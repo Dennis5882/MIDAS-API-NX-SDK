@@ -286,15 +286,6 @@ Pick any unchecked row, implement it in the listed `module`, add a test mirrorin
 | [ ] | `/db/CUTL` | Cutting Line | gen/civil | `midas_nx.db.load_combinations` |
 | [ ] | `/db/CLWP` | Plate Cutting Line Diagram | gen/civil | `midas_nx.db.load_combinations` |
 
-## 17_DB_Bridge.md (0/4)
-
-| | Endpoint | Name | Products | Module |
-|---|---|---|---|---|
-| [ ] | `/db/GSBG` | Bridge Girder Diagrams | civil | `midas_nx.db.bridge` |
-| [ ] | `/db/GCMB` | General Camber Control | civil | `midas_nx.db.bridge` |
-| [ ] | `/db/CAMB` | FCM Camber Control | civil | `midas_nx.db.bridge` |
-| [ ] | `/db/ULFC` | Cable Control – Unknown Load Factor Constraints | civil | `midas_nx.db.bridge` |
-
 ## 14_DB_Pushover.md (0/6)
 
 | | Endpoint | Name | Products | Module |
@@ -305,24 +296,6 @@ Pick any unchecked row, implement it in the listed `module`, add a test mirrorin
 | [ ] | `/db/PHGE` | Assign Pushover Hinge Properties | gen/civil | `midas_nx.db.pushover` |
 | [ ] | `/db/POLC` | Pushover Load Cases | gen/civil | `midas_nx.db.pushover` |
 | [ ] | `/db/POLC-M1` | Pushover Load Case (Hyper-S) | gen/civil | `midas_nx.db.pushover` |
-
-## 24_DB_Design.md (0/13)
-
-| | Endpoint | Name | Products | Module |
-|---|---|---|---|---|
-| [ ] | `/db/DCON` | RC Design Code | gen/civil | `midas_nx.db.design` |
-| [ ] | `/db/DSTL` | Steel Design Code | gen/civil | `midas_nx.db.design` |
-| [ ] | `/db/RCHK` | Rebar Input for Checking (Beam/Column) | gen/civil | `midas_nx.db.design` |
-| [ ] | `/db/LENG` | Unbraced Length | gen/civil | `midas_nx.db.design` |
-| [ ] | `/db/MEMB` | Member Assignment | gen/civil | `midas_nx.db.design` |
-| [ ] | `/db/DCTL` | Definition of Frame | gen/civil | `midas_nx.db.design` |
-| [ ] | `/db/LTSR` | Limiting Slenderness Ratio | gen/civil | `midas_nx.db.design` |
-| [ ] | `/db/MBTP` | Modify Member Type | gen/civil | `midas_nx.db.design` |
-| [ ] | `/db/WMAK` | Modify Wall Mark Design | gen/civil | `midas_nx.db.design` |
-| [ ] | `/db/REBB` | Modify Beam Rebar Data | gen/civil | `midas_nx.db.design` |
-| [ ] | `/db/REBC` | Modify Column Rebar Data (POST 전용) | gen/civil | `midas_nx.db.design` |
-| [ ] | `/db/REBW` | Modify Wall Rebar Data | gen/civil | `midas_nx.db.design` |
-| [ ] | `/db/REBR` | Modify Brace Rebar Data | gen/civil | `midas_nx.db.design` |
 
 ## 15_OPE.md (0/19)
 
@@ -360,20 +333,14 @@ Pick any unchecked row, implement it in the listed `module`, add a test mirrorin
 | [ ] | `/view/DISPLAY` | Display | gen/civil | `midas_nx.view` |
 | [ ] | `/view/RESULTGRAPHIC` | Type of Display / 반력·변위·트러스·보·판·응력 등 결과 표시 | gen/civil | `midas_nx.view` |
 
-## 23_POST_Design.md (0/10)
+## 17_DB_Bridge.md (0/4)
 
 | | Endpoint | Name | Products | Module |
 |---|---|---|---|---|
-| [ ] | `/post/PM` | P-M Interaction Diagram | gen/civil | `midas_nx.post.design` |
-| [ ] | `/post/STEELCODECHECK` | Steel Code Check | gen/civil | `midas_nx.post.design` |
-| [ ] | `/post/BEAMDESIGNFORCES` | Concrete – Beam Design Force | gen/civil | `midas_nx.post.design` |
-| [ ] | `/post/COLUMNDESIGNFORCES` | Concrete – Column Design Forces | gen/civil | `midas_nx.post.design` |
-| [ ] | `/post/BRACEDESIGNFORCES` | Concrete – Brace Design Forces | gen/civil | `midas_nx.post.design` |
-| [ ] | `/post/WALLDESIGNFORCES` | Concrete – Wall Design Forces | gen/civil | `midas_nx.post.design` |
-| [ ] | `/post/STEELMEMBERDESIGNFORCES` | Steel – Member Design Forces | gen/civil | `midas_nx.post.design` |
-| [ ] | `/post/SRCBEAMDESIGNFORCES` | SRC – Beam Design Forces | gen/civil | `midas_nx.post.design` |
-| [ ] | `/post/SRCCOLUMNDESIGNFORCES` | SRC – Column Design Forces | gen/civil | `midas_nx.post.design` |
-| [ ] | `/post/COLDFORMEDSTEELMEMBERDESIGNFORCES` | Cold Formed – Member Design Forces | gen/civil | `midas_nx.post.design` |
+| [ ] | `/db/GSBG` | Bridge Girder Diagrams | civil | `midas_nx.db.bridge` |
+| [ ] | `/db/GCMB` | General Camber Control | civil | `midas_nx.db.bridge` |
+| [ ] | `/db/CAMB` | FCM Camber Control | civil | `midas_nx.db.bridge` |
+| [ ] | `/db/ULFC` | Cable Control – Unknown Load Factor Constraints | civil | `midas_nx.db.bridge` |
 
 ## 18_POST_PreProcess.md (0/1)
 
@@ -392,6 +359,39 @@ Pick any unchecked row, implement it in the listed `module`, add a test mirrorin
 | | Endpoint | Name | Products | Module |
 |---|---|---|---|---|
 | [ ] | `/post/TABLE (Analysis Story Table types)` | ~16 story table types | gen/civil | `midas_nx.post.story` |
+
+## 23_POST_Design.md (0/10)
+
+| | Endpoint | Name | Products | Module |
+|---|---|---|---|---|
+| [ ] | `/post/PM` | P-M Interaction Diagram | gen/civil | `midas_nx.post.design` |
+| [ ] | `/post/STEELCODECHECK` | Steel Code Check | gen/civil | `midas_nx.post.design` |
+| [ ] | `/post/BEAMDESIGNFORCES` | Concrete – Beam Design Force | gen/civil | `midas_nx.post.design` |
+| [ ] | `/post/COLUMNDESIGNFORCES` | Concrete – Column Design Forces | gen/civil | `midas_nx.post.design` |
+| [ ] | `/post/BRACEDESIGNFORCES` | Concrete – Brace Design Forces | gen/civil | `midas_nx.post.design` |
+| [ ] | `/post/WALLDESIGNFORCES` | Concrete – Wall Design Forces | gen/civil | `midas_nx.post.design` |
+| [ ] | `/post/STEELMEMBERDESIGNFORCES` | Steel – Member Design Forces | gen/civil | `midas_nx.post.design` |
+| [ ] | `/post/SRCBEAMDESIGNFORCES` | SRC – Beam Design Forces | gen/civil | `midas_nx.post.design` |
+| [ ] | `/post/SRCCOLUMNDESIGNFORCES` | SRC – Column Design Forces | gen/civil | `midas_nx.post.design` |
+| [ ] | `/post/COLDFORMEDSTEELMEMBERDESIGNFORCES` | Cold Formed – Member Design Forces | gen/civil | `midas_nx.post.design` |
+
+## 24_DB_Design.md (0/13)
+
+| | Endpoint | Name | Products | Module |
+|---|---|---|---|---|
+| [ ] | `/db/DCON` | RC Design Code | gen/civil | `midas_nx.db.design` |
+| [ ] | `/db/DSTL` | Steel Design Code | gen/civil | `midas_nx.db.design` |
+| [ ] | `/db/RCHK` | Rebar Input for Checking (Beam/Column) | gen/civil | `midas_nx.db.design` |
+| [ ] | `/db/LENG` | Unbraced Length | gen/civil | `midas_nx.db.design` |
+| [ ] | `/db/MEMB` | Member Assignment | gen/civil | `midas_nx.db.design` |
+| [ ] | `/db/DCTL` | Definition of Frame | gen/civil | `midas_nx.db.design` |
+| [ ] | `/db/LTSR` | Limiting Slenderness Ratio | gen/civil | `midas_nx.db.design` |
+| [ ] | `/db/MBTP` | Modify Member Type | gen/civil | `midas_nx.db.design` |
+| [ ] | `/db/WMAK` | Modify Wall Mark Design | gen/civil | `midas_nx.db.design` |
+| [ ] | `/db/REBB` | Modify Beam Rebar Data | gen/civil | `midas_nx.db.design` |
+| [ ] | `/db/REBC` | Modify Column Rebar Data (POST 전용) | gen/civil | `midas_nx.db.design` |
+| [ ] | `/db/REBW` | Modify Wall Rebar Data | gen/civil | `midas_nx.db.design` |
+| [ ] | `/db/REBR` | Modify Brace Rebar Data | gen/civil | `midas_nx.db.design` |
 
 ## 25_Design_Steel_KDS41302022.md (0/1)
 

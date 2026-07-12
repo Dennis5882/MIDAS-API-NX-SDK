@@ -26,7 +26,8 @@ class SectBefore(TypedDict, total=False):
     USER_OFFSET_REF: int  # 0=Centroid, 1=Extreme Fiber; default 0
     USE_SHEAR_DEFORM: bool  # default false
     USE_WARPING_EFFECT: bool  # default false
-    SECT_I: Any  # SECTTYPE-specific body, e.g. {"DATATYPE":1,"SECT_I":{"DB_NAME":...}}
+    DATATYPE: int  # 12-A DB/User only: DB=1, User=2; required for SECTTYPE="DBUSER"
+    SECT_I: Any  # SECTTYPE-specific body, e.g. (DBUSER) {"DB_NAME": "KS21", "SECT_NAME": "H300x150x6.5/9"}
 
 
 class SectionPayload(TypedDict, total=False):

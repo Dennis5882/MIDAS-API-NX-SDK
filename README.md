@@ -38,6 +38,14 @@ Material.create({1: {
     "PARAM": [{"P_TYPE": 1, "STANDARD": "AS17(RC)", "DB": "C32"}],
 }}, client=client)
 
+Section.create({1: {
+    "SECTTYPE": "DBUSER", "SECT_NAME": "H300x150",
+    "SECT_BEFORE": {
+        "SHAPE": "H", "OFFSET_PT": "CC", "DATATYPE": 1,
+        "SECT_I": {"DB_NAME": "KS21", "SECT_NAME": "H300x150x6.5/9"},
+    },
+}}, client=client)
+
 Node.create({
     1: {"X": 0, "Y": 0, "Z": 0},
     2: {"X": 0, "Y": 0, "Z": 3.2},

@@ -17,7 +17,7 @@ def main() -> None:
     endpoints = data["endpoints"]
 
     by_chapter: "OrderedDict[str, list[dict]]" = OrderedDict()
-    for e in endpoints:
+    for e in sorted(endpoints, key=lambda e: e["chapter_file"]):
         by_chapter.setdefault(e["chapter_file"], []).append(e)
 
     total = len(endpoints)

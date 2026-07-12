@@ -43,7 +43,8 @@ Section.create(
             "SECT_BEFORE": {
                 "SHAPE": "H",
                 "OFFSET_PT": "CC",
-                "SECT_I": {"DATATYPE": 1, "DB_NAME": "KS21", "SECT_NAME": "H300x150x6.5/9"},
+                "DATATYPE": 1,  # 1=DB, 2=User — sibling of SECT_I, not nested inside it
+                "SECT_I": {"DB_NAME": "KS21", "SECT_NAME": "H300x150x6.5/9"},
             },
         }
     },

@@ -76,6 +76,7 @@ def test_section_create_sends_documented_assign_shape(gen_client):
                 "SECT_BEFORE": {
                     "SHAPE": "H",
                     "OFFSET_PT": "CC",
+                    "DATATYPE": 1,
                     "SECT_I": {"DB_NAME": "KS21", "SECT_NAME": "H300x150x6.5/9"},
                 },
             }
@@ -84,7 +85,12 @@ def test_section_create_sends_documented_assign_shape(gen_client):
     )
 
     sent = responses.calls[0].request
-    assert json.loads(sent.body)["Assign"]["1"]["SECTTYPE"] == "DBUSER"
+    body = json.loads(sent.body)["Assign"]["1"]
+    assert body["SECTTYPE"] == "DBUSER"
+    # DATATYPE is a sibling of SECT_I inside SECT_BEFORE, not nested inside it
+    # (docs/manual/04_DB_Properties.md #12-A) — regression check for that mix-up.
+    assert body["SECT_BEFORE"]["DATATYPE"] == 1
+    assert "DATATYPE" not in body["SECT_BEFORE"]["SECT_I"]
 
 
 @responses.activate
