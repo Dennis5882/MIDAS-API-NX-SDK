@@ -1,0 +1,78 @@
+"""Generic ``/db/*`` CRUD base class.
+
+Source convention: MIDAS-API manual repo, e.g. docs/manual/03_DB_Node_Element.md
+#1 (/db/NODE). Every /db/* endpoint is ID-keyed under an "Assign" wrapper for
+POST/PUT/DELETE; GET returns the full set (no documented per-ID URL filtering
+across the manual, so we don't invent one).
+
+DELETE payload is inconsistent across the manual itself (some chapters send
+``None`` per id, e.g. 03_DB_Node_Element.md; others send ``{}``, e.g.
+06_DB_Static_Loads.md). We standardize on ``None`` (matches the NODE example,
+the most-referenced endpoint in the manual) — both have been observed as
+accepted by the server in the source docs.
+"""
+from __future__ import annotations
+
+from typing import ClassVar, Optional
+
+from ..client import MidasClient, UnsupportedMethodError, get_default_client
+
+_ALL_METHODS = frozenset({"POST", "GET", "PUT", "DELETE"})
+
+
+class DbResource:
+    """Base class for a single ``/db/*`` endpoint.
+
+    Subclasses set:
+        ENDPOINT: e.g. "/db/NODE"
+        NAME: human-readable name (manual "기능" column), for error messages
+        PRODUCTS: {"gen"}, {"civil"}, or {"gen", "civil"}
+        METHODS: subset of {"POST", "GET", "PUT", "DELETE"} the endpoint
+            actually supports (defaults to all four; override for
+            GET/PUT-only endpoints like MATD).
+    """
+
+    ENDPOINT: ClassVar[str]
+    NAME: ClassVar[str] = ""
+    PRODUCTS: ClassVar[frozenset] = frozenset({"gen", "civil"})
+    METHODS: ClassVar[frozenset] = _ALL_METHODS
+
+    @classmethod
+    def _check(cls, client: MidasClient, method: str) -> None:
+        client.check_product(cls.PRODUCTS, cls.NAME or cls.__name__)
+        if method not in cls.METHODS:
+            raise UnsupportedMethodError(
+                f"{cls.NAME or cls.__name__} ({cls.ENDPOINT}) does not support {method}; "
+                f"supported methods: {sorted(cls.METHODS)}",
+                method=method,
+                endpoint=cls.ENDPOINT,
+            )
+
+    @classmethod
+    def get(cls, client: Optional[MidasClient] = None) -> dict:
+        """Fetch all items. Response is nested under the endpoint's key,
+        e.g. ``{"NODE": {"1": {...}, "2": {...}}}``."""
+        client = client or get_default_client()
+        cls._check(client, "GET")
+        return client.request("GET", cls.ENDPOINT)
+
+    @classmethod
+    def create(cls, items: dict, client: Optional[MidasClient] = None) -> dict:
+        """items: {id: payload_dict}, e.g. {1: {"X": 0, "Y": 0, "Z": 0}}."""
+        client = client or get_default_client()
+        cls._check(client, "POST")
+        return client.request("POST", cls.ENDPOINT, {"Assign": {str(k): v for k, v in items.items()}})
+
+    @classmethod
+    def update(cls, items: dict, client: Optional[MidasClient] = None) -> dict:
+        """items: {id: payload_dict} — same shape as create()."""
+        client = client or get_default_client()
+        cls._check(client, "PUT")
+        return client.request("PUT", cls.ENDPOINT, {"Assign": {str(k): v for k, v in items.items()}})
+
+    @classmethod
+    def delete(cls, ids: list, client: Optional[MidasClient] = None) -> dict:
+        """ids: list of item ids to delete, e.g. [1, 2, 3]."""
+        client = client or get_default_client()
+        cls._check(client, "DELETE")
+        return client.request("DELETE", cls.ENDPOINT, {"Assign": {str(i): None for i in ids}})

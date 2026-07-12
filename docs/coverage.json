@@ -1,0 +1,3032 @@
+{
+  "vendored_from": "Dennis5882/MIDAS-API docs/manual/INDEX.md",
+  "source_note": "Static snapshot; re-run scripts/vendor_coverage.py to refresh. POST result-table types and the three Design Code chapters (25-27) are not itemized by URL in INDEX.md and are represented as single aggregate rows rather than one row per table/check.",
+  "endpoints": [
+    {
+      "endpoint": "/doc/NEW",
+      "name": "New Project",
+      "chapter_file": "01_DOC.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.doc"
+    },
+    {
+      "endpoint": "/doc/OPEN",
+      "name": "Open Project",
+      "chapter_file": "01_DOC.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.doc"
+    },
+    {
+      "endpoint": "/doc/CLOSE",
+      "name": "Close Project",
+      "chapter_file": "01_DOC.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.doc"
+    },
+    {
+      "endpoint": "/doc/SAVE",
+      "name": "Save",
+      "chapter_file": "01_DOC.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.doc"
+    },
+    {
+      "endpoint": "/doc/SAVEAS",
+      "name": "Save As",
+      "chapter_file": "01_DOC.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.doc"
+    },
+    {
+      "endpoint": "/doc/STAGAS",
+      "name": "Save Current Stage As",
+      "chapter_file": "01_DOC.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.doc"
+    },
+    {
+      "endpoint": "/doc/IMPORT",
+      "name": "Import to JSON",
+      "chapter_file": "01_DOC.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.doc"
+    },
+    {
+      "endpoint": "/doc/IMPORTMXT",
+      "name": "Import to mct/mgt",
+      "chapter_file": "01_DOC.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.doc"
+    },
+    {
+      "endpoint": "/doc/EXPORT",
+      "name": "Export to JSON",
+      "chapter_file": "01_DOC.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.doc"
+    },
+    {
+      "endpoint": "/doc/EXPORTMXT",
+      "name": "Export to mct/mgt",
+      "chapter_file": "01_DOC.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.doc"
+    },
+    {
+      "endpoint": "/doc/ANAL",
+      "name": "Perform Analysis",
+      "chapter_file": "01_DOC.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.doc"
+    },
+    {
+      "endpoint": "/db/PJCF",
+      "name": "Project Information",
+      "chapter_file": "02_DB_Project_Structure.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.project"
+    },
+    {
+      "endpoint": "/db/UNIT",
+      "name": "Unit System",
+      "chapter_file": "02_DB_Project_Structure.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.db.project"
+    },
+    {
+      "endpoint": "/db/STYP",
+      "name": "Structure Type",
+      "chapter_file": "02_DB_Project_Structure.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.db.project"
+    },
+    {
+      "endpoint": "/db/STYP-M1",
+      "name": "Structure Type (Hyper-S)",
+      "chapter_file": "02_DB_Project_Structure.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.project"
+    },
+    {
+      "endpoint": "/db/GRUP",
+      "name": "Structure Group",
+      "chapter_file": "02_DB_Project_Structure.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.project"
+    },
+    {
+      "endpoint": "/db/BNGR",
+      "name": "Boundary Group",
+      "chapter_file": "02_DB_Project_Structure.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.project"
+    },
+    {
+      "endpoint": "/db/LDGR",
+      "name": "Load Group",
+      "chapter_file": "02_DB_Project_Structure.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.project"
+    },
+    {
+      "endpoint": "/db/TDGR",
+      "name": "Tendon Group",
+      "chapter_file": "02_DB_Project_Structure.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.project"
+    },
+    {
+      "endpoint": "/db/NPLN",
+      "name": "Named Plane",
+      "chapter_file": "02_DB_Project_Structure.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.project"
+    },
+    {
+      "endpoint": "/db/CO_M",
+      "name": "Material Color",
+      "chapter_file": "02_DB_Project_Structure.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.project"
+    },
+    {
+      "endpoint": "/db/CO_S",
+      "name": "Section Color",
+      "chapter_file": "02_DB_Project_Structure.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.project"
+    },
+    {
+      "endpoint": "/db/CO_T",
+      "name": "Thickness Color",
+      "chapter_file": "02_DB_Project_Structure.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.project"
+    },
+    {
+      "endpoint": "/db/CO_F",
+      "name": "Floor Load Color",
+      "chapter_file": "02_DB_Project_Structure.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.project"
+    },
+    {
+      "endpoint": "/db/SPAN",
+      "name": "Span Information",
+      "chapter_file": "02_DB_Project_Structure.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.project"
+    },
+    {
+      "endpoint": "/db/STOR",
+      "name": "Story Data",
+      "chapter_file": "02_DB_Project_Structure.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.project"
+    },
+    {
+      "endpoint": "/db/NODE",
+      "name": "Node",
+      "chapter_file": "03_DB_Node_Element.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.db.node_element"
+    },
+    {
+      "endpoint": "/db/ELEM",
+      "name": "Element",
+      "chapter_file": "03_DB_Node_Element.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.db.node_element"
+    },
+    {
+      "endpoint": "/db/SKEW",
+      "name": "Node Local Axis",
+      "chapter_file": "03_DB_Node_Element.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.node_element"
+    },
+    {
+      "endpoint": "/db/MADO",
+      "name": "Define Domain",
+      "chapter_file": "03_DB_Node_Element.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.node_element"
+    },
+    {
+      "endpoint": "/db/SBDO",
+      "name": "Define Sub-Domain",
+      "chapter_file": "03_DB_Node_Element.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.node_element"
+    },
+    {
+      "endpoint": "/db/DOEL",
+      "name": "Domain-Element",
+      "chapter_file": "03_DB_Node_Element.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.node_element"
+    },
+    {
+      "endpoint": "/db/MATL",
+      "name": "Material Properties",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.db.properties.material"
+    },
+    {
+      "endpoint": "/db/MATL-M1",
+      "name": "Material Properties (Hyper-S)",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/IMFM",
+      "name": "Inelastic Material Properties for Fiber Model",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/IMFM-M1",
+      "name": "Inelastic Material Link for Auto Generation (Hyper-S)",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/TDMF",
+      "name": "Time Dependent Material – User Defined",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/TDMT",
+      "name": "Time Dependent Material – Creep/Shrinkage",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/TDME",
+      "name": "Time Dependent Material – Compressive Strength",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/EDMP",
+      "name": "Change Property",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/TMAT",
+      "name": "Time Dependent Material Link",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/EPMT",
+      "name": "Plastic Material",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/EPMT-M1",
+      "name": "Plastic Material (Hyper-S)",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/SECT",
+      "name": "Section Properties (Common / DB·User / Value / SRC / PSC / Tapered 등)",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.db.properties.section"
+    },
+    {
+      "endpoint": "/db/THIK",
+      "name": "Thickness (Value / Stiffened DB·User·Value)",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.db.properties.thickness"
+    },
+    {
+      "endpoint": "/db/TSGR",
+      "name": "Tapered Group",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/SECF",
+      "name": "Section Manager – Stiffness",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/RPSC",
+      "name": "Section Manager – Reinforcements",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/STRPSSM",
+      "name": "Section Manager – Stress Points",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/PSSF",
+      "name": "Section Manager – Plate Stiffness Scale Factor",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/VBEM",
+      "name": "Virtual Beam",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/VSEC",
+      "name": "Virtual Section",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/EWSF",
+      "name": "Effective Width Scale Factor",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/IEHC",
+      "name": "Inelastic Hinge Control Data",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/IEHG",
+      "name": "Assign Inelastic Hinge Properties",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/IEHG-BEAM-M1",
+      "name": "Assign Inelastic Hinges – Beam (Hyper-S)",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/IEHG-TRUSS-M1",
+      "name": "Assign Inelastic Hinges – Truss (Hyper-S)",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/IEHG-GL-M1",
+      "name": "Assign Inelastic Hinges – General Link (Hyper-S)",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/IEHG-PSS-M1",
+      "name": "Assign Inelastic Hinges – Point Spring Support (Hyper-S)",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/FIMP",
+      "name": "Inelastic Material Properties",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/FIBR",
+      "name": "Fiber Division of Section",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/GRDP",
+      "name": "Group Damping",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/ESSF",
+      "name": "Element Stiffness Scale Factor",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.properties.*"
+    },
+    {
+      "endpoint": "/db/MATD",
+      "name": "Modify Concrete Materials",
+      "chapter_file": "04_DB_Properties.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.db.properties.material"
+    },
+    {
+      "endpoint": "/db/CONS",
+      "name": "Constraint Support",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/NSPR",
+      "name": "Point Spring",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/GSTP",
+      "name": "Define General Spring Type",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/GSPR",
+      "name": "Assign General Spring Supports",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/SSPS",
+      "name": "Surface Spring",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/ELNK",
+      "name": "Elastic Link",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/RIGD",
+      "name": "Rigid Link",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/NLLP",
+      "name": "General Link Properties",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/NLNK",
+      "name": "General Link",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/NLNK-M1",
+      "name": "General Link (Hyper-S)",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/CGLP",
+      "name": "Change General Link Property",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/FRLS",
+      "name": "Beam End Release",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/OFFS",
+      "name": "Beam End Offsets",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/PRLS",
+      "name": "Plate End Release",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/MLFC",
+      "name": "Force-Deformation Function",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/SDVI",
+      "name": "Seismic Device – Viscous/Oil Damper",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/SDVE",
+      "name": "Seismic Device – Viscoelastic Damper",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/SDST",
+      "name": "Seismic Device – Steel Damper",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/SDHY",
+      "name": "Seismic Device – Hysteretic Isolator (MSS)",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/SDIS",
+      "name": "Seismic Device – Isolator (MSS)",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/MCON",
+      "name": "Linear Constraints",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/PZEF",
+      "name": "Panel Zone Effects",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/CLDR",
+      "name": "Define Constraints Label Direction",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/DRLS",
+      "name": "Diaphragm Disconnect",
+      "chapter_file": "05_DB_Boundary.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.boundary"
+    },
+    {
+      "endpoint": "/db/STLD",
+      "name": "Static Load Cases",
+      "chapter_file": "06_DB_Static_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/BODF",
+      "name": "Self-Weight",
+      "chapter_file": "06_DB_Static_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/CNLD",
+      "name": "Nodal Loads",
+      "chapter_file": "06_DB_Static_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/BMLD",
+      "name": "Beam Loads",
+      "chapter_file": "06_DB_Static_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/SDSP",
+      "name": "Specified Displacements of Support",
+      "chapter_file": "06_DB_Static_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/NMAS",
+      "name": "Nodal Masses",
+      "chapter_file": "06_DB_Static_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/LTOM",
+      "name": "Loads to Masses",
+      "chapter_file": "06_DB_Static_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/NBOF",
+      "name": "Nodal Body Force",
+      "chapter_file": "06_DB_Static_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/PSLT",
+      "name": "Define Pressure Load Type",
+      "chapter_file": "06_DB_Static_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/PRES",
+      "name": "Assign Pressure Loads",
+      "chapter_file": "06_DB_Static_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/PNLD",
+      "name": "Define Plane Load Type",
+      "chapter_file": "06_DB_Static_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/PNLA",
+      "name": "Assign Plane Loads",
+      "chapter_file": "06_DB_Static_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/FBLD",
+      "name": "Define Floor Load Type",
+      "chapter_file": "06_DB_Static_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/FBLA",
+      "name": "Assign Floor Loads",
+      "chapter_file": "06_DB_Static_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/FMLD",
+      "name": "Finishing Material Loads",
+      "chapter_file": "06_DB_Static_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/POSP",
+      "name": "Parameter of Soil Properties",
+      "chapter_file": "06_DB_Static_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/EPST",
+      "name": "Static Earth Pressure",
+      "chapter_file": "06_DB_Static_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/EPSE",
+      "name": "Seismic Earth Pressure",
+      "chapter_file": "06_DB_Static_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/POSL",
+      "name": "Parameter of Seismic Loads",
+      "chapter_file": "06_DB_Static_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/SWIND",
+      "name": "Static Wind Load (KDS 41-12:2022 / User Type)",
+      "chapter_file": "06_DB_Static_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/SSEIS",
+      "name": "Static Seismic Load (KDS 41-17-00:2019 / User Type)",
+      "chapter_file": "06_DB_Static_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/ETMP",
+      "name": "Element Temperature",
+      "chapter_file": "07_DB_Temperature_Prestress.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.temperature_prestress"
+    },
+    {
+      "endpoint": "/db/GTMP",
+      "name": "Temperature Gradient",
+      "chapter_file": "07_DB_Temperature_Prestress.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.temperature_prestress"
+    },
+    {
+      "endpoint": "/db/BTMP",
+      "name": "Beam Section Temperature",
+      "chapter_file": "07_DB_Temperature_Prestress.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.temperature_prestress"
+    },
+    {
+      "endpoint": "/db/STMP",
+      "name": "System Temperature",
+      "chapter_file": "07_DB_Temperature_Prestress.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.temperature_prestress"
+    },
+    {
+      "endpoint": "/db/NTMP",
+      "name": "Nodal Temperature",
+      "chapter_file": "07_DB_Temperature_Prestress.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.temperature_prestress"
+    },
+    {
+      "endpoint": "/db/TDNT",
+      "name": "Tendon Property",
+      "chapter_file": "07_DB_Temperature_Prestress.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.temperature_prestress"
+    },
+    {
+      "endpoint": "/db/TDNA",
+      "name": "Tendon Profile",
+      "chapter_file": "07_DB_Temperature_Prestress.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.temperature_prestress"
+    },
+    {
+      "endpoint": "/db/TDCS",
+      "name": "Tendon Location for Composite Section",
+      "chapter_file": "07_DB_Temperature_Prestress.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.temperature_prestress"
+    },
+    {
+      "endpoint": "/db/TDPL",
+      "name": "Tendon Prestress",
+      "chapter_file": "07_DB_Temperature_Prestress.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.temperature_prestress"
+    },
+    {
+      "endpoint": "/db/PRST",
+      "name": "Prestress Beam Loads",
+      "chapter_file": "07_DB_Temperature_Prestress.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.temperature_prestress"
+    },
+    {
+      "endpoint": "/db/PTNS",
+      "name": "Pretension Loads",
+      "chapter_file": "07_DB_Temperature_Prestress.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.temperature_prestress"
+    },
+    {
+      "endpoint": "/db/EXLD",
+      "name": "External Type Load Case for Pretension",
+      "chapter_file": "07_DB_Temperature_Prestress.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.temperature_prestress"
+    },
+    {
+      "endpoint": "/db/MVCD",
+      "name": "Moving Load Code",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/LLAN",
+      "name": "Traffic Line Lanes",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/LLANch",
+      "name": "Traffic Line Lanes – China",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/LLANid",
+      "name": "Traffic Line Lanes – India",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/LLANtr",
+      "name": "Traffic Line Lanes – Transverse",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/LLANop",
+      "name": "Traffic Line Lanes – Moving Load Optimization",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/SLAN",
+      "name": "Traffic Surface Lanes",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/SLANch",
+      "name": "Traffic Surface Lanes – China",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/SLANop",
+      "name": "Traffic Surface Lanes – Moving Load Optimization",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/MVHL",
+      "name": "Vehicles (AASHTO / LRFD / Canada / BS / Eurocode / Korea 등)",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/MVHLtr",
+      "name": "Vehicles – Transverse",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/MVLD",
+      "name": "Moving Load Cases",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/MVLDch",
+      "name": "Moving Load Cases – China",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/MVLDid",
+      "name": "Moving Load Cases – India",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/MVLDbs",
+      "name": "Moving Load Cases – BS",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/MVLDeu",
+      "name": "Moving Load Cases – Eurocode",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/MVLDpl",
+      "name": "Moving Load Cases – Poland",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/MVLDtr",
+      "name": "Moving Load Cases – Transverse",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/CRGR",
+      "name": "Concurrent Reaction Group",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/CJFG",
+      "name": "Concurrent Joint Force Group",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/MVHC",
+      "name": "Vehicle Classes",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/SINF",
+      "name": "Plate Element for Influence Surface",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/MLSP",
+      "name": "Lane Support – Negative Moments at Interior Piers",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/MLSR",
+      "name": "Lane Support – Reactions at Interior Piers",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/DYLA",
+      "name": "Dynamic Load Allowance",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/IMPF",
+      "name": "Additional Impact Factor",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/DYFG",
+      "name": "Railway Dynamic Factor",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/DYNF",
+      "name": "Railway Dynamic Factor by Element",
+      "chapter_file": "08_DB_Moving_Loads.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.moving_loads"
+    },
+    {
+      "endpoint": "/db/SPFC",
+      "name": "Response Spectrum Functions (User / Korea / US / Eurocode / China 등)",
+      "chapter_file": "09_DB_Dynamic_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.dynamic_loads"
+    },
+    {
+      "endpoint": "/db/SPLC",
+      "name": "Response Spectrum Load Cases",
+      "chapter_file": "09_DB_Dynamic_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.dynamic_loads"
+    },
+    {
+      "endpoint": "/db/THGC",
+      "name": "Time History Global Control",
+      "chapter_file": "09_DB_Dynamic_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.dynamic_loads"
+    },
+    {
+      "endpoint": "/db/THGC-M1",
+      "name": "Time History Global Control (Hyper-S)",
+      "chapter_file": "09_DB_Dynamic_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.dynamic_loads"
+    },
+    {
+      "endpoint": "/db/THOO-M1",
+      "name": "Time History Output Option (Hyper-S)",
+      "chapter_file": "09_DB_Dynamic_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.dynamic_loads"
+    },
+    {
+      "endpoint": "/db/THIS",
+      "name": "Time History Load Cases",
+      "chapter_file": "09_DB_Dynamic_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.dynamic_loads"
+    },
+    {
+      "endpoint": "/db/THIS-M1",
+      "name": "Time History Load Cases (Hyper-S)",
+      "chapter_file": "09_DB_Dynamic_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.dynamic_loads"
+    },
+    {
+      "endpoint": "/db/THFC",
+      "name": "Time History Functions",
+      "chapter_file": "09_DB_Dynamic_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.dynamic_loads"
+    },
+    {
+      "endpoint": "/db/THGA",
+      "name": "Ground Acceleration",
+      "chapter_file": "09_DB_Dynamic_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.dynamic_loads"
+    },
+    {
+      "endpoint": "/db/THNL",
+      "name": "Dynamic Nodal Loads",
+      "chapter_file": "09_DB_Dynamic_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.dynamic_loads"
+    },
+    {
+      "endpoint": "/db/THSL",
+      "name": "Time Varying Static Loads",
+      "chapter_file": "09_DB_Dynamic_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.dynamic_loads"
+    },
+    {
+      "endpoint": "/db/THMS",
+      "name": "Multiple Support Excitation",
+      "chapter_file": "09_DB_Dynamic_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.dynamic_loads"
+    },
+    {
+      "endpoint": "/db/STAG",
+      "name": "Define Construction Stage",
+      "chapter_file": "10_DB_Construction_Stage.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.construction_stage"
+    },
+    {
+      "endpoint": "/db/CSCS",
+      "name": "Composite Section for Construction Stage",
+      "chapter_file": "10_DB_Construction_Stage.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.construction_stage"
+    },
+    {
+      "endpoint": "/db/TMLD",
+      "name": "Time Loads for Construction Stage",
+      "chapter_file": "10_DB_Construction_Stage.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.construction_stage"
+    },
+    {
+      "endpoint": "/db/STBK",
+      "name": "Set-Back Loads for Nonlinear Construction Stage",
+      "chapter_file": "10_DB_Construction_Stage.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.construction_stage"
+    },
+    {
+      "endpoint": "/db/CMCS",
+      "name": "Camber for Construction Stage",
+      "chapter_file": "10_DB_Construction_Stage.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.construction_stage"
+    },
+    {
+      "endpoint": "/db/CRPC",
+      "name": "Creep Coefficient for Construction Stage",
+      "chapter_file": "10_DB_Construction_Stage.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.construction_stage"
+    },
+    {
+      "endpoint": "/db/ETFC",
+      "name": "Ambient Temperature Functions",
+      "chapter_file": "10_DB_Construction_Stage.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.construction_stage"
+    },
+    {
+      "endpoint": "/db/CCFC",
+      "name": "Convection Coefficient Functions",
+      "chapter_file": "10_DB_Construction_Stage.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.construction_stage"
+    },
+    {
+      "endpoint": "/db/HECB",
+      "name": "Element Convection Boundary",
+      "chapter_file": "10_DB_Construction_Stage.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.construction_stage"
+    },
+    {
+      "endpoint": "/db/HSPT",
+      "name": "Prescribed Temperature",
+      "chapter_file": "10_DB_Construction_Stage.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.construction_stage"
+    },
+    {
+      "endpoint": "/db/HSFC",
+      "name": "Heat Source Functions",
+      "chapter_file": "10_DB_Construction_Stage.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.construction_stage"
+    },
+    {
+      "endpoint": "/db/HAHS",
+      "name": "Assign Heat Source",
+      "chapter_file": "10_DB_Construction_Stage.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.construction_stage"
+    },
+    {
+      "endpoint": "/db/HPCE",
+      "name": "Pipe Cooling",
+      "chapter_file": "10_DB_Construction_Stage.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.construction_stage"
+    },
+    {
+      "endpoint": "/db/HSTG",
+      "name": "Define Construction Stage for Hydration",
+      "chapter_file": "10_DB_Construction_Stage.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.construction_stage"
+    },
+    {
+      "endpoint": "/db/SMPT",
+      "name": "Settlement Group",
+      "chapter_file": "11_DB_Settlement_Misc_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.misc_loads"
+    },
+    {
+      "endpoint": "/db/SMLC",
+      "name": "Settlement Load Cases",
+      "chapter_file": "11_DB_Settlement_Misc_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.misc_loads"
+    },
+    {
+      "endpoint": "/db/PLCB",
+      "name": "Pre-composite Section",
+      "chapter_file": "11_DB_Settlement_Misc_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.misc_loads"
+    },
+    {
+      "endpoint": "/db/LDSQ",
+      "name": "Load Sequence for Nonlinear",
+      "chapter_file": "11_DB_Settlement_Misc_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.misc_loads"
+    },
+    {
+      "endpoint": "/db/WVLD",
+      "name": "Wave Loads",
+      "chapter_file": "11_DB_Settlement_Misc_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.misc_loads"
+    },
+    {
+      "endpoint": "/db/IELC",
+      "name": "Ignore Elements for Load Cases",
+      "chapter_file": "11_DB_Settlement_Misc_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.misc_loads"
+    },
+    {
+      "endpoint": "/db/IFGS",
+      "name": "Large Displacement – Initial Forces for Geometric Stiffness",
+      "chapter_file": "11_DB_Settlement_Misc_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.misc_loads"
+    },
+    {
+      "endpoint": "/db/EFCT",
+      "name": "Small Displacement – Initial Force Control Data",
+      "chapter_file": "11_DB_Settlement_Misc_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.misc_loads"
+    },
+    {
+      "endpoint": "/db/INMF",
+      "name": "Small Displacement – Initial Element Force",
+      "chapter_file": "11_DB_Settlement_Misc_Loads.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.misc_loads"
+    },
+    {
+      "endpoint": "/db/ACTL",
+      "name": "Main Control Data",
+      "chapter_file": "12_DB_Analysis_Control.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.analysis_control"
+    },
+    {
+      "endpoint": "/db/ACTL-M1",
+      "name": "Main Control Data (Hyper-S)",
+      "chapter_file": "12_DB_Analysis_Control.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.analysis_control"
+    },
+    {
+      "endpoint": "/db/PDEL",
+      "name": "P-Delta Analysis Control",
+      "chapter_file": "12_DB_Analysis_Control.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.analysis_control"
+    },
+    {
+      "endpoint": "/db/BUCK",
+      "name": "Buckling Analysis Control",
+      "chapter_file": "12_DB_Analysis_Control.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.analysis_control"
+    },
+    {
+      "endpoint": "/db/EIGV",
+      "name": "Eigenvalue Analysis Control",
+      "chapter_file": "12_DB_Analysis_Control.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.analysis_control"
+    },
+    {
+      "endpoint": "/db/EIGV-M1",
+      "name": "Eigenvalue Analysis Control (Hyper-S)",
+      "chapter_file": "12_DB_Analysis_Control.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.analysis_control"
+    },
+    {
+      "endpoint": "/db/HHCT",
+      "name": "Heat of Hydration Analysis Control",
+      "chapter_file": "12_DB_Analysis_Control.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.analysis_control"
+    },
+    {
+      "endpoint": "/db/HHCT-M1",
+      "name": "Heat of Hydration Analysis Control (Hyper-S)",
+      "chapter_file": "12_DB_Analysis_Control.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.analysis_control"
+    },
+    {
+      "endpoint": "/db/MVCT",
+      "name": "Moving Load Analysis Control",
+      "chapter_file": "12_DB_Analysis_Control.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.analysis_control"
+    },
+    {
+      "endpoint": "/db/MVCTch",
+      "name": "Moving Load Analysis Control – China",
+      "chapter_file": "12_DB_Analysis_Control.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.analysis_control"
+    },
+    {
+      "endpoint": "/db/MVCTid",
+      "name": "Moving Load Analysis Control – India",
+      "chapter_file": "12_DB_Analysis_Control.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.analysis_control"
+    },
+    {
+      "endpoint": "/db/MVCTbs",
+      "name": "Moving Load Analysis Control – BS",
+      "chapter_file": "12_DB_Analysis_Control.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.analysis_control"
+    },
+    {
+      "endpoint": "/db/MVCTtr",
+      "name": "Moving Load Analysis Control – Transverse",
+      "chapter_file": "12_DB_Analysis_Control.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.analysis_control"
+    },
+    {
+      "endpoint": "/db/SMCT",
+      "name": "Settlement Analysis Control Data",
+      "chapter_file": "12_DB_Analysis_Control.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.analysis_control"
+    },
+    {
+      "endpoint": "/db/NLCT",
+      "name": "Nonlinear Analysis Control Data",
+      "chapter_file": "12_DB_Analysis_Control.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.analysis_control"
+    },
+    {
+      "endpoint": "/db/NLCT-M1",
+      "name": "Nonlinear Analysis Control (Hyper-S)",
+      "chapter_file": "12_DB_Analysis_Control.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.analysis_control"
+    },
+    {
+      "endpoint": "/db/STCT",
+      "name": "Construction Stage Analysis Control Data",
+      "chapter_file": "12_DB_Analysis_Control.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.analysis_control"
+    },
+    {
+      "endpoint": "/db/STCT-M1",
+      "name": "Construction Stage Analysis Control Data (Hyper-S)",
+      "chapter_file": "12_DB_Analysis_Control.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.analysis_control"
+    },
+    {
+      "endpoint": "/db/BCCT",
+      "name": "Boundary Change Assignment",
+      "chapter_file": "12_DB_Analysis_Control.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.analysis_control"
+    },
+    {
+      "endpoint": "/db/BCGD-M1",
+      "name": "Assign Boundary Combination (Hyper-S)",
+      "chapter_file": "12_DB_Analysis_Control.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.analysis_control"
+    },
+    {
+      "endpoint": "/db/BCGA-M1",
+      "name": "Assign Boundary Combination (Hyper-S)",
+      "chapter_file": "12_DB_Analysis_Control.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.analysis_control"
+    },
+    {
+      "endpoint": "/db/LCOM-GEN",
+      "name": "Load Combinations – General",
+      "chapter_file": "13_DB_Load_Combinations.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.load_combinations"
+    },
+    {
+      "endpoint": "/db/LCOM-CONC",
+      "name": "Load Combinations – Concrete Design",
+      "chapter_file": "13_DB_Load_Combinations.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.load_combinations"
+    },
+    {
+      "endpoint": "/db/LCOM-STEEL",
+      "name": "Load Combinations – Steel Design",
+      "chapter_file": "13_DB_Load_Combinations.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.load_combinations"
+    },
+    {
+      "endpoint": "/db/LCOM-SRC",
+      "name": "Load Combinations – SRC Design",
+      "chapter_file": "13_DB_Load_Combinations.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.load_combinations"
+    },
+    {
+      "endpoint": "/db/LCOM-STLCOMP",
+      "name": "Load Combinations – Composite Steel Girder Design",
+      "chapter_file": "13_DB_Load_Combinations.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.load_combinations"
+    },
+    {
+      "endpoint": "/db/LCOM-SEISMIC",
+      "name": "Load Combinations – Seismic Design",
+      "chapter_file": "13_DB_Load_Combinations.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.load_combinations"
+    },
+    {
+      "endpoint": "/db/CUTL",
+      "name": "Cutting Line",
+      "chapter_file": "13_DB_Load_Combinations.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.load_combinations"
+    },
+    {
+      "endpoint": "/db/CLWP",
+      "name": "Plate Cutting Line Diagram",
+      "chapter_file": "13_DB_Load_Combinations.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.load_combinations"
+    },
+    {
+      "endpoint": "/db/GSBG",
+      "name": "Bridge Girder Diagrams",
+      "chapter_file": "17_DB_Bridge.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.bridge"
+    },
+    {
+      "endpoint": "/db/GCMB",
+      "name": "General Camber Control",
+      "chapter_file": "17_DB_Bridge.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.bridge"
+    },
+    {
+      "endpoint": "/db/CAMB",
+      "name": "FCM Camber Control",
+      "chapter_file": "17_DB_Bridge.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.bridge"
+    },
+    {
+      "endpoint": "/db/ULFC",
+      "name": "Cable Control – Unknown Load Factor Constraints",
+      "chapter_file": "17_DB_Bridge.md",
+      "products": [
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.bridge"
+    },
+    {
+      "endpoint": "/db/POGD",
+      "name": "Pushover Analysis Control Data",
+      "chapter_file": "14_DB_Pushover.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.pushover"
+    },
+    {
+      "endpoint": "/db/POGD-M1",
+      "name": "Pushover Global Control (Hyper-S)",
+      "chapter_file": "14_DB_Pushover.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.pushover"
+    },
+    {
+      "endpoint": "/db/IEPI",
+      "name": "Ignore Elements for Pushover Initial Load",
+      "chapter_file": "14_DB_Pushover.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.pushover"
+    },
+    {
+      "endpoint": "/db/PHGE",
+      "name": "Assign Pushover Hinge Properties",
+      "chapter_file": "14_DB_Pushover.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.pushover"
+    },
+    {
+      "endpoint": "/db/POLC",
+      "name": "Pushover Load Cases",
+      "chapter_file": "14_DB_Pushover.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.pushover"
+    },
+    {
+      "endpoint": "/db/POLC-M1",
+      "name": "Pushover Load Case (Hyper-S)",
+      "chapter_file": "14_DB_Pushover.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.pushover"
+    },
+    {
+      "endpoint": "/db/DCON",
+      "name": "RC Design Code",
+      "chapter_file": "24_DB_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.design"
+    },
+    {
+      "endpoint": "/db/DSTL",
+      "name": "Steel Design Code",
+      "chapter_file": "24_DB_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.design"
+    },
+    {
+      "endpoint": "/db/RCHK",
+      "name": "Rebar Input for Checking (Beam/Column)",
+      "chapter_file": "24_DB_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.design"
+    },
+    {
+      "endpoint": "/db/LENG",
+      "name": "Unbraced Length",
+      "chapter_file": "24_DB_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.design"
+    },
+    {
+      "endpoint": "/db/MEMB",
+      "name": "Member Assignment",
+      "chapter_file": "24_DB_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.design"
+    },
+    {
+      "endpoint": "/db/DCTL",
+      "name": "Definition of Frame",
+      "chapter_file": "24_DB_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.design"
+    },
+    {
+      "endpoint": "/db/LTSR",
+      "name": "Limiting Slenderness Ratio",
+      "chapter_file": "24_DB_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.design"
+    },
+    {
+      "endpoint": "/db/MBTP",
+      "name": "Modify Member Type",
+      "chapter_file": "24_DB_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.design"
+    },
+    {
+      "endpoint": "/db/WMAK",
+      "name": "Modify Wall Mark Design",
+      "chapter_file": "24_DB_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.design"
+    },
+    {
+      "endpoint": "/db/REBB",
+      "name": "Modify Beam Rebar Data",
+      "chapter_file": "24_DB_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.design"
+    },
+    {
+      "endpoint": "/db/REBC",
+      "name": "Modify Column Rebar Data (POST 전용)",
+      "chapter_file": "24_DB_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.design"
+    },
+    {
+      "endpoint": "/db/REBW",
+      "name": "Modify Wall Rebar Data",
+      "chapter_file": "24_DB_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.design"
+    },
+    {
+      "endpoint": "/db/REBR",
+      "name": "Modify Brace Rebar Data",
+      "chapter_file": "24_DB_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.db.design"
+    },
+    {
+      "endpoint": "/ope/PROJECTSTATUS",
+      "name": "Project Status",
+      "chapter_file": "15_OPE.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.ope"
+    },
+    {
+      "endpoint": "/ope/DIVIDEELEM",
+      "name": "Divide Elements",
+      "chapter_file": "15_OPE.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.ope"
+    },
+    {
+      "endpoint": "/ope/SECTPROP",
+      "name": "Section Properties Calculation Results",
+      "chapter_file": "15_OPE.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.ope"
+    },
+    {
+      "endpoint": "/ope/USLC",
+      "name": "Using Load Combinations",
+      "chapter_file": "15_OPE.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.ope"
+    },
+    {
+      "endpoint": "/ope/LINEBMLD",
+      "name": "Line Beam Load",
+      "chapter_file": "15_OPE.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.ope"
+    },
+    {
+      "endpoint": "/ope/AUTOMESH",
+      "name": "Auto-Mesh Planar Area",
+      "chapter_file": "15_OPE.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.ope"
+    },
+    {
+      "endpoint": "/ope/SSPS",
+      "name": "Surface Spring",
+      "chapter_file": "15_OPE.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.ope"
+    },
+    {
+      "endpoint": "/ope/EDMP",
+      "name": "Change Property",
+      "chapter_file": "15_OPE.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.ope"
+    },
+    {
+      "endpoint": "/ope/STOR",
+      "name": "Story Calculation",
+      "chapter_file": "15_OPE.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.ope"
+    },
+    {
+      "endpoint": "/ope/STORY_PARAM",
+      "name": "Story Check Parameter",
+      "chapter_file": "15_OPE.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.ope"
+    },
+    {
+      "endpoint": "/ope/STORY_IRR_PARAM",
+      "name": "Story Irregularity Check Parameter",
+      "chapter_file": "15_OPE.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.ope"
+    },
+    {
+      "endpoint": "/ope/STORPROP",
+      "name": "Story Properties",
+      "chapter_file": "15_OPE.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.ope"
+    },
+    {
+      "endpoint": "/ope/MEMB",
+      "name": "Member Assignment",
+      "chapter_file": "15_OPE.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.ope"
+    },
+    {
+      "endpoint": "/ope/GUSTFACTOR",
+      "name": "Gust Factor Calculator",
+      "chapter_file": "15_OPE.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.ope"
+    },
+    {
+      "endpoint": "/ope/LCOM-GEN",
+      "name": "Load Combination (General) – KDS:2022 / AIK-SRC2K",
+      "chapter_file": "15_OPE.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.ope"
+    },
+    {
+      "endpoint": "/ope/LCOM-CONC",
+      "name": "Load Combination (Concrete) – KDS 41 20:2022",
+      "chapter_file": "15_OPE.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.ope"
+    },
+    {
+      "endpoint": "/ope/LCOM-STEEL",
+      "name": "Load Combination (Steel) – KDS 41 30:2022",
+      "chapter_file": "15_OPE.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.ope"
+    },
+    {
+      "endpoint": "/ope/LCOM-SRC",
+      "name": "Load Combination (SRC) – KDS 41 SRC:2022 / AIK-SRC2K",
+      "chapter_file": "15_OPE.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.ope"
+    },
+    {
+      "endpoint": "/ope/GSBG",
+      "name": "Bridge Girder Diagram Image Generation",
+      "chapter_file": "15_OPE.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.ope"
+    },
+    {
+      "endpoint": "/view/SELECT",
+      "name": "Select",
+      "chapter_file": "16_VIEW.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.view"
+    },
+    {
+      "endpoint": "/view/CAPTURE",
+      "name": "Capture",
+      "chapter_file": "16_VIEW.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.view"
+    },
+    {
+      "endpoint": "/view/PRECAPTURE",
+      "name": "Dialog Capture",
+      "chapter_file": "16_VIEW.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.view"
+    },
+    {
+      "endpoint": "/view/ANGLE",
+      "name": "Viewpoint",
+      "chapter_file": "16_VIEW.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.view"
+    },
+    {
+      "endpoint": "/view/ACTIVE",
+      "name": "Active",
+      "chapter_file": "16_VIEW.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.view"
+    },
+    {
+      "endpoint": "/view/DISPLAY",
+      "name": "Display",
+      "chapter_file": "16_VIEW.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.view"
+    },
+    {
+      "endpoint": "/view/RESULTGRAPHIC",
+      "name": "Type of Display / 반력·변위·트러스·보·판·응력 등 결과 표시",
+      "chapter_file": "16_VIEW.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.view"
+    },
+    {
+      "endpoint": "/post/PM",
+      "name": "P-M Interaction Diagram",
+      "chapter_file": "23_POST_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.post.design"
+    },
+    {
+      "endpoint": "/post/STEELCODECHECK",
+      "name": "Steel Code Check",
+      "chapter_file": "23_POST_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.post.design"
+    },
+    {
+      "endpoint": "/post/BEAMDESIGNFORCES",
+      "name": "Concrete – Beam Design Force",
+      "chapter_file": "23_POST_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.post.design"
+    },
+    {
+      "endpoint": "/post/COLUMNDESIGNFORCES",
+      "name": "Concrete – Column Design Forces",
+      "chapter_file": "23_POST_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.post.design"
+    },
+    {
+      "endpoint": "/post/BRACEDESIGNFORCES",
+      "name": "Concrete – Brace Design Forces",
+      "chapter_file": "23_POST_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.post.design"
+    },
+    {
+      "endpoint": "/post/WALLDESIGNFORCES",
+      "name": "Concrete – Wall Design Forces",
+      "chapter_file": "23_POST_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.post.design"
+    },
+    {
+      "endpoint": "/post/STEELMEMBERDESIGNFORCES",
+      "name": "Steel – Member Design Forces",
+      "chapter_file": "23_POST_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.post.design"
+    },
+    {
+      "endpoint": "/post/SRCBEAMDESIGNFORCES",
+      "name": "SRC – Beam Design Forces",
+      "chapter_file": "23_POST_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.post.design"
+    },
+    {
+      "endpoint": "/post/SRCCOLUMNDESIGNFORCES",
+      "name": "SRC – Column Design Forces",
+      "chapter_file": "23_POST_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.post.design"
+    },
+    {
+      "endpoint": "/post/COLDFORMEDSTEELMEMBERDESIGNFORCES",
+      "name": "Cold Formed – Member Design Forces",
+      "chapter_file": "23_POST_Design.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.post.design"
+    },
+    {
+      "endpoint": "/post/TABLE (Pre-Process Table types)",
+      "name": "10 pre-process table types",
+      "chapter_file": "18_POST_PreProcess.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.post.pre_process"
+    },
+    {
+      "endpoint": "/post/TABLE (Analysis Result Table types)",
+      "name": "~24 analysis result table types",
+      "chapter_file": "19_POST_AnalysisResult_1.md / 20_POST_AnalysisResult_2.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.post.result_1"
+    },
+    {
+      "endpoint": "/post/TABLE (Analysis Story Table types)",
+      "name": "~16 story table types",
+      "chapter_file": "21_POST_StoryTables.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.post.story"
+    },
+    {
+      "endpoint": "Design Code – STEEL KDS 41 30:2022",
+      "name": "27 endpoints (steel design code-check)",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "Design Code – RC KDS 41 20:2022",
+      "name": "69 endpoints (RC design code-check)",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.design.rc_kds"
+    },
+    {
+      "endpoint": "Design Code – SRC AIK-SRC2K",
+      "name": "27 endpoints (SRC design code-check)",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "planned",
+      "module": "midas_nx.design.src_aik"
+    }
+  ]
+}
