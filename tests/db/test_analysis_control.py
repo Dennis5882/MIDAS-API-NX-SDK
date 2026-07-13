@@ -121,6 +121,13 @@ def test_eigenvalue_analysis_control_hyper_s_update_ritz_variant(gen_client):
 
 
 @responses.activate
+def test_eigenvalue_analysis_control_hyper_s_create_raises_before_any_http_call(gen_client):
+    with pytest.raises(UnsupportedMethodError):
+        EigenvalueAnalysisControlHyperS.create({1: {"ANAL_TYPE": "RITZ"}}, client=gen_client)
+    assert len(responses.calls) == 0
+
+
+@responses.activate
 def test_heat_of_hydration_analysis_control_create_effective_modulus_variant(gen_client):
     responses.add(responses.POST, "https://x.test:443/gen/db/HHCT", json={}, status=200)
     HeatOfHydrationAnalysisControl.create(
@@ -157,6 +164,13 @@ def test_heat_of_hydration_analysis_control_hyper_s_update_sends_convergence(gen
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["CONVERGENCE"]["DISP"]["OPT_CHECK"] is True
+
+
+@responses.activate
+def test_heat_of_hydration_analysis_control_hyper_s_create_raises_before_any_http_call(gen_client):
+    with pytest.raises(UnsupportedMethodError):
+        HeatOfHydrationAnalysisControlHyperS.create({1: {"FINAL_STAGE": True}}, client=gen_client)
+    assert len(responses.calls) == 0
 
 
 @responses.activate
@@ -273,6 +287,13 @@ def test_nonlinear_analysis_control_hyper_s_update_sends_nested_objects(gen_clie
 
 
 @responses.activate
+def test_nonlinear_analysis_control_hyper_s_create_raises_before_any_http_call(gen_client):
+    with pytest.raises(UnsupportedMethodError):
+        NonlinearAnalysisControlHyperS.create({1: {"LC_SCOPE": "ALL"}}, client=gen_client)
+    assert len(responses.calls) == 0
+
+
+@responses.activate
 def test_construction_stage_analysis_control_data_create_sends_documented_assign_shape(gen_client):
     responses.add(responses.POST, "https://x.test:443/gen/db/STCT", json={}, status=200)
     ConstructionStageAnalysisControlData.create(
@@ -297,6 +318,13 @@ def test_construction_stage_analysis_control_data_hyper_s_update_sends_nested_an
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["ANAL_TYPE"]["iNLA_TYPE"] == 1
+
+
+@responses.activate
+def test_construction_stage_analysis_control_data_hyper_s_create_raises_before_any_http_call(gen_client):
+    with pytest.raises(UnsupportedMethodError):
+        ConstructionStageAnalysisControlDataHyperS.create({1: {"bLAST_FINAL": True}}, client=gen_client)
+    assert len(responses.calls) == 0
 
 
 @responses.activate

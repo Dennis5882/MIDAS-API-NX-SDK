@@ -82,6 +82,7 @@ TABLE_TYPE_WEIGHT_IRREGULARITY_Y = "WEIGHT_IRREGULARITY_Y"
 def get_story_drift_table(
     table_type: str = TABLE_TYPE_STORY_DRIFT_COMB,
     table_name: str = "",
+    *,
     unit: Optional[TableUnit] = None,
     styles: Optional[TableStyles] = None,
     components: Optional[List[str]] = None,
@@ -114,6 +115,7 @@ def get_story_drift_table(
 def get_story_displacement_table(
     table_type: str = TABLE_TYPE_STORY_DISPLACEMENT_COMB,
     table_name: str = "",
+    *,
     unit: Optional[TableUnit] = None,
     styles: Optional[TableStyles] = None,
     components: Optional[List[str]] = None,
@@ -144,6 +146,7 @@ def get_story_displacement_table(
 
 def get_story_shear_force_rs_table(
     table_name: str = "",
+    *,
     unit: Optional[TableUnit] = None,
     styles: Optional[TableStyles] = None,
     components: Optional[List[str]] = None,
@@ -174,6 +177,7 @@ def get_story_shear_force_rs_table(
 
 def get_story_shear_force_coefficient_table(
     table_name: str = "",
+    *,
     unit: Optional[TableUnit] = None,
     styles: Optional[TableStyles] = None,
     components: Optional[List[str]] = None,
@@ -204,6 +208,7 @@ def get_story_shear_force_coefficient_table(
 
 def get_story_mode_shape_table(
     table_name: str = "",
+    *,
     unit: Optional[TableUnit] = None,
     styles: Optional[TableStyles] = None,
     components: Optional[List[str]] = None,
@@ -233,6 +238,7 @@ def get_story_mode_shape_table(
 
 def get_story_shear_force_ratio_table(
     table_name: str = "",
+    *,
     unit: Optional[TableUnit] = None,
     styles: Optional[TableStyles] = None,
     components: Optional[List[str]] = None,
@@ -263,6 +269,7 @@ def get_story_shear_force_ratio_table(
 
 def get_story_eccentricity_table(
     table_name: str = "",
+    *,
     unit: Optional[TableUnit] = None,
     styles: Optional[TableStyles] = None,
     components: Optional[List[str]] = None,
@@ -293,6 +300,7 @@ def get_story_eccentricity_table(
 
 def get_overturning_moment_table(
     table_name: str = "",
+    *,
     unit: Optional[TableUnit] = None,
     styles: Optional[TableStyles] = None,
     components: Optional[List[str]] = None,
@@ -323,6 +331,7 @@ def get_overturning_moment_table(
 
 def get_story_axial_force_sum_table(
     table_name: str = "",
+    *,
     unit: Optional[TableUnit] = None,
     styles: Optional[TableStyles] = None,
     components: Optional[List[str]] = None,
@@ -354,6 +363,7 @@ def get_story_axial_force_sum_table(
 def get_story_stability_coefficient_table(
     table_type: str = TABLE_TYPE_STORY_STABILITY_COEFFICIENT_X,
     table_name: str = "",
+    *,
     unit: Optional[TableUnit] = None,
     styles: Optional[TableStyles] = None,
     components: Optional[List[str]] = None,
@@ -384,6 +394,7 @@ def get_story_stability_coefficient_table(
 def get_torsional_irregularity_table(
     table_type: str = TABLE_TYPE_TORSIONAL_IRREGULARITY_X,
     table_name: str = "",
+    *,
     unit: Optional[TableUnit] = None,
     styles: Optional[TableStyles] = None,
     components: Optional[List[str]] = None,
@@ -414,6 +425,7 @@ def get_torsional_irregularity_table(
 def get_torsional_amplification_factor_table(
     table_type: str = TABLE_TYPE_TORSIONAL_AMPLIFICATION_FACTOR_X,
     table_name: str = "",
+    *,
     unit: Optional[TableUnit] = None,
     styles: Optional[TableStyles] = None,
     components: Optional[List[str]] = None,
@@ -444,6 +456,7 @@ def get_torsional_amplification_factor_table(
 def get_stiffness_irregularity_table(
     table_type: str = TABLE_TYPE_STIFFNESS_IRREGULARITY_X,
     table_name: str = "",
+    *,
     unit: Optional[TableUnit] = None,
     styles: Optional[TableStyles] = None,
     components: Optional[List[str]] = None,
@@ -473,6 +486,7 @@ def get_stiffness_irregularity_table(
 
 def get_capacity_irregularity_table(
     table_name: str = "",
+    *,
     unit: Optional[TableUnit] = None,
     styles: Optional[TableStyles] = None,
     components: Optional[List[str]] = None,
@@ -503,6 +517,7 @@ def get_capacity_irregularity_table(
 
 def get_criteria_for_regularity_in_plan_table(
     table_name: str = "",
+    *,
     unit: Optional[TableUnit] = None,
     styles: Optional[TableStyles] = None,
     components: Optional[List[str]] = None,
@@ -529,6 +544,7 @@ def get_criteria_for_regularity_in_plan_table(
 
 def get_ultimate_story_shear_force_check_table(
     table_name: str = "",
+    *,
     unit: Optional[TableUnit] = None,
     styles: Optional[TableStyles] = None,
     components: Optional[List[str]] = None,
@@ -560,6 +576,7 @@ def get_ultimate_story_shear_force_check_table(
 def get_weight_irregularity_table(
     table_type: str = TABLE_TYPE_WEIGHT_IRREGULARITY_X,
     table_name: str = "",
+    *,
     unit: Optional[TableUnit] = None,
     styles: Optional[TableStyles] = None,
     components: Optional[List[str]] = None,

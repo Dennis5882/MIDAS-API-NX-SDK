@@ -46,6 +46,28 @@ class TimeValuePoint(TypedDict, total=False):
     VALUE: float  # required
 
 
+class OptUseToleranceValue(TypedDict, total=False):
+    """Shared {OPT_USE, VALUE} convergence-criterion pair used by several
+    Hyper-S nested convergence objects (e.g. /db/ACTL-M1's TCELEM.CONVERGENCE,
+    /db/NLCT-M1's CONV_CRITERIA, /db/POGD-M1's ITER_CTRL.NORM_CTRL — each of
+    DISPL/LOAD/WORK or DISP/FORCE/ENERGY) — import this instead of
+    re-declaring the same two fields per chapter."""
+
+    OPT_USE: bool  # optional
+    VALUE: float  # required if OPT_USE is true
+
+
+class InitialLoadCaseItem(TypedDict, total=False):
+    """Shared {LC_NAME, LC_TYPE, SF} pushover/pushover-Hyper-S initial-load
+    entry (e.g. /db/POGD's "INITLOAD", /db/POGD-M1's "INIT_LOAD_LIST",
+    /db/THGC-M1's "INIT_LOAD_LIST") — import this instead of re-declaring the
+    same three fields per chapter."""
+
+    LC_NAME: str  # Load Case Name, required
+    LC_TYPE: str  # Load Case Type (e.g. "STATIC"/"STAGE"), required
+    SF: float  # Scale Factor, required
+
+
 class DbResource:
     """Base class for a single ``/db/*`` endpoint.
 

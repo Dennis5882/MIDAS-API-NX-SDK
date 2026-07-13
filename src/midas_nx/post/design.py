@@ -66,6 +66,7 @@ TABLE_TYPE_COLD_FORMED_STEEL_MEMBER_DESIGN_FORCES = "COLDFORMEDSTEELMEMBERDESIGN
 def _get_design_forces_table(
     table_type: str,
     table_name: str = "",
+    *,
     node_elems: Optional[NodeElemsSelector] = None,
     parts: Optional[List[str]] = None,
     unit: Optional[TableUnit] = None,
@@ -87,6 +88,7 @@ def _get_design_forces_table(
 
 def get_beam_design_forces_table(
     table_name: str = "",
+    *,
     node_elems: Optional[NodeElemsSelector] = None,
     parts: Optional[List[str]] = None,
     unit: Optional[TableUnit] = None,
@@ -101,12 +103,20 @@ def get_beam_design_forces_table(
     ["PartI", "PartJ"].
     """
     return _get_design_forces_table(
-        TABLE_TYPE_BEAM_DESIGN_FORCES, table_name, node_elems, parts, unit, styles, components, client
+        TABLE_TYPE_BEAM_DESIGN_FORCES,
+        table_name,
+        node_elems=node_elems,
+        parts=parts,
+        unit=unit,
+        styles=styles,
+        components=components,
+        client=client,
     )
 
 
 def get_column_design_forces_table(
     table_name: str = "",
+    *,
     node_elems: Optional[NodeElemsSelector] = None,
     parts: Optional[List[str]] = None,
     unit: Optional[TableUnit] = None,
@@ -116,12 +126,20 @@ def get_column_design_forces_table(
 ) -> dict:
     """docs/manual/23_POST_Design.md #4 — Concrete Design - Column Design Forces."""
     return _get_design_forces_table(
-        TABLE_TYPE_COLUMN_DESIGN_FORCES, table_name, node_elems, parts, unit, styles, components, client
+        TABLE_TYPE_COLUMN_DESIGN_FORCES,
+        table_name,
+        node_elems=node_elems,
+        parts=parts,
+        unit=unit,
+        styles=styles,
+        components=components,
+        client=client,
     )
 
 
 def get_brace_design_forces_table(
     table_name: str = "",
+    *,
     node_elems: Optional[NodeElemsSelector] = None,
     parts: Optional[List[str]] = None,
     unit: Optional[TableUnit] = None,
@@ -134,12 +152,20 @@ def get_brace_design_forces_table(
     Response shape matches Column Design Forces.
     """
     return _get_design_forces_table(
-        TABLE_TYPE_BRACE_DESIGN_FORCES, table_name, node_elems, parts, unit, styles, components, client
+        TABLE_TYPE_BRACE_DESIGN_FORCES,
+        table_name,
+        node_elems=node_elems,
+        parts=parts,
+        unit=unit,
+        styles=styles,
+        components=components,
+        client=client,
     )
 
 
 def get_wall_design_forces_table(
     table_name: str = "",
+    *,
     node_elems: Optional[NodeElemsSelector] = None,
     unit: Optional[TableUnit] = None,
     styles: Optional[TableStyles] = None,
@@ -153,12 +179,19 @@ def get_wall_design_forces_table(
     own geometry instead of member-end selection).
     """
     return _get_design_forces_table(
-        TABLE_TYPE_WALL_DESIGN_FORCES, table_name, node_elems, None, unit, styles, components, client
+        TABLE_TYPE_WALL_DESIGN_FORCES,
+        table_name,
+        node_elems=node_elems,
+        unit=unit,
+        styles=styles,
+        components=components,
+        client=client,
     )
 
 
 def get_steel_member_design_forces_table(
     table_name: str = "",
+    *,
     node_elems: Optional[NodeElemsSelector] = None,
     parts: Optional[List[str]] = None,
     unit: Optional[TableUnit] = None,
@@ -168,12 +201,20 @@ def get_steel_member_design_forces_table(
 ) -> dict:
     """docs/manual/23_POST_Design.md #7 — Steel Design - Steel Member Design Forces."""
     return _get_design_forces_table(
-        TABLE_TYPE_STEEL_MEMBER_DESIGN_FORCES, table_name, node_elems, parts, unit, styles, components, client
+        TABLE_TYPE_STEEL_MEMBER_DESIGN_FORCES,
+        table_name,
+        node_elems=node_elems,
+        parts=parts,
+        unit=unit,
+        styles=styles,
+        components=components,
+        client=client,
     )
 
 
 def get_src_beam_design_forces_table(
     table_name: str = "",
+    *,
     node_elems: Optional[NodeElemsSelector] = None,
     parts: Optional[List[str]] = None,
     unit: Optional[TableUnit] = None,
@@ -187,12 +228,20 @@ def get_src_beam_design_forces_table(
     "My(-)" here (RC beam forces list "My(-)" first).
     """
     return _get_design_forces_table(
-        TABLE_TYPE_SRC_BEAM_DESIGN_FORCES, table_name, node_elems, parts, unit, styles, components, client
+        TABLE_TYPE_SRC_BEAM_DESIGN_FORCES,
+        table_name,
+        node_elems=node_elems,
+        parts=parts,
+        unit=unit,
+        styles=styles,
+        components=components,
+        client=client,
     )
 
 
 def get_src_column_design_forces_table(
     table_name: str = "",
+    *,
     node_elems: Optional[NodeElemsSelector] = None,
     parts: Optional[List[str]] = None,
     unit: Optional[TableUnit] = None,
@@ -202,12 +251,20 @@ def get_src_column_design_forces_table(
 ) -> dict:
     """docs/manual/23_POST_Design.md #9 — SRC Design - SRC Column Design Forces."""
     return _get_design_forces_table(
-        TABLE_TYPE_SRC_COLUMN_DESIGN_FORCES, table_name, node_elems, parts, unit, styles, components, client
+        TABLE_TYPE_SRC_COLUMN_DESIGN_FORCES,
+        table_name,
+        node_elems=node_elems,
+        parts=parts,
+        unit=unit,
+        styles=styles,
+        components=components,
+        client=client,
     )
 
 
 def get_cold_formed_steel_member_design_forces_table(
     table_name: str = "",
+    *,
     node_elems: Optional[NodeElemsSelector] = None,
     parts: Optional[List[str]] = None,
     unit: Optional[TableUnit] = None,
@@ -219,10 +276,10 @@ def get_cold_formed_steel_member_design_forces_table(
     return _get_design_forces_table(
         TABLE_TYPE_COLD_FORMED_STEEL_MEMBER_DESIGN_FORCES,
         table_name,
-        node_elems,
-        parts,
-        unit,
-        styles,
-        components,
-        client,
+        node_elems=node_elems,
+        parts=parts,
+        unit=unit,
+        styles=styles,
+        components=components,
+        client=client,
     )

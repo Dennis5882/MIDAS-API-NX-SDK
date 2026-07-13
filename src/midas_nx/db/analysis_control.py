@@ -3,16 +3,7 @@ from __future__ import annotations
 
 from typing import Any, List, TypedDict
 
-from .base import DbResource, GET_PUT_DELETE_METHODS
-
-
-class OptUseToleranceValue(TypedDict, total=False):
-    """Shared {OPT_USE, VALUE} convergence-criterion pair used by
-    ACTL-M1's TCELEM.CONVERGENCE and NLCT-M1's CONV_CRITERIA (each of
-    DISPL/LOAD/WORK or DISP/LOAD/WORK)."""
-
-    OPT_USE: bool  # optional
-    VALUE: float  # required if OPT_USE is true
+from .base import DbResource, GET_PUT_DELETE_METHODS, OptUseToleranceValue
 
 
 class ErectionLoadItem(TypedDict, total=False):

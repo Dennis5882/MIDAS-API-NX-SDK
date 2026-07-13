@@ -45,6 +45,7 @@ TABLE_TYPE_STORY_WEIGHT = "STORYWEIGHT"
 
 def get_element_weight_table(
     table_name: str = "",
+    *,
     node_elems: Optional[NodeElemsSelector] = None,
     client: Optional[MidasClient] = None,
 ) -> dict:
@@ -56,12 +57,14 @@ def get_element_weight_table(
     return get_table(TABLE_TYPE_ELEMENT_WEIGHT, table_name, node_elems=node_elems, client=client)
 
 
-def get_nodal_body_force_table(table_name: str = "", client: Optional[MidasClient] = None) -> dict:
+def get_nodal_body_force_table(table_name: str = "", *, client: Optional[MidasClient] = None) -> dict:
     """docs/manual/18_POST_PreProcess.md #2 — Nodal Body Force Table."""
     return get_table(TABLE_TYPE_NODAL_BODY_FORCE, table_name, client=client)
 
 
-def get_mass_summary_table(direction: str, table_name: str = "", client: Optional[MidasClient] = None) -> dict:
+def get_mass_summary_table(
+    direction: str, table_name: str = "", *, client: Optional[MidasClient] = None
+) -> dict:
     """docs/manual/18_POST_PreProcess.md #3 — Mass Summary Table.
 
     direction: "X"/"Y"/"Z".
@@ -69,7 +72,9 @@ def get_mass_summary_table(direction: str, table_name: str = "", client: Optiona
     return get_table(f"MASS_SUMMARY_{direction}", table_name, client=client)
 
 
-def get_load_summary_table(direction: str, table_name: str = "", client: Optional[MidasClient] = None) -> dict:
+def get_load_summary_table(
+    direction: str, table_name: str = "", *, client: Optional[MidasClient] = None
+) -> dict:
     """docs/manual/18_POST_PreProcess.md #4 — Load Summary Table.
 
     direction: "X"/"Y"/"Z".
@@ -77,13 +82,13 @@ def get_load_summary_table(direction: str, table_name: str = "", client: Optiona
     return get_table(f"LOAD_SUMMARY_{direction}", table_name, client=client)
 
 
-def get_material_table(table_name: str = "", client: Optional[MidasClient] = None) -> dict:
+def get_material_table(table_name: str = "", *, client: Optional[MidasClient] = None) -> dict:
     """docs/manual/18_POST_PreProcess.md #5 — Material Table."""
     return get_table(TABLE_TYPE_MATERIAL, table_name, client=client)
 
 
 def get_section_table(
-    table_type: str = TABLE_TYPE_SECTION_ALL, table_name: str = "", client: Optional[MidasClient] = None
+    table_type: str = TABLE_TYPE_SECTION_ALL, table_name: str = "", *, client: Optional[MidasClient] = None
 ) -> dict:
     """docs/manual/18_POST_PreProcess.md #6 — Section Table.
 
@@ -92,7 +97,7 @@ def get_section_table(
     return get_table(table_type, table_name, client=client)
 
 
-def get_supports_table(table_name: str = "", client: Optional[MidasClient] = None) -> dict:
+def get_supports_table(table_name: str = "", *, client: Optional[MidasClient] = None) -> dict:
     """docs/manual/18_POST_PreProcess.md #7 — Restraint Supports Table."""
     return get_table(TABLE_TYPE_SUPPORTS, table_name, client=client)
 
@@ -100,6 +105,7 @@ def get_supports_table(table_name: str = "", client: Optional[MidasClient] = Non
 def get_story_mass_summary_table(
     table_type: str = TABLE_TYPE_STORY_MASS,
     table_name: str = "",
+    *,
     unit: Optional[TableUnit] = None,
     styles: Optional[TableStyles] = None,
     components: Optional[List[str]] = None,
@@ -113,7 +119,9 @@ def get_story_mass_summary_table(
     return get_table(table_type, table_name, unit=unit, styles=styles, components=components, client=client)
 
 
-def get_story_load_summary_table(direction: str, table_name: str = "", client: Optional[MidasClient] = None) -> dict:
+def get_story_load_summary_table(
+    direction: str, table_name: str = "", *, client: Optional[MidasClient] = None
+) -> dict:
     """docs/manual/18_POST_PreProcess.md #9 — Story Load Summary Table.
 
     direction: "X"/"Y"/"Z".
@@ -121,6 +129,6 @@ def get_story_load_summary_table(direction: str, table_name: str = "", client: O
     return get_table(f"STORY_LOAD_SUMMARY_{direction}", table_name, client=client)
 
 
-def get_story_weight_table(table_name: str = "", client: Optional[MidasClient] = None) -> dict:
+def get_story_weight_table(table_name: str = "", *, client: Optional[MidasClient] = None) -> dict:
     """docs/manual/18_POST_PreProcess.md #10 — Story Weight Table."""
     return get_table(TABLE_TYPE_STORY_WEIGHT, table_name, client=client)

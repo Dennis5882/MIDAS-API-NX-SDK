@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Any, List, TypedDict
 
-from .base import DbResource, GET_PUT_DELETE_METHODS, TimeValuePoint
+from .base import DbResource, GET_PUT_DELETE_METHODS, InitialLoadCaseItem, TimeValuePoint
 
 
 class ResponseSpectrumFunctionValue(TypedDict, total=False):
@@ -116,16 +116,6 @@ class TimeHistoryGlobalControl(DbResource):
     PRODUCTS = frozenset({"civil"})
 
 
-class HyperSInitialLoadItem(TypedDict, total=False):
-    """One entry of THGC-M1's "INIT_LOAD_LIST" — same concept as
-    TimeHistoryInitialLoadItem (THGC's "aILL") but under Hyper-S's own key
-    names."""
-
-    LC_NAME: str  # Load Case Name, required
-    SF: float  # Scale Factor, required
-    LC_TYPE: str  # Load Case Type, required
-
-
 class HyperSIncrementStep(TypedDict, total=False):
     """THGC-M1's "INCREMENT_STEP" sub-object."""
 
@@ -149,7 +139,7 @@ class TimeHistoryGlobalControlHyperSPayload(TypedDict, total=False):
 
     GEO_NONL_TYPE: int  # None=0, Large Disp=1, P-Delta=2; required
     INIT_LOAD_TYPE: int  # Nonlinear static=0, Retrieve static/construction stage results=1; required
-    INIT_LOAD_LIST: List[HyperSInitialLoadItem]  # optional
+    INIT_LOAD_LIST: List[InitialLoadCaseItem]  # optional
     INCREMENT_STEP: HyperSIncrementStep  # optional
     ITER_PARAM: Any  # {"PERMIT_FAIL","MAX_ITER","NORM_CTRL",...}, required
     IGNORE_ELEM: bool  # Ignore NL Initial Load Elements, default false, optional

@@ -3,16 +3,10 @@ from __future__ import annotations
 
 from typing import List, TypedDict
 
-from .base import DbResource, GET_PUT_DELETE_METHODS
+from .base import DbResource, GET_PUT_DELETE_METHODS, InitialLoadCaseItem, OptUseToleranceValue
 
 
 # --- 1. /db/POGD — Pushover Analysis Control Data ---------------------------
-
-
-class InitialLoadCaseItemPOGD(TypedDict, total=False):
-    LC_NAME: str  # Load Case Name, required
-    LC_TYPE: str  # Load Case Type, required
-    SF: float  # Scale Factor, required
 
 
 class NonlinearAnalysisOptionPOGD(TypedDict, total=False):
@@ -87,7 +81,7 @@ class PushoverAnalysisControlDataPayload(TypedDict, total=False):
 
     GEOMNONLINEAR_TYPE: str  # None="NONE"/Large Displacements="LARGE_DISP", default "NONE", optional
     INITLOADMETHOD: str  # Perform Analysis="PERFORM_ANAL"/Import Result="IMPORT_RESULT", default "PERFORM_ANAL", optional
-    INITLOAD: List[InitialLoadCaseItemPOGD]  # Initial Load Case List, optional
+    INITLOAD: List[InitialLoadCaseItem]  # Initial Load Case List, optional
     bCONSIGNOREELEM: bool  # Consider Ignore Elements for NL Analysis Initial Load, default false, optional
     NONL_OPT: NonlinearAnalysisOptionPOGD  # Nonlinear Analysis Option, required
     PHOP_OPT: PushoverHingeDataOptionPOGD  # Pushover Hinge Data Option, optional
@@ -102,12 +96,6 @@ class PushoverAnalysisControlData(DbResource):
 
 
 # --- 2. /db/POGD-M1 — Pushover Global Control (Hyper-S) ---------------------
-
-
-class InitialLoadCaseItemHyperSPOGD(TypedDict, total=False):
-    LC_NAME: str  # required, min length 1
-    LC_TYPE: str  # "STATIC"/"STAGE", required
-    SF: float  # Scale Factor (!= 0), required
 
 
 class ShearYieldStopHyperS(TypedDict, total=False):
@@ -144,20 +132,13 @@ class AnalysisStopHyperS(TypedDict, total=False):
     SUPPORT_DZ_DIR: SupportDzDirStopHyperS  # optional
 
 
-class NormCriterionHyperS(TypedDict, total=False):
-    """{OPT_USE, VALUE>0} pair — VALUE required when OPT_USE is true,
-    forbidden when false."""
-
-    OPT_USE: bool  # required
-    VALUE: float  # required if OPT_USE true (must be > 0)
-
-
 class NormControlHyperS(TypedDict, total=False):
-    """At least one of DISP/FORCE/ENERGY must have OPT_USE=true."""
+    """At least one of DISP/FORCE/ENERGY must have OPT_USE=true; each
+    VALUE must be > 0 when its OPT_USE is true."""
 
-    DISP: NormCriterionHyperS  # required
-    FORCE: NormCriterionHyperS  # required
-    ENERGY: NormCriterionHyperS  # required
+    DISP: OptUseToleranceValue  # required
+    FORCE: OptUseToleranceValue  # required
+    ENERGY: OptUseToleranceValue  # required
 
 
 class LineSearchHyperS(TypedDict, total=False):
@@ -229,7 +210,7 @@ class PushoverAnalysisControlDataHyperSPayload(TypedDict, total=False):
 
     GEO_NONL_TYPE: int  # None=0/P-Delta=1/Large Displacements=2, required
     INIT_LOAD_TYPE: int  # Perform Nonlinear Static Analysis=0/Import Analysis Results=1, required
-    INIT_LOAD_LIST: List[InitialLoadCaseItemHyperSPOGD]  # optional
+    INIT_LOAD_LIST: List[InitialLoadCaseItem]  # LC_NAME min length 1, SF != 0; optional
     IGNORE_ELEM: bool  # Consider "Ignore Elements for Initial Load", optional (forbidden if INIT_LOAD_TYPE=1)
     ANALYSIS_STOP: AnalysisStopHyperS  # optional
     ITER_CTRL: IterationControlHyperS  # required
