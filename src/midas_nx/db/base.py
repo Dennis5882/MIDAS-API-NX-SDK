@@ -37,6 +37,15 @@ class ItemGroupFields(TypedDict, total=False):
     GROUP_NAME: str  # Group Name (Boundary/Load, depending on endpoint), default "", optional
 
 
+class TimeValuePoint(TypedDict, total=False):
+    """Shared {TIME, VALUE} pair used by several time-function "ITEM"/
+    "aFUNCDATA" arrays (e.g. /db/THFC, /db/ETFC, /db/CCFC, /db/HSFC) —
+    import this instead of re-declaring the same two fields per chapter."""
+
+    TIME: float  # required
+    VALUE: float  # required
+
+
 class DbResource:
     """Base class for a single ``/db/*`` endpoint.
 

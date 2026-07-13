@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Any, List, TypedDict
 
-from .base import DbResource, GET_PUT_DELETE_METHODS
+from .base import DbResource, GET_PUT_DELETE_METHODS, TimeValuePoint
 
 
 class ResponseSpectrumFunctionValue(TypedDict, total=False):
@@ -116,20 +116,45 @@ class TimeHistoryGlobalControl(DbResource):
     PRODUCTS = frozenset({"civil"})
 
 
+class HyperSInitialLoadItem(TypedDict, total=False):
+    """One entry of THGC-M1's "INIT_LOAD_LIST" — same concept as
+    TimeHistoryInitialLoadItem (THGC's "aILL") but under Hyper-S's own key
+    names."""
+
+    LC_NAME: str  # Load Case Name, required
+    SF: float  # Scale Factor, required
+    LC_TYPE: str  # Load Case Type, required
+
+
+class HyperSIncrementStep(TypedDict, total=False):
+    """THGC-M1's "INCREMENT_STEP" sub-object."""
+
+    NSTEP: int  # Number of Increment Steps, default 1, optional
+    OUT_TYPE: int  # Final step only=0, Step increments=1; default 0, optional
+    STEP_INC: int  # Step Increment (OUT_TYPE=1), required if OUT_TYPE=1
+
+
+class HyperSHingeOption(TypedDict, total=False):
+    """THGC-M1's "HINGE_OPT" sub-object."""
+
+    PSPRING_SUP: int  # P-spring support treatment, optional
+    EL: int  # Element data, optional
+
+
 class TimeHistoryGlobalControlHyperSPayload(TypedDict, total=False):
     """docs/manual/09_DB_Dynamic_Loads.md #4 — /db/THGC-M1 Specifications table
-    (Hyper-S). Nested INCREMENT_STEP/ITER_PARAM/HINGE_OPT sub-objects are left
-    as Any given their size — see the manual for their full shape.
+    (Hyper-S). ITER_PARAM is left as Any given its size (nested convergence
+    norms, line-search options) — see the manual for its full shape.
     """
 
     GEO_NONL_TYPE: int  # None=0, Large Disp=1, P-Delta=2; required
     INIT_LOAD_TYPE: int  # Nonlinear static=0, Retrieve static/construction stage results=1; required
-    INIT_LOAD_LIST: Any  # [{"LC_NAME","SF","LC_TYPE"}, ...], optional
-    INCREMENT_STEP: Any  # {"NSTEP","OUT_TYPE","STEP_INC"}, optional
+    INIT_LOAD_LIST: List[HyperSInitialLoadItem]  # optional
+    INCREMENT_STEP: HyperSIncrementStep  # optional
     ITER_PARAM: Any  # {"PERMIT_FAIL","MAX_ITER","NORM_CTRL",...}, required
     IGNORE_ELEM: bool  # Ignore NL Initial Load Elements, default false, optional
     SEQ_LOAD_TYPE: int  # Undeformed=0, Deformed=1; default 1, optional
-    HINGE_OPT: Any  # {"PSPRING_SUP","EL"}, optional
+    HINGE_OPT: HyperSHingeOption  # optional
 
 
 class TimeHistoryGlobalControlHyperS(DbResource):
@@ -139,11 +164,30 @@ class TimeHistoryGlobalControlHyperS(DbResource):
     METHODS = GET_PUT_DELETE_METHODS
 
 
+class HyperSOutputOption(TypedDict, total=False):
+    """THOO-M1's "OUT_OPT" sub-object."""
+
+    HINGE_OUT: int  # All elements=0, Selected elements=1, No output=2; required
+    COMMON_OPT: bool  # true=FIBER_OUT matches HINGE_OUT, required
+    FIBER_OUT: int  # All elements=0, Selected elements=1, No output=2; required if COMMON_OPT=false
+
+
+class HyperSResultSelection(TypedDict, total=False):
+    """THOO-M1's "RESULT_SELECTION" sub-object."""
+
+    ENERGY_RESULT: bool  # default true, optional
+    SDVI: bool  # Viscous/Oil Damper Results, default true, optional
+    SDVE: bool  # Viscoelastic Damper Results, default true, optional
+    SDST: bool  # Steel Damper Results, default true, optional
+    SDHY: bool  # Hysteretic Isolator Results, default true, optional
+    SDIS: bool  # Isolator Device Results, default true, optional
+
+
 class TimeHistoryOutputOptionHyperSPayload(TypedDict, total=False):
     """docs/manual/09_DB_Dynamic_Loads.md #5 — /db/THOO-M1 Specifications table (Hyper-S)."""
 
-    OUT_OPT: Any  # {"HINGE_OUT","COMMON_OPT","FIBER_OUT"}, required
-    RESULT_SELECTION: Any  # {"ENERGY_RESULT","SDVI","SDVE","SDST","SDHY","SDIS"}, required
+    OUT_OPT: HyperSOutputOption  # required
+    RESULT_SELECTION: HyperSResultSelection  # required
 
 
 class TimeHistoryOutputOptionHyperS(DbResource):
@@ -187,15 +231,24 @@ class TimeHistoryLoadCase(DbResource):
     PRODUCTS = frozenset({"gen", "civil"})
 
 
+class HyperSAnalysisCase(TypedDict, total=False):
+    """THIS-M1's "ANAL_CASE" sub-object."""
+
+    ANAL_TYPE: int  # Linear=0, Nonlinear=1; required
+    ANAL_METHOD: int  # Modal=0, Direct Integration=1; required
+    TH_TYPE: int  # Transient=0, Periodic=1; required
+
+
 class TimeHistoryLoadCaseHyperSPayload(TypedDict, total=False):
     """docs/manual/09_DB_Dynamic_Loads.md #7 — /db/THIS-M1 Specifications table
-    (Hyper-S). ANAL_CASE/DAMPING/NONL_CTRL_PARAM sub-objects are left as Any
-    given their size — see the manual for their full shape.
+    (Hyper-S). DAMPING/NONL_CTRL_PARAM sub-objects are left as Any given their
+    size (nested modal overrides, convergence/line-search control) — see the
+    manual for their full shape.
     """
 
     NAME: str  # required
     DESC: str  # optional
-    ANAL_CASE: Any  # {"ANAL_TYPE","ANAL_METHOD","TH_TYPE"}, required
+    ANAL_CASE: HyperSAnalysisCase  # required
     ENDTIME: float  # required
     TIME_INC: float  # required
     OUTPUT_STEP: int  # required
@@ -214,11 +267,6 @@ class TimeHistoryLoadCaseHyperS(DbResource):
     PRODUCTS = frozenset({"gen", "civil"})
 
 
-class TimeHistoryFunctionValue(TypedDict, total=False):
-    TIME: float  # required
-    VALUE: float  # required
-
-
 class TimeHistoryFunctionPayload(TypedDict, total=False):
     """docs/manual/09_DB_Dynamic_Loads.md #8 — /db/THFC Specifications table.
 
@@ -235,7 +283,7 @@ class TimeHistoryFunctionPayload(TypedDict, total=False):
     iMETHOD: int  # 0=Scale Factor, 1=Max Value; required
     SCALE: float  # required if iMETHOD=0
     MAXVALUE: float  # default 0, optional, used if iMETHOD=1
-    aFUNCDATA: List[TimeHistoryFunctionValue]  # required
+    aFUNCDATA: List[TimeValuePoint]  # required
     # FUNCTYPE=2 only
     CONS_A: float  # Constant A, required
     CONS_C: float  # Constant C, required

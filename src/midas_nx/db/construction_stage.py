@@ -1,9 +1,9 @@
 """Source: docs/manual/10_DB_Construction_Stage.md, items 1-14."""
 from __future__ import annotations
 
-from typing import List, TypedDict
+from typing import Any, List, TypedDict
 
-from .base import DbResource, ItemGroupFields
+from .base import DbResource, ItemGroupFields, TimeValuePoint
 
 
 class LoadGroupDayItem(TypedDict, total=False):
@@ -58,7 +58,7 @@ class CompositeSectionPartInfo(TypedDict, total=False):
     MAT: str  # Material ID (MATL: number as string, ELEM: blank), optional
     CSTAGE: str  # Composite Stage (active stage: blank, target stage: stage name), default "", optional
     AGE: float  # Material Age (days), default 0, optional
-    PARTINFO_H: float  # Nominal Member Dimension (h), default "AUTO", optional
+    PARTINFO_H: Any  # Nominal Member Dimension (h): a number, or the sentinel "AUTO"; default "AUTO", optional
     PARTINFO_VS: float  # Volume/Surface Ratio (v/s), default 0, optional
     PARTINFO_M: float  # Exposed Surface Modulus (M), default 0, optional
     AREA: float  # Area stiffness scale factor, default 1, optional
@@ -153,11 +153,6 @@ class CreepCoefficientConstructionStage(DbResource):
     PRODUCTS = frozenset({"gen", "civil"})
 
 
-class TimeFunctionValue(TypedDict, total=False):
-    TIME: float  # required
-    VALUE: float  # required
-
-
 class AmbientTemperatureFunctionPayload(TypedDict, total=False):
     """docs/manual/10_DB_Construction_Stage.md #7 — /db/ETFC Specifications table.
 
@@ -172,7 +167,7 @@ class AmbientTemperatureFunctionPayload(TypedDict, total=False):
     MEAN_TEMP: float  # TYPE=SINE: Mean Temperature (To), default 0, optional
     DELAY_TIME: float  # TYPE=SINE: Delay Time (to), default 0, optional
     SCALE_FACTOR: float  # TYPE=USER, required
-    ITEM: List[TimeFunctionValue]  # TYPE=USER, required
+    ITEM: List[TimeValuePoint]  # TYPE=USER, required
 
 
 class AmbientTemperatureFunction(DbResource):
@@ -191,7 +186,7 @@ class ConvectionCoefficientFunctionPayload(TypedDict, total=False):
     TYPE: str  # "CONST" / "USER", required
     COEF: float  # TYPE=CONST: Convection Coefficient, required
     SCALE_FACTOR: float  # TYPE=USER, required
-    ITEM: List[TimeFunctionValue]  # TYPE=USER, required
+    ITEM: List[TimeValuePoint]  # TYPE=USER, required
 
 
 class ConvectionCoefficientFunction(DbResource):
@@ -257,7 +252,7 @@ class HeatSourceFunctionPayload(TypedDict, total=False):
     CEMENT_CONT: float  # TYPE=FUNC, OPT_USE_CONC_DATA=true: Cement Content, default 0, optional
     IS_ADIABATIC_TEMP: bool  # TYPE=USER: false=Heat Source, true=Temperature; default true, optional
     SCALE_FACTOR: float  # TYPE=USER, required
-    ITEM: List[TimeFunctionValue]  # TYPE=USER, required
+    ITEM: List[TimeValuePoint]  # TYPE=USER, required
 
 
 class HeatSourceFunction(DbResource):

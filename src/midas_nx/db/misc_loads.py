@@ -66,13 +66,18 @@ class LoadSequenceNonlinear(DbResource):
     PRODUCTS = frozenset({"gen", "civil"})
 
 
+class WaveLoadGrowthItem(TypedDict, total=False):
+    Z: float  # Elevation, optional
+    T: float  # Thickness, optional
+
+
 class WaveLoadPayload(TypedDict, total=False):
     """docs/manual/11_DB_Settlement_Misc_Loads.md #5 — /db/WVLD Specifications table.
 
     COEF (drag/inertia coefficients per structure group), CHAR (wave theory
     parameters), and PROF (current profile) are deeply nested sub-objects —
-    left as Any for v1, matching the SECT_I precedent. FLOOD_GRUP/GROWTH/
-    USERGRID/TRAJ are similarly left loosely typed.
+    left as Any for v1, matching the SECT_I precedent. USERGRID/TRAJ are
+    similarly left loosely typed (2D arrays of 9-field grid points).
     """
 
     NAME: str  # Wave Load Name, required
@@ -89,7 +94,7 @@ class WaveLoadPayload(TypedDict, total=False):
     CHAR: Any  # {"THEORY","FUNC","DIR","HEIGHT","CHAR_TYPE","LENGTH","PERIOD",...}
     PROF: Any  # {"CUR_DIR","CUR_FACTOR","GRID_DATA"}
     FLOOD_GRUP: List[str]  # Flood Condition (Structure Group Names), optional
-    GROWTH: Any  # Marine Growth Data [{"Z","T"}, ...], optional
+    GROWTH: List[WaveLoadGrowthItem]  # Marine Growth Data, optional
     GRID_X: int  # optional
     GRID_Z: int  # optional
     USERGRID: Any  # 2D array of {"X","Z","ELEV","VX","VCX","VT","VZ","AX","AZ"}, optional
