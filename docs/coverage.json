@@ -2365,7 +2365,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.pushover"
     },
     {
@@ -2376,7 +2376,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.pushover"
     },
     {
@@ -2387,7 +2387,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.pushover"
     },
     {
@@ -2398,7 +2398,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.pushover"
     },
     {
@@ -2409,7 +2409,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.pushover"
     },
     {
@@ -2420,7 +2420,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.pushover"
     },
     {
