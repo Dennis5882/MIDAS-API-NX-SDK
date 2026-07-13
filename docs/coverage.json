@@ -2237,7 +2237,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.load_combinations"
     },
     {
@@ -2248,7 +2248,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.load_combinations"
     },
     {
@@ -2259,7 +2259,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.load_combinations"
     },
     {
@@ -2270,7 +2270,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.load_combinations"
     },
     {
@@ -2281,7 +2281,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.load_combinations"
     },
     {
@@ -2292,7 +2292,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.load_combinations"
     },
     {
@@ -2303,7 +2303,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.load_combinations"
     },
     {
@@ -2314,7 +2314,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.load_combinations"
     },
     {
