@@ -24,6 +24,10 @@ _ALL_METHODS = frozenset({"POST", "GET", "PUT", "DELETE"})
 #: settings like /db/PZEF, /db/CLDR) — import instead of redefining locally.
 NO_DELETE_METHODS = frozenset({"POST", "GET", "PUT"})
 
+#: Shared METHODS override for singleton Hyper-S-only settings endpoints that
+#: don't support POST (e.g. /db/THGC-M1, /db/THOO-M1) — only GET/PUT/DELETE.
+GET_PUT_DELETE_METHODS = frozenset({"GET", "PUT", "DELETE"})
+
 
 class ItemGroupFields(TypedDict, total=False):
     """Shared ID/GROUP_NAME preamble for a /db/* "ITEMS" array entry — extend
