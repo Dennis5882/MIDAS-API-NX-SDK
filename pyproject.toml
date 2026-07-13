@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "midas-nx"
-version = "0.2.0"
+version = "0.3.0"
 description = "Independent, unified Python SDK for the MIDAS NX Open API (Civil NX + Gen NX)"
 readme = "README.md"
 license = "MIT"

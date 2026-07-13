@@ -5,8 +5,8 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-07-13, at v0.2.0 (148/278 documented endpoints, Phase 1
-> complete — full analyzable model).
+> Last updated: 2026-07-14, at v0.3.0 (196/278 documented endpoints, Phase 2
+> complete — analysis control + result extraction).
 
 ---
 
@@ -32,7 +32,24 @@ midas_nx/
     ├── dynamic_loads.py ch 09  response spectrum · time history
     ├── construction_stage.py     ch 10  stages · composite sections · hydration
     ├── misc_loads.py    ch 11  settlement · wave loads · initial forces
-    └── (planned)        ch 08, 12-27  see §3
+    ├── analysis_control.py       ch 12  main/P-Delta/buckling/eigenvalue/
+    │                    nonlinear/construction-stage/moving-load control
+    ├── load_combinations.py      ch 13  LCOM-* combinations · cutting lines
+    ├── pushover.py       ch 14  pushover global control · load cases
+    └── (planned)        ch 08, 15-17, 22, 24-27  see §3
+└── post/                 POST /post/* result extraction — plain functions,
+    │                    wrapped in "Argument" (same convention as doc.py).
+    ├── base.py           get_table() — shared /post/TABLE plumbing (one
+    │                    endpoint, TABLE_TYPE selects the table; no
+    │                    DbResource-per-type since there's one real endpoint).
+    ├── pre_process.py    ch 18  element weight · mass/load summary · material ·
+    │                    section · supports · story mass/load/weight (10 types)
+    ├── result_1.py       ch 19-20  reaction/displacement/truss/cable/beam/
+    │                    plate/plane/solid/link/mode-shape/tendon results (50 types)
+    ├── story.py          ch 21  story drift/displacement/shear/eccentricity/
+    │                    irregularity-check tables (17 types)
+    └── design.py         ch 23  P-M diagram · steel code check · design
+                         forces (RC/steel/SRC/cold-formed) (10 endpoints)
 ```
 
 **Design invariants** (keep these as new chapters land):
@@ -45,7 +62,7 @@ midas_nx/
 
 ---
 
-## 2. Current status (v0.2.0)
+## 2. Current status (v0.3.0)
 
 | Area | Chapters | Endpoints | State |
 |---|---|---|---|
@@ -55,17 +72,23 @@ midas_nx/
 | Boundary | 05 | 24/24 | ✅ done |
 | Static loads | 06 | 21/21 | ✅ done |
 | **Phase 1 — analyzable model** | 07, 09, 10, 11 | **47/47** | ✅ done |
-| **Everything else** | 08, 12–27 | **0/130 rows** | ⏳ not started |
-| **Total** | | **148/278 (53%)** | v0.2.0 on PyPI |
+| **Phase 2 — analysis control + results out** | 12–14, 18–21, 23 | **48/48 rows** | ✅ done |
+| **Everything else** | 08, 15–17, 22, 24–27 | **0/82 rows** | ⏳ not started |
+| **Total** | | **196/278 (71%)** | v0.3.0 on PyPI |
 
 > ⚠️ **The 278 undercounts real work.** Design-code chapters 25/26/27 are one
-> aggregate row each but hold **27 + 69 + 27 = 123 real endpoints**; POST
-> result-table chapters (18–21) are also single aggregate rows. True remaining
-> surface is closer to **~350 endpoints**, concentrated in design code-checks.
+> aggregate row each but hold **27 + 69 + 27 = 123 real endpoints**; the ch18–21
+> POST table chapters were also single aggregate rows before Phase 2 — now
+> broken out into 87 real table-type functions across `post/pre_process.py`,
+> `post/result_1.py`, and `post/story.py`. True remaining surface is closer to
+> **~300 endpoints**, concentrated in design code-checks (ch 25–27).
 
 Velocity reference: the 02–06 build added 76 endpoints in one pass; Phase 1
-(07/09/10/11) added another 47 in a second pass — both followed the same
-fixed transcribe→type→test→mark-coverage loop (see §5).
+(07/09/10/11) added another 47 in a second pass; Phase 2 (12–14, 18–21, 23)
+added 48 rows (~118 real functions/classes, including 3 chapters delegated to
+parallel background agents following the same established pattern) in a
+third pass — all three followed the same fixed transcribe→type→test→
+mark-coverage loop (see §5).
 
 ---
 
@@ -82,13 +105,14 @@ Everything needed to define a full model that MIDAS can actually run.
 - ch 10 Construction Stage (14/14)
 - ch 11 Settlement / Misc Loads (9/9)
 
-### Phase 2 — Analysis control + results out  ·  ~49 rows ✦  ·  → v0.3.0
+### Phase 2 ✅ — Analysis control + results out  ·  48/48 rows ✦  ·  v0.3.0
 Configure the run and read results back — the payoff phase.
-- ch 12 Analysis Control (21)
-- ch 13 Load Combinations (8)
-- ch 14 Pushover (6)
-- ch 18–21 POST result/story tables (4 aggregate rows ✦ — many table types)
-- ch 23 POST Design forces (10)
+- ch 12 Analysis Control (21/21)
+- ch 13 Load Combinations (8/8)
+- ch 14 Pushover (6/6)
+- ch 18–21 POST result/story tables (4 aggregate rows ✦ → 87 real functions:
+  10 pre-process + 50 analysis-result + 17 story table types)
+- ch 23 POST Design forces (10/10)
 
 ### Phase 3 — Operations & view  ·  ~26 endpoints  ·  → v0.4.0
 - ch 15 OPE operations (19)
@@ -120,7 +144,7 @@ The largest chunk; likely warrants its own sub-phasing per code.
 |---|---|---|
 | v0.1.0 ✅ | Core DB modeling (ch 01–06) | published |
 | v0.2.0 ✅ | Full analyzable model (Phase 1) | published |
-| v0.3.0 | Analysis control + result extraction (Phase 2) | round-trip: define → run → read |
+| v0.3.0 | Analysis control + result extraction (Phase 2) | ready to release |
 | v0.4.0 | Operations & view (Phase 3) | |
 | v0.5.0 | Civil bridge features (Phase 4) | moving loads usable |
 | v1.0.0 | Design code checks (Phase 5) | full documented surface covered |
