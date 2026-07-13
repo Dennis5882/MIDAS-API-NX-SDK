@@ -13,11 +13,24 @@ accepted by the server in the source docs.
 """
 from __future__ import annotations
 
-from typing import ClassVar, Optional
+from typing import ClassVar, Optional, TypedDict
 
 from ..client import MidasClient, UnsupportedMethodError, get_default_client
 
 _ALL_METHODS = frozenset({"POST", "GET", "PUT", "DELETE"})
+
+#: Shared METHODS override for endpoints that support everything but DELETE
+#: (e.g. named-group definitions like /db/GRUP, /db/BNGR; single-record
+#: settings like /db/PZEF, /db/CLDR) — import instead of redefining locally.
+NO_DELETE_METHODS = frozenset({"POST", "GET", "PUT"})
+
+
+class ItemGroupFields(TypedDict, total=False):
+    """Shared ID/GROUP_NAME preamble for a /db/* "ITEMS" array entry — extend
+    this instead of re-declaring ID/GROUP_NAME on every new Item TypedDict."""
+
+    ID: int  # Serial Number, default 0, optional
+    GROUP_NAME: str  # Group Name (Boundary/Load, depending on endpoint), default "", optional
 
 
 class DbResource:
