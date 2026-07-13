@@ -5,8 +5,8 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-07-14, at v0.3.0 (196/278 documented endpoints, Phase 2
-> complete — analysis control + result extraction).
+> Last updated: 2026-07-14, at v0.4.0 (222/278 documented endpoints, Phase 3
+> complete — operations & view control).
 
 ---
 
@@ -36,7 +36,13 @@ midas_nx/
     │                    nonlinear/construction-stage/moving-load control
     ├── load_combinations.py      ch 13  LCOM-* combinations · cutting lines
     ├── pushover.py       ch 14  pushover global control · load cases
-    └── (planned)        ch 08, 15-17, 22, 24-27  see §3
+    └── (planned)        ch 08, 17, 22, 24-27  see §3
+├── ope.py                ch 15  GUI/preprocessing operations (element divide,
+│                        auto-mesh, LCOM-* auto-generation, gust factor, ...)
+│                        — plain functions, one TypedDict argument each.
+├── view.py               ch 16  model view control (selection, capture,
+│                        viewpoint, active target, display, result graphics)
+│                        — plain functions, one TypedDict argument each.
 └── post/                 POST /post/* result extraction — plain functions,
     │                    wrapped in "Argument" (same convention as doc.py).
     ├── base.py           get_table() — shared /post/TABLE plumbing (one
@@ -52,6 +58,13 @@ midas_nx/
                          forces (RC/steel/SRC/cold-formed) (10 endpoints)
 ```
 
+**`ope.py`/`view.py` convention**: like `doc.py`, bodies are wrapped in a plain
+`"Argument"` key (not ID-keyed `"Assign"`). But unlike `doc.py`'s few-named-
+kwargs style, most ch15/16 endpoints have deeply-nested, highly-optional
+bodies (10+ levels in places, e.g. `/view/DISPLAY`'s ~90 boolean toggles), so
+each POST function takes one `TypedDict` `argument` parameter instead —
+mirroring the `db/*.py` payload-typing style but at the whole-body level.
+
 **Design invariants** (keep these as new chapters land):
 - One `DbResource` subclass per endpoint; `TypedDict` payloads document schema
   (no runtime validation — schemas are too conditional).
@@ -62,7 +75,7 @@ midas_nx/
 
 ---
 
-## 2. Current status (v0.3.0)
+## 2. Current status (v0.4.0)
 
 | Area | Chapters | Endpoints | State |
 |---|---|---|---|
@@ -73,22 +86,24 @@ midas_nx/
 | Static loads | 06 | 21/21 | ✅ done |
 | **Phase 1 — analyzable model** | 07, 09, 10, 11 | **47/47** | ✅ done |
 | **Phase 2 — analysis control + results out** | 12–14, 18–21, 23 | **48/48 rows** | ✅ done |
-| **Everything else** | 08, 15–17, 22, 24–27 | **0/82 rows** | ⏳ not started |
-| **Total** | | **196/278 (71%)** | v0.3.0 on PyPI |
+| **Phase 3 — operations & view** | 15, 16 | **26/26** | ✅ done |
+| **Everything else** | 08, 17, 22, 24–27 | **0/56 rows** | ⏳ not started |
+| **Total** | | **222/278 (80%)** | v0.4.0 on PyPI |
 
 > ⚠️ **The 278 undercounts real work.** Design-code chapters 25/26/27 are one
 > aggregate row each but hold **27 + 69 + 27 = 123 real endpoints**; the ch18–21
 > POST table chapters were also single aggregate rows before Phase 2 — now
 > broken out into 87 real table-type functions across `post/pre_process.py`,
 > `post/result_1.py`, and `post/story.py`. True remaining surface is closer to
-> **~300 endpoints**, concentrated in design code-checks (ch 25–27).
+> **~280 endpoints**, concentrated in design code-checks (ch 25–27).
 
 Velocity reference: the 02–06 build added 76 endpoints in one pass; Phase 1
 (07/09/10/11) added another 47 in a second pass; Phase 2 (12–14, 18–21, 23)
-added 48 rows (~118 real functions/classes, including 3 chapters delegated to
-parallel background agents following the same established pattern) in a
-third pass — all three followed the same fixed transcribe→type→test→
-mark-coverage loop (see §5).
+added 48 rows (~118 real functions/classes) in a third pass; Phase 3 (15, 16)
+added 26 endpoints (~50 real functions/classes) in a fourth pass — all four
+followed the same fixed transcribe→type→test→mark-coverage loop (see §5),
+with Phase 2's ch19-20/ch21 and Phase 3's ch15/ch16 each delegated to
+parallel background agents following that same established pattern.
 
 ---
 
@@ -114,9 +129,9 @@ Configure the run and read results back — the payoff phase.
   10 pre-process + 50 analysis-result + 17 story table types)
 - ch 23 POST Design forces (10/10)
 
-### Phase 3 — Operations & view  ·  ~26 endpoints  ·  → v0.4.0
-- ch 15 OPE operations (19)
-- ch 16 VIEW select/capture/display (7)
+### Phase 3 ✅ — Operations & view  ·  26/26 endpoints  ·  v0.4.0
+- ch 15 OPE operations (19/19)
+- ch 16 VIEW select/capture/display (7/7)
 
 ### Phase 4 — Civil bridge specialization  ·  32 endpoints (civil-only)  ·  → v0.5.0
 - ch 08 Moving Loads (28, civil-only)
@@ -144,8 +159,8 @@ The largest chunk; likely warrants its own sub-phasing per code.
 |---|---|---|
 | v0.1.0 ✅ | Core DB modeling (ch 01–06) | published |
 | v0.2.0 ✅ | Full analyzable model (Phase 1) | published |
-| v0.3.0 | Analysis control + result extraction (Phase 2) | ready to release |
-| v0.4.0 | Operations & view (Phase 3) | |
+| v0.3.0 ✅ | Analysis control + result extraction (Phase 2) | published |
+| v0.4.0 | Operations & view (Phase 3) | ready to release |
 | v0.5.0 | Civil bridge features (Phase 4) | moving loads usable |
 | v1.0.0 | Design code checks (Phase 5) | full documented surface covered |
 
