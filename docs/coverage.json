@@ -1209,7 +1209,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.temperature_prestress"
     },
     {
@@ -1220,7 +1220,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.temperature_prestress"
     },
     {
@@ -1231,7 +1231,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.temperature_prestress"
     },
     {
@@ -1242,7 +1242,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.temperature_prestress"
     },
     {
@@ -1253,7 +1253,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.temperature_prestress"
     },
     {
@@ -1264,7 +1264,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.temperature_prestress"
     },
     {
@@ -1275,7 +1275,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.temperature_prestress"
     },
     {
@@ -1286,7 +1286,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.temperature_prestress"
     },
     {
@@ -1297,7 +1297,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.temperature_prestress"
     },
     {
@@ -1308,7 +1308,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.temperature_prestress"
     },
     {
@@ -1319,7 +1319,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.temperature_prestress"
     },
     {
@@ -1330,7 +1330,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.temperature_prestress"
     },
     {
