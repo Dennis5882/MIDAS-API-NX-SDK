@@ -1907,7 +1907,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.misc_loads"
     },
     {
@@ -1918,7 +1918,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.misc_loads"
     },
     {
@@ -1929,7 +1929,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.misc_loads"
     },
     {
@@ -1940,7 +1940,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.misc_loads"
     },
     {
@@ -1951,7 +1951,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.misc_loads"
     },
     {
@@ -1962,7 +1962,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.misc_loads"
     },
     {
@@ -1973,7 +1973,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.misc_loads"
     },
     {
@@ -1984,7 +1984,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.misc_loads"
     },
     {
@@ -1995,7 +1995,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.misc_loads"
     },
     {
