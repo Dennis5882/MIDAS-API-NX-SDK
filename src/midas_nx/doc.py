@@ -8,11 +8,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from .client import MidasClient, get_default_client
-
-
-def _post(command: str, argument, client: Optional[MidasClient] = None) -> dict:
-    return (client or get_default_client()).request("POST", command, {"Argument": argument})
+from .client import MidasClient, post_argument as _post
 
 
 def new_project(client: Optional[MidasClient] = None) -> dict:

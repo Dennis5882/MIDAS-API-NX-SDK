@@ -190,3 +190,17 @@ def MidasAPI(method: str, command: str, body: Optional[dict] = None) -> dict:
     README.md and examples/python/basic_example.py.
     """
     return get_default_client().request(method, command, body)
+
+
+def post_argument(command: str, argument, client: Optional[MidasClient] = None) -> dict:
+    """Shared POST-with-``"Argument"``-wrapper helper for the non-ID-keyed
+    endpoint families (``/doc/*``, ``/ope/*``, ``/view/*``, and the two plain
+    ``/post/*`` endpoints in ``post/design.py``) — as opposed to the ID-keyed
+    ``"Assign"`` wrapper used by ``db/base.py``'s ``DbResource``."""
+    return (client or get_default_client()).request("POST", command, {"Argument": argument})
+
+
+def get_result(command: str, client: Optional[MidasClient] = None) -> dict:
+    """Shared GET helper (no request body) for the same non-ID-keyed
+    endpoint families as :func:`post_argument`."""
+    return (client or get_default_client()).request("GET", command)

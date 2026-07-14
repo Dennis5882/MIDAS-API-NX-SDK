@@ -31,11 +31,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, TypedDict
 
-from .client import MidasClient, get_default_client
-
-
-def _post(command: str, argument, client: Optional[MidasClient] = None) -> dict:
-    return (client or get_default_client()).request("POST", command, {"Argument": argument})
+from .client import MidasClient, get_result as _get, post_argument as _post
 
 
 # --- 1. /view/SELECT — Select ------------------------------------------------
@@ -47,8 +43,7 @@ def get_selection(client: Optional[MidasClient] = None) -> dict:
     GET-only, no request body. Returns the currently selected node/element
     ID lists, e.g. ``{"SELECT": {"NODE_LIST": [...], "ELEM_LIST": [...]}}``.
     """
-    client = client or get_default_client()
-    return client.request("GET", "/view/SELECT")
+    return _get("/view/SELECT", client)
 
 
 # --- 2. /view/CAPTURE — Capture ----------------------------------------------

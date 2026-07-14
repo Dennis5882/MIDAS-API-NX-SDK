@@ -9,12 +9,8 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from ..client import MidasClient, get_default_client
+from ..client import MidasClient, post_argument as _post
 from .base import NodeElemsSelector, TableStyles, TableUnit, get_table
-
-
-def _post(command: str, client: Optional[MidasClient] = None) -> dict:
-    return (client or get_default_client()).request("POST", command, {"Argument": {}})
 
 
 def get_pm_interaction_diagram(client: Optional[MidasClient] = None) -> dict:
@@ -25,7 +21,7 @@ def get_pm_interaction_diagram(client: Optional[MidasClient] = None) -> dict:
     manual doesn't publish a fixed response HEAD/DATA shape for this one —
     the response keys depend on the active design code configuration.
     """
-    return _post("/post/PM", client)
+    return _post("/post/PM", {}, client)
 
 
 def get_steel_code_check(client: Optional[MidasClient] = None) -> dict:
@@ -35,7 +31,7 @@ def get_steel_code_check(client: Optional[MidasClient] = None) -> dict:
     entry has SECT/ELEM id, RAT (combined strength ratio), SLN (slenderness
     ratio), DEF (deflection), DEFA (allowable deflection).
     """
-    return _post("/post/STEELCODECHECK", client)
+    return _post("/post/STEELCODECHECK", {}, client)
 
 
 # 3. Concrete Design - Beam Design Forces

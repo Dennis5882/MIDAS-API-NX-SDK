@@ -71,6 +71,67 @@ def test_divide_elements_parallel_bracing_variant(gen_client):
     }
 
 
+@responses.activate
+def test_divide_elements_unequal_variant(gen_client):
+    responses.add(responses.POST, "https://x.test:443/gen/ope/DIVIDEELEM", json={}, status=200)
+    ope.divide_elements(
+        {
+            "TARGETS": [1],
+            "DIVIDE": {
+                "ELEM_TYPE": "Planar",
+                "DIV_METHOD": "Unequal",
+                "OPTION": {"UNEQUAL_OPTION": {"DIST_X": "2@2.5", "DIST_Y": "2@3.0"}},
+            },
+        },
+        client=gen_client,
+    )
+    sent = responses.calls[0].request
+    assert json.loads(sent.body)["Argument"]["DIVIDE"]["OPTION"]["UNEQUAL_OPTION"] == {
+        "DIST_X": "2@2.5",
+        "DIST_Y": "2@3.0",
+    }
+
+
+@responses.activate
+def test_divide_elements_parametric_unequal_variant(gen_client):
+    responses.add(responses.POST, "https://x.test:443/gen/ope/DIVIDEELEM", json={}, status=200)
+    ope.divide_elements(
+        {
+            "TARGETS": [1],
+            "DIVIDE": {
+                "ELEM_TYPE": "Solid",
+                "DIV_METHOD": "ParametricUnequal",
+                "OPTION": {
+                    "PARAMETRIC_OPTION": {"RATIO_X": "3@0.3", "RATIO_Y": "4@0.2", "RATIO_Z": "0.1,0.2,0.3"}
+                },
+            },
+        },
+        client=gen_client,
+    )
+    sent = responses.calls[0].request
+    assert json.loads(sent.body)["Argument"]["DIVIDE"]["OPTION"]["PARAMETRIC_OPTION"]["RATIO_Z"] == "0.1,0.2,0.3"
+
+
+@responses.activate
+def test_divide_elements_divide_by_node_variant(gen_client):
+    responses.add(responses.POST, "https://x.test:443/gen/ope/DIVIDEELEM", json={}, status=200)
+    ope.divide_elements(
+        {
+            "DIVIDE": {
+                "ELEM_TYPE": "Frame",
+                "DIV_METHOD": "DividebyNode",
+                "OPTION": {"BY_NODE_OPTION": {"ELEM_NUM": 5, "NODE_NUM": 12}},
+            }
+        },
+        client=gen_client,
+    )
+    sent = responses.calls[0].request
+    assert json.loads(sent.body)["Argument"]["DIVIDE"]["OPTION"]["BY_NODE_OPTION"] == {
+        "ELEM_NUM": 5,
+        "NODE_NUM": 12,
+    }
+
+
 # --- 3. SECTPROP --------------------------------------------------------------
 
 
@@ -155,6 +216,41 @@ def test_create_line_beam_load_uniload_with_copy(gen_client):
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Argument"]["COPY"] == {"USE": True, "AXIS": "Y", "DIST": "10@3.0"}
+
+
+@responses.activate
+def test_create_line_beam_load_trapressure_with_additional_height(gen_client):
+    responses.add(responses.POST, "https://x.test:443/gen/ope/LINEBMLD", json={}, status=200)
+    ope.create_line_beam_load(
+        {
+            "LCNAME": "TRAPRESSURE_01",
+            "TYPE": "TRAPRESSURE",
+            "TARGET": {"METHOD": 0, "NODE": [10, 20]},
+            "ADD_H": {"USE": True, "I_END": 0.5, "J_END": 0.8, "USE_J_END": True},
+            "LOAD": {"DIR": "LZ", "TYPE": 0, "D": [0, 1, 2, 3], "P": [-1, -2, -3, -4]},
+        },
+        client=gen_client,
+    )
+    sent = responses.calls[0].request
+    assert json.loads(sent.body)["Argument"]["ADD_H"] == {
+        "USE": True, "I_END": 0.5, "J_END": 0.8, "USE_J_END": True
+    }
+
+
+@responses.activate
+def test_create_line_beam_load_curved(gen_client):
+    responses.add(responses.POST, "https://x.test:443/gen/ope/LINEBMLD", json={}, status=200)
+    ope.create_line_beam_load(
+        {
+            "LCNAME": "CURVED_01",
+            "TYPE": "CURVED",
+            "TARGET": {"METHOD": 1, "ELEM": [5, 6, 7]},
+            "LOAD": {"DIR": "GZ", "A": 1.0, "B": 2.0, "C": 3.0},
+        },
+        client=gen_client,
+    )
+    sent = responses.calls[0].request
+    assert json.loads(sent.body)["Argument"]["LOAD"] == {"DIR": "GZ", "A": 1.0, "B": 2.0, "C": 3.0}
 
 
 # --- 6. AUTOMESH -----------------------------------------------------------------
@@ -262,6 +358,45 @@ def test_convert_surface_spring_elastic_link_tens(gen_client):
     assert json.loads(sent.body)["Argument"]["BOUNDARY"] == {
         "TYPE": "TENS", "DIR": 7, "SUBGRADE": 5000, "LENGTH": 0.5
     }
+
+
+@responses.activate
+def test_convert_surface_spring_comp(gen_client):
+    responses.add(responses.POST, "https://x.test:443/gen/ope/SSPS", json={}, status=200)
+    ope.convert_surface_spring(
+        {
+            "CONVERT_TO": "POINT_SPRING",
+            "NODE_ELEMS": {"KEYS": [81, 82]},
+            "ELEMENT": {"TYPE": "SOLID_NODE"},
+            "BOUNDARY": {"TYPE": "COMP", "DIR": 3, "SUBGRADE": 4000},
+        },
+        client=gen_client,
+    )
+    sent = responses.calls[0].request
+    assert json.loads(sent.body)["Argument"]["BOUNDARY"] == {"TYPE": "COMP", "DIR": 3, "SUBGRADE": 4000}
+
+
+@responses.activate
+def test_convert_surface_spring_multi(gen_client):
+    responses.add(responses.POST, "https://x.test:443/gen/ope/SSPS", json={}, status=200)
+    ope.convert_surface_spring(
+        {
+            "CONVERT_TO": "ELASTIC_LINK",
+            "NODE_ELEMS": {"KEYS": [91, 92]},
+            "ELEMENT": {"TYPE": "SOLID_FACE", "FACE": 2},
+            "BOUNDARY": {
+                "TYPE": "MULTI",
+                "STIFF": [1000, 2000, 3000],
+                "bDAMP": False,
+                "DAMP": [0, 0, 0],
+                "PHU": 500,
+                "LENGTH": 0.3,
+            },
+        },
+        client=gen_client,
+    )
+    sent = responses.calls[0].request
+    assert json.loads(sent.body)["Argument"]["BOUNDARY"]["PHU"] == 500
 
 
 # --- 8. EDMP -----------------------------------------------------------------------

@@ -87,7 +87,7 @@ mirroring the `db/*.py` payload-typing style but at the whole-body level.
 | **Phase 1 — analyzable model** | 07, 09, 10, 11 | **47/47** | ✅ done |
 | **Phase 2 — analysis control + results out** | 12–14, 18–21, 23 | **48/48 rows** | ✅ done |
 | **Phase 3 — operations & view** | 15, 16 | **26/26** | ✅ done |
-| **Everything else** | 08, 17, 22, 24–27 | **0/56 rows** | ⏳ not started |
+| **Everything else** | 08, 17, 24–27 | **0/48 rows** | ⏳ not started |
 | **Total** | | **222/278 (80%)** | v0.4.0 on PyPI |
 
 > ⚠️ **The 278 undercounts real work.** Design-code chapters 25/26/27 are one
@@ -100,7 +100,8 @@ mirroring the `db/*.py` payload-typing style but at the whole-body level.
 Velocity reference: the 02–06 build added 76 endpoints in one pass; Phase 1
 (07/09/10/11) added another 47 in a second pass; Phase 2 (12–14, 18–21, 23)
 added 48 rows (~118 real functions/classes) in a third pass; Phase 3 (15, 16)
-added 26 endpoints (~50 real functions/classes) in a fourth pass — all four
+added 26 endpoints (131 real functions/classes across ope.py + view.py) in a
+fourth pass — all four
 followed the same fixed transcribe→type→test→mark-coverage loop (see §5),
 with Phase 2's ch19-20/ch21 and Phase 3's ch15/ch16 each delegated to
 parallel background agents following that same established pattern.

@@ -11,11 +11,7 @@ from __future__ import annotations
 
 from typing import List, Optional, TypedDict, Union
 
-from .client import MidasClient, get_default_client
-
-
-def _post(command: str, argument, client: Optional[MidasClient] = None) -> dict:
-    return (client or get_default_client()).request("POST", command, {"Argument": argument})
+from .client import MidasClient, get_result as _get, post_argument as _post
 
 
 # --- 1. /ope/PROJECTSTATUS — Project Status ---------------------------------
@@ -26,7 +22,7 @@ def get_project_status(client: Optional[MidasClient] = None) -> dict:
 
     GET-only, no request body; returns live counts of model/load data.
     """
-    return (client or get_default_client()).request("GET", "/ope/PROJECTSTATUS")
+    return _get("/ope/PROJECTSTATUS", client)
 
 
 # --- 2. /ope/DIVIDEELEM — Divide Elements ------------------------------------
@@ -134,7 +130,7 @@ def get_section_properties(client: Optional[MidasClient] = None) -> dict:
 
     GET-only, no request body; response is keyed by section ID.
     """
-    return (client or get_default_client()).request("GET", "/ope/SECTPROP")
+    return _get("/ope/SECTPROP", client)
 
 
 # --- 4. /ope/USLC — Using Load Combinations ----------------------------------
@@ -313,8 +309,10 @@ def auto_mesh(argument: AutoMeshArgument, client: Optional[MidasClient] = None) 
 # --- 7. /ope/SSPS — Surface Spring -------------------------------------------
 
 
-class SurfaceSpringTargetKeys(TypedDict, total=False):
-    KEYS: List[int]  # target node/element numbers, required
+class TargetKeys(TypedDict, total=False):
+    """Shared explicit-ID-list shape, used by SSPS's and EDMP's NODE_ELEMS."""
+
+    KEYS: List[int]  # target node/element numbers, e.g. [101, 102, 103], required
 
 
 class SurfaceSpringElement(TypedDict, total=False):
@@ -342,7 +340,7 @@ class SurfaceSpringArgument(TypedDict, total=False):
 
     CONVERT_TO: str  # "POINT_SPRING"/"ELASTIC_LINK", required
     GROUP_NAME: str  # boundary group name, default "", optional
-    NODE_ELEMS: SurfaceSpringTargetKeys  # required
+    NODE_ELEMS: TargetKeys  # required
     ELEMENT: SurfaceSpringElement  # required
     BOUNDARY: SurfaceSpringBoundary  # required
 
@@ -355,10 +353,6 @@ def convert_surface_spring(argument: SurfaceSpringArgument, client: Optional[Mid
 # --- 8. /ope/EDMP — Change Property ------------------------------------------
 
 
-class ChangePropertyTargetKeys(TypedDict, total=False):
-    KEYS: List[int]  # target node/element numbers, e.g. [101, 102, 103], required
-
-
 class ChangePropertyArgument(TypedDict, total=False):
     """docs/manual/15_OPE.md #8 — /ope/EDMP — Change Property.
 
@@ -366,7 +360,7 @@ class ChangePropertyArgument(TypedDict, total=False):
     creep & shrinkage calculations.
     """
 
-    NODE_ELEMS: ChangePropertyTargetKeys  # required
+    NODE_ELEMS: TargetKeys  # required
     TYPE: str  # "NSM" (notional size)/"VSR" (volume surface ratio), default "NSM", optional
     AUTO: bool  # auto-calculate; VSR only allows false, default false, optional
     CODE: str  # "Korean Standard"/"CEB-FIP(1990)"/"Japanese Standard"/"Chinese Standard"; used when AUTO=true and TYPE="NSM", default "Korean Standard", optional
@@ -415,7 +409,7 @@ class StoryCheckParameterArgument(TypedDict, total=False):
 
 def get_story_check_parameter(client: Optional[MidasClient] = None) -> dict:
     """docs/manual/15_OPE.md #10 — /ope/STORY_PARAM — Story Check Parameter (GET)."""
-    return (client or get_default_client()).request("GET", "/ope/STORY_PARAM")
+    return _get("/ope/STORY_PARAM", client)
 
 
 def set_story_check_parameter(argument: StoryCheckParameterArgument, client: Optional[MidasClient] = None) -> dict:
@@ -450,7 +444,7 @@ class StoryIrregularityCheckParameterArgument(TypedDict, total=False):
 
 def get_story_irregularity_check_parameter(client: Optional[MidasClient] = None) -> dict:
     """docs/manual/15_OPE.md #11 — /ope/STORY_IRR_PARAM — Story Irregularity Check Parameter (GET)."""
-    return (client or get_default_client()).request("GET", "/ope/STORY_IRR_PARAM")
+    return _get("/ope/STORY_IRR_PARAM", client)
 
 
 def set_story_irregularity_check_parameter(
@@ -622,22 +616,15 @@ class UndergroundLoadCaseItem(TypedDict, total=False):
     LOAD_CASE_STATIC: List[str]  # earth-pressure load cases (static component), required
 
 
-class UndergroundSpecialLoad(TypedDict, total=False):
-    """Distinct from the top-level ADDITIONAL_LOAD.SPECIAL_LOAD — this one
-    lives inside UNDERGROUND_LOAD and applies special-seismic-load handling
-    to underground load generation specifically."""
-
-    OPT_USE: bool  # required
-    VERTICAL_LOAD_FACTOR: float  # >=0, required if OPT_USE true
-    SDS: float  # >=0, required if OPT_USE true
-    OVER_STRENGTH_FACTOR: List[LoadCombScaleFactorItem]  # required if OPT_USE true
-
-
 class UndergroundLoad(TypedDict, total=False):
     OPT_USE: bool  # required
     SCALE_FACTOR: List[LoadCombScaleFactorItem]  # required if OPT_USE true
     LOAD_CASE_LIST: List[UndergroundLoadCaseItem]  # required if OPT_USE true
-    SPECIAL_LOAD: UndergroundSpecialLoad  # optional
+    # SPECIAL_LOAD lives inside UNDERGROUND_LOAD and applies special-seismic-load
+    # handling to underground load generation specifically — same {OPT_USE,
+    # VERTICAL_LOAD_FACTOR, SDS, OVER_STRENGTH_FACTOR} shape as the top-level
+    # ADDITIONAL_LOAD.SPECIAL_LOAD, so SpecialSeismicLoad is reused here.
+    SPECIAL_LOAD: SpecialSeismicLoad  # optional
 
 
 # --- 15. /ope/LCOM-GEN — Load Combination (General) – KDS:2022 / AIK-SRC2K --
@@ -681,6 +668,12 @@ def generate_load_combination_general(
 
     DGNCODE selects the schema: KDS:2022 (LoadCombinationGeneralKdsArgument,
     CODE_SELECTION-flattened) vs AIK-SRC2K (LoadCombinationAikSrc2kArgument).
+    The Union only helps callers running a type checker — TypedDicts aren't
+    validated at runtime (matches this SDK's other payload types), so build
+    ONLY the fields documented for the DGNCODE you set; mixing fields from
+    both schemas (e.g. AIK-SRC2K's DGNCODE with KDS:2022 fields like
+    CODE_SELECTION/ADD_ENVELOPE/CS_ANALYSIS) is sent to the API as-is and
+    will surface as a server-side error, not a client-side one.
     """
     return _post("/ope/LCOM-GEN", argument, client)
 
@@ -709,22 +702,29 @@ def generate_load_combination_concrete(
     return _post("/ope/LCOM-CONC", argument, client)
 
 
-# --- 17. /ope/LCOM-STEEL — Load Combination (Steel) – KDS 41 30:2022 -------
-
-
-class LoadCombinationSteelArgument(TypedDict, total=False):
-    """docs/manual/15_OPE.md #17 — /ope/LCOM-STEEL — Load Combination (Steel) – KDS 41 30:2022.
-
-    Same schema as LCOM-CONC except CS_ANALYSIS/PRESTRESS_LOSS don't exist.
-    """
+class _LoadCombinationSteelSrcKdsArgument(TypedDict, total=False):
+    """Shared schema for LCOM-STEEL and LCOM-SRC's KDS:2022 variant — field-
+    for-field identical (same as LCOM-CONC minus CS_ANALYSIS/PRESTRESS_LOSS);
+    only DGNCODE's literal value differs per endpoint, so it's redeclared in
+    each subclass's docstring rather than duplicating all 7 fields twice."""
 
     OPTION: str  # "ADD"/"REPLACE", required
-    DGNCODE: str  # "KDS 41 30 : 2022", required
+    DGNCODE: str  # required (see subclass docstring for the exact literal)
     RS_SCALE_FACTOR: List[LoadCombScaleFactorItem]  # optional
     WIND_LOAD_COMB: WindLoadComb  # optional
     ORTHO_EFFECT: OrthoEffect  # optional
     ADDITIONAL_LOAD: AdditionalLoad  # optional
     UNDERGROUND_LOAD: UndergroundLoad  # optional
+
+
+# --- 17. /ope/LCOM-STEEL — Load Combination (Steel) – KDS 41 30:2022 -------
+
+
+class LoadCombinationSteelArgument(_LoadCombinationSteelSrcKdsArgument):
+    """docs/manual/15_OPE.md #17 — /ope/LCOM-STEEL — Load Combination (Steel) – KDS 41 30:2022.
+
+    DGNCODE: "KDS 41 30 : 2022".
+    """
 
 
 def generate_load_combination_steel(
@@ -737,17 +737,8 @@ def generate_load_combination_steel(
 # --- 18. /ope/LCOM-SRC — Load Combination (SRC) – KDS 41 SRC:2022 / AIK-SRC2K
 
 
-class LoadCombinationSrcKdsArgument(TypedDict, total=False):
-    """KDS 41 SRC:2022 variant of /ope/LCOM-SRC. Same schema as
-    LCOM-CONC/LCOM-STEEL (no CS_ANALYSIS/PRESTRESS_LOSS)."""
-
-    OPTION: str  # "ADD"/"REPLACE", required
-    DGNCODE: str  # "KDS 41 SRC : 2022", required
-    RS_SCALE_FACTOR: List[LoadCombScaleFactorItem]  # optional
-    WIND_LOAD_COMB: WindLoadComb  # optional
-    ORTHO_EFFECT: OrthoEffect  # optional
-    ADDITIONAL_LOAD: AdditionalLoad  # optional
-    UNDERGROUND_LOAD: UndergroundLoad  # optional
+class LoadCombinationSrcKdsArgument(_LoadCombinationSteelSrcKdsArgument):
+    """KDS 41 SRC:2022 variant of /ope/LCOM-SRC. DGNCODE: "KDS 41 SRC : 2022"."""
 
 
 def generate_load_combination_src(
@@ -758,6 +749,11 @@ def generate_load_combination_src(
 
     DGNCODE selects the schema: KDS 41 SRC:2022 (LoadCombinationSrcKdsArgument)
     vs AIK-SRC2K (LoadCombinationAikSrc2kArgument, RS_SCALE_FACTOR optional here).
+    The Union only helps callers running a type checker — TypedDicts aren't
+    validated at runtime (matches this SDK's other payload types), so build
+    ONLY the fields documented for the DGNCODE you set; a hybrid dict mixing
+    both schemas is sent to the API as-is and will surface as a server-side
+    error, not a client-side one.
     """
     return _post("/ope/LCOM-SRC", argument, client)
 
