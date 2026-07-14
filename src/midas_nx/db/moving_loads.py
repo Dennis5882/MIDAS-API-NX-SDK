@@ -7,9 +7,7 @@ from __future__ import annotations
 
 from typing import Any, List, TypedDict
 
-from .base import DbResource
-
-_CIVIL_ONLY = frozenset({"civil"})
+from .base import CIVIL_ONLY, DbResource
 
 
 # --- 1. /db/MVCD — Moving Load Code ------------------------------------------
@@ -29,7 +27,7 @@ class MovingLoadCodePayload(TypedDict, total=False):
 class MovingLoadCode(DbResource):
     ENDPOINT = "/db/MVCD"
     NAME = "Moving Load Code"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 2. /db/LLAN — Traffic Line Lanes ----------------------------------------
@@ -74,7 +72,7 @@ class TrafficLineLanePayload(TypedDict, total=False):
 class TrafficLineLanes(DbResource):
     ENDPOINT = "/db/LLAN"
     NAME = "Traffic Line Lanes"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 3. /db/LLANch — Traffic Line Lanes – China ------------------------------
@@ -101,7 +99,7 @@ class TrafficLineLanesChinaPayload(TypedDict, total=False):
 class TrafficLineLanesChina(DbResource):
     ENDPOINT = "/db/LLANch"
     NAME = "Traffic Line Lanes – China"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 4. /db/LLANid — Traffic Line Lanes – India ------------------------------
@@ -128,7 +126,7 @@ class TrafficLineLanesIndiaPayload(TypedDict, total=False):
 class TrafficLineLanesIndia(DbResource):
     ENDPOINT = "/db/LLANid"
     NAME = "Traffic Line Lanes – India"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 5. /db/LLANtr — Traffic Line Lanes – Transverse -------------------------
@@ -149,27 +147,19 @@ class TrafficLineLanesTransversePayload(TypedDict, total=False):
 class TrafficLineLanesTransverse(DbResource):
     ENDPOINT = "/db/LLANtr"
     NAME = "Traffic Line Lanes – Transverse"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 6. /db/LLANop — Traffic Line Lanes – Moving Load Optimization ----------
 
 
-class LineLaneOptimizationItem(TypedDict, total=False):
-    """LANE_ITEMS entry for /db/LLANop. The worked example uses "FACT"/
-    "SPAN_START" for one code and "CENT_F" for another; flattened here
-    (mirrors MaterialParam precedent), matching LineLaneItem's fields.
-    """
-
-    ELEM: int  # Element No., required
-    ECC: float  # Eccentricity, optional
-    FACT: float  # Impact Factor, optional (code-dependent)
-    SPAN_START: bool  # Span Start, optional (code-dependent)
-    CENT_F: float  # Centrifugal Force Factor, optional (code-dependent, e.g. AASHTO LRFD)
-
-
 class TrafficLineLanesOptimizationPayload(TypedDict, total=False):
-    """docs/manual/08_DB_Moving_Loads.md #6 — /db/LLANop Specifications table."""
+    """docs/manual/08_DB_Moving_Loads.md #6 — /db/LLANop Specifications table.
+
+    LANE_ITEMS has the same code-dependent-fields shape as /db/LLAN's
+    LANE_ITEMS (LineLaneItem) — the manual describes both as "ELEM, ECC,
+    code-dependent additional fields".
+    """
 
     LL_NAME: str  # Name of Line Lane, required
     LOAD_DIST: str  # Load Distribution: "LANE"/"CROSS", required
@@ -184,13 +174,13 @@ class TrafficLineLanesOptimizationPayload(TypedDict, total=False):
     ANAL_LANE_OFFSET: float  # Analysis Lane Offset, optional
     WHEEL_SPACE: float  # Wheel Spacing, default 0, optional
     MARGIN: float  # Margin, default 0, optional
-    LANE_ITEMS: List[LineLaneOptimizationItem]  # required
+    LANE_ITEMS: List[LineLaneItem]  # required
 
 
 class TrafficLineLanesOptimization(DbResource):
     ENDPOINT = "/db/LLANop"
     NAME = "Traffic Line Lanes – Moving Load Optimization"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 7. /db/SLAN — Traffic Surface Lanes -------------------------------------
@@ -231,7 +221,7 @@ class TrafficSurfaceLanePayload(TypedDict, total=False):
 class TrafficSurfaceLanes(DbResource):
     ENDPOINT = "/db/SLAN"
     NAME = "Traffic Surface Lanes"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 8. /db/SLANch — Traffic Surface Lanes – China ---------------------------
@@ -263,7 +253,7 @@ class TrafficSurfaceLanesChinaPayload(TypedDict, total=False):
 class TrafficSurfaceLanesChina(DbResource):
     ENDPOINT = "/db/SLANch"
     NAME = "Traffic Surface Lanes – China"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 9. /db/SLANop — Traffic Surface Lanes – Moving Load Optimization ------
@@ -297,7 +287,7 @@ class TrafficSurfaceLanesOptimizationPayload(TypedDict, total=False):
 class TrafficSurfaceLanesOptimization(DbResource):
     ENDPOINT = "/db/SLANop"
     NAME = "Traffic Surface Lanes – Moving Load Optimization"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 10. /db/MVHL — Vehicles --------------------------------------------------
@@ -346,7 +336,7 @@ class VehiclePayload(TypedDict, total=False):
 class Vehicles(DbResource):
     ENDPOINT = "/db/MVHL"
     NAME = "Vehicles"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 11. /db/MVHLtr — Vehicles – Transverse -----------------------------------
@@ -372,7 +362,7 @@ class VehicleTransversePayload(TypedDict, total=False):
 class VehiclesTransverse(DbResource):
     ENDPOINT = "/db/MVHLtr"
     NAME = "Vehicles – Transverse"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 12. /db/MVLD — Moving Load Cases -----------------------------------------
@@ -454,7 +444,7 @@ class MovingLoadCasePayload(TypedDict, total=False):
 class MovingLoadCase(DbResource):
     ENDPOINT = "/db/MVLD"
     NAME = "Moving Load Cases"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 13. /db/MVLDch — Moving Load Cases – China -------------------------------
@@ -486,14 +476,14 @@ class MovingLoadCaseChinaPayload(TypedDict, total=False):
 class MovingLoadCaseChina(DbResource):
     ENDPOINT = "/db/MVLDch"
     NAME = "Moving Load Cases – China"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 14. /db/MVLDid — Moving Load Cases – India -------------------------------
 
 
 class MovingLoadCaseIndiaSubLoadItem(TypedDict, total=False):
-    VEHICLE_CLASS_1: str  # Vehicle Class Name, required
+    VEHICLE_CLASS_1: str  # Vehicle Class Name, required (manual's own field name — not "VEHICLE_CLASS" as in MVLDch's sibling item)
     SCALE_FACTOR: float  # Scale Factor, required
     MIN_NUM_LOADED_LANES: int  # Min. Number of Loaded Lanes, required
     MAX_NUM_LOADED_LANES: int  # Max. Number of Loaded Lanes, required
@@ -525,7 +515,7 @@ class MovingLoadCaseIndiaPayload(TypedDict, total=False):
 class MovingLoadCaseIndia(DbResource):
     ENDPOINT = "/db/MVLDid"
     NAME = "Moving Load Cases – India"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 15. /db/MVLDbs — Moving Load Cases – BS ----------------------------------
@@ -575,7 +565,7 @@ class MovingLoadCaseBsPayload(TypedDict, total=False):
 class MovingLoadCaseBs(DbResource):
     ENDPOINT = "/db/MVLDbs"
     NAME = "Moving Load Cases – BS"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 16. /db/MVLDeu — Moving Load Cases – Eurocode ----------------------------
@@ -649,7 +639,7 @@ class MovingLoadCaseEurocodePayload(TypedDict, total=False):
 class MovingLoadCaseEurocode(DbResource):
     ENDPOINT = "/db/MVLDeu"
     NAME = "Moving Load Cases – Eurocode"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 17. /db/MVLDpl — Moving Load Cases – Poland ------------------------------
@@ -694,7 +684,7 @@ class MovingLoadCasePolandPayload(TypedDict, total=False):
 class MovingLoadCasePoland(DbResource):
     ENDPOINT = "/db/MVLDpl"
     NAME = "Moving Load Cases – Poland"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 18. /db/MVLDtr — Moving Load Cases – Transverse --------------------------
@@ -715,7 +705,7 @@ class MovingLoadCaseTransversePayload(TypedDict, total=False):
 class MovingLoadCaseTransverse(DbResource):
     ENDPOINT = "/db/MVLDtr"
     NAME = "Moving Load Cases – Transverse"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 19. /db/CRGR — Concurrent Reaction Group ---------------------------------
@@ -733,13 +723,13 @@ class StructureGroupNamesPayload(TypedDict, total=False):
 class ConcurrentReactionGroup(DbResource):
     ENDPOINT = "/db/CRGR"
     NAME = "Concurrent Reaction Group"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 class ConcurrentJointForceGroup(DbResource):
     ENDPOINT = "/db/CJFG"
     NAME = "Concurrent Joint Force Group"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 21. /db/MVHC — Vehicle Classes -------------------------------------------
@@ -759,7 +749,7 @@ class VehicleClassPayload(TypedDict, total=False):
 class VehicleClasses(DbResource):
     ENDPOINT = "/db/MVHC"
     NAME = "Vehicle Classes"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 22. /db/SINF — Plate Element for Influence Surface -----------------------
@@ -778,7 +768,7 @@ class PlateElementForInfluenceSurfacePayload(TypedDict, total=False):
 class PlateElementForInfluenceSurface(DbResource):
     ENDPOINT = "/db/SINF"
     NAME = "Plate Element for Influence Surface"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 23. /db/MLSP — Lane Support – Negative Moments at Interior Piers --------
@@ -804,7 +794,7 @@ class LaneSupportNegativeMomentPayload(TypedDict, total=False):
 class LaneSupportNegativeMoment(DbResource):
     ENDPOINT = "/db/MLSP"
     NAME = "Lane Support – Negative Moments at Interior Piers"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 24. /db/MLSR — Lane Support – Reactions at Interior Piers ---------------
@@ -823,7 +813,7 @@ class LaneSupportReactionPayload(TypedDict, total=False):
 class LaneSupportReaction(DbResource):
     ENDPOINT = "/db/MLSR"
     NAME = "Lane Support – Reactions at Interior Piers"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 25. /db/DYLA — Dynamic Load Allowance ------------------------------------
@@ -842,7 +832,7 @@ class DynamicLoadAllowancePayload(TypedDict, total=False):
 class DynamicLoadAllowance(DbResource):
     ENDPOINT = "/db/DYLA"
     NAME = "Dynamic Load Allowance"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 26. /db/IMPF — Additional Impact Factor ----------------------------------
@@ -853,6 +843,13 @@ class AdditionalImpactFactorItem(TypedDict, total=False):
     field group applies (Impact Factor / Effective Span Length – User
     Input, vs. Effective Span Length – Auto Calculation, Line Lane only);
     flattened onto one item (mirrors MaterialParam precedent).
+
+    The manual's Parameters table documents COMPONENTS as 6 flags for
+    ELEMTYPE="BEAM" (My_max/My_min/Mz_max/Mz_min/Fx_max/Fx_min), but its own
+    worked BEAM example sends an 8-element array
+    (``[true, true, true, true, true, true, false, false]``, i.e. the
+    6 Beam flags padded with 2 trailing false values); following the worked
+    example.
     """
 
     ID: int  # Serial Number, required
@@ -862,7 +859,7 @@ class AdditionalImpactFactorItem(TypedDict, total=False):
     FACTOR: float  # Factor, required (FACT_TYPE="IMPACT_FACT"/"EFF_SPAN_LEN_USER")
     ELEMTYPE: str  # Element Type: "BEAM"/"TRUSS"/"PLATE", required if FACT_TYPE="EFF_SPAN_LEN_AUTO" (LANE_TYPE="LINE" only)
     PARTS: List[bool]  # Parts (Beam: [i,1/4,1/2,3/4,j] / Plate: [cent,i,j,k,l]), required if FACT_TYPE="EFF_SPAN_LEN_AUTO"
-    COMPONENTS: List[bool]  # Components (Beam: 6 flags / Truss: 2 flags / Plate: 8 flags), required if FACT_TYPE="EFF_SPAN_LEN_AUTO"
+    COMPONENTS: List[bool]  # Components (Beam: 6 flags / Truss: 2 flags / Plate: 8 flags per Parameters table; see docstring for the Beam worked-example discrepancy), required if FACT_TYPE="EFF_SPAN_LEN_AUTO"
 
 
 class AdditionalImpactFactorPayload(TypedDict, total=False):
@@ -877,7 +874,7 @@ class AdditionalImpactFactorPayload(TypedDict, total=False):
 class AdditionalImpactFactor(DbResource):
     ENDPOINT = "/db/IMPF"
     NAME = "Additional Impact Factor"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 27. /db/DYFG — Railway Dynamic Factor ------------------------------------
@@ -901,10 +898,10 @@ class RailwayDynamicFactorPayload(TypedDict, total=False):
 class RailwayDynamicFactor(DbResource):
     ENDPOINT = "/db/DYFG"
     NAME = "Railway Dynamic Factor"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 class RailwayDynamicFactorByElement(DbResource):
     ENDPOINT = "/db/DYNF"
     NAME = "Railway Dynamic Factor by Element"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY

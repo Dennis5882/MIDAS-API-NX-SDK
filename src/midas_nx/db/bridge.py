@@ -7,9 +7,7 @@ from __future__ import annotations
 
 from typing import List, TypedDict
 
-from .base import DbResource
-
-_CIVIL_ONLY = frozenset({"civil"})
+from .base import CIVIL_ONLY, DbResource
 
 
 # --- 1. /db/GSBG — Bridge Girder Diagrams ------------------------------------
@@ -39,7 +37,7 @@ class BridgeGirderDiagramPayload(TypedDict, total=False):
 class BridgeGirderDiagram(DbResource):
     ENDPOINT = "/db/GSBG"
     NAME = "Bridge Girder Diagrams"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 2. /db/GCMB — General Camber Control ------------------------------------
@@ -60,7 +58,7 @@ class GeneralCamberControlPayload(TypedDict, total=False):
 class GeneralCamberControl(DbResource):
     ENDPOINT = "/db/GCMB"
     NAME = "General Camber Control"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 3. /db/CAMB — FCM Camber Control -----------------------------------------
@@ -77,7 +75,7 @@ class FcmCamberControlPayload(TypedDict, total=False):
 class FcmCamberControl(DbResource):
     ENDPOINT = "/db/CAMB"
     NAME = "FCM Camber Control"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 4. /db/ULFC — Cable Control - Unknown Load Factor Constraints ----------
@@ -109,4 +107,4 @@ class UnknownLoadFactorConstraintPayload(TypedDict, total=False):
 class UnknownLoadFactorConstraint(DbResource):
     ENDPOINT = "/db/ULFC"
     NAME = "Cable Control - Unknown Load Factor Constraints"
-    PRODUCTS = _CIVIL_ONLY
+    PRODUCTS = CIVIL_ONLY
