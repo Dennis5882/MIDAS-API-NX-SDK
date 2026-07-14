@@ -3293,15 +3293,763 @@
       "module": "midas_nx.design.steel_kds"
     },
     {
-      "endpoint": "Design Code – RC KDS 41 20:2022",
-      "name": "69 endpoints (RC design code-check)",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCO",
+      "name": "콘크리트 설계 코드 옵션",
       "chapter_file": "26_Design_RC_KDS41202022.md",
       "products": [
         "gen",
         "civil"
       ],
-      "status": "planned",
-      "module": "midas_nx.design.rc_kds"
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.setup"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCTL",
+      "name": "프레임 정의",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.setup"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/LLRF",
+      "name": "활하중 저감계수",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.setup"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/LCTB",
+      "name": "비선형 하중케이스 하중기여",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.setup"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/SRDF",
+      "name": "강도감소계수",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.setup"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/EQCT",
+      "name": "지진 하중조합 타입",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.setup"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/ULCT",
+      "name": "지하 하중조합 타입",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.setup"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/SUEQ",
+      "name": "지진 스케일업 계수",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.setup"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/SDGN",
+      "name": "내진 설계 타입",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.setup"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/SCOL",
+      "name": "내진 기둥 타입",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.setup"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/MBTP",
+      "name": "부재 타입 수정",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.setup"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/MEMB",
+      "name": "부재 배정",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.setup"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/MATD",
+      "name": "콘크리트 재료 수정",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.setup"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/LENG",
+      "name": "비지지 길이(L, Lb)",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.setup"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/KFAC",
+      "name": "유효좌굴길이계수(K)",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.setup"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/CMFT",
+      "name": "등가모멘트 보정계수(Cm)",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.setup"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/FMAG",
+      "name": "모멘트 확대계수(B1/δb, B2/δs)",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.setup"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/MLLR",
+      "name": "활하중 저감계수 수정",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.setup"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/HCBM",
+      "name": "헌치보 배정",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.setup"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/MRFT",
+      "name": "모멘트 재분배 계수",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.rebar"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/TRFT",
+      "name": "비틀림 감소계수",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.rebar"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/MCMB",
+      "name": "보 모멘트 산정 방법",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.rebar"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/DFBA",
+      "name": "부재 배정된 보 설계력",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.rebar"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/PMDM",
+      "name": "P-M 곡선 산정 방법",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.rebar"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/WMAK",
+      "name": "벽체 마크 데이터 수정",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.rebar"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/BEMW",
+      "name": "벽체ID별 경계요소법",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.rebar"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/REXC",
+      "name": "철근 노출 조건",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.rebar"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/LMRR",
+      "name": "최대 철근비 제한",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.rebar"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCRM-BEAM",
+      "name": "보 부재별 철근 설계기준",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.rebar"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCRM-COLUMN",
+      "name": "기둥 부재별 철근 설계기준",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.rebar"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCRM-BRACE",
+      "name": "가새 부재별 철근 설계기준",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.rebar"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCRM-WALL",
+      "name": "벽체 부재별 철근 설계기준",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.rebar"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCRE",
+      "name": "철근 설계기준",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.rebar"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCREM",
+      "name": "접합부 보 철근 동일화",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.rebar"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/REBB",
+      "name": "보 철근 데이터 수정",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.rebar"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/REBC",
+      "name": "기둥 철근 데이터 수정",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.rebar"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/REBW",
+      "name": "벽체 철근 데이터 수정",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.rebar"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/REBR",
+      "name": "가새 철근 데이터 수정",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.rebar"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/BD-ANAL",
+      "name": "RC 보 설계 수행",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.design_forces"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/BD-TABLE",
+      "name": "RC 보 설계 테이블",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.design_forces"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/BD-REPORT",
+      "name": "RC 보 설계 리포트",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.design_forces"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/CD-ANAL",
+      "name": "RC 기둥 설계 수행",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.design_forces"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/CD-TABLE",
+      "name": "RC 기둥 설계 테이블",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.design_forces"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/CD-REPORT",
+      "name": "RC 기둥 설계 리포트",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.design_forces"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/BRD-ANAL",
+      "name": "RC 가새 설계 수행",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.design_forces"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/BRD-TABLE",
+      "name": "RC 가새 설계 테이블",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.design_forces"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/BRD-REPORT",
+      "name": "RC 가새 설계 리포트",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.design_forces"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/WD-ANAL",
+      "name": "RC 벽체 설계 수행",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.design_forces"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/WD-TABLE",
+      "name": "RC 벽체 설계 테이블",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.design_forces"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/WD-REPORT",
+      "name": "RC 벽체 설계 리포트",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.design_forces"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/HCD-ANAL",
+      "name": "RC 헌치보 설계 수행",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.design_forces"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/HCD-TABLE",
+      "name": "RC 헌치보 설계 테이블",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.design_forces"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/HCD-REPORT",
+      "name": "RC 헌치보 설계 리포트",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.design_forces"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/BC-ANAL",
+      "name": "RC 보 검토 수행",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.checks"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/BC-TABLE",
+      "name": "RC 보 검토 테이블",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.checks"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/BC-REPORT",
+      "name": "RC 보 검토 리포트",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.checks"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/CC-ANAL",
+      "name": "RC 기둥 검토 수행",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.checks"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/CC-TABLE",
+      "name": "RC 기둥 검토 테이블",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.checks"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/CC-REPORT",
+      "name": "RC 기둥 검토 리포트",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.checks"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/BRC-ANAL",
+      "name": "RC 가새 검토 수행",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.checks"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/BRC-TABLE",
+      "name": "RC 가새 검토 테이블",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.checks"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/BRC-REPORT",
+      "name": "RC 가새 검토 리포트",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.checks"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/WC-ANAL",
+      "name": "RC 벽체 검토 수행",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.checks"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/WC-TABLE",
+      "name": "RC 벽체 검토 테이블",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.checks"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/WC-REPORT",
+      "name": "RC 벽체 검토 리포트",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.checks"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/CDESIGN",
+      "name": "RC 콘크리트 종합 설계 결과",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.checks"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/TABLE",
+      "name": "기둥 설계력(Column Design Forces)",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.checks"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/TABLE",
+      "name": "가새 설계력(Brace Design Forces)",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.checks"
+    },
+    {
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/TABLE",
+      "name": "보 설계력(Beam Design Forces)",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.checks"
     },
     {
       "endpoint": "Design Code – SRC AIK-SRC2K",
