@@ -15,18 +15,12 @@ from __future__ import annotations
 from typing import List, TypedDict
 
 from .base import DbResource
+from ..post.base import NodeElemsSelector
 
-
-# --- Shared sub-shapes reused across the four rebar-data endpoints ---------
-
-
-class SubSectionElems(TypedDict, total=False):
-    """Shared KEYS/TO/STRUCTURE_GROUP_NAME "pick one" element-selector used
-    when CREATE_SUB_SECTION=true (REBB/REBC/REBR "ELEMS")."""
-
-    KEYS: List[int]  # Element ID array, optional
-    TO: str  # ID range, e.g. "1to160", optional
-    STRUCTURE_GROUP_NAME: str  # Structure Group Name, optional
+# Shared KEYS/TO/STRUCTURE_GROUP_NAME "pick one" element-selector used when
+# CREATE_SUB_SECTION=true (REBB/REBC/REBR "ELEMS") — identical shape to
+# post/base.py's NodeElemsSelector, reused instead of redeclared.
+SubSectionElems = NodeElemsSelector
 
 
 class HoopShearBarSpec(TypedDict, total=False):
@@ -425,10 +419,17 @@ class ConcreteFaceToCenterOfRebar(TypedDict, total=False):
 
 
 class WallRebarItem(TypedDict, total=False):
-    """ITEMS entry."""
+    """ITEMS entry.
+
+    SUB_WALL_ID is labeled both "read only" and "Required" by the manual's
+    own Parameters table when CREATE_SUB_WALL_ID=true — a self-contradiction
+    in the source; the worked Request/Response example sends it as real
+    client input (SUB_WALL_ID=1), so it is documented here as required,
+    matching the example rather than the "read only" label.
+    """
 
     CREATE_SUB_WALL_ID: bool  # default false, optional
-    SUB_WALL_ID: int  # Sub Wall ID, read-only, required if CREATE_SUB_WALL_ID=true
+    SUB_WALL_ID: int  # Sub Wall ID, "read only" per manual but sent as required input in the worked example, required if CREATE_SUB_WALL_ID=true
     STORY: StoryRange  # required if CREATE_SUB_WALL_ID=true
     VERTICAL_REBAR: RebarNameDist  # required
     HORIZONTAL_REBAR: RebarNameDist  # required

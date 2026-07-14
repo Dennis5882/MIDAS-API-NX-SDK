@@ -34,7 +34,16 @@ _BASE = "/DESIGN/STEEL/KDS-41-30-2022"
 
 
 class SteelDesignCodeOptionPayload(TypedDict, total=False):
-    """docs/manual/25_Design_Steel_KDS41302022.md #1 — DCO Specifications table."""
+    """docs/manual/25_Design_Steel_KDS41302022.md #1 — DCO Specifications table.
+
+    SEIS_SYS's "Buckling-Restrained Braced Frames" value is hyphenated per
+    this endpoint's own manual section (both its JSON Schema enum and
+    Parameters table); note that SLRS's FRAME_TYPE (#19,
+    SeismicLoadResistingSystemByMemberPayload) documents the same seismic
+    system WITHOUT the hyphen ("Buckling Restrained Braced Frames") — a
+    manual-internal spelling inconsistency between the two endpoints, not a
+    transcription error here. Use each endpoint's own spelling verbatim.
+    """
 
     DGNCODE: str  # Design Code, fixed "KDS 41 30 : 2022", required
     LAT_BRACE: bool  # All Beams/Girders are Laterally Braced, default false, optional
