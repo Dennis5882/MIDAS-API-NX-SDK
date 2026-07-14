@@ -2431,7 +2431,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.design"
     },
     {
@@ -2442,7 +2442,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.design"
     },
     {
@@ -2453,7 +2453,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.design"
     },
     {
@@ -2464,7 +2464,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.design"
     },
     {
@@ -2475,7 +2475,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.design"
     },
     {
@@ -2486,7 +2486,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.design"
     },
     {
@@ -2497,7 +2497,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.design"
     },
     {
@@ -2508,7 +2508,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.design"
     },
     {
@@ -2519,7 +2519,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.design"
     },
     {
@@ -2530,7 +2530,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.design"
     },
     {
@@ -2541,7 +2541,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.design"
     },
     {
@@ -2552,7 +2552,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.design"
     },
     {
@@ -2563,7 +2563,7 @@
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
       "module": "midas_nx.db.design"
     },
     {
@@ -2996,14 +2996,300 @@
       "module": "midas_nx.post.story"
     },
     {
-      "endpoint": "Design Code – STEEL KDS 41 30:2022",
-      "name": "27 endpoints (steel design code-check)",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/DCO",
+      "name": "Design Code Option",
       "chapter_file": "25_Design_Steel_KDS41302022.md",
       "products": [
         "gen",
         "civil"
       ],
-      "status": "planned",
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/DCTL",
+      "name": "Definition of Frame",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/LLRF",
+      "name": "Live Load Reduction Factor",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/LCTB",
+      "name": "Load Contribution for Nonlinear Load Case",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/SRDF",
+      "name": "Strength Reduction Factors",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/SERV",
+      "name": "Serviceability Parameters",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/EQCT",
+      "name": "Seismic Load Combination Type",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/ULCT",
+      "name": "Underground Load Combination Type",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/SUEQ",
+      "name": "Scale up Factor for Earthquake",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/CRCM",
+      "name": "Combined Ratio Calculation Method for Circular Section",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/HCBM",
+      "name": "Haunched Beam Assignment",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/LENG",
+      "name": "Unbraced Length",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/KFAC",
+      "name": "Effective Length Factor",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/LTSR",
+      "name": "Limiting Slenderness Ratio",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/CMFT",
+      "name": "Equivalent Moment Correction Factor",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/FMAG",
+      "name": "Moment Magnifier",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/CBFT",
+      "name": "Bending Coefficient",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/MBTP",
+      "name": "Modify Member Type",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/SLRS",
+      "name": "Seismic Load Resisting System by Member",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/MLLR",
+      "name": "Modify Live Load Reduction Factor",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/MEMB",
+      "name": "Member Assignment",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/SMODI",
+      "name": "Modify Steel Material",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/CODE-ANAL",
+      "name": "Steel Code Check Perform",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/CODE-TABLE",
+      "name": "Steel Code Check Table",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/CODE-REPORT",
+      "name": "Steel Code Check Report",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/DREULT",
+      "name": "Steel Design Result",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/TABLE",
+      "name": "Steel Member Design Forces",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
       "module": "midas_nx.design.steel_kds"
     },
     {

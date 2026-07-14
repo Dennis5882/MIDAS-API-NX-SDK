@@ -28,6 +28,11 @@ NO_DELETE_METHODS = frozenset({"POST", "GET", "PUT"})
 #: don't support POST (e.g. /db/THGC-M1, /db/THOO-M1) — only GET/PUT/DELETE.
 GET_PUT_DELETE_METHODS = frozenset({"GET", "PUT", "DELETE"})
 
+#: Shared METHODS override for derived/read-only-input design-code records
+#: that support neither POST nor PUT (e.g. ch24-27's LCTB "Load Contribution
+#: for Nonlinear Load Case" endpoints) — only GET/DELETE.
+GET_DELETE_METHODS = frozenset({"GET", "DELETE"})
+
 #: Shared PRODUCTS override for Civil-NX-only endpoints (e.g. /db/LCOM-CONC,
 #: the entire ch08/ch17 bridge/moving-load chapters) — import instead of
 #: redefining a local frozenset({"civil"}) per chapter.
