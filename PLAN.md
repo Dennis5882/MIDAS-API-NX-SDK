@@ -5,8 +5,8 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-07-14, at v0.5.0 (254/278 documented endpoints, Phase 4
-> complete — civil bridge specialization).
+> Last updated: 2026-07-15, at v0.6.0 (294/304 documented endpoints, Phase 5a
+> complete — design setup + steel design code).
 
 ---
 
@@ -40,13 +40,26 @@ midas_nx/
     │                    (country variants) · dynamic factors (civil-only)
     ├── bridge.py         ch 17  girder diagrams · camber control · cable
     │                    unknown-load-factor constraints (civil-only)
-    └── (planned)        ch 24-27  see §3
+    ├── design.py         ch 24  pre-design-calc input: RC/steel code select,
+    │                    rebar-check input, unbraced length, design member
+    │                    assignment, frame def, slenderness limits, rebar overrides
+    └── (planned)        ch 26-27  see §3
 ├── ope.py                ch 15  GUI/preprocessing operations (element divide,
 │                        auto-mesh, LCOM-* auto-generation, gust factor, ...)
 │                        — plain functions, one TypedDict argument each.
 ├── view.py               ch 16  model view control (selection, capture,
 │                        viewpoint, active target, display, result graphics)
 │                        — plain functions, one TypedDict argument each.
+├── design/               DESIGN/<STEEL|RC|SRC>/<code>/<ENDPOINT> — a
+│                        different namespace from /db/*; mixes DbResource-style
+│                        config/member-CRUD endpoints with plain POST-action
+│                        functions (design-execution/table/report/image) that
+│                        reuse post/base.py's NodeElemsSelector/TableUnit/
+│                        TableStyles.
+│   ├── base.py           (planned, if ch26/27 reuse warrants it — not yet needed)
+│   └── steel_kds.py       ch 25  Steel design code KDS 41 30:2022 setup,
+│                        per-member design parameters, material overrides,
+│                        design-execution/result-table/report/image (27/27)
 └── post/                 POST /post/* result extraction — plain functions,
     │                    wrapped in "Argument" (same convention as doc.py).
     ├── base.py           get_table() — shared /post/TABLE plumbing (one
@@ -79,7 +92,7 @@ mirroring the `db/*.py` payload-typing style but at the whole-body level.
 
 ---
 
-## 2. Current status (v0.5.0)
+## 2. Current status (v0.6.0)
 
 | Area | Chapters | Endpoints | State |
 |---|---|---|---|
@@ -92,25 +105,29 @@ mirroring the `db/*.py` payload-typing style but at the whole-body level.
 | **Phase 2 — analysis control + results out** | 12–14, 18–21, 23 | **48/48 rows** | ✅ done |
 | **Phase 3 — operations & view** | 15, 16 | **26/26** | ✅ done |
 | **Phase 4 — civil bridge specialization** | 08, 17 | **32/32** | ✅ done |
-| **Everything else** | 24–27 | **0/16 rows** | ⏳ not started |
-| **Total** | | **254/278 (91%)** | v0.5.0 on PyPI |
+| **Phase 5a — design setup + steel code** | 24, 25 | **40/40** | ✅ done |
+| **Everything else** | 26, 27 | **0/2 rows** | ⏳ not started |
+| **Total** | | **294/304 (97%)** | v0.6.0 on PyPI |
 
-> ⚠️ **The 278 undercounts real work.** Design-code chapters 25/26/27 are one
-> aggregate row each but hold **27 + 69 + 27 = 123 real endpoints**; the ch18–21
-> POST table chapters were also single aggregate rows before Phase 2 — now
-> broken out into 87 real table-type functions across `post/pre_process.py`,
-> `post/result_1.py`, and `post/story.py`. True remaining surface is closer to
-> **~270 endpoints**, concentrated in design code-checks (ch 25–27).
+> ⚠️ **The 304 still undercounts real work.** Design-code chapters 26/27 are
+> one aggregate row each but hold **69 + 27 = 96 real endpoints** (ch25's own
+> aggregate row was broken out into 27 real rows this phase, mirroring the
+> ch18–21 precedent from Phase 2). True remaining surface is closer to
+> **~104 endpoints**, entirely in ch26 (RC KDS 41 20:2022) and ch27 (SRC
+> AIK-SRC2K).
 
 Velocity reference: the 02–06 build added 76 endpoints in one pass; Phase 1
 (07/09/10/11) added another 47 in a second pass; Phase 2 (12–14, 18–21, 23)
 added 48 rows (~118 real functions/classes) in a third pass; Phase 3 (15, 16)
 added 26 endpoints (131 real functions/classes across ope.py + view.py) in a
 fourth pass; Phase 4 (08, 17) added 32 endpoints (90 real classes across
-moving_loads.py + bridge.py) in a fifth pass — all five
+moving_loads.py + bridge.py) in a fifth pass; Phase 5a (24, 25) added 40
+endpoints (122 real classes/functions across db/design.py + design/steel_kds.py)
+in a sixth pass — all six
 followed the same fixed transcribe→type→test→mark-coverage loop (see §5),
-with Phase 2's ch19-20/ch21, Phase 3's ch15/ch16, and Phase 4's ch08 each
-delegated to background agents following that same established pattern.
+with Phase 2's ch19-20/ch21, Phase 3's ch15/ch16, Phase 4's ch08, and Phase
+5a's ch24+ch25 (in parallel) each delegated to background agents following
+that same established pattern.
 
 ---
 
@@ -144,12 +161,26 @@ Configure the run and read results back — the payoff phase.
 - ch 08 Moving Loads (28/28, civil-only)
 - ch 17 Bridge diagrams/cable/camber (4/4, civil-only)
 
-### Phase 5 — Design code checks  ·  ~136 real endpoints ✦  ·  → v1.0.0
-The largest chunk; likely warrants its own sub-phasing per code.
-- ch 24 DB Design setup (13)
-- ch 25 Steel KDS 41 30:2022 (27 ✦)
-- ch 26 RC KDS 41 20:2022 (69 ✦)
-- ch 27 SRC AIK-SRC2K (27 ✦)
+### Phase 5 — Design code checks  ·  ~136 real endpoints ✦  ·  split by code
+The largest chunk — split into per-code sub-phases (confirmed necessary after
+measuring source density: ch26 alone is 13,363 manual lines / 69 endpoints,
+3x any chapter built so far), each its own release rather than one big bang.
+
+- **Phase 5a ✅ — Design setup + Steel code  ·  40/40 endpoints  ·  v0.6.0**
+  - ch 24 DB Design setup (13/13)
+  - ch 25 Steel KDS 41 30:2022 (27/27 ✦)
+- **Phase 5b — RC design code  ·  69 real endpoints ✦  ·  → v0.7.0**
+  - ch 26 RC KDS 41 20:2022 (69) — largest single chapter in the project
+    (13,363 manual lines); will itself need splitting across multiple
+    background-agent passes (settings block ~items 1-38, then the
+    BD/CD/BRD/WD/HCD/BC/CC/BRC × ANAL/TABLE/REPORT triplets ~items 39-69,
+    which compress well via shared TypedDicts + thin wrappers).
+- **Phase 5c — SRC design code  ·  27 real endpoints ✦  ·  → v0.8.0**
+  - ch 27 SRC AIK-SRC2K (27) — same DCO/DCTL/LLRF/... setup + check-triplet
+    structure as ch25/26; expect significant cross-chapter TypedDict/shape
+    reuse once ch26 lands.
+- v1.0.0 tags immediately once 5c lands (full documented surface covered) —
+  no separate v1.0.0-only work planned beyond the version bump itself.
 
 ### Cross-cutting / backlog (any time)
 - Resolve undocumented Hyper-S stubs (STYP-M1, MATL-M1, IMFM-M1, EPMT-M1,
@@ -168,8 +199,11 @@ The largest chunk; likely warrants its own sub-phasing per code.
 | v0.2.0 ✅ | Full analyzable model (Phase 1) | published |
 | v0.3.0 ✅ | Analysis control + result extraction (Phase 2) | published |
 | v0.4.0 ✅ | Operations & view (Phase 3) | published |
-| v0.5.0 | Civil bridge features (Phase 4) | ready to release |
-| v1.0.0 | Design code checks (Phase 5) | full documented surface covered |
+| v0.5.0 ✅ | Civil bridge features (Phase 4) | published |
+| v0.6.0 | Design setup + Steel code (Phase 5a) | ready to release |
+| v0.7.0 | RC design code (Phase 5b) | ch 26 usable |
+| v0.8.0 | SRC design code (Phase 5c) | ch 27 usable |
+| v1.0.0 | Design code checks complete | full documented surface covered |
 
 Each version ships when its phase's chapters are 100% (minus undocumented
 stubs) and green in CI. Release = bump `pyproject.toml` version, tag, publish
