@@ -161,7 +161,7 @@ The largest chunk; likely warrants its own sub-phasing per code.
 | v0.1.0 ✅ | Core DB modeling (ch 01–06) | published |
 | v0.2.0 ✅ | Full analyzable model (Phase 1) | published |
 | v0.3.0 ✅ | Analysis control + result extraction (Phase 2) | published |
-| v0.4.0 | Operations & view (Phase 3) | ready to release |
+| v0.4.0 ✅ | Operations & view (Phase 3) | published |
 | v0.5.0 | Civil bridge features (Phase 4) | moving loads usable |
 | v1.0.0 | Design code checks (Phase 5) | full documented surface covered |
 
