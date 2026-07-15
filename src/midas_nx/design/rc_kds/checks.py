@@ -17,6 +17,7 @@ from typing import Any, Dict, List, Optional, TypedDict
 
 from ...client import MidasClient, post_argument as _post
 from ...post.base import NodeElemsSelector, TableStyles, TableUnit
+from .design_forces import RcReportDetailPositions, RcWallDesignSelection
 
 _BASE = "/DESIGN/RC/KDS-41-20-2022"
 
@@ -60,15 +61,6 @@ class RcMemberCheckTableArgument(TypedDict, total=False):
     COMPONENTS: List[str]  # Result table components (member-type-specific; see manual HEAD table), optional
 
 
-class RcDetailPositions(TypedDict, total=False):
-    """*-REPORT's "DETAIL_POSITIONS" — only valid when
-    CURRENT_MODE_MEMB="Detail"."""
-
-    END_I: bool  # default true, optional
-    MID: bool  # default false, optional
-    END_J: bool  # default false, optional
-
-
 class RcMemberCheckReportArgument(TypedDict, total=False):
     """docs/manual/26_Design_RC_KDS41202022.md #56/#59/#62 — BC-REPORT/
     CC-REPORT/BRC-REPORT Argument (identical shape across beam/column/
@@ -81,7 +73,7 @@ class RcMemberCheckReportArgument(TypedDict, total=False):
     CURRENT_MODE_PROP: str  # PROP output mode: "Graphic"/"Summary" (no Detail), conditionally required if REPORT_TYPE="PROP"
     ELEMS: NodeElemsSelector  # Element No. Input, required if not using SECTIONS
     SECTIONS: List[int]  # Section No. Input, required if not using ELEMS
-    DETAIL_POSITIONS: RcDetailPositions  # Detail output positions, valid only when CURRENT_MODE_MEMB="Detail", optional
+    DETAIL_POSITIONS: RcReportDetailPositions  # Detail output positions, valid only when CURRENT_MODE_MEMB="Detail", optional
     EXPORT_PATH: str  # Directory path to save the report files, required
     OUTPUT_NAME: str  # Output file base name, required
 
@@ -206,21 +198,12 @@ def export_brace_check_report(
 
 
 # === Wall check triplet (items 63-65) — SELECTIONS-based (WALL_IDS+STORY, not element IDs) ===
-
-
-class WallIdsSelector(TypedDict, total=False):
-    """WC-ANAL/WC-TABLE/WC-REPORT's "SELECTIONS[].WALL_IDS" — use exactly
-    one of KEYS/TO (oneOf)."""
-
-    KEYS: List[int]  # explicit wall ID list, optional
-    TO: str  # wall ID range, e.g. "10to20", optional
-
-
-class WallCheckSelection(TypedDict, total=False):
-    """WC-ANAL/WC-TABLE/WC-REPORT's "SELECTIONS" array entry."""
-
-    WALL_IDS: WallIdsSelector  # Wall ID selection, optional
-    STORY: List[str]  # Story name list, optional
+#
+# WC-ANAL/WC-TABLE/WC-REPORT's "SELECTIONS[].WALL_IDS" (KEYS/TO — pick one)
+# and "SELECTIONS" array entry ({WALL_IDS, STORY}) are identical in shape to
+# WD-ANAL/WD-TABLE/WD-REPORT's own "SELECTIONS" (#48/#49/#50, design_forces.py)
+# — reused here as RcWallIdsSelector/RcWallDesignSelection rather than
+# redeclared.
 
 
 # --- 63. DESIGN/RC/KDS-41-20-2022/WC-ANAL — RC Wall Check Perform ----------
@@ -234,7 +217,7 @@ class PerformRcWallCheckArgument(TypedDict, total=False):
     checked.
     """
 
-    SELECTIONS: List[WallCheckSelection]  # Wall/story selection list; omit or empty for all walls/stories, optional
+    SELECTIONS: List[RcWallDesignSelection]  # Wall/story selection list; omit or empty for all walls/stories, optional
 
 
 def perform_wall_check(
@@ -252,7 +235,7 @@ class RcWallCheckTableArgument(TypedDict, total=False):
     """docs/manual/26_Design_RC_KDS41202022.md #64 — WC-TABLE Argument."""
 
     TABLE_TYPE: str  # Output unit: "WID+STORY"=wall ID+story/"WID"=wall ID, required
-    SELECTIONS: List[WallCheckSelection]  # Wall/story selection list; omit or empty for all walls/stories, optional
+    SELECTIONS: List[RcWallDesignSelection]  # Wall/story selection list; omit or empty for all walls/stories, optional
     PRI_SORT: int  # WID+STORY sort: Story=0/WID=1, default 1, optional
     PRI_SORT_WID: int  # WID sort: WallMark=0/WID=1, default 1, optional
     RESULT: int  # Filter by check status: All=0/OK=1/NG=2, default 0, optional
@@ -285,7 +268,7 @@ class RcWallCheckReportArgument(TypedDict, total=False):
     REPORT_TYPE: str  # Output unit: "WID+STORY"/"WID", default "WID+STORY", required
     CURRENT_MODE_WID_STORY: str  # WID+STORY output mode: "Graphic"/"Detail"/"Summary"/"PMCurve", conditionally required if REPORT_TYPE="WID+STORY"
     CURRENT_MODE_WID: str  # WID output mode: "Graphic"/"Summary"/"PMCurve" (no Detail), conditionally required if REPORT_TYPE="WID"
-    SELECTIONS: List[WallCheckSelection]  # Wall/story selection list; omit or empty for all walls/stories, optional
+    SELECTIONS: List[RcWallDesignSelection]  # Wall/story selection list; omit or empty for all walls/stories, optional
     EXPORT_PATH: str  # Directory path to save the report files, required
     OUTPUT_NAME: str  # Output file base name, required
 

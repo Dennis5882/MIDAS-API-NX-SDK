@@ -122,8 +122,12 @@ def get_beam_design_table(
 # --- 41. DESIGN/RC/KDS-41-20-2022/BD-REPORT — RC Beam Design Report --------
 
 
-class RcBeamDetailPositions(TypedDict, total=False):
-    """BD-REPORT's "DETAIL_POSITIONS" — output positions for Detail mode."""
+class RcReportDetailPositions(TypedDict, total=False):
+    """"DETAIL_POSITIONS" — output positions for Detail mode, {END_I, MID,
+    END_J}. Shared across this chapter's *-REPORT endpoints wherever Detail
+    mode is offered: BD-REPORT (#41, this file) and BC-REPORT/CC-REPORT/
+    BRC-REPORT (#56/#59/#62, see checks.py, which imports this class rather
+    than redeclaring it)."""
 
     END_I: bool  # Include end-I position, default true, optional
     MID: bool  # Include mid-span position, default false, optional
@@ -143,7 +147,7 @@ class RcBeamDesignReportArgument(TypedDict, total=False):
     CURRENT_MODE_PROP: str  # Output mode for REPORT_TYPE="PROP": "Graphic"/"Summary", conditionally required (PROP)
     ELEMS: NodeElemsSelector  # Element No. Input, required if not using SECTIONS (oneOf)
     SECTIONS: List[int]  # Section No. Input, required if not using ELEMS (oneOf)
-    DETAIL_POSITIONS: RcBeamDetailPositions  # Output positions when CURRENT_MODE_MEMB="Detail", optional
+    DETAIL_POSITIONS: RcReportDetailPositions  # Output positions when CURRENT_MODE_MEMB="Detail", optional
     EXPORT_PATH: str  # Directory path to save the report files, required
     OUTPUT_NAME: str  # Output file base name (multi-element runs prefix index+element no.), required
 
@@ -234,14 +238,18 @@ def export_brace_design_report(
 
 class RcWallIdsSelector(TypedDict, total=False):
     """Wall's "WALL_IDS" — unlike post/base.py's NodeElemsSelector, this has
-    only KEYS/TO (no STRUCTURE_GROUP_NAME option), per #48/#49/#50's schemas."""
+    only KEYS/TO (no STRUCTURE_GROUP_NAME option), per #48/#49/#50's schemas.
+    Identical shape to WC-ANAL/WC-TABLE/WC-REPORT's own "WALL_IDS"
+    (#63/#64/#65, see checks.py, which imports this class rather than
+    redeclaring it)."""
 
     KEYS: List[int]  # Wall IDs specified individually, e.g. [1, 2, 3]
     TO: str  # Wall ID range, e.g. "10to20"
 
 
 class RcWallDesignSelection(TypedDict, total=False):
-    """One entry of "SELECTIONS" — a Wall ID set paired with target stories."""
+    """One entry of "SELECTIONS" — a Wall ID set paired with target stories.
+    Identical shape to WC-*'s own "SELECTIONS" entry (see checks.py)."""
 
     WALL_IDS: RcWallIdsSelector  # Wall ID Input (KEYS or TO), required
     STORY: List[str]  # Target story names, e.g. ["B1F", "1F"], required
