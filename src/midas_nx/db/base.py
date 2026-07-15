@@ -33,6 +33,11 @@ GET_PUT_DELETE_METHODS = frozenset({"GET", "PUT", "DELETE"})
 #: for Nonlinear Load Case" endpoints) — only GET/DELETE.
 GET_DELETE_METHODS = frozenset({"GET", "DELETE"})
 
+#: Shared METHODS override for write-only/no-read design-code records that
+#: don't support GET (e.g. ch27's DSRC "SRC Design Code" endpoint) — only
+#: PUT/DELETE.
+PUT_DELETE_METHODS = frozenset({"PUT", "DELETE"})
+
 #: Shared PRODUCTS override for Civil-NX-only endpoints (e.g. /db/LCOM-CONC,
 #: the entire ch08/ch17 bridge/moving-load chapters) — import instead of
 #: redefining a local frozenset({"civil"}) per chapter.

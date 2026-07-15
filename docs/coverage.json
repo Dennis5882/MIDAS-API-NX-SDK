@@ -4052,15 +4052,301 @@
       "module": "midas_nx.design.rc_kds.checks"
     },
     {
-      "endpoint": "Design Code – SRC AIK-SRC2K",
-      "name": "27 endpoints (SRC design code-check)",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/DSRC",
+      "name": "SRC Design Code",
       "chapter_file": "27_Design_SRC_AIKSRC2K.md",
       "products": [
         "gen",
         "civil"
       ],
-      "status": "planned",
-      "module": "midas_nx.design.src_aik"
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/DCO",
+      "name": "Design Code Option",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/DCTL",
+      "name": "Definition of Frame",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/LLRF",
+      "name": "Live Load Reduction Factor",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/LCTB",
+      "name": "Load Contribution for Nonlinear Load Case",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/LENG",
+      "name": "Unbraced Length (L, Lb)",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/KFAC",
+      "name": "Effective Length Factor (K)",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/LTSR",
+      "name": "Limiting Slenderness Ratio",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/CMFT",
+      "name": "Equivalent Moment Correction Factor (Cm)",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/FMAG",
+      "name": "Moment Magnifier (B1/δb, B2/δs)",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/MLLR",
+      "name": "Modify Live Load Reduction Factor",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/SUEQ",
+      "name": "Scale up Factor for Earthquake",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/MBTP",
+      "name": "Modify Member Type",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/EQCT",
+      "name": "Seismic Load Combination Type",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/BC-ANAL",
+      "name": "SRC Beam Check Perform",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/BC-TABLE",
+      "name": "SRC Beam Check Table",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/BC-REPORT",
+      "name": "SRC Beam Check Report",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/CC-ANAL",
+      "name": "SRC Column Check Perform",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/CC-TABLE",
+      "name": "SRC Column Check Table",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/CC-REPORT",
+      "name": "SRC Column Check Report",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/OCHECK",
+      "name": "SRC Optimal Design",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/TABLE",
+      "name": "SRC Beam Design Forces",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/TABLE",
+      "name": "SRC Column Design Forces",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/MATD",
+      "name": "SRC Modify Material",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/MCRD",
+      "name": "SRC Column Section Data",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/MEMB",
+      "name": "Member Assignment",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
+    },
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/MRBD",
+      "name": "SRC Beam Section Data",
+      "chapter_file": "27_Design_SRC_AIKSRC2K.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.src_aiksrc2k"
     }
   ]
 }

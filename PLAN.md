@@ -5,8 +5,9 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-07-15, at v0.7.0 (363/372 documented endpoints, Phase 5b
-> complete — RC design code KDS 41 20:2022).
+> Last updated: 2026-07-15, at v0.8.0 (390/398 documented endpoints, Phase 5c
+> complete — SRC design code AIK-SRC2K). Full documented surface covered;
+> v1.0.0 is next (version bump only, no remaining chapter work).
 
 ---
 
@@ -40,10 +41,9 @@ midas_nx/
     │                    (country variants) · dynamic factors (civil-only)
     ├── bridge.py         ch 17  girder diagrams · camber control · cable
     │                    unknown-load-factor constraints (civil-only)
-    ├── design.py         ch 24  pre-design-calc input: RC/steel code select,
-    │                    rebar-check input, unbraced length, design member
-    │                    assignment, frame def, slenderness limits, rebar overrides
-    └── (planned)        ch 27  see §3
+    └── design.py         ch 24  pre-design-calc input: RC/steel code select,
+                         rebar-check input, unbraced length, design member
+                         assignment, frame def, slenderness limits, rebar overrides
 ├── ope.py                ch 15  GUI/preprocessing operations (element divide,
 │                        auto-mesh, LCOM-* auto-generation, gust factor, ...)
 │                        — plain functions, one TypedDict argument each.
@@ -56,28 +56,31 @@ midas_nx/
 │                        functions (design-execution/table/report/image) that
 │                        reuse post/base.py's NodeElemsSelector/TableUnit/
 │                        TableStyles.
-│   ├── base.py           (planned, if ch27 reuse warrants it — not yet needed;
-│                        ch26 turned out too different from ch25 field-for-field
-│                        to justify one, per-chapter local TypedDicts instead)
 │   ├── steel_kds.py       ch 25  Steel design code KDS 41 30:2022 setup,
 │   │                    per-member design parameters, material overrides,
 │   │                    design-execution/result-table/report/image (27/27)
-│   └── rc_kds/            ch 26  RC design code KDS 41 20:2022 (69/69 ✦✦,
-│       │                largest chapter in the project — split into 4 files,
-│       │                mirrors db/properties/'s subpackage-per-oversized-
-│       │                chapter precedent):
-│       ├── setup.py       design code/frame/load-combination setup, seismic
-│       │                params, per-member design params (19)
-│       ├── rebar.py       moment/torsion/rebar-ratio params, wall/rebar-
-│       │                design-criteria, beam/column/wall/brace rebar
-│       │                overrides (19)
-│       ├── design_forces.py  design-execution/table/report per member type:
-│       │                beam/column/brace/wall/haunched-beam (15)
-│       └── checks.py      code-check/table/report per member type, plus
-│                        comprehensive design result and column/brace/beam
-│                        design-forces tables — the latter 3 share one real
-│                        HTTP endpoint (TABLE) selected by Argument.TABLE_TYPE,
-│                        mirroring post/design.py's shared-helper pattern (16)
+│   ├── rc_kds/            ch 26  RC design code KDS 41 20:2022 (69/69 ✦✦,
+│   │   │                largest chapter in the project — split into 4 files,
+│   │   │                mirrors db/properties/'s subpackage-per-oversized-
+│   │   │                chapter precedent):
+│   │   ├── setup.py       design code/frame/load-combination setup, seismic
+│   │   │                params, per-member design params (19)
+│   │   ├── rebar.py       moment/torsion/rebar-ratio params, wall/rebar-
+│   │   │                design-criteria, beam/column/wall/brace rebar
+│   │   │                overrides (19)
+│   │   ├── design_forces.py  design-execution/table/report per member type:
+│   │   │                beam/column/brace/wall/haunched-beam (15)
+│   │   └── checks.py      code-check/table/report per member type, plus
+│   │                    comprehensive design result and column/brace/beam
+│   │                    design-forces tables — the latter 3 share one real
+│   │                    HTTP endpoint (TABLE) selected by Argument.TABLE_TYPE,
+│   │                    mirroring post/design.py's shared-helper pattern (16)
+│   └── src_aiksrc2k.py    ch 27  SRC design code AIK-SRC2K setup, per-member
+│                        design parameters, check-execution/result-table/
+│                        report, optimal design, material/section overrides
+│                        (27/27, single self-contained file — no cross-chapter
+│                        TypedDict reuse with steel_kds.py/rc_kds/*, per this
+│                        subtree's established convention)
 └── post/                 POST /post/* result extraction — plain functions,
     │                    wrapped in "Argument" (same convention as doc.py).
     ├── base.py           get_table() — shared /post/TABLE plumbing (one
@@ -110,7 +113,7 @@ mirroring the `db/*.py` payload-typing style but at the whole-body level.
 
 ---
 
-## 2. Current status (v0.7.0)
+## 2. Current status (v0.8.0)
 
 | Area | Chapters | Endpoints | State |
 |---|---|---|---|
@@ -125,14 +128,13 @@ mirroring the `db/*.py` payload-typing style but at the whole-body level.
 | **Phase 4 — civil bridge specialization** | 08, 17 | **32/32** | ✅ done |
 | **Phase 5a — design setup + steel code** | 24, 25 | **40/40** | ✅ done |
 | **Phase 5b — RC design code** | 26 | **69/69** | ✅ done |
-| **Everything else** | 27 | **0/1 row** | ⏳ not started |
-| **Total** | | **363/372 (98%)** | v0.7.0 on PyPI |
+| **Phase 5c — SRC design code** | 27 | **27/27** | ✅ done |
+| **Total** | | **390/398 (98%)** | v0.8.0 on PyPI |
 
-> ⚠️ **The 372 still undercounts real work by a little.** Design-code chapter
-> 27 is one aggregate row but holds **27 real endpoints** (ch26's own
-> aggregate row was broken out into 69 real rows this phase, mirroring the
-> ch18–21/ch25 precedent). True remaining surface is **27 endpoints**, entirely
-> in ch27 (SRC AIK-SRC2K).
+> The remaining 8 rows are undocumented Hyper-S stubs (STYP-M1, MATL-M1,
+> IMFM-M1, EPMT-M1, IEHG-*-M1) with no manual spec to transcribe from — see
+> §3's cross-cutting backlog. Every documented endpoint across all 27
+> chapters is now implemented; v1.0.0 is a version-bump-only release.
 
 Velocity reference: the 02–06 build added 76 endpoints in one pass; Phase 1
 (07/09/10/11) added another 47 in a second pass; Phase 2 (12–14, 18–21, 23)
@@ -142,12 +144,16 @@ fourth pass; Phase 4 (08, 17) added 32 endpoints (90 real classes across
 moving_loads.py + bridge.py) in a fifth pass; Phase 5a (24, 25) added 40
 endpoints (122 real classes/functions across db/design.py + design/steel_kds.py)
 in a sixth pass; Phase 5b (26) added 69 endpoints (173 real classes/functions
-across design/rc_kds/'s 4 files) in a seventh pass — all seven
-followed the same fixed transcribe→type→test→mark-coverage loop (see §5),
-with Phase 2's ch19-20/ch21, Phase 3's ch15/ch16, Phase 4's ch08, Phase 5a's
-ch24+ch25 (in parallel), and Phase 5b's ch26 (split 4 ways in parallel — the
-first time a single chapter itself needed splitting across multiple agents)
-each delegated to background agents following that same established pattern.
+across design/rc_kds/'s 4 files) in a seventh pass; Phase 5c (27) added 27
+endpoints (~68 real classes/functions across design/src_aiksrc2k.py) in an
+eighth and final pass — all eight followed the same fixed
+transcribe→type→test→mark-coverage loop (see §5), with Phase 2's ch19-20/ch21,
+Phase 3's ch15/ch16, Phase 4's ch08, Phase 5a's ch24+ch25 (in parallel), Phase
+5b's ch26 (split 4 ways in parallel — the first time a single chapter itself
+needed splitting across multiple agents), and Phase 5c's ch27 (small enough,
+at 7,148 manual lines, to fit back into a single background-agent pass like
+ch25) each delegated to background agents following that same established
+pattern.
 
 ---
 
@@ -199,12 +205,18 @@ measuring source density: ch26 alone is 13,363 manual lines / 69 endpoints,
     field sets differ enough per-endpoint (even for same-named endpoints
     like DCO/MBTP/MLLR/HCBM) that local-per-chapter shapes stayed the right
     call; `design/base.py` remains unbuilt.
-- **Phase 5c — SRC design code  ·  27 real endpoints ✦  ·  → v0.8.0**
+- **Phase 5c ✅ — SRC design code  ·  27/27 endpoints ✦  ·  v0.8.0**
   - ch 27 SRC AIK-SRC2K (27) — same DCO/DCTL/LLRF/... setup + check-triplet
-    structure as ch25/26, but small enough (measure before splitting) to
-    likely fit in one or two background-agent passes rather than ch26's four.
-- v1.0.0 tags immediately once 5c lands (full documented surface covered) —
-  no separate v1.0.0-only work planned beyond the version bump itself.
+    structure as ch25/26; at 7,148 manual lines it was close in size to
+    ch25 (6,199 lines/27 endpoints), so it fit in a single background-agent
+    pass rather than ch26's four-way split. Kept fully self-contained (no
+    cross-chapter TypedDict reuse with steel_kds.py/rc_kds/*), matching
+    Phase 5b's finding that same-named endpoints (DCTL/MBTP/...) still
+    differ enough field-for-field across codes that local shapes are the
+    right call.
+- v1.0.0 next — full documented surface now covered (390/398, remaining 8
+  rows are undocumented Hyper-S stubs); version-bump-only release, no
+  further chapter work planned.
 
 ### Cross-cutting / backlog (any time)
 - Resolve undocumented Hyper-S stubs (STYP-M1, MATL-M1, IMFM-M1, EPMT-M1,
