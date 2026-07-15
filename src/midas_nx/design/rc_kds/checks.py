@@ -86,7 +86,17 @@ def perform_beam_check(
 ) -> dict:
     """docs/manual/26_Design_RC_KDS41202022.md #54 — BC-ANAL — RC Beam Check
     Perform. Runs code-checking on RC beam members that already have rebar
-    assigned. Response: ``{"message": "success"}``."""
+    assigned. Response: ``{"message": "success"}``.
+
+    ⚠️ Live-tested: the sibling ``perform_column_check`` (CC-ANAL) was
+    confirmed to hang the Gen NX desktop app's internal "Design Thread"
+    (stuck at "Converting Design Results... 0%", Stop Execution
+    unresponsive, required a forced process kill) — see
+    docs/live_verification_notes.md. This function shares the same
+    "perform check" architecture and was not independently tested; treat
+    it as carrying the same unconfirmed-but-plausible hang risk until
+    proven otherwise.
+    """
     return _post(f"{_BASE}/BC-ANAL", argument, client)
 
 
@@ -125,7 +135,18 @@ def perform_column_check(
     """docs/manual/26_Design_RC_KDS41202022.md #57 — CC-ANAL — RC Column
     Check Perform. Runs P-M interaction/shear code-checking on RC column
     members that already have rebar assigned. Response: ``{"message":
-    "success"}``."""
+    "success"}``.
+
+    ⚠️ Live-tested and CONFIRMED to hang: this call reproducibly hung the
+    Gen NX desktop app's internal "Design Thread" (stuck at "Converting
+    Design Results... 0%", Stop Execution unresponsive, required a forced
+    process kill via Task Manager) — reproduced twice, once from a fresh
+    minimal model. Two clean, correctly-shaped ``{"error": ...}`` responses
+    were also observed for other invalid states, so the request shape
+    itself is not the problem — this looks like a genuine Gen NX
+    application defect. See docs/live_verification_notes.md for the full
+    reproduction steps before calling this against a live session.
+    """
     return _post(f"{_BASE}/CC-ANAL", argument, client)
 
 
@@ -164,7 +185,13 @@ def perform_brace_check(
     """docs/manual/26_Design_RC_KDS41202022.md #60 — BRC-ANAL — RC Brace
     Check Perform. Runs P-M interaction/shear code-checking on RC brace
     members that already have rebar assigned. Response: ``{"message":
-    "success"}``."""
+    "success"}``.
+
+    ⚠️ Live-tested: the sibling ``perform_column_check`` (CC-ANAL) was
+    confirmed to hang the Gen NX desktop app's internal "Design Thread" —
+    see docs/live_verification_notes.md. Not independently tested; treat
+    as carrying the same risk.
+    """
     return _post(f"{_BASE}/BRC-ANAL", argument, client)
 
 
@@ -224,7 +251,13 @@ def perform_wall_check(
     argument: PerformRcWallCheckArgument, client: Optional[MidasClient] = None
 ) -> dict:
     """docs/manual/26_Design_RC_KDS41202022.md #63 — WC-ANAL — RC Wall Check
-    Perform. Response: ``{"message": "success"}``."""
+    Perform. Response: ``{"message": "success"}``.
+
+    ⚠️ Live-tested: the sibling ``perform_column_check`` (CC-ANAL) was
+    confirmed to hang the Gen NX desktop app's internal "Design Thread" —
+    see docs/live_verification_notes.md. Not independently tested; treat
+    as carrying the same risk.
+    """
     return _post(f"{_BASE}/WC-ANAL", argument, client)
 
 

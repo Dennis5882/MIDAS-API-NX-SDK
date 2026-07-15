@@ -371,7 +371,14 @@ def perform_src_beam_check(
     """docs/manual/27_Design_SRC_AIKSRC2K.md #15 — BC-ANAL — SRC Beam Check
     Perform. Executes the SRC beam design/check calculation; results are
     stored on the model and later retrieved via BC-TABLE/BC-REPORT.
-    Response: ``{"message": "success"}``."""
+    Response: ``{"message": "success"}``.
+
+    ⚠️ Live-tested elsewhere: the RC equivalent
+    (``design.rc_kds.checks.perform_column_check``, CC-ANAL) was confirmed
+    to hang the Gen NX desktop app's internal "Design Thread" — see
+    docs/live_verification_notes.md. Not independently tested; treat as
+    carrying the same risk.
+    """
     return _post(f"{_BASE}/BC-ANAL", argument, client)
 
 
@@ -437,7 +444,15 @@ def perform_src_column_check(
     argument: SrcMemberCheckPerformArgument, client: Optional[MidasClient] = None
 ) -> dict:
     """docs/manual/27_Design_SRC_AIKSRC2K.md #18 — CC-ANAL — SRC Column
-    Check Perform. Response: ``{"message": "success"}``."""
+    Check Perform. Response: ``{"message": "success"}``.
+
+    ⚠️ Live-tested elsewhere: the RC equivalent
+    (``design.rc_kds.checks.perform_column_check``, CC-ANAL) was confirmed
+    to hang the Gen NX desktop app's internal "Design Thread" — see
+    docs/live_verification_notes.md. Not independently tested; treat as
+    carrying the same risk (same endpoint code, different design-code
+    namespace).
+    """
     return _post(f"{_BASE}/CC-ANAL", argument, client)
 
 
@@ -562,7 +577,15 @@ def perform_src_optimal_design(
     """docs/manual/27_Design_SRC_AIKSRC2K.md #21 — OCHECK — SRC Optimal
     Design. Response: ``{"ODSR_RUN_RESPONSE": {"FORCE": ..., "DIST": ...,
     "HEAD": ["No", "Name", "SteelSize", "Astl", "COM", "Axial", "Ben-y",
-    "Ben-z", "Shear"], "DATA": [[...], ...]}}``."""
+    "Ben-z", "Shear"], "DATA": [[...], ...]}}``.
+
+    ⚠️ Live-tested elsewhere: ``design.rc_kds.checks.perform_column_check``
+    (CC-ANAL) was confirmed to hang the Gen NX desktop app's internal
+    "Design Thread" — see docs/live_verification_notes.md. This is an
+    iterative re-analysis/optimization action (potentially longer-running
+    than a plain code check), not independently tested; treat as carrying
+    at least the same risk.
+    """
     return _post(f"{_BASE}/OCHECK", argument, client)
 
 

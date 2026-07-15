@@ -518,7 +518,17 @@ def perform_steel_code_check(
 ) -> dict:
     """docs/manual/25_Design_Steel_KDS41302022.md #23 — CODE-ANAL — Steel Code
     Check Perform. Executes the design calculation; response is
-    ``{"message": "success"}`` on success."""
+    ``{"message": "success"}`` on success.
+
+    ⚠️ Live-tested elsewhere: the RC equivalent
+    (``design.rc_kds.checks.perform_column_check``, CC-ANAL) was confirmed
+    to hang the Gen NX desktop app's internal "Design Thread" (stuck at
+    "Converting Design Results... 0%", required a forced process kill) —
+    see docs/live_verification_notes.md. This function was not
+    independently tested; treat it as carrying the same
+    unconfirmed-but-plausible hang risk given the shared "perform check"
+    architecture.
+    """
     return _post(f"{_BASE}/CODE-ANAL", argument, client)
 
 

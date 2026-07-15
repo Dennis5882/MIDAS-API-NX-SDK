@@ -182,7 +182,7 @@ This confirms the full chain end to end: SDK request shape → real Gen NX
 solve → SDK response parsing, for both the `/db/*` write side and the
 `/post/TABLE` read side.
 
-## ⚠️ Reproduced Gen NX application crash — RC column code-check execution
+## ⚠️ CONFIRMED — `CC-ANAL` (RC column code-check perform) hangs Gen NX and requires a forced process kill
 
 While extending the same Gen session above to verify design-code check
 *execution* (as opposed to just config-singleton writes), the following
@@ -213,25 +213,70 @@ restart):
    Gen NX desktop application itself had stopped responding and needed a
    full restart.
 
-**Root cause is unknown** — could be an actual defect in this Gen NX
-build's KDS 41 20:2022 column-check solver when given a minimal/edge-case
-model (single element, single load combination, freshly-assigned rebar and
-member-type on the same session as 10+ prior config writes), a resource
-issue specific to this session after the earlier heavy read/write smoke
-testing, or something unrelated to this SDK's request shape entirely (the
-request body was a plain `{"Argument": {"PERFORM_TYPE": "ALL"}}` — nothing
-unusual). **Not something to guess at further without reproducing it
-independently** (fresh Gen NX process, fresh minimal model, same 7-step
-sequence). If it reproduces cleanly, worth reporting to MIDASIT with this
-exact sequence — an Open API call should not be able to hang/crash the
-desktop client this way regardless of what the underlying design check
-finds.
+### Reproduction #2 — confirmed, with visual evidence
+
+To rule out "messy session state" as the cause, the entire sequence was
+redone from a **fresh `doc.new_project()`**, touching only RC design (no
+`steel_kds`/`src_aiksrc2k` namespaces at all this time):
+
+1. Fresh minimal model (1 material, 1 section, 2 nodes, 1 element, 1
+   support, 1 static load case `DL`, self-weight) + `doc.analyze()` — all
+   clean.
+2. `ModifyMemberType` → `COLUMN`, `ModifyColumnRebarData` (same rebar
+   payload as before), `doc.analyze()` again — all clean.
+3. `CC-ANAL` before any load combination existed — failed cleanly and
+   fast with `{"error": {"message": "failed:LoadCombination"}}`. **Did
+   not hang.** This suggested the first hang might have been session-state
+   related.
+4. Manually written `db.load_combinations.LoadCombinationGeneral` combo
+   — `CC-ANAL` retried — failed cleanly and fast again with the same
+   `"failed:LoadCombination"` message (the manually-entered `LCOM-GEN`
+   entry apparently isn't recognized as a valid design combination by the
+   RC check module — a separate, milder finding, see below).
+5. Used `ope.generate_load_combination_concrete({"OPTION": "ADD",
+   "DGNCODE": "KDS 41 20 : 2022"})` instead — this **is** the right way to
+   produce design-code-recognized combinations: it auto-generated
+   `cLCB1` (`1.4(D)`, `ACTIVE: "STRENGTH"`) and `cLCB2`
+   (`SERV:(D)`, `ACTIVE: "SERVICE"`) in `/db/LCOM-CONC`.
+6. `CC-ANAL` retried a third time, now with a real, code-recognized
+   design combination in place — **hung again**, this time with a 40s
+   explicit client timeout.
+7. The user checked the Gen NX window directly and found a **"Stop
+   Design Thread" dialog, stuck at "Converting Design Results... 0%"**
+   with a "Stop Execution" button. Clicking Stop Execution **did nothing**
+   — the dialog stayed frozen. The application had to be force-killed via
+   Task Manager; there was no graceful recovery path.
+
+**Conclusion**: this is a real, reproducible Gen NX application defect,
+not session-state flakiness and not an SDK issue. `CC-ANAL` (RC column
+code-check "perform") appears to spawn an internal "Design Thread" that
+can deadlock during its "Converting Design Results" phase, and the
+deadlock is unrecoverable from the UI (Stop Execution is on the same
+stuck thread/message loop). The Open API call blocks synchronously
+waiting for that thread, so from the SDK's perspective it just looks like
+a network read timeout with no way to distinguish "still computing" from
+"permanently stuck" short of an arbitrarily long timeout.
+
+**Do not call `design.rc_kds.checks.perform_column_check` (`CC-ANAL`)
+against a live session without an escape plan** (expect to force-kill Gen
+NX). Given the shared "Design Thread" architecture across every other
+`perform_*_check`/`*-ANAL` function in this SDK (`perform_beam_check`,
+`perform_brace_check`, `perform_wall_check` in the same file;
+`perform_steel_code_check` in `steel_kds.py`;
+`perform_src_beam_check`/`perform_src_column_check` in
+`src_aiksrc2k.py`; `perform_optimal_design`/`OCHECK` variants), **treat
+the entire "perform design check" family as carrying the same
+unconfirmed-but-plausible hang risk** until each is independently tested.
+This session did not attempt any of the others after this finding.
 
 **Practical takeaway for this SDK**: nothing to fix in `midas-nx` itself —
-the request shape was correct per the manual and the two prior clean
-`{"error": ...}` responses show the server *can* validate and reject bad
-state gracefully. This looks like a Gen NX application-side robustness
-issue under this specific sequence, not an SDK contract bug.
+every request shape sent was correct per the manual (confirmed by the
+clean, correctly-shaped `{"error": ...}` responses on the calls that
+didn't hang), and the SDK has no way to add a client-side guard against a
+server-side thread deadlock. This is a Gen NX application defect worth
+reporting to MIDASIT directly, with this file's reproduction steps.
+Consider adding a runtime warning to the `perform_*_check` docstrings
+pointing future callers at this file before they hit it unprepared.
 
 ## Caveat — read before acting on this file
 
