@@ -182,6 +182,57 @@ This confirms the full chain end to end: SDK request shape → real Gen NX
 solve → SDK response parsing, for both the `/db/*` write side and the
 `/post/TABLE` read side.
 
+## ⚠️ Reproduced Gen NX application crash — RC column code-check execution
+
+While extending the same Gen session above to verify design-code check
+*execution* (as opposed to just config-singleton writes), the following
+sequence **crashed/hung the Gen NX desktop application itself** (not just
+an API error — the process stopped responding and required a manual
+restart):
+
+1. `design.rc_kds.setup.ModifyMemberType.create({1: {"TYPE": "COLUMN"}})` —
+   succeeded.
+2. `design.rc_kds.rebar.ModifyColumnRebarData.create({1: {"ITEMS": [...]}})`
+   keyed by section number 1 (main bar D22×8, end/center hoop bars D10) —
+   succeeded.
+3. First `perform_column_check({"PERFORM_TYPE": "ALL"})` (`CC-ANAL`) —
+   failed cleanly with `{"error": {"message": " Please perform
+   analysis."}}` (expected — design parameters changed after the last
+   solve, invalidating results).
+4. Re-ran `doc.analyze()` — succeeded.
+5. Retried `CC-ANAL` — failed cleanly with `{"error": {"message":
+   "failed:LoadCombination"}}` (also expected — no load combination
+   existed yet, only a raw load case).
+6. Added `db.load_combinations.LoadCombinationGeneral.create({1: {"NAME":
+   "COMB1", "ACTIVE": "ACTIVE", "iTYPE": 0, "vCOMB": [{"ANAL": "ST",
+   "LCNAME": "DL", "FACTOR": 1.2}]}})` — succeeded.
+7. Retried `CC-ANAL` a third time — **this call never returned**. Timed
+   out client-side at both 30s (default) and 120s (explicit
+   `MidasClient(timeout=120)`) with `ReadTimeoutError`/`ConnectionError`
+   — no HTTP response at all, not even a slow one. The user confirmed the
+   Gen NX desktop application itself had stopped responding and needed a
+   full restart.
+
+**Root cause is unknown** — could be an actual defect in this Gen NX
+build's KDS 41 20:2022 column-check solver when given a minimal/edge-case
+model (single element, single load combination, freshly-assigned rebar and
+member-type on the same session as 10+ prior config writes), a resource
+issue specific to this session after the earlier heavy read/write smoke
+testing, or something unrelated to this SDK's request shape entirely (the
+request body was a plain `{"Argument": {"PERFORM_TYPE": "ALL"}}` — nothing
+unusual). **Not something to guess at further without reproducing it
+independently** (fresh Gen NX process, fresh minimal model, same 7-step
+sequence). If it reproduces cleanly, worth reporting to MIDASIT with this
+exact sequence — an Open API call should not be able to hang/crash the
+desktop client this way regardless of what the underlying design check
+finds.
+
+**Practical takeaway for this SDK**: nothing to fix in `midas-nx` itself —
+the request shape was correct per the manual and the two prior clean
+`{"error": ...}` responses show the server *can* validate and reject bad
+state gracefully. This looks like a Gen NX application-side robustness
+issue under this specific sequence, not an SDK contract bug.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
