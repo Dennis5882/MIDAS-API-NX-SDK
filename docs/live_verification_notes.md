@@ -118,6 +118,70 @@ from the product tested against.
   observed there, but the "already exists" behavior itself is a genuine
   cross-code-namespace side effect worth knowing about).
 
+## Extended verification: Civil-only chapters + full analyze→results round-trip
+
+Two more sessions were run after the initial pass above.
+
+### Civil write test — ch08 moving loads / ch17 bridge (previously untested)
+
+Built a minimal Civil model (30 m single-span concrete beam: 1 material, 1
+section, 2 nodes, 1 element, 1 fixed support), then:
+
+- `MovingLoadCode.update` (`/db/MVCD`, `CODE="AASHTO LRFD"`): succeeded.
+- `TrafficLineLanes.create` (`/db/LLAN`) **first attempt failed** with a real
+  server-side semantic validation error, not a schema rejection:
+  `"[Error] Line Lane Data (Name:Lane1) contains errors.(Item:Centrifugal
+  Force ( 0.0 < Value < 1.0))"`. The manual documents `LANE_ITEMS.CENT_F`
+  as merely "optional (AASHTO LRFD only)" — this session's evidence is that
+  once `AASHTO LRFD` is the selected moving-load code, `CENT_F` is
+  effectively **required** (must be a value in the open interval (0, 1);
+  the SDK's implicit default of omitting the field, which the server reads
+  as 0.0, is rejected). Retried with `CENT_F: 0.1` — succeeded, and `GET`
+  read back every field including server-filled defaults
+  (`GROUP_NAME: ""`, `SKEW_START/END: 0`, `WHEEL_SPACE: 0`,
+  `OPT_AUTO_LANE: False`, `ALLOW_WIDTH: 0`, `FACT: 0`, `SPAN_START: False`,
+  `ECCEN_VERT_LOAD: 0`) — full round-trip confirmed once the semantically
+  valid payload was sent. Not an SDK bug (the field genuinely is optional
+  per the manual's schema, and the SDK correctly makes it optional in the
+  `TypedDict`), but worth knowing if you hit the same error live: pass a
+  nonzero `CENT_F` when `MVCD.CODE` is `"AASHTO LRFD"`.
+- `BridgeGirderDiagram.create` (`/db/GSBG`) with a placeholder
+  `BODY_ELEM_GRUP_K: 1` (no structure group with that ID actually existed):
+  succeeded — the server did not validate the group reference exists at
+  write time.
+
+### Gen full analyze → results round-trip (post/* chapters, previously only mocked)
+
+Added a static load case (`STLD`, `NAME="DL"`, `TYPE="D"`) and self-weight
+(`BODF`, `FV=[0,0,-1]`) to the Gen cantilever-column model from the first
+pass, then:
+
+1. `doc.analyze()` (`/doc/ANAL`) — first call (no loads yet) correctly
+   failed with `"[Error] Load information has not been entered for
+   Analysis."`; after adding the load case, succeeded
+   (`"MIDAS GEN NX command complete"`).
+2. `post.result_1.get_reaction_table/get_displacement_table/
+   get_beam_force_table` — first call used `load_case_names=["DL"]` and
+   got back `{"message": ""}` for all three (looked like "no data", but
+   was actually a caller mistake). `get_table`'s own docstring in
+   `post/base.py` already documents the fix: load case names need a type
+   suffix, e.g. `"DL(ST)"`. Retried with `["DL(ST)"]` — all three returned
+   full documented `{FORCE, DIST, HEAD, DATA}` tables.
+3. **The numbers are physically correct**, not just structurally valid:
+   - Reaction at node 1 (base): `FZ = 28.243152` — matches hand-calc
+     self-weight of a 0.6×0.6×3.2 m C24 concrete column (`0.36 m² × 3.2 m
+     × ~24.5 kN/m³ ≈ 28.2–28.8 kN`).
+   - Displacement at node 2 (free top): `DZ = -0.000005` m — negligible
+     axial shortening under self-weight, correct sign (downward).
+   - Beam force: axial force `-28.24 kN` at the I-end (base), decreasing
+     linearly to `0.00` at the J-end (free top) across the 4 reported
+     stations — exactly the expected self-weight axial-force diagram for a
+     vertical cantilever.
+
+This confirms the full chain end to end: SDK request shape → real Gen NX
+solve → SDK response parsing, for both the `/db/*` write side and the
+`/post/TABLE` read side.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
