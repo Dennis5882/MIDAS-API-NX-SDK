@@ -444,6 +444,132 @@ modules) or is somehow specific to the KDS check module's own
 implementation. Don't generalize "every `perform_*_check` call hangs" past
 KDS 41 20:2022 without independent testing of another code.
 
+### `perform_wall_check` (WC-ANAL) — tested, does NOT reproduce the stall
+
+Using a sixth session (a separate, wall-heavy Korean production model, KDS
+41 20:2022 native, with pre-existing real wall-check results already present
+from prior GUI use — `WID`/`Story`/`WallMark` rows like `101`/`B1`/`RW1`
+with real `CHK_STR: "OK"` data), `perform_wall_check` was tested for the
+first time:
+
+1. Single wall/story (`SELECTIONS: [{"WALL_IDS": {"KEYS": [101]}, "STORY":
+   ["B1"]}]`) — returned `{"message": "success"}` in **3.5s**. No stall.
+2. All walls/stories (`SELECTIONS` omitted) — returned `{"message":
+   "success"}` in **5.9s**. No stall.
+
+**`WC-ANAL` does not reproduce the `CC-ANAL` stall**, at least on this
+model, in either single-target or full-scope form. This is useful negative
+evidence: whatever's stuck in the column-check "Design Thread" progress
+dialog is not a blanket property of every `perform_*_check` function in
+this file — it may be specific to `CC-ANAL` (or to the member-based
+ELEMS/SECTIONS-targeted check family: beam/column/brace, vs. the
+WID+STORY-targeted wall check, which may run through different internal
+code entirely). Don't assume `perform_wall_check` carries the same risk as
+`perform_column_check` going forward.
+
+### `perform_beam_check` (BC-ANAL) — CONFIRMED to hang too, on two separate models, with a new crash variant
+
+Same wall-heavy-model session, real beam rebar data already present
+(`ModifyBeamRebarData` had entries for elements `11`, `12`, `13`). Walked
+the same precondition sequence as the `CC-ANAL` reproductions:
+
+1. `BC-ANAL` on element 11 before member type was registered in this
+   design-code namespace — failed cleanly and fast: `{"error": {"message":
+   "failed:Rebar"}}` (`ModifyMemberType.get()` was empty for this
+   namespace even though rebar data existed — same "each precondition
+   fails independently and cleanly" pattern as the column reproductions).
+2. `ModifyMemberType.update({11: {"TYPE": "BEAM"}})` — succeeded.
+3. `BC-ANAL` retried — failed cleanly: `{"error": {"message": " Please
+   perform analysis."}}` (member-type change invalidated prior results,
+   same as CC-ANAL reproduction #1/#4).
+4. `doc.analyze()` via the API — **timed out after 90s** with no response.
+   This one was just a genuinely long-running solve on this large model
+   (4000+ nodes), not the progress-dialog bug — the user confirmed Gen
+   NX's own progress UI was actively solving, not stuck. See the
+   timeout-guidance note below. After the user re-ran analysis from the
+   GUI and confirmed it completed, `BC-ANAL` was retried:
+5. `BC-ANAL` retried a third time on element 11 — **hung again**, 60s
+   client timeout, no HTTP response. This time the user reported the Gen
+   NX app itself looked normal (no visible stuck dialog) — but
+   `get_beam_check_table` (`BC-TABLE`) for that *same* element also then
+   hung repeatedly (multiple retries, up to 30s each), while `BC-TABLE`
+   for a different, nonexistent element (12 — actually absent from this
+   model, confirmed by the clean fast `"Element 12 does not exist."`
+   response) returned instantly. Basic connectivity (`GET /db/NODE`) also
+   remained fully responsive throughout. This points to something
+   specifically locked/stuck server-side scoped to *that element's* beam
+   check state, even without a visibly stuck dialog — consistent with the
+   "stuck signal, not a real deadlock" diagnosis, just manifesting without
+   an obvious UI symptom this time.
+
+A **second, independent model** was then opened to rule out anything
+specific to the wall-heavy model: a real production Taiwan RC frame
+("rahmen") structure, 315 nodes / 564 elements, active design code
+`TWN-USD112` (not KDS — so, like reproduction #3, the KDS module's own
+`MBTP`/`REBB` tables were empty and had to be populated directly, which
+the API allowed with no validation against the model's "actual" active
+code, consistent with prior findings):
+
+1. `ModifyMemberType.update({1: {"TYPE": "BEAM"}})` (element 1, a real
+   `TYPE: "BEAM"` element, section 11) — succeeded.
+2. `ModifyBeamRebarData.update({11: {"ITEMS": [...]}})` (keyed by section
+   number 11, matching element 1's `SECT`) — succeeded.
+3. `doc.analyze()` — this model is much smaller; completed in **16.4s**,
+   and a subsequent `get_reaction_table(load_case_names=["DL(ST)"])` call
+   confirmed real, queryable results immediately (no large-model delay
+   this time).
+4. `ope.generate_load_combination_concrete({"OPTION": "ADD", "DGNCODE":
+   "KDS 41 20 : 2022"})` — succeeded, generated a full set of KDS strength
+   combinations (`cLCB1`..`cLCB7`+) from this model's real load cases
+   (`DL`, `LL`, `EXN`, `EXP`, `EYN`, `EYP`, `EZ`, `WX`, `WY`).
+5. `BC-ANAL` on element 1, all preconditions now satisfied on this fresh
+   model — **hung again**, 60s client timeout, no HTTP response.
+6. This time the user reported the exact text of the crash dialog for the
+   first time — *"[Error] Failed to disconnect the work session due to an
+   unidentified error. Since you have not logged out, other PCs may have
+   limited access to the license. In order to properly terminate the
+   program, try to re-execute the program, press 'New Project' and then
+   close the program."* — and the application crashed/closed. **The user
+   confirmed this is the same popup that appeared during the earlier
+   forced-kill `CC-ANAL` reproductions (#1-#3)** — it just hadn't been
+   transcribed verbatim before (previously logged generically as "an
+   additional error popup"). **The user's stated rule: whenever this
+   specific license-work-session-disconnect popup appears, the program
+   always dies — there is no recovering from it.** This is a different,
+   worse outcome than the clean "Stop Execution" recovery seen in
+   reproductions #4/#5 (where this popup did not appear at all).
+
+**This confirms `BC-ANAL` shares `CC-ANAL`'s hang, on two independent
+models (one forced-KDS-setup wall-heavy Korean model, one forced-KDS-setup
+Taiwan RC frame model), both under the same precondition pattern
+(member-type + rebar assigned in the KDS namespace, a KDS-recognized load
+combination present, confirmed-queryable analysis results).** Combined
+with the earlier `CC-ANAL` reproductions, the observed outcomes now form
+two consistent buckets rather than random variation: (a) the "Converting
+Design Results" dialog gets stuck but recovers cleanly via Stop Execution,
+no popup, no crash (`CC-ANAL` reproductions #4/#5) — the check likely did
+finish and its results persist (confirmed via `CC-TABLE`); or (b) the
+**"Failed to disconnect the work session"** license-error dialog appears
+and the program crashes outright, unrecoverable (`CC-ANAL` reproductions 1
+through 3, and this session's Taiwan-model `BC-ANAL` reproduction). This
+raises the severity of the underlying MIDASIT bug report beyond "a stuck
+progress bar" — outcome (b) is a licensing-visible crash that, per the
+dialog's own text, may affect *other PCs'* access to the license until the
+process is fully terminated.
+
+### Timeout guidance for `doc.analyze()` on large models — a separate, milder finding
+
+While waiting on step 4 above, it became clear a plain client-side read
+timeout on `doc.analyze()` is not by itself evidence of a hang — on a
+4000+ node model, analysis can legitimately take longer than
+`MidasClient`'s default 30s timeout (observed: still running past 90s,
+with the user confirming Gen NX's own progress UI showed it actively
+solving, not stuck). **Don't conflate this with the `CC-ANAL` stuck-dialog
+bug** — that one is confirmed via the message log to have a specific
+"finished but dialog didn't update" signature; a slow `doc.analyze()` on a
+big model is just... slow. Pass a larger `MidasClient(timeout=...)` for
+big-model analysis calls rather than treating a timeout as failure.
+
 **Practical takeaway for this SDK**: nothing to fix in `midas-nx` itself —
 every request shape sent was correct per the manual (confirmed by the
 clean, correctly-shaped `{"error": ...}` responses on every call that

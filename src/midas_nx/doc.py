@@ -73,6 +73,16 @@ def analyze(analysis_type: Optional[str] = None, client: Optional[MidasClient] =
 
     analysis_type (Optional): e.g. "PUSHOVER" for a pushover run; omit for a
     general analysis run.
+
+    ⚠️ Live-tested: on a large model (4000+ nodes), this call legitimately
+    took longer than a 90s client timeout to solve — a
+    ``MidasConnectionError``/read-timeout here does not necessarily mean the
+    request failed, it can mean the solve is still running server-side.
+    ``MidasClient(timeout=...)`` defaults to 30s; pass a larger value for
+    big models rather than treating a timeout as a hard failure. See
+    docs/live_verification_notes.md for the full context (this is a
+    separate, milder finding from the confirmed `CC-ANAL` stuck-dialog
+    bug — plain long-running analysis, not a stall).
     """
     argument = {"TYPE": analysis_type} if analysis_type else {}
     return _post("/doc/ANAL", argument, client)

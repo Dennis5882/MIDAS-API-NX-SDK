@@ -88,14 +88,27 @@ def perform_beam_check(
     Perform. Runs code-checking on RC beam members that already have rebar
     assigned. Response: ``{"message": "success"}``.
 
-    ⚠️ Live-tested: the sibling ``perform_column_check`` (CC-ANAL) was
-    confirmed to hang the Gen NX desktop app's internal "Design Thread"
-    (stuck at "Converting Design Results... 0%", Stop Execution
-    unresponsive, required a forced process kill) — see
-    docs/live_verification_notes.md. This function shares the same
-    "perform check" architecture and was not independently tested; treat
-    it as carrying the same unconfirmed-but-plausible hang risk until
-    proven otherwise.
+    ⚠️ Live-tested and CONFIRMED to share ``perform_column_check``'s
+    (CC-ANAL) stall — reproduced on two independent real models (a
+    forced-KDS-setup wall-heavy Korean model, and a separate
+    forced-KDS-setup Taiwan RC frame model), once the full precondition
+    chain (member type + rebar + a KDS-recognized load combination +
+    confirmed-queryable analysis results) was satisfied. See
+    docs/live_verification_notes.md for both reproductions. Outcomes
+    varied: one attempt left the app UI looking normal but silently locked
+    just that element's check-related endpoints (`get_beam_check_table`
+    for the same element also hung repeatedly, while other elements
+    responded instantly); the other crashed the app outright with a
+    **"Failed to disconnect the work session"** license error dialog — per
+    the user, this exact popup also appeared during the earlier `CC-ANAL`
+    forced-kill reproductions, and whenever it appears the program always
+    dies (unrecoverable, unlike the clean Stop-Execution recovery seen in
+    other `CC-ANAL` reproductions). **Unlike `CC-ANAL`, the `CC-TABLE`
+    readback workaround is NOT confirmed here** — in one of the two `BC-ANAL`
+    reproductions, `get_beam_check_table` for the *same* stuck element also
+    hung repeatedly afterward (while the same call for an unrelated element
+    returned instantly), so don't assume a subsequent table read will
+    reliably succeed the way it did for the column check.
     """
     return _post(f"{_BASE}/BC-ANAL", argument, client)
 
@@ -279,10 +292,17 @@ def perform_wall_check(
     """docs/manual/26_Design_RC_KDS41202022.md #63 — WC-ANAL — RC Wall Check
     Perform. Response: ``{"message": "success"}``.
 
-    ⚠️ Live-tested: the sibling ``perform_column_check`` (CC-ANAL) was
-    confirmed to hang the Gen NX desktop app's internal "Design Thread" —
-    see docs/live_verification_notes.md. Not independently tested; treat
-    as carrying the same risk.
+    ⚠️ Live-tested and CONFIRMED to NOT reproduce the sibling
+    ``perform_column_check`` (CC-ANAL) stall: on a real, wall-heavy
+    production model (KDS 41 20:2022 native, real pre-existing wall-check
+    data), both a single-wall/story call and a full all-walls call
+    (``SELECTIONS`` omitted) returned ``{"message": "success"}`` cleanly
+    in under 6 seconds — no stuck "Converting Design Results" dialog. This
+    is useful negative evidence that CC-ANAL's stall isn't a blanket
+    property of every "perform check" function in this file; it may be
+    specific to CC-ANAL or to the ELEMS/SECTIONS-targeted member-check
+    family (beam/column/brace) rather than this WID+STORY-targeted wall
+    check. See docs/live_verification_notes.md for the full writeup.
     """
     return _post(f"{_BASE}/WC-ANAL", argument, client)
 
