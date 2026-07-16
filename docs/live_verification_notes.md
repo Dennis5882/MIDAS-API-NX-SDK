@@ -557,6 +557,39 @@ progress bar" — outcome (b) is a licensing-visible crash that, per the
 dialog's own text, may affect *other PCs'* access to the license until the
 process is fully terminated.
 
+### This exact crash signature has a prior precedent — it isn't new to v2.1
+
+A separate, earlier round of live MIDAS Gen NX Open API testing (same
+account, a different local project, pre-v2.1 build) independently hit the
+**identical** `"Failed to disconnect the work session..."` crash text —
+from a completely different trigger: calling `doc/new` rapidly and
+repeatedly (back-to-back x10, concurrent x5/x15). That round's writeup
+retested the `doc/new` trigger specifically against the v2.1 build and
+found it **no longer reproducible**, and closed it out as resolved,
+concluding the original crash was "limited to a previous build or a
+specific sequence." **This session's `CC-ANAL`/`BC-ANAL` reproductions
+show that conclusion was premature** — the same crash signature, verbatim,
+resurfaces under a different trigger (a design-check "perform" call) in
+the same v2.1 build. This is valuable context for framing a MIDASIT bug
+report: not a one-off, but a recurring session-teardown defect that keeps
+resurfacing under different trigger conditions across builds and across
+independent testing sessions — worth reporting as a *class* of bug rather
+than a single reproducible steps list tied to one endpoint.
+
+**Useful diagnostic tool for next time**: that same earlier round
+identified `GET https://moa-engineers.midasit.com:443/mapikey/verify`
+(note: base URL with the product path — `/gen` or `/civil` — removed) as a
+live-verified health-check endpoint, undocumented in the vendored manual,
+that reliably distinguishes "AWS relay server alive, Gen NX process alive"
+(`status: "connected"`) from "AWS relay alive, Gen NX process died"
+(other endpoints then return HTTP 404 with `"Client Disconnected"` /
+`"client does not exist"`, while `/mapikey/verify` itself still resolves
+against the relay). This wasn't used during today's reproductions — relied
+on the user's visual confirmation of the Gen NX window instead — but would
+give a definitive, scriptable way to confirm process death vs. a merely
+slow/busy session in future reproductions, without waiting on manual
+screen-watching.
+
 ### Timeout guidance for `doc.analyze()` on large models — a separate, milder finding
 
 While waiting on step 4 above, it became clear a plain client-side read
