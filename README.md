@@ -11,10 +11,27 @@ documented at [Dennis5882/MIDAS-API](https://github.com/Dennis5882/MIDAS-API). S
 
 This is an unofficial, community project — not affiliated with or endorsed by MIDASIT.
 
+## Use cases
+
+- **Automation** — bulk-create or bulk-edit hundreds of section/material/load entries in one
+  script instead of clicking through the GUI one member at a time.
+- **Data integration** — pull structural data straight from Excel/pandas or a database into a
+  live MIDAS model (or the reverse: pull model/result data out into your existing analysis
+  pipeline).
+- **Design optimization** — drive an optimization loop with Python's numeric/scientific stack
+  (NumPy, SciPy, ...) against real analysis results, iterating section sizes or member layouts
+  automatically.
+
 ## Install
 
 ```bash
-pip install -e ".[dev]"   # from a checkout, for development
+pip install midas-nx
+```
+
+To contribute or develop against a checkout:
+
+```bash
+pip install -e ".[dev]"
 ```
 
 ## Quick start
