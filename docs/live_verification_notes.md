@@ -182,7 +182,7 @@ This confirms the full chain end to end: SDK request shape → real Gen NX
 solve → SDK response parsing, for both the `/db/*` write side and the
 `/post/TABLE` read side.
 
-## ⚠️ CONFIRMED — `CC-ANAL` (RC column code-check perform) hangs Gen NX and requires a forced process kill
+## ⚠️ CONFIRMED — `CC-ANAL` (RC column code-check perform) reproducibly stalls Gen NX at "Converting Design Results 0%" (often requires a forced process kill)
 
 While extending the same Gen session above to verify design-code check
 *execution* (as opposed to just config-singleton writes), the following
@@ -313,17 +313,96 @@ the entire "perform design check" family as carrying the same likely hang
 risk once both analogous preconditions are met** until each is
 independently tested. This session did not attempt any of the others.
 
+### Reproduction #4 — cleanest case: a natively KDS-configured real model, no forced setup
+
+A fourth session opened a separate, unrelated pre-existing Gen model whose
+RC design code was **already** `"KDS 41 20 : 2022"` natively (not forced
+onto it like reproductions #2/#3) — `rc_kds.setup.ConcreteDesignCodeOption`
+and `rc_kds.rebar.ModifyColumnRebarData` already had real data (4 sections)
+before any of this session's calls. This is the most realistic scenario
+yet: a normal user, on a normal KDS-native model, checking one column.
+
+1. `CC-ANAL` on a real column element (`PERFORM_TYPE: "ELEMS"`, single
+   element) — failed cleanly: `{"error": {"message": " Please perform
+   analysis."}}`.
+2. `doc.analyze()` via the API returned `"MIDAS GEN NX command complete"`,
+   but a subsequent `get_reaction_table()` call still reported
+   `"[empty] Cannot generate table data as there is no analysis result."`
+   — i.e. the API's "complete" acknowledgment did not reliably mean
+   results were actually queryable yet on this larger model (4044 nodes).
+   Re-running the analysis **from the Gen NX GUI directly** resolved this
+   (reaction table then returned real data) — worth noting as a separate,
+   milder finding: don't assume `doc.analyze()`'s response means results
+   are immediately queryable for large models; confirm with a cheap
+   results call before proceeding, or retry.
+3. `CC-ANAL` retried on the same element — the HTTP call hung again (40s
+   timeout, no response), and the same "Stop Design Thread — Converting
+   Design Results... 0%" dialog appeared. **This time the user also
+   checked Gen NX's internal message/log window while it was stuck**, and
+   it showed the entire check had already finished:
+
+   ```text
+   *** Start Code Checking by KDS 41 20 : 2022.
+       End preparing Design Informations.
+       End Design/Checking of Member.
+       Creating design result file...
+       End creating design result file.
+       End converting Design Results.
+   *** End Code Checking by KDS 41 20 : 2022
+   ```
+
+   Every step, including "End converting Design Results" and the final
+   "End Code Checking" line, had already logged as complete — while the
+   progress dialog was still frozen at 0% on that same step. The user
+   clicked Stop Execution; the dialog closed and the app recovered
+   cleanly, no forced kill needed this time (unlike reproductions #1–#3,
+   where an additional error popup appeared and the app had to be
+   force-killed).
+
+**Revised diagnosis: this is very likely a stuck progress-dialog / stale
+completion-signal bug, not a genuine backend computation deadlock.** The
+underlying KDS code check appears to actually finish — the message log
+says so explicitly, end to end — but something (the progress dialog's
+own close/refresh logic, and/or whatever signal the Open API layer itself
+waits on to consider the request "done" and return an HTTP response)
+never fires. That would also explain why the API call kept timing out
+even in this 4th case: it's plausibly blocked on the *same* stuck signal
+as the dialog, not on the design check itself. Reproductions #1–#3 didn't
+have this log checked at the time, so it's unconfirmed whether they were
+the same underlying issue or a genuinely different (deadlocked, not just
+signal-stuck) failure — worth checking the message log first thing if
+this is reproduced again.
+
+**Four for four on the stall itself; consequences vary.** Every attempt
+where the check had a real target element with real rebar data, a real
+recognized load combination, and real analysis results triggered the same
+"Converting Design Results... 0%" stall — including this cleanest case
+with no artificial setup at all and, per the log, a design check that had
+actually completed. That part is no longer a corner case; it's the
+expected outcome of calling `CC-ANAL` for its actual intended purpose in
+this Gen NX build. What differs is the outcome: an additional error popup
+and a required forced kill 3 of 4 times, vs. a clean recovery via Stop
+Execution (with the check apparently having already finished
+successfully) the 4th time. **Testing was stopped after this
+reproduction** — no further value in repeating it, and most attempts
+still cost a forced restart or at least a stuck dialog.
+
 **Practical takeaway for this SDK**: nothing to fix in `midas-nx` itself —
 every request shape sent was correct per the manual (confirmed by the
 clean, correctly-shaped `{"error": ...}` responses on every call that
-didn't hang, across three separate reproductions on two different
+didn't hang, across four separate reproductions on three different
 models), and the SDK has no way to add a client-side guard against a
-server-side thread deadlock. This is a confirmed, reproducible Gen NX
-application defect worth reporting to MIDASIT directly, with this file's
-exact precondition pattern (member-type + rebar assigned, plus a
-KDS-recognized design load combination present) — reproduced 3 for 3
-times that both conditions were met, on both a trivial synthetic model
-and an unrelated production-scale model.
+server-side dialog/signal bug it can't see. This is a confirmed,
+reproducible Gen NX application defect worth reporting to MIDASIT
+directly — most usefully framed as "the KDS column-check progress dialog
+gets stuck at 'Converting Design Results 0%' even after the message log
+shows the check completed, and the Open API call that triggered it never
+receives a response either," together with this file's exact precondition
+pattern (member-type + rebar assigned, plus a KDS-recognized design load
+combination present, plus confirmed-queryable analysis results) —
+reproduced 4 for 4 times that all conditions were met, across a trivial
+synthetic model, a production-scale model (twice), and a natively
+KDS-configured production model.
 
 ## Caveat — read before acting on this file
 

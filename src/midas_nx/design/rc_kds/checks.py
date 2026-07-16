@@ -137,14 +137,23 @@ def perform_column_check(
     members that already have rebar assigned. Response: ``{"message":
     "success"}``.
 
-    ⚠️ Live-tested and CONFIRMED to hang: this call reproducibly hung the
-    Gen NX desktop app's internal "Design Thread" (stuck at "Converting
-    Design Results... 0%", Stop Execution unresponsive, required a forced
-    process kill via Task Manager) — reproduced twice, once from a fresh
-    minimal model. Two clean, correctly-shaped ``{"error": ...}`` responses
-    were also observed for other invalid states, so the request shape
-    itself is not the problem — this looks like a genuine Gen NX
-    application defect. See docs/live_verification_notes.md for the full
+    ⚠️ Live-tested and CONFIRMED to stall: this call reproducibly got the
+    Gen NX desktop app's progress dialog stuck at "Converting Design
+    Results... 0%", 4 times out of 4 whenever the target had real rebar
+    data, a real recognized design load combination, and confirmed
+    analysis results — including on natively KDS-configured production
+    models, not just synthetic setups. On one occasion the app's own
+    message log showed the check (including "End converting Design
+    Results" and the final "End Code Checking" line) had actually
+    finished while the dialog stayed frozen at 0% — this looks like a
+    stuck progress-dialog/completion-signal bug rather than the design
+    check itself deadlocking, and the Open API call plausibly blocks on
+    that same stuck signal. Consequences varied: an error popup plus a
+    required forced process kill 3 of 4 times, a clean recovery via "Stop
+    Execution" the other time. Every call that didn't hit this
+    precondition combination instead returned a clean, correctly-shaped
+    ``{"error": ...}`` response, so the request shape itself is not the
+    problem. See docs/live_verification_notes.md for the full
     reproduction steps before calling this against a live session.
     """
     return _post(f"{_BASE}/CC-ANAL", argument, client)
