@@ -20,6 +20,22 @@ This is an unofficial, community project — not affiliated with or endorsed by 
 > 참고하세요. 실제 Gen NX/Civil NX 세션으로 검증한 내용(주의할 점, 알려진 이슈)은
 > [docs/live_verification_notes.md](./docs/live_verification_notes.md)에 정리되어
 > 있습니다.
+>
+> **繁體中文使用者指南**：`midas-nx` 是將 MIDAS Civil NX 與 MIDAS Gen NX 的 Open API
+> 整合為單一 Python 套件的非官方社群 SDK。與 MIDASIT 官方的 `midas-civil`/`midas-gen`
+> 套件依產品分開、且僅涵蓋部分已文件化 API 不同，`midas-nx` 同時涵蓋兩種產品，並根據
+> [MIDAS-API 手冊儲存庫](https://github.com/Dennis5882/MIDAS-API) 中記載的規格實作。
+> 安裝方式為 `pip install midas-nx`，使用範例請參考下方「Quick start」章節。實際在
+> Gen NX / Civil NX 連線環境中驗證過的內容（注意事項、已知問題）整理於
+> [docs/live_verification_notes.md](./docs/live_verification_notes.md)。
+>
+> **简体中文使用指南**：`midas-nx` 是将 MIDAS Civil NX 与 MIDAS Gen NX 的 Open API
+> 整合为单一 Python 包的非官方社区 SDK。与 MIDASIT 官方的 `midas-civil`/`midas-gen`
+> 包按产品拆分、且仅覆盖部分已文档化 API 不同，`midas-nx` 同时支持两种产品，并根据
+> [MIDAS-API 手册仓库](https://github.com/Dennis5882/MIDAS-API) 中记载的规格实现。
+> 安装方式为 `pip install midas-nx`，使用示例请参考下方"Quick start"章节。在实际
+> Gen NX / Civil NX 连接环境中验证过的内容（注意事项、已知问题）整理于
+> [docs/live_verification_notes.md](./docs/live_verification_notes.md)。
 
 ## Use cases
 
