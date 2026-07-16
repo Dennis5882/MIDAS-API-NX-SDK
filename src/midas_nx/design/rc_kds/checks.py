@@ -153,8 +153,13 @@ def perform_column_check(
     Execution" the other time. Every call that didn't hit this
     precondition combination instead returned a clean, correctly-shaped
     ``{"error": ...}`` response, so the request shape itself is not the
-    problem. See docs/live_verification_notes.md for the full
-    reproduction steps before calling this against a live session.
+    problem. **Confirmed workaround**: when this call times out, the check
+    has very likely already completed and persisted anyway — a subsequent
+    ``get_column_check_table`` call for the same element returned full,
+    real results (OK/NG, P-M ratios, assigned rebar) immediately after a
+    "hung" ``perform_column_check`` call, no retry of this function
+    needed. See docs/live_verification_notes.md for the full reproduction
+    steps before calling this against a live session.
     """
     return _post(f"{_BASE}/CC-ANAL", argument, client)
 
@@ -169,7 +174,13 @@ def get_column_check_table(
     Check Table. Response: ``{table_name_or_"RC Column Checking Result":
     {"FORCE": ..., "DIST": ..., "HEAD": [...], "DATA": [[...], ...]}}``.
     HEAD includes P-M interaction ratios, end/mid shear, and main-rebar/hoop
-    rebar-detail checks."""
+    rebar-detail checks.
+
+    ⚠️ Live-tested workaround: if ``perform_column_check`` (CC-ANAL) times
+    out against a live session, call this afterward before assuming the
+    check failed — it returned full real results immediately after a
+    "hung" CC-ANAL call in testing. See docs/live_verification_notes.md.
+    """
     return _post(f"{_BASE}/CC-TABLE", argument, client)
 
 

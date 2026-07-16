@@ -387,6 +387,24 @@ successfully) the 4th time. **Testing was stopped after this
 reproduction** — no further value in repeating it, and most attempts
 still cost a forced restart or at least a stuck dialog.
 
+### Confirmed: the check result is actually there — `CC-TABLE` proves it
+
+After reconnecting post-reproduction #4, `get_column_check_table` (`CC-TABLE`)
+was called for the same element (371) that the "hung" `CC-ANAL` call had
+targeted — **it returned full, real design-check results**:
+`CHK_STR: "OK"`, `CHK_RBR: "OK"`, real P-M interaction ratios
+(`Rat_P: 0.468`, `Rat_M: 0.151`), real assigned rebar (`"28-6-D25"`), real
+shear/hoop-spacing checks — not placeholder or empty data. This
+conclusively confirms the diagnosis above: the design check itself
+genuinely completes and its results genuinely persist to the model, even
+when the triggering `CC-ANAL` call times out with no HTTP response.
+
+**Practical workaround for callers**: if `perform_column_check` (`CC-ANAL`)
+times out or the connection errors, **don't assume the check failed** —
+retry with `get_column_check_table` (`CC-TABLE`) for the same
+element/section shortly after. The check very likely already ran to
+completion; only the "done" acknowledgment got lost, not the work.
+
 **Practical takeaway for this SDK**: nothing to fix in `midas-nx` itself —
 every request shape sent was correct per the manual (confirmed by the
 clean, correctly-shaped `{"error": ...}` responses on every call that
