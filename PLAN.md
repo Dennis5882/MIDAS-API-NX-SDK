@@ -5,9 +5,17 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-07-15, at v0.8.0 (390/398 documented endpoints, Phase 5c
-> complete — SRC design code AIK-SRC2K). Full documented surface covered;
-> v1.0.0 is next (version bump only, no remaining chapter work).
+> Last updated: 2026-07-16, at v0.9.0 (390/398 documented endpoints, Phase 5c
+> complete — SRC design code AIK-SRC2K; extensive live Gen NX / Civil NX
+> verification this release, see docs/live_verification_notes.md). The
+> remaining 8 rows are Hyper-S `-M1` endpoints with no JSON Schema in the
+> manual repo (URL/methods + an external Zendesk link only) — genuinely not
+> transcribable to this repo's typed-TypedDict standard without depending
+> on an external, non-versioned source, so they're treated as undocumented
+> stubs per this project's existing "100% minus undocumented stubs" gate.
+> v1.0.0 is next; whether it requires those 8 (needs a source for their
+> schema) or is already earned under the existing stub exclusion is an
+> open call for the next release.
 
 ---
 
@@ -113,7 +121,7 @@ mirroring the `db/*.py` payload-typing style but at the whole-body level.
 
 ---
 
-## 2. Current status (v0.8.0)
+## 2. Current status (v0.9.0)
 
 | Area | Chapters | Endpoints | State |
 |---|---|---|---|
@@ -129,12 +137,13 @@ mirroring the `db/*.py` payload-typing style but at the whole-body level.
 | **Phase 5a — design setup + steel code** | 24, 25 | **40/40** | ✅ done |
 | **Phase 5b — RC design code** | 26 | **69/69** | ✅ done |
 | **Phase 5c — SRC design code** | 27 | **27/27** | ✅ done |
-| **Total** | | **390/398 (98%)** | v0.8.0 on PyPI |
+| **Total** | | **390/398 (98%)** | v0.9.0 on PyPI |
 
 > The remaining 8 rows are undocumented Hyper-S stubs (STYP-M1, MATL-M1,
-> IMFM-M1, EPMT-M1, IEHG-*-M1) with no manual spec to transcribe from — see
-> §3's cross-cutting backlog. Every documented endpoint across all 27
-> chapters is now implemented; v1.0.0 is a version-bump-only release.
+> IMFM-M1, EPMT-M1, IEHG-*-M1) with no JSON Schema in the manual repo to
+> transcribe from (URL/methods + an external Zendesk link only) — see §3's
+> cross-cutting backlog. Every endpoint with an actual JSON Schema across
+> all 27 chapters is now implemented.
 
 Velocity reference: the 02–06 build added 76 endpoints in one pass; Phase 1
 (07/09/10/11) added another 47 in a second pass; Phase 2 (12–14, 18–21, 23)
@@ -214,14 +223,21 @@ measuring source density: ch26 alone is 13,363 manual lines / 69 endpoints,
     Phase 5b's finding that same-named endpoints (DCTL/MBTP/...) still
     differ enough field-for-field across codes that local shapes are the
     right call.
-- v1.0.0 next — full documented surface now covered (390/398, remaining 8
-  rows are undocumented Hyper-S stubs); version-bump-only release, no
-  further chapter work planned.
+- **v0.9.0 ✅ — Live Gen/Civil NX verification + PyPI discoverability**
+  — no new chapter work; extensive live-session verification against real
+  Gen NX / Civil NX (see docs/live_verification_notes.md — confirmed a
+  reproducible Gen NX application defect in the RC-KDS "perform design
+  check" family, confirmed the full Civil analyze→results chain including
+  moving loads) plus PyPI-page improvements (`py.typed` marker, classifiers,
+  keywords, project URLs, README install/use-cases/multilingual intro).
+- v1.0.0 next — pending a decision on whether the 8 undocumented Hyper-S
+  stubs block it (see cross-cutting backlog below) or the existing "100%
+  minus undocumented stubs" gate already counts as met.
 
 ### Cross-cutting / backlog (any time)
 - Resolve undocumented Hyper-S stubs (STYP-M1, MATL-M1, IMFM-M1, EPMT-M1,
-  IEHG-*-M1) once the vendored manual documents them.
-- Package `py.typed` marker so downstream type-checkers see the TypedDicts.
+  IEHG-*-M1) once the vendored manual documents them with an actual JSON
+  Schema (currently only URL/methods + an external Zendesk link).
 - Optional runtime validation layer (opt-in) for the non-conditional payloads.
 - Integration smoke test against a live MIDAS NX server (currently all mocked).
 
@@ -238,8 +254,9 @@ measuring source density: ch26 alone is 13,363 manual lines / 69 endpoints,
 | v0.5.0 ✅ | Civil bridge features (Phase 4) | published |
 | v0.6.0 ✅ | Design setup + Steel code (Phase 5a) | published |
 | v0.7.0 ✅ | RC design code (Phase 5b) | published |
-| v0.8.0 | SRC design code (Phase 5c) | ready to release |
-| v1.0.0 | Design code checks complete | full documented surface covered |
+| v0.8.0 ✅ | SRC design code (Phase 5c) | published |
+| v0.9.0 | Live Gen/Civil NX verification + PyPI discoverability (py.typed, classifiers, README) | ready to release |
+| v1.0.0 | Design code checks complete (incl. Hyper-S `-M1`, 8 endpoints remaining) | full documented surface covered |
 
 Each version ships when its phase's chapters are 100% (minus undocumented
 stubs) and green in CI. Release = bump `pyproject.toml` version, tag, publish
