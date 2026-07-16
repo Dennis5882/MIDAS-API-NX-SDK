@@ -590,6 +590,90 @@ give a definitive, scriptable way to confirm process death vs. a merely
 slow/busy session in future reproductions, without waiting on manual
 screen-watching.
 
+### `perform_wall_design` (WD-ANAL) — CONFIRMED to hang too, even though the sibling `perform_wall_check` (WC-ANAL) does not
+
+Same wall-heavy model, same wall (`WID 101`, `Story B1`) already confirmed
+clean under `WC-ANAL`. `perform_wall_design` (a *different* endpoint,
+manual item #48, `WD-ANAL` — RC Wall **Design** Perform, distinct from
+`WC-ANAL`'s RC Wall **Check** Perform, item #63) was tested for the first
+time:
+
+1. First attempt — failed cleanly and fast: `{"error": {"message": "
+   Please perform analysis."}}`. Unrelated `steel_kds`/`src_aiksrc2k`
+   member-type writes made earlier in this session (while probing whether
+   other design-code modules share the `CC-ANAL` bug — see above)
+   apparently invalidated the model's analysis results, consistent with
+   the established "any design-parameter write invalidates results"
+   pattern.
+2. Re-ran `doc.analyze()` — completed in **151.3s** (large model, expected
+   per the timeout-guidance note below, not a stall).
+3. `WD-ANAL` retried on the same wall/story — **hung**, 60s client
+   timeout, no HTTP response. The user checked Gen NX and reported the
+   app looked completely normal — no visible stuck dialog this time
+   either.
+4. `get_wall_design_table` (`WD-TABLE`) for the same wall/story —
+   **returned full, real design results** immediately (`Pu: 126.106`,
+   `Rat-Py: 0.748`, `phiVn: 1804.81`, `Rat-V: 0.634`, real rebar
+   `"D13 @300"`/`"D10 @190"`, `CHK: "OK"`). Same workaround as `CC-ANAL`:
+   the design computation completed and persisted; only the HTTP
+   acknowledgment never arrived.
+
+**Separate schema finding, unrelated to the hang**: the manual documents
+`WD-TABLE`'s response as `{"data": {"COMPONENTS": [...], "ROWS": [{col:
+val, ...}, ...]}}` (with a worked example iterating `data["ROWS"]`), but
+the live response above came back in the same `{"Result Table": {"FORCE":
+..., "DIST": ..., "HEAD": [...], "DATA": [[...], ...]}}` HEAD/DATA shape
+every other member-check table in this chapter uses. Confirmed by
+re-reading the manual's own JSON Schema and worked example for this
+endpoint side by side with the live response — this isn't a caller
+mistake. `get_wall_design_table`'s docstring now flags this.
+
+**This means the earlier "WID+STORY-targeted checks are safe" hypothesis
+(based on `WC-ANAL` alone) was wrong** — `WD-ANAL` is also WID+STORY-
+targeted and still hangs. The safe/unsafe split isn't about the targeting
+scheme (`ELEMS`/`SECTIONS` vs `WID`/`STORY`); `perform_wall_check`
+(`WC-ANAL`) remains the only tested "perform" function in this file so far
+that does **not** reproduce the stall — `perform_column_check`,
+`perform_beam_check`, and now `perform_wall_design` all do, across every
+model tested. What distinguishes `WC-ANAL` from the other three is still
+unclear — possibly that a wall "check" only reads/verifies existing rebar
+against demand, while `WD-ANAL`/`CC-ANAL`/`BC-ANAL` all compute and
+*write* new required-design data back into the model (rebar layout,
+member-check parameter records) — but this is a hypothesis, not confirmed.
+
+### Other design-code modules (steel_kds, SRC) — inconclusive, blocked by license/model limitations, not evidence either way
+
+While looking for a fast way to test whether the `CC-ANAL`-style stall
+extends beyond the RC-KDS module, two other design-code "perform check"
+families were attempted on the same wall-heavy model and both were blocked
+before reaching the actual "perform" call, for reasons unrelated to this
+bug:
+
+- **`steel_kds.perform_steel_code_check`**: blocked at the load-combination
+  step — `ope.generate_load_combination_steel` returned `{"error":
+  {"message": "There is no license to use the specified Steel Design
+  Code."}}`. A real license limitation, not a bug; this account/model
+  cannot exercise the steel design-check module at all.
+- **SRC (`src_aiksrc2k`)**: the design code itself is licensed
+  (`ope.generate_load_combination_src` succeeded), but `SrcBeamSectionData`
+  (the rebar-equivalent registration for SRC composite beams) returned
+  `{"error": {"message": "Unknown Error"}}` on every attempt, and
+  `SrcModifyMaterial` writes didn't appear to persist (`GET` came back
+  empty afterward). Likely cause: every section in this model is a plain
+  rectangular RC shape (`SB`) — SRC (steel-reinforced-concrete composite)
+  design plausibly requires an actual composite section geometry that
+  doesn't exist anywhere in this model, unlike the RC-KDS rebar overlay
+  which worked on any section regardless of the model's "real" design
+  code.
+
+**Neither result says anything about whether steel/SRC "perform check"
+calls share the `CC-ANAL` stall** — both were blocked upstream of the
+precondition chain this file's other reproductions establish as necessary
+(member type + rebar/section data + recognized load combination +
+queryable analysis results). Testing this properly would need a model with
+real steel or SRC composite members, not a forced setup on an RC-only
+model. Left as a genuinely open question.
+
 ### Timeout guidance for `doc.analyze()` on large models — a separate, milder finding
 
 While waiting on step 4 above, it became clear a plain client-side read

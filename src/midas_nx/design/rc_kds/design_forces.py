@@ -275,7 +275,20 @@ def perform_wall_design(
 ) -> dict:
     """docs/manual/26_Design_RC_KDS41202022.md #48 — WD-ANAL — RC Wall
     Design Perform. Walls are selected by WALL_IDS+STORY pairs rather than
-    ELEMS/SECTIONS. Response: ``{"message": "success"}``."""
+    ELEMS/SECTIONS. Response: ``{"message": "success"}``.
+
+    ⚠️ Live-tested and CONFIRMED to hang, same as ``perform_column_check``
+    (CC-ANAL) / ``perform_beam_check`` (BC-ANAL): the call timed out with no
+    HTTP response even though the app UI looked completely normal (no
+    visible stuck dialog). **Note this is despite the sibling
+    ``perform_wall_check`` (WC-ANAL) NOT reproducing the stall** — so
+    "WID+STORY-targeted = safe" is not a valid rule; this design-perform
+    function hangs while the check-perform function for the same wall does
+    not. **Confirmed workaround**: ``get_wall_design_table`` for the same
+    wall/story returned full, real design results (rebar, ratios, `CHK:
+    "OK"`) immediately after this call timed out — the design likely
+    completed and persisted anyway. See docs/live_verification_notes.md.
+    """
     return _post(f"{_BASE}/WD-ANAL", argument, client)
 
 
@@ -305,9 +318,24 @@ def get_wall_design_table(
 ) -> dict:
     """docs/manual/26_Design_RC_KDS41202022.md #49 — WD-TABLE — RC Wall
     Design Table. Unlike the other member types' tables, the response is
-    NOT a HEAD/DATA array pair — it's ``{"status": ..., "message": ...,
-    "data": {"COMPONENTS": [...column names...], "ROWS": [{col: val, ...},
-    ...], "TOTAL_COUNT": int, ...}}``."""
+    documented as NOT a HEAD/DATA array pair — it's ``{"status": ...,
+    "message": ..., "data": {"COMPONENTS": [...column names...], "ROWS":
+    [{col: val, ...}, ...], "TOTAL_COUNT": int, ...}}``.
+
+    ⚠️ Live-tested: the actual response observed live did NOT match the
+    manual's documented shape above — it came back as the same
+    ``{"Result Table": {"FORCE": ..., "DIST": ..., "HEAD": [...], "DATA":
+    [[...], ...]}}`` HEAD/DATA shape used by every other member-check
+    table in this file (``CC-TABLE``/``BC-TABLE``/``WC-TABLE``). Treat the
+    docstring's documented shape as unconfirmed and prefer handling
+    whichever shape actually comes back. See
+    docs/live_verification_notes.md.
+
+    ⚠️ Live-tested workaround: if ``perform_wall_design`` (WD-ANAL) times
+    out, call this afterward before assuming the design failed — it
+    returned full real results immediately after a "hung" WD-ANAL call in
+    testing.
+    """
     return _post(f"{_BASE}/WD-TABLE", argument, client)
 
 
