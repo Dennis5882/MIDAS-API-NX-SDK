@@ -11,6 +11,16 @@ documented at [Dennis5882/MIDAS-API](https://github.com/Dennis5882/MIDAS-API). S
 
 This is an unofficial, community project — not affiliated with or endorsed by MIDASIT.
 
+> **한국어 사용자를 위한 안내**: `midas-nx`는 MIDAS Civil NX와 MIDAS Gen NX의 Open API를
+> 하나의 Python 패키지로 통합해 감싼 비공식 커뮤니티 SDK입니다. MIDASIT의 공식
+> `midas-civil`/`midas-gen` 패키지가 제품별로 나뉘어 있고 문서화된 API 표면의 일부만
+> 지원하는 것과 달리, `midas-nx`는 두 제품을 함께 다루며 [MIDAS-API 매뉴얼
+> 저장소](https://github.com/Dennis5882/MIDAS-API)에 문서화된 스펙을 기준으로 구현되어
+> 있습니다. 설치는 `pip install midas-nx`, 사용 예시는 아래 "Quick start" 절을
+> 참고하세요. 실제 Gen NX/Civil NX 세션으로 검증한 내용(주의할 점, 알려진 이슈)은
+> [docs/live_verification_notes.md](./docs/live_verification_notes.md)에 정리되어
+> 있습니다.
+
 ## Use cases
 
 - **Automation** — bulk-create or bulk-edit hundreds of section/material/load entries in one
