@@ -139,22 +139,28 @@ def perform_column_check(
 
     ⚠️ Live-tested and CONFIRMED to stall: this call reproducibly got the
     Gen NX desktop app's progress dialog stuck at "Converting Design
-    Results... 0%", 4 times out of 4 whenever the target had real rebar
+    Results... 0%", 5 times out of 5 whenever the target had real rebar
     data, a real recognized design load combination, and confirmed
     analysis results — including on natively KDS-configured production
-    models, not just synthetic setups. On one occasion the app's own
+    models, not just synthetic setups, and confirmed to be independent of
+    admin/elevated privileges (reproduced identically running Gen NX
+    normally and "as administrator"). On one occasion the app's own
     message log showed the check (including "End converting Design
     Results" and the final "End Code Checking" line) had actually
     finished while the dialog stayed frozen at 0% — this looks like a
     stuck progress-dialog/completion-signal bug rather than the design
     check itself deadlocking, and the Open API call plausibly blocks on
     that same stuck signal. Consequences varied: an error popup plus a
-    required forced process kill 3 of 4 times, a clean recovery via "Stop
-    Execution" the other time. Every call that didn't hit this
+    required forced process kill 3 of 5 times, a clean recovery via "Stop
+    Execution" the other 2 times. Every call that didn't hit this
     precondition combination instead returned a clean, correctly-shaped
     ``{"error": ...}`` response, so the request shape itself is not the
-    problem. **Confirmed workaround**: when this call times out, the check
-    has very likely already completed and persisted anyway — a subsequent
+    problem. Confirmed on Gen NX 2026 v2.1, English build — not a
+    Korean-localization artifact — but every reproduction used the
+    **KDS 41 20:2022** design code specifically; whether non-KDS codes
+    (AISC, Eurocode, ...) hit the same stall is untested. **Confirmed
+    workaround**: when this call times out, the check has very likely
+    already completed and persisted anyway — a subsequent
     ``get_column_check_table`` call for the same element returned full,
     real results (OK/NG, P-M ratios, assigned rebar) immediately after a
     "hung" ``perform_column_check`` call, no retry of this function

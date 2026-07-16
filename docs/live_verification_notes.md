@@ -405,6 +405,45 @@ retry with `get_column_check_table` (`CC-TABLE`) for the same
 element/section shortly after. The check very likely already ran to
 completion; only the "done" acknowledgment got lost, not the work.
 
+### Reproduction #5 — retried with Gen NX run as Administrator: same result
+
+To rule out a permissions/UAC-related cause, the user closed Gen NX, relaunched
+it with "Run as administrator," reopened the same natively-KDS-configured
+model from reproduction #4, and re-ran the full analysis from the GUI before
+retrying.
+
+1. `perform_column_check` (`CC-ANAL`) on the same element (371) — the API call
+   hung again, timing out client-side after 60s with no HTTP response
+   (`MidasConnectionError: ... Read timed out`), and the Gen NX progress
+   dialog stalled at "Converting Design Results... 0%" again, same as every
+   prior reproduction.
+2. The user waited briefly without clicking Stop, then clicked **Stop
+   Execution** — the dialog closed and the app recovered cleanly, no forced
+   process kill needed (matching reproduction #4's recovery behavior, not the
+   forced-kill behavior of #1–#3).
+3. `get_column_check_table` (`CC-TABLE`) for the same element immediately
+   after — returned the identical full result set as reproduction #4
+   (`CHK_STR: "OK"`, `CHK_RBR: "OK"`, `Rat_P: 0.468`, `28-6-D25`, ...),
+   confirming the workaround holds here too.
+
+**Conclusion: administrator privileges are not a factor.** The stall, the
+Stop-Execution recovery path, and the CC-TABLE workaround are all identical
+running elevated vs. running normally — this rules out a UAC/file-permission
+explanation for the stuck dialog.
+
+**Build/localization confirmed: this is the English/international build,
+not a Korean-localized one.** All five reproductions were run against
+**Gen NX 2026 v2.1, English version** — so the stall is not a
+Korean-UI-localization artifact; it reproduces on the same build
+international users install. What remains genuinely untested is the
+**design-code axis**: every reproduction used **KDS 41 20 : 2022**
+specifically. It's still an open question — not tested here — whether the
+same "Converting Design Results 0%" stall occurs for non-Korean design
+codes (AISC, Eurocode, etc., via `steel_kds.py` or other `design/*`
+modules) or is somehow specific to the KDS check module's own
+implementation. Don't generalize "every `perform_*_check` call hangs" past
+KDS 41 20:2022 without independent testing of another code.
+
 **Practical takeaway for this SDK**: nothing to fix in `midas-nx` itself —
 every request shape sent was correct per the manual (confirmed by the
 clean, correctly-shaped `{"error": ...}` responses on every call that
