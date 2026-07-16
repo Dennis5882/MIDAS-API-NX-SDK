@@ -96,6 +96,20 @@ JSON body) against what the manual documents.
 pytest
 ```
 
+## Live verification notes
+
+This package's request/response shapes are typed from the vendored manual and
+tested with mocked HTTP (see below) — but a subset of endpoints has also been
+exercised against real Gen NX / Civil NX sessions. Notable findings (a
+confirmed Gen NX application hang triggered by one specific design-check
+call, product-availability quirks not documented in the manual, a couple of
+"documented optional but actually required under X" server validation
+quirks) are written up in
+[docs/live_verification_notes.md](./docs/live_verification_notes.md) — most
+of the safe, actionable ones are also inlined as docstring warnings on the
+specific functions/fields involved, so `help()`/your editor will surface them
+directly.
+
 ## Contributing
 
 Pick an unimplemented endpoint from [ROADMAP.md](./ROADMAP.md), follow the pattern in

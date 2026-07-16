@@ -52,13 +52,20 @@ class LineLaneItem(TypedDict, total=False):
     """LANE_ITEMS entry for /db/LLAN. Fields beyond ELEM/ECC are code-dependent
     (see 08_DB_Moving_Loads.md #2 "LANE_ITEMS (코드별 추가 필드)" table);
     flattened onto one item (mirrors MaterialParam precedent).
+
+    ⚠️ Live-tested: with MVCD.CODE="AASHTO LRFD", omitting CENT_F (which
+    this schema marks merely optional) gets rejected server-side —
+    "Centrifugal Force ( 0.0 < Value < 1.0)" — because the omitted field
+    defaults to 0.0, which fails the code's own (0, 1) exclusive-range
+    validation. Pass a nonzero CENT_F whenever MVCD.CODE is "AASHTO LRFD".
+    See docs/live_verification_notes.md for the reproduction.
     """
 
     ELEM: int  # Element No., required
     ECC: float  # Eccentricity, optional (KSCE-LSD15/Canada/BS/Russia/South Africa/Korea/AASHTO Standard/Taiwan/AASHTO LRFD/PENNDOT/Eurocode/Australia/Poland)
     FACT: float  # Impact Factor, optional (Korea/AASHTO Standard/Taiwan only)
     SPAN_START: bool  # Span Start, optional (Korea/AASHTO Standard/Taiwan/AASHTO LRFD/PENNDOT/Australia/Poland only)
-    CENT_F: float  # Centrifugal Force Factor, optional (AASHTO LRFD only)
+    CENT_F: float  # Centrifugal Force Factor, optional (AASHTO LRFD only) — see class docstring, effectively required and nonzero when MVCD.CODE="AASHTO LRFD"
     ECCEN_VERT_LOAD: float  # Eccentricity Considering Cant (vertical load), optional (Eurocode only)
 
 

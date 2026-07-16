@@ -7,6 +7,18 @@ uniformly to all 17 story tables (TABLE_NAME, TABLE_TYPE, EXPORT_PATH, UNIT,
 STYLES, COMPONENTS, NODE_ELEMS, LOAD_CASE_NAMES, OPT_CS, STAGE_STEP) rather
 than documenting a per-table subset like ch18 did, so every wrapper below
 exposes the full common kwarg set (mirroring get_table's own signature).
+
+⚠️ Live-tested: on a real analyzed model with valid ``load_case_names``,
+these story tables can still return ``{"error": {"message": "[empty]
+Cannot generate table data as there is no analysis result."}}`` even
+though ``post/result_1.py``'s node/element-level tables (reaction,
+displacement, beam force, ...) work fine against the same analysis. The
+fix was calling ``ope.calculate_story(...)`` (``/ope/STOR``) *before*
+``doc.analyze()`` — story-level aggregates (weight/stiffness centers,
+eccentricity, overturning moment, etc.) appear to need that explicit
+calculation step baked into the analysis run, not just derivable
+after-the-fact from raw nodal results. See
+docs/live_verification_notes.md for the full reproduction.
 """
 from __future__ import annotations
 
