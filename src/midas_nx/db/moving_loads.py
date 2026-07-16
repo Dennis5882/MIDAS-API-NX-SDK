@@ -301,7 +301,16 @@ class TrafficSurfaceLanesOptimization(DbResource):
 
 
 class VehicleDefaultParams(TypedDict, total=False):
-    """docs/manual/08_DB_Moving_Loads.md #10 — /db/MVHL "VEH_DEFAULT" table."""
+    """docs/manual/08_DB_Moving_Loads.md #10 — /db/MVHL "VEH_DEFAULT" table.
+
+    ⚠️ Live-tested: sending this as an empty ``{}`` (every field here is
+    individually documented as optional) made ``Vehicles.create`` silently
+    no-op — response ``{"message": ""}``, and a subsequent ``GET`` showed
+    nothing had actually been saved, no error raised. Populating at least
+    ``DYN_LOAD_ALLOWANCE``/``CENT_F`` (matching the manual's own worked
+    example for your ``STANDARD_CODE``) made the same call succeed
+    immediately. See docs/live_verification_notes.md.
+    """
 
     UNIFORM_LOAD: float  # Uniform Load, optional
     DYN_LOAD_ALLOWANCE: float  # Dynamic Load Allowance (%), optional

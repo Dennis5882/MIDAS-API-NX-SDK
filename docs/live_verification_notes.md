@@ -182,6 +182,93 @@ This confirms the full chain end to end: SDK request shape → real Gen NX
 solve → SDK response parsing, for both the `/db/*` write side and the
 `/post/TABLE` read side.
 
+## Civil full analyze → results round-trip, including moving-load envelope results (previously untested)
+
+A later Civil session closed the remaining gap on the Civil side: static
+analysis physically verified end to end, and — Civil's signature feature —
+an actual moving-load analysis run and its `(MV:max)`/`(MV:min)` envelope
+results read back and sanity-checked.
+
+### Static self-weight round-trip — physically verified
+
+Built a 30 m, 2-span (3-node) simply supported... in practice **fixed
+against rotation at both ends** (constraint string `1111100` restrains
+`RY` at both supports, not a true pin) concrete girder (`0.6×1.0 m`
+rectangular section, `C24`/`KS01(RC)`), added a `DL` self-weight load case,
+ran `doc.analyze()`, then read back reactions/displacements/beam forces:
+
+- Total self-weight reaction: `ΣFZ = 423.647281 kN` across both supports
+  (`211.823641` each) — consistent with a uniformly distributed self-weight
+  load `w = 423.647 / 30 = 14.12 kN/m` on a `0.6 × 1.0 m` section.
+- Support moment `MY = ±1059.11825 kN·m` — matches the fixed-end-moment
+  formula for a fixed-fixed beam under UDL, `wL²/12 = 14.12 × 30² / 12 =
+  1059.12` — an exact hand-calc match.
+- Beam-force moment diagram across both elements' I/1/4/2/4/3/4/J stations
+  forms a consistent parabola between the two support end-moments and the
+  midspan value (`132.39`), matching continuous-beam bending-moment theory.
+
+**Operational note, not a bug**: one `Material.create` attempt with
+`STANDARD: "KS(RC)"` failed with `"Failed to get material data for:
+C24"` — the correct Civil concrete standard code turned out to be
+`"KS01(RC)"`, not `"KS(RC)"`. The manual doesn't enumerate every valid
+`STANDARD` string per material type/product, so this is a live-only
+finding, not a schema contradiction.
+
+### Moving-load analysis — full chain verified, with real vehicle/lane data
+
+Added `MovingLoadCode` (`CODE="KOREA"`), a Traffic Line Lane spanning both
+elements, a `DB-24` Korean standard vehicle, and a moving-load case
+referencing both, then re-ran analysis:
+
+- `Vehicles.create` (`/db/MVHL`) **initially no-op'd silently**
+  (`{"message": ""}`, not an error, and a subsequent `GET` confirmed
+  nothing was actually saved) when `VEH_DEFAULT` was sent as `{}`. The
+  manual's own worked example for `STANDARD_CODE="KS-RB"` always populates
+  `VEH_DEFAULT` with explicit `DYN_LOAD_ALLOWANCE`/`CENT_F` values even
+  though the schema marks those fields "optional" — copying the manual's
+  exact worked example (`MVLD_CODE: 6`, `VEH_DEFAULT: {"DYN_LOAD_ALLOWANCE":
+  0, "CENT_F": false}`) succeeded immediately. Worth knowing live: don't
+  send an empty `VEH_DEFAULT: {}` even though every one of its fields is
+  individually documented as optional — populate it per the manual's
+  worked example for your `STANDARD_CODE`.
+- `MovingLoadCase.create` (`/db/MVLD`, `TYPE=0` general load referencing
+  the vehicle + lane by name) — succeeded.
+- `doc.analyze()` — succeeded in **2.0s** (tiny model, no large-model delay
+  here).
+- `get_beam_force_table(load_case_names=["MV1(MV:max)"])` and
+  `["MV1(MV:min)"]` — both returned full, real, non-degenerate envelope
+  data: e.g. max positive midspan moment `615.61`–`732.12 kN·m`, min
+  (most-negative) support moment `-1702.53 kN·m` (larger in magnitude than
+  the plain self-weight case above, as expected — the DB-24 truck adds to
+  the fixed-end moment at whichever support it's nearest). This is a
+  believable, non-trivial moving-load envelope, not placeholder/zero data.
+
+This confirms the full Civil-specific chain end to end: `MVCD` → `MVHL` →
+`LLAN` → `MVLD` → `doc.analyze()` → `post/TABLE` with `(MV:max)`/`(MV:min)`
+suffixes, previously only exercised as isolated writes (see the moving-load
+write test above), not run through an actual analysis.
+
+### Operational quirk shared with the Gen findings: a confirmation dialog blocks the whole API session, not just one call
+
+Partway through this session, `MovingLoadCode.update` (changing the active
+moving-load code) triggered a **Civil NX confirmation dialog** ("changing
+this will delete existing analysis results") that the user hadn't
+dismissed yet. While that dialog sat open, **every** subsequent API call —
+including totally unrelated ones like a plain `GET /db/NODE` — timed out
+with no response, not just the call that triggered the dialog. After the
+user dismissed the dialog, the session immediately became responsive
+again, and a `GET` on the field that triggered it confirmed the change had
+already persisted despite the client-side timeout.
+
+This is the same shape of finding as the Gen `CC-ANAL` stall (an API call
+blocks on an unacknowledged UI dialog, and the underlying change completes
+and persists regardless of whether the HTTP response ever arrives) — but
+milder and expected: a normal user-confirmation dialog is not a bug, and
+it explains itself once you know to check for it. Worth knowing for
+scripted/batch use of this API: **any call that can trigger a confirmation
+dialog (destructive/data-loss-risking changes) can make the entire session
+appear hung until a human dismisses it**, not just that one call.
+
 ## ⚠️ CONFIRMED — `CC-ANAL` (RC column code-check perform) reproducibly stalls Gen NX at "Converting Design Results 0%" (often requires a forced process kill)
 
 While extending the same Gen session above to verify design-code check
