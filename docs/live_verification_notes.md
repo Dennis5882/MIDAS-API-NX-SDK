@@ -257,26 +257,73 @@ waiting for that thread, so from the SDK's perspective it just looks like
 a network read timeout with no way to distinguish "still computing" from
 "permanently stuck" short of an arbitrarily long timeout.
 
+### Reproduction #3 — confirmed a third time, on an unrelated large real-world model
+
+To rule out "this only happens on a tiny synthetic 1-element model," the
+same pattern was tested against a separate, pre-existing production-scale
+Gen model (thousands of nodes/elements, real materials/loads/analysis
+results already present, different RC design code originally selected).
+Project-specific numeric details are intentionally omitted here — only the
+reproduction pattern matters:
+
+1. A read-only survey confirmed this model's active RC design code was
+   **not** KDS 41 20:2022, so its `rc_kds.setup` (config-singleton) and
+   `rc_kds.rebar` (member rebar) tables were empty for every member,
+   despite the model already having real design-member registrations
+   under a different code.
+2. `CC-ANAL` on a real, verified-vertical concrete column element with
+   `PERFORM_TYPE: "ELEMS"` (single element, not `"ALL"`) — failed cleanly
+   and fast: `{"error": {"message": "failed:Rebar, BeamData"}}`. No hang.
+3. Assigned `ModifyMemberType` (`COLUMN`) + `ModifyColumnRebarData` (same
+   rebar shape as the earlier reproductions) for that element's section,
+   re-ran `doc.analyze()` (succeeded, no issue at this model's larger
+   scale) — retried `CC-ANAL` — failed cleanly and fast again:
+   `{"error": {"message": "failed:LoadCombination"}}` (the model's 50+
+   pre-existing general load combinations were **not** recognized as valid
+   design combinations, consistent with reproduction #2). No hang.
+4. Ran `ope.generate_load_combination_concrete({"OPTION": "ADD", "DGNCODE":
+   "KDS 41 20 : 2022"})` — succeeded, auto-generated proper factored
+   combinations from the model's real load cases.
+5. Retried `CC-ANAL` a third time on the same single element — **hung
+   again**, 40s client timeout, no HTTP response. The user confirmed Gen
+   NX was frozen again and required another forced kill.
+
+**This is now the exact, minimal, deterministic trigger pattern across
+three independent reproductions** (one synthetic model, one real
+production model tested twice): `CC-ANAL` hangs specifically once **both**
+(a) the target element/section has member-type + rebar data assigned for
+the KDS 41 20:2022 namespace, **and** (b) at least one load combination
+exists that the KDS check module itself recognizes as a valid design
+combination (i.e., one generated via `ope.generate_load_combination_concrete`
+or equivalent, not a plain manually-written `/db/LCOM-GEN` entry). In
+other words: it hangs at the exact moment the check has *enough real data
+to actually attempt the P-M-interaction calculation* — every precondition
+short of that fails fast and cleanly instead.
+
 **Do not call `design.rc_kds.checks.perform_column_check` (`CC-ANAL`)
-against a live session without an escape plan** (expect to force-kill Gen
-NX). Given the shared "Design Thread" architecture across every other
+against a live session with both preconditions satisfied, without an
+escape plan** (expect to force-kill Gen NX — "Stop Execution" does not
+work). Given the shared "Design Thread" architecture across every other
 `perform_*_check`/`*-ANAL` function in this SDK (`perform_beam_check`,
 `perform_brace_check`, `perform_wall_check` in the same file;
 `perform_steel_code_check` in `steel_kds.py`;
 `perform_src_beam_check`/`perform_src_column_check` in
 `src_aiksrc2k.py`; `perform_optimal_design`/`OCHECK` variants), **treat
-the entire "perform design check" family as carrying the same
-unconfirmed-but-plausible hang risk** until each is independently tested.
-This session did not attempt any of the others after this finding.
+the entire "perform design check" family as carrying the same likely hang
+risk once both analogous preconditions are met** until each is
+independently tested. This session did not attempt any of the others.
 
 **Practical takeaway for this SDK**: nothing to fix in `midas-nx` itself —
 every request shape sent was correct per the manual (confirmed by the
-clean, correctly-shaped `{"error": ...}` responses on the calls that
-didn't hang), and the SDK has no way to add a client-side guard against a
-server-side thread deadlock. This is a Gen NX application defect worth
-reporting to MIDASIT directly, with this file's reproduction steps.
-Consider adding a runtime warning to the `perform_*_check` docstrings
-pointing future callers at this file before they hit it unprepared.
+clean, correctly-shaped `{"error": ...}` responses on every call that
+didn't hang, across three separate reproductions on two different
+models), and the SDK has no way to add a client-side guard against a
+server-side thread deadlock. This is a confirmed, reproducible Gen NX
+application defect worth reporting to MIDASIT directly, with this file's
+exact precondition pattern (member-type + rebar assigned, plus a
+KDS-recognized design load combination present) — reproduced 3 for 3
+times that both conditions were met, on both a trivial synthetic model
+and an unrelated production-scale model.
 
 ## Caveat — read before acting on this file
 
