@@ -111,6 +111,10 @@ configure(mapi_key="your-mapi-key-here", product="gen")
 MidasAPI("POST", "/doc/NEW", {"Argument": {}})
 ```
 
+More worked examples in [`examples/python/`](./examples/python/): a wind-load plate
+(`kds_wind_load.py`) and a 20-element simply-supported beam with a load combination
+(`simple_beam_load_combination.py`).
+
 ## Design
 
 - **Instance-based `MidasClient`** — no global mutable state; errors raise typed exceptions
@@ -125,6 +129,12 @@ MidasAPI("POST", "/doc/NEW", {"Argument": {}})
   5 mutually-exclusive variants) for a one-size-fits-all validated model.
 - **`/doc/*` lifecycle** endpoints are plain functions (`doc.new_project()`, `doc.save()`, ...) —
   not ID-keyed, wrapped in `"Argument"` rather than `"Assign"`.
+- **Connection sanity check + schema fallback** — `client.verify_connection()` wraps the
+  server's `/mapikey/verify` health check (is the product alive, is this key valid, which
+  product is it) for use right after constructing a client or before a batch of calls. Every
+  `DbResource` also has `.info(client=None)`, which asks the server directly for a resource's
+  current field/type schema (`GET /info/db/...`) — a fallback for endpoints this SDK hasn't
+  wrapped yet, or fields that changed since the vendored manual was last synced.
 
 See `docs/coverage.json` / [ROADMAP.md](./ROADMAP.md) for the full endpoint list, what's
 implemented, and where new endpoints should go.
@@ -152,6 +162,28 @@ quirks) are written up in
 of the safe, actionable ones are also inlined as docstring warnings on the
 specific functions/fields involved, so `help()`/your editor will surface them
 directly.
+
+## Troubleshooting
+
+`MidasConnectionError` almost always means MIDAS Gen/Civil NX isn't running, isn't connected
+via Open API, or the connection died mid-session. `client.verify_connection()` (see Design,
+above) is the fastest way to tell those apart — it reports whether the product process is
+alive and whether the current MAPI-Key is valid for it, before you burn a request timeout
+finding out the hard way.
+
+If the app is running and still won't connect, it's usually a corporate firewall blocking
+outbound traffic to the MIDAS relay. Share this with your network/security team:
+
+| Item | Value |
+| --- | --- |
+| Protocol | `https`, `wss` |
+| Port | `443` |
+| IP | `121.157.60.1/32` (MIDAS public NAT IP) |
+| URI | `https://moa-engineers.midasit.com` |
+
+If your network does SSL inspection/interception on all outbound traffic, `moa-engineers.midasit.com`
+needs to be excluded from it — several users have hit silent connection failures caused by SSL
+inspection specifically, separate from a plain firewall block.
 
 ## Contributing
 

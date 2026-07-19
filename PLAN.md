@@ -25,11 +25,14 @@ that ROADMAP.md doesn't capture.
 midas_nx/
 ├── client.py            MidasClient — instance-based HTTP + auth, typed errors,
 │                        Product.GEN|CIVIL selection, strict_product guard.
-│                        Also: configure()/MidasAPI() low-level free-function API.
+│                        Also: configure()/MidasAPI() low-level free-function API,
+│                        .verify_connection() (/mapikey/verify health check).
 ├── doc.py               /doc/*, /ope/*, /view/* lifecycle — plain functions,
 │                        wrapped in "Argument" (not ID-keyed "Assign").
 └── db/
-    ├── base.py          DbResource — .create/.get/.update/.delete classmethods,
+    ├── base.py          DbResource — .create/.get/.update/.delete/.info()
+    │                    classmethods (.info() = /info/db/... schema
+    │                    introspection, independent of METHODS/CRUD),
     │                    METHODS/PRODUCTS guards, shared NO_DELETE_METHODS +
     │                    ItemGroupFields TypedDict.
     ├── project.py       ch 02  Project structure, groups, colors, story
@@ -237,6 +240,16 @@ measuring source density: ch26 alone is 13,363 manual lines / 69 endpoints,
   `BATCH_LIST` changed from an object array to a plain string array).
   Updated `BridgeGirderDiagramArgument` + its tests to match; no other
   endpoint affected by that manual update.
+- **Unreleased — connection/introspection helpers, pending a version
+  decision**: `MidasClient.verify_connection()` (`/mapikey/verify` health
+  check) and `DbResource.info()` (`/info/db/...` schema introspection, a
+  fallback for fields/endpoints this SDK hasn't wrapped yet). Source:
+  the manual repo's docs/AUTHENTICATION.md (a cross-cutting auth/ops guide,
+  not a per-chapter manual page) — not tracked in docs/coverage.json /
+  ROADMAP.md for that reason. Also ported the manual repo's simple-beam
+  load-combination tutorial to `examples/python/`, and added a README
+  Troubleshooting section (connection errors, firewall/SSL-inspection
+  allowlist).
 - v1.0.0 next — pending a decision on whether the 8 undocumented Hyper-S
   stubs block it (see cross-cutting backlog below) or the existing "100%
   minus undocumented stubs" gate already counts as met.

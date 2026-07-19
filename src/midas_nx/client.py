@@ -124,7 +124,34 @@ class MidasClient:
             logger.warning(message)
 
     def request(self, method: str, command: str, body: Optional[Mapping[str, Any]] = None) -> dict:
-        url = self.base_url + command
+        return self._send(method, self.base_url + command, body, endpoint=command)
+
+    def verify_connection(self) -> dict:
+        """GET {base url with the /gen or /civil product segment removed}/mapikey/verify.
+
+        Docs: the MIDAS-API manual repo's docs/AUTHENTICATION.md, "연결 전 상태
+        확인 — /mapikey/verify" — a health-check endpoint documented in the
+        repo's auth guide rather than a per-chapter manual page (so it isn't
+        tracked in docs/coverage.json/ROADMAP.md alongside the itemized
+        endpoint surface). Distinguishes three cases: HTTP 200 with
+        ``"status": "connected"``/``"keyVerified": True`` (healthy — the
+        product process is alive and this MAPI-Key is valid for it); HTTP 200
+        with ``"status": "disconnected"`` (product not connected — returned
+        as-is, not raised, since it's a normal response shape, not an HTTP
+        error); and HTTP 404 with a "client does not exist" message (the
+        product process died after connecting — surfaced as
+        ``MidasNotFoundError`` like any other 404). Useful as a sanity check
+        right after constructing a client, or before a batch of calls that
+        would otherwise each hit their own timeout if the product has
+        silently died.
+        """
+        suffix = f"/{self.product.value}"
+        root = self.base_url[: -len(suffix)] if self.base_url.endswith(suffix) else self.base_url
+        return self._send("GET", f"{root}/mapikey/verify", None, endpoint="/mapikey/verify")
+
+    def _send(
+        self, method: str, url: str, body: Optional[Mapping[str, Any]], *, endpoint: str
+    ) -> dict:
         headers = {"Content-Type": "application/json", "MAPI-Key": self.mapi_key}
 
         try:
@@ -133,7 +160,7 @@ class MidasClient:
             )
         except requests.RequestException as exc:
             raise MidasConnectionError(
-                f"{method.upper()} {command} failed: {exc}", method=method, endpoint=command
+                f"{method.upper()} {endpoint} failed: {exc}", method=method, endpoint=endpoint
             ) from exc
 
         data: Any = response.json() if response.text else {}
@@ -150,10 +177,10 @@ class MidasClient:
             message = data.get("message") or (data.get("error") or {}).get("message") or message
 
         raise exc_cls(
-            f"{method.upper()} {command} -> {response.status_code}: {message}",
+            f"{method.upper()} {endpoint} -> {response.status_code}: {message}",
             status_code=response.status_code,
             method=method,
-            endpoint=command,
+            endpoint=endpoint,
             response_body=data,
         )
 

@@ -119,3 +119,54 @@ def test_check_product_warns_instead_of_raising_when_not_strict():
     client = MidasClient(mapi_key="k", base_url="https://x.test:443/gen", product=Product.GEN, strict_product=False)
     # Should not raise.
     client.check_product(frozenset({"civil"}), "Some Civil-only Resource")
+
+
+@responses.activate
+def test_verify_connection_strips_product_segment_and_reports_connected(gen_client):
+    responses.add(
+        responses.GET,
+        "https://x.test:443/mapikey/verify",
+        json={
+            "user": "sjj0507@midasit.com",
+            "program": "gen",
+            "connectionID": "hU4OMIWBRG",
+            "keyVerified": True,
+            "status": "connected",
+        },
+        status=200,
+    )
+
+    result = gen_client.verify_connection()
+
+    assert result["status"] == "connected"
+    assert result["keyVerified"] is True
+    sent = responses.calls[0].request
+    assert sent.url == "https://x.test:443/mapikey/verify"
+    assert sent.headers["MAPI-Key"] == "test-key"
+
+
+@responses.activate
+def test_verify_connection_returns_disconnected_status_without_raising(gen_client):
+    responses.add(
+        responses.GET,
+        "https://x.test:443/mapikey/verify",
+        json={"keyVerified": True, "status": "disconnected"},
+        status=200,
+    )
+
+    result = gen_client.verify_connection()
+
+    assert result["status"] == "disconnected"
+
+
+@responses.activate
+def test_verify_connection_404_raises_not_found_error(gen_client):
+    responses.add(
+        responses.GET,
+        "https://x.test:443/mapikey/verify",
+        json={"message": "client does not exist"},
+        status=404,
+    )
+
+    with pytest.raises(MidasNotFoundError):
+        gen_client.verify_connection()

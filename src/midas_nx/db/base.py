@@ -93,6 +93,9 @@ class DbResource:
         METHODS: subset of {"POST", "GET", "PUT", "DELETE"} the endpoint
             actually supports (defaults to all four; override for
             GET/PUT-only endpoints like MATD).
+
+    Also provides ``.info()`` — a server-side schema introspection GET
+    (``/info/db/...``), independent of ``METHODS``/CRUD; see its docstring.
     """
 
     ENDPOINT: ClassVar[str]
@@ -118,6 +121,26 @@ class DbResource:
         client = client or get_default_client()
         cls._check(client, "GET")
         return client.request("GET", cls.ENDPOINT)
+
+    @classmethod
+    def info(cls, client: Optional[MidasClient] = None) -> dict:
+        """GET {base url}/info/db/... — server-returned key/type schema for
+        this resource, e.g. ``GET /info/db/NODE``.
+
+        Docs: the MIDAS-API manual repo's docs/AUTHENTICATION.md, "/info/db/...
+        — DB 리소스 스키마 인트로스펙션" — undocumented in the per-chapter
+        manual pages this repo's TypedDicts are transcribed from, but
+        documented in the repo's auth guide as a way to ask the server
+        directly for a field's current shape instead of digging through the
+        manual (or as a fallback for the endpoints this SDK hasn't wrapped
+        yet). Not tracked in docs/coverage.json/ROADMAP.md for that reason.
+        Independent of ``METHODS`` (schema info, not a data operation) — this
+        is attempted even for GET-less resources (e.g. ch27's ``DSRC``,
+        PUT/DELETE only).
+        """
+        client = client or get_default_client()
+        client.check_product(cls.PRODUCTS, cls.NAME or cls.__name__)
+        return client.request("GET", "/info" + cls.ENDPOINT)
 
     @classmethod
     def create(cls, items: dict, client: Optional[MidasClient] = None) -> dict:
