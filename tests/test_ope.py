@@ -827,17 +827,11 @@ def test_generate_bridge_girder_diagram_stress_batch(gen_client):
     ope.generate_bridge_girder_diagram(
         {
             "LC_NAME": "LCB_STRENGTH_01",
-            "LC_TYPE": "CB",
             "DGRM_TYPE": 0,
             "BATCH": True,
             "X_AXIS_TYPE": 0,
-            "COMPONENTS": 5,
-            "COMBINED_COMP": 0,
             "STRESS_LINE": {"OPT_USE": True, "COMP": 24000, "TENS": 54000},
-            "BATCH_LIST": [
-                {"BRDG_GROUP": "BG_LEFT", "SF": 1, "GROUP": "Stress_Left_Girder"},
-                {"BRDG_GROUP": "BG_RIGHT", "SF": 1, "GROUP": "Stress_Right_Girder"},
-            ],
+            "BATCH_LIST": ["Stress_Left_Girder", "Stress_Right_Girder"],
             "STAGE_LIST": ["CS1", "CS2", "FINAL"],
             "EXPORT_PATH": "C:\\Temp\\GSBG\\StressBatch",
             "EXTENSION": "jpg",
@@ -846,7 +840,7 @@ def test_generate_bridge_girder_diagram_stress_batch(gen_client):
     )
     sent = responses.calls[0].request
     body = json.loads(sent.body)
-    assert body["Argument"]["BATCH_LIST"][1]["GROUP"] == "Stress_Right_Girder"
+    assert body["Argument"]["BATCH_LIST"][1] == "Stress_Right_Girder"
     assert body["Argument"]["EXTENSION"] == "jpg"
 
 
@@ -856,7 +850,6 @@ def test_generate_bridge_girder_diagram_force_single(gen_client):
     ope.generate_bridge_girder_diagram(
         {
             "LC_NAME": "LCB_SERVICE_01",
-            "LC_TYPE": "CB",
             "DGRM_TYPE": 1,
             "BATCH": False,
             "X_AXIS_TYPE": 1,

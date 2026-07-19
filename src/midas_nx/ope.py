@@ -767,18 +767,14 @@ class AllowableStressLine(TypedDict, total=False):
     TENS: int  # allowable tension stress (follows current system unit setting), required if OPT_USE true
 
 
-class BridgeGirderBatchItem(TypedDict, total=False):
-    BRDG_GROUP: str  # bridge girder element group, required
-    SF: int  # scale factor, default 1, optional
-    GROUP: str  # output group name, required
-
-
 #: docs/manual/15_OPE.md #19 — /ope/GSBG — Bridge Girder Diagram Image Generation.
 #:
-#: Manual flags this endpoint "확인 필요" (unconfirmed) as of 2026-07-12: it is
-#: published as a standalone Zendesk article (id 59870138081177) but not yet
-#: linked from the official MIDAS API Online Manual TOC's OPE section.
-#: Transcribed as-is; verify against the production API before relying on it.
+#: The manual's official article was updated 2026-07-14 (superseding the
+#: 2026-07-12 "확인 필요"/unconfirmed draft this was originally transcribed
+#: from). Two breaking schema changes vs. that draft: `LC_TYPE` was dropped
+#: entirely (only `LC_NAME` is sent now), and `BATCH_LIST` changed from an
+#: array of `{BRDG_GROUP, SF, GROUP}` objects to a plain array of output
+#: group-name strings.
 #:
 #: DGRM_TYPE selects Stress(0)/Force(1) (governs which COMPONENTS values are
 #: valid); BATCH selects whether BATCH_LIST or BRDG_GROUP is used. Fields
@@ -789,16 +785,15 @@ BridgeGirderDiagramArgument = TypedDict(
     "BridgeGirderDiagramArgument",
     {
         "LC_NAME": str,  # load case/combination name, required
-        "LC_TYPE": str,  # "ST" (static)/"CS" (construction stage)/"CB" (combination), required
         "DGRM_TYPE": int,  # Stress=0/Force=1, required
         "BATCH": bool,  # default true, optional
         "X_AXIS_TYPE": int,  # Distance=0/Node=1, default 0, optional
-        "COMPONENTS": int,  # Stress(DGRM_TYPE=0): Sax=0/+Sby=1/-Sby=2/+Sbz=3/-Sbz=4/Combined=5/7thDOF=6; Force(DGRM_TYPE=1): Fx=0/Fy=1/Fz=2/Mx=3/My=4/Mz=5/Mb=6/Mt=7/Mw=8; default 0, optional
-        "7TH_DOF_TYPE": int,  # 0-6, used when DGRM_TYPE=0 and COMPONENTS=6 (7th DOF), default 0, optional
-        "COMBINED_COMP": int,  # 0-4, used when DGRM_TYPE=0 and COMPONENTS=5 (Combined), default 0, optional
-        "STRESS_LINE": AllowableStressLine,  # optional
-        "BATCH_LIST": List[BridgeGirderBatchItem],  # bridge-girder-group/scale-factor/group-name sets, required if BATCH=true
-        "BRDG_GROUP": str,  # bridge girder element group, required if BATCH=false
+        "COMPONENTS": int,  # Stress(DGRM_TYPE=0): Sax=0/+Sby=1/-Sby=2/+Sbz=3/-Sbz=4/Combined=5/7thDOF=6; Force(DGRM_TYPE=1): Fx=0/Fy=1/Fz=2/Mx=3/My=4/Mz=5/Mb=6/Mt=7/Mw=8; default 0, optional; not allowed at top level when BATCH=true
+        "7TH_DOF_TYPE": int,  # 0-6, used when DGRM_TYPE=0 and COMPONENTS=6 (7th DOF), default 0, optional; not allowed when BATCH=true
+        "COMBINED_COMP": int,  # 0-4, used when DGRM_TYPE=0 and COMPONENTS=5 (Combined), default 0, optional; not allowed when BATCH=true
+        "STRESS_LINE": AllowableStressLine,  # optional, not allowed when DGRM_TYPE=1 (Force)
+        "BATCH_LIST": List[str],  # output group names, required if BATCH=true/omitted; not allowed if BATCH=false
+        "BRDG_GROUP": str,  # bridge girder element group, required if BATCH=false; not allowed if BATCH=true
         "STAGE_LIST": List[str],  # construction stages to generate diagrams for (minItems 1), required
         "EXPORT_PATH": str,  # image save path, required
         "EXTENSION": str,  # "bmp"/"jpg"/"emf", required
@@ -812,7 +807,7 @@ def generate_bridge_girder_diagram(
 ) -> dict:
     """docs/manual/15_OPE.md #19 — /ope/GSBG — Bridge Girder Diagram Image Generation.
 
-    See BridgeGirderDiagramArgument's docstring re: the manual's own
-    "확인 필요" (unconfirmed) flag on this endpoint.
+    See BridgeGirderDiagramArgument's docstring re: the 2026-07-14 schema
+    update (LC_TYPE removed, BATCH_LIST is now a plain string array).
     """
     return _post("/ope/GSBG", argument, client)
