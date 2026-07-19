@@ -5,17 +5,19 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-07-19, at v0.9.1 (390/398 documented endpoints, Phase 5c
+> Last updated: 2026-07-19, at v0.10.0 (390/398 documented endpoints, Phase 5c
 > complete — SRC design code AIK-SRC2K; v0.9.0 added extensive live Gen NX /
-> Civil NX verification, see docs/live_verification_notes.md; v0.9.1 is a
-> live-manual schema-sync fix, see §4). The remaining 8 rows are Hyper-S
-> `-M1` endpoints with no JSON Schema in the manual repo (URL/methods + an
-> external Zendesk link only) — genuinely not transcribable to this repo's
-> typed-TypedDict standard without depending on an external, non-versioned
-> source, so they're treated as undocumented stubs per this project's
-> existing "100% minus undocumented stubs" gate. v1.0.0 is next; whether it
-> requires those 8 (needs a source for their schema) or is already earned
-> under the existing stub exclusion is an open call for the next release.
+> Civil NX verification, see docs/live_verification_notes.md; v0.9.1 was a
+> live-manual schema-sync fix; v0.10.0 adds cross-cutting connection/schema
+> helpers not counted in the 390/398, see §4). The remaining 8 rows are
+> Hyper-S `-M1` endpoints with no JSON Schema in the manual repo (URL/methods
+> and an external Zendesk link only) — genuinely not transcribable to this
+> repo's typed-TypedDict standard without depending on an external,
+> non-versioned source, so they're treated as undocumented stubs per this
+> project's existing "100% minus undocumented stubs" gate. v1.0.0 is next;
+> whether it requires those 8 (needs a source for their schema) or is
+> already earned under the existing stub exclusion is an open call for the
+> next release.
 
 ---
 
@@ -124,7 +126,7 @@ mirroring the `db/*.py` payload-typing style but at the whole-body level.
 
 ---
 
-## 2. Current status (v0.9.1)
+## 2. Current status (v0.10.0)
 
 | Area | Chapters | Endpoints | State |
 |---|---|---|---|
@@ -140,7 +142,7 @@ mirroring the `db/*.py` payload-typing style but at the whole-body level.
 | **Phase 5a — design setup + steel code** | 24, 25 | **40/40** | ✅ done |
 | **Phase 5b — RC design code** | 26 | **69/69** | ✅ done |
 | **Phase 5c — SRC design code** | 27 | **27/27** | ✅ done |
-| **Total** | | **390/398 (98%)** | v0.9.1 on PyPI |
+| **Total** | | **390/398 (98%)** | v0.10.0 ready to release |
 
 > The remaining 8 rows are undocumented Hyper-S stubs (STYP-M1, MATL-M1,
 > IMFM-M1, EPMT-M1, IEHG-*-M1) with no JSON Schema in the manual repo to
@@ -240,15 +242,15 @@ measuring source density: ch26 alone is 13,363 manual lines / 69 endpoints,
   `BATCH_LIST` changed from an object array to a plain string array).
   Updated `BridgeGirderDiagramArgument` + its tests to match; no other
   endpoint affected by that manual update.
-- **Unreleased — connection/introspection helpers, pending a version
-  decision**: `MidasClient.verify_connection()` (`/mapikey/verify` health
-  check) and `DbResource.info()` (`/info/db/...` schema introspection, a
-  fallback for fields/endpoints this SDK hasn't wrapped yet). Source:
-  the manual repo's docs/AUTHENTICATION.md (a cross-cutting auth/ops guide,
-  not a per-chapter manual page) — not tracked in docs/coverage.json /
-  ROADMAP.md for that reason. Also ported the manual repo's simple-beam
-  load-combination tutorial to `examples/python/`, and added a README
-  Troubleshooting section (connection errors, firewall/SSL-inspection
+- **v0.10.0 ✅ — Connection/introspection helpers**
+  — `MidasClient.verify_connection()` (`/mapikey/verify` health check) and
+  `DbResource.info()` (`/info/db/...` schema introspection, a fallback for
+  fields/endpoints this SDK hasn't wrapped yet). Source: the manual repo's
+  docs/AUTHENTICATION.md (a cross-cutting auth/ops guide, not a per-chapter
+  manual page) — not tracked in docs/coverage.json/ROADMAP.md for that
+  reason, so the 390/398 count is unchanged. Also ported the manual repo's
+  simple-beam load-combination tutorial to `examples/python/`, and added a
+  README Troubleshooting section (connection errors, firewall/SSL-inspection
   allowlist).
 - v1.0.0 next — pending a decision on whether the 8 undocumented Hyper-S
   stubs block it (see cross-cutting backlog below) or the existing "100%
@@ -276,7 +278,8 @@ measuring source density: ch26 alone is 13,363 manual lines / 69 endpoints,
 | v0.7.0 ✅ | RC design code (Phase 5b) | published |
 | v0.8.0 ✅ | SRC design code (Phase 5c) | published |
 | v0.9.0 ✅ | Live Gen/Civil NX verification + PyPI discoverability (py.typed, classifiers, README) | published |
-| v0.9.1 | Live-manual schema sync (`/ope/GSBG` → 2026-07-14 schema) | ready to release |
+| v0.9.1 ✅ | Live-manual schema sync (`/ope/GSBG` → 2026-07-14 schema) | published |
+| v0.10.0 | Connection/introspection helpers (`verify_connection()`, `DbResource.info()`) + beam example + troubleshooting docs | ready to release |
 | v1.0.0 | Design code checks complete (incl. Hyper-S `-M1`, 8 endpoints remaining) | full documented surface covered |
 
 Each version ships when its phase's chapters are 100% (minus undocumented
