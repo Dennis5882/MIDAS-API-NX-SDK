@@ -11,6 +11,10 @@ documented at [Dennis5882/MIDAS-API](https://github.com/Dennis5882/MIDAS-API). S
 
 This is an unofficial, community project — not affiliated with or endorsed by MIDASIT.
 
+> **New to programming?** If you're a structural engineer who's never written Python before,
+> [docs/en/quickstart.md](./docs/en/quickstart.md) walks through everything from installing
+> Python to running your first script.
+>
 > **한국어 사용자를 위한 안내**: `midas-nx`는 MIDAS Civil NX와 MIDAS Gen NX의 Open API를
 > 하나의 Python 패키지로 통합해 감싼 비공식 커뮤니티 SDK입니다. MIDASIT의 공식
 > `midas-civil`/`midas-gen` 패키지가 제품별로 나뉘어 있고 문서화된 API 표면의 일부만
@@ -19,7 +23,9 @@ This is an unofficial, community project — not affiliated with or endorsed by 
 > 있습니다. 설치는 `pip install midas-nx`, 사용 예시는 아래 "Quick start" 절을
 > 참고하세요. 실제 Gen NX/Civil NX 세션으로 검증한 내용(주의할 점, 알려진 이슈)은
 > [docs/live_verification_notes.md](./docs/live_verification_notes.md)에 정리되어
-> 있습니다.
+> 있습니다. **Python이나 프로그래밍이 처음이신 구조 엔지니어**는
+> [docs/ko/quickstart.md](./docs/ko/quickstart.md)에서 Python 설치부터 첫
+> 스크립트 실행까지 순서대로 안내받으실 수 있습니다.
 >
 > **繁體中文使用者指南**：`midas-nx` 是將 MIDAS Civil NX 與 MIDAS Gen NX 的 Open API
 > 整合為單一 Python 套件的非官方社群 SDK。與 MIDASIT 官方的 `midas-civil`/`midas-gen`
@@ -27,7 +33,10 @@ This is an unofficial, community project — not affiliated with or endorsed by 
 > [MIDAS-API 手冊儲存庫](https://github.com/Dennis5882/MIDAS-API) 中記載的規格實作。
 > 安裝方式為 `pip install midas-nx`，使用範例請參考下方「Quick start」章節。實際在
 > Gen NX / Civil NX 連線環境中驗證過的內容（注意事項、已知問題）整理於
-> [docs/live_verification_notes.md](./docs/live_verification_notes.md)。
+> [docs/live_verification_notes.md](./docs/live_verification_notes.md)。**從未寫過
+> Python 的結構工程師**，可參考
+> [docs/zh-tw/quickstart.md](./docs/zh-tw/quickstart.md)，內含從安裝 Python 到
+> 執行第一支腳本的完整步驟。
 >
 > **简体中文使用指南**：`midas-nx` 是将 MIDAS Civil NX 与 MIDAS Gen NX 的 Open API
 > 整合为单一 Python 包的非官方社区 SDK。与 MIDASIT 官方的 `midas-civil`/`midas-gen`
@@ -118,7 +127,9 @@ More worked examples in [`examples/python/`](./examples/python/): a wind-load pl
 ## Design
 
 - **Instance-based `MidasClient`** — no global mutable state; errors raise typed exceptions
-  (`MidasAuthError`, `MidasNotFoundError`, ...) instead of killing the process.
+  (`MidasAuthError`, `MidasNotFoundError`, ...) instead of killing the process. The most common
+  ones (auth, connection, not-found) append a plain-language `(Hint: ...)` suggestion to the
+  message — no need to guess what a 401 or a dead connection means.
 - **Unified Gen/Civil** — `MidasClient(product=Product.GEN | Product.CIVIL)`; each resource class
   declares which product(s) it supports (`PRODUCTS`), and calling a Civil-only resource against a
   Gen client raises `ProductMismatchError` by default (`strict_product=False` to only warn).
@@ -126,7 +137,9 @@ More worked examples in [`examples/python/`](./examples/python/): a wind-load pl
   classmethods; `TypedDict` payload types document each endpoint's schema (from
   `docs/manual/*.md` in the sibling repo) for editor/type-checker support, without runtime
   payload validation — schemas are too conditional (see e.g. the Eurocode moving-load endpoint,
-  5 mutually-exclusive variants) for a one-size-fits-all validated model.
+  5 mutually-exclusive variants) for a one-size-fits-all validated model. `.items()` is a
+  convenience alternative to `.get()`: `Node.items()` returns `{1: {"X": 0, ...}, 2: {...}}`
+  (int-keyed, unwrapped) instead of `.get()`'s raw `{"NODE": {"1": {...}, ...}}` response shape.
 - **`/doc/*` lifecycle** endpoints are plain functions (`doc.new_project()`, `doc.save()`, ...) —
   not ID-keyed, wrapped in `"Argument"` rather than `"Assign"`.
 - **Connection sanity check + schema fallback** — `client.verify_connection()` wraps the
