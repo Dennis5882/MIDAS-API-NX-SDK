@@ -1,5 +1,6 @@
 {
   "vendored_from": "Dennis5882/MIDAS-API docs/manual/INDEX.md",
+  "vendored_at_commit": "8d9dc54217c773da4c778440c4c5f5e9d044e716",
   "source_note": "Static snapshot; re-run scripts/vendor_coverage.py to refresh. POST result-table types and the three Design Code chapters (25-27) are not itemized by URL in INDEX.md and are represented as single aggregate rows rather than one row per table/check.",
   "endpoints": [
     {
@@ -11,7 +12,19 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.doc"
+      "module": "midas_nx.doc",
+      "live_verified": {
+        "date": "2026-07-22",
+        "products": [
+          "gen",
+          "civil"
+        ],
+        "method": "scripts/live_smoke.py",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/doc/OPEN",
@@ -121,7 +134,19 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.doc"
+      "module": "midas_nx.doc",
+      "live_verified": {
+        "date": "2026-07-22",
+        "products": [
+          "gen",
+          "civil"
+        ],
+        "method": "scripts/live_smoke.py",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/PJCF",
@@ -143,7 +168,19 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.project"
+      "module": "midas_nx.db.project",
+      "live_verified": {
+        "date": "2026-07-22",
+        "products": [
+          "gen",
+          "civil"
+        ],
+        "method": "scripts/live_smoke.py",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/STYP",
@@ -297,7 +334,19 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.node_element"
+      "module": "midas_nx.db.node_element",
+      "live_verified": {
+        "date": "2026-07-22",
+        "products": [
+          "gen",
+          "civil"
+        ],
+        "method": "scripts/live_smoke.py",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/ELEM",
@@ -308,7 +357,19 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.node_element"
+      "module": "midas_nx.db.node_element",
+      "live_verified": {
+        "date": "2026-07-22",
+        "products": [
+          "gen",
+          "civil"
+        ],
+        "method": "scripts/live_smoke.py",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SKEW",
@@ -363,7 +424,19 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.material"
+      "module": "midas_nx.db.properties.material",
+      "live_verified": {
+        "date": "2026-07-22",
+        "products": [
+          "gen",
+          "civil"
+        ],
+        "method": "scripts/live_smoke.py",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MATL-M1",
@@ -484,7 +557,19 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.section"
+      "module": "midas_nx.db.properties.section",
+      "live_verified": {
+        "date": "2026-07-22",
+        "products": [
+          "gen",
+          "civil"
+        ],
+        "method": "scripts/live_smoke.py",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/THIK",
@@ -715,7 +800,19 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-22",
+        "products": [
+          "gen",
+          "civil"
+        ],
+        "method": "scripts/live_smoke.py",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/NSPR",
@@ -979,7 +1076,19 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.static_loads"
+      "module": "midas_nx.db.static_loads",
+      "live_verified": {
+        "date": "2026-07-22",
+        "products": [
+          "gen",
+          "civil"
+        ],
+        "method": "scripts/live_smoke.py",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/BODF",
@@ -990,7 +1099,19 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.static_loads"
+      "module": "midas_nx.db.static_loads",
+      "live_verified": {
+        "date": "2026-07-22",
+        "products": [
+          "gen",
+          "civil"
+        ],
+        "method": "scripts/live_smoke.py",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/CNLD",

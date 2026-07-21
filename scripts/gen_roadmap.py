@@ -22,6 +22,20 @@ def main() -> None:
 
     total = len(endpoints)
     implemented = sum(1 for e in endpoints if e["status"] == "implemented")
+    live_verified = sum(1 for e in endpoints if e.get("live_verified"))
+
+    # D4 version matrix: every distinct (date, Gen build, Civil build) combo
+    # a live_verified entry cites — naturally grows into a real matrix as
+    # more scripts/live_smoke.py runs get recorded over time.
+    sessions = sorted({
+        (
+            e["live_verified"]["date"],
+            e["live_verified"].get("nx_versions", {}).get("gen", "?"),
+            e["live_verified"].get("nx_versions", {}).get("civil", "?"),
+        )
+        for e in endpoints
+        if e.get("live_verified") and e["live_verified"].get("nx_versions")
+    })
 
     lines = [
         "# Roadmap",
@@ -31,6 +45,21 @@ def main() -> None:
         "",
         f"**{implemented}/{total} documented endpoints implemented.**",
         "",
+        f"**{live_verified}/{implemented} implemented endpoints live-verified** "
+        "against a real Gen NX / Civil NX session (`live_verified` field in "
+        "`docs/coverage.json`; see `scripts/live_smoke.py` and "
+        "`docs/live_verification_notes.md`).",
+        "",
+    ]
+
+    if sessions:
+        lines.append("| Date | Gen NX build | Civil NX build |")
+        lines.append("|---|---|---|")
+        for date, gen_build, civil_build in sessions:
+            lines.append(f"| {date} | {gen_build} | {civil_build} |")
+        lines.append("")
+
+    lines += [
         "> " + data["source_note"],
         "",
         "Pick any unchecked row, implement it in the listed `module`, add a test "
@@ -45,12 +74,13 @@ def main() -> None:
         done = sum(1 for r in rows if r["status"] == "implemented")
         lines.append(f"## {chapter_file} ({done}/{len(rows)})")
         lines.append("")
-        lines.append("| | Endpoint | Name | Products | Module |")
-        lines.append("|---|---|---|---|---|")
+        lines.append("| | Live | Endpoint | Name | Products | Module |")
+        lines.append("|---|---|---|---|---|---|")
         for r in rows:
             checkbox = "[x]" if r["status"] == "implemented" else "[ ]"
+            live = "✅" if r.get("live_verified") else ""
             products = "/".join(r["products"])
-            lines.append(f"| {checkbox} | `{r['endpoint']}` | {r['name']} | {products} | `{r['module']}` |")
+            lines.append(f"| {checkbox} | {live} | `{r['endpoint']}` | {r['name']} | {products} | `{r['module']}` |")
         lines.append("")
 
     (ROOT / "ROADMAP.md").write_text("\n".join(lines), encoding="utf-8")

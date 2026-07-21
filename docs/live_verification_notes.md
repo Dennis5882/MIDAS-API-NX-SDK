@@ -791,6 +791,61 @@ reproduced 4 for 4 times that all conditions were met, across a trivial
 synthetic model, a production-scale model (twice), and a natively
 KDS-configured production model.
 
+## Repeatable smoke test — `scripts/live_smoke.py` (2026-07-22)
+
+Everything above was run by hand, one call at a time. This session turned
+the core write → analyze → read round trip (new project, unit, material,
+section, node, element, support, load case, self-weight, `doc.analyze()`,
+reaction/displacement/beam-force tables, checked against a hand-calc) into
+`scripts/live_smoke.py`, then ran it fresh against both a live Gen NX and a
+live Civil NX session (same MIDASIT account, both freshly reset via
+`/doc/NEW`). Both runs succeeded end to end and reported
+`reaction_matches_hand_calc: true`. Confirmed builds (via each app's
+About/도움말 dialog): **MIDAS Gen NX 2026 (v2.1), build 06/23/2026** and
+**MIDAS Civil NX 2026 (v2.1), build 06/05/2026** — the same v2.1 line as
+the English-build Gen NX used in the `CC-ANAL`/`BC-ANAL` reproductions
+above, now with an exact build date on record for the first time.
+`docs/coverage.json` now tags the ten endpoints this script exercises
+(`/doc/NEW`, `/doc/ANAL`, `/db/UNIT`, `/db/MATL`, `/db/SECT`, `/db/NODE`,
+`/db/ELEM`, `/db/CONS`, `/db/STLD`, `/db/BODF`) with a `"live_verified"`
+field carrying this date and both builds; `ROADMAP.md` surfaces the count
+and a Gen/Civil build matrix generated from it (PLAN.md's D4).
+
+New findings from this run, beyond what's already recorded above:
+
+- **The `/post/TABLE` response's top-level key is not stable across
+  sessions.** Earlier findings in this file saw it as `"Result Table"`;
+  this session got back the literal string `"empty"` for the same
+  reaction/displacement/beam-force calls (with `table_name` left at its
+  default `""`). Don't hardcode either key — `scripts/live_smoke.py`'s
+  `_find_head_data()` scans the response's values for the first dict
+  containing both `"HEAD"` and `"DATA"` instead, which is robust across
+  whatever this key turns out to be call-to-call.
+- **A 200 response can carry an `{"error": ...}` body even from a `DbResource.create()` call, and this is easy to miss if a caller only checks
+  the HTTP status.** `live_smoke.py`'s first draft didn't check for this
+  and silently treated a failed `Constraint.create()` as successful — the
+  fix (checking for an `"error"` key in every 2xx body) is the same
+  pattern already noted above for design-code "already exists" responses;
+  worth treating as a general rule for every `DbResource`/`doc.*` call, not
+  just the design-code family.
+- **Gen's concrete `STANDARD` code for C24 is `"KS01(RC)"`, same as Civil**
+  — confirmed by first trying the plausible-looking `"KS(RC)"` on Gen,
+  which failed with `{"error": {"message": "Unknown Error"}}` (an
+  unhelpful message with no hint about the actual problem being the
+  standard-code string), then retrying with `"KS01(RC)"`, which succeeded
+  immediately. The manual doesn't enumerate valid `STANDARD` strings per
+  product, so — as with the original Civil finding above — this is a
+  live-only data point, not a schema contradiction.
+- **Physically-grounded cross-check, both products**: a 0.6×0.6 m, 3.2 m
+  tall C24/KS01(RC) cantilever column's self-weight reaction came back as
+  `FZ = 27.113426 kN` on both Gen and Civil (byte-identical, same model) —
+  about 4% below a naive hand-calc using a generic 24.5 kN/m³ unit weight
+  (`0.36 m² × 3.2 m × 24.5 ≈ 28.22 kN`), implying MIDAS's actual `C24`/
+  `KS01(RC)` preset unit weight is closer to `27.113 / (0.36 × 3.2) ≈
+  23.53 kN/m³`. Useful reference point for anyone else hand-calc-checking
+  a KS01(RC) C24 model; `scripts/live_smoke.py` uses a 5% tolerance for
+  exactly this reason rather than an exact-match assertion.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
