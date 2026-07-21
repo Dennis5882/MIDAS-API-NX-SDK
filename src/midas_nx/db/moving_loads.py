@@ -9,7 +9,6 @@ from typing import Any, List, TypedDict
 
 from .base import CIVIL_ONLY, DbResource
 
-
 # --- 1. /db/MVCD — Moving Load Code ------------------------------------------
 
 

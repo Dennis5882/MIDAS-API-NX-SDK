@@ -8,7 +8,8 @@ from __future__ import annotations
 
 from typing import Optional
 
-from .client import MidasClient, post_argument as _post
+from .client import MidasClient
+from .client import post_argument as _post
 
 
 def new_project(client: Optional[MidasClient] = None) -> dict:

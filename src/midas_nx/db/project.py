@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from typing import List, TypedDict
 
-from .base import DbResource, NO_DELETE_METHODS
+from .base import NO_DELETE_METHODS, DbResource
 
 _GET_PUT_ONLY = frozenset({"GET", "PUT"})
 

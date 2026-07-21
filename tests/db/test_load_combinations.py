@@ -6,8 +6,8 @@ import responses
 from midas_nx.client import ProductMismatchError
 from midas_nx.db.load_combinations import (
     CuttingLine,
-    LoadCombinationConcrete,
     LoadCombinationCompositeSteelGirder,
+    LoadCombinationConcrete,
     LoadCombinationGeneral,
     LoadCombinationSeismic,
     LoadCombinationSRC,

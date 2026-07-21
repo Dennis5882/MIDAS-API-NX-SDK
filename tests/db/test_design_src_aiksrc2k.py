@@ -5,6 +5,7 @@ import responses
 
 from midas_nx.client import UnsupportedMethodError
 from midas_nx.design.src_aiksrc2k import (
+    SrcBeamSectionData,
     SrcColumnSectionData,
     SrcDefinitionOfFrame,
     SrcDesignCode,
@@ -19,7 +20,6 @@ from midas_nx.design.src_aiksrc2k import (
     SrcModifyMaterial,
     SrcModifyMemberType,
     SrcMomentMagnifier,
-    SrcBeamSectionData,
     SrcScaleUpFactorForEarthquake,
     SrcSeismicLoadCombinationType,
     SrcUnbracedLength,

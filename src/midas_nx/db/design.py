@@ -14,8 +14,8 @@ from __future__ import annotations
 
 from typing import List, TypedDict
 
-from .base import DbResource
 from ..post.base import NodeElemsSelector
+from .base import DbResource
 
 # Shared KEYS/TO/STRUCTURE_GROUP_NAME "pick one" element-selector used when
 # CREATE_SUB_SECTION=true (REBB/REBC/REBR "ELEMS") — identical shape to

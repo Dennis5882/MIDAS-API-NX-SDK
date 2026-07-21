@@ -9,7 +9,12 @@ from __future__ import annotations
 
 from typing import Any, List, TypedDict
 
-from .base import DbResource, GET_PUT_DELETE_METHODS, InitialLoadCaseItem, TimeValuePoint
+from .base import (
+    GET_PUT_DELETE_METHODS,
+    DbResource,
+    InitialLoadCaseItem,
+    TimeValuePoint,
+)
 
 
 class ResponseSpectrumFunctionValue(TypedDict, total=False):

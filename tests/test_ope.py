@@ -4,7 +4,6 @@ import responses
 
 from midas_nx import ope
 
-
 # --- 1. PROJECTSTATUS --------------------------------------------------------
 
 

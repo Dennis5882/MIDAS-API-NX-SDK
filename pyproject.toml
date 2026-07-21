@@ -41,6 +41,7 @@ dependencies = [
 dev = [
   "pytest>=7.0",
   "responses>=0.23",
+  "ruff>=0.15",
 ]
 
 [project.urls]
@@ -56,3 +57,9 @@ packages = ["src/midas_nx"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["F", "I"]

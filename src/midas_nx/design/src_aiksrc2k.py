@@ -34,8 +34,14 @@ from __future__ import annotations
 
 from typing import List, Optional, TypedDict
 
-from ..client import MidasClient, post_argument as _post
-from ..db.base import DbResource, GET_DELETE_METHODS, GET_PUT_DELETE_METHODS, PUT_DELETE_METHODS
+from ..client import MidasClient
+from ..client import post_argument as _post
+from ..db.base import (
+    GET_DELETE_METHODS,
+    GET_PUT_DELETE_METHODS,
+    PUT_DELETE_METHODS,
+    DbResource,
+)
 from ..post.base import NodeElemsSelector, TableStyles, TableUnit
 
 _BASE = "/DESIGN/SRC/AIK-SRC2K"

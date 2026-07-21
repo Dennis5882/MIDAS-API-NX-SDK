@@ -2,7 +2,14 @@ import json
 
 import responses
 
-from midas_nx.db.node_element import DomainElement, Element, MainDomain, Node, Skew, SubDomain
+from midas_nx.db.node_element import (
+    DomainElement,
+    Element,
+    MainDomain,
+    Node,
+    Skew,
+    SubDomain,
+)
 
 
 @responses.activate

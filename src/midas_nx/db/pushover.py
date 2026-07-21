@@ -3,8 +3,12 @@ from __future__ import annotations
 
 from typing import List, TypedDict
 
-from .base import DbResource, GET_PUT_DELETE_METHODS, InitialLoadCaseItem, OptUseToleranceValue
-
+from .base import (
+    GET_PUT_DELETE_METHODS,
+    DbResource,
+    InitialLoadCaseItem,
+    OptUseToleranceValue,
+)
 
 # --- 1. /db/POGD — Pushover Analysis Control Data ---------------------------
 

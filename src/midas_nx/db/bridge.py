@@ -9,7 +9,6 @@ from typing import List, TypedDict
 
 from .base import CIVIL_ONLY, DbResource
 
-
 # --- 1. /db/GSBG — Bridge Girder Diagrams ------------------------------------
 
 

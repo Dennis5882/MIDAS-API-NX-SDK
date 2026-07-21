@@ -25,7 +25,8 @@ from __future__ import annotations
 
 from typing import List, Optional, TypedDict
 
-from ...client import MidasClient, post_argument as _post
+from ...client import MidasClient
+from ...client import post_argument as _post
 from ...post.base import NodeElemsSelector, TableStyles, TableUnit
 
 _BASE = "/DESIGN/RC/KDS-41-20-2022"

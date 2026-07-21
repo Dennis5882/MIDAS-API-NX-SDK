@@ -8,8 +8,8 @@ https://github.com/Dennis5882/MIDAS-API/tree/main/docs/manual
 See ROADMAP.md for endpoint coverage.
 """
 from .client import (
-    MidasAPIError,
     MidasAPI,
+    MidasAPIError,
     MidasAuthError,
     MidasClient,
     MidasConnectionError,

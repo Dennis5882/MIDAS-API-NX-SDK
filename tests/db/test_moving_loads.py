@@ -35,7 +35,6 @@ from midas_nx.db.moving_loads import (
     VehiclesTransverse,
 )
 
-
 # --- 1. /db/MVCD --------------------------------------------------------------
 
 

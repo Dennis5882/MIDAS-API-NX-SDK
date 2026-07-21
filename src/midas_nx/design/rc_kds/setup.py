@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from typing import List, TypedDict
 
-from ...db.base import DbResource, GET_DELETE_METHODS, GET_PUT_DELETE_METHODS
+from ...db.base import GET_DELETE_METHODS, GET_PUT_DELETE_METHODS, DbResource
 
 _BASE = "/DESIGN/RC/KDS-41-20-2022"
 

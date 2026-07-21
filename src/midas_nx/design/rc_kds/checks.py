@@ -15,7 +15,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, TypedDict
 
-from ...client import MidasClient, post_argument as _post
+from ...client import MidasClient
+from ...client import post_argument as _post
 from ...post.base import NodeElemsSelector, TableStyles, TableUnit
 from .design_forces import RcReportDetailPositions, RcWallDesignSelection
 

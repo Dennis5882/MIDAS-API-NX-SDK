@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from typing import Dict, List, TypedDict
 
-from ...db.base import DbResource, GET_PUT_DELETE_METHODS
+from ...db.base import GET_PUT_DELETE_METHODS, DbResource
 from ...post.base import NodeElemsSelector
 
 _BASE = "/DESIGN/RC/KDS-41-20-2022"

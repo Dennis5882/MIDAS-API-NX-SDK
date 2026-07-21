@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any, List, TypedDict
 
-from .base import DbResource, ItemGroupFields, NO_DELETE_METHODS
+from .base import NO_DELETE_METHODS, DbResource, ItemGroupFields
 
 
 class ConstraintItem(ItemGroupFields, total=False):

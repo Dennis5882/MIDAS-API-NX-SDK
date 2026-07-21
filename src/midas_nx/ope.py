@@ -11,8 +11,9 @@ from __future__ import annotations
 
 from typing import List, Optional, TypedDict, Union
 
-from .client import MidasClient, get_result as _get, post_argument as _post
-
+from .client import MidasClient
+from .client import get_result as _get
+from .client import post_argument as _post
 
 # --- 1. /ope/PROJECTSTATUS — Project Status ---------------------------------
 
