@@ -11,7 +11,7 @@ from __future__ import annotations
 import logging
 import os
 from enum import Enum
-from typing import Any, Mapping, Optional
+from typing import Any, ClassVar, Mapping, Optional
 
 import requests
 
@@ -38,7 +38,14 @@ def build_base_url(product: "Product | str") -> str:
 
 
 class MidasAPIError(Exception):
-    """Base class for all errors raised by this SDK."""
+    """Base class for all errors raised by this SDK.
+
+    Subclasses may set ``HINT`` to a short, actionable suggestion; it's
+    appended to the message automatically so callers see both the server's
+    own error text and, where there's a common fix, what to do about it.
+    """
+
+    HINT: ClassVar[str] = ""
 
     def __init__(
         self,
@@ -49,6 +56,13 @@ class MidasAPIError(Exception):
         endpoint: Optional[str] = None,
         response_body: Any = None,
     ) -> None:
+        if self.HINT:
+            # "(Hint: ...)" rather than an em-dash separator: this message
+            # is read directly by non-developers, including on a Windows
+            # console using a non-Unicode codepage (e.g. cp949) that can't
+            # encode an em-dash and would otherwise render it as a
+            # "\uXXXX" escape in the middle of the message.
+            message = f"{message} (Hint: {self.HINT})"
         super().__init__(message)
         self.status_code = status_code
         self.method = method
@@ -59,9 +73,19 @@ class MidasAPIError(Exception):
 class MidasAuthError(MidasAPIError):
     """401 / 403 — invalid or missing MAPI-Key."""
 
+    HINT = (
+        "check your MAPI-Key. Get or verify one from the Gen NX / Civil NX "
+        "application's Open API / Apps menu > API Key"
+    )
+
 
 class MidasNotFoundError(MidasAPIError):
     """404 — model not connected, or resource/id not found."""
+
+    HINT = (
+        "either the product isn't connected (call client.verify_connection() "
+        "to check) or the id you asked for doesn't exist in the current model"
+    )
 
 
 class MidasRequestError(MidasAPIError):
@@ -74,6 +98,8 @@ class MidasServerError(MidasAPIError):
 
 class MidasConnectionError(MidasAPIError):
     """Network failure / timeout before a response was received."""
+
+    HINT = "check that MIDAS Gen NX / Civil NX is running with Open API connected"
 
 
 class ProductMismatchError(MidasAPIError):

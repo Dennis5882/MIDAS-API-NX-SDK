@@ -65,6 +65,16 @@ def test_401_raises_auth_error_not_process_exit(gen_client):
     with pytest.raises(MidasAuthError) as exc_info:
         gen_client.request("GET", "/db/NODE")
     assert exc_info.value.status_code == 401
+    assert "Invalid MAPI-Key" in str(exc_info.value)
+    assert "(Hint:" in str(exc_info.value)
+
+
+@responses.activate
+def test_other_4xx_message_has_no_hint_suffix(gen_client):
+    responses.add(responses.POST, "https://x.test:443/gen/db/NODE", json={"message": "bad"}, status=400)
+    with pytest.raises(MidasRequestError) as exc_info:
+        gen_client.request("POST", "/db/NODE", {})
+    assert "(Hint:" not in str(exc_info.value)
 
 
 @responses.activate

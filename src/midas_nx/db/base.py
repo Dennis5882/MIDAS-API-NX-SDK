@@ -123,6 +123,16 @@ class DbResource:
         return client.request("GET", cls.ENDPOINT)
 
     @classmethod
+    def items(cls, client: Optional[MidasClient] = None) -> dict:
+        """Fetch all items, unwrapped to ``{id: payload}`` with int ids
+        (e.g. ``{1: {"X": 0, "Y": 0, "Z": 0}, ...}`` for ``Node``), instead
+        of ``.get()``'s raw ``{ENDPOINT_KEY: {"1": {...}, ...}}`` response.
+        ``.get()`` is unchanged; use whichever shape is more convenient."""
+        response = cls.get(client=client)
+        table = next(iter(response.values()), {}) if response else {}
+        return {int(k): v for k, v in table.items()}
+
+    @classmethod
     def info(cls, client: Optional[MidasClient] = None) -> dict:
         """GET {base url}/info/db/... — server-returned key/type schema for
         this resource, e.g. ``GET /info/db/NODE``.
