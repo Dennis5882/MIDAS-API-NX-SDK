@@ -634,3 +634,33 @@ def test_get_composite_section_self_constraint_beam_table_accepts_stress_variant
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Argument"]["TABLE_TYPE"] == "SELF_CONST_BEAM_STRESS"
+
+
+@responses.activate
+def test_get_wall_force_table_sends_full_argument(gen_client):
+    responses.add(responses.POST, "https://x.test:443/gen/post/TABLE", json={}, status=200)
+    result_1.get_wall_force_table(
+        table_name="WallForce",
+        unit={"FORCE": "kN", "DIST": "m"},
+        styles={"FORMAT": "Fixed", "PLACE": 3},
+        node_elems={"KEYS": [1, 2, 3]},
+        load_case_names=["gLCB6(CB)"],
+        sect_position="Mid",
+        parts=["top", "bot"],
+        story_names=["2F"],
+        client=gen_client,
+    )
+    sent = responses.calls[0].request
+    assert json.loads(sent.body) == {
+        "Argument": {
+            "TABLE_NAME": "WallForce",
+            "TABLE_TYPE": "WALL_FORCE_MOMENT",
+            "UNIT": {"FORCE": "kN", "DIST": "m"},
+            "STYLES": {"FORMAT": "Fixed", "PLACE": 3},
+            "NODE_ELEMS": {"KEYS": [1, 2, 3]},
+            "LOAD_CASE_NAMES": ["gLCB6(CB)"],
+            "SECT_POSITION": "Mid",
+            "PARTS": ["top", "bot"],
+            "STORY_NAMES": ["2F"],
+        }
+    }

@@ -1,5 +1,5 @@
 """Source: docs/manual/19_POST_AnalysisResult_1.md, items 1-12, and
-docs/manual/20_POST_AnalysisResult_2.md, items 1-38.
+docs/manual/20_POST_AnalysisResult_2.md, items 1-39.
 
 All functions POST to the shared /post/TABLE endpoint — see post/base.py.
 """
@@ -189,6 +189,9 @@ TABLE_TYPE_COMPOSITE_SECTION_BEAM_STRESS = "COMPSECTBEAMSTRESS"
 # 38. Composite Section for C.S. (Self-Constraint Force and Stress)
 TABLE_TYPE_SELF_CONSTRAINT_BEAM_FORCE = "SELF_CONST_BEAM_FORCE"
 TABLE_TYPE_SELF_CONSTRAINT_BEAM_STRESS = "SELF_CONST_BEAM_STRESS"
+
+# 39. Wall Force — 2026-07-25 official addition, previously undocumented
+TABLE_TYPE_WALL_FORCE_MOMENT = "WALL_FORCE_MOMENT"
 
 
 # --- 19_POST_AnalysisResult_1.md ---
@@ -1609,5 +1612,45 @@ def get_composite_section_self_constraint_beam_table(
         load_case_names=load_case_names,
         opt_cs=opt_cs,
         stage_step=stage_step,
+        client=client,
+    )
+
+
+def get_wall_force_table(
+    table_name: str = "",
+    *,
+    node_elems: Optional[NodeElemsSelector] = None,
+    unit: Optional[TableUnit] = None,
+    styles: Optional[TableStyles] = None,
+    components: Optional[List[str]] = None,
+    load_case_names: Optional[List[str]] = None,
+    opt_cs: Optional[bool] = None,
+    stage_step: Optional[List[str]] = None,
+    sect_position: Optional[str] = None,
+    parts: Optional[List[str]] = None,
+    story_names: Optional[List[str]] = None,
+    client: Optional[MidasClient] = None,
+) -> dict:
+    """docs/manual/20_POST_AnalysisResult_2.md #39 — Wall Force.
+
+    Unlike plain Plate Force, results are per-story/per-level with top ("top")
+    and bottom ("bot") values reported side by side (HEAD's Part/Axial/...
+    columns repeat once for each). story_names restricts to specific stories
+    (default: all); parts selects result part(s) (e.g. "top"/"bot"); both are
+    optional per the manual.
+    """
+    return get_table(
+        TABLE_TYPE_WALL_FORCE_MOMENT,
+        table_name,
+        node_elems=node_elems,
+        unit=unit,
+        styles=styles,
+        components=components,
+        load_case_names=load_case_names,
+        opt_cs=opt_cs,
+        stage_step=stage_step,
+        sect_position=sect_position,
+        parts=parts,
+        story_names=story_names,
         client=client,
     )

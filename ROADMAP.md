@@ -358,7 +358,7 @@ Pick any unchecked row, implement it in the listed `module`, add a test mirrorin
 
 | | Live | Endpoint | Name | Products | Module |
 |---|---|---|---|---|---|
-| [x] |  | `/post/TABLE (Analysis Result Table types)` | ~24 analysis result table types | gen/civil | `midas_nx.post.result_1` |
+| [x] |  | `/post/TABLE (Analysis Result Table types)` | ~25 analysis result table types (adds Wall Force, 2026-07-25) | gen/civil | `midas_nx.post.result_1` |
 
 ## 21_POST_StoryTables.md (1/1)
 

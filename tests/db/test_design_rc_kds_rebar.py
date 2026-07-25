@@ -307,22 +307,40 @@ def test_rebar_design_criteria_by_wall_member_create_sends_documented_assign_sha
     RebarDesignCriteriaByWallMember.create(
         {
             976: {
-                "VERTICAL_REBAR": "D13",
-                "HORIZONTAL_REBAR": "D10",
-                "END_REBAR": "D13",
-                "BE_HORZ_REBAR": "D10",
-                "BE_HORZ_SPACE": 0.2,
-                "BE_VERT_SPACE": 0.1,
-                "DE": 0.05,
-                "DW": 0.05,
+                "ITEMS": [
+                    {
+                        "STORY": "1F",
+                        "VERTICAL_REBAR": "D13",
+                        "HORIZONTAL_REBAR": "D10",
+                        "END_REBAR": "D13",
+                        "BE_HORZ_REBAR": "D10",
+                        "BE_HORZ_SPACE": 0.2,
+                        "BE_VERT_SPACE": 0.1,
+                        "DE": 0.05,
+                        "DW": 0.05,
+                    },
+                    {
+                        "STORY": "B1",
+                        "VERTICAL_REBAR": "D4",
+                        "HORIZONTAL_REBAR": "D10",
+                        "END_REBAR": "D5",
+                        "BE_HORZ_REBAR": "D13",
+                        "BE_HORZ_SPACE": 0.2,
+                        "BE_VERT_SPACE": 0.2,
+                        "DE": 0.05,
+                        "DW": 0.05,
+                    },
+                ]
             }
         },
         client=gen_client,
     )
     sent = responses.calls[0].request
     body = json.loads(sent.body)["Assign"]["976"]
-    assert body["VERTICAL_REBAR"] == "D13"
-    assert body["BE_VERT_SPACE"] == 0.1
+    assert body["ITEMS"][0]["STORY"] == "1F"
+    assert body["ITEMS"][0]["VERTICAL_REBAR"] == "D13"
+    assert body["ITEMS"][1]["STORY"] == "B1"
+    assert body["ITEMS"][1]["BE_VERT_SPACE"] == 0.2
 
 
 # --- 33. DCRE -----------------------------------------------------------------

@@ -12,7 +12,7 @@ response is returned as a plain dict rather than typed further.
 """
 from __future__ import annotations
 
-from typing import List, Optional, TypedDict
+from typing import Any, Dict, List, Optional, TypedDict
 
 from ..client import MidasClient, get_default_client
 
@@ -56,6 +56,11 @@ def get_table(
     opt_cs: Optional[bool] = None,
     stage_step: Optional[List[str]] = None,
     parts: Optional[List[str]] = None,
+    story_names: Optional[List[str]] = None,
+    sect_position: Optional[str] = None,
+    modes: Optional[List[str]] = None,
+    additional: Optional[Dict[str, Any]] = None,
+    set_calculation_method: Optional[Dict[str, Any]] = None,
     client: Optional[MidasClient] = None,
 ) -> dict:
     """POST /post/TABLE — extract one result table.
@@ -70,8 +75,19 @@ def get_table(
     names with a type suffix, e.g. "DL(ST)", "COMB1(CB)", "CS1(CS)".
     opt_cs/stage_step: analysis-result tables only (ch19-21) — enable and
     select construction-stage steps, e.g. ["CS1:001(first)", "CS1:002(last)"].
-    parts: design-force tables only (ch23) — member end/location selection,
-    e.g. ["PartI", "PartJ"].
+    parts: design-force tables (ch23) and Wall Force (ch20) — member
+    end/location or top/bot part selection, e.g. ["PartI", "PartJ"].
+    story_names: Story-series (ch21) and Wall Force (ch20) tables only —
+    restrict to specific story names; omitting it selects all stories.
+    sect_position: Wall Force (ch20) only — section position selector.
+    modes: Story Mode Shape (ch21) only — mode filter, e.g. ["Mode1", "Mode2"];
+    omitting it returns all modes.
+    additional: Story-series tables (ch21) only — the table-type-specific
+    "ADDITIONAL" object (angle/Beta/node-selection/... settings); see each
+    story.py caller's docstring and TypedDict for its shape.
+    set_calculation_method: Weight Irregularity Check (ch21) only — unlike
+    every other story table, the manual places this field directly under
+    "Argument" rather than nesting it in "ADDITIONAL".
     """
     argument: dict = {"TABLE_NAME": table_name, "TABLE_TYPE": table_type}
     if export_path is not None:
@@ -92,5 +108,15 @@ def get_table(
         argument["STAGE_STEP"] = stage_step
     if parts is not None:
         argument["PARTS"] = parts
+    if story_names is not None:
+        argument["STORY_NAMES"] = story_names
+    if sect_position is not None:
+        argument["SECT_POSITION"] = sect_position
+    if modes is not None:
+        argument["MODES"] = modes
+    if additional is not None:
+        argument["ADDITIONAL"] = additional
+    if set_calculation_method is not None:
+        argument["SET_CALCULATION_METHOD"] = set_calculation_method
     client = client or get_default_client()
     return client.request("POST", "/post/TABLE", {"Argument": argument})

@@ -266,10 +266,10 @@ class RebarDesignCriteriaByBraceMember(DbResource):
 # --- 32. DESIGN/RC/KDS-41-20-2022/DCRM-WALL — Rebar Design Criteria by Wall Member ---
 
 
-class RebarDesignCriteriaByWallMemberPayload(TypedDict, total=False):
-    """docs/manual/26_Design_RC_KDS41202022.md #32 — DCRM-WALL Specifications
-    table. Response is nested under top-level key "DCRMW"."""
+class RebarDesignCriteriaByWallMemberItem(TypedDict, total=False):
+    """One entry of DCRM-WALL's per-story "ITEMS" array (#32)."""
 
+    STORY: str  # Story name, minLength 1, required
     VERTICAL_REBAR: str  # Vertical rebar size, D4~D57 (19 total), required
     HORIZONTAL_REBAR: str  # Horizontal rebar size, D4~D57 (19 total), required
     END_REBAR: str  # End rebar size, D4~D57 (19 total), required
@@ -278,6 +278,19 @@ class RebarDesignCriteriaByWallMemberPayload(TypedDict, total=False):
     BE_VERT_SPACE: float  # Boundary element vertical rebar spacing, required
     DE: float  # End cover distance de (m), default 0, optional
     DW: float  # Wall-face cover distance dw (m), default 0, optional
+
+
+class RebarDesignCriteriaByWallMemberPayload(TypedDict, total=False):
+    """docs/manual/26_Design_RC_KDS41202022.md #32 — DCRM-WALL Specifications
+    table. Response is nested under top-level key "DCRMW".
+
+    2026-07-21 schema change: was previously one flat rebar-spec object per
+    wall ID; the manual now documents per-story entries under a required
+    "ITEMS" array (each item adding a required "STORY" name to the same
+    rebar-spec fields) — see RebarDesignCriteriaByWallMemberItem.
+    """
+
+    ITEMS: List[RebarDesignCriteriaByWallMemberItem]  # Per-story rebar spec list, minItems 1, required
 
 
 class RebarDesignCriteriaByWallMember(DbResource):
@@ -461,9 +474,9 @@ class RcBeamRebarSector(TypedDict, total=False):
     following the example (matches db/design.py's ch24 REBB precedent).
     """
 
-    vMAIN_BAR_TOP: List[RcBeamMainBarLayerEntry]  # Top main rebar layers, optional
-    vMAIN_BAR_BOT: List[RcBeamMainBarLayerEntry]  # Bottom main rebar layers, optional
-    SHEAR_BAR: RcBeamShearBarSpec  # Stirrup data, optional
+    vMAIN_BAR_TOP: List[RcBeamMainBarLayerEntry]  # Top main rebar layers, required (2026-07-25: manual now marks required)
+    vMAIN_BAR_BOT: List[RcBeamMainBarLayerEntry]  # Bottom main rebar layers, required (2026-07-25: manual now marks required)
+    SHEAR_BAR: RcBeamShearBarSpec  # Stirrup data, required (2026-07-25: manual now marks required)
     SKIN_BAR_NAME: str  # Skin bar rebar size, optional
     SKIN_BAR_NUM: int  # Skin bar count, optional
 
@@ -606,7 +619,7 @@ class RcBraceMainBarSpec(TypedDict, total=False):
     """REBR ITEMS.MAIN_BAR — unlike REBC's MAIN_BAR, no USE_CORNER/NAME_CORNER."""
 
     NAME: str  # Main rebar size, D4~D57 (19 total), required
-    NUM: int  # Total rebar count, required
+    NUM: int  # Total rebar count, min 4 (2026-07-25: manual now documents this constraint), required
     ROW: int  # Number of rows, required
 
 
