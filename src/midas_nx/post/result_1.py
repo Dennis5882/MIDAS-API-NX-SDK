@@ -1634,10 +1634,19 @@ def get_wall_force_table(
     """docs/manual/20_POST_AnalysisResult_2.md #39 — Wall Force.
 
     Unlike plain Plate Force, results are per-story/per-level with top ("top")
-    and bottom ("bot") values reported side by side (HEAD's Part/Axial/...
-    columns repeat once for each). story_names restricts to specific stories
-    (default: all); parts selects result part(s) (e.g. "top"/"bot"); both are
-    optional per the manual.
+    and bottom ("bot") values reported side by side.
+
+    ⚠️ HEAD repeats its Part/Axial/Shear-y/Shear-z/Torsion/Moment-y/Moment-z
+    columns twice — once for top, once for bot — so the usual
+    ``dict(zip(head, row))`` idiom silently drops the top values (the later
+    bot columns overwrite them). Slice by position instead: ``row[5:12]`` is
+    the top group and ``row[12:19]`` the bot group, each in HEAD's order.
+
+    story_names restricts to specific stories (default: all); parts selects
+    result part(s) (e.g. "top"/"bot"). Note that sect_position and parts
+    appear only in the official article's JSON Schema — neither the
+    Specifications table nor the worked example describes them — so their
+    accepted values are inferred from the key names and response shape.
     """
     return get_table(
         TABLE_TYPE_WALL_FORCE_MOMENT,

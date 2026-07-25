@@ -265,8 +265,8 @@ def test_get_story_drift_table_sends_additional(gen_client):
             "SET_STORY_DRIFT_CALCULATION_METHOD": {
                 "DRIFT_AT_THE_CENTER_OF_MASS": True,
                 "AVERAGE_DRIFT_OF_VERTICAL_ELEMENTS": True,
-                "DRIFT_OF_A_VERTICAL_LINE_ON_SELECTED_NODE": {"X_DIR": 109},
-                "AVERAGE_DRIFT_OF_VERTICAL_LINES_ON_SELECTED_NODES": {"X_DIR": [262, 260]},
+                "DRIFT_OF_A_VERTICAL_LINE_ON_SELECTED_NODE": {"X-DIR": 109},
+                "AVERAGE_DRIFT_OF_VERTICAL_LINES_ON_SELECTED_NODES": {"X-DIR": [262, 260]},
                 "SHEAR_WEIGHTED_AVERAGE_DRIFT_OF_VERTICAL_ELEMENTS": True,
             },
         },
@@ -275,6 +275,26 @@ def test_get_story_drift_table_sends_additional(gen_client):
     sent = responses.calls[0].request
     additional = json.loads(sent.body)["Argument"]["ADDITIONAL"]
     assert additional["SET_STORY_DRIFT_PARAMS"]["RESPONSE_MOD_FACTOR_VALUE"] == 3
+    assert additional["SET_STORY_DRIFT_CALCULATION_METHOD"]["DRIFT_OF_A_VERTICAL_LINE_ON_SELECTED_NODE"] == {
+        "X-DIR": 109
+    }
+
+
+@responses.activate
+def test_get_story_drift_table_passes_underscore_direction_key_unchanged(gen_client):
+    """The official docs contradict themselves on X-DIR vs X_DIR; both must
+    reach the server verbatim so callers can fall back to the other spelling."""
+    responses.add(responses.POST, "https://x.test:443/gen/post/TABLE", json={}, status=200)
+    story.get_story_drift_table(
+        additional={
+            "SET_STORY_DRIFT_CALCULATION_METHOD": {
+                "DRIFT_OF_A_VERTICAL_LINE_ON_SELECTED_NODE": {"X_DIR": 109},
+            }
+        },
+        client=gen_client,
+    )
+    sent = responses.calls[0].request
+    additional = json.loads(sent.body)["Argument"]["ADDITIONAL"]
     assert additional["SET_STORY_DRIFT_CALCULATION_METHOD"]["DRIFT_OF_A_VERTICAL_LINE_ON_SELECTED_NODE"] == {
         "X_DIR": 109
     }

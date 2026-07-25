@@ -136,20 +136,43 @@ class StoryDriftParams(TypedDict, total=False):
     BETA: StoryDriftBeta  # Beta value setting, optional
 
 
-class StoryDriftVerticalLineSelection(TypedDict, total=False):
-    """{X_DIR/Y_DIR/COMBINED: node ID} — exactly one key per the manual."""
+# Direction-key spelling is contradictory in the official docs: the
+# Specifications table writes "X_DIR"/"Y_DIR" (underscore) while the official
+# request example writes "X-DIR"/"Y-DIR" (hyphen). Both spellings are declared
+# below so neither trips a type-checker; send the hyphen form first (it is the
+# one the working official example uses) and fall back to the underscore form
+# if the server rejects it. Declared with functional TypedDict syntax because
+# "X-DIR" is not a valid Python identifier.
+StoryDriftVerticalLineSelection = TypedDict(
+    "StoryDriftVerticalLineSelection",
+    {
+        "X-DIR": int,  # try this spelling first
+        "Y-DIR": int,
+        "COMBINED": int,
+        "X_DIR": int,  # Specifications-table spelling; fallback
+        "Y_DIR": int,
+    },
+    total=False,
+)
+"""{X-DIR/Y-DIR/COMBINED: node ID} — exactly one key per the manual."""
 
-    X_DIR: int
-    Y_DIR: int
-    COMBINED: int
+StoryDriftVerticalLinesSelection = TypedDict(
+    "StoryDriftVerticalLinesSelection",
+    {
+        "X-DIR": List[int],  # try this spelling first
+        "Y-DIR": List[int],
+        "COMBINED": List[int],
+        "X_DIR": List[int],  # Specifications-table spelling; fallback
+        "Y_DIR": List[int],
+    },
+    total=False,
+)
+"""{X-DIR/Y-DIR/COMBINED: [node IDs]} — exactly one key per the manual.
 
-
-class StoryDriftVerticalLinesSelection(TypedDict, total=False):
-    """{X_DIR/Y_DIR/COMBINED: [node IDs]} — exactly one key per the manual."""
-
-    X_DIR: List[int]
-    Y_DIR: List[int]
-    COMBINED: List[int]
+The Specifications table types the parent field as Array[Object], but the
+official request example passes a single direction-keyed object
+({"X-DIR": [262, 260]}); the example's shape is what this models.
+"""
 
 
 class StoryDriftCalculationMethod(TypedDict, total=False):
@@ -226,9 +249,15 @@ class StoryStabilityCalculationMethod(TypedDict, total=False):
     the stability coefficient. NOTE: #13 Stiffness Irregularity also has a
     field named SET_CALCULATION_METHOD under ADDITIONAL, but with a
     different sub-schema (STORY_STIFFNESS_METHOD too) — see
-    StiffnessCalculationMethod, not this class."""
+    StiffnessCalculationMethod, not this class.
 
-    STORY_DRIFT_METHOD: str  # "Drift on the Center of Mass"/"Max. Drift of Outer Extreme Points"/"Max. Drift of All Vertical Elements", optional
+    The official Specifications table for this table misspells the first enum
+    value as "Drfit on the Center of Mass"; #13/#17's articles and this
+    article's own request example all use "Drift at the Center of Mass", so
+    that normalized form is what's documented here.
+    """
+
+    STORY_DRIFT_METHOD: str  # "Drift at the Center of Mass"/"Max. Drift of Outer Extreme Points"/"Max. Drift of All Vertical Elements", optional
 
 
 class StoryStabilityCoefficientAdditional(TypedDict, total=False):
@@ -258,11 +287,13 @@ class IrregularEndsAdditional(TypedDict, total=False):
 class StiffnessCalculationMethod(TypedDict, total=False):
     """ADDITIONAL.SET_CALCULATION_METHOD (#13) — distinct from
     StoryStabilityCalculationMethod (#10); adds STORY_STIFFNESS_METHOD.
-    STORY_DRIFT_METHOD's third option is transcribed "Max. Drfit of All
-    Vertical Elements" verbatim in the official manual (sic, missing an
-    "i") — send it exactly as documented if selecting that option."""
 
-    STORY_DRIFT_METHOD: str  # "Drift at the Center of Mass" (default)/"Max. Drift of Outer Extreme Points"/"Max. Drfit of All Vertical Elements" [sic], optional
+    The official Specifications table for this table misspells the third enum
+    value as "Max. Drfit of All Vertical Elements"; #17's article documents
+    the same enum correctly, so the normalized form is used here.
+    """
+
+    STORY_DRIFT_METHOD: str  # "Drift at the Center of Mass" (default)/"Max. Drift of Outer Extreme Points"/"Max. Drift of All Vertical Elements", optional
     STORY_STIFFNESS_METHOD: str  # "1 / Story Drift Ratio" (default) or "Story Shear / Story Drift", optional
 
 
