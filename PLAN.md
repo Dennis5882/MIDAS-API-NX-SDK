@@ -5,7 +5,7 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-07-19, at v0.10.0 (390/398 documented endpoints, Phase 5c
+> Last updated: 2026-07-21, at v0.10.0 (390/398 documented endpoints, Phase 5c
 > complete — SRC design code AIK-SRC2K; v0.9.0 added extensive live Gen NX /
 > Civil NX verification, see docs/live_verification_notes.md; v0.9.1 was a
 > live-manual schema-sync fix; v0.10.0 adds cross-cutting connection/schema
@@ -14,10 +14,11 @@ that ROADMAP.md doesn't capture.
 > and an external Zendesk link only) — genuinely not transcribable to this
 > repo's typed-TypedDict standard without depending on an external,
 > non-versioned source, so they're treated as undocumented stubs per this
-> project's existing "100% minus undocumented stubs" gate. v1.0.0 is next;
-> whether it requires those 8 (needs a source for their schema) or is
-> already earned under the existing stub exclusion is an open call for the
-> next release.
+> project's existing "100% minus undocumented stubs" gate. Endpoint coverage
+> (Phases 1-5) is essentially done; Phases 6-8 below shift the project's
+> center of gravity from "cover the API surface" to "make the SDK trustworthy,
+> maintainable, and usable by non-developer structural engineers" — see each
+> phase for the reasoning and what's already in place vs. still greenfield.
 
 ---
 
@@ -252,16 +253,95 @@ measuring source density: ch26 alone is 13,363 manual lines / 69 endpoints,
   simple-beam load-combination tutorial to `examples/python/`, and added a
   README Troubleshooting section (connection errors, firewall/SSL-inspection
   allowlist).
-- v1.0.0 next — pending a decision on whether the 8 undocumented Hyper-S
-  stubs block it (see cross-cutting backlog below) or the existing "100%
-  minus undocumented stubs" gate already counts as met.
+### Phase 6 — Trust & maintenance foundation  ·  v0.11-0.13
+Endpoint coverage (Phases 1-5) is essentially done; before layering practitioner
+features on top, harden the ground it stands on. Reprioritized 2026-07-21 after
+a roadmap review found part of this phase already done in earlier releases —
+scope below is corrected to what's actually left, not restated from scratch.
+- **CI: basic test/lint pipeline** — `.github/workflows/` currently has only
+  `publish.yml`, gated on `release` (build+test+publish). There is no
+  push/PR CI at all yet. Add `.github/workflows/ci.yml` running
+  `pytest` + `ruff` on every push/PR. This is a prerequisite for the manual-diff
+  job below, not optional groundwork.
+- **A1, narrowed — formalize live verification already done.** v0.9.0 already
+  ran a real Gen NX + Civil NX session against 526 endpoints (233/253 Gen,
+  273/293 Civil OK) and recorded a reproducible Gen NX defect — see
+  `docs/live_verification_notes.md`. That work is *not* reflected in
+  `docs/coverage.json` (`"live_verified"` field: 0 occurrences today). Add the
+  field per-endpoint from the existing notes, surface a verification-rate line
+  in `ROADMAP.md`, and add `scripts/live_smoke.py` so the next live session is
+  a rerun, not a one-off.
+- **D1, narrowed — wire the vendoring pipeline into CI.** `scripts/vendor_coverage.py`
+  and `scripts/gen_roadmap.py` (the chapter↔module mapping D1 wants) already
+  exist and work; they're just manual/on-demand. Once basic CI (above) exists,
+  add a weekly scheduled job that runs `vendor_coverage.py` against the sibling
+  manual repo, diffs the result, flags changed chapters `"stale"` in
+  `coverage.json`, and opens an issue.
+- **C1, narrowed — beginner tutorial, not install docs.** README already has
+  a `pip install midas-nx` section and Korean/Traditional-Chinese/Simplified-Chinese
+  onboarding paragraphs (added v0.9.0). Still missing: a screenshot-driven,
+  zero-python-experience "first script" walkthrough and a `docs/ko/`/`docs/en/`
+  split. One complete path beats a feature-complete doc site.
+- **C2 — friendlier error messages.** Exception hierarchy is already solid
+  (`MidasAPIError` → `MidasAuthError`/`MidasNotFoundError`/`MidasRequestError`/
+  `MidasServerError`/`MidasConnectionError`/`ProductMismatchError`/
+  `UnsupportedMethodError`, `src/midas_nx/client.py`). Add "how to fix it" text
+  to each: MAPI key location for `MidasAuthError`, NX process/API-server check
+  for `MidasConnectionError`.
+- **D6 — back the competitive claim already in production.** README already
+  ships "covers roughly a third of the documented API surface" (official
+  packages) as unbacked prose today — this isn't a future risk, it's a live
+  claim with no citation. Build the `coverage.json`-derived comparison table
+  (or soften to a neutral "single package, both products, broad coverage"
+  framing) this release, not later.
+
+### Phase 7 — Practitioner efficiency  ·  v0.14
+- **B2 — Excel round-trip**, `midas-nx[excel]` extra (keep pandas/openpyxl out
+  of the core dependency — `requests`-only import stays a hard invariant).
+  `from_excel`/`to_excel` for node/element/load tables and result reports;
+  `to_dataframe()` folds in as the pandas primitive underneath.
+- **B3 — GET response unwrap helper.** `Node.items(client=...) -> dict[int, NodePayload]`
+  alongside the existing `.get()`, same pattern across `DbResource` subclasses.
+- **C3 — scenario examples** (2 to start): analyze → extract results → Excel
+  summary report; construction-stage bulk model edit. Each example doubles as
+  live-verification evidence (Phase 6 A1) and onboarding material (C1).
+
+### Phase 8 — High-level workflow layer  ·  v0.15+
+Deliberately last: picking the wrong recipe scenarios is the most expensive
+mistake in this axis, so it waits on user feedback from Phases 6-7's examples
+and README traffic, not just code readiness.
+- **B1 — `midas_nx.recipes` (or `.easy`)**: workflow-level functions
+  (`create_frame(...)`, `apply_load_combos_kds(...)`, `extract_member_forces(...)`)
+  returning practitioner-ready dict/DataFrame shapes, ID/endpoint-key unwrapping
+  built in. Low-level layer (current `db.*`/`design.*`) stays untouched
+  underneath — this is additive, not a replacement.
+- **B4 — opt-in runtime validation**, two-staged: `typing_extensions.Required[]`
+  first, opt-in full validation second. Default `strict=True` in the new
+  recipes layer; low-level layer keeps today's no-validation behavior.
+- **D2 — schema drift checker**, `scripts/check_drift.py`, using the client's
+  existing `/info/db/...` introspection (`DbResource.info()`, added v0.10.0) to
+  diff live-server schema against this SDK's `TypedDict` definitions — the
+  server-side counterpart to Phase 6's manual-diff job.
+- **D4 — product-version compatibility matrix** — record verified Gen NX/Civil
+  NX product versions per endpoint in `coverage.json`, surface as a table.
+- **D3 — scaffolding, not full codegen** — `scripts/gen_endpoint.py` generates
+  TypedDict + `DbResource` subclass + mirror-test boilerplate from a manual `.md`
+  chapter; human review stays mandatory given the manual's own internal
+  inconsistencies (same rationale D1's stale-flagging exists for).
+
+### v1.0.0 — public API freeze
+Gate: (a) the 8 undocumented Hyper-S `-M1` stubs resolved once the manual
+documents them with an actual JSON Schema, or the existing "100% minus
+undocumented stubs" rule is formally invoked instead; (b) Phase 6's live-verification
+formalization (A1) complete; (c) Phase 6's manual-diff CI (D1) running. Matches
+D5 from the 2026-07-21 roadmap review: 1.0 means "frozen public surface +
+live-verified core paths + a running change-detection pipeline," not just
+"endpoint count is high."
 
 ### Cross-cutting / backlog (any time)
 - Resolve undocumented Hyper-S stubs (STYP-M1, MATL-M1, IMFM-M1, EPMT-M1,
   IEHG-*-M1) once the vendored manual documents them with an actual JSON
   Schema (currently only URL/methods + an external Zendesk link).
-- Optional runtime validation layer (opt-in) for the non-conditional payloads.
-- Integration smoke test against a live MIDAS NX server (currently all mocked).
 
 ---
 
@@ -279,12 +359,23 @@ measuring source density: ch26 alone is 13,363 manual lines / 69 endpoints,
 | v0.8.0 ✅ | SRC design code (Phase 5c) | published |
 | v0.9.0 ✅ | Live Gen/Civil NX verification + PyPI discoverability (py.typed, classifiers, README) | published |
 | v0.9.1 ✅ | Live-manual schema sync (`/ope/GSBG` → 2026-07-14 schema) | published |
-| v0.10.0 | Connection/introspection helpers (`verify_connection()`, `DbResource.info()`) + beam example + troubleshooting docs | ready to release |
-| v1.0.0 | Design code checks complete (incl. Hyper-S `-M1`, 8 endpoints remaining) | full documented surface covered |
+| v0.10.0 ✅ | Connection/introspection helpers (`verify_connection()`, `DbResource.info()`) + beam example + troubleshooting docs | published |
+| v0.11.0 | Phase 6 pt. 1 — CI (`ci.yml`), `coverage.json` `live_verified` field + `scripts/live_smoke.py`, weekly manual-diff job (D1) | CI green, live-verified rate shown in ROADMAP.md |
+| v0.12.0 | Phase 6 pt. 2 — friendlier error messages (C2), beginner tutorial + `docs/ko/`/`docs/en/` (C1), coverage-comparison table backing README's competitive claim (D6) | |
+| v0.13.0 | Phase 7 — Excel round-trip extra (B2), GET-unwrap helper (B3), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
+| v0.14.0+ | Phase 8 — `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4), schema-drift checker (D2), version matrix (D4), endpoint scaffolding tool (D3) | |
+| v1.0.0 | Public API freeze: Hyper-S `-M1` stub decision + Phase 6 live-verification/manual-diff CI running | full documented surface covered, live-verified, change-detection pipeline live |
 
 Each version ships when its phase's chapters are 100% (minus undocumented
 stubs) and green in CI. Release = bump `pyproject.toml` version, tag, publish
 GitHub Release → `publish.yml` auto-uploads to PyPI.
+
+> Numbering note (2026-07-21): the original Phase 1-5 numbering above was
+> chapter/endpoint-coverage-driven and ended at v0.10.0. Phase 6-8 (this
+> section) reflect a 2026-07-21 roadmap review's four-axis reprioritization
+> (reliability, practitioner efficiency, non-developer accessibility,
+> maintenance architecture) — version numbers from v0.11.0 on are provisional
+> until each release's actual scope is locked at cut time.
 
 ---
 
