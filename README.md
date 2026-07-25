@@ -1,24 +1,16 @@
 # midas-nx
 
-An independent, unified Python SDK for the **MIDAS NX Open API** (MIDAS Civil NX + MIDAS Gen NX).
-
-Unlike MIDASIT's official [`midas-civil`](https://pypi.org/project/midas-civil/) /
-[`midas-gen`](https://github.com/MIDASIT-Co-Ltd/midas-gen-python) packages — separate,
-near-duplicated codebases per product, covering roughly a third of the documented API surface —
-`midas_nx` is a single package for both products, built directly against the endpoint schema
-documented at [Dennis5882/MIDAS-API](https://github.com/Dennis5882/MIDAS-API). See
+A unified Python SDK for the **MIDAS NX Open API** — one package covering both
+**MIDAS Civil NX** and **MIDAS Gen NX**, typed directly against the endpoint schema documented
+at [Dennis5882/MIDAS-API](https://github.com/Dennis5882/MIDAS-API). See
 [ROADMAP.md](./ROADMAP.md) for what's implemented so far vs. planned.
-
-This is an unofficial, community project — not affiliated with or endorsed by MIDASIT.
 
 > **New to programming?** If you're a structural engineer who's never written Python before,
 > [docs/en/quickstart.md](./docs/en/quickstart.md) walks through everything from installing
 > Python to running your first script.
 >
 > **한국어 사용자를 위한 안내**: `midas-nx`는 MIDAS Civil NX와 MIDAS Gen NX의 Open API를
-> 하나의 Python 패키지로 통합해 감싼 비공식 커뮤니티 SDK입니다. MIDASIT의 공식
-> `midas-civil`/`midas-gen` 패키지가 제품별로 나뉘어 있고 문서화된 API 표면의 일부만
-> 지원하는 것과 달리, `midas-nx`는 두 제품을 함께 다루며 [MIDAS-API 매뉴얼
+> 하나의 Python 패키지로 통합해 감싼 SDK입니다. 두 제품을 함께 다루며, [MIDAS-API 매뉴얼
 > 저장소](https://github.com/Dennis5882/MIDAS-API)에 문서화된 스펙을 기준으로 구현되어
 > 있습니다. 설치는 `pip install midas-nx`, 사용 예시는 아래 "Quick start" 절을
 > 참고하세요. 실제 Gen NX/Civil NX 세션으로 검증한 내용(주의할 점, 알려진 이슈)은
@@ -28,8 +20,7 @@ This is an unofficial, community project — not affiliated with or endorsed by 
 > 스크립트 실행까지 순서대로 안내받으실 수 있습니다.
 >
 > **繁體中文使用者指南**：`midas-nx` 是將 MIDAS Civil NX 與 MIDAS Gen NX 的 Open API
-> 整合為單一 Python 套件的非官方社群 SDK。與 MIDASIT 官方的 `midas-civil`/`midas-gen`
-> 套件依產品分開、且僅涵蓋部分已文件化 API 不同，`midas-nx` 同時涵蓋兩種產品，並根據
+> 整合為單一 Python 套件的 SDK，同時涵蓋兩種產品，並根據
 > [MIDAS-API 手冊儲存庫](https://github.com/Dennis5882/MIDAS-API) 中記載的規格實作。
 > 安裝方式為 `pip install midas-nx`，使用範例請參考下方「Quick start」章節。實際在
 > Gen NX / Civil NX 連線環境中驗證過的內容（注意事項、已知問題）整理於
@@ -39,8 +30,7 @@ This is an unofficial, community project — not affiliated with or endorsed by 
 > 執行第一支腳本的完整步驟。
 >
 > **简体中文使用指南**：`midas-nx` 是将 MIDAS Civil NX 与 MIDAS Gen NX 的 Open API
-> 整合为单一 Python 包的非官方社区 SDK。与 MIDASIT 官方的 `midas-civil`/`midas-gen`
-> 包按产品拆分、且仅覆盖部分已文档化 API 不同，`midas-nx` 同时支持两种产品，并根据
+> 整合为单一 Python 包的 SDK，同时支持两种产品，并根据
 > [MIDAS-API 手册仓库](https://github.com/Dennis5882/MIDAS-API) 中记载的规格实现。
 > 安装方式为 `pip install midas-nx`，使用示例请参考下方"Quick start"章节。在实际
 > Gen NX / Civil NX 连接环境中验证过的内容（注意事项、已知问题）整理于
@@ -210,3 +200,6 @@ endpoints), and add a test mirroring `tests/db/test_node_element.py`. Mark it `"
 ## License
 
 MIT — see [LICENSE](./LICENSE).
+
+MIDAS, MIDAS Gen NX, and MIDAS Civil NX are trademarks of MIDAS Information Technology Co., Ltd.,
+used here to identify the software this SDK connects to.

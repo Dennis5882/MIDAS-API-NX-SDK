@@ -1,8 +1,7 @@
-"""midas_nx — independent, unified Python SDK for the MIDAS NX Open API.
+"""midas_nx — unified Python SDK for the MIDAS NX Open API.
 
 Covers both MIDAS Civil NX and MIDAS Gen NX (a "product" parameter selects
-which). Built independently of MIDASIT's official midas-civil/midas-gen
-packages against the schema documented at
+which), typed against the schema documented at
 https://github.com/Dennis5882/MIDAS-API/tree/main/docs/manual
 
 See ROADMAP.md for endpoint coverage.
