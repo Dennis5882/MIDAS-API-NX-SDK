@@ -200,6 +200,3 @@ endpoints), and add a test mirroring `tests/db/test_node_element.py`. Mark it `"
 ## License
 
 MIT — see [LICENSE](./LICENSE).
-
-MIDAS, MIDAS Gen NX, and MIDAS Civil NX are trademarks of MIDAS Information Technology Co., Ltd.,
-used here to identify the software this SDK connects to.
