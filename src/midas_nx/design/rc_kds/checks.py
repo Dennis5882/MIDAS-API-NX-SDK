@@ -89,27 +89,32 @@ def perform_beam_check(
     Perform. Runs code-checking on RC beam members that already have rebar
     assigned. Response: ``{"message": "success"}``.
 
-    ⚠️ Live-tested and CONFIRMED to share ``perform_column_check``'s
-    (CC-ANAL) stall — reproduced on two independent real models (a
-    forced-KDS-setup wall-heavy Korean model, and a separate
-    forced-KDS-setup Taiwan RC frame model), once the full precondition
-    chain (member type + rebar + a KDS-recognized load combination +
-    confirmed-queryable analysis results) was satisfied. See
-    docs/live_verification_notes.md for both reproductions. Outcomes
-    varied: one attempt left the app UI looking normal but silently locked
-    just that element's check-related endpoints (`get_beam_check_table`
-    for the same element also hung repeatedly, while other elements
-    responded instantly); the other crashed the app outright with a
-    **"Failed to disconnect the work session"** license error dialog — per
-    the user, this exact popup also appeared during the earlier `CC-ANAL`
-    forced-kill reproductions, and whenever it appears the program always
-    dies (unrecoverable, unlike the clean Stop-Execution recovery seen in
-    other `CC-ANAL` reproductions). **Unlike `CC-ANAL`, the `CC-TABLE`
-    readback workaround is NOT confirmed here** — in one of the two `BC-ANAL`
-    reproductions, `get_beam_check_table` for the *same* stuck element also
-    hung repeatedly afterward (while the same call for an unrelated element
-    returned instantly), so don't assume a subsequent table read will
-    reliably succeed the way it did for the column check.
+    ✅ **Re-verified 2026-07-25: no longer hangs on a current Gen NX build.**
+    An independent production tool (the QuickRebar NX web app) now ships
+    this call behind a user-triggered "recheck" button and ran it — plus
+    ``perform_column_check`` including ``PERFORM_TYPE: "ALL"`` — cleanly
+    4/4 with the app staying connected; ``PERFORM_TYPE: "ALL"`` re-checks a
+    whole model in roughly 2 seconds. This supersedes the blanket "never
+    call this" rule below.
+
+    ⚠️ Previously CONFIRMED to hang on **Gen NX 2026 v2.1**, reproduced on
+    two independent real models once the full precondition chain (member
+    type + rebar + a KDS-recognized load combination + confirmed-queryable
+    analysis results) was satisfied. One attempt silently locked just that
+    element's check endpoints; another crashed the app outright with a
+    **"Failed to disconnect the work session"** license-error dialog
+    (unrecoverable — the program always dies once it appears). See
+    docs/live_verification_notes.md for both reproductions and the
+    re-verification.
+
+    The re-verification is one build and one model, and every test on both
+    sides used the **KDS 41 20:2022** code specifically, so keep the
+    defensive pattern the production tool uses: a short timeout (it uses
+    25s) and — because a timed-out check may still have committed its
+    results — read ``get_beam_check_table`` regardless of whether this call
+    returned. If you only need results the user already computed in Gen NX's
+    own GUI, reading ``get_beam_check_table`` alone needs no perform call at
+    all and carries none of this risk.
     """
     return _post(f"{_BASE}/BC-ANAL", argument, client)
 
@@ -151,35 +156,35 @@ def perform_column_check(
     members that already have rebar assigned. Response: ``{"message":
     "success"}``.
 
-    ⚠️ Live-tested and CONFIRMED to stall: this call reproducibly got the
-    Gen NX desktop app's progress dialog stuck at "Converting Design
-    Results... 0%", 5 times out of 5 whenever the target had real rebar
-    data, a real recognized design load combination, and confirmed
-    analysis results — including on natively KDS-configured production
-    models, not just synthetic setups, and confirmed to be independent of
-    admin/elevated privileges (reproduced identically running Gen NX
-    normally and "as administrator"). On one occasion the app's own
-    message log showed the check (including "End converting Design
-    Results" and the final "End Code Checking" line) had actually
-    finished while the dialog stayed frozen at 0% — this looks like a
-    stuck progress-dialog/completion-signal bug rather than the design
-    check itself deadlocking, and the Open API call plausibly blocks on
-    that same stuck signal. Consequences varied: an error popup plus a
-    required forced process kill 3 of 5 times, a clean recovery via "Stop
-    Execution" the other 2 times. Every call that didn't hit this
-    precondition combination instead returned a clean, correctly-shaped
-    ``{"error": ...}`` response, so the request shape itself is not the
-    problem. Confirmed on Gen NX 2026 v2.1, English build — not a
-    Korean-localization artifact — but every reproduction used the
-    **KDS 41 20:2022** design code specifically; whether non-KDS codes
-    (AISC, Eurocode, ...) hit the same stall is untested. **Confirmed
-    workaround**: when this call times out, the check has very likely
-    already completed and persisted anyway — a subsequent
-    ``get_column_check_table`` call for the same element returned full,
-    real results (OK/NG, P-M ratios, assigned rebar) immediately after a
-    "hung" ``perform_column_check`` call, no retry of this function
-    needed. See docs/live_verification_notes.md for the full reproduction
-    steps before calling this against a live session.
+    ✅ **Re-verified 2026-07-25: no longer hangs on a current Gen NX build.**
+    An independent production tool (the QuickRebar NX web app) ran this
+    call — including ``PERFORM_TYPE: "ALL"`` — plus ``perform_beam_check``
+    cleanly 4/4 with the app staying connected. This supersedes the blanket
+    "never call this" rule below.
+
+    ⚠️ Previously CONFIRMED to stall on **Gen NX 2026 v2.1**: the desktop
+    app's progress dialog got stuck at "Converting Design Results... 0%",
+    5 times out of 5 whenever the target had real rebar data, a recognized
+    design load combination, and confirmed analysis results — on natively
+    KDS-configured production models, not just synthetic setups, and
+    independent of admin/elevated privileges. On one occasion the app's own
+    message log showed the check had actually finished while the dialog
+    stayed frozen at 0%, suggesting a stuck completion-signal bug rather
+    than the check itself deadlocking. Consequences varied: a forced process
+    kill 3 of 5 times, clean recovery via "Stop Execution" the other 2.
+    Every call that didn't hit the precondition combination instead returned
+    a clean, correctly-shaped ``{"error": ...}`` response, so the request
+    shape itself was never the problem.
+
+    The re-verification is one build and one model, and every test on both
+    sides used the **KDS 41 20:2022** code specifically (whether non-KDS
+    codes hit the old stall was never tested), so keep the defensive
+    pattern: a short timeout, and read ``get_column_check_table``
+    regardless of whether this call returned — a timed-out check very
+    likely still committed its results, which is exactly what the original
+    reproductions showed (full OK/NG, P-M ratios, and assigned rebar came
+    back immediately after a "hung" call, with no retry needed). See
+    docs/live_verification_notes.md for the full history.
     """
     return _post(f"{_BASE}/CC-ANAL", argument, client)
 
@@ -200,6 +205,9 @@ def get_column_check_table(
     out against a live session, call this afterward before assuming the
     check failed — it returned full real results immediately after a
     "hung" CC-ANAL call in testing. See docs/live_verification_notes.md.
+
+    This also reads results the user already computed in Gen NX's own GUI,
+    so it is the zero-risk way to get a verdict with no perform call at all.
     """
     return _post(f"{_BASE}/CC-TABLE", argument, client)
 
@@ -227,10 +235,12 @@ def perform_brace_check(
     members that already have rebar assigned. Response: ``{"message":
     "success"}``.
 
-    ⚠️ Live-tested: the sibling ``perform_column_check`` (CC-ANAL) was
-    confirmed to hang the Gen NX desktop app's internal "Design Thread" —
-    see docs/live_verification_notes.md. Not independently tested; treat
-    as carrying the same risk.
+    ⚠️ Never independently tested. Its siblings ``perform_column_check``
+    (CC-ANAL) and ``perform_beam_check`` (BC-ANAL) were confirmed to hang
+    Gen NX 2026 v2.1 but re-verified clean on a current build on
+    2026-07-25 — see docs/live_verification_notes.md. Assume the same
+    history applies here until tested: use a short timeout, and read
+    ``get_brace_check_table`` regardless of whether this call returns.
     """
     return _post(f"{_BASE}/BRC-ANAL", argument, client)
 
@@ -300,10 +310,13 @@ def perform_wall_check(
     (``SELECTIONS`` omitted) returned ``{"message": "success"}`` cleanly
     in under 6 seconds — no stuck "Converting Design Results" dialog. This
     is useful negative evidence that CC-ANAL's stall isn't a blanket
-    property of every "perform check" function in this file; it may be
-    specific to CC-ANAL or to the ELEMS/SECTIONS-targeted member-check
-    family (beam/column/brace) rather than this WID+STORY-targeted wall
-    check. See docs/live_verification_notes.md for the full writeup.
+    property of every "perform check" function in this file. Independently
+    corroborated 2026-07-25: a production tool (the QuickRebar NX web app)
+    ships this call alongside CC-ANAL for live wall verdicts, and neither
+    hung on a current build. Note the stall was never about the targeting
+    scheme — ``perform_wall_design`` (WD-ANAL, design_forces.py) is also
+    WID+STORY-targeted and *did* hang on v2.1. See
+    docs/live_verification_notes.md for the full writeup.
     """
     return _post(f"{_BASE}/WC-ANAL", argument, client)
 

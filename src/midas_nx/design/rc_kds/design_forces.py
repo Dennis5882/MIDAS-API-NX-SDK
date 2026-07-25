@@ -278,17 +278,23 @@ def perform_wall_design(
     Design Perform. Walls are selected by WALL_IDS+STORY pairs rather than
     ELEMS/SECTIONS. Response: ``{"message": "success"}``.
 
-    ⚠️ Live-tested and CONFIRMED to hang, same as ``perform_column_check``
-    (CC-ANAL) / ``perform_beam_check`` (BC-ANAL): the call timed out with no
-    HTTP response even though the app UI looked completely normal (no
-    visible stuck dialog). **Note this is despite the sibling
-    ``perform_wall_check`` (WC-ANAL) NOT reproducing the stall** — so
-    "WID+STORY-targeted = safe" is not a valid rule; this design-perform
-    function hangs while the check-perform function for the same wall does
-    not. **Confirmed workaround**: ``get_wall_design_table`` for the same
-    wall/story returned full, real design results (rebar, ratios, `CHK:
-    "OK"`) immediately after this call timed out — the design likely
-    completed and persisted anyway. See docs/live_verification_notes.md.
+    ⚠️ CONFIRMED to hang on **Gen NX 2026 v2.1**, same as
+    ``perform_column_check`` (CC-ANAL) / ``perform_beam_check`` (BC-ANAL):
+    the call timed out with no HTTP response even though the app UI looked
+    completely normal (no visible stuck dialog). **Note this is despite the
+    sibling ``perform_wall_check`` (WC-ANAL) NOT reproducing the stall** —
+    so "WID+STORY-targeted = safe" is not a valid rule; this design-perform
+    function hung while the check-perform function for the same wall did
+    not.
+
+    The 2026-07-25 re-verification that cleared CC-ANAL/BC-ANAL on a current
+    build covered the *check* endpoints only — **this design-perform
+    endpoint was not among them**, so its status on current builds is
+    unknown. Keep the confirmed workaround: ``get_wall_design_table`` for
+    the same wall/story returned full, real design results (rebar, ratios,
+    ``CHK: "OK"``) immediately after this call timed out, so read it back
+    regardless rather than retrying this function. See
+    docs/live_verification_notes.md.
     """
     return _post(f"{_BASE}/WD-ANAL", argument, client)
 

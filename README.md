@@ -166,9 +166,11 @@ pytest
 
 This package's request/response shapes are typed from the vendored manual and
 tested with mocked HTTP (see below) — but a subset of endpoints has also been
-exercised against real Gen NX / Civil NX sessions. Notable findings (a
-confirmed Gen NX application hang triggered by one specific design-check
-call, product-availability quirks not documented in the manual, a couple of
+exercised against real Gen NX / Civil NX sessions. Notable findings (a Gen NX
+application hang that the RC design-check "perform" calls reproducibly
+triggered on the 2026 v2.1 build — re-verified as fixed on a current build in
+July 2026, with the recommended defensive pattern documented either way —
+product-availability quirks not documented in the manual, and a couple of
 "documented optional but actually required under X" server validation
 quirks) are written up in
 [docs/live_verification_notes.md](./docs/live_verification_notes.md) — most

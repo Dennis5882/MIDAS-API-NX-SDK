@@ -521,14 +521,15 @@ def perform_steel_code_check(
     Check Perform. Executes the design calculation; response is
     ``{"message": "success"}`` on success.
 
-    ⚠️ Live-tested elsewhere: the RC equivalent
+    ⚠️ Never independently tested. The RC equivalent
     (``design.rc_kds.checks.perform_column_check``, CC-ANAL) was confirmed
-    to hang the Gen NX desktop app's internal "Design Thread" (stuck at
-    "Converting Design Results... 0%", required a forced process kill) —
-    see docs/live_verification_notes.md. This function was not
-    independently tested; treat it as carrying the same
-    unconfirmed-but-plausible hang risk given the shared "perform check"
-    architecture.
+    to hang Gen NX 2026 v2.1 (stuck at "Converting Design Results... 0%",
+    required a forced process kill) but re-verified clean on a current build
+    on 2026-07-25 — see docs/live_verification_notes.md. Every test on both
+    sides used the **KDS 41 20:2022 RC** code, so neither the original stall
+    nor its resolution has been confirmed for this steel-code path. Use a
+    short timeout and read ``get_steel_code_check_table`` regardless of
+    whether this call returns.
     """
     return _post(f"{_BASE}/CODE-ANAL", argument, client)
 

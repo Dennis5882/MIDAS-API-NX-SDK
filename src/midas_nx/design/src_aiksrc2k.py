@@ -379,11 +379,14 @@ def perform_src_beam_check(
     stored on the model and later retrieved via BC-TABLE/BC-REPORT.
     Response: ``{"message": "success"}``.
 
-    ⚠️ Live-tested elsewhere: the RC equivalent
+    ⚠️ Never independently tested. The RC equivalent
     (``design.rc_kds.checks.perform_column_check``, CC-ANAL) was confirmed
-    to hang the Gen NX desktop app's internal "Design Thread" — see
-    docs/live_verification_notes.md. Not independently tested; treat as
-    carrying the same risk.
+    to hang Gen NX 2026 v2.1 but re-verified clean on a current build on
+    2026-07-25 — see docs/live_verification_notes.md. Every test on both
+    sides used the **KDS 41 20:2022 RC** code, so neither the original
+    stall nor its resolution is confirmed for this SRC path. Use a short
+    timeout and read the corresponding ``*-TABLE`` back regardless of
+    whether this call returns.
     """
     return _post(f"{_BASE}/BC-ANAL", argument, client)
 
@@ -452,12 +455,15 @@ def perform_src_column_check(
     """docs/manual/27_Design_SRC_AIKSRC2K.md #18 — CC-ANAL — SRC Column
     Check Perform. Response: ``{"message": "success"}``.
 
-    ⚠️ Live-tested elsewhere: the RC equivalent
-    (``design.rc_kds.checks.perform_column_check``, CC-ANAL) was confirmed
-    to hang the Gen NX desktop app's internal "Design Thread" — see
-    docs/live_verification_notes.md. Not independently tested; treat as
-    carrying the same risk (same endpoint code, different design-code
-    namespace).
+    ⚠️ Never independently tested. The RC equivalent
+    (``design.rc_kds.checks.perform_column_check``, CC-ANAL — same endpoint
+    code, different design-code namespace) was confirmed to hang Gen NX
+    2026 v2.1 but re-verified clean on a current build on 2026-07-25 — see
+    docs/live_verification_notes.md. Every test on both sides used the
+    **KDS 41 20:2022 RC** code, so neither the original stall nor its
+    resolution is confirmed for this SRC path. Use a short timeout and read
+    ``get_src_column_check_table`` back regardless of whether this call
+    returns.
     """
     return _post(f"{_BASE}/CC-ANAL", argument, client)
 
@@ -585,12 +591,13 @@ def perform_src_optimal_design(
     "HEAD": ["No", "Name", "SteelSize", "Astl", "COM", "Axial", "Ben-y",
     "Ben-z", "Shear"], "DATA": [[...], ...]}}``.
 
-    ⚠️ Live-tested elsewhere: ``design.rc_kds.checks.perform_column_check``
-    (CC-ANAL) was confirmed to hang the Gen NX desktop app's internal
-    "Design Thread" — see docs/live_verification_notes.md. This is an
-    iterative re-analysis/optimization action (potentially longer-running
-    than a plain code check), not independently tested; treat as carrying
-    at least the same risk.
+    ⚠️ Never independently tested. ``design.rc_kds.checks.perform_column_check``
+    (CC-ANAL) was confirmed to hang Gen NX 2026 v2.1 but re-verified clean
+    on a current build on 2026-07-25 — see docs/live_verification_notes.md.
+    That re-verification covered RC *check* endpoints under KDS 41 20:2022
+    only; this is an iterative re-analysis/optimization action on a
+    different design code, potentially longer-running than a plain code
+    check, so treat it as carrying at least the same risk.
     """
     return _post(f"{_BASE}/OCHECK", argument, client)
 

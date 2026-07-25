@@ -271,6 +271,14 @@ appear hung until a human dismisses it**, not just that one call.
 
 ## ⚠️ CONFIRMED — `CC-ANAL` (RC column code-check perform) reproducibly stalls Gen NX at "Converting Design Results 0%" (often requires a forced process kill)
 
+> **STATUS UPDATE (2026-07-25): superseded for `CC-ANAL`/`BC-ANAL`/`WC-ANAL`.**
+> These three were re-verified as running cleanly on a current Gen NX build —
+> see [the re-verification section below](#status-update-2026-07-25--cc-analbc-anal-no-longer-hang-on-a-current-gen-nx-build).
+> Everything in this section is retained as the record of a real, extensively
+> reproduced defect on **Gen NX 2026 v2.1**, and as the reason the defensive
+> read-back pattern is still worth keeping. `WD-ANAL` was **not** part of the
+> re-verification and its current status is unknown.
+
 While extending the same Gen session above to verify design-code check
 *execution* (as opposed to just config-singleton writes), the following
 sequence **crashed/hung the Gen NX desktop application itself** (not just
@@ -845,6 +853,80 @@ New findings from this run, beyond what's already recorded above:
   23.53 kN/m³`. Useful reference point for anyone else hand-calc-checking
   a KS01(RC) C24 model; `scripts/live_smoke.py` uses a 5% tolerance for
   exactly this reason rather than an exact-match assertion.
+
+## STATUS UPDATE (2026-07-25) — `CC-ANAL`/`BC-ANAL` no longer hang on a current Gen NX build
+
+The `*-ANAL` design-check stall documented at length above — the single
+most severe finding in this file, reproduced across three models and five
+attempts, and the reason every `perform_*` docstring in `design/` carried a
+"treat as a hang risk" warning — **no longer reproduces on a current Gen NX
+build.**
+
+**Source of this finding.** Unlike the rest of this file, this did not come
+from a dedicated SDK test session. It comes from *QuickRebar NX*
+(`rebar-repair.vercel.app`), a separate production web tool by the same
+author that drives the same Gen NX Open API endpoints over HTTP. Its own
+project notes record a live re-test on 2026-07-25 that ran:
+
+- `CC-ANAL` — including the whole-model `PERFORM_TYPE: "ALL"` variant, the
+  exact shape that reproducibly killed the app on v2.1
+- `BC-ANAL` — the beam equivalent, also previously confirmed to hang
+- `WC-ANAL` — the wall check, which never reproduced the stall anyway
+
+**4 out of 4 clean, with the app staying connected throughout.**
+`PERFORM_TYPE: "ALL"` re-checks an entire model in roughly 2 seconds. The
+tool now ships `BC-ANAL` wired to a user-facing "Gen NX 재검토" button,
+followed by a `BC-TABLE` read of `CHK_STR` / `Rat-N` / `Rat-P` / `Rat-V` —
+i.e. this is not a one-off lab result but an endpoint running in a
+deployed tool against real users' models.
+
+### What this does and does not license
+
+| Endpoint | v2.1 status | Current status |
+| --- | --- | --- |
+| `CC-ANAL` (column check) | hung 5/5 | ✅ re-verified clean |
+| `BC-ANAL` (beam check) | hung on 2 models | ✅ re-verified clean |
+| `WC-ANAL` (wall check) | never hung | ✅ still clean |
+| `WD-ANAL` (wall **design**) | hung | ❓ **not re-tested** |
+| `BRC-ANAL`, steel `CODE-ANAL`, SRC `*-ANAL`, `OCHECK` | never tested | ❓ **not re-tested** |
+
+Two limits on the evidence, both worth respecting:
+
+1. **One build, one model.** The original defect was itself intermittent in
+   its *consequences* (forced kill 3 of 5 times, clean recovery the other
+   2) even while being reliable in its *trigger*. Four clean runs is good
+   evidence, not proof of a fix, and the exact build number of the re-test
+   was not recorded.
+2. **KDS 41 20:2022 only.** Every test on both sides of this — the original
+   reproductions and the re-verification — used the KDS RC design code.
+   Nothing here says anything about the steel (`steel_kds.py`), SRC
+   (`src_aiksrc2k.py`), or non-Korean code paths.
+
+### Keep the defensive pattern regardless
+
+The production tool still wraps these calls defensively, and the SDK's
+docstrings now recommend the same:
+
+- **Short timeout** on the `*-ANAL` call (the tool uses 25s).
+- **Read the `*-TABLE` back regardless of whether `*-ANAL` returned.** This
+  was the confirmed workaround during the hang era — a timed-out check had
+  usually completed and persisted anyway — and it remains the correct shape
+  for a call whose HTTP acknowledgment is known to be unreliable.
+- **Prefer reading `*-TABLE` alone when possible.** Design results the user
+  already computed in Gen NX's own GUI are readable with no perform call at
+  all. That path never carried any of this risk and is still the zero-risk
+  option.
+
+### Why the docstrings kept the history
+
+The `perform_*` docstrings in `design/` now lead with this re-verification
+rather than the old "never call this" rule, but they retain a compressed
+version of the v2.1 reproductions. That is deliberate: this exact crash
+signature (`"Failed to disconnect the work session..."`) has now
+resurfaced twice under *different* triggers across builds — once via rapid
+`doc/new` calls on a pre-v2.1 build, once via `*-ANAL` on v2.1 — and was
+declared resolved after the first. Treating "resolved" as permanent is the
+mistake this file already recorded once.
 
 ## Caveat — read before acting on this file
 
