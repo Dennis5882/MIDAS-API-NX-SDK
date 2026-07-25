@@ -271,13 +271,13 @@ appear hung until a human dismisses it**, not just that one call.
 
 ## ⚠️ CONFIRMED — `CC-ANAL` (RC column code-check perform) reproducibly stalls Gen NX at "Converting Design Results 0%" (often requires a forced process kill)
 
-> **STATUS UPDATE (2026-07-25): superseded for `CC-ANAL`/`BC-ANAL`/`WC-ANAL`.**
-> These three were re-verified as running cleanly on a current Gen NX build —
-> see [the re-verification section below](#status-update-2026-07-25--cc-analbc-anal-no-longer-hang-on-a-current-gen-nx-build).
-> Everything in this section is retained as the record of a real, extensively
-> reproduced defect on **Gen NX 2026 v2.1**, and as the reason the defensive
-> read-back pattern is still worth keeping. `WD-ANAL` was **not** part of the
-> re-verification and its current status is unknown.
+> **STATUS UPDATE (2026-07-25): `CC-ANAL`/`BC-ANAL`/`WC-ANAL` ran clean 4/4 —
+> on the *same build* that hung here.** This is not a "fixed in a newer
+> build" story: both the reproductions below and the clean re-runs happened
+> on **Gen NX 2026 (v2.1), build 06/23/2026**. The trigger is therefore
+> something other than the build, and is still unidentified — so nothing in
+> this section is retracted. See
+> [the re-verification section below](#status-update-2026-07-25--cc-analbc-anal-ran-clean-on-the-same-build-that-hung).
 
 While extending the same Gen session above to verify design-code check
 *execution* (as opposed to just config-singleton writes), the following
@@ -854,13 +854,13 @@ New findings from this run, beyond what's already recorded above:
   a KS01(RC) C24 model; `scripts/live_smoke.py` uses a 5% tolerance for
   exactly this reason rather than an exact-match assertion.
 
-## STATUS UPDATE (2026-07-25) — `CC-ANAL`/`BC-ANAL` no longer hang on a current Gen NX build
+## STATUS UPDATE (2026-07-25) — `CC-ANAL`/`BC-ANAL` ran clean on the same build that hung
 
 The `*-ANAL` design-check stall documented at length above — the single
 most severe finding in this file, reproduced across three models and five
 attempts, and the reason every `perform_*` docstring in `design/` carried a
-"treat as a hang risk" warning — **no longer reproduces on a current Gen NX
-build.**
+"treat as a hang risk" warning — **did not reproduce in a later round of
+live use.** Critically, this is **not** a "fixed in a newer build" story.
 
 **Source of this finding.** Unlike the rest of this file, this did not come
 from a dedicated SDK test session. It comes from *QuickRebar NX*
@@ -869,7 +869,7 @@ author that drives the same Gen NX Open API endpoints over HTTP. Its own
 project notes record a live re-test on 2026-07-25 that ran:
 
 - `CC-ANAL` — including the whole-model `PERFORM_TYPE: "ALL"` variant, the
-  exact shape that reproducibly killed the app on v2.1
+  exact shape that reproducibly killed the app in the reproductions above
 - `BC-ANAL` — the beam equivalent, also previously confirmed to hang
 - `WC-ANAL` — the wall check, which never reproduced the stall anyway
 
@@ -880,32 +880,58 @@ followed by a `BC-TABLE` read of `CHK_STR` / `Rat-N` / `Rat-P` / `Rat-V` —
 i.e. this is not a one-off lab result but an endpoint running in a
 deployed tool against real users' models.
 
+### ⚠️ The build did not change — so the trigger is still unidentified
+
+The About dialog was checked on 2026-07-25 and reports **MIDAS Gen NX 2026
+(v2.1), build 06/23/2026** — byte-for-byte the same build recorded for the
+`CC-ANAL`/`BC-ANAL` reproductions above and for the 2026-07-22 smoke test.
+**The same binary both hangs and does not hang.**
+
+That rules out the most comforting explanation (a vendor patch) and leaves
+the actual variable unknown. Plausible candidates, none of them tested:
+
+- **Model state.** The reproductions established a precondition chain
+  (member type + rebar + a *KDS-recognized* load combination, the last one
+  generated via `ope.generate_load_combination_concrete` rather than a
+  hand-written `/db/LCOM-GEN`) and hung at the exact point the check had
+  enough real data to attempt the P-M calculation. Whether the QuickRebar
+  models satisfied that same chain was never checked.
+- **Call sequence.** The reproductions ran the check immediately after
+  API-side writes of member-type/rebar data; the tool's flow may differ in
+  ordering or in how much settles first.
+- **Client/transport.** Python `requests` from a local machine vs. Node
+  `fetch` from a Vercel serverless function — different timeouts and
+  connection handling against the same relay.
+- **Genuine intermittency in the trigger.** The defect was already known to
+  be intermittent in its *consequences* (forced kill 3 of 5 times, clean
+  "Stop Execution" recovery the other 2). Intermittency in the trigger
+  itself was assumed absent, but four clean runs do not disprove it.
+
+**Nothing in the reproduction sections above is retracted.** The correct
+reading is "this is not universal and not always triggered," not "this is
+fixed."
+
 ### What this does and does not license
 
-| Endpoint | v2.1 status | Current status |
+| Endpoint | Earlier status (build 06/23/2026) | 2026-07-25 (same build) |
 | --- | --- | --- |
-| `CC-ANAL` (column check) | hung 5/5 | ✅ re-verified clean |
-| `BC-ANAL` (beam check) | hung on 2 models | ✅ re-verified clean |
+| `CC-ANAL` (column check) | hung 5/5 | ✅ clean 4/4 |
+| `BC-ANAL` (beam check) | hung on 2 models | ✅ clean |
 | `WC-ANAL` (wall check) | never hung | ✅ still clean |
 | `WD-ANAL` (wall **design**) | hung | ❓ **not re-tested** |
 | `BRC-ANAL`, steel `CODE-ANAL`, SRC `*-ANAL`, `OCHECK` | never tested | ❓ **not re-tested** |
 
-Two limits on the evidence, both worth respecting:
+One further limit on the evidence: **KDS 41 20:2022 only.** Every test on
+both sides of this — the original reproductions and the re-verification —
+used the KDS RC design code. Nothing here says anything about the steel
+(`steel_kds.py`), SRC (`src_aiksrc2k.py`), or non-Korean code paths.
 
-1. **One build, one model.** The original defect was itself intermittent in
-   its *consequences* (forced kill 3 of 5 times, clean recovery the other
-   2) even while being reliable in its *trigger*. Four clean runs is good
-   evidence, not proof of a fix, and the exact build number of the re-test
-   was not recorded.
-2. **KDS 41 20:2022 only.** Every test on both sides of this — the original
-   reproductions and the re-verification — used the KDS RC design code.
-   Nothing here says anything about the steel (`steel_kds.py`), SRC
-   (`src_aiksrc2k.py`), or non-Korean code paths.
+### Keep the defensive pattern — this is now the main takeaway
 
-### Keep the defensive pattern regardless
-
-The production tool still wraps these calls defensively, and the SDK's
-docstrings now recommend the same:
+Because the trigger is unidentified rather than removed, the defensive
+pattern is not optional hygiene; it is the actual mitigation. The
+production tool wraps these calls this way, and the SDK's docstrings
+recommend the same:
 
 - **Short timeout** on the `*-ANAL` call (the tool uses 25s).
 - **Read the `*-TABLE` back regardless of whether `*-ANAL` returned.** This
@@ -921,12 +947,14 @@ docstrings now recommend the same:
 
 The `perform_*` docstrings in `design/` now lead with this re-verification
 rather than the old "never call this" rule, but they retain a compressed
-version of the v2.1 reproductions. That is deliberate: this exact crash
-signature (`"Failed to disconnect the work session..."`) has now
-resurfaced twice under *different* triggers across builds — once via rapid
-`doc/new` calls on a pre-v2.1 build, once via `*-ANAL` on v2.1 — and was
-declared resolved after the first. Treating "resolved" as permanent is the
-mistake this file already recorded once.
+version of the reproductions. That is deliberate, and the same-build
+finding above is why: this exact crash signature (`"Failed to disconnect
+the work session..."`) has now resurfaced twice under *different* triggers
+— once via rapid `doc/new` calls on a pre-v2.1 build, once via `*-ANAL` on
+v2.1 — and was declared resolved after the first. Treating "did not
+reproduce" as "fixed" is the mistake this file has already recorded once,
+and the first draft of this very section repeated it by assuming a newer
+build was responsible before the About dialog was actually checked.
 
 ## Caveat — read before acting on this file
 

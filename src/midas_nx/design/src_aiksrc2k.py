@@ -381,12 +381,12 @@ def perform_src_beam_check(
 
     ⚠️ Never independently tested. The RC equivalent
     (``design.rc_kds.checks.perform_column_check``, CC-ANAL) was confirmed
-    to hang Gen NX 2026 v2.1 but re-verified clean on a current build on
-    2026-07-25 — see docs/live_verification_notes.md. Every test on both
-    sides used the **KDS 41 20:2022 RC** code, so neither the original
-    stall nor its resolution is confirmed for this SRC path. Use a short
-    timeout and read the corresponding ``*-TABLE`` back regardless of
-    whether this call returns.
+    to hang Gen NX 2026 (v2.1), build 06/23/2026, then ran clean on that
+    same build on 2026-07-25 — the trigger is unidentified, not fixed; see
+    docs/live_verification_notes.md. Every test on both sides used the
+    **KDS 41 20:2022 RC** code, so nothing is confirmed either way for this
+    SRC path. Use a short timeout and read the corresponding ``*-TABLE``
+    back regardless of whether this call returns.
     """
     return _post(f"{_BASE}/BC-ANAL", argument, client)
 
@@ -458,12 +458,12 @@ def perform_src_column_check(
     ⚠️ Never independently tested. The RC equivalent
     (``design.rc_kds.checks.perform_column_check``, CC-ANAL — same endpoint
     code, different design-code namespace) was confirmed to hang Gen NX
-    2026 v2.1 but re-verified clean on a current build on 2026-07-25 — see
+    2026 (v2.1), build 06/23/2026, then ran clean on that same build on
+    2026-07-25 — the trigger is unidentified, not fixed; see
     docs/live_verification_notes.md. Every test on both sides used the
-    **KDS 41 20:2022 RC** code, so neither the original stall nor its
-    resolution is confirmed for this SRC path. Use a short timeout and read
-    ``get_src_column_check_table`` back regardless of whether this call
-    returns.
+    **KDS 41 20:2022 RC** code, so nothing is confirmed either way for this
+    SRC path. Use a short timeout and read ``get_src_column_check_table``
+    back regardless of whether this call returns.
     """
     return _post(f"{_BASE}/CC-ANAL", argument, client)
 
@@ -592,12 +592,13 @@ def perform_src_optimal_design(
     "Ben-z", "Shear"], "DATA": [[...], ...]}}``.
 
     ⚠️ Never independently tested. ``design.rc_kds.checks.perform_column_check``
-    (CC-ANAL) was confirmed to hang Gen NX 2026 v2.1 but re-verified clean
-    on a current build on 2026-07-25 — see docs/live_verification_notes.md.
-    That re-verification covered RC *check* endpoints under KDS 41 20:2022
-    only; this is an iterative re-analysis/optimization action on a
-    different design code, potentially longer-running than a plain code
-    check, so treat it as carrying at least the same risk.
+    (CC-ANAL) was confirmed to hang Gen NX 2026 (v2.1), build 06/23/2026,
+    then ran clean on that same build on 2026-07-25 — the trigger is
+    unidentified, not fixed; see docs/live_verification_notes.md. That
+    round covered RC *check* endpoints under KDS 41 20:2022 only; this is
+    an iterative re-analysis/optimization action on a different design
+    code, potentially longer-running than a plain code check, so treat it
+    as carrying at least the same risk.
     """
     return _post(f"{_BASE}/OCHECK", argument, client)
 

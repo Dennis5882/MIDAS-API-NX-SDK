@@ -89,32 +89,34 @@ def perform_beam_check(
     Perform. Runs code-checking on RC beam members that already have rebar
     assigned. Response: ``{"message": "success"}``.
 
-    ✅ **Re-verified 2026-07-25: no longer hangs on a current Gen NX build.**
+    ✅ **Re-verified 2026-07-25: ran clean 4/4 — on the same build that hung.**
     An independent production tool (the QuickRebar NX web app) now ships
     this call behind a user-triggered "recheck" button and ran it — plus
     ``perform_column_check`` including ``PERFORM_TYPE: "ALL"`` — cleanly
     4/4 with the app staying connected; ``PERFORM_TYPE: "ALL"`` re-checks a
-    whole model in roughly 2 seconds. This supersedes the blanket "never
-    call this" rule below.
+    whole model in roughly 2 seconds. This lifts the blanket "never call
+    this" rule — but see the caveat below before treating it as fixed.
 
-    ⚠️ Previously CONFIRMED to hang on **Gen NX 2026 v2.1**, reproduced on
-    two independent real models once the full precondition chain (member
-    type + rebar + a KDS-recognized load combination + confirmed-queryable
-    analysis results) was satisfied. One attempt silently locked just that
-    element's check endpoints; another crashed the app outright with a
-    **"Failed to disconnect the work session"** license-error dialog
-    (unrecoverable — the program always dies once it appears). See
-    docs/live_verification_notes.md for both reproductions and the
-    re-verification.
+    ⚠️ CONFIRMED to hang on **Gen NX 2026 (v2.1), build 06/23/2026**,
+    reproduced on two independent real models once the full precondition
+    chain (member type + rebar + a KDS-recognized load combination +
+    confirmed-queryable analysis results) was satisfied. One attempt
+    silently locked just that element's check endpoints; another crashed the
+    app outright with a **"Failed to disconnect the work session"**
+    license-error dialog (unrecoverable — the program always dies once it
+    appears).
 
-    The re-verification is one build and one model, and every test on both
-    sides used the **KDS 41 20:2022** code specifically, so keep the
-    defensive pattern the production tool uses: a short timeout (it uses
-    25s) and — because a timed-out check may still have committed its
-    results — read ``get_beam_check_table`` regardless of whether this call
-    returned. If you only need results the user already computed in Gen NX's
-    own GUI, reading ``get_beam_check_table`` alone needs no perform call at
-    all and carries none of this risk.
+    ⚠️ **The clean re-verification ran on that exact same build** — this was
+    not fixed by a vendor patch, so the real trigger is still unidentified
+    (model state, call sequence, and client/transport are all untested
+    candidates). Every test on both sides also used the **KDS 41 20:2022**
+    code specifically. Treat the defensive pattern as the actual mitigation,
+    not as hygiene: use a short timeout (the production tool uses 25s) and —
+    because a timed-out check may still have committed its results — read
+    ``get_beam_check_table`` regardless of whether this call returned. If
+    you only need results the user already computed in Gen NX's own GUI,
+    reading ``get_beam_check_table`` alone needs no perform call at all and
+    carries none of this risk. See docs/live_verification_notes.md.
     """
     return _post(f"{_BASE}/BC-ANAL", argument, client)
 
@@ -156,14 +158,15 @@ def perform_column_check(
     members that already have rebar assigned. Response: ``{"message":
     "success"}``.
 
-    ✅ **Re-verified 2026-07-25: no longer hangs on a current Gen NX build.**
+    ✅ **Re-verified 2026-07-25: ran clean 4/4 — on the same build that hung.**
     An independent production tool (the QuickRebar NX web app) ran this
     call — including ``PERFORM_TYPE: "ALL"`` — plus ``perform_beam_check``
-    cleanly 4/4 with the app staying connected. This supersedes the blanket
-    "never call this" rule below.
+    cleanly 4/4 with the app staying connected. This lifts the blanket
+    "never call this" rule — but see the caveat below before treating it as
+    fixed.
 
-    ⚠️ Previously CONFIRMED to stall on **Gen NX 2026 v2.1**: the desktop
-    app's progress dialog got stuck at "Converting Design Results... 0%",
+    ⚠️ CONFIRMED to stall on **Gen NX 2026 (v2.1), build 06/23/2026**: the
+    desktop app's progress dialog got stuck at "Converting Design Results... 0%",
     5 times out of 5 whenever the target had real rebar data, a recognized
     design load combination, and confirmed analysis results — on natively
     KDS-configured production models, not just synthetic setups, and
@@ -176,14 +179,16 @@ def perform_column_check(
     a clean, correctly-shaped ``{"error": ...}`` response, so the request
     shape itself was never the problem.
 
-    The re-verification is one build and one model, and every test on both
-    sides used the **KDS 41 20:2022** code specifically (whether non-KDS
-    codes hit the old stall was never tested), so keep the defensive
-    pattern: a short timeout, and read ``get_column_check_table``
-    regardless of whether this call returned — a timed-out check very
-    likely still committed its results, which is exactly what the original
-    reproductions showed (full OK/NG, P-M ratios, and assigned rebar came
-    back immediately after a "hung" call, with no retry needed). See
+    ⚠️ **The clean re-verification ran on that exact same build** — this was
+    not fixed by a vendor patch, so the real trigger is still unidentified
+    (model state, call sequence, and client/transport are all untested
+    candidates). Every test on both sides also used the **KDS 41 20:2022**
+    code specifically. Treat the defensive pattern as the actual mitigation:
+    use a short timeout, and read ``get_column_check_table`` regardless of
+    whether this call returned — a timed-out check very likely still
+    committed its results, which is exactly what the original reproductions
+    showed (full OK/NG, P-M ratios, and assigned rebar came back immediately
+    after a "hung" call, with no retry needed). See
     docs/live_verification_notes.md for the full history.
     """
     return _post(f"{_BASE}/CC-ANAL", argument, client)
@@ -237,10 +242,11 @@ def perform_brace_check(
 
     ⚠️ Never independently tested. Its siblings ``perform_column_check``
     (CC-ANAL) and ``perform_beam_check`` (BC-ANAL) were confirmed to hang
-    Gen NX 2026 v2.1 but re-verified clean on a current build on
-    2026-07-25 — see docs/live_verification_notes.md. Assume the same
-    history applies here until tested: use a short timeout, and read
-    ``get_brace_check_table`` regardless of whether this call returns.
+    Gen NX 2026 (v2.1), build 06/23/2026, then ran clean on that same build
+    on 2026-07-25 — i.e. the trigger is unidentified rather than fixed; see
+    docs/live_verification_notes.md. Assume the same history applies here:
+    use a short timeout, and read ``get_brace_check_table`` regardless of
+    whether this call returns.
     """
     return _post(f"{_BASE}/BRC-ANAL", argument, client)
 
@@ -313,9 +319,9 @@ def perform_wall_check(
     property of every "perform check" function in this file. Independently
     corroborated 2026-07-25: a production tool (the QuickRebar NX web app)
     ships this call alongside CC-ANAL for live wall verdicts, and neither
-    hung on a current build. Note the stall was never about the targeting
-    scheme — ``perform_wall_design`` (WD-ANAL, design_forces.py) is also
-    WID+STORY-targeted and *did* hang on v2.1. See
+    hung. Note the stall was never about the targeting scheme —
+    ``perform_wall_design`` (WD-ANAL, design_forces.py) is also
+    WID+STORY-targeted and *did* hang on the same build. See
     docs/live_verification_notes.md for the full writeup.
     """
     return _post(f"{_BASE}/WC-ANAL", argument, client)
