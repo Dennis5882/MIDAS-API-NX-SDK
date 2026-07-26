@@ -1,0 +1,296 @@
+"""Render docs/vendor_report_ko.md as a .docx for handing to MIDASIT.
+
+The markdown file stays the source of truth; this only reformats it, so the
+Word document never has to be hand-edited and can be regenerated after any
+correction to the report.
+
+    pip install python-docx        # not in [dev] — this doesn't ship or run in CI
+    python scripts/make_vendor_docx.py [output.docx]
+
+Supports the markdown subset the report actually uses: ``#``/``##``/``###``
+headings, paragraphs, ``- `` bullets with indented continuations, ``|`` tables,
+fenced code blocks, ``>`` block quotes, ``---`` rules, and inline ``**bold**``
+and ``` `code` ``` (including code nested inside bold).
+"""
+from __future__ import annotations
+
+import re
+import sys
+from pathlib import Path
+
+from docx import Document
+from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+from docx.shared import Cm, Pt, RGBColor
+
+SOURCE = Path(__file__).resolve().parent.parent / "docs" / "vendor_report_ko.md"
+
+BODY_FONT, MONO_FONT = "맑은 고딕", "Consolas"
+CODE_FILL, HEAD_FILL = "F7F7F7", "EDEDED"
+
+
+# --------------------------------------------------------------------------
+# markdown -> block list
+# --------------------------------------------------------------------------
+
+
+def parse(md: str) -> list:
+    """Return a list of ("kind", payload) blocks."""
+    lines = md.split("\n")
+    blocks, i = [], 0
+    while i < len(lines):
+        line = lines[i]
+
+        if line.startswith("```"):                                  # fenced code
+            i += 1
+            buf = []
+            while i < len(lines) and not lines[i].startswith("```"):
+                buf.append(lines[i])
+                i += 1
+            blocks.append(("code", "\n".join(buf)))
+            i += 1
+        elif line.startswith("|"):                                  # table
+            rows = []
+            while i < len(lines) and lines[i].startswith("|"):
+                cells = [c.strip() for c in lines[i].strip().strip("|").split("|")]
+                if not all(re.fullmatch(r":?-{2,}:?", c) for c in cells):
+                    rows.append(cells)
+                i += 1
+            blocks.append(("table", rows))
+        elif re.match(r"#{1,3} ", line):                            # heading
+            level = len(line) - len(line.lstrip("#"))
+            blocks.append((f"h{level}", line[level:].strip()))
+            i += 1
+        elif line.startswith(">"):                                  # block quote
+            buf = []
+            while i < len(lines) and lines[i].startswith(">"):
+                buf.append(lines[i].lstrip(">").strip())
+                i += 1
+            blocks.append(("quote", " ".join(buf)))
+        elif line.startswith("- ") or line.startswith("  - "):      # bullet
+            indent = 1 if line.startswith("  - ") else 0
+            text = line.split("- ", 1)[1]
+            i += 1
+            pad = "    " if indent else "  "
+            while (i < len(lines) and lines[i].startswith(pad) and lines[i].strip()
+                   and not lines[i].lstrip().startswith("- ")):
+                text += " " + lines[i].strip()
+                i += 1
+            blocks.append(("bullet", (indent, text)))
+        elif line.strip() == "---":
+            blocks.append(("rule", ""))
+            i += 1
+        elif not line.strip():
+            i += 1
+        else:                                                       # paragraph
+            buf = [line.strip()]
+            i += 1
+            while i < len(lines) and lines[i].strip() and not re.match(
+                    r"(#{1,3} |\||```|>|- |---$)", lines[i]):
+                buf.append(lines[i].strip())
+                i += 1
+            blocks.append(("p", " ".join(buf)))
+    return blocks
+
+
+# --------------------------------------------------------------------------
+# low-level helpers python-docx has no API for
+# --------------------------------------------------------------------------
+
+
+def shade(element, fill: str) -> None:
+    """Apply a solid background to a paragraph or table cell."""
+    pr = element.get_or_add_tcPr() if element.tag.endswith("tc") else \
+        element.get_or_add_pPr()
+    shd = OxmlElement("w:shd")
+    shd.set(qn("w:val"), "clear")
+    shd.set(qn("w:color"), "auto")
+    shd.set(qn("w:fill"), fill)
+    pr.append(shd)
+
+
+def border(paragraph, edges: dict) -> None:
+    pr = paragraph._p.get_or_add_pPr()
+    pbdr = OxmlElement("w:pBdr")
+    for edge, (size, color) in edges.items():
+        el = OxmlElement(f"w:{edge}")
+        el.set(qn("w:val"), "single")
+        el.set(qn("w:sz"), str(size))
+        el.set(qn("w:space"), "4")
+        el.set(qn("w:color"), color)
+        pbdr.append(el)
+    pr.append(pbdr)
+
+
+def east_asian(run) -> None:
+    run._element.rPr.rFonts.set(qn("w:eastAsia"), run.font.name)
+
+
+def tight(paragraph, before=0, after=0, exact=None) -> None:
+    pf = paragraph.paragraph_format
+    pf.space_before = Pt(before)
+    pf.space_after = Pt(after)
+    if exact:
+        pf.line_spacing = Pt(exact)
+
+
+# --------------------------------------------------------------------------
+# inline runs
+# --------------------------------------------------------------------------
+
+
+def add_runs(paragraph, text: str, bold: bool = False, size: float | None = None):
+    for token in re.split(r"(\*\*.+?\*\*|`[^`]+`)", text):
+        if not token:
+            continue
+        if token.startswith("**") and token.endswith("**"):
+            add_runs(paragraph, token[2:-2], bold=True, size=size)
+        elif token.startswith("`") and token.endswith("`"):
+            r = paragraph.add_run(token[1:-1])
+            r.font.name = MONO_FONT
+            r.font.size = Pt((size or 9.5) - 0.7)
+            r.bold = bold
+            east_asian(r)
+        else:
+            r = paragraph.add_run(token)
+            r.bold = bold
+            if size:
+                r.font.size = Pt(size)
+
+
+# --------------------------------------------------------------------------
+# build
+# --------------------------------------------------------------------------
+
+
+def build(blocks: list, out_path: Path) -> None:
+    doc = Document()
+
+    normal = doc.styles["Normal"]
+    normal.font.name = BODY_FONT
+    normal.font.size = Pt(9.5)
+    normal.element.rPr.rFonts.set(qn("w:eastAsia"), BODY_FONT)
+    normal.paragraph_format.space_after = Pt(4.5)
+    normal.paragraph_format.line_spacing = 1.32
+
+    for level, size in ((1, 15), (2, 12), (3, 10.5)):
+        st = doc.styles[f"Heading {level}"]
+        st.font.name = BODY_FONT
+        st.font.size = Pt(size)
+        st.font.bold = True
+        st.font.color.rgb = RGBColor(0x1A, 0x1A, 0x1A)
+        st.element.rPr.rFonts.set(qn("w:eastAsia"), BODY_FONT)
+        st.paragraph_format.space_before = Pt(18 - level * 3)
+        st.paragraph_format.space_after = Pt(6)
+
+    for section in doc.sections:
+        section.page_height, section.page_width = Cm(29.7), Cm(21.0)
+        section.top_margin = section.bottom_margin = Cm(2.0)
+        section.left_margin = section.right_margin = Cm(2.0)
+    usable = doc.sections[0].page_width - Cm(4.0)
+
+    for kind, payload in blocks:
+        if kind in ("h1", "h2", "h3"):
+            p = doc.add_paragraph(style=f"Heading {kind[1]}")
+            add_runs(p, payload)
+            if kind == "h1":
+                border(p, {"bottom": (8, "999999")})
+
+        elif kind == "p":
+            add_runs(doc.add_paragraph(), payload)
+
+        elif kind == "bullet":
+            indent, text = payload
+            p = doc.add_paragraph()
+            p.paragraph_format.left_indent = Cm(0.6 + indent * 0.5)
+            p.paragraph_format.first_line_indent = Cm(-0.35)
+            tight(p, before=1, after=1)
+            p.add_run("• " if not indent else "– ")
+            add_runs(p, text)
+
+        elif kind == "quote":
+            p = doc.add_paragraph()
+            p.paragraph_format.left_indent = Cm(0.6)
+            border(p, {"left": (12, "BFBFBF")})
+            add_runs(p, payload)
+
+        elif kind == "code":
+            lines = payload.split("\n")
+            for n, line in enumerate(lines):
+                p = doc.add_paragraph()
+                p.paragraph_format.left_indent = Cm(0.3)
+                tight(p, exact=11.5)
+                shade(p._p, CODE_FILL)
+                edges = {}
+                if n == 0:
+                    edges["top"] = (4, "D9D9D9")
+                if n == len(lines) - 1:
+                    edges["bottom"] = (4, "D9D9D9")
+                if edges:
+                    border(p, edges)
+                r = p.add_run(line or " ")
+                r.font.name = MONO_FONT
+                r.font.size = Pt(8.2)
+                east_asian(r)
+            tight(doc.add_paragraph(), exact=5)
+
+        elif kind == "table":
+            rows = payload
+            if not rows:
+                continue
+            ncol = max(len(r) for r in rows)
+            table = doc.add_table(rows=0, cols=ncol)
+            table.style = "Table Grid"
+            table.alignment = WD_TABLE_ALIGNMENT.CENTER
+            table.autofit = False
+
+            weights = [max(len(r[c]) if c < len(r) else 0 for r in rows) or 1
+                       for c in range(ncol)]
+            total = sum(weights)
+            widths = [max(Cm(1.1), int(usable * w / total)) for w in weights]
+
+            for ri, cells in enumerate(rows):
+                row = table.add_row()
+                for ci in range(ncol):
+                    cell = row.cells[ci]
+                    cell.width = widths[ci]
+                    p = cell.paragraphs[0]
+                    tight(p, before=1.2, after=1.2)
+                    add_runs(p, cells[ci] if ci < len(cells) else "",
+                             bold=(ri == 0), size=9)
+                    if ri == 0:
+                        shade(cell._tc, HEAD_FILL)
+            tight(doc.add_paragraph(), exact=5)
+
+        elif kind == "rule":
+            p = doc.add_paragraph()
+            tight(p, before=3, after=3)
+            border(p, {"bottom": (6, "BFBFBF")})
+
+    # Footer: page numbers, so a printed copy stays in order.
+    footer = doc.sections[0].footer.paragraphs[0]
+    footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    fld = OxmlElement("w:fldSimple")
+    fld.set(qn("w:instr"), "PAGE")
+    footer._p.append(fld)
+
+    doc.save(out_path)
+
+
+def main() -> int:
+    out_path = Path(sys.argv[1]) if len(sys.argv) > 1 else SOURCE.with_suffix(".docx")
+    blocks = parse(SOURCE.read_text(encoding="utf-8"))
+    build(blocks, out_path)
+
+    kinds: dict = {}
+    for k, _ in blocks:
+        kinds[k] = kinds.get(k, 0) + 1
+    print(f"wrote {out_path}  ({out_path.stat().st_size:,} bytes)")
+    print("blocks: " + ", ".join(f"{k}={v}" for k, v in sorted(kinds.items())))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
