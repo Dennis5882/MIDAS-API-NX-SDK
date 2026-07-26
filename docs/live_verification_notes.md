@@ -1295,6 +1295,68 @@ Both are testable; neither is cheap, since each attempt costs a crash and a
 license recovery. Recorded as the two surviving hypotheses rather than picked
 between.
 
+#### The session hypothesis, and why it is now the leading one
+
+The project author proposed a mechanism for the second one that fits the
+evidence better than anything model-side: **the server retains a record of the
+existing session, and a later request is read as a second client connecting**,
+so the session/licence layer refuses the teardown. Three things support it:
+
+1. **The dialog only ever talks about sessions and licences.** It says nothing
+   about the model — which is what you would expect given that four
+   model-side variables have now been eliminated by experiment.
+2. **The original documented trigger was literally concurrency.** The earlier
+   pre-v2.1 round reproduced this crash with `doc/new` called *concurrently*
+   x5/x15. That was filed here as an obsolete build-specific quirk; under this
+   hypothesis it is the same defect seen from the other end, and the "resolved"
+   label was hiding a mechanism rather than a fixed bug.
+3. **NX runs on a separate machine**, reached through MIDASIT's relay, so
+   there really is distributed session state to get out of sync — this was not
+   understood when the earlier notes were written.
+
+What does *not* yet fit: Gen and Civil were both connected on the same account
+(`sjj0507@midasit.com`, distinct `connectionID`s) during the four clean
+`/doc/NEW` runs as well as the crash, so two products sharing an account is
+not sufficient on its own.
+
+The one session-level difference that survives: the crashed session was the
+**original long-lived connection** — hours old, two 253-endpoint sweeps and
+dozens of probes deep — while every clean run happened on a freshly restarted
+NX process minutes old.
+
+#### Tested: the historical concurrency trigger does NOT reproduce
+
+Run against a trivial empty document on the same build, reproducing the
+pre-v2.1 pattern exactly, each phase followed by a health check:
+
+| Phase | Result |
+|---|---|
+| 10 back-to-back `/doc/NEW`, no pause | 10/10 fine |
+| **5 concurrent** `/doc/NEW`, separate clients | 5/5 fine (18.6s) |
+| **15 concurrent** `/doc/NEW`, separate clients | 15/15 fine (59.5s) |
+
+Session stayed healthy throughout, same `connectionID`, app responsive after
+every phase. So **concurrency alone does not do it**, and the earlier round's
+`doc/new`-burst trigger really does look fixed on v2.1 — the "resolved" label
+was right about *that pattern*, even though the endpoint can still crash.
+
+This corrects the framing in the section above, which read the single-call
+crash as evidence that the concurrency trigger had returned. It had not. What
+they share is the endpoint and the crash text, not the route to it.
+
+Where that leaves the two hypotheses: the session-age one is weakened (an
+idle-but-old session is still untested, but burst load on a fresh one is
+clean), and **model content is now the leading candidate by elimination**.
+Every clean run — including 30 `/doc/NEW` calls across these phases — was
+against a document with one material, one section and no design data.
+
+The decisive test is the obvious one: reopen the model that crashed and call
+`/doc/NEW` again. That turns n=1 into a reproduction, which is what a vendor
+bug report needs; without it this is still an anecdote. Failing that, building
+a deliberately content-rich model through the API (many sections, groups,
+story data, load combinations, design member assignments) would isolate
+content from the specific file.
+
 ### 🧭 Every path in this API belongs to the machine running NX, not yours
 
 The single most useful thing learned today, and it cost five failed
