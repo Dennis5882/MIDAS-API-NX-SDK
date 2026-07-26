@@ -3,6 +3,15 @@
 Source: MIDAS-API manual repo, docs/manual/01_DOC.md (items 1-11).
 POST-only; every body is wrapped in an ``"Argument"`` key (not ID-keyed, so
 these are plain functions rather than DbResource subclasses).
+
+⚠️ **Every path in this API belongs to the machine running NX.** Calls reach
+the product through MIDASIT's relay, so it may be on a different computer than
+the one running this code — that is a normal deployment, not an edge case. It
+applies to ``open_project``/``save_as``/``import_*``/``export_*`` here, and
+equally to ``EXPORT_PATH`` on result tables, design reports and view captures.
+Derive the path from ``MidasClient.verify_connection()["user"]`` rather than
+from your own environment; see :func:`save_as` for the pattern and the failure
+mode, which is silent.
 """
 from __future__ import annotations
 
@@ -94,7 +103,30 @@ def save(client: Optional[MidasClient] = None) -> dict:
 
 
 def save_as(path: str, client: Optional[MidasClient] = None) -> dict:
-    """docs/manual/01_DOC.md #5 — /doc/SAVEAS — Save As."""
+    """docs/manual/01_DOC.md #5 — /doc/SAVEAS — Save As.
+
+    ⚠️ ``path`` is resolved **on the machine running NX**, which is not
+    necessarily the machine running this code — calls go through MIDASIT's
+    relay, so the product may be on another computer entirely. A path built
+    from your own ``%USERPROFILE%`` or ``os.path.expanduser`` is a common way
+    to get this wrong.
+
+    Build it from the server instead::
+
+        user = client.verify_connection()["user"]      # "someone@midasit.com"
+        path = f"C:/Users/{user.split('@')[0]}/Documents/model.mgbx"
+
+    A rejected path raises MIDAS's own "invalid path" dialog on that machine
+    and blocks the session until a human dismisses it — while this call still
+    answers ``{"message": "... command complete"}``, exactly as a successful
+    save does. Live-tested 2026-07-26: the only difference visible from here
+    was latency (58s blocked vs 0.4s saved). ``os.path.exists()`` locally
+    proves nothing; :func:`open_project` on the same path is the check that
+    asks the right filesystem.
+
+    Note also that the manual's example still uses the pre-NX ``.mcb``
+    extension; Gen NX 2026 writes ``.mgbx`` and Civil NX ``.mcbx``.
+    """
     return _post("/doc/SAVEAS", path, client)
 
 

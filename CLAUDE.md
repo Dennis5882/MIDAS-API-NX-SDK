@@ -99,6 +99,13 @@ Two things that have already caused rework:
   not on a key name. `post.base.unwrap_table()` does this; use it instead of indexing by
   `TABLE_NAME`. Confirmed 2026-07-26: **`"empty"` is just the default key for a blank
   `TABLE_NAME`**, and it can carry a full table — never read it as "no data".
+- **Every path belongs to the machine running NX, not the one running the script.** Calls go
+  through MIDASIT's relay, so the product is often on another PC. `EXPORT_PATH`, `/doc/SAVEAS`,
+  `/doc/OPEN`, report and image paths all resolve there. A path that doesn't exist on that machine
+  raises a modal dialog *there* and blocks the session, while the HTTP call still answers
+  `{"message": "... command complete"}` — identical to success. Build paths from
+  `verify_connection()["user"]`, and verify a write with `/doc/OPEN`, never `os.path.exists()`.
+  This cost an afternoon of chasing a "broken" `/doc/SAVEAS` that was working fine.
 - **`DELETE {endpoint}` with an ID-keyed `"Assign"` body empties the whole table**, ignoring the
   ids — for `/db/NODE` that takes the attached elements with it. This is what the manual documents,
   and it cost a model before it was caught. The undocumented `DELETE {endpoint}/{id}` is the one

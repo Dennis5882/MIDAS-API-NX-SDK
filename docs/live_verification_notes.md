@@ -1260,6 +1260,86 @@ until the process is properly terminated — which per the dialog means
 re-running the program, pressing New Project, and closing it cleanly. Do not
 point `/doc/NEW` at a session holding a model that matters.
 
+## 2026-07-26 — narrowing the `/doc/NEW` crash, and `/doc/SAVEAS` looks broken
+
+### What the `/doc/NEW` crash is *not*
+
+Four controlled runs against Gen NX 2026 (v2.1, build 06/23/2026), each
+building the document through the API so only one variable moves:
+
+| Document under `/doc/NEW` | Result |
+|---|---|
+| 2-node scratch | ✅ 3.1s |
+| 710 nodes / 1339 elements, API-built | ✅ 3.6s |
+| 750 nodes / 1300 elements, API-built, **solved, reactions readable** | ✅ 4.1s |
+| 710 nodes / 700 elements, **saved then reopened from disk** | ✅ 4.1s |
+| 710 nodes / 1272 elements, the user's real model, opened from disk, solved | 🛑 crash |
+
+Four candidate causes tested and **all four eliminated**: the product being
+Gen, model size, the presence of analysis results, and the document being
+disk-backed. The last of those was the leading hypothesis after the first
+three fell, and it did not survive contact with a controlled test — a document
+saved via `/doc/SAVEAS` and reopened via `/doc/OPEN` tore down cleanly.
+
+What still separates the one document that crashed:
+
+- **Content, not size.** It carried 60 sections, 3 materials, structure and
+  boundary groups, story data, load combinations, rebar data, and 190 design
+  members each for RC/steel/SRC. Every test model had one material, one
+  section and no design data at all.
+- **Session history.** That session had served two full 253-endpoint read
+  sweeps plus dozens of ad-hoc probes over several hours before the crash. The
+  clean runs were minutes old.
+
+Both are testable; neither is cheap, since each attempt costs a crash and a
+license recovery. Recorded as the two surviving hypotheses rather than picked
+between.
+
+### 🧭 Every path in this API belongs to the machine running NX, not yours
+
+The single most useful thing learned today, and it cost five failed
+`/doc/SAVEAS` attempts to notice.
+
+The API is reached through MIDASIT's relay at `moa-engineers.midasit.com`, so
+the NX process answering your calls **may be on a different computer entirely**
+— it was here. Every path-valued field is therefore resolved on *that* machine:
+
+- `/doc/SAVEAS`, `/doc/OPEN`, `/doc/IMPORT*`, `/doc/EXPORT*`
+- `EXPORT_PATH` on every `/post/TABLE` call and every design report/image call
+- image capture paths in `/view/*` and `/ope/*`
+
+Writing to `C:/Users/<your-windows-account>/Documents/...` fails when that
+account exists only on your machine. The failure is quiet in the worst way:
+
+| Path sent | Response | What actually happened |
+|---|---|---|
+| `C:/Users/Dennis/Documents/x.mgbx` (local account) | `command complete`, 58.2s | modal "invalid path" dialog on the NX machine, blocking until dismissed |
+| `C:/Users/sjj0507/Documents/x.mgbx` (NX machine's account) | `command complete`, 0.4s | saved |
+
+**Both answers are byte-identical.** The only signals are the latency — a
+blocked dialog inflates it — and, decisively, whether the file is really
+there. Checking `os.path.exists()` from the calling script proves nothing; it
+is looking at the wrong filesystem. `/doc/OPEN` on the path you just wrote is
+the check that works, since it asks the same machine.
+
+The manual repo's `examples/javascript/auto-save-before-analysis.html` already
+warns about this — *"%USERPROFILE% 같은 환경변수는 MAPI 서버(Gen NX 프로세스)가
+인식하지 못합니다"* — and derives the folder from the account name in
+`/mapikey/verify`'s `user` email (`sjj0507@midasit.com` → `sjj0507`). That is
+the right pattern: **ask the server who it is, then build the path.**
+
+Two corrections to earlier drafts of this file, kept because the reasoning
+error is instructive:
+
+- `/doc/SAVEAS` is **not** broken. It was writing files correctly the whole
+  time, to a machine this script could not see.
+- Its response is still not proof of success — but the reason is the dialog,
+  not the endpoint.
+
+Same lesson for `.mgbx`: the manual's example still shows the pre-NX `.mcb`,
+and Gen NX 2026 writes `.mgbx`. That turned out not to be what was failing
+here, but the example extension is stale regardless.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

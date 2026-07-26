@@ -95,6 +95,9 @@ def get_table(
     """
     argument: dict = {"TABLE_NAME": table_name, "TABLE_TYPE": table_type}
     if export_path is not None:
+        # Resolved on the machine running NX, which may not be this one - see
+        # midas_nx.doc's module docstring. A path that doesn't exist there
+        # raises a modal dialog on that machine and blocks the session.
         argument["EXPORT_PATH"] = export_path
     if node_elems is not None:
         argument["NODE_ELEMS"] = node_elems
