@@ -1216,7 +1216,13 @@ too, without needing a separate assertion: the `/db/CNLD`, `/db/BMLD` and
 delete, that one call would have taken the seed with it and all three would
 have failed — which is exactly how the bug was found on Civil.
 
-## 2026-07-26 — the `doc/new` crash trigger is NOT resolved on v2.1
+## 2026-07-26 — `/doc/NEW` killed Gen NX once, and nothing explains it
+
+> Read the follow-up sections before acting on this one. The framing here —
+> that the old `doc/new` concurrency trigger had returned — did not survive
+> testing, and every hypothesis raised below was subsequently eliminated,
+> including by reopening the very model involved. The crash is real and the
+> mitigation stands; the cause is unidentified.
 
 A single `/doc/NEW` against **Gen NX 2026 (v2.1), build 06/23/2026** with a
 real 710-node / 1272-element analyzed model open produced the license
@@ -1350,12 +1356,61 @@ clean), and **model content is now the leading candidate by elimination**.
 Every clean run — including 30 `/doc/NEW` calls across these phases — was
 against a document with one material, one section and no design data.
 
-The decisive test is the obvious one: reopen the model that crashed and call
-`/doc/NEW` again. That turns n=1 into a reproduction, which is what a vendor
-bug report needs; without it this is still an anecdote. Failing that, building
-a deliberately content-rich model through the API (many sections, groups,
-story data, load combinations, design member assignments) would isolate
-content from the specific file.
+#### Tested: the model is innocent, and so is session load
+
+The decisive test was run — the user reopened the exact model that crashed,
+on the same build, same account, same machine:
+
+```text
+nodes 710 · elements 1272 · materials 3 · sections 60 · constraints 44
+load cases 5 · load combos 6 · structure groups 3
+RC design members 190 · beam rebar 31
+    /doc/NEW -> {"message": "MIDAS GEN NX command complete"}  (3.7s)
+    session survived
+```
+
+**No crash.** Model content is eliminated too.
+
+Session load was then tested on its own: two full read sweeps back to back
+(~480 calls) followed by `/doc/NEW` — the shape of what preceded the original
+crash. Also clean, 4.5s.
+
+So every variable isolated so far is eliminated:
+
+| Hypothesis | Verdict |
+|---|---|
+| Product being Gen | ✗ |
+| Model size | ✗ |
+| Analysis results present | ✗ |
+| Document loaded from disk | ✗ |
+| Request concurrency (10 serial / 5 / 15 parallel) | ✗ |
+| Model content (**the very model that crashed**) | ✗ |
+| Accumulated session load (~480 calls) | ✗ |
+
+#### What this most likely is
+
+This now matches the pattern already recorded in this file for `CC-ANAL` /
+`BC-ANAL`: reproducible five times out of five, then clean on the same build
+with nothing changed. Two different endpoints, the same crash text, the same
+inability to pin a trigger. Reading them as one intermittent defect in
+**session teardown** explains more than any per-endpoint story does — and it
+is consistent with everything eliminated above, all of which is about the
+document rather than the session.
+
+Untested combinations remain (rich model *and* heavy session load together —
+yesterday's actual state; or wall-clock session age measured in hours rather
+than call count). But the useful conclusion for this SDK does not depend on
+resolving that:
+
+- **Treat `/doc/NEW` and `*-ANAL` as calls that can kill the application**,
+  regardless of what the document holds. There is no precondition to check.
+- The mitigation is unchanged and is not going to improve: don't point them at
+  a session holding work that isn't saved, and expect to restart the product
+  and recover the licence when it happens.
+- For a vendor report, the honest framing is a **class** of intermittent
+  session-teardown failure across `/doc/NEW` and `*-ANAL`, with this file's
+  elimination table attached to show what it is *not*. That is more useful
+  than a steps-to-reproduce list nobody can run.
 
 ### 🧭 Every path in this API belongs to the machine running NX, not yours
 
