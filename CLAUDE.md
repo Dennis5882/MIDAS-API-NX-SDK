@@ -36,7 +36,12 @@ runs exactly these on Python 3.9 and 3.13.
   `ROADMAP.md`.
 - `docs/live_verification_notes.md` — findings from real Gen/Civil NX sessions that are *not* in the
   manual. Deliberately kept out of the typed contracts; read it before trusting any `PRODUCTS` change.
-- `PLAN.md` — the author's own roadmap. **Don't edit it.**
+- `PLAN.md` — the hand-maintained big-picture roadmap (`ROADMAP.md` is the generated per-endpoint
+  counterpart). It is **editable, and goes stale fast**: it spent v0.11.0–v0.11.2 listing shipped
+  work as pending, because releases updated the code but not the plan. When a release changes what
+  §2's status table or §4's milestone table claims, update them in the same commit, along with the
+  "Last updated" line. Verify against the tree before restating status — most of the 2026-07-26
+  corrections were things the plan asserted were missing while the file sat in the repo.
 
 ## Adding an endpoint
 
