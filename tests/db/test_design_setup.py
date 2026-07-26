@@ -319,10 +319,11 @@ def test_wall_rebar_create_sends_documented_assign_shape(gen_client):
 
 @responses.activate
 def test_wall_rebar_delete_sends_null_assign(gen_client):
-    responses.add(responses.DELETE, "https://x.test:443/gen/db/REBW", json={}, status=200)
+    responses.add(responses.DELETE, "https://x.test:443/gen/db/REBW/1", json={}, status=200)
     WallRebar.delete([1], client=gen_client)
     sent = responses.calls[0].request
-    assert json.loads(sent.body) == {"Assign": {"1": None}}
+    assert sent.url.endswith("/1")
+    assert sent.body is None
 
 
 @responses.activate

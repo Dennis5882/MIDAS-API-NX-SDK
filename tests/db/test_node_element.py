@@ -33,11 +33,43 @@ def test_node_get_returns_full_response(gen_client):
 
 
 @responses.activate
-def test_node_delete_sends_null_per_id(gen_client):
-    responses.add(responses.DELETE, "https://x.test:443/gen/db/NODE", json={}, status=200)
+def test_node_delete_uses_the_per_id_url(gen_client):
+    """The manual's ID-keyed "Assign" body was measured deleting the whole
+    table on a live server; delete() uses DELETE {endpoint}/{id} instead.
+    See db/base.py's module docstring."""
+    responses.add(responses.DELETE, "https://x.test:443/gen/db/NODE/4", json={}, status=200)
+
     Node.delete([4], client=gen_client)
+
     sent = responses.calls[0].request
-    assert json.loads(sent.body) == {"Assign": {"4": None}}
+    assert sent.url == "https://x.test:443/gen/db/NODE/4"
+    assert sent.body is None
+
+
+@responses.activate
+def test_node_delete_issues_one_request_per_id_and_keys_the_result(gen_client):
+    for node_id in (4, 5):
+        responses.add(
+            responses.DELETE, f"https://x.test:443/gen/db/NODE/{node_id}",
+            json={"NODE": {str(node_id): {}}}, status=200,
+        )
+
+    result = Node.delete([4, 5], client=gen_client)
+
+    assert len(responses.calls) == 2
+    assert set(result) == {4, 5}
+    assert result[5] == {"NODE": {"5": {}}}
+
+
+@responses.activate
+def test_delete_all_still_sends_the_documented_whole_table_call(gen_client):
+    responses.add(responses.DELETE, "https://x.test:443/gen/db/NODE", json={}, status=200)
+
+    Node.delete_all(client=gen_client)
+
+    sent = responses.calls[0].request
+    assert sent.url == "https://x.test:443/gen/db/NODE"
+    assert json.loads(sent.body) == {"Assign": {}}
 
 
 @responses.activate

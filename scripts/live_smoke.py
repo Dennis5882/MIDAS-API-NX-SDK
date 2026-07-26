@@ -11,10 +11,21 @@ docs/live_verification_notes.md (2026-07-15). Re-run this whenever you want
 to reconfirm write -> analyze -> read still works end to end on a current
 NX build, without re-deriving the whole walk-through by hand.
 
-⚠️ Calls /doc/NEW, which discards whatever is open in that NX session
-WITHOUT saving. Don't run this against a session with unsaved work you
-care about. The built model is left open afterward (not saved, not
-closed) so you can inspect it in the NX GUI.
+⚠️ Calls /doc/NEW, which replaces whatever is open in that NX session.
+Don't run this against a session with work you care about. The built model
+is left open afterward (not saved, not closed) so you can inspect it in the
+NX GUI.
+
+⚠️ Corrected 2026-07-26: this used to say /doc/NEW discards the open
+document "WITHOUT saving". Not reliably. It can instead raise NX's own
+save-changes dialog, and **the whole API session blocks until a human
+clicks it** - so the risk is a stall, not only silent data loss. The first
+run of the day hit exactly that on a document opened from disk: the dialog
+appeared, the session was blocked behind it, and the analysis that ran
+after it came back {"message": "MIDAS CIVIL NX Analysis failed."}. The same
+script passed immediately afterwards. Later /doc/NEW calls against scratch
+documents did not prompt at all, so treat it as possible, not certain, and
+don't run this unattended against a session you can't see.
 
 Requires a running MIDAS Gen NX or Civil NX instance with the Open API
 connected (see src/midas_nx/README.md Quick Start).

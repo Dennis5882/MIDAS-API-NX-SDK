@@ -140,11 +140,15 @@ def test_load_contribution_get_only_endpoint_rejects_create(gen_client):
 
 
 @responses.activate
-def test_load_contribution_delete_sends_null_assign(gen_client):
-    responses.add(responses.DELETE, f"{BASE}/LCTB", json={}, status=200)
+def test_load_contribution_delete_uses_per_id_urls(gen_client):
+    for item_id in (2, 3):
+        responses.add(responses.DELETE, f"{BASE}/LCTB/{item_id}", json={}, status=200)
+
     LoadContributionForNonlinearLoadCase.delete([2, 3], client=gen_client)
-    sent = responses.calls[0].request
-    assert json.loads(sent.body) == {"Assign": {"2": None, "3": None}}
+
+    assert [call.request.url for call in responses.calls] == [
+        f"{BASE}/LCTB/2", f"{BASE}/LCTB/3",
+    ]
 
 
 # --- 5. SRDF ------------------------------------------------------------

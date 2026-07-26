@@ -116,8 +116,15 @@ def test_unknown_load_factor_constraint_create_equality_and_inequality(civil_cli
 
 
 @responses.activate
-def test_unknown_load_factor_constraint_delete_sends_null_assign(civil_client):
-    responses.add(responses.DELETE, "https://x.test:443/civil/db/ULFC", json={}, status=200)
+def test_unknown_load_factor_constraint_delete_uses_per_id_urls(civil_client):
+    for item_id in (2, 3):
+        responses.add(
+            responses.DELETE, f"https://x.test:443/civil/db/ULFC/{item_id}", json={}, status=200
+        )
+
     UnknownLoadFactorConstraint.delete([2, 3], client=civil_client)
-    sent = responses.calls[0].request
-    assert json.loads(sent.body) == {"Assign": {"2": None, "3": None}}
+
+    assert [call.request.url for call in responses.calls] == [
+        "https://x.test:443/civil/db/ULFC/2",
+        "https://x.test:443/civil/db/ULFC/3",
+    ]

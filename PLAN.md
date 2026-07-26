@@ -5,8 +5,11 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-07-26, at v0.13.0 (390/398 documented endpoints; 295/390
-> live-verified per `docs/coverage.json`, both products). v0.13.0 corrected the
+> Last updated: 2026-07-26, at v0.14.0 (390/398 documented endpoints; 295/390
+> live-verified per `docs/coverage.json`, both products). v0.14.0 came out of
+> the first write-enabled live session: `DbResource.delete([id])` was deleting
+> the whole table, following a manual the server does not honour. v0.13.0
+> corrected the
 > Hyper-S (`-M1`) family to Civil-only after live testing showed the SDK
 > offering 21 Civil-only endpoints to Gen clients, and completed A1's live
 > sweep across both products. v0.12.0 is a client-correctness
@@ -176,7 +179,8 @@ they're the ones worth re-checking before planning a release):
 | Manual drift | `manual-drift-check.yml` (`cron: 0 3 * * 3`) + `scripts/check_manual_drift.py` | ✅ running |
 | Schema drift (live) | `scripts/check_drift.py` (`/info/db/...` vs TypedDict) | ✅ local dev tool |
 | Scaffolding | `scripts/gen_endpoint.py` | ✅ in the documented add-an-endpoint loop |
-| Response handling | 200-with-`error` body, non-JSON body, empty-table shapes | ✅ hardened in v0.12.0 |
+| Response handling | 200-with-`error` body, non-JSON body, empty-table shapes, failed-analysis message | ✅ hardened in v0.12.0/v0.14.0 |
+| Write verification | `scripts/live_crud_check.py` — create/read/update/delete round trips | ⚠️ 10 resources, Civil only |
 | Version metadata | `__init__.py` `__version__` (hatchling `dynamic`) + `tests/test_version.py` | ✅ single source |
 | Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 295/390, both products |
 | Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md` | ⚠️ text-only, no screenshots |
@@ -320,6 +324,18 @@ measuring source density: ch26 alone is 13,363 manual lines / 69 endpoints,
   - `__version__` is now the single source (`dynamic = ["version"]`), with
     `tests/test_version.py` guarding it. It had reported `0.10.0` since
     v0.11.0 because the release step edited only `pyproject.toml`.
+- **v0.14.0 ✅ — Write verification, and a table-destroying `delete()`**
+  — first session with write permission on a real Civil NX. The new
+  `scripts/live_crud_check.py` (create → read → update → delete per resource)
+  found `DbResource.delete([id])` **emptying the entire table**, elements
+  included, because the manual's documented ID-keyed DELETE body is ignored by
+  the server. The undocumented per-id URL works; `delete()` now uses it and
+  the old behaviour is named `delete_all()`. Also: `doc.analyze()` raises on
+  `{"message": "... Analysis failed."}`, which carries no `error` key and so
+  slipped past v0.12.0's check. Ten resources now pass a full round trip. Full
+  findings — including `/doc/SAVEAS` returning success for a save that never
+  happened, and `verify_connection()` being unable to see a blocked session —
+  in `docs/live_verification_notes.md`.
 - **v0.13.0 ✅ — Hyper-S is Civil-only + live verification at 295/390**
   — `scripts/live_readonly_sweep.py` (A1, see Phase 6) swept both products
   against real sessions on 2026-07-26 and found the SDK offering the 13
@@ -466,8 +482,10 @@ Status after 2026-07-26:
   answer a live GET under Civil NX and 5 expose a schema via `/info/db/...`.
   See the v1.0.0 gate above for the three options — this needs a decision, not
   more waiting.
-- Extend live verification to write paths. Read coverage is at 295/390;
-  POST/PUT/DELETE is still only what `live_smoke.py` touches.
+- Extend write verification. `scripts/live_crud_check.py` covers 10 resources
+  on Civil; the same run against Gen is untested, and the design/`post` write
+  families aren't covered at all. Given that the first write session found a
+  table-destroying `delete()`, this is the highest-yield axis left.
 
 ---
 
@@ -491,6 +509,7 @@ Status after 2026-07-26:
 | v0.11.2 ✅ | `STORY_DRIFT_METHOD` enum + direction-key spelling correction; `*-ANAL` re-verification writeup; README framing cleanup | published |
 | v0.12.0 ✅ | Client correctness — `MidasResultError` for 200-with-`error` bodies, non-JSON responses kept inside the exception hierarchy, `items()` empty-shape fix, `post.base.unwrap_table()`, `__version__` single-sourced | published |
 | v0.13.0 ✅ | Hyper-S corrected to Civil-only (`HYPER_S_ONLY`), A1 live sweep complete across both products (295/390), D4 matrix has both halves | published |
+| v0.14.0 ✅ | `delete()` no longer empties the table (per-id URL) + `delete_all()`, `analyze()` raises on a failed solve, `scripts/live_crud_check.py` | published |
 | v0.14.0 | Phase 6 remainder — screenshot-driven beginner walkthrough (C1 pt. 2); optionally the Hyper-S stub decision (see v1.0.0 gate (a)) | a non-developer can get to a first result from the docs alone |
 | v0.15.0 | Phase 7 — Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
 | v0.16.0+ | Phase 8 — `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |

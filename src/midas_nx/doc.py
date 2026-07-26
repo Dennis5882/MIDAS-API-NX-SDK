@@ -8,12 +8,58 @@ from __future__ import annotations
 
 from typing import Optional
 
-from .client import MidasClient
+from .client import MidasClient, MidasResultError, get_default_client
 from .client import post_argument as _post
+
+#: ``/doc/ANAL`` reports a solver failure as HTTP 200 with a plain
+#: ``{"message": "MIDAS CIVIL NX Analysis failed."}`` — the *same* key it uses
+#: for success (``"... command complete"``), and without the ``"error"`` object
+#: that MidasClient checks for. Observed live 2026-07-26 on Civil NX 2026
+#: (v2.1). Matched case-insensitively on the one stable word rather than on the
+#: full string, since the sentence embeds the product name and has only been
+#: seen under Civil.
+_ANALYSIS_FAILURE_MARKER = "failed"
+
+
+def _check_analysis_message(response: dict, client: Optional[MidasClient]) -> dict:
+    """Raise if /doc/ANAL's 200 body says the analysis failed.
+
+    Kept here rather than in ``MidasClient`` on purpose: ``"message"`` is the
+    ordinary success carrier across the API, so a general "message containing
+    'failed' means failure" rule would misfire (a design-check summary may well
+    report how many members failed). ``analyze()`` is the call where a missed
+    failure is most costly — every downstream result table comes back empty and
+    the caller has nothing pointing at the cause.
+    """
+    active = client or get_default_client()
+    if not active.raise_on_result_error:
+        return response
+    message = response.get("message") if isinstance(response, dict) else None
+    if isinstance(message, str) and _ANALYSIS_FAILURE_MARKER in message.lower():
+        raise MidasResultError(
+            f"POST /doc/ANAL -> 200, but the analysis did not succeed: {message}",
+            status_code=200,
+            method="POST",
+            endpoint="/doc/ANAL",
+            response_body=response,
+        )
+    return response
 
 
 def new_project(client: Optional[MidasClient] = None) -> dict:
-    """docs/manual/01_DOC.md #1 — /doc/NEW — New Project."""
+    """docs/manual/01_DOC.md #1 — /doc/NEW — New Project.
+
+    ⚠️ Live-tested 2026-07-26: this **can** raise MIDAS's own "save changes?"
+    dialog, and any dialog **blocks the whole API session** until a human
+    dismisses it — not just this call. Your next request then fails or times
+    out for reasons that have nothing to do with it; a solve started behind
+    that dialog came back ``{"message": "... Analysis failed."}``.
+
+    It is not predictable from the API side. In one session it prompted on a
+    document opened from disk and then did not prompt on any of the several
+    scratch documents ``/doc/NEW`` had itself created. Assume it may prompt:
+    don't run this unattended against a session you can't see.
+    """
     return _post("/doc/NEW", {}, client)
 
 
@@ -75,6 +121,15 @@ def analyze(analysis_type: Optional[str] = None, client: Optional[MidasClient] =
     analysis_type (Optional): e.g. "PUSHOVER" for a pushover run; omit for a
     general analysis run.
 
+    ⚠️ Live-tested 2026-07-26: a *failed* solve is reported as HTTP 200 with
+    ``{"message": "MIDAS CIVIL NX Analysis failed."}`` — the same key a
+    successful call uses for ``"... command complete"``, and with no ``error``
+    object. This function raises :class:`MidasResultError` on it rather than
+    returning a dict that reads as success; every result table would otherwise
+    come back empty with nothing pointing at the cause. A model the solver
+    rejects up front (e.g. no boundary conditions) is reported the other way,
+    as a normal ``{"error": ...}`` body, and raises from the client.
+
     ⚠️ Live-tested: on a large model (4000+ nodes), this call legitimately
     took longer than a 90s client timeout to solve — a
     ``MidasConnectionError``/read-timeout here does not necessarily mean the
@@ -86,4 +141,4 @@ def analyze(analysis_type: Optional[str] = None, client: Optional[MidasClient] =
     bug — plain long-running analysis, not a stall).
     """
     argument = {"TYPE": analysis_type} if analysis_type else {}
-    return _post("/doc/ANAL", argument, client)
+    return _check_analysis_message(_post("/doc/ANAL", argument, client), client)

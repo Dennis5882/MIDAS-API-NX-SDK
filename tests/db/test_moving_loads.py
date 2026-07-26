@@ -434,11 +434,18 @@ def test_moving_load_case_create_optimization_variant(civil_client):
 
 
 @responses.activate
-def test_moving_load_case_delete_sends_null_assign(civil_client):
-    responses.add(responses.DELETE, "https://x.test:443/civil/db/MVLD", json={}, status=200)
+def test_moving_load_case_delete_uses_per_id_urls(civil_client):
+    for item_id in (1, 2):
+        responses.add(
+            responses.DELETE, f"https://x.test:443/civil/db/MVLD/{item_id}", json={}, status=200
+        )
+
     MovingLoadCase.delete([1, 2], client=civil_client)
-    sent = responses.calls[0].request
-    assert json.loads(sent.body) == {"Assign": {"1": None, "2": None}}
+
+    assert [call.request.url for call in responses.calls] == [
+        "https://x.test:443/civil/db/MVLD/1",
+        "https://x.test:443/civil/db/MVLD/2",
+    ]
 
 
 # --- 13. /db/MVLDch -------------------------------------------------------------

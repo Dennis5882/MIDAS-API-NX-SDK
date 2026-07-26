@@ -68,11 +68,12 @@ def test_torsion_reduction_factor_update_sends_documented_assign_shape(gen_clien
 
 
 @responses.activate
-def test_torsion_reduction_factor_delete_sends_null_assign(gen_client):
-    responses.add(responses.DELETE, f"{BASE}/TRFT", json={}, status=200)
+def test_torsion_reduction_factor_delete_uses_the_per_id_url(gen_client):
+    responses.add(responses.DELETE, f"{BASE}/TRFT/888", json={}, status=200)
     TorsionReductionFactor.delete([888], client=gen_client)
     sent = responses.calls[0].request
-    assert json.loads(sent.body) == {"Assign": {"888": None}}
+    assert sent.url.endswith("/888")
+    assert sent.body is None
 
 
 # --- 22. MCMB ---------------------------------------------------------------
@@ -568,7 +569,7 @@ def test_modify_column_rebar_data_supports_get_put_delete(gen_client):
         status=200,
     )
     responses.add(responses.PUT, f"{BASE}/REBC", json={}, status=200)
-    responses.add(responses.DELETE, f"{BASE}/REBC", json={}, status=200)
+    responses.add(responses.DELETE, f"{BASE}/REBC/1", json={}, status=200)
 
     get_result = ModifyColumnRebarData.get(client=gen_client)
     assert get_result["REBC"]["1"]["ITEMS"] == []

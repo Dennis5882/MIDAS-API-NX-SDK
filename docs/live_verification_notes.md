@@ -1117,6 +1117,97 @@ not just reasoned from the docs.
   back at 4.1 MB / 39760 rows. Pass `load_case_names` rather than raising the
   timeout.
 
+## 2026-07-26 — write verification on Civil NX, and a table-destroying bug
+
+First session with permission to create, modify and delete freely on Civil NX
+2026 (v2.1), build 06/05/2026. `scripts/live_crud_check.py` was written for it:
+create → read back → update → read back → delete → confirm gone, per resource.
+Read sweeps prove an endpoint answers; only this proves the SDK's *write*
+shapes are the ones the server accepts.
+
+### 🛑 `DbResource.delete([id])` was deleting the entire table
+
+The single most serious defect found so far, and it was invisible to every
+mocked test in `tests/`.
+
+```text
+after create      : [1, 2, 3, 101]
+after delete([101]): []              <- expected [1, 2, 3]
+```
+
+For `/db/NODE` this also takes out every element attached to those nodes, so
+one `delete()` call empties a model. It surfaced by accident: the CRUD run
+deleted one throwaway node, and the seeded model was gone afterwards.
+
+**The SDK was following the manual exactly.** `03_DB_Node_Element.md` documents
+`DELETE /db/NODE` with `{"Assign": {"4": None}}`, and `db/base.py` had reasoned
+carefully about `None` vs `{}` across chapters. Both forms behave the same way
+live, and neither one respects the ids:
+
+| Request | Result |
+|---|---|
+| `DELETE /db/NODE` + `{"Assign": {"3": null}}` | table emptied |
+| `DELETE /db/NODE` + `{"Assign": {"3": {}}}` | table emptied |
+| `DELETE /db/NODE` + `{"Assign": {"2": {}, "3": {}}}` | table emptied |
+| **`DELETE /db/NODE/3`** | **only node 3 removed, and returned** |
+
+The per-id URL is undocumented — `db/base.py` explicitly declined to invent it
+("no documented per-ID URL filtering across the manual, so we don't invent
+one"). It works, and it is the only form that does what `delete()` claims.
+Verified on `/db/NODE`, `/db/STLD`, `/db/LDGR` and `/db/MATL`; deleting an id
+that doesn't exist is a harmless no-op returning `{"message": ""}`.
+
+Fixed in v0.14.0: `delete()` issues one `DELETE {endpoint}/{id}` per id, and
+the whole-table behaviour is kept under the name `delete_all()`.
+
+### Two more "a 200 is not success" variants
+
+v0.12.0 taught the client to reject a 2xx carrying `{"error": ...}`. Writing
+turned up two cases that slip past it:
+
+- **`/doc/ANAL` reports a failed solve as `{"message": "MIDAS CIVIL NX
+  Analysis failed."}`** — the same `message` key a successful call uses for
+  `"... command complete"`, with no `error` object anywhere. Every result table
+  then comes back empty with nothing explaining why. `doc.analyze()` now
+  inspects that message; the check is deliberately not in the client, since
+  `message` is the normal success carrier elsewhere.
+- **`/doc/SAVEAS` returns `{"message": "... command complete"}` for a save
+  that did not happen.** Given a path NX rejects it raises a modal *"잘못된
+  경로가 있습니다"* dialog, blocks the session until someone clicks it, and then
+  answers with the success string. No file on disk. There is no way to tell
+  success from failure from the response — check the filesystem.
+
+Note also that error bodies arrive under **201** as well as 200
+(`POST /db/CONS` → `201` + `{"error": ...}`), so any check keyed on the status
+being exactly 200 misses them.
+
+### `verify_connection()` cannot detect a blocked session
+
+While a dialog was up, `/mapikey/verify` answered `{"status": "connected"}`
+in milliseconds while every `/db/*` call timed out. The health check is served
+by the relay, not by the blocked application. It tells you the process is alive
+and the key is valid — it does not tell you the app can currently answer.
+
+### Field-level findings from the round trips
+
+- **`/db/CONS`'s `CONSTRAINT` must be exactly 7 characters.** Six is rejected
+  outright; **eight is accepted and silently truncated to seven**, giving a
+  support that was never requested with no error raised.
+- **`/db/STLD` ignores the `"Assign"` key and renumbers.** Posting under key
+  `7` produced record `2` (`NO: 2`), the next free slot. `/db/NODE` honours the
+  key exactly (posting under `77` yields node `77`). So the ID-keyed convention
+  is not uniform, and code that writes a record and then reads it back by the
+  key it sent will miss for load cases.
+- **`create()` is not an upsert.** Re-posting an existing key returns `201`
+  with `{"error": ...}` "Key Already Exist".
+
+Round-trip results, 10 resources: `/db/GRUP`, `/db/BNGR`, `/db/LDGR`,
+`/db/NODE`, `/db/SKEW`, `/db/STLD`, `/db/CNLD`, `/db/BMLD`, `/db/CONS`,
+`/db/MVCD` — all pass create/read/update/delete once the payloads above are
+right. The four that failed on the first run were all bad test fixtures
+(deleted prerequisites, a 6-character constraint), not SDK defects; that is
+worth stating plainly, because a checker that cries wolf gets ignored.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

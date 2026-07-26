@@ -99,6 +99,17 @@ Two things that have already caused rework:
   not on a key name. `post.base.unwrap_table()` does this; use it instead of indexing by
   `TABLE_NAME`. Confirmed 2026-07-26: **`"empty"` is just the default key for a blank
   `TABLE_NAME`**, and it can carry a full table — never read it as "no data".
+- **`DELETE {endpoint}` with an ID-keyed `"Assign"` body empties the whole table**, ignoring the
+  ids — for `/db/NODE` that takes the attached elements with it. This is what the manual documents,
+  and it cost a model before it was caught. The undocumented `DELETE {endpoint}/{id}` is the one
+  that deletes a single record. `DbResource.delete()` uses it as of v0.14.0; the destructive form is
+  `delete_all()`. Don't "simplify" `delete()` back to one request.
+- **Not every failure carries an `error` key.** `/doc/ANAL` reports a failed solve as
+  `{"message": "... Analysis failed."}` and `/doc/SAVEAS` returns `"... command complete"` for a
+  save that never happened. Error bodies also arrive under **201**, not just 200. When adding a
+  write endpoint, verify the failure shape live rather than assuming `MidasResultError` covers it.
+- **`verify_connection()` can't see a blocked session.** While a modal dialog is up, `/mapikey/verify`
+  still answers `"connected"` (the relay serves it) while every `/db/*` call times out.
 - **Hyper-S (`-M1`) endpoints are Civil NX only** — it's the solver MIDASIT shipped with Civil NX.
   They 404 under Gen. Use `HYPER_S_ONLY` from `db/base.py`, not `CIVIL_ONLY`: Hyper-S is expected
   to reach Gen NX eventually, and that constant is the one place to widen when it does.

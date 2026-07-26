@@ -5,11 +5,18 @@ Source convention: MIDAS-API manual repo, e.g. docs/manual/03_DB_Node_Element.md
 POST/PUT/DELETE; GET returns the full set (no documented per-ID URL filtering
 across the manual, so we don't invent one).
 
-DELETE payload is inconsistent across the manual itself (some chapters send
-``None`` per id, e.g. 03_DB_Node_Element.md; others send ``{}``, e.g.
-06_DB_Static_Loads.md). We standardize on ``None`` (matches the NODE example,
-the most-referenced endpoint in the manual) — both have been observed as
-accepted by the server in the source docs.
+⚠️ DELETE does not work the way the manual documents it. The manual's worked
+example is ``DELETE /db/NODE`` with ``{"Assign": {"4": None}}``, and chapters
+disagree on ``None`` vs ``{}`` per id. Live testing on 2026-07-26 (Civil NX
+2026 v2.1) found **both forms delete the entire table**, ignoring the ids
+entirely — deleting one node took the whole node table with it, and the
+elements attached to those nodes with it. The undocumented per-id URL,
+``DELETE {endpoint}/{id}``, does the right thing: it removes exactly that
+record and returns it. Verified across ``/db/NODE``, ``/db/STLD``,
+``/db/LDGR`` and ``/db/MATL``; deleting an id that doesn't exist is a
+harmless no-op. :meth:`DbResource.delete` uses the per-id URL as of v0.14.0.
+The whole-table form is still reachable, deliberately, as
+:meth:`DbResource.delete_all`.
 """
 from __future__ import annotations
 
@@ -191,7 +198,36 @@ class DbResource:
 
     @classmethod
     def delete(cls, ids: list, client: Optional[MidasClient] = None) -> dict:
-        """ids: list of item ids to delete, e.g. [1, 2, 3]."""
+        """Delete the listed ids, e.g. ``[1, 2, 3]``. Returns ``{id: response}``.
+
+        Issues one ``DELETE {ENDPOINT}/{id}`` per id rather than the manual's
+        single ID-keyed ``"Assign"`` body. That is not a stylistic choice: the
+        documented body form was measured deleting **the entire table**
+        regardless of which ids it names (see this module's docstring), which
+        for ``/db/NODE`` also takes out every element attached to those nodes.
+        The per-id URL removes exactly the record asked for.
+
+        Deleting an id that isn't there is a no-op, so this is safe to call
+        without checking first. If you actually want to empty a table, say so
+        with :meth:`delete_all`.
+        """
         client = client or get_default_client()
         cls._check(client, "DELETE")
-        return client.request("DELETE", cls.ENDPOINT, {"Assign": {str(i): None for i in ids}})
+        return {i: client.request("DELETE", f"{cls.ENDPOINT}/{i}") for i in ids}
+
+    @classmethod
+    def delete_all(cls, client: Optional[MidasClient] = None) -> dict:
+        """Empty this table — **every record**, not a selection.
+
+        This is the manual's documented DELETE call (``{"Assign": {...}}``
+        against the bare endpoint). Live testing showed it ignoring the ids in
+        that body and clearing the table, so it is exposed under a name that
+        says what it does instead of being reachable by accident through
+        :meth:`delete`.
+
+        For ``/db/NODE`` this also removes every element attached to the
+        deleted nodes. There is no undo through the API.
+        """
+        client = client or get_default_client()
+        cls._check(client, "DELETE")
+        return client.request("DELETE", cls.ENDPOINT, {"Assign": {}})
