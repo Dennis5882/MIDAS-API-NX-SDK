@@ -91,10 +91,12 @@ Two things that have already caused rework:
 ## Live-server behaviour worth knowing
 
 - **A 200 does not mean success.** Several endpoints return HTTP 200 with an `{"error": {...}}`
-  body. Check for the key explicitly — a wrapper that only catches non-2xx will report false success.
+  body. Since v0.12.0 `MidasClient._send()` detects this and raises `MidasResultError`
+  (opt out with `raise_on_result_error=False`) — don't add a second check per call site, and
+  don't regress it: before v0.12.0 the client returned the error dict as a successful result.
 - **`/post/TABLE`'s top-level response key is unstable** across sessions (seen as both
   `"Result Table"` and `"empty"`). Match on shape — find the dict carrying `HEAD`/`DATA` — not on
-  a key name.
+  a key name. `post.base.unwrap_table()` does this; use it instead of indexing by `TABLE_NAME`.
 - **`*-ANAL` design-check calls** reproducibly hung Gen NX 2026 v2.1 (build 06/23/2026), then ran
   clean on that *same build*. Not a vendor fix; trigger unidentified. Use a short timeout and read
   the `*-TABLE` back regardless of whether the call returned. Full history in

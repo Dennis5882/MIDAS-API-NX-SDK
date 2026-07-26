@@ -120,6 +120,11 @@ More worked examples in [`examples/python/`](./examples/python/): a wind-load pl
   (`MidasAuthError`, `MidasNotFoundError`, ...) instead of killing the process. The most common
   ones (auth, connection, not-found) append a plain-language `(Hint: ...)` suggestion to the
   message — no need to guess what a 401 or a dead connection means.
+- **A 200 is not assumed to be success** — several endpoints report a refusal with an
+  `{"error": ...}` body under a 2xx status (a story table asked for before the story calculation
+  has run, a design check whose preconditions aren't met). Those raise `MidasResultError` rather
+  than returning an error dict that looks like a result; pass
+  `MidasClient(raise_on_result_error=False)` if you'd rather inspect the body yourself.
 - **Unified Gen/Civil** — `MidasClient(product=Product.GEN | Product.CIVIL)`; each resource class
   declares which product(s) it supports (`PRODUCTS`), and calling a Civil-only resource against a
   Gen client raises `ProductMismatchError` by default (`strict_product=False` to only warn).
@@ -188,7 +193,9 @@ outbound traffic to the MIDAS relay. Share this with your network/security team:
 
 If your network does SSL inspection/interception on all outbound traffic, `moa-engineers.midasit.com`
 needs to be excluded from it — several users have hit silent connection failures caused by SSL
-inspection specifically, separate from a plain firewall block.
+inspection specifically, separate from a plain firewall block. When an appliance answers in the
+product's place, you'll get a `MidasServerError` reading `response body is not JSON: '<html>...'` —
+that message is the giveaway that something between you and MIDAS is intercepting the request.
 
 ## Contributing
 

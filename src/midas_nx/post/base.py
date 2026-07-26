@@ -12,7 +12,7 @@ response is returned as a plain dict rather than typed further.
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, TypedDict
+from typing import Any, Dict, List, Mapping, Optional, TypedDict
 
 from ..client import MidasClient, get_default_client
 
@@ -67,8 +67,12 @@ def get_table(
 
     table_type: the table's TABLE_TYPE value (see pre_process.py/result_1.py/
     story.py/design.py for the documented constants).
-    table_name: response table title; also becomes the response's top-level
-    key, e.g. {table_name: {"FORCE": ..., "DIST": ..., "HEAD": [...], "DATA": [...]}}.
+    table_name: response table title. The manual documents it as also becoming
+    the response's top-level key, e.g.
+    {table_name: {"FORCE": ..., "DIST": ..., "HEAD": [...], "DATA": [...]}} —
+    but live sessions have returned other keys for the same call ("Result
+    Table", "empty"), so don't index the response by name. Use
+    :func:`unwrap_table` below, which finds the table by shape instead.
     node_elems/unit/styles/components: only meaningful for the specific table
     types documented as supporting them — see each caller's docstring.
     load_case_names: analysis-result tables only (ch19-21) — load/combination
@@ -120,3 +124,35 @@ def get_table(
         argument["SET_CALCULATION_METHOD"] = set_calculation_method
     client = client or get_default_client()
     return client.request("POST", "/post/TABLE", {"Argument": argument})
+
+
+#: Keys that identify the actual table object inside a /post/TABLE response.
+_TABLE_MARKERS = ("HEAD", "DATA")
+
+
+def unwrap_table(response: Mapping[str, Any]) -> dict:
+    """Pull the ``{FORCE, DIST, HEAD, DATA}`` table out of a ``get_table()``
+    response, whatever its top-level key happens to be.
+
+    The DbResource-side counterpart is ``DbResource.items()``. Matching on
+    shape rather than on the key name is deliberate: the same call has been
+    seen returning ``"Result Table"`` and ``"empty"`` as its top-level key
+    across sessions, in addition to the ``TABLE_NAME`` the manual documents,
+    so ``response[table_name]`` is not safe. Returns ``{}`` when the response
+    carries no table (e.g. a zero-row ``{"message": ""}``).
+
+    Example::
+
+        raw = get_reaction_table(load_case_names=["DL(ST)"])
+        table = unwrap_table(raw)
+        for row in table.get("DATA", []):
+            ...
+    """
+    if not isinstance(response, Mapping):
+        return {}
+    if any(marker in response for marker in _TABLE_MARKERS):
+        return dict(response)
+    for value in response.values():
+        if isinstance(value, Mapping) and any(marker in value for marker in _TABLE_MARKERS):
+            return dict(value)
+    return {}

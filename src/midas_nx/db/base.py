@@ -127,9 +127,18 @@ class DbResource:
         """Fetch all items, unwrapped to ``{id: payload}`` with int ids
         (e.g. ``{1: {"X": 0, "Y": 0, "Z": 0}, ...}`` for ``Node``), instead
         of ``.get()``'s raw ``{ENDPOINT_KEY: {"1": {...}, ...}}`` response.
-        ``.get()`` is unchanged; use whichever shape is more convenient."""
+        ``.get()`` is unchanged; use whichever shape is more convenient.
+
+        Returns ``{}`` for an empty table. A zero-row response has been
+        observed live in two shapes — ``{"<KEY>": {}}`` and a bare
+        ``{"message": ""}`` (see docs/live_verification_notes.md) — so this
+        picks the first dict-valued entry rather than the first entry, which
+        would otherwise raise ``AttributeError`` on the string value.
+        """
         response = cls.get(client=client)
-        table = next(iter(response.values()), {}) if response else {}
+        if not isinstance(response, dict):
+            return {}
+        table = next((v for v in response.values() if isinstance(v, dict)), {})
         return {int(k): v for k, v in table.items()}
 
     @classmethod

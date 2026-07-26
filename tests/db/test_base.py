@@ -50,3 +50,22 @@ def test_items_returns_empty_dict_for_empty_table(gen_client):
     responses.add(responses.GET, "https://x.test:443/gen/db/NODE", json={"NODE": {}}, status=200)
 
     assert Node.items(client=gen_client) == {}
+
+
+@responses.activate
+def test_items_returns_empty_dict_for_the_message_shaped_empty_response(gen_client):
+    """A zero-row response has been observed live as a bare {"message": ""} as
+    well as {"<KEY>": {}} — the string value must not reach .items()."""
+    responses.add(responses.GET, "https://x.test:443/gen/db/NODE", json={"message": ""}, status=200)
+
+    assert Node.items(client=gen_client) == {}
+
+
+@responses.activate
+def test_items_skips_non_dict_entries_to_find_the_table(gen_client):
+    responses.add(
+        responses.GET, "https://x.test:443/gen/db/NODE",
+        json={"message": "", "NODE": {"1": {"X": 0, "Y": 0, "Z": 0}}}, status=200,
+    )
+
+    assert Node.items(client=gen_client) == {1: {"X": 0, "Y": 0, "Z": 0}}

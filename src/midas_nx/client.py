@@ -102,6 +102,24 @@ class MidasConnectionError(MidasAPIError):
     HINT = "check that MIDAS Gen NX / Civil NX is running with Open API connected"
 
 
+class MidasResultError(MidasAPIError):
+    """HTTP 200, but the body carries an ``{"error": {...}}`` object.
+
+    Several endpoints report a refusal this way instead of with an HTTP error
+    status — e.g. a story table asked for before ``ope.calculate_story()`` has
+    run, or a design check whose preconditions aren't met. Treating the 2xx as
+    success hands the caller an error dict that looks like a result, so the
+    client raises instead. Pass ``MidasClient(raise_on_result_error=False)`` to
+    get the raw body back and inspect it yourself.
+    """
+
+    HINT = (
+        "the request reached the product but it refused the operation; check the "
+        "model state the call needs (analysis run, story calculation, design "
+        "parameters) rather than the request shape"
+    )
+
+
 class ProductMismatchError(MidasAPIError):
     """Raised when a resource's PRODUCTS doesn't include the client's product."""
 
@@ -112,6 +130,12 @@ class UnsupportedMethodError(MidasAPIError):
 
 
 _STATUS_EXCEPTIONS = {401: MidasAuthError, 403: MidasAuthError, 404: MidasNotFoundError}
+
+
+def _exception_for_status(status_code: int) -> "type[MidasAPIError]":
+    return _STATUS_EXCEPTIONS.get(
+        status_code, MidasServerError if status_code >= 500 else MidasRequestError
+    )
 
 
 class MidasClient:
@@ -131,6 +155,7 @@ class MidasClient:
         timeout: float = 30.0,
         strict_product: bool = True,
         session: Optional[requests.Session] = None,
+        raise_on_result_error: bool = True,
     ) -> None:
         self.mapi_key = mapi_key or os.getenv("MIDAS_MAPI_KEY", "")
         self.product = Product(product)
@@ -138,6 +163,7 @@ class MidasClient:
         self.timeout = timeout
         self.strict_product = strict_product
         self._session = session or requests.Session()
+        self.raise_on_result_error = raise_on_result_error
 
     def check_product(self, resource_products: frozenset, resource_name: str) -> None:
         if self.product.value not in resource_products:
@@ -189,15 +215,42 @@ class MidasClient:
                 f"{method.upper()} {endpoint} failed: {exc}", method=method, endpoint=endpoint
             ) from exc
 
-        data: Any = response.json() if response.text else {}
+        try:
+            data: Any = response.json() if response.text else {}
+        except ValueError as exc:
+            # A proxy, captive portal or SSL-inspection appliance answering
+            # instead of the product — the body isn't the documented JSON at
+            # all. Keep it inside this SDK's exception hierarchy rather than
+            # letting a raw JSONDecodeError escape past `except MidasAPIError`.
+            snippet = " ".join(response.text.split())[:200]
+            exc_cls = MidasServerError if response.ok else _exception_for_status(response.status_code)
+            raise exc_cls(
+                f"{method.upper()} {endpoint} -> {response.status_code}: "
+                f"response body is not JSON: {snippet!r}",
+                status_code=response.status_code,
+                method=method,
+                endpoint=endpoint,
+                response_body=response.text,
+            ) from exc
 
         if response.ok:
+            # A 200 does not mean success: several endpoints report a refusal
+            # with an {"error": {...}} body under a 2xx status. See
+            # MidasResultError and docs/live_verification_notes.md.
+            if self.raise_on_result_error and isinstance(data, dict) and data.get("error"):
+                error = data["error"]
+                detail = error.get("message", error) if isinstance(error, dict) else error
+                raise MidasResultError(
+                    f"{method.upper()} {endpoint} -> {response.status_code} "
+                    f"with an error body: {detail}",
+                    status_code=response.status_code,
+                    method=method,
+                    endpoint=endpoint,
+                    response_body=data,
+                )
             return data
 
-        exc_cls = _STATUS_EXCEPTIONS.get(
-            response.status_code,
-            MidasServerError if response.status_code >= 500 else MidasRequestError,
-        )
+        exc_cls = _exception_for_status(response.status_code)
         message = response.reason
         if isinstance(data, dict):
             message = data.get("message") or (data.get("error") or {}).get("message") or message

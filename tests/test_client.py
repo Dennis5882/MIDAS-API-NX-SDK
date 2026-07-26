@@ -6,11 +6,13 @@ import responses
 
 from midas_nx.client import (
     MidasAPI,
+    MidasAPIError,
     MidasAuthError,
     MidasClient,
     MidasConnectionError,
     MidasNotFoundError,
     MidasRequestError,
+    MidasResultError,
     MidasServerError,
     Product,
     build_base_url,
@@ -54,6 +56,83 @@ def test_request_sends_correct_url_headers_and_body(gen_client):
 def test_request_empty_response_body_returns_empty_dict(gen_client):
     responses.add(responses.POST, "https://x.test:443/gen/doc/SAVE", body="", status=200)
     assert gen_client.request("POST", "/doc/SAVE", {"Argument": {}}) == {}
+
+
+@responses.activate
+def test_200_with_error_body_raises_result_error(gen_client):
+    """A 200 does not mean success: /post/TABLE and the design-check family
+    report refusals with an {"error": ...} body under a 2xx status."""
+    responses.add(
+        responses.POST, "https://x.test:443/gen/post/TABLE",
+        json={"error": {"message": "[empty] Cannot generate table data as there is no analysis result."}},
+        status=200,
+    )
+    with pytest.raises(MidasResultError) as exc_info:
+        gen_client.request("POST", "/post/TABLE", {"Argument": {}})
+
+    assert exc_info.value.status_code == 200
+    assert "no analysis result" in str(exc_info.value)
+    assert "(Hint:" in str(exc_info.value)
+    assert exc_info.value.response_body["error"]["message"].startswith("[empty]")
+
+
+@responses.activate
+def test_200_with_error_body_returned_raw_when_opted_out():
+    client = MidasClient(
+        mapi_key="k", base_url="https://x.test:443/gen", product=Product.GEN,
+        raise_on_result_error=False,
+    )
+    responses.add(
+        responses.POST, "https://x.test:443/gen/post/TABLE",
+        json={"error": {"message": "nope"}}, status=200,
+    )
+    assert client.request("POST", "/post/TABLE", {"Argument": {}}) == {"error": {"message": "nope"}}
+
+
+@responses.activate
+def test_200_with_falsy_error_key_is_not_treated_as_a_failure(gen_client):
+    responses.add(responses.GET, "https://x.test:443/gen/db/NODE", json={"error": {}}, status=200)
+    assert gen_client.request("GET", "/db/NODE") == {"error": {}}
+
+
+@responses.activate
+def test_non_json_body_stays_inside_the_sdk_exception_hierarchy(gen_client):
+    """A proxy/SSL-inspection appliance answering with HTML must not leak a
+    raw JSONDecodeError past `except MidasAPIError`."""
+    responses.add(
+        responses.GET, "https://x.test:443/gen/db/NODE",
+        body="<html>502 Bad Gateway</html>", status=502, content_type="text/html",
+    )
+    with pytest.raises(MidasServerError) as exc_info:
+        gen_client.request("GET", "/db/NODE")
+
+    assert isinstance(exc_info.value, MidasAPIError)
+    assert "not JSON" in str(exc_info.value)
+    assert exc_info.value.status_code == 502
+
+
+@responses.activate
+def test_non_json_body_on_200_raises_server_error(gen_client):
+    responses.add(
+        responses.GET, "https://x.test:443/gen/db/NODE",
+        body="<html>login</html>", status=200, content_type="text/html",
+    )
+    with pytest.raises(MidasServerError):
+        gen_client.request("GET", "/db/NODE")
+
+
+@responses.activate
+def test_non_json_body_on_401_still_maps_to_auth_error(gen_client):
+    """Status mapping wins over the parse failure, so the MAPI-Key hint
+    survives a proxy that returns an HTML login page with a 401."""
+    responses.add(
+        responses.GET, "https://x.test:443/gen/db/NODE",
+        body="<html>sign in</html>", status=401, content_type="text/html",
+    )
+    with pytest.raises(MidasAuthError) as exc_info:
+        gen_client.request("GET", "/db/NODE")
+
+    assert "(Hint:" in str(exc_info.value)
 
 
 @responses.activate
