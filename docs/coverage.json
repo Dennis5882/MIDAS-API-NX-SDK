@@ -236,11 +236,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -257,11 +259,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -278,11 +282,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -465,12 +471,12 @@
       "status": "implemented",
       "module": "midas_nx.db.node_element",
       "live_verified": {
-        "date": "2026-07-22",
+        "date": "2026-07-26",
         "products": [
-          "gen",
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_smoke.py",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
@@ -513,11 +519,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -703,11 +711,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -820,11 +830,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -841,11 +853,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -862,11 +876,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -1154,11 +1170,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -1194,12 +1212,12 @@
       "status": "implemented",
       "module": "midas_nx.db.boundary",
       "live_verified": {
-        "date": "2026-07-22",
+        "date": "2026-07-26",
         "products": [
-          "gen",
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_smoke.py",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
@@ -1219,11 +1237,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -1240,11 +1260,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -1261,11 +1283,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -1282,11 +1306,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -1303,11 +1329,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -1324,11 +1352,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -1428,11 +1458,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -1449,11 +1481,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -1617,11 +1651,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -1699,12 +1735,12 @@
       "status": "implemented",
       "module": "midas_nx.db.static_loads",
       "live_verified": {
-        "date": "2026-07-22",
+        "date": "2026-07-26",
         "products": [
-          "gen",
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_smoke.py",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
@@ -1747,11 +1783,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -1768,11 +1806,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -1789,11 +1829,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -1831,11 +1873,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -1852,11 +1896,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -1873,11 +1919,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -1894,11 +1942,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -1957,11 +2007,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -2146,11 +2198,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -2230,11 +2284,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -2399,7 +2455,7 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
@@ -2419,7 +2475,7 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
@@ -2579,7 +2635,7 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
@@ -2619,7 +2675,7 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
@@ -2799,7 +2855,7 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
@@ -3207,11 +3263,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -3249,11 +3307,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },
@@ -3293,7 +3353,7 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
@@ -3312,11 +3372,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
+          "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         }
       }
     },

@@ -1,5 +1,6 @@
-"""Live create -> read -> update -> read -> delete -> read round trip for a
-curated set of /db/* resources, against a real Gen NX / Civil NX session.
+"""Live create -> read -> update -> read -> delete -> read round trips for the
+/db/* resources a real modelling script actually touches, against a real
+Gen NX / Civil NX session.
 
 The read-only counterpart, scripts/live_readonly_sweep.py, proves an endpoint
 exists and answers. This proves the SDK's *write* shapes are the ones the
@@ -7,6 +8,62 @@ server actually accepts: that ``create()``'s "Assign" body lands, that a
 ``get()`` echoes back what was written, that ``update()`` changes it, and that
 ``delete()`` removes it. A TypedDict transcribed with a wrong field name will
 pass every mocked test in tests/ and only fail here.
+
+Cases are grouped into **tiers**, run in priority order — the order in which a
+modelling script needs them, not the order the manual lists them:
+
+    core       the proven baseline (groups, nodes, elements, load cases, loads)
+    props      material / section sub-types (thickness, stiffness factors,
+               time-dependent material)
+    boundary   springs and links
+    static     the rest of ch06's static loads, plus ch07 element/nodal
+               temperature
+    stage      construction stages and what attaches to them
+    moving     Civil-only moving-load chain (code -> lane -> vehicle -> case)
+
+``--tier`` runs a subset. Every tier declares its own seed, so a tier is
+runnable on its own.
+
+Fixture design
+--------------
+Most first-run failures in this checker have been bad fixtures, not SDK bugs
+(4 of 4 on the first Civil run, 2026-07-26). Two rules keep it that way:
+
+1. **Seed first, then take the next id.** Definition tables disagree about
+   whether they honour the ``"Assign"`` key: /db/NODE does (posting under 77
+   yields node 77), /db/STLD does not (it renumbers to the next free slot).
+   So a seeded record goes in at the lowest free key and its case takes the
+   *next sequential* key — under either behaviour both land on the same id.
+   Where a record can be referenced by name (structure/boundary/load groups,
+   spring types, lanes, vehicles) the fixtures reference it by name and the
+   id question never arises.
+2. **Nothing a case deletes may be another case's prerequisite.** Seeded
+   records are suffixed ``_SEED`` and no case touches them.
+
+Failure classification
+----------------------
+A checker that cries wolf gets ignored, so the report separates:
+
+    regression   a case that has completed this round trip live before broke
+                 -> treat as an SDK defect until proven otherwise
+    unverified   a case that has never passed live failed -> triage the
+                 fixture payload first; it is not yet evidence about the SDK
+    blocked      a seed step this case declared a need for failed, so the
+                 case never ran -> fixture
+    skipped      quarantined: calling the endpoint is known to hang or kill
+                 MIDAS NX, so it is not run unless --include-crashers
+
+``Case.confirmed=True`` marks the cases that have actually passed against a
+live server. Flip a case to ``confirmed=True`` only after you have watched it
+pass, and say where in the comment. As of 2026-07-26, 40 of 43 are confirmed
+on Civil NX 2026 v2.1; the three that are not each have a recorded reason that
+is not an SDK defect (/db/NMAS crashes the product, /db/TDMT refuses every
+payload server-side, /db/TMAT depends on /db/TDMT).
+
+🛑 /db/NMAS is quarantined. One POST to it reliably kills Civil NX 2026 v2.1
+and holds the license until the product is restarted and closed properly —
+see the case comment and docs/live_verification_notes.md. This is what
+--include-crashers exists to gate.
 
 DESTRUCTIVE. It calls /doc/NEW and builds a throwaway model. Never point it at
 a session holding work you care about.
@@ -25,12 +82,14 @@ Check the file exists yourself afterwards; do not trust the response.
 
 Run with the dev environment active (``pip install -e ".[dev]"``), e.g.:
     python scripts/live_crud_check.py --product civil
+    python scripts/live_crud_check.py --product civil --tier core,boundary
     python scripts/live_crud_check.py --product civil --save-as C:/tmp/scratch.mcb
     python scripts/live_crud_check.py --product civil --out crud.json
 
-Exit code 0 -> every step of every case passed.
-Exit code 1 -> at least one step failed (see the report).
+Exit code 0 -> every case that ran completed a full round trip.
+Exit code 1 -> a previously-confirmed case regressed (SDK defect suspect).
 Exit code 2 -> couldn't connect, or the server rejected the connection.
+Exit code 3 -> only unverified failures / blocked cases (triage the fixtures).
 """
 from __future__ import annotations
 
@@ -38,28 +97,86 @@ import argparse
 import json
 import sys
 from datetime import datetime, timezone
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List, Optional, Sequence
 
 from midas_nx import doc
 from midas_nx.client import MidasAPIError, MidasClient
-from midas_nx.db.boundary import Constraint
-from midas_nx.db.moving_loads import MovingLoadCode
+from midas_nx.db.boundary import (
+    BeamEndOffset,
+    BeamEndRelease,
+    Constraint,
+    ElasticLink,
+    GeneralSpringSupport,
+    GeneralSpringType,
+    LinearConstraint,
+    PointSpring,
+    RigidLink,
+    SurfaceSpring,
+)
+from midas_nx.db.construction_stage import (
+    CamberConstructionStage,
+    ConstructionStage,
+    CreepCoefficientConstructionStage,
+    TimeLoadConstructionStage,
+)
+from midas_nx.db.moving_loads import (
+    MovingLoadCase,
+    MovingLoadCode,
+    TrafficLineLanes,
+    VehicleClasses,
+    Vehicles,
+)
 from midas_nx.db.node_element import Element, Node, Skew
 from midas_nx.db.project import BoundaryGroup, LoadGroup, StructureGroup, Unit
-from midas_nx.db.properties.material import Material
-from midas_nx.db.properties.section import Section
-from midas_nx.db.static_loads import BeamLoad, NodalLoad, SelfWeight, StaticLoadCase
+from midas_nx.db.properties.material import (
+    Material,
+    TimeDependentMaterialCreepShrinkage,
+    TimeDependentMaterialLink,
+    TimeDependentMaterialStrength,
+)
+from midas_nx.db.properties.section import (
+    ElementStiffnessScaleFactor,
+    Section,
+    SectionStiffness,
+    TaperedGroup,
+)
+from midas_nx.db.properties.thickness import Thickness
+from midas_nx.db.static_loads import (
+    BeamLoad,
+    FloorLoadType,
+    LoadsToMass,
+    NodalBodyForce,
+    NodalLoad,
+    NodalMass,
+    PressureLoad,
+    PressureLoadType,
+    SelfWeight,
+    SpecifiedDisplacement,
+    StaticLoadCase,
+)
+from midas_nx.db.temperature_prestress import ElementTemperature, NodalTemperature
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-SIZE, HEIGHT = 0.6, 3.2
+SIZE, HEIGHT, BAY = 0.6, 3.2, 4.0
+
+#: How a failed case is reported. See the module docstring.
+OK, REGRESSION, UNVERIFIED, BLOCKED = "ok", "regression", "unverified", "blocked"
+#: Quarantined: known to hang or kill the product, so not run by default.
+SKIPPED = "skipped"
 
 
 class Case:
     """One resource's round trip: what to write, what to change, what to check.
 
     ``probe`` pulls the single value the assertions compare on, so a case
-    stays readable even when the payload is deeply nested.
+    stays readable even when the payload is deeply nested. Where echoing a
+    value back is itself uncertain (server-side reordering, unit conversion),
+    probe something boring like NAME — the point of this checker is that the
+    write lands and the delete removes it, not field-level fidelity.
+
+    ``confirmed`` means this exact case has completed the round trip against a
+    real server; only those count as regressions when they fail.
     """
 
     def __init__(
@@ -71,6 +188,10 @@ class Case:
         expect_created: Any,
         expect_updated: Any,
         item_id: int = 1,
+        confirmed: bool = False,
+        products: Optional[Sequence[str]] = None,
+        needs: Sequence[str] = (),
+        crashes: Optional[str] = None,
     ) -> None:
         self.resource = resource
         self.create_payload = create_payload
@@ -79,92 +200,59 @@ class Case:
         self.expect_created = expect_created
         self.expect_updated = expect_updated
         self.item_id = item_id
+        self.confirmed = confirmed
+        self.products = tuple(products) if products else ("gen", "civil")
+        #: Names of the seed steps this case genuinely depends on. A case that
+        #: needs nothing still runs when a sibling's seed step fails — the
+        #: first live run blocked 7 cases behind one unrelated /db/TDMT seed
+        #: failure, which is exactly the false-positive noise that gets a
+        #: checker ignored.
+        self.needs = tuple(needs)
+        #: Set when calling this endpoint is known to hang or kill MIDAS NX.
+        #: Such a case is skipped unless --include-crashers is passed: the
+        #: cost of running it is a forced restart plus the license-recovery
+        #: dance, and it takes every case after it down with it.
+        self.crashes = crashes
 
 
-def _cases() -> List[Case]:
-    """Curated, not exhaustive: one case per write-shape family, biased toward
-    the endpoints a real modelling script actually touches."""
-    return [
-        Case(
-            StructureGroup,
-            {"NAME": "SG_CRUD"}, {"NAME": "SG_CRUD_2"},
-            lambda p: p.get("NAME"), "SG_CRUD", "SG_CRUD_2",
-        ),
-        Case(
-            BoundaryGroup,
-            {"NAME": "BG_CRUD"}, {"NAME": "BG_CRUD_2"},
-            lambda p: p.get("NAME"), "BG_CRUD", "BG_CRUD_2",
-        ),
-        Case(
-            LoadGroup,
-            {"NAME": "LG_CRUD"}, {"NAME": "LG_CRUD_2"},
-            lambda p: p.get("NAME"), "LG_CRUD", "LG_CRUD_2",
-        ),
-        Case(
-            Node,
-            {"X": 1.0, "Y": 2.0, "Z": 3.0}, {"X": 1.0, "Y": 2.0, "Z": 9.5},
-            lambda p: p.get("Z"), 3.0, 9.5,
-            item_id=101,
-        ),
-        # Keyed by node id: node 2 is seeded and no case deletes it.
-        Case(
-            Skew,
-            {"iMETHOD": 1, "ANGLE_X": 0, "ANGLE_Y": 0, "ANGLE_Z": 30},
-            {"iMETHOD": 1, "ANGLE_X": 0, "ANGLE_Y": 0, "ANGLE_Z": 45},
-            lambda p: p.get("ANGLE_Z"), 30, 45,
-            item_id=2,
-        ),
-        # /db/STLD renumbers: the server assigns NO sequentially rather than
-        # honouring the "Assign" key, so this has to be the next free slot
-        # after the two the seed creates.
-        Case(
-            StaticLoadCase,
-            {"NAME": "CRUDCASE", "TYPE": "L", "DESC": "crud"},
-            {"NAME": "CRUDCASE", "TYPE": "L", "DESC": "crud updated"},
-            lambda p: p.get("DESC"), "crud", "crud updated",
-            item_id=3,
-        ),
-        # Loads reference LC_SCRATCH, which the seed creates and nothing deletes.
-        Case(
-            NodalLoad,
-            {"ITEMS": [{"ID": 1, "LCNAME": "LC_SCRATCH", "FZ": -10.0}]},
-            {"ITEMS": [{"ID": 1, "LCNAME": "LC_SCRATCH", "FZ": -25.0}]},
-            lambda p: p["ITEMS"][0].get("FZ"), -10.0, -25.0,
-            item_id=2,
-        ),
-        Case(
-            BeamLoad,
-            {"ITEMS": [{"ID": 1, "LCNAME": "LC_SCRATCH", "CMD": "BEAM", "TYPE": "UNILOAD",
-                        "DIRECTION": "GZ", "D": [0, 1, 0, 0], "P": [-5.0, -5.0, 0, 0]}]},
-            {"ITEMS": [{"ID": 1, "LCNAME": "LC_SCRATCH", "CMD": "BEAM", "TYPE": "UNILOAD",
-                        "DIRECTION": "GZ", "D": [0, 1, 0, 0], "P": [-8.0, -8.0, 0, 0]}]},
-            lambda p: p["ITEMS"][0]["P"][0], -5.0, -8.0,
-        ),
-        # CONSTRAINT must be exactly 7 characters (Dx Dy Dz Rx Ry Rz W). A
-        # 6-character string is rejected with "[Error] Constraint Condition
-        # has(have) been incorrectly entered." rather than being padded.
-        Case(
-            Constraint,
-            {"ITEMS": [{"ID": 2, "CONSTRAINT": "1110000"}]},
-            {"ITEMS": [{"ID": 2, "CONSTRAINT": "1111111"}]},
-            lambda p: p["ITEMS"][0].get("CONSTRAINT"), "1110000", "1111111",
-            item_id=2,
-        ),
-    ]
+class SeedStep:
+    """One named, independently-failing piece of a tier's fixture."""
+
+    def __init__(self, name: str, run: Callable[[MidasClient], None]) -> None:
+        self.name = name
+        self.run = run
 
 
-def _civil_only_cases() -> List[Case]:
-    return [
-        Case(
-            MovingLoadCode,
-            {"CODE": "KOREA"}, {"CODE": "AASHTO LRFD"},
-            lambda p: p.get("CODE"), "KOREA", "AASHTO LRFD",
-        ),
-    ]
+class Tier:
+    """A named group of cases plus the seed steps they need.
+
+    The seed runs immediately before the tier's cases, not once up front, so
+    a tier stays runnable on its own and so a tier can rebuild something an
+    earlier tier's case deleted (``moving`` re-creates /db/MVCD, which the
+    ``core`` tier's own case deletes).
+    """
+
+    def __init__(self, name: str, title: str, seeds: Callable[[], List[SeedStep]],
+                 cases: Callable[[], List[Case]]) -> None:
+        self.name = name
+        self.title = title
+        self.seeds = seeds
+        self.cases = cases
+
+
+# --------------------------------------------------------------------------
+# Base model — everything every tier can assume exists.
+# --------------------------------------------------------------------------
 
 
 def _seed_model(client: MidasClient) -> None:
-    """Minimum model the load/boundary cases need to attach to."""
+    """Minimum model the cases attach to.
+
+    Ids are chosen so that nothing here collides with a case:
+      nodes    1-2 frame, 3-4 beam chain, 5-8 plate corners, 21-22 free pair
+      elements 1-3 beams, 4 plate
+      material 1, section 1, thickness 1, load cases 1 (DL) and 2 (LC_SCRATCH)
+    """
     Unit.update({1: {"DIST": "M", "FORCE": "KN"}}, client=client)
     Material.create(
         {1: {"TYPE": "CONC", "NAME": "C24",
@@ -177,14 +265,705 @@ def _seed_model(client: MidasClient) -> None:
                              "SECT_I": {"vSIZE": [SIZE, SIZE]}}}},
         client=client,
     )
-    Node.create({1: {"X": 0, "Y": 0, "Z": 0}, 2: {"X": 0, "Y": 0, "Z": HEIGHT}}, client=client)
-    Element.create({1: {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [1, 2]}}, client=client)
+    # Thickness 1 backs the plate element; the props tier's own THIK case
+    # takes id 2 so it can be deleted without taking the plate with it.
+    Thickness.create(
+        {1: {"NAME": "T_SEED", "TYPE": "VALUE", "bINOUT": False,
+             "T_IN": 0.20, "T_OUT": 0, "O_VALUE": 0}},
+        client=client,
+    )
+    Node.create(
+        {
+            1: {"X": 0, "Y": 0, "Z": 0},
+            2: {"X": 0, "Y": 0, "Z": HEIGHT},
+            3: {"X": BAY, "Y": 0, "Z": HEIGHT},
+            4: {"X": 2 * BAY, "Y": 0, "Z": HEIGHT},
+            # Plate corners, offset in -Y so they can't be confused with the frame.
+            5: {"X": 0, "Y": -BAY, "Z": 0},
+            6: {"X": BAY, "Y": -BAY, "Z": 0},
+            7: {"X": BAY, "Y": -2 * BAY, "Z": 0},
+            8: {"X": 0, "Y": -2 * BAY, "Z": 0},
+            # A free, unconnected pair for the link/constraint cases. Nothing
+            # else attaches to these, so ELNK/RIGD/MCON can't collide with a
+            # real element — but they do collide with *each other*, so those
+            # three cases rely on each deleting itself before the next runs.
+            21: {"X": 0, "Y": 2 * BAY, "Z": 0},
+            22: {"X": 0, "Y": 2 * BAY, "Z": HEIGHT},
+        },
+        client=client,
+    )
+    Element.create(
+        {
+            1: {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [1, 2]},
+            2: {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [2, 3]},
+            3: {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [3, 4]},
+            4: {"TYPE": "PLATE", "MATL": 1, "SECT": 1, "NODE": [5, 6, 7, 8]},
+        },
+        client=client,
+    )
     Constraint.create({1: {"ITEMS": [{"ID": 1, "CONSTRAINT": "1111111"}]}}, client=client)
     StaticLoadCase.create({1: {"NAME": "DL", "TYPE": "D", "DESC": "Dead Load"}}, client=client)
-    # A load case the load cases below can attach to, that no case deletes.
+    # A load case every load case below attaches to, that nothing deletes.
     StaticLoadCase.create({2: {"NAME": "LC_SCRATCH", "TYPE": "L", "DESC": "crud fixture"}},
                           client=client)
     SelfWeight.create({1: {"LCNAME": "DL", "FV": [0, 0, -1]}}, client=client)
+
+
+def _no_seeds() -> List[SeedStep]:
+    """Tiers that need nothing beyond the base model."""
+    return []
+
+
+# --------------------------------------------------------------------------
+# Tier: core — the baseline proven live on 2026-07-26 (Civil 10/10, Gen 9/9).
+# --------------------------------------------------------------------------
+
+
+def _core_cases() -> List[Case]:
+    return [
+        Case(
+            StructureGroup,
+            {"NAME": "SG_CRUD"}, {"NAME": "SG_CRUD_2"},
+            lambda p: p.get("NAME"), "SG_CRUD", "SG_CRUD_2",
+            confirmed=True,
+        ),
+        Case(
+            BoundaryGroup,
+            {"NAME": "BG_CRUD"}, {"NAME": "BG_CRUD_2"},
+            lambda p: p.get("NAME"), "BG_CRUD", "BG_CRUD_2",
+            confirmed=True,
+        ),
+        Case(
+            LoadGroup,
+            {"NAME": "LG_CRUD"}, {"NAME": "LG_CRUD_2"},
+            lambda p: p.get("NAME"), "LG_CRUD", "LG_CRUD_2",
+            confirmed=True,
+        ),
+        Case(
+            Node,
+            {"X": 1.0, "Y": 2.0, "Z": 3.0}, {"X": 1.0, "Y": 2.0, "Z": 9.5},
+            lambda p: p.get("Z"), 3.0, 9.5,
+            item_id=101, confirmed=True,
+        ),
+        # Keyed by node id: node 2 is seeded and no case deletes it.
+        Case(
+            Skew,
+            {"iMETHOD": 1, "ANGLE_X": 0, "ANGLE_Y": 0, "ANGLE_Z": 30},
+            {"iMETHOD": 1, "ANGLE_X": 0, "ANGLE_Y": 0, "ANGLE_Z": 45},
+            lambda p: p.get("ANGLE_Z"), 30, 45,
+            item_id=2, confirmed=True,
+        ),
+        # /db/STLD renumbers: the server assigns NO sequentially rather than
+        # honouring the "Assign" key, so this has to be the next free slot
+        # after the two the seed creates.
+        Case(
+            StaticLoadCase,
+            {"NAME": "CRUDCASE", "TYPE": "L", "DESC": "crud"},
+            {"NAME": "CRUDCASE", "TYPE": "L", "DESC": "crud updated"},
+            lambda p: p.get("DESC"), "crud", "crud updated",
+            item_id=3, confirmed=True,
+        ),
+        # Loads reference LC_SCRATCH, which the seed creates and nothing deletes.
+        Case(
+            NodalLoad,
+            {"ITEMS": [{"ID": 1, "LCNAME": "LC_SCRATCH", "FZ": -10.0}]},
+            {"ITEMS": [{"ID": 1, "LCNAME": "LC_SCRATCH", "FZ": -25.0}]},
+            lambda p: p["ITEMS"][0].get("FZ"), -10.0, -25.0,
+            item_id=2, confirmed=True,
+        ),
+        Case(
+            BeamLoad,
+            {"ITEMS": [{"ID": 1, "LCNAME": "LC_SCRATCH", "CMD": "BEAM", "TYPE": "UNILOAD",
+                        "DIRECTION": "GZ", "D": [0, 1, 0, 0], "P": [-5.0, -5.0, 0, 0]}]},
+            {"ITEMS": [{"ID": 1, "LCNAME": "LC_SCRATCH", "CMD": "BEAM", "TYPE": "UNILOAD",
+                        "DIRECTION": "GZ", "D": [0, 1, 0, 0], "P": [-8.0, -8.0, 0, 0]}]},
+            lambda p: p["ITEMS"][0]["P"][0], -5.0, -8.0,
+            confirmed=True,
+        ),
+        # CONSTRAINT must be exactly 7 characters (Dx Dy Dz Rx Ry Rz W). A
+        # 6-character string is rejected with "[Error] Constraint Condition
+        # has(have) been incorrectly entered." rather than being padded.
+        Case(
+            Constraint,
+            {"ITEMS": [{"ID": 2, "CONSTRAINT": "1110000"}]},
+            {"ITEMS": [{"ID": 2, "CONSTRAINT": "1111111"}]},
+            lambda p: p["ITEMS"][0].get("CONSTRAINT"), "1110000", "1111111",
+            item_id=2, confirmed=True,
+        ),
+        # Deletes itself, which is what lets the moving tier re-create the
+        # code it needs. Civil-only; Gen 404s on the whole ch08 family.
+        Case(
+            MovingLoadCode,
+            {"CODE": "KOREA"}, {"CODE": "AASHTO LRFD"},
+            lambda p: p.get("CODE"), "KOREA", "AASHTO LRFD",
+            confirmed=True, products=("civil",),
+        ),
+    ]
+
+
+# --------------------------------------------------------------------------
+# Tier: props — material / section sub-types.
+# --------------------------------------------------------------------------
+
+
+def _props_seeds() -> List[SeedStep]:
+    """/db/TMAT links a creep/shrinkage record to a strength record *by name*,
+    so both have to outlive the cases that exercise those two tables.
+
+    ⚠️ The manual's ``"KDS2016"`` code name is not a value Civil NX 2026 v2.1
+    accepts, on either endpoint. Probed live 2026-07-26 against /db/TDME:
+    ``CEB-FIP(2010)``, ``CEB-FIP(1990)`` and ``Ohzagi`` are accepted, and
+    ``ACI`` is accepted once ``A``/``B`` are supplied; ``KDS2016``,
+    ``KDS(2016)``, ``KCI-2007`` and ``KDS`` are all rejected. The two error
+    strings are diagnostic: "Wrong Field" means the code name is unknown,
+    while "[Error] Time Dependent Material(Comp. Strength) input data contain
+    errors" means the name was recognised but the code's extra fields are
+    missing.
+
+    🛑 Open item: /db/TDMT rejects *everything* with ``Wrong Field`` — the
+    manual's worked example, every code name /db/TDME accepts, and even a
+    bare ``{"NAME": "C"}`` — while ``/info/db/TDMT`` lists every field being
+    sent, and an ``{"Argument": ...}`` body is refused with a different and
+    correct error ("It must have Assign object"). So the wrapper and the
+    field names are right and the endpoint still refuses. Looks server-side;
+    unresolved. It only blocks the /db/TMAT case now that seed steps are
+    per-case.
+    """
+    return [
+        SeedStep("tdmt_seed", lambda c: TimeDependentMaterialCreepShrinkage.create(
+            {1: {"NAME": "TD_SEED", "CODE": "CEB-FIP(2010)", "STR": 24000, "HU": 70,
+                 "MSIZE": 0.2, "CTYPE": "RS", "AGE": 28}}, client=c)),
+        SeedStep("tdme_seed", lambda c: TimeDependentMaterialStrength.create(
+            {1: {"NAME": "TD_SEED", "TYPE": "CODE", "CODENAME": "CEB-FIP(2010)",
+                 "STRENGTH": 24000}}, client=c)),
+    ]
+
+
+def _props_cases() -> List[Case]:
+    return [
+        # id 2: thickness 1 is the seeded one the plate element uses.
+        Case(
+            Thickness,
+            {"NAME": "THK_CRUD", "TYPE": "VALUE", "bINOUT": False,
+             "T_IN": 0.25, "T_OUT": 0, "O_VALUE": 0},
+            {"NAME": "THK_CRUD", "TYPE": "VALUE", "bINOUT": False,
+             "T_IN": 0.30, "T_OUT": 0, "O_VALUE": 0},
+            lambda p: p.get("T_IN"), 0.25, 0.30,
+            item_id=2, confirmed=True,
+        ),
+        # Keyed by element id.
+        Case(
+            ElementStiffnessScaleFactor,
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "", "AREA_SF": 0.5, "ASY_SF": 1.0,
+                        "ASZ_SF": 1.0, "IXX_SF": 1.0, "IYY_SF": 1.0, "IZZ_SF": 1.0,
+                        "WGT_SF": 1.0}]},
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "", "AREA_SF": 0.75, "ASY_SF": 1.0,
+                        "ASZ_SF": 1.0, "IXX_SF": 1.0, "IYY_SF": 1.0, "IZZ_SF": 1.0,
+                        "WGT_SF": 1.0}]},
+            lambda p: p["ITEMS"][0].get("AREA_SF"), 0.5, 0.75,
+            item_id=2, confirmed=True,
+        ),
+        # Resolved live 2026-07-26: /db/SECF is keyed by **section** id, not
+        # element id. Posting under element 3 returned 200 with no error and
+        # silently stored nothing; the identical body under section 1 round-
+        # tripped. db/properties/section.py said "element id" and was wrong.
+        Case(
+            SectionStiffness,
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "", "AREA_SF": 1.2, "IYY_SF": 1.0,
+                        "IZZ_SF": 1.0, "WGT_SF": 1.0}]},
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "", "AREA_SF": 1.4, "IYY_SF": 1.0,
+                        "IZZ_SF": 1.0, "WGT_SF": 1.0}]},
+            lambda p: p["ITEMS"][0].get("AREA_SF"), 1.2, 1.4,
+            item_id=1, confirmed=True,
+        ),
+        Case(
+            TaperedGroup,
+            {"NAME": "TG_CRUD", "ELEMLIST": [2, 3], "ZVAR": "LINEAR", "YVAR": "LINEAR"},
+            {"NAME": "TG_CRUD_2", "ELEMLIST": [2, 3], "ZVAR": "LINEAR", "YVAR": "LINEAR"},
+            lambda p: p.get("NAME"), "TG_CRUD", "TG_CRUD_2",
+            confirmed=True,
+        ),
+        # id 2: id 1 is TD_SEED, which /db/TMAT below references by name.
+        Case(
+            TimeDependentMaterialCreepShrinkage,
+            {"NAME": "TDMT_CRUD", "CODE": "CEB-FIP(2010)", "STR": 24000, "HU": 70,
+             "MSIZE": 0.2, "CTYPE": "RS", "AGE": 28},
+            {"NAME": "TDMT_CRUD", "CODE": "CEB-FIP(2010)", "STR": 24000, "HU": 60,
+             "MSIZE": 0.2, "CTYPE": "RS", "AGE": 28},
+            lambda p: p.get("HU"), 70, 60,
+            item_id=2,
+        ),
+        Case(
+            TimeDependentMaterialStrength,
+            {"NAME": "TDME_CRUD", "TYPE": "CODE", "CODENAME": "CEB-FIP(2010)",
+             "STRENGTH": 24000},
+            {"NAME": "TDME_CRUD", "TYPE": "CODE", "CODENAME": "CEB-FIP(2010)",
+             "STRENGTH": 30000},
+            lambda p: p.get("STRENGTH"), 24000, 30000,
+            item_id=2, confirmed=True,
+        ),
+        # Keyed by material id (the manual's example keys it "2", a material
+        # number, not a running id). Material 1 is the seeded C24.
+        Case(
+            TimeDependentMaterialLink,
+            {"TDMT_NAME": "TD_SEED", "TDME_NAME": "TD_SEED"},
+            {"TDMT_NAME": "TDMT_CRUD", "TDME_NAME": "TD_SEED"},
+            lambda p: p.get("TDMT_NAME"), "TD_SEED", "TDMT_CRUD",
+            item_id=1, needs=("tdmt_seed", "tdme_seed"),
+        ),
+    ]
+
+
+# --------------------------------------------------------------------------
+# Tier: boundary — springs and links.
+# --------------------------------------------------------------------------
+
+
+def _boundary_seeds() -> List[SeedStep]:
+    """/db/GSPR assigns a general spring *type* by name, and the update step
+    has to switch to a second one, so two survive the tier."""
+    return [
+        SeedStep("spring_types", lambda c: GeneralSpringType.create(
+            {
+                1: {"NAME": "GS_SEED", "OPT_STIFFNESS": True,
+                    "SPRING": [1000, 0, 0, 0, 0, 0, 500, 0, 0, 0, 0, 500,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0]},
+                2: {"NAME": "GS_SEED_2", "OPT_STIFFNESS": True,
+                    "SPRING": [2000, 0, 0, 0, 0, 0, 800, 0, 0, 0, 0, 800,
+                               0, 0, 0, 0, 0, 0, 0, 0, 0]},
+            },
+            client=c)),
+    ]
+
+
+def _boundary_cases() -> List[Case]:
+    # All nine confirmed live on Civil NX 2026 v2.1 (build 06/05/2026),
+    # 2026-07-26 — 9/9 full round trips in the first run that exercised them.
+    return [
+        # Keyed by node id. LINEAR uses SDR/F_S; COMP/TENS/MULTI would use
+        # DIR/DV/SK instead.
+        Case(
+            PointSpring,
+            {"ITEMS": [{"ID": 1, "TYPE": "LINEAR", "GROUP_NAME": "",
+                        "SDR": [1000, 500, 500, 0, 0, 0],
+                        "F_S": [False, False, False, False, False, False]}]},
+            {"ITEMS": [{"ID": 1, "TYPE": "LINEAR", "GROUP_NAME": "",
+                        "SDR": [2000, 500, 500, 0, 0, 0],
+                        "F_S": [False, False, False, False, False, False]}]},
+            lambda p: p["ITEMS"][0]["SDR"][0], 1000, 2000,
+            item_id=2, confirmed=True,
+        ),
+        # id 3: ids 1-2 are the seeded types /db/GSPR references by name.
+        Case(
+            GeneralSpringType,
+            {"NAME": "GS_CRUD", "OPT_STIFFNESS": True,
+             "SPRING": [1500, 0, 0, 0, 0, 0, 600, 0, 0, 0, 0, 600,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0]},
+            {"NAME": "GS_CRUD_2", "OPT_STIFFNESS": True,
+             "SPRING": [1500, 0, 0, 0, 0, 0, 600, 0, 0, 0, 0, 600,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0]},
+            lambda p: p.get("NAME"), "GS_CRUD", "GS_CRUD_2",
+            item_id=3, confirmed=True,
+        ),
+        Case(
+            GeneralSpringSupport,
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "", "TYPE_NAME": "GS_SEED"}]},
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "", "TYPE_NAME": "GS_SEED_2"}]},
+            lambda p: p["ITEMS"][0].get("TYPE_NAME"), "GS_SEED", "GS_SEED_2",
+            item_id=3, confirmed=True, needs=("spring_types",),
+        ),
+        # The next three all use the free 21/22 node pair and each deletes
+        # itself before the next runs — a node can't carry an elastic link, a
+        # rigid link and a linear constraint at once.
+        Case(
+            ElasticLink,
+            {"NODE": [21, 22], "LINK": "GEN", "ANGLE": 0,
+             "SDR": [1000, 500, 500, 0, 0, 0],
+             "R_S": [False, False, False, False, False, False],
+             "bSHEAR": False, "DR": [0, 0]},
+            {"NODE": [21, 22], "LINK": "GEN", "ANGLE": 0,
+             "SDR": [2000, 500, 500, 0, 0, 0],
+             "R_S": [False, False, False, False, False, False],
+             "bSHEAR": False, "DR": [0, 0]},
+            lambda p: p["SDR"][0], 1000, 2000,
+            confirmed=True,
+        ),
+        # Keyed by *master* node id, not a running serial.
+        Case(
+            RigidLink,
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "", "DOF": 111111, "S_NODE": [22]}]},
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "", "DOF": 110001, "S_NODE": [22]}]},
+            lambda p: p["ITEMS"][0].get("DOF"), 111111, 110001,
+            item_id=21, confirmed=True,
+        ),
+        Case(
+            LinearConstraint,
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "", "SLAVE_TYPE": "111000", "TYPE": "EX",
+                        "SLAVES": [{"NODE_KEY": 21, "COEFF": 1.0}]}]},
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "", "SLAVE_TYPE": "111000", "TYPE": "EX",
+                        "SLAVES": [{"NODE_KEY": 21, "COEFF": 0.5}]}]},
+            lambda p: p["ITEMS"][0]["SLAVES"][0].get("COEFF"), 1.0, 0.5,
+            item_id=22, confirmed=True,
+        ),
+        # Keyed by element id. FLAG_I/FLAG_J are 7-char [Fx,Fy,Fz,Mx,My,Mz,Mb].
+        Case(
+            BeamEndRelease,
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "", "bVALUE": False,
+                        "FLAG_I": "0000100", "VALUE_I": [0, 0, 0, 0, 0, 0, 0],
+                        "FLAG_J": "0000000", "VALUE_J": [0, 0, 0, 0, 0, 0, 0]}]},
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "", "bVALUE": False,
+                        "FLAG_I": "0000100", "VALUE_I": [0, 0, 0, 0, 0, 0, 0],
+                        "FLAG_J": "0000100", "VALUE_J": [0, 0, 0, 0, 0, 0, 0]}]},
+            lambda p: p["ITEMS"][0].get("FLAG_J"), "0000000", "0000100",
+            item_id=2, confirmed=True,
+        ),
+        # TYPE="ELEMENT" is the ECS form: no RGDXi/RGDXj.
+        Case(
+            BeamEndOffset,
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "", "TYPE": "ELEMENT",
+                        "RGDYi": 0.11, "RGDZi": 0.12, "RGDYj": 0.21, "RGDZj": 0.22}]},
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "", "TYPE": "ELEMENT",
+                        "RGDYi": 0.15, "RGDZi": 0.12, "RGDYj": 0.21, "RGDZj": 0.22}]},
+            lambda p: p["ITEMS"][0].get("RGDYi"), 0.11, 0.15,
+            item_id=3, confirmed=True,
+        ),
+        # Element 4 is the seeded plate; ELEM_TYPE has to match it.
+        Case(
+            SurfaceSpring,
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "", "ELEM_TYPE": "PLANAR(FACE)",
+                        "SPRING_TYPE": 0, "MODULUS": 500}]},
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "", "ELEM_TYPE": "PLANAR(FACE)",
+                        "SPRING_TYPE": 0, "MODULUS": 800}]},
+            lambda p: p["ITEMS"][0].get("MODULUS"), 500, 800,
+            item_id=4, confirmed=True,
+        ),
+    ]
+
+
+# --------------------------------------------------------------------------
+# Tier: static — the rest of ch06, plus ch07 element/nodal temperature.
+# --------------------------------------------------------------------------
+
+
+def _static_cases() -> List[Case]:
+    return [
+        # Node 1 is the constrained support, which is what a specified
+        # displacement needs. VALUES is [Dx,Dy,Dz,Rx,Ry,Rz] in the local CS.
+        Case(
+            SpecifiedDisplacement,
+            {"ITEMS": [{"ID": 1, "LCNAME": "LC_SCRATCH", "GROUP_NAME": "",
+                        "VALUES": [{"OPT_FLAG": True, "DISPLACEMENT": 0.01},
+                                   {"OPT_FLAG": False, "DISPLACEMENT": 0},
+                                   {"OPT_FLAG": False, "DISPLACEMENT": 0},
+                                   {"OPT_FLAG": False, "DISPLACEMENT": 0},
+                                   {"OPT_FLAG": False, "DISPLACEMENT": 0},
+                                   {"OPT_FLAG": False, "DISPLACEMENT": 0}]}]},
+            {"ITEMS": [{"ID": 1, "LCNAME": "LC_SCRATCH", "GROUP_NAME": "",
+                        "VALUES": [{"OPT_FLAG": True, "DISPLACEMENT": 0.02},
+                                   {"OPT_FLAG": False, "DISPLACEMENT": 0},
+                                   {"OPT_FLAG": False, "DISPLACEMENT": 0},
+                                   {"OPT_FLAG": False, "DISPLACEMENT": 0},
+                                   {"OPT_FLAG": False, "DISPLACEMENT": 0},
+                                   {"OPT_FLAG": False, "DISPLACEMENT": 0}]}]},
+            lambda p: p["ITEMS"][0]["VALUES"][0].get("DISPLACEMENT"), 0.01, 0.02,
+            item_id=1, confirmed=True,
+        ),
+        Case(
+            LoadsToMass,
+            {"DIR": "XYZ", "bNODAL": True, "bBEAM": True, "bFLOOR": False,
+             "bPRES": False, "GRAV": 9.806,
+             "vLC": [{"LCNAME": "LC_SCRATCH", "FACTOR": 1.0}]},
+            {"DIR": "XYZ", "bNODAL": True, "bBEAM": True, "bFLOOR": False,
+             "bPRES": False, "GRAV": 9.806,
+             "vLC": [{"LCNAME": "LC_SCRATCH", "FACTOR": 0.5}]},
+            lambda p: p["vLC"][0].get("FACTOR"), 1.0, 0.5,
+            confirmed=True,
+        ),
+        Case(
+            NodalBodyForce,
+            {"LCNAME": "LC_SCRATCH", "OPT_USE_GROUP": False, "KEY_NODE_ITEMS": [2, 3],
+             "OPT_NODAL_MASS": True, "OPT_LOAD_TO_MASS": False, "OPT_STRUCT_MASS": True,
+             "X": 1.0, "Y": 0, "Z": 0},
+            {"LCNAME": "LC_SCRATCH", "OPT_USE_GROUP": False, "KEY_NODE_ITEMS": [2, 3],
+             "OPT_NODAL_MASS": True, "OPT_LOAD_TO_MASS": False, "OPT_STRUCT_MASS": True,
+             "X": 2.0, "Y": 0, "Z": 0},
+            lambda p: p.get("X"), 1.0, 2.0,
+            confirmed=True,
+        ),
+        Case(
+            FloorLoadType,
+            {"NAME": "FL_CRUD", "DESC": "",
+             "ITEM": [{"LCNAME": "LC_SCRATCH", "FLOOR_LOAD": -5.0,
+                       "OPT_SUB_BEAM_WEIGHT": False}]},
+            {"NAME": "FL_CRUD", "DESC": "",
+             "ITEM": [{"LCNAME": "LC_SCRATCH", "FLOOR_LOAD": -8.0,
+                       "OPT_SUB_BEAM_WEIGHT": False}]},
+            lambda p: p["ITEM"][0].get("FLOOR_LOAD"), -5.0, -8.0,
+            confirmed=True,
+        ),
+        # The manual spells ELEM_TYPE "Plate/PlaneStress(Face)" in its worked
+        # example and "Plate/Plane Stress (Face)" in its Specifications prose.
+        # Resolved live 2026-07-26: the unspaced example form is the one the
+        # server accepts.
+        Case(
+            PressureLoadType,
+            {"NAME": "PL_CRUD", "DESC": "", "ELEM_TYPE": "Plate/PlaneStress(Face)",
+             "PRESSURE_LOAD_ITEMS": [{"LOADCASENAME": "LC_SCRATCH",
+                                      "LOADTYPE": "Uniform", "LOAD_P1": -20}]},
+            {"NAME": "PL_CRUD", "DESC": "", "ELEM_TYPE": "Plate/PlaneStress(Face)",
+             "PRESSURE_LOAD_ITEMS": [{"LOADCASENAME": "LC_SCRATCH",
+                                      "LOADTYPE": "Uniform", "LOAD_P1": -30}]},
+            lambda p: p["PRESSURE_LOAD_ITEMS"][0].get("LOAD_P1"), -20, -30,
+            confirmed=True,
+        ),
+        # Keyed by element id — 4 is the seeded plate.
+        #
+        # ⚠️ DIRECTION is "LZ", not the documented default "NORMAL". On a PLATE
+        # with FACE_EDGE_TYPE="FACE", "NORMAL" is rejected ("[Error] Errors
+        # detected in Pressure Loads Data.(Item:Load Direction)") and omitting
+        # DIRECTION fails the same way, so the default is a trap. Verified
+        # 2026-07-26: LZ / LX / GZ / VECTOR all work.
+        Case(
+            PressureLoad,
+            {"ITEMS": [{"ID": 1, "LCNAME": "LC_SCRATCH", "GROUP_NAME": "",
+                        "CMD": "PRES", "ELEM_TYPE": "PLATE",
+                        "FACE_EDGE_TYPE": "FACE", "DIRECTION": "LZ",
+                        "EDGE_FACE": 1,
+                        "FORCES": [-10.0, -10.0, -10.0, -10.0]}]},
+            {"ITEMS": [{"ID": 1, "LCNAME": "LC_SCRATCH", "GROUP_NAME": "",
+                        "CMD": "PRES", "ELEM_TYPE": "PLATE",
+                        "FACE_EDGE_TYPE": "FACE", "DIRECTION": "LZ",
+                        "EDGE_FACE": 1,
+                        "FORCES": [-20.0, -20.0, -20.0, -20.0]}]},
+            lambda p: p["ITEMS"][0]["FORCES"][0], -10.0, -20.0,
+            item_id=4, confirmed=True,
+        ),
+        # ch07: element and nodal temperature, the two temperature loads a
+        # normal modelling script actually writes.
+        Case(
+            ElementTemperature,
+            {"ITEMS": [{"ID": 1, "LCNAME": "LC_SCRATCH", "GROUP_NAME": "", "TEMP": 35}]},
+            {"ITEMS": [{"ID": 1, "LCNAME": "LC_SCRATCH", "GROUP_NAME": "", "TEMP": 20}]},
+            lambda p: p["ITEMS"][0].get("TEMP"), 35, 20,
+            item_id=1, confirmed=True,
+        ),
+        Case(
+            NodalTemperature,
+            {"ITEMS": [{"ID": 1, "LCNAME": "LC_SCRATCH", "GROUP_NAME": "", "TEMPER": -3}]},
+            {"ITEMS": [{"ID": 1, "LCNAME": "LC_SCRATCH", "GROUP_NAME": "", "TEMPER": 5}]},
+            lambda p: p["ITEMS"][0].get("TEMPER"), -3, 5,
+            item_id=3, confirmed=True,
+        ),
+        # 🛑 Last in the tier, and quarantined. A single
+        # POST /db/NMAS {"Assign": {"3": {"mX": 1, "mY": 1, "mZ": 1}}} kills
+        # Civil NX 2026 v2.1 (build 06/05/2026): the call times out, every
+        # following /db/* call times out, and the app raises the "Failed to
+        # disconnect the work session" license dialog and exits.
+        #
+        # Reproduced four times on 2026-07-26. Two competing hypotheses were
+        # raised and both are dead: an idle work-session timeout (one run had a
+        # ~32 minute gap in front of it) and a blocking save-changes dialog
+        # from /doc/NEW. The decisive run issued no /doc/NEW at all and put
+        # three writes and two reads, 0.08-0.17s each, in the 1.3s before the
+        # call - a modal would have frozen those too. It died identically.
+        # See docs/live_verification_notes.md.
+        Case(
+            NodalMass,
+            {"mX": 1.0, "mY": 1.0, "mZ": 1.0},
+            {"mX": 1.0, "mY": 1.0, "mZ": 2.0},
+            lambda p: p.get("mZ"), 1.0, 2.0,
+            item_id=3,
+            crashes="POST /db/NMAS kills Civil NX 2026 v2.1 (4 reproductions, 2026-07-26)",
+        ),
+    ]
+
+
+# --------------------------------------------------------------------------
+# Tier: stage — construction stages and what attaches to them.
+# --------------------------------------------------------------------------
+
+
+def _stage_seeds() -> List[SeedStep]:
+    """Groups are referenced by *name* by /db/STAG, so their ids don't matter
+    and the core tier's group cases can't interfere.
+
+    The seeded stage deliberately activates nothing: a structure group can
+    only be activated once across the whole stage sequence, so leaving it
+    empty keeps SG_SEED free for the /db/STAG case below.
+    """
+    def _groups(c: MidasClient) -> None:
+        StructureGroup.create({2: {"NAME": "SG_SEED"}}, client=c)
+        BoundaryGroup.create({2: {"NAME": "BG_SEED"}}, client=c)
+        LoadGroup.create({1: {"NAME": "LG_SEED"}}, client=c)
+
+    return [
+        SeedStep("groups", _groups),
+        SeedStep("stage_1", lambda c: ConstructionStage.create(
+            {1: {"NAME": "CS_SEED", "DURATION": 5, "bSV_RSLT": True,
+                 "bSV_STEP": False, "bLOAD_STEP": False, "ADD_STEP": []}}, client=c)),
+    ]
+
+
+def _stage_cases() -> List[Case]:
+    return [
+        # id 2: stage 1 is CS_SEED, which /db/TMLD and /db/CRPC attach to.
+        Case(
+            ConstructionStage,
+            {"NAME": "CS_CRUD", "DURATION": 10, "bSV_RSLT": True, "bSV_STEP": False,
+             "bLOAD_STEP": False, "ADD_STEP": [],
+             "ACT_ELEM": [{"GRUP_NAME": "SG_SEED", "AGE": 10}],
+             "ACT_BNGR": [{"BNGR_NAME": "BG_SEED", "POS": "DEFORMED"}],
+             "ACT_LOAD": [{"LOAD_NAME": "LG_SEED", "DAY": "FIRST"}]},
+            {"NAME": "CS_CRUD", "DURATION": 20, "bSV_RSLT": True, "bSV_STEP": False,
+             "bLOAD_STEP": False, "ADD_STEP": [],
+             "ACT_ELEM": [{"GRUP_NAME": "SG_SEED", "AGE": 10}],
+             "ACT_BNGR": [{"BNGR_NAME": "BG_SEED", "POS": "DEFORMED"}],
+             "ACT_LOAD": [{"LOAD_NAME": "LG_SEED", "DAY": "FIRST"}]},
+            lambda p: p.get("DURATION"), 10, 20,
+            item_id=2, confirmed=True, needs=("groups",),
+        ),
+        # Keyed by construction stage id.
+        Case(
+            TimeLoadConstructionStage,
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "LG_SEED", "DAY": 35}]},
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "LG_SEED", "DAY": 25}]},
+            lambda p: p["ITEMS"][0].get("DAY"), 35, 25,
+            item_id=1, confirmed=True, needs=("groups", "stage_1"),
+        ),
+        Case(
+            CreepCoefficientConstructionStage,
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "LG_SEED", "CREEP": 1.2}]},
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "LG_SEED", "CREEP": 1.5}]},
+            lambda p: p["ITEMS"][0].get("CREEP"), 1.2, 1.5,
+            item_id=1, confirmed=True, needs=("groups", "stage_1"),
+        ),
+        # Keyed by node id.
+        Case(
+            CamberConstructionStage,
+            {"DEFORM": 0.0, "USER": 0.17},
+            {"DEFORM": 0.0, "USER": 0.28},
+            lambda p: p.get("USER"), 0.17, 0.28,
+            item_id=3, confirmed=True, needs=("stage_1",),
+        ),
+    ]
+
+
+# --------------------------------------------------------------------------
+# Tier: moving — the Civil-only moving-load chain.
+# --------------------------------------------------------------------------
+
+
+def _moving_seeds() -> List[SeedStep]:
+    """Rebuilds the code the core tier's /db/MVCD case deleted, then the lane
+    and vehicle that /db/MVLD and /db/MVHC reference by name.
+
+    ⚠️ Do not send ``VEH_DEFAULT: {}``. Every one of its fields is documented
+    as optional, but an empty object makes ``/db/MVHL`` silently no-op —
+    ``{"message": ""}``, no error, and a following GET shows nothing was
+    saved. Verified live; see docs/live_verification_notes.md.
+    """
+    return [
+        SeedStep("mvcd", lambda c: MovingLoadCode.create({1: {"CODE": "KOREA"}}, client=c)),
+        SeedStep("lane", lambda c: TrafficLineLanes.create(
+            {1: {"COMMON": {"LL_NAME": "LL_SEED", "LOAD_DIST": "LANE", "GROUP_NAME": "",
+                            "SKEW_START": 0, "SKEW_END": 0, "MOVING": "BOTH",
+                            "WHEEL_SPACE": 1.8, "WIDTH": 3, "OPT_AUTO_LANE": False},
+                 "LANE_ITEMS": [{"ELEM": 2, "ECC": 0}, {"ELEM": 3, "ECC": 0}]}},
+            client=c)),
+        SeedStep("vehicle", lambda c: Vehicles.create(
+            {1: {"MVLD_CODE": 6, "VEHICLE_LOAD_NAME": "KR(SRB)_DB-24",
+                 "VEHICLE_LOAD_NUM": 1, "VEHICLE_TYPE_NAME": "DB-24",
+                 "STANDARD_CODE": "KS-RB",
+                 "VEH_DEFAULT": {"DYN_LOAD_ALLOWANCE": 0, "CENT_F": False}}},
+            client=c)),
+    ]
+
+
+def _moving_cases() -> List[Case]:
+    civil = ("civil",)
+    return [
+        # id 2: lane 1 is LL_SEED, which the /db/MVLD case references.
+        Case(
+            TrafficLineLanes,
+            {"COMMON": {"LL_NAME": "LL_CRUD", "LOAD_DIST": "LANE", "GROUP_NAME": "",
+                        "SKEW_START": 0, "SKEW_END": 0, "MOVING": "BOTH",
+                        "WHEEL_SPACE": 1.8, "WIDTH": 3, "OPT_AUTO_LANE": False},
+             "LANE_ITEMS": [{"ELEM": 2, "ECC": 0.0}, {"ELEM": 3, "ECC": 0.0}]},
+            {"COMMON": {"LL_NAME": "LL_CRUD", "LOAD_DIST": "LANE", "GROUP_NAME": "",
+                        "SKEW_START": 0, "SKEW_END": 0, "MOVING": "BOTH",
+                        "WHEEL_SPACE": 1.8, "WIDTH": 3, "OPT_AUTO_LANE": False},
+             "LANE_ITEMS": [{"ELEM": 2, "ECC": 0.5}, {"ELEM": 3, "ECC": 0.5}]},
+            lambda p: p["LANE_ITEMS"][0].get("ECC"), 0.0, 0.5,
+            item_id=2, products=civil, confirmed=True, needs=("mvcd",),
+        ),
+        # id 2: vehicle 1 is the seeded DB-24 the class/case reference.
+        #
+        # ⚠️ VEHICLE_LOAD_NUM must be 1 for a standard-DB vehicle. Sending 2
+        # (verified live 2026-07-26) makes NX **silently discard**
+        # VEHICLE_TYPE_NAME and STANDARD_CODE and store the record as a
+        # user-defined "Truck/Lane" vehicle instead — 200, no error, and the
+        # only way to notice is to read the record back. Same failure shape as
+        # /db/CONS truncating an 8-character CONSTRAINT.
+        Case(
+            Vehicles,
+            {"MVLD_CODE": 6, "VEHICLE_LOAD_NAME": "KR(SRB)_DB-18",
+             "VEHICLE_LOAD_NUM": 1, "VEHICLE_TYPE_NAME": "DB-18",
+             "STANDARD_CODE": "KS-RB",
+             "VEH_DEFAULT": {"DYN_LOAD_ALLOWANCE": 0, "CENT_F": False}},
+            {"MVLD_CODE": 6, "VEHICLE_LOAD_NAME": "KR(SRB)_DB-18",
+             "VEHICLE_LOAD_NUM": 1, "VEHICLE_TYPE_NAME": "DB-18",
+             "STANDARD_CODE": "KS-RB",
+             "VEH_DEFAULT": {"DYN_LOAD_ALLOWANCE": 10, "CENT_F": False}},
+            lambda p: p["VEH_DEFAULT"].get("DYN_LOAD_ALLOWANCE"), 0, 10,
+            item_id=2, products=civil, confirmed=True, needs=("mvcd",),
+        ),
+        # VEHICLE_LD_NAMES takes the vehicle's VEHICLE_LOAD_NAME, not the
+        # type name the manual's worked example shows ("DB-18") — confirmed
+        # live 2026-07-26 with "KR(SRB)_DB-24".
+        Case(
+            VehicleClasses,
+            {"VEHICLE_CLS_NAME": "VC_CRUD", "VEHICLE_LD_NAMES": ["KR(SRB)_DB-24"]},
+            {"VEHICLE_CLS_NAME": "VC_CRUD_2", "VEHICLE_LD_NAMES": ["KR(SRB)_DB-24"]},
+            lambda p: p.get("VEHICLE_CLS_NAME"), "VC_CRUD", "VC_CRUD_2",
+            products=civil, confirmed=True, needs=("mvcd", "vehicle"),
+        ),
+        Case(
+            MovingLoadCase,
+            {"LCNAME": "MV_CRUD", "DESC": "", "TYPE": 0,
+             "DEFAULT": {"LANE_FACTOR_TYPE": 1,
+                         "SCALE_FACTORS": [1, 0.9, 0.8, 0.7, 0.65, 0.65],
+                         "COMB_OPTION": "COMBINED",
+                         "SUB_LOAD_DATAS": [{"VEHICLE_TYPE": "VL",
+                                             "VEHICLE_NAME": "KR(SRB)_DB-24",
+                                             "SCALE_FACTOR": 1.0,
+                                             "MIN_LOADED_LANE": 1,
+                                             "MAX_LOADED_LANE": 1,
+                                             "LANE_NAMES": ["LL_SEED"]}]}},
+            {"LCNAME": "MV_CRUD", "DESC": "", "TYPE": 0,
+             "DEFAULT": {"LANE_FACTOR_TYPE": 1,
+                         "SCALE_FACTORS": [1, 0.9, 0.8, 0.7, 0.65, 0.65],
+                         "COMB_OPTION": "COMBINED",
+                         "SUB_LOAD_DATAS": [{"VEHICLE_TYPE": "VL",
+                                             "VEHICLE_NAME": "KR(SRB)_DB-24",
+                                             "SCALE_FACTOR": 0.8,
+                                             "MIN_LOADED_LANE": 1,
+                                             "MAX_LOADED_LANE": 1,
+                                             "LANE_NAMES": ["LL_SEED"]}]}},
+            lambda p: p["DEFAULT"]["SUB_LOAD_DATAS"][0].get("SCALE_FACTOR"), 1.0, 0.8,
+            products=civil, confirmed=True, needs=("mvcd", "lane", "vehicle"),
+        ),
+    ]
+
+
+#: Priority order — what a modelling script needs, not the manual's order.
+TIERS: List[Tier] = [
+    Tier("core", "baseline model, groups and static loads", _no_seeds, _core_cases),
+    Tier("props", "material / section sub-types", _props_seeds, _props_cases),
+    Tier("boundary", "springs and links", _boundary_seeds, _boundary_cases),
+    Tier("static", "remaining static loads + temperature", _no_seeds, _static_cases),
+    Tier("stage", "construction stages", _stage_seeds, _stage_cases),
+    Tier("moving", "moving loads (Civil NX only)", _moving_seeds, _moving_cases),
+]
 
 
 def _run_case(case: Case, client: MidasClient) -> Dict[str, Any]:
@@ -193,6 +972,7 @@ def _run_case(case: Case, client: MidasClient) -> Dict[str, Any]:
         "endpoint": res.ENDPOINT,
         "name": res.NAME,
         "id": case.item_id,
+        "confirmed": case.confirmed,
         "steps": {},
     }
 
@@ -205,35 +985,29 @@ def _run_case(case: Case, client: MidasClient) -> Dict[str, Any]:
         row["steps"][step] = {"ok": True}
         return value
 
+    def read_probe(expected, label):
+        got = res.items(client=client).get(case.item_id)
+        if got is None:
+            raise MidasAPIError(f"{res.ENDPOINT}: id {case.item_id} missing after {label}")
+        actual = case.probe(got)
+        if actual != expected:
+            raise MidasAPIError(
+                f"{res.ENDPOINT}: {label} {expected!r}, read back {actual!r}"
+            )
+        return actual
+
     try:
-        record("create", lambda: res.create({case.item_id: case.create_payload}, client=client))
-
-        def check_created():
-            got = res.items(client=client).get(case.item_id)
-            if got is None:
-                raise MidasAPIError(f"{res.ENDPOINT}: id {case.item_id} missing after create")
-            actual = case.probe(got)
-            if actual != case.expect_created:
-                raise MidasAPIError(
-                    f"{res.ENDPOINT}: wrote {case.expect_created!r}, read back {actual!r}"
-                )
-            return actual
-
-        record("read_back", check_created)
+        if "POST" in res.METHODS:
+            record("create", lambda: res.create({case.item_id: case.create_payload},
+                                                client=client))
+            record("read_back", lambda: read_probe(case.expect_created, "wrote"))
+        else:
+            row["steps"]["create"] = {"ok": True, "skipped": "endpoint has no POST"}
 
         if "PUT" in res.METHODS:
-            record("update", lambda: res.update({case.item_id: case.update_payload}, client=client))
-
-            def check_updated():
-                got = res.items(client=client).get(case.item_id, {})
-                actual = case.probe(got)
-                if actual != case.expect_updated:
-                    raise MidasAPIError(
-                        f"{res.ENDPOINT}: updated to {case.expect_updated!r}, read back {actual!r}"
-                    )
-                return actual
-
-            record("read_updated", check_updated)
+            record("update", lambda: res.update({case.item_id: case.update_payload},
+                                                client=client))
+            record("read_updated", lambda: read_probe(case.expect_updated, "updated to"))
         else:
             row["steps"]["update"] = {"ok": True, "skipped": "endpoint has no PUT"}
 
@@ -242,7 +1016,9 @@ def _run_case(case: Case, client: MidasClient) -> Dict[str, Any]:
 
             def check_deleted():
                 if case.item_id in res.items(client=client):
-                    raise MidasAPIError(f"{res.ENDPOINT}: id {case.item_id} still present after delete")
+                    raise MidasAPIError(
+                        f"{res.ENDPOINT}: id {case.item_id} still present after delete"
+                    )
                 return True
 
             record("read_deleted", check_deleted)
@@ -252,7 +1028,46 @@ def _run_case(case: Case, client: MidasClient) -> Dict[str, Any]:
         pass
 
     row["ok"] = all(step.get("ok") for step in row["steps"].values())
+    row["classification"] = OK if row["ok"] else (REGRESSION if case.confirmed
+                                                  else UNVERIFIED)
     return row
+
+
+def _session_lost(row: Dict[str, Any]) -> bool:
+    """Did this failure mean the product is gone, rather than that the call
+    was rejected?
+
+    Learned the hard way on 2026-07-26: Civil NX died mid-run, and the run
+    then spent two 30s timeouts and six 404s grinding through cases that
+    never had a chance. The relay answers ``404 client does not exist`` once
+    the process is gone, and a read timeout is what you get while it is
+    dying. Either way there is nothing left to test, so stop and say so —
+    reporting 8 "failures" against a corpse is exactly the false-positive
+    noise this report is built to avoid.
+    """
+    for step in row["steps"].values():
+        error = str(step.get("error", ""))
+        if "client does not exist" in error or "Read timed out" in error:
+            return True
+    return False
+
+
+def _stub_row(case: Case, classification: str, reason: str) -> Dict[str, Any]:
+    return {
+        "endpoint": case.resource.ENDPOINT,
+        "name": case.resource.NAME,
+        "id": case.item_id,
+        "confirmed": case.confirmed,
+        "steps": {},
+        "ok": False,
+        "classification": classification,
+        "blocked_by": reason,
+    }
+
+
+def _mark(row: Dict[str, Any]) -> str:
+    return {OK: "PASS", REGRESSION: "REGRESS", UNVERIFIED: "FAIL",
+            BLOCKED: "BLOCK", SKIPPED: "SKIP"}[row["classification"]]
 
 
 def main() -> int:
@@ -261,13 +1076,34 @@ def main() -> int:
     parser.add_argument("--mapi-key", help="defaults to MIDAS_MAPI_KEY env var")
     parser.add_argument("--base-url", help="defaults to MIDAS_BASE_URL env var")
     parser.add_argument(
+        "--tier",
+        help="comma-separated tiers to run, in priority order: "
+        + ", ".join(t.name for t in TIERS) + " (default: all)",
+    )
+    parser.add_argument(
         "--save-as",
         help="save the currently open document here before /doc/NEW, so a "
         "save-changes dialog can't block the session",
     )
+    parser.add_argument(
+        "--include-crashers",
+        action="store_true",
+        help="also run cases quarantined for hanging or killing MIDAS NX "
+        "(currently /db/NMAS). Expect to restart the product and to redo the "
+        "license-recovery steps afterwards.",
+    )
     parser.add_argument("--timeout", type=float, default=60.0)
     parser.add_argument("--out", help="path to write the report JSON (optional)")
     args = parser.parse_args()
+
+    tiers = TIERS
+    if args.tier:
+        wanted = [n.strip() for n in args.tier.split(",") if n.strip()]
+        unknown = [n for n in wanted if n not in {t.name for t in TIERS}]
+        if unknown:
+            print(f"Unknown tier(s): {', '.join(unknown)}", file=sys.stderr)
+            return 2
+        tiers = [t for t in TIERS if t.name in wanted]
 
     client = MidasClient(
         mapi_key=args.mapi_key, base_url=args.base_url,
@@ -288,39 +1124,103 @@ def main() -> int:
 
     print("Creating a throwaway document and seeding a minimal model...")
     doc.new_project(client=client)
-    _seed_model(client)
+    try:
+        _seed_model(client)
+    except MidasAPIError as exc:
+        print(f"Base seed failed, so nothing below it can be trusted: {exc}",
+              file=sys.stderr)
+        return 3
 
-    cases = _cases()
-    if client.product.value == "civil":
-        cases += _civil_only_cases()
+    product = client.product.value
+    results: List[Dict[str, Any]] = []
+    aborted = None
+    for tier in tiers:
+        if aborted:
+            break
+        cases = [c for c in tier.cases() if product in c.products]
+        if not cases:
+            continue
+        print(f"\n[{tier.name}] {tier.title}")
+        # Seed steps fail independently, and a case is only blocked by the
+        # step it actually declared a need for.
+        failed_seeds: Dict[str, str] = {}
+        for step in tier.seeds():
+            try:
+                step.run(client)
+            except MidasAPIError as exc:
+                failed_seeds[step.name] = str(exc)[:160]
+                print(f"  seed '{step.name}' failed: {failed_seeds[step.name]}")
+        for case in cases:
+            missing = [n for n in case.needs if n in failed_seeds]
+            if case.crashes and not args.include_crashers:
+                row = _stub_row(case, SKIPPED, case.crashes)
+            elif missing:
+                row = _stub_row(case, BLOCKED,
+                                f"seed '{missing[0]}': {failed_seeds[missing[0]]}")
+            else:
+                row = _run_case(case, client)
+            results.append(row)
+            marks = " ".join(
+                f"{name}={'ok' if step.get('ok') else 'FAIL'}"
+                for name, step in row["steps"].items()
+            )
+            print(f"  {_mark(row):8}{row['endpoint']:12} {marks}")
+            if _session_lost(row):
+                aborted = (f"the product stopped answering at {row['endpoint']} — "
+                           f"MIDAS NX is hung or gone, so nothing after this "
+                           f"point was tested")
+                print(f"\n!! ABORTED: {aborted}")
+                break
 
-    results = []
-    for case in cases:
-        row = _run_case(case, client)
-        results.append(row)
-        marks = " ".join(
-            f"{name}={'ok' if step.get('ok') else 'FAIL'}" for name, step in row["steps"].items()
-        )
-        print(f"{'PASS' if row['ok'] else 'FAIL'}  {row['endpoint']:12} {marks}")
-
-    passed = sum(1 for r in results if r["ok"])
+    by_class = {k: [r for r in results if r["classification"] == k]
+                for k in (OK, REGRESSION, UNVERIFIED, BLOCKED, SKIPPED)}
     report = {
-        "product": client.product.value,
+        "product": product,
         "checked_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "connection": {k: health.get(k) for k in ("user", "program", "connectionID")},
+        "tiers": [t.name for t in tiers],
+        "aborted": aborted,
         "cases": len(results),
-        "passed": passed,
+        "passed": len(by_class[OK]),
+        "regressions": len(by_class[REGRESSION]),
+        "unverified_failures": len(by_class[UNVERIFIED]),
+        "blocked": len(by_class[BLOCKED]),
+        "skipped": len(by_class[SKIPPED]),
         "results": results,
     }
 
     print()
-    print(f"{passed}/{len(results)} resources completed a full round trip.")
+    print(f"{len(by_class[OK])}/{len(results)} resources completed a full round trip.")
+    if by_class[REGRESSION]:
+        print(f"  {len(by_class[REGRESSION])} REGRESSION - a case that passed live "
+              f"before now fails; treat as an SDK defect:")
+        for r in by_class[REGRESSION]:
+            print(f"      {r['endpoint']}")
+    if by_class[UNVERIFIED]:
+        print(f"  {len(by_class[UNVERIFIED])} unverified failure(s) - never passed "
+              f"live; triage the fixture payload before blaming the SDK:")
+        for r in by_class[UNVERIFIED]:
+            print(f"      {r['endpoint']}")
+    if by_class[BLOCKED]:
+        print(f"  {len(by_class[BLOCKED])} blocked by a failed seed (fixture problem):")
+        for r in by_class[BLOCKED]:
+            print(f"      {r['endpoint']}")
+    if by_class[SKIPPED]:
+        print(f"  {len(by_class[SKIPPED])} quarantined, not run "
+              f"(pass --include-crashers to run anyway):")
+        for r in by_class[SKIPPED]:
+            print(f"      {r['endpoint']} - {r['blocked_by']}")
+
     if args.out:
         with open(args.out, "w", encoding="utf-8") as fh:
             json.dump(report, fh, indent=2, ensure_ascii=False)
         print(f"Report written to {args.out}")
 
-    return 0 if passed == len(results) else 1
+    if by_class[REGRESSION]:
+        return 1
+    if by_class[UNVERIFIED] or by_class[BLOCKED]:
+        return 3
+    return 0
 
 
 if __name__ == "__main__":

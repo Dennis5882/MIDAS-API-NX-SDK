@@ -1457,6 +1457,276 @@ Same lesson for `.mgbx`: the manual's example still shows the pre-NX `.mcb`,
 and Gen NX 2026 writes `.mgbx`. That turned out not to be what was failing
 here, but the example extension is stale regardless.
 
+## 2026-07-26 (later) — 🛑 `POST /db/NMAS` kills Civil NX, deterministically
+
+The first crash in this file with a **reproducible one-call trigger**. Read it
+alongside the `/doc/NEW` section above, whose "cause unidentified, survives
+every hypothesis" conclusion it partly supersedes: the license dialog those
+sections treat as an unexplained session-teardown symptom can now be produced
+on demand.
+
+```text
+POST /db/NMAS  {"Assign": {"3": {"mX": 1.0, "mY": 1.0, "mZ": 1.0}}}
+```
+
+Civil NX 2026 (v2.1), build 06/05/2026. Four reproductions, no exceptions.
+The call times out, **every** subsequent `/db/*` call times out, and the
+application raises
+
+> [Error] Failed to disconnect the work session due to an unidentified error.
+> Since you have not logged out, other PCs may have limited access to the
+> license.
+
+and exits — holding the license until the product is re-run, `New Project` is
+pressed, and it is closed properly. A second dialog names it outright:
+*"Program will be closed due to an unexpected problem."*
+
+Where NX puts its crash-recovery file varies with the document, and one of the
+two locations it chose is unusable. Twice it tried
+`C:\Program Files\MIDAS\MIDAS CIVIL NX\DgnPlugIn\_restore.mcb` and was
+refused, since a standard account cannot write there; on the fourth
+reproduction it wrote to the user's `Downloads` folder successfully. So
+auto-recovery is not universally broken here — but it fails silently in the
+Program Files case, which is worth knowing before relying on it. That is an
+install-level problem, separate from the crash.
+
+### The three reproductions, and why the third one settles it
+
+| # | Preceding activity | `/doc/NEW`? | Idle | Outcome |
+|---|---|---|---|---|
+| 1 | full `core` + `boundary` tiers; `/db/SDSP` create→update→delete completed immediately before | yes | none | died on `/db/NMAS` |
+| 2 | `verify_connection`, `GET /db/NODE` (10 nodes), `GET /db/NMAS` (`{}`) | no | **~32 min** | died on `/db/NMAS` |
+| 3 | `/doc/NEW`, seed model, `GET /db/NODE`, **control `POST /db/CNLD` (0.1s)**, `GET /db/CNLD` | yes | none — 20s-old session | died on `/db/NMAS` |
+| 4 | `POST /db/NODE`, **`POST /db/SKEW`, `POST /db/CONS`**, `GET /db/NMAS`, `GET /db/NODE` — five calls at 0.08–0.17s each, all within the 1.3s before | **no** | none | died on `/db/NMAS` |
+
+Two competing explanations were raised. Both are excluded by the table.
+
+**An idle work-session timeout**, since a ~32-minute absence sat in front of
+reproduction 2. It does not survive the evidence.
+
+- In run 2 itself, **three `/db/*` calls succeeded after the idle gap** and one
+  of them returned all ten nodes. Those are answered by the application, not
+  the relay, so the work session was alive.
+- The narrower variant — "the first *write* after a long idle is what dies" —
+  is excluded by run 1, where `/db/NMAS` was nowhere near the first write:
+  100+ calls including dozens of writes had already succeeded, and `/db/SDSP`
+  had just completed a full round trip.
+- Run 3 then removes the confound entirely: a 20-second-old session, a control
+  write to a *sibling* static-load endpoint succeeding in 0.1s, then this one
+  call taking the session down.
+
+**A blocking save-changes dialog**, since `/doc/NEW` raises one on a document
+with unsaved changes, and this file already records that any modal dialog
+freezes the whole API session rather than the one call. Reproduction 4 was run
+specifically to test it: **no `/doc/NEW` anywhere in the run**, so nothing
+could raise that dialog, and it worked on node ids 9001/9002 so the open
+document was left alone. Three writes and two reads returned in 0.08–0.17s
+each inside the 1.3 seconds before the call — which also excludes a dialog
+raised by anything else, because a modal would have frozen those five too.
+`POST /db/NMAS` died exactly as before.
+
+The dialogs that appear *afterwards* are consistent with the crash rather than
+an explanation of it: NX raises the license and "unexpected problem" dialogs on
+its way out.
+
+`GET /db/NMAS` and `/info/db/NMAS` are unaffected. Nothing about the payload is
+unusual — three unit masses on a plain seeded node — and `/info/db/NMAS` lists
+exactly the fields being sent. **This is a product defect, not a wrong request
+shape in this SDK.**
+
+### `verify_connection()` reports "connected" throughout
+
+Worth restating because it was measured twice in a row here, 0.5s each time,
+while `GET /db/NODE` timed out at 15s in between. The health check is served by
+the relay. It confirms the key is valid and the connection record exists; it
+tells you **nothing** about whether the application can answer.
+
+### What was done about it
+
+- `NodalMassPayload` in `db/static_loads.py` carries the warning, with the
+  recommendation to use `LoadsToMass` (`/db/LTOM`) where the mass can be
+  derived from loads instead.
+- `scripts/live_crud_check.py` **quarantines** the case: `Case.crashes` marks
+  it, it is skipped by default and reported as `SKIP`, and running it needs an
+  explicit `--include-crashers`. It is also last in its tier, so opting in
+  costs only that one case rather than the seven that sat behind it in run 1.
+- The checker now aborts the whole run the moment a failure looks like a lost
+  session (`client does not exist`, or a read timeout) instead of grinding
+  through the remainder. Run 1 spent two 30s timeouts and six 404s reporting
+  "failures" against an application that had already exited.
+
+Untested on Gen NX. Do not assume it is Civil-only, and do not assume it is
+version-specific on this evidence alone.
+
+## 2026-07-26 (later) — write verification, tiers 2-6: 40 of 43 cases confirmed
+
+`scripts/live_crud_check.py` grew from 11 cases to 43, grouped into six tiers
+ordered by what a modelling script actually reaches for. Confirmed live on
+Civil NX 2026 v2.1 the same day: **40/43**, across five runs. The three that
+are not confirmed each have a recorded reason, and none of them is an SDK
+defect: `/db/NMAS` crashes the product, `/db/TDMT` refuses every payload
+server-side, and `/db/TMAT` cannot be reached without `/db/TDMT`.
+
+Newly proven round trips (create → read → update → read → delete → read):
+
+| Tier | Endpoints |
+|---|---|
+| `props` | `/db/THIK` `/db/ESSF` `/db/SECF` `/db/TSGR` `/db/TDME` |
+| `boundary` | `/db/NSPR` `/db/GSTP` `/db/GSPR` `/db/ELNK` `/db/RIGD` `/db/MCON` `/db/FRLS` `/db/OFFS` `/db/SSPS` — 9/9 first time out |
+| `static` | `/db/SDSP` `/db/LTOM` `/db/NBOF` `/db/FBLD` `/db/PSLT` `/db/PRES` `/db/ETMP` `/db/NTMP` — 8/8 once `/db/NMAS` was quarantined out of the way |
+| `stage` | `/db/STAG` `/db/TMLD` `/db/CRPC` `/db/CMCS` |
+| `moving` | `/db/LLAN` `/db/MVHL` `/db/MVHC` `/db/MVLD` |
+
+Still unconfirmed: `/db/NMAS` (quarantined, above), `/db/TDMT` (below) and
+`/db/TMAT` (blocked by `/db/TDMT`).
+
+The quarantine paid for itself immediately: the seven `static` cases that had
+never been *reached* — they sat behind `/db/NMAS` in the crashed run, and were
+never evidence of anything — all passed once it was skipped and moved last.
+Six on the first attempt, `/db/PRES` after the fix below.
+
+### 🛑 `/db/SECF` is keyed by section id, and the SDK said element id
+
+`db/properties/section.py` documented `/db/SECF` ("Section Manager -
+Stiffness") as keyed by element id. It is keyed by **section** id.
+
+| Request | Response | Stored |
+|---|---|---|
+| `POST /db/SECF` `{"Assign": {"3": {...}}}` (element 3) | 200, no error | **nothing** |
+| `POST /db/SECF` `{"Assign": {"1": {...}}}` (section 1) | 200 | the record, echoed back in full |
+
+The wrong-key form is silent — no error object, no message, nothing to notice
+except reading back and finding an empty table. Since this project's TypedDicts
+are explicitly documentation rather than runtime validation, a wrong comment
+here *is* the defect; corrected in the docstring, with the evidence.
+
+The fixture found it on purpose: the case was deliberately keyed to element 3
+with a note saying a "missing after write" failure would mean the key was a
+section id, because the manual's worked example keys it `9001` right next to
+`/db/STRPSSM`'s `9003`, and `/db/STRPSSM` *is* section-keyed.
+
+### ⚠️ `/db/MVHL` silently downgrades a standard vehicle to a user-defined one
+
+`VEHICLE_LOAD_NUM` must be `1` for a standard-DB vehicle. Send `2` and NX
+**discards `VEHICLE_TYPE_NAME` and `STANDARD_CODE`** and stores a user-defined
+"Truck/Lane" vehicle instead, with a 200 and no error:
+
+```text
+sent    {"MVLD_CODE": 6, "VEHICLE_LOAD_NAME": "KR(SRB)_DB-18",
+         "VEHICLE_LOAD_NUM": 2, "VEHICLE_TYPE_NAME": "DB-18",
+         "STANDARD_CODE": "KS-RB", "VEH_DEFAULT": {"DYN_LOAD_ALLOWANCE": 0, ...}}
+stored  {"MVLD_CODE": 6, "VEHICLE_LOAD_NAME": "KR(SRB)_DB-18",
+         "VEHICLE_LOAD_NUM": 2, "USER_LOAD_TYPE": "Truck/Lane",
+         "VEH_DEFAULT": {"UNIFORM_LOAD": 0, "PL": 0, "PLM": 0, "PLV": 0}}
+```
+
+With `VEHICLE_LOAD_NUM: 1`, `DB-18`, `DB-24` and `DL-24` all store correctly
+under `STANDARD_CODE: "KS-RB"`. This joins `/db/CONS` truncating an 8-character
+`CONSTRAINT` and the empty-`VEH_DEFAULT` no-op as a **silent data-corruption**
+shape: the only defence is to read the record back and compare.
+
+Also resolved: `/db/MVHC`'s `VEHICLE_LD_NAMES` takes the vehicle's
+`VEHICLE_LOAD_NAME` (`"KR(SRB)_DB-24"`), not the type name (`"DB-18"`) the
+manual's worked example shows.
+
+### ⚠️ `/db/PRES`'s documented default `DIRECTION` is rejected
+
+`DIRECTION` is documented (manual and SDK alike) as defaulting to `"NORMAL"`.
+On a 4-node PLATE with `FACE_EDGE_TYPE: "FACE"` — the commonest pressure load
+there is — Civil NX 2026 v2.1 rejects it:
+
+```text
+[Error] Errors detected in Pressure Loads Data.(Item:Load Direction)
+```
+
+**Omitting `DIRECTION` fails identically**, which confirms the default is
+applied and the default is unusable. Working values on that same element:
+
+| `DIRECTION` | Result |
+|---|---|
+| `LZ` (element local z — normal to the plate), `LX`, `GZ` | accepted |
+| `VECTOR` with `VECTORS: [0, 0, -1]` | accepted |
+| `NORMAL` | `(Item:Load Direction)` |
+| `NORMAL_PLANE`, `NORMAL_ELEM`, `GLOBAL_Z`, `LOCAL_Z` | `Wrong Field` |
+
+The two error strings separate the cases again: `"NORMAL"` earns the specific
+"Load Direction" complaint rather than the generic `Wrong Field` that the
+invented spellings get, so it *is* a recognised enum value — presumably valid
+for some other `ELEM_TYPE`/`FACE_EDGE_TYPE` pair. For plate faces, pass `"LZ"`.
+
+Two smaller notes from the same endpoint: the server echoes `FORCES` back with
+five entries where the manual's example sends four, and `/info/db/PRES` gives
+its `maxItems` as 5; and `/info/db/PRES` carries a `PSLT_KEY` field (a
+`/db/PSLT` reference) that the manual chapter does not document.
+
+Also resolved, on `/db/PSLT`: the manual spells `ELEM_TYPE`
+`"Plate/PlaneStress(Face)"` in its worked example and `"Plate/Plane Stress
+(Face)"` in its Specifications prose. The **unspaced example form** is the one
+the server accepts.
+
+### ⚠️ The manual's only documented time-dependent-material code name is rejected
+
+`"KDS2016"` — the value in the manual's worked example, its Python example and
+its `NAME` field for both `/db/TDMT` and `/db/TDME` — is not accepted by Civil
+NX 2026 v2.1. Probed against `/db/TDME`:
+
+| `CODENAME` | Result |
+|---|---|
+| `CEB-FIP(2010)`, `CEB-FIP(1990)`, `Ohzagi` | accepted |
+| `ACI` | accepted **once `A`/`B` are supplied** |
+| `KDS2016`, `KDS(2016)`, `KDS`, `KCI-2007`, `Korea Standard` | `Wrong Field` |
+| `KDS-2016` | recognised, but still rejected even with `A`/`B` |
+
+The two error strings are diagnostic and worth knowing:
+
+- `"Wrong Field"` — the code name is not one the product knows.
+- `"[Error] Time Dependent Material(Comp. Strength) input data contain errors."`
+  — the name *was* recognised; the code's own conditional fields are missing.
+
+### 🛑 Open: `/db/TDMT` rejects every payload, including a single field
+
+Unresolved, and recorded so the next session doesn't re-derive it. `/db/TDMT`
+answers `201` + `{"error": {"message": "Wrong Field"}}` to:
+
+- the manual's worked example verbatim
+- every code name `/db/TDME` accepts
+- each documented field removed in turn
+- `TYPE: "CODE"` added
+- a bare `{"NAME": "C"}`
+- `PUT` as well as `POST`, and keys other than `1`
+
+Meanwhile `/info/db/TDMT` lists every field being sent, and an
+`{"Argument": ...}` body is refused with a *different* and correct error
+("It must have Assign object in the format of json"). So the wrapper is right,
+the field names are right, and the endpoint refuses anyway. `GET` returns the
+normal empty `{"message": ""}`. Looks server-side. `/db/TMAT` cannot be tested
+until it is resolved, since `/db/TMAT` links a `/db/TDMT` record by name.
+
+### Fixture design rules, and why they earned their keep
+
+Two rules, both paid for by the first run:
+
+1. **Seed at the lowest free key, let the case take the next one.** Definition
+   tables disagree about honouring the `"Assign"` key — `/db/NODE` honours it,
+   `/db/STLD` and `/db/TDME` renumber to the next free slot (posting `/db/TDME`
+   under keys 10/15/16/18 produced ids 1/2/3/4). Seeding first and taking the
+   next sequential key makes both behaviours land on the same id. Where a
+   record is referenceable by name — groups, spring types, lanes, vehicles —
+   the fixtures use the name and the question never arises.
+2. **Seed steps are per-case dependencies, not per-tier.** The first run
+   blocked all 7 `props` cases behind the one `/db/TDMT` seed failure, though
+   only `/db/TMAT` needed it. Four of those seven pass. A checker that reports
+   6 false blockages out of 7 gets ignored, which is the whole point of
+   separating **regression** (a confirmed case broke → SDK defect suspect,
+   exit 1) from **unverified** (never passed → triage the fixture, exit 3)
+   from **blocked** and **skipped**.
+
+The classification held up: across three runs every single failure resolved to
+a fixture defect, a documented-value defect, or a product defect — and none to
+an SDK behaviour defect. The one SDK defect found was a wrong docstring
+(`/db/SECF`), which no amount of round-tripping would have caught if the case
+had been keyed correctly by accident.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
