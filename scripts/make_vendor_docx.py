@@ -20,7 +20,7 @@ from pathlib import Path
 
 from docx import Document
 from docx.enum.table import WD_TABLE_ALIGNMENT
-from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt, RGBColor
@@ -29,6 +29,32 @@ SOURCE = Path(__file__).resolve().parent.parent / "docs" / "vendor_report_ko.md"
 
 BODY_FONT, MONO_FONT = "맑은 고딕", "Consolas"
 CODE_FILL, HEAD_FILL = "F7F7F7", "EDEDED"
+MUTED = RGBColor(0x66, 0x66, 0x66)
+ACCENT = RGBColor(0x1F, 0x3B, 0x63)          # headings
+SEVERITY = {                                  # triage colours in the 심각도 column
+    "치명적": RGBColor(0xB3, 0x1B, 0x1B),
+    "높음": RGBColor(0xC0, 0x5A, 0x10),
+    "중간": RGBColor(0x8A, 0x6D, 0x00),
+    "낮음": MUTED,
+}
+ZEBRA = "FAFAFA"
+#: The report is short enough to navigate by its A-/B- numbering, so the
+#: contents page is off. Word's navigation pane still works from the headings.
+INCLUDE_TOC = False
+
+#: Report shell. The markdown carries the content; the document identity lives
+#: here, so the .md stays readable on its own and isn't cluttered with cover
+#: metadata. Fill in 작성자 before sending.
+TITLE = "MIDAS NX Open API 이슈 리포트"
+SUBTITLE = "MIDAS CIVIL NX 2026 Open API 검증 결과"
+DOC_INFO = [
+    ("문서명", TITLE),
+    ("버전", "1.0"),
+    ("작성일", "2026-07-26"),
+    ("수신", "MIDASIT 개발팀 / 기획팀"),
+    ("검증 대상", "MIDAS CIVIL NX 2026 v2.2 (build 06/18/2026) · v2.1 (build 06/05/2026)"),
+    ("첨부", "vendor_repro_nmas.py — A-1 재현 스크립트"),
+]
 
 
 # --------------------------------------------------------------------------
@@ -125,7 +151,14 @@ def border(paragraph, edges: dict) -> None:
 
 
 def east_asian(run) -> None:
-    run._element.rPr.rFonts.set(qn("w:eastAsia"), run.font.name)
+    """Pin the East-Asian font too, or Word falls back for the Hangul runs.
+
+    Assigning font.name first is what materialises <w:rPr><w:rFonts>; on a run
+    that has never had a font set, both are absent and the set() would fail.
+    """
+    name = run.font.name or BODY_FONT
+    run.font.name = name
+    run._element.rPr.rFonts.set(qn("w:eastAsia"), name)
 
 
 def display_width(text: str) -> int:
@@ -140,7 +173,8 @@ def display_width(text: str) -> int:
     return sum(2 if ord(ch) > 0x2E80 else 1 for ch in plain)
 
 
-def set_table_layout(table, widths) -> None:
+def set_table_layout(table, widths, outer: str = "808080",
+                     inner: str = "D9D9D9") -> None:
     """Write the column widths Word actually honours.
 
     ``cell.width`` alone does not survive: Word lays a fixed-layout table out
@@ -156,9 +190,9 @@ def set_table_layout(table, widths) -> None:
 
     borders = OxmlElement("w:tblBorders")
     for edge, (size, color) in (
-        ("top", (8, "808080")), ("bottom", (8, "808080")),
-        ("left", (2, "D9D9D9")), ("right", (2, "D9D9D9")),
-        ("insideH", (2, "D9D9D9")), ("insideV", (2, "E8E8E8")),
+        ("top", (8, outer)), ("bottom", (8, outer)),
+        ("left", (2, inner)), ("right", (2, inner)),
+        ("insideH", (2, inner)), ("insideV", (2, inner)),
     ):
         el = OxmlElement(f"w:{edge}")
         el.set(qn("w:val"), "single")
@@ -191,6 +225,98 @@ def tight(paragraph, before=0, after=0, exact=None) -> None:
     pf.space_after = Pt(after)
     if exact:
         pf.line_spacing = Pt(exact)
+
+
+def field(paragraph, instr: str, cached: str = "") -> None:
+    """A Word field (PAGE, NUMPAGES, ...) with a cached value.
+
+    The cached text is what shows before Word recalculates, so a document that
+    is opened and never refreshed still reads correctly.
+    """
+    fld = OxmlElement("w:fldSimple")
+    fld.set(qn("w:instr"), instr)
+    if cached:
+        run = OxmlElement("w:r")
+        text = OxmlElement("w:t")
+        text.text = cached
+        run.append(text)
+        fld.append(run)
+    paragraph._p.append(fld)
+
+
+def page_break(doc) -> None:
+    doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
+
+
+def add_cover(doc, usable) -> None:
+    spacer = doc.add_paragraph()
+    tight(spacer, exact=90)
+
+    p = doc.add_paragraph()
+    tight(p, after=4)
+    r = p.add_run(TITLE)
+    r.bold = True
+    r.font.size = Pt(26)
+    east_asian(r)
+
+    p = doc.add_paragraph()
+    tight(p, after=34)
+    r = p.add_run(SUBTITLE)
+    r.font.size = Pt(11.5)
+    r.font.color.rgb = MUTED
+    east_asian(r)
+
+    table = doc.add_table(rows=0, cols=2)
+    table.autofit = False
+    widths = [Cm(3.2), Cm(usable.cm - 3.2)]
+    set_table_layout(table, widths, outer="BFBFBF", inner="E8E8E8")
+    for label, value in DOC_INFO:
+        row = table.add_row()
+        for ci, text in enumerate((label, value)):
+            cell = row.cells[ci]
+            cell.width = widths[ci]
+            cp = cell.paragraphs[0]
+            tight(cp, before=2.5, after=2.5)
+            add_runs(cp, text, bold=(ci == 0), size=9.5)
+        shade(row.cells[0]._tc, HEAD_FILL)
+
+
+def add_toc(doc, blocks) -> None:
+    p = doc.add_paragraph(style="Heading 1")
+    add_runs(p, "목차")
+    border(p, {"bottom": (8, "999999")})
+    for kind, payload in blocks:
+        if kind not in ("h1", "h2"):
+            continue
+        if payload in (TITLE, "목차"):
+            continue
+        entry = doc.add_paragraph()
+        tight(entry, before=1.5, after=1.5)
+        entry.paragraph_format.left_indent = Cm(0.4 if kind == "h1" else 1.1)
+        add_runs(entry, payload, bold=(kind == "h1"))
+        if kind == "h1":
+            for r in entry.runs:
+                r.font.size = Pt(10.5)
+
+
+def add_header_footer(doc) -> None:
+    head = doc.sections[0].header.paragraphs[0]
+    head.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    tight(head, after=0)
+    r = head.add_run(TITLE)
+    r.font.size = Pt(8)
+    r.font.color.rgb = MUTED
+    east_asian(r)
+    border(head, {"bottom": (4, "D9D9D9")})
+
+    foot = doc.sections[0].footer.paragraphs[0]
+    foot.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    field(foot, " PAGE ", "1")
+    sep = foot.add_run(" / ")
+    field(foot, " NUMPAGES ", "1")
+    for r in foot.runs + [sep]:
+        r.font.size = Pt(8.5)
+        r.font.color.rgb = MUTED
 
 
 # --------------------------------------------------------------------------
@@ -227,20 +353,26 @@ def build(blocks: list, out_path: Path) -> None:
 
     normal = doc.styles["Normal"]
     normal.font.name = BODY_FONT
-    normal.font.size = Pt(9.5)
+    normal.font.size = Pt(10)
     normal.element.rPr.rFonts.set(qn("w:eastAsia"), BODY_FONT)
-    normal.paragraph_format.space_after = Pt(4.5)
-    normal.paragraph_format.line_spacing = 1.32
+    normal.paragraph_format.space_after = Pt(6)
+    # Hangul sits taller than Latin, so it needs more leading to stay readable.
+    normal.paragraph_format.line_spacing = 1.5
+    normal.paragraph_format.widow_control = True
 
-    for level, size in ((1, 15), (2, 12), (3, 10.5)):
+    for level, size, before in ((1, 16, 26), (2, 12.5, 18), (3, 10.5, 13)):
         st = doc.styles[f"Heading {level}"]
         st.font.name = BODY_FONT
         st.font.size = Pt(size)
         st.font.bold = True
-        st.font.color.rgb = RGBColor(0x1A, 0x1A, 0x1A)
+        st.font.color.rgb = ACCENT
         st.element.rPr.rFonts.set(qn("w:eastAsia"), BODY_FONT)
-        st.paragraph_format.space_before = Pt(18 - level * 3)
-        st.paragraph_format.space_after = Pt(6)
+        st.paragraph_format.space_before = Pt(before)
+        st.paragraph_format.space_after = Pt(7)
+        # A heading stranded at the foot of a page is the most visible way a
+        # generated document looks unedited.
+        st.paragraph_format.keep_with_next = True
+        st.paragraph_format.line_spacing = 1.25
 
     for section in doc.sections:
         section.page_height, section.page_width = Cm(29.7), Cm(21.0)
@@ -251,22 +383,24 @@ def build(blocks: list, out_path: Path) -> None:
     usable = Cm(section.page_width.cm - section.left_margin.cm
                 - section.right_margin.cm)
 
-    first_heading = True
+    add_header_footer(doc)
+    add_cover(doc, usable)
+    page_break(doc)
+    if INCLUDE_TOC:
+        add_toc(doc, blocks)
+        page_break(doc)
+
+    title_seen = False
     for kind, payload in blocks:
         if kind in ("h1", "h2", "h3"):
+            # The markdown's own H1 title is already on the cover.
+            if kind == "h1" and not title_seen:
+                title_seen = True
+                continue
             p = doc.add_paragraph(style=f"Heading {kind[1]}")
-            if kind == "h1" and first_heading:
-                # The document title, not a section header: bigger, no rule,
-                # and no space above since it opens the page.
-                add_runs(p, payload, size=19)
-                for r in p.runs:
-                    r.bold = True
-                tight(p, before=0, after=14)
-            else:
-                add_runs(p, payload)
-                if kind == "h1":
-                    border(p, {"bottom": (8, "999999")})
-            first_heading = False
+            add_runs(p, payload)
+            if kind == "h1":
+                border(p, {"bottom": (8, "B0B8C4")})
 
         elif kind == "p":
             add_runs(doc.add_paragraph(), payload)
@@ -282,8 +416,12 @@ def build(blocks: list, out_path: Path) -> None:
 
         elif kind == "quote":
             p = doc.add_paragraph()
-            p.paragraph_format.left_indent = Cm(0.6)
-            border(p, {"left": (12, "BFBFBF")})
+            p.paragraph_format.left_indent = Cm(0.55)
+            p.paragraph_format.right_indent = Cm(0.25)
+            tight(p, before=4, after=4)
+            p.paragraph_format.line_spacing = 1.42
+            shade(p._p, "F4F6F9")
+            border(p, {"left": (18, "8A9BB5")})
             add_runs(p, payload)
 
         elif kind == "code":
@@ -343,12 +481,21 @@ def build(blocks: list, out_path: Path) -> None:
                     cell = row.cells[ci]
                     cell.width = widths[ci]
                     p = cell.paragraphs[0]
-                    tight(p, before=1.6, after=1.6)
-                    p.paragraph_format.line_spacing = 1.18
-                    add_runs(p, cells[ci] if ci < len(cells) else "",
-                             bold=(ri == 0), size=9)
+                    tight(p, before=2.4, after=2.4)
+                    p.paragraph_format.line_spacing = 1.3
+                    text = cells[ci] if ci < len(cells) else ""
+                    add_runs(p, text, bold=(ri == 0), size=9)
                     if ri == 0:
                         shade(cell._tc, HEAD_FILL)
+                    else:
+                        # Colour the triage column so severity reads at a glance.
+                        colour = SEVERITY.get(text.strip())
+                        if colour is not None:
+                            for r in p.runs:
+                                r.font.color.rgb = colour
+                                r.bold = True
+                        if ri % 2 == 0:
+                            shade(cell._tc, ZEBRA)
             tight(doc.add_paragraph(), exact=6)
 
         elif kind == "rule":
