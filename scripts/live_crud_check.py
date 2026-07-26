@@ -713,8 +713,11 @@ def _static_cases() -> List[Case]:
         ),
         # The manual spells ELEM_TYPE "Plate/PlaneStress(Face)" in its worked
         # example and "Plate/Plane Stress (Face)" in its Specifications prose.
-        # Resolved live 2026-07-26: the unspaced example form is the one the
-        # server accepts.
+        # Both are accepted (checked 2026-07-26 on v2.2), so the inconsistency
+        # is cosmetic. An earlier note here claimed the unspaced form was "the
+        # one the server accepts" - that was inferred from this case passing,
+        # without ever sending the spaced form. Don't infer an enum from one
+        # value working.
         Case(
             PressureLoadType,
             {"NAME": "PL_CRUD", "DESC": "", "ELEM_TYPE": "Plate/PlaneStress(Face)",

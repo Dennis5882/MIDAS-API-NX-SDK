@@ -269,6 +269,11 @@ class PressureLoadTypePayload(TypedDict, total=False):
     (Edge)", "Solid (Face)", "Plane Strain (Edge)", "Axisymmetric (Edge)",
     "Wall (Edge)" — see the manual's Element Type Load Support Matrix for
     which of LOAD_P1..P4 apply per (ELEM_TYPE, LOADTYPE) combination.
+
+    The manual writes these with spaces in its Specifications prose and
+    without them in its worked example ("Plate/PlaneStress(Face)"). Checked
+    live 2026-07-26 (Civil NX 2026 v2.2): **both spellings are accepted**, so
+    either is safe.
     """
 
     NAME: str  # Pressure Load Type Name, required

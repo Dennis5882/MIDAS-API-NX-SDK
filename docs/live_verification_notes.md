@@ -1664,10 +1664,13 @@ five entries where the manual's example sends four, and `/info/db/PRES` gives
 its `maxItems` as 5; and `/info/db/PRES` carries a `PSLT_KEY` field (a
 `/db/PSLT` reference) that the manual chapter does not document.
 
-Also resolved, on `/db/PSLT`: the manual spells `ELEM_TYPE`
-`"Plate/PlaneStress(Face)"` in its worked example and `"Plate/Plane Stress
-(Face)"` in its Specifications prose. The **unspaced example form** is the one
-the server accepts.
+Also on `/db/PSLT`: the manual spells `ELEM_TYPE` `"Plate/PlaneStress(Face)"`
+in its worked example and `"Plate/Plane Stress (Face)"` in its Specifications
+prose. This section originally concluded the unspaced form was "the one the
+server accepts" — **that was wrong**, and it was inferred from the CRUD case
+passing with the unspaced form without ever sending the spaced one. Both are
+accepted (checked on v2.2, see the final-verification section). The manual's
+inconsistency is cosmetic.
 
 ### ⚠️ The manual's only documented time-dependent-material code name is rejected
 
@@ -1895,6 +1898,62 @@ docstring now scopes the warning to v2.1.
 This is the argument for re-checking before reporting rather than after: the
 same sweep that confirmed two findings retired a third and sharpened one of
 the two.
+
+## 2026-07-26 (final) — every vendor-report claim re-checked in one pass
+
+Before sending anything to MIDASIT, all 16 claims were re-run against a single
+v2.2 session (build 06/18/2026) **in ascending order of severity** — the
+documentation items first, then the response conventions, then the silent
+write failures, then the destructive `DELETE`, and the crash last. Ordering it
+that way matters: the crash ends the session, so anything after it would go
+unverified.
+
+**14 of 16 reproduced.** The two that did not are the useful part.
+
+### ❌ Retracted: `/db/PSLT`'s `ELEM_TYPE` spelling was never a defect
+
+Both `"Plate/PlaneStress(Face)"` and `"Plate/Plane Stress (Face)"` are
+accepted. The earlier claim that only the unspaced form works came from the
+CRUD case passing with that form — the spaced form was never sent. That is an
+inference dressed up as a finding, and it is exactly the failure mode this file
+already records for `/db/TDMT`: **do not conclude anything about an enum from
+one value working.** Removed from the vendor report.
+
+### ⚠️ `A-4` failed its own check, not the claim
+
+The assertion required two probes to both return an error body, and one of them
+(`POST /db/CONS` with a 3-character `CONSTRAINT` on a node that does not exist)
+returned `201` with no error at all. The claim itself is confirmed by the other
+probe — `POST /db/TDMT` → **`201`** + `{"error": {"message": "Wrong Field"}}` —
+and by `PUT /db/TMAT` → **`200`** + `Wrong DB Name` earlier the same day. Bad
+test, good finding; the report's example list was corrected rather than the
+claim.
+
+That stray `201`-with-no-error on a nonexistent node is itself suspicious as
+another silent no-op, but it was not checked with a follow-up GET and is not
+claimed anywhere.
+
+### `/mapikey/verify` is stale, not permanently wrong
+
+Worth correcting because the report said it reports `"connected"` for a dead
+application. It does — but not forever. Measured immediately after two crashes:
+`"connected"`. Measured after this crash, roughly 30 seconds later and after
+two 15s timeouts had elapsed: **`"disconnected"`**. So the relay's connection
+record catches up; there is a window in which it lies. The report now says
+that instead.
+
+### Confirmed unchanged on v2.2
+
+`/db/TDMT`'s code-name enum (B-1), `/db/TDME`'s (B-2), `/db/SECF`'s section
+key (B-3), `/db/PRES`'s rejected `"NORMAL"` default and its 5-entry `FORCES`
+(B-4, B-7), `/db/MVHC`'s `VEHICLE_LD_NAMES` — which rejects a vehicle *type*
+name with `Unknown Error` (B-5) — `/db/STLD`'s renumbering, where a POST under
+key `7` produced id `3` (B-6), the `"Wrong Field"` vs "input data contain
+errors" split (A-6), all three silent write failures (A-3a/b/c), `DELETE`
+emptying `/db/NODE` from 10 nodes and 4 elements to zero from a single named id
+(A-2), the per-id form working correctly (A-2b), and **`POST /db/NMAS` killing
+the application — reproduction #6** (A-1), with the three control calls
+immediately before it all returning normally.
 
 ## Caveat — read before acting on this file
 

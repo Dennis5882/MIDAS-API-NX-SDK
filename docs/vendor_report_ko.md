@@ -44,10 +44,10 @@ def call(method, endpoint, body=None, timeout=15):
 | A-2 | 제품 | `DELETE /db/*` | 문서화된 형식이 지정 ID를 무시하고 **테이블 전체를 삭제** | 치명적 |
 | A-3 | 제품 | 다수 | 쓰기가 무시/변조됐는데 **HTTP는 성공을 반환** (4건, 동일 유형) | 높음 |
 | A-4 | 제품 | 전역 | 오류 본문이 **HTTP 200 / 201**로 반환됨 | 중간 |
-| A-5 | 제품 | `/mapikey/verify` | 프로그램이 종료된 뒤에도 `"connected"` 반환 | 중간 |
+| A-5 | 제품 | `/mapikey/verify` | 프로그램 종료 직후 일정 시간 `"connected"`를 반환 | 중간 |
 | A-6 | 제품 | 오류 메시지 | `"Wrong Field"`가 실제로는 **값** 오류를 의미 | 중간 |
 | A-7 | 설치 | 복구 파일 | `Program Files` 하위에 기록 시도 → 권한 거부로 조용히 실패 | 낮음 |
-| B-1~8 | 문서 | 매뉴얼 | 문서화된 값/키가 제품 동작과 불일치 (8건) | — |
+| B-1~7 | 문서 | 매뉴얼 | 문서화된 값/키가 제품 동작과 불일치 (7건) | — |
 
 ---
 
@@ -236,8 +236,8 @@ call("POST", "/db/SECF", {"Assign": {"3": {"ITEMS": [{"ID": 1, "AREA_SF": 1.2}]}
 오류 응답이 4xx/5xx가 아니라 성공 상태 코드로 전달됩니다.
 
 ```text
-POST /db/CONS   -> 201  {"error": {"message": "..."}}
 POST /db/TDMT   -> 201  {"error": {"message": "Wrong Field"}}
+POST /db/CONS   -> 201  {"error": {"message": "[Error] Constraint Condition ..."}}
 PUT  /db/TMAT   -> 200  {"error": {"message": "Wrong DB Name"}}
 ```
 
@@ -265,8 +265,11 @@ GET /db/NODE          -> 15초 타임아웃
 "제품이 응답 가능한 상태인지"를 반영하지 못하는 것은 문제로 보입니다. 자동화 스크립트가
 사전 점검으로 사용하기 어렵습니다.
 
-참고로 **정상 재시작 후에는 `"disconnected"`를 정확히 반환합니다.** 크래시 시 릴레이의
-연결 기록이 갱신되지 않는 것으로 보입니다.
+**시간에 따라 달라집니다.** 크래시 직후에 호출하면 두 차례 모두 `"connected"`였고,
+약 30초 뒤(타임아웃 2회를 거친 뒤)에 호출한 경우에는 `"disconnected"`가 반환되었습니다.
+정상 재시작 후에도 `"disconnected"`를 정확히 반환합니다. 즉 영구적으로 잘못된 값을
+주는 것은 아니고, **연결 기록이 갱신되기 전까지 일정 시간 낡은 값을 반환**하는 것으로
+보입니다. 그 구간이 자동화에서 문제가 됩니다.
 
 ---
 
@@ -315,10 +318,14 @@ C:\Users\<user>\Downloads\제목 없음_restore.mcb                -> 정상 저
 | B-2 | `/db/TDME` | `CODENAME` 예시 `"KDS2016"` | 거부됨. `CEB-FIP(2010)`·`CEB-FIP(1990)`·`Ohzagi` 허용, `ACI`는 `A`/`B` 동반 시 허용 |
 | B-3 | `/db/SECF` | 예시 키 `9001` (element로 읽힘) | **단면 ID** 키 |
 | B-4 | `/db/PRES` | `DIRECTION` 기본값 `"NORMAL"` | PLATE + `FACE_EDGE_TYPE:"FACE"`에서 **거부**. 필드 생략 시에도 동일 실패. `LZ`/`LX`/`GZ`/`VECTOR`는 정상 |
-| B-5 | `/db/PSLT` | 본문은 `"Plate/Plane Stress (Face)"`, 예시는 `"Plate/PlaneStress(Face)"` | **예시 쪽(공백 없음)**이 정상 |
-| B-6 | `/db/MVHC` | `VEHICLE_LD_NAMES` 예시가 차량 **종류명**(`"DB-18"`) | 차량의 `VEHICLE_LOAD_NAME`(`"KR(SRB)_DB-24"`) |
-| B-7 | `/db/STLD`, `/db/TDME` | `"Assign"` 키로 ID 지정 | 키를 무시하고 **다음 빈 번호로 재부여** (문서에 언급 없음) |
-| B-8 | `/db/PRES` | `FORCES` 예시 4개 | 5개로 반환. `/info/db/PRES`의 `maxItems`도 5. 또한 `/info`에는 있는 `PSLT_KEY`가 챕터에 없음 |
+| B-5 | `/db/MVHC` | `VEHICLE_LD_NAMES` 예시가 차량 **종류명**(`"DB-18"`) | 차량의 `VEHICLE_LOAD_NAME`(`"KR(SRB)_DB-24"`). 종류명을 보내면 `Unknown Error`로 거부됨 |
+| B-6 | `/db/STLD`, `/db/TDME` | `"Assign"` 키로 ID 지정 | 키를 무시하고 **다음 빈 번호로 재부여** (문서에 언급 없음). 키 `7`로 POST → ID `3` 생성 |
+| B-7 | `/db/PRES` | `FORCES` 예시 4개 | 5개로 반환. `/info/db/PRES`의 `maxItems`도 5. 또한 `/info`에는 있는 `PSLT_KEY`가 챕터에 없음 |
+
+`/db/PSLT`의 `ELEM_TYPE` 표기(본문 `"Plate/Plane Stress (Face)"` vs 예시
+`"Plate/PlaneStress(Face)"`)도 초안에 포함했다가 제외했습니다. 검증해 보니 **두 표기가
+모두 허용**되어 제품 측 문제가 아니었습니다. 다만 매뉴얼 안에서 표기가 갈리는 것은
+그대로이므로, 문서만 통일해 주시면 좋겠습니다.
 
 ## B-1 상세 — `/db/TDMT`와 `/db/TDME`의 코드명 목록이 다릅니다
 
@@ -350,12 +357,18 @@ CEB-FIP 기반 모델은 이 엔드포인트에서 **`"European"`**이라는 이
   하중조건 2)에 대해 확인했습니다.
 - 모든 항목은 응답만 확인하지 않고 **다시 조회해서 저장 결과를 비교**했습니다. A-3의
   4건은 이 비교 없이는 발견되지 않습니다.
-- **A-1 ~ A-7, B-1 ~ B-8 전 항목을 v2.2 (build 06/18/2026)에서 확인했습니다.**
+- **최종적으로 전 항목을 v2.2 (build 06/18/2026) 단일 세션에서 심각도 역순으로
+  일괄 재검증했습니다** (문서 항목 → 응답 규약 → 무언 실패 → 테이블 삭제 → 크래시).
   A-1(크래시)과 A-2(DELETE)는 v2.1 (build 06/05/2026)에서도 동일하게 확인했습니다.
-- v2.1에서 관측되었으나 **v2.2에서는 재현되지 않은 항목이 하나 있어** 리포트에서
-  제외했습니다: `/db/MVHL`에 `VEH_DEFAULT: {}`(빈 객체)를 보내면 v2.1에서는 저장되지
-  않으면서 `{"message": ""}`가 반환되었으나, v2.2에서는 정상 저장되고 `VEH_DEFAULT`에
-  기본값(`DYN_LOAD_ALLOWANCE: 0`, `CENT_F: false`)이 채워져 반환됩니다. 이미 조치된
-  것으로 보이며, 확인차 함께 적어 둡니다.
+  A-1은 총 6회 재현되었습니다.
+- **초안에서 제외한 항목 2건** — 재현되지 않는 내용을 함께 보내면 나머지 항목의
+  신뢰도까지 떨어지므로 뺐습니다. 확인차 남겨 둡니다.
+  - `/db/MVHL`에 `VEH_DEFAULT: {}`(빈 객체) 전송: v2.1에서는 저장되지 않으면서
+    `{"message": ""}`가 반환되었으나, **v2.2에서는 정상 저장**되고 `VEH_DEFAULT`에
+    기본값(`DYN_LOAD_ALLOWANCE: 0`, `CENT_F: false`)이 채워져 반환됩니다. 조치된 것으로
+    보입니다.
+  - `/db/PSLT`의 `ELEM_TYPE` 표기: **두 표기 모두 허용**되어 제품 문제가 아닙니다
+    (B 목록 아래 주석 참조).
+- 모든 항목은 응답 확인에 그치지 않고 **다시 조회하여 저장 결과를 비교**했습니다.
 
 추가 정보나 재현 로그가 필요하시면 말씀해 주세요.
