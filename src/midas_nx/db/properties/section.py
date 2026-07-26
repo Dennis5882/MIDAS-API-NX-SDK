@@ -73,7 +73,15 @@ class SectionStiffnessItem(ItemGroupFields, total=False):
 
 
 class SectionStiffnessPayload(TypedDict):
-    """docs/manual/04_DB_Properties.md #15 — /db/SECF. Keyed by element id."""
+    """docs/manual/04_DB_Properties.md #15 — /db/SECF. Keyed by **section** id.
+
+    Verified live 2026-07-26 (Civil NX 2026 v2.1): posting this body under an
+    element id returns 200 with no error and stores nothing at all, while the
+    identical body under a section id round-trips. This docstring said
+    "element id" until that run — one of the cases where a wrong comment is
+    the whole defect, since these TypedDicts are documentation rather than
+    runtime validation.
+    """
 
     ITEMS: List[SectionStiffnessItem]
 

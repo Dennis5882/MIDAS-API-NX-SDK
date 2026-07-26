@@ -99,13 +99,27 @@ class PressureLoadItem(ItemGroupFields, total=False):
     FORCES is required when FACE_EDGE_TYPE is "FACE"/"PRES"; EDGE_LOADS is
     required when FACE_EDGE_TYPE is "EDGE" — the two are mutually exclusive
     per docs/manual/06_DB_Static_Loads.md #10, not enforced at runtime here.
+
+    ⚠️ **Do not rely on DIRECTION's documented default.** Verified live
+    2026-07-26 (Civil NX 2026 v2.1) on a 4-node PLATE with
+    FACE_EDGE_TYPE="FACE": ``"NORMAL"`` is rejected with "[Error] Errors
+    detected in Pressure Loads Data.(Item:Load Direction)", and **omitting
+    DIRECTION fails identically** — so the default is applied and the default
+    is unusable for the commonest case. ``"LZ"`` (element local z, i.e. normal
+    to the plate), ``"LX"``, ``"GZ"`` and ``"VECTOR"`` (with VECTORS) all
+    succeed. ``"NORMAL"`` is a *recognised* value — misspellings get the
+    generic "Wrong Field" instead — so it is presumably valid for some other
+    ELEM_TYPE/FACE_EDGE_TYPE combination; pass ``"LZ"`` for plate faces.
+
+    The server also echoes FORCES back with five entries, not the four the
+    manual's example sends, and ``/info/db/PRES`` gives its maxItems as 5.
     """
 
     LCNAME: str  # Load Case Name, required
     CMD: str  # default "PRES", optional
     ELEM_TYPE: str  # "PLATE"/"SOLID"/"PLANE", default "PLATE", optional
     FACE_EDGE_TYPE: str  # "FACE"/"EDGE"/"PRES", required
-    DIRECTION: str  # "NORMAL"/"LX"/"LY"/"LZ"/"GX"/"GY"/"GZ"/"VECTOR", default "NORMAL"
+    DIRECTION: str  # "NORMAL"/"LX"/"LY"/"LZ"/"GX"/"GY"/"GZ"/"VECTOR" — see the class docstring; the documented "NORMAL" default is rejected for PLATE/FACE, pass "LZ"
     VECTORS: List[float]  # [X,Y,Z], required if DIRECTION="VECTOR"
     OPT_PROJECTION: bool  # default false, optional (GX/GY/GZ only)
     EDGE_FACE: int  # Solid: 1-6, Plate/Plane: 1-4, required
@@ -150,7 +164,26 @@ class SpecifiedDisplacement(DbResource):
 
 
 class NodalMassPayload(TypedDict, total=False):
-    """docs/manual/06_DB_Static_Loads.md #6 — /db/NMAS. Keyed by node id."""
+    """docs/manual/06_DB_Static_Loads.md #6 — /db/NMAS. Keyed by node id.
+
+    🛑 **POST to this endpoint crashes Civil NX 2026 v2.1 (build 06/05/2026).**
+    Reproduced four times on 2026-07-26, twice under controlled conditions:
+    a single ``POST /db/NMAS`` with ``{"mX": 1, "mY": 1, "mZ": 1}`` on a plain
+    node times out, every following ``/db/*`` call times out, and the
+    application raises the "Failed to disconnect the work session" license
+    dialog and exits — which holds the license until the product is restarted
+    and closed properly. In the decisive run, three writes and two reads had
+    each returned in under 0.2s in the 1.3 seconds before it and no
+    ``/doc/NEW`` was issued at all, which excludes both an idle session and a
+    blocking save-changes dialog as explanations.
+
+    Nothing about the payload is unusual, and ``GET``/``/info/db/NMAS`` are
+    unaffected — so this is a product defect, not a wrong request shape here.
+    Until MIDASIT fixes it, treat writing nodal masses as unavailable on Civil
+    NX: use ``LoadsToMass`` (``/db/LTOM``) where the mass can come from loads,
+    and if you must call this, expect to lose the session. Untested on Gen NX.
+    Full evidence in docs/live_verification_notes.md.
+    """
 
     mX: float  # Translational Mass - GCS X, required
     mY: float  # Translational Mass - GCS Y, default 0, optional
