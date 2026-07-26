@@ -37,11 +37,20 @@ process, both freshly reset via `/doc/new` before testing.
 
 ### Failure breakdown
 
-**Hyper-S (`-M1`) endpoints — 13, fail under Gen, absent from the Civil
-target set entirely** (their `PRODUCTS` is already `{"gen"}`-only in the
-SDK). Expected: the connected Gen session isn't running in Hyper-S solver
-mode, so these routes simply don't exist for it right now. Not evidence of
-an SDK bug.
+**Hyper-S (`-M1`) endpoints — 13, fail under Gen.**
+
+> ⚠️ **Corrected 2026-07-26.** The original text here said these were
+> "absent from the Civil target set entirely (their `PRODUCTS` is already
+> `{"gen"}`-only in the SDK)" and explained the Gen 404s as the session not
+> running in Hyper-S solver mode. **Both halves were wrong.** Their
+> `PRODUCTS` was `{"gen", "civil"}`, so they *were* in the Civil target set,
+> and re-running the sweep shows all 13 **answering under Civil**. Hyper-S
+> is the solver MIDASIT introduced with Civil NX — it is a Civil NX feature,
+> not a Gen mode — so the Gen 404s are correct behaviour and the SDK's
+> `PRODUCTS` was the thing that was wrong. Fixed via `HYPER_S_ONLY` in
+> `db/base.py`. See the 2026-07-26 section below. The claim was never
+> checked against a Civil run; it was inferred, and the inference was wrong
+> in a way that a one-line `sorted(cls.PRODUCTS)` would have caught.
 
 - `/db/ACTL-M1`, `/db/BCGA-M1`, `/db/BCGD-M1`, `/db/EIGV-M1`,
   `/db/HHCT-M1`, `/db/NLCT-M1`, `/db/NLNK-M1`, `/db/STCT-M1`,
@@ -970,6 +979,11 @@ session** (Gen NX 2026 v2.1, build 06/23/2026).
 | Answered | 233 | 233 |
 | Failed (all 404) | 20 | 20 |
 
+Civil NX 2026 (v2.1), build 06/05/2026 was swept the same day and also
+reproduced exactly — **293 swept, 273 answered, 20 404s**. The Civil session
+had a near-empty document (2 nodes, 1 element), so unlike the Gen run it is a
+same-conditions repeat, not a different-model one.
+
 **The failing 20 are the same 20 endpoints**, all `MidasNotFoundError` 404:
 the 13 Hyper-S `-M1` routes plus `CMCS`, `EWSF`, `PLCB`, `RCHK`, `SPAN`,
 `STRPSSM`, `WVLD`. Run twice in the same session, byte-identical both times.
@@ -986,6 +1000,69 @@ What this does and does not settle:
   a third from a different account or license would be the one to act on.
 - Results recorded per endpoint in `docs/coverage.json` (`live_verified`),
   taking the count from 10/390 to 235/390.
+
+### Hyper-S is Civil NX only — the SDK's `PRODUCTS` was wrong
+
+Running both products the same day made this unmissable:
+
+| Hyper-S (`-M1`) endpoint family | Gen NX 2026 v2.1 | Civil NX 2026 v2.1 |
+|---|---|---|
+| Implemented `-M1` endpoints | 13/13 → **404** | 13/13 → **answered** |
+| Undocumented `-M1` stubs | 8/8 → **404** | 8/8 → **answered** |
+
+`/db/ACTL-M1` returned a populated row under Civil, not just an empty table,
+so these are live routes rather than registered-but-inert ones.
+
+**Confirmed by the project author**: Hyper-S is the name MIDASIT gave the
+solver introduced with the Civil NX release. It is a Civil NX product
+feature, so the Gen 404s were correct all along and the SDK's
+`PRODUCTS = {"gen", "civil"}` was the defect. All 21 `-M1` rows (13
+implemented + 8 stubs) are now Civil-only, via a dedicated `HYPER_S_ONLY`
+constant in `db/base.py` and a parametrized guard in
+`tests/db/test_hyper_s_products.py`.
+
+**This one is expected to change again.** The author notes Hyper-S may reach
+Gen NX in a future release. That is why it is its own constant rather than
+`CIVIL_ONLY`: when it happens, widen `HYPER_S_ONLY` and re-run
+`scripts/live_readonly_sweep.py --product gen` to confirm, instead of
+treating the current state as permanent.
+
+Note this changes the Gen failure accounting for the better. Of the 20 Gen
+404s, 13 were never SDK-callable errors at all — they were Civil-only
+endpoints the SDK wrongly offered to Gen clients. With `PRODUCTS` corrected,
+a Gen sweep covers 240 endpoints with **7** unexplained 404s (`CMCS`,
+`EWSF`, `PLCB`, `RCHK`, `SPAN`, `STRPSSM`, `WVLD`), and a Gen client now
+raises `ProductMismatchError` before issuing a doomed request.
+
+### The 8 "un-transcribable" Hyper-S stubs are introspectable after all
+
+`docs/coverage.json` carries 8 `-M1` rows as `planned`, not implemented,
+because the manual gives a URL, methods and a Zendesk link but no JSON
+Schema — and this project's v1.0.0 gate has been waiting on exactly that.
+Against a live Civil session, **all 8 answer a plain GET**, and 5 return a
+field-level schema from `/info/db/...`:
+
+| Endpoint | `/info/db/...` | Top-level fields |
+|---|---|---|
+| `/db/STYP-M1` | schema | `STYPE`, `GRAV`, `TEMP`, `ALIGNBEAM`, `ALIGNSLAB`, `MASS_CONTROL` |
+| `/db/MATL-M1` | schema | `MATL_NAME`, `MATL_TYPE`, `DAMP_RAT`, `PARAM` |
+| `/db/IMFM-M1` | schema | `CONCRETE`, `STEEL` |
+| `/db/EPMT-M1` | schema | `NAME`, `MODEL_TYPE`, `TRESCA`, `VMISES`, `MOHRCL`, `DRUCKER`, `MASONRY`, `CONCDMG` |
+| `/db/IEHG-BEAM-M1` | schema | `INEL_PROP_NAME` |
+| `/db/IEHG-TRUSS-M1` | 404 | GET works, no schema route |
+| `/db/IEHG-GL-M1` | 404 | GET works, no schema route |
+| `/db/IEHG-PSS-M1` | 404 | GET works, no schema route |
+
+`/db/STYP-M1` and `/db/MATL-M1` also returned real data (`{"STYPE": "3D",
+"GRAV": 9.806, ...}`, `{"MATL_NAME": "C24", "MATL_TYPE": "CONC", ...}`).
+
+This does not make them transcribed — server introspection is a different
+source from the manual, and `DbResource.info()`'s docstring already frames it
+as a fallback rather than a substitute. But the v1.0.0 gate's premise, that
+these are "genuinely not transcribable without depending on an external,
+non-versioned source", no longer holds: the server itself is the source, and
+it is the same server the SDK talks to. Deciding whether that clears the gate
+is a call for the author, not something this file should assume.
 
 ### The `{"message": ""}` zero-row shape is the common case, not an edge case
 

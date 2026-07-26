@@ -36,8 +36,8 @@ def test_pushover_analysis_control_data_create_sends_documented_assign_shape(gen
 
 
 @responses.activate
-def test_pushover_analysis_control_data_hyper_s_update_sends_nested_iter_ctrl(gen_client):
-    responses.add(responses.PUT, "https://x.test:443/gen/db/POGD-M1", json={}, status=200)
+def test_pushover_analysis_control_data_hyper_s_update_sends_nested_iter_ctrl(civil_client):
+    responses.add(responses.PUT, "https://x.test:443/civil/db/POGD-M1", json={}, status=200)
     PushoverAnalysisControlDataHyperS.update(
         {
             1: {
@@ -56,16 +56,16 @@ def test_pushover_analysis_control_data_hyper_s_update_sends_nested_iter_ctrl(ge
                 },
             }
         },
-        client=gen_client,
+        client=civil_client,
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["ITER_CTRL"]["NORM_CTRL"]["DISP"]["VALUE"] == 0.001
 
 
 @responses.activate
-def test_pushover_analysis_control_data_hyper_s_create_raises_before_any_http_call(gen_client):
+def test_pushover_analysis_control_data_hyper_s_create_raises_before_any_http_call(civil_client):
     with pytest.raises(UnsupportedMethodError):
-        PushoverAnalysisControlDataHyperS.create({1: {"GEO_NONL_TYPE": 0}}, client=gen_client)
+        PushoverAnalysisControlDataHyperS.create({1: {"GEO_NONL_TYPE": 0}}, client=civil_client)
     assert len(responses.calls) == 0
 
 
@@ -116,8 +116,8 @@ def test_pushover_load_case_create_mode_shape_variant(gen_client):
 
 
 @responses.activate
-def test_pushover_load_case_hyper_s_update_load_control_variant(gen_client):
-    responses.add(responses.PUT, "https://x.test:443/gen/db/POLC-M1", json={}, status=200)
+def test_pushover_load_case_hyper_s_update_load_control_variant(civil_client):
+    responses.add(responses.PUT, "https://x.test:443/civil/db/POLC-M1", json={}, status=200)
     PushoverLoadCaseHyperS.update(
         {
             1: {
@@ -132,14 +132,14 @@ def test_pushover_load_case_hyper_s_update_load_control_variant(gen_client):
                 "LOADPATTERN": [{"LCNAME": "DEAD", "SF": 1}, {"LCNAME": "LIVE", "SF": 0.5}],
             }
         },
-        client=gen_client,
+        client=civil_client,
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["CTRL_OPT"]["INCFUNC_NAME"] == "POFC_01"
 
 
 @responses.activate
-def test_pushover_load_case_hyper_s_create_raises_before_any_http_call(gen_client):
+def test_pushover_load_case_hyper_s_create_raises_before_any_http_call(civil_client):
     with pytest.raises(UnsupportedMethodError):
-        PushoverLoadCaseHyperS.create({1: {"LCNAME": "x"}}, client=gen_client)
+        PushoverLoadCaseHyperS.create({1: {"LCNAME": "x"}}, client=civil_client)
     assert len(responses.calls) == 0

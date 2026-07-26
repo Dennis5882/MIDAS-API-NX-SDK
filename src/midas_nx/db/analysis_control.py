@@ -3,7 +3,12 @@ from __future__ import annotations
 
 from typing import Any, List, TypedDict
 
-from .base import GET_PUT_DELETE_METHODS, DbResource, OptUseToleranceValue
+from .base import (
+    GET_PUT_DELETE_METHODS,
+    HYPER_S_ONLY,
+    DbResource,
+    OptUseToleranceValue,
+)
 
 
 class ErectionLoadItem(TypedDict, total=False):
@@ -70,6 +75,7 @@ class MainControlDataHyperSPayload(TypedDict, total=False):
 class MainControlDataHyperS(DbResource):
     ENDPOINT = "/db/ACTL-M1"
     NAME = "Main Control Data (Hyper-S)"
+    PRODUCTS = HYPER_S_ONLY
     METHODS = GET_PUT_DELETE_METHODS
 
 
@@ -199,6 +205,7 @@ class EigenvalueAnalysisControlHyperSPayload(TypedDict, total=False):
 class EigenvalueAnalysisControlHyperS(DbResource):
     ENDPOINT = "/db/EIGV-M1"
     NAME = "Eigenvalue Analysis Control (Hyper-S)"
+    PRODUCTS = HYPER_S_ONLY
     METHODS = GET_PUT_DELETE_METHODS
 
 
@@ -282,6 +289,7 @@ class HeatOfHydrationAnalysisControlHyperSPayload(TypedDict, total=False):
 class HeatOfHydrationAnalysisControlHyperS(DbResource):
     ENDPOINT = "/db/HHCT-M1"
     NAME = "Heat of Hydration Analysis Control (Hyper-S)"
+    PRODUCTS = HYPER_S_ONLY
     METHODS = GET_PUT_DELETE_METHODS
 
 
@@ -576,6 +584,7 @@ class NonlinearAnalysisControlHyperSPayload(TypedDict, total=False):
 class NonlinearAnalysisControlHyperS(DbResource):
     ENDPOINT = "/db/NLCT-M1"
     NAME = "Nonlinear Analysis Control (Hyper-S)"
+    PRODUCTS = HYPER_S_ONLY
     METHODS = GET_PUT_DELETE_METHODS
 
 
@@ -756,6 +765,7 @@ class ConstructionStageAnalysisControlDataHyperSPayload(TypedDict, total=False):
 class ConstructionStageAnalysisControlDataHyperS(DbResource):
     ENDPOINT = "/db/STCT-M1"
     NAME = "Construction Stage Analysis Control Data (Hyper-S)"
+    PRODUCTS = HYPER_S_ONLY
     METHODS = GET_PUT_DELETE_METHODS
 
 
@@ -808,6 +818,7 @@ class DefineBoundaryCombinationHyperSPayload(TypedDict, total=False):
 class DefineBoundaryCombinationHyperS(DbResource):
     ENDPOINT = "/db/BCGD-M1"
     NAME = "Define Boundary Combination (Hyper-S)"
+    PRODUCTS = HYPER_S_ONLY
 
 
 # --- 21. /db/BCGA-M1 — Assign Boundary Combination (Hyper-S) ----------------
@@ -831,3 +842,4 @@ class AssignBoundaryCombinationHyperSPayload(TypedDict, total=False):
 class AssignBoundaryCombinationHyperS(DbResource):
     ENDPOINT = "/db/BCGA-M1"
     NAME = "Assign Boundary Combination (Hyper-S)"
+    PRODUCTS = HYPER_S_ONLY

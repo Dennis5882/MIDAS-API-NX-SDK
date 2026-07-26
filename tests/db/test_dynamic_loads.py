@@ -64,8 +64,8 @@ def test_time_history_global_control_create_is_civil_only(civil_client, gen_clie
 
 
 @responses.activate
-def test_time_history_global_control_hyper_s_update_sends_documented_assign_shape(gen_client):
-    responses.add(responses.PUT, "https://x.test:443/gen/db/THGC-M1", json={}, status=200)
+def test_time_history_global_control_hyper_s_update_sends_documented_assign_shape(civil_client):
+    responses.add(responses.PUT, "https://x.test:443/civil/db/THGC-M1", json={}, status=200)
     TimeHistoryGlobalControlHyperS.update(
         {
             1: {
@@ -74,22 +74,22 @@ def test_time_history_global_control_hyper_s_update_sends_documented_assign_shap
                 "ITER_PARAM": {"PERMIT_FAIL": True, "MAX_ITER": 30},
             }
         },
-        client=gen_client,
+        client=civil_client,
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["ITER_PARAM"]["MAX_ITER"] == 30
 
 
 @responses.activate
-def test_time_history_global_control_hyper_s_create_raises_before_any_http_call(gen_client):
+def test_time_history_global_control_hyper_s_create_raises_before_any_http_call(civil_client):
     with pytest.raises(UnsupportedMethodError):
-        TimeHistoryGlobalControlHyperS.create({1: {"GEO_NONL_TYPE": 0}}, client=gen_client)
+        TimeHistoryGlobalControlHyperS.create({1: {"GEO_NONL_TYPE": 0}}, client=civil_client)
     assert len(responses.calls) == 0
 
 
 @responses.activate
-def test_time_history_output_option_hyper_s_update_sends_documented_assign_shape(gen_client):
-    responses.add(responses.PUT, "https://x.test:443/gen/db/THOO-M1", json={}, status=200)
+def test_time_history_output_option_hyper_s_update_sends_documented_assign_shape(civil_client):
+    responses.add(responses.PUT, "https://x.test:443/civil/db/THOO-M1", json={}, status=200)
     TimeHistoryOutputOptionHyperS.update(
         {
             1: {
@@ -97,7 +97,7 @@ def test_time_history_output_option_hyper_s_update_sends_documented_assign_shape
                 "RESULT_SELECTION": {"ENERGY_RESULT": True},
             }
         },
-        client=gen_client,
+        client=civil_client,
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["OUT_OPT"]["HINGE_OUT"] == 1
@@ -130,8 +130,8 @@ def test_time_history_load_case_create_linear_modal_variant(gen_client):
 
 
 @responses.activate
-def test_time_history_load_case_hyper_s_create_sends_documented_assign_shape(gen_client):
-    responses.add(responses.POST, "https://x.test:443/gen/db/THIS-M1", json={}, status=200)
+def test_time_history_load_case_hyper_s_create_sends_documented_assign_shape(civil_client):
+    responses.add(responses.POST, "https://x.test:443/civil/db/THIS-M1", json={}, status=200)
     TimeHistoryLoadCaseHyperS.create(
         {
             1: {
@@ -145,7 +145,7 @@ def test_time_history_load_case_hyper_s_create_sends_documented_assign_shape(gen
                 "DAMPING": {"DAMPING_METHOD": 0, "ALL_DAMPING_RATIO": 0.05},
             }
         },
-        client=gen_client,
+        client=civil_client,
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["ANAL_CASE"]["ANAL_TYPE"] == 1

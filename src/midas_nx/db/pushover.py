@@ -5,6 +5,7 @@ from typing import List, TypedDict
 
 from .base import (
     GET_PUT_DELETE_METHODS,
+    HYPER_S_ONLY,
     DbResource,
     InitialLoadCaseItem,
     OptUseToleranceValue,
@@ -225,6 +226,7 @@ class PushoverAnalysisControlDataHyperSPayload(TypedDict, total=False):
 class PushoverAnalysisControlDataHyperS(DbResource):
     ENDPOINT = "/db/POGD-M1"
     NAME = "Pushover Global Control (Hyper-S)"
+    PRODUCTS = HYPER_S_ONLY
     METHODS = GET_PUT_DELETE_METHODS
 
 
@@ -368,4 +370,5 @@ class PushoverLoadCaseHyperSPayload(TypedDict, total=False):
 class PushoverLoadCaseHyperS(DbResource):
     ENDPOINT = "/db/POLC-M1"
     NAME = "Pushover Load Case (Hyper-S)"
+    PRODUCTS = HYPER_S_ONLY
     METHODS = GET_PUT_DELETE_METHODS

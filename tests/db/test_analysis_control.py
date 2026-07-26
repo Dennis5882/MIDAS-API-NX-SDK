@@ -38,8 +38,8 @@ def test_main_control_data_create_sends_documented_assign_shape(gen_client):
 
 
 @responses.activate
-def test_main_control_data_hyper_s_update_sends_nested_tcelem(gen_client):
-    responses.add(responses.PUT, "https://x.test:443/gen/db/ACTL-M1", json={}, status=200)
+def test_main_control_data_hyper_s_update_sends_nested_tcelem(civil_client):
+    responses.add(responses.PUT, "https://x.test:443/civil/db/ACTL-M1", json={}, status=200)
     MainControlDataHyperS.update(
         {
             1: {
@@ -51,16 +51,16 @@ def test_main_control_data_hyper_s_update_sends_nested_tcelem(gen_client):
                 },
             }
         },
-        client=gen_client,
+        client=civil_client,
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["TCELEM"]["CONVERGENCE"]["DISPL"]["VALUE"] == 0.001
 
 
 @responses.activate
-def test_main_control_data_hyper_s_create_raises_before_any_http_call(gen_client):
+def test_main_control_data_hyper_s_create_raises_before_any_http_call(civil_client):
     with pytest.raises(UnsupportedMethodError):
-        MainControlDataHyperS.create({1: {"ARCD": True}}, client=gen_client)
+        MainControlDataHyperS.create({1: {"ARCD": True}}, client=civil_client)
     assert len(responses.calls) == 0
 
 
@@ -104,8 +104,8 @@ def test_eigenvalue_analysis_control_create_ritz_variant(gen_client):
 
 
 @responses.activate
-def test_eigenvalue_analysis_control_hyper_s_update_ritz_variant(gen_client):
-    responses.add(responses.PUT, "https://x.test:443/gen/db/EIGV-M1", json={}, status=200)
+def test_eigenvalue_analysis_control_hyper_s_update_ritz_variant(civil_client):
+    responses.add(responses.PUT, "https://x.test:443/civil/db/EIGV-M1", json={}, status=200)
     EigenvalueAnalysisControlHyperS.update(
         {
             1: {
@@ -114,16 +114,16 @@ def test_eigenvalue_analysis_control_hyper_s_update_ritz_variant(gen_client):
                 "RITZ_LOAD": [{"TYPE": "GROUND", "LOAD_NAME": "ACCX", "NUM_OF_GEN": 5}],
             }
         },
-        client=gen_client,
+        client=civil_client,
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["RITZ_LOAD"][0]["NUM_OF_GEN"] == 5
 
 
 @responses.activate
-def test_eigenvalue_analysis_control_hyper_s_create_raises_before_any_http_call(gen_client):
+def test_eigenvalue_analysis_control_hyper_s_create_raises_before_any_http_call(civil_client):
     with pytest.raises(UnsupportedMethodError):
-        EigenvalueAnalysisControlHyperS.create({1: {"ANAL_TYPE": "RITZ"}}, client=gen_client)
+        EigenvalueAnalysisControlHyperS.create({1: {"ANAL_TYPE": "RITZ"}}, client=civil_client)
     assert len(responses.calls) == 0
 
 
@@ -149,8 +149,8 @@ def test_heat_of_hydration_analysis_control_create_effective_modulus_variant(gen
 
 
 @responses.activate
-def test_heat_of_hydration_analysis_control_hyper_s_update_sends_convergence(gen_client):
-    responses.add(responses.PUT, "https://x.test:443/gen/db/HHCT-M1", json={}, status=200)
+def test_heat_of_hydration_analysis_control_hyper_s_update_sends_convergence(civil_client):
+    responses.add(responses.PUT, "https://x.test:443/civil/db/HHCT-M1", json={}, status=200)
     HeatOfHydrationAnalysisControlHyperS.update(
         {
             1: {
@@ -160,16 +160,16 @@ def test_heat_of_hydration_analysis_control_hyper_s_update_sends_convergence(gen
                 "CONVERGENCE": {"DISP": {"OPT_CHECK": True, "VALUE": 0.001}},
             }
         },
-        client=gen_client,
+        client=civil_client,
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["CONVERGENCE"]["DISP"]["OPT_CHECK"] is True
 
 
 @responses.activate
-def test_heat_of_hydration_analysis_control_hyper_s_create_raises_before_any_http_call(gen_client):
+def test_heat_of_hydration_analysis_control_hyper_s_create_raises_before_any_http_call(civil_client):
     with pytest.raises(UnsupportedMethodError):
-        HeatOfHydrationAnalysisControlHyperS.create({1: {"FINAL_STAGE": True}}, client=gen_client)
+        HeatOfHydrationAnalysisControlHyperS.create({1: {"FINAL_STAGE": True}}, client=civil_client)
     assert len(responses.calls) == 0
 
 
@@ -268,8 +268,8 @@ def test_nonlinear_analysis_control_data_create_newton_variant(gen_client):
 
 
 @responses.activate
-def test_nonlinear_analysis_control_hyper_s_update_sends_nested_objects(gen_client):
-    responses.add(responses.PUT, "https://x.test:443/gen/db/NLCT-M1", json={}, status=200)
+def test_nonlinear_analysis_control_hyper_s_update_sends_nested_objects(civil_client):
+    responses.add(responses.PUT, "https://x.test:443/civil/db/NLCT-M1", json={}, status=200)
     NonlinearAnalysisControlHyperS.update(
         {
             1: {
@@ -280,16 +280,16 @@ def test_nonlinear_analysis_control_hyper_s_update_sends_nested_objects(gen_clie
                 "CONV_CRITERIA": {"DISP": {"OPT_USE": True, "VALUE": 0.001}},
             }
         },
-        client=gen_client,
+        client=civil_client,
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["LOAD_STEPS"]["NUMBER_STEPS"] == 20
 
 
 @responses.activate
-def test_nonlinear_analysis_control_hyper_s_create_raises_before_any_http_call(gen_client):
+def test_nonlinear_analysis_control_hyper_s_create_raises_before_any_http_call(civil_client):
     with pytest.raises(UnsupportedMethodError):
-        NonlinearAnalysisControlHyperS.create({1: {"LC_SCOPE": "ALL"}}, client=gen_client)
+        NonlinearAnalysisControlHyperS.create({1: {"LC_SCOPE": "ALL"}}, client=civil_client)
     assert len(responses.calls) == 0
 
 
@@ -305,8 +305,8 @@ def test_construction_stage_analysis_control_data_create_sends_documented_assign
 
 
 @responses.activate
-def test_construction_stage_analysis_control_data_hyper_s_update_sends_nested_anal_type(gen_client):
-    responses.add(responses.PUT, "https://x.test:443/gen/db/STCT-M1", json={}, status=200)
+def test_construction_stage_analysis_control_data_hyper_s_update_sends_nested_anal_type(civil_client):
+    responses.add(responses.PUT, "https://x.test:443/civil/db/STCT-M1", json={}, status=200)
     ConstructionStageAnalysisControlDataHyperS.update(
         {
             1: {
@@ -314,16 +314,16 @@ def test_construction_stage_analysis_control_data_hyper_s_update_sends_nested_an
                 "ANAL_TYPE": {"iINC_NLA": 0, "iNLA_TYPE": 1, "bINC_PDL": True, "bINC_TDE": True},
             }
         },
-        client=gen_client,
+        client=civil_client,
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["ANAL_TYPE"]["iNLA_TYPE"] == 1
 
 
 @responses.activate
-def test_construction_stage_analysis_control_data_hyper_s_create_raises_before_any_http_call(gen_client):
+def test_construction_stage_analysis_control_data_hyper_s_create_raises_before_any_http_call(civil_client):
     with pytest.raises(UnsupportedMethodError):
-        ConstructionStageAnalysisControlDataHyperS.create({1: {"bLAST_FINAL": True}}, client=gen_client)
+        ConstructionStageAnalysisControlDataHyperS.create({1: {"bLAST_FINAL": True}}, client=civil_client)
     assert len(responses.calls) == 0
 
 
@@ -346,18 +346,18 @@ def test_boundary_change_assignment_create_sends_documented_assign_shape(gen_cli
 
 
 @responses.activate
-def test_define_boundary_combination_hyper_s_create_sends_documented_assign_shape(gen_client):
-    responses.add(responses.POST, "https://x.test:443/gen/db/BCGD-M1", json={}, status=200)
+def test_define_boundary_combination_hyper_s_create_sends_documented_assign_shape(civil_client):
+    responses.add(responses.POST, "https://x.test:443/civil/db/BCGD-M1", json={}, status=200)
     DefineBoundaryCombinationHyperS.create(
-        {1: {"BCG_NAME": "Support_BCG", "GROUP_LIST": ["Fixed_Support", "Elastic_Link"]}}, client=gen_client
+        {1: {"BCG_NAME": "Support_BCG", "GROUP_LIST": ["Fixed_Support", "Elastic_Link"]}}, client=civil_client
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["GROUP_LIST"] == ["Fixed_Support", "Elastic_Link"]
 
 
 @responses.activate
-def test_assign_boundary_combination_hyper_s_create_sends_documented_assign_shape(gen_client):
-    responses.add(responses.POST, "https://x.test:443/gen/db/BCGA-M1", json={}, status=200)
+def test_assign_boundary_combination_hyper_s_create_sends_documented_assign_shape(civil_client):
+    responses.add(responses.POST, "https://x.test:443/civil/db/BCGA-M1", json={}, status=200)
     AssignBoundaryCombinationHyperS.create(
         {
             1: {
@@ -368,7 +368,7 @@ def test_assign_boundary_combination_hyper_s_create_sends_documented_assign_shap
                 "BC_SELECT": ["SECF", "NSPR"],
             }
         },
-        client=gen_client,
+        client=civil_client,
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["BC_SELECT"] == ["SECF", "NSPR"]

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any, List, TypedDict
 
-from .base import NO_DELETE_METHODS, DbResource, ItemGroupFields
+from .base import HYPER_S_ONLY, NO_DELETE_METHODS, DbResource, ItemGroupFields
 
 
 class ConstraintItem(ItemGroupFields, total=False):
@@ -234,7 +234,7 @@ class GeneralLinkHyperSPayload(TypedDict, total=False):
 class GeneralLinkHyperS(DbResource):
     ENDPOINT = "/db/NLNK-M1"
     NAME = "General Link (Hyper-S)"
-    PRODUCTS = frozenset({"gen", "civil"})
+    PRODUCTS = HYPER_S_ONLY
 
 
 class ChangeGeneralLinkPropertyPayload(TypedDict, total=False):

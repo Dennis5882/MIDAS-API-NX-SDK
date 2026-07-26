@@ -43,6 +43,20 @@ PUT_DELETE_METHODS = frozenset({"PUT", "DELETE"})
 #: redefining a local frozenset({"civil"}) per chapter.
 CIVIL_ONLY = frozenset({"civil"})
 
+#: Shared PRODUCTS override for the Hyper-S (``-M1``) endpoint family.
+#:
+#: Hyper-S is the solver MIDASIT introduced with Civil NX, so these routes are
+#: served by Civil and absent from Gen. Confirmed live on 2026-07-26: all 13
+#: implemented ``-M1`` endpoints answered under Civil NX 2026 (v2.1) and all 13
+#: returned 404 under Gen NX 2026 (v2.1), on the same account and the same day.
+#:
+#: Kept separate from :data:`CIVIL_ONLY` deliberately. This is a *product
+#: feature* boundary, not the structural Civil/Gen split that ch08/ch17 encode,
+#: and MIDASIT is expected to bring Hyper-S to Gen NX at some point. When that
+#: happens, widen this one constant rather than hunting down 13 classes — and
+#: re-verify with ``scripts/live_readonly_sweep.py --product gen`` first.
+HYPER_S_ONLY = frozenset({"civil"})
+
 
 class ItemGroupFields(TypedDict, total=False):
     """Shared ID/GROUP_NAME preamble for a /db/* "ITEMS" array entry — extend

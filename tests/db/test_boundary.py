@@ -144,9 +144,9 @@ def test_general_link_create_element_ref_system(gen_client):
 
 
 @responses.activate
-def test_general_link_hyper_s_create_sends_documented_assign_shape(gen_client):
-    responses.add(responses.POST, "https://x.test:443/gen/db/NLNK-M1", json={}, status=200)
-    GeneralLinkHyperS.create({1: {"PROP_NAME": "GL_HyperS_Prop", "NODE1": 20, "NODE2": 21}}, client=gen_client)
+def test_general_link_hyper_s_create_sends_documented_assign_shape(civil_client):
+    responses.add(responses.POST, "https://x.test:443/civil/db/NLNK-M1", json={}, status=200)
+    GeneralLinkHyperS.create({1: {"PROP_NAME": "GL_HyperS_Prop", "NODE1": 20, "NODE2": 21}}, client=civil_client)
     sent = responses.calls[0].request
     assert json.loads(sent.body) == {"Assign": {"1": {"PROP_NAME": "GL_HyperS_Prop", "NODE1": 20, "NODE2": 21}}}
 

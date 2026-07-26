@@ -5,8 +5,11 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-07-26, at v0.12.0 (390/398 documented endpoints; 10/390
-> live-verified per `docs/coverage.json`). v0.12.0 is a client-correctness
+> Last updated: 2026-07-26, at v0.13.0 (390/398 documented endpoints; 295/390
+> live-verified per `docs/coverage.json`, both products). v0.13.0 corrected the
+> Hyper-S (`-M1`) family to Civil-only after live testing showed the SDK
+> offering 21 Civil-only endpoints to Gen clients, and completed A1's live
+> sweep across both products. v0.12.0 is a client-correctness
 > release, cut out of order from a review of `src/midas_nx/` itself rather
 > than from the phase plan: a 200 carrying an `{"error": ...}` body was being
 > returned as success, a non-JSON response escaped the exception hierarchy as
@@ -175,7 +178,7 @@ they're the ones worth re-checking before planning a release):
 | Scaffolding | `scripts/gen_endpoint.py` | ✅ in the documented add-an-endpoint loop |
 | Response handling | 200-with-`error` body, non-JSON body, empty-table shapes | ✅ hardened in v0.12.0 |
 | Version metadata | `__init__.py` `__version__` (hatchling `dynamic`) + `tests/test_version.py` | ✅ single source |
-| Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 235/390 recorded |
+| Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 295/390, both products |
 | Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md` | ⚠️ text-only, no screenshots |
 | Practitioner layer | Excel round-trip, `recipes`/`easy`, opt-in validation | ❌ not started |
 
@@ -317,6 +320,17 @@ measuring source density: ch26 alone is 13,363 manual lines / 69 endpoints,
   - `__version__` is now the single source (`dynamic = ["version"]`), with
     `tests/test_version.py` guarding it. It had reported `0.10.0` since
     v0.11.0 because the release step edited only `pyproject.toml`.
+- **v0.13.0 ✅ — Hyper-S is Civil-only + live verification at 295/390**
+  — `scripts/live_readonly_sweep.py` (A1, see Phase 6) swept both products
+  against real sessions on 2026-07-26 and found the SDK offering the 13
+  Hyper-S (`-M1`) endpoints to Gen clients: they answer under Civil NX and
+  404 under Gen NX, 21/21 including the 8 unimplemented stubs. Hyper-S is the
+  solver MIDASIT shipped with Civil NX, so `PRODUCTS` was simply wrong.
+  Corrected via a `HYPER_S_ONLY` constant — deliberately separate from
+  `CIVIL_ONLY`, because Hyper-S is expected to reach Gen NX eventually and
+  that day this should be one line, not 13. Guarded by
+  `tests/db/test_hyper_s_products.py`. A Gen client now raises
+  `ProductMismatchError` instead of issuing a request that can only 404.
 
 ### Phase 6 ✅ (mostly) — Trust & maintenance foundation  ·  v0.11.0-v0.11.2
 Endpoint coverage (Phases 1-5) is done; before layering practitioner features
@@ -357,16 +371,17 @@ it actually is.
 
 **Remaining (⏳ — this is what v0.13.0 is for; v0.12.0 was cut for the
 client-correctness fixes above instead):**
-- **A1 — mostly done 2026-07-26; the Civil half is what's left.**
-  `scripts/live_readonly_sweep.py` is now committed (GET-only, safe against an
-  open model) and its results are recorded per endpoint, taking `live_verified`
-  from **10/390 to 235/390**. The Gen sweep reproduced the 2026-07-22 numbers
-  exactly — 253 swept, 233 OK, the same 20 404s — on a real 710-node analyzed
-  model rather than a blank one, which removes model state as an explanation
-  for those 20. **Remaining: run the same sweep against Civil NX** (293
-  expected) and record it; the version matrix then has both halves. Note the
-  old "526 endpoints" figure in this plan was wrong in both directions — 546
-  tested / 506 OK across both products are the real numbers.
+- **A1 ✅ done 2026-07-26 — both products swept and recorded.**
+  `scripts/live_readonly_sweep.py` is committed (GET-only, safe against an open
+  model) and its results are recorded per endpoint: `live_verified` went from
+  **10/390 to 295/390**. Gen reproduced 2026-07-22 exactly (253 swept, 233 OK,
+  the same 20 404s) on a real 710-node analyzed model rather than a blank one,
+  which removes model state as an explanation; Civil reproduced exactly too
+  (293/273/20). D4's version matrix now has both halves. The old "526
+  endpoints" figure in this plan was wrong in both directions — 546 tested /
+  506 OK across both products are the real numbers. **What's left on this axis
+  is write coverage**, not read: POST/PUT/DELETE is still only exercised by
+  `live_smoke.py`'s ~10-endpoint round trip.
 - **C1 remainder — a screenshot-driven, zero-python-experience walkthrough.**
   The three quickstarts are text-only (129/147/89 lines, 0 images). The missing
   piece is the NX-side half: where the MAPI key lives, what "API connected"
@@ -384,7 +399,7 @@ client-correctness fixes above instead):**
 > forbids reintroducing official/unofficial positioning or the comparison.
 > There is no claim left to substantiate — don't rebuild the table.
 
-### Phase 7 — Practitioner efficiency  ·  v0.14.0
+### Phase 7 — Practitioner efficiency
 - **B2 — Excel round-trip**, `midas-nx[excel]` extra (keep pandas/openpyxl out
   of the core dependency — `requests`-only import stays a hard invariant).
   `from_excel`/`to_excel` for node/element/load tables and result reports;
@@ -398,7 +413,7 @@ client-correctness fixes above instead):**
 
 > B3 shipped early, in v0.11.0 — see Phase 6.
 
-### Phase 8 — High-level workflow layer  ·  v0.15.0+
+### Phase 8 — High-level workflow layer
 Deliberately last: picking the wrong recipe scenarios is the most expensive
 mistake in this axis, so it waits on user feedback from Phases 6-7's examples
 and README traffic, not just code readiness.
@@ -417,21 +432,42 @@ and README traffic, not just code readiness.
 > `nx_versions` per live-verified endpoint. See Phase 6.
 
 ### v1.0.0 — public API freeze
-Gate: (a) the 8 undocumented Hyper-S `-M1` stubs resolved once the manual
-documents them with an actual JSON Schema, or the existing "100% minus
-undocumented stubs" rule is formally invoked instead; (b) live verification
-covering the core paths, not just the 10 endpoints `live_smoke.py` touches
-(Phase 6's A1 remainder); (c) the manual-diff pipeline having actually caught
-and survived a real upstream change — v0.11.1/v0.11.2 were exactly that drill
-run by hand, so this is close. Matches D5 from the 2026-07-21 roadmap review:
-1.0 means "frozen public surface + live-verified core paths + a running
-change-detection pipeline," not just "endpoint count is high."
-Gates (a) and (b) are what's genuinely open; the D1 half of (c) is running.
+Gate: (a) the 8 undocumented Hyper-S `-M1` stubs resolved; (b) live
+verification covering the core paths; (c) the manual-diff pipeline having
+caught and survived a real upstream change. Matches D5 from the 2026-07-21
+roadmap review: 1.0 means "frozen public surface + live-verified core paths +
+a running change-detection pipeline," not just "endpoint count is high."
+
+Status after 2026-07-26:
+
+- **(b) read paths are done** — 295/390 recorded across both products. Write
+  paths are still only `live_smoke.py`'s ~10 endpoints, so read this gate as
+  half-met.
+- **(c) is met in substance** — `manual-drift-check.yml` runs weekly, and
+  v0.11.1/v0.11.2 were that exact drill executed by hand on a real breaking
+  upstream change.
+- **(a)'s premise has changed and needs an author decision.** The stubs were
+  parked because the manual documents no JSON Schema for them, and
+  transcribing from the external Zendesk link would mean depending on an
+  unversioned source. But all 8 answer a live GET under Civil NX and 5 return
+  a field-level schema from `/info/db/...` (see
+  `docs/live_verification_notes.md`). The server is a versioned, first-party
+  source the SDK already talks to. Three ways out, in preference order:
+  1. Implement them from `/info/db/...` introspection, marked in-module as
+     server-derived rather than manual-transcribed, and covered by the live
+     sweep. Costs a documented exception to the transcribe-from-manual rule.
+  2. Keep waiting for the manual and formally invoke the existing "100% minus
+     undocumented stubs" rule at 1.0.
+  3. Implement only the 5 with schemas and leave the 3 `IEHG-*` ones parked.
 
 ### Cross-cutting / backlog (any time)
-- Resolve undocumented Hyper-S stubs (STYP-M1, MATL-M1, IMFM-M1, EPMT-M1,
-  IEHG-*-M1) once the vendored manual documents them with an actual JSON
-  Schema (currently only URL/methods + an external Zendesk link).
+- Resolve the undocumented Hyper-S stubs (STYP-M1, MATL-M1, IMFM-M1, EPMT-M1,
+  IEHG-*-M1). No longer blocked on the vendored manual: as of 2026-07-26 all 8
+  answer a live GET under Civil NX and 5 expose a schema via `/info/db/...`.
+  See the v1.0.0 gate above for the three options — this needs a decision, not
+  more waiting.
+- Extend live verification to write paths. Read coverage is at 295/390;
+  POST/PUT/DELETE is still only what `live_smoke.py` touches.
 
 ---
 
@@ -454,9 +490,10 @@ Gates (a) and (b) are what's genuinely open; the D1 half of (c) is running.
 | v0.11.1 ✅ | Manual-sync fix — `DCRM-WALL` breaking schema change, Wall Force table, story-table `ADDITIONAL` params | published |
 | v0.11.2 ✅ | `STORY_DRIFT_METHOD` enum + direction-key spelling correction; `*-ANAL` re-verification writeup; README framing cleanup | published |
 | v0.12.0 ✅ | Client correctness — `MidasResultError` for 200-with-`error` bodies, non-JSON responses kept inside the exception hierarchy, `items()` empty-shape fix, `post.base.unwrap_table()`, `__version__` single-sourced | published |
-| v0.13.0 | Phase 6 remainder — Civil half of the live sweep (A1; the Gen half and D4's matrix landed 2026-07-26 at 235/390), screenshot-driven beginner walkthrough (C1 pt. 2) | both products swept and recorded; a non-developer can get to a first result from the docs alone |
-| v0.14.0 | Phase 7 — Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
-| v0.15.0+ | Phase 8 — `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
+| v0.13.0 ✅ | Hyper-S corrected to Civil-only (`HYPER_S_ONLY`), A1 live sweep complete across both products (295/390), D4 matrix has both halves | published |
+| v0.14.0 | Phase 6 remainder — screenshot-driven beginner walkthrough (C1 pt. 2); optionally the Hyper-S stub decision (see v1.0.0 gate (a)) | a non-developer can get to a first result from the docs alone |
+| v0.15.0 | Phase 7 — Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
+| v0.16.0+ | Phase 8 — `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
 | v1.0.0 | Public API freeze: Hyper-S `-M1` stub decision + core paths live-verified | full documented surface covered, live-verified, change-detection pipeline live |
 
 Each version ships when its phase's chapters are 100% (minus undocumented
@@ -467,11 +504,12 @@ GitHub Release → `publish.yml` auto-uploads to PyPI.
 > chapter/endpoint-coverage-driven and ended at v0.10.0. Phase 6-8 (this
 > section) reflect a 2026-07-21 roadmap review's four-axis reprioritization
 > (reliability, practitioner efficiency, non-developer accessibility,
-> maintenance architecture) — version numbers from v0.13.0 on are provisional
-> until each release's actual scope is locked at cut time. v0.12.0 is the
-> mechanism working as intended: an out-of-band correctness release took the
-> number, and the phase work shifted down rather than the release being
-> forced into the plan's shape.
+> maintenance architecture) — version numbers from v0.14.0 on are provisional
+> until each release's actual scope is locked at cut time. v0.12.0 and v0.13.0
+> are the mechanism working as intended: both were out-of-band releases driven
+> by what live testing turned up, and the phase work shifted down rather than
+> the releases being forced into the plan's shape. **Phase headings deliberately
+> carry no version number** — only this table does, so a re-cut edits one place.
 >
 > Version-bump note: a release is warranted only when `src/midas_nx/` behaviour
 > or packaged metadata changed. `scripts/`, `docs/`, `.github/` and this file

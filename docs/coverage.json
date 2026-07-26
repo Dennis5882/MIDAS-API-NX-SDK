@@ -218,7 +218,6 @@
       "name": "Structure Type (Hyper-S)",
       "chapter_file": "02_DB_Project_Structure.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "planned",
@@ -422,7 +421,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.project"
+      "module": "midas_nx.db.project",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/STOR",
@@ -603,7 +612,6 @@
       "name": "Material Properties (Hyper-S)",
       "chapter_file": "04_DB_Properties.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "planned",
@@ -635,7 +643,6 @@
       "name": "Inelastic Material Link for Auto Generation (Hyper-S)",
       "chapter_file": "04_DB_Properties.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "planned",
@@ -772,7 +779,6 @@
       "name": "Plastic Material (Hyper-S)",
       "chapter_file": "04_DB_Properties.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "planned",
@@ -894,7 +900,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.*"
+      "module": "midas_nx.db.properties.*",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/PSSF",
@@ -968,7 +984,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.*"
+      "module": "midas_nx.db.properties.*",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/IEHC",
@@ -1017,7 +1043,6 @@
       "name": "Assign Inelastic Hinges – Beam (Hyper-S)",
       "chapter_file": "04_DB_Properties.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "planned",
@@ -1028,7 +1053,6 @@
       "name": "Assign Inelastic Hinges – Truss (Hyper-S)",
       "chapter_file": "04_DB_Properties.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "planned",
@@ -1039,7 +1063,6 @@
       "name": "Assign Inelastic Hinges – General Link (Hyper-S)",
       "chapter_file": "04_DB_Properties.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "planned",
@@ -1050,7 +1073,6 @@
       "name": "Assign Inelastic Hinges – Point Spring Support (Hyper-S)",
       "chapter_file": "04_DB_Properties.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "planned",
@@ -1357,11 +1379,20 @@
       "name": "General Link (Hyper-S)",
       "chapter_file": "05_DB_Boundary.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/CGLP",
@@ -2362,7 +2393,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/LLAN",
@@ -2372,7 +2413,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/LLANch",
@@ -2382,7 +2433,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/LLANid",
@@ -2392,7 +2453,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/LLANtr",
@@ -2402,7 +2473,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/LLANop",
@@ -2412,7 +2493,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SLAN",
@@ -2422,7 +2513,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SLANch",
@@ -2432,7 +2533,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SLANop",
@@ -2442,7 +2553,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MVHL",
@@ -2452,7 +2573,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MVHLtr",
@@ -2462,7 +2593,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MVLD",
@@ -2472,7 +2613,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MVLDch",
@@ -2482,7 +2633,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MVLDid",
@@ -2492,7 +2653,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MVLDbs",
@@ -2502,7 +2673,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MVLDeu",
@@ -2512,7 +2693,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MVLDpl",
@@ -2522,7 +2713,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MVLDtr",
@@ -2532,7 +2733,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/CRGR",
@@ -2542,7 +2753,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/CJFG",
@@ -2552,7 +2773,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MVHC",
@@ -2562,7 +2793,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SINF",
@@ -2572,7 +2813,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MLSP",
@@ -2582,7 +2833,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MLSR",
@@ -2592,7 +2853,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/DYLA",
@@ -2602,7 +2873,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/IMPF",
@@ -2612,7 +2893,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/DYFG",
@@ -2622,7 +2913,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/DYNF",
@@ -2632,7 +2933,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.moving_loads"
+      "module": "midas_nx.db.moving_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SPFC",
@@ -2685,29 +2996,57 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.dynamic_loads"
+      "module": "midas_nx.db.dynamic_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/THGC-M1",
       "name": "Time History Global Control (Hyper-S)",
       "chapter_file": "09_DB_Dynamic_Loads.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.dynamic_loads"
+      "module": "midas_nx.db.dynamic_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/THOO-M1",
       "name": "Time History Output Option (Hyper-S)",
       "chapter_file": "09_DB_Dynamic_Loads.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.dynamic_loads"
+      "module": "midas_nx.db.dynamic_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/THIS",
@@ -2735,11 +3074,20 @@
       "name": "Time History Load Cases (Hyper-S)",
       "chapter_file": "09_DB_Dynamic_Loads.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.dynamic_loads"
+      "module": "midas_nx.db.dynamic_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/THFC",
@@ -2939,7 +3287,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.construction_stage"
+      "module": "midas_nx.db.construction_stage",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/CRPC",
@@ -3181,7 +3539,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.misc_loads"
+      "module": "midas_nx.db.misc_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/LDSQ",
@@ -3213,7 +3581,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.misc_loads"
+      "module": "midas_nx.db.misc_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/IELC",
@@ -3325,11 +3703,20 @@
       "name": "Main Control Data (Hyper-S)",
       "chapter_file": "12_DB_Analysis_Control.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.analysis_control"
+      "module": "midas_nx.db.analysis_control",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/PDEL",
@@ -3399,11 +3786,20 @@
       "name": "Eigenvalue Analysis Control (Hyper-S)",
       "chapter_file": "12_DB_Analysis_Control.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.analysis_control"
+      "module": "midas_nx.db.analysis_control",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/HHCT",
@@ -3431,11 +3827,20 @@
       "name": "Heat of Hydration Analysis Control (Hyper-S)",
       "chapter_file": "12_DB_Analysis_Control.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.analysis_control"
+      "module": "midas_nx.db.analysis_control",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MVCT",
@@ -3446,7 +3851,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.analysis_control"
+      "module": "midas_nx.db.analysis_control",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MVCTch",
@@ -3457,7 +3872,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.analysis_control"
+      "module": "midas_nx.db.analysis_control",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MVCTid",
@@ -3468,7 +3893,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.analysis_control"
+      "module": "midas_nx.db.analysis_control",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MVCTbs",
@@ -3479,7 +3914,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.analysis_control"
+      "module": "midas_nx.db.analysis_control",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MVCTtr",
@@ -3490,7 +3935,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.analysis_control"
+      "module": "midas_nx.db.analysis_control",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SMCT",
@@ -3539,11 +3994,20 @@
       "name": "Nonlinear Analysis Control (Hyper-S)",
       "chapter_file": "12_DB_Analysis_Control.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.analysis_control"
+      "module": "midas_nx.db.analysis_control",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/STCT",
@@ -3571,11 +4035,20 @@
       "name": "Construction Stage Analysis Control Data (Hyper-S)",
       "chapter_file": "12_DB_Analysis_Control.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.analysis_control"
+      "module": "midas_nx.db.analysis_control",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/BCCT",
@@ -3603,22 +4076,40 @@
       "name": "Assign Boundary Combination (Hyper-S)",
       "chapter_file": "12_DB_Analysis_Control.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.analysis_control"
+      "module": "midas_nx.db.analysis_control",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/BCGA-M1",
       "name": "Assign Boundary Combination (Hyper-S)",
       "chapter_file": "12_DB_Analysis_Control.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.analysis_control"
+      "module": "midas_nx.db.analysis_control",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/LCOM-GEN",
@@ -3650,7 +4141,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.load_combinations"
+      "module": "midas_nx.db.load_combinations",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/LCOM-STEEL",
@@ -3703,7 +4204,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.load_combinations"
+      "module": "midas_nx.db.load_combinations",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/LCOM-SEISMIC",
@@ -3776,7 +4287,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.bridge"
+      "module": "midas_nx.db.bridge",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/GCMB",
@@ -3786,7 +4307,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.bridge"
+      "module": "midas_nx.db.bridge",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/CAMB",
@@ -3796,7 +4327,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.bridge"
+      "module": "midas_nx.db.bridge",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/ULFC",
@@ -3806,7 +4347,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.bridge"
+      "module": "midas_nx.db.bridge",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/POGD",
@@ -3834,11 +4385,20 @@
       "name": "Pushover Global Control (Hyper-S)",
       "chapter_file": "14_DB_Pushover.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.pushover"
+      "module": "midas_nx.db.pushover",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/IEPI",
@@ -3908,11 +4468,20 @@
       "name": "Pushover Load Case (Hyper-S)",
       "chapter_file": "14_DB_Pushover.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.pushover"
+      "module": "midas_nx.db.pushover",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/DCON",
@@ -3965,7 +4534,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.design"
+      "module": "midas_nx.db.design",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "civil"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/LENG",

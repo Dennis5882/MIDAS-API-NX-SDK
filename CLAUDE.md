@@ -99,6 +99,9 @@ Two things that have already caused rework:
   not on a key name. `post.base.unwrap_table()` does this; use it instead of indexing by
   `TABLE_NAME`. Confirmed 2026-07-26: **`"empty"` is just the default key for a blank
   `TABLE_NAME`**, and it can carry a full table — never read it as "no data".
+- **Hyper-S (`-M1`) endpoints are Civil NX only** — it's the solver MIDASIT shipped with Civil NX.
+  They 404 under Gen. Use `HYPER_S_ONLY` from `db/base.py`, not `CIVIL_ONLY`: Hyper-S is expected
+  to reach Gen NX eventually, and that constant is the one place to widen when it does.
 - **Verifying against a live session: `scripts/live_readonly_sweep.py` is the safe one.** It
   issues GET only, so it can run against a model the user has open. `scripts/live_smoke.py` calls
   `/doc/NEW` and **discards unsaved work** — never run it against someone's open document without

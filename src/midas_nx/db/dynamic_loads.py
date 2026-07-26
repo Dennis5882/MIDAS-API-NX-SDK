@@ -11,6 +11,7 @@ from typing import Any, List, TypedDict
 
 from .base import (
     GET_PUT_DELETE_METHODS,
+    HYPER_S_ONLY,
     DbResource,
     InitialLoadCaseItem,
     TimeValuePoint,
@@ -155,7 +156,7 @@ class TimeHistoryGlobalControlHyperSPayload(TypedDict, total=False):
 class TimeHistoryGlobalControlHyperS(DbResource):
     ENDPOINT = "/db/THGC-M1"
     NAME = "Time History Global Control (Hyper-S)"
-    PRODUCTS = frozenset({"gen", "civil"})
+    PRODUCTS = HYPER_S_ONLY
     METHODS = GET_PUT_DELETE_METHODS
 
 
@@ -188,7 +189,7 @@ class TimeHistoryOutputOptionHyperSPayload(TypedDict, total=False):
 class TimeHistoryOutputOptionHyperS(DbResource):
     ENDPOINT = "/db/THOO-M1"
     NAME = "Time History Output Option (Hyper-S)"
-    PRODUCTS = frozenset({"gen", "civil"})
+    PRODUCTS = HYPER_S_ONLY
     METHODS = GET_PUT_DELETE_METHODS
 
 
@@ -259,7 +260,7 @@ class TimeHistoryLoadCaseHyperSPayload(TypedDict, total=False):
 class TimeHistoryLoadCaseHyperS(DbResource):
     ENDPOINT = "/db/THIS-M1"
     NAME = "Time History Load Cases (Hyper-S)"
-    PRODUCTS = frozenset({"gen", "civil"})
+    PRODUCTS = HYPER_S_ONLY
 
 
 class TimeHistoryFunctionPayload(TypedDict, total=False):
