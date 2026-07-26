@@ -128,6 +128,63 @@ def east_asian(run) -> None:
     run._element.rPr.rFonts.set(qn("w:eastAsia"), run.font.name)
 
 
+def display_width(text: str) -> int:
+    """Rough rendered width in units of one Latin character.
+
+    Sizing columns by ``len()`` is what made the first draft look wrong: a
+    Korean glyph is about twice as wide as a Latin one, so a column of Korean
+    prose came out under-weighted against a column of short ASCII codes.
+    Markup is stripped because it isn't rendered.
+    """
+    plain = re.sub(r"\*\*|`", "", text)
+    return sum(2 if ord(ch) > 0x2E80 else 1 for ch in plain)
+
+
+def set_table_layout(table, widths) -> None:
+    """Write the column widths Word actually honours.
+
+    ``cell.width`` alone does not survive: Word lays a fixed-layout table out
+    from ``<w:tblGrid>``, which python-docx fills with equal columns at
+    creation time. Both have to be set, and the layout has to be declared
+    fixed or Word re-fits everything to content anyway.
+    """
+    tbl_pr = table._tbl.tblPr
+
+    layout = OxmlElement("w:tblLayout")
+    layout.set(qn("w:type"), "fixed")
+    tbl_pr.append(layout)
+
+    borders = OxmlElement("w:tblBorders")
+    for edge, (size, color) in (
+        ("top", (8, "808080")), ("bottom", (8, "808080")),
+        ("left", (2, "D9D9D9")), ("right", (2, "D9D9D9")),
+        ("insideH", (2, "D9D9D9")), ("insideV", (2, "E8E8E8")),
+    ):
+        el = OxmlElement(f"w:{edge}")
+        el.set(qn("w:val"), "single")
+        el.set(qn("w:sz"), str(size))
+        el.set(qn("w:space"), "0")
+        el.set(qn("w:color"), color)
+        borders.append(el)
+    tbl_pr.append(borders)
+
+    margins = OxmlElement("w:tblCellMar")
+    for edge, value in (("top", 60), ("bottom", 60), ("left", 108), ("right", 108)):
+        el = OxmlElement(f"w:{edge}")
+        el.set(qn("w:w"), str(value))
+        el.set(qn("w:type"), "dxa")
+        margins.append(el)
+    tbl_pr.append(margins)
+
+    for grid_col, width in zip(table._tbl.tblGrid.findall(qn("w:gridCol")), widths):
+        grid_col.set(qn("w:w"), str(width.twips))
+
+
+def repeat_header(row) -> None:
+    tr_pr = row._tr.get_or_add_trPr()
+    tr_pr.append(OxmlElement("w:tblHeader"))
+
+
 def tight(paragraph, before=0, after=0, exact=None) -> None:
     pf = paragraph.paragraph_format
     pf.space_before = Pt(before)
@@ -189,14 +246,27 @@ def build(blocks: list, out_path: Path) -> None:
         section.page_height, section.page_width = Cm(29.7), Cm(21.0)
         section.top_margin = section.bottom_margin = Cm(2.0)
         section.left_margin = section.right_margin = Cm(2.0)
-    usable = doc.sections[0].page_width - Cm(4.0)
+    # Length - Length yields a bare EMU int, so rebuild it as a Length.
+    section = doc.sections[0]
+    usable = Cm(section.page_width.cm - section.left_margin.cm
+                - section.right_margin.cm)
 
+    first_heading = True
     for kind, payload in blocks:
         if kind in ("h1", "h2", "h3"):
             p = doc.add_paragraph(style=f"Heading {kind[1]}")
-            add_runs(p, payload)
-            if kind == "h1":
-                border(p, {"bottom": (8, "999999")})
+            if kind == "h1" and first_heading:
+                # The document title, not a section header: bigger, no rule,
+                # and no space above since it opens the page.
+                add_runs(p, payload, size=19)
+                for r in p.runs:
+                    r.bold = True
+                tight(p, before=0, after=14)
+            else:
+                add_runs(p, payload)
+                if kind == "h1":
+                    border(p, {"bottom": (8, "999999")})
+            first_heading = False
 
         elif kind == "p":
             add_runs(doc.add_paragraph(), payload)
@@ -220,7 +290,8 @@ def build(blocks: list, out_path: Path) -> None:
             lines = payload.split("\n")
             for n, line in enumerate(lines):
                 p = doc.add_paragraph()
-                p.paragraph_format.left_indent = Cm(0.3)
+                p.paragraph_format.left_indent = Cm(0.45)
+                p.paragraph_format.right_indent = Cm(0.25)
                 tight(p, exact=11.5)
                 shade(p._p, CODE_FILL)
                 edges = {}
@@ -242,27 +313,43 @@ def build(blocks: list, out_path: Path) -> None:
                 continue
             ncol = max(len(r) for r in rows)
             table = doc.add_table(rows=0, cols=ncol)
-            table.style = "Table Grid"
             table.alignment = WD_TABLE_ALIGNMENT.CENTER
             table.autofit = False
 
-            weights = [max(len(r[c]) if c < len(r) else 0 for r in rows) or 1
-                       for c in range(ncol)]
+            # Weight by the widest cell but damp it with the column average, so
+            # one long outlier doesn't starve every other column.
+            widest = [max(display_width(r[c]) if c < len(r) else 0 for r in rows)
+                      for c in range(ncol)]
+            mean = [sum(display_width(r[c]) if c < len(r) else 0 for r in rows)
+                    / len(rows) for c in range(ncol)]
+            weights = [max(1.0, 0.45 * w + 0.55 * m) ** 0.72
+                       for w, m in zip(widest, mean)]
             total = sum(weights)
-            widths = [max(Cm(1.1), int(usable * w / total)) for w in weights]
+            floor = Cm(1.5)
+            widths = [max(floor, Cm(usable.cm * w / total)) for w in weights]
+            overflow = sum(w.cm for w in widths) - usable.cm
+            if overflow > 0:                       # give the excess back proportionally
+                slack = [w for w in widths if w > floor]
+                take = overflow / len(slack) if slack else 0
+                widths = [Cm(max(floor.cm, w.cm - take)) if w > floor else w
+                          for w in widths]
+            set_table_layout(table, widths)
 
             for ri, cells in enumerate(rows):
                 row = table.add_row()
+                if ri == 0:
+                    repeat_header(row)
                 for ci in range(ncol):
                     cell = row.cells[ci]
                     cell.width = widths[ci]
                     p = cell.paragraphs[0]
-                    tight(p, before=1.2, after=1.2)
+                    tight(p, before=1.6, after=1.6)
+                    p.paragraph_format.line_spacing = 1.18
                     add_runs(p, cells[ci] if ci < len(cells) else "",
                              bold=(ri == 0), size=9)
                     if ri == 0:
                         shade(cell._tc, HEAD_FILL)
-            tight(doc.add_paragraph(), exact=5)
+            tight(doc.add_paragraph(), exact=6)
 
         elif kind == "rule":
             p = doc.add_paragraph()
