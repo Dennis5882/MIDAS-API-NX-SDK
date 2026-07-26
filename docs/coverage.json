@@ -157,7 +157,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.project"
+      "module": "midas_nx.db.project",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/UNIT",
@@ -191,7 +201,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.project"
+      "module": "midas_nx.db.project",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/STYP-M1",
@@ -213,7 +233,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.project"
+      "module": "midas_nx.db.project",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/BNGR",
@@ -224,7 +254,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.project"
+      "module": "midas_nx.db.project",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/LDGR",
@@ -235,7 +275,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.project"
+      "module": "midas_nx.db.project",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/TDGR",
@@ -246,7 +296,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.project"
+      "module": "midas_nx.db.project",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/NPLN",
@@ -257,7 +317,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.project"
+      "module": "midas_nx.db.project",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/CO_M",
@@ -268,7 +338,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.project"
+      "module": "midas_nx.db.project",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/CO_S",
@@ -279,7 +359,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.project"
+      "module": "midas_nx.db.project",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/CO_T",
@@ -290,7 +380,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.project"
+      "module": "midas_nx.db.project",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/CO_F",
@@ -301,7 +401,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.project"
+      "module": "midas_nx.db.project",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SPAN",
@@ -323,7 +433,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.project"
+      "module": "midas_nx.db.project",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/NODE",
@@ -380,7 +500,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.node_element"
+      "module": "midas_nx.db.node_element",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MADO",
@@ -391,7 +521,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.node_element"
+      "module": "midas_nx.db.node_element",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SBDO",
@@ -402,7 +542,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.node_element"
+      "module": "midas_nx.db.node_element",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/DOEL",
@@ -413,7 +563,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.node_element"
+      "module": "midas_nx.db.node_element",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MATL",
@@ -458,7 +618,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.*"
+      "module": "midas_nx.db.properties.*",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/IMFM-M1",
@@ -480,7 +650,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.*"
+      "module": "midas_nx.db.properties.*",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/TDMT",
@@ -491,7 +671,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.*"
+      "module": "midas_nx.db.properties.*",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/TDME",
@@ -502,7 +692,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.*"
+      "module": "midas_nx.db.properties.*",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/EDMP",
@@ -513,7 +713,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.*"
+      "module": "midas_nx.db.properties.*",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/TMAT",
@@ -524,7 +734,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.*"
+      "module": "midas_nx.db.properties.*",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/EPMT",
@@ -535,7 +755,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.*"
+      "module": "midas_nx.db.properties.*",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/EPMT-M1",
@@ -580,7 +810,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.thickness"
+      "module": "midas_nx.db.properties.thickness",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/TSGR",
@@ -591,7 +831,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.*"
+      "module": "midas_nx.db.properties.*",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SECF",
@@ -602,7 +852,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.*"
+      "module": "midas_nx.db.properties.*",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/RPSC",
@@ -613,7 +873,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.*"
+      "module": "midas_nx.db.properties.*",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/STRPSSM",
@@ -635,7 +905,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.*"
+      "module": "midas_nx.db.properties.*",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/VBEM",
@@ -646,7 +926,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.*"
+      "module": "midas_nx.db.properties.*",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/VSEC",
@@ -657,7 +947,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.*"
+      "module": "midas_nx.db.properties.*",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/EWSF",
@@ -679,7 +979,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.*"
+      "module": "midas_nx.db.properties.*",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/IEHG",
@@ -690,7 +1000,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.*"
+      "module": "midas_nx.db.properties.*",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/IEHG-BEAM-M1",
@@ -745,7 +1065,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.*"
+      "module": "midas_nx.db.properties.*",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/FIBR",
@@ -756,7 +1086,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.*"
+      "module": "midas_nx.db.properties.*",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/GRDP",
@@ -767,7 +1107,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.*"
+      "module": "midas_nx.db.properties.*",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/ESSF",
@@ -778,7 +1128,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.*"
+      "module": "midas_nx.db.properties.*",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MATD",
@@ -789,7 +1149,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.properties.material"
+      "module": "midas_nx.db.properties.material",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/CONS",
@@ -823,7 +1193,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/GSTP",
@@ -834,7 +1214,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/GSPR",
@@ -845,7 +1235,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SSPS",
@@ -856,7 +1256,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/ELNK",
@@ -867,7 +1277,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/RIGD",
@@ -878,7 +1298,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/NLLP",
@@ -889,7 +1319,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/NLNK",
@@ -900,7 +1340,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/NLNK-M1",
@@ -922,7 +1372,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/FRLS",
@@ -933,7 +1393,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/OFFS",
@@ -944,7 +1414,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/PRLS",
@@ -955,7 +1435,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MLFC",
@@ -966,7 +1456,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SDVI",
@@ -977,7 +1477,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SDVE",
@@ -988,7 +1498,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SDST",
@@ -999,7 +1519,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SDHY",
@@ -1010,7 +1540,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SDIS",
@@ -1021,7 +1561,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MCON",
@@ -1032,7 +1582,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/PZEF",
@@ -1043,7 +1603,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/CLDR",
@@ -1054,7 +1624,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/DRLS",
@@ -1065,7 +1645,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.boundary"
+      "module": "midas_nx.db.boundary",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/STLD",
@@ -1122,7 +1712,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.static_loads"
+      "module": "midas_nx.db.static_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/BMLD",
@@ -1133,7 +1733,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.static_loads"
+      "module": "midas_nx.db.static_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SDSP",
@@ -1144,7 +1754,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.static_loads"
+      "module": "midas_nx.db.static_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/NMAS",
@@ -1155,7 +1775,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.static_loads"
+      "module": "midas_nx.db.static_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/LTOM",
@@ -1166,7 +1796,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.static_loads"
+      "module": "midas_nx.db.static_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/NBOF",
@@ -1177,7 +1817,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.static_loads"
+      "module": "midas_nx.db.static_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/PSLT",
@@ -1188,7 +1838,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.static_loads"
+      "module": "midas_nx.db.static_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/PRES",
@@ -1199,7 +1859,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.static_loads"
+      "module": "midas_nx.db.static_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/PNLD",
@@ -1210,7 +1880,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.static_loads"
+      "module": "midas_nx.db.static_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/PNLA",
@@ -1221,7 +1901,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.static_loads"
+      "module": "midas_nx.db.static_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/FBLD",
@@ -1232,7 +1922,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.static_loads"
+      "module": "midas_nx.db.static_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/FBLA",
@@ -1243,7 +1943,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.static_loads"
+      "module": "midas_nx.db.static_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/FMLD",
@@ -1254,7 +1964,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.static_loads"
+      "module": "midas_nx.db.static_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/POSP",
@@ -1265,7 +1985,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.static_loads"
+      "module": "midas_nx.db.static_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/EPST",
@@ -1276,7 +2006,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.static_loads"
+      "module": "midas_nx.db.static_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/EPSE",
@@ -1287,7 +2027,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.static_loads"
+      "module": "midas_nx.db.static_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/POSL",
@@ -1298,7 +2048,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.static_loads"
+      "module": "midas_nx.db.static_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SWIND",
@@ -1309,7 +2069,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.static_loads"
+      "module": "midas_nx.db.static_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SSEIS",
@@ -1320,7 +2090,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.static_loads"
+      "module": "midas_nx.db.static_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/ETMP",
@@ -1331,7 +2111,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.temperature_prestress"
+      "module": "midas_nx.db.temperature_prestress",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/GTMP",
@@ -1342,7 +2132,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.temperature_prestress"
+      "module": "midas_nx.db.temperature_prestress",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/BTMP",
@@ -1353,7 +2153,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.temperature_prestress"
+      "module": "midas_nx.db.temperature_prestress",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/STMP",
@@ -1364,7 +2174,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.temperature_prestress"
+      "module": "midas_nx.db.temperature_prestress",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/NTMP",
@@ -1375,7 +2195,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.temperature_prestress"
+      "module": "midas_nx.db.temperature_prestress",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/TDNT",
@@ -1386,7 +2216,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.temperature_prestress"
+      "module": "midas_nx.db.temperature_prestress",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/TDNA",
@@ -1397,7 +2237,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.temperature_prestress"
+      "module": "midas_nx.db.temperature_prestress",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/TDCS",
@@ -1408,7 +2258,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.temperature_prestress"
+      "module": "midas_nx.db.temperature_prestress",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/TDPL",
@@ -1419,7 +2279,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.temperature_prestress"
+      "module": "midas_nx.db.temperature_prestress",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/PRST",
@@ -1430,7 +2300,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.temperature_prestress"
+      "module": "midas_nx.db.temperature_prestress",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/PTNS",
@@ -1441,7 +2321,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.temperature_prestress"
+      "module": "midas_nx.db.temperature_prestress",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/EXLD",
@@ -1452,7 +2342,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.temperature_prestress"
+      "module": "midas_nx.db.temperature_prestress",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MVCD",
@@ -1743,7 +2643,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.dynamic_loads"
+      "module": "midas_nx.db.dynamic_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SPLC",
@@ -1754,7 +2664,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.dynamic_loads"
+      "module": "midas_nx.db.dynamic_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/THGC",
@@ -1798,7 +2718,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.dynamic_loads"
+      "module": "midas_nx.db.dynamic_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/THIS-M1",
@@ -1820,7 +2750,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.dynamic_loads"
+      "module": "midas_nx.db.dynamic_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/THGA",
@@ -1831,7 +2771,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.dynamic_loads"
+      "module": "midas_nx.db.dynamic_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/THNL",
@@ -1842,7 +2792,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.dynamic_loads"
+      "module": "midas_nx.db.dynamic_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/THSL",
@@ -1853,7 +2813,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.dynamic_loads"
+      "module": "midas_nx.db.dynamic_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/THMS",
@@ -1864,7 +2834,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.dynamic_loads"
+      "module": "midas_nx.db.dynamic_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/STAG",
@@ -1875,7 +2855,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.construction_stage"
+      "module": "midas_nx.db.construction_stage",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/CSCS",
@@ -1886,7 +2876,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.construction_stage"
+      "module": "midas_nx.db.construction_stage",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/TMLD",
@@ -1897,7 +2897,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.construction_stage"
+      "module": "midas_nx.db.construction_stage",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/STBK",
@@ -1908,7 +2918,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.construction_stage"
+      "module": "midas_nx.db.construction_stage",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/CMCS",
@@ -1930,7 +2950,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.construction_stage"
+      "module": "midas_nx.db.construction_stage",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/ETFC",
@@ -1941,7 +2971,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.construction_stage"
+      "module": "midas_nx.db.construction_stage",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/CCFC",
@@ -1952,7 +2992,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.construction_stage"
+      "module": "midas_nx.db.construction_stage",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/HECB",
@@ -1963,7 +3013,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.construction_stage"
+      "module": "midas_nx.db.construction_stage",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/HSPT",
@@ -1974,7 +3034,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.construction_stage"
+      "module": "midas_nx.db.construction_stage",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/HSFC",
@@ -1985,7 +3055,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.construction_stage"
+      "module": "midas_nx.db.construction_stage",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/HAHS",
@@ -1996,7 +3076,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.construction_stage"
+      "module": "midas_nx.db.construction_stage",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/HPCE",
@@ -2007,7 +3097,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.construction_stage"
+      "module": "midas_nx.db.construction_stage",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/HSTG",
@@ -2018,7 +3118,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.construction_stage"
+      "module": "midas_nx.db.construction_stage",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SMPT",
@@ -2029,7 +3139,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.misc_loads"
+      "module": "midas_nx.db.misc_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SMLC",
@@ -2040,7 +3160,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.misc_loads"
+      "module": "midas_nx.db.misc_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/PLCB",
@@ -2062,7 +3192,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.misc_loads"
+      "module": "midas_nx.db.misc_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/WVLD",
@@ -2084,7 +3224,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.misc_loads"
+      "module": "midas_nx.db.misc_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/IFGS",
@@ -2095,7 +3245,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.misc_loads"
+      "module": "midas_nx.db.misc_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/EFCT",
@@ -2106,7 +3266,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.misc_loads"
+      "module": "midas_nx.db.misc_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/INMF",
@@ -2117,7 +3287,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.misc_loads"
+      "module": "midas_nx.db.misc_loads",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/ACTL",
@@ -2128,7 +3308,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.analysis_control"
+      "module": "midas_nx.db.analysis_control",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/ACTL-M1",
@@ -2150,7 +3340,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.analysis_control"
+      "module": "midas_nx.db.analysis_control",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/BUCK",
@@ -2161,7 +3361,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.analysis_control"
+      "module": "midas_nx.db.analysis_control",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/EIGV",
@@ -2172,7 +3382,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.analysis_control"
+      "module": "midas_nx.db.analysis_control",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/EIGV-M1",
@@ -2194,7 +3414,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.analysis_control"
+      "module": "midas_nx.db.analysis_control",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/HHCT-M1",
@@ -2271,7 +3501,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.analysis_control"
+      "module": "midas_nx.db.analysis_control",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/NLCT",
@@ -2282,7 +3522,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.analysis_control"
+      "module": "midas_nx.db.analysis_control",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/NLCT-M1",
@@ -2304,7 +3554,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.analysis_control"
+      "module": "midas_nx.db.analysis_control",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/STCT-M1",
@@ -2326,7 +3586,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.analysis_control"
+      "module": "midas_nx.db.analysis_control",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/BCGD-M1",
@@ -2359,7 +3629,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.load_combinations"
+      "module": "midas_nx.db.load_combinations",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/LCOM-CONC",
@@ -2381,7 +3661,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.load_combinations"
+      "module": "midas_nx.db.load_combinations",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/LCOM-SRC",
@@ -2392,7 +3682,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.load_combinations"
+      "module": "midas_nx.db.load_combinations",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/LCOM-STLCOMP",
@@ -2414,7 +3714,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.load_combinations"
+      "module": "midas_nx.db.load_combinations",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/CUTL",
@@ -2425,7 +3735,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.load_combinations"
+      "module": "midas_nx.db.load_combinations",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/CLWP",
@@ -2436,7 +3756,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.load_combinations"
+      "module": "midas_nx.db.load_combinations",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/GSBG",
@@ -2487,7 +3817,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.pushover"
+      "module": "midas_nx.db.pushover",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/POGD-M1",
@@ -2509,7 +3849,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.pushover"
+      "module": "midas_nx.db.pushover",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/PHGE",
@@ -2520,7 +3870,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.pushover"
+      "module": "midas_nx.db.pushover",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/POLC",
@@ -2531,7 +3891,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.pushover"
+      "module": "midas_nx.db.pushover",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/POLC-M1",
@@ -2553,7 +3923,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.design"
+      "module": "midas_nx.db.design",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/DSTL",
@@ -2564,7 +3944,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.design"
+      "module": "midas_nx.db.design",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/RCHK",
@@ -2586,7 +3976,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.design"
+      "module": "midas_nx.db.design",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MEMB",
@@ -2597,7 +3997,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.design"
+      "module": "midas_nx.db.design",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/DCTL",
@@ -2608,7 +4018,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.design"
+      "module": "midas_nx.db.design",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/LTSR",
@@ -2619,7 +4039,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.design"
+      "module": "midas_nx.db.design",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/MBTP",
@@ -2630,7 +4060,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.design"
+      "module": "midas_nx.db.design",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/WMAK",
@@ -2641,7 +4081,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.design"
+      "module": "midas_nx.db.design",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/REBB",
@@ -2652,7 +4102,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.design"
+      "module": "midas_nx.db.design",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/REBC",
@@ -2674,7 +4134,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.design"
+      "module": "midas_nx.db.design",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/REBR",
@@ -2685,7 +4155,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.design"
+      "module": "midas_nx.db.design",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/ope/PROJECTSTATUS",
@@ -3125,7 +4605,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/DCTL",
@@ -3136,7 +4626,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/LLRF",
@@ -3147,7 +4647,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/LCTB",
@@ -3158,7 +4668,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/SRDF",
@@ -3169,7 +4689,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/SERV",
@@ -3180,7 +4710,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/EQCT",
@@ -3191,7 +4731,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/ULCT",
@@ -3202,7 +4752,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/SUEQ",
@@ -3213,7 +4773,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/CRCM",
@@ -3224,7 +4794,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/HCBM",
@@ -3235,7 +4815,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/LENG",
@@ -3246,7 +4836,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/KFAC",
@@ -3257,7 +4857,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/LTSR",
@@ -3268,7 +4878,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/CMFT",
@@ -3279,7 +4899,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/FMAG",
@@ -3290,7 +4920,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/CBFT",
@@ -3301,7 +4941,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/MBTP",
@@ -3312,7 +4962,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/SLRS",
@@ -3323,7 +4983,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/MLLR",
@@ -3334,7 +5004,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/MEMB",
@@ -3345,7 +5025,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/SMODI",
@@ -3356,7 +5046,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/CODE-ANAL",
@@ -3422,7 +5122,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.setup"
+      "module": "midas_nx.design.rc_kds.setup",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCTL",
@@ -3433,7 +5143,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.setup"
+      "module": "midas_nx.design.rc_kds.setup",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/LLRF",
@@ -3444,7 +5164,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.setup"
+      "module": "midas_nx.design.rc_kds.setup",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/LCTB",
@@ -3455,7 +5185,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.setup"
+      "module": "midas_nx.design.rc_kds.setup",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/SRDF",
@@ -3466,7 +5206,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.setup"
+      "module": "midas_nx.design.rc_kds.setup",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/EQCT",
@@ -3477,7 +5227,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.setup"
+      "module": "midas_nx.design.rc_kds.setup",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/ULCT",
@@ -3488,7 +5248,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.setup"
+      "module": "midas_nx.design.rc_kds.setup",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/SUEQ",
@@ -3499,7 +5269,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.setup"
+      "module": "midas_nx.design.rc_kds.setup",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/SDGN",
@@ -3510,7 +5290,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.setup"
+      "module": "midas_nx.design.rc_kds.setup",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/SCOL",
@@ -3521,7 +5311,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.setup"
+      "module": "midas_nx.design.rc_kds.setup",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/MBTP",
@@ -3532,7 +5332,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.setup"
+      "module": "midas_nx.design.rc_kds.setup",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/MEMB",
@@ -3543,7 +5353,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.setup"
+      "module": "midas_nx.design.rc_kds.setup",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/MATD",
@@ -3554,7 +5374,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.setup"
+      "module": "midas_nx.design.rc_kds.setup",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/LENG",
@@ -3565,7 +5395,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.setup"
+      "module": "midas_nx.design.rc_kds.setup",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/KFAC",
@@ -3576,7 +5416,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.setup"
+      "module": "midas_nx.design.rc_kds.setup",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/CMFT",
@@ -3587,7 +5437,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.setup"
+      "module": "midas_nx.design.rc_kds.setup",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/FMAG",
@@ -3598,7 +5458,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.setup"
+      "module": "midas_nx.design.rc_kds.setup",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/MLLR",
@@ -3609,7 +5479,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.setup"
+      "module": "midas_nx.design.rc_kds.setup",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/HCBM",
@@ -3620,7 +5500,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.setup"
+      "module": "midas_nx.design.rc_kds.setup",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/MRFT",
@@ -3631,7 +5521,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.rebar"
+      "module": "midas_nx.design.rc_kds.rebar",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/TRFT",
@@ -3642,7 +5542,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.rebar"
+      "module": "midas_nx.design.rc_kds.rebar",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/MCMB",
@@ -3653,7 +5563,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.rebar"
+      "module": "midas_nx.design.rc_kds.rebar",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/DFBA",
@@ -3664,7 +5584,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.rebar"
+      "module": "midas_nx.design.rc_kds.rebar",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/PMDM",
@@ -3675,7 +5605,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.rebar"
+      "module": "midas_nx.design.rc_kds.rebar",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/WMAK",
@@ -3686,7 +5626,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.rebar"
+      "module": "midas_nx.design.rc_kds.rebar",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/BEMW",
@@ -3697,7 +5647,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.rebar"
+      "module": "midas_nx.design.rc_kds.rebar",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/REXC",
@@ -3708,7 +5668,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.rebar"
+      "module": "midas_nx.design.rc_kds.rebar",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/LMRR",
@@ -3719,7 +5689,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.rebar"
+      "module": "midas_nx.design.rc_kds.rebar",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCRM-BEAM",
@@ -3730,7 +5710,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.rebar"
+      "module": "midas_nx.design.rc_kds.rebar",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCRM-COLUMN",
@@ -3741,7 +5731,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.rebar"
+      "module": "midas_nx.design.rc_kds.rebar",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCRM-BRACE",
@@ -3752,7 +5752,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.rebar"
+      "module": "midas_nx.design.rc_kds.rebar",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCRM-WALL",
@@ -3763,7 +5773,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.rebar"
+      "module": "midas_nx.design.rc_kds.rebar",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCRE",
@@ -3774,7 +5794,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.rebar"
+      "module": "midas_nx.design.rc_kds.rebar",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCREM",
@@ -3785,7 +5815,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.rebar"
+      "module": "midas_nx.design.rc_kds.rebar",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/REBB",
@@ -3796,7 +5836,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.rebar"
+      "module": "midas_nx.design.rc_kds.rebar",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/REBC",
@@ -3807,7 +5857,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.rebar"
+      "module": "midas_nx.design.rc_kds.rebar",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/REBW",
@@ -3818,7 +5878,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.rebar"
+      "module": "midas_nx.design.rc_kds.rebar",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/REBR",
@@ -3829,7 +5899,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.rebar"
+      "module": "midas_nx.design.rc_kds.rebar",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/BD-ANAL",
@@ -4192,7 +6272,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/DCTL",
@@ -4203,7 +6293,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/LLRF",
@@ -4214,7 +6314,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/LCTB",
@@ -4225,7 +6335,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/LENG",
@@ -4236,7 +6356,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/KFAC",
@@ -4247,7 +6377,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/LTSR",
@@ -4258,7 +6398,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/CMFT",
@@ -4269,7 +6419,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/FMAG",
@@ -4280,7 +6440,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/MLLR",
@@ -4291,7 +6461,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/SUEQ",
@@ -4302,7 +6482,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/MBTP",
@@ -4313,7 +6503,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/EQCT",
@@ -4324,7 +6524,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/BC-ANAL",
@@ -4434,7 +6644,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/MCRD",
@@ -4445,7 +6665,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/MEMB",
@@ -4456,7 +6686,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/MRBD",
@@ -4467,7 +6707,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-26",
+        "products": [
+          "gen"
+        ],
+        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+        }
+      }
     }
   ]
 }

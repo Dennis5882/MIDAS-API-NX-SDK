@@ -94,9 +94,15 @@ Two things that have already caused rework:
   body. Since v0.12.0 `MidasClient._send()` detects this and raises `MidasResultError`
   (opt out with `raise_on_result_error=False`) — don't add a second check per call site, and
   don't regress it: before v0.12.0 the client returned the error dict as a successful result.
-- **`/post/TABLE`'s top-level response key is unstable** across sessions (seen as both
-  `"Result Table"` and `"empty"`). Match on shape — find the dict carrying `HEAD`/`DATA` — not on
-  a key name. `post.base.unwrap_table()` does this; use it instead of indexing by `TABLE_NAME`.
+- **`/post/TABLE`'s top-level response key is unstable** (seen as `"Result Table"` and `"empty"`
+  as well as the `TABLE_NAME` you passed). Match on shape — find the dict carrying `HEAD`/`DATA` —
+  not on a key name. `post.base.unwrap_table()` does this; use it instead of indexing by
+  `TABLE_NAME`. Confirmed 2026-07-26: **`"empty"` is just the default key for a blank
+  `TABLE_NAME`**, and it can carry a full table — never read it as "no data".
+- **Verifying against a live session: `scripts/live_readonly_sweep.py` is the safe one.** It
+  issues GET only, so it can run against a model the user has open. `scripts/live_smoke.py` calls
+  `/doc/NEW` and **discards unsaved work** — never run it against someone's open document without
+  asking first.
 - **`*-ANAL` design-check calls** reproducibly hung Gen NX 2026 v2.1 (build 06/23/2026), then ran
   clean on that *same build*. Not a vendor fix; trigger unidentified. Use a short timeout and read
   the `*-TABLE` back regardless of whether the call returned. Full history in

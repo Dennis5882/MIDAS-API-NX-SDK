@@ -956,6 +956,90 @@ reproduce" as "fixed" is the mistake this file has already recorded once,
 and the first draft of this very section repeated it by assuming a newer
 build was responsible before the About dialog was actually checked.
 
+## 2026-07-26 — read-only sweep reproduced on a real model, same build
+
+Re-ran the whole GET surface with the new `scripts/live_readonly_sweep.py`
+(read-only; safe against an open document, unlike `live_smoke.py`) against a
+**real production model — 710 nodes, 1272 elements, 60 sections, with
+analysis results already present** — on **the same build as the 2026-07-22
+session** (Gen NX 2026 v2.1, build 06/23/2026).
+
+| | 2026-07-22 (blank model) | 2026-07-26 (710-node model) |
+|---|---|---|
+| GET-capable Gen resources swept | 253 | 253 |
+| Answered | 233 | 233 |
+| Failed (all 404) | 20 | 20 |
+
+**The failing 20 are the same 20 endpoints**, all `MidasNotFoundError` 404:
+the 13 Hyper-S `-M1` routes plus `CMCS`, `EWSF`, `PLCB`, `RCHK`, `SPAN`,
+`STRPSSM`, `WVLD`. Run twice in the same session, byte-identical both times.
+
+What this does and does not settle:
+
+- **Model state is eliminated as an explanation.** The two sessions differ in
+  everything about the document — empty vs. a real analyzed structure — and
+  the failure set did not move by one endpoint.
+- **License tier is not.** Same MIDASIT account, same license/edition, same
+  build. Per this file's own caveat below, that is not yet the "different
+  account" trigger, so **`PRODUCTS` was left unchanged** for the 7
+  Gen-fails/Civil-succeeds classes. This section is the second data point;
+  a third from a different account or license would be the one to act on.
+- Results recorded per endpoint in `docs/coverage.json` (`live_verified`),
+  taking the count from 10/390 to 235/390.
+
+### The `{"message": ""}` zero-row shape is the common case, not an edge case
+
+Of the 233 endpoints that answered, **176 returned `{"message": ""}` and only
+57 returned the keyed `{"<KEY>": {...}}` shape** — on a fully populated model.
+A zero-row table is the normal state for most endpoints because a given model
+uses a small fraction of the API surface. This matters more than it looks:
+`DbResource.items()` assumed the keyed shape and raised `AttributeError` on
+the string value, so before v0.12.0 that helper failed on roughly three
+quarters of the endpoints it was supposed to serve. Fixed in v0.12.0.
+
+### `/post/TABLE`'s unstable top-level key, explained
+
+Earlier sessions recorded the response key varying between `TABLE_NAME`,
+`"Result Table"`, and `"empty"` with no known trigger. It is simply the
+default: **omit or blank `TABLE_NAME` and the server keys the response
+`"empty"`; pass a name and you get that name back.** Same call, same 78 rows
+of real data, both ways:
+
+```text
+get_story_drift_table(STORY_DRIFT_X)                     -> keys=['empty'] rows=78
+get_story_drift_table(STORY_DRIFT_X, table_name="Drift") -> keys=['Drift'] rows=78
+```
+
+`"empty"` is *not* an error marker — it carried a full table here. Matching on
+shape (`post.base.unwrap_table()`, v0.12.0) remains the right approach, since
+this doesn't explain the `"Result Table"` sighting, but "empty means no data"
+is a wrong inference to guard against.
+
+### HTTP 200 with an error body — reproduced deliberately
+
+Sending an unknown `TABLE_TYPE` returns **HTTP 200** with:
+
+```json
+{"error": {"message": "MIDAS GEN NX there was an error creating utbl. (ex PostMode ...)"}}
+```
+
+This is the failure mode the client silently returned as a result until
+v0.12.0; it now raises `MidasResultError`. Confirmed against the live server,
+not just reasoned from the docs.
+
+### Two practitioner traps found while probing
+
+- **An invalid load-case name is not an error.** `get_reaction_table(
+  load_case_names=["NoSuchCase(ST)"])` returned `{"message": ...}` with zero
+  rows — after **23 seconds**. Nothing distinguishes "wrong case name" from
+  "genuinely no results" in the response, so validate case names against
+  `/db/STLD` before trusting an empty table.
+- **Unfiltered result tables can exceed a sane timeout.** The beam-force
+  table for all 1272 elements timed out at 30s; the same table filtered to a
+  single load case returned 6350 rows in **2.2s**. The displacement table came
+  back at 4.1 MB / 39760 rows. Pass `load_case_names` rather than raising the
+  timeout.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

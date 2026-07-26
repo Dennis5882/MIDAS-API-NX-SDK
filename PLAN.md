@@ -175,7 +175,7 @@ they're the ones worth re-checking before planning a release):
 | Scaffolding | `scripts/gen_endpoint.py` | ✅ in the documented add-an-endpoint loop |
 | Response handling | 200-with-`error` body, non-JSON body, empty-table shapes | ✅ hardened in v0.12.0 |
 | Version metadata | `__init__.py` `__version__` (hatchling `dynamic`) + `tests/test_version.py` | ✅ single source |
-| Live verification | `scripts/live_smoke.py`, `live_verified` in `coverage.json` | ⚠️ 10/390 recorded |
+| Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 235/390 recorded |
 | Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md` | ⚠️ text-only, no screenshots |
 | Practitioner layer | Excel round-trip, `recipes`/`easy`, opt-in validation | ❌ not started |
 
@@ -357,15 +357,16 @@ it actually is.
 
 **Remaining (⏳ — this is what v0.13.0 is for; v0.12.0 was cut for the
 client-correctness fixes above instead):**
-- **A1 remainder — widen live coverage from 10 to the core paths.**
-  `live_verified` currently marks **10 of 390** implemented endpoints: only
-  what `live_smoke.py`'s cantilever round trip touches. The broader evidence
-  already exists in `docs/live_verification_notes.md` — a read-only sweep of
-  546 GET-capable, product-compatible classes (Gen 233/253 OK, Civil 273/293
-  OK) — but it was a scripted one-off whose per-endpoint results were never
-  written back into `coverage.json`. Turn that sweep into a committed script
-  and record its results per endpoint. (The old "526 endpoints" figure in this
-  plan was wrong in both directions; 546 tested / 506 OK are the real numbers.)
+- **A1 — mostly done 2026-07-26; the Civil half is what's left.**
+  `scripts/live_readonly_sweep.py` is now committed (GET-only, safe against an
+  open model) and its results are recorded per endpoint, taking `live_verified`
+  from **10/390 to 235/390**. The Gen sweep reproduced the 2026-07-22 numbers
+  exactly — 253 swept, 233 OK, the same 20 404s — on a real 710-node analyzed
+  model rather than a blank one, which removes model state as an explanation
+  for those 20. **Remaining: run the same sweep against Civil NX** (293
+  expected) and record it; the version matrix then has both halves. Note the
+  old "526 endpoints" figure in this plan was wrong in both directions — 546
+  tested / 506 OK across both products are the real numbers.
 - **C1 remainder — a screenshot-driven, zero-python-experience walkthrough.**
   The three quickstarts are text-only (129/147/89 lines, 0 images). The missing
   piece is the NX-side half: where the MAPI key lives, what "API connected"
@@ -453,7 +454,7 @@ Gates (a) and (b) are what's genuinely open; the D1 half of (c) is running.
 | v0.11.1 ✅ | Manual-sync fix — `DCRM-WALL` breaking schema change, Wall Force table, story-table `ADDITIONAL` params | published |
 | v0.11.2 ✅ | `STORY_DRIFT_METHOD` enum + direction-key spelling correction; `*-ANAL` re-verification writeup; README framing cleanup | published |
 | v0.12.0 ✅ | Client correctness — `MidasResultError` for 200-with-`error` bodies, non-JSON responses kept inside the exception hierarchy, `items()` empty-shape fix, `post.base.unwrap_table()`, `__version__` single-sourced | published |
-| v0.13.0 | Phase 6 remainder — widen `live_verified` past the 10 smoke-test endpoints (A1), per-endpoint NX version matrix (D4), screenshot-driven beginner walkthrough (C1 pt. 2) | live-verified rate in ROADMAP.md materially up; a non-developer can get to a first result from the docs alone |
+| v0.13.0 | Phase 6 remainder — Civil half of the live sweep (A1; the Gen half and D4's matrix landed 2026-07-26 at 235/390), screenshot-driven beginner walkthrough (C1 pt. 2) | both products swept and recorded; a non-developer can get to a first result from the docs alone |
 | v0.14.0 | Phase 7 — Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
 | v0.15.0+ | Phase 8 — `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
 | v1.0.0 | Public API freeze: Hyper-S `-M1` stub decision + core paths live-verified | full documented surface covered, live-verified, change-detection pipeline live |
