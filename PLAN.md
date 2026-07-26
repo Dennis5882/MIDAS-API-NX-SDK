@@ -5,8 +5,14 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-07-26, at v0.11.2 (390/398 documented endpoints; 10/390
-> live-verified per `docs/coverage.json`). Phase 5c completed the endpoint
+> Last updated: 2026-07-26, at v0.12.0 (390/398 documented endpoints; 10/390
+> live-verified per `docs/coverage.json`). v0.12.0 is a client-correctness
+> release, cut out of order from a review of `src/midas_nx/` itself rather
+> than from the phase plan: a 200 carrying an `{"error": ...}` body was being
+> returned as success, a non-JSON response escaped the exception hierarchy as
+> a raw `JSONDecodeError`, `DbResource.items()` crashed on the
+> `{"message": ""}` empty shape, and `midas_nx.__version__` had been stuck at
+> `0.10.0` for two releases. Phase 5c completed the endpoint
 > sweep at v0.10.0 (SRC design code AIK-SRC2K); **Phase 6's tooling axis then
 > landed almost entirely in v0.11.0** — push/PR CI, the weekly manual-drift
 > job, the `live_verified` field + `scripts/live_smoke.py`, `DbResource.items()`,
@@ -157,16 +163,18 @@ mirroring the `db/*.py` payload-typing style but at the whole-body level.
 > cross-cutting backlog. Every endpoint with an actual JSON Schema across
 > all 27 chapters is now implemented.
 
-Non-endpoint status as of v0.11.2 (these are the axes Phases 6-8 move, and
+Non-endpoint status as of v0.12.0 (these are the axes Phases 6-8 move, and
 they're the ones worth re-checking before planning a release):
 
 | Axis | Artifact | State |
 |---|---|---|
-| Tests | 602 tests, `responses`-mocked | ✅ green |
+| Tests | 617 tests, `responses`-mocked | ✅ green |
 | CI | `.github/workflows/ci.yml` — pytest + ruff on py3.9/3.13, push+PR | ✅ running |
 | Manual drift | `manual-drift-check.yml` (`cron: 0 3 * * 3`) + `scripts/check_manual_drift.py` | ✅ running |
 | Schema drift (live) | `scripts/check_drift.py` (`/info/db/...` vs TypedDict) | ✅ local dev tool |
 | Scaffolding | `scripts/gen_endpoint.py` | ✅ in the documented add-an-endpoint loop |
+| Response handling | 200-with-`error` body, non-JSON body, empty-table shapes | ✅ hardened in v0.12.0 |
+| Version metadata | `__init__.py` `__version__` (hatchling `dynamic`) + `tests/test_version.py` | ✅ single source |
 | Live verification | `scripts/live_smoke.py`, `live_verified` in `coverage.json` | ⚠️ 10/390 recorded |
 | Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md` | ⚠️ text-only, no screenshots |
 | Practitioner layer | Excel round-trip, `recipes`/`easy`, opt-in validation | ❌ not started |
@@ -288,6 +296,27 @@ measuring source density: ch26 alone is 13,363 manual lines / 69 endpoints,
   accordingly (same build, not a vendor fix — trigger still unidentified),
   and dropped the official/unofficial framing and trademark line from the
   README.
+- **v0.12.0 ✅ — Client correctness** (out-of-band, from a review of
+  `src/midas_nx/` rather than of the phase plan — the first release driven by
+  auditing the SDK's own behaviour instead of the manual):
+  - HTTP 200 carrying an `{"error": {...}}` body now raises `MidasResultError`
+    instead of being returned as a successful result. This is the repo's own
+    top documented live-server gotcha; it was described in three docstrings
+    and handled in none. Opt out with `raise_on_result_error=False`.
+  - A non-JSON response (proxy/SSL-inspection appliance answering in the
+    product's place) raised a raw `JSONDecodeError` straight past
+    `except MidasAPIError`; it now maps into the hierarchy, keeping the
+    status-based class so a 401 login page still carries the MAPI-Key hint.
+  - `DbResource.items()` raised `AttributeError` on the `{"message": ""}`
+    zero-row shape recorded in `live_verification_notes.md`; it now returns
+    `{}` and picks the table by value type rather than by position.
+  - `post.base.unwrap_table()` — the `/post/TABLE` counterpart to
+    `DbResource.items()`, finding the `HEAD`/`DATA` dict by shape. The
+    unstable top-level key was documented as a hazard with no helper to
+    handle it, and `get_table()`'s own docstring contradicted the finding.
+  - `__version__` is now the single source (`dynamic = ["version"]`), with
+    `tests/test_version.py` guarding it. It had reported `0.10.0` since
+    v0.11.0 because the release step edited only `pyproject.toml`.
 
 ### Phase 6 ✅ (mostly) — Trust & maintenance foundation  ·  v0.11.0-v0.11.2
 Endpoint coverage (Phases 1-5) is done; before layering practitioner features
@@ -326,7 +355,8 @@ it actually is.
 - **B3 ✅ (moved up from Phase 7) — GET response unwrap.**
   `DbResource.items()` in `db/base.py`, available on every subclass.
 
-**Remaining (⏳ — this is what v0.12.0 is for):**
+**Remaining (⏳ — this is what v0.13.0 is for; v0.12.0 was cut for the
+client-correctness fixes above instead):**
 - **A1 remainder — widen live coverage from 10 to the core paths.**
   `live_verified` currently marks **10 of 390** implemented endpoints: only
   what `live_smoke.py`'s cantilever round trip touches. The broader evidence
@@ -353,7 +383,7 @@ it actually is.
 > forbids reintroducing official/unofficial positioning or the comparison.
 > There is no claim left to substantiate — don't rebuild the table.
 
-### Phase 7 — Practitioner efficiency  ·  v0.13.0
+### Phase 7 — Practitioner efficiency  ·  v0.14.0
 - **B2 — Excel round-trip**, `midas-nx[excel]` extra (keep pandas/openpyxl out
   of the core dependency — `requests`-only import stays a hard invariant).
   `from_excel`/`to_excel` for node/element/load tables and result reports;
@@ -367,7 +397,7 @@ it actually is.
 
 > B3 shipped early, in v0.11.0 — see Phase 6.
 
-### Phase 8 — High-level workflow layer  ·  v0.14.0+
+### Phase 8 — High-level workflow layer  ·  v0.15.0+
 Deliberately last: picking the wrong recipe scenarios is the most expensive
 mistake in this axis, so it waits on user feedback from Phases 6-7's examples
 and README traffic, not just code readiness.
@@ -422,9 +452,10 @@ Gates (a) and (b) are what's genuinely open; the D1 half of (c) is running.
 | v0.11.0 ✅ | Phase 6 tooling — CI (`ci.yml`), weekly manual-drift job (D1), drift/scaffolding/smoke scripts (D2/D3/A1), `DbResource.items()` (B3), error hints (C2), ko/en/zh-tw guides (C1 pt. 1) | published |
 | v0.11.1 ✅ | Manual-sync fix — `DCRM-WALL` breaking schema change, Wall Force table, story-table `ADDITIONAL` params | published |
 | v0.11.2 ✅ | `STORY_DRIFT_METHOD` enum + direction-key spelling correction; `*-ANAL` re-verification writeup; README framing cleanup | published |
-| v0.12.0 | Phase 6 remainder — widen `live_verified` past the 10 smoke-test endpoints (A1), per-endpoint NX version matrix (D4), screenshot-driven beginner walkthrough (C1 pt. 2) | live-verified rate in ROADMAP.md materially up; a non-developer can get to a first result from the docs alone |
-| v0.13.0 | Phase 7 — Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
-| v0.14.0+ | Phase 8 — `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
+| v0.12.0 ✅ | Client correctness — `MidasResultError` for 200-with-`error` bodies, non-JSON responses kept inside the exception hierarchy, `items()` empty-shape fix, `post.base.unwrap_table()`, `__version__` single-sourced | published |
+| v0.13.0 | Phase 6 remainder — widen `live_verified` past the 10 smoke-test endpoints (A1), per-endpoint NX version matrix (D4), screenshot-driven beginner walkthrough (C1 pt. 2) | live-verified rate in ROADMAP.md materially up; a non-developer can get to a first result from the docs alone |
+| v0.14.0 | Phase 7 — Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
+| v0.15.0+ | Phase 8 — `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
 | v1.0.0 | Public API freeze: Hyper-S `-M1` stub decision + core paths live-verified | full documented surface covered, live-verified, change-detection pipeline live |
 
 Each version ships when its phase's chapters are 100% (minus undocumented
@@ -435,8 +466,11 @@ GitHub Release → `publish.yml` auto-uploads to PyPI.
 > chapter/endpoint-coverage-driven and ended at v0.10.0. Phase 6-8 (this
 > section) reflect a 2026-07-21 roadmap review's four-axis reprioritization
 > (reliability, practitioner efficiency, non-developer accessibility,
-> maintenance architecture) — version numbers from v0.12.0 on are provisional
-> until each release's actual scope is locked at cut time.
+> maintenance architecture) — version numbers from v0.13.0 on are provisional
+> until each release's actual scope is locked at cut time. v0.12.0 is the
+> mechanism working as intended: an out-of-band correctness release took the
+> number, and the phase work shifted down rather than the release being
+> forced into the plan's shape.
 >
 > Version-bump note: a release is warranted only when `src/midas_nx/` behaviour
 > or packaged metadata changed. `scripts/`, `docs/`, `.github/` and this file
