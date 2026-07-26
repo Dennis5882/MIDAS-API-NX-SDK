@@ -59,6 +59,21 @@ def new_project(client: Optional[MidasClient] = None) -> dict:
     document opened from disk and then did not prompt on any of the several
     scratch documents ``/doc/NEW`` had itself created. Assume it may prompt:
     don't run this unattended against a session you can't see.
+
+    🛑 **This call has crashed Gen NX outright.** On 2026-07-26, one
+    ``/doc/NEW`` against Gen NX 2026 (v2.1, build 06/23/2026) holding a real
+    710-node analyzed model produced the *"Failed to disconnect the work
+    session"* license dialog and killed the application; the API answered
+    ``404 Client Disconnected``. The license stays checked out until the
+    process is terminated properly, which affects other machines. The same
+    call ran a dozen times that day against small scratch documents with no
+    incident, so the open document's size or state looks like the factor —
+    one occurrence, so that is a hypothesis, not a cause.
+
+    Point this at a session whose contents you are willing to lose *and*
+    whose process you are willing to restart. ``docs/live_verification_notes.md``
+    has the full history, including the same crash signature under two other
+    triggers.
     """
     return _post("/doc/NEW", {}, client)
 

@@ -123,6 +123,12 @@ Two things that have already caused rework:
   `docs/live_verification_notes.md`.
 - Any call that can raise a **confirmation dialog** blocks the whole API session, not just that
   call, until a human dismisses it.
+- **`/doc/NEW` has crashed Gen NX** when the open document was a large real model (2026-07-26,
+  v2.1 build 06/23/2026) — the "Failed to disconnect the work session" license dialog, which
+  always kills the app and holds the license until the process is restarted properly. Harmless
+  a dozen times over against small scratch documents the same day. Never point `scripts/live_smoke.py`
+  or `scripts/live_crud_check.py` at a session holding a model that matters; get the user to
+  press New Project first and confirm the document is empty.
 
 ## Releasing
 

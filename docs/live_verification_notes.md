@@ -1201,12 +1201,64 @@ and the key is valid — it does not tell you the app can currently answer.
 - **`create()` is not an upsert.** Re-posting an existing key returns `201`
   with `{"error": ...}` "Key Already Exist".
 
-Round-trip results, 10 resources: `/db/GRUP`, `/db/BNGR`, `/db/LDGR`,
-`/db/NODE`, `/db/SKEW`, `/db/STLD`, `/db/CNLD`, `/db/BMLD`, `/db/CONS`,
-`/db/MVCD` — all pass create/read/update/delete once the payloads above are
-right. The four that failed on the first run were all bad test fixtures
-(deleted prerequisites, a 6-character constraint), not SDK defects; that is
-worth stating plainly, because a checker that cries wolf gets ignored.
+Round-trip results: **Civil 10/10, Gen 9/9** (`/db/MVCD` is Civil-only and
+correctly skipped there) across `/db/GRUP`, `/db/BNGR`, `/db/LDGR`,
+`/db/NODE`, `/db/SKEW`, `/db/STLD`, `/db/CNLD`, `/db/BMLD`, `/db/CONS` and
+`/db/MVCD` — all create/read/update/delete once the payloads above are right.
+The four that failed on the first run were all bad test fixtures (deleted
+prerequisites, a 6-character constraint), not SDK defects; that is worth
+stating plainly, because a checker that cries wolf gets ignored.
+
+The Gen run doubles as confirmation that the per-id delete fix works there
+too, without needing a separate assertion: the `/db/CNLD`, `/db/BMLD` and
+`/db/CONS` cases attach to seeded node 1, element 1 and node 2, and they run
+*after* the `/db/NODE` case deletes node 101. Under the old whole-table
+delete, that one call would have taken the seed with it and all three would
+have failed — which is exactly how the bug was found on Civil.
+
+## 2026-07-26 — the `doc/new` crash trigger is NOT resolved on v2.1
+
+A single `/doc/NEW` against **Gen NX 2026 (v2.1), build 06/23/2026** with a
+real 710-node / 1272-element analyzed model open produced the license
+work-session crash dialog and killed the application:
+
+> `[Error] Failed to disconnect the work session due to an unidentified error.`
+> `Since you have not logged out, other PCs may have limited access to the`
+> `license. In order to properly terminate the program, try to re-execute the`
+> `program, press 'New Project' and then close the program.`
+
+The API side reported it correctly and immediately: `POST /doc/NEW -> 404:
+Client Disconnected`, surfaced as `MidasNotFoundError`. No hang, no timeout —
+the SDK's only involvement was issuing one documented call.
+
+**This reopens a trigger this file had closed.** The section "This exact crash
+signature has a prior precedent" records that the `doc/new` trigger was
+retested against v2.1, found no longer reproducible, and closed out as
+"limited to a previous build or a specific sequence". That conclusion is now
+wrong twice over: it was already questioned by the `*-ANAL` reproductions, and
+here the original `doc/new` trigger itself reproduces on the current build.
+
+Two things are different from the earlier `doc/new` reproductions, and both
+make this worse, not better:
+
+- **It was one call, not a burst.** The earlier round needed back-to-back x10
+  or concurrent x5/x15 to trigger it. This was a single request.
+- **The document mattered.** `/doc/NEW` had been called perhaps a dozen times
+  earlier the same day against small scratch documents on Civil NX with no
+  incident. The one that crashed was the first against a large, analyzed,
+  loaded-from-disk model.
+
+That points at document teardown of a real model, not at call frequency. It is
+one occurrence, so treat the size/state correlation as a hypothesis worth
+testing deliberately rather than an established cause — but the "resolved"
+label on the `doc/new` trigger should not be restored without a reproduction
+attempt on a comparable model.
+
+**Practical consequence, unchanged from the earlier findings:** once this
+dialog appears the program always dies, and the license stays checked out
+until the process is properly terminated — which per the dialog means
+re-running the program, pressing New Project, and closing it cleanly. Do not
+point `/doc/NEW` at a session holding a model that matters.
 
 ## Caveat — read before acting on this file
 
