@@ -109,7 +109,11 @@ Version bumps are warranted **only when `src/midas_nx/` behaviour or packaged me
 each time rather than assuming.
 
 1. Commit the code changes.
-2. Separate commit: `chore: bump version to vX.Y.Z` editing only `pyproject.toml`.
+2. Separate commit: `chore: bump version to vX.Y.Z` editing only `src/midas_nx/__init__.py`'s
+   `__version__`. That is the **single source** — `pyproject.toml` declares `dynamic = ["version"]`
+   and hatchling reads it from there. (Until v0.11.2 the bump edited `pyproject.toml` instead, which
+   left `midas_nx.__version__` reporting `0.10.0` on a `0.11.2` install; `tests/test_version.py`
+   now fails if the two drift apart.)
 3. `git push origin main`.
 4. **The author publishes the GitHub Release manually via the web UI** (tag `vX.Y.Z`) — `gh` CLI is
    not installed here and no `GITHUB_TOKEN`/`GH_TOKEN` is set, so don't attempt it. Draft the release

@@ -4,7 +4,10 @@ build-backend = "hatchling.build"
 
 [project]
 name = "midas-nx"
-version = "0.11.2"
+# Read from src/midas_nx/__init__.py's __version__ (see [tool.hatch.version]),
+# so the installed distribution and midas_nx.__version__ can't drift apart —
+# they did between v0.10.0 and v0.11.2, when only this file was being bumped.
+dynamic = ["version"]
 description = "Unified Python SDK for the MIDAS NX Open API (Civil NX + Gen NX)"
 readme = "README.md"
 license = "MIT"
@@ -51,6 +54,9 @@ Documentation = "https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/ROADMA
 "Bug Tracker" = "https://github.com/Dennis5882/MIDAS-API-NX-SDK/issues"
 Changelog = "https://github.com/Dennis5882/MIDAS-API-NX-SDK/releases"
 Manual = "https://github.com/Dennis5882/MIDAS-API"
+
+[tool.hatch.version]
+path = "src/midas_nx/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/midas_nx"]
