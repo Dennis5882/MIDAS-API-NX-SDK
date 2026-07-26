@@ -1835,6 +1835,67 @@ the endpoint works, its documented code names don't. What is worth reporting as
 a product-side issue is the error text — `"Wrong Field"` for an unrecognised
 *value* sends the reader to inspect field names, which is what happened here.
 
+## 2026-07-26 (later still) — v2.2 re-check of the v2.1-only findings
+
+Three findings had only ever been seen on v2.1 (build 06/05/2026) and were
+about to be sent to MIDASIT on that basis. Re-run on v2.2 (build 06/18/2026)
+before sending. Two hold, one does not.
+
+| Finding | v2.1 | v2.2 |
+| --- | --- | --- |
+| `/db/CONS` silently truncates an 8-character `CONSTRAINT` to 7 | reproduces | **reproduces** |
+| `DELETE {endpoint}` + ID-keyed `"Assign"` empties the whole table | reproduces | **reproduces** |
+| `/db/MVHL` no-ops on an empty `VEH_DEFAULT: {}` | reproduces | **does not reproduce** |
+
+### `/db/CONS` — and the response lies too
+
+The truncation is unchanged, and re-checking it turned up something the
+original write-up missed: **the POST response echoes the 8-character string
+back**, while the stored record holds 7.
+
+```text
+POST /db/CONS {"Assign": {"3": {"ITEMS": [{"ID": 1, "CONSTRAINT": "11111111"}]}}}
+  response -> {"CONS": {"3": {"ITEMS": [{"ID": 1, "CONSTRAINT": "11111111"}]}}}   8 chars
+  GET      -> {"3": {"ITEMS": [{"ID": 1, "GROUP_NAME": "", "CONSTRAINT": "1111111"}]}}   7
+```
+
+So the immediate response cannot be used to detect it either — a separate GET
+is the only signal. Six characters is still rejected outright, so the asymmetry
+is the real complaint: too short errors, too long is silently cut.
+
+### `DELETE` — measured on v2.2, and it is as bad as recorded
+
+```text
+before  NODE 10, ELEM 4
+        DELETE /db/NODE {"Assign": {"21": null}}     one node named
+after   NODE 0,  ELEM 0                              the model is gone
+
+before  STLD ['1', '2']
+        DELETE /db/STLD {"Assign": {"1": {}}}        one load case named
+after   STLD []
+
+        DELETE /db/NODE/502                          the per-id form
+        -> {"NODE": {"502": {...}}}, 501 and 503 untouched
+```
+
+One detail worth having: the response body returns **every** record it deleted,
+so the response does reveal the over-deletion — after the fact. `delete()`
+already uses the per-id URL, so nothing changes in the SDK.
+
+### `/db/MVHL`'s empty `VEH_DEFAULT` — fixed, so it comes out of the report
+
+On v2.2 the record saves and `VEH_DEFAULT` comes back populated with
+`{"DYN_LOAD_ALLOWANCE": 0, "CENT_F": false}` — the product now fills the
+defaults instead of discarding the write. Removed from the vendor report's
+silent-write-failure list, since sending a claim that does not reproduce on the
+current build costs credibility for the ones that do; kept in the report's
+appendix as a note that it appears resolved, and the `VehicleDefaultParams`
+docstring now scopes the warning to v2.1.
+
+This is the argument for re-checking before reporting rather than after: the
+same sweep that confirmed two findings retired a third and sharpened one of
+the two.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

@@ -302,13 +302,18 @@ class TrafficSurfaceLanesOptimization(DbResource):
 class VehicleDefaultParams(TypedDict, total=False):
     """docs/manual/08_DB_Moving_Loads.md #10 — /db/MVHL "VEH_DEFAULT" table.
 
-    ⚠️ Live-tested: sending this as an empty ``{}`` (every field here is
-    individually documented as optional) made ``Vehicles.create`` silently
-    no-op — response ``{"message": ""}``, and a subsequent ``GET`` showed
-    nothing had actually been saved, no error raised. Populating at least
-    ``DYN_LOAD_ALLOWANCE``/``CENT_F`` (matching the manual's own worked
-    example for your ``STANDARD_CODE``) made the same call succeed
-    immediately. See docs/live_verification_notes.md.
+    ⚠️ On Civil NX 2026 **v2.1**, sending this as an empty ``{}`` (every field
+    here is individually documented as optional) made ``Vehicles.create``
+    silently no-op — response ``{"message": ""}``, and a subsequent ``GET``
+    showed nothing had actually been saved, no error raised. Populating at
+    least ``DYN_LOAD_ALLOWANCE``/``CENT_F`` (matching the manual's own worked
+    example for your ``STANDARD_CODE``) made the same call succeed.
+
+    **This did not reproduce on v2.2 (build 06/18/2026)**, re-checked
+    2026-07-26: an empty ``VEH_DEFAULT`` saves correctly and comes back
+    populated with ``{"DYN_LOAD_ALLOWANCE": 0, "CENT_F": false}``. Looks fixed.
+    Populating it explicitly is still the safer habit if you support v2.1.
+    See docs/live_verification_notes.md.
     """
 
     UNIFORM_LOAD: float  # Uniform Load, optional

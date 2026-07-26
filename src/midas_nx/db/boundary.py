@@ -10,11 +10,16 @@ class ConstraintItem(ItemGroupFields, total=False):
     """One entry of the /db/CONS "ITEMS" array.
 
     The 7-character length is enforced, and the two failure modes differ.
-    Verified live 2026-07-26 (Civil NX 2026 v2.1): 6 characters is rejected
-    with "[Error] Constraint Condition has(have) been incorrectly entered.",
-    while 8 characters is *accepted and silently truncated* to the first 7.
-    So a too-long string gives you a support you never asked for, with no
-    error to notice.
+    Verified live 2026-07-26 on Civil NX 2026 **v2.1 and v2.2 alike**:
+    6 characters is rejected with "[Error] Constraint Condition has(have) been
+    incorrectly entered.", while 8 characters is *accepted and silently
+    truncated* to the first 7. So a too-long string gives you a support you
+    never asked for, with no error to notice.
+
+    Worse than it first looked: the POST **response echoes the 8-character
+    string back** while the stored record holds 7, so the immediate response
+    cannot be used to detect it either. Only a follow-up GET shows the
+    truncation. Check the length yourself before sending.
     """
 
     CONSTRAINT: str  # [DX,DY,DZ,RX,RY,RZ,RW] 7-char string, "1"=fixed "0"=free, required
