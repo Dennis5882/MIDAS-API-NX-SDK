@@ -1567,6 +1567,11 @@ are not confirmed each have a recorded reason, and none of them is an SDK
 defect: `/db/NMAS` crashes the product, `/db/TDMT` refuses every payload
 server-side, and `/db/TMAT` cannot be reached without `/db/TDMT`.
 
+> Superseded later the same day, and the numbers below are the v2.1 state, not
+> the current one. `/db/TDMT` was **not** refusing anything server-side — the
+> `CODE` value was wrong; it and `/db/TMAT` both round-trip, taking this to
+> **42/43** on v2.2. See the two later sections.
+
 Newly proven round trips (create → read → update → read → delete → read):
 
 | Tier | Endpoints |
@@ -1683,24 +1688,23 @@ The two error strings are diagnostic and worth knowing:
 - `"[Error] Time Dependent Material(Comp. Strength) input data contain errors."`
   — the name *was* recognised; the code's own conditional fields are missing.
 
-### 🛑 Open: `/db/TDMT` rejects every payload, including a single field
+### ⚠️ `/db/TDMT` looked server-side broken and was not — see the correction below
 
-Unresolved, and recorded so the next session doesn't re-derive it. `/db/TDMT`
-answers `201` + `{"error": {"message": "Wrong Field"}}` to:
+Recorded as written at the time, because the reasoning error is the useful
+part. `/db/TDMT` answered `201` + `{"error": {"message": "Wrong Field"}}` to
+the manual's worked example, to every code name `/db/TDME` accepts, to each
+documented field removed in turn, and to a bare `{"NAME": "C"}`; `PUT`
+behaved the same; `/info/db/TDMT` listed every field being sent; and an
+`{"Argument": ...}` body was refused with a *different*, correct error. From
+that this file concluded "looks server-side".
 
-- the manual's worked example verbatim
-- every code name `/db/TDME` accepts
-- each documented field removed in turn
-- `TYPE: "CODE"` added
-- a bare `{"NAME": "C"}`
-- `PUT` as well as `POST`, and keys other than `1`
-
-Meanwhile `/info/db/TDMT` lists every field being sent, and an
-`{"Argument": ...}` body is refused with a *different* and correct error
-("It must have Assign object in the format of json"). So the wrapper is right,
-the field names are right, and the endpoint refuses anyway. `GET` returns the
-normal empty `{"message": ""}`. Looks server-side. `/db/TMAT` cannot be tested
-until it is resolved, since `/db/TMAT` links a `/db/TDMT` record by name.
+That conclusion was wrong. Nothing about it was server-side — the `CODE` value
+was simply not one this endpoint accepts, and "Wrong Field" is what it says
+when it cannot resolve `CODE`. Resolved further down: **"Wrong Field" from
+these endpoints means the code name is unknown, not that a field name is
+wrong**, and the message being about "Field" is actively misleading. The
+lesson worth keeping: an exhaustive-looking elimination sweep over the fields
+proves nothing when the bad value is in a field you never varied.
 
 ### Fixture design rules, and why they earned their keep
 
@@ -1726,6 +1730,110 @@ a fixture defect, a documented-value defect, or a product defect — and none to
 an SDK behaviour defect. The one SDK defect found was a wrong docstring
 (`/db/SECF`), which no amount of round-tripping would have caught if the case
 had been keyed correctly by accident.
+
+## 2026-07-26 (later still) — Civil NX v2.2: nothing changed
+
+The user upgraded to **MIDAS Civil NX 2026 (v2.2), build 06/18/2026** — a
+version bump, not a reinstall of the crashing build — and the whole checker
+was re-run against it.
+
+### The 40 confirmed round trips are unchanged
+
+`live_crud_check.py --product civil` gave a byte-identical verdict on v2.2:
+**40/43**, zero regressions, the same three exceptions. That is worth having
+on its own — it is the first evidence in this project that the SDK's write
+shapes survive a Civil NX version change, and the endpoints in
+`docs/coverage.json` now cite v2.2 as their verified version. (The same 40
+passed on v2.1 build 06/05/2026 earlier the same day; the `nx_versions` field
+holds one build per product, so it names the newer one.)
+
+### 🛑 `/db/NMAS` reproduction #5 — the upgrade did not fix it
+
+Same protocol as reproduction #4, deliberately: no `/doc/NEW` anywhere in the
+run, control writes immediately before, node ids 9001+ so the open document is
+untouched.
+
+```text
+[  0.6s] OK    POST /db/NODE 9001-9005 (fixture)      (0.11s)
+[  0.7s] OK    CONTROL POST /db/SKEW 9001             (0.11s)
+[  0.8s] OK    CONTROL POST /db/CONS 9002             (0.11s)
+[  0.9s] OK    CONTROL GET  /db/NODE  (t-0)           (0.08s)
+[ 15.9s] FAIL  POST /db/NMAS 9001                     (15.01s)  read timeout
+[ 31.4s] FAIL  GET  /db/NODE                          (15.47s)  read timeout
+```
+
+The probe was written to keep going if the call had survived — five more
+`POST`s, a `PUT`, a `DELETE` and a read-back — precisely so that a clean
+result would not rest on one lucky call. It never got there.
+
+**This is now five reproductions across two versions.** It matters because of
+the precedent this file already records: `CC-ANAL`/`BC-ANAL` were reproducible
+five times out of five and then ran clean on the *same* build with nothing
+changed, and `/doc/NEW`'s crash never got a trigger at all. `/db/NMAS` is not
+that. It is deterministic, it is one call, the payload is three unit masses on
+a plain node, and a vendor version bump did not touch it.
+
+Practical consequence: **do not wait for this to be fixed by upgrading**, and
+the vendor report is worth actually sending — see the crash section above for
+the evidence to attach.
+
+### `/db/TDMT` is not version-specific either
+
+Still `201` + `{"error": {"message": "Wrong Field"}}` on v2.2, for the manual's
+own worked example. Whatever is wrong with that endpoint survived the same
+upgrade, which removes "stale build" as an explanation and makes it worth
+reporting alongside the crash rather than sitting on it.
+
+## 2026-07-26 (later still) — `/db/TDMT` solved: the code-name enums differ
+
+`/db/TDMT` and `/db/TDME` sit next to each other in chapter 04, take a code
+name each, and **do not share a code-name enum.** That is the whole answer, and
+it cost most of a session to find because a `Wrong Field` error pointed at the
+fields rather than at the value.
+
+Probed live on v2.2 with the CEB-FIP field set (`MSIZE`/`CTYPE`) and the ACI
+field set (`VOL`/`CMETHOD`), 16 candidate names each:
+
+| `CODE` on `/db/TDMT` | Result |
+|---|---|
+| `European` | accepted with either field set |
+| `AASHTO` | accepted with either field set |
+| `ACI` | accepted with `VOL`/`CMETHOD` |
+| `Russian` | recognised — "input data contain errors", so it wants other fields |
+| `CEB-FIP`, `CEB-FIP(2010)`, `CEB-FIP(1990)`, `CEB-FIP(1978)`, `CEB FIP` | `Wrong Field` |
+| `Ohzagi`, `KDS-2016`, `KDS2016`, `Korea`, `KCI-USD12`, `JTG3362-2018` | `Wrong Field` |
+
+So **MIDAS calls the CEB-FIP-based creep/shrinkage model `"European"` on this
+endpoint**, and every CEB-FIP spelling is rejected — while `/db/TDME` accepts
+`CEB-FIP(2010)`/`CEB-FIP(1990)`/`Ohzagi` and rejects `European`-flavoured
+guesses. The manual's chapter blurb for `/db/TDMT` — "CEB-FIP(2010/1990/1978),
+ACI, KDS 등" — describes a set of names the endpoint does not take. Stored
+records come back with `CODE` upper-cased (`"European"` → `"EUROPEAN"`).
+
+The two error strings are the same diagnostic pair seen on `/db/TDME`, and they
+are the fastest way to triage this class of endpoint:
+
+- `"Wrong Field"` → the **code name** is unknown. Vary the value, not the fields.
+- `"[Error] ... input data contain errors."` → the name is recognised; the
+  code's own conditional fields are missing or wrong.
+
+With `CODE: "European"`, `/db/TDMT` round-trips, and `/db/TMAT` — which links a
+`/db/TDMT` and a `/db/TDME` record **by name** — round-trips after it. That
+takes the checker to **42/43 confirmed**, leaving only the `/db/NMAS` crash.
+
+One more self-inflicted fixture defect on the way there, worth recording
+because it is the exact rule this file lays out two sections up: `/db/TMAT`'s
+update pointed `TDMT_NAME` at `TDMT_CRUD`, the record the `/db/TDMT` case
+creates *and deletes*, so the update earned a `Wrong DB Name` for a reason that
+had nothing to do with `/db/TMAT`. Fixed by seeding two creep/shrinkage records
+(`TD_SEED`, `TD_SEED_2`) that outlive the tier and switching between them.
+
+### What this changes about the vendor report
+
+`/db/TDMT` comes **off** the product-defect list and moves to the manual team:
+the endpoint works, its documented code names don't. What is worth reporting as
+a product-side issue is the error text — `"Wrong Field"` for an unrecognised
+*value* sends the reader to inspect field names, which is what happened here.
 
 ## Caveat — read before acting on this file
 

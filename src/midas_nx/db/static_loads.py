@@ -166,8 +166,9 @@ class SpecifiedDisplacement(DbResource):
 class NodalMassPayload(TypedDict, total=False):
     """docs/manual/06_DB_Static_Loads.md #6 — /db/NMAS. Keyed by node id.
 
-    🛑 **POST to this endpoint crashes Civil NX 2026 v2.1 (build 06/05/2026).**
-    Reproduced four times on 2026-07-26, twice under controlled conditions:
+    🛑 **POST to this endpoint crashes Civil NX — on two different versions.**
+    v2.1 (build 06/05/2026) and v2.2 (build 06/18/2026), five reproductions on
+    2026-07-26, three of them under controlled conditions:
     a single ``POST /db/NMAS`` with ``{"mX": 1, "mY": 1, "mZ": 1}`` on a plain
     node times out, every following ``/db/*`` call times out, and the
     application raises the "Failed to disconnect the work session" license

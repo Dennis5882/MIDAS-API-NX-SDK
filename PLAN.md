@@ -13,8 +13,9 @@ that ROADMAP.md doesn't capture.
 > silent standard-vehicle downgrade in `/db/MVHL`, and a documented
 > time-dependent-material code name the product rejects — plus one product
 > defect severe enough to quarantine: `POST /db/NMAS` kills Civil NX
-> deterministically. 40 of the 43 cases are confirmed live; the three that
-> aren't each have a recorded non-SDK reason. v0.14.0 came out of the first write-enabled live session: `DbResource.delete([id])` was deleting
+> deterministically, on **v2.1 and v2.2 alike** — five reproductions, so
+> upgrading is not the fix. 42 of the 43 cases are confirmed live on v2.2; the
+> one that isn't is that crash. v0.14.0 came out of the first write-enabled live session: `DbResource.delete([id])` was deleting
 > the whole table, following a manual the server does not honour. v0.13.0
 > corrected the
 > Hyper-S (`-M1`) family to Civil-only after live testing showed the SDK
@@ -187,7 +188,7 @@ they're the ones worth re-checking before planning a release):
 | Schema drift (live) | `scripts/check_drift.py` (`/info/db/...` vs TypedDict) | ✅ local dev tool |
 | Scaffolding | `scripts/gen_endpoint.py` | ✅ in the documented add-an-endpoint loop |
 | Response handling | 200-with-`error` body, non-JSON body, empty-table shapes, failed-analysis message | ✅ hardened in v0.12.0/v0.14.0 |
-| Write verification | `scripts/live_crud_check.py` — create/read/update/delete round trips, 43 cases in 6 tiers | ✅ 40/43 confirmed live on Civil NX 2026 v2.1 (2026-07-26); the 3 remaining are `/db/NMAS` (quarantined — crashes the product) and `/db/TDMT`/`/db/TMAT` (server-side refusal), none an SDK defect |
+| Write verification | `scripts/live_crud_check.py` — create/read/update/delete round trips, 43 cases in 6 tiers | ✅ **42/43** confirmed live on Civil NX 2026 v2.2 (2026-07-26), 40 of them on v2.1 too. The one left is `/db/NMAS`, quarantined because it crashes the product on both versions |
 | Version metadata | `__init__.py` `__version__` (hatchling `dynamic`) + `tests/test_version.py` | ✅ single source |
 | Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 295/390, both products |
 | Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md` | ⚠️ text-only, no screenshots |
@@ -195,8 +196,8 @@ they're the ones worth re-checking before planning a release):
 
 ### Write-verification priority
 
-295 of the 390 implemented endpoints answer a live GET; **40 have had a write
-round trip proven** against a real server (10 on both products, 30 on Civil).
+295 of the 390 implemented endpoints answer a live GET; **42 have had a write
+round trip proven** against a real server (10 on both products, 32 on Civil).
 Answering a GET says an endpoint exists; only a round trip says the SDK's write
 shape is the one the server accepts. `scripts/live_crud_check.py`'s tiers close
 that gap, ordered by what a real modelling script reaches for rather than by
@@ -219,12 +220,15 @@ docstring said element id; `/db/MVHL` silently downgrades a standard vehicle to
 a user-defined one when `VEHICLE_LOAD_NUM` isn't 1; and the manual's only
 documented time-dependent-material code name (`"KDS2016"`) is not a value the
 product accepts. One product defect is severe enough to gate: **`POST /db/NMAS`
-kills Civil NX deterministically**, so that case is quarantined behind
-`--include-crashers` — after which the seven `static` cases that had sat behind
-it, and had never been *reached* rather than having failed, all passed. A
-fourth documented-value defect turned up there too: `/db/PRES`'s documented
-default `DIRECTION` of `"NORMAL"` is rejected on a plate face, and omitting the
-field fails the same way.
+kills Civil NX deterministically**, on v2.1 and v2.2 alike, so that case is
+quarantined behind `--include-crashers` — after which the seven `static` cases
+that had sat behind it, and had never been *reached* rather than having failed,
+all passed. Two more documented-value defects turned up: `/db/PRES`'s
+documented default `DIRECTION` of `"NORMAL"` is rejected on a plate face and
+omitting the field fails the same way; and `/db/TDMT` does not share
+`/db/TDME`'s code-name enum — it wants `"European"` for the CEB-FIP model and
+rejects every CEB-FIP spelling, which is what made it look server-side broken
+for most of the session.
 
 Two rules make the fixtures trustworthy, because on the first Civil run every
 failure was a bad fixture rather than an SDK defect. Seeded records go in at

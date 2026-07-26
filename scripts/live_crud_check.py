@@ -55,10 +55,9 @@ A checker that cries wolf gets ignored, so the report separates:
 
 ``Case.confirmed=True`` marks the cases that have actually passed against a
 live server. Flip a case to ``confirmed=True`` only after you have watched it
-pass, and say where in the comment. As of 2026-07-26, 40 of 43 are confirmed
-on Civil NX 2026 v2.1; the three that are not each have a recorded reason that
-is not an SDK defect (/db/NMAS crashes the product, /db/TDMT refuses every
-payload server-side, /db/TMAT depends on /db/TDMT).
+pass, and say where in the comment. As of 2026-07-26, 42 of 43 are confirmed
+on Civil NX 2026 v2.2 (and 40 of them on v2.1 as well). The only one left is
+/db/NMAS, which is quarantined because it crashes the product.
 
 🛑 /db/NMAS is quarantined. One POST to it reliably kills Civil NX 2026 v2.1
 and holds the license until the product is restarted and closed properly —
@@ -420,19 +419,30 @@ def _props_seeds() -> List[SeedStep]:
     errors" means the name was recognised but the code's extra fields are
     missing.
 
-    🛑 Open item: /db/TDMT rejects *everything* with ``Wrong Field`` — the
-    manual's worked example, every code name /db/TDME accepts, and even a
-    bare ``{"NAME": "C"}`` — while ``/info/db/TDMT`` lists every field being
-    sent, and an ``{"Argument": ...}`` body is refused with a different and
-    correct error ("It must have Assign object"). So the wrapper and the
-    field names are right and the endpoint still refuses. Looks server-side;
-    unresolved. It only blocks the /db/TMAT case now that seed steps are
-    per-case.
+    ⚠️ /db/TDMT and /db/TDME do **not** share a code-name enum, which is the
+    trap that made /db/TDMT look broken for a whole session. Probed live
+    2026-07-26 on v2.2: /db/TDMT accepts ``ACI`` (with VOL/CMETHOD),
+    ``European`` and ``AASHTO`` (with MSIZE/CTYPE), and recognises
+    ``Russian``; it rejects **every** CEB-FIP spelling — ``CEB-FIP``,
+    ``CEB-FIP(2010)``, ``CEB-FIP(1990)``, ``CEB-FIP(1978)`` — along with
+    ``Ohzagi`` and every KDS form, all of which /db/TDME either accepts or at
+    least recognises. MIDAS calls the CEB-FIP-based model ``"European"`` here,
+    so that is what the CEB-FIP field set (MSIZE/CTYPE) has to pair with. The
+    manual's chapter blurb ("CEB-FIP(2010/1990/1978), ACI, KDS") does not
+    describe this endpoint.
     """
     return [
+        # Two records, because /db/TMAT's update has to switch TDMT_NAME to a
+        # *different* creep/shrinkage record and both have to outlive the
+        # /db/TDMT case, which deletes its own. Pointing the update at
+        # TDMT_CRUD instead earned a "Wrong DB Name" on 2026-07-26 - a
+        # self-inflicted violation of the "nothing a case deletes is another
+        # case's prerequisite" rule three functions above.
         SeedStep("tdmt_seed", lambda c: TimeDependentMaterialCreepShrinkage.create(
-            {1: {"NAME": "TD_SEED", "CODE": "CEB-FIP(2010)", "STR": 24000, "HU": 70,
-                 "MSIZE": 0.2, "CTYPE": "RS", "AGE": 28}}, client=c)),
+            {1: {"NAME": "TD_SEED", "CODE": "European", "STR": 24000, "HU": 70,
+                 "MSIZE": 0.2, "CTYPE": "RS", "AGE": 28},
+             2: {"NAME": "TD_SEED_2", "CODE": "European", "STR": 30000, "HU": 65,
+                 "MSIZE": 0.25, "CTYPE": "RS", "AGE": 28}}, client=c)),
         SeedStep("tdme_seed", lambda c: TimeDependentMaterialStrength.create(
             {1: {"NAME": "TD_SEED", "TYPE": "CODE", "CODENAME": "CEB-FIP(2010)",
                  "STRENGTH": 24000}}, client=c)),
@@ -483,15 +493,15 @@ def _props_cases() -> List[Case]:
             lambda p: p.get("NAME"), "TG_CRUD", "TG_CRUD_2",
             confirmed=True,
         ),
-        # id 2: id 1 is TD_SEED, which /db/TMAT below references by name.
+        # id 3: ids 1-2 are TD_SEED/TD_SEED_2, which /db/TMAT references by name.
         Case(
             TimeDependentMaterialCreepShrinkage,
-            {"NAME": "TDMT_CRUD", "CODE": "CEB-FIP(2010)", "STR": 24000, "HU": 70,
+            {"NAME": "TDMT_CRUD", "CODE": "European", "STR": 24000, "HU": 70,
              "MSIZE": 0.2, "CTYPE": "RS", "AGE": 28},
-            {"NAME": "TDMT_CRUD", "CODE": "CEB-FIP(2010)", "STR": 24000, "HU": 60,
+            {"NAME": "TDMT_CRUD", "CODE": "European", "STR": 24000, "HU": 60,
              "MSIZE": 0.2, "CTYPE": "RS", "AGE": 28},
             lambda p: p.get("HU"), 70, 60,
-            item_id=2,
+            item_id=3, confirmed=True,
         ),
         Case(
             TimeDependentMaterialStrength,
@@ -507,9 +517,9 @@ def _props_cases() -> List[Case]:
         Case(
             TimeDependentMaterialLink,
             {"TDMT_NAME": "TD_SEED", "TDME_NAME": "TD_SEED"},
-            {"TDMT_NAME": "TDMT_CRUD", "TDME_NAME": "TD_SEED"},
-            lambda p: p.get("TDMT_NAME"), "TD_SEED", "TDMT_CRUD",
-            item_id=1, needs=("tdmt_seed", "tdme_seed"),
+            {"TDMT_NAME": "TD_SEED_2", "TDME_NAME": "TD_SEED"},
+            lambda p: p.get("TDMT_NAME"), "TD_SEED", "TD_SEED_2",
+            item_id=1, confirmed=True, needs=("tdmt_seed", "tdme_seed"),
         ),
     ]
 
@@ -756,11 +766,14 @@ def _static_cases() -> List[Case]:
         ),
         # 🛑 Last in the tier, and quarantined. A single
         # POST /db/NMAS {"Assign": {"3": {"mX": 1, "mY": 1, "mZ": 1}}} kills
-        # Civil NX 2026 v2.1 (build 06/05/2026): the call times out, every
-        # following /db/* call times out, and the app raises the "Failed to
-        # disconnect the work session" license dialog and exits.
+        # Civil NX on both v2.1 (build 06/05/2026) and v2.2 (build
+        # 06/18/2026): the call times out, every following /db/* call times
+        # out, and the app raises the "Failed to disconnect the work session"
+        # license dialog and exits.
         #
-        # Reproduced four times on 2026-07-26. Two competing hypotheses were
+        # Reproduced five times on 2026-07-26, and the version upgrade did
+        # not fix it: the same controlled protocol died identically on v2.2.
+        # Two competing hypotheses were
         # raised and both are dead: an idle work-session timeout (one run had a
         # ~32 minute gap in front of it) and a blocking save-changes dialog
         # from /doc/NEW. The decisive run issued no /doc/NEW at all and put
@@ -773,7 +786,7 @@ def _static_cases() -> List[Case]:
             {"mX": 1.0, "mY": 1.0, "mZ": 2.0},
             lambda p: p.get("mZ"), 1.0, 2.0,
             item_id=3,
-            crashes="POST /db/NMAS kills Civil NX 2026 v2.1 (4 reproductions, 2026-07-26)",
+            crashes="POST /db/NMAS kills Civil NX v2.1 and v2.2 (5 reproductions, 2026-07-26)",
         ),
     ]
 

@@ -125,14 +125,20 @@ Two things that have already caused rework:
   `/doc/NEW` and **discards unsaved work** — never run it against someone's open document without
   asking first.
 - **`scripts/live_crud_check.py` write coverage is tracked in the script itself.** Cases carry
-  `confirmed=True` only once someone has watched them pass live (40/43 as of 2026-07-26,
+  `confirmed=True` only once someone has watched them pass live (42/43 as of 2026-07-26,
   Civil NX); a failure of a confirmed case is a **regression** and exits 1, while a failure of an
   unconfirmed one exits 3 and means "triage the fixture first". Don't flip `confirmed` to silence
   a failure, and don't report an unconfirmed failure as an SDK defect — across three runs every
   failure resolved to a fixture, a wrong documented value, or a product bug, and the one real SDK
-  defect was a wrong docstring. Four documented values turned out to be wrong live — `/db/SECF`'s
-  key, `/db/PRES`'s default `DIRECTION`, `/db/MVHL`'s `VEHICLE_LOAD_NUM`, and the `"KDS2016"`
-  time-dependent-material code name — so treat the manual's worked examples as a starting guess. Seed steps are per-case dependencies (`needs=`) for the same
+  defect was a wrong docstring. Five documented values turned out to be wrong live — `/db/SECF`'s
+  key, `/db/PRES`'s default `DIRECTION`, `/db/MVHL`'s `VEHICLE_LOAD_NUM`, the `"KDS2016"`
+  time-dependent-material code name, and `/db/TDMT`'s whole code-name enum (it wants `"European"`,
+  not any CEB-FIP spelling) — so treat the manual's worked examples as a starting guess.
+- **`"Wrong Field"` from a `/db/*` write usually means a bad *value*, not a bad field name.**
+  Confirmed on `/db/TDMT` and `/db/TDME`: an unrecognised `CODE`/`CODENAME` answers `Wrong Field`,
+  while a recognised one with the wrong companion fields answers `"[Error] ... input data contain
+  errors."`. A whole session went into varying fields on `/db/TDMT` before the value was suspected
+  — vary the enum value first. Seed steps are per-case dependencies (`needs=`) for the same
   reason: one bad seed used to report 6 false blockages.
 - **`*-ANAL` design-check calls** reproducibly hung Gen NX 2026 v2.1 (build 06/23/2026), then ran
   clean on that *same build*. Not a vendor fix; trigger unidentified. Use a short timeout and read
@@ -140,13 +146,15 @@ Two things that have already caused rework:
   `docs/live_verification_notes.md`.
 - Any call that can raise a **confirmation dialog** blocks the whole API session, not just that
   call, until a human dismisses it.
-- **`POST /db/NMAS` kills Civil NX 2026 v2.1, every time.** The only crash here with a
+- **`POST /db/NMAS` kills Civil NX, every time, on two versions.** The only crash here with a
   one-call trigger: a single nodal-mass write times out, every following `/db/*` call times
   out, and the app raises the "Failed to disconnect the work session" license dialog and
   exits — holding the license until it's re-run, `New Project` pressed, and closed properly.
-  Reproduced four times on 2026-07-26, and both competing explanations are dead: the decisive
-  run issued no `/doc/NEW` (so no save-changes dialog was possible) and put three writes and two
-  reads, each under 0.2s, in the 1.3s before the call — a modal would have frozen those too. `GET /db/NMAS` and `/info/db/NMAS` are fine and the payload is
+  Five reproductions on 2026-07-26 across **v2.1 (build 06/05/2026) and v2.2 (build
+  06/18/2026)**, so upgrading is not the fix. Both competing explanations are dead: the
+  decisive runs issued no `/doc/NEW` (so no save-changes dialog was possible) and put three
+  writes and two reads, each under 0.2s, in the 1.3s before the call — a modal would have
+  frozen those too. `GET /db/NMAS` and `/info/db/NMAS` are fine and the payload is
   three unit masses on a plain node, so this is a product defect, not a request-shape one.
   Prefer `/db/LTOM` (`LoadsToMass`) where mass can come from loads. `live_crud_check.py`
   quarantines the case behind `--include-crashers`; don't un-quarantine it to "check if it's
