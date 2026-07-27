@@ -3,7 +3,8 @@
 `/db/*` 43개 엔드포인트에 대해 생성 → 조회 → 수정 → 삭제 왕복을 수행했고, 42개는 정상
 동작을 확인했습니다. 아래는 정상 동작하지 않은 항목입니다.
 
-담당 부서가 다를 것으로 보아 **제품 결함(A)과 문서 오류(B)를 분리**했습니다.
+담당 부서가 다를 것으로 보아 **제품 결함(A)과 문서 관련(B)을 분리**했습니다. B는 발송 전
+공식 온라인 매뉴얼 원문(2026-07-27 기준)과 다시 대조했습니다.
 
 | 항목 | 내용 |
 | --- | --- |
@@ -21,7 +22,7 @@
 | A-5 | `/mapikey/verify` | 프로그램 종료 후 일정 시간 `"connected"` 반환 | 중간 |
 | A-6 | 오류 메시지 | `"Wrong Field"`가 실제로는 **값** 오류를 의미 | 중간 |
 | A-7 | 복구 파일 | `Program Files` 하위 기록 시도 → 권한 거부로 조용히 실패 | 낮음 |
-| B-1~7 | 매뉴얼 | 문서화된 값·키가 제품 동작과 불일치 | — |
+| B-1~3 | 매뉴얼 | 기본값·예시·키 처리에 대한 보완 요청 | — |
 
 재현 코드는 `requests`만 사용합니다. 공통 헬퍼:
 
@@ -124,8 +125,9 @@ entered.`). **짧으면 거부하고 길면 조용히 잘라내는 비대칭**�
 `VEHICLE_LOAD_NUM: 1`이면 `DB-18`·`DB-24`·`DL-24` 모두 정상 저장됩니다. 표준 차량 지정이
 실패했다면 오류로 알려주시는 편이 안전합니다.
 
-`/db/SECF`는 **단면 ID**를 키로 받습니다(B-3). element ID로 보내면 200이 반환되면서
-아무것도 저장되지 않습니다.
+`/db/SECF`는 **단면 ID**를 키로 받습니다. element ID로 보내면 200이 반환되면서 아무것도
+저장되지 않습니다. 잘못된 키를 쓴 저희 쪽 실수였지만, 조회되지 않는 키에 대해 성공을
+반환하는 점은 확인을 부탁드립니다.
 
 ## A-4. 오류 본문이 HTTP 200 / 201로 반환됩니다
 
@@ -177,38 +179,71 @@ C:\Users\<user>\Downloads\제목 없음_restore.mcb                -> 정상 저
 
 ---
 
-# B. 문서 오류
+# B. 문서 관련
 
-제품 동작은 정상이며, 매뉴얼 기재 내용과 불일치하는 항목입니다.
+제품 동작은 정상이며, 공식 온라인 매뉴얼(JSON Manual 섹션) 기재 내용과 관련된 항목입니다.
+아래 3건은 **2026-07-27자 공식 아티클 원문을 다시 확인**한 결과만 남긴 것입니다.
 
-| # | 대상 | 문서 기재 | 실제 동작 |
+| # | 대상 | 아티클 | 내용 |
 | --- | --- | --- | --- |
-| B-1 | `/db/TDMT` | `CODE`: "CEB-FIP(2010/1990/1978), ACI, KDS 등" | `European`·`AASHTO`·`ACI` 허용. **CEB-FIP 표기는 전부 거부** |
-| B-2 | `/db/TDME` | `CODENAME` 예시 `"KDS2016"` | 거부. `CEB-FIP(2010)`·`CEB-FIP(1990)`·`Ohzagi` 허용, `ACI`는 `A`/`B` 동반 시 허용 |
-| B-3 | `/db/SECF` | 예시 키 `9001` (element로 읽힘) | **단면 ID** 키 |
-| B-4 | `/db/PRES` | `DIRECTION` 기본값 `"NORMAL"` | PLATE + `FACE_EDGE_TYPE:"FACE"`에서 **거부**. 필드 생략 시에도 동일 실패. `LZ`·`LX`·`GZ`·`VECTOR`는 정상 |
-| B-5 | `/db/MVHC` | `VEHICLE_LD_NAMES` 예시가 차량 **종류명**(`"DB-18"`) | 차량의 `VEHICLE_LOAD_NAME`. 종류명은 `Unknown Error`로 거부 |
-| B-6 | `/db/STLD`, `/db/TDME` | `"Assign"` 키로 ID 지정 | 키를 무시하고 **다음 빈 번호로 재부여**. 키 `7`로 POST → ID `3` 생성 (문서에 언급 없음) |
-| B-7 | `/db/PRES` | `FORCES` 예시 4개 | 5개로 반환. `/info/db/PRES`의 `maxItems`도 5. `/info`에 있는 `PSLT_KEY`가 챕터에 없음 |
+| B-1 | `/db/PRES` | Assign Pressure Loads | `DIRECTION`이 `Optional / 기본값 "NORMAL"`인데, 각주 ¹⁾ 표에서는 해당 조합에 `NORMAL`이 불가로 표기 |
+| B-2 | `/db/MVHC` | Vehicle Classes | 예시의 `VEHICLE_LD_NAMES: ["DB-18"]`이 그대로는 동작하지 않음 |
+| B-3 | `/db/STLD` | Static Load Cases | `"Assign"` 키의 의미가 명시되어 있지 않음 (이 엔드포인트는 키를 무시하고 재부여) |
 
-## B-1 상세 — `/db/TDMT`와 `/db/TDME`의 코드명 목록이 다릅니다
+## B-1. `/db/PRES` — `DIRECTION`의 기본값과 각주가 서로 맞지 않습니다
 
-두 엔드포인트가 같은 챕터에 나란히 있고 각각 코드명을 받지만 **허용값이 서로 다릅니다.**
-CEB-FIP 필드 세트(`MSIZE`/`CTYPE`)와 ACI 필드 세트(`VOL`/`CMETHOD`)로 각각 16개
-후보값을 시도한 결과입니다.
+각주 ¹⁾의 표는 실제 동작을 **정확히** 기술하고 있습니다.
 
-| `/db/TDMT`의 `CODE` | 결과 |
-| --- | --- |
-| `European`, `AASHTO` | 두 필드 세트 모두 허용 |
-| `ACI` | `VOL`/`CMETHOD`와 함께 허용 |
-| `Russian` | 인식됨 (다른 부속 필드 요구) |
-| `CEB-FIP`, `CEB-FIP(2010)`, `CEB-FIP(1990)`, `CEB-FIP(1978)` | 거부 |
-| `Ohzagi`, `KDS-2016`, `KDS2016`, `Korea`, `KCI-USD12`, `JTG3362-2018` | 거부 |
+| Element Types | Normal | Local x/y/z | Global X/Y/Z | Vectors |
+| --- | --- | --- | --- | --- |
+| `"PLATE"` `"FACE"` | **-** | O | O | O |
+| `"PLATE"` `"EDGE"` | O | O | O | O |
+| `"SOLID"` `"PRES"` | O | O | O | O |
 
-CEB-FIP 기반 모델이 이 엔드포인트에서는 **`"European"`**이라는 이름을 쓰는 것으로
-이해했습니다. 반면 `/db/TDME`는 `CEB-FIP(2010)`을 받고 `European`을 받지 않습니다.
-두 엔드포인트의 허용값 목록을 각각 명시해 주시면 좋겠습니다. 저장된 레코드는 `CODE`가
-대문자로 반환됩니다 (`"European"` → `"EUROPEAN"`).
+다만 Specifications 표의 `DIRECTION` 행은 `Default: "NORMAL"`, `Required: Optional`로
+되어 있습니다. `PLATE` + `FACE` 조합에서는 두 기술이 양립할 수 없고, 실제로 **필드를
+생략하면 요청이 실패합니다.**
+
+```python
+# PLATE + FACE, DIRECTION 생략 -> 실패
+# PLATE + FACE, DIRECTION: "LZ" -> 정상
+```
+
+해당 조합에서는 `DIRECTION`을 Required로 표기하거나, 기본값에 예외를 병기해 주시면
+좋겠습니다.
+
+## B-2. `/db/MVHC` — 예시를 그대로 실행하면 `Unknown Error`가 발생합니다
+
+공식 예시는 아래와 같습니다.
+
+```json
+{ "Assign": { "1": { "VEHICLE_CLS_NAME": "VCN1",
+                     "VEHICLE_LD_NAMES": ["DB-18"] } } }
+```
+
+`VEHICLE_LD_NAMES`는 "Selected Vehicle List"로, `/db/MVHL`에 정의된 차량의
+`VEHICLE_LOAD_NAME`을 넣어야 합니다. `"DB-18"`은 표준 차량의 **종류명**이어서, 같은 이름의
+차량을 먼저 정의해 두지 않으면 `Unknown Error`로 거부됩니다.
+
+선행 조건(`/db/MVHL` 정의가 먼저 필요하다는 점)을 한 줄 덧붙여 주시거나, 예시를
+사용자가 지정한 이름으로 바꿔 주시면 좋겠습니다. 참고로 실패 시 메시지가
+`Unknown Error`뿐이라 원인 파악이 어렵습니다(A-6과 같은 사안입니다).
+
+## B-3. `/db/STLD` — `"Assign"` 키가 ID로 쓰이지 않는다는 설명이 없습니다
+
+대부분의 `/db/*` 엔드포인트는 `"Assign"`의 키가 곧 레코드 ID입니다(`/db/NODE`에 키
+`9001`로 쓰면 절점 9001이 생성됩니다). 그런데 `/db/STLD`와 `/db/TDME`는 키를 무시하고
+**다음 빈 번호로 재부여**합니다.
+
+```python
+call("POST", "/db/STLD", {"Assign": {"7": {"NAME": "LC7", "TYPE": "D"}}})
+call("GET",  "/db/STLD")
+# -> 생성된 ID는 3 (7이 아님)
+```
+
+Specifications 표는 `"NO"`를 `Read Only`로만 표기하고 있고, `"Assign"` 키가 어떻게
+처리되는지는 나와 있지 않습니다. 키를 존중하는 테이블과 재부여하는 테이블이 섞여 있으므로,
+재부여하는 엔드포인트에는 그 사실을 명시해 주시면 좋겠습니다.
 
 ---
 
@@ -225,5 +260,20 @@ CEB-FIP 기반 모델이 이 엔드포인트에서는 **`"European"`**이라는 
   - `/db/PSLT`의 `ELEM_TYPE` 표기 — 본문(`"Plate/Plane Stress (Face)"`)과
     예시(`"Plate/PlaneStress(Face)"`) 표기가 다르지만 **두 표기 모두 허용**되어 제품
     문제가 아닙니다. 매뉴얼 내 표기만 통일해 주시면 됩니다.
+
+- 문서 관련 항목은 발송 전 **2026-07-27자 공식 아티클 원문과 다시 대조**했고, 그 결과
+  당초 작성했던 7건 중 **4건을 저희 쪽 오류로 판단해 철회**했습니다. 공식 문서는 정확했고,
+  저희가 참조하던 사내 정리본의 전사 오류였습니다. 기록 차원에서 남깁니다.
+
+  | 철회 항목 | 저희가 주장하려던 내용 | 공식 아티클 실제 기재 |
+  | --- | --- | --- |
+  | `/db/TDMT` `CODE` | "CEB-FIP 표기를 전부 거부한다" | `CEB_FIP_2010`·`CEB`·`KDS_2016`·`EUROPEAN` 등 **28개 값이 정확히 명시**되어 있음. 저희가 시험한 값은 같은 예시의 `NAME`(표시용 이름)이었습니다 |
+  | `/db/TDME` `CODENAME` | "`KDS2016`이 거부된다" | 공식 표기는 `KDS-2016`. `KDS2016`은 공식 문서에 없는 표기였습니다 |
+  | `/db/SECF` 키 | "예시 키가 element로 읽힌다" | 공식 아티클은 키의 의미를 언급하지 않으며, element라고 쓴 적이 없습니다 |
+  | `/db/PRES` `FORCES` | "예시가 4개인데 5개로 반환된다" | 공식 표기가 `Array [Number, 5]`이고 예시도 모두 5개입니다. `PSLT_KEY`도 공식 스키마에 있습니다 |
+
+  참고로 `/db/TDMT`는 `UNDERSCORED_UPPERCASE`(`CEB_FIP_2010`), `/db/TDME`는 표시용
+  문자열(`CEB-FIP(2010)`)을 쓰는 것으로 **두 엔드포인트의 표기 규칙이 다릅니다.** 양쪽 다
+  문서에는 정확히 적혀 있으나, 같은 코드를 다르게 표기해야 하는 점은 혼동하기 쉬웠습니다.
 
 추가 정보나 재현 로그가 필요하시면 말씀해 주세요.

@@ -409,27 +409,31 @@ def _props_seeds() -> List[SeedStep]:
     """/db/TMAT links a creep/shrinkage record to a strength record *by name*,
     so both have to outlive the cases that exercise those two tables.
 
-    ⚠️ The manual's ``"KDS2016"`` code name is not a value Civil NX 2026 v2.1
-    accepts, on either endpoint. Probed live 2026-07-26 against /db/TDME:
-    ``CEB-FIP(2010)``, ``CEB-FIP(1990)`` and ``Ohzagi`` are accepted, and
-    ``ACI`` is accepted once ``A``/``B`` are supplied; ``KDS2016``,
-    ``KDS(2016)``, ``KCI-2007`` and ``KDS`` are all rejected. The two error
-    strings are diagnostic: "Wrong Field" means the code name is unknown,
-    while "[Error] Time Dependent Material(Comp. Strength) input data contain
-    errors" means the name was recognised but the code's extra fields are
-    missing.
+    ⚠️ /db/TDMT and /db/TDME do **not** share a code-name enum, and the two
+    spell the *same* code differently. This cost a whole session on
+    2026-07-26, when /db/TDMT looked broken because it was being fed
+    /db/TDME's spellings.
 
-    ⚠️ /db/TDMT and /db/TDME do **not** share a code-name enum, which is the
-    trap that made /db/TDMT look broken for a whole session. Probed live
-    2026-07-26 on v2.2: /db/TDMT accepts ``ACI`` (with VOL/CMETHOD),
-    ``European`` and ``AASHTO`` (with MSIZE/CTYPE), and recognises
-    ``Russian``; it rejects **every** CEB-FIP spelling — ``CEB-FIP``,
-    ``CEB-FIP(2010)``, ``CEB-FIP(1990)``, ``CEB-FIP(1978)`` — along with
-    ``Ohzagi`` and every KDS form, all of which /db/TDME either accepts or at
-    least recognises. MIDAS calls the CEB-FIP-based model ``"European"`` here,
-    so that is what the CEB-FIP field set (MSIZE/CTYPE) has to pair with. The
-    manual's chapter blurb ("CEB-FIP(2010/1990/1978), ACI, KDS") does not
-    describe this endpoint.
+        code          /db/TDMT ``CODE``     /db/TDME ``CODENAME``
+        CEB-FIP 2010  "CEB_FIP_2010"        "CEB-FIP(2010)"
+        CEB-FIP 1990  "CEB"                 "CEB-FIP(1990)"
+        KDS 2016      "KDS_2016"            "KDS-2016"
+        European      "EUROPEAN"            "European"
+
+    /db/TDMT takes UNDERSCORED_UPPERCASE tokens; /db/TDME takes the
+    human-readable display string. Both are documented correctly and in full
+    by the official articles (see docs/live_verification_notes.md for the
+    URLs) — the values we were probing with came from a bad transcription in
+    the vendored manual copy, not from MIDASIT.
+
+    ``"European"`` is accepted here and reads back as ``"EUROPEAN"``, so the
+    match is case-insensitive; that is why this seed works despite not being
+    spelled the official way.
+
+    The two error strings are still diagnostic: "Wrong Field" means the code
+    name is unknown, while "[Error] Time Dependent Material(...) input data
+    contain errors" means the name was recognised but the code's companion
+    fields are missing. Vary the *value* before the field names.
     """
     return [
         # Two records, because /db/TMAT's update has to switch TDMT_NAME to a

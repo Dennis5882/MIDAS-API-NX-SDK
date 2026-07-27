@@ -1955,6 +1955,82 @@ emptying `/db/NODE` from 10 nodes and 4 elements to zero from a single named id
 the application — reproduction #6** (A-1), with the three control calls
 immediately before it all returning normally.
 
+## 2026-07-27 — 🛑 four of the seven "documentation defects" were **ours**, not MIDASIT's
+
+Before sending the vendor report, every B-item was re-checked against the
+**official Zendesk articles** (`support.midasuser.com`, JSON Manual section
+`30087500371097`) fetched that day — not against `E:\AI Study\MIDAS-API`.
+That distinction is the whole finding. The vendored manual is a *curated
+transcription*; section B had been written against it, so wherever the
+transcription was wrong, we were about to accuse MIDASIT of our own error.
+
+**B-1 `/db/TDMT` `CODE` — retracted.** The official article
+([Creep/Shrinkage](https://support.midasuser.com/hc/en-us/articles/35808006330009))
+documents a complete, exact 28-value enum: `CEB_FIP_2010`, `CEB`,
+`CEB_FIP_1978`, `ACI`, `PCA`, `COMBINED`, `AASHTO`, `JSCE_12`, `JSCE_07`,
+`JSCE`, `JAPAN`, `INDIA_IRC_18_2000`, `INDIA_IRC_112_2011`, `EUROPEAN`,
+`AS_5100_5_2017`, `AS_5100_5_2016`, `AS_RTA_5100_5_2011`, `AS_3600_2009`,
+`NEWZEALAND`, `RUSSIAN`, `CHINESE`, `JTG`, `CHINA_JTG3362_2018`, `KDS_2016`,
+`KSI_USD12`, `KSCE_2010`, `KS`, `USER_DEFINED`.
+
+The 16 values swept on 2026-07-26 were **`NAME` values read as `CODE` values**.
+In the official example, `"NAME": "CEB-FIP(1990)"` sits directly above
+`"CODE": "CEB"` — `NAME` is the free-text label, `CODE` is the enum. Every
+"rejected CEB-FIP spelling" recorded above was a string the official article
+never proposes for that field. `"European"` was not a discovery; `EUROPEAN`
+is documented, and the match is case-insensitive.
+
+**B-2 `/db/TDME` `CODENAME` — retracted.** The official article
+([Compressive Strength](https://support.midasuser.com/hc/en-us/articles/35808102389401))
+gives `"KDS-2016"`. `"KDS2016"`, the value probed and reported as rejected,
+appears in **neither** official article — it is a vendored-copy error.
+
+So the two endpoints do differ, and interestingly: `/db/TDMT` takes
+`UNDERSCORED_UPPERCASE` tokens, `/db/TDME` takes the display string
+(`CEB-FIP(2010)`, `KDS-2016`, `European`). Both are documented correctly and
+in full. That the SDK's own seeds already use `CODENAME: "CEB-FIP(2010)"` and
+pass live is confirmation, not coincidence.
+
+**B-3 `/db/SECF` — retracted.** The official article is titled *Section
+Manager - Stiffness* and never states what the `"Assign"` key means; it just
+uses `9001`/`9002` as example keys. "Keyed by element id" was **our own
+docstring**, already corrected in `db/properties/section.py`. The live finding
+(section id is the right key) stands; the accusation does not.
+
+**B-7 `/db/PRES` — retracted.** The official Specifications row reads
+`"FORCES"  Array [Number, 5]`, and all four official examples carry five
+entries. `PSLT_KEY` **is** present in the official JSON Schema. Both halves
+described the vendored chapter, not the source.
+
+**B-4 `/db/PRES` `DIRECTION` — narrowed, not retracted.** Footnote ¹⁾ of the
+official article carries an availability matrix that documents the live
+behaviour exactly: for `"PLATE"` + `"FACE"`, Normal is `-` while Local x/y/z,
+Global X/Y/Z and Vectors are `O`. What survives is much smaller: the
+Specifications row still marks `DIRECTION` *Optional, default `"NORMAL"`*,
+which cannot hold for the one combination where `NORMAL` is unavailable —
+hence omitting the field fails.
+
+**B-5 and B-6 stand**, B-6 rephrased as an omission: the official `/db/STLD`
+article marks `"NO"` *Read Only* and never says what the `"Assign"` key does,
+so renumbering contradicts no published statement — it is undocumented, which
+is a weaker and more accurate claim.
+
+### The rule this produces
+
+**Never cite the vendored manual as "the documentation" in anything sent
+outside.** It exists to be corrected; `E:\AI Study\MIDAS-API`'s own CLAUDE.md
+says it deliberately normalizes official typos and marks them `⚠️`. For an
+internal decision it is the right source. For a claim *about MIDASIT's
+documentation*, fetch the article and quote it. Four of seven claims died on
+contact with the source, and the two that survived got weaker.
+
+Still open: a live re-test with the official values (`CODE: "CEB_FIP_2010"`,
+`"KDS_2016"` on `/db/TDMT`; `CODENAME: "KDS-2016"` on `/db/TDME`). It was not
+possible on 2026-07-27 — the relay answered `client does not exist`, no
+session. The retractions do not depend on it (dropping an unverified
+accusation is the safe direction), but if any official value *does* fail,
+that is a genuine product defect and a new A-item.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
