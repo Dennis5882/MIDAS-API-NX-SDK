@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any, List, TypedDict
 
-from .base import DbResource, ItemGroupFields, TimeValuePoint
+from .base import CIVIL_ONLY, DbResource, ItemGroupFields, TimeValuePoint
 
 
 class LoadGroupDayItem(TypedDict, total=False):
@@ -130,9 +130,15 @@ class CamberConstructionStagePayload(TypedDict, total=False):
 
 
 class CamberConstructionStage(DbResource):
+    """⚠️ The manual documents this for both products, but three independent
+    live sessions (2026-07-22, 2026-07-26, 2026-07-27) all 404 it under Gen
+    NX while it answers under Civil NX — the third one a POST, not just a
+    GET. See docs/live_verification_notes.md.
+    """
+
     ENDPOINT = "/db/CMCS"
     NAME = "Camber for Construction Stage"
-    PRODUCTS = frozenset({"gen", "civil"})
+    PRODUCTS = CIVIL_ONLY
 
 
 class CreepCoefficientItem(ItemGroupFields, total=False):

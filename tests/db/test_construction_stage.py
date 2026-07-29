@@ -90,9 +90,9 @@ def test_set_back_load_create_sends_documented_assign_shape(gen_client):
 
 
 @responses.activate
-def test_camber_construction_stage_create_keyed_by_node_id(gen_client):
-    responses.add(responses.POST, "https://x.test:443/gen/db/CMCS", json={}, status=200)
-    CamberConstructionStage.create({23: {"DEFORM": 0.0, "USER": 0.0}}, client=gen_client)
+def test_camber_construction_stage_create_keyed_by_node_id(civil_client):
+    responses.add(responses.POST, "https://x.test:443/civil/db/CMCS", json={}, status=200)
+    CamberConstructionStage.create({23: {"DEFORM": 0.0, "USER": 0.0}}, client=civil_client)
     sent = responses.calls[0].request
     assert json.loads(sent.body) == {"Assign": {"23": {"DEFORM": 0.0, "USER": 0.0}}}
 

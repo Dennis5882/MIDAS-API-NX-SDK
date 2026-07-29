@@ -857,13 +857,14 @@ def _stage_cases() -> List[Case]:
             lambda p: p["ITEMS"][0].get("CREEP"), 1.2, 1.5,
             item_id=1, confirmed=True, needs=("groups", "stage_1"),
         ),
-        # Keyed by node id.
+        # Keyed by node id. Civil NX only as of 2026-07-27 — see
+        # CamberConstructionStage's docstring.
         Case(
             CamberConstructionStage,
             {"DEFORM": 0.0, "USER": 0.17},
             {"DEFORM": 0.0, "USER": 0.28},
             lambda p: p.get("USER"), 0.17, 0.28,
-            item_id=3, confirmed=True, needs=("stage_1",),
+            item_id=3, products=("civil",), confirmed=True, needs=("stage_1",),
         ),
     ]
 

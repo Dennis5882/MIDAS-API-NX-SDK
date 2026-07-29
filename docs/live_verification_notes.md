@@ -2031,6 +2031,59 @@ session. The retractions do not depend on it (dropping an unverified
 accusation is the safe direction), but if any official value *does* fail,
 that is a genuine product defect and a new A-item.
 
+## 2026-07-27 (later) — Gen NX v2.1 (build 07/28/2026): `props`/`boundary`/`static`/`stage` get their first Gen CRUD run, `/db/CMCS` corrected to Civil-only
+
+New Gen NX install, new MAPI key, `scripts/live_crud_check.py --product gen`
+(no `--include-crashers`). **Correction to get right before it goes stale:**
+this was not the checker's first exposure to Gen NX — the `core` tier's own
+comment already says "the baseline proven live on 2026-07-26 (Civil 10/10,
+Gen 9/9)", and that 2026-07-26 Gen pass is what let `/db/TDMT` and
+`/db/TDME` inherit `confirmed=True` in the first place. What today actually
+added: the **`props`, `boundary`, `static` and `stage` tiers ran against Gen
+for the first time** (27 endpoints), on top of `core` repeating clean. Of
+those, `/db/TDMT`/`/db/TDME` are worth calling out specifically — they use
+the seeds already fixed in the 2026-07-27 section above
+(`CODE: "European"`, `CODENAME: "CEB-FIP(2010)"`), so this is the first
+live confirmation of those *specific* values on a Gen session, not just
+Civil. `/db/NMAS` stayed quarantined; not run.
+
+First pass: 36/38 confirmed cases passed. **`/db/CMCS` came back a
+REGRESSION** — `confirmed=True` in the checker, but that flag was earned on
+Civil NX runs only; the `stage` tier had never touched Gen before today.
+Before treating it as an SDK defect: `/db/CMCS` is one of the 7 endpoints
+already flagged twice in this file (2026-07-22, 2026-07-26) as "manual says
+gen+civil, but 404s under Gen in practice" — and both those were GET-only
+read sweeps, deliberately left unactioned pending a third, independent data
+point per this file's own caveat.
+
+This run is that third point, on a different session (new build, new day)
+and with **stronger evidence than either prior one** — an actual `POST`
+attempting to create a record, not just a `GET` against an empty table. Same
+account as before (`sjj0507@midasit.com`), so it doesn't clear the
+stricter "different account" bar floated in the 2026-07-26 section, but it
+does satisfy the caveat's actual rule below ("different session" is listed
+as sufficient), and three same-account reproductions across five days and
+three separate sessions is not a coincidence worth waiting out further.
+
+**Action taken:** `CamberConstructionStage.PRODUCTS` changed from
+`{"gen", "civil"}` to `CIVIL_ONLY` in `db/construction_stage.py`, the
+`live_crud_check.py` case given `products=("civil",)` so a future Gen run
+skips it instead of false-flagging, and its mocked test switched from
+`gen_client` to `civil_client`. The other 6 endpoints in that original list
+(`EWSF`, `PLCB`, `RCHK`, `SPAN`, `STRPSSM`, `WVLD`) are **not** touched —
+none of them are exercised by `live_crud_check.py`, so this run adds no new
+evidence for them. They stay at two data points, per the caveat.
+
+**Re-run after the fix: 36/37, clean — 0 regressions, 0 unverified failures,
+0 blocked**, `/db/CMCS` correctly filtered out for a Gen client rather than
+skipped-and-counted. `docs/coverage.json` updated in bulk for all 36 passing
+endpoints: `live_verified.products` gained `"gen"`,
+`live_verified.nx_versions.gen` set to `"MIDAS Gen NX 2026 (v2.1), build
+07/28/2026"`, date bumped to 2026-07-27. `/db/CMCS`'s own entry instead
+dropped `"gen"` from top-level `products` (now `["civil"]`, matching
+`PRODUCTS`) and its `live_verified` note records the three-session Gen 404
+history.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
