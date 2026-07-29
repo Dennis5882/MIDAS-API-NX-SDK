@@ -507,9 +507,9 @@ def test_set_story_irregularity_check_parameter_sends_all_fields(gen_client):
     ope.set_story_irregularity_check_parameter(
         {
             "COUNTRY_CODE": "NTCS2023",
-            "STORY_DRIFT_METHOD": "Max.DriftofOuterExtremePoints",
-            "STORY_STIFFNESS_METHOD": "1/StoryDriftRatio",
-            "SEISMIC_BEHAVIOR_FACTOR": "3orbelow",
+            "STORY_DRIFT_METHOD": "Max. Drift of Outer Extreme Points",
+            "STORY_STIFFNESS_METHOD": "1 / Story Drift Ratio",
+            "SEISMIC_BEHAVIOR_FACTOR": "3 or below",
         },
         client=gen_client,
     )
@@ -517,9 +517,9 @@ def test_set_story_irregularity_check_parameter_sends_all_fields(gen_client):
     assert json.loads(sent.body) == {
         "Argument": {
             "COUNTRY_CODE": "NTCS2023",
-            "STORY_DRIFT_METHOD": "Max.DriftofOuterExtremePoints",
-            "STORY_STIFFNESS_METHOD": "1/StoryDriftRatio",
-            "SEISMIC_BEHAVIOR_FACTOR": "3orbelow",
+            "STORY_DRIFT_METHOD": "Max. Drift of Outer Extreme Points",
+            "STORY_STIFFNESS_METHOD": "1 / Story Drift Ratio",
+            "SEISMIC_BEHAVIOR_FACTOR": "3 or below",
         }
     }
 

@@ -120,6 +120,35 @@ Two things that have already caused rework:
 - **Hyper-S (`-M1`) endpoints are Civil NX only** — it's the solver MIDASIT shipped with Civil NX.
   They 404 under Gen. Use `HYPER_S_ONLY` from `db/base.py`, not `CIVIL_ONLY`: Hyper-S is expected
   to reach Gen NX eventually, and that constant is the one place to widen when it does.
+- **Most of ch08/ch17 (moving-load/bridge) is *not* actually Civil NX only**, despite the manual's
+  framing and this SDK's `CIVIL_ONLY` docstring having said otherwise until 2026-07-29: 32 of 47
+  declared-Civil-only endpoints (`/db/LCOM-CONC` with real populated data, the rest with an empty
+  table) answer on Gen NX too, route + `/info` schema both confirmed live. `GEN_ONLY` in `db/base.py`
+  documents which 15 are genuinely Civil-only. That the API answers doesn't mean driving a
+  bridge/moving-load feature from a Gen NX session is a sound engineering choice for a given
+  project — that's the calling engineer's judgment, not something `PRODUCTS` should gate.
+- **A manual chapter can be wrong about its own endpoint's field names, not just an enum value.**
+  `/db/REBW` (ch24, Modify Wall Rebar) is the confirmed case: live-checked 2026-07-29 against a
+  real production Gen NX model, every field name in the manual's Specifications table
+  (`VERTICAL_REBAR`, `HORIZONTAL_REBAR`, `STORY: {FROM,TO}`, `CONCRETE_FACE_TO_CENTER_OF_REBAR`,
+  ...) is wrong — the live server's actual GET/`.info()`/PUT contract uses `VER_BAR`, `HOR_BAR`,
+  `vSTORY_NAME` (a story-name array, not a range), top-level `DW`/`DE`, etc. Confirmed via a live
+  PUT round trip (change → verify → revert), not just GET. Its sibling `/db/REBB` and the
+  KDS-specific `/DESIGN/RC/KDS-41-20-2022/REBW` both matched their own docs exactly, so this isn't
+  a systemic rebar-family issue — treat each endpoint's manual section as independently
+  fallible, and cross-check `/info/db/...` against real populated data before trusting a
+  Specifications table that's never been checked against a live model with actual data in it.
+  `WallRebarPayload`/`WallRebarItem` in `db/design.py` now documents the server-confirmed shape.
+- **A GET can still pop a modal dialog if the open document lives under `Program Files`** (or any
+  other path a standard account can't write to) — confirmed live 2026-07-29 with `GET /db/CAMB`
+  (FCM Camber Control, a plain read): with the product's own bundled tutorial file open from
+  `Program Files\...\Tutorial\`, the call still answered `{"message": ""}` but a
+  `"...액세스가 거부되었습니다"` (access denied) dialog popped anyway; moving the same file to
+  `Downloads` and repeating the identical call produced no dialog. This generalizes the
+  crash-recovery-only `_restore.mcb`-under-`Program Files` case (vendor report A-7) into a broader
+  pattern: some read-shaped commands write an auxiliary/cache file next to the document even to
+  answer a GET. `scripts/live_readonly_sweep.py`'s "GET only, safe" claim still holds for *data*
+  safety, but keep working documents off `Program Files`-style paths before running it.
 - **Verifying against a live session: `scripts/live_readonly_sweep.py` is the safe one.** It
   issues GET only, so it can run against a model the user has open. `scripts/live_smoke.py` calls
   `/doc/NEW` and **discards unsaved work** — never run it against someone's open document without

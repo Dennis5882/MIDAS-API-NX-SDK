@@ -20,6 +20,38 @@ that ROADMAP.md doesn't capture.
 > two different spellings for the same code (`"CEB_FIP_2010"` vs.
 > `"CEB-FIP(2010)"`) — plus one endpoint, `/db/CMCS`, whose `PRODUCTS` was
 > corrected to Civil-only after three independent Gen sessions all 404'd it.
+> The mirror correction landed the same day: a Civil NX 2026 v2.2 (07/28/2026)
+> sweep found 20 endpoints (`STOR`, `SWIND`, `SSEIS`, `POSP`, `EPST`, `DRLS`,
+> `SDHY`, `SDIS`, three `db/*` rebar endpoints, and 9 design-chapter
+> endpoints under `RC/KDS-41-20-2022`, `SRC/AIK-SRC2K` and
+> `STEEL/KDS-41-30-2022`) 404ing on Civil at both the route and `/info`
+> level; an independently run validation sweep against the same day's
+> patched builds (`docs/Codex Report/`) reproduced the identical 20, so all
+> 20 are now `GEN_ONLY` (new `db/base.py` constant, mirroring `HYPER_S_ONLY`).
+> A same-day live re-check with both products open reproduced all 20 again
+> and gave the 3 adjacent candidates (`/db/REBC`'s schema, `/ope/STORY_PARAM`,
+> `/ope/STORY_IRR_PARAM`) their second independent confirmation, so `/db/REBC`
+> is now `GEN_ONLY` too (21 total); the two `ope.py` functions are documented
+> Gen-only in their docstrings but not enforced, since plain `doc`/`ope`/`view`
+> functions have no `PRODUCTS` gate anywhere in this SDK. The same live
+> session found the mirror-image defect: 32 of 47 endpoints declared
+> `CIVIL_ONLY` (ch08 moving-loads, ch17 bridge, the `MVCT` analysis-control
+> family, `LCOM-CONC`/`LCOM-STLCOMP`) actually answer on Gen NX too —
+> `/db/LCOM-CONC` with 494 real rows, the rest with an empty table but a
+> resolving `/info` schema. All 32 are now left at the class default
+> (gen+civil); `db/base.py`'s own `CIVIL_ONLY` docstring had cited
+> `/db/LCOM-CONC` as its canonical example, which was itself wrong. 15
+> endpoints stay genuinely Civil-only. Separately, that same session
+> confirmed a Windows file-permission dialog (`Program Files` access denied)
+> can be triggered by a plain `GET` (`/db/CAMB`), not just crash recovery —
+> generalizing vendor-report finding A-7. The same session also found
+> `/db/REBW`'s entire manual section wrong — every field name, checked
+> against a real production Gen NX model and confirmed via a live PUT round
+> trip — while its sibling `/db/REBB` and the KDS-specific
+> `/DESIGN/RC/KDS-41-20-2022/REBW` both matched their own docs exactly.
+> `WallRebarPayload`/`WallRebarItem` in `db/design.py` corrected to the
+> server-confirmed shape (vendor report B-4); a real `src/` correctness fix,
+> adding to the pending version-bump case.
 > ⚠️ An earlier draft of this paragraph said the manual's `"KDS2016"` was a
 > documented value the product rejects — that was wrong. `"KDS2016"` was a
 > transcription error in the vendored manual copy; the official Zendesk
@@ -192,7 +224,7 @@ they're the ones worth re-checking before planning a release):
 
 | Axis | Artifact | State |
 |---|---|---|
-| Tests | 638 tests, `responses`-mocked | ✅ green |
+| Tests | 665 tests, `responses`-mocked | ✅ green |
 | CI | `.github/workflows/ci.yml` — pytest + ruff on py3.9/3.13, push+PR | ✅ running |
 | Manual drift | `manual-drift-check.yml` (`cron: 0 3 * * 3`) + `scripts/check_manual_drift.py` | ✅ running |
 | Schema drift (live) | `scripts/check_drift.py` (`/info/db/...` vs TypedDict) | ✅ local dev tool |

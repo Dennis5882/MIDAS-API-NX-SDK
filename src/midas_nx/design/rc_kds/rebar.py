@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from typing import Dict, List, TypedDict
 
-from ...db.base import GET_PUT_DELETE_METHODS, DbResource
+from ...db.base import GEN_ONLY, GET_PUT_DELETE_METHODS, DbResource
 from ...post.base import NodeElemsSelector
 
 _BASE = "/DESIGN/RC/KDS-41-20-2022"
@@ -72,6 +72,9 @@ class TorsionReductionFactorPayload(TypedDict, total=False):
 class TorsionReductionFactor(DbResource):
     ENDPOINT = f"{_BASE}/TRFT"
     NAME = "Torsion Reduction Factor"
+    #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
+    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
+    PRODUCTS = GEN_ONLY
 
 
 # --- 22. DESIGN/RC/KDS-41-20-2022/MCMB — Beam Moment Calculation Method ----
@@ -512,6 +515,9 @@ class ModifyBeamRebarDataPayload(TypedDict, total=False):
 class ModifyBeamRebarData(DbResource):
     ENDPOINT = f"{_BASE}/REBB"
     NAME = "Modify Beam Rebar Data"
+    #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
+    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
+    PRODUCTS = GEN_ONLY
 
 
 # --- 36. DESIGN/RC/KDS-41-20-2022/REBC — Modify Column Rebar Data ----------
@@ -554,6 +560,11 @@ class ModifyColumnRebarData(DbResource):
     #: Active Methods per this endpoint's own manual section: full
     #: POST/GET/PUT/DELETE — unlike ch24's /db/REBC, which is POST-only. Do
     #: NOT apply a POST-only METHODS override here.
+    #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
+    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring. Distinct
+    #: from ch24's db.design.ColumnRebar (/db/REBC), which is a separate,
+    #: unconfirmed Gen-only candidate left alone for now.
+    PRODUCTS = GEN_ONLY
 
 
 # --- 37. DESIGN/RC/KDS-41-20-2022/REBW — Modify Wall Rebar Data ------------
@@ -610,6 +621,9 @@ class ModifyWallRebarDataPayload(TypedDict, total=False):
 class ModifyWallRebarData(DbResource):
     ENDPOINT = f"{_BASE}/REBW"
     NAME = "Modify Wall Rebar Data"
+    #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
+    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
+    PRODUCTS = GEN_ONLY
 
 
 # --- 38. DESIGN/RC/KDS-41-20-2022/REBR — Modify Brace Rebar Data -----------
@@ -648,3 +662,6 @@ class ModifyBraceRebarDataPayload(TypedDict, total=False):
 class ModifyBraceRebarData(DbResource):
     ENDPOINT = f"{_BASE}/REBR"
     NAME = "Modify Brace Rebar Data"
+    #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
+    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
+    PRODUCTS = GEN_ONLY

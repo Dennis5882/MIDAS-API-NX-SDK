@@ -3,7 +3,7 @@ import json
 import pytest
 import responses
 
-from midas_nx.client import ProductMismatchError, UnsupportedMethodError
+from midas_nx.client import UnsupportedMethodError
 from midas_nx.db.analysis_control import (
     AssignBoundaryCombinationHyperS,
     BoundaryChangeAssignment,
@@ -174,7 +174,7 @@ def test_heat_of_hydration_analysis_control_hyper_s_create_raises_before_any_htt
 
 
 @responses.activate
-def test_moving_load_analysis_control_create_is_civil_only(civil_client, gen_client):
+def test_moving_load_analysis_control_create_sends_documented_assign_shape(civil_client):
     responses.add(responses.POST, "https://x.test:443/civil/db/MVCT", json={}, status=200)
     MovingLoadAnalysisControl.create(
         {1: {"METHOD": "EXACT", "POINT": "INF", "PLATE": "NODAL", "FRAME": "AXIAL"}}, client=civil_client
@@ -182,8 +182,14 @@ def test_moving_load_analysis_control_create_is_civil_only(civil_client, gen_cli
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["METHOD"] == "EXACT"
 
-    with pytest.raises(ProductMismatchError):
-        MovingLoadAnalysisControl.create({1: {"POINT": "INF"}}, client=gen_client)
+
+@responses.activate
+def test_moving_load_analysis_control_also_works_on_gen_client(gen_client):
+    # Not Civil-only despite the chapter's bridge-design framing — route +
+    # /info both answer on Gen NX too, live-checked 2026-07-29.
+    responses.add(responses.POST, "https://x.test:443/gen/db/MVCT", json={}, status=200)
+    MovingLoadAnalysisControl.create({1: {"POINT": "INF"}}, client=gen_client)
+    assert len(responses.calls) == 1
 
 
 @responses.activate

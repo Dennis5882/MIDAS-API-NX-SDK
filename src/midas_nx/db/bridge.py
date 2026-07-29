@@ -1,7 +1,12 @@
 """Source: docs/manual/17_DB_Bridge.md, items 1-4.
 
-MIDAS Civil NX only (bridge specialization results): girder diagrams, camber
-control (General/FCM), and cable unknown-load-factor constraints.
+MIDAS Civil NX only (bridge specialization results): girder diagrams
+(`GSBG`) and camber control (General/FCM: `GCMB`/`CAMB`) — all three
+confirmed 404 on Gen NX (route + `/info`), live-checked 2026-07-29.
+`UnknownLoadFactorConstraint` (`ULFC`) is the exception: it answers on Gen
+too (empty table; route + `/info` both resolve), so it's left at the class
+default (gen+civil) rather than `CIVIL_ONLY` — see db/base.py's `GEN_ONLY`
+docstring's sibling note.
 """
 from __future__ import annotations
 
@@ -106,4 +111,3 @@ class UnknownLoadFactorConstraintPayload(TypedDict, total=False):
 class UnknownLoadFactorConstraint(DbResource):
     ENDPOINT = "/db/ULFC"
     NAME = "Cable Control - Unknown Load Factor Constraints"
-    PRODUCTS = CIVIL_ONLY

@@ -1,0 +1,78 @@
+{
+  "generated_at": "2026-07-29T19:02:45+09:00",
+  "sdk": {
+    "package": "midas-nx",
+    "installed_version": "0.14.0",
+    "pypi_latest_version": "0.14.0"
+  },
+  "target": "MIDAS Gen NX connected session",
+  "scope": {
+    "all_sdk_resource_paths": 295,
+    "gen_resource_paths": 242,
+    "gen_get_resource_paths": 240,
+    "estimated_gen_sdk_paths_including_commands": 282,
+    "live_read_only_paths_tested": 245,
+    "non_db_safe_gets": 5,
+    "not_live_called": {
+      "post_or_state_changing_command_paths": 35,
+      "resource_paths_without_get": 2
+    }
+  },
+  "effective_results": {
+    "success": 238,
+    "route_404": 7,
+    "success_rate_percent": 97.1
+  },
+  "db_sweep": {
+    "duration_seconds": 22.713,
+    "median_seconds": 0.091,
+    "p95_seconds": 0.1064,
+    "p99_seconds": 0.186,
+    "success": 233,
+    "error": 7,
+    "404": 7,
+    "empty_success_responses": 230,
+    "populated_success_responses": 3
+  },
+  "non_db_gets": [
+    {
+      "endpoint": "/ope/PROJECTSTATUS",
+      "outcome": "success"
+    },
+    {
+      "endpoint": "/ope/SECTPROP",
+      "outcome": "success"
+    },
+    {
+      "endpoint": "/ope/STORY_PARAM",
+      "outcome": "success"
+    },
+    {
+      "endpoint": "/ope/STORY_IRR_PARAM",
+      "outcome": "success"
+    },
+    {
+      "endpoint": "/view/SELECT",
+      "outcome": "success"
+    }
+  ],
+  "db_404_endpoints": [
+    "/db/CMCS",
+    "/db/EWSF",
+    "/db/PLCB",
+    "/db/RCHK",
+    "/db/SPAN",
+    "/db/STRPSSM",
+    "/db/WVLD"
+  ],
+  "resource_paths_without_get": [
+    {
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/DSRC",
+      "info_outcome": "404"
+    },
+    {
+      "endpoint": "/db/REBC",
+      "info_outcome": "success"
+    }
+  ]
+}

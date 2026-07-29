@@ -15,7 +15,7 @@ from __future__ import annotations
 from typing import List, TypedDict
 
 from ..post.base import NodeElemsSelector
-from .base import CIVIL_ONLY, DbResource
+from .base import CIVIL_ONLY, GEN_ONLY, DbResource
 
 # Shared KEYS/TO/STRUCTURE_GROUP_NAME "pick one" element-selector used when
 # CREATE_SUB_SECTION=true (REBB/REBC/REBR "ELEMS") — identical shape to
@@ -360,6 +360,9 @@ class BeamRebarPayload(TypedDict, total=False):
 class BeamRebar(DbResource):
     ENDPOINT = "/db/REBB"
     NAME = "Modify Beam Rebar"
+    #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
+    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
+    PRODUCTS = GEN_ONLY
 
 
 # --- 11. /db/REBC — Modify Column Rebar (POST only) -------------------------
@@ -403,53 +406,64 @@ class ColumnRebar(DbResource):
     #: a one-off override, not promoted to a shared db/base.py constant
     #: since no other chapter needs POST-only.
     METHODS = frozenset({"POST"})
+    #: Gen-only: no GET, but `/info/db/REBC` answers on Gen and 404s on
+    #: Civil, confirmed independently twice (2026-07-29 sweep, then a live
+    #: re-check the same day) — see db/base.py's GEN_ONLY docstring. Distinct
+    #: from ch26's design.rc_kds.rebar.ModifyColumnRebarData
+    #: (/DESIGN/RC/KDS-41-20-2022/REBC), a separate endpoint with the same
+    #: short name that supports full CRUD.
+    PRODUCTS = GEN_ONLY
 
 
 # --- 12. /db/REBW — Modify Wall Rebar ---------------------------------------
 
 
-class StoryRange(TypedDict, total=False):
-    FROM: str  # Start story, required
-    TO: str  # End story, required
-
-
-class WallEndRebarSpec(TypedDict, total=False):
-    NAME: str  # Rebar size, D4~D57, required
-    NUM: int  # Rebar count, required
-    DIST: float  # Rebar spacing, required
-
-
-class ConcreteFaceToCenterOfRebar(TypedDict, total=False):
-    DW: float  # required
-    DE: float  # required
-
-
 class WallRebarItem(TypedDict, total=False):
     """ITEMS entry.
 
-    SUB_WALL_ID is labeled both "read only" and "Required" by the manual's
-    own Parameters table when CREATE_SUB_WALL_ID=true — a self-contradiction
-    in the source; the worked Request/Response example sends it as real
-    client input (SUB_WALL_ID=1), so it is documented here as required,
-    matching the example rather than the "read only" label.
+    ⚠️ 2026-07-29 rewrite: the manual's own JSON Schema for this endpoint
+    (`CREATE_SUB_WALL_ID`/`SUB_WALL_ID`/`STORY: {FROM,TO}`/`VERTICAL_REBAR`/
+    `HORIZONTAL_REBAR`/`USE_END_REBAR`/`END_REBAR: {NAME,NUM,DIST}`/
+    `BE_HORIZONTAL_REBAR`/`BOUNDARY_ELEMENT_LENGTH`/
+    `CONCRETE_FACE_TO_CENTER_OF_REBAR: {DW,DE}`/`USE_MODEL_THICKNESS`/
+    `THICKNESS`) does not match what the live server actually implements for
+    `/db/REBW`, confirmed three ways against a real production Gen NX model
+    with real wall rebar data: `GET /db/REBW` echoed the fields below (not
+    the manual's), `GET /info/db/REBW` documents the same fields below as
+    the server's own schema, and a live `PUT` using the fields below
+    round-tripped correctly (verified, then reverted to the original
+    value). Every sibling endpoint checked the same session matched its own
+    documentation exactly — `/db/REBB` (this chapter) and
+    `/DESIGN/RC/KDS-41-20-2022/REBW` (ch26, the KDS-specific sibling) both
+    use the manual's long-form names correctly — so this looks like a
+    defect specific to `/db/REBW`'s manual section. Checked directly against
+    MIDASIT's official Zendesk article (not just the vendored manual copy):
+    https://support.midasuser.com/hc/en-us/articles/59359110968345
+    documents the same long-form names, ruling out a vendored-repo
+    transcription error — the official documentation itself doesn't match
+    its own server. See `docs/live_verification_notes.md`'s 2026-07-29
+    sections for the full reproduction.
     """
 
-    CREATE_SUB_WALL_ID: bool  # default false, optional
-    SUB_WALL_ID: int  # Sub Wall ID, "read only" per manual but sent as required input in the worked example, required if CREATE_SUB_WALL_ID=true
-    STORY: StoryRange  # required if CREATE_SUB_WALL_ID=true
-    VERTICAL_REBAR: RebarNameDist  # required
-    HORIZONTAL_REBAR: RebarNameDist  # required
-    USE_END_REBAR: bool  # default false, optional
-    END_REBAR: WallEndRebarSpec  # required if USE_END_REBAR=true
-    BE_HORIZONTAL_REBAR: RebarNameDist  # Boundary Element horizontal rebar, optional
-    BOUNDARY_ELEMENT_LENGTH: float  # default 0, optional
-    CONCRETE_FACE_TO_CENTER_OF_REBAR: ConcreteFaceToCenterOfRebar  # dw/de, required
-    USE_MODEL_THICKNESS: bool  # default true, optional
-    THICKNESS: float  # required if USE_MODEL_THICKNESS=false
+    ID: int  # read-only, optional
+    bUSE_MODEL_THICK: bool  # Use Model Thickness, optional
+    THICK: float  # Thickness, required if bUSE_MODEL_THICK=false
+    DW: float  # Dw (Concrete Face ~ Rebar Center), optional
+    DE: float  # De (Concrete Face ~ Rebar Center), optional
+    VER_BAR: RebarNameDist  # Vertical Rebar, optional
+    HOR_BAR: RebarNameDist  # Horizontal Rebar, optional
+    END_BAR: RebarNameDist  # End Rebar, optional
+    NUM_END_BAR: int  # End Rebar Num, optional
+    BE_HOR_BAR: RebarNameDist  # Boundary Element Horizontal Rebar, optional
+    BE_LENGTH: float  # Boundary Element Length, optional
+    vSTORY_NAME: List[str]  # Story Key List, optional
 
 
 class WallRebarPayload(TypedDict, total=False):
-    """docs/manual/24_DB_Design.md #12 — /db/REBW Specifications tables."""
+    """docs/manual/24_DB_Design.md #12 — /db/REBW. See `WallRebarItem`'s
+    docstring: the manual's own Specifications tables for this endpoint
+    don't match the live server; this payload documents the server-confirmed
+    shape instead."""
 
     ITEMS: List[WallRebarItem]  # min 1, required
 
@@ -457,6 +471,9 @@ class WallRebarPayload(TypedDict, total=False):
 class WallRebar(DbResource):
     ENDPOINT = "/db/REBW"
     NAME = "Modify Wall Rebar"
+    #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
+    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
+    PRODUCTS = GEN_ONLY
 
 
 # --- 13. /db/REBR — Modify Brace Rebar --------------------------------------
@@ -492,3 +509,6 @@ class BraceRebarPayload(TypedDict, total=False):
 class BraceRebar(DbResource):
     ENDPOINT = "/db/REBR"
     NAME = "Modify Brace Rebar"
+    #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
+    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
+    PRODUCTS = GEN_ONLY

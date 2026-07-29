@@ -3,7 +3,7 @@ import json
 import pytest
 import responses
 
-from midas_nx.client import ProductMismatchError, UnsupportedMethodError
+from midas_nx.client import UnsupportedMethodError
 from midas_nx.db.dynamic_loads import (
     DynamicNodalLoad,
     GroundAcceleration,
@@ -51,7 +51,7 @@ def test_response_spectrum_load_case_create_sends_documented_assign_shape(gen_cl
 
 
 @responses.activate
-def test_time_history_global_control_create_is_civil_only(civil_client, gen_client):
+def test_time_history_global_control_create_sends_documented_assign_shape(civil_client):
     responses.add(responses.POST, "https://x.test:443/civil/db/THGC", json={}, status=200)
     TimeHistoryGlobalControl.create(
         {1: {"GNT": 0, "ILT": 0, "bPCF": True, "MAXNS": 10, "MAXIT": 10}}, client=civil_client
@@ -59,8 +59,14 @@ def test_time_history_global_control_create_is_civil_only(civil_client, gen_clie
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["GNT"] == 0
 
-    with pytest.raises(ProductMismatchError):
-        TimeHistoryGlobalControl.create({1: {"GNT": 0}}, client=gen_client)
+
+@responses.activate
+def test_time_history_global_control_also_works_on_gen_client(gen_client):
+    # Not Civil-only despite the chapter's bridge-design framing — route +
+    # /info both answer on Gen NX too, live-checked 2026-07-29.
+    responses.add(responses.POST, "https://x.test:443/gen/db/THGC", json={}, status=200)
+    TimeHistoryGlobalControl.create({1: {"GNT": 0}}, client=gen_client)
+    assert len(responses.calls) == 1
 
 
 @responses.activate

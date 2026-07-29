@@ -1,0 +1,85 @@
+{
+  "generated_at": "2026-07-29T18:53:31+09:00",
+  "sdk": {
+    "package": "midas-nx",
+    "installed_version": "0.14.0",
+    "pypi_latest_version": "0.14.0"
+  },
+  "target": "MIDAS Civil NX connected session",
+  "scope": {
+    "estimated_unique_sdk_paths": 335,
+    "live_read_only_paths_tested": 298,
+    "db_resource_gets": 293,
+    "non_db_safe_gets": 5,
+    "not_live_called": {
+      "post_or_state_changing_command_paths": 35,
+      "resource_paths_without_get": 2
+    }
+  },
+  "effective_results": {
+    "success": 276,
+    "route_404": 22,
+    "success_rate_percent": 92.6,
+    "transient_timeout_recovered": 1
+  },
+  "db_sweep": {
+    "duration_seconds": 40.615,
+    "median_seconds": 0.0944,
+    "p95_seconds": 0.1185,
+    "p99_seconds": 0.3412,
+    "initial_success": 272,
+    "initial_error": 21,
+    "effective_success_after_retry": 273,
+    "404": 20,
+    "empty_success_responses_initial": 256,
+    "populated_success_responses": 16
+  },
+  "non_db_gets": [
+    {
+      "endpoint": "/ope/PROJECTSTATUS",
+      "outcome": "success"
+    },
+    {
+      "endpoint": "/ope/SECTPROP",
+      "outcome": "success"
+    },
+    {
+      "endpoint": "/ope/STORY_PARAM",
+      "outcome": "404"
+    },
+    {
+      "endpoint": "/ope/STORY_IRR_PARAM",
+      "outcome": "404"
+    },
+    {
+      "endpoint": "/view/SELECT",
+      "outcome": "success"
+    }
+  ],
+  "db_and_design_404_endpoints": [
+    "/DESIGN/RC/KDS-41-20-2022/MATD",
+    "/DESIGN/RC/KDS-41-20-2022/REBB",
+    "/DESIGN/RC/KDS-41-20-2022/REBC",
+    "/DESIGN/RC/KDS-41-20-2022/REBR",
+    "/DESIGN/RC/KDS-41-20-2022/REBW",
+    "/DESIGN/RC/KDS-41-20-2022/TRFT",
+    "/DESIGN/RC/KDS-41-20-2022/ULCT",
+    "/DESIGN/SRC/AIK-SRC2K/MATD",
+    "/DESIGN/STEEL/KDS-41-30-2022/ULCT",
+    "/db/DRLS",
+    "/db/EPST",
+    "/db/POSP",
+    "/db/REBB",
+    "/db/REBR",
+    "/db/REBW",
+    "/db/SDHY",
+    "/db/SDIS",
+    "/db/SSEIS",
+    "/db/STOR",
+    "/db/SWIND"
+  ],
+  "resource_paths_without_get": [
+    "/DESIGN/SRC/AIK-SRC2K/DSRC",
+    "/db/REBC"
+  ]
+}

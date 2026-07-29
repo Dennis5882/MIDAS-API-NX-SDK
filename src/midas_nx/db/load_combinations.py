@@ -48,11 +48,18 @@ class LoadCombinationGeneral(DbResource):
 
 
 class LoadCombinationConcrete(DbResource):
-    """#2 — ACTIVE: "INACTIVE"/"STRENGTH"/"SERVICE". Supports iTYPE=2 (ABS). Civil NX only."""
+    """#2 — ACTIVE: "INACTIVE"/"STRENGTH"/"SERVICE". Supports iTYPE=2 (ABS).
+
+    Not Civil-only despite the chapter's framing: live-confirmed 2026-07-29
+    against a real production Gen NX model with 494 real, populated rows —
+    see db/base.py's GEN_ONLY docstring's sibling finding for the other 31
+    ch08/ch17 endpoints that answer on Gen too (most with an empty table,
+    this one with real data). PRODUCTS left at the class default
+    (gen+civil).
+    """
 
     ENDPOINT = "/db/LCOM-CONC"
     NAME = "Load Combinations - Concrete Design"
-    PRODUCTS = frozenset({"civil"})
 
 
 class LoadCombinationSteel(DbResource):
@@ -70,11 +77,16 @@ class LoadCombinationSRC(DbResource):
 
 
 class LoadCombinationCompositeSteelGirder(DbResource):
-    """#5 — ACTIVE: "INACTIVE"/"STRENGTH"/"SERVICE". iTYPE=2 (ABS) not supported. Civil NX only (bridge design)."""
+    """#5 — ACTIVE: "INACTIVE"/"STRENGTH"/"SERVICE". iTYPE=2 (ABS) not supported.
+
+    Not Civil-only despite the chapter's bridge-design framing: route + /info
+    schema both answer on Gen NX too (empty table, live-checked 2026-07-29)
+    — see db/base.py's GEN_ONLY docstring's sibling finding. PRODUCTS left
+    at the class default (gen+civil).
+    """
 
     ENDPOINT = "/db/LCOM-STLCOMP"
     NAME = "Load Combinations - Composite Steel Girder Design"
-    PRODUCTS = frozenset({"civil"})
 
 
 class LoadCombinationSeismic(DbResource):

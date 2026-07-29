@@ -19,7 +19,11 @@ modelling script needs them, not the order the manual lists them:
     static     the rest of ch06's static loads, plus ch07 element/nodal
                temperature
     stage      construction stages and what attaches to them
-    moving     Civil-only moving-load chain (code -> lane -> vehicle -> case)
+    moving     moving-load chain (code -> lane -> vehicle -> case). Its
+               fixtures are Korea-standard and kept Civil-only here; the
+               underlying routes answer on Gen too but per-CODE, not
+               unconditionally (see the tier's own comment) — /db/CMCS in
+               the stage tier is the one still genuinely Civil-only
 
 ``--tier`` runs a subset. Every tier declares its own seed, so a tier is
 runnable on its own.
@@ -392,12 +396,20 @@ def _core_cases() -> List[Case]:
             item_id=2, confirmed=True,
         ),
         # Deletes itself, which is what lets the moving tier re-create the
-        # code it needs. Civil-only; Gen 404s on the whole ch08 family.
+        # code it needs. Framed by the manual as Civil-only; live-confirmed
+        # 2026-07-29 to also answer on Gen NX — but per-CODE, not
+        # unconditionally: "AASHTO STANDARD"/"AASHTO LRFD"/"EUROCODE"/"BS"
+        # create fine on Gen, while "KOREA"/"CHINA"/"KSCE-LSD15" answer 201
+        # with `[Error] ... Unavailable moving load code` there (confirmed
+        # live; presumably a licensed-module gate per region code, not a
+        # route-level restriction). Uses "AASHTO STANDARD"/"AASHTO LRFD" here
+        # specifically so this case runs unmodified on both products — don't
+        # swap back to a KR/CN code without re-splitting per product.
         Case(
             MovingLoadCode,
-            {"CODE": "KOREA"}, {"CODE": "AASHTO LRFD"},
-            lambda p: p.get("CODE"), "KOREA", "AASHTO LRFD",
-            confirmed=True, products=("civil",),
+            {"CODE": "AASHTO STANDARD"}, {"CODE": "AASHTO LRFD"},
+            lambda p: p.get("CODE"), "AASHTO STANDARD", "AASHTO LRFD",
+            confirmed=True,
         ),
     ]
 
@@ -864,7 +876,17 @@ def _stage_cases() -> List[Case]:
 
 
 # --------------------------------------------------------------------------
-# Tier: moving — the Civil-only moving-load chain.
+# Tier: moving — the moving-load chain, Korea-standard fixtures throughout
+# (MVCD "KOREA", vehicles keyed to "KS-RB"). Kept Civil-only *in this
+# checker* even though the underlying routes answer on Gen too (see
+# db/base.py's GEN_ONLY docstring's sibling note): live-tested 2026-07-29,
+# /db/MVCD itself creates fine on Gen for "AASHTO STANDARD"/"AASHTO LRFD"/
+# "EUROCODE"/"BS" but answers `[Error] ... Unavailable moving load code` for
+# "KOREA"/"CHINA"/"KSCE-LSD15" — presumably a licensed-module gate per
+# region code, not a route-level restriction. This tier's Korea-specific
+# fixture chain (lane/vehicle/case) has not been rebuilt around a
+# Gen-available code, so it stays Civil-only here until someone does that
+# work and actually watches it pass live.
 # --------------------------------------------------------------------------
 
 
@@ -977,7 +999,7 @@ TIERS: List[Tier] = [
     Tier("boundary", "springs and links", _boundary_seeds, _boundary_cases),
     Tier("static", "remaining static loads + temperature", _no_seeds, _static_cases),
     Tier("stage", "construction stages", _stage_seeds, _stage_cases),
-    Tier("moving", "moving loads (Civil NX only)", _moving_seeds, _moving_cases),
+    Tier("moving", "moving loads (Civil NX only in this checker's fixtures)", _moving_seeds, _moving_cases),
 ]
 
 

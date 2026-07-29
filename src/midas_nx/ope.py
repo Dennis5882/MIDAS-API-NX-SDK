@@ -409,7 +409,14 @@ class StoryCheckParameterArgument(TypedDict, total=False):
 
 
 def get_story_check_parameter(client: Optional[MidasClient] = None) -> dict:
-    """docs/manual/15_OPE.md #10 — /ope/STORY_PARAM — Story Check Parameter (GET)."""
+    """docs/manual/15_OPE.md #10 — /ope/STORY_PARAM — Story Check Parameter (GET).
+
+    Live-confirmed Gen NX only (404 on Civil, twice independently, 2026-07-29)
+    — see db/base.py's GEN_ONLY docstring. Not enforced here: unlike
+    db/*/design/* resources, plain doc/ope/view functions have no PRODUCTS
+    gate in this SDK, so a Civil call reaches the server and 404s there
+    rather than raising client-side.
+    """
     return _get("/ope/STORY_PARAM", client)
 
 
@@ -424,27 +431,39 @@ def set_story_check_parameter(argument: StoryCheckParameterArgument, client: Opt
 class StoryIrregularityCheckParameterArgument(TypedDict, total=False):
     """docs/manual/15_OPE.md #11 — /ope/STORY_IRR_PARAM — Story Irregularity Check Parameter.
 
-    Doc inconsistency: the Parameters table renders STORY_DRIFT_METHOD /
-    STORY_STIFFNESS_METHOD / SEISMIC_BEHAVIOR_FACTOR values with spaces (e.g.
+    ⚠️ 2026-07-29 correction: an earlier draft of this docstring followed the
+    manual's worked POST-request/response JSON example, which sends
+    STORY_DRIFT_METHOD/STORY_STIFFNESS_METHOD/SEISMIC_BEHAVIOR_FACTOR
+    space-stripped (e.g. "Max.DriftofOuterExtremePoints", "1/StoryDriftRatio",
+    "3orbelow"), over the Parameters table's space-containing rendering (e.g.
     "Max. Drift of Outer Extreme Points", "1 / Story Drift Ratio",
-    "3 or below"), but the worked POST-request/response JSON examples send
-    the space-stripped form (e.g. "Max.DriftofOuterExtremePoints",
-    "1/StoryDriftRatio", "3orbelow"). We follow the worked examples as the
-    more concrete source (same precedent as EigenvalueRitzLoadCaseItem in
-    db/analysis_control.py). The table's first STORY_DRIFT_METHOD option,
-    "Drift at the Center of Mass", never appears in a worked example, so its
-    space-stripped form ("DriftattheCenterofMass") below is an inference by
-    the same pattern, not independently confirmed.
+    "3 or below") — reasoning the worked example was the more concrete
+    source. Live evidence against a real production Gen NX model
+    contradicts that: `GET /ope/STORY_IRR_PARAM` returned
+    ``{"STORY_DRIFT_METHOD": "Drift at the Center of Mass",
+    "STORY_STIFFNESS_METHOD": "1 / Story Drift Ratio"}`` — the
+    space-containing form, matching the Parameters table and matching the
+    sibling `post/story.py` STORY_DRIFT endpoint's own live-confirmed
+    convention. The manual's worked example for this chapter is the outlier;
+    space-containing is now documented as canonical. Not enforced at
+    runtime either way (TypedDicts here are documentation, not validation).
     """
 
     COUNTRY_CODE: str  # "NTC2018"/"NTC2012"/"NTC2008"/"KBC2009"/"NSR-10"/"NTCS2020"/"NTCS2023"/"NSCP2015"/"IS1893(2016)"/"IS16700(2023)", required
-    STORY_DRIFT_METHOD: str  # "DriftattheCenterofMass"/"Max.DriftofOuterExtremePoints"/"Max.DriftofAllVerticalElements", required
-    STORY_STIFFNESS_METHOD: str  # "1/StoryDriftRatio"/"StoryShear/StoryDrift", required
-    SEISMIC_BEHAVIOR_FACTOR: str  # "4"/"3orbelow", required if COUNTRY_CODE in {"NTCS2023", "NTCS2020"}
+    STORY_DRIFT_METHOD: str  # "Drift at the Center of Mass"/"Max. Drift of Outer Extreme Points"/"Max. Drift of All Vertical Elements", required
+    STORY_STIFFNESS_METHOD: str  # "1 / Story Drift Ratio"/"Story Shear / Story Drift", required
+    SEISMIC_BEHAVIOR_FACTOR: str  # "4"/"3 or below", required if COUNTRY_CODE in {"NTCS2023", "NTCS2020"}
 
 
 def get_story_irregularity_check_parameter(client: Optional[MidasClient] = None) -> dict:
-    """docs/manual/15_OPE.md #11 — /ope/STORY_IRR_PARAM — Story Irregularity Check Parameter (GET)."""
+    """docs/manual/15_OPE.md #11 — /ope/STORY_IRR_PARAM — Story Irregularity Check Parameter (GET).
+
+    Live-confirmed Gen NX only (404 on Civil, twice independently, 2026-07-29)
+    — see db/base.py's GEN_ONLY docstring. Not enforced here: unlike
+    db/*/design/* resources, plain doc/ope/view functions have no PRODUCTS
+    gate in this SDK, so a Civil call reaches the server and 404s there
+    rather than raising client-side.
+    """
     return _get("/ope/STORY_IRR_PARAM", client)
 
 

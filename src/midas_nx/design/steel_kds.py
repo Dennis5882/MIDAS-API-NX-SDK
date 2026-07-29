@@ -23,7 +23,7 @@ from typing import Any, Dict, List, Optional, TypedDict
 
 from ..client import MidasClient
 from ..client import post_argument as _post
-from ..db.base import GET_DELETE_METHODS, GET_PUT_DELETE_METHODS, DbResource
+from ..db.base import GEN_ONLY, GET_DELETE_METHODS, GET_PUT_DELETE_METHODS, DbResource
 from ..post.base import NodeElemsSelector, TableStyles, TableUnit
 
 _BASE = "/DESIGN/STEEL/KDS-41-30-2022"
@@ -198,6 +198,9 @@ class UndergroundLoadCombinationTypePayload(TypedDict, total=False):
 class UndergroundLoadCombinationType(DbResource):
     ENDPOINT = f"{_BASE}/ULCT"
     NAME = "Underground Load Combination Type"
+    #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
+    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
+    PRODUCTS = GEN_ONLY
 
 
 # --- 9. DESIGN/STEEL/KDS-41-30-2022/SUEQ — Scale up Factor for Earthquake ---

@@ -2472,13 +2472,21 @@ after their respective "omitted fields" call, and neither did after the
 **Root cause: `/db/NMAS` crashes when `rmX`/`rmY`/`rmZ` are absent from the
 payload — an uninitialized-value read or missing-default bug server-side
 for those three fields specifically — not a defect in nodal-mass writes in
-general.** The manual documents them as optional with a default of `0`;
-the server apparently doesn't apply that default safely when they're
-missing, but is fine when a caller supplies it explicitly. This explains
-every prior reproduction (this file's, `docs/vendor_repro_nmas.py`'s, and
-`live_crud_check.py`'s fixtures all omitted these fields) without
-contradicting any of it — the crash was always real, just narrower in
-scope than "the whole endpoint is broken" implied.
+general.** Re-checked against the official article directly (not the
+vendored copy, per this file's own "fetch the Zendesk article" lesson from
+the 2026-07-27 section-B correction):
+[support.midasuser.com/hc/en-us/articles/35952994344985-Nodal-Masses](https://support.midasuser.com/hc/en-us/articles/35952994344985-Nodal-Masses)'s
+Specifications table documents `rmX`/`rmY`/`rmZ` as Optional with Default
+`0`, exactly as the vendored manual said — so every omitted-fields request
+this investigation sent was fully spec-compliant, and the server crashing
+on it is unambiguously a defect, not a documentation gap or a caller
+mistake. The server apparently doesn't apply that documented default
+safely when the fields are missing, but is fine when a caller supplies it
+explicitly. This explains every prior reproduction (this file's,
+`docs/vendor_repro_nmas.py`'s, and `live_crud_check.py`'s fixtures all
+omitted these fields) without contradicting any of it — the crash was
+always real, just narrower in scope than "the whole endpoint is broken"
+implied.
 
 **Fix applied**: `NodalMass.create()`/`.update()` in `db/static_loads.py`
 now merge `{"rmX": 0.0, "rmY": 0.0, "rmZ": 0.0}` under any item that
@@ -2496,6 +2504,410 @@ docstring in `db/static_loads.py` (now describes the fix, not just the
 symptom), `live_crud_check.py` (case un-quarantined, module docstring's
 "42 of 43" corrected to all 43), and `docs/vendor_report_ko.md`'s A-1
 (rewritten to lead with the root cause and the workaround).
+
+## 2026-07-29 — the 20 Civil 404s independently reproduced, `PRODUCTS` corrected
+
+The caveat below asked for independent reproduction — different account,
+different session — before touching `PRODUCTS` for the 20 endpoints found
+404ing on the Civil v2.2 (07/28/2026) sweep. That arrived the same day: a
+separately run validation sweep (`docs/Codex Report/midas_nx_0.14.0_civil_*`
+and `..._gen_*`), executed from a different machine/session against the
+same day's freshly patched Civil and Gen builds, landed on **the exact same
+20 Civil endpoints** (`db_and_design_404_endpoints` in its JSON summary) and
+**the exact same 7 Gen endpoints** (`CMCS`, `EWSF`, `PLCB`, `RCHK`, `SPAN`,
+`STRPSSM`, `WVLD` — the latter three already `CIVIL_ONLY`/`HYPER_S_ONLY` in
+the SDK, so unsurprising; the rest confirm the existing accounting). Both
+tools also agree the 20 Civil 404s are 404 at the `/info` schema level too,
+not just the GET route.
+
+That satisfies this file's own reproduction bar, so all 20 are now declared
+`GEN_ONLY` (new constant in `db/base.py`, same pattern as `HYPER_S_ONLY`):
+the 11 `db/*` endpoints (`STOR`, `SWIND`, `SSEIS`, `POSP`, `EPST`, `DRLS`,
+`SDHY`, `SDIS`, `REBB`, `REBR`, `REBW`) and the 9 design-chapter endpoints
+(`/DESIGN/RC/KDS-41-20-2022/{MATD,REBB,REBC,REBR,REBW,TRFT,ULCT}`,
+`/DESIGN/SRC/AIK-SRC2K/MATD`, `/DESIGN/STEEL/KDS-41-30-2022/ULCT`). Guarded
+by a parametrized test, `tests/db/test_civil_v22_gen_only_products.py`,
+mirroring `test_hyper_s_products.py`.
+
+The independent sweep also surfaced three endpoints not previously in this
+file's list, all looking like the same pattern but **not yet independently
+reproduced twice**, so `PRODUCTS` was deliberately left unchanged for them:
+
+- `/db/REBC` (ch24, POST-only, no GET) — its `/info` schema answers on Gen,
+  404s on Civil.
+- `/ope/STORY_PARAM` and `/ope/STORY_IRR_PARAM` — GET succeeds on Gen, 404s
+  on Civil.
+
+## 2026-07-29 (later same day) — live re-verification with both products open
+
+With Civil NX and Gen NX both connected in the same session, re-ran every
+classification claim above directly through the SDK (`MidasClient(...,
+strict_product=False)` on both clients, so the SDK's own `PRODUCTS` guard
+couldn't short-circuit the call — the point was to hit the real server, not
+re-confirm the guard against itself):
+
+| Family | Classification | Probed | Result |
+|---|---|---:|---|
+| `GEN_ONLY` (the 20 corrected above) | civil GET fails, gen GET ok | 20/20 | **20/20 matched**, byte-identical to the Civil v2.2 sweep and the independent Codex sweep |
+| `HYPER_S_ONLY` (13 implemented `-M1` endpoints) | civil GET ok, gen GET fails | 13/13 | **13/13 matched**, no change since 2026-07-26 |
+
+Both families are now confirmed a third time (`GEN_ONLY`) or a second time
+(`HYPER_S_ONLY`, unchanged since first confirmed) with zero mismatches.
+
+**The 3 previously-unconfirmed candidates also confirmed this session** —
+this is their second independent reproduction, so this file's own bar for
+acting is now met:
+
+- `/db/REBC` (ch24, POST-only): `.info()` answers on Gen, 404s on Civil.
+- `/ope/STORY_PARAM`: GET succeeds on Gen, 404s on Civil.
+- `/ope/STORY_IRR_PARAM`: GET succeeds on Gen, 404s on Civil.
+
+**Action taken**: `db.design.ColumnRebar` (`/db/REBC`) is now `PRODUCTS =
+GEN_ONLY`, guarded in the same `test_civil_v22_gen_only_products.py` test
+(now 21 endpoints). `docs/coverage.json` updated to match.
+`/ope/STORY_PARAM` and `/ope/STORY_IRR_PARAM` are documented as Gen-only in
+`get_story_check_parameter`'s and `get_story_irregularity_check_parameter`'s
+docstrings in `ope.py`, but **not enforced** — plain `doc.py`/`ope.py`/
+`view.py` functions have no `PRODUCTS` gate anywhere in this SDK (they're
+functions, not `DbResource` subclasses), so a Civil call against either
+still reaches the server and 404s there rather than raising client-side.
+Adding a product-gate mechanism to that whole module family would be a
+bigger design change than this session's scope — flagged for a future
+decision, not done here.
+
+**Final classification as of this session** (all three families now
+independently confirmed at least twice, zero open mismatches):
+`GEN_ONLY` = 21 endpoints (the 20 above + `/db/REBC`), `HYPER_S_ONLY` = 13
+implemented + 8 undocumented-stub `-M1` endpoints (unchanged), `CIVIL_ONLY`
+= the ch08/ch17 bridge/moving-load chapters plus the 7 endpoints corrected
+2026-07-29 morning (`CMCS` and friends) — unchanged, not re-probed this
+session since the user's request was specifically the Gen-only and
+Hyper-S-only families plus the 3 unconfirmed candidates.
+
+## 2026-07-29 (later still) — STORY_PARAM/STORY_IRR_PARAM against a real production Gen NX model, and a manual defect found in the process
+
+The prior session's Gen NX GET check for `/ope/STORY_PARAM`/`/ope/STORY_IRR_PARAM`
+ran against whatever model happened to be open — good enough to confirm the
+route answers, not enough to confirm it answers *meaningfully*. With a real
+production model open (`/ope/PROJECTSTATUS`: 4044 nodes, 4686 elements, 11
+stories, 441+494+108 load combinations across three design codes — not a
+scratch model), re-ran the GET calls directly:
+
+```
+GET /db/STOR              -> 11 real stories (B1, 1F..9F, Roof) with populated
+                              wind/seismic eccentricity and torsional data
+GET /ope/STORY_PARAM      -> {"COUNTRY_CODE": "NTC2018"}
+GET /ope/STORY_IRR_PARAM  -> {"COUNTRY_CODE": "NTC2018",
+                               "STORY_DRIFT_METHOD": "Drift at the Center of Mass",
+                               "STORY_STIFFNESS_METHOD": "1 / Story Drift Ratio"}
+```
+
+Both endpoints answered with real, previously human-configured values (not
+defaults or an empty shape), settling the "does this route actually work on
+Gen, not just technically respond" question the user raised. No analysis run
+was needed — both endpoints are pre-analysis configuration (country code and
+calculation-method selection used by later story-drift/irregularity result
+tables), not analysis output, so `/doc/ANAL` was never called this session.
+
+**Found in the process: a real manual defect, not just a confirmation.**
+`StoryIrregularityCheckParameterArgument` in `ope.py` had documented
+`STORY_DRIFT_METHOD`/`STORY_STIFFNESS_METHOD`/`SEISMIC_BEHAVIOR_FACTOR` as
+space-stripped (`"Max.DriftofOuterExtremePoints"`, `"1/StoryDriftRatio"`,
+`"3orbelow"`), reasoning the manual's own worked JSON example was more
+concrete evidence than the Parameters table's space-containing rendering.
+The live GET above returned the **space-containing** form
+(`"Drift at the Center of Mass"`, `"1 / Story Drift Ratio"`) for a
+real, human-set value — directly contradicting that worked example, and
+matching both the Parameters table and the sibling `post/story.py`
+STORY_DRIFT endpoint's own already-live-confirmed convention (see that
+file's `STORY_DRIFT_METHOD` comments, chapter `21_POST_StoryTables.md`).
+Corrected `ope.py`'s docstring/comment and `tests/test_ope.py`'s example
+values to the space-containing form as canonical. Not runtime-enforced
+either way — TypedDicts here are documentation, not validation — but this
+is exactly the "manual's worked example is the outlier, live evidence and
+the Parameters table agree" pattern this project has hit before (KDS2016,
+Story Drift X_DIR/X-DIR).
+
+## 2026-07-29 (still later) — the mirror-image finding: 32 of 47 "Civil-only" endpoints answer on Gen too
+
+Asked to also re-verify the plain `CIVIL_ONLY` family (excluding Hyper-S,
+already reconfirmed above) with both Civil NX and Gen NX open at once.
+Enumerated all 47 non-Hyper-S `CIVIL_ONLY` `DbResource` classes and probed
+each with `MidasClient(..., strict_product=False)` on both clients (same
+methodology as the `GEN_ONLY`/`HYPER_S_ONLY` re-check above — bypass the
+SDK's own guard to see what the server actually does).
+
+**32 of the 47 answered on Gen NX too** — not the expected 404. Checked
+`/info/db/...` schema for all 32: every one resolves a full JSON Schema on
+Gen, the same evidentiary bar this file has used everywhere else to call a
+route "genuinely exists" rather than "coincidentally didn't error." Content
+of the 32 GET responses:
+
+- **`/db/LCOM-CONC`** (Load Combinations - Concrete Design): **494 real,
+  populated rows** — matching this exact production model's own
+  `/ope/PROJECTSTATUS` count (`'Load Comb(Concrete)': 494`). Unambiguous:
+  this is a real, working, populated Gen NX feature, not an artifact.
+- The other 31 returned `{"message": ""}` (the standard empty-table shape)
+  — ambiguous on GET alone, but the matching `/info` schema on all 31 is the
+  same signal this file already treats as sufficient elsewhere.
+
+The 32: `IMPF`, `LCOM-CONC`, `LCOM-STLCOMP`, `LLAN`, `LLANch`, `LLANid`,
+`LLANop`, `LLANtr`, `MLSP`, `MLSR`, `MVCD`, `MVCT`, `MVCTbs`, `MVCTch`,
+`MVCTid`, `MVCTtr`, `MVHC`, `MVHL`, `MVHLtr`, `MVLD`, `MVLDbs`, `MVLDch`,
+`MVLDeu`, `MVLDid`, `MVLDpl`, `MVLDtr`, `SINF`, `SLAN`, `SLANch`, `SLANop`,
+`THGC`, `ULFC`.
+
+**This directly contradicted `db/base.py`'s own `CIVIL_ONLY` docstring**,
+which cited `/db/LCOM-CONC` and "the entire ch08/ch17 bridge/moving-load
+chapters" as the canonical example of this constant's use — that example
+turned out to be wrong.
+
+**The remaining 15 stayed genuinely Civil-only** (404 on Gen, both GET and
+by extension the route): `CAMB`, `CJFG`, `CMCS`, `CRGR`, `DYFG`, `DYLA`,
+`DYNF`, `EWSF`, `GCMB`, `GSBG`, `PLCB`, `RCHK`, `SPAN`, `STRPSSM`, `WVLD` —
+7 of these are the ones already corrected 2026-07-26 after independent Gen
+404s, so no surprise there; the other 8 (bridge girder/camber-control trio
+plus the railway/concurrent-group set) are newly reconfirmed, not new
+corrections.
+
+**Decision, made with the user (not unilateral)**: given the scale (32
+endpoints) and that it contradicts documented domain framing the author
+themselves wrote, this was raised as an explicit question rather than
+auto-applied. The user's read on it: the API clearly does respond
+("분명히 통신이 되는데 only라고 쓴 것은 아닌 것 같음" — "it clearly
+communicates, so writing 'only' doesn't seem right"), and whether an
+engineer *should* actually drive bridge/moving-load features from a Gen NX
+session is a separate, per-project judgment call ("목적에 따라 다르겠지만
+엔지니어가 판단해서 사용해야 할 것 같음") — not something `PRODUCTS`
+should gate. Confirmed: apply the same evidentiary bar used for
+`GEN_ONLY`/`HYPER_S_ONLY` and correct all 32.
+
+**Action taken**: all 32 classes' `PRODUCTS = CIVIL_ONLY` override removed
+(back to the class default, `gen+civil`) across `db/moving_loads.py` (23),
+`db/analysis_control.py` (5, the `MVCT` family), `db/load_combinations.py`
+(2), `db/dynamic_loads.py` (1, `THGC`), `db/bridge.py` (1, `ULFC`).
+`docs/coverage.json` updated to match (24 of the 32 needed a `products`
+fix; 8 already said `["gen","civil"]` there despite the SDK's `PRODUCTS`
+disagreeing — the manual-derived coverage metadata had actually been right
+and the SDK's own class attribute was the stale one). Five tests
+(`test_*_is_civil_only` in `test_analysis_control.py`, `test_dynamic_loads.py`,
+`test_load_combinations.py` ×2, `test_moving_loads.py`) that asserted a
+`ProductMismatchError` on the Gen client were rewritten to assert the call
+now succeeds instead. Module-level docstrings in `moving_loads.py`,
+`bridge.py`, and the `CIVIL_ONLY` constant itself in `db/base.py` corrected
+to stop citing the wrong example and to record the finding.
+
+**During this session's live probing, the user observed a brief popup on
+the Civil NX side** ("Civil에 뭔가 거부되었다는 팝업") — normal again by
+the time it was reported, popup already dismissed, no session hang.
+Everything run against Civil in this session was GET/`.info()` only (no
+POST/PUT/DELETE), so the trigger isn't identified yet. The user was
+re-attempting to reproduce it with a screenshot at the time of this note;
+if a cause is confirmed, record it here rather than assuming GET is
+unconditionally safe against this server the way this file has assumed
+throughout.
+
+## 2026-07-29 (final) — `GET /db/CAMB` can trigger the same `Program Files` write-permission dialog as crash recovery, confirmed A/B
+
+While reproducing the CIVIL_ONLY sweep above for the user to watch, a modal
+popup flashed on the Civil NX side mid-run: `"...5 FCM General.mcb
+액세스가 거부되었습니다"` (access denied), for the product's own bundled
+tutorial file at `C:\Program Files\MIDAS\MIDAS CIVIL NX\MIDAS CIVIL
+NX\Tutorial\5 FCM General.mcb`. The user had that FCM tutorial model open at
+the time. The API call itself still answered normally — this is the same
+"HTTP success, modal dialog on the side" pattern this file has documented
+before (see the crash-recovery `_restore.mcb` case and the `/doc/SAVEAS`
+case in `CLAUDE.md`).
+
+Isolated the trigger with a controlled A/B, same session, same call, one
+variable changed:
+
+| Document location | `GET /db/CAMB` (FCM Camber Control) | Popup |
+|---|---|---|
+| `C:\Program Files\...\Tutorial\5 FCM General.mcb` | `{"message": ""}` | **Yes** |
+| Same file, moved to `Downloads` | `{"message": ""}` | **No** |
+
+Confirmed: **`/db/CAMB` — a plain read GET, not a write, not a crash — can
+still trigger this dialog**, whenever the open document sits in a
+write-protected location. This generalizes the previously-known
+crash-recovery-only case (`_restore.mcb` under `Program Files`, first seen
+during the Gen NX hang investigation) into a broader pattern: some
+GET-shaped commands apparently attempt to write an auxiliary/cache file next
+to the document even to answer a read, and when that write is denied by
+Windows, the dialog surfaces regardless of the command's nominal read/write
+classification. Recorded as vendor report A-7's second, independently
+reproduced trigger (`docs/vendor_report_ko.md`).
+
+**Practical implication for this SDK and its scripts**: `GET` is not
+unconditionally side-effect-free against this server the way this file has
+assumed throughout — a document living under `Program Files` (or any other
+path a standard account can't write to) is the actual risk factor, not the
+HTTP method. `scripts/live_readonly_sweep.py`'s docstring claim ("SAFE TO
+RUN AGAINST AN OPEN MODEL... issues GET only") still holds for *data*
+safety (no mutation, no discarded work) but should not be read as "will
+never pop a dialog" — advise users to keep working documents off
+`Program Files`-style paths before a sweep, the same advice already given
+for A-7's crash-recovery case.
+
+## 2026-07-29 (last) — full CRUD re-run on the newest Civil build, 43/43 clean including NMAS
+
+With the user's FCM model already saved aside as a disposable copy, ran
+`scripts/live_crud_check.py --product civil --include-crashers` against the
+same live Civil NX session (this discards the currently-open document via
+`/doc/NEW`, same as always — the FCM file itself was unaffected since it
+was saved separately first). All 6 tiers, all 43 resources, full
+create→read→update→read→delete→read round trip: **43/43 PASS, zero
+failures**, including `/db/NMAS` (`create=ok read_back=ok update=ok
+read_updated=ok delete=ok read_deleted=ok`) — the first full Civil-side CRUD
+confirmation of the omitted-`rmX`/`rmY`/`rmZ` fix from earlier today, not
+just the Gen-side one already recorded above. Also ran a fresh
+`live_readonly_sweep.py --product civil --record-coverage` against the FCM
+model itself (before the CRUD run): 273/273 GET-capable resources answered,
+zero 404s — a clean end-to-end confirmation that today's `GEN_ONLY`/
+`CIVIL_ONLY` corrections match live behavior with no regressions.
+
+Followed by `scripts/live_crud_check.py --product gen --include-crashers`
+against the same-day Gen NX session: **37/37 PASS**, zero failures,
+including `/db/NMAS` again. The 6 missing cases versus Civil's 43 are
+`/db/CMCS` (stage tier) and the whole `moving` tier (4 cases) — both
+declared `products=("civil",)` inside the checker script itself, which
+wasn't updated for today's `CIVIL_ONLY`→`gen+civil` corrections above.
+Worth widening in a future session (`MVCD`/`LLAN`/`MVHL`/`MVLD` are now
+confirmed to work on Gen too), but out of scope for this one.
+
+## 2026-07-29 (very last) — `/db/MVCD`'s Gen availability is per-CODE, not unconditional
+
+Tried to widen `scripts/live_crud_check.py`'s `moving` tier to also run on
+Gen NX, since today's finding above showed the whole ch08 chapter answering
+there. The checker's own discipline caught a real nuance immediately: its
+`/db/MVCD` seed (`CODE: "KOREA"`) came back `REGRESS` — a live 201 carrying
+`[Error] Errors detected in Moving Load Code Data.(Item:Unavailable moving
+load code)`.
+
+Isolated with a quick sweep of every documented `CODE` value against Gen:
+
+```
+KOREA           -> [Error] ... Unavailable moving load code
+CHINA           -> [Error] ... Unavailable moving load code
+KSCE-LSD15      -> [Error] ... Unavailable moving load code
+AASHTO STANDARD -> created ok
+AASHTO LRFD     -> created ok
+EUROCODE        -> created ok
+BS              -> created ok
+```
+
+So `/db/MVCD` genuinely creates and round-trips on Gen NX — for the
+US/Euro/UK codes. The Korea/China-specific codes 201 with an error there,
+presumably a licensed-module gate scoped to the region code rather than a
+route-level product restriction. This doesn't contradict the `GEN_ONLY`
+finding above (route + `/info` both legitimately resolve on Gen) — it
+refines it: **route existence and per-value availability are different
+questions**, and GET/`.info()` alone can only answer the first.
+
+**Action**: `live_crud_check.py`'s core-tier `/db/MVCD` case now uses
+`"AASHTO STANDARD"`/`"AASHTO LRFD"` instead of `"KOREA"`/`"AASHTO LRFD"`, so
+it runs unmodified and confirmed on both products (43/43 Civil, 38/38 Gen
+after the change). The `moving` tier's other three cases (`LLAN`/`MVHL`/
+`MVHC`/`MVLD`) stay Civil-only *in this checker*, since their fixture chain
+is Korea-standard throughout (vehicle `STANDARD_CODE: "KS-RB"`) and hasn't
+been rebuilt around a Gen-available code — that fixture work is unstarted,
+not evidence those routes are Civil-only (they aren't, per the `GEN_ONLY`
+finding). `PRODUCTS` on the SDK classes themselves is unchanged by this —
+this section is entirely about the checker script's fixture coverage, not
+a source-level correction.
+
+## 2026-07-29 (truly last) — `/db/REBW`'s manual section doesn't match the live server at all
+
+With a second real production Gen NX model opened (KDS/Korean-code
+building, 4044 nodes, 4686 elements — the same model from this file's
+`STORY_PARAM`/`STORY_IRR_PARAM` section above), re-ran the readonly sweep
+(`--record-coverage`, 265/265 GET-capable Gen resources, zero errors) and
+then spot-checked populated design-chapter data for manual drift, the same
+way `/db/STAG`/`/db/TDNA` were checked against the Civil FCM model earlier.
+
+`/db/REBW` (ch24, "Modify Wall Rebar," 102 real rows) came back completely
+unrecognizable against its own documented schema:
+
+```
+Documented (manual's own JSON Schema, matches this SDK's old WallRebarItem):
+  CREATE_SUB_WALL_ID, SUB_WALL_ID, STORY: {FROM, TO},
+  VERTICAL_REBAR: {NAME, DIST}, HORIZONTAL_REBAR: {NAME, DIST},
+  USE_END_REBAR, END_REBAR: {NAME, NUM, DIST},
+  BE_HORIZONTAL_REBAR: {NAME, DIST}, BOUNDARY_ELEMENT_LENGTH,
+  CONCRETE_FACE_TO_CENTER_OF_REBAR: {DW, DE},
+  USE_MODEL_THICKNESS, THICKNESS
+
+Live GET /db/REBW:
+  {"ID": 0, "bUSE_MODEL_THICK": true, "THICK": 0, "DW": 0.05, "DE": 0.05,
+   "VER_BAR": {"NAME": "D16", "DIST": 0.2},
+   "HOR_BAR": {"NAME": "D13", "DIST": 0.25},
+   "END_BAR": {"NAME": "", "DIST": 0}, "NUM_END_BAR": 0,
+   "BE_HOR_BAR": {"NAME": "D10", "DIST": 0.2}, "BE_LENGTH": 0}
+```
+
+Every field is renamed (and `DW`/`DE` flattened out of any nesting), and
+`STORY` doesn't exist as `{FROM,TO}` at all. Two checks isolated this to
+`/db/REBW` specifically, not a systemic ch24 problem:
+
+- **`/db/REBB`** (ch24's sibling, "Modify Beam Rebar") matched its own
+  documentation exactly — `vMAIN_BAR_TOP`, `SHEAR_BAR`, `SKIN_BAR_NAME`,
+  all present as documented, real data.
+- **`/DESIGN/RC/KDS-41-20-2022/REBW`** (ch26, the KDS-specific sibling for
+  the *same physical walls*, same 102 rows) also matched its own
+  documentation exactly — `VERTICAL_REBAR`, `HORIZONTAL_REBAR`,
+  `CONCRETE_FACE_TO_CENTER_OF_REBAR: {DW,DE}`, all present, long-form.
+
+`GET /info/db/REBW` confirmed the abbreviated shape is the server's own
+stated schema, not a GET-only quirk — it documents `bUSE_MODEL_THICK`,
+`VER_BAR`, `HOR_BAR`, `END_BAR`, `NUM_END_BAR`, `BE_HOR_BAR`, `BE_LENGTH`,
+and `vSTORY_NAME: [string]` (a story-name array, not a `{FROM,TO}` range)
+as the `Argument` schema. Confirmed it's also the real write contract, not
+just read: picked one existing wall (id 101), backed up its exact current
+value, sent a `PUT` using the info-confirmed field names changing
+`VER_BAR.DIST` from `0.2` to `0.99`, verified the change landed on a fresh
+`GET`, then restored the original value and verified the restore matched
+byte-for-byte. Full round trip, real data, real Gen NX session.
+
+**Conclusion**: `docs/manual/24_DB_Design.md`'s `/db/REBW` section (and by
+inheritance this SDK's old `WallRebarPayload`/`WallRebarItem`) documents a
+schema the live server doesn't implement. A user following the manual's
+worked example would have every field silently ignored or rejected — this
+isn't a cosmetic drift, it's the whole payload contract. `/db/REBB` and the
+ch26 KDS sibling being correct rules out "the whole rebar family is
+misdocumented" — this looks like a defect isolated to `/db/REBW`'s specific
+manual section.
+
+**Checked against the official source directly — not just the vendored
+copy.** Per this file's own standing rule (never cite the vendored manual
+repo as "the documentation" in anything sent externally), searched
+MIDASIT's Zendesk Help Center API directly: the dedicated article for this
+endpoint is
+[59359110968345 — "Modify Wall Rebar Data"](https://support.midasuser.com/hc/en-us/articles/59359110968345-Modify-Wall-Rebar-Data)
+(distinct from
+[59236271208729](https://support.midasuser.com/hc/en-us/articles/59236271208729-DESIGN-RC-KDS-41-20-2022-REBW-Modify-Wall-Rebar-Data),
+the correct ch26 KDS-specific article). It documents the same long-form
+names as the vendored copy (`VERTICAL_REBAR`, `HORIZONTAL_REBAR`,
+`CONCRETE_FACE_TO_CENTER_OF_REBAR`, `STORY: {FROM,TO}`, ...). **This rules
+out a vendored-repo transcription error** — the official MIDASIT
+documentation itself doesn't match its own server's implementation. Direct
+HTML fetches of Zendesk pages 403 for this tool; the JSON Help Center API
+(`/api/v2/help_center/en-us/articles/<id>.json`) and article search
+(`/api/v2/help_center/articles/search.json?query=...`) work and are the
+way to reach a specific official article when a chapter's combined
+reference article is too large to fetch in full.
+
+**Fix applied**: `WallRebarItem`/`WallRebarPayload` in `db/design.py`
+rewritten to the server-confirmed shape (`ID`, `bUSE_MODEL_THICK`, `THICK`,
+`DW`, `DE`, `VER_BAR`, `HOR_BAR`, `END_BAR`, `NUM_END_BAR`, `BE_HOR_BAR`,
+`BE_LENGTH`, `vSTORY_NAME`), with a docstring explaining the manual
+mismatch and citing this section. The now-unused `StoryRange`/
+`WallEndRebarSpec`/`ConcreteFaceToCenterOfRebar` helper TypedDicts were
+removed (ch26's `RcWallStoryRange`/`RcWallEndRebarSpec`/
+`RcWallConcreteFaceToCenterOfRebar` are separate, correct, untouched).
+`tests/db/test_design_setup.py`'s `WallRebar` create test updated to the
+corrected field names. This is a real correctness fix — the old TypedDict
+would have led a caller straight into the exact defect this session found.
+Worth reporting to MIDASIT: see `docs/vendor_report_ko.md`.
 
 ## Caveat — read before acting on this file
 

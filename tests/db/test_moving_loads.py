@@ -1,9 +1,7 @@
 import json
 
-import pytest
 import responses
 
-from midas_nx.client import ProductMismatchError
 from midas_nx.db.moving_loads import (
     AdditionalImpactFactor,
     ConcurrentJointForceGroup,
@@ -47,10 +45,12 @@ def test_moving_load_code_create_sends_documented_assign_shape(civil_client):
 
 
 @responses.activate
-def test_moving_load_code_is_civil_only(gen_client):
-    with pytest.raises(ProductMismatchError):
-        MovingLoadCode.create({1: {"CODE": "KSCE-LSD15"}}, client=gen_client)
-    assert len(responses.calls) == 0
+def test_moving_load_code_also_works_on_gen_client(gen_client):
+    # Not Civil-only despite the chapter's bridge-design framing — route +
+    # /info both answer on Gen NX too, live-checked 2026-07-29.
+    responses.add(responses.POST, "https://x.test:443/gen/db/MVCD", json={}, status=200)
+    MovingLoadCode.create({1: {"CODE": "KSCE-LSD15"}}, client=gen_client)
+    assert len(responses.calls) == 1
 
 
 # --- 2. /db/LLAN ---------------------------------------------------------------

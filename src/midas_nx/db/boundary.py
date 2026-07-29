@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any, List, TypedDict
 
-from .base import HYPER_S_ONLY, NO_DELETE_METHODS, DbResource, ItemGroupFields
+from .base import GEN_ONLY, HYPER_S_ONLY, NO_DELETE_METHODS, DbResource, ItemGroupFields
 
 
 class ConstraintItem(ItemGroupFields, total=False):
@@ -428,7 +428,9 @@ class SeismicDeviceHystereticIsolatorPayload(TypedDict, total=False):
 class SeismicDeviceHystereticIsolator(DbResource):
     ENDPOINT = "/db/SDHY"
     NAME = "Seismic Device - Hysteretic Isolator (MSS)"
-    PRODUCTS = frozenset({"gen", "civil"})
+    #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
+    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
+    PRODUCTS = GEN_ONLY
 
 
 class SeismicDeviceIsolatorPayload(TypedDict, total=False):
@@ -452,7 +454,9 @@ class SeismicDeviceIsolatorPayload(TypedDict, total=False):
 class SeismicDeviceIsolator(DbResource):
     ENDPOINT = "/db/SDIS"
     NAME = "Seismic Device - Isolator (MSS)"
-    PRODUCTS = frozenset({"gen", "civil"})
+    #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
+    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
+    PRODUCTS = GEN_ONLY
 
 
 class LinearConstraintSlave(TypedDict, total=False):
@@ -519,4 +523,6 @@ class DiaphragmDisconnect(DbResource):
 
     ENDPOINT = "/db/DRLS"
     NAME = "Diaphragm Disconnect"
-    PRODUCTS = frozenset({"gen", "civil"})
+    #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
+    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
+    PRODUCTS = GEN_ONLY

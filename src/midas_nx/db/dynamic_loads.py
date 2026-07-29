@@ -119,7 +119,6 @@ class TimeHistoryGlobalControlPayload(TypedDict, total=False):
 class TimeHistoryGlobalControl(DbResource):
     ENDPOINT = "/db/THGC"
     NAME = "Time History Global Control"
-    PRODUCTS = frozenset({"civil"})
 
 
 class HyperSIncrementStep(TypedDict, total=False):

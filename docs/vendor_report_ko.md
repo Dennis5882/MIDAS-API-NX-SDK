@@ -21,8 +21,9 @@
 | A-4 | 전역 | 오류 본문이 HTTP **200 / 201**로 반환 | 중간 |
 | A-5 | `/mapikey/verify` | 프로그램 종료 후 일정 시간 `"connected"` 반환 | 중간 |
 | A-6 | 오류 메시지 | `"Wrong Field"`가 실제로는 **값** 오류를 의미 | 중간 |
-| A-7 | 복구 파일 | `Program Files` 하위 기록 시도 → 권한 거부로 조용히 실패 | 낮음 |
+| A-7 | 파일 접근 | `Program Files` 하위 기록 시도 → 권한 거부. 크래시 복구뿐 아니라 평범한 GET 호출에서도 재현됨 | 중간 |
 | B-1~3 | 매뉴얼 | 기본값·예시·키 처리에 대한 보완 요청 | — |
+| B-4 | `/db/REBW` | **필드명 전체가 실제 서버 스키마와 다름** (매뉴얼만의 문제, 서버는 정상·일관 동작) | 높음 |
 
 재현 코드는 `requests`만 사용합니다. 공통 헬퍼:
 
@@ -44,12 +45,16 @@ A-1은 바로 실행 가능한 단일 파일로도 첨부했습니다 — `vendo
 
 ## A-1. 🛑 `POST /db/NMAS`에서 선택 필드(`rmX`/`rmY`/`rmZ`)를 생략하면 프로그램이 종료됩니다
 
-**원인을 특정했습니다.** `mX`/`mY`/`mZ`만 보내고 `rmX`/`rmY`/`rmZ`(회전 질량 모멘트,
-매뉴얼상 선택 필드·기본값 0)를 생략하면 세션이 즉시 종료됩니다. **같은 호출에 이 세
-필드를 `0.0`으로라도 명시적으로 채워 보내면 문제없이 성공합니다.** 매뉴얼의 Python
-예제(`nmas_data`)는 항상 6개 필드를 전부 채워서 보내는 형태라 이 결함에 걸리지
-않습니다 — Specifications 표가 문서화한 "선택, 기본값 0"이라는 optionality를 실제로
-활용했을 때만 재현됩니다.
+**원인을 특정했습니다.** `mX`/`mY`/`mZ`만 보내고 `rmX`/`rmY`/`rmZ`(회전 질량 모멘트)를
+생략하면 세션이 즉시 종료됩니다. **같은 호출에 이 세 필드를 `0.0`으로라도 명시적으로
+채워 보내면 문제없이 성공합니다.**
+
+공식 문서([support.midasuser.com/hc/en-us/articles/35952994344985-Nodal-Masses](https://support.midasuser.com/hc/en-us/articles/35952994344985-Nodal-Masses))의
+Specifications 표를 다시 확인했습니다 — `rmX`/`rmY`/`rmZ`는 **Optional, Default `0`**
+으로 명시돼 있습니다. 즉 저희가 보낸 요청은 공식 스펙 기준으로 100% 유효한 요청이었고,
+그런데도 세션이 죽었습니다. 같은 문서의 예제(`nmas_data`)는 항상 6개 필드를 전부 채워서
+보내는 형태라 이 결함에 걸리지 않습니다 — 문서가 스스로 보장하는 optionality를 실제로
+활용했을 때만 재현되는 결함입니다.
 
 ```python
 # 죽습니다:
@@ -188,16 +193,28 @@ GET /db/NODE          -> 15초 타임아웃
 페이로드까지 시도한 뒤에야 `CODE` 값이 원인임을 발견했습니다.
 `"Unknown value for field 'CODE'"` 정도로 필드명을 함께 주시면 진단이 훨씬 빨라집니다.
 
-## A-7. 크래시 복구 파일이 `Program Files` 하위에 기록되어 실패합니다
+## A-7. `Program Files` 하위 문서에서 파일 기록이 권한 거부로 실패합니다
 
 ```text
-C:\Program Files\MIDAS\MIDAS CIVIL NX\DgnPlugIn\_restore.mcb  -> 액세스 거부 (2회)
+C:\Program Files\MIDAS\MIDAS CIVIL NX\DgnPlugIn\_restore.mcb  -> 액세스 거부 (크래시 복구, 2회)
 C:\Users\<user>\Downloads\제목 없음_restore.mcb                -> 정상 저장 (1회)
 ```
 
 문서 상태에 따라 경로가 달라지며, `Program Files` 하위인 경우 일반 사용자 권한으로
-기록할 수 없어 **복구가 조용히 실패합니다.** `%LOCALAPPDATA%` 등 쓰기 가능한 경로를
-사용하시는 것이 좋겠습니다.
+기록할 수 없어 **복구가 조용히 실패합니다.**
+
+**2026-07-29 추가 재현: 크래시 복구뿐 아니라 평범한 읽기 호출에서도 재현됩니다.**
+`Program Files\MIDAS\MIDAS CIVIL NX\MIDAS CIVIL NX\Tutorial\5 FCM General.mcb`
+(제품 제공 튜토리얼 파일)를 열어둔 상태에서 `GET /db/CAMB`(FCM Camber Control)를
+호출하면, API 응답 자체는 `{"message": ""}`로 정상 도착하지만 화면에는
+`"...5 FCM General.mcb 액세스가 거부되었습니다."` 모달이 뜹니다. 같은 문서를
+쓰기 가능한 폴더(`다운로드`)로 옮긴 뒤 동일한 호출을 반복하면 모달이 뜨지 않고
+조용히 넘어갑니다 — 같은 세션, 같은 호출, 문서 경로만 바꾼 A/B로 확인했습니다.
+즉 이 문제는 크래시 복구 한정이 아니라, **문서가 쓰기 불가능한 경로에 있을 때
+특정 조회성 명령이 내부적으로 보조 파일을 쓰려고 시도하면서 발생하는 더 넓은
+패턴**으로 보입니다. `Program Files`처럼 일반 사용자 쓰기 권한이 없는 경로에
+문서를 두지 않도록 안내하시거나, 서버 쪽에서 쓰기 실패를 조용히 무시하고 조회
+결과만 반환하도록 처리하시는 편이 안전할 것 같습니다.
 
 ---
 
@@ -266,6 +283,45 @@ call("GET",  "/db/STLD")
 Specifications 표는 `"NO"`를 `Read Only`로만 표기하고 있고, `"Assign"` 키가 어떻게
 처리되는지는 나와 있지 않습니다. 키를 존중하는 테이블과 재부여하는 테이블이 섞여 있으므로,
 재부여하는 엔드포인트에는 그 사실을 명시해 주시면 좋겠습니다.
+
+## B-4. `/db/REBW` — Specifications 표의 필드명이 서버 구현과 완전히 다릅니다
+
+실제 프로덕션 Gen NX 모델(한국 KDS 기준, 벽체 철근 102건 실데이터)로 확인했습니다.
+매뉴얼 Specifications 표는 다음을 기재하고 있습니다:
+
+```
+CREATE_SUB_WALL_ID, SUB_WALL_ID, STORY: {FROM, TO},
+VERTICAL_REBAR: {NAME, DIST}, HORIZONTAL_REBAR: {NAME, DIST},
+USE_END_REBAR, END_REBAR: {NAME, NUM, DIST},
+BE_HORIZONTAL_REBAR: {NAME, DIST}, BOUNDARY_ELEMENT_LENGTH,
+CONCRETE_FACE_TO_CENTER_OF_REBAR: {DW, DE},
+USE_MODEL_THICKNESS, THICKNESS
+```
+
+그런데 실제 `GET /db/REBW` 응답과 `GET /info/db/REBW` 스키마는 다음입니다:
+
+```
+{"ID": 0, "bUSE_MODEL_THICK": true, "THICK": 0, "DW": 0.05, "DE": 0.05,
+ "VER_BAR": {"NAME": "D16", "DIST": 0.2},
+ "HOR_BAR": {"NAME": "D13", "DIST": 0.25},
+ "END_BAR": {"NAME": "", "DIST": 0}, "NUM_END_BAR": 0,
+ "BE_HOR_BAR": {"NAME": "D10", "DIST": 0.2}, "BE_LENGTH": 0}
+```
+
+`STORY`는 `{FROM,TO}` 범위가 아니라 `vSTORY_NAME`(층 이름 문자열 배열)입니다. 필드명이
+하나도 일치하지 않고, `DW`/`DE`는 중첩 없이 최상위로 나옵니다. **PUT으로 실제 확인**했습니다
+— 기존 벽체 하나의 값을 백업한 뒤 `/info` 스키마의 필드명으로 값을 바꿔 보냈더니 정상
+반영됐고, 재조회로 확인 후 원래 값으로 복원했습니다.
+
+같은 세션에서 같은 모델의 형제 엔드포인트로 교차 확인했습니다: `/db/REBB`(같은 챕터)와
+`/DESIGN/RC/KDS-41-20-2022/REBW`(KDS 전용 벽체 철근, 같은 물리 벽체 102건)는 **둘 다
+자신의 문서와 정확히 일치**했습니다. 즉 철근 관련 엔드포인트 전체의 문제가 아니라,
+**`/db/REBW`의 Specifications 표 하나만** 실제 서버 구현과 다른 것으로 보입니다.
+
+**공식 온라인 매뉴얼로 직접 재확인했습니다** — 저희가 참고한 사본의 전사 오류가 아닙니다.
+[공식 아티클](https://support.midasuser.com/hc/en-us/articles/59359110968345-Modify-Wall-Rebar-Data)도
+`VERTICAL_REBAR`/`HORIZONTAL_REBAR`/`CONCRETE_FACE_TO_CENTER_OF_REBAR`/`STORY: {FROM,TO}` 등
+긴 이름 그대로 기재되어 있습니다. 즉 **공식 문서 자체가 실제 서버와 다릅니다.**
 
 ---
 

@@ -37,6 +37,7 @@ from typing import List, Optional, TypedDict
 from ..client import MidasClient
 from ..client import post_argument as _post
 from ..db.base import (
+    GEN_ONLY,
     GET_DELETE_METHODS,
     GET_PUT_DELETE_METHODS,
     PUT_DELETE_METHODS,
@@ -821,6 +822,9 @@ class SrcModifyMaterial(DbResource):
     ENDPOINT = f"{_BASE}/MATD"
     NAME = "SRC Modify Material"
     METHODS = GET_PUT_DELETE_METHODS
+    #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
+    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
+    PRODUCTS = GEN_ONLY
 
 
 # --- 25. DESIGN/SRC/AIK-SRC2K/MCRD — SRC Column Section Data ----------------

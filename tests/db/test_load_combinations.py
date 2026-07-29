@@ -1,9 +1,7 @@
 import json
 
-import pytest
 import responses
 
-from midas_nx.client import ProductMismatchError
 from midas_nx.db.load_combinations import (
     CuttingLine,
     LoadCombinationCompositeSteelGirder,
@@ -39,7 +37,7 @@ def test_load_combination_general_create_sends_documented_assign_shape(gen_clien
 
 
 @responses.activate
-def test_load_combination_concrete_create_is_civil_only(civil_client, gen_client):
+def test_load_combination_concrete_create_sends_documented_assign_shape(civil_client):
     responses.add(responses.POST, "https://x.test:443/civil/db/LCOM-CONC", json={}, status=200)
     LoadCombinationConcrete.create(
         {
@@ -56,8 +54,15 @@ def test_load_combination_concrete_create_is_civil_only(civil_client, gen_client
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["bES"] is False
 
-    with pytest.raises(ProductMismatchError):
-        LoadCombinationConcrete.create({1: {"NAME": "x", "vCOMB": []}}, client=gen_client)
+
+@responses.activate
+def test_load_combination_concrete_also_works_on_gen_client(gen_client):
+    # Not Civil-only despite the chapter's framing — live-confirmed 2026-07-29
+    # against a real production Gen NX model, see LoadCombinationConcrete's
+    # docstring.
+    responses.add(responses.POST, "https://x.test:443/gen/db/LCOM-CONC", json={}, status=200)
+    LoadCombinationConcrete.create({1: {"NAME": "x", "vCOMB": []}}, client=gen_client)
+    assert len(responses.calls) == 1
 
 
 @responses.activate
@@ -83,7 +88,7 @@ def test_load_combination_src_create_sends_documented_assign_shape(gen_client):
 
 
 @responses.activate
-def test_load_combination_composite_steel_girder_create_is_civil_only(civil_client, gen_client):
+def test_load_combination_composite_steel_girder_create_sends_documented_assign_shape(civil_client):
     responses.add(responses.POST, "https://x.test:443/civil/db/LCOM-STLCOMP", json={}, status=200)
     LoadCombinationCompositeSteelGirder.create(
         {
@@ -99,8 +104,14 @@ def test_load_combination_composite_steel_girder_create_is_civil_only(civil_clie
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["vCOMB"][0]["ANAL"] == "MV"
 
-    with pytest.raises(ProductMismatchError):
-        LoadCombinationCompositeSteelGirder.create({1: {"NAME": "x", "vCOMB": []}}, client=gen_client)
+
+@responses.activate
+def test_load_combination_composite_steel_girder_also_works_on_gen_client(gen_client):
+    # Not Civil-only despite the chapter's bridge-design framing — route +
+    # /info both answer on Gen NX too, live-checked 2026-07-29.
+    responses.add(responses.POST, "https://x.test:443/gen/db/LCOM-STLCOMP", json={}, status=200)
+    LoadCombinationCompositeSteelGirder.create({1: {"NAME": "x", "vCOMB": []}}, client=gen_client)
+    assert len(responses.calls) == 1
 
 
 @responses.activate

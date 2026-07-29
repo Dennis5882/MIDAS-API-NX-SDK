@@ -294,8 +294,12 @@ class HeatOfHydrationAnalysisControlHyperS(DbResource):
 
 
 # --- 9-13. Moving Load Analysis Control (Civil NX bridge feature) ----------
-# Not offered in Gen NX (buildings) — all five variants below are civil-only,
-# matching the ch08 Moving Loads chapter's civil-only convention.
+# Framed by the manual as a Civil NX bridge feature, not offered by Gen NX's
+# (buildings) UI. Live-checked 2026-07-29 against a real production Gen NX
+# model: all five variants below answer on Gen too (empty table; route +
+# /info both resolve) — left at the class default (gen+civil), matching the
+# correction made to the ch08 Moving Loads chapter's own convention. See
+# db/base.py's GEN_ONLY docstring's sibling note.
 
 
 class MovingLoadAnalysisControlPayload(TypedDict, total=False):
@@ -341,7 +345,6 @@ class MovingLoadAnalysisControlPayload(TypedDict, total=False):
 class MovingLoadAnalysisControl(DbResource):
     ENDPOINT = "/db/MVCT"
     NAME = "Moving Load Analysis Control"
-    PRODUCTS = frozenset({"civil"})
 
 
 class MovingLoadAnalysisControlChinaPayload(TypedDict, total=False):
@@ -384,7 +387,6 @@ class MovingLoadAnalysisControlChinaPayload(TypedDict, total=False):
 class MovingLoadAnalysisControlChina(DbResource):
     ENDPOINT = "/db/MVCTch"
     NAME = "Moving Load Analysis Control - China"
-    PRODUCTS = frozenset({"civil"})
 
 
 class MovingLoadAnalysisControlIndiaPayload(TypedDict, total=False):
@@ -420,7 +422,6 @@ class MovingLoadAnalysisControlIndiaPayload(TypedDict, total=False):
 class MovingLoadAnalysisControlIndia(DbResource):
     ENDPOINT = "/db/MVCTid"
     NAME = "Moving Load Analysis Control - India"
-    PRODUCTS = frozenset({"civil"})
 
 
 class MovingLoadAnalysisControlBSPayload(TypedDict, total=False):
@@ -452,7 +453,6 @@ class MovingLoadAnalysisControlBSPayload(TypedDict, total=False):
 class MovingLoadAnalysisControlBS(DbResource):
     ENDPOINT = "/db/MVCTbs"
     NAME = "Moving Load Analysis Control - BS"
-    PRODUCTS = frozenset({"civil"})
 
 
 class MovingLoadAnalysisControlTransversePayload(TypedDict, total=False):
@@ -472,7 +472,6 @@ class MovingLoadAnalysisControlTransversePayload(TypedDict, total=False):
 class MovingLoadAnalysisControlTransverse(DbResource):
     ENDPOINT = "/db/MVCTtr"
     NAME = "Moving Load Analysis Control - Transverse"
-    PRODUCTS = frozenset({"civil"})
 
 
 # --- 14. /db/SMCT — Settlement Analysis Control Data ------------------------

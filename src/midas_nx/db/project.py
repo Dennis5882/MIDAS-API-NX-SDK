@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from typing import List, TypedDict
 
-from .base import CIVIL_ONLY, NO_DELETE_METHODS, DbResource
+from .base import CIVIL_ONLY, GEN_ONLY, NO_DELETE_METHODS, DbResource
 
 _GET_PUT_ONLY = frozenset({"GET", "PUT"})
 
@@ -283,4 +283,6 @@ class StoryPayload(TypedDict, total=False):
 class Story(DbResource):
     ENDPOINT = "/db/STOR"
     NAME = "Story Data"
-    PRODUCTS = frozenset({"gen", "civil"})
+    #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
+    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
+    PRODUCTS = GEN_ONLY

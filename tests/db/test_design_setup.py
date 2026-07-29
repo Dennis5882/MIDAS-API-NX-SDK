@@ -287,24 +287,26 @@ def test_column_rebar_only_supports_post(gen_client):
 
 @responses.activate
 def test_wall_rebar_create_sends_documented_assign_shape(gen_client):
+    # Field names confirmed live 2026-07-29 against a real production Gen NX
+    # model — the manual's own Specifications tables for this endpoint don't
+    # match the server; see WallRebarItem's docstring.
     responses.add(responses.POST, "https://x.test:443/gen/db/REBW", json={}, status=200)
     WallRebar.create(
         {
             1: {
                 "ITEMS": [
                     {
-                        "CREATE_SUB_WALL_ID": True,
-                        "VERTICAL_REBAR": {"NAME": "D19", "DIST": 222},
-                        "HORIZONTAL_REBAR": {"NAME": "D16", "DIST": 200},
-                        "USE_END_REBAR": True,
-                        "END_REBAR": {"NAME": "D25", "NUM": 2, "DIST": 150},
-                        "BE_HORIZONTAL_REBAR": {"NAME": "D19", "DIST": 222},
-                        "BOUNDARY_ELEMENT_LENGTH": 222,
-                        "CONCRETE_FACE_TO_CENTER_OF_REBAR": {"DW": 50, "DE": 50},
-                        "USE_MODEL_THICKNESS": False,
-                        "THICKNESS": 1000,
-                        "SUB_WALL_ID": 1,
-                        "STORY": {"FROM": "2F", "TO": "Roof"},
+                        "bUSE_MODEL_THICK": False,
+                        "THICK": 1000,
+                        "DW": 50,
+                        "DE": 50,
+                        "VER_BAR": {"NAME": "D19", "DIST": 222},
+                        "HOR_BAR": {"NAME": "D16", "DIST": 200},
+                        "END_BAR": {"NAME": "D25", "DIST": 150},
+                        "NUM_END_BAR": 2,
+                        "BE_HOR_BAR": {"NAME": "D19", "DIST": 222},
+                        "BE_LENGTH": 222,
+                        "vSTORY_NAME": ["2F", "Roof"],
                     }
                 ]
             }
@@ -313,8 +315,8 @@ def test_wall_rebar_create_sends_documented_assign_shape(gen_client):
     )
     sent = responses.calls[0].request
     item = json.loads(sent.body)["Assign"]["1"]["ITEMS"][0]
-    assert item["STORY"]["TO"] == "Roof"
-    assert item["CONCRETE_FACE_TO_CENTER_OF_REBAR"]["DW"] == 50
+    assert item["vSTORY_NAME"] == ["2F", "Roof"]
+    assert item["DW"] == 50
 
 
 @responses.activate

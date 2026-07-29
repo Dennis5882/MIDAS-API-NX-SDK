@@ -1,7 +1,19 @@
 """Source: docs/manual/08_DB_Moving_Loads.md, items 1-28.
 
-MIDAS Civil NX only (moving-load / traffic-lane / vehicle / dynamic-factor
-definitions for bridge live-load analysis).
+Framed by the manual as bridge live-load analysis (moving-load / traffic-lane
+/ vehicle / dynamic-factor definitions), historically declared Civil NX only
+across this whole chapter. Live-checked 2026-07-29 against a real production
+Gen NX model: most of these endpoints answer on Gen too (route + `/info`
+schema both resolve, if usually to an empty table since a Gen model has no
+bridge data) and are left at the class default (gen+civil) — only
+`CIVIL_ONLY` remains where Gen genuinely 404s: `ConcurrentReactionGroup`
+(CRGR), `ConcurrentJointForceGroup` (CJFG), `DynamicLoadAllowance` (DYLA),
+`RailwayDynamicFactor` (DYFG), `RailwayDynamicFactorByElement` (DYNF). That
+the API accepts a call doesn't mean using bridge/moving-load features from a
+Gen NX session is a sound engineering choice for a given project — that's a
+judgment call for the engineer, not something this SDK's `PRODUCTS` should
+gate. See db/base.py's `GEN_ONLY` docstring's sibling note and
+docs/live_verification_notes.md for the full evidence.
 """
 from __future__ import annotations
 
@@ -26,7 +38,6 @@ class MovingLoadCodePayload(TypedDict, total=False):
 class MovingLoadCode(DbResource):
     ENDPOINT = "/db/MVCD"
     NAME = "Moving Load Code"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 2. /db/LLAN — Traffic Line Lanes ----------------------------------------
@@ -78,7 +89,6 @@ class TrafficLineLanePayload(TypedDict, total=False):
 class TrafficLineLanes(DbResource):
     ENDPOINT = "/db/LLAN"
     NAME = "Traffic Line Lanes"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 3. /db/LLANch — Traffic Line Lanes – China ------------------------------
@@ -105,7 +115,6 @@ class TrafficLineLanesChinaPayload(TypedDict, total=False):
 class TrafficLineLanesChina(DbResource):
     ENDPOINT = "/db/LLANch"
     NAME = "Traffic Line Lanes – China"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 4. /db/LLANid — Traffic Line Lanes – India ------------------------------
@@ -132,7 +141,6 @@ class TrafficLineLanesIndiaPayload(TypedDict, total=False):
 class TrafficLineLanesIndia(DbResource):
     ENDPOINT = "/db/LLANid"
     NAME = "Traffic Line Lanes – India"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 5. /db/LLANtr — Traffic Line Lanes – Transverse -------------------------
@@ -153,7 +161,6 @@ class TrafficLineLanesTransversePayload(TypedDict, total=False):
 class TrafficLineLanesTransverse(DbResource):
     ENDPOINT = "/db/LLANtr"
     NAME = "Traffic Line Lanes – Transverse"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 6. /db/LLANop — Traffic Line Lanes – Moving Load Optimization ----------
@@ -186,7 +193,6 @@ class TrafficLineLanesOptimizationPayload(TypedDict, total=False):
 class TrafficLineLanesOptimization(DbResource):
     ENDPOINT = "/db/LLANop"
     NAME = "Traffic Line Lanes – Moving Load Optimization"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 7. /db/SLAN — Traffic Surface Lanes -------------------------------------
@@ -227,7 +233,6 @@ class TrafficSurfaceLanePayload(TypedDict, total=False):
 class TrafficSurfaceLanes(DbResource):
     ENDPOINT = "/db/SLAN"
     NAME = "Traffic Surface Lanes"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 8. /db/SLANch — Traffic Surface Lanes – China ---------------------------
@@ -259,7 +264,6 @@ class TrafficSurfaceLanesChinaPayload(TypedDict, total=False):
 class TrafficSurfaceLanesChina(DbResource):
     ENDPOINT = "/db/SLANch"
     NAME = "Traffic Surface Lanes – China"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 9. /db/SLANop — Traffic Surface Lanes – Moving Load Optimization ------
@@ -293,7 +297,6 @@ class TrafficSurfaceLanesOptimizationPayload(TypedDict, total=False):
 class TrafficSurfaceLanesOptimization(DbResource):
     ENDPOINT = "/db/SLANop"
     NAME = "Traffic Surface Lanes – Moving Load Optimization"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 10. /db/MVHL — Vehicles --------------------------------------------------
@@ -356,7 +359,6 @@ class VehiclePayload(TypedDict, total=False):
 class Vehicles(DbResource):
     ENDPOINT = "/db/MVHL"
     NAME = "Vehicles"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 11. /db/MVHLtr — Vehicles – Transverse -----------------------------------
@@ -382,7 +384,6 @@ class VehicleTransversePayload(TypedDict, total=False):
 class VehiclesTransverse(DbResource):
     ENDPOINT = "/db/MVHLtr"
     NAME = "Vehicles – Transverse"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 12. /db/MVLD — Moving Load Cases -----------------------------------------
@@ -464,7 +465,6 @@ class MovingLoadCasePayload(TypedDict, total=False):
 class MovingLoadCase(DbResource):
     ENDPOINT = "/db/MVLD"
     NAME = "Moving Load Cases"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 13. /db/MVLDch — Moving Load Cases – China -------------------------------
@@ -496,7 +496,6 @@ class MovingLoadCaseChinaPayload(TypedDict, total=False):
 class MovingLoadCaseChina(DbResource):
     ENDPOINT = "/db/MVLDch"
     NAME = "Moving Load Cases – China"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 14. /db/MVLDid — Moving Load Cases – India -------------------------------
@@ -535,7 +534,6 @@ class MovingLoadCaseIndiaPayload(TypedDict, total=False):
 class MovingLoadCaseIndia(DbResource):
     ENDPOINT = "/db/MVLDid"
     NAME = "Moving Load Cases – India"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 15. /db/MVLDbs — Moving Load Cases – BS ----------------------------------
@@ -585,7 +583,6 @@ class MovingLoadCaseBsPayload(TypedDict, total=False):
 class MovingLoadCaseBs(DbResource):
     ENDPOINT = "/db/MVLDbs"
     NAME = "Moving Load Cases – BS"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 16. /db/MVLDeu — Moving Load Cases – Eurocode ----------------------------
@@ -659,7 +656,6 @@ class MovingLoadCaseEurocodePayload(TypedDict, total=False):
 class MovingLoadCaseEurocode(DbResource):
     ENDPOINT = "/db/MVLDeu"
     NAME = "Moving Load Cases – Eurocode"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 17. /db/MVLDpl — Moving Load Cases – Poland ------------------------------
@@ -704,7 +700,6 @@ class MovingLoadCasePolandPayload(TypedDict, total=False):
 class MovingLoadCasePoland(DbResource):
     ENDPOINT = "/db/MVLDpl"
     NAME = "Moving Load Cases – Poland"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 18. /db/MVLDtr — Moving Load Cases – Transverse --------------------------
@@ -725,7 +720,6 @@ class MovingLoadCaseTransversePayload(TypedDict, total=False):
 class MovingLoadCaseTransverse(DbResource):
     ENDPOINT = "/db/MVLDtr"
     NAME = "Moving Load Cases – Transverse"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 19. /db/CRGR — Concurrent Reaction Group ---------------------------------
@@ -769,7 +763,6 @@ class VehicleClassPayload(TypedDict, total=False):
 class VehicleClasses(DbResource):
     ENDPOINT = "/db/MVHC"
     NAME = "Vehicle Classes"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 22. /db/SINF — Plate Element for Influence Surface -----------------------
@@ -788,7 +781,6 @@ class PlateElementForInfluenceSurfacePayload(TypedDict, total=False):
 class PlateElementForInfluenceSurface(DbResource):
     ENDPOINT = "/db/SINF"
     NAME = "Plate Element for Influence Surface"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 23. /db/MLSP — Lane Support – Negative Moments at Interior Piers --------
@@ -814,7 +806,6 @@ class LaneSupportNegativeMomentPayload(TypedDict, total=False):
 class LaneSupportNegativeMoment(DbResource):
     ENDPOINT = "/db/MLSP"
     NAME = "Lane Support – Negative Moments at Interior Piers"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 24. /db/MLSR — Lane Support – Reactions at Interior Piers ---------------
@@ -833,7 +824,6 @@ class LaneSupportReactionPayload(TypedDict, total=False):
 class LaneSupportReaction(DbResource):
     ENDPOINT = "/db/MLSR"
     NAME = "Lane Support – Reactions at Interior Piers"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 25. /db/DYLA — Dynamic Load Allowance ------------------------------------
@@ -894,7 +884,6 @@ class AdditionalImpactFactorPayload(TypedDict, total=False):
 class AdditionalImpactFactor(DbResource):
     ENDPOINT = "/db/IMPF"
     NAME = "Additional Impact Factor"
-    PRODUCTS = CIVIL_ONLY
 
 
 # --- 27. /db/DYFG — Railway Dynamic Factor ------------------------------------

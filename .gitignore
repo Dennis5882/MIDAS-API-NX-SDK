@@ -13,6 +13,7 @@ dist/
 .vscode/
 .idea/
 .claude/
+.mcp.json
 
 # Generated from docs/vendor_report_ko.md by scripts/make_vendor_docx.py
 *.docx

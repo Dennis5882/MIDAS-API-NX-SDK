@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import Any, List, Optional, TypedDict
 
 from ..client import MidasClient
-from .base import DbResource, ItemGroupFields
+from .base import GEN_ONLY, DbResource, ItemGroupFields
 
 
 class StaticLoadCasePayload(TypedDict, total=False):
@@ -464,7 +464,9 @@ class SoilPropertyPayload(TypedDict, total=False):
 class SoilProperty(DbResource):
     ENDPOINT = "/db/POSP"
     NAME = "Parameter of Soil Properties"
-    PRODUCTS = frozenset({"gen", "civil"})
+    #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
+    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
+    PRODUCTS = GEN_ONLY
 
 
 class StaticEarthPressureProfileItem(TypedDict, total=False):
@@ -496,7 +498,9 @@ class StaticEarthPressurePayload(TypedDict, total=False):
 class StaticEarthPressure(DbResource):
     ENDPOINT = "/db/EPST"
     NAME = "Static Earth Pressure"
-    PRODUCTS = frozenset({"gen", "civil"})
+    #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
+    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
+    PRODUCTS = GEN_ONLY
 
 
 class SeismicEarthPressureProfileItem(TypedDict, total=False):
@@ -584,7 +588,9 @@ class StaticWindLoadPayload(TypedDict, total=False):
 class StaticWindLoad(DbResource):
     ENDPOINT = "/db/SWIND"
     NAME = "Static Wind Load"
-    PRODUCTS = frozenset({"gen", "civil"})
+    #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
+    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
+    PRODUCTS = GEN_ONLY
 
 
 class StaticSeismicLoadPayload(TypedDict, total=False):
@@ -609,4 +615,6 @@ class StaticSeismicLoadPayload(TypedDict, total=False):
 class StaticSeismicLoad(DbResource):
     ENDPOINT = "/db/SSEIS"
     NAME = "Static Seismic Load"
-    PRODUCTS = frozenset({"gen", "civil"})
+    #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
+    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
+    PRODUCTS = GEN_ONLY

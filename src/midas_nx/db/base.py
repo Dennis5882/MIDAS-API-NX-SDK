@@ -45,9 +45,19 @@ GET_DELETE_METHODS = frozenset({"GET", "DELETE"})
 #: PUT/DELETE.
 PUT_DELETE_METHODS = frozenset({"PUT", "DELETE"})
 
-#: Shared PRODUCTS override for Civil-NX-only endpoints (e.g. /db/LCOM-CONC,
-#: the entire ch08/ch17 bridge/moving-load chapters) — import instead of
-#: redefining a local frozenset({"civil"}) per chapter.
+#: Shared PRODUCTS override for Civil-NX-only endpoints (e.g. ch17's bridge
+#: girder-diagram/camber-control trio, ch08's per-code dynamic-factor and
+#: concurrent-group endpoints) — import instead of redefining a local
+#: frozenset({"civil"}) per chapter.
+#:
+#: ⚠️ Most of ch08/ch17 is *not* actually Civil-only. An earlier version of
+#: this docstring cited /db/LCOM-CONC as the example — live-checked
+#: 2026-07-29 against a real production Gen NX model and found it returns
+#: real, populated data there (494 rows), not a 404. The same check found 31
+#: more ch08/ch17 endpoints answering on Gen too (route + /info both
+#: resolve, usually to an empty table). See GEN_ONLY's docstring below and
+#: docs/live_verification_notes.md for the full evidence and the list of
+#: what's genuinely still Civil-only in these two chapters.
 CIVIL_ONLY = frozenset({"civil"})
 
 #: Shared PRODUCTS override for the Hyper-S (``-M1``) endpoint family.
@@ -63,6 +73,42 @@ CIVIL_ONLY = frozenset({"civil"})
 #: happens, widen this one constant rather than hunting down 13 classes — and
 #: re-verify with ``scripts/live_readonly_sweep.py --product gen`` first.
 HYPER_S_ONLY = frozenset({"civil"})
+
+#: Shared PRODUCTS override for endpoints that answer under Gen NX but 404
+#: (route-level, including ``/info/db/...`` schema introspection) under Civil
+#: NX. Confirmed by two independent sessions on 2026-07-29, same day, against
+#: freshly patched builds: this SDK's own ``live_readonly_sweep.py`` against
+#: Civil NX 2026 v2.2 (07/28/2026), and an independently-run validation sweep
+#: (`docs/Codex Report/`) against the same day's Civil and Gen patches from a
+#: different machine/session — both landed on the identical 11 ``/db/*``
+#: endpoints (``STOR``, ``SWIND``, ``SSEIS``, ``POSP``, ``EPST``, ``DRLS``,
+#: ``SDHY``, ``SDIS``, ``REBB``, ``REBR``, ``REBW``) plus the same 9
+#: design-chapter endpoints under ``/DESIGN/RC/KDS-41-20-2022/*``,
+#: ``/DESIGN/SRC/AIK-SRC2K/MATD`` and ``/DESIGN/STEEL/KDS-41-30-2022/ULCT``.
+#: See ``docs/live_verification_notes.md``'s 2026-07-29 sections for the full
+#: evidence. A few adjacent 404s (``/db/REBC``'s schema, ``/ope/STORY_PARAM``,
+#: ``/ope/STORY_IRR_PARAM``) look like the same pattern but are not yet
+#: independently reproduced twice — left alone pending that.
+GEN_ONLY = frozenset({"gen"})
+
+#: Not a constant — a note on the mirror-image finding. On 2026-07-29, a live
+#: re-check against real production Civil NX and Gen NX sessions open at once
+#: found 32 of 47 endpoints declared :data:`CIVIL_ONLY` (excluding
+#: :data:`HYPER_S_ONLY`) also answer under Gen NX — route + ``/info`` schema
+#: both resolve there too, one (``/db/LCOM-CONC``) with real, populated data
+#: (494 rows), the rest with an empty table. Those 32 are now left at the
+#: class default (``gen+civil``) instead of :data:`CIVIL_ONLY`: 23 in
+#: ``db/moving_loads.py``, 5 in ``db/analysis_control.py`` (the ``MVCT``
+#: family), 2 in ``db/load_combinations.py``, 1 each in ``db/dynamic_loads.py``
+#: (``THGC``) and ``db/bridge.py`` (``ULFC``). The remaining 15 genuinely 404
+#: on Gen and stay :data:`CIVIL_ONLY`: the Hyper-S family aside, that's
+#: ``CAMB``, ``CJFG``, ``CMCS``, ``CRGR``, ``DYFG``, ``DYLA``, ``DYNF``,
+#: ``EWSF``, ``GCMB``, ``GSBG``, ``PLCB``, ``RCHK``, ``SPAN``, ``STRPSSM``,
+#: ``WVLD``. That the API answers doesn't mean using a bridge/moving-load
+#: endpoint from a Gen NX session is a sound engineering choice for a given
+#: project — that's the calling engineer's judgment, not something
+#: ``PRODUCTS`` should gate. See ``docs/live_verification_notes.md``'s
+#: 2026-07-29 sections for the full evidence.
 
 
 class ItemGroupFields(TypedDict, total=False):

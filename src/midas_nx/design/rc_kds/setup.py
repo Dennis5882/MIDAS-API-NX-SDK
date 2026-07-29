@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from typing import List, TypedDict
 
-from ...db.base import GET_DELETE_METHODS, GET_PUT_DELETE_METHODS, DbResource
+from ...db.base import GEN_ONLY, GET_DELETE_METHODS, GET_PUT_DELETE_METHODS, DbResource
 
 _BASE = "/DESIGN/RC/KDS-41-20-2022"
 
@@ -203,6 +203,9 @@ class UndergroundLoadCombinationTypePayload(TypedDict, total=False):
 class UndergroundLoadCombinationType(DbResource):
     ENDPOINT = f"{_BASE}/ULCT"
     NAME = "Underground Load Combination Type"
+    #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
+    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
+    PRODUCTS = GEN_ONLY
 
 
 # --- 8. DESIGN/RC/KDS-41-20-2022/SUEQ — Scale up Factor for Earthquake -------
@@ -339,6 +342,9 @@ class ModifyConcreteMaterial(DbResource):
     ENDPOINT = f"{_BASE}/MATD"
     NAME = "Modify Concrete Material"
     METHODS = GET_PUT_DELETE_METHODS
+    #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
+    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
+    PRODUCTS = GEN_ONLY
 
 
 # --- 14. DESIGN/RC/KDS-41-20-2022/LENG — Unbraced Length (L, Lb) -------------
