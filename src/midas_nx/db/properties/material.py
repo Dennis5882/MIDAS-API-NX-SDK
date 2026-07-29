@@ -1,14 +1,20 @@
-"""Source: docs/manual/04_DB_Properties.md, items 1, 3, 5-10, 28, 32.
-
-MATL-M1 (Hyper-S material) and IMFM-M1 (Hyper-S auto-generation link) are
-itemized by URL in INDEX.md but documented as thin stubs with no
-Specifications table in the chapter file, so left unimplemented.
+"""Source: docs/manual/04_DB_Properties.md, items 1, 3, 5-10, 28, 32, plus the
+Hyper-S variants MATL-M1, IMFM-M1, EPMT-M1. None of the three have a
+Specifications table in the chapter file; their payload TypedDicts below are
+derived from live `GET /info/db/...` server introspection instead (confirmed
+2026-07-29, Civil NX Hyper-S) — see each Hyper-S class's own docstring. Two
+of the three turned out to have a genuinely different wire shape from their
+non-Hyper-S sibling, not just a product gate on the same schema: MATL-M1's
+PARAM entries nest user-defined fields under USER_DEFINED with 0-indexed
+P_TYPE (vs MATL's flat fields with 1-indexed P_TYPE), and IMFM-M1 nests
+fields under CONCRETE/STEEL sub-objects with different names entirely
+(UN_CONC_NAME/CONF_CONC_NAME vs IMFM's flat CONC_NAME/CONFINED_CONC_NAME).
 """
 from __future__ import annotations
 
 from typing import Any, List, TypedDict
 
-from ..base import DbResource
+from ..base import HYPER_S_ONLY, DbResource
 
 
 class MaterialParam(TypedDict, total=False):
@@ -57,6 +63,63 @@ class Material(DbResource):
     ENDPOINT = "/db/MATL"
     NAME = "Material Properties"
     PRODUCTS = frozenset({"gen", "civil"})
+
+
+class MaterialHyperSUserDefined(TypedDict, total=False):
+    """Shape of MaterialHyperSParam's USER_DEFINED sub-object."""
+
+    bELAST: bool  # User Elasticity
+    POISN: float  # Poisson's ratio
+    THERMAL: float  # Coefficients of linear thermal
+    DEN: float  # Weight Density
+    ELAST_M: List[float]  # Modulii of elasticity [X, Y, Z]
+    THERMAL_M: List[float]  # Coefficients of linear thermal [X, Y, Z]
+    SHEAR_M: List[float]  # Shear modulii [xy, xz, yz]
+    POISN_M: List[float]  # Poisson's ratio [xy, xz, yz]
+    bMASS_DENS: bool  # Use Mass Density
+    MASS: float  # Mass Density
+
+
+class MaterialHyperSThermalTransfer(TypedDict, total=False):
+    """Shape of MaterialHyperSParam's THERMAL_TRANS sub-object."""
+
+    HE_SPEC: float  # Specific Heat
+    HE_COND: float  # Heat Conduction
+
+
+class MaterialHyperSParam(TypedDict, total=False):
+    """One entry of MaterialHyperSPayload's PARAM array. P_TYPE is 0-indexed
+    here (Standard=0, Isotropic=1, Orthotropic=2) — the non-Hyper-S sibling
+    MaterialParam is 1-indexed for the same concept, confirmed live.
+    """
+
+    P_TYPE: int  # Standard/DB=0, Isotropic/User=1, Orthotropic/User=2
+    STANDARD: str  # Standard
+    CODE: str  # Code
+    DB: str  # DB Name
+    USER_DEFINED: MaterialHyperSUserDefined
+    PLASTIC_MATL_NAME: str  # Plastic Material Name
+    THERMAL_TRANS: MaterialHyperSThermalTransfer
+
+
+class MaterialHyperSPayload(TypedDict, total=False):
+    """No Specifications table exists for this Hyper-S variant of MATL in
+    the manual chapter. Field names/types below come from `GET
+    /info/db/MATL-M1` server introspection; a live GET on a real Civil NX
+    Hyper-S model also confirmed a populated row using the P_TYPE=0
+    (Standard/DB) shape (both confirmed 2026-07-29).
+    """
+
+    MATL_NAME: str  # Material Name
+    MATL_TYPE: str  # Material Type
+    DAMP_RAT: float  # Damping Ratio
+    PARAM: List[MaterialHyperSParam]  # Material Parameters
+
+
+class MaterialHyperS(DbResource):
+    ENDPOINT = "/db/MATL-M1"
+    NAME = "Material Properties (Hyper-S)"
+    PRODUCTS = HYPER_S_ONLY
 
 
 class MaterialModifyConcreteDesign(TypedDict, total=False):
@@ -111,6 +174,41 @@ class InelasticFiberMaterialLink(DbResource):
     ENDPOINT = "/db/IMFM"
     NAME = "Inelastic Material Properties for Fiber Model"
     PRODUCTS = frozenset({"gen", "civil"})
+
+
+class InelasticFiberMaterialLinkHyperSConcrete(TypedDict, total=False):
+    """Shape of InelasticFiberMaterialLinkHyperSPayload's CONCRETE
+    sub-object."""
+
+    UN_CONC_NAME: str  # Inelastic Material of Concrete (/db/FIMP name)
+    CONF_CONC_NAME: str  # Confined Concrete for Columns (/db/FIMP name)
+    REBAR_NAME: str  # Inelastic Material of Rebar (/db/FIMP name)
+
+
+class InelasticFiberMaterialLinkHyperSSteel(TypedDict, total=False):
+    """Shape of InelasticFiberMaterialLinkHyperSPayload's STEEL sub-object."""
+
+    STEEL_NAME: str  # Inelastic Material of Steel (/db/FIMP name)
+
+
+class InelasticFiberMaterialLinkHyperSPayload(TypedDict, total=False):
+    """No Specifications table exists for this Hyper-S variant of IMFM in
+    the manual chapter. Field names/types below come from `GET
+    /info/db/IMFM-M1` server introspection (confirmed live 2026-07-29,
+    Civil NX Hyper-S). Unlike the flat non-Hyper-S IMFM shape, fields here
+    nest under CONCRETE/STEEL sub-objects with different names entirely
+    (UN_CONC_NAME/CONF_CONC_NAME vs CONC_NAME/CONFINED_CONC_NAME) — not a
+    simple product gate on the same schema.
+    """
+
+    CONCRETE: InelasticFiberMaterialLinkHyperSConcrete
+    STEEL: InelasticFiberMaterialLinkHyperSSteel
+
+
+class InelasticFiberMaterialLinkHyperS(DbResource):
+    ENDPOINT = "/db/IMFM-M1"
+    NAME = "Inelastic Material Properties for Fiber Model (Hyper-S)"
+    PRODUCTS = HYPER_S_ONLY
 
 
 class TimeDependentMaterialFunctionValue(TypedDict, total=False):
@@ -225,6 +323,107 @@ class PlasticMaterial(DbResource):
     ENDPOINT = "/db/EPMT"
     NAME = "Plastic Material"
     PRODUCTS = frozenset({"gen", "civil"})
+
+
+class PlasticMaterialHyperSHardeningModel(TypedDict, total=False):
+    """Shared shape of PlasticMaterialHyperSPayload's TRESCA/VMISES bodies."""
+
+    INIT_YIELD_STRESS: float  # Initial Uniaxial Yield Stress
+    OPT_HARDENING: bool  # Hardening
+    HARDENING_TYPE: int  # Isotropic=0, Kinematic=1, Mixed=2
+    HARDENING_COEF: float  # Hardening Coefficient
+    BACK_STRESS_COEF: float  # Back Stress Coefficient
+
+
+class PlasticMaterialHyperSCoulombModel(TypedDict, total=False):
+    """Shared shape of PlasticMaterialHyperSPayload's MOHRCL/DRUCKER
+    bodies."""
+
+    INIT_COHESION: float  # Initial Cohesion
+    INIT_FRIC_ANGLE: float  # Initial Friction Angle (deg)
+    OPT_HARDENING: bool  # Hardening
+    HARDENING_TYPE: int  # Isotropic=0
+    HARDENING_COEF: float  # Hardening Coefficient
+    BACK_STRESS_COEF: float  # Back Stress Coefficient
+
+
+class PlasticMaterialHyperSMasonryLayer(TypedDict, total=False):
+    """Shared shape of PlasticMaterialHyperSMasonry's BM/BED_JOINT/
+    HEAD_JOINT sub-objects."""
+
+    YOUNG_S_MODULUS: float  # Young's Modulus
+    POSSIONS_S_RATIO: float  # Poisson's Ratio (server's own field name spelling)
+    TENSION_STRENGTH: float  # Tension Strength
+    STIFF_REDUCTION: float  # Stiffness Reduction Factor
+
+
+class PlasticMaterialHyperSMasonryGeometry(TypedDict, total=False):
+    BRICK_LENGTH: float
+    BRICK_HEIGHT: float
+    THICKNESS_BED: float
+    THICKNESS_HEAD: float
+
+
+class PlasticMaterialHyperSMasonryCoord(TypedDict, total=False):
+    COORD_TYPE: int  # Global=0, ElementLocal=1, GlobalZAngle=2
+    COORD_ANGLE: float  # Angle from Global X (deg)
+
+
+class PlasticMaterialHyperSMasonry(TypedDict, total=False):
+    """Shape of PlasticMaterialHyperSPayload's MASONRY sub-object."""
+
+    BM: PlasticMaterialHyperSMasonryLayer  # Brick Material Properties
+    BED_JOINT: PlasticMaterialHyperSMasonryLayer  # Bed Joint Properties
+    HEAD_JOINT: PlasticMaterialHyperSMasonryLayer  # Head Joint Properties
+    GEOM: PlasticMaterialHyperSMasonryGeometry  # Geometry of Masonry Panel
+    MAT_COORD: PlasticMaterialHyperSMasonryCoord  # Material Coordinate System
+
+
+class PlasticMaterialHyperSConcreteDamageItem(TypedDict, total=False):
+    """Shared shape of PlasticMaterialHyperSConcreteDamage's COMP_ITEMS/
+    TENSILE_ITEMS array entries."""
+
+    INELASTIC_STRAIN: float
+    YIELD_STRESS: float
+    DAMAGE: float
+
+
+class PlasticMaterialHyperSConcreteDamage(TypedDict, total=False):
+    """Shape of PlasticMaterialHyperSPayload's CONCDMG sub-object."""
+
+    DILIATION_ANGLE: float  # Dilation Angle (deg) — server's own field name spelling
+    ECCEN: float  # Eccentricity
+    FBO_FCO: float  # fbo/fco
+    K: float
+    VISCOSITY_PARAM: float  # Viscosity Parameter
+    COMP_ITEMS: List[PlasticMaterialHyperSConcreteDamageItem]  # Compressive Behavior
+    TENSILE_ITEMS: List[PlasticMaterialHyperSConcreteDamageItem]  # Tensile Behavior
+
+
+class PlasticMaterialHyperSPayload(TypedDict, total=False):
+    """No Specifications table exists for this Hyper-S variant of EPMT in
+    the manual chapter. Field names/types below come from `GET
+    /info/db/EPMT-M1` server introspection (confirmed live 2026-07-29,
+    Civil NX Hyper-S). MODEL_TYPE is an int here (Tresca=0, VonMises=1,
+    MohrCoulomb=2, DruckerPrager=3, Masonry=4, ConcreteDamage=5) — unlike
+    the non-Hyper-S EPMT's string codes ("TR"/"VM"/"MC"/...). Pass only the
+    sub-object matching MODEL_TYPE.
+    """
+
+    NAME: str  # Name
+    MODEL_TYPE: int  # Tresca=0, VonMises=1, MohrCoulomb=2, DruckerPrager=3, Masonry=4, ConcreteDamage=5
+    TRESCA: PlasticMaterialHyperSHardeningModel  # MODEL_TYPE=0
+    VMISES: PlasticMaterialHyperSHardeningModel  # MODEL_TYPE=1
+    MOHRCL: PlasticMaterialHyperSCoulombModel  # MODEL_TYPE=2
+    DRUCKER: PlasticMaterialHyperSCoulombModel  # MODEL_TYPE=3
+    MASONRY: PlasticMaterialHyperSMasonry  # MODEL_TYPE=4
+    CONCDMG: PlasticMaterialHyperSConcreteDamage  # MODEL_TYPE=5
+
+
+class PlasticMaterialHyperS(DbResource):
+    ENDPOINT = "/db/EPMT-M1"
+    NAME = "Plastic Material (Hyper-S)"
+    PRODUCTS = HYPER_S_ONLY
 
 
 class InelasticMaterialKentParkParam(TypedDict, total=False):

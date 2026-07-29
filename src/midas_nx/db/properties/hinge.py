@@ -1,15 +1,18 @@
-"""Source: docs/manual/04_DB_Properties.md, items 22-23 (/db/IEHC, /db/IEHG).
-
-The Hyper-S hinge-assignment variants (IEHG-BEAM-M1, IEHG-TRUSS-M1,
-IEHG-GL-M1, IEHG-PSS-M1) are itemized by URL in INDEX.md but documented as
-thin stubs with no Specifications table in the chapter file, so left
-unimplemented.
+"""Source: docs/manual/04_DB_Properties.md, items 22-23 (/db/IEHC, /db/IEHG),
+plus the Hyper-S hinge-assignment variants IEHG-BEAM-M1, IEHG-TRUSS-M1,
+IEHG-GL-M1, IEHG-PSS-M1 (one per element type). None have a Specifications
+table in the chapter file. IEHG-BEAM-M1's shape is confirmed live via `GET
+/info/db/IEHG-BEAM-M1` (2026-07-29, Civil NX Hyper-S); the other three have
+no `/info` route at all (404 there, even though GET on the endpoint itself
+works) — their classes assume the identical single-field shape by sibling
+analogy, not independent server confirmation. See
+InelasticHingePropertyHyperSPayload's docstring.
 """
 from __future__ import annotations
 
 from typing import TypedDict
 
-from ..base import DbResource
+from ..base import HYPER_S_ONLY, DbResource
 
 
 class InelasticHingeControlPayload(TypedDict, total=False):
@@ -55,3 +58,52 @@ class InelasticHingeProperty(DbResource):
     ENDPOINT = "/db/IEHG"
     NAME = "Assign Inelastic Hinge Properties"
     PRODUCTS = frozenset({"gen", "civil"})
+
+
+class InelasticHingePropertyHyperSPayload(TypedDict, total=False):
+    """Shape confirmed live for IEHG-BEAM-M1 via `GET /info/db/IEHG-BEAM-M1`
+    (2026-07-29, Civil NX Hyper-S). IEHG-TRUSS-M1/IEHG-GL-M1/IEHG-PSS-M1
+    have no `/info` route (404, even though GET on the endpoint itself
+    works) — the identical shape is assumed for them by sibling analogy
+    (same IEHG-*-M1 family, differing only by element-type suffix), not
+    independently server-confirmed the way BEAM-M1's is.
+    """
+
+    INEL_PROP_NAME: str  # Inelastic Hinge Property Name
+
+
+class InelasticHingePropertyHyperSBeam(DbResource):
+    ENDPOINT = "/db/IEHG-BEAM-M1"
+    NAME = "Assign Inelastic Hinge Properties (Beam, Hyper-S)"
+    PRODUCTS = HYPER_S_ONLY
+
+
+class InelasticHingePropertyHyperSTruss(DbResource):
+    """⚠️ Field shape assumed from IEHG-BEAM-M1 by sibling analogy — this
+    endpoint's own `/info/db/...` route 404s, so it isn't independently
+    server-confirmed. See InelasticHingePropertyHyperSPayload.
+    """
+
+    ENDPOINT = "/db/IEHG-TRUSS-M1"
+    NAME = "Assign Inelastic Hinge Properties (Truss, Hyper-S)"
+    PRODUCTS = HYPER_S_ONLY
+
+
+class InelasticHingePropertyHyperSGeneralLink(DbResource):
+    """⚠️ See InelasticHingePropertyHyperSTruss — same caveat."""
+
+    ENDPOINT = "/db/IEHG-GL-M1"
+    NAME = "Assign Inelastic Hinge Properties (General Link, Hyper-S)"
+    PRODUCTS = HYPER_S_ONLY
+
+
+class InelasticHingePropertyHyperSPss(DbResource):
+    """⚠️ See InelasticHingePropertyHyperSTruss — same caveat. The "PSS"
+    suffix's meaning isn't stated in any available source (manual, /info,
+    or the live server); kept as the literal endpoint suffix rather than
+    guessed at.
+    """
+
+    ENDPOINT = "/db/IEHG-PSS-M1"
+    NAME = "Assign Inelastic Hinge Properties (PSS, Hyper-S)"
+    PRODUCTS = HYPER_S_ONLY

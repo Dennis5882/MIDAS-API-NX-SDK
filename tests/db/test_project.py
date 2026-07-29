@@ -16,6 +16,7 @@ from midas_nx.db.project import (
     Story,
     StructureGroup,
     StructureType,
+    StructureTypeHyperS,
     TendonGroup,
     ThicknessColor,
     Unit,
@@ -212,3 +213,26 @@ def test_story_create_sends_documented_assign_shape(gen_client):
     Story.create({1: story}, client=gen_client)
     sent = responses.calls[0].request
     assert json.loads(sent.body) == {"Assign": {"1": story}}
+
+
+@responses.activate
+def test_structure_type_hyper_s_update_sends_info_derived_shape(civil_client):
+    responses.add(responses.PUT, "https://x.test:443/civil/db/STYP-M1", json={}, status=200)
+    styp = {
+        "STYPE": "3D",
+        "GRAV": 9.806,
+        "TEMP": 0,
+        "ALIGNBEAM": False,
+        "ALIGNSLAB": False,
+        "MASS_CONTROL": {"MASS_TYPE": "LUMPED", "MASS_POS": "CENTROID", "SELFWEIGHT": False},
+    }
+    StructureTypeHyperS.update({1: styp}, client=civil_client)
+    sent = responses.calls[0].request
+    assert json.loads(sent.body) == {"Assign": {"1": styp}}
+
+
+@responses.activate
+def test_structure_type_hyper_s_create_raises_before_any_http_call(civil_client):
+    with pytest.raises(UnsupportedMethodError):
+        StructureTypeHyperS.create({1: {"STYPE": "3D"}}, client=civil_client)
+    assert len(responses.calls) == 0

@@ -220,8 +220,18 @@
       "products": [
         "civil"
       ],
-      "status": "planned",
-      "module": "midas_nx.db.project"
+      "status": "implemented",
+      "module": "midas_nx.db.project",
+      "live_verified": {
+        "date": "2026-07-29",
+        "products": [
+          "civil"
+        ],
+        "method": "direct MidasClient GET/.info() probe (not scripts/live_readonly_sweep.py - the session disconnected from the relay mid-sweep before the script itself could run)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/GRUP",
@@ -621,8 +631,18 @@
       "products": [
         "civil"
       ],
-      "status": "planned",
-      "module": "midas_nx.db.properties.*"
+      "status": "implemented",
+      "module": "midas_nx.db.properties.material",
+      "live_verified": {
+        "date": "2026-07-29",
+        "products": [
+          "civil"
+        ],
+        "method": "direct MidasClient GET/.info() probe (not scripts/live_readonly_sweep.py - the session disconnected from the relay mid-sweep before the script itself could run)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/IMFM",
@@ -652,8 +672,18 @@
       "products": [
         "civil"
       ],
-      "status": "planned",
-      "module": "midas_nx.db.properties.*"
+      "status": "implemented",
+      "module": "midas_nx.db.properties.material",
+      "live_verified": {
+        "date": "2026-07-29",
+        "products": [
+          "civil"
+        ],
+        "method": "direct MidasClient GET/.info() probe (not scripts/live_readonly_sweep.py - the session disconnected from the relay mid-sweep before the script itself could run)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/TDMF",
@@ -794,8 +824,18 @@
       "products": [
         "civil"
       ],
-      "status": "planned",
-      "module": "midas_nx.db.properties.*"
+      "status": "implemented",
+      "module": "midas_nx.db.properties.material",
+      "live_verified": {
+        "date": "2026-07-29",
+        "products": [
+          "civil"
+        ],
+        "method": "direct MidasClient GET/.info() probe (not scripts/live_readonly_sweep.py - the session disconnected from the relay mid-sweep before the script itself could run)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/SECT",
@@ -1064,8 +1104,18 @@
       "products": [
         "civil"
       ],
-      "status": "planned",
-      "module": "midas_nx.db.properties.*"
+      "status": "implemented",
+      "module": "midas_nx.db.properties.hinge",
+      "live_verified": {
+        "date": "2026-07-29",
+        "products": [
+          "civil"
+        ],
+        "method": "direct MidasClient GET/.info() probe (not scripts/live_readonly_sweep.py - the session disconnected from the relay mid-sweep before the script itself could run)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/IEHG-TRUSS-M1",
@@ -1074,8 +1124,18 @@
       "products": [
         "civil"
       ],
-      "status": "planned",
-      "module": "midas_nx.db.properties.*"
+      "status": "implemented",
+      "module": "midas_nx.db.properties.hinge",
+      "live_verified": {
+        "date": "2026-07-29",
+        "products": [
+          "civil"
+        ],
+        "method": "direct MidasClient GET/.info() probe (not scripts/live_readonly_sweep.py - the session disconnected from the relay mid-sweep before the script itself could run)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/IEHG-GL-M1",
@@ -1084,8 +1144,18 @@
       "products": [
         "civil"
       ],
-      "status": "planned",
-      "module": "midas_nx.db.properties.*"
+      "status": "implemented",
+      "module": "midas_nx.db.properties.hinge",
+      "live_verified": {
+        "date": "2026-07-29",
+        "products": [
+          "civil"
+        ],
+        "method": "direct MidasClient GET/.info() probe (not scripts/live_readonly_sweep.py - the session disconnected from the relay mid-sweep before the script itself could run)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/IEHG-PSS-M1",
@@ -1094,8 +1164,18 @@
       "products": [
         "civil"
       ],
-      "status": "planned",
-      "module": "midas_nx.db.properties.*"
+      "status": "implemented",
+      "module": "midas_nx.db.properties.hinge",
+      "live_verified": {
+        "date": "2026-07-29",
+        "products": [
+          "civil"
+        ],
+        "method": "direct MidasClient GET/.info() probe (not scripts/live_readonly_sweep.py - the session disconnected from the relay mid-sweep before the script itself could run)",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/FIMP",

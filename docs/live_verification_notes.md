@@ -2909,6 +2909,73 @@ corrected field names. This is a real correctness fix — the old TypedDict
 would have led a caller straight into the exact defect this session found.
 Worth reporting to MIDASIT: see `docs/vendor_report_ko.md`.
 
+## 2026-07-29 (later same day) — the 8 Hyper-S `-M1` stubs, implemented from `/info/db/...`
+
+Per the author's decision on the v1.0.0 gate's item (a) ("1번으로 해서 진행" —
+go with option 1), pulled full `GET /info/db/...` JSON Schema bodies for all
+8 previously-unimplemented Hyper-S stub endpoints against a live Civil NX
+2026 (v2.2, build 06/18/2026) session, using a direct `MidasClient(...,
+strict_product=False)` probe (not `scripts/live_readonly_sweep.py` this
+time — the session disconnected from the relay partway through, before the
+script itself could run; the direct probe's results were already captured).
+
+5 of 8 resolved a full schema:
+
+| Endpoint | GET | `/info` |
+|---|---|---|
+| `/db/STYP-M1` | real populated row (`STYPE: "3D"`, `GRAV: 9.806`, ...) | full schema |
+| `/db/MATL-M1` | real populated row (`MATL_NAME: "C24"`, `MATL_TYPE: "CONC"`, `PARAM[0].P_TYPE: 0`) | full schema |
+| `/db/IMFM-M1` | `{"message": ""}` (empty table) | full schema |
+| `/db/EPMT-M1` | `{"message": ""}` (empty table) | full schema |
+| `/db/IEHG-BEAM-M1` | `{"message": ""}` (empty table) | full schema |
+| `/db/IEHG-TRUSS-M1` | `{"message": ""}` (empty table) | **404** |
+| `/db/IEHG-GL-M1` | `{"message": ""}` (empty table) | **404** |
+| `/db/IEHG-PSS-M1` | `{"message": ""}` (empty table) | **404** |
+
+The 3 `IEHG-{TRUSS,GL,PSS}-M1` endpoints answer GET (empty table on this
+model) but their own `/info/db/...` route 404s — no schema route exists for
+them specifically, unlike their sibling `IEHG-BEAM-M1`.
+
+Two of the five resolved schemas turned out to have a **genuinely different
+wire shape** from their non-Hyper-S sibling, not just a product gate on an
+identical schema:
+
+- `/db/MATL-M1`'s `PARAM[].P_TYPE` is 0-indexed (`Standard:0, Isotropic:1,
+  Orthotropic:2`) and nests user-defined fields under a `USER_DEFINED`
+  sub-object, vs. non-Hyper-S `/db/MATL`'s 1-indexed `P_TYPE` with flat
+  fields (`ELAST`, `POISN`, ... directly on the param object).
+- `/db/IMFM-M1` nests fields under `CONCRETE`/`STEEL` sub-objects with
+  different names entirely (`UN_CONC_NAME`, `CONF_CONC_NAME`) vs.
+  non-Hyper-S `/db/IMFM`'s flat `CONC_NAME`/`CONFINED_CONC_NAME`.
+
+`/db/EPMT-M1`'s `MODEL_TYPE` is also an int (`Tresca:0, VonMises:1,
+MohrCoulomb:2, DruckerPrager:3, Masonry:4, ConcreteDamage:5`) vs.
+non-Hyper-S `/db/EPMT`'s string codes (`"TR"`/`"VM"`/`"MC"`/...), and adds
+two sub-objects (`DRUCKER`, `MASONRY`, `CONCDMG`) the non-Hyper-S variant's
+chapter never documented at all.
+
+**Fix applied**: implemented all 8 as proper `DbResource` subclasses —
+`StructureTypeHyperS` (`db/project.py`), `MaterialHyperS` /
+`InelasticFiberMaterialLinkHyperS` / `PlasticMaterialHyperS`
+(`db/properties/material.py`), `InelasticHingePropertyHyperS{Beam,Truss,
+GeneralLink,Pss}` (`db/properties/hinge.py`). Each payload TypedDict is
+documented in its own docstring as `/info`-derived rather than
+manual-transcribed. The 3 `IEHG-*` classes without their own `/info` route
+carry an explicit `⚠️` docstring caveat that their single-field shape
+(`INEL_PROP_NAME`) is assumed by sibling analogy to `IEHG-BEAM-M1`, not
+independently confirmed — if that assumption is ever wrong, it'll surface
+as a `"Wrong Field"` response on a real write, per this file's own
+"`Wrong Field` usually means a bad value, not a bad field name" note (which
+doesn't apply here since these would be genuinely wrong field *names*, an
+exception worth remembering if it comes up).
+
+`docs/coverage.json` updated: all 8 endpoints marked `"status":
+"implemented"` with a `live_verified` entry citing this direct-probe method
+(distinct from the sweep script's own `live_readonly_sweep.py` method
+string, since the sweep script itself didn't get to run). Coverage is now
+398/398 (100%). `tests/db/test_hyper_s_products.py`'s family-size assertion
+updated 13→21. This resolves the v1.0.0 gate's item (a) — see PLAN.md.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

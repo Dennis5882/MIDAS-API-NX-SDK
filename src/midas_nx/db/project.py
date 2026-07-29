@@ -1,6 +1,7 @@
-"""Source: docs/manual/02_DB_Project_Structure.md, items 1-14 (all but STYP-M1,
-the Hyper-S variant of STYP — itemized by URL in INDEX.md but not documented
-with a Specifications table/schema in the chapter file, so left unimplemented).
+"""Source: docs/manual/02_DB_Project_Structure.md, items 1-14, plus STYP-M1
+(the Hyper-S variant of STYP: no Specifications table in the chapter file,
+so its `StructureTypeHyperSPayload` below is derived from `GET
+/info/db/STYP-M1` server introspection instead — see that class's docstring).
 
 UNIT/STYP are GET/PUT-only ("신규 파일의 필수 데이터: GET / PUT만 동작") — new-file
 required data doesn't support POST/DELETE. CO_M/CO_S/CO_T/CO_F (visual color
@@ -12,7 +13,7 @@ from __future__ import annotations
 
 from typing import List, TypedDict
 
-from .base import CIVIL_ONLY, GEN_ONLY, NO_DELETE_METHODS, DbResource
+from .base import CIVIL_ONLY, GEN_ONLY, HYPER_S_ONLY, NO_DELETE_METHODS, DbResource
 
 _GET_PUT_ONLY = frozenset({"GET", "PUT"})
 
@@ -52,6 +53,38 @@ class StructureType(DbResource):
     ENDPOINT = "/db/STYP"
     NAME = "Structure Type"
     PRODUCTS = frozenset({"gen", "civil"})
+    METHODS = _GET_PUT_ONLY
+
+
+class MassControlHyperS(TypedDict, total=False):
+    """Shape of StructureTypeHyperSPayload's MASS_CONTROL sub-object."""
+
+    MASS_TYPE: str  # Mass type
+    MASS_POS: str  # Mass position
+    SELFWEIGHT: bool  # Convert Self Weight
+    MASS_AXIS: str  # Structure Mass Type
+
+
+class StructureTypeHyperSPayload(TypedDict, total=False):
+    """No Specifications table exists for this Hyper-S variant of STYP in
+    the manual chapter. Field names/types below come directly from `GET
+    /info/db/STYP-M1` server introspection (confirmed live 2026-07-29,
+    Civil NX Hyper-S) instead of a transcribed table — see the v1.0.0
+    Hyper-S-stub decision in PLAN.md.
+    """
+
+    STYPE: str  # Structure Type
+    GRAV: float  # Gravity
+    TEMP: float  # Initial Temperature
+    ALIGNBEAM: bool  # Align Top of Beam Section
+    ALIGNSLAB: bool  # Align Top of Slab (Plate)
+    MASS_CONTROL: MassControlHyperS  # Mass control parameter
+
+
+class StructureTypeHyperS(DbResource):
+    ENDPOINT = "/db/STYP-M1"
+    NAME = "Structure Type (Hyper-S)"
+    PRODUCTS = HYPER_S_ONLY
     METHODS = _GET_PUT_ONLY
 
 

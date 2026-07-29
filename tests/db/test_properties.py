@@ -5,14 +5,24 @@ import responses
 
 from midas_nx.client import UnsupportedMethodError
 from midas_nx.db.properties.damping import GroupDamping
-from midas_nx.db.properties.hinge import InelasticHingeControl, InelasticHingeProperty
+from midas_nx.db.properties.hinge import (
+    InelasticHingeControl,
+    InelasticHingeProperty,
+    InelasticHingePropertyHyperSBeam,
+    InelasticHingePropertyHyperSGeneralLink,
+    InelasticHingePropertyHyperSPss,
+    InelasticHingePropertyHyperSTruss,
+)
 from midas_nx.db.properties.material import (
     ChangeProperty,
     InelasticFiberMaterialLink,
+    InelasticFiberMaterialLinkHyperS,
     InelasticMaterialProperty,
     Material,
+    MaterialHyperS,
     MaterialModifyConcrete,
     PlasticMaterial,
+    PlasticMaterialHyperS,
     TimeDependentMaterialCreepShrinkage,
     TimeDependentMaterialFunction,
     TimeDependentMaterialLink,
@@ -415,3 +425,60 @@ def test_group_damping_create_sends_documented_assign_shape(gen_client):
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["STRAIN_GROUP_ITEMS"][0]["DAMPING_RATIO"] == 0.05
+
+
+@responses.activate
+def test_material_hyper_s_create_sends_info_derived_shape(civil_client):
+    responses.add(responses.POST, "https://x.test:443/civil/db/MATL-M1", json={}, status=200)
+    matl = {
+        "MATL_NAME": "C24",
+        "MATL_TYPE": "CONC",
+        "DAMP_RAT": 0,
+        "PARAM": [{"P_TYPE": 0, "STANDARD": "KS01(RC)", "DB": "C24"}],
+    }
+    MaterialHyperS.create({1: matl}, client=civil_client)
+    sent = responses.calls[0].request
+    assert json.loads(sent.body) == {"Assign": {"1": matl}}
+
+
+@responses.activate
+def test_inelastic_fiber_material_link_hyper_s_create_sends_nested_shape(civil_client):
+    responses.add(responses.POST, "https://x.test:443/civil/db/IMFM-M1", json={}, status=200)
+    InelasticFiberMaterialLinkHyperS.create(
+        {1: {"CONCRETE": {"UN_CONC_NAME": "Concrete_KP"}, "STEEL": {"STEEL_NAME": "Steel_Menegotto"}}},
+        client=civil_client,
+    )
+    sent = responses.calls[0].request
+    assert json.loads(sent.body)["Assign"]["1"]["CONCRETE"]["UN_CONC_NAME"] == "Concrete_KP"
+
+
+@responses.activate
+def test_plastic_material_hyper_s_create_von_mises_variant(civil_client):
+    responses.add(responses.POST, "https://x.test:443/civil/db/EPMT-M1", json={}, status=200)
+    PlasticMaterialHyperS.create(
+        {1: {"NAME": "Steel_VonMises", "MODEL_TYPE": 1, "VMISES": {"INIT_YIELD_STRESS": 235000}}},
+        client=civil_client,
+    )
+    sent = responses.calls[0].request
+    assert json.loads(sent.body)["Assign"]["1"]["MODEL_TYPE"] == 1
+
+
+@responses.activate
+def test_inelastic_hinge_property_hyper_s_beam_create_keyed_by_element_id(civil_client):
+    responses.add(responses.POST, "https://x.test:443/civil/db/IEHG-BEAM-M1", json={}, status=200)
+    InelasticHingePropertyHyperSBeam.create({2101: {"INEL_PROP_NAME": "Fiber_Auto"}}, client=civil_client)
+    sent = responses.calls[0].request
+    assert json.loads(sent.body) == {"Assign": {"2101": {"INEL_PROP_NAME": "Fiber_Auto"}}}
+
+
+@responses.activate
+def test_inelastic_hinge_property_hyper_s_truss_gl_pss_create_keyed_by_element_id(civil_client):
+    for cls, endpoint in (
+        (InelasticHingePropertyHyperSTruss, "IEHG-TRUSS-M1"),
+        (InelasticHingePropertyHyperSGeneralLink, "IEHG-GL-M1"),
+        (InelasticHingePropertyHyperSPss, "IEHG-PSS-M1"),
+    ):
+        responses.add(responses.POST, f"https://x.test:443/civil/db/{endpoint}", json={}, status=200)
+        cls.create({1: {"INEL_PROP_NAME": "Fiber_Auto"}}, client=civil_client)
+        sent = responses.calls[-1].request
+        assert json.loads(sent.body) == {"Assign": {"1": {"INEL_PROP_NAME": "Fiber_Auto"}}}

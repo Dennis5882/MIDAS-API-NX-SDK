@@ -5,8 +5,10 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-07-29, at v0.14.0 (390/398 documented endpoints; 295/390
-> live-verified per `docs/coverage.json`, both products, of which **all 43
+> Last updated: 2026-07-29, at v0.14.0 (398/398 documented endpoints — the
+> last 8 Hyper-S `-M1` stubs landed today from `/info/db/...` introspection,
+> closing v1.0.0 gate item (a), see below; 303/398 live-verified per
+> `docs/coverage.json`, both products, of which **all 43
 > write-checker cases are now confirmed** by a full CRUD round trip rather
 > than a GET — 36 of those now on Gen NX too, not just Civil. The last case,
 > `/db/NMAS`, used to kill **both** Civil NX and Gen NX outright (15+
@@ -200,8 +202,8 @@ mirroring the `db/*.py` payload-typing style but at the whole-body level.
 | Area | Chapters | Endpoints | State |
 |---|---|---|---|
 | Lifecycle | 01 | 11/11 | ✅ done |
-| Core modeling | 02, 03 | 20/21 | ✅ done (1 undoc Hyper-S stub) |
-| Properties | 04 | 25/32 | ✅ done (7 undoc Hyper-S/stub) |
+| Core modeling | 02, 03 | 21/21 | ✅ done |
+| Properties | 04 | 32/32 | ✅ done |
 | Boundary | 05 | 24/24 | ✅ done |
 | Static loads | 06 | 21/21 | ✅ done |
 | **Phase 1 — analyzable model** | 07, 09, 10, 11 | **47/47** | ✅ done |
@@ -211,12 +213,16 @@ mirroring the `db/*.py` payload-typing style but at the whole-body level.
 | **Phase 5a — design setup + steel code** | 24, 25 | **40/40** | ✅ done |
 | **Phase 5b — RC design code** | 26 | **69/69** | ✅ done |
 | **Phase 5c — SRC design code** | 27 | **27/27** | ✅ done |
-| **Total** | | **390/398 (98%)** | published through v0.11.2 |
+| **Total** | | **398/398 (100%)** | 390/398 published through v0.11.2; the last 8 landed 2026-07-29 |
 
-> The remaining 8 rows are undocumented Hyper-S stubs (STYP-M1, MATL-M1,
-> IMFM-M1, EPMT-M1, IEHG-*-M1) with no JSON Schema in the manual repo to
-> transcribe from (URL/methods + an external Zendesk link only) — see §3's
-> cross-cutting backlog. Every endpoint with an actual JSON Schema across
+> The last 8 rows (STYP-M1, MATL-M1, IMFM-M1, EPMT-M1, IEHG-{BEAM,TRUSS,GL,
+> PSS}-M1) had no JSON Schema in the manual repo to transcribe from — this
+> was v1.0.0 gate item (a). Resolved 2026-07-29 by deriving their payload
+> TypedDicts from live `GET /info/db/...` server introspection instead
+> (confirmed for 5 of 8; the other 3 — IEHG-TRUSS/GL/PSS-M1 — have no
+> `/info` route at all, so their shape is assumed by sibling analogy to
+> IEHG-BEAM-M1, not independently confirmed). Documented in-module as
+> server-derived, not manual-transcribed. Every documented endpoint across
 > all 27 chapters is now implemented.
 
 Non-endpoint status as of v0.12.0 (these are the axes Phases 6-8 move, and
@@ -224,7 +230,7 @@ they're the ones worth re-checking before planning a release):
 
 | Axis | Artifact | State |
 |---|---|---|
-| Tests | 665 tests, `responses`-mocked | ✅ green |
+| Tests | 680 tests, `responses`-mocked | ✅ green |
 | CI | `.github/workflows/ci.yml` — pytest + ruff on py3.9/3.13, push+PR | ✅ running |
 | Manual drift | `manual-drift-check.yml` (`cron: 0 3 * * 3`) + `scripts/check_manual_drift.py` | ✅ running |
 | Schema drift (live) | `scripts/check_drift.py` (`/info/db/...` vs TypedDict) | ✅ local dev tool |
@@ -232,7 +238,7 @@ they're the ones worth re-checking before planning a release):
 | Response handling | 200-with-`error` body, non-JSON body, empty-table shapes, failed-analysis message | ✅ hardened in v0.12.0/v0.14.0 |
 | Write verification | `scripts/live_crud_check.py` — create/read/update/delete round trips, 43 cases in 6 tiers | ✅ **all 43** confirmed live on Civil NX 2026 v2.2, 40 of them on v2.1 too; 36 of the 43 also confirmed on Gen NX v2.1. `/db/NMAS` (the last holdout) used to crash **both** products, root-caused 2026-07-29 (omitted `rmX`/`rmY`/`rmZ`) and worked around in `NodalMass.create()`/`.update()` |
 | Version metadata | `__init__.py` `__version__` (hatchling `dynamic`) + `tests/test_version.py` | ✅ single source |
-| Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 295/390, both products |
+| Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 303/398, both products |
 | Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md` | ⚠️ text-only, no screenshots |
 | Practitioner layer | Excel round-trip, `recipes`/`easy`, opt-in validation | ❌ not started |
 
@@ -558,38 +564,64 @@ caught and survived a real upstream change. Matches D5 from the 2026-07-21
 roadmap review: 1.0 means "frozen public surface + live-verified core paths +
 a running change-detection pipeline," not just "endpoint count is high."
 
-Status after 2026-07-26:
+Status after 2026-07-29:
 
-- **(b) read paths are done** — 295/390 recorded across both products. Write
-  paths are still only `live_smoke.py`'s ~10 endpoints, so read this gate as
-  half-met.
-- **(c) is met in substance** — `manual-drift-check.yml` runs weekly, and
-  v0.11.1/v0.11.2 were that exact drill executed by hand on a real breaking
-  upstream change.
-- **(a)'s premise has changed and needs an author decision.** The stubs were
-  parked because the manual documents no JSON Schema for them, and
-  transcribing from the external Zendesk link would mean depending on an
-  unversioned source. But all 8 answer a live GET under Civil NX and 5 return
-  a field-level schema from `/info/db/...` (see
-  `docs/live_verification_notes.md`). The server is a versioned, first-party
-  source the SDK already talks to. Three ways out, in preference order:
-  1. Implement them from `/info/db/...` introspection, marked in-module as
-     server-derived rather than manual-transcribed, and covered by the live
-     sweep. Costs a documented exception to the transcribe-from-manual rule.
-  2. Keep waiting for the manual and formally invoke the existing "100% minus
-     undocumented stubs" rule at 1.0.
-  3. Implement only the 5 with schemas and leave the 3 `IEHG-*` ones parked.
+- **(a) is now resolved.** Went with option 1 (the author's explicit choice,
+  "1번으로 해서 진행"): implemented all 8 stubs (`StructureTypeHyperS`,
+  `MaterialHyperS`, `InelasticFiberMaterialLinkHyperS`, `PlasticMaterialHyperS`,
+  `InelasticHingePropertyHyperS{Beam,Truss,GeneralLink,Pss}`) with payload
+  TypedDicts derived from live `GET /info/db/...` introspection rather than a
+  manual Specifications table, documented in-module as server-derived. 5 of 8
+  have a directly-confirmed `/info` schema (`STYP-M1`, `MATL-M1`, `IMFM-M1`,
+  `EPMT-M1`, `IEHG-BEAM-M1`); the other 3 (`IEHG-TRUSS-M1`, `IEHG-GL-M1`,
+  `IEHG-PSS-M1`) have no `/info` route at all (404, even though GET works),
+  so their single-field shape is assumed by sibling analogy to `IEHG-BEAM-M1`
+  and flagged as such, not independently confirmed. Two Hyper-S variants
+  (`MATL-M1`, `IMFM-M1`) turned out to have a genuinely different wire shape
+  from their non-Hyper-S sibling (0-indexed `P_TYPE` vs 1-indexed; nested
+  `CONCRETE`/`STEEL` sub-objects with different field names vs flat fields) —
+  not just a product gate on an identical schema. Coverage is now 398/398
+  (100%); `docs/coverage.json`/`ROADMAP.md`/`tests/db/test_hyper_s_products.py`
+  (13→21) updated; 680 tests passing. This is a genuine `src/` addition
+  (new classes, new client behavior), so it adds to the pending version-bump
+  case, see the project memory.
+- **(b) is now met, not half-met.** `scripts/live_crud_check.py` covers 43
+  resources across 6 tiers with a full create→read→update→read→delete→read
+  round trip: **43/43 confirmed on Civil NX**, **38/43 confirmed on Gen**
+  (the other 5 are genuinely Civil-only — `/db/CMCS` and the 4-case moving
+  chain — not untested). `/db/NMAS`, the one case that used to gate this
+  permanently (crashed both products), was root-caused and fixed 2026-07-29.
+  Read paths: 303/398 recorded across both products (the +8 being today's
+  Hyper-S stubs), unchanged elsewhere and re-confirmed live the same day with
+  zero regressions.
+- **(c) is met, and reinforced again today** — not by the automated
+  `manual-drift-check.yml` pipeline this time, but by the same live-check
+  discipline catching a real, severe manual/server mismatch by hand
+  (`/db/REBW`'s entire field-name schema, see `docs/live_verification_notes.md`
+  and vendor report B-4). Worth flagging as a new consideration for 1.0,
+  not yet in this gate's original three criteria: REBW was only caught
+  because someone happened to read real populated data back against a real
+  model. There is no way to know how many other endpoints carry the same
+  kind of undiscovered manual/server mismatch without doing that same
+  check broadly — a case for a wider live drift audit before declaring the
+  public surface frozen, not just an endpoint-count or route-existence
+  check. Not resolved; a call for the author.
+
+**All three original gate criteria are now met.** The only open item is the
+newly-surfaced (c)-adjacent question above (wider live drift audit before
+freezing) — a call for the author, not a blocker by the gate's original text.
 
 ### Cross-cutting / backlog (any time)
-- Resolve the undocumented Hyper-S stubs (STYP-M1, MATL-M1, IMFM-M1, EPMT-M1,
-  IEHG-*-M1). No longer blocked on the vendored manual: as of 2026-07-26 all 8
-  answer a live GET under Civil NX and 5 expose a schema via `/info/db/...`.
-  See the v1.0.0 gate above for the three options — this needs a decision, not
-  more waiting.
-- Extend write verification. `scripts/live_crud_check.py` covers 10 resources
-  on Civil; the same run against Gen is untested, and the design/`post` write
-  families aren't covered at all. Given that the first write session found a
-  table-destroying `delete()`, this is the highest-yield axis left.
+
+- ~~Resolve the undocumented Hyper-S stubs~~ — done 2026-07-29, see the
+  v1.0.0 gate above.
+- Extend write verification further. `scripts/live_crud_check.py` now covers
+  43 resources across 6 tiers on both products (43/43 Civil, 38/43 Gen — see
+  the v1.0.0 gate above), but the design-chapter (`ch24-27`) and `post/`
+  write families still aren't covered by it at all. `/db/REBW`'s 2026-07-29
+  discovery (whole field-name schema wrong, only found by reading real
+  populated data back) is a concrete argument for extending this checker —
+  or some equivalent live-data spot-check — into those chapters before 1.0.
 
 ---
 
@@ -614,10 +646,10 @@ Status after 2026-07-26:
 | v0.12.0 ✅ | Client correctness — `MidasResultError` for 200-with-`error` bodies, non-JSON responses kept inside the exception hierarchy, `items()` empty-shape fix, `post.base.unwrap_table()`, `__version__` single-sourced | published |
 | v0.13.0 ✅ | Hyper-S corrected to Civil-only (`HYPER_S_ONLY`), A1 live sweep complete across both products (295/390), D4 matrix has both halves | published |
 | v0.14.0 ✅ | `delete()` no longer empties the table (per-id URL) + `delete_all()`, `analyze()` raises on a failed solve, `scripts/live_crud_check.py` | published |
-| v0.14.0 | Phase 6 remainder — screenshot-driven beginner walkthrough (C1 pt. 2); optionally the Hyper-S stub decision (see v1.0.0 gate (a)) | a non-developer can get to a first result from the docs alone |
-| v0.15.0 | Phase 7 — Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
-| v0.16.0+ | Phase 8 — `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
-| v1.0.0 | Public API freeze: Hyper-S `-M1` stub decision + core paths live-verified | full documented surface covered, live-verified, change-detection pipeline live |
+| v0.15.0 (pending) | Bundles the 2026-07-29 `src/` diff: 53 PRODUCTS corrections, `/db/REBW` schema rewrite, `STORY_IRR_PARAM` enum fix, and the 8 Hyper-S `-M1` stubs (resolves v1.0.0 gate (a)); plus Phase 6 remainder — screenshot-driven beginner walkthrough (C1 pt. 2) | a non-developer can get to a first result from the docs alone |
+| v0.16.0 | Phase 7 — Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
+| v0.17.0+ | Phase 8 — `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
+| v1.0.0 | Public API freeze: all three gate criteria met as of 2026-07-29 (Hyper-S stub decision resolved, core paths live-verified, manual-diff pipeline survived a real change) — only the wider-live-drift-audit question (surfaced by the REBW find) remains open | full documented surface covered, live-verified, change-detection pipeline live |
 
 Each version ships when its phase's chapters are 100% (minus undocumented
 stubs) and green in CI. Release = bump `pyproject.toml` version, tag, publish

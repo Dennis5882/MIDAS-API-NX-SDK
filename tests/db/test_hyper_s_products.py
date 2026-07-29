@@ -6,6 +6,12 @@ contradicted: all 13 answered under Civil NX 2026 (v2.1) and all 13 returned
 404 under Gen NX 2026 (v2.1). This guards the whole family at once, so a new
 `-M1` endpoint can't quietly land with the wrong PRODUCTS.
 
+2026-07-29: the remaining 8 undocumented `-M1` stubs (STYP-M1, MATL-M1,
+IMFM-M1, EPMT-M1, IEHG-{BEAM,TRUSS,GL,PSS}-M1) were implemented from `GET
+/info/db/...` server introspection instead of a manual Specifications table
+(none exists for these), resolving the v1.0.0 gate's Hyper-S-stub item. Total
+is now 21, not 13.
+
 If MIDASIT brings Hyper-S to Gen NX, widen `HYPER_S_ONLY` in db/base.py and
 this test follows automatically - see that constant's docstring.
 """
@@ -40,7 +46,7 @@ HYPER_S = sorted(
 
 
 def test_the_hyper_s_family_is_discoverable():
-    assert len(HYPER_S) == 13, [c.ENDPOINT for c in HYPER_S]
+    assert len(HYPER_S) == 21, [c.ENDPOINT for c in HYPER_S]
 
 
 @pytest.mark.parametrize("cls", HYPER_S, ids=lambda c: c.ENDPOINT)
