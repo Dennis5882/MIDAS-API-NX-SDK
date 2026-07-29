@@ -150,10 +150,15 @@ Two things that have already caused rework:
   one-call trigger: a single nodal-mass write times out, every following `/db/*` call times
   out, and the app raises the "Failed to disconnect the work session" license dialog and
   exits — holding the license until it's re-run, `New Project` pressed, and closed properly.
-  Six reproductions on Civil NX (2026-07-26) across **v2.1 (build 06/05/2026) and v2.2 (build
-  06/18/2026)**, so upgrading is not the fix — and three more on **Gen NX 2026 v2.1 (build
-  07/28/2026)** (2026-07-29) confirmed it's not Civil-specific either: **9/9 across both
-  products, every attempt.** The three Gen crashes varied in surface symptom — an immediate
+  Eight reproductions on Civil NX (six on 2026-07-26, two on 2026-07-29) across **v2.1 (build
+  06/05/2026), v2.2 (build 06/18/2026), and v2.2 (build 07/28/2026)**, so upgrading is not the
+  fix — and three more on **Gen NX 2026 v2.1 (build 07/28/2026)** (2026-07-29) confirmed it's not
+  Civil-specific either: **11/11 across both products, every attempt.** One of the two 07/29
+  Civil reproductions used a from-scratch minimal model (2 nodes, 1 beam element, 1 fixed
+  support, nothing else — built specifically to rule out "an unrestrained/floating node or
+  substructure somewhere in the model makes the mass-matrix update hang" as an alternative
+  explanation) and still died identically — this is not a model-topology issue. The three Gen
+  crashes varied in surface symptom — an immediate
   `404 Client Disconnected`, then twice a 15s `Read timed out` on the call itself followed by
   every subsequent call timing out too — but the underlying signal was identical every time: the
   session is dead and stays dead. **The third Gen reproduction was against a real production

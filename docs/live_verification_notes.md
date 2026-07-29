@@ -2207,12 +2207,148 @@ way the Civil real-model evidence did earlier in this file: it rules out
 "only happens on synthetic/throwaway test data" as an explanation. The user
 had saved the model beforehand, so the crash cost a restart cycle, not work.
 
-**Running total: 9/9 — six on Civil NX, three on Gen NX, zero survivals.**
-Every file that recorded this as "Civil NX" or cited a specific reproduction
-count has been updated: `CLAUDE.md`, `NodalMassPayload`'s docstring in
-`db/static_loads.py`, the `crashes=` note in `live_crud_check.py`. The
-vendor report's A-1 gets this as its strongest piece of evidence yet — see
-below.
+**Running total after this section: 9/9 — six on Civil NX, three on Gen NX,
+zero survivals.** Every file that recorded this as "Civil NX" or cited a
+specific reproduction count has been updated: `CLAUDE.md`,
+`NodalMassPayload`'s docstring in `db/static_loads.py`, the `crashes=` note
+in `live_crud_check.py`. The vendor report's A-1 gets this as its strongest
+piece of evidence yet — see below.
+
+## 2026-07-29 (still later) — `/db/NMAS` reproduction #10, on a freshly updated Civil NX build
+
+The user installed a new Civil NX build the same day — v2.2 (build
+07/28/2026), one build newer than the v2.2 (06/18/2026) build already on
+record — and asked for a fresh round of checks before trusting it, ending
+with a repeat of the NMAS reproduction to see if the build update happened
+to fix it.
+
+Read-only sweep first (293 GET-capable Civil resources, 273 ok / 20 error).
+All 20 errors were 404, on both `GET` and the schema-only `/info/db/...`
+probe (a control call, `Node.info()`, succeeded on the same session) — that
+rules out "no data in this model" as the explanation, since a schema probe
+doesn't touch model data at all. The 20: `/db/STOR`, `/db/SWIND`,
+`/db/SSEIS`, `/db/POSP`, `/db/EPST`, `/db/DRLS`, `/db/SDHY`, `/db/SDIS`,
+`/db/REBB`, `/db/REBR`, `/db/REBW`, plus 9 design-chapter endpoints —
+`/DESIGN/RC/KDS-41-20-2022/{MATD,REBB,REBC,REBR,REBW,TRFT,ULCT}`,
+`/DESIGN/SRC/AIK-SRC2K/MATD`, `/DESIGN/STEEL/KDS-41-30-2022/ULCT`. 11 of
+these had previously been `live_verified` as `ok` specifically on **Gen NX**
+(2026-07-26) and had never been probed live on Civil before — so this reads
+as a first-time signal that these may actually be Gen-only (the SDK
+currently declares `PRODUCTS={"gen","civil"}` for all 20), not a build
+regression; coverage.json shows no prior Civil `live_verified` entry for any
+of them. **Not acted on** — per the caveat below, one session's evidence isn't
+enough to flip a `PRODUCTS` frozenset; the trigger to revisit these 20 is an
+independent reproduction (different session/account, or a fresh Civil
+document via `live_crud_check.py`'s throwaway-model setup) confirming the
+same 404s. Separately, `scripts/check_manual_drift.py` found the
+vendored manual repo two commits stale — the Story Drift `X_DIR`/`X-DIR`
+contradiction (`21_POST_StoryTables.md`) was officially corrected by the
+vendor (unified on the underscore spelling, type confirmed `Object`), so
+`post/story.py`'s `StoryDriftVerticalLine(s)Selection` TypedDicts and their
+tests were updated to match and the hyphen fallback was dropped;
+`vendored_at_commit` bumped to `aeca67553dd078e2057f2ab5e87fe3391775e6ac`
+and re-confirmed `has_diff: false`. The other stale file
+(`04_DB_Properties.md`'s TDMT/TDME `KDS2016` correction) needed no code
+change — the SDK already had the corrected values. Then
+`scripts/live_crud_check.py --product civil` (all six tiers, `/db/NMAS`
+auto-skipped): 42/42 non-quarantined cases passed, matching the existing
+42/43-confirmed baseline with zero regressions from the build update.
+
+Finally, with the user's explicit go-ahead, `--tier static
+--include-crashers`:
+
+```
+PASS    /db/ETMP     create=ok read_back=ok update=ok read_updated=ok delete=ok read_deleted=ok
+PASS    /db/NTMP     create=ok read_back=ok update=ok read_updated=ok delete=ok read_deleted=ok
+FAIL    /db/NMAS     create=FAIL
+!! ABORTED: the product stopped answering at /db/NMAS — MIDAS NX is hung or
+gone, so nothing after this point was tested
+error: "POST /db/NMAS failed: ... Read timed out. (read timeout=60.0)"
+```
+
+Same shape as every prior reproduction: a plain throwaway model, seven calls
+that all passed immediately before it, then a 60s timeout on the `POST
+/db/NMAS` call itself and the session gone. **The 07/28/2026 Civil build
+does not fix this.**
+
+**Running total after this section: 10/10 — seven on Civil NX (across three
+version/build combinations), three on Gen NX, zero survivals.** Updated the
+same three files as the prior count bump: `CLAUDE.md`, `NodalMassPayload`'s
+docstring in `db/static_loads.py`, the `crashes=` note in
+`live_crud_check.py`.
+
+## 2026-07-29 (later yet) — `/db/NMAS` reproduction #11: a from-scratch minimal model rules out the "floating substructure" hypothesis
+
+Before reproduction #10 (above), the user raised a legitimate structural-
+engineering objection: every single reproduction to date had written the
+mass to, or alongside, a node with no restraint and no connecting element —
+`vendor_repro_nmas.py`'s node 9001 gets a `SKEW` (a local-axis rotation, not
+a restraint) but no `CONS` and no element, so it is a literally free-
+floating point in space; `live_crud_check.py`'s seed model targets node 3
+(which *is* connected, via the beam chain back to node 1's fixity), but the
+same model also permanently carries an entirely unrestrained, disconnected
+plate (nodes 5-8) and, during the `static` tier, an unrestrained floating
+node pair (21/22) left over from the `boundary` tier. A structural model
+with an unrestrained, disconnected substructure has a singular stiffness
+matrix (rigid-body modes with no associated stiffness) — if `POST
+/db/NMAS` triggers any internal mass-matrix or modal bookkeeping, an
+iterative solver hitting that singularity hanging instead of erroring out
+cleanly is a real, previously-documented class of defect in commercial FEA
+software. This was a serious enough alternative explanation to test before
+trusting the vendor report's framing.
+
+**Test**: build a deliberately minimal, structurally clean model directly
+on the (already-blank, from the prior reproduction) open document — no
+`/doc/NEW` — with nothing floating anywhere: node 1 (fixed, `CONS`
+`"1111111"`), node 2 (free), one `BEAM` element connecting them, one
+material, one section. The mass target, node 2, is unrestrained itself but
+fully connected via the beam — a textbook, kinematically determinate
+cantilever, not a mechanism, and the *only* thing in the document.
+
+```
+[  0.7s] OK      Unit                           (0.29s)
+[  0.8s] OK      Material                       (0.12s)
+[  0.9s] OK      Section                        (0.10s)
+[  1.0s] OK      Node 1,2                       (0.15s)
+[  1.2s] OK      Element (beam 1-2)             (0.16s)
+[  1.3s] OK      Constraint (fix node 1)        (0.12s)
+[  1.4s] OK      GET /db/NMAS (target table)    (0.09s)  {"message": ""}
+[  1.5s] OK      GET /db/NODE                   (0.08s)
+[ 48.3s] ERROR   POST /db/NMAS node 2           (46.85s)  404: Client Disconnected
+[ 48.3s] OK      GET /mapikey/verify            (0.01s)
+[ 48.3s] ERROR   GET /db/NODE                   (0.01s)  404: client does not exist
+```
+
+**Died identically.** The user watched it happen on screen this time (a
+first for this investigation) and captured the exact sequence: the
+in-app dialog read verbatim `[Error] Failed to disconnect the work session
+due to an unidentified error. Since you have not logged out, other PCs may
+have limited access to the license. In order to properly terminate the
+program, try to re-execute the program, press 'New Project' and then close
+the program.` — matching every prior paraphrase of this dialog exactly —
+followed by a second, previously-undocumented dialog: `Program will be
+closed due to an unexpected problem. The recovered file is saved in
+[C:\Program Files\MIDAS\MIDAS CIVIL NX\MIDAS CIVIL NX\DgnPlugIn\_restore.mcb]`,
+itself followed by an access-denied error for that exact path — the
+crash-recovery autosave attempted to write under `Program Files` and was
+denied, the same class of unchecked-write-permission issue as A-7 in the
+vendor report (a different endpoint's report path), now also seen in the
+crash handler itself. The model tree, visible on screen right before the
+crash, confirmed the model was built exactly as intended: 2 nodes, 1 beam
+element, 1 material, 1 section, 1 support — nothing else.
+
+**This rules out model topology as an explanation.** A model with no
+disconnected or unrestrained component anywhere, built from exactly the
+fields the manual documents, dies the same way as every messier fixture
+before it. The defect is in `/db/NMAS`'s write handling itself, not
+triggered by a singular stiffness matrix elsewhere in the document.
+
+**Running total: 11/11 — eight on Civil NX (three version/build
+combinations, one of them this minimal-model run), three on Gen NX, zero
+survivals.** Updated `CLAUDE.md`, `NodalMassPayload`'s docstring in
+`db/static_loads.py`, the `crashes=` note in `live_crud_check.py`, and
+`docs/vendor_report_ko.md`'s A-1 section (which now cites this reproduction
+explicitly as the rebuttal to a "malformed model" explanation).
 
 ## Caveat — read before acting on this file
 
