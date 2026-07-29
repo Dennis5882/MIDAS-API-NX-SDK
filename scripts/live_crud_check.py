@@ -794,7 +794,7 @@ def _static_cases() -> List[Case]:
             lambda p: p.get("mZ"), 1.0, 2.0,
             item_id=3,
             crashes="POST /db/NMAS kills Civil NX (6 reproductions, v2.1/v2.2, 2026-07-26/27) "
-                    "and Gen NX (v2.1, first attempt, 2026-07-27) - not product-specific",
+                    "and Gen NX (v2.1, first attempt, 2026-07-29) - not product-specific",
         ),
     ]
 
@@ -858,7 +858,7 @@ def _stage_cases() -> List[Case]:
             lambda p: p["ITEMS"][0].get("CREEP"), 1.2, 1.5,
             item_id=1, confirmed=True, needs=("groups", "stage_1"),
         ),
-        # Keyed by node id. Civil NX only as of 2026-07-27 — see
+        # Keyed by node id. Civil NX only as of 2026-07-29 — see
         # CamberConstructionStage's docstring.
         Case(
             CamberConstructionStage,

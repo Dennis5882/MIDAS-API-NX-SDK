@@ -2031,7 +2031,12 @@ session. The retractions do not depend on it (dropping an unverified
 accusation is the safe direction), but if any official value *does* fail,
 that is a genuine product defect and a new A-item.
 
-## 2026-07-27 (later) — Gen NX v2.1 (build 07/28/2026): `props`/`boundary`/`static`/`stage` get their first Gen CRUD run, `/db/CMCS` corrected to Civil-only
+## 2026-07-29 — Gen NX v2.1 (build 07/28/2026): `props`/`boundary`/`static`/`stage` get their first Gen CRUD run, `/db/CMCS` corrected to Civil-only
+
+*(Dated 2026-07-27 in an earlier draft of this section — wrong. This work
+happened in the same conversation as the section above but after a real
+multi-day gap; git's own commit timestamps settled it: `7f63ea6` and
+`456d4fa`, the two commits from this session, are both stamped 2026-07-29.)*
 
 New Gen NX install, new MAPI key, `scripts/live_crud_check.py --product gen`
 (no `--include-crashers`). **Correction to get right before it goes stale:**
@@ -2062,7 +2067,7 @@ attempting to create a record, not just a `GET` against an empty table. Same
 account as before (`sjj0507@midasit.com`), so it doesn't clear the
 stricter "different account" bar floated in the 2026-07-26 section, but it
 does satisfy the caveat's actual rule below ("different session" is listed
-as sufficient), and three same-account reproductions across five days and
+as sufficient), and three same-account reproductions across seven days and
 three separate sessions is not a coincidence worth waiting out further.
 
 **Action taken:** `CamberConstructionStage.PRODUCTS` changed from
@@ -2079,12 +2084,12 @@ evidence for them. They stay at two data points, per the caveat.
 skipped-and-counted. `docs/coverage.json` updated in bulk for all 36 passing
 endpoints: `live_verified.products` gained `"gen"`,
 `live_verified.nx_versions.gen` set to `"MIDAS Gen NX 2026 (v2.1), build
-07/28/2026"`, date bumped to 2026-07-27. `/db/CMCS`'s own entry instead
+07/28/2026"`, date bumped to 2026-07-29. `/db/CMCS`'s own entry instead
 dropped `"gen"` from top-level `products` (now `["civil"]`, matching
 `PRODUCTS`) and its `live_verified` note records the three-session Gen 404
 history.
 
-## 2026-07-27 (later still) — 🛑 `POST /db/NMAS` also crashes Gen NX: not a Civil-specific defect
+## 2026-07-29 (later) — 🛑 `POST /db/NMAS` also crashes Gen NX: not a Civil-specific defect
 
 With the user's explicit go-ahead, `--include-crashers --tier static` was run
 once against the fresh Gen NX v2.1 (build 07/28/2026) session — the first

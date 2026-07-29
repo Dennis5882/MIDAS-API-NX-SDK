@@ -169,7 +169,7 @@ class NodalMassPayload(TypedDict, total=False):
     🛑 **POST to this endpoint crashes both Civil NX and Gen NX.** Civil: two
     different versions, v2.1 (build 06/05/2026) and v2.2 (build 06/18/2026),
     six reproductions as of 2026-07-26/27, three of them under controlled
-    conditions. Gen: v2.1 (build 07/28/2026), first attempt, 2026-07-27 —
+    conditions. Gen: v2.1 (build 07/28/2026), first attempt, 2026-07-29 —
     same failure signature. Not a Civil-specific defect.
     A single ``POST /db/NMAS`` with ``{"mX": 1, "mY": 1, "mZ": 1}`` on a plain
     node times out, every following ``/db/*`` call times out, and the

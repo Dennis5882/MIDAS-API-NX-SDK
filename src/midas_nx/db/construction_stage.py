@@ -131,7 +131,7 @@ class CamberConstructionStagePayload(TypedDict, total=False):
 
 class CamberConstructionStage(DbResource):
     """⚠️ The manual documents this for both products, but three independent
-    live sessions (2026-07-22, 2026-07-26, 2026-07-27) all 404 it under Gen
+    live sessions (2026-07-22, 2026-07-26, 2026-07-29) all 404 it under Gen
     NX while it answers under Civil NX — the third one a POST, not just a
     GET. See docs/live_verification_notes.md.
     """

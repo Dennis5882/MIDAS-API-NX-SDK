@@ -151,7 +151,7 @@ Two things that have already caused rework:
   out, and the app raises the "Failed to disconnect the work session" license dialog and
   exits — holding the license until it's re-run, `New Project` pressed, and closed properly.
   Six reproductions on Civil NX (2026-07-26) across **v2.1 (build 06/05/2026) and v2.2 (build
-  06/18/2026)**, so upgrading is not the fix — and a seventh on 2026-07-27 confirmed it's not
+  06/18/2026)**, so upgrading is not the fix — and a seventh on 2026-07-29 confirmed it's not
   Civil-specific either: **Gen NX 2026 v2.1 (build 07/28/2026)** died the same way on the first
   ever attempt, same error text pattern (`client does not exist` on every call after). This is
   a defect in the shared write path both products go through, not a Civil quirk. Both

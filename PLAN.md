@@ -5,13 +5,13 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-07-27, at v0.14.0 (390/398 documented endpoints; 295/390
+> Last updated: 2026-07-29, at v0.14.0 (390/398 documented endpoints; 295/390
 > live-verified per `docs/coverage.json`, both products, of which **42 of 43
 > write-checker cases are confirmed** by a full CRUD round trip rather than a
 > GET — 36 of those now on Gen NX too, not just Civil. The one case left is
 > `/db/NMAS`, and it is not a Civil-only problem: it kills **both** Civil NX
 > (six reproductions, v2.1/v2.2) and Gen NX (v2.1, first-ever attempt,
-> 2026-07-27) with the same failure signature, so it stays quarantined behind
+> 2026-07-29) with the same failure signature, so it stays quarantined behind
 > `--include-crashers` on both. Three defects surfaced that mocked tests
 > cannot reach — a wrong key documented for `/db/SECF`, a silent
 > standard-vehicle downgrade in `/db/MVHL`, and `/db/TDMT`/`/db/TDME` using
@@ -196,7 +196,7 @@ they're the ones worth re-checking before planning a release):
 | Schema drift (live) | `scripts/check_drift.py` (`/info/db/...` vs TypedDict) | ✅ local dev tool |
 | Scaffolding | `scripts/gen_endpoint.py` | ✅ in the documented add-an-endpoint loop |
 | Response handling | 200-with-`error` body, non-JSON body, empty-table shapes, failed-analysis message | ✅ hardened in v0.12.0/v0.14.0 |
-| Write verification | `scripts/live_crud_check.py` — create/read/update/delete round trips, 43 cases in 6 tiers | ✅ **42/43** confirmed live on Civil NX 2026 v2.2 (2026-07-26), 40 of them on v2.1 too; 36 of the 42 now also confirmed on Gen NX v2.1 (2026-07-27). The one left is `/db/NMAS`, quarantined because it crashes **both** products |
+| Write verification | `scripts/live_crud_check.py` — create/read/update/delete round trips, 43 cases in 6 tiers | ✅ **42/43** confirmed live on Civil NX 2026 v2.2 (2026-07-26), 40 of them on v2.1 too; 36 of the 42 now also confirmed on Gen NX v2.1 (2026-07-29). The one left is `/db/NMAS`, quarantined because it crashes **both** products |
 | Version metadata | `__init__.py` `__version__` (hatchling `dynamic`) + `tests/test_version.py` | ✅ single source |
 | Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 295/390, both products |
 | Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md` | ⚠️ text-only, no screenshots |
@@ -232,7 +232,7 @@ user-defined one when `VEHICLE_LOAD_NUM` isn't 1; and `/db/TDMT` and
 to cross-feed and get a false "Wrong Field". One product defect is severe
 enough to gate: **`POST /db/NMAS` crashes both Civil NX and Gen NX
 deterministically** — Civil on v2.1 and v2.2 alike (six reproductions), Gen
-on v2.1 (first-ever attempt, 2026-07-27) — so that case is quarantined behind
+on v2.1 (first-ever attempt, 2026-07-29) — so that case is quarantined behind
 `--include-crashers` on both products, after which the seven `static` cases
 that had sat behind it on the first Civil run, and had never been *reached*
 rather than having failed, all passed. Two more documented-value defects
