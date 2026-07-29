@@ -7,17 +7,20 @@ SDK가 아니라 제품 동작이므로, 중간 계층 없이 원본 HTTP 요청
 
 사용법:
     pip install requests
-    python vendor_repro_nmas.py <MAPI-Key>
+    python vendor_repro_nmas.py <MAPI-Key>              # Civil NX (기본값)
+    python vendor_repro_nmas.py <MAPI-Key> --product gen  # Gen NX
 
     또는 MIDAS_MAPI_KEY 환경변수에 키를 넣고 인자 없이 실행
 
-⚠️ 경고 — 이 스크립트는 MIDAS Civil NX를 종료시킵니다.
+⚠️ 경고 — 이 스크립트는 MIDAS Civil NX와 Gen NX 둘 다 종료시킵니다. 두 제품
+모두에서 9회 재현(Civil 6회, Gen 3회 — 그중 하나는 실무 모델에서도 재현)됐고,
+한 번도 예외 없이 죽었습니다.
 
     - 저장하지 않은 작업이 있는 문서에 대해 실행하지 마십시오. `/doc/NEW` 를
       호출하지는 않지만, 프로그램이 비정상 종료되므로 미저장 내용은 사라집니다.
     - 종료 후 라이선스가 반환되지 않습니다. 프로그램을 다시 실행하여
       New Project 를 누르고 정상 종료해야 회수됩니다.
-    - 실행 전 Civil NX 에서 Open API 연결이 되어 있어야 합니다.
+    - 실행 전 대상 제품에서 Open API 연결이 되어 있어야 합니다.
 
 설계 의도 (두 가지 대안 원인을 배제하기 위한 구성입니다):
 
@@ -30,6 +33,7 @@ SDK가 아니라 제품 동작이므로, 중간 계층 없이 원본 HTTP 요청
     또한 절점 번호 9001 이상만 사용하므로 열려 있는 문서의 기존 내용은 건드리지
     않습니다.
 """
+import argparse
 import json
 import os
 import sys
@@ -37,12 +41,18 @@ import time
 
 import requests
 
-BASE = "https://moa-engineers.midasit.com:443/civil"
 TIMEOUT = 15.0
 
 
 def main() -> int:
-    key = sys.argv[1] if len(sys.argv) > 1 else os.getenv("MIDAS_MAPI_KEY", "")
+    sys.stdout.reconfigure(encoding="utf-8")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("key", nargs="?", default=None)
+    parser.add_argument("--product", choices=["civil", "gen"], default="civil")
+    args = parser.parse_args()
+    base = f"https://moa-engineers.midasit.com:443/{args.product}"
+
+    key = args.key or os.getenv("MIDAS_MAPI_KEY", "")
     if not key:
         print("MAPI Key를 인자로 넘기거나 MIDAS_MAPI_KEY 환경변수에 설정하십시오.")
         return 2
@@ -55,7 +65,7 @@ def main() -> int:
         t = time.time()
         try:
             response = requests.request(
-                method, BASE + endpoint, headers=headers, json=body, timeout=TIMEOUT
+                method, base + endpoint, headers=headers, json=body, timeout=TIMEOUT
             )
         except requests.exceptions.ReadTimeout:
             print(f"[{time.time() - start:5.1f}s] TIMEOUT  {label:38} "
@@ -66,7 +76,7 @@ def main() -> int:
               f"({time.time() - t:.2f}s)  {body_text}")
         return True
 
-    print(f"대상: {BASE}")
+    print(f"대상: {base}")
     if not call("연결 확인", "GET", "/mapikey/verify"):
         return 2
 
@@ -104,7 +114,7 @@ def main() -> int:
     print("  - GET /mapikey/verify 는 여전히 connected 를 반환하는 반면")
     print("    GET /db/NODE 는 타임아웃됩니다 (릴레이만 응답).")
     print()
-    print("Civil NX 화면에 라이선스 관련 대화상자가 표시되어 있을 것입니다.")
+    print(f"{'Civil NX' if args.product == 'civil' else 'Gen NX'} 화면에 라이선스 관련 대화상자가 표시되어 있을 것입니다.")
     print("라이선스 회수를 위해: 프로그램 재실행 → New Project → 정상 종료")
     return 1
 

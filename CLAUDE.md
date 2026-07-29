@@ -151,10 +151,15 @@ Two things that have already caused rework:
   out, and the app raises the "Failed to disconnect the work session" license dialog and
   exits — holding the license until it's re-run, `New Project` pressed, and closed properly.
   Six reproductions on Civil NX (2026-07-26) across **v2.1 (build 06/05/2026) and v2.2 (build
-  06/18/2026)**, so upgrading is not the fix — and a seventh on 2026-07-29 confirmed it's not
-  Civil-specific either: **Gen NX 2026 v2.1 (build 07/28/2026)** died the same way on the first
-  ever attempt, same error text pattern (`client does not exist` on every call after). This is
-  a defect in the shared write path both products go through, not a Civil quirk. Both
+  06/18/2026)**, so upgrading is not the fix — and three more on **Gen NX 2026 v2.1 (build
+  07/28/2026)** (2026-07-29) confirmed it's not Civil-specific either: **9/9 across both
+  products, every attempt.** The three Gen crashes varied in surface symptom — an immediate
+  `404 Client Disconnected`, then twice a 15s `Read timed out` on the call itself followed by
+  every subsequent call timing out too — but the underlying signal was identical every time: the
+  session is dead and stays dead. **The third Gen reproduction was against a real production
+  model** (the user's own work, not a synthetic/throwaway one), which rules out "only happens on
+  synthetic data" the same way the real-model Civil evidence already had. This is a defect in
+  the shared write path both products go through, not a Civil quirk. Both
   competing explanations are dead: the decisive Civil runs issued no `/doc/NEW` (so no
   save-changes dialog was possible) and put three writes and two reads, each under 0.2s, in
   the 1.3s before the call — a modal would have frozen those too. `GET /db/NMAS` and

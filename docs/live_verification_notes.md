@@ -2155,6 +2155,65 @@ above for good: 13 were Hyper-S (corrected in v0.13.0), and these final 7
 independent sessions apiece. Nothing in that original list of 20 remains
 unexplained.
 
+## 2026-07-29 (later still) — `/db/NMAS` reproductions #2 and #3 on Gen NX: 9/9 overall, confirmed on a real production model
+
+The user asked to go back to `/db/NMAS` one more time, specifically on Gen
+NX. Two more reproductions followed, back to back, each requiring the full
+license-recovery cycle (restart, New Project, close properly) before the
+next could run.
+
+**Reproduction #2 (Gen, scratch document):** `scripts/live_crud_check.py
+--product gen --tier static --include-crashers`, same throwaway-model setup
+as the first Gen crash. This time the script's own `_session_lost` check
+caught it inline and aborted the run immediately, rather than needing a
+follow-up probe:
+
+```
+FAIL    /db/NMAS     create=FAIL
+!! ABORTED: the product stopped answering at /db/NMAS — MIDAS NX is hung or
+gone, so nothing after this point was tested
+error: "POST /db/NMAS failed: ... Read timed out. (read timeout=60.0)"
+```
+
+A 60s timeout on the call itself this time, rather than the first crash's
+immediate `404 Client Disconnected` — a different wire-level symptom, same
+outcome.
+
+**Reproduction #3 (Gen, real production model):** the user opened an actual
+work file — not a scratch document — and asked to `GET /db/NMAS` against it
+first (safe; returned `{"message": ""}`, no masses defined). Then,
+explicitly confirming the model was already saved, asked to `POST` it.
+Rather than risk the model's own node numbering, this run reused the
+established protocol from `docs/vendor_repro_nmas.py` (control writes/reads
+immediately before the target call, node ids 9001+ so nothing in the real
+model is touched, no `/doc/NEW` anywhere):
+
+```
+[  1.0s] 201   POST /db/NODE 9001,9002        (0.56s)
+[  1.4s] 201   POST /db/SKEW 9001             (0.47s)
+[  1.9s] 201   POST /db/CONS 9002             (0.49s)
+[  2.3s] 200   GET  /db/NMAS (target table)   (0.41s)  {"message": ""}
+[  2.7s] 200   GET  /db/NODE                  (0.40s)
+[ 18.1s] TIMEOUT  POST /db/NMAS 9001          (15.35s)
+[ 18.5s] 404   GET /mapikey/verify            (0.39s)
+[ 33.8s] TIMEOUT  GET /db/NODE                (15.34s)
+```
+
+Same shape as every prior reproduction: three control calls immediately
+before the target call all returned normally in under 0.6s each, the target
+call itself timed out, and everything after was dead. **This is the first
+Gen NX reproduction against real production data**, which matters the same
+way the Civil real-model evidence did earlier in this file: it rules out
+"only happens on synthetic/throwaway test data" as an explanation. The user
+had saved the model beforehand, so the crash cost a restart cycle, not work.
+
+**Running total: 9/9 — six on Civil NX, three on Gen NX, zero survivals.**
+Every file that recorded this as "Civil NX" or cited a specific reproduction
+count has been updated: `CLAUDE.md`, `NodalMassPayload`'s docstring in
+`db/static_loads.py`, the `crashes=` note in `live_crud_check.py`. The
+vendor report's A-1 gets this as its strongest piece of evidence yet — see
+below.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
