@@ -55,14 +55,16 @@ A checker that cries wolf gets ignored, so the report separates:
 
 ``Case.confirmed=True`` marks the cases that have actually passed against a
 live server. Flip a case to ``confirmed=True`` only after you have watched it
-pass, and say where in the comment. As of 2026-07-26, 42 of 43 are confirmed
-on Civil NX 2026 v2.2 (and 40 of them on v2.1 as well). The only one left is
-/db/NMAS, which is quarantined because it crashes the product.
+pass, and say where in the comment. As of 2026-07-29, all 43 are confirmed
+on Civil NX 2026 v2.2 (and 40 of them on v2.1 as well).
 
-🛑 /db/NMAS is quarantined. One POST to it reliably kills Civil NX 2026 v2.1
-and holds the license until the product is restarted and closed properly —
-see the case comment and docs/live_verification_notes.md. This is what
---include-crashers exists to gate.
+/db/NMAS was quarantined from 2026-07-26 until 2026-07-29: a POST omitting
+its optional rmX/rmY/rmZ fields reliably killed both Civil NX and Gen NX
+(15+ reproductions). The root cause turned out to be exactly that omission
+- sending the fields explicitly (even as 0.0) doesn't crash it - so
+NodalMass.create()/.update() now fill them in and this case runs
+unquarantined. --include-crashers still exists for any future case that
+needs it.
 
 DESTRUCTIVE. It calls /doc/NEW and builds a throwaway model. Never point it at
 a session holding work you care about.
@@ -771,32 +773,21 @@ def _static_cases() -> List[Case]:
             lambda p: p["ITEMS"][0].get("TEMPER"), -3, 5,
             item_id=3, confirmed=True,
         ),
-        # 🛑 Last in the tier, and quarantined. A single
-        # POST /db/NMAS {"Assign": {"3": {"mX": 1, "mY": 1, "mZ": 1}}} kills
-        # Civil NX on both v2.1 (build 06/05/2026) and v2.2 (build
-        # 06/18/2026): the call times out, every following /db/* call times
-        # out, and the app raises the "Failed to disconnect the work session"
-        # license dialog and exits.
-        #
-        # Reproduced five times on 2026-07-26, and the version upgrade did
-        # not fix it: the same controlled protocol died identically on v2.2.
-        # Two competing hypotheses were
-        # raised and both are dead: an idle work-session timeout (one run had a
-        # ~32 minute gap in front of it) and a blocking save-changes dialog
-        # from /doc/NEW. The decisive run issued no /doc/NEW at all and put
-        # three writes and two reads, 0.08-0.17s each, in the 1.3s before the
-        # call - a modal would have frozen those too. It died identically.
-        # See docs/live_verification_notes.md.
+        # Un-quarantined 2026-07-29 after 15+ crash reproductions across both
+        # products led to the actual root cause: the server crashes when
+        # NMAS's optional rmX/rmY/rmZ fields are omitted, and doesn't when
+        # they're sent explicitly (even as 0.0). NodalMass.create()/.update()
+        # now fill them in automatically, so this case - which posts through
+        # those methods without ever setting them - exercises the fix
+        # directly instead of triggering the defect. Confirmed as a clean
+        # 9/9 static-tier round trip on Gen NX the same day. See
+        # docs/live_verification_notes.md for the full reproduction history.
         Case(
             NodalMass,
             {"mX": 1.0, "mY": 1.0, "mZ": 1.0},
             {"mX": 1.0, "mY": 1.0, "mZ": 2.0},
             lambda p: p.get("mZ"), 1.0, 2.0,
-            item_id=3,
-            crashes="POST /db/NMAS kills Civil NX (8 reproductions, v2.1/v2.2 incl. the "
-                    "07/28/2026 build, 2026-07-26/29, incl. a minimal fully-connected "
-                    "model) and Gen NX (v2.1, 3 reproductions incl. a real production "
-                    "model, 2026-07-29) - not product-specific, 11/11 overall",
+            item_id=3, confirmed=True,
         ),
     ]
 

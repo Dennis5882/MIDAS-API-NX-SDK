@@ -124,6 +124,30 @@ def test_nodal_mass_create_keyed_by_node_id(gen_client):
 
 
 @responses.activate
+def test_nodal_mass_create_defaults_omitted_rotational_fields(gen_client):
+    """Omitting rmX/rmY/rmZ reproducibly crashes the live server (confirmed
+    on both Civil NX and Gen NX, 2026-07-29 - see docs/live_verification_notes.md);
+    sending them explicitly as 0.0 does not. create()/update() fill them in
+    so callers are protected without needing to know about the defect."""
+    responses.add(responses.POST, "https://x.test:443/gen/db/NMAS", json={}, status=200)
+    NodalMass.create({1: {"mX": 1, "mY": 2, "mZ": 3}}, client=gen_client)
+    sent = responses.calls[0].request
+    assert json.loads(sent.body) == {
+        "Assign": {"1": {"mX": 1, "mY": 2, "mZ": 3, "rmX": 0.0, "rmY": 0.0, "rmZ": 0.0}}
+    }
+
+
+@responses.activate
+def test_nodal_mass_update_defaults_omitted_rotational_fields(gen_client):
+    responses.add(responses.PUT, "https://x.test:443/gen/db/NMAS", json={}, status=200)
+    NodalMass.update({1: {"mX": 1, "mY": 2, "mZ": 3, "rmY": 9}}, client=gen_client)
+    sent = responses.calls[0].request
+    assert json.loads(sent.body) == {
+        "Assign": {"1": {"mX": 1, "mY": 2, "mZ": 3, "rmX": 0.0, "rmY": 9, "rmZ": 0.0}}
+    }
+
+
+@responses.activate
 def test_loads_to_mass_create_sends_documented_assign_shape(gen_client):
     responses.add(responses.POST, "https://x.test:443/gen/db/LTOM", json={}, status=200)
     LoadsToMass.create(

@@ -125,8 +125,9 @@ Two things that have already caused rework:
   `/doc/NEW` and **discards unsaved work** — never run it against someone's open document without
   asking first.
 - **`scripts/live_crud_check.py` write coverage is tracked in the script itself.** Cases carry
-  `confirmed=True` only once someone has watched them pass live (42/43 as of 2026-07-26,
-  Civil NX); a failure of a confirmed case is a **regression** and exits 1, while a failure of an
+  `confirmed=True` only once someone has watched them pass live (all 43 as of 2026-07-29,
+  Civil NX, after `/db/NMAS`'s crash was root-caused and worked around — see above); a failure of
+  a confirmed case is a **regression** and exits 1, while a failure of an
   unconfirmed one exits 3 and means "triage the fixture first". Don't flip `confirmed` to silence
   a failure, and don't report an unconfirmed failure as an SDK defect — across three runs every
   failure resolved to a fixture, a wrong documented value, or a product bug, and the one real SDK
@@ -146,33 +147,22 @@ Two things that have already caused rework:
   `docs/live_verification_notes.md`.
 - Any call that can raise a **confirmation dialog** blocks the whole API session, not just that
   call, until a human dismisses it.
-- **`POST /db/NMAS` kills both Civil NX and Gen NX, every time.** The only crash here with a
-  one-call trigger: a single nodal-mass write times out, every following `/db/*` call times
-  out, and the app raises the "Failed to disconnect the work session" license dialog and
-  exits — holding the license until it's re-run, `New Project` pressed, and closed properly.
-  Eight reproductions on Civil NX (six on 2026-07-26, two on 2026-07-29) across **v2.1 (build
-  06/05/2026), v2.2 (build 06/18/2026), and v2.2 (build 07/28/2026)**, so upgrading is not the
-  fix — and three more on **Gen NX 2026 v2.1 (build 07/28/2026)** (2026-07-29) confirmed it's not
-  Civil-specific either: **11/11 across both products, every attempt.** One of the two 07/29
-  Civil reproductions used a from-scratch minimal model (2 nodes, 1 beam element, 1 fixed
-  support, nothing else — built specifically to rule out "an unrestrained/floating node or
-  substructure somewhere in the model makes the mass-matrix update hang" as an alternative
-  explanation) and still died identically — this is not a model-topology issue. The three Gen
-  crashes varied in surface symptom — an immediate
-  `404 Client Disconnected`, then twice a 15s `Read timed out` on the call itself followed by
-  every subsequent call timing out too — but the underlying signal was identical every time: the
-  session is dead and stays dead. **The third Gen reproduction was against a real production
-  model** (the user's own work, not a synthetic/throwaway one), which rules out "only happens on
-  synthetic data" the same way the real-model Civil evidence already had. This is a defect in
-  the shared write path both products go through, not a Civil quirk. Both
-  competing explanations are dead: the decisive Civil runs issued no `/doc/NEW` (so no
-  save-changes dialog was possible) and put three writes and two reads, each under 0.2s, in
-  the 1.3s before the call — a modal would have frozen those too. `GET /db/NMAS` and
-  `/info/db/NMAS` are fine and the payload is three unit masses on a plain node, so this is a
-  product defect, not a request-shape one. Prefer `/db/LTOM` (`LoadsToMass`) where mass can
-  come from loads. `live_crud_check.py` quarantines the case behind `--include-crashers`;
-  don't un-quarantine it to "check if it's fixed" without asking — that now applies to Gen NX
-  too, not just Civil.
+- **`POST /db/NMAS` used to kill both Civil NX and Gen NX — root cause found and worked around
+  2026-07-29.** 15+ reproductions across both products (multiple Civil versions/builds, a real
+  production model, a same-LAN-as-the-host caller, a from-scratch minimal fully-connected model)
+  first ruled out every wrong explanation — not an idle timeout, not a blocking save-changes
+  dialog, not model topology, not which machine the HTTP request comes from — before landing on
+  the real one: **the server crashes when the optional `rmX`/`rmY`/`rmZ` fields are omitted from
+  the payload, and does not crash when they're sent explicitly, even as `0.0` (their documented
+  default)**. Confirmed symmetrically on both products in the same session: a full-fields call
+  survives, an immediately following omitted-fields call on a different node kills that same
+  session every time — reads as an uninitialized-value read server-side for those three fields
+  specifically. `NodalMass.create()`/`.update()` (`db/static_loads.py`) now fill them in
+  automatically before sending, so calling the class through this SDK is safe without knowing any
+  of this; `live_crud_check.py`'s `/db/NMAS` case runs unquarantined now (`--include-crashers` is
+  still there for any future case that needs it). Full reproduction history in
+  `docs/live_verification_notes.md`; the vendor report's A-1 now leads with the root cause and
+  the workaround, not just "it crashes."
 - **`/doc/NEW` has crashed Gen NX** when the open document was a large real model (2026-07-26,
   v2.1 build 06/23/2026) — the "Failed to disconnect the work session" license dialog, which
   always kills the app and holds the license until the process is restarted properly. Harmless

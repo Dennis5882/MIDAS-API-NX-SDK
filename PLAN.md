@@ -6,13 +6,15 @@ For the itemized per-endpoint checklist see the auto-generated
 that ROADMAP.md doesn't capture.
 
 > Last updated: 2026-07-29, at v0.14.0 (390/398 documented endpoints; 295/390
-> live-verified per `docs/coverage.json`, both products, of which **42 of 43
-> write-checker cases are confirmed** by a full CRUD round trip rather than a
-> GET — 36 of those now on Gen NX too, not just Civil. The one case left is
-> `/db/NMAS`, and it is not a Civil-only problem: it kills **both** Civil NX
-> (six reproductions, v2.1/v2.2) and Gen NX (v2.1, first-ever attempt,
-> 2026-07-29) with the same failure signature, so it stays quarantined behind
-> `--include-crashers` on both. Three defects surfaced that mocked tests
+> live-verified per `docs/coverage.json`, both products, of which **all 43
+> write-checker cases are now confirmed** by a full CRUD round trip rather
+> than a GET — 36 of those now on Gen NX too, not just Civil. The last case,
+> `/db/NMAS`, used to kill **both** Civil NX and Gen NX outright (15+
+> reproductions across both, not a Civil-only problem), but its root cause
+> was found the same day: the server crashes only when the optional
+> `rmX`/`rmY`/`rmZ` fields are omitted, not when they're sent explicitly
+> (even as `0.0`). `NodalMass.create()`/`.update()` now fill them in
+> automatically, so the case runs unquarantined. Three defects surfaced that mocked tests
 > cannot reach — a wrong key documented for `/db/SECF`, a silent
 > standard-vehicle downgrade in `/db/MVHL`, and `/db/TDMT`/`/db/TDME` using
 > two different spellings for the same code (`"CEB_FIP_2010"` vs.
@@ -190,13 +192,13 @@ they're the ones worth re-checking before planning a release):
 
 | Axis | Artifact | State |
 |---|---|---|
-| Tests | 637 tests, `responses`-mocked | ✅ green |
+| Tests | 638 tests, `responses`-mocked | ✅ green |
 | CI | `.github/workflows/ci.yml` — pytest + ruff on py3.9/3.13, push+PR | ✅ running |
 | Manual drift | `manual-drift-check.yml` (`cron: 0 3 * * 3`) + `scripts/check_manual_drift.py` | ✅ running |
 | Schema drift (live) | `scripts/check_drift.py` (`/info/db/...` vs TypedDict) | ✅ local dev tool |
 | Scaffolding | `scripts/gen_endpoint.py` | ✅ in the documented add-an-endpoint loop |
 | Response handling | 200-with-`error` body, non-JSON body, empty-table shapes, failed-analysis message | ✅ hardened in v0.12.0/v0.14.0 |
-| Write verification | `scripts/live_crud_check.py` — create/read/update/delete round trips, 43 cases in 6 tiers | ✅ **42/43** confirmed live on Civil NX 2026 v2.2 (2026-07-26), 40 of them on v2.1 too; 36 of the 42 now also confirmed on Gen NX v2.1 (2026-07-29). The one left is `/db/NMAS`, quarantined because it crashes **both** products |
+| Write verification | `scripts/live_crud_check.py` — create/read/update/delete round trips, 43 cases in 6 tiers | ✅ **all 43** confirmed live on Civil NX 2026 v2.2, 40 of them on v2.1 too; 36 of the 43 also confirmed on Gen NX v2.1. `/db/NMAS` (the last holdout) used to crash **both** products, root-caused 2026-07-29 (omitted `rmX`/`rmY`/`rmZ`) and worked around in `NodalMass.create()`/`.update()` |
 | Version metadata | `__init__.py` `__version__` (hatchling `dynamic`) + `tests/test_version.py` | ✅ single source |
 | Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 295/390, both products |
 | Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md` | ⚠️ text-only, no screenshots |
@@ -229,13 +231,15 @@ user-defined one when `VEHICLE_LOAD_NUM` isn't 1; and `/db/TDMT` and
 `/db/TDME` spell the same code differently
 (`CODE: "CEB_FIP_2010"`/`"KDS_2016"` vs. `CODENAME: "CEB-FIP(2010)"`/
 `"KDS-2016"`) — both documented correctly by the official articles, but easy
-to cross-feed and get a false "Wrong Field". One product defect is severe
-enough to gate: **`POST /db/NMAS` crashes both Civil NX and Gen NX
-deterministically** — Civil on v2.1 and v2.2 alike (six reproductions), Gen
-on v2.1 (first-ever attempt, 2026-07-29) — so that case is quarantined behind
-`--include-crashers` on both products, after which the seven `static` cases
-that had sat behind it on the first Civil run, and had never been *reached*
-rather than having failed, all passed. Two more documented-value defects
+to cross-feed and get a false "Wrong Field". One product defect looked severe
+enough to gate permanently: **`POST /db/NMAS` crashed both Civil NX and Gen
+NX** across 15+ reproductions (multiple Civil versions/builds, a real
+production model, a from-scratch minimal model, both products) — until
+2026-07-29's root-cause session found it only happens when the optional
+`rmX`/`rmY`/`rmZ` fields are omitted, and doesn't when they're sent
+explicitly (even as `0.0`, their documented default). `NodalMass.create()`/
+`.update()` now fill them in automatically, so the case runs unquarantined
+and confirmed. Two more documented-value defects
 turned up: `/db/PRES`'s documented default `DIRECTION` of `"NORMAL"` is
 rejected on a plate face and omitting the field fails the same way (though
 the official article's own footnote already documents this — see the B-4

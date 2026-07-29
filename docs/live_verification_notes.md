@@ -2343,12 +2343,159 @@ fields the manual documents, dies the same way as every messier fixture
 before it. The defect is in `/db/NMAS`'s write handling itself, not
 triggered by a singular stiffness matrix elsewhere in the document.
 
-**Running total: 11/11 — eight on Civil NX (three version/build
-combinations, one of them this minimal-model run), three on Gen NX, zero
-survivals.** Updated `CLAUDE.md`, `NodalMassPayload`'s docstring in
+**Running total after this section: 11/11 — eight on Civil NX (three
+version/build combinations, one of them this minimal-model run), three on
+Gen NX, zero survivals.** Updated `CLAUDE.md`, `NodalMassPayload`'s
+docstring in `db/static_loads.py`, the `crashes=` note in
+`live_crud_check.py`, and `docs/vendor_report_ko.md`'s A-1 section (which
+now cites this reproduction explicitly as the rebuttal to a "malformed
+model" explanation).
+
+## 2026-07-29 (later still) — `/db/NMAS` reproduction #12: calling-machine location doesn't matter either
+
+The user set up a second machine for this investigation: "A PC" runs Gen NX
+itself plus a Codex CLI instance, both on the same host/LAN; this repo and
+every prior reproduction had been run from a separate dev machine ("B PC"),
+reaching Gen NX only through the public relay
+(`moa-engineers.midasit.com`). Codex on A PC built its own client on top of
+this SDK and called `POST /db/NMAS` — and it did not crash. That result, on
+its own, would have reopened everything: eleven reproductions had already
+ruled out idle timeouts, modal dialogs, and model topology, but never
+whether the request's network path (same-LAN-as-the-product vs. a remote
+relay round trip) was the actual variable.
+
+Before trusting it, the target node needed to be checked. Asked for the
+exact call, the user reported the response was `[Warning] DTO_NMAS.999999
+The command is ignored because the specified node does not exist in the
+model` — node `999999` was never created in the open document. Every prior
+reproduction (this file's and `docs/vendor_repro_nmas.py`'s alike) creates
+the target node with `POST /db/NODE` immediately before writing its mass,
+specifically so the write reaches the actual crash-prone code path rather
+than an earlier existence check. A's "success" was a clean, correct
+rejection of bad input — evidence the validation layer works, not evidence
+the write path is safe.
+
+To settle it, `docs/vendor_repro_nmas.py --product gen` (unmodified, the
+same script already used for reproduction #3 against a real production
+model) was run from B PC once more, immediately after getting the Gen
+MAPI-Key:
+
+```
+[  0.9s] 201      POST /db/NODE 9001,9002        (0.51s)
+[  1.3s] 201      POST /db/SKEW 9001             (0.44s)
+[  1.8s] 201      POST /db/CONS 9002             (0.46s)
+[  2.2s] 200      GET  /db/NMAS (대상 테이블)      (0.41s)  {"message": ""}
+[  2.6s] 200      GET  /db/NODE                  (0.40s)
+[ 18.0s] TIMEOUT  POST /db/NMAS 9001             (15.37s)
+[ 18.4s] 404      GET /mapikey/verify            (릴레이만 응답)
+[ 33.7s] TIMEOUT  GET /db/NODE                  (15.35s)
+```
+
+Died identically — and the user immediately confirmed Gen NX on A PC had
+also gone down ("죽음"), from a call made on B PC. **That is the decisive
+part**: A PC and B PC were both looking at the same live Gen NX session
+the whole time, so a crash triggered from B PC killed the process A PC was
+using. Calling-machine location cannot be the variable — there was only
+ever one process, and it dies regardless of which machine's HTTP request
+reaches it, as long as the target node actually exists.
+
+**Running total after this section: 12/12 — eight on Civil NX, four on Gen
+NX, zero survivals.** Updated `CLAUDE.md`, `NodalMassPayload`'s docstring in
 `db/static_loads.py`, the `crashes=` note in `live_crud_check.py`, and
-`docs/vendor_report_ko.md`'s A-1 section (which now cites this reproduction
-explicitly as the rebuttal to a "malformed model" explanation).
+`docs/vendor_report_ko.md`'s A-1 section with a fourth excluded hypothesis
+(calling-machine location).
+
+## 2026-07-29 (final) — `/db/NMAS`'s actual root cause: omitting `rmX`/`rmY`/`rmZ`
+
+A PC's Codex instance built its own client on this SDK and reported one
+more data point: `POST /db/NMAS` with `{"mX": 1.0, "mY": 1.0, "mZ": 1.0,
+"rmX": 0.0, "rmY": 0.0, "rmZ": 0.0}` — all six fields, not just the three
+this file's every prior reproduction sent — succeeded, verified with a GET
+and cleanly deleted afterward. That is a real difference in payload shape,
+not a location or SDK-version effect (the previous section had already
+shown A PC and B PC hit the identical Gen NX session), so it needed
+isolating properly rather than accepted at face value.
+
+**First check: same session, immediately after A PC's success, from B PC.**
+`docs/vendor_repro_nmas.py --product gen` (unmodified — omits rmX/rmY/rmZ,
+same as every prior reproduction) was run right away and died on the same
+live session A PC had just used successfully:
+
+```
+[  0.9s] 201      POST /db/NODE 9001,9002        (0.51s)
+[  1.3s] 201      POST /db/SKEW 9001             (0.44s)
+[  1.8s] 201      POST /db/CONS 9002             (0.46s)
+[  2.2s] 200      GET  /db/NMAS (대상 테이블)      (0.41s)  {"message": ""}
+[  2.6s] 200      GET  /db/NODE                  (0.40s)
+[ 18.0s] TIMEOUT  POST /db/NMAS 9001             (15.37s)
+```
+
+Same live process, same account, minutes apart: full fields survived,
+omitted fields died. That is close to conclusive on its own, but the two
+calls used different HTTP clients (A PC's Codex-built client vs. this
+repo's `requests`-based script), so a same-tool, same-session A/B was still
+worth doing before rewriting the payload contract.
+
+**Same-session A/B, one script, two nodes, Gen NX (after a restart):**
+
+```
+--- 1) node 9101, full fields (mX,mY,mZ,rmX=0,rmY=0,rmZ=0) ---
+[  3.7s] 201      POST /db/NMAS 9101 (full fields)   {"NMAS": {"9101": {...,"rmX":0,"rmY":0,"rmZ":0}}}
+[  4.1s] ...GET /mapikey/verify, GET /db/NODE - both fine, session alive
+
+--- 2) node 9102, omitted fields (mX,mY,mZ only) ---
+[  0.5s] 200      GET /db/NODE (pre-check)            - confirmed alive first
+[ 15.9s] TIMEOUT  POST /db/NMAS 9102 (omitted fields)  - died
+[ 16.3s] 404      GET /mapikey/verify (relay only)
+[ 31.8s] TIMEOUT  GET /db/NODE
+```
+
+One script, one session, one node created fine, mass written with all six
+fields — survives. A second node, mass written with three fields omitted —
+kills the exact session that had just survived the first call, seconds
+earlier. There is no cleaner isolation than that.
+
+**Symmetric confirmation on both products, same day, after both were
+restarted:** a single script ran the identical two-step protocol (full
+fields on node N, then omitted fields on node N+1, in the same session)
+against Civil NX and then Gen NX in sequence:
+
+| Product | Full fields (`rmX/rmY/rmZ=0.0`) | Omitted fields |
+| --- | --- | --- |
+| Civil | survived (201, `GET /db/NODE` fine after) | died (15.41s timeout, then `GET /db/NODE` timeout) |
+| Gen | survived (201, `GET /db/NODE` fine after) | died (15.46s timeout, then `GET /db/NODE` timeout) |
+
+The user independently confirmed both products' UI showed the crash dialog
+after their respective "omitted fields" call, and neither did after the
+"full fields" call moments earlier.
+
+**Root cause: `/db/NMAS` crashes when `rmX`/`rmY`/`rmZ` are absent from the
+payload — an uninitialized-value read or missing-default bug server-side
+for those three fields specifically — not a defect in nodal-mass writes in
+general.** The manual documents them as optional with a default of `0`;
+the server apparently doesn't apply that default safely when they're
+missing, but is fine when a caller supplies it explicitly. This explains
+every prior reproduction (this file's, `docs/vendor_repro_nmas.py`'s, and
+`live_crud_check.py`'s fixtures all omitted these fields) without
+contradicting any of it — the crash was always real, just narrower in
+scope than "the whole endpoint is broken" implied.
+
+**Fix applied**: `NodalMass.create()`/`.update()` in `db/static_loads.py`
+now merge `{"rmX": 0.0, "rmY": 0.0, "rmZ": 0.0}` under any item that
+doesn't set them, before sending — exactly the documented default, made
+explicit because the server can't be trusted to apply it itself. Verified
+live through the SDK (not just raw `requests`): a `NodalMass.create()` call
+passing only `mX`/`mY`/`mZ` succeeded and the session stayed alive, and
+`scripts/live_crud_check.py --product gen --tier static --include-crashers`
+completed `/db/NMAS`'s full create→read→update→read→delete→read round trip
+cleanly (9/9 for the tier). The case is un-quarantined and `confirmed=True`
+in `live_crud_check.py` as of this session.
+
+Updated everywhere this was recorded: `CLAUDE.md`, `NodalMassPayload`'s
+docstring in `db/static_loads.py` (now describes the fix, not just the
+symptom), `live_crud_check.py` (case un-quarantined, module docstring's
+"42 of 43" corrected to all 43), and `docs/vendor_report_ko.md`'s A-1
+(rewritten to lead with the root cause and the workaround).
 
 ## Caveat — read before acting on this file
 

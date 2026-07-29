@@ -1,8 +1,9 @@
 """Source: docs/manual/06_DB_Static_Loads.md, items 1-21."""
 from __future__ import annotations
 
-from typing import Any, List, TypedDict
+from typing import Any, List, Optional, TypedDict
 
+from ..client import MidasClient
 from .base import DbResource, ItemGroupFields
 
 
@@ -166,37 +167,34 @@ class SpecifiedDisplacement(DbResource):
 class NodalMassPayload(TypedDict, total=False):
     """docs/manual/06_DB_Static_Loads.md #6 — /db/NMAS. Keyed by node id.
 
-    🛑 **POST to this endpoint crashes both Civil NX and Gen NX — 11/11 across
-    both, every attempt.** Civil: three different versions/builds, v2.1
-    (build 06/05/2026), v2.2 (build 06/18/2026), and v2.2 (build 07/28/2026),
-    eight reproductions total (six on 2026-07-26, two on 2026-07-29). Gen:
-    v2.1 (build 07/28/2026), three reproductions on 2026-07-29 — an immediate
-    ``404 Client Disconnected``, then twice a 15s ``Read timed out`` followed
-    by every later call also timing out. The third Gen run was against the
-    user's own real production model (not synthetic test data) and still
-    died in the same way. Not a Civil-specific defect, and not fixed by the
-    07/28/2026 Civil build update. One of the two 07/29 Civil reproductions
-    used a from-scratch minimal model (2 nodes, 1 beam, 1 fixed support,
-    nothing else) targeting the free-but-connected node, specifically to
-    rule out "an unrestrained/floating node or substructure elsewhere in the
-    model makes a mass-matrix update hang on a singular system" as an
-    alternative explanation — it died identically, so this is not a model-
-    topology issue either.
-    A single ``POST /db/NMAS`` with ``{"mX": 1, "mY": 1, "mZ": 1}`` on a plain
-    node times out, every following ``/db/*`` call times out, and the
-    application raises the "Failed to disconnect the work session" license
-    dialog and exits — which holds the license until the product is restarted
-    and closed properly. In the decisive run, three writes and two reads had
-    each returned in under 0.2s in the 1.3 seconds before it and no
-    ``/doc/NEW`` was issued at all, which excludes both an idle session and a
-    blocking save-changes dialog as explanations.
+    🛑 **Root cause found 2026-07-29, after 15+ crash reproductions across
+    both Civil NX and Gen NX (multiple versions/builds, throwaway and real
+    production models, both local and cross-machine callers — see
+    docs/live_verification_notes.md for the full history): the server
+    crashes when the optional ``rmX``/``rmY``/``rmZ`` fields are omitted
+    from the payload, and does not crash when they are sent explicitly
+    (even as ``0.0``, their documented default).** Confirmed symmetrically
+    on both products in the same session: a call with all six fields
+    present succeeds (``201``, echoes the data back, session stays alive),
+    and an immediately following call on a different node with only
+    ``mX``/``mY``/``mZ`` set kills that same session every time. This reads
+    as an uninitialized-value read or missing-default bug server-side for
+    these three fields specifically, not a defect in ``/db/NMAS`` writes in
+    general. The failure itself is a ~15-60s timeout on the call, every
+    following ``/db/*`` call then timing out too, and the "Failed to
+    disconnect the work session" license dialog forcing a restart.
 
-    Nothing about the payload is unusual, and ``GET``/``/info/db/NMAS`` are
-    unaffected — so this is a product defect, not a wrong request shape here.
-    Until MIDASIT fixes it, treat writing nodal masses as unavailable on both
-    products: use ``LoadsToMass`` (``/db/LTOM``) where the mass can come from
-    loads, and if you must call this, expect to lose the session. Full
-    evidence in docs/live_verification_notes.md.
+    **This class works around it**: :meth:`NodalMass.create` and
+    :meth:`NodalMass.update` fill in ``rmX``/``rmY``/``rmZ`` with ``0.0``
+    for any item that omits them, before sending — matching the documented
+    default exactly, just made explicit because the server can't be trusted
+    to apply it itself. Callers don't need to know about this defect to use
+    the class safely; pass all six fields yourself only if you need
+    non-zero rotational mass.
+
+    ``GET``/``/info/db/NMAS`` were never affected either way. Full
+    reproduction history, including the crashes that preceded finding this
+    root cause, is in docs/live_verification_notes.md.
     """
 
     mX: float  # Translational Mass - GCS X, required
@@ -208,9 +206,30 @@ class NodalMassPayload(TypedDict, total=False):
 
 
 class NodalMass(DbResource):
+    """See :class:`NodalMassPayload` — :meth:`create`/:meth:`update` default
+    the optional rotational-mass fields to ``0.0`` to work around a server
+    crash triggered by omitting them."""
+
     ENDPOINT = "/db/NMAS"
     NAME = "Nodal Masses"
     PRODUCTS = frozenset({"gen", "civil"})
+
+    _ROTATIONAL_DEFAULTS = {"rmX": 0.0, "rmY": 0.0, "rmZ": 0.0}
+
+    @classmethod
+    def _with_rotational_defaults(cls, items: dict) -> dict:
+        return {
+            k: {**cls._ROTATIONAL_DEFAULTS, **v}
+            for k, v in items.items()
+        }
+
+    @classmethod
+    def create(cls, items: dict, client: Optional[MidasClient] = None) -> dict:
+        return super().create(cls._with_rotational_defaults(items), client=client)
+
+    @classmethod
+    def update(cls, items: dict, client: Optional[MidasClient] = None) -> dict:
+        return super().update(cls._with_rotational_defaults(items), client=client)
 
 
 class LoadsToMassCase(TypedDict, total=False):
