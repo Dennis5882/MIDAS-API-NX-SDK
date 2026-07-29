@@ -166,10 +166,12 @@ class SpecifiedDisplacement(DbResource):
 class NodalMassPayload(TypedDict, total=False):
     """docs/manual/06_DB_Static_Loads.md #6 — /db/NMAS. Keyed by node id.
 
-    🛑 **POST to this endpoint crashes Civil NX — on two different versions.**
-    v2.1 (build 06/05/2026) and v2.2 (build 06/18/2026), five reproductions on
-    2026-07-26, three of them under controlled conditions:
-    a single ``POST /db/NMAS`` with ``{"mX": 1, "mY": 1, "mZ": 1}`` on a plain
+    🛑 **POST to this endpoint crashes both Civil NX and Gen NX.** Civil: two
+    different versions, v2.1 (build 06/05/2026) and v2.2 (build 06/18/2026),
+    six reproductions as of 2026-07-26/27, three of them under controlled
+    conditions. Gen: v2.1 (build 07/28/2026), first attempt, 2026-07-27 —
+    same failure signature. Not a Civil-specific defect.
+    A single ``POST /db/NMAS`` with ``{"mX": 1, "mY": 1, "mZ": 1}`` on a plain
     node times out, every following ``/db/*`` call times out, and the
     application raises the "Failed to disconnect the work session" license
     dialog and exits — which holds the license until the product is restarted
@@ -180,10 +182,10 @@ class NodalMassPayload(TypedDict, total=False):
 
     Nothing about the payload is unusual, and ``GET``/``/info/db/NMAS`` are
     unaffected — so this is a product defect, not a wrong request shape here.
-    Until MIDASIT fixes it, treat writing nodal masses as unavailable on Civil
-    NX: use ``LoadsToMass`` (``/db/LTOM``) where the mass can come from loads,
-    and if you must call this, expect to lose the session. Untested on Gen NX.
-    Full evidence in docs/live_verification_notes.md.
+    Until MIDASIT fixes it, treat writing nodal masses as unavailable on both
+    products: use ``LoadsToMass`` (``/db/LTOM``) where the mass can come from
+    loads, and if you must call this, expect to lose the session. Full
+    evidence in docs/live_verification_notes.md.
     """
 
     mX: float  # Translational Mass - GCS X, required

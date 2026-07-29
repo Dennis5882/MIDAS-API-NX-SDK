@@ -2084,6 +2084,37 @@ dropped `"gen"` from top-level `products` (now `["civil"]`, matching
 `PRODUCTS`) and its `live_verified` note records the three-session Gen 404
 history.
 
+## 2026-07-27 (later still) — 🛑 `POST /db/NMAS` also crashes Gen NX: not a Civil-specific defect
+
+With the user's explicit go-ahead, `--include-crashers --tier static` was run
+once against the fresh Gen NX v2.1 (build 07/28/2026) session — the first
+time this case has ever touched Gen. It crashed on the **first attempt**:
+
+```
+POST /db/NMAS -> 404: Client Disconnected (Hint: either the product isn't
+connected ... or the id you asked for doesn't exist in the current model)
+```
+
+A follow-up `GET /db/NODE` a few seconds later confirmed the session was
+actually gone, not just this one call rejected: `404 {"error": {"message":
+"client does not exist"}}` — the exact string Civil NX gives after this same
+crash. The user restarted Gen NX, pressed New Project, and reconnected;
+`GET /db/NODE` on the new session returned `200 {"message": ""}` (empty
+document), confirming recovery.
+
+This settles the question left open in the 2026-07-26 Civil section: the
+crash is **not** a Civil NX peculiarity. Six reproductions on Civil (two
+versions) plus one on Gen (first-ever attempt, different build entirely,
+different product) is the same failure on both of MIDASIT's NX flagship
+products through what must be a shared write path. Not re-running this
+again — one clean reproduction on Gen matching Civil's exact signature is
+enough; further attempts just burn licenses for no new information.
+
+**Updated everywhere this was recorded as Civil-only:** `CLAUDE.md`,
+`NodalMassPayload`'s docstring in `db/static_loads.py`, the `crashes=` note
+on the case in `live_crud_check.py`. The vendor report's A-1 needs the same
+correction before it's sent — "Civil NX 한정" understates it.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

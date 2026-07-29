@@ -5,17 +5,25 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-07-26, at v0.14.0 (390/398 documented endpoints; 295/390
-> live-verified per `docs/coverage.json`, both products, of which **33 are now
-> write-verified** by a full CRUD round trip rather than a GET). The write
-> checker grew from 11 cases to 43 across six priority tiers and found three
-> defects mocked tests cannot reach — a wrong key documented for `/db/SECF`, a
-> silent standard-vehicle downgrade in `/db/MVHL`, and a documented
-> time-dependent-material code name the product rejects — plus one product
-> defect severe enough to quarantine: `POST /db/NMAS` kills Civil NX
-> deterministically, on **v2.1 and v2.2 alike** — five reproductions, so
-> upgrading is not the fix. 42 of the 43 cases are confirmed live on v2.2; the
-> one that isn't is that crash. v0.14.0 came out of the first write-enabled live session: `DbResource.delete([id])` was deleting
+> Last updated: 2026-07-27, at v0.14.0 (390/398 documented endpoints; 295/390
+> live-verified per `docs/coverage.json`, both products, of which **42 of 43
+> write-checker cases are confirmed** by a full CRUD round trip rather than a
+> GET — 36 of those now on Gen NX too, not just Civil. The one case left is
+> `/db/NMAS`, and it is not a Civil-only problem: it kills **both** Civil NX
+> (six reproductions, v2.1/v2.2) and Gen NX (v2.1, first-ever attempt,
+> 2026-07-27) with the same failure signature, so it stays quarantined behind
+> `--include-crashers` on both. Three defects surfaced that mocked tests
+> cannot reach — a wrong key documented for `/db/SECF`, a silent
+> standard-vehicle downgrade in `/db/MVHL`, and `/db/TDMT`/`/db/TDME` using
+> two different spellings for the same code (`"CEB_FIP_2010"` vs.
+> `"CEB-FIP(2010)"`) — plus one endpoint, `/db/CMCS`, whose `PRODUCTS` was
+> corrected to Civil-only after three independent Gen sessions all 404'd it.
+> ⚠️ An earlier draft of this paragraph said the manual's `"KDS2016"` was a
+> documented value the product rejects — that was wrong. `"KDS2016"` was a
+> transcription error in the vendored manual copy; the official Zendesk
+> articles document `"KDS-2016"`/`"KDS_2016"` correctly, and both endpoints
+> accept their real values without issue. See `docs/live_verification_notes.md`
+> (2026-07-27 entries) for the full correction. v0.14.0 came out of the first write-enabled live session: `DbResource.delete([id])` was deleting
 > the whole table, following a manual the server does not honour. v0.13.0
 > corrected the
 > Hyper-S (`-M1`) family to Civil-only after live testing showed the SDK
@@ -188,7 +196,7 @@ they're the ones worth re-checking before planning a release):
 | Schema drift (live) | `scripts/check_drift.py` (`/info/db/...` vs TypedDict) | ✅ local dev tool |
 | Scaffolding | `scripts/gen_endpoint.py` | ✅ in the documented add-an-endpoint loop |
 | Response handling | 200-with-`error` body, non-JSON body, empty-table shapes, failed-analysis message | ✅ hardened in v0.12.0/v0.14.0 |
-| Write verification | `scripts/live_crud_check.py` — create/read/update/delete round trips, 43 cases in 6 tiers | ✅ **42/43** confirmed live on Civil NX 2026 v2.2 (2026-07-26), 40 of them on v2.1 too. The one left is `/db/NMAS`, quarantined because it crashes the product on both versions |
+| Write verification | `scripts/live_crud_check.py` — create/read/update/delete round trips, 43 cases in 6 tiers | ✅ **42/43** confirmed live on Civil NX 2026 v2.2 (2026-07-26), 40 of them on v2.1 too; 36 of the 42 now also confirmed on Gen NX v2.1 (2026-07-27). The one left is `/db/NMAS`, quarantined because it crashes **both** products |
 | Version metadata | `__init__.py` `__version__` (hatchling `dynamic`) + `tests/test_version.py` | ✅ single source |
 | Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 295/390, both products |
 | Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md` | ⚠️ text-only, no screenshots |
@@ -205,30 +213,35 @@ manual chapter:
 
 | Tier | Covers | Why here |
 |---|---|---|
-| `core` | groups, nodes, elements, load cases, nodal/beam loads, constraints | the original 10; the regression baseline, and the only tier proven on Gen as well |
+| `core` | groups, nodes, elements, load cases, nodal/beam loads, constraints | the original 10; the regression baseline, proven on Gen since 2026-07-26 |
 | `props` | THIK, ESSF, SECF, TSGR, TDMT/TDME/TMAT | every model picks a thickness and a stiffness factor; creep/shrinkage gates PSC and construction stages |
 | `boundary` | NSPR, GSTP/GSPR, ELNK, RIGD, MCON, FRLS, OFFS, SSPS | springs and links are the boundary conditions scripts actually write; CONS alone isn't a model |
 | `static` | SDSP, NMAS, LTOM, NBOF, FBLD, PSLT, PRES + ch07 ETMP/NTMP | the ch06 remainder, plus the two temperature loads that behave like static loads |
 | `stage` | STAG, TMLD, CRPC, CMCS | needs groups by name and a stage id to attach to, so it comes after both |
 | `moving` | LLAN, MVHL, MVHC, MVLD (Civil) | last: Civil-only, and the longest prerequisite chain (code → lane → vehicle → case) |
 
-What the first three live runs settled (see `docs/live_verification_notes.md`
-for the evidence): the `boundary` tier passed 9/9 first time, `stage` 4/4 and
-`moving` 4/4 after fixture fixes, and three defects surfaced that no mocked
-test could have caught — `/db/SECF` is keyed by section id and the SDK's
-docstring said element id; `/db/MVHL` silently downgrades a standard vehicle to
-a user-defined one when `VEHICLE_LOAD_NUM` isn't 1; and the manual's only
-documented time-dependent-material code name (`"KDS2016"`) is not a value the
-product accepts. One product defect is severe enough to gate: **`POST /db/NMAS`
-kills Civil NX deterministically**, on v2.1 and v2.2 alike, so that case is
-quarantined behind `--include-crashers` — after which the seven `static` cases
-that had sat behind it, and had never been *reached* rather than having failed,
-all passed. Two more documented-value defects turned up: `/db/PRES`'s
-documented default `DIRECTION` of `"NORMAL"` is rejected on a plate face and
-omitting the field fails the same way; and `/db/TDMT` does not share
-`/db/TDME`'s code-name enum — it wants `"European"` for the CEB-FIP model and
-rejects every CEB-FIP spelling, which is what made it look server-side broken
-for most of the session.
+What the live runs settled (see `docs/live_verification_notes.md` for the
+evidence): the `boundary` tier passed 9/9 first time, `stage` 4/4 and `moving`
+4/4 after fixture fixes, and three defects surfaced that no mocked test could
+have caught — `/db/SECF` is keyed by section id and the SDK's docstring said
+element id; `/db/MVHL` silently downgrades a standard vehicle to a
+user-defined one when `VEHICLE_LOAD_NUM` isn't 1; and `/db/TDMT` and
+`/db/TDME` spell the same code differently
+(`CODE: "CEB_FIP_2010"`/`"KDS_2016"` vs. `CODENAME: "CEB-FIP(2010)"`/
+`"KDS-2016"`) — both documented correctly by the official articles, but easy
+to cross-feed and get a false "Wrong Field". One product defect is severe
+enough to gate: **`POST /db/NMAS` crashes both Civil NX and Gen NX
+deterministically** — Civil on v2.1 and v2.2 alike (six reproductions), Gen
+on v2.1 (first-ever attempt, 2026-07-27) — so that case is quarantined behind
+`--include-crashers` on both products, after which the seven `static` cases
+that had sat behind it on the first Civil run, and had never been *reached*
+rather than having failed, all passed. Two more documented-value defects
+turned up: `/db/PRES`'s documented default `DIRECTION` of `"NORMAL"` is
+rejected on a plate face and omitting the field fails the same way (though
+the official article's own footnote already documents this — see the B-4
+narrowing in `docs/live_verification_notes.md`); and `/db/CMCS`'s `PRODUCTS`
+was corrected to Civil-only after three independent sessions all 404'd it
+under Gen despite the manual listing both.
 
 Two rules make the fixtures trustworthy, because on the first Civil run every
 failure was a bad fixture rather than an SDK defect. Seeded records go in at

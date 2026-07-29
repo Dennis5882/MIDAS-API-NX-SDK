@@ -46,13 +46,14 @@ INCLUDE_TOC = False
 #: here, so the .md stays readable on its own and isn't cluttered with cover
 #: metadata. Fill in 작성자 before sending.
 TITLE = "MIDAS NX Open API 이슈 리포트"
-SUBTITLE = "MIDAS CIVIL NX 2026 Open API 검증 결과"
+SUBTITLE = "MIDAS CIVIL NX 2026 / GEN NX 2026 Open API 검증 결과"
 DOC_INFO = [
     ("문서명", TITLE),
-    ("버전", "1.0"),
-    ("작성일", "2026-07-26"),
+    ("버전", "1.1"),
+    ("작성일", "2026-07-27"),
     ("수신", "MIDASIT 개발팀 / 기획팀"),
-    ("검증 대상", "MIDAS CIVIL NX 2026 v2.2 (build 06/18/2026) · v2.1 (build 06/05/2026)"),
+    ("검증 대상", "MIDAS CIVIL NX 2026 v2.2 (build 06/18/2026) · v2.1 (build 06/05/2026); "
+                "GEN NX 2026 v2.1 (build 07/28/2026) — A-1만"),
     ("첨부", "vendor_repro_nmas.py — A-1 재현 스크립트"),
 ]
 

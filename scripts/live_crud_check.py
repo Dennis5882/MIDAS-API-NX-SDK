@@ -793,7 +793,8 @@ def _static_cases() -> List[Case]:
             {"mX": 1.0, "mY": 1.0, "mZ": 2.0},
             lambda p: p.get("mZ"), 1.0, 2.0,
             item_id=3,
-            crashes="POST /db/NMAS kills Civil NX v2.1 and v2.2 (5 reproductions, 2026-07-26)",
+            crashes="POST /db/NMAS kills Civil NX (6 reproductions, v2.1/v2.2, 2026-07-26/27) "
+                    "and Gen NX (v2.1, first attempt, 2026-07-27) - not product-specific",
         ),
     ]
 
