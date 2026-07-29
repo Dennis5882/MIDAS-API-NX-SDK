@@ -136,43 +136,34 @@ class StoryDriftParams(TypedDict, total=False):
     BETA: StoryDriftBeta  # Beta value setting, optional
 
 
-# Direction-key spelling is contradictory in the official docs: the
-# Specifications table writes "X_DIR"/"Y_DIR" (underscore) while the official
-# request example writes "X-DIR"/"Y-DIR" (hyphen). Both spellings are declared
-# below so neither trips a type-checker; send the hyphen form first (it is the
-# one the working official example uses) and fall back to the underscore form
-# if the server rejects it. Declared with functional TypedDict syntax because
-# "X-DIR" is not a valid Python identifier.
+# Direction-key spelling used to be contradictory in the official docs (the
+# Specifications table wrote "X_DIR"/"Y_DIR" while the request example wrote
+# "X-DIR"/"Y-DIR"), and the parent field's type disagreed too (table said
+# Array[Object], example showed a single object). The vendor's 2026-07-29
+# correction unified both on the underscore spelling and confirmed the Object
+# shape — see docs/manual/21_POST_StoryTables.md #1 in the MIDAS-API repo.
 StoryDriftVerticalLineSelection = TypedDict(
     "StoryDriftVerticalLineSelection",
     {
-        "X-DIR": int,  # try this spelling first
-        "Y-DIR": int,
-        "COMBINED": int,
-        "X_DIR": int,  # Specifications-table spelling; fallback
+        "X_DIR": int,
         "Y_DIR": int,
+        "COMBINED": int,
     },
     total=False,
 )
-"""{X-DIR/Y-DIR/COMBINED: node ID} — exactly one key per the manual."""
+"""{X_DIR/Y_DIR/COMBINED: node ID} — exactly one key per the manual."""
 
 StoryDriftVerticalLinesSelection = TypedDict(
     "StoryDriftVerticalLinesSelection",
     {
-        "X-DIR": List[int],  # try this spelling first
-        "Y-DIR": List[int],
-        "COMBINED": List[int],
-        "X_DIR": List[int],  # Specifications-table spelling; fallback
+        "X_DIR": List[int],
         "Y_DIR": List[int],
+        "COMBINED": List[int],
     },
     total=False,
 )
-"""{X-DIR/Y-DIR/COMBINED: [node IDs]} — exactly one key per the manual.
-
-The Specifications table types the parent field as Array[Object], but the
-official request example passes a single direction-keyed object
-({"X-DIR": [262, 260]}); the example's shape is what this models.
-"""
+"""{X_DIR/Y_DIR/COMBINED: [node IDs]} — exactly one key per the manual, e.g.
+{"X_DIR": [262, 260]}."""
 
 
 class StoryDriftCalculationMethod(TypedDict, total=False):
