@@ -171,8 +171,8 @@ def test_floor_load_color_update_sends_documented_assign_shape(gen_client):
 
 
 @responses.activate
-def test_span_create_sends_documented_assign_shape(gen_client):
-    responses.add(responses.POST, "https://x.test:443/gen/db/SPAN", json={}, status=200)
+def test_span_create_sends_documented_assign_shape(civil_client):
+    responses.add(responses.POST, "https://x.test:443/civil/db/SPAN", json={}, status=200)
     SpanPayload = {
         "NAME": "s1",
         "bEXACTSPAN": True,
@@ -184,7 +184,7 @@ def test_span_create_sends_documented_assign_shape(gen_client):
             {"ELEM_KEY": 2, "SUPPORT": 1},
         ],
     }
-    Span.create({1: SpanPayload}, client=gen_client)
+    Span.create({1: SpanPayload}, client=civil_client)
     sent = responses.calls[0].request
     assert json.loads(sent.body) == {"Assign": {"1": SpanPayload}}
 

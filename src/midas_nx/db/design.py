@@ -15,7 +15,7 @@ from __future__ import annotations
 from typing import List, TypedDict
 
 from ..post.base import NodeElemsSelector
-from .base import DbResource
+from .base import CIVIL_ONLY, DbResource
 
 # Shared KEYS/TO/STRUCTURE_GROUP_NAME "pick one" element-selector used when
 # CREATE_SUB_SECTION=true (REBB/REBC/REBR "ELEMS") — identical shape to
@@ -176,8 +176,14 @@ class RebarCheckInputPayload(TypedDict, total=False):
 
 
 class RebarCheckInput(DbResource):
+    """⚠️ The manual documents this for both products, but three independent
+    live sessions (2026-07-22, 2026-07-26, 2026-07-29) all 404 it under Gen
+    NX while it answers under Civil NX. See docs/live_verification_notes.md.
+    """
+
     ENDPOINT = "/db/RCHK"
     NAME = "Rebar Check Input (Beam/Column)"
+    PRODUCTS = CIVIL_ONLY
 
 
 # --- 4. /db/LENG — Unbraced Length ------------------------------------------

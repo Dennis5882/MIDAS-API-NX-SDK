@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from typing import List, TypedDict
 
-from .base import NO_DELETE_METHODS, DbResource
+from .base import CIVIL_ONLY, NO_DELETE_METHODS, DbResource
 
 _GET_PUT_ONLY = frozenset({"GET", "PUT"})
 
@@ -250,9 +250,14 @@ class SpanPayload(TypedDict, total=False):
 
 
 class Span(DbResource):
+    """⚠️ The manual documents this for both products, but three independent
+    live sessions (2026-07-22, 2026-07-26, 2026-07-29) all 404 it under Gen
+    NX while it answers under Civil NX. See docs/live_verification_notes.md.
+    """
+
     ENDPOINT = "/db/SPAN"
     NAME = "Span Information"
-    PRODUCTS = frozenset({"gen", "civil"})
+    PRODUCTS = CIVIL_ONLY
 
 
 class StoryPayload(TypedDict, total=False):

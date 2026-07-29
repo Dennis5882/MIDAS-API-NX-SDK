@@ -423,7 +423,6 @@
       "name": "Span Information",
       "chapter_file": "02_DB_Project_Structure.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "implemented",
@@ -433,9 +432,10 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET); manual documents gen+civil but 404s under Gen in three independent sessions (2026-07-22, 2026-07-26, 2026-07-29)",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported"
         }
       }
     },
@@ -916,7 +916,6 @@
       "name": "Section Manager – Stress Points",
       "chapter_file": "04_DB_Properties.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "implemented",
@@ -926,9 +925,10 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET); manual documents gen+civil but 404s under Gen in three independent sessions (2026-07-22, 2026-07-26, 2026-07-29)",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported"
         }
       }
     },
@@ -1000,7 +1000,6 @@
       "name": "Effective Width Scale Factor",
       "chapter_file": "04_DB_Properties.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "implemented",
@@ -1010,9 +1009,10 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET); manual documents gen+civil but 404s under Gen in three independent sessions (2026-07-22, 2026-07-26, 2026-07-29)",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported"
         }
       }
     },
@@ -3601,7 +3601,6 @@
       "name": "Pre-composite Section",
       "chapter_file": "11_DB_Settlement_Misc_Loads.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "implemented",
@@ -3611,9 +3610,10 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET); manual documents gen+civil but 404s under Gen in three independent sessions (2026-07-22, 2026-07-26, 2026-07-29)",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported"
         }
       }
     },
@@ -3643,7 +3643,6 @@
       "name": "Wave Loads",
       "chapter_file": "11_DB_Settlement_Misc_Loads.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "implemented",
@@ -3653,9 +3652,10 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET); manual documents gen+civil but 404s under Gen in three independent sessions (2026-07-22, 2026-07-26, 2026-07-29)",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported"
         }
       }
     },
@@ -4596,7 +4596,6 @@
       "name": "Rebar Input for Checking (Beam/Column)",
       "chapter_file": "24_DB_Design.md",
       "products": [
-        "gen",
         "civil"
       ],
       "status": "implemented",
@@ -4606,9 +4605,10 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET); manual documents gen+civil but 404s under Gen in three independent sessions (2026-07-22, 2026-07-26, 2026-07-29)",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported"
         }
       }
     },

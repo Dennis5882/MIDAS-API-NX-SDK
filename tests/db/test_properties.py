@@ -270,8 +270,8 @@ def test_section_reinforcement_create_sends_documented_assign_shape(gen_client):
 
 
 @responses.activate
-def test_section_stress_points_create_sends_documented_assign_shape(gen_client):
-    responses.add(responses.POST, "https://x.test:443/gen/db/STRPSSM", json={}, status=200)
+def test_section_stress_points_create_sends_documented_assign_shape(civil_client):
+    responses.add(responses.POST, "https://x.test:443/civil/db/STRPSSM", json={}, status=200)
     SectionStressPoints.create(
         {
             9003: {
@@ -282,7 +282,7 @@ def test_section_stress_points_create_sends_documented_assign_shape(gen_client):
                 "POINT2": [{"PY": 0.00583, "PZ": 0.00476}],
             }
         },
-        client=gen_client,
+        client=civil_client,
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["9003"]["POINT_SIZE_1"] == 2
@@ -331,11 +331,11 @@ def test_virtual_section_create_sends_documented_assign_shape(gen_client):
 
 
 @responses.activate
-def test_effective_width_scale_factor_create_keyed_by_element_id(gen_client):
-    responses.add(responses.POST, "https://x.test:443/gen/db/EWSF", json={}, status=200)
+def test_effective_width_scale_factor_create_keyed_by_element_id(civil_client):
+    responses.add(responses.POST, "https://x.test:443/civil/db/EWSF", json={}, status=200)
     EffectiveWidthScaleFactor.create(
         {10: {"ITEMS": [{"ID": 1, "LYSCALE": 0.5, "ZTSCALE": 0.6, "ZBSCALE": 0.7, "bJ": False}]}},
-        client=gen_client,
+        client=civil_client,
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["10"]["ITEMS"][0]["LYSCALE"] == 0.5

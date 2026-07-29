@@ -35,9 +35,9 @@ def test_settlement_load_case_create_sends_documented_assign_shape(gen_client):
 
 
 @responses.activate
-def test_pre_composite_section_create_sends_documented_assign_shape(gen_client):
-    responses.add(responses.POST, "https://x.test:443/gen/db/PLCB", json={}, status=200)
-    PreCompositeSection.create({1: {"LCNAME_ITEM": ["DL(BC)1", "DL(BC)3"]}}, client=gen_client)
+def test_pre_composite_section_create_sends_documented_assign_shape(civil_client):
+    responses.add(responses.POST, "https://x.test:443/civil/db/PLCB", json={}, status=200)
+    PreCompositeSection.create({1: {"LCNAME_ITEM": ["DL(BC)1", "DL(BC)3"]}}, client=civil_client)
     sent = responses.calls[0].request
     assert json.loads(sent.body) == {"Assign": {"1": {"LCNAME_ITEM": ["DL(BC)1", "DL(BC)3"]}}}
 
@@ -51,8 +51,8 @@ def test_load_sequence_nonlinear_create_preserves_order(gen_client):
 
 
 @responses.activate
-def test_wave_load_create_sends_documented_assign_shape(gen_client):
-    responses.add(responses.POST, "https://x.test:443/gen/db/WVLD", json={}, status=200)
+def test_wave_load_create_sends_documented_assign_shape(civil_client):
+    responses.add(responses.POST, "https://x.test:443/civil/db/WVLD", json={}, status=200)
     WaveLoad.create(
         {
             1: {
@@ -65,7 +65,7 @@ def test_wave_load_create_sends_documented_assign_shape(gen_client):
                 "PROF": {"GRID_DATA": [{"D": 0.0, "V": 0.5}]},
             }
         },
-        client=gen_client,
+        client=civil_client,
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["CHAR"]["THEORY"] == "STOKES"

@@ -2075,9 +2075,9 @@ three separate sessions is not a coincidence worth waiting out further.
 `live_crud_check.py` case given `products=("civil",)` so a future Gen run
 skips it instead of false-flagging, and its mocked test switched from
 `gen_client` to `civil_client`. The other 6 endpoints in that original list
-(`EWSF`, `PLCB`, `RCHK`, `SPAN`, `STRPSSM`, `WVLD`) are **not** touched —
-none of them are exercised by `live_crud_check.py`, so this run adds no new
-evidence for them. They stay at two data points, per the caveat.
+(`EWSF`, `PLCB`, `RCHK`, `SPAN`, `STRPSSM`, `WVLD`) were **not** exercised by
+`live_crud_check.py`, so this run added no new evidence for *them* — but see
+2026-07-29's read-only sweep below, which closed that gap the same day.
 
 **Re-run after the fix: 36/37, clean — 0 regressions, 0 unverified failures,
 0 blocked**, `/db/CMCS` correctly filtered out for a Gen client rather than
@@ -2119,6 +2119,41 @@ enough; further attempts just burn licenses for no new information.
 `NodalMassPayload`'s docstring in `db/static_loads.py`, the `crashes=` note
 on the case in `live_crud_check.py`. The vendor report's A-1 needs the same
 correction before it's sent — "Civil NX 한정" understates it.
+
+## 2026-07-29 (later) — full read-only re-sweep on the new Gen NX build closes the remaining 6
+
+With the NMAS-on-Gen question settled, the user asked what else the new Gen
+NX patch was worth re-checking. `scripts/live_readonly_sweep.py --product
+gen` — the same read-only GET sweep from 2026-07-22 and 2026-07-26 — was
+re-run against **Gen NX 2026 v2.1, build 07/28/2026**, a session and build
+distinct from both prior ones.
+
+**239 GET-capable resources swept, 233 ok, 6 errors — the exact same 6, byte
+for byte:** `EWSF`, `PLCB`, `RCHK`, `SPAN`, `STRPSSM`, `WVLD`, all
+`MidasNotFoundError` 404 with the identical hint text. No drift, no new
+failures, no fixes from the patch. (`CMCS` wasn't part of this sweep at
+all — it's correctly excluded now that its `PRODUCTS` is Civil-only.)
+
+That is the third independent reproduction this file's own caveat asked for
+on these 6 — same bar `/db/CMCS` cleared a few hours earlier, same account,
+different session and build each time (2026-07-22, 2026-07-26, 2026-07-29).
+**Action taken:** all 6 classes' `PRODUCTS` changed from `{"gen", "civil"}`
+to `CIVIL_ONLY` — `RebarCheckInput` (`db/design.py`), `PreCompositeSection`
+and `WaveLoad` (`db/misc_loads.py`), `Span` (`db/project.py`),
+`SectionStressPoints` and `EffectiveWidthScaleFactor`
+(`db/properties/section.py`) — each with the same dated docstring note as
+`CamberConstructionStage`. Their 6 mocked tests switched from `gen_client`
+to `civil_client` (they were asserting a request shape against a product
+that, per this finding, can't actually take that request).
+`docs/coverage.json`'s top-level `products` for all 6 corrected to
+`["civil"]` to match, and their `live_verified.method` notes now record the
+three-session history the same way `/db/CMCS`'s does.
+
+This closes out the "20 Gen 404s" accounting from the 2026-07-26 section
+above for good: 13 were Hyper-S (corrected in v0.13.0), and these final 7
+(`CMCS` plus these 6) are now all confirmed Civil-only after three
+independent sessions apiece. Nothing in that original list of 20 remains
+unexplained.
 
 ## Caveat — read before acting on this file
 

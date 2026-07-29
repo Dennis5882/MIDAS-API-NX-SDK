@@ -50,8 +50,8 @@ def test_steel_design_code_update_sends_documented_assign_shape(gen_client):
 
 
 @responses.activate
-def test_rebar_check_input_create_column_and_beam_mixed(gen_client):
-    responses.add(responses.POST, "https://x.test:443/gen/db/RCHK", json={}, status=200)
+def test_rebar_check_input_create_column_and_beam_mixed(civil_client):
+    responses.add(responses.POST, "https://x.test:443/civil/db/RCHK", json={}, status=200)
     RebarCheckInput.create(
         {
             1: {
@@ -105,7 +105,7 @@ def test_rebar_check_input_create_column_and_beam_mixed(gen_client):
                 },
             },
         },
-        client=gen_client,
+        client=civil_client,
     )
     sent = responses.calls[0].request
     body = json.loads(sent.body)["Assign"]
