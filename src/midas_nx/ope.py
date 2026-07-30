@@ -744,7 +744,16 @@ class LoadCombinationConcreteArgument(TypedDict, total=False):
 def generate_load_combination_concrete(
     argument: LoadCombinationConcreteArgument, client: Optional[MidasClient] = None
 ) -> dict:
-    """docs/manual/15_OPE.md #16 — /ope/LCOM-CONC — Load Combination (Concrete) – KDS 41 20:2022."""
+    """docs/manual/15_OPE.md #16 — /ope/LCOM-CONC — Load Combination (Concrete) – KDS 41 20:2022.
+
+    ⚠️ Live-tested 2026-07-30: a minimal payload ({OPTION, DGNCODE} only)
+    succeeded on Gen NX but 404'd on Civil NX, on the same synthetic frame
+    model shape (single reproduction so far, not yet independently
+    reconfirmed) — possibly Gen-only despite the manual not saying so. Not
+    enforced here: plain ope.py functions have no PRODUCTS gate in this
+    SDK, so a Civil call reaches the server and 404s there rather than
+    raising client-side.
+    """
     return _post("/ope/LCOM-CONC", argument, client)
 
 
@@ -776,7 +785,11 @@ class LoadCombinationSteelArgument(_LoadCombinationSteelSrcKdsArgument):
 def generate_load_combination_steel(
     argument: LoadCombinationSteelArgument, client: Optional[MidasClient] = None
 ) -> dict:
-    """docs/manual/15_OPE.md #17 — /ope/LCOM-STEEL — Load Combination (Steel) – KDS 41 30:2022."""
+    """docs/manual/15_OPE.md #17 — /ope/LCOM-STEEL — Load Combination (Steel) – KDS 41 30:2022.
+
+    ⚠️ Live-tested 2026-07-30: same Civil-404/Gen-ok split as
+    generate_load_combination_concrete — see that function's docstring.
+    """
     return _post("/ope/LCOM-STEEL", argument, client)
 
 
@@ -792,6 +805,9 @@ def generate_load_combination_src(
     client: Optional[MidasClient] = None,
 ) -> dict:
     """docs/manual/15_OPE.md #18 — /ope/LCOM-SRC — Load Combination (SRC) – KDS 41 SRC:2022 / AIK-SRC2K.
+
+    ⚠️ Live-tested 2026-07-30: same Civil-404/Gen-ok split as
+    generate_load_combination_concrete — see that function's docstring.
 
     DGNCODE selects the schema: KDS 41 SRC:2022 (LoadCombinationSrcKdsArgument)
     vs AIK-SRC2K (LoadCombinationAikSrc2kArgument, RS_SCALE_FACTOR optional here).
