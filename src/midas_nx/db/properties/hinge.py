@@ -98,12 +98,19 @@ class InelasticHingePropertyHyperSGeneralLink(DbResource):
 
 
 class InelasticHingePropertyHyperSPss(DbResource):
-    """⚠️ See InelasticHingePropertyHyperSTruss — same caveat. The "PSS"
-    suffix's meaning isn't stated in any available source (manual, /info,
-    or the live server); kept as the literal endpoint suffix rather than
-    guessed at.
+    """⚠️ Field shape caveat: see InelasticHingePropertyHyperSTruss — this
+    endpoint's own `/info/db/...` route also 404s.
+
+    "PSS" is not a mystery: the manual repo's `docs/manual/INDEX.md` titles
+    this endpoint "Assign Inelastic Hinges — Point Spring Support (Hyper-S)",
+    and `04_DB_Properties.md`'s own chapter TOC calls it "... Point Spring
+    (Hyper-S)" — a minor inconsistency within the manual itself ("Support"
+    present in one title, absent in the other), but "Point Spring" either
+    way. An earlier version of this docstring wrongly claimed the meaning
+    "isn't stated in any available source" — it is, just not alongside a
+    Specifications table, which is the only thing actually missing here.
     """
 
     ENDPOINT = "/db/IEHG-PSS-M1"
-    NAME = "Assign Inelastic Hinge Properties (PSS, Hyper-S)"
+    NAME = "Assign Inelastic Hinge Properties (Point Spring, Hyper-S)"
     PRODUCTS = HYPER_S_ONLY

@@ -238,7 +238,15 @@ class TimeDependentMaterialCreepShrinkagePayload(TypedDict, total=False):
     """docs/manual/04_DB_Properties.md #6 — /db/TDMT Specifications table.
 
     Fields 5-8 are conditional on CODE (CEB-FIP uses MSIZE/TYPEOFAFFR, ACI
-    uses VOL/CMETHOD); pass only the ones matching the selected code.
+    uses VOL/CMETHOD, CODE="EUROPEAN" uses TCODE/bSILICA); pass only the ones
+    matching the selected code.
+
+    ⚠️ `GET /info/db/TDMT` (checked 2026-07-30) reveals roughly 70 total
+    fields spanning many more design codes (JSCE, GB, JTG, and others) than
+    the three branches typed here — this endpoint's Specifications table is
+    itself only a subset of what the server actually accepts. Only
+    CEB-FIP/ACI/European are typed for v1; treat any other CODE value's
+    extra fields as untyped extra dict keys, same as SECT_I's precedent.
     """
 
     NAME: str  # Time Dependent Material Name, required
@@ -251,6 +259,8 @@ class TimeDependentMaterialCreepShrinkagePayload(TypedDict, total=False):
     TYPEOFAFFR: int  # CEB-FIP 2010: Aggregate type 0=Basalt/dense limestone, 1=Quartzite, 2=Limestone, 3=Sandstone; default 0
     VOL: float  # ACI: Volume/Surface Ratio, required
     CMETHOD: str  # ACI: "MOIST" / "STEAM", default "MOIST", optional
+    TCODE: int  # CODE="EUROPEAN": Type of Code, optional. Confirmed live 2026-07-30 (real PSC bridge model, Eurocode) — not in the manual's own Specifications table.
+    bSILICA: bool  # CODE="EUROPEAN": Silica Fume, optional. Confirmed live 2026-07-30 — see TCODE.
 
 
 class TimeDependentMaterialCreepShrinkage(DbResource):

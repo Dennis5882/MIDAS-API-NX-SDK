@@ -20,10 +20,13 @@ modelling script needs them, not the order the manual lists them:
                temperature
     stage      construction stages and what attaches to them
     moving     moving-load chain (code -> lane -> vehicle -> case). Its
-               fixtures are Korea-standard and kept Civil-only here; the
-               underlying routes answer on Gen too but per-CODE, not
-               unconditionally (see the tier's own comment) — /db/CMCS in
-               the stage tier is the one still genuinely Civil-only
+               fixtures are AASHTO LRFD/HL-93 (rebuilt 2026-07-30 from
+               Korea-standard, cross-checked against a real production
+               arch-bridge model's own data) and kept Civil-only here for
+               now, pending an actual Gen run; the underlying routes answer
+               on Gen too but per-CODE, not unconditionally (see the tier's
+               own comment) — /db/CMCS in the stage tier is the one still
+               genuinely Civil-only
 
 ``--tier`` runs a subset. Every tier declares its own seed, so a tier is
 runnable on its own.
@@ -876,17 +879,24 @@ def _stage_cases() -> List[Case]:
 
 
 # --------------------------------------------------------------------------
-# Tier: moving — the moving-load chain, Korea-standard fixtures throughout
-# (MVCD "KOREA", vehicles keyed to "KS-RB"). Kept Civil-only *in this
-# checker* even though the underlying routes answer on Gen too (see
-# db/base.py's GEN_ONLY docstring's sibling note): live-tested 2026-07-29,
-# /db/MVCD itself creates fine on Gen for "AASHTO STANDARD"/"AASHTO LRFD"/
-# "EUROCODE"/"BS" but answers `[Error] ... Unavailable moving load code` for
-# "KOREA"/"CHINA"/"KSCE-LSD15" — presumably a licensed-module gate per
-# region code, not a route-level restriction. This tier's Korea-specific
-# fixture chain (lane/vehicle/case) has not been rebuilt around a
-# Gen-available code, so it stays Civil-only here until someone does that
-# work and actually watches it pass live.
+# Tier: moving — the moving-load chain, now AASHTO LRFD fixtures throughout
+# (MVCD "AASHTO LRFD", vehicles keyed to "AASHTO-LRFD"/HL-93). Was
+# Korea-standard (MVCD "KOREA", vehicles keyed to "KS-RB") through
+# 2026-07-29: live-tested that day, /db/MVCD itself creates fine on Gen for
+# "AASHTO STANDARD"/"AASHTO LRFD"/"EUROCODE"/"BS" but answers `[Error] ...
+# Unavailable moving load code` for "KOREA"/"CHINA"/"KSCE-LSD15" —
+# presumably a licensed-module gate per region code, not a route-level
+# restriction. Rebuilt 2026-07-30 around AASHTO LRFD/HL-93 after
+# cross-checking this exact fixture shape against a real production Civil
+# NX arch-bridge model's live AASHTO LRFD data (see
+# docs/live_verification_notes.md) — field-for-field identical to what a
+# real bridge project stores, not an invented example. Still `products=civil`
+# here: the chain answers on Gen too per the 32-endpoint mirror finding (all
+# of ch08 does), and AASHTO codes are the ones confirmed *not* gated by the
+# region-code lock, so this should now pass unchanged on Gen — but that is
+# an expectation, not yet something watched pass live. Widen `products` and
+# flip `confirmed` only once someone actually runs this against a Gen
+# session.
 # --------------------------------------------------------------------------
 
 
@@ -898,20 +908,28 @@ def _moving_seeds() -> List[SeedStep]:
     as optional, but an empty object makes ``/db/MVHL`` silently no-op —
     ``{"message": ""}``, no error, and a following GET shows nothing was
     saved. Verified live; see docs/live_verification_notes.md.
+
+    ⚠️ With ``MVCD.CODE="AASHTO LRFD"``, ``LineLaneItem``'s ``CENT_F`` must be
+    a nonzero value in (0, 1) — omitting it (or leaving the field's own
+    documented default of 0) is rejected server-side with "Centrifugal
+    Force ( 0.0 < Value < 1.0)". See ``LineLaneItem``'s docstring in
+    ``db/moving_loads.py``, independently reconfirmed against a real
+    production model's own data (``CENT_F: 0.5``) on 2026-07-30.
     """
     return [
-        SeedStep("mvcd", lambda c: MovingLoadCode.create({1: {"CODE": "KOREA"}}, client=c)),
+        SeedStep("mvcd", lambda c: MovingLoadCode.create({1: {"CODE": "AASHTO LRFD"}}, client=c)),
         SeedStep("lane", lambda c: TrafficLineLanes.create(
             {1: {"COMMON": {"LL_NAME": "LL_SEED", "LOAD_DIST": "LANE", "GROUP_NAME": "",
                             "SKEW_START": 0, "SKEW_END": 0, "MOVING": "BOTH",
                             "WHEEL_SPACE": 1.8, "WIDTH": 3, "OPT_AUTO_LANE": False},
-                 "LANE_ITEMS": [{"ELEM": 2, "ECC": 0}, {"ELEM": 3, "ECC": 0}]}},
+                 "LANE_ITEMS": [{"ELEM": 2, "ECC": 0, "CENT_F": 0.5},
+                                {"ELEM": 3, "ECC": 0, "CENT_F": 0.5}]}},
             client=c)),
         SeedStep("vehicle", lambda c: Vehicles.create(
-            {1: {"MVLD_CODE": 6, "VEHICLE_LOAD_NAME": "KR(SRB)_DB-24",
-                 "VEHICLE_LOAD_NUM": 1, "VEHICLE_TYPE_NAME": "DB-24",
-                 "STANDARD_CODE": "KS-RB",
-                 "VEH_DEFAULT": {"DYN_LOAD_ALLOWANCE": 0, "CENT_F": False}}},
+            {1: {"MVLD_CODE": 2, "VEHICLE_LOAD_NAME": "HL93TRK_SEED",
+                 "VEHICLE_LOAD_NUM": 1, "VEHICLE_TYPE_NAME": "HL-93TRK",
+                 "STANDARD_CODE": "AASHTO-LRFD",
+                 "VEH_DEFAULT": {"DYN_LOAD_ALLOWANCE": 33, "CENT_F": False}}},
             client=c)),
     ]
 
@@ -925,42 +943,45 @@ def _moving_cases() -> List[Case]:
             {"COMMON": {"LL_NAME": "LL_CRUD", "LOAD_DIST": "LANE", "GROUP_NAME": "",
                         "SKEW_START": 0, "SKEW_END": 0, "MOVING": "BOTH",
                         "WHEEL_SPACE": 1.8, "WIDTH": 3, "OPT_AUTO_LANE": False},
-             "LANE_ITEMS": [{"ELEM": 2, "ECC": 0.0}, {"ELEM": 3, "ECC": 0.0}]},
+             "LANE_ITEMS": [{"ELEM": 2, "ECC": 0.0, "CENT_F": 0.5},
+                            {"ELEM": 3, "ECC": 0.0, "CENT_F": 0.5}]},
             {"COMMON": {"LL_NAME": "LL_CRUD", "LOAD_DIST": "LANE", "GROUP_NAME": "",
                         "SKEW_START": 0, "SKEW_END": 0, "MOVING": "BOTH",
                         "WHEEL_SPACE": 1.8, "WIDTH": 3, "OPT_AUTO_LANE": False},
-             "LANE_ITEMS": [{"ELEM": 2, "ECC": 0.5}, {"ELEM": 3, "ECC": 0.5}]},
+             "LANE_ITEMS": [{"ELEM": 2, "ECC": 0.5, "CENT_F": 0.5},
+                            {"ELEM": 3, "ECC": 0.5, "CENT_F": 0.5}]},
             lambda p: p["LANE_ITEMS"][0].get("ECC"), 0.0, 0.5,
             item_id=2, products=civil, confirmed=True, needs=("mvcd",),
         ),
-        # id 2: vehicle 1 is the seeded DB-24 the class/case reference.
+        # id 2: vehicle 1 is the seeded HL-93TRK the class/case reference.
         #
-        # ⚠️ VEHICLE_LOAD_NUM must be 1 for a standard-DB vehicle. Sending 2
-        # (verified live 2026-07-26) makes NX **silently discard**
-        # VEHICLE_TYPE_NAME and STANDARD_CODE and store the record as a
-        # user-defined "Truck/Lane" vehicle instead — 200, no error, and the
-        # only way to notice is to read the record back. Same failure shape as
-        # /db/CONS truncating an 8-character CONSTRAINT.
+        # ⚠️ VEHICLE_LOAD_NUM must be 1 for a standard vehicle. Sending 2
+        # (verified live 2026-07-26, on the Korea-standard fixture this
+        # replaced) makes NX **silently discard** VEHICLE_TYPE_NAME and
+        # STANDARD_CODE and store the record as a user-defined "Truck/Lane"
+        # vehicle instead — 200, no error, and the only way to notice is to
+        # read the record back. Same failure shape as /db/CONS truncating an
+        # 8-character CONSTRAINT.
         Case(
             Vehicles,
-            {"MVLD_CODE": 6, "VEHICLE_LOAD_NAME": "KR(SRB)_DB-18",
-             "VEHICLE_LOAD_NUM": 1, "VEHICLE_TYPE_NAME": "DB-18",
-             "STANDARD_CODE": "KS-RB",
-             "VEH_DEFAULT": {"DYN_LOAD_ALLOWANCE": 0, "CENT_F": False}},
-            {"MVLD_CODE": 6, "VEHICLE_LOAD_NAME": "KR(SRB)_DB-18",
-             "VEHICLE_LOAD_NUM": 1, "VEHICLE_TYPE_NAME": "DB-18",
-             "STANDARD_CODE": "KS-RB",
-             "VEH_DEFAULT": {"DYN_LOAD_ALLOWANCE": 10, "CENT_F": False}},
-            lambda p: p["VEH_DEFAULT"].get("DYN_LOAD_ALLOWANCE"), 0, 10,
+            {"MVLD_CODE": 2, "VEHICLE_LOAD_NAME": "HL93TDM_CRUD",
+             "VEHICLE_LOAD_NUM": 1, "VEHICLE_TYPE_NAME": "HL-93TDM",
+             "STANDARD_CODE": "AASHTO-LRFD",
+             "VEH_DEFAULT": {"DYN_LOAD_ALLOWANCE": 33, "CENT_F": False}},
+            {"MVLD_CODE": 2, "VEHICLE_LOAD_NAME": "HL93TDM_CRUD",
+             "VEHICLE_LOAD_NUM": 1, "VEHICLE_TYPE_NAME": "HL-93TDM",
+             "STANDARD_CODE": "AASHTO-LRFD",
+             "VEH_DEFAULT": {"DYN_LOAD_ALLOWANCE": 20, "CENT_F": False}},
+            lambda p: p["VEH_DEFAULT"].get("DYN_LOAD_ALLOWANCE"), 33, 20,
             item_id=2, products=civil, confirmed=True, needs=("mvcd",),
         ),
         # VEHICLE_LD_NAMES takes the vehicle's VEHICLE_LOAD_NAME, not the
-        # type name the manual's worked example shows ("DB-18") — confirmed
-        # live 2026-07-26 with "KR(SRB)_DB-24".
+        # type name the manual's worked example shows — confirmed live
+        # 2026-07-26 on the Korea-standard fixture this replaced.
         Case(
             VehicleClasses,
-            {"VEHICLE_CLS_NAME": "VC_CRUD", "VEHICLE_LD_NAMES": ["KR(SRB)_DB-24"]},
-            {"VEHICLE_CLS_NAME": "VC_CRUD_2", "VEHICLE_LD_NAMES": ["KR(SRB)_DB-24"]},
+            {"VEHICLE_CLS_NAME": "VC_CRUD", "VEHICLE_LD_NAMES": ["HL93TRK_SEED"]},
+            {"VEHICLE_CLS_NAME": "VC_CRUD_2", "VEHICLE_LD_NAMES": ["HL93TRK_SEED"]},
             lambda p: p.get("VEHICLE_CLS_NAME"), "VC_CRUD", "VC_CRUD_2",
             products=civil, confirmed=True, needs=("mvcd", "vehicle"),
         ),
@@ -968,20 +989,20 @@ def _moving_cases() -> List[Case]:
             MovingLoadCase,
             {"LCNAME": "MV_CRUD", "DESC": "", "TYPE": 0,
              "DEFAULT": {"LANE_FACTOR_TYPE": 1,
-                         "SCALE_FACTORS": [1, 0.9, 0.8, 0.7, 0.65, 0.65],
-                         "COMB_OPTION": "COMBINED",
+                         "SCALE_FACTORS": [1.2, 1, 0.85, 0.65, 0.65, 0.65],
+                         "COMB_OPTION": "INDEPENDENT",
                          "SUB_LOAD_DATAS": [{"VEHICLE_TYPE": "VL",
-                                             "VEHICLE_NAME": "KR(SRB)_DB-24",
+                                             "VEHICLE_NAME": "HL93TRK_SEED",
                                              "SCALE_FACTOR": 1.0,
                                              "MIN_LOADED_LANE": 1,
                                              "MAX_LOADED_LANE": 1,
                                              "LANE_NAMES": ["LL_SEED"]}]}},
             {"LCNAME": "MV_CRUD", "DESC": "", "TYPE": 0,
              "DEFAULT": {"LANE_FACTOR_TYPE": 1,
-                         "SCALE_FACTORS": [1, 0.9, 0.8, 0.7, 0.65, 0.65],
-                         "COMB_OPTION": "COMBINED",
+                         "SCALE_FACTORS": [1.2, 1, 0.85, 0.65, 0.65, 0.65],
+                         "COMB_OPTION": "INDEPENDENT",
                          "SUB_LOAD_DATAS": [{"VEHICLE_TYPE": "VL",
-                                             "VEHICLE_NAME": "KR(SRB)_DB-24",
+                                             "VEHICLE_NAME": "HL93TRK_SEED",
                                              "SCALE_FACTOR": 0.8,
                                              "MIN_LOADED_LANE": 1,
                                              "MAX_LOADED_LANE": 1,
@@ -999,7 +1020,7 @@ TIERS: List[Tier] = [
     Tier("boundary", "springs and links", _boundary_seeds, _boundary_cases),
     Tier("static", "remaining static loads + temperature", _no_seeds, _static_cases),
     Tier("stage", "construction stages", _stage_seeds, _stage_cases),
-    Tier("moving", "moving loads (Civil NX only in this checker's fixtures)", _moving_seeds, _moving_cases),
+    Tier("moving", "moving loads (AASHTO LRFD fixtures; Civil-confirmed, Gen not yet watched live)", _moving_seeds, _moving_cases),
 ]
 
 

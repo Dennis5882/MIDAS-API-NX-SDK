@@ -319,6 +319,32 @@ def test_vehicles_create_sends_veh_default(civil_client):
     assert json.loads(sent.body)["Assign"]["1"]["VEH_DEFAULT"]["DYN_LOAD_ALLOWANCE"] == 25
 
 
+@responses.activate
+def test_vehicles_create_sends_veh_eurocode_without_standard_code(civil_client):
+    responses.add(responses.POST, "https://x.test:443/civil/db/MVHL", json={}, status=200)
+    Vehicles.create(
+        {
+            1: {
+                "MVLD_CODE": 11,
+                "VEHICLE_LOAD_NAME": "Load Model 1",
+                "VEHICLE_LOAD_NUM": 1,
+                "VEHICLE_TYPE_NAME": "Load Model 1",
+                "VEH_EUROCODE": {
+                    "SUB_TYPE": 19,
+                    "AMP_VALUES": [0.75, 0.4],
+                    "TANDEM_ADJUST_VALUES": [1, 1, 1],
+                    "UDL_ADJUST_VALUES": [1, 1, 1, 1],
+                },
+            }
+        },
+        client=civil_client,
+    )
+    sent = responses.calls[0].request
+    body = json.loads(sent.body)["Assign"]["1"]
+    assert body["VEH_EUROCODE"]["SUB_TYPE"] == 19
+    assert "STANDARD_CODE" not in body
+
+
 # --- 11. /db/MVHLtr -------------------------------------------------------------
 
 

@@ -32,6 +32,7 @@ class ConstructionStagePayload(TypedDict, total=False):
     """docs/manual/10_DB_Construction_Stage.md #1 — /db/STAG Specifications table."""
 
     NAME: str  # Stage Name, required
+    NO: int  # Construction Stage No. (sequence order), optional. Confirmed live 2026-07-30 (real cable-stayed bridge model) and in /info/db/STAG — not in the manual's own Specifications table.
     DURATION: float  # Duration (days), required
     bSV_RSLT: bool  # Save Results per Stage, default false, optional
     bSV_STEP: bool  # Save Additional Steps, default false, optional

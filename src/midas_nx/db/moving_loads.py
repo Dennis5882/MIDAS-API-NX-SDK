@@ -69,13 +69,24 @@ class LineLaneItem(TypedDict, total=False):
     defaults to 0.0, which fails the code's own (0, 1) exclusive-range
     validation. Pass a nonzero CENT_F whenever MVCD.CODE is "AASHTO LRFD".
     See docs/live_verification_notes.md for the reproduction.
+
+    ⚠️ CENT_F is documented (and was believed here) to be AASHTO-LRFD-only,
+    but two independent real production models contradict that: a
+    Eurocode-coded railway bridge (2026-07-30) has the identical populated
+    value (CENT_F: 0.5) on every LANE_ITEMS entry, same as the AASHTO LRFD
+    arch-bridge model that originally motivated the note above. Whether
+    this reflects a genuine cross-code field or is simply always echoed
+    back regardless of the selected code (as ECCEN_VERT_LOAD/FACT/WIDTH
+    have also been seen to be, populated-but-inert, on codes that don't use
+    them) is not yet resolved — treat "AASHTO LRFD only" below as unverified
+    rather than corrected.
     """
 
     ELEM: int  # Element No., required
     ECC: float  # Eccentricity, optional (KSCE-LSD15/Canada/BS/Russia/South Africa/Korea/AASHTO Standard/Taiwan/AASHTO LRFD/PENNDOT/Eurocode/Australia/Poland)
     FACT: float  # Impact Factor, optional (Korea/AASHTO Standard/Taiwan only)
     SPAN_START: bool  # Span Start, optional (Korea/AASHTO Standard/Taiwan/AASHTO LRFD/PENNDOT/Australia/Poland only)
-    CENT_F: float  # Centrifugal Force Factor, optional (AASHTO LRFD only) — see class docstring, effectively required and nonzero when MVCD.CODE="AASHTO LRFD"
+    CENT_F: float  # Centrifugal Force Factor, documented AASHTO-LRFD-only but seen populated on Eurocode too — see class docstring; effectively required and nonzero when MVCD.CODE="AASHTO LRFD"
     ECCEN_VERT_LOAD: float  # Eccentricity Considering Cant (vertical load), optional (Eurocode only)
 
 
@@ -338,21 +349,102 @@ class VehicleLoadItem(TypedDict, total=False):
     POINT_DIST: float  # Point Distance, required
 
 
+class VehicleEurocodeParams(TypedDict, total=False):
+    """VEH_EUROCODE sub-object of /db/MVHL, used instead of VEH_DEFAULT for
+    Eurocode's predefined load models (Load Model 1/2/3, rail HSLM-A/B, ...).
+
+    Confirmed live 2026-07-30 against a real production Eurocode PSC bridge
+    model — not documented in the manual's own Specifications table at all
+    (only VEH_DEFAULT is). `GET /info/db/MVHL` shows this object has ~50
+    fields covering multiple load-model sub-types selected by SUB_TYPE; only
+    the flat scalar ones are typed here, matching the field set actually
+    seen live. LOADCASES/VEHICLES/PERMIT_LOAD are deeply nested and
+    load-model-specific, so they're left as extra untyped dict keys — pass
+    them as-is rather than through this TypedDict, same as SECT_I's
+    precedent for shape-conditional structures.
+    """
+
+    SUB_TYPE: int  # Load model sub-type selector, required
+    SEL_VEHICLE: str  # Select Vehicle, optional
+    AMP: float  # Amplification, optional
+    AMP2: float  # Amplification2, optional
+    AMP_VALUES: List[float]  # Amplification Value Array, optional
+    TANDEM_ADJUST_VALUES: List[float]  # Tandem System Adjustment Factor Array, optional
+    TANDEM_LOADS: List[float]  # Tandem System Axle Loads Array, optional
+    UDL_ADJUST_VALUES: List[float]  # UDL System Adjustment Factor Array, optional
+    UDL_LOADS: List[float]  # UDL System Uniformly Dist. Loads Array, optional
+    USE_DYNAMIC_FACTOR2_0: bool  # optional
+    USE_DYNAMIC_FACTOR2_1: bool  # optional
+    USE_POINT_LOAD3_0: bool  # optional
+    USE_POINT_LOAD3_1: bool  # optional
+    VAR_SPACING: bool  # Use Variable Axle Spacing, optional
+    MAX_SPACING: float  # optional
+    MIN_SPACING: float  # optional
+    WHEEL_SPACING: float  # Wheel Spacing for Static Load, optional
+    LM3_LOADCASE1: bool  # optional
+    LM3_LOADCASE2: bool  # optional
+    ADJUSTMENT: float  # optional
+    ADJUSTMENT2: float  # optional
+    AXLE_NUM: int  # optional
+    FOOTWAY: float  # optional
+    INTERVAL: float  # Two Vehicle Interval, optional
+    DYNAMIC_FACTOR: bool  # optional
+    USER_INPUT: bool  # optional
+    DSPACE: float  # optional
+    W1: float  # optional
+    DD1: float  # optional
+    D1: float  # optional
+    W2: float  # optional
+    DD2: float  # optional
+    D2: float  # optional
+    PRESSURE_LOAD: float  # optional
+    V_LOAD_FACTOR: float  # Eccentricity of Lateral Displacement of Vertical Loads Factor, optional
+    LONGI_DIST: bool  # Consider Longitudinal Distribution of Point Loads, optional
+    DIST_RAIL_SUPPORT: float  # Distance between Rail Support Points, optional
+    ECCEN_VERT_LOAD: bool  # optional
+    ECCEN_VERT_LOAD_VALUE: float  # optional
+    HSLMA_NUM: int  # optional
+    HSLMA_LENGTH: float  # optional
+    HSLMA_SPACING: float  # optional
+    HSLMA_FORCE: float  # optional
+    HSLMB_NUM: int  # optional
+    HSLMB_FORCE: float  # optional
+    HSLMB_DIST: float  # optional
+    PHI_DYN_EFF1: float  # optional
+    PHI_DYN_EFF2: float  # optional
+    # LOADCASES, VEHICLES, PERMIT_LOAD: deeply nested, load-model-specific —
+    # pass as extra untyped dict keys.
+
+
 class VehiclePayload(TypedDict, total=False):
     """docs/manual/08_DB_Moving_Loads.md #10 — /db/MVHL Specifications table.
 
     STANDARD_CODE values: "AASHTO-STD"/"AASHTO-LRFD"/"KS-RB"/"KS2005"/
     "KSCE-LSD15"/"BS"/"EUROCODE"/"CANADA"/"AUSTRALIA"/"CHINA"/"INDIA"/
     "TAIWAN"/"POLAND"/"RUSSIA"/"SOUTH_AFRICA".
+
+    ⚠️ STANDARD_CODE/VEH_DEFAULT are the manual's only documented shape, but
+    `GET /info/db/MVHL` (checked 2026-07-30) shows 11 more country-specific
+    sub-objects the manual never mentions: VEH_FR, VEH_CN, VEH_IN, VEH_CA,
+    VEH_BS, VEH_EUROCODE, VEH_RU, VEH_KSCE_LSD15, VEH_AU, VEH_PL, VEH_ZA —
+    plus a second load-items array, LOAD_ITEMS2. Confirmed live against a
+    real Eurocode PSC bridge model: its predefined "Load Model 1" vehicle
+    entry has **no STANDARD_CODE key at all** and uses VEH_EUROCODE instead
+    of VEH_DEFAULT — so despite the table below marking both "required",
+    that's only true for the generic/VEH_DEFAULT shape. Only VEH_EUROCODE is
+    typed here (`VehicleEurocodeParams`); the other 10 country-specific
+    sub-objects are confirmed to exist via `/info` but not individually
+    typed — pass them as extra untyped dict keys if you need one.
     """
 
     MVLD_CODE: int  # Moving Load Code, required
     VEHICLE_LOAD_NAME: str  # Vehicular Load Name (user-assigned), required
     VEHICLE_LOAD_NUM: int  # Vehicular Load Number, required
     VEHICLE_TYPE_NAME: str  # Vehicular Type Name (predefined vehicle name), required
-    STANDARD_CODE: str  # Standard Code, required
+    STANDARD_CODE: str  # Standard Code, required for the VEH_DEFAULT shape — see class docstring
     USER_LOAD_TYPE: str  # User Load Type (when user-defined), optional
-    VEH_DEFAULT: VehicleDefaultParams  # Default Parameters, required
+    VEH_DEFAULT: VehicleDefaultParams  # Default Parameters, required for the generic shape — see class docstring
+    VEH_EUROCODE: VehicleEurocodeParams  # Eurocode predefined load models, used instead of VEH_DEFAULT — see class docstring
     LOAD_ITEMS: List[VehicleLoadItem]  # User-defined axle-load items, optional
 
 

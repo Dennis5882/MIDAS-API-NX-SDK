@@ -223,14 +223,14 @@
       "status": "implemented",
       "module": "midas_nx.db.project",
       "live_verified": {
-        "date": "2026-07-29",
+        "date": "2026-07-30",
         "products": [
           "civil"
         ],
-        "method": "direct MidasClient GET/.info() probe (not scripts/live_readonly_sweep.py - the session disconnected from the relay mid-sweep before the script itself could run)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation)"
       }
     },
     {
@@ -634,14 +634,14 @@
       "status": "implemented",
       "module": "midas_nx.db.properties.material",
       "live_verified": {
-        "date": "2026-07-29",
+        "date": "2026-07-30",
         "products": [
           "civil"
         ],
-        "method": "direct MidasClient GET/.info() probe (not scripts/live_readonly_sweep.py - the session disconnected from the relay mid-sweep before the script itself could run)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation)"
       }
     },
     {
@@ -675,14 +675,14 @@
       "status": "implemented",
       "module": "midas_nx.db.properties.material",
       "live_verified": {
-        "date": "2026-07-29",
+        "date": "2026-07-30",
         "products": [
           "civil"
         ],
-        "method": "direct MidasClient GET/.info() probe (not scripts/live_readonly_sweep.py - the session disconnected from the relay mid-sweep before the script itself could run)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation)"
       }
     },
     {
@@ -827,14 +827,14 @@
       "status": "implemented",
       "module": "midas_nx.db.properties.material",
       "live_verified": {
-        "date": "2026-07-29",
+        "date": "2026-07-30",
         "products": [
           "civil"
         ],
-        "method": "direct MidasClient GET/.info() probe (not scripts/live_readonly_sweep.py - the session disconnected from the relay mid-sweep before the script itself could run)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation)"
       }
     },
     {
@@ -1107,14 +1107,14 @@
       "status": "implemented",
       "module": "midas_nx.db.properties.hinge",
       "live_verified": {
-        "date": "2026-07-29",
+        "date": "2026-07-30",
         "products": [
           "civil"
         ],
-        "method": "direct MidasClient GET/.info() probe (not scripts/live_readonly_sweep.py - the session disconnected from the relay mid-sweep before the script itself could run)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation)"
       }
     },
     {
@@ -1127,14 +1127,14 @@
       "status": "implemented",
       "module": "midas_nx.db.properties.hinge",
       "live_verified": {
-        "date": "2026-07-29",
+        "date": "2026-07-30",
         "products": [
           "civil"
         ],
-        "method": "direct MidasClient GET/.info() probe (not scripts/live_readonly_sweep.py - the session disconnected from the relay mid-sweep before the script itself could run)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "method": "scripts/live_readonly_sweep.py (read-only GET); this endpoint's own GET /info/db/... route still 404'd on reconfirmation, so its INEL_PROP_NAME shape remains assumed by sibling analogy to /db/IEHG-BEAM-M1, not independently schema-confirmed"
       }
     },
     {
@@ -1147,14 +1147,14 @@
       "status": "implemented",
       "module": "midas_nx.db.properties.hinge",
       "live_verified": {
-        "date": "2026-07-29",
+        "date": "2026-07-30",
         "products": [
           "civil"
         ],
-        "method": "direct MidasClient GET/.info() probe (not scripts/live_readonly_sweep.py - the session disconnected from the relay mid-sweep before the script itself could run)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "method": "scripts/live_readonly_sweep.py (read-only GET); this endpoint's own GET /info/db/... route still 404'd on reconfirmation, so its INEL_PROP_NAME shape remains assumed by sibling analogy to /db/IEHG-BEAM-M1, not independently schema-confirmed"
       }
     },
     {
@@ -1167,14 +1167,14 @@
       "status": "implemented",
       "module": "midas_nx.db.properties.hinge",
       "live_verified": {
-        "date": "2026-07-29",
+        "date": "2026-07-30",
         "products": [
           "civil"
         ],
-        "method": "direct MidasClient GET/.info() probe (not scripts/live_readonly_sweep.py - the session disconnected from the relay mid-sweep before the script itself could run)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "method": "scripts/live_readonly_sweep.py (read-only GET); this endpoint's own GET /info/db/... route still 404'd on reconfirmation, so its INEL_PROP_NAME shape remains assumed by sibling analogy to /db/IEHG-BEAM-M1, not independently schema-confirmed"
       }
     },
     {

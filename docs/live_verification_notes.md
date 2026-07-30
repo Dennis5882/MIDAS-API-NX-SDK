@@ -2976,6 +2976,208 @@ string, since the sweep script itself didn't get to run). Coverage is now
 398/398 (100%). `tests/db/test_hyper_s_products.py`'s family-size assertion
 updated 13→21. This resolves the v1.0.0 gate's item (a) — see PLAN.md.
 
+**Two corrections caught by `/code-review` on 2026-07-30, after v1.0.0 shipped:**
+
+1. `InelasticHingePropertyHyperSPss`'s docstring claimed "PSS" isn't stated
+   in any available source — false. The manual repo's `INDEX.md` titles the
+   endpoint "Assign Inelastic Hinges — Point Spring Support (Hyper-S)", and
+   `04_DB_Properties.md`'s own chapter TOC calls it "... Point Spring
+   (Hyper-S)" (a minor internal inconsistency in the manual — "Support"
+   present in one title, absent in the other — but "Point Spring" either
+   way). What's actually missing is a Specifications table, not the name.
+   Fixed the docstring and its `NAME` field (now "... Point Spring,
+   Hyper-S)"). This is why the day's own rule matters: verify a claim
+   against the actual source before asserting it, even a claim about what a
+   source *doesn't* say.
+2. `docs/coverage.json`'s `live_verified.method` string was identical for
+   all 8 Hyper-S stubs, which overclaimed schema confirmation for
+   `IEHG-{TRUSS,GL,PSS}-M1` — their `/info` route 404s, so only GET was
+   actually confirmed for them, unlike the other 5. Reworded their `method`
+   field to say so explicitly, so a future reader of the coverage ledger
+   (or `scripts/check_manual_drift.py`) doesn't skip re-verifying these
+   three on the strength of a probe that never actually ran against their
+   schema.
+
+## 2026-07-30 — second independent live re-check of the 8 Hyper-S stubs
+
+With a fresh Civil NX session (same build, v2.2 06/18/2026), re-ran
+`scripts/live_readonly_sweep.py` for real this time (2026-07-29's original
+recording used a direct probe, since the session disconnected — see above —
+before the script itself could run). All 8 answered `ok`: `STYP-M1`,
+`MATL-M1`, `IMFM-M1`, `EPMT-M1`, `IEHG-BEAM-M1`, `IEHG-TRUSS-M1`,
+`IEHG-GL-M1`, `IEHG-PSS-M1`.
+
+Also re-probed `/info/db/...` directly for all 8 to check the schema/no-schema
+split still holds: it does, exactly. The 5 with a schema
+(`STYP-M1`/`MATL-M1`/`IMFM-M1`/`EPMT-M1`/`IEHG-BEAM-M1`) returned the
+identical field set as 2026-07-29 — a second independent confirmation, not
+just a repeat of the same probe. The 3 without one (`IEHG-TRUSS-M1`,
+`IEHG-GL-M1`, `IEHG-PSS-M1`) still 404 on `/info` — their `INEL_PROP_NAME`
+shape remains an assumption by sibling analogy to `IEHG-BEAM-M1`, not
+independently confirmed, and there is still no indication MIDASIT intends to
+add an `/info` route for them.
+
+`docs/coverage.json`'s `live_verified` entries for all 8 updated to cite
+`scripts/live_readonly_sweep.py` (the intended method, now that it actually
+ran) with today's date, keeping the same schema-confirmed/unconfirmed
+distinction from the code-review fix above.
+
+## 2026-07-30 — a real AASHTO arch-bridge model, and rebuilding the moving-tier fixture
+
+With a different real production Civil NX model open (an AASHTO-coded arch
+bridge), ran a full `scripts/live_readonly_sweep.py` (281/281 `ok`, zero
+404s — reconfirms every `PRODUCTS` classification holds on a third,
+structurally distinct real model) and spot-checked the genuinely
+`CIVIL_ONLY` bridge-chapter endpoints (`CMCS`, `EWSF`, `PLCB`, `RCHK`,
+`SPAN`, `STRPSSM`, `WVLD`, `CAMB`, `CJFG`, `CRGR`, `DYFG`, `DYLA`, `DYNF`,
+`GCMB`, `GSBG`) — all answer cleanly with 0 rows, meaning this arch bridge
+simply doesn't use girder-camber/composite-girder features, not an error.
+
+The moving-load chapter had real, meaningful AASHTO LRFD data: `/db/MVCD`
+(`CODE: "AASHTO LRFD"`), `/db/MVHL` (the actual HL-93 design truck/tandem,
+`HL-93TRK`/`HL-93TDM`, `STANDARD_CODE: "AASHTO-LRFD"`), `/db/LLAN` (2 real
+lanes with populated `LANE_ITEMS`), and `/db/MVLD` (a load case combining
+both HL-93 vehicles with the AASHTO `SCALE_FACTORS` combination rule).
+Cross-checked field-for-field against `VehiclePayload`, `TrafficLineLanePayload`,
+and `MovingLoadCasePayload` in `db/moving_loads.py`: **zero drift** — every
+field name, nesting, and type matched. This also independently reconfirmed
+(against genuine production data, not a synthetic test) the existing
+`LineLaneItem` docstring warning that `CENT_F` must be nonzero when
+`MVCD.CODE="AASHTO LRFD"` (`CENT_F: 0.5` in the real data).
+
+**Follow-on: rebuilt `scripts/live_crud_check.py`'s `moving` tier fixture
+around this AASHTO LRFD/HL-93 shape**, replacing the Korea-standard
+(`MVCD "KOREA"`, `STANDARD_CODE "KS-RB"`) fixture that had kept the tier
+Civil-only in the checker since 2026-07-29 (Korea/China/KSCE-LSD15 codes
+hit a licensed-module gate on Gen; AASHTO does not). Ran it live against
+this same Civil session — the user explicitly authorized this knowing it
+calls `/doc/NEW` and discards the open arch-bridge model ("자유롭게 해") —
+and all 4 resources (`LLAN`/`MVHL`/`MVHC`/`MVLD`) passed a full
+create→read→update→read→delete→read round trip on the first run. Still
+`products=civil` in the checker for now: the fixture is now
+code-portable and the route-level evidence says it should also pass on
+Gen, but that is an expectation, not something watched pass live yet —
+widen `products`/flip to Gen-confirmed only once someone actually runs
+`--tier moving --product gen`.
+
+## 2026-07-30 (same day) — a real Eurocode PSC bridge model finds four schema gaps
+
+Same session, model swapped to a different real production Civil NX model:
+a PSC (prestressed concrete) bridge built with Eurocode, evidently by the
+Free Cantilever Method (4 construction stages, `ACT_ELEM`/`ACT_BNGR`/
+`ACT_LOAD` populated per stage, 24 real tendon profiles across groups
+A1-C4). Full `live_readonly_sweep.py` again 281/281 `ok`. The genuinely
+`CIVIL_ONLY` bridge-chapter endpoints all answered with 0 rows (this bridge
+type doesn't use girder-camber features), same as the arch-bridge model
+above — reconfirms `PRODUCTS` holds on a third, structurally distinct real
+model.
+
+Cross-checked real tendon/prestress/creep-shrinkage/moving-load data against
+their TypedDicts (`db/temperature_prestress.py`, `db/properties/material.py`,
+`db/moving_loads.py`) and found four confirmed gaps — smaller in scope than
+`/db/REBW` but the same species of defect (manual under-documents, `/info`
+and real data reveal more):
+
+1. **`/db/TDNT` (`TendonPropertyPayload`) was missing `bRELAX`** ("Relaxation
+   coefficient - Check Box", boolean) — present in this model's real tendon
+   data and in `/info/db/TDNT`, absent from both the manual's Specifications
+   table and the TypedDict.
+2. **`/db/TDPL` (`TendonPrestressItem`) was missing `GROUP_NAME`** ("Group
+   Name", string) — same story: real data has `"GROUP_NAME": "PS1"` on every
+   item, `/info/db/TDPL` confirms it, the manual's table doesn't mention it.
+3. **`/db/TDMT` has a third code branch, `CODE="EUROPEAN"`, entirely
+   undocumented.** This model's concrete (`C40/50`) uses it with two
+   dedicated fields, `TCODE` (int) and `bSILICA` (bool), neither in the
+   manual's table nor the TypedDict (which only covered CEB-FIP and ACI).
+   `GET /info/db/TDMT` reveals this endpoint's real schema is far larger
+   still — roughly 70 fields spanning many more codes (JSCE, GB, JTG, and
+   others) — only the EUROPEAN branch's two extra fields were added; the
+   rest is noted as a known gap, not fixed, in the TypedDict's own docstring.
+4. **`/db/MVHL` (`VehiclePayload`) has 11 more country-specific sub-objects
+   the manual never mentions at all.** `GET /info/db/MVHL` lists `VEH_FR`,
+   `VEH_CN`, `VEH_IN`, `VEH_CA`, `VEH_BS`, `VEH_EUROCODE`, `VEH_RU`,
+   `VEH_KSCE_LSD15`, `VEH_AU`, `VEH_PL`, `VEH_ZA` alongside the documented
+   `VEH_DEFAULT`, plus a second load-items array `LOAD_ITEMS2`. This model's
+   real Eurocode "Load Model 1" vehicle (`MVLD_CODE: 11`) uses
+   `VEH_EUROCODE` instead of `VEH_DEFAULT` and — more surprising —
+   **omits `STANDARD_CODE` entirely**, even though the manual's own
+   Specifications table marks it "Required". `VEH_EUROCODE` itself has
+   ~50 fields (`/info` schema) covering multiple Eurocode load-model
+   sub-types (LM1/LM2/LM3, rail HSLM-A/B, permit loads); the flat scalar
+   ones are now typed as `VehicleEurocodeParams`, with the three deeply
+   nested, load-model-specific arrays (`LOADCASES`/`VEHICLES`/
+   `PERMIT_LOAD`) left untyped, same treatment as `SECT_I`'s precedent.
+   The other 10 country-specific sub-objects are confirmed to exist via
+   `/info` but not individually typed — a real, larger backlog item if
+   someone needs France/China/India/Canada/etc. moving-load support beyond
+   what already works through `VEH_DEFAULT`.
+
+All four fixed in `src/`, plus a new test (`test_vehicles_create_sends_veh_eurocode_without_standard_code`)
+covering the `VEH_EUROCODE`-without-`STANDARD_CODE` shape. 681 tests passing,
+ruff clean. This is a genuine `src/` correctness improvement (four
+previously-unrepresentable real payload shapes now have accurate
+TypedDicts) — adds to the pending version-bump case.
+
+## 2026-07-30 (same day) — a real Eurocode railway bridge: confirms `VehicleEurocodeParams`, finds a CENT_F scope surprise
+
+Model swapped again, same Civil session: a Eurocode railway bridge. Full
+sweep 281/281 `ok` again; the `CIVIL_ONLY` railway-specific
+`RailwayDynamicFactor` (`/db/DYFG`) has real, meaningful computed data
+(`INPUT_TYPE: 0` = Auto, `DYN_FACTOR: 1.148...` computed) that matches
+`RailwayDynamicFactorPayload` exactly — no drift.
+
+`/db/MVHL` has three real Eurocode rail load models — "Load Model 71",
+"Load Model SW/0", "Load Model SW/2" (`SUB_TYPE: 23`, distinct from Load
+Model 1's `SUB_TYPE: 19` seen on the PSC bridge above) — using `W1`, `DD1`,
+`D1`, `W2`, `DD2`, `D2`, `V_LOAD_FACTOR`, `LONGI_DIST`, `ECCEN_VERT_LOAD`.
+**Every one of these fields was already covered by `VehicleEurocodeParams`**,
+added minutes earlier from the PSC bridge's road-vehicle example — a second,
+independent real-data confirmation of that fix, this time for the rail
+load-model sub-type rather than the road one.
+
+Also surfaced a genuine scope surprise in an *existing*, previously-trusted
+note: `LineLaneItem.CENT_F` (`/db/LLAN`'s `LANE_ITEMS[].CENT_F`) was
+documented "AASHTO LRFD only" after the 2026-07-29 finding that omitting it
+under `MVCD.CODE="AASHTO LRFD"` gets rejected server-side. This Eurocode
+railway bridge's own `LANE_ITEMS` carry the identical populated value
+(`CENT_F: 0.5`) — same value as the AASHTO arch-bridge model. Left
+unresolved rather than "corrected": it isn't yet clear whether CENT_F is
+genuinely active under Eurocode too, or just echoed back inertly regardless
+of code (as `FACT`/`WIDTH`/`ECCEN_VERT_LOAD` have been seen to be on codes
+that don't use them). `LineLaneItem`'s docstring now flags this as an open
+question rather than asserting either way — a candidate for a future
+same-value-different-code write test if it matters to a caller.
+
+## 2026-07-30 (same day) — a cable-stayed/suspension bridge: one more gap, `STAG`'s `NO`
+
+Model swapped again to a cable-stayed bridge (this turned out to be the same
+FCM model from earlier in the session — recognizable by its `ELNK` "Stay"
+records at nodes 27/78 and 129/180, `LINK: "GEN"`, and a `GRUP` "Sag" node
+group covering exactly those same two i-nodes for cable sag adjustment).
+Full sweep 281/281 `ok` again.
+
+Cross-checked `RigidLinkItem` (`/db/RIGD`, 49 real rows), `ConstraintItem`
+(`/db/CONS`, 10 real rows), and `ElasticLinkPayload` (`/db/ELNK`) against
+real data — all matched exactly, no drift.
+
+`ConstructionStagePayload` (`/db/STAG`, 8 real stages including cable-sag-
+specific ones that activate/deactivate the "Stay"/"Pin Connection" boundary
+groups mid-sequence) was missing **`NO`** ("Construction Stage No.",
+integer) — present in every real stage record and in `/info/db/STAG`, not
+in the manual's Specifications table. Fixed. `DACT_BNGR`/`DACT_ELEM`'s
+`REDIST` (element force redistribution %) were already correctly typed and
+matched the real data exactly.
+
+Running tally for 2026-07-30's cross-model spot-checking (four real
+production Civil NX models: arch bridge, PSC bridge, railway bridge,
+cable-stayed bridge): **6 schema gaps found and fixed** (`TDNT.bRELAX`,
+`TDPL.GROUP_NAME`, `TDMT`'s EUROPEAN branch, `MVHL`'s `VEH_EUROCODE` +
+10 other undocumented country sub-objects, `STAG.NO`), one open question
+left unresolved (`CENT_F`'s true code scope), and one existing fix
+(`VehicleEurocodeParams`) independently reconfirmed twice more against
+different real Eurocode load-model sub-types. Zero drift found everywhere
+else checked across all four models.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

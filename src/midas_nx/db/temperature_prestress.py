@@ -149,6 +149,7 @@ class TendonPropertyPayload(TypedDict, total=False):
     LR: bool  # Low Relaxation (TB05/TB10092/Q-CR codes), default false, optional
     bOSRF: bool  # Apply Overstress Reduction Factor (TB05/TB10092/Q-CR/JTG codes), default false, optional
     FPK: float  # Characteristic Strength fpk (TB05/TB10092/Q-CR/JTJ/JTG codes), required for those codes
+    bRELAX: bool  # Relaxation Coefficient - Check Box, optional. Confirmed live 2026-07-30 (real PSC bridge model) — missing from the manual's own Specifications table.
     TDMFNAME: str  # Relaxation Function Name (User Defined), required for that mode
 
 
@@ -212,6 +213,7 @@ class TendonPrestressItem(ItemGroupFields, total=False):
     """One entry of the /db/TDPL "ITEMS" array."""
 
     LCNAME: str  # Load Case Name, required
+    GROUP_NAME: str  # Boundary Group Name, optional. Confirmed live 2026-07-30 (real PSC bridge model) — missing from the manual's own Specifications table; server's own /info/db/TDPL confirms it.
     TENDON_NAME: str  # Tendon Profile Name (/db/TDNA name), required
     TYPE: str  # Prestress Load Type: "STRESS" / "FORCE", default "STRESS", optional
     ORDER: str  # Jacking Step: "BEGIN" / "END" / "BOTH", default "BEGIN", optional
