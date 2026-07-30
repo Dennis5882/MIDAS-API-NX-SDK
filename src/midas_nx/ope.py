@@ -183,6 +183,16 @@ def use_load_combinations(argument: UsingLoadCombinationsArgument, client: Optio
 
 
 class LineLoadTarget(TypedDict, total=False):
+    """⚠️ Live-tested 2026-07-30 on Gen NX: ``METHOD=0`` (NODE-defined load
+    line) works exactly as documented, but ``METHOD=1`` (selected elements)
+    consistently answered ``{"error": {"message": "Wrong Field"}}`` across
+    3 reproductions varying TYPE (UNILOAD/CONLOAD) and LOAD.D/P shape, with
+    ``ELEM`` pointing at a real, existing element each time. Not yet
+    isolated further (no extra field discovered that fixes it) — treat
+    ``METHOD=1`` as unconfirmed/possibly broken and prefer ``METHOD=0``
+    until this is re-tested.
+    """
+
     METHOD: int  # on load line=0 / selected elements=1, required
     ELEM: List[int]  # target elements, required if METHOD=1
     NODE: List[int]  # 2 nodes defining the load line, required if METHOD=0
@@ -485,6 +495,14 @@ class StoryPropertiesArgument(TypedDict, total=False):
     (not in that enum) — likely an undocumented third option. The table also
     types PLACE as String, but the worked example sends an integer (4); we
     follow the worked example (int) for PLACE.
+
+    ⚠️ Live-tested 2026-07-30 on Gen NX: this route 404'd 3/3 tries, with
+    both FORMAT="Fixed" and FORMAT="Default" (ruling out that as the cause)
+    and with/without populated /db/STOR records (ruling that out too).
+    Not root-caused — could be a genuinely inactive route on this build, a
+    missing precondition not yet identified (e.g. a prior calculate_story
+    call, or a recognized STRUCTURE_TYPE), or something else entirely.
+    Treat as unconfirmed until re-tested.
     """
 
     FORCE_UNIT: str  # "N"/"KN"/"KGF"/"TONF"/"LBF"/"KIPS", default System, optional
@@ -694,6 +712,14 @@ def generate_load_combination_general(
     both schemas (e.g. AIK-SRC2K's DGNCODE with KDS:2022 fields like
     CODE_SELECTION/ADD_ENVELOPE/CS_ANALYSIS) is sent to the API as-is and
     will surface as a server-side error, not a client-side one.
+
+    ⚠️ Live-tested 2026-07-30 on Gen NX: a KDS:2022/CONCRETE payload built
+    from every field this TypedDict documents as required for that body
+    (RS_SCALE_FACTOR, ORTHO_EFFECT, ADDITIONAL_LOAD with both nested
+    OPT_USE flags false, CS_ANALYSIS, PRESTRESS_LOSS) answered "Wrong
+    Field". Not root-caused — the sibling endpoint LCOM-CONC succeeded
+    with a minimal payload covering the same design body, so this wasn't
+    pursued further; treat as unconfirmed.
     """
     return _post("/ope/LCOM-GEN", argument, client)
 

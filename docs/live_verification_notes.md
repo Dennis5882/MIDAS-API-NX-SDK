@@ -3302,6 +3302,213 @@ own explicit go-ahead rather than folding into this GET-only sweep:**
   `CC-ANAL`/`BC-ANAL` sections above) — short-timeout-and-poll discipline
   applies, not a plain probe.
 
+## 2026-07-30 (later still) — a synthetic frame model, and a new crash candidate: `POST /ope/EDMP`
+
+User authorized going further into the remaining `/ope/*`/`/view/*`/analysis
+categories and building whatever model was needed ("모델 필요하면 직접
+만들어서 진행해"). Built a synthetic 2-bay, 2-story steel frame on the same
+empty Gen NX session (9 frame nodes + 4 unconnected quad nodes for a later
+`AUTOMESH` attempt, 10 `BEAM` elements, 1 isotropic steel material, 1
+`DBUSER` solid-rectangle section, base constraints, one `"DL"` load case,
+two `/db/STOR` records) — all standard, previously-proven `/db/*` writes.
+
+Ran a batch of the remaining mutating `/ope/*` actions against it:
+
+| Action | Endpoint | Result |
+|---|---|---|
+| `assign_members` | `/ope/MEMB` | ok |
+| `get_story_properties` | `/ope/STORPROP` | **404** (separate open question, see below) |
+| `calculate_story` | `/ope/STOR` | ok — recalculated the two `/db/STOR` records' geometry-derived fields (`STORY_LEVEL`, `WIND_FLOOR_WIDTH_Y`, `WIND_CENTER_Y`, ...) from actual model geometry, overwriting the placeholder values seeded above; expected behavior for an auto-calculate action, not a bug |
+| `divide_elements` | `/ope/DIVIDEELEM` | ok — split element 7 into two elements at a new midpoint node |
+| `calculate_gust_factor` | `/ope/GUSTFACTOR` | ok |
+| `change_property` (`TYPE="NSM"`, `AUTO=true`) | `/ope/EDMP` | 🛑 **30s read timeout, then Gen NX crashed** |
+| `create_line_beam_load` | `/ope/LINEBMLD` | timed out — but this ran *after* EDMP already broke the session, so this failure doesn't mean anything about `LINEBMLD` itself; needs re-testing post-recovery |
+
+**`POST /ope/EDMP` is a new crash candidate**, confirmed once: the call
+itself read-timed-out (30s), a follow-up plain `GET /db/NODE` on the same
+session also timed out, and `verify_connection()` still reported
+`"connected"` throughout — the exact "modal dialog blocks every `/db/*`
+call while `/mapikey/verify` keeps answering" pattern this file already
+documents for other crashes. The user confirmed Gen NX showed the familiar
+"[Error] Failed to disconnect the work session..." license dialog (same
+one seen in the `/doc/NEW` and pre-fix `NMAS` crashes) — a full crash, not
+just a slow call.
+
+**Not yet root-caused.** Only one payload variant was tried
+(`{"NODE_ELEMS": {"KEYS": [1,2,3]}, "TYPE": "NSM", "AUTO": true, "CODE":
+"Korean Standard", "H_VS": 0.5}`, targeting 3 `BEAM` elements). Unlike the
+`NMAS` saga, this is a single reproduction with no A/B isolation yet —
+could be `EDMP` itself, the `AUTO=true` auto-calculate path specifically,
+the `CODE` value, or something about the target elements. Flagged here
+rather than pursued immediately; whether this gets the full NMAS-style
+isolation treatment or just a documented-and-deprioritized flag (like the
+`*-ANAL` hangs) is the user's call once Gen NX is back up.
+
+**`/ope/STORPROP` (`get_story_properties`) 404'd** on its first-ever live
+call, independent of the EDMP crash (it ran two calls earlier in the same
+batch, before anything broke). Open question, not yet investigated:
+possibly needs `calculate_story`/`/db/STOR` data in a different state,
+possibly a genuine route issue, possibly a body-shape problem surfacing as
+404 instead of a schema error (seen before in this project — worth
+comparing against the manual's worked example rather than assuming the
+docstring's `FORMAT`/`PLACE` guess is the actual cause).
+
+## 2026-07-30 (later still) — after recovery: `LINEBMLD`/`AUTOMESH`/`LCOM-*` sorted out, then a second crash on `POST /ope/USLC`
+
+Rebuilt the same synthetic frame (Gen NX's crash-recovery "New Project"
+step discards the document, as expected) and continued through the
+remaining `/ope/*` actions.
+
+**`/ope/LINEBMLD` (`TARGET.METHOD`) sorted out**: `METHOD=0` (NODE-defined
+load line) works exactly per the manual's own worked examples — confirmed
+live with a `UNILOAD` on nodes `[7,8]`, echoed back correctly
+(`D`/`P` padded to 4 elements: `[0.25, 0.85, 0, 0]` / `[-3, -3, 0, 0]`).
+`METHOD=1` (selected elements) still fails identically a 3rd time
+(`TYPE=UNILOAD` and `TYPE=CONLOAD`, both with a real, existing element in
+`TARGET.ELEM`) — 3/3 `"Wrong Field"`, 0/1 success. Documented in
+`ope.py`'s `LineLoadTarget` docstring as unconfirmed/likely broken; not
+pursued further (no untried field found that changes the outcome).
+
+**`/ope/AUTOMESH` needs boundary *elements*, and they must be frame-
+capable (`BEAM`), not `TRUSS`**: the first attempt used `METHOD="Nodes"`
+with 4 isolated, unconnected corner nodes and got a generic
+`"MIDAS GEN NX second query is wrong"` — not a documented error string,
+and not obviously about a missing field. Switching to `METHOD="Line
+Elements"` with 4 boundary elements ringing the quad (plus adding the
+`THICKNESS` the worked example includes but the Parameters table marks
+merely "Optional") got further but still failed
+(`"[Error] Invalid element list!"`) when those 4 boundary elements were
+`TRUSS`. Rebuilding the same 4 elements as `BEAM` succeeded immediately,
+generating 4 real `PLATE` elements. Reads as a genuine element-type
+restriction (a `TRUSS` — no bending stiffness — plausibly can't bound a
+meshed plate region) rather than a schema documentation gap; not written
+up as a defect, just noted here since the manual doesn't say which line-
+element types qualify.
+
+**`/ope/LCOM-CONC`, `/ope/LCOM-STEEL`, `/ope/LCOM-SRC` all worked with a
+minimal payload** (`{"OPTION": "ADD", "DGNCODE": "<per-endpoint code
+string>"}` — every other field really is optional as documented), each
+generating 2 real combinations (`STRENGTH`/`SERVICE`) from the model's
+single `"DL"` load case. **`/ope/LCOM-GEN` (`CODE_SELECTION="CONCRETE"`)
+failed with `"Wrong Field"`** on a payload built from the TypedDict's own
+documented-required fields for that body
+(`RS_SCALE_FACTOR:[]`, `ORTHO_EFFECT:{OPT_USE:false}`,
+`ADDITIONAL_LOAD:{SPECIAL_LOAD:{OPT_USE:false},
+VERTICAL_LOAD:{OPT_USE:false}}`, `CS_ANALYSIS:false`,
+`PRESTRESS_LOSS:false`) — not yet investigated further, lower priority
+since `LCOM-CONC` already covers the same design body successfully via
+its own dedicated endpoint.
+
+**🛑 `POST /ope/USLC` crashed Gen NX — a second, independent crash
+candidate this session.** Payload: `{"POSITION": "CONC", "LCOM_LIST":
+[{"TYPE": "CONC", "NAME": "cLCB1"}, {"TYPE": "CONC", "NAME": "cLCB2"}]}`,
+referencing two real combinations that `LCOM-CONC` had just generated
+successfully moments earlier in the same session. Same signature as the
+`EDMP` crash: the call itself read-timed-out (25s), a follow-up plain
+`GET /db/NODE` also timed out, `verify_connection()` still reported
+`"connected"` throughout, and the user confirmed Gen NX itself was dead
+("죽음") requiring the same New-Project-then-restart recovery.
+
+**Two crash candidates from one session's `/ope/*` sweep (`EDMP`, `USLC`,
+2 of 7 actions attempted) changes the risk calculus** — this isn't a
+single fluke the way early `NMAS` reproductions looked, it's a live
+~30% hit rate on this endpoint family so far. Deliberately **not**
+continuing to blindly try the remaining untested actions (`SSPS`, `GSBG`)
+without the user's explicit go-ahead each time; asked the user directly
+whether to keep pushing through `/ope/*` (accepting the crash risk) or
+switch to safer categories (`/view/*`, then analysis + result tables) and
+leave the rest of `/ope/*` flagged-but-untested, the same way `*-ANAL` is
+handled elsewhere in this file.
+
+**`/ope/STORPROP` (`get_story_properties`) 404'd** on its first-ever live
+call, independent of the EDMP crash (it ran two calls earlier in the same
+batch, before anything broke). Open question, not yet investigated:
+possibly needs `calculate_story`/`/db/STOR` data in a different state,
+possibly a genuine route issue, possibly a body-shape problem surfacing as
+404 instead of a schema error (seen before in this project — worth
+comparing against the manual's worked example rather than assuming the
+docstring's `FORMAT`/`PLACE` guess is the actual cause).
+
+## 2026-07-30 (later still) — user accepted the crash risk; `SSPS`, `ANAL`, result/story tables, and both design-check `*-ANAL` families all pass
+
+User explicitly chose to keep going despite the `EDMP`/`USLC` crashes
+("계속 진행 (크래시 감수하고)"). Rebuilt the frame a third time (same
+9-node/10-`BEAM` shape, no stories or quad nodes this round) and continued.
+
+**`/ope/SSPS` worked cleanly, no crash**: `CONVERT_TO=POINT_SPRING`,
+`ELEMENT.TYPE=FRAME` on two real `BEAM` elements, matching the manual's
+own worked example almost exactly — generated real `/db/NSPR` point-spring
+records with computed `SDR`/`Cr`/`EFFAREA`/`DK` fields.
+
+**`/view/ANGLE`, `/view/ACTIVE`, `/view/DISPLAY` all worked, no crash** —
+cosmetic view-state actions, as expected.
+
+**`/doc/ANAL` timed out (30s) — but this was a save-confirmation dialog,
+not a crash.** The call itself read-timed-out and the follow-up `GET
+/db/NODE` also timed out, looking identical to the `EDMP`/`USLC` crash
+signature — but the user checked Gen NX and found a plain "저장해달래"
+(save-changes) prompt, not the "Failed to disconnect" crash dialog. This
+is CLAUDE.md's already-documented "any confirmation dialog blocks the
+whole session until dismissed" behavior, reproduced for `/doc/ANAL`
+specifically for the first time in this file, and importantly: **not
+every session-blocking dialog is a crash** — the two need to be told
+apart by asking the user what's actually on screen, not assumed from the
+timeout pattern alone. After the user saved, the session unblocked
+immediately (model intact, 9 nodes) and a retried `/doc/ANAL` succeeded
+in 5s.
+
+**`/post/TABLE` (Analysis Result + Analysis Story categories) both
+confirmed working** post-analysis: `get_reaction_table` and
+`get_beam_force_table` (`result_1.py`) returned real per-node/per-element
+rows (all zero, since the model's one `"DL"` load case never had an
+actual load value assigned — expected, not a defect); `get_story_drift_table`
+(`story.py`) returned a valid empty response (no lateral/seismic load to
+report on). One spot-check per category, not all ~25/~16 table types.
+
+**`/view/RESULTGRAPHIC` worked** (`CURRENT_MODE="reactionforces/moments"`)
+now that real analysis results existed.
+
+**Both design-check `*-ANAL` families tested — neither hung.** User
+explicitly accepted the extra risk here too (this family's docstring
+already warns of a documented Gen NX hang requiring a forced process
+kill, a step beyond anything recovered from today via the graceful
+New-Project dialog flow). `perform_steel_code_check` (`/DESIGN/STEEL/
+KDS-41-30-2022/CODE-ANAL`, `PERFORM_TYPE=ALL`) and `perform_column_check`
+(`/DESIGN/RC/KDS-41-20-2022/CC-ANAL`, same) both answered in under 2
+seconds with clean, informative errors (`"failed:LoadCombination"` and
+`"failed:Material, Section, LoadCombination, ElementType, Axis,
+SectionType, SectionData, Rebar, Analysis, BeamData"` respectively) —
+neither ever completed a full check, since the synthetic model has no
+active load combination and (`CC-ANAL`'s case) no concrete/rebar data at
+all. **This does not clear the historical hang risk** — the past hangs
+happened on a real RC model with actual concrete/rebar data actually
+reaching the design-check computation, a code path this synthetic model
+never got close to. Follow-up `CC-TABLE`/`CODE-TABLE` calls also failed
+cleanly (`"MIDAS GEN NX second query is wrong"`), no hang either.
+
+**Two open questions parked, not resolved:**
+- `/ope/STORPROP` 404'd a 3rd time even with real `/db/STOR` data present
+  and `FORMAT="Default"` (the manual's own worked-example value) — ruling
+  out both of the two leading hypotheses from the earlier attempt. Genuine
+  cause still unknown; documented in `ope.py`'s `StoryPropertiesArgument`
+  docstring.
+- `/ope/LCOM-GEN` (`CODE_SELECTION="CONCRETE"`) still fails `"Wrong
+  Field"` even with every documented-required field for that body
+  present. Not pursued further since `LCOM-CONC` already covers the same
+  design body successfully; documented in `generate_load_combination_general`'s
+  docstring.
+- A **second** `/ope/LCOM-STEEL` call (regenerating combinations on a
+  fresh model iteration, this time to feed `CODE-ANAL`) failed
+  (`"Set_DefaultLoadComb failed; check CheckLcom history..."`) after an
+  earlier identical-shaped call had succeeded cleanly in a prior model
+  iteration. Not reconciled — possibly some hidden state dependency,
+  possibly unrelated to the payload at all.
+
+Coverage after this whole multi-crash session: 328/398 live-verified
+(+24 from the day's starting 304), covering `/ope/*`, `/view/*`,
+`/post/TABLE`'s two analysis categories, and a first live pass at the
+`*-ANAL` design-check family.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

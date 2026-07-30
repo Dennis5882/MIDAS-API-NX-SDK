@@ -4947,7 +4947,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.ope"
+      "module": "midas_nx.ope",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen"
+        ],
+        "method": "manual POST probe via midas_nx.ope.divide_elements against a synthetic frame model built for this session; ELEM_TYPE=Frame, DIV_METHOD=Equal, split one BEAM element into two at a new midpoint node",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+        }
+      }
     },
     {
       "endpoint": "/ope/SECTPROP",
@@ -4992,7 +5002,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.ope"
+      "module": "midas_nx.ope",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen"
+        ],
+        "method": "manual POST probe via midas_nx.ope.create_line_beam_load; TARGET.METHOD=0 (NODE-defined load line) confirmed working exactly per the manual's worked example; TARGET.METHOD=1 (selected elements) failed 'Wrong Field' in 3/3 tries with a real target element -- see LineLoadTarget's docstring, treated as unconfirmed/likely broken",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+        }
+      }
     },
     {
       "endpoint": "/ope/AUTOMESH",
@@ -5003,7 +5023,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.ope"
+      "module": "midas_nx.ope",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen"
+        ],
+        "method": "manual POST probe via midas_nx.ope.auto_mesh; METHOD='Nodes' on 4 isolated corner nodes failed ('MIDAS GEN NX second query is wrong'); METHOD='Line Elements' with 4 boundary elements failed when they were TRUSS ('[Error] Invalid element list!') but succeeded immediately when rebuilt as BEAM, generating real PLATE elements -- reads as a genuine element-type restriction, not a schema gap",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+        }
+      }
     },
     {
       "endpoint": "/ope/SSPS",
@@ -5014,7 +5044,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.ope"
+      "module": "midas_nx.ope",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen"
+        ],
+        "method": "manual POST probe via midas_nx.ope.convert_surface_spring; CONVERT_TO=POINT_SPRING, ELEMENT.TYPE=FRAME on two real BEAM elements, matching the manual's worked example -- generated real /db/NSPR point-spring records",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+        }
+      }
     },
     {
       "endpoint": "/ope/EDMP",
@@ -5036,7 +5076,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.ope"
+      "module": "midas_nx.ope",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen"
+        ],
+        "method": "manual POST probe via midas_nx.ope.calculate_story (SEIS_ECC/WIND_ECC both disabled); recalculated the model's /db/STOR geometry-derived fields from actual element/node data, overwriting the seeded placeholder values -- expected auto-calculate behavior",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+        }
+      }
     },
     {
       "endpoint": "/ope/STORY_PARAM",
@@ -5102,7 +5152,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.ope"
+      "module": "midas_nx.ope",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen"
+        ],
+        "method": "manual POST probe via midas_nx.ope.assign_members (ASSIGN_TYPE=AUTO, SELECTION_TYPE=ALL)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+        }
+      }
     },
     {
       "endpoint": "/ope/GUSTFACTOR",
@@ -5113,7 +5173,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.ope"
+      "module": "midas_nx.ope",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen"
+        ],
+        "method": "manual POST probe via midas_nx.ope.calculate_gust_factor (STRUCTURE_TYPE=RIGID); returned real GUST_FACTOR_X/Y values under the documented OPE_GUSTFACTOR_RESPONSE key",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+        }
+      }
     },
     {
       "endpoint": "/ope/LCOM-GEN",
@@ -5135,7 +5205,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.ope"
+      "module": "midas_nx.ope",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen"
+        ],
+        "method": "manual POST probe via midas_nx.ope.generate_load_combination_concrete with a minimal payload ({OPTION, DGNCODE} only, confirming the rest really are optional); generated 2 real STRENGTH/SERVICE combinations from the model's single load case",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+        }
+      }
     },
     {
       "endpoint": "/ope/LCOM-STEEL",
@@ -5146,7 +5226,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.ope"
+      "module": "midas_nx.ope",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen"
+        ],
+        "method": "manual POST probe via midas_nx.ope.generate_load_combination_steel with a minimal payload ({OPTION, DGNCODE} only); generated 2 real STRENGTH/SERVICE combinations. A later repeat call in a fresh iteration of the same model failed ('Set_DefaultLoadComb failed...') -- not yet reconciled with the first success, open question",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+        }
+      }
     },
     {
       "endpoint": "/ope/LCOM-SRC",
@@ -5157,7 +5247,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.ope"
+      "module": "midas_nx.ope",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen"
+        ],
+        "method": "manual POST probe via midas_nx.ope.generate_load_combination_src with a minimal payload ({OPTION, DGNCODE} only, KDS 41 SRC:2022 variant); generated 2 real STRENGTH/SERVICE combinations. The AIK-SRC2K schema variant was not tested",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+        }
+      }
     },
     {
       "endpoint": "/ope/GSBG",
@@ -5224,7 +5324,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.view"
+      "module": "midas_nx.view",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen"
+        ],
+        "method": "manual POST probe via midas_nx.view.set_angle",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+        }
+      }
     },
     {
       "endpoint": "/view/ACTIVE",
@@ -5235,7 +5345,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.view"
+      "module": "midas_nx.view",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen"
+        ],
+        "method": "manual POST probe via midas_nx.view.set_active (ACTIVE_MODE=All)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+        }
+      }
     },
     {
       "endpoint": "/view/DISPLAY",
@@ -5246,7 +5366,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.view"
+      "module": "midas_nx.view",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen"
+        ],
+        "method": "manual POST probe via midas_nx.view.set_display (NODE.NODE/NODE_NUMBER only, one of 7 groups)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+        }
+      }
     },
     {
       "endpoint": "/view/RESULTGRAPHIC",
@@ -5257,7 +5387,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.view"
+      "module": "midas_nx.view",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen"
+        ],
+        "method": "manual POST probe via midas_nx.view.set_result_graphic (CURRENT_MODE='reactionforces/moments') after a real /doc/ANAL run; only this one result mode was tried",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+        }
+      }
     },
     {
       "endpoint": "/post/PM",
@@ -5401,7 +5541,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.post.result_1"
+      "module": "midas_nx.post.result_1",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen"
+        ],
+        "method": "manual GET-shaped POST probe via midas_nx.post.result_1.get_reaction_table and get_beam_force_table after a real /doc/ANAL run on a synthetic frame model -- 2 of ~25 table types spot-checked (all zero-valued since the model's one load case had no actual loads assigned); the rest were not individually re-probed",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+        }
+      }
     },
     {
       "endpoint": "/post/TABLE (Analysis Story Table types)",
@@ -5412,7 +5562,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.post.story"
+      "module": "midas_nx.post.story",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen"
+        ],
+        "method": "manual GET-shaped POST probe via midas_nx.post.story.get_story_drift_table after a real /doc/ANAL run -- 1 of ~16 table types spot-checked, returned a valid empty response (no seismic/story-drift-relevant load applied); the rest were not individually re-probed",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/DCO",
@@ -5884,7 +6044,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen"
+        ],
+        "method": "manual POST probe via midas_nx.design.steel_kds.perform_steel_code_check (PERFORM_TYPE=ALL) on a synthetic steel frame with no active load combination -- did NOT hang (unlike this endpoint's own docstring's stated concern, borrowed from the RC CC-ANAL history): answered in <2s with a clean 'failed:LoadCombination' error. Never completed a full successful check; get_steel_code_check_table also failed cleanly afterward ('MIDAS GEN NX second query is wrong'), no hang either",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/CODE-TABLE",
@@ -6928,7 +7098,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.checks"
+      "module": "midas_nx.design.rc_kds.checks",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen"
+        ],
+        "method": "manual POST probe via midas_nx.design.rc_kds.checks.perform_column_check (PERFORM_TYPE=ALL) on a synthetic all-STEEL frame (no concrete/rebar data at all) -- did NOT hang: answered in <2s with a clean 'failed:Material, Section, LoadCombination, ElementType, Axis, SectionType, SectionData, Rebar, Analysis, BeamData' error. This does not confirm the documented hang risk is resolved -- the historical hangs happened on real RC models with actual concrete/rebar data, a condition this synthetic model doesn't reproduce",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/CC-TABLE",
