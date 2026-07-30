@@ -4924,7 +4924,19 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.ope"
+      "module": "midas_nx.ope",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen",
+          "civil"
+        ],
+        "method": "manual GET probe via midas_nx.ope.get_project_status (plain function, not a DbResource, so scripts/live_readonly_sweep.py's class-based discovery never reaches it)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/ope/DIVIDEELEM",
@@ -4946,7 +4958,19 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.ope"
+      "module": "midas_nx.ope",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen",
+          "civil"
+        ],
+        "method": "manual GET probe via midas_nx.ope.get_section_properties (plain function, not a DbResource, so scripts/live_readonly_sweep.py's class-based discovery never reaches it); empty-model response (no sections defined), confirms the route/shape not populated data",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/ope/USLC",
@@ -5023,7 +5047,18 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.ope"
+      "module": "midas_nx.ope",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen"
+        ],
+        "method": "manual GET probe via midas_nx.ope.get_story_check_parameter (plain function, not a DbResource, so scripts/live_readonly_sweep.py's class-based discovery never reaches it); 404s on Civil, third independent confirmation of the Gen-only restriction the manual doesn't document (not enforced client-side -- see the function's own docstring)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/ope/STORY_IRR_PARAM",
@@ -5034,7 +5069,18 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.ope"
+      "module": "midas_nx.ope",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen"
+        ],
+        "method": "manual GET probe via midas_nx.ope.get_story_irregularity_check_parameter (plain function, not a DbResource, so scripts/live_readonly_sweep.py's class-based discovery never reaches it); 404s on Civil, third independent confirmation of the Gen-only restriction the manual doesn't document (not enforced client-side -- see the function's own docstring)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/ope/STORPROP",
@@ -5133,7 +5179,19 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.view"
+      "module": "midas_nx.view",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen",
+          "civil"
+        ],
+        "method": "manual GET probe via midas_nx.view.get_selection (plain function, not a DbResource, so scripts/live_readonly_sweep.py's class-based discovery never reaches it)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/view/CAPTURE",
@@ -5320,7 +5378,19 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.post.pre_process"
+      "module": "midas_nx.post.pre_process",
+      "live_verified": {
+        "date": "2026-07-30",
+        "products": [
+          "gen",
+          "civil"
+        ],
+        "method": "manual GET probe via midas_nx.post.pre_process.get_material_table only (one of the 10 TABLE_TYPE values in this module, spot-checking the shared post.base.get_table()/unwrap_table() mechanism they all route through) -- the other 9 table types were not individually re-probed this session",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/post/TABLE (Analysis Result Table types)",

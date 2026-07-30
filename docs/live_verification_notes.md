@@ -3241,6 +3241,67 @@ yet** — it's harmless when the field is now defaulted correctly either way
 (explicit `0.0` in, explicit `0` out), and removing it prematurely would
 regress hard the moment someone hits this from an unpatched build.
 
+## 2026-07-30 (later) — closing the "never GET-swept" gap: `/ope`, `/view`, `/post` plain-function endpoints
+
+Coverage stood at 304/398 live-verified with 94 endpoints unaccounted for.
+Checked why: `scripts/live_readonly_sweep.py` only discovers `DbResource`
+subclasses (`_all_resources()` walks the class hierarchy), so the whole
+`/doc/*`, `/ope/*`, `/view/*`, `/post/*`, `/DESIGN/*` families — all plain
+functions per this SDK's own layout convention — were **never reachable by
+the sweep regardless of whether they actually work**, not because they're
+untested-and-risky. Some of them already had been tested live in earlier
+sessions (`STORY_PARAM`/`STORY_IRR_PARAM` on 2026-07-29) without ever
+getting a `coverage.json` entry, since nothing writes to that file except
+the sweep script's `--record-coverage` flag.
+
+With both Civil NX (v2.2, 07/29/2026) and Gen NX (v2.1, 07/28/2026)
+connected, empty documents on both (0 nodes), manually probed the
+GET-shaped subset of these plain functions directly (not through the
+sweep tool, which doesn't know about them):
+
+| Function | Endpoint | Civil | Gen |
+|---|---|---|---|
+| `ope.get_project_status` | `/ope/PROJECTSTATUS` | ok | ok |
+| `ope.get_section_properties` | `/ope/SECTPROP` | ok (empty) | ok (empty) |
+| `ope.get_story_check_parameter` | `/ope/STORY_PARAM` | 404 | ok |
+| `ope.get_story_irregularity_check_parameter` | `/ope/STORY_IRR_PARAM` | 404 | ok |
+| `view.get_selection` | `/view/SELECT` | ok | ok |
+| `post.pre_process.get_material_table` | `/post/TABLE` (pre-process) | ok (empty) | ok (empty) |
+
+`STORY_PARAM`/`STORY_IRR_PARAM`'s Civil 404 is now confirmed a **third**
+time (previously: the 2026-07-29 sweep, then the same-day live re-check
+with both products open) — solid evidence for the Gen-only restriction
+that this SDK documents in the functions' own docstrings but doesn't
+(and, being plain functions, can't cleanly) enforce client-side. All 6
+recorded into `coverage.json`'s `live_verified` field; 310/398 total now.
+`post.pre_process.get_material_table` was one spot-check standing in for
+all 10 `TABLE_TYPE` values in that module (they share the same
+`post.base.get_table()`/`unwrap_table()` plumbing) — the other 9 weren't
+individually re-probed.
+
+**Left deliberately untouched this pass — all mutate the model, the
+document itself, or need a completed analysis first, so they get their
+own explicit go-ahead rather than folding into this GET-only sweep:**
+
+- `/doc/*` lifecycle (`OPEN`/`CLOSE`/`SAVE`/`SAVEAS`/`IMPORT`/`EXPORT`/
+  `STAGAS`) — touches real files on the machine running NX; this file's own
+  history has a confirmed `Program Files`-path modal-dialog trap for even
+  GET-shaped calls, so a write-shaped one deserves more care, not less.
+- `/ope/*` actions (`DIVIDEELEM`, `USLC`, `LINEBMLD`, `AUTOMESH`, `SSPS`,
+  `EDMP`, `STOR`, `STORPROP`, `MEMB`, `GUSTFACTOR`, `LCOM-*`, `GSBG`) —
+  real model mutations (mesh, load combos, story calc); both open documents
+  are empty right now so there's nothing to safely exercise them against
+  yet anyway.
+- `/view/*` actions (`CAPTURE`, `PRECAPTURE`, `ANGLE`, `ACTIVE`, `DISPLAY`,
+  `RESULTGRAPHIC`) — `CAPTURE`/`PRECAPTURE` write image files to the NX
+  machine (same file-path risk class as `/doc/*`); the rest are harmless
+  view-state toggles but weren't in this pass's scope.
+- `/post/TABLE` (Analysis Result / Analysis Story categories) and
+  `/DESIGN/*/*-ANAL` chapters — need a completed `/doc/ANAL` run first, and
+  `*-ANAL` calls have a confirmed history of hanging Gen NX (see the
+  `CC-ANAL`/`BC-ANAL` sections above) — short-timeout-and-poll discipline
+  applies, not a plain probe.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
