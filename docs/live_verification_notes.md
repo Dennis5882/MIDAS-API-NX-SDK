@@ -3206,6 +3206,41 @@ SDK hadn't typed yet. Fixed. `TYPE: "USER"` ("User Defined Load") is a
 real documented code, not a mystery value — first row of the Load Type
 table.
 
+## 2026-07-30 (later still) — 🎉 `POST /db/NMAS` no longer crashes on Civil NX v2.2, build 07/29/2026
+
+User reported MIDASIT shipped a patch and asked to verify. Fresh Civil NX
+session, v2.2 build **07/29/2026** — one day newer than the build used for
+reproductions #10-12 (v2.2 build 07/28/2026, see "final" root-cause
+section above). Empty document (0 nodes), so no data at risk.
+
+Reproduced the exact historical trigger on a raw `client.request()` call
+(bypassing `NodalMass`'s own `rmX`/`rmY`/`rmZ` auto-fill workaround, which
+would have masked the question): created node 1, `POST /db/NMAS` with only
+`mX`/`mY`/`mZ` set — the omitted-rotational-fields shape that killed the
+session in all 15+ prior reproductions across both products. This time:
+**201 in 0.5s, session stayed alive.** Repeated on a second node (`mX/mY/
+mZ` again omitted-rm) since the original bug specifically needed a *second*
+call on a different node to trigger — same result, 0.1s, alive.
+`verify_connection()` before/after both showed `"connected"`, and a
+follow-up `GET /db/NMAS` showed both records with `rmX`/`rmY`/`rmZ` now
+correctly defaulted to `0` server-side — meaning MIDASIT's fix isn't just
+"stopped crashing", it's now applying the documented default like it
+always should have. Cleaned up both test nodes/masses afterward; document
+back to empty.
+
+**This looks like a genuine server-side vendor fix**, not a fluke — same
+account, same reproduction method that was 15/15 reliable before, now 2/2
+clean on the newer build. Still only one account/session, so treat as
+strong evidence rather than final confirmation (see the Caveat below); the
+right trigger to fully retire `NodalMass`'s auto-fill workaround is
+independent reproduction of the fix (different account/session, and a
+matching Gen NX patch — this was Civil NX only, Gen NX's own last-known
+build (v2.1, 07/28/2026) was not re-tested here and NMAS was never
+observed to be product-specific anyway). **Not removing the workaround
+yet** — it's harmless when the field is now defaulted correctly either way
+(explicit `0.0` in, explicit `0` out), and removing it prematurely would
+regress hard the moment someone hits this from an unpatched build.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
