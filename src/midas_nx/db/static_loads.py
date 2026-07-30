@@ -15,6 +15,7 @@ class StaticLoadCasePayload(TypedDict, total=False):
     see the manual's full Load Type table for the complete list.
     """
 
+    NO: int  # Ordering Index in GUI, read-only (returned by GET, not accepted on write)
     NAME: str  # Load Case Name, required
     TYPE: str  # Load Type code, required
     DESC: str  # Description, default "", optional

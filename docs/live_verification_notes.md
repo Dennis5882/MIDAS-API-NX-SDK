@@ -3178,6 +3178,34 @@ left unresolved (`CENT_F`'s true code scope), and one existing fix
 different real Eurocode load-model sub-types. Zero drift found everywhere
 else checked across all four models.
 
+## 2026-07-30 (later) — first Gen NX pass of the day: a small solid-element cantilever model, `STLD.NO` gap
+
+Switched to a fresh Gen NX session (v2.1, build 07/28/2026) with a small
+real model open — not a bridge this time: a 5m x 0.4m x 0.2m concrete
+block cantilever modeled as 10 `SOLID` (hexahedral) elements, fixed at one
+end (`CONS` all-6-DOF on the 4 end nodes), one user-named load case
+(`STLD` `"CASE1"`, `TYPE: "USER"`). Small model, but real (not `/doc/NEW`
+scratch), and a different element family (`SOLID`) than anything spot-
+checked so far this week (all bridge frame/beam models).
+
+Full `live_readonly_sweep.py` re-run: 265/265 `ok`, zero newly-recorded
+(all previously verified) — no regressions.
+
+Cross-checked `MaterialPayload`/`MaterialParam` (`/db/MATL`, `P_TYPE=2`
+isotropic concrete), `ElementPayload` (`/db/ELEM`, `TYPE: "SOLID"`),
+`ConstraintItem` (`/db/CONS`), and `UnitPayload` (`/db/UNIT`) against real
+data — all matched exactly.
+
+`StaticLoadCasePayload` (`/db/STLD`) was missing **`NO`** ("Ordering Index
+in GUI") — present in the real record (`{"NO": 1, "NAME": "CASE1", "TYPE":
+"USER", "DESC": ""}`) and documented in the manual's own Specifications
+table (`06_DB_Static_Loads.md`, marked "Read Only"), just never
+transcribed into the TypedDict. Same class of gap as `STAG.NO` two
+sections up — a read-only GUI-ordering field the manual documents but this
+SDK hadn't typed yet. Fixed. `TYPE: "USER"` ("User Defined Load") is a
+real documented code, not a mystery value — first row of the Load Type
+table.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
