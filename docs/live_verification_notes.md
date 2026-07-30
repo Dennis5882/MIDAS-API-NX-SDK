@@ -3546,6 +3546,57 @@ Civil confirmation section's reasoning, which applies identically here
 (harmless once the server also defaults correctly; still needed for
 anyone on an unpatched build).
 
+## 2026-07-30 (last) — `EDMP`/`USLC` crashes confirmed independent of NMAS's fix, filed as `MAPI-2425`/`MAPI-2426`
+
+User asked to retry today's two `/ope/*` crashes (`EDMP`, `USLC`) on the
+same Gen NX build just confirmed to fix `NMAS` (v2.1, 07/30/2026), to see
+whether the same patch happened to fix them too.
+
+**Both crashed again, on the first retry each.** `/ope/EDMP` with the
+identical payload from earlier (`NODE_ELEMS.KEYS` on 3 real `BEAM`
+elements, `TYPE=NSM`, `AUTO=true`) timed out at 25s; `verify_connection()`
+came back `"disconnected"` this time (a different signature than earlier
+today's `"connected"`-but-blocked pattern — possibly a harder crash, or
+just a different failure mode of the same underlying issue). User
+confirmed Gen NX had died and restarted it. `/ope/USLC` (`POSITION=CONC`,
+referencing a real load combination) crashed identically on its retry
+too, `"connected"`-but-blocked this time. **Conclusion: these are
+independent defects from NMAS** — the patch that fixed `NMAS` did nothing
+for either of them.
+
+Side finding while rebuilding for the `USLC` retry: `/ope/LCOM-CONC` and
+`/ope/LCOM-STEEL` (auto-generate load combinations), which had worked
+cleanly with a minimal payload earlier the same day, now failed with
+`"Set_DefaultLoadComb failed; check CheckLcom history (e.g. duplicate
+LCOM names, name length, stage gate)."` on a freshly-restarted Gen NX
+session with a brand new empty document — not explained, mentioned in the
+`USLC` ticket as a possibly-related data point rather than claimed as
+understood. Worked around by writing the combination directly via
+`/db/LCOM-CONC` (the `DbResource`, not the `/ope/LCOM-CONC` generator) to
+get `USLC` a real combination name to reference.
+
+**Filed `MAPI-2425` (`/ope/EDMP`) and `MAPI-2426` (`/ope/USLC`)** under
+epic MAPI-1200, both linked "relates to" `MAPI-2378` (NMAS) and to each
+other, via the Atlassian MCP directly. A JQL search first ruled out an
+existing duplicate — `MAPI-597` ("[OPE] Change Property") looked like a
+candidate but is an unrelated, already-closed 2024 ticket about a
+Confluence spec page, not a crash. Unlike `MAPI-2378`, neither new issue
+claims a root cause — both are framed honestly as "reproduced twice
+(pre- and post-NMAS-patch), trigger not yet isolated," asking MIDASIT to
+check server-side logs rather than asserting a fix. Also noted: mid-session,
+the "disconnected" `verify_connection()` reading once turned out to mean
+a *different physical PC's* Gen NX had gone offline, not a crash on the
+PC actually being tested — the user runs Gen NX on two machines (A/B)
+with independent MAPI keys, so a stale-looking key needs checking against
+"which PC" before assuming a crash.
+
+Also worth flagging for anyone reading this file to decide what to test
+next: the Gen NX session reconnected mid-troubleshooting with **710 real
+nodes already loaded** (not the empty scratch document expected after a
+crash-recovery New Project) — meaning at some point the user's own
+real work was open in the same window this testing used. No write calls
+were made against that state; testing stopped as soon as it was noticed.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
