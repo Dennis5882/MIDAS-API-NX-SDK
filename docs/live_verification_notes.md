@@ -3597,6 +3597,60 @@ crash-recovery New Project) — meaning at some point the user's own
 real work was open in the same window this testing used. No write calls
 were made against that state; testing stopped as soon as it was noticed.
 
+## 2026-07-31 — Civil NX re-check of today's Gen-only confirmations, plus the LCOM-CONC/STEEL/SRC 404
+
+With Civil NX v2.2 (build 07/29/2026) open on the same synthetic frame model
+built earlier for the EDMP/USLC session, repeated the endpoints that had
+only been spot-checked on Gen so far:
+
+- `/ope/DIVIDEELEM`, `MEMB`, `GUSTFACTOR`, `SSPS` — all worked identically
+  to Gen, same payload shapes.
+- `/ope/LINEBMLD` — `TARGET.METHOD=0` confirmed working on Civil too
+  (matching the manual's worked example, same as Gen); `METHOD=1` not
+  re-tried here (already unconfirmed/likely broken on Gen).
+- `/ope/AUTOMESH` — same element-type restriction found on Gen holds on
+  Civil: 4 boundary elements as `BEAM` succeeded and generated real
+  `PLATE` elements; `TRUSS` was not re-tried (already known to fail on Gen).
+- `/view/ANGLE`, `ACTIVE`, `DISPLAY` — all worked identically to Gen.
+- **New finding: `/ope/LCOM-CONC`, `LCOM-STEEL`, `LCOM-SRC` all 404 on
+  Civil NX** with the identical minimal payload (`{OPTION, DGNCODE}`) that
+  generates load combinations cleanly on Gen NX. Single reproduction per
+  endpoint, on the same synthetic frame model shape used for the successful
+  Gen calls earlier today. Documented in each function's docstring in
+  `ope.py` (commit `3d2695e`), following the same "confirmed Gen-only, not
+  enforced client-side" pattern already established for
+  `STORY_PARAM`/`STORY_IRR_PARAM`.
+
+Then continued into the items that hadn't been attempted on Civil yet at all:
+
+- `/doc/ANAL` — ran clean, no save dialog this time (the model had already
+  been saved from earlier work), matching the pre-existing 2026-07-22
+  `live_verified` record for this endpoint (which already covered both
+  products from `live_smoke.py`).
+- `/post/TABLE` (Analysis Result category) — `get_reaction_table` and
+  `get_beam_force_table` both returned real non-zero rows this time (the
+  Civil model has AUTOMESH-generated plates with real self-weight, unlike
+  Gen's earlier all-zero-load test) — expected, not a defect.
+- `/post/TABLE` (Analysis Story category) — `get_story_drift_table` failed
+  with `"there was an error creating utbl. (ex PostMode ...)"` on Civil.
+  Not treated as a new defect: `/db/STOR` (Story data) was already
+  confirmed Gen-only earlier in this SDK's history (`db/project.py`'s
+  `Story.PRODUCTS = GEN_ONLY`), so a Story-table read having nothing to
+  read on Civil is the expected consequence, not a route-level break.
+  Not added to this endpoint's confirmed-products list.
+- `CODE-ANAL` (steel) and `CC-ANAL` (RC column) — both re-ran cleanly on
+  Civil, matching the Gen result: no hang, fast (`<2s`) informative
+  "failed:..." errors listing missing prerequisites (load combination,
+  material, rebar, etc.). Same caveat as the Gen finding applies: this
+  doesn't clear the historically-hung code path, since the synthetic model
+  still has no real concrete/rebar/load-combination data to reach it.
+
+Civil session stayed `"connected"` throughout with no crashes. All of the
+above recorded in `docs/coverage.json`, coverage steady at 398/398
+implemented / 328/398 live_verified (this round only added products/method
+detail to already-verified entries, no new endpoints crossed into
+`live_verified` for the first time).
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
