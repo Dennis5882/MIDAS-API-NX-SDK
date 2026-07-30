@@ -3509,6 +3509,43 @@ Coverage after this whole multi-crash session: 328/398 live-verified
 `/post/TABLE`'s two analysis categories, and a first live pass at the
 `*-ANAL` design-check family.
 
+## 2026-07-30 (later still) — 🎉 `POST /db/NMAS` no longer crashes on Gen NX v2.1, build 07/30/2026 either
+
+User reported MIDASIT shipped a Gen NX patch too and asked for the same
+live re-verification already done for Civil. New build confirmed via the
+About dialog: **MIDAS GEN NX 2026 (v2.1), build 07/30/2026** — one day
+newer than every Gen build tested earlier this session (07/28/2026).
+
+Mid-test wrinkle, not a defect: the session originally connected via a
+saved key started answering `404 "client does not exist"` /
+`verify_connection()` → `"disconnected"` — genuinely different from every
+other disconnect signature seen this session (which always showed
+`"connected"` while `/db/*` timed out). Turned out to be a **different
+machine entirely**: the user runs Gen NX on two separate PCs (A and B)
+with independent MAPI keys, and the originally-saved key was PC B's,
+which had gone offline for an unrelated reason. The user supplied PC A's
+key instead, which connected cleanly. `.env` updated with a note about
+the two-PC setup so a future stale-key confusion is diagnosed faster.
+
+On PC A's freshly patched session (0 nodes, scratch document): reproduced
+the exact historical trigger — two nodes, two `POST /db/NMAS` calls each
+omitting `rmX`/`rmY`/`rmZ`, the shape that reliably killed both products
+before the fix. Both calls succeeded in 0.1s each, `verify_connection()`
+stayed `"connected"` throughout, and the follow-up `GET /db/NMAS` showed
+the server correctly defaulting the omitted fields to `0` itself — same
+signature as Civil's confirmed fix earlier today. Test nodes/masses
+cleaned up afterward; document back to empty.
+
+**Both Civil NX (v2.2, 07/29/2026) and Gen NX (v2.1, 07/30/2026) now
+confirmed fixed**, closing out the last open caveat from the Civil
+confirmation ("Gen NX was not re-tested"). Still only one account/session
+per product; independent reproduction (different account, or a third
+session) would raise this from "strong evidence" to "settled". `NodalMass`'s
+SDK-side auto-fill workaround stays in place regardless — see the earlier
+Civil confirmation section's reasoning, which applies identically here
+(harmless once the server also defaults correctly; still needed for
+anyone on an unpatched build).
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
