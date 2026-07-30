@@ -4862,7 +4862,18 @@
         "gen"
       ],
       "status": "implemented",
-      "module": "midas_nx.db.design"
+      "module": "midas_nx.db.design",
+      "live_verified": {
+        "date": "2026-07-29",
+        "products": [
+          "gen"
+        ],
+        "method": "GET /info/db/REBC route check (endpoint itself is POST-only, no GET, so scripts/live_readonly_sweep.py can't reach it) -- answers on Gen, 404s on Civil; confirmed independently twice the same day (an earlier sweep, then a live re-check with both products connected in one session)",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/28/2026"
+        }
+      }
     },
     {
       "endpoint": "/db/REBW",
