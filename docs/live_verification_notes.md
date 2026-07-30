@@ -3651,6 +3651,86 @@ implemented / 328/398 live_verified (this round only added products/method
 detail to already-verified entries, no new endpoints crossed into
 `live_verified` for the first time).
 
+## 2026-07-31 (later) — a real production cable-stayed bridge on Civil NX closes 28 read-only gaps
+
+The user loaded a real production model into the same Civil NX session
+(v2.2, build 07/29/2026): 273 nodes, 278 elements (202 `TENSTR` cable-type
+plus 76 `BEAM`), no analysis run yet, no design/rebar data. This is genuine
+user data, not a scratch file — no write/execute call with any known crash
+or hang risk was made against it; everything below is a GET-shaped POST
+that only reads or reports "nothing to show yet."
+
+**Closed 28 of the previously-unreachable `/post`/`/DESIGN` read-only
+table endpoints** (coverage 328 → 356/398) by calling each with a minimal
+valid argument and confirming the route + argument shape are accepted and
+the error handling is clean:
+
+- `/post/PM`, `STEELCODECHECK`, `BEAMDESIGNFORCES`, `COLUMNDESIGNFORCES`,
+  `BRACEDESIGNFORCES`, `WALLDESIGNFORCES`, `STEELMEMBERDESIGNFORCES`,
+  `SRCBEAMDESIGNFORCES`, `SRCCOLUMNDESIGNFORCES`,
+  `COLDFORMEDSTEELMEMBERDESIGNFORCES` (`post/design.py`) — all answered
+  `"Please Check/perform Analysis"` or `"there was an error creating utbl"`.
+- `/DESIGN/STEEL/KDS-41-30-2022/CODE-TABLE` and `TABLE` — same "please
+  perform analysis" / utbl error pattern.
+- `/DESIGN/RC/KDS-41-20-2022/BD-TABLE`, `CD-TABLE`, `BRD-TABLE`,
+  `WD-TABLE`, `HCD-TABLE` (`design_forces.py`) — all "please perform
+  analysis".
+- `/DESIGN/RC/KDS-41-20-2022/BC-TABLE`, `CC-TABLE`, `BRC-TABLE`
+  (`checks.py`) initially failed `"Wrong Field"` with only `ELEMS` set —
+  turned out `TABLE_TYPE` (`"MEMB"`) is required and I'd omitted it; once
+  added, all three answered cleanly with "please perform analysis". Not an
+  SDK defect, just an easy-to-miss required field matching `CODE-TABLE`'s
+  own shape.
+- `/DESIGN/RC/KDS-41-20-2022/WC-TABLE`, `TABLE` (x3, one physical route
+  shared by Column/Brace/Beam Design Forces per its own docstring) — same
+  pattern.
+- `/DESIGN/SRC/AIK-SRC2K/BC-TABLE`, `CC-TABLE`, `TABLE` (x2, Beam/Column
+  Design Forces sharing one route) — same pattern.
+
+Session stayed `"connected"` throughout, no crashes, no hangs — but note
+**none of these ever returned real populated data**, only clean
+"nothing to check yet" errors, since the model has no analysis/design
+results. Recorded in `coverage.json` as confirming route, argument shape,
+and error-handling only; flagged for a follow-up pass once real analysis
+and design results exist on a model like this.
+
+**`/ope/STORPROP` re-confirmed 404 on Civil too** (previously only tried
+on Gen), this time against real data, not a synthetic model. Consistent
+with `/db/STOR` (Story) already being Gen-only, though the original Gen
+404 itself was never root-caused, so "this whole route is Gen-only" stays
+a plausible guess, not a confirmed fact. Noted in `StoryPropertiesArgument`'s
+docstring.
+
+**Explicitly NOT touched, and why** — all of these need either a real
+file path on the NX host machine or the user's explicit go-ahead given
+this is now real production data, neither of which was available/asked
+for in this round:
+
+- `/doc/OPEN`/`CLOSE`/`SAVE`/`SAVEAS`/`STAGAS`/`IMPORT`/`IMPORTMXT`/
+  `EXPORT`/`EXPORTMXT` — need a safe file path from the user.
+- `/view/CAPTURE`/`PRECAPTURE`, `*-REPORT` across all three design
+  families, `DREULT`, `CDESIGN` — all require `EXPORT_PATH` (write a file
+  on the NX machine); same blocker as `/doc/*`.
+- All remaining `*-ANAL` "perform" endpoints (`BD/CD/BRD/WD/HCD-ANAL`,
+  `BC/BRC/WC-ANAL` under RC-KDS, `BC-ANAL`/`CC-ANAL` under SRC) — this
+  family has documented hang history (`perform_column_check`/
+  `perform_wall_design`, see earlier 2026-07-25 sections); not run against
+  real data without asking first.
+- `/DESIGN/SRC/AIK-SRC2K/OCHECK` — iterative re-analysis/optimization,
+  flagged in its own docstring as "never independently tested," at least
+  as much risk as the `*-ANAL` family.
+- `/DESIGN/SRC/AIK-SRC2K/DSRC` — PUT/DELETE-only config write (sets the
+  active SRC design code); skipped rather than mutate a real model's
+  settings without asking, even though it's likely low-impact.
+- `/ope/LCOM-GEN` (still "Wrong Field" from 2026-07-30, not re-attempted:
+  it's a write, and re-debugging it means adding combos to real data) and
+  `/ope/GSBG` (needs a load combination with real analysis results plus a
+  Bridge Group defined — this model has neither yet: `/db/STLD` shows only
+  one `"Self Weight"` case, and there's no dedicated bridge-group `/db/*`
+  resource in this SDK to create one via API).
+- `/ope/EDMP`/`USLC` — already known Gen NX crashers (`MAPI-2425`/`2426`),
+  not retried here at all (different product, and real data regardless).
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

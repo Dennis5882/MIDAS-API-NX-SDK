@@ -503,6 +503,13 @@ class StoryPropertiesArgument(TypedDict, total=False):
     missing precondition not yet identified (e.g. a prior calculate_story
     call, or a recognized STRUCTURE_TYPE), or something else entirely.
     Treat as unconfirmed until re-tested.
+
+    ⚠️ Also 404'd on Civil NX (2026-07-31, v2.2 build 07/29/2026) against a
+    real production bridge model, not just the synthetic Gen model above.
+    Consistent with Story data (`/db/STOR`) already being confirmed
+    Gen-only — plausibly this whole route only exists on Gen — but that's
+    still a guess, not confirmed, since the underlying Gen 404 was never
+    root-caused either.
     """
 
     FORCE_UNIT: str  # "N"/"KN"/"KGF"/"TONF"/"LBF"/"KIPS", default System, optional
