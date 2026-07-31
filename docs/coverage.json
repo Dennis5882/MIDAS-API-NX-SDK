@@ -5432,7 +5432,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-checked 2026-07-31 after a real /doc/ANAL run completed on this model: error changed from 'Please Check Analysis' to 'Please Check RC Design Code' -- confirms the analysis prerequisite is now satisfied and the route progresses to the next real precondition (this bridge has no RC design code configured, being a cable-stayed steel/box-girder deck).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         }
@@ -5453,7 +5453,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-checked 2026-07-31 after a real /doc/ANAL run: no longer errors at all, now answers the 'empty' shape ({'message': ''}) -- route accepts the request cleanly once analysis exists; no steel code check has been run yet so there's no data to report, consistent with other 'empty means nothing to show, not failure' findings elsewhere in this SDK.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         }

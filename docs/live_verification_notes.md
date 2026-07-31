@@ -3731,6 +3731,71 @@ for in this round:
 - `/ope/EDMP`/`USLC` — already known Gen NX crashers (`MAPI-2425`/`2426`),
   not retried here at all (different product, and real data regardless).
 
+## 2026-07-31 (later still) — a real modeling defect found and fixed on the bridge, then a real /doc/ANAL confirms post-analysis progression
+
+Off to the side from SDK verification: the user spotted that the deck in
+the 3D view looked like it was "standing up" instead of lying flat, and
+asked me to check. Node-coordinate inspection showed the deck centerline
+itself was correctly horizontal (X 0-657m, Y 5.5m constant, Z gently
+curving 20.7-25.2m) with `ANGLE: 0` on every deck `BEAM` element (203-254)
+— no rotation/orientation bug. The real cause turned out to be **`/db/SECT`
+id 3 ("Deck"), a Box section with `H` and `B` swapped**: `vSIZE` was
+`[11, 1.6, 0.04, 0.04, ...]` (11m tall, 1.6m wide) instead of the clearly
+intended `[1.6, 11, ...]` (1.6m tall, 11m wide — matching the deck's real
+11m Y-width exactly). Fixed live with the user's consent:
+
+- `PUT /db/SECT` with `vSIZE[0]`/`vSIZE[1]` swapped succeeded, but **the
+  `STIFF` sub-object (Area/Asy/Asz/RXX/RYY/RZZ — note: despite the `R`
+  prefix these are moment-of-inertia-type values, not radii of gyration;
+  the manual doesn't document this `STIFF` response shape at all for
+  `/db/SECT`) was NOT recomputed by the PUT** — it stayed stale at the old
+  H=11/B=1.6 numbers even after the geometry changed.
+- The user opened the Section Data dialog in the Civil NX GUI and clicked
+  "Calc. Section Properties", which recalculated Area/Asy/Asz/Ixx/Iyy/Izz
+  correctly for the new H=1.6/B=11 shape **in the dialog only** — a
+  follow-up `GET /db/SECT/3` still showed the old stale values until the
+  user clicked OK to actually commit the dialog.
+- After OK, `GET /db/SECT/3` confirmed the new values saved server-side
+  (`AREA: 1.0016`, `RXX: 1.868`, `RYY: 0.559`, `RZZ: 12.525`,
+  `CYP/CYM: 5.5`, `CZP/CZM: 0.8`, matching H=1.6/B=11 exactly).
+
+**Takeaway for this SDK: `PUT /db/SECT` on a `SECTTYPE: "VALUE"` box
+section only stores the raw dimensions — it does not auto-derive the
+`STIFF` mechanical properties from them.** Anything writing `/db/SECT`
+sections programmatically needs to either compute `STIFF` itself before
+sending, or have a human recalculate via the GUI afterward — there's no
+API-callable "recalculate now" action found in this chapter.
+
+With the corrected section in place, the user asked to re-run analysis
+and sanity-check the results. `POST /doc/ANAL` completed in 5s (no crash).
+This model uses **Construction Stage Analysis** (`/db/STAG` has 8 stages,
+CS0-CS7) rather than plain static load cases — `get_reaction_table`/
+`get_cable_force_table`/`get_displacement_table` all returned `{"message":
+""}` (empty) for ordinary `load_case_names` like `"Self Weight"` or
+`"Self Weight(CS)"` until switching to **`load_case_names=["Summation(CS)"]`
+with `opt_cs=True` and `stage_step=["CS7:001(last)"]`** (final stage, per
+the manual's `"CS1:001(first)"`/`"CS1:002(last)"` format at
+`19_POST_AnalysisResult_1.md:65`) — then all three returned real data:
+symmetric reactions (844.4 tonf total, matching the bridge's mirror
+symmetry exactly), all 202 cable elements in tension (none went slack/
+compression after the section fix), and DZ displacement up to 2.37m
+(flagged to the user as needing their own engineering judgment — cumulative
+construction-stage displacement isn't directly comparable to a simple
+span/400 serviceability check).
+
+**Bonus finding while retesting `post/design.py` after the real analysis
+existed**: `get_pm_interaction_diagram`'s error changed from `"Please
+Check Analysis"` (pre-analysis) to `"Please Check RC Design Code"`
+(post-analysis) — confirms the route correctly progresses through its
+precondition chain rather than being stuck. `get_steel_code_check`
+stopped erroring entirely post-analysis, now answering the `"empty"`
+shape (nothing to report since no code check has been run, not a
+failure). `BEAMDESIGNFORCES`/`COLUMNDESIGNFORCES`/
+`STEELMEMBERDESIGNFORCES` still hit `"there was an error creating utbl"`
+even post-analysis — these apparently need a load combination too, not
+just an analysis result, which this model doesn't have yet (only the one
+`"Self Weight"` load case exists, no `LCOM-*`).
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
