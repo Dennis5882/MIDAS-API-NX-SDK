@@ -3955,6 +3955,65 @@ closeable from here:
   and an FCM bridge), filed as `MAPI-2429` (relates to nothing yet —
   linking left for the user to decide).
 
+## 2026-07-31 (session end) — `GSBG` investigation on a real FCM bridge: two blockers understood, one still open
+
+With explicit consent to "handle it freely," dug into why `/ope/GSBG`
+(Bridge Girder Diagram Image Generation) has been unreachable all
+session, using a real FCM (Free Cantilever Method) bridge model the user
+opened (111 nodes, 106 `BEAM` elements, 17 construction stages —
+`Pier1`/`Pier2`, `PierTable1`/`2`, `P1Seg1`-`12`, `P2Seg1`-`12`,
+`KeySeg1`-`3`, `FSM1`/`2`, all as existing `/db/GRUP` entries).
+
+**Corrected an earlier wrong assumption: `BRDG_GROUP` is just a plain
+`/db/GRUP` name, not a GUI-wizard-only object.** `docs/manual/17_DB_Bridge.md`'s
+`/db/GSBG` chapter (the DB-level sibling of `/ope/GSBG`) requires
+`BODY_ELEM_GRUP_K`, an integer referencing a `/db/GRUP` group — proving
+the "Bridge Girder Group" concept is exactly the general-purpose
+Structure Group table this SDK already exposes as `StructureGroup`
+(`db/project.py`, fully POST/PUT-capable). Split this model's 106 `BEAM`
+elements into 82 horizontal (girder, ids 1-82, constant Z between
+segment endpoints) vs 24 vertical (pier, ids 83-106, constant X) by node
+geometry, then created a new group:
+
+```python
+StructureGroup.create({34: {"NAME": "Girder_All", "E_LIST": list(range(1, 83))}})
+```
+
+This succeeded and is now a permanent addition to this real model — worth
+noting since `StructureGroup.PRODUCTS`/`METHODS` is `NO_DELETE_METHODS`,
+so it can't be removed via this SDK; only through the Civil NX GUI if the
+user wants it gone.
+
+**First blocker, understood but not solvable via API alone: "post mode
+is required."** Passing `BRDG_GROUP="Girder_All"` got past the
+group-not-found stage into this error (matching `DREULT`'s "Post Mode is
+not available" seen earlier on the cable-stayed bridge — the same
+underlying gate, different wording). Ran a real `/doc/ANAL` first (46.6s
+for this 17-stage FCM model, no crash), then tried `set_result_graphic()`
+(`/view/RESULTGRAPHIC`, `TYPE: "CS", NAME: "Summation"`) — that itself
+succeeded, but did **not** clear the "post mode" gate for `GSBG`. Only
+the user manually clicking the "Post" tab in the Civil NX GUI did. No
+API-only path into this mode was found this session.
+
+**Second blocker, reproduced but not root-caused: "Final/PostCS stage is
+not supported."** Once Post Mode was manually enabled, every `GSBG` call
+hit this new error — and it did not change across `STAGE_LIST` values
+`CS1`/`CS2`/`CS3`/`CS16`/`CS17` (the model's real final stage) or
+`LC_NAME` values `"Self"`/`"Self(CS)"`/`"Summation(CS)"`. Since varying
+the documented parameters had zero effect, this reads like leftover
+document state — plausibly the earlier `set_result_graphic()` call's
+`NAME: "Summation"` (itself a "Final/PostCS" aggregate result type)
+stuck the document in a mode `GSBG` refuses to diagram from, rather than
+anything wrong with the `GSBG` call's own arguments. Not confirmed before
+the session ended.
+
+**Net effect: `GSBG` went from "can't even test it" to "two of three
+blockers understood, one open."** Recorded as still unverified in
+`coverage.json` — a real success would need starting fresh (undo the
+`Summation` result-graphic state, or open yet another session) and
+confirming whether a plain single-stage `set_result_graphic()` call
+avoids the "Final/PostCS" error.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

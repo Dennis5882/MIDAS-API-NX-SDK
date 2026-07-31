@@ -902,5 +902,33 @@ def generate_bridge_girder_diagram(
 
     See BridgeGirderDiagramArgument's docstring re: the 2026-07-14 schema
     update (LC_TYPE removed, BATCH_LIST is now a plain string array).
+
+    ⚠️ Live-tested 2026-07-31 on Civil NX, on a real FCM (Free Cantilever
+    Method) bridge model, 17 construction stages. Partial progress, not
+    fully unblocked:
+
+    - `BRDG_GROUP` genuinely is just a `/db/GRUP` (StructureGroup) name —
+      creating one via `StructureGroup.create({id: {"NAME": ..., "E_LIST":
+      [...]}})` with the girder's beam element IDs and passing that NAME
+      here works: the "group not found"-shaped error goes away once the
+      group exists. This contradicts an earlier assumption that Bridge
+      Groups can only be created via the GUI wizard — a plain element
+      group is sufficient.
+    - Before that, every call failed with `"post mode is required"`
+      (matching `DREULT`'s `"Post Mode is not available"` on a different
+      model) — calling `set_result_graphic()` first did NOT clear this;
+      only the user manually switching to the "Post" tab in the Civil NX
+      GUI did. No API-only way to enter this mode was found.
+    - After that, every call instead fails with `"Final/PostCS stage is
+      not supported"` — reproduced with `STAGE_LIST` set to `CS1`, `CS2`,
+      `CS3`, `CS16`, and `CS17` (the model's actual final stage) and
+      `LC_NAME` set to `"Self"`, `"Self(CS)"`, and `"Summation(CS)"`,
+      identically every time. Since varying the documented parameters
+      didn't change the error, this looks like leftover state from an
+      earlier `set_result_graphic()` call made with `LOAD_CASE_COMB:
+      {"TYPE": "CS", "NAME": "Summation"}` (Summation is itself a
+      "Final/PostCS" aggregate) — not root-caused before the session
+      ended. Treat GSBG as still blocked; the Bridge Group and Post Mode
+      pieces are now understood, but this last error isn't.
     """
     return _post("/ope/GSBG", argument, client)
