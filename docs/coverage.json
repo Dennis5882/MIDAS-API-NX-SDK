@@ -35,7 +35,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.doc"
+      "module": "midas_nx.doc",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. save_as() to a new test file then open_project() on that same path round-tripped cleanly (273 nodes intact after reopen); also used to verify close_project() below (reopen after close restored the session).",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/doc/CLOSE",
@@ -46,7 +56,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.doc"
+      "module": "midas_nx.doc",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. close_project() succeeded, and a follow-up GET /db/NODE correctly answered 'The project is not opened' (clean, not a crash/hang) -- reopening the same file afterward restored a working session with all 273 nodes intact.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/doc/SAVE",
@@ -57,7 +77,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.doc"
+      "module": "midas_nx.doc",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. save() succeeded after switching the open document to the test file via open_project() -- did not touch the original production file.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/doc/SAVEAS",
@@ -68,7 +98,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.doc"
+      "module": "midas_nx.doc",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. save_as() to a new .mcbx file succeeded; verified for real (not just a trusted response) by immediately open_project()-ing that same path and confirming all 273 nodes came back.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/doc/STAGAS",
@@ -79,7 +119,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.doc"
+      "module": "midas_nx.doc",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. First 2 tries failed ('Please check the file name or extension' with a .mcbx path, then 'Please specify the correct stage name' with the post/TABLE-style qualified stage_step like 'CS7:001(last)') before succeeding with the plain stage NAME ('CS7', matching /db/STAG's own NAME field) and a legacy .mcb extension -- matches the manual's own worked example (STAGE_STEP: 'Fase1', EXPORT_PATH: '...FASE1.mcb') exactly; my first two guesses were the ones misreading the docs, not a live defect. stage_as()'s docstring updated to warn against the post/TABLE-style format.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/doc/IMPORT",
@@ -112,7 +162,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.doc"
+      "module": "midas_nx.doc",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. export_json() to a .json path answered command-complete; not independently read back (no IMPORT round-trip attempted -- see live_verification_notes.md for why IMPORT was skipped on this real model).",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/doc/EXPORTMXT",
@@ -123,7 +183,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.doc"
+      "module": "midas_nx.doc",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. export_mxt() to a .mct path answered command-complete; not independently read back, same reasoning as EXPORT above.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/doc/ANAL",
@@ -5314,7 +5384,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.view"
+      "module": "midas_nx.view",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. capture() with just EXPORT_PATH succeeded cleanly.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/view/PRECAPTURE",
@@ -5325,7 +5405,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.view"
+      "module": "midas_nx.view",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. precapture() with VIEW_TYPE='FIBR' and a guessed OPTION.ID answered a clean 'second query is wrong' error -- this model has no fiber-modeled sections defined, so the argument shape is confirmed but never got real data.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/view/ANGLE",
@@ -7042,7 +7132,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.design_forces"
+      "module": "midas_nx.design.rc_kds.design_forces",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_beam_design(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/BD-TABLE",
@@ -7085,7 +7185,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.design_forces"
+      "module": "midas_nx.design.rc_kds.design_forces",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_column_design(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/CD-TABLE",
@@ -7128,7 +7238,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.design_forces"
+      "module": "midas_nx.design.rc_kds.design_forces",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_brace_design(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/BRD-TABLE",
@@ -7171,7 +7291,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.design_forces"
+      "module": "midas_nx.design.rc_kds.design_forces",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_wall_design() with a broad WALL_IDS.TO selection answered 'Please perform analysis' in <1s, no hang -- notable since this specific endpoint has documented hang history; this model has no wall elements at all (it's a bridge), so this doesn't clear that history, just adds one more clean run.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/WD-TABLE",
@@ -7214,7 +7344,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.design_forces"
+      "module": "midas_nx.design.rc_kds.design_forces",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_haunched_beam_design({}) answered 'Please perform analysis' in <1s, no hang.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/HCD-TABLE",
@@ -7257,7 +7397,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.checks"
+      "module": "midas_nx.design.rc_kds.checks",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_beam_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/BC-TABLE",
@@ -7355,7 +7505,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.checks"
+      "module": "midas_nx.design.rc_kds.checks",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_brace_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/BRC-TABLE",
@@ -7398,7 +7558,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.checks"
+      "module": "midas_nx.design.rc_kds.checks",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_wall_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/WC-TABLE",
@@ -7799,7 +7969,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_src_beam_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/BC-TABLE",
@@ -7842,7 +8022,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_src_column_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in 0.1s, no hang.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/CC-TABLE",

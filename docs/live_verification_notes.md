@@ -3796,6 +3796,105 @@ even post-analysis — these apparently need a load combination too, not
 just an analysis result, which this model doesn't have yet (only the one
 `"Self Weight"` load case exists, no `LCOM-*`).
 
+## 2026-07-31 (later still) — 19 file-path/ANAL-family endpoints closed, then a new crash: `OCHECK`
+
+With the user's go-ahead and a real safe path on the NX host machine
+(`E:\MIDAS PROGRAM\temp`), closed 19 more endpoints on the real bridge
+model (coverage 356 → 375/398):
+
+**`/doc/*` lifecycle, verified as real round-trips, not just trusted
+"command complete" responses:**
+
+- `save_as()` to a new `.mcbx` file, then `open_project()` on that same
+  path — reopened with all 273 nodes intact, confirming the write
+  actually happened (per this SDK's own `save_as` docstring warning that
+  a rejected path still answers "command complete").
+- `close_project()` — succeeded, and a follow-up `GET /db/NODE` correctly
+  answered `"The project is not opened"` (clean, not a hang) — then
+  `open_project()` on the same file restored a fully working session.
+- `save()` — succeeded (against the test file, not the original, since
+  the open-document context had already switched via the `open_project()`
+  round-trip above).
+- `export_json()`/`export_mxt()` — both answered command-complete;
+  **not** independently read back — see below for why `IMPORT` wasn't
+  attempted, which is the same reason a round-trip verification wasn't
+  either.
+- `stage_as()` (`/doc/STAGAS`) — took 3 tries: `.mcbx` extension failed
+  ("Please check the file name or extension"), then the post/TABLE-style
+  qualified stage name `"CS7:001(last)"` failed ("Please specify the
+  correct stage name"), then the plain stage name `"CS7"` (matching
+  `/db/STAG`'s own `NAME` field) with a legacy `.mcb` extension succeeded.
+  Both failures were **my own wrong guesses**, not a live defect — the
+  manual's own worked example already shows exactly this shape
+  (`STAGE_STEP: "Fase1"`, `EXPORT_PATH: "...FASE1.mcb"`). Updated
+  `stage_as()`'s docstring in `doc.py` so the next person doesn't make the
+  same guess from the parameter name alone.
+
+**`/view/CAPTURE` and `PRECAPTURE`**: `capture()` with just `EXPORT_PATH`
+succeeded cleanly. `precapture()` (fiber-section diagram) answered a
+clean `"second query is wrong"` — this model has no fiber-modeled
+sections, so the argument shape is confirmed but never produced real
+data.
+
+**Explicitly still skipped: `/doc/IMPORT`/`IMPORTMXT`.** Both are
+additive/merging operations into whatever model is currently open — since
+this is genuinely real production data, importing anything into it (even
+a file exported from the same model) risks duplicating or corrupting
+entities. These need a disposable scratch document (`/doc/NEW`) to test
+safely, not this real bridge — not attempted this round.
+
+**The `*-ANAL` "perform design check" family — 10 more endpoints, all
+clean, no hang:** with the user's explicit go-ahead given the documented
+hang history, ran `BD/CD/BRD/WD/HCD-ANAL` (`design_forces.py`),
+`BC/BRC/WC-ANAL` (`checks.py`), and SRC's `BC-ANAL`/`CC-ANAL` — every one
+answered `"Please perform analysis"` in under 1 second, no hang. Notably
+this includes `WD-ANAL` (RC Wall Design Perform), the one endpoint in
+this whole family with documented hang history on Gen NX 2026-06-23 — a
+clean run here doesn't clear that history (this bridge has zero wall
+elements, so it never got anywhere near the code path that hung before),
+but it's one more data point of the endpoint behaving normally under
+different conditions.
+
+**🔴 New crash found: `POST /DESIGN/SRC/AIK-SRC2K/OCHECK`.** Called with
+`ANALYSIS_OPT.ANAL_TIME=0` and `OUTPUT.MODEL_UPDATE=False` (deliberately
+conservative, to avoid it silently rewriting real sections if it somehow
+proceeded past validation) against a model with zero SRC-eligible
+sections/materials. The client-side call timed out at 25s; a same-session
+`GET /db/NODE` timed out too — the documented "connected but /db/* blocked"
+signature of a native dialog holding the session. The user checked the
+screen and found a **cascade of three dialogs**, distinct from every
+other crash found this session (`EDMP`/`USLC` crash immediately with no
+intermediate dialog):
+
+1. `"Error Checking Result:"` listing every missing prerequisite (No
+   Material/Section Shape/Section Type/Section Data/Load Combination/
+   Member Type/Element Type/Design Axis/Reinforced Bar exists for
+   Checking) — this is the same information every other `*-ANAL` returns
+   as a clean JSON error; here it's a blocking native dialog instead.
+2. `"Unacceptable model for optimal design."`
+3. The familiar `"[Error] Failed to disconnect the work session due to an
+   unidentified error..."` crash dialog, followed by `"Program will be
+   closed due to an unexpected problem"` with an auto-recovery file path
+   (`E:\MIDAS PROGRAM\temp\sdk_test_save_restore.mcb`).
+
+After the user restarted Civil NX (re-execute → New Project → close,
+per the dialog's own instructions) and reconnected with the same MAPI
+key, the session recovered fully: 273 nodes intact, and `/db/SECT/3`'s
+H/B fix from earlier this session (`vSIZE: [1.6, 11, ...]`) survived —
+no data loss. **Not yet filed to MIDASIT Jira — needs the user's
+explicit go-ahead first**, per the standing rule from the `EDMP`/`USLC`
+filing earlier this session (see `MAPI-2425`/`2426`).
+
+Coverage after this round: 375/398 implemented+verified; remaining gap is
+`/doc/IMPORT`/`IMPORTMXT` (needs a scratch document), `/ope/LCOM-GEN`/
+`STORPROP`/`GSBG` (unresolved or blocked on prerequisites not available
+via API), `OCHECK` (now confirmed a crasher, not "verified working"),
+`DSRC` (config write, skipped for consent), and the `*-REPORT`/`DREULT`/
+`CDESIGN` family (still need real design results to test meaningfully,
+which no `*-ANAL` on this model has produced — every one failed the
+"please perform analysis"/prerequisite check, since this bridge has no
+RC design code or load combination configured).
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

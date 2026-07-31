@@ -133,8 +133,20 @@ def save_as(path: str, client: Optional[MidasClient] = None) -> dict:
 def stage_as(stage_step: str, export_path: Optional[str] = None, client: Optional[MidasClient] = None) -> dict:
     """docs/manual/01_DOC.md #6 — /doc/STAGAS — Save Current Stage As.
 
-    stage_step (Required): construction-stage step name to save.
-    export_path (Optional): file path to save to.
+    stage_step (Required): the plain construction-stage NAME (e.g. "CS7",
+    matching /db/STAG's own "NAME" field) — NOT the qualified
+    "STAGE:step(last)" format used by post/TABLE's own STAGE_STEP
+    parameter (e.g. "CS7:001(last)"). Live-tested 2026-07-31: the qualified
+    format fails with "Please specify the correct stage name"; the plain
+    stage name succeeds. Matches the manual's own worked example exactly
+    (``STAGE_STEP: "Fase1"``) — this is a case of the SDK's own docstring
+    inviting the wrong guess by naming the parameter the same as the
+    differently-shaped post/TABLE one, not a manual/live discrepancy.
+
+    export_path (Optional): file path to save to — must use the legacy
+    ``.mcb`` extension (live-tested 2026-07-31: ``.mcbx`` fails with
+    "Please check the file name or extension"), unlike save_as() which
+    wants the current NX-native extension.
     """
     argument = {"STAGE_STEP": stage_step}
     if export_path is not None:
