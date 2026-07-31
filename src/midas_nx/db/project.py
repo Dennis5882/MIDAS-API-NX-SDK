@@ -6,8 +6,11 @@ so its `StructureTypeHyperSPayload` below is derived from `GET
 UNIT/STYP are GET/PUT-only ("신규 파일의 필수 데이터: GET / PUT만 동작") — new-file
 required data doesn't support POST/DELETE. CO_M/CO_S/CO_T/CO_F (visual color
 defaults) are likewise GET/PUT-only. GRUP/BNGR (structure/boundary groups) omit
-DELETE — presumably because groups are referenced elsewhere and must be removed
-via their owning UI, not itemized here.
+DELETE per the official manual itself: its own methods table (§ overview and
+each endpoint's own Methods row) lists GRUP and BNGR as POST/GET/PUT only,
+while every other endpoint in this chapter (PJCF, LDGR, TDGR, NPLN, SPAN,
+STOR) gets the full POST/GET/PUT/DELETE set. Not an SDK-side restriction —
+the API itself never exposes a DELETE route for these two.
 """
 from __future__ import annotations
 
