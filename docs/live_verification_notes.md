@@ -3895,6 +3895,66 @@ which no `*-ANAL` on this model has produced — every one failed the
 "please perform analysis"/prerequisite check, since this bridge has no
 RC design code or load combination configured).
 
+## 2026-07-31 (last) — Civil NX coverage closed out to 392/398: `*-REPORT` family, `DSRC`, `IMPORT`/`IMPORTMXT`, and a routing-level confirmation for `LCOM-*`/`STORPROP`
+
+Closed the rest of what was tractable on Civil NX this session (375 → 392/398):
+
+**All 12 remaining `*-REPORT` endpoints plus `DREULT`/`CDESIGN`** (Steel
+`CODE-REPORT`, RC-KDS `BD/CD/BRD/WD/HCD/BC/CC/BRC/WC-REPORT`, SRC
+`BC/CC-REPORT`) answered `"Please perform analysis"` cleanly with the
+same `E:\MIDAS PROGRAM\temp` path — consistent with every `*-ANAL` on
+this model failing the same precondition. `DREULT` answered `"It's
+failed, Post Mode is not available"`; `CDESIGN` answered `"It's not
+found Figure Name"` (needs a pre-existing named smart-report figure
+config this model doesn't have) — both clean, route+shape confirmed, no
+crash.
+
+**`/DESIGN/SRC/AIK-SRC2K/DSRC` (config write) round-tripped cleanly**:
+`PUT` with `DGNCODE="AIK-SRC2K"` succeeded, then `DELETE` reverted it —
+both echoed the record back, no lasting mutation left on the real model.
+
+**`/doc/IMPORT`/`IMPORTMXT` finally closed**, with the user's explicit
+consent to `/doc/NEW` a disposable scratch document (discarding the FCM
+test model from the `OCHECK` reproduction, which was no longer needed).
+On the resulting empty document: `export_json()` → `import_json()` and
+`export_mxt()` → `import_mxt()` both round-tripped cleanly, staying at 0
+nodes throughout — no crash, no data corruption. This is the reason
+these two were deliberately skipped earlier against the real bridge
+model: additive/merge operations need a throwaway target, not production
+data.
+
+**`/ope/LCOM-GEN` retried with the simpler AIK-SRC2K schema** (`{OPTION,
+DGNCODE: "AIK-SRC2K", RS_SCALE_FACTOR: []}`, vs the KDS:2022/CONCRETE
+attempt that got "Wrong Field" on Gen 2026-07-30) — **404'd outright on
+Civil**, a different and more definitive failure mode. Checked `GET
+/info/ope/LCOM-GEN` and `/info/ope/LCOM-CONC` directly: **both also 404
+on Civil** — the routes aren't registered on Civil NX at all, not just
+failing at execution. This confirms at the routing level what was only
+inferred before: **the whole `/ope/LCOM-*` family (`GEN`/`CONC`/`STEEL`/
+`SRC`) is Gen-only**, closing the open question from LCOM-CONC/STEEL/
+SRC's original Civil-404 finding (2026-07-30).
+
+**`/ope/STORPROP` got the same `/info` check**: `GET /info/ope/STORPROP`
+also 404s on Civil, matching the routing-level pattern above. Doesn't
+explain why Gen also 404s on the same route (Gen's own `/info` was never
+checked), so that half of the mystery stays open — but the Civil side is
+now confirmed at the routing level rather than just inferred from a
+failed POST.
+
+**Final Civil NX tally: 392/398.** The 6 remaining are genuinely not
+closeable from here:
+- `/ope/EDMP`/`USLC` — confirmed Gen NX crashers (`MAPI-2425`/`2426`),
+  a different product's problem to retest.
+- `/ope/STORPROP`/`LCOM-GEN` — routing-confirmed 404 on Civil, but *why*
+  Gen also fails (STORPROP) or exactly which field breaks (LCOM-GEN on
+  Gen) is still open.
+- `/ope/GSBG` — still blocked on a Bridge Group definition, which has no
+  API-level way to create in this SDK's current endpoint coverage.
+- `/DESIGN/SRC/AIK-SRC2K/OCHECK` — confirmed a genuine Civil NX crash,
+  reproduced twice on two different bridge models (a cable-stayed bridge
+  and an FCM bridge), filed as `MAPI-2429` (relates to nothing yet —
+  linking left for the user to decide).
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

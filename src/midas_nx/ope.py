@@ -510,6 +510,13 @@ class StoryPropertiesArgument(TypedDict, total=False):
     Gen-only — plausibly this whole route only exists on Gen — but that's
     still a guess, not confirmed, since the underlying Gen 404 was never
     root-caused either.
+
+    ⚠️ Confirmed 2026-07-31: ``GET /info/ope/STORPROP`` also 404s on Civil
+    NX — the route isn't registered on Civil at all, matching the same
+    routing-level confirmation found for the `/ope/LCOM-*` family
+    (generate_load_combination_general's docstring). Still doesn't explain
+    *why* Gen 404s too, since Gen's own `/info/ope/STORPROP` was never
+    checked — that remains open.
     """
 
     FORCE_UNIT: str  # "N"/"KN"/"KGF"/"TONF"/"LBF"/"KIPS", default System, optional
@@ -727,6 +734,17 @@ def generate_load_combination_general(
     Field". Not root-caused — the sibling endpoint LCOM-CONC succeeded
     with a minimal payload covering the same design body, so this wasn't
     pursued further; treat as unconfirmed.
+
+    ⚠️ Live-tested 2026-07-31 on Civil NX: even the minimal AIK-SRC2K
+    schema (``{OPTION, DGNCODE: "AIK-SRC2K", RS_SCALE_FACTOR: []}``) 404'd
+    outright — a different failure mode than Gen's "Wrong Field" (which at
+    least reaches routing/validation). Confirmed via ``GET
+    /info/ope/LCOM-GEN`` also 404ing on Civil (route genuinely not
+    registered, not just an execution failure) — same for
+    ``/info/ope/LCOM-CONC``. This closes the question left open for
+    LCOM-CONC/STEEL/SRC's Civil-404 finding: **the whole `/ope/LCOM-*`
+    family is Gen-only**, confirmed at the routing level, not just
+    inferred from execution failures.
     """
     return _post("/ope/LCOM-GEN", argument, client)
 
@@ -760,6 +778,12 @@ def generate_load_combination_concrete(
     enforced here: plain ope.py functions have no PRODUCTS gate in this
     SDK, so a Civil call reaches the server and 404s there rather than
     raising client-side.
+
+    ⚠️ Confirmed 2026-07-31: ``GET /info/ope/LCOM-CONC`` (and
+    ``/info/ope/LCOM-GEN``) also 404 on Civil NX — the whole `/ope/LCOM-*`
+    family's routes aren't registered on Civil at all, not just failing at
+    execution. This upgrades the "possibly Gen-only" guess above to a
+    routing-level confirmation.
     """
     return _post("/ope/LCOM-CONC", argument, client)
 

@@ -140,7 +140,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.doc"
+      "module": "midas_nx.doc",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX: with the user's consent, /doc/NEW created a disposable empty scratch document (discarding a real test model that was no longer needed), then export_json() to E:/MIDAS PROGRAM/temp/sdk_test_scratch.json followed by import_json() on that same file both succeeded cleanly, model stayed empty (0 nodes) throughout as expected for an empty-to-empty round trip -- no crash.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/doc/IMPORTMXT",
@@ -151,7 +161,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.doc"
+      "module": "midas_nx.doc",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX: same disposable scratch document as IMPORT above -- export_mxt() then import_mxt() on the same .mct file both succeeded cleanly, no crash.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/doc/EXPORT",
@@ -6298,7 +6318,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/DREULT",
@@ -6309,7 +6339,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.steel_kds"
+      "module": "midas_nx.design.steel_kds",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered \"It's failed, Post Mode is not available\" cleanly -- confirms route+shape, no crash.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/TABLE",
@@ -7174,7 +7214,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.design_forces"
+      "module": "midas_nx.design.rc_kds.design_forces",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/CD-ANAL",
@@ -7227,7 +7277,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.design_forces"
+      "module": "midas_nx.design.rc_kds.design_forces",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/BRD-ANAL",
@@ -7280,7 +7340,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.design_forces"
+      "module": "midas_nx.design.rc_kds.design_forces",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/WD-ANAL",
@@ -7333,7 +7403,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.design_forces"
+      "module": "midas_nx.design.rc_kds.design_forces",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly (WALL_IDS/SELECTIONS shape, unlike the member-based reports).",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/HCD-ANAL",
@@ -7386,7 +7466,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.design_forces"
+      "module": "midas_nx.design.rc_kds.design_forces",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/BC-ANAL",
@@ -7439,7 +7529,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.checks"
+      "module": "midas_nx.design.rc_kds.checks",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/CC-ANAL",
@@ -7494,7 +7594,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.checks"
+      "module": "midas_nx.design.rc_kds.checks",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/BRC-ANAL",
@@ -7547,7 +7657,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.checks"
+      "module": "midas_nx.design.rc_kds.checks",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/WC-ANAL",
@@ -7600,7 +7720,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.checks"
+      "module": "midas_nx.design.rc_kds.checks",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/CDESIGN",
@@ -7611,7 +7741,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.rc_kds.checks"
+      "module": "midas_nx.design.rc_kds.checks",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered \"It's not found Figure Name\" -- FIGURE_NAME must reference a pre-existing named smart-report figure config, which this model doesn't have; route+shape confirmed, no crash.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/TABLE",
@@ -7685,7 +7825,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. PUT with DGNCODE='AIK-SRC2K' succeeded (echoed back cleanly), then reverted with DELETE (also succeeded, echoing the deleted record) -- full round trip on the real model, no lasting mutation left behind.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/DCO",
@@ -8011,7 +8161,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/CC-ANAL",
@@ -8064,7 +8224,17 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-07-31",
+        "products": [
+          "civil"
+        ],
+        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "nx_versions": {
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        }
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/OCHECK",
