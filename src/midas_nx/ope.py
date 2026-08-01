@@ -517,6 +517,12 @@ class StoryPropertiesArgument(TypedDict, total=False):
     (generate_load_combination_general's docstring). Still doesn't explain
     *why* Gen 404s too, since Gen's own `/info/ope/STORPROP` was never
     checked — that remains open.
+
+    ⚠️ 4th reproduction, 2026-08-01 on Gen NX: still 404 (FORMAT="Default",
+    PLACE=4), on a different Gen session/build than the 2026-07-30 tries.
+    Consistently dead across every condition tried so far — still
+    unexplained, not yet worth calling "genuinely inactive route" without
+    checking Gen's own `/info/ope/STORPROP`.
     """
 
     FORCE_UNIT: str  # "N"/"KN"/"KGF"/"TONF"/"LBF"/"KIPS", default System, optional
@@ -745,6 +751,15 @@ def generate_load_combination_general(
     LCOM-CONC/STEEL/SRC's Civil-404 finding: **the whole `/ope/LCOM-*`
     family is Gen-only**, confirmed at the routing level, not just
     inferred from execution failures.
+
+    ⚠️ Live-tested 2026-08-01 on Gen NX: the minimal AIK-SRC2K schema
+    (``{OPTION, DGNCODE: "AIK-SRC2K", RS_SCALE_FACTOR: []}``) also answers
+    "Wrong Field" on Gen — same result as the KDS:2022/CONCRETE payload
+    tested above on 2026-07-30, so it's not specific to one schema
+    variant. Unlike Civil (which 404s at the routing level, see above),
+    this one reaches the server and is rejected there, confirming the
+    route itself is live on Gen for both schema shapes; still no root
+    cause identified.
     """
     return _post("/ope/LCOM-GEN", argument, client)
 

@@ -592,14 +592,23 @@ def perform_src_optimal_design(
     "HEAD": ["No", "Name", "SteelSize", "Astl", "COM", "Axial", "Ben-y",
     "Ben-z", "Shear"], "DATA": [[...], ...]}}``.
 
-    ⚠️ Never independently tested. ``design.rc_kds.checks.perform_column_check``
-    (CC-ANAL) was confirmed to hang Gen NX 2026 (v2.1), build 06/23/2026,
-    then ran clean on that same build on 2026-07-25 — the trigger is
-    unidentified, not fixed; see docs/live_verification_notes.md. That
-    round covered RC *check* endpoints under KDS 41 20:2022 only; this is
-    an iterative re-analysis/optimization action on a different design
-    code, potentially longer-running than a plain code check, so treat it
-    as carrying at least the same risk.
+    ⚠️ Confirmed a genuine crash on Civil NX (2026-07-31, real production
+    bridge model with zero SRC-eligible sections/materials): the call
+    itself timed out, then a same-session `GET /db/NODE` also timed out —
+    a native dialog cascade had taken the whole session down, requiring a
+    full Civil NX restart to recover (no data loss). Filed as `MAPI-2429`.
+    See docs/live_verification_notes.md's 2026-07-31 "New crash found"
+    section for the full dialog sequence.
+
+    ⚠️ Gen NX, 2026-08-01: tried against a session whose open document had
+    **zero sections at all** (not the "sections exist but none are
+    SRC-eligible" shape that crashed Civil) — a fabricated `SECT_NO` got a
+    clean `"Section 1 does not exist."` JSON error, no dialog, session
+    stayed alive. This is NOT equivalent to the Civil repro conditions and
+    does not clear Gen of the same risk; the crash trigger needs an actual
+    non-SRC-eligible section to reference, which this Gen session's model
+    didn't have. Re-test on Gen against a real model with real (non-SRC)
+    sections before treating Gen as safe.
     """
     return _post(f"{_BASE}/OCHECK", argument, client)
 

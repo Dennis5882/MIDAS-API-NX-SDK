@@ -4014,6 +4014,94 @@ blockers understood, one open."** Recorded as still unverified in
 confirming whether a plain single-stage `set_result_graphic()` call
 avoids the "Final/PostCS" error.
 
+## 2026-08-01 — Gen NX re-check of the 3 unresolved `/ope/*` cases (STORPROP, LCOM-GEN, OCHECK)
+
+Connected to a fresh Gen NX session (PC A, user `sjj0507@midasit.com`) to
+follow up on the endpoints left "no live_verified" in `coverage.json`,
+skipping the two already-filed crashers (`EDMP`/`USLC`, `MAPI-2425`/`2426`)
+and the blocked `GSBG`.
+
+**`/ope/STORPROP` — 4th reproduction, still 404.** Same `FORMAT="Default"`,
+`PLACE=4` payload that 404'd on 2026-07-30. Still fully unexplained; not
+worth another blind retry without checking Gen's own `/info/ope/STORPROP`
+(only Civil's has been checked, see the 2026-07-31 entry above).
+
+**`/ope/LCOM-GEN` — new data point, still broken.** Only the KDS:2022/
+CONCRETE schema had been tried on Gen before (2026-07-30, "Wrong Field").
+Today's minimal AIK-SRC2K schema (`{OPTION, DGNCODE: "AIK-SRC2K",
+RS_SCALE_FACTOR: []}`) reached the server (200, not 404 — confirms the
+Gen route is genuinely live, unlike Civil's routing-level 404) but also
+answered "Wrong Field". Both schema shapes now fail the same way on Gen;
+root cause still unknown.
+
+**`/DESIGN/SRC/AIK-SRC2K/OCHECK` — attempted, but not a real repro of the
+Civil crash.** The open Gen document had **zero sections** (`/db/SECT`
+empty) — not the "sections exist, none SRC-eligible" shape that crashed
+Civil NX on 2026-07-31 (`MAPI-2429`). A fabricated `SECT_NO: 1` got a
+clean `"Section 1 does not exist."` JSON error; a follow-up `GET /db/NODE`
+confirmed the session stayed alive (0 nodes, matching the empty document).
+**This does not clear Gen of the same crash risk** — it never reached the
+code path that crashed Civil, since that path needs a real, existing,
+non-SRC-eligible section to validate against. Re-test needed against a
+real Gen model with actual section data before drawing any conclusion
+either way.
+
+**Net: no new crashes, no new working endpoints — just narrowed what's
+already known.** All three remain open. Nothing filed to Jira from this
+round (nothing new to report — LCOM-GEN's finding refines a symptom
+already implicitly covered by `generate_load_combination_general`'s own
+docstring, not a new bug).
+
+## 2026-08-01 (later) — real Gen NX apartment model retest of OCHECK crashes; a new crash found on `KDS-41-20-2022/TABLE` (CD-TABLE), filed as `MAPI-2431`
+
+Following up on the note above that the empty-document OCHECK attempt
+didn't clear Gen of crash risk: reconnected to a fresh Gen NX session
+(new MAPI key) with the user's real production "apartment" model open
+(14,027 nodes, 476 sections) to retest against actual section data.
+
+**`/DESIGN/SRC/AIK-SRC2K/OCHECK` crashed Gen NX on the real model.**
+`verify_connection()` kept answering `"connected"` while every `/db/*`
+call timed out, then the NX process itself died — the same signature
+previously seen on Civil (`MAPI-2429`). Recovery cycle (dismiss dialogs
+→ relaunch → New Project → close → reconnect with the same MAPI key)
+completed with **no data loss**: post-recovery `/db/NODE`/`/db/SECT`
+counts matched pre-crash exactly (14,027 / 476). This is the first
+confirmation that the crash-recovery-without-data-loss pattern, well
+established on Civil, also holds for Gen NX.
+
+**Then a second, different crash: `POST /DESIGN/RC/KDS-41-20-2022/TABLE`
+(Column Design Forces, `get_column_design_forces_table` /
+`TABLE_TYPE_COLUMN_DESIGN_FORCES`).** Tried as the next step in the
+RC/SRC design-code verification plan, on the assumption that a `TABLE`
+read-back endpoint would be safe (no prior crash history for any
+`*-TABLE` case) — that assumption was wrong. The very first call
+produced the identical "connected but every `/db/*` call times out,
+then the process dies" signature. Recovered the same way, again with
+**no data loss** once the user reopened the apartment model.
+
+To rule out leftover state from the OCHECK crash/recovery cycle as a
+confound, reproduced independently: recovered to a **freshly-created,
+completely empty** Gen document and issued the same `CD-TABLE` call in
+isolation. Same crash signature, same recovery, same no-data-loss
+outcome (trivially, since the document was empty). Two independent
+reproductions (real populated model, isolated empty model) — meets this
+project's bar for "confirmed," not just "unconfirmed single repro."
+
+Filed as **MAPI-2431** (build: MIDAS Gen NX 2026 (v2.1), Build
+07/30/2026), under epic `MAPI-1200`. Not linked to `MAPI-2429`/OCHECK —
+different endpoint, no evidence of a shared cause. `get_brace_design_forces_table`/`get_beam_design_forces_table` share the same
+underlying `TABLE` endpoint/helper and were not independently tested;
+flagged as equally at risk in their docstrings until tested.
+
+**Net for this session: two real crashes confirmed on Gen NX
+(`OCHECK` via `MAPI-2429`'s Civil finding now also reproduced on Gen;
+`CD-TABLE` newly found and filed as `MAPI-2431`), zero data loss across
+both.** Further crash-risk testing on the real apartment model paused
+per the user pending explicit re-confirmation — the working assumption
+that `*-TABLE`/`*-REPORT` reads are inherently safe no longer holds and
+each new candidate needs to be treated as a possible crasher until
+tested.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

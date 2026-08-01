@@ -587,7 +587,21 @@ def get_column_design_forces_table(
     Forces. Requires analysis and design to already be complete. Response:
     ``{table_name_or_"empty": {"FORCE": ..., "DIST": ..., "HEAD": ["Index",
     "Memb", "Part", "LComName", "Type", "Fx", "Fy", "Fz", "Mx", "My", "Mz"],
-    "DATA": [[...], ...]}}``."""
+    "DATA": [[...], ...]}}``.
+
+    ⚠️ Live-tested 2026-08-01 on Gen NX: this call killed the session —
+    ``verify_connection()`` kept reporting "connected" while every
+    subsequent ``/db/*`` call timed out, then the NX process itself died.
+    Reproduced twice independently (a real production "apartment" model,
+    and again in isolation on a freshly-recovered, completely empty
+    model), ruling out model content as the cause. No data loss either
+    time after the standard crash-recovery cycle (dismiss dialogs →
+    relaunch → New Project → close → reconnect with the same MAPI key).
+    Root cause unidentified; filed as MAPI-2431. Not yet tested on Civil
+    NX. Same endpoint/underlying helper as
+    :func:`get_brace_design_forces_table` and
+    :func:`get_beam_design_forces_table` — treat those as equally at
+    risk until independently tested."""
     return _get_rc_design_forces_table(
         TABLE_TYPE_COLUMN_DESIGN_FORCES,
         table_name,
@@ -617,7 +631,12 @@ def get_brace_design_forces_table(
 ) -> dict:
     """docs/manual/26_Design_RC_KDS41202022.md #68 — TABLE — Brace Design
     Forces. Response shape/columns match Column Design Forces (see
-    :func:`get_column_design_forces_table`)."""
+    :func:`get_column_design_forces_table`).
+
+    ⚠️ Shares the same ``TABLE`` endpoint/helper as
+    :func:`get_column_design_forces_table`, which crashed Gen NX
+    (reproduced twice, MAPI-2431) — not independently tested, but treat
+    as equally at risk until it is."""
     return _get_rc_design_forces_table(
         TABLE_TYPE_BRACE_DESIGN_FORCES,
         table_name,
@@ -649,7 +668,12 @@ def get_beam_design_forces_table(
     Forces. Response: ``{table_name_or_"empty": {"FORCE": ..., "DIST": ...,
     "HEAD": ["Index", "Memb", "Part", "LComName", "Type", "Fz", "Mx",
     "My(-)", "My(+)"], "DATA": [[...], ...]}}`` — column set differs from
-    Column/Brace Design Forces (no Fx/Fy/My/Mz; adds signed My(-)/My(+))."""
+    Column/Brace Design Forces (no Fx/Fy/My/Mz; adds signed My(-)/My(+)).
+
+    ⚠️ Shares the same ``TABLE`` endpoint/helper as
+    :func:`get_column_design_forces_table`, which crashed Gen NX
+    (reproduced twice, MAPI-2431) — not independently tested, but treat
+    as equally at risk until it is."""
     return _get_rc_design_forces_table(
         TABLE_TYPE_BEAM_DESIGN_FORCES,
         table_name,
