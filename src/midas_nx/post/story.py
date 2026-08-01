@@ -187,8 +187,9 @@ class StoryDriftAdditional(TypedDict, total=False):
 class StorySetAngle(TypedDict, total=False):
     """Shared ADDITIONAL.SET_ANGLE {"ANGLE": ...} object — Angle2 is always
     Angle1 + 90° server-side. Used by #6 Story Shear Force Ratio (Required),
-    #8 Overturning Moment (Optional, default 0), and #14 Capacity
-    Irregularity Check (Required)."""
+    #8 Overturning Moment (Optional, default 0), #14 Capacity Irregularity
+    Check (Required), and #16 Ultimate Story Shear Force Check (Optional,
+    default 0)."""
 
     ANGLE: float  # Angle1 input value (deg)
 
@@ -242,13 +243,18 @@ class StoryStabilityCalculationMethod(TypedDict, total=False):
     different sub-schema (STORY_STIFFNESS_METHOD too) — see
     StiffnessCalculationMethod, not this class.
 
-    The official Specifications table for this table misspells the first enum
-    value as "Drfit on the Center of Mass"; #13/#17's articles and this
-    article's own request example all use "Drift at the Center of Mass", so
-    that normalized form is what's documented here.
+    The official Specifications table for this table misspells the first
+    enum value as "Drfit on the Center of Mass". An earlier version of this
+    docstring normalized it to "Drift at the Center of Mass" by assuming it
+    shared #13/#17's enum — MIDASIT confirmed (Jira MAPI-2009, 2026-07-30)
+    that assumption was wrong: the API follows the product UI's own wording
+    per table, and #10's screen (Story Stability Coefficient) genuinely
+    says "on", not "at" — only #17 Weight Irregularity Check uses "at". So
+    only the spelling (Drfit -> Drift) is a real typo here; the preposition
+    is correct as documented. Don't re-normalize this to "at" again.
     """
 
-    STORY_DRIFT_METHOD: str  # "Drift at the Center of Mass"/"Max. Drift of Outer Extreme Points"/"Max. Drift of All Vertical Elements", optional
+    STORY_DRIFT_METHOD: str  # "Drift on the Center of Mass"/"Max. Drift of Outer Extreme Points"/"Max. Drift of All Vertical Elements", optional
 
 
 class StoryStabilityCoefficientAdditional(TypedDict, total=False):
@@ -300,6 +306,15 @@ class CapacityIrregularityAdditional(TypedDict, total=False):
     (Weak Story) ADDITIONAL object. SET_ANGLE is Required for this table."""
 
     SET_ANGLE: StorySetAngle  # required
+
+
+class UltimateStoryShearForceAdditional(TypedDict, total=False):
+    """docs/manual/21_POST_StoryTables.md #16 — Ultimate Story Shear Force
+    Check ADDITIONAL object — 2026-07-30 official addition (previously
+    undocumented). Same shape as #14 Capacity Irregularity Check, but
+    SET_ANGLE (and its nested ANGLE) is Optional here, not Required."""
+
+    SET_ANGLE: StorySetAngle  # optional, default ANGLE=0
 
 
 class WeightIrregularityCalculationMethod(TypedDict, total=False):
@@ -823,12 +838,17 @@ def get_ultimate_story_shear_force_check_table(
     load_case_names: Optional[List[str]] = None,
     opt_cs: Optional[bool] = None,
     stage_step: Optional[List[str]] = None,
+    additional: Optional[UltimateStoryShearForceAdditional] = None,
     client: Optional[MidasClient] = None,
 ) -> dict:
     """docs/manual/21_POST_StoryTables.md #16 — Ultimate Story Shear For Check.
 
     Applied shear force (Ve) vs. clockwise/counter-clockwise ultimate shear
     force (Vp) by column/wall, with a final OK/NG remark.
+
+    additional: SET_ANGLE — Optional, default ANGLE=0 (unlike #14 Capacity
+    Irregularity Check's Required SET_ANGLE). 2026-07-30 official addition;
+    previously undocumented.
     """
     return get_table(
         TABLE_TYPE_ULTIMATE_STORY_SHEAR_FORCE_CHECK,
@@ -840,6 +860,7 @@ def get_ultimate_story_shear_force_check_table(
         load_case_names=load_case_names,
         opt_cs=opt_cs,
         stage_step=stage_step,
+        additional=additional,
         client=client,
     )
 

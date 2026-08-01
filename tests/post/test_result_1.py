@@ -645,8 +645,6 @@ def test_get_wall_force_table_sends_full_argument(gen_client):
         styles={"FORMAT": "Fixed", "PLACE": 3},
         node_elems={"KEYS": [1, 2, 3]},
         load_case_names=["gLCB6(CB)"],
-        sect_position="Mid",
-        parts=["top", "bot"],
         story_names=["2F"],
         client=gen_client,
     )
@@ -659,8 +657,6 @@ def test_get_wall_force_table_sends_full_argument(gen_client):
             "STYLES": {"FORMAT": "Fixed", "PLACE": 3},
             "NODE_ELEMS": {"KEYS": [1, 2, 3]},
             "LOAD_CASE_NAMES": ["gLCB6(CB)"],
-            "SECT_POSITION": "Mid",
-            "PARTS": ["top", "bot"],
             "STORY_NAMES": ["2F"],
         }
     }

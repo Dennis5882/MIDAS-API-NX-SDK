@@ -349,6 +349,56 @@ class VehicleLoadItem(TypedDict, total=False):
     POINT_DIST: float  # Point Distance, required
 
 
+class VehicleKsceLsd15PointItem(TypedDict, total=False):
+    """POINT_ITEMS entry of VEH_KSCE_LSD15."""
+
+    POINT_LOAD: float  # Load, required
+    POINT_DIST: float  # Spacing, required
+    POINT_DIST2: float  # Distributed-load-equivalent length, only when CONVERT_DIST_LOAD=true, default 0, optional
+
+
+class VehicleKsceLsd15Params(TypedDict, total=False):
+    """VEH_KSCE_LSD15 sub-object of /db/MVHL, used instead of VEH_DEFAULT
+    when STANDARD_CODE is "KSCE-LSD15" — documented in a separate official
+    article ("Vehicles - KSCE-LSD15") the manual repo picked up 2026-07-30,
+    not in this endpoint's own Specifications table, so it was previously
+    missing here (only listed as an untyped extra key, see VehiclePayload's
+    class docstring history).
+
+    ⚠️ **MVLD_CODE for this shape is 13, not 1.** An older worked example in
+    the manual used ``MVLD_CODE: 1`` with VEH_DEFAULT for a KSCE-LSD15
+    vehicle; the corrected official example uses ``MVLD_CODE: 13`` with this
+    object instead. Use 13 when sending VEH_KSCE_LSD15.
+
+    The official Specifications table marks LENGTH_LANE/UNIFORM_LOAD_W/
+    UNIFORM_LOAD_LOAD_LENGTH_L/POINT_ITEMS as unconditionally "Required",
+    but the official Standard-vehicle request example omits all three
+    UNIFORM_LOAD_* fields (Lane-only) and the official User-Defined
+    Truck/Lane example omits LOADED_LENGTH/W1/W2/D1/D2/EXP — so actual
+    requiredness depends on USER_LOAD_TYPE ("Truck/Lane" vs a predefined
+    Standard vehicle) and LENGTH_LANE, not a fixed set. Build only the
+    fields your worked example needs, matching this SDK's convention for
+    other conditionally-required payloads.
+    """
+
+    LOAD_TYPE: int  # 0=75% of Design Load/1=25% of Design Load, meaningful only for KL-510LNE; default 0, optional
+    LOADED_LENGTH: float  # Lane Loaded Length, User Defined Truck/Lane only, default 60, optional
+    W1: float  # Distribution Load Not Exceeding Loaded Length, default 12.7, optional
+    W2: float  # Distribution Load Exceeding Loaded Length, default 12.7, optional
+    D1: float  # Spacing dD1, User Defined Train only, default 0, optional
+    D2: float  # Spacing dD2, User Defined Train only, default 0, optional
+    EXP: float  # Exponent to calculate distribution load of W2, default 0.1, optional
+    DYN_LOAD_ALLOWANCE: float  # Dynamic Load Allowance (%), default 0, optional
+    LENGTH_LANE: int  # 0=1st Model/1=2nd Model, conditionally required — see class docstring
+    LENGTH_LANE_USER: float  # Length of Lane Load (User), used when LENGTH_LANE=0, default 0, optional
+    CONVERT_DIST_LOAD: bool  # Convert point load to distributed load, default false, optional
+    UNIFORM_LOAD_NUM: float  # Number of Uniform Load (Lane only) — N items means N-1, default 0, optional
+    UNIFORM_LOAD_DIST: float  # Uniform Load Distance, Lane only, default 0, optional
+    UNIFORM_LOAD_W: float  # Uniform Load, Lane only, conditionally required — see class docstring
+    UNIFORM_LOAD_LOAD_LENGTH_L: float  # Uniform Load Length, Lane only, conditionally required — see class docstring
+    POINT_ITEMS: List[VehicleKsceLsd15PointItem]  # axle-load array, conditionally required — see class docstring
+
+
 class VehicleEurocodeParams(TypedDict, total=False):
     """VEH_EUROCODE sub-object of /db/MVHL, used instead of VEH_DEFAULT for
     Eurocode's predefined load models (Load Model 1/2/3, rail HSLM-A/B, ...).
@@ -431,13 +481,14 @@ class VehiclePayload(TypedDict, total=False):
     real Eurocode PSC bridge model: its predefined "Load Model 1" vehicle
     entry has **no STANDARD_CODE key at all** and uses VEH_EUROCODE instead
     of VEH_DEFAULT — so despite the table below marking both "required",
-    that's only true for the generic/VEH_DEFAULT shape. Only VEH_EUROCODE is
-    typed here (`VehicleEurocodeParams`); the other 10 country-specific
-    sub-objects are confirmed to exist via `/info` but not individually
-    typed — pass them as extra untyped dict keys if you need one.
+    that's only true for the generic/VEH_DEFAULT shape. VEH_EUROCODE and
+    VEH_KSCE_LSD15 are typed here (`VehicleEurocodeParams`,
+    `VehicleKsceLsd15Params`); the other 9 country-specific sub-objects are
+    confirmed to exist via `/info` but not individually typed — pass them
+    as extra untyped dict keys if you need one.
     """
 
-    MVLD_CODE: int  # Moving Load Code, required
+    MVLD_CODE: int  # Moving Load Code, required — e.g. 13 for KSCE-LSD15/VEH_KSCE_LSD15, see VehicleKsceLsd15Params
     VEHICLE_LOAD_NAME: str  # Vehicular Load Name (user-assigned), required
     VEHICLE_LOAD_NUM: int  # Vehicular Load Number, required
     VEHICLE_TYPE_NAME: str  # Vehicular Type Name (predefined vehicle name), required
@@ -445,6 +496,7 @@ class VehiclePayload(TypedDict, total=False):
     USER_LOAD_TYPE: str  # User Load Type (when user-defined), optional
     VEH_DEFAULT: VehicleDefaultParams  # Default Parameters, required for the generic shape — see class docstring
     VEH_EUROCODE: VehicleEurocodeParams  # Eurocode predefined load models, used instead of VEH_DEFAULT — see class docstring
+    VEH_KSCE_LSD15: VehicleKsceLsd15Params  # KSCE-LSD15 predefined/user-defined vehicles, used instead of VEH_DEFAULT when STANDARD_CODE="KSCE-LSD15" — see class docstring
     LOAD_ITEMS: List[VehicleLoadItem]  # User-defined axle-load items, optional
 
 

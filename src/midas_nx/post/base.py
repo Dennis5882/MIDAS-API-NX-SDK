@@ -57,7 +57,6 @@ def get_table(
     stage_step: Optional[List[str]] = None,
     parts: Optional[List[str]] = None,
     story_names: Optional[List[str]] = None,
-    sect_position: Optional[str] = None,
     modes: Optional[List[str]] = None,
     additional: Optional[Dict[str, Any]] = None,
     set_calculation_method: Optional[Dict[str, Any]] = None,
@@ -79,11 +78,13 @@ def get_table(
     names with a type suffix, e.g. "DL(ST)", "COMB1(CB)", "CS1(CS)".
     opt_cs/stage_step: analysis-result tables only (ch19-21) — enable and
     select construction-stage steps, e.g. ["CS1:001(first)", "CS1:002(last)"].
-    parts: design-force tables (ch23) and Wall Force (ch20) — member
-    end/location or top/bot part selection, e.g. ["PartI", "PartJ"].
+    parts: design-force tables (ch23) only — member end/location or top/bot
+    part selection, e.g. ["PartI", "PartJ"]. Not Wall Force (ch20) — MIDASIT
+    confirmed 2026-07-30 (Jira MAPI-2012) that table type never supported
+    PARTS or SECT_POSITION; both were removed from the official article, and
+    this SDK's own get_wall_force_table() no longer accepts either.
     story_names: Story-series (ch21) and Wall Force (ch20) tables only —
     restrict to specific story names; omitting it selects all stories.
-    sect_position: Wall Force (ch20) only — section position selector.
     modes: Story Mode Shape (ch21) only — mode filter, e.g. ["Mode1", "Mode2"];
     omitting it returns all modes.
     additional: Story-series tables (ch21) only — the table-type-specific
@@ -117,8 +118,6 @@ def get_table(
         argument["PARTS"] = parts
     if story_names is not None:
         argument["STORY_NAMES"] = story_names
-    if sect_position is not None:
-        argument["SECT_POSITION"] = sect_position
     if modes is not None:
         argument["MODES"] = modes
     if additional is not None:

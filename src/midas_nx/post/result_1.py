@@ -1626,8 +1626,6 @@ def get_wall_force_table(
     load_case_names: Optional[List[str]] = None,
     opt_cs: Optional[bool] = None,
     stage_step: Optional[List[str]] = None,
-    sect_position: Optional[str] = None,
-    parts: Optional[List[str]] = None,
     story_names: Optional[List[str]] = None,
     client: Optional[MidasClient] = None,
 ) -> dict:
@@ -1642,11 +1640,15 @@ def get_wall_force_table(
     bot columns overwrite them). Slice by position instead: ``row[5:12]`` is
     the top group and ``row[12:19]`` the bot group, each in HEAD's order.
 
-    story_names restricts to specific stories (default: all); parts selects
-    result part(s) (e.g. "top"/"bot"). Note that sect_position and parts
-    appear only in the official article's JSON Schema — neither the
-    Specifications table nor the worked example describes them — so their
-    accepted values are inferred from the key names and response shape.
+    story_names restricts to specific stories (default: all).
+
+    ⚠️ 2026-07-30: this table type does NOT accept ``sect_position``/``parts``
+    (removed from the function signature). An earlier version of this
+    docstring inferred both as accepted from their appearance in the
+    official article's JSON Schema alone; MIDASIT confirmed (Jira MAPI-2012)
+    this table never supported them and removed both from the official
+    article too. If you need a specific top/bot part, slice HEAD/DATA
+    yourself per the note above rather than requesting it server-side.
     """
     return get_table(
         TABLE_TYPE_WALL_FORCE_MOMENT,
@@ -1658,8 +1660,6 @@ def get_wall_force_table(
         load_case_names=load_case_names,
         opt_cs=opt_cs,
         stage_step=stage_step,
-        sect_position=sect_position,
-        parts=parts,
         story_names=story_names,
         client=client,
     )

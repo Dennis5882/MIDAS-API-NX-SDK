@@ -86,10 +86,15 @@ def main() -> None:
     modules_by_chapter: dict[str, set[str]] = {}
     implemented_chapters: set[str] = set()
     for e in coverage["endpoints"]:
-        chapter = e["chapter_file"]
-        if e["status"] == "implemented":
-            modules_by_chapter.setdefault(chapter, set()).add(e["module"])
-            implemented_chapters.add(chapter)
+        # A ledger entry can span multiple chapters (e.g. one module
+        # implementing endpoints from both ch19 and ch20 records
+        # "19_....md / 20_....md") - split so each chapter file matches
+        # individually against changed_files, instead of only the compound
+        # string ever matching.
+        for chapter in e["chapter_file"].split(" / "):
+            if e["status"] == "implemented":
+                modules_by_chapter.setdefault(chapter, set()).add(e["module"])
+                implemented_chapters.add(chapter)
 
     stale = {
         chapter: sorted(modules_by_chapter[chapter])
