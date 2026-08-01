@@ -5,6 +5,28 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
+> Last updated: 2026-08-02, at v1.1.0. **v1.0.0 shipped 2026-07-29** (public
+> API freeze, all three gate criteria below met) and was verified live on
+> PyPI the same day. **v1.1.0 shipped 2026-08-02**: syncing 3 manual chapters
+> that drifted from the vendored `MIDAS-API` repo (`aeca675` → `7167365`,
+> `docs/coverage.json`'s `vendored_at_commit`) — `STORY_DRIFT_METHOD`'s first
+> enum value corrected back from "at" to "on" the Center of Mass for Story
+> Stability Coefficient specifically (MIDASIT confirmed via Jira MAPI-2009
+> that an earlier normalization pass wrongly assumed it shared #13/#17's "at"
+> wording — same enum, same mistake pattern as the v0.11.1 incident below, a
+> different specific value), a newly-typed `VehicleKsceLsd15Params`
+> (KSCE-LSD15 vehicles use `VEH_KSCE_LSD15`/`MVLD_CODE=13`, not
+> `VEH_DEFAULT`/`MVLD_CODE=1`), Ultimate Story Shear Force Check's new
+> optional `ADDITIONAL.SET_ANGLE`, and — the freeze's first breaking change —
+> `get_table()`/`get_wall_force_table()` drop `sect_position` (and the latter
+> drops `parts` too), since MIDASIT confirmed (Jira MAPI-2012) Wall Force
+> never supported either field; this SDK's own fields were an inferred guess
+> from the JSON Schema alone. Also fixed a `check_manual_drift.py` bug that
+> silently never matched compound `chapter_file` ledger entries (e.g.
+> `"19_....md / 20_....md"`) against individual changed filenames. The
+> paragraph below is the state as of v0.14.0/pre-freeze and is kept for
+> history; treat coverage/status numbers in it as of that date, not current.
+>
 > Last updated: 2026-07-29, at v0.14.0 (398/398 documented endpoints — the
 > last 8 Hyper-S `-M1` stubs landed today from `/info/db/...` introspection,
 > closing v1.0.0 gate item (a), see below; 303/398 live-verified per
@@ -197,7 +219,7 @@ mirroring the `db/*.py` payload-typing style but at the whole-body level.
 
 ---
 
-## 2. Current status (v0.11.2)
+## 2. Current status (as of 2026-07-29, pre-v1.0.0-freeze — table below predates v1.0.0/v1.1.0, see header)
 
 | Area | Chapters | Endpoints | State |
 |---|---|---|---|
@@ -611,6 +633,17 @@ Status after 2026-07-29:
 newly-surfaced (c)-adjacent question above (wider live drift audit before
 freezing) — a call for the author, not a blocker by the gate's original text.
 
+**v1.0.0 shipped 2026-07-29** on this basis (GitHub Release + `publish.yml` +
+PyPI all confirmed live that day). The wider-live-drift-audit question above
+was left open by choice, not resolved — and it caught something the same
+day: **v1.1.0 (2026-08-02) broke the freeze**, removing `sect_position` from
+`get_table()`/`get_wall_force_table()` (and `parts` from the latter) after
+MIDASIT confirmed (Jira MAPI-2012) Wall Force never actually supported
+either field — this SDK's fields were an inferred guess, not confirmed
+against the product. "Frozen" here has always meant "no *known* reason left
+to break it," not "provably will never break" — the open audit question is
+exactly why that's the honest framing rather than a stronger guarantee.
+
 ### Cross-cutting / backlog (any time)
 
 - ~~Resolve the undocumented Hyper-S stubs~~ — done 2026-07-29, see the
@@ -646,10 +679,11 @@ freezing) — a call for the author, not a blocker by the gate's original text.
 | v0.12.0 ✅ | Client correctness — `MidasResultError` for 200-with-`error` bodies, non-JSON responses kept inside the exception hierarchy, `items()` empty-shape fix, `post.base.unwrap_table()`, `__version__` single-sourced | published |
 | v0.13.0 ✅ | Hyper-S corrected to Civil-only (`HYPER_S_ONLY`), A1 live sweep complete across both products (295/390), D4 matrix has both halves | published |
 | v0.14.0 ✅ | `delete()` no longer empties the table (per-id URL) + `delete_all()`, `analyze()` raises on a failed solve, `scripts/live_crud_check.py` | published |
-| v0.15.0 (pending) | Bundles the 2026-07-29 `src/` diff: 53 PRODUCTS corrections, `/db/REBW` schema rewrite, `STORY_IRR_PARAM` enum fix, and the 8 Hyper-S `-M1` stubs (resolves v1.0.0 gate (a)); plus Phase 6 remainder — screenshot-driven beginner walkthrough (C1 pt. 2) | a non-developer can get to a first result from the docs alone |
-| v0.16.0 | Phase 7 — Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
-| v0.17.0+ | Phase 8 — `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
-| v1.0.0 | Public API freeze: all three gate criteria met as of 2026-07-29 (Hyper-S stub decision resolved, core paths live-verified, manual-diff pipeline survived a real change) — only the wider-live-drift-audit question (surfaced by the REBW find) remains open | full documented surface covered, live-verified, change-detection pipeline live |
+| ~~v0.15.0~~ | Never shipped as its own release — the planned bundle (53 PRODUCTS corrections, `/db/REBW` schema rewrite, `STORY_IRR_PARAM` enum fix, 8 Hyper-S `-M1` stubs) landed directly in v1.0.0 instead (`5b7fc3c`, `05977a5`), same day the freeze gate closed | superseded by v1.0.0 |
+| v1.0.0 ✅ | Public API freeze: all three gate criteria met 2026-07-29 (Hyper-S stub decision resolved, core paths live-verified, manual-diff pipeline survived a real change) — only the wider-live-drift-audit question (surfaced by the REBW find) left open by choice | published — GitHub Release + `publish.yml` + PyPI confirmed live 2026-07-29 |
+| v1.1.0 ✅ | First post-freeze breaking change: `get_table()`/`get_wall_force_table()` drop `sect_position`/`parts` per MIDASIT's confirmation (Jira MAPI-2012) Wall Force never supported them; plus the open drift-audit question above catching a real drift on the first sync since the freeze (`STORY_DRIFT_METHOD` "on" vs "at", `VEH_KSCE_LSD15`/`MVLD_CODE=13`) | published 2026-08-02 |
+| v0.16.0/Phase 7 (not started) | Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
+| v0.17.0+/Phase 8 (not started) | `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
 
 Each version ships when its phase's chapters are 100% (minus undocumented
 stubs) and green in CI. Release = bump `pyproject.toml` version, tag, publish

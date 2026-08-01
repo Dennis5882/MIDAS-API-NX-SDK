@@ -205,12 +205,19 @@ Version bumps are warranted **only when `src/midas_nx/` behaviour or packaged me
 `scripts/`, `docs/`, and `.github/` don't ship in the wheel. Re-derive this from the actual diff
 each time rather than assuming.
 
-1. Commit the code changes.
+1. Commit the code changes **together with `PLAN.md`'s "Last updated" line and §2/§4 tables**,
+   updated to the state this release actually leaves the repo in. This step used to be a separate,
+   easy-to-skip rule stated only in "Where things go" above, disconnected from this checklist — and
+   it did get skipped: the v1.0.0 bump commit (`0fb0454`, 2026-07-29) said in its own message that
+   all three of PLAN.md's v1.0.0 gate criteria were met, but never touched `PLAN.md` itself, and
+   that went unnoticed until the v1.1.0 release. Don't repeat that: if this release changes what
+   §2's status table or §4's milestone table claims, that's part of "the code changes," not an
+   optional follow-up.
 2. Separate commit: `chore: bump version to vX.Y.Z` editing only `src/midas_nx/__init__.py`'s
    `__version__`. That is the **single source** — `pyproject.toml` declares `dynamic = ["version"]`
    and hatchling reads it from there. (Until v0.11.2 the bump edited `pyproject.toml` instead, which
    left `midas_nx.__version__` reporting `0.10.0` on a `0.11.2` install; `tests/test_version.py`
-   now fails if the two drift apart.)
+   now fails if the two drift apart.) Keep `PLAN.md` out of *this* commit — it belongs in step 1.
 3. `git push origin main`.
 4. **The author publishes the GitHub Release manually via the web UI** (tag `vX.Y.Z`) — `gh` CLI is
    not installed here and no `GITHUB_TOKEN`/`GH_TOKEN` is set, so don't attempt it. Draft the release
