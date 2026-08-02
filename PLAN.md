@@ -5,7 +5,14 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-08-02, at v2.1.0. **v2.1.0 shipped 2026-08-02**: drops
+> Last updated: 2026-08-02, at v2.1.1. **v2.1.1 shipped 2026-08-02**:
+> re-applied the three Dependabot floor bumps that had been closed for
+> blocking on Python 3.9 (`requests>=2.28`→`>=2.34.2`, `mypy>=1.11`→`>=2.3.0`,
+> `pytest>=7.0`→`>=9.1.1`) — v2.1.0's 3.9 drop, minutes earlier, removed the
+> only reason they'd failed CI. `requests` is a runtime dependency, so this is
+> packaged metadata and bump-worthy on its own; no public API changed.
+>
+> Previously: **v2.1.0 shipped 2026-08-02**: drops
 > Python 3.9/3.10/3.11 support — `requires-python` is now `>=3.12`, the CI
 > matrix is `["3.12", "3.13"]`, and `[tool.mypy]`/`[tool.ruff]`'s
 > `python_version`/`target-version` follow. Triggered by three Dependabot PRs
@@ -765,6 +772,7 @@ exactly why that's the honest framing rather than a stronger guarantee.
 | v2.0.0 ✅ | External-review response. **Breaking:** `delete_all()` requires `confirm=True`. Adds per-request `timeout=`, mypy (clean, 41 modules) + the full 3.9–3.13 CI matrix + a built-wheel smoke test, a read/write split in the live-verification numbers (63 write / 329 read), a MkDocs site with a generated API reference, `SECURITY.md`/`CONTRIBUTING.md` with an explicit SemVer + deprecation policy, absolute README links that survive PyPI, and the employee-led project-status statement | published 2026-08-02 |
 | v2.0.1 ✅ | Packaged-metadata-only: README trimmed to a lightweight multilingual (en/ko/zh-tw/zh-cn) landing page, developer-level content consolidated onto the MkDocs site instead of duplicated | published 2026-08-02 |
 | v2.1.0 ✅ | Drops Python 3.9/3.10/3.11 support (`requires-python = ">=3.12"`); 3.9 was already 9 months past its own EOL, and three Dependabot floor bumps (requests/mypy/pytest) were stuck behind it | published 2026-08-02 |
+| v2.1.1 ✅ | Re-applies the requests/mypy/pytest floor bumps closed for blocking on Python 3.9, now that v2.1.0 dropped it | published 2026-08-02 |
 | v0.16.0/Phase 7 (not started) | Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
 | v0.17.0+/Phase 8 (not started) | `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
 
