@@ -230,10 +230,22 @@ each time rather than assuming.
 
 ## Conventions
 
-- **README framing**: lead with what the SDK does. The author removed all official/unofficial
-  positioning and the comparison against MIDASIT's own packages — don't reintroduce it. The README
-  carries parallel Korean / 繁體中文 / 简体中文 blocks plus `docs/{ko,en,zh-tw}/quickstart.md`;
-  a user-facing wording change usually means touching all of them.
+- **README framing**: lead with what the SDK does, then the project-status paragraph.
+  **Reversed 2026-08-02, at the author's explicit request** (this rule used to say
+  "the author removed all official/unofficial positioning — don't reintroduce it"):
+  the README and PyPI summary now *do* carry a short status paragraph, because the
+  author is a MIDAS IT employee and "built by an employee, from real product
+  verification" is the SDK's actual provenance and worth stating. It must convey all
+  three of: built by a MIDAS IT employee from hands-on verification; **not** an
+  officially released or supported MIDAS IT product; SDK issues → GitHub Issues,
+  product/licensing/Open-API-service issues → MIDAS IT official support.
+  Still forbidden: logos, trademark usage, any wording implying company endorsement,
+  and the comparison against MIDASIT's own packages. Don't rename the project.
+  Officialization talks with MIDASIT HQ are open and undecided as of 2026-08-02 — if
+  they conclude, this wording is the first thing to revisit.
+  The README carries parallel Korean / 繁體中文 / 简体中文 blocks plus
+  `docs/{ko,en,zh-tw}/quickstart.md`; a user-facing wording change usually means
+  touching all of them.
 - **Windows consoles are cp949.** Non-ASCII in `print()` or an uncaught traceback either crashes or
   mangles. Scripts call `sys.stdout.reconfigure(encoding="utf-8")`; user-facing exception text stays
   ASCII (hence `(Hint: ...)`, not an em-dash).

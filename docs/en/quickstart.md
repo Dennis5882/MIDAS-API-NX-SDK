@@ -5,6 +5,13 @@ but have never written a line of Python before. It walks through everything
 from installing Python to running your first script, in order, so you can
 follow it start to finish in one sitting.
 
+> `midas-nx` is an employee-led open-source project, built by a MIDAS IT
+> employee from hands-on product and API verification work. It is **not an
+> officially released or supported MIDAS IT product** — please report problems
+> with this SDK or guide on
+> [GitHub Issues](https://github.com/Dennis5882/MIDAS-API-NX-SDK/issues) rather
+> than to MIDAS IT product support, which does not cover it.
+
 > If you already write code, [README.md](../../README.md)'s Quick Start is
 > faster. This guide is for the step before that — for anyone who isn't
 > sure what Python even is yet.

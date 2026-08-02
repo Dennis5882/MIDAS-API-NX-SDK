@@ -246,7 +246,7 @@ class StoryStabilityCalculationMethod(TypedDict, total=False):
     The official Specifications table for this table misspells the first
     enum value as "Drfit on the Center of Mass". An earlier version of this
     docstring normalized it to "Drift at the Center of Mass" by assuming it
-    shared #13/#17's enum — MIDASIT confirmed (Jira MAPI-2009, 2026-07-30)
+    shared #13/#17's enum — MIDASIT confirmed 2026-07-30
     that assumption was wrong: the API follows the product UI's own wording
     per table, and #10's screen (Story Stability Coefficient) genuinely
     says "on", not "at" — only #17 Weight Irregularity Check uses "at". So

@@ -6,6 +6,11 @@
 > 如果您已經會寫程式，[README.md](../../README.md) 的 Quick Start 章節會更快。
 > 本指南是給「還不太確定 Python 是什麼」的讀者準備的前置步驟。
 
+> 本專案由 MIDAS IT 員工依據實際產品與 API 驗證經驗開發維護，屬於**員工自主的開源
+> 專案**，並非 MIDAS IT 官方發布或提供技術支援的產品。因此本指南與 SDK 的相關問題
+> 請至 [GitHub Issues](https://github.com/Dennis5882/MIDAS-API-NX-SDK/issues) 回報，
+> 官方產品技術支援並不涵蓋本專案。
+
 ## 開始之前需要準備
 
 - Windows 電腦（本指南以 Windows 為準說明）

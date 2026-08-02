@@ -1,0 +1,126 @@
+# Contributing to midas-nx
+
+Thanks for looking. This is an employee-led open-source project, not an
+officially supported MIDAS IT product — see the README for what that means for
+support expectations.
+
+## Where to report what
+
+| Problem | Where |
+| --- | --- |
+| SDK bug, wrong payload shape, missing endpoint, docs | [GitHub Issues](https://github.com/Dennis5882/MIDAS-API-NX-SDK/issues) |
+| Security vulnerability in this package | [SECURITY.md](./SECURITY.md) — privately, not a public issue |
+| MIDAS Gen NX / Civil NX product, licensing, Open API service | MIDAS IT official support channels |
+
+If a call fails, say which **product and build** (Help → About) — behaviour
+differs between Gen NX and Civil NX, and between builds of the same version.
+
+## Setup
+
+```bash
+pip install -e ".[dev]"
+```
+
+Three checks must pass before any commit. CI runs exactly these:
+
+```bash
+pytest                        # ~690 tests, no live server needed
+ruff check src tests scripts
+mypy
+```
+
+The test suite mocks HTTP with `responses`. **Nothing in it touches a real
+MIDAS NX session**, and it must stay that way — tests have to run in CI, where
+no product is installed.
+
+## Adding or changing an endpoint
+
+`CLAUDE.md` has the full loop; the short version:
+
+1. Scaffold from the manual chapter in the sibling
+   [MIDAS-API](https://github.com/Dennis5882/MIDAS-API) repo via
+   `scripts/gen_endpoint.py`.
+2. Follow `src/midas_nx/db/node_element.py` as the reference pattern:
+   `ENDPOINT` / `NAME` / `PRODUCTS` / `METHODS`, with a `{ClassName}Payload`
+   TypedDict directly above the class.
+3. TypedDicts are **documentation, not runtime validation** — the real schemas
+   are too conditional for one flat model. Put the manual's
+   requiredness/default in a trailing comment per field rather than trying to
+   encode it in the type.
+4. Add a test mirroring `tests/db/test_node_element.py` — assert the request
+   shape (URL, headers, JSON body).
+5. Mark it `"implemented"` in `docs/coverage.json`, then re-run
+   `python scripts/gen_roadmap.py`. **Never hand-edit `ROADMAP.md`** — it is
+   generated.
+
+## Two things that will get a PR sent back
+
+**Don't encode a manual claim as verified fact.** The official documentation
+has been wrong about field names, enum values, and defaults — repeatedly, and
+in ways only a live round trip caught. If the manual says it but nobody has
+seen it work, write it as the manual's claim, not as confirmed behaviour.
+
+**Don't weaken a safety guard to make something pass.** `delete()` issues one
+request per id on purpose; `delete_all()` requires `confirm=True` on purpose.
+Both exist because the documented alternative was measured destroying an
+entire table. Same for `MidasResultError`: a 200 response carrying an
+`{"error": ...}` body is a failure, and turning that check off to get a green
+test is not a fix.
+
+## Live verification
+
+Scripts under `scripts/` that talk to a real product are **not** run by CI and
+should not be run casually:
+
+- `scripts/live_readonly_sweep.py` — GET only. Safe against a model you have
+  open.
+- `scripts/live_smoke.py` — calls `/doc/NEW` and **discards unsaved work**.
+- `scripts/live_crud_check.py` — creates, updates and deletes real records.
+
+Never point the last two at a session holding a model that matters. Some calls
+have crashed the product outright; `docs/live_verification_notes.md` records
+which, and is worth reading before your first live run.
+
+If you do verify something live, record the product, build, date and what you
+actually observed — including a negative result. Don't upgrade an endpoint's
+`live_verified` entry in `docs/coverage.json` on the strength of a call that
+merely didn't error.
+
+## Versioning and compatibility
+
+[Semantic Versioning](https://semver.org/). The public API is everything
+exported from `midas_nx` plus the documented resource classes and endpoint
+functions — not private helpers (`_`-prefixed), and not the exact wording of
+an exception message.
+
+**Python:** 3.9+. Every version in the classifier list is tested in CI. Dropping
+one is a minor bump at least, announced in the release notes.
+
+**MIDAS NX:** there is no single "supported version" — the same endpoint can
+behave differently across products and builds. What a release claims is what
+was actually observed, recorded per endpoint in `docs/coverage.json` and
+narratively in `docs/live_verification_notes.md`. A product-side change can
+therefore break a working call without any release here.
+
+**Deprecation:** the normal path is deprecate in one minor release
+(`DeprecationWarning`, still functional, replacement named in the message and
+release notes), remove in the next major.
+
+**The exception is safety.** A default that can destroy a user's model is not
+kept working for a deprecation cycle just because SemVer would prefer it —
+during that cycle the hazard stays armed, which is the thing being fixed.
+Such a change ships immediately, is called out at the top of the release
+notes, and the fix is always a one-line edit at the call site.
+
+This has happened once, and is the precedent: `delete_all()` now requires
+`confirm=True`, and raises `DestructiveOperationError` without it — before
+sending anything, so a mistaken call costs nothing.
+
+```python
+Node.delete_all()                  # before
+Node.delete_all(confirm=True)      # now
+```
+
+## Commits
+
+Imperative subject, body explaining *why*. Match `git log`.

@@ -597,7 +597,7 @@ def get_column_design_forces_table(
     model), ruling out model content as the cause. No data loss either
     time after the standard crash-recovery cycle (dismiss dialogs →
     relaunch → New Project → close → reconnect with the same MAPI key).
-    Root cause unidentified; filed as MAPI-2431. Not yet tested on Civil
+    Root cause unidentified; reported to MIDASIT. Not yet tested on Civil
     NX. Same endpoint/underlying helper as
     :func:`get_brace_design_forces_table` and
     :func:`get_beam_design_forces_table` — treat those as equally at
@@ -635,7 +635,7 @@ def get_brace_design_forces_table(
 
     ⚠️ Shares the same ``TABLE`` endpoint/helper as
     :func:`get_column_design_forces_table`, which crashed Gen NX
-    (reproduced twice, MAPI-2431) — not independently tested, but treat
+    (reproduced twice, reported to MIDASIT) — not independently tested, but treat
     as equally at risk until it is."""
     return _get_rc_design_forces_table(
         TABLE_TYPE_BRACE_DESIGN_FORCES,
@@ -672,7 +672,7 @@ def get_beam_design_forces_table(
 
     ⚠️ Shares the same ``TABLE`` endpoint/helper as
     :func:`get_column_design_forces_table`, which crashed Gen NX
-    (reproduced twice, MAPI-2431) — not independently tested, but treat
+    (reproduced twice, reported to MIDASIT) — not independently tested, but treat
     as equally at risk until it is."""
     return _get_rc_design_forces_table(
         TABLE_TYPE_BEAM_DESIGN_FORCES,

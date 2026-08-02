@@ -596,7 +596,7 @@ def perform_src_optimal_design(
     bridge model with zero SRC-eligible sections/materials): the call
     itself timed out, then a same-session `GET /db/NODE` also timed out —
     a native dialog cascade had taken the whole session down, requiring a
-    full Civil NX restart to recover (no data loss). Filed as `MAPI-2429`.
+    full Civil NX restart to recover (no data loss). Reported to MIDASIT.
     See docs/live_verification_notes.md's 2026-07-31 "New crash found"
     section for the full dialog sequence.
 

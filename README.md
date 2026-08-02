@@ -3,10 +3,17 @@
 A unified Python SDK for the **MIDAS NX Open API** — one package covering both
 **MIDAS Civil NX** and **MIDAS Gen NX**, typed directly against the endpoint schema documented
 at [Dennis5882/MIDAS-API](https://github.com/Dennis5882/MIDAS-API). See
-[ROADMAP.md](./ROADMAP.md) for what's implemented so far vs. planned.
+[ROADMAP.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/ROADMAP.md) for what's implemented so far vs. planned.
+
+Built by a MIDAS IT employee, from hands-on verification against real Gen NX and
+Civil NX sessions. It is an employee-led open-source project — **not an officially
+released or supported MIDAS IT product**. Issues with this SDK belong on
+[GitHub Issues](https://github.com/Dennis5882/MIDAS-API-NX-SDK/issues); questions
+about the products, licensing, or the Open API service itself go to MIDAS IT's
+official support channels.
 
 > **New to programming?** If you're a structural engineer who's never written Python before,
-> [docs/en/quickstart.md](./docs/en/quickstart.md) walks through everything from installing
+> [docs/en/quickstart.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/docs/en/quickstart.md) walks through everything from installing
 > Python to running your first script.
 >
 > **한국어 사용자를 위한 안내**: `midas-nx`는 MIDAS Civil NX와 MIDAS Gen NX의 Open API를
@@ -14,27 +21,44 @@ at [Dennis5882/MIDAS-API](https://github.com/Dennis5882/MIDAS-API). See
 > 저장소](https://github.com/Dennis5882/MIDAS-API)에 문서화된 스펙을 기준으로 구현되어
 > 있습니다. 설치는 `pip install midas-nx`, 사용 예시는 아래 "Quick start" 절을
 > 참고하세요. 실제 Gen NX/Civil NX 세션으로 검증한 내용(주의할 점, 알려진 이슈)은
-> [docs/live_verification_notes.md](./docs/live_verification_notes.md)에 정리되어
+> [docs/live_verification_notes.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/docs/live_verification_notes.md)에 정리되어
 > 있습니다. **Python이나 프로그래밍이 처음이신 구조 엔지니어**는
-> [docs/ko/quickstart.md](./docs/ko/quickstart.md)에서 Python 설치부터 첫
+> [docs/ko/quickstart.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/docs/ko/quickstart.md)에서 Python 설치부터 첫
 > 스크립트 실행까지 순서대로 안내받으실 수 있습니다.
+>
+> `midas-nx`는 마이다스아이티 재직자가 실제 제품·API 검증 경험을 바탕으로
+> 개발·관리하는 **직원 주도형 오픈소스 프로젝트**입니다. 마이다스아이티가 공식적으로
+> 출시하거나 기술지원하는 제품은 아닙니다. SDK 자체의 문제는
+> [GitHub Issues](https://github.com/Dennis5882/MIDAS-API-NX-SDK/issues)로,
+> 제품·라이선스·Open API 서비스 자체에 대한 문의는 마이다스아이티 공식 지원 채널로
+> 문의해 주세요.
 >
 > **繁體中文使用者指南**：`midas-nx` 是將 MIDAS Civil NX 與 MIDAS Gen NX 的 Open API
 > 整合為單一 Python 套件的 SDK，同時涵蓋兩種產品，並根據
 > [MIDAS-API 手冊儲存庫](https://github.com/Dennis5882/MIDAS-API) 中記載的規格實作。
 > 安裝方式為 `pip install midas-nx`，使用範例請參考下方「Quick start」章節。實際在
 > Gen NX / Civil NX 連線環境中驗證過的內容（注意事項、已知問題）整理於
-> [docs/live_verification_notes.md](./docs/live_verification_notes.md)。**從未寫過
+> [docs/live_verification_notes.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/docs/live_verification_notes.md)。**從未寫過
 > Python 的結構工程師**，可參考
-> [docs/zh-tw/quickstart.md](./docs/zh-tw/quickstart.md)，內含從安裝 Python 到
+> [docs/zh-tw/quickstart.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/docs/zh-tw/quickstart.md)，內含從安裝 Python 到
 > 執行第一支腳本的完整步驟。
+>
+> 本專案由 MIDAS IT 員工依據實際產品與 API 驗證經驗開發維護，屬於**員工自主的開源
+> 專案**，並非 MIDAS IT 官方發布或提供技術支援的產品。SDK 本身的問題請至
+> [GitHub Issues](https://github.com/Dennis5882/MIDAS-API-NX-SDK/issues)；產品、
+> 授權或 Open API 服務本身的問題，請洽 MIDAS IT 官方支援管道。
 >
 > **简体中文使用指南**：`midas-nx` 是将 MIDAS Civil NX 与 MIDAS Gen NX 的 Open API
 > 整合为单一 Python 包的 SDK，同时支持两种产品，并根据
 > [MIDAS-API 手册仓库](https://github.com/Dennis5882/MIDAS-API) 中记载的规格实现。
 > 安装方式为 `pip install midas-nx`，使用示例请参考下方"Quick start"章节。在实际
 > Gen NX / Civil NX 连接环境中验证过的内容（注意事项、已知问题）整理于
-> [docs/live_verification_notes.md](./docs/live_verification_notes.md)。
+> [docs/live_verification_notes.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/docs/live_verification_notes.md)。
+>
+> 本项目由 MIDAS IT 员工基于实际产品与 API 验证经验开发维护，属于**员工自主的开源
+> 项目**，并非 MIDAS IT 官方发布或提供技术支持的产品。SDK 本身的问题请提交至
+> [GitHub Issues](https://github.com/Dennis5882/MIDAS-API-NX-SDK/issues)；产品、
+> 授权或 Open API 服务本身的问题，请联系 MIDAS IT 官方支持渠道。
 
 ## Use cases
 
@@ -110,7 +134,7 @@ configure(mapi_key="your-mapi-key-here", product="gen")
 MidasAPI("POST", "/doc/NEW", {"Argument": {}})
 ```
 
-More worked examples in [`examples/python/`](./examples/python/): a wind-load plate
+More worked examples in [`examples/python/`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/examples/python/): a wind-load plate
 (`kds_wind_load.py`) and a 20-element simply-supported beam with a load combination
 (`simple_beam_load_combination.py`).
 
@@ -144,7 +168,7 @@ More worked examples in [`examples/python/`](./examples/python/): a wind-load pl
   current field/type schema (`GET /info/db/...`) — a fallback for endpoints this SDK hasn't
   wrapped yet, or fields that changed since the vendored manual was last synced.
 
-See `docs/coverage.json` / [ROADMAP.md](./ROADMAP.md) for the full endpoint list, what's
+See `docs/coverage.json` / [ROADMAP.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/ROADMAP.md) for the full endpoint list, what's
 implemented, and where new endpoints should go.
 
 ## Testing
@@ -168,10 +192,46 @@ is still unidentified and the defensive pattern still matters —
 product-availability quirks not documented in the manual, and a couple of
 "documented optional but actually required under X" server validation
 quirks) are written up in
-[docs/live_verification_notes.md](./docs/live_verification_notes.md) — most
+[docs/live_verification_notes.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/docs/live_verification_notes.md) — most
 of the safe, actionable ones are also inlined as docstring warnings on the
 specific functions/fields involved, so `help()`/your editor will surface them
 directly.
+
+## Known issues — read before writing anything
+
+These are live-observed behaviours of the MIDAS NX API and products, not bugs
+in this package. Full detail and reproductions in
+[docs/live_verification_notes.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/docs/live_verification_notes.md).
+
+- **A 200 response does not mean success.** Several endpoints report a refusal
+  with an `{"error": {...}}` body under a 2xx status. This package raises
+  `MidasResultError` for those. Others don't even do that: `/doc/ANAL` reports
+  a failed solve as `{"message": "... Analysis failed."}`, and `/doc/SAVEAS`
+  answers `"... command complete"` for a save that never happened. **Verify a
+  write by reading it back.**
+- **`delete_all()` empties the whole table** — for `/db/NODE` that takes every
+  attached element with it, with no undo. It requires `confirm=True`. Use
+  `delete([ids])` for specific records.
+- **Paths belong to the machine running NX, not the one running your script.**
+  Calls go through a relay, so the product is often on another PC.
+  `EXPORT_PATH`, `/doc/SAVEAS`, `/doc/OPEN` and report/image paths all resolve
+  *there*. A path that doesn't exist on that machine raises a modal dialog on
+  that machine and blocks the session, while your HTTP call still returns
+  something that looks like success. Build paths from
+  `verify_connection()["user"]`, and never trust `os.path.exists()` locally.
+- **Any modal dialog blocks the entire API session**, not just the call that
+  caused it, until a human dismisses it — and `verify_connection()` still
+  answers `"connected"` the whole time. Treat a healthy connection check as
+  "the key is valid", not as clearance to proceed.
+- **Some calls have crashed the product outright.** The `*-ANAL` design-check
+  family and a few design/table endpoints have killed a live session; several
+  are reported to MIDAS IT. Use a short per-call `timeout=` and read the
+  result back separately rather than blocking on a response that may never
+  arrive.
+- **Don't run destructive scripts against a model that matters.**
+  `scripts/live_smoke.py` calls `/doc/NEW` and discards unsaved work;
+  `scripts/live_crud_check.py` writes and deletes real records. Only
+  `scripts/live_readonly_sweep.py` is safe against an open model.
 
 ## Troubleshooting
 
@@ -199,11 +259,16 @@ that message is the giveaway that something between you and MIDAS is interceptin
 
 ## Contributing
 
-Pick an unimplemented endpoint from [ROADMAP.md](./ROADMAP.md), follow the pattern in
+See [CONTRIBUTING.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/CONTRIBUTING.md)
+for setup, the endpoint-adding loop, live-verification safety rules, and the
+versioning/deprecation policy. To report a security issue privately, see
+[SECURITY.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/SECURITY.md).
+
+The short version: pick an unimplemented endpoint from [ROADMAP.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/ROADMAP.md), follow the pattern in
 `src/midas_nx/db/node_element.py` (or `doc.py` for `/doc/*`/`/ope/*`/`/view/*`-style plain-function
 endpoints), and add a test mirroring `tests/db/test_node_element.py`. Mark it `"implemented"` in
 `docs/coverage.json` (see `scripts/gen_roadmap.py`) and regenerate `ROADMAP.md`.
 
 ## License
 
-MIT — see [LICENSE](./LICENSE).
+MIT — see [LICENSE](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/LICENSE).

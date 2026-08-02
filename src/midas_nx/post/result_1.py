@@ -1645,7 +1645,7 @@ def get_wall_force_table(
     ⚠️ 2026-07-30: this table type does NOT accept ``sect_position``/``parts``
     (removed from the function signature). An earlier version of this
     docstring inferred both as accepted from their appearance in the
-    official article's JSON Schema alone; MIDASIT confirmed (Jira MAPI-2012)
+    official article's JSON Schema alone; MIDASIT confirmed 2026-07-30
     this table never supported them and removed both from the official
     article too. If you need a specific top/bot part, slice HEAD/DATA
     yourself per the note above rather than requesting it server-side.
