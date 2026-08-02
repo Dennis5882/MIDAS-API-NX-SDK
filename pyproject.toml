@@ -40,7 +40,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "pytest>=7.0",
-  "responses>=0.23",
+  "responses>=0.26.2",
   "ruff>=0.15",
   "mypy>=1.11",
   "types-requests",
