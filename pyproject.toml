@@ -56,11 +56,7 @@ docs = [
 [project.urls]
 Homepage = "https://github.com/Dennis5882/MIDAS-API-NX-SDK"
 Repository = "https://github.com/Dennis5882/MIDAS-API-NX-SDK"
-# Flip to https://dennis5882.github.io/MIDAS-API-NX-SDK/ once GitHub Pages is
-# enabled for this repo (Settings > Pages > Source: GitHub Actions) and
-# .github/workflows/docs.yml has run once. Pointing at it before then would
-# publish a 404 to PyPI, which is the exact bug the absolute-link fix removed.
-Documentation = "https://github.com/Dennis5882/MIDAS-API-NX-SDK#readme"
+Documentation = "https://dennis5882.github.io/MIDAS-API-NX-SDK/"
 "Bug Tracker" = "https://github.com/Dennis5882/MIDAS-API-NX-SDK/issues"
 Changelog = "https://github.com/Dennis5882/MIDAS-API-NX-SDK/releases"
 Manual = "https://github.com/Dennis5882/MIDAS-API"
