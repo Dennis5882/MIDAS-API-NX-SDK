@@ -46,4 +46,4 @@
 
 ---
 
-Full detailed notes: [`release_notes_v1.1.0.md`](./release_notes_v1.1.0.md).
+Full detailed notes: [`release_notes_v1.1.0.md`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/docs/release_notes_v1.1.0.md).
