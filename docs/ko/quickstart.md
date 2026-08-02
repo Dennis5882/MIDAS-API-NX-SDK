@@ -4,7 +4,7 @@
 처음이신 구조 엔지니어를 위한 것입니다. Python 설치부터 첫 스크립트 실행까지,
 한 번에 끝까지 따라 할 수 있도록 순서대로 안내합니다.
 
-> 개발 경험이 있으시다면 [README.md](../../README.md)의 Quick Start가 더 빠릅니다.
+> 개발 경험이 있으시다면 [README.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/README.md)의 Quick Start가 더 빠릅니다.
 > 이 가이드는 그 전 단계 — "Python이 뭔지도 잘 모르겠다"는 분들을 위한 것입니다.
 
 > `midas-nx`는 마이다스아이티 재직자가 실제 제품·API 검증 경험을 바탕으로
@@ -126,7 +126,7 @@ python first_script.py
 - **`MidasAuthError`가 뜬다면**: 3단계에서 복사한 키를 스크립트에 정확히
   붙여넣었는지 확인하세요. 키는 프로그램을 껐다 켜면 바뀔 수 있으니, 안 되면
   다시 발급받아 붙여넣어 보세요.
-- **회사 방화벽 안에 있다면**: [README.md](../../README.md)의 "Troubleshooting"
+- **회사 방화벽 안에 있다면**: [README.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/README.md)의 "Troubleshooting"
   섹션에 IT팀에 전달할 방화벽 허용 정보(포트/주소)가 정리되어 있습니다.
 
 ## 다음 단계
@@ -137,11 +137,11 @@ python first_script.py
   추가해줘"처럼 자연어로 요청하면 됩니다. AI가 실제 `midas-nx` 코드로 바꿔줄
   겁니다 — 이 SDK는 애초에 그렇게 함께 쓰기 편하도록 설계되었습니다(타입 힌트,
   명확한 에러 메시지 등).
-- 더 실무에 가까운 예제: GitHub의 [`examples/python/`](../../examples/python/)
+- 더 실무에 가까운 예제: GitHub의 [`examples/python/`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/examples/python/)
   폴더 (보 하중조합, 풍하중, 시공단계 등) — AI에게 "이 예제처럼 만들어줘"라고
   보여줘도 좋습니다.
-- 구현된 전체 기능 목록: [ROADMAP.md](../../ROADMAP.md)
-- 더 자세한 사용법·설계 원칙: [README.md](../../README.md)
+- 구현된 전체 기능 목록: [ROADMAP.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/ROADMAP.md)
+- 더 자세한 사용법·설계 원칙: [README.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/README.md)
 
 이 가이드를 따라 하다 막히는 부분이 있었다면 GitHub Issues에 알려주세요 —
 다음 사용자를 위해 가이드를 개선하는 데 큰 도움이 됩니다.

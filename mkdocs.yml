@@ -1,0 +1,83 @@
+site_name: midas-nx
+site_description: >-
+  Unified Python SDK for the MIDAS NX Open API (Civil NX + Gen NX).
+  An employee-led open-source project, not an official MIDAS IT product.
+site_url: https://dennis5882.github.io/MIDAS-API-NX-SDK/
+repo_url: https://github.com/Dennis5882/MIDAS-API-NX-SDK
+repo_name: Dennis5882/MIDAS-API-NX-SDK
+edit_uri: edit/main/docs/
+
+# MkDocs Material over Sphinx: the documentation that already exists in this
+# repo is Markdown, the API reference is generated from Google/reST-ish
+# docstrings that mkdocstrings reads directly, and nobody here needs Sphinx's
+# cross-project inventory machinery. Sphinx would mean converting the existing
+# guides to reST or bolting on MyST for no gain.
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.highlight
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            show_source: false
+            show_root_heading: true
+            heading_level: 3
+            members_order: source
+            docstring_section_style: list
+            filters: ["!^_"]
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.details
+
+# Repo artifacts that live under docs/ but are not documentation pages.
+exclude_docs: |
+  coverage.json
+  vendor_report_ko.md
+  vendor_report_ko.docx
+  vendor_repro_nmas.py
+  release_notes_*.md
+  Codex Report/
+
+nav:
+  - Overview: index.md
+  - Getting started:
+      - English: en/quickstart.md
+      - 한국어: ko/quickstart.md
+      - 繁體中文: zh-tw/quickstart.md
+  - Safety:
+      - Destructive operations and recovery: safety.md
+  - Reference:
+      - Client and exceptions: reference/client.md
+      - DB resources: reference/db.md
+      - Document, operations, view: reference/doc-ope-view.md
+  - Verification:
+      - How endpoints are verified: verification.md
+      - Live session notes: live_verification_notes.md

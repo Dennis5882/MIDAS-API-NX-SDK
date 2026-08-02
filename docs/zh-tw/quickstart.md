@@ -3,7 +3,7 @@
 本指南適合每天使用 MIDAS Gen NX/Civil NX，但從未寫過 Python 程式的結構工程師。
 內容從安裝 Python 開始，一路帶到執行第一支腳本為止，依序照做即可一次完成。
 
-> 如果您已經會寫程式，[README.md](../../README.md) 的 Quick Start 章節會更快。
+> 如果您已經會寫程式，[README.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/README.md) 的 Quick Start 章節會更快。
 > 本指南是給「還不太確定 Python 是什麼」的讀者準備的前置步驟。
 
 > 本專案由 MIDAS IT 員工依據實際產品與 API 驗證經驗開發維護，屬於**員工自主的開源
@@ -118,7 +118,7 @@ python first_script.py
   告訴您該檢查什麼。
 - **出現 `MidasAuthError`**：請確認貼上的金鑰與第 3 步複製的完全一致。
   重新啟動程式後金鑰可能會改變，若發生此情況請重新發行並貼上新的金鑰。
-- **身處公司防火牆環境**：請參考 [README.md](../../README.md) 的
+- **身處公司防火牆環境**：請參考 [README.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/README.md) 的
   「Troubleshooting」章節，內含可交給 IT 團隊的連接埠/位址資訊。
 
 ## 下一步
@@ -129,10 +129,10 @@ python first_script.py
   載重組合」，AI 就會幫您轉換成實際的 `midas-nx` 程式碼。這套 SDK 本身就是為了
   方便這樣搭配使用而設計的（型別提示、清楚的錯誤訊息等）。
 - 更貼近實務的範例：GitHub 上的
-  [`examples/python/`](../../examples/python/) 資料夾（梁載重組合、
+  [`examples/python/`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/examples/python/) 資料夾（梁載重組合、
   風載重、施工階段等）——也可以直接拿給 AI 說「照這個範例幫我做」。
-- 已實作功能完整清單：[ROADMAP.md](../../ROADMAP.md)
-- 更詳細的使用方式與設計說明：[README.md](../../README.md)
+- 已實作功能完整清單：[ROADMAP.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/ROADMAP.md)
+- 更詳細的使用方式與設計說明：[README.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/README.md)
 
 若您在跟著本指南操作時卡關，歡迎到 GitHub Issues 告訴我們——
 這能幫助我們為下一位使用者改善這份指南。

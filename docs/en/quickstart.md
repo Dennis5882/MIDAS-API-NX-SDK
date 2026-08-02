@@ -12,7 +12,7 @@ follow it start to finish in one sitting.
 > [GitHub Issues](https://github.com/Dennis5882/MIDAS-API-NX-SDK/issues) rather
 > than to MIDAS IT product support, which does not cover it.
 
-> If you already write code, [README.md](../../README.md)'s Quick Start is
+> If you already write code, [README.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/README.md)'s Quick Start is
 > faster. This guide is for the step before that — for anyone who isn't
 > sure what Python even is yet.
 
@@ -133,7 +133,7 @@ Gen NX window will show a new 0.6m x 0.6m concrete column, 3.2m tall.
   Keys can change when you restart the app — get a fresh one and paste it
   in again if this happens.
 - **Behind a corporate firewall**: see the "Troubleshooting" section in
-  [README.md](../../README.md) for the exact port/address info to hand to
+  [README.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/README.md) for the exact port/address info to hand to
   your IT team.
 
 ## Next steps
@@ -145,11 +145,11 @@ Gen NX window will show a new 0.6m x 0.6m concrete column, 3.2m tall.
   load combination" — and it'll turn that into real `midas-nx` code. This
   SDK is built to make that easy (type hints, clear error messages).
 - More realistic examples: the
-  [`examples/python/`](../../examples/python/) folder on GitHub (beam load
+  [`examples/python/`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/examples/python/) folder on GitHub (beam load
   combinations, wind loads, construction stages, ...) — a good thing to
   show your AI assistant as a "build me something like this" reference.
-- Full list of what's implemented: [ROADMAP.md](../../ROADMAP.md)
-- More detailed usage and design notes: [README.md](../../README.md)
+- Full list of what's implemented: [ROADMAP.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/ROADMAP.md)
+- More detailed usage and design notes: [README.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/README.md)
 
 If you got stuck anywhere following this guide, please open a GitHub
 issue — it helps make the guide better for the next person.
