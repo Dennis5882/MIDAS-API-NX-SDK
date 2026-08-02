@@ -5,7 +5,22 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-08-02, at v2.0.0. **v2.0.0 shipped 2026-08-02**, in
+> Last updated: 2026-08-02, at v2.0.1. **v2.0.1 shipped 2026-08-02**: no
+> `src/midas_nx/` behaviour changed — this is a packaged-metadata-only
+> release. `README.md` (which ships verbatim as the PyPI project description)
+> was cut from ~15.7 KB to ~4.3 KB: the English/Korean/繁體中文/简體中文
+> blocks now carry only the project-status statement, install command, and a
+> beginner-guide link each, with the developer-level "Design"/"Testing"/
+> "Known issues"/"Troubleshooting" sections dropped in favor of linking to
+> the MkDocs site, which already carried the same content (`docs/index.md`,
+> `docs/safety.md`, `CONTRIBUTING.md`). The one piece of content that wasn't
+> already duplicated there — the corporate-firewall/SSL-inspection
+> troubleshooting table — was moved into `docs/safety.md` first, so nothing
+> was lost. Bumped because `pyproject.toml`'s `readme = "README.md"` makes
+> the README packaged metadata, and this release's Releasing-checklist step 1
+> is this paragraph plus the milestone-table row below.
+>
+> Previously: **v2.0.0 shipped 2026-08-02**, in
 > response to an external code review of the (then already stale) v0.14.0
 > tree. Roughly 60% of that review's findings were real, 25% already done,
 > and 15% declined with reasons recorded below. What landed:
@@ -732,6 +747,7 @@ exactly why that's the honest framing rather than a stronger guarantee.
 | v1.0.0 ✅ | Public API freeze: all three gate criteria met 2026-07-29 (Hyper-S stub decision resolved, core paths live-verified, manual-diff pipeline survived a real change) — only the wider-live-drift-audit question (surfaced by the REBW find) left open by choice | published — GitHub Release + `publish.yml` + PyPI confirmed live 2026-07-29 |
 | v1.1.0 ✅ | First post-freeze breaking change: `get_table()`/`get_wall_force_table()` drop `sect_position`/`parts` per MIDASIT's confirmation (Jira MAPI-2012) Wall Force never supported them; plus the open drift-audit question above catching a real drift on the first sync since the freeze (`STORY_DRIFT_METHOD` "on" vs "at", `VEH_KSCE_LSD15`/`MVLD_CODE=13`) | published 2026-08-02 |
 | v2.0.0 ✅ | External-review response. **Breaking:** `delete_all()` requires `confirm=True`. Adds per-request `timeout=`, mypy (clean, 41 modules) + the full 3.9–3.13 CI matrix + a built-wheel smoke test, a read/write split in the live-verification numbers (63 write / 329 read), a MkDocs site with a generated API reference, `SECURITY.md`/`CONTRIBUTING.md` with an explicit SemVer + deprecation policy, absolute README links that survive PyPI, and the employee-led project-status statement | published 2026-08-02 |
+| v2.0.1 ✅ | Packaged-metadata-only: README trimmed to a lightweight multilingual (en/ko/zh-tw/zh-cn) landing page, developer-level content consolidated onto the MkDocs site instead of duplicated | published 2026-08-02 |
 | v0.16.0/Phase 7 (not started) | Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
 | v0.17.0+/Phase 8 (not started) | `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
 

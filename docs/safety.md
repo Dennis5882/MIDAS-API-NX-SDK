@@ -139,6 +139,34 @@ about:
 `/doc/NEW` has itself crashed Gen NX when the open document was a large real
 model. Get the document to an empty state first, and confirm it.
 
+## Connectivity troubleshooting
+
+`MidasConnectionError` almost always means MIDAS Gen/Civil NX isn't running,
+isn't connected via Open API, or the connection died mid-session.
+`client.verify_connection()` is the fastest way to tell those apart — it
+reports whether the product process is alive and whether the current
+MAPI-Key is valid for it, before you burn a request timeout finding out the
+hard way.
+
+If the app is running and still won't connect, it's usually a corporate
+firewall blocking outbound traffic to the MIDAS relay. Share this with your
+network/security team:
+
+| Item | Value |
+| --- | --- |
+| Protocol | `https`, `wss` |
+| Port | `443` |
+| IP | `121.157.60.1/32` (MIDAS public NAT IP) |
+| URI | `https://moa-engineers.midasit.com` |
+
+If your network does SSL inspection/interception on all outbound traffic,
+`moa-engineers.midasit.com` needs to be excluded from it — several users have
+hit silent connection failures caused by SSL inspection specifically,
+separate from a plain firewall block. When an appliance answers in the
+product's place, you'll get a `MidasServerError` reading `response body is
+not JSON: '<html>...'` — that message is the giveaway that something between
+you and MIDAS is intercepting the request.
+
 ## Timeouts are not rollbacks
 
 A client-side timeout means you stopped waiting. It does not mean the server
