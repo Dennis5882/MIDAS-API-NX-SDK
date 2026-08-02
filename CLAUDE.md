@@ -33,7 +33,14 @@ runs exactly these on Python 3.9 and 3.13.
     table, so these are functions over one generic `get_table()`, not a resource per table).
   - `design/` — design-code chapters (`rc_kds/`, `steel_kds.py`, `src_aiksrc2k.py`).
 - `docs/coverage.json` — the endpoint ledger. `ROADMAP.md` is **generated from it** — never hand-edit
-  `ROADMAP.md`.
+  `ROADMAP.md`. Each `live_verified` entry carries a **`level`** of `"read"` or `"write"`, and
+  `ROADMAP.md` counts the two separately: `"write"` means a live call actually mutated model data or
+  wrote a file on the NX host, `"read"` covers everything else *including POST-shaped reads*
+  (`/post/TABLE`, `*-REPORT` calls that returned "Please perform analysis" without producing
+  output). The HTTP verb doesn't decide it. Reads and writes prove different things — a GET proves
+  the route exists and parses, only a round trip proves the request shape is one the server accepts,
+  and every field-name/enum/default defect found so far was invisible to reads. Setting `level` on a
+  new entry is not optional; `gen_roadmap.py` emits a warning banner for any entry missing it.
 - `docs/live_verification_notes.md` — findings from real Gen/Civil NX sessions that are *not* in the
   manual. Deliberately kept out of the typed contracts; read it before trusting any `PRODUCTS` change.
 - `PLAN.md` — the hand-maintained big-picture roadmap (`ROADMAP.md` is the generated per-endpoint

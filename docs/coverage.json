@@ -23,7 +23,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -44,7 +45,8 @@
         "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. save_as() to a new test file then open_project() on that same path round-tripped cleanly (273 nodes intact after reopen); also used to verify close_project() below (reopen after close restored the session).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -65,7 +67,8 @@
         "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. close_project() succeeded, and a follow-up GET /db/NODE correctly answered 'The project is not opened' (clean, not a crash/hang) -- reopening the same file afterward restored a working session with all 273 nodes intact.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -86,7 +89,8 @@
         "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. save() succeeded after switching the open document to the test file via open_project() -- did not touch the original production file.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -107,7 +111,8 @@
         "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. save_as() to a new .mcbx file succeeded; verified for real (not just a trusted response) by immediately open_project()-ing that same path and confirming all 273 nodes came back.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -128,7 +133,8 @@
         "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. First 2 tries failed ('Please check the file name or extension' with a .mcbx path, then 'Please specify the correct stage name' with the post/TABLE-style qualified stage_step like 'CS7:001(last)') before succeeding with the plain stage NAME ('CS7', matching /db/STAG's own NAME field) and a legacy .mcb extension -- matches the manual's own worked example (STAGE_STEP: 'Fase1', EXPORT_PATH: '...FASE1.mcb') exactly; my first two guesses were the ones misreading the docs, not a live defect. stage_as()'s docstring updated to warn against the post/TABLE-style format.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -149,7 +155,8 @@
         "method": "manual POST probe on Civil NX: with the user's consent, /doc/NEW created a disposable empty scratch document (discarding a real test model that was no longer needed), then export_json() to E:/MIDAS PROGRAM/temp/sdk_test_scratch.json followed by import_json() on that same file both succeeded cleanly, model stayed empty (0 nodes) throughout as expected for an empty-to-empty round trip -- no crash.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -170,7 +177,8 @@
         "method": "manual POST probe on Civil NX: same disposable scratch document as IMPORT above -- export_mxt() then import_mxt() on the same .mct file both succeeded cleanly, no crash.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -191,7 +199,8 @@
         "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. export_json() to a .json path answered command-complete; not independently read back (no IMPORT round-trip attempted -- see live_verification_notes.md for why IMPORT was skipped on this real model).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -212,7 +221,8 @@
         "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. export_mxt() to a .mct path answered command-complete; not independently read back, same reasoning as EXPORT above.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -235,7 +245,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -256,7 +267,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -279,7 +291,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -300,7 +313,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -320,7 +334,8 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
         },
-        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation)"
+        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation)",
+        "level": "read"
       }
     },
     {
@@ -343,7 +358,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -366,7 +382,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -389,7 +406,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -410,7 +428,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -431,7 +450,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -452,7 +472,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -473,7 +494,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -494,7 +516,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -515,7 +538,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -536,7 +560,8 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -556,7 +581,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -579,7 +605,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -602,7 +629,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -625,7 +653,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -646,7 +675,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -667,7 +697,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -688,7 +719,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -711,7 +743,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -731,7 +764,8 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
         },
-        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation)"
+        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation)",
+        "level": "read"
       }
     },
     {
@@ -752,7 +786,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -772,7 +807,8 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
         },
-        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation)"
+        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation)",
+        "level": "read"
       }
     },
     {
@@ -793,7 +829,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -816,7 +853,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -839,7 +877,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -860,7 +899,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -883,7 +923,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -904,7 +945,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -924,7 +966,8 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
         },
-        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation)"
+        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation)",
+        "level": "read"
       }
     },
     {
@@ -947,7 +990,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -970,7 +1014,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -993,7 +1038,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -1016,7 +1062,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -1037,7 +1084,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1058,7 +1106,8 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1079,7 +1128,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1100,7 +1150,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1121,7 +1172,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1142,7 +1194,8 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1163,7 +1216,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1184,7 +1238,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1204,7 +1259,8 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
         },
-        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation)"
+        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation)",
+        "level": "read"
       }
     },
     {
@@ -1224,7 +1280,8 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
         },
-        "method": "scripts/live_readonly_sweep.py (read-only GET); this endpoint's own GET /info/db/... route still 404'd on reconfirmation, so its INEL_PROP_NAME shape remains assumed by sibling analogy to /db/IEHG-BEAM-M1, not independently schema-confirmed"
+        "method": "scripts/live_readonly_sweep.py (read-only GET); this endpoint's own GET /info/db/... route still 404'd on reconfirmation, so its INEL_PROP_NAME shape remains assumed by sibling analogy to /db/IEHG-BEAM-M1, not independently schema-confirmed",
+        "level": "read"
       }
     },
     {
@@ -1244,7 +1301,8 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
         },
-        "method": "scripts/live_readonly_sweep.py (read-only GET); this endpoint's own GET /info/db/... route still 404'd on reconfirmation, so its INEL_PROP_NAME shape remains assumed by sibling analogy to /db/IEHG-BEAM-M1, not independently schema-confirmed"
+        "method": "scripts/live_readonly_sweep.py (read-only GET); this endpoint's own GET /info/db/... route still 404'd on reconfirmation, so its INEL_PROP_NAME shape remains assumed by sibling analogy to /db/IEHG-BEAM-M1, not independently schema-confirmed",
+        "level": "read"
       }
     },
     {
@@ -1264,7 +1322,8 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
         },
-        "method": "scripts/live_readonly_sweep.py (read-only GET); this endpoint's own GET /info/db/... route still 404'd on reconfirmation, so its INEL_PROP_NAME shape remains assumed by sibling analogy to /db/IEHG-BEAM-M1, not independently schema-confirmed"
+        "method": "scripts/live_readonly_sweep.py (read-only GET); this endpoint's own GET /info/db/... route still 404'd on reconfirmation, so its INEL_PROP_NAME shape remains assumed by sibling analogy to /db/IEHG-BEAM-M1, not independently schema-confirmed",
+        "level": "read"
       }
     },
     {
@@ -1285,7 +1344,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1306,7 +1366,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1327,7 +1388,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1350,7 +1412,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -1371,7 +1434,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1394,7 +1458,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -1417,7 +1482,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -1440,7 +1506,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -1463,7 +1530,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -1486,7 +1554,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -1509,7 +1578,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -1532,7 +1602,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -1553,7 +1624,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1574,7 +1646,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1594,7 +1667,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1615,7 +1689,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1638,7 +1713,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -1661,7 +1737,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -1682,7 +1759,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1703,7 +1781,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1724,7 +1803,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1745,7 +1825,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1766,7 +1847,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1786,7 +1868,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1806,7 +1889,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1829,7 +1913,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -1850,7 +1935,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1871,7 +1957,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1891,7 +1978,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -1914,7 +2002,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -1937,7 +2026,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -1960,7 +2050,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -1983,7 +2074,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -2006,7 +2098,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -2027,7 +2120,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2050,7 +2144,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -2073,7 +2168,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -2096,7 +2192,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -2119,7 +2216,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -2140,7 +2238,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2161,7 +2260,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2184,7 +2284,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -2205,7 +2306,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2226,7 +2328,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2246,7 +2349,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2266,7 +2370,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2287,7 +2392,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2308,7 +2414,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2328,7 +2435,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2348,7 +2456,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2371,7 +2480,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -2392,7 +2502,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2413,7 +2524,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2434,7 +2546,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2457,7 +2570,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -2478,7 +2592,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2499,7 +2614,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2520,7 +2636,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2541,7 +2658,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2562,7 +2680,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2583,7 +2702,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2604,7 +2724,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2625,7 +2746,8 @@
         "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -2646,7 +2768,8 @@
         "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -2667,7 +2790,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2688,7 +2812,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2709,7 +2834,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2730,7 +2856,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2751,7 +2878,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2772,7 +2900,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2793,7 +2922,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2814,7 +2944,8 @@
         "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -2835,7 +2966,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2856,7 +2988,8 @@
         "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -2877,7 +3010,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2898,7 +3032,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2919,7 +3054,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2940,7 +3076,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2961,7 +3098,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -2982,7 +3120,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3002,7 +3141,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3022,7 +3162,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3043,7 +3184,8 @@
         "method": "scripts/live_crud_check.py (full CRUD round trip)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -3064,7 +3206,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3085,7 +3228,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3106,7 +3250,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3126,7 +3271,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3147,7 +3293,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3167,7 +3314,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3187,7 +3335,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3208,7 +3357,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3229,7 +3379,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3250,7 +3401,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3270,7 +3422,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3290,7 +3443,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3311,7 +3465,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3331,7 +3486,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3352,7 +3508,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3373,7 +3530,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3394,7 +3552,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3415,7 +3574,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3436,7 +3596,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3459,7 +3620,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -3480,7 +3642,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3503,7 +3666,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -3524,7 +3688,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3545,7 +3710,8 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -3568,7 +3734,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -3589,7 +3756,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3610,7 +3778,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3631,7 +3800,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3652,7 +3822,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3673,7 +3844,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3694,7 +3866,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3715,7 +3888,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3736,7 +3910,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3757,7 +3932,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3778,7 +3954,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3799,7 +3976,8 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3820,7 +3998,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3841,7 +4020,8 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3862,7 +4042,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3883,7 +4064,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3904,7 +4086,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3925,7 +4108,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3946,7 +4130,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3966,7 +4151,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -3987,7 +4173,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4008,7 +4195,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4029,7 +4217,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4049,7 +4238,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4070,7 +4260,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4090,7 +4281,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4111,7 +4303,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4132,7 +4325,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4153,7 +4347,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4174,7 +4369,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4195,7 +4391,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4216,7 +4413,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4237,7 +4435,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4257,7 +4456,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4278,7 +4478,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4298,7 +4499,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4319,7 +4521,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4339,7 +4542,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4359,7 +4563,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4380,7 +4585,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4401,7 +4607,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4422,7 +4629,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4443,7 +4651,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4464,7 +4673,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4485,7 +4695,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4506,7 +4717,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4527,7 +4739,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4547,7 +4760,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4567,7 +4781,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4587,7 +4802,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4608,7 +4824,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4629,7 +4846,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4649,7 +4867,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4670,7 +4889,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4691,7 +4911,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4712,7 +4933,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4732,7 +4954,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4753,7 +4976,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4774,7 +4998,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4795,7 +5020,8 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4816,7 +5042,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4837,7 +5064,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4858,7 +5086,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4879,7 +5108,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4900,7 +5130,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4921,7 +5152,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4941,7 +5173,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4962,7 +5195,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/28/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -4982,7 +5216,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5002,7 +5237,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5025,7 +5261,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5048,7 +5285,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -5071,7 +5309,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5105,7 +5344,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -5128,7 +5368,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -5151,7 +5392,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -5183,7 +5425,8 @@
         "method": "manual POST probe via midas_nx.ope.calculate_story (SEIS_ECC/WIND_ECC both disabled); recalculated the model's /db/STOR geometry-derived fields from actual element/node data, overwriting the seeded placeholder values -- expected auto-calculate behavior",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
-        }
+        },
+        "level": "write"
       }
     },
     {
@@ -5205,7 +5448,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5227,7 +5471,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5261,7 +5506,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5284,7 +5530,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5316,7 +5563,8 @@
         "method": "manual POST probe via midas_nx.ope.generate_load_combination_concrete with a minimal payload ({OPTION, DGNCODE} only, confirming the rest really are optional); generated 2 real STRENGTH/SERVICE combinations from the model's single load case",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5337,7 +5585,8 @@
         "method": "manual POST probe via midas_nx.ope.generate_load_combination_steel with a minimal payload ({OPTION, DGNCODE} only); generated 2 real STRENGTH/SERVICE combinations. A later repeat call in a fresh iteration of the same model failed ('Set_DefaultLoadComb failed...') -- not yet reconciled with the first success, open question",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5358,7 +5607,8 @@
         "method": "manual POST probe via midas_nx.ope.generate_load_combination_src with a minimal payload ({OPTION, DGNCODE} only, KDS 41 SRC:2022 variant); generated 2 real STRENGTH/SERVICE combinations. The AIK-SRC2K schema variant was not tested",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5392,7 +5642,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5413,7 +5664,8 @@
         "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. capture() with just EXPORT_PATH succeeded cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5434,7 +5686,8 @@
         "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. precapture() with VIEW_TYPE='FIBR' and a guessed OPTION.ID answered a clean 'second query is wrong' error -- this model has no fiber-modeled sections defined, so the argument shape is confirmed but never got real data.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5457,7 +5710,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5480,7 +5734,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5503,7 +5758,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5524,7 +5780,8 @@
         "method": "manual POST probe via midas_nx.view.set_result_graphic (CURRENT_MODE='reactionforces/moments') after a real /doc/ANAL run; only this one result mode was tried",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5545,7 +5802,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-checked 2026-07-31 after a real /doc/ANAL run completed on this model: error changed from 'Please Check Analysis' to 'Please Check RC Design Code' -- confirms the analysis prerequisite is now satisfied and the route progresses to the next real precondition (this bridge has no RC design code configured, being a cable-stayed steel/box-girder deck).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5566,7 +5824,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-checked 2026-07-31 after a real /doc/ANAL run: no longer errors at all, now answers the 'empty' shape ({'message': ''}) -- route accepts the request cleanly once analysis exists; no steel code check has been run yet so there's no data to report, consistent with other 'empty means nothing to show, not failure' findings elsewhere in this SDK.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5587,7 +5846,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5608,7 +5868,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5629,7 +5890,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5650,7 +5912,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5671,7 +5934,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5692,7 +5956,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5713,7 +5978,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5734,7 +6000,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5757,7 +6024,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5780,7 +6048,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5801,7 +6070,8 @@
         "method": "manual GET-shaped POST probe via midas_nx.post.story.get_story_drift_table after a real /doc/ANAL run -- 1 of ~16 table types spot-checked, returned a valid empty response (no seismic/story-drift-relevant load applied); the rest were not individually re-probed. Re-tried on Civil NX 2026-07-30: get_story_drift_table failed ('there was an error creating utbl') -- consistent with /db/STOR (Story data) already being confirmed Gen-only, not treated as a new defect; not added to this endpoint's confirmed products",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5822,7 +6092,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5843,7 +6114,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5864,7 +6136,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5885,7 +6158,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5906,7 +6180,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5927,7 +6202,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5948,7 +6224,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5968,7 +6245,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -5989,7 +6267,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6010,7 +6289,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6031,7 +6311,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6052,7 +6333,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6073,7 +6355,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6094,7 +6377,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6115,7 +6399,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6136,7 +6421,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6157,7 +6443,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6178,7 +6465,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6199,7 +6487,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6220,7 +6509,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6241,7 +6531,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6262,7 +6553,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6285,7 +6577,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6306,7 +6599,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6327,7 +6621,8 @@
         "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6348,7 +6643,8 @@
         "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered \"It's failed, Post Mode is not available\" cleanly -- confirms route+shape, no crash.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6369,7 +6665,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6390,7 +6687,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6411,7 +6709,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6432,7 +6731,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6453,7 +6753,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6474,7 +6775,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6495,7 +6797,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6515,7 +6818,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6536,7 +6840,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6557,7 +6862,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6578,7 +6884,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6599,7 +6906,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6620,7 +6928,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6640,7 +6949,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6661,7 +6971,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6682,7 +6993,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6703,7 +7015,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6724,7 +7037,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6745,7 +7059,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6766,7 +7081,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6787,7 +7103,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6807,7 +7124,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6828,7 +7146,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6849,7 +7168,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6870,7 +7190,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6891,7 +7212,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6912,7 +7234,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6933,7 +7256,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6954,7 +7278,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6975,7 +7300,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -6996,7 +7322,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7017,7 +7344,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7038,7 +7366,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7059,7 +7388,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7080,7 +7410,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7100,7 +7431,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7120,7 +7452,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7140,7 +7473,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7160,7 +7494,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7181,7 +7516,8 @@
         "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_beam_design(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7202,7 +7538,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7223,7 +7560,8 @@
         "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7244,7 +7582,8 @@
         "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_column_design(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7265,7 +7604,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7286,7 +7626,8 @@
         "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7307,7 +7648,8 @@
         "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_brace_design(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7328,7 +7670,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7349,7 +7692,8 @@
         "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7370,7 +7714,8 @@
         "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_wall_design() with a broad WALL_IDS.TO selection answered 'Please perform analysis' in <1s, no hang -- notable since this specific endpoint has documented hang history; this model has no wall elements at all (it's a bridge), so this doesn't clear that history, just adds one more clean run.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7391,7 +7736,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7412,7 +7758,8 @@
         "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly (WALL_IDS/SELECTIONS shape, unlike the member-based reports).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7433,7 +7780,8 @@
         "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_haunched_beam_design({}) answered 'Please perform analysis' in <1s, no hang.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7454,7 +7802,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7475,7 +7824,8 @@
         "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7496,7 +7846,8 @@
         "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_beam_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7517,7 +7868,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7538,7 +7890,8 @@
         "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7561,7 +7914,8 @@
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7582,7 +7936,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7603,7 +7958,8 @@
         "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7624,7 +7980,8 @@
         "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_brace_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7645,7 +8002,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7666,7 +8024,8 @@
         "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7687,7 +8046,8 @@
         "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_wall_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7708,7 +8068,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7729,7 +8090,8 @@
         "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7750,7 +8112,8 @@
         "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered \"It's not found Figure Name\" -- FIGURE_NAME must reference a pre-existing named smart-report figure config, which this model doesn't have; route+shape confirmed, no crash.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7771,7 +8134,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7792,7 +8156,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7813,7 +8178,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7834,7 +8200,8 @@
         "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. PUT with DGNCODE='AIK-SRC2K' succeeded (echoed back cleanly), then reverted with DELETE (also succeeded, echoing the deleted record) -- full round trip on the real model, no lasting mutation left behind.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7855,7 +8222,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7876,7 +8244,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7897,7 +8266,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7918,7 +8288,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7939,7 +8310,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7960,7 +8332,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -7981,7 +8354,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -8002,7 +8376,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -8023,7 +8398,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -8044,7 +8420,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -8065,7 +8442,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -8086,7 +8464,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -8107,7 +8486,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -8128,7 +8508,8 @@
         "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_src_beam_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -8149,7 +8530,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -8170,7 +8552,8 @@
         "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -8191,7 +8574,8 @@
         "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_src_column_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in 0.1s, no hang.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -8212,7 +8596,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -8233,7 +8618,8 @@
         "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -8265,7 +8651,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -8286,7 +8673,8 @@
         "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -8306,7 +8694,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -8327,7 +8716,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -8348,7 +8738,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     },
     {
@@ -8369,7 +8760,8 @@
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
-        }
+        },
+        "level": "read"
       }
     }
   ]

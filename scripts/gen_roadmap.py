@@ -24,6 +24,29 @@ def main() -> None:
     implemented = sum(1 for e in endpoints if e["status"] == "implemented")
     live_verified = sum(1 for e in endpoints if e.get("live_verified"))
 
+    # Read vs write, because one number for both overstates what is known:
+    # a GET that answers proves the route exists and the response parses; only
+    # a create/update/delete proves the SDK's *request* shape is one the server
+    # accepts. "write" here means data (or a file on the NX host) was actually
+    # mutated -- a POST that was refused before doing anything counts as read.
+    write_verified = sum(
+        1 for e in endpoints if (e.get("live_verified") or {}).get("level") == "write"
+    )
+    read_verified = sum(
+        1 for e in endpoints if (e.get("live_verified") or {}).get("level") == "read"
+    )
+    unleveled = live_verified - write_verified - read_verified
+
+    # Per-product, counted off the same live_verified entries.
+    by_product = {
+        p: sum(
+            1
+            for e in endpoints
+            if p in (e.get("live_verified") or {}).get("products", [])
+        )
+        for p in ("gen", "civil")
+    }
+
     # D4 version matrix: every distinct (date, Gen build, Civil build) combo
     # a live_verified entry cites — naturally grows into a real matrix as
     # more scripts/live_smoke.py runs get recorded over time.
@@ -45,12 +68,42 @@ def main() -> None:
         "",
         f"**{implemented}/{total} documented endpoints implemented.**",
         "",
-        f"**{live_verified}/{implemented} implemented endpoints live-verified** "
-        "against a real Gen NX / Civil NX session (`live_verified` field in "
-        "`docs/coverage.json`; see `scripts/live_smoke.py` and "
-        "`docs/live_verification_notes.md`).",
+        "## Verification status",
+        "",
+        "| Measure | Count | What it means |",
+        "|---|---|---|",
+        f"| Implemented | {implemented}/{total} | wrapped, typed, and unit-tested against a mocked server |",
+        f"| Live-verified (any) | {live_verified}/{implemented} | exercised against a real Gen NX / Civil NX session |",
+        f"| — live **write** | {write_verified}/{implemented} | actually created/updated/deleted data, or wrote a file on the NX host |",
+        f"| — live **read** | {read_verified}/{implemented} | reads only: the route answers and the response parses |",
+        f"| Not live-verified | {implemented - live_verified}/{implemented} | no live evidence recorded either way |",
+        f"| Verified on Gen NX | {by_product['gen']}/{implemented} | |",
+        f"| Verified on Civil NX | {by_product['civil']}/{implemented} | |",
+        "",
+        "**Read and write are counted separately on purpose.** A GET that "
+        "answers proves the route exists and the response parses; only a "
+        "create/update/delete round trip proves the *request* shape this SDK "
+        "sends is one the server accepts. Most of the defects found so far — "
+        "wrong field names, wrong enum values, wrong documented defaults — were "
+        "invisible to reads. A row counted as read is not a weaker claim about "
+        "the same thing; it is a claim about a different thing.",
+        "",
+        "Live-verification evidence lives in each endpoint's `live_verified` "
+        "entry in `docs/coverage.json` (product, build, date, and what was "
+        "actually done), with the narrative in "
+        "`docs/live_verification_notes.md`. Write coverage comes from "
+        "`scripts/live_crud_check.py`; read coverage mostly from "
+        "`scripts/live_readonly_sweep.py`.",
         "",
     ]
+
+    if unleveled:
+        lines += [
+            f"> ⚠️ {unleveled} live-verified endpoint(s) have no `level` recorded "
+            "and are counted in neither the read nor the write row. Set "
+            '`live_verified.level` to `"read"` or `"write"` for those.',
+            "",
+        ]
 
     if sessions:
         lines.append("| Date | Gen NX build | Civil NX build |")
@@ -61,6 +114,10 @@ def main() -> None:
 
     lines += [
         "> " + data["source_note"],
+        "",
+        "In the per-chapter tables below, the **Live** column is `W` for an "
+        "endpoint with live write verification, `R` for live reads only, and "
+        "blank for none.",
         "",
         "Pick any unchecked row, implement it in the listed `module`, add a test "
         "mirroring the pattern in `tests/db/test_node_element.py` (or "
@@ -78,7 +135,9 @@ def main() -> None:
         lines.append("|---|---|---|---|---|---|")
         for r in rows:
             checkbox = "[x]" if r["status"] == "implemented" else "[ ]"
-            live = "✅" if r.get("live_verified") else ""
+            lv = r.get("live_verified") or {}
+            # W beats R: a write round trip subsumes reading the record back.
+            live = {"write": "W", "read": "R"}.get(lv.get("level"), "✅" if lv else "")
             products = "/".join(r["products"])
             lines.append(f"| {checkbox} | {live} | `{r['endpoint']}` | {r['name']} | {products} | `{r['module']}` |")
         lines.append("")

@@ -86,6 +86,25 @@ actually observed — including a negative result. Don't upgrade an endpoint's
 `live_verified` entry in `docs/coverage.json` on the strength of a call that
 merely didn't error.
 
+A `live_verified` entry looks like this, and **`level` is required**:
+
+```json
+"live_verified": {
+  "date": "2026-08-02",
+  "products": ["gen"],
+  "level": "write",
+  "method": "scripts/live_crud_check.py (full CRUD round trip)",
+  "nx_versions": { "gen": "MIDAS Gen NX 2026 (v2.1), build 07/30/2026" }
+}
+```
+
+`level` is `"write"` only if the call **actually mutated** something — model
+data, or a file on the NX host — and that was confirmed. Everything else is
+`"read"`, including POST-shaped reads like `/post/TABLE` and report calls that
+returned "Please perform analysis" without producing output. The HTTP verb
+does not decide this; what the server actually did decides it. ROADMAP.md
+counts the two separately, and will warn if an entry has no `level`.
+
 ## Versioning and compatibility
 
 [Semantic Versioning](https://semver.org/). The public API is everything
