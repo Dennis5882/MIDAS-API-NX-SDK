@@ -5,7 +5,52 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-08-02, at v1.1.0. **v1.0.0 shipped 2026-07-29** (public
+> Last updated: 2026-08-02, at v2.0.0. **v2.0.0 shipped 2026-08-02**, in
+> response to an external code review of the (then already stale) v0.14.0
+> tree. Roughly 60% of that review's findings were real, 25% already done,
+> and 15% declined with reasons recorded below. What landed:
+> **(a) safety** — `delete_all()` now requires `confirm=True` and raises
+> `DestructiveOperationError` before sending anything (the one destructive
+> call with no guard on it); per-request `timeout=` on
+> `request`/`post_argument`/`get_result`/`verify_connection`, which is what
+> makes the documented workaround for the hanging `*-ANAL` family
+> expressible; and `verify_connection()` now documents that it **cannot see a
+> dialog-blocked session**. **(b) typing/CI** — mypy added and clean across
+> all 41 modules (it found one real defect on first run: `get_table()`'s
+> `additional`/`set_calculation_method` were typed `dict[str, Any]`, which
+> the ten `TypedDict` callers in `post/story.py` are deliberately not
+> assignable to); the full 3.9–3.13 matrix now runs, not just its two ends; a
+> `package` job builds the wheel, installs it into a clean venv and asserts
+> `py.typed` shipped, `__version__` matches the distribution, and the
+> `delete_all()` guard is armed in the built artifact; `publish.yml` gates on
+> all of it plus a tag↔`__version__` check. **(c) honesty of the numbers** —
+> `live_verified` entries carry a `level`, and `ROADMAP.md` reports **63
+> write / 329 read / 6 unverified** instead of one conflated "392
+> live-verified"; reads and writes prove different things, and every
+> field-name/enum/default defect found so far was invisible to reads.
+> **(d) docs** — a MkDocs Material site with a mkdocstrings API reference,
+> plus new `safety.md` and `verification.md` pages; the README's 12 relative
+> links were broken on PyPI and are now absolute; `SECURITY.md` and
+> `CONTRIBUTING.md` added, the latter carrying the SemVer/deprecation policy
+> (this release is its first application: a safety fix ships without a
+> deprecation cycle, because during that cycle the hazard stays armed).
+> **(e) positioning** — README/PyPI/quickstarts now state that this is an
+> employee-led project and **not** an officially supported MIDAS IT product,
+> reversing a prior rule in `CLAUDE.md`, at the author's explicit request.
+> **Declined, with reasons**: an optional runtime-validation layer (product
+> and method checks already exist in `_check()`; required-key checks would
+> duplicate the static types across 682 schemas; and an enum validator built
+> from the manual would *reject payloads that actually work*, since the
+> manual's enum values have repeatedly been wrong live); a GET-vs-write retry
+> policy (there is no retry logic at all — adding the machinery to then
+> carefully not use it adds risk to fix a non-problem); `CHANGELOG.md`
+> (duplicates `docs/release_notes_v*.md` + GitHub Releases); and a
+> maintainer/reviewer governance policy (premature for a single-maintainer
+> project). Still open: applying `Required`/`NotRequired` beyond the core —
+> deferred deliberately, and when it happens it must follow **live CRUD
+> confirmation, not the manual's requiredness column**.
+>
+> Previously: **v1.0.0 shipped 2026-07-29** (public
 > API freeze, all three gate criteria below met) and was verified live on
 > PyPI the same day. **v1.1.0 shipped 2026-08-02**: syncing 3 manual chapters
 > that drifted from the vendored `MIDAS-API` repo (`aeca675` → `7167365`,
@@ -219,7 +264,7 @@ mirroring the `db/*.py` payload-typing style but at the whole-body level.
 
 ---
 
-## 2. Current status (as of 2026-07-29, pre-v1.0.0-freeze — table below predates v1.0.0/v1.1.0, see header)
+## 2. Current status (endpoint table as of 2026-07-29; verification/tooling rows updated for v2.0.0)
 
 | Area | Chapters | Endpoints | State |
 |---|---|---|---|
@@ -247,20 +292,24 @@ mirroring the `db/*.py` payload-typing style but at the whole-body level.
 > server-derived, not manual-transcribed. Every documented endpoint across
 > all 27 chapters is now implemented.
 
-Non-endpoint status as of v0.12.0 (these are the axes Phases 6-8 move, and
+Non-endpoint status as of **v2.0.0** (these are the axes Phases 6-8 move, and
 they're the ones worth re-checking before planning a release):
 
 | Axis | Artifact | State |
 |---|---|---|
-| Tests | 680 tests, `responses`-mocked | ✅ green |
-| CI | `.github/workflows/ci.yml` — pytest + ruff on py3.9/3.13, push+PR | ✅ running |
+| Tests | 693 tests, `responses`-mocked | ✅ green |
+| CI | `.github/workflows/ci.yml` — ruff + pytest on py3.9/3.10/3.11/3.12/3.13, push+PR | ✅ running |
+| Static typing | mypy over `src/midas_nx`, config in `pyproject.toml`, own CI job | ✅ clean across all 41 modules |
+| Packaging verification | `package` CI job + `scripts/wheel_smoke_test.py` — builds the wheel, installs it into a clean venv, asserts `py.typed` shipped, `__version__` matches the distribution, and the `delete_all()` guard is armed | ✅ running |
+| Destructive-op safety | `delete()` per-id URL; `delete_all(confirm=True)` required, else `DestructiveOperationError` before sending | ✅ guarded |
+| Docs site | MkDocs Material + mkdocstrings (`mkdocs.yml`), built `--strict` on every PR | ⚠️ built and gated in CI; **GitHub Pages not yet enabled**, so not deployed |
 | Manual drift | `manual-drift-check.yml` (`cron: 0 3 * * 3`) + `scripts/check_manual_drift.py` | ✅ running |
 | Schema drift (live) | `scripts/check_drift.py` (`/info/db/...` vs TypedDict) | ✅ local dev tool |
 | Scaffolding | `scripts/gen_endpoint.py` | ✅ in the documented add-an-endpoint loop |
 | Response handling | 200-with-`error` body, non-JSON body, empty-table shapes, failed-analysis message | ✅ hardened in v0.12.0/v0.14.0 |
 | Write verification | `scripts/live_crud_check.py` — create/read/update/delete round trips, 43 cases in 6 tiers | ✅ **all 43** confirmed live on Civil NX 2026 v2.2, 40 of them on v2.1 too; 36 of the 43 also confirmed on Gen NX v2.1. `/db/NMAS` (the last holdout) used to crash **both** products, root-caused 2026-07-29 (omitted `rmX`/`rmY`/`rmZ`) and worked around in `NodalMass.create()`/`.update()` |
-| Version metadata | `__init__.py` `__version__` (hatchling `dynamic`) + `tests/test_version.py` | ✅ single source |
-| Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 303/398, both products |
+| Version metadata | `__init__.py` `__version__` (hatchling `dynamic`) + `tests/test_version.py` + a tag↔`__version__` check in `publish.yml` | ✅ single source, enforced at release |
+| Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 392/398 recorded, now split by `level`: **63 write / 329 read / 6 unverified**, both products |
 | Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md` | ⚠️ text-only, no screenshots |
 | Practitioner layer | Excel round-trip, `recipes`/`easy`, opt-in validation | ❌ not started |
 
@@ -682,6 +731,7 @@ exactly why that's the honest framing rather than a stronger guarantee.
 | ~~v0.15.0~~ | Never shipped as its own release — the planned bundle (53 PRODUCTS corrections, `/db/REBW` schema rewrite, `STORY_IRR_PARAM` enum fix, 8 Hyper-S `-M1` stubs) landed directly in v1.0.0 instead (`5b7fc3c`, `05977a5`), same day the freeze gate closed | superseded by v1.0.0 |
 | v1.0.0 ✅ | Public API freeze: all three gate criteria met 2026-07-29 (Hyper-S stub decision resolved, core paths live-verified, manual-diff pipeline survived a real change) — only the wider-live-drift-audit question (surfaced by the REBW find) left open by choice | published — GitHub Release + `publish.yml` + PyPI confirmed live 2026-07-29 |
 | v1.1.0 ✅ | First post-freeze breaking change: `get_table()`/`get_wall_force_table()` drop `sect_position`/`parts` per MIDASIT's confirmation (Jira MAPI-2012) Wall Force never supported them; plus the open drift-audit question above catching a real drift on the first sync since the freeze (`STORY_DRIFT_METHOD` "on" vs "at", `VEH_KSCE_LSD15`/`MVLD_CODE=13`) | published 2026-08-02 |
+| v2.0.0 ✅ | External-review response. **Breaking:** `delete_all()` requires `confirm=True`. Adds per-request `timeout=`, mypy (clean, 41 modules) + the full 3.9–3.13 CI matrix + a built-wheel smoke test, a read/write split in the live-verification numbers (63 write / 329 read), a MkDocs site with a generated API reference, `SECURITY.md`/`CONTRIBUTING.md` with an explicit SemVer + deprecation policy, absolute README links that survive PyPI, and the employee-led project-status statement | published 2026-08-02 |
 | v0.16.0/Phase 7 (not started) | Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
 | v0.17.0+/Phase 8 (not started) | `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
 
