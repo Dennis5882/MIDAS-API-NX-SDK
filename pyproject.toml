@@ -45,7 +45,7 @@ dev = [
   "pytest>=7.0",
   "responses>=0.23",
   "ruff>=0.15",
-  "mypy>=1.11",
+  "mypy>=2.3.0",
   "types-requests",
 ]
 docs = [
