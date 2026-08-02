@@ -112,8 +112,9 @@ exported from `midas_nx` plus the documented resource classes and endpoint
 functions — not private helpers (`_`-prefixed), and not the exact wording of
 an exception message.
 
-**Python:** 3.9+. Every version in the classifier list is tested in CI. Dropping
-one is a minor bump at least, announced in the release notes.
+**Python:** 3.12+ (dropped 3.9–3.11 in v2.1.0 — 3.9 was already past its own
+EOL). Every version in the classifier list is tested in CI. Dropping one is a
+minor bump at least, announced in the release notes.
 
 **MIDAS NX:** there is no single "supported version" — the same endpoint can
 behave differently across products and builds. What a release claims is what

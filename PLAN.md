@@ -5,7 +5,23 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-08-02, at v2.0.1. **v2.0.1 shipped 2026-08-02**: no
+> Last updated: 2026-08-02, at v2.1.0. **v2.1.0 shipped 2026-08-02**: drops
+> Python 3.9/3.10/3.11 support — `requires-python` is now `>=3.12`, the CI
+> matrix is `["3.12", "3.13"]`, and `[tool.mypy]`/`[tool.ruff]`'s
+> `python_version`/`target-version` follow. Triggered by three Dependabot PRs
+> (`requests`, `mypy`, `pytest` floor bumps) all failing the same way — the
+> `pip install -e ".[dev]"` step on the 3.9 CI job, because each new floor
+> version had itself dropped 3.9 support — which surfaced that **Python 3.9
+> reached its own upstream EOL on 2025-10-31**, nine months before this
+> decision, making the "keep 3.9 working" side of the tradeoff moot. 3.12
+> (not the newest, 3.14) was chosen to stay clear of any version
+> not yet past its own EOL, while unblocking all three stuck PRs. Per
+> `CONTRIBUTING.md`'s versioning policy, dropping a supported Python version
+> is "a minor bump at least, announced in the release notes" — no
+> deprecation-cycle warning required first, unlike the general public-API
+> rule.
+>
+> Previously: **v2.0.1 shipped 2026-08-02**: no
 > `src/midas_nx/` behaviour changed — this is a packaged-metadata-only
 > release. `README.md` (which ships verbatim as the PyPI project description)
 > was cut from ~15.7 KB to ~4.3 KB: the English/Korean/繁體中文/简體中文
@@ -748,6 +764,7 @@ exactly why that's the honest framing rather than a stronger guarantee.
 | v1.1.0 ✅ | First post-freeze breaking change: `get_table()`/`get_wall_force_table()` drop `sect_position`/`parts` per MIDASIT's confirmation (Jira MAPI-2012) Wall Force never supported them; plus the open drift-audit question above catching a real drift on the first sync since the freeze (`STORY_DRIFT_METHOD` "on" vs "at", `VEH_KSCE_LSD15`/`MVLD_CODE=13`) | published 2026-08-02 |
 | v2.0.0 ✅ | External-review response. **Breaking:** `delete_all()` requires `confirm=True`. Adds per-request `timeout=`, mypy (clean, 41 modules) + the full 3.9–3.13 CI matrix + a built-wheel smoke test, a read/write split in the live-verification numbers (63 write / 329 read), a MkDocs site with a generated API reference, `SECURITY.md`/`CONTRIBUTING.md` with an explicit SemVer + deprecation policy, absolute README links that survive PyPI, and the employee-led project-status statement | published 2026-08-02 |
 | v2.0.1 ✅ | Packaged-metadata-only: README trimmed to a lightweight multilingual (en/ko/zh-tw/zh-cn) landing page, developer-level content consolidated onto the MkDocs site instead of duplicated | published 2026-08-02 |
+| v2.1.0 ✅ | Drops Python 3.9/3.10/3.11 support (`requires-python = ">=3.12"`); 3.9 was already 9 months past its own EOL, and three Dependabot floor bumps (requests/mypy/pytest) were stuck behind it | published 2026-08-02 |
 | v0.16.0/Phase 7 (not started) | Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
 | v0.17.0+/Phase 8 (not started) | `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
 

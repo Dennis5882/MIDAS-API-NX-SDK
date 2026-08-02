@@ -13,7 +13,7 @@ python scripts/gen_roadmap.py   # regenerate ROADMAP.md from docs/coverage.json
 ```
 
 Both `pytest` and `ruff check src tests` must pass before any commit — CI (`.github/workflows/ci.yml`)
-runs exactly these on Python 3.9 and 3.13.
+runs exactly these on Python 3.12 and 3.13.
 
 ## Sibling repos on this machine
 
