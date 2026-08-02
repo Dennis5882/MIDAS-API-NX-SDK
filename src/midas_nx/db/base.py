@@ -22,7 +22,12 @@ from __future__ import annotations
 
 from typing import ClassVar, Optional, TypedDict
 
-from ..client import MidasClient, UnsupportedMethodError, get_default_client
+from ..client import (
+    DestructiveOperationError,
+    MidasClient,
+    UnsupportedMethodError,
+    get_default_client,
+)
 
 _ALL_METHODS = frozenset({"POST", "GET", "PUT", "DELETE"})
 
@@ -262,8 +267,14 @@ class DbResource:
         return {i: client.request("DELETE", f"{cls.ENDPOINT}/{i}") for i in ids}
 
     @classmethod
-    def delete_all(cls, client: Optional[MidasClient] = None) -> dict:
+    def delete_all(cls, client: Optional[MidasClient] = None, *, confirm: bool = False) -> dict:
         """Empty this table — **every record**, not a selection.
+
+        Requires ``confirm=True``. Without it this raises
+        :class:`~midas_nx.client.DestructiveOperationError` before sending
+        anything, so a mistaken call costs nothing::
+
+            Node.delete_all(confirm=True)
 
         This is the manual's documented DELETE call (``{"Assign": {...}}``
         against the bare endpoint). Live testing showed it ignoring the ids in
@@ -272,8 +283,21 @@ class DbResource:
         :meth:`delete`.
 
         For ``/db/NODE`` this also removes every element attached to the
-        deleted nodes. There is no undo through the API.
+        deleted nodes. There is no undo through the API, and the products
+        raise no confirmation dialog on the API path — the keyword is the
+        only thing standing between a typo and an emptied model, which is
+        why it is required rather than merely recommended.
+
+        To remove specific records instead, use :meth:`delete`.
         """
+        if confirm is not True:
+            raise DestructiveOperationError(
+                f"{cls.NAME or cls.__name__} ({cls.ENDPOINT}): delete_all() would delete "
+                f"every record in this table, not a selection, and cannot be undone. "
+                f"Call delete_all(confirm=True) if that is intended.",
+                method="DELETE",
+                endpoint=cls.ENDPOINT,
+            )
         client = client or get_default_client()
         cls._check(client, "DELETE")
         return client.request("DELETE", cls.ENDPOINT, {"Assign": {}})

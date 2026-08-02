@@ -7,6 +7,7 @@ https://github.com/Dennis5882/MIDAS-API/tree/main/docs/manual
 See ROADMAP.md for endpoint coverage.
 """
 from .client import (
+    DestructiveOperationError,
     MidasAPI,
     MidasAPIError,
     MidasAuthError,
@@ -43,5 +44,6 @@ __all__ = [
     "MidasConnectionError",
     "ProductMismatchError",
     "UnsupportedMethodError",
+    "DestructiveOperationError",
     "__version__",
 ]

@@ -1,7 +1,9 @@
 import json
 
+import pytest
 import responses
 
+from midas_nx.client import DestructiveOperationError
 from midas_nx.db.node_element import (
     DomainElement,
     Element,
@@ -65,11 +67,37 @@ def test_node_delete_issues_one_request_per_id_and_keys_the_result(gen_client):
 def test_delete_all_still_sends_the_documented_whole_table_call(gen_client):
     responses.add(responses.DELETE, "https://x.test:443/gen/db/NODE", json={}, status=200)
 
-    Node.delete_all(client=gen_client)
+    Node.delete_all(client=gen_client, confirm=True)
 
     sent = responses.calls[0].request
     assert sent.url == "https://x.test:443/gen/db/NODE"
     assert json.loads(sent.body) == {"Assign": {}}
+
+
+@responses.activate
+def test_delete_all_without_confirm_raises_and_sends_nothing(gen_client):
+    responses.add(responses.DELETE, "https://x.test:443/gen/db/NODE", json={}, status=200)
+
+    with pytest.raises(DestructiveOperationError) as excinfo:
+        Node.delete_all(client=gen_client)
+
+    # The guard runs before the request is built, so nothing reached the server.
+    assert len(responses.calls) == 0
+    message = str(excinfo.value)
+    assert "/db/NODE" in message
+    assert "confirm=True" in message
+
+
+@responses.activate
+@pytest.mark.parametrize("bad_confirm", [False, None, 0, "", "yes", 1])
+def test_delete_all_only_accepts_the_literal_true(gen_client, bad_confirm):
+    """A truthy-but-not-True value must not be enough to empty a table."""
+    responses.add(responses.DELETE, "https://x.test:443/gen/db/NODE", json={}, status=200)
+
+    with pytest.raises(DestructiveOperationError):
+        Node.delete_all(client=gen_client, confirm=bad_confirm)
+
+    assert len(responses.calls) == 0
 
 
 @responses.activate

@@ -17,6 +17,8 @@ from midas_nx.client import (
     Product,
     build_base_url,
     configure,
+    get_result,
+    post_argument,
 )
 
 
@@ -216,9 +218,9 @@ def test_verify_connection_strips_product_segment_and_reports_connected(gen_clie
         responses.GET,
         "https://x.test:443/mapikey/verify",
         json={
-            "user": "sjj0507@midasit.com",
+            "user": "someone@example.com",
             "program": "gen",
-            "connectionID": "hU4OMIWBRG",
+            "connectionID": "EXAMPLECONN",
             "keyVerified": True,
             "status": "connected",
         },
@@ -259,3 +261,75 @@ def test_verify_connection_404_raises_not_found_error(gen_client):
 
     with pytest.raises(MidasNotFoundError):
         gen_client.verify_connection()
+
+
+class _RecordingSession:
+    """Minimal stand-in for requests.Session that records the timeout it was
+    handed, which `responses` does not expose on its recorded calls."""
+
+    def __init__(self):
+        self.calls = []
+
+    def request(self, method, url, **kwargs):
+        self.calls.append(kwargs)
+        response = requests.Response()
+        response.status_code = 200
+        response._content = b"{}"
+        response.url = url
+        return response
+
+
+def test_request_uses_the_client_timeout_by_default():
+    session = _RecordingSession()
+    client = MidasClient(
+        mapi_key="k", base_url="https://x.test:443/gen", timeout=12.5, session=session
+    )
+
+    client.request("GET", "/db/NODE")
+
+    assert session.calls[0]["timeout"] == 12.5
+
+
+def test_request_timeout_overrides_the_client_default_for_one_call():
+    session = _RecordingSession()
+    client = MidasClient(
+        mapi_key="k", base_url="https://x.test:443/gen", timeout=30.0, session=session
+    )
+
+    client.request("POST", "/doc/ANAL", {"Argument": {}}, timeout=2.0)
+    client.request("GET", "/db/NODE")
+
+    # The override applies to that call only; the next one is back on the default.
+    assert session.calls[0]["timeout"] == 2.0
+    assert session.calls[1]["timeout"] == 30.0
+
+
+def test_request_accepts_a_connect_read_timeout_pair():
+    session = _RecordingSession()
+    client = MidasClient(mapi_key="k", base_url="https://x.test:443/gen", session=session)
+
+    client.request("GET", "/db/NODE", timeout=(3.05, 60.0))
+
+    assert session.calls[0]["timeout"] == (3.05, 60.0)
+
+
+def test_post_argument_and_get_result_pass_the_timeout_through():
+    session = _RecordingSession()
+    client = MidasClient(mapi_key="k", base_url="https://x.test:443/gen", session=session)
+
+    post_argument("/doc/ANAL", {}, client, timeout=1.5)
+    get_result("/db/NODE", client, timeout=4.0)
+
+    assert session.calls[0]["timeout"] == 1.5
+    assert session.calls[1]["timeout"] == 4.0
+
+
+def test_verify_connection_accepts_a_timeout_override():
+    session = _RecordingSession()
+    client = MidasClient(
+        mapi_key="k", base_url="https://x.test:443/gen", timeout=30.0, session=session
+    )
+
+    client.verify_connection(timeout=1.0)
+
+    assert session.calls[0]["timeout"] == 1.0

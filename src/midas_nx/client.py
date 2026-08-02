@@ -11,13 +11,18 @@ from __future__ import annotations
 import logging
 import os
 from enum import Enum
-from typing import Any, ClassVar, Mapping, Optional
+from typing import Any, ClassVar, Mapping, Optional, Tuple, Union
 
 import requests
 
 logger = logging.getLogger("midas_nx")
 
 _HOST = "moa-engineers.midasit.com"
+
+#: What ``requests`` accepts for ``timeout``: one number covering both phases,
+#: or a ``(connect, read)`` pair. Aliased so per-request overrides and the
+#: client default stay describable by the same name.
+Timeout = Union[float, Tuple[float, float]]
 
 
 class Product(str, Enum):
@@ -129,6 +134,23 @@ class UnsupportedMethodError(MidasAPIError):
     (e.g. calling .create() on a GET/PUT-only endpoint like MATD)."""
 
 
+class DestructiveOperationError(MidasAPIError):
+    """Raised when a call that would destroy model data was made without
+    explicitly confirming it (e.g. ``DbResource.delete_all()`` without
+    ``confirm=True``).
+
+    Raised **before** anything is sent, so nothing has changed on the server
+    when you see this. There is no undo through the API, and the products
+    have no confirmation dialog on the API path, so the guard is here rather
+    than in the product.
+    """
+
+    HINT = (
+        "pass confirm=True if you really mean to empty the whole table, or use "
+        "delete(ids) to remove specific records"
+    )
+
+
 _STATUS_EXCEPTIONS = {401: MidasAuthError, 403: MidasAuthError, 404: MidasNotFoundError}
 
 
@@ -152,12 +174,16 @@ class MidasClient:
         mapi_key: Optional[str] = None,
         base_url: Optional[str] = None,
         product: "Product | str" = Product.GEN,
-        timeout: float = 30.0,
+        timeout: Timeout = 30.0,
         strict_product: bool = True,
         session: Optional[requests.Session] = None,
         raise_on_result_error: bool = True,
     ) -> None:
-        self.mapi_key = mapi_key or os.getenv("MIDAS_MAPI_KEY", "")
+        # Annotated rather than inferred: this ends up in a request header, and
+        # an Optional here would silently allow a None-valued "MAPI-Key".
+        # The trailing `or ""` is what makes that provable — mypy widens
+        # `x or os.getenv(k, "")` back to `str | None`.
+        self.mapi_key: str = mapi_key or os.getenv("MIDAS_MAPI_KEY") or ""
         self.product = Product(product)
         self.base_url = (base_url or os.getenv("MIDAS_BASE_URL") or build_base_url(self.product)).rstrip("/")
         self.timeout = timeout
@@ -175,10 +201,28 @@ class MidasClient:
                 raise ProductMismatchError(message)
             logger.warning(message)
 
-    def request(self, method: str, command: str, body: Optional[Mapping[str, Any]] = None) -> dict:
-        return self._send(method, self.base_url + command, body, endpoint=command)
+    def request(
+        self,
+        method: str,
+        command: str,
+        body: Optional[Mapping[str, Any]] = None,
+        *,
+        timeout: "Timeout | None" = None,
+    ) -> dict:
+        """Send one request. ``timeout`` overrides the client default for this
+        call only; omitting it keeps the client's own ``timeout``.
 
-    def verify_connection(self) -> dict:
+        Pass a ``(connect, read)`` tuple to bound the two phases separately —
+        useful for calls that are known to hang once the product has accepted
+        them (the ``*-ANAL`` design-check family), where you want to give up
+        waiting quickly and read the result back with a follow-up GET instead
+        of blocking on a response that may never arrive. A timeout is not a
+        rollback: the product may well finish the operation after the client
+        has stopped waiting.
+        """
+        return self._send(method, self.base_url + command, body, endpoint=command, timeout=timeout)
+
+    def verify_connection(self, *, timeout: "Timeout | None" = None) -> dict:
         """GET {base url with the /gen or /civil product segment removed}/mapikey/verify.
 
         Docs: the MIDAS-API manual repo's docs/AUTHENTICATION.md, "연결 전 상태
@@ -196,19 +240,43 @@ class MidasClient:
         right after constructing a client, or before a batch of calls that
         would otherwise each hit their own timeout if the product has
         silently died.
+
+        ⚠️ **This is not a preflight check, and a "connected" answer does not
+        mean the next call will work.** While the product is showing a modal
+        dialog — a confirmation prompt, an access-denied error, a crash-
+        recovery notice — the relay keeps answering ``/mapikey/verify`` with
+        ``"connected"`` while every ``/db/*`` call on that same session times
+        out until a human dismisses the dialog. Confirmed live. So treat a
+        healthy answer here as "the key is valid and the process was alive a
+        moment ago", not as clearance to run a destructive operation. There
+        is no API-visible signal for a dialog-blocked session; the only
+        reliable check is a cheap real call (e.g. a small ``GET``) and a
+        short ``timeout``.
         """
         suffix = f"/{self.product.value}"
         root = self.base_url[: -len(suffix)] if self.base_url.endswith(suffix) else self.base_url
-        return self._send("GET", f"{root}/mapikey/verify", None, endpoint="/mapikey/verify")
+        return self._send(
+            "GET", f"{root}/mapikey/verify", None, endpoint="/mapikey/verify", timeout=timeout
+        )
 
     def _send(
-        self, method: str, url: str, body: Optional[Mapping[str, Any]], *, endpoint: str
+        self,
+        method: str,
+        url: str,
+        body: Optional[Mapping[str, Any]],
+        *,
+        endpoint: str,
+        timeout: "Timeout | None" = None,
     ) -> dict:
         headers = {"Content-Type": "application/json", "MAPI-Key": self.mapi_key}
 
         try:
             response = self._session.request(
-                method.upper(), url, headers=headers, json=body, timeout=self.timeout
+                method.upper(),
+                url,
+                headers=headers,
+                json=body,
+                timeout=self.timeout if timeout is None else timeout,
             )
         except requests.RequestException as exc:
             raise MidasConnectionError(
@@ -298,15 +366,30 @@ def MidasAPI(method: str, command: str, body: Optional[dict] = None) -> dict:
     return get_default_client().request(method, command, body)
 
 
-def post_argument(command: str, argument, client: Optional[MidasClient] = None) -> dict:
+def post_argument(
+    command: str,
+    argument,
+    client: Optional[MidasClient] = None,
+    *,
+    timeout: "Timeout | None" = None,
+) -> dict:
     """Shared POST-with-``"Argument"``-wrapper helper for the non-ID-keyed
     endpoint families (``/doc/*``, ``/ope/*``, ``/view/*``, and the two plain
     ``/post/*`` endpoints in ``post/design.py``) — as opposed to the ID-keyed
-    ``"Assign"`` wrapper used by ``db/base.py``'s ``DbResource``."""
-    return (client or get_default_client()).request("POST", command, {"Argument": argument})
+    ``"Assign"`` wrapper used by ``db/base.py``'s ``DbResource``.
+
+    ``timeout`` overrides the client default for this call only. The
+    ``*-ANAL`` design-check family has been observed hanging after the
+    product accepted the request, so a short timeout plus a follow-up read of
+    the matching ``*-TABLE`` is the documented way to drive those."""
+    return (client or get_default_client()).request(
+        "POST", command, {"Argument": argument}, timeout=timeout
+    )
 
 
-def get_result(command: str, client: Optional[MidasClient] = None) -> dict:
+def get_result(
+    command: str, client: Optional[MidasClient] = None, *, timeout: "Timeout | None" = None
+) -> dict:
     """Shared GET helper (no request body) for the same non-ID-keyed
     endpoint families as :func:`post_argument`."""
-    return (client or get_default_client()).request("GET", command)
+    return (client or get_default_client()).request("GET", command, timeout=timeout)
