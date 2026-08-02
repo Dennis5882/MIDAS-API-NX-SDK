@@ -12,7 +12,7 @@ response is returned as a plain dict rather than typed further.
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List, Mapping, Optional, TypedDict
+from typing import Any, List, Mapping, Optional, TypedDict
 
 from ..client import MidasClient, get_default_client
 
@@ -58,8 +58,10 @@ def get_table(
     parts: Optional[List[str]] = None,
     story_names: Optional[List[str]] = None,
     modes: Optional[List[str]] = None,
-    additional: Optional[Dict[str, Any]] = None,
-    set_calculation_method: Optional[Dict[str, Any]] = None,
+    # Mapping, not Dict: every caller passes a TypedDict, and TypedDict is
+    # deliberately not assignable to the invariant dict[str, Any].
+    additional: Optional[Mapping[str, Any]] = None,
+    set_calculation_method: Optional[Mapping[str, Any]] = None,
     client: Optional[MidasClient] = None,
 ) -> dict:
     """POST /post/TABLE — extract one result table.
@@ -80,7 +82,7 @@ def get_table(
     select construction-stage steps, e.g. ["CS1:001(first)", "CS1:002(last)"].
     parts: design-force tables (ch23) only — member end/location or top/bot
     part selection, e.g. ["PartI", "PartJ"]. Not Wall Force (ch20) — MIDASIT
-    confirmed 2026-07-30 (Jira MAPI-2012) that table type never supported
+    confirmed 2026-07-30 that table type never supported
     PARTS or SECT_POSITION; both were removed from the official article, and
     this SDK's own get_wall_force_table() no longer accepts either.
     story_names: Story-series (ch21) and Wall Force (ch20) tables only —

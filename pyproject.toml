@@ -8,7 +8,7 @@ name = "midas-nx"
 # so the installed distribution and midas_nx.__version__ can't drift apart —
 # they did between v0.10.0 and v0.11.2, when only this file was being bumped.
 dynamic = ["version"]
-description = "Unified Python SDK for the MIDAS NX Open API (Civil NX + Gen NX)"
+description = "Unified Python SDK for the MIDAS NX Open API (Civil NX + Gen NX) - employee-led open source, not an official MIDAS IT product"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.9"
@@ -20,7 +20,7 @@ keywords = [
   "fea", "bridge-design", "sdk", "api-wrapper", "midasit",
 ]
 classifiers = [
-  "Development Status :: 4 - Beta",
+  "Development Status :: 5 - Production/Stable",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.9",
@@ -45,12 +45,14 @@ dev = [
   "pytest>=7.0",
   "responses>=0.23",
   "ruff>=0.15",
+  "mypy>=1.11",
+  "types-requests",
 ]
 
 [project.urls]
 Homepage = "https://github.com/Dennis5882/MIDAS-API-NX-SDK"
 Repository = "https://github.com/Dennis5882/MIDAS-API-NX-SDK"
-Documentation = "https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/ROADMAP.md"
+Documentation = "https://github.com/Dennis5882/MIDAS-API-NX-SDK#readme"
 "Bug Tracker" = "https://github.com/Dennis5882/MIDAS-API-NX-SDK/issues"
 Changelog = "https://github.com/Dennis5882/MIDAS-API-NX-SDK/releases"
 Manual = "https://github.com/Dennis5882/MIDAS-API"
@@ -63,6 +65,24 @@ packages = ["src/midas_nx"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.mypy]
+# 3.10, not the 3.9 this package supports: current mypy refuses python_version
+# below 3.10. Real 3.9 compatibility is enforced by the CI test matrix and by
+# ruff's target-version, not here. Every module uses
+# `from __future__ import annotations`, so the 3.9/3.10 typing-syntax gap
+# doesn't affect what mypy sees.
+python_version = "3.10"
+files = ["src/midas_nx"]
+ignore_missing_imports = true
+# Deliberately not --strict. The payload TypedDicts are documentation of a
+# heavily conditional external schema, not a model to validate against, so
+# strict mode's untyped-def/Any rules would produce noise rather than defects.
+# What is enforced is the part that catches real mistakes: no implicit
+# Optional, and no silently-ignored type errors.
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
 
 [tool.ruff]
 target-version = "py39"
