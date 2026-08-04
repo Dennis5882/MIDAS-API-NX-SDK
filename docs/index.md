@@ -52,6 +52,7 @@ in plain language.
 
 | You want to… | Go to |
 | --- | --- |
+| Run a complete task end-to-end | [Recipes](recipes/index.md) |
 | Understand what can break a model or a session | [Destructive operations and recovery](safety.md) |
 | Look up a class, function or exception | [Reference](reference/client.md) |
 | Know which endpoints are actually proven to work | [How endpoints are verified](verification.md) |

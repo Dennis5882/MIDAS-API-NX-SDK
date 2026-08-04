@@ -78,6 +78,11 @@ nav:
           - English: ai-coding/safe-start.md
           - 한국어: ko/ai-coding/safe-start.md
       - AI context pack: ai-coding/context-pack.md
+  - Recipes:
+      - Overview: recipes/index.md
+      - Inspect a project: recipes/inspect-project.md
+      - Read nodes and elements: recipes/read-nodes-and-elements.md
+      - Extract a result table: recipes/get-results.md
   - Safety:
       - Destructive operations and recovery: safety.md
   - Reference:

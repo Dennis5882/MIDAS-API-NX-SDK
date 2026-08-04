@@ -515,8 +515,18 @@ and README traffic, not just code readiness.
 > deferred as an idea, not adopted; only its two verified bugs (a dead
 > Troubleshooting link in the ko quickstart, unsanitized production-model
 > detail/local paths in public `coverage.json` free text) were fixed, both
-> in v2.1.2. Neither plan is scheduled work — Phase 8 still waits on Phase
-> 6-7 user feedback before B1 starts, per the paragraph above.
+> in v2.1.2. **B1 itself (a new `midas_nx.recipes` code module) is still
+> deliberately not started** — it's new public API surface with no usage
+> feedback yet (v2.1.2 shipped days before this note). What *did* start
+> 2026-08-04: a small pilot of the doc-only recipe format from §11 above —
+> `docs/recipes/{index,inspect-project,read-nodes-and-elements,get-results}.md`,
+> three read-only (risk level 1) recipes built entirely on the existing
+> `db.*`/`post.*` API, no new SDK code. This is architecturally a different,
+> much lower-commitment thing than B1: it's navigation and worked examples
+> over what already ships, not a new versioned API surface, so it doesn't
+> need to wait on the same feedback gate. `mkdocs build --strict` passing
+> with the new `Recipes` nav section; import statements in all three spot-
+> checked against the installed package.
 
 > D2 (schema drift checker), D3 (endpoint scaffolding) and D4 (version matrix)
 > all moved out of this phase: D2/D3 shipped in v0.11.0, and D4 is now folded
