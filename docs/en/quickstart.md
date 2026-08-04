@@ -77,6 +77,8 @@ the MIDAS Gen NX (or Civil NX) application itself**.
 
 ## Step 4: Write and run your first script (read-only)
 
+**Risk level: 1 — read-only** (see [Risk levels](../safety.md#risk-levels)).
+
 Open Notepad (or VS Code, or any text editor) and paste the following
 exactly as-is. Just replace
 `"paste_the_key_you_copied_in_step_3_here"` with your actual key.
@@ -131,6 +133,10 @@ to try against real work.
   your IT team.
 
 ## Step 5: Try changing the model (optional — this changes your model)
+
+**Risk level: 4 — high risk** (see [Risk levels](../safety.md#risk-levels)).
+`doc.new_project()` discards unsaved work, which is why this step is
+optional and separate from Step 4.
 
 The read-only script above proves your connection works. If you'd like to
 see `midas-nx` actually build something, here's the same example the

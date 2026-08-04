@@ -16,8 +16,9 @@ print(client.verify_connection())
 print(f"{len(Node.items(client=client))} node(s) in the current model.")
 ```
 
-This example is read-only — it cannot create, change, or delete anything, so
-it's safe to run against a real model.
+**Risk level: 1 — read-only** (see [Risk levels](safety.md#risk-levels)). It
+cannot create, change, or delete anything, so it's safe to run against a
+real model.
 
 !!! info "Project status"
     Built by a MIDAS IT employee, from hands-on verification against real

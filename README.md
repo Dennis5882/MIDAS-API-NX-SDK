@@ -16,8 +16,9 @@ print(client.verify_connection())
 print(f"{len(Node.items(client=client))} node(s) in the current model.")
 ```
 
-This is read-only — it can't create, change, or delete anything, so it's
-safe to run against a real model.
+**Risk level: 1 — read-only** (see [Risk levels](https://dennis5882.github.io/MIDAS-API-NX-SDK/safety/#risk-levels)).
+It can't create, change, or delete anything, so it's safe to run against a
+real model.
 
 More examples, including ones that build a model:
 [`examples/python/`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/examples/python/).

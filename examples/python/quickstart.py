@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-"""midas_nx quick start — creates a model. See verify_and_read.py for a
+"""midas_nx quick start - creates a model. See verify_and_read.py for a
 read-only alternative that is safe to run against a real project.
+
+Risk level: 4 - high risk (see docs/safety.md#risk-levels).
 
 Ports the MIDAS-API manual repo's README quick-start example: create a new
 document, set units, define a material/section, place two nodes, connect

@@ -7,6 +7,27 @@ reproductions are in [Live session notes](live_verification_notes.md).
 Read this before your first write. Several of these cost hours to diagnose the
 first time.
 
+## Risk levels
+
+Examples and recipes across this project's docs are labeled with one of
+these. If something you're reading isn't labeled (yet), assume the highest
+level that could plausibly apply until you've checked.
+
+| Level | Meaning | Examples |
+| --- | --- | --- |
+| 0 | Connection / local check only | Checking the installed version, `verify_connection()` |
+| 1 | Read-only | `.items()`, `.get()` on any `/db/*` resource |
+| 2 | Limited addition | `.create()` against a disposable test model |
+| 3 | Modifies existing data | `.update()` on materials, sections, loads, ... |
+| 4 | High risk | `.delete()`, `delete_all()`, `doc.new_project()`, `doc.open_project()`, `doc.save_as()`, `doc.analyze()` |
+
+Levels 3 and 4 should always run against a copy, preview the change before
+sending it, and get verified by reading the data back afterward — see
+[A 200 response does not mean success](#a-200-response-does-not-mean-success)
+for why the response alone isn't proof. Level 4 in particular should never
+sit inside an automatic retry loop — see
+[Timeouts are not rollbacks](#timeouts-are-not-rollbacks).
+
 ## A 200 response does not mean success
 
 This is the single most important thing on the page.
