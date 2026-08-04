@@ -34,11 +34,23 @@ it's safe to run against a real model.
     does not mean success. Start with
     [Destructive operations and recovery](safety.md).
 
-## Where to go
+## How would you like to start?
+
+**Learn Python and use the SDK.** Install Python, then follow a guided,
+read-only walkthrough that explains each step. No prior programming
+experience assumed.
+→ [Getting started](en/quickstart.md) (also [한국어](ko/quickstart.md), [繁體中文](zh-tw/quickstart.md))
+
+**Build a script with an AI coding assistant.** Don't know Python well?
+Give your AI assistant (Claude Code, ChatGPT, Copilot, or similar) a
+verified context pack and a pre-run safety checklist, and describe your task
+in plain language.
+→ [Safe start: building with an AI coding assistant](ai-coding/safe-start.md)
+
+## Learn more
 
 | You want to… | Go to |
 | --- | --- |
-| Install Python and run a first script, with no prior programming | [Getting started](en/quickstart.md) (also [한국어](ko/quickstart.md), [繁體中文](zh-tw/quickstart.md)) |
 | Understand what can break a model or a session | [Destructive operations and recovery](safety.md) |
 | Look up a class, function or exception | [Reference](reference/client.md) |
 | Know which endpoints are actually proven to work | [How endpoints are verified](verification.md) |

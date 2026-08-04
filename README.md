@@ -82,6 +82,7 @@ Python 包的 SDK。由 MIDAS IT 员工基于实际产品验证经验开发维�
 | | |
 | --- | --- |
 | Full docs & API reference | [Documentation site](https://dennis5882.github.io/MIDAS-API-NX-SDK/) |
+| Building with an AI coding assistant instead of writing Python yourself | [Safe start](https://dennis5882.github.io/MIDAS-API-NX-SDK/ai-coding/safe-start/) |
 | Known issues / safety notes — read before writing anything | [docs/safety.md](https://dennis5882.github.io/MIDAS-API-NX-SDK/safety/) |
 | Endpoint implementation status | [ROADMAP.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/ROADMAP.md) |
 | Contributing / dev setup | [CONTRIBUTING.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/CONTRIBUTING.md) |
