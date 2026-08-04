@@ -5,7 +5,34 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-08-02, at v2.1.1. **v2.1.1 shipped 2026-08-02**:
+> Last updated: 2026-08-04, at v2.1.2. **v2.1.2 shipped 2026-08-04**: no
+> `src/midas_nx/` behaviour changed — packaged-metadata-only, same
+> justification as v2.0.1 (`pyproject.toml`'s `readme = "README.md"` makes
+> the README packaged metadata, so a README-only change is still bump-worthy
+> on its own). Bundles four onboarding-docs commits: (1) README/`docs/index.md`
+> and all three `docs/{en,ko,zh-tw}/quickstart.md` had their first example
+> replaced with a read-only `verify_connection()`+`Node.items()` check — the
+> previous first example called `doc.new_project()`, which discards unsaved
+> work in whatever document is open and has crashed Gen NX outright on a
+> large real model (see "Live-server behaviour worth knowing" in
+> `CLAUDE.md`); the original model-building script moved to an explicit,
+> warning-labeled "Step 5 (optional)", plus a MAPI-Key handling note and a
+> new read-only `examples/python/verify_and_read.py`; (2) a new
+> `docs/ai-coding/` section (`safe-start.md`, `context-pack.md`) for users
+> who have an AI assistant write the Python instead of learning it — the
+> quickstarts already told beginners to do this in "Next steps" but gave
+> them nothing to hand the assistant; (3) `docs/index.md`'s six-row "Where to
+> go" table split into a two-path "How would you like to start?" entry
+> (learn Python vs. build with AI), same change mirrored in README's "Learn
+> more" table; (4) a Risk levels table (0-4) added to `docs/safety.md`, with
+> level badges on every example the first three commits touched — notably
+> quickstart's Step 5 demo (just adds one column) is level 4 purely because
+> it calls `doc.new_project()`, not because of what it builds. Three
+> superseded/reference onboarding-planning drafts archived under
+> `docs/planning/` (excluded from the mkdocs build) instead of left at the
+> repo root.
+>
+> Previously: **v2.1.1 shipped 2026-08-02**:
 > re-applied the three Dependabot floor bumps that had been closed for
 > blocking on Python 3.9 (`requests>=2.28`→`>=2.34.2`, `mypy>=1.11`→`>=2.3.0`,
 > `pytest>=7.0`→`>=9.1.1`) — v2.1.0's 3.9 drop, minutes earlier, removed the
@@ -348,7 +375,7 @@ they're the ones worth re-checking before planning a release):
 | Write verification | `scripts/live_crud_check.py` — create/read/update/delete round trips, 43 cases in 6 tiers | ✅ **all 43** confirmed live on Civil NX 2026 v2.2, 40 of them on v2.1 too; 36 of the 43 also confirmed on Gen NX v2.1. `/db/NMAS` (the last holdout) used to crash **both** products, root-caused 2026-07-29 (omitted `rmX`/`rmY`/`rmZ`) and worked around in `NodalMass.create()`/`.update()` |
 | Version metadata | `__init__.py` `__version__` (hatchling `dynamic`) + `tests/test_version.py` + a tag↔`__version__` check in `publish.yml` | ✅ single source, enforced at release |
 | Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 392/398 recorded, now split by `level`: **63 write / 329 read / 6 unverified**, both products |
-| Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md` | ⚠️ text-only, no screenshots |
+| Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md`, `docs/ai-coding/`, `docs/index.md`, `docs/safety.md` risk levels | ✅ first example read-only + AI-assistant path (v2.1.2); ⚠️ still text-only, no screenshots |
 | Practitioner layer | Excel round-trip, `recipes`/`easy`, opt-in validation | ❌ not started |
 
 ### Write-verification priority
@@ -618,10 +645,12 @@ client-correctness fixes above instead):**
   is write coverage**, not read: POST/PUT/DELETE is still only exercised by
   `live_smoke.py`'s ~10-endpoint round trip.
 - **C1 remainder — a screenshot-driven, zero-python-experience walkthrough.**
-  The three quickstarts are text-only (129/147/89 lines, 0 images). The missing
-  piece is the NX-side half: where the MAPI key lives, what "API connected"
-  looks like in the GUI, what a failed connection looks like. One complete
-  path with pictures beats a feature-complete doc site.
+  The three quickstarts are still text-only (211/202/188 lines as of v2.1.2,
+  up from 129/147/89 — the read-only-first rewrite added content but not
+  images; 0 images). The missing piece is the NX-side half: where the MAPI
+  key lives, what "API connected" looks like in the GUI, what a failed
+  connection looks like. One complete path with pictures beats a
+  feature-complete doc site.
 - **D4, pulled forward from Phase 8 — per-endpoint version matrix.**
   `coverage.json` already carries `nx_versions` *inside* each `live_verified`
   block and `ROADMAP.md` prints one global build table. Promoting that to a
@@ -773,6 +802,7 @@ exactly why that's the honest framing rather than a stronger guarantee.
 | v2.0.1 ✅ | Packaged-metadata-only: README trimmed to a lightweight multilingual (en/ko/zh-tw/zh-cn) landing page, developer-level content consolidated onto the MkDocs site instead of duplicated | published 2026-08-02 |
 | v2.1.0 ✅ | Drops Python 3.9/3.10/3.11 support (`requires-python = ">=3.12"`); 3.9 was already 9 months past its own EOL, and three Dependabot floor bumps (requests/mypy/pytest) were stuck behind it | published 2026-08-02 |
 | v2.1.1 ✅ | Re-applies the requests/mypy/pytest floor bumps closed for blocking on Python 3.9, now that v2.1.0 dropped it | published 2026-08-02 |
+| v2.1.2 ✅ | Packaged-metadata-only: beginner onboarding rewrite — read-only first example everywhere, new `docs/ai-coding/` AI-assistant safety pack, two-path doc-site entry, risk-level (0-4) badges in `docs/safety.md` | published 2026-08-04 |
 | v0.16.0/Phase 7 (not started) | Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
 | v0.17.0+/Phase 8 (not started) | `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
 
