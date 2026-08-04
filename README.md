@@ -9,14 +9,18 @@ pip install midas-nx
 
 ```python
 from midas_nx import MidasClient, Product
-from midas_nx import doc
+from midas_nx.db.node_element import Node
 
 client = MidasClient(mapi_key="your-mapi-key-here", product=Product.GEN)
-doc.new_project(client=client)
-doc.save(client=client)
+print(client.verify_connection())
+print(f"{len(Node.items(client=client))} node(s) in the current model.")
 ```
 
-More examples: [`examples/python/`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/examples/python/).
+This is read-only — it can't create, change, or delete anything, so it's
+safe to run against a real model.
+
+More examples, including ones that build a model:
+[`examples/python/`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/examples/python/).
 Full guide, safety notes, and API reference: **[Documentation site](https://dennis5882.github.io/MIDAS-API-NX-SDK/)**.
 
 ---

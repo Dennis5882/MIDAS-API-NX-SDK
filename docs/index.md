@@ -13,10 +13,11 @@ from midas_nx.db.node_element import Node
 
 client = MidasClient(mapi_key="YOUR-MAPI-KEY", product=Product.GEN)
 print(client.verify_connection())
-
-Node.create({1: {"X": 0, "Y": 0, "Z": 0}}, client=client)
-print(Node.items(client=client))
+print(f"{len(Node.items(client=client))} node(s) in the current model.")
 ```
+
+This example is read-only — it cannot create, change, or delete anything, so
+it's safe to run against a real model.
 
 !!! info "Project status"
     Built by a MIDAS IT employee, from hands-on verification against real

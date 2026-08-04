@@ -65,6 +65,7 @@ exclude_docs: |
   vendor_repro_nmas.py
   release_notes_*.md
   Codex Report/
+  planning/
 
 nav:
   - Overview: index.md

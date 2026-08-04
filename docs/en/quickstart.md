@@ -68,11 +68,79 @@ the MIDAS Gen NX (or Civil NX) application itself**.
 > You can always get a new one from the same menu, so don't worry if you
 > lose it.
 
-## Step 4: Write and run your first script
+> ⚠️ **Treat it like a password while it's live.** The scripts below paste
+> the key directly into the code, which is fine for a one-off file on your
+> own machine — but don't commit that file to Git, paste it into a public
+> chat/issue, or share a screenshot that shows it. If you think a key leaked,
+> just get a fresh one from the same menu; the old one still expires when
+> you close the app.
+
+## Step 4: Write and run your first script (read-only)
 
 Open Notepad (or VS Code, or any text editor) and paste the following
 exactly as-is. Just replace
 `"paste_the_key_you_copied_in_step_3_here"` with your actual key.
+
+```python
+from midas_nx import MidasClient, Product
+from midas_nx.db.node_element import Node
+
+# Using Civil NX instead? Change this to product=Product.CIVIL.
+client = MidasClient(mapi_key="paste_the_key_you_copied_in_step_3_here", product=Product.GEN)
+
+print(client.verify_connection())
+
+nodes = Node.items(client=client)
+print(f"Connected. Found {len(nodes)} node(s) in the current model.")
+```
+
+Save the file as `first_script.py` (your Desktop or any folder works fine).
+
+In Command Prompt, navigate to the folder where you saved it and run it.
+For example, if you saved it to your Desktop:
+
+```
+cd Desktop
+python first_script.py
+```
+
+You should see something like:
+
+```
+{'status': 'connected', 'keyVerified': True}
+Connected. Found 3 node(s) in the current model.
+```
+
+(The exact node count depends on whatever model you currently have open —
+`0` is a perfectly normal answer if it's a blank project.)
+
+**This script only reads data.** It cannot create, change, or delete
+anything in your model, no matter which project you run it against — safe
+to try against real work.
+
+## If something goes wrong
+
+- **`MidasConnectionError`**: check that Gen NX/Civil NX is running and
+  Open API is connected. This SDK's error messages end with a
+  `(Hint: ...)` telling you what to check.
+- **`MidasAuthError`**: make sure you pasted the key from step 3 exactly.
+  Keys can change when you restart the app — get a fresh one and paste it
+  in again if this happens.
+- **Behind a corporate firewall**: see the "Troubleshooting" section in
+  [README.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/README.md) for the exact port/address info to hand to
+  your IT team.
+
+## Step 5: Try changing the model (optional — this changes your model)
+
+The read-only script above proves your connection works. If you'd like to
+see `midas-nx` actually build something, here's the same example the
+MIDAS-API manual uses — but read the warning first.
+
+> ⚠️ **This script calls `doc.new_project()`, which discards any unsaved
+> work in whatever document is currently open in Gen NX/Civil NX** — even
+> work unrelated to this script. Only run it against a blank project, or one
+> you don't mind losing unsaved changes in. If you have a real model open,
+> save it first (or close it and start a new blank project).
 
 ```python
 from midas_nx import MidasClient, Product, doc
@@ -105,36 +173,15 @@ doc.save(client=client)
 print("Success! Check Gen NX — a column should now be in the model.")
 ```
 
-Save the file as `first_script.py` (your Desktop or any folder works fine).
-
-In Command Prompt, navigate to the folder where you saved it and run it.
-For example, if you saved it to your Desktop:
-
-```
-cd Desktop
-python first_script.py
-```
-
+Run it the same way as Step 4 (save as a `.py` file, run with `python`).
 You should see `Success! Check Gen NX...` printed, and switching to the
 Gen NX window will show a new 0.6m x 0.6m concrete column, 3.2m tall.
 
 > The material/section combination above (`C24`/`KS01(RC)`) was
 > live-verified against a real Gen NX and Civil NX session on 2026-07-22
 > (see [docs/live_verification_notes.md](../live_verification_notes.md)) —
-> this first script uses confirmed values, not an untested guess, so it's
-> meant to just work.
-
-## If something goes wrong
-
-- **`MidasConnectionError`**: check that Gen NX/Civil NX is running and
-  Open API is connected. This SDK's error messages end with a
-  `(Hint: ...)` telling you what to check.
-- **`MidasAuthError`**: make sure you pasted the key from step 3 exactly.
-  Keys can change when you restart the app — get a fresh one and paste it
-  in again if this happens.
-- **Behind a corporate firewall**: see the "Troubleshooting" section in
-  [README.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/README.md) for the exact port/address info to hand to
-  your IT team.
+> this script uses confirmed values, not an untested guess, so it's meant to
+> just work.
 
 ## Next steps
 

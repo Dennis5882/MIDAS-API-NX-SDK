@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
-"""midas_nx quick start.
+"""midas_nx quick start — creates a model. See verify_and_read.py for a
+read-only alternative that is safe to run against a real project.
 
 Ports the MIDAS-API manual repo's README quick-start example: create a new
 document, set units, define a material/section, place two nodes, connect
 them with a column element, then save.
+
+WARNING: doc.new_project() discards any unsaved work in whatever document is
+currently open in Gen NX/Civil NX, even work unrelated to this script. Only
+run this against a blank project, or one you don't mind losing unsaved
+changes in.
 
 Requires a running MIDAS Gen NX (or Civil NX) with Open API connected — set
 MIDAS_MAPI_KEY (and optionally MIDAS_BASE_URL) before running.
