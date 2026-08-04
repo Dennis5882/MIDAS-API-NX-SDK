@@ -5,39 +5,34 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-08-04, at v2.1.2. **v2.1.2 shipped 2026-08-04**: no
-> `src/midas_nx/` behaviour changed — packaged-metadata-only, same
-> justification as v2.0.1 (`pyproject.toml`'s `readme = "README.md"` makes
-> the README packaged metadata, so a README-only change is still bump-worthy
-> on its own). Bundles four onboarding-docs commits: (1) README/`docs/index.md`
-> and all three `docs/{en,ko,zh-tw}/quickstart.md` had their first example
-> replaced with a read-only `verify_connection()`+`Node.items()` check — the
-> previous first example called `doc.new_project()`, which discards unsaved
-> work in whatever document is open and has crashed Gen NX outright on a
-> large real model (see "Live-server behaviour worth knowing" in
-> `CLAUDE.md`); the original model-building script moved to an explicit,
-> warning-labeled "Step 5 (optional)", plus a MAPI-Key handling note and a
-> new read-only `examples/python/verify_and_read.py`; (2) a new
-> `docs/ai-coding/` section (`safe-start.md`, `context-pack.md`) for users
-> who have an AI assistant write the Python instead of learning it — the
-> quickstarts already told beginners to do this in "Next steps" but gave
-> them nothing to hand the assistant; (3) `docs/index.md`'s six-row "Where to
-> go" table split into a two-path "How would you like to start?" entry
-> (learn Python vs. build with AI), same change mirrored in README's "Learn
-> more" table; (4) a Risk levels table (0-4) added to `docs/safety.md`, with
-> level badges on every example the first three commits touched — notably
-> quickstart's Step 5 demo (just adds one column) is level 4 purely because
-> it calls `doc.new_project()`, not because of what it builds. Three
-> superseded/reference onboarding-planning drafts archived under
-> `docs/planning/` (excluded from the mkdocs build) instead of left at the
-> repo root.
+> Last updated: 2026-08-04, at v2.1.3. **v2.1.3 shipped 2026-08-04**: the
+> first `src/midas_nx/` behaviour change since v2.0.0 — fixes a real bug in
+> `MidasClient._send()`'s non-2xx error path: building the exception message
+> assumed `data["error"]` was always a dict, so a 4xx/5xx response shaped
+> like `{"error": "some string"}` raised a bare `AttributeError` instead of
+> the intended `MidasAuthError`/`MidasRequestError`/`MidasServerError`,
+> breaking any `except MidasAPIError:` handler. Found by a review pass
+> across all of `src/midas_nx/` (41 modules, ~16.4k lines) prompted by a
+> week of heavy docs churn; added a regression test
+> (`test_non_dict_error_body_on_4xx_does_not_crash`). Same pass also fixed
+> two stale docstrings: `db/dynamic_loads.py`'s THGC payload still claimed
+> Civil-only despite the class already being correctly left ungated per the
+> 2026-07-29 Gen NX correction, and `db/design.py`'s `RebarNameDist` still
+> cited REBW's old, confirmed-wrong manual field names instead of the
+> server-confirmed `VER_BAR`/`HOR_BAR`/`BE_HOR_BAR` the code actually uses.
+> Everything else reviewed — `db/base.py`'s CRUD pattern, all model/load/
+> analysis resources, `doc.py`/`ope.py`/`view.py`, `post/*`'s shape-based
+> table unwrapping, and all three RC/steel/SRC design-code chapters — came
+> back clean.
+>
+> Previously: **v2.1.2 shipped 2026-08-04** — packaged-metadata-only
+> beginner-onboarding rewrite; see `docs/release_notes_v2.1.2.md`.
 >
 > **Release-by-release history lives in `docs/release_notes_v*.md`** (and,
 > for anything predating v1.0.0, in `docs/live_verification_notes.md` and
-> git history) — this header used to accumulate a full "Previously: ..."
-> chain back to v0.14.0, which by v2.1.2 had grown past 200 lines and
-> duplicated content those files already carry. Trimmed 2026-08-04 to just
-> the current release; nothing was deleted, only de-duplicated.
+> git history) — this header is kept to the current release plus one
+> "Previously" line so it doesn't re-accumulate the 200+ line chain trimmed
+> on 2026-08-04.
 
 ---
 
@@ -621,6 +616,7 @@ exactly why that's the honest framing rather than a stronger guarantee.
 | v2.1.0 ✅ | Drops Python 3.9/3.10/3.11 support (`requires-python = ">=3.12"`); 3.9 was already 9 months past its own EOL, and three Dependabot floor bumps (requests/mypy/pytest) were stuck behind it | published 2026-08-02 |
 | v2.1.1 ✅ | Re-applies the requests/mypy/pytest floor bumps closed for blocking on Python 3.9, now that v2.1.0 dropped it | published 2026-08-02 |
 | v2.1.2 ✅ | Packaged-metadata-only: beginner onboarding rewrite — read-only first example everywhere, new `docs/ai-coding/` AI-assistant safety pack, two-path doc-site entry, risk-level (0-4) badges in `docs/safety.md` | published 2026-08-04 |
+| v2.1.3 ✅ | Fixes `MidasClient._send()` raising `AttributeError` instead of a `MidasAPIError` subclass when a non-2xx error body's `error` field is a non-dict; two stale-docstring corrections found in the same review pass | published 2026-08-04 |
 | v0.16.0/Phase 7 (not started) | Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
 | v0.17.0+/Phase 8 (not started) | `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
 

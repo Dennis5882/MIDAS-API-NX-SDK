@@ -321,7 +321,9 @@ class MidasClient:
         exc_cls = _exception_for_status(response.status_code)
         message = response.reason
         if isinstance(data, dict):
-            message = data.get("message") or (data.get("error") or {}).get("message") or message
+            error = data.get("error")
+            error_message = error.get("message", error) if isinstance(error, dict) else error
+            message = data.get("message") or error_message or message
 
         raise exc_cls(
             f"{method.upper()} {endpoint} -> {response.status_code}: {message}",

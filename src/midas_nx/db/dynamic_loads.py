@@ -87,7 +87,13 @@ class TimeHistoryInitialLoadItem(TypedDict, total=False):
 
 
 class TimeHistoryGlobalControlPayload(TypedDict, total=False):
-    """docs/manual/09_DB_Dynamic_Loads.md #3 — /db/THGC Specifications table. CIVIL NX only."""
+    """docs/manual/09_DB_Dynamic_Loads.md #3 — /db/THGC Specifications table.
+
+    Despite the manual's Civil-only framing, this answers on Gen NX too
+    (route + /info both resolve, empty table) — live-checked 2026-07-29,
+    left at the class default (gen+civil) rather than CIVIL_ONLY. See
+    db/base.py's GEN_ONLY docstring's sibling note.
+    """
 
     GNT: int  # Geometric Nonlinearity Type: None=0, Large Displacement=1, P-Delta=2; required
     ILT: int  # Initial Load Type: Nonlinear static=0, Static/construction stage import=1; default 0, required

@@ -34,8 +34,10 @@ class HoopShearBarSpec(TypedDict, total=False):
 
 
 class RebarNameDist(TypedDict, total=False):
-    """Shared {NAME, DIST} pair used by REBW's VERTICAL_REBAR/
-    HORIZONTAL_REBAR/BE_HORIZONTAL_REBAR."""
+    """Shared {NAME, DIST} pair used by REBW's VER_BAR/HOR_BAR/END_BAR/
+    BE_HOR_BAR (server-confirmed names — see WallRebarItem's docstring;
+    the manual's VERTICAL_REBAR/HORIZONTAL_REBAR/BE_HORIZONTAL_REBAR
+    naming does not match what the live server implements)."""
 
     NAME: str  # Rebar size, D4~D57, required
     DIST: float  # Rebar spacing, required
