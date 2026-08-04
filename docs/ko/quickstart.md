@@ -21,29 +21,40 @@
 
 ## 1단계: Python 설치하기
 
-1. https://www.python.org/downloads/ 에 접속합니다.
-2. "Download Python 3.x.x" 버튼을 눌러 설치 파일을 내려받습니다.
-3. 설치 파일을 실행합니다. **이때 설치 화면 맨 아래의 "Add python.exe to PATH"
+`midas-nx`는 **Python 3.12 또는 3.13**이 필요합니다 — 이 SDK가 실제로
+검증하는 버전입니다.
+
+1. https://www.python.org/downloads/ 에 접속합니다. 보통 최신 버전 다운로드
+   버튼이 보이는데, 그게 이미 3.12나 3.13이면 그대로 받으면 되고, 그보다
+   더 최신 버전이라면 같은 페이지의 "All releases" 링크에서 3.12나 3.13을
+   따로 받으세요.
+2. 설치 파일을 실행합니다. **이때 설치 화면 맨 아래의 "Add python.exe to PATH"
    체크박스를 반드시 체크**한 뒤 "Install Now"를 누르세요. 이 체크를 빠뜨리면
    나중에 명령 프롬프트가 `python`을 인식하지 못합니다.
-4. 설치가 끝나면 확인해봅니다. 시작 메뉴에서 "cmd"를 검색해 명령 프롬프트를 열고
+3. 설치가 끝나면 확인해봅니다. 시작 메뉴에서 "cmd"를 검색해 명령 프롬프트를 열고
    다음을 입력하세요.
 
    ```
    python --version
    ```
 
-   `Python 3.x.x` 같은 결과가 나오면 설치 성공입니다. `'python'은 내부 또는
-   외부 명령... 이 아닙니다` 같은 오류가 뜨면 3번의 PATH 체크를 빠뜨린 것이니
-   Python을 다시 설치해보세요.
+   `Python 3.12.x` 또는 `Python 3.13.x`가 나와야 합니다. 이미 더 예전 버전
+   (예: `Python 3.10.x`)이 깔려 있었다면 위 방법으로 3.12나 3.13을 설치하세요
+   — 다음 단계에서 `pip install`이 그보다 낮은 버전에는 `midas-nx` 설치를
+   거부합니다. `'python'은 내부 또는 외부 명령... 이 아닙니다` 같은 오류가
+   뜨면 2번의 PATH 체크를 빠뜨린 것이니 Python을 다시 설치해보세요.
 
 ## 2단계: midas-nx 설치하기
 
 같은 명령 프롬프트에서 다음을 입력합니다.
 
 ```
-pip install midas-nx
+python -m pip install midas-nx
 ```
+
+(그냥 `pip` 대신 `python -m pip`를 쓰면, PC에 Python이 여러 버전 깔려 있을
+때 엉뚱한 버전에 설치되는 걸 막아줍니다 — `pip install 패키지명` 형태만
+보셨더라도 이 방식을 쓰는 게 더 안전합니다.)
 
 `Successfully installed midas-nx-...`라는 메시지가 뜨면 설치 완료입니다.
 
@@ -133,15 +144,43 @@ python first_script.py
   ["Connectivity troubleshooting"](../safety.md#connectivity-troubleshooting)에
   IT팀에 전달할 방화벽 허용 정보(포트/주소)가 정리되어 있습니다.
 
-## 5단계: 모델을 실제로 바꿔보기 (선택 — 모델이 변경됩니다)
+## 5단계: 빈 모델에 데이터 추가하기 (선택 — 모델이 변경됩니다)
+
+**위험 등급: 2 — 제한적 추가** ([위험 등급 안내](../safety.md#risk-levels) 참고).
+
+실행하기 전에, Gen NX/Civil NX에서 **직접 GUI로 새 빈 프로젝트**를
+만들어두세요 (File > New Project 등). 이 스크립트는 현재 열려 있는
+프로젝트에 데이터를 추가할 뿐, 프로젝트를 새로 만들지는 않습니다. 아래
+6단계와 달리 `doc.new_project()`를 호출하지 않으므로 버릴 작업 자체가
+없습니다.
+
+```python
+from midas_nx import MidasClient, Product
+from midas_nx.db.node_element import Node
+
+# Civil NX를 쓰신다면 product=Product.CIVIL로 바꾸세요.
+client = MidasClient(mapi_key="여기에_3단계에서_복사한_키_붙여넣기", product=Product.GEN)
+
+Node.create({1: {"X": 0, "Y": 0, "Z": 0}, 2: {"X": 0, "Y": 0, "Z": 3.2}}, client=client)
+
+nodes = Node.items(client=client)
+print(f"절점 2개를 추가했습니다. 현재 모델에 절점 {len(nodes)}개가 있습니다.")
+```
+
+4단계와 같은 방법으로 실행하세요. `절점 2개를 추가했습니다. 현재 모델에
+절점 2개가 있습니다.`가 출력되고(열어둔 빈 프로젝트에 이미 뭔가 있었다면
+더 많을 수 있습니다), Gen NX 화면에는 새 점 2개가 보일 겁니다.
+
+## 6단계: 모델을 처음부터 만들어보기 (선택 — 모델이 변경됩니다)
 
 **위험 등급: 4 — 고위험** ([위험 등급 안내](../safety.md#risk-levels) 참고).
 `doc.new_project()`가 저장하지 않은 작업을 버리기 때문에, 이 단계는 선택
-사항으로 4단계와 분리했습니다.
+사항으로 4·5단계와 분리했습니다.
 
-위 스크립트는 연결이 잘 되는지 확인하는 용도입니다. `midas-nx`가 실제로
-무언가를 만드는 모습을 보고 싶으시다면, MIDAS-API 매뉴얼이 사용하는 예제를
-아래에 준비했습니다 — 실행 전에 경고를 먼저 읽어주세요.
+4단계로 연결이 잘 되는지 확인했고, 5단계로 직접 준비한 모델에 안전하게
+데이터를 추가해봤습니다. `midas-nx`가 프로젝트 생성부터 모델 전체를
+처음부터 만드는 모습까지 보고 싶으시다면, MIDAS-API 매뉴얼이 사용하는
+예제를 아래에 준비했습니다 — 실행 전에 경고를 먼저 읽어주세요.
 
 > ⚠️ **이 스크립트는 `doc.new_project()`를 호출하는데, 이는 현재 Gen
 > NX/Civil NX에서 열려 있는 문서의 저장하지 않은 작업을 모두 버립니다** —

@@ -19,19 +19,24 @@
 
 ## 第 1 步：安裝 Python
 
-1. 前往 https://www.python.org/downloads/ 。
-2. 點選「Download Python 3.x.x」下載安裝檔。
-3. 執行安裝檔。**安裝畫面最下方的「Add python.exe to PATH」核取方塊務必勾選**，
+`midas-nx` 需要 **Python 3.12 或 3.13** —— 這是本 SDK 實際驗證過的版本。
+
+1. 前往 https://www.python.org/downloads/ 。該頁面通常會提供最新版本；
+   若已經標示 3.12 或 3.13 可直接下載，若是更新的版本，請改用該頁面的
+   「All releases」連結，另外下載 3.12 或 3.13。
+2. 執行安裝檔。**安裝畫面最下方的「Add python.exe to PATH」核取方塊務必勾選**，
    再點「Install Now」。若漏勾這個選項，之後命令提示字元會無法辨識 `python`
    指令。
-4. 安裝完成後進行確認。在開始功能表搜尋「cmd」開啟命令提示字元，輸入：
+3. 安裝完成後進行確認。在開始功能表搜尋「cmd」開啟命令提示字元，輸入：
 
    ```
    python --version
    ```
 
-   若顯示類似 `Python 3.x.x` 的結果即代表安裝成功。若出現
-   `'python' 不是內部或外部命令` 之類的錯誤，代表第 3 步漏勾了 PATH 選項，
+   應該會顯示 `Python 3.12.x` 或 `Python 3.13.x`。若您原本裝的是更舊的版本
+   （例如 `Python 3.10.x`），請依上述方式安裝 3.12 或 3.13 —— 下一步的
+   `pip install` 會拒絕在更舊版本上安裝 `midas-nx`。若出現
+   `'python' 不是內部或外部命令` 之類的錯誤，代表第 2 步漏勾了 PATH 選項，
    請重新安裝一次 Python 並勾選該選項。
 
 ## 第 2 步：安裝 midas-nx
@@ -39,8 +44,12 @@
 在同一個命令提示字元視窗輸入：
 
 ```
-pip install midas-nx
+python -m pip install midas-nx
 ```
+
+（用 `python -m pip` 而非單純的 `pip`，可避免電腦上有多個 Python 版本時
+安裝到錯誤的版本——即使您平常看到的都是 `pip install 套件名稱` 這種寫法，
+這樣用也沒問題。）
 
 出現 `Successfully installed midas-nx-...` 訊息即代表安裝完成。
 
@@ -122,14 +131,41 @@ python first_script.py
   [「Connectivity troubleshooting」](../safety.md#connectivity-troubleshooting)，
   內含可交給 IT 團隊的連接埠/位址資訊。
 
-## 第 5 步：試著變更模型（選用 —— 會變更您的模型）
+## 第 5 步：在空白模型中新增資料（選用 —— 會變更您的模型）
+
+**風險等級：2 — 有限新增**（參見[風險等級說明](../safety.md#risk-levels)）。
+
+執行前，請先在 Gen NX/Civil NX 中用 GUI **自行建立一個新的空白專案**
+（File > New Project 等）。這支腳本只會對目前開啟的專案新增資料，不會
+自己建立專案。與下方第 6 步不同，它完全不呼叫 `doc.new_project()`，因此
+沒有任何東西會被捨棄。
+
+```python
+from midas_nx import MidasClient, Product
+from midas_nx.db.node_element import Node
+
+# 若使用 Civil NX，請將此處改為 product=Product.CIVIL
+client = MidasClient(mapi_key="請貼上第3步複製的金鑰", product=Product.GEN)
+
+Node.create({1: {"X": 0, "Y": 0, "Z": 0}, 2: {"X": 0, "Y": 0, "Z": 3.2}}, client=client)
+
+nodes = Node.items(client=client)
+print(f"已新增 2 個節點。目前模型共有 {len(nodes)} 個節點。")
+```
+
+執行方式與第 4 步相同。畫面會出現「已新增 2 個節點。目前模型共有 2
+個節點。」（若您開啟的空白專案原本就有內容，數字可能更多），切換到
+Gen NX 畫面即可看到新增的兩個點。
+
+## 第 6 步：從零開始建立整個模型（選用 —— 會變更您的模型）
 
 **風險等級：4 — 高風險**（參見[風險等級說明](../safety.md#risk-levels)）。
-`doc.new_project()` 會捨棄未儲存的工作，這就是此步驟為選用且獨立於第 4 步
-的原因。
+`doc.new_project()` 會捨棄未儲存的工作，這就是此步驟為選用且獨立於第 4、5
+步的原因。
 
-上面的腳本用來確認連線是否正常。若您想看看 `midas-nx` 實際建立東西的過程，
-以下準備了 MIDAS-API 手冊使用的相同範例 —— 但請先閱讀下方警告。
+第 4 步確認了連線正常，第 5 步在您自行準備的模型中安全地新增了資料。若您
+想看看 `midas-nx` 從建立專案本身到建出完整模型的過程，以下準備了
+MIDAS-API 手冊使用的相同範例 —— 但請先閱讀下方警告。
 
 > ⚠️ **這支腳本會呼叫 `doc.new_project()`，這會捨棄目前 Gen NX/Civil NX
 > 中已開啟文件的所有未儲存工作** —— 即使與這支腳本無關的工作也一樣。

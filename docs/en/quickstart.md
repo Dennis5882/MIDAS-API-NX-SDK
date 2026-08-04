@@ -24,31 +24,42 @@ follow it start to finish in one sitting.
 
 ## Step 1: Install Python
 
-1. Go to https://www.python.org/downloads/.
-2. Click "Download Python 3.x.x" to download the installer.
-3. Run the installer. **Make sure to check the "Add python.exe to PATH"
+`midas-nx` requires **Python 3.12 or 3.13** — those are the versions this
+SDK is tested against.
+
+1. Go to https://www.python.org/downloads/. The button there usually offers
+   the latest release; if that's already labeled 3.12 or 3.13 you're fine,
+   but if it offers something newer, use that page's "All releases" link to
+   get 3.12 or 3.13 specifically instead.
+2. Run the installer. **Make sure to check the "Add python.exe to PATH"
    checkbox at the bottom of the first screen** before clicking "Install
    Now." Skipping this means your command prompt won't recognize `python`
    later.
-4. Once installed, verify it worked. Search for "cmd" in the Start menu to
+3. Once installed, verify it worked. Search for "cmd" in the Start menu to
    open Command Prompt, then type:
 
    ```
    python --version
    ```
 
-   If you see something like `Python 3.x.x`, you're good. If you get
-   `'python' is not recognized as an internal or external command`, you
-   missed the PATH checkbox in step 3 — reinstall Python and check it this
-   time.
+   You should see `Python 3.12.x` or `Python 3.13.x`. If you already had an
+   older Python installed (e.g. `Python 3.10.x`), install 3.12 or 3.13 as
+   above — `pip install` will refuse `midas-nx` on anything older in the
+   next step. If you get `'python' is not recognized as an internal or
+   external command`, you missed the PATH checkbox in step 2 — reinstall
+   Python and check it this time.
 
 ## Step 2: Install midas-nx
 
 In the same Command Prompt window:
 
 ```
-pip install midas-nx
+python -m pip install midas-nx
 ```
+
+(`python -m pip` rather than a bare `pip` avoids installing into the wrong
+Python if you have more than one version on your machine — worth using
+even if you've only ever seen `pip install package` written the other way.)
 
 You'll see `Successfully installed midas-nx-...` when it's done.
 
@@ -139,15 +150,43 @@ to try against real work.
   ["Connectivity troubleshooting"](../safety.md#connectivity-troubleshooting)
   for the exact port/address info to hand to your IT team.
 
-## Step 5: Try changing the model (optional — this changes your model)
+## Step 5: Add data to a blank model (optional — this changes your model)
+
+**Risk level: 2 — limited addition** (see [Risk levels](../safety.md#risk-levels)).
+
+Before running this, open Gen NX/Civil NX yourself and start a **new, empty
+project** through the GUI (File > New Project, or similar) — this script
+adds data to whatever project is currently open, it does not create one.
+Unlike Step 6 below, it never calls `doc.new_project()`, so there's nothing
+for it to discard.
+
+```python
+from midas_nx import MidasClient, Product
+from midas_nx.db.node_element import Node
+
+# Using Civil NX instead? Change this to product=Product.CIVIL.
+client = MidasClient(mapi_key="paste_the_key_you_copied_in_step_3_here", product=Product.GEN)
+
+Node.create({1: {"X": 0, "Y": 0, "Z": 0}, 2: {"X": 0, "Y": 0, "Z": 3.2}}, client=client)
+
+nodes = Node.items(client=client)
+print(f"Added 2 nodes. The model now has {len(nodes)} node(s).")
+```
+
+Run it the same way as Step 4. You should see `Added 2 nodes. The model now
+has 2 node(s).` (more, if the blank project you opened wasn't actually
+empty), and switching to Gen NX will show two new points in the model.
+
+## Step 6: Build a whole model (optional — this changes your model)
 
 **Risk level: 4 — high risk** (see [Risk levels](../safety.md#risk-levels)).
 `doc.new_project()` discards unsaved work, which is why this step is
-optional and separate from Step 4.
+optional and separate from Steps 4 and 5.
 
-The read-only script above proves your connection works. If you'd like to
-see `midas-nx` actually build something, here's the same example the
-MIDAS-API manual uses — but read the warning first.
+Step 4 proved your connection works, and Step 5 added data safely to a
+model you prepared yourself. If you'd like to see `midas-nx` build an
+entire model from scratch — including creating the project itself — here's
+the same example the MIDAS-API manual uses. Read the warning first.
 
 > ⚠️ **This script calls `doc.new_project()`, which discards any unsaved
 > work in whatever document is currently open in Gen NX/Civil NX** — even
