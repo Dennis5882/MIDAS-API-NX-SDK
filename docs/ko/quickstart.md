@@ -68,6 +68,13 @@ Python이 아니라 **MIDAS Gen NX(또는 Civil NX) 프로그램 안에서** 직
 > 보이는 스크린샷을 공유하지는 마세요. 유출된 것 같다면 같은 메뉴에서 새
 > 키를 발급받으면 됩니다 — 기존 키도 프로그램을 종료하면 어차피 만료됩니다.
 
+> 🌏 **MIDAS 중국 서버를 쓰신다면**: 아래 스크립트는 마이다스아이티의
+> 기본 글로벌 서버로 연결되는데, 중국은 별도 서버를 씁니다. 아래
+> `MidasClient(...)` 호출에 `base_url="https://moa-engineers.midasit.cn:443/gen"`
+> (Civil NX는 `/civil`)를 추가하세요. 어느 서버를 쓰는지 모르시겠다면 일단
+> 기본값으로 시도해보세요 — 이 가이드를 검증한 사용자를 포함해 대부분은
+> 기본값이 맞습니다.
+
 ## 4단계: 첫 스크립트 작성하고 실행하기 (읽기 전용)
 
 **위험 등급: 1 — 읽기 전용** ([위험 등급 안내](../safety.md#risk-levels) 참고).
@@ -122,8 +129,9 @@ python first_script.py
 - **`MidasAuthError`가 뜬다면**: 3단계에서 복사한 키를 스크립트에 정확히
   붙여넣었는지 확인하세요. 키는 프로그램을 껐다 켜면 바뀔 수 있으니, 안 되면
   다시 발급받아 붙여넣어 보세요.
-- **회사 방화벽 안에 있다면**: [README.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/README.md)의 "Troubleshooting"
-  섹션에 IT팀에 전달할 방화벽 허용 정보(포트/주소)가 정리되어 있습니다.
+- **회사 방화벽 안에 있다면**:
+  ["Connectivity troubleshooting"](../safety.md#connectivity-troubleshooting)에
+  IT팀에 전달할 방화벽 허용 정보(포트/주소)가 정리되어 있습니다.
 
 ## 5단계: 모델을 실제로 바꿔보기 (선택 — 모델이 변경됩니다)
 

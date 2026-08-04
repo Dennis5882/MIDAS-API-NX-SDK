@@ -75,6 +75,13 @@ the MIDAS Gen NX (or Civil NX) application itself**.
 > just get a fresh one from the same menu; the old one still expires when
 > you close the app.
 
+> 🌏 **On MIDAS's China server?** The scripts below connect to MIDASIT's
+> default global relay, which does not reach China's separate regional
+> server. Add `base_url="https://moa-engineers.midasit.cn:443/gen"` (use
+> `/civil` for Civil NX) to the `MidasClient(...)` call below. If you're
+> unsure which server you're on, try the default first — it's correct for
+> most users, including everyone this guide has been tested against.
+
 ## Step 4: Write and run your first script (read-only)
 
 **Risk level: 1 — read-only** (see [Risk levels](../safety.md#risk-levels)).
@@ -128,9 +135,9 @@ to try against real work.
 - **`MidasAuthError`**: make sure you pasted the key from step 3 exactly.
   Keys can change when you restart the app — get a fresh one and paste it
   in again if this happens.
-- **Behind a corporate firewall**: see the "Troubleshooting" section in
-  [README.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/README.md) for the exact port/address info to hand to
-  your IT team.
+- **Behind a corporate firewall**: see
+  ["Connectivity troubleshooting"](../safety.md#connectivity-troubleshooting)
+  for the exact port/address info to hand to your IT team.
 
 ## Step 5: Try changing the model (optional — this changes your model)
 

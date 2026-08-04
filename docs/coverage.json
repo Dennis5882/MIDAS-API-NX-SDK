@@ -42,7 +42,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. save_as() to a new test file then open_project() on that same path round-tripped cleanly (273 nodes intact after reopen); also used to verify close_project() below (reopen after close restored the session).",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. save_as() to a new test file then open_project() on that same path round-tripped cleanly (node count intact after reopen); also used to verify close_project() below (reopen after close restored the session).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -64,7 +64,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. close_project() succeeded, and a follow-up GET /db/NODE correctly answered 'The project is not opened' (clean, not a crash/hang) -- reopening the same file afterward restored a working session with all 273 nodes intact.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. close_project() succeeded, and a follow-up GET /db/NODE correctly answered 'The project is not opened' (clean, not a crash/hang) -- reopening the same file afterward restored a working session with all nodes intact.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -86,7 +86,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. save() succeeded after switching the open document to the test file via open_project() -- did not touch the original production file.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. save() succeeded after switching the open document to the test file via open_project() -- did not touch the original production file.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -108,7 +108,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. save_as() to a new .mcbx file succeeded; verified for real (not just a trusted response) by immediately open_project()-ing that same path and confirming all 273 nodes came back.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. save_as() to a new .mcbx file succeeded; verified for real (not just a trusted response) by immediately open_project()-ing that same path and confirming all nodes came back.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -130,7 +130,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. First 2 tries failed ('Please check the file name or extension' with a .mcbx path, then 'Please specify the correct stage name' with the post/TABLE-style qualified stage_step like 'CS7:001(last)') before succeeding with the plain stage NAME ('CS7', matching /db/STAG's own NAME field) and a legacy .mcb extension -- matches the manual's own worked example (STAGE_STEP: 'Fase1', EXPORT_PATH: '...FASE1.mcb') exactly; my first two guesses were the ones misreading the docs, not a live defect. stage_as()'s docstring updated to warn against the post/TABLE-style format.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. First 2 tries failed ('Please check the file name or extension' with a .mcbx path, then 'Please specify the correct stage name' with the post/TABLE-style qualified stage_step like 'CS7:001(last)') before succeeding with the plain stage NAME ('CS7', matching /db/STAG's own NAME field) and a legacy .mcb extension -- matches the manual's own worked example (STAGE_STEP: 'Fase1', EXPORT_PATH: '...FASE1.mcb') exactly; my first two guesses were the ones misreading the docs, not a live defect. stage_as()'s docstring updated to warn against the post/TABLE-style format.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -152,7 +152,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX: with the user's consent, /doc/NEW created a disposable empty scratch document (discarding a real test model that was no longer needed), then export_json() to E:/MIDAS PROGRAM/temp/sdk_test_scratch.json followed by import_json() on that same file both succeeded cleanly, model stayed empty (0 nodes) throughout as expected for an empty-to-empty round trip -- no crash.",
+        "method": "manual POST probe on Civil NX: with the user's consent, /doc/NEW created a disposable empty scratch document (discarding a real test model that was no longer needed), then export_json() to a user-provided path on the NX host machine followed by import_json() on that same file both succeeded cleanly, model stayed empty (0 nodes) throughout as expected for an empty-to-empty round trip -- no crash.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -196,7 +196,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. export_json() to a .json path answered command-complete; not independently read back (no IMPORT round-trip attempted -- see live_verification_notes.md for why IMPORT was skipped on this real model).",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. export_json() to a .json path answered command-complete; not independently read back (no IMPORT round-trip attempted -- see live_verification_notes.md for why IMPORT was skipped on this real model).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -218,7 +218,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. export_mxt() to a .mct path answered command-complete; not independently read back, same reasoning as EXPORT above.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. export_mxt() to a .mct path answered command-complete; not independently read back, same reasoning as EXPORT above.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -5661,7 +5661,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. capture() with just EXPORT_PATH succeeded cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. capture() with just EXPORT_PATH succeeded cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -5683,7 +5683,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. precapture() with VIEW_TYPE='FIBR' and a guessed OPTION.ID answered a clean 'second query is wrong' error -- this model has no fiber-modeled sections defined, so the argument shape is confirmed but never got real data.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. precapture() with VIEW_TYPE='FIBR' and a guessed OPTION.ID answered a clean 'second query is wrong' error -- this model has no fiber-modeled sections defined, so the argument shape is confirmed but never got real data.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -5799,7 +5799,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-checked 2026-07-31 after a real /doc/ANAL run completed on this model: error changed from 'Please Check Analysis' to 'Please Check RC Design Code' -- confirms the analysis prerequisite is now satisfied and the route progresses to the next real precondition (this bridge has no RC design code configured, being a cable-stayed steel/box-girder deck).",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-checked 2026-07-31 after a real /doc/ANAL run completed on this model: error changed from 'Please Check Analysis' to 'Please Check RC Design Code' -- confirms the analysis prerequisite is now satisfied and the route progresses to the next real precondition (this model has no RC design code configured, matching its structure type).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -5821,7 +5821,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-checked 2026-07-31 after a real /doc/ANAL run: no longer errors at all, now answers the 'empty' shape ({'message': ''}) -- route accepts the request cleanly once analysis exists; no steel code check has been run yet so there's no data to report, consistent with other 'empty means nothing to show, not failure' findings elsewhere in this SDK.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-checked 2026-07-31 after a real /doc/ANAL run: no longer errors at all, now answers the 'empty' shape ({'message': ''}) -- route accepts the request cleanly once analysis exists; no steel code check has been run yet so there's no data to report, consistent with other 'empty means nothing to show, not failure' findings elsewhere in this SDK.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -5843,7 +5843,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -5865,7 +5865,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -5887,7 +5887,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -5909,7 +5909,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -5931,7 +5931,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -5953,7 +5953,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -5975,7 +5975,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -5997,7 +5997,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -6596,7 +6596,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -6618,7 +6618,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -6640,7 +6640,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered \"It's failed, Post Mode is not available\" cleanly -- confirms route+shape, no crash.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered \"It's failed, Post Mode is not available\" cleanly -- confirms route+shape, no crash.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -6662,7 +6662,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7513,7 +7513,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_beam_design(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_beam_design(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7535,7 +7535,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7557,7 +7557,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7579,7 +7579,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_column_design(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_column_design(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7601,7 +7601,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7623,7 +7623,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7645,7 +7645,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_brace_design(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_brace_design(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7667,7 +7667,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7689,7 +7689,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7711,7 +7711,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_wall_design() with a broad WALL_IDS.TO selection answered 'Please perform analysis' in <1s, no hang -- notable since this specific endpoint has documented hang history; this model has no wall elements at all (it's a bridge), so this doesn't clear that history, just adds one more clean run.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_wall_design() with a broad WALL_IDS.TO selection answered 'Please perform analysis' in <1s, no hang -- notable since this specific endpoint has documented hang history; this model has no wall elements at all (it's a bridge), so this doesn't clear that history, just adds one more clean run.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7733,7 +7733,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7755,7 +7755,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly (WALL_IDS/SELECTIONS shape, unlike the member-based reports).",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly (WALL_IDS/SELECTIONS shape, unlike the member-based reports).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7777,7 +7777,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_haunched_beam_design({}) answered 'Please perform analysis' in <1s, no hang.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_haunched_beam_design({}) answered 'Please perform analysis' in <1s, no hang.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7799,7 +7799,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7821,7 +7821,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7843,7 +7843,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_beam_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_beam_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7865,7 +7865,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7887,7 +7887,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7933,7 +7933,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7955,7 +7955,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7977,7 +7977,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_brace_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_brace_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -7999,7 +7999,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -8021,7 +8021,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -8043,7 +8043,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_wall_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_wall_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -8065,7 +8065,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -8087,7 +8087,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -8109,7 +8109,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered \"It's not found Figure Name\" -- FIGURE_NAME must reference a pre-existing named smart-report figure config, which this model doesn't have; route+shape confirmed, no crash.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered \"It's not found Figure Name\" -- FIGURE_NAME must reference a pre-existing named smart-report figure config, which this model doesn't have; route+shape confirmed, no crash.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -8131,7 +8131,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -8153,7 +8153,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -8175,7 +8175,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -8197,7 +8197,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. PUT with DGNCODE='AIK-SRC2K' succeeded (echoed back cleanly), then reverted with DELETE (also succeeded, echoing the deleted record) -- full round trip on the real model, no lasting mutation left behind.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. PUT with DGNCODE='AIK-SRC2K' succeeded (echoed back cleanly), then reverted with DELETE (also succeeded, echoing the deleted record) -- full round trip on the real model, no lasting mutation left behind.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -8505,7 +8505,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_src_beam_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_src_beam_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -8527,7 +8527,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -8549,7 +8549,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -8571,7 +8571,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production cable-stayed bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. perform_src_column_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in 0.1s, no hang.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_src_column_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in 0.1s, no hang.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -8593,7 +8593,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -8615,7 +8615,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production bridge model, using a user-provided safe path (E:/MIDAS PROGRAM/temp) on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -8648,7 +8648,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
@@ -8670,7 +8670,7 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production cable-stayed bridge model (273 nodes, 202 TENSTR + 76 BEAM elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },

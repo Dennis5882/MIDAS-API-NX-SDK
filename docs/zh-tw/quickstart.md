@@ -63,6 +63,13 @@ Python 中取得，而是**直接在 MIDAS Gen NX（或 Civil NX）程式內**�
 > 到 Git、貼到公開聊天室或 Issue，也不要分享含有金鑰的截圖。若懷疑金鑰
 > 外洩，直接到同一個選單重新發行即可——舊金鑰在關閉程式後本來就會失效。
 
+> 🌏 **使用中國大陸的 MIDAS 伺服器嗎？** 以下腳本會連線到 MIDASIT 的
+> 預設全球伺服器，而中國大陸使用的是獨立伺服器。請在下方
+> `MidasClient(...)` 呼叫中加入
+> `base_url="https://moa-engineers.midasit.cn:443/gen"`
+> （Civil NX 請改為 `/civil`）。若不確定自己使用哪個伺服器，可先嘗試預設
+> 值——包含驗證過本指南的使用者在內，多數人使用預設值即可。
+
 ## 第 4 步：撰寫並執行第一支腳本（唯讀）
 
 **風險等級：1 — 唯讀**（參見[風險等級說明](../safety.md#risk-levels)）。
@@ -111,8 +118,9 @@ python first_script.py
   告訴您該檢查什麼。
 - **出現 `MidasAuthError`**：請確認貼上的金鑰與第 3 步複製的完全一致。
   重新啟動程式後金鑰可能會改變，若發生此情況請重新發行並貼上新的金鑰。
-- **身處公司防火牆環境**：請參考 [README.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/README.md) 的
-  「Troubleshooting」章節，內含可交給 IT 團隊的連接埠/位址資訊。
+- **身處公司防火牆環境**：請參考
+  [「Connectivity troubleshooting」](../safety.md#connectivity-troubleshooting)，
+  內含可交給 IT 團隊的連接埠/位址資訊。
 
 ## 第 5 步：試著變更模型（選用 —— 會變更您的模型）
 
