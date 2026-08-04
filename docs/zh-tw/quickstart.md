@@ -168,7 +168,10 @@ print("成功！請切換到 Gen NX 畫面確認柱子是否已建立。")
   每一行程式碼。把這支腳本拿給 Claude Code、ChatGPT、GitHub Copilot 等工具，
   用一般語言描述需求即可，例如「改成 20 公尺長的梁而不是柱子」、「幫我加一個
   載重組合」，AI 就會幫您轉換成實際的 `midas-nx` 程式碼。這套 SDK 本身就是為了
-  方便這樣搭配使用而設計的（型別提示、清楚的錯誤訊息等）。
+  方便這樣搭配使用而設計的（型別提示、清楚的錯誤訊息等）。執行 AI 產生的程式碼前，
+  請先參考
+  [AI 輔助程式設計安全指南](../ai-coding/safe-start.md)，
+  取得要給 AI 的 context pack 以及執行前的檢查清單。
 - 更貼近實務的範例：GitHub 上的
   [`examples/python/`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/examples/python/) 資料夾（梁載重組合、
   風載重、施工階段等）——也可以直接拿給 AI 說「照這個範例幫我做」。

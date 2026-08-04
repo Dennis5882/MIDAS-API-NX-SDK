@@ -190,7 +190,10 @@ Gen NX window will show a new 0.6m x 0.6m concrete column, 3.2m tall.
   Show this script to Claude Code, ChatGPT, GitHub Copilot, or similar, and
   ask in plain language — "make a 20m beam instead of a column," "add a
   load combination" — and it'll turn that into real `midas-nx` code. This
-  SDK is built to make that easy (type hints, clear error messages).
+  SDK is built to make that easy (type hints, clear error messages). Before
+  you run anything it writes, see
+  [Safe start: building with an AI coding assistant](../ai-coding/safe-start.md)
+  for a context pack to give it and a checklist to review its code against.
 - More realistic examples: the
   [`examples/python/`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/examples/python/) folder on GitHub (beam load
   combinations, wind loads, construction stages, ...) — a good thing to

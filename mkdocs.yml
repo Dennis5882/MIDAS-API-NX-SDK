@@ -73,6 +73,9 @@ nav:
       - English: en/quickstart.md
       - 한국어: ko/quickstart.md
       - 繁體中文: zh-tw/quickstart.md
+  - AI-assisted coding:
+      - Safe start: ai-coding/safe-start.md
+      - AI context pack: ai-coding/context-pack.md
   - Safety:
       - Destructive operations and recovery: safety.md
   - Reference:
