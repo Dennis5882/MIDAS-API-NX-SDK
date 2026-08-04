@@ -74,7 +74,9 @@ nav:
       - 한국어: ko/quickstart.md
       - 繁體中文: zh-tw/quickstart.md
   - AI-assisted coding:
-      - Safe start: ai-coding/safe-start.md
+      - Safe start:
+          - English: ai-coding/safe-start.md
+          - 한국어: ko/ai-coding/safe-start.md
       - AI context pack: ai-coding/context-pack.md
   - Safety:
       - Destructive operations and recovery: safety.md
@@ -82,6 +84,8 @@ nav:
       - Client and exceptions: reference/client.md
       - DB resources: reference/db.md
       - Document, operations, view: reference/doc-ope-view.md
+      - Post and result extraction: reference/post.md
+      - Design code chapters: reference/design.md
   - Verification:
       - How endpoints are verified: verification.md
       - Live session notes: live_verification_notes.md

@@ -237,7 +237,7 @@ print("성공! Gen NX 화면에서 기둥이 생성된 걸 확인해보세요.")
   추가해줘"처럼 자연어로 요청하면 됩니다. AI가 실제 `midas-nx` 코드로 바꿔줄
   겁니다 — 이 SDK는 애초에 그렇게 함께 쓰기 편하도록 설계되었습니다(타입 힌트,
   명확한 에러 메시지 등). AI가 만들어준 코드를 실행하기 전에는
-  [AI 코딩 안전 시작 가이드](../ai-coding/safe-start.md)에서 AI에게 줄 context
+  [AI 코딩 안전 시작 가이드](ai-coding/safe-start.md)에서 AI에게 줄 context
   pack과 실행 전 검토 체크리스트를 확인하세요.
 - 더 실무에 가까운 예제: GitHub의 [`examples/python/`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/examples/python/)
   폴더 (보 하중조합, 풍하중, 시공단계 등) — AI에게 "이 예제처럼 만들어줘"라고

@@ -503,6 +503,21 @@ and README traffic, not just code readiness.
   first, opt-in full validation second. Default `strict=True` in the new
   recipes layer; low-level layer keeps today's no-validation behavior.
 
+> **Recipe/engineering-task layer inputs (reviewed 2026-08-04):**
+> `docs/planning/onboarding_plan_active.md` §11 (a per-recipe doc standard —
+> risk level, product, verification status, full runnable code) and
+> `docs/planning/documentation_maintenance_architecture_plan.md` §6-7 (an
+> engineering-task index generated as navigation over `coverage.json`, not
+> copied API text) both propose shapes for this layer for whenever B1 starts.
+> The architecture plan's larger ask — a `coverage.json` schema v2 with
+> `observations[]` and a 12-state discrepancy FSM tracking MIDASIT dev-team
+> ticket review — was judged disproportionate to solo-maintainer scale and
+> deferred as an idea, not adopted; only its two verified bugs (a dead
+> Troubleshooting link in the ko quickstart, unsanitized production-model
+> detail/local paths in public `coverage.json` free text) were fixed, both
+> in v2.1.2. Neither plan is scheduled work — Phase 8 still waits on Phase
+> 6-7 user feedback before B1 starts, per the paragraph above.
+
 > D2 (schema drift checker), D3 (endpoint scaffolding) and D4 (version matrix)
 > all moved out of this phase: D2/D3 shipped in v0.11.0, and D4 is now folded
 > into Phase 6's A1 remainder since `coverage.json` already records
@@ -584,6 +599,28 @@ exactly why that's the honest framing rather than a stronger guarantee.
   discovery (whole field-name schema wrong, only found by reading real
   populated data back) is a concrete argument for extending this checker —
   or some equivalent live-data spot-check — into those chapters before 1.0.
+- **Doc-site backlog triage (2026-08-04)**, cross-checking
+  `docs/planning/documentation_maintenance_architecture_plan.md` §6.1's
+  three-tier nav proposal against what's actually on the MkDocs site:
+  - **Done this pass**: tier 3 (developer Reference) had two whole chapter
+    families — `post/*` (ch18-23 result extraction) and `design/*` (ch24-27
+    RC/steel/SRC code checks) — with no Reference page at all, unlike every
+    other module. Not an architecture gap, just missed when `reference/`
+    was built; added `docs/reference/post.md` and `docs/reference/design.md`
+    (curated examples + a ROADMAP.md pointer, matching `reference/db.md`'s
+    existing style — not an exhaustive per-endpoint dump), wired into
+    `mkdocs.yml` nav, `mkdocs build --strict` passing.
+  - **Also done this pass**: `docs/ko/ai-coding/safe-start.md` — a Korean
+    translation of the AI-assisted-coding safe-start page (architecture
+    plan §0.3 P1's "한국어 AI 안전 시작 페이지"), wired into `mkdocs.yml`
+    nav next to the English original (same "language sub-list" pattern as
+    Getting started), and `docs/ko/quickstart.md`'s existing cross-link
+    repointed at it. `context-pack.md` deliberately stays English-only,
+    single-source, per that same plan's own reasoning (AI-facing content
+    that must track the SDK exactly — one canonical version, not N to keep
+    in sync). `mkdocs build --strict` passing after both additions.
+  - **Tier 2 (engineering-task index / Recipes)**: unchanged from the Phase
+    8 note above — still not started, still waiting on Phase 6-7 feedback.
 
 ---
 
