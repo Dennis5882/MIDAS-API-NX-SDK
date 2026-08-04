@@ -73,6 +73,7 @@ nav:
       - English: en/quickstart.md
       - 한국어: ko/quickstart.md
       - 繁體中文: zh-tw/quickstart.md
+      - Python 기초 (한국어): ko/python-basics.md
   - AI-assisted coding:
       - Safe start:
           - English: ai-coding/safe-start.md

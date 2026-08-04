@@ -85,6 +85,10 @@ Python이 아니라 **MIDAS Gen NX(또는 Civil NX) 프로그램 안에서** 직
 > 마찬가지입니다. 기본 글로벌 서버(`moa-engineers.midasit.com`)와 다르면
 > 아래 `MidasClient(...)` 호출에 `base_url="복사한 값"`을 추가하세요.
 
+> 아래 코드에서 `client = MidasClient(...)`나 `for` 같은 게 낯설게
+> 느껴지신다면, 먼저 [Python 기초](python-basics.md)에서 이 가이드에 나오는
+> 문법만 짧게 짚어보고 오셔도 좋습니다.
+
 ## 4단계: 첫 스크립트 작성하고 실행하기 (읽기 전용)
 
 **위험 등급: 1 — 읽기 전용** ([위험 등급 안내](../safety.md#risk-levels) 참고).

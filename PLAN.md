@@ -180,7 +180,7 @@ they're the ones worth re-checking before planning a release):
 | Static typing | mypy over `src/midas_nx`, config in `pyproject.toml`, own CI job | ✅ clean across all 41 modules |
 | Packaging verification | `package` CI job + `scripts/wheel_smoke_test.py` — builds the wheel, installs it into a clean venv, asserts `py.typed` shipped, `__version__` matches the distribution, and the `delete_all()` guard is armed | ✅ running |
 | Destructive-op safety | `delete()` per-id URL; `delete_all(confirm=True)` required, else `DestructiveOperationError` before sending | ✅ guarded |
-| Docs site | MkDocs Material + mkdocstrings (`mkdocs.yml`), built `--strict` on every PR | ⚠️ built and gated in CI; **GitHub Pages not yet enabled**, so not deployed |
+| Docs site | MkDocs Material + mkdocstrings (`mkdocs.yml`), built `--strict` on every PR | ✅ live at `dennis5882.github.io/MIDAS-API-NX-SDK/` (confirmed 2026-08-04 — this row had drifted stale, saying "GitHub Pages not yet enabled" after it already was) |
 | Manual drift | `manual-drift-check.yml` (`cron: 0 3 * * 3`) + `scripts/check_manual_drift.py` | ✅ running |
 | Schema drift (live) | `scripts/check_drift.py` (`/info/db/...` vs TypedDict) | ✅ local dev tool |
 | Scaffolding | `scripts/gen_endpoint.py` | ✅ in the documented add-an-endpoint loop |
@@ -188,7 +188,7 @@ they're the ones worth re-checking before planning a release):
 | Write verification | `scripts/live_crud_check.py` — create/read/update/delete round trips, 43 cases in 6 tiers | ✅ **all 43** confirmed live on Civil NX 2026 v2.2, 40 of them on v2.1 too; 36 of the 43 also confirmed on Gen NX v2.1. `/db/NMAS` (the last holdout) used to crash **both** products, root-caused 2026-07-29 (omitted `rmX`/`rmY`/`rmZ`) and worked around in `NodalMass.create()`/`.update()` |
 | Version metadata | `__init__.py` `__version__` (hatchling `dynamic`) + `tests/test_version.py` + a tag↔`__version__` check in `publish.yml` | ✅ single source, enforced at release |
 | Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 392/398 recorded, now split by `level`: **63 write / 329 read / 6 unverified**, both products |
-| Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md`, `docs/ai-coding/`, `docs/index.md`, `docs/safety.md` risk levels | ✅ first example read-only + AI-assistant path (v2.1.2); ⚠️ still text-only, no screenshots |
+| Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md`, `docs/ai-coding/`, `docs/index.md`, `docs/safety.md` risk levels, `docs/recipes/`, `docs/ko/python-basics.md` | ✅ first example read-only + AI-assistant path (v2.1.2); recipe pilot + ko minimal-Python primer + real-session-verified MAPI key step (2026-08-04); ⚠️ still text-only, no screenshots |
 | Practitioner layer | Excel round-trip, `recipes`/`easy`, opt-in validation | ❌ not started |
 
 ### Write-verification priority
