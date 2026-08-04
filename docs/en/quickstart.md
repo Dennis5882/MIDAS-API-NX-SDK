@@ -70,28 +70,27 @@ Gen NX/Civil NX. You don't get it from Python — you get it **from inside
 the MIDAS Gen NX (or Civil NX) application itself**.
 
 1. Launch MIDAS Gen NX (or Civil NX).
-2. Find the **Open API** menu in the top menu bar (depending on your
-   version, it may appear as "Open API" or under an "Apps" menu).
-3. Choose **Issue API Key** (or similarly worded). A long string of
-   letters and numbers appears — copy it.
+2. In the top menu, open **Apps** and click **API Settings**.
+3. The screen shows a **Base URL** and a **MAPI-Key**. Click the **Copy**
+   button next to each to copy it.
+4. Click **Connected**. If it succeeds, Status switches to **Connected** —
+   that's what confirms Open API is actually active.
 
-> This key is temporary and only valid while the application is running.
-> You can always get a new one from the same menu, so don't worry if you
-> lose it.
+> Want a fresh key (e.g. you think one leaked)? Click **Refresh** next to
+> it. The old key is invalidated immediately.
 
 > ⚠️ **Treat it like a password while it's live.** The scripts below paste
 > the key directly into the code, which is fine for a one-off file on your
 > own machine — but don't commit that file to Git, paste it into a public
 > chat/issue, or share a screenshot that shows it. If you think a key leaked,
-> just get a fresh one from the same menu; the old one still expires when
+> just click **Refresh** above for a new one; the old one still expires when
 > you close the app.
 
-> 🌏 **On MIDAS's China server?** The scripts below connect to MIDASIT's
-> default global relay, which does not reach China's separate regional
-> server. Add `base_url="https://moa-engineers.midasit.cn:443/gen"` (use
-> `/civil` for Civil NX) to the `MidasClient(...)` call below. If you're
-> unsure which server you're on, try the default first — it's correct for
-> most users, including everyone this guide has been tested against.
+> 🌏 **No need to guess which regional server you're on.** Use the
+> **Base URL** shown on that same screen — it's correct for any region,
+> including China's separate server. If it differs from the SDK's default
+> global relay (`moa-engineers.midasit.com`), add
+> `base_url="the copied value"` to the `MidasClient(...)` call below.
 
 ## Step 4: Write and run your first script (read-only)
 

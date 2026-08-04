@@ -631,6 +631,20 @@ exactly why that's the honest framing rather than a stronger guarantee.
     in sync). `mkdocs build --strict` passing after both additions.
   - **Tier 2 (engineering-task index / Recipes)**: unchanged from the Phase
     8 note above — still not started, still waiting on Phase 6-7 feedback.
+- **Quickstart Step 3 corrected from a real session (2026-08-04).** The
+  three quickstarts' "get a MAPI key" step had been describing a menu path
+  ("find the Open API menu... choose Issue API Key") never confirmed
+  against an actual running Gen NX/Civil NX session. The author walked
+  through the real screen: top menu **Apps → API Settings**, which shows
+  both **Base URL** and **MAPI-Key** with **Copy** buttons, a **Refresh**
+  button to reissue the key, and a **Connected** button whose success
+  flips Status to **Connected**. Rewrote Step 3 in all three languages to
+  match, and simplified the 🌏 China-server note in the process: since the
+  product's own API Settings screen shows the correct Base URL directly,
+  there's no need to guess a region from a URL pattern — copy what's
+  shown. This is the same category of gap as the Phase 6 C1 remainder
+  below (text-only quickstarts describing NX-side UI without having seen
+  it) but narrower in scope — one step, not a full screenshot pass.
 
 ---
 
