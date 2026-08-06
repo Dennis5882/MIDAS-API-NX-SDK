@@ -629,11 +629,21 @@ exactly why that's the honest framing rather than a stronger guarantee.
     single-source, per that same plan's own reasoning (AI-facing content
     that must track the SDK exactly — one canonical version, not N to keep
     in sync). `mkdocs build --strict` passing after both additions.
-  - **Tier 2 (engineering-task index / Recipes)**: unchanged from the Phase
-    8 note above — still not started, still waiting on Phase 6-7 feedback.
-    Explicitly declined 2026-08-04 to build out the full 10-category index
-    now: the 3-recipe pilot has no usage feedback yet, and expanding to all
-    10 categories would reverse the "wait for feedback" call with no new
+  - **Tier 2, corrected same day**: the author's actual ask on re-discussion
+    wasn't "write 10 categories of new recipe content" (that's still
+    declined, see below) but "reorganize what already exists under the
+    10-category taxonomy so engineers can find it" — a navigation-only
+    change, exactly what architecture-plan §6.2 describes ("기능별 페이지는
+    색인으로 제한"). Done: `docs/recipes/index.md`'s flat 3-row table
+    replaced with a 10-row task table (model setup → geometry → properties
+    → boundary → loads → analysis → results order); rows without a recipe
+    yet say so plainly ("*none yet*") and link straight to the relevant
+    `midas_nx` module / Reference page / ROADMAP.md chapter instead of
+    leaving a dead end. No new tutorial content was written — this doesn't
+    touch the feedback gate below at all.
+  - **Writing new recipe content for the 7 empty categories is still
+    declined**: the 3-recipe pilot has no usage feedback yet, and doing
+    that now would reverse the "wait for feedback" call with no new
     evidence to justify it.
   - **Tier 3 completed 2026-08-04**: split `reference/doc-ope-view.md` (one
     page covering three unrelated module families) into
