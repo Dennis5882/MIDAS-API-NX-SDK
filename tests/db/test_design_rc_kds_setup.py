@@ -17,6 +17,7 @@ from midas_nx.design.rc_kds.setup import (
     ModifyLiveLoadReductionFactor,
     ModifyMemberType,
     MomentMagnifier,
+    RcDesignCodeSelection,
     ScaleUpFactorForEarthquake,
     SeismicColumnType,
     SeismicDesignType,
@@ -27,6 +28,41 @@ from midas_nx.design.rc_kds.setup import (
 )
 
 BASE = "https://x.test:443/gen/DESIGN/RC/KDS-41-20-2022"
+
+
+# --- 0. DRC (RC Design Code Selection) -----------------------------------
+# Added to the manual 2026-08-06 (MAPI-1365); unlike everything else in this
+# file, its URI does not carry the KDS-41-20-2022 prefix.
+
+
+@responses.activate
+def test_rc_design_code_selection_update_sends_documented_assign_shape(gen_client):
+    responses.add(responses.PUT, "https://x.test:443/gen/DESIGN/RC/DRC", json={}, status=200)
+    RcDesignCodeSelection.update({1: {"DGNCODE": "KDS 41 20 : 2022"}}, client=gen_client)
+    sent = responses.calls[0].request
+    assert sent.url == "https://x.test:443/gen/DESIGN/RC/DRC"
+    assert json.loads(sent.body) == {"Assign": {"1": {"DGNCODE": "KDS 41 20 : 2022"}}}
+
+
+@responses.activate
+def test_rc_design_code_selection_get_returns_response_as_is(gen_client):
+    # The manual's own GET example nests the response under "DCON", not
+    # "DRC"/"DCO" — DbResource.items() unwraps by shape (first dict-valued
+    # entry), not by key name, so this doesn't need special handling here.
+    responses.add(
+        responses.GET,
+        "https://x.test:443/gen/DESIGN/RC/DRC",
+        json={"DCON": {"1": {"DGNCODE": "KDS 41 20 : 2022"}}},
+        status=200,
+    )
+    assert RcDesignCodeSelection.items(client=gen_client) == {1: {"DGNCODE": "KDS 41 20 : 2022"}}
+
+
+@responses.activate
+def test_rc_design_code_selection_create_raises_before_any_http_call(gen_client):
+    with pytest.raises(UnsupportedMethodError):
+        RcDesignCodeSelection.create({1: {"DGNCODE": "KDS 41 20 : 2022"}}, client=gen_client)
+    assert len(responses.calls) == 0
 
 
 # --- 1. DCO -------------------------------------------------------------

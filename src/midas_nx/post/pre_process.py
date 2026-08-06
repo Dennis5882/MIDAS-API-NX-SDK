@@ -39,6 +39,11 @@ TABLE_TYPE_STORY_MASS_X = "STORY_MASS_X"
 TABLE_TYPE_STORY_MASS_Y = "STORY_MASS_Y"
 TABLE_TYPE_STORY_MASS_Z = "STORY_MASS_Z"
 
+# 9. Story Load Summary Table
+TABLE_TYPE_STORY_LOAD_X = "STORY_LOAD_X"
+TABLE_TYPE_STORY_LOAD_Y = "STORY_LOAD_Y"
+TABLE_TYPE_STORY_LOAD_Z = "STORY_LOAD_Z"
+
 # 10. Story Weight Table
 TABLE_TYPE_STORY_WEIGHT = "STORYWEIGHT"
 
@@ -120,15 +125,49 @@ def get_story_mass_summary_table(
 
 
 def get_story_load_summary_table(
-    direction: str, table_name: str = "", *, client: Optional[MidasClient] = None
+    direction: str,
+    table_name: str = "",
+    *,
+    unit: Optional[TableUnit] = None,
+    styles: Optional[TableStyles] = None,
+    components: Optional[List[str]] = None,
+    load_case_names: Optional[List[str]] = None,
+    client: Optional[MidasClient] = None,
 ) -> dict:
     """docs/manual/18_POST_PreProcess.md #9 — Story Load Summary Table.
 
     direction: "X"/"Y"/"Z".
+    load_case_names: e.g. ["DL (ST)"] — present in the manual's Request
+    example but missing from its own Specifications table (a manual
+    self-contradiction; the example wins per this repo's convention).
+
+    2026-08-06 manual update (MAPI-949): TABLE_TYPE renamed
+    STORY_LOAD_SUMMARY_{dir} -> STORY_LOAD_{dir}, matching STORY_MASS's
+    naming (the other half of the same ticket, already reflected below).
+    This call also gained unit/styles/components/load_case_names.
     """
-    return get_table(f"STORY_LOAD_SUMMARY_{direction}", table_name, client=client)
+    return get_table(
+        f"STORY_LOAD_{direction}",
+        table_name,
+        unit=unit,
+        styles=styles,
+        components=components,
+        load_case_names=load_case_names,
+        client=client,
+    )
 
 
-def get_story_weight_table(table_name: str = "", *, client: Optional[MidasClient] = None) -> dict:
-    """docs/manual/18_POST_PreProcess.md #10 — Story Weight Table."""
-    return get_table(TABLE_TYPE_STORY_WEIGHT, table_name, client=client)
+def get_story_weight_table(
+    table_name: str = "",
+    *,
+    unit: Optional[TableUnit] = None,
+    styles: Optional[TableStyles] = None,
+    components: Optional[List[str]] = None,
+    client: Optional[MidasClient] = None,
+) -> dict:
+    """docs/manual/18_POST_PreProcess.md #10 — Story Weight Table.
+
+    2026-08-06 manual update: gained unit/styles/components (TABLE_TYPE
+    itself, "STORYWEIGHT", is unchanged).
+    """
+    return get_table(TABLE_TYPE_STORY_WEIGHT, table_name, unit=unit, styles=styles, components=components, client=client)

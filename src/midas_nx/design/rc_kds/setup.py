@@ -19,6 +19,36 @@ from ...db.base import GEN_ONLY, GET_DELETE_METHODS, GET_PUT_DELETE_METHODS, DbR
 _BASE = "/DESIGN/RC/KDS-41-20-2022"
 
 
+# --- 0. DESIGN/RC/DRC — RC Design Code Selection -----------------------------
+# Added to the manual 2026-08-06 (MAPI-1365) — a chapter-level "which RC
+# design code is active" selector, numbered "## 0." because it predates and
+# sits outside the KDS-41-20-2022/<CODE> numbering the other 69 endpoints
+# share.
+
+
+class RcDesignCodeSelectionPayload(TypedDict, total=False):
+    """docs/manual/26_Design_RC_KDS41202022.md #0 — DRC Specifications table.
+
+    Unlike this chapter's other 69 endpoints, DRC's own URI doesn't carry the
+    KDS-41-20-2022 prefix (it's ``/DESIGN/RC/DRC``, not
+    ``/DESIGN/RC/KDS-41-20-2022/DRC``). The manual's GET response example is
+    also nested under ``"DCON"`` — neither the endpoint name (``DRC``) nor
+    the design-code-option endpoint's name (``DCO``) — stated explicitly in
+    the manual as intentional, not a typo. ``DbResource.items()``/``.get()``
+    already tolerate an unstable top-level key (they take the first
+    dict-valued entry rather than indexing by ``ENDPOINT``), so this needed
+    no special-casing beyond noting it here.
+    """
+
+    DGNCODE: str  # Design Code, enum currently has one value "KDS 41 20 : 2022", required
+
+
+class RcDesignCodeSelection(DbResource):
+    ENDPOINT = "/DESIGN/RC/DRC"
+    NAME = "RC Design Code Selection"
+    METHODS = GET_PUT_DELETE_METHODS
+
+
 # --- 1. DESIGN/RC/KDS-41-20-2022/DCO — Design Code Option --------------------
 
 

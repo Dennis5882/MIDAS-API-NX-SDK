@@ -5,32 +5,31 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-08-04, at v2.1.3 — this line tracks **release** state,
-> not every edit; docs-only changes below carry their own dates (most
-> recently 2026-08-06, in Cross-cutting/backlog) without moving this line,
-> since none of them touch `src/` or warrant a version bump.
-> **v2.1.3 shipped 2026-08-04**: the
-> first `src/midas_nx/` behaviour change since v2.0.0 — fixes a real bug in
-> `MidasClient._send()`'s non-2xx error path: building the exception message
-> assumed `data["error"]` was always a dict, so a 4xx/5xx response shaped
-> like `{"error": "some string"}` raised a bare `AttributeError` instead of
-> the intended `MidasAuthError`/`MidasRequestError`/`MidasServerError`,
-> breaking any `except MidasAPIError:` handler. Found by a review pass
-> across all of `src/midas_nx/` (41 modules, ~16.4k lines) prompted by a
-> week of heavy docs churn; added a regression test
-> (`test_non_dict_error_body_on_4xx_does_not_crash`). Same pass also fixed
-> two stale docstrings: `db/dynamic_loads.py`'s THGC payload still claimed
-> Civil-only despite the class already being correctly left ungated per the
-> 2026-07-29 Gen NX correction, and `db/design.py`'s `RebarNameDist` still
-> cited REBW's old, confirmed-wrong manual field names instead of the
-> server-confirmed `VER_BAR`/`HOR_BAR`/`BE_HOR_BAR` the code actually uses.
-> Everything else reviewed — `db/base.py`'s CRUD pattern, all model/load/
-> analysis resources, `doc.py`/`ope.py`/`view.py`, `post/*`'s shape-based
-> table unwrapping, and all three RC/steel/SRC design-code chapters — came
-> back clean.
+> Last updated: 2026-08-07, at v2.2.0 — this line tracks **release** state,
+> not every edit; docs-only changes carry their own dates in
+> Cross-cutting/backlog without moving this line.
+> **v2.2.0 shipped 2026-08-07**: the first manual-driven `src/midas_nx/`
+> change since the vendored manual repo's 2026-08-06 sync
+> (`scripts/check_manual_drift.py` flagged real, non-cosmetic drift —
+> confirmed against Jira as the actual shipment of three long-DONE tickets,
+> MAPI-949/1671/1365):
+> `post.pre_process.get_story_load_summary_table()`'s `TABLE_TYPE` renamed
+> `STORY_LOAD_SUMMARY_{dir}` → `STORY_LOAD_{dir}` (**breaking**, matching
+> `STORY_MASS`'s naming from the same ticket) and gained
+> `unit`/`styles`/`components`/`load_case_names`;
+> `get_story_weight_table()` gained `unit`/`styles`/`components`;
+> `post.design.get_wall_design_forces_table()` gained `story_names`; and a
+> new endpoint, `design.rc_kds.setup.RcDesignCodeSelection`
+> (`/DESIGN/RC/DRC`), whose GET response nests under the key `"DCON"` per
+> the manual itself — handled for free by `DbResource.items()`'s existing
+> shape-based unwrapping. `docs/coverage.json` updated (398→399,
+> `vendored_at_commit` bumped to `f4a55e7`), `check_manual_drift.py` now
+> reports `has_diff: false`, `ROADMAP.md` regenerated. 6 new/changed tests,
+> 700 passing, ruff/mypy clean.
 >
-> Previously: **v2.1.2 shipped 2026-08-04** — packaged-metadata-only
-> beginner-onboarding rewrite; see `docs/release_notes_v2.1.2.md`.
+> Previously: **v2.1.3 shipped 2026-08-04** — fixed `MidasClient._send()`
+> raising a bare `AttributeError` instead of a `MidasAPIError` subclass on
+> a non-dict `error` body; see `docs/release_notes_v2.1.3.md`.
 >
 > **Release-by-release history lives in `docs/release_notes_v*.md`** (and,
 > for anything predating v1.0.0, in `docs/live_verification_notes.md` and
@@ -160,9 +159,9 @@ mirroring the `db/*.py` payload-typing style but at the whole-body level.
 | **Phase 3 — operations & view** | 15, 16 | **26/26** | ✅ done |
 | **Phase 4 — civil bridge specialization** | 08, 17 | **32/32** | ✅ done |
 | **Phase 5a — design setup + steel code** | 24, 25 | **40/40** | ✅ done |
-| **Phase 5b — RC design code** | 26 | **69/69** | ✅ done |
+| **Phase 5b — RC design code** | 26 | **70/70** | ✅ done |
 | **Phase 5c — SRC design code** | 27 | **27/27** | ✅ done |
-| **Total** | | **398/398 (100%)** | 390/398 published through v0.11.2; the last 8 landed 2026-07-29 |
+| **Total** | | **399/399 (100%)** | 390/398 published through v0.11.2, the last 8 landed 2026-07-29; `+1` on 2026-08-07 — `DESIGN/RC/DRC` (RC design code selection), a chapter-26 endpoint newly documented in the manual repo's 2026-08-06 sync (MAPI-1365) |
 
 > The last 8 rows (STYP-M1, MATL-M1, IMFM-M1, EPMT-M1, IEHG-{BEAM,TRUSS,GL,
 > PSS}-M1) had no JSON Schema in the manual repo to transcribe from — this
@@ -191,7 +190,7 @@ they're the ones worth re-checking before planning a release):
 | Response handling | 200-with-`error` body, non-JSON body, empty-table shapes, failed-analysis message | ✅ hardened in v0.12.0/v0.14.0 |
 | Write verification | `scripts/live_crud_check.py` — create/read/update/delete round trips, 43 cases in 6 tiers | ✅ **all 43** confirmed live on Civil NX 2026 v2.2, 40 of them on v2.1 too; 36 of the 43 also confirmed on Gen NX v2.1. `/db/NMAS` (the last holdout) used to crash **both** products, root-caused 2026-07-29 (omitted `rmX`/`rmY`/`rmZ`) and worked around in `NodalMass.create()`/`.update()` |
 | Version metadata | `__init__.py` `__version__` (hatchling `dynamic`) + `tests/test_version.py` + a tag↔`__version__` check in `publish.yml` | ✅ single source, enforced at release |
-| Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 392/398 recorded, now split by `level`: **63 write / 329 read / 6 unverified**, both products |
+| Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 392/399 recorded, now split by `level`: **63 write / 329 read / 7 unverified**, both products (the 7th unverified is the new `DESIGN/RC/DRC`, added 2026-08-07, not yet live-tested) |
 | Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md`, `docs/ai-coding/`, `docs/index.md`, `docs/safety.md` risk levels, `docs/recipes/`, `docs/ko/python-basics.md` | ✅ first example read-only + AI-assistant path (v2.1.2); recipe pilot + ko minimal-Python primer + real-session-verified MAPI key step (2026-08-04); ⚠️ still text-only, no screenshots |
 | Practitioner layer | Excel round-trip, `recipes`/`easy`, opt-in validation | ❌ not started |
 
@@ -706,6 +705,7 @@ exactly why that's the honest framing rather than a stronger guarantee.
 | v2.1.1 ✅ | Re-applies the requests/mypy/pytest floor bumps closed for blocking on Python 3.9, now that v2.1.0 dropped it | published 2026-08-02 |
 | v2.1.2 ✅ | Packaged-metadata-only: beginner onboarding rewrite — read-only first example everywhere, new `docs/ai-coding/` AI-assistant safety pack, two-path doc-site entry, risk-level (0-4) badges in `docs/safety.md` | published 2026-08-04 |
 | v2.1.3 ✅ | Fixes `MidasClient._send()` raising `AttributeError` instead of a `MidasAPIError` subclass when a non-2xx error body's `error` field is a non-dict; two stale-docstring corrections found in the same review pass | published 2026-08-04 |
+| v2.2.0 ✅ | Manual-driven sync (398→399 endpoints): Story Load Summary Table's `TABLE_TYPE` renamed (**breaking**), Story Load/Weight Tables gain unit/styles/components/load_case_names, Wall Design Forces gains `story_names`, new `DESIGN/RC/DRC` endpoint (`RcDesignCodeSelection`) | published 2026-08-07 |
 | v0.16.0/Phase 7 (not started) | Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
 | v0.17.0+/Phase 8 (not started) | `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
 

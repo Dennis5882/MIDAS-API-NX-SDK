@@ -1,6 +1,6 @@
 {
   "vendored_from": "Dennis5882/MIDAS-API docs/manual/INDEX.md",
-  "vendored_at_commit": "7167365ab10df4fe1c70d6a9fafb3b480d66bdad",
+  "vendored_at_commit": "f4a55e723fa6781cfee492fed2c956c0ccd4fa21",
   "source_note": "Static snapshot; re-run scripts/vendor_coverage.py to refresh. POST result-table types and the three Design Code chapters (25-27) are not itemized by URL in INDEX.md and are represented as single aggregate rows rather than one row per table/check.",
   "endpoints": [
     {
@@ -6668,6 +6668,17 @@
         },
         "level": "read"
       }
+    },
+    {
+      "endpoint": "/DESIGN/RC/DRC",
+      "name": "RC 설계 코드 선택",
+      "chapter_file": "26_Design_RC_KDS41202022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.rc_kds.setup"
     },
     {
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCO",

@@ -167,6 +167,7 @@ def get_wall_design_forces_table(
     unit: Optional[TableUnit] = None,
     styles: Optional[TableStyles] = None,
     components: Optional[List[str]] = None,
+    story_names: Optional[List[str]] = None,
     client: Optional[MidasClient] = None,
 ) -> dict:
     """docs/manual/23_POST_Design.md #6 — Concrete Design - Wall Design Forces.
@@ -174,14 +175,20 @@ def get_wall_design_forces_table(
     Adds WID (wall id) and Story columns instead of a "Memb" column; no
     PARTS filter documented (uses Part values "Top"/"Bottom" from the wall's
     own geometry instead of member-end selection).
+
+    story_names: restrict to specific story names, e.g. ["1F", "2F"];
+    omitting it selects all stories. Added in the 2026-08-06 manual update
+    (MAPI-1671) — the ticket's own request example used the key "STORY",
+    but the shipped param is "STORY_NAMES", matching ch20/ch21's naming.
     """
-    return _get_design_forces_table(
+    return get_table(
         TABLE_TYPE_WALL_DESIGN_FORCES,
         table_name,
         node_elems=node_elems,
         unit=unit,
         styles=styles,
         components=components,
+        story_names=story_names,
         client=client,
     )
 

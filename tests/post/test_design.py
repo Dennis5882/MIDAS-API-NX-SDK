@@ -65,6 +65,16 @@ def test_get_wall_design_forces_table_has_no_parts_param(gen_client):
 
 
 @responses.activate
+def test_get_wall_design_forces_table_sends_story_names(gen_client):
+    responses.add(responses.POST, "https://x.test:443/gen/post/TABLE", json={}, status=200)
+    design.get_wall_design_forces_table(story_names=["1F", "2F"], client=gen_client)
+    sent = responses.calls[0].request
+    body = json.loads(sent.body)["Argument"]
+    assert body["TABLE_TYPE"] == "WALLDESIGNFORCES"
+    assert body["STORY_NAMES"] == ["1F", "2F"]
+
+
+@responses.activate
 def test_get_steel_member_design_forces_table_selects_type(gen_client):
     responses.add(responses.POST, "https://x.test:443/gen/post/TABLE", json={}, status=200)
     design.get_steel_member_design_forces_table(parts=["PartI", "PartJ"], client=gen_client)

@@ -98,7 +98,28 @@ def test_get_story_load_summary_table_selects_direction(gen_client):
     responses.add(responses.POST, "https://x.test:443/gen/post/TABLE", json={}, status=200)
     pre_process.get_story_load_summary_table("Y", "StoryLoad_Y", client=gen_client)
     sent = responses.calls[0].request
-    assert json.loads(sent.body)["Argument"]["TABLE_TYPE"] == "STORY_LOAD_SUMMARY_Y"
+    assert json.loads(sent.body)["Argument"]["TABLE_TYPE"] == "STORY_LOAD_Y"
+
+
+@responses.activate
+def test_get_story_load_summary_table_sends_unit_styles_components_and_load_case_names(gen_client):
+    responses.add(responses.POST, "https://x.test:443/gen/post/TABLE", json={}, status=200)
+    pre_process.get_story_load_summary_table(
+        "Z",
+        "StoryLoadZ",
+        unit={"FORCE": "KN", "DIST": "M"},
+        styles={"FORMAT": "Fixed", "PLACE": 3},
+        components=["Load", "Story", "Level", "Sum"],
+        load_case_names=["DL (ST)"],
+        client=gen_client,
+    )
+    sent = responses.calls[0].request
+    body = json.loads(sent.body)["Argument"]
+    assert body["TABLE_TYPE"] == "STORY_LOAD_Z"
+    assert body["UNIT"] == {"FORCE": "KN", "DIST": "M"}
+    assert body["STYLES"] == {"FORMAT": "Fixed", "PLACE": 3}
+    assert body["COMPONENTS"] == ["Load", "Story", "Level", "Sum"]
+    assert body["LOAD_CASE_NAMES"] == ["DL (ST)"]
 
 
 @responses.activate
@@ -107,3 +128,19 @@ def test_get_story_weight_table_sends_minimal_argument(gen_client):
     pre_process.get_story_weight_table("StoryWeight", client=gen_client)
     sent = responses.calls[0].request
     assert json.loads(sent.body) == {"Argument": {"TABLE_NAME": "StoryWeight", "TABLE_TYPE": "STORYWEIGHT"}}
+
+
+@responses.activate
+def test_get_story_weight_table_sends_unit_styles_and_components(gen_client):
+    responses.add(responses.POST, "https://x.test:443/gen/post/TABLE", json={}, status=200)
+    pre_process.get_story_weight_table(
+        unit={"FORCE": "KN", "DIST": "M"},
+        styles={"FORMAT": "Fixed", "PLACE": 3},
+        components=["Story", "Level", "Sum"],
+        client=gen_client,
+    )
+    sent = responses.calls[0].request
+    body = json.loads(sent.body)["Argument"]
+    assert body["UNIT"] == {"FORCE": "KN", "DIST": "M"}
+    assert body["STYLES"] == {"FORMAT": "Fixed", "PLACE": 3}
+    assert body["COMPONENTS"] == ["Story", "Level", "Sum"]

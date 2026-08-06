@@ -76,8 +76,12 @@ def get_table(
     :func:`unwrap_table` below, which finds the table by shape instead.
     node_elems/unit/styles/components: only meaningful for the specific table
     types documented as supporting them — see each caller's docstring.
-    load_case_names: analysis-result tables only (ch19-21) — load/combination
-    names with a type suffix, e.g. "DL(ST)", "COMB1(CB)", "CS1(CS)".
+    load_case_names: analysis-result tables (ch19-21) — load/combination
+    names with a type suffix, e.g. "DL(ST)", "COMB1(CB)", "CS1(CS)". Also
+    accepted by ch18's Story Load Summary Table as of the 2026-08-06 manual
+    update, whose own example spells the suffix with a leading space
+    ("DL (ST)") rather than ch19-21's "DL(ST)" — a manual-source
+    inconsistency, not a call-site-specific requirement to enforce here.
     opt_cs/stage_step: analysis-result tables only (ch19-21) — enable and
     select construction-stage steps, e.g. ["CS1:001(first)", "CS1:002(last)"].
     parts: design-force tables (ch23) only — member end/location or top/bot
@@ -85,8 +89,12 @@ def get_table(
     confirmed 2026-07-30 that table type never supported
     PARTS or SECT_POSITION; both were removed from the official article, and
     this SDK's own get_wall_force_table() no longer accepts either.
-    story_names: Story-series (ch21) and Wall Force (ch20) tables only —
-    restrict to specific story names; omitting it selects all stories.
+    story_names: Story-series (ch21) and Wall Force (ch20) tables — restrict
+    to specific story names; omitting it selects all stories. Also accepted
+    by Wall Design Forces (ch23) as of the 2026-08-06 manual update
+    (MAPI-1671); that endpoint's own Specifications table numbers it as
+    param 9, alongside the existing member-scope/unit/style/component
+    params.
     modes: Story Mode Shape (ch21) only — mode filter, e.g. ["Mode1", "Mode2"];
     omitting it returns all modes.
     additional: Story-series tables (ch21) only — the table-type-specific
