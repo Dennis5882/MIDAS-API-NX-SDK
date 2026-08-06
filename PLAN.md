@@ -631,6 +631,19 @@ exactly why that's the honest framing rather than a stronger guarantee.
     in sync). `mkdocs build --strict` passing after both additions.
   - **Tier 2 (engineering-task index / Recipes)**: unchanged from the Phase
     8 note above — still not started, still waiting on Phase 6-7 feedback.
+    Explicitly declined 2026-08-04 to build out the full 10-category index
+    now: the 3-recipe pilot has no usage feedback yet, and expanding to all
+    10 categories would reverse the "wait for feedback" call with no new
+    evidence to justify it.
+  - **Tier 3 completed 2026-08-04**: split `reference/doc-ope-view.md` (one
+    page covering three unrelated module families) into
+    `reference/document.md`, `reference/operations.md`,
+    `reference/view.md` — matching §6.1's "Operation Functions"/"View
+    Functions" as separate Reference entries. Unlike the tier-2 item
+    above, this was low-risk to do immediately: purely organizational, no
+    new public API surface, nothing gated on user feedback. No inbound
+    links to the old page existed outside `mkdocs.yml` itself.
+    `mkdocs build --strict` passing with the 3-way split.
 - **Quickstart Step 3 corrected from a real session (2026-08-04).** The
   three quickstarts' "get a MAPI key" step had been describing a menu path
   ("find the Open API menu... choose Issue API Key") never confirmed

@@ -89,7 +89,9 @@ nav:
   - Reference:
       - Client and exceptions: reference/client.md
       - DB resources: reference/db.md
-      - Document, operations, view: reference/doc-ope-view.md
+      - Document lifecycle: reference/document.md
+      - Operation functions: reference/operations.md
+      - View functions: reference/view.md
       - Post and result extraction: reference/post.md
       - Design code chapters: reference/design.md
   - Verification:
