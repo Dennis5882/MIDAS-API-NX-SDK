@@ -5,7 +5,11 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-08-04, at v2.1.3. **v2.1.3 shipped 2026-08-04**: the
+> Last updated: 2026-08-04, at v2.1.3 — this line tracks **release** state,
+> not every edit; docs-only changes below carry their own dates (most
+> recently 2026-08-06, in Cross-cutting/backlog) without moving this line,
+> since none of them touch `src/` or warrant a version bump.
+> **v2.1.3 shipped 2026-08-04**: the
 > first `src/midas_nx/` behaviour change since v2.0.0 — fixes a real bug in
 > `MidasClient._send()`'s non-2xx error path: building the exception message
 > assumed `data["error"]` was always a dict, so a 4xx/5xx response shaped
@@ -629,7 +633,8 @@ exactly why that's the honest framing rather than a stronger guarantee.
     single-source, per that same plan's own reasoning (AI-facing content
     that must track the SDK exactly — one canonical version, not N to keep
     in sync). `mkdocs build --strict` passing after both additions.
-  - **Tier 2, corrected same day**: the author's actual ask on re-discussion
+  - **Tier 2, corrected 2026-08-06** (two days after the 2026-08-04 triage
+    below, not the same day): the author's actual ask on re-discussion
     wasn't "write 10 categories of new recipe content" (that's still
     declined, see below) but "reorganize what already exists under the
     10-category taxonomy so engineers can find it" — a navigation-only
@@ -645,7 +650,7 @@ exactly why that's the honest framing rather than a stronger guarantee.
     declined**: the 3-recipe pilot has no usage feedback yet, and doing
     that now would reverse the "wait for feedback" call with no new
     evidence to justify it.
-  - **Tier 3 completed 2026-08-04**: split `reference/doc-ope-view.md` (one
+  - **Tier 3 completed 2026-08-06**: split `reference/doc-ope-view.md` (one
     page covering three unrelated module families) into
     `reference/document.md`, `reference/operations.md`,
     `reference/view.md` — matching §6.1's "Operation Functions"/"View

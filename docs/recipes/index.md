@@ -20,18 +20,24 @@ exist, the entry below still links to the closest real material —
 [ROADMAP.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/ROADMAP.md)
 for the full endpoint list — rather than leaving a dead end.
 
-| Task | Recipe | Reference / endpoint list |
-| --- | --- | --- |
-| Model setup | [Inspect a project](inspect-project.md) — Level 1 | [Document lifecycle](../reference/document.md), ch01/ch02 in ROADMAP.md |
-| Nodes and elements | [Read nodes and elements](read-nodes-and-elements.md) — Level 1 | [DB resources](../reference/db.md), ch03 in ROADMAP.md |
-| Materials and sections | *none yet* | `midas_nx.db.properties`, ch04 in ROADMAP.md |
-| Groups and boundary conditions | *none yet* | `midas_nx.db.project` (groups), `midas_nx.db.boundary`, ch02/ch05 in ROADMAP.md |
-| Static loads | *none yet* | `midas_nx.db.static_loads`, ch06 in ROADMAP.md |
-| Dynamic and seismic loads | *none yet* | `midas_nx.db.dynamic_loads`, ch09 in ROADMAP.md |
-| Temperature and moving loads | *none yet* | `midas_nx.db.temperature_prestress`, `midas_nx.db.moving_loads` (Civil NX only), ch07/ch08 in ROADMAP.md |
-| Construction stages | *none yet* | `midas_nx.db.construction_stage`, ch10 in ROADMAP.md |
-| Analysis | *none yet* | [Document lifecycle](../reference/document.md) (`doc.analyze()`), `midas_nx.db.analysis_control`, ch12 in ROADMAP.md |
-| Results | [Extract a result table](get-results.md) — Level 1 | [Post and result extraction](../reference/post.md), ch18-23 in ROADMAP.md |
+| Task | Recipe | What it does | Reference / endpoint list |
+| --- | --- | --- | --- |
+| Model setup | [Inspect a project](inspect-project.md) — Level 1 | Connect and print a one-screen summary of the current model | [Client](../reference/client.md), [DB resources](../reference/db.md) — this recipe only checks the connection and counts nodes/elements; ch01/ch02 project-lifecycle itself has no recipe yet, see [Document lifecycle](../reference/document.md) |
+| Nodes and elements | [Read nodes and elements](read-nodes-and-elements.md) — Level 1 | List and filter the model's geometry | [DB resources](../reference/db.md), ch03 in ROADMAP.md |
+| Materials and sections | *none yet* | — | `midas_nx.db.properties.material`, `.section` (the `properties` package itself has no exports — its classes live in these submodules), ch04 in ROADMAP.md |
+| Groups and boundary conditions | *none yet* | — | `midas_nx.db.project` (groups), `midas_nx.db.boundary`, ch02/ch05 in ROADMAP.md |
+| Static loads | *none yet* | — | `midas_nx.db.static_loads`, ch06 in ROADMAP.md |
+| Dynamic and seismic loads | *none yet* | — | `midas_nx.db.dynamic_loads`, ch09 in ROADMAP.md |
+| Temperature and moving loads | *none yet* | — | `midas_nx.db.temperature_prestress`, `midas_nx.db.moving_loads` (despite ch08's framing, most of its ~80 classes support both products — only 5 are gated Civil-only), ch07/ch08 in ROADMAP.md |
+| Construction stages | *none yet* | — | `midas_nx.db.construction_stage`, ch10 in ROADMAP.md |
+| Analysis | *none yet* | — | [Document lifecycle](../reference/document.md) (`doc.analyze()`), `midas_nx.db.analysis_control`, ch12 in ROADMAP.md |
+| Results | [Extract a result table](get-results.md) — Level 1 | Pull reaction forces out of an already-analyzed model | [Post and result extraction](../reference/post.md), ch18-21 and ch23 in ROADMAP.md (ch22 doesn't exist — the manual jumps 21 to 23) |
+
+> This table's module/chapter mapping is hand-maintained, not generated
+> from `docs/coverage.json` the way `ROADMAP.md` is. If a future manual
+> chapter renumbering or module split makes an entry above look wrong,
+> `docs/coverage.json` and `ROADMAP.md` are the source of truth — please
+> report the mismatch.
 
 The three that exist are all read-only (risk level 1 — see
 [Risk levels](../safety.md#risk-levels)): none of them can create, change,
