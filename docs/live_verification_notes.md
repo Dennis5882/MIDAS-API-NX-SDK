@@ -4102,6 +4102,95 @@ that `*-TABLE`/`*-REPORT` reads are inherently safe no longer holds and
 each new candidate needs to be treated as a possible crasher until
 tested.
 
+## 2026-08-07 — patch verification: `MAPI-2425`/`MAPI-2426` fixed on both products; the predicted `get_beam_design_forces_table` risk confirmed; `MAPI-2429` closed as "not a defect"
+
+Followed up on a fresh, previously-unseen crash found earlier the same
+session (`get_beam_design_forces_table`, `POST /post/TABLE`,
+`TABLE_TYPE_BEAM_DESIGN_FORCES` — hung Gen NX build 07/30/2026 on the
+very first call of a `post/*` read sweep, ~4 minutes of timeouts before
+the session died). The user then patched both products — About dialogs
+confirmed **MIDAS GEN NX 2026 (v2.1), Build 08/06/2026** (patch v975,
+see below) and **MIDAS CIVIL NX 2026 (v2.2), Build 08/06/2026** — and
+asked to check whether previously-reported issues were resolved, and
+whether the patch introduced anything new.
+
+**Checked MIDASIT's internal Jira for what changed.** `MAPI-2425`
+(`/ope/EDMP`) and `MAPI-2426` (`/ope/USLC`) — both filed 2026-07-30, both
+originally Gen-NX-only reports — were marked **DONE** at 09:13-09:15 the
+same morning the user patched, linked to a shared fix build
+(`GEN_NX_US_D260806_T0910_N3547_r_b1_MR.zip`, v975). Root cause per the
+vendor comment on `MAPI-2425`: `AUTO: true` internally still read
+`PARAMETER` even though the manual only documents it as required when
+`AUTO: false`; with `AUTO: true` and no `PARAMETER`, the code used the
+missing value directly instead of guarding it, crashing the product. The
+fix changes that path to return a proper error response instead of
+crashing — it is **not** a requiredness change to `PARAMETER` itself, so
+this SDK's existing docstring (`PARAMETER: ... required if AUTO=false` —
+matching the manual exactly) needed no correction.
+
+`MAPI-2429` (`/DESIGN/SRC/AIK-SRC2K/OCHECK` crash, filed against both
+products) was closed the day before as **"결함 아님" (not a defect)** —
+not because it doesn't crash, but because the endpoint itself is an
+unofficial, paused-mid-development API that MIDASIT is renaming to a
+`/TEMP/DESIGN/...` prefix (also affects `STEEL/KDS-41-30-2022/OCHECK`
+and `SRC/AIK-SRC2K/DCHECK`). No fix timeline; still crash-prone by
+design, not by accident.
+
+**Retested `EDMP`/`USLC` live, on both products, with the exact
+crash-reproduction payloads from the original reports.** Per the user's
+standing permission to build disposable models for this ("모델은 안
+중요해, 필요하면 더미 만들어서 테스트해도 됨"), built a minimal model on
+each product from empty (`Material` "C24"/`KS01(RC)`, `Section`
+400×400 `DBUSER`, two `Node`s, one `BEAM` `Element`, one `StaticLoadCase`
+"DL", one `LoadCombinationConcrete` "cLCB1") and issued:
+
+```json
+POST /ope/EDMP
+{"Argument": {"NODE_ELEMS": {"KEYS": [1]}, "TYPE": "NSM", "AUTO": true,
+              "CODE": "Korean Standard", "H_VS": 0.5}}
+```
+
+```json
+POST /ope/USLC
+{"Argument": {"POSITION": "CONC",
+              "LCOM_LIST": [{"TYPE": "CONC", "NAME": "cLCB1"}]}}
+```
+
+**Both products, both calls: no crash.** `EDMP` now answers
+`MidasResultError("Unknown Error")` — a clean rejection, not a hang.
+`USLC` now answers `{"message": "MIDAS <product> NX command complete"}`
+— an actual success. `verify_connection()` confirmed healthy after every
+call, on both Gen and Civil. Neither crash report was originally filed
+against Civil NX (both said "Gen NX 세션 종료" only) — tested there
+anyway since the fix build is shared, and it holds on Civil too.
+
+**The `get_beam_design_forces_table` crash from earlier this session is
+not a new, unfiled bug — it's the risk the 2026-08-01 entry above
+already flagged and left untested.** That entry (`MAPI-2431`, Column
+Design Forces) noted: *"`get_brace_design_forces_table`/
+`get_beam_design_forces_table` share the same underlying `TABLE`
+endpoint/helper and were not independently tested; flagged as equally at
+risk."* `post/base.py`'s `get_table()` confirms this at the code level —
+every `post.design.get_*_design_forces_table()` function, Beam included,
+routes through the same `POST /post/TABLE` call with a different
+`TABLE_TYPE`. This session's Beam crash is that prediction landing, on
+build 07/30/2026 (pre-patch) — same failure signature as `MAPI-2431`
+(long timeout, then every `/db/*` call fails, then the process dies).
+Whether the 08/06 patch fixes this specific `TABLE_TYPE` the way it fixed
+`EDMP`/`USLC` is untested — retesting it means deliberately repeating a
+call already known to hang, so it stays paused pending the user's
+explicit go-ahead, per "위험한 것은 마지막에."
+
+**Net: two of three previously-reported crashes (`EDMP`/`USLC`) confirmed
+fixed on both products by the same patch; the third (`OCHECK`) confirmed
+not fixed and not going to be (unofficial API); `MAPI-2431`'s Column
+Design Forces crash remains unresolved (IN PROGRESS) and its sibling
+Beam Design Forces crash is now empirically confirmed rather than just
+predicted.** No evidence of new, undocumented endpoints in this patch —
+checked both `scripts/check_manual_drift.py` (`has_diff: false`) and a
+7-day Jira sweep of `[MIDAS API]`-tagged issues (nothing beyond the six
+already tracked here).
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
