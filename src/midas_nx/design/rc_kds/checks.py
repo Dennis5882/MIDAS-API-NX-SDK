@@ -597,11 +597,23 @@ def get_column_design_forces_table(
     model), ruling out model content as the cause. No data loss either
     time after the standard crash-recovery cycle (dismiss dialogs →
     relaunch → New Project → close → reconnect with the same MAPI key).
-    Root cause unidentified; reported to MIDASIT. Not yet tested on Civil
-    NX. Same endpoint/underlying helper as
+    Root cause unidentified; reported to MIDASIT (`MAPI-2431`). Not yet
+    tested on Civil NX. Same endpoint/underlying helper as
     :func:`get_brace_design_forces_table` and
     :func:`get_beam_design_forces_table` — treat those as equally at
-    risk until independently tested."""
+    risk until independently tested.
+
+    ⚠️ Re-tested 2026-08-07 on the same patch build that fixed `MAPI-2425`/
+    `MAPI-2426` (Gen NX v975, build 08/06/2026) — **not fixed**. MIDASIT
+    couldn't reproduce it on their side and asked for the test model;
+    re-tested two cases instead of sharing one. Against the currently-open
+    real model (small, no design run yet): no crash, clean empty response.
+    Against a completely blank ``/doc/NEW`` document (0 nodes): crashed
+    again, identical signature (``verify_connection()`` → disconnected,
+    every ``/db/*`` call → 404). The blank-document repro needs no model
+    file at all, so that's what was reported back — real-model crash risk
+    is unresolved either way; don't treat the one non-crashing real-model
+    test as evidence this is now safe."""
     return _get_rc_design_forces_table(
         TABLE_TYPE_COLUMN_DESIGN_FORCES,
         table_name,

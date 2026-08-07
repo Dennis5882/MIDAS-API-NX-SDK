@@ -8465,15 +8465,18 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.checks",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-07",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "2026-07-31 manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) with no analysis/design run yet -- clean route+shape confirmation, informative 'Please perform analysis' error, no crash. 2026-08-01 on Gen NX (TABLE_TYPE=COLUMNDESIGNFORCES): crashed twice independently (real 14,027-node apartment model, and an isolated empty document) -- filed as MAPI-2431. 2026-08-07 re-tested post-patch (Gen NX v975, build 08/06/2026): MIDASIT couldn't reproduce on their side and asked for the test model; re-tested two cases instead of sharing one. Against the then-current small real model (63 nodes, no design run): no crash, clean empty response -- matches MIDASIT's own result. Against a fresh /doc/NEW blank document (0 nodes, confirmed via GET /db/NODE): crashed again, identical signature (verify_connection() -> disconnected, every /db/* call -> 404). Reported both cases back on MAPI-2431 with the blank-document repro steps (no model file needed). Still IN PROGRESS -- the one non-crashing real-model result is not evidence this is safe on real models generally.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
-        "level": "read"
+        "level": "read",
+        "outcome": "crash_or_hang"
       }
     },
     {

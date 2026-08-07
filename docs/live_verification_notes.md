@@ -4191,6 +4191,46 @@ checked both `scripts/check_manual_drift.py` (`has_diff: false`) and a
 7-day Jira sweep of `[MIDAS API]`-tagged issues (nothing beyond the six
 already tracked here).
 
+## 2026-08-07 (later) — `MAPI-2431` re-tested post-patch: still crashes, and MIDASIT couldn't reproduce it on their side
+
+MIDASIT replied on `MAPI-2431` saying the same call worked fine in their
+environment and asked for the model used to test it. Rather than share a
+model file, re-tested two cases live on Gen NX (same patch build, v975,
+build 08/06/2026) to characterize exactly when it does and doesn't crash:
+
+**Case 1 — the currently-open real model, no design run yet: no crash.**
+`POST /DESIGN/RC/KDS-41-20-2022/TABLE` with
+`{"Argument": {"TABLE_NAME": "", "TABLE_TYPE": "COLUMNDESIGNFORCES"}}`
+answered a clean empty `{}`, and a follow-up `verify_connection()`/
+`GET /db/NODE` confirmed the session stayed healthy. This matches what
+MIDASIT saw on their side.
+
+**Case 2 — a completely blank document (`/doc/NEW`, confirmed 0 nodes via
+`GET /db/NODE`): crashes, same signature as before.** The same call got no
+response; `verify_connection()` then answered `"status": "disconnected"`
+(notably accurate this time, not the usual false "connected") and
+`GET /db/NODE` failed `404 client does not exist`. Gen NX needed a
+restart.
+
+This reconciles with the 2026-08-01 entry above, which also crashed on
+both a real populated model (14,027 nodes, real section data) and an
+isolated empty document — so the empty-document repro isn't new. What's
+new is that **today's small real model (63 nodes) did not crash**, where
+the much larger apartment model on 08-01 did. That's not enough evidence
+to conclude the patch fixed anything for real models — the two "real
+model" tests differ in more than just the patch (node count, whether any
+design/analysis had been run, section data present or not) — but it does
+mean the crash isn't purely a function of "real model vs. empty model."
+The one variable that reproduces it reliably across every test so far,
+pre- and post-patch, is **zero design data present** — trivially true for
+a blank document, and possibly also true of the small 08-07 test model if
+it turns out to have sections without any run design check. Reported both
+cases back on the ticket with the exact repro steps (`/doc/NEW` then the
+call above, no model file needed) since that's a strictly easier repro
+path for MIDASIT than sharing a model.
+
+Still `IN PROGRESS`, unresolved as of this entry.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
