@@ -83,13 +83,21 @@ def _describe(response: Any) -> Dict[str, Any]:
 
     Zero-row responses have been seen live in two forms - ``{"<KEY>": {}}`` and
     a bare ``{"message": ""}`` - so the shape itself is evidence worth
-    recording, not just the row count.
+    recording, not just the row count. When the response is message-shaped,
+    the message text itself (capped) is what distinguishes "no data yet" from
+    "rejected: perform analysis first" - a distinction the row count/shape
+    alone can't make. Server messages seen so far are generic status text,
+    not model content, but this is capped and should still be reviewed before
+    any of it lands in a public file (docs/coverage.json shipped unsanitized
+    production-model detail once before - see CLAUDE.md).
     """
     if not isinstance(response, dict):
         return {"shape": type(response).__name__, "rows": None}
     table = next((v for v in response.values() if isinstance(v, dict)), None)
     if table is None:
-        return {"shape": "message" if "message" in response else "no-table", "rows": 0}
+        if "message" in response:
+            return {"shape": "message", "rows": 0, "message_text": str(response["message"])[:200]}
+        return {"shape": "no-table", "rows": 0}
     return {"shape": "keyed", "key": next(iter(response)), "rows": len(table)}
 
 
