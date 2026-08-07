@@ -5546,7 +5546,20 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.ope"
+      "module": "midas_nx.ope",
+      "live_verified": {
+        "date": "2026-08-07",
+        "products": [
+          "gen",
+          "civil"
+        ],
+        "method": "manual POST probe on a disposable minimal model (Node/Material/Section/Element/StaticLoadCase/LoadCombinationConcrete), reproducing MAPI-2426's original crash payload after the 08/06/2026 patch",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+        },
+        "level": "write"
+      }
     },
     {
       "endpoint": "/ope/LINEBMLD",
@@ -5629,7 +5642,20 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.ope"
+      "module": "midas_nx.ope",
+      "live_verified": {
+        "date": "2026-08-07",
+        "products": [
+          "gen",
+          "civil"
+        ],
+        "method": "manual POST probe on a disposable minimal model (Node/Material/Section/Element), reproducing MAPI-2425's original crash payload (AUTO=true, TYPE=NSM, no PARAMETER) after the 08/06/2026 patch",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+        },
+        "level": "write"
+      }
     },
     {
       "endpoint": "/ope/STOR",
@@ -6244,12 +6270,13 @@
           "gen",
           "civil"
         ],
-        "method": "manual GET probe via midas_nx.post.pre_process.get_material_table only (one of the 10 TABLE_TYPE values in this module, spot-checking the shared post.base.get_table()/unwrap_table() mechanism they all route through) -- the other 9 table types were not individually re-probed this session",
+        "method": "manual GET probe via midas_nx.post.pre_process.get_material_table only (one of the 10 TABLE_TYPE values in this module, spot-checking the shared post.base.get_table()/unwrap_table() mechanism they all route through) -- the other 9 table types were not individually re-probed this session 2026-08-07: same Civil NX FCM bridge sweep also covered this module's other 9 table types. 7 of 10 answered ok: get_element_weight_table/get_mass_summary_table/get_section_table/get_supports_table (plus get_material_table, already covered above) returned real populated rows; get_load_summary_table/get_nodal_body_force_table answered a clean empty response. The 3 get_story_*_table functions all answered result_error ('there was an error creating utbl') -- this bridge model has no story data, matching the Story-module row's Gen-only finding below.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
-        "level": "read"
+        "level": "read",
+        "outcome": "success_populated"
       }
     },
     {
@@ -6268,12 +6295,13 @@
           "gen",
           "civil"
         ],
-        "method": "manual GET-shaped POST probe via midas_nx.post.result_1.get_reaction_table and get_beam_force_table after a real /doc/ANAL run on a synthetic frame model -- 2 of ~25 table types spot-checked; Civil re-check used a model with real AUTOMESH-generated plates so DL self-weight was non-zero (Gen's earlier check had an all-zero load case, both are expected results, not defects); the rest were not individually re-probed",
+        "method": "manual GET-shaped POST probe via midas_nx.post.result_1.get_reaction_table and get_beam_force_table after a real /doc/ANAL run on a synthetic frame model -- 2 of ~25 table types spot-checked; Civil re-check used a model with real AUTOMESH-generated plates so DL self-weight was non-zero (Gen's earlier check had an all-zero load case, both are expected results, not defects); the rest were not individually re-probed 2026-08-07 broader sweep on a real Civil NX FCM bridge model (111 nodes, post-analysis): 48 of this module's 51 get_*_table functions answered ok (design-forces-family functions in post.design excluded from this sweep -- confirmed crash-prone, see MAPI-2431), 5 with real populated rows (get_tendon_arrangement/coordinates/elongation/stress_limit_check/weight_table -- this FCM bridge model has real tendon data), the rest a clean empty response for element types this bridge model doesn't have (truss/cable/plane/solid). get_beam_force_static_prestress_table and get_wall_force_table both answered result_error ('there was an error creating utbl (ex PostMode ...)') -- same 'post mode' precondition GSBG is blocked on, see ope.py's generate_bridge_girder_diagram docstring. get_tendon_loss_table timed out at 40s without crashing the session (verify_connection + a follow-up /db/NODE call both succeeded right after), treated as slow rather than broken.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
-        "level": "read"
+        "level": "read",
+        "outcome": "success_populated"
       }
     },
     {
@@ -6291,11 +6319,12 @@
         "products": [
           "gen"
         ],
-        "method": "manual GET-shaped POST probe via midas_nx.post.story.get_story_drift_table after a real /doc/ANAL run -- 1 of ~16 table types spot-checked, returned a valid empty response (no seismic/story-drift-relevant load applied); the rest were not individually re-probed. Re-tried on Civil NX 2026-07-30: get_story_drift_table failed ('there was an error creating utbl') -- consistent with /db/STOR (Story data) already being confirmed Gen-only, not treated as a new defect; not added to this endpoint's confirmed products",
+        "method": "manual GET-shaped POST probe via midas_nx.post.story.get_story_drift_table after a real /doc/ANAL run -- 1 of ~16 table types spot-checked, returned a valid empty response (no seismic/story-drift-relevant load applied); the rest were not individually re-probed. Re-tried on Civil NX 2026-07-30: get_story_drift_table failed ('there was an error creating utbl') -- consistent with /db/STOR (Story data) already being confirmed Gen-only, not treated as a new defect; not added to this endpoint's confirmed products 2026-08-07: re-swept all ~17 story table types on the same Civil NX FCM bridge model -- all answered result_error (\"there was an error creating utbl\"), reconfirming this module doesn't work on Civil NX (matches the Gen-only finding already recorded above); no new Gen-side evidence gathered this pass.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
         },
-        "level": "read"
+        "level": "read",
+        "outcome": "success_empty"
       }
     },
     {

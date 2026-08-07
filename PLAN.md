@@ -190,7 +190,7 @@ they're the ones worth re-checking before planning a release):
 | Response handling | 200-with-`error` body, non-JSON body, empty-table shapes, failed-analysis message | ✅ hardened in v0.12.0/v0.14.0 |
 | Write verification | `scripts/live_crud_check.py` — create/read/update/delete round trips, 43 cases in 6 tiers | ✅ **all 43** confirmed live on Civil NX 2026 v2.2, 40 of them on v2.1 too; 36 of the 43 also confirmed on Gen NX v2.1. `/db/NMAS` (the last holdout) used to crash **both** products, root-caused 2026-07-29 (omitted `rmX`/`rmY`/`rmZ`) and worked around in `NodalMass.create()`/`.update()` |
 | Version metadata | `__init__.py` `__version__` (hatchling `dynamic`) + `tests/test_version.py` + a tag↔`__version__` check in `publish.yml` | ✅ single source, enforced at release |
-| Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 393/399 recorded, split by `level`: **63 write / 330 read / 6 unverified**, both products (`DESIGN/RC/DRC` live-tested 2026-08-07, GET-only, `success_empty`) |
+| Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 395/399 recorded, split by `level`: **65 write / 330 read / 4 unverified**, both products (`DESIGN/RC/DRC` live-tested 2026-08-07, GET-only, `success_empty`; `/ope/EDMP`/`/ope/USLC` live-tested 2026-08-07 post-patch, both write, confirming `MAPI-2425`/`MAPI-2426` fixed). Remaining 4 unverified: `/ope/STORPROP` (404 both products, routing-level), `/ope/LCOM-GEN` (Gen: `Wrong Field`, Civil: 404 routing-level), `/ope/GSBG` (needs a real bridge model), `/DESIGN/SRC/AIK-SRC2K/OCHECK` (crashes both products, `MAPI-2429`) |
 | Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md`, `docs/ai-coding/`, `docs/index.md`, `docs/safety.md` risk levels, `docs/recipes/`, `docs/ko/python-basics.md` | ✅ first example read-only + AI-assistant path (v2.1.2); recipe pilot + ko minimal-Python primer + real-session-verified MAPI key step (2026-08-04); ⚠️ still text-only, no screenshots |
 | Practitioner layer | Excel round-trip, `recipes`/`easy`, opt-in validation | ❌ not started |
 
@@ -672,6 +672,17 @@ exactly why that's the honest framing rather than a stronger guarantee.
   shown. This is the same category of gap as the Phase 6 C1 remainder
   below (text-only quickstarts describing NX-side UI without having seen
   it) but narrower in scope — one step, not a full screenshot pass.
+- **Watch item (2026-08-07): `/DESIGN/SRC/AIK-SRC2K/OCHECK`+`DCHECK` and
+  `/DESIGN/STEEL/KDS-41-30-2022/OCHECK` may move under `/TEMP/DESIGN/...`.**
+  Per MIDASIT's reply on `MAPI-2429` (the `OCHECK` crash, closed as "결함
+  아님"): these optimal-design endpoints are an unofficial API paused
+  mid-development, and MIDASIT plans to rename them under a `/TEMP/`
+  prefix specifically to mark them as unofficial — not a crash fix, no
+  resume date given. If that rename actually ships, `design/src_aiksrc2k.py`
+  and `steel_kds.py`'s hardcoded `ENDPOINT` strings for these three
+  resources would start 404ing. No action needed until it actually
+  happens — re-run `scripts/check_manual_drift.py` periodically and watch
+  for it rather than guessing a timeline.
 
 ---
 
