@@ -647,8 +647,10 @@ def get_brace_design_forces_table(
 
     ⚠️ Shares the same ``TABLE`` endpoint/helper as
     :func:`get_column_design_forces_table`, which crashed Gen NX
-    (reproduced twice, reported to MIDASIT) — not independently tested, but treat
-    as equally at risk until it is."""
+    (reproduced twice, reported to MIDASIT as `MAPI-2431`) — not
+    independently tested on Gen, but treat as equally at risk until it is.
+    Confirmed clean on Civil NX 2026-08-07 (informative ``"there was an
+    error creating utbl (ex PostMode ...)"`` error, no crash)."""
     return _get_rc_design_forces_table(
         TABLE_TYPE_BRACE_DESIGN_FORCES,
         table_name,
@@ -684,8 +686,14 @@ def get_beam_design_forces_table(
 
     ⚠️ Shares the same ``TABLE`` endpoint/helper as
     :func:`get_column_design_forces_table`, which crashed Gen NX
-    (reproduced twice, reported to MIDASIT) — not independently tested, but treat
-    as equally at risk until it is."""
+    (reproduced twice, reported to MIDASIT as `MAPI-2431`) — not
+    independently tested on Gen via this exact endpoint, but the sibling
+    :func:`midas_nx.post.design.get_beam_design_forces_table` (different
+    endpoint, ``/post/TABLE``, same ``TABLE_TYPE``) is independently
+    confirmed crashing Gen NX, so treat this one as equally at risk until
+    tested. Confirmed clean on Civil NX 2026-08-07 (informative
+    ``"there was an error creating utbl (ex PostMode ...)"`` error, no
+    crash)."""
     return _get_rc_design_forces_table(
         TABLE_TYPE_BEAM_DESIGN_FORCES,
         table_name,

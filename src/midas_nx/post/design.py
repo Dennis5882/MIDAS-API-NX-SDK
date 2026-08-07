@@ -98,6 +98,20 @@ def get_beam_design_forces_table(
     Requires analysis and design to already be complete (see 24_DB_Design.md
     for design-code/member setup). parts: member end selection, e.g.
     ["PartI", "PartJ"].
+
+    ⚠️ Confirmed crashing Gen NX, reproduced twice (once pre-patch during a
+    broader ``post/*`` sweep, once 2026-08-07 post-patch on build
+    08/06/2026 against a blank ``/doc/NEW`` document): the call hangs, then
+    ``verify_connection()`` shows disconnected and every ``/db/*`` call
+    404s. Same failure signature and same underlying ``/post/TABLE`` helper
+    as `MAPI-2431` (Column Design Forces, via the sibling
+    ``/DESIGN/RC/KDS-41-20-2022/TABLE`` endpoint). **Confirmed NOT
+    reproducing on Civil NX** — same-day retest against a real model
+    answered a clean ``"there was an error creating utbl (ex PostMode
+    ...)"`` error every time, session stayed healthy. Every other
+    ``get_*_design_forces_table()`` function in this module shares this
+    same ``/post/TABLE`` helper and is presumed equally at risk on Gen
+    until independently confirmed.
     """
     return _get_design_forces_table(
         TABLE_TYPE_BEAM_DESIGN_FORCES,
@@ -121,7 +135,15 @@ def get_column_design_forces_table(
     components: Optional[List[str]] = None,
     client: Optional[MidasClient] = None,
 ) -> dict:
-    """docs/manual/23_POST_Design.md #4 — Concrete Design - Column Design Forces."""
+    """docs/manual/23_POST_Design.md #4 — Concrete Design - Column Design Forces.
+
+    ⚠️ Shares the ``/post/TABLE`` helper with :func:`get_beam_design_forces_table`
+    (confirmed crashing Gen NX, clean on Civil NX) — the same
+    ``TABLE_TYPE`` crashes Gen NX via the sibling
+    ``/DESIGN/RC/KDS-41-20-2022/TABLE`` endpoint too (`MAPI-2431`). Not
+    independently tested via this exact route on Gen; confirmed clean on
+    Civil NX 2026-08-07.
+    """
     return _get_design_forces_table(
         TABLE_TYPE_COLUMN_DESIGN_FORCES,
         table_name,
@@ -147,6 +169,10 @@ def get_brace_design_forces_table(
     """docs/manual/23_POST_Design.md #5 — Concrete Design - Brace Design Forces.
 
     Response shape matches Column Design Forces.
+
+    ⚠️ Shares the ``/post/TABLE`` helper with :func:`get_beam_design_forces_table`
+    (confirmed crashing Gen NX, clean on Civil NX) — not independently
+    tested on Gen; confirmed clean on Civil NX 2026-08-07.
     """
     return _get_design_forces_table(
         TABLE_TYPE_BRACE_DESIGN_FORCES,
@@ -180,6 +206,10 @@ def get_wall_design_forces_table(
     omitting it selects all stories. Added in the 2026-08-06 manual update
     (MAPI-1671) — the ticket's own request example used the key "STORY",
     but the shipped param is "STORY_NAMES", matching ch20/ch21's naming.
+
+    ⚠️ Shares the ``/post/TABLE`` helper with :func:`get_beam_design_forces_table`
+    (confirmed crashing Gen NX, clean on Civil NX) — not independently
+    tested on Gen; confirmed clean on Civil NX 2026-08-07.
     """
     return get_table(
         TABLE_TYPE_WALL_DESIGN_FORCES,
@@ -203,7 +233,12 @@ def get_steel_member_design_forces_table(
     components: Optional[List[str]] = None,
     client: Optional[MidasClient] = None,
 ) -> dict:
-    """docs/manual/23_POST_Design.md #7 — Steel Design - Steel Member Design Forces."""
+    """docs/manual/23_POST_Design.md #7 — Steel Design - Steel Member Design Forces.
+
+    ⚠️ Shares the ``/post/TABLE`` helper with :func:`get_beam_design_forces_table`
+    (confirmed crashing Gen NX, clean on Civil NX) — not independently
+    tested on Gen; confirmed clean on Civil NX 2026-08-07.
+    """
     return _get_design_forces_table(
         TABLE_TYPE_STEEL_MEMBER_DESIGN_FORCES,
         table_name,
@@ -230,6 +265,10 @@ def get_src_beam_design_forces_table(
 
     Column order differs from RC Beam Design Forces: "My(+)" precedes
     "My(-)" here (RC beam forces list "My(-)" first).
+
+    ⚠️ Shares the ``/post/TABLE`` helper with :func:`get_beam_design_forces_table`
+    (confirmed crashing Gen NX, clean on Civil NX) — not independently
+    tested on Gen; confirmed clean on Civil NX 2026-08-07.
     """
     return _get_design_forces_table(
         TABLE_TYPE_SRC_BEAM_DESIGN_FORCES,
@@ -253,7 +292,12 @@ def get_src_column_design_forces_table(
     components: Optional[List[str]] = None,
     client: Optional[MidasClient] = None,
 ) -> dict:
-    """docs/manual/23_POST_Design.md #9 — SRC Design - SRC Column Design Forces."""
+    """docs/manual/23_POST_Design.md #9 — SRC Design - SRC Column Design Forces.
+
+    ⚠️ Shares the ``/post/TABLE`` helper with :func:`get_beam_design_forces_table`
+    (confirmed crashing Gen NX, clean on Civil NX) — not independently
+    tested on Gen; confirmed clean on Civil NX 2026-08-07.
+    """
     return _get_design_forces_table(
         TABLE_TYPE_SRC_COLUMN_DESIGN_FORCES,
         table_name,
@@ -276,7 +320,12 @@ def get_cold_formed_steel_member_design_forces_table(
     components: Optional[List[str]] = None,
     client: Optional[MidasClient] = None,
 ) -> dict:
-    """docs/manual/23_POST_Design.md #10 — Cold Formed Design - Cold Formed Steel Member Design Forces."""
+    """docs/manual/23_POST_Design.md #10 — Cold Formed Design - Cold Formed Steel Member Design Forces.
+
+    ⚠️ Shares the ``/post/TABLE`` helper with :func:`get_beam_design_forces_table`
+    (confirmed crashing Gen NX, clean on Civil NX) — not independently
+    tested on Gen; confirmed clean on Civil NX 2026-08-07.
+    """
     return _get_design_forces_table(
         TABLE_TYPE_COLD_FORMED_STEEL_MEMBER_DESIGN_FORCES,
         table_name,

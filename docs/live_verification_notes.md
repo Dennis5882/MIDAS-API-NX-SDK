@@ -4231,6 +4231,102 @@ path for MIDASIT than sharing a model.
 
 Still `IN PROGRESS`, unresolved as of this entry.
 
+## 2026-08-07 (later still) — the `TABLE`/`/post/TABLE` design-forces crash family is Gen-NX-only: full Civil NX sweep clean, plus a 43/43 `live_crud_check.py` reconfirmation
+
+Following the `MAPI-2431` re-test above, checked whether the crash family
+(everything sharing `post.design`'s `/post/TABLE` helper, and
+`design.rc_kds.checks`'s sibling `/DESIGN/RC/KDS-41-20-2022/TABLE`
+endpoint) is really Gen-specific, or just hadn't been tried on Civil yet.
+
+**Civil NX, same patch build (v975-equivalent, build 08/06/2026), against
+a real model (111 nodes, no design run yet):**
+
+- `/post/TABLE`, all 8 `TABLE_TYPE` values in `post.design`
+  (`BEAMDESIGNFORCES`, `COLUMNDESIGNFORCES`, `BRACEDESIGNFORCES`,
+  `WALLDESIGNFORCES`, `STEELMEMBERDESIGNFORCES`, `SRCBEAMDESIGNFORCES`,
+  `SRCCOLUMNDESIGNFORCES`, `COLDFORMEDSTEELMEMBERDESIGNFORCES`) — every
+  single one answered a clean `200`-with-error-body `"there was an error
+  creating utbl (ex PostMode ...)"`. No hang, no crash;
+  `verify_connection()`/`GET /db/NODE` confirmed the session healthy after
+  each call, node count unchanged (111) throughout.
+- `/DESIGN/RC/KDS-41-20-2022/TABLE`, the two not yet covered
+  (`BEAMDESIGNFORCES`, `BRACEDESIGNFORCES` — `COLUMNDESIGNFORCES` was
+  already confirmed clean here back on 2026-07-31) — same clean
+  `PostMode` error, no crash.
+
+**Net: 11 of 11 tested combinations are clean on Civil NX; the only
+confirmed crashes in this whole family remain the two already filed on
+Gen NX** (`MAPI-2431`'s Column Design Forces via the `KDS-41-20-2022`
+endpoint, and this session's Beam Design Forces via `/post/TABLE`, both
+reproduced again post-patch). The remaining Gen-side combinations
+(Brace/Wall/Steel/SRC/Cold-Formed via `/post/TABLE`, Brace via the KDS
+endpoint) are still untested on Gen and are documented as "equally at
+risk" rather than confirmed either way — this crash family looks
+Gen-specific so far, but that's not the same claim as "safe on Gen for
+the untested types."
+
+**Separately, ran `scripts/live_crud_check.py --product civil` (all
+tiers, no `--include-crashers`) against this same patch build: 43/43
+resources completed a full create→read→update→read→delete→read round
+trip, no failures.** This is a reconfirmation, not a new finding — all
+43 cases were already `confirmed=True` as of 2026-07-29 per the script's
+own tracking — but it's the first time they've all been re-run together
+against the 08/06/2026 patch build, and nothing regressed. Note this
+script creates its own scratch document via `/doc/NEW`, so it discarded
+whatever was open beforehand (with the user's explicit go-ahead, since
+that document didn't matter).
+
+## 2026-08-07 (last) — full Civil NX `DbResource` GET sweep closes most of the read-coverage gap; `GEN_ONLY` reconfirmed unchanged
+
+Prompted by a moment of confusion: after a run of Civil-specific findings,
+it looked like Civil NX coverage might be "done." It wasn't — at the time,
+only 195/399 endpoints had ever been live-verified on Civil at all (most
+of this project's live sessions have skewed Gen-heavy). Ran the actual
+numbers, corrected the misunderstanding, then closed as much of the real
+gap as a single sweep reasonably could.
+
+**`scripts/live_readonly_sweep.py --product civil --record-coverage`**
+against build 08/06/2026 (confirmed via a Help > About screenshot: *MIDAS
+CIVIL NX 2026 (v2.2), Build: 08/06/2026*) swept all 282 GET-capable
+`DbResource` classes (everything in `db/*`, plus
+`design.rc_kds.rebar`/`design.rc_kds.setup`/`design.steel_kds`/
+`design.src_aiksrc2k`'s `DbResource`-based classes — the plain-function
+`TABLE`/`ANAL`/`REPORT` endpoints in `design.rc_kds.checks` and
+`doc.py`/`ope.py`/`post/*` aren't covered by this tool at all, since it
+only enumerates `DbResource` subclasses). **All 282 answered ok** — no
+failures, no crashes, session healthy throughout.
+
+The script's own `--record-coverage` only writes a *new* `live_verified`
+entry where none exists yet, so it undercounted: most of these 282 already
+had a Gen-only `live_verified` entry from an earlier session, and the
+script correctly declined to touch those (its docstring says so
+explicitly — an existing entry is never overwritten). Wrote a one-off
+merge script instead: for every endpoint this sweep confirmed `ok`, if its
+existing `live_verified.products` didn't already include `"civil"`, add
+it, append a short note, and cite this build. Matched primarily by
+`(endpoint, module)`; a residual 21 entries use a wildcard module string
+(`"midas_nx.db.properties.*"`) in `coverage.json` instead of the real
+submodule, so those were matched by endpoint alone (checked for
+uniqueness first) in a second pass. **172 endpoints gained a Civil
+confirmation this way. `Verified on Civil NX` went 195/399 → 367/399.**
+
+Separately, force-tested all 20 `GEN_ONLY`-tagged `DbResource` classes
+against Civil NX (`strict_product=False`, bypassing the client-side
+guard that normally blocks a product mismatch) — the same check that
+originally established `GEN_ONLY` on 2026-07-29. **All 20 still 404 on
+Civil**, identical to the original finding: no drift across two patch
+cycles. `db/base.py`'s `GEN_ONLY` docstring now cites this reconfirmation
+alongside the original evidence.
+
+**What's left of the 32/399 still not live-verified on Civil:** almost
+entirely the plain-function endpoints (`doc.py`/`ope.py`/`post/*`/
+`design.rc_kds.checks`) that this sweep tool doesn't reach, several of
+which overlap the Gen-only crash-risk family documented earlier this same
+day (Column/Beam/Brace Design Forces and friends). Closing that remainder
+needs per-module manual testing, not a single automated sweep, and was
+deliberately deferred rather than rushed — see the still-open item at the
+end of this file's history.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

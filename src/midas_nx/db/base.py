@@ -94,6 +94,11 @@ HYPER_S_ONLY = frozenset({"civil"})
 #: evidence. A few adjacent 404s (``/db/REBC``'s schema, ``/ope/STORY_PARAM``,
 #: ``/ope/STORY_IRR_PARAM``) look like the same pattern but are not yet
 #: independently reproduced twice — left alone pending that.
+#:
+#: Reconfirmed 2026-08-07 against a freshly patched build (Civil NX 2026
+#: v2.2, build 08/06/2026): all 20 of these classes still 404 on Civil with
+#: ``strict_product=False`` forcing the call through. No drift since
+#: 2026-07-29 — this constant is still accurate.
 GEN_ONLY = frozenset({"gen"})
 
 #: Not a constant — a note on the mirror-image finding. On 2026-07-29, a live
