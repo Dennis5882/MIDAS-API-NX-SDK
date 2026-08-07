@@ -592,6 +592,16 @@ def perform_src_optimal_design(
     "HEAD": ["No", "Name", "SteelSize", "Astl", "COM", "Axial", "Ben-y",
     "Ben-z", "Shear"], "DATA": [[...], ...]}}``.
 
+    🛑 UNOFFICIAL, PAUSED-DEVELOPMENT API — MIDASIT confirmed (Jira
+    MAPI-2429, 2026-08-06) this endpoint was mid-development and shelved,
+    with no resume date, and moved its own path from
+    ``/DESIGN/SRC/AIK-SRC2K/OCHECK`` to ``/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK``
+    specifically to mark it unofficial. **The path move is not a fix**:
+    confirmed live 2026-08-07 that the new ``/TEMP/`` path still reproduces
+    the exact same crash as the old one, on the same request shape that
+    crashed Civil NX below. Calling this is expected to crash the running
+    NX session; only use it if you've accepted that risk.
+
     ⚠️ Confirmed a genuine crash on Civil NX (2026-07-31, real production
     bridge model with zero SRC-eligible sections/materials): the call
     itself timed out, then a same-session `GET /db/NODE` also timed out —
@@ -607,10 +617,14 @@ def perform_src_optimal_design(
     stayed alive. This is NOT equivalent to the Civil repro conditions and
     does not clear Gen of the same risk; the crash trigger needs an actual
     non-SRC-eligible section to reference, which this Gen session's model
-    didn't have. Re-test on Gen against a real model with real (non-SRC)
-    sections before treating Gen as safe.
+    didn't have.
+
+    ⚠️ Gen NX, 2026-08-07: re-tested on the new ``/TEMP/`` path against a
+    session whose open document has real, non-SRC-eligible sections
+    (matching the Civil repro conditions this time) — crashed the same
+    way (timeout, then session unresponsive, full restart needed).
     """
-    return _post(f"{_BASE}/OCHECK", argument, client)
+    return _post(f"/TEMP{_BASE}/OCHECK", argument, client)
 
 
 # === Beam/Column Design Forces (items 22-23) — shared URI "TABLE" ==========

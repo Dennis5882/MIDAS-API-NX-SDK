@@ -8974,7 +8974,7 @@
       }
     },
     {
-      "endpoint": "/DESIGN/SRC/AIK-SRC2K/OCHECK",
+      "endpoint": "/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK",
       "name": "SRC Optimal Design",
       "chapter_file": "27_Design_SRC_AIKSRC2K.md",
       "products": [
@@ -8982,7 +8982,21 @@
         "civil"
       ],
       "status": "implemented",
-      "module": "midas_nx.design.src_aiksrc2k"
+      "module": "midas_nx.design.src_aiksrc2k",
+      "live_verified": {
+        "date": "2026-08-07",
+        "products": [
+          "gen",
+          "civil"
+        ],
+        "method": "manual POST probe reproducing the documented crash payload (a real, non-SRC-eligible section referenced). Civil NX crashed 2026-07-31 at the old /DESIGN/SRC/AIK-SRC2K/OCHECK path (real production bridge model). MIDASIT confirmed (MAPI-2429, 2026-08-06) this is an unofficial, paused-development API and moved the path to /TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK to mark it as such -- the old path now cleanly 404s. Re-tested on the new /TEMP/ path 2026-08-07 on Gen NX against a session with real non-SRC sections: identical crash (timeout, then session unresponsive, full restart required). The path move is not a fix.",
+        "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+        },
+        "level": "write",
+        "outcome": "crash_or_hang"
+      }
     },
     {
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/TABLE",

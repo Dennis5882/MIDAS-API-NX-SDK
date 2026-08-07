@@ -375,7 +375,7 @@ def test_export_src_column_check_report_sends_documented_argument_shape(gen_clie
 def test_perform_src_optimal_design_sends_documented_argument_shape(gen_client):
     responses.add(
         responses.POST,
-        f"{BASE}/OCHECK",
+        "https://x.test:443/gen/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK",
         json={"ODSR_RUN_RESPONSE": {"HEAD": [], "DATA": []}},
         status=200,
     )
