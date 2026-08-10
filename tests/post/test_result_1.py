@@ -175,9 +175,13 @@ def test_get_concurrent_joint_force_table_sends_full_argument(gen_client):
     responses.add(responses.POST, "https://x.test:443/gen/post/TABLE", json={}, status=200)
     result_1.get_concurrent_joint_force_table(
         table_name="Concurrent Joint Forces",
-        load_case_names=["case_01(MV:max)"],
-        additional={"SET_REACTION_PARAMS": {"NODE_KEY": 10, "COMPONENT": "111111"}},
+        node_elems={"KEYS": [9, 10]},
         unit={"FORCE": "KN", "DIST": "M"},
+        components=["Fx", "Fy", "Fz"],
+        load_case_names=["case_01(MV:max)"],
+        opt_cs=True,
+        stage_step=["CS1:001(first)"],
+        additional={"SET_REACTION_PARAMS": {"NODE_KEY": 10, "COMPONENT": "111111"}},
         client=gen_client,
     )
     sent = responses.calls[0].request
@@ -185,8 +189,12 @@ def test_get_concurrent_joint_force_table_sends_full_argument(gen_client):
         "Argument": {
             "TABLE_NAME": "Concurrent Joint Forces",
             "TABLE_TYPE": "CONCURRENT_JOINT_FORCE",
+            "NODE_ELEMS": {"KEYS": [9, 10]},
             "UNIT": {"FORCE": "KN", "DIST": "M"},
+            "COMPONENTS": ["Fx", "Fy", "Fz"],
             "LOAD_CASE_NAMES": ["case_01(MV:max)"],
+            "OPT_CS": True,
+            "STAGE_STEP": ["CS1:001(first)"],
             "ADDITIONAL": {"SET_REACTION_PARAMS": {"NODE_KEY": 10, "COMPONENT": "111111"}},
         }
     }

@@ -570,10 +570,14 @@ class ConcurrentJointForceAdditional(TypedDict, total=False):
 def get_concurrent_joint_force_table(
     table_name: str = "",
     *,
-    load_case_names: Optional[List[str]] = None,
-    additional: Optional[ConcurrentJointForceAdditional] = None,
+    node_elems: Optional[NodeElemsSelector] = None,
     unit: Optional[TableUnit] = None,
     styles: Optional[TableStyles] = None,
+    components: Optional[List[str]] = None,
+    load_case_names: Optional[List[str]] = None,
+    opt_cs: Optional[bool] = None,
+    stage_step: Optional[List[str]] = None,
+    additional: Optional[ConcurrentJointForceAdditional] = None,
     client: Optional[MidasClient] = None,
 ) -> dict:
     """docs/manual/19_POST_AnalysisResult_1.md #13 — Concurrent Joint Force.
@@ -584,6 +588,13 @@ def get_concurrent_joint_force_table(
     named load case's joint force at that same instant — typically paired
     with moving-load ``(MV:max)``/``(MV:min)`` load cases.
 
+    node_elems/unit/styles/components/load_case_names/opt_cs/stage_step:
+    the chapter's common 10-item parameter table applies to all 13 tables
+    including this one — table #13's own note says ``ADDITIONAL`` is
+    added *on top of* those 10 items, not in place of them. COMPONENTS in
+    particular drives which "Elem./Component" blocks appear in the
+    response (see below).
+
     additional: SET_REACTION_PARAMS — Required; the reaction node id and
     which of its 6 components (Fx/Fy/Fz/Mx/My/Mz, as a 6-digit 0/1 string
     e.g. "111111") to key the extreme-value search on.
@@ -591,17 +602,19 @@ def get_concurrent_joint_force_table(
     Unlike the other tables in this module, HEAD is not a fixed column
     list: it repeats a fixed 3-column prefix ("Index", "Elem.", "Load")
     plus a "Elem./Component" + 6-DOF block per element found, so its
-    length depends on how many elements answer. NODE_ELEMS/COMPONENTS/
-    OPT_CS/STAGE_STEP are not documented for this table type and are not
-    exposed here.
+    length depends on how many elements answer.
     """
     return get_table(
         TABLE_TYPE_CONCURRENT_JOINT_FORCE,
         table_name,
-        load_case_names=load_case_names,
-        additional=additional,
+        node_elems=node_elems,
         unit=unit,
         styles=styles,
+        components=components,
+        load_case_names=load_case_names,
+        opt_cs=opt_cs,
+        stage_step=stage_step,
+        additional=additional,
         client=client,
     )
 

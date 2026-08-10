@@ -390,7 +390,7 @@ Pick any unchecked row, implement it in the listed `module`, add a test mirrorin
 
 | | Live | Endpoint | Name | Products | Module |
 |---|---|---|---|---|---|
-| [x] | R | `/post/TABLE (Analysis Result Table types)` | ~26 analysis result table types (adds Concurrent Joint Force, 2026-08-07) | gen/civil | `midas_nx.post.result_1` |
+| [x] | R | `/post/TABLE (Analysis Result Table types)` | ~26 analysis result table types (adds Concurrent Joint Force, 2026-08-10) | gen/civil | `midas_nx.post.result_1` |
 
 ## 21_POST_StoryTables.md (1/1)
 
