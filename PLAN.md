@@ -5,29 +5,32 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-08-07, at v2.2.1 — this line tracks **release** state,
+> Last updated: 2026-08-10, at v2.3.0 — this line tracks **release** state,
 > not every edit; docs-only changes carry their own dates in
 > Cross-cutting/backlog without moving this line.
-> **v2.2.1 shipped 2026-08-07**: `design.src_aiksrc2k.perform_src_optimal_design()`
-> (`OCHECK`) was calling `/DESIGN/SRC/AIK-SRC2K/OCHECK`, a path MIDASIT
-> quietly retired — it now 404s. Per MIDASIT's reply on MAPI-2429 (closed
-> "결함 아님"), `OCHECK` is an unofficial, paused-development API moved to
-> `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK` to mark it as such; the SDK now calls
-> that path. Not a fix, just following the move: re-tested live 2026-08-07
-> on Gen NX against real non-SRC-eligible sections and the new path
-> crashes the session identically to the old one. Docstring now leads with
-> a 🛑 unofficial/paused-API warning. `docs/coverage.json`'s entry renamed
-> to the new path and gained its first `outcome: "crash_or_hang"` block;
-> `ROADMAP.md` regenerated (396/399 live-verified). See
-> `docs/release_notes_v2.2.1.md`.
+> **v2.3.0 shipped 2026-08-10**: manual-driven sync against the vendored
+> manual repo's 2026-08-10 commit (`76ebda9`), found via
+> `scripts/check_manual_drift.py` after the manual repo's own "정기 동기화"
+> commit. New endpoint: `post.result_1.get_concurrent_joint_force_table()`
+> (`TABLE_TYPE=CONCURRENT_JOINT_FORCE` via `/post/TABLE`) — previously
+> undocumented, not yet live-tested. Two additive schema extensions (no
+> breaking change): `StaticWindLoadPayload`/`StaticSeismicLoadPayload`
+> (`/db/SWIND`/`/db/SSEIS`) each gained fields for a `WIND_CODE`/
+> `SEIS_CODE = "USER TYPE"` variant that inputs story-level wind
+> pressure/seismic force directly instead of using the KDS calculation.
+> A third flagged file (`17_DB_Bridge.md`) turned out not to need any code
+> change: it now also documents `/ope/GSBG` a second time, but that's the
+> same endpoint this SDK already implements from `15_OPE.md` #19 (field-
+> for-field identical), not a new one. `docs/coverage.json`'s
+> `vendored_at_commit` bumped to `76ebda9`, `check_manual_drift.py` now
+> reports `has_diff: false`. 1 new test, 701 passing, ruff/mypy clean. See
+> `docs/release_notes_v2.3.0.md`.
 >
-> Previously: **v2.2.0 shipped 2026-08-07** — the first manual-driven
-> `src/midas_nx/` change since the vendored manual repo's 2026-08-06 sync:
-> `post.pre_process.get_story_load_summary_table()`'s `TABLE_TYPE` renamed
-> `STORY_LOAD_SUMMARY_{dir}` → `STORY_LOAD_{dir}` (**breaking**),
-> `get_story_weight_table()` and `get_wall_design_forces_table()` gained
-> new parameters, and a new endpoint `RcDesignCodeSelection`
-> (`/DESIGN/RC/DRC`) was added; see `docs/release_notes_v2.2.0.md`.
+> Previously: **v2.2.1 shipped 2026-08-07** — `perform_src_optimal_design()`
+> (`OCHECK`) now calls `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK`, following
+> MIDASIT's own move of this unofficial, paused-development endpoint
+> (MAPI-2429); the move doesn't fix the underlying crash, re-confirmed
+> live; see `docs/release_notes_v2.2.1.md`.
 >
 > **Release-by-release history lives in `docs/release_notes_v*.md`** (and,
 > for anything predating v1.0.0, in `docs/live_verification_notes.md` and
@@ -719,6 +722,7 @@ exactly why that's the honest framing rather than a stronger guarantee.
 | v2.1.3 ✅ | Fixes `MidasClient._send()` raising `AttributeError` instead of a `MidasAPIError` subclass when a non-2xx error body's `error` field is a non-dict; two stale-docstring corrections found in the same review pass | published 2026-08-04 |
 | v2.2.0 ✅ | Manual-driven sync (398→399 endpoints): Story Load Summary Table's `TABLE_TYPE` renamed (**breaking**), Story Load/Weight Tables gain unit/styles/components/load_case_names, Wall Design Forces gains `story_names`, new `DESIGN/RC/DRC` endpoint (`RcDesignCodeSelection`) | published 2026-08-07 |
 | v2.2.1 ✅ | `perform_src_optimal_design()` (`OCHECK`) follows MIDASIT's `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK` path move (MAPI-2429, unofficial/paused API) — old path now 404s; new path still crashes the session live-confirmed, docstring warns upfront | published 2026-08-07 |
+| v2.3.0 ✅ | Manual-driven sync (`76ebda9`): new endpoint `get_concurrent_joint_force_table()` (`CONCURRENT_JOINT_FORCE`), `SWIND`/`SSEIS` gain a `"USER TYPE"` schema variant (additive, non-breaking); `/ope/GSBG`'s new second listing in ch17 confirmed to be the same already-implemented endpoint, no code change needed | published 2026-08-10 |
 | v0.16.0/Phase 7 (not started) | Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
 | v0.17.0+/Phase 8 (not started) | `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
 

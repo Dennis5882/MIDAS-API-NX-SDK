@@ -918,6 +918,12 @@ def generate_bridge_girder_diagram(
     See BridgeGirderDiagramArgument's docstring re: the 2026-07-14 schema
     update (LC_TYPE removed, BATCH_LIST is now a plain string array).
 
+    As of the manual's 2026-08-10 sync, this same endpoint is also
+    documented a second time at docs/manual/17_DB_Bridge.md #5 (cross-
+    referenced from db/bridge.py's GSBG module docstring) — field-for-field
+    identical to the schema below, not a separate/updated version. This
+    function is unaffected; no code change was needed.
+
     ⚠️ Live-tested 2026-07-31 on Civil NX, on a real FCM (Free Cantilever
     Method) bridge model, 17 construction stages. Partial progress, not
     fully unblocked:

@@ -7,6 +7,13 @@ confirmed 404 on Gen NX (route + `/info`), live-checked 2026-07-29.
 too (empty table; route + `/info` both resolve), so it's left at the class
 default (gen+civil) rather than `CIVIL_ONLY` — see db/base.py's `GEN_ONLY`
 docstring's sibling note.
+
+Item 5 in this chapter as of the manual's 2026-08-10 sync, `/ope/GSBG`
+(Bridge Girder Diagram Image Export), is not a new endpoint despite the
+new item number — it's the same `/ope/GSBG` this SDK already implements
+as `ope.generate_bridge_girder_diagram()`, sourced from and still
+documented at `docs/manual/15_OPE.md` #19. The manual now documents it a
+second time here too, field-for-field identical; no SDK change needed.
 """
 from __future__ import annotations
 

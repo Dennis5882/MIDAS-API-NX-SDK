@@ -1,11 +1,11 @@
-"""Source: docs/manual/19_POST_AnalysisResult_1.md, items 1-12, and
+"""Source: docs/manual/19_POST_AnalysisResult_1.md, items 1-13, and
 docs/manual/20_POST_AnalysisResult_2.md, items 1-39.
 
 All functions POST to the shared /post/TABLE endpoint — see post/base.py.
 """
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import List, Optional, TypedDict
 
 from ..client import MidasClient
 from .base import NodeElemsSelector, TableStyles, TableUnit, get_table
@@ -53,6 +53,9 @@ TABLE_TYPE_BEAM_STRESS_DETAIL = "BEAMSTRESSDETAIL"
 # 12. Beam Stress (PSC)
 TABLE_TYPE_BEAM_STRESS_PSC = "BEAMSTRESSPSC"
 TABLE_TYPE_BEAM_STRESS_7DOF_PSC = "BEAMSTRESS7DOFPSC"
+
+# 13. Concurrent Joint Force — 2026-08-10 official addition, previously undocumented
+TABLE_TYPE_CONCURRENT_JOINT_FORCE = "CONCURRENT_JOINT_FORCE"
 
 # --- from 20_POST_AnalysisResult_2.md ---
 
@@ -546,6 +549,59 @@ def get_beam_stress_psc_table(
         load_case_names=load_case_names,
         opt_cs=opt_cs,
         stage_step=stage_step,
+        client=client,
+    )
+
+
+class ConcurrentJointForceReactionParams(TypedDict, total=False):
+    """ADDITIONAL.SET_REACTION_PARAMS (#13) — required."""
+
+    NODE_KEY: int  # reaction node id, required
+    COMPONENT: str  # 6-digit 0/1 flags, order Fx/Fy/Fz/Mx/My/Mz, e.g. "111111", required
+
+
+class ConcurrentJointForceAdditional(TypedDict, total=False):
+    """docs/manual/19_POST_AnalysisResult_1.md #13 — Concurrent Joint Force
+    ADDITIONAL object. SET_REACTION_PARAMS is Required for this table."""
+
+    SET_REACTION_PARAMS: ConcurrentJointForceReactionParams  # required
+
+
+def get_concurrent_joint_force_table(
+    table_name: str = "",
+    *,
+    load_case_names: Optional[List[str]] = None,
+    additional: Optional[ConcurrentJointForceAdditional] = None,
+    unit: Optional[TableUnit] = None,
+    styles: Optional[TableStyles] = None,
+    client: Optional[MidasClient] = None,
+) -> dict:
+    """docs/manual/19_POST_AnalysisResult_1.md #13 — Concurrent Joint Force.
+
+    Added to the manual 2026-08-10 — previously undocumented. For the
+    reaction node/component named in ``additional``, finds the load
+    case(s)' extreme (max/min) reaction instant and reports every other
+    named load case's joint force at that same instant — typically paired
+    with moving-load ``(MV:max)``/``(MV:min)`` load cases.
+
+    additional: SET_REACTION_PARAMS — Required; the reaction node id and
+    which of its 6 components (Fx/Fy/Fz/Mx/My/Mz, as a 6-digit 0/1 string
+    e.g. "111111") to key the extreme-value search on.
+
+    Unlike the other tables in this module, HEAD is not a fixed column
+    list: it repeats a fixed 3-column prefix ("Index", "Elem.", "Load")
+    plus a "Elem./Component" + 6-DOF block per element found, so its
+    length depends on how many elements answer. NODE_ELEMS/COMPONENTS/
+    OPT_CS/STAGE_STEP are not documented for this table type and are not
+    exposed here.
+    """
+    return get_table(
+        TABLE_TYPE_CONCURRENT_JOINT_FORCE,
+        table_name,
+        load_case_names=load_case_names,
+        additional=additional,
+        unit=unit,
+        styles=styles,
         client=client,
     )
 

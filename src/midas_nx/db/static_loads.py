@@ -576,14 +576,23 @@ class StaticWindLoadPayload(TypedDict, total=False):
     PARAMETERS is deeply conditional on its nested INPUT_METHOD (0=Simplified,
     1=General, 2=General + Vortex Shedding) per the KDS 41-12:2022 code; only
     the common envelope is typed for v1, matching the SECT_I precedent.
+
+    WIND_CODE="USER TYPE" (added to the manual 2026-08-10) is a separate
+    variant that skips the KDS calculation entirely: PARAMETERS is unused
+    and STORY_WIND_PRESSURE/WIND_ECCEN_X/WIND_ECCEN_Y take over instead.
+    GET-only fields ELEV/LOAD_H/LOAD_BX/LOAD_BY must not be sent back in a
+    request per the manual's own JSON Schema.
     """
 
-    WIND_CODE: str  # e.g. "KDS(41-12: 2022)", required
+    WIND_CODE: str  # e.g. "KDS(41-12: 2022)" or "USER TYPE", required
     DESC: str  # default "", optional
+    WIND_ECCEN_X: int  # USER TYPE only: 0=Positive/1=Negative/2=None, default 2, optional
+    WIND_ECCEN_Y: int  # USER TYPE only: 0=Positive/1=Negative/2=None, default 2, optional
     SCALE_FACTOR_X: float  # required
     SCALE_FACTOR_Y: float  # required
-    PARAMETERS: Any  # variant-specific body, keyed by "INPUT_METHOD"
-    ADDITIONAL_LOAD: Any  # optional per-story overrides
+    PARAMETERS: Any  # variant-specific body, keyed by "INPUT_METHOD"; unused when WIND_CODE="USER TYPE"
+    STORY_WIND_PRESSURE: Any  # USER TYPE only: array of {STORY_NAME, PRESS_X, PRESS_Y}, required when WIND_CODE="USER TYPE"
+    ADDITIONAL_LOAD: Any  # optional per-story overrides; USER TYPE shape: array of {STORY_NAME, ALONG_X, ALONG_Y, TORSIONAL_RZ}
 
 
 class StaticWindLoad(DbResource):
@@ -600,17 +609,26 @@ class StaticSeismicLoadPayload(TypedDict, total=False):
     PARAMETERS holds the nested KDS 41-17-00:2019 code parameters (seismic
     zone, site class, period method, ...); only the common envelope is typed
     for v1, matching the SECT_I precedent.
+
+    SEIS_CODE="USER TYPE" (added to the manual 2026-08-10) is a separate
+    variant that skips the KDS calculation entirely: PARAMETERS is unused
+    and SEISMIC_FORCE/INHERENT_TORSION take over instead. The manual's own
+    Request Example misspells INHERENT_TORSION as "NHERENT_TORSION" (missing
+    leading I) — its JSON Schema and Specifications table both agree on
+    INHERENT_TORSION, so that's the one to send.
     """
 
-    SEIS_CODE: str  # e.g. "KDS(41-17-00:2019)", required
+    SEIS_CODE: str  # e.g. "KDS(41-17-00:2019)" or "USER TYPE", required
     DESC: str  # default "", optional
     SCALE_FACTOR_X: float  # required
     SCALE_FACTOR_Y: float  # required
     ACCIDENT_ECCEN_X: int  # 0=+, 1=-, 2=none; optional
     ACCIDENT_ECCEN_Y: int  # 0=+, 1=-, 2=none; optional
     ACCIDENT_TORSION: bool  # Enable accidental eccentricity, default false, optional
-    PARAMETERS: Any  # nested design-code parameters
-    ADDITIONAL_LOAD: Any  # optional story-level load adjustments
+    INHERENT_TORSION: bool  # USER TYPE only: consider inherent torsion, default false, optional
+    PARAMETERS: Any  # nested design-code parameters; unused when SEIS_CODE="USER TYPE"
+    SEISMIC_FORCE: Any  # USER TYPE only: array of {STORY_NAME, FORCE_X, FORCE_Y}, required when SEIS_CODE="USER TYPE"
+    ADDITIONAL_LOAD: Any  # optional story-level load adjustments; USER TYPE shape: {STORY_NAME, ALONG_X, ALONG_Y, TORSIONAL_RZ}
 
 
 class StaticSeismicLoad(DbResource):

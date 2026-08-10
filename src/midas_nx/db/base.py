@@ -96,9 +96,14 @@ HYPER_S_ONLY = frozenset({"civil"})
 #: independently reproduced twice — left alone pending that.
 #:
 #: Reconfirmed 2026-08-07 against a freshly patched build (Civil NX 2026
-#: v2.2, build 08/06/2026): all 20 of these classes still 404 on Civil with
-#: ``strict_product=False`` forcing the call through. No drift since
-#: 2026-07-29 — this constant is still accurate.
+#: v2.2, build 08/06/2026): 20 of the 21 classes currently set to
+#: :data:`GEN_ONLY` still 404 on Civil with ``strict_product=False``
+#: forcing the call through. The 21st, ``/db/REBC`` (``ColumnRebar``,
+#: ``db/design.py``), is POST-only — no ``GET`` to force through this
+#: pass — so it was not part of this reconfirmation; its own docstring
+#: still cites the separate 2026-07-29 ``/info/db/REBC`` schema check as
+#: its evidence. No drift found among the 20 reconfirmed since
+#: 2026-07-29.
 GEN_ONLY = frozenset({"gen"})
 
 #: Not a constant — a note on the mirror-image finding. On 2026-07-29, a live

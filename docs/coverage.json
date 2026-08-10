@@ -1,6 +1,6 @@
 {
   "vendored_from": "Dennis5882/MIDAS-API docs/manual/INDEX.md",
-  "vendored_at_commit": "f4a55e723fa6781cfee492fed2c956c0ccd4fa21",
+  "vendored_at_commit": "4c59f062fe08ab990e70d2a074f86012c2755b1b",
   "source_note": "Static snapshot; re-run scripts/vendor_coverage.py to refresh. POST result-table types and the three Design Code chapters (25-27) are not itemized by URL in INDEX.md and are represented as single aggregate rows rather than one row per table/check.",
   "endpoints": [
     {
@@ -2612,7 +2612,7 @@
         "products": [
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET). 2026-08-10 manual sync documented a previously-undocumented WIND_CODE='USER TYPE' variant (STORY_WIND_PRESSURE/WIND_ECCEN_X/WIND_ECCEN_Y instead of PARAMETERS) -- reflected in StaticWindLoadPayload's fields/docstring; not live-tested, this GET sweep predates it and only exercised the existing KDS-code variant.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
         },
@@ -2634,7 +2634,7 @@
         "products": [
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET). 2026-08-10 manual sync documented a previously-undocumented SEIS_CODE='USER TYPE' variant (SEISMIC_FORCE/INHERENT_TORSION instead of PARAMETERS) -- reflected in StaticSeismicLoadPayload's fields/docstring; not live-tested, this GET sweep predates it and only exercised the existing KDS-code variant.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
         },
@@ -6299,14 +6299,16 @@
       "live_verified": {
         "date": "2026-08-07",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): still a clean 'there was an error creating utbl (ex PostMode ...)' error, no crash, session stayed healthy. Separately, this exact call (TABLE_TYPE=BEAMDESIGNFORCES via POST /post/TABLE) crashed Gen NX earlier the same day -- long hang, then verify_connection() showed disconnected and every /db/* call 404'd. Reproduced twice on Gen (once pre-patch during a broader post/* sweep, once post-patch on build 08/06/2026 against a blank /doc/NEW document). This crash is the same family as MAPI-2431 (Column Design Forces via the sibling /DESIGN/RC/KDS-41-20-2022/TABLE endpoint) -- both share the underlying TABLE-generation logic and both crash Gen NX but not Civil NX.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): still a clean 'there was an error creating utbl (ex PostMode ...)' error, no crash, session stayed healthy. CRASHES GEN NX: this exact call (TABLE_TYPE=BEAMDESIGNFORCES via POST /post/TABLE) crashed Gen NX -- long hang, then verify_connection() showed disconnected and every /db/* call 404'd. Reproduced twice on Gen (once pre-patch during a broader post/* sweep, once post-patch on build 08/06/2026 against a blank /doc/NEW document). Same failure signature as MAPI-2431 (Column Design Forces), but that crash reproduces against a different endpoint (/DESIGN/RC/KDS-41-20-2022/TABLE, a separate SDK code path in design.rc_kds.checks) -- the two share only the TABLE_TYPE naming convention, not a code path; independently-crashing siblings, not one shared root cause.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
-        "outcome": "success_empty"
+        "outcome": "crash_or_hang"
       }
     },
     {
@@ -6497,7 +6499,7 @@
     },
     {
       "endpoint": "/post/TABLE (Analysis Result Table types)",
-      "name": "~25 analysis result table types (adds Wall Force, 2026-07-25)",
+      "name": "~26 analysis result table types (adds Concurrent Joint Force, 2026-08-10)",
       "chapter_file": "19_POST_AnalysisResult_1.md / 20_POST_AnalysisResult_2.md",
       "products": [
         "gen",
@@ -6511,7 +6513,7 @@
           "gen",
           "civil"
         ],
-        "method": "manual GET-shaped POST probe via midas_nx.post.result_1.get_reaction_table and get_beam_force_table after a real /doc/ANAL run on a synthetic frame model -- 2 of ~25 table types spot-checked; Civil re-check used a model with real AUTOMESH-generated plates so DL self-weight was non-zero (Gen's earlier check had an all-zero load case, both are expected results, not defects); the rest were not individually re-probed 2026-08-07 broader sweep on a real Civil NX FCM bridge model (111 nodes, post-analysis): 48 of this module's 51 get_*_table functions answered ok (design-forces-family functions in post.design excluded from this sweep -- confirmed crash-prone, see MAPI-2431), 5 with real populated rows (get_tendon_arrangement/coordinates/elongation/stress_limit_check/weight_table -- this FCM bridge model has real tendon data), the rest a clean empty response for element types this bridge model doesn't have (truss/cable/plane/solid). get_beam_force_static_prestress_table and get_wall_force_table both answered result_error ('there was an error creating utbl (ex PostMode ...)') -- same 'post mode' precondition GSBG is blocked on, see ope.py's generate_bridge_girder_diagram docstring. get_tendon_loss_table timed out at 40s without crashing the session (verify_connection + a follow-up /db/NODE call both succeeded right after), treated as slow rather than broken.",
+        "method": "manual GET-shaped POST probe via midas_nx.post.result_1.get_reaction_table and get_beam_force_table after a real /doc/ANAL run on a synthetic frame model -- 2 of ~25 table types spot-checked; Civil re-check used a model with real AUTOMESH-generated plates so DL self-weight was non-zero (Gen's earlier check had an all-zero load case, both are expected results, not defects); the rest were not individually re-probed 2026-08-07 broader sweep on a real Civil NX FCM bridge model (111 nodes, post-analysis): 48 of this module's 51 get_*_table functions answered ok (design-forces-family functions in post.design excluded from this sweep -- confirmed crash-prone, see MAPI-2431), 5 with real populated rows (get_tendon_arrangement/coordinates/elongation/stress_limit_check/weight_table -- this FCM bridge model has real tendon data), the rest a clean empty response for element types this bridge model doesn't have (truss/cable/plane/solid). get_beam_force_static_prestress_table and get_wall_force_table both answered result_error ('there was an error creating utbl (ex PostMode ...)') -- same 'post mode' precondition GSBG is blocked on, see ope.py's generate_bridge_girder_diagram docstring. get_tendon_loss_table timed out at 40s without crashing the session (verify_connection + a follow-up /db/NODE call both succeeded right after), treated as slow rather than broken. get_concurrent_joint_force_table() (TABLE_TYPE=CONCURRENT_JOINT_FORCE) added 2026-08-10 from a manual sync that documented this table type for the first time -- not covered by the sweep above (added after it), not yet live-tested at all; route/shape unverified.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"

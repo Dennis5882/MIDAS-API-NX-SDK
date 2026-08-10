@@ -103,12 +103,17 @@ def get_beam_design_forces_table(
     broader ``post/*`` sweep, once 2026-08-07 post-patch on build
     08/06/2026 against a blank ``/doc/NEW`` document): the call hangs, then
     ``verify_connection()`` shows disconnected and every ``/db/*`` call
-    404s. Same failure signature and same underlying ``/post/TABLE`` helper
-    as `MAPI-2431` (Column Design Forces, via the sibling
-    ``/DESIGN/RC/KDS-41-20-2022/TABLE`` endpoint). **Confirmed NOT
-    reproducing on Civil NX** — same-day retest against a real model
-    answered a clean ``"there was an error creating utbl (ex PostMode
-    ...)"`` error every time, session stayed healthy. Every other
+    404s. Same failure signature as `MAPI-2431` (Column Design Forces) —
+    but that crash was reproduced against a *different* endpoint,
+    ``/DESIGN/RC/KDS-41-20-2022/TABLE`` in
+    :func:`midas_nx.design.rc_kds.checks.get_column_design_forces_table`,
+    which has its own separate ``_post`` call, not this module's
+    ``/post/TABLE``. The two only share the ``TABLE_TYPE`` string
+    convention, not a code path — treat them as independently-crashing
+    siblings, not one shared root cause. **Confirmed NOT reproducing on
+    Civil NX** — same-day retest against a real model answered a clean
+    ``"there was an error creating utbl (ex PostMode ...)"`` error every
+    time, session stayed healthy. Every other
     ``get_*_design_forces_table()`` function in this module shares this
     same ``/post/TABLE`` helper and is presumed equally at risk on Gen
     until independently confirmed.

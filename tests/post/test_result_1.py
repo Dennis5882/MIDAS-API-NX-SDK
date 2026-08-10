@@ -171,6 +171,28 @@ def test_get_beam_stress_psc_table_accepts_7dof_variant(gen_client):
 
 
 @responses.activate
+def test_get_concurrent_joint_force_table_sends_full_argument(gen_client):
+    responses.add(responses.POST, "https://x.test:443/gen/post/TABLE", json={}, status=200)
+    result_1.get_concurrent_joint_force_table(
+        table_name="Concurrent Joint Forces",
+        load_case_names=["case_01(MV:max)"],
+        additional={"SET_REACTION_PARAMS": {"NODE_KEY": 10, "COMPONENT": "111111"}},
+        unit={"FORCE": "KN", "DIST": "M"},
+        client=gen_client,
+    )
+    sent = responses.calls[0].request
+    assert json.loads(sent.body) == {
+        "Argument": {
+            "TABLE_NAME": "Concurrent Joint Forces",
+            "TABLE_TYPE": "CONCURRENT_JOINT_FORCE",
+            "UNIT": {"FORCE": "KN", "DIST": "M"},
+            "LOAD_CASE_NAMES": ["case_01(MV:max)"],
+            "ADDITIONAL": {"SET_REACTION_PARAMS": {"NODE_KEY": 10, "COMPONENT": "111111"}},
+        }
+    }
+
+
+@responses.activate
 def test_get_plate_force_local_table_sends_full_argument(gen_client):
     responses.add(responses.POST, "https://x.test:443/gen/post/TABLE", json={}, status=200)
     result_1.get_plate_force_local_table(
