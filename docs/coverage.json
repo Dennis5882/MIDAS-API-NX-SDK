@@ -6179,13 +6179,15 @@
       "status": "implemented",
       "module": "midas_nx.view",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. capture() with just EXPORT_PATH succeeded cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. capture() with just EXPORT_PATH succeeded cleanly. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -6201,13 +6203,15 @@
       "status": "implemented",
       "module": "midas_nx.view",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. precapture() with VIEW_TYPE='FIBR' and a guessed OPTION.ID answered a clean 'second query is wrong' error -- this model has no fiber-modeled sections defined, so the argument shape is confirmed but never got real data.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. precapture() with VIEW_TYPE='FIBR' and a guessed OPTION.ID answered a clean 'second query is wrong' error -- this model has no fiber-modeled sections defined, so the argument shape is confirmed but never got real data. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -7193,13 +7197,15 @@
       "status": "implemented",
       "module": "midas_nx.design.steel_kds",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -7215,13 +7221,15 @@
       "status": "implemented",
       "module": "midas_nx.design.steel_kds",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -7237,13 +7245,15 @@
       "status": "implemented",
       "module": "midas_nx.design.steel_kds",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered \"It's failed, Post Mode is not available\" cleanly -- confirms route+shape, no crash.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered \"It's failed, Post Mode is not available\" cleanly -- confirms route+shape, no crash. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8235,13 +8245,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.design_forces",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_beam_design(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_beam_design(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8257,13 +8269,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.design_forces",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8279,13 +8293,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.design_forces",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8301,13 +8317,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.design_forces",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_column_design(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_column_design(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8323,13 +8341,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.design_forces",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8345,13 +8365,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.design_forces",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8367,13 +8389,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.design_forces",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_brace_design(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_brace_design(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8389,13 +8413,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.design_forces",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8411,13 +8437,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.design_forces",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8433,13 +8461,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.design_forces",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_wall_design() with a broad WALL_IDS.TO selection answered 'Please perform analysis' in <1s, no hang -- notable since this specific endpoint has documented hang history; this model has no wall elements at all (it's a bridge), so this doesn't clear that history, just adds one more clean run.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_wall_design() with a broad WALL_IDS.TO selection answered 'Please perform analysis' in <1s, no hang -- notable since this specific endpoint has documented hang history; this model has no wall elements at all (it's a bridge), so this doesn't clear that history, just adds one more clean run. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8455,13 +8485,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.design_forces",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8477,13 +8509,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.design_forces",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly (WALL_IDS/SELECTIONS shape, unlike the member-based reports).",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly (WALL_IDS/SELECTIONS shape, unlike the member-based reports). Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8499,13 +8533,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.design_forces",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_haunched_beam_design({}) answered 'Please perform analysis' in <1s, no hang.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_haunched_beam_design({}) answered 'Please perform analysis' in <1s, no hang. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8521,13 +8557,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.design_forces",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8543,13 +8581,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.design_forces",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8565,13 +8605,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.checks",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_beam_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_beam_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8587,13 +8629,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.checks",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8609,13 +8653,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.checks",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8655,13 +8701,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.checks",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8677,13 +8725,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.checks",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8699,13 +8749,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.checks",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_brace_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_brace_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8721,13 +8773,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.checks",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8743,13 +8797,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.checks",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8765,13 +8821,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.checks",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_wall_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_wall_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8787,13 +8845,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.checks",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8809,13 +8869,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.checks",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -8831,13 +8893,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.checks",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered \"It's not found Figure Name\" -- FIGURE_NAME must reference a pre-existing named smart-report figure config, which this model doesn't have; route+shape confirmed, no crash.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered \"It's not found Figure Name\" -- FIGURE_NAME must reference a pre-existing named smart-report figure config, which this model doesn't have; route+shape confirmed, no crash. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -9271,13 +9335,15 @@
       "status": "implemented",
       "module": "midas_nx.design.src_aiksrc2k",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_src_beam_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_src_beam_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in <1s, no hang. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -9293,13 +9359,15 @@
       "status": "implemented",
       "module": "midas_nx.design.src_aiksrc2k",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -9315,13 +9383,15 @@
       "status": "implemented",
       "module": "midas_nx.design.src_aiksrc2k",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -9337,13 +9407,15 @@
       "status": "implemented",
       "module": "midas_nx.design.src_aiksrc2k",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_src_column_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in 0.1s, no hang.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. perform_src_column_check(PERFORM_TYPE=ALL) answered 'Please perform analysis' in 0.1s, no hang. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -9359,13 +9431,15 @@
       "status": "implemented",
       "module": "midas_nx.design.src_aiksrc2k",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }
@@ -9381,13 +9455,15 @@
       "status": "implemented",
       "module": "midas_nx.design.src_aiksrc2k",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. answered 'Please perform analysis' cleanly. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, against a blank /doc/NEW document (0 nodes/0 elements) as part of a batch sweep of the crash-family-adjacent-but-not-confirmed-crashing endpoints in this chapter. Response was a clean, informative refusal ('Please perform analysis.' or similar) rather than a crash or hang — confirms the route is live and does not crash/hang on this build with no prior analysis/design data. Not a happy-path behavioral verification (the document has no real structural members), and does not by itself clear the risk noted for the sibling Column/Brace/Beam Design Forces TABLE_TYPE (this endpoint is a different one).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.2), build 08/06/2026"
         },
         "level": "read"
       }

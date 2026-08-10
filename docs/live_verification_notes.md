@@ -4382,6 +4382,70 @@ RC/SRC/Steel `*-ANAL` triads have their own independent Gen-hang history
 per-module manual testing with explicit go-ahead each time, not another
 single automated sweep.
 
+## 2026-08-10 (last) — non-crash-family ANAL/TABLE/REPORT/CAPTURE batch on Gen NX: 40 endpoints, no crash/hang, all recorded
+
+Continuing the `DbResource` sweep's leftover gap: the plain-function design
+chapters (`design.rc_kds.design_forces`, `design.rc_kds.checks`,
+`design.steel_kds`, `design.src_aiksrc2k`, `view.py`) that the GET-only
+sweep can't reach. Explicitly excluded from this batch: the confirmed/
+at-risk Design-Forces crash family (`post.design`'s 8, `checks.py`'s
+Column/Brace/Beam Design Forces `TABLE`, `steel_kds.py`'s
+`TABLE`=`STEELMEMBERDESIGNFORCES`, `src_aiksrc2k.py`'s `TABLE`=
+Beam/Column SRC Design Forces — all share the same `*DESIGNFORCES`
+`TABLE_TYPE` naming convention as the confirmed Column/Brace/Beam crashes)
+and `src_aiksrc2k.py`'s `OCHECK` (confirmed crashing both products,
+`MAPI-2429`, already recorded separately).
+
+Correction to the earlier "22 crash-family" figure quoted mid-session:
+that overcounted by treating all 14 untested `checks.py` entries as
+crash-family, when only 3 of them (Column/Brace/Beam Design Forces) are.
+The other 11 (`BC`/`CC`/`BRC`/`WC`-ANAL/TABLE/REPORT, `CDESIGN`) are
+unrelated check/report functions — `BC-ANAL`/`CC-ANAL` were already
+re-verified clean via the QuickRebar NX production tool (2026-07-25),
+and `WC-ANAL` was independently confirmed to NOT reproduce the CC-ANAL
+stall. The real crash-family total across all modules is 11 Design-Forces
+functions + `OCHECK`, not 22.
+
+Ran against a blank `/doc/NEW` document (0 nodes/0 elements, same one
+left over from the `DbResource` sweep), in two batches:
+
+**Category A (29 calls, no ANAL/PERFORM prerequisite)** — `view.CAPTURE`/
+`PRECAPTURE`; `design_forces.py`'s BD/CD/BRD/WD/HCD `*-TABLE`/`*-REPORT`
+(10); `checks.py`'s BC/CC/BRC/WC `*-TABLE`/`*-REPORT` + `CDESIGN` (9);
+`steel_kds.py`'s `CODE-TABLE`/`CODE-REPORT`/`DREULT` (3, `TABLE` skipped
+as crash-family-adjacent); `src_aiksrc2k.py`'s BC/CC `*-TABLE`/`*-REPORT`
+(4, `TABLE`/`OCHECK` skipped). All 29 answered cleanly with informative
+refusals (`"Please perform analysis."`, `"It's not found Figure Name"`,
+`"Wrong Field"`, `"Post Mode is not available"`) — no crash, no hang,
+session alive after every call.
+
+**Category B (12 `*-ANAL`/`*-PERFORM` calls, 25s timeout)**, run only
+after explicit user go-ahead given the documented Gen-hang history on
+this family (WC/BC/CC/BRC-ANAL, BD/CD/BRD/WD/HCD-ANAL, `CODE-ANAL`, SRC
+BC/CC-ANAL — `WD-ANAL` deliberately tested last, being the one with
+confirmed historical hang evidence). All 12 answered in <1s with the same
+clean `"Please perform analysis."` refusal, immediately followed by a
+`*-TABLE` read-back (per the established mitigation pattern) and a
+`/db/NODE` session-alive check — no hang anywhere, including `WD-ANAL`.
+Plausible explanation: the historical hangs were reproduced specifically
+*with* real rebar/analysis data to process; against 0 elements the server
+has nothing to "Convert Design Results" for and fails fast instead. This
+does **not** clear the historical hang risk for real models — it's a
+second data point (blank-document-is-safe), not a fix confirmation.
+
+Recorded via a one-off merge script (same `(endpoint, module)`-matching
+approach as the two `DbResource` sweeps): **38 endpoints gained a new Gen
+confirmation** (2 — `CC-ANAL`, `CODE-ANAL` — already had one from an
+earlier session). `Verified on Gen NX` went 299/399 → 337/399.
+
+Remaining real gap on Gen: the crash-family (11 Design-Forces functions,
+already characterized as crashing/at-risk, not "unverified"), `OCHECK`
+(confirmed crashing, ditto), and `doc.py`'s 9 file-lifecycle endpoints
+(`OPEN`/`CLOSE`/`SAVE`/`SAVEAS`/`STAGAS`/`IMPORT`/`IMPORTMXT`/`EXPORT`/
+`EXPORTMXT` — deliberately not attempted against a session with real
+state at risk) plus `ope.py`'s 3 already-investigated-and-blocked cases
+(`STORPROP`/`LCOM-GEN`/`GSBG`).
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
