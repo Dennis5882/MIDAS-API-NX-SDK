@@ -175,9 +175,11 @@ def get_brace_design_forces_table(
 
     Response shape matches Column Design Forces.
 
-    ⚠️ Shares the ``/post/TABLE`` helper with :func:`get_beam_design_forces_table`
-    (confirmed crashing Gen NX, clean on Civil NX) — not independently
-    tested on Gen; confirmed clean on Civil NX 2026-08-07.
+    ⚠️ Confirmed crashing Gen NX (2026-08-10, build 08/06/2026, blank
+    ``/doc/NEW`` document): no response, then ``verify_connection()``
+    shows disconnected and every ``/db/*`` call 404s — same signature as
+    :func:`get_beam_design_forces_table`'s independently-confirmed crash.
+    Confirmed clean on Civil NX (2026-08-07/2026-08-10 retests).
     """
     return _get_design_forces_table(
         TABLE_TYPE_BRACE_DESIGN_FORCES,

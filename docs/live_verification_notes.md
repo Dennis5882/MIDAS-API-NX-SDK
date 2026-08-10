@@ -4327,6 +4327,61 @@ needs per-module manual testing, not a single automated sweep, and was
 deliberately deferred rather than rushed — see the still-open item at the
 end of this file's history.
 
+## 2026-08-10 — `BRACEDESIGNFORCES` confirmed crashing Gen NX, closing one more gap in the design-forces crash family
+
+Continuing the Gen-side sweep of the `post.design`/`/post/TABLE` design-
+forces crash family (Column and Beam already confirmed crashing, the
+rest flagged "equally at risk" but untested): tried `BRACEDESIGNFORCES`
+against a blank `/doc/NEW` document on Gen NX (build 08/06/2026, same
+patch already confirmed crashing for Column/Beam). Same signature: no
+response, then `verify_connection()` → disconnected, every `/db/*` call
+→ 404. Gen NX needed a restart.
+
+User paused the sweep here rather than continuing through the remaining
+5 candidates (`WALLDESIGNFORCES`, `STEELMEMBERDESIGNFORCES`,
+`SRCBEAMDESIGNFORCES`, `SRCCOLUMNDESIGNFORCES`,
+`COLDFORMEDSTEELMEMBERDESIGNFORCES` via `/post/TABLE`, plus
+`BRACEDESIGNFORCES` via the sibling `/DESIGN/RC/KDS-41-20-2022/TABLE`
+endpoint in `design.rc_kds.checks` — still untested) — each confirmed
+crash costs a full Gen NX restart, and three confirmed crashes
+(Column/Beam/Brace, all via the same shared `/post/TABLE` helper) was
+judged enough evidence for the pattern without burning through the rest
+one restart at a time. Remaining candidates stay documented as "equally
+at risk, untested" rather than confirmed.
+
+## 2026-08-10 (later) — full Gen NX `DbResource` GET sweep, mirroring the earlier Civil sweep
+
+After confirming Gen coverage had a much bigger gap than Civil (132/399
+endpoints never live-tested on Gen at all — this project's live sessions
+have skewed Civil-heavy since the FCM bridge model work), ran the same
+tool used for the Civil sweep, this time against Gen:
+
+**`scripts/live_readonly_sweep.py --product gen --record-coverage`**
+against build 08/06/2026, on a blank `/doc/NEW` document (post-crash
+restart from the `BRACEDESIGNFORCES` finding above): swept all 266
+GET-capable `DbResource` classes applicable to Gen — **all 266 answered
+ok**, no failures, no crashes, session stayed healthy throughout and
+after.
+
+Same merge-script approach as the Civil sweep (the tool's own
+`--record-coverage` only adds a *new* entry, so a one-off script added
+`"gen"` to existing Civil-only `live_verified.products` wherever this
+sweep confirmed it): **32 endpoints gained a Gen confirmation this way.
+`Verified on Gen NX` went 266/399 → 299/399.** A smaller jump than the
+Civil sweep's 172, because most of the remaining gap here is
+plain-function endpoints (`doc.py`/`ope.py`/`post/*`/
+`design.rc_kds.checks`/`design.rc_kds.design_forces`/
+`design.src_aiksrc2k`'s ANAL/TABLE/REPORT triads) this tool doesn't
+reach — including the crash-risk family from earlier today, which stays
+untouched by this GET-only sweep by design.
+
+Explicitly paused here rather than continuing into those plain-function
+modules: several overlap the confirmed Gen crash-risk family, and the
+RC/SRC/Steel `*-ANAL` triads have their own independent Gen-hang history
+(see the 2026-08-01 entries above) — closing the remainder needs
+per-module manual testing with explicit go-ahead each time, not another
+single automated sweep.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

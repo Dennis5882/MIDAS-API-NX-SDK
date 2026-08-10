@@ -2955,11 +2955,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "write",
         "outcome": "success_empty"
@@ -2978,11 +2980,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "write",
         "outcome": "success_empty"
@@ -3001,11 +3005,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -3024,11 +3030,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -3047,11 +3055,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -3070,11 +3080,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -3093,11 +3105,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -3116,11 +3130,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -3139,11 +3155,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -3162,11 +3180,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "write",
         "outcome": "success_empty"
@@ -3185,11 +3205,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -3208,11 +3230,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "write",
         "outcome": "success_empty"
@@ -3231,11 +3255,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -3254,11 +3280,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -3277,11 +3305,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -3300,11 +3330,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -3323,11 +3355,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -3346,11 +3380,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -3413,11 +3449,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "write",
         "outcome": "success_empty"
@@ -3436,11 +3474,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -3459,11 +3499,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -3482,11 +3524,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -3527,11 +3571,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -3644,11 +3690,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -4643,11 +4691,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -4666,11 +4716,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -4689,11 +4741,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -4712,11 +4766,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -4735,11 +4791,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -4971,11 +5029,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -5044,11 +5104,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -5208,11 +5270,13 @@
       "live_verified": {
         "date": "2026-07-26",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -6345,16 +6409,18 @@
       "status": "implemented",
       "module": "midas_nx.post.design",
       "live_verified": {
-        "date": "2026-08-07",
+        "date": "2026-08-10",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): still a clean 'there was an error creating utbl (ex PostMode ...)' error, no crash. Not independently tested on Gen NX -- shares the same /post/TABLE helper as BEAMDESIGNFORCES (confirmed crashing on Gen) and COLUMNDESIGNFORCES (confirmed crashing on Gen via the sibling KDS endpoint, MAPI-2431); treat as equally at risk on Gen until tested.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): still a clean 'there was an error creating utbl (ex PostMode ...)' error, no crash. CRASHES GEN NX: re-tested 2026-08-10 on Gen NX (build 08/06/2026) against a blank /doc/NEW document -- no response, then verify_connection() -> disconnected, every /db/* call -> 404. Confirmed crashing, same failure signature as the independently-confirmed BEAMDESIGNFORCES crash (this module) and the MAPI-2431 COLUMNDESIGNFORCES crash (sibling KDS endpoint) -- shares only the TABLE_TYPE naming convention with those, not a code path.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
         },
         "level": "read",
-        "outcome": "success_empty"
+        "outcome": "crash_or_hang"
       }
     },
     {
