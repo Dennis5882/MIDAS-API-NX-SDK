@@ -5,9 +5,19 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-08-10, at v2.3.1 — this line tracks **release** state,
+> Last updated: 2026-08-10, at v2.3.2 — this line tracks **release** state,
 > not every edit; docs-only changes carry their own dates in
 > Cross-cutting/backlog without moving this line.
+> **v2.3.2 shipped 2026-08-10**: `BRACEDESIGNFORCES` independently confirmed
+> crashing Gen NX (third of the Column/Beam/Brace Design-Forces family,
+> `post/design.py` docstring updated), plus two live-verification sweeps —
+> a full Gen NX `DbResource` GET sweep (266/266 clean, 32 new confirmations)
+> and a manual batch of 38 non-crash-family design-chapter ANAL/TABLE/
+> REPORT/CAPTURE endpoints (also clean, including the historically
+> hang-prone `WD-ANAL`). No behavior change beyond the docstring; bumped
+> because `post/design.py` ships in the wheel. `Verified on Gen NX`:
+> 266/399 → 337/399. See `docs/live_verification_notes.md`'s 2026-08-10
+> entries for the full detail.
 > **v2.3.1 shipped 2026-08-10**: a `/code-review` pass against v2.3.0's
 > commit found `get_concurrent_joint_force_table()` (added that release)
 > omitted `node_elems`/`components`/`opt_cs`/`stage_step`, with a
@@ -719,6 +729,7 @@ exactly why that's the honest framing rather than a stronger guarantee.
 | v2.2.1 ✅ | `perform_src_optimal_design()` (`OCHECK`) follows MIDASIT's `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK` path move (MAPI-2429, unofficial/paused API) — old path now 404s; new path still crashes the session live-confirmed, docstring warns upfront | published 2026-08-07 |
 | v2.3.0 ✅ | Manual-driven sync (`76ebda9`): new endpoint `get_concurrent_joint_force_table()` (`CONCURRENT_JOINT_FORCE`), `SWIND`/`SSEIS` gain a `"USER TYPE"` schema variant (additive, non-breaking); `/ope/GSBG`'s new second listing in ch17 confirmed to be the same already-implemented endpoint, no code change needed | published 2026-08-10 |
 | v2.3.1 ✅ | `/code-review` fix: `get_concurrent_joint_force_table()` (v2.3.0) was missing `node_elems`/`components`/`opt_cs`/`stage_step` and its docstring wrongly denied the manual documents them for this table — added and corrected; `ROADMAP.md` regenerated to match a v2.3.0 date fix | published 2026-08-10 |
+| v2.3.2 ✅ | `BRACEDESIGNFORCES` confirmed crashing Gen NX (docstring update), a full Gen NX `DbResource` GET sweep (32 new confirmations), and a manual 38-endpoint non-crash-family design-chapter batch (view/RC/steel/SRC ANAL-TABLE-REPORT, incl. `WD-ANAL`) — all clean. `Verified on Gen NX`: 266/399 → 337/399 | published 2026-08-10 |
 | v0.16.0/Phase 7 (not started) | Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
 | v0.17.0+/Phase 8 (not started) | `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
 
