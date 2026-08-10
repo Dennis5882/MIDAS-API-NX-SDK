@@ -5,32 +5,27 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-08-10, at v2.3.0 — this line tracks **release** state,
+> Last updated: 2026-08-10, at v2.3.1 — this line tracks **release** state,
 > not every edit; docs-only changes carry their own dates in
 > Cross-cutting/backlog without moving this line.
-> **v2.3.0 shipped 2026-08-10**: manual-driven sync against the vendored
-> manual repo's 2026-08-10 commit (`76ebda9`), found via
-> `scripts/check_manual_drift.py` after the manual repo's own "정기 동기화"
-> commit. New endpoint: `post.result_1.get_concurrent_joint_force_table()`
-> (`TABLE_TYPE=CONCURRENT_JOINT_FORCE` via `/post/TABLE`) — previously
-> undocumented, not yet live-tested. Two additive schema extensions (no
-> breaking change): `StaticWindLoadPayload`/`StaticSeismicLoadPayload`
-> (`/db/SWIND`/`/db/SSEIS`) each gained fields for a `WIND_CODE`/
-> `SEIS_CODE = "USER TYPE"` variant that inputs story-level wind
-> pressure/seismic force directly instead of using the KDS calculation.
-> A third flagged file (`17_DB_Bridge.md`) turned out not to need any code
-> change: it now also documents `/ope/GSBG` a second time, but that's the
-> same endpoint this SDK already implements from `15_OPE.md` #19 (field-
-> for-field identical), not a new one. `docs/coverage.json`'s
-> `vendored_at_commit` bumped to `76ebda9`, `check_manual_drift.py` now
-> reports `has_diff: false`. 1 new test, 701 passing, ruff/mypy clean. See
-> `docs/release_notes_v2.3.0.md`.
+> **v2.3.1 shipped 2026-08-10**: a `/code-review` pass against v2.3.0's
+> commit found `get_concurrent_joint_force_table()` (added that release)
+> omitted `node_elems`/`components`/`opt_cs`/`stage_step`, with a
+> docstring wrongly claiming the manual doesn't document them for this
+> table — it does; the chapter's common 10-item parameter table applies
+> to all 13 tables, `ADDITIONAL` is added on top of them, and
+> `COMPONENTS` specifically drives which column blocks the response
+> repeats. All four now exposed and forwarded, docstring corrected. Also
+> regenerates `ROADMAP.md`, left stale by a v2.3.0 date fix
+> (2026-08-07 → 2026-08-10) applied after the last regeneration. See
+> `docs/release_notes_v2.3.1.md`.
 >
-> Previously: **v2.2.1 shipped 2026-08-07** — `perform_src_optimal_design()`
-> (`OCHECK`) now calls `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK`, following
-> MIDASIT's own move of this unofficial, paused-development endpoint
-> (MAPI-2429); the move doesn't fix the underlying crash, re-confirmed
-> live; see `docs/release_notes_v2.2.1.md`.
+> Previously: **v2.3.0 shipped 2026-08-10** — manual-driven sync
+> (`76ebda9`): new endpoint `get_concurrent_joint_force_table()`
+> (`CONCURRENT_JOINT_FORCE`), `SWIND`/`SSEIS` gain a `"USER TYPE"` schema
+> variant (additive), `/ope/GSBG`'s new second listing in ch17 confirmed
+> to be the already-implemented endpoint, no code change needed there;
+> see `docs/release_notes_v2.3.0.md`.
 >
 > **Release-by-release history lives in `docs/release_notes_v*.md`** (and,
 > for anything predating v1.0.0, in `docs/live_verification_notes.md` and
@@ -723,6 +718,7 @@ exactly why that's the honest framing rather than a stronger guarantee.
 | v2.2.0 ✅ | Manual-driven sync (398→399 endpoints): Story Load Summary Table's `TABLE_TYPE` renamed (**breaking**), Story Load/Weight Tables gain unit/styles/components/load_case_names, Wall Design Forces gains `story_names`, new `DESIGN/RC/DRC` endpoint (`RcDesignCodeSelection`) | published 2026-08-07 |
 | v2.2.1 ✅ | `perform_src_optimal_design()` (`OCHECK`) follows MIDASIT's `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK` path move (MAPI-2429, unofficial/paused API) — old path now 404s; new path still crashes the session live-confirmed, docstring warns upfront | published 2026-08-07 |
 | v2.3.0 ✅ | Manual-driven sync (`76ebda9`): new endpoint `get_concurrent_joint_force_table()` (`CONCURRENT_JOINT_FORCE`), `SWIND`/`SSEIS` gain a `"USER TYPE"` schema variant (additive, non-breaking); `/ope/GSBG`'s new second listing in ch17 confirmed to be the same already-implemented endpoint, no code change needed | published 2026-08-10 |
+| v2.3.1 ✅ | `/code-review` fix: `get_concurrent_joint_force_table()` (v2.3.0) was missing `node_elems`/`components`/`opt_cs`/`stage_step` and its docstring wrongly denied the manual documents them for this table — added and corrected; `ROADMAP.md` regenerated to match a v2.3.0 date fix | published 2026-08-10 |
 | v0.16.0/Phase 7 (not started) | Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
 | v0.17.0+/Phase 8 (not started) | `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
 
