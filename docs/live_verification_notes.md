@@ -4446,6 +4446,16 @@ already characterized as crashing/at-risk, not "unverified"), `OCHECK`
 state at risk) plus `ope.py`'s 3 already-investigated-and-blocked cases
 (`STORPROP`/`LCOM-GEN`/`GSBG`).
 
+**`coverage.json` correction (2026-08-11):** the 2026-08-10 batch's merge
+script had recorded the Gen version as `v2.2` (copy-pasted from Civil's
+version string) on all 38 entries it touched — Gen was never on v2.2.
+Corrected all 38 to `MIDAS Gen NX 2026 (v2.1), build 08/06/2026`, the
+build actually used that session. Caught via a fresh connection check
+this session: About dialog showed **Gen NX 2026 (v2.1), build
+08/11/2026** (user `sjj0507@midasit.com`), `verify_connection()` →
+`connected`, `Node.get()` → 404 (blank/new document, 0 nodes) — a
+connectivity check only, no new endpoint coverage recorded from it.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
