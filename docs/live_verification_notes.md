@@ -4511,6 +4511,30 @@ Both `Node.get()`-checked alive after each call. No crash, no hang.
 `docs/coverage.json` and both functions' docstrings (`ope.py`,
 `view.py`) updated; `ROADMAP.md` regenerated.
 
+**Full write round-trip + per-endpoint PUT sweep, same session, Civil NX
+v2.2 build 08/11/2026.** `scripts/live_smoke.py --product civil` run
+against the blank connected session: `/doc/NEW` → `UNIT` → `MATL` (C24)
+→ `SECT` (600×600 DBUSER column) → 2×`NODE` → `ELEM` (beam) → `CONS`
+(fixed) → `STLD` (DL) → `BODF` (self-weight) → `/doc/ANAL` →
+reaction/displacement/beam-force tables, all 13 steps `ok: true`;
+reaction `FZ` = 27.11 kN vs. 28.22 kN hand-calc, within the script's 5%
+tolerance.
+
+Followed by a dedicated PUT-only sweep (change → GET-verify → revert →
+GET-verify per endpoint, on the 8 resources the smoke test had just
+populated): `UNIT`, `MATL`, `SECT`, `NODE`, `ELEM`, `CONS`, `STLD`,
+`BODF` — all 8 changed and reverted cleanly, confirmed via a follow-up
+GET each time. One cosmetic-only observation: `SECT`'s `vSIZE` readback
+comes back zero-padded to a fixed 10-element array
+(`[0.6, 0.6, 0, 0, 0, 0, 0, 0, 0, 0]`) rather than echoing the 2-element
+list that was sent — not a defect, just the server's storage shape for
+a variable-length dimension array. `Node.get()` confirmed the session
+alive throughout. All 8 of these endpoints were already `civil`-verified
+at `level: "write"` in `coverage.json` (from earlier `create()`-only
+testing) — this sweep specifically exercised `update()`/PUT, which
+hadn't been individually confirmed before, so no new coverage entries,
+just a stronger evidence base behind the existing ones.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
