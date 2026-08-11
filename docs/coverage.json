@@ -5944,9 +5944,10 @@
         "products": [
           "gen"
         ],
-        "method": "manual POST probe via midas_nx.ope.calculate_story (SEIS_ECC/WIND_ECC both disabled); recalculated the model's /db/STOR geometry-derived fields from actual element/node data, overwriting the seeded placeholder values -- expected auto-calculate behavior",
+        "method": "manual POST probe via midas_nx.ope.calculate_story (SEIS_ECC/WIND_ECC both disabled); recalculated the model's /db/STOR geometry-derived fields from actual element/node data, overwriting the seeded placeholder values -- expected auto-calculate behavior -- confirmed 2026-08-11: 404s on Civil NX (blank doc, SEIS_ECC/WIND_ECC both disabled) -- matches the rest of the story family (STORY_PARAM/STORY_IRR_PARAM/STORPROP/post-TABLE story types), all Gen-only",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/11/2026 -- confirms 404, not supported"
         },
         "level": "write"
       }
@@ -6299,13 +6300,15 @@
       "status": "implemented",
       "module": "midas_nx.view",
       "live_verified": {
-        "date": "2026-07-30",
+        "date": "2026-08-11",
         "products": [
-          "gen"
+          "gen",
+          "civil"
         ],
-        "method": "manual POST probe via midas_nx.view.set_result_graphic (CURRENT_MODE='reactionforces/moments') after a real /doc/ANAL run; only this one result mode was tried",
+        "method": "manual POST probe via midas_nx.view.set_result_graphic (CURRENT_MODE='reactionforces/moments') after a real /doc/ANAL run; only this one result mode was tried -- confirmed 2026-08-11 on Civil NX: CURRENT_MODE=reactionforces/moments against a blank doc (no analysis run) got a clean MidasResultError (\"MIDAS CIVIL NX Empty Load Case Type\"), session stayed alive -- route is registered on Civil, same no-analysis-yet shape as the Gen result",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/11/2026"
         },
         "level": "read"
       }

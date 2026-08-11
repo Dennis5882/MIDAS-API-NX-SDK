@@ -4452,9 +4452,64 @@ version string) on all 38 entries it touched — Gen was never on v2.2.
 Corrected all 38 to `MIDAS Gen NX 2026 (v2.1), build 08/06/2026`, the
 build actually used that session. Caught via a fresh connection check
 this session: About dialog showed **Gen NX 2026 (v2.1), build
-08/11/2026** (user `sjj0507@midasit.com`), `verify_connection()` →
-`connected`, `Node.get()` → 404 (blank/new document, 0 nodes) — a
-connectivity check only, no new endpoint coverage recorded from it.
+08/11/2026** (user `sjj0507@midasit.com`).
+
+**Connection-check tooling bug, same session:** the first pass of both
+this Gen check and a following Civil check (About dialog: **Civil NX
+2026 (v2.2), build 08/11/2026**) called `MidasClient(..., base_url=
+"https://moa-engineers.midasit.com")` — overriding the default and
+stripping the required `/gen`/`/civil` product path segment that
+`build_base_url()` normally appends. `verify_connection()` still
+succeeded (its URL-strip logic in `client.py` tolerates either form),
+masking the bug, but every `/db/*` call landed on a route that doesn't
+exist and returned a generic 404 — misread at the time as "blank
+document, 0 nodes." Re-run without the `base_url` override: `Node.get()`
+→ `{"message": ""}` on both products, the correct **zero-row** shape —
+so both sessions genuinely are on blank documents, same conclusion as
+before, but now for the right reason. No SDK code was at fault — the
+bug was in the ad hoc verification script, not `client.py`.
+
+**`OCHECK` re-tried on Civil (v2.2, build 08/11/2026) with the corrected
+client**, at the user's request to re-attempt Civil's known crash
+(`perform_src_optimal_design`, `docs/live_verification_notes.md`'s
+2026-07-31 "New crash found" section). Same shape as Gen's 2026-08-01
+attempt: a fabricated `SECT_NO: 1` against a document with zero sections
+got a clean `MidasResultError` — `"Section 1 does not exist."` — and a
+follow-up `Node.get()` confirmed the session stayed alive
+(`{"message": ""}`). **Not a repro of the 2026-07-31 crash** — that
+needed a real, existing, non-SRC-eligible section to reach the crashing
+code path, which this blank document doesn't have. Narrows nothing new;
+the crash risk on real Civil models with real sections stands as
+documented.
+
+**Quick full Civil-gap sweep, same session.** Of the 11 endpoints
+`coverage.json` listed as not-yet-`civil`-verified, 9 turned out to
+already carry a conclusive Civil finding recorded only in their
+docstring/method text (not reflected in `live_verified.products` because
+the finding is negative): `STORY_PARAM`/`STORY_IRR_PARAM` (confirmed
+404, 3rd+ repro), `/post/TABLE` story types (confirmed error, 2 sweeps),
+`STORPROP`/`LCOM-GEN`/`GSBG` (dead route or unmet precondition on every
+product, not Civil-specific), `LCOM-CONC`/`LCOM-STEEL`/`LCOM-SRC`
+(confirmed 404 — "the whole `/ope/LCOM-*` family's routes aren't
+registered on Civil at all," per `generate_load_combination_concrete`'s
+existing docstring). Retesting these would only reconfirm known dead
+routes/blocked preconditions, so only the 2 genuinely untested ones were
+run:
+
+- **`/ope/STOR` (Story Calculation) — 404 on Civil**, first direct test
+  against this product (`SEIS_ECC`/`WIND_ECC` both disabled, blank doc).
+  Extends the story family's Gen-only pattern to cover this endpoint too.
+- **`/view/RESULTGRAPHIC` — route IS registered on Civil**, unlike the
+  story family: `CURRENT_MODE=reactionforces/moments` against a blank
+  doc (no analysis run) got a clean `MidasResultError`, `"MIDAS CIVIL NX
+  Empty Load Case Type"`. Session stayed alive. Added `civil` to its
+  `live_verified.products` — same standard as the 2026-08-10 Gen batch
+  (a clean, correctly-shaped rejection counts as verified request
+  handling, not "no data").
+
+Both `Node.get()`-checked alive after each call. No crash, no hang.
+`docs/coverage.json` and both functions' docstrings (`ope.py`,
+`view.py`) updated; `ROADMAP.md` regenerated.
 
 ## Caveat — read before acting on this file
 

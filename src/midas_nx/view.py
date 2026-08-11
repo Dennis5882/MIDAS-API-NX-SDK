@@ -603,5 +603,13 @@ class ResultGraphicArgument(TypedDict, total=False):
 
 
 def set_result_graphic(argument: ResultGraphicArgument, client: Optional[MidasClient] = None) -> dict:
-    """docs/manual/16_VIEW.md #7 — /view/RESULTGRAPHIC — Result Graphic."""
+    """docs/manual/16_VIEW.md #7 — /view/RESULTGRAPHIC — Result Graphic.
+
+    ⚠️ Confirmed 2026-08-11: unlike the story family, this route IS
+    registered on Civil NX (v2.2, build 08/11/2026) — `CURRENT_MODE:
+    "reactionforces/moments"` against a blank document (no analysis run)
+    got a clean `MidasResultError`, `"MIDAS CIVIL NX Empty Load Case
+    Type"`, and the session stayed alive. Same shape as Gen's own
+    07/30 result (no analysis run yet), just a Civil-flavored message.
+    """
     return _post("/view/RESULTGRAPHIC", argument, client)

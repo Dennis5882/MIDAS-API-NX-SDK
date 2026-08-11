@@ -405,7 +405,16 @@ class StoryCalculationArgument(TypedDict, total=False):
 
 
 def calculate_story(argument: StoryCalculationArgument, client: Optional[MidasClient] = None) -> dict:
-    """docs/manual/15_OPE.md #9 — /ope/STOR — Story Calculation."""
+    """docs/manual/15_OPE.md #9 — /ope/STOR — Story Calculation.
+
+    ⚠️ Confirmed 2026-08-11: 404s on Civil NX (v2.2, build 08/11/2026),
+    both `SEIS_ECC`/`WIND_ECC` disabled, on a blank document — first
+    direct test of this endpoint against Civil. Matches the same
+    Gen-only pattern already confirmed for the rest of the story family
+    (`STORY_PARAM`, `STORY_IRR_PARAM`, `STORPROP`, and the `/post/TABLE`
+    story-table types) — the whole story feature set looks to be
+    unregistered on Civil, not just this one endpoint.
+    """
     return _post("/ope/STOR", argument, client)
 
 
