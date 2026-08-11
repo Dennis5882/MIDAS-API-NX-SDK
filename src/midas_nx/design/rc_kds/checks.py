@@ -613,7 +613,18 @@ def get_column_design_forces_table(
     every ``/db/*`` call → 404). The blank-document repro needs no model
     file at all, so that's what was reported back — real-model crash risk
     is unresolved either way; don't treat the one non-crashing real-model
-    test as evidence this is now safe."""
+    test as evidence this is now safe.
+
+    ⚠️ Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), a fresh
+    blank ``/doc/NEW`` document (0 nodes) — same repro shape as the
+    crashing case above: this time a clean empty response, no crash,
+    session stayed healthy. This is MAPI-2431's most reliably-reproducing
+    case (crashed twice independently, reconfirmed not-fixed as recently
+    as 2026-08-07), so a clean pass here is the strongest single data
+    point yet, but the 2026-08-07 note above already shows this call
+    isn't even monotonic with data complexity (crashed blank, clean on a
+    63-node real model) — treat as reduced-but-not-cleared until an
+    independent second re-test."""
     return _get_rc_design_forces_table(
         TABLE_TYPE_COLUMN_DESIGN_FORCES,
         table_name,
@@ -650,7 +661,13 @@ def get_brace_design_forces_table(
     (reproduced twice, reported to MIDASIT as `MAPI-2431`) — not
     independently tested on Gen, but treat as equally at risk until it is.
     Confirmed clean on Civil NX 2026-08-07 (informative ``"there was an
-    error creating utbl (ex PostMode ...)"`` error, no crash)."""
+    error creating utbl (ex PostMode ...)"`` error, no crash).
+
+    Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank
+    ``/doc/NEW`` document: clean empty response, no crash, session stayed
+    healthy. A single clean pass is not independent proof the MAPI-2431
+    risk is gone — treat as reduced-but-not-cleared until a real-model
+    retest."""
     return _get_rc_design_forces_table(
         TABLE_TYPE_BRACE_DESIGN_FORCES,
         table_name,
@@ -693,7 +710,13 @@ def get_beam_design_forces_table(
     confirmed crashing Gen NX, so treat this one as equally at risk until
     tested. Confirmed clean on Civil NX 2026-08-07 (informative
     ``"there was an error creating utbl (ex PostMode ...)"`` error, no
-    crash)."""
+    crash).
+
+    Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank
+    ``/doc/NEW`` document: clean empty response, no crash, session stayed
+    healthy. A single clean pass is not independent proof the MAPI-2431/
+    sibling-crash risk is gone — treat as reduced-but-not-cleared until a
+    real-model retest."""
     return _get_rc_design_forces_table(
         TABLE_TYPE_BEAM_DESIGN_FORCES,
         table_name,

@@ -117,6 +117,14 @@ def get_beam_design_forces_table(
     ``get_*_design_forces_table()`` function in this module shares this
     same ``/post/TABLE`` helper and is presumed equally at risk on Gen
     until independently confirmed.
+
+    Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), same blank
+    ``/doc/NEW`` document shape as the confirmed crash above: this time a
+    clean ``{"message": ""}`` response, no crash, session stayed healthy.
+    A single clean pass does **not** confirm a fix for a
+    historically-confirmed crash — could be intermittent/non-deterministic
+    rather than fixed; needs an independent second re-test before drawing
+    any conclusion.
     """
     return _get_design_forces_table(
         TABLE_TYPE_BEAM_DESIGN_FORCES,
@@ -148,6 +156,12 @@ def get_column_design_forces_table(
     ``/DESIGN/RC/KDS-41-20-2022/TABLE`` endpoint too (`MAPI-2431`). Not
     independently tested via this exact route on Gen; confirmed clean on
     Civil NX 2026-08-07.
+
+    Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank
+    ``/doc/NEW`` document: clean empty response, no crash, session stayed
+    healthy. A single clean pass is not independent proof the MAPI-2431
+    risk is gone — treat as reduced-but-not-cleared until a real-model
+    retest.
     """
     return _get_design_forces_table(
         TABLE_TYPE_COLUMN_DESIGN_FORCES,
@@ -180,6 +194,14 @@ def get_brace_design_forces_table(
     shows disconnected and every ``/db/*`` call 404s — same signature as
     :func:`get_beam_design_forces_table`'s independently-confirmed crash.
     Confirmed clean on Civil NX (2026-08-07/2026-08-10 retests).
+
+    Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), same blank
+    ``/doc/NEW`` document shape as the confirmed crash: this time a clean
+    ``{"message": ""}`` response, no crash, session stayed healthy. A
+    single clean pass does **not** confirm a fix for a
+    historically-confirmed crash — could be intermittent/non-deterministic
+    rather than fixed; needs an independent second re-test before drawing
+    any conclusion.
     """
     return _get_design_forces_table(
         TABLE_TYPE_BRACE_DESIGN_FORCES,
@@ -217,6 +239,12 @@ def get_wall_design_forces_table(
     ⚠️ Shares the ``/post/TABLE`` helper with :func:`get_beam_design_forces_table`
     (confirmed crashing Gen NX, clean on Civil NX) — not independently
     tested on Gen; confirmed clean on Civil NX 2026-08-07.
+
+    Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank
+    ``/doc/NEW`` document: clean empty response, no crash, session stayed
+    healthy. A single clean pass against a call that shares this
+    module's confirmed-crashing helper is not independent proof the risk
+    is gone — treat as reduced-but-not-cleared until a real-model retest.
     """
     return get_table(
         TABLE_TYPE_WALL_DESIGN_FORCES,
@@ -245,6 +273,12 @@ def get_steel_member_design_forces_table(
     ⚠️ Shares the ``/post/TABLE`` helper with :func:`get_beam_design_forces_table`
     (confirmed crashing Gen NX, clean on Civil NX) — not independently
     tested on Gen; confirmed clean on Civil NX 2026-08-07.
+
+    Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank
+    ``/doc/NEW`` document: clean empty response, no crash, session stayed
+    healthy. A single clean pass against a call that shares this
+    module's confirmed-crashing helper is not independent proof the risk
+    is gone — treat as reduced-but-not-cleared until a real-model retest.
     """
     return _get_design_forces_table(
         TABLE_TYPE_STEEL_MEMBER_DESIGN_FORCES,
@@ -276,6 +310,12 @@ def get_src_beam_design_forces_table(
     ⚠️ Shares the ``/post/TABLE`` helper with :func:`get_beam_design_forces_table`
     (confirmed crashing Gen NX, clean on Civil NX) — not independently
     tested on Gen; confirmed clean on Civil NX 2026-08-07.
+
+    Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank
+    ``/doc/NEW`` document: clean empty response, no crash, session stayed
+    healthy. A single clean pass against a call that shares this
+    module's confirmed-crashing helper is not independent proof the risk
+    is gone — treat as reduced-but-not-cleared until a real-model retest.
     """
     return _get_design_forces_table(
         TABLE_TYPE_SRC_BEAM_DESIGN_FORCES,
@@ -304,6 +344,12 @@ def get_src_column_design_forces_table(
     ⚠️ Shares the ``/post/TABLE`` helper with :func:`get_beam_design_forces_table`
     (confirmed crashing Gen NX, clean on Civil NX) — not independently
     tested on Gen; confirmed clean on Civil NX 2026-08-07.
+
+    Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank
+    ``/doc/NEW`` document: clean empty response, no crash, session stayed
+    healthy. A single clean pass against a call that shares this
+    module's confirmed-crashing helper is not independent proof the risk
+    is gone — treat as reduced-but-not-cleared until a real-model retest.
     """
     return _get_design_forces_table(
         TABLE_TYPE_SRC_COLUMN_DESIGN_FORCES,
@@ -332,6 +378,12 @@ def get_cold_formed_steel_member_design_forces_table(
     ⚠️ Shares the ``/post/TABLE`` helper with :func:`get_beam_design_forces_table`
     (confirmed crashing Gen NX, clean on Civil NX) — not independently
     tested on Gen; confirmed clean on Civil NX 2026-08-07.
+
+    Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank
+    ``/doc/NEW`` document: clean empty response, no crash, session stayed
+    healthy. A single clean pass against a call that shares this
+    module's confirmed-crashing helper is not independent proof the risk
+    is gone — treat as reduced-but-not-cleared until a real-model retest.
     """
     return _get_design_forces_table(
         TABLE_TYPE_COLD_FORMED_STEEL_MEMBER_DESIGN_FORCES,

@@ -776,5 +776,15 @@ def get_steel_member_design_forces_table(
 ) -> dict:
     """docs/manual/25_Design_Steel_KDS41302022.md #27 — TABLE — Steel Member
     Design Forces. Response: ``{table_name_or_"empty": {"FORCE": ...,
-    "DIST": ..., "HEAD": [...], "DATA": [[...], ...]}}``."""
+    "DIST": ..., "HEAD": [...], "DATA": [[...], ...]}}``.
+
+    Shares the ``TABLE_TYPE``-crash pattern seen across this whole
+    Design-Forces family (`MAPI-2431` and siblings) — presumed at risk on
+    Gen until independently confirmed on real data. Re-tested 2026-08-11
+    on Gen NX (v2.1, build 08/11/2026), blank ``/doc/NEW`` document,
+    ``{"TABLE_TYPE": "STEELMEMBERDESIGNFORCES"}``: clean empty response,
+    no crash, session stayed healthy. A single clean pass is not
+    independent proof the risk is gone — treat as reduced-but-not-cleared
+    until a real-model retest.
+    """
     return _post(f"{_BASE}/TABLE", argument, client)

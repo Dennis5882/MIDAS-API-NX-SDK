@@ -6373,10 +6373,10 @@
           "civil",
           "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): still a clean 'there was an error creating utbl (ex PostMode ...)' error, no crash, session stayed healthy. CRASHES GEN NX: this exact call (TABLE_TYPE=BEAMDESIGNFORCES via POST /post/TABLE) crashed Gen NX -- long hang, then verify_connection() showed disconnected and every /db/* call 404'd. Reproduced twice on Gen (once pre-patch during a broader post/* sweep, once post-patch on build 08/06/2026 against a blank /doc/NEW document). Same failure signature as MAPI-2431 (Column Design Forces), but that crash reproduces against a different endpoint (/DESIGN/RC/KDS-41-20-2022/TABLE, a separate SDK code path in design.rc_kds.checks) -- the two share only the TABLE_TYPE naming convention, not a code path; independently-crashing siblings, not one shared root cause.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): still a clean 'there was an error creating utbl (ex PostMode ...)' error, no crash, session stayed healthy. CRASHES GEN NX: this exact call (TABLE_TYPE=BEAMDESIGNFORCES via POST /post/TABLE) crashed Gen NX -- long hang, then verify_connection() showed disconnected and every /db/* call 404'd. Reproduced twice on Gen (once pre-patch during a broader post/* sweep, once post-patch on build 08/06/2026 against a blank /doc/NEW document). Same failure signature as MAPI-2431 (Column Design Forces), but that crash reproduces against a different endpoint (/DESIGN/RC/KDS-41-20-2022/TABLE, a separate SDK code path in design.rc_kds.checks) -- the two share only the TABLE_TYPE naming convention, not a code path; independently-crashing siblings, not one shared root cause. Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), same blank /doc/NEW document shape as the confirmed crash: this time a clean {'message': ''} response, no crash, session stayed healthy. Single clean pass does NOT confirm a fix for a historically-confirmed crash -- could be intermittent/non-deterministic rather than fixed; needs an independent second re-test before drawing any conclusion.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026",
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/11/2026"
         },
         "level": "read",
         "outcome": "crash_or_hang"
@@ -6393,13 +6393,15 @@
       "status": "implemented",
       "module": "midas_nx.post.design",
       "live_verified": {
-        "date": "2026-08-07",
+        "date": "2026-08-11",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): still a clean 'there was an error creating utbl (ex PostMode ...)' error, no crash. Not independently crash-tested via this exact /post/TABLE route on Gen NX -- but the same TABLE_TYPE crashes Gen NX reliably via the sibling /DESIGN/RC/KDS-41-20-2022/TABLE endpoint (MAPI-2431, reproduced 2026-08-01 and again 2026-08-07 post-patch), and this module's BEAMDESIGNFORCES crashed Gen via this exact /post/TABLE route -- treat as equally at risk on Gen until independently confirmed.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): still a clean 'there was an error creating utbl (ex PostMode ...)' error, no crash. Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank /doc/NEW document -- clean empty response, no crash, session stayed healthy. Does NOT confirm a fix for the sibling MAPI-2431/BEAMDESIGNFORCES crashes -- single clean pass, not independent proof; treat as reduced-but-not-cleared risk on Gen until a real-model retest.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/11/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -6421,10 +6423,10 @@
           "civil",
           "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): still a clean 'there was an error creating utbl (ex PostMode ...)' error, no crash. CRASHES GEN NX: re-tested 2026-08-10 on Gen NX (build 08/06/2026) against a blank /doc/NEW document -- no response, then verify_connection() -> disconnected, every /db/* call -> 404. Confirmed crashing, same failure signature as the independently-confirmed BEAMDESIGNFORCES crash (this module) and the MAPI-2431 COLUMNDESIGNFORCES crash (sibling KDS endpoint) -- shares only the TABLE_TYPE naming convention with those, not a code path.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): still a clean 'there was an error creating utbl (ex PostMode ...)' error, no crash. CRASHES GEN NX: re-tested 2026-08-10 on Gen NX (build 08/06/2026) against a blank /doc/NEW document -- no response, then verify_connection() -> disconnected, every /db/* call -> 404. Confirmed crashing, same failure signature as the independently-confirmed BEAMDESIGNFORCES crash (this module) and the MAPI-2431 COLUMNDESIGNFORCES crash (sibling KDS endpoint) -- shares only the TABLE_TYPE naming convention with those, not a code path. Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), same blank /doc/NEW document shape as the confirmed crash: this time a clean {'message': ''} response, no crash, session stayed healthy. Single clean pass does NOT confirm a fix for a historically-confirmed crash -- could be intermittent/non-deterministic rather than fixed; needs an independent second re-test before drawing any conclusion.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026",
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/11/2026"
         },
         "level": "read",
         "outcome": "crash_or_hang"
@@ -6441,13 +6443,15 @@
       "status": "implemented",
       "module": "midas_nx.post.design",
       "live_verified": {
-        "date": "2026-08-07",
+        "date": "2026-08-11",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): still a clean 'there was an error creating utbl (ex PostMode ...)' error, no crash. Not independently tested on Gen NX -- shares the same /post/TABLE helper as the confirmed Gen-crashing BEAMDESIGNFORCES/COLUMNDESIGNFORCES cases; treat as equally at risk on Gen until tested.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): still a clean 'there was an error creating utbl (ex PostMode ...)' error, no crash. Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank /doc/NEW document -- clean empty response, no crash, session stayed healthy (Node.get() confirmed alive immediately after). Does NOT confirm a fix for the sibling BEAMDESIGNFORCES/COLUMNDESIGNFORCES crashes -- single clean pass against a historically-confirmed-crashing sibling call, not independent proof; treat as reduced-but-not-cleared risk on Gen until a real-model retest.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/11/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -6464,13 +6468,15 @@
       "status": "implemented",
       "module": "midas_nx.post.design",
       "live_verified": {
-        "date": "2026-08-07",
+        "date": "2026-08-11",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): still a clean 'there was an error creating utbl (ex PostMode ...)' error, no crash. Not independently tested on Gen NX -- shares the same /post/TABLE helper as the confirmed Gen-crashing BEAMDESIGNFORCES/COLUMNDESIGNFORCES cases; treat as equally at risk on Gen until tested.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): still a clean 'there was an error creating utbl (ex PostMode ...)' error, no crash. Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank /doc/NEW document -- clean empty response, no crash, session stayed healthy (Node.get() confirmed alive immediately after). Does NOT confirm a fix for the sibling BEAMDESIGNFORCES/COLUMNDESIGNFORCES crashes -- single clean pass against a historically-confirmed-crashing sibling call, not independent proof; treat as reduced-but-not-cleared risk on Gen until a real-model retest.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/11/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -6487,13 +6493,15 @@
       "status": "implemented",
       "module": "midas_nx.post.design",
       "live_verified": {
-        "date": "2026-08-07",
+        "date": "2026-08-11",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): still a clean 'there was an error creating utbl (ex PostMode ...)' error, no crash. Not independently tested on Gen NX -- shares the same /post/TABLE helper as the confirmed Gen-crashing BEAMDESIGNFORCES/COLUMNDESIGNFORCES cases; treat as equally at risk on Gen until tested.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): still a clean 'there was an error creating utbl (ex PostMode ...)' error, no crash. Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank /doc/NEW document -- clean empty response, no crash, session stayed healthy (Node.get() confirmed alive immediately after). Does NOT confirm a fix for the sibling BEAMDESIGNFORCES/COLUMNDESIGNFORCES crashes -- single clean pass against a historically-confirmed-crashing sibling call, not independent proof; treat as reduced-but-not-cleared risk on Gen until a real-model retest.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/11/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -6510,13 +6518,15 @@
       "status": "implemented",
       "module": "midas_nx.post.design",
       "live_verified": {
-        "date": "2026-08-07",
+        "date": "2026-08-11",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): still a clean 'there was an error creating utbl (ex PostMode ...)' error, no crash. Not independently tested on Gen NX -- shares the same /post/TABLE helper as the confirmed Gen-crashing BEAMDESIGNFORCES/COLUMNDESIGNFORCES cases; treat as equally at risk on Gen until tested.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): still a clean 'there was an error creating utbl (ex PostMode ...)' error, no crash. Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank /doc/NEW document -- clean empty response, no crash, session stayed healthy (Node.get() confirmed alive immediately after). Does NOT confirm a fix for the sibling BEAMDESIGNFORCES/COLUMNDESIGNFORCES crashes -- single clean pass against a historically-confirmed-crashing sibling call, not independent proof; treat as reduced-but-not-cleared risk on Gen until a real-model retest.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/11/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -6533,13 +6543,15 @@
       "status": "implemented",
       "module": "midas_nx.post.design",
       "live_verified": {
-        "date": "2026-08-07",
+        "date": "2026-08-11",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): still a clean 'there was an error creating utbl (ex PostMode ...)' error, no crash. Not independently tested on Gen NX -- shares the same /post/TABLE helper as the confirmed Gen-crashing BEAMDESIGNFORCES/COLUMNDESIGNFORCES cases; treat as equally at risk on Gen until tested.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): still a clean 'there was an error creating utbl (ex PostMode ...)' error, no crash. Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank /doc/NEW document -- clean empty response, no crash, session stayed healthy (Node.get() confirmed alive immediately after). Does NOT confirm a fix for the sibling BEAMDESIGNFORCES/COLUMNDESIGNFORCES crashes -- single clean pass against a historically-confirmed-crashing sibling call, not independent proof; treat as reduced-but-not-cleared risk on Gen until a real-model retest.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/11/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -7272,13 +7284,15 @@
       "status": "implemented",
       "module": "midas_nx.design.steel_kds",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-11",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank /doc/NEW document, {\"TABLE_TYPE\": \"STEELMEMBERDESIGNFORCES\"} -- clean empty response, no crash, session stayed healthy. Shares the TABLE_TYPE-crash pattern seen elsewhere in this crash family, so this single clean pass is not independent proof of a fix; treat as reduced-but-not-cleared risk on Gen until a real-model retest.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/11/2026"
         },
         "level": "read"
       }
@@ -8925,10 +8939,10 @@
           "civil",
           "gen"
         ],
-        "method": "2026-07-31 manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) with no analysis/design run yet -- clean route+shape confirmation, informative 'Please perform analysis' error, no crash. 2026-08-01 on Gen NX (TABLE_TYPE=COLUMNDESIGNFORCES): crashed twice independently (real 14,027-node apartment model, and an isolated empty document) -- filed as MAPI-2431. 2026-08-07 re-tested post-patch (Gen NX v975, build 08/06/2026): MIDASIT couldn't reproduce on their side and asked for the test model; re-tested two cases instead of sharing one. Against the then-current small real model (63 nodes, no design run): no crash, clean empty response -- matches MIDASIT's own result. Against a fresh /doc/NEW blank document (0 nodes, confirmed via GET /db/NODE): crashed again, identical signature (verify_connection() -> disconnected, every /db/* call -> 404). Reported both cases back on MAPI-2431 with the blank-document repro steps (no model file needed). Still IN PROGRESS -- the one non-crashing real-model result is not evidence this is safe on real models generally.",
+        "method": "2026-07-31 manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) with no analysis/design run yet -- clean route+shape confirmation, informative 'Please perform analysis' error, no crash. 2026-08-01 on Gen NX (TABLE_TYPE=COLUMNDESIGNFORCES): crashed twice independently (real 14,027-node apartment model, and an isolated empty document) -- filed as MAPI-2431. 2026-08-07 re-tested post-patch (Gen NX v975, build 08/06/2026): MIDASIT couldn't reproduce on their side and asked for the test model; re-tested two cases instead of sharing one. Against the then-current small real model (63 nodes, no design run): no crash, clean empty response -- matches MIDASIT's own result. Against a fresh /doc/NEW blank document (0 nodes, confirmed via GET /db/NODE): crashed again, identical signature (verify_connection() -> disconnected, every /db/* call -> 404). Reported both cases back on MAPI-2431 with the blank-document repro steps (no model file needed). Still IN PROGRESS -- the one non-crashing real-model result is not evidence this is safe on real models generally. Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), a fresh blank /doc/NEW document (0 nodes) -- same repro shape as the crashing case above: this time a clean empty response, no crash, session stayed healthy. This is MAPI-2431's most reliably-reproducing case (crashed twice independently, reconfirmed not-fixed as recently as 2026-08-07), so a clean pass here is the strongest single data point yet -- but still just one pass against a call with an established intermittent-on-blank-doc history (see the 2026-08-07 note: crashed on blank doc, clean on a 63-node real model, i.e. not even monotonic with data complexity). Needs an independent second re-test before calling this fixed.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/11/2026"
         },
         "level": "read",
         "outcome": "crash_or_hang"
@@ -8945,13 +8959,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.checks",
       "live_verified": {
-        "date": "2026-08-07",
+        "date": "2026-08-11",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): clean 'there was an error creating utbl (ex PostMode ...)' error, no crash. Not independently tested on Gen NX -- shares this endpoint with Column Design Forces (confirmed crashing on Gen, MAPI-2431); treat as equally at risk on Gen until tested.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): clean 'there was an error creating utbl (ex PostMode ...)' error, no crash. Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank /doc/NEW document -- clean empty response, no crash, session stayed healthy. Does NOT confirm a fix for Column Design Forces' MAPI-2431 crash (this endpoint) -- single clean pass, not independent proof; treat as reduced-but-not-cleared risk on Gen until a real-model retest.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/11/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -8968,13 +8984,15 @@
       "status": "implemented",
       "module": "midas_nx.design.rc_kds.checks",
       "live_verified": {
-        "date": "2026-08-07",
+        "date": "2026-08-11",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): clean 'there was an error creating utbl (ex PostMode ...)' error, no crash. Not independently tested on Gen NX via this exact endpoint -- shares it with Column Design Forces (confirmed crashing on Gen, MAPI-2431); the sibling post.design.get_beam_design_forces_table() (different endpoint, /post/TABLE, same TABLE_TYPE) is independently confirmed crashing on Gen -- treat this one as equally at risk on Gen until tested.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-07 on Civil NX (same patch build): clean 'there was an error creating utbl (ex PostMode ...)' error, no crash. Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank /doc/NEW document -- clean empty response, no crash, session stayed healthy. Does NOT confirm a fix for Column Design Forces' MAPI-2431 crash or the sibling post.design.get_beam_design_forces_table() crash -- single clean pass, not independent proof; treat as reduced-but-not-cleared risk on Gen until a real-model retest.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/11/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -9487,10 +9505,10 @@
           "gen",
           "civil"
         ],
-        "method": "manual POST probe reproducing the documented crash payload (a real, non-SRC-eligible section referenced). Civil NX crashed 2026-07-31 at the old /DESIGN/SRC/AIK-SRC2K/OCHECK path (real production bridge model). MIDASIT confirmed (MAPI-2429, 2026-08-06) this is an unofficial, paused-development API and moved the path to /TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK to mark it as such -- the old path now cleanly 404s. Re-tested on the new /TEMP/ path 2026-08-07 on Gen NX against a session with real non-SRC sections: identical crash (timeout, then session unresponsive, full restart required). The path move is not a fix.",
+        "method": "manual POST probe reproducing the documented crash payload (a real, non-SRC-eligible section referenced). Civil NX crashed 2026-07-31 at the old /DESIGN/SRC/AIK-SRC2K/OCHECK path (real production bridge model). MIDASIT confirmed (MAPI-2429, 2026-08-06) this is an unofficial, paused-development API and moved the path to /TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK to mark it as such -- the old path now cleanly 404s. Re-tested on the new /TEMP/ path 2026-08-07 on Gen NX against a session with real non-SRC sections: identical crash (timeout, then session unresponsive, full restart required). The path move is not a fix. Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026) and, at the user's request, on Civil NX (v2.2, build 08/11/2026) too -- both against a document with zero sections (not the real non-SRC-eligible-section shape that actually triggers the crash): both got the same clean 'Section 1 does not exist.' MidasResultError as the 2026-08-01 Gen non-repro, session stayed healthy both times. Reconfirms the existing precondition finding (needs a real section to reach the crashing code path) rather than adding new evidence either way -- the crash risk on real models stands as documented.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/11/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/11/2026"
         },
         "level": "write",
         "outcome": "crash_or_hang"
@@ -9507,13 +9525,15 @@
       "status": "implemented",
       "module": "midas_nx.design.src_aiksrc2k",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-11",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank /doc/NEW document -- clean empty response, no crash, session stayed healthy. Shares the TABLE_TYPE-crash pattern seen elsewhere in this crash family, so this single clean pass is not independent proof of a fix; treat as reduced-but-not-cleared risk on Gen until a real-model retest.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/11/2026"
         },
         "level": "read"
       }
@@ -9529,13 +9549,15 @@
       "status": "implemented",
       "module": "midas_nx.design.src_aiksrc2k",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-11",
         "products": [
-          "civil"
+          "civil",
+          "gen"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank /doc/NEW document -- clean empty response, no crash, session stayed healthy. Shares the TABLE_TYPE-crash pattern seen elsewhere in this crash family, so this single clean pass is not independent proof of a fix; treat as reduced-but-not-cleared risk on Gen until a real-model retest.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/11/2026"
         },
         "level": "read"
       }

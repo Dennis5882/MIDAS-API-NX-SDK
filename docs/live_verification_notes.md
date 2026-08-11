@@ -4535,6 +4535,66 @@ testing) — this sweep specifically exercised `update()`/PUT, which
 hadn't been individually confirmed before, so no new coverage entries,
 just a stronger evidence base behind the existing ones.
 
+## 2026-08-11 (later) — full Gen NX crash-family re-test: 15 previously-crashing/at-risk calls, 0 crashes this time
+
+At the user's explicit request to re-test "everything that had crashed on
+Gen," and after correcting an initial mis-framing (told the user this
+would likely be inconclusive on a blank document like `OCHECK` — wrong:
+`get_beam_design_forces_table()`'s own docstring already documented a
+confirmed crash *on a blank `/doc/NEW` document*, so the risk was real,
+not just theoretical). User re-confirmed proceeding anyway with the
+corrected risk understanding.
+
+**Batch 1 — 11 previously-unverified-on-Gen crash-family functions + `OCHECK`**,
+called one at a time against the connected blank Gen session (0 nodes),
+`Node.get()` health-checked after every single call, ready to stop
+immediately on the first failure:
+`checks.get_brace_design_forces_table`, `checks.get_beam_design_forces_table`,
+`steel_kds.get_steel_member_design_forces_table`,
+`src_aiksrc2k.get_src_beam_design_forces_table`,
+`src_aiksrc2k.get_src_column_design_forces_table`,
+`post.design.get_column_design_forces_table`,
+`post.design.get_wall_design_forces_table`,
+`post.design.get_steel_member_design_forces_table`,
+`post.design.get_src_beam_design_forces_table`,
+`post.design.get_src_column_design_forces_table`,
+`post.design.get_cold_formed_steel_member_design_forces_table`, and
+`perform_src_optimal_design` (`OCHECK`, zero-section precondition, same
+non-repro shape as the existing 2026-08-01 finding). All 12 answered
+cleanly (mostly empty-table responses), session alive throughout.
+
+**Batch 2 — the 3 *already-confirmed-crashing* cases**, re-tested next
+since "전부" (all) includes these: `post.design.get_brace_design_forces_table`
+(`BRACEDESIGNFORCES`), `post.design.get_beam_design_forces_table`
+(`BEAMDESIGNFORCES`), and `checks.get_column_design_forces_table`
+(`MAPI-2431` — reproduced twice independently across different models,
+re-confirmed *not fixed* as recently as 2026-08-07, the single
+strongest repro in this whole family). All 3 — including MAPI-2431 —
+answered cleanly this time too. Session alive after all 3.
+
+**Total: 15 of 15 calls clean, zero crashes, zero hangs**, against Gen NX
+2026 v2.1, build 08/11/2026 (previous crash confirmations were on build
+08/06/2026 and earlier).
+
+**This is not being called "fixed."** One clean pass against a
+historically-confirmed crash doesn't distinguish "the vendor fixed it"
+from "the crash is intermittent/non-deterministic" — and MAPI-2431's own
+history already shows non-monotonic behavior (crashed on a blank
+document, clean on a 63-node real model, in the same 2026-08-07 session).
+Every affected docstring and `coverage.json` entry now carries today's
+result as an additional data point, explicitly flagged as
+"reduced-but-not-cleared," not a resolution. An independent second
+re-test — ideally against real, populated model data rather than a
+blank document, since that's the condition never yet cleanly tested for
+most of this family — is the next real step, not a documentation
+close-out.
+
+`docs/coverage.json` (15 entries updated/extended), `ROADMAP.md`
+(regenerated), and the docstrings in `post/design.py`, `checks.py`,
+`steel_kds.py`, `src_aiksrc2k.py` (10 functions) all updated with
+today's finding. `ruff check` and the full test suite (701 tests) both
+pass.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

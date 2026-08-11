@@ -623,6 +623,15 @@ def perform_src_optimal_design(
     session whose open document has real, non-SRC-eligible sections
     (matching the Civil repro conditions this time) — crashed the same
     way (timeout, then session unresponsive, full restart needed).
+
+    Gen NX and Civil NX, 2026-08-11 (v2.1/v2.2, build 08/11/2026): both
+    re-tested against a document with **zero sections** (same shape as
+    the 2026-08-01 Gen non-repro above, not the real non-SRC-eligible-
+    section shape that actually triggers the crash) — both got the same
+    clean ``"Section 1 does not exist."`` error, session stayed healthy
+    both times. Reconfirms the precondition finding rather than adding
+    new evidence either way; the crash risk on real models with real
+    sections stands as documented above.
     """
     return _post(f"/TEMP{_BASE}/OCHECK", argument, client)
 
@@ -706,7 +715,16 @@ def get_src_beam_design_forces_table(
     Column Design Forces), distinguished by TABLE_TYPE. Response:
     ``{table_name_or_"empty": {"FORCE": ..., "DIST": ..., "HEAD": ["Index",
     "Memb", "Part", "LComName", "Type", "Fz", "Mx", "My(+)", "My(-)"],
-    "DATA": [[...], ...]}}``."""
+    "DATA": [[...], ...]}}``.
+
+    Shares the ``TABLE_TYPE``-crash pattern seen across the wider
+    Design-Forces family (`MAPI-2431` and siblings) — presumed at risk on
+    Gen until independently confirmed on real data. Re-tested 2026-08-11
+    on Gen NX (v2.1, build 08/11/2026), blank ``/doc/NEW`` document: clean
+    empty response, no crash, session stayed healthy. A single clean pass
+    is not independent proof the risk is gone — treat as
+    reduced-but-not-cleared until a real-model retest.
+    """
     return _get_src_design_forces_table(
         TABLE_TYPE_BEAM_DESIGN_FORCES,
         table_name,
@@ -739,7 +757,16 @@ def get_src_column_design_forces_table(
     Design Forces), distinguished by TABLE_TYPE. Response:
     ``{table_name_or_"empty": {"FORCE": ..., "DIST": ..., "HEAD": ["Index",
     "Memb", "Part", "LComName", "Type", "Fx", "Fy", "Fz", "Mx", "My", "Mz"],
-    "DATA": [[...], ...]}}``."""
+    "DATA": [[...], ...]}}``.
+
+    Shares the ``TABLE_TYPE``-crash pattern seen across the wider
+    Design-Forces family (`MAPI-2431` and siblings) — presumed at risk on
+    Gen until independently confirmed on real data. Re-tested 2026-08-11
+    on Gen NX (v2.1, build 08/11/2026), blank ``/doc/NEW`` document: clean
+    empty response, no crash, session stayed healthy. A single clean pass
+    is not independent proof the risk is gone — treat as
+    reduced-but-not-cleared until a real-model retest.
+    """
     return _get_src_design_forces_table(
         TABLE_TYPE_COLUMN_DESIGN_FORCES,
         table_name,
