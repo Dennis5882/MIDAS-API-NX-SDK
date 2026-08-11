@@ -12,9 +12,8 @@
   table); `get_wall_design_forces_table()` gains `story_names`.
 - New endpoint: `RcDesignCodeSelection` (`/DESIGN/RC/DRC`) — selects the
   active RC design code.
-- All three changes trace to long-`DONE` tickets in MIDASIT's internal
-  Jira (MAPI-949, MAPI-1671, MAPI-1365) shipping in the manual's
-  2026-08-06 sync; endpoint count 398 → 399.
+- All three changes trace to long-standing requests against MIDASIT
+  shipping in the manual's 2026-08-06 sync; endpoint count 398 → 399.
 
 ## 한국어
 
@@ -29,9 +28,8 @@
   `get_wall_design_forces_table()`에 `story_names` 추가.
 - 신규 엔드포인트: `RcDesignCodeSelection` (`/DESIGN/RC/DRC`) — 활성 RC
   설계 코드를 선택합니다.
-- 세 변경 모두 MIDASIT 내부 Jira에서 오래전 `DONE` 처리된 티켓
-  (MAPI-949, MAPI-1671, MAPI-1365)이 매뉴얼의 2026-08-06 동기화로 실제
-  반영된 것입니다. 엔드포인트 수 398 → 399.
+- 세 변경 모두 MIDASIT에 오래전 요청했던 사항이 매뉴얼의 2026-08-06
+  동기화로 실제 반영된 것입니다. 엔드포인트 수 398 → 399.
 
 ## 繁體中文
 
@@ -45,9 +43,8 @@
   `get_wall_design_forces_table()` 新增 `story_names`。
 - 新端點：`RcDesignCodeSelection`（`/DESIGN/RC/DRC`）——選擇目前啟用的
   RC 設計規範。
-- 以上三項變更都對應 MIDASIT 內部 Jira 中早已標記 `DONE` 的工單
-  （MAPI-949、MAPI-1671、MAPI-1365），隨手冊 2026-08-06 的同步實際上線。
-  端點數量 398 → 399。
+- 以上三項變更都對應早先向 MIDASIT 提出的需求，隨手冊 2026-08-06 的同步
+  實際上線。端點數量 398 → 399。
 
 ---
 

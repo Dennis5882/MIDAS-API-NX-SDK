@@ -1,10 +1,10 @@
 ## Fixed
 
 - **`design.src_aiksrc2k.perform_src_optimal_design()` (SRC Optimal Design,
-  `OCHECK`) called a path MIDASIT quietly retired.** Per MIDASIT's reply on
-  MAPI-2429 (the crash this SDK reported against the endpoint, closed
-  2026-08-06 as "결함 아님"): `OCHECK` is an unofficial API paused
-  mid-development with no resume date, and MIDASIT moved it from
+  `OCHECK`) called a path MIDASIT quietly retired.** Per MIDASIT's reply
+  to the crash this SDK reported against the endpoint (closed as "not a
+  defect"): `OCHECK` is an unofficial API paused mid-development with no
+  resume date, and MIDASIT moved it from
   `/DESIGN/SRC/AIK-SRC2K/OCHECK` to `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK`
   specifically to mark it as such. Confirmed live 2026-08-07: the old path
   now cleanly 404s, so every call through this SDK's old code was failing
@@ -27,13 +27,13 @@
 ## How this was found
 
 Live re-verification pass immediately after a 2026-08-06 Gen/Civil NX
-patch, checking whether previously-reported Jira issues were actually
-fixed. `MAPI-2425`/`MAPI-2426` were (`/ope/EDMP`/`/ope/USLC`, already
-verified separately); `MAPI-2429` turned out to be closed not by a fix but
-by moving the endpoint under `/TEMP/` and documenting it as unofficial —
-this SDK needed to follow that move rather than keep calling a dead path.
-`_BASE` in `src_aiksrc2k.py` is shared by ~25 other endpoints in the same
-module; none of those changed, since MIDASIT's move only touched
-`OCHECK`. The SDK never wrapped the sibling endpoints MIDASIT's comment
-also mentioned (steel's own `OCHECK`, `DCHECK`), so there was nothing to
-update for those.
+patch, checking whether previously-reported issues were actually fixed.
+Two were (`/ope/EDMP`/`/ope/USLC`, already verified separately); the
+`OCHECK` crash report turned out to be closed not by a fix but by moving
+the endpoint under `/TEMP/` and documenting it as unofficial — this SDK
+needed to follow that move rather than keep calling a dead path. `_BASE`
+in `src_aiksrc2k.py` is shared by ~25 other endpoints in the same module;
+none of those changed, since MIDASIT's move only touched `OCHECK`. The
+SDK never wrapped the sibling endpoints MIDASIT's reply also mentioned
+(steel's own `OCHECK`, `DCHECK`), so there was nothing to update for
+those.

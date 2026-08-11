@@ -6,8 +6,8 @@
 
 - **Fixed:** `perform_src_optimal_design()` (`OCHECK`) was calling
   `/DESIGN/SRC/AIK-SRC2K/OCHECK`, a path MIDASIT quietly retired — it now
-  404s. MIDASIT confirmed (Jira MAPI-2429) this is an unofficial,
-  paused-development API and moved it to
+  404s. MIDASIT confirmed this is an unofficial, paused-development API
+  and moved it to
   `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK` to mark it as such. The SDK now
   calls the new path.
 - **Not a fix, just following the move:** re-tested live 2026-08-07 —
@@ -22,8 +22,8 @@
 
 - **수정:** `perform_src_optimal_design()`(`OCHECK`)가 MIDASIT이 조용히
   폐기한 경로인 `/DESIGN/SRC/AIK-SRC2K/OCHECK`를 호출하고 있었습니다 —
-  이제 이 경로는 404를 반환합니다. MIDASIT은 (Jira MAPI-2429에서) 이
-  엔드포인트가 개발이 중단된 비공식 API라고 확인했고, 이를 표시하기 위해
+  이제 이 경로는 404를 반환합니다. MIDASIT은 이 엔드포인트가 개발이
+  중단된 비공식 API라고 확인했고, 이를 표시하기 위해
   `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK`로 옮겼습니다. SDK는 이제 새 경로를
   호출합니다.
 - **수정이 아니라 경로만 따라간 것입니다:** 2026-08-07 실환경에서
@@ -38,8 +38,7 @@
 
 - **修正：** `perform_src_optimal_design()`（`OCHECK`）呼叫的是 MIDASIT
   已悄悄棄用的路徑 `/DESIGN/SRC/AIK-SRC2K/OCHECK`——現在該路徑會回傳
-  404。MIDASIT 已確認（Jira MAPI-2429）此端點是暫停開發的非官方 API，並
-  將其移至 `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK` 以標示此狀態。SDK 現在會
+  404。MIDASIT 已確認此端點是暫停開發的非官方 API，並將其移至 `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK` 以標示此狀態。SDK 現在會
   呼叫新路徑。
 - **並非修復，只是跟隨路徑異動：** 2026-08-07 於實際環境重新測試，新路徑
   仍會以與舊路徑相同的方式讓 NX 工作階段當機。文件字串開頭現已加上
