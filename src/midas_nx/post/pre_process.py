@@ -145,6 +145,12 @@ def get_story_load_summary_table(
     STORY_LOAD_SUMMARY_{dir} -> STORY_LOAD_{dir}, matching STORY_MASS's
     naming (the other half of the same ticket, already reflected below).
     This call also gained unit/styles/components/load_case_names.
+
+    ⚠️ Live-verified 2026-08-13 (Gen NX v2.1, build 08/12/2026): against a
+    model with 2 real Stories and one static load case, direction="X"
+    with load_case_names=["DL(ST)"] returned real per-story populated
+    rows keyed by story name — confirms the renamed TABLE_TYPE and the
+    new params both work as documented.
     """
     return get_table(
         f"STORY_LOAD_{direction}",
@@ -169,5 +175,8 @@ def get_story_weight_table(
 
     2026-08-06 manual update: gained unit/styles/components (TABLE_TYPE
     itself, "STORYWEIGHT", is unchanged).
+
+    ⚠️ Live-verified 2026-08-13 (Gen NX v2.1, build 08/12/2026): against
+    the same 2-story model, returned real per-story populated rows.
     """
     return get_table(TABLE_TYPE_STORY_WEIGHT, table_name, unit=unit, styles=styles, components=components, client=client)

@@ -320,5 +320,9 @@ class Story(DbResource):
     ENDPOINT = "/db/STOR"
     NAME = "Story Data"
     #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
-    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
+    #: twice on 2026-07-29, and again 2026-08-13 (v2.2, build 08/12/2026)
+    #: — see db/base.py's GEN_ONLY docstring. Write round trip confirmed on
+    #: Gen NX 2026-08-13 (v2.1, build 08/12/2026): create() with a full,
+    #: real 2-story payload succeeded and both stories were readable by
+    #: name from /db/SWIND, /db/SSEIS, and the story load/weight tables.
     PRODUCTS = GEN_ONLY

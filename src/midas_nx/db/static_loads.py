@@ -582,6 +582,12 @@ class StaticWindLoadPayload(TypedDict, total=False):
     and STORY_WIND_PRESSURE/WIND_ECCEN_X/WIND_ECCEN_Y take over instead.
     GET-only fields ELEV/LOAD_H/LOAD_BX/LOAD_BY must not be sent back in a
     request per the manual's own JSON Schema.
+
+    ⚠️ Live-verified 2026-08-13 (Gen NX v2.1, build 08/12/2026): on a model
+    with real ``Story`` data (``STORY_NAME`` "1F"/"RF"), a POST with
+    ``STORY_WIND_PRESSURE`` keyed to both story names succeeded and GET
+    read it back correctly — the server fills in ELEV/LOAD_H/LOAD_BX/
+    LOAD_BY on the way out, confirming they're genuinely GET-only.
     """
 
     WIND_CODE: str  # e.g. "KDS(41-12: 2022)" or "USER TYPE", required
@@ -616,6 +622,13 @@ class StaticSeismicLoadPayload(TypedDict, total=False):
     Request Example misspells INHERENT_TORSION as "NHERENT_TORSION" (missing
     leading I) — its JSON Schema and Specifications table both agree on
     INHERENT_TORSION, so that's the one to send.
+
+    ⚠️ Live-verified 2026-08-13 (Gen NX v2.1, build 08/12/2026): on the same
+    2-story model as ``StaticWindLoadPayload``'s USER TYPE test, a POST with
+    ``SEISMIC_FORCE`` keyed to both story names plus ``INHERENT_TORSION``
+    succeeded and GET read it back correctly (server fills in per-story
+    WEIGHT/ELEV on the way out) — confirms the corrected spelling above is
+    the one the server actually accepts.
     """
 
     SEIS_CODE: str  # e.g. "KDS(41-17-00:2019)" or "USER TYPE", required

@@ -603,6 +603,34 @@ def get_concurrent_joint_force_table(
     list: it repeats a fixed 3-column prefix ("Index", "Elem.", "Load")
     plus a "Elem./Component" + 6-DOF block per element found, so its
     length depends on how many elements answer.
+
+    ⚠️ Live-tested 2026-08-13 on both products (Gen NX v2.1 / Civil NX
+    v2.2, both build 08/12/2026) against a plain static-load-case
+    cantilever-column model (a real fixed-support reaction, no moving
+    loads): the route accepts the request on both — no 404, no crash,
+    session stayed healthy — but both refused it with a clean, product-
+    specific error: Gen answered ``"there was an error creating utbl.
+    (ex PostMode ...)"``, Civil answered ``"No data found for the
+    specified node key."`` (confirmed the node id is right — a
+    string-typed ``NODE_KEY`` retry got a worse, clearly-wrong-shape
+    error, ruling out a type mismatch).
+
+    **The Gen error's "PostMode" wording is misleading — this is *not*
+    the same gate `get_wall_force_table`/`generate_bridge_girder_diagram`
+    are blocked on.** That gate (documented on `GSBG`, see
+    `docs/live_verification_notes.md`'s 2026-07-31 findings) clears once
+    a human manually clicks the "Post" tab in the NX GUI. Here, the user
+    confirmed the Gen NX GUI was **already showing Post mode active** at
+    the moment of this test, and the identical error persisted anyway —
+    so toggling to Post mode is not the fix for this specific table.
+    Combined with Civil's "no data for this node key" (on a node that
+    demonstrably does have reaction data), this points at the same root
+    cause on both products: no moving-load result data to search an
+    "extreme instant" over, matching this docstring's own
+    ``(MV:max)``/``(MV:min)`` note literally, not the generic Post-mode
+    gate. Route/shape is confirmed correct on both products; building
+    real moving-load (Vehicle/Lane/MV load case) test data to confirm
+    this table works when that data exists remains untested.
     """
     return get_table(
         TABLE_TYPE_CONCURRENT_JOINT_FORCE,

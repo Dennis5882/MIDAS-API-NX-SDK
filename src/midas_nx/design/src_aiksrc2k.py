@@ -58,6 +58,12 @@ class SrcDesignCodePayload(TypedDict, total=False):
 
     PUT/DELETE only — unlike every other config-singleton in this chapter,
     DSRC has no GET (confirmed by its own "### Active Methods" section).
+
+    Live-tested 2026-07-31 on Civil NX (real production model): PUT then
+    DELETE round-tripped cleanly, no lasting mutation. Live-tested
+    2026-08-11 on Gen NX (v2.1, build 08/11/2026, blank document): PUT
+    alone succeeded, echoed back cleanly, session stayed healthy — DELETE
+    not re-tried this pass.
     """
 
     DGNCODE: str  # Design Code, fixed "AIK-SRC2K", required
@@ -632,6 +638,19 @@ def perform_src_optimal_design(
     both times. Reconfirms the precondition finding rather than adding
     new evidence either way; the crash risk on real models with real
     sections stands as documented above.
+
+    ⚠️ Civil NX, 2026-08-13 (v2.2, build 08/12/2026): re-tested with the
+    actual trigger shape restored — a dummy model built specifically for
+    this test (C24 concrete material, 600×600 ``DBUSER`` section: real,
+    existing, and non-SRC-eligible) — and it crashed again, identical
+    signature (client-side timeout, then a same-session ``GET /db/NODE``
+    returning ``404 client does not exist``, "Failed to disconnect the
+    work session" dialog confirmed on screen). Recovered cleanly via the
+    dialog's own instructions, no data of value lost (the dummy model was
+    disposable). Confirms the crash is not build-dependent — this is not
+    a "sometimes" defect like ``NMAS`` briefly was; it reproduces
+    reliably given the right precondition, consistent with MIDASIT's
+    "not a defect, no fix timeline" stance.
     """
     return _post(f"/TEMP{_BASE}/OCHECK", argument, client)
 

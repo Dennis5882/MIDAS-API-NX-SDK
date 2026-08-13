@@ -954,11 +954,32 @@ def generate_bridge_girder_diagram(
       `CS3`, `CS16`, and `CS17` (the model's actual final stage) and
       `LC_NAME` set to `"Self"`, `"Self(CS)"`, and `"Summation(CS)"`,
       identically every time. Since varying the documented parameters
-      didn't change the error, this looks like leftover state from an
+      didn't change the error, this looked like leftover state from an
       earlier `set_result_graphic()` call made with `LOAD_CASE_COMB:
       {"TYPE": "CS", "NAME": "Summation"}` (Summation is itself a
       "Final/PostCS" aggregate) — not root-caused before the session
-      ended. Treat GSBG as still blocked; the Bridge Group and Post Mode
-      pieces are now understood, but this last error isn't.
+      ended.
+
+    ⚠️ Re-tested 2026-08-13 on Civil NX (v2.2, build 08/12/2026), a
+    different real construction-stage bridge model (4 stages, CS1-CS4).
+    User manually confirmed Post mode active first: **"post mode is
+    required" did not recur** — confirms the manual GUI toggle is a
+    reproducible fix for that specific gate, not a one-off. But **"Final/
+    PostCS stage is not supported" recurred identically**, across
+    `STAGE_LIST=["CS1"]` (the model's *first* stage, not "final" by any
+    reading) with three different `LC_NAME` values — on a session that
+    never called `set_result_graphic()` at all. **This rules out the
+    "leftover state from an earlier set_result_graphic() call" theory**
+    above — the error reproduces from a clean session with no prior
+    `RESULTGRAPHIC` call. A follow-up attempt to explicitly select stage
+    CS1 as the active result via `set_result_graphic(CURRENT_MODE=
+    "beamdiagrams", LOAD_CASE_COMB={"TYPE": "CS", "NAME": "CS1"})` failed
+    differently — `"Can not find load case"` — so `CS1` alone isn't a
+    valid `LOAD_CASE_COMB.NAME`; the correct stage-result naming for this
+    call is still unknown. Session stayed healthy throughout, no crash.
+    Treat GSBG as still blocked; the Bridge Group and Post Mode pieces
+    are solved, "Final/PostCS stage is not supported" looks more
+    structural than session-state-dependent now, and remains
+    unexplained.
     """
     return _post("/ope/GSBG", argument, client)

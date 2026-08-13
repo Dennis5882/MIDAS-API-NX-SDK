@@ -4595,6 +4595,288 @@ close-out.
 today's finding. `ruff check` and the full test suite (701 tests) both
 pass.
 
+**`DSRC` (SRC Design Code) tested on Gen, same session, after the Civil
+session was closed.** Previously deferred pending consent (config-write,
+no `GET` to verify state either way). `PUT {"DGNCODE": "AIK-SRC2K"}`
+against Gen NX (v2.1, build 08/11/2026, blank document) succeeded,
+echoed back cleanly, session stayed healthy. Not a full round trip like
+the existing 2026-07-31 Civil test (PUT + DELETE) — `DELETE` wasn't
+re-tried this pass. `coverage.json` gains `gen` in `live_verified.products`;
+its `level` was also corrected `read` → `write` (it's a `PUT`, not a
+read, regardless of which product tested it first).
+
+## 2026-08-13 — new patch on both products: connection check only
+
+User applied a new patch to both products and asked to confirm both
+connect, with versions recorded. `verify_connection()` against fresh
+`.env` MAPI keys (last-occurrence-wins for the duplicated
+`MIDAS_MAPI_KEY_GEN`/`MIDAS_MAPI_KEY_CIVIL` lines) succeeded for both:
+
+```text
+GEN:   {'user': 'sjj0507@midasit.com', 'program': 'gen',   'connectionID': 'N-pAmlMjSg', 'keyVerified': True, 'status': 'connected'}
+CIVIL: {'user': 'sjj0507@midasit.com', 'program': 'civil', 'connectionID': 'WjbfiHlPSw', 'keyVerified': True, 'status': 'connected'}
+```
+
+About-dialog screenshots confirm the new build:
+
+- **MIDAS GEN NX 2026 (v2.1), build 08/12/2026** (previous: 08/11/2026)
+- **MIDAS CIVIL NX 2026 (v2.2), build 08/12/2026** (previous: 08/11/2026)
+
+Same version numbers as the prior patch, one-day-newer build only —
+consistent with a routine patch rather than a version bump.
+
+## 2026-08-13 (later) — `/db/NMAS` raw crash-trigger re-repro on Civil NX: server-side bug looks actually fixed now, not just SDK-masked
+
+User asked whether the crash-family items flagged earlier in this file
+were all resolved on Civil NX. Answer at the time: `NMAS` — SDK-safe via
+the `rmX`/`rmY`/`rmZ` auto-fill workaround, previously confirmed the
+*server itself* no longer crashed as of Civil NX v2.2 build 07/29/2026;
+`OCHECK`/`perform_src_optimal_design` (`MAPI-2429`) — still open, closed
+by MIDASIT as "not a defect" (unofficial paused-development API being
+moved to `/TEMP/...`), crash risk on real models with real sections never
+actually retested. User asked to proceed with `NMAS` first, then
+explicitly asked for the raw repro (bypassing the SDK workaround) to
+check the server's current state directly, accepting the session-death
+risk that trigger has historically carried.
+
+Against Civil NX v2.2, build 08/12/2026, on a blank connected document:
+
+1. **SDK-safe path first** (sanity check): created `Node` 1, then
+   `NodalMass.create({1: {mX:1, mY:1, mZ:1}})` (rm fields omitted from
+   the call, auto-filled to `0.0` by the SDK before sending) — clean
+   `201`, read back correctly, session alive. Cleaned up.
+2. **Raw repro**, bypassing `NodalMass.create()` entirely via
+   `client.request()` directly: created `Node` 1 and `Node` 2. Control
+   call — `POST /db/NMAS` on node 1 with all six fields explicit
+   (`mX/mY/mZ` + `rmX/rmY/rmZ: 0.0`) — succeeded in 0.2s. **Trigger
+   call** — `POST /db/NMAS` on node 2 with `rmX`/`rmY`/`rmZ` omitted
+   entirely (the exact payload shape that reproduced the crash 15+ times
+   across both products pre-fix) — succeeded in **0.1s**, no timeout, no
+   hang. `GET /db/NMAS` read back node 2 with `rmX: 0, rmY: 0, rmZ: 0` —
+   **the server itself now applies the documented default**, rather than
+   reading an uninitialized value. Follow-up `verify_connection()` and
+   `Node.get()` both confirmed the session fully responsive immediately
+   after. Test data (`NMAS` + both nodes) deleted, document back to
+   blank, session still `connected` throughout and after.
+
+Historically this exact omitted-fields call took 15-60s and then killed
+the session; here it returned in under a second with a correct result.
+That's a materially stronger signal than the 07-29 finding (which only
+established "doesn't crash," not "applies the right default") —
+consistent with MIDASIT having actually fixed the uninitialized-value
+bug server-side, not just gotten lucky on one retest. **Not** changing
+`NodalMass`'s SDK-side workaround based on this single repro on one
+account/build — the class still fills `rmX`/`rmY`/`rmZ` explicitly, since
+that costs nothing, remains correct regardless of server state, and this
+is one data point on one build, not proof the fix is universal across
+every deployed installation. Only tested on Civil this session; Gen not
+re-repro'd today (its own last confirmation was 2026-07-30, build
+07/30/2026).
+
+## 2026-08-13 (last) — `OCHECK`/`MAPI-2429` re-repro'd on Civil NX with the real trigger shape: still crashes on the current patch
+
+After the NMAS reconfirmation above, asked whether Civil's crash-family
+items were "all resolved." Answer: `NMAS` yes (see above), `OCHECK`
+(`perform_src_optimal_design`, `MAPI-2429`) no — MIDASIT closed it "not a
+defect," no fix timeline, and the 2026-08-11 retest never actually
+reached the crashing code path (zero-section document). User asked to
+build a dummy model and retry properly.
+
+**Dummy model built on Civil NX v2.2, build 08/12/2026** (blank document,
+confirmed empty first): `Material.create` (C24 concrete, `KS01(RC)`),
+`Section.create` (600×600 `DBUSER`, `SHAPE: "SB"` — a real, existing,
+plain concrete section, i.e. **non-SRC-eligible**, the exact
+precondition the 2026-07-31 finding says is needed), two `Node`s, one
+`BEAM` `Element` referencing both. All four calls succeeded, session
+alive.
+
+**`perform_src_optimal_design` called against it** — `SECT_LIST:
+[{SECT_NO: 1, SECT_DB: "USER"}]`, `ANALYSIS_OPT.ANAL_TIME: 0`,
+`OUTPUT.MODEL_UPDATE: False` (same conservative shape as the original
+2026-07-31 repro). The call timed out client-side at 30s. A follow-up
+`GET /db/NODE` immediately after returned `MidasNotFoundError: 404
+client does not exist` — the documented "process died after connecting"
+signature. User confirmed on screen: the **"[Error] Failed to disconnect
+the work session due to an unidentified error..."** dialog, identical to
+2026-07-31's crash.
+
+**Recovery**, per the dialog's own instructions (OK → re-launch → New
+Project → close → reconnect with the same MAPI key): reconnected
+cleanly, `verify_connection()` → `connected`, same `connectionID`.
+`Node`/`Element`/`Material`/`Section` all read back empty — the dummy
+model was cleared by the New Project step, not a data-loss event; it was
+disposable test data built specifically for this repro, nothing of
+value was lost.
+
+**Conclusion: `MAPI-2429` is confirmed still live on the current patch
+(v2.2, build 08/12/2026), not fixed and not intermittent in the way
+`NMAS` briefly was.** This is a stronger data point than the 08-11
+non-repro (which used the wrong precondition) and is consistent with
+MIDASIT's "not a defect, no fix timeline" stance — the crash isn't
+build-dependent, it's inherent to calling this unofficial,
+paused-development endpoint with a real section. `docs/coverage.json`'s
+`/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK` entry updated with today's repro and
+build. Not re-tested on Gen this session.
+
+## 2026-08-13 (last) — closing the 3 "typed but never live-tested" gaps from the recent manual syncs: SWIND/SSEIS USER TYPE, renamed Story Load/Weight tables, CONCURRENT_JOINT_FORCE
+
+Earlier the same day, checking what the two most recent manual-repo sync
+commits (`f4a55e7` 08-07, `76ebda9` 08-10) actually added turned up 3
+items that were typed into this SDK but never independently live-tested
+against the new shape: `/db/SWIND`/`/db/SSEIS`'s `"USER TYPE"` variant,
+the renamed `/post/TABLE` `STORY_LOAD_{X,Y,Z}` + new `STORYWEIGHT`
+fields, and the brand-new `CONCURRENT_JOINT_FORCE` table type. User asked
+to test all of them, on both products, building dummy models as needed.
+
+**Gen NX (v2.1, build 08/12/2026) — built a 2-story cantilever model**
+from scratch on the blank connected session: `Unit`, `Material` (C24),
+`Section` (600×600 `DBUSER`), 3 `Node`s / 2 `BEAM` `Element`s (a
+0→3.2m→6.4m column), base `Constraint`, **2 real `Story` records**
+(`"1F"` at 3.2m, `"RF"` at 6.4m, full field set), `StaticLoadCase`
+("DL"), `SelfWeight`, then `/doc/ANAL`. Reaction sanity-checked
+(54.23 kN, self-weight of the two-segment column). Every step `ok`.
+
+- **`SWIND`/`SSEIS` `"USER TYPE"`**: POST with `STORY_WIND_PRESSURE`/
+  `SEISMIC_FORCE` keyed to `"1F"`/`"RF"` succeeded (201) for both, GET
+  read both back correctly — the server fills in GET-only fields
+  (`ELEV`/`LOAD_H`/`LOAD_BX`/`LOAD_BY` for wind, `WEIGHT`/`ELEV` for
+  seismic) on the way out, confirming those must stay client-side-omit
+  on write, as the docstrings already said. `INHERENT_TORSION`'s
+  corrected spelling (vs. the manual's own `"NHERENT_TORSION"` typo)
+  confirmed as the one the server accepts.
+- **Story Load Summary / Story Weight**: `get_story_load_summary_table("X",
+  load_case_names=["DL(ST)"])` and `get_story_weight_table()` both
+  returned real per-story populated rows (`"1F"`/`"RF"`, correct
+  elevations, correct self-weight distribution) — closes the "renamed
+  TABLE_TYPE never re-tested" gap.
+- **`CONCURRENT_JOINT_FORCE`**: `additional.SET_REACTION_PARAMS =
+  {NODE_KEY: 1, COMPONENT: "111111"}`, `load_case_names=["DL(ST)"]` (then
+  retried with 2 load cases after adding a second `StaticLoadCase`
+  "LL") — both attempts got the identical clean error `"there was an
+  error creating utbl. (ex PostMode ...)"`. Not a crash, not a 404 —
+  same "PostMode" precondition family as `get_wall_force_table`/`GSBG`.
+
+**Civil NX (v2.2, build 08/12/2026) — re-confirmed `/db/STOR`/`SWIND`/
+`SSEIS` still cleanly 404** (GEN_ONLY holds on the current patch too).
+Built a fresh single-story-height cantilever column (same recipe, no
+Story data — Civil doesn't have that endpoint) and tested
+`CONCURRENT_JOINT_FORCE` there too: same request shape got a
+**different** clean error, `"No data found for the specified node
+key."` A follow-up retry with `NODE_KEY` sent as a string (instead of
+int) got a worse, obviously-wrong-shape error (`"second query is
+wrong"`), which rules out a type mismatch as the cause of the first
+error — confirms the documented `int` type is correct and the node id
+itself (which does have real reaction data, confirmed via
+`get_reaction_table` in the same session) just isn't what this table
+is looking for.
+
+**Conclusion**: `CONCURRENT_JOINT_FORCE`'s own manual note — "typically
+paired with moving-load `(MV:max)`/`(MV:min)` load cases" — reads as
+literal, not just typical: a plain static-load-case reaction isn't
+"extreme" over anything for this table to search, on either product.
+Route and request shape are now confirmed correct on both products
+(no defect found); building actual moving-load (Vehicle/Lane/MV load
+case) test data to exercise the real result path is future work, not
+done this session.
+
+**Correction, same session: Gen's "PostMode" error is NOT the same gate
+`GSBG` is blocked on.** User asked "Gen은 현재 postmode 맞잖아?" (Gen is
+already in Post mode right now, isn't it?) and shared a screenshot
+proving it — the "Post-processing Mode" toolbar toggle visibly enabled,
+the analysis message log showing the completed solve, on the same
+2-story column model this session built. Re-ran the exact
+`CONCURRENT_JOINT_FORCE` call with Post mode confirmed already active:
+**identical error, unchanged.** This decouples it from the
+`GSBG`/`get_wall_force_table` "post mode is required" gate documented
+2026-07-31, which *does* clear once a human manually enables Post mode
+— here it didn't, so the word "PostMode" in this particular error string
+is a red herring for this table specifically. Strengthens rather than
+weakens the moving-load-data hypothesis above: with the generic
+Post-mode explanation ruled out, "no `(MV:max)`/`(MV:min)` result to
+search over" is the more likely remaining explanation for both
+products' errors. `docs/coverage.json` and
+`post/result_1.py`'s `get_concurrent_joint_force_table` docstring
+corrected to not conflate this with the GSBG gate.
+
+All dummy models left open on both sessions (not cleaned up) in case
+useful for follow-up testing. `docs/coverage.json` updated for `/db/STOR`,
+`/db/SWIND`, `/db/SSEIS`, and both `/post/TABLE` aggregate rows (ch18,
+ch19); docstrings in `db/project.py`, `db/static_loads.py`,
+`post/pre_process.py`, `post/result_1.py` updated to match.
+
+## 2026-08-13 (last) — `GSBG` retest: the "post mode" gate is a reproducible fix, but the "Final/PostCS" blocker is not leftover state after all
+
+Following the Civil-gap review above (which flagged `/ope/GSBG` as the
+one genuinely open item), user opened the same real FCM bridge model
+used in the original 2026-07-31 investigation and ran a full analysis,
+asking to retry `GSBG`.
+
+**First attempt, FCM bridge (111 nodes, 106 elements), Post mode not yet
+manually enabled**: created a `Girder_All` `StructureGroup` covering the
+82 non-pier elements (`P1Seg*`/`P2Seg*`/`PierTable*`/`KeySeg*`/`FSM*`
+groups' union), then called `generate_bridge_girder_diagram` —
+immediately hit the known `"post mode is required"` gate again, exactly
+as before. Asked the user to manually click the "Post" tab.
+
+**User raised a fair question before proceeding: is it okay to test
+against a real production bridge?** Answered honestly — `GSBG` itself
+has never crashed in any prior session (only clean JSON errors), and the
+call doesn't write model data (only an output image file), so the risk
+profile is lower than e.g. `OCHECK`, but not zero since this specific
+combination (Post mode + a real registered Bridge Group) had never been
+tried. User switched to a different, smaller real bridge model instead
+(61 nodes, 52 elements, 4 construction stages `CS1`-`CS4`, groups
+`SG1`/`SG2`/`SG3`) and confirmed Post mode active via the GUI.
+
+**With Post mode confirmed active: `"post mode is required"` did not
+recur.** Confirms the manual "Post" tab toggle is a real, reproducible
+fix for that specific gate — not a fluke of the 2026-07-31 session.
+
+**But `"Final/PostCS stage is not supported"` came right back**,
+identically, across `STAGE_LIST=["CS1"]` (the model's first stage) with
+`LC_NAME` = `"Self Weight"`, `"Self Weight(CS)"`, and `"Summation(CS)"`,
+using both a fresh `Girder_All` group (all 52 elements) and the model's
+own pre-existing `SG1` segment group as `BRDG_GROUP`. **This session
+never called `set_result_graphic()` before hitting the error** — directly
+contradicting the 2026-07-31 hypothesis that this was leftover state
+from an earlier `RESULTGRAPHIC` call with a `"Summation"` load case.
+That theory is now ruled out.
+
+Tried one more thing: explicitly selecting stage `CS1` as the active
+result via `set_result_graphic(CURRENT_MODE="beamdiagrams",
+LOAD_CASE_COMB={"TYPE": "CS", "NAME": "CS1"})` — failed differently,
+`"Can not find load case"`, meaning `CS1` alone isn't a valid
+`LOAD_CASE_COMB.NAME` for that call. Didn't find the right name before
+stopping (user called time on this thread — `GSBG` stays open for a
+future session, not close-out material today).
+
+Civil NX session stayed `"connected"` and responsive throughout every
+attempt — no crash, no hang, on either bridge model. `docs/coverage.json`
+gained `GSBG`'s first `live_verified` entry (previously had none at all,
+despite the extensive 2026-07-31 investigation never having been
+synced in) recording this as still-blocked, not a success.
+`ope.py`'s `generate_bridge_girder_diagram` docstring updated with
+today's findings.
+
+## 2026-08-13 (last) — full `live_crud_check.py` reconfirmation on Civil NX build 08/12/2026: 43/43, no regressions
+
+User asked whether Civil NX had ever had the full CRUD suite run against
+it. Answer at the time: yes, all 43 cases confirmed since 2026-07-29,
+last fully re-run together 2026-08-07 against build 08/06/2026 — but not
+against either of the two patches since (08/11, 08/12). User gave
+explicit go-ahead to run it now, understanding `/doc/NEW` would discard
+the small 4-stage bridge model (`SG1`/`SG2`/`SG3`) open from the `GSBG`
+session above (not saved, not needed further).
+
+`scripts/live_crud_check.py --product civil` (all 6 tiers, no
+`--include-crashers` — nothing is quarantined anymore): **43/43
+resources completed a full create→read→update→read→delete→read round
+trip, zero failures**, against Civil NX 2026 v2.2, build 08/12/2026.
+Covers core (10), props (7), boundary (9), static (9, including
+`/db/NMAS`), stage (4), and moving (4, AASHTO LRFD fixtures). No
+regressions from the 2026-08-07 baseline. Reconfirmation, not a new
+finding — same conclusion as 08-07, now current as of today's patch.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
