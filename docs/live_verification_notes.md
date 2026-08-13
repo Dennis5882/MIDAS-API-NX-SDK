@@ -4877,6 +4877,76 @@ Covers core (10), props (7), boundary (9), static (9, including
 regressions from the 2026-08-07 baseline. Reconfirmation, not a new
 finding — same conclusion as 08-07, now current as of today's patch.
 
+## 2026-08-13 (last) — Gen NX full verification pass, mirroring today's Civil NX session
+
+User asked to do the same broad pass on Gen NX that Civil NX got earlier
+today, "in a safe order." Plan: read-only sweep first, then the two
+untested read-shaped POSTs, then the riskier `/doc/*` file-management
+family (paths resolve on the NX host, `/doc/SAVEAS` has a known silent-
+failure landmine), and the destructive full CRUD suite last.
+
+**Coverage-gap check (read-only, coverage.json only):** of 363 gen-
+applicable endpoints, 0 had zero live evidence, but 12 had never been
+tested *on Gen specifically* (Civil-only so far): the whole `/doc/*`
+file-management family (`OPEN`/`CLOSE`/`SAVE`/`SAVEAS`/`STAGAS`/
+`IMPORT`/`IMPORTMXT`/`EXPORT`/`EXPORTMXT`), `/post/PM`, `/post/
+STEELCODECHECK`, and the already-known-open `/ope/GSBG`.
+
+**Full read-only sweep, Gen NX v2.1 build 08/12/2026:** 266/266 GET-
+capable resources answered, zero 404s — no regressions from prior
+sweeps.
+
+**`/post/PM` and `/post/STEELCODECHECK`**, against the small analyzed
+2-story concrete column (no RC design code configured): both answered
+the same clean precondition errors/empty responses Civil got on 2026-
+07-31 (`"Please Check RC Design Code"` for PM, `{"message": ""}` for
+STEELCODECHECK). Route/shape confirmed on Gen for the first time.
+
+**`/doc/*` file family**, path built from `verify_connection()['user']`
+per `save_as()`'s own documented pattern (`C:/Users/sjj0507/Documents/
+gsdk_test.mgbx`), all against the same disposable test model:
+
+- `SAVEAS` → `OPEN` (verify) → `SAVE` → `CLOSE` → `OPEN` (reopen): all
+  clean, node count (3) intact through every step. First Gen confirmation
+  for all four endpoints.
+- `EXPORT` (JSON) succeeded; the **`IMPORT` round trip on that same file
+  failed** — `"MAINREBAR_B_FY must be > 0."` — a clean, informative
+  error (not a crash), but a genuine new finding: this model's exported
+  JSON apparently carries an invalid rebar default that import-side
+  validation rejects. Not root-caused (SDK export gap vs. a real product
+  default-value bug is still an open question). Node count unaffected by
+  the failed import.
+- `EXPORTMXT` succeeded; the **`IMPORTMXT` round trip succeeded too, but
+  with a warning that turned out to be inaccurate**: `"[Warning] Static
+  Seismic/Wind Loads Data for User Type are deleted due to changes in
+  Story Data."` A follow-up `GET` on `/db/SWIND`, `/db/SSEIS`, and
+  `/db/STOR` showed all three completely unchanged — nothing was
+  actually deleted. **Don't take this warning's wording as ground truth
+  for final state; verify with GET**, same lesson as the "a 200 doesn't
+  mean success" family of findings, just inverted (a warning that
+  doesn't mean failure either).
+- `STAGAS` not tested — needs a construction-stage model, which this
+  session's throwaway column doesn't have. Still open on Gen.
+
+Session stayed `"connected"` and responsive throughout every step, no
+crash, no hang. `docs/coverage.json` updated for `/post/PM`,
+`/post/STEELCODECHECK`, and 8 of the 9 `/doc/*` endpoints (all but
+`STAGAS`) with today's Gen findings; `ROADMAP.md` regenerated.
+
+**Last step: full `scripts/live_crud_check.py --product gen` run**,
+against the same patch build (v2.1, 08/12/2026), no `--include-crashers`
+needed (nothing quarantined). **38/38 resources completed a full
+create→read→update→read→delete→read round trip, zero failures** — core
+(10), props (7), boundary (9), static (9, including `/db/NMAS`), stage
+(3 of 4; `/db/CMCS` is declared Civil-only in the checker by design).
+The `moving` tier (4 cases) is also Civil-only in the checker, per the
+2026-07-29 finding that `/db/MVCD`'s Gen availability is per-CODE, not
+unconditional — not re-litigated today. No regressions from any prior
+Gen run. This closes out today's Gen NX pass at the same depth as the
+Civil NX one earlier: read sweep, the 2 previously-Gen-untested
+read-shaped POSTs, the `/doc/*` file family, and the full write suite,
+all clean or with informative (non-crash) findings on this patch build.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

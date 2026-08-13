@@ -38,12 +38,14 @@
       "status": "implemented",
       "module": "midas_nx.doc",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-13",
         "products": [
+          "gen",
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. save_as() to a new test file then open_project() on that same path round-tripped cleanly (node count intact after reopen); also used to verify close_project() below (reopen after close restored the session).",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. save_as() to a new test file then open_project() on that same path round-tripped cleanly (node count intact after reopen); also used to verify close_project() below (reopen after close restored the session). First tested on Gen NX 2026-08-13 (v2.1, build 08/12/2026): path built from verify_connection()['user'] (C:/Users/<username>/Documents/gsdk_test.mgbx) per doc.save_as()'s own docstring guidance -- save_as() then open_project() on that path round-tripped cleanly, node count (3) intact.",
         "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/12/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
         "level": "write"
@@ -60,12 +62,14 @@
       "status": "implemented",
       "module": "midas_nx.doc",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-13",
         "products": [
+          "gen",
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. close_project() succeeded, and a follow-up GET /db/NODE correctly answered 'The project is not opened' (clean, not a crash/hang) -- reopening the same file afterward restored a working session with all nodes intact.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. close_project() succeeded, and a follow-up GET /db/NODE correctly answered 'The project is not opened' (clean, not a crash/hang) -- reopening the same file afterward restored a working session with all nodes intact. First tested on Gen NX 2026-08-13 (v2.1, build 08/12/2026): same shape -- close_project() succeeded, GET /db/NODE answered 'The project is not opened' cleanly, reopen restored all 3 nodes.",
         "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/12/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
         "level": "write"
@@ -82,12 +86,14 @@
       "status": "implemented",
       "module": "midas_nx.doc",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-13",
         "products": [
+          "gen",
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. save() succeeded after switching the open document to the test file via open_project() -- did not touch the original production file.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. save() succeeded after switching the open document to the test file via open_project() -- did not touch the original production file. First tested on Gen NX 2026-08-13 (v2.1, build 08/12/2026) on the disposable test file from the SAVEAS test below: save() succeeded cleanly.",
         "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/12/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
         "level": "write"
@@ -104,12 +110,14 @@
       "status": "implemented",
       "module": "midas_nx.doc",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-13",
         "products": [
+          "gen",
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. save_as() to a new .mcbx file succeeded; verified for real (not just a trusted response) by immediately open_project()-ing that same path and confirming all nodes came back.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. save_as() to a new .mcbx file succeeded; verified for real (not just a trusted response) by immediately open_project()-ing that same path and confirming all nodes came back. First tested on Gen NX 2026-08-13 (v2.1, build 08/12/2026): save_as() to a .mgbx path (built from verify_connection()['user'], matching the docstring's documented safe pattern) succeeded; verified for real via open_project() on the same path, all 3 nodes came back.",
         "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/12/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
         "level": "write"
@@ -148,12 +156,14 @@
       "status": "implemented",
       "module": "midas_nx.doc",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-13",
         "products": [
+          "gen",
           "civil"
         ],
-        "method": "manual POST probe on Civil NX: with the user's consent, /doc/NEW created a disposable empty scratch document (discarding a real test model that was no longer needed), then export_json() to a user-provided path on the NX host machine followed by import_json() on that same file both succeeded cleanly, model stayed empty (0 nodes) throughout as expected for an empty-to-empty round trip -- no crash.",
+        "method": "manual POST probe on Civil NX: with the user's consent, /doc/NEW created a disposable empty scratch document (discarding a real test model that was no longer needed), then export_json() to a user-provided path on the NX host machine followed by import_json() on that same file both succeeded cleanly, model stayed empty (0 nodes) throughout as expected for an empty-to-empty round trip -- no crash. First tested on Gen NX 2026-08-13 (v2.1, build 08/12/2026), NOT empty-to-empty this time: export_json() on a populated 2-story concrete column (with Story/SWIND/SSEIS data from earlier this session) succeeded, but the re-import failed cleanly with 'MAINREBAR_B_FY must be > 0.' -- the exported JSON apparently carries a rebar-related field with an invalid default that the product's own import validation rejects. Not yet root-caused (could be an SDK-side gap in what gets exported/round-tripped, or a genuine product default-value bug); node count was unaffected by the failed import (still 3), session stayed healthy. Route/shape confirmed working -- the JSON round trip on THIS model's content is what's currently blocked, not the endpoint itself.",
         "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/12/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
         "level": "write"
@@ -170,12 +180,14 @@
       "status": "implemented",
       "module": "midas_nx.doc",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-13",
         "products": [
+          "gen",
           "civil"
         ],
-        "method": "manual POST probe on Civil NX: same disposable scratch document as IMPORT above -- export_mxt() then import_mxt() on the same .mct file both succeeded cleanly, no crash.",
+        "method": "manual POST probe on Civil NX: same disposable scratch document as IMPORT above -- export_mxt() then import_mxt() on the same .mct file both succeeded cleanly, no crash. First tested on Gen NX 2026-08-13 (v2.1, build 08/12/2026), on the same populated 2-story column (Story/SWIND/SSEIS data present): export_mxt() succeeded; import_mxt() on that .mgt file also succeeded but returned a WARNING, not a plain success message -- '[Warning] Static Seismic/Wind Loads Data for User Type are deleted due to changes in Story Data.' A follow-up GET on /db/SWIND, /db/SSEIS, and /db/STOR showed all data still present and unchanged -- the warning text describes something that did NOT actually happen in this round trip (re-importing the same story data back onto itself). Don't trust this warning's wording as a description of final state; verify with GET.",
         "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/12/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
         "level": "write"
@@ -192,12 +204,14 @@
       "status": "implemented",
       "module": "midas_nx.doc",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-13",
         "products": [
+          "gen",
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. export_json() to a .json path answered command-complete; not independently read back (no IMPORT round-trip attempted -- see live_verification_notes.md for why IMPORT was skipped on this real model).",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. export_json() to a .json path answered command-complete; not independently read back (no IMPORT round-trip attempted -- see live_verification_notes.md for why IMPORT was skipped on this real model). First tested on Gen NX 2026-08-13 (v2.1, build 08/12/2026): export_json() succeeded cleanly; see /doc/IMPORT's entry for the round-trip result (import back failed on a rebar-field validation, not an EXPORT-side issue).",
         "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/12/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
         "level": "write"
@@ -214,12 +228,14 @@
       "status": "implemented",
       "module": "midas_nx.doc",
       "live_verified": {
-        "date": "2026-07-31",
+        "date": "2026-08-13",
         "products": [
+          "gen",
           "civil"
         ],
-        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. export_mxt() to a .mct path answered command-complete; not independently read back, same reasoning as EXPORT above.",
+        "method": "manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. export_mxt() to a .mct path answered command-complete; not independently read back, same reasoning as EXPORT above. First tested on Gen NX 2026-08-13 (v2.1, build 08/12/2026): export_mxt() succeeded cleanly; see /doc/IMPORTMXT's entry for the round-trip result (import back succeeded, with a misleading deletion warning that didn't match actual GET-verified state).",
         "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/12/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
         "level": "write"
@@ -6359,8 +6375,9 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-checked 2026-07-31 after a real /doc/ANAL run completed on this model: error changed from 'Please Check Analysis' to 'Please Check RC Design Code' -- confirms the analysis prerequisite is now satisfied and the route progresses to the next real precondition (this model has no RC design code configured, matching its structure type).",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-checked 2026-07-31 after a real /doc/ANAL run completed on this model: error changed from 'Please Check Analysis' to 'Please Check RC Design Code' -- confirms the analysis prerequisite is now satisfied and the route progresses to the next real precondition (this model has no RC design code configured, matching its structure type). First tested on Gen NX 2026-08-13 (v2.1, build 08/12/2026), against a small analyzed 2-story concrete column with no RC design code configured: same clean 'Please Check RC Design Code' error, session healthy -- confirms the route/precondition behavior matches Civil.",
         "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/12/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
         "level": "read"
@@ -6381,8 +6398,9 @@
         "products": [
           "civil"
         ],
-        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-checked 2026-07-31 after a real /doc/ANAL run: no longer errors at all, now answers the 'empty' shape ({'message': ''}) -- route accepts the request cleanly once analysis exists; no steel code check has been run yet so there's no data to report, consistent with other 'empty means nothing to show, not failure' findings elsewhere in this SDK.",
+        "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-checked 2026-07-31 after a real /doc/ANAL run: no longer errors at all, now answers the 'empty' shape ({'message': ''}) -- route accepts the request cleanly once analysis exists; no steel code check has been run yet so there's no data to report, consistent with other 'empty means nothing to show, not failure' findings elsewhere in this SDK. First tested on Gen NX 2026-08-13 (v2.1, build 08/12/2026) against an analyzed 2-story concrete column: same clean 'empty' response, session healthy.",
         "nx_versions": {
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/12/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
         "level": "read"
