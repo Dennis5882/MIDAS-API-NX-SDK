@@ -135,6 +135,27 @@ from midas_nx.db.construction_stage import (
     CreepCoefficientConstructionStage,
     TimeLoadConstructionStage,
 )
+from midas_nx.db.load_combinations import (
+    CuttingLine,
+    LoadCombinationCompositeSteelGirder,
+    LoadCombinationConcrete,
+    LoadCombinationGeneral,
+    LoadCombinationSeismic,
+    LoadCombinationSRC,
+    LoadCombinationSteel,
+    PlateCuttingLineDiagram,
+)
+from midas_nx.db.misc_loads import (
+    IgnoreElementForLoadCase,
+    InitialElementForce,
+    InitialForceControlData,
+    InitialForceGeometricStiffness,
+    LoadSequenceNonlinear,
+    PreCompositeSection,
+    SettlementGroup,
+    SettlementLoadCase,
+    WaveLoad,
+)
 from midas_nx.db.moving_loads import (
     MovingLoadCase,
     MovingLoadCode,
@@ -159,17 +180,26 @@ from midas_nx.db.project import (
     ThicknessColor,
     Unit,
 )
+from midas_nx.db.properties.damping import GroupDamping
 from midas_nx.db.properties.material import (
+    ChangeProperty,
     Material,
     TimeDependentMaterialCreepShrinkage,
+    TimeDependentMaterialFunction,
     TimeDependentMaterialLink,
     TimeDependentMaterialStrength,
 )
 from midas_nx.db.properties.section import (
+    EffectiveWidthScaleFactor,
     ElementStiffnessScaleFactor,
+    PlateStiffnessScaleFactor,
     Section,
+    SectionReinforcement,
     SectionStiffness,
+    SectionStressPoints,
     TaperedGroup,
+    VirtualBeam,
+    VirtualSection,
 )
 from midas_nx.db.properties.thickness import Thickness
 from midas_nx.db.static_loads import (
@@ -185,7 +215,13 @@ from midas_nx.db.static_loads import (
     SpecifiedDisplacement,
     StaticLoadCase,
 )
-from midas_nx.db.temperature_prestress import ElementTemperature, NodalTemperature
+from midas_nx.db.temperature_prestress import (
+    BeamSectionTemperature,
+    ElementTemperature,
+    NodalTemperature,
+    SystemTemperature,
+    TemperatureGradient,
+)
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -1261,6 +1297,373 @@ def _extras1_cases() -> List[Case]:
     ]
 
 
+# --------------------------------------------------------------------------
+# Tier: extras2 — batch 2 of the read-only-verified endpoints (2026-08-16):
+# db.misc_loads in full, plus 3 of db.temperature_prestress's 10 (GTMP/STMP/
+# BTMP; the other 7 are tendon/prestress endpoints, deferred with the
+# seismic-device family from extras1). Payloads adapted from the manual's
+# own end-to-end workflow example (docs/manual/11_DB_Settlement_Misc_Loads.md
+# "End-to-End 워크플로우 예제"), which chains all 8 misc_loads endpoints
+# through one consistent fixture — reused here almost verbatim.
+# --------------------------------------------------------------------------
+
+
+def _extras2_seeds() -> List[SeedStep]:
+    """/db/SMPT renumbers to the next free slot rather than honouring the
+    "Assign" key (confirmed live 2026-08-16, same family as /db/STLD and
+    /db/FBLD) -- this seed's requested id 90 actually lands at id 1, which
+    is why the SettlementGroup case below targets id 2, not 1.
+    """
+    return [
+        SeedStep("smpt_seed", lambda c: SettlementGroup.create(
+            {90: {"NAME": "SG_SEED", "SETTLE": 20, "ITEMS": [1, 2]}}, client=c)),
+    ]
+
+
+def _extras2_cases() -> List[Case]:
+    return [
+        Case(
+            SettlementGroup,
+            {"NAME": "SG_CRUD", "SETTLE": 25, "ITEMS": [1, 2]},
+            {"NAME": "SG_CRUD_2", "SETTLE": 15, "ITEMS": [1, 2]},
+            lambda p: p.get("NAME"), "SG_CRUD", "SG_CRUD_2",
+            item_id=2, needs=("smpt_seed",), confirmed=True,
+        ),
+        # ST_GROUPS references the smpt_seed record by name, not the SMPT
+        # case above (which deletes its own record before this would run).
+        Case(
+            SettlementLoadCase,
+            {"NAME": "SLC_CRUD", "DESC": "", "FACTOR": 1.0, "MIN": 1, "MAX": 1,
+             "ST_GROUPS": ["SG_SEED"]},
+            {"NAME": "SLC_CRUD", "DESC": "", "FACTOR": 0.5, "MIN": 1, "MAX": 1,
+             "ST_GROUPS": ["SG_SEED"]},
+            lambda p: p.get("FACTOR"), 1.0, 0.5,
+            needs=("smpt_seed",), confirmed=True,
+        ),
+        # Manual docstring: "Single global record — Assign key is always 1."
+        Case(
+            PreCompositeSection,
+            {"LCNAME_ITEM": ["LC_SCRATCH"]}, {"LCNAME_ITEM": ["DL", "LC_SCRATCH"]},
+            lambda p: p.get("LCNAME_ITEM"), ["LC_SCRATCH"], ["DL", "LC_SCRATCH"],
+            products=("civil",), confirmed=True,
+        ),
+        Case(
+            LoadSequenceNonlinear,
+            {"LCNAME_ITEM": ["DL", "LC_SCRATCH"]}, {"LCNAME_ITEM": ["LC_SCRATCH", "DL"]},
+            lambda p: p.get("LCNAME_ITEM"), ["DL", "LC_SCRATCH"], ["LC_SCRATCH", "DL"],
+            confirmed=True,
+        ),
+        # ⚠️ Confirmed failing live 2026-08-16 (Civil NX v2.2, build
+        # 08/14/2026) with the manual's own full canonical example
+        # reproduced verbatim, AND with a bare {"NAME": "..."} payload --
+        # both answer the identical "Wrong Field". Not a fixture bug this
+        # checker can iterate past (same class of finding as /db/NLLP in
+        # extras1): something about /db/WVLD's own preconditions is
+        # undocumented, possibly a licensed offshore/marine module gate.
+        # COEF/CHAR/PROF are Any-typed in the SDK either way -- no
+        # Specifications table constrains those sub-objects further.
+        Case(
+            WaveLoad,
+            {"NAME": "WV_CRUD", "DESC": "", "bSTLD": True, "bTHIS": False,
+             "VERT_COORD": "GLOBAL_Z", "DENSITY": 10.05, "DEPTH": 30.0,
+             "COEF": {"TYPE": "CONST",
+                      "COEF_S": [{"GRUP": "", "DIA": 0.5, "DRAG_COEF_X": 0.0,
+                                  "DRAG_COEF_Y": 0.65, "DRAG_COEF_Z": 0.65,
+                                  "INER_COEF_X": 0.0, "INER_COEF_Y": 2.0, "INER_COEF_Z": 2.0}],
+                      "COEF_R": [], "bOVER": False, "OVER_S": [], "OVER_R": []},
+             "CHAR": {"THEORY": "AIRY", "FUNC": 1, "DIR": 0.0, "HEIGHT": 5.0,
+                      "CHAR_TYPE": "PERIOD", "LENGTH": 0.0, "PERIOD": 8.0,
+                      "K_FACTOR": 1.0, "SURFACE_V": 0.3, "BOTTOM_Y": 0.05},
+             "PROF": {"CUR_DIR": 0.0, "CUR_FACTOR": 1.0, "GRID_DATA": []},
+             "FLOOD_GRUP": [], "GROWTH": [], "GRID_X": 5, "GRID_Z": 5,
+             "bSELFW": True, "bBUOYANT": True, "CREST": "MAX", "UNIT": "m",
+             "INITAL_POS": 0.0, "STEP": 1.0, "POS": 5},
+            {"NAME": "WV_CRUD_2", "DESC": "", "bSTLD": True, "bTHIS": False,
+             "VERT_COORD": "GLOBAL_Z", "DENSITY": 10.05, "DEPTH": 30.0,
+             "COEF": {"TYPE": "CONST",
+                      "COEF_S": [{"GRUP": "", "DIA": 0.5, "DRAG_COEF_X": 0.0,
+                                  "DRAG_COEF_Y": 0.65, "DRAG_COEF_Z": 0.65,
+                                  "INER_COEF_X": 0.0, "INER_COEF_Y": 2.0, "INER_COEF_Z": 2.0}],
+                      "COEF_R": [], "bOVER": False, "OVER_S": [], "OVER_R": []},
+             "CHAR": {"THEORY": "AIRY", "FUNC": 1, "DIR": 0.0, "HEIGHT": 5.0,
+                      "CHAR_TYPE": "PERIOD", "LENGTH": 0.0, "PERIOD": 8.0,
+                      "K_FACTOR": 1.0, "SURFACE_V": 0.3, "BOTTOM_Y": 0.05},
+             "PROF": {"CUR_DIR": 0.0, "CUR_FACTOR": 1.0, "GRID_DATA": []},
+             "FLOOD_GRUP": [], "GROWTH": [], "GRID_X": 5, "GRID_Z": 5,
+             "bSELFW": True, "bBUOYANT": True, "CREST": "MAX", "UNIT": "m",
+             "INITAL_POS": 0.0, "STEP": 1.0, "POS": 5},
+            lambda p: p.get("NAME"), "WV_CRUD", "WV_CRUD_2",
+            products=("civil",),
+        ),
+        Case(
+            IgnoreElementForLoadCase,
+            {"ELEMENT": 1, "LCNAME": "DL", "OPT_IGNORE": True},
+            {"ELEMENT": 1, "LCNAME": "DL", "OPT_IGNORE": False},
+            lambda p: p.get("OPT_IGNORE"), True, False,
+            confirmed=True,
+        ),
+        # Keyed by element id.
+        Case(
+            InitialForceGeometricStiffness,
+            {"DIR": "GX", "INIT_FORCE": 100.0}, {"DIR": "GX", "INIT_FORCE": 200.0},
+            lambda p: p.get("INIT_FORCE"), 100.0, 200.0,
+            item_id=1, confirmed=True,
+        ),
+        Case(
+            InitialForceControlData,
+            {"bADDLC": False, "LCNAME": "DL", "bUSECOMB": False, "COMB_LIST": [],
+             "bCHECK_GEOM_STIFF": True},
+            {"bADDLC": True, "LCNAME": "DL", "bUSECOMB": False, "COMB_LIST": [],
+             "bCHECK_GEOM_STIFF": True},
+            lambda p: p.get("bADDLC"), False, True,
+            confirmed=True,
+        ),
+        Case(
+            InitialElementForce,
+            {"ELEM_TYPE": "BEAM", "ELEM_KEY": 1,
+             "ELEMENT_FORCES": [100, 0, 50, 0, 200, 0, -100, 0, -50, 0, -200, 0]},
+            {"ELEM_TYPE": "BEAM", "ELEM_KEY": 1,
+             "ELEMENT_FORCES": [150, 0, 50, 0, 200, 0, -100, 0, -50, 0, -200, 0]},
+            lambda p: p.get("ELEMENT_FORCES"),
+            [100, 0, 50, 0, 200, 0, -100, 0, -50, 0, -200, 0],
+            [150, 0, 50, 0, 200, 0, -100, 0, -50, 0, -200, 0],
+            confirmed=True,
+        ),
+        # Keyed by element id; element 1 is the base seed's beam.
+        Case(
+            TemperatureGradient,
+            {"ITEMS": [{"ID": 1, "LCNAME": "DL", "TYPE": 1, "TZ": 5.0, "USE_HZ": False,
+                        "HZ": 0.3, "TY": 3.0, "USE_HY": False, "HY": 0.3}]},
+            {"ITEMS": [{"ID": 1, "LCNAME": "DL", "TYPE": 1, "TZ": 8.0, "USE_HZ": False,
+                        "HZ": 0.3, "TY": 3.0, "USE_HY": False, "HY": 0.3}]},
+            lambda p: p["ITEMS"][0].get("TZ"), 5.0, 8.0,
+            item_id=1, confirmed=True,
+        ),
+        Case(
+            SystemTemperature,
+            {"LCNAME": "DL", "GROUP_NAME": "", "TEMPER": 10.0},
+            {"LCNAME": "DL", "GROUP_NAME": "", "TEMPER": 20.0},
+            lambda p: p.get("TEMPER"), 10.0, 20.0,
+            confirmed=True,
+        ),
+        # ⚠️ The manual flags this "MIDAS Civil NX 전용 기능" (Civil-only)
+        # in prose, but it answered live on Gen NX too (confirmed
+        # 2026-08-16, v2.1 build 08/14/2026) -- another documented-vs-
+        # actual-routing mismatch, same pattern as the ch08/ch17
+        # moving-load family. Left unrestricted (both products) here.
+        Case(
+            BeamSectionTemperature,
+            {"ITEMS": [{"ID": 1, "LCNAME": "DL", "GROUP_NAME": "", "DIR": "LZ",
+                        "REF": "Centroid", "NUM": 1, "bPSC": False,
+                        "vSECTTMP": [{"TYPE": "ELEMENT", "VAL_B": 0.2, "VAL_H1": 0.1,
+                                      "VAL_H2": 0.2, "VAL_T1": 3, "VAL_T2": 12.4}]}]},
+            {"ITEMS": [{"ID": 1, "LCNAME": "DL", "GROUP_NAME": "", "DIR": "LZ",
+                        "REF": "Centroid", "NUM": 1, "bPSC": False,
+                        "vSECTTMP": [{"TYPE": "ELEMENT", "VAL_B": 0.2, "VAL_H1": 0.1,
+                                      "VAL_H2": 0.2, "VAL_T1": 5, "VAL_T2": 12.4}]}]},
+            lambda p: p["ITEMS"][0]["vSECTTMP"][0].get("VAL_T1"), 3, 5,
+            item_id=1, confirmed=True,
+        ),
+    ]
+
+
+# --------------------------------------------------------------------------
+# Tier: extras3 — batch 3 of the read-only-verified endpoints (2026-08-16):
+# db.properties.* tractable subset (9 of its 15). Deferred: the 5
+# fiber/inelastic-hinge endpoints (IMFM, EPMT, FIMP, IEHC, IEHG — need real
+# stress-strain curve fixtures) and FIBR (depends on FIMP), same complexity
+# class as extras1's deferred seismic-device family.
+# --------------------------------------------------------------------------
+
+
+def _extras3_seeds() -> List[SeedStep]:
+    """VirtualBeam references two VSEC records by id -- seeded here rather
+    than reusing the VirtualSection case's own record, which deletes itself.
+    """
+    return [
+        SeedStep("vsec_seed", lambda c: VirtualSection.create(
+            {90: {"NAME": "VS_SEED_1", "CENT_CALC_TYPE": 0, "CEN_PT_X": 0, "CEN_PT_Y": 0,
+                  "CEN_PT_Z": 0, "NORMAL_X": 1, "NORMAL_Y": 0, "NORMAL_Z": 0,
+                  "NODE_LIST": [5, 6, 7, 8], "ELEM_LIST": [4]},
+             91: {"NAME": "VS_SEED_2", "CENT_CALC_TYPE": 0, "CEN_PT_X": 0, "CEN_PT_Y": 0,
+                  "CEN_PT_Z": 0, "NORMAL_X": 1, "NORMAL_Y": 0, "NORMAL_Z": 0,
+                  "NODE_LIST": [5, 6, 7, 8], "ELEM_LIST": [4]}},
+            client=c)),
+    ]
+
+
+def _extras3_cases() -> List[Case]:
+    return [
+        # GROUP_NAME references the base seed's material by name ("C24").
+        Case(
+            # ⚠️ Confirmed failing live 2026-08-16 (Civil NX v2.2, build
+            # 08/14/2026) even reproducing the manual's own canonical
+            # example verbatim (GROUP_NAME as the material's numeric id
+            # "1", not its name; the extra STIFF_COEF_DEFAULT/
+            # MASS_COEF_DEFAULT/OPT_*_PROP_DEFAULT fields included) -- same
+            # generic "Wrong Field" either way. Not resolved as a fixture
+            # problem; same class of finding as /db/NLLP and /db/WVLD.
+            GroupDamping,
+            {"bExistStrain": True, "OPT_CALC_WHEN_USED": True,
+             "OPT_MASS_PROP_DEFAULT": True, "OPT_STIFF_PROP_DEFAULT": True,
+             "STIFF_COEF_DEFAULT": 0.0849, "MASS_COEF_DEFAULT": 0.0419,
+             "STRAIN_GROUP_ITEMS": [{"GROUP_TYPE": "MATERIAL", "GROUP_NAME": "1",
+                                      "DAMPING_RATIO": 0.05}]},
+            {"bExistStrain": True, "OPT_CALC_WHEN_USED": True,
+             "OPT_MASS_PROP_DEFAULT": True, "OPT_STIFF_PROP_DEFAULT": True,
+             "STIFF_COEF_DEFAULT": 0.0849, "MASS_COEF_DEFAULT": 0.0419,
+             "STRAIN_GROUP_ITEMS": [{"GROUP_TYPE": "MATERIAL", "GROUP_NAME": "1",
+                                      "DAMPING_RATIO": 0.03}]},
+            lambda p: p["STRAIN_GROUP_ITEMS"][0].get("DAMPING_RATIO"), 0.05, 0.03,
+        ),
+        # Keyed by material id; material 1 is the base seed's C24.
+        Case(
+            ChangeProperty,
+            {"TYPE": "NSM", "H_VS": 0.15}, {"TYPE": "NSM", "H_VS": 0.20},
+            lambda p: p.get("H_VS"), 0.15, 0.20,
+            item_id=1, confirmed=True,
+        ),
+        Case(
+            # ⚠️ Confirmed failing live 2026-08-16 (Civil NX v2.2, build
+            # 08/14/2026) reproducing the manual's own Request Body example
+            # verbatim (its 4-point vDAY array, not the 2-point one first
+            # tried) -- same "Wrong Field". Same class of finding as
+            # /db/NLLP, /db/WVLD, /db/GRDP.
+            TimeDependentMaterialFunction,
+            {"NAME": "Shrinkage_User", "FTYPE": "SHRINK", "SCALE": 1.0,
+             "DESC": "", "vDAY": [{"DAY": 28, "VALUE": 0.0001}, {"DAY": 90, "VALUE": 0.0002},
+                                   {"DAY": 365, "VALUE": 0.0003}, {"DAY": 3650, "VALUE": 0.0004}]},
+            {"NAME": "Shrinkage_User", "FTYPE": "SHRINK", "SCALE": 1.2,
+             "DESC": "", "vDAY": [{"DAY": 28, "VALUE": 0.0001}, {"DAY": 90, "VALUE": 0.0002},
+                                   {"DAY": 365, "VALUE": 0.0003}, {"DAY": 3650, "VALUE": 0.0004}]},
+            lambda p: p.get("SCALE"), 1.0, 1.2,
+        ),
+        # ⚠️ Confirmed failing live 2026-08-16 (Civil NX v2.2, build
+        # 08/14/2026), including the manual's own Request Body example
+        # verbatim. RPSC/STRPSSM's own worked examples key at ids 401/9003
+        # rather than a plain running number, and both describe "PSC/RC
+        # 단면" specifically -- our base seed's section is a plain DBUSER
+        # rectangular column, which may not carry a Section Manager
+        # reinforcement/stress-point slot at all. Genuinely unresolved
+        # either way (fixture-shaped or not); not swept under a workaround.
+        # Keyed by section id; section 1 is the base seed's column section.
+        Case(
+            SectionReinforcement,
+            {"OPT_MBAR_J": False, "OPT_SBAR_J": False, "OPT_CRACKED": False,
+             "SBAR_ITEMS": [{"OPT_DR": False}, {"OPT_DR": False}]},
+            {"OPT_MBAR_J": False, "OPT_SBAR_J": False, "OPT_CRACKED": True,
+             "SBAR_ITEMS": [{"OPT_DR": False}, {"OPT_DR": False}]},
+            lambda p: p.get("OPT_CRACKED"), False, True,
+            item_id=1,
+        ),
+        Case(
+            SectionStressPoints,
+            {"OPT_SAME_J": True, "POINT_SIZE_1": 2, "POINT_SIZE_2": 2,
+             "POINT1": [{"PY": 0.00583, "PZ": 0.00476}, {"PY": -0.00506, "PZ": 0.00097}],
+             "POINT2": [{"PY": 0.00583, "PZ": 0.00476}, {"PY": -0.00506, "PZ": 0.00097}]},
+            {"OPT_SAME_J": True, "POINT_SIZE_1": 2, "POINT_SIZE_2": 2,
+             "POINT1": [{"PY": 0.006, "PZ": 0.00476}, {"PY": -0.00506, "PZ": 0.00097}],
+             "POINT2": [{"PY": 0.006, "PZ": 0.00476}, {"PY": -0.00506, "PZ": 0.00097}]},
+            lambda p: p["POINT1"][0].get("PY"), 0.00583, 0.006,
+            item_id=1, products=("civil",),
+        ),
+        # Keyed by element id; element 4 is the base seed's plate.
+        Case(
+            PlateStiffnessScaleFactor,
+            {"ITEMS": [{"ID": 1, "AXIAL_X": 0.8}]},
+            {"ITEMS": [{"ID": 1, "AXIAL_X": 0.5}]},
+            lambda p: p["ITEMS"][0].get("AXIAL_X"), 0.8, 0.5,
+            item_id=4, confirmed=True,
+        ),
+        Case(
+            VirtualSection,
+            {"NAME": "VS_CRUD", "CENT_CALC_TYPE": 0, "CEN_PT_X": 0, "CEN_PT_Y": 0,
+             "CEN_PT_Z": 0, "NORMAL_X": 1, "NORMAL_Y": 0, "NORMAL_Z": 0,
+             "NODE_LIST": [5, 6, 7, 8], "ELEM_LIST": [4]},
+            {"NAME": "VS_CRUD_2", "CENT_CALC_TYPE": 0, "CEN_PT_X": 0, "CEN_PT_Y": 0,
+             "CEN_PT_Z": 0, "NORMAL_X": 1, "NORMAL_Y": 0, "NORMAL_Z": 0,
+             "NODE_LIST": [5, 6, 7, 8], "ELEM_LIST": [4]},
+            lambda p: p.get("NAME"), "VS_CRUD", "VS_CRUD_2",
+            confirmed=True,
+        ),
+        # Keyed by element id; VSEC1/VSEC2 reference the vsec_seed records.
+        Case(
+            VirtualBeam,
+            {"VSEC1": 90, "VSEC2": 91}, {"VSEC1": 91, "VSEC2": 90},
+            lambda p: p.get("VSEC1"), 90, 91,
+            item_id=1, needs=("vsec_seed",), confirmed=True,
+        ),
+        Case(
+            EffectiveWidthScaleFactor,
+            {"ITEMS": [{"ID": 1, "LYSCALE": 1.0, "ZTSCALE": 1.0, "ZBSCALE": 1.0, "bJ": False}]},
+            {"ITEMS": [{"ID": 1, "LYSCALE": 0.8, "ZTSCALE": 1.0, "ZBSCALE": 1.0, "bJ": False}]},
+            lambda p: p["ITEMS"][0].get("LYSCALE"), 1.0, 0.8,
+            item_id=1, products=("civil",), confirmed=True,
+        ),
+    ]
+
+
+# --------------------------------------------------------------------------
+# Tier: extras4 — batch 4 of the read-only-verified endpoints (2026-08-16):
+# db.load_combinations in full (8/8) -- all six LCOM-* endpoints share one
+# payload shape (see LoadCombinationPayload's docstring in
+# db/load_combinations.py), so this tier is nearly a copy-paste of one case
+# six times over.
+# --------------------------------------------------------------------------
+
+
+def _extras4_cases() -> List[Case]:
+    lcom_case = lambda resource, active, **kw: Case(  # noqa: E731
+        resource,
+        {"NAME": "LCOM_CRUD", "ACTIVE": active, "iTYPE": 0, "DESC": "",
+         "vCOMB": [{"ANAL": "ST", "LCNAME": "DL", "FACTOR": 1.0}]},
+        {"NAME": "LCOM_CRUD", "ACTIVE": active, "iTYPE": 0, "DESC": "",
+         "vCOMB": [{"ANAL": "ST", "LCNAME": "DL", "FACTOR": 1.2}]},
+        lambda p: p["vCOMB"][0].get("FACTOR"), 1.0, 1.2,
+        **kw,
+    )
+    return [
+        lcom_case(LoadCombinationGeneral, "ACTIVE", confirmed=True),
+        lcom_case(LoadCombinationConcrete, "STRENGTH", confirmed=True),
+        lcom_case(LoadCombinationSteel, "STRENGTH", confirmed=True),
+        lcom_case(LoadCombinationSRC, "STRENGTH", confirmed=True),
+        lcom_case(LoadCombinationCompositeSteelGirder, "STRENGTH", confirmed=True),
+        # ⚠️ Product-asymmetric live 2026-08-16 (build 08/14/2026): the
+        # identical ANAL="ST" payload passed clean on Gen NX (create->GET->
+        # update->GET->delete, full round trip) but Civil NX answers "The
+        # Load Combination Type is not supported" for the same case, unlike
+        # the other five LCOM-* endpoints (all accept plain static "ST" on
+        # both products). The manual's own example uses ANAL="RS" (Response
+        # Spectrum) and ANAL="CS" (Construction Stage) instead; tried both
+        # against the base seed's "DL" case on Civil and got "Unknown
+        # Error" (DL is genuinely a plain static case, not RS/CS-typed, so
+        # those ANAL values don't resolve against it either). Needs a real
+        # /db/SPLC Response Spectrum Load Case fixture to test properly on
+        # Civil -- deferred to whichever future batch covers
+        # db.dynamic_loads. Left unconfirmed overall since it doesn't pass
+        # uniformly, even though the Gen NX round trip itself is clean.
+        lcom_case(LoadCombinationSeismic, "ACTIVE"),
+        Case(
+            CuttingLine,
+            {"NAME": "CUT_CRUD", "DIR": "NORMAL", "PT1X": 0, "PT1Y": 0, "PT1Z": 0,
+             "PT2X": 1, "PT2Y": 0, "PT2Z": 0, "TYPE": 0},
+            {"NAME": "CUT_CRUD_2", "DIR": "NORMAL", "PT1X": 0, "PT1Y": 0, "PT1Z": 0,
+             "PT2X": 1, "PT2Y": 0, "PT2Z": 0, "TYPE": 0},
+            lambda p: p.get("NAME"), "CUT_CRUD", "CUT_CRUD_2",
+            confirmed=True,
+        ),
+        Case(
+            PlateCuttingLineDiagram,
+            {"NAME": "CLWP_CRUD", "DIR": "NORMAL", "PT1X": 0, "PT1Y": 0, "PT1Z": 0,
+             "PT2X": 1, "PT2Y": 0, "PT2Z": 0, "PT3X": 0, "PT3Y": 1, "PT3Z": 0},
+            {"NAME": "CLWP_CRUD_2", "DIR": "NORMAL", "PT1X": 0, "PT1Y": 0, "PT1Z": 0,
+             "PT2X": 1, "PT2Y": 0, "PT2Z": 0, "PT3X": 0, "PT3Y": 1, "PT3Z": 0},
+            lambda p: p.get("NAME"), "CLWP_CRUD", "CLWP_CRUD_2",
+            confirmed=True,
+        ),
+    ]
+
+
 #: Priority order — what a modelling script needs, not the manual's order.
 TIERS: List[Tier] = [
     Tier("core", "baseline model, groups and static loads", _no_seeds, _core_cases),
@@ -1270,6 +1673,9 @@ TIERS: List[Tier] = [
     Tier("stage", "construction stages", _stage_seeds, _stage_cases),
     Tier("moving", "moving loads (AASHTO LRFD fixtures; Civil-confirmed, Gen not yet watched live)", _moving_seeds, _moving_cases),
     Tier("extras1", "batch 1 of read-only-verified db.project/db.boundary endpoints", _extras1_seeds, _extras1_cases),
+    Tier("extras2", "batch 2: db.misc_loads in full + 3 of db.temperature_prestress", _extras2_seeds, _extras2_cases),
+    Tier("extras3", "batch 3: tractable subset of db.properties.*", _extras3_seeds, _extras3_cases),
+    Tier("extras4", "batch 4: db.load_combinations in full", _no_seeds, _extras4_cases),
 ]
 
 

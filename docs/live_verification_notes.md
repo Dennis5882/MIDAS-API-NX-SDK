@@ -5060,6 +5060,155 @@ note. `ROADMAP.md` regenerated. Batch 2 (the remaining ~150 read-only
 `/db/*` endpoints, including the deferred seismic-device family and the
 `NLLP` root cause) is open for a future session.
 
+## 2026-08-16 (last) — write coverage batch 2: db.misc_loads in full + 3 of db.temperature_prestress, 11/12 confirmed
+
+Continuing the write-coverage push from earlier today (batch 1: db.project
++ db.boundary, 14/18). User asked to keep going; picked db.misc_loads (all
+9 of its endpoints were still read-only) plus 3 tractable
+`db.temperature_prestress` endpoints (`GTMP`/`STMP`/`BTMP` — the other 7 are
+tendon/prestress geometry, deferred alongside extras1's seismic-device
+family).
+
+Found a genuine shortcut: `docs/manual/11_DB_Settlement_Misc_Loads.md` ends
+with an "End-to-End 워크플로우 예제" that chains all 8 core misc_loads
+endpoints (`SMPT → SMLC → PLCB → LDSQ → WVLD → IELC → EFCT → INMF`) through
+one consistent fixture. Adapted its payloads almost verbatim into a new
+`extras2` tier (12 cases, 1 seed step) instead of re-deriving fixtures from
+the Specifications tables like extras1 needed to.
+
+First live run (Civil NX v2.2, build 08/14/2026): 10/12. Triaged the 2
+failures:
+
+- **`/db/SMPT`**: same renumbering behaviour as `/db/STLD`/`/db/FBLD` — a
+  seed record requested at id 90 landed at id 1 instead, colliding with the
+  case's own id-1 target ("Key Already Exist"). Fixed by moving the case to
+  id 2.
+- **`/db/WVLD`**: did **not** resolve to a fixture problem. The manual's own
+  full canonical example, reproduced verbatim, answered `"Wrong Field"` —
+  and so did a bare `{"NAME": "..."}` payload, ruling out any specific
+  field. Left at `level: read`, same class of unexplained finding as
+  extras1's `/db/NLLP` (possibly a licensed offshore/marine module gate,
+  unconfirmed).
+
+Re-run clean on both products after the fix:
+
+- **Civil NX** (v2.2, build 08/14/2026): 11/12 (`PLCB`/`WVLD` are
+  Civil-only; `WVLD` is the one remaining failure).
+- **Gen NX** (v2.1, build 08/14/2026): 10/10 — clean pass, exit code 0.
+  `PLCB`/`WVLD` correctly skipped as Civil-only.
+
+Incidental finding: **`/db/BTMP`** (Beam Section Temperature) passed live
+on **both** products, despite the manual's own prose flagging it
+`"⚠️ MIDAS Civil NX 전용 기능"` (Civil-NX-only) — its Specifications table
+carries no such restriction and coverage.json already listed both products.
+Same documented-vs-actual-routing mismatch pattern as the ch08/ch17
+moving-load family from 2026-07-29.
+
+11/12 cases flipped to `confirmed=True`; `docs/coverage.json` updated for
+all 11 to `level: "write"`, `/db/WVLD` stays `level: "read"` with a dated
+note. `ROADMAP.md` regenerated. Batch 3 (properties.*, analysis_control,
+dynamic_loads, design, moving_loads, construction_stage, load_combinations,
+pushover, bridge, the tendon/prestress half of temperature_prestress, the
+deferred seismic-device family, and root-causing `NLLP`/`WVLD`) is open for
+a future session.
+
+## 2026-08-16 (last) — write coverage batch 3: tractable subset of db.properties.*, 4-5/9 confirmed
+
+Third write-coverage batch of the day. Picked 9 of `db.properties.*`'s
+15 remaining read-only endpoints — deferred the 5 fiber/inelastic-hinge
+endpoints (`IMFM`, `EPMT`, `FIMP`, `IEHC`, `IEHG`, needing real
+stress-strain curve fixtures) and `FIBR` (depends on `FIMP`), same
+complexity class as extras1's deferred seismic-device family.
+
+First live run (Civil NX v2.2, build 08/14/2026): 5/9. Unlike batches 1-2,
+most of the 4 failures did **not** resolve to fixture problems even after
+reproducing each endpoint's own manual canonical example verbatim:
+
+- **`/db/GRDP`** (Group Damping): tried both a minimal Specifications-table
+  payload and the manual's full worked example (with `GROUP_NAME` as the
+  material's numeric id `"1"`, not its name — the actual fixture bug found
+  — plus the extra `STIFF_COEF_DEFAULT`/`MASS_COEF_DEFAULT`/`OPT_*_PROP_DEFAULT`
+  fields the manual's example includes but its own Specifications table
+  omits). Both answered `"Wrong Field"` identically.
+- **`/db/TDMF`** (Time Dependent Material – User Defined): reproduced the
+  manual's own 4-point `vDAY` Request Body example verbatim (not just the
+  2-point one first tried) — still `"Wrong Field"`.
+- **`/db/RPSC`** (Section Manager – Reinforcements): manual's own example
+  reproduced — still fails.
+- **`/db/STRPSSM`** (Section Manager – Stress Points, Civil-only): manual's
+  own example reproduced — still fails. Noteworthy: RPSC's own worked
+  example keys at id `401` and STRPSSM's at id `9003`, not a plain running
+  number like every other endpoint tested today — both describe "PSC/RC
+  단면" specifically, so the base seed's plain `DBUSER` rectangular column
+  section may not carry a Section Manager reinforcement/stress-point slot
+  at all. Left genuinely unresolved rather than guessed at further.
+
+All 4 are the same class of finding as `/db/NLLP` (extras1) and `/db/WVLD`
+(extras2) — a manual-exact payload still answering a generic error live.
+Three unrelated-looking endpoints failing identically on the first try of
+a brand-new tier is unusual enough (vs. extras1/2's near-clean first
+passes) that it's worth flagging as a pattern to watch, not just three
+independent coincidences — worth revisiting with a fresh angle rather than
+more payload guessing.
+
+Re-run clean on both products (no changes needed for the passing 5):
+
+- **Civil NX** (v2.2, build 08/14/2026): 5/9 (`EDMP`, `PSSF`, `VSEC`,
+  `VBEM`, `EWSF` pass; `GRDP`/`TDMF`/`RPSC`/`STRPSSM` are the 4 failures).
+- **Gen NX** (v2.1, build 08/14/2026): 4/7 (`STRPSSM`/`EWSF` correctly
+  skipped as Civil-only; `GRDP`/`TDMF`/`RPSC` reproduce the identical
+  failure, ruling out a Civil-specific explanation for those three).
+
+5 passing cases flipped to `confirmed=True`; `docs/coverage.json` updated
+for `EDMP`/`PSSF`/`VSEC`/`VBEM`/`EWSF` to `level: "write"`.
+`GRDP`/`TDMF`/`RPSC`/`STRPSSM` stay `level: "read"` with dated notes.
+`ROADMAP.md` regenerated. Batch 4 (the deferred fiber/inelastic-hinge
+family, analysis_control, dynamic_loads, design, moving_loads,
+construction_stage, load_combinations, pushover, bridge, the
+tendon/prestress half of temperature_prestress, and root-causing
+`NLLP`/`WVLD`/`GRDP`/`TDMF`/`RPSC`/`STRPSSM`) is open for a future session.
+
+## 2026-08-16 (last) — write coverage batch 4: db.load_combinations in full, 7-8/8 confirmed
+
+Fourth write-coverage batch of the day. `db.load_combinations` was a clean
+target: all 8 of its endpoints were still read-only, and 6 of them
+(`LCOM-GEN/CONC/STEEL/SRC/STLCOMP/SEISMIC`) share one payload shape per
+the module's own `LoadCombinationPayload` docstring, so the tier is mostly
+one parametrized case repeated six times.
+
+First live run (Civil NX v2.2, build 08/14/2026): 7/8 — only
+`LCOM-SEISMIC` failed, with `"The Load Combination Type is not
+supported"` for the same `ANAL="ST"` payload its 5 siblings all accept.
+
+The interesting part: **re-running on Gen NX passed 8/8, including
+`LCOM-SEISMIC`** with the identical payload. This is the first
+same-day, same-build, same-payload case in today's batches where the two
+products actually disagree rather than one being a documented
+Gen/Civil-only route — Civil genuinely rejects `ANAL="ST"` for seismic
+combinations while Gen accepts it. Tried the manual's own `ANAL="RS"`/
+`"CS"` alternative on Civil against the base seed's plain static `"DL"`
+case; both answered `"Unknown Error"` instead, because `DL` isn't
+actually an RS/CS-typed case — reproducing the manual's intended usage
+properly needs a real `/db/SPLC` Response Spectrum Load Case, which is
+one of the `db.dynamic_loads` endpoints deferred to a future batch. Left
+`LCOM-SEISMIC` at `level: read` rather than call it "confirmed" off an
+asymmetric pass.
+
+7 cases (`LCOM-GEN`, `LCOM-CONC`, `LCOM-STEEL`, `LCOM-SRC`,
+`LCOM-STLCOMP`, `CUTL`, `CLWP`) flipped to `confirmed=True`;
+`docs/coverage.json` updated for all 7 to `level: "write"`.
+`LCOM-SEISMIC` stays `level: "read"` with a dated note explaining the
+product asymmetry. `ROADMAP.md` regenerated.
+
+Running total for today's write-coverage push (batches 1-4): 42 endpoints
+flipped to `level: write`, 7 left as genuinely unresolved live findings
+(`NLLP`, `WVLD`, `GRDP`, `TDMF`, `RPSC`, `STRPSSM`, `LCOM-SEISMIC`). Batch
+5 (the deferred fiber/inelastic-hinge family, `db.analysis_control`,
+`db.dynamic_loads` — which would also unblock `LCOM-SEISMIC` —
+`db.design`, `db.moving_loads`, `db.construction_stage`'s hydration
+family, `db.pushover`, `db.bridge`, and the tendon/prestress half of
+`db.temperature_prestress`) is open for a future session.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
