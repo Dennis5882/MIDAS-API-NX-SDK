@@ -5378,6 +5378,321 @@ Hyper-S dynamic_loads variants, `/db/DRLS`'s empty-payload shape problem,
 and root-causing the 14 unresolved findings above) is open for a future
 session.
 
+## 2026-08-17 — write coverage batch 7: standalone/frame-attachable remainder of db.static_loads, 4/5 (Civil) + 5/8 (Gen)
+
+Seventh write-coverage batch, continuing without a fresh scope check —
+picked the remaining `db.static_loads` endpoints that don't need real
+plate/planar geometry beyond what the base seed model already has: `PNLD`,
+`PNLA`, `FBLA`, `FMLD`, `POSP`, `EPST`, `POSL`, `EPSE`. (`PNLA` was
+initially assumed to need real plate geometry and deferrable, but
+`_seed_model`'s own base model already has one — element 4, nodes 5-8 — so
+it came along for free.)
+
+First live run (Civil NX v2.2, build 08/14/2026): 1/5, only `FMLD` passed
+clean. Triaged the rest:
+
+- **`/db/PNLD`**: create succeeded but read-back failed — same
+  STLD/FBLD-family renumbering as extras1/extras5's seeds (the seed
+  landed at id 1, not the requested 90; the case's own id 91 request
+  actually landed at id 2). Fixed by pointing the case at id 2 and citing
+  the seed's real id.
+- **`/db/PNLA`**: `"Wrong Field"` even after fixing `PNLD_KEY` to the
+  seed's real id. Bisected by removing one field at a time — the manual
+  marks `LOAD_GROUP` Required, but sending *any* non-empty value for it
+  answers `"Wrong Field"`; omitting the key (or sending `""`) succeeds.
+  Fixed by dropping it; `db/static_loads.py`'s `PlaneLoadPayload` docstring
+  now documents this.
+- **`/db/POSL`**: `"Wrong Field"` on every payload, including the
+  manual's own literal example. Fetched `.info()`'s live schema: Civil
+  NX's actual field set is `NAME`/`SZ`/`SRF`/`SC`/`FA`/`FV`/`DAMP_RATIO`
+  only — a completely different, smaller shape than the manual's
+  `CODE`/`METHOD`/`EPA`/`SDS`/`SD1`/`USER_GROUP`/`IF`/`RMF`. Sending
+  `CODE` at all — even as `""` — was confirmed as the specific trigger via
+  per-field bisection. Checked Gen NX's own `.info()` schema for
+  comparison and found it *does* match the manual (plus two undocumented
+  fields, `EPGAeff`/`Kae`) — this endpoint's real contract is
+  product-asymmetric, not just wrong. Split the checker's one `POSL` case
+  into two, one payload per product; `SeismicLoadParamPayload` in
+  `db/static_loads.py` now documents both shapes.
+
+Re-run clean on Civil after the `PNLD`/`PNLA`/`POSL` fixes: **4/5**
+(`PNLD`, `PNLA`, `FMLD`, `POSL` pass; `FBLA` is the one remaining
+failure, `"Unknown Error"` on POST, not resolved as a fixture problem
+despite trying the base model's plate-corner nodes and an unrelated
+frame-chain node set, both winding orders, `FLOOR_DIST_TYPE` 1 and 2, and
+the manual's full optional-field set).
+
+**Gen NX** (v2.1, build 08/14/2026), same fixed cases plus the Gen-only
+trio (`POSP`/`EPST`/`EPSE`): **5/8**. `POSP`'s first attempt answered
+`"Unknown Error"` with a single soil layer — fixed by using the manual's
+own 3-layer example, whose `HEIGHT` values sum to exactly the depth from
+`GROUND_LEVEL` to `BEDROCK_LEVEL` (5+5+15=25m); a single layer that
+doesn't reach that depth appears to be the trigger, the same undocumented
+cross-field relationship class as `/db/SPAN`'s item-count-vs-list-length
+rule from batch 1. `POSP`, `PNLD`, `PNLA`, `FMLD`, `POSL` all passed
+clean after fixture fixes. `EPST` and `EPSE` both failed `"Wrong Field"`
+even with field names confirmed matching their own live `/info` schema
+and several bisected variants (`SEL_TYPE`, `EP_TYPE`, blank `SOIL_PROP`,
+omitted `IN_PT`, `PRES_PROFILE_ITEMS`) — not resolved as fixture
+problems, left `level: read` alongside `FBLA`. `EPST`/`EPSE` are untested
+on Civil NX since `POSP` (which their `SOIL_PROP` references) is
+Gen-only, so there's no Civil fixture to build them against — genuinely
+untested there, not confirmed broken.
+
+6 endpoints flipped to `level: write` (`PNLD`, `PNLA`, `FMLD`, `POSP`,
+`POSL` — `POSL` write-confirmed on both products despite the schema
+split); `FBLA`, `EPST`, `EPSE` stay `level: read` as new unresolved
+findings. `docs/coverage.json` and `ROADMAP.md` updated; `pytest` (701)
+and `ruff` both clean after the source-level `PlaneLoadPayload`/
+`SeismicLoadParamPayload` docstring fixes.
+
+Running total for the write-coverage push (batches 1-7): 55 endpoints
+flipped to `level: write`, 17 left as genuinely unresolved live findings
+(`NLLP`, `WVLD`, `GRDP`, `TDMF`, `RPSC`, `STRPSSM`, `LCOM-SEISMIC`,
+`SPLC`, `THMS`, `SDVI`, `SDVE`, `SDST`, `SDHY`, `SDIS`, `FBLA`, `EPST`,
+`EPSE`), plus the one confirmed live crash from batch 5 (`THNL` PUT on
+Gen NX, MAPI-2468). Batch 8 (the deferred fiber/inelastic-hinge family,
+`db.node_element`'s Domain feature, `db.analysis_control`, `db.design`,
+`db.moving_loads`'s remainder, `db.construction_stage`'s hydration
+family, `db.pushover`, `db.bridge`, the tendon/prestress half of
+`db.temperature_prestress`, the 3 deferred Hyper-S dynamic_loads
+variants, `/db/DRLS`'s empty-payload shape problem, and root-causing the
+17 unresolved findings above) is open for a future session.
+
+## 2026-08-17 — write coverage batch 8: tractable subset of db.analysis_control, 5/9 (Civil) + 7/9 (Gen)
+
+Eighth write-coverage batch, continuing without a fresh scope check.
+Picked 9 of `db.analysis_control`'s 21 endpoints: the singleton "control
+data" tables (`ACTL`, `PDEL`, `BUCK`, `EIGV`, `HHCT`, `MVCT`, `SMCT`,
+`NLCT`, `BCCT`) — each is one record at id 1, referencing only the base
+seed model's own load cases, so no per-tier geometry was needed. Deferred
+the 5 Hyper-S (`-M1`) variants and the 4 country-specific `MVCT`
+variants (`MVCTch`/`id`/`bs`/`tr`) as before.
+
+First live run (Civil NX v2.2, build 08/14/2026): 3/9. Triaged:
+
+- **`/db/EIGV`**: the manual's own first worked example uses
+  `TYPE: "EIGEN"` (Subspace Iteration) and answered `"FREQ_RANGE is
+  required for LANCZOS."` — the server doesn't recognize `"EIGEN"` as a
+  valid `TYPE` at all despite the manual and `/info`'s own schema both
+  listing it; only `"LANCZOS"`/`"RITZ"` work. Fixed by switching to the
+  manual's own Lanczos example.
+- **`/db/BCCT`**: `vBOUNDARY`'s `vBG` entries (`"BG1"`/`"BG2"`, the
+  manual's own example values) answered `"Boundary Group not found:
+  BG1"` — they have to be real `/db/BNGR` boundary groups, not free-text
+  labels. Fixed with a `bngr_seed` step.
+
+Three did **not** resolve to fixture problems, each a distinct kind of
+finding:
+
+- **`/db/ACTL`**: `TOL` never persists as written on Civil NX — POST
+  succeeds and reads back correctly, but a follow-up PUT changing only
+  `TOL` reads back the original value every time, confirmed even after a
+  full DELETE + fresh POST with a different `TOL`. On Gen NX the same
+  payload fails outright with `"Wrong Field"`, including a bare
+  `{ITER, TOL}`-only payload — and Gen's own `/info` schema turns out to
+  differ from Civil's/the manual's (no `CLATS`, an undocumented `ACWC`
+  that answers `"Wrong Key"` when sent, ruling that field out too as the
+  cause). Two different symptoms, same verdict: unresolved on both.
+- **`/db/NLCT`**: Civil NX answers `"LINE_SEARCH_OPTION is required when
+  OPT_ENABLE_LINE_SEARCH is true."` — neither field is in the manual or
+  in `/info`'s own live schema. Tried `OPT_ENABLE_LINE_SEARCH: false`
+  explicitly (same error) and a guessed `LINE_SEARCH_OPTION: "AUTO"`
+  alongside `true` (also unchanged). **Passes clean on Gen NX** with the
+  exact same payload — product-asymmetric, so the checker now carries two
+  cases, one per product.
+- **`/db/HHCT`**: Civil NX's `THETA` field has the same "write doesn't
+  stick" symptom as `ACTL`'s `TOL` — POST succeeds with no error body,
+  but the immediate GET reads `THETA` back as `0`, not the `1` sent,
+  reproduced twice. **Also passes clean on Gen NX** with the identical
+  payload — another product-asymmetric split into two cases.
+- **`/db/MVCT`**: fails on *both* products, with different errors
+  depending on payload completeness — the manual's full example answers
+  `"Unknown Error"` on both Civil and Gen, a stripped-down minimal
+  payload answers `"Wrong Field"` on Civil instead. Field names match
+  `/info` on both. Noted as possibly needing the full AASHTO LRFD
+  moving-load fixture chain (code → lane → vehicle → case, see the
+  `"moving"` tier) built first rather than being a standalone control
+  table like its 8 siblings here — untested, not pulled into this tier's
+  scope given the size of that prerequisite chain.
+
+Final result after fixes, re-run clean on both products:
+
+- **Civil NX**: 5/9 (`PDEL`, `BUCK`, `EIGV`, `SMCT`, `BCCT` pass; `ACTL`,
+  `HHCT`, `MVCT`, `NLCT` are the 4 failures).
+- **Gen NX**: 7/9 (same 5 plus `HHCT` and `NLCT`; `ACTL` and `MVCT` are
+  the 2 failures, confirmed as genuinely both-product issues rather than
+  Civil-specific).
+
+9 endpoints flipped to `level: write` total — 5 confirmed both products
+(`PDEL`, `BUCK`, `EIGV`, `SMCT`, `BCCT`), 2 confirmed Gen-only (`HHCT`,
+`NLCT`, with the `level: write` reflecting the Gen NX result specifically
+per this project's convention of documenting the asymmetry rather than
+averaging it away). `ACTL` and `MVCT` stay `level: read` as new
+unresolved findings. `docs/coverage.json` and `ROADMAP.md` updated;
+`pytest` (701) and `ruff` both clean.
+
+Running total for the write-coverage push (batches 1-8): 64 endpoints
+flipped to `level: write`, 19 left as genuinely unresolved live findings
+(`NLLP`, `WVLD`, `GRDP`, `TDMF`, `RPSC`, `STRPSSM`, `LCOM-SEISMIC`,
+`SPLC`, `THMS`, `SDVI`, `SDVE`, `SDST`, `SDHY`, `SDIS`, `FBLA`, `EPST`,
+`EPSE`, `ACTL`, `MVCT`), plus the one confirmed live crash from batch 5
+(`THNL` PUT on Gen NX, MAPI-2468). Batch 9 (the deferred fiber/
+inelastic-hinge family, `db.node_element`'s Domain feature, the
+remaining 12 of `db.analysis_control` — 5 Hyper-S + 4 country-specific
+MVCT + `MVCT` itself once its moving-load prerequisite chain is worked
+out, `db.design`, `db.moving_loads`'s remainder, `db.construction_stage`'s
+hydration family, `db.pushover`, `db.bridge`, the tendon/prestress half
+of `db.temperature_prestress`, the 3 deferred Hyper-S dynamic_loads
+variants, `/db/DRLS`'s empty-payload shape problem, and root-causing the
+19 unresolved findings above) is open for a future session.
+
+## 2026-08-17 — write coverage batch 9: db.node_element's Domain feature, 0/3 -- /db/MADO silently drops writes
+
+Ninth write-coverage batch. Picked up `db.node_element`'s last 3
+read-only endpoints: `MADO`, `SBDO`, `DOEL` (the "Domain" feature used
+for 2D/plane-stress mesh assignment). Small, self-contained scope —
+`SBDO`/`DOEL` both reference a `MADO` domain by name/id, so the tier
+needed a `mado_seed` creating two named domains (`DM1_SEED`/`DM2_SEED`)
+plus `DOEL`'s own case targeting the base seed model's existing plate
+element (id 4, nodes 5-8) rather than building new geometry.
+
+First live run (Civil NX v2.2, build 08/14/2026): 0/3, all three
+`read_back` failures with `"id N missing after wrote"`. Initially looked
+like the familiar STLD/FBLD-family renumbering gotcha from earlier
+batches, but a manual `GET` on all three tables immediately after
+`create()` came back completely empty — not renumbered, genuinely never
+written. Bisected `/db/MADO` specifically since it's the root of the
+dependency chain:
+
+- `POST /db/MADO` answers `{"message": ""}` — HTTP success, no error
+  body at all — but the record is absent from a follow-up `GET`, every
+  time.
+- Reproduced with several payload variants: `MATL`/`PROP` pointed at the
+  base model's real material/section ids (1/1), `SUB_TYPE` 1 and 2,
+  `TYPE` 3 (Plane Stress) instead of 4 (Plate), and — the clearest
+  signal — **the manual's own literal request-body example reproduced
+  verbatim** (`NAME: "DM1"`, `MATL: 0`, `PROP: 0`, `SUB_TYPE: 2`). All
+  silently no-ops.
+- Checked Gen NX independently: identical `{"message": ""}` /
+  empty-GET result with the same literal manual payload.
+
+Not resolved as a fixture problem on either product — a `"message": ""`
+success response that doesn't persist anything is a different failure
+shape than this session's usual `"Wrong Field"`/`"Unknown Error"` class,
+closer to the `/doc/SAVEAS` "command complete but no file written"
+pattern this project has already documented elsewhere, just on a `/db/*`
+table instead of a file write.
+
+`SBDO` and `DOEL` both fail as a direct consequence — they reference
+`DM1_SEED`/`DM2_SEED` by name/id, and those domains were never actually
+created — so their own field contracts remain genuinely untested, not
+confirmed broken independently of `MADO`. Left all 3 at `level: read`
+with dated notes making that dependency explicit; the checker's own
+cases are kept (not skipped) so a future `MADO` fix can be verified to
+unblock `SBDO`/`DOEL` without touching this tier's code again.
+
+Caught and fixed one process mistake before finalizing: `MADO`'s own
+case was initially marked `confirmed=True` while drafting the fixture,
+before it had actually been run live — the first real run correctly
+flagged it as a **regression** (a confirmed case failing) rather than an
+unverified failure, which would have been a false alarm. Reverted the
+premature flag before this file/`coverage.json` were touched, so nothing
+downstream saw the false regression.
+
+`docs/coverage.json` and `ROADMAP.md` updated (all 3 stay `level: read`
+— this batch added 0 to the write count, a clean miss rather than a
+partial one). `pytest` (701) and `ruff` both clean.
+
+Running total for the write-coverage push (batches 1-9): still 64
+endpoints at `level: write` (batch 9 added 0), 22 left as genuinely
+unresolved live findings (`NLLP`, `WVLD`, `GRDP`, `TDMF`, `RPSC`,
+`STRPSSM`, `LCOM-SEISMIC`, `SPLC`, `THMS`, `SDVI`, `SDVE`, `SDST`,
+`SDHY`, `SDIS`, `FBLA`, `EPST`, `EPSE`, `ACTL`, `MVCT`, `MADO`, `SBDO`,
+`DOEL`), plus the one confirmed live crash from batch 5 (`THNL` PUT on
+Gen NX, MAPI-2468). Batch 10 (the deferred fiber/inelastic-hinge
+family, the remaining 12 of `db.analysis_control`, `db.design`,
+`db.moving_loads`'s remainder, `db.construction_stage`'s hydration
+family, `db.pushover`, `db.bridge`, the tendon/prestress half of
+`db.temperature_prestress`, the 3 deferred Hyper-S dynamic_loads
+variants, `/db/DRLS`'s empty-payload shape problem, and root-causing the
+22 unresolved findings above) is open for a future session.
+
+## 2026-08-17 — write coverage batch 10: standalone subset of db.construction_stage's heat-of-hydration family, 5/7 both products
+
+Tenth write-coverage batch. Picked 7 of `db.construction_stage`'s 10
+remaining read-only endpoints — the heat-of-hydration family
+(`ETFC`/`CCFC`/`HSFC`/`HAHS`/`HPCE`/`STBK`/`HSTG`), deferring `HECB` and
+`HSPT` (both keyed by a construction-stage id per the manual's own note)
+and `CSCS` (references a stage name via `ASTAGE`) since none of the
+three have a construction stage to attach to in this tier's fixture.
+The chapter's own End-to-End workflow example covers 6 of these 7
+(`ETFC`→`CCFC`→`HSFC`→`HAHS`→`HECB`→`HSTG`), so most payloads were
+adapted from it rather than re-derived from the Specifications tables.
+
+First live run (Civil NX v2.2, build 08/14/2026): 4/7. Triaged:
+
+- **`/db/HSFC`**: `"Key Already Exist"` — the case's own id (91) collided
+  with `hsfc_seed`'s second record, which the seed also placed at 91.
+  Fixed by moving the case to id 92.
+- **`/db/HSTG`**: passed on the first try — the fixture used real
+  `/db/GRUP`-family structure/boundary group names (`SG10_SEED`/
+  `BG10_SEED`) from the start rather than the manual's own made-up
+  group-name example, applying the `/db/BCCT` lesson from batch 8
+  proactively instead of hitting the same wall twice.
+
+Two did **not** resolve to fixture problems:
+
+- **`/db/HAHS`**: answered `"[Error] The element no. 1 is an element
+  type in which Heat Source Assignment cannot be entered."` for element
+  1 (a frame/beam). Switched to element 4 (the base model's `PLATE`) —
+  same error, just renumbered to element 4. Heat-of-hydration is
+  normally applied to mass concrete (piers, footings) modelled as
+  `SOLID` elements, which the base seed model doesn't build — most
+  likely a scope gap in this fixture rather than a confirmed product
+  defect, since a real `SOLID` element was never tried. Left
+  unconfirmed rather than treated as a genuine finding, pending that
+  test in a future session.
+- **`/db/HPCE`**: answered `"Wrong Key"` — a different error class than
+  this session's usual `"Wrong Field"`/`"Unknown Error"`. Bisected field
+  by field: every field *except* `ITEMS` succeeds individually (each
+  answering the ordinary `"Wrong Field"` for an incomplete payload), but
+  adding `ITEMS` — with real frame node ids, real plate node ids, or a
+  single node — always flips the error to `"Wrong Key"` instead. Live
+  `/info`'s own schema confirms `ITEMS` is a plain integer array,
+  matching exactly what was sent, so this isn't a documented-vs-actual
+  mismatch either. Also found two undocumented fields via `/info`
+  (`START_STAGE`/`END_STAGE`, both strings, absent from the manual
+  entirely) and tried them both empty and omitted — no change either
+  way. Genuinely unresolved, same class as `/db/FBLA`/`/db/EPST` etc.
+
+Re-run clean on both products after the `HSFC`/`HSTG` fixes:
+
+- **Civil NX**: 5/7 (`ETFC`, `CCFC`, `HSFC`, `STBK`, `HSTG` pass; `HAHS`
+  and `HPCE` are the 2 failures).
+- **Gen NX**: same 5/7 split, confirming `HAHS`/`HPCE` aren't
+  Civil-specific.
+
+5 endpoints flipped to `level: write`; `HAHS` and `HPCE` stay
+`level: read` with dated notes. `docs/coverage.json` and `ROADMAP.md`
+updated; `pytest` (701) and `ruff` both clean.
+
+Running total for the write-coverage push (batches 1-10): 69 endpoints
+flipped to `level: write`, 24 left as genuinely unresolved or
+scope-limited live findings (`NLLP`, `WVLD`, `GRDP`, `TDMF`, `RPSC`,
+`STRPSSM`, `LCOM-SEISMIC`, `SPLC`, `THMS`, `SDVI`, `SDVE`, `SDST`,
+`SDHY`, `SDIS`, `FBLA`, `EPST`, `EPSE`, `ACTL`, `MVCT`, `MADO`, `SBDO`,
+`DOEL`, `HAHS`, `HPCE`), plus the one confirmed live crash from batch 5
+(`THNL` PUT on Gen NX, MAPI-2468). Batch 11 (the deferred fiber/
+inelastic-hinge family, the remaining 12 of `db.analysis_control`,
+`db.design`, `db.moving_loads`'s remainder, `db.construction_stage`'s
+`HECB`/`HSPT`/`CSCS` — needs a real construction stage built first —
+`db.pushover`, `db.bridge`, the tendon/prestress half of
+`db.temperature_prestress`, the 3 deferred Hyper-S dynamic_loads
+variants, `/db/DRLS`'s empty-payload shape problem, retesting `/db/HAHS`
+against a real `SOLID` element, and root-causing the 24 unresolved
+findings above) is open for a future session.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

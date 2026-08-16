@@ -109,6 +109,17 @@ from typing import Any, Callable, Dict, List, Optional, Sequence
 
 from midas_nx import doc
 from midas_nx.client import MidasAPIError, MidasClient
+from midas_nx.db.analysis_control import (
+    BoundaryChangeAssignment,
+    BucklingAnalysisControl,
+    EigenvalueAnalysisControl,
+    HeatOfHydrationAnalysisControl,
+    MainControlData,
+    MovingLoadAnalysisControl,
+    NonlinearAnalysisControlData,
+    PDeltaAnalysisControl,
+    SettlementAnalysisControlData,
+)
 from midas_nx.db.boundary import (
     BeamEndOffset,
     BeamEndRelease,
@@ -135,9 +146,16 @@ from midas_nx.db.boundary import (
     SurfaceSpring,
 )
 from midas_nx.db.construction_stage import (
+    AmbientTemperatureFunction,
+    AssignHeatSource,
     CamberConstructionStage,
     ConstructionStage,
+    ConstructionStageForHydration,
+    ConvectionCoefficientFunction,
     CreepCoefficientConstructionStage,
+    HeatSourceFunction,
+    PipeCooling,
+    SetBackLoad,
     TimeLoadConstructionStage,
 )
 from midas_nx.db.dynamic_loads import (
@@ -179,7 +197,14 @@ from midas_nx.db.moving_loads import (
     VehicleClasses,
     Vehicles,
 )
-from midas_nx.db.node_element import Element, Node, Skew
+from midas_nx.db.node_element import (
+    DomainElement,
+    Element,
+    MainDomain,
+    Node,
+    Skew,
+    SubDomain,
+)
 from midas_nx.db.project import (
     BoundaryGroup,
     FloorLoadColor,
@@ -220,15 +245,23 @@ from midas_nx.db.properties.section import (
 from midas_nx.db.properties.thickness import Thickness
 from midas_nx.db.static_loads import (
     BeamLoad,
+    FinishingMaterialLoad,
+    FloorLoad,
     FloorLoadType,
     LoadsToMass,
     NodalBodyForce,
     NodalLoad,
     NodalMass,
+    PlaneLoad,
+    PlaneLoadType,
     PressureLoad,
     PressureLoadType,
+    SeismicEarthPressure,
+    SeismicLoadParam,
     SelfWeight,
+    SoilProperty,
     SpecifiedDisplacement,
+    StaticEarthPressure,
     StaticLoadCase,
 )
 from midas_nx.db.temperature_prestress import (
@@ -2017,6 +2050,684 @@ def _extras6_cases() -> List[Case]:
     ]
 
 
+def _extras7_seeds() -> List[SeedStep]:
+    """batch 7: the standalone/frame-attachable remainder of db.static_loads.
+
+    pnld_seed and fbld_seed are separate records from their siblings'
+    own CRUD cases (which delete themselves at the end of their round
+    trip) purely so PNLA/FBLA have something stable to reference while
+    those siblings run -- same pattern as extras5's spfc/thfc seeds.
+    posp_seed/posl_seed exist for the same reason, feeding EPST/EPSE's
+    SOIL_PROP/SEIS_LOAD name references.
+
+    The base seed model (_seed_model) already has a PLATE element (id 4,
+    nodes 5-8, a flat plate in the XY plane at Z=0) alongside the frame
+    chain (elements 1-3), so PNLA (needs a real plate) and FMLD (keyed by
+    element id) both have something real to attach to without this tier
+    building any geometry of its own.
+
+    pnld_seed/fbld_seed both land at id 1, not the requested 90 -- same
+    STLD/FBLD-family renumbering as extras1/extras5's seeds (confirmed
+    live 2026-08-16), so the id-90 request is cosmetic; downstream cases
+    reference id 1. posp_seed's ITEMS need to span from GROUND_LEVEL down
+    to at least BEDROCK_LEVEL (5+5+15=25m matching the manual's own
+    3-layer example) -- a single layer answered "Unknown Error" on POST,
+    the same class of undocumented cross-field relationship as /db/SPAN's
+    item-count-vs-list-length rule.
+
+    posl_seed intentionally uses the manual's original field set
+    (CODE/METHOD/EPA/SDS/SD1/USER_GROUP/IF/RMF): confirmed live 2026-08-16
+    that /db/POSL's *live* schema is product-asymmetric -- Gen NX's
+    GET/`.info()` schema matches the manual almost exactly (plus two
+    undocumented fields, EPGAeff/Kae), while Civil NX's actual schema is a
+    completely different, smaller field set (SRF/DAMP_RATIO instead of
+    EPA/SDS/SD1/METHOD/USER_GROUP/RMF, and CODE rejected outright -- see
+    the extras7_cases() POSL cases below). This seed only needs to work on
+    Gen, since EPSE (the only thing that references it by name) is
+    gen-only here.
+    """
+    return [
+        SeedStep("pnld_seed", lambda c: PlaneLoadType.create(
+            {90: {"NAME": "PNLD_SEED", "DESC": "", "LTYPE": "AREA",
+                  "COPY_X": [0], "COPY_Y": [0],
+                  "AREALOAD": {"bUNIFORM": True, "b3PNT": False,
+                               "X": [0, 4, 4, 0], "Y": [0, 0, -4, -4],
+                               "LOAD": [-5.0, -5.0, -5.0, -5.0]}}},
+            client=c)),
+        SeedStep("fbld_seed", lambda c: FloorLoadType.create(
+            {90: {"NAME": "FBLD_SEED", "DESC": "",
+                  "ITEM": [{"LCNAME": "DL", "FLOOR_LOAD": 4.0,
+                            "OPT_SUB_BEAM_WEIGHT": True}]}},
+            client=c)),
+        SeedStep("posp_seed", lambda c: SoilProperty.create(
+            {90: {"NAME": "POSP_SEED", "DESC": "", "OPT_USE_N": False,
+                  "GROUND_LEVEL": 0.0, "BEDROCK_LEVEL": -25.0,
+                  "FOOTING_LEVEL": -10.0,
+                  "ITEMS": [{"HEIGHT": 5.0, "ANGLE_OR_N": 28, "DENSITY": 17.0,
+                             "VS": 150, "KH": 10000, "DISP": 0.001},
+                            {"HEIGHT": 5.0, "ANGLE_OR_N": 32, "DENSITY": 18.0,
+                             "VS": 200, "KH": 20000, "DISP": 0.001},
+                            {"HEIGHT": 15.0, "ANGLE_OR_N": 35, "DENSITY": 19.0,
+                             "VS": 300, "KH": 50000, "DISP": 0.001}]}},
+            client=c)),
+        SeedStep("posl_seed", lambda c: SeismicLoadParam.create(
+            {90: {"NAME": "POSL_SEED", "CODE": "KDS(41-17-00:2019)",
+                  "METHOD": "EQV_STATIC", "SZ": "1", "EPA": 0.22, "SC": "S2",
+                  "FA": 1.0, "FV": 1.4, "SDS": 0.2933, "SD1": 0.1467,
+                  "USER_GROUP": "1", "IF": 1.5, "RMF": 3.0}},
+            client=c)),
+    ]
+
+
+def _extras7_cases() -> List[Case]:
+    return [
+        # id 1 is pnld_seed (see seed docstring); this case lands at id 2.
+        Case(
+            PlaneLoadType,
+            {"NAME": "PNLD_CRUD", "DESC": "", "LTYPE": "AREA",
+             "COPY_X": [0], "COPY_Y": [0],
+             "AREALOAD": {"bUNIFORM": True, "b3PNT": False,
+                          "X": [0, 4, 4, 0], "Y": [0, 0, -4, -4],
+                          "LOAD": [-5.0, -5.0, -5.0, -5.0]}},
+            {"NAME": "PNLD_CRUD", "DESC": "", "LTYPE": "AREA",
+             "COPY_X": [0], "COPY_Y": [0],
+             "AREALOAD": {"bUNIFORM": True, "b3PNT": False,
+                          "X": [0, 4, 4, 0], "Y": [0, 0, -4, -4],
+                          "LOAD": [-8.0, -8.0, -8.0, -8.0]}},
+            lambda p: p["AREALOAD"]["LOAD"][0], -5.0, -8.0,
+            item_id=2, needs=("pnld_seed",),
+        ),
+        # POINT_ORIGIN/AXIS_X/AXIS_Y trace the base model's own plate (element
+        # 4, nodes 5-8: (0,-4,0),(4,-4,0),(4,-8,0),(0,-8,0)) so ON_PLANE
+        # selection has something real to find. PNLD_KEY=1 is pnld_seed's
+        # landed id, not the 90 it was requested at.
+        #
+        # LOAD_GROUP is dropped despite the manual/TypedDict marking it
+        # Required -- confirmed live 2026-08-16 that sending *any*
+        # non-empty LOAD_GROUP answers "Wrong Field" on Civil NX
+        # (bisected: identical payload with the key omitted succeeds), so
+        # it's either not actually required or must reference a
+        # pre-existing Load Group this fixture doesn't define.
+        Case(
+            PlaneLoad,
+            {"LCNAME": "LC_SCRATCH", "PNLD_KEY": 1, "ELEM_TYPE": "PLATE",
+             "POINT_ORIGIN": [0, -4, 0], "AXIS_X": [4, -4, 0], "AXIS_Y": [4, -8, 0],
+             "TOL": 0.001, "SELECT_TYPE": "ON_PLANE", "LOAD_DIR": "GLOBAL_Z",
+             "PROJECT_TYPE": "NO"},
+            {"LCNAME": "LC_SCRATCH", "PNLD_KEY": 1, "ELEM_TYPE": "PLATE",
+             "POINT_ORIGIN": [0, -4, 0], "AXIS_X": [4, -4, 0], "AXIS_Y": [4, -8, 0],
+             "TOL": 0.002, "SELECT_TYPE": "ON_PLANE", "LOAD_DIR": "GLOBAL_Z",
+             "PROJECT_TYPE": "NO"},
+            lambda p: p.get("TOL"), 0.001, 0.002,
+            item_id=1, needs=("pnld_seed",), confirmed=True,
+        ),
+        # ⚠️ Confirmed failing live 2026-08-16 (Civil NX v2.2, build
+        # 08/14/2026) with "Unknown Error" -- tried the base model's own
+        # plate corners (5-8) and the unrelated frame-chain nodes (1-4),
+        # both winding orders, FLOOR_DIST_TYPE 1 and 2, and the manual's
+        # full optional-field set. None resolved it. Not a fixture problem
+        # in any of the ways this project's other renumbering/reference
+        # gotchas have been; same unresolved class as /db/NLLP, /db/WVLD,
+        # /db/SDVI (batch 6), etc.
+        Case(
+            FloorLoad,
+            {"FLOOR_LOAD_TYPE_NAME": "FBLD_SEED", "FLOOR_DIST_TYPE": 1,
+             "DIR": "GZ", "NODES": [5, 6, 7, 8], "LOAD_ANGLE": 0},
+            {"FLOOR_LOAD_TYPE_NAME": "FBLD_SEED", "FLOOR_DIST_TYPE": 1,
+             "DIR": "GZ", "NODES": [5, 6, 7, 8], "LOAD_ANGLE": 15},
+            lambda p: p.get("LOAD_ANGLE"), 0, 15,
+            item_id=1, needs=("fbld_seed",),
+        ),
+        # Keyed by element id -- element 1 is a base-model beam.
+        Case(
+            FinishingMaterialLoad,
+            {"ITEMS": [{"ID": 1, "LCNAME": "LC_SCRATCH", "GROUP_NAME": "",
+                        "COVERING_TYPE": "ENVELOP",
+                        "COVERING_RANGE": ["HALF", "HALF", "FULL", "FULL"],
+                        "THICKNESS": 0.2, "DENSITY": 24.5, "DIR": "GZ",
+                        "SCALE_FACTOR": 1.0}]},
+            {"ITEMS": [{"ID": 1, "LCNAME": "LC_SCRATCH", "GROUP_NAME": "",
+                        "COVERING_TYPE": "ENVELOP",
+                        "COVERING_RANGE": ["HALF", "HALF", "FULL", "FULL"],
+                        "THICKNESS": 0.2, "DENSITY": 24.5, "DIR": "GZ",
+                        "SCALE_FACTOR": 1.5}]},
+            lambda p: p["ITEMS"][0].get("SCALE_FACTOR"), 1.0, 1.5,
+            item_id=1, confirmed=True,
+        ),
+        # 3 ITEMS spanning GROUND_LEVEL to BEDROCK_LEVEL, matching the
+        # manual's own layer-depth relationship (see seed docstring).
+        Case(
+            SoilProperty,
+            {"NAME": "POSP_CRUD", "DESC": "", "OPT_USE_N": False,
+             "GROUND_LEVEL": 0.0, "BEDROCK_LEVEL": -25.0, "FOOTING_LEVEL": -10.0,
+             "ITEMS": [{"HEIGHT": 5.0, "ANGLE_OR_N": 28, "DENSITY": 17.0,
+                        "VS": 150, "KH": 10000, "DISP": 0.001},
+                       {"HEIGHT": 5.0, "ANGLE_OR_N": 32, "DENSITY": 18.0,
+                        "VS": 200, "KH": 20000, "DISP": 0.001},
+                       {"HEIGHT": 15.0, "ANGLE_OR_N": 35, "DENSITY": 19.0,
+                        "VS": 300, "KH": 50000, "DISP": 0.001}]},
+            {"NAME": "POSP_CRUD", "DESC": "", "OPT_USE_N": False,
+             "GROUND_LEVEL": 0.0, "BEDROCK_LEVEL": -25.0, "FOOTING_LEVEL": -10.0,
+             "ITEMS": [{"HEIGHT": 5.0, "ANGLE_OR_N": 28, "DENSITY": 20.0,
+                        "VS": 150, "KH": 10000, "DISP": 0.001},
+                       {"HEIGHT": 5.0, "ANGLE_OR_N": 32, "DENSITY": 18.0,
+                        "VS": 200, "KH": 20000, "DISP": 0.001},
+                       {"HEIGHT": 15.0, "ANGLE_OR_N": 35, "DENSITY": 19.0,
+                        "VS": 300, "KH": 50000, "DISP": 0.001}]},
+            lambda p: p["ITEMS"][0].get("DENSITY"), 17.0, 20.0,
+            item_id=91, products=("gen",), confirmed=True,
+        ),
+        # ⚠️ Confirmed failing live 2026-08-16 (Gen NX v2.1, build
+        # 08/14/2026) with "Wrong Field" -- field names match /info's own
+        # schema exactly, and bisected several variants (SEL_TYPE=GRUP,
+        # EP_TYPE=ACTIVE, blank SOIL_PROP, no IN_PT, with
+        # PRES_PROFILE_ITEMS) with no change. Not resolved as a fixture
+        # problem; same unresolved class as /db/FBLA just above.
+        Case(
+            StaticEarthPressure,
+            {"LOADCASE": "LC_SCRATCH", "DIR": "XY", "ANGLE": 0, "IN_PT": [0, 0, 0],
+             "SF": 1.0, "EP_TYPE": "AT_REST", "SURCHARGE_LOAD": 10.0,
+             "WATER_LEVEL": -5.0, "SOIL_PROP": "POSP_SEED", "SEL_TYPE": "ELEMENT",
+             "ELEM_TYPE": "FRAME", "ELEM_LIST": [1, 2, 3]},
+            {"LOADCASE": "LC_SCRATCH", "DIR": "XY", "ANGLE": 0, "IN_PT": [0, 0, 0],
+             "SF": 1.5, "EP_TYPE": "AT_REST", "SURCHARGE_LOAD": 10.0,
+             "WATER_LEVEL": -5.0, "SOIL_PROP": "POSP_SEED", "SEL_TYPE": "ELEMENT",
+             "ELEM_TYPE": "FRAME", "ELEM_LIST": [1, 2, 3]},
+            lambda p: p.get("SF"), 1.0, 1.5,
+            item_id=1, needs=("posp_seed",), products=("gen",),
+        ),
+        # ⚠️ Product-asymmetric live schema, confirmed 2026-08-16 -- see the
+        # seed docstring above. Split into two cases since a single
+        # payload can't satisfy both products' actual field sets.
+        Case(
+            SeismicLoadParam,
+            {"NAME": "POSL_CRUD", "SZ": "1", "SRF": 0.22, "SC": "S2",
+             "FA": 1.0, "FV": 1.4, "DAMP_RATIO": 0.05},
+            {"NAME": "POSL_CRUD", "SZ": "1", "SRF": 0.22, "SC": "S2",
+             "FA": 1.0, "FV": 1.4, "DAMP_RATIO": 0.08},
+            lambda p: p.get("DAMP_RATIO"), 0.05, 0.08,
+            item_id=91, products=("civil",), confirmed=True,
+        ),
+        Case(
+            SeismicLoadParam,
+            {"NAME": "POSL_CRUD", "CODE": "KDS(41-17-00:2019)", "METHOD": "EQV_STATIC",
+             "SZ": "1", "EPA": 0.22, "SC": "S2", "FA": 1.0, "FV": 1.4,
+             "SDS": 0.2933, "SD1": 0.1467, "USER_GROUP": "1", "IF": 1.5, "RMF": 3.0},
+            {"NAME": "POSL_CRUD", "CODE": "KDS(41-17-00:2019)", "METHOD": "EQV_STATIC",
+             "SZ": "1", "EPA": 0.22, "SC": "S2", "FA": 1.0, "FV": 1.4,
+             "SDS": 0.2933, "SD1": 0.1467, "USER_GROUP": "1", "IF": 1.5, "RMF": 3.5},
+            lambda p: p.get("RMF"), 3.0, 3.5,
+            item_id=92, products=("gen",), confirmed=True,
+        ),
+        # SOIL_PROP references posp_seed, which is Gen-only (POSP itself is
+        # a GEN_ONLY endpoint) -- restricted to Gen here even though
+        # EPSE's own PRODUCTS covers both, since there's no equivalent
+        # Civil fixture to reference. Civil's own EPSE round trip is
+        # untested by this case, not confirmed broken.
+        #
+        # ⚠️ Also confirmed failing live 2026-08-16 (Gen NX) with
+        # "Wrong Field", same unresolved class as EPST just above --
+        # untested whether it's the same underlying cause.
+        Case(
+            SeismicEarthPressure,
+            {"LOADCASE": "LC_SCRATCH", "DIR": "XY", "ANGLE": 0, "IN_PT": [0, 0, 0],
+             "SF": 1.0, "CODE": "KDS(41-17-00:2019)", "SEIS_LOAD": "POSL_SEED",
+             "LAYER_PARAM": "SINGLE", "LAYER_LV": 0, "SOIL_PROP": "POSP_SEED",
+             "SEL_TYPE": "ELEMENT", "ELEM_TYPE": "FRAME", "ELEM_LIST": [1, 2, 3]},
+            {"LOADCASE": "LC_SCRATCH", "DIR": "XY", "ANGLE": 0, "IN_PT": [0, 0, 0],
+             "SF": 1.5, "CODE": "KDS(41-17-00:2019)", "SEIS_LOAD": "POSL_SEED",
+             "LAYER_PARAM": "SINGLE", "LAYER_LV": 0, "SOIL_PROP": "POSP_SEED",
+             "SEL_TYPE": "ELEMENT", "ELEM_TYPE": "FRAME", "ELEM_LIST": [1, 2, 3]},
+            lambda p: p.get("SF"), 1.0, 1.5,
+            item_id=1, needs=("posp_seed", "posl_seed"), products=("gen",),
+        ),
+    ]
+
+
+def _extras8_seeds() -> List[SeedStep]:
+    """BCCT's vBOUNDARY.vBG entries must reference real /db/BNGR boundary
+    groups -- confirmed live 2026-08-16: the manual's own example uses
+    made-up names ("BG1"/"BG2") and answers "Boundary Group not found:
+    BG1" verbatim. This seed creates them for real."""
+    return [
+        SeedStep("bngr_seed", lambda c: BoundaryGroup.create(
+            {1: {"NAME": "BG1"}, 2: {"NAME": "BG2"}}, client=c)),
+    ]
+
+
+def _extras8_cases() -> List[Case]:
+    """batch 8: the tractable subset of db.analysis_control -- 9 of its 21
+    endpoints. All 9 are singleton "control data" tables (one record, id 1,
+    no per-model geometry to reference beyond the base seed's own load
+    cases "DL"/"LC_SCRATCH"), so no seed step is needed beyond bngr_seed
+    above. Deferred: the 5 Hyper-S (``-M1``) variants (Civil-only, deeply
+    nested payloads) and the 4 country-specific MVCT variants (MVCTch/id/
+    bs/tr -- large, code-specific field sets not worth the fixture cost
+    yet).
+    """
+    return [
+        # ⚠️ Confirmed failing live 2026-08-16 on both products, but with
+        # different symptoms:
+        # - Civil NX (v2.2, build 08/14/2026): TOL never persists as
+        #   written. POST with TOL=0.001 succeeds and reads back
+        #   correctly, but a follow-up PUT changing only TOL to 0.0005
+        #   (and separately, to 0.01) reads back 0.001 both times --
+        #   confirmed even after DELETE + a fresh POST with TOL=0.01,
+        #   ruling out a PUT-specific bug. TOL appears fixed at 0.001
+        #   server-side regardless of what's sent.
+        # - Gen NX (v2.1, build 08/14/2026): every POST answers
+        #   "Wrong Field" outright, including a bare {ITER, TOL}-only
+        #   payload and one matching /info's own live schema exactly
+        #   (which differs from Civil's and the manual's -- Gen has no
+        #   CLATS field but does have an undocumented ACWC one; adding
+        #   ACWC changes the error to "Wrong Key", suggesting it's
+        #   read-only, not the cause either).
+        # Neither resolved as a fixture problem.
+        Case(
+            MainControlData,
+            {"ARDC": True, "ANRC": True, "ITER": 20, "TOL": 0.001,
+             "CSECF": False, "TRS": True, "CRBAR": False, "BMSTRESS": False,
+             "CLATS": False},
+            {"ARDC": True, "ANRC": True, "ITER": 20, "TOL": 0.0005,
+             "CSECF": False, "TRS": True, "CRBAR": False, "BMSTRESS": False,
+             "CLATS": False},
+            lambda p: p.get("TOL"), 0.001, 0.0005,
+            item_id=1,
+        ),
+        Case(
+            PDeltaAnalysisControl,
+            {"ITER": 5, "TOL": 1e-05, "PDEL_CASES": [
+                {"LCNAME": "DL", "FACTOR": 1.0}, {"LCNAME": "LC_SCRATCH", "FACTOR": 1.0}]},
+            {"ITER": 8, "TOL": 1e-05, "PDEL_CASES": [
+                {"LCNAME": "DL", "FACTOR": 1.0}, {"LCNAME": "LC_SCRATCH", "FACTOR": 1.0}]},
+            lambda p: p.get("ITER"), 5, 8,
+            item_id=1, confirmed=True,
+        ),
+        Case(
+            BucklingAnalysisControl,
+            {"MODE_NUM": 12, "OPT_POSITIVE": True, "OPT_CONSIDER_AXIAL_ONLY": True,
+             "LOAD_FACTOR_FROM": 0, "LOAD_FACTOR_TO": 0, "OPT_STURM_SEQ": True,
+             "ITEMS": [{"LCNAME": "DL", "FACTOR": 1, "LOAD_TYPE": 1},
+                       {"LCNAME": "LC_SCRATCH", "FACTOR": 1, "LOAD_TYPE": 0}]},
+            {"MODE_NUM": 6, "OPT_POSITIVE": True, "OPT_CONSIDER_AXIAL_ONLY": True,
+             "LOAD_FACTOR_FROM": 0, "LOAD_FACTOR_TO": 0, "OPT_STURM_SEQ": True,
+             "ITEMS": [{"LCNAME": "DL", "FACTOR": 1, "LOAD_TYPE": 1},
+                       {"LCNAME": "LC_SCRATCH", "FACTOR": 1, "LOAD_TYPE": 0}]},
+            lambda p: p.get("MODE_NUM"), 12, 6,
+            item_id=1, confirmed=True,
+        ),
+        # ⚠️ TYPE="EIGEN" (Subspace Iteration, the manual's own first
+        # worked example) answers "FREQ_RANGE is required for LANCZOS." --
+        # confirmed live 2026-08-16 that "EIGEN" isn't accepted as a TYPE
+        # value at all; the server evidently only recognises "LANCZOS" and
+        # "RITZ" despite the manual and /info schema both listing EIGEN.
+        # Switched to the manual's Lanczos example instead, which passes.
+        Case(
+            EigenvalueAnalysisControl,
+            {"TYPE": "LANCZOS", "iFREQ": 30, "bMINMAX": True, "FRMIN": 0.1,
+             "FRMAX": 50, "bSTRUM": True},
+            {"TYPE": "LANCZOS", "iFREQ": 50, "bMINMAX": True, "FRMIN": 0.1,
+             "FRMAX": 50, "bSTRUM": True},
+            lambda p: p.get("iFREQ"), 30, 50,
+            item_id=1, confirmed=True,
+        ),
+        # ⚠️ Product-asymmetric, confirmed live 2026-08-16: this exact
+        # payload passes clean on Gen NX (confirmed=True below) but fails
+        # on Civil NX -- POSTs successfully (200/201, no error body) but a
+        # GET immediately after reads THETA back as 0, not the 1 that was
+        # sent, reproduced twice including after a DELETE + fresh POST.
+        # Split into two cases since only one product's round trip
+        # actually completes.
+        Case(
+            HeatOfHydrationAnalysisControl,
+            {"FINAL_STAGE": True, "STAGE_NAME": "", "THETA": 1, "INIT_TEMP": 20,
+             "EVAL": "GAUSS", "OPT_USE_EQUI_AGE": True, "OPT_INCL_SELF_WEIGHT": False,
+             "SELF_WEIGHT_FACTOR": -1, "OPT_IS_CREEP_SHRINKAGE": True,
+             "ITEM": {"TYPE": "BOTH", "CREEP_CALC_METHOD": 0,
+                      "M_GENERAL": {"ITER": 20, "TOL": 0.001}}},
+            {"FINAL_STAGE": True, "STAGE_NAME": "", "THETA": 0.5, "INIT_TEMP": 20,
+             "EVAL": "GAUSS", "OPT_USE_EQUI_AGE": True, "OPT_INCL_SELF_WEIGHT": False,
+             "SELF_WEIGHT_FACTOR": -1, "OPT_IS_CREEP_SHRINKAGE": True,
+             "ITEM": {"TYPE": "BOTH", "CREEP_CALC_METHOD": 0,
+                      "M_GENERAL": {"ITER": 20, "TOL": 0.001}}},
+            lambda p: p.get("THETA"), 1, 0.5,
+            item_id=1, products=("civil",),
+        ),
+        Case(
+            HeatOfHydrationAnalysisControl,
+            {"FINAL_STAGE": True, "STAGE_NAME": "", "THETA": 1, "INIT_TEMP": 20,
+             "EVAL": "GAUSS", "OPT_USE_EQUI_AGE": True, "OPT_INCL_SELF_WEIGHT": False,
+             "SELF_WEIGHT_FACTOR": -1, "OPT_IS_CREEP_SHRINKAGE": True,
+             "ITEM": {"TYPE": "BOTH", "CREEP_CALC_METHOD": 0,
+                      "M_GENERAL": {"ITER": 20, "TOL": 0.001}}},
+            {"FINAL_STAGE": True, "STAGE_NAME": "", "THETA": 0.5, "INIT_TEMP": 20,
+             "EVAL": "GAUSS", "OPT_USE_EQUI_AGE": True, "OPT_INCL_SELF_WEIGHT": False,
+             "SELF_WEIGHT_FACTOR": -1, "OPT_IS_CREEP_SHRINKAGE": True,
+             "ITEM": {"TYPE": "BOTH", "CREEP_CALC_METHOD": 0,
+                      "M_GENERAL": {"ITER": 20, "TOL": 0.001}}},
+            lambda p: p.get("THETA"), 1, 0.5,
+            item_id=1, products=("gen",), confirmed=True,
+        ),
+        # ⚠️ Confirmed failing live 2026-08-16 on both products, with two
+        # different errors depending on payload completeness: the manual's
+        # full worked example answers "Unknown Error" on Civil NX (same as
+        # /db/FBLA's and /db/EPST's unresolved class) and on Gen NX too,
+        # while a stripped-down minimal payload answers "Wrong Field"
+        # instead on Civil -- field names both match /info's own live
+        # schema. Given /db/MVCT sits downstream of the
+        # "moving" tier's whole AASHTO LRFD moving-load fixture chain
+        # (code -> lane -> vehicle -> case), it may need that entire
+        # prerequisite chain built first rather than being a standalone
+        # control table like its siblings in this batch -- untested here,
+        # left as a genuine finding rather than pulled into this tier's
+        # scope.
+        Case(
+            MovingLoadAnalysisControl,
+            {"METHOD": "EXACT", "POINT": "INF", "iIGP": 0, "iIGPN": 3,
+             "PLATE": "NODAL", "bSTRCALC": True, "bCONCURRENT": True,
+             "bCONCLINK": True, "FRAME": "AXIAL", "bCSTRCALC": True,
+             "bREAC": True, "bRG": False, "RGN": "",
+             "bDISP": True, "bDG": False, "DGN": "",
+             "bFM": True, "bFG": False, "FGN": "",
+             "bL": True, "bLG": False, "LGN": ""},
+            {"METHOD": "EXACT", "POINT": "INF", "iIGP": 0, "iIGPN": 5,
+             "PLATE": "NODAL", "bSTRCALC": True, "bCONCURRENT": True,
+             "bCONCLINK": True, "FRAME": "AXIAL", "bCSTRCALC": True,
+             "bREAC": True, "bRG": False, "RGN": "",
+             "bDISP": True, "bDG": False, "DGN": "",
+             "bFM": True, "bFG": False, "FGN": "",
+             "bL": True, "bLG": False, "LGN": ""},
+            lambda p: p.get("iIGPN"), 3, 5,
+            item_id=1,
+        ),
+        Case(
+            SettlementAnalysisControlData,
+            {"CONCURRENT_CALC": True, "CONCURRENT_LINK": False},
+            {"CONCURRENT_CALC": False, "CONCURRENT_LINK": False},
+            lambda p: p.get("CONCURRENT_CALC"), True, False,
+            item_id=1, confirmed=True,
+        ),
+        # ⚠️ Product-asymmetric, confirmed live 2026-08-16: this exact
+        # payload passes clean on Gen NX (confirmed=True below) but fails
+        # on Civil NX with "LINE_SEARCH_OPTION is required when
+        # OPT_ENABLE_LINE_SEARCH is true." -- neither field appears in the
+        # manual or in /info's own live schema at all. Tried explicitly
+        # setting OPT_ENABLE_LINE_SEARCH=False (still the same error) and
+        # adding a guessed LINE_SEARCH_OPTION="AUTO" alongside
+        # OPT_ENABLE_LINE_SEARCH=True (also the same error, unchanged) --
+        # neither cleared it on Civil. Split into two cases since only one
+        # product's round trip actually completes.
+        Case(
+            NonlinearAnalysisControlData,
+            {"NONLINEAR_TYPE": "GEOM+MATL", "ITERATION_METHOD": "NEWTON",
+             "NUMBER_STEPS": 1, "MAX_ITERATIONS": 30,
+             "OPT_ENERGY_NORM": True, "ENERGY_NORM": 0.001,
+             "OPT_DISPLACEMENT_NORM": True, "DISPLACEMENT_NORM": 0.001,
+             "OPT_FORCE_NORM": True, "FORCE_NORM": 0.001,
+             "NEWTON_ITEMS": [{"ITERATION_METHOD": "NEWTON", "LCNAME": "LC_SCRATCH",
+                               "NUMBER_STEPS": 1, "MAX_ITERATIONS": 30, "LOAD_FACTORS": [1]}]},
+            {"NONLINEAR_TYPE": "GEOM+MATL", "ITERATION_METHOD": "NEWTON",
+             "NUMBER_STEPS": 1, "MAX_ITERATIONS": 50,
+             "OPT_ENERGY_NORM": True, "ENERGY_NORM": 0.001,
+             "OPT_DISPLACEMENT_NORM": True, "DISPLACEMENT_NORM": 0.001,
+             "OPT_FORCE_NORM": True, "FORCE_NORM": 0.001,
+             "NEWTON_ITEMS": [{"ITERATION_METHOD": "NEWTON", "LCNAME": "LC_SCRATCH",
+                               "NUMBER_STEPS": 1, "MAX_ITERATIONS": 50, "LOAD_FACTORS": [1]}]},
+            lambda p: p.get("MAX_ITERATIONS"), 30, 50,
+            item_id=1, products=("civil",),
+        ),
+        Case(
+            NonlinearAnalysisControlData,
+            {"NONLINEAR_TYPE": "GEOM+MATL", "ITERATION_METHOD": "NEWTON",
+             "NUMBER_STEPS": 1, "MAX_ITERATIONS": 30,
+             "OPT_ENERGY_NORM": True, "ENERGY_NORM": 0.001,
+             "OPT_DISPLACEMENT_NORM": True, "DISPLACEMENT_NORM": 0.001,
+             "OPT_FORCE_NORM": True, "FORCE_NORM": 0.001,
+             "NEWTON_ITEMS": [{"ITERATION_METHOD": "NEWTON", "LCNAME": "LC_SCRATCH",
+                               "NUMBER_STEPS": 1, "MAX_ITERATIONS": 30, "LOAD_FACTORS": [1]}]},
+            {"NONLINEAR_TYPE": "GEOM+MATL", "ITERATION_METHOD": "NEWTON",
+             "NUMBER_STEPS": 1, "MAX_ITERATIONS": 50,
+             "OPT_ENERGY_NORM": True, "ENERGY_NORM": 0.001,
+             "OPT_DISPLACEMENT_NORM": True, "DISPLACEMENT_NORM": 0.001,
+             "OPT_FORCE_NORM": True, "FORCE_NORM": 0.001,
+             "NEWTON_ITEMS": [{"ITERATION_METHOD": "NEWTON", "LCNAME": "LC_SCRATCH",
+                               "NUMBER_STEPS": 1, "MAX_ITERATIONS": 50, "LOAD_FACTORS": [1]}]},
+            lambda p: p.get("MAX_ITERATIONS"), 30, 50,
+            item_id=1, products=("gen",), confirmed=True,
+        ),
+        # vBOUNDARY.vBG entries must reference real /db/BNGR boundary
+        # groups (bngr_seed above) -- the manual's own "BG1"/"BG2" example
+        # values are made-up and answer "Boundary Group not found: BG1".
+        Case(
+            BoundaryChangeAssignment,
+            {"bSPT": True, "bSPR": True, "bGSPR": False, "bCGLINK": False,
+             "bSSSF": True, "bPSSF": False, "bRLS": True, "bCDOF": False,
+             "vBOUNDARY": [{"BGCNAME": "BGL1", "vBG": ["BG1", "BG2"]}],
+             "vLOADANAL": [{"TYPE": "ST", "BGCNAME": "BGL1", "LCNAME": "LC_SCRATCH"}]},
+            {"bSPT": False, "bSPR": True, "bGSPR": False, "bCGLINK": False,
+             "bSSSF": True, "bPSSF": False, "bRLS": True, "bCDOF": False,
+             "vBOUNDARY": [{"BGCNAME": "BGL1", "vBG": ["BG1", "BG2"]}],
+             "vLOADANAL": [{"TYPE": "ST", "BGCNAME": "BGL1", "LCNAME": "LC_SCRATCH"}]},
+            lambda p: p.get("bSPT"), True, False,
+            item_id=1, needs=("bngr_seed",), confirmed=True,
+        ),
+    ]
+
+
+def _extras9_seeds() -> List[SeedStep]:
+    """batch 9: db.node_element's Domain feature (MADO/SBDO/DOEL).
+
+    ⚠️ /db/MADO itself is a genuine unresolved finding, confirmed live
+    2026-08-16 on both products: POST answers `{"message": ""}` -- no
+    error body, HTTP success -- but the record never actually appears in
+    a follow-up GET. Reproduced with several payload variants including
+    the manual's own literal request-body example (NAME="DM1", TYPE=4,
+    MATL=0, PROP=0, SUB_TYPE=2) verbatim, and with MATL/PROP pointed at
+    the base seed model's real material/section ids (1/1) instead of the
+    manual's placeholder 0/0. Every attempt is silently a no-op. This
+    seed is kept (rather than deleted) so SBDO/DOEL's own cases still run
+    and demonstrate the downstream effect -- they reference a domain name
+    that was never actually created, which is the real reason they fail
+    too, not necessarily a defect of their own.
+    """
+    return [
+        SeedStep("mado_seed", lambda c: MainDomain.create(
+            {90: {"NAME": "DM1_SEED", "TYPE": 4, "MATL": 1, "PROP": 1, "SUB_TYPE": 1},
+             91: {"NAME": "DM2_SEED", "TYPE": 4, "MATL": 1, "PROP": 1, "SUB_TYPE": 1}},
+            client=c)),
+    ]
+
+
+def _extras9_cases() -> List[Case]:
+    """None of these 3 have ever passed live -- see the seed docstring
+    above for /db/MADO's root cause. SBDO and DOEL are included anyway
+    (not skipped) since a future MADO fix might unblock them without any
+    change needed here."""
+    return [
+        Case(
+            MainDomain,
+            {"NAME": "DM_CRUD", "TYPE": 4, "MATL": 1, "PROP": 1, "SUB_TYPE": 1},
+            {"NAME": "DM_CRUD", "TYPE": 4, "MATL": 1, "PROP": 1, "SUB_TYPE": 2},
+            lambda p: p.get("SUB_TYPE"), 1, 2,
+            item_id=92, needs=("mado_seed",),
+        ),
+        # DOMAIN_NAME references mado_seed's DM1_SEED by name -- which was
+        # never actually created (see above), so this fails downstream of
+        # /db/MADO's own defect, not necessarily one of its own. Civil-only
+        # field set (MEMB_TYPE_CIVIL/REBAR_AXIS_TYPE/STR_UCS/AXIS_VECTOR),
+        # per the manual's own Civil worked example.
+        Case(
+            SubDomain,
+            {"SUB_DOMAIN_NAME": "SDM_CRUD", "V1": 0, "V2": 90, "DOMAIN_NAME": "DM1_SEED",
+             "MEMB_TYPE_CIVIL": 1, "REBAR_AXIS_TYPE": 0, "STR_UCS": "",
+             "AXIS_VECTOR": [0, 0, 0, 0, 0, 0]},
+            {"SUB_DOMAIN_NAME": "SDM_CRUD", "V1": 0, "V2": 45, "DOMAIN_NAME": "DM1_SEED",
+             "MEMB_TYPE_CIVIL": 1, "REBAR_AXIS_TYPE": 0, "STR_UCS": "",
+             "AXIS_VECTOR": [0, 0, 0, 0, 0, 0]},
+            lambda p: p.get("V2"), 90, 45,
+            item_id=1, needs=("mado_seed",), products=("civil",),
+        ),
+        # Gen-only field set (MEMBER_TYPE/bUseMt/THICKNESS/rebar layout),
+        # per the manual's own Gen worked example. Same downstream-of-MADO
+        # caveat as the Civil case above.
+        Case(
+            SubDomain,
+            {"SUB_DOMAIN_NAME": "SDM_CRUD", "V1": 0, "V2": 90, "DOMAIN_NAME": "DM1_SEED",
+             "MEMBER_TYPE": 1, "bUseMt": True, "THICKNESS": 0.2,
+             "OPT_BASIC_REBAR": True, "TOP_REBAR_NAME_X": "D13", "TOP_REBAR_SPACE_X": 0.15,
+             "BOTTOM_REBAR_NAME_X": "D13", "BOTTOM_REBAR_SPACE_X": 0.15,
+             "TOP_REBAR_NAME_Y": "D13", "TOP_REBAR_SPACE_Y": 0.15,
+             "BOTTOM_REBAR_NAME_Y": "D13", "BOTTOM_REBAR_SPACE_Y": 0.15,
+             "OPT_REBAR_MATL": False, "REBAR_MATL_KEY": 0},
+            {"SUB_DOMAIN_NAME": "SDM_CRUD", "V1": 0, "V2": 45, "DOMAIN_NAME": "DM1_SEED",
+             "MEMBER_TYPE": 1, "bUseMt": True, "THICKNESS": 0.2,
+             "OPT_BASIC_REBAR": True, "TOP_REBAR_NAME_X": "D13", "TOP_REBAR_SPACE_X": 0.15,
+             "BOTTOM_REBAR_NAME_X": "D13", "BOTTOM_REBAR_SPACE_X": 0.15,
+             "TOP_REBAR_NAME_Y": "D13", "TOP_REBAR_SPACE_Y": 0.15,
+             "BOTTOM_REBAR_NAME_Y": "D13", "BOTTOM_REBAR_SPACE_Y": 0.15,
+             "OPT_REBAR_MATL": False, "REBAR_MATL_KEY": 0},
+            lambda p: p.get("V2"), 90, 45,
+            item_id=1, needs=("mado_seed",), products=("gen",),
+        ),
+        # Keyed by element id -- element 4 is the base model's plate.
+        # KEY_DOMAIN/MAIN_DOMAIN_NAME reference mado_seed's domains, which
+        # were never actually created (same downstream caveat as SBDO
+        # above).
+        Case(
+            DomainElement,
+            {"TYPE": 0, "KEY_DOMAIN": 90, "MAIN_DOMAIN_NAME": "DM1_SEED"},
+            {"TYPE": 0, "KEY_DOMAIN": 91, "MAIN_DOMAIN_NAME": "DM2_SEED"},
+            lambda p: p.get("MAIN_DOMAIN_NAME"), "DM1_SEED", "DM2_SEED",
+            item_id=4, needs=("mado_seed",),
+        ),
+    ]
+
+
+def _extras10_seeds() -> List[SeedStep]:
+    """batch 10: the standalone (non-construction-stage-keyed) subset of
+    db.construction_stage's heat-of-hydration family. Deferred: /db/HECB,
+    /db/HSPT (both keyed by a construction-stage id, per the manual's own
+    "Assign의 키(ID)는 시공단계 번호입니다" note) and /db/CSCS (references a
+    stage name via ASTAGE) -- all three would need a real construction
+    stage built first, which this tier doesn't do.
+
+    hsfc_seed creates two named functions (not one) so /db/HAHS's update
+    step can switch FUNC_NAME to a second real function rather than a
+    no-op -- same two-seed pattern as the boundary tier's spring_types.
+    Named with a "10" suffix (SG10_SEED/BG10_SEED) to avoid colliding
+    with the "stage" tier's own SG_SEED/BG_SEED when a full run exercises
+    both tiers against the same document.
+    """
+    def _groups10(c: MidasClient) -> None:
+        StructureGroup.create({90: {"NAME": "SG10_SEED"}}, client=c)
+        BoundaryGroup.create({90: {"NAME": "BG10_SEED"}}, client=c)
+
+    return [
+        SeedStep("groups10", _groups10),
+        SeedStep("hsfc_seed", lambda c: HeatSourceFunction.create(
+            {90: {"NAME": "HSFC_SEED", "TYPE": "CONST", "TEMP_CONST": 10},
+             91: {"NAME": "HSFC_SEED_2", "TYPE": "CONST", "TEMP_CONST": 15}},
+            client=c)),
+    ]
+
+
+def _extras10_cases() -> List[Case]:
+    return [
+        Case(
+            AmbientTemperatureFunction,
+            {"NAME": "ETFC_CRUD", "TYPE": "CONST", "TEMP": 30},
+            {"NAME": "ETFC_CRUD", "TYPE": "CONST", "TEMP": 15},
+            lambda p: p.get("TEMP"), 30, 15,
+            item_id=1, confirmed=True,
+        ),
+        Case(
+            ConvectionCoefficientFunction,
+            {"NAME": "CCFC_CRUD", "TYPE": "CONST", "COEF": 15},
+            {"NAME": "CCFC_CRUD", "TYPE": "CONST", "COEF": 20},
+            lambda p: p.get("COEF"), 15, 20,
+            item_id=1, confirmed=True,
+        ),
+        # id 92: hsfc_seed's two records land at 90/91.
+        Case(
+            HeatSourceFunction,
+            {"NAME": "HSFC_CRUD", "TYPE": "CONST", "TEMP_CONST": 10},
+            {"NAME": "HSFC_CRUD", "TYPE": "CONST", "TEMP_CONST": 25},
+            lambda p: p.get("TEMP_CONST"), 10, 25,
+            item_id=92, needs=("hsfc_seed",),
+        ),
+        # ⚠️ Keyed by element id. Confirmed live 2026-08-16 (Civil NX
+        # v2.2, build 08/14/2026) that Heat Source Assignment rejects both
+        # element types the base seed model has: a frame element (id 1)
+        # and a PLATE (id 4), both with "[Error] The element no. N is an
+        # element type in which Heat Source Assignment cannot be
+        # entered." Heat-of-hydration is normally applied to mass
+        # concrete (piers, footings) modelled as SOLID elements, which
+        # this base model doesn't build -- likely a scope gap in this
+        # fixture (no SOLID geometry available), not necessarily a
+        # product defect; untested against a real SOLID element. FUNC_NAME
+        # would switch from hsfc_seed's first function to its second on
+        # update, once a SOLID element is available to key this on.
+        Case(
+            AssignHeatSource,
+            {"FUNC_NAME": "HSFC_SEED"},
+            {"FUNC_NAME": "HSFC_SEED_2"},
+            lambda p: p.get("FUNC_NAME"), "HSFC_SEED", "HSFC_SEED_2",
+            item_id=4, needs=("hsfc_seed",),
+        ),
+        # ⚠️ Confirmed failing live 2026-08-16 (Civil NX v2.2, build
+        # 08/14/2026) with "Wrong Key" -- a different error class than
+        # this session's usual "Wrong Field"/"Unknown Error". Bisected to
+        # ITEMS specifically: every other field succeeds individually
+        # (each answers the normal "Wrong Field" for an incomplete
+        # payload), but adding ITEMS -- with real frame node ids, real
+        # plate node ids, or a single node -- always flips the error to
+        # "Wrong Key" instead. Live /info's own schema says ITEMS is a
+        # plain integer array, matching what was sent, so the mismatch
+        # isn't a documented one. Also tried the undocumented
+        # START_STAGE/END_STAGE string fields /info reveals (absent from
+        # the manual entirely) both empty and omitted -- no change.
+        Case(
+            PipeCooling,
+            {"NAME": "HPCE_CRUD", "DIAMETER": 0.025, "COEF": 850, "HEAT": 4200,
+             "DENSITY": 1000, "TEMPER": 15, "FLOW_RATE": 20, "START_TIME": 0,
+             "END_TIME": 168, "ITEMS": [1, 2, 3, 4]},
+            {"NAME": "HPCE_CRUD", "DIAMETER": 0.025, "COEF": 850, "HEAT": 4200,
+             "DENSITY": 1000, "TEMPER": 20, "FLOW_RATE": 20, "START_TIME": 0,
+             "END_TIME": 168, "ITEMS": [1, 2, 3, 4]},
+            lambda p: p.get("TEMPER"), 15, 20,
+            item_id=1,
+        ),
+        # NODE1/NODE2 are the base model's own frame nodes; LCNAME is the
+        # base model's own "LC_SCRATCH" load case.
+        Case(
+            SetBackLoad,
+            {"NODE1": 1, "NODE2": 2, "DX": 0, "DY": 0.005, "DZ": 0,
+             "LCNAME": "LC_SCRATCH", "GROUP_NAME": ""},
+            {"NODE1": 1, "NODE2": 2, "DX": 0, "DY": 0.01, "DZ": 0,
+             "LCNAME": "LC_SCRATCH", "GROUP_NAME": ""},
+            lambda p: p.get("DY"), 0.005, 0.01,
+            item_id=1, confirmed=True,
+        ),
+        # ACT_ELEM/ACT_BNGR reference groups10's real structure/boundary
+        # groups by name -- the manual's own worked example uses made-up
+        # group names, so this fixture uses real ones from the start
+        # rather than repeating the /db/BCCT lesson from batch 8.
+        Case(
+            ConstructionStageForHydration,
+            {"NAME": "HSTG_CRUD", "bINITAL_TEMP": True, "INITIAL_TEMP": 20,
+             "ADD_STEP": [1, 3, 7, 14, 28], "ACT_ELEM": ["SG10_SEED"],
+             "ACT_BNGR": ["BG10_SEED"], "DACT_BNGR": [], "ACT_LOAD": [],
+             "DACT_LOAD": []},
+            {"NAME": "HSTG_CRUD", "bINITAL_TEMP": True, "INITIAL_TEMP": 25,
+             "ADD_STEP": [1, 3, 7, 14, 28], "ACT_ELEM": ["SG10_SEED"],
+             "ACT_BNGR": ["BG10_SEED"], "DACT_BNGR": [], "ACT_LOAD": [],
+             "DACT_LOAD": []},
+            lambda p: p.get("INITIAL_TEMP"), 20, 25,
+            item_id=1, needs=("groups10",), confirmed=True,
+        ),
+    ]
+
+
 #: Priority order — what a modelling script needs, not the manual's order.
 TIERS: List[Tier] = [
     Tier("core", "baseline model, groups and static loads", _no_seeds, _core_cases),
@@ -2031,6 +2742,10 @@ TIERS: List[Tier] = [
     Tier("extras4", "batch 4: db.load_combinations in full", _no_seeds, _extras4_cases),
     Tier("extras5", "batch 5: db.dynamic_loads (9 of 12, Hyper-S variants deferred)", _extras5_seeds, _extras5_cases),
     Tier("extras6", "batch 6: seismic-device family from db.boundary (SDVI/SDVE/SDST/SDHY/SDIS; all 5 fail live, DRLS deferred)", _no_seeds, _extras6_cases),
+    Tier("extras7", "batch 7: standalone/frame-attachable remainder of db.static_loads (PNLD/PNLA/FMLD/POSP/POSL confirmed; FBLA/EPST/EPSE fail live)", _extras7_seeds, _extras7_cases),
+    Tier("extras8", "batch 8: tractable subset of db.analysis_control (PDEL/BUCK/EIGV/SMCT/BCCT confirmed both products; HHCT/NLCT confirmed Gen only; ACTL/MVCT fail on both)", _extras8_seeds, _extras8_cases),
+    Tier("extras9", "batch 9: db.node_element's Domain feature (MADO/SBDO/DOEL -- all 3 fail live, MADO silently drops writes on both products)", _extras9_seeds, _extras9_cases),
+    Tier("extras10", "batch 10: standalone subset of db.construction_stage's heat-of-hydration family (ETFC/CCFC/HSFC/STBK/HSTG confirmed; HAHS needs a SOLID element this fixture lacks; HPCE fails live; HECB/HSPT/CSCS deferred)", _extras10_seeds, _extras10_cases),
 ]
 
 

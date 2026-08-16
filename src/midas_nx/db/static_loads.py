@@ -347,10 +347,17 @@ class PlaneLoadType(DbResource):
 
 
 class PlaneLoadPayload(TypedDict, total=False):
-    """docs/manual/06_DB_Static_Loads.md #12 — /db/PNLA Specifications table."""
+    """docs/manual/06_DB_Static_Loads.md #12 — /db/PNLA Specifications table.
+
+    ⚠️ Confirmed live 2026-08-16 (Civil NX v2.2, build 08/14/2026):
+    despite the manual marking ``LOAD_GROUP`` Required, sending any
+    non-empty value answers ``"Wrong Field"``; omitting the key (or
+    sending ``""``) succeeds. Left typed as optional here pending
+    confirmation of what value it actually expects, if any.
+    """
 
     LCNAME: str  # Load Case Name, required
-    LOAD_GROUP: str  # Load Group Name, required
+    LOAD_GROUP: str  # Load Group Name -- confirmed live: any non-empty value is rejected ("Wrong Field"); omit or send ""
     PNLD_KEY: int  # Defined Plane Load Key (/db/PNLD id), required
     ELEM_TYPE: str  # "PLATE" / "SOLID", required
     POINT_ORIGIN: List[float]  # First Point / Origin [x, y, z], required
@@ -547,21 +554,36 @@ class SeismicEarthPressure(DbResource):
 
 
 class SeismicLoadParamPayload(TypedDict, total=False):
-    """docs/manual/06_DB_Static_Loads.md #19 — /db/POSL Specifications table."""
+    """docs/manual/06_DB_Static_Loads.md #19 — /db/POSL Specifications table.
+
+    ⚠️ Confirmed live 2026-08-16 (v2.1/v2.2, build 08/14/2026): this
+    endpoint's actual accepted field set is product-asymmetric, and only
+    Gen NX matches the fields below. **Civil NX's live schema is entirely
+    different** — ``SZ``, ``SRF`` (Seismic Risk Factor, not ``EPA``),
+    ``SC``, ``FA``, ``FV``, ``DAMP_RATIO`` (Damping Ratio) only. Sending
+    ``CODE`` on Civil fails ``"Wrong Field"`` even as an empty string, and
+    none of ``METHOD``/``EPA``/``SDS``/``SD1``/``USER_GROUP``/``IF``/
+    ``RMF`` are accepted there at all. Gen NX also has two undocumented
+    fields beyond the manual: ``EPGAeff``, ``Kae`` (both float, per
+    ``GET``/``.info()``). Check the active product before building this
+    payload; there is no single shape that works on both.
+    """
 
     NAME: str  # Load Case Name, required
-    CODE: str  # Seismic Load Code, optional
-    METHOD: str  # "RES_DISP"/"EQV_STATIC", optional
+    CODE: str  # Seismic Load Code, optional. Gen NX only -- any value, even "", is rejected on Civil NX
+    METHOD: str  # "RES_DISP"/"EQV_STATIC", optional. Gen NX only
     SZ: str  # Seismic Zone, required
-    EPA: float  # Effective Peak Ground Acceleration, required
+    EPA: float  # Effective Peak Ground Acceleration, required. Gen NX only -- see SRF for Civil NX
     SC: str  # Site Class, required
     FA: float  # Short-period Site Coefficient, required
     FV: float  # Long-period Site Coefficient, required
-    SDS: float  # Design Spectral Acceleration at Short Period, required
-    SD1: float  # Design Spectral Acceleration at 1-sec Period, required
-    USER_GROUP: str  # Seismic User Group, optional
-    IF: float  # Importance Factor, required
-    RMF: float  # Response Modification Factor, required
+    SDS: float  # Design Spectral Acceleration at Short Period, required. Gen NX only
+    SD1: float  # Design Spectral Acceleration at 1-sec Period, required. Gen NX only
+    USER_GROUP: str  # Seismic User Group, optional. Gen NX only
+    IF: float  # Importance Factor, required. Gen NX only
+    RMF: float  # Response Modification Factor, required. Gen NX only
+    SRF: float  # Seismic Risk Factor. Civil NX only, undocumented -- Civil's equivalent of EPA
+    DAMP_RATIO: float  # Damping Ratio. Civil NX only, undocumented
 
 
 class SeismicLoadParam(DbResource):
