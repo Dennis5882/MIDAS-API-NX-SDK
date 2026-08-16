@@ -112,11 +112,19 @@ from midas_nx.client import MidasAPIError, MidasClient
 from midas_nx.db.boundary import (
     BeamEndOffset,
     BeamEndRelease,
+    ChangeGeneralLinkProperty,
     Constraint,
+    ConstraintLabelDirection,
     ElasticLink,
+    ForceDeformationFunction,
+    GeneralLink,
+    GeneralLinkHyperS,
+    GeneralLinkProperty,
     GeneralSpringSupport,
     GeneralSpringType,
     LinearConstraint,
+    PanelZoneEffect,
+    PlateEndRelease,
     PointSpring,
     RigidLink,
     SurfaceSpring,
@@ -135,7 +143,22 @@ from midas_nx.db.moving_loads import (
     Vehicles,
 )
 from midas_nx.db.node_element import Element, Node, Skew
-from midas_nx.db.project import BoundaryGroup, LoadGroup, StructureGroup, Unit
+from midas_nx.db.project import (
+    BoundaryGroup,
+    FloorLoadColor,
+    LoadGroup,
+    MaterialColor,
+    NamedPlane,
+    ProjectInfo,
+    SectionColor,
+    Span,
+    StructureGroup,
+    StructureType,
+    StructureTypeHyperS,
+    TendonGroup,
+    ThicknessColor,
+    Unit,
+)
 from midas_nx.db.properties.material import (
     Material,
     TimeDependentMaterialCreepShrinkage,
@@ -1013,6 +1036,231 @@ def _moving_cases() -> List[Case]:
     ]
 
 
+# --------------------------------------------------------------------------
+# Tier: extras1 — batch 1 of the read-only-verified db.project/db.boundary
+# endpoints (2026-08-16): project-wide singleton settings, name-only groups,
+# and the general-link family. Deliberately excludes the 5 seismic-device
+# endpoints (SDVI/SDVE/SDST/SDHY/SDIS) and DRLS — nested COMMON payloads and
+# an empty-object payload respectively need their own fixture work first.
+# --------------------------------------------------------------------------
+
+
+def _extras1_seeds() -> List[SeedStep]:
+    """Isolated from the core/boundary tiers' own nodes: a fresh 23-26 node
+    quartet so this tier is runnable standalone. 23/24 back the NLNK/NLNK-M1
+    *cases* (each overwrites the same pair, different element ids); 25/26
+    back a general-link *seed* record that outlives those cases, for CGLP.
+
+    ``pjcf_unlock``: a fresh document already carries a /db/PJCF record at
+    id 1 (confirmed live 2026-08-16, Civil NX v2.2 build 08/14/2026 —
+    ``ProjectInfo.items()`` returns a non-empty placeholder before any case
+    runs). Its POST/DELETE are documented, but POST answers "Key Already
+    Exist" for *any* id, not just 1, until that pre-existing record is
+    deleted first -- a real singleton, same family as UNIT/STYP, just with
+    DELETE as the unlock instead of being GET/PUT-only.
+
+    ``fbld_seed``: /db/CO_F is keyed by a Floor Load Type id, and the base
+    model seeds none, so a bare PUT 404s ("id 1 missing after update" --
+    confirmed live 2026-08-16). /db/FBLD also renumbers to the next free
+    slot rather than honouring the "Assign" key (same behaviour as
+    /db/STLD, see the props tier's own note) -- it lands at id 1 in a
+    fresh document regardless of the id requested here, so the CO_F case
+    below targets id 1 to match.
+    """
+    return [
+        SeedStep("extras1_nodes", lambda c: Node.create(
+            {23: {"X": 0, "Y": 3 * BAY, "Z": 0}, 24: {"X": 0, "Y": 3 * BAY, "Z": HEIGHT},
+             25: {"X": BAY, "Y": 3 * BAY, "Z": 0}, 26: {"X": BAY, "Y": 3 * BAY, "Z": HEIGHT}},
+            client=c)),
+        SeedStep("pjcf_unlock", lambda c: ProjectInfo.delete([1], client=c)),
+        SeedStep("fbld_seed", lambda c: FloorLoadType.create(
+            {1: {"NAME": "FL_SEED", "DESC": "",
+                 "ITEM": [{"LCNAME": "LC_SCRATCH", "FLOOR_LOAD": -5.0,
+                           "OPT_SUB_BEAM_WEIGHT": False}]}},
+            client=c)),
+        # ⚠️ Confirmed failing live 2026-08-16 (Civil NX v2.2, build
+        # 08/14/2026) with the manual's own request-example payload
+        # reproduced verbatim (PROPERTY_NAME/DESC/APPLICATION_TYPE=ELEMENT/
+        # APPLICATION_TYPE_D=SPG/TOTAL_WEIGHT/OPT_USE_MASS), on both a
+        # partially-seeded and a completely fresh /doc/NEW document -- same
+        # generic "Unknown Error" both times. Not a fixture bug this
+        # checker can iterate past; something about /db/NLLP's own
+        # preconditions is undocumented. Left in (unconfirmed) so this
+        # blocks NLNK/NLNK-M1/CGLP visibly rather than silently.
+        SeedStep("nllp_seed", lambda c: GeneralLinkProperty.create(
+            {90: {"PROPERTY_NAME": "NLLP_SEED", "APPLICATION_TYPE": "ELEMENT",
+                  "APPLICATION_TYPE_D": "SPG"},
+             91: {"PROPERTY_NAME": "NLLP_SEED_2", "APPLICATION_TYPE": "ELEMENT",
+                  "APPLICATION_TYPE_D": "SPG"}},
+            client=c)),
+        SeedStep("glink_seed", lambda c: GeneralLink.create(
+            {90: {"NODE1": 25, "NODE2": 26, "PROP_NAME": "NLLP_SEED",
+                  "REF_SYSTEM": 0, "BETA_ANGLE": 0}},
+            client=c)),
+    ]
+
+
+def _extras1_cases() -> List[Case]:
+    civil = ("civil",)
+    return [
+        Case(
+            ProjectInfo,
+            {"PROJECT": "CRUD_TEST", "USER": "crud"},
+            {"PROJECT": "CRUD_TEST_2", "USER": "crud"},
+            lambda p: p.get("PROJECT"), "CRUD_TEST", "CRUD_TEST_2",
+            needs=("pjcf_unlock",), confirmed=True,
+        ),
+        # GET/PUT only, no POST/DELETE — the record already exists at id 1
+        # in a fresh document (same pattern _seed_model relies on for Unit).
+        # MASS must be 1 (Lumped) or 2 (Consistent) -- 0 answers "Wrong
+        # Field" (confirmed live 2026-08-16; the manual's own Specifications
+        # table calls it Optional with no stated default, but doesn't list 0
+        # as a valid value either, only 1/2).
+        Case(
+            StructureType,
+            {}, {"STYP": 0, "MASS": 1, "bMASSOFFSET": False, "bSELFWEIGHT": True,
+                 "SMASS": 2, "GRAV": 9.806, "TEMP": 20, "bALIGNBEAM": False,
+                 "bALIGNSLAB": False, "bROTRIGID": True},
+            lambda p: p.get("TEMP"), None, 20,
+            confirmed=True,
+        ),
+        Case(
+            StructureTypeHyperS,
+            {}, {"STYPE": "3D", "GRAV": 9.806, "TEMP": 0, "ALIGNBEAM": False,
+                 "ALIGNSLAB": False,
+                 "MASS_CONTROL": {"MASS_TYPE": "LUMPED", "MASS_POS": "CENTROID",
+                                  "SELFWEIGHT": False}},
+            lambda p: p.get("STYPE"), None, "3D",
+            products=civil, confirmed=True,
+        ),
+        Case(
+            TendonGroup,
+            {"NAME": "TG_CRUD"}, {"NAME": "TG_CRUD_2"},
+            lambda p: p.get("NAME"), "TG_CRUD", "TG_CRUD_2",
+            confirmed=True,
+        ),
+        Case(
+            NamedPlane,
+            {"NAME": "NP_CRUD", "TYPE": 2, "COORD": 5.0},
+            {"NAME": "NP_CRUD", "TYPE": 2, "COORD": 10.0},
+            lambda p: p.get("COORD"), 5.0, 10.0,
+            confirmed=True,
+        ),
+        # CO_M/CO_S/CO_T keyed by the material/section/thickness id they
+        # colour — reuse the base seed's id-1 material/section/thickness.
+        Case(
+            MaterialColor,
+            {}, {"W_R": 111, "W_G": 142, "W_B": 91, "bBLEMD": False, "FACT": 0.5},
+            lambda p: p.get("W_R"), None, 111,
+            item_id=1, confirmed=True,
+        ),
+        Case(
+            SectionColor,
+            {}, {"W_R": 111, "W_G": 142, "W_B": 91, "bBLEMD": False, "FACT": 0.5},
+            lambda p: p.get("W_R"), None, 111,
+            item_id=1, confirmed=True,
+        ),
+        Case(
+            ThicknessColor,
+            {}, {"W_R": 111, "W_G": 142, "W_B": 91, "bBLEMD": False, "FACT": 0.5},
+            lambda p: p.get("W_R"), None, 111,
+            item_id=1, confirmed=True,
+        ),
+        # CO_F is keyed by a Floor Load Type (/db/FBLD) id -- the fbld_seed
+        # step provides one, landing at id 1 (FBLD renumbers, see the seed
+        # docstring above). Its own "NAME" field is read-only, mirroring
+        # the linked FBLD record's name (confirmed live 2026-08-16: a PUT
+        # with NAME="FL_CRUD" echoed back "FL_SEED" unchanged) -- probe a
+        # colour field instead, like CO_M/CO_S/CO_T.
+        Case(
+            FloorLoadColor,
+            {}, {"NAME": "FL_CRUD", "WF_R": 166, "OPT_BLEND": True, "BLEND_FACTOR": 0.25},
+            lambda p: p.get("WF_R"), None, 166,
+            item_id=1, needs=("fbld_seed",), confirmed=True,
+        ),
+        # SPAN_BASE_ITEMS.length must be SPAN_LIST.length + 1 (one support
+        # point per span boundary) -- confirmed live 2026-08-16 after a
+        # 2-items/3-list mismatch answered "[Error] ... (Item:Number of
+        # Spans)"; the manual's own Specifications table doesn't state this
+        # relationship, only its JSON Schema shows two independently-typed
+        # arrays.
+        Case(
+            Span,
+            {"NAME": "SPAN_CRUD", "bEXACTSPAN": True, "DIRECTION": 0, "SECTTYPE": 0,
+             "SPAN_LIST": [2.5, 5],
+             "SPAN_BASE_ITEMS": [{"ELEM_KEY": 1, "SUPPORT": 1}, {"ELEM_KEY": 2, "SUPPORT": 1},
+                                  {"ELEM_KEY": 3, "SUPPORT": 2}]},
+            {"NAME": "SPAN_CRUD_2", "bEXACTSPAN": True, "DIRECTION": 0, "SECTTYPE": 0,
+             "SPAN_LIST": [2.5, 5],
+             "SPAN_BASE_ITEMS": [{"ELEM_KEY": 1, "SUPPORT": 1}, {"ELEM_KEY": 2, "SUPPORT": 1},
+                                  {"ELEM_KEY": 3, "SUPPORT": 2}]},
+            lambda p: p.get("NAME"), "SPAN_CRUD", "SPAN_CRUD_2",
+            products=civil, confirmed=True,
+        ),
+        Case(
+            GeneralLinkProperty,
+            {"PROPERTY_NAME": "NLLP_CRUD", "APPLICATION_TYPE": "ELEMENT", "APPLICATION_TYPE_D": "SPG"},
+            {"PROPERTY_NAME": "NLLP_CRUD_2", "APPLICATION_TYPE": "ELEMENT", "APPLICATION_TYPE_D": "SPG"},
+            lambda p: p.get("PROPERTY_NAME"), "NLLP_CRUD", "NLLP_CRUD_2",
+        ),
+        Case(
+            GeneralLink,
+            {"NODE1": 23, "NODE2": 24, "PROP_NAME": "NLLP_SEED", "REF_SYSTEM": 0, "BETA_ANGLE": 0},
+            {"NODE1": 23, "NODE2": 24, "PROP_NAME": "NLLP_SEED", "REF_SYSTEM": 0, "BETA_ANGLE": 15},
+            lambda p: p.get("BETA_ANGLE"), 0, 15,
+            needs=("nllp_seed", "extras1_nodes"),
+        ),
+        Case(
+            GeneralLinkHyperS,
+            {"PROP_NAME": "NLLP_SEED", "NODE1": 23, "NODE2": 24},
+            {"PROP_NAME": "NLLP_SEED_2", "NODE1": 23, "NODE2": 24},
+            lambda p: p.get("PROP_NAME"), "NLLP_SEED", "NLLP_SEED_2",
+            item_id=2, products=civil, needs=("nllp_seed", "extras1_nodes"),
+        ),
+        Case(
+            ChangeGeneralLinkProperty,
+            {"GLINK_KEY": 90, "CHANGE_PROPERTY_NAME": "NLLP_SEED"},
+            {"GLINK_KEY": 90, "CHANGE_PROPERTY_NAME": "NLLP_SEED_2"},
+            lambda p: p.get("CHANGE_PROPERTY_NAME"), "NLLP_SEED", "NLLP_SEED_2",
+            needs=("nllp_seed", "glink_seed"),
+        ),
+        # Element 4 is the base seed's plate.
+        Case(
+            PlateEndRelease,
+            {"ITEMS": [{"ID": 1, "N1": [1, 1, 1, 0, 0], "N2": [0, 0, 0, 0, 0],
+                        "N3": [0, 0, 0, 0, 0], "N4": [0, 0, 0, 0, 0]}]},
+            {"ITEMS": [{"ID": 1, "N1": [1, 1, 1, 1, 0], "N2": [0, 0, 0, 0, 0],
+                        "N3": [0, 0, 0, 0, 0], "N4": [0, 0, 0, 0, 0]}]},
+            lambda p: p["ITEMS"][0].get("N1"), [1, 1, 1, 0, 0], [1, 1, 1, 1, 0],
+            item_id=4, confirmed=True,
+        ),
+        Case(
+            ForceDeformationFunction,
+            {"NAME": "MLFC_CRUD", "TYPE": "FORCE", "SYMM": False,
+             "ITEMS": [{"X": 0.0, "Y": 0.0}, {"X": 0.01, "Y": 100.0}, {"X": 0.02, "Y": 150.0}]},
+            {"NAME": "MLFC_CRUD_2", "TYPE": "FORCE", "SYMM": False,
+             "ITEMS": [{"X": 0.0, "Y": 0.0}, {"X": 0.01, "Y": 100.0}, {"X": 0.02, "Y": 150.0}]},
+            lambda p: p.get("NAME"), "MLFC_CRUD", "MLFC_CRUD_2",
+            confirmed=True,
+        ),
+        Case(
+            PanelZoneEffect,
+            {"OPT_OFFSET": False, "OFFS_FACTOR": 0.5, "OUTPUT_POSITION": 0},
+            {"OPT_OFFSET": True, "OFFS_FACTOR": 0.75, "OUTPUT_POSITION": 0},
+            lambda p: p.get("OFFS_FACTOR"), 0.5, 0.75,
+            confirmed=True,
+        ),
+        # No DELETE (NO_DELETE_METHODS), keyed by node id — node 1 already
+        # has a /db/CONS record, an unrelated table, so no collision.
+        Case(
+            ConstraintLabelDirection,
+            {"DIR": 0}, {"DIR": 2},
+            lambda p: p.get("DIR"), 0, 2,
+            confirmed=True,
+        ),
+    ]
+
+
 #: Priority order — what a modelling script needs, not the manual's order.
 TIERS: List[Tier] = [
     Tier("core", "baseline model, groups and static loads", _no_seeds, _core_cases),
@@ -1021,6 +1269,7 @@ TIERS: List[Tier] = [
     Tier("static", "remaining static loads + temperature", _no_seeds, _static_cases),
     Tier("stage", "construction stages", _stage_seeds, _stage_cases),
     Tier("moving", "moving loads (AASHTO LRFD fixtures; Civil-confirmed, Gen not yet watched live)", _moving_seeds, _moving_cases),
+    Tier("extras1", "batch 1 of read-only-verified db.project/db.boundary endpoints", _extras1_seeds, _extras1_cases),
 ]
 
 

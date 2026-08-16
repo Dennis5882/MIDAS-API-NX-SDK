@@ -4990,6 +4990,76 @@ No crashes, no hangs, no field/value regressions surfaced on either
 product. This is a clean re-confirmation, not new coverage — same cases
 as the 08-13 runs, one patch build later.
 
+## 2026-08-16 (last) — expanding write coverage past the curated CRUD suite: batch 1 of db.project/db.boundary, 14/18 confirmed
+
+User asked what to do next on the new 08/14/2026 patch. Given the existing
+`live_crud_check.py` suite only covers a curated 43/38-endpoint subset while
+174 `/db/*` endpoints across both products were still only read-verified,
+picked expanding write coverage over re-chasing GSBG's open blocker or the
+Gen `MAINREBAR_B_FY` import bug. User chose to start with `db.project` +
+`db.boundary`'s 24 read-only endpoints (of 174 total), scoped down to a
+tractable 18 for this session — deferred the 5 seismic-device endpoints
+(SDVI/SDVE/SDST/SDHY/SDIS, deeply nested `COMMON` payloads) and `DRLS`
+(empty-object payload, no field to round-trip) to a future batch.
+
+Added a new `extras1` tier to `scripts/live_crud_check.py` (18 cases, 3 new
+seed steps) covering: `PJCF`, `STYP`, `STYP-M1`, `TDGR`, `NPLN`, `CO_M`,
+`CO_S`, `CO_T`, `CO_F`, `SPAN`, `NLLP`, `NLNK`, `NLNK-M1`, `CGLP`, `PRLS`,
+`MLFC`, `PZEF`, `CLDR`. First live run (Civil NX v2.2, build 08/14/2026):
+10/18, all failures fixture problems as expected on a first pass. Triaged
+and fixed 4 of them:
+
+- **`/db/PJCF`**: a fresh document already carries a Project Info record at
+  id 1 (non-empty placeholder, confirmed via `ProjectInfo.items()` before
+  any case ran), and POST answers "Key Already Exist" for *any* id, not
+  just 1, until that record is deleted first. Same singleton family as
+  UNIT/STYP, just with DELETE as the unlock instead of being GET/PUT-only.
+  Added a `pjcf_unlock` seed step.
+- **`/db/STYP`**: `MASS: 0` answers "Wrong Field" — valid values are only
+  `1` (Lumped) or `2` (Consistent) per the manual's own enum, which the
+  first payload didn't respect. Fixed to `MASS: 1`.
+- **`/db/SPAN`**: `SPAN_BASE_ITEMS.length` must be `SPAN_LIST.length + 1`
+  (one support point per span boundary) — a 2-items/3-list mismatch
+  answered `"[Error] ... (Item:Number of Spans)"`. The manual's
+  Specifications table doesn't state this relationship; only cross-checking
+  against its own worked JSON example (4 items / 3 values) surfaced it.
+  Fixed to 3 items / 2 values.
+- **`/db/CO_F`**: keyed by a Floor Load Type (`/db/FBLD`) id, which the
+  base seed model doesn't create — needed its own `fbld_seed` step. Also
+  found live that CO_F's own `"NAME"` field is **read-only**, mirroring the
+  linked FBLD record's name: a PUT with `NAME="FL_CRUD"` echoed back
+  `"FL_SEED"` unchanged. Switched the case to probe a colour field
+  (`WF_R`) instead, matching CO_M/CO_S/CO_T.
+
+One failure did **not** resolve to a fixture problem: **`/db/NLLP`**
+(General Link Properties) answers a generic `"Unknown Error"` on POST even
+with the manual's own request-example payload reproduced verbatim
+(`PROPERTY_NAME`/`DESC`/`APPLICATION_TYPE="ELEMENT"`/
+`APPLICATION_TYPE_D="SPG"`/`TOTAL_WEIGHT`/`OPT_USE_MASS`), tried against
+both a partially-seeded and a completely fresh `/doc/NEW` document, on
+**both** Civil NX and Gen NX. Left as `level: read` in coverage.json —
+genuinely unresolved, not swept under a workaround. This blocks `NLNK`,
+`NLNK-M1`, and `CGLP` (all reference an NLLP record by name), so those
+three stayed untested this round too; their coverage.json entries got a
+2026-08-16 note saying so rather than being silently left stale.
+
+Final result after fixes, re-run fresh on both products:
+
+- **Civil NX** (v2.2, build 08/14/2026): 14/18 (`STYP-M1`/`SPAN` are
+  Civil-only and both pass; `NLLP`/`NLNK`/`NLNK-M1`/`CGLP` are the 4
+  failures/blocks).
+- **Gen NX** (v2.1, build 08/14/2026): 12/15 (`STYP-M1`/`SPAN` correctly
+  skipped as Civil-only; `NLLP`/`NLNK`/`CGLP` are the 3 failures/blocks —
+  same `NLLP` root cause reproduces here too, ruling out a Civil-specific
+  explanation).
+
+All 14 passing cases flipped to `confirmed=True` in the script.
+`docs/coverage.json` updated for all 14 to `level: "write"`; `/db/NLLP`,
+`/db/NLNK`, `/db/NLNK-M1`, `/db/CGLP` stay `level: "read"` with a dated
+note. `ROADMAP.md` regenerated. Batch 2 (the remaining ~150 read-only
+`/db/*` endpoints, including the deferred seismic-device family and the
+`NLLP` root cause) is open for a future session.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
