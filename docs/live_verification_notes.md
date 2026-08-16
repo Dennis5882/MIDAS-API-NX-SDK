@@ -4947,6 +4947,49 @@ Civil NX one earlier: read sweep, the 2 previously-Gen-untested
 read-shaped POSTs, the `/doc/*` file family, and the full write suite,
 all clean or with informative (non-crash) findings on this patch build.
 
+## 2026-08-16 — new patch on both products: connection check only
+
+User applied a new patch to both products and asked to confirm both
+connect, with versions recorded. `verify_connection()` against fresh
+`.env` MAPI keys (last-occurrence-wins for the duplicated
+`MIDAS_MAPI_KEY_GEN`/`MIDAS_MAPI_KEY_CIVIL` lines) succeeded for both:
+
+```text
+GEN:   {'user': 'sjj0507@midasit.com', 'program': 'gen',   'connectionID': 'N-pAmlMjSg', 'keyVerified': True, 'status': 'connected'}
+CIVIL: {'user': 'sjj0507@midasit.com', 'program': 'civil', 'connectionID': 'WjbfiHlPSw', 'keyVerified': True, 'status': 'connected'}
+```
+
+About-dialog screenshots confirm the new build:
+
+- **MIDAS GEN NX 2026 (v2.1), build 08/14/2026** (previous: 08/12/2026)
+- **MIDAS CIVIL NX 2026 (v2.2), build 08/14/2026** (previous: 08/12/2026)
+
+Same version numbers as the prior patch, two-days-newer build only —
+consistent with a routine patch rather than a version bump.
+
+## 2026-08-16 (last) — full `live_crud_check.py` reconfirmation on both products, build 08/14/2026: 43/43 Civil, 38/38 Gen, no regressions
+
+User asked to verify the new 08/14/2026 patch after confirming both
+products connect (see the connection-check entry above). Chose the full
+CRUD-suite scope over a read-only sweep or a targeted re-test of past
+crash items, and explicitly authorized the `/doc/NEW` data loss ("go
+go") after being warned.
+
+Ran `scripts/live_crud_check.py` with no `--tier` filter (all tiers) on
+each product in turn, Civil first:
+
+- **Civil NX** (v2.2, build 08/14/2026): 43/43 — identical result set to
+  the 08/12/2026 run (`core`/`props`/`boundary`/`static`/`stage`/`moving`
+  all pass, including `/db/NMAS` clean via the auto-filled
+  `rmX`/`rmY`/`rmZ` workaround).
+- **Gen NX** (v2.1, build 08/14/2026): 38/38 — same as 08/12/2026 (no
+  `moving` tier; those fixtures are Civil-confirmed only, per the tier's
+  own docstring in the script).
+
+No crashes, no hangs, no field/value regressions surfaced on either
+product. This is a clean re-confirmation, not new coverage — same cases
+as the 08-13 runs, one patch build later.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
