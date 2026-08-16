@@ -135,6 +135,17 @@ from midas_nx.db.construction_stage import (
     CreepCoefficientConstructionStage,
     TimeLoadConstructionStage,
 )
+from midas_nx.db.dynamic_loads import (
+    DynamicNodalLoad,
+    GroundAcceleration,
+    MultipleSupportExcitation,
+    ResponseSpectrumFunction,
+    ResponseSpectrumLoadCase,
+    TimeHistoryFunction,
+    TimeHistoryGlobalControl,
+    TimeHistoryLoadCase,
+    TimeVaryingStaticLoad,
+)
 from midas_nx.db.load_combinations import (
     CuttingLine,
     LoadCombinationCompositeSteelGirder,
@@ -1664,6 +1675,215 @@ def _extras4_cases() -> List[Case]:
     ]
 
 
+# --------------------------------------------------------------------------
+# Tier: extras5 — batch 5 of the read-only-verified endpoints (2026-08-16):
+# 9 of db.dynamic_loads's 12 (THGC-M1/THOO-M1/THIS-M1, the Hyper-S variants
+# with deeply-nested required control sub-objects, deferred). Building a
+# real /db/SPLC also unblocks extras4's LCOM-SEISMIC on Civil, which
+# rejects a plain "ST" combination and needs an "RS"-typed load case.
+# --------------------------------------------------------------------------
+
+
+def _extras5_seeds() -> List[SeedStep]:
+    """SPFC/THFC (functions) and THIS (a time-history load case) are
+    referenced by name from several sibling cases below, so each gets a
+    persistent seed record distinct from its own tested case's record.
+
+    All three (and THIS's own case) renumber to id 1 rather than honouring
+    the "Assign" key requested here (id 90) -- same STLD/FBLD/SMPT family,
+    confirmed live 2026-08-16. That's why the sibling cases in
+    _extras5_cases() below target id 2, not 1.
+
+    thfc_force_seed exists separately from thfc_seed because /db/THNL's
+    FUNC_NAME requires a Force/Moment-type function (iTYPE=3/4) --
+    confirmed live: referencing thfc_seed's Accel-type (iTYPE=2) function
+    answers "Unknown Error", not a field-name problem.
+    """
+    return [
+        SeedStep("spfc_seed", lambda c: ResponseSpectrumFunction.create(
+            {90: {"NAME": "SPFC_SEED", "iTYPE": 2, "iMETHOD": 0, "SCALE": 1.0,
+                  "GRAV": 9.806, "DRATIO": 0.05, "DESC": "",
+                  "aFUNC": [{"PERIOD": 0.1, "VALUE": 0.5}, {"PERIOD": 0.5, "VALUE": 1.0},
+                            {"PERIOD": 1.0, "VALUE": 0.3}]}},
+            client=c)),
+        SeedStep("thfc_seed", lambda c: TimeHistoryFunction.create(
+            {90: {"NAME": "THFC_SEED", "DESC": "", "iTYPE": 2, "GRAV": 9.806,
+                  "FUNCTYPE": 1, "iMETHOD": 0, "SCALE": 1.0,
+                  "aFUNCDATA": [{"TIME": 0, "VALUE": 0}, {"TIME": 0.1, "VALUE": 0.5},
+                                {"TIME": 0.2, "VALUE": 1.0}]}},
+            client=c)),
+        SeedStep("thfc_force_seed", lambda c: TimeHistoryFunction.create(
+            {91: {"NAME": "THFC_FORCE_SEED", "DESC": "", "iTYPE": 3, "GRAV": 9.806,
+                  "FUNCTYPE": 1, "iMETHOD": 0, "SCALE": 1.0,
+                  "aFUNCDATA": [{"TIME": 0, "VALUE": 0}, {"TIME": 0.1, "VALUE": 0.5}]}},
+            client=c)),
+        SeedStep("this_seed", lambda c: TimeHistoryLoadCase.create(
+            {90: {"COMMON": {"NAME": "THIS_SEED", "iATYPE": 1, "iAMETHOD": 1, "iTHTYPE": 1,
+                             "ENDTIME": 30.0, "INC": 0.01, "iOUT": 1, "INITMETHOD": "INIT",
+                             "INITLOAD": 0, "bDVA": False, "bKEEP": False, "iMDTYPE": 1},
+                  "DALL": 0.05}},
+            client=c)),
+    ]
+
+
+def _extras5_cases() -> List[Case]:
+    return [
+        # id 2: spfc_seed renumbers to id 1 (see seed docstring above).
+        Case(
+            ResponseSpectrumFunction,
+            {"NAME": "SPFC_CRUD", "iTYPE": 2, "iMETHOD": 0, "SCALE": 1.0, "GRAV": 9.806,
+             "DRATIO": 0.05, "DESC": "",
+             "aFUNC": [{"PERIOD": 0.1, "VALUE": 0.5}, {"PERIOD": 0.5, "VALUE": 1.0},
+                       {"PERIOD": 1.0, "VALUE": 0.3}]},
+            {"NAME": "SPFC_CRUD", "iTYPE": 2, "iMETHOD": 0, "SCALE": 1.2, "GRAV": 9.806,
+             "DRATIO": 0.05, "DESC": "",
+             "aFUNC": [{"PERIOD": 0.1, "VALUE": 0.5}, {"PERIOD": 0.5, "VALUE": 1.0},
+                       {"PERIOD": 1.0, "VALUE": 0.3}]},
+            lambda p: p.get("SCALE"), 1.0, 1.2,
+            item_id=2, needs=("spfc_seed",), confirmed=True,
+        ),
+        # ⚠️ Product-asymmetric live 2026-08-16 (build 08/14/2026): passes
+        # clean on Civil NX (create->GET->update->GET->delete) but Gen NX
+        # answers "Unknown Error" on create with the identical payload,
+        # reproduced twice. Possibly needs an eigenvalue/modal analysis
+        # control setup on Gen that Civil doesn't require -- not
+        # investigated further. Left unconfirmed rather than flag Gen as a
+        # false-positive regression every run. aFUNCNAME references the
+        # spfc_seed record by name.
+        Case(
+            ResponseSpectrumLoadCase,
+            {"NAME": "SPLC_CRUD", "DIR": "XY", "SCALE": 1.0, "PMFT": 1.0,
+             "aFUNCNAME": ["SPFC_SEED"]},
+            {"NAME": "SPLC_CRUD", "DIR": "XY", "SCALE": 1.2, "PMFT": 1.0,
+             "aFUNCNAME": ["SPFC_SEED"]},
+            lambda p: p.get("SCALE"), 1.0, 1.2,
+            needs=("spfc_seed",),
+        ),
+        # ⚠️ The manual flags this "CIVIL NX 전용" (Civil-only) in prose,
+        # matching db/dynamic_loads.py's own docstring note that it was
+        # already found to answer on Gen NX too (empty-table route+/info
+        # check, 2026-07-29) -- left unrestricted here to get a write-level
+        # confirmation of that on both products, not just the read-level one.
+        Case(
+            TimeHistoryGlobalControl,
+            {"GNT": 0, "ILT": 0, "aILL": [{"SLC": "DL", "SF": 1.0, "LCT": 1}],
+             "IEPI": True, "NSTEP": 1, "bROT": False, "SNIO": 1, "bPCF": True,
+             "MAXNS": 10, "MAXIT": 10, "bDN": True, "bFN": False, "bEN": False,
+             "DN": 0.001, "FN": 0.001, "EN": 0.001, "bULSM": False, "ULSM": 5,
+             "ENERGYRESULT": False, "SDVI": False, "SDVE": False, "SDST": False,
+             "SDHY": False, "SDIS": False, "bMSSSTATUS": False},
+            {"GNT": 0, "ILT": 0, "aILL": [{"SLC": "DL", "SF": 1.0, "LCT": 1}],
+             "IEPI": True, "NSTEP": 2, "bROT": False, "SNIO": 1, "bPCF": True,
+             "MAXNS": 10, "MAXIT": 10, "bDN": True, "bFN": False, "bEN": False,
+             "DN": 0.001, "FN": 0.001, "EN": 0.001, "bULSM": False, "ULSM": 5,
+             "ENERGYRESULT": False, "SDVI": False, "SDVE": False, "SDST": False,
+             "SDHY": False, "SDIS": False, "bMSSSTATUS": False},
+            lambda p: p.get("NSTEP"), 1, 2,
+            confirmed=True,
+        ),
+        # "Linear Modal Transient" shape from the manual's own worked
+        # example -- COMMON's iATYPE=1(Linear)/iAMETHOD=1(Modal) combo
+        # needs the top-level "DALL" (modal damping) key alongside COMMON,
+        # not itemized in the Specifications table itself.
+        # id 2: this_seed renumbers to id 1 (see seed docstring above).
+        Case(
+            TimeHistoryLoadCase,
+            {"COMMON": {"NAME": "THIS_CRUD", "iATYPE": 1, "iAMETHOD": 1, "iTHTYPE": 1,
+                        "ENDTIME": 30.0, "INC": 0.01, "iOUT": 1, "INITMETHOD": "INIT",
+                        "INITLOAD": 0, "bDVA": False, "bKEEP": False, "iMDTYPE": 1},
+             "DALL": 0.05},
+            {"COMMON": {"NAME": "THIS_CRUD", "iATYPE": 1, "iAMETHOD": 1, "iTHTYPE": 1,
+                        "ENDTIME": 45.0, "INC": 0.01, "iOUT": 1, "INITMETHOD": "INIT",
+                        "INITLOAD": 0, "bDVA": False, "bKEEP": False, "iMDTYPE": 1},
+             "DALL": 0.05},
+            lambda p: p["COMMON"].get("ENDTIME"), 30.0, 45.0,
+            item_id=2, needs=("this_seed",), confirmed=True,
+        ),
+        # id 3: thfc_seed and thfc_force_seed renumber to ids 1 and 2.
+        Case(
+            TimeHistoryFunction,
+            {"NAME": "THFC_CRUD", "DESC": "", "iTYPE": 2, "GRAV": 9.806, "FUNCTYPE": 1,
+             "iMETHOD": 0, "SCALE": 1.0,
+             "aFUNCDATA": [{"TIME": 0, "VALUE": 0}, {"TIME": 0.1, "VALUE": 0.5},
+                           {"TIME": 0.2, "VALUE": 1.0}]},
+            {"NAME": "THFC_CRUD", "DESC": "", "iTYPE": 2, "GRAV": 9.806, "FUNCTYPE": 1,
+             "iMETHOD": 0, "SCALE": 1.5,
+             "aFUNCDATA": [{"TIME": 0, "VALUE": 0}, {"TIME": 0.1, "VALUE": 0.5},
+                           {"TIME": 0.2, "VALUE": 1.0}]},
+            lambda p: p.get("SCALE"), 1.0, 1.5,
+            item_id=3, needs=("thfc_seed", "thfc_force_seed"), confirmed=True,
+        ),
+        # NAME references the this_seed load case by name; FUNCX/Y/Z
+        # reference the thfc_seed function by name.
+        Case(
+            GroundAcceleration,
+            {"NAME": "THIS_SEED", "ANGLE": 0, "FUNCX": "THFC_SEED", "SCALEX": 1.0,
+             "ATIMEX": 0, "FUNCY": "THFC_SEED", "SCALEY": 1.0, "ATIMEY": 0,
+             "FUNCZ": "THFC_SEED", "SCALEZ": 1.0, "ATIMEZ": 0},
+            {"NAME": "THIS_SEED", "ANGLE": 0, "FUNCX": "THFC_SEED", "SCALEX": 1.5,
+             "ATIMEX": 0, "FUNCY": "THFC_SEED", "SCALEY": 1.0, "ATIMEY": 0,
+             "FUNCZ": "THFC_SEED", "SCALEZ": 1.0, "ATIMEZ": 0},
+            lambda p: p.get("SCALEX"), 1.0, 1.5,
+            needs=("this_seed", "thfc_seed"), confirmed=True,
+        ),
+        # Keyed by node id; node 1 is the base seed's frame node. FUNC_NAME
+        # must reference a Force/Moment-type function (thfc_force_seed,
+        # iTYPE=3) -- the Accel-type thfc_seed answers "Unknown Error" here
+        # (confirmed live 2026-08-16), matching the manual's own
+        # "FUNC_NAME에는 Force 또는 Moment 타입의 시간이력 함수만 사용 가능" warning.
+        #
+        # ⚠️⚠️ CIVIL-ONLY BY DESIGN, NOT A DOCUMENTED RESTRICTION: on Gen NX,
+        # PUT /db/THNL immediately following a successful POST+GET of the
+        # same record kills the Gen NX session -- confirmed twice live
+        # 2026-08-16 (v2.1, build 08/14/2026), including a from-scratch
+        # repro after restarting Gen NX between attempts. verify_connection()
+        # itself reports status "disconnected" afterwards, not just a
+        # blocked dialog. Civil NX's identical round trip is clean. Filed as
+        # MAPI-2468 (parented under MAPI-2427, the "API 동작 중 프로그램
+        # 종료" epic), trigger not yet root-caused by the vendor. Restricted
+        # to Civil here rather than crash-quarantined on both products,
+        # since only Gen actually crashes -- re-enable Gen once MAPI-2468 is
+        # resolved, and even then retest deliberately rather than assuming.
+        Case(
+            DynamicNodalLoad,
+            {"ITEMS": [{"ID": 1, "THLCNAME": "THIS_SEED", "FUNC_NAME": "THFC_FORCE_SEED",
+                        "DIR": "X", "ARRIVAL_TIME": 0, "SCALE_FACTOR": 1.0}]},
+            {"ITEMS": [{"ID": 1, "THLCNAME": "THIS_SEED", "FUNC_NAME": "THFC_FORCE_SEED",
+                        "DIR": "X", "ARRIVAL_TIME": 0, "SCALE_FACTOR": 1.5}]},
+            lambda p: p["ITEMS"][0].get("SCALE_FACTOR"), 1.0, 1.5,
+            products=("civil",),
+            item_id=1, needs=("this_seed", "thfc_force_seed"), confirmed=True,
+        ),
+        Case(
+            TimeVaryingStaticLoad,
+            {"THIS_LCNAME": "THIS_SEED", "SLOAD": "DL", "THIS_FUNCNAME": "THFC_SEED",
+             "ATIME": 0, "SCALE": 1.0},
+            {"THIS_LCNAME": "THIS_SEED", "SLOAD": "DL", "THIS_FUNCNAME": "THFC_SEED",
+             "ATIME": 0, "SCALE": 1.5},
+            lambda p: p.get("SCALE"), 1.0, 1.5,
+            needs=("this_seed", "thfc_seed"), confirmed=True,
+        ),
+        # ⚠️ Confirmed failing live 2026-08-16 (Civil NX v2.2, build
+        # 08/14/2026) with "Wrong Field", including a required-fields-only
+        # payload and the manual's own field names reproduced exactly.
+        # db/dynamic_loads.py's own docstring already flags this endpoint
+        # as "Keyed by node/group id" (unlike THNL's plain node id) --
+        # possibly needs a real multi-support boundary/support group
+        # defined first, not just any integer key. Not resolved as a
+        # simple fixture problem; same class of finding as /db/NLLP,
+        # /db/WVLD, /db/GRDP, /db/TDMF, /db/RPSC, /db/STRPSSM.
+        Case(
+            MultipleSupportExcitation,
+            {"ITEMS": [{"ID": 1, "LCNAME": "THIS_SEED", "ANGLE": 0, "FUNCX": "THFC_SEED",
+                        "SCALEX": 1.0}]},
+            {"ITEMS": [{"ID": 1, "LCNAME": "THIS_SEED", "ANGLE": 0, "FUNCX": "THFC_SEED",
+                        "SCALEX": 1.5}]},
+            lambda p: p["ITEMS"][0].get("SCALEX"), 1.0, 1.5,
+            item_id=1, needs=("this_seed", "thfc_seed"),
+        ),
+    ]
+
+
 #: Priority order — what a modelling script needs, not the manual's order.
 TIERS: List[Tier] = [
     Tier("core", "baseline model, groups and static loads", _no_seeds, _core_cases),
@@ -1676,6 +1896,7 @@ TIERS: List[Tier] = [
     Tier("extras2", "batch 2: db.misc_loads in full + 3 of db.temperature_prestress", _extras2_seeds, _extras2_cases),
     Tier("extras3", "batch 3: tractable subset of db.properties.*", _extras3_seeds, _extras3_cases),
     Tier("extras4", "batch 4: db.load_combinations in full", _no_seeds, _extras4_cases),
+    Tier("extras5", "batch 5: db.dynamic_loads (9 of 12, Hyper-S variants deferred)", _extras5_seeds, _extras5_cases),
 ]
 
 

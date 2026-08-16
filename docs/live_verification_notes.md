@@ -5209,6 +5209,111 @@ flipped to `level: write`, 7 left as genuinely unresolved live findings
 family, `db.pushover`, `db.bridge`, and the tendon/prestress half of
 `db.temperature_prestress`) is open for a future session.
 
+## 2026-08-16 (last) — write coverage batch 5: db.dynamic_loads, new Gen NX crash found and filed as MAPI-2468
+
+Fifth write-coverage batch of the day, and the one this session picked
+specifically because it also unblocks batch 4's `LCOM-SEISMIC` finding
+(needs a real `/db/SPLC` Response Spectrum Load Case). Covered 9 of
+`db.dynamic_loads`'s 12 endpoints — deferred the 3 Hyper-S variants
+(`THGC-M1`/`THOO-M1`/`THIS-M1`, deeply-nested required control
+sub-objects).
+
+First live run (Civil NX v2.2, build 08/14/2026): 4/9. Triaged and fixed
+3 fixture issues:
+
+- **`/db/SPFC`/`/db/THIS`/`/db/THFC`**: all three answered "Key Already
+  Exist" — their seed records (requested at id 90) renumber to id 1, same
+  STLD/FBLD/SMPT family, so the cases' own test records collided at the
+  same id. Fixed by moving the cases to the next free id (2, or 3 where
+  `/db/THFC` has two seed records ahead of it).
+- **`/db/THNL`**: "Unknown Error" — its `FUNC_NAME` must reference a
+  Force/Moment-type function (`iTYPE=3/4`), not the Accel-type one
+  (`iTYPE=2`) already seeded for other cases; added a second,
+  Force-typed seed function. This matches the manual's own explicit
+  warning ("FUNC_NAME에는 Force 또는 Moment 타입의 시간이력 함수만 사용
+  가능"), just missed on the first pass.
+
+Re-run clean on Civil NX after the fixes: 8/9 (only `THMS` still fails —
+see below).
+
+**Then, running the same tier on Gen NX, the product crashed mid-run.**
+`SPLC` failed normally ("Unknown Error", session still alive), `THGC`/
+`THIS`/`THFC`/`THGA` all passed clean, then `THNL`'s own case showed
+`create=ok read_back=ok update=FAIL` — its `PUT` failed with `404 Client
+Disconnected`, and the very next case (`THSL`) got `404 client does not
+exist`. The checker's own `_session_lost` guard caught it and aborted
+correctly. User asked directly ("Gen NX 뭐가 죽은 것 같은데?") mid-run;
+confirmed via a direct `verify_connection()` call that `status` itself
+had flipped to `"disconnected"` — not just a blocked-dialog false
+"connected" (the documented `verify_connection()`-can't-see-a-blocked-
+session landmine). This was a genuine session death, not a masked hang.
+
+User restarted Gen NX, then explicitly asked to reproduce the same
+scenario again ("다시 한번 같은 상황 연출해봐"). **Re-ran the identical
+tier on the freshly-restarted Gen NX session and the crash reproduced at
+the exact same point**: `SPLC` "Unknown Error" (alive), four clean
+passes, `THNL` `create=ok read_back=ok update=FAIL` with the same `404
+Client Disconnected`, then the aborted follow-on call. Two independent
+reproductions, same trigger, same build (v2.1, 08/14/2026) — this
+project's usual "confirmed" bar.
+
+Isolated the trigger precisely: `POST /db/THNL` succeeds and the
+following `GET` echoes it back correctly, but the **next `PUT
+/db/THNL`** (`{"Assign": {"1": {"ITEMS": [{...}]}}}`, only
+`SCALE_FACTOR` changed from the create payload) is what kills the
+session — not the `POST` itself. Civil NX's identical round trip is
+completely clean.
+
+User asked to write this up and file it in MIDASIT's internal Jira
+("내용 정리하고 Jira에 올리자 이건"). Searched `project = MAPI AND (text
+~ "THNL" OR text ~ "Dynamic Nodal Load")` first — no existing ticket for
+this symptom (the only THNL hit, MAPI-177, is an unrelated closed 2023
+delete-behavior ticket). Filed **MAPI-2468**, parented under **MAPI-2427**
+("API 동작 중 프로그램 종료 이슈" — the same crash-symptom epic that
+already holds MAPI-2378/NMAS, MAPI-2425/EDMP, MAPI-2426/USLC, and
+MAPI-2431/CD-TABLE), priority 높음 (`id: "3"`, matching all four
+precedents), with the exact reproduction payload, both reproduction
+timestamps, and an open "root cause not yet identified" framing — not
+linked to the other four as a shared cause, since there's no evidence of
+one, same call this project made for MAPI-2431.
+
+`live_crud_check.py`'s `/db/THNL` case is now restricted to
+`products=("civil",)` rather than fully crash-quarantined, since only
+Gen NX actually crashes and Civil's round trip is clean — re-enabling Gen
+needs a deliberate decision once MAPI-2468 is resolved, not an assumption
+that a vendor fix landed.
+
+One more genuinely unresolved finding, same class as extras1/2/3's
+`NLLP`/`WVLD`/`GRDP`/`TDMF`/`RPSC`/`STRPSSM`: **`/db/THMS`** answers
+`"Wrong Field"` on both products even with the manual's own field names
+and a required-fields-only payload. `db/dynamic_loads.py`'s own docstring
+already flags it as "Keyed by node/group id" (unlike `THNL`'s plain node
+id) — may need a real multi-support boundary/support group defined
+first, not just any integer key.
+
+Also product-asymmetric (mirroring `LCOM-SEISMIC`'s reversed case from
+batch 4): **`/db/SPLC`** passes clean on Civil NX but Gen NX answers
+`"Unknown Error"` on the identical payload, reproduced twice — left at
+`level: read` pending investigation (possibly needs a Gen-specific modal/
+eigenvalue analysis-control setup).
+
+Final tally: 6 endpoints (`SPFC`, `THGC`, `THIS`, `THFC`, `THGA`, `THSL`)
+write-confirmed on both products; `THNL` write-confirmed on Civil only
+(Gen crashes, MAPI-2468 filed); `SPLC` and `THMS` stay `level: read` as
+genuine unresolved findings. `docs/coverage.json` and `ROADMAP.md`
+updated accordingly.
+
+Running total for today's write-coverage push (batches 1-5): 49 endpoints
+flipped to `level: write`, 9 left as genuinely unresolved live findings
+(`NLLP`, `WVLD`, `GRDP`, `TDMF`, `RPSC`, `STRPSSM`, `LCOM-SEISMIC`,
+`SPLC`, `THMS`), plus one new confirmed live crash (`THNL` PUT on Gen NX,
+MAPI-2468). Batch 6 (the deferred fiber/inelastic-hinge family, seismic
+devices, `db.analysis_control`, `db.design`, `db.moving_loads`'s
+remainder, `db.construction_stage`'s hydration family, `db.pushover`,
+`db.bridge`, the tendon/prestress half of `db.temperature_prestress`, the
+3 deferred Hyper-S dynamic_loads variants, and root-causing the 9 unresolved
+findings above) is open for a future session.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
