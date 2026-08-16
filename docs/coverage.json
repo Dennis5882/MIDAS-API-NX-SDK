@@ -1941,12 +1941,12 @@
       "status": "implemented",
       "module": "midas_nx.db.boundary",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-16",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too.",
+        "method": "2026-08-16: write-round-trip attempted (batch 6) -- POST fails \"Wrong Field\" on both Gen NX and Civil NX (v2.1/v2.2, build 08/14/2026) even with the manual's own literal worked example and several hand-tried value variants; not resolved as a fixture problem. Same unresolved class as /db/NLLP, /db/WVLD, /db/GRDP, /db/TDMF, /db/RPSC, /db/STRPSSM, /db/THMS. Left at level: read.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
@@ -1966,12 +1966,12 @@
       "status": "implemented",
       "module": "midas_nx.db.boundary",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-16",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too.",
+        "method": "2026-08-16: write-round-trip attempted (batch 6) -- POST fails \"Wrong Field\" on both Gen NX and Civil NX (v2.1/v2.2, build 08/14/2026) even with the manual's own literal worked example and several hand-tried value variants; not resolved as a fixture problem. Same unresolved class as /db/NLLP, /db/WVLD, /db/GRDP, /db/TDMF, /db/RPSC, /db/STRPSSM, /db/THMS. Left at level: read.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
@@ -1991,12 +1991,12 @@
       "status": "implemented",
       "module": "midas_nx.db.boundary",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-16",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too.",
+        "method": "2026-08-16: write-round-trip attempted (batch 6) -- POST fails \"Wrong Field\" on both Gen NX and Civil NX (v2.1/v2.2, build 08/14/2026) even with the manual's own literal worked example and several hand-tried value variants; not resolved as a fixture problem. Same unresolved class as /db/NLLP, /db/WVLD, /db/GRDP, /db/TDMF, /db/RPSC, /db/STRPSSM, /db/THMS. Left at level: read.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
@@ -2015,11 +2015,11 @@
       "status": "implemented",
       "module": "midas_nx.db.boundary",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-16",
         "products": [
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "2026-08-16: write-round-trip attempted (batch 6) -- POST fails \"Wrong Field\" on both Gen NX and Civil NX (v2.1/v2.2, build 08/14/2026) even with the manual's own literal worked example and several hand-tried value variants; not resolved as a fixture problem. Same unresolved class as /db/NLLP, /db/WVLD, /db/GRDP, /db/TDMF, /db/RPSC, /db/STRPSSM, /db/THMS. Left at level: read.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
         },
@@ -2037,11 +2037,11 @@
       "status": "implemented",
       "module": "midas_nx.db.boundary",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-16",
         "products": [
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "2026-08-16: write-round-trip attempted (batch 6) -- POST fails \"Wrong Field\" on both Gen NX and Civil NX (v2.1/v2.2, build 08/14/2026) even with the manual's own literal worked example and several hand-tried value variants; not resolved as a fixture problem. Same unresolved class as /db/NLLP, /db/WVLD, /db/GRDP, /db/TDMF, /db/RPSC, /db/STRPSSM, /db/THMS. Left at level: read.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
         },

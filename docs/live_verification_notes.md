@@ -5314,6 +5314,70 @@ remainder, `db.construction_stage`'s hydration family, `db.pushover`,
 3 deferred Hyper-S dynamic_loads variants, and root-causing the 9 unresolved
 findings above) is open for a future session.
 
+## 2026-08-16 (last) — write coverage batch 6: seismic-device family from db.boundary, 0/5 -- genuine finding, not a fixture bug
+
+Sixth write-coverage batch of the day. Picked up the seismic-device family
+(`SDVI`/`SDVE`/`SDST`/`SDHY`/`SDIS`) that batch 1 deliberately deferred out
+of `extras1` for its deeply nested `COMMON` payloads. Transcribed each
+payload from the manual's own POST worked examples (`05_DB_Boundary.md`,
+items 16-20), not the leaner Specifications tables, per this project's
+standing preference for worked examples over tables when they disagree.
+
+First live run (Civil NX v2.2, build 08/14/2026): 0/3 (`SDHY`/`SDIS` are
+Gen-only, correctly skipped). All three POSTs answered `"Wrong Field"`.
+Bisected by hand rather than assuming a fixture bug outright, given this
+project's own caution about varying values before field names:
+
+- Reproduced the manual's own bare literal `SDVI` example verbatim
+  (`DAMPER_TYPE=0`, `DASHPOT_TYPE=0` — Linear Elastic, not the customized
+  `=2` Exponential values the case used) — still `"Wrong Field"`.
+- Fetched `SDVI.info()`'s live JSON schema: field names match the manual
+  exactly (`COMMON.{NAME,DESC,INPUT_METHOD,COMPANY,PRODUCT_NAME,
+  TYPE_NUMBER}`, `DEVICE_TYPE`, `DAMPER_TYPE`, `DASHPOT_TYPE`, `INPUT_TYPE`,
+  `ITEM[6]` — plus an undocumented `INPUT_TYPE_EXFN` and per-item `EXFN_*`
+  fields for the Exponential dashpot type), ruling out a field-name typo.
+- Tried a `COMMON`-only payload, a payload with `INPUT_TYPE_EXFN` added, no
+  `ITEM` array, no `DEVICE_TYPE`, non-empty `COMPANY`/`PRODUCT_NAME`/
+  `TYPE_NUMBER` everywhere, `INPUT_METHOD=1` (Reference DB), and a
+  single-entry `ITEM` array instead of 6 — every variant still answered
+  `"Wrong Field"`.
+- Extended the same manual-literal-payload test to `SDVE`/`SDST` (Civil)
+  and `SDHY`/`SDIS` (Gen) — all 4 failed identically, and a full `--tier
+  extras6` run on Gen NX confirmed all 5 fail there too (`SDHY`/`SDIS`
+  included this time, since Gen is where they're actually implemented).
+
+Not resolved as a fixture problem on either product. Notably, `/db/NLLP`
+(General Link Properties, extras1's confirmed-broken endpoint) is the
+table these five devices are meant to be referenced *from*
+(`APPLICATION_TYPE_D="VI"/"VE"/"ST"/"HY"/"IS"`) — two independently
+confirmed-broken endpoint families in the same manual chapter raises
+suspicion of something chapter-wide (a licensed isolator/damper-design
+module gate not enabled on this session?) rather than five unrelated
+defects, but that's unconfirmed speculation, not a finding to act on.
+
+Left all 5 at `level: read` in `docs/coverage.json`, each with a dated
+note; none of the `extras6` cases are `confirmed=True` since none have
+ever passed live. `/db/DRLS` (#24, the other endpoint extras1 deferred out
+of this chapter) stays deferred for an unrelated, purely mechanical reason:
+its payload is `{<node id>: {}}`, an empty object with no field to
+distinguish a create from an update, so it doesn't fit this checker's
+create/update/probe shape at all — a different problem from the
+`"Wrong Field"` finding above. `ROADMAP.md` regenerated (399/399
+implemented, write-count unchanged by this batch since nothing passed).
+
+Running total for today's write-coverage push (batches 1-6): still 49
+endpoints flipped to `level: write` (batch 6 added 0), 14 left as
+genuinely unresolved live findings (`NLLP`, `WVLD`, `GRDP`, `TDMF`, `RPSC`,
+`STRPSSM`, `LCOM-SEISMIC`, `SPLC`, `THMS`, `SDVI`, `SDVE`, `SDST`, `SDHY`,
+`SDIS`), plus the one confirmed live crash from batch 5 (`THNL` PUT on Gen
+NX, MAPI-2468). Batch 7 (the deferred fiber/inelastic-hinge family,
+`db.analysis_control`, `db.design`, `db.moving_loads`'s remainder,
+`db.construction_stage`'s hydration family, `db.pushover`, `db.bridge`,
+the tendon/prestress half of `db.temperature_prestress`, the 3 deferred
+Hyper-S dynamic_loads variants, `/db/DRLS`'s empty-payload shape problem,
+and root-causing the 14 unresolved findings above) is open for a future
+session.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

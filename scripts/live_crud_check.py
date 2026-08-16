@@ -127,6 +127,11 @@ from midas_nx.db.boundary import (
     PlateEndRelease,
     PointSpring,
     RigidLink,
+    SeismicDeviceHystereticIsolator,
+    SeismicDeviceIsolator,
+    SeismicDeviceSteelDamper,
+    SeismicDeviceViscoelasticDamper,
+    SeismicDeviceViscousDamper,
     SurfaceSpring,
 )
 from midas_nx.db.construction_stage import (
@@ -1884,6 +1889,134 @@ def _extras5_cases() -> List[Case]:
     ]
 
 
+def _extras6_cases() -> List[Case]:
+    """batch 6: the seismic-device family from db.boundary, deferred out of
+    extras1 for its deeply nested COMMON payloads. Each is an independent
+    definition table (not node-keyed), so item_id=1 is free in a document
+    that hasn't touched these tables yet -- no seed step needed.
+
+    Payloads transcribed from the manual's own POST examples (05_DB_Boundary
+    #16-20), not the leaner Specifications tables, per this project's
+    standing preference for worked examples over tables when they disagree
+    -- SDVE's own example omits COMMON.COMPANY despite the table marking it
+    required, so it's kept in here anyway since sending it is harmless.
+
+    SDHY and SDIS are Gen-only per db/boundary.py's own PRODUCTS (404 on
+    Civil, confirmed 2026-07-29). /db/DRLS (#24, also Gen-only) stays
+    deferred: its payload is `{<node id>: {}}`, an empty object with no
+    field to distinguish a create from an update, so it doesn't fit this
+    checker's create/update/probe shape.
+
+    ⚠️ All 5 confirmed failing live 2026-08-16 (Civil NX v2.2 + Gen NX v2.1,
+    both build 08/14/2026): every POST answers "Wrong Field" -- including
+    the manual's own bare worked example transcribed verbatim, a
+    COMMON-only payload, and several enum/value variants tried by hand
+    (INPUT_METHOD=1, non-empty COMPANY/PRODUCT_NAME/TYPE_NUMBER, a
+    single-entry ITEM array). GET /db/SDVI's own /info schema matches the
+    manual's field names exactly, ruling out a field-name typo. None of
+    these cases have ever passed live; none are `confirmed=True`. Same
+    class of unresolved finding as /db/NLLP, /db/WVLD, /db/GRDP, /db/TDMF,
+    /db/RPSC, /db/STRPSSM, /db/THMS -- and notably NLLP (General Link
+    Properties, which these seismic devices are meant to be referenced
+    *from*) is the other confirmed-broken endpoint in this same
+    05_DB_Boundary chapter, strengthening rather than resolving the
+    suspicion that something chapter-wide (a licensed
+    isolator/damper-design module gate?) is missing on this session.
+    """
+
+    def _sdvi_common(name: str) -> dict:
+        return {"NAME": name, "DESC": "Seismic Oil Damper 500kN",
+                "INPUT_METHOD": 0, "COMPANY": "SUMITOMO",
+                "PRODUCT_NAME": "OD-500", "TYPE_NUMBER": "OD500-A"}
+
+    return [
+        Case(
+            SeismicDeviceViscousDamper,
+            {"COMMON": _sdvi_common("SDVI_CRUD"), "DEVICE_TYPE": "",
+             "DAMPER_TYPE": 2, "DASHPOT_TYPE": 2, "INPUT_TYPE": 0,
+             "ITEM": [
+                 {"OPT_DOF": True, "CE": 500, "P1": 1000, "C1": 200, "ALPHA1": 0.5, "K0": 0},
+                 {"OPT_DOF": False, "CE": 0, "P1": 0, "C1": 0, "ALPHA1": 1, "K0": 0},
+                 {"OPT_DOF": False, "CE": 0, "P1": 0, "C1": 0, "ALPHA1": 1, "K0": 0},
+                 {"OPT_DOF": False, "CE": 0, "P1": 0, "C1": 0, "ALPHA1": 1, "K0": 0},
+                 {"OPT_DOF": False, "CE": 0, "P1": 0, "C1": 0, "ALPHA1": 1, "K0": 0},
+                 {"OPT_DOF": False, "CE": 0, "P1": 0, "C1": 0, "ALPHA1": 1, "K0": 0},
+             ]},
+            {"COMMON": _sdvi_common("SDVI_CRUD"), "DEVICE_TYPE": "",
+             "DAMPER_TYPE": 2, "DASHPOT_TYPE": 2, "INPUT_TYPE": 0,
+             "ITEM": [
+                 {"OPT_DOF": True, "CE": 800, "P1": 1000, "C1": 200, "ALPHA1": 0.5, "K0": 0},
+                 {"OPT_DOF": False, "CE": 0, "P1": 0, "C1": 0, "ALPHA1": 1, "K0": 0},
+                 {"OPT_DOF": False, "CE": 0, "P1": 0, "C1": 0, "ALPHA1": 1, "K0": 0},
+                 {"OPT_DOF": False, "CE": 0, "P1": 0, "C1": 0, "ALPHA1": 1, "K0": 0},
+                 {"OPT_DOF": False, "CE": 0, "P1": 0, "C1": 0, "ALPHA1": 1, "K0": 0},
+                 {"OPT_DOF": False, "CE": 0, "P1": 0, "C1": 0, "ALPHA1": 1, "K0": 0},
+             ]},
+            lambda p: p["ITEM"][0].get("CE"), 500, 800,
+        ),
+        Case(
+            SeismicDeviceViscoelasticDamper,
+            {"COMMON": {"NAME": "SDVE_CRUD", "DESC": "", "INPUT_METHOD": 0,
+                        "COMPANY": "SUMITOMO", "PRODUCT_NAME": "VE-200",
+                        "TYPE_NUMBER": "VE200-A"},
+             "MATERIAL_TYPE": "GR100", "SHEAR_AREA": 0.05},
+            {"COMMON": {"NAME": "SDVE_CRUD", "DESC": "", "INPUT_METHOD": 0,
+                        "COMPANY": "SUMITOMO", "PRODUCT_NAME": "VE-200",
+                        "TYPE_NUMBER": "VE200-A"},
+             "MATERIAL_TYPE": "GR100", "SHEAR_AREA": 0.08},
+            lambda p: p.get("SHEAR_AREA"), 0.05, 0.08,
+        ),
+        Case(
+            SeismicDeviceSteelDamper,
+            {"COMMON": {"NAME": "SDST_CRUD", "DESC": "", "INPUT_METHOD": 0,
+                        "COMPANY": "", "PRODUCT_NAME": "SD-300",
+                        "TYPE_NUMBER": "SD300-A"},
+             "DIR": "Dx", "SDST_HYS_MODEL": "BL2"},
+            {"COMMON": {"NAME": "SDST_CRUD", "DESC": "", "INPUT_METHOD": 0,
+                        "COMPANY": "", "PRODUCT_NAME": "SD-300",
+                        "TYPE_NUMBER": "SD300-A"},
+             "DIR": "Dy", "SDST_HYS_MODEL": "BL2"},
+            lambda p: p.get("DIR"), "Dx", "Dy",
+        ),
+        Case(
+            SeismicDeviceHystereticIsolator,
+            {"COMMON": {"NAME": "SDHY_CRUD", "DESC": "", "INPUT_METHOD": 0,
+                        "COMPANY": "", "PRODUCT_NAME": "HI-500",
+                        "TYPE_NUMBER": "HI500-A"},
+             "SDHY_HYS_MODEL": "DegradingBiLinear", "MSS": 8, "K0": 5000},
+            {"COMMON": {"NAME": "SDHY_CRUD", "DESC": "", "INPUT_METHOD": 0,
+                        "COMPANY": "", "PRODUCT_NAME": "HI-500",
+                        "TYPE_NUMBER": "HI500-A"},
+             "SDHY_HYS_MODEL": "DegradingBiLinear", "MSS": 8, "K0": 6000},
+            lambda p: p.get("K0"), 5000, 6000,
+            products=("gen",),
+        ),
+        Case(
+            SeismicDeviceIsolator,
+            {"COMMON": {"NAME": "SDIS_CRUD", "DESC": "", "INPUT_METHOD": 0,
+                        "COMPANY": "", "PRODUCT_NAME": "LRB-500",
+                        "TYPE_NUMBER": "LRB500-A"},
+             "SDIS_DEV_TYPE": "LRB", "MSS": 8, "TAU_K": 1.0, "TAU_Q": 1.0,
+             "KV": 150000,
+             "LRB": {"SDIS_HYS_MODEL": "BiLinear", "AR": 0.196, "TR": 0.15,
+                      "KE": 20000, "K2": 2000, "QD": 80, "DX": 0,
+                      "OPT_CONS_NONL": False, "BETA": 0.1, "ALPHA": 0.5,
+                      "SIGMA_V": 3000}},
+            {"COMMON": {"NAME": "SDIS_CRUD", "DESC": "", "INPUT_METHOD": 0,
+                        "COMPANY": "", "PRODUCT_NAME": "LRB-500",
+                        "TYPE_NUMBER": "LRB500-A"},
+             "SDIS_DEV_TYPE": "LRB", "MSS": 8, "TAU_K": 1.0, "TAU_Q": 1.0,
+             "KV": 160000,
+             "LRB": {"SDIS_HYS_MODEL": "BiLinear", "AR": 0.196, "TR": 0.15,
+                      "KE": 20000, "K2": 2000, "QD": 80, "DX": 0,
+                      "OPT_CONS_NONL": False, "BETA": 0.1, "ALPHA": 0.5,
+                      "SIGMA_V": 3000}},
+            lambda p: p.get("KV"), 150000, 160000,
+            products=("gen",),
+        ),
+    ]
+
+
 #: Priority order — what a modelling script needs, not the manual's order.
 TIERS: List[Tier] = [
     Tier("core", "baseline model, groups and static loads", _no_seeds, _core_cases),
@@ -1897,6 +2030,7 @@ TIERS: List[Tier] = [
     Tier("extras3", "batch 3: tractable subset of db.properties.*", _extras3_seeds, _extras3_cases),
     Tier("extras4", "batch 4: db.load_combinations in full", _no_seeds, _extras4_cases),
     Tier("extras5", "batch 5: db.dynamic_loads (9 of 12, Hyper-S variants deferred)", _extras5_seeds, _extras5_cases),
+    Tier("extras6", "batch 6: seismic-device family from db.boundary (SDVI/SDVE/SDST/SDHY/SDIS; all 5 fail live, DRLS deferred)", _no_seeds, _extras6_cases),
 ]
 
 
