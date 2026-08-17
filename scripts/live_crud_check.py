@@ -112,6 +112,7 @@ from midas_nx.client import MidasAPIError, MidasClient
 from midas_nx.db.analysis_control import (
     BoundaryChangeAssignment,
     BucklingAnalysisControl,
+    ConstructionStageAnalysisControlData,
     EigenvalueAnalysisControl,
     HeatOfHydrationAnalysisControl,
     MainControlData,
@@ -145,6 +146,12 @@ from midas_nx.db.boundary import (
     SeismicDeviceViscousDamper,
     SurfaceSpring,
 )
+from midas_nx.db.bridge import (
+    BridgeGirderDiagram,
+    FcmCamberControl,
+    GeneralCamberControl,
+    UnknownLoadFactorConstraint,
+)
 from midas_nx.db.construction_stage import (
     AmbientTemperatureFunction,
     AssignHeatSource,
@@ -153,10 +160,22 @@ from midas_nx.db.construction_stage import (
     ConstructionStageForHydration,
     ConvectionCoefficientFunction,
     CreepCoefficientConstructionStage,
+    ElementConvectionBoundary,
     HeatSourceFunction,
     PipeCooling,
+    PrescribedTemperature,
     SetBackLoad,
     TimeLoadConstructionStage,
+)
+from midas_nx.db.design import (
+    DesignMemberAssignment,
+    FrameDefinition,
+    LimitingSlendernessRatio,
+    ModifyMemberType,
+    ModifyWallMark,
+    RcDesignCode,
+    SteelDesignCode,
+    UnbracedLength,
 )
 from midas_nx.db.dynamic_loads import (
     DynamicNodalLoad,
@@ -998,13 +1017,11 @@ def _stage_cases() -> List[Case]:
 # cross-checking this exact fixture shape against a real production Civil
 # NX arch-bridge model's live AASHTO LRFD data (see
 # docs/live_verification_notes.md) — field-for-field identical to what a
-# real bridge project stores, not an invented example. Still `products=civil`
-# here: the chain answers on Gen too per the 32-endpoint mirror finding (all
-# of ch08 does), and AASHTO codes are the ones confirmed *not* gated by the
-# region-code lock, so this should now pass unchanged on Gen — but that is
-# an expectation, not yet something watched pass live. Widen `products` and
-# flip `confirmed` only once someone actually runs this against a Gen
-# session.
+# real bridge project stores, not an invented example. Confirmed live on
+# Gen NX too, 2026-08-17 (batch 11b) -- the identical fixture (LLAN/MVHL/
+# MVHC/MVLD) passes clean, same as the 32-endpoint ch08 mirror finding
+# predicted. `products` widened to both, `confirmed` left as-is (was
+# already True from the Civil confirmation).
 # --------------------------------------------------------------------------
 
 
@@ -1043,7 +1060,7 @@ def _moving_seeds() -> List[SeedStep]:
 
 
 def _moving_cases() -> List[Case]:
-    civil = ("civil",)
+    both_products = ("civil", "gen")  # confirmed live on Gen too, 2026-08-17 -- see tier comment
     return [
         # id 2: lane 1 is LL_SEED, which the /db/MVLD case references.
         Case(
@@ -1059,7 +1076,7 @@ def _moving_cases() -> List[Case]:
              "LANE_ITEMS": [{"ELEM": 2, "ECC": 0.5, "CENT_F": 0.5},
                             {"ELEM": 3, "ECC": 0.5, "CENT_F": 0.5}]},
             lambda p: p["LANE_ITEMS"][0].get("ECC"), 0.0, 0.5,
-            item_id=2, products=civil, confirmed=True, needs=("mvcd",),
+            item_id=2, products=both_products, confirmed=True, needs=("mvcd",),
         ),
         # id 2: vehicle 1 is the seeded HL-93TRK the class/case reference.
         #
@@ -1081,7 +1098,7 @@ def _moving_cases() -> List[Case]:
              "STANDARD_CODE": "AASHTO-LRFD",
              "VEH_DEFAULT": {"DYN_LOAD_ALLOWANCE": 20, "CENT_F": False}},
             lambda p: p["VEH_DEFAULT"].get("DYN_LOAD_ALLOWANCE"), 33, 20,
-            item_id=2, products=civil, confirmed=True, needs=("mvcd",),
+            item_id=2, products=both_products, confirmed=True, needs=("mvcd",),
         ),
         # VEHICLE_LD_NAMES takes the vehicle's VEHICLE_LOAD_NAME, not the
         # type name the manual's worked example shows — confirmed live
@@ -1091,7 +1108,7 @@ def _moving_cases() -> List[Case]:
             {"VEHICLE_CLS_NAME": "VC_CRUD", "VEHICLE_LD_NAMES": ["HL93TRK_SEED"]},
             {"VEHICLE_CLS_NAME": "VC_CRUD_2", "VEHICLE_LD_NAMES": ["HL93TRK_SEED"]},
             lambda p: p.get("VEHICLE_CLS_NAME"), "VC_CRUD", "VC_CRUD_2",
-            products=civil, confirmed=True, needs=("mvcd", "vehicle"),
+            products=both_products, confirmed=True, needs=("mvcd", "vehicle"),
         ),
         Case(
             MovingLoadCase,
@@ -1116,7 +1133,7 @@ def _moving_cases() -> List[Case]:
                                              "MAX_LOADED_LANE": 1,
                                              "LANE_NAMES": ["LL_SEED"]}]}},
             lambda p: p["DEFAULT"]["SUB_LOAD_DATAS"][0].get("SCALE_FACTOR"), 1.0, 0.8,
-            products=civil, confirmed=True, needs=("mvcd", "lane", "vehicle"),
+            products=both_products, confirmed=True, needs=("mvcd", "lane", "vehicle"),
         ),
     ]
 
@@ -2361,7 +2378,15 @@ def _extras8_cases() -> List[Case]:
         # confirmed live 2026-08-16 that "EIGEN" isn't accepted as a TYPE
         # value at all; the server evidently only recognises "LANCZOS" and
         # "RITZ" despite the manual and /info schema both listing EIGEN.
-        # Switched to the manual's Lanczos example instead, which passes.
+        # Switched to the manual's Lanczos example instead, which passes
+        # clean on Gen NX. Product-asymmetric, confirmed live 2026-08-16:
+        # this exact LANCZOS payload (TYPE/iFREQ/bMINMAX/FRMIN/FRMAX/
+        # bSTRUM) still answers the identical "FREQ_RANGE is required for
+        # LANCZOS." on Civil NX -- Civil evidently wants a field literally
+        # named FREQ_RANGE that FRMIN/FRMAX/bMINMAX don't satisfy, and
+        # neither the manual nor /info document it. Never retried with a
+        # guessed FREQ_RANGE field. Split into two cases since only Gen's
+        # round trip actually completes.
         Case(
             EigenvalueAnalysisControl,
             {"TYPE": "LANCZOS", "iFREQ": 30, "bMINMAX": True, "FRMIN": 0.1,
@@ -2369,7 +2394,16 @@ def _extras8_cases() -> List[Case]:
             {"TYPE": "LANCZOS", "iFREQ": 50, "bMINMAX": True, "FRMIN": 0.1,
              "FRMAX": 50, "bSTRUM": True},
             lambda p: p.get("iFREQ"), 30, 50,
-            item_id=1, confirmed=True,
+            item_id=1, products=("civil",),
+        ),
+        Case(
+            EigenvalueAnalysisControl,
+            {"TYPE": "LANCZOS", "iFREQ": 30, "bMINMAX": True, "FRMIN": 0.1,
+             "FRMAX": 50, "bSTRUM": True},
+            {"TYPE": "LANCZOS", "iFREQ": 50, "bMINMAX": True, "FRMIN": 0.1,
+             "FRMAX": 50, "bSTRUM": True},
+            lambda p: p.get("iFREQ"), 30, 50,
+            item_id=1, products=("gen",), confirmed=True,
         ),
         # ⚠️ Product-asymmetric, confirmed live 2026-08-16: this exact
         # payload passes clean on Gen NX (confirmed=True below) but fails
@@ -2498,6 +2532,12 @@ def _extras8_cases() -> List[Case]:
         # vBOUNDARY.vBG entries must reference real /db/BNGR boundary
         # groups (bngr_seed above) -- the manual's own "BG1"/"BG2" example
         # values are made-up and answer "Boundary Group not found: BG1".
+        # That fix clears it on Gen NX (confirmed=True below), but
+        # confirmed live 2026-08-16 that Civil NX still answers the
+        # identical "Boundary Group not found: BG1" even with bngr_seed's
+        # real /db/BNGR groups in place -- never retried on Civil after
+        # this was found. Split into two cases since only Gen's round trip
+        # actually completes.
         Case(
             BoundaryChangeAssignment,
             {"bSPT": True, "bSPR": True, "bGSPR": False, "bCGLINK": False,
@@ -2509,7 +2549,20 @@ def _extras8_cases() -> List[Case]:
              "vBOUNDARY": [{"BGCNAME": "BGL1", "vBG": ["BG1", "BG2"]}],
              "vLOADANAL": [{"TYPE": "ST", "BGCNAME": "BGL1", "LCNAME": "LC_SCRATCH"}]},
             lambda p: p.get("bSPT"), True, False,
-            item_id=1, needs=("bngr_seed",), confirmed=True,
+            item_id=1, needs=("bngr_seed",), products=("civil",),
+        ),
+        Case(
+            BoundaryChangeAssignment,
+            {"bSPT": True, "bSPR": True, "bGSPR": False, "bCGLINK": False,
+             "bSSSF": True, "bPSSF": False, "bRLS": True, "bCDOF": False,
+             "vBOUNDARY": [{"BGCNAME": "BGL1", "vBG": ["BG1", "BG2"]}],
+             "vLOADANAL": [{"TYPE": "ST", "BGCNAME": "BGL1", "LCNAME": "LC_SCRATCH"}]},
+            {"bSPT": False, "bSPR": True, "bGSPR": False, "bCGLINK": False,
+             "bSSSF": True, "bPSSF": False, "bRLS": True, "bCDOF": False,
+             "vBOUNDARY": [{"BGCNAME": "BGL1", "vBG": ["BG1", "BG2"]}],
+             "vLOADANAL": [{"TYPE": "ST", "BGCNAME": "BGL1", "LCNAME": "LC_SCRATCH"}]},
+            lambda p: p.get("bSPT"), True, False,
+            item_id=1, needs=("bngr_seed",), products=("gen",), confirmed=True,
         ),
     ]
 
@@ -2728,6 +2781,272 @@ def _extras10_cases() -> List[Case]:
     ]
 
 
+def _extras11_seeds() -> List[SeedStep]:
+    """HECB/HSPT need a real /db/BNGR boundary group plus, for HECB, real
+    /db/CCFC and /db/ETFC function names -- same "use real names from the
+    start" lesson as /db/BCCT's bngr_seed and /db/HSTG's groups10."""
+    def _hecb_seed(c: MidasClient) -> None:
+        BoundaryGroup.create({11: {"NAME": "BG11_SEED"}}, client=c)
+        ConvectionCoefficientFunction.create(
+            {11: {"NAME": "CC11_SEED", "TYPE": "CONST", "COEF": 15}}, client=c)
+        AmbientTemperatureFunction.create(
+            {11: {"NAME": "AT11_SEED", "TYPE": "CONST", "TEMP": 20}}, client=c)
+
+    return [
+        SeedStep("hecb_seed", _hecb_seed),
+    ]
+
+
+def _extras11_cases() -> List[Case]:
+    """batch 11a: /db/STCT, the one untested endpoint left in the
+    tractable subset of db.analysis_control (the rest of the 12 still
+    missing -- ACTL-M1/EIGV-M1/HHCT-M1/NLCT-M1/STCT-M1/BCGD-M1/BCGA-M1 are
+    Hyper-S/-M1, MVCTch/id/bs/tr are large country-specific field sets --
+    stay deferred per the extras8 docstring). Needs a real construction
+    stage name, which the "stage" tier's own "stage_1" seed already
+    creates as "CS_SEED" -- this tier must run after "stage" in the same
+    session for `needs=("stage_1",)` to resolve.
+
+    The manual's own worked example uses a made-up stage name ("CS1"),
+    same class of mistake as /db/BCCT's "BG1"/"BG2" -- swapped for the
+    real "CS_SEED" from the start. bINC_PDL (Civil NX only per its own
+    TypedDict comment) is left out of this first attempt to keep one
+    payload triable on both products; split into product variants if it
+    turns out to matter.
+
+    ⚠️ Confirmed failing live 2026-08-17 on both products, two different
+    symptoms:
+    - Civil NX: once a real construction stage is registered (stage_1
+      above), /db/STCT already holds an auto-populated default record at
+      id 1 -- POST answers "Key Already Exist" outright, and DELETE
+      separately answers "[Error] Construction Stage Analysis Control
+      Data cannot be deleted when the Construction Stage is registered."
+      A manual PUT (bypassing this Case's POST-first flow) does succeed
+      and echoes iITER/TOL correctly in its own response, but a follow-up
+      GET drops both fields entirely -- confirmed on a second PUT with a
+      different iITER value too, ruling out a one-off.
+    - Gen NX: no pre-existing default record, so POST itself succeeds,
+      but the same iITER/TOL silent-drop reproduces on the very first GET
+      after create ("wrote 30, read back None").
+    Every other field in this payload (FINAL_STAGE, CPFC, bCONV/bTRUSS/
+    bBEAM, bCAMBER, bCHANGE_CABLE, iNLA_TYPE, bINC_TDE, bCNS, TYPE,
+    iITER_CR, TOL_CR) persists correctly on both products -- only the two
+    Linear-analysis-specific fields (iITER, TOL) are silently dropped,
+    plausibly because iNLA_TYPE=1 (Accumulative) makes the server treat
+    them as inapplicable without saying so. Left as a genuine finding
+    rather than switched to a Linear+Independent payload, since the
+    manual's own worked example is the Accumulative combination tested
+    here.
+    """
+    return [
+        Case(
+            ConstructionStageAnalysisControlData,
+            {"bLAST_FINAL": False, "FINAL_STAGE": "CS_SEED",
+             "iINC_NLA": 0, "iNLA_TYPE": 1,
+             "iITER": 30, "TOL": 0.01,
+             "bINC_TDE": True, "bCNS": True, "TYPE": "BOTH",
+             "iITER_CR": 5, "TOL_CR": 0.01,
+             "CPFC": "EXTERNAL",
+             "bCONV": True, "bTRUSS": True, "bBEAM": True,
+             "bCHANGE_CABLE": True, "bCAMBER": True},
+            {"bLAST_FINAL": False, "FINAL_STAGE": "CS_SEED",
+             "iINC_NLA": 0, "iNLA_TYPE": 1,
+             "iITER": 50, "TOL": 0.01,
+             "bINC_TDE": True, "bCNS": True, "TYPE": "BOTH",
+             "iITER_CR": 5, "TOL_CR": 0.01,
+             "CPFC": "EXTERNAL",
+             "bCONV": True, "bTRUSS": True, "bBEAM": True,
+             "bCHANGE_CABLE": True, "bCAMBER": True},
+            lambda p: p.get("iITER"), 30, 50,
+            item_id=1, needs=("stage_1",),
+        ),
+        # batch 11c: HECB/HSPT, keyed by construction stage *number* (not
+        # element/node id -- "Assign의 키(ID)는 시공단계 번호입니다" per the
+        # manual's own note on both). item_id=1 is stage_1's "CS_SEED".
+        # The manual's own worked examples use made-up group/function names
+        # ("BG_SURF", "CC_Standard", "AT_Summer") -- swapped for hecb_seed's
+        # real ones from the start, same lesson as /db/BCCT.
+        #
+        # ⚠️ Confirmed failing live 2026-08-17 on both products with
+        # "[Error] The element no. 1 is an element type in which Element
+        # Convection Boundary cannot be entered." -- same failure shape and
+        # likely the same root cause as /db/HAHS in batch 10 (element
+        # convection/heat-source assignment needs a real SOLID element,
+        # which this fixture's frame/plate base model doesn't build).
+        # ITEMS[0].ID=1 lines up with "element no. 1" in the error, despite
+        # the manual describing ID as a plain serial number rather than an
+        # element reference -- untested against a real SOLID element or a
+        # different ID value, left as the same scope gap as HAHS rather
+        # than independently re-bisected.
+        Case(
+            ElementConvectionBoundary,
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "BG11_SEED", "FACE_NO": 1,
+                        "CCFC_NAME": "CC11_SEED", "ETFC_NAME": "AT11_SEED"}]},
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "BG11_SEED", "FACE_NO": 2,
+                        "CCFC_NAME": "CC11_SEED", "ETFC_NAME": "AT11_SEED"}]},
+            lambda p: p["ITEMS"][0].get("FACE_NO"), 1, 2,
+            item_id=1, needs=("stage_1", "hecb_seed"),
+        ),
+        Case(
+            PrescribedTemperature,
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "BG11_SEED", "TEMPER": 15.0}]},
+            {"ITEMS": [{"ID": 1, "GROUP_NAME": "BG11_SEED", "TEMPER": 20.0}]},
+            lambda p: p["ITEMS"][0].get("TEMPER"), 15.0, 20.0,
+            item_id=1, needs=("stage_1", "hecb_seed"), confirmed=True,
+        ),
+    ]
+
+
+def _extras12_seeds() -> List[SeedStep]:
+    """batch 12: db.bridge (GSBG/GCMB/CAMB/ULFC). All 4 Civil-only per
+    db/bridge.py's own docstring except ULFC, which answers on Gen too.
+
+    A single real /db/GRUP structure group, key 12, backs GCMB's
+    GRUP_NAME, CAMB's three group-name fields, and GSBG's numeric
+    BODY_ELEM_GRUP_K -- the manual's own worked examples use made-up
+    names ("FSM"/"PSC-BN"/"Key-SegK1~K5" for CAMB, "CS_0".."CS_18" for
+    GCMB), same lesson as /db/BCCT.
+    """
+    return [
+        SeedStep("bridge_group", lambda c: StructureGroup.create(
+            {12: {"NAME": "SG12_SEED"}, 13: {"NAME": "SG12_SEED_2"}}, client=c)),
+    ]
+
+
+def _extras12_cases() -> List[Case]:
+    civil = ("civil",)
+    return [
+        Case(
+            GeneralCamberControl,
+            {"bSTART_PT_ZERO": True,
+             "GCMB_BASE_ITEMS": [{"GRUP_NAME": "SG12_SEED", "DIRECTION": "+DX"}]},
+            {"bSTART_PT_ZERO": True,
+             "GCMB_BASE_ITEMS": [{"GRUP_NAME": "SG12_SEED", "DIRECTION": "-DX"}]},
+            lambda p: p["GCMB_BASE_ITEMS"][0].get("DIRECTION"), "+DX", "-DX",
+            item_id=1, needs=("bridge_group",), products=civil, confirmed=True,
+        ),
+        Case(
+            FcmCamberControl,
+            {"BODY_GROUP_NAME": "SG12_SEED", "SUPP_GROUP_NAME": "SG12_SEED",
+             "KEYSEG_GROUP_NAME": "SG12_SEED"},
+            {"BODY_GROUP_NAME": "SG12_SEED_2", "SUPP_GROUP_NAME": "SG12_SEED",
+             "KEYSEG_GROUP_NAME": "SG12_SEED"},
+            lambda p: p.get("BODY_GROUP_NAME"), "SG12_SEED", "SG12_SEED_2",
+            item_id=1, needs=("bridge_group",), products=civil, confirmed=True,
+        ),
+        Case(
+            BridgeGirderDiagram,
+            {"NAME": "GSBG_CRUD", "BATCH": True, "BODY_ELEM_GRUP_K": 12,
+             "ALLSTAGE": False, "DGRM_TYPE": 1, "MOMENT_COMP": 4, "SCALEFACTOR": 1},
+            {"NAME": "GSBG_CRUD", "BATCH": True, "BODY_ELEM_GRUP_K": 12,
+             "ALLSTAGE": False, "DGRM_TYPE": 1, "MOMENT_COMP": 2, "SCALEFACTOR": 1},
+            lambda p: p.get("MOMENT_COMP"), 4, 2,
+            item_id=1, needs=("bridge_group",), products=civil, confirmed=True,
+        ),
+        # TYPE="REAC" keyed by a real base-model node id (node 1).
+        # ⚠️ POINT is only documented as meaningful for TYPE="BEAM", but
+        # confirmed live 2026-08-17 it's actually required unconditionally
+        # -- omitting it on a TYPE="REAC" payload answers "Wrong Field";
+        # POINT=0 clears it.
+        Case(
+            UnknownLoadFactorConstraint,
+            {"NAME": "ULFC_CRUD", "TYPE": "REAC", "OBJ_ID": 1, "POINT": 0, "COMP": 2,
+             "EQ": True, "bVALUE": True, "VALUE": 500, "OtherObject": 0},
+            {"NAME": "ULFC_CRUD", "TYPE": "REAC", "OBJ_ID": 1, "POINT": 0, "COMP": 2,
+             "EQ": True, "bVALUE": True, "VALUE": 300, "OtherObject": 0},
+            lambda p: p.get("VALUE"), 500, 300,
+            item_id=1, confirmed=True,
+        ),
+    ]
+
+
+def _extras13_cases() -> List[Case]:
+    """batch 13: the tractable, non-rebar subset of db.design (8 of 13) --
+    design-code selection, unbraced length, member/frame/slenderness
+    definitions, and mark overrides. All are simple singleton or
+    element-keyed tables, no analysis run needed. Deferred: /db/RCHK
+    (Civil-only, large nested vMAIN/vSUB_BAR/vLAYER rebar-check structures)
+    and /db/REBB/REBC/REBW/REBR (Gen-only, similarly large rebar-data
+    overrides -- REBW's own manual section was already found wrong and
+    fixed against a live production model, see db/design.py; the other
+    three untested here).
+
+    DGNCODE values for DCON/DSTL are taken verbatim from the manual's own
+    worked examples ("KCI-USD12"/"AISC(16th)-LRFD22") rather than guessed,
+    given this project's track record of enum values that don't match
+    their own documented spelling.
+    """
+    return [
+        Case(
+            RcDesignCode,
+            {"DGNCODE": "KCI-USD12"},
+            {"DGNCODE": "ACI318-19"},
+            lambda p: p.get("DGNCODE"), "KCI-USD12", "ACI318-19",
+            item_id=1,
+        ),
+        Case(
+            SteelDesignCode,
+            {"DGNCODE": "AISC(16th)-LRFD22"},
+            {"DGNCODE": "Eurocode3-2:05"},
+            lambda p: p.get("DGNCODE"), "AISC(16th)-LRFD22", "Eurocode3-2:05",
+            item_id=1,
+        ),
+        # Keyed by a real base-model frame element id (1).
+        Case(
+            UnbracedLength,
+            {"LY": 9.464111, "LZ": 4, "LB": 4, "bNOTUSE": False,
+             "bAUTOCALC": False, "LT": 9.464111},
+            {"LY": 9.464111, "LZ": 4, "LB": 4, "bNOTUSE": False,
+             "bAUTOCALC": False, "LT": 5.0},
+            lambda p: p.get("LT"), 9.464111, 5.0,
+            item_id=1,
+        ),
+        # AELEM groups the base model's frame elements 1-3 into one member.
+        Case(
+            DesignMemberAssignment,
+            {"AELEM": [1, 2, 3], "bREVERSE": False},
+            {"AELEM": [1, 2, 3], "bREVERSE": True},
+            lambda p: p.get("bREVERSE"), False, True,
+            item_id=1,
+        ),
+        Case(
+            FrameDefinition,
+            {"FRAMEX": "Braced Non-sway", "FRAMEY": "Braced Non-sway",
+             "bAUTOKF": False, "DT": "XY"},
+            {"FRAMEX": "Braced Non-sway", "FRAMEY": "Unbraced Sway",
+             "bAUTOKF": True, "DT": "3D"},
+            lambda p: p.get("DT"), "XY", "3D",
+            item_id=1,
+        ),
+        # Keyed by a real base-model frame element id (1).
+        Case(
+            LimitingSlendernessRatio,
+            {"bNOTCHECK": False, "COMP": 150, "TENS": 400},
+            {"bNOTCHECK": False, "COMP": 200, "TENS": 300},
+            lambda p: p.get("COMP"), 150, 200,
+            item_id=1,
+        ),
+        # Keyed by a real base-model frame element id (1).
+        Case(
+            ModifyMemberType,
+            {"TYPE": "COLUMN"},
+            {"TYPE": "BEAM"},
+            lambda p: p.get("TYPE"), "COLUMN", "BEAM",
+            item_id=1,
+        ),
+        # WID_LIST references the base model's own PLATE element (id 4) --
+        # untested whether the server requires it to actually be flagged
+        # as a wall-type element rather than any plate.
+        Case(
+            ModifyWallMark,
+            {"MARKNAME": "W1", "WID_LIST": [4]},
+            {"MARKNAME": "W1_RENAMED", "WID_LIST": [4]},
+            lambda p: p.get("MARKNAME"), "W1", "W1_RENAMED",
+            item_id=1,
+        ),
+    ]
+
+
 #: Priority order — what a modelling script needs, not the manual's order.
 TIERS: List[Tier] = [
     Tier("core", "baseline model, groups and static loads", _no_seeds, _core_cases),
@@ -2735,7 +3054,7 @@ TIERS: List[Tier] = [
     Tier("boundary", "springs and links", _boundary_seeds, _boundary_cases),
     Tier("static", "remaining static loads + temperature", _no_seeds, _static_cases),
     Tier("stage", "construction stages", _stage_seeds, _stage_cases),
-    Tier("moving", "moving loads (AASHTO LRFD fixtures; Civil-confirmed, Gen not yet watched live)", _moving_seeds, _moving_cases),
+    Tier("moving", "moving loads (AASHTO LRFD fixtures; confirmed both products)", _moving_seeds, _moving_cases),
     Tier("extras1", "batch 1 of read-only-verified db.project/db.boundary endpoints", _extras1_seeds, _extras1_cases),
     Tier("extras2", "batch 2: db.misc_loads in full + 3 of db.temperature_prestress", _extras2_seeds, _extras2_cases),
     Tier("extras3", "batch 3: tractable subset of db.properties.*", _extras3_seeds, _extras3_cases),
@@ -2743,9 +3062,12 @@ TIERS: List[Tier] = [
     Tier("extras5", "batch 5: db.dynamic_loads (9 of 12, Hyper-S variants deferred)", _extras5_seeds, _extras5_cases),
     Tier("extras6", "batch 6: seismic-device family from db.boundary (SDVI/SDVE/SDST/SDHY/SDIS; all 5 fail live, DRLS deferred)", _no_seeds, _extras6_cases),
     Tier("extras7", "batch 7: standalone/frame-attachable remainder of db.static_loads (PNLD/PNLA/FMLD/POSP/POSL confirmed; FBLA/EPST/EPSE fail live)", _extras7_seeds, _extras7_cases),
-    Tier("extras8", "batch 8: tractable subset of db.analysis_control (PDEL/BUCK/EIGV/SMCT/BCCT confirmed both products; HHCT/NLCT confirmed Gen only; ACTL/MVCT fail on both)", _extras8_seeds, _extras8_cases),
+    Tier("extras8", "batch 8: tractable subset of db.analysis_control (PDEL/BUCK/SMCT confirmed both products; EIGV/BCCT/HHCT/NLCT confirmed Gen only, all 4 fail on Civil; ACTL/MVCT fail on both)", _extras8_seeds, _extras8_cases),
     Tier("extras9", "batch 9: db.node_element's Domain feature (MADO/SBDO/DOEL -- all 3 fail live, MADO silently drops writes on both products)", _extras9_seeds, _extras9_cases),
     Tier("extras10", "batch 10: standalone subset of db.construction_stage's heat-of-hydration family (ETFC/CCFC/HSFC/STBK/HSTG confirmed; HAHS needs a SOLID element this fixture lacks; HPCE fails live; HECB/HSPT/CSCS deferred)", _extras10_seeds, _extras10_cases),
+    Tier("extras11", "batch 11a/c: /db/STCT (fails live -- iITER/TOL silently don't persist), /db/HSPT confirmed, /db/HECB fails live (same SOLID-element gap as HAHS)", _extras11_seeds, _extras11_cases),
+    Tier("extras12", "batch 12: db.bridge in full, all 4 confirmed (GSBG/GCMB/CAMB Civil-only, ULFC both products)", _extras12_seeds, _extras12_cases),
+    Tier("extras13", "batch 13: tractable non-rebar subset of db.design (8 of 13; RCHK/REBB/REBC/REBW/REBR deferred)", _no_seeds, _extras13_cases),
 ]
 
 

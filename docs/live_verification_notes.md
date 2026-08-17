@@ -5693,6 +5693,201 @@ variants, `/db/DRLS`'s empty-payload shape problem, retesting `/db/HAHS`
 against a real `SOLID` element, and root-causing the 24 unresolved
 findings above) is open for a future session.
 
+## 2026-08-17 — correction: `EIGV`/`BCCT` were never actually confirmed on Civil NX
+
+Re-reading batch 8's own raw result files (`extras8_civil.json`, checked_at
+2026-08-16T15:47:37Z) while resuming the write-coverage push turned up a
+mismatch: the code and `docs/coverage.json` both claimed `/db/EIGV` and
+`/db/BCCT` were "confirmed both products," but that Civil NX run — the only
+one ever made for these two cases — has both failing:
+
+- `EIGV`: `"FREQ_RANGE is required for LANCZOS."`, the *identical* error
+  the batch-8 write-up already documents for the rejected `TYPE="EIGEN"`
+  attempt — except this run used the fixed `TYPE="LANCZOS"` payload
+  (`iFREQ`/`bMINMAX`/`FRMIN`/`FRMAX`/`bSTRUM`) that passes clean on Gen.
+  Civil answers the same error anyway, meaning it wants some additional,
+  undocumented field literally named `FREQ_RANGE` that `FRMIN`/`FRMAX`
+  don't satisfy.
+- `BCCT`: `"Boundary Group not found: BG1"` — the exact error the
+  `bngr_seed` fix (creating real `/db/BNGR` groups named `BG1`/`BG2`) was
+  supposed to clear, and did clear on Gen (`extras8_gen.json`, same day,
+  5 minutes later, both cases `ok`). Civil rejects the same real groups
+  under the same names.
+
+No Civil retry for either case exists anywhere in this session's scratch
+output (checked — `extras8_civil2.json` was never created, unlike
+`extras7_civil2.json`/`extras10_civil2.json` which do exist for their
+tiers' fixed re-runs). The "confirmed both products" claim was written
+without actually re-running Civil after the Gen fix landed — caught this
+time by cross-checking the code against its own raw evidence, per this
+project's standing "verify before confirming already done" rule.
+
+Fixed: both `Case`s split into `products=("civil",)` unconfirmed /
+`products=("gen",)` confirmed=True, same pattern as `HHCT`/`NLCT`.
+`docs/coverage.json`'s `method` notes for both rewritten to state
+"confirmed live on Gen NX; Civil NX fails" instead of "both products."
+`ROADMAP.md` regenerated (399/399 implemented, unchanged — both stay
+`level: write` since Gen alone still counts, same as `HHCT`/`NLCT`; the
+batch 1-10 running total of 69 write / 24 unresolved is unaffected, only
+the per-endpoint accuracy). `pytest` and `ruff` both clean.
+
+Lesson for future batches: a product-split `Case` pair should be written
+(and `confirmed` set) only after *both* products have actually been run
+with the final payload — not after fixing one product's error and
+assuming the fix generalizes.
+
+## 2026-08-17 — batch 11a: `/db/STCT` (last tractable gap in `db.analysis_control`)
+
+Of the 12 `db.analysis_control` endpoints left unattempted after batch 8, 11
+are Hyper-S/`-M1` variants or the four large country-specific `MVCT`
+siblings (`MVCTch`/`MVCTid`/`MVCTbs`/`MVCTtr`) — all deferred as before.
+`/db/STCT` (Construction Stage Analysis Control Data) was the one genuinely
+tractable endpoint left, so it got its own tier (`extras11`) rather than
+waiting for a bigger batch.
+
+Needs a real construction stage to reference (`FINAL_STAGE`), so it reuses
+the `stage` tier's own `stage_1` seed (`CS_SEED`) — confirmed the manual's
+own worked example makes the same mistake batch 8 already found on `BCCT`
+(a made-up stage name, `"CS1"`), swapped for the real one from the start.
+
+First Civil run failed immediately: `POST /db/STCT` answered `"Key Already
+Exist"`. Investigated directly (bypassing the harness) and found the real
+shape of the problem — **once a real construction stage is registered,
+`/db/STCT` already holds an auto-populated default record at id 1**,
+before any explicit POST. Tried `DELETE`-then-`POST` to clear it first;
+`DELETE` answered its own separate error: `"[Error] Construction Stage
+Analysis Control Data cannot be deleted when the Construction Stage is
+registered."` So this table is POST/DELETE-locked once construction
+staging is in use — a real business rule, not a fixture bug.
+
+Fell back to a manual `PUT` on the existing id-1 record instead. The `PUT`
+itself succeeded and its response echoed `iITER`/`TOL` back correctly, but
+a follow-up `GET` dropped both fields entirely (present in every other
+respect — `FINAL_STAGE`, `CPFC`, `bCONV`/`bTRUSS`/`bBEAM`, `bCAMBER`,
+`bCHANGE_CABLE`, `iNLA_TYPE`, `bINC_TDE`, `bCNS`, `TYPE`, `iITER_CR`,
+`TOL_CR` all persisted). Repeated with a second `iITER` value to rule out
+a one-off — same result both times.
+
+Gen NX doesn't pre-populate a default record, so `POST` itself succeeds
+there, but the identical `iITER`/`TOL` silent-drop reproduces on the very
+first `GET` after create (`"wrote 30, read back None"`) — confirming the
+underlying defect is symmetric across both products, only the
+POST-vs-already-exists wrinkle is Civil-specific. Likely cause: the
+payload combines `iINC_NLA=0` (Linear) with `iNLA_TYPE=1` (Accumulative)
+per the manual's own example, and the server may treat the two
+Linear-only fields as inapplicable under Accumulative mode without saying
+so.
+
+Left as a genuine, product-symmetric finding — the `Case` in `extras11`
+stays unconfirmed, documenting the Civil `"Key Already Exist"` failure
+directly (closest to what a real caller hits first). `docs/coverage.json`
+records the fuller story (both products, both failure modes) since the
+generic harness can only exercise one of them per run. `level` stays
+`read`. `ROADMAP.md` regenerated (399/399 implemented, unchanged);
+`pytest` (701) and `ruff` both clean.
+
+Running total for the write-coverage push (batches 1-11a): still 69
+endpoints at `level: write`; 25 now carry a dated genuinely-unresolved or
+scope-limited finding (the 24 from batches 1-10 plus `STCT`), plus the one
+confirmed live crash (`THNL` PUT on Gen NX, MAPI-2468).
+
+## 2026-08-17 — batch 11b: `moving` tier confirmed on Gen NX
+
+The `moving` tier's own header comment had been sitting there since
+2026-07-30 with a note that it *should* pass on Gen unchanged — the AASHTO
+LRFD codes are the ones confirmed not gated by the region-code lock, and
+the same fixture already round-trips clean on Civil — but that nobody had
+actually run it against a Gen session. Ran it: `core` (base model) +
+`moving` against Gen NX, identical fixture (`MVCD` "AASHTO LRFD", `LLAN`
+line lanes, `MVHL`/`MVHC` HL-93 truck/tandem vehicles, `MVLD` vehicle
+classes) — all 4 pass clean, full create→read→update→read→delete→read.
+Re-ran Civil NX afterward too, to make sure widening `products` didn't
+regress anything — also clean, 14/14 both times.
+
+Widened all 4 `Case`s from `products=("civil",)` to both, kept
+`confirmed=True` (already true from the Civil confirmation).
+`docs/coverage.json`'s `method` note for `LLAN`/`MVHL`/`MVHC`/`MVLD`
+updated to record the Gen write-round-trip explicitly — they'd been
+`level: write` already off the Civil result plus a separate GET-only Gen
+sweep from 2026-08-10, so the write/read tally is unchanged; this closes
+the Gen side from "route exists" to "write proven." `ROADMAP.md`
+regenerated (399/399, unchanged); `pytest` (701) and `ruff` both clean.
+
+## 2026-08-17 — batch 11c: `/db/HECB`/`/db/HSPT` (construction-stage-keyed heat-of-hydration pair)
+
+Batch 10 deferred `HECB`/`HSPT`/`CSCS` because they need a real construction
+stage id, which this session's `stage` tier now provides (`stage_1` seeds
+`CS_SEED` at id 1). Added both to the `extras11` tier alongside `STCT`.
+Both are keyed by construction stage *number* in the `Assign` dict, not an
+element or node id — the manual says so explicitly for each ("Assign의
+키(ID)는 시공단계 번호입니다") — and both worked examples use made-up
+group/function names (`"BG_SURF"`, `"CC_Standard"`, `"AT_Summer"` for
+`HECB`; `"BG_BASE"` for `HSPT`), same mistake class as `/db/BCCT`'s
+`"BG1"`/`"BG2"`. New `hecb_seed` creates real `/db/BNGR`, `/db/CCFC`, and
+`/db/ETFC` records up front instead.
+
+- **`HSPT`** (Prescribed Temperature): passes clean on both products,
+  first try. `confirmed=True`.
+- **`HECB`** (Element Convection Boundary): fails on both products with
+  `"[Error] The element no. 1 is an element type in which Element
+  Convection Boundary cannot be entered."` — the exact same failure shape
+  as `/db/HAHS` from batch 10. `ITEMS[0].ID` (documented as a plain serial
+  number) lines up numerically with "element no. 1" in the error, so it's
+  plausibly read as an element reference server-side despite the manual's
+  description. Given `HAHS` hit the identical wall and heat-of-hydration
+  boundary conditions are normally applied to mass-concrete `SOLID`
+  elements (piers, footings), this reads as the same fixture scope gap —
+  the base model only builds frame and plate elements, no `SOLID` — rather
+  than a fresh defect. Left unconfirmed, not re-bisected past that point.
+
+1 endpoint (`HSPT`) flipped to `level: write`; `HECB` stays `level: read`
+with a dated note pointing at the `HAHS` precedent. `docs/coverage.json`
+and `ROADMAP.md` updated; `pytest` (701) and `ruff` both clean.
+
+Running total for the write-coverage push (batches 1-11c): 70 endpoints at
+`level: write` (69 from batches 1-10, +1 `HSPT` here — `LLAN`/`MVHL`/
+`MVHC`/`MVLD` were already `write` before batch 11b, so widening them to
+Gen doesn't add to this count); 26 with a dated genuinely-unresolved or
+scope-limited finding (the 25 through batch 11a plus `HECB`), plus the one
+confirmed live crash (`THNL` PUT on Gen NX, MAPI-2468). `CSCS` (composite
+section for construction stage) is the one endpoint left in this family,
+deferred again — it references a stage-specific section change, a bigger
+fixture than this batch's scope.
+
+## 2026-08-17 — batch 12: `db.bridge` in full, clean sweep
+
+Picked `db.bridge` next (`GSBG`/`GCMB`/`CAMB`/`ULFC`, 4 endpoints) — fully
+self-contained, no fiber/hinge dependency chain, and small enough to do in
+one pass. Three of the four (`GSBG`/`GCMB`/`CAMB`) are Civil-only per
+`db/bridge.py`'s own docstring; `ULFC` answers on Gen too.
+
+One seed: a real `/db/GRUP` structure group (`SG12_SEED`, plus a second
+`SG12_SEED_2` so `CAMB`'s update step has something to switch to) —
+`GCMB`'s `GRUP_NAME` and `CAMB`'s three group-name fields all reference
+it by name, `GSBG`'s `BODY_ELEM_GRUP_K` by its numeric key (12). The
+manual's own worked examples use made-up group names for both (`"CS_0"`
+.. `"CS_18"` for `GCMB`, `"FSM"`/`"PSC-BN"`/`"Key-SegK1~K5"` for `CAMB`) —
+same lesson as `/db/BCCT`, used real ones from the start.
+
+First Civil run: `GCMB`/`CAMB`/`GSBG` passed clean immediately. `ULFC`
+failed with `"Wrong Field"` — the fixture had omitted `POINT` since the
+manual only documents it as "required if TYPE=BEAM," but a direct check
+confirmed it's actually **required unconditionally**: a `TYPE="REAC"`
+payload without it is rejected, `POINT=0` clears it. Corrected the
+fixture and `src/midas_nx/db/bridge.py`'s `POINT` field comment to
+document this. Re-ran Civil clean (14/14), then Gen (11/11, `ULFC` only —
+the other three are Civil-only by design, not attempted there).
+
+All 4 endpoints flipped to `level: write`, all `confirmed=True` — the
+first batch in this whole push where every endpoint passed with no
+genuinely-unresolved finding left behind. `docs/coverage.json` and
+`ROADMAP.md` updated; `pytest` (701) and `ruff` both clean.
+
+Running total for the write-coverage push (batches 1-12): 74 endpoints at
+`level: write` (70 through batch 11c, +4 here); 26 with a dated
+genuinely-unresolved or scope-limited finding (unchanged this batch), plus
+the one confirmed live crash (`THNL` PUT on Gen NX, MAPI-2468).
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

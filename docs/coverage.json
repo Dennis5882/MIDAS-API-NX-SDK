@@ -2995,12 +2995,12 @@
       "status": "implemented",
       "module": "midas_nx.db.moving_loads",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-17",
         "products": [
           "civil",
           "gen"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too. Full write-round-trip confirmed live on Gen NX too, 2026-08-17 (batch 11b) -- the identical AASHTO LRFD fixture passes clean on both products; the 2026-08-10 note above was GET-only for Gen, this closes that to a real write proof.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
@@ -3195,12 +3195,12 @@
       "status": "implemented",
       "module": "midas_nx.db.moving_loads",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-17",
         "products": [
           "civil",
           "gen"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too. Full write-round-trip confirmed live on Gen NX too, 2026-08-17 (batch 11b) -- the identical AASHTO LRFD fixture passes clean on both products; the 2026-08-10 note above was GET-only for Gen, this closes that to a real write proof.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
@@ -3245,12 +3245,12 @@
       "status": "implemented",
       "module": "midas_nx.db.moving_loads",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-17",
         "products": [
           "civil",
           "gen"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too. Full write-round-trip confirmed live on Gen NX too, 2026-08-17 (batch 11b) -- the identical AASHTO LRFD fixture passes clean on both products; the 2026-08-10 note above was GET-only for Gen, this closes that to a real write proof.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
@@ -3464,12 +3464,12 @@
       "status": "implemented",
       "module": "midas_nx.db.moving_loads",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-17",
         "products": [
           "civil",
           "gen"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too. Full write-round-trip confirmed live on Gen NX too, 2026-08-17 (batch 11b) -- the identical AASHTO LRFD fixture passes clean on both products; the 2026-08-10 note above was GET-only for Gen, this closes that to a real write proof.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
@@ -4144,18 +4144,17 @@
       "status": "implemented",
       "module": "midas_nx.db.construction_stage",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-17",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too.",
+        "method": "2026-08-17: write attempt fails live on both products (batch 11c) with \"[Error] The element no. 1 is an element type in which Element Convection Boundary cannot be entered.\" -- same failure shape as /db/HAHS (batch 10): likely needs a real SOLID element for heat-of-hydration, which this fixture's frame/plate base model doesn't build. ITEMS[0].ID=1 lines up with \"element no. 1\" in the error despite the manual describing ID as a plain serial number, not an element reference -- untested against a real SOLID element or a different ID value.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "read"
       }
     },
     {
@@ -4169,17 +4168,17 @@
       "status": "implemented",
       "module": "midas_nx.db.construction_stage",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-17",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too.",
+        "method": "2026-08-17: write-round-trip confirmed live (batch 11c), both products. docs/coverage.json/live_crud_check.py extras11 tier. Keyed by construction stage number, not element/node id, per the manual's own note; the manual's worked example uses a made-up GROUP_NAME (\"BG_BASE\") -- used a real /db/BNGR group from the start instead.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
         },
-        "level": "read",
+        "level": "write",
         "outcome": "success_empty"
       }
     },
@@ -4617,7 +4616,7 @@
           "gen",
           "civil"
         ],
-        "method": "2026-08-16: write-round-trip confirmed live (batch 8), both products. docs/coverage.json/live_crud_check.py's extras8 tier. TYPE=\"EIGEN\" (Subspace Iteration) is not accepted despite the manual's own worked example using it -- only \"LANCZOS\"/\"RITZ\" work; use the Lanczos payload shape instead.",
+        "method": "2026-08-16: write-round-trip confirmed live on Gen NX (batch 8); Civil NX fails -- TYPE=\"EIGEN\" (the manual's own worked example) is rejected outright with \"FREQ_RANGE is required for LANCZOS.\"; switching to the manual's LANCZOS payload (iFREQ/bMINMAX/FRMIN/FRMAX/bSTRUM) clears it on Gen but Civil answers the identical error even with that payload -- Civil evidently wants an undocumented field literally named FREQ_RANGE. Product-asymmetric; level reflects the Gen NX result.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
@@ -4903,18 +4902,17 @@
       "status": "implemented",
       "module": "midas_nx.db.analysis_control",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-17",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too.",
+        "method": "2026-08-17: write attempt fails live on both products (batch 11). Civil NX: once a real construction stage exists, /db/STCT already holds an auto-populated default record at id 1 -- POST answers \"Key Already Exist\"; DELETE separately answers \"cannot be deleted when the Construction Stage is registered\". A manual PUT succeeds and echoes iITER/TOL correctly, but a follow-up GET drops both fields entirely. Gen NX: no pre-existing record, so POST itself succeeds, but the identical iITER/TOL silent-drop reproduces on the first GET after create. Every other field in the manual's own worked example payload persists correctly on both products -- only the two Linear-analysis-specific fields silently fail to round-trip, plausibly because iNLA_TYPE=1 (Accumulative) makes the server treat them as inapplicable without saying so.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "read"
       }
     },
     {
@@ -4955,7 +4953,7 @@
           "gen",
           "civil"
         ],
-        "method": "2026-08-16: write-round-trip confirmed live (batch 8), both products. docs/coverage.json/live_crud_check.py's extras8 tier. vBOUNDARY.vBG entries must reference real /db/BNGR boundary groups -- the manual's own \"BG1\"/\"BG2\" example values are made up and answer \"Boundary Group not found\".",
+        "method": "2026-08-16: write-round-trip confirmed live on Gen NX (batch 8); Civil NX fails -- vBOUNDARY.vBG entries must reference real /db/BNGR boundary groups (the manual's own \"BG1\"/\"BG2\" example values are made up and answer \"Boundary Group not found: BG1\"); creating real BNGR groups with those names clears it on Gen but Civil answers the identical \"Boundary Group not found: BG1\" even with the real groups in place. Product-asymmetric; level reflects the Gen NX result.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
@@ -5218,15 +5216,16 @@
       "status": "implemented",
       "module": "midas_nx.db.bridge",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-17",
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "2026-08-17: write-round-trip confirmed live (batch 12), Civil NX (Civil-only endpoint). BODY_ELEM_GRUP_K is the numeric key of a real /db/GRUP structure group (not a name string, unlike GCMB/CAMB's group fields).",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
         },
-        "level": "read",
+        "level": "write",
         "outcome": "success_empty"
       }
     },
@@ -5240,15 +5239,16 @@
       "status": "implemented",
       "module": "midas_nx.db.bridge",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-17",
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "2026-08-17: write-round-trip confirmed live (batch 12), Civil NX (Civil-only endpoint). docs/coverage.json/live_crud_check.py extras12 tier. GRUP_NAME must reference a real /db/GRUP structure group -- the manual's own worked example uses made-up names (\"CS_0\"..\"CS_18\"), used a real one from the start instead.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
         },
-        "level": "read",
+        "level": "write",
         "outcome": "success_empty"
       }
     },
@@ -5262,15 +5262,16 @@
       "status": "implemented",
       "module": "midas_nx.db.bridge",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-17",
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "2026-08-17: write-round-trip confirmed live (batch 12), Civil NX (Civil-only endpoint). All 3 group-name fields (BODY_GROUP_NAME/SUPP_GROUP_NAME/KEYSEG_GROUP_NAME) accept the same real /db/GRUP structure group name -- the manual's own worked example uses made-up names (\"FSM\"/\"PSC-BN\"/\"Key-SegK1~K5\"), used real ones from the start instead.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
         },
-        "level": "read",
+        "level": "write",
         "outcome": "success_empty"
       }
     },
@@ -5285,17 +5286,17 @@
       "status": "implemented",
       "module": "midas_nx.db.bridge",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-17",
         "products": [
-          "civil",
-          "gen"
+          "gen",
+          "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
+        "method": "2026-08-17: write-round-trip confirmed live (batch 12), both products. TYPE=\"REAC\" keyed by a real base-model node id. POINT is documented as \"required if TYPE=BEAM\" but is actually required unconditionally live -- omitting it on a TYPE=\"REAC\" payload answers \"Wrong Field\"; send 0 for non-BEAM types. src/midas_nx/db/bridge.py's POINT field comment corrected to document this.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
         },
-        "level": "read",
+        "level": "write",
         "outcome": "success_empty"
       }
     },

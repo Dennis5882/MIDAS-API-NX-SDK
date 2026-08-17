@@ -103,7 +103,11 @@ class UnknownLoadFactorConstraintPayload(TypedDict, total=False):
     NAME: str  # Constraint Name, required
     TYPE: str  # Reaction="REAC"/Displacement="DISP"/Truss Force="TRUSS"/Beam Force="BEAM", required
     OBJ_ID: int  # Element/Node ID, required
-    POINT: int  # I-end=0/1-4=1/2-4=2/3-4=3/J-end=4, required if TYPE="BEAM"
+    # I-end=0/1-4=1/2-4=2/3-4=3/J-end=4. The manual marks this "required if
+    # TYPE=BEAM" (it's only semantically meaningful there), but live-confirmed
+    # 2026-08-17: it's actually required unconditionally -- a TYPE="REAC"
+    # payload without it answers "Wrong Field"; send 0 for non-BEAM types.
+    POINT: int
     COMP: int  # FX-DX-Iend=0/FY-DY-Jend=1/FZ-DZ=2/MX-RX=3/MY-RY=4/MZ-RZ=5, required
     EQ: bool  # Equality=true/Inequality=false, default false, optional
     bVALUE: bool  # Check Value, default false, optional (EQ=true)
