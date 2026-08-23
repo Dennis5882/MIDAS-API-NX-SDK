@@ -243,18 +243,21 @@ class StoryStabilityCalculationMethod(TypedDict, total=False):
     different sub-schema (STORY_STIFFNESS_METHOD too) — see
     StiffnessCalculationMethod, not this class.
 
-    The official Specifications table for this table misspells the first
-    enum value as "Drfit on the Center of Mass". An earlier version of this
-    docstring normalized it to "Drift at the Center of Mass" by assuming it
-    shared #13/#17's enum — MIDASIT confirmed 2026-07-30
-    that assumption was wrong: the API follows the product UI's own wording
-    per table, and #10's screen (Story Stability Coefficient) genuinely
-    says "on", not "at" — only #17 Weight Irregularity Check uses "at". So
-    only the spelling (Drfit -> Drift) is a real typo here; the preposition
-    is correct as documented. Don't re-normalize this to "at" again.
+    This enum's wording has flipped twice — keep the history so it isn't
+    flipped a third time on a stale assumption. The official Specifications
+    table originally misspelled the first value as "Drfit on the Center of
+    Mass"; MIDASIT confirmed 2026-07-30 (Jira MAPI-2009) that only the
+    spelling was a typo and the product screen for this table (#10 Story
+    Stability Coefficient) genuinely used "on", unlike #13/#17. That has
+    since been superseded: a follow-up report (Jira MAPI-2375) noted the API
+    actually mixes an ignored `SET_STORY_DRIFT_METHOD` field with the real
+    `SET_CALCULATION_METHOD.STORY_DRIFT_METHOD` one, and MIDASIT's developer
+    decided 2026-08-10 to unify the product UI and API enum on "at" across
+    all three tables; the official article was updated 2026-08-20. Current
+    correct value is "Drift at the Center of Mass", matching #13/#17.
     """
 
-    STORY_DRIFT_METHOD: str  # "Drift on the Center of Mass"/"Max. Drift of Outer Extreme Points"/"Max. Drift of All Vertical Elements", optional
+    STORY_DRIFT_METHOD: str  # "Drift at the Center of Mass"/"Max. Drift of Outer Extreme Points"/"Max. Drift of All Vertical Elements", optional
 
 
 class StoryStabilityCoefficientAdditional(TypedDict, total=False):
