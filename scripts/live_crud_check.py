@@ -2964,31 +2964,47 @@ def _extras13_cases() -> List[Case]:
     """batch 13: the tractable, non-rebar subset of db.design (8 of 13) --
     design-code selection, unbraced length, member/frame/slenderness
     definitions, and mark overrides. All are simple singleton or
-    element-keyed tables, no analysis run needed. Deferred: /db/RCHK
+    element-keyed tables, no analysis run needed.
+
+    All 8 round-tripped clean on Civil NX 2026-08-24 (18/18 incl. core).
+    Gen NX was disconnected that session and has never run this tier --
+    confirmed stays False on every Case here until it does; don't flip it
+    from the Civil result alone (see EIGV/BCCT's batch-8/11 correction for
+    why that's a real mistake, not a formality).
+
+    Deferred: /db/RCHK
     (Civil-only, large nested vMAIN/vSUB_BAR/vLAYER rebar-check structures)
     and /db/REBB/REBC/REBW/REBR (Gen-only, similarly large rebar-data
     overrides -- REBW's own manual section was already found wrong and
     fixed against a live production model, see db/design.py; the other
     three untested here).
 
-    DGNCODE values for DCON/DSTL are taken verbatim from the manual's own
-    worked examples ("KCI-USD12"/"AISC(16th)-LRFD22") rather than guessed,
-    given this project's track record of enum values that don't match
-    their own documented spelling.
+    DGNCODE values for DCON/DSTL: live-bisected 2026-08-24, not taken
+    verbatim from the manual. The manual's own worked-example values
+    ("ACI318-19"/"ACI318M-19"/"ACI318-14"/"ACI318M-14" for DCON, and
+    "AISC(16th)-LRFD22" for DSTL) all answer "Wrong Field"/"[Error] Errors
+    detected in Steel Design Control Data." on this Civil NX 2026 v2.2
+    license -- reproduced on both POST and PUT, with and without a STEEL
+    material present in the model, so it isn't a fixture/model-state gap.
+    "KDS 24 14 21 : 2021" (DCON) and every other tested non-Eurocode/ASD89
+    DSTL code (KDS/KBC/CSA/GB/BS/AS/IS/DIN/SIA/NBR/JGJ/AIJ families) fail
+    the same way. Reads as a license/module gate on specific
+    country-code editions, not a request-shape bug -- use values confirmed
+    to actually round-trip on this license instead.
     """
     return [
         Case(
             RcDesignCode,
             {"DGNCODE": "KCI-USD12"},
-            {"DGNCODE": "ACI318-19"},
-            lambda p: p.get("DGNCODE"), "KCI-USD12", "ACI318-19",
+            {"DGNCODE": "KCI-USD07"},
+            lambda p: p.get("DGNCODE"), "KCI-USD12", "KCI-USD07",
             item_id=1,
         ),
         Case(
             SteelDesignCode,
-            {"DGNCODE": "AISC(16th)-LRFD22"},
             {"DGNCODE": "Eurocode3-2:05"},
-            lambda p: p.get("DGNCODE"), "AISC(16th)-LRFD22", "Eurocode3-2:05",
+            {"DGNCODE": "AISC-ASD89"},
+            lambda p: p.get("DGNCODE"), "Eurocode3-2:05", "AISC-ASD89",
             item_id=1,
         ),
         # Keyed by a real base-model frame element id (1).
@@ -3001,11 +3017,15 @@ def _extras13_cases() -> List[Case]:
             lambda p: p.get("LT"), 9.464111, 5.0,
             item_id=1,
         ),
-        # AELEM groups the base model's frame elements 1-3 into one member.
+        # AELEM must be elements of the same auto-detected member type
+        # (COLUMN vs BEAM, from orientation) -- live-confirmed 2026-08-24:
+        # [1, 2, 3] fails "Not Same Member Type" because element 1 (node
+        # 1->2) is vertical (COLUMN) while 2/3 (node 2->3->4) are
+        # horizontal (BEAM). Elements 2-3 alone share BEAM and group fine.
         Case(
             DesignMemberAssignment,
-            {"AELEM": [1, 2, 3], "bREVERSE": False},
-            {"AELEM": [1, 2, 3], "bREVERSE": True},
+            {"AELEM": [2, 3], "bREVERSE": False},
+            {"AELEM": [2, 3], "bREVERSE": True},
             lambda p: p.get("bREVERSE"), False, True,
             item_id=1,
         ),
@@ -3067,7 +3087,7 @@ TIERS: List[Tier] = [
     Tier("extras10", "batch 10: standalone subset of db.construction_stage's heat-of-hydration family (ETFC/CCFC/HSFC/STBK/HSTG confirmed; HAHS needs a SOLID element this fixture lacks; HPCE fails live; HECB/HSPT/CSCS deferred)", _extras10_seeds, _extras10_cases),
     Tier("extras11", "batch 11a/c: /db/STCT (fails live -- iITER/TOL silently don't persist), /db/HSPT confirmed, /db/HECB fails live (same SOLID-element gap as HAHS)", _extras11_seeds, _extras11_cases),
     Tier("extras12", "batch 12: db.bridge in full, all 4 confirmed (GSBG/GCMB/CAMB Civil-only, ULFC both products)", _extras12_seeds, _extras12_cases),
-    Tier("extras13", "batch 13: tractable non-rebar subset of db.design (8 of 13; RCHK/REBB/REBC/REBW/REBR deferred)", _no_seeds, _extras13_cases),
+    Tier("extras13", "batch 13: tractable non-rebar subset of db.design (8 of 13, all clean on Civil; Gen not yet run; RCHK/REBB/REBC/REBW/REBR deferred)", _no_seeds, _extras13_cases),
 ]
 
 

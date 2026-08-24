@@ -5888,6 +5888,59 @@ Running total for the write-coverage push (batches 1-12): 74 endpoints at
 genuinely-unresolved or scope-limited finding (unchanged this batch), plus
 the one confirmed live crash (`THNL` PUT on Gen NX, MAPI-2468).
 
+### 2026-08-24 — batch 13 (`db.design` non-rebar subset), Civil NX only
+
+Resumed batch 13 (`/db/DCON`/`DSTL`/`LENG`/`MEMB`/`DCTL`/`LTSR`/`MBTP`/
+`WMAK`) after the previous session ended blocked on both NX sessions being
+disconnected. This session: Civil NX 2026 v2.2 (build 08/24/2026) was
+open and connected; Gen NX stayed `disconnected` throughout, so this
+batch only ever ran on Civil.
+
+First Civil run: 3 of 8 failed. Triaged and fixed all three:
+
+- **`/db/DCON`/`/db/DSTL` (RC/Steel Design Code)** — the manual's own
+  worked-example `DGNCODE` values (`"ACI318-19"`/`"ACI318M-19"`/
+  `"ACI318-14"`/`"ACI318M-14"` for DCON; `"AISC(16th)-LRFD22"` for DSTL)
+  all answered `"Wrong Field"` / `"[Error] Errors detected in Steel
+  Design Control Data."` — on both POST and PUT, and (for DSTL) with a
+  `STEEL` material present in the model, ruling out a model-state gap.
+  Bisected a wider set of `DGNCODE` values directly against the live
+  server: for DCON, every non-`KCI`/`Eurocode2`/`AASHTO` code tried
+  (`"KDS 24 14 21 : 2021"` included) failed the same way; for DSTL,
+  every code tried except `"Eurocode3-2:05"` and `"AISC-ASD89"` failed
+  the same way (`KDS`/`KBC`/`CSA`/`GB`/`BS`/`AS`/`IS`/`DIN`/`SIA`/`NBR`/
+  `JGJ`/`AIJ` families all rejected). Reads as a country-design-code
+  license/module gate on this particular Civil NX license, not a request
+  shape bug — switched the fixture to `KCI-USD12`→`KCI-USD07` (DCON) and
+  `Eurocode3-2:05`→`AISC-ASD89` (DSTL), both of which round-trip clean.
+- **`/db/MEMB` (Design Member Assignment)** — `AELEM: [1, 2, 3]` failed
+  `"No element among selected elements is designated as a member.(Not
+  Same Member Type)"`. The shared base-model fixture's element 1 runs
+  vertically (node 1→2, auto-classified `COLUMN`) while elements 2-3 run
+  horizontally (node 2→3→4, `BEAM`) — grouping a column with beams into
+  one `AELEM` trips this check. Elements 2-3 alone share `BEAM` and
+  group fine; fixture changed to `AELEM: [2, 3]`.
+
+Re-ran Civil clean: 18/18 (10 core + 8 extras13). `docs/coverage.json`
+updated for all 8 endpoints to `level: write`, `products: ["civil"]`
+only — **not** `["gen", "civil"]`, since Gen was never actually run this
+session; each entry's `method` says so explicitly. `Case.confirmed`
+stays `False` in `scripts/live_crud_check.py` for all 8 until Gen NX
+reconnects and runs the same tier — this batch is exactly the situation
+the EIGV/BCCT correction (batch 11) warned about avoiding: don't infer a
+second product's result from the first's. `pytest` (701) and `ruff`
+both clean.
+
+Running total for the write-coverage push (batches 1-13): 82 endpoints
+at `level: write` on at least one product (74 through batch 12, +8
+here, 8 of those Civil-only pending Gen); 26 with a dated
+genuinely-unresolved or scope-limited finding (unchanged), plus the one
+confirmed live crash (`THNL` PUT on Gen NX, MAPI-2468). **Next session:
+run `--tier core,extras13` on Gen NX first** — if it passes clean, flip
+all 8 `Case.confirmed=True` and add `"gen"` to each `coverage.json`
+entry's `products`; if any fail, split per-product like EIGV/BCCT rather
+than guessing which fields need Gen-specific handling.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
