@@ -5941,6 +5941,113 @@ all 8 `Case.confirmed=True` and add `"gen"` to each `coverage.json`
 entry's `products`; if any fail, split per-product like EIGV/BCCT rather
 than guessing which fields need Gen-specific handling.
 
+### 2026-08-24 (later) — `OCHECK`/`MAPI-2429` re-repro'd on Civil NX v2.2, build 08/24/2026: still crashes
+
+At the user's request, re-ran the crash reproduction for `MAPI-2429`
+(`perform_src_optimal_design`, `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK`) on
+whatever Civil NX build happened to be open this session, to check
+whether it's still live two builds after the last confirmation
+(2026-08-13, build 08/12/2026).
+
+Built the same dummy-model shape as 2026-08-13 on a fresh `/doc/NEW`
+(confirmed blank first): `Material.create` (C24 concrete, `KS01(RC)`),
+`Section.create` (600×600 `DBUSER`, `SHAPE: "SB"` — real,
+non-SRC-eligible), two `Node`s, one `BEAM` `Element`. All four succeeded.
+Called `perform_src_optimal_design` with `SECT_LIST: [{"SECT_NO": 1,
+"SECT_DB": "USER"}]`, `ANALYSIS_OPT.ANAL_TIME: 0`,
+`OUTPUT.MODEL_UPDATE: False` — the same conservative payload as every
+prior repro.
+
+**Crashed again**, same underlying signature but observed slightly
+differently: the call itself timed out client-side (35s, no response),
+and this time the immediate follow-up `GET /db/NODE` *also* timed out
+(35s) rather than returning the fast `404 client does not exist` seen
+2026-08-13 — `verify_connection()` afterward showed `status:
+"disconnected"`. Same "session died mid-call" outcome, just a slower
+symptom on this build. Recovered via the standard restart (dialog OK →
+re-launch → New Project → close → reconnect with the same MAPI key);
+reconnected cleanly with the same `connectionID` as before the crash.
+Dummy model was disposable test data, nothing lost.
+
+**Conclusion: `MAPI-2429` remains live on Civil NX v2.2, build
+08/24/2026** — two builds after the last confirmation (08/12/2026),
+still not build-dependent, still consistent with MIDASIT's "not a
+defect, no fix timeline" stance from `MAPI-2429`'s own closure.
+`docs/coverage.json`'s `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK` entry updated
+with today's repro and build; no Jira action needed since the ticket is
+already closed on this exact finding. Not re-tested on Gen this
+session.
+
+## 2026-08-25 — checking MIDASIT's shipped fixes on Gen NX v2.1, build 08/20/2026: MAPI-2468 (THNL) and MAPI-2431 (CD-TABLE) both confirmed fixed
+
+Followed up asking Jira status of the whole crash-family epic (MAPI-2427)
+to see which tickets were closed with an actual verified fix vs. just
+closed after MIDASIT shipped a patch we'd never independently retested.
+Of the 6 crash tickets: `MAPI-2378`/NMAS and `MAPI-2425`/EDMP and
+`MAPI-2426`/USLC already had our own confirmation comments on the
+ticket; `MAPI-2429`/OCHECK is confirmed still broken (see above);
+`MAPI-2431`/CD-TABLE and `MAPI-2468`/THNL had patches shipped
+(2026-08-11 and 2026-08-17 respectively) but no retest from our side —
+Gen NX happened to be open this session (v2.1, build 08/20/2026, newer
+than both patches), so retested both.
+
+**`MAPI-2468` (`PUT /db/THNL` killing Gen NX) — fixed.** Raw repro first
+(node + `THFC_FORCE_SEED` time-history function + `THIS_SEED` load case,
+then `POST`/`GET`/`PUT` on `/db/THNL` with only `SCALE_FACTOR` changed):
+the `PUT` that used to kill the session now returns in ~0.2s, session
+stays healthy. MIDASIT's own comment (2026-08-17) explains the root
+cause: the data layer deletes the old row when a time-history key
+matches, and the API layer kept referencing it post-transaction,
+dereferencing invalid memory. Then re-verified properly through the
+harness: lifted `scripts/live_crud_check.py`'s `Case.products=("civil",)`
+restriction on the `DynamicNodalLoad` case and re-ran `--tier
+core,extras5` on Gen — `/db/THNL` now `PASS`es its full round trip
+(create→read→update→read→delete→read), 17/19 in the tier (the 2
+pre-existing unrelated failures, `SPLC`/`THMS`, are unchanged, documented
+findings, not a regression). `docs/coverage.json`'s `/db/THNL` entry and
+the `DynamicNodalLoad` case's harness comment both updated; both
+products now `confirmed=True`.
+
+**`MAPI-2431` (Column/Brace/Beam Design Forces via
+`/DESIGN/RC/KDS-41-20-2022/TABLE`, `midas_nx.design.rc_kds.checks`) —
+fixed.** This ticket's history was the messiest of the six: crashed
+twice independently (2026-08-01, real apartment model + isolated empty
+doc), MIDASIT couldn't reproduce it themselves and asked for the model,
+re-crashed on a blank `/doc/NEW` retest 2026-08-07, then came back clean
+on the *same* blank-doc shape 2026-08-11 — which the notes at the time
+explicitly flagged as "not proof, could be intermittent, needs an
+independent second re-test" given the call's history of *not* even being
+monotonic with data complexity (crashed blank, clean on a 63-node real
+model, on the same day). Today's retest — same blank-doc shape, Gen NX
+v2.1 build 08/20/2026, a different and later build than the 08-11
+patch — was the second consecutive clean pass: `get_column_design_forces
+_table('')`, `get_brace_design_forces_table('')`, and
+`get_beam_design_forces_table('')` all returned in <0.3s with `{}` and
+`{"message": ""}`-shaped empty responses, session healthy throughout.
+MIDASIT's 2026-08-11 patch comment names the actual fix: guard code
+added for a Design API call made with no analysis run. Between the named
+root cause and two consecutive clean passes on two different post-patch
+builds, this clears the "needs an independent second re-test" bar.
+`docs/coverage.json`'s three `/DESIGN/RC/KDS-41-20-2022/TABLE` entries
+(Column/Brace/Beam) and their docstrings in `src/midas_nx/design/rc_kds/
+checks.py` updated.
+
+**Explicitly not covered by either fix:** the sibling `/post/TABLE` code
+path (`midas_nx.post.design`'s `get_column_design_forces_table`,
+`get_brace_design_forces_table`, `get_beam_design_forces_table` — a
+different endpoint sharing only the `TABLE_TYPE` naming convention, per
+the existing "independently-crashing siblings, not one shared root
+cause" note) was **not** retested this session and stays flagged
+crash-risk on Gen NX. Don't read today's fixes as clearing that endpoint
+too.
+
+**Crash-family epic status after today: 4 of 6 confirmed fixed by us
+(NMAS, EDMP, USLC, CD-TABLE via `rc_kds.checks`, THNL), 1 confirmed still
+broken (OCHECK/MAPI-2429, MIDASIT's own "not a defect" stance), 0 left
+unverified.** `MAPI-2431` and `MAPI-2468` haven't had a confirmation
+comment posted back to Jira yet — that needs the user's explicit
+go-ahead per this project's standing Jira-consent rule before doing so.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

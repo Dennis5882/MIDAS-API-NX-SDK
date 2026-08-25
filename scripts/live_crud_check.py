@@ -1887,18 +1887,14 @@ def _extras5_cases() -> List[Case]:
         # (confirmed live 2026-08-16), matching the manual's own
         # "FUNC_NAME에는 Force 또는 Moment 타입의 시간이력 함수만 사용 가능" warning.
         #
-        # ⚠️⚠️ CIVIL-ONLY BY DESIGN, NOT A DOCUMENTED RESTRICTION: on Gen NX,
-        # PUT /db/THNL immediately following a successful POST+GET of the
-        # same record kills the Gen NX session -- confirmed twice live
-        # 2026-08-16 (v2.1, build 08/14/2026), including a from-scratch
-        # repro after restarting Gen NX between attempts. verify_connection()
-        # itself reports status "disconnected" afterwards, not just a
-        # blocked dialog. Civil NX's identical round trip is clean. Filed as
-        # MAPI-2468 (parented under MAPI-2427, the "API 동작 중 프로그램
-        # 종료" epic), trigger not yet root-caused by the vendor. Restricted
-        # to Civil here rather than crash-quarantined on both products,
-        # since only Gen actually crashes -- re-enable Gen once MAPI-2468 is
-        # resolved, and even then retest deliberately rather than assuming.
+        # PUT /db/THNL used to kill the Gen NX session (confirmed twice live
+        # 2026-08-16, v2.1 build 08/14/2026) -- MAPI-2468, root-caused and
+        # patched by MIDASIT 2026-08-17 (a stale time-history-key delete in
+        # the data layer left a dangling reference the API layer then
+        # dereferenced after the transaction). Re-tested live 2026-08-25 on
+        # Gen NX v2.1, build 08/20/2026: PUT succeeds in ~0.2s, session
+        # stays healthy. Restriction to Civil-only lifted; both products
+        # confirmed.
         Case(
             DynamicNodalLoad,
             {"ITEMS": [{"ID": 1, "THLCNAME": "THIS_SEED", "FUNC_NAME": "THFC_FORCE_SEED",
@@ -1906,7 +1902,6 @@ def _extras5_cases() -> List[Case]:
             {"ITEMS": [{"ID": 1, "THLCNAME": "THIS_SEED", "FUNC_NAME": "THFC_FORCE_SEED",
                         "DIR": "X", "ARRIVAL_TIME": 0, "SCALE_FACTOR": 1.5}]},
             lambda p: p["ITEMS"][0].get("SCALE_FACTOR"), 1.0, 1.5,
-            products=("civil",),
             item_id=1, needs=("this_seed", "thfc_force_seed"), confirmed=True,
         ),
         Case(

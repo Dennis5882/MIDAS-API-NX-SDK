@@ -46,7 +46,6 @@ Live-verification evidence lives in each endpoint's `live_verified` entry in `do
 | 2026-08-01 | MIDAS Gen NX 2026 (v2.1), build 07/28/2026 | MIDAS Civil NX 2026 (v2.2), build 07/29/2026 -- confirms 404 at routing level, not supported |
 | 2026-08-07 | MIDAS Gen NX 2026 (v2.1), build 07/30/2026 | MIDAS Civil NX 2026 (v2.2), build 07/29/2026 |
 | 2026-08-07 | MIDAS Gen NX 2026 (v2.1), build 08/06/2026 | MIDAS Civil NX 2026 (v2.2), build 08/06/2026 |
-| 2026-08-07 | MIDAS Gen NX 2026 (v2.1), build 08/11/2026 | MIDAS Civil NX 2026 (v2.2), build 07/29/2026 |
 | 2026-08-07 | MIDAS Gen NX 2026 (v2.1), build 08/11/2026 | MIDAS Civil NX 2026 (v2.2), build 08/06/2026 |
 | 2026-08-10 | MIDAS Gen NX 2026 (v2.1), build 08/06/2026 | MIDAS Civil NX 2026 (v2.2), build 07/29/2026 |
 | 2026-08-10 | MIDAS Gen NX 2026 (v2.1), build 08/11/2026 | MIDAS Civil NX 2026 (v2.2), build 08/06/2026 |
@@ -54,7 +53,6 @@ Live-verification evidence lives in each endpoint's `live_verified` entry in `do
 | 2026-08-11 | MIDAS Gen NX 2026 (v2.1), build 08/11/2026 | MIDAS Civil NX 2026 (v2.2), build 07/29/2026 |
 | 2026-08-11 | MIDAS Gen NX 2026 (v2.1), build 08/11/2026 | MIDAS Civil NX 2026 (v2.2), build 08/06/2026 |
 | 2026-08-13 | ? | MIDAS Civil NX 2026 (v2.2), build 08/12/2026 |
-| 2026-08-13 | MIDAS Gen NX 2026 (v2.1), build 08/11/2026 | MIDAS Civil NX 2026 (v2.2), build 08/12/2026 |
 | 2026-08-13 | MIDAS Gen NX 2026 (v2.1), build 08/12/2026 | ? |
 | 2026-08-13 | MIDAS Gen NX 2026 (v2.1), build 08/12/2026 | MIDAS Civil NX 2026 (v2.2), build 07/29/2026 |
 | 2026-08-13 | MIDAS Gen NX 2026 (v2.1), build 08/12/2026 | MIDAS Civil NX 2026 (v2.2), build 08/12/2026 -- 404, confirms GEN_ONLY |
@@ -62,7 +60,6 @@ Live-verification evidence lives in each endpoint's `live_verified` entry in `do
 | 2026-08-16 | ? | MIDAS Civil NX 2026 (v2.2), build 08/14/2026 |
 | 2026-08-16 | MIDAS Gen NX 2026 (v2.1), build 06/23/2026 | ? |
 | 2026-08-16 | MIDAS Gen NX 2026 (v2.1), build 06/23/2026 | MIDAS Civil NX 2026 (v2.2), build 08/06/2026 |
-| 2026-08-16 | MIDAS Gen NX 2026 (v2.1), build 06/23/2026 | MIDAS Civil NX 2026 (v2.2), build 08/14/2026 |
 | 2026-08-16 | MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported | MIDAS Civil NX 2026 (v2.1), build 06/05/2026 |
 | 2026-08-16 | MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported | MIDAS Civil NX 2026 (v2.2), build 08/14/2026 |
 | 2026-08-16 | MIDAS Gen NX 2026 (v2.1), build 08/06/2026 | MIDAS Civil NX 2026 (v2.1), build 06/05/2026 |
@@ -71,6 +68,10 @@ Live-verification evidence lives in each endpoint's `live_verified` entry in `do
 | 2026-08-17 | MIDAS Gen NX 2026 (v2.1), build 08/06/2026 | MIDAS Civil NX 2026 (v2.2), build 06/18/2026 |
 | 2026-08-17 | MIDAS Gen NX 2026 (v2.1), build 08/14/2026 | MIDAS Civil NX 2026 (v2.2), build 08/14/2026 |
 | 2026-08-24 | ? | MIDAS Civil NX 2026 (v2.2), build 08/24/2026 |
+| 2026-08-24 | MIDAS Gen NX 2026 (v2.1), build 08/11/2026 | MIDAS Civil NX 2026 (v2.2), build 08/24/2026 |
+| 2026-08-25 | MIDAS Gen NX 2026 (v2.1), build 08/20/2026 | MIDAS Civil NX 2026 (v2.2), build 07/29/2026 |
+| 2026-08-25 | MIDAS Gen NX 2026 (v2.1), build 08/20/2026 | MIDAS Civil NX 2026 (v2.2), build 08/06/2026 |
+| 2026-08-25 | MIDAS Gen NX 2026 (v2.1), build 08/20/2026 | MIDAS Civil NX 2026 (v2.2), build 08/14/2026 |
 
 > Static snapshot; re-run scripts/vendor_coverage.py to refresh. POST result-table types and the three Design Code chapters (25-27) are not itemized by URL in INDEX.md and are represented as single aggregate rows rather than one row per table/check.
 

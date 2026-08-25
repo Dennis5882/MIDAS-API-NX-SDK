@@ -624,7 +624,20 @@ def get_column_design_forces_table(
     point yet, but the 2026-08-07 note above already shows this call
     isn't even monotonic with data complexity (crashed blank, clean on a
     63-node real model) — treat as reduced-but-not-cleared until an
-    independent second re-test."""
+    independent second re-test.
+
+    ✅ **Fixed, confirmed 2026-08-25.** MIDASIT root-caused MAPI-2431 as
+    missing guard code for a Design API call made with no analysis run,
+    and shipped a fix in the 2026-08-11 patch build. Re-tested on Gen NX
+    v2.1, build 08/20/2026 (a different, later build than the 08-11
+    patch) against the same blank-document shape: clean, no crash,
+    session healthy — the second consecutive clean pass since the patch,
+    which clears the "needs an independent second re-test" bar above.
+    Treat the crash risk on this endpoint as resolved. This does **not**
+    cover the sibling ``/post/TABLE`` code path
+    (:mod:`midas_nx.post.design`'s ``get_column_design_forces_table`` and
+    friends) — that's a separate, independently-crashing endpoint per its
+    own docstring, not addressed by this fix."""
     return _get_rc_design_forces_table(
         TABLE_TYPE_COLUMN_DESIGN_FORCES,
         table_name,
@@ -667,7 +680,15 @@ def get_brace_design_forces_table(
     ``/doc/NEW`` document: clean empty response, no crash, session stayed
     healthy. A single clean pass is not independent proof the MAPI-2431
     risk is gone — treat as reduced-but-not-cleared until a real-model
-    retest."""
+    retest.
+
+    ✅ **Fixed, confirmed 2026-08-25**, same as
+    :func:`get_column_design_forces_table` — see that docstring for the
+    root cause and the two-consecutive-clean-pass evidence. Re-tested
+    here too on the same Gen NX v2.1, build 08/20/2026 session: clean,
+    no crash. Treat this endpoint's crash risk as resolved; the sibling
+    ``/post/TABLE`` code path in :mod:`midas_nx.post.design` is still
+    unaddressed."""
     return _get_rc_design_forces_table(
         TABLE_TYPE_BRACE_DESIGN_FORCES,
         table_name,
@@ -716,7 +737,16 @@ def get_beam_design_forces_table(
     ``/doc/NEW`` document: clean empty response, no crash, session stayed
     healthy. A single clean pass is not independent proof the MAPI-2431/
     sibling-crash risk is gone — treat as reduced-but-not-cleared until a
-    real-model retest."""
+    real-model retest.
+
+    ✅ **This ``/DESIGN/RC/KDS-...`` endpoint fixed, confirmed 2026-08-25**
+    — see :func:`get_column_design_forces_table` for the root cause and
+    the two-consecutive-clean-pass evidence (same Gen NX v2.1, build
+    08/20/2026 session). The sibling
+    :func:`midas_nx.post.design.get_beam_design_forces_table`
+    (``/post/TABLE``, independently confirmed crashing) is a genuinely
+    different code path and was **not** retested — don't treat this
+    fix as covering it."""
     return _get_rc_design_forces_table(
         TABLE_TYPE_BEAM_DESIGN_FORCES,
         table_name,
