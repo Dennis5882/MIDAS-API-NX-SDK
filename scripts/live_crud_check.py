@@ -110,14 +110,21 @@ from typing import Any, Callable, Dict, List, Optional, Sequence
 from midas_nx import doc
 from midas_nx.client import MidasAPIError, MidasClient
 from midas_nx.db.analysis_control import (
+    AssignBoundaryCombinationHyperS,
     BoundaryChangeAssignment,
     BucklingAnalysisControl,
     ConstructionStageAnalysisControlData,
+    ConstructionStageAnalysisControlDataHyperS,
+    DefineBoundaryCombinationHyperS,
     EigenvalueAnalysisControl,
+    EigenvalueAnalysisControlHyperS,
     HeatOfHydrationAnalysisControl,
+    HeatOfHydrationAnalysisControlHyperS,
     MainControlData,
+    MainControlDataHyperS,
     MovingLoadAnalysisControl,
     NonlinearAnalysisControlData,
+    NonlinearAnalysisControlHyperS,
     PDeltaAnalysisControl,
     SettlementAnalysisControlData,
 )
@@ -210,8 +217,13 @@ from midas_nx.db.misc_loads import (
     WaveLoad,
 )
 from midas_nx.db.moving_loads import (
+    ConcurrentJointForceGroup,
+    ConcurrentReactionGroup,
+    DynamicLoadAllowance,
     MovingLoadCase,
     MovingLoadCode,
+    RailwayDynamicFactor,
+    RailwayDynamicFactorByElement,
     TrafficLineLanes,
     VehicleClasses,
     Vehicles,
@@ -3062,6 +3074,191 @@ def _extras13_cases() -> List[Case]:
     ]
 
 
+class _MvcdSwitch(MovingLoadCode):
+    """PUT-only view of /db/MVCD, used to switch the singleton record's
+    CODE mid-tier without re-POSTing over the record extras14's own
+    mvcd_ksce_seed already created (which would answer "Key Already
+    Exist") or DELETEing it afterward (which would undo the switch before
+    DYFG/DYNF run)."""
+
+    METHODS = frozenset({"GET", "PUT"})
+
+
+def _extras14_seeds() -> List[SeedStep]:
+    """batch 14: the 12 Civil-only-by-design endpoints (5 db.moving_loads,
+    7 db.analysis_control Hyper-S/-M1 variants) -- Hyper-S is a Civil NX
+    solver, so these were never reachable on Gen at all, unlike most of
+    this project's Civil-only findings which are just unimplemented-on-
+    Gen quirks of an otherwise-shared endpoint.
+
+    CRGR/CJFG/DYLA reference a real /db/GRUP structure group by name (id
+    14 to avoid colliding with any other tier's group ids); BCGD-M1
+    references a real /db/BNGR boundary group; BCGA-M1 references both a
+    real static load case name (this tier's own "DL14_SEED") and the
+    BCGD-M1 record this tier creates. DYNF is keyed by a real element id,
+    not a serial number -- reuses core's element 1.
+
+    /db/MVCD is a shared singleton with mutually exclusive requirements:
+    DYLA only accepts KSCE-LSD15/AASHTO LRFD/PENDOT, DYFG/DYNF only accept
+    Eurocode. Seeds all run before any case (this harness doesn't
+    interleave them), so satisfying both means seeding KSCE-LSD15 up
+    front for DYLA and then switching to Eurocode via a plain MVCD
+    update() *as a case*, positioned between DYLA and DYFG/DYNF in the
+    list below.
+    """
+    return [
+        SeedStep("sg14_seed", lambda c: StructureGroup.create(
+            {14: {"NAME": "SG14_SEED"}}, client=c)),
+        SeedStep("bngr14_seed", lambda c: BoundaryGroup.create(
+            {14: {"NAME": "BG14_SEED"}}, client=c)),
+        SeedStep("dl14_seed", lambda c: StaticLoadCase.create(
+            {14: {"NAME": "DL14_SEED", "TYPE": "D", "DESC": ""}}, client=c)),
+        SeedStep("mvcd_ksce_seed", lambda c: MovingLoadCode.create(
+            {1: {"CODE": "KSCE-LSD15"}}, client=c)),
+        SeedStep("bcgd_m1_seed", lambda c: DefineBoundaryCombinationHyperS.create(
+            {1: {"BCG_NAME": "BCGD14_SEED", "GROUP_LIST": ["BG14_SEED"]}}, client=c)),
+    ]
+
+
+def _extras14_cases() -> List[Case]:
+    civil = ("civil",)
+    return [
+        Case(
+            ConcurrentReactionGroup,
+            {"GROUPS": ["SG14_SEED"]}, {"GROUPS": ["SG14_SEED"]},
+            lambda p: p.get("GROUPS"), ["SG14_SEED"], ["SG14_SEED"],
+            item_id=1, needs=("sg14_seed",), products=civil, confirmed=True,
+        ),
+        Case(
+            ConcurrentJointForceGroup,
+            {"GROUPS": ["SG14_SEED"]}, {"GROUPS": ["SG14_SEED"]},
+            lambda p: p.get("GROUPS"), ["SG14_SEED"], ["SG14_SEED"],
+            item_id=1, needs=("sg14_seed",), products=civil, confirmed=True,
+        ),
+        # DYLA needs MVCD.CODE in {KSCE-LSD15, AASHTO LRFD, PENDOT} -- live-
+        # confirmed 2026-08-25 ("[Error] Additional Dynamic Load Allowance
+        # can be applied when Moving Load Code is entered as ..."), so this
+        # runs against the tier's KSCE-LSD15 seed before the case below
+        # switches the same singleton /db/MVCD record to Eurocode for
+        # DYFG/DYNF. Seeds and cases don't interleave in this harness (all
+        # seeds run before any case), so the code switch has to be its own
+        # mid-list case, not a second seed.
+        Case(
+            DynamicLoadAllowance,
+            {"FACTOR": 10.0, "ITEMS": ["SG14_SEED"]},
+            {"FACTOR": 20.0, "ITEMS": ["SG14_SEED"]},
+            lambda p: p.get("FACTOR"), 10.0, 20.0,
+            item_id=1, needs=("sg14_seed", "mvcd_ksce_seed"), products=civil, confirmed=True,
+        ),
+        # Switches /db/MVCD from KSCE-LSD15 (DYLA, above) to EUROCODE
+        # (DYFG/DYNF, below) via PUT only -- see the DYLA case's comment.
+        # mvcd_ksce_seed already POSTed id 1, so this must not POST again
+        # ("Key Already Exist"); _MvcdSwitch restricts METHODS to skip the
+        # harness's create/read_back steps and go straight to PUT.
+        Case(
+            _MvcdSwitch,
+            {"CODE": "KSCE-LSD15"}, {"CODE": "EUROCODE"},
+            lambda p: p.get("CODE"), "KSCE-LSD15", "EUROCODE",
+            item_id=1, needs=("mvcd_ksce_seed",), products=civil, confirmed=True,
+        ),
+        # ⚠️ Needs ALL 6 fields sent every time, live-confirmed 2026-08-25 --
+        # the manual's own conditional requiredness (LENGTH/MAINTAIN_TYPE
+        # only for INPUT_TYPE=0, HEIGHT_COVER only for OPT_REDUCE_EFF=true,
+        # DYN_FACTOR only for INPUT_TYPE=1) answers "Wrong Field" on both
+        # POST and PUT if any field is omitted -- see RailwayDynamicFactor
+        # Payload's docstring in db/moving_loads.py. DYNF (below) does NOT
+        # share this quirk.
+        Case(
+            RailwayDynamicFactor,
+            {"INPUT_TYPE": 1, "LENGTH": 0, "MAINTAIN_TYPE": 0,
+             "OPT_REDUCE_EFF": False, "HEIGHT_COVER": 0, "DYN_FACTOR": 1.2},
+            {"INPUT_TYPE": 1, "LENGTH": 0, "MAINTAIN_TYPE": 0,
+             "OPT_REDUCE_EFF": False, "HEIGHT_COVER": 0, "DYN_FACTOR": 1.5},
+            lambda p: p.get("DYN_FACTOR"), 1.2, 1.5,
+            item_id=1, needs=("mvcd_ksce_seed",), products=civil, confirmed=True,
+        ),
+        # Keyed by a real element id (core's element 1), not a serial number.
+        Case(
+            RailwayDynamicFactorByElement,
+            {"INPUT_TYPE": 1, "DYN_FACTOR": 1.2},
+            {"INPUT_TYPE": 1, "DYN_FACTOR": 1.5},
+            lambda p: p.get("DYN_FACTOR"), 1.2, 1.5,
+            item_id=1, needs=("mvcd_ksce_seed",), products=civil, confirmed=True,
+        ),
+        Case(
+            MainControlDataHyperS,
+            {"ARCD": True}, {"ARCD": False},
+            lambda p: p.get("ARCD"), True, False,
+            item_id=1, products=civil, confirmed=True,
+        ),
+        # FREQ_RANGE sent explicitly (OPT_USE=False) even though it's
+        # documented optional -- EIGV (non-Hyper-S)'s Civil failure was an
+        # undocumented-but-required FREQ_RANGE, so this variant sends it
+        # up front rather than risking the same gap.
+        Case(
+            EigenvalueAnalysisControlHyperS,
+            {"ANAL_TYPE": "LANCZOS", "FREQ_NO": 5, "FREQ_RANGE": {"OPT_USE": False}},
+            {"ANAL_TYPE": "LANCZOS", "FREQ_NO": 10, "FREQ_RANGE": {"OPT_USE": False}},
+            lambda p: p.get("FREQ_NO"), 5, 10,
+            item_id=1, products=civil, confirmed=True,
+        ),
+        Case(
+            HeatOfHydrationAnalysisControlHyperS,
+            {"FINAL_STAGE": True, "OPT_IS_CREEP_SHRINKAGE": False},
+            {"FINAL_STAGE": True, "OPT_IS_CREEP_SHRINKAGE": False, "INIT_TEMP": 25.0},
+            lambda p: p.get("INIT_TEMP"), None, 25.0,
+            item_id=1, products=civil, confirmed=True,
+        ),
+        # LC_SCOPE wants "ALL" (a scope keyword), not a load case name --
+        # the manual's own worked example uses "ALL", live-confirmed this
+        # is required (a real load case name here answers "Wrong Field").
+        # CONV_CRITERIA needs at least one sub-object with OPT_USE=true and
+        # a VALUE; all-false answers "Wrong Field" too.
+        Case(
+            NonlinearAnalysisControlHyperS,
+            {"LC_SCOPE": "ALL", "NONLINEAR_TYPE": "GEOM", "ITER_METHOD": "FORCE",
+             "LOAD_STEPS": {"STEP_MODE": "AUTO", "NUMBER_STEPS": 10, "OUTPUT": "EVERY"},
+             "CONV_CRITERIA": {"DISP": {"OPT_USE": True, "VALUE": 0.001}}},
+            {"LC_SCOPE": "ALL", "NONLINEAR_TYPE": "GEOM", "ITER_METHOD": "FORCE",
+             "LOAD_STEPS": {"STEP_MODE": "AUTO", "NUMBER_STEPS": 20, "OUTPUT": "EVERY"},
+             "CONV_CRITERIA": {"DISP": {"OPT_USE": True, "VALUE": 0.001}}},
+            lambda p: p["LOAD_STEPS"].get("NUMBER_STEPS"), 10, 20,
+            item_id=1, products=civil, confirmed=True,
+        ),
+        Case(
+            ConstructionStageAnalysisControlDataHyperS,
+            {"bLAST_FINAL": True, "ANAL_TYPE": {"iINC_NLA": 0, "iNLA_TYPE": 0}},
+            {"bLAST_FINAL": True, "ANAL_TYPE": {"iINC_NLA": 1, "iNLA_TYPE": 0}},
+            lambda p: p["ANAL_TYPE"].get("iINC_NLA"), 0, 1,
+            item_id=1, products=civil, confirmed=True,
+        ),
+        Case(
+            DefineBoundaryCombinationHyperS,
+            {"BCG_NAME": "BCGD14_CRUD", "GROUP_LIST": ["BG14_SEED"]},
+            {"BCG_NAME": "BCGD14_CRUD", "GROUP_LIST": ["BG14_SEED"]},
+            lambda p: p.get("BCG_NAME"), "BCGD14_CRUD", "BCGD14_CRUD",
+            item_id=2, needs=("bngr14_seed",), products=civil, confirmed=True,
+        ),
+        # ⚠️ BC_SELECT: the manual's own enum table is entirely wrong --
+        # every value in it ("SECF"/"CONS"/"MCON"/...) answers "Wrong
+        # Field" live. Real values come from GET /info/db/BCGA-M1 -- see
+        # AssignBoundaryCombinationHyperSPayload's docstring in
+        # db/analysis_control.py for the full corrected list.
+        # BC_SELECT comes back in a server-chosen order, not the order sent
+        # (live-confirmed 2026-08-25: sent ["SP","LC","EL"], read back
+        # ["SP","EL","LC"]) -- probe sorts before comparing.
+        Case(
+            AssignBoundaryCombinationHyperS,
+            {"BC_ASSIGN": [{"ANAL_TYPE": "ST", "LCNAME": "DL14_SEED", "BGCNAME": "BCGD14_SEED"}],
+             "BC_SELECT": ["SP", "LC"]},
+            {"BC_ASSIGN": [{"ANAL_TYPE": "ST", "LCNAME": "DL14_SEED", "BGCNAME": "BCGD14_SEED"}],
+             "BC_SELECT": ["SP", "LC", "EL"]},
+            lambda p: sorted(p.get("BC_SELECT", [])), ["LC", "SP"], ["EL", "LC", "SP"],
+            item_id=1, needs=("dl14_seed", "bcgd_m1_seed"), products=civil, confirmed=True,
+        ),
+    ]
+
+
 #: Priority order — what a modelling script needs, not the manual's order.
 TIERS: List[Tier] = [
     Tier("core", "baseline model, groups and static loads", _no_seeds, _core_cases),
@@ -3083,6 +3280,7 @@ TIERS: List[Tier] = [
     Tier("extras11", "batch 11a/c: /db/STCT (fails live -- iITER/TOL silently don't persist), /db/HSPT confirmed, /db/HECB fails live (same SOLID-element gap as HAHS)", _extras11_seeds, _extras11_cases),
     Tier("extras12", "batch 12: db.bridge in full, all 4 confirmed (GSBG/GCMB/CAMB Civil-only, ULFC both products)", _extras12_seeds, _extras12_cases),
     Tier("extras13", "batch 13: tractable non-rebar subset of db.design (8 of 13, all clean on Civil; Gen not yet run; RCHK/REBB/REBC/REBW/REBR deferred)", _no_seeds, _extras13_cases),
+    Tier("extras14", "batch 14: the 12 Civil-only-by-design endpoints (5 db.moving_loads, 7 db.analysis_control Hyper-S/-M1), all confirmed", _extras14_seeds, _extras14_cases),
 ]
 
 

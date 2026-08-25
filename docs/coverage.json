@@ -3419,16 +3419,16 @@
       "status": "implemented",
       "module": "midas_nx.db.moving_loads",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-25",
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "GROUPS references a real /db/GRUP structure group name (the manual's own examples use made-up names). Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -3441,16 +3441,16 @@
       "status": "implemented",
       "module": "midas_nx.db.moving_loads",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-25",
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "GROUPS references a real /db/GRUP structure group name. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -3563,16 +3563,16 @@
       "status": "implemented",
       "module": "midas_nx.db.moving_loads",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-25",
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "Live-confirmed 2026-08-25: requires /db/MVCD.CODE to be one of KSCE-LSD15/AASHTO LRFD/PENDOT first (\"[Error] Additional Dynamic Load Allowance can be applied when Moving Load Code is entered as ...\" otherwise). ITEMS references a real structure group name. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -3610,16 +3610,16 @@
       "status": "implemented",
       "module": "midas_nx.db.moving_loads",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-25",
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "Live-confirmed 2026-08-25: requires /db/MVCD.CODE=EUROCODE first. Also -- despite the manual marking LENGTH/MAINTAIN_TYPE/HEIGHT_COVER/DYN_FACTOR as conditionally required per INPUT_TYPE/OPT_REDUCE_EFF, the live server answers \"Wrong Field\" on POST/PUT unless all six fields are sent together every time, even ones that don't apply to the chosen mode. The sibling /db/DYNF does not share this quirk -- its documented conditional requiredness works as written. See RailwayDynamicFactorPayload's docstring in src/midas_nx/db/moving_loads.py. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -3632,16 +3632,16 @@
       "status": "implemented",
       "module": "midas_nx.db.moving_loads",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-25",
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "Live-confirmed 2026-08-25: requires /db/MVCD.CODE=EUROCODE first, and is keyed by a real element id (not a serial number, per the manual's own note) -- documented conditional field requiredness works as written here, unlike its sibling /db/DYFG. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -4538,16 +4538,16 @@
       "status": "implemented",
       "module": "midas_nx.db.analysis_control",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-25",
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "Simple PUT, no prerequisites. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
-        "level": "read",
-        "outcome": "success_populated"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -4635,16 +4635,16 @@
       "status": "implemented",
       "module": "midas_nx.db.analysis_control",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-25",
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "FREQ_RANGE sent explicitly with OPT_USE=false even though documented optional, to avoid the same undocumented-required-field gap the non-Hyper-S /db/EIGV has on Civil (see that endpoint's own coverage entry). Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -4682,16 +4682,16 @@
       "status": "implemented",
       "module": "midas_nx.db.analysis_control",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-25",
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "Simple PUT with FINAL_STAGE=true (no construction-stage reference needed for the default branch). Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -4879,16 +4879,16 @@
       "status": "implemented",
       "module": "midas_nx.db.analysis_control",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-25",
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "Live-confirmed 2026-08-25: LC_SCOPE wants the literal scope keyword \"ALL\" (matching the manual's own worked example), not a real load case name -- a load case name answers \"Wrong Field\". CONV_CRITERIA needs at least one sub-object with OPT_USE=true and a VALUE; all-false also answers \"Wrong Field\". Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -4925,16 +4925,16 @@
       "status": "implemented",
       "module": "midas_nx.db.analysis_control",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-25",
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "Simple PUT with bLAST_FINAL=true, ANAL_TYPE={iINC_NLA:0, iNLA_TYPE:0} (no construction-stage reference needed for the default branch) -- notably does NOT reproduce the non-Hyper-S /db/STCT's iITER/TOL silent-drop bug, but this payload doesn't exercise those fields either. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -4972,16 +4972,16 @@
       "status": "implemented",
       "module": "midas_nx.db.analysis_control",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-25",
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "GROUP_LIST references a real /db/BNGR boundary group name. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -4994,16 +4994,16 @@
       "status": "implemented",
       "module": "midas_nx.db.analysis_control",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-25",
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "Live-confirmed 2026-08-25, a major manual defect: the manual's own BC_SELECT enum table (\"SECF\"/\"ESSF\"/\"EWSF\"/\"PSSF\"/\"WSSF\"/\"CONS\"/\"NSPR\"/\"GSPR\"/\"SSPS\"/\"ELNK\"/\"RIGD\"/\"NLNK\"/\"CGLP\"/\"FRLS\"/\"OFFS\"/\"PRLS\"/\"MCON\") is entirely wrong -- every value in it answers \"Wrong Field\" live. GET /info/db/BCGA-M1 gives the real enum (SSSF/ES/EW/PS/SP/PSS/GSS/SSS/EL/RL/GL/CGL/BER/BEO/PER/LC), a completely different abbreviation scheme, not a spelling fix of the manual's values. Also: BC_SELECT comes back in a server-chosen order, not the order sent. See AssignBoundaryCombinationHyperSPayload's docstring in src/midas_nx/db/analysis_control.py. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {

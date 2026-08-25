@@ -830,11 +830,31 @@ class BoundaryCombinationAssignItem(TypedDict, total=False):
 
 
 class AssignBoundaryCombinationHyperSPayload(TypedDict, total=False):
-    """docs/manual/12_DB_Analysis_Control.md #21 — /db/BCGA-M1 Specifications tables."""
+    """docs/manual/12_DB_Analysis_Control.md #21 — /db/BCGA-M1 Specifications tables.
+
+    ⚠️ Live-confirmed 2026-08-25 on Civil NX: the manual's own `BC_SELECT`
+    enum table (below, for reference/traceability only) is entirely wrong
+    — every value in it answers "Wrong Field". `GET /info/db/BCGA-M1`
+    gives the server's real enum, listed on `BC_SELECT`'s own comment;
+    use those instead. Cross-referencing meaning by position, the manual's
+    table looks like an editing artifact from a *different*, longer
+    abbreviation scheme (SECF/ESSF/EWSF/... vs the live SSSF/ES/EW/...)
+    rather than a simple typo -- don't try to "fix the spelling" of the
+    manual's values, they don't correspond 1:1 to the live ones.
+    """
 
     BC_ASSIGN: List[BoundaryCombinationAssignItem]  # required
-    # enum values: "SECF"/"ESSF"/"EWSF"/"PSSF"/"WSSF"/"CONS"/"NSPR"/"GSPR"/
-    # "SSPS"/"ELNK"/"RIGD"/"NLNK"/"CGLP"/"FRLS"/"OFFS"/"PRLS"/"MCON"
+    # manual's documented (WRONG, live-rejected) enum values: "SECF"/"ESSF"/
+    # "EWSF"/"PSSF"/"WSSF"/"CONS"/"NSPR"/"GSPR"/"SSPS"/"ELNK"/"RIGD"/"NLNK"/
+    # "CGLP"/"FRLS"/"OFFS"/"PRLS"/"MCON" -- do not use these.
+    # Live-confirmed real enum values (GET /info/db/BCGA-M1, 2026-08-25):
+    # "SSSF" Section Stiffness Scale Factor / "ES" Element Stiffness Scale
+    # Factor / "EW" Effective Width Scale Factor / "PS" Plate Stiffness
+    # Scale Factor / "SP" Support / "PSS" Point Spring Support / "GSS"
+    # General Spring Support / "SSS" Surface Spring Support / "EL" Elastic
+    # Link / "RL" Rigid Link / "GL" General Link / "CGL" Change General
+    # Link Property / "BER" Beam End Release / "BEO" Beam End Offset /
+    # "PER" Plate End Release / "LC" Linear Constraints
     BC_SELECT: List[str]  # Apply to Boundary Change, required
 
 

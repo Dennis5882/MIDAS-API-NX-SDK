@@ -1037,7 +1037,21 @@ class AdditionalImpactFactor(DbResource):
 class RailwayDynamicFactorPayload(TypedDict, total=False):
     """docs/manual/08_DB_Moving_Loads.md #27/#28 — /db/DYFG and /db/DYNF
     Specifications tables (identical shape for both; DYNF's Assign key is
-    the Element ID instead of a serial number). Usable codes: Eurocode.
+    the Element ID instead of a serial number). Usable codes: Eurocode
+    (set via /db/MVCD's ``CODE: "EUROCODE"`` first, or every write here
+    answers "Wrong Field" regardless of payload).
+
+    ⚠️ Live-confirmed 2026-08-25 on Civil NX: despite the manual marking
+    LENGTH/MAINTAIN_TYPE/HEIGHT_COVER/DYN_FACTOR as conditionally required
+    (only for their own INPUT_TYPE/OPT_REDUCE_EFF branch), **``/db/DYFG``
+    rejects a POST/PUT with "Wrong Field" unless all six fields are sent
+    together**, even the ones that don't apply to the chosen mode (send
+    them as their zero/false default) — the same class of bug as
+    ``/db/NMAS``'s undocumented-unconditional fields, just a clean
+    rejection here rather than a crash. ``/db/DYNF`` does **not** share
+    this — the documented conditional requiredness works there as
+    written; only DYFG needs the all-fields workaround. Send all six
+    explicitly on DYFG to avoid the ambiguity.
     """
 
     INPUT_TYPE: int  # Auto=0/User=1, required

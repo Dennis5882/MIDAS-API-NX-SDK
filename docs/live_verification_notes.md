@@ -6041,12 +6041,101 @@ cause" note) was **not** retested this session and stays flagged
 crash-risk on Gen NX. Don't read today's fixes as clearing that endpoint
 too.
 
-**Crash-family epic status after today: 4 of 6 confirmed fixed by us
+**Crash-family epic status after today: 5 of 6 confirmed fixed by us
 (NMAS, EDMP, USLC, CD-TABLE via `rc_kds.checks`, THNL), 1 confirmed still
 broken (OCHECK/MAPI-2429, MIDASIT's own "not a defect" stance), 0 left
 unverified.** `MAPI-2431` and `MAPI-2468` haven't had a confirmation
 comment posted back to Jira yet — that needs the user's explicit
 go-ahead per this project's standing Jira-consent rule before doing so.
+
+## 2026-08-25 (later) — batch 14: the 12 Civil-only-by-design endpoints (5 db.moving_loads, 7 db.analysis_control Hyper-S/-M1), all confirmed on Civil NX v2.2, build 08/24/2026
+
+User asked to continue the write-coverage push on Civil NX specifically
+("civil nx 검증 진행해볼래?"). Picked the clearest Civil-only target: the
+12 endpoints that are Civil-only *by design* rather than by an
+undocumented Gen gap — 5 from `db.moving_loads` (`CRGR`/`CJFG`/`DYLA`/
+`DYFG`/`DYNF`) and 7 Hyper-S (`-M1`) variants from
+`db.analysis_control` (`ACTL-M1`/`EIGV-M1`/`HHCT-M1`/`NLCT-M1`/
+`STCT-M1`/`BCGD-M1`/`BCGA-M1`). Hyper-S is a Civil NX-only solver, so
+these were never reachable on Gen at all — unlike most of this
+project's other Civil-only findings, which are just an undocumented gap
+in an otherwise-shared endpoint.
+
+First checked whether Hyper-S needs a model-level mode switch before
+these endpoints respond: `GET /db/STYP-M1` (Structure Type, Hyper-S)
+answered its defaults on a completely fresh, non-Hyper-S document — no
+switch needed, the `-M1` endpoints are just always reachable on Civil.
+
+Direct ad-hoc bisection (not yet through the harness) got 8/12 working
+on the first attempt (`CRGR`/`CJFG`/`DYLA`/`ACTL-M1`/`EIGV-M1`/
+`HHCT-M1`/`STCT-M1`/`BCGD-M1`); 4 failed and were triaged:
+
+- **`/db/DYFG`** — "Wrong Field" on every payload shape tried, including
+  the manual's own verbatim worked examples, with `/db/MVCD.CODE` set to
+  `EUROCODE` (the documented prerequisite). Bisected via `GET
+  /info/db/DYFG` (schema matched the manual exactly) and by varying the
+  payload systematically: sending **all six documented fields
+  simultaneously**, including the ones the manual marks conditionally
+  required only for the *other* `INPUT_TYPE`/`OPT_REDUCE_EFF` branch,
+  fixed it. Confirmed reproducible on a fresh document. Same defect
+  class as `/db/NMAS`'s `rmX`/`rmY`/`rmZ` bug, just a clean rejection
+  instead of a crash. The sibling `/db/DYNF` does **not** share this —
+  its conditional requiredness works as documented; it only needed a
+  real element id as the `Assign` key (per the manual's own note that
+  DYNF's key is an element id, not a serial number).
+- **`/db/BCGA-M1`** — "Wrong Field" on `BC_SELECT` regardless of which
+  manual-documented value was tried (`"CONS"`, `"MCON"`, etc). `GET
+  /info/db/BCGA-M1` revealed the live server's real enum is a
+  *completely different abbreviation scheme* from the manual's own
+  table — `SSSF`/`ES`/`EW`/`PS`/`SP`/`PSS`/`GSS`/`SSS`/`EL`/`RL`/`GL`/
+  `CGL`/`BER`/`BEO`/`PER`/`LC` vs the manual's `SECF`/`ESSF`/`EWSF`/
+  `PSSF`/`WSSF`/`CONS`/`NSPR`/`GSPR`/`SSPS`/`ELNK`/`RIGD`/`NLNK`/`CGLP`/
+  `FRLS`/`OFFS`/`PRLS`/`MCON`. Not a spelling-level typo like several
+  earlier findings this project has documented — a real enum table
+  substitution, most likely an editing artifact from a different,
+  longer naming convention. Using the live values (`"SP"`/`"LC"`) fixed
+  it immediately.
+- **`/db/NLCT-M1`** — "Wrong Field" with `LC_SCOPE` set to a real load
+  case name (`"DL"`) and `CONV_CRITERIA` all `OPT_USE: false`. The
+  manual's own worked example uses the literal keyword `"ALL"` for
+  `LC_SCOPE`, not a load case name — switching to `"ALL"` and giving
+  `CONV_CRITERIA.DISP` a real `OPT_USE: true`/`VALUE` fixed it.
+- **`/db/DYNF`** — see DYFG above; this one just needed a real element
+  id, not a payload change.
+
+With all 4 fixed, re-ran ad-hoc — 12/12 clean — then encoded the seeds
+and cases properly into `scripts/live_crud_check.py` as a new
+`extras14` tier and ran it **through the harness** (the actual bar for
+`Case.confirmed=True`, not an ad-hoc script): first attempt surfaced 2
+more issues the ad-hoc script hadn't hit, both harness/fixture bugs
+rather than SDK defects:
+
+- `/db/DYLA` needs `/db/MVCD.CODE` in `{KSCE-LSD15, AASHTO LRFD,
+  PENDOT}` — a *different*, mutually exclusive requirement from
+  DYFG/DYNF's `EUROCODE`. Since this harness runs all of a tier's seeds
+  before any of its cases (no interleaving), a single seed can't satisfy
+  both. Fixed by seeding `KSCE-LSD15` up front for `DYLA`, then adding a
+  dedicated mid-list `_MvcdSwitch` case (a local `MovingLoadCode`
+  subclass restricted to `GET`/`PUT` only, to update the existing
+  seeded record without re-`POST`ing over it or `DELETE`ing it
+  afterward) that flips the same singleton record to `EUROCODE` before
+  `DYFG`/`DYNF` run.
+- `/db/BCGA-M1`'s `BC_SELECT` comes back in a server-chosen order, not
+  the order sent (`["SP","LC","EL"]` sent, `["SP","EL","LC"]` read back)
+  — the case's probe now sorts both sides before comparing.
+
+Re-ran: **23/23 clean** (10 core + 13 extras14 — `MVCD`'s own switch
+case is a 13th row alongside the 12 real endpoints). `docs/coverage.json`
+updated for all 12 endpoints (`level: write`, `products: ["civil"]`,
+Gen genuinely unreachable so no "pending" caveat needed here unlike
+batch 13); `src/midas_nx/db/moving_loads.py` (`RailwayDynamicFactorPayload`)
+and `src/midas_nx/db/analysis_control.py`
+(`AssignBoundaryCombinationHyperSPayload`) docstrings corrected.
+`pytest` (701) and `ruff` both clean.
+
+Running total for the write-coverage push: 157 endpoints at `level:
+write` on at least one product (145 through the 08-25 crash-family
+session, +12 here).
 
 ## Caveat — read before acting on this file
 
