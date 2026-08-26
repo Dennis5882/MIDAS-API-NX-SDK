@@ -90,10 +90,16 @@ export async function getTableAt(
   );
 }
 
+/** Query the shared `/post/TABLE` endpoint for one documented table type. */
 export function getTable(tableType: string, options: TableOptions = {}): Promise<JsonObject> {
   return getTableAt("/post/TABLE", tableType, options);
 }
 
+/**
+ * Find the table by its `HEAD`/`DATA` shape instead of its top-level key.
+ * Live MIDAS NX sessions have returned the requested name, `Result Table`,
+ * and `empty` for equivalent calls, so indexing by `tableName` is unsafe.
+ */
 export function unwrapTable(response: JsonObject): JsonObject {
   if ("HEAD" in response || "DATA" in response) return response;
   for (const value of Object.values(response)) {
@@ -109,37 +115,51 @@ export function unwrapTable(response: JsonObject): JsonObject {
   return {};
 }
 
-export type DesignForcesTableOptions = Omit<TableOptions, "loadCaseNames" | "constructionStage" | "stageSteps" | "modes" | "additional" | "calculationMethod">;
+type BaseDesignForcesTableOptions = Pick<
+  TableOptions,
+  "tableName" | "nodeElements" | "unit" | "styles" | "components"
+>;
+export type MemberDesignForcesTableOptions = BaseDesignForcesTableOptions &
+  Pick<TableOptions, "parts">;
+export type WallDesignForcesTableOptions = BaseDesignForcesTableOptions &
+  Pick<TableOptions, "storyNames">;
 
-function designForces(tableType: string) {
-  return (options?: DesignForcesTableOptions) => getTable(tableType, options);
+function memberDesignForces(tableType: string) {
+  return (options?: MemberDesignForcesTableOptions) => getTable(tableType, options);
 }
 
-export function defineTable(tableType: string) {
-  return (options?: TableOptions) => getTable(tableType, options);
+export function defineTable<TOptions extends TableOptions = TableOptions>(tableType: string) {
+  return (options?: TOptions) => getTable(tableType, options);
 }
 
-export function defineVariableTable(defaultTableType?: string) {
-  return (options: TableOptions & { tableType?: string } = {}) => {
+export function defineVariableTable<TOptions extends TableOptions = TableOptions>(
+  defaultTableType?: string,
+) {
+  return (options: TOptions & { tableType?: string } = {} as TOptions) => {
     const tableType = options.tableType ?? defaultTableType;
     if (!tableType) throw new TypeError("tableType is required");
     return getTable(tableType, options);
   };
 }
 
-export function defineDirectionalTable(prefix: string) {
-  return (direction: string, options?: TableOptions) => getTable(`${prefix}${direction}`, options);
+export type TableDirection = "X" | "Y" | "Z";
+
+export function defineDirectionalTable<TOptions extends TableOptions = TableOptions>(prefix: string) {
+  return (direction: TableDirection, options?: TOptions) => getTable(`${prefix}${direction}`, options);
 }
 
 export const post = {
   getTable,
   unwrapTable,
-  getBeamDesignForcesTable: designForces("BEAMDESIGNFORCES"),
-  getColumnDesignForcesTable: designForces("COLUMNDESIGNFORCES"),
-  getBraceDesignForcesTable: designForces("BRACEDESIGNFORCES"),
-  getWallDesignForcesTable: designForces("WALLDESIGNFORCES"),
-  getSteelMemberDesignForcesTable: designForces("STEELMEMBERDESIGNFORCES"),
-  getSrcBeamDesignForcesTable: designForces("SRCBEAMDESIGNFORCES"),
-  getSrcColumnDesignForcesTable: designForces("SRCCOLUMNDESIGNFORCES"),
-  getColdFormedSteelMemberDesignForcesTable: designForces("COLDFORMEDSTEELMEMBERDESIGNFORCES"),
+  getBeamDesignForcesTable: memberDesignForces("BEAMDESIGNFORCES"),
+  getColumnDesignForcesTable: memberDesignForces("COLUMNDESIGNFORCES"),
+  getBraceDesignForcesTable: memberDesignForces("BRACEDESIGNFORCES"),
+  getWallDesignForcesTable: (options?: WallDesignForcesTableOptions) =>
+    getTable("WALLDESIGNFORCES", options),
+  getSteelMemberDesignForcesTable: memberDesignForces("STEELMEMBERDESIGNFORCES"),
+  getSrcBeamDesignForcesTable: memberDesignForces("SRCBEAMDESIGNFORCES"),
+  getSrcColumnDesignForcesTable: memberDesignForces("SRCCOLUMNDESIGNFORCES"),
+  getColdFormedSteelMemberDesignForcesTable: memberDesignForces(
+    "COLDFORMEDSTEELMEMBERDESIGNFORCES",
+  ),
 } as const;

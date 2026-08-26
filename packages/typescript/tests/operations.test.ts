@@ -38,6 +38,12 @@ describe("generated API surface", () => {
       Argument: { HORIZONTAL: 30 },
     });
   });
+
+  it("sends an empty Argument for no-argument POST operations", async () => {
+    const { client, fetch } = mockClient();
+    await operations.post.design.getPmInteractionDiagram({ client });
+    expect(JSON.parse(String(fetch.mock.calls[0]?.[1]?.body))).toEqual({ Argument: {} });
+  });
 });
 
 describe("document and table safety behavior", () => {

@@ -71,6 +71,13 @@ export class MidasClient {
     return this.send<T>(method, `${this.baseUrl}${command}`, command, body, options);
   }
 
+  /**
+   * Verify the key and product connection through the relay.
+   *
+   * A connected response does not prove the next model call will work: a
+   * modal dialog in MIDAS NX can leave this endpoint healthy while `/db/*`
+   * calls block. Use a cheap real GET when that distinction matters.
+   */
   async verifyConnection<T extends JsonValue = JsonObject>(options: RequestOptions = {}): Promise<T> {
     const suffix = `/${this.product}`;
     const root = this.baseUrl.endsWith(suffix) ? this.baseUrl.slice(0, -suffix.length) : this.baseUrl;

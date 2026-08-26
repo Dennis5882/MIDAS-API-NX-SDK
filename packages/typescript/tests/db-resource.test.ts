@@ -46,6 +46,39 @@ describe("DbResource", () => {
     ]);
   });
 
+  it("runs destructive per-ID requests sequentially", async () => {
+    let releaseFirst!: (response: Response) => void;
+    const firstResponse = new Promise<Response>((resolve) => {
+      releaseFirst = resolve;
+    });
+    const fetch = vi
+      .fn<typeof globalThis.fetch>()
+      .mockImplementationOnce(async () => firstResponse)
+      .mockImplementation(async () =>
+        new Response(JSON.stringify({ message: "ok" }), { status: 200 }),
+      );
+    const client = new MidasClient({ fetch });
+    const node = defineDbResource(metadata);
+
+    const deletion = node.delete([1, 2], client);
+    expect(fetch).toHaveBeenCalledTimes(1);
+
+    releaseFirst(new Response(JSON.stringify({ message: "ok" }), { status: 200 }));
+    await deletion;
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it("stops before later IDs when a delete fails", async () => {
+    const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(
+      new Response(JSON.stringify({ message: "failed" }), { status: 500 }),
+    );
+    const client = new MidasClient({ fetch });
+    const node = defineDbResource(metadata);
+
+    await expect(node.delete([1, 2], client)).rejects.toThrow();
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
   it("blocks whole-table deletion unless explicitly confirmed", async () => {
     const node = defineDbResource(metadata);
     await expect(node.deleteAll({})).rejects.toBeInstanceOf(DestructiveOperationError);

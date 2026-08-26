@@ -79,6 +79,21 @@ const table = unwrapTable(raw);
 Advanced users can call any command directly with `client.request(...)` or
 the default-client helper `midasApi(...)`.
 
+## Safety notes
+
+- File paths are resolved on the computer running MIDAS NX, which may not be
+  the computer running this code.
+- A request timeout only stops the SDK from waiting. It does not roll back an
+  analysis or design operation already accepted by MIDAS NX.
+- `doc.newProject()` can discard work, open a modal product dialog, or require
+  the MIDAS NX process to be restarted. Do not use it unattended on a model
+  that matters.
+- Design and result-table functions include the live-verification warnings
+  from the Python SDK in their TypeScript JSDoc. Read the IDE documentation
+  before calling an operation against a real model.
+- Per-ID deletion is deliberately sequential. Whole-table deletion remains
+  blocked unless `confirm: true` is passed explicitly.
+
 ## Project status
 
 This is an employee-led open-source project built from the official MIDAS API

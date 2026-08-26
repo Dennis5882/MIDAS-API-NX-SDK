@@ -22,6 +22,10 @@ export interface MidasClientOptions {
 }
 
 export interface RequestOptions {
+  /**
+   * Per-request timeout in milliseconds. A timeout stops waiting; it does not
+   * roll back an operation that MIDAS NX has already accepted.
+   */
   timeout?: Timeout;
   signal?: AbortSignal;
 }

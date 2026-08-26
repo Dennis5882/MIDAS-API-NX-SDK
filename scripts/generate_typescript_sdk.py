@@ -42,6 +42,22 @@ _POST_TABLE_LEDGER_ALIASES = {
     "/post/SRCCOLUMNDESIGNFORCES",
     "/post/COLDFORMEDSTEELMEMBERDESIGNFORCES",
 }
+_TABLE_OPTION_NAMES = {
+    "table_name": "tableName",
+    "export_path": "exportPath",
+    "node_elems": "nodeElements",
+    "unit": "unit",
+    "styles": "styles",
+    "components": "components",
+    "load_case_names": "loadCaseNames",
+    "opt_cs": "constructionStage",
+    "stage_step": "stageSteps",
+    "parts": "parts",
+    "story_names": "storyNames",
+    "modes": "modes",
+    "additional": "additional",
+    "set_calculation_method": "calculationMethod",
+}
 
 
 def _all_subclasses(base: type) -> list[type]:
@@ -58,6 +74,37 @@ def _camel(value: str) -> str:
         return "resource"
     first, *rest = parts
     return first[:1].lower() + first[1:] + "".join(p[:1].upper() + p[1:] for p in rest)
+
+
+def _jsdoc(value: str, indent: int) -> list[str]:
+    """Render reviewed Python endpoint documentation into TypeScript JSDoc."""
+    if not value.strip():
+        return []
+    pad = "  " * indent
+    lines = [f"{pad}/**"]
+    for raw_line in value.replace("*/", "* /").splitlines():
+        # Some historical Python sources contain mojibake warning glyphs from
+        # an older Windows encoding. Keep npm declarations readable and turn
+        # a damaged leading marker into an explicit warning label.
+        marker = ""
+        if "\u26a0" in raw_line or "\U0001f6d1" in raw_line:
+            marker = "WARNING: "
+        elif "\u2705" in raw_line:
+            marker = "VERIFIED: "
+        normalized = (
+            raw_line.replace("\u2014", " - ")
+            .replace("\u2013", " - ")
+            .replace("\u2192", " -> ")
+            .replace("\u00b0", " degrees ")
+        )
+        line = re.sub(r"[^\x09\x20-\x7e]", "", normalized).rstrip()
+        line = re.sub(r"^(\s*)\?+\s*", r"\1WARNING: ", line)
+        line = re.sub(r"\s+\?+\s+", " - ", line)
+        if marker:
+            line = re.sub(r"^(\s*)", rf"\1{marker}", line, count=1)
+        lines.append(f"{pad} * {line}" if line.strip() else f"{pad} *")
+    lines.append(f"{pad} */")
+    return lines
 
 
 def _module_parts(module: str) -> list[str]:
@@ -456,6 +503,8 @@ def _operation_specs(
                     "pythonModule": module,
                     "modulePath": _module_parts(module),
                     "argumentType": argument_type,
+                    "noArgument": method == "POST" and argument is None,
+                    "documentation": ast.get_docstring(node) or "",
                 }
             )
     return operations
@@ -486,8 +535,11 @@ def _render_operations(operations: list[dict[str, Any]]) -> str:
             )
             if value["method"] == "GET":
                 expression = f"defineGetOperation({metadata})"
+            elif value["noArgument"]:
+                expression = f"defineEmptyPostOperation({metadata})"
             else:
                 expression = f"definePostOperation<{value['argumentType']}>({metadata})"
+            lines.extend(_jsdoc(value["documentation"], indent + 1))
             lines.append(f"{pad}  {key}: {expression},")
         lines.append(f"{pad}}}")
         return lines
@@ -533,6 +585,11 @@ def _table_specs(modules: dict[str, ast.Module]) -> list[dict[str, Any]]:
                         table_type = values[0].value
                         factory = "directional"
                 if table_type is not None:
+                    option_names = {
+                        _TABLE_OPTION_NAMES[parameter.arg]
+                        for parameter in node.args.args + node.args.kwonlyargs
+                        if parameter.arg in _TABLE_OPTION_NAMES
+                    }
                     tables.append(
                         {
                             "exportName": _camel(node.name),
@@ -541,6 +598,8 @@ def _table_specs(modules: dict[str, ast.Module]) -> list[dict[str, Any]]:
                             "pythonFunction": node.name,
                             "pythonModule": module,
                             "modulePath": _module_parts(module)[1:],
+                            "optionNames": sorted(option_names),
+                            "documentation": ast.get_docstring(node) or "",
                         }
                     )
                 break
@@ -570,7 +629,12 @@ def _render_tables(tables: list[dict[str, Any]]) -> str:
                     "variable": "defineVariableTable",
                     "directional": "defineDirectionalTable",
                 }[value["factory"]]
-                lines.append(f"{pad}  {key}: {factory}({json.dumps(value['tableType'])}),")
+                option_names = " | ".join(json.dumps(name) for name in value["optionNames"])
+                option_type = f"Pick<TableOptions, {option_names}>" if option_names else "Record<never, never>"
+                lines.extend(_jsdoc(value["documentation"], indent + 1))
+                lines.append(
+                    f"{pad}  {key}: {factory}<{option_type}>({json.dumps(value['tableType'])}),"
+                )
         lines.append(f"{pad}}}")
         return lines
 
@@ -698,7 +762,7 @@ def main() -> None:
     generated_operations = "\n".join(
         [
             "// Generated by scripts/generate_typescript_sdk.py. Do not edit by hand.",
-            'import { defineGetOperation, definePostOperation } from "../operation";',
+            'import { defineEmptyPostOperation, defineGetOperation, definePostOperation } from "../operation";',
             'import type { JsonObject } from "../types";',
             'import type * as Types from "./types";',
             "",
@@ -715,6 +779,7 @@ def main() -> None:
         [
             "// Generated by scripts/generate_typescript_sdk.py. Do not edit by hand.",
             'import { defineDirectionalTable, defineTable, defineVariableTable } from "../post";',
+            'import type { TableOptions } from "../post";',
             "",
             f"export const tables = {_render_tables(tables)} as const;",
             "",

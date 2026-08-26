@@ -69,14 +69,33 @@ export class DbResource<TPayload extends object = JsonObject> {
     return client.request("PUT", this.metadata.endpoint, { Assign: stringifyKeys(items) });
   }
 
+  /**
+   * Delete only the requested IDs, one request at a time. Processing stops at
+   * the first error so later destructive requests are never left running in
+   * the background after this promise rejects.
+   */
   async delete(ids: readonly ItemId[], client: MidasClient = getDefaultClient()): Promise<Record<string, JsonObject>> {
     this.check(client, "DELETE");
-    const entries = await Promise.all(
-      ids.map(async (id) => [String(id), await client.request<JsonObject>("DELETE", `${this.metadata.endpoint}/${id}`)] as const),
-    );
-    return Object.fromEntries(entries);
+    const responses: Record<string, JsonObject> = {};
+    // MIDAS NX sessions are stateful and several operations can block the
+    // product UI. Keep destructive calls ordered and stop at the first error;
+    // launching every DELETE with Promise.all would let later mutations keep
+    // running after the caller has already received a rejection.
+    for (const id of ids) {
+      responses[String(id)] = await client.request<JsonObject>(
+        "DELETE",
+        `${this.metadata.endpoint}/${id}`,
+      );
+    }
+    return responses;
   }
 
+  /**
+   * Empty the entire resource table.
+   *
+   * @warning This cannot be undone through the API. For `/db/NODE`, attached
+   * elements are removed as well. Use `delete(ids)` for selected records.
+   */
   async deleteAll(
     options: { confirm: true; client?: MidasClient } | { confirm?: false; client?: MidasClient },
   ): Promise<JsonObject> {

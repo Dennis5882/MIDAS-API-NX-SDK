@@ -1,7 +1,14 @@
-import { getTableAt, type TableOptions } from "./post";
+import {
+  getTableAt,
+  type MemberDesignForcesTableOptions,
+  type TableOptions,
+} from "./post";
+
+export type DesignEndpointTableOptions = MemberDesignForcesTableOptions &
+  Pick<TableOptions, "exportPath">;
 
 function defineDesignTable(endpoint: string, tableType: string) {
-  return (options?: TableOptions) => getTableAt(endpoint, tableType, options);
+  return (options?: DesignEndpointTableOptions) => getTableAt(endpoint, tableType, options);
 }
 
 export const designTables = {

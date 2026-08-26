@@ -21,6 +21,10 @@ export type PostOperation<TArgument extends object> = ((
   options?: OperationOptions,
 ) => Promise<JsonObject>) & { readonly metadata: OperationMetadata };
 
+export type EmptyPostOperation = ((options?: OperationOptions) => Promise<JsonObject>) & {
+  readonly metadata: OperationMetadata;
+};
+
 export function getResult(command: string, options: OperationOptions = {}): Promise<JsonObject> {
   return (options.client ?? getDefaultClient()).request("GET", command, undefined, options);
 }
@@ -48,5 +52,10 @@ export function definePostOperation<TArgument extends object = JsonObject>(
 ): PostOperation<TArgument> {
   const operation = (argument: TArgument, options: OperationOptions = {}) =>
     postArgument(metadata.endpoint, argument, options);
+  return Object.assign(operation, { metadata });
+}
+
+export function defineEmptyPostOperation(metadata: OperationMetadata): EmptyPostOperation {
+  const operation = (options: OperationOptions = {}) => postArgument(metadata.endpoint, {}, options);
   return Object.assign(operation, { metadata });
 }
