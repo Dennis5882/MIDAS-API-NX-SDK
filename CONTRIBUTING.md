@@ -19,6 +19,8 @@ differs between Gen NX and Civil NX, and between builds of the same version.
 
 ```bash
 pip install -e ".[dev]"
+cd packages/typescript
+npm install
 ```
 
 Three checks must pass before any commit. CI runs exactly these:
@@ -27,7 +29,18 @@ Three checks must pass before any commit. CI runs exactly these:
 pytest                        # ~690 tests, no live server needed
 ruff check src tests scripts
 mypy
+
+cd packages/typescript
+npm run generate              # derives npm resources/types from Python
+npm run typecheck
+npm test
 ```
+
+Generated TypeScript files and `schema/typescript-coverage.json` are committed.
+The generator fails if any row in `docs/coverage.json` is not represented in
+the npm SDK, and CI fails if generated output has drifted. When the official
+manual changes, update the reviewed Python model and coverage ledger first,
+then regenerate both language surfaces in the same change.
 
 The test suite mocks HTTP with `responses`. **Nothing in it touches a real
 MIDAS NX session**, and it must stay that way — tests have to run in CI, where
