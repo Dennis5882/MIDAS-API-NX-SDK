@@ -6,9 +6,19 @@ For the itemized per-endpoint checklist see the auto-generated
 that ROADMAP.md doesn't capture.
 
 > Last updated: 2026-08-27 — Python/PyPI v2.3.5; JavaScript/TypeScript/npm
-> v2.3.3. This line tracks **release** state,
+> v2.3.4 released, v2.4.0 prepared and awaiting its `js-v*` Release. This line
+> tracks **release** state,
 > not every edit; docs-only changes carry their own dates in
 > Cross-cutting/backlog without moving this line.
+> **npm v2.4.0 prepared 2026-08-27**: `db.staticLoads.nodalMass` could crash a
+> live MIDAS NX session — it sent payloads missing `rmX`/`rmY`/`rmZ` straight
+> through, the trigger root-caused on 2026-07-29 and fixed in Python the same
+> day. The npm package shipped a month later without the protection, because
+> the workaround was behaviour inside `NodalMass.create()` and the generator
+> only carries metadata and docstrings. Introduced `contracts/` (§1) so a
+> safety rule is a fact about the endpoint rather than a property of one
+> language binding, with `scripts/validate_contracts.py` failing CI when
+> either SDK stops honouring one. Two endpoints contracted so far.
 > **v2.3.5 shipped 2026-08-27**: closed out the sibling manual repo's
 > 24-chapter "전수 재검증" drift in full (`vendored_at_commit` now current,
 > `check_manual_drift.py` reports `has_diff: false`) — dozens of field-level
@@ -64,17 +74,28 @@ that ROADMAP.md doesn't capture.
 
 ## 1. Architecture map
 
-The repository now maintains two packaged language surfaces. Python remains the reviewed implementation
-and endpoint-metadata source; the npm SDK combines generated TypeScript contracts with hand-written
-runtime adapters. Both surfaces share `docs/coverage.json` and the live-verification safety evidence.
+The repository maintains two packaged language surfaces, and is migrating to a language-neutral
+contract as the source of truth for both. Historically Python was the reviewed implementation *and*
+the endpoint-metadata source for npm generation — which is how the npm package shipped a month after
+`/db/NMAS`'s crash workaround without it: the generator carries metadata and docstrings, and that
+workaround was behaviour inside a method. `contracts/` now holds endpoint shape and safety rules as
+facts about the API, sourced from the manual repo, live verification records and `/info`
+introspection — never from either SDK. Both surfaces still share `docs/coverage.json` and the
+live-verification safety evidence; folding that ledger into `contracts/verification/` is pending.
 
 ```text
+contracts/                        language-neutral source of truth (see contracts/README.md)
+├── schema/                       JSON Schema for an endpoint contract
+├── endpoints/                    one YAML per endpoint — 2 of 399 so far
+├── safety/                       cross-endpoint client rules + known product defects
+└── verification/                 dated, build-specific live findings, split per product
 src/midas_nx/                     Python package (PyPI: midas-nx)
 packages/typescript/              JavaScript/TypeScript package (npm: midas-nx)
 ├── src/generated/                generated resources, operations, tables, payload types
 ├── src/{client,db-resource,...}  hand-written runtime and safety behavior
 └── tests/                        Vitest unit and public-type coverage
 scripts/generate_typescript_sdk.py
+scripts/validate_contracts.py     validates contracts, then checks both SDKs against them
 schema/typescript-*.json          committed cross-language generation ledgers
 ```
 
@@ -217,12 +238,13 @@ they're the ones worth re-checking before planning a release):
 
 | Axis | Artifact | State |
 |---|---|---|
-| Tests | 706 tests, mocked/local only | ✅ green |
+| Tests | 719 Python tests + 26 Vitest tests, mocked/local only | ✅ green |
 | CI | `.github/workflows/ci.yml` — Python checks on 3.12/3.13 plus npm generation/typecheck/tests/package smoke on Node.js 18/22, push+PR | ✅ running |
 | Static typing | mypy over `src/midas_nx`, config in `pyproject.toml`, own CI job | ✅ clean across all 41 modules |
 | Packaging verification | `package` CI job + `scripts/wheel_smoke_test.py` — builds the wheel, installs it into a clean venv, asserts `py.typed` shipped, `__version__` matches the distribution, and the `delete_all()` guard is armed | ✅ running |
-| TypeScript/npm SDK | `packages/typescript/` — ESM + CommonJS + declarations, Node.js 18+, Vitest/typecheck/build and packed-artifact smoke tests | ✅ npm `midas-nx` v2.3.3 published 2026-08-26; `js-v*` OIDC workflow and npm Trusted Publisher registration completed 2026-08-27 |
-| Cross-language generation | `scripts/generate_typescript_sdk.py`, `schema/typescript-{resources,coverage}.json`, `packages/typescript/src/generated/` | ✅ generated outputs committed; CI rejects drift from the reviewed Python/coverage source |
+| TypeScript/npm SDK | `packages/typescript/` — ESM + CommonJS + declarations, Node.js 18+, Vitest/typecheck/build and packed-artifact smoke tests | ✅ npm `midas-nx` v2.3.4 published 2026-08-27; `js-v*` OIDC workflow and npm Trusted Publisher registration completed 2026-08-27. v2.4.0 prepared 2026-08-27 (`/db/NMAS` normalization + `payloadDefaults`), not yet released |
+| Cross-language generation | `scripts/generate_typescript_sdk.py`, `schema/typescript-{resources,coverage}.json`, `packages/typescript/src/generated/` | ✅ generated outputs committed; CI rejects drift. ⚠️ CI was red on `main` 2026-08-27 (`dcb98e0`..`21034f3`) because the committed npm surface had gone stale against its own generator — **py-v2.3.5 was tagged while it was red**. Fixed in `f303fd7`; the drift gate works, nobody read it |
+| Language-neutral contracts | `contracts/` + `scripts/validate_contracts.py`, own CI job | 🚧 2 of 399 endpoints (`/db/NODE`, `/db/NMAS`). Validates schema, cross-references, safety-rule coverage, and **parity against both SDKs** — a disagreement is an SDK defect, not a reason to edit the contract. Caught the real one: npm could crash a live NX session on `/db/NMAS` for its whole first month |
 | Destructive-op safety | `delete()` per-id URL; `delete_all(confirm=True)` required, else `DestructiveOperationError` before sending | ✅ guarded |
 | Docs site | MkDocs Material + mkdocstrings (`mkdocs.yml`), built `--strict` on every PR | ✅ live at `dennis5882.github.io/MIDAS-API-NX-SDK/` (confirmed 2026-08-04 — this row had drifted stale, saying "GitHub Pages not yet enabled" after it already was) |
 | Manual drift | `manual-drift-check.yml` (`cron: 0 3 * * 3`) + `scripts/check_manual_drift.py` | ✅ running |
@@ -771,6 +793,8 @@ exactly why that's the honest framing rather than a stronger guarantee.
 | v2.3.5 ✅ | Full close-out of the sibling manual repo's 24-chapter re-verification drift (`vendored_at_commit` current, `has_diff: false`); root-caused 3 long-standing "Wrong Field" write stalls (`GRDP`/`SDHY`/`SDIS`) to missing fields, not server bugs; caught 6 cases of the manual repo's own re-verification being newly wrong, 2 traced further to stale MIDASIT official docs. Write coverage 158→162/399 | published 2026-08-27 |
 | npm v2.3.2 ✅ | Initial typed JavaScript/TypeScript SDK generated from the reviewed Python endpoint inventory, with shared Civil NX/Gen NX coverage | published to npm 2026-08-26 |
 | npm v2.3.3 ✅ | Safety and result-table typing hardening; declaration checks and packed npm artifact smoke tests added to CI | published to npm 2026-08-26 |
+| npm v2.3.4 ✅ | Package-local changelog, npm release checklist, and the independent `js-v*` trusted-publishing route | published to npm 2026-08-27 |
+| npm v2.4.0 🚧 | Fixes `db.staticLoads.nodalMass` sending payloads that could end a live NX session; adds `DbResourceMetadata.payloadDefaults`, generated from the new `contracts/` source of truth | committed 2026-08-27, `js-v2.4.0` Release not yet published |
 | v0.16.0/Phase 7 (not started) | Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
 | v0.17.0+/Phase 8 (not started) | `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
 
