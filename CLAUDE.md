@@ -2,7 +2,7 @@
 
 Python and JavaScript/TypeScript SDKs wrapping the **MIDAS NX Open API**, with both language
 surfaces covering **Civil NX** and **Gen NX**. Published as `midas-nx` on both PyPI and npm
-(separate registries and version streams). Repo `Dennis5882/MIDAS-API-NX-SDK`, branch `main`.
+(separate registries, one shared version number since 2026-08-28 — see Releasing). Repo `Dennis5882/MIDAS-API-NX-SDK`, branch `main`.
 
 ## Commands
 
@@ -248,16 +248,38 @@ Two things that have already caused rework:
 
 ## Releasing
 
-PyPI and npm use the same package name in separate registries, but their versions are independent.
-Keep endpoint behavior and safety documentation synchronized; do not bump both versions merely to make
-the numbers match when only one packaged surface changed.
+PyPI and npm use the same package name and, **as of 2026-08-28, the same version number**.
+**Reversed at the author's explicit request** — this rule previously said the two version streams were
+independent and that you must "not bump both versions merely to make the numbers match when only one
+packaged surface changed." They are now kept in lockstep: one package name across two registries that
+reports two different versions is confusing to the people the SDK is for, and that outweighs the
+tidiness of a per-registry changelog.
+
+What lockstep means in practice:
+
+- A release bumps **both** `src/midas_nx/__init__.py`'s `__version__` and `packages/typescript/package.json`
+  (plus `package-lock.json`) to the same number, and publishes **both** a `py-vX.Y.Z` and a `js-vX.Y.Z`
+  GitHub Release.
+- One number covers both surfaces, so it can never be right for both at once. The author picks it;
+  don't bump on your own reading of semver. Whatever it says, the release notes must state plainly
+  what actually changed in each surface and what actually breaks. The 2.6.0 release is the worked
+  example in both directions: nothing in `src/midas_nx/` changed at all (an identical wheel went out
+  under a new number), while the npm side removed exported interface members — a breaking removal
+  shipped deliberately as a minor bump to keep the numbers aligned, called out at the top of the
+  npm changelog so anyone using those fields is not ambushed by a number that looks safe.
+- A release where one surface has no shipped change at all is still a real release for that registry —
+  it republishes an identical wheel or tarball under the aligned number. Do not skip it; a skipped
+  bump is how the streams drifted apart in the first place.
+
 The unprefixed `v*` tags are historical; all new package releases use `py-v*` or `js-v*`.
 
 ### Python / PyPI
 
-Version bumps are warranted **only when `src/midas_nx/` behaviour or packaged metadata changed** —
-`scripts/`, `docs/`, and `.github/` don't ship in the wheel. Re-derive this from the actual diff
-each time rather than assuming.
+A release is warranted when **either** packaged surface changed — `src/midas_nx/` behaviour or
+packaged metadata, or the npm package's source, declarations or metadata. `scripts/`, `docs/` and
+`.github/` ship in neither and warrant nothing on their own. Under lockstep versioning (see above)
+the Python version moves even when only the npm surface changed; re-derive from the actual diff
+which surface is the reason, and say so in the release notes.
 
 1. Commit the code changes **together with `PLAN.md`'s "Last updated" line and §2/§4 tables**,
    updated to the state this release actually leaves the repo in. This step used to be a separate,
@@ -288,8 +310,10 @@ each time rather than assuming.
 
 ### JavaScript / TypeScript / npm
 
-An npm version bump is warranted when `packages/typescript/src/`, its generated public declarations,
-or npm packaged metadata changes. Documentation outside the package and CI-only changes do not require it.
+An npm release accompanies every Python release and vice versa — see the lockstep rule above. What
+changed in `packages/typescript/src/`, its generated public declarations, or npm packaged metadata
+decides the *notes*, and a breaking change here makes the shared number a major bump; it no longer
+decides whether npm gets a release at all.
 
 1. Update the reviewed Python model and `docs/coverage.json` first when the official API contract changed.
 2. From `packages/typescript/`, run `npm run generate`, then review both `src/generated/` and the

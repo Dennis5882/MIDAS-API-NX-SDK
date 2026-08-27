@@ -5,9 +5,10 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-08-27 — Python/PyPI v2.3.5; JavaScript/TypeScript/npm
-> v2.3.4 released, v2.4.0 prepared and awaiting its `js-v*` Release. This line
-> tracks **release** state,
+> Last updated: 2026-08-28 — **PyPI and npm now share one version number, 2.6.0**,
+> at the author's explicit request; the two streams were 2.3.5 and 2.4.0 and the
+> split was confusing for one package name. `CLAUDE.md`'s Releasing section was
+> reversed to match. This line tracks **release** state,
 > not every edit; docs-only changes carry their own dates in
 > Cross-cutting/backlog without moving this line.
 > **npm v2.4.0 prepared 2026-08-27**: `db.staticLoads.nodalMass` could crash a
@@ -244,7 +245,8 @@ they're the ones worth re-checking before planning a release):
 | Packaging verification | `package` CI job + `scripts/wheel_smoke_test.py` — builds the wheel, installs it into a clean venv, asserts `py.typed` shipped, `__version__` matches the distribution, and the `delete_all()` guard is armed | ✅ running |
 | TypeScript/npm SDK | `packages/typescript/` — ESM + CommonJS + declarations, Node.js 18+, Vitest/typecheck/build and packed-artifact smoke tests | ✅ npm `midas-nx` v2.3.4 published 2026-08-27; `js-v*` OIDC workflow and npm Trusted Publisher registration completed 2026-08-27. v2.4.0 prepared 2026-08-27 (`/db/NMAS` normalization + `payloadDefaults`), not yet released |
 | Cross-language generation | `scripts/generate_typescript_sdk.py`, `schema/typescript-{resources,coverage}.json`, `packages/typescript/src/generated/` | ✅ generated outputs committed; CI rejects drift. ⚠️ CI was red on `main` 2026-08-27 (`dcb98e0`..`21034f3`) because the committed npm surface had gone stale against its own generator — **py-v2.3.5 was tagged while it was red**. Fixed in `f303fd7`; the drift gate works, nobody read it |
-| Language-neutral contracts | `contracts/` + `scripts/validate_contracts.py`, own CI job | 🚧 2 of 399 endpoints (`/db/NODE`, `/db/NMAS`). Validates schema, cross-references, safety-rule coverage, and **parity against both SDKs** — a disagreement is an SDK defect, not a reason to edit the contract. Caught the real one: npm could crash a live NX session on `/db/NMAS` for its whole first month |
+| Language-neutral contracts | `contracts/` + `scripts/{extract,promote,validate}_contract*.py`, own CI job | 🚧 **39 endpoints + 3 result tables**, 266 fields. Drafted from the manual by `extract_contracts.py` (370 of 386 sections parse), promoted by `promote_contract.py` (which refused 344 of 376 drafts). Validates schema, cross-references, safety-rule coverage, manual drift, and **parity against both SDKs** — a disagreement is an SDK defect, not a reason to edit the contract. It has caught: npm able to crash a live NX session on `/db/NMAS`; `/db/GRUP` claiming a DELETE it does not serve; `/db/RIGD`/`/db/OFFS` flattening an `ITEMS` array; and 7 endpoints wrongly called Civil-only |
+| Omission safety | `safeToOmit` in every contract field | 🚧 59 proven safe from confirmed live payloads, 5 proven unsafe, **202 honestly unverified**. The manual saying "Optional" is not evidence — that is what `documentedOptional` records, and `/db/NMAS` is where believing it kills the session |
 | Destructive-op safety | `delete()` per-id URL; `delete_all(confirm=True)` required, else `DestructiveOperationError` before sending | ✅ guarded |
 | Docs site | MkDocs Material + mkdocstrings (`mkdocs.yml`), built `--strict` on every PR | ✅ live at `dennis5882.github.io/MIDAS-API-NX-SDK/` (confirmed 2026-08-04 — this row had drifted stale, saying "GitHub Pages not yet enabled" after it already was) |
 | Manual drift | `manual-drift-check.yml` (`cron: 0 3 * * 3`) + `scripts/check_manual_drift.py` | ✅ running |
@@ -794,7 +796,8 @@ exactly why that's the honest framing rather than a stronger guarantee.
 | npm v2.3.2 ✅ | Initial typed JavaScript/TypeScript SDK generated from the reviewed Python endpoint inventory, with shared Civil NX/Gen NX coverage | published to npm 2026-08-26 |
 | npm v2.3.3 ✅ | Safety and result-table typing hardening; declaration checks and packed npm artifact smoke tests added to CI | published to npm 2026-08-26 |
 | npm v2.3.4 ✅ | Package-local changelog, npm release checklist, and the independent `js-v*` trusted-publishing route | published to npm 2026-08-27 |
-| npm v2.4.0 🚧 | Fixes `db.staticLoads.nodalMass` sending payloads that could end a live NX session; adds `DbResourceMetadata.payloadDefaults`, generated from the new `contracts/` source of truth | committed 2026-08-27, `js-v2.4.0` Release not yet published |
+| npm v2.4.0 ✅ | Fixes `db.staticLoads.nodalMass` sending payloads that could end a live NX session; adds `DbResourceMetadata.payloadDefaults`, generated from the new `contracts/` source of truth | published to npm 2026-08-27 |
+| **2.6.0** 🚧 | First release under one shared version number. Python: no `src/midas_nx/` change at all — an identical wheel under the aligned number. npm: `pythonModule`/`pythonFunction` removed from the shipped metadata, payload types for 38 endpoints generated from `contracts/` instead of from Python `TypedDict`s, and `tableTypes` added. Repo: `/post/TABLE` modelled as endpoint + table, 39 endpoint contracts and 3 table contracts promoted | committed 2026-08-28, `py-v2.6.0`/`js-v2.6.0` Releases pending |
 | v0.16.0/Phase 7 (not started) | Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
 | v0.17.0+/Phase 8 (not started) | `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
 

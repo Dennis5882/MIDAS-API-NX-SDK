@@ -6,9 +6,14 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
-## 3.0.0 - 2026-08-28
+## 2.6.0 - 2026-08-28
 
 ### Breaking
+
+> Released as a **minor** bump, at the author's decision, to keep the npm and
+> PyPI version numbers aligned. If your code reads `metadata.pythonModule` or an
+> operation's `pythonModule`/`pythonFunction`, it will stop compiling on this
+> upgrade even though the number does not say so.
 
 - `DbResourceMetadata.pythonModule` and `OperationMetadata.pythonModule` /
   `pythonFunction` are gone. The npm package was shipping the PyPI package's
