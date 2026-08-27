@@ -6318,6 +6318,191 @@ gaps, not actively-wrong values that break a live call) so deferred
 rather than blocking. Still 21 of the 24 changed manual chapters not
 yet reflected at all; `vendored_at_commit` stays unbumped.
 
+## 2026-08-27 (even later) — clearing most of the deferred properties/boundary gaps, plus 9 more chapters; 12/24 chapters now reflected
+
+Continuation of the previous entry's deferred list, worked in three
+parallel passes (Gen NX live throughout; Civil NX's session key answered
+`client does not exist`/404 the whole time, so every Civil-only or
+Hyper-S-only item below is manual-sourced/schema-confirmed only, not
+round-tripped). All three passes ran until this Claude Code account hit
+its monthly spend limit mid-session and were finished by hand afterward
+— noted per item below as "agent pass" vs. "finished by hand".
+
+**`04_DB_Properties.md` (agent pass, completed in full):**
+- `/db/EPMT` `PlasticMaterialPayload`: added the entirely-missing `DP`
+  (Drucker-Prager → `DRUCKER`), `MA` (Masonry → `MASONRY`), `DM` (Concrete
+  Damage → `CONCDMG`) branches, and corrected `HARDENING_COEF` from
+  Optional to Required-when-`OPT_HARDENING`-defaults-to-0. Manual-sourced
+  (article id `35808376517913`), not independently live-tested.
+- `/db/FIMP` `InelasticMaterialKentParkParam`: added `EC1_METHOD`/`EC1`/
+  `Z`/`STRENGTH_AFTER`. Manual-sourced only (article id `35944335180569`).
+- `/db/TSGR` `TaperedGroupPayload`: added the Y-axis polynomial fields
+  (`YEXP`/`YFROM`/`YDIST`).
+- `/db/SECF` `SectionStiffnessItem`: added the Tapered-section J-end block
+  (`W_SF`/`IPART`/`bDiffIJ`/etc.).
+- `/db/RPSC` `SectionReinforcementPayload`: added the previously-missing
+  required `MBAR_ITEMS` (longitudinal reinforcement) plus its sibling
+  shear-reinforcement fields.
+- `/db/FIBR` `FiberDivisionBaseItem.FIBR_BASE_KEY`: corrected from `bool`
+  to `int` — both the manual's JSON Schema and Request Example
+  (`"FIBR_BASE_KEY": 752`) show an integer key, not a boolean. Also added
+  `OPT_MONITORED_FIBER`/`MONITORED_FIBER`. Manual-sourced only.
+- `/db/GRDP` `GroupDampingPayload`: added the entire Element Mass &
+  Stiffness Proportional / Rayleigh-damping scheme (`bExistElement` + 17
+  fields, `GROUP_DAMPING_ITEMS[]`, two priority fields) that was missing
+  outright — only the Strain Energy Proportional scheme was typed before.
+  **Live-confirmed root cause of a standing failure**: `/db/GRDP` had been
+  stuck at `level: read` since 2026-08-16 because a write attempt using
+  the (at-the-time-incomplete) manual's worked example answered `"Wrong
+  Field"`; retested 2026-08-27 on Gen NX with the full field set via a
+  throwaway `/db/MATL` fixture — POST/GET/DELETE round trip succeeded.
+  `docs/coverage.json` bumped to `level: write` (Gen only).
+- `/db/TDMT` code table: 5 previously-undocumented `CODE` values added to
+  the docstring (`INDIA_IRC_112_2020`/`AS_2017_AMD_2024`/
+  `AS_2018_AMD_2021`/`NEWZEALAND_2022`/`CHJTG_T_D65_2015`) — purely
+  documentation, `CODE` was already untyped `str`.
+
+**`05_DB_Boundary.md`:**
+- *(agent pass)* `/db/NLLP` `GeneralLinkPropertyPayload`: added
+  `DIST_RATIO_DY`/`DIST_RATIO_DZ`/`COUPLED_INPUT_METHOD`, schema-confirmed
+  via `GET /info/db/NLLP` on Gen NX (types match). A live POST round trip
+  was attempted but every `/db/NLLP` create that session — including the
+  manual's own unmodified example — answered `"Unknown Error"` while an
+  unrelated `/db/GSTP` write succeeded moments earlier/later in the same
+  session; treated as a session-specific anomaly, not evidence against
+  the fields.
+- *(agent pass)* `/db/NLNK-M1` `GeneralLinkHyperSPayload`: rewritten from
+  a 3-field stub to the full `/db/NLNK`-equivalent shape
+  (REF_SYSTEM/INPUT_METHOD branching + ANGLE/POINT/VECTOR value arrays)
+  plus `IEHP_NAME`. Not live-verified — Hyper-S/Civil-only, Civil session
+  unavailable (`GET /db/NLNK-M1` and `GET /info/db/NLNK-M1` both answered
+  `client does not exist`).
+- *(agent pass, live-confirmed)* `/db/SDVI` `SeismicDeviceViscousDamperItem`:
+  added the six `EXFN_*`/`OPT_EXFN_CE` fields (Exponential dashpot type).
+  Confirmed via a clean POST/GET/DELETE round trip on Gen NX
+  (`DASHPOT_TYPE=2`); the manual's own Request Example sends all 12
+  fields regardless of `DASHPOT_TYPE` and the server didn't reject the
+  Exponential-only fields under Linear/Bilinear in ad-hoc testing either,
+  so the SDK now sends the full set unconditionally.
+- *(agent pass, live-confirmed)* `/db/SDVE` `SeismicDeviceViscoelasticDamperPayload`:
+  rewritten from a 3-field stub (`COMMON`/`MATERIAL_TYPE`/`SHEAR_AREA`) to
+  17 fields — the manual's Specifications table only documents those same
+  3, but its own Request Example sends 14 more, confirmed real via a
+  round trip.
+- *(agent pass, partially live-confirmed)* `/db/SDST`
+  `SeismicDeviceSteelDamperPayload`: rewritten. The manual's official
+  Specifications table lists `MATERIAL_TYPE`/`MULTIPL` — fields that
+  actually belong to the sibling SDVE page, apparently cross-contaminated
+  in the vendor's source docs. `GET /info/db/SDST` on Gen NX confirms no
+  such properties exist server-side; it lists exactly `K0`/`P1`/`ALPHA1`/
+  `KB` plus 4 hysteresis-model sub-objects (`BL2`/`LY2`/`LY3`/`IK2`).
+  `K0`/`P1`/`ALPHA1`/`KB`+`BL2` confirmed via a live round trip; `LY2`/
+  `LY3`/`IK2` are schema-confirmed only.
+- *(finished by hand, live-confirmed)* `/db/SDHY`
+  `SeismicDeviceHystereticIsolatorPayload`: added `P1`/`P2`/`ALPHA1`/
+  `ALPHA2`/`BETA`/`Phi`/`LAMBDA` (previously only `COMMON`/
+  `SDHY_HYS_MODEL`/`MSS`/`K0` were typed). **Root-caused a standing
+  `level: read` failure**: `/db/SDHY` had been stuck since 2026-08-16
+  because the write attempt (using the then-incomplete manual example)
+  answered `"Wrong Field"`; retested with the full field set — clean
+  POST/GET/DELETE round trip on Gen NX. `docs/coverage.json` bumped to
+  `level: write` (Gen only). The manual's own table also lists a
+  `MULTIPL` field absent from its JSON Schema/Request Example — left out,
+  same cross-contamination pattern as SDST/SDVE.
+- *(finished by hand, partially live-confirmed)* `/db/SDIS`
+  `SeismicDeviceIsolatorPayload`: rewritten from 3 loose `Any` fields to
+  proper `LRB`/`NRB`/`SB` sub-TypedDicts, correcting five errors the
+  manual repo's own 2026-08-25 re-verification found in its prior text:
+  (1) `SDIS_DEV_TYPE`'s 3rd value is `"SLD"`, not `"SB"` (`"SB"` is only
+  the data object's key); (2) LRB's `OPT_CONS_NONL`/`BETA`/`ALPHA`/
+  `SIGMA_V` nest inside a `DX` sub-object, not siblings of `KE`/`AR`/`TR`;
+  (3) LRB has two distinct stiffness fields, `KE` and `K0` — `K0` was
+  missing; (4) NRB has `AR`/`TR`/`KH`/`DX`, not just `KH`; (5) SB was
+  missing `QD`(Index)/`Pi_VALUE`. **Root-caused part of the same standing
+  `level: read` failure as SDHY/GRDP**: retested on Gen NX — the `SLD`
+  variant round-tripped cleanly (POST/GET/DELETE), confirming the fix;
+  `docs/coverage.json` bumped to `level: write` (Gen only) on the
+  strength of that. The `LRB` variant still answers `"Wrong Field"` even
+  with the corrected shape, but `GET /info/db/SDIS` independently
+  confirms the corrected LRB nesting matches the live schema exactly —
+  per this project's established pattern that `"Wrong Field"` usually
+  means an unrecognized *value* rather than a wrong shape, this is
+  suspected to be `SDIS_HYS_MODEL="BiLinear"` not being a recognized
+  literal, not a structural defect; left unresolved, flagged in the
+  docstring. `NRB` untested either way.
+- *(finished by hand, live-confirmed)* `/db/MCON` `LinearConstraintItem`
+  / `SLAVES[]`: split into `LinearConstraintSlaveExplicit`
+  (`NODE_KEY`+`COEFF`+`DOF`, when `TYPE="EX"`) and
+  `LinearConstraintSlaveWeighted` (`NODE_KEY`+`WEIGHT`, when `TYPE="WD"`)
+  — the old single `LinearConstraintSlave` TypedDict only had
+  `NODE_KEY`+`COEFF` and was silently wrong for `TYPE="WD"` (no `WEIGHT`
+  field existed at all) and incomplete for `TYPE="EX"` (missing `DOF`).
+  Live-confirmed via two separate POST/GET/DELETE round trips on Gen NX
+  (one per `TYPE`) using the manual's own worked example values.
+
+**Nine smaller chapters (agent pass, all completed):**
+- `02_DB_Project_Structure.md`: `/db/STYP` gained default-value
+  documentation for 5 booleans + `SMASS` (manual-sourced, not
+  live-tested — `/db/STYP` is new-file-only data, can't be probed without
+  `/doc/NEW` against a session that might hold real work). `/db/NPLN`:
+  corrected `TOL` (default `0`, was undocumented) and `COORD` (plain
+  Optional default `0`, was wrongly marked conditionally-Required) — both
+  **live-confirmed** on Gen NX via a POST omitting both fields, GET
+  reading back the defaults, then deleting the probe record.
+- `03_DB_Node_Element.md`: `SkewPayload.iMETHOD` defaults to `1` (Angle)
+  when omitted — **live-confirmed** on Gen NX via a probe-node round trip.
+- `09_DB_Dynamic_Loads.md`: `HyperSAnalysisCase.ANAL_METHOD` gained a 3rd
+  value (`2`=Static), manual-sourced only (THIS-M1 is Hyper-S/Civil-only,
+  session unavailable).
+- `10_DB_Construction_Stage.md`: `/db/CSCS`
+  `CompositeSectionPartInfo.WAREA` (self-weight stiffness scale factor —
+  the manual's table jumps IZZ→IW but the schema/examples all show WAREA
+  between them) and `OPT_UPDATE_ALL_H` added; manual-sourced only.
+- `11_DB_Settlement_Misc_Loads.md`: `/db/WVLD` `WaveLoadPayload.CREST`/
+  `UNIT` corrected from an unsourced guess (`"MAX"`/`"MANUAL"`) to the
+  only values the manual's own Request Example actually shows
+  (`"MXM"`/`"PHASE"`) — flagged as example-confirmed, not an exhaustive
+  enum, since neither version of the manual's table lists literal values
+  for these fields at all. `GRID_X`/`GRID_Z` comments clarified. Not
+  live-tested — `/db/WVLD` is Civil-only, session unavailable.
+- `12_DB_Analysis_Control.md`: `/db/STCT` `iBSC` relabeled from "Bi-Section
+  Control" to "Beam Section Property Option" (Constant=0/Change with
+  Tendon=1) — a different concept entirely; the old label described a
+  concept actually covered by the unrelated `BSSTEP`/`ADSTEP` fields.
+  `/db/STCT-M1`: `ANAL_TYPE.iINC_NLA` gained a 4th value (Geometric+
+  Material Nonlinear=3) and a new `bIEMF` field; `CREEP_SHRINKAGE.TYPE`
+  corrected from `"SHRINK"` to `"SHRINKAGE"` (STCT-M1 differs from legacy
+  STCT's spelling); top-level gained `iBSC` (default `1`, deliberately
+  different from legacy STCT's default `0`), `FRAME_OUTPUT`, `bSAVE_OCS`,
+  `NONL_CONTROL`. All Hyper-S/Civil-only, manual-sourced only (session
+  unavailable).
+- `13_DB_Load_Combinations.md`: investigated the manual's 2026-08-26 claim
+  that a phantom `NO` field should be dropped from all six `LCOM-*`
+  endpoints — **live-tested and found the manual wrong**: POST/GET on
+  `/db/LCOM-GEN` (Gen NX, 2026-08-27) confirms the response's `NO` field
+  is real and server-populated, not a client-side artifact. No SDK change
+  made; `docs/coverage.json`'s `LCOM-*` entries annotated with this
+  contradiction so a future manual sync doesn't silently "fix" it away.
+- `14_DB_Pushover.md`: `/db/POGD-M1` `GEO_NONL_TYPE` enum order corrected
+  — this file had it as None=0/P-Delta=1/Large Displacements=2 (following
+  a JSON Schema description's word order that turns out to contradict its
+  own Specifications table), while `db/dynamic_loads.py`'s two
+  same-concept fields already had the table's order (None=0/Large
+  Displacement=1/P-Delta=2); reconciled to match those two — this file
+  was the inconsistent one. `/db/PHGE` `AssignPushoverHingePropertiesPayload.TYPE`
+  gained the 4th documented value, `"G-LINK"` (General Link), previously
+  omitted by an unbounded "e.g." phrasing.
+
+**Still not started** (ran out of session budget): `15_OPE.md`,
+`16_VIEW.md`, `19_/20_POST_AnalysisResult...md`, `21_POST_StoryTables.md`
+— none of `ope.py`/`view.py`/`post/*.py` were touched this pass. Combined
+with the 3 conflicts + 5 priority items from the previous entry, **12 of
+the 24 changed chapters are now reflected**; 12 remain, all previously
+surveyed (see the prior entry's punch list for `15`/`16`/`19-20`/`21`'s
+specific items). `vendored_at_commit` stays unbumped
+(`fbd4f9796824b8967ea748f3bcd0d329fe39fb55`). `pytest` (706), `ruff`, and
+`mypy` all clean after this pass.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

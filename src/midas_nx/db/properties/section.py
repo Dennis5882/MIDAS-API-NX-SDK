@@ -45,7 +45,15 @@ class Section(DbResource):
 
 
 class TaperedGroupPayload(TypedDict, total=False):
-    """docs/manual/04_DB_Properties.md #14 — /db/TSGR Specifications table."""
+    """docs/manual/04_DB_Properties.md #14 — /db/TSGR Specifications table.
+
+    ⚠️ 2026-08-27: the Y-axis polynomial fields (YEXP/YFROM/YDIST) were
+    missing here — the manual documents them as the Z-axis fields' exact
+    mirror (article id `35942955627673`) and this SDK only had the Z side
+    typed. Added by symmetry with ZEXP/ZFROM/ZDIST. Manual-sourced, not
+    independently live-tested (purely additive, same shape as the
+    already-typed Z-axis fields).
+    """
 
     NAME: str  # Tapered Group Name, required
     ELEMLIST: List[int]  # Element No. list, required
@@ -54,6 +62,9 @@ class TaperedGroupPayload(TypedDict, total=False):
     ZEXP: float  # ZVAR=POLY only: Z axis Exponent, required
     ZFROM: str  # ZVAR=POLY only: Z axis Symmetric Plane from "i" or "j", default "i", optional
     ZDIST: float  # ZVAR=POLY only: Z axis Symmetric Plane Distance (m), default 0, optional
+    YEXP: float  # YVAR=POLY only: Y axis Exponent, required
+    YFROM: str  # YVAR=POLY only: Y axis Symmetric Plane from "i" or "j", default "i", optional
+    YDIST: float  # YVAR=POLY only: Y axis Symmetric Plane Distance (m), default 0, optional
 
 
 class TaperedGroup(DbResource):
@@ -63,13 +74,32 @@ class TaperedGroup(DbResource):
 
 
 class SectionStiffnessItem(ItemGroupFields, total=False):
-    AREA_SF: float  # Area Scale Factor, default 1, optional
-    ASY_SF: float  # Asy Scale Factor, default 1, optional
-    ASZ_SF: float  # Asz Scale Factor, default 1, optional
-    IXX_SF: float  # Ixx Scale Factor, default 1, optional
-    IYY_SF: float  # Iyy Scale Factor, default 1, optional
-    IZZ_SF: float  # Izz Scale Factor, default 1, optional
+    """⚠️ 2026-08-27: the Tapered-section J-end block (W_SF/IPART/bDiffIJ/
+    J1-J8, 11 fields) was entirely missing here — the manual documents it
+    as a separate naming scheme from the I-end fields (`J1`-`J8` in
+    Area/Asy/Asz/Ixx/Iyy/Izz/Weight/Warping order, not `..._SF_J`; article
+    id `35943174833177`). Added per the manual's own field names.
+    Manual-sourced, not independently live-tested.
+    """
+
+    AREA_SF: float  # Area Scale Factor (I), default 1, optional
+    ASY_SF: float  # Asy Scale Factor (I), default 1, optional
+    ASZ_SF: float  # Asz Scale Factor (I), default 1, optional
+    IXX_SF: float  # Ixx Scale Factor (I), default 1, optional
+    IYY_SF: float  # Iyy Scale Factor (I), default 1, optional
+    IZZ_SF: float  # Izz Scale Factor (I), default 1, optional
     WGT_SF: float  # Weight Scale Factor, default 1, optional
+    W_SF: float  # Warping Scale Factor (I), default 1, optional
+    IPART: int  # Composite Section application point: Before=1, After=2, Before+After=3; default 1, optional
+    bDiffIJ: bool  # Tapered Section: use separate J-end values, default true, optional
+    J1: float  # Tapered Section, J-end: Area Scale Factor, default 1, optional
+    J2: float  # Tapered Section, J-end: Asy Scale Factor, default 1, optional
+    J3: float  # Tapered Section, J-end: Asz Scale Factor, default 1, optional
+    J4: float  # Tapered Section, J-end: Ixx Scale Factor, default 1, optional
+    J5: float  # Tapered Section, J-end: Iyy Scale Factor, default 1, optional
+    J6: float  # Tapered Section, J-end: Izz Scale Factor, default 1, optional
+    J7: float  # Tapered Section, J-end: Weight Scale Factor, default 1, optional
+    J8: float  # Tapered Section, J-end: Warping Scale Factor, default 1, optional
 
 
 class SectionStiffnessPayload(TypedDict):
@@ -93,19 +123,70 @@ class SectionStiffness(DbResource):
 
 
 class SectionReinforcementShearItem(TypedDict, total=False):
+    """⚠️ 2026-08-27: SBW (Steel Bar for Web)/TR (Torsional Reinforcement)/
+    SR (Stirrup)/Enclosing-Stirrup fields (16 fields) were entirely missing
+    here — only the Diagonal Reinforcement (DR) fields were typed. The
+    manual's own field table (article id `35943227821465`) documents all
+    four groups as siblings under the same `SBAR_ITEMS[]` entry. Added per
+    the manual. Manual-sourced, not independently live-tested.
+    """
+
     OPT_DR: bool  # Diagonal Reinforcement, default false, optional
-    DR_PITCH: float  # optional
-    DR_THETA: float  # optional
-    DR_AW: float  # optional
+    DR_PITCH: float  # [DR] Pitch, optional
+    DR_THETA: float  # [DR] Angle, optional
+    DR_AW: float  # [DR] Area, optional
+    OPT_SBW: bool  # Steel Bar for Web, default false, optional
+    SBW_PITCH: float  # [SBW] Pitch, optional
+    SBW_ANGLE: float  # [SBW] Angle, optional
+    SBW_AP: float  # [SBW] Area, optional
+    SBW_PS: float  # [SBW] Pre-force, optional
+    SBW_FACTOR: float  # [SBW] Shear Reduction Factor, optional
+    OPT_TR: bool  # Torsional Reinforcement, default false, optional
+    TR_PITCH: float  # [TR] Pitch, optional
+    TR_AWT: float  # [TR] Area (Web), optional
+    TR_ALT: float  # [TR] Area (Longitudinal), optional
+    OPT_SR: bool  # Stirrup Exist, default false, optional
+    SR_PITCH: float  # [SR] Pitch, optional
+    SR_AW: float  # [SR] Area, optional
+    OPT_LBAR_FLG: bool  # Enclosing Stirrup, default false, optional
+    LBAR_THICK: float  # (Enclosed area calc) Cover Thickness, optional
+    LBAR_INC_FC: int  # Include Flange/Cantilever: Off=0, On=1; optional
+
+
+class SectionReinforcementLongitudinalItem(TypedDict, total=False):
+    """docs/manual/04_DB_Properties.md #16 — /db/RPSC "MBAR_ITEMS[]" entry.
+
+    Added 2026-08-27 along with the parent payload's MBAR_ITEMS field — see
+    SectionReinforcementPayload's docstring.
+    """
+
+    IJ: str  # Section Position: "I" / "J", required
+    NAME: str  # Bar Name, required
+    REF_Y: int  # Reference Y: Centroid=0, Left=1; required
+    Y: float  # Distance from Reference (Y-dir), default 0, optional
+    REF_Z: int  # Reference Z: Top=0, Bottom=1; required
+    Z: float  # Distance from Reference (Z-dir), default 0, optional
+    NUM: int  # Number of Rebar, required
+    SPACING: float  # Spacing between Rebars, default 0, optional
+    PART: int  # optional, requiredness not specified by the manual
 
 
 class SectionReinforcementPayload(TypedDict, total=False):
-    """docs/manual/04_DB_Properties.md #16 — /db/RPSC. Keyed by section id."""
+    """docs/manual/04_DB_Properties.md #16 — /db/RPSC. Keyed by section id.
+
+    ⚠️ 2026-08-27: `MBAR_ITEMS` (longitudinal reinforcement, required) was
+    entirely missing from this payload — the manual's Specifications table
+    lists it as a sibling of `SBAR_ITEMS`, both required (article id
+    `35943227821465`). Added, plus the shear-item field expansion documented
+    on SectionReinforcementShearItem. Manual-sourced, not independently
+    live-tested.
+    """
 
     OPT_MBAR_J: bool  # Same Rebar Data at i and j-end (Longitudinal), required
     OPT_SBAR_J: bool  # Same Shear Rebar Data at i and j-end, required
     OPT_CRACKED: bool  # Cracked Section, required
     SBAR_ITEMS: List[SectionReinforcementShearItem]  # [i-section, j-section], required
+    MBAR_ITEMS: List[SectionReinforcementLongitudinalItem]  # [i-section, j-section], required
 
 
 class SectionReinforcement(DbResource):
@@ -255,11 +336,43 @@ class FiberDivisionColor(TypedDict, total=False):
 
 
 class FiberDivisionBaseItem(TypedDict, total=False):
-    FIBR_BASE_KEY: bool  # required
+    """docs/manual/04_DB_Properties.md #29 — /db/FIBR "FIBR_BASE[]" entry.
+
+    ⚠️ 2026-08-27: `FIBR_BASE_KEY` was typed `bool` here; the manual's own
+    Specifications table (article id `35944476555801`) and its Request
+    Example (`"FIBR_BASE_KEY": 752`) both show it as an **Integer** fiber
+    identifier, not a flag. Live-confirmed the same day: `GET
+    /info/db/FIBR` on a connected Gen NX session reports
+    `FIBR_BASE_KEY`'s JSON-schema type as `"integer"` (see
+    `FiberDivision.info()`), matching the manual and contradicting the
+    previous `bool` typing. Changed `bool` -> `int`. The other 8 fields
+    (REBAR_NAME/AREA/CENTER_Y/CENTER_Z/FIBER_MATL_ID/AREA_CONSIDER_REBAR/
+    OPT_IS_REBAR/POINT_Y/POINT_Z) were entirely missing and are added here
+    from the same manual table; their presence and types were cross-checked
+    against the same live `/info/db/FIBR` response but not round-tripped
+    with real fiber data.
+    """
+
+    FIBR_BASE_KEY: int  # Fiber Base Key, required. Corrected from bool 2026-08-27 -- see docstring.
+    REBAR_NAME: str  # Rebar Name, required (blank string when not a rebar fiber)
+    AREA: float  # Area, required
+    CENTER_Y: float  # Center Y, required
+    CENTER_Z: float  # Center Z, required
+    FIBER_MATL_ID: float  # Index into FIMP_NAME/FIMP_COLOR (which of the 6 materials), required
+    AREA_CONSIDER_REBAR: float  # Area Consider Rebar, required
+    OPT_IS_REBAR: bool  # Is Rebar, required
+    POINT_Y: List[float]  # Fiber outline polygon, Point Y list, required
+    POINT_Z: List[float]  # Fiber outline polygon, Point Z list, required
 
 
 class FiberDivisionPayload(TypedDict, total=False):
-    """docs/manual/04_DB_Properties.md #29 — /db/FIBR Specifications table."""
+    """docs/manual/04_DB_Properties.md #29 — /db/FIBR Specifications table.
+
+    ⚠️ 2026-08-27: `OPT_MONITORED_FIBER`/`MONITORED_FIBER` (monitored-fiber
+    selection, both required per the manual) were entirely missing here;
+    added. See FiberDivisionBaseItem's docstring for the FIBR_BASE_KEY type
+    correction and the other FIBR_BASE[] fields added in the same pass.
+    """
 
     NAME: str  # Fiber Division Name, required
     SECT_KEY: int  # Assigned Section ID (/db/SECT id), required
@@ -267,6 +380,8 @@ class FiberDivisionPayload(TypedDict, total=False):
     FIMP_NAME: List[str]  # Inelastic Material Properties Name, 6 entries (/db/FIMP names), required
     FIMP_COLOR: List[FiberDivisionColor]  # 6 entries, optional
     FIBR_BASE: List[FiberDivisionBaseItem]  # Fiber Division Base Data, required
+    OPT_MONITORED_FIBER: bool  # Use Monitored Fiber, required
+    MONITORED_FIBER: List[int]  # 0/1 flag per FIBR_BASE entry, required
 
 
 class FiberDivision(DbResource):

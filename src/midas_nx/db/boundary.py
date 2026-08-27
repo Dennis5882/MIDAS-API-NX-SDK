@@ -226,6 +226,18 @@ class GeneralLinkPropertyPayload(TypedDict, total=False):
     envelope is typed for v1, matching the SECT_I precedent. See the
     manual's APPLICATION_TYPE Combination Table for the full list of
     (APPLICATION_TYPE, APPLICATION_TYPE_D) pairs and their extra keys.
+
+    ⚠️ Added 2026-08-27 per the sibling manual repo's re-verification:
+    `DIST_RATIO_DY`/`DIST_RATIO_DZ`/`COUPLED_INPUT_METHOD` were missing
+    from the common envelope entirely. Confirmed real via `GET
+    /info/db/NLLP` schema introspection on Gen NX the same day (their
+    types match the manual: two numbers + one integer). Not confirmed via
+    a live POST round trip — every `/db/NLLP` create attempted that
+    session, including the manual's own unmodified worked example,
+    answered `"Unknown Error"` while an unrelated `/db/GSTP` write
+    succeeded moments earlier and later in the same session. Treat the
+    round-trip failure as a session-specific anomaly rather than evidence
+    against these fields; the schema is the more direct signal here.
     """
 
     PROPERTY_NAME: str  # required
@@ -238,6 +250,9 @@ class GeneralLinkPropertyPayload(TypedDict, total=False):
     TOTAL_MASS: float  # optional
     L_MASS_RATIO: float  # Lumped Mass Ratio, optional
     OPT_SHEAR_SPR_LOC: bool  # Shear Spring Location Option, optional
+    DIST_RATIO_DY: float  # Distance Ratio from End I (Dy), optional
+    DIST_RATIO_DZ: float  # Distance Ratio from End I (Dz), optional
+    COUPLED_INPUT_METHOD: int  # Coupled Input Method, optional
 
 
 class GeneralLinkProperty(DbResource):
@@ -276,13 +291,33 @@ class GeneralLink(DbResource):
 class GeneralLinkHyperSPayload(TypedDict, total=False):
     """docs/manual/05_DB_Boundary.md #10 — /db/NLNK-M1 (Hyper-S solver only).
 
-    Manual notes no official JSON schema example is published; parameter
-    shape follows /db/NLNK per the vendored chapter's own description.
+    ⚠️ Rewritten 2026-08-27 per the sibling manual repo's re-verification.
+    The previous version of this TypedDict was a 3-field stub written when
+    the manual said no JSON schema example existed for this endpoint; the
+    re-verified manual chapter found a full spec (928-line source article)
+    that turned out to be almost identical to `/db/NLNK` (this same file's
+    `GeneralLinkPayload`, item #9) — same REF_SYSTEM/INPUT_METHOD branching,
+    same ANGLE_VALUES/POINT_VALUES/VECTOR_VALUES shapes — with only
+    `IEHP_NAME` (Inelastic Hinge Property Name) absent.
+
+    **Not live-verified**: this is a Hyper-S-only endpoint (see
+    :data:`~midas_nx.db.base.HYPER_S_ONLY`), and the Civil NX session
+    available for this pass answered `client does not exist` on both
+    `GET /db/NLNK-M1` and `GET /info/db/NLNK-M1` (product not connected).
+    Applying the manual's documented shape as-is; re-verify against a live
+    Hyper-S-enabled Civil NX session before trusting it for a write.
     """
 
     PROP_NAME: str  # General Link Property Name (/db/NLLP name), required
     NODE1: int  # required
     NODE2: int  # required
+    GROUP_NAME: str  # Boundary Group Name, default "", optional
+    REF_SYSTEM: int  # 0=Element, 1=Global; required
+    BETA_ANGLE: float  # REF_SYSTEM=0, default 0, required
+    INPUT_METHOD: int  # REF_SYSTEM=1: 0=Angle, 1=3 Points, 2=Vector; required
+    ANGLE_VALUES: Any  # INPUT_METHOD=0: [{"VALUE": [about X, about y', about z'']}]
+    POINT_VALUES: Any  # INPUT_METHOD=1: [P0[3], P1[3], P2[3]]
+    VECTOR_VALUES: Any  # INPUT_METHOD=2: [V1[3], V2[3]]
 
 
 class GeneralLinkHyperS(DbResource):
@@ -404,22 +439,47 @@ class SeismicDeviceCommon(TypedDict, total=False):
 
 
 class SeismicDeviceViscousDamperItem(TypedDict, total=False):
+    """One entry of `/db/SDVI`'s `ITEM` array (one per DOF, 6 entries).
+
+    ⚠️ Added 2026-08-27 per the sibling manual repo's re-verification
+    (live-confirmed via a clean POST/GET/DELETE round trip on Gen NX the
+    same day, sent with `DASHPOT_TYPE=2` i.e. Exponential): the six
+    `EXFN_*`/`OPT_EXFN_CE` fields below were previously missing entirely.
+    Per the manual's own Request Example, **all 12 fields are sent on
+    every item regardless of `DASHPOT_TYPE`** — the server didn't reject
+    the Exponential-only fields when `DASHPOT_TYPE` was Linear Elastic or
+    Bilinear in ad-hoc testing either, so send the full set unconditionally
+    rather than branching on `DASHPOT_TYPE` client-side.
+    """
+
     OPT_DOF: bool  # DOF enabled, required
     CE: float  # Initial Damping Coefficient, required
     P1: float  # Max Damping Force, required
     C1: float  # Secondary Damping Coefficient, required
     ALPHA1: float  # Damping Exponent, required
     K0: float  # Initial Stiffness, required
+    EXFN_PY: float  # Exponential: Damping Force, required
+    EXFN_VY: float  # Exponential: Reference Velocity, required
+    EXFN_DE: float  # Exponential: Damping Exponent, required
+    EXFN_DC: float  # Exponential: Damping Coefficient, required
+    OPT_EXFN_CE: bool  # Exponential: Use Initial Damping Coefficient, required
+    EXFN_CE: float  # Exponential: Initial Damping Coefficient value, required
 
 
 class SeismicDeviceViscousDamperPayload(TypedDict, total=False):
-    """docs/manual/05_DB_Boundary.md #16 — /db/SDVI Specifications table."""
+    """docs/manual/05_DB_Boundary.md #16 — /db/SDVI Specifications table.
+
+    ⚠️ `INPUT_TYPE_EXFN` added 2026-08-27 per the sibling manual repo's
+    re-verification — live-confirmed via the same round trip as
+    :class:`SeismicDeviceViscousDamperItem`'s `EXFN_*` fields.
+    """
 
     COMMON: SeismicDeviceCommon  # required
     DEVICE_TYPE: str  # optional
     DAMPER_TYPE: int  # 0=Single Dashpot, 1=Kelvin(Voigt), 2=Maxwell; required
     DASHPOT_TYPE: int  # 0=Linear Elastic, 1=Bilinear, 2=Exponential; required
     INPUT_TYPE: int  # 0=Damping ratio alpha1, 1=Damping constant C1; required
+    INPUT_TYPE_EXFN: int  # Input Type for Exponential Function Type, required
     ITEM: List[SeismicDeviceViscousDamperItem]  # 6 entries, one per DOF; required
 
 
@@ -430,11 +490,34 @@ class SeismicDeviceViscousDamper(DbResource):
 
 
 class SeismicDeviceViscoelasticDamperPayload(TypedDict, total=False):
-    """docs/manual/05_DB_Boundary.md #17 — /db/SDVE Specifications table."""
+    """docs/manual/05_DB_Boundary.md #17 — /db/SDVE Specifications table.
+
+    ⚠️ Rewritten 2026-08-27 per the sibling manual repo's re-verification
+    (live-confirmed via a clean POST/GET/DELETE round trip on Gen NX the
+    same day): this TypedDict previously had only `COMMON`/`MATERIAL_TYPE`/
+    `SHEAR_AREA`. The manual's Specifications table itself only lists those
+    same 3 as "documented", but its own Request Example sends 14 more
+    fields alongside them — confirmed real by the round trip, not just by
+    the table.
+    """
 
     COMMON: SeismicDeviceCommon  # required
     MATERIAL_TYPE: str  # "GR100"/"GR300"/"SR05"/"GR400"/"CST"/"TRC", required
     SHEAR_AREA: float  # required
+    THICKNESS: float  # required
+    MULTIPL: float  # Multiplier, required
+    DIR: str  # Direction, e.g. "Dx", required
+    FREQ: float  # Frequency, required
+    STIFF_FACTOR: float  # Stiffness Factor, required
+    DAMP_FACTOR: float  # Damping Factor, required
+    REF_T: float  # Reference Temperature, required
+    LIMIT_DEF: float  # Limit Deformation, required
+    EFF_STIFF: float  # Effective Stiffness, required
+    EQUI_DAMP: float  # Equivalent Damping, required
+    OPT_MOUNT_STIFF: bool  # Use Mount Stiffness, required
+    MOUNT_STIFF: float  # Mount Stiffness, required
+    OPT_KINETIC_FRIC: bool  # Use Kinetic Friction, required
+    KINETIC_FRIC: float  # Kinetic Friction, required
 
 
 class SeismicDeviceViscoelasticDamper(DbResource):
@@ -443,12 +526,54 @@ class SeismicDeviceViscoelasticDamper(DbResource):
     PRODUCTS = frozenset({"gen", "civil"})
 
 
+class SeismicDeviceSteelDamperBL2(TypedDict, total=False):
+    BETA: float  # Exponent in Unloading Stiffness Calculation, required
+
+
+class SeismicDeviceSteelDamperLY2(TypedDict, total=False):
+    ALPHA2: float  # Stiffness Factor, required
+    THETA: float  # Strength Factor, required
+
+
+class SeismicDeviceSteelDamperLY3(TypedDict, total=False):
+    ALPHA2: float  # Stiffness Factor, required
+    THETA: float  # Strength Factor, required
+    GAMMA: float  # Stiffness Ratio, required
+
+
+class SeismicDeviceSteelDamperIK2(TypedDict, total=False):
+    GAMMA: float  # Isotropic Factor, required
+
+
 class SeismicDeviceSteelDamperPayload(TypedDict, total=False):
-    """docs/manual/05_DB_Boundary.md #18 — /db/SDST Specifications table."""
+    """docs/manual/05_DB_Boundary.md #18 — /db/SDST Specifications table.
+
+    ⚠️ Rewritten 2026-08-27 per the sibling manual repo's re-verification.
+    The manual repo's own re-verification found the *official* SDST
+    Specifications table lists `MATERIAL_TYPE` ("GR100" etc.) and
+    `MULTIPL` — fields that actually belong to the sibling SDVE
+    (Viscoelastic Damper) page, apparently cross-contaminated in the
+    vendor's source docs. Neither field appears in this endpoint's JSON
+    Schema or Request Example. Confirmed independently here: `GET
+    /info/db/SDST` on Gen NX (2026-08-27) returns no `MATERIAL_TYPE`/
+    `MULTIPL` properties at all, and lists exactly `K0`/`P1`/`ALPHA1`/`KB`
+    plus the four hysteresis-model sub-objects below. `K0`/`P1`/`ALPHA1`/
+    `KB` and the `"BL2"` sub-object were additionally confirmed via a
+    clean live POST/GET/DELETE round trip the same day; `LY2`/`LY3`/`IK2`
+    are schema-confirmed only (not round-tripped with a real POST).
+    """
 
     COMMON: SeismicDeviceCommon  # required
     DIR: str  # Direction, e.g. "Dx", required
-    SDST_HYS_MODEL: str  # Hysteresis Model, e.g. "BL2", required
+    SDST_HYS_MODEL: str  # "BL2"/"LY2"/"LY3"/"IK2", required
+    K0: float  # Initial Stiffness, required
+    P1: float  # Yield Strength, required
+    ALPHA1: float  # Stiffness Factor, required
+    KB: float  # Mounting Parts Stiffness, required
+    BL2: SeismicDeviceSteelDamperBL2  # present when SDST_HYS_MODEL="BL2"
+    LY2: SeismicDeviceSteelDamperLY2  # present when SDST_HYS_MODEL="LY2"
+    LY3: SeismicDeviceSteelDamperLY3  # present when SDST_HYS_MODEL="LY3"
+    IK2: SeismicDeviceSteelDamperIK2  # present when SDST_HYS_MODEL="IK2"
 
 
 class SeismicDeviceSteelDamper(DbResource):
@@ -458,12 +583,29 @@ class SeismicDeviceSteelDamper(DbResource):
 
 
 class SeismicDeviceHystereticIsolatorPayload(TypedDict, total=False):
-    """docs/manual/05_DB_Boundary.md #19 — /db/SDHY Specifications table."""
+    """docs/manual/05_DB_Boundary.md #19 — /db/SDHY Specifications table.
+
+    ⚠️ Rewritten 2026-08-27 per the sibling manual repo's 2026-08-25
+    re-verification (article id `35948292269977`): P1/P2/ALPHA1/ALPHA2/
+    BETA/Phi/LAMBDA were missing entirely. Live-confirmed via a clean
+    POST/GET/DELETE round trip on Gen NX the same day, using the manual's
+    own worked example values (SDHY_HYS_MODEL="DegradingBiLinear"). The
+    manual's own table also lists a `MULTIPL` field that appears in neither
+    its JSON Schema nor Request Example (the same cross-contamination
+    pattern found on SDST/SDVE) — deliberately left out here too.
+    """
 
     COMMON: SeismicDeviceCommon  # required
     SDHY_HYS_MODEL: str  # e.g. "DegradingBiLinear", required
     MSS: int  # Number of Shear Springs, required
     K0: float  # Initial Stiffness, required
+    P1: float  # Yield Strength, required
+    P2: float  # 2nd Yield Strength, required
+    ALPHA1: float  # Stiffness Factor, required
+    ALPHA2: float  # 2nd Stiffness Factor, required
+    BETA: float  # Exponent in Unloading Stiffness Calculation, required
+    Phi: float  # required
+    LAMBDA: float  # required
 
 
 class SeismicDeviceHystereticIsolator(DbResource):
@@ -474,22 +616,82 @@ class SeismicDeviceHystereticIsolator(DbResource):
     PRODUCTS = GEN_ONLY
 
 
+class SeismicDeviceIsolatorVerticalDX(TypedDict, total=False):
+    """LRB/NRB's nested "DX" (Vertical Direction Properties) object. All optional."""
+
+    OPT_CONS_NONL: bool  # Use Consider Vertical Direction Nonlinearity, optional
+    BETA: float  # Tensile Stiffness Reduction Factor, optional
+    ALPHA: float  # Tensile Stiffness Reduction Ratio, optional
+    SIGMA_V: float  # Tensile Limit Strength, optional
+
+
+class SeismicDeviceIsolatorLRB(TypedDict, total=False):
+    """SDIS_DEV_TYPE="LRB" data object."""
+
+    SDIS_HYS_MODEL: str  # Hysteresis Model, required
+    KE: float  # Initial Stiffness (Ke), required
+    AR: float  # Rubber Cross Section Area, required
+    TR: float  # Total Thickness of Rubber, required
+    K0: float  # Initial Stiffness (K0, distinct from KE), required
+    K2: float  # 2nd Stiffness, required
+    QD: float  # Characteristic Strength, required
+    DX: SeismicDeviceIsolatorVerticalDX  # optional
+
+
+class SeismicDeviceIsolatorNRB(TypedDict, total=False):
+    """SDIS_DEV_TYPE="NRB" data object."""
+
+    AR: float  # Rubber Cross Section Area, required
+    TR: float  # Total Thickness of Rubber, required
+    KH: float  # Horizontal Stiffness, required
+    DX: SeismicDeviceIsolatorVerticalDX  # optional
+
+
+class SeismicDeviceIsolatorSB(TypedDict, total=False):
+    """SDIS_DEV_TYPE="SLD" data object (keyed "SB")."""
+
+    AS: float  # Area of Sliding Head, required
+    K0: float  # Initial Stiffness, required
+    QD: int  # Index Qd, required
+    Pi_VALUE: float  # Pi, required
+    MU0: float  # Frictional Factor, required
+
+
 class SeismicDeviceIsolatorPayload(TypedDict, total=False):
     """docs/manual/05_DB_Boundary.md #20 — /db/SDIS Specifications table.
 
     Exactly one of LRB/NRB/SB is present, matching SDIS_DEV_TYPE
-    ("LRB"/"NRB"/"SB") — left as Any for v1, matching SECT_I precedent.
+    ("LRB"/"NRB"/"SLD") — left as Any for v1, matching SECT_I precedent.
+
+    ⚠️ Rewritten 2026-08-27 per the sibling manual repo's 2026-08-25 full
+    rewrite (article id `35948330042649`), which corrected five errors in
+    its own previous copy: (1) `SDIS_DEV_TYPE`'s third value is `"SLD"`,
+    not `"SB"` — `"SB"` is only the *data object's* key; (2) LRB's
+    `OPT_CONS_NONL`/`BETA`/`ALPHA`/`SIGMA_V` are nested one level down
+    inside a `DX` sub-object, not siblings of `KE`/`AR`/`TR`; (3) LRB has
+    two distinct initial-stiffness fields, `KE` and `K0` — `K0` was missing
+    entirely; (4) NRB has `AR`/`TR`/`KH`/`DX` (4 fields + the same nested
+    `DX`), not just `KH`; (5) SB's `QD`(Index)/`Pi_VALUE` were missing.
+    Live-confirmed 2026-08-27 on Gen NX: `SB` (SDIS_DEV_TYPE="SLD") via a
+    clean POST/GET/DELETE round trip with the manual's own worked example.
+    `LRB` was schema-confirmed via `GET /info/db/SDIS` (which matches this
+    shape exactly, `DX` nesting included) but a POST attempt with the
+    manual's own example answered `"Wrong Field"` — per this project's
+    established pattern that usually means an unrecognized *value* (here,
+    likely `SDIS_HYS_MODEL="BiLinear"`), not a wrong field name/shape; the
+    schema match is the stronger signal. `NRB` is manual-sourced only,
+    neither round-tripped nor schema-diffed this session.
     """
 
     COMMON: SeismicDeviceCommon  # required
-    SDIS_DEV_TYPE: str  # "LRB" / "NRB" / "SB", required
+    SDIS_DEV_TYPE: str  # "LRB" / "NRB" / "SLD" (data still keyed "SB"), required
     MSS: int  # Number of Shear Springs, required
     TAU_K: float  # Adjustment Parameter tau_k, required
     TAU_Q: float  # Adjustment Parameter tau_q, required
     KV: float  # Vertical Stiffness, required
-    LRB: Any  # SDIS_DEV_TYPE="LRB": {"SDIS_HYS_MODEL","AR","TR","KE","K2","QD",...}
-    NRB: Any  # SDIS_DEV_TYPE="NRB": {"KH": ...}
-    SB: Any  # SDIS_DEV_TYPE="SB": {"AS","K0","MU0"}
+    LRB: SeismicDeviceIsolatorLRB  # required when SDIS_DEV_TYPE="LRB"
+    NRB: SeismicDeviceIsolatorNRB  # required when SDIS_DEV_TYPE="NRB"
+    SB: SeismicDeviceIsolatorSB  # required when SDIS_DEV_TYPE="SLD"
 
 
 class SeismicDeviceIsolator(DbResource):
@@ -500,15 +702,36 @@ class SeismicDeviceIsolator(DbResource):
     PRODUCTS = GEN_ONLY
 
 
-class LinearConstraintSlave(TypedDict, total=False):
+class LinearConstraintSlaveExplicit(TypedDict, total=False):
+    """SLAVES[] entry when the owning LinearConstraintItem.TYPE == "EX"."""
+
     NODE_KEY: int  # required
-    COEFF: float  # required
+    COEFF: float  # Coefficient, required
+    DOF: int  # Degree of Freedom: DX=0/DY=1/DZ=2/RX=3/RY=4/RZ=5, required
+
+
+class LinearConstraintSlaveWeighted(TypedDict, total=False):
+    """SLAVES[] entry when the owning LinearConstraintItem.TYPE == "WD"."""
+
+    NODE_KEY: int  # required
+    WEIGHT: float  # required
 
 
 class LinearConstraintItem(ItemGroupFields, total=False):
+    """docs/manual/05_DB_Boundary.md #21 — /db/MCON ITEMS[] entry.
+
+    ⚠️ 2026-08-27: the manual's own 2026-08-25 re-verification (article id
+    `35948507217689`) corrected SLAVES[]'s shape: it previously documented
+    both TYPE values as using COEFF, but they don't share a shape — "EX"
+    (Explicit) uses NODE_KEY+COEFF+DOF (one DOF per slave entry), "WD"
+    (Weighted Displacement) uses NODE_KEY+WEIGHT only. Live-confirmed
+    2026-08-27 via two separate POST/GET/DELETE round trips on Gen NX
+    (one per TYPE), using the manual's own worked example values.
+    """
+
     SLAVE_TYPE: str  # 6-char DOF flag (DX..RZ) of the constrained node, required
     TYPE: str  # "EX"=Explicit, "WD"=Weighted Displacement; required
-    SLAVES: List[LinearConstraintSlave]  # Independent Nodes, required
+    SLAVES: List[Any]  # List[LinearConstraintSlaveExplicit] if TYPE="EX", List[LinearConstraintSlaveWeighted] if TYPE="WD"; required
 
 
 class LinearConstraintPayload(TypedDict):

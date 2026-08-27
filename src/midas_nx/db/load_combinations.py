@@ -20,6 +20,18 @@ class LoadCombinationPayload(TypedDict, total=False):
     (see LoadCombinationConcretePayload). ACTIVE's valid values and
     whether iTYPE=2 (ABS) is supported vary per endpoint — see each
     DbResource subclass's docstring.
+
+    The manual's 2026-08-26 re-verification claimed `NO` should be dropped
+    from all six LCOM-* endpoints (no textual basis for it in any of the 6
+    articles' JSON Schema/Specifications table/examples). Re-tested live
+    2026-08-27 on Gen NX before trusting that: POST a real `/db/LCOM-GEN`
+    combination (`{"NAME": "ProbeLC1", "iTYPE": 0, "vCOMB": [...]}`, `NO`
+    omitted), then GET it back -- the server's own response includes
+    `"NO": 1` unprompted. The manual's new claim is wrong; `NO` is real
+    (read-only, server-assigned), same pattern as the independently
+    confirmed `/db/STLD.NO`/`/db/STAG.NO` fields elsewhere in this SDK.
+    Not dropped. Probe combination and its supporting STLD case deleted
+    after confirming.
     """
 
     NO: int  # Combination Number, read-only

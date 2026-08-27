@@ -38,18 +38,30 @@ class Unit(DbResource):
 
 
 class StructureTypePayload(TypedDict, total=False):
-    """docs/manual/02_DB_Project_Structure.md #3 — /db/STYP Specifications table."""
+    """docs/manual/02_DB_Project_Structure.md #3 — /db/STYP Specifications table.
 
-    STYP: int  # Structure Type
+    Defaults below (all five booleans default `false`, `SMASS` defaults `1`)
+    come from the manual's 2026-08-25 re-verification against article id
+    `35802404495257` -- previously undocumented. Not independently
+    live-tested: `/db/STYP` is "new-file required data" (GET/PUT only), so
+    its default only applies to a document that has never had the field set,
+    and probing that would require `/doc/NEW`, which this project's live
+    scripts never call against a session that might hold real work. A live
+    GET on the currently open Gen NX document (2026-08-27) reads back
+    `bMASSOFFSET: True` -- but that reflects this document's own prior
+    setting, not the manual's claimed default for a fresh file.
+    """
+
+    STYP: int  # Structure Type, default System (see manual)
     MASS: int  # Mass Type
-    bMASSOFFSET: bool  # Consider Offset
-    bSELFWEIGHT: bool  # Convert Self Weight to Mass
-    SMASS: int  # Structure Mass Type (when bSELFWEIGHT)
+    bMASSOFFSET: bool  # Consider Offset, default false (manual-sourced, not live-verified)
+    bSELFWEIGHT: bool  # Convert Self Weight to Mass, default false (manual-sourced, not live-verified)
+    SMASS: int  # Structure Mass Type (when bSELFWEIGHT), default 1 (manual-sourced, not live-verified)
     GRAV: float  # Gravity
-    TEMP: float  # Initial Temperature
-    bALIGNBEAM: bool  # Align Top of Beam Section
-    bALIGNSLAB: bool  # Align Top of Slab (Plate)
-    bROTRIGID: bool  # Considering Rotational Rigid
+    TEMP: float  # Initial Temperature, default 0
+    bALIGNBEAM: bool  # Align Top of Beam Section, default false (manual-sourced, not live-verified)
+    bALIGNSLAB: bool  # Align Top of Slab (Plate), default false (manual-sourced, not live-verified)
+    bROTRIGID: bool  # Considering Rotational Rigid, default false (manual-sourced, not live-verified)
 
 
 class StructureType(DbResource):
@@ -181,13 +193,24 @@ class NamedPlanePointItem(TypedDict, total=False):
 
 
 class NamedPlanePayload(TypedDict, total=False):
-    """docs/manual/02_DB_Project_Structure.md #8 — /db/NPLN Specifications table."""
+    """docs/manual/02_DB_Project_Structure.md #8 — /db/NPLN Specifications table.
+
+    2026-08-25 re-verification (article id `35805287066649`) corrected two
+    values the SDK previously had wrong: `TOL` defaults to `0` (was
+    undocumented), and `COORD` is plain Optional with default `0` -- not
+    conditionally Required when TYPE != 1, despite being the field that
+    actually matters in that case. Live-verified 2026-08-27 on Gen NX: POST
+    `{"NAME": "ProbeNPLN", "TYPE": 2}` (both TOL and COORD omitted) round
+    tripped through GET as `{"TOL": 0, "COORD": 0, ...}` -- confirming both
+    defaults and that COORD is genuinely optional, not conditionally
+    required. Probe record deleted after confirming.
+    """
 
     NAME: str  # Plane Name, required
     TYPE: int  # 1=3 Points, 2=X-Y Plane, 3=X-Z Plane, 4=Y-Z Plane; required
-    TOL: float  # Tolerance, optional
+    TOL: float  # Tolerance, default 0, optional
     POINT: List[NamedPlanePointItem]  # required if TYPE=1: 3 points, each {"ITEM": [X, Y, Z]}
-    COORD: float  # required if TYPE!=1: Z/Y/X position depending on TYPE
+    COORD: float  # Z/Y/X position depending on TYPE, default 0, optional (used when TYPE!=1)
 
 
 class NamedPlane(DbResource):

@@ -247,6 +247,16 @@ class TimeDependentMaterialCreepShrinkagePayload(TypedDict, total=False):
     itself only a subset of what the server actually accepts. Only
     CEB-FIP/ACI/European are typed for v1; treat any other CODE value's
     extra fields as untyped extra dict keys, same as SECT_I's precedent.
+
+    ⚠️ 2026-08-27: the manual's own `CODE` value table (article id
+    `35808006330009`) was re-verified 2026-08-25 and gained 5 previously
+    undocumented entries: `"INDIA_IRC_112_2020"`, `"AS_2017_AMD_2024"`,
+    `"AS_2018_AMD_2021"`, `"NEWZEALAND_2022"`, `"CHJTG_T_D65_2015"`. `CODE`
+    is plain `str` here (this SDK never hardcoded a `Literal` of the ~30
+    valid values), so these additions need no code change — noted here only
+    so the field's accepted-value set stays traceable to its source.
+    Manual-sourced, not independently live-tested (purely additive value
+    documentation, no live server behavior in question).
     """
 
     NAME: str  # Time Dependent Material Name, required
@@ -364,16 +374,33 @@ class PlasticMaterialPayload(TypedDict, total=False):
     """docs/manual/04_DB_Properties.md #10 — /db/EPMT Specifications table.
 
     Deeply conditional on MODEL_TYPE ("TR"/"VM"=Tresca/Von-Mises common
-    params under TRESCA/VMISES, "MC"=Mohr-Coulomb under MOHRCL, "DP"/"MA"/
-    "DM" undocumented in the chapter) — only common Tresca/Von-Mises and
-    Mohr-Coulomb sub-objects are typed for v1.
+    params under TRESCA/VMISES, "MC"=Mohr-Coulomb under MOHRCL, "DP"=
+    Drucker-Prager under DRUCKER, "MA"=Masonry under MASONRY, "DM"=Concrete
+    Damage under CONCDMG).
+
+    ⚠️ 2026-08-27: the manual's DP/MA/DM branches (`DRUCKER`/`MASONRY`/
+    `CONCDMG`) were entirely missing from this repo's copy of the chapter
+    until a 2026-08-25 re-verification against the source article (id
+    `35808376517913`) added them back; TRESCA/VMISES/MOHRCL were already
+    typed here. The same re-verification also corrected `HARDENING_COEF`
+    (for all four hardening-capable models — TRESCA/VMISES/MOHRCL/DRUCKER)
+    from Optional to **Required whenever `OPT_HARDENING`'s default of `0`
+    (Activated) is in effect** — the manual's previous copy of this table
+    had marked it Optional. Manual-sourced, not independently live-tested:
+    this is additive/corrective documentation only, and none of these
+    sub-objects' internal shape is broken out into its own TypedDict here
+    (unlike the Hyper-S EPMT-M1 sibling below) since MOHRCL/DRUCKER share
+    one shape and TRESCA/VMISES share another — see the inline comments.
     """
 
     NAME: str  # Plastic Material Name, required
     MODEL_TYPE: str  # "TR"/"VM"/"MC"/"DP"/"MA"/"DM", required
-    TRESCA: Any  # MODEL_TYPE=TR: {"INIT_YIELD_STRESS", "OPT_HARDENING", "HARDENING_TYPE", "HARDENING_COEF", "BACK_STRESS_COEF"}
+    TRESCA: Any  # MODEL_TYPE=TR: {"INIT_YIELD_STRESS" (required), "OPT_HARDENING" (default 0=Activated), "HARDENING_TYPE" ("ISO"/"KIN"/"MIX", default "ISO", only used when OPT_HARDENING=0), "HARDENING_COEF" (required when OPT_HARDENING=0), "BACK_STRESS_COEF" (required when HARDENING_TYPE="MIX")}
     VMISES: Any  # MODEL_TYPE=VM: same shape as TRESCA
-    MOHRCL: Any  # MODEL_TYPE=MC: {"INIT_COHESION", "INIT_FRIC_ANGLE", "OPT_HARDENING"}
+    MOHRCL: Any  # MODEL_TYPE=MC: {"INIT_COHESION" (required), "INIT_FRIC_ANGLE" (required), "OPT_HARDENING" (default 0=Activated), "HARDENING_TYPE" ("ISO"/"KIN"/"MIX", default "ISO"), "HARDENING_COEF" (required when OPT_HARDENING=0), "BACK_STRESS_COEF" (required when HARDENING_TYPE="MIX")}
+    DRUCKER: Any  # MODEL_TYPE=DP: same shape as MOHRCL. Added 2026-08-27, manual-sourced only.
+    MASONRY: Any  # MODEL_TYPE=MA: {"BM", "BED_JOINT", "HEAD_JOINT": each {"YOUNG_S_MODULUS", "POSSIONS_S_RATIO", "TENSION_STRENGTH", "SOFTENING_PARAMETER" (BM only) / "HARDENING_PARAM" (BED_JOINT/HEAD_JOINT only)}, "GEOM": {"BRICK_LENGTH", "BRICK_HEIGHT", "THICKNESS_BED", "THICKNESS_HEAD", "COORD_TYPE" (Global-Y/Global-X=0, Local-y/Local-z=-1, Global-Z/Angle=-4), "COORD_ANGLE" (required when COORD_TYPE=-4)} — all required}. Added 2026-08-27, manual-sourced only; NOTE the COORD_TYPE enum (-1/-4) and per-layer field naming (SOFTENING_PARAMETER vs HARDENING_PARAM) both differ from the Hyper-S EPMT-M1 sibling's PlasticMaterialHyperSMasonry (0/1/2 enum, single STIFF_REDUCTION name) — do not conflate the two.
+    CONCDMG: Any  # MODEL_TYPE=DM: {"DILIATION_ANGLE", "ECCEN", "FBO_FCO", "K", "VISCOSITY_PARAM", "COMP_ITEMS"/"TENSILE_ITEMS": Array[{"INELASTIC_STRAIN", "YIELD_STRESS", "DAMAGE"}] — all required}. Added 2026-08-27, manual-sourced only; same shape as the Hyper-S sibling's PlasticMaterialHyperSConcreteDamage.
 
 
 class PlasticMaterial(DbResource):
@@ -484,11 +511,25 @@ class PlasticMaterialHyperS(DbResource):
 
 
 class InelasticMaterialKentParkParam(TypedDict, total=False):
+    """docs/manual/04_DB_Properties.md #28 — /db/FIMP "KENPAR" (Kent & Park)
+    sub-object.
+
+    ⚠️ 2026-08-27: EC1_METHOD/EC1/Z/STRENGTH_AFTER were missing from this
+    class relative to the manual's own Kent & Park field table (article id
+    `35944335180569`); added here. Manual-sourced, not independently
+    live-tested — this endpoint needs a full nonlinear material definition
+    to round-trip meaningfully and wasn't cheap to verify live.
+    """
+
     FC: float  # Concrete Strength (fc'), required
-    EC0: float  # Peak Strain, required
-    K: float  # Strength/Strain Factor, required
-    ECU: float  # Ultimate Strain, required
     PARTIAL_FACT: float  # Partial Safety Factor, required
+    K: float  # Strength/Strain Factor, required
+    EC0: float  # Peak Strain (epsilon_c0), required
+    EC1_METHOD: int  # Hardening Strain Method: Manual=0, Calculation=1; required
+    EC1: float  # Hardening Strain Manual (epsilon_c1), required (used when EC1_METHOD=0)
+    Z: float  # Hardening Strain Calculation (Z), required (used when EC1_METHOD=1)
+    ECU: float  # Ultimate Strain (epsilon_cu), required
+    STRENGTH_AFTER: int  # Strength After Critical Strain: Zero=0, Keep=1; required
 
 
 class InelasticMaterialPropertyPayload(TypedDict, total=False):

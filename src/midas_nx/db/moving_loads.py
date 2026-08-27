@@ -703,25 +703,97 @@ class MovingLoadCaseBsStandardData(TypedDict, total=False):
     SUBLOADDATA: List[MovingLoadCaseBsSubLoadDataItem]  # required
 
 
+class MovingLoadCaseBsSpecialData(TypedDict, total=False):
+    """"LCDATA_SPECIAL" object, required when LOADMODEL="SPECAIL"."""
+
+    VEHICLE_NAME: str  # Standard vehicle, required
+    SPECIAL_VIHICLE_NAME: str  # Special vehicle ([sic] matches the manual's own key spelling), required
+    SELECTEDLANES: List[str]  # Selected Lanes, required
+    STRAD_LANE: List[MovingLoadCaseBsStraddleLaneItem]  # Straddling Lane pairs, required
+
+
+class MovingLoadCaseBsAllModeData(TypedDict, total=False):
+    """"LCDATA_ALLMODE" object, required when LOADMODEL="ALL_MODE_1"/"ALL_MODE_2"."""
+
+    VEHICLE_NAME: str  # Standard vehicle, required
+    SPECIAL_VIHICLE_NAME: str  # Special vehicle, required
+    SELECTEDLANES: List[str]  # Selected Lanes, required
+    STRAD_LANE: List[MovingLoadCaseBsStraddleLaneItem]  # Straddling Lane pairs, required
+    REMAINING_LANE: List[str]  # ALL_MODE_1 only, optional
+
+
+class MovingLoadCaseBsOptiBase(TypedDict, total=False):
+    """Shared "OPTI_BASE" sub-object used by the *_OPTI variants."""
+
+    MINVEHLDIST: float  # Minimum vehicle distance, required
+    ASSIGN_LANE: str  # Assign Lane, required
+    NUMLOADEDLANES: int  # Number of Loaded Lanes, required
+
+
+class MovingLoadCaseBsOptiVehicleBaseItem(TypedDict, total=False):
+    VEHICLE_TYPE: str  # "VL" (vehicle load) / "VC" (vehicle class), required
+    VEHICLE_NAME: str  # required
+    SCALE_FACTOR: float  # required
+
+
+class MovingLoadCaseBsStandardOptiData(TypedDict, total=False):
+    """"LCDATA_STANDARD_OPTI" object, required when bAUTOOPTIMIZE=true &
+    LOADMODEL="STANDER"."""
+
+    LOADINGEFFECT: str  # required
+    OPTI_BASE: MovingLoadCaseBsOptiBase  # required
+    OPTI_VEHICLE_BASE: List[MovingLoadCaseBsOptiVehicleBaseItem]  # required
+
+
+class MovingLoadCaseBsSpecialOptiData(TypedDict, total=False):
+    """"LCDATA_SPECIAL_OPTI" object, required when LOADMODEL="SPECAIL"
+    (Optimization)."""
+
+    VEHICLE_NAME: str  # required
+    SPECIAL_VIHICLE_NAME: str  # required
+    OPTI_BASE: MovingLoadCaseBsOptiBase  # required
+
+
+class MovingLoadCaseBsAllModeOptiData(TypedDict, total=False):
+    """"LCDATA_ALLMODE_OPTI" object, required when LOADMODEL="ALL_MODE_1"/
+    "ALL_MODE_2" (Optimization)."""
+
+    VEHICLE_NAME: str  # required
+    SPECIAL_VIHICLE_NAME: str  # required
+    OPTI_BASE: MovingLoadCaseBsOptiBase  # required
+    REMAINING_LANE: List[str]  # ALL_MODE_1 only, optional
+
+
 class MovingLoadCaseBsPayload(TypedDict, total=False):
     """docs/manual/08_DB_Moving_Loads.md #15 — /db/MVLDbs Specifications table.
 
-    LCDATA_SPECIAL/LCDATA_ALLMODE are documented only as required-when-
-    LOADMODEL="SPECAIL"/"ALL_MODE_1" object placeholders — the manual gives
-    no internal field table or worked example for either, so they are typed
-    as Any per this repo's convention for genuinely undocumented shapes.
+    2026-08-25 re-verification (article id `35961459443737`) added the 4th
+    `LOADMODEL` value (`"ALL_MODE_2"`, CS454 ALL Mode2 -- previously
+    missing) and filled in the field shapes for `LCDATA_SPECIAL`/
+    `LCDATA_ALLMODE` (previously typed as `Any`, genuinely undocumented)
+    plus the three Moving Load Optimization-only objects
+    (`LCDATA_STANDARD_OPTI`/`LCDATA_SPECIAL_OPTI`/`LCDATA_ALLMODE_OPTI`),
+    which were entirely absent from both the manual and this SDK before.
+    Additive-only: no previously-typed field changed shape. Not
+    independently live-tested this session (BS moving-load setup needs
+    vehicle/lane data this session's scratch document doesn't have); manual
+    text transcribed directly from the officially cited Specifications
+    table and summary table.
     """
 
     LCNAME: str  # Load Case Name, required
     DESC: str  # Description, default "", optional
     bAUTOOPTIMIZE: bool  # Moving Load Optimization, default false, optional
-    LOADMODEL: str  # "STANDER"/"SPECAIL"/"ALL_MODE_1", required
+    LOADMODEL: str  # "STANDER"/"SPECAIL"/"ALL_MODE_1"/"ALL_MODE_2", required
     bAUTOLIVELOADCOMB: bool  # Auto Live Load Combination, default false, optional
     DGNCOMBFACTORTYPE: str  # "ULTIMATE"/"SERVICEABIL", required
     COMBMETHOD: str  # "COMB_1"/"COMB_2_3", required
-    LCDATA_STANDARD: MovingLoadCaseBsStandardData  # required if LOADMODEL="STANDER"
-    LCDATA_SPECIAL: Any  # required if LOADMODEL="SPECAIL"; shape undocumented
-    LCDATA_ALLMODE: Any  # required if LOADMODEL="ALL_MODE_1"; shape undocumented
+    LCDATA_STANDARD: MovingLoadCaseBsStandardData  # required if LOADMODEL="STANDER" (General)
+    LCDATA_SPECIAL: MovingLoadCaseBsSpecialData  # required if LOADMODEL="SPECAIL" (General)
+    LCDATA_ALLMODE: MovingLoadCaseBsAllModeData  # required if LOADMODEL="ALL_MODE_1"/"ALL_MODE_2" (General)
+    LCDATA_STANDARD_OPTI: MovingLoadCaseBsStandardOptiData  # required if bAUTOOPTIMIZE=true & LOADMODEL="STANDER"
+    LCDATA_SPECIAL_OPTI: MovingLoadCaseBsSpecialOptiData  # required if bAUTOOPTIMIZE=true & LOADMODEL="SPECAIL"
+    LCDATA_ALLMODE_OPTI: MovingLoadCaseBsAllModeOptiData  # required if bAUTOOPTIMIZE=true & LOADMODEL="ALL_MODE_1"/"ALL_MODE_2"
 
 
 class MovingLoadCaseBs(DbResource):

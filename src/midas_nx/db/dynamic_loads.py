@@ -233,10 +233,19 @@ class TimeHistoryLoadCase(DbResource):
 
 
 class HyperSAnalysisCase(TypedDict, total=False):
-    """THIS-M1's "ANAL_CASE" sub-object."""
+    """THIS-M1's "ANAL_CASE" sub-object.
+
+    `ANAL_METHOD`'s 3rd value (`2`=Static) was missing from the manual's own
+    Specifications table until its 2026-08-25 re-verification (article id
+    `56538335819673`) -- added here to match. The manual also notes the
+    Linear+Static (`ANAL_TYPE=0` + `ANAL_METHOD=2`) combination is rejected
+    server-side. Not independently live-tested: THIS-M1 is Hyper-S/Civil-NX
+    only and the Civil NX session was unavailable this session (`client
+    does not exist`).
+    """
 
     ANAL_TYPE: int  # Linear=0, Nonlinear=1; required
-    ANAL_METHOD: int  # Modal=0, Direct Integration=1; required
+    ANAL_METHOD: int  # Modal=0, Direct Integration=1, Static=2 (rejected if ANAL_TYPE=Linear); required
     TH_TYPE: int  # Transient=0, Periodic=1; required
 
 

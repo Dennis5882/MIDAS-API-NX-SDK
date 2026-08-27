@@ -596,6 +596,15 @@ class ConstructionStageAnalysisControlDataPayload(TypedDict, total=False):
     iINC_NLA (Linear=0/Nonlinear=1/Material Nonlinear=2) and iNLA_TYPE
     (Independent=0/Accumulative=1) together select which field group below
     applies; flattened onto one payload (mirrors MaterialParam precedent).
+
+    2026-08-25 re-verification (article id `35990281053465`) corrected
+    `iBSC`'s label: it was previously described as "Bi-Section Control"
+    (a nonlinear iteration concept, actually covered by the unrelated
+    `BSSTEP`/`ADSTEP` fields below), but the manual's own Specifications
+    table names it "Beam Section Property Option" (Constant=0/Change with
+    Tendon=1) -- a completely different concept. Not independently
+    live-tested (a `/db/STCT` round trip needs a real construction-stage
+    model this session's scratch document doesn't have).
     """
 
     bLAST_FINAL: bool  # Last Stage=true/Other Stage=false, default false, optional
@@ -623,7 +632,7 @@ class ConstructionStageAnalysisControlDataPayload(TypedDict, total=False):
     bSD: bool  # Use Stress Decrease, optional
     iSDOPT: int  # Stress Decrease Option, optional
     SDCONST: float  # Stress Decrease Constant, optional
-    iBSC: int  # Bi-Section Control, default 0, optional
+    iBSC: int  # Beam Section Property Option: Constant=0/Change with Tendon=1, default 0, optional
     bINC_PDL: bool  # Include P-Delta Effect (Civil NX only), default false, optional
     iITER: int  # Number of Iterations (Linear), optional
     TOL: float  # Convergence Tolerance (Linear), optional
@@ -670,10 +679,21 @@ class ConstructionStageAnalysisControlData(DbResource):
 
 
 class ConstructionStageAnalysisTypeHyperS(TypedDict, total=False):
-    iINC_NLA: int  # Linear=0/Nonlinear=1/Material Nonlinear=2, required
-    iNLA_TYPE: int  # Independent=0/Accumulative=1, required
-    bINC_PDL: bool  # Include P-Delta Effect, optional
-    bINC_TDE: bool  # Include Time Dependent Effect, optional
+    """STCT-M1's "ANAL_TYPE" sub-object.
+
+    2026-08-25 re-verification (article id `57053813627673`) added
+    `iINC_NLA`'s 4th value (`3`=Geometric+Material Nonlinear -- when
+    `iINC_NLA` is 2 or 3, `iNLA_TYPE` only accepts 1/Accumulative) and the
+    previously entirely-missing `bIEMF` field. Not independently
+    live-tested: STCT-M1 is Hyper-S/Civil-NX only and the Civil NX session
+    was unavailable this session (`client does not exist`).
+    """
+
+    iINC_NLA: int  # Linear=0/Nonlinear=1/Material Nonlinear=2/Geometric+Material Nonlinear=3, required
+    iNLA_TYPE: int  # Independent=0/Accumulative=1 (only 1 allowed if iINC_NLA in {2,3}), required
+    bIEMF: bool  # Include Equilibrium Element Nodal Forces (iINC_NLA=1 & iNLA_TYPE=0 only), optional
+    bINC_PDL: bool  # Include P-Delta Effect (iINC_NLA=0 only), optional
+    bINC_TDE: bool  # Include Time Dependent Effect (iNLA_TYPE=1 & iINC_NLA in {0,1} only), optional
 
 
 class ConstructionStageRestartHyperS(TypedDict, total=False):
@@ -696,8 +716,17 @@ class AutoTimeStepHyperS(TypedDict, total=False):
 
 
 class CreepShrinkageControlHyperS(TypedDict, total=False):
+    """STCT-M1's "TIME_DEP_CONTROL.CREEP_SHRINKAGE" sub-object.
+
+    2026-08-25 re-verification (article id `57053813627673`) corrected
+    `TYPE`'s 2nd enum value: STCT-M1 uses `"SHRINKAGE"`, not the legacy
+    `/db/STCT`'s `"SHRINK"` -- confirmed consistently in both the manual's
+    JSON Schema and its own Specifications table for this endpoint. Not
+    independently live-tested (Civil NX session unavailable this session).
+    """
+
     OPT_USE: bool  # required
-    TYPE: str  # "CREEP"/"SHRINK"/"BOTH", optional
+    TYPE: str  # "CREEP"/"SHRINKAGE"/"BOTH" (NOT "SHRINK" -- that's legacy STCT's spelling), optional
     bOUCC: bool  # Only User's Creep Coefficient, optional
     INTERNAL_STEP: InternalTimeStepHyperS  # optional
     AUTO_TIME_STEP: AutoTimeStepHyperS  # optional
@@ -745,8 +774,30 @@ class StressDecreaseHyperS(TypedDict, total=False):
     SDCONST: float  # optional
 
 
+class FrameOutputHyperS(TypedDict, total=False):
+    """STCT-M1's "FRAME_OUTPUT" sub-object."""
+
+    bCALC_CFF: bool  # Calculate Concurrent Forces of Frame, optional
+    bCALC_CSP: bool  # Calculate Output of Each Part of Composite Section, optional
+    bSELFCONS: bool  # Self-constrained Forces & Stresses, optional
+
+
 class ConstructionStageAnalysisControlDataHyperSPayload(TypedDict, total=False):
-    """docs/manual/12_DB_Analysis_Control.md #18 — /db/STCT-M1 Specifications tables."""
+    """docs/manual/12_DB_Analysis_Control.md #18 — /db/STCT-M1 Specifications tables.
+
+    2026-08-25 re-verification (article id `57053813627673`) added four
+    top-level fields entirely missing before: `iBSC` (same Beam Section
+    Property Option concept as legacy STCT's `iBSC`, but a **different
+    default** -- STCT-M1 defaults to `1`, STCT defaults to `0`),
+    `FRAME_OUTPUT`, `bSAVE_OCS`, and `NONL_CONTROL`. `NONL_CONTROL`'s own
+    internal shape (`iLSTEP`/`INTOUT`/`ADVANCED`/`DISP`/`LOAD`/`WORK`) is
+    left as `Any` given its size and nesting, matching this file's existing
+    convention for `ITER_PARAM`/`NONL_CTRL_PARAM` elsewhere -- see the
+    manual for the full shape; note its `ADVANCED` sub-object uses
+    different key names/types than the similarly-named one under
+    `NLCT-M1` (§16) despite the same underlying concept. Not independently
+    live-tested (Civil NX session unavailable this session).
+    """
 
     bLAST_FINAL: bool  # optional
     ANAL_TYPE: ConstructionStageAnalysisTypeHyperS  # required
@@ -759,6 +810,10 @@ class ConstructionStageAnalysisControlDataHyperSPayload(TypedDict, total=False):
     INITIAL_CONTROL: InitialForceControlHyperS  # optional
     INITIAL_DISP: InitialDisplacementHyperS  # optional
     STRESS_DECREASE: StressDecreaseHyperS  # optional
+    iBSC: int  # Beam Section Property Option: Constant=0/Change with Tendon=1, default 1 (NOT 0 -- differs from legacy STCT), optional
+    FRAME_OUTPUT: FrameOutputHyperS  # optional
+    bSAVE_OCS: bool  # Save Output of Current Stage (Beam/Truss), default false, optional
+    NONL_CONTROL: Any  # {"iLSTEP","INTOUT","ADVANCED","DISP","LOAD","WORK"}, required if ANAL_TYPE.iINC_NLA != 0
 
 
 class ConstructionStageAnalysisControlDataHyperS(DbResource):

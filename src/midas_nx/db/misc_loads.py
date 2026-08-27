@@ -83,6 +83,19 @@ class WaveLoadPayload(TypedDict, total=False):
     parameters), and PROF (current profile) are deeply nested sub-objects —
     left as Any for v1, matching the SECT_I precedent. USERGRID/TRAJ are
     similarly left loosely typed (2D arrays of 9-field grid points).
+
+    2026-08-25 re-verification (article id `35988728179097`) corrected
+    `CREST`/`UNIT`: the manual's own Specifications table lists neither
+    field's literal values at all, so this SDK's prior `"MAX"`/`"MANUAL"`
+    guess for CREST had no textual basis in either version of the manual.
+    The only values confirmed anywhere (the manual's own Request Example)
+    are `CREST="MXM"` and `UNIT="PHASE"`; corrected to those, flagged as
+    example-confirmed rather than a documented exhaustive enum. Not
+    independently live-tested: `/db/WVLD` is Civil-only and the Civil NX
+    session was unavailable this session (`client does not exist`).
+    `VERT_COORD`'s `"GLOBAL_X"` value is also flagged unconfirmed by the
+    manual itself (no textual basis found either, kept since X/Y/Z is the
+    structurally expected set) -- left as-is, not newly introduced here.
     """
 
     NAME: str  # Wave Load Name, required
@@ -90,7 +103,7 @@ class WaveLoadPayload(TypedDict, total=False):
     bSTLD: bool  # Use Static Load Generation, default false, optional
     bTHIS: bool  # Use Time History Load Generation, default false, optional
     NAME_THIS: str  # Time History Load Case Name, optional
-    VERT_COORD: str  # "GLOBAL_X"/"GLOBAL_Y"/"GLOBAL_Z", default "GLOBAL_Z", required
+    VERT_COORD: str  # "GLOBAL_X"(unconfirmed)/"GLOBAL_Y"/"GLOBAL_Z", default "GLOBAL_Z", required
     DENSITY: float  # Water Weight Density, required
     DEPTH: float  # Water Depth, required
     bSELFW: bool  # Use Self Weight, default false, optional
@@ -100,12 +113,12 @@ class WaveLoadPayload(TypedDict, total=False):
     PROF: Any  # {"CUR_DIR","CUR_FACTOR","GRID_DATA"}
     FLOOD_GRUP: List[str]  # Flood Condition (Structure Group Names), optional
     GROWTH: List[WaveLoadGrowthItem]  # Marine Growth Data, optional
-    GRID_X: int  # optional
-    GRID_Z: int  # optional
+    GRID_X: int  # Grid X Size, optional
+    GRID_Z: int  # Grid Y Size (per the manual's own key/description naming, not a typo), optional
     USERGRID: Any  # 2D array of {"X","Z","ELEV","VX","VCX","VT","VZ","AX","AZ"}, optional
     TRAJ: Any  # Trajectory Grid Data, same shape as USERGRID, optional
-    CREST: str  # "MAX" / "MANUAL", optional
-    UNIT: str  # Crest Position Unit, optional
+    CREST: str  # Crest Critical Position, example-confirmed value "MXM"; other literals undocumented, optional
+    UNIT: str  # Crest Position Unit, example-confirmed value "PHASE"; other literals undocumented, optional
     INITAL_POS: float  # Initial Position, optional
     STEP: float  # Increase Step, optional
     POS: int  # Number of Positions, optional

@@ -208,12 +208,26 @@ class PushoverMiscOptionHyperS(TypedDict, total=False):
 class PushoverAnalysisControlDataHyperSPayload(TypedDict, total=False):
     """docs/manual/14_DB_Pushover.md #2 — /db/POGD-M1 Specifications tables.
 
-    If GEO_NONL_TYPE is 1 or 2 (P-Delta/Large Displacements), INIT_LOAD_TYPE
+    If GEO_NONL_TYPE is 1 or 2 (Large Displacements/P-Delta), INIT_LOAD_TYPE
     must be 0. If INIT_LOAD_TYPE is 1 (import results), IGNORE_ELEM must not
     be provided.
+
+    2026-08-26 re-verification (article id `56511008007705`) corrected
+    `GEO_NONL_TYPE`'s enum order: this SDK had it as None=0/P-Delta=1/Large
+    Displacements=2 (following the JSON Schema description's word order --
+    "None / P-Delta / Large Displacements"), but the manual's own
+    Specifications table numbers it None=0/**Large Displacements=1**/
+    **P-Delta=2** instead -- the schema description text and the table
+    contradict each other there, and the table wins. Cross-checked against
+    this same-named field elsewhere in this SDK: `db/dynamic_loads.py`'s
+    `TimeHistoryGlobalControlPayload.GNT` and
+    `TimeHistoryGlobalControlHyperSPayload.GEO_NONL_TYPE` (from
+    docs/manual/09_DB_Dynamic_Loads.md) both already had the corrected
+    order (None=0/Large Displacement=1/P-Delta=2) -- this file was the
+    inconsistent one. Not independently live-tested this session.
     """
 
-    GEO_NONL_TYPE: int  # None=0/P-Delta=1/Large Displacements=2, required
+    GEO_NONL_TYPE: int  # None=0/Large Displacements=1/P-Delta=2, required
     INIT_LOAD_TYPE: int  # Perform Nonlinear Static Analysis=0/Import Analysis Results=1, required
     INIT_LOAD_LIST: List[InitialLoadCaseItem]  # LC_NAME min length 1, SF != 0; optional
     IGNORE_ELEM: bool  # Consider "Ignore Elements for Initial Load", optional (forbidden if INIT_LOAD_TYPE=1)
@@ -254,10 +268,17 @@ class AssignPushoverHingePropertiesPayload(TypedDict, total=False):
     """docs/manual/14_DB_Pushover.md #4 — /db/PHGE Specifications table.
 
     Assign Key is the assignment sequence number (not the element ID).
+
+    2026-08-26 re-verification (article id `35992838417049`) added the 4th
+    `TYPE` value: the manual's own text lists exactly 4 values (Beam/
+    Column="BEAM", Wall (Gen NX only)="WALL", Truss="TRUSS", General
+    Link="G-LINK") but had previously presented them with an unbounded
+    "e.g." phrasing that omitted "G-LINK" entirely. Not independently
+    live-tested this session.
     """
 
     ID: int  # Element ID, required
-    TYPE: str  # Element Type: e.g. "BEAM"/"TRUSS"/"WALL", required
+    TYPE: str  # Element Type: "BEAM"(Beam/Column)/"WALL"(Gen NX only)/"TRUSS"/"G-LINK"(General Link), required
     HINGE_TYPE: str  # Pushover Hinge Type (e.g. "Myz_15"), required
     FIBER_KEY: int  # required
 

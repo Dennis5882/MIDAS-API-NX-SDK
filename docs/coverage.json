@@ -1493,18 +1493,17 @@
       "status": "implemented",
       "module": "midas_nx.db.properties.*",
       "live_verified": {
-        "date": "2026-08-16",
+        "date": "2026-08-27",
         "products": [
-          "gen",
-          "civil"
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip attempted 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras3: POST with the manual's own canonical example reproduced as closely as possible answered \"Wrong Field\" on both products. Not resolved as a fixture problem -- left at level=read, same class of finding as /db/NLLP and /db/WVLD.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip attempted 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras3: POST with the manual's own (at-the-time incomplete) canonical example answered \"Wrong Field\" on both products. Root-caused 2026-08-27: the manual's Specifications table (and this SDK's GroupDampingPayload) was missing the entire Element Mass & Stiffness Proportional / Rayleigh-damping field set (bExistElement + 17 more fields, GROUP_DAMPING_ITEMS[], two priority fields); the 2026-08-16 canonical example predates that discovery and never sent them. Retested manually (not via live_crud_check.py) on Gen NX with the full field set from the re-verified manual -- POST/GET/DELETE round trip via midas_nx.db.properties.damping.GroupDamping and a throwaway /db/MATL fixture (id 9999) succeeded and GET read the stored values back; both records deleted after. Civil NX was not reachable this session -- level bumped for Gen only pending a Civil retest with the complete field set.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -2012,16 +2011,16 @@
       "status": "implemented",
       "module": "midas_nx.db.boundary",
       "live_verified": {
-        "date": "2026-08-16",
+        "date": "2026-08-27",
         "products": [
           "gen"
         ],
-        "method": "2026-08-16: write-round-trip attempted (batch 6) -- POST fails \"Wrong Field\" on both Gen NX and Civil NX (v2.1/v2.2, build 08/14/2026) even with the manual's own literal worked example and several hand-tried value variants; not resolved as a fixture problem. Same unresolved class as /db/NLLP, /db/WVLD, /db/GRDP, /db/TDMF, /db/RPSC, /db/STRPSSM, /db/THMS. Left at level: read.",
+        "method": "2026-08-16: write-round-trip attempted (batch 6) -- POST fails \"Wrong Field\" on both Gen NX and Civil NX (v2.1/v2.2, build 08/14/2026) even with the manual's own literal worked example; not resolved as a fixture problem at the time. Root-caused 2026-08-27: the manual's own Specifications table (article id 35948292269977) was missing P1/P2/ALPHA1/ALPHA2/BETA/Phi/LAMBDA -- the 2026-08-16 worked example never sent them, hence \"Wrong Field\". Retested on Gen NX with the full field set from the re-verified manual: POST/GET/DELETE round trip via midas_nx.db.boundary.SeismicDeviceHystereticIsolator succeeded and GET read the stored values back; record deleted after. Civil NX not reachable this session -- level bumped for Gen only.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -2034,16 +2033,16 @@
       "status": "implemented",
       "module": "midas_nx.db.boundary",
       "live_verified": {
-        "date": "2026-08-16",
+        "date": "2026-08-27",
         "products": [
           "gen"
         ],
-        "method": "2026-08-16: write-round-trip attempted (batch 6) -- POST fails \"Wrong Field\" on both Gen NX and Civil NX (v2.1/v2.2, build 08/14/2026) even with the manual's own literal worked example and several hand-tried value variants; not resolved as a fixture problem. Same unresolved class as /db/NLLP, /db/WVLD, /db/GRDP, /db/TDMF, /db/RPSC, /db/STRPSSM, /db/THMS. Left at level: read.",
+        "method": "2026-08-16: write-round-trip attempted (batch 6) -- POST fails \"Wrong Field\" on both Gen NX and Civil NX (v2.1/v2.2, build 08/14/2026) even with the manual's own literal worked example; not resolved as a fixture problem at the time. Root-caused 2026-08-27 for the SLD variant: the manual's own Specifications table (article id 35948330042649) had SDIS_DEV_TYPE's third value wrong (documented as \"SB\", actually \"SLD\") and was missing QD/Pi_VALUE from the SB data object -- the 2026-08-16 attempt used the old wrong shape. Retested on Gen NX with the corrected SLD shape from the re-verified manual: POST/GET/DELETE round trip via midas_nx.db.boundary.SeismicDeviceIsolator succeeded and GET read the stored values back; record deleted after. The LRB variant still answers \"Wrong Field\" with the manual's own worked example even after the same correction pass (nested DX nesting, separate K0/KE) -- but GET /info/db/SDIS independently confirms the corrected LRB shape matches the schema exactly, so per this project's established Wrong-Field-usually-means-bad-value pattern this is suspected to be an unrecognized SDIS_HYS_MODEL literal, not a shape defect; left unresolved. NRB not attempted. Civil NX not reachable this session -- level bumped for Gen only, on the strength of the SLD round trip.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -5019,7 +5018,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras4: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras4: create->GET->update->GET->delete all succeeded on both products. Re-confirmed 2026-08-27 (Gen NX, on the sibling /db/LCOM-GEN endpoint that shares this schema) that the response's read-only NO field is real, contradicting the sibling manual's 2026-08-26 re-verification claim that NO should be dropped from all six LCOM-* endpoints -- see docs/live_verification_notes.md.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -5069,7 +5068,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras4: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras4: create->GET->update->GET->delete all succeeded on both products. Re-confirmed 2026-08-27 (Gen NX, on the sibling /db/LCOM-GEN endpoint that shares this schema) that the response's read-only NO field is real, contradicting the sibling manual's 2026-08-26 re-verification claim that NO should be dropped from all six LCOM-* endpoints -- see docs/live_verification_notes.md.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -5094,7 +5093,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras4: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras4: create->GET->update->GET->delete all succeeded on both products. Re-confirmed 2026-08-27 (Gen NX, on the sibling /db/LCOM-GEN endpoint that shares this schema) that the response's read-only NO field is real, contradicting the sibling manual's 2026-08-26 re-verification claim that NO should be dropped from all six LCOM-* endpoints -- see docs/live_verification_notes.md.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -5169,7 +5168,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras4: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras4: create->GET->update->GET->delete all succeeded on both products. Re-confirmed 2026-08-27 (Gen NX, on the sibling /db/LCOM-GEN endpoint that shares this schema) that the response's read-only NO field is real, contradicting the sibling manual's 2026-08-26 re-verification claim that NO should be dropped from all six LCOM-* endpoints -- see docs/live_verification_notes.md.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -5194,7 +5193,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras4: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras4: create->GET->update->GET->delete all succeeded on both products. Re-confirmed 2026-08-27 (Gen NX, on the sibling /db/LCOM-GEN endpoint that shares this schema) that the response's read-only NO field is real, contradicting the sibling manual's 2026-08-26 re-verification claim that NO should be dropped from all six LCOM-* endpoints -- see docs/live_verification_notes.md.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"

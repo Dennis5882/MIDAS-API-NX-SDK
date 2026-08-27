@@ -48,9 +48,17 @@ class SkewPayload(TypedDict, total=False):
 
     Shape depends on iMETHOD: 1=Angle (ANGLE_*), 2=3 Points (P0*/P1*/P2*),
     3=Vector (V1*/V2*), 4=Line Vector (LV0*/LV1*/LV2* + REFTYPE/G_DIR/L_DIR).
+
+    `iMETHOD` defaults to `1` (Angle) when omitted -- live-verified 2026-08-27
+    on Gen NX: POST `{"ANGLE_X": 15, "ANGLE_Y": 0, "ANGLE_Z": 0}` (iMETHOD
+    omitted) against a probe node round-tripped through GET as
+    `{"iMETHOD": 1, ...}`. Corrects the manual's own Specifications table,
+    which lists `iMETHOD` as Optional with no default shown; the 2026-08-25
+    re-verification note (article id `35807178748569`) called out `1` as the
+    real default.
     """
 
-    iMETHOD: int  # 1=Angle, 2=3 Points, 3=Vector, 4=Line Vector; optional
+    iMETHOD: int  # 1=Angle, 2=3 Points, 3=Vector, 4=Line Vector; optional, default 1 (Angle)
     ANGLE_X: float  # iMETHOD=1, default 0
     ANGLE_Y: float  # iMETHOD=1, default 0
     ANGLE_Z: float  # iMETHOD=1, default 0

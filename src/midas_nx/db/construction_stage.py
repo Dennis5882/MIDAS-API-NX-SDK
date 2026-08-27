@@ -68,17 +68,30 @@ class CompositeSectionPartInfo(TypedDict, total=False):
     IXX: float  # Torsional resistance stiffness scale factor, default 1, optional
     IYY: float  # Moment of inertia (y-axis) scale factor, default 1, optional
     IZZ: float  # Moment of inertia (z-axis) scale factor, default 1, optional
+    WAREA: float  # Self-weight stiffness scale factor, default 1, optional
     IW: float  # Warping constant stiffness scale factor, default 1, optional
 
 
 class CompositeSectionConstructionStagePayload(TypedDict, total=False):
-    """docs/manual/10_DB_Construction_Stage.md #2 — /db/CSCS Specifications table."""
+    """docs/manual/10_DB_Construction_Stage.md #2 — /db/CSCS Specifications table.
+
+    2026-08-25 re-verification (article id `35987625234201`) added two
+    fields the manual's own Specifications table omitted: `WAREA` (self-
+    weight stiffness scale factor -- the table jumps straight from IZZ to
+    IW, but the JSON Schema and every Request Example show `WAREA` between
+    them) and `OPT_UPDATE_ALL_H` (schema-only, never appears in the manual's
+    own worked examples either -- kept Optional/untyped-default per the
+    manual's own caveat). Additive-only; not independently live-tested (a
+    round trip needs a pre-existing `/db/SECT` section and `/db/STAG` stage
+    name, not set up this session).
+    """
 
     SEC: int  # Section ID (/db/SECT id), required
     ASTAGE: str  # Active Stage Name, required
     TYPE: str  # Composite Type: "GENERAL" / "USER", required
     bTAP: bool  # Tapered Type, default false, optional
     vPARTINFO: List[CompositeSectionPartInfo]  # Part Info List, required
+    OPT_UPDATE_ALL_H: bool  # Auto-calculate nominal dimension (h), schema-only (no manual worked example), optional
 
 
 class CompositeSectionConstructionStage(DbResource):
