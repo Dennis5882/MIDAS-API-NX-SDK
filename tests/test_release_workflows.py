@@ -5,11 +5,13 @@ part of the publish safety boundary: a JavaScript release must never enter the
 PyPI jobs, and a Python release must never enter the npm job.
 """
 
+import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PYTHON_WORKFLOW = ROOT / ".github" / "workflows" / "publish.yml"
 NPM_WORKFLOW = ROOT / ".github" / "workflows" / "publish-npm.yml"
+NPM_PACKAGE = ROOT / "packages" / "typescript"
 
 
 def _workflow(path: Path) -> str:
@@ -37,3 +39,15 @@ def test_npm_publish_route_requires_js_tag_prefix_and_oidc():
     assert "npm publish --access public" in workflow
     assert "gh-action-pypi-publish" not in workflow
     assert "paths:" not in workflow
+
+
+def test_npm_release_notes_are_packaged_and_prefix_aware():
+    package = json.loads((NPM_PACKAGE / "package.json").read_text(encoding="utf-8"))
+    releasing = (NPM_PACKAGE / "RELEASING.md").read_text(encoding="utf-8")
+    changelog = (NPM_PACKAGE / "CHANGELOG.md").read_text(encoding="utf-8")
+
+    assert "CHANGELOG.md" in package["files"]
+    assert "js-vX.Y.Z" in releasing
+    assert "preceding `js-v*` tag explicitly" in releasing
+    assert "automatic selection" in releasing and "`py-v*`" in releasing
+    assert "## Unreleased" in changelog

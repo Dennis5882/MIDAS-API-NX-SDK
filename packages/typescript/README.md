@@ -102,4 +102,10 @@ officially released or supported MIDAS IT product. Report SDK issues through
 the repository's GitHub Issues; use MIDAS IT's official support channels for
 product, licensing, and Open API service questions.
 
+## Releases
+
+- [npm package changelog](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/packages/typescript/CHANGELOG.md)
+- [GitHub Releases](https://github.com/Dennis5882/MIDAS-API-NX-SDK/releases) — npm releases use `js-v*` tags
+- [npm release checklist](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/packages/typescript/RELEASING.md)
+
 Licensed under the MIT License.

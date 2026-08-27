@@ -274,7 +274,8 @@ or npm packaged metadata changes. Documentation outside the package and CI-only 
    repository-root `schema/typescript-*.json`. Never hide generator drift by editing generated files directly.
 3. Bump `package.json` and `package-lock.json` together (for example,
    `npm version X.Y.Z --no-git-tag-version`).
-4. Run `npm run prepack`; inspect the resulting declarations and `npm pack --dry-run` contents.
+4. Follow `packages/typescript/RELEASING.md`: promote `CHANGELOG.md`'s `Unreleased` entries into the
+   new version, run `npm run prepack`, and inspect the declarations and `npm pack --dry-run` contents.
 5. Commit and push, then publish a GitHub Release with tag `js-vX.Y.Z`. That triggers
    `.github/workflows/publish-npm.yml`, which ignores non-`js-v` releases, repeats generation and
    package checks, verifies the tag against `package.json`, and publishes through npm Trusted
@@ -285,6 +286,8 @@ or npm packaged metadata changes. Documentation outside the package and CI-only 
 7. Verify the public result with `npm view midas-nx version dist-tags --json` and a clean temporary
    install/import smoke test. The PyPI and npm workflows remain separate even when a release changes
    both language surfaces; create one `py-v*` Release and one `js-v*` Release in that case.
+   When generating GitHub notes, explicitly select the previous `js-v*` tag so Python releases are
+   not included in the npm comparison.
 
 ## Conventions
 
