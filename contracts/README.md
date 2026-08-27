@@ -160,8 +160,18 @@ Start from a machine-drafted transcription rather than retyping a table:
 ```bash
 python scripts/extract_contracts.py                       # what is parseable
 python scripts/extract_contracts.py --emit /db/STLD       # draft one endpoint
+python scripts/promote_contract.py db-stld                # promote a reviewed draft
+python scripts/promote_contract.py --all --dry-run        # what would qualify
 python scripts/extract_contracts.py --check               # promoted vs. manual
 ```
+
+`promote_contract.py` refuses more than it accepts, on purpose. It will not
+promote a draft that still carries review notes, one whose section has
+conditional variant tables nobody has merged, one whose methods the manual never
+states, or one of the eight endpoints whose documented payload has already been
+measured wrong live - putting the manual's version of `/db/SECF`'s key into the
+source of truth would be worse than having no contract for it. Of 376 drafts, 32
+qualified.
 
 `--emit` writes to `contracts/drafts/`, which is **git-ignored and ignored by the
 validator**. Every draft carries `draft: true`, which the schema forbids, so a
@@ -191,7 +201,7 @@ Then:
 
 ## Migration status
 
-Six endpoints are contracted. The remaining ledger lives in `docs/coverage.json`
+Thirty-nine endpoints and three result tables are contracted. The remaining ledger lives in `docs/coverage.json`
 (399 endpoints) and is being migrated incrementally, so an endpoint without a
 contract is expected rather than a defect. What is *not* optional is that a
 contract, once written, is honoured by both SDKs.
@@ -206,6 +216,8 @@ What the extractor can currently reach, per `scripts/extract_contracts.py`:
 | Fields transcribed | ~4,770, of which ~180 nested |
 | Fields given `safeToOmit: true` from a confirmed live payload | 437, across 72 endpoints |
 | Drafts with no review note and no unmerged variant table | 130 |
+| Promoted so far | 39 endpoints + 3 tables |
+| Payload types the npm SDK now takes from contracts | 38 of 738 |
 | Sections with conditional variant tables left unmerged | 58 |
 | Sections belonging to the shared `/post/TABLE` family | 89 |
 

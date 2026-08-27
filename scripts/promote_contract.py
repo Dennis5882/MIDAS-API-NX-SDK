@@ -1,0 +1,341 @@
+"""Promote reviewed drafts from contracts/drafts/ into contracts/endpoints/.
+
+A draft is a transcription of a manual section. Promoting it means answering the
+questions the manual cannot: which products actually serve the route, what a
+DELETE really does, and how far anyone has checked. This script types those
+answers consistently; it does not invent them.
+
+Where each answer comes from
+----------------------------
+``products``      ``docs/coverage.json``'s top-level product list - the manual's
+                  framing narrowed by live 404 sweeps, and wrong for 32 of 47
+                  endpoints the manual called Civil-only. Deliberately *not*
+                  ``live_verified.products``, which answers a different question:
+                  which products this was checked on. Deriving one from the other
+                  declared seven endpoints Civil-only for no better reason than
+                  that one August pass only had Civil open.
+``methods``       the manual, cross-checked against both SDKs by
+                  ``scripts/validate_contracts.py``. A draft whose methods the
+                  manual never stated is refused rather than defaulted.
+``verification``  ``docs/coverage.json``'s date, build and level, written into
+                  ``contracts/verification/{gen,civil}-nx.yaml`` as a record the
+                  contract then references.
+``DELETE``        the measured two-operation shape. The manual's documented body
+                  form empties the whole table regardless of the ids it names;
+                  the per-id URL it does not document is the one that deletes a
+                  selection.
+
+What it refuses
+---------------
+An endpoint whose documented payload has already been measured wrong live is
+left out. Bulk-promoting the manual's version of ``/db/SECF``'s key would put a
+known-false statement into the source of truth, which is worse than having no
+contract for it. Those need someone to encode the correction and the evidence by
+hand, with ``provenance: live_corrected`` and a ``manualDefects`` entry.
+
+Usage::
+
+    python scripts/promote_contract.py db-grup db-rigd
+    python scripts/promote_contract.py --all --dry-run
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import sys
+from pathlib import Path
+from typing import Optional
+
+ROOT = Path(__file__).resolve().parent.parent
+DRAFTS = ROOT / "contracts" / "drafts"
+ENDPOINTS = ROOT / "contracts" / "endpoints"
+VERIFICATION = ROOT / "contracts" / "verification"
+COVERAGE = ROOT / "docs" / "coverage.json"
+
+#: Endpoints whose documented payload has been measured wrong against a running
+#: product. Each needs its correction and evidence written by hand; see
+#: docs/live_verification_notes.md and CLAUDE.md's live-behaviour section.
+NEEDS_HAND_REVIEW = {
+    "/db/SECF": "its documented key is wrong live",
+    "/db/PRES": "its documented default DIRECTION is wrong live",
+    "/db/MVHL": "its documented VEHICLE_LOAD_NUM is wrong live",
+    "/db/TDMT": "its whole code-name enum is wrong live - the server wants 'European'",
+    "/db/TDME": "companion to /db/TDMT's enum finding",
+    "/db/REBW": "every field name in its manual section is wrong live",
+    "/db/REBC": "the official article itself is wrong about its array shape",
+    "/db/REBB": "its write path is broken server-side, not a shape question",
+}
+
+_DELETE_OPS = """  - method: DELETE
+    variant: per_id
+    path: {endpoint}/{{id}}
+    risk: destructive
+    mitigation: none
+    summary: Delete exactly the record named in the path.
+    request:
+      wrapper: none
+    response:
+      wrapper: table
+      keyStability: stable
+    notes: >-
+      Undocumented route, and the only DELETE form that deletes a selection
+      rather than the whole table - see risk db-delete-body-empties-table.
+  - method: DELETE
+    variant: whole_table
+    risk: destructive
+    mitigation: confirmation_required
+    summary: Empty the entire table.
+    request:
+      wrapper: assign
+      itemSchema: none
+      description: >-
+        The manual's documented form. The ids in that body are ignored.
+    response:
+      wrapper: message
+"""
+
+_DELETE_RULES = """
+sdkRules:
+  - id: {id}-delete-per-id
+    kind: per_id_request
+    appliesTo: [DELETE]
+    variant: per_id
+    reason: >-
+      The manual's DELETE body form empties the whole table regardless of the
+      ids it names. Measured on /db/NODE, /db/STLD, /db/LDGR and /db/MATL and
+      treated as a property of /db/* DELETE, so an SDK's ordinary "delete these
+      ids" call must use the undocumented per-id URL. Requests go one at a time
+      and stop at the first failure.
+    riskRef: db-delete-body-empties-table
+    alternative: Emptying the table on purpose is the separate whole_table operation.
+  - id: {id}-delete-all-confirmation
+    kind: require_confirmation
+    appliesTo: [DELETE]
+    variant: whole_table
+    reason: >-
+      Emptying the table cannot be undone through the API and raises no
+      product-side dialog.
+    riskRef: db-delete-body-empties-table
+    alternative: Use the per_id DELETE operation to remove selected records.
+
+knownDefects:
+  - ref: db-delete-body-empties-table
+"""
+
+_HEADER = """# {endpoint}
+#
+# Drafted by scripts/extract_contracts.py from the official manual, then promoted
+# by scripts/promote_contract.py: products, verification status and the DELETE
+# shape come from docs/coverage.json's live record and the measured /db/* DELETE
+# behaviour, not from the manual's framing. safeToOmit is answered `true` only
+# where a confirmed live payload actually omitted the field.
+"""
+
+
+def _coverage() -> dict[str, dict]:
+    data = json.loads(COVERAGE.read_text(encoding="utf-8"))
+    return {entry["endpoint"]: entry for entry in data["endpoints"]}
+
+
+def _record_id(entry: dict) -> str:
+    """One shared record per (date, level, outcome), not one per endpoint."""
+    live = entry["live_verified"]
+    return f"db-{live['level']}-sweep-{live['date']}"
+
+
+def _verification_block(entry: dict, product: str) -> str:
+    live = entry["live_verified"]
+    version = live.get("nx_versions", {}).get(product, f"MIDAS {product.title()} NX 2026")
+    method = " ".join(live.get("method", "").split())[:400]
+    return f"""
+  - id: {_record_id(entry)}
+    endpoints: []
+    date: "{live['date']}"
+    nxVersion: {version}
+    level: {live['level']}
+    outcome: {live.get('outcome', 'success')}
+    method: >-
+      {method}
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md
+"""
+
+
+def promote(slug: str, coverage: dict[str, dict], dry_run: bool) -> Optional[str]:
+    """Return the record id this promotion needs, or None if it was refused."""
+    draft_path = DRAFTS / f"{slug}.yaml"
+    if not draft_path.exists():
+        print(f"  {slug}: no draft - run scripts/extract_contracts.py --emit first")
+        return None
+
+    text = draft_path.read_text(encoding="utf-8")
+    endpoint_match = re.search(r"^endpoint: (\S+)$", text, re.MULTILINE)
+    if endpoint_match is None:
+        print(f"  {slug}: draft has no endpoint")
+        return None
+    endpoint = endpoint_match.group(1)
+
+    if endpoint in NEEDS_HAND_REVIEW:
+        print(f"  {slug}: refused - {NEEDS_HAND_REVIEW[endpoint]}")
+        return None
+    if "TODO(review): the chapter did not state its methods" in text:
+        print(f"  {slug}: refused - the manual never states this endpoint's methods")
+        return None
+
+    # A draft still carrying review notes is incomplete by its own admission.
+    # Promoting it in bulk would put "the manual left this blank" into the source
+    # of truth as though it were settled. The nesting notes are the exception:
+    # they record how a structure was reconstructed, not something unresolved.
+    notes = [
+        line.strip()
+        for line in text.splitlines()
+        if line.strip().startswith("# NOTE:") and "nests this under" not in line
+    ]
+    if notes:
+        print(f"  {slug}: refused - {len(notes)} unresolved review note(s), e.g. {notes[0][8:60]}")
+        return None
+    if "unmergedTables:" in text:
+        print(f"  {slug}: refused - the section has conditional variant tables nobody has merged")
+        return None
+    if "TODO(review): the manual did not" in text:
+        print(f"  {slug}: refused - the manual leaves a field's type or requiredness unstated")
+        return None
+    if re.search(r"^fields: \[\]$", text, re.MULTILINE):
+        print(f"  {slug}: refused - no payload fields could be parsed")
+        return None
+    if not endpoint.startswith("/db/"):
+        print(
+            f"  {slug}: refused - only /db/* resources are promotable in bulk; "
+            f"{endpoint} is a plain function and its parity check is not modelled yet"
+        )
+        return None
+    entry = coverage.get(endpoint)
+    if entry is None or not entry.get("live_verified"):
+        print(f"  {slug}: refused - no live-verification record in docs/coverage.json")
+        return None
+
+    live = entry["live_verified"]
+    # Two different questions, and conflating them was worth one round of the
+    # parity check shouting. `products` asks which products serve the route -
+    # narrowed from the manual only where a live sweep measured a 404. The
+    # ledger's top-level `products` carries that. `live_verified.products` asks
+    # something else entirely: which products this was checked on. Seven
+    # endpoints checked only against Civil in one August pass are not
+    # Civil-only, and deriving `products` from the tested set said they were.
+    products = sorted(entry["products"])
+    tested = sorted(live["products"])
+    status = {
+        ("civil", "gen"): "verified_both",
+        ("gen",): "verified_gen",
+        ("civil",): "verified_civil",
+    }.get(tuple(tested), "manual_only")
+    record = _record_id(entry)
+
+    text = re.sub(r"^# DRAFT contract for .*?\n(#.*\n)*\n", "", text, flags=re.MULTILINE)
+    text = text.replace("draft: true   # reviewing this file is what removes this line\n", "")
+    text = _HEADER.format(endpoint=endpoint) + text
+
+    text = text.replace("# TODO(review): confirm against live evidence, not the manual's framing.\n", "")
+    text = text.replace(
+        "# TODO(review): manual_only is the honest state for a contract nobody has\n"
+        "# called yet. Raise it only with a record in contracts/verification/.\n",
+        "",
+    )
+    text = re.sub(
+        r"^[ ]*# TODO\(review\): nobody has omitted this against a live product\.\n"
+        r"[ ]*# Leave it unverified, or find out - do not read the manual's\n"
+        r"[ ]*# 'Optional' as an answer; that is what documentedOptional records\.\n",
+        "",
+        text,
+        flags=re.MULTILINE,
+    )
+    text = text.replace("   # TODO(review): product_crash_risk if it has ever ended a session", "")
+    text = text.replace(
+        "    mitigation: none   # TODO(review): see /db/NODE's contract for the two DELETE forms\n", ""
+    )
+
+    text = re.sub(
+        r"^products: \[.*\]$",
+        "products: [" + ", ".join(products) + "]",
+        text,
+        flags=re.MULTILINE,
+    )
+
+    block = f"verification:\n  status: {status}\n"
+    if status != "manual_only":
+        block += "  records:\n" + "".join(
+            f"    - product: {p}\n      ref: {record}\n" for p in tested
+        )
+    text = re.sub(r"verification:\n  status: manual_only\n", block, text)
+
+    plain_delete = re.search(r"  - method: DELETE\n(?:    (?!- method).*\n)+", text)
+    if plain_delete:
+        text = text.replace(plain_delete.group(0), _DELETE_OPS.format(endpoint=endpoint))
+        text = text.replace("\nextraction:", _DELETE_RULES.format(id=slug) + "\nextraction:")
+
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    if not dry_run:
+        (ENDPOINTS / f"{slug}.yaml").write_text(text, encoding="utf-8")
+    print(f"  {slug}: {endpoint} -> served by {products}, {status}")
+    return record
+
+
+def ensure_records(needed: dict[str, dict], dry_run: bool) -> None:
+    """Append any verification record a promotion referenced but did not exist."""
+    for product in ("gen", "civil"):
+        path = VERIFICATION / f"{product}-nx.yaml"
+        text = path.read_text(encoding="utf-8")
+        additions = [
+            _verification_block(entry, product)
+            for record, entry in sorted(needed.items())
+            if f"id: {record}\n" not in text and product in entry["live_verified"]["products"]
+        ]
+        if not additions:
+            continue
+        print(f"  {path.name}: adding {len(additions)} record(s)")
+        if not dry_run:
+            path.write_text(text.rstrip("\n") + "\n" + "".join(additions), encoding="utf-8")
+
+
+def main(argv: list[str]) -> int:
+    sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("slugs", nargs="*", help="draft ids, e.g. db-grup")
+    parser.add_argument("--all", action="store_true", help="promote every draft that qualifies")
+    parser.add_argument("--dry-run", action="store_true")
+    args = parser.parse_args(argv)
+
+    coverage = _coverage()
+    existing = {path.stem for path in ENDPOINTS.glob("*.yaml")}
+    slugs = args.slugs or (
+        [p.stem for p in sorted(DRAFTS.glob("*.yaml")) if p.stem not in existing] if args.all else []
+    )
+    if not slugs:
+        parser.error("name at least one draft, or pass --all")
+
+    needed: dict[str, dict] = {}
+    promoted = 0
+    for slug in slugs:
+        record = promote(slug, coverage, args.dry_run)
+        if record is None:
+            continue
+        promoted += 1
+        endpoint = re.search(
+            r"^endpoint: (\S+)$", (DRAFTS / f"{slug}.yaml").read_text(encoding="utf-8"), re.MULTILINE
+        ).group(1)
+        needed[record] = coverage[endpoint]
+
+    ensure_records(needed, args.dry_run)
+    print(f"\n{promoted} promoted, {len(slugs) - promoted} refused{' (dry run)' if args.dry_run else ''}")
+    print("Now run: python scripts/validate_contracts.py")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))

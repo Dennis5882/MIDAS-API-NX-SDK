@@ -130,3 +130,115 @@ records:
     riskRef: post-table-unstable-response-key
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-read-sweep-2026-07-26
+    endpoints: []
+    date: "2026-07-26"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 08/06/2026
+    level: read
+    outcome: success_empty
+    method: >-
+      scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too.
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-read-sweep-2026-08-16
+    endpoints: []
+    date: "2026-08-16"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 08/06/2026
+    level: read
+    outcome: success_empty
+    method: >-
+      scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip attempted 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras3: POST with the manual's own canonical exam
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-write-sweep-2026-07-22
+    endpoints: []
+    date: "2026-07-22"
+    nxVersion: MIDAS Civil NX 2026 (v2.1), build 06/05/2026
+    level: write
+    outcome: success_populated
+    method: >-
+      scripts/live_smoke.py
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-write-sweep-2026-07-29
+    endpoints: []
+    date: "2026-07-29"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 06/18/2026
+    level: write
+    outcome: success_empty
+    method: >-
+      scripts/live_crud_check.py (full CRUD round trip)
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-write-sweep-2026-08-16
+    endpoints: []
+    date: "2026-08-16"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 08/14/2026
+    level: write
+    outcome: success
+    method: >-
+      scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras3: create->GET->update->GET->delete all succ
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-write-sweep-2026-08-17
+    endpoints: []
+    date: "2026-08-17"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 08/14/2026
+    level: write
+    outcome: success_empty
+    method: >-
+      2026-08-17: write-round-trip confirmed live (batch 12), both products. TYPE="REAC" keyed by a real base-model node id. POINT is documented as "required if TYPE=BEAM" but is actually required unconditionally live -- omitting it on a TYPE="REAC" payload answers "Wrong Field"; send 0 for non-BEAM types. src/midas_nx/db/bridge.py's POINT field comment corrected to document this.
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-write-sweep-2026-08-24
+    endpoints: []
+    date: "2026-08-24"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 08/24/2026
+    level: write
+    outcome: success_empty
+    method: >-
+      2026-08-24 (batch 13): write-round-trip confirmed live on Civil NX (create->read->update->read->delete->read). Clean write round trip, no findings. Gen NX session was disconnected this session -- not yet run there; do not treat as Gen-confirmed.
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md
