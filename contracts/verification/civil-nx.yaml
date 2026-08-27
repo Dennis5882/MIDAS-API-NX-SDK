@@ -242,3 +242,35 @@ records:
       rather than at nothing.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-read-sweep-2026-07-30
+    endpoints: []
+    date: "2026-07-30"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 07/29/2026
+    level: read
+    outcome: success
+    method: >-
+      manual POST probe via midas_nx.view.set_angle Re-checked on Civil NX 2026-07-30 -- worked identically.
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-read-sweep-2026-08-10
+    endpoints: []
+    date: "2026-08-10"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 07/29/2026
+    level: read
+    outcome: success
+    method: >-
+      manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. precapture() with VIEW_TYPE='FIBR' and a guessed OPTION.ID answered a clean 'second query is wrong' error -- this model has no fiber-modeled sections defined, so the argument shape is confirmed but never got real data. Re-tested 2026-08-10 on Gen NX 2026 (v2.2), build 08/06/2026, aga
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md

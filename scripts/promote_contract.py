@@ -47,6 +47,13 @@ import sys
 from pathlib import Path
 from typing import Optional
 
+from function_endpoints import (
+    FunctionEndpoint,
+    ResourceEndpoint,
+    function_endpoints,
+    resource_endpoints,
+)
+
 ROOT = Path(__file__).resolve().parent.parent
 DRAFTS = ROOT / "contracts" / "drafts"
 ENDPOINTS = ROOT / "contracts" / "endpoints"
@@ -126,10 +133,11 @@ knownDefects:
 _HEADER = """# {endpoint}
 #
 # Drafted by scripts/extract_contracts.py from the official manual, then promoted
-# by scripts/promote_contract.py: products, verification status and the DELETE
-# shape come from docs/coverage.json's live record and the measured /db/* DELETE
-# behaviour, not from the manual's framing. safeToOmit is answered `true` only
-# where a confirmed live payload actually omitted the field.
+# by scripts/promote_contract.py: products and verification status come from
+# docs/coverage.json's live record, not from the manual's framing. For /db/*
+# endpoints, the DELETE shape comes from measured /db/* DELETE behaviour.
+# safeToOmit is answered `true` only where a confirmed live payload actually
+# omitted the field.
 """
 
 
@@ -167,7 +175,89 @@ def _verification_block(entry: dict, product: str) -> str:
 """
 
 
-def promote(slug: str, coverage: dict[str, dict], dry_run: bool) -> Optional[str]:
+def _draft_methods(text: str) -> set[str]:
+    """Read only the manual-transcribed operation verbs from a draft."""
+    return set(re.findall(r"^  - method: ([A-Z]+)$", text, re.MULTILINE))
+
+
+def _plain_function_is_modelled(
+    endpoint: str,
+    methods: set[str],
+    functions: dict[str, FunctionEndpoint],
+) -> str | None:
+    """Return why a plain route cannot yet receive a green parity contract."""
+    surface = functions.get(endpoint)
+    if surface is None:
+        return "no generic plain-function parity surface was discovered"
+    if surface.python is None:
+        return "no Python plain function exposes the route"
+    if surface.typescript is None:
+        return "no npm plain function exposes the route"
+    if surface.python.methods != methods:
+        return (
+            f"Python plain functions serve {sorted(surface.python.methods)}, "
+            f"but the manual draft declares {sorted(methods)}"
+        )
+    if surface.typescript.methods != methods:
+        return (
+            f"npm plain functions serve {sorted(surface.typescript.methods)}, "
+            f"but the manual draft declares {sorted(methods)}"
+        )
+    return None
+
+
+def _non_db_resource_is_modelled(
+    endpoint: str,
+    methods: set[str],
+    products: set[str],
+    resources: dict[str, ResourceEndpoint],
+) -> str:
+    """Describe the safe next step for a non-/db ``DbResource`` draft.
+
+    This is a parity classification, not a source of contract facts.  In
+    particular, the measured ``/db/*`` DELETE body behaviour is not evidence
+    for a similarly-shaped ``/DESIGN/*`` resource.
+    """
+    surface = resources[endpoint]
+    if surface.python is None:
+        return "no Python resource exposes the route"
+    if surface.typescript is None:
+        return "no npm resource exposes the route"
+    if surface.python.methods != methods:
+        return (
+            f"Python resource serves {sorted(surface.python.methods)}, "
+            f"but the manual draft declares {sorted(methods)}"
+        )
+    if surface.typescript.methods != methods:
+        return (
+            f"npm resource serves {sorted(surface.typescript.methods)}, "
+            f"but the manual draft declares {sorted(methods)}"
+        )
+    if surface.python.products != products:
+        return (
+            f"Python resource declares products {sorted(surface.python.products)}, "
+            f"but live/manual ledger declares {sorted(products)}"
+        )
+    if surface.typescript.products != products:
+        return (
+            f"npm resource declares products {sorted(surface.typescript.products)}, "
+            f"but live/manual ledger declares {sorted(products)}"
+        )
+    if "DELETE" in methods:
+        return (
+            "non-/db resource DELETE needs its own manual/live semantics; "
+            "/db/* DELETE evidence is not transferable"
+        )
+    return "non-/db resource promotion is deferred until the generator shadow workflow"
+
+
+def promote(
+    slug: str,
+    coverage: dict[str, dict],
+    functions: dict[str, FunctionEndpoint],
+    resources: dict[str, ResourceEndpoint],
+    dry_run: bool,
+) -> Optional[str]:
     """Return the record id this promotion needs, or None if it was refused."""
     draft_path = DRAFTS / f"{slug}.yaml"
     if not draft_path.exists():
@@ -209,16 +299,21 @@ def promote(slug: str, coverage: dict[str, dict], dry_run: bool) -> Optional[str
     if re.search(r"^fields: \[\]$", text, re.MULTILINE):
         print(f"  {slug}: refused - no payload fields could be parsed")
         return None
-    if not endpoint.startswith("/db/"):
-        print(
-            f"  {slug}: refused - only /db/* resources are promotable in bulk; "
-            f"{endpoint} is a plain function and its parity check is not modelled yet"
-        )
-        return None
     entry = coverage.get(endpoint)
     if entry is None or not entry.get("live_verified"):
         print(f"  {slug}: refused - no live-verification record in docs/coverage.json")
         return None
+
+    methods = _draft_methods(text)
+    if not endpoint.startswith("/db/"):
+        if endpoint in resources:
+            reason = _non_db_resource_is_modelled(endpoint, methods, set(entry["products"]), resources)
+            print(f"  {slug}: refused - non-db resource parity: {reason}")
+            return None
+        function_reason = _plain_function_is_modelled(endpoint, methods, functions)
+        if function_reason is not None:
+            print(f"  {slug}: refused - plain-function parity: {function_reason}")
+            return None
 
     live = entry["live_verified"]
     # Two different questions, and conflating them was worth one round of the
@@ -275,7 +370,7 @@ def promote(slug: str, coverage: dict[str, dict], dry_run: bool) -> Optional[str
     text = re.sub(r"verification:\n  status: manual_only\n", block, text)
 
     plain_delete = re.search(r"  - method: DELETE\n(?:    (?!- method).*\n)+", text)
-    if plain_delete:
+    if endpoint.startswith("/db/") and plain_delete:
         text = text.replace(plain_delete.group(0), _DELETE_OPS.format(endpoint=endpoint))
         text = text.replace("\nextraction:", _DELETE_RULES.format(id=slug) + "\nextraction:")
 
@@ -312,6 +407,8 @@ def main(argv: list[str]) -> int:
     args = parser.parse_args(argv)
 
     coverage = _coverage()
+    functions = function_endpoints()
+    resources = resource_endpoints()
     existing = {path.stem for path in ENDPOINTS.glob("*.yaml")}
     slugs = args.slugs or (
         [p.stem for p in sorted(DRAFTS.glob("*.yaml")) if p.stem not in existing] if args.all else []
@@ -322,13 +419,16 @@ def main(argv: list[str]) -> int:
     needed: dict[str, dict] = {}
     promoted = 0
     for slug in slugs:
-        record = promote(slug, coverage, args.dry_run)
+        record = promote(slug, coverage, functions, resources, args.dry_run)
         if record is None:
             continue
         promoted += 1
-        endpoint = re.search(
+        endpoint_match = re.search(
             r"^endpoint: (\S+)$", (DRAFTS / f"{slug}.yaml").read_text(encoding="utf-8"), re.MULTILINE
-        ).group(1)
+        )
+        if endpoint_match is None:  # promote() already verified this draft.
+            raise RuntimeError(f"{slug}: draft endpoint disappeared during promotion")
+        endpoint = endpoint_match.group(1)
         needed[record] = coverage[endpoint]
 
     ensure_records(needed, args.dry_run)

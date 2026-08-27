@@ -35,6 +35,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from function_endpoints import function_endpoints
+
 ROOT = Path(__file__).resolve().parent.parent
 CONTRACTS = ROOT / "contracts"
 ENDPOINT_DIR = CONTRACTS / "endpoints"
@@ -246,19 +248,19 @@ def check_safety(contracts: list[tuple[Path, dict]], failures: Failures) -> None
                 continue
             declared = {f["key"]: f for f in _iter_fields(contract.get("fields", []))}
             for key, value in rule["values"].items():
-                field = declared.get(key)
-                if field is None:
+                declared_field = declared.get(key)
+                if declared_field is None:
                     failures.add(
                         path.name,
                         f"sdkRule {rule['id']!r} defaults undeclared field {key!r}",
                     )
-                elif "documentedDefault" in field and field["documentedDefault"] is not None:
-                    if float(value) != float(field["documentedDefault"]):
+                elif "documentedDefault" in declared_field and declared_field["documentedDefault"] is not None:
+                    if float(value) != float(declared_field["documentedDefault"]):
                         failures.add(
                             path.name,
                             f"sdkRule {rule['id']!r} sets {key}={value!r}, which is "
                             f"not its documented default "
-                            f"{field['documentedDefault']!r} - a normalization "
+                            f"{declared_field['documentedDefault']!r} - a normalization "
                             f"rule may make a default explicit, not invent one",
                         )
 
@@ -301,14 +303,11 @@ def _python_resources() -> dict[str, Any]:
     return found
 
 
-# Not every endpoint is a DbResource. /post/TABLE is one route serving 89
-# tables, so both SDKs expose it as a function over a TABLE_TYPE string rather
-# than as a resource class. Its parity question is not "does a class exist" but
-# "do both SDKs know every TABLE_TYPE the contracts declare", which
-# check_tables() answers.
-_FUNCTION_ENDPOINTS = {
-    "/post/TABLE": ("midas_nx.post.base", "get_table"),
-}
+# Not every endpoint is a DbResource.  ``function_endpoints()`` discovers the
+# top-level Python calls and npm operation metadata instead of maintaining an
+# endpoint-by-endpoint exception list.  This is deliberately parity metadata:
+# the SDKs are checked as subjects and never supply contract facts.
+_FUNCTION_ENDPOINTS = function_endpoints()
 
 
 def check_parity(contracts: list[tuple[Path, dict]], failures: Failures) -> None:
@@ -329,23 +328,38 @@ def check_parity(contracts: list[tuple[Path, dict]], failures: Failures) -> None
         methods = {op["method"] for op in contract["operations"]}
         products = set(contract["products"])
 
-        if endpoint in _FUNCTION_ENDPOINTS:
-            module_name, function = _FUNCTION_ENDPOINTS[endpoint]
-            import importlib
-
-            try:
-                module = importlib.import_module(module_name)
-            except Exception as exc:
-                failures.add(path.name, f"cannot import {module_name}: {exc}")
-                continue
-            if not callable(getattr(module, function, None)):
+        function_endpoint = _FUNCTION_ENDPOINTS.get(endpoint)
+        if function_endpoint is not None:
+            python = function_endpoint.python
+            if python is None:
+                failures.add(path.name, f"no Python plain function exposes {endpoint}")
+            elif python.methods != methods:
                 failures.add(
                     path.name,
-                    f"{module_name}.{function}() does not exist, so nothing in the "
-                    f"Python SDK serves {endpoint}",
+                    f"Python plain functions {list(python.entries)} serve "
+                    f"{sorted(python.methods)}, contract declares {sorted(methods)}",
                 )
-            if TS_TABLES.exists() and "defineTable" not in TS_TABLES.read_text(encoding="utf-8"):
-                failures.add(path.name, f"the npm surface exposes nothing for {endpoint}")
+
+            typescript = function_endpoint.typescript
+            if typescript is None:
+                failures.add(path.name, f"no npm plain function exposes {endpoint}")
+            else:
+                if typescript.methods != methods:
+                    failures.add(
+                        path.name,
+                        f"npm plain functions {list(typescript.entries)} serve "
+                        f"{sorted(typescript.methods)}, contract declares {sorted(methods)}",
+                    )
+                # Python plain functions do not carry product metadata to
+                # compare.  npm operation metadata does when it is present,
+                # so validate that independently rather than inventing Python
+                # product support from a function's implementation.
+                if typescript.products is not None and typescript.products != products:
+                    failures.add(
+                        path.name,
+                        f"npm plain functions {list(typescript.entries)} declare products "
+                        f"{sorted(typescript.products)}, contract declares {sorted(products)}",
+                    )
             continue
 
         resource = python_resources.get(endpoint)
