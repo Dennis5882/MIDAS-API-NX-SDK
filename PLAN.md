@@ -5,11 +5,27 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-08-27 — Python/PyPI v2.3.2; JavaScript/TypeScript/npm
+> Last updated: 2026-08-27 — Python/PyPI v2.3.5; JavaScript/TypeScript/npm
 > v2.3.3. This line tracks **release** state,
 > not every edit; docs-only changes carry their own dates in
 > Cross-cutting/backlog without moving this line.
-> **v2.3.2 shipped 2026-08-10**: `BRACEDESIGNFORCES` independently confirmed
+> **v2.3.5 shipped 2026-08-27**: closed out the sibling manual repo's
+> 24-chapter "전수 재검증" drift in full (`vendored_at_commit` now current,
+> `check_manual_drift.py` reports `has_diff: false`) — dozens of field-level
+> corrections across `db/boundary.py`, `db/design.py`, `db/properties/*`,
+> `db/analysis_control.py`, `db/dynamic_loads.py`, `ope.py`, `view.py`, and
+> `post/*.py`, each re-tested live on Gen and/or Civil NX rather than
+> applied from manual text alone. Root-caused three long-standing "Wrong
+> Field"-since-2026-08-16 stalls (`/db/GRDP`, `/db/SDHY`, `/db/SDIS`) down
+> to missing fields, not server bugs — all now `level: write`. Also caught
+> the manual repo's own re-verification introducing *new* wrong claims in
+> 6 places (Story Load Summary Table, `/db/REBW`, `/db/REBC`, `/db/REBB`,
+> `/db/LCOM-*`'s `NO` field, `/ope/MEMB`'s `ELEM_LIST`) by re-testing live
+> instead of trusting a "재검증" commit message — 2 of those (Story Load
+> Summary, `/db/REBC`) traced to MIDASIT's own official Zendesk docs being
+> stale, not just the vendored copy; filed/commented accordingly (see
+> `docs/vendor_report_ko.md` v1.3 and MAPI-949). Write coverage: 158/399 →
+> 162/399. **v2.3.2 shipped 2026-08-10**: `BRACEDESIGNFORCES` independently confirmed
 > crashing Gen NX (third of the Column/Beam/Brace Design-Forces family,
 > `post/design.py` docstring updated), plus two live-verification sweeps —
 > a full Gen NX `DbResource` GET sweep (266/266 clean, 32 new confirmations)
@@ -201,7 +217,7 @@ they're the ones worth re-checking before planning a release):
 
 | Axis | Artifact | State |
 |---|---|---|
-| Tests | 703 tests, mocked/local only | ✅ green |
+| Tests | 706 tests, mocked/local only | ✅ green |
 | CI | `.github/workflows/ci.yml` — Python checks on 3.12/3.13 plus npm generation/typecheck/tests/package smoke on Node.js 18/22, push+PR | ✅ running |
 | Static typing | mypy over `src/midas_nx`, config in `pyproject.toml`, own CI job | ✅ clean across all 41 modules |
 | Packaging verification | `package` CI job + `scripts/wheel_smoke_test.py` — builds the wheel, installs it into a clean venv, asserts `py.typed` shipped, `__version__` matches the distribution, and the `delete_all()` guard is armed | ✅ running |
@@ -215,18 +231,21 @@ they're the ones worth re-checking before planning a release):
 | Response handling | 200-with-`error` body, non-JSON body, empty-table shapes, failed-analysis message | ✅ hardened in v0.12.0/v0.14.0 |
 | Write verification | `scripts/live_crud_check.py` — create/read/update/delete round trips, 43 cases in 6 tiers | ✅ **all 43** confirmed live on Civil NX 2026 v2.2, 40 of them on v2.1 too; 36 of the 43 also confirmed on Gen NX v2.1. `/db/NMAS` (the last holdout) used to crash **both** products, root-caused 2026-07-29 (omitted `rmX`/`rmY`/`rmZ`) and worked around in `NodalMass.create()`/`.update()` |
 | Version metadata | `__init__.py` `__version__` (hatchling `dynamic`) + `tests/test_version.py` + a tag↔`__version__` check in `publish.yml` | ✅ single source, enforced at release |
-| Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 396/399 recorded, split by `level`: **66 write / 330 read / 3 unverified**, both products (`DESIGN/RC/DRC` live-tested 2026-08-07, GET-only, `success_empty`; `/ope/EDMP`/`/ope/USLC` live-tested 2026-08-07 post-patch, both write, confirming `MAPI-2425`/`MAPI-2426` fixed; `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK` live-tested 2026-08-07, write, `outcome: crash_or_hang` — confirmed crashing on the new `/TEMP/` path too, shipped as v2.2.1; the Column/Beam/Brace-and-friends `TABLE`/`/post/TABLE` design-forces crash family confirmed Gen-NX-only, clean on Civil across 11 tested combinations — Column/Beam/Brace all independently confirmed crashing Gen NX as of 2026-08-10, the rest still "equally at risk, untested" by choice, see the Cross-cutting/backlog item below). Remaining 3 unverified: `/ope/STORPROP` (404 both products, routing-level), `/ope/LCOM-GEN` (Gen: `Wrong Field`, Civil: 404 routing-level), `/ope/GSBG` (needs a real bridge model + a GUI-only "Post mode" switch no API call can trigger). **Per-product split is now Gen 337/399, Civil 367/399** (Civil jumped from 195 after a 2026-08-07 full `DbResource` GET sweep merged 172 endpoints; Gen jumped from 266 after a mirrored 2026-08-10 sweep merged 32 more, then from 299 after a 2026-08-10 follow-up batch manually tested 38 of the plain-function design-chapter ANAL/TABLE/REPORT/CAPTURE endpoints the sweep tool can't reach (view.py/`design.rc_kds.design_forces`/`design.rc_kds.checks`/`design.steel_kds`/`design.src_aiksrc2k`, excluding the 11-function Design-Forces crash family and `OCHECK`) against a blank document with no crash/hang, incl. the historically hang-prone `WD-ANAL`; `GEN_ONLY`'s 20 endpoints reconfirmed still 404 on Civil, no drift). Remaining gap on both products is almost entirely `doc.py`'s 9 file-lifecycle endpoints (deliberately untested against a session with real state at risk), `ope.py`'s 3 already-blocked cases, and the crash-family/`OCHECK` endpoints (already characterized, not "unverified") |
+| Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 399/399 recorded, split by `level`: **162 write / 237 read / 0 unverified** as of 2026-08-27 (was 66/330/3 as of the note below; the intervening rise is many sessions' write-coverage push, not one release), both products (`DESIGN/RC/DRC` live-tested 2026-08-07, GET-only, `success_empty`; `/ope/EDMP`/`/ope/USLC` live-tested 2026-08-07 post-patch, both write, confirming `MAPI-2425`/`MAPI-2426` fixed; `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK` live-tested 2026-08-07, write, `outcome: crash_or_hang` — confirmed crashing on the new `/TEMP/` path too, shipped as v2.2.1; the Column/Beam/Brace-and-friends `TABLE`/`/post/TABLE` design-forces crash family confirmed Gen-NX-only, clean on Civil across 11 tested combinations — Column/Beam/Brace all independently confirmed crashing Gen NX as of 2026-08-10, the rest still "equally at risk, untested" by choice, see the Cross-cutting/backlog item below). Remaining 3 unverified: `/ope/STORPROP` (404 both products, routing-level), `/ope/LCOM-GEN` (Gen: `Wrong Field`, Civil: 404 routing-level), `/ope/GSBG` (needs a real bridge model + a GUI-only "Post mode" switch no API call can trigger). **Per-product split is now Gen 337/399, Civil 367/399** (Civil jumped from 195 after a 2026-08-07 full `DbResource` GET sweep merged 172 endpoints; Gen jumped from 266 after a mirrored 2026-08-10 sweep merged 32 more, then from 299 after a 2026-08-10 follow-up batch manually tested 38 of the plain-function design-chapter ANAL/TABLE/REPORT/CAPTURE endpoints the sweep tool can't reach (view.py/`design.rc_kds.design_forces`/`design.rc_kds.checks`/`design.steel_kds`/`design.src_aiksrc2k`, excluding the 11-function Design-Forces crash family and `OCHECK`) against a blank document with no crash/hang, incl. the historically hang-prone `WD-ANAL`; `GEN_ONLY`'s 20 endpoints reconfirmed still 404 on Civil, no drift). Remaining gap on both products is almost entirely `doc.py`'s 9 file-lifecycle endpoints (deliberately untested against a session with real state at risk), `ope.py`'s 3 already-blocked cases, and the crash-family/`OCHECK` endpoints (already characterized, not "unverified") |
 | Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md`, `docs/ai-coding/`, `docs/index.md`, `docs/safety.md` risk levels, `docs/recipes/`, `docs/ko/python-basics.md` | ✅ first example read-only + AI-assistant path (v2.1.2); recipe pilot + ko minimal-Python primer + real-session-verified MAPI key step (2026-08-04); ⚠️ still text-only, no screenshots |
 | Practitioner layer | Excel round-trip, `recipes`/`easy`, opt-in validation | ❌ not started |
 
 ### Write-verification priority
 
-295 of the 390 implemented endpoints answer a live GET; **42 have had a write
-round trip proven** against a real server (10 on both products, 32 on Civil).
-Answering a GET says an endpoint exists; only a round trip says the SDK's write
-shape is the one the server accepts. `scripts/live_crud_check.py`'s tiers close
-that gap, ordered by what a real modelling script reaches for rather than by
-manual chapter:
+All 399 implemented endpoints answer a live GET or write; **162 have had a
+write round trip proven** against a real server, as of 2026-08-27 (see the
+"Live verification" row above — this count has grown across many sessions
+since the `scripts/live_crud_check.py` tiers below were first built, not in
+one pass). Answering a GET says an endpoint exists; only a round trip says
+the SDK's write shape is the one the server accepts. The tiers below were
+the original push that closed that gap, ordered by what a real modelling
+script reaches for rather than by manual chapter — kept here as the
+still-accurate origin story, not a live count:
 
 | Tier | Covers | Why here |
 |---|---|---|
@@ -749,6 +768,7 @@ exactly why that's the honest framing rather than a stronger guarantee.
 | v2.3.0 ✅ | Manual-driven sync (`76ebda9`): new endpoint `get_concurrent_joint_force_table()` (`CONCURRENT_JOINT_FORCE`), `SWIND`/`SSEIS` gain a `"USER TYPE"` schema variant (additive, non-breaking); `/ope/GSBG`'s new second listing in ch17 confirmed to be the same already-implemented endpoint, no code change needed | published 2026-08-10 |
 | v2.3.1 ✅ | `/code-review` fix: `get_concurrent_joint_force_table()` (v2.3.0) was missing `node_elems`/`components`/`opt_cs`/`stage_step` and its docstring wrongly denied the manual documents them for this table — added and corrected; `ROADMAP.md` regenerated to match a v2.3.0 date fix | published 2026-08-10 |
 | v2.3.2 ✅ | `BRACEDESIGNFORCES` confirmed crashing Gen NX (docstring update), a full Gen NX `DbResource` GET sweep (32 new confirmations), and a manual 38-endpoint non-crash-family design-chapter batch (view/RC/steel/SRC ANAL-TABLE-REPORT, incl. `WD-ANAL`) — all clean. `Verified on Gen NX`: 266/399 → 337/399 | published 2026-08-10 |
+| v2.3.5 ✅ | Full close-out of the sibling manual repo's 24-chapter re-verification drift (`vendored_at_commit` current, `has_diff: false`); root-caused 3 long-standing "Wrong Field" write stalls (`GRDP`/`SDHY`/`SDIS`) to missing fields, not server bugs; caught 6 cases of the manual repo's own re-verification being newly wrong, 2 traced further to stale MIDASIT official docs. Write coverage 158→162/399 | published 2026-08-27 |
 | npm v2.3.2 ✅ | Initial typed JavaScript/TypeScript SDK generated from the reviewed Python endpoint inventory, with shared Civil NX/Gen NX coverage | published to npm 2026-08-26 |
 | npm v2.3.3 ✅ | Safety and result-table typing hardening; declaration checks and packed npm artifact smoke tests added to CI | published to npm 2026-08-26 |
 | v0.16.0/Phase 7 (not started) | Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
