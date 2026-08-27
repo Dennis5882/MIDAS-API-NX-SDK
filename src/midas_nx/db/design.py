@@ -18,8 +18,9 @@ from ..post.base import NodeElemsSelector
 from .base import CIVIL_ONLY, GEN_ONLY, DbResource
 
 # Shared KEYS/TO/STRUCTURE_GROUP_NAME "pick one" element-selector used when
-# CREATE_SUB_SECTION=true (REBB/REBC/REBR "ELEMS") — identical shape to
-# post/base.py's NodeElemsSelector, reused instead of redeclared.
+# CREATE_SUB_SECTION=true (REBR "ELEMS" -- REBB/REBC don't have this field,
+# see their own docstrings, 2026-08-27) — identical shape to post/base.py's
+# NodeElemsSelector, reused instead of redeclared.
 SubSectionElems = NodeElemsSelector
 
 
@@ -294,17 +295,24 @@ class ModifyWallMark(DbResource):
 class BeamMainBarLayerEntry(TypedDict, total=False):
     """Item shape for BAR_SECTOR_*.vMAIN_BAR_TOP / vMAIN_BAR_BOT.
 
-    The manual's own Specifications summary describes MAIN_BAR_TOP/BOT as a
-    {LAYER1, LAYER2} object each holding {NAME, NUM}, but the worked
-    Request/Response examples show these as "vMAIN_BAR_TOP"/"vMAIN_BAR_BOT"
-    *arrays* (always empty in the example, so the item shape isn't directly
-    observed there); following the manual's own guidance to prefer the
-    example's array-of-layers shape, and inferring per-item fields {LAYER,
-    NAME, NUM} from the layer-object Parameters table plus the sibling
-    RCHK POS_TOP_LAYERS/POS_BOT_LAYERS array-of-layer-object precedent.
+    ⚠️ 2026-08-27: dropped the inferred `LAYER` field. The sibling manual
+    repo's 8/26 "전수 재검증" pass briefly changed this whole endpoint to a
+    `{LAYER1, LAYER2}` object shape (matching what its Specifications
+    table literally says, and what the official MIDASIT Zendesk article
+    also says) — then reverted that change the same day, back to this
+    array-of-`{NAME,NUM}` shape, believing REBB had been swept up in a
+    batch mistake alongside REBC/REBW. A fresh `GET /info/db/REBB` schema
+    pull confirms this endpoint's array items really are just `{NAME,
+    NUM}` — no `LAYER` property anywhere in the live schema. The `LAYER`
+    field was this SDK's own unconfirmed inference (see the removed
+    comment below, from a since-superseded rewrite); dropped now that
+    direct schema evidence is available. Not round-tripped with a real
+    POST this session (every attempt failed generically before reaching a
+    real target section, on both the array and the LAYER1/LAYER2 variant
+    — inconclusive either way), so this is schema-confirmed only, not a
+    live write confirmation.
     """
 
-    LAYER: int  # Layer number (1 or 2), required
     NAME: str  # Rebar size, D4~D57, required
     NUM: int  # Rebar count, required
 
@@ -338,11 +346,17 @@ class BeamRebarItem(TypedDict, total=False):
     The Parameters table names the cover-distance fields "DT"/"DB", but the
     worked example uses "MAIN_BAR_DC_TOP"/"MAIN_BAR_DC_BOT" (matching the
     JSON-Schema's own field names); following the example/schema.
+
+    ⚠️ 2026-08-27: dropped `CREATE_SUB_SECTION`/`ELEMS`. Neither appears in
+    a fresh `GET /info/db/REBB` schema pull (which does list `ID`, `BAR_
+    SECTOR_I/M/J`, `MAIN_BAR_DC_TOP/BOT`, and the three `bSAME_SIZE_*`
+    flags below verbatim) — they were carried over from the shared
+    `SubSectionElems`/REBC/REBR "create a sub-section" pattern without
+    independent confirmation for this endpoint specifically. Schema-
+    confirmed only, not round-tripped with a real POST this session.
     """
 
-    CREATE_SUB_SECTION: bool  # default false, optional
     ID: int  # Sub Section ID, read-only, optional
-    ELEMS: SubSectionElems  # required if CREATE_SUB_SECTION=true
     BAR_SECTOR_I: BeamRebarSector  # required
     BAR_SECTOR_M: BeamRebarSector  # required
     BAR_SECTOR_J: BeamRebarSector  # required
@@ -394,7 +408,26 @@ class ColumnMainBarItem(TypedDict, total=False):
 
 class ColumnRebarItem(TypedDict, total=False):
     """ITEMS entry. See ColumnMainBarItem's docstring for the 2026-08-27
-    rewrite context."""
+    rewrite context.
+
+    ⚠️ 2026-08-27 (later): the sibling manual repo's own 8/26 "전수
+    재검증" pass had briefly "corrected" this endpoint to a single-object
+    `MAIN_BAR`/top-level `DO`/string `HOOK_TYPE` shape (matching the
+    official MIDASIT Zendesk article, id `49513980544793`, fetched and
+    read directly) — then reverted that "fix" the same day after finding
+    it was itself wrong. Both the reverted manual text and the official
+    article agree with each other, and both disagree with this SDK. Re-
+    tested live on Gen NX to settle it independently of either source:
+    `POST /db/REBC` with the official article's single-`MAIN_BAR`-object
+    shape answers `"Wrong Field"` (rejected outright); the array-based
+    `vMAIN_BAR` shape below answers a specific domain error instead
+    ("Column Rebars has been entered in the section no. N, which has not
+    been specified" — recognized, just needs a real target section). A
+    fresh `GET /info/db/REBC` schema pull independently confirms every
+    field below verbatim, including one this SDK was still missing:
+    `HOOK_TYPE`. Conclusion stands: the official article itself is wrong
+    for this endpoint, not just the vendored copy.
+    """
 
     ID: int  # Sub Section number, required
     vMAIN_BAR: List[ColumnMainBarItem]  # Main Bar List, required
@@ -403,6 +436,7 @@ class ColumnRebarItem(TypedDict, total=False):
     HOOP_TYPE: int  # 1=Tied, 2=Spiral, required -- Integer, not the string this SDK previously used
     bSAME_SPACE_END_CEN: bool  # required
     NUM_BAR_BC_JOINT: int  # Beam-Column joint rebar count (specific design codes only), required
+    HOOK_TYPE: int  # Added 2026-08-27, schema-confirmed via GET /info/db/REBC (no enum meaning given by the schema description); not independently live-tested, optional
 
 
 class ColumnRebarPayload(TypedDict, total=False):
@@ -461,6 +495,14 @@ class WallRebarItem(TypedDict, total=False):
     field `vSTORY_NAME`, `items.type: "string"` — exactly matching this
     TypedDict, not the manual's new claim. The manual's correction is
     wrong on this field specifically; don't apply it.
+
+    ⚠️ 2026-08-27 (later): the manual repo's own re-verification pass
+    also claimed `/db/REBC`'s and `/db/REBB`'s Specifications went stale
+    the same way as this endpoint's — see `ColumnRebarItem`'s and
+    `BeamMainBarLayerEntry`'s docstrings. `/db/REBW` itself is unaffected:
+    re-fetched the **entire** live schema (`GET /info/db/REBW`, every
+    field, not just `vSTORY_NAME`) and it matches this TypedDict exactly,
+    field for field.
     """
 
     ID: int  # read-only, optional

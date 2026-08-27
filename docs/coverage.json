@@ -5657,11 +5657,11 @@
       "status": "implemented",
       "module": "midas_nx.db.design",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-27",
         "products": [
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) 2026-08-27: the sibling manual repo briefly \"corrected\" this endpoint to a {LAYER1,LAYER2} object shape (matching the official Zendesk article), then reverted the same day back to an array-based vMAIN_BAR_TOP/BOT shape, believing REBB had been mistakenly swept into the REBC/REBW batch fix. A fresh GET /info/db/REBB schema pull confirms the array-based shape is correct but with plain {NAME,NUM} items -- no LAYER field, and no CREATE_SUB_SECTION/ELEMS either (both were this SDK's own unconfirmed additions, now removed). Not round-tripped with a real POST (every attempt this session failed generically before reaching a real target section); schema-confirmed only, level stays read.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
         },
@@ -5683,7 +5683,7 @@
         "products": [
           "gen"
         ],
-        "method": "GET /info/db/REBC route check (endpoint itself is POST-only, no GET, so scripts/live_readonly_sweep.py can't reach it) -- answers on Gen, 404s on Civil; confirmed independently twice the same day (an earlier sweep, then a live re-check with both products connected in one session) Corrected 2026-08-27, whole payload rewrite: the previous shape (CREATE_SUB_SECTION/ELEMS/HOOK_TYPE/single-object MAIN_BAR/top-level DO) was confused with a different endpoint and answered \"Wrong Field\" on every live attempt. The real shape (vMAIN_BAR as an array, integer HOOP_TYPE, bSAME_SPACE_END_CEN, NUM_BAR_BC_JOINT) round-tripped a full POST->GET->PUT->DELETE->GET cycle on Gen NX, confirming DELETE actually removes the record. Also not POST-only as previously documented -- full CRUD confirmed live; METHODS override removed.",
+        "method": "GET /info/db/REBC route check (endpoint itself is POST-only, no GET, so scripts/live_readonly_sweep.py can't reach it) -- answers on Gen, 404s on Civil; confirmed independently twice the same day (an earlier sweep, then a live re-check with both products connected in one session) Corrected 2026-08-27, whole payload rewrite: the previous shape (CREATE_SUB_SECTION/ELEMS/HOOK_TYPE/single-object MAIN_BAR/top-level DO) was confused with a different endpoint and answered \"Wrong Field\" on every live attempt. The real shape (vMAIN_BAR as an array, integer HOOP_TYPE, bSAME_SPACE_END_CEN, NUM_BAR_BC_JOINT) round-tripped a full POST->GET->PUT->DELETE->GET cycle on Gen NX, confirming DELETE actually removes the record. Also not POST-only as previously documented -- full CRUD confirmed live; METHODS override removed. Pre-Jira due diligence 2026-08-27: fetched the official Zendesk article (id 49513980544793) directly -- it documents a single-object MAIN_BAR/POST-only shape, matching a since-reverted sibling-manual-repo mistake, not this SDK. Re-tested live on Gen NX: that single-object shape answers \"Wrong Field\" (rejected), while this SDK's vMAIN_BAR array shape answers a specific \"section not specified\" domain error (recognized). A fresh GET /info/db/REBC also confirms every field verbatim, plus one this SDK was missing (HOOK_TYPE, now added). The official article itself is wrong for this endpoint.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/20/2026"
         },
@@ -5704,7 +5704,7 @@
         "products": [
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-checked 2026-08-27 against the sibling manual repo's full re-verification pass, which newly claimed vSTORY_NAME should be vSTORY_KEY (Integer array): GET /info/db/REBW on Gen NX still names the field vSTORY_NAME with items.type \"string\", exactly matching the 2026-07-29 rewrite -- the manual's new claim on this field is wrong, not applied.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-checked 2026-08-27 against the sibling manual repo's full re-verification pass, which newly claimed vSTORY_NAME should be vSTORY_KEY (Integer array): GET /info/db/REBW on Gen NX still names the field vSTORY_NAME with items.type \"string\", exactly matching the 2026-07-29 rewrite -- the manual's new claim on this field is wrong, not applied. Pre-Jira due diligence 2026-08-27: re-fetched the complete GET /info/db/REBW schema (not just vSTORY_NAME) -- every field matches this SDK exactly. Unaffected by the sibling manual repo's same-day revert of its REBB/REBC/REBW re-verification mistakes.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
         },

@@ -6769,6 +6769,67 @@ go to Jira. Test fixtures (nodes/elements/STLD/LCOM-GEN records) created
 on both products during this pass were all cleaned up. `pytest` (706),
 `ruff`, `mypy` unaffected (no source changed this entry).
 
+## 2026-08-27 (yet again) — the sibling manual repo reverted its own REBB/REBC/REBW re-verification, and got 2 of 3 wrong
+
+While the above was in progress, the user reported the manual repo had
+been updated again: commit `af21cd7` ("24장 REBB/REBC/REBW 오정정 되돌림")
+reverts its own 8/26 re-verification for all three endpoints, saying
+that pass had confused them with a different endpoint's schema and
+introduced fictional fields (`vMAIN_BAR`/`vSTORY_KEY`/integer `HOOP_TYPE`
+etc.). Checked each of the three independently — live schema pulls, and
+for REBC a live POST comparison — rather than trusting the revert at
+face value, same as every other manual claim this session:
+
+- **`/db/REBC` — the revert is right that 8/26 was wrong, but the
+  revert's own replacement is *also* wrong.** Fetched the official
+  Zendesk article directly (id `49513980544793`, "Modify Column Rebar
+  Data") — it documents a single-object `MAIN_BAR` (`NAME`/`NUM`/`ROW`/
+  `USE_CORNER`), `DO`, and `Active Methods: POST` only, matching exactly
+  what the revert restored. Live-tested both shapes on Gen NX: the
+  official/reverted single-object shape answers `"Wrong Field"`
+  (rejected outright); this SDK's existing array-based `vMAIN_BAR` shape
+  answers `"Column Rebars has been entered in the section no. 1, which
+  has not been specified"` — a domain error, meaning the shape itself
+  was accepted. A fresh `GET /info/db/REBC` independently confirms the
+  array shape field-for-field, plus one field this SDK didn't have yet:
+  `HOOK_TYPE` (added). `GET /db/REBC` also answers cleanly, contradicting
+  "POST only." **The official MIDASIT article is wrong for this
+  endpoint**, not just the vendored copy — this is now the second
+  confirmed case of that this session (the first was Story Load Summary
+  Table, a docs/example mismatch rather than a wrong field name).
+- **`/db/REBW` — unaffected.** Re-pulled the complete `GET /info/db/REBW`
+  schema (every field, not just the previously-checked `vSTORY_NAME`) —
+  matches this SDK exactly. Nothing to change.
+- **`/db/REBB` — the revert is wrong, and so is the SDK, in different
+  ways.** The revert restored a `{LAYER1, LAYER2}` object shape for
+  `MAIN_BAR_TOP`/`MAIN_BAR_BOT` (matching the official article). A fresh
+  `GET /info/db/REBB` schema pull shows neither that nor exactly what
+  this SDK had: the live server uses an **array** of `{NAME, NUM}` items
+  (no `LAYER1`/`LAYER2`, but also no `LAYER` field like this SDK's own
+  `BeamMainBarLayerEntry` had inferred) — array position encodes the
+  layer instead. The schema also shows no `CREATE_SUB_SECTION`/`ELEMS`
+  at all, which this SDK had carried over from the REBC/REBR pattern
+  without independent confirmation for REBB specifically. Removed
+  `LAYER`/`CREATE_SUB_SECTION`/`ELEMS` from `BeamMainBarLayerEntry`/
+  `BeamRebarItem`. **Not round-tripped with a real POST**: every attempt
+  this session (with or without these fields) failed with a generic
+  `"Wrong Field"` before reaching a usable target section — inconclusive
+  on its own, so this fix rests on the schema pull alone, not a write
+  confirmation. Interesting side note: this SDK's 2026-07-29 rewrite of
+  the neighboring `WallRebarItem` docstring says REBB was checked that
+  same session and "uses the manual's long-form names correctly" — that
+  was before 8/26 ever touched REBB, and refers to whatever the manual
+  said at the time, not necessarily this array shape; not re-derivable
+  now without the 2026-07-29 session's own notes.
+
+Net effect: of the 3 endpoints the manual repo just reverted, 1 revert
+was fully correct (REBW, moot — already fine), 1 revert corrected a real
+problem but replaced it with a still-wrong shape whose real source is
+now identified as a bug in MIDASIT's own official docs (REBC), and 1
+revert introduced a new problem where none existed (REBB, un-reverted
+here based on fresh schema evidence). `pytest` (706), `ruff`, `mypy` all
+clean.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
