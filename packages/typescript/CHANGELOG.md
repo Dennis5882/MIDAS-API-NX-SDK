@@ -6,10 +6,17 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.3.4 - 2026-08-27
+
 ### Added
 
 - Package-local changelog and an npm release checklist for the independent
   `js-v*` release stream.
+
+### Changed
+
+- Added separate npm trusted-publishing automation for `js-v*` GitHub
+  Releases, independent from the Python `py-v*` release stream.
 
 ## 2.3.3 - 2026-08-26
 
