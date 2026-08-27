@@ -6,6 +6,8 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.4.0 - 2026-08-27
+
 ### Fixed
 
 - **`db.staticLoads.nodalMass` could crash a live MIDAS NX session.** Creating or
