@@ -6,6 +6,23 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Fixed
+
+- **`db.staticLoads.nodalMass` could crash a live MIDAS NX session.** Creating or
+  updating a nodal mass without `rmX`/`rmY`/`rmZ` sent the payload to the product
+  unchanged. Omitting those three fields has been observed to hang the call and
+  end the NX session across both Gen NX and Civil NX; the Python package has
+  filled them with their documented default of `0` since 2026-07-29, and this
+  package shipped without that protection. `create()` and `update()` now apply the
+  same defaults, without overriding any value the caller supplied.
+
+### Added
+
+- `DbResourceMetadata.payloadDefaults`, generated from the new language-neutral
+  endpoint contracts in `contracts/`, so an endpoint's safety rules reach both the
+  npm and PyPI packages instead of only whichever one they were written in. CI
+  fails when either package stops honouring a contract.
+
 ## 2.3.4 - 2026-08-27
 
 ### Added

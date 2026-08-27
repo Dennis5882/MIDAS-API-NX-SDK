@@ -44,6 +44,12 @@ dev = [
   "ruff>=0.15",
   "mypy>=2.3.0",
   "types-requests",
+  # contracts/ tooling only. Deliberately not a runtime dependency: the
+  # contracts are consumed at generation and validation time, so an installed
+  # midas-nx still needs nothing but requests.
+  "pyyaml>=6.0",
+  "types-PyYAML",
+  "jsonschema>=4.23",
 ]
 docs = [
   "mkdocs-material>=9.5",

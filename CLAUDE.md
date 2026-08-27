@@ -12,6 +12,7 @@ pytest                          # Python suite; no live server needed
 ruff check src tests scripts    # Python lint
 mypy                            # Python static typing
 python scripts/gen_roadmap.py   # regenerate ROADMAP.md from docs/coverage.json
+python scripts/validate_contracts.py   # validate contracts/ and check both SDKs against it
 
 cd packages/typescript
 npm ci                          # JavaScript/TypeScript dev setup
@@ -34,6 +35,18 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
 
 ## Where things go
 
+- `contracts/` — the **language-neutral source of truth**, being introduced endpoint
+  by endpoint. Read `contracts/README.md` before touching it. The Python and npm
+  packages are equal implementations of what is written there; neither is a source
+  for the other, and neither may be used as a source for a contract. Permitted
+  sources are the manual repo, `docs/live_verification_notes.md`, and live
+  `/info/{endpoint}` introspection. `scripts/validate_contracts.py` validates the
+  contracts and then checks **both** SDKs against them — a disagreement is an SDK
+  defect, never a reason to edit the contract. Two things there are easy to get
+  wrong: `documentedOptional` (a claim about the docs) and `safeToOmit` (a claim
+  about the product) are separate booleans and must stay that way, and `risk`
+  (what the endpoint is) and `mitigation` (what the SDKs do) are separate axes —
+  a mitigated crash risk is still a crash risk.
 - `src/midas_nx/` — the only thing that ships in the wheel (`packages = ["src/midas_nx"]`).
   - `client.py` — `MidasClient`, `Product` enum, exception hierarchy rooted at `MidasAPIError`.
   - `db/` — `/db/*` endpoints as `DbResource` subclasses.
@@ -89,6 +102,13 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
 5. Mark it `"implemented"` in `docs/coverage.json`, then rerun `scripts/gen_roadmap.py`.
 6. Run `npm run generate` from `packages/typescript/`, review the generated TypeScript diff, and add
    or update hand-written npm adapters/tests when the endpoint needs behavior beyond generated metadata.
+7. **If the endpoint needs a safety rule, it belongs in a contract, not in one language.**
+   Write `contracts/endpoints/<id>.yaml`, then run `python scripts/validate_contracts.py`.
+   `normalize_defaults` rules flow into the npm surface automatically through
+   `npm run generate`; the Python side implements them in the resource class, and the
+   validator fails if the two disagree. A rule that lives only inside
+   `NodalMass.create()` reaches only Python's users — that is how the npm package
+   shipped for a month able to crash a live NX session.
 
 ## Staying in sync with the manual repo
 

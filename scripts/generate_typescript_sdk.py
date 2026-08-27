@@ -330,6 +330,44 @@ def _render_types(modules: dict[str, ast.Module], type_keys: set[tuple[str, str]
     return "\n".join(chunks)
 
 
+def _contract_payload_defaults() -> dict[str, dict[str, Any]]:
+    """Read ``normalize_defaults`` rules out of contracts/endpoints/*.yaml.
+
+    Payload normalization is *behaviour*, not metadata, which is precisely why
+    it never survived the trip from Python to TypeScript: ``/db/NMAS``'s
+    rmX/rmY/rmZ workaround lived inside ``NodalMass.create()``, so the npm
+    package shipped a month after that fix without it and could still kill a
+    live NX session. Reading the rule from the language-neutral contract instead
+    means neither SDK can be the one that has it.
+
+    Contracts are optional here on purpose: they are being introduced endpoint by
+    endpoint, and an endpoint without one simply gets no defaults.
+    ``scripts/validate_contracts.py`` is what fails CI when a contract exists and
+    an SDK does not honour it.
+    """
+    contract_dir = ROOT / "contracts" / "endpoints"
+    if not contract_dir.is_dir():
+        return {}
+    try:
+        import yaml  # noqa: PLC0415
+    except ImportError:  # pragma: no cover - dev dependency
+        raise SystemExit(
+            "contracts/ is present but PyYAML is not installed. "
+            'Run: pip install -e ".[dev]"'
+        ) from None
+
+    defaults: dict[str, dict[str, Any]] = {}
+    for path in sorted(contract_dir.glob("*.yaml")):
+        contract = yaml.safe_load(path.read_text(encoding="utf-8"))
+        merged: dict[str, Any] = {}
+        for rule in contract.get("sdkRules", []):
+            if rule.get("kind") == "normalize_defaults":
+                merged.update(rule.get("values", {}))
+        if merged:
+            defaults[contract["endpoint"]] = merged
+    return defaults
+
+
 def _load_resources() -> list[dict[str, Any]]:
     sys.path.insert(0, str(PYTHON_SRC))
     import midas_nx  # noqa: PLC0415
@@ -342,6 +380,8 @@ def _load_resources() -> list[dict[str, Any]]:
     coverage_by_endpoint: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for entry in coverage["endpoints"]:
         coverage_by_endpoint[entry["endpoint"]].append(entry)
+
+    payload_defaults = _contract_payload_defaults()
 
     resources: list[dict[str, Any]] = []
     for cls in _all_subclasses(DbResource):
@@ -357,6 +397,13 @@ def _load_resources() -> list[dict[str, Any]]:
                 "methods": sorted(cls.METHODS),
                 "pythonModule": cls.__module__,
                 "modulePath": _module_parts(cls.__module__),
+                # Present only for endpoints with a contract rule; see
+                # _contract_payload_defaults().
+                **(
+                    {"payloadDefaults": payload_defaults[endpoint]}
+                    if endpoint in payload_defaults
+                    else {}
+                ),
                 "manual": [
                     {
                         "name": match.get("name"),
@@ -395,6 +442,8 @@ def _render_tree(resources: list[dict[str, Any]]) -> str:
                     key: value[key]
                     for key in ("className", "endpoint", "name", "products", "methods", "pythonModule")
                 }
+                if "payloadDefaults" in value:
+                    metadata["payloadDefaults"] = value["payloadDefaults"]
                 encoded = json.dumps(metadata, ensure_ascii=False, separators=(",", ":"))
                 payload = value.get("payloadType", "JsonObject")
                 lines.append(f"{pad}  {key}: defineDbResource<{payload}>({encoded}),")

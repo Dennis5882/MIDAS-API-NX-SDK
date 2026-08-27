@@ -1,0 +1,42 @@
+# Live verification records for MIDAS Gen NX.
+#
+# One entry per observed session finding. Endpoint contracts reference these by
+# id through `verification.records[].ref`. Prose narrative stays in
+# docs/live_verification_notes.md; this file carries only what a machine needs
+# to check that a claim has a dated, product-specific, build-specific source.
+schemaVersion: 1
+product: gen
+
+records:
+  - id: db-node-crud-2026-07-29
+    endpoints: ["/db/NODE"]
+    date: "2026-07-29"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 07/28/2026
+    level: write
+    outcome: success
+    method: Full CRUD round trip against a scratch document.
+    finding: >-
+      POST, GET, PUT and per-id DELETE all behaved as contracted. The per-id
+      DELETE route removed exactly the named node.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-nmas-crash-rootcause-2026-07-29
+    endpoints: ["/db/NMAS"]
+    date: "2026-07-29"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 07/30/2026
+    level: write
+    outcome: product_crash
+    method: >-
+      Paired calls in one session - one POST with all six fields explicit,
+      followed immediately by a POST on a different node with rmX/rmY/rmZ
+      omitted.
+    finding: >-
+      The full-fields call succeeded with 201 and the session stayed alive. The
+      omitted-fields call hung and killed that same session, reproducibly. This
+      is the pair that isolated the root cause after 15+ earlier reproductions
+      had ruled out idle timeouts, save dialogs, model topology and caller
+      location.
+    riskRef: db-nmas-omitted-rotational-mass
+    evidence:
+      - docs/live_verification_notes.md

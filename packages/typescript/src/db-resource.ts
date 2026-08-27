@@ -19,6 +19,21 @@ export interface DbResourceMetadata {
   products: readonly Product[];
   methods: readonly HttpMethod[];
   pythonModule: string;
+  /**
+   * Field values this endpoint's contract requires be sent explicitly, filled
+   * in on `create()` and `update()` for any record that omits them.
+   *
+   * These are never invented defaults. Each one is the value the official
+   * manual already documents, made explicit on the wire because omitting it
+   * has been observed to break the product. `/db/NMAS` is the case that
+   * motivated it: leaving `rmX`/`rmY`/`rmZ` out of the payload hung the call
+   * and killed the NX session across 15+ reproductions on both Gen NX and
+   * Civil NX, while sending them as `0.0` - their own documented default - did
+   * not. A caller should not have to know that to use the endpoint safely.
+   *
+   * Generated from `contracts/endpoints/*.yaml`; see `contracts/README.md`.
+   */
+  payloadDefaults?: Readonly<Record<string, unknown>>;
 }
 
 export class DbResource<TPayload extends object = JsonObject> {
@@ -59,14 +74,30 @@ export class DbResource<TPayload extends object = JsonObject> {
     return client.request("GET", `/info${this.metadata.endpoint}`);
   }
 
+  /**
+   * Apply the contract's required-explicit field values to every record,
+   * without overriding anything the caller supplied.
+   */
+  private normalize(items: ItemMap<TPayload>): ItemMap<TPayload> {
+    const defaults = this.metadata.payloadDefaults;
+    if (!defaults) return items;
+    return Object.fromEntries(
+      Object.entries(items).map(([id, payload]) => [id, { ...defaults, ...payload }]),
+    ) as ItemMap<TPayload>;
+  }
+
   async create(items: ItemMap<TPayload>, client: MidasClient = getDefaultClient()): Promise<JsonObject> {
     this.check(client, "POST");
-    return client.request("POST", this.metadata.endpoint, { Assign: stringifyKeys(items) });
+    return client.request("POST", this.metadata.endpoint, {
+      Assign: stringifyKeys(this.normalize(items)),
+    });
   }
 
   async update(items: ItemMap<TPayload>, client: MidasClient = getDefaultClient()): Promise<JsonObject> {
     this.check(client, "PUT");
-    return client.request("PUT", this.metadata.endpoint, { Assign: stringifyKeys(items) });
+    return client.request("PUT", this.metadata.endpoint, {
+      Assign: stringifyKeys(this.normalize(items)),
+    });
   }
 
   /**

@@ -1,0 +1,81 @@
+# Live verification records for MIDAS Civil NX.
+#
+# One entry per observed session finding. Endpoint contracts reference these by
+# id through `verification.records[].ref`. Prose narrative stays in
+# docs/live_verification_notes.md; this file carries only what a machine needs
+# to check that a claim has a dated, product-specific, build-specific source.
+schemaVersion: 1
+product: civil
+
+records:
+  - id: db-node-crud-2026-07-29
+    endpoints: ["/db/NODE"]
+    date: "2026-07-29"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 06/18/2026
+    level: write
+    outcome: success
+    method: Full CRUD round trip against a scratch document.
+    finding: >-
+      POST, GET, PUT and per-id DELETE all behaved as contracted.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-delete-body-empties-table-2026-07-26
+    endpoints: ["/db/NODE", "/db/STLD", "/db/LDGR", "/db/MATL"]
+    date: "2026-07-26"
+    nxVersion: MIDAS Civil NX 2026 (v2.1)
+    level: write
+    outcome: destructive_surprise
+    method: >-
+      Issued the manual's documented DELETE body form naming a single id, then
+      read the table back.
+    finding: >-
+      Both documented body forms - id mapped to null and id mapped to {} -
+      emptied the entire table and ignored the ids. For /db/NODE the elements
+      attached to those nodes went with them. DELETE {endpoint}/{id}, which the
+      manual does not document, removed exactly the named record and returned
+      it; deleting an absent id was a no-op.
+    riskRef: db-delete-body-empties-table
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-nmas-crash-rootcause-2026-07-29
+    endpoints: ["/db/NMAS"]
+    date: "2026-07-29"
+    nxVersion: MIDAS Civil NX 2026 (v2.2)
+    level: write
+    outcome: product_crash
+    method: >-
+      Paired calls in one session - one POST with all six fields explicit,
+      followed immediately by a POST on a different node with rmX/rmY/rmZ
+      omitted.
+    finding: >-
+      Same result as Gen NX on the same day: full-fields call survives,
+      omitted-fields call kills the session. The symmetry across two products
+      is what made an uninitialized server-side read the only remaining
+      explanation.
+    riskRef: db-nmas-omitted-rotational-mass
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-nmas-raw-retrigger-2026-08-13
+    endpoints: ["/db/NMAS"]
+    date: "2026-08-13"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 08/12/2026
+    level: write
+    outcome: success
+    method: >-
+      Deliberate raw re-trigger bypassing the SDK normalization entirely, on a
+      blank connected document, with the user's explicit go-ahead and accepting
+      the session-death risk. Control call with all six fields, then the exact
+      historical trigger payload with rmX/rmY/rmZ omitted.
+    finding: >-
+      Control call succeeded in 0.2s. The trigger call succeeded in 0.1s and
+      GET read the record back with rmX/rmY/rmZ all 0 - the server now applies
+      the documented default rather than reading an uninitialized value. Session
+      responsive throughout and afterwards. Materially stronger than the
+      2026-07-29 retest, which only established "does not crash". One build on
+      one account, so the SDK normalization stays in place.
+    riskRef: db-nmas-omitted-rotational-mass
+    evidence:
+      - docs/live_verification_notes.md

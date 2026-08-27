@@ -5954,6 +5954,11 @@
         "db",
         "staticLoads"
       ],
+      "payloadDefaults": {
+        "rmX": 0.0,
+        "rmY": 0.0,
+        "rmZ": 0.0
+      },
       "manual": [
         {
           "name": "Nodal Masses",

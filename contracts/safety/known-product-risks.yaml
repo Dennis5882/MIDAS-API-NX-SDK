@@ -1,0 +1,143 @@
+# Known MIDAS NX product risks, and the cross-endpoint rules every SDK must follow.
+#
+# Endpoint contracts reference entries here by id, through `knownDefects[].ref`
+# and `sdkRules[].riskRef`. A risk that no contract references is a validation
+# error: either it belongs to an endpoint that has not been contracted yet, or it
+# is stale.
+schemaVersion: 1
+
+# ---------------------------------------------------------------------------
+# Rules that hold for every endpoint, regardless of contract.
+# ---------------------------------------------------------------------------
+clientRules:
+  - id: timeout-is-not-rollback
+    title: A timeout is not a rollback
+    statement: >-
+      A client-side timeout stops the SDK waiting. It does not cancel, undo or
+      roll back anything on the MIDAS NX side. The product may still be
+      executing the request, may complete it after the SDK has already raised,
+      and may have mutated the model or written files by then. Model state after
+      a timeout is unknown until it is read back.
+    requiredOfSdks: >-
+      Document this wherever a timeout is configurable or raised, in text that
+      survives into the published API documentation, and never describe a
+      timeout as cancelling the operation.
+    evidence: >-
+      Observed repeatedly on hanging *-ANAL design checks and on the /db/NMAS
+      crash, where the call timed out client-side while the product was still
+      wedged. docs/live_verification_notes.md.
+
+  - id: http-200-is-not-success
+    title: A 200 does not mean success
+    statement: >-
+      Several endpoints answer HTTP 200 - and sometimes 201 - with an
+      {"error": {...}} body. Others report failure in a plain "message" string:
+      /doc/ANAL reports a failed solve as {"message": "... Analysis failed."}
+      and /doc/SAVEAS returns "... command complete" for a save that never
+      happened.
+    requiredOfSdks: >-
+      Inspect the response body, not only the status line, and raise on an error
+      body by default. Do not assume one error shape covers every endpoint;
+      verify the failure shape of each write endpoint against a live product.
+
+  - id: response-key-is-unstable
+    title: Match the response table by shape, not by key name
+    statement: >-
+      /post/TABLE's top-level response key has been observed as "Result Table",
+      as "empty", and as the TABLE_NAME that was requested. "empty" is simply
+      the default key for a blank TABLE_NAME and can carry a full table, so it
+      must never be read as "no data".
+    requiredOfSdks: >-
+      Locate the payload by finding the object carrying HEAD/DATA, never by
+      indexing a key name.
+
+  - id: paths-resolve-on-the-nx-host
+    title: Every path belongs to the machine running NX
+    statement: >-
+      Calls travel through the MIDASIT relay, so the product commonly runs on a
+      different machine from the script. EXPORT_PATH, /doc/SAVEAS, /doc/OPEN,
+      report and image paths all resolve on the NX host. A path that does not
+      exist there raises a modal dialog on that machine and blocks the session,
+      while the HTTP call still answers with a success-shaped message.
+    requiredOfSdks: >-
+      Document that paths are host-side, and verify a write by reading it back
+      through the API rather than by checking the local filesystem.
+
+  - id: modal-dialog-blocks-the-session
+    title: A dialog blocks the whole API session
+    statement: >-
+      Any call that raises a confirmation or error dialog on the NX host blocks
+      every subsequent API call, not just its own, until a human dismisses it.
+      /mapikey/verify keeps answering "connected" throughout, because the relay
+      serves it, so a connection check cannot detect this state. Read-shaped
+      calls are not exempt: GET /db/CAMB raised an access-denied dialog purely
+      because the open document lived under Program Files.
+    requiredOfSdks: >-
+      Never treat a successful connection check as proof that the session is
+      responsive.
+
+# ---------------------------------------------------------------------------
+# Endpoint-specific product defects.
+# ---------------------------------------------------------------------------
+risks:
+  - id: db-nmas-omitted-rotational-mass
+    title: POST/PUT /db/NMAS crashes when rmX/rmY/rmZ are omitted
+    severity: product_crash_risk
+    endpoints: ["/db/NMAS"]
+    products: [gen, civil]
+    symptom: >-
+      The call hangs for 15-60 seconds and never returns. Every following /db/*
+      call then times out too, and the product raises its "Failed to disconnect
+      the work session" licence dialog, which kills the application and holds
+      the licence until the process is restarted properly.
+    rootCause: >-
+      The server reads an uninitialized value for rmX, rmY and rmZ specifically
+      when they are absent from the payload, instead of applying their
+      documented default of 0. Sending them explicitly - even as 0.0 - avoids it
+      entirely. Confirmed symmetrically on both products in one session: a
+      full-fields call survives and an immediately following omitted-fields call
+      on a different node kills that same session, every time.
+    ruledOut: >-
+      Not an idle timeout, not a blocking save-changes dialog, not model
+      topology, and not which machine the HTTP request originates from. 15+
+      reproductions across multiple Civil and Gen versions and builds, a real
+      production model, a same-LAN caller, and a from-scratch minimal fully
+      connected model.
+    mitigation: normalized
+    sdkRule: nmas-rotational-mass-defaults
+    status: >-
+      Fixed server-side on Civil NX 2026 v2.2 build 08/12/2026, on one account:
+      a raw re-trigger bypassing the SDK returned in 0.1s and read back
+      rmX/rmY/rmZ as 0, meaning the server now applies the documented default.
+      That is one build on one installation, not every deployed installation, so
+      the SDK rule stays.
+    firstObserved: "2026-07-29"
+    rootCausedOn: "2026-07-29"
+    lastChecked: "2026-08-13"
+    evidence:
+      - docs/live_verification_notes.md
+    reportedToVendor: A-1
+
+  - id: db-delete-body-empties-table
+    title: DELETE with an id-keyed Assign body empties the whole table
+    severity: destructive
+    endpoints: ["/db/*"]
+    products: [gen, civil]
+    symptom: >-
+      DELETE against the bare endpoint with an id-keyed body deletes every
+      record in the table and ignores the ids named in that body. For /db/NODE
+      this takes every element attached to those nodes with it. This is the form
+      the official manual documents as deleting one record.
+    rootCause: >-
+      Behaviour of the documented route. The undocumented DELETE {endpoint}/{id}
+      is the one that deletes a single record, and deleting an absent id there
+      is a harmless no-op.
+    mitigation: confirmation_required
+    sdkRule: node-delete-per-id
+    status: >-
+      Open. Verified across /db/NODE, /db/STLD, /db/LDGR and /db/MATL; treated
+      as a property of /db/* DELETE rather than of any one endpoint.
+    firstObserved: "2026-07-26"
+    lastChecked: "2026-07-26"
+    evidence:
+      - docs/live_verification_notes.md
