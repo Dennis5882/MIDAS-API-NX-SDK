@@ -1,4 +1,4 @@
-# MIDAS NX Open API — 이슈 리포트 (2026-07-29, v1.2)
+# MIDAS NX Open API — 이슈 리포트 (2026-07-29, v1.3 — B-4/B-5 2026-08-27 갱신)
 
 `/db/*` 43개 엔드포인트에 대해 생성 → 조회 → 수정 → 삭제 왕복을 수행했고, 42개는 정상
 동작을 확인했습니다. 아래는 정상 동작하지 않은 항목입니다.
@@ -221,13 +221,16 @@ C:\Users\<user>\Downloads\제목 없음_restore.mcb                -> 정상 저
 # B. 문서 관련
 
 제품 동작은 정상이며, 공식 온라인 매뉴얼(JSON Manual 섹션) 기재 내용과 관련된 항목입니다.
-아래 3건은 **2026-07-27자 공식 아티클 원문을 다시 확인**한 결과만 남긴 것입니다.
+B-1~3은 **2026-07-27자**, B-4는 **2026-07-29자 및 2026-08-27자**, B-5는 **2026-08-27자**
+공식 아티클 원문을 직접 확인한 결과만 남긴 것입니다.
 
 | # | 대상 | 아티클 | 내용 |
 | --- | --- | --- | --- |
 | B-1 | `/db/PRES` | Assign Pressure Loads | `DIRECTION`이 `Optional / 기본값 "NORMAL"`인데, 각주 ¹⁾ 표에서는 해당 조합에 `NORMAL`이 불가로 표기 |
 | B-2 | `/db/MVHC` | Vehicle Classes | 예시의 `VEHICLE_LD_NAMES: ["DB-18"]`이 그대로는 동작하지 않음 |
 | B-3 | `/db/STLD` | Static Load Cases | `"Assign"` 키의 의미가 명시되어 있지 않음 (이 엔드포인트는 키를 무시하고 재부여) |
+| B-4 | `/db/REBW` | Modify Wall Rebar Data | Specifications 표의 필드명이 서버 구현과 전혀 다름 (`VERTICAL_REBAR` 등 vs 실제 `VER_BAR` 등) |
+| B-5 | `/db/REBC` | Modify Column Rebar Data | `Active Methods`(POST만)와 주철근 필드 구조(`MAIN_BAR` 단일 객체)가 서버 구현과 다름 |
 
 ## B-1. `/db/PRES` — `DIRECTION`의 기본값과 각주가 서로 맞지 않습니다
 
@@ -318,10 +321,55 @@ USE_MODEL_THICKNESS, THICKNESS
 자신의 문서와 정확히 일치**했습니다. 즉 철근 관련 엔드포인트 전체의 문제가 아니라,
 **`/db/REBW`의 Specifications 표 하나만** 실제 서버 구현과 다른 것으로 보입니다.
 
-**공식 온라인 매뉴얼로 직접 재확인했습니다** — 저희가 참고한 사본의 전사 오류가 아닙니다.
+공식 온라인 매뉴얼로 직접 재확인한 결과입니다 — 참조 사본의 전사 오류가 아닙니다.
 [공식 아티클](https://support.midasuser.com/hc/en-us/articles/59359110968345-Modify-Wall-Rebar-Data)도
 `VERTICAL_REBAR`/`HORIZONTAL_REBAR`/`CONCRETE_FACE_TO_CENTER_OF_REBAR`/`STORY: {FROM,TO}` 등
 긴 이름 그대로 기재되어 있습니다. 즉 **공식 문서 자체가 실제 서버와 다릅니다.**
+
+**2026-08-27 재확인:** 같은 문서를 담고 있는 별도 article id
+([49514033006745](https://support.midasuser.com/hc/en-us/articles/49514033006745-Modify-Wall-Rebar-Data))도
+직접 조회했으며, 동일하게 `VERTICAL_REBAR`/`CREATE_SUB_WALL_ID` 등 실제 서버와 다른 필드명을
+기재하고 있습니다. `GET /info/db/REBW` 스키마도 재조회해 위 필드 구성(`VER_BAR`/`HOR_BAR`/
+`vSTORY_NAME` 등)이 그대로임을 확인했습니다.
+
+## B-5. `/db/REBC` — `Active Methods`와 주철근 필드 구조가 서버 구현과 다릅니다
+
+[공식 아티클](https://support.midasuser.com/hc/en-us/articles/49513980544793-Modify-Column-Rebar-Data)은
+다음과 같이 기재하고 있습니다.
+
+- `Active Methods: POST` (POST만 지원)
+- 주철근 필드가 단일 객체 `MAIN_BAR: {NAME, NUM, ROW, USE_CORNER, NAME_CORNER}`
+
+실제 Gen NX 서버는 `GET`/`PUT`/`DELETE`가 모두 정상 동작하며(POST 전용이 아님), 주철근
+필드는 배열 `vMAIN_BAR: [{NAME, NUM, ROW, D0, bUSE_CORNER, NAME_CORNER}, ...]`입니다.
+
+```python
+# 문서 기재 형태로 요청
+{"Assign": {"1": {"ITEMS": [{
+    "MAIN_BAR": {"NAME": "D19", "NUM": 8, "ROW": 3, "USE_CORNER": False, "NAME_CORNER": "D19"},
+    "SHEAR_BAR_END": {"NAME": "D10", "LEG_Y": 2, "LEG_Z": 2, "DIST": 100},
+    "SHEAR_BAR_CEN": {"NAME": "D10", "LEG_Y": 2, "LEG_Z": 2, "DIST": 200},
+    "DO": 0.04,
+}]}}}
+# -> "Wrong Field" (필드 자체가 인식되지 않음)
+
+# 실제 서버 스키마(vMAIN_BAR 배열) 형태로 동일 조건 요청
+{"Assign": {"1": {"ITEMS": [{
+    "vMAIN_BAR": [{"NAME": "D19", "NUM": 8, "ROW": 3, "D0": 0.04,
+                   "bUSE_CORNER": False, "NAME_CORNER": "D19"}],
+    "SHEAR_BAR_END": {"NAME": "D10", "LEG_Y": 2, "LEG_Z": 2, "DIST": 100},
+    "SHEAR_BAR_CEN": {"NAME": "D10", "LEG_Y": 2, "LEG_Z": 2, "DIST": 200},
+    "HOOP_TYPE": 1, "bSAME_SPACE_END_CEN": True, "NUM_BAR_BC_JOINT": 0,
+}]}}}
+# -> 정상 처리되어 도메인 에러(대상 섹션 번호 관련) 응답 -- 요청 형태 자체는 인식됨
+```
+
+`GET /info/db/REBC` 스키마도 배열 구조(`vMAIN_BAR`)와 정확히 일치하며, 문서에는 없는
+`HOOK_TYPE` 필드도 포함되어 있습니다. `GET /db/REBC` 역시 정상 응답해 `Active Methods:
+POST`만이라는 기재와 배치됩니다.
+
+테스트 환경: MIDAS Gen NX 2026 (v2.1). B-4(`/db/REBW`)와 같은 챕터의 인접 엔드포인트이며,
+공식 문서 자체가 실제 서버와 다르다는 같은 패턴입니다.
 
 ---
 
