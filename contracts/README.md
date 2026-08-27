@@ -135,8 +135,30 @@ declares match both SDKs.
 
 ## Adding a contract for an endpoint
 
-1. Read the endpoint's chapter in the manual repo. Transcribe fields with
-   `provenance: manual`.
+Start from a machine-drafted transcription rather than retyping a table:
+
+```bash
+python scripts/extract_contracts.py                       # what is parseable
+python scripts/extract_contracts.py --emit /db/STLD       # draft one endpoint
+python scripts/extract_contracts.py --check               # promoted vs. manual
+```
+
+`--emit` writes to `contracts/drafts/`, which is **git-ignored and ignored by the
+validator**. A draft is an unreviewed transcription, and it deliberately cannot
+validate: every field's `safeToOmit` is left out, so the schema rejects the file
+until a human answers it. That is the whole point. Auto-filling `safeToOmit: true`
+because the manual said "Optional" would restate the documentation as evidence,
+and `/db/NMAS` is the endpoint where doing that gets someone's session killed.
+
+Of roughly 4,770 fields the extractor can read, about a third carry a review note
+— no Default column, an enum whose values live elsewhere in the chapter, a row
+naming two keys at once, a condition the manual gestures at but never states.
+Those notes travel into the draft. Clear them; don't delete them.
+
+Then:
+
+1. Read the endpoint's chapter in the manual repo yourself. The draft is a
+   starting point, not a review. Fields keep `provenance: manual`.
 2. Check `docs/live_verification_notes.md` for anything observed about it. Where
    live behaviour contradicts the manual, the contract records live behaviour,
    `manualDefects` records the mismatch, and the field's `provenance` becomes
@@ -151,12 +173,27 @@ declares match both SDKs.
 
 ## Migration status
 
-Two endpoints are contracted so far. The remaining ledger lives in
-`docs/coverage.json` (399 endpoints) and is being migrated incrementally, so an
-endpoint without a contract is expected rather than a defect. What is *not*
-optional is that a contract, once written, is honoured by both SDKs.
+Two endpoints are contracted. The remaining ledger lives in `docs/coverage.json`
+(399 endpoints) and is being migrated incrementally, so an endpoint without a
+contract is expected rather than a defect. What is *not* optional is that a
+contract, once written, is honoured by both SDKs.
 
-Still to come: the manual-extraction pipeline that turns the chapters'
-Specifications tables and `### JSON Schema` blocks into draft contracts; reversal
-of the remaining Python-to-npm generation; and folding `docs/coverage.json` into
-`contracts/verification/` so there is one ledger rather than two.
+What the extractor can currently reach, per `scripts/extract_contracts.py`:
+
+| | |
+| --- | --- |
+| Endpoint sections found across chapters 01-17 and 24-27 | 386 |
+| ...with a parameter table it can parse | 370 |
+| Fields transcribed | ~4,770, of which ~180 nested |
+| Sections with conditional variant tables left unmerged | 58 |
+| Sections belonging to the shared `/post/TABLE` family | 89 |
+
+The 89 `/post/TABLE` sections (chapters 18-23) are one endpoint selected by a
+`TABLE_TYPE` string, with response `HEAD` columns instead of a request payload.
+They need a two-layer contract — endpoint plus table — which the schema does not
+model yet, so the extractor reports them rather than flattening them into
+endpoint contracts.
+
+Still to come: that two-layer model; reversal of the remaining Python-to-npm
+generation; and folding `docs/coverage.json` into `contracts/verification/` so
+there is one ledger rather than two.

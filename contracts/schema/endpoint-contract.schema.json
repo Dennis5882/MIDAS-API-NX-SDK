@@ -238,6 +238,32 @@
         }
       }
     },
+    "extraction": {
+      "type": "object",
+      "description": "Provenance left by scripts/extract_contracts.py when this contract was drafted from a manual chapter. Kept after promotion: knowing which table a field list came from is what lets --check tell drift from a deliberate correction.",
+      "additionalProperties": false,
+      "properties": {
+        "source": { "type": "string", "description": "Chapter file and line the field table was read from." },
+        "table": { "type": "string", "description": "Heading of the table that produced `fields`." },
+        "unmergedTables": {
+          "type": "array",
+          "description": "Parameter tables in the same section that were NOT merged, usually conditional variants selected by a type or code field. Listed rather than merged or dropped: a partial field list presented as complete is its own kind of wrong answer.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "heading": { "type": "string" },
+              "fields": { "type": "integer" },
+              "line": { "type": "integer" },
+              "resolution": {
+                "type": "string",
+                "description": "What review decided about this table: merged into fields, modelled as nested properties, split into its own contract, or deliberately out of scope."
+              }
+            }
+          }
+        }
+      }
+    },
     "knownDefects": {
       "type": "array",
       "description": "Product defects affecting this endpoint. References contracts/safety/known-product-risks.yaml.",
