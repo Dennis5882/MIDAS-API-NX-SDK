@@ -314,8 +314,15 @@ class GeneralLinkHyperSPayload(TypedDict, total=False):
     property: `/db/NLLP` writes are themselves a separate, already-known
     standing failure on both products (see `GeneralLinkPropertyPayload`'s
     docstring above), so this endpoint's own write path was never actually
-    exercised. Shape is schema-confirmed; the round trip is blocked by
-    that unrelated upstream issue, not evidence against this shape.
+    exercised. Confirmed via a bisection sweep the same day: every
+    `/db/NLLP` payload tried, down to a single `{"PROPERTY_NAME": "..."}`
+    field, answers the identical `"Unknown Error"` -- it's not something a
+    different `NLNK-M1` payload could route around. This isn't a new
+    problem either: the legacy `GeneralLinkPayload`'s own docstring
+    already recorded (2026-08-16) that its write test was scaffolded but
+    never run for the exact same reason. Shape is schema-confirmed; the
+    round trip is blocked by that unrelated upstream issue, not evidence
+    against this shape.
     """
 
     PROP_NAME: str  # General Link Property Name (/db/NLLP name), required

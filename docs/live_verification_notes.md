@@ -6648,6 +6648,55 @@ evidence for fields already added (NLNK-M1, THIS-M1, STCT-M1). `pytest`
 (706), `ruff`, and `mypy` all clean; Civil NX scratch document confirmed
 empty after cleanup.
 
+## 2026-08-27 (final, really) — pushing STCT-M1/THIS-M1/NLNK-M1 past schema-only into real round trips
+
+The user asked to actually try live-verifying the three items the
+previous entry left at "schema-confirmed only" rather than settle for
+that. Two came all the way through; the third stayed genuinely blocked.
+
+- **`STCT-M1` `iINC_NLA=3`/`bIEMF` — fully closed.** The previous entry's
+  "write-once, PUT rejects everything" read was a red herring: the block
+  was PUT specifically, not these values. Creating a **fresh record at
+  POST time** with `{"iINC_NLA": 3, "iNLA_TYPE": 1}`, and separately
+  `{"iINC_NLA": 1, "iNLA_TYPE": 0, "bIEMF": true}`, both round-tripped
+  exactly through GET on Civil NX. `docs/coverage.json`'s `/db/STCT-M1`
+  entry updated with this evidence (level was already `write` from an
+  earlier batch).
+- **`THIS-M1` `ANAL_METHOD=2` (Static) — fully closed, and expanded
+  further than asked.** No worked JSON example exists for THIS-M1's
+  Static case in the manual (only a parameter table) — legacy `/db/THIS`
+  has its own Static example under a completely different key convention
+  (`COMMON.iAMETHOD`/`iISTEP`/...) that doesn't apply here and would have
+  been a trap to copy from directly. Built a fresh payload from the
+  §7-2 parameter table instead: `ANAL_TYPE=1`, `ANAL_METHOD=2`,
+  `INC_STEP=10`, `INC_CTRL={"INC_METHOD":0,"SF":1}`, deliberately omitting
+  `ENDTIME`/`TIME_INC`/`DAMPING` (documented as required by this SDK's
+  existing TypedDict, but the manual's own table scopes them to
+  Modal/Direct-Integration only). It round-tripped cleanly on Civil NX —
+  POST, GET (server auto-filled a complete `NONL_CTRL_PARAM` including a
+  nested `BOUNDARY_NL_ANAL` even though neither was sent), DELETE. This
+  also surfaced that `GEOM_NL_TYPE`/`INC_STEP`/`SUBSEQ`/`INC_CTRL`/
+  `TIME_PARAM` were missing from `TimeHistoryLoadCaseHyperSPayload`
+  entirely (not just the `ANAL_METHOD` enum value the manual flagged) —
+  added, with a note that `ENDTIME`/`TIME_INC`/`DAMPING`'s "required"
+  marking is really conditional on `ANAL_METHOD` and this TypedDict
+  doesn't branch on it (a known imprecision, not fixed this pass).
+  `docs/coverage.json`'s `/db/THIS-M1` bumped from `read` to `write`.
+- **`NLNK-M1` — stayed blocked, confirmed genuinely unblockable today.**
+  Bisected `/db/NLLP` down to a single `{"PROPERTY_NAME": "..."}` field
+  across four different `(APPLICATION_TYPE, APPLICATION_TYPE_D)`
+  combinations — every one answers the identical `"Unknown Error"`,
+  regardless of content. `/db/NLLP` writes are unconditionally broken on
+  this account/session, not something a cleverer payload works around.
+  This also isn't new: the legacy `GeneralLinkPayload`'s (`/db/NLNK`)
+  own docstring already recorded on 2026-08-16 that its write test was
+  scaffolded but never run for this exact reason. `NLNK-M1`'s docstring
+  updated to cite both findings so the next person doesn't re-attempt the
+  same dead end.
+
+`pytest` (706), `ruff`, and `mypy` clean; Civil NX scratch document
+confirmed empty after cleanup.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

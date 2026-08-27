@@ -684,19 +684,16 @@ class ConstructionStageAnalysisTypeHyperS(TypedDict, total=False):
     2026-08-25 re-verification (article id `57053813627673`) added
     `iINC_NLA`'s 4th value (`3`=Geometric+Material Nonlinear -- when
     `iINC_NLA` is 2 or 3, `iNLA_TYPE` only accepts 1/Accumulative) and the
-    previously entirely-missing `bIEMF` field. Schema-confirmed 2026-08-27
-    on Civil NX: `GET /info/db/STCT-M1`'s `ANAL_TYPE.iINC_NLA` description
-    literally reads "Nonlinear Analysis Type (0=No NL, 1=Geo NL, 2=Mat NL,
-    3=Geo+Mat NL)", and `bIEMF` is present in the schema too. Not
-    round-tripped with a real POST/PUT for these two specifically: this
-    object turned out to be **write-once** in practice -- a live PUT
-    attempt failed with `"Wrong Field"` even for a known-good, already-
-    documented value pair (`iINC_NLA=1`/`iNLA_TYPE=1`) on an existing
-    record, so the PUT rejection when testing `iINC_NLA=3`/`bIEMF`
-    specifically doesn't mean those values are wrong -- it reproduces
-    regardless of value. POST-then-GET of a plain record did round-trip
-    `iINC_NLA=0` successfully; the rest of this object's fields are
-    schema-confirmed only.
+    previously entirely-missing `bIEMF` field.
+
+    **Live-confirmed 2026-08-27 on Civil NX**, both via `POST`-time
+    creation rather than `PUT` on an existing record (this object is
+    write-once in practice -- a `PUT` fails with `"Wrong Field"` even for
+    an already-documented known-good value pair on an existing record, so
+    testing new values via `PUT` was a dead end; creating fresh with the
+    new value works fine): `{"iINC_NLA": 3, "iNLA_TYPE": 1}` round-tripped
+    exactly, and separately `{"iINC_NLA": 1, "iNLA_TYPE": 0, "bIEMF":
+    true}` round-tripped exactly too. Both confirmed real.
     """
 
     iINC_NLA: int  # Linear=0/Nonlinear=1/Material Nonlinear=2/Geometric+Material Nonlinear=3, required

@@ -239,12 +239,11 @@ class HyperSAnalysisCase(TypedDict, total=False):
     Specifications table until its 2026-08-25 re-verification (article id
     `56538335819673`) -- added here to match. The manual also notes the
     Linear+Static (`ANAL_TYPE=0` + `ANAL_METHOD=2`) combination is rejected
-    server-side. Schema-confirmed 2026-08-27 on Civil NX: `GET
-    /info/db/THIS-M1`'s own field description literally reads "Analysis
-    Method (Modal:0, Direct:1, Static:2)" -- not just applying the manual's
-    claim, the server's own schema text independently states the same
-    enum. Not round-tripped with a real POST (needs a fully-specified
-    DAMPING/NONL_CTRL_PARAM setup this session didn't build).
+    server-side. **Live-confirmed 2026-08-27 on Civil NX**: a full
+    Static-mode `POST /db/THIS-M1` (`ANAL_TYPE=1`, `ANAL_METHOD=2`, plus
+    `INC_STEP`/`INC_CTRL` -- see `TimeHistoryLoadCaseHyperSPayload`'s
+    docstring for the full payload and what it revealed) round-tripped
+    cleanly through `GET`.
     """
 
     ANAL_TYPE: int  # Linear=0, Nonlinear=1; required
@@ -254,24 +253,49 @@ class HyperSAnalysisCase(TypedDict, total=False):
 
 class TimeHistoryLoadCaseHyperSPayload(TypedDict, total=False):
     """docs/manual/09_DB_Dynamic_Loads.md #7 — /db/THIS-M1 Specifications table
-    (Hyper-S). DAMPING/NONL_CTRL_PARAM sub-objects are left as Any given their
-    size (nested modal overrides, convergence/line-search control) — see the
-    manual for their full shape.
+    (Hyper-S). DAMPING/NONL_CTRL_PARAM/INC_CTRL/TIME_PARAM sub-objects are
+    left as Any given their size (nested modal overrides, convergence/
+    line-search control) — see the manual for their full shape.
+
+    **`GEOM_NL_TYPE`/`INC_STEP`/`SUBSEQ`/`INC_CTRL`/`TIME_PARAM` added
+    2026-08-27**, discovered live rather than from the manual text alone:
+    verifying `ANAL_CASE.ANAL_METHOD=2` (Static, added to the manual
+    2026-08-25) required constructing a full Static-mode payload from
+    scratch (the manual has no worked JSON example for THIS-M1's Static
+    case, unlike the legacy `/db/THIS`'s own -- don't confuse the two,
+    their key conventions differ entirely, e.g. legacy uses
+    `COMMON.iAMETHOD`/`iISTEP`). That payload (`ANAL_TYPE=1`,
+    `ANAL_METHOD=2`, `INC_STEP=10`, `INC_CTRL={"INC_METHOD":0,"SF":1}`,
+    no `ENDTIME`/`TIME_INC`/`DAMPING`) round-tripped cleanly on Civil NX
+    -- confirming `ANAL_METHOD=2` itself, and that `ENDTIME`/`TIME_INC`/
+    `DAMPING` are genuinely not required for the Static branch despite
+    this class marking them required (they're required for
+    Modal/Direct-Integration only; this TypedDict doesn't branch on
+    `ANAL_METHOD` the way `PARAM`-style classes elsewhere in this SDK do
+    for their own mode-dependent fields -- left as a known imprecision
+    rather than restructured this pass). The server auto-filled a full
+    `NONL_CTRL_PARAM` (including a nested `BOUNDARY_NL_ANAL`) on GET even
+    though it wasn't sent, confirming that sub-object's shape too.
     """
 
     NAME: str  # required
     DESC: str  # optional
     ANAL_CASE: HyperSAnalysisCase  # required
-    ENDTIME: float  # required
-    TIME_INC: float  # required
+    ENDTIME: float  # required for ANAL_METHOD=0/1 (Modal/Direct); not required for ANAL_METHOD=2 (Static) -- see class docstring
+    TIME_INC: float  # required for ANAL_METHOD=0/1; not required for ANAL_METHOD=2 -- see class docstring
     OUTPUT_STEP: int  # required
+    INC_STEP: int  # Increment Steps -- effectively required when ANAL_METHOD=2 (Static), default 1, optional. Live-confirmed 2026-08-27.
+    GEOM_NL_TYPE: int  # Geometric Nonlinearity Type, default 0, optional (ANAL_TYPE=1 only). Live-confirmed 2026-08-27 (server default 0).
     INIT_METHOD: str  # "INIT" / "ORDER", required
     USE_INIT_LOAD: bool  # required
+    SUBSEQ: Any  # {"OPT_USE","SUBSEQ_LOAD","LCTYPE","CASE"}, required when INIT_METHOD="ORDER". Live-discovered 2026-08-27, not independently round-tripped.
     CUM_DVA: bool  # Cumulative Displacement/Velocity/Acceleration, optional
     KEEP_LOAD: bool  # Maintain final-step load state, optional
     KEEP_ACC: bool  # Maintain final-step acceleration, optional
-    DAMPING: Any  # {"DAMPING_METHOD","ALL_DAMPING_RATIO","MODAL_DAMPING_RATIO"}, required
-    NONL_CTRL_PARAM: Any  # {"PERFORM_ITER","ITER_CTRL":{...}}, required for iATYPE=Nonlinear
+    DAMPING: Any  # {"DAMPING_METHOD","ALL_DAMPING_RATIO","MODAL_DAMPING_RATIO"}, required for ANAL_METHOD=0/1; not required for ANAL_METHOD=2 -- see class docstring
+    NONL_CTRL_PARAM: Any  # {"PERFORM_ITER","ITER_CTRL":{...,"BOUNDARY_NL_ANAL":{...}}}, required for ANAL_TYPE=1 (Nonlinear) -- and auto-filled by the server with real defaults even when omitted, per 2026-08-27 live evidence
+    INC_CTRL: Any  # {"INC_METHOD","SF"} or {"INC_METHOD","DISP_CTRL":{...}}, ANAL_METHOD=2 (Static) only. Live-confirmed 2026-08-27.
+    TIME_PARAM: Any  # {"METHOD","NEWMARK_METHOD","GAMMA","BETA"}, ANAL_METHOD=1 (Direct Integration) only. Manual-sourced, not independently tested.
 
 
 class TimeHistoryLoadCaseHyperS(DbResource):

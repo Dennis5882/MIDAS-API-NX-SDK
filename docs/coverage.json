@@ -3794,16 +3794,16 @@
       "status": "implemented",
       "module": "midas_nx.db.dynamic_loads",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-27",
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Schema-checked 2026-08-27 on Civil NX (GET /info/db/THIS-M1): ANAL_CASE.ANAL_METHOD field description literally reads \"Analysis Method (Modal:0, Direct:1, Static:2)\", confirming the 2026-08-25 manual addition of the Static=2 value independent of the manual text. Not round-tripped with a real POST (needs a fully-specified DAMPING/NONL_CTRL_PARAM setup not built this session); level stays read.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET). Schema-checked 2026-08-27 on Civil NX (GET /info/db/THIS-M1): ANAL_CASE.ANAL_METHOD field description literally reads \"Analysis Method (Modal:0, Direct:1, Static:2)\", confirming the 2026-08-25 manual addition of the Static=2 value independent of the manual text. Write round trip completed 2026-08-27 on Civil NX: POST /db/THIS-M1 with a full Static-mode payload (ANAL_TYPE=1, ANAL_METHOD=2, INC_STEP=10, INC_CTRL={INC_METHOD:0,SF:1}, no ENDTIME/TIME_INC/DAMPING) -> GET read it back exactly, with the server auto-filling a complete NONL_CTRL_PARAM (including nested BOUNDARY_NL_ANAL) even though it was never sent -> DELETE succeeded. This also surfaced that GEOM_NL_TYPE/INC_STEP/SUBSEQ/INC_CTRL/TIME_PARAM were entirely missing from this SDK's TypedDict before -- added, see TimeHistoryLoadCaseHyperSPayload's docstring.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -4925,7 +4925,7 @@
         "products": [
           "civil"
         ],
-        "method": "Simple PUT with bLAST_FINAL=true, ANAL_TYPE={iINC_NLA:0, iNLA_TYPE:0} (no construction-stage reference needed for the default branch) -- notably does NOT reproduce the non-Hyper-S /db/STCT's iITER/TOL silent-drop bug, but this payload doesn't exercise those fields either. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-tested 2026-08-27 on Civil NX for the four fields added 2026-08-25 (iBSC/FRAME_OUTPUT/bSAVE_OCS/NONL_CONTROL) and ANAL_TYPE.iINC_NLA/bIEMF: a plain POST/GET round trip confirmed all four top-level fields real (server auto-assigned iBSC=1, matching the documented default, plus full FRAME_OUTPUT/NONL_CONTROL shapes) and TIME_DEP_CONTROL.CREEP_SHRINKAGE.TYPE=\"SHRINKAGE\" round-tripped explicitly. iINC_NLA=3/bIEMF are schema-confirmed via GET /info/db/STCT-M1 only -- PUT on this endpoint rejected even a known-good ANAL_TYPE value pair with \"Wrong Field\", so a write of a non-default ANAL_TYPE value could not be achieved either way this session.",
+        "method": "Simple PUT with bLAST_FINAL=true, ANAL_TYPE={iINC_NLA:0, iNLA_TYPE:0} (no construction-stage reference needed for the default branch) -- notably does NOT reproduce the non-Hyper-S /db/STCT's iITER/TOL silent-drop bug, but this payload doesn't exercise those fields either. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-tested 2026-08-27 on Civil NX for the four fields added 2026-08-25 (iBSC/FRAME_OUTPUT/bSAVE_OCS/NONL_CONTROL) and ANAL_TYPE.iINC_NLA/bIEMF: a plain POST/GET round trip confirmed all four top-level fields real (server auto-assigned iBSC=1, matching the documented default, plus full FRAME_OUTPUT/NONL_CONTROL shapes) and TIME_DEP_CONTROL.CREEP_SHRINKAGE.TYPE=\"SHRINKAGE\" round-tripped explicitly. iINC_NLA=3/bIEMF are schema-confirmed via GET /info/db/STCT-M1 only -- PUT on this endpoint rejected even a known-good ANAL_TYPE value pair with \"Wrong Field\", so a write of a non-default ANAL_TYPE value could not be achieved either way this session. iINC_NLA=3/bIEMF fully live-confirmed 2026-08-27 on Civil NX via direct POST-time creation (not PUT, which this object rejects even for known-good value changes on an existing record): {iINC_NLA:3,iNLA_TYPE:1} and separately {iINC_NLA:1,iNLA_TYPE:0,bIEMF:true} both round-tripped exactly through GET.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
