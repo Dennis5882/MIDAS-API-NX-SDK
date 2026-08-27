@@ -211,6 +211,21 @@ export const tables = {
      * with load_case_names=["DL(ST)"] returned real per-story populated
      * rows keyed by story name  -  confirms the renamed TABLE_TYPE and the
      * new params both work as documented.
+     *
+     *  WARNING: 2026-08-27: the sibling manual repo's full re-verification pass
+     * reversed course, claiming this was all a mistake  -  that the 2026-08-06
+     * sync had actually copied Story Mass Summary Table's shape by accident,
+     * and the real params are just TABLE_NAME/TABLE_TYPE(STORY_LOAD_SUMMARY_
+     * {dir})/EXPORT_PATH. Re-tested live the same day on Gen NX to check:
+     * `TABLE_TYPE="STORY_LOAD_X"` (this function's value) still answers
+     * cleanly (`{"message": ""}` on a document with no story data, same
+     * shape as the known-good sibling `STORY_MASS_X`), while
+     * `TABLE_TYPE="STORY_LOAD_SUMMARY_X"` (the manual's new claim, tried in
+     * every case combination and casing) consistently answers `"there was
+     * an error creating utbl"`  -  an unrecognized-table-type error, not a
+     * data-shape error. **The manual's new correction is wrong; this
+     * function's existing TABLE_TYPE and params are confirmed correct
+     * again.** Don't flip this back without new live evidence.
      */
     getStoryLoadSummaryTable: defineDirectionalTable<Pick<TableOptions, "components" | "loadCaseNames" | "styles" | "tableName" | "unit">>("STORY_LOAD_"),
     /**
@@ -255,7 +270,7 @@ export const tables = {
     /**
      * docs/manual/19_POST_AnalysisResult_1.md #9  -  Beam Force (Static Prestress).
      */
-    getBeamForceStaticPrestressTable: defineTable<Pick<TableOptions, "components" | "constructionStage" | "loadCaseNames" | "nodeElements" | "stageSteps" | "styles" | "tableName" | "unit">>("BEAMFORCESIP"),
+    getBeamForceStaticPrestressTable: defineTable<Pick<TableOptions, "components" | "constructionStage" | "loadCaseNames" | "nodeElements" | "stageSteps" | "styles" | "tableName" | "unit">>("BEAMFORCESTP"),
     /**
      * docs/manual/19_POST_AnalysisResult_1.md #8  -  Beam Force.
      *
@@ -277,8 +292,10 @@ export const tables = {
     /**
      * docs/manual/19_POST_AnalysisResult_1.md #10  -  Beam Stress.
      *
-     * table_type: TABLE_TYPE_BEAM_STRESS (default) or TABLE_TYPE_BEAM_STRESS_7DOF
-     * (includes warping/7th-DOF components).
+     * table_type: TABLE_TYPE_BEAM_STRESS (default), TABLE_TYPE_BEAM_STRESS_7DOF
+     * (includes warping/7th-DOF components), or TABLE_TYPE_BEAM_STRESS_BY_MAX
+     * (max-value basis, adds a "Component" HEAD column) -- see that constant's
+     * comment for an ITEM_TO_DISPLAY caveat this function doesn't expose.
      */
     getBeamStressTable: defineVariableTable<Pick<TableOptions, "components" | "constructionStage" | "loadCaseNames" | "nodeElements" | "stageSteps" | "styles" | "tableName" | "unit">>("BEAMSTRESS"),
     /**

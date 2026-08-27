@@ -1940,7 +1940,10 @@
         "gen"
       ],
       "methods": [
-        "POST"
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
       ],
       "pythonModule": "midas_nx.db.design",
       "modulePath": [

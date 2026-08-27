@@ -414,6 +414,7 @@ export namespace DbAnalysisControlTypes {
   export interface ConstructionStageAnalysisTypeHyperS {
     iINC_NLA?: number;
     iNLA_TYPE?: number;
+    bIEMF?: boolean;
     bINC_PDL?: boolean;
     bINC_TDE?: boolean;
   }
@@ -476,6 +477,11 @@ export namespace DbAnalysisControlTypes {
     iSDOPT?: number;
     SDCONST?: number;
   }
+  export interface FrameOutputHyperS {
+    bCALC_CFF?: boolean;
+    bCALC_CSP?: boolean;
+    bSELFCONS?: boolean;
+  }
   export interface ConstructionStageAnalysisControlDataHyperSPayload {
     bLAST_FINAL?: boolean;
     ANAL_TYPE?: ConstructionStageAnalysisTypeHyperS;
@@ -488,6 +494,10 @@ export namespace DbAnalysisControlTypes {
     INITIAL_CONTROL?: InitialForceControlHyperS;
     INITIAL_DISP?: InitialDisplacementHyperS;
     STRESS_DECREASE?: StressDecreaseHyperS;
+    iBSC?: number;
+    FRAME_OUTPUT?: FrameOutputHyperS;
+    bSAVE_OCS?: boolean;
+    NONL_CONTROL?: unknown;
   }
   export interface BoundaryGroupCombinationItem {
     BGCNAME?: string;
@@ -560,9 +570,11 @@ export namespace DbBoundaryTypes {
     SDR?: Array<number>;
     F_S?: Array<boolean>;
     DAMPING?: boolean;
+    Cr?: Array<number>;
+    STIFF?: number;
     DIR?: number;
     DV?: Array<number>;
-    SK?: Array<number>;
+    FUNCTION?: number;
   }
   export interface PointSpringPayload {
     ITEMS: Array<PointSpringItem>;
@@ -624,6 +636,9 @@ export namespace DbBoundaryTypes {
     TOTAL_MASS?: number;
     L_MASS_RATIO?: number;
     OPT_SHEAR_SPR_LOC?: boolean;
+    DIST_RATIO_DY?: number;
+    DIST_RATIO_DZ?: number;
+    COUPLED_INPUT_METHOD?: number;
   }
   export interface GeneralLinkPayload {
     NODE1?: number;
@@ -642,6 +657,13 @@ export namespace DbBoundaryTypes {
     PROP_NAME?: string;
     NODE1?: number;
     NODE2?: number;
+    GROUP_NAME?: string;
+    REF_SYSTEM?: number;
+    BETA_ANGLE?: number;
+    INPUT_METHOD?: number;
+    ANGLE_VALUES?: unknown;
+    POINT_VALUES?: unknown;
+    VECTOR_VALUES?: unknown;
   }
   export interface ChangeGeneralLinkPropertyPayload {
     GLINK_KEY?: number;
@@ -705,6 +727,12 @@ export namespace DbBoundaryTypes {
     C1?: number;
     ALPHA1?: number;
     K0?: number;
+    EXFN_PY?: number;
+    EXFN_VY?: number;
+    EXFN_DE?: number;
+    EXFN_DC?: number;
+    OPT_EXFN_CE?: boolean;
+    EXFN_CE?: number;
   }
   export interface SeismicDeviceViscousDamperPayload {
     COMMON?: SeismicDeviceCommon;
@@ -712,23 +740,97 @@ export namespace DbBoundaryTypes {
     DAMPER_TYPE?: number;
     DASHPOT_TYPE?: number;
     INPUT_TYPE?: number;
+    INPUT_TYPE_EXFN?: number;
     ITEM?: Array<SeismicDeviceViscousDamperItem>;
   }
   export interface SeismicDeviceViscoelasticDamperPayload {
     COMMON?: SeismicDeviceCommon;
     MATERIAL_TYPE?: string;
     SHEAR_AREA?: number;
+    THICKNESS?: number;
+    MULTIPL?: number;
+    DIR?: string;
+    FREQ?: number;
+    STIFF_FACTOR?: number;
+    DAMP_FACTOR?: number;
+    REF_T?: number;
+    LIMIT_DEF?: number;
+    EFF_STIFF?: number;
+    EQUI_DAMP?: number;
+    OPT_MOUNT_STIFF?: boolean;
+    MOUNT_STIFF?: number;
+    OPT_KINETIC_FRIC?: boolean;
+    KINETIC_FRIC?: number;
+  }
+  export interface SeismicDeviceSteelDamperBL2 {
+    BETA?: number;
+  }
+  export interface SeismicDeviceSteelDamperLY2 {
+    ALPHA2?: number;
+    THETA?: number;
+  }
+  export interface SeismicDeviceSteelDamperLY3 {
+    ALPHA2?: number;
+    THETA?: number;
+    GAMMA?: number;
+  }
+  export interface SeismicDeviceSteelDamperIK2 {
+    GAMMA?: number;
   }
   export interface SeismicDeviceSteelDamperPayload {
     COMMON?: SeismicDeviceCommon;
     DIR?: string;
     SDST_HYS_MODEL?: string;
+    K0?: number;
+    P1?: number;
+    ALPHA1?: number;
+    KB?: number;
+    BL2?: SeismicDeviceSteelDamperBL2;
+    LY2?: SeismicDeviceSteelDamperLY2;
+    LY3?: SeismicDeviceSteelDamperLY3;
+    IK2?: SeismicDeviceSteelDamperIK2;
   }
   export interface SeismicDeviceHystereticIsolatorPayload {
     COMMON?: SeismicDeviceCommon;
     SDHY_HYS_MODEL?: string;
     MSS?: number;
     K0?: number;
+    P1?: number;
+    P2?: number;
+    ALPHA1?: number;
+    ALPHA2?: number;
+    BETA?: number;
+    Phi?: number;
+    LAMBDA?: number;
+  }
+  export interface SeismicDeviceIsolatorVerticalDX {
+    OPT_CONS_NONL?: boolean;
+    BETA?: number;
+    ALPHA?: number;
+    SIGMA_V?: number;
+  }
+  export interface SeismicDeviceIsolatorLRB {
+    SDIS_HYS_MODEL?: string;
+    KE?: number;
+    AR?: number;
+    TR?: number;
+    K0?: number;
+    K2?: number;
+    QD?: number;
+    DX?: SeismicDeviceIsolatorVerticalDX;
+  }
+  export interface SeismicDeviceIsolatorNRB {
+    AR?: number;
+    TR?: number;
+    KH?: number;
+    DX?: SeismicDeviceIsolatorVerticalDX;
+  }
+  export interface SeismicDeviceIsolatorSB {
+    AS?: number;
+    K0?: number;
+    QD?: number;
+    Pi_VALUE?: number;
+    MU0?: number;
   }
   export interface SeismicDeviceIsolatorPayload {
     COMMON?: SeismicDeviceCommon;
@@ -737,18 +839,23 @@ export namespace DbBoundaryTypes {
     TAU_K?: number;
     TAU_Q?: number;
     KV?: number;
-    LRB?: unknown;
-    NRB?: unknown;
-    SB?: unknown;
+    LRB?: SeismicDeviceIsolatorLRB;
+    NRB?: SeismicDeviceIsolatorNRB;
+    SB?: SeismicDeviceIsolatorSB;
   }
-  export interface LinearConstraintSlave {
+  export interface LinearConstraintSlaveExplicit {
     NODE_KEY?: number;
     COEFF?: number;
+    DOF?: number;
+  }
+  export interface LinearConstraintSlaveWeighted {
+    NODE_KEY?: number;
+    WEIGHT?: number;
   }
   export interface LinearConstraintItem extends DbBaseTypes.ItemGroupFields {
     SLAVE_TYPE?: string;
     TYPE?: string;
-    SLAVES?: Array<LinearConstraintSlave>;
+    SLAVES?: Array<unknown>;
   }
   export interface LinearConstraintPayload {
     ITEMS: Array<LinearConstraintItem>;
@@ -854,6 +961,7 @@ export namespace DbConstructionStageTypes {
     IXX?: number;
     IYY?: number;
     IZZ?: number;
+    WAREA?: number;
     IW?: number;
   }
   export interface CompositeSectionConstructionStagePayload {
@@ -862,6 +970,7 @@ export namespace DbConstructionStageTypes {
     TYPE?: string;
     bTAP?: boolean;
     vPARTINFO?: Array<CompositeSectionPartInfo>;
+    OPT_UPDATE_ALL_H?: boolean;
   }
   export interface TimeLoadItem extends DbBaseTypes.ItemGroupFields {
     DAY?: number;
@@ -1069,7 +1178,6 @@ export namespace DbDesignTypes {
     WID_LIST?: Array<number>;
   }
   export interface BeamMainBarLayerEntry {
-    LAYER?: number;
     NAME?: string;
     NUM?: number;
   }
@@ -1086,9 +1194,7 @@ export namespace DbDesignTypes {
     SKIN_BAR_NUM?: number;
   }
   export interface BeamRebarItem {
-    CREATE_SUB_SECTION?: boolean;
     ID?: number;
-    ELEMS?: unknown;
     BAR_SECTOR_I?: BeamRebarSector;
     BAR_SECTOR_M?: BeamRebarSector;
     BAR_SECTOR_J?: BeamRebarSector;
@@ -1101,22 +1207,22 @@ export namespace DbDesignTypes {
   export interface BeamRebarPayload {
     ITEMS?: Array<BeamRebarItem>;
   }
-  export interface ColumnMainBarSpec {
+  export interface ColumnMainBarItem {
     NAME?: string;
     NUM?: number;
     ROW?: number;
-    USE_CORNER?: boolean;
+    D0?: number;
+    bUSE_CORNER?: boolean;
     NAME_CORNER?: string;
   }
   export interface ColumnRebarItem {
-    CREATE_SUB_SECTION?: boolean;
     ID?: number;
-    ELEMS?: unknown;
-    MAIN_BAR?: ColumnMainBarSpec;
+    vMAIN_BAR?: Array<ColumnMainBarItem>;
     SHEAR_BAR_END?: HoopShearBarSpec;
     SHEAR_BAR_CEN?: HoopShearBarSpec;
-    DO?: number;
-    HOOP_TYPE?: string;
+    HOOP_TYPE?: number;
+    bSAME_SPACE_END_CEN?: boolean;
+    NUM_BAR_BC_JOINT?: number;
     HOOK_TYPE?: number;
   }
   export interface ColumnRebarPayload {
@@ -1291,13 +1397,18 @@ export namespace DbDynamicLoadsTypes {
     ENDTIME?: number;
     TIME_INC?: number;
     OUTPUT_STEP?: number;
+    INC_STEP?: number;
+    GEOM_NL_TYPE?: number;
     INIT_METHOD?: string;
     USE_INIT_LOAD?: boolean;
+    SUBSEQ?: unknown;
     CUM_DVA?: boolean;
     KEEP_LOAD?: boolean;
     KEEP_ACC?: boolean;
     DAMPING?: unknown;
     NONL_CTRL_PARAM?: unknown;
+    INC_CTRL?: unknown;
+    TIME_PARAM?: unknown;
   }
   export interface TimeHistoryFunctionPayload {
     NAME?: string;
@@ -1841,6 +1952,45 @@ export namespace DbMovingLoadsTypes {
     LOADINGEFFECT?: string;
     SUBLOADDATA?: Array<MovingLoadCaseBsSubLoadDataItem>;
   }
+  export interface MovingLoadCaseBsSpecialData {
+    VEHICLE_NAME?: string;
+    SPECIAL_VIHICLE_NAME?: string;
+    SELECTEDLANES?: Array<string>;
+    STRAD_LANE?: Array<MovingLoadCaseBsStraddleLaneItem>;
+  }
+  export interface MovingLoadCaseBsAllModeData {
+    VEHICLE_NAME?: string;
+    SPECIAL_VIHICLE_NAME?: string;
+    SELECTEDLANES?: Array<string>;
+    STRAD_LANE?: Array<MovingLoadCaseBsStraddleLaneItem>;
+    REMAINING_LANE?: Array<string>;
+  }
+  export interface MovingLoadCaseBsOptiBase {
+    MINVEHLDIST?: number;
+    ASSIGN_LANE?: string;
+    NUMLOADEDLANES?: number;
+  }
+  export interface MovingLoadCaseBsOptiVehicleBaseItem {
+    VEHICLE_TYPE?: string;
+    VEHICLE_NAME?: string;
+    SCALE_FACTOR?: number;
+  }
+  export interface MovingLoadCaseBsStandardOptiData {
+    LOADINGEFFECT?: string;
+    OPTI_BASE?: MovingLoadCaseBsOptiBase;
+    OPTI_VEHICLE_BASE?: Array<MovingLoadCaseBsOptiVehicleBaseItem>;
+  }
+  export interface MovingLoadCaseBsSpecialOptiData {
+    VEHICLE_NAME?: string;
+    SPECIAL_VIHICLE_NAME?: string;
+    OPTI_BASE?: MovingLoadCaseBsOptiBase;
+  }
+  export interface MovingLoadCaseBsAllModeOptiData {
+    VEHICLE_NAME?: string;
+    SPECIAL_VIHICLE_NAME?: string;
+    OPTI_BASE?: MovingLoadCaseBsOptiBase;
+    REMAINING_LANE?: Array<string>;
+  }
   export interface MovingLoadCaseBsPayload {
     LCNAME?: string;
     DESC?: string;
@@ -1850,8 +2000,11 @@ export namespace DbMovingLoadsTypes {
     DGNCOMBFACTORTYPE?: string;
     COMBMETHOD?: string;
     LCDATA_STANDARD?: MovingLoadCaseBsStandardData;
-    LCDATA_SPECIAL?: unknown;
-    LCDATA_ALLMODE?: unknown;
+    LCDATA_SPECIAL?: MovingLoadCaseBsSpecialData;
+    LCDATA_ALLMODE?: MovingLoadCaseBsAllModeData;
+    LCDATA_STANDARD_OPTI?: MovingLoadCaseBsStandardOptiData;
+    LCDATA_SPECIAL_OPTI?: MovingLoadCaseBsSpecialOptiData;
+    LCDATA_ALLMODE_OPTI?: MovingLoadCaseBsAllModeOptiData;
   }
   export interface MovingLoadCaseEurocodeStraddlingLaneItem {
     NAME1?: string;
@@ -2210,14 +2363,45 @@ export namespace DbPropertiesDampingTypes {
     GROUP_NAME?: string;
     DAMPING_RATIO?: number;
   }
+  export interface GroupDampingRayleighItem {
+    GROUP_TYPE?: string;
+    GROUP_NAME?: string;
+    STIFF_COEF?: number;
+    OPT_STIFF_PROP?: boolean;
+    MASS_COEF?: number;
+    OPT_MASS_PROP?: boolean;
+    DIRECT_CALC_MODE?: number;
+    FREQ_PERIOD_MODE?: number;
+    FREQ_MODE_1?: number;
+    FREQ_MODE_2?: number;
+    PERIOD_MODE_1?: number;
+    PERIOD_MODE_2?: number;
+    DAMPING_RATIO_MODE?: number;
+    DAMPING_RATIO_MODE_1?: number;
+    DAMPING_RATIO_MODE_2?: number;
+  }
   export interface GroupDampingPayload {
     bExistStrain?: boolean;
     STRAIN_GROUP_ITEMS?: Array<GroupDampingItem>;
     OPT_CALC_WHEN_USED?: boolean;
-    STIFF_COEF_DEFAULT?: unknown;
-    MASS_COEF_DEFAULT?: unknown;
-    OPT_MASS_PROP_DEFAULT?: unknown;
-    OPT_STIFF_PROP_DEFAULT?: unknown;
+    STRAIN_GROUP_PRIORITY?: number;
+    STRAIN_VALUE_PRIORITY?: number;
+    bExistElement?: boolean;
+    OPT_MASS_PROP_DEFAULT?: boolean;
+    OPT_STIFF_PROP_DEFAULT?: boolean;
+    DIRECT_CALC_MODE_DEFAULT?: number;
+    MASS_COEF_DEFAULT?: number;
+    STIFF_COEF_DEFAULT?: number;
+    FREQ_PERIOD_MODE_DEFAULT?: number;
+    FREQ_MODE_1_DEFAULT?: number;
+    FREQ_MODE_2_DEFAULT?: number;
+    PERIOD_MODE_1_DEFAULT?: number;
+    PERIOD_MODE_2_DEFAULT?: number;
+    DAMPING_MODE_1_DEFAULT?: number;
+    DAMPING_MODE_2_DEFAULT?: number;
+    GROUP_DAMPING_ITEMS?: Array<GroupDampingRayleighItem>;
+    ELEM_GROUP_PRIORITY?: number;
+    ELEM_VALUE_PRIORITY?: number;
   }
 }
 
@@ -2378,6 +2562,16 @@ export namespace DbPropertiesMaterialTypes {
     A?: number;
     B?: number;
     iCTYPE?: number;
+    nAGGRE?: number;
+    DENSITY?: number;
+    CMETH?: number;
+    CTYPE?: number;
+    MAXS?: number;
+    PZ?: number;
+    TENS_STRN_FACTOR?: number;
+    bUSE?: boolean;
+    D?: number;
+    iECTYPE?: number;
   }
   export interface ChangePropertyPayload {
     TYPE?: string;
@@ -2393,6 +2587,9 @@ export namespace DbPropertiesMaterialTypes {
     TRESCA?: unknown;
     VMISES?: unknown;
     MOHRCL?: unknown;
+    DRUCKER?: unknown;
+    MASONRY?: unknown;
+    CONCDMG?: unknown;
   }
   export interface PlasticMaterialHyperSHardeningModel {
     INIT_YIELD_STRESS?: number;
@@ -2458,10 +2655,14 @@ export namespace DbPropertiesMaterialTypes {
   }
   export interface InelasticMaterialKentParkParam {
     FC?: number;
-    EC0?: number;
-    K?: number;
-    ECU?: number;
     PARTIAL_FACT?: number;
+    K?: number;
+    EC0?: number;
+    EC1_METHOD?: number;
+    EC1?: number;
+    Z?: number;
+    ECU?: number;
+    STRENGTH_AFTER?: number;
   }
   export interface InelasticMaterialPropertyPayload {
     NAME?: string;
@@ -2500,6 +2701,9 @@ export namespace DbPropertiesSectionTypes {
     ZEXP?: number;
     ZFROM?: string;
     ZDIST?: number;
+    YEXP?: number;
+    YFROM?: string;
+    YDIST?: number;
   }
   export interface SectionStiffnessItem extends DbBaseTypes.ItemGroupFields {
     AREA_SF?: number;
@@ -2509,6 +2713,17 @@ export namespace DbPropertiesSectionTypes {
     IYY_SF?: number;
     IZZ_SF?: number;
     WGT_SF?: number;
+    W_SF?: number;
+    IPART?: number;
+    bDiffIJ?: boolean;
+    J1?: number;
+    J2?: number;
+    J3?: number;
+    J4?: number;
+    J5?: number;
+    J6?: number;
+    J7?: number;
+    J8?: number;
   }
   export interface SectionStiffnessPayload {
     ITEMS: Array<SectionStiffnessItem>;
@@ -2518,12 +2733,40 @@ export namespace DbPropertiesSectionTypes {
     DR_PITCH?: number;
     DR_THETA?: number;
     DR_AW?: number;
+    OPT_SBW?: boolean;
+    SBW_PITCH?: number;
+    SBW_ANGLE?: number;
+    SBW_AP?: number;
+    SBW_PS?: number;
+    SBW_FACTOR?: number;
+    OPT_TR?: boolean;
+    TR_PITCH?: number;
+    TR_AWT?: number;
+    TR_ALT?: number;
+    OPT_SR?: boolean;
+    SR_PITCH?: number;
+    SR_AW?: number;
+    OPT_LBAR_FLG?: boolean;
+    LBAR_THICK?: number;
+    LBAR_INC_FC?: number;
+  }
+  export interface SectionReinforcementLongitudinalItem {
+    IJ?: string;
+    NAME?: string;
+    REF_Y?: number;
+    Y?: number;
+    REF_Z?: number;
+    Z?: number;
+    NUM?: number;
+    SPACING?: number;
+    PART?: number;
   }
   export interface SectionReinforcementPayload {
     OPT_MBAR_J?: boolean;
     OPT_SBAR_J?: boolean;
     OPT_CRACKED?: boolean;
     SBAR_ITEMS?: Array<SectionReinforcementShearItem>;
+    MBAR_ITEMS?: Array<SectionReinforcementLongitudinalItem>;
   }
   export interface StressPoint {
     PY?: number;
@@ -2595,7 +2838,16 @@ export namespace DbPropertiesSectionTypes {
     B?: number;
   }
   export interface FiberDivisionBaseItem {
-    FIBR_BASE_KEY?: boolean;
+    FIBR_BASE_KEY?: number;
+    REBAR_NAME?: string;
+    AREA?: number;
+    CENTER_Y?: number;
+    CENTER_Z?: number;
+    FIBER_MATL_ID?: number;
+    AREA_CONSIDER_REBAR?: number;
+    OPT_IS_REBAR?: boolean;
+    POINT_Y?: Array<number>;
+    POINT_Z?: Array<number>;
   }
   export interface FiberDivisionPayload {
     NAME?: string;
@@ -2604,6 +2856,8 @@ export namespace DbPropertiesSectionTypes {
     FIMP_NAME?: Array<string>;
     FIMP_COLOR?: Array<FiberDivisionColor>;
     FIBR_BASE?: Array<FiberDivisionBaseItem>;
+    OPT_MONITORED_FIBER?: boolean;
+    MONITORED_FIBER?: Array<number>;
   }
 }
 
@@ -4836,6 +5090,10 @@ export namespace PostBaseTypes {
     FORMAT?: string;
     PLACE?: number;
   }
+  export interface NodeFlag {
+    CENTER?: boolean;
+    NODES?: boolean;
+  }
 }
 
 export namespace PostResult1Types {
@@ -4980,6 +5238,7 @@ export namespace ViewTypes {
     E_LIST?: Array<number>;
     IDENTITY_TYPE?: string;
     IDENTITY_LIST?: Array<string>;
+    STORY_ACTIVE?: string;
   }
   export interface NodeDisplay {
     NODE?: boolean;

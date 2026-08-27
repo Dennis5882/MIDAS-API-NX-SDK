@@ -1239,8 +1239,8 @@
       "surface": "operation"
     },
     {
-      "endpoint": "/ope/STORPROP",
-      "canonicalEndpoint": "/ope/STORPROP",
+      "endpoint": "/ope/STORYPROP",
+      "canonicalEndpoint": "/ope/STORYPROP",
       "surface": "operation"
     },
     {

@@ -519,7 +519,7 @@ export const operations = {
      * both `SEIS_ECC`/`WIND_ECC` disabled, on a blank document  -  first
      * direct test of this endpoint against Civil. Matches the same
      * Gen-only pattern already confirmed for the rest of the story family
-     * (`STORY_PARAM`, `STORY_IRR_PARAM`, `STORPROP`, and the `/post/TABLE`
+     * (`STORY_PARAM`, `STORY_IRR_PARAM`, `STORYPROP`, and the `/post/TABLE`
      * story-table types)  -  the whole story feature set looks to be
      * unregistered on Civil, not just this one endpoint.
      */
@@ -716,12 +716,15 @@ export const operations = {
      */
     getStoryIrregularityCheckParameter: defineGetOperation({"endpoint":"/ope/STORY_IRR_PARAM","method":"GET","pythonFunction":"get_story_irregularity_check_parameter","pythonModule":"midas_nx.ope"}),
     /**
-     * docs/manual/15_OPE.md #12  -  /ope/STORPROP  -  Story Properties.
+     * docs/manual/15_OPE.md #12  -  /ope/STORYPROP  -  Story Properties.
      *
      * POST-only but functions as a query (unit/format-controlled report of
-     * per-story weight, elevation, loaded height/width).
+     * per-story weight, elevation, loaded height/width). See
+     * StoryPropertiesArgument's docstring: the URL was ``/ope/STORPROP``
+     * (missing a Y) until 2026-08-27 -- that was the actual defect behind
+     * every historical 404, not a dead route.
      */
-    getStoryProperties: definePostOperation<Types.OpeTypes.StoryPropertiesArgument>({"endpoint":"/ope/STORPROP","method":"POST","pythonFunction":"get_story_properties","pythonModule":"midas_nx.ope"}),
+    getStoryProperties: definePostOperation<Types.OpeTypes.StoryPropertiesArgument>({"endpoint":"/ope/STORYPROP","method":"POST","pythonFunction":"get_story_properties","pythonModule":"midas_nx.ope"}),
     /**
      * docs/manual/15_OPE.md #10  -  /ope/STORY_PARAM  -  Story Check Parameter (POST).
      */
