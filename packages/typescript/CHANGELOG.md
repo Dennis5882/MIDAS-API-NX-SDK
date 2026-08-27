@@ -6,6 +6,17 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.6.1 - 2026-08-28
+
+### Fixed
+
+- Generated operation wrappers now carry the reviewed Gen NX/Civil NX product
+  support from `docs/coverage.json`. Calling a Gen-only operation such as
+  `operations.ope.getStoryCheckParameter()` with a Civil client now rejects
+  with `ProductMismatchError` before sending a request that would return 404.
+- Product-mismatch failures from operation wrappers are Promise rejections,
+  consistent with their declared async API.
+
 ## 2.6.0 - 2026-08-28
 
 ### Breaking

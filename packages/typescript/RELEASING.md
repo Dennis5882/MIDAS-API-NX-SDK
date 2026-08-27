@@ -1,15 +1,18 @@
 # npm release checklist
 
-The npm and PyPI packages share the `midas-nx` name but have independent
-versions. This checklist is only for the JavaScript/TypeScript package.
+PyPI and npm share the `midas-nx` name and the same version number. This
+checklist covers the JavaScript/TypeScript-specific release work; each npm
+release also has a matching PyPI release with the same version.
 
 ## Before publishing
 
-1. Confirm the change affects npm-packaged behavior, declarations, metadata,
-   or documentation. Repository-only CI/docs changes do not require a bump.
+1. Confirm the change affects either packaged surface. Repository-only CI/docs
+   changes do not require a bump; a release that affects only one package still
+   bumps and publishes both to keep versions aligned.
 2. Move the entries under `CHANGELOG.md`'s `Unreleased` heading into a new
    `X.Y.Z - YYYY-MM-DD` section. Keep an empty `Unreleased` heading at the top.
-3. Update both npm version files:
+3. Update the npm version files, then the Python `__version__`, to the same
+   number:
 
    ```bash
    cd packages/typescript
@@ -31,7 +34,7 @@ versions. This checklist is only for the JavaScript/TypeScript package.
 
 Create a GitHub Release with tag `js-vX.Y.Z`. When GitHub asks for the
 previous tag, select the preceding `js-v*` tag explicitly; automatic selection
-can choose a `py-v*` release from the independent Python stream.
+can choose the matching `py-v*` release instead.
 
 Use this release-note template:
 

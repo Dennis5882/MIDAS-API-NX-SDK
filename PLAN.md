@@ -5,7 +5,7 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-08-28 — **PyPI and npm now share one version number, 2.6.0**,
+> Last updated: 2026-08-28 — **PyPI and npm now share one version number, 2.6.1**,
 > at the author's explicit request; the two streams were 2.3.5 and 2.4.0 and the
 > split was confusing for one package name. `CLAUDE.md`'s Releasing section was
 > reversed to match. This line tracks **release** state,
@@ -797,14 +797,15 @@ exactly why that's the honest framing rather than a stronger guarantee.
 | npm v2.3.3 ✅ | Safety and result-table typing hardening; declaration checks and packed npm artifact smoke tests added to CI | published to npm 2026-08-26 |
 | npm v2.3.4 ✅ | Package-local changelog, npm release checklist, and the independent `js-v*` trusted-publishing route | published to npm 2026-08-27 |
 | npm v2.4.0 ✅ | Fixes `db.staticLoads.nodalMass` sending payloads that could end a live NX session; adds `DbResourceMetadata.payloadDefaults`, generated from the new `contracts/` source of truth | published to npm 2026-08-27 |
-| **2.6.0** 🚧 | First release under one shared version number. Python: no `src/midas_nx/` change at all — an identical wheel under the aligned number. npm: `pythonModule`/`pythonFunction` removed from the shipped metadata, payload types for 38 endpoints generated from `contracts/` instead of from Python `TypedDict`s, and `tableTypes` added. Repo: `/post/TABLE` modelled as endpoint + table, 39 endpoint contracts and 3 table contracts promoted | committed 2026-08-28, `py-v2.6.0`/`js-v2.6.0` Releases pending |
+| **2.6.0** ✅ | First release under one shared version number. Python: no `src/midas_nx/` change at all — an identical wheel under the aligned number. npm: `pythonModule`/`pythonFunction` removed from the shipped metadata, payload types for 38 endpoints generated from `contracts/` instead of from Python `TypedDict`s, and `tableTypes` added. Repo: `/post/TABLE` modelled as endpoint + table, 39 endpoint contracts and 3 table contracts promoted | published 2026-08-28 as `py-v2.6.0` and `js-v2.6.0` |
+| **2.6.1** 🚧 | npm operation wrappers now enforce the reviewed Gen NX/Civil NX product availability before sending a request; validated against a real Civil NX session with full DB GET coverage and a model -> analysis -> result-table round trip. Python is republished unchanged to preserve the shared version | release prepared 2026-08-28; `py-v2.6.1`/`js-v2.6.1` pending |
 | v0.16.0/Phase 7 (not started) | Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
 | v0.17.0+/Phase 8 (not started) | `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
 
 Python releases use `py-v*` GitHub Releases and `publish.yml` to reach PyPI. npm releases use `js-v*`
 GitHub Releases and `publish-npm.yml` with npm Trusted Publishing (OIDC). Both workflows check the tag
 prefix and package version directly because `release` events cannot use path filters. The registries
-share the `midas-nx` name but keep independent versions.
+share the `midas-nx` name and move in lockstep on one version number.
 
 > Numbering note (2026-07-21): the original Phase 1-5 numbering above was
 > chapter/endpoint-coverage-driven and ended at v0.10.0. Phase 6-8 (this
