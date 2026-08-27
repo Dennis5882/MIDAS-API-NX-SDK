@@ -367,31 +367,42 @@ class BeamRebar(DbResource):
     PRODUCTS = GEN_ONLY
 
 
-# --- 11. /db/REBC — Modify Column Rebar (POST only) -------------------------
+# --- 11. /db/REBC — Modify Column Rebar --------------------------------------
 
 
-class ColumnMainBarSpec(TypedDict, total=False):
-    """REBC ITEMS.MAIN_BAR."""
+class ColumnMainBarItem(TypedDict, total=False):
+    """REBC ITEMS.vMAIN_BAR entry.
+
+    ⚠️ Rewritten 2026-08-27: this whole endpoint's previous TypedDicts
+    (`ColumnMainBarSpec`, and the old `ColumnRebarItem` below) were
+    confused with a different endpoint — `CREATE_SUB_SECTION`/`ELEMS`/
+    `HOOK_TYPE` and a single-object `MAIN_BAR`/top-level `DO` don't exist
+    in the real schema at all. Confirmed live on Gen NX: the old shape's
+    `POST /db/REBC` answers `"Wrong Field"`; the shape below round-trips
+    cleanly through a full POST->GET->PUT->DELETE->GET cycle. Also, this
+    endpoint is **not** POST-only as previously documented — full CRUD,
+    confirmed live (see `ColumnRebar.METHODS` below).
+    """
 
     NAME: str  # Main rebar size, D4~D57, required
     NUM: int  # Total rebar count, required
     ROW: int  # Number of rows, required
-    USE_CORNER: bool  # required
-    NAME_CORNER: str  # Corner rebar size, required if USE_CORNER=true
+    D0: float  # Concrete-face-to-rebar-center distance, required
+    bUSE_CORNER: bool  # required
+    NAME_CORNER: str  # Corner rebar size, required
 
 
 class ColumnRebarItem(TypedDict, total=False):
-    """ITEMS entry."""
+    """ITEMS entry. See ColumnMainBarItem's docstring for the 2026-08-27
+    rewrite context."""
 
-    CREATE_SUB_SECTION: bool  # default false, optional
-    ID: int  # Sub Section ID, read-only, optional
-    ELEMS: SubSectionElems  # required if CREATE_SUB_SECTION=true
-    MAIN_BAR: ColumnMainBarSpec  # required
+    ID: int  # Sub Section number, required
+    vMAIN_BAR: List[ColumnMainBarItem]  # Main Bar List, required
     SHEAR_BAR_END: HoopShearBarSpec  # required
     SHEAR_BAR_CEN: HoopShearBarSpec  # required
-    DO: float  # Concrete-face-to-rebar-center distance (do), required
-    HOOP_TYPE: str  # "Ties"/"Spirals", default "Ties", optional
-    HOOK_TYPE: int  # 90+(135 or 180)=0 / Both(135 or 180)=1, default 0, optional
+    HOOP_TYPE: int  # 1=Tied, 2=Spiral, required -- Integer, not the string this SDK previously used
+    bSAME_SPACE_END_CEN: bool  # required
+    NUM_BAR_BC_JOINT: int  # Beam-Column joint rebar count (specific design codes only), required
 
 
 class ColumnRebarPayload(TypedDict, total=False):
@@ -403,17 +414,14 @@ class ColumnRebarPayload(TypedDict, total=False):
 class ColumnRebar(DbResource):
     ENDPOINT = "/db/REBC"
     NAME = "Modify Column Rebar"
-    #: This endpoint documents Active Methods as POST only (confirmed by
-    #: both the TOC table and this section's own "Active Methods" line) —
-    #: a one-off override, not promoted to a shared db/base.py constant
-    #: since no other chapter needs POST-only.
-    METHODS = frozenset({"POST"})
-    #: Gen-only: no GET, but `/info/db/REBC` answers on Gen and 404s on
-    #: Civil, confirmed independently twice (2026-07-29 sweep, then a live
-    #: re-check the same day) — see db/base.py's GEN_ONLY docstring. Distinct
-    #: from ch26's design.rc_kds.rebar.ModifyColumnRebarData
+    #: Gen-only: `/info/db/REBC` answers on Gen and 404s on Civil,
+    #: confirmed independently twice (2026-07-29 sweep, then a live
+    #: re-check the same day) — see db/base.py's GEN_ONLY docstring.
+    #: Full CRUD confirmed live 2026-08-27 (POST->GET->PUT->DELETE->GET,
+    #: DELETE actually removes the record). Distinct from ch26's
+    #: design.rc_kds.rebar.ModifyColumnRebarData
     #: (/DESIGN/RC/KDS-41-20-2022/REBC), a separate endpoint with the same
-    #: short name that supports full CRUD.
+    #: short name.
     PRODUCTS = GEN_ONLY
 
 
@@ -445,6 +453,14 @@ class WallRebarItem(TypedDict, total=False):
     transcription error — the official documentation itself doesn't match
     its own server. See `docs/live_verification_notes.md`'s 2026-07-29
     sections for the full reproduction.
+
+    ⚠️ 2026-08-27: the sibling manual repo's full re-verification pass
+    claimed this field is actually `vSTORY_KEY` (an Integer array), not
+    `vSTORY_NAME` (String array). Re-checked live the same day, `GET
+    /info/db/REBW` on Gen NX: the server's own schema still names the
+    field `vSTORY_NAME`, `items.type: "string"` — exactly matching this
+    TypedDict, not the manual's new claim. The manual's correction is
+    wrong on this field specifically; don't apply it.
     """
 
     ID: int  # read-only, optional

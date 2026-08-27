@@ -411,7 +411,7 @@ def calculate_story(argument: StoryCalculationArgument, client: Optional[MidasCl
     both `SEIS_ECC`/`WIND_ECC` disabled, on a blank document — first
     direct test of this endpoint against Civil. Matches the same
     Gen-only pattern already confirmed for the rest of the story family
-    (`STORY_PARAM`, `STORY_IRR_PARAM`, `STORPROP`, and the `/post/TABLE`
+    (`STORY_PARAM`, `STORY_IRR_PARAM`, `STORYPROP`, and the `/post/TABLE`
     story-table types) — the whole story feature set looks to be
     unregistered on Civil, not just this one endpoint.
     """
@@ -493,11 +493,11 @@ def set_story_irregularity_check_parameter(
     return _post("/ope/STORY_IRR_PARAM", argument, client)
 
 
-# --- 12. /ope/STORPROP — Story Properties ------------------------------------
+# --- 12. /ope/STORYPROP — Story Properties ------------------------------------
 
 
 class StoryPropertiesArgument(TypedDict, total=False):
-    """docs/manual/15_OPE.md #12 — /ope/STORPROP — Story Properties.
+    """docs/manual/15_OPE.md #12 — /ope/STORYPROP — Story Properties.
 
     Doc inconsistencies: the Parameters table types FORMAT as an enum of
     "Fixed"/"Scientific", but the worked request example sends "Default"
@@ -505,33 +505,31 @@ class StoryPropertiesArgument(TypedDict, total=False):
     types PLACE as String, but the worked example sends an integer (4); we
     follow the worked example (int) for PLACE.
 
-    ⚠️ Live-tested 2026-07-30 on Gen NX: this route 404'd 3/3 tries, with
-    both FORMAT="Fixed" and FORMAT="Default" (ruling out that as the cause)
-    and with/without populated /db/STOR records (ruling that out too).
-    Not root-caused — could be a genuinely inactive route on this build, a
-    missing precondition not yet identified (e.g. a prior calculate_story
-    call, or a recognized STRUCTURE_TYPE), or something else entirely.
-    Treat as unconfirmed until re-tested.
+    ✅ Root cause found and fixed 2026-08-27: every one of the four 404
+    reproductions below (2026-07-30/07-31/08-01) called the misspelled URL
+    ``/ope/STORPROP``. The sibling manual repo's full re-verification pass
+    against MIDASIT's official pages found the real URL is
+    ``/ope/STORYPROP`` (STORY+PROP, not STOR+PROP) — confirmed live the
+    same day on Gen NX: ``POST /ope/STORPROP`` still 404s, while
+    ``POST /ope/STORYPROP`` routes through cleanly (200, ``"There is no
+    valid story information."`` on a document with no Story data — a
+    domain error, not a routing error). `get_story_properties()` now posts
+    to the corrected URL. The four historical 404s below were never a
+    genuinely dead/inactive route; they were hitting a URL that never
+    existed.
 
-    ⚠️ Also 404'd on Civil NX (2026-07-31, v2.2 build 07/29/2026) against a
-    real production bridge model, not just the synthetic Gen model above.
-    Consistent with Story data (`/db/STOR`) already being confirmed
-    Gen-only — plausibly this whole route only exists on Gen — but that's
-    still a guess, not confirmed, since the underlying Gen 404 was never
-    root-caused either.
-
-    ⚠️ Confirmed 2026-07-31: ``GET /info/ope/STORPROP`` also 404s on Civil
-    NX — the route isn't registered on Civil at all, matching the same
-    routing-level confirmation found for the `/ope/LCOM-*` family
-    (generate_load_combination_general's docstring). Still doesn't explain
-    *why* Gen 404s too, since Gen's own `/info/ope/STORPROP` was never
-    checked — that remains open.
-
-    ⚠️ 4th reproduction, 2026-08-01 on Gen NX: still 404 (FORMAT="Default",
-    PLACE=4), on a different Gen session/build than the 2026-07-30 tries.
-    Consistently dead across every condition tried so far — still
-    unexplained, not yet worth calling "genuinely inactive route" without
-    checking Gen's own `/info/ope/STORPROP`.
+    Historical 404 reproductions (all against the old, wrong
+    ``/ope/STORPROP`` spelling — kept for the record, not evidence of a
+    server defect): 2026-07-30 on Gen NX, 3/3 tries, with both
+    FORMAT="Fixed" and FORMAT="Default" and with/without populated
+    `/db/STOR` records. 2026-07-31 on Civil NX (v2.2 build 07/29/2026)
+    against a real production bridge model. 2026-07-31: `GET
+    /info/ope/STORPROP` also 404'd on Civil — though this turned out to be
+    uninformative too, since `/info/ope/*` routes 404 even for endpoints
+    confirmed working via POST (e.g. `/ope/STORY_IRR_PARAM`), so a
+    `/info/` 404 says nothing about whether the POST route itself exists.
+    2026-08-01: 4th reproduction on a different Gen session/build, still
+    404 on the misspelled URL.
     """
 
     FORCE_UNIT: str  # "N"/"KN"/"KGF"/"TONF"/"LBF"/"KIPS", default System, optional
@@ -541,12 +539,15 @@ class StoryPropertiesArgument(TypedDict, total=False):
 
 
 def get_story_properties(argument: StoryPropertiesArgument, client: Optional[MidasClient] = None) -> dict:
-    """docs/manual/15_OPE.md #12 — /ope/STORPROP — Story Properties.
+    """docs/manual/15_OPE.md #12 — /ope/STORYPROP — Story Properties.
 
     POST-only but functions as a query (unit/format-controlled report of
-    per-story weight, elevation, loaded height/width).
+    per-story weight, elevation, loaded height/width). See
+    StoryPropertiesArgument's docstring: the URL was ``/ope/STORPROP``
+    (missing a Y) until 2026-08-27 -- that was the actual defect behind
+    every historical 404, not a dead route.
     """
-    return _post("/ope/STORPROP", argument, client)
+    return _post("/ope/STORYPROP", argument, client)
 
 
 # --- 13. /ope/MEMB — Member Assignment ---------------------------------------

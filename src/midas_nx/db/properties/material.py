@@ -270,15 +270,62 @@ class TimeDependentMaterialCreepShrinkage(DbResource):
 
 
 class TimeDependentMaterialStrengthPayload(TypedDict, total=False):
-    """docs/manual/04_DB_Properties.md #7 — /db/TDME Specifications table."""
+    """docs/manual/04_DB_Properties.md #7 — /db/TDME Specifications table.
+
+    Additional fields are grouped by CODENAME, not by TYPE=CODE/USER as an
+    earlier version of this TypedDict implied.
+
+    ⚠️ Corrected 2026-08-27: the previous version grouped `A`/`B` under
+    "ACI/KDS", implying `CODENAME="KDS-2016"` (the code Korean users
+    reach for most) uses them. Live-confirmed on Gen NX: `CODENAME=
+    "KDS-2016"` with `A`/`B` answers `"[Error] Time Dependent
+    Material(Comp. Strength) input data contain errors."` (the code name
+    is recognized, its own required fields are missing); the same
+    material with `iCTYPE`/`DENSITY` instead round-trips cleanly.
+    `A`/`B` actually belong to `CODENAME="ACI"` or `"Korean Standard"` (a
+    separate, differently-named code from `"KDS-2016"`) — confirmed
+    `"Korean Standard"` + `A`/`B` also round-trips cleanly. This matches
+    (and finally explains) a 2026-07-2x finding already on record: probing
+    `KDS-2016` with `A`/`B` got exactly this "recognized but its own
+    fields are missing" error, not "Wrong Field" -- the missing fields
+    were iCTYPE/DENSITY, not a naming problem.
+
+    Field groups by CODENAME (Cement Type `iCTYPE` values are shared
+    across groups but not enumerated per-group here -- see the manual):
+    - `"ACI"`, `"Korean Standard"`: `A`, `B` (both required)
+    - `"CEB-FIP(1990)"`, `"Ohzagi"`, `"European"`, `"INDIA(IRC:112-2011)"`,
+      `"KCI-USD12"`: `iCTYPE` (required)
+    - `"CEB-FIP(2010)"`, `"INDIA(IRC:112-2020)"`: `iCTYPE`, `nAGGRE` (both required)
+    - `"Russian"`: `iCTYPE`, `CMETH`, `CTYPE`, `MAXS`, `PZ` (all required;
+      `CTYPE` here is unrelated to the top-level `TYPE` field despite the
+      similar name)
+    - `"GILBERT AND RANZI"`, **`"KDS-2016"`**: `iCTYPE`, `DENSITY` (both
+      required) -- confirmed live, see above
+    - `"Japan (Hydration)"`: `TENS_STRN_FACTOR` (required), `bUSE` (default
+      false); then `A`/`B`/`D` if `bUSE=false`, or `iCTYPE` if `bUSE=true`
+    - `"Japan (Elastic)"`: `iECTYPE` (required)
+    - Codes needing only the 4 common fields (no group-specific ones):
+      `"INDIA(IRC:18-2000)"`, `"CEB-FIP(1978)"`, `"AS 5100.5-2017"`,
+      `"AS 5100.5-2016"`, `"AS/RTA 5100.5-2011"`, `"AS 3600-2009"`
+    """
 
     NAME: str  # Material Name, required
     TYPE: str  # "CODE" / "USER", required
     CODENAME: str  # TYPE=CODE, required
     STRENGTH: float  # TYPE=CODE, required
-    A: float  # TYPE=USER (ACI/KDS): Factor a, required
-    B: float  # TYPE=USER (ACI/KDS): Factor b, required
-    iCTYPE: int  # TYPE=USER (CEB-FIP 1990/Ohzagi): Cement Type, required
+    A: float  # CODENAME in {ACI, Korean Standard, Japan (Hydration) w/ bUSE=false}: Factor a, required
+    B: float  # CODENAME in {ACI, Korean Standard, Japan (Hydration) w/ bUSE=false}: Factor b, required
+    iCTYPE: int  # CODENAME in {CEB-FIP(1990/2010), Ohzagi, European, INDIA(IRC:112-*), KCI-USD12, Russian, GILBERT AND RANZI, KDS-2016, Japan (Hydration) w/ bUSE=true}: Cement Type, required
+    nAGGRE: int  # CODENAME in {CEB-FIP(2010), INDIA(IRC:112-2020)}: Aggregate Type, required
+    DENSITY: float  # CODENAME in {GILBERT AND RANZI, KDS-2016}: Weight Density, required
+    CMETH: int  # CODENAME=Russian: Curing Method, Natural=0/Steam=1, required
+    CTYPE: int  # CODENAME=Russian: Concrete Type (distinct from top-level TYPE), Heavy=0/Fine-Grained=1, required
+    MAXS: float  # CODENAME=Russian: Maximum Aggregate Size, required
+    PZ: float  # CODENAME=Russian: Specific Content of the Cement Paste, required
+    TENS_STRN_FACTOR: float  # CODENAME=Japan (Hydration): Tensile Strength Factor, required
+    bUSE: bool  # CODENAME=Japan (Hydration): Use Concrete Data Option, default false, optional
+    D: float  # CODENAME=Japan (Hydration), bUSE=false: Factor d, required
+    iECTYPE: int  # CODENAME=Japan (Elastic): Normal=0/Rapid=1, required
 
 
 class TimeDependentMaterialStrength(DbResource):

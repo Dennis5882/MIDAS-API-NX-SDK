@@ -151,6 +151,21 @@ def get_story_load_summary_table(
     with load_case_names=["DL(ST)"] returned real per-story populated
     rows keyed by story name — confirms the renamed TABLE_TYPE and the
     new params both work as documented.
+
+    ⚠️ 2026-08-27: the sibling manual repo's full re-verification pass
+    reversed course, claiming this was all a mistake — that the 2026-08-06
+    sync had actually copied Story Mass Summary Table's shape by accident,
+    and the real params are just TABLE_NAME/TABLE_TYPE(STORY_LOAD_SUMMARY_
+    {dir})/EXPORT_PATH. Re-tested live the same day on Gen NX to check:
+    `TABLE_TYPE="STORY_LOAD_X"` (this function's value) still answers
+    cleanly (`{"message": ""}` on a document with no story data, same
+    shape as the known-good sibling `STORY_MASS_X`), while
+    `TABLE_TYPE="STORY_LOAD_SUMMARY_X"` (the manual's new claim, tried in
+    every case combination and casing) consistently answers `"there was
+    an error creating utbl"` — an unrecognized-table-type error, not a
+    data-shape error. **The manual's new correction is wrong; this
+    function's existing TABLE_TYPE and params are confirmed correct
+    again.** Don't flip this back without new live evidence.
     """
     return get_table(
         f"STORY_LOAD_{direction}",

@@ -6137,6 +6137,187 @@ Running total for the write-coverage push: 157 endpoints at `level:
 write` on at least one product (145 through the 08-25 crash-family
 session, +12 here).
 
+## 2026-08-27 — sibling manual repo's 24-chapter "전수 재검증" pass: 3 live-evidence conflicts resolved, the rest surveyed but not yet applied
+
+The sibling manual repo (`E:\AI Study\MIDAS-API`) moved from
+`fbd4f979...` (this SDK's `vendored_at_commit`) to `05eb6c08...` via a
+"전수 재검증" (full re-verification) pass that re-checked all 27
+chapters against MIDASIT's official pages — 24 chapters actually
+changed. Far too large to reflect in one session; a general-purpose
+agent surveyed all 24 diffs against the current SDK source and flagged
+3 as directly contradicting something this SDK already documents as
+independently live-verified. Per this project's standing rule, none of
+the 3 were "corrected" from the manual's new text alone — each was
+re-tested live first.
+
+**1. `get_story_load_summary_table` (`post/pre_process.py`) — SDK was
+right, manual's new correction is wrong.** The manual's 08-25 sync
+(commit `05c0550`) claimed the 2026-08-06 sync had confused this table
+with its sibling Story Mass Summary Table, and the real params are just
+`TABLE_NAME`/`TABLE_TYPE`(`STORY_LOAD_SUMMARY_{dir}`)/`EXPORT_PATH` —
+directly contradicting this SDK's own 2026-08-13 live confirmation
+(`TABLE_TYPE="STORY_LOAD_{dir}"` plus `unit`/`styles`/`components`/
+`load_case_names`, returning real per-story rows). Re-tested live on
+Gen NX (v2.1, build 08/20/2026): `TABLE_TYPE="STORY_LOAD_X"` still
+answers cleanly (`{"message": ""}` on a document with no story data,
+same shape as the known-good sibling `STORY_MASS_X`); `TABLE_TYPE=
+"STORY_LOAD_SUMMARY_X"` (every casing tried) consistently answers
+`"there was an error creating utbl"` — an unrecognized-table-type
+error. The manual's new correction is itself wrong; not applied.
+
+**2. `get_story_properties` (`ope.py`) — manual was right, SDK had a
+genuine typo.** Four historical 404s (2026-07-30 x3 Gen, 2026-07-31
+Civil, 2026-08-01 Gen) were all attributed to "unexplained, possibly a
+dead route." The manual's re-verification found the real URL is
+`/ope/STORYPROP` (STORY+PROP), not `/ope/STORPROP` — the SDK had been
+calling a URL with a missing letter the entire time. Re-tested live on
+Gen NX: `POST /ope/STORPROP` still 404s; `POST /ope/STORYPROP` routes
+through cleanly (200, `"There is no valid story information."` on a
+document with no Story data — a domain error, not a routing error).
+Also resolved a side puzzle: `GET /info/ope/STORPROP`'s 404 (taken
+earlier as routing-level confirmation the route doesn't exist) turns
+out to be uninformative — `GET /info/ope/STORY_IRR_PARAM` 404s too,
+for an endpoint independently confirmed working via POST, so `/info/
+ope/*` apparently doesn't work for any `/ope/*` endpoint, working or
+not. Fixed: `get_story_properties()` now posts to `/ope/STORYPROP`;
+`docs/coverage.json`'s `/ope/STORPROP` entry renamed and reconfirmed.
+
+**3. `WallRebarItem.vSTORY_NAME` (`db/design.py`, `/db/REBW`) — SDK
+was right, manual's new correction is wrong.** The manual's
+re-verification claimed the field is `vSTORY_KEY` (Integer array), not
+`vSTORY_NAME` (String array) — contradicting the 2026-07-29 rewrite,
+which had confirmed the field three independent ways against a real
+production Gen NX model (GET echo, `/info/db/REBW` schema, and a live
+PUT round-trip). Re-checked `GET /info/db/REBW` live again today: the
+server's own schema still names the field `vSTORY_NAME`, `items.type:
+"string"` — exactly matching the existing TypedDict. The manual's new
+claim is wrong on this field; not applied.
+
+**The other 21 changed chapters were surveyed (not deep-reviewed field
+by field) and are NOT yet reflected in the SDK.** Highlights worth
+prioritizing next, none live-tested yet: `/db/GSTP`'s 21-value spring
+matrix is documented as upper-triangular when the manual's re-check
+says it's diagonal-terms-first — the manual calls this "실무에 영향이
+큰 정정" (high real-world impact; wrong DOF assignment if unfixed).
+`/db/NSPR`'s `DIR` enum and `SK` field are both wrong (`STIFF`/
+`FUNCTION` don't exist as documented). `/db/REBC`'s entire payload
+shape is confused with a different endpoint. `post/result_1.py` has
+two wrong `TABLE_TYPE` constants (`BEAMFORCEBYMAX`/`BEAMFORCESIP`
+should be `BEAMFORCEVBM`/`BEAMFORCESTP`). `04_DB_Properties.md` and
+`05_DB_Boundary.md` carry the largest volume of under-documented
+(missing, not wrong) fields — `TDME`'s `A`/`B` vs `KDS-2016`'s actual
+`iCTYPE`/`DENSITY` requirement is probably the highest-value one there.
+Full per-file breakdown is in this session's conversation, not
+re-derived here — ask for it again if starting the next pass.
+
+**`docs/coverage.json`'s `vendored_at_commit` stays at `fbd4f979...`,
+not bumped to `05eb6c08...`** — only 3 of 24 changed chapters are
+actually reflected; bumping now would falsely claim the rest are synced
+too. `python scripts/check_manual_drift.py` will keep reporting
+`has_diff: true` until the remaining 21 are addressed, which is
+correct, not a bug. `pytest` (704) and `ruff` both clean after this
+session's 3 fixes.
+
+## 2026-08-27 (later) — working the 24-chapter drift survey's priority list: 5 more runtime-breaking bugs confirmed and fixed live on Gen NX
+
+Continuing from the priority list the earlier survey left (GSTP, NSPR,
+REBC, `post/result_1.py`'s two `TABLE_TYPE` typos, and `/db/TDME`'s
+`A`/`B` vs `KDS-2016` conflict) — Gen NX was open, so each item was
+live-tested before applying any fix, per this project's standing rule.
+
+**`/db/GSTP`'s 21-value matrix order — the manual's re-verification was
+right, confirmed by direct GUI inspection.** Posted a probe spring with
+a unique value (11-31) at each of the 21 array indices, then had the
+user open the General Spring Type dialog in Gen NX and read the 6x6
+grid back. Every single cell matched the manual's new "diagonal terms
+first, then off-diagonal row by row" order exactly — SDx/SDy/SDz/SRx/
+SRy/SRz diagonal = indices 0-5, then row-1 off-diagonals at 6-10, row-2
+at 11-14, row-3 at 15-17, row-4 at 18-19, row-5 at 20. The SDK's prior
+"upper-triangular" claim (K11,K12,K13,...,K22,K23,...) put stiffness at
+the wrong degrees of freedom for anyone who filled the array that way.
+`GeneralSpringTypePayload` rewritten with the full index table. Note:
+`scripts/live_crud_check.py`'s own `spring_types`/`GS_CRUD` fixtures
+were built under the old (wrong) assumption too — harmless in practice
+since neither Case's probe function actually asserts SPRING array
+values (GSTP's checks NAME, NSPR's checks SDR unrelated to GSTP), but
+the physical spring those fixtures create doesn't mean what its
+in-code comment implies. Not worth rebuilding the fixture data itself
+since no assertion depends on it; the misleading comment on the LINEAR
+NSPR case was fixed.
+
+**`/db/NSPR`'s COMP/TENS/MULTI shape — manual right, SDK had a fully
+fictional field.** The old shape (`DIR` 1-4, `DV`, an `SK` array) was
+confirmed live to answer `"[Error] Point Spring value has(have) been
+incorrectly entered."`; `SK` doesn't exist as a field at all. The real
+shape — `STIFF` (single number) for COMP/TENS, `FUNCTION` (an
+`/db/MLFC` id) for MULTI, `DIR` 0-6 (six signed directions plus
+Vector), `DV` only meaningful when `DIR=6` — round-tripped cleanly,
+confirmed separately for `DIR=6`+`DV`, `DIR=0` with no `DV`, and
+LINEAR's previously-undocumented `Cr` damping array. `PointSpringItem`
+rewritten.
+
+**`/db/REBC` — manual right, SDK's whole payload was confused with a
+different endpoint.** The old shape (`CREATE_SUB_SECTION`/`ELEMS`/
+`HOOK_TYPE`, a single-object `MAIN_BAR`, top-level `DO`) answered
+`"Wrong Field"` on the first live attempt. The real shape (`vMAIN_BAR`
+as an array of `{NAME,NUM,ROW,D0,bUSE_CORNER,NAME_CORNER}`, integer
+`HOOP_TYPE` 1=Tied/2=Spiral, `bSAME_SPACE_END_CEN`,
+`NUM_BAR_BC_JOINT`) round-tripped a full POST→GET→PUT→DELETE→GET cycle
+— DELETE genuinely removed the record (confirmed via a follow-up GET
+returning empty). Also **not POST-only** as previously documented —
+the `METHODS = frozenset({"POST"})` override was removed; full CRUD
+confirmed live. `ColumnRebarItem` rewritten, `ColumnMainBarSpec`
+renamed to `ColumnMainBarItem` to match the array-of-objects shape.
+
+**`post/result_1.py`'s two `TABLE_TYPE` constants were unrecognized
+values, not just misspelled labels.** `TABLE_TYPE_BEAM_FORCE_BY_MAX`
+(was `"BEAMFORCEBYMAX"`) and `TABLE_TYPE_BEAM_FORCE_STATIC_PRESTRESS`
+(was `"BEAMFORCESIP"`) both answered `"there was an error creating
+utbl"` (unrecognized table type) on Gen NX. The manual's corrected
+values (`"BEAMFORCEVBM"`, `"BEAMFORCESTP"`) instead answer `"Cannot
+generate table data as there is no analysis result"` — a materially
+different error confirming the table type itself is now recognized;
+not re-tested against a document with a real analysis run for
+populated data, so `coverage.json`'s level stays `read`.
+
+**`/db/TDME`'s `A`/`B` vs `KDS-2016` conflict — manual right, and it
+explains an old open question.** Live-confirmed: `CODENAME="KDS-2016"`
+with `A`/`B` answers `"[Error] Time Dependent Material(Comp. Strength)
+input data contain errors."`; the same material with `iCTYPE`/
+`DENSITY` instead round-trips cleanly. `CODENAME="Korean Standard"`
+(a separate, differently-named code) confirmed to work with `A`/`B` as
+expected. This resolves a finding already on record from an earlier
+session (`KDS-2016` recognized but rejected with `A`/`B`, cause
+unidentified at the time, this file's own 2026-07-2x sections) — the
+missing fields were `iCTYPE`/`DENSITY`, not a naming problem.
+`TimeDependentMaterialStrengthPayload` rewritten with a full
+per-`CODENAME` field group table; only the `KDS-2016`/`Korean
+Standard`/`ACI` groups were live-tested, the rest (`Russian`, the two
+`Japan` variants, etc.) are transcribed from the manual's
+re-verification and not independently confirmed.
+
+`docs/coverage.json` updated for `/db/GSTP`/`/db/NSPR`/`/db/REBC`/
+`/db/TDME` (all flipped or reconfirmed `level: write`) and the
+`post/result_1.py` aggregate entry (route/type confirmed, `level`
+stays `read`). Global write coverage: 158/399. Tests updated to match
+(`tests/db/test_design_setup.py`'s REBC tests, `tests/post/
+test_result_1.py`'s TABLE_TYPE assertions). `pytest` (704) and `ruff`
+both clean. **Remaining from the priority list, not yet done**: the
+`04_DB_Properties.md`/`05_DB_Boundary.md` under-documented (missing,
+not wrong) fields flagged in the earlier survey — `PlasticMaterialPayload`'s
+DP/MA/DM sub-objects, `InelasticMaterialKentParkParam`'s 4 missing
+fields, `SectionStiffnessItem`'s J-end block, `SectionReinforcementPayload`'s
+`MBAR_ITEMS`, `FiberDivisionPayload`'s wrong `FIBR_BASE_KEY` type plus
+missing fields, `GroupDampingPayload`'s Rayleigh-damping branch,
+`TaperedGroupPayload`'s Y-axis POLY branch, `SeismicDeviceIsolatorPayload`'s
+`SDIS_DEV_TYPE` enum and nested shapes, `LinearConstraintSlave`'s
+`COEFF`/`WEIGHT` split, the three badly-incomplete seismic-device
+classes, `GeneralLinkPropertyPayload`'s missing fields, and
+`GeneralLinkHyperSPayload`'s outdated stub — lower severity (additive
+gaps, not actively-wrong values that break a live call) so deferred
+rather than blocking. Still 21 of the 24 changed manual chapters not
+yet reflected at all; `vendored_at_commit` stays unbumped.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

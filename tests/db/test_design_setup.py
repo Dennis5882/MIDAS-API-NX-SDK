@@ -1,9 +1,7 @@
 import json
 
-import pytest
 import responses
 
-from midas_nx.client import UnsupportedMethodError
 from midas_nx.db.design import (
     BeamRebar,
     BraceRebar,
@@ -249,19 +247,31 @@ def test_beam_rebar_create_sends_documented_assign_shape(gen_client):
 
 @responses.activate
 def test_column_rebar_create_sends_documented_assign_shape(gen_client):
+    # Field names confirmed live 2026-08-27 -- the old shape (CREATE_SUB_SECTION/
+    # MAIN_BAR/DO/HOOK_TYPE) answered "Wrong Field"; this shape round-tripped a
+    # full POST->GET->PUT->DELETE->GET cycle. See ColumnMainBarItem's docstring.
     responses.add(responses.POST, "https://x.test:443/gen/db/REBC", json={}, status=200)
     ColumnRebar.create(
         {
             1: {
                 "ITEMS": [
                     {
-                        "CREATE_SUB_SECTION": False,
-                        "MAIN_BAR": {"NAME": "D19", "NUM": 8, "ROW": 3, "USE_CORNER": False},
+                        "ID": 0,
+                        "vMAIN_BAR": [
+                            {
+                                "NAME": "D19",
+                                "NUM": 8,
+                                "ROW": 3,
+                                "D0": 0.04,
+                                "bUSE_CORNER": False,
+                                "NAME_CORNER": "D19",
+                            }
+                        ],
                         "SHEAR_BAR_END": {"NAME": "D10", "LEG_Y": 2, "LEG_Z": 2, "DIST": 100},
                         "SHEAR_BAR_CEN": {"NAME": "D10", "LEG_Y": 2, "LEG_Z": 2, "DIST": 200},
-                        "DO": 40,
-                        "HOOP_TYPE": "Ties",
-                        "HOOK_TYPE": 0,
+                        "HOOP_TYPE": 1,
+                        "bSAME_SPACE_END_CEN": True,
+                        "NUM_BAR_BC_JOINT": 0,
                     }
                 ]
             }
@@ -270,19 +280,21 @@ def test_column_rebar_create_sends_documented_assign_shape(gen_client):
     )
     sent = responses.calls[0].request
     item = json.loads(sent.body)["Assign"]["1"]["ITEMS"][0]
-    assert item["MAIN_BAR"]["NUM"] == 8
+    assert item["vMAIN_BAR"][0]["NUM"] == 8
     assert item["SHEAR_BAR_END"]["LEG_Y"] == 2
 
 
 @responses.activate
-def test_column_rebar_only_supports_post(gen_client):
-    with pytest.raises(UnsupportedMethodError):
-        ColumnRebar.get(client=gen_client)
-    with pytest.raises(UnsupportedMethodError):
-        ColumnRebar.update({1: {"ITEMS": []}}, client=gen_client)
-    with pytest.raises(UnsupportedMethodError):
-        ColumnRebar.delete([1], client=gen_client)
-    assert len(responses.calls) == 0
+def test_column_rebar_supports_full_crud(gen_client):
+    # Confirmed live 2026-08-27: not POST-only as the manual previously
+    # claimed -- full CRUD, including DELETE actually removing the record.
+    responses.add(responses.GET, "https://x.test:443/gen/db/REBC", json={}, status=200)
+    responses.add(responses.PUT, "https://x.test:443/gen/db/REBC", json={}, status=200)
+    responses.add(responses.DELETE, "https://x.test:443/gen/db/REBC/1", json={}, status=200)
+    ColumnRebar.get(client=gen_client)
+    ColumnRebar.update({1: {"ITEMS": []}}, client=gen_client)
+    ColumnRebar.delete([1], client=gen_client)
+    assert len(responses.calls) == 3
 
 
 @responses.activate

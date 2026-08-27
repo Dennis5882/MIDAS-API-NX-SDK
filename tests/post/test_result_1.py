@@ -119,7 +119,7 @@ def test_get_beam_force_table_accepts_by_max_variant(gen_client):
     responses.add(responses.POST, "https://x.test:443/gen/post/TABLE", json={}, status=200)
     result_1.get_beam_force_table(result_1.TABLE_TYPE_BEAM_FORCE_BY_MAX, client=gen_client)
     sent = responses.calls[0].request
-    assert json.loads(sent.body)["Argument"]["TABLE_TYPE"] == "BEAMFORCEBYMAX"
+    assert json.loads(sent.body)["Argument"]["TABLE_TYPE"] == "BEAMFORCEVBM"
 
 
 @responses.activate
@@ -127,7 +127,7 @@ def test_get_beam_force_static_prestress_table_sends_table_type(gen_client):
     responses.add(responses.POST, "https://x.test:443/gen/post/TABLE", json={}, status=200)
     result_1.get_beam_force_static_prestress_table("BeamForcePS", client=gen_client)
     sent = responses.calls[0].request
-    assert json.loads(sent.body)["Argument"]["TABLE_TYPE"] == "BEAMFORCESIP"
+    assert json.loads(sent.body)["Argument"]["TABLE_TYPE"] == "BEAMFORCESTP"
 
 
 @responses.activate

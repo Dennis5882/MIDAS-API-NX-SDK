@@ -524,12 +524,12 @@ def test_set_story_irregularity_check_parameter_sends_all_fields(gen_client):
     }
 
 
-# --- 12. STORPROP ----------------------------------------------------------------------
+# --- 12. STORYPROP ----------------------------------------------------------------------
 
 
 @responses.activate
 def test_get_story_properties_sends_unit_and_format_settings(gen_client):
-    responses.add(responses.POST, "https://x.test:443/gen/ope/STORPROP", json={}, status=200)
+    responses.add(responses.POST, "https://x.test:443/gen/ope/STORYPROP", json={}, status=200)
     ope.get_story_properties(
         {"FORCE_UNIT": "KN", "LENGTH_UNIT": "M", "FORMAT": "Default", "PLACE": 4}, client=gen_client
     )

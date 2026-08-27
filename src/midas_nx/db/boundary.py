@@ -43,7 +43,23 @@ class Constraint(DbResource):
 class PointSpringItem(ItemGroupFields, total=False):
     """One entry of the /db/NSPR "ITEMS" array.
 
-    LINEAR uses SDR/F_S/DAMPING; COMP/TENS/MULTI use DIR/DV/SK instead.
+    LINEAR uses SDR/F_S/DAMPING/Cr; COMP/TENS use STIFF/DIR/DV; MULTI uses
+    FUNCTION/DIR/DV.
+
+    ⚠️ Corrected 2026-08-27 per the sibling manual repo's re-verification
+    (live-confirmed on Gen NX the same day): the previous version of this
+    TypedDict conflated all three of COMP/TENS/MULTI into one made-up
+    DIR(1-4)/DV/SK shape. Real behavior: `POST /db/NSPR` with
+    `{"DIR": 4, "DV": [0,0,0], "SK": [2000.0, 0.0, 0.0]}` (the old shape)
+    answers `"[Error] Point Spring value has(have) been incorrectly
+    entered."`; `{"DIR": 6, "DV": [0,-1,-1], "STIFF": 2000000.0}` (the
+    real shape below) round-trips cleanly. `SK` doesn't exist as a field
+    at all -- COMP/TENS use a single `STIFF` number, MULTI uses `FUNCTION`
+    (an `/db/MLFC` id) instead. `DIR` is 0-6 (six signed axis directions
+    plus Vector), not 1-4; `DV` is only meaningful/required when `DIR=6`,
+    confirmed via a clean round-trip with `DIR=0` and no `DV` at all.
+    `Cr` (LINEAR's per-DOF damping array) was previously missing entirely
+    -- confirmed live via a clean round-trip.
     """
 
     TYPE: str  # "LINEAR" / "COMP" / "TENS" / "MULTI", required
@@ -51,11 +67,15 @@ class PointSpringItem(ItemGroupFields, total=False):
     # LINEAR only
     SDR: List[float]  # Spring Stiffness [SDx,SDy,SDz,SRx,SRy,SRz], required
     F_S: List[bool]  # Fixed Option [SDx,SDy,SDz,SRx,SRy,SRz], default false
-    DAMPING: bool  # Damping Constant, optional
-    # COMP / TENS / MULTI only
-    DIR: int  # 1=Dx, 2=Dy, 3=Dz, 4=Dy&Dz; required
-    DV: List[float]  # Displacement Values [Disp_1, Disp_2, Disp_3], required
-    SK: List[float]  # Spring Stiffness Values [K_1, K_2, K_3], required
+    DAMPING: bool  # Use Damping Constant, default false, optional
+    Cr: List[float]  # Damping [Cx,Cy,Cz,CRx,CRy,CRz], default 0, optional
+    # COMP / TENS only
+    STIFF: float  # Stiffness, required
+    # COMP / TENS / MULTI
+    DIR: int  # Dx(+)=0/Dx(-)=1/Dy(+)=2/Dy(-)=3/Dz(+)=4/Dz(-)=5/Vector=6, required
+    DV: List[float]  # Normal Vector [x,y,z], required if DIR=6, default 0
+    # MULTI only
+    FUNCTION: int  # Force-Deformation function id (from /db/MLFC), required
 
 
 class PointSpringPayload(TypedDict):
@@ -73,8 +93,29 @@ class PointSpring(DbResource):
 class GeneralSpringTypePayload(TypedDict, total=False):
     """docs/manual/05_DB_Boundary.md #3 — /db/GSTP Specifications table.
 
-    SPRING/MASS/DAMPING are 21-value upper-triangular matrices, each valid
-    only when its matching OPT_* flag is true.
+    SPRING/MASS/DAMPING are 21-value symmetric 6x6 matrices (each valid
+    only when its matching OPT_* flag is true), but **not** in simple
+    upper-triangular row order. Live-confirmed 2026-08-27 on Gen NX by
+    sending a probe spring with a unique value 11-31 at each of the 21
+    indices and reading the values back off the General Spring Type
+    dialog's 6x6 grid (SDx/SDy/SDz/SRx/SRy/SRz): the real order is
+    **diagonal terms first, then off-diagonal terms row by row**:
+
+    - idx 0-5:   diagonal (1,1)..(6,6) — i.e. Kxx, Kyy, Kzz, Krxrx, Kryry, Krzrz
+    - idx 6-10:  row 1 off-diagonal — (1,2), (1,3), (1,4), (1,5), (1,6)
+    - idx 11-14: row 2 off-diagonal — (2,3), (2,4), (2,5), (2,6)
+    - idx 15-17: row 3 off-diagonal — (3,4), (3,5), (3,6)
+    - idx 18-19: row 4 off-diagonal — (4,5), (4,6)
+    - idx 20:    row 5 off-diagonal — (5,6)
+
+    This SDK previously documented plain upper-triangular row order (K11,
+    K12, K13, K14, K15, K16, K22, K23, ...) — confirmed wrong by the same
+    test (index 1 showed up as Kyy on the diagonal, not K12). Anyone who
+    filled the array by the old convention put stiffness at the wrong
+    degrees of freedom. Only SPRING (OPT_STIFFNESS) was tested directly
+    against the GUI; MASS/DAMPING are assumed to share the same layout
+    (the manual documents all three identically) but weren't
+    independently confirmed.
     """
 
     NAME: str  # General Spring Name, required

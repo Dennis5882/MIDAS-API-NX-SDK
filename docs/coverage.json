@@ -938,15 +938,14 @@
       "status": "implemented",
       "module": "midas_nx.db.properties.*",
       "live_verified": {
-        "date": "2026-07-29",
+        "date": "2026-08-27",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Corrected 2026-08-27: the previous version grouped A/B under \"ACI/KDS\", implying CODENAME=\"KDS-2016\" uses them. Live-confirmed on Gen NX: KDS-2016 + A/B answers \"[Error] Time Dependent Material(Comp. Strength) input data contain errors.\"; KDS-2016 + iCTYPE/DENSITY round-trips cleanly. A/B actually belong to CODENAME=\"ACI\" or \"Korean Standard\" (a separate code from KDS-2016) -- confirmed \"Korean Standard\"+A/B also round-trips. This explains a 2026-07-2x finding already on record (KDS-2016 recognized but rejected with A/B, cause unknown at the time) -- the missing fields were iCTYPE/DENSITY. Full per-CODENAME field table added to TimeDependentMaterialStrengthPayload's docstring, though only the KDS-2016/Korean Standard/ACI groups were live-tested; the rest (Russian, Japan variants, etc.) are transcribed from the manual's re-verification, not independently confirmed.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/20/2026"
         },
         "level": "write",
         "outcome": "success_empty"
@@ -1594,15 +1593,14 @@
       "status": "implemented",
       "module": "midas_nx.db.boundary",
       "live_verified": {
-        "date": "2026-07-29",
+        "date": "2026-08-27",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-verified 2026-08-27: the previous COMP/TENS/MULTI shape (DIR 1-4, DV, a fictional SK field) answered \"[Error] Point Spring value has(have) been incorrectly entered.\" live on Gen NX. The corrected shape (STIFF single number for COMP/TENS, FUNCTION for MULTI, DIR 0-6 including Vector, DV only meaningful for DIR=6) round-trips cleanly -- confirmed DIR=6+DV, DIR=0 with no DV, and LINEAR's previously-undocumented Cr damping array all separately. PointSpringItem rewritten.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/20/2026"
         },
         "level": "write",
         "outcome": "success_empty"
@@ -1619,15 +1617,14 @@
       "status": "implemented",
       "module": "midas_nx.db.boundary",
       "live_verified": {
-        "date": "2026-07-29",
+        "date": "2026-08-27",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-verified 2026-08-27 following the sibling manual repo's re-verification pass, which corrected the 21-value matrix index order: this SDK previously documented plain upper-triangular row order (K11,K12,K13,...,K22,K23,...). Live-confirmed on Gen NX via a probe spring (21 unique values 11-31, one per index) read back off the General Spring Type dialog's 6x6 grid: the real order is diagonal terms first (idx 0-5), then off-diagonal terms row by row (idx 6-10 row 1, 11-14 row 2, 15-17 row 3, 18-19 row 4, 20 row 5) -- matches the manual's correction exactly, the SDK's prior claim was wrong. GeneralSpringTypePayload's docstring rewritten with the full index table.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/20/2026"
         },
         "level": "write",
         "outcome": "success_empty"
@@ -5683,16 +5680,15 @@
       "status": "implemented",
       "module": "midas_nx.db.design",
       "live_verified": {
-        "date": "2026-07-29",
+        "date": "2026-08-27",
         "products": [
           "gen"
         ],
-        "method": "GET /info/db/REBC route check (endpoint itself is POST-only, no GET, so scripts/live_readonly_sweep.py can't reach it) -- answers on Gen, 404s on Civil; confirmed independently twice the same day (an earlier sweep, then a live re-check with both products connected in one session)",
+        "method": "GET /info/db/REBC route check (endpoint itself is POST-only, no GET, so scripts/live_readonly_sweep.py can't reach it) -- answers on Gen, 404s on Civil; confirmed independently twice the same day (an earlier sweep, then a live re-check with both products connected in one session) Corrected 2026-08-27, whole payload rewrite: the previous shape (CREATE_SUB_SECTION/ELEMS/HOOK_TYPE/single-object MAIN_BAR/top-level DO) was confused with a different endpoint and answered \"Wrong Field\" on every live attempt. The real shape (vMAIN_BAR as an array, integer HOOP_TYPE, bSAME_SPACE_END_CEN, NUM_BAR_BC_JOINT) round-tripped a full POST->GET->PUT->DELETE->GET cycle on Gen NX, confirming DELETE actually removes the record. Also not POST-only as previously documented -- full CRUD confirmed live; METHODS override removed.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/28/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/20/2026"
         },
-        "level": "read"
+        "level": "write"
       }
     },
     {
@@ -5705,11 +5701,11 @@
       "status": "implemented",
       "module": "midas_nx.db.design",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-27",
         "products": [
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-checked 2026-08-27 against the sibling manual repo's full re-verification pass, which newly claimed vSTORY_NAME should be vSTORY_KEY (Integer array): GET /info/db/REBW on Gen NX still names the field vSTORY_NAME with items.type \"string\", exactly matching the 2026-07-29 rewrite -- the manual's new claim on this field is wrong, not applied.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
         },
@@ -5998,7 +5994,7 @@
       }
     },
     {
-      "endpoint": "/ope/STORPROP",
+      "endpoint": "/ope/STORYPROP",
       "name": "Story Properties",
       "chapter_file": "15_OPE.md",
       "products": [
@@ -6007,14 +6003,13 @@
       "status": "implemented",
       "module": "midas_nx.ope",
       "live_verified": {
-        "date": "2026-08-01",
+        "date": "2026-08-27",
         "products": [
           "gen"
         ],
-        "method": "manual POST probe via midas_nx.ope.get_story_properties. On Gen NX: 404'd 4/4 tries across two sessions/builds (2026-07-30 x3, 2026-08-01 x1), varying FORMAT ('Fixed'/'Default') and with/without populated /db/STOR records -- not root-caused, still unexplained. On Civil NX (2026-07-31, real production bridge model): also 404'd, and GET /info/ope/STORPROP additionally confirmed 404 -- the route isn't registered on Civil at all (routing-level, not just an execution failure), matching the rest of the story family. Doesn't explain why Gen 404s too, since Gen's own /info/ope/STORPROP was never checked.",
+        "method": "Root cause found 2026-08-27: every historical 404 (2026-07-30 x3, 2026-08-01 x1 on Gen NX; 2026-07-31 on Civil NX against a real production bridge model) was hitting the misspelled URL /ope/STORPROP. The sibling manual repo's full re-verification pass found the real URL is /ope/STORYPROP (STORY+PROP) -- confirmed live the same day on Gen NX: POST /ope/STORPROP still 404s, POST /ope/STORYPROP routes through cleanly (200, \"There is no valid story information.\" on a document with no Story data -- a domain error, not a routing error). midas_nx.ope.get_story_properties() now posts to the corrected URL. GET /info/ope/STORPROP's earlier 404 on Civil turned out to be uninformative -- /info/ope/* routes 404 even for endpoints confirmed working via POST (e.g. /ope/STORY_IRR_PARAM), so a /info/ 404 says nothing about whether the POST route itself exists. Not yet re-tested against a document with real Story data for a fully populated response -- the domain error confirms the route exists, which was the open question.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026 -- confirms 404 at routing level, not supported"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/20/2026"
         },
         "level": "read"
       }
@@ -6602,12 +6597,12 @@
       "status": "implemented",
       "module": "midas_nx.post.pre_process",
       "live_verified": {
-        "date": "2026-07-30",
+        "date": "2026-08-27",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "manual GET probe via midas_nx.post.pre_process.get_material_table only (one of the 10 TABLE_TYPE values in this module, spot-checking the shared post.base.get_table()/unwrap_table() mechanism they all route through) -- the other 9 table types were not individually re-probed this session 2026-08-07: same Civil NX FCM bridge sweep also covered this module's other 9 table types. 7 of 10 answered ok: get_element_weight_table/get_mass_summary_table/get_section_table/get_supports_table (plus get_material_table, already covered above) returned real populated rows; get_load_summary_table/get_nodal_body_force_table answered a clean empty response. The 3 get_story_*_table functions all answered result_error ('there was an error creating utbl') -- this bridge model has no story data, matching the Story-module row's Gen-only finding below. 2026-08-13: with real Story data present (Gen NX, 2 stories), get_story_load_summary_table (post-2026-08-06-rename TABLE_TYPE STORY_LOAD_X, plus new unit/styles/components/load_case_names params) and get_story_weight_table (new unit/styles/components params) both returned real per-story populated rows keyed to the actual story names -- closes the 'renamed TABLE_TYPE never tested' gap this row used to carry. get_story_mass_summary_table not re-tested this pass (no new schema change, lower priority).",
+        "method": "manual GET probe via midas_nx.post.pre_process.get_material_table only (one of the 10 TABLE_TYPE values in this module, spot-checking the shared post.base.get_table()/unwrap_table() mechanism they all route through) -- the other 9 table types were not individually re-probed this session 2026-08-07: same Civil NX FCM bridge sweep also covered this module's other 9 table types. 7 of 10 answered ok: get_element_weight_table/get_mass_summary_table/get_section_table/get_supports_table (plus get_material_table, already covered above) returned real populated rows; get_load_summary_table/get_nodal_body_force_table answered a clean empty response. The 3 get_story_*_table functions all answered result_error ('there was an error creating utbl') -- this bridge model has no story data, matching the Story-module row's Gen-only finding below. 2026-08-13: with real Story data present (Gen NX, 2 stories), get_story_load_summary_table (post-2026-08-06-rename TABLE_TYPE STORY_LOAD_X, plus new unit/styles/components/load_case_names params) and get_story_weight_table (new unit/styles/components params) both returned real per-story populated rows keyed to the actual story names -- closes the 'renamed TABLE_TYPE never tested' gap this row used to carry. get_story_mass_summary_table not re-tested this pass (no new schema change, lower priority). Re-checked 2026-08-27 against the sibling manual repo's full re-verification pass, which newly claimed get_story_load_summary_table's TABLE_TYPE should revert to STORY_LOAD_SUMMARY_{dir} with only TABLE_NAME/TABLE_TYPE/EXPORT_PATH (no unit/styles/components/load_case_names): re-tested live on Gen NX, TABLE_TYPE=STORY_LOAD_X (this function's actual value) still answers cleanly, while TABLE_TYPE=STORY_LOAD_SUMMARY_X consistently answers \"there was an error creating utbl\" (unrecognized table type) in every case/casing tried. The manual's new claim is wrong here; the 2026-08-13 confirmation stands.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/12/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
@@ -6627,12 +6622,12 @@
       "status": "implemented",
       "module": "midas_nx.post.result_1",
       "live_verified": {
-        "date": "2026-07-30",
+        "date": "2026-08-27",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "manual GET-shaped POST probe via midas_nx.post.result_1.get_reaction_table and get_beam_force_table after a real /doc/ANAL run on a synthetic frame model -- 2 of ~25 table types spot-checked; Civil re-check used a model with real AUTOMESH-generated plates so DL self-weight was non-zero (Gen's earlier check had an all-zero load case, both are expected results, not defects); the rest were not individually re-probed 2026-08-07 broader sweep on a real Civil NX FCM bridge model (111 nodes, post-analysis): 48 of this module's 51 get_*_table functions answered ok (design-forces-family functions in post.design excluded from this sweep -- confirmed crash-prone, see MAPI-2431), 5 with real populated rows (get_tendon_arrangement/coordinates/elongation/stress_limit_check/weight_table -- this FCM bridge model has real tendon data), the rest a clean empty response for element types this bridge model doesn't have (truss/cable/plane/solid). get_beam_force_static_prestress_table and get_wall_force_table both answered result_error ('there was an error creating utbl (ex PostMode ...)') -- same 'post mode' precondition GSBG is blocked on, see ope.py's generate_bridge_girder_diagram docstring. get_tendon_loss_table timed out at 40s without crashing the session (verify_connection + a follow-up /db/NODE call both succeeded right after), treated as slow rather than broken. get_concurrent_joint_force_table() (TABLE_TYPE=CONCURRENT_JOINT_FORCE) added 2026-08-10 from a manual sync that documented this table type for the first time. 2026-08-13: tested on both products against a fresh cantilever-column model with a real fixed-support reaction (Gen NX v2.1 build 08/12/2026, Civil NX v2.2 build 08/12/2026), ADDITIONAL.SET_REACTION_PARAMS={NODE_KEY: 1, COMPONENT: '111111'}, one and then two static load cases -- route accepts the request on both products (no 404, no crash), but both refused it with a clean, product-specific error and the session stayed healthy: Gen answered 'there was an error creating utbl. (ex PostMode ...)', Civil answered 'No data found for the specified node key.' A NODE_KEY-as-string retry on Civil got a worse, clearly-wrong-shape error ('second query is wrong'), confirming the documented int type is correct. IMPORTANT CORRECTION, same session: the user confirmed via screenshot that the Gen NX GUI was already showing 'Post-processing Mode' actively enabled (toolbar toggle highlighted, post-analysis message log visible) at the moment of this test -- yet the identical 'PostMode' error persisted. This is NOT the same gate get_wall_force_table/GSBG are blocked on (that one clears once a human manually enables Post mode; this didn't). The 'PostMode' wording in the error text is misleading for this specific table. Combined with Civil's 'no data for this node key' (on a node with confirmed real reaction data), both read as the same underlying cause: no moving-load MV:max/MV:min result data to search an 'extreme instant' over, matching this table's own docstring note literally -- route/shape confirmed correct on both products, functional precondition (real moving-load results) remains untested.",
+        "method": "manual GET-shaped POST probe via midas_nx.post.result_1.get_reaction_table and get_beam_force_table after a real /doc/ANAL run on a synthetic frame model -- 2 of ~25 table types spot-checked; Civil re-check used a model with real AUTOMESH-generated plates so DL self-weight was non-zero (Gen's earlier check had an all-zero load case, both are expected results, not defects); the rest were not individually re-probed 2026-08-07 broader sweep on a real Civil NX FCM bridge model (111 nodes, post-analysis): 48 of this module's 51 get_*_table functions answered ok (design-forces-family functions in post.design excluded from this sweep -- confirmed crash-prone, see MAPI-2431), 5 with real populated rows (get_tendon_arrangement/coordinates/elongation/stress_limit_check/weight_table -- this FCM bridge model has real tendon data), the rest a clean empty response for element types this bridge model doesn't have (truss/cable/plane/solid). get_beam_force_static_prestress_table and get_wall_force_table both answered result_error ('there was an error creating utbl (ex PostMode ...)') -- same 'post mode' precondition GSBG is blocked on, see ope.py's generate_bridge_girder_diagram docstring. get_tendon_loss_table timed out at 40s without crashing the session (verify_connection + a follow-up /db/NODE call both succeeded right after), treated as slow rather than broken. get_concurrent_joint_force_table() (TABLE_TYPE=CONCURRENT_JOINT_FORCE) added 2026-08-10 from a manual sync that documented this table type for the first time. 2026-08-13: tested on both products against a fresh cantilever-column model with a real fixed-support reaction (Gen NX v2.1 build 08/12/2026, Civil NX v2.2 build 08/12/2026), ADDITIONAL.SET_REACTION_PARAMS={NODE_KEY: 1, COMPONENT: '111111'}, one and then two static load cases -- route accepts the request on both products (no 404, no crash), but both refused it with a clean, product-specific error and the session stayed healthy: Gen answered 'there was an error creating utbl. (ex PostMode ...)', Civil answered 'No data found for the specified node key.' A NODE_KEY-as-string retry on Civil got a worse, clearly-wrong-shape error ('second query is wrong'), confirming the documented int type is correct. IMPORTANT CORRECTION, same session: the user confirmed via screenshot that the Gen NX GUI was already showing 'Post-processing Mode' actively enabled (toolbar toggle highlighted, post-analysis message log visible) at the moment of this test -- yet the identical 'PostMode' error persisted. This is NOT the same gate get_wall_force_table/GSBG are blocked on (that one clears once a human manually enables Post mode; this didn't). The 'PostMode' wording in the error text is misleading for this specific table. Combined with Civil's 'no data for this node key' (on a node with confirmed real reaction data), both read as the same underlying cause: no moving-load MV:max/MV:min result data to search an 'extreme instant' over, matching this table's own docstring note literally -- route/shape confirmed correct on both products, functional precondition (real moving-load results) remains untested. Corrected 2026-08-27: TABLE_TYPE_BEAM_FORCE_BY_MAX (was \"BEAMFORCEBYMAX\") and TABLE_TYPE_BEAM_FORCE_STATIC_PRESTRESS (was \"BEAMFORCESIP\") were both unrecognized TABLE_TYPE values -- live on Gen NX, the old values answered \"there was an error creating utbl\" (unrecognized), the corrected values (BEAMFORCEVBM, BEAMFORCESTP) answer \"Cannot generate table data as there is no analysis result\" (recognized, just no data on a fresh document) -- a different error class confirming the route+type themselves are now right. Not re-tested against a document with a real analysis run for populated data.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/12/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/12/2026"

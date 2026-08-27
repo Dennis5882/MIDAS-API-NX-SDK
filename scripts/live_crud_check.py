@@ -710,8 +710,9 @@ def _boundary_cases() -> List[Case]:
     # All nine confirmed live on Civil NX 2026 v2.1 (build 06/05/2026),
     # 2026-07-26 — 9/9 full round trips in the first run that exercised them.
     return [
-        # Keyed by node id. LINEAR uses SDR/F_S; COMP/TENS/MULTI would use
-        # DIR/DV/SK instead.
+        # Keyed by node id. LINEAR uses SDR/F_S; COMP/TENS use STIFF/DIR/DV
+        # and MULTI uses FUNCTION/DIR/DV instead (corrected 2026-08-27; see
+        # PointSpringItem's docstring -- not exercised by this LINEAR case).
         Case(
             PointSpring,
             {"ITEMS": [{"ID": 1, "TYPE": "LINEAR", "GROUP_NAME": "",

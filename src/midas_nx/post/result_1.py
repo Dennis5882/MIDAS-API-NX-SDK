@@ -38,10 +38,16 @@ TABLE_TYPE_CABLE_EFFICIENCY = "CABLEEFFIENCY"  # sic — API spec spells it "EFF
 
 # 8. Beam Force
 TABLE_TYPE_BEAM_FORCE = "BEAMFORCE"
-TABLE_TYPE_BEAM_FORCE_BY_MAX = "BEAMFORCEBYMAX"
+#: Corrected 2026-08-27 (was "BEAMFORCEBYMAX") -- live-confirmed on Gen NX:
+#: the old value answered "there was an error creating utbl" (unrecognized
+#: table type), this one answers "Cannot generate table data as there is
+#: no analysis result" (recognized, just no data yet on a fresh document).
+TABLE_TYPE_BEAM_FORCE_BY_MAX = "BEAMFORCEVBM"
 
 # 9. Beam Force (Static Prestress)
-TABLE_TYPE_BEAM_FORCE_STATIC_PRESTRESS = "BEAMFORCESIP"
+#: Corrected 2026-08-27 (was "BEAMFORCESIP") -- same live-confirmation
+#: pattern as TABLE_TYPE_BEAM_FORCE_BY_MAX above.
+TABLE_TYPE_BEAM_FORCE_STATIC_PRESTRESS = "BEAMFORCESTP"
 
 # 10. Beam Stress
 TABLE_TYPE_BEAM_STRESS = "BEAMSTRESS"
