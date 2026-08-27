@@ -6582,11 +6582,71 @@ All live checks on Gen NX; Civil NX remained unreachable all session.
   here are documentation, not runtime-enforced); not live-tested.
 
 **All 24 changed manual chapters are now reflected.** `vendored_at_commit`
-still intentionally left unbumped
-(`fbd4f9796824b8967ea748f3bcd0d329fe39fb55`) pending a final
+bumped to `05eb6c08d1af5d61db517d63eb274f7038c80caa`;
 `scripts/check_manual_drift.py --manual-api-repo "E:\AI Study\MIDAS-API"`
-confirmation of `has_diff: false` before that bump — not run yet this
-session. `pytest` (706), `ruff`, and `mypy` all clean.
+now reports `{"has_diff": false, "commit":
+"05eb6c08d1af5d61db517d63eb274f7038c80caa"}`. `pytest` (706), `ruff`, and
+`mypy` all clean.
+
+## 2026-08-27 (final) — closing the Civil-only gaps this drift work left unverified, now that a working Civil NX key is available
+
+The user provided a fresh Civil NX MAPI key after the above; the
+previously-stored one had gone stale (`verify_connection` reported
+`status: "disconnected"`, and a plain `GET /db/NODE` 404'd with `client
+does not exist"`) even though it decoded to the same session id — the
+underlying product just hadn't been reconnected yet. Once reconnected,
+went back through every item this drift pass had left as "Civil-only,
+session unavailable" and closed as many as the model state allowed:
+
+- **`/db/WVLD`** (misc_loads.py): bisected the manual's full worked
+  example down to a bare `{"NAME": "WV1"}` payload — even that minimal
+  form still answers the identical `"Wrong Field"` first seen 2026-08-16.
+  Confirms the standing failure is unrelated to the `CREST`/`UNIT` value
+  correction specifically; the entire write path is blocked (suspected
+  licensed offshore/marine module gate, per the existing coverage.json
+  note). `CREST`/`UNIT` remain unverified by a live round trip.
+- **`/db/NLLP`** (boundary.py `GeneralLinkPropertyPayload`): reconfirmed
+  the manual's own unmodified example still answers `"Unknown Error"` on
+  Civil NX too (previously only confirmed on Gen) — this is a genuine
+  standing cross-product failure, not the "session-specific anomaly" this
+  session had speculated for the Gen-only attempt. Docstring corrected.
+  The new `DIST_RATIO_DY`/`DIST_RATIO_DZ`/`COUPLED_INPUT_METHOD` fields
+  stay schema-confirmed only (`GET /info/db/NLLP`).
+- **`/db/NLNK-M1`** (boundary.py `GeneralLinkHyperSPayload`): schema fully
+  confirmed via `GET /info/db/NLNK-M1` on Civil NX — exactly the 10 fields
+  this SDK now types, confirming `IEHP_NAME` really is absent server-side.
+  A live POST attempt (two real nodes, `REF_SYSTEM=0`) answered `"Unknown
+  Error"`, almost certainly because `PROP_NAME` had no real `/db/NLLP`
+  property to reference (see above) — this endpoint's own write path was
+  never actually exercised.
+- **`THIS-M1`** (dynamic_loads.py `HyperSAnalysisCase.ANAL_METHOD`):
+  schema-confirmed via `GET /info/db/THIS-M1` on Civil NX — the field's
+  own description literally reads "Analysis Method (Modal:0, Direct:1,
+  Static:2)", independently corroborating the manual's addition of
+  `Static=2`. Not round-tripped (needs a full `DAMPING`/`NONL_CTRL_PARAM`
+  setup not built this session).
+- **`STCT-M1`** (analysis_control.py, three classes): the most fully
+  closed of the five. A plain `POST`+`GET` round trip on Civil NX
+  confirmed `iBSC`/`FRAME_OUTPUT`/`bSAVE_OCS`/`NONL_CONTROL` are all real
+  (server auto-assigned `iBSC: 1`, matching the documented STCT-M1-only
+  default, plus a fully-populated `NONL_CONTROL` shape now recorded in
+  the docstring for whoever next wants to type it out instead of `Any`).
+  `TIME_DEP_CONTROL.CREEP_SHRINKAGE.TYPE="SHRINKAGE"` round-tripped
+  explicitly (and a separate creation that omitted `TYPE` defaulted to
+  `"BOTH"`, confirming that value too). `iINC_NLA`'s new `3` value and
+  `bIEMF` are schema-confirmed only (`GET /info/db/STCT-M1`'s own field
+  descriptions list both) — a live `PUT` attempt to set them failed with
+  `"Wrong Field"`, but so did a `PUT` using an already-documented
+  known-good value pair (`iINC_NLA=1`/`iNLA_TYPE=1`) on the same record,
+  so this object is write-once in practice and the rejection isn't
+  evidence against the new values specifically.
+
+None of these needed an SDK behavior change — all were either
+reconfirmations of already-documented standing failures (WVLD, NLLP) or
+upgrades from "manual-sourced only" to "schema-confirmed"/"live-confirmed"
+evidence for fields already added (NLNK-M1, THIS-M1, STCT-M1). `pytest`
+(706), `ruff`, and `mypy` all clean; Civil NX scratch document confirmed
+empty after cleanup.
 
 ## Caveat — read before acting on this file
 

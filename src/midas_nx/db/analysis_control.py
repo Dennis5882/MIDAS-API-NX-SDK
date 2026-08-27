@@ -684,9 +684,19 @@ class ConstructionStageAnalysisTypeHyperS(TypedDict, total=False):
     2026-08-25 re-verification (article id `57053813627673`) added
     `iINC_NLA`'s 4th value (`3`=Geometric+Material Nonlinear -- when
     `iINC_NLA` is 2 or 3, `iNLA_TYPE` only accepts 1/Accumulative) and the
-    previously entirely-missing `bIEMF` field. Not independently
-    live-tested: STCT-M1 is Hyper-S/Civil-NX only and the Civil NX session
-    was unavailable this session (`client does not exist`).
+    previously entirely-missing `bIEMF` field. Schema-confirmed 2026-08-27
+    on Civil NX: `GET /info/db/STCT-M1`'s `ANAL_TYPE.iINC_NLA` description
+    literally reads "Nonlinear Analysis Type (0=No NL, 1=Geo NL, 2=Mat NL,
+    3=Geo+Mat NL)", and `bIEMF` is present in the schema too. Not
+    round-tripped with a real POST/PUT for these two specifically: this
+    object turned out to be **write-once** in practice -- a live PUT
+    attempt failed with `"Wrong Field"` even for a known-good, already-
+    documented value pair (`iINC_NLA=1`/`iNLA_TYPE=1`) on an existing
+    record, so the PUT rejection when testing `iINC_NLA=3`/`bIEMF`
+    specifically doesn't mean those values are wrong -- it reproduces
+    regardless of value. POST-then-GET of a plain record did round-trip
+    `iINC_NLA=0` successfully; the rest of this object's fields are
+    schema-confirmed only.
     """
 
     iINC_NLA: int  # Linear=0/Nonlinear=1/Material Nonlinear=2/Geometric+Material Nonlinear=3, required
@@ -721,8 +731,11 @@ class CreepShrinkageControlHyperS(TypedDict, total=False):
     2026-08-25 re-verification (article id `57053813627673`) corrected
     `TYPE`'s 2nd enum value: STCT-M1 uses `"SHRINKAGE"`, not the legacy
     `/db/STCT`'s `"SHRINK"` -- confirmed consistently in both the manual's
-    JSON Schema and its own Specifications table for this endpoint. Not
-    independently live-tested (Civil NX session unavailable this session).
+    JSON Schema and its own Specifications table for this endpoint.
+    **Live-confirmed 2026-08-27 on Civil NX**: `POST /db/STCT-M1` with
+    `{"OPT_USE": true, "TYPE": "SHRINKAGE"}` succeeded and `GET` read it
+    back verbatim (a separate creation that omitted `TYPE` entirely
+    defaulted to `"BOTH"`, confirming that value too).
     """
 
     OPT_USE: bool  # required
@@ -795,8 +808,24 @@ class ConstructionStageAnalysisControlDataHyperSPayload(TypedDict, total=False):
     convention for `ITER_PARAM`/`NONL_CTRL_PARAM` elsewhere -- see the
     manual for the full shape; note its `ADVANCED` sub-object uses
     different key names/types than the similarly-named one under
-    `NLCT-M1` (§16) despite the same underlying concept. Not independently
-    live-tested (Civil NX session unavailable this session).
+    `NLCT-M1` (§16) despite the same underlying concept.
+
+    **Live-confirmed 2026-08-27 on Civil NX**: all four fields are real.
+    A plain `POST /db/STCT-M1` (no explicit values for any of them) came
+    back on `GET` with `iBSC: 1` (confirming the different-from-legacy
+    default), `FRAME_OUTPUT: {"bCALC_CFF": false, "bCALC_CSP": true,
+    "bSELFCONS": false}`, `bSAVE_OCS: false`, and a fully-populated
+    `NONL_CONTROL: {"iLSTEP": 1, "INTOUT": "EVERY", "ADVANCED":
+    {"USE_DEF_SETTINGS": true}, "DISP": {"OPT_USE": false}, "LOAD":
+    {"OPT_USE": true, "VALUE": 0.001}, "WORK": {"OPT_USE": true, "VALUE":
+    1e-06}}` -- confirming `NONL_CONTROL`'s actual live shape too, for
+    whoever next decides it's worth typing out instead of `Any`. Only
+    server-assigned defaults were observed, not an explicit write of
+    non-default values -- `PUT` on this endpoint turned out to reject
+    even known-good field changes (`"Wrong Field"` on `ANAL_TYPE`
+    specifically, reproduced with an already-documented value pair), so a
+    write of a *non-default* value for these four fields specifically
+    wasn't achieved this session.
     """
 
     bLAST_FINAL: bool  # optional

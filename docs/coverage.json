@@ -1745,7 +1745,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip attempted 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: POST with the manual's own request-example payload reproduced verbatim (PROPERTY_NAME/DESC/APPLICATION_TYPE=ELEMENT/APPLICATION_TYPE_D=SPG/TOTAL_WEIGHT/OPT_USE_MASS) answered a generic \"Unknown Error\" on both products, on both a seeded and a completely fresh /doc/NEW document. Not resolved as a fixture problem -- left as level=read pending further investigation into /db/NLLP's undocumented preconditions.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip attempted 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: POST with the manual's own request-example payload reproduced verbatim (PROPERTY_NAME/DESC/APPLICATION_TYPE=ELEMENT/APPLICATION_TYPE_D=SPG/TOTAL_WEIGHT/OPT_USE_MASS) answered a generic \"Unknown Error\" on both products, on both a seeded and a completely fresh /doc/NEW document. Not resolved as a fixture problem -- left as level=read pending further investigation into /db/NLLP's undocumented preconditions. Reconfirmed 2026-08-27 on Civil NX: the manual's own unmodified worked example (PROPERTY_NAME/APPLICATION_TYPE=ELEMENT/APPLICATION_TYPE_D=SPG/...) still answers the identical \"Unknown Error\" seen 2026-08-16 on both products -- same standing failure, not resolved. Also blocks a genuine write test of /db/NLNK-M1 (PROP_NAME has nothing valid to reference).",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
@@ -1793,7 +1793,7 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) 2026-08-16: a write attempt was scaffolded alongside this batch but never ran -- blocked by /db/NLLP's live failure (its own prerequisite record), not tested itself yet.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) 2026-08-16: a write attempt was scaffolded alongside this batch but never ran -- blocked by /db/NLLP's live failure (its own prerequisite record), not tested itself yet. Schema-checked 2026-08-27 on Civil NX (GET /info/db/NLNK-M1): lists exactly the 10 fields this SDK now types (confirming IEHP_NAME really is absent, matching /db/NLNK's shape otherwise). A live POST was attempted (REF_SYSTEM=0, two real nodes) but answered \"Unknown Error\" -- most likely because PROP_NAME could not reference a real /db/NLLP property, since /db/NLLP writes are themselves a separate known-broken path (see that endpoint's own entry); this endpoint's own write path was never actually exercised. Level stays read.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         },
@@ -3798,7 +3798,7 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Schema-checked 2026-08-27 on Civil NX (GET /info/db/THIS-M1): ANAL_CASE.ANAL_METHOD field description literally reads \"Analysis Method (Modal:0, Direct:1, Static:2)\", confirming the 2026-08-25 manual addition of the Static=2 value independent of the manual text. Not round-tripped with a real POST (needs a fully-specified DAMPING/NONL_CTRL_PARAM setup not built this session); level stays read.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
         },
@@ -4390,7 +4390,7 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET); manual documents gen+civil but 404s under Gen in three independent sessions (2026-07-22, 2026-07-26, 2026-07-29) Write round trip attempted 2026-08-16 (Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: POST with the manual's own full canonical example reproduced verbatim, and separately a bare {\"NAME\": \"...\"} payload, both answered the identical \"Wrong Field\". Not resolved as a fixture problem -- left at level=read pending further investigation (possibly a licensed offshore/marine module gate), same class of finding as /db/NLLP.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET); manual documents gen+civil but 404s under Gen in three independent sessions (2026-07-22, 2026-07-26, 2026-07-29) Write round trip attempted 2026-08-16 (Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: POST with the manual's own full canonical example reproduced verbatim, and separately a bare {\"NAME\": \"...\"} payload, both answered the identical \"Wrong Field\". Not resolved as a fixture problem -- left at level=read pending further investigation (possibly a licensed offshore/marine module gate), same class of finding as /db/NLLP. Reconfirmed 2026-08-27 on Civil NX: bisected from the manual's full worked example down to a bare {\"NAME\": ...} payload, and even that minimal form still answers the identical \"Wrong Field\" seen 2026-08-16 -- confirms this is unrelated to the CREST/UNIT value correction (2026-08-25) specifically, the entire write path is still blocked. CREST/UNIT remain unverified by a live round trip.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported"
@@ -4925,7 +4925,7 @@
         "products": [
           "civil"
         ],
-        "method": "Simple PUT with bLAST_FINAL=true, ANAL_TYPE={iINC_NLA:0, iNLA_TYPE:0} (no construction-stage reference needed for the default branch) -- notably does NOT reproduce the non-Hyper-S /db/STCT's iITER/TOL silent-drop bug, but this payload doesn't exercise those fields either. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
+        "method": "Simple PUT with bLAST_FINAL=true, ANAL_TYPE={iINC_NLA:0, iNLA_TYPE:0} (no construction-stage reference needed for the default branch) -- notably does NOT reproduce the non-Hyper-S /db/STCT's iITER/TOL silent-drop bug, but this payload doesn't exercise those fields either. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-tested 2026-08-27 on Civil NX for the four fields added 2026-08-25 (iBSC/FRAME_OUTPUT/bSAVE_OCS/NONL_CONTROL) and ANAL_TYPE.iINC_NLA/bIEMF: a plain POST/GET round trip confirmed all four top-level fields real (server auto-assigned iBSC=1, matching the documented default, plus full FRAME_OUTPUT/NONL_CONTROL shapes) and TIME_DEP_CONTROL.CREEP_SHRINKAGE.TYPE=\"SHRINKAGE\" round-tripped explicitly. iINC_NLA=3/bIEMF are schema-confirmed via GET /info/db/STCT-M1 only -- PUT on this endpoint rejected even a known-good ANAL_TYPE value pair with \"Wrong Field\", so a write of a non-default ANAL_TYPE value could not be achieved either way this session.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },

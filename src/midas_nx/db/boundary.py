@@ -232,12 +232,16 @@ class GeneralLinkPropertyPayload(TypedDict, total=False):
     from the common envelope entirely. Confirmed real via `GET
     /info/db/NLLP` schema introspection on Gen NX the same day (their
     types match the manual: two numbers + one integer). Not confirmed via
-    a live POST round trip — every `/db/NLLP` create attempted that
-    session, including the manual's own unmodified worked example,
-    answered `"Unknown Error"` while an unrelated `/db/GSTP` write
-    succeeded moments earlier and later in the same session. Treat the
-    round-trip failure as a session-specific anomaly rather than evidence
-    against these fields; the schema is the more direct signal here.
+    a live POST round trip on either product: `/db/NLLP` writes were
+    already a known standing failure before this addition (2026-08-16:
+    the manual's own unmodified example answers a generic `"Unknown
+    Error"` on both Gen and Civil, seeded or fresh document, `level: read`
+    since) -- reconfirmed 2026-08-27 on Civil NX specifically (both with
+    and without these new fields, same `"Unknown Error"`, so this addition
+    isn't what's blocking it). The schema match from `/info/db/NLLP` is
+    the strongest signal available for these fields' shape; the endpoint's
+    write path itself is unresolved on both products, unrelated to this
+    change.
     """
 
     PROPERTY_NAME: str  # required
@@ -300,12 +304,18 @@ class GeneralLinkHyperSPayload(TypedDict, total=False):
     same ANGLE_VALUES/POINT_VALUES/VECTOR_VALUES shapes — with only
     `IEHP_NAME` (Inelastic Hinge Property Name) absent.
 
-    **Not live-verified**: this is a Hyper-S-only endpoint (see
-    :data:`~midas_nx.db.base.HYPER_S_ONLY`), and the Civil NX session
-    available for this pass answered `client does not exist` on both
-    `GET /db/NLNK-M1` and `GET /info/db/NLNK-M1` (product not connected).
-    Applying the manual's documented shape as-is; re-verify against a live
-    Hyper-S-enabled Civil NX session before trusting it for a write.
+    Schema fully confirmed 2026-08-27 on Civil NX: `GET /info/db/NLNK-M1`
+    lists exactly these 10 properties (`NODE1`/`NODE2`/`GROUP_NAME`/
+    `PROP_NAME`/`REF_SYSTEM`/`BETA_ANGLE`/`INPUT_METHOD`/`VECTOR_VALUES`/
+    `ANGLE_VALUES`/`POINT_VALUES`), confirming `IEHP_NAME` really is absent
+    server-side too. A live POST round trip was attempted (`REF_SYSTEM=0`,
+    against two real nodes) but answered `"Unknown Error"` -- almost
+    certainly because `PROP_NAME` couldn't reference a real `/db/NLLP`
+    property: `/db/NLLP` writes are themselves a separate, already-known
+    standing failure on both products (see `GeneralLinkPropertyPayload`'s
+    docstring above), so this endpoint's own write path was never actually
+    exercised. Shape is schema-confirmed; the round trip is blocked by
+    that unrelated upstream issue, not evidence against this shape.
     """
 
     PROP_NAME: str  # General Link Property Name (/db/NLLP name), required

@@ -239,9 +239,12 @@ class HyperSAnalysisCase(TypedDict, total=False):
     Specifications table until its 2026-08-25 re-verification (article id
     `56538335819673`) -- added here to match. The manual also notes the
     Linear+Static (`ANAL_TYPE=0` + `ANAL_METHOD=2`) combination is rejected
-    server-side. Not independently live-tested: THIS-M1 is Hyper-S/Civil-NX
-    only and the Civil NX session was unavailable this session (`client
-    does not exist`).
+    server-side. Schema-confirmed 2026-08-27 on Civil NX: `GET
+    /info/db/THIS-M1`'s own field description literally reads "Analysis
+    Method (Modal:0, Direct:1, Static:2)" -- not just applying the manual's
+    claim, the server's own schema text independently states the same
+    enum. Not round-tripped with a real POST (needs a fully-specified
+    DAMPING/NONL_CTRL_PARAM setup this session didn't build).
     """
 
     ANAL_TYPE: int  # Linear=0, Nonlinear=1; required
