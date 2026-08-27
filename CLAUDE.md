@@ -1,19 +1,29 @@
 # CLAUDE.md — midas-nx
 
-Python SDK wrapping the **MIDAS NX Open API**, one package for both **Civil NX** and **Gen NX**.
-Published to PyPI as `midas-nx`. Repo `Dennis5882/MIDAS-API-NX-SDK`, branch `main`.
+Python and JavaScript/TypeScript SDKs wrapping the **MIDAS NX Open API**, with both language
+surfaces covering **Civil NX** and **Gen NX**. Published as `midas-nx` on both PyPI and npm
+(separate registries and version streams). Repo `Dennis5882/MIDAS-API-NX-SDK`, branch `main`.
 
 ## Commands
 
 ```bash
-pip install -e ".[dev]"      # dev setup
-pytest                       # full suite, ~600 tests, no live server needed
-ruff check src tests         # lint (config in pyproject.toml: select = ["F", "I"])
+pip install -e ".[dev]"         # Python dev setup
+pytest                          # Python suite; no live server needed
+ruff check src tests scripts    # Python lint
+mypy                            # Python static typing
 python scripts/gen_roadmap.py   # regenerate ROADMAP.md from docs/coverage.json
+
+cd packages/typescript
+npm ci                          # JavaScript/TypeScript dev setup
+npm run generate                # regenerate npm resources/types from reviewed Python metadata
+npm run typecheck
+npm test
+npm run build
 ```
 
-Both `pytest` and `ruff check src tests` must pass before any commit — CI (`.github/workflows/ci.yml`)
-runs exactly these on Python 3.12 and 3.13.
+Before a commit, run the checks for every affected surface. CI (`.github/workflows/ci.yml`) always
+runs the Python checks on 3.12/3.13 and the npm generation, typecheck, tests, package build, declaration
+safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these tests needs a live server.
 
 ## Sibling repos on this machine
 
@@ -32,6 +42,14 @@ runs exactly these on Python 3.12 and 3.13.
   - `post/` — everything POSTing to the shared `/post/TABLE` (a `TABLE_TYPE` string selects the
     table, so these are functions over one generic `get_table()`, not a resource per table).
   - `design/` — design-code chapters (`rc_kds/`, `steel_kds.py`, `src_aiksrc2k.py`).
+- `packages/typescript/` — the npm package. Hand-written runtime adapters live directly under `src/`;
+  generated resources, operations, tables, and payload types live under `src/generated/`.
+  `package.json` is the npm version source; `package-lock.json` must change with it.
+- `scripts/generate_typescript_sdk.py` — derives the generated npm surface from the reviewed Python
+  classes and shared coverage ledger. Run it through `npm run generate`; do not hand-edit
+  `packages/typescript/src/generated/*`.
+- `schema/typescript-resources.json` / `schema/typescript-coverage.json` — committed generator outputs.
+  CI fails if either these schemas or `packages/typescript/src/generated/*` drift after regeneration.
 - `docs/coverage.json` — the endpoint ledger. `ROADMAP.md` is **generated from it** — never hand-edit
   `ROADMAP.md`. Each `live_verified` entry carries a **`level`** of `"read"` or `"write"`, and
   `ROADMAP.md` counts the two separately: `"write"` means a live call actually mutated model data or
@@ -69,6 +87,8 @@ runs exactly these on Python 3.12 and 3.13.
 4. Add a test mirroring `tests/db/test_node_element.py` (mock HTTP via `responses`, assert the
    request shape — URL, headers, JSON body).
 5. Mark it `"implemented"` in `docs/coverage.json`, then rerun `scripts/gen_roadmap.py`.
+6. Run `npm run generate` from `packages/typescript/`, review the generated TypeScript diff, and add
+   or update hand-written npm adapters/tests when the endpoint needs behavior beyond generated metadata.
 
 ## Staying in sync with the manual repo
 
@@ -208,6 +228,13 @@ Two things that have already caused rework:
 
 ## Releasing
 
+PyPI and npm use the same package name in separate registries, but their versions are independent.
+Keep endpoint behavior and safety documentation synchronized; do not bump both versions merely to make
+the numbers match when only one packaged surface changed.
+The unprefixed `v*` tags are historical; all new package releases use `py-v*` or `js-v*`.
+
+### Python / PyPI
+
 Version bumps are warranted **only when `src/midas_nx/` behaviour or packaged metadata changed** —
 `scripts/`, `docs/`, and `.github/` don't ship in the wheel. Re-derive this from the actual diff
 each time rather than assuming.
@@ -226,21 +253,45 @@ each time rather than assuming.
    left `midas_nx.__version__` reporting `0.10.0` on a `0.11.2` install; `tests/test_version.py`
    now fails if the two drift apart.) Keep `PLAN.md` out of *this* commit — it belongs in step 1.
 3. `git push origin main`.
-4. **The author publishes the GitHub Release manually via the web UI** (tag `vX.Y.Z`) — `gh` CLI is
+4. **The author publishes the GitHub Release manually via the web UI** (tag `py-vX.Y.Z`) — `gh` CLI is
    not installed here and no `GITHUB_TOKEN`/`GH_TOKEN` is set, so don't attempt it. Draft the release
    notes for them to paste.
-5. That Release triggers `.github/workflows/publish.yml` (PyPI Trusted Publishing).
+5. That Release triggers `.github/workflows/publish.yml` (PyPI Trusted Publishing). The workflow
+   explicitly ignores every release whose tag does not start with `py-v`; `release` events do not
+   support path filtering.
 6. Verify with unauthenticated public APIs:
    `api.github.com/repos/Dennis5882/MIDAS-API-NX-SDK/releases/latest`, the same repo's
    `actions/workflows/publish.yml/runs`, and `pypi.org/pypi/midas-nx/<version>/json`.
    PyPI's `/json` `latest` field caches — query the exact version path to confirm.
+
+### JavaScript / TypeScript / npm
+
+An npm version bump is warranted when `packages/typescript/src/`, its generated public declarations,
+or npm packaged metadata changes. Documentation outside the package and CI-only changes do not require it.
+
+1. Update the reviewed Python model and `docs/coverage.json` first when the official API contract changed.
+2. From `packages/typescript/`, run `npm run generate`, then review both `src/generated/` and the
+   repository-root `schema/typescript-*.json`. Never hide generator drift by editing generated files directly.
+3. Bump `package.json` and `package-lock.json` together (for example,
+   `npm version X.Y.Z --no-git-tag-version`).
+4. Run `npm run prepack`; inspect the resulting declarations and `npm pack --dry-run` contents.
+5. Commit and push, then publish a GitHub Release with tag `js-vX.Y.Z`. That triggers
+   `.github/workflows/publish-npm.yml`, which ignores non-`js-v` releases, repeats generation and
+   package checks, verifies the tag against `package.json`, and publishes through npm Trusted
+   Publishing (OIDC). No npm token or one-time code belongs in the repository or workflow.
+6. One-time external setup: on npmjs.com, configure `midas-nx`'s GitHub Actions Trusted Publisher
+   for repository `Dennis5882/MIDAS-API-NX-SDK`, workflow `publish-npm.yml`, no environment, and
+   allow `npm publish`. The workflow uses Node.js 24 and `id-token: write` for this trust exchange.
+7. Verify the public result with `npm view midas-nx version dist-tags --json` and a clean temporary
+   install/import smoke test. The PyPI and npm workflows remain separate even when a release changes
+   both language surfaces; create one `py-v*` Release and one `js-v*` Release in that case.
 
 ## Conventions
 
 - **README framing**: lead with what the SDK does, then the project-status paragraph.
   **Reversed 2026-08-02, at the author's explicit request** (this rule used to say
   "the author removed all official/unofficial positioning — don't reintroduce it"):
-  the README and PyPI summary now *do* carry a short status paragraph, because the
+  the root README and registry-facing package docs now *do* carry a short status paragraph, because the
   author is a MIDAS IT employee and "built by an employee, from real product
   verification" is the SDK's actual provenance and worth stating. It must convey all
   three of: built by a MIDAS IT employee from hands-on verification; **not** an
@@ -250,9 +301,9 @@ each time rather than assuming.
   and the comparison against MIDASIT's own packages. Don't rename the project.
   Officialization talks with MIDASIT HQ are open and undecided as of 2026-08-02 — if
   they conclude, this wording is the first thing to revisit.
-  The README carries parallel Korean / 繁體中文 / 简体中文 blocks plus
-  `docs/{ko,en,zh-tw}/quickstart.md`; a user-facing wording change usually means
-  touching all of them.
+  The root README carries parallel Korean / 繁體中文 / 简体中文 blocks plus
+  `docs/{ko,en,zh-tw}/quickstart.md`; the npm-facing guide is
+  `packages/typescript/README.md`. A user-facing wording change usually means checking all of them.
 - **Windows consoles are cp949.** Non-ASCII in `print()` or an uncaught traceback either crashes or
   mangles. Scripts call `sys.stdout.reconfigure(encoding="utf-8")`; user-facing exception text stays
   ASCII (hence `(Hint: ...)`, not an em-dash).

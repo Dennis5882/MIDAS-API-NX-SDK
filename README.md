@@ -1,7 +1,10 @@
 # midas-nx
 
-Unified Python SDK for the **MIDAS NX Open API** — one package covering both
-**MIDAS Civil NX** and **MIDAS Gen NX**.
+Unified Python and JavaScript/TypeScript SDKs for the **MIDAS NX Open API** —
+both packages cover **MIDAS Civil NX** and **MIDAS Gen NX** from the same
+reviewed endpoint inventory.
+
+## Python (PyPI)
 
 ```bash
 pip install midas-nx
@@ -16,12 +19,33 @@ print(client.verify_connection())
 print(f"{len(Node.items(client=client))} node(s) in the current model.")
 ```
 
+## JavaScript / TypeScript (npm)
+
+```bash
+npm install midas-nx
+```
+
+```ts
+import { MidasClient, resources } from "midas-nx";
+
+const client = new MidasClient({
+  mapiKey: process.env.MIDAS_MAPI_KEY,
+  product: "gen",
+});
+
+await client.verifyConnection();
+const nodes = await resources.db.nodeElement.node.items(client);
+console.log(`${Object.keys(nodes).length} node(s) in the current model.`);
+```
+
 **Risk level: 1 — read-only** (see [Risk levels](https://dennis5882.github.io/MIDAS-API-NX-SDK/safety/#risk-levels)).
 It can't create, change, or delete anything, so it's safe to run against a
 real model.
 
 More examples, including ones that build a model:
 [`examples/python/`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/examples/python/).
+For the npm API and safety notes, see the
+[`packages/typescript` guide](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/packages/typescript).
 Full guide, safety notes, and API reference: **[Documentation site](https://dennis5882.github.io/MIDAS-API-NX-SDK/)**.
 
 ---
@@ -35,13 +59,17 @@ to [GitHub Issues](https://github.com/Dennis5882/MIDAS-API-NX-SDK/issues);
 questions about the products, licensing, or the Open API service itself go to
 MIDAS IT's official support channels.
 
-**New to Python?** [docs/en/quickstart.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/docs/en/quickstart.md)
+The repository maintains both the Python package on PyPI and the typed
+JavaScript/TypeScript package on npm. **New to Python?**
+[docs/en/quickstart.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/docs/en/quickstart.md)
 walks through installing Python and running your first script.
 
 ## 한국어
 
-`midas-nx`는 MIDAS Civil NX와 MIDAS Gen NX의 Open API를 하나의 Python
-패키지로 통합한 SDK입니다. 마이다스아이티 재직자가 실제 제품 검증 경험을
+`midas-nx`는 MIDAS Civil NX와 MIDAS Gen NX의 Open API를 Python(PyPI)과
+JavaScript/TypeScript(npm) 패키지로 제공하는 SDK입니다. 두 패키지는 동일한
+검토 완료 엔드포인트 목록을 기준으로 함께 유지보수합니다. 마이다스아이티
+재직자가 실제 제품 검증 경험을
 바탕으로 개발·관리하는 **직원 주도형 오픈소스 프로젝트**이며, 마이다스아이티가
 공식적으로 출시·지원하는 제품은 아닙니다. SDK 자체의 문제는
 [GitHub Issues](https://github.com/Dennis5882/MIDAS-API-NX-SDK/issues)로,
@@ -54,8 +82,9 @@ walks through installing Python and running your first script.
 
 ## 繁體中文
 
-`midas-nx` 是將 MIDAS Civil NX 與 MIDAS Gen NX 的 Open API 整合為單一
-Python 套件的 SDK。由 MIDAS IT 員工根據實際產品驗證經驗開發維護，屬於
+`midas-nx` 將 MIDAS Civil NX 與 MIDAS Gen NX 的 Open API 提供為 Python
+（PyPI）及 JavaScript/TypeScript（npm）套件，兩者依據同一份經審核的端點清單
+共同維護。由 MIDAS IT 員工根據實際產品驗證經驗開發維護，屬於
 **員工自主的開源專案**，並非 MIDAS IT 官方發布或提供技術支援的產品。SDK
 本身的問題請至 [GitHub Issues](https://github.com/Dennis5882/MIDAS-API-NX-SDK/issues)；
 產品、授權或 Open API 服務本身的問題，請洽 MIDAS IT 官方支援管道。
@@ -66,8 +95,9 @@ Python 套件的 SDK。由 MIDAS IT 員工根據實際產品驗證經驗開發�
 
 ## 简体中文
 
-`midas-nx` 是将 MIDAS Civil NX 与 MIDAS Gen NX 的 Open API 整合为单一
-Python 包的 SDK。由 MIDAS IT 员工基于实际产品验证经验开发维护，属于
+`midas-nx` 将 MIDAS Civil NX 与 MIDAS Gen NX 的 Open API 提供为 Python
+（PyPI）及 JavaScript/TypeScript（npm）包，两者依据同一份经审核的端点清单
+共同维护。由 MIDAS IT 员工基于实际产品验证经验开发维护，属于
 **员工自主的开源项目**，并非 MIDAS IT 官方发布或提供技术支持的产品。SDK
 本身的问题请提交至 [GitHub Issues](https://github.com/Dennis5882/MIDAS-API-NX-SDK/issues)；
 产品、授权或 Open API 服务本身的问题，请联系 MIDAS IT 官方支持渠道。
@@ -83,6 +113,7 @@ Python 包的 SDK。由 MIDAS IT 员工基于实际产品验证经验开发维�
 | | |
 | --- | --- |
 | Full docs & API reference | [Documentation site](https://dennis5882.github.io/MIDAS-API-NX-SDK/) |
+| JavaScript / TypeScript npm SDK | [packages/typescript/README.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/packages/typescript/README.md) |
 | Building with an AI coding assistant instead of writing Python yourself | [Safe start](https://dennis5882.github.io/MIDAS-API-NX-SDK/ai-coding/safe-start/) |
 | Known issues / safety notes — read before writing anything | [docs/safety.md](https://dennis5882.github.io/MIDAS-API-NX-SDK/safety/) |
 | Endpoint implementation status | [ROADMAP.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/ROADMAP.md) |

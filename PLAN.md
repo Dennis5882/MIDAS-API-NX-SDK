@@ -5,7 +5,8 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-08-10, at v2.3.2 — this line tracks **release** state,
+> Last updated: 2026-08-27 — Python/PyPI v2.3.2; JavaScript/TypeScript/npm
+> v2.3.3. This line tracks **release** state,
 > not every edit; docs-only changes carry their own dates in
 > Cross-cutting/backlog without moving this line.
 > **v2.3.2 shipped 2026-08-10**: `BRACEDESIGNFORCES` independently confirmed
@@ -46,6 +47,22 @@ that ROADMAP.md doesn't capture.
 ---
 
 ## 1. Architecture map
+
+The repository now maintains two packaged language surfaces. Python remains the reviewed implementation
+and endpoint-metadata source; the npm SDK combines generated TypeScript contracts with hand-written
+runtime adapters. Both surfaces share `docs/coverage.json` and the live-verification safety evidence.
+
+```text
+src/midas_nx/                     Python package (PyPI: midas-nx)
+packages/typescript/              JavaScript/TypeScript package (npm: midas-nx)
+├── src/generated/                generated resources, operations, tables, payload types
+├── src/{client,db-resource,...}  hand-written runtime and safety behavior
+└── tests/                        Vitest unit and public-type coverage
+scripts/generate_typescript_sdk.py
+schema/typescript-*.json          committed cross-language generation ledgers
+```
+
+### Python package
 
 ```text
 midas_nx/
@@ -151,7 +168,7 @@ mirroring the `db/*.py` payload-typing style but at the whole-body level.
 
 ---
 
-## 2. Current status (endpoint table as of 2026-07-29; verification/tooling rows updated for v2.0.0)
+## 2. Current status (endpoint table as of 2026-07-29; package surfaces updated 2026-08-27)
 
 | Area | Chapters | Endpoints | State |
 |---|---|---|---|
@@ -184,10 +201,12 @@ they're the ones worth re-checking before planning a release):
 
 | Axis | Artifact | State |
 |---|---|---|
-| Tests | 693 tests, `responses`-mocked | ✅ green |
-| CI | `.github/workflows/ci.yml` — ruff + pytest on py3.9/3.10/3.11/3.12/3.13, push+PR | ✅ running |
+| Tests | 703 tests, mocked/local only | ✅ green |
+| CI | `.github/workflows/ci.yml` — Python checks on 3.12/3.13 plus npm generation/typecheck/tests/package smoke on Node.js 18/22, push+PR | ✅ running |
 | Static typing | mypy over `src/midas_nx`, config in `pyproject.toml`, own CI job | ✅ clean across all 41 modules |
 | Packaging verification | `package` CI job + `scripts/wheel_smoke_test.py` — builds the wheel, installs it into a clean venv, asserts `py.typed` shipped, `__version__` matches the distribution, and the `delete_all()` guard is armed | ✅ running |
+| TypeScript/npm SDK | `packages/typescript/` — ESM + CommonJS + declarations, Node.js 18+, Vitest/typecheck/build and packed-artifact smoke tests | ⚠️ npm `midas-nx` v2.3.3 published 2026-08-26; `js-v*` OIDC workflow added 2026-08-27, pending one-time npm Trusted Publisher registration before its first automated release |
+| Cross-language generation | `scripts/generate_typescript_sdk.py`, `schema/typescript-{resources,coverage}.json`, `packages/typescript/src/generated/` | ✅ generated outputs committed; CI rejects drift from the reviewed Python/coverage source |
 | Destructive-op safety | `delete()` per-id URL; `delete_all(confirm=True)` required, else `DestructiveOperationError` before sending | ✅ guarded |
 | Docs site | MkDocs Material + mkdocstrings (`mkdocs.yml`), built `--strict` on every PR | ✅ live at `dennis5882.github.io/MIDAS-API-NX-SDK/` (confirmed 2026-08-04 — this row had drifted stale, saying "GitHub Pages not yet enabled" after it already was) |
 | Manual drift | `manual-drift-check.yml` (`cron: 0 3 * * 3`) + `scripts/check_manual_drift.py` | ✅ running |
@@ -730,12 +749,15 @@ exactly why that's the honest framing rather than a stronger guarantee.
 | v2.3.0 ✅ | Manual-driven sync (`76ebda9`): new endpoint `get_concurrent_joint_force_table()` (`CONCURRENT_JOINT_FORCE`), `SWIND`/`SSEIS` gain a `"USER TYPE"` schema variant (additive, non-breaking); `/ope/GSBG`'s new second listing in ch17 confirmed to be the same already-implemented endpoint, no code change needed | published 2026-08-10 |
 | v2.3.1 ✅ | `/code-review` fix: `get_concurrent_joint_force_table()` (v2.3.0) was missing `node_elems`/`components`/`opt_cs`/`stage_step` and its docstring wrongly denied the manual documents them for this table — added and corrected; `ROADMAP.md` regenerated to match a v2.3.0 date fix | published 2026-08-10 |
 | v2.3.2 ✅ | `BRACEDESIGNFORCES` confirmed crashing Gen NX (docstring update), a full Gen NX `DbResource` GET sweep (32 new confirmations), and a manual 38-endpoint non-crash-family design-chapter batch (view/RC/steel/SRC ANAL-TABLE-REPORT, incl. `WD-ANAL`) — all clean. `Verified on Gen NX`: 266/399 → 337/399 | published 2026-08-10 |
+| npm v2.3.2 ✅ | Initial typed JavaScript/TypeScript SDK generated from the reviewed Python endpoint inventory, with shared Civil NX/Gen NX coverage | published to npm 2026-08-26 |
+| npm v2.3.3 ✅ | Safety and result-table typing hardening; declaration checks and packed npm artifact smoke tests added to CI | published to npm 2026-08-26 |
 | v0.16.0/Phase 7 (not started) | Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
 | v0.17.0+/Phase 8 (not started) | `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
 
-Each version ships when its phase's chapters are 100% (minus undocumented
-stubs) and green in CI. Release = bump `pyproject.toml` version, tag, publish
-GitHub Release → `publish.yml` auto-uploads to PyPI.
+Python releases use `py-v*` GitHub Releases and `publish.yml` to reach PyPI. npm releases use `js-v*`
+GitHub Releases and `publish-npm.yml` with npm Trusted Publishing (OIDC). Both workflows check the tag
+prefix and package version directly because `release` events cannot use path filters. The registries
+share the `midas-nx` name but keep independent versions.
 
 > Numbering note (2026-07-21): the original Phase 1-5 numbering above was
 > chapter/endpoint-coverage-driven and ended at v0.10.0. Phase 6-8 (this
@@ -748,11 +770,11 @@ GitHub Release → `publish.yml` auto-uploads to PyPI.
 > the releases being forced into the plan's shape. **Phase headings deliberately
 > carry no version number** — only this table does, so a re-cut edits one place.
 >
-> Version-bump note: a release is warranted only when `src/midas_nx/` behaviour
-> or packaged metadata changed. `scripts/`, `docs/`, `.github/` and this file
-> don't ship in the wheel — v0.11.0 got a bump because it also touched
-> `client.py`/`db/base.py`, not because of the CI and script work. Re-derive
-> this from the actual diff each time (`CLAUDE.md` § Releasing).
+> Version-bump note: bump the Python version only when `src/midas_nx/` behavior
+> or wheel metadata changes, and the npm version only when `packages/typescript/`
+> packaged behavior, declarations, or metadata changes. `scripts/`, repository
+> docs, `.github/`, and this file do not by themselves require either bump.
+> Re-derive this from the actual diff each time (`CLAUDE.md` § Releasing).
 >
 > Staleness note (2026-07-26): this plan spent v0.11.0-v0.11.2 describing
 > already-shipped work as pending — most of Phase 6, plus D2/D3 sitting in
@@ -775,5 +797,7 @@ canonical version):
 2. Add `DbResource` subclass + `TypedDict` payload in the chapter module.
 3. Add a `responses`-mocked test mirroring `tests/db/test_node_element.py`.
 4. Mark `"implemented"` in `docs/coverage.json`, re-run `scripts/gen_roadmap.py`.
-5. Run `pytest` + `ruff check src tests` before committing the chapter — CI
-   runs exactly these on py3.9 and py3.13.
+5. Run `pytest`, `ruff check src tests scripts`, and `mypy`.
+6. From `packages/typescript/`, run `npm run generate`, review the generated
+   surface and schemas, then run `npm run typecheck` and `npm test`. CI also
+   builds and smoke-tests the packed artifact on Node.js 18 and 22.

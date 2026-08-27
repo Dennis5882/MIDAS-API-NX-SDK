@@ -1,4 +1,4 @@
-name: Publish to PyPI
+name: Publish Python to PyPI
 
 on:
   release:
@@ -9,11 +9,14 @@ permissions:
 
 jobs:
   build:
+    if: startsWith(github.event.release.tag_name, 'py-v')
     # Everything that can fail must fail here, before the publish job runs:
     # once a version is on PyPI it cannot be replaced, only yanked.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.release.tag_name }}
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.13"
@@ -23,15 +26,17 @@ jobs:
       - run: pytest
 
       - name: Fail if the release tag does not match midas_nx.__version__
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
           set -euo pipefail
-          tag="${GITHUB_REF_NAME#v}"
+          tag="${RELEASE_TAG#py-v}"
           pkg="$(python -c 'import midas_nx; print(midas_nx.__version__)')"
           if [ "$tag" != "$pkg" ]; then
-            echo "Release tag ${GITHUB_REF_NAME} does not match __version__ ${pkg}" >&2
+            echo "Release tag ${RELEASE_TAG} does not match __version__ ${pkg}" >&2
             exit 1
           fi
-          echo "tag ${GITHUB_REF_NAME} matches __version__ ${pkg}"
+          echo "tag ${RELEASE_TAG} matches __version__ ${pkg}"
 
       - run: pip install build twine
       - run: python -m build
@@ -52,6 +57,7 @@ jobs:
           path: dist/
 
   publish:
+    if: startsWith(github.event.release.tag_name, 'py-v')
     needs: build
     runs-on: ubuntu-latest
     environment: pypi
