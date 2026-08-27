@@ -265,9 +265,29 @@ class InteriorInclusionOption(TypedDict, total=False):
 
 
 class AutoMesher(TypedDict, total=False):
-    METHOD: str  # "Nodes"/"Line Elements"/"Planar Elements", default "Line Elements", optional
+    """⚠️ 2026-08-27: the manual's 2026-08-26 re-verification (article id
+    `35736427971225`) claims `METHOD`/`TYPE` (and `AutoMeshProperty.
+    ELEMENT_TYPE` below) should be space-stripped (`"LineElements"`,
+    `"Quadandtriangle"`, `"PlaneStress"`) rather than the Specifications
+    table's human-readable spaced form, reasoning the worked
+    Request/Response examples use the stripped form. **Attempted to
+    live-test on Gen NX; inconclusive** -- a POST with `METHOD="Nodes"`/
+    `TYPE="Quadrilateral"` (both single-word, so this particular attempt
+    didn't actually exercise the disputed multi-word values either way)
+    failed with a generic `"MIDAS GEN NX second query is wrong"` error not
+    obviously about field spelling. Not pursued further this session. Left
+    at the table's spaced form -- **not** applying the manual's claim
+    unverified, per this project's own precedent
+    (StoryIrregularityCheckParameterArgument above, where an identical
+    "example uses stripped literals" claim from a different chapter turned
+    out to be backwards against real live evidence). Needs a real
+    successful `/ope/AUTOMESH` round trip with a multi-word value to
+    settle either way.
+    """
+
+    METHOD: str  # "Nodes"/"Line Elements"/"Planar Elements", default "Line Elements", optional -- see class docstring, unresolved
     TARGETS: List[int]  # nodes/elements bounding the mesh area, required
-    TYPE: str  # "Quadrilateral"/"Quad and Triangle"/"Triangle", default "Quadrilateral", optional
+    TYPE: str  # "Quadrilateral"/"Quad and Triangle"/"Triangle", default "Quadrilateral", optional -- see class docstring, unresolved
     MESH_INNER_DOMAIN: bool  # default false, optional
     INCLUDE_INTERIOR_NODES: InteriorInclusionOption  # optional
     INCLUDE_INTERIOR_LINES: InteriorInclusionOption  # optional
@@ -422,9 +442,21 @@ def calculate_story(argument: StoryCalculationArgument, client: Optional[MidasCl
 
 
 class StoryCheckParameterArgument(TypedDict, total=False):
-    """docs/manual/15_OPE.md #10 — /ope/STORY_PARAM — Story Check Parameter."""
+    """docs/manual/15_OPE.md #10 — /ope/STORY_PARAM — Story Check Parameter.
 
-    COUNTRY_CODE: str  # "NTC2012"/"NTC2008"/"KBC2009"/"NSR-10"/"NTC2018"/"NTCS2020"/"IS1893(2016)"/"IS16700(2023)", required
+    ⚠️ 2026-08-27: `COUNTRY_CODE`'s value was `"NTCS2020"`; the manual's
+    2026-08-26 re-verification (article id `49514705474457`) corrects it
+    to `"NTC2020"` (no S) specifically for *this* endpoint, per its own
+    Specifications table — the same value has an S (`"NTCS2020"`) on the
+    sibling `StoryIrregularityCheckParameterArgument` below, and the
+    manual explicitly calls out that the two endpoints use different
+    literals for the same code. Not independently live-tested (needs a
+    real story/building model this session's scratch document doesn't
+    have); table-sourced only, no worked example uses this value either
+    way.
+    """
+
+    COUNTRY_CODE: str  # "NTC2012"/"NTC2008"/"KBC2009"/"NSR-10"/"NTC2018"/"NTC2020"(no S -- differs from the STORY_IRR_PARAM sibling's "NTCS2020")/"IS1893(2016)"/"IS16700(2023)", required
 
 
 def get_story_check_parameter(client: Optional[MidasClient] = None) -> dict:
@@ -554,11 +586,28 @@ def get_story_properties(argument: StoryPropertiesArgument, client: Optional[Mid
 
 
 class MemberAssignmentArgument(TypedDict, total=False):
-    """docs/manual/15_OPE.md #13 — /ope/MEMB — Member Assignment."""
+    """docs/manual/15_OPE.md #13 — /ope/MEMB — Member Assignment.
+
+    ⚠️ 2026-08-27: the manual's 2026-08-26 re-verification (article id
+    `49514964272665`) claimed this field's real key is `"AELEM"`, not
+    `"ELEM_LIST"` — reasoning that the worked Request/Response examples
+    (and the response body's own key) all use `"AELEM"`, so the
+    Specifications table's `"ELEM_LIST"` must be the typo. **Live-tested
+    on Gen NX and found the manual's new claim wrong**: with real elements
+    in the model, `{"ELEM_LIST": [1, 2], ...}` succeeded and produced a
+    member (echoing back `{"AELEM": [1, 2], "bREVERSE": false}` in the
+    *response*, matching the manual's response example), while
+    `{"AELEM": [1, 2], ...}` in the *request* failed with `"There is no
+    valid element information."` — i.e. the server didn't recognize
+    `AELEM` as a request field at all. The manual conflated the response
+    key with the request key. `ELEM_LIST` is correct and left unchanged;
+    documented here so a future manual sync doesn't silently "fix" this
+    into a regression.
+    """
 
     ASSIGN_TYPE: str  # "MANUAL"/"AUTO", required
     SELECTION_TYPE: str  # "ALL"/"SELECTION", required
-    ELEM_LIST: List[int]  # target elements; ignored if SELECTION_TYPE="ALL", required if "SELECTION"
+    ELEM_LIST: List[int]  # target elements; ignored if SELECTION_TYPE="ALL", required if "SELECTION". NOT "AELEM" -- see docstring, live-confirmed 2026-08-27
     ALLOW_SINGLE: bool  # allow single-element members, required
 
 

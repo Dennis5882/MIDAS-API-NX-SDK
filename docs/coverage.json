@@ -1,6 +1,6 @@
 {
   "vendored_from": "Dennis5882/MIDAS-API docs/manual/INDEX.md",
-  "vendored_at_commit": "fbd4f9796824b8967ea748f3bcd0d329fe39fb55",
+  "vendored_at_commit": "05eb6c08d1af5d61db517d63eb274f7038c80caa",
   "source_note": "Static snapshot; re-run scripts/vendor_coverage.py to refresh. POST result-table types and the three Design Code chapters (25-27) are not itemized by URL in INDEX.md and are represented as single aggregate rows rather than one row per table/check.",
   "endpoints": [
     {

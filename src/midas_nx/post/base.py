@@ -43,6 +43,14 @@ class TableStyles(TypedDict, total=False):
     PLACE: int  # decimal places, 0-15
 
 
+class NodeFlag(TypedDict, total=False):
+    """Per-DOF output-location flag accepted by a subset of ch20's plate/plane
+    stress-force table types — see get_table()'s node_flag parameter docstring."""
+
+    CENTER: bool  # default false
+    NODES: bool  # default false
+
+
 def get_table(
     table_type: str,
     table_name: str = "",
@@ -58,6 +66,8 @@ def get_table(
     parts: Optional[List[str]] = None,
     story_names: Optional[List[str]] = None,
     modes: Optional[List[str]] = None,
+    average_nodal_result: Optional[bool] = None,
+    node_flag: Optional[NodeFlag] = None,
     # Mapping, not Dict: every caller passes a TypedDict, and TypedDict is
     # deliberately not assignable to the invariant dict[str, Any].
     additional: Optional[Mapping[str, Any]] = None,
@@ -97,6 +107,20 @@ def get_table(
     params.
     modes: Story Mode Shape (ch21) only — mode filter, e.g. ["Mode1", "Mode2"];
     omitting it returns all modes.
+    average_nodal_result: ch20's plate/plane-stress/strain/axisymmetric result
+    tables only (20_POST_AnalysisResult_2.md sections 1-19, 23-25 — not every
+    table in that chapter; sections 20-21, Solid Force, never had it). Added
+    2026-08-27 per the manual's 2026-08-26 re-verification (this whole
+    parameter, and node_flag below, were missing from every affected
+    section's docs before that pass, not called out as table-specific until
+    then). Live-confirmed accepted (not rejected as an unrecognized field) on
+    Gen NX via PLATESTRESSL: without a real analysis result the call still
+    fails, but with the *same* "no analysis result" error whether or not this
+    field is present, not a shape-rejection error.
+    node_flag: a smaller subset of the same ch20 tables (sections 3-7, 10-11,
+    14-15, 18-19, 22-25) — element-center (CENTER) vs. per-node (NODES)
+    output selection. Same 2026-08-27 addition and live-confirmation as
+    average_nodal_result above.
     additional: Story-series tables (ch21) only — the table-type-specific
     "ADDITIONAL" object (angle/Beta/node-selection/... settings); see each
     story.py caller's docstring and TypedDict for its shape.
@@ -130,6 +154,10 @@ def get_table(
         argument["STORY_NAMES"] = story_names
     if modes is not None:
         argument["MODES"] = modes
+    if average_nodal_result is not None:
+        argument["AVERAGE_NODAL_RESULT"] = average_nodal_result
+    if node_flag is not None:
+        argument["NODE_FLAG"] = node_flag
     if additional is not None:
         argument["ADDITIONAL"] = additional
     if set_calculation_method is not None:

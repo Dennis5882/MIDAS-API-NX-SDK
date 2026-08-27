@@ -135,13 +135,24 @@ class ActiveArgument(TypedDict, total=False):
     "Active" (N_LIST/E_LIST), or "Identity" (IDENTITY_TYPE/IDENTITY_LIST).
     Flattened onto one TypedDict, mirroring the MaterialParam-style
     precedent for mode-dependent fields elsewhere in this SDK.
+
+    ⚠️ 2026-08-27: added `IDENTITY_TYPE="STORY"` (per-story activation) and
+    its companion `STORY_ACTIVE` field. The manual's 2026-08-26
+    re-verification (article id `35523395368985`) notes this mode was
+    added to the vendor's own Specifications table/Request Example without
+    the matching JSON Schema update — reconciled from the table/example
+    there. Live-confirmed on Gen NX 2026-08-27: both `{"ACTIVE_MODE":
+    "Identity", "IDENTITY_TYPE": "STORY", "IDENTITY_LIST": ["1F"],
+    "STORY_ACTIVE": "FLOOR"}` and a plain `{"ACTIVE_MODE": "All"}` both
+    answered `"... command complete"`.
     """
 
     ACTIVE_MODE: str  # "All"/"Active"/"Identity", required
     N_LIST: List[int]  # Node number list, required if ACTIVE_MODE="Active"
     E_LIST: List[int]  # Element number list, required if ACTIVE_MODE="Active"
-    IDENTITY_TYPE: str  # "Group"/"NamedPlane"/"LoadGroup"/"BoundaryGroup", required if ACTIVE_MODE="Identity"
-    IDENTITY_LIST: List[str]  # Identity name list, required if ACTIVE_MODE="Identity"
+    IDENTITY_TYPE: str  # "Group"/"NamedPlane"/"LoadGroup"/"BoundaryGroup"/"STORY", required if ACTIVE_MODE="Identity"
+    IDENTITY_LIST: List[str]  # Identity name list (story names if IDENTITY_TYPE="STORY"), required if ACTIVE_MODE="Identity"
+    STORY_ACTIVE: str  # "FLOOR"/"ABOVE"/"BELOW"/"BOTH", required if IDENTITY_TYPE="STORY"
 
 
 def set_active(argument: ActiveArgument, client: Optional[MidasClient] = None) -> dict:

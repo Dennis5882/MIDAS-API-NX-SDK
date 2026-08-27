@@ -291,10 +291,18 @@ class StiffnessCalculationMethod(TypedDict, total=False):
     The official Specifications table for this table misspells the third enum
     value as "Max. Drfit of All Vertical Elements"; #17's article documents
     the same enum correctly, so the normalized form is used here.
+
+    ⚠️ 2026-08-27: both fields' default was documented here as the first
+    enum value; the manual's own table (re-checked against article id
+    `49513107644057`) literally says `"System"` for both -- a sentinel
+    meaning "use the document's current calculation setting", not one of
+    the listed enum strings. Corrected the comments; not independently
+    live-tested (omitting the field and reading back the resolved value
+    would need a real story model with an existing calculation setting).
     """
 
-    STORY_DRIFT_METHOD: str  # "Drift at the Center of Mass" (default)/"Max. Drift of Outer Extreme Points"/"Max. Drift of All Vertical Elements", optional
-    STORY_STIFFNESS_METHOD: str  # "1 / Story Drift Ratio" (default) or "Story Shear / Story Drift", optional
+    STORY_DRIFT_METHOD: str  # "Drift at the Center of Mass"/"Max. Drift of Outer Extreme Points"/"Max. Drift of All Vertical Elements", default "System" (use document's current setting), optional
+    STORY_STIFFNESS_METHOD: str  # "1 / Story Drift Ratio"/"Story Shear / Story Drift", default "System" (use document's current setting), optional
 
 
 class StiffnessIrregularityAdditional(TypedDict, total=False):

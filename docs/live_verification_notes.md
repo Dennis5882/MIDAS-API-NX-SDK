@@ -6503,6 +6503,91 @@ specific items). `vendored_at_commit` stays unbumped
 (`fbd4f9796824b8967ea748f3bcd0d329fe39fb55`). `pytest` (706), `ruff`, and
 `mypy` all clean after this pass.
 
+## 2026-08-27 (yet later) — the last 4 chapters: 15_OPE, 16_VIEW, 19-20_POST result tables, 21_POST story tables; all 24 chapters now reflected
+
+Finished by hand (no background agents this pass — still rate-limited).
+All live checks on Gen NX; Civil NX remained unreachable all session.
+
+- **`15_OPE.md` `/ope/STORY_PARAM` `StoryCheckParameterArgument.COUNTRY_CODE`**:
+  corrected `"NTCS2020"` → `"NTC2020"` (no S) — the manual's 2026-08-26
+  re-verification (article id `49514705474457`) found this endpoint's own
+  Specifications table uses the no-S spelling, distinct from the sibling
+  `StoryIrregularityCheckParameterArgument` (§11) which genuinely does use
+  `"NTCS2020"`/`"NTCS2023"` (with S) — the manual explicitly flags the two
+  endpoints as using different literals for the same code. Table-sourced
+  only, not live-tested (needs a real story model).
+- **`15_OPE.md` `/ope/MEMB` `MemberAssignmentArgument.ELEM_LIST`**: the
+  manual's 2026-08-26 re-verification claimed the real key is `"AELEM"`
+  (reasoning from the worked examples and the *response* body, which does
+  use `AELEM`). **Live-tested on Gen NX and found the manual's claim
+  backwards**: with real elements in the model, a request using
+  `"ELEM_LIST"` succeeded (and its response echoed `"AELEM"`, matching the
+  manual's response example — that's where the confusion came from); the
+  identical request using `"AELEM"` failed with `"There is no valid
+  element information."` — the server didn't recognize it as a request
+  field. No SDK change; `ELEM_LIST` was already correct. Second example
+  this session (after `13_DB_Load_Combinations.md`'s `NO` field) of a
+  manual "correction" that doesn't survive a live test — see the Caveat
+  section's underlying point, restated in `reference_midas_api_manual.md`.
+- **`15_OPE.md` `/ope/AUTOMESH` `AutoMesher.METHOD`/`TYPE` (and
+  `AutoMeshProperty.ELEMENT_TYPE`)**: the manual's 2026-08-26
+  re-verification makes the same "table says spaced, example says
+  stripped, trust the example" argument that turned out backwards for
+  `StoryIrregularityCheckParameterArgument` earlier this session (see the
+  2026-08-27-first entry above). Attempted to settle it live on Gen NX;
+  inconclusive — a POST using only single-word values for these three
+  fields (so it didn't actually exercise the disputed spacing) failed with
+  a generic `"MIDAS GEN NX second query is wrong"` unrelated to spelling.
+  Not pursued further. **Left unchanged at the table's spaced form**,
+  explicitly not applying the manual's unverified claim — flagged in the
+  docstring as needing a real multi-word-value round trip to resolve
+  either way.
+- **`16_VIEW.md` `/view/ACTIVE` `ActiveArgument`**: added
+  `IDENTITY_TYPE="STORY"` and its companion `STORY_ACTIVE` field
+  (`"FLOOR"`/`"ABOVE"`/`"BELOW"`/`"BOTH"`) — the manual's 2026-08-26
+  re-verification (article id `35523395368985`) found this mode was added
+  to the Specifications table/Request Example without a matching JSON
+  Schema update. **Live-confirmed on Gen NX**: both a plain
+  `{"ACTIVE_MODE": "All"}` and `{"ACTIVE_MODE": "Identity",
+  "IDENTITY_TYPE": "STORY", "IDENTITY_LIST": ["1F"], "STORY_ACTIVE":
+  "FLOOR"}` (against a document with no story data defined) answered
+  `"... command complete"`.
+- **`19-20_POST_AnalysisResult_*.md` `post/base.py` `get_table()`**: added
+  `average_nodal_result`/`node_flag` kwargs (→ `AVERAGE_NODAL_RESULT`
+  boolean, `NODE_FLAG` `{CENTER, NODES}` object). These apply to a named
+  subset of ch20's 39 plate/plane-stress-and-strain/axisymmetric tables
+  (not universal, and not in the ch19/ch20 common-parameters table) — the
+  manual's 2026-08-26 re-verification found both fields missing from every
+  affected section's own docs, not previously called out as table-scoped
+  at all. Live-confirmed accepted (not rejected) on Gen NX via
+  `PLATESTRESSL`: with both fields set, the call still fails on a
+  fresh document, but with the same "no analysis result" error as any
+  ordinary call to that table type — not a shape-rejection error.
+- **`19_POST_AnalysisResult_1.md` `post/result_1.py`
+  `TABLE_TYPE_BEAM_STRESS_BY_MAX = "BEAMSTRESSVBM"`**: added — missing
+  entirely before (the sibling `TABLE_TYPE_BEAM_FORCE_BY_MAX` already
+  existed; this max-value-basis variant of Beam Stress did not). Live-
+  confirmed recognized on Gen NX (same "no analysis result yet" signal as
+  above, not "unrecognized table type"). Its `ITEM_TO_DISPLAY` filter
+  parameter is not exposed by `get_beam_stress_table()` — noted in both
+  places, not implemented (no existing kwarg pattern fits a single-table
+  extra field cleanly; deferred rather than bolted on).
+- **`21_POST_StoryTables.md` `post/story.py`
+  `StiffnessCalculationMethod`**: corrected both fields' documented
+  default from the first enum value (`"Drift at the Center of Mass"`/`"1 /
+  Story Drift Ratio"`) to what the manual's own table (re-checked against
+  article id `49513107644057`) actually says: the literal string
+  `"System"` — a sentinel meaning "use the document's current calculation
+  setting," not one of the listed enum values. Comment-only (TypedDicts
+  here are documentation, not runtime-enforced); not live-tested.
+
+**All 24 changed manual chapters are now reflected.** `vendored_at_commit`
+still intentionally left unbumped
+(`fbd4f9796824b8967ea748f3bcd0d329fe39fb55`) pending a final
+`scripts/check_manual_drift.py --manual-api-repo "E:\AI Study\MIDAS-API"`
+confirmation of `has_diff: false` before that bump — not run yet this
+session. `pytest` (706), `ruff`, and `mypy` all clean.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

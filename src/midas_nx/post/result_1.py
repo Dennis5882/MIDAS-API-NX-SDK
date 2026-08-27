@@ -52,6 +52,16 @@ TABLE_TYPE_BEAM_FORCE_STATIC_PRESTRESS = "BEAMFORCESTP"
 # 10. Beam Stress
 TABLE_TYPE_BEAM_STRESS = "BEAMSTRESS"
 TABLE_TYPE_BEAM_STRESS_7DOF = "BEAMSTRESS7DOF"
+#: Added 2026-08-27 -- missing from this SDK entirely until the manual's
+#: 2026-08-26 re-verification (article id `36011455813273`) added it to the
+#: chapter's own table list. Live-confirmed recognized on Gen NX: answers
+#: "Cannot generate table data as there is no analysis result" (recognized,
+#: no data yet), not an unrecognized-table-type error. Response HEAD adds a
+#: "Component" column after "Part" versus TABLE_TYPE_BEAM_STRESS; also
+#: accepts an "ITEM_TO_DISPLAY" component filter that get_table() has no
+#: dedicated kwarg for yet -- not exposed here either, matching this
+#: function's existing scope (see get_beam_stress_table()'s docstring).
+TABLE_TYPE_BEAM_STRESS_BY_MAX = "BEAMSTRESSVBM"
 
 # 11. Beam Stress (Equivalent)
 TABLE_TYPE_BEAM_STRESS_DETAIL = "BEAMSTRESSDETAIL"
@@ -483,8 +493,10 @@ def get_beam_stress_table(
 ) -> dict:
     """docs/manual/19_POST_AnalysisResult_1.md #10 — Beam Stress.
 
-    table_type: TABLE_TYPE_BEAM_STRESS (default) or TABLE_TYPE_BEAM_STRESS_7DOF
-    (includes warping/7th-DOF components).
+    table_type: TABLE_TYPE_BEAM_STRESS (default), TABLE_TYPE_BEAM_STRESS_7DOF
+    (includes warping/7th-DOF components), or TABLE_TYPE_BEAM_STRESS_BY_MAX
+    (max-value basis, adds a "Component" HEAD column) -- see that constant's
+    comment for an ITEM_TO_DISPLAY caveat this function doesn't expose.
     """
     return get_table(
         table_type,
