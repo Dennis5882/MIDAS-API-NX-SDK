@@ -118,13 +118,18 @@ def test_conditional_variant_tables_are_reported_not_merged(section: ex.Section)
     assert section.tables[1].heading == "TYPE=SPECIAL 전용"
 
 
-def test_draft_never_answers_safe_to_omit(section: ex.Section):
-    """The one thing the manual cannot know must stay unanswered."""
+def test_draft_never_answers_safe_to_omit_from_the_manual(section: ex.Section):
+    """The manual's "Optional" must never become a claim about the product.
+
+    Without live evidence every field stays `unverified`, including the four the
+    synthetic chapter marks Optional.
+    """
     draft = yaml.safe_load(ex.render_draft(section))
 
     def walk(fields):
         for field in fields:
-            assert "safeToOmit" not in field, f"{field['key']} was given a safeToOmit"
+            assert field["safeToOmit"] == "unverified", field["key"]
+            assert "omissionEvidence" not in field
             walk(field.get("properties", []))
 
     walk(draft["fields"])
@@ -132,7 +137,38 @@ def test_draft_never_answers_safe_to_omit(section: ex.Section):
     assert all(f["provenance"] == "manual" for f in draft["fields"])
 
 
-def test_draft_is_valid_yaml_and_fails_schema_only_on_review_markers(section: ex.Section):
+def test_draft_answers_safe_to_omit_only_from_a_confirmed_live_payload(section: ex.Section):
+    evidence = ex.LiveOmission(
+        case="Synthetic",
+        endpoint="/db/SYNTH",
+        sent=frozenset({"NAME", "ITEMS"}),
+        products="gen and civil",
+    )
+    fields = {f["key"]: f for f in yaml.safe_load(ex.render_draft(section, evidence))["fields"]}
+
+    # Sent in the payload that passed: nothing was learned about omitting them.
+    assert fields["NAME"]["safeToOmit"] == "unverified"
+    assert fields["ITEMS"]["safeToOmit"] == "unverified"
+
+    # Absent from a payload a product accepted: that is evidence, and it is cited.
+    assert fields["bFLAG"]["safeToOmit"] is True
+    assert "Synthetic" in fields["bFLAG"]["omissionEvidence"]
+    assert "not that the resulting model" in fields["bFLAG"]["omissionEvidence"]
+
+
+def test_nested_fields_are_never_given_live_evidence(section: ex.Section):
+    """A top-level payload key says nothing about members inside it."""
+    evidence = ex.LiveOmission(
+        case="Synthetic", endpoint="/db/SYNTH", sent=frozenset({"NAME"}), products="gen"
+    )
+    fields = {f["key"]: f for f in yaml.safe_load(ex.render_draft(section, evidence))["fields"]}
+
+    for child in fields["ITEMS"]["properties"]:
+        assert child["safeToOmit"] == "unverified", child["key"]
+
+
+def test_draft_is_valid_yaml_but_cannot_validate_as_a_contract(section: ex.Section):
+    """A draft must be unusable until read, and unusable for one obvious reason."""
     jsonschema = pytest.importorskip("jsonschema")
     import json
 
@@ -140,10 +176,39 @@ def test_draft_is_valid_yaml_and_fails_schema_only_on_review_markers(section: ex
         (ROOT / "contracts" / "schema" / "endpoint-contract.schema.json").read_text(encoding="utf-8")
     )
     draft = yaml.safe_load(ex.render_draft(section))
-    messages = {e.message for e in jsonschema.Draft202012Validator(schema).iter_errors(draft)}
+    assert draft["draft"] is True
 
-    assert messages, "a draft must not validate; review is what promotes it"
-    assert all("safeToOmit" in message for message in messages), messages
+    errors = list(jsonschema.Draft202012Validator(schema).iter_errors(draft))
+    assert errors, "a draft must not validate; review is what promotes it"
+    assert {tuple(e.path) for e in errors} == {("draft",)}, [
+        (list(e.path), e.message) for e in errors
+    ]
+
+
+def test_claiming_safe_to_omit_requires_evidence():
+    """`safeToOmit: true` without omissionEvidence is exactly the mistake to block."""
+    jsonschema = pytest.importorskip("jsonschema")
+    import json
+
+    schema = json.loads(
+        (ROOT / "contracts" / "schema" / "endpoint-contract.schema.json").read_text(encoding="utf-8")
+    )
+    field = {
+        "key": "X",
+        "type": "number",
+        "requirement": "optional",
+        "documentedOptional": True,
+        "safeToOmit": True,
+        "provenance": "manual",
+    }
+    validator = jsonschema.Draft202012Validator(schema["$defs"]["field"])
+
+    assert [e.message for e in validator.iter_errors(field)] == [
+        "'omissionEvidence' is a required property"
+    ]
+
+    field["omissionEvidence"] = "live_crud_check.py's Node case omitted it and passed"
+    assert not list(validator.iter_errors(field))
 
 
 def test_field_names_that_yaml_would_mangle_are_quoted(section: ex.Section):

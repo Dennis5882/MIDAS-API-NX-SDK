@@ -20,6 +20,10 @@
       "const": 1,
       "description": "Format version of this contract file. Bumped only when the schema changes incompatibly."
     },
+    "draft": {
+      "const": false,
+      "description": "Machine-drafted files under contracts/drafts/ carry `draft: true` and are not contracts. Reviewing a draft is what removes this marker; until then the file cannot validate, which is what stops an unreviewed transcription being moved into contracts/endpoints/ and treated as fact."
+    },
     "id": {
       "type": "string",
       "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
@@ -349,12 +353,16 @@
           "description": "Whether the official manual marks this field optional. A statement about the documentation, never about observed behaviour."
         },
         "safeToOmit": {
-          "type": "boolean",
-          "description": "Whether omitting the field is actually safe against a live product. Modelled separately from `documentedOptional` on purpose: /db/NMAS's rmX/rmY/rmZ are documentedOptional true and safeToOmit false, because omitting them crashes the product that documented them as optional. Anything false here must be covered by an sdkRule."
+          "enum": [true, false, "unverified"],
+          "description": "Whether omitting the field is actually safe against a live product. Modelled separately from `documentedOptional` on purpose: /db/NMAS's rmX/rmY/rmZ are documentedOptional true and safeToOmit false, because omitting them crashes the product that documented them as optional. `unverified` is the honest answer for most fields and is not a lesser state - it says nobody has omitted this against a running product. `true` is a claim about the product and needs `omissionEvidence`; `false` needs `omissionEffect`, and if the field is also documentedOptional it must be covered by an sdkRule."
         },
         "omissionEffect": {
           "type": "string",
           "description": "Required when safeToOmit is false: what actually happens on omission."
+        },
+        "omissionEvidence": {
+          "type": "string",
+          "description": "Required when safeToOmit is true: what live call omitted this field and succeeded. Normally a scripts/live_crud_check.py case name or a contracts/verification/ record id. \"The manual says Optional\" is not evidence - that is what documentedOptional already records."
         },
         "enum": {
           "type": "array",
@@ -376,6 +384,13 @@
             "required": ["safeToOmit"]
           },
           "then": { "required": ["omissionEffect"] }
+        },
+        {
+          "if": {
+            "properties": { "safeToOmit": { "const": true } },
+            "required": ["safeToOmit"]
+          },
+          "then": { "required": ["omissionEvidence"] }
         },
         {
           "if": {

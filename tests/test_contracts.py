@@ -153,10 +153,28 @@ def test_nmas_contract_marks_rotational_fields_unsafe_to_omit():
         assert fields[key]["documentedOptional"] is True
         assert fields[key]["safeToOmit"] is False
 
+    # mY/mZ are documented optional and nobody has omitted them against a live
+    # product - the confirmed live payload sends all three translational masses.
+    # `unverified` is the honest answer; claiming `true` here would be reading
+    # the manual's "Optional" as evidence, which is the mistake rmX punishes.
     for key in ("mY", "mZ"):
-        assert fields[key]["safeToOmit"] is True
+        assert fields[key]["safeToOmit"] == "unverified"
 
     assert _normalization_values(contract) == {"rmX": 0.0, "rmY": 0.0, "rmZ": 0.0}
+
+
+def test_no_contract_claims_omission_safety_without_evidence():
+    """`safeToOmit: true` is a claim about the product and has to cite one."""
+    for name, contract in _contracts().items():
+        for field in contract.get("fields", []):
+            if field["safeToOmit"] is not True:
+                continue
+            evidence = field.get("omissionEvidence", "")
+            assert evidence.strip(), f"{name}: {field['key']} claims safeToOmit with no evidence"
+            assert "manual" not in evidence.lower() or "live" in evidence.lower(), (
+                f"{name}: {field['key']} cites the manual as omission evidence; the manual "
+                f"saying 'Optional' is what documentedOptional already records"
+            )
 
 
 class _RecordingClient:

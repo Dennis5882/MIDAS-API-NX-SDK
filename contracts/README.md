@@ -66,8 +66,26 @@ manual is correct that the field is optional, and following the manual kills the
 session. Collapsing the two into one boolean loses exactly the case that hurts
 people — the caller who read the documentation and did what it said.
 
-Any field that is `documentedOptional` but not `safeToOmit` **must** be covered
-by an `sdkRule`. CI enforces it.
+`safeToOmit` has three values, and `unverified` is not a lesser one:
+
+| Value | Means | Requires |
+| --- | --- | --- |
+| `true` | A live call omitted it and succeeded | `omissionEvidence` citing that call |
+| `false` | Someone omitted it and something broke | `omissionEffect`, plus an `sdkRule` if the field is also documentedOptional |
+| `unverified` | Nobody has omitted it against a running product | nothing |
+
+Most fields are `unverified`, and saying so is the point. "The manual says
+Optional" is **not** evidence for `true` — that is what `documentedOptional`
+already records, and treating it as an answer is precisely the reasoning
+`/db/NMAS` punishes. The first two contracts written by hand got this wrong and
+were corrected: their coordinates and translational masses now read `unverified`,
+because `scripts/live_crud_check.py`'s confirmed payloads send all of them.
+
+Where evidence does exist, it is mechanical: 116 cases in that checker are marked
+`confirmed=True`, meaning someone watched that exact payload complete a live
+round trip. A documented field absent from such a payload was omitted and the
+call still worked. `scripts/extract_contracts.py` reads those payloads and fills
+in `safeToOmit: true` with the case cited — 437 fields across 72 endpoints.
 
 ## Risk and mitigation are separate axes
 
@@ -103,6 +121,8 @@ contracts/
   endpoints/
     db-node.yaml                     one file per endpoint; file name == `id`
     db-nmas.yaml
+    db-grup.yaml  db-rigd.yaml  db-offs.yaml  db-co-m.yaml
+  drafts/                            git-ignored; `draft: true`, not contracts
   safety/
     known-product-risks.yaml         cross-endpoint client rules + product defects
   verification/
@@ -144,11 +164,9 @@ python scripts/extract_contracts.py --check               # promoted vs. manual
 ```
 
 `--emit` writes to `contracts/drafts/`, which is **git-ignored and ignored by the
-validator**. A draft is an unreviewed transcription, and it deliberately cannot
-validate: every field's `safeToOmit` is left out, so the schema rejects the file
-until a human answers it. That is the whole point. Auto-filling `safeToOmit: true`
-because the manual said "Optional" would restate the documentation as evidence,
-and `/db/NMAS` is the endpoint where doing that gets someone's session killed.
+validator**. Every draft carries `draft: true`, which the schema forbids, so a
+file moved into `contracts/endpoints/` without being read fails CI with one
+unambiguous message rather than passing as fact.
 
 Of roughly 4,770 fields the extractor can read, about a third carry a review note
 — no Default column, an enum whose values live elsewhere in the chapter, a row
@@ -173,7 +191,7 @@ Then:
 
 ## Migration status
 
-Two endpoints are contracted. The remaining ledger lives in `docs/coverage.json`
+Six endpoints are contracted. The remaining ledger lives in `docs/coverage.json`
 (399 endpoints) and is being migrated incrementally, so an endpoint without a
 contract is expected rather than a defect. What is *not* optional is that a
 contract, once written, is honoured by both SDKs.
@@ -184,7 +202,10 @@ What the extractor can currently reach, per `scripts/extract_contracts.py`:
 | --- | --- |
 | Endpoint sections found across chapters 01-17 and 24-27 | 386 |
 | ...with a parameter table it can parse | 370 |
+| ...whose methods the manual actually states | 110 |
 | Fields transcribed | ~4,770, of which ~180 nested |
+| Fields given `safeToOmit: true` from a confirmed live payload | 437, across 72 endpoints |
+| Drafts with no review note and no unmerged variant table | 130 |
 | Sections with conditional variant tables left unmerged | 58 |
 | Sections belonging to the shared `/post/TABLE` family | 89 |
 

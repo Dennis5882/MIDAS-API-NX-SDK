@@ -120,7 +120,11 @@ fields:
     requirement: optional
     documentedDefault: 0
     documentedOptional: true
-    safeToOmit: true
+    safeToOmit: unverified
+    # The manual says Optional with a default of 0. Nobody has omitted a
+    # coordinate against a running product - scripts/live_crud_check.py's Node
+    # case sends all three - so this stays unverified rather than restating the
+    # documentation as a fact about the server.
     provenance: manual
 
   - key: "Y"
@@ -129,7 +133,7 @@ fields:
     requirement: optional
     documentedDefault: 0
     documentedOptional: true
-    safeToOmit: true
+    safeToOmit: unverified
     provenance: manual
 
   - key: Z
@@ -138,7 +142,7 @@ fields:
     requirement: optional
     documentedDefault: 0
     documentedOptional: true
-    safeToOmit: true
+    safeToOmit: unverified
     provenance: manual
 
 sdkRules:

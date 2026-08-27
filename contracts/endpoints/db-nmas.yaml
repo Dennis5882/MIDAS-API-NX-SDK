@@ -132,7 +132,7 @@ fields:
     requirement: optional
     documentedDefault: 0
     documentedOptional: true
-    safeToOmit: true
+    safeToOmit: unverified
     provenance: manual
 
   - key: mZ
@@ -141,7 +141,7 @@ fields:
     requirement: optional
     documentedDefault: 0
     documentedOptional: true
-    safeToOmit: true
+    safeToOmit: unverified
     provenance: manual
 
   - key: rmX

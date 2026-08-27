@@ -91,6 +91,17 @@ def check_schema(contracts: list[tuple[Path, dict]], failures: Failures) -> None
     schema = json.loads(SCHEMA_FILE.read_text(encoding="utf-8"))
     validator = Draft202012Validator(schema)
     for path, contract in contracts:
+        if contract.get("draft"):
+            # The clearest possible message for the most likely mistake: a
+            # machine-drafted transcription moved out of contracts/drafts/
+            # without anyone reading it.
+            failures.add(
+                path.name,
+                "still carries `draft: true` - this is an unreviewed transcription from "
+                "scripts/extract_contracts.py, not a contract. Read it, answer its "
+                "TODO(review) markers, then delete that line.",
+            )
+            continue
         for error in sorted(validator.iter_errors(contract), key=lambda e: list(e.path)):
             location = "/".join(str(part) for part in error.path) or "(root)"
             failures.add(path.name, f"schema: {location}: {error.message}")
@@ -210,7 +221,11 @@ def check_safety(contracts: list[tuple[Path, dict]], failures: Failures) -> None
             for field in rule.get("fields", [])
         }
         for field in _iter_fields(contract.get("fields", [])):
-            if field["safeToOmit"] or field["key"] in covered:
+            # `unverified` means nobody has omitted this against a running
+            # product. That is an honest gap, not a defect, so it is counted in
+            # the summary rather than failed here. Only a measured `false` -
+            # someone tried it and something broke - demands a rule.
+            if field["safeToOmit"] is not False or field["key"] in covered:
                 continue
             if field["requirement"] == "required" and not field["documentedOptional"]:
                 # A required field the caller must supply; nothing to normalize.
@@ -452,6 +467,13 @@ def main(argv: list[str]) -> int:
         for op in c["operations"]
         if op["risk"] == "product_crash_risk"
     )
+    fields = [f for _, c in contracts for f in _iter_fields(c.get("fields", []))]
+    omission = {state: 0 for state in ("proven safe", "proven unsafe", "unverified")}
+    for entry in fields:
+        value = entry.get("safeToOmit")
+        key = "proven safe" if value is True else "proven unsafe" if value is False else "unverified"
+        omission[key] += 1
+
     print(
         f"contracts: {len(contracts)} endpoints, "
         f"{sum(len(c['operations']) for _, c in contracts)} operations, "
@@ -459,6 +481,12 @@ def main(argv: list[str]) -> int:
         f"{len(risks.get('risks', []))} known risks, "
         f"{sum(len(v.get('records', [])) for v in verification.values())} "
         f"verification records"
+    )
+    print(
+        f"omission safety of {len(fields)} fields: "
+        + ", ".join(f"{count} {label}" for label, count in omission.items())
+        + ". `unverified` is an honest gap, not a failure - it says nobody has"
+        " omitted that field against a running product."
     )
 
     if failures:

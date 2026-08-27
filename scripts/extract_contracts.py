@@ -8,14 +8,18 @@ retyping a table by hand.
 
 What this script will and will not do matters more than what it parses.
 
-**It drafts, it does not promote.** Output goes to `contracts/drafts/`, which
-`scripts/validate_contracts.py` deliberately ignores. A draft omits every field's
-`safeToOmit`, so it *cannot* validate against the contract schema until a human
-answers the one question the manual can never answer: whether omitting a field
-is safe against a running product. `/db/NMAS` documents `rmX`/`rmY`/`rmZ` as
-optional and omitting them kills the session. Auto-filling `safeToOmit: true`
-from a manual that says "Optional" would restate the documentation as if it were
-evidence, and the CI gate built on that distinction would be worth nothing.
+**It drafts, it does not promote.** Output goes to `contracts/drafts/`, which is
+git-ignored and which `scripts/validate_contracts.py` ignores. Every draft
+carries `draft: true`, which the schema forbids, so no draft can be moved into
+`contracts/endpoints/` and pass CI without someone reading it first.
+
+**It never answers `safeToOmit` from the manual.** That field is a claim about
+the product, and the manual cannot make it: `/db/NMAS` documents
+`rmX`/`rmY`/`rmZ` as optional and omitting them kills the session. A draft
+answers `true` only where a payload in `scripts/live_crud_check.py` marked
+`confirmed=True` actually omitted the field and the round trip still passed,
+citing that case. Everything else is emitted `unverified`, which is the honest
+state and not a lesser one.
 
 **It reports what it could not parse rather than quietly dropping it.** A
 section with conditional sub-tables (`#### LINEAR 전용`, `#### 1-2-B. Korea
@@ -67,7 +71,15 @@ TABLE_FAMILY_CHAPTERS = {
 _SECTION = re.compile(r"^##\s+(\d+)\.\s*`?(/?[A-Za-z][A-Za-z0-9/_.\-]*/[A-Za-z0-9/_.\-]+)`?\s*(?:[—\-–]\s*(.*))?$")
 _DIVIDER = re.compile(r"^\|[\s:|-]+\|$")
 _SOURCE_URL = re.compile(r"\*\*Source\*\*:\s*\[[^\]]*\]\((https?://[^)]+)\)")
-_METHODS = re.compile(r"(?:Active Methods|\*\*Methods\*\*):?\*{0,2}\s*[:`]?\s*([A-Z,\s`]+)")
+# The chapters declare methods four ways: `**Active Methods:** POST, GET`,
+# `**Methods:** ...`, `- **Methods**: ...`, and a two-column table row
+# `| **Methods** | POST, GET, PUT |`. Missing the table form is not cosmetic -
+# it made /db/GRUP's draft claim a DELETE the endpoint does not serve, because
+# the extractor fell back to the /db/* default of all four verbs.
+_METHODS = re.compile(
+    r"^\s*(?:[-*]\s*)?\|?\s*\*{0,2}(?:Active\s+)?Methods\*{0,2}\s*[:：]?\s*\|?\s*([A-Z,\s`|]+)",
+    re.MULTILINE,
+)
 
 _KEY_COLUMNS = {"key", "키"}
 _DESC_COLUMNS = {"description", "설명"}
@@ -426,8 +438,49 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
     return tables
 
 
+_TOC_METHOD_COLUMNS = {"methods", "active methods", "메서드"}
+
+
+def _toc_methods(lines: list[str]) -> dict[str, list[str]]:
+    """Read methods out of a chapter's contents table.
+
+    15 chapters state each endpoint's verbs once, in the table of contents,
+    rather than in the endpoint's own section. Without this the extractor falls
+    back to the /db/* default of all four verbs, which is how /db/GRUP's first
+    draft claimed a DELETE the endpoint does not serve.
+    """
+    found: dict[str, list[str]] = {}
+    for index, line in enumerate(lines):
+        if not (line.startswith("|") and index + 1 < len(lines) and _DIVIDER.match(lines[index + 1])):
+            continue
+        header = [cell.strip().lower() for cell in line.strip("|").split("|")]
+        if "endpoint" not in header:
+            continue
+        method_column = next((i for i, h in enumerate(header) if h in _TOC_METHOD_COLUMNS), None)
+        if method_column is None:
+            continue
+        endpoint_column = header.index("endpoint")
+        row = index + 2
+        while row < len(lines) and lines[row].startswith("|"):
+            cells = [cell.strip() for cell in lines[row].strip("|").split("|")]
+            row += 1
+            if len(cells) != len(header):
+                continue
+            endpoint = re.search(r"/?[A-Za-z][A-Za-z0-9/_.\-]*/[A-Za-z0-9/_.\-]+", _clean(cells[endpoint_column]))
+            if not endpoint:
+                continue
+            verbs = sorted(
+                {v for v in re.findall(r"[A-Z]+", cells[method_column]) if v in {"GET", "POST", "PUT", "DELETE"}}
+            )
+            if verbs:
+                path = endpoint.group(0)
+                found[path if path.startswith("/") else "/" + path] = verbs
+    return found
+
+
 def parse_chapter(path: Path) -> list[Section]:
     lines = path.read_text(encoding="utf-8").splitlines()
+    toc_methods = _toc_methods(lines)
     starts: list[tuple[int, re.Match[str]]] = []
     for index, line in enumerate(lines):
         match = _SECTION.match(line)
@@ -458,6 +511,8 @@ def parse_chapter(path: Path) -> list[Section]:
             section.methods = sorted(
                 {m for m in re.findall(r"[A-Z]+", methods.group(1)) if m in {"GET", "POST", "PUT", "DELETE"}}
             )
+        if not section.methods:
+            section.methods = toc_methods.get(section.endpoint, [])
         section.tables = _parse_tables(body, index)
         sections.append(section)
     return sections
@@ -517,6 +572,92 @@ def _scalar(value: Any) -> str:
     return text
 
 
+@dataclass
+class LiveOmission:
+    """A payload that a real product accepted, and what it left out."""
+
+    case: str
+    endpoint: str
+    sent: frozenset[str]
+    products: str
+
+
+def live_omission_evidence() -> dict[str, LiveOmission]:
+    """Which fields a confirmed live write actually omitted, per endpoint.
+
+    `scripts/live_crud_check.py` carries 116 cases marked `confirmed=True`,
+    meaning someone watched that exact payload complete a create-read-update-
+    delete round trip against a running product. A documented field absent from
+    such a payload was omitted and the call still worked - which is evidence
+    about the product, and therefore the only kind of thing `safeToOmit: true`
+    is allowed to rest on.
+
+    Read statically, through `ast`. Importing the checker would be reading an
+    SDK to learn about the API; this reads a record of what a server did.
+
+    It proves the call was accepted, not that the resulting model was what the
+    engineer wanted - the emitted evidence string says so.
+    """
+    import ast  # noqa: PLC0415
+
+    checker = ROOT / "scripts" / "live_crud_check.py"
+    if not checker.exists():
+        return {}
+
+    endpoints: dict[str, str] = {}
+    try:
+        sys.path.insert(0, str(ROOT / "src"))
+        import importlib  # noqa: PLC0415
+        import pkgutil  # noqa: PLC0415
+
+        import midas_nx  # noqa: PLC0415
+        from midas_nx.db.base import DbResource  # noqa: PLC0415
+
+        for module in pkgutil.walk_packages(midas_nx.__path__, "midas_nx."):
+            importlib.import_module(module.name)
+
+        def walk(base: type) -> None:
+            for child in base.__subclasses__():
+                if getattr(child, "ENDPOINT", None):
+                    endpoints[child.__name__] = child.ENDPOINT
+                walk(child)
+
+        walk(DbResource)
+    except Exception:
+        return {}
+
+    found: dict[str, LiveOmission] = {}
+    for node in ast.walk(ast.parse(checker.read_text(encoding="utf-8"))):
+        if not (isinstance(node, ast.Call) and getattr(node.func, "id", "") == "Case"):
+            continue
+        keywords = {k.arg: k.value for k in node.keywords}
+        confirmed = keywords.get("confirmed")
+        if not (isinstance(confirmed, ast.Constant) and confirmed.value is True):
+            continue
+
+        resource = node.args[0] if node.args else keywords.get("resource")
+        payload = node.args[1] if len(node.args) > 1 else keywords.get("create_payload")
+        if resource is None or payload is None:
+            continue
+        name = getattr(resource, "id", None) or ast.unparse(resource)
+        endpoint = endpoints.get(name)
+        if endpoint is None or endpoint in found:
+            continue
+        try:
+            sent = frozenset(ast.literal_eval(payload).keys())
+        except Exception:
+            continue
+
+        products = keywords.get("products")
+        found[endpoint] = LiveOmission(
+            case=name,
+            endpoint=endpoint,
+            sent=sent,
+            products=ast.unparse(products) if products is not None else "gen and civil",
+        )
+    return found
+
+
 def _block(text: str, indent: str, prefix: str = "") -> list[str]:
     """Wrap `text` at a readable width.
 
@@ -539,7 +680,9 @@ def _block(text: str, indent: str, prefix: str = "") -> list[str]:
     return out
 
 
-def _render_fields(fields: list[ParsedField], indent: str) -> list[str]:
+def _render_fields(
+    fields: list[ParsedField], indent: str, evidence: Optional[LiveOmission] = None
+) -> list[str]:
     lines: list[str] = []
     body = indent + "  "
     for parsed in fields:
@@ -566,8 +709,30 @@ def _render_fields(fields: list[ParsedField], indent: str) -> list[str]:
                 lines.append(f"{body}condition: \"TODO(review): the manual does not state the condition\"")
         lines.append(f"{body}documentedDefault: {_scalar(parsed.documented_default)}")
         lines.append(f"{body}documentedOptional: {'true' if parsed.requirement == 'optional' else 'false'}")
-        lines.append(f"{body}# TODO(review): safeToOmit - REQUIRED. Has anyone omitted this against a")
-        lines.append(f"{body}# live product? If not, say so and find out before promoting this file.")
+
+        # safeToOmit is a claim about the product, so it is only ever answered
+        # `true` here from a payload a product actually accepted without the
+        # field. Everything else stays `unverified`, which is the honest state,
+        # not a lesser one.
+        omitted_live = (
+            evidence is not None and indent == "  " and parsed.key not in evidence.sent
+        )
+        if omitted_live:
+            assert evidence is not None
+            lines.append(f"{body}safeToOmit: true")
+            lines.append(f"{body}omissionEvidence: >-")
+            lines += _block(
+                f"scripts/live_crud_check.py's {evidence.case} case completed a live "
+                f"create-read-update-delete round trip on {evidence.products} without this "
+                f"field in its payload. That is evidence the call is accepted, not that the "
+                f"resulting model is what an engineer wanted.",
+                body + "  ",
+            )
+        else:
+            lines.append(f"{body}safeToOmit: unverified")
+            lines.append(f"{body}# TODO(review): nobody has omitted this against a live product.")
+            lines.append(f"{body}# Leave it unverified, or find out - do not read the manual's")
+            lines.append(f"{body}# 'Optional' as an answer; that is what documentedOptional records.")
         lines.append(f"{body}provenance: manual")
         for note in parsed.notes:
             lines += _block(f"NOTE: {note}", body, prefix="# ")
@@ -577,7 +742,7 @@ def _render_fields(fields: list[ParsedField], indent: str) -> list[str]:
     return lines
 
 
-def render_draft(section: Section) -> str:
+def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> str:
     main = section.tables[0] if section.tables else None
     lines: list[str] = [
         f"# DRAFT contract for {section.endpoint} - extracted, not reviewed.",
@@ -598,6 +763,7 @@ def render_draft(section: Section) -> str:
         "# Then run: python scripts/validate_contracts.py",
         "",
         "contractVersion: 1",
+        "draft: true   # reviewing this file is what removes this line",
         f"id: {section.id}",
         f"endpoint: {section.endpoint}",
         f"name: {_scalar(section.title or section.endpoint)}",
@@ -650,7 +816,7 @@ def render_draft(section: Section) -> str:
         ]
     else:
         lines.append("fields:")
-        lines += _render_fields(main.fields, "  ")
+        lines += _render_fields(main.fields, "  ", evidence)
         lines.append("")
 
     lines.append("extraction:")
@@ -744,12 +910,14 @@ def run_emit(sections: list[Section], targets: list[str], emit_all: bool) -> int
         return 2
 
     DRAFT_DIR.mkdir(parents=True, exist_ok=True)
+    evidence = live_omission_evidence()
     written = skipped = 0
     for section in chosen:
         if section.id in promoted:
             skipped += 1
             continue
-        (DRAFT_DIR / f"{section.id}.yaml").write_text(render_draft(section), encoding="utf-8")
+        draft = render_draft(section, evidence.get(section.endpoint))
+        (DRAFT_DIR / f"{section.id}.yaml").write_text(draft, encoding="utf-8")
         written += 1
         if not emit_all:
             print(f"  {section.endpoint:<45} -> contracts/drafts/{section.id}.yaml")

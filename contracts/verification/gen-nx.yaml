@@ -40,3 +40,36 @@ records:
     riskRef: db-nmas-omitted-rotational-mass
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-crud-batch-2026-07-29
+    endpoints: ["/db/GRUP", "/db/RIGD", "/db/OFFS"]
+    date: "2026-07-29"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 07/28/2026
+    level: write
+    outcome: success_empty
+    method: scripts/live_crud_check.py - full create-read-update-delete round trip.
+    finding: >-
+      Each endpoint accepted its create payload, echoed it back on read, took an
+      update, and removed exactly the requested record on a per-id delete. The
+      payloads omitted most documented-optional fields and the calls still
+      succeeded, which is what the contracts cite under omissionEvidence -
+      evidence the call is accepted, not that the resulting model is what an
+      engineer wanted. Recorded as success_empty: the round trip passed against
+      a scratch document with no pre-existing data of its own.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-co-m-crud-2026-08-16
+    endpoints: ["/db/CO_M"]
+    date: "2026-08-16"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 08/14/2026
+    level: write
+    outcome: success
+    method: Live write round trip against a document with real material colours set.
+    finding: >-
+      GET and PUT both behaved as contracted. The endpoint serves no POST or
+      DELETE, which the manual states in its contents table - the same place
+      /db/GRUP's method list lives, and the reason the extractor now reads that
+      table.
+    evidence:
+      - docs/live_verification_notes.md
