@@ -225,6 +225,49 @@ def test_check_reports_drift_between_a_contract_and_the_manual(section: ex.Secti
     assert set(manual) >= {"NAME", "ITEMS", "ITEMS.ITEM_NAME", "CFG.MODE"}
 
 
+METHOD_DECLARATION_FORMS = {
+    "colon inside the bold": "- **Methods**: `POST`, `GET`",
+    "colon outside the bold": "**Active Methods:** `POST, GET`",
+    "middle-dot separator": "**Methods:** `POST` · `GET`",
+    "two-column table row": "| **Method** | `POST`, `GET` |",
+    "heading, verbs below": "### Active Methods\n\n`POST` · `GET`",
+    "heading, verbs in a table": (
+        "### HTTP Methods\n\n"
+        "| Method | URL | 설명 |\n"
+        "|--------|-----|------|\n"
+        "| POST | `{base_url}/db/SYNTH` | create |\n"
+        "| GET | `{base_url}/db/SYNTH` | read |"
+    ),
+}
+
+
+@pytest.mark.parametrize("form", sorted(METHOD_DECLARATION_FORMS))
+def test_every_declaration_form_the_chapters_use_is_read(form: str, tmp_path: Path):
+    """The chapters state their verbs six ways, and a missed form is not cosmetic.
+
+    A section whose verbs go unread falls back to the /db/* default of all four -
+    which is how /db/GRUP's first draft claimed a DELETE the endpoint does not
+    serve - or, once that fallback became a refusal, blocks promotion outright.
+    Reading only the narrowest form made 276 of 386 sections look like the manual
+    never stated its methods; the real number is 26.
+    """
+    path = tmp_path / "99_DB_Forms.md"
+    path.write_text(
+        "# 99 DB — Forms\n\n## 1. `/db/SYNTH` — Synthetic\n\n"
+        + METHOD_DECLARATION_FORMS[form]
+        + "\n",
+        encoding="utf-8",
+    )
+    assert ex.parse_chapter(path)[0].methods == ["GET", "POST"]
+
+
+def test_a_section_that_states_no_methods_stays_empty(tmp_path: Path):
+    """The fallback belongs to the caller, so silence must stay legible here."""
+    path = tmp_path / "99_DB_Silent.md"
+    path.write_text("# 99 DB — Silent\n\n## 1. `/db/SYNTH` — Synthetic\n\nNo verbs anywhere.\n", encoding="utf-8")
+    assert ex.parse_chapter(path)[0].methods == []
+
+
 def test_shipped_contracts_still_match_the_manual_if_it_is_present():
     """Runs only where the sibling manual repo is checked out - CI does both."""
     manual_repo = ex.DEFAULT_MANUAL_REPO

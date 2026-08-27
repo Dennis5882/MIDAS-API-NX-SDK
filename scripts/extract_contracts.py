@@ -43,6 +43,7 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+from collections import Counter
 from dataclasses import dataclass
 from dataclasses import field as dataclass_field
 from pathlib import Path
@@ -71,15 +72,65 @@ TABLE_FAMILY_CHAPTERS = {
 _SECTION = re.compile(r"^##\s+(\d+)\.\s*`?(/?[A-Za-z][A-Za-z0-9/_.\-]*/[A-Za-z0-9/_.\-]+)`?\s*(?:[—\-–]\s*(.*))?$")
 _DIVIDER = re.compile(r"^\|[\s:|-]+\|$")
 _SOURCE_URL = re.compile(r"\*\*Source\*\*:\s*\[[^\]]*\]\((https?://[^)]+)\)")
-# The chapters declare methods four ways: `**Active Methods:** POST, GET`,
-# `**Methods:** ...`, `- **Methods**: ...`, and a two-column table row
-# `| **Methods** | POST, GET, PUT |`. Missing the table form is not cosmetic -
-# it made /db/GRUP's draft claim a DELETE the endpoint does not serve, because
-# the extractor fell back to the /db/* default of all four verbs.
+# The chapters declare methods six ways, and each miss is expensive: without one
+# the extractor falls back to the /db/* default of all four verbs, which is how
+# /db/GRUP's first draft claimed a DELETE the endpoint does not serve.
+#
+#   - **Methods**: `POST, GET`          label, then the colon inside the bold
+#   **Active Methods:** `POST`, `GET`   label, with the colon outside it
+#   **Methods:** `POST` · `GET`         ...and a middle dot for a separator
+#   | **Method** | `POST` |             a two-column table row, verb singular
+#   ### Active Methods                  a heading, verbs on a following line
+#   ### HTTP Methods                    a heading, verbs in a Method column
+#
+# The first three are one regex; the rest need surrounding lines, so
+# _section_methods() drives them. Reading only the narrowest form left 276 of
+# 386 sections looking like the manual never stated its verbs at all - it does,
+# in five of these six ways, and each is worth a promotable contract.
 _METHODS = re.compile(
-    r"^\s*(?:[-*]\s*)?\|?\s*\*{0,2}(?:Active\s+)?Methods\*{0,2}\s*[:：]?\s*\|?\s*([A-Z,\s`|]+)",
+    r"^\s*(?:[-*]\s*)?\*{0,2}(?:Active\s+|HTTP\s+|Supported\s+)?Methods?\s*\*{0,2}\s*[:：]\s*\*{0,2}\s*"
+    r"((?:[`\s]*[A-Z]+[,\s·`/]*)+)",
     re.MULTILINE,
 )
+_METHODS_TABLE_ROW = re.compile(
+    r"^\s*\|\s*\*{0,2}(?:Active\s+|HTTP\s+|Supported\s+)?Methods?\*{0,2}\s*\|\s*([^|]+)\|", re.MULTILINE
+)
+_METHODS_HEADING = re.compile(r"^#{2,4}\s+\*{0,2}(?:Active|HTTP|Supported)\s+Methods?\*{0,2}\s*$", re.I)
+
+_VERBS = {"GET", "POST", "PUT", "DELETE"}
+
+
+def _verbs(text: str) -> list[str]:
+    return sorted({v for v in re.findall(r"[A-Z]+", text) if v in _VERBS})
+
+
+def _section_methods(lines: list[str]) -> list[str]:
+    """Read an endpoint section's HTTP verbs, in whichever form it declares them."""
+    text = "\n".join(lines)
+    for pattern in (_METHODS, _METHODS_TABLE_ROW):
+        match = pattern.search(text)
+        if match:
+            verbs = _verbs(match.group(1))
+            if verbs:
+                return verbs
+
+    # `### Active Methods` puts the verbs on a following line; `### HTTP Methods`
+    # puts them in the first column of a table. Both end at the next heading.
+    for index, line in enumerate(lines):
+        if not _METHODS_HEADING.match(line):
+            continue
+        verbs: set[str] = set()
+        for follow in lines[index + 1 :]:
+            if follow.startswith("#"):
+                break
+            if follow.startswith("|"):
+                cells = [cell.strip() for cell in follow.strip("|").split("|")]
+                verbs.update(_verbs(cells[0]) if cells else [])
+            else:
+                verbs.update(_verbs(follow))
+        if verbs:
+            return sorted(verbs)
+    return []
 
 _KEY_COLUMNS = {"key", "키"}
 _DESC_COLUMNS = {"description", "설명"}
@@ -540,11 +591,7 @@ def parse_chapter(path: Path) -> list[Section]:
         url = _SOURCE_URL.search(text)
         if url:
             section.source_url = url.group(1)
-        methods = _METHODS.search(text)
-        if methods:
-            section.methods = sorted(
-                {m for m in re.findall(r"[A-Z]+", methods.group(1)) if m in {"GET", "POST", "PUT", "DELETE"}}
-            )
+        section.methods = _section_methods(body)
         if not section.methods:
             section.methods = toc_methods.get(section.endpoint, [])
         section.tables = _parse_tables(body, index)
@@ -913,6 +960,16 @@ def run_report(sections: list[Section], table_family: dict[str, int]) -> int:
             reasons[head] = reasons.get(head, 0) + 1
     for reason, count in sorted(reasons.items(), key=lambda kv: -kv[1])[:8]:
         print(f"  {count:>5}  {reason}")
+
+    # A section with no stated verbs cannot be promoted, so this is a headline
+    # number, not a detail - and it was reported as 276 while the extractor could
+    # read only the narrowest of the six forms the chapters use. Print it, so the
+    # next person quoting it is quoting a measurement.
+    silent = [s for s in sections if not s.methods]
+    if silent:
+        print(f"\n{len(silent)} of {total} sections state their HTTP methods nowhere the extractor can read:")
+        for chapter, count in sorted(Counter(s.chapter_file for s in silent).items()):
+            print(f"  {count:>3}  {chapter}")
 
     if table_family:
         skipped = sum(table_family.values())
