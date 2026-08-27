@@ -36,7 +36,12 @@ jobs:
           node-version: "22"
           cache: npm
           cache-dependency-path: packages/typescript/package-lock.json
-      - run: pip install -e .
+      # The dev extra, not the bare install: npm generation reads the safety
+      # rules out of contracts/, which needs PyYAML. The generator refuses to
+      # run without it rather than emitting a surface with the rules silently
+      # missing - that silence is the bug this whole arrangement exists to
+      # prevent.
+      - run: pip install -e ".[dev]"
       - run: npm ci
         working-directory: packages/typescript
       - run: npm run generate
