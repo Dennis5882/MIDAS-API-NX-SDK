@@ -12,30 +12,30 @@ export const operations = {
          * Check Report. Response: ``{"SUCCESS": bool, "FILE_PATH": str, "MESSAGE":
          * str}``.
          */
-        exportBeamCheckReport: definePostOperation<Types.DesignRcKdsChecksTypes.RcMemberCheckReportArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BC-REPORT","method":"POST"}),
+        exportBeamCheckReport: definePostOperation<Types.DesignRcKdsChecksTypes.RcMemberCheckReportArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BC-REPORT","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #62  -  BRC-REPORT  -  RC Brace
          * Check Report. Response: ``{"SUCCESS": bool, "FILE_PATH": str, "MESSAGE":
          * str}``.
          */
-        exportBraceCheckReport: definePostOperation<Types.DesignRcKdsChecksTypes.RcMemberCheckReportArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BRC-REPORT","method":"POST"}),
+        exportBraceCheckReport: definePostOperation<Types.DesignRcKdsChecksTypes.RcMemberCheckReportArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BRC-REPORT","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #59  -  CC-REPORT  -  RC Column
          * Check Report. Response: ``{"SUCCESS": bool, "FILE_PATH": str, "MESSAGE":
          * str}``.
          */
-        exportColumnCheckReport: definePostOperation<Types.DesignRcKdsChecksTypes.RcMemberCheckReportArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/CC-REPORT","method":"POST"}),
+        exportColumnCheckReport: definePostOperation<Types.DesignRcKdsChecksTypes.RcMemberCheckReportArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/CC-REPORT","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #66  -  CDESIGN  -  RC Concrete
          * Comprehensive Design Result. Response: ``{"message": "success"}``.
          */
-        exportComprehensiveDesignResultImage: definePostOperation<Types.DesignRcKdsChecksTypes.ComprehensiveDesignResultArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/CDESIGN","method":"POST"}),
+        exportComprehensiveDesignResultImage: definePostOperation<Types.DesignRcKdsChecksTypes.ComprehensiveDesignResultArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/CDESIGN","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #65  -  WC-REPORT  -  RC Wall
          * Check Report. Response: ``{"SUCCESS": bool, "FILE_PATH": str, "MESSAGE":
          * str}``.
          */
-        exportWallCheckReport: definePostOperation<Types.DesignRcKdsChecksTypes.RcWallCheckReportArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/WC-REPORT","method":"POST"}),
+        exportWallCheckReport: definePostOperation<Types.DesignRcKdsChecksTypes.RcWallCheckReportArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/WC-REPORT","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #55  -  BC-TABLE  -  RC Beam Check
          * Table. Response: ``{table_name_or_"RC Beam Checking Result": {"FORCE":
@@ -43,7 +43,7 @@ export const operations = {
          * strength checks (Neg/Pos moment, shear) and rebar-detail checks (main
          * rebar, stirrup).
          */
-        getBeamCheckTable: definePostOperation<Types.DesignRcKdsChecksTypes.RcMemberCheckTableArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BC-TABLE","method":"POST"}),
+        getBeamCheckTable: definePostOperation<Types.DesignRcKdsChecksTypes.RcMemberCheckTableArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BC-TABLE","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #61  -  BRC-TABLE  -  RC Brace
          * Check Table. Response: ``{table_name_or_"Result Table": {"FORCE": ...,
@@ -54,7 +54,7 @@ export const operations = {
          * column check table but with a single (non end/mid-split) shear/hoop
          * location.
          */
-        getBraceCheckTable: definePostOperation<Types.DesignRcKdsChecksTypes.RcMemberCheckTableArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BRC-TABLE","method":"POST"}),
+        getBraceCheckTable: definePostOperation<Types.DesignRcKdsChecksTypes.RcMemberCheckTableArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BRC-TABLE","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #58  -  CC-TABLE  -  RC Column
          * Check Table. Response: ``{table_name_or_"RC Column Checking Result":
@@ -70,7 +70,7 @@ export const operations = {
          * This also reads results the user already computed in Gen NX's own GUI,
          * so it is the zero-risk way to get a verdict with no perform call at all.
          */
-        getColumnCheckTable: definePostOperation<Types.DesignRcKdsChecksTypes.RcMemberCheckTableArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/CC-TABLE","method":"POST"}),
+        getColumnCheckTable: definePostOperation<Types.DesignRcKdsChecksTypes.RcMemberCheckTableArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/CC-TABLE","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #64  -  WC-TABLE  -  RC Wall
          * Check Table. Unlike the beam/column/brace check tables, the response is
@@ -80,7 +80,7 @@ export const operations = {
          * per wall-mark/story row), e.g. ``{"TABLE_NAME": ..., "COMPONENTS": [...],
          * "DATA": [{"WID": 1, "Story": "3F", ...}, ...]}``.
          */
-        getWallCheckTable: definePostOperation<Types.DesignRcKdsChecksTypes.RcWallCheckTableArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/WC-TABLE","method":"POST"}),
+        getWallCheckTable: definePostOperation<Types.DesignRcKdsChecksTypes.RcWallCheckTableArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/WC-TABLE","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #54  -  BC-ANAL  -  RC Beam Check
          * Perform. Runs code-checking on RC beam members that already have rebar
@@ -115,7 +115,7 @@ export const operations = {
          * reading ``get_beam_check_table`` alone needs no perform call at all and
          * carries none of this risk. See docs/live_verification_notes.md.
          */
-        performBeamCheck: definePostOperation<Types.DesignRcKdsChecksTypes.PerformRcMemberCheckArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BC-ANAL","method":"POST"}),
+        performBeamCheck: definePostOperation<Types.DesignRcKdsChecksTypes.PerformRcMemberCheckArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BC-ANAL","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #60  -  BRC-ANAL  -  RC Brace
          * Check Perform. Runs P-M interaction/shear code-checking on RC brace
@@ -130,7 +130,7 @@ export const operations = {
          * use a short timeout, and read ``get_brace_check_table`` regardless of
          * whether this call returns.
          */
-        performBraceCheck: definePostOperation<Types.DesignRcKdsChecksTypes.PerformRcMemberCheckArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BRC-ANAL","method":"POST"}),
+        performBraceCheck: definePostOperation<Types.DesignRcKdsChecksTypes.PerformRcMemberCheckArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BRC-ANAL","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #57  -  CC-ANAL  -  RC Column
          * Check Perform. Runs P-M interaction/shear code-checking on RC column
@@ -170,7 +170,7 @@ export const operations = {
          * after a "hung" call, with no retry needed). See
          * docs/live_verification_notes.md for the full history.
          */
-        performColumnCheck: definePostOperation<Types.DesignRcKdsChecksTypes.PerformRcMemberCheckArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/CC-ANAL","method":"POST"}),
+        performColumnCheck: definePostOperation<Types.DesignRcKdsChecksTypes.PerformRcMemberCheckArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/CC-ANAL","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #63  -  WC-ANAL  -  RC Wall Check
          * Perform. Response: ``{"message": "success"}``.
@@ -190,7 +190,7 @@ export const operations = {
          * WID+STORY-targeted and *did* hang on the same build. See
          * docs/live_verification_notes.md for the full writeup.
          */
-        performWallCheck: definePostOperation<Types.DesignRcKdsChecksTypes.PerformRcWallCheckArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/WC-ANAL","method":"POST"}),
+        performWallCheck: definePostOperation<Types.DesignRcKdsChecksTypes.PerformRcWallCheckArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/WC-ANAL","method":"POST","products":["civil","gen"]}),
       },
       designForces: {
         /**
@@ -198,59 +198,59 @@ export const operations = {
          * Design Report. Response: ``{"SUCCESS": bool, "FILE_PATH": str,
          * "MESSAGE": str}``.
          */
-        exportBeamDesignReport: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcBeamDesignReportArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BD-REPORT","method":"POST"}),
+        exportBeamDesignReport: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcBeamDesignReportArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BD-REPORT","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #47  -  BRD-REPORT  -  RC Brace
          * Design Report. Response: ``{"SUCCESS": bool, "FILE_PATH": str,
          * "MESSAGE": str}``.
          */
-        exportBraceDesignReport: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcColumnBraceDesignReportArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BRD-REPORT","method":"POST"}),
+        exportBraceDesignReport: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcColumnBraceDesignReportArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BRD-REPORT","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #44  -  CD-REPORT  -  RC Column
          * Design Report. Response: ``{"SUCCESS": bool, "FILE_PATH": str,
          * "MESSAGE": str}``.
          */
-        exportColumnDesignReport: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcColumnBraceDesignReportArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/CD-REPORT","method":"POST"}),
+        exportColumnDesignReport: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcColumnBraceDesignReportArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/CD-REPORT","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #53  -  HCD-REPORT  -  RC
          * Haunched Beam Design Report. Response: ``{"SUCCESS": bool, "FILE_PATH":
          * str, "MESSAGE": str}``.
          */
-        exportHaunchedBeamDesignReport: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcHaunchedBeamDesignReportArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/HCD-REPORT","method":"POST"}),
+        exportHaunchedBeamDesignReport: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcHaunchedBeamDesignReportArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/HCD-REPORT","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #50  -  WD-REPORT  -  RC Wall
          * Design Report. Response: ``{"SUCCESS": bool, "FILE_PATH": str,
          * "MESSAGE": str}``.
          */
-        exportWallDesignReport: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcWallDesignReportArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/WD-REPORT","method":"POST"}),
+        exportWallDesignReport: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcWallDesignReportArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/WD-REPORT","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #40  -  BD-TABLE  -  RC Beam
          * Design Table. Response: ``{table_name_or_"RC Beam Design Result":
          * {"FORCE": ..., "DIST": ..., "HEAD": [...25 columns...], "DATA":
          * [[...], ...]}}``.
          */
-        getBeamDesignTable: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcMemberDesignTableArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BD-TABLE","method":"POST"}),
+        getBeamDesignTable: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcMemberDesignTableArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BD-TABLE","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #46  -  BRD-TABLE  -  RC Brace
          * Design Table. Includes P-M interaction and shear check results. Response:
          * ``{table_name_or_"Result Table": {"FORCE": ..., "DIST": ..., "HEAD":
          * [...28 columns...], "DATA": [[...], ...]}}``.
          */
-        getBraceDesignTable: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcMemberDesignTableArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BRD-TABLE","method":"POST"}),
+        getBraceDesignTable: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcMemberDesignTableArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BRD-TABLE","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #43  -  CD-TABLE  -  RC Column
          * Design Table. Includes P-M interaction and shear check results. Response:
          * ``{table_name_or_"Result Table": {"FORCE": ..., "DIST": ..., "HEAD":
          * [...32 columns...], "DATA": [[...], ...]}}``.
          */
-        getColumnDesignTable: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcMemberDesignTableArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/CD-TABLE","method":"POST"}),
+        getColumnDesignTable: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcMemberDesignTableArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/CD-TABLE","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #52  -  HCD-TABLE  -  RC Haunched
          * Beam Design Table. Multiple rows per element (one per haunch
          * section/POS). Response: ``{table_name_or_"Result Table": {"FORCE": ...,
          * "DIST": ..., "HEAD": [...20 columns...], "DATA": [[...], ...]}}``.
          */
-        getHaunchedBeamDesignTable: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcHaunchedBeamDesignTableArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/HCD-TABLE","method":"POST"}),
+        getHaunchedBeamDesignTable: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcHaunchedBeamDesignTableArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/HCD-TABLE","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #49  -  WD-TABLE  -  RC Wall
          * Design Table. Unlike the other member types' tables, the response is
@@ -272,29 +272,29 @@ export const operations = {
          * returned full real results immediately after a "hung" WD-ANAL call in
          * testing.
          */
-        getWallDesignTable: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcWallDesignTableArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/WD-TABLE","method":"POST"}),
+        getWallDesignTable: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcWallDesignTableArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/WD-TABLE","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #39  -  BD-ANAL  -  RC Beam Design
          * Perform. Executes the RC beam design calculation; results are stored on
          * the model and later retrieved via BD-TABLE/BD-REPORT. Response:
          * ``{"message": "success"}``.
          */
-        performBeamDesign: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcMemberDesignPerformArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BD-ANAL","method":"POST"}),
+        performBeamDesign: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcMemberDesignPerformArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BD-ANAL","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #45  -  BRD-ANAL  -  RC Brace
          * Design Perform. Response: ``{"message": "success"}``.
          */
-        performBraceDesign: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcMemberDesignPerformArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BRD-ANAL","method":"POST"}),
+        performBraceDesign: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcMemberDesignPerformArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/BRD-ANAL","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #42  -  CD-ANAL  -  RC Column
          * Design Perform. Response: ``{"message": "success"}``.
          */
-        performColumnDesign: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcMemberDesignPerformArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/CD-ANAL","method":"POST"}),
+        performColumnDesign: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcMemberDesignPerformArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/CD-ANAL","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #51  -  HCD-ANAL  -  RC Haunched
          * Beam Design Perform. Response: ``{"message": "success"}``.
          */
-        performHaunchedBeamDesign: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcHaunchedBeamDesignPerformArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/HCD-ANAL","method":"POST"}),
+        performHaunchedBeamDesign: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcHaunchedBeamDesignPerformArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/HCD-ANAL","method":"POST","products":["civil","gen"]}),
         /**
          * docs/manual/26_Design_RC_KDS41202022.md #48  -  WD-ANAL  -  RC Wall
          * Design Perform. Walls are selected by WALL_IDS+STORY pairs rather than
@@ -319,7 +319,7 @@ export const operations = {
          * regardless rather than retrying this function. See
          * docs/live_verification_notes.md.
          */
-        performWallDesign: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcWallDesignPerformArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/WD-ANAL","method":"POST"}),
+        performWallDesign: definePostOperation<Types.DesignRcKdsDesignForcesTypes.RcWallDesignPerformArgument>({"endpoint":"/DESIGN/RC/KDS-41-20-2022/WD-ANAL","method":"POST","products":["civil","gen"]}),
       },
     },
     srcAiksrc2k: {
@@ -328,13 +328,13 @@ export const operations = {
        * Check Report. Response: ``{"SUCCESS": bool, "FILE_PATH": str, "MESSAGE":
        * str}``.
        */
-      exportSrcBeamCheckReport: definePostOperation<Types.DesignSrcAiksrc2kTypes.SrcBeamCheckReportArgument>({"endpoint":"/DESIGN/SRC/AIK-SRC2K/BC-REPORT","method":"POST"}),
+      exportSrcBeamCheckReport: definePostOperation<Types.DesignSrcAiksrc2kTypes.SrcBeamCheckReportArgument>({"endpoint":"/DESIGN/SRC/AIK-SRC2K/BC-REPORT","method":"POST","products":["civil","gen"]}),
       /**
        * docs/manual/27_Design_SRC_AIKSRC2K.md #20  -  CC-REPORT  -  SRC Column
        * Check Report. Response: ``{"SUCCESS": bool, "FILE_PATH": str, "MESSAGE":
        * str}``.
        */
-      exportSrcColumnCheckReport: definePostOperation<Types.DesignSrcAiksrc2kTypes.SrcColumnCheckReportArgument>({"endpoint":"/DESIGN/SRC/AIK-SRC2K/CC-REPORT","method":"POST"}),
+      exportSrcColumnCheckReport: definePostOperation<Types.DesignSrcAiksrc2kTypes.SrcColumnCheckReportArgument>({"endpoint":"/DESIGN/SRC/AIK-SRC2K/CC-REPORT","method":"POST","products":["civil","gen"]}),
       /**
        * docs/manual/27_Design_SRC_AIKSRC2K.md #16  -  BC-TABLE  -  SRC Beam Check
        * Table. COMPONENTS accepts: "MEMB"/"SECT"/"Span"/"Section"/"Bc"/"Hc"/
@@ -343,7 +343,7 @@ export const operations = {
        * "Rat_V" (27 total). Response: ``{table_name_or_"Result Table": {"FORCE":
        * ..., "DIST": ..., "HEAD": [...27 columns...], "DATA": [[...], ...]}}``.
        */
-      getSrcBeamCheckTable: definePostOperation<Types.DesignSrcAiksrc2kTypes.SrcMemberCheckTableArgument>({"endpoint":"/DESIGN/SRC/AIK-SRC2K/BC-TABLE","method":"POST"}),
+      getSrcBeamCheckTable: definePostOperation<Types.DesignSrcAiksrc2kTypes.SrcMemberCheckTableArgument>({"endpoint":"/DESIGN/SRC/AIK-SRC2K/BC-TABLE","method":"POST","products":["civil","gen"]}),
       /**
        * docs/manual/27_Design_SRC_AIKSRC2K.md #19  -  CC-TABLE  -  SRC Column
        * Check Table. COMPONENTS accepts (SSRC79-style; SEL not included):
@@ -353,7 +353,7 @@ export const operations = {
        * ``{table_name_or_"Result Table": {"FORCE": ..., "DIST": ..., "HEAD":
        * [...31 columns...], "DATA": [[...], ...]}}``.
        */
-      getSrcColumnCheckTable: definePostOperation<Types.DesignSrcAiksrc2kTypes.SrcMemberCheckTableArgument>({"endpoint":"/DESIGN/SRC/AIK-SRC2K/CC-TABLE","method":"POST"}),
+      getSrcColumnCheckTable: definePostOperation<Types.DesignSrcAiksrc2kTypes.SrcMemberCheckTableArgument>({"endpoint":"/DESIGN/SRC/AIK-SRC2K/CC-TABLE","method":"POST","products":["civil","gen"]}),
       /**
        * docs/manual/27_Design_SRC_AIKSRC2K.md #15  -  BC-ANAL  -  SRC Beam Check
        * Perform. Executes the SRC beam design/check calculation; results are
@@ -369,7 +369,7 @@ export const operations = {
        * SRC path. Use a short timeout and read the corresponding ``*-TABLE``
        * back regardless of whether this call returns.
        */
-      performSrcBeamCheck: definePostOperation<Types.DesignSrcAiksrc2kTypes.SrcMemberCheckPerformArgument>({"endpoint":"/DESIGN/SRC/AIK-SRC2K/BC-ANAL","method":"POST"}),
+      performSrcBeamCheck: definePostOperation<Types.DesignSrcAiksrc2kTypes.SrcMemberCheckPerformArgument>({"endpoint":"/DESIGN/SRC/AIK-SRC2K/BC-ANAL","method":"POST","products":["civil","gen"]}),
       /**
        * docs/manual/27_Design_SRC_AIKSRC2K.md #18  -  CC-ANAL  -  SRC Column
        * Check Perform. Response: ``{"message": "success"}``.
@@ -384,7 +384,7 @@ export const operations = {
        * SRC path. Use a short timeout and read ``get_src_column_check_table``
        * back regardless of whether this call returns.
        */
-      performSrcColumnCheck: definePostOperation<Types.DesignSrcAiksrc2kTypes.SrcMemberCheckPerformArgument>({"endpoint":"/DESIGN/SRC/AIK-SRC2K/CC-ANAL","method":"POST"}),
+      performSrcColumnCheck: definePostOperation<Types.DesignSrcAiksrc2kTypes.SrcMemberCheckPerformArgument>({"endpoint":"/DESIGN/SRC/AIK-SRC2K/CC-ANAL","method":"POST","products":["civil","gen"]}),
       /**
        * docs/manual/27_Design_SRC_AIKSRC2K.md #21  -  OCHECK  -  SRC Optimal
        * Design. Response: ``{"ODSR_RUN_RESPONSE": {"FORCE": ..., "DIST": ...,
@@ -445,7 +445,7 @@ export const operations = {
        * reliably given the right precondition, consistent with MIDASIT's
        * "not a defect, no fix timeline" stance.
        */
-      performSrcOptimalDesign: definePostOperation<Types.DesignSrcAiksrc2kTypes.SrcOptimalDesignArgument>({"endpoint":"/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK","method":"POST"}),
+      performSrcOptimalDesign: definePostOperation<Types.DesignSrcAiksrc2kTypes.SrcOptimalDesignArgument>({"endpoint":"/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK","method":"POST","products":["civil","gen"]}),
     },
     steelKds: {
       /**
@@ -453,19 +453,19 @@ export const operations = {
        * Code Check Report. Response: ``{"SUCCESS": bool, "FILE_PATH": str,
        * "MESSAGE": str}``.
        */
-      exportSteelCodeCheckReport: definePostOperation<Types.DesignSteelKdsTypes.SteelCodeCheckReportArgument>({"endpoint":"/DESIGN/STEEL/KDS-41-30-2022/CODE-REPORT","method":"POST"}),
+      exportSteelCodeCheckReport: definePostOperation<Types.DesignSteelKdsTypes.SteelCodeCheckReportArgument>({"endpoint":"/DESIGN/STEEL/KDS-41-30-2022/CODE-REPORT","method":"POST","products":["civil","gen"]}),
       /**
        * docs/manual/25_Design_Steel_KDS41302022.md #26  -  DREULT  -  Steel Design
        * Result. Captures/saves the steel design result view as a JPG image.
        * Response: ``{"message": "MIDAS GEN NX command complete"}``.
        */
-      exportSteelDesignResultImage: definePostOperation<Types.DesignSteelKdsTypes.SteelDesignResultArgument>({"endpoint":"/DESIGN/STEEL/KDS-41-30-2022/DREULT","method":"POST"}),
+      exportSteelDesignResultImage: definePostOperation<Types.DesignSteelKdsTypes.SteelDesignResultArgument>({"endpoint":"/DESIGN/STEEL/KDS-41-30-2022/DREULT","method":"POST","products":["civil","gen"]}),
       /**
        * docs/manual/25_Design_Steel_KDS41302022.md #24  -  CODE-TABLE  -  Steel Code
        * Check Table. Response: ``{table_name_or_"Result Table": {"FORCE": ...,
        * "DIST": ..., "HEAD": [...], "DATA": [[...], ...]}}``.
        */
-      getSteelCodeCheckTable: definePostOperation<Types.DesignSteelKdsTypes.SteelCodeCheckTableArgument>({"endpoint":"/DESIGN/STEEL/KDS-41-30-2022/CODE-TABLE","method":"POST"}),
+      getSteelCodeCheckTable: definePostOperation<Types.DesignSteelKdsTypes.SteelCodeCheckTableArgument>({"endpoint":"/DESIGN/STEEL/KDS-41-30-2022/CODE-TABLE","method":"POST","products":["civil","gen"]}),
       /**
        * docs/manual/25_Design_Steel_KDS41302022.md #27  -  TABLE  -  Steel Member
        * Design Forces. Response: ``{table_name_or_"empty": {"FORCE": ...,
@@ -480,7 +480,7 @@ export const operations = {
        * independent proof the risk is gone  -  treat as reduced-but-not-cleared
        * until a real-model retest.
        */
-      getSteelMemberDesignForcesTable: definePostOperation<Types.DesignSteelKdsTypes.SteelMemberDesignForcesArgument>({"endpoint":"/DESIGN/STEEL/KDS-41-30-2022/TABLE","method":"POST"}),
+      getSteelMemberDesignForcesTable: definePostOperation<Types.DesignSteelKdsTypes.SteelMemberDesignForcesArgument>({"endpoint":"/DESIGN/STEEL/KDS-41-30-2022/TABLE","method":"POST","products":["civil","gen"]}),
       /**
        * docs/manual/25_Design_Steel_KDS41302022.md #23  -  CODE-ANAL  -  Steel Code
        * Check Perform. Executes the design calculation; response is
@@ -496,22 +496,22 @@ export const operations = {
        * for this steel-code path. Use a short timeout and read
        * ``get_steel_code_check_table`` regardless of whether this call returns.
        */
-      performSteelCodeCheck: definePostOperation<Types.DesignSteelKdsTypes.PerformSteelCodeCheckArgument>({"endpoint":"/DESIGN/STEEL/KDS-41-30-2022/CODE-ANAL","method":"POST"}),
+      performSteelCodeCheck: definePostOperation<Types.DesignSteelKdsTypes.PerformSteelCodeCheckArgument>({"endpoint":"/DESIGN/STEEL/KDS-41-30-2022/CODE-ANAL","method":"POST","products":["civil","gen"]}),
     },
   },
   ope: {
     /**
      * docs/manual/15_OPE.md #13  -  /ope/MEMB  -  Member Assignment.
      */
-    assignMembers: definePostOperation<Types.OpeTypes.MemberAssignmentArgument>({"endpoint":"/ope/MEMB","method":"POST"}),
+    assignMembers: definePostOperation<Types.OpeTypes.MemberAssignmentArgument>({"endpoint":"/ope/MEMB","method":"POST","products":["civil","gen"]}),
     /**
      * docs/manual/15_OPE.md #6  -  /ope/AUTOMESH  -  Auto-Mesh Planar Area.
      */
-    autoMesh: definePostOperation<Types.OpeTypes.AutoMeshArgument>({"endpoint":"/ope/AUTOMESH","method":"POST"}),
+    autoMesh: definePostOperation<Types.OpeTypes.AutoMeshArgument>({"endpoint":"/ope/AUTOMESH","method":"POST","products":["civil","gen"]}),
     /**
      * docs/manual/15_OPE.md #14  -  /ope/GUSTFACTOR  -  Gust Factor Calculator.
      */
-    calculateGustFactor: definePostOperation<Types.OpeTypes.GustFactorArgument>({"endpoint":"/ope/GUSTFACTOR","method":"POST"}),
+    calculateGustFactor: definePostOperation<Types.OpeTypes.GustFactorArgument>({"endpoint":"/ope/GUSTFACTOR","method":"POST","products":["civil","gen"]}),
     /**
      * docs/manual/15_OPE.md #9  -  /ope/STOR  -  Story Calculation.
      *
@@ -523,23 +523,23 @@ export const operations = {
      * story-table types)  -  the whole story feature set looks to be
      * unregistered on Civil, not just this one endpoint.
      */
-    calculateStory: definePostOperation<Types.OpeTypes.StoryCalculationArgument>({"endpoint":"/ope/STOR","method":"POST"}),
+    calculateStory: definePostOperation<Types.OpeTypes.StoryCalculationArgument>({"endpoint":"/ope/STOR","method":"POST","products":["gen"]}),
     /**
      * docs/manual/15_OPE.md #8  -  /ope/EDMP  -  Change Property.
      */
-    changeProperty: definePostOperation<Types.OpeTypes.ChangePropertyArgument>({"endpoint":"/ope/EDMP","method":"POST"}),
+    changeProperty: definePostOperation<Types.OpeTypes.ChangePropertyArgument>({"endpoint":"/ope/EDMP","method":"POST","products":["civil","gen"]}),
     /**
      * docs/manual/15_OPE.md #7  -  /ope/SSPS  -  Surface Spring.
      */
-    convertSurfaceSpring: definePostOperation<Types.OpeTypes.SurfaceSpringArgument>({"endpoint":"/ope/SSPS","method":"POST"}),
+    convertSurfaceSpring: definePostOperation<Types.OpeTypes.SurfaceSpringArgument>({"endpoint":"/ope/SSPS","method":"POST","products":["civil","gen"]}),
     /**
      * docs/manual/15_OPE.md #5  -  /ope/LINEBMLD  -  Line Beam Load.
      */
-    createLineBeamLoad: definePostOperation<Types.OpeTypes.LineBeamLoadArgument>({"endpoint":"/ope/LINEBMLD","method":"POST"}),
+    createLineBeamLoad: definePostOperation<Types.OpeTypes.LineBeamLoadArgument>({"endpoint":"/ope/LINEBMLD","method":"POST","products":["civil","gen"]}),
     /**
      * docs/manual/15_OPE.md #2  -  /ope/DIVIDEELEM  -  Divide Elements.
      */
-    divideElements: definePostOperation<Types.OpeTypes.DivideElementsArgument>({"endpoint":"/ope/DIVIDEELEM","method":"POST"}),
+    divideElements: definePostOperation<Types.OpeTypes.DivideElementsArgument>({"endpoint":"/ope/DIVIDEELEM","method":"POST","products":["civil","gen"]}),
     /**
      * docs/manual/15_OPE.md #19  -  /ope/GSBG  -  Bridge Girder Diagram Image Generation.
      *
@@ -601,7 +601,7 @@ export const operations = {
      * structural than session-state-dependent now, and remains
      * unexplained.
      */
-    generateBridgeGirderDiagram: definePostOperation<JsonObject>({"endpoint":"/ope/GSBG","method":"POST"}),
+    generateBridgeGirderDiagram: definePostOperation<JsonObject>({"endpoint":"/ope/GSBG","method":"POST","products":["civil","gen"]}),
     /**
      * docs/manual/15_OPE.md #16  -  /ope/LCOM-CONC  -  Load Combination (Concrete)  -  KDS 41 20:2022.
      *
@@ -619,7 +619,7 @@ export const operations = {
      * execution. This upgrades the "possibly Gen-only" guess above to a
      * routing-level confirmation.
      */
-    generateLoadCombinationConcrete: definePostOperation<Types.OpeTypes.LoadCombinationConcreteArgument>({"endpoint":"/ope/LCOM-CONC","method":"POST"}),
+    generateLoadCombinationConcrete: definePostOperation<Types.OpeTypes.LoadCombinationConcreteArgument>({"endpoint":"/ope/LCOM-CONC","method":"POST","products":["gen"]}),
     /**
      * docs/manual/15_OPE.md #15  -  /ope/LCOM-GEN  -  Load Combination (General)  -  KDS:2022 / AIK-SRC2K.
      *
@@ -660,7 +660,7 @@ export const operations = {
      * route itself is live on Gen for both schema shapes; still no root
      * cause identified.
      */
-    generateLoadCombinationGeneral: definePostOperation<Types.OpeTypes.LoadCombinationGeneralKdsArgument | Types.OpeTypes.LoadCombinationAikSrc2kArgument>({"endpoint":"/ope/LCOM-GEN","method":"POST"}),
+    generateLoadCombinationGeneral: definePostOperation<Types.OpeTypes.LoadCombinationGeneralKdsArgument | Types.OpeTypes.LoadCombinationAikSrc2kArgument>({"endpoint":"/ope/LCOM-GEN","method":"POST","products":["gen"]}),
     /**
      * docs/manual/15_OPE.md #18  -  /ope/LCOM-SRC  -  Load Combination (SRC)  -  KDS 41 SRC:2022 / AIK-SRC2K.
      *
@@ -675,26 +675,26 @@ export const operations = {
      * both schemas is sent to the API as-is and will surface as a server-side
      * error, not a client-side one.
      */
-    generateLoadCombinationSrc: definePostOperation<Types.OpeTypes.LoadCombinationSrcKdsArgument | Types.OpeTypes.LoadCombinationAikSrc2kArgument>({"endpoint":"/ope/LCOM-SRC","method":"POST"}),
+    generateLoadCombinationSrc: definePostOperation<Types.OpeTypes.LoadCombinationSrcKdsArgument | Types.OpeTypes.LoadCombinationAikSrc2kArgument>({"endpoint":"/ope/LCOM-SRC","method":"POST","products":["gen"]}),
     /**
      * docs/manual/15_OPE.md #17  -  /ope/LCOM-STEEL  -  Load Combination (Steel)  -  KDS 41 30:2022.
      *
      *  WARNING: Live-tested 2026-07-30: same Civil-404/Gen-ok split as
      * generate_load_combination_concrete  -  see that function's docstring.
      */
-    generateLoadCombinationSteel: definePostOperation<Types.OpeTypes.LoadCombinationSteelArgument>({"endpoint":"/ope/LCOM-STEEL","method":"POST"}),
+    generateLoadCombinationSteel: definePostOperation<Types.OpeTypes.LoadCombinationSteelArgument>({"endpoint":"/ope/LCOM-STEEL","method":"POST","products":["gen"]}),
     /**
      * docs/manual/15_OPE.md #1  -  /ope/PROJECTSTATUS  -  Project Status.
      *
      * GET-only, no request body; returns live counts of model/load data.
      */
-    getProjectStatus: defineGetOperation({"endpoint":"/ope/PROJECTSTATUS","method":"GET"}),
+    getProjectStatus: defineGetOperation({"endpoint":"/ope/PROJECTSTATUS","method":"GET","products":["civil","gen"]}),
     /**
      * docs/manual/15_OPE.md #3  -  /ope/SECTPROP  -  Section Properties Calculation Results.
      *
      * GET-only, no request body; response is keyed by section ID.
      */
-    getSectionProperties: defineGetOperation({"endpoint":"/ope/SECTPROP","method":"GET"}),
+    getSectionProperties: defineGetOperation({"endpoint":"/ope/SECTPROP","method":"GET","products":["civil","gen"]}),
     /**
      * docs/manual/15_OPE.md #10  -  /ope/STORY_PARAM  -  Story Check Parameter (GET).
      *
@@ -704,7 +704,7 @@ export const operations = {
      * gate in this SDK, so a Civil call reaches the server and 404s there
      * rather than raising client-side.
      */
-    getStoryCheckParameter: defineGetOperation({"endpoint":"/ope/STORY_PARAM","method":"GET"}),
+    getStoryCheckParameter: defineGetOperation({"endpoint":"/ope/STORY_PARAM","method":"GET","products":["gen"]}),
     /**
      * docs/manual/15_OPE.md #11  -  /ope/STORY_IRR_PARAM  -  Story Irregularity Check Parameter (GET).
      *
@@ -714,7 +714,7 @@ export const operations = {
      * gate in this SDK, so a Civil call reaches the server and 404s there
      * rather than raising client-side.
      */
-    getStoryIrregularityCheckParameter: defineGetOperation({"endpoint":"/ope/STORY_IRR_PARAM","method":"GET"}),
+    getStoryIrregularityCheckParameter: defineGetOperation({"endpoint":"/ope/STORY_IRR_PARAM","method":"GET","products":["gen"]}),
     /**
      * docs/manual/15_OPE.md #12  -  /ope/STORYPROP  -  Story Properties.
      *
@@ -724,19 +724,19 @@ export const operations = {
      * (missing a Y) until 2026-08-27 -- that was the actual defect behind
      * every historical 404, not a dead route.
      */
-    getStoryProperties: definePostOperation<Types.OpeTypes.StoryPropertiesArgument>({"endpoint":"/ope/STORYPROP","method":"POST"}),
+    getStoryProperties: definePostOperation<Types.OpeTypes.StoryPropertiesArgument>({"endpoint":"/ope/STORYPROP","method":"POST","products":["gen"]}),
     /**
      * docs/manual/15_OPE.md #10  -  /ope/STORY_PARAM  -  Story Check Parameter (POST).
      */
-    setStoryCheckParameter: definePostOperation<Types.OpeTypes.StoryCheckParameterArgument>({"endpoint":"/ope/STORY_PARAM","method":"POST"}),
+    setStoryCheckParameter: definePostOperation<Types.OpeTypes.StoryCheckParameterArgument>({"endpoint":"/ope/STORY_PARAM","method":"POST","products":["gen"]}),
     /**
      * docs/manual/15_OPE.md #11  -  /ope/STORY_IRR_PARAM  -  Story Irregularity Check Parameter (POST).
      */
-    setStoryIrregularityCheckParameter: definePostOperation<Types.OpeTypes.StoryIrregularityCheckParameterArgument>({"endpoint":"/ope/STORY_IRR_PARAM","method":"POST"}),
+    setStoryIrregularityCheckParameter: definePostOperation<Types.OpeTypes.StoryIrregularityCheckParameterArgument>({"endpoint":"/ope/STORY_IRR_PARAM","method":"POST","products":["gen"]}),
     /**
      * docs/manual/15_OPE.md #4  -  /ope/USLC  -  Using Load Combinations.
      */
-    useLoadCombinations: definePostOperation<Types.OpeTypes.UsingLoadCombinationsArgument>({"endpoint":"/ope/USLC","method":"POST"}),
+    useLoadCombinations: definePostOperation<Types.OpeTypes.UsingLoadCombinationsArgument>({"endpoint":"/ope/USLC","method":"POST","products":["civil","gen"]}),
   },
   post: {
     design: {
@@ -748,7 +748,7 @@ export const operations = {
        * manual doesn't publish a fixed response HEAD/DATA shape for this one  -
        * the response keys depend on the active design code configuration.
        */
-      getPmInteractionDiagram: defineEmptyPostOperation({"endpoint":"/post/PM","method":"POST"}),
+      getPmInteractionDiagram: defineEmptyPostOperation({"endpoint":"/post/PM","method":"POST","products":["civil","gen"]}),
       /**
        * docs/manual/23_POST_Design.md #2  -  /post/STEELCODECHECK  -  Steel Code Check.
        *
@@ -756,37 +756,37 @@ export const operations = {
        * entry has SECT/ELEM id, RAT (combined strength ratio), SLN (slenderness
        * ratio), DEF (deflection), DEFA (allowable deflection).
        */
-      getSteelCodeCheck: defineEmptyPostOperation({"endpoint":"/post/STEELCODECHECK","method":"POST"}),
+      getSteelCodeCheck: defineEmptyPostOperation({"endpoint":"/post/STEELCODECHECK","method":"POST","products":["civil","gen"]}),
     },
   },
   view: {
     /**
      * docs/manual/16_VIEW.md #2  -  /view/CAPTURE  -  Capture.
      */
-    capture: definePostOperation<Types.ViewTypes.CaptureArgument>({"endpoint":"/view/CAPTURE","method":"POST"}),
+    capture: definePostOperation<Types.ViewTypes.CaptureArgument>({"endpoint":"/view/CAPTURE","method":"POST","products":["civil","gen"]}),
     /**
      * docs/manual/16_VIEW.md #1  -  /view/SELECT  -  Select.
      *
      * GET-only, no request body. Returns the currently selected node/element
      * ID lists, e.g. ``{"SELECT": {"NODE_LIST": [...], "ELEM_LIST": [...]}}``.
      */
-    getSelection: defineGetOperation({"endpoint":"/view/SELECT","method":"GET"}),
+    getSelection: defineGetOperation({"endpoint":"/view/SELECT","method":"GET","products":["civil","gen"]}),
     /**
      * docs/manual/16_VIEW.md #3  -  /view/PRECAPTURE  -  Dialog Capture.
      */
-    precapture: definePostOperation<Types.ViewTypes.PrecaptureArgument>({"endpoint":"/view/PRECAPTURE","method":"POST"}),
+    precapture: definePostOperation<Types.ViewTypes.PrecaptureArgument>({"endpoint":"/view/PRECAPTURE","method":"POST","products":["civil","gen"]}),
     /**
      * docs/manual/16_VIEW.md #5  -  /view/ACTIVE  -  Active.
      */
-    setActive: definePostOperation<Types.ViewTypes.ActiveArgument>({"endpoint":"/view/ACTIVE","method":"POST"}),
+    setActive: definePostOperation<Types.ViewTypes.ActiveArgument>({"endpoint":"/view/ACTIVE","method":"POST","products":["civil","gen"]}),
     /**
      * docs/manual/16_VIEW.md #4  -  /view/ANGLE  -  Viewpoint.
      */
-    setAngle: definePostOperation<Types.ViewTypes.AngleArgument>({"endpoint":"/view/ANGLE","method":"POST"}),
+    setAngle: definePostOperation<Types.ViewTypes.AngleArgument>({"endpoint":"/view/ANGLE","method":"POST","products":["civil","gen"]}),
     /**
      * docs/manual/16_VIEW.md #6  -  /view/DISPLAY  -  Display.
      */
-    setDisplay: definePostOperation<Types.ViewTypes.DisplayArgument>({"endpoint":"/view/DISPLAY","method":"POST"}),
+    setDisplay: definePostOperation<Types.ViewTypes.DisplayArgument>({"endpoint":"/view/DISPLAY","method":"POST","products":["civil","gen"]}),
     /**
      * docs/manual/16_VIEW.md #7  -  /view/RESULTGRAPHIC  -  Result Graphic.
      *
@@ -797,7 +797,7 @@ export const operations = {
      * Type"`, and the session stayed alive. Same shape as Gen's own
      * 07/30 result (no analysis run yet), just a Civil-flavored message.
      */
-    setResultGraphic: definePostOperation<Types.ViewTypes.ResultGraphicArgument>({"endpoint":"/view/RESULTGRAPHIC","method":"POST"}),
+    setResultGraphic: definePostOperation<Types.ViewTypes.ResultGraphicArgument>({"endpoint":"/view/RESULTGRAPHIC","method":"POST","products":["civil","gen"]}),
   },
 } as const;
 

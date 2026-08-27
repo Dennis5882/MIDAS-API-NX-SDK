@@ -573,7 +573,9 @@ def _constant_evaluator(tree: ast.Module):
 
 
 def _operation_specs(
-    modules: dict[str, ast.Module], type_keys: set[tuple[str, str]]
+    modules: dict[str, ast.Module],
+    type_keys: set[tuple[str, str]],
+    products_by_endpoint: dict[str, list[str]],
 ) -> list[dict[str, Any]]:
     operations: list[dict[str, Any]] = []
     for module, tree in sorted(modules.items()):
@@ -602,6 +604,11 @@ def _operation_specs(
             endpoint = evaluate(call.args[0])
             if not isinstance(endpoint, str) or not endpoint.startswith("/"):
                 continue
+            products = products_by_endpoint.get(endpoint)
+            if products is None:
+                raise RuntimeError(
+                    f"Operation {module}.{node.name} ({endpoint}) has no products in docs/coverage.json"
+                )
             argument = next((arg for arg in node.args.args if arg.arg == "argument"), None)
             argument_type = "JsonObject"
             if argument is not None and argument.annotation is not None:
@@ -628,6 +635,7 @@ def _operation_specs(
                     "exportName": _camel(node.name),
                     "endpoint": endpoint,
                     "method": method,
+                    "products": products,
                     "pythonFunction": node.name,
                     "pythonModule": module,
                     "modulePath": _module_parts(module),
@@ -658,7 +666,7 @@ def _render_operations(operations: list[dict[str, Any]]) -> str:
                 lines.append(f"{pad}  }},")
                 continue
             metadata = json.dumps(
-                {field: value[field] for field in ("endpoint", "method")},
+                {field: value[field] for field in ("endpoint", "method", "products")},
                 ensure_ascii=False,
                 separators=(",", ":"),
             )
@@ -866,7 +874,12 @@ def main() -> None:
     modules = _source_modules()
     resource_keys = {(item["pythonModule"], item["className"]) for item in resources}
     type_keys = _collect_type_classes(modules, resource_keys)
-    operations = _operation_specs(modules, type_keys)
+    coverage = json.loads((ROOT / "docs" / "coverage.json").read_text(encoding="utf-8"))
+    products_by_endpoint = {
+        entry["endpoint"]: sorted(entry["products"])
+        for entry in coverage["endpoints"]
+    }
+    operations = _operation_specs(modules, type_keys, products_by_endpoint)
     tables = _table_specs(modules)
     _attach_payload_types(resources, type_keys)
     contract_fields = _contract_payload_fields()
@@ -891,7 +904,6 @@ def main() -> None:
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
 
-    coverage = json.loads((ROOT / "docs" / "coverage.json").read_text(encoding="utf-8"))
     resource_endpoints = {item["endpoint"] for item in resources}
     operation_endpoints = {item["endpoint"] for item in operations}
     coverage_rows: list[dict[str, str]] = []

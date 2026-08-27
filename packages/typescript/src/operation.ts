@@ -1,9 +1,10 @@
 import { getDefaultClient, type MidasClient } from "./client";
-import type { HttpMethod, JsonObject, RequestOptions } from "./types";
+import type { HttpMethod, JsonObject, Product, RequestOptions } from "./types";
 
 export interface OperationMetadata {
   endpoint: string;
   method: Extract<HttpMethod, "GET" | "POST">;
+  products: readonly Product[];
 }
 
 export interface OperationOptions extends RequestOptions {
@@ -41,19 +42,30 @@ export function postArgument<TArgument extends object>(
 }
 
 export function defineGetOperation(metadata: OperationMetadata): GetOperation {
-  const operation = (options: OperationOptions = {}) => getResult(metadata.endpoint, options);
+  const operation = async (options: OperationOptions = {}) => {
+    const client = options.client ?? getDefaultClient();
+    client.checkProduct(metadata.products, metadata.endpoint);
+    return getResult(metadata.endpoint, { ...options, client });
+  };
   return Object.assign(operation, { metadata });
 }
 
 export function definePostOperation<TArgument extends object = JsonObject>(
   metadata: OperationMetadata,
 ): PostOperation<TArgument> {
-  const operation = (argument: TArgument, options: OperationOptions = {}) =>
-    postArgument(metadata.endpoint, argument, options);
+  const operation = async (argument: TArgument, options: OperationOptions = {}) => {
+    const client = options.client ?? getDefaultClient();
+    client.checkProduct(metadata.products, metadata.endpoint);
+    return postArgument(metadata.endpoint, argument, { ...options, client });
+  };
   return Object.assign(operation, { metadata });
 }
 
 export function defineEmptyPostOperation(metadata: OperationMetadata): EmptyPostOperation {
-  const operation = (options: OperationOptions = {}) => postArgument(metadata.endpoint, {}, options);
+  const operation = async (options: OperationOptions = {}) => {
+    const client = options.client ?? getDefaultClient();
+    client.checkProduct(metadata.products, metadata.endpoint);
+    return postArgument(metadata.endpoint, {}, { ...options, client });
+  };
   return Object.assign(operation, { metadata });
 }

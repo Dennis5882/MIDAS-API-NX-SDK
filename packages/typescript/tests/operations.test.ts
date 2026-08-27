@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   MidasClient,
   MidasResultError,
+  ProductMismatchError,
   designTables,
   doc,
   getTable,
@@ -43,6 +44,16 @@ describe("generated API surface", () => {
     const { client, fetch } = mockClient();
     await operations.post.design.getPmInteractionDiagram({ client });
     expect(JSON.parse(String(fetch.mock.calls[0]?.[1]?.body))).toEqual({ Argument: {} });
+  });
+
+  it("blocks Gen-only operations before sending a Civil request", async () => {
+    const { fetch } = mockClient();
+    const client = new MidasClient({ product: "civil", fetch });
+
+    await expect(operations.ope.getStoryCheckParameter({ client })).rejects.toBeInstanceOf(
+      ProductMismatchError,
+    );
+    expect(fetch).not.toHaveBeenCalled();
   });
 });
 
