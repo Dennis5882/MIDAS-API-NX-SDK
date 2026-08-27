@@ -253,9 +253,11 @@ each time rather than assuming.
    left `midas_nx.__version__` reporting `0.10.0` on a `0.11.2` install; `tests/test_version.py`
    now fails if the two drift apart.) Keep `PLAN.md` out of *this* commit — it belongs in step 1.
 3. `git push origin main`.
-4. **The author publishes the GitHub Release manually via the web UI** (tag `py-vX.Y.Z`) — `gh` CLI is
-   not installed here and no `GITHUB_TOKEN`/`GH_TOKEN` is set, so don't attempt it. Draft the release
-   notes for them to paste.
+4. **Publish the GitHub Release** (tag `py-vX.Y.Z`). `gh` CLI is installed and authenticated
+   (`gh auth status`, `repo` scope) as of 2026-08-27 — Claude Code can run `gh release create` directly
+   once the author has said so for that release; draft the release notes as a short highlights list
+   (not an exhaustive per-file diff) either way. The author may still choose to publish manually via
+   the web UI instead — check which one they want, don't assume.
 5. That Release triggers `.github/workflows/publish.yml` (PyPI Trusted Publishing). The workflow
    explicitly ignores every release whose tag does not start with `py-v`; `release` events do not
    support path filtering.
