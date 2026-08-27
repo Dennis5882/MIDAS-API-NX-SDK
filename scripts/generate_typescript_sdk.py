@@ -655,6 +655,59 @@ def _table_specs(modules: dict[str, ast.Module]) -> list[dict[str, Any]]:
     return tables
 
 
+def _render_table_types() -> list[str]:
+    """Emit every contracted TABLE_TYPE as a named constant.
+
+    89 result tables share one route, selected by a `TABLE_TYPE` string. Both
+    SDKs could always *reach* any of them by passing the raw string, but the
+    Python package names each value (`TABLE_TYPE_REACTION_LOCAL`) while the npm
+    package named only whichever one a wrapper defaulted to - so a variant like
+    `REACTIONL` existed for anyone who already knew it existed, and for nobody
+    else. Names come from `contracts/tables/*.yaml`, the same place both
+    languages now take them from.
+    """
+    contract_dir = ROOT / "contracts" / "tables"
+    if not contract_dir.is_dir():
+        return []
+    try:
+        import yaml  # noqa: PLC0415
+    except ImportError:  # pragma: no cover - dev dependency
+        raise SystemExit(
+            'contracts/ is present but PyYAML is not installed. Run: pip install -e ".[dev]"'
+        ) from None
+
+    entries: list[tuple[str, list[tuple[str, str, str]]]] = []
+    for path in sorted(contract_dir.glob("*.yaml")):
+        contract = yaml.safe_load(path.read_text(encoding="utf-8"))
+        variants = [
+            (_camel(v.get("description") or v["value"]), v["value"], v.get("description", ""))
+            for v in contract.get("tableTypes", [])
+        ]
+        if variants:
+            entries.append((_camel(contract["name"]), variants))
+    if not entries:
+        return []
+
+    lines = [
+        "/**",
+        " * TABLE_TYPE values, from contracts/tables/*.yaml.",
+        " *",
+        " * Pass one as `tableType` to the matching table wrapper to select a variant",
+        " * other than its default.",
+        " */",
+        "export const tableTypes = {",
+    ]
+    for name, variants in entries:
+        lines.append(f"  {name}: {{")
+        for key, value, description in variants:
+            if description:
+                lines.append(f"    /** {description} */")
+            lines.append(f'    {key}: "{value}",')
+        lines.append("  },")
+    lines += ["} as const;", ""]
+    return lines
+
+
 def _render_tables(tables: list[dict[str, Any]]) -> str:
     tree: dict[str, Any] = {}
     for table in tables:
@@ -834,6 +887,7 @@ def main() -> None:
             "",
             f"export const tableCount = {len(tables)} as const;",
             "",
+            *_render_table_types(),
         ]
     )
     (TYPESCRIPT_SRC / "generated" / "tables.ts").write_text(

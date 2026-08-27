@@ -141,3 +141,29 @@ risks:
     lastChecked: "2026-07-26"
     evidence:
       - docs/live_verification_notes.md
+
+  - id: post-table-unstable-response-key
+    title: /post/TABLE's response key is not the one you asked for
+    severity: read_only
+    endpoints: ["/post/TABLE"]
+    products: [gen, civil]
+    symptom: >-
+      The top-level key wrapping the returned table has been observed as the
+      TABLE_NAME that was requested, as "Result Table", and as "empty". An SDK
+      that indexes the response by the name it sent gets a KeyError on a call
+      that actually succeeded.
+    rootCause: >-
+      "empty" is the server's default key for a blank TABLE_NAME. It is not a
+      signal that the table is empty - it can carry a full table - so reading it
+      as "no data" silently discards results.
+    mitigation: normalized
+    sdkRule: post-table-unwrap-by-shape
+    status: >-
+      Open, and treated as permanent: the SDKs locate the payload by finding the
+      object carrying HEAD and DATA rather than by key name, which is correct
+      whichever key the server picks.
+    firstObserved: "2026-07-26"
+    lastChecked: "2026-07-26"
+    evidence:
+      - docs/live_verification_notes.md
+

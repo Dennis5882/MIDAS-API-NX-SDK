@@ -756,3 +756,30 @@ export const tables = {
 } as const;
 
 export const tableCount = 87 as const;
+
+/**
+ * TABLE_TYPE values, from contracts/tables/*.yaml.
+ *
+ * Pass one as `tableType` to the matching table wrapper to select a variant
+ * other than its default.
+ */
+export const tableTypes = {
+  beamForceStaticPrestress: {
+    /** Beam member force under static prestress */
+    beamMemberForceUnderStaticPrestress: "BEAMFORCESTP",
+  },
+  displacements: {
+    /** Global coordinate system */
+    globalCoordinateSystem: "DISPLACEMENTG",
+    /** Local coordinate system */
+    localCoordinateSystem: "DISPLACEMENTL",
+  },
+  reaction: {
+    /** Global coordinate system */
+    globalCoordinateSystem: "REACTIONG",
+    /** Local coordinate system */
+    localCoordinateSystem: "REACTIONL",
+    /** Local - surface spring */
+    localSurfaceSpring: "REACTIONSURFACESPRING",
+  },
+} as const;

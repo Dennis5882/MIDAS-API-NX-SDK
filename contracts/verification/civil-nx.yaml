@@ -112,3 +112,21 @@ records:
       table.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: post-table-response-key-2026-07-26
+    endpoints: ["/post/TABLE"]
+    date: "2026-07-26"
+    nxVersion: MIDAS Civil NX 2026 (v2.1)
+    level: read
+    outcome: success
+    method: >-
+      Repeated /post/TABLE requests while varying TABLE_NAME, including leaving
+      it blank.
+    finding: >-
+      The response's top-level key varied - the requested TABLE_NAME, "Result
+      Table", and "empty" - and a blank TABLE_NAME produced "empty" carrying a
+      full table. Locating the payload by its HEAD/DATA shape works in every
+      case; indexing by key name does not.
+    riskRef: post-table-unstable-response-key
+    evidence:
+      - docs/live_verification_notes.md

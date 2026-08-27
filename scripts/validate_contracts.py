@@ -38,10 +38,14 @@ from typing import Any
 ROOT = Path(__file__).resolve().parent.parent
 CONTRACTS = ROOT / "contracts"
 ENDPOINT_DIR = CONTRACTS / "endpoints"
+TABLE_DIR = CONTRACTS / "tables"
 SCHEMA_FILE = CONTRACTS / "schema" / "endpoint-contract.schema.json"
+TABLE_SCHEMA_FILE = CONTRACTS / "schema" / "table-contract.schema.json"
 RISKS_FILE = CONTRACTS / "safety" / "known-product-risks.yaml"
 VERIFICATION_DIR = CONTRACTS / "verification"
 TS_RESOURCES = ROOT / "schema" / "typescript-resources.json"
+TS_TABLES = ROOT / "packages" / "typescript" / "src" / "generated" / "tables.ts"
+PY_POST = ROOT / "src" / "midas_nx" / "post"
 
 _ID_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 
@@ -297,6 +301,16 @@ def _python_resources() -> dict[str, Any]:
     return found
 
 
+# Not every endpoint is a DbResource. /post/TABLE is one route serving 89
+# tables, so both SDKs expose it as a function over a TABLE_TYPE string rather
+# than as a resource class. Its parity question is not "does a class exist" but
+# "do both SDKs know every TABLE_TYPE the contracts declare", which
+# check_tables() answers.
+_FUNCTION_ENDPOINTS = {
+    "/post/TABLE": ("midas_nx.post.base", "get_table"),
+}
+
+
 def check_parity(contracts: list[tuple[Path, dict]], failures: Failures) -> None:
     try:
         python_resources = _python_resources()
@@ -314,6 +328,25 @@ def check_parity(contracts: list[tuple[Path, dict]], failures: Failures) -> None
         endpoint = contract["endpoint"]
         methods = {op["method"] for op in contract["operations"]}
         products = set(contract["products"])
+
+        if endpoint in _FUNCTION_ENDPOINTS:
+            module_name, function = _FUNCTION_ENDPOINTS[endpoint]
+            import importlib
+
+            try:
+                module = importlib.import_module(module_name)
+            except Exception as exc:
+                failures.add(path.name, f"cannot import {module_name}: {exc}")
+                continue
+            if not callable(getattr(module, function, None)):
+                failures.add(
+                    path.name,
+                    f"{module_name}.{function}() does not exist, so nothing in the "
+                    f"Python SDK serves {endpoint}",
+                )
+            if TS_TABLES.exists() and "defineTable" not in TS_TABLES.read_text(encoding="utf-8"):
+                failures.add(path.name, f"the npm surface exposes nothing for {endpoint}")
+            continue
 
         resource = python_resources.get(endpoint)
         if resource is None:
@@ -362,6 +395,116 @@ def check_parity(contracts: list[tuple[Path, dict]], failures: Failures) -> None
                     f"{sorted(products)}",
                 )
             _check_typescript_normalization(path, contract, ts_resource, failures)
+
+
+def _load_tables() -> list[tuple[Path, dict]]:
+    if not TABLE_DIR.is_dir():
+        return []
+    return [(p, _load_yaml(p)) for p in sorted(TABLE_DIR.glob("*.yaml"))]
+
+
+def check_tables(
+    tables: list[tuple[Path, dict]],
+    endpoints: set[str],
+    risks: dict,
+    verification: dict[str, dict],
+    failures: Failures,
+) -> None:
+    """Validate the second layer, and check both SDKs know every TABLE_TYPE.
+
+    A table contract's parity question is not whether a class exists - 89 tables
+    share one route - but whether the string that selects it is reachable from
+    both language surfaces. A TABLE_TYPE only one SDK knows is a table only one
+    SDK's users can read.
+    """
+    if not tables:
+        return
+    from jsonschema import Draft202012Validator
+
+    schema = json.loads(TABLE_SCHEMA_FILE.read_text(encoding="utf-8"))
+    validator = Draft202012Validator(schema)
+
+    risk_ids = {r["id"] for r in risks.get("risks", [])}
+    record_ids = {
+        product: {r["id"] for r in data.get("records", [])}
+        for product, data in verification.items()
+    }
+
+    python_source = "\n".join(
+        path.read_text(encoding="utf-8") for path in sorted(PY_POST.glob("*.py"))
+    ) if PY_POST.is_dir() else ""
+    # Design-code tables are routed through their own /DESIGN/.../TABLE modules.
+    design_dir = ROOT / "src" / "midas_nx" / "design"
+    if design_dir.is_dir():
+        python_source += "\n".join(
+            path.read_text(encoding="utf-8") for path in sorted(design_dir.rglob("*.py"))
+        )
+    typescript_source = TS_TABLES.read_text(encoding="utf-8") if TS_TABLES.exists() else ""
+
+    for path, table in tables:
+        if table.get("draft"):
+            failures.add(
+                path.name,
+                "still carries `draft: true` - this is an unreviewed transcription from "
+                "scripts/extract_contracts.py, not a contract.",
+            )
+            continue
+        for error in sorted(validator.iter_errors(table), key=lambda e: list(e.path)):
+            location = "/".join(str(part) for part in error.path) or "(root)"
+            failures.add(path.name, f"schema: {location}: {error.message}")
+        if table.get("id") != path.stem:
+            failures.add(path.name, f"id {table.get('id')!r} does not match file name {path.stem!r}")
+
+        if table["endpoint"] not in endpoints:
+            failures.add(
+                path.name,
+                f"routes through {table['endpoint']}, which has no endpoint contract - "
+                f"the shared request shape has to be contracted before a table can "
+                f"declare how it departs from it",
+            )
+
+        for defect in table.get("knownDefects", []):
+            if defect["ref"] not in risk_ids:
+                failures.add(path.name, f"knownDefects references unknown risk {defect['ref']!r}")
+        for record in table.get("verification", {}).get("records", []):
+            known = record_ids.get(record["product"])
+            if known is None:
+                failures.add(path.name, f"no verification file for product {record['product']!r}")
+            elif record["ref"] not in known:
+                failures.add(
+                    path.name,
+                    f"verification record {record['ref']!r} is not in {record['product']}-nx.yaml",
+                )
+
+        for entry in table.get("tableTypes", []):
+            value = entry["value"]
+            # Both SDKs can reach any table by passing the raw string, so this is
+            # not about reachability - it is about whether a caller can find the
+            # variant without already knowing it exists. A value one language
+            # names and the other does not is a table only one language's users
+            # will discover.
+            if f'"{value}"' not in python_source:
+                failures.add(
+                    path.name,
+                    f"TABLE_TYPE {value!r} is not named anywhere in the Python SDK",
+                )
+            if f'"{value}"' not in typescript_source:
+                failures.add(
+                    path.name,
+                    f"TABLE_TYPE {value!r} is not named anywhere in the npm SDK - a "
+                    f"caller can still pass the string, but only if they already know "
+                    f"the variant exists",
+                )
+
+        # An unresolved manual contradiction must stay visible rather than being
+        # quietly settled in favour of whichever spelling someone typed first.
+        for defect in table.get("manualDefects", []):
+            if defect.get("resolved") is False and not defect.get("evidence", "").strip():
+                failures.add(
+                    path.name,
+                    f"unresolved manualDefect about {defect['describes']} with no evidence "
+                    f"recorded - say what was checked and what is still unknown",
+                )
 
 
 def _normalization_values(contract: dict) -> dict[str, Any]:
@@ -453,11 +596,16 @@ def main(argv: list[str]) -> int:
         for path in sorted(VERIFICATION_DIR.glob("*.yaml"))
     }
 
+    tables = _load_tables()
+
     failures = Failures()
     check_schema(contracts, failures)
     check_cross_references(contracts, risks, verification, failures)
     check_safety(contracts, failures)
     check_manual_source(contracts, failures)
+    check_tables(
+        tables, {c['endpoint'] for _, c in contracts}, risks, verification, failures
+    )
     if not skip_parity:
         check_parity(contracts, failures)
 
@@ -482,6 +630,18 @@ def main(argv: list[str]) -> int:
         f"{sum(len(v.get('records', [])) for v in verification.values())} "
         f"verification records"
     )
+    if tables:
+        table_types = sum(len(t.get("tableTypes", [])) for _, t in tables)
+        unresolved = sum(
+            1
+            for _, t in tables
+            for d in t.get("manualDefects", [])
+            if d.get("resolved") is False
+        )
+        print(
+            f"result tables: {len(tables)} contracted, {table_types} TABLE_TYPE values, "
+            f"{unresolved} unresolved manual contradiction(s)"
+        )
     print(
         f"omission safety of {len(fields)} fields: "
         + ", ".join(f"{count} {label}" for label, count in omission.items())

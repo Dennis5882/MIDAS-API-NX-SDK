@@ -954,12 +954,22 @@ def run_check(sections: list[Section]) -> int:
 
     by_endpoint = {section.endpoint: section for section in sections}
     problems: list[str] = []
+    skipped: list[str] = []
     checked = 0
 
     for path in sorted(ENDPOINT_DIR.glob("*.yaml")):
         contract = yaml.safe_load(path.read_text(encoding="utf-8"))
         if contract["source"]["manual"]["status"] != "documented":
             continue
+        chapter = contract["source"]["manual"].get("chapterFile")
+        if chapter in TABLE_FAMILY_CHAPTERS:
+            # /post/TABLE is documented in those chapters' shared "공통 사항"
+            # sections, not in a numbered endpoint section, and this extractor
+            # does not model that chapter family. Reporting it as missing would
+            # be reporting the extractor's own gap as a contract defect.
+            skipped.append(f"{path.name} ({chapter}: /post/TABLE family, not modelled)")
+            continue
+
         section = by_endpoint.get(contract["endpoint"])
         if section is None:
             problems.append(f"{path.name}: claims a documented manual source, but no chapter section describes {contract['endpoint']}")
@@ -1004,6 +1014,8 @@ def run_check(sections: list[Section]) -> int:
                 )
 
     print(f"checked {checked} promoted contract(s) against the manual")
+    for note in skipped:
+        print(f"  skipped {note}")
     if problems:
         print(f"\n{len(problems)} disagreement(s):")
         for problem in problems:

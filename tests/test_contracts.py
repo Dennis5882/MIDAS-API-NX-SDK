@@ -249,3 +249,73 @@ def test_client_rules_document_timeout_semantics():
     statement = rules["timeout-is-not-rollback"]["statement"].lower()
     assert "does not cancel" in statement
     assert "roll back" in statement or "rollback" in statement
+
+
+# ---------------------------------------------------------------------------
+# The second layer: 89 result tables behind one route.
+# ---------------------------------------------------------------------------
+
+TABLE_DIR = CONTRACTS / "tables"
+
+
+def _tables() -> dict[str, dict]:
+    return {path.stem: _load(path) for path in sorted(TABLE_DIR.glob("*.yaml"))}
+
+
+def test_every_table_routes_through_a_contracted_endpoint():
+    """A table cannot describe how it departs from a request shape nobody wrote."""
+    endpoints = {contract["endpoint"] for contract in _contracts().values()}
+
+    for name, table in _tables().items():
+        assert table["endpoint"] in endpoints, (
+            f"{name} routes through {table['endpoint']}, which has no endpoint contract"
+        )
+
+
+def test_table_types_are_named_in_both_sdks():
+    """A TABLE_TYPE only one language names is a table only its users will find."""
+    python_source = "\n".join(
+        path.read_text(encoding="utf-8") for path in (ROOT / "src" / "midas_nx" / "post").glob("*.py")
+    )
+    npm_source = (
+        ROOT / "packages" / "typescript" / "src" / "generated" / "tables.ts"
+    ).read_text(encoding="utf-8")
+
+    for name, table in _tables().items():
+        for entry in table["tableTypes"]:
+            value = entry["value"]
+            assert f'"{value}"' in python_source, f"{name}: {value} unnamed in the Python SDK"
+            assert f'"{value}"' in npm_source, f"{name}: {value} unnamed in the npm SDK"
+
+
+def test_unresolved_manual_contradictions_stay_unresolved():
+    """Where the manual disagrees with itself, say so instead of picking a winner.
+
+    /post/TABLE has two live examples: the manual's schema, table and example
+    disagree about `REACTIONSURFACESPRING` and about `BEAMFORCESTP`. Each
+    contract declares the majority spelling *and* records that nobody has asked
+    the server which one it accepts.
+    """
+    unresolved = [
+        (name, defect)
+        for name, table in _tables().items()
+        for defect in table.get("manualDefects", [])
+        if defect.get("resolved") is False
+    ]
+
+    assert unresolved, "the two known /post/TABLE spelling contradictions should be recorded"
+    for name, defect in unresolved:
+        assert defect["evidence"].strip(), f"{name}: unresolved defect with no evidence"
+        assert "not " in defect["actual"].lower() or "unknown" in defect["actual"].lower(), (
+            f"{name}: an unresolved contradiction must say what is still unknown"
+        )
+
+
+def test_post_table_response_key_is_declared_unstable():
+    """The one thing an SDK must not do to this endpoint is index it by key name."""
+    contract = _load(ENDPOINT_DIR / "post-table.yaml")
+    response = next(op for op in contract["operations"] if op["method"] == "POST")["response"]
+
+    assert response["keyStability"] == "unstable"
+    assert "empty" in response["keyNote"]
+    assert any(rule["kind"] == "warn" for rule in contract["sdkRules"])
