@@ -6830,6 +6830,51 @@ revert introduced a new problem where none existed (REBB, un-reverted
 here based on fresh schema evidence). `pytest` (706), `ruff`, `mypy` all
 clean.
 
+## 2026-08-27 (yet again, later) — REBB: pushed for a real write round trip, concluded the write path itself is broken
+
+The user asked to actually live-verify REBB rather than settle for
+schema evidence. Built a full real target from scratch on Gen NX
+specifically for this (the earlier attempts this session had no real
+section/element to write against): a concrete `MATL` (C24), a `SECT`
+(`SHAPE: "SB"`, the confirmed-working fixture pattern from
+`scripts/live_crud_check.py`, not the shapes that had been failing all
+session), a `BEAM` element using it, and a `DCON` design code — then
+retried `POST /db/REBB` many different ways:
+
+- This SDK's existing array-based shape (`vMAIN_BAR_TOP`/`BOT`, flat
+  `SKIN_BAR_NAME`/`NUM`, `MAIN_BAR_DC_TOP`/`BOT`) — `"Wrong Field"`.
+- Fetched the official Zendesk article's raw HTML directly and found it
+  embeds a full JSON Schema block distinct from its own rendered
+  Specifications table — using `LAYER1`/`LAYER2` objects, `DT`/`DB` cover
+  names, and `"additionalProperties": false`. Tried that exact shape —
+  `"Wrong Field"`.
+- Mixed variants (`DT`/`DB` with the array shape, `DT`/`DB` with
+  `LAYER1`/`LAYER2`) — `"Wrong Field"`.
+- A **literally empty item** (`{"ITEMS": [{}]}`) against the real
+  section — `"Wrong Field"`, identically.
+
+The empty-item result is the deciding one: if an empty object fails the
+same way as a fully-specified one, the failure can't be about which
+field names or nesting are used. Ruled out the last remaining
+non-content explanations too — `verify_connection()` shows a clean
+`connected` status (not a blocked-modal false positive) and an unrelated
+sanity `GET /db/NODE` succeeds normally in the same session, so the
+client/session itself is fine. **Conclusion: `/db/REBB`'s write path is
+broken on this account/session regardless of payload, the same class of
+finding as `/db/NLLP` and `/db/WVLD`** (both already documented
+elsewhere in this SDK as standing failures) — not a shape question this
+pass can resolve by trying yet another field-name permutation.
+
+One more thing worth keeping: **the official article's own JSON Schema
+block contradicts its own Request/Response Example**, in the same
+document. This SDK follows the example (which also matches the
+independent `GET /info/db/REBB` schema pull from earlier this session) —
+the closest thing to a tiebreaker available — but with the write path
+itself down, this can't be confirmed with an actual round trip. All test
+fixtures (MATL/SECT/ELEM/NODE/DCON) cleaned up after. `pytest` (706),
+`ruff`, `mypy` all clean; no source changed this entry beyond the
+coverage.json/docstring notes already made.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

@@ -352,8 +352,27 @@ class BeamRebarItem(TypedDict, total=False):
     SECTOR_I/M/J`, `MAIN_BAR_DC_TOP/BOT`, and the three `bSAME_SIZE_*`
     flags below verbatim) — they were carried over from the shared
     `SubSectionElems`/REBC/REBR "create a sub-section" pattern without
-    independent confirmation for this endpoint specifically. Schema-
-    confirmed only, not round-tripped with a real POST this session.
+    independent confirmation for this endpoint specifically.
+
+    ⚠️ 2026-08-27 (later): attempted a full live POST round trip on Gen NX
+    with a real material + section + beam element set up specifically for
+    this test — every variant tried answered `"Wrong Field"` identically:
+    this SDK's array shape, the official Zendesk article's own embedded
+    JSON Schema block (`LAYER1`/`LAYER2` objects, `DT`/`DB` cover-distance
+    names, `additionalProperties: false`), and a literally empty item
+    `{}`. The identical failure regardless of content (including an empty
+    item) rules out a field-shape problem — this is now believed to be a
+    standing write-path failure on this account/session, the same class
+    of finding as `/db/NLLP` and `/db/WVLD` elsewhere in this SDK, not
+    something the request body can fix. Also newly noteworthy: the
+    official article is internally self-contradictory here — its own
+    embedded JSON Schema block (`LAYER1`/`LAYER2`, `DT`/`DB`) disagrees
+    with its own Request/Response Example (`vMAIN_BAR_TOP`/`BOT` arrays,
+    `MAIN_BAR_DC_TOP`/`BOT`) in the same document. This SDK follows the
+    example, matching the one other independent signal available (the
+    `GET /info/db/REBB` schema, which also uses the array form) — but
+    with the write path itself broken, neither can be confirmed live.
+    Level stays read.
     """
 
     ID: int  # Sub Section ID, read-only, optional
