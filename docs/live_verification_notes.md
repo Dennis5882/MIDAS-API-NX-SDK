@@ -6697,6 +6697,78 @@ that. Two came all the way through; the third stayed genuinely blocked.
 `pytest` (706), `ruff`, and `mypy` clean; Civil NX scratch document
 confirmed empty after cleanup.
 
+## 2026-08-27 (post-mortem) — pre-Jira due diligence: cross-checking the 4 "manual is wrong" findings against MIDASIT's live official pages, plus a dual-product re-test
+
+Before filing anything against MIDASIT, went back to each of the 4 findings
+above and fetched the actual live Zendesk article directly (per this
+project's own established rule — see the vendor-report boundary note: an
+internal vendored-repo citation is not the same as the actual published
+text, and 4 of 7 claims in an earlier vendor-report draft turned out to be
+citing the vendored copy's own transcription errors, not MIDASIT's real
+pages). Used `https://support.midasuser.com/api/v2/help_center/en-us/
+articles/<id>.json` (the HTML page 403s WebFetch); found article ids via
+the sibling manual repo's own citations where present, and via
+`.../help_center/articles/search.json?query=...&locale=en-us` where not.
+Then re-ran every live test on **both** Gen NX and Civil NX (not just
+whichever product happened to be handy when each was first found).
+
+All 4 survive intact — official docs corroborate every one, sometimes
+adding a plausible explanation for how the sibling manual repo's
+re-verification went wrong:
+
+1. **Story Load Summary Table** (`TABLE_TYPE`). Official article id
+   `49514148775705` ("Story Load Summary", GEN NX), `updated_at`
+   2026-08-05 — its own worked JSON example literally sends
+   `"TABLE_TYPE": "STORY_LOAD_SUMMARY_X"`. Re-tested live just now: Gen NX
+   still answers `"there was an error creating utbl"` (unrecognized) for
+   that exact literal, and still accepts the undocumented
+   `"STORY_LOAD_X"` cleanly. Civil NX rejects both identically (this
+   table type is Gen-only, already established — not informative either
+   way there). **This is now the most interesting of the 4**: it's not
+   that the sibling manual repo mis-transcribed anything — they quoted
+   MIDASIT's real page accurately — it's that MIDASIT's own published
+   example doesn't match their own live server. Worth flagging to
+   MIDASIT as exactly that (a docs/API mismatch on their end), not as a
+   transcription error.
+2. **`/db/REBW`'s `vSTORY_NAME`**. Official article id `49514033006745`
+   ("Modify Wall Rebar Data") turned out to describe a *third*, older
+   schema entirely (`VERTICAL_REBAR`/`HORIZONTAL_REBAR`/`CREATE_SUB_WALL_ID`/
+   `STORY:{FROM,TO}`) — neither this SDK's `vSTORY_NAME` nor the sibling
+   repo's claimed `vSTORY_KEY` appear anywhere in it, so that article is
+   itself stale relative to both. The decisive check was a fresh
+   `GET /info/db/REBW` on Gen NX just now: the live schema names the field
+   `vSTORY_NAME` (array of strings) — matching this SDK exactly — but
+   its own `description` reads **"Story Key List"**, which is almost
+   certainly why the sibling repo's re-verification concluded the field
+   itself must be named `vSTORY_KEY`. Civil NX 404s on this endpoint
+   entirely, already documented as Gen-only (`GEN_ONLY`, confirmed twice
+   2026-07-29) — expected, not a new data point.
+3. **`/db/LCOM-*`'s `NO` field**. Official article id `35990806887065`
+   ("Load Combinations - General", CIVIL NX+API) documents `NO` in all
+   three places the sibling repo's re-verification claimed it was absent
+   from: the JSON Schema (`"NO": {"description": "CombinationNumber"}`),
+   the Specifications table (`Combination Number | "NO" | Integer | - |
+   Read Only`), and both request/response examples. Re-tested live just
+   now on **both** products (the original test was Gen-only): a fresh
+   `POST /db/LCOM-GEN` that never sends `NO` gets it back on `GET` as
+   `"NO": 1` on Gen NX *and* Civil NX identically.
+4. **`/ope/MEMB`'s `ELEM_LIST`**. Official article id `49514964272665`
+   ("Member Assignment", GEN NX) — Specifications table lists
+   `"ELEM_LIST"` ("Element List", Required), and the *request* example
+   sends `"ELEM_LIST": [640, 692]`; only the *response* example uses
+   `"AELEM"`. This confirms exactly the mix-up already suspected: the
+   sibling repo's re-verification cited the response's `AELEM` key as if
+   it were the request field. Re-tested live just now on **both**
+   products: `ELEM_LIST` succeeds (assigns the member) and `AELEM` is
+   rejected as "no valid element information" on Gen NX *and* Civil NX
+   identically.
+
+No SDK or docs changes needed — all 4 already match the SDK's current
+code; this pass only strengthens the evidence trail before any of them
+go to Jira. Test fixtures (nodes/elements/STLD/LCOM-GEN records) created
+on both products during this pass were all cleaned up. `pytest` (706),
+`ruff`, `mypy` unaffected (no source changed this entry).
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
