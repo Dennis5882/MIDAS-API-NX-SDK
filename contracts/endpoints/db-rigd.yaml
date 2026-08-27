@@ -92,64 +92,53 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
-  - key: ID
-    description: >-
-      Serial Number (마스터 절점 ID)
-    type: integer
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's RigidLink case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: GROUP_NAME
-    description: >-
-      Boundary Group Name
-    type: string
-    requirement: optional
-    documentedDefault: ""
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's RigidLink case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: DOF
-    description: >-
-      Degree of Freedom (정수: 각 자리가 DX∼RZ)
-    type: integer
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's RigidLink case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: S_NODE
-    description: >-
-      Slave Node ID Numbers
-    type: array
-    items:
-      type: integer
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's RigidLink case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
+    properties:
+      - key: ID
+        description: >-
+          Serial Number (마스터 절점 ID)
+        type: integer
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'ITEMS' by numbering it '(1)', not by
+        # naming a path
+      - key: GROUP_NAME
+        description: >-
+          Boundary Group Name
+        type: string
+        requirement: optional
+        documentedDefault: ""
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'ITEMS' by numbering it '(2)', not by
+        # naming a path
+      - key: DOF
+        description: >-
+          Degree of Freedom (정수: 각 자리가 DX∼RZ)
+        type: integer
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'ITEMS' by numbering it '(3)', not by
+        # naming a path
+      - key: S_NODE
+        description: >-
+          Slave Node ID Numbers
+        type: array
+        items:
+          type: integer
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'ITEMS' by numbering it '(4)', not by
+        # naming a path
 
 sdkRules:
   - id: db-rigd-delete-per-id

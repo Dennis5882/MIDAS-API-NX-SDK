@@ -92,6 +92,15 @@ _EMPTY_CELLS = {"", "-", "—", "–", "n/a", "N/A"}
 # The chapters draw nesting with a box-drawing marker in the Description column.
 _DESC_TREE = re.compile(r"^[└├│─\s]+")
 
+# ...and, far more often, in the No. column: a parent is numbered `4`, its
+# children `(1)`/`(2)` or `4-1`/`4-2`, and a grandchild `4-1-1`. 1,257 of the
+# manual's 4,731 numbered rows are children this way. Missing it flattened
+# /db/RIGD's ITEMS array into four sibling keys no payload actually has - a
+# wrong contract that reached contracts/endpoints/ before type generation
+# from the same contract exposed it.
+_NUMBER_CHILD = re.compile(r"^\((\d+)\)$")
+_NUMBER_PATH = re.compile(r"^\d+(?:-\d+)+$")
+
 
 def _slug(value: str) -> str:
     return re.sub(r"-+", "-", re.sub(r"[^a-z0-9]+", "-", value.lower())).strip("-")
@@ -202,6 +211,7 @@ class ParsedField:
     requirement: Optional[str]
     documented_default: Any
     condition: Optional[str] = None
+    number: str = ""
     notes: list[str] = dataclass_field(default_factory=list)
     properties: list["ParsedField"] = dataclass_field(default_factory=list)
 
@@ -248,19 +258,40 @@ def _as_container(field: ParsedField, is_array: bool) -> None:
 def _nest(flat: list[ParsedField]) -> list[ParsedField]:
     """Turn the manual's dotted Key paths into real nested fields.
 
-    The chapters address nested payload members three ways: a dotted path in the
+    The chapters address nested payload members four ways: a dotted path in the
     Key column (`DATA1.DESIGN.C_FC`), a bracketed array path
-    (`POINT_ITEMS[].POINT_LOAD`), and a `└` tree marker that sometimes leaks out
-    of the Description column into the Key. All three describe structure the
-    contract can represent exactly, so they are reconstructed rather than
-    flattened into 730-odd keys that no payload actually has.
+    (`POINT_ITEMS[].POINT_LOAD`), a `└` tree marker that sometimes leaks out of
+    the Description column into the Key, and - most often of all - the No.
+    column, where a parent is `4` and its children are `(1)`/`(2)` or `4-1`/`4-2`.
+    All four describe structure the contract can represent exactly, so they are
+    reconstructed rather than flattened into keys no payload actually has.
     """
     roots: list[ParsedField] = []
     by_path: dict[tuple[str, ...], ParsedField] = {}
     last_root: Optional[ParsedField] = None
+    by_depth: dict[int, ParsedField] = {}
 
     for entry in flat:
         key = entry.key
+
+        # The No. column decides nesting unless the key itself spells out a
+        # path, which is unambiguous and wins.
+        depth = 0
+        if _NUMBER_CHILD.match(entry.number):
+            depth = 1
+        elif _NUMBER_PATH.match(entry.number):
+            depth = entry.number.count("-")
+        if depth and "." not in key and not key.startswith("└"):
+            parent = by_depth.get(depth - 1)
+            if parent is not None:
+                entry.notes.append(
+                    f"the manual nests this under {parent.key!r} by numbering it "
+                    f"{entry.number!r}, not by naming a path"
+                )
+                _as_container(parent, is_array=parent.type == "array")
+                parent.properties.append(entry)
+                by_depth[depth] = entry
+                continue
         tree_marked = key.startswith("└")
         if tree_marked:
             key = key.lstrip("└").strip()
@@ -303,6 +334,8 @@ def _nest(flat: list[ParsedField]) -> list[ParsedField]:
                 (parent.properties if parent is not None else roots).append(entry)
                 if parent is None:
                     last_root = entry
+                    by_depth[0] = entry
+                    by_depth.pop(1, None)
                 break
 
             if existing is None:
@@ -422,6 +455,7 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                     requirement=requirement,
                     documented_default=default,
                     condition=condition,
+                    number=_clean(cells[0]) if cells else "",
                     notes=notes,
                 )
             )

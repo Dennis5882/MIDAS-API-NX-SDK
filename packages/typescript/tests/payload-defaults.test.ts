@@ -105,7 +105,7 @@ describe("nodalMass payload normalization", () => {
       name: "Scratch",
       products: ["gen", "civil"] as const,
       methods: ["POST"] as const,
-      pythonModule: "midas_nx.db.scratch",
+      manualChapter: "99_Synthetic.md",
     });
 
     await resource.create({ 1: { A: 1 } }, client);

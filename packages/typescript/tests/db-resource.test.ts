@@ -12,7 +12,7 @@ const metadata = {
   name: "Node",
   products: ["gen", "civil"] as const,
   methods: ["GET", "POST", "PUT", "DELETE"] as const,
-  pythonModule: "midas_nx.db.node_element",
+  manualChapter: "03_DB_Node_Element.md",
 };
 
 describe("DbResource", () => {

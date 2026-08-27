@@ -622,8 +622,19 @@ export namespace DbBoundaryTypes {
     DOF?: number;
     S_NODE?: Array<number>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface RigidLinkPayload {
-    ITEMS: Array<RigidLinkItem>;
+    /** Rigid Link (배열로 삽입) */
+    ITEMS: Array<{
+      /** Serial Number (마스터 절점 ID) */
+      ID?: number;
+      /** Boundary Group Name */
+      GROUP_NAME?: string;
+      /** Degree of Freedom (정수: 각 자리가 DX∼RZ) */
+      DOF: number;
+      /** Slave Node ID Numbers */
+      S_NODE: Array<number>;
+    }>;
   }
   export interface GeneralLinkPropertyPayload {
     PROPERTY_NAME?: string;
@@ -689,8 +700,29 @@ export namespace DbBoundaryTypes {
     RGDYj?: number;
     RGDZj?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface BeamEndOffsetPayload {
-    ITEMS: Array<BeamEndOffsetItem>;
+    /** Beam End Offsets (배열로 삽입) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Reference CS · "GLOBAL" / "ELEMENT" */
+      TYPE: string;
+      /** i-단 X방향 오프셋 (GCS) */
+      RGDXi?: number;
+      /** i-단 Y방향 오프셋 (GCS) */
+      RGDYi?: number;
+      /** i-단 Z방향 오프셋 (GCS) */
+      RGDZi?: number;
+      /** j-단 X방향 오프셋 (GCS) */
+      RGDXj?: number;
+      /** j-단 Y방향 오프셋 (GCS) */
+      RGDYj?: number;
+      /** j-단 Z방향 오프셋 (GCS) */
+      RGDZj?: number;
+    }>;
   }
   export interface PlateEndReleaseItem extends DbBaseTypes.ItemGroupFields {
     N1?: Array<number>;
@@ -2128,9 +2160,13 @@ export namespace DbMovingLoadsTypes {
 }
 
 export namespace DbNodeElementTypes {
+  /** Generated from contracts/endpoints/. */
   export interface NodePayload {
+    /** Coordinates - x (global coordinate system) */
     X?: number;
+    /** Coordinates - y (global coordinate system) */
     Y?: number;
+    /** Coordinates - z (global coordinate system) */
     Z?: number;
   }
   export interface ElementPayload {
@@ -2267,10 +2303,15 @@ export namespace DbProjectTypes {
     ADATE?: string;
     COMMENT?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface StructureGroupPayload {
-    NAME?: string;
+    /** Structure Group Name */
+    NAME: string;
+    /** Plane Type */
     P_TYPE?: number;
+    /** Node List */
     N_LIST?: Array<number>;
+    /** Element List */
     E_LIST?: Array<number>;
   }
   export interface BoundaryGroupPayload {
@@ -2306,7 +2347,30 @@ export namespace DbProjectTypes {
     bBLEMD?: boolean;
     FACT?: number;
   }
-  export interface MaterialColorPayload extends _ColorPayload {
+  /** Generated from contracts/endpoints/. */
+  export interface MaterialColorPayload {
+    /** Wire Frame Red (0–255) */
+    W_R?: number;
+    /** Wire Frame Green (0–255) */
+    W_G?: number;
+    /** Wire Frame Blue (0–255) */
+    W_B?: number;
+    /** Hidden Fill Red (0–255) */
+    HF_R?: number;
+    /** Hidden Fill Green (0–255) */
+    HF_G?: number;
+    /** Hidden Fill Blue (0–255) */
+    HF_B?: number;
+    /** Hidden Edge Red (0–255) */
+    HE_R?: number;
+    /** Hidden Edge Green (0–255) */
+    HE_G?: number;
+    /** Hidden Edge Blue (0–255) */
+    HE_B?: number;
+    /** Opacity Boolean */
+    bBLEMD?: boolean;
+    /** Opacity Value (0.0–1.0) */
+    FACT?: number;
   }
   export interface SectionColorPayload extends _ColorPayload {
   }
@@ -3164,12 +3228,19 @@ export namespace DbStaticLoadsTypes {
   export interface SpecifiedDisplacementPayload {
     ITEMS: Array<SpecifiedDisplacementItem>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface NodalMassPayload {
-    mX?: number;
+    /** Translational Mass - GCS X */
+    mX: number;
+    /** Translational Mass - GCS Y */
     mY?: number;
+    /** Translational Mass - GCS Z */
     mZ?: number;
+    /** Rotational Mass Moment of Inertia - X-axis */
     rmX?: number;
+    /** Rotational Mass Moment of Inertia - Y-axis */
     rmY?: number;
+    /** Rotational Mass Moment of Inertia - Z-axis */
     rmZ?: number;
   }
   export interface LoadsToMassCase {

@@ -18,7 +18,16 @@ export interface DbResourceMetadata {
   name: string;
   products: readonly Product[];
   methods: readonly HttpMethod[];
-  pythonModule: string;
+  /**
+   * The official manual chapter documenting this endpoint, e.g.
+   * `03_DB_Node_Element.md` in `Dennis5882/MIDAS-API`.
+   *
+   * This replaced a `pythonModule` field that shipped the PyPI package's module
+   * path to JavaScript users - nothing they could act on, and a standing
+   * advertisement that one language surface was generated from the other. Both
+   * are now generated from `contracts/`.
+   */
+  manualChapter?: string;
   /**
    * Field values this endpoint's contract requires be sent explicitly, filled
    * in on `create()` and `update()` for any record that omits them.

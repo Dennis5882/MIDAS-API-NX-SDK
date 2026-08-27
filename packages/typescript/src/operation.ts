@@ -4,8 +4,6 @@ import type { HttpMethod, JsonObject, RequestOptions } from "./types";
 export interface OperationMetadata {
   endpoint: string;
   method: Extract<HttpMethod, "GET" | "POST">;
-  pythonFunction: string;
-  pythonModule: string;
 }
 
 export interface OperationOptions extends RequestOptions {

@@ -6,6 +6,35 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 3.0.0 - 2026-08-28
+
+### Breaking
+
+- `DbResourceMetadata.pythonModule` and `OperationMetadata.pythonModule` /
+  `pythonFunction` are gone. The npm package was shipping the PyPI package's
+  module paths (`"midas_nx.db.static_loads"`) to JavaScript users - nothing a
+  caller could act on, and a standing advertisement that one language surface
+  was generated from the other. `DbResourceMetadata` gains an optional
+  `manualChapter` instead, naming the official manual chapter that documents the
+  endpoint.
+
+### Added
+
+- `tableTypes` - every `TABLE_TYPE` value from `contracts/tables/*.yaml` as a
+  named constant. Previously the npm package named only whichever value a table
+  wrapper defaulted to, so variants like `REACTIONL` and
+  `REACTIONSURFACESPRING` were reachable only by a caller who already knew they
+  existed. The Python package has always named them.
+
+### Changed
+
+- Payload types for contracted endpoints are generated from `contracts/`
+  rather than from the Python `TypedDict`s. This makes them more accurate, not
+  merely differently sourced: the `TypedDict`s are all `total=False`, so every
+  field they produced was optional regardless of what the manual said. Six
+  endpoints so far - `/db/RIGD`'s `DOF` and `S_NODE` are now correctly required,
+  and its `ITEMS` array carries its real element shape.
+
 ## 2.4.0 - 2026-08-27
 
 ### Fixed

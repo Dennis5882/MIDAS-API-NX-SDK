@@ -92,132 +92,106 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
-  - key: ID
-    description: >-
-      Serial Number
-    type: integer
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's BeamEndOffset case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: GROUP_NAME
-    description: >-
-      Load Group Name
-    type: string
-    requirement: optional
-    documentedDefault: ""
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's BeamEndOffset case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: TYPE
-    description: >-
-      Reference CS · "GLOBAL" / "ELEMENT"
-    type: string
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's BeamEndOffset case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: RGDXi
-    description: >-
-      i-단 X방향 오프셋 (GCS)
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's BeamEndOffset case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: RGDYi
-    description: >-
-      i-단 Y방향 오프셋 (GCS)
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's BeamEndOffset case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: RGDZi
-    description: >-
-      i-단 Z방향 오프셋 (GCS)
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's BeamEndOffset case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: RGDXj
-    description: >-
-      j-단 X방향 오프셋 (GCS)
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's BeamEndOffset case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: RGDYj
-    description: >-
-      j-단 Y방향 오프셋 (GCS)
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's BeamEndOffset case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: RGDZj
-    description: >-
-      j-단 Z방향 오프셋 (GCS)
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's BeamEndOffset case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
+    properties:
+      - key: ID
+        description: >-
+          Serial Number
+        type: integer
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'ITEMS' by numbering it '(1)', not by
+        # naming a path
+      - key: GROUP_NAME
+        description: >-
+          Load Group Name
+        type: string
+        requirement: optional
+        documentedDefault: ""
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'ITEMS' by numbering it '(2)', not by
+        # naming a path
+      - key: TYPE
+        description: >-
+          Reference CS · "GLOBAL" / "ELEMENT"
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'ITEMS' by numbering it '(3)', not by
+        # naming a path
+      - key: RGDXi
+        description: >-
+          i-단 X방향 오프셋 (GCS)
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'ITEMS' by numbering it '(4)', not by
+        # naming a path
+      - key: RGDYi
+        description: >-
+          i-단 Y방향 오프셋 (GCS)
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'ITEMS' by numbering it '(5)', not by
+        # naming a path
+      - key: RGDZi
+        description: >-
+          i-단 Z방향 오프셋 (GCS)
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'ITEMS' by numbering it '(6)', not by
+        # naming a path
+      - key: RGDXj
+        description: >-
+          j-단 X방향 오프셋 (GCS)
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'ITEMS' by numbering it '(7)', not by
+        # naming a path
+      - key: RGDYj
+        description: >-
+          j-단 Y방향 오프셋 (GCS)
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'ITEMS' by numbering it '(8)', not by
+        # naming a path
+      - key: RGDZj
+        description: >-
+          j-단 Z방향 오프셋 (GCS)
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'ITEMS' by numbering it '(9)', not by
+        # naming a path
 
 sdkRules:
   - id: db-offs-delete-per-id
