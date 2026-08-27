@@ -29,7 +29,11 @@ jobs:
 
       - name: Ensure npm CLI supports Trusted Publishing
         run: npm install --global "npm@^11.5.1"
-      - run: pip install -e .
+      # The dev extra, not the bare install: this job re-runs `npm run generate`
+      # before publishing, and generation reads the endpoint safety rules out of
+      # contracts/, which needs PyYAML. The generator refuses to run without it
+      # rather than publishing a package with those rules silently missing.
+      - run: pip install -e ".[dev]"
       - run: npm ci
         working-directory: packages/typescript
 
