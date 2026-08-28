@@ -47,6 +47,7 @@ import sys
 from pathlib import Path
 from typing import Optional
 
+import yaml
 from function_endpoints import (
     FunctionEndpoint,
     ResourceEndpoint,
@@ -339,7 +340,14 @@ def promote(
     if notes:
         print(f"  {slug}: refused - {len(notes)} unresolved review note(s), e.g. {notes[0][8:60]}")
         return None
-    if "unmergedTables:" in text:
+    # ``structuralTables`` is an extractor record that each supplementary
+    # table was placed under a named object/array path.  It is not a blanket
+    # exemption: only the still-unresolved ``unmergedTables`` population is
+    # the conditional-variant blocker.  Parsing YAML avoids a comment or a
+    # prose mention accidentally changing promotion behaviour.
+    draft_data = yaml.safe_load(text)
+    extraction = draft_data.get("extraction", {}) if isinstance(draft_data, dict) else {}
+    if extraction.get("unmergedTables"):
         print(f"  {slug}: refused - the section has conditional variant tables nobody has merged")
         return None
     if "TODO(review): the manual did not" in text:

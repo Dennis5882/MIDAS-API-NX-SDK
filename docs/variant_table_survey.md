@@ -100,6 +100,49 @@ grouping.  They still need a human to verify the object path from the manual;
 | `/DESIGN/RC/KDS-41-20-2022/REBR` | `26_Design_RC_KDS41202022.md:7112-7154` | Named reinforcement item substructures, not type-selected records. |
 | `/view/DISPLAY` | `16_VIEW.md:827-1002`, seven optional `Argument.*` groups | The manual explicitly says callers select which optional display-group objects to send; the groups may coexist. |
 
+### Structural-path transcription (2026-08-29)
+
+The extractor's closed structural-merge map records the destination below for
+each supplementary table.  These are paths stated by the manual's table title,
+its immediately preceding object/array row, or its surrounding prose; they are
+not inferred from either SDK.  A table with no such path remains
+`extraction.unmergedTables` and is still blocked by the promotion gate.
+
+| Endpoint | Supplementary-table destination(s) |
+| --- | --- |
+| `/db/ACTL-M1` | `TCELEM`; `TCELEM.CONVERGENCE` |
+| `/db/BCCT` | root `vBOUNDARY`; root `vLOADANAL` |
+| `/db/GRDP` | root Element Mass & Stiffness fields |
+| `/db/IEHC` | root Wall fields, `products: [gen]` |
+| `/db/IMFM` | root `STEEL_NAME` |
+| `/db/MCON` | `ITEMS[].SLAVES[]` (the manual labels the two layouts `TYPE="EX"` and `TYPE="WD"`) |
+| `/db/MVCTch` | root impact controls; `FREQ`; `BRIDGE1`; `BRIDGE2` |
+| `/db/POGD` | `NONL_OPT`; `PHOP_OPT` |
+| `/db/RCHK` | conditional `BEAM` / `COLM` objects; `BEAM.vMAIN[].POS_*_LAYERS[]`; `COLM.vLAYER[].vPOSITION[]` |
+| `/db/RPSC` | `SBAR_ITEMS[]`; `MBAR_ITEMS[]` |
+| `/db/SBDO` | root Civil-only fields, `products: [civil]`; root GEN-only fields, `products: [gen]` |
+| `/db/WVLD` | `COEF` and its four item arrays; `CHAR`; `PROF.GRID_DATA[]`; root misc; `GROWTH[]`; `USERGRID[]` / `TRAJ[]` items |
+| `/view/DISPLAY` | coexisting `Argument.NODE`, `ELEMENT`, `PROPERTY`, `GROUP_SELECTION` / `BOUNDARY`, `LOAD`, `MISC`, `VIEW` |
+| `.../DCRE` | `Assign.BEAM`, `COLUMN`, `BRACE`, `WALL`, including its material-map arrays and `ADDITIONAL_WALL_DATA` |
+| `.../DCRM-WALL` | `Assign.{wallId}.ITEMS[]` |
+| `.../REBB` | `Assign.{sectionId}.ITEMS[].BAR_SECTOR_{I,M,J}` and `.ELEMS` |
+| `.../REBC` | `Assign.{sectionId}.ITEMS[].MAIN_BAR`, `.SHEAR_BAR_{END,CEN}`, and `.ELEMS` |
+| `.../REBR` | `Assign.{sectionId}.ITEMS[].MAIN_BAR`, `.SHEAR_BAR_{END,CEN}`, and `.ELEMS` |
+
+The structural classification removes exactly the multi-table blocker; it does
+not make absent manual facts true.  On 2026-08-29, the ordinary promotion gate
+could therefore promote `BCCT`, `GRDP`, `IEHC`, `IMFM`, and `SBDO`.  The other
+13 structural-path drafts remain deliberately unpromoted for independent,
+measured reasons:
+
+| Drafts | Remaining non-variant blocker |
+| --- | --- |
+| `ACTL-M1`, `MCON`, `WVLD` | Child tables omit Required and/or Default columns; no value was invented. |
+| `MVCTch`, `POGD`, `DCRE`, `REBB` | A row names multiple wire keys but does not supply safely parallel claims for every key. |
+| `RCHK`, `RPSC` | The current numbered-row reconstruction encounters a manual type/child-structure conflict. |
+| `DISPLAY` | The manual uses non-literal defaults requiring product confirmation. |
+| `DCRM-WALL`, `REBC`, `REBR` | The manual declares an enum but leaves its complete value list elsewhere or unstated. |
+
 ### C. Different-operation tables (0)
 
 There is no `/db/*`, `/DESIGN/*`, `/ope/*`, or `/view/*` member in this 45-item

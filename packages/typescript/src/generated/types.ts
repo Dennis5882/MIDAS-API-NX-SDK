@@ -781,19 +781,44 @@ export namespace DbAnalysisControlTypes {
     BGCNAME?: string;
     LCNAME?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface BoundaryChangeAssignmentPayload {
+    /** Support */
     bSPT?: boolean;
+    /** Point Spring Support */
     bSPR?: boolean;
+    /** General Spring Support */
     bGSPR?: boolean;
+    /** Change General Link Property */
     bCGLINK?: boolean;
+    /** Section Stiffness Scale Factor */
     bSSSF?: boolean;
+    /** Plate Stiffness Scale Factor */
     bPSSF?: boolean;
+    /** Beam End Release */
     bRLS?: boolean;
+    /** Wall Stiffness Scale Factor */
     bWSSF?: boolean;
+    /** Element Stiffness Scale Factor */
     bESSF?: boolean;
+    /** Constrain DOF associated with specified displacements / settlements by boundary group combinations */
     bCDOF?: boolean;
-    vBOUNDARY?: Array<BoundaryGroupCombinationItem>;
-    vLOADANAL?: Array<LoadCaseAnalysisAssignmentItem>;
+    /** Boundary List */
+    vBOUNDARY: Array<{
+      /** Boundary Group Combination Name */
+      BGCNAME: string;
+      /** Boundary Group List */
+      vBG: Array<string>;
+    }>;
+    /** Load Cases & Analysis List */
+    vLOADANAL?: Array<{
+      /** Load Cases & Analysis Type */
+      TYPE: string;
+      /** Boundary Group Combination Name */
+      BGCNAME: string;
+      /** Static Load Case */
+      LCNAME: string;
+    }>;
   }
   /** Generated from contracts/endpoints/. */
   export interface DefineBoundaryCombinationHyperSPayload {
@@ -3148,29 +3173,52 @@ export namespace DbNodeElementTypes {
     /** Sub Type */
     SUB_TYPE: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SubDomainPayload {
-    SUB_DOMAIN_NAME?: string;
-    V1?: number;
-    V2?: number;
-    DOMAIN_NAME?: string;
-    MEMB_TYPE_CIVIL?: number;
+    /** Sub Domain Name */
+    SUB_DOMAIN_NAME: string;
+    /** Rebar Dir.1 */
+    V1: number;
+    /** Rebar Dir.2 */
+    V2: number;
+    /** Domain Name */
+    DOMAIN_NAME: string;
+    /** Member Type Civil • None: 0 • Plate Beam (1D): 1 • Plate Column (1D): 2 • Shell: 3 */
+    MEMB_TYPE_CIVIL: number;
+    /** Rebar Direction • Local: 0 • UCS: 1 • Reference Axis: 2 */
     REBAR_AXIS_TYPE?: number;
+    /** UCS (Rebar Direction이 UCS인 경우) */
     STR_UCS?: string;
-    AXIS_VECTOR?: Array<number>;
-    MEMBER_TYPE?: number;
+    /** Axis Vector (Rebar Direction이 Reference Axis인 경우) */
+    AXIS_VECTOR?: number;
+    /** Member Type • None: 0 • Slab: 1 • Mat: 2 */
+    MEMBER_TYPE: number;
+    /** Basic Rebar Option */
     OPT_BASIC_REBAR?: boolean;
+    /** Top Rebar Name (X-Dir) */
     TOP_REBAR_NAME_X?: string;
+    /** Top Rebar Space (X-Dir) */
     TOP_REBAR_SPACE_X?: number;
+    /** Bottom Rebar Name (X-Dir) */
     BOTTOM_REBAR_NAME_X?: string;
+    /** Bottom Rebar Space (X-Dir) */
     BOTTOM_REBAR_SPACE_X?: number;
+    /** Top Rebar Name (Y-Dir) */
     TOP_REBAR_NAME_Y?: string;
+    /** Top Rebar Space (Y-Dir) */
     TOP_REBAR_SPACE_Y?: number;
+    /** Bottom Rebar Name (Y-Dir) */
     BOTTOM_REBAR_NAME_Y?: string;
+    /** Bottom Rebar Space (Y-Dir) */
     BOTTOM_REBAR_SPACE_Y?: number;
+    /** Rebar Material Option */
     OPT_REBAR_MATL?: boolean;
+    /** Rebar Material Key */
     REBAR_MATL_KEY?: number;
-    bUseMt?: boolean;
-    THICKNESS?: number;
+    /** Use Mt */
+    bUseMt: boolean;
+    /** Thickness */
+    THICKNESS: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface DomainElementPayload {
@@ -3438,47 +3486,97 @@ export namespace DbPropertiesDampingTypes {
     DAMPING_RATIO_MODE_1?: number;
     DAMPING_RATIO_MODE_2?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface GroupDampingPayload {
-    bExistStrain?: boolean;
-    STRAIN_GROUP_ITEMS?: Array<GroupDampingItem>;
-    OPT_CALC_WHEN_USED?: boolean;
-    STRAIN_GROUP_PRIORITY?: number;
-    STRAIN_VALUE_PRIORITY?: number;
-    bExistElement?: boolean;
+    /** Strain Energy Proportional 사용 여부 */
+    bExistStrain: boolean;
+    /** Damping Ratio Items(재료/구조군/경계군별 감쇠비) */
+    STRAIN_GROUP_ITEMS: Array<{
+      /** Damping Ratio Type · Material: "MATERIAL" / Structure Group: "STRUCTURE" / Boundary: "BOUNDARY" */
+      GROUP_TYPE: string;
+      /** Damping Ratio Name(재료는 ID, 구조군/경계군은 이름) */
+      GROUP_NAME: string;
+      /** Damping Ratio */
+      DAMPING_RATIO: number;
+    }>;
+    /** Calculate Only When Used */
+    OPT_CALC_WHEN_USED: boolean;
+    /** Priority: Material Data vs Structure Group · Material: 0 / Structure Group: 1 */
+    STRAIN_GROUP_PRIORITY: number;
+    /** Priority between Structure Groups · Smallest: 0 / Largest: 1 */
+    STRAIN_VALUE_PRIORITY: number;
+    /** Element Mass & Stiffness Proportional 사용 여부 */
+    bExistElement: boolean;
+    /** (미지정 요소) Mass Proportional 옵션 */
     OPT_MASS_PROP_DEFAULT?: boolean;
+    /** (미지정 요소) Stiffness Proportional 옵션 */
     OPT_STIFF_PROP_DEFAULT?: boolean;
-    DIRECT_CALC_MODE_DEFAULT?: number;
-    MASS_COEF_DEFAULT?: number;
-    STIFF_COEF_DEFAULT?: number;
-    FREQ_PERIOD_MODE_DEFAULT?: number;
-    FREQ_MODE_1_DEFAULT?: number;
-    FREQ_MODE_2_DEFAULT?: number;
-    PERIOD_MODE_1_DEFAULT?: number;
-    PERIOD_MODE_2_DEFAULT?: number;
-    DAMPING_MODE_1_DEFAULT?: number;
-    DAMPING_MODE_2_DEFAULT?: number;
-    GROUP_DAMPING_ITEMS?: Array<GroupDampingRayleighItem>;
-    ELEM_GROUP_PRIORITY?: number;
-    ELEM_VALUE_PRIORITY?: number;
+    /** 직접 입력/모드 기반 산정 · Direct: 0 / Calculate from Modal Damping: 1 */
+    DIRECT_CALC_MODE_DEFAULT: number;
+    /** Mass Proportional 값 */
+    MASS_COEF_DEFAULT: number;
+    /** Stiffness Proportional 값 */
+    STIFF_COEF_DEFAULT: number;
+    /** 계수 산정 기준 · Frequency: 0 / Period: 1 */
+    FREQ_PERIOD_MODE_DEFAULT: number;
+    /** Frequency Mode 1 */
+    FREQ_MODE_1_DEFAULT: number;
+    /** Frequency Mode 2 */
+    FREQ_MODE_2_DEFAULT: number;
+    /** Period Mode 1 */
+    PERIOD_MODE_1_DEFAULT: number;
+    /** Period Mode 2 */
+    PERIOD_MODE_2_DEFAULT: number;
+    /** Damping Ratio Mode 1 */
+    DAMPING_MODE_1_DEFAULT: number;
+    /** Damping Ratio Mode 2 */
+    DAMPING_MODE_2_DEFAULT: number;
+    /** 그룹별 Rayleigh 감쇠 오버라이드 */
+    GROUP_DAMPING_ITEMS: Array<JsonObject>;
+    /** Priority: Material Data vs Structure Group(요소 쪽) */
+    ELEM_GROUP_PRIORITY: number;
+    /** Priority between Structure Groups(요소 쪽) */
+    ELEM_VALUE_PRIORITY: number;
   }
 }
 
 export namespace DbPropertiesHingeTypes {
+  /** Generated from contracts/endpoints/. */
   export interface InelasticHingeControlPayload {
-    BEAM_LOC?: number;
-    OPT_ConsiderRebarArea1D?: boolean;
-    FAreaSizeCore?: number;
-    BeamDivNumNy?: number;
-    BeamDivNumNz?: number;
-    FAreaSizeCover?: number;
-    WallConsOut?: boolean;
-    WallDivNumZ?: number;
-    WallDivNumY?: number;
-    dR?: number;
-    WAreaSize?: string;
-    OPT_ConsiderRebarAreaWall?: boolean;
-    CoverDivNumNy?: number;
-    CoverDivNumNz?: number;
+    /** Reference Location for Distributed Hinges · I-End: 0 / Center: 1 / J-End: 2 */
+    BEAM_LOC: number;
+    /** Consider Reinforcement Area */
+    OPT_ConsiderRebarArea1D: boolean;
+    /** Fiber Beam Areas Core · Auto Size: 0 / Equal-Size: 1 */
+    FAreaSizeCore: number;
+    /** Number of Divisions(Beam-Column) — Ny (y-dir) */
+    BeamDivNumNy: number;
+    /** Number of Divisions(Beam-Column) — Nz (z-dir) */
+    BeamDivNumNz: number;
+    /** Fiber Beam Areas Cover · Auto Size: 0 / Equal-Size: 1 */
+    FAreaSizeCover: number;
+    /** Number of divisions(Beam-Column, Cover) — Ny */
+    BeamDivNumNyCover: number;
+    /** Number of divisions(Beam-Column, Cover) — Nz */
+    BeamDivNumNzCover: number;
+    /** Consider Out of Plane Nonlinearity of Plate Type */
+    WallConsOut: boolean;
+    /** Fiber Wall Areas Core */
+    WAreaSize: number;
+    /** Number of divisions — z, Core */
+    WallDivNumZ: number;
+    /** Number of divisions — y, Core */
+    WallDivNumY: number;
+    /** Fiber Wall Areas Cover */
+    WAreaSizeCover: number;
+    /** Number of divisions — z, Cover */
+    WallDivNumZCover: number;
+    /** Number of divisions — y, Cover */
+    WallDivNumYCover: number;
+    /** Wall, Consider Rebar Area */
+    OPT_ConsiderRebarAreaWall: boolean;
+    /** Shear Spring Location */
+    dR: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface InelasticHingePropertyPayload {
@@ -3570,10 +3668,15 @@ export namespace DbPropertiesMaterialTypes {
     MAINREBAR_B_FY?: number;
     SUBREBAR_B_FY?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface InelasticFiberMaterialLinkPayload {
+    /** Inelastic Material of Concrete */
     CONC_NAME?: string;
+    /** Confined Concrete for Columns */
     CONFINED_CONC_NAME?: string;
+    /** Inelastic Material of Rebar */
     REBAR_NAME?: string;
+    /** Inelastic Material of Steel */
     STEEL_NAME?: string;
   }
   export interface InelasticFiberMaterialLinkHyperSConcrete {

@@ -284,6 +284,60 @@ def test_conditional_variant_tables_are_reported_not_merged(section: ex.Section)
     assert section.tables[1].heading == "TYPE=SPECIAL 전용"
 
 
+def test_structural_table_merge_uses_the_manual_named_object_path(tmp_path: Path):
+    """A structural table goes below TCELEM, never beside it at record root."""
+    path = tmp_path / "99_DB_Structural.md"
+    path.write_text(
+        """## 1. `/db/ACTL-M1` -- control
+
+### Base
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Truss options | `"TCELEM"` | Object | - | Optional |
+
+### TCELEM object
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Increment count | `"NUMINC"` | Integer | 1 | Optional |
+| 2 | Convergence | `"CONVERGENCE"` | Object | - | Optional |
+
+### CONVERGENCE object
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Use criterion | `"OPT_USE"` | Boolean | false | Optional |
+""",
+        encoding="utf-8",
+    )
+    draft = yaml.safe_load(ex.render_draft(ex.parse_chapter(path)[0]))
+    tcelem = draft["fields"][0]
+    assert [field["key"] for field in tcelem["properties"]] == ["NUMINC", "CONVERGENCE"]
+    assert tcelem["properties"][1]["properties"][0]["key"] == "OPT_USE"
+    assert "unmergedTables" not in draft["extraction"]
+    assert draft["extraction"]["structuralTables"][0]["paths"] == ["TCELEM"]
+
+
+def test_product_partition_stays_on_fields_not_the_endpoint(tmp_path: Path):
+    path = tmp_path / "99_DB_ProductSplit.md"
+    path.write_text(
+        """## 1. `/db/IEHC` -- hinge control
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Beam | `"BEAM"` | Boolean | false | Optional |
+
+### GEN-only fields
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 2 | Wall | `"WALL"` | Boolean | false | Optional |
+""",
+        encoding="utf-8",
+    )
+    draft = yaml.safe_load(ex.render_draft(ex.parse_chapter(path)[0]))
+    fields = {field["key"]: field for field in draft["fields"]}
+    assert fields["WALL"]["products"] == ["gen"]
+    assert "products" not in fields["BEAM"]
+
+
 def test_explicit_variant_tables_preserve_their_discriminator_and_do_not_merge(tmp_path: Path):
     path = tmp_path / "99_DB_Variants.md"
     path.write_text(

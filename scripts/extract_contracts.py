@@ -41,6 +41,7 @@ not the manual's to claim.
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import re
 import sys
@@ -575,6 +576,7 @@ class ParsedField:
     number: str = ""
     notes: list[str] = dataclass_field(default_factory=list)
     properties: list["ParsedField"] = dataclass_field(default_factory=list)
+    products: tuple[str, ...] = ()
 
 
 # JSON member names may begin with a digit.  ``7TH_DOF_TYPE`` is an exact,
@@ -742,6 +744,188 @@ class ParsedTable:
 
 
 @dataclass(frozen=True)
+class StructuralTableMerge:
+    """A manually transcribed destination for one supplementary table.
+
+    A multi-table section is *not* safe to merge merely because its headings
+    look related.  These entries exist only where the official manual names a
+    containing object or array path.  They are deliberately keyed by table
+    index as well as endpoint: a heading such as ``Parameters`` is repeated
+    throughout several chapters and is not a reliable selector on its own.
+    """
+
+    table: int
+    targets: tuple[tuple[str, ...], ...]
+    products: tuple[str, ...] = ()
+
+
+# The paths below are transcriptions of the parameter headings and surrounding
+# prose in docs/manual, recorded in docs/variant_table_survey.md §B.  This is a
+# closed allow-list, not a heuristic: any other extra table remains unmerged.
+_STRUCTURAL_TABLE_SPLITS: dict[str, tuple[StructuralTableMerge, ...]] = {
+    "/db/ACTL-M1": (
+        StructuralTableMerge(1, (("TCELEM",),)),
+        StructuralTableMerge(2, (("TCELEM", "CONVERGENCE"),)),
+    ),
+    "/db/BCCT": (
+        StructuralTableMerge(1, ((),)),
+        StructuralTableMerge(2, ((),)),
+    ),
+    "/db/GRDP": (StructuralTableMerge(1, ((),)),),
+    "/db/IEHC": (StructuralTableMerge(1, ((),), ("gen",)),),
+    "/db/IMFM": (StructuralTableMerge(1, ((),)),),
+    "/db/MCON": (
+        StructuralTableMerge(1, (("ITEMS", "SLAVES"),)),
+        StructuralTableMerge(2, (("ITEMS", "SLAVES"),)),
+    ),
+    "/db/MVCTch": (
+        StructuralTableMerge(1, ((),)),
+        StructuralTableMerge(2, (("FREQ",),)),
+        StructuralTableMerge(3, (("BRIDGE1",),)),
+        StructuralTableMerge(4, (("BRIDGE2",),)),
+    ),
+    "/db/POGD": (
+        StructuralTableMerge(1, (("NONL_OPT",),)),
+        StructuralTableMerge(2, (("PHOP_OPT",),)),
+    ),
+    "/db/RPSC": (
+        StructuralTableMerge(1, (("SBAR_ITEMS",),)),
+        StructuralTableMerge(2, (("MBAR_ITEMS",),)),
+    ),
+    "/db/SBDO": (
+        StructuralTableMerge(1, ((),), ("civil",)),
+        StructuralTableMerge(2, ((),), ("gen",)),
+    ),
+    "/db/WVLD": (
+        StructuralTableMerge(1, (("COEF",),)),
+        StructuralTableMerge(2, (("COEF", "COEF_S"), ("COEF", "COEF_R"), ("COEF", "OVER_S"), ("COEF", "OVER_R"))),
+        StructuralTableMerge(3, (("CHAR",),)),
+        StructuralTableMerge(4, (("PROF",),)),
+        StructuralTableMerge(5, (("PROF", "GRID_DATA"),)),
+        StructuralTableMerge(6, ((),)),
+        StructuralTableMerge(7, (("GROWTH",),)),
+        StructuralTableMerge(8, (("USERGRID",), ("TRAJ",))),
+    ),
+    "/DESIGN/RC/KDS-41-20-2022/DCRM-WALL": (
+        StructuralTableMerge(1, (("Assign", "ITEMS"),)),
+    ),
+    "/DESIGN/RC/KDS-41-20-2022/DCRE": (
+        StructuralTableMerge(1, (("Assign", "BEAM"),)),
+        StructuralTableMerge(2, (("Assign", "COLUMN"), ("Assign", "BRACE"))),
+        StructuralTableMerge(3, (("Assign", "WALL"),)),
+        StructuralTableMerge(4, (("Assign", "WALL", "MATERIAL_BY_DIAMETER_INPUT", "VERTICAL_END_REBAR"), ("Assign", "WALL", "MATERIAL_BY_DIAMETER_INPUT", "HORIZONTAL_REBAR"))),
+        StructuralTableMerge(5, (("Assign", "WALL", "ADDITIONAL_WALL_DATA"),)),
+    ),
+    "/DESIGN/RC/KDS-41-20-2022/REBB": (
+        StructuralTableMerge(1, (("Assign", "ITEMS", "BAR_SECTOR_I"), ("Assign", "ITEMS", "BAR_SECTOR_M"), ("Assign", "ITEMS", "BAR_SECTOR_J"))),
+        StructuralTableMerge(2, (("Assign", "ITEMS", "ELEMS"),)),
+    ),
+    "/DESIGN/RC/KDS-41-20-2022/REBC": (
+        StructuralTableMerge(1, (("Assign", "ITEMS", "MAIN_BAR"),)),
+        StructuralTableMerge(2, (("Assign", "ITEMS", "SHEAR_BAR_END"), ("Assign", "ITEMS", "SHEAR_BAR_CEN"))),
+        StructuralTableMerge(3, (("Assign", "ITEMS", "ELEMS"),)),
+    ),
+    "/DESIGN/RC/KDS-41-20-2022/REBR": (
+        StructuralTableMerge(1, (("Assign", "ITEMS", "MAIN_BAR"),)),
+        StructuralTableMerge(2, (("Assign", "ITEMS", "SHEAR_BAR_END"), ("Assign", "ITEMS", "SHEAR_BAR_CEN"))),
+        StructuralTableMerge(3, (("Assign", "ITEMS", "ELEMS"),)),
+    ),
+    "/view/DISPLAY": tuple(StructuralTableMerge(index, (("Argument",),)) for index in range(1, 7)),
+}
+
+
+_STRUCTURAL_ROOT_MOVES: dict[str, tuple[tuple[str, tuple[str, ...]], ...]] = {
+    # The design endpoints use an ID-keyed Assign map.  The parameter tables
+    # describe the value under an Assign key, not sibling root keys.
+    "/DESIGN/RC/KDS-41-20-2022/DCRM-WALL": (("ITEMS", ("Assign",)),),
+    "/DESIGN/RC/KDS-41-20-2022/DCRE": (
+        ("BEAM", ("Assign",)),
+        ("COLUMN", ("Assign",)),
+        ("BRACE", ("Assign",)),
+        ("WALL", ("Assign",)),
+    ),
+    "/DESIGN/RC/KDS-41-20-2022/REBB": (("ITEMS", ("Assign",)),),
+    "/DESIGN/RC/KDS-41-20-2022/REBC": (("ITEMS", ("Assign",)),),
+    "/DESIGN/RC/KDS-41-20-2022/REBR": (("ITEMS", ("Assign",)),),
+}
+
+
+_STRUCTURAL_CONTAINERS: dict[str, tuple[str, ...]] = {
+    # These names are headings in the manual's supplementary tables; the
+    # table does not repeat a separate parent row in the base table.
+    "/db/WVLD": ("COEF", "CHAR", "PROF"),
+}
+
+
+def _manual_container(key: str, *, condition: Optional[str] = None) -> ParsedField:
+    """Create a container the manual names in a heading rather than a row."""
+
+    return ParsedField(
+        key=key,
+        description="",
+        type="object",
+        items=None,
+        requirement="conditional" if condition else "optional",
+        documented_default=None,
+        condition=condition,
+    )
+
+
+def _rchk_structural_fields(section: "Section") -> tuple[list[ParsedField], list[StructuralTableMerge]]:
+    """Transcribe the two named BEAM/COLM objects in the RCHK manual section."""
+
+    if len(section.tables) != 5:
+        return copy.deepcopy(section.tables[0].fields), []
+
+    def keyed(table: ParsedTable) -> dict[str, ParsedField]:
+        return {field.key: copy.deepcopy(field) for field in _walk(table.fields)}
+
+    beam_rows, column_rows, layer_rows, position_rows = (keyed(table) for table in section.tables[1:])
+    try:
+        beam_main = beam_rows["vMAIN"]
+        beam_main.properties = [beam_rows[key] for key in ("SECTOR", "POS_TOP_LAYERS", "POS_BOT_LAYERS")]
+        beam_sub = beam_rows["vSUB_BAR"]
+        beam_sub.properties = [beam_rows[key] for key in (
+            "SECTOR", "dSUB_BARNUM", "SUB_BARNAME", "dSUB_BARDIST", "dSUB_BARANGLE",
+            "bTORSIONAL_BAR", "sTRTORBARNA", "dTORBAR_SPACING", "bBUNDLEDBAR",
+            "dBUNDLEDBARNUM", "LONGIBARNA", "dLONGIBARNUM",
+        )]
+        col_layer = column_rows["vLAYER"]
+        col_layer.properties = [column_rows[key] for key in ("INDEX", "dDc", "vPOSITION")]
+        col_sub = column_rows["SUB_BAR"]
+        col_sub.properties = [column_rows[key] for key in (
+            "SUBBAR_NAME", "SUBBAR_DIST", "SUBBAR_NUM", "SUBBAR_NAME_Y", "SUBBAR_NAME_Z",
+            "SUBBAR_NUM_Y", "SUBBAR_NUM_Z",
+        )]
+        layer = list(layer_rows.values())
+        position = list(position_rows.values())
+    except KeyError:
+        return copy.deepcopy(section.tables[0].fields), []
+
+    beam = _manual_container("BEAM", condition='MEMBTYPE="BEAM"')
+    beam.properties = [beam_main, beam_sub]
+    column = _manual_container("COLM", condition='MEMBTYPE="COLUMN"')
+    column.properties = [col_layer, col_sub]
+    beam_main.properties[1].properties = copy.deepcopy(layer)
+    beam_main.properties[2].properties = copy.deepcopy(layer)
+    col_layer.properties[2].properties = position
+    return copy.deepcopy(section.tables[0].fields) + [beam, column], [
+        StructuralTableMerge(index, (("BEAM",) if index in {1, 3} else ("COLM",),))
+        for index in range(1, 5)
+    ]
+
+
+def _display_structural_fields(section: "Section") -> tuple[list[ParsedField], list[StructuralTableMerge]]:
+    """DISPLAY's seven Argument groups are additive, never a one-of choice."""
+
+    argument = _manual_container("Argument")
+    for table in section.tables:
+        if not _append_fields(argument.properties, copy.deepcopy(table.fields)):
+            return copy.deepcopy(section.tables[0].fields), []
+    return [argument], [StructuralTableMerge(index, (("Argument",),)) for index in range(len(section.tables))]
+
+
+@dataclass(frozen=True)
 class ParsedVariant:
     """One manual table selected by an explicitly documented discriminator."""
 
@@ -801,6 +985,132 @@ def _explicit_variants(tables: list[ParsedTable]) -> list[ParsedVariant]:
     if len({variant.equals for variant in variants}) != len(variants):
         return []
     return variants
+
+
+def _field_at_path(fields: list[ParsedField], path: tuple[str, ...]) -> Optional[ParsedField]:
+    current = fields
+    found: Optional[ParsedField] = None
+    for part in path:
+        found = next((field for field in current if field.key == part), None)
+        if found is None:
+            return None
+        current = found.properties
+    return found
+
+
+def _append_fields(destination: list[ParsedField], additions: list[ParsedField]) -> bool:
+    """Append a table's fields without silently replacing a documented key."""
+
+    existing = {field.key: field for field in destination}
+    for addition in additions:
+        prior = existing.get(addition.key)
+        if prior is None:
+            destination.append(addition)
+            existing[addition.key] = addition
+            continue
+        # Repeated NODE_KEY in MCON's two SLAVES layouts is the same field,
+        # stated in both tables.  Preserve it once only when its documented
+        # type and requirement agree; differing declarations remain blocked.
+        if (prior.type, prior.requirement, prior.documented_default) != (
+            addition.type,
+            addition.requirement,
+            addition.documented_default,
+        ):
+            return False
+    return True
+
+
+def _tag_products(fields: list[ParsedField], products: tuple[str, ...]) -> None:
+    for field in fields:
+        field.products = products
+        _tag_products(field.properties, products)
+
+
+def _structural_fields(section: "Section") -> tuple[list[ParsedField], list[StructuralTableMerge]]:
+    """Apply only pre-audited structural table paths for one manual section.
+
+    The return value lists exactly the table resolutions that succeeded.  A
+    missing parent, duplicate key, or unlisted table is intentionally left out;
+    render_draft will retain it under ``unmergedTables`` and promotion will
+    continue to refuse it.
+    """
+
+    if not section.tables:
+        return [], []
+    if section.endpoint == "/db/RCHK":
+        return _rchk_structural_fields(section)
+    if section.endpoint == "/view/DISPLAY":
+        return _display_structural_fields(section)
+    fields = copy.deepcopy(section.tables[0].fields)
+
+    for key in _STRUCTURAL_CONTAINERS.get(section.endpoint, ()):
+        if _field_at_path(fields, (key,)) is None:
+            fields.append(_manual_container(key))
+
+    for key, parent_path in _STRUCTURAL_ROOT_MOVES.get(section.endpoint, ()):
+        source = next((field for field in fields if field.key == key), None)
+        parent = _field_at_path(fields, parent_path)
+        if source is None or parent is None or source is parent:
+            continue
+        fields.remove(source)
+        if not _append_fields(parent.properties, [source]):
+            fields.append(source)
+
+    resolved: list[StructuralTableMerge] = []
+    by_table = {merge.table: merge for merge in _STRUCTURAL_TABLE_SPLITS.get(section.endpoint, ())}
+    for index, table in enumerate(section.tables[1:], start=1):
+        merge = by_table.get(index)
+        if merge is None:
+            continue
+        if section.endpoint == "/DESIGN/RC/KDS-41-20-2022/DCRE" and index == 4:
+            # The manual says the two arrays share the same item structure.
+            # Its one table lists the two array names followed by their shared
+            # REBAR_DIAMETER/MATERIAL item rows, so retain that hierarchy for
+            # both arrays instead of putting the item rows beside them.
+            parent = _field_at_path(fields, ("Assign", "WALL", "MATERIAL_BY_DIAMETER_INPUT"))
+            rows = {field.key: copy.deepcopy(field) for field in _walk(table.fields)}
+            if parent is not None and {"VERTICAL_END_REBAR", "HORIZONTAL_REBAR", "REBAR_DIAMETER", "MATERIAL"} <= rows.keys():
+                children = [rows["REBAR_DIAMETER"], rows["MATERIAL"]]
+                vertical = rows["VERTICAL_END_REBAR"]
+                horizontal = rows["HORIZONTAL_REBAR"]
+                vertical.properties = copy.deepcopy(children)
+                horizontal.properties = copy.deepcopy(children)
+                if _append_fields(parent.properties, [vertical, horizontal]):
+                    resolved.append(merge)
+            continue
+        destinations: list[list[ParsedField]] = []
+        for path in merge.targets:
+            parent = _field_at_path(fields, path)
+            if path and parent is None:
+                destinations = []
+                break
+            destinations.append(fields if not path else parent.properties)
+        if not destinations:
+            continue
+        # Clone for every target: the manual explicitly states the same item
+        # shape for e.g. REBB's I/M/J sectors and REBC's two shear-bar objects.
+        # Preflight every destination so a duplicate cannot leave a half-merged
+        # draft that looks complete.
+        destination_keys = [{field.key: field for field in destination} for destination in destinations]
+        compatible = all(
+            all(
+                field.key not in keys
+                or (keys[field.key].type, keys[field.key].requirement, keys[field.key].documented_default)
+                == (field.type, field.requirement, field.documented_default)
+                for field in table.fields
+            )
+            for keys in destination_keys
+        )
+        if not compatible:
+            continue
+        for destination in destinations:
+            additions = copy.deepcopy(table.fields)
+            if merge.products:
+                _tag_products(additions, merge.products)
+            if not _append_fields(destination, additions):
+                raise AssertionError("preflighted structural table merge became incompatible")
+        resolved.append(merge)
+    return fields, resolved
 
 
 def _section_schema_hints(lines: list[str]) -> dict[tuple[str, ...], list[dict[str, Any]]]:
@@ -1567,6 +1877,8 @@ def _render_fields(
         if parsed.description:
             lines.append(f"{body}description: >-")
             lines += _block(parsed.description, body + "  ")
+        if parsed.products:
+            lines.append(f"{body}products: [{', '.join(parsed.products)}]")
         if parsed.type:
             lines.append(f"{body}type: {parsed.type}")
             if parsed.items and parsed.items.get("type"):
@@ -1627,6 +1939,8 @@ def _render_fields(
 
 def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> str:
     main = section.tables[0] if section.tables else None
+    fields, structural_merges = _structural_fields(section)
+    resolved_tables = {merge.table for merge in structural_merges}
     lines: list[str] = [
         f"# DRAFT contract for {section.endpoint} - extracted, not reviewed.",
         "#",
@@ -1699,7 +2013,7 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
         ]
     else:
         lines.append("fields:")
-        lines += _render_fields(main.fields, "  ", evidence)
+        lines += _render_fields(fields, "  ", evidence)
         lines.append("")
 
     if section.variants:
@@ -1720,14 +2034,28 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
     lines.append("extraction:")
     lines.append(f"  source: {section.chapter_file} line {main.line if main else '?'}")
     lines.append(f"  table: {_scalar(main.heading if main else 'none found')}")
-    if len(section.tables) > 1 and not section.variants:
+    if structural_merges:
+        lines.append("  structuralTables:")
+        for merge in structural_merges:
+            table = section.tables[merge.table]
+            lines.append(f"    - heading: {_scalar(table.heading)}")
+            lines.append(f"      line: {table.line}")
+            lines.append("      paths:")
+            for target in merge.targets:
+                lines.append(f"        - {_scalar('.'.join(target) or '<root>')}")
+    unresolved = [
+        (index, table)
+        for index, table in enumerate(section.tables[1:], start=1)
+        if index not in resolved_tables
+    ]
+    if unresolved and not section.variants:
         lines.append("  # Additional parameter tables in this section were NOT merged. They are")
         lines.append("  # usually conditional variants selected by a type/code field. Decide")
         lines.append("  # whether they belong in this contract's fields, as nested `properties`,")
         lines.append("  # or as a separate contract - do not assume the first table is the whole")
         lines.append("  # schema.")
         lines.append("  unmergedTables:")
-        for table in section.tables[1:]:
+        for _, table in unresolved:
             lines.append(f"    - heading: {_scalar(table.heading)}")
             lines.append(f"      fields: {len(table.fields)}")
             lines.append(f"      line: {table.line}")
@@ -1937,7 +2265,10 @@ def run_check(sections: list[Section]) -> int:
             continue
         checked += 1
 
-        manual_fields = _flatten_manual(section.tables[0].fields)
+        # Use the same closed structural merge map as draft emission.  Without
+        # this, --check would wrongly call a nested supplementary-table field
+        # contract drift simply because it only inspected the first table.
+        manual_fields = _flatten_manual(_structural_fields(section)[0])
         contract_fields = _flatten_contract(contract.get("fields", []))
         overridden = {
             d.get("describes") for d in contract.get("manualDefects", [])

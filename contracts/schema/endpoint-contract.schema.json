@@ -270,9 +270,27 @@
               }
             }
           }
+        },
+        "structuralTables": {
+            "type": "array",
+            "description": "Supplementary manual tables whose named object or array destination was transcribed by the extractor. This is evidence of a structural merge, not a waiver for conditional variants.",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["heading", "line", "paths"],
+              "properties": {
+                "heading": { "type": "string" },
+                "line": { "type": "integer" },
+                "paths": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": { "type": "string" }
+                }
+              }
+            }
+          }
         }
-      }
-    },
+      },
     "knownDefects": {
       "type": "array",
       "description": "Product defects affecting this endpoint. References contracts/safety/known-product-risks.yaml.",
@@ -334,6 +352,13 @@
           "description": "One literal wire-property name. A manual row that names multiple keys must be split or kept unpromoted."
         },
         "description": { "type": "string" },
+        "products": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["gen", "civil"] },
+          "description": "Products to which this field applies when the manual explicitly labels a field group as product-specific. It never narrows the endpoint-level products list."
+        },
         "type": {
           "enum": ["string", "number", "integer", "boolean", "array", "object"]
         },
