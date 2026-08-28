@@ -240,7 +240,7 @@ class PlateStiffnessScaleFactorPayload(TypedDict):
 
 class PlateStiffnessScaleFactor(DbResource):
     ENDPOINT = "/db/PSSF"
-    NAME = "Section Manager - Plate Stiffness Scale Factor"
+    NAME = "/db/PSSF"
     PRODUCTS = frozenset({"gen", "civil"})
 
 
@@ -253,7 +253,7 @@ class VirtualBeamPayload(TypedDict, total=False):
 
 class VirtualBeam(DbResource):
     ENDPOINT = "/db/VBEM"
-    NAME = "Virtual Beam"
+    NAME = "/db/VBEM"
     PRODUCTS = frozenset({"gen", "civil"})
 
 
@@ -274,7 +274,7 @@ class VirtualSectionPayload(TypedDict, total=False):
 
 class VirtualSection(DbResource):
     ENDPOINT = "/db/VSEC"
-    NAME = "Virtual Section"
+    NAME = "/db/VSEC"
     PRODUCTS = frozenset({"gen", "civil"})
 
 
@@ -303,7 +303,7 @@ class EffectiveWidthScaleFactor(DbResource):
     """
 
     ENDPOINT = "/db/EWSF"
-    NAME = "Effective Width Scale Factor"
+    NAME = "/db/EWSF"
     PRODUCTS = CIVIL_ONLY
 
 

@@ -230,7 +230,7 @@ class TimeDependentMaterialFunctionPayload(TypedDict, total=False):
 
 class TimeDependentMaterialFunction(DbResource):
     ENDPOINT = "/db/TDMF"
-    NAME = "Time Dependent Material - User Defined"
+    NAME = "/db/TDMF"
     PRODUCTS = frozenset({"gen", "civil"})
 
 
@@ -353,7 +353,7 @@ class ChangePropertyPayload(TypedDict, total=False):
 
 class ChangeProperty(DbResource):
     ENDPOINT = "/db/EDMP"
-    NAME = "Change Property"
+    NAME = "/db/EDMP"
     PRODUCTS = frozenset({"gen", "civil"})
 
 
@@ -366,7 +366,7 @@ class TimeDependentMaterialLinkPayload(TypedDict, total=False):
 
 class TimeDependentMaterialLink(DbResource):
     ENDPOINT = "/db/TMAT"
-    NAME = "Time Dependent Material Link"
+    NAME = "/db/TMAT"
     PRODUCTS = frozenset({"gen", "civil"})
 
 

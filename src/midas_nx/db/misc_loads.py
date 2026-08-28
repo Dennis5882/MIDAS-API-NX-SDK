@@ -161,7 +161,7 @@ class InitialForceGeometricStiffnessPayload(TypedDict, total=False):
 
 class InitialForceGeometricStiffness(DbResource):
     ENDPOINT = "/db/IFGS"
-    NAME = "Large Displacement - Initial Forces for Geometric Stiffness"
+    NAME = "Large Displacement – Initial Forces for Geometric Stiffness"
     PRODUCTS = frozenset({"gen", "civil"})
 
 
@@ -182,7 +182,7 @@ class InitialForceControlDataPayload(TypedDict, total=False):
 
 class InitialForceControlData(DbResource):
     ENDPOINT = "/db/EFCT"
-    NAME = "Small Displacement - Initial Force Control Data"
+    NAME = "Small Displacement – Initial Force Control Data"
     PRODUCTS = frozenset({"gen", "civil"})
 
 
@@ -201,5 +201,5 @@ class InitialElementForcePayload(TypedDict, total=False):
 
 class InitialElementForce(DbResource):
     ENDPOINT = "/db/INMF"
-    NAME = "Small Displacement - Initial Element Force"
+    NAME = "Small Displacement – Initial Element Force"
     PRODUCTS = frozenset({"gen", "civil"})

@@ -121,4 +121,4 @@ class UnknownLoadFactorConstraintPayload(TypedDict, total=False):
 
 class UnknownLoadFactorConstraint(DbResource):
     ENDPOINT = "/db/ULFC"
-    NAME = "Cable Control - Unknown Load Factor Constraints"
+    NAME = "Cable Control – Unknown Load Factor Constraints"

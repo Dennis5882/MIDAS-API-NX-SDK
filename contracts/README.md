@@ -237,6 +237,7 @@ What the extractor can currently reach, per `scripts/extract_contracts.py`:
 | Fields transcribed across parsed tables | 4,798, of which 321 nested |
 | Promoted so far | 120 endpoints + 3 tables |
 | Payload types the npm SDK now takes from contracts | 81 of 738 |
+| DB resource metadata the npm SDK now takes from contracts | 83 of 304 |
 | Explicitly modelled conditional variant sets | 5 |
 | Sections with conditional variant tables left unmerged | 53 |
 | Enum fields whose complete value list is not stated | 95 |

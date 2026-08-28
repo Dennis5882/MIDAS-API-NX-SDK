@@ -442,6 +442,65 @@ def _contract_payload_defaults() -> dict[str, dict[str, Any]]:
     return defaults
 
 
+def _contract_resource_surfaces() -> dict[str, dict[str, Any]]:
+    """Read the contract-owned surface of each contracted DB resource.
+
+    Class and module names remain compatibility anchors while the public npm
+    tree is still organised like the existing SDK.  The endpoint, display
+    name, products, methods and manual chapter are contract facts.  Keeping
+    those two roles separate lets this Stage 3 shadow run replace only facts
+    the contract actually owns, and leaves an uncontracted resource on the
+    previous Python fallback path.
+    """
+
+    contract_dir = ROOT / "contracts" / "endpoints"
+    if not contract_dir.is_dir():
+        return {}
+    try:
+        import yaml  # noqa: PLC0415
+    except ImportError:  # pragma: no cover - dev dependency
+        raise SystemExit(
+            "contracts/ is present but PyYAML is not installed. "
+            'Run: pip install -e "[dev]"'
+        ) from None
+
+    surfaces: dict[str, dict[str, Any]] = {}
+    for path in sorted(contract_dir.glob("*.yaml")):
+        contract = yaml.safe_load(path.read_text(encoding="utf-8"))
+        endpoint = contract.get("endpoint", "")
+        if not endpoint.startswith("/db/") or not contract.get("fields"):
+            continue
+        if endpoint in surfaces:
+            raise ValueError(f"Duplicate resource contract for {endpoint}")
+        surfaces[endpoint] = {
+            "name": contract["name"],
+            "products": sorted(contract["products"]),
+            "methods": sorted({operation["method"] for operation in contract["operations"]}),
+            "manualChapter": contract["source"]["manual"].get("chapterFile"),
+        }
+    return surfaces
+
+
+def _contract_resource_mismatches(resource: dict[str, Any], surface: dict[str, Any]) -> list[str]:
+    """Compare a legacy SDK resource with the facts its contract owns."""
+
+    chapter = next(
+        (manual.get("chapterFile") for manual in resource.get("manual", []) if manual.get("chapterFile")),
+        None,
+    )
+    actual = {
+        "name": resource["name"],
+        "products": resource["products"],
+        "methods": resource["methods"],
+        "manualChapter": chapter,
+    }
+    return [
+        f"{key}: SDK has {actual[key]!r}, contract has {surface[key]!r}"
+        for key in actual
+        if actual[key] != surface[key]
+    ]
+
+
 def _load_resources() -> list[dict[str, Any]]:
     sys.path.insert(0, str(PYTHON_SRC))
     import midas_nx  # noqa: PLC0415
@@ -456,38 +515,57 @@ def _load_resources() -> list[dict[str, Any]]:
         coverage_by_endpoint[entry["endpoint"]].append(entry)
 
     payload_defaults = _contract_payload_defaults()
+    contract_surfaces = _contract_resource_surfaces()
 
     resources: list[dict[str, Any]] = []
     for cls in _all_subclasses(DbResource):
         endpoint = cls.ENDPOINT
         matches = coverage_by_endpoint.get(endpoint, [])
-        resources.append(
-            {
-                "className": cls.__name__,
-                "exportName": _camel(cls.__name__),
-                "endpoint": endpoint,
-                "name": cls.NAME or cls.__name__,
-                "products": sorted(cls.PRODUCTS),
-                "methods": sorted(cls.METHODS),
-                "pythonModule": cls.__module__,
-                "modulePath": _module_parts(cls.__module__),
-                # Present only for endpoints with a contract rule; see
-                # _contract_payload_defaults().
-                **(
-                    {"payloadDefaults": payload_defaults[endpoint]}
-                    if endpoint in payload_defaults
-                    else {}
-                ),
-                "manual": [
-                    {
-                        "name": match.get("name"),
-                        "chapterFile": match.get("chapter_file"),
-                        "status": match.get("status"),
-                    }
-                    for match in matches
-                ],
-            }
-        )
+        resource = {
+            "className": cls.__name__,
+            "exportName": _camel(cls.__name__),
+            "endpoint": endpoint,
+            "name": cls.NAME or cls.__name__,
+            "products": sorted(cls.PRODUCTS),
+            "methods": sorted(cls.METHODS),
+            "pythonModule": cls.__module__,
+            "modulePath": _module_parts(cls.__module__),
+            # Present only for endpoints with a contract rule; see
+            # _contract_payload_defaults().
+            **(
+                {"payloadDefaults": payload_defaults[endpoint]}
+                if endpoint in payload_defaults
+                else {}
+            ),
+            "manual": [
+                {
+                    "name": match.get("name"),
+                    "chapterFile": match.get("chapter_file"),
+                    "status": match.get("status"),
+                }
+                for match in matches
+            ],
+        }
+        contract_surface = contract_surfaces.get(endpoint)
+        if contract_surface is not None:
+            mismatches = _contract_resource_mismatches(resource, contract_surface)
+            if mismatches:
+                raise ValueError(
+                    f"{endpoint}: contract resource shadow differs from the SDK: "
+                    + "; ".join(mismatches)
+                )
+            # `className` / `pythonModule` remain npm compatibility anchors,
+            # while all endpoint facts now originate in the contract.
+            resource.update(
+                name=contract_surface["name"],
+                products=contract_surface["products"],
+                methods=contract_surface["methods"],
+                # Keep the coverage ledger's richer manual entry in the
+                # committed manifest during the shadow phase. Runtime npm
+                # metadata, below, reads this contract-owned chapter instead.
+                contractManualChapter=contract_surface["manualChapter"],
+            )
+        resources.append(resource)
     return sorted(resources, key=lambda item: (item["pythonModule"], item["className"], item["endpoint"]))
 
 
@@ -522,7 +600,7 @@ def _render_tree(resources: list[dict[str, Any]]) -> str:
                 # language was generated from the other. The manual chapter is
                 # the language-neutral answer to the same question - where is
                 # this endpoint documented.
-                chapter = next(
+                chapter = value.get("contractManualChapter") or next(
                     (m.get("chapterFile") for m in value.get("manual", []) if m.get("chapterFile")),
                     None,
                 )
@@ -904,7 +982,12 @@ def main() -> None:
             "coverageLedger": "docs/coverage.json",
         },
         "resourceCount": len(resources),
-        "resources": resources,
+        # `contractManualChapter` is an internal shadow-run input. It affects
+        # npm runtime metadata but is deliberately not a new manifest surface.
+        "resources": [
+            {key: value for key, value in resource.items() if key != "contractManualChapter"}
+            for resource in resources
+        ],
     }
     (SCHEMA_DIR / "typescript-resources.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"

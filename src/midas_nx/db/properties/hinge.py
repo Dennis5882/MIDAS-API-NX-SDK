@@ -56,7 +56,7 @@ class InelasticHingePropertyPayload(TypedDict, total=False):
 
 class InelasticHingeProperty(DbResource):
     ENDPOINT = "/db/IEHG"
-    NAME = "Assign Inelastic Hinge Properties"
+    NAME = "/db/IEHG"
     PRODUCTS = frozenset({"gen", "civil"})
 
 

@@ -60,7 +60,7 @@ class RcDesignCodePayload(TypedDict, total=False):
 
 class RcDesignCode(DbResource):
     ENDPOINT = "/db/DCON"
-    NAME = "RC Design Code"
+    NAME = "RC 설계 코드"
 
 
 # --- 2. /db/DSTL — Steel Design Code ----------------------------------------
@@ -79,7 +79,7 @@ class SteelDesignCodePayload(TypedDict, total=False):
 
 class SteelDesignCode(DbResource):
     ENDPOINT = "/db/DSTL"
-    NAME = "Steel Design Code"
+    NAME = "강재 설계 코드"
 
 
 # --- 3. /db/RCHK — Rebar Check Input (Beam/Column) --------------------------
@@ -205,7 +205,7 @@ class UnbracedLengthPayload(TypedDict, total=False):
 
 class UnbracedLength(DbResource):
     ENDPOINT = "/db/LENG"
-    NAME = "Unbraced Length"
+    NAME = "비지지 길이"
 
 
 # --- 5. /db/MEMB — Design Member Assignment ---------------------------------
@@ -224,7 +224,7 @@ class DesignMemberAssignmentPayload(TypedDict, total=False):
 
 class DesignMemberAssignment(DbResource):
     ENDPOINT = "/db/MEMB"
-    NAME = "Design Member Assignment"
+    NAME = "설계 부재 배정"
 
 
 # --- 6. /db/DCTL — Definition of Frame --------------------------------------
@@ -257,7 +257,7 @@ class LimitingSlendernessRatioPayload(TypedDict, total=False):
 
 class LimitingSlendernessRatio(DbResource):
     ENDPOINT = "/db/LTSR"
-    NAME = "Limiting Slenderness Ratio"
+    NAME = "세장비 제한"
 
 
 # --- 8. /db/MBTP — Modify Member Type ---------------------------------------
@@ -271,7 +271,7 @@ class ModifyMemberTypePayload(TypedDict, total=False):
 
 class ModifyMemberType(DbResource):
     ENDPOINT = "/db/MBTP"
-    NAME = "Modify Member Type"
+    NAME = "부재 타입 수정"
 
 
 # --- 9. /db/WMAK — Modify Wall Mark -----------------------------------------
@@ -286,7 +286,7 @@ class ModifyWallMarkPayload(TypedDict, total=False):
 
 class ModifyWallMark(DbResource):
     ENDPOINT = "/db/WMAK"
-    NAME = "Modify Wall Mark"
+    NAME = "벽체 마크 설계 수정"
 
 
 # --- 10. /db/REBB — Modify Beam Rebar ---------------------------------------

@@ -58,8 +58,10 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
 - `packages/typescript/` — the npm package. Hand-written runtime adapters live directly under `src/`;
   generated resources, operations, tables, and payload types live under `src/generated/`.
   `package.json` is the npm version source; `package-lock.json` must change with it.
-- `scripts/generate_typescript_sdk.py` — derives the generated npm surface from the reviewed Python
-  classes and shared coverage ledger. Run it through `npm run generate`; do not hand-edit
+- `scripts/generate_typescript_sdk.py` — for a contracted `/db/*` endpoint, derives the npm
+  endpoint/name/products/methods/manual-chapter surface from its contract; uncontracted resources
+  still use the reviewed Python fallback. Class and module names remain compatibility anchors until
+  every resource is contracted. Run it through `npm run generate`; do not hand-edit
   `packages/typescript/src/generated/*`.
 - `schema/typescript-resources.json` / `schema/typescript-coverage.json` — committed generator outputs.
   CI fails if either these schemas or `packages/typescript/src/generated/*` drift after regeneration.

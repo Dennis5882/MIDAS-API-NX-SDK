@@ -390,7 +390,7 @@
       "className": "MovingLoadAnalysisControlBS",
       "exportName": "movingLoadAnalysisControlBS",
       "endpoint": "/db/MVCTbs",
-      "name": "Moving Load Analysis Control - BS",
+      "name": "Moving Load Analysis Control – BS",
       "products": [
         "civil",
         "gen"
@@ -450,7 +450,7 @@
       "className": "MovingLoadAnalysisControlIndia",
       "exportName": "movingLoadAnalysisControlIndia",
       "endpoint": "/db/MVCTid",
-      "name": "Moving Load Analysis Control - India",
+      "name": "Moving Load Analysis Control – India",
       "products": [
         "civil",
         "gen"
@@ -480,7 +480,7 @@
       "className": "MovingLoadAnalysisControlTransverse",
       "exportName": "movingLoadAnalysisControlTransverse",
       "endpoint": "/db/MVCTtr",
-      "name": "Moving Load Analysis Control - Transverse",
+      "name": "Moving Load Analysis Control – Transverse",
       "products": [
         "civil",
         "gen"
@@ -1428,7 +1428,7 @@
       "className": "UnknownLoadFactorConstraint",
       "exportName": "unknownLoadFactorConstraint",
       "endpoint": "/db/ULFC",
-      "name": "Cable Control - Unknown Load Factor Constraints",
+      "name": "Cable Control – Unknown Load Factor Constraints",
       "products": [
         "civil",
         "gen"
@@ -1964,7 +1964,7 @@
       "className": "DesignMemberAssignment",
       "exportName": "designMemberAssignment",
       "endpoint": "/db/MEMB",
-      "name": "Design Member Assignment",
+      "name": "설계 부재 배정",
       "products": [
         "civil",
         "gen"
@@ -2024,7 +2024,7 @@
       "className": "LimitingSlendernessRatio",
       "exportName": "limitingSlendernessRatio",
       "endpoint": "/db/LTSR",
-      "name": "Limiting Slenderness Ratio",
+      "name": "세장비 제한",
       "products": [
         "civil",
         "gen"
@@ -2054,7 +2054,7 @@
       "className": "ModifyMemberType",
       "exportName": "modifyMemberType",
       "endpoint": "/db/MBTP",
-      "name": "Modify Member Type",
+      "name": "부재 타입 수정",
       "products": [
         "civil",
         "gen"
@@ -2084,7 +2084,7 @@
       "className": "ModifyWallMark",
       "exportName": "modifyWallMark",
       "endpoint": "/db/WMAK",
-      "name": "Modify Wall Mark",
+      "name": "벽체 마크 설계 수정",
       "products": [
         "civil",
         "gen"
@@ -2114,7 +2114,7 @@
       "className": "RcDesignCode",
       "exportName": "rcDesignCode",
       "endpoint": "/db/DCON",
-      "name": "RC Design Code",
+      "name": "RC 설계 코드",
       "products": [
         "civil",
         "gen"
@@ -2173,7 +2173,7 @@
       "className": "SteelDesignCode",
       "exportName": "steelDesignCode",
       "endpoint": "/db/DSTL",
-      "name": "Steel Design Code",
+      "name": "강재 설계 코드",
       "products": [
         "civil",
         "gen"
@@ -2203,7 +2203,7 @@
       "className": "UnbracedLength",
       "exportName": "unbracedLength",
       "endpoint": "/db/LENG",
-      "name": "Unbraced Length",
+      "name": "비지지 길이",
       "products": [
         "civil",
         "gen"
@@ -2887,7 +2887,7 @@
       "className": "InitialElementForce",
       "exportName": "initialElementForce",
       "endpoint": "/db/INMF",
-      "name": "Small Displacement - Initial Element Force",
+      "name": "Small Displacement – Initial Element Force",
       "products": [
         "civil",
         "gen"
@@ -2917,7 +2917,7 @@
       "className": "InitialForceControlData",
       "exportName": "initialForceControlData",
       "endpoint": "/db/EFCT",
-      "name": "Small Displacement - Initial Force Control Data",
+      "name": "Small Displacement – Initial Force Control Data",
       "products": [
         "civil",
         "gen"
@@ -2947,7 +2947,7 @@
       "className": "InitialForceGeometricStiffness",
       "exportName": "initialForceGeometricStiffness",
       "endpoint": "/db/IFGS",
-      "name": "Large Displacement - Initial Forces for Geometric Stiffness",
+      "name": "Large Displacement – Initial Forces for Geometric Stiffness",
       "products": [
         "civil",
         "gen"
@@ -3960,7 +3960,7 @@
       "className": "DomainElement",
       "exportName": "domainElement",
       "endpoint": "/db/DOEL",
-      "name": "Domain-Element",
+      "name": "/db/DOEL",
       "products": [
         "civil",
         "gen"
@@ -4020,7 +4020,7 @@
       "className": "MainDomain",
       "exportName": "mainDomain",
       "endpoint": "/db/MADO",
-      "name": "Define Domain",
+      "name": "/db/MADO",
       "products": [
         "civil",
         "gen"
@@ -4633,7 +4633,7 @@
       "className": "InelasticHingeProperty",
       "exportName": "inelasticHingeProperty",
       "endpoint": "/db/IEHG",
-      "name": "Assign Inelastic Hinge Properties",
+      "name": "/db/IEHG",
       "products": [
         "civil",
         "gen"
@@ -4784,7 +4784,7 @@
       "className": "ChangeProperty",
       "exportName": "changeProperty",
       "endpoint": "/db/EDMP",
-      "name": "Change Property",
+      "name": "/db/EDMP",
       "products": [
         "civil",
         "gen"
@@ -5089,7 +5089,7 @@
       "className": "TimeDependentMaterialFunction",
       "exportName": "timeDependentMaterialFunction",
       "endpoint": "/db/TDMF",
-      "name": "Time Dependent Material - User Defined",
+      "name": "/db/TDMF",
       "products": [
         "civil",
         "gen"
@@ -5120,7 +5120,7 @@
       "className": "TimeDependentMaterialLink",
       "exportName": "timeDependentMaterialLink",
       "endpoint": "/db/TMAT",
-      "name": "Time Dependent Material Link",
+      "name": "/db/TMAT",
       "products": [
         "civil",
         "gen"
@@ -5182,7 +5182,7 @@
       "className": "EffectiveWidthScaleFactor",
       "exportName": "effectiveWidthScaleFactor",
       "endpoint": "/db/EWSF",
-      "name": "Effective Width Scale Factor",
+      "name": "/db/EWSF",
       "products": [
         "civil"
       ],
@@ -5274,7 +5274,7 @@
       "className": "PlateStiffnessScaleFactor",
       "exportName": "plateStiffnessScaleFactor",
       "endpoint": "/db/PSSF",
-      "name": "Section Manager - Plate Stiffness Scale Factor",
+      "name": "/db/PSSF",
       "products": [
         "civil",
         "gen"
@@ -5459,7 +5459,7 @@
       "className": "VirtualBeam",
       "exportName": "virtualBeam",
       "endpoint": "/db/VBEM",
-      "name": "Virtual Beam",
+      "name": "/db/VBEM",
       "products": [
         "civil",
         "gen"
@@ -5490,7 +5490,7 @@
       "className": "VirtualSection",
       "exportName": "virtualSection",
       "endpoint": "/db/VSEC",
-      "name": "Virtual Section",
+      "name": "/db/VSEC",
       "products": [
         "civil",
         "gen"

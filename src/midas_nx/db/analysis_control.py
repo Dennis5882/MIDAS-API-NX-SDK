@@ -421,7 +421,7 @@ class MovingLoadAnalysisControlIndiaPayload(TypedDict, total=False):
 
 class MovingLoadAnalysisControlIndia(DbResource):
     ENDPOINT = "/db/MVCTid"
-    NAME = "Moving Load Analysis Control - India"
+    NAME = "Moving Load Analysis Control – India"
 
 
 class MovingLoadAnalysisControlBSPayload(TypedDict, total=False):
@@ -452,7 +452,7 @@ class MovingLoadAnalysisControlBSPayload(TypedDict, total=False):
 
 class MovingLoadAnalysisControlBS(DbResource):
     ENDPOINT = "/db/MVCTbs"
-    NAME = "Moving Load Analysis Control - BS"
+    NAME = "Moving Load Analysis Control – BS"
 
 
 class MovingLoadAnalysisControlTransversePayload(TypedDict, total=False):
@@ -471,7 +471,7 @@ class MovingLoadAnalysisControlTransversePayload(TypedDict, total=False):
 
 class MovingLoadAnalysisControlTransverse(DbResource):
     ENDPOINT = "/db/MVCTtr"
-    NAME = "Moving Load Analysis Control - Transverse"
+    NAME = "Moving Load Analysis Control – Transverse"
 
 
 # --- 14. /db/SMCT — Settlement Analysis Control Data ------------------------
