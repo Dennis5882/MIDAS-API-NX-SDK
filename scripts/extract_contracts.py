@@ -96,7 +96,15 @@ _METHODS = re.compile(
 _METHODS_TABLE_ROW = re.compile(
     r"^\s*\|\s*\*{0,2}(?:Active\s+|HTTP\s+|Supported\s+)?Methods?\*{0,2}\s*\|\s*([^|]+)\|", re.MULTILINE
 )
-_METHODS_HEADING = re.compile(r"^#{2,4}\s+\*{0,2}(?:Active|HTTP|Supported)\s+Methods?\*{0,2}\s*$", re.I)
+# Some chapters number and localize this heading (for example,
+# ``### 1-1. HTTP 메서드 및 URL``).  ``HTTP`` still establishes that the
+# following table is an HTTP-method table; the parser below accepts only actual
+# HTTP verbs from its first column, so a broader heading match cannot invent a
+# method from the surrounding prose.
+_METHODS_HEADING = re.compile(
+    r"^#{2,4}\s+(?:.*\b(?:Active|Supported)\s+Methods?\b.*|.*\bHTTP\b.*)$",
+    re.I,
+)
 
 _VERBS = {"GET", "POST", "PUT", "DELETE"}
 
@@ -489,6 +497,19 @@ def _normalize_default(cell: str) -> tuple[Any, Optional[str]]:
         return low == "true", None
     if low in {"blank", "빈 문자열", '""'}:
         return "", None
+    # ``[]``, ``{}``, and JSON lists such as ``[\"AXIAL\"]`` are complete,
+    # typed defaults stated by the manual. Keeping them as strings makes a
+    # documented default look unverified, while interpreting prose such as
+    # ``Auto`` or ``System`` would be a guess. Accept only a whole JSON array
+    # or object so the distinction stays explicit.
+    if text.startswith(("[", "{")):
+        try:
+            structured = json.loads(text)
+        except json.JSONDecodeError:
+            pass
+        else:
+            if isinstance(structured, (list, dict)):
+                return structured, None
     try:
         number = float(text)
     except ValueError:
@@ -1287,6 +1308,8 @@ def _scalar(value: Any) -> str:
         return "true" if value else "false"
     if isinstance(value, (int, float)):
         return repr(value)
+    if isinstance(value, (list, dict)):
+        return json.dumps(value, ensure_ascii=False, separators=(",", ": "))
 
     text = str(value)
     quoted = '"' + text.replace("\\", "\\\\").replace('"', '\\"') + '"'

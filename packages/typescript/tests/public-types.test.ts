@@ -21,6 +21,15 @@ if (false) {
   resources.db.movingLoads.railwayDynamicFactor.create({ 1: { INPUT_TYPE: 0, HEIGHT_COVER: 1 } });
   resources.db.movingLoads.railwayDynamicFactorByElement.create({ 1: { INPUT_TYPE: 0 } });
 
+  // /db/BODF is now modelled directly from its manual contract.
+  resources.db.staticLoads.selfWeight.create({ 1: { LCNAME: "DL", FV: [0, 0, -1] } });
+
+  // @ts-expect-error /db/BODF requires the load-case name
+  resources.db.staticLoads.selfWeight.create({ 1: { FV: [0, 0, -1] } });
+
+  // @ts-expect-error /db/BODF's FV factor is exactly three directional values
+  resources.db.staticLoads.selfWeight.create({ 1: { LCNAME: "DL", FV: [0, -1] } });
+
   // @ts-expect-error /db/DYFG requires HEIGHT_COVER in its contract payload
   resources.db.movingLoads.railwayDynamicFactor.create({ 1: { INPUT_TYPE: 0 } });
 

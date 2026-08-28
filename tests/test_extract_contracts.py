@@ -51,6 +51,8 @@ CHAPTER = """# 99 DB — Synthetic
 | 18 | Digit-prefixed wire key | `"7TH_DOF_TYPE"` | Integer | 0 | Optional |
 | 19 | Escaped fixed vector | `"ESCAPED_VECTOR"` | Array \\[Number, 3\\] | - | Required |
 | 20 | Conditional from description (`MODE="SPECIAL"`) | `"SPECIAL_VALUE"` | Number | - | Conditional Required |
+| 21 | Empty item defaults | `"DEFAULT_ITEMS"` | Array [Number] | [] | Optional |
+| 22 | Empty object default | `"DEFAULT_OPTIONS"` | Object | {} | Optional |
 
 ### Variant table
 
@@ -150,6 +152,8 @@ def test_explicit_type_constraints_are_preserved(section: ex.Section):
     assert fields["INLINE_DEFAULT"].type == "boolean"
     assert fields["INLINE_DEFAULT"].documented_default is False
     assert fields["CONST_VALUE"].constraints == {"const": 0.75}
+    assert fields["DEFAULT_ITEMS"].documented_default == []
+    assert fields["DEFAULT_OPTIONS"].documented_default == {}
     assert fields["REVERSED"].enum == [0, 1]
     assert fields["ENABLED"].type == "boolean"
     assert fields["ENABLED"].documented_default is False
@@ -165,6 +169,8 @@ def test_explicit_type_constraints_are_preserved(section: ex.Section):
     assert draft_fields["VECTOR"]["minItems"] == 3
     assert draft_fields["INLINE_DEFAULT"]["documentedDefault"] is False
     assert draft_fields["CONST_VALUE"]["const"] == 0.75
+    assert draft_fields["DEFAULT_ITEMS"]["documentedDefault"] == []
+    assert draft_fields["DEFAULT_OPTIONS"]["documentedDefault"] == {}
 
 
 def test_only_exact_parallel_columns_are_split_into_independent_fields(tmp_path: Path):
@@ -489,6 +495,13 @@ METHOD_DECLARATION_FORMS = {
     "heading, verbs in a table": (
         "### HTTP Methods\n\n"
         "| Method | URL | 설명 |\n"
+        "|--------|-----|------|\n"
+        "| POST | `{base_url}/db/SYNTH` | create |\n"
+        "| GET | `{base_url}/db/SYNTH` | read |"
+    ),
+    "numbered local HTTP heading, verbs in a table": (
+        "### 1-1. HTTP 메서드 및 URL\n\n"
+        "| 메서드 | URL | 설명 |\n"
         "|--------|-----|------|\n"
         "| POST | `{base_url}/db/SYNTH` | create |\n"
         "| GET | `{base_url}/db/SYNTH` | read |"

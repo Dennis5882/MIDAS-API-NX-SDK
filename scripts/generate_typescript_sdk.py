@@ -301,7 +301,15 @@ def _contract_field_type(field: dict[str, Any], indent: str) -> str:
         return f"Array<{inner}>" if kind == "array" else inner
     if kind == "array":
         item = (field.get("items") or {}).get("type")
-        return f"Array<{_CONTRACT_TS_TYPES.get(item, 'unknown')}>"
+        rendered_item = _CONTRACT_TS_TYPES.get(item, "unknown")
+        minimum = field.get("minItems")
+        maximum = field.get("maxItems")
+        # A matching pair of bounds is an exact contract fact, not a runtime
+        # guess. Preserve it as a tuple so TypeScript callers cannot submit a
+        # too-short vector to a field such as /db/BODF's FV.
+        if isinstance(minimum, int) and minimum == maximum:
+            return "[" + ", ".join([rendered_item] * minimum) + "]"
+        return f"Array<{rendered_item}>"
     if field.get("enum") and kind == "string":
         return " | ".join(f'"{value}"' for value in field["enum"])
     return _CONTRACT_TS_TYPES.get(kind, "unknown")

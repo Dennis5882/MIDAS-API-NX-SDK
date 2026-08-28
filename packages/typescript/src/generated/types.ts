@@ -693,15 +693,15 @@ export namespace DbBoundaryTypes {
     /** Stiffness-matrix option. */
     OPT_STIFFNESS?: boolean;
     /** 21-value stiffness matrix. */
-    SPRING?: Array<number>;
+    SPRING?: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
     /** Mass-matrix option. */
     OPT_MASS?: boolean;
     /** 21-value mass matrix. */
-    MASS?: Array<number>;
+    MASS?: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
     /** Damping-matrix option. */
     OPT_DAMPING?: boolean;
     /** 21-value damping matrix. */
-    DAMPING?: Array<number>;
+    DAMPING?: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
   }
   export interface GeneralSpringSupportItem extends DbBaseTypes.ItemGroupFields {
     TYPE_NAME?: string;
@@ -2320,11 +2320,11 @@ export namespace DbMovingLoadsTypes {
     /** Bridge type. */
     BRIDGE_TYPE: number;
     /** Scale factors for an old urban bridge. */
-    SCALE_FACTOR_O: Array<number>;
+    SCALE_FACTOR_O: [number, number, number, number, number, number, number, number];
     /** Scale factors for a highway or new urban bridge. */
-    SCALE_FACTOR_N: Array<number>;
+    SCALE_FACTOR_N: [number, number, number, number, number, number, number, number];
     /** Scale factors for JTG B01-2014. */
-    SCALE_FACTOR_JTG: Array<number>;
+    SCALE_FACTOR_JTG: [number, number, number, number, number, number, number, number];
     /** Combination option. */
     LOADING_EFFECT: number;
   } & (
@@ -3822,10 +3822,14 @@ export namespace DbStaticLoadsTypes {
     /** Description */
     DESC?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SelfWeightPayload {
-    LCNAME?: string;
+    /** Load Case Name */
+    LCNAME: string;
+    /** Load Group Name */
     GROUP_NAME?: string;
-    FV?: Array<number>;
+    /** Self-Weight Factor [X, Y, Z] */
+    FV: [number, number, number];
   }
   export interface NodalLoadItem extends DbBaseTypes.ItemGroupFields {
     LCNAME?: string;
