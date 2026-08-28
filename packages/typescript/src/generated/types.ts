@@ -7,16 +7,26 @@ export namespace DbAnalysisControlTypes {
     EREC?: string;
     vLCNAME?: Array<string>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MainControlDataPayload {
+    /** Auto Rotational DOF Constraint for Truss / Plane Stress / Solid Elements */
     ARDC?: boolean;
+    /** Auto Normal Rotation Constraint for Plate Elements */
     ANRC?: boolean;
+    /** Consider Section Stiffness Scale Factor for Stress Calculation */
     CSECF?: boolean;
+    /** Transfer Reactions of Slave Node to the Master Node */
     TRS?: boolean;
+    /** Calculate Equivalent Beam Stresses (Von-Mises and Max-Shear) */
     BMSTRESS?: boolean;
+    /** Consider Reinforcement for Section Stiffness Calculation */
     CRBAR?: boolean;
+    /** Change Local Axis of Tapered Section for Force / Stress Calculation */
     CLATS?: boolean;
-    ITER?: number;
-    TOL?: number;
+    /** Number of Iterations / Load Case */
+    ITER: number;
+    /** Convergence Tolerance */
+    TOL: number;
   }
   export interface TensionCompressionTrussConvergence {
     DISPL?: DbBaseTypes.OptUseToleranceValue;
@@ -45,24 +55,48 @@ export namespace DbAnalysisControlTypes {
     LCNAME?: string;
     FACTOR?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface PDeltaAnalysisControlPayload {
-    ITER?: number;
+    /** Number of Iterations */
+    ITER: number;
+    /** Convergence Tolerance */
     TOL?: number;
-    PDEL_CASES?: Array<PDeltaLoadCaseItem>;
+    /** Load Cases */
+    PDEL_CASES: Array<{
+      /** Load Case Name */
+      LCNAME: string;
+      /** Scale Factor */
+      FACTOR: number;
+    }>;
   }
   export interface BucklingLoadCaseItem {
     LCNAME?: string;
     FACTOR?: number;
     LOAD_TYPE?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface BucklingAnalysisControlPayload {
-    MODE_NUM?: number;
+    /** Number of Modes */
+    MODE_NUM: number;
+    /** Load Factor Range Type (Positive Value Only: true / Search: false) */
     OPT_POSITIVE?: boolean;
+    /** Search From (when OPT_POSITIVE is false) */
     LOAD_FACTOR_FROM?: number;
+    /** Search To (when OPT_POSITIVE is false) */
     LOAD_FACTOR_TO?: number;
+    /** Check Sturm Sequence */
     OPT_STURM_SEQ?: boolean;
+    /** Frame Geometric Stiffness Option (Consider Axial Only) */
     OPT_CONSIDER_AXIAL_ONLY?: boolean;
-    ITEMS?: Array<BucklingLoadCaseItem>;
+    /** Load Cases (Buckling Combination) */
+    ITEMS: Array<{
+      /** Load Case Name */
+      LCNAME: string;
+      /** Scale Factor */
+      FACTOR?: number;
+      /** Load Type (Variable: 0 / Constant: 1) */
+      LOAD_TYPE?: number;
+    }>;
   }
   export interface EigenvalueRitzLoadCaseItem {
     KIND?: string;
@@ -219,69 +253,130 @@ export namespace DbAnalysisControlTypes {
     FREQ?: unknown;
     BRIDGE1?: unknown;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadAnalysisControlIndiaPayload {
+    /** Influence Generating Points (0/1) */
     iIGP?: number;
-    UNUMT?: number;
-    DIST?: number;
-    PLATE?: string;
+    /** Number/Line Element (when iIGP=0) */
+    UNUMT: number;
+    /** Distance between Points (when iIGP=1) */
+    DIST: number;
+    /** Plate Options ("CENTER" / "NODAL") */
+    PLATE: string;
+    /** Plate – Stress */
     bSTRCALC?: boolean;
-    FRAME?: string;
+    /** Frame Options ("NORMAL" / "AXIAL") */
+    FRAME: string;
+    /** Frame – Combined Stress */
     bCSTRCALC?: boolean;
+    /** Filter – Reactions */
     bREAC?: boolean;
+    /** Reactions Option (All/Group) */
     bRGP?: boolean;
-    RGP?: string;
+    /** Reactions Group Name */
+    RGP: string;
+    /** Filter – Displacements */
     bDISP?: boolean;
+    /** Displacements Option (All/Group) */
     bDGP?: boolean;
-    DGP?: string;
+    /** Displacements Group Name */
+    DGP: string;
+    /** Filter – Forces/Moments */
     bFM?: boolean;
+    /** Forces/Moments Option (All/Group) */
     bFGP?: boolean;
-    FGP?: string;
+    /** Forces/Moments Group Name */
+    FGP: string;
+    /** Filter – Elastic/General Links */
     bL?: boolean;
+    /** Links Option (All/Group) */
     bLG?: boolean;
-    LGP?: string;
+    /** Links Group Name */
+    LGP: string;
+    /** Bridge Type for Impact/CDA (Steel: 0 / RC: 1) */
     BRIDGE?: number;
+    /** Track (Single: 0 / Double: 1 / Multiple: 2) */
     TRACKS?: number;
+    /** Sleeper Width Type (Type1: 0 / Type2: 1 / User: 2) */
     WIDTHTYPE?: number;
+    /** Sleeper Width for User */
     WIDTH?: number;
+    /** Depth of Fill */
     DEPTH?: number;
-    VHMAX?: number;
+    /** Maximum Successive Vehicles */
+    VHMAX: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadAnalysisControlBSPayload {
+    /** Influence Generating Points (0/1) */
     iIGP?: number;
-    UNUMT?: number;
-    DIST?: number;
-    PLATE?: string;
+    /** Number/Line Element (when iIGP=0) */
+    UNUMT: number;
+    /** Distance between Points (when iIGP=1) */
+    DIST: number;
+    /** Plate Options ("CENTER" / "NODAL") */
+    PLATE: string;
+    /** Plate – Stress */
     bSTRCALC?: boolean;
+    /** Plate – Concurrent Force */
     bCONCURRENT?: boolean;
-    FRAME?: string;
+    /** Frame Options ("NORMAL" / "AXIAL") */
+    FRAME: string;
+    /** Frame – Combined Stress */
     bCSTRCALC?: boolean;
+    /** Filter – Reactions */
     bREAC?: boolean;
+    /** Reactions Option (All/Group) */
     bRGP?: boolean;
-    RGP?: string;
+    /** Reactions Group Name */
+    RGP: string;
+    /** Filter – Displacements */
     bDISP?: boolean;
+    /** Displacements Option (All/Group) */
     bDGP?: boolean;
-    DGP?: string;
+    /** Displacements Group Name */
+    DGP: string;
+    /** Filter – Forces/Moments */
     bFM?: boolean;
+    /** Forces/Moments Option (All/Group) */
     bFGP?: boolean;
-    FGP?: string;
+    /** Forces/Moments Group Name */
+    FGP: string;
+    /** Filter – Elastic/General Links */
     bL?: boolean;
+    /** Links Option (All/Group) */
     bLG?: boolean;
-    LGP?: string;
+    /** Links Group Name */
+    LGP: string;
+    /** N for HA Lane Factor (BD/37/01) or ALL Model 2 (CS 454) — N < 6: 0 / N ≥ 6: 1 */
     NUMLANE?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadAnalysisControlTransversePayload {
-    LOAD_POINT_SEL?: number;
+    /** Load Point Selection (Influence Line Dependent: 1 / All Point: 2) */
+    LOAD_POINT_SEL: number;
+    /** Influence Generation Method (Number/Line: 0 / Distance: 1) */
     INFL_GEN_POINT?: number;
-    NUM_UNIT_LOAD?: number;
-    DISTANCE?: number;
-    ANALYSIS_RESULT?: number;
+    /** Number/Line Element (when method 0) */
+    NUM_UNIT_LOAD: number;
+    /** Distance between Points (when method 1) */
+    DISTANCE: number;
+    /** Analysis Results Type (Normal: 1 / Normal+Concurrent Force/Stress: 2) */
+    ANALYSIS_RESULT: number;
+    /** Combined Stress */
     OPT_COMBINED_STR?: boolean;
+    /** Reactions */
     OPT_REACTIONS?: boolean;
+    /** Displacement */
     OPT_DISPLACEMENTS?: boolean;
+    /** Forces/Moments */
     OPT_FORCE?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SettlementAnalysisControlDataPayload {
+    /** Plate Concurrent Force (Active: true / Inactive: false) */
     CONCURRENT_CALC?: boolean;
+    /** Elastic / General Links Concurrent Force (Active: true / Inactive: false) */
     CONCURRENT_LINK?: boolean;
   }
   export interface NonlinearNewtonItem {
@@ -522,9 +617,12 @@ export namespace DbAnalysisControlTypes {
     vBOUNDARY?: Array<BoundaryGroupCombinationItem>;
     vLOADANAL?: Array<LoadCaseAnalysisAssignmentItem>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface DefineBoundaryCombinationHyperSPayload {
-    BCG_NAME?: string;
-    GROUP_LIST?: Array<string>;
+    /** Boundary Combination Name (1~20자, 모델 내 유일) */
+    BCG_NAME: string;
+    /** Boundary Group List (선택한 경계 그룹 이름 배열, 중복 자동 제거) */
+    GROUP_LIST: Array<string>;
   }
   export interface BoundaryCombinationAssignItem {
     ANAL_TYPE?: string;
@@ -591,8 +689,17 @@ export namespace DbBoundaryTypes {
   export interface GeneralSpringSupportItem extends DbBaseTypes.ItemGroupFields {
     TYPE_NAME?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface GeneralSpringSupportPayload {
-    ITEMS: Array<GeneralSpringSupportItem>;
+    /** General Spring (배열로 삽입) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Boundary Group Name */
+      GROUP_NAME?: string;
+      /** Defined General Spring Name (GSTP에서 정의한 이름) */
+      TYPE_NAME: string;
+    }>;
   }
   export interface SurfaceSpringItem extends DbBaseTypes.ItemGroupFields {
     ELEM_TYPE?: string;
@@ -601,8 +708,25 @@ export namespace DbBoundaryTypes {
     SPRING_TYPE?: number;
     MODULUS?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SurfaceSpringPayload {
-    ITEMS: Array<SurfaceSpringItem>;
+    /** Surface Spring (배열로 삽입) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Boundary Group Name */
+      GROUP_NAME?: string;
+      /** Element Type · "FRAME" / "PLANAR(FACE)" / "PLANAR(EDGE)" / "SOLID" */
+      ELEM_TYPE: string;
+      /** Edge/Face 선택 · FRAME: Local x=2, y=0, z=1 · PLANAR/SOLID: Edge#1∼4=0∼3 */
+      EDGE_FACE?: number;
+      /** Spring Type · 0=Linear, 1=Comp.-Only, 2=Tens.-Only */
+      SPRING_TYPE?: number;
+      /** Modulus of Subgrade Reaction Ks */
+      MODULUS: number;
+      /** Width(FRAME 전용) */
+      WIDTH?: number;
+    }>;
   }
   export interface ElasticLinkPayload {
     NODE?: Array<number>;
@@ -664,21 +788,36 @@ export namespace DbBoundaryTypes {
     POINT_VALUES?: unknown;
     VECTOR_VALUES?: unknown;
   }
+  /** Generated from contracts/endpoints/. */
   export interface GeneralLinkHyperSPayload {
-    PROP_NAME?: string;
-    NODE1?: number;
-    NODE2?: number;
+    /** General Link Property Name */
+    PROP_NAME: string;
+    /** Node 1 ID */
+    NODE1: number;
+    /** Node 2 ID */
+    NODE2: number;
+    /** Reference Coordinate System · 0=Element, 1=Global */
+    REF_SYSTEM: number;
+    /** Beta Angle */
+    BETA_ANGLE: number;
+    /** Input Method · 0=Angle, 1=3 Points, 2=Vector */
+    INPUT_METHOD: number;
+    /** Angle Values [about X, about y', about z''] */
+    ANGLE_VALUES: Array<JsonObject>;
+    /** Point Values [P0[3], P1[3], P2[3]] */
+    POINT_VALUES: Array<JsonObject>;
+    /** Vector Values [V1[3], V2[3]] */
+    VECTOR_VALUES: Array<JsonObject>;
+    /** Boundary Group Name */
     GROUP_NAME?: string;
-    REF_SYSTEM?: number;
-    BETA_ANGLE?: number;
-    INPUT_METHOD?: number;
-    ANGLE_VALUES?: unknown;
-    POINT_VALUES?: unknown;
-    VECTOR_VALUES?: unknown;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ChangeGeneralLinkPropertyPayload {
-    GLINK_KEY?: number;
-    CHANGE_PROPERTY_NAME?: string;
+    /** General Link ID Number */
+    GLINK_KEY: number;
+    /** Change Property Name (NLLP에서 정의된 이름) */
+    CHANGE_PROPERTY_NAME: string;
+    /** Boundary Group Name */
     GROUP_NAME?: string;
   }
   export interface BeamEndReleaseItem extends DbBaseTypes.ItemGroupFields {
@@ -892,13 +1031,19 @@ export namespace DbBoundaryTypes {
   export interface LinearConstraintPayload {
     ITEMS: Array<LinearConstraintItem>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface PanelZoneEffectPayload {
-    OPT_OFFSET?: boolean;
-    OFFS_FACTOR?: number;
-    OUTPUT_POSITION?: number;
+    /** Auto Calculate Panel Zone Offset Distances */
+    OPT_OFFSET: boolean;
+    /** Offset Factor */
+    OFFS_FACTOR: number;
+    /** Output Position */
+    OUTPUT_POSITION: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ConstraintLabelDirectionPayload {
-    DIR?: number;
+    /** Constraint Label Direction */
+    DIR: number;
   }
 }
 
@@ -1647,24 +1792,41 @@ export namespace DbLoadCombinationsTypes {
 }
 
 export namespace DbMiscLoadsTypes {
+  /** Generated from contracts/endpoints/. */
   export interface SettlementGroupPayload {
-    NAME?: string;
-    SETTLE?: number;
-    ITEMS?: Array<number>;
+    /** Settlement Group Name */
+    NAME: string;
+    /** Settlement Displacement */
+    SETTLE: number;
+    /** Node List */
+    ITEMS: Array<number>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SettlementLoadCasePayload {
-    NAME?: string;
-    DESC?: string;
-    FACTOR?: number;
-    MIN?: number;
-    MAX?: number;
-    ST_GROUPS?: Array<string>;
+    /** Settlement Load Case No. (Assign Key) */
+    KEY: number;
+    /** Settlement Load Case Name */
+    NAME: string;
+    /** Description */
+    DESC: string;
+    /** Settlement Scale Factor */
+    FACTOR: number;
+    /** Settlement – Min. Group Nos. */
+    MIN: number;
+    /** Settlement – Max. Group Nos. */
+    MAX: number;
+    /** Selected Settlement Group Names */
+    ST_GROUPS: Array<string>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface PreCompositeSectionPayload {
-    LCNAME_ITEM?: Array<string>;
+    /** Static Load Case Names */
+    LCNAME_ITEM: Array<string>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface LoadSequenceNonlinearPayload {
-    LCNAME_ITEM?: Array<string>;
+    /** Load Case Names (순서 배열) */
+    LCNAME_ITEM: Array<string>;
   }
   export interface WaveLoadGrowthItem {
     Z?: number;
@@ -1696,36 +1858,58 @@ export namespace DbMiscLoadsTypes {
     STEP?: number;
     POS?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface IgnoreElementForLoadCasePayload {
-    ELEMENT?: number;
-    LCNAME?: string;
-    OPT_IGNORE?: boolean;
+    /** Element ID */
+    ELEMENT: number;
+    /** Load Case Name */
+    LCNAME: string;
+    /** Ignore Option */
+    OPT_IGNORE: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface InitialForceGeometricStiffnessPayload {
-    DIR?: string;
-    INIT_FORCE?: number;
+    /** Direction ("GX" / "GY" / "GZ" / "AXIAL") */
+    DIR: string;
+    /** Initial Force */
+    INIT_FORCE: number;
   }
   export interface InitialForceCombinationItem {
     LCNAME?: string;
     FACTOR?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface InitialForceControlDataPayload {
+    /** Use Add Initial Force to Element Force */
     bADDLC?: boolean;
-    LCNAME?: string;
+    /** Load Case Name */
+    LCNAME: string;
+    /** Use Initial Force Combination */
     bUSECOMB?: boolean;
-    COMB_LIST?: Array<InitialForceCombinationItem>;
+    /** Initial Force Combination Cases */
+    COMB_LIST: Array<{
+      /** Scale Factor */
+      FACTOR: number;
+    }>;
+    /** Check to Reflect Initial Axial Forces into Geometric Stiffness */
     bCHECK_GEOM_STIFF?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface InitialElementForcePayload {
-    ELEM_TYPE?: string;
-    ELEM_KEY?: number;
-    ELEMENT_FORCES?: Array<number>;
+    /** Element Type */
+    ELEM_TYPE: string;
+    /** Element ID */
+    ELEM_KEY: number;
+    /** Element Forces */
+    ELEMENT_FORCES: Array<number>;
   }
 }
 
 export namespace DbMovingLoadsTypes {
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadCodePayload {
-    CODE?: string;
+    /** Moving Load Code */
+    CODE: string;
   }
   export interface LineLaneCommon {
     LL_NAME?: string;
@@ -1747,9 +1931,28 @@ export namespace DbMovingLoadsTypes {
     CENT_F?: number;
     ECCEN_VERT_LOAD?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TrafficLineLanePayload {
-    COMMON?: LineLaneCommon;
-    LANE_ITEMS?: Array<LineLaneItem>;
+    /** Name of Line Lane */
+    LL_NAME: string;
+    /** Lane Width */
+    WIDTH: number;
+    /** Wheel Spacing */
+    WHEEL_SPACE?: number;
+    /** Transverse Lane Optimization */
+    OPT_AUTO_LANE?: boolean;
+    /** Allow Width for Optimization */
+    ALLOW_WIDTH?: number;
+    /** Load Distribution ("LANE" / "CROSS") */
+    LOAD_DIST: string;
+    /** Name of Structure Group */
+    GROUP_NAME?: string;
+    /** Skew Start */
+    SKEW_START?: number;
+    /** Skew End */
+    SKEW_END?: number;
+    /** Moving Direction ("FORWARD" / "BACKWARD" / "BOTH") */
+    MOVING: string;
   }
   export interface LineLaneChinaItem {
     ELEM?: number;
@@ -1758,9 +1961,18 @@ export namespace DbMovingLoadsTypes {
     SPAN_START?: boolean;
     SCALE_FACTOR?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TrafficLineLanesChinaPayload {
-    COMMON?: LineLaneCommon;
-    LANE_ITEMS?: Array<LineLaneChinaItem>;
+    /** Element No. */
+    ELEM: number;
+    /** Eccentricity */
+    ECC?: number;
+    /** Span Length */
+    SPAN?: number;
+    /** Span Start */
+    SPAN_START?: boolean;
+    /** Scale Factor */
+    SCALE_FACTOR?: number;
   }
   export interface LineLaneIndiaItem {
     ELEM?: number;
@@ -1769,33 +1981,65 @@ export namespace DbMovingLoadsTypes {
     IMPACT_FACTOR?: number;
     SPAN?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TrafficLineLanesIndiaPayload {
-    COMMON?: LineLaneCommon;
-    LANE_ITEMS?: Array<LineLaneIndiaItem>;
+    /** Element No. */
+    ELEM: number;
+    /** Eccentricity */
+    ECC?: number;
+    /** Option (0=IF/CDA, 1=Span Length) */
+    IMPACT_SPAN?: number;
+    /** Scale Factor (when IMPACT_SPAN=0) */
+    IMPACT_FACTOR?: number;
+    /** Span Length (when IMPACT_SPAN=1) */
+    SPAN?: number;
   }
   export interface LineLaneTransverseItem {
     ELEM?: number;
     FACTOR?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TrafficLineLanesTransversePayload {
-    LL_NAME?: string;
-    LANE_ITEMS?: Array<LineLaneTransverseItem>;
+    /** Name of Line Lane */
+    LL_NAME: string;
+    /** Lane Items */
+    LANE_ITEMS: Array<{
+      /** Element ID */
+      ELEM: number;
+      /** Factor */
+      FACTOR: number;
+    }>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TrafficLineLanesOptimizationPayload {
-    LL_NAME?: string;
-    LOAD_DIST?: string;
+    /** Name of Line Lane */
+    LL_NAME: string;
+    /** Load Distribution ("LANE" / "CROSS") */
+    LOAD_DIST: string;
+    /** Structure Group Name */
     GROUP_NAME?: string;
+    /** Skew Start */
     SKEW_START?: number;
+    /** Skew End */
     SKEW_END?: number;
-    MOVING?: string;
-    OPTIM_WIDTH?: number;
-    LANE_WIDTH?: number;
-    OFFSET_TYPE?: number;
+    /** Moving Direction */
+    MOVING: string;
+    /** Optimization Width */
+    OPTIM_WIDTH: number;
+    /** Lane Width */
+    LANE_WIDTH: number;
+    /** Offset Type (0=Fixed, 1=Division) */
+    OFFSET_TYPE: number;
+    /** Number of Division */
     DIVIDE_NUM?: number;
+    /** Analysis Lane Offset */
     ANAL_LANE_OFFSET?: number;
+    /** Wheel Spacing */
     WHEEL_SPACE?: number;
+    /** Margin */
     MARGIN?: number;
-    LANE_ITEMS?: Array<LineLaneItem>;
+    /** Lane Items (ELEM, ECC, 코드별 추가 필드) */
+    LANE_ITEMS: Array<JsonObject>;
   }
   export interface SurfaceLaneItem {
     NODE?: number;
@@ -1808,33 +2052,42 @@ export namespace DbMovingLoadsTypes {
     SPAN_LENGTH?: number;
     ECCEN_VERT_LOAD?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TrafficSurfaceLanePayload {
-    NAME?: string;
-    WIDTH?: number;
+    /** Name of Surface Lane */
+    NAME: string;
+    /** Lane Width */
+    WIDTH: number;
+    /** Wheel Spacing */
     WHEEL_SPACE?: number;
+    /** Skew Start */
     SKEW_START?: number;
+    /** Skew End */
     SKEW_END?: number;
+    /** Transverse Lane Optimization */
     bOPTIMIZE?: boolean;
+    /** Allow Width for Optimization */
     ALLOW_WIDTH?: number;
-    MV_DIR?: string;
+    /** Moving Direction ("FORWARD" / "BACKWARD" / "BOTH") */
+    MV_DIR: string;
+    /** Sequence Number (Unique) */
     SEQ?: number;
-    LANE_ITEMS?: Array<SurfaceLaneItem>;
+    /** Lane Items */
+    LANE_ITEMS: Array<JsonObject>;
   }
   export interface SurfaceLaneChinaItem {
     NODE?: number;
     OFFSET?: number;
     SPAN_LENGTH?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TrafficSurfaceLanesChinaPayload {
-    NAME?: string;
-    WIDTH?: number;
-    WHEEL_SPACE?: number;
-    SKEW_START?: number;
-    SKEW_END?: number;
-    bOPTIMIZE?: boolean;
-    ALLOW_WIDTH?: number;
-    MV_DIR?: string;
-    LANE_ITEMS?: Array<SurfaceLaneChinaItem>;
+    /** Node No. */
+    NODE: number;
+    /** Offset Distance to Lane Center */
+    OFFSET?: number;
+    /** Span Length */
+    SPAN_LENGTH?: number;
   }
   export interface SurfaceLaneOptimizationItem {
     NODE_KEY?: number;
@@ -1958,18 +2211,31 @@ export namespace DbMovingLoadsTypes {
     VEH_KSCE_LSD15?: VehicleKsceLsd15Params;
     LOAD_ITEMS?: Array<VehicleLoadItem>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface VehicleTransversePayload {
-    NAME?: string;
-    P?: number;
-    W?: number;
-    LW?: number;
-    NUM?: number;
-    DW?: number;
-    DV?: number;
+    /** Vehicular Load Name */
+    NAME: string;
+    /** Wheel Load (P) */
+    P: number;
+    /** Distribution Width */
+    W: number;
+    /** Longitudinal Width */
+    LW: number;
+    /** Max. Number of Lanes (n) */
+    NUM: number;
+    /** Distance between Wheels (Dw) */
+    DW: number;
+    /** Min. Distance between Vehicle (Dv) */
+    DV: number;
+    /** Edge Distance of Wheel Loads (De) */
     DE?: number;
+    /** Median Strip Option */
     OPT_MEDIAN_STRIP?: boolean;
+    /** Location (Ml) */
     ML?: number;
+    /** Width (Mw) */
     MW?: number;
+    /** Max. Number of Left Lanes (n1) */
     LEFT_LANES?: number;
   }
   export interface MovingLoadCaseSubLoadDataItem {
@@ -2191,38 +2457,64 @@ export namespace DbMovingLoadsTypes {
     bPERMIT_LOAD?: boolean;
     DEFAULT?: MovingLoadCasePolandDefault;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadCaseTransversePayload {
-    LCNAME?: string;
+    /** Load Case Name */
+    LCNAME: string;
+    /** Description */
     DESC?: string;
-    MVHL_NAME?: string;
-    SCALEFACTOR?: number;
-    LLAN_NAME?: string;
-    NUM_LANE?: number;
-    ITEMS?: Array<number>;
+    /** Vehicle Name */
+    MVHL_NAME: string;
+    /** Scale Factor */
+    SCALEFACTOR: number;
+    /** Line Lane */
+    LLAN_NAME: string;
+    /** Number of Loaded Lanes */
+    NUM_LANE: number;
+    /** Factors (Length: NUM_LANE + 1) */
+    ITEMS: Array<number>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface StructureGroupNamesPayload {
-    GROUPS?: Array<string>;
+    /** Structure Group Names */
+    GROUPS: Array<string>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface VehicleClassPayload {
-    VEHICLE_CLS_NAME?: string;
-    VEHICLE_LD_NAMES?: Array<string>;
+    /** Vehicle Class Name */
+    VEHICLE_CLS_NAME: string;
+    /** Selected Vehicle List */
+    VEHICLE_LD_NAMES: Array<string>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface PlateElementForInfluenceSurfacePayload {
-    ELEM_LISTS?: Array<number>;
+    /** Assigned Element List */
+    ELEM_LISTS: Array<number>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface LaneSupportNegativeMomentPayload {
-    TYPE?: string;
+    /** Input Type ("AutoInput" / "UserInput") */
+    TYPE: string;
+    /** Structure Group Name (AutoInput 전용) */
     GROUP_NAME?: string;
+    /** Element ID */
     ELEMENT_NO?: number;
+    /** Element Type ("BEAM" / "PLATE") */
     ELEMENT_TYPE?: string;
+    /** Position ("Both" / "End-I" / "End-J", BEAM 전용) */
     POSITION?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface LaneSupportReactionPayload {
-    NODE?: number;
+    /** Fixed Value: 0 (Key는 Node ID) */
+    NODE: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface DynamicLoadAllowancePayload {
-    FACTOR?: number;
-    ITEMS?: Array<string>;
+    /** Impact Factor (%) */
+    FACTOR: number;
+    /** Selected Structure Group List */
+    ITEMS: Array<string>;
   }
   export interface AdditionalImpactFactorItem {
     ID?: number;
@@ -2237,12 +2529,19 @@ export namespace DbMovingLoadsTypes {
   export interface AdditionalImpactFactorPayload {
     ITEMS?: Array<AdditionalImpactFactorItem>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface RailwayDynamicFactorPayload {
-    INPUT_TYPE?: number;
+    /** Input Type (0=Auto, 1=User) */
+    INPUT_TYPE: number;
+    /** Determinant Length (Lφ) */
     LENGTH?: number;
+    /** Quality of Track Maintenance (0=Carefully, 1=Standard) */
     MAINTAIN_TYPE?: number;
+    /** Consider Reduced Dynamic Effect */
     OPT_REDUCE_EFF?: boolean;
+    /** Height of Cover (h) */
     HEIGHT_COVER?: number;
+    /** Dynamic Factor (φ) */
     DYN_FACTOR?: number;
   }
 }
@@ -3433,10 +3732,15 @@ export namespace DbPushoverTypes {
 }
 
 export namespace DbStaticLoadsTypes {
+  /** Generated from contracts/endpoints/. */
   export interface StaticLoadCasePayload {
+    /** Ordering Index in GUI */
     NO?: number;
-    NAME?: string;
-    TYPE?: string;
+    /** Load Case Name */
+    NAME: string;
+    /** Load Type */
+    TYPE: string;
+    /** Description */
     DESC?: string;
   }
   export interface SelfWeightPayload {
@@ -3679,22 +3983,34 @@ export namespace DbStaticLoadsTypes {
     LOADING_AREA_GROUP?: number;
     PRES_PROFILE_ITEMS?: Array<SeismicEarthPressureProfileItem>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SeismicLoadParamPayload {
-    NAME?: string;
+    /** Load Case Name */
+    NAME: string;
+    /** Seismic Load Code */
     CODE?: string;
+    /** Seismic Calculation Method ("RES_DISP" / "EQV_STATIC") */
     METHOD?: string;
-    SZ?: string;
-    EPA?: number;
-    SC?: string;
-    FA?: number;
-    FV?: number;
-    SDS?: number;
-    SD1?: number;
+    /** Seismic Zone */
+    SZ: string;
+    /** Effective Peak Ground Acceleration */
+    EPA: number;
+    /** Site Class */
+    SC: string;
+    /** Short-period Site Coefficient */
+    FA: number;
+    /** Long-period Site Coefficient */
+    FV: number;
+    /** Design Spectral Acceleration at Short Period */
+    SDS: number;
+    /** Design Spectral Acceleration at 1-sec Period */
+    SD1: number;
+    /** Seismic User Group */
     USER_GROUP?: string;
-    IF?: number;
-    RMF?: number;
-    SRF?: number;
-    DAMP_RATIO?: number;
+    /** Importance Factor */
+    IF: number;
+    /** Response Modification Factor */
+    RMF: number;
   }
   export interface StaticWindLoadPayload {
     WIND_CODE?: string;
@@ -3754,9 +4070,13 @@ export namespace DbTemperaturePrestressTypes {
   export interface BeamSectionTemperaturePayload {
     ITEMS: Array<BeamSectionTemperatureItem>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SystemTemperaturePayload {
-    LCNAME?: string;
+    /** Load Case Name */
+    LCNAME: string;
+    /** Load Group Name */
     GROUP_NAME?: string;
+    /** System Temperature */
     TEMPER?: number;
   }
   export interface NodalTemperatureItem extends DbBaseTypes.ItemGroupFields {
@@ -3811,10 +4131,14 @@ export namespace DbTemperaturePrestressTypes {
     DeBondELEN?: number;
     SHAPE?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TendonLocationCompositeSectionPayload {
-    TDNA?: number;
-    CSCS?: number;
-    PART_NUM?: number;
+    /** Tendon Profile No. */
+    TDNA: number;
+    /** Composite Section for Construction Stage No. */
+    CSCS: number;
+    /** Part Number */
+    PART_NUM: number;
   }
   export interface TendonPrestressItem extends DbBaseTypes.ItemGroupFields {
     LCNAME?: string;

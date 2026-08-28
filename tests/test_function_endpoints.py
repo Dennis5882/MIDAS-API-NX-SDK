@@ -14,9 +14,17 @@ from function_endpoints import (
     typescript_function_surfaces,
 )
 from promote_contract import (
+    _ambiguous_draft_key,
     _non_db_delete_response_unknown,
     _non_db_resource_is_modelled,
 )
+
+
+def test_promotion_rejects_a_manual_row_that_still_names_multiple_fields():
+    assert _ambiguous_draft_key(
+        "fields:\n  - key: FIRST\n    properties:\n      - key: 'SECOND\" / \"THIRD'\n"
+    ) == 'SECOND" / "THIRD'
+    assert _ambiguous_draft_key("fields:\n  - key: FIRST\n    properties:\n      - key: SECOND_2\n") is None
 
 
 def test_plain_function_discovery_resolves_constant_routes_and_npm_metadata(tmp_path):

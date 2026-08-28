@@ -328,7 +328,11 @@
       "additionalProperties": false,
       "required": ["key", "type", "requirement", "documentedOptional", "safeToOmit", "provenance"],
       "properties": {
-        "key": { "type": "string", "minLength": 1 },
+        "key": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+          "description": "One literal wire-property name. A manual row that names multiple keys must be split or kept unpromoted."
+        },
         "description": { "type": "string" },
         "type": {
           "enum": ["string", "number", "integer", "boolean", "array", "object"]
@@ -375,6 +379,16 @@
           "items": { "type": ["string", "number", "boolean"] }
         },
         "enumNote": { "type": "string" },
+        "minimum": { "type": "number", "description": "Inclusive lower bound stated by the manual." },
+        "exclusiveMinimum": { "type": "number", "description": "Exclusive lower bound stated by the manual." },
+        "maximum": { "type": "number", "description": "Inclusive upper bound stated by the manual." },
+        "exclusiveMaximum": { "type": "number", "description": "Exclusive upper bound stated by the manual." },
+        "notEqual": { "type": ["string", "number", "boolean"], "description": "A value the manual explicitly forbids." },
+        "const": { "type": ["string", "number", "boolean"], "description": "The only value the manual permits." },
+        "minItems": { "type": "integer", "minimum": 0, "description": "Inclusive array length lower bound stated by the manual." },
+        "maxItems": { "type": "integer", "minimum": 0, "description": "Inclusive array length upper bound stated by the manual." },
+        "minLength": { "type": "integer", "minimum": 0, "description": "Inclusive string length lower bound stated by the manual." },
+        "maxLength": { "type": "integer", "minimum": 0, "description": "Inclusive string length upper bound stated by the manual." },
         "unit": { "type": "string" },
         "provenance": {
           "enum": ["manual", "live_verified", "live_corrected", "info_schema"],

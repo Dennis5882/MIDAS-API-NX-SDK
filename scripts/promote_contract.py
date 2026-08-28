@@ -74,6 +74,8 @@ NEEDS_HAND_REVIEW = {
     "/db/REBB": "its write path is broken server-side, not a shape question",
 }
 
+_FIELD_KEY = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+
 _DELETE_OPS = """  - method: DELETE
     variant: per_id
     path: {endpoint}/{{id}}
@@ -178,6 +180,26 @@ def _verification_block(entry: dict, product: str) -> str:
 def _draft_methods(text: str) -> set[str]:
     """Read only the manual-transcribed operation verbs from a draft."""
     return set(re.findall(r"^  - method: ([A-Z]+)$", text, re.MULTILINE))
+
+
+def _ambiguous_draft_key(text: str) -> str | None:
+    """Return a non-wire field key that must not be promoted as a contract fact."""
+
+    import yaml
+
+    document = yaml.safe_load(text)
+
+    def walk(fields: list[dict]) -> str | None:
+        for field in fields:
+            key = field.get("key")
+            if not isinstance(key, str) or not _FIELD_KEY.fullmatch(key):
+                return str(key)
+            nested = walk(field.get("properties", []))
+            if nested is not None:
+                return nested
+        return None
+
+    return walk(document.get("fields", []))
 
 
 def _plain_function_is_modelled(
@@ -297,6 +319,9 @@ def promote(
         return None
     if "TODO(review): the chapter did not state its methods" in text:
         print(f"  {slug}: refused - the manual never states this endpoint's methods")
+        return None
+    if key := _ambiguous_draft_key(text):
+        print(f"  {slug}: refused - {key!r} is not one literal wire-property name")
         return None
 
     # A draft still carrying review notes is incomplete by its own admission.

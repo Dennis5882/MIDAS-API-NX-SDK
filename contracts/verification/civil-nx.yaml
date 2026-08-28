@@ -290,3 +290,35 @@ records:
       rather than at nothing.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-write-sweep-2026-07-26
+    endpoints: []
+    date: "2026-07-26"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 06/18/2026
+    level: write
+    outcome: success_empty
+    method: >-
+      scripts/live_crud_check.py (full CRUD round trip) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-write-sweep-2026-08-25
+    endpoints: []
+    date: "2026-08-25"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 08/24/2026
+    level: write
+    outcome: success
+    method: >-
+      Live-confirmed 2026-08-25: requires /db/MVCD.CODE=EUROCODE first, and is keyed by a real element id (not a serial number, per the manual's own note) -- documented conditional field requiredness works as written here, unlike its sibling /db/DYFG. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delet
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md

@@ -187,10 +187,12 @@ python scripts/extract_contracts.py --check               # promoted vs. manual
 `promote_contract.py` refuses more than it accepts, on purpose. It will not
 promote a draft that still carries review notes, one whose section has
 conditional variant tables nobody has merged, one whose methods the manual never
-states, or one of the eight endpoints whose documented payload has already been
+states, contains a key row that still names more than one wire property, or is
+one of the eight endpoints whose documented payload has already been
 measured wrong live - putting the manual's version of `/db/SECF`'s key into the
-source of truth would be worse than having no contract for it. Of 376 drafts, 32
-qualified.
+source of truth would be worse than having no contract for it. Run
+`python scripts/promote_contract.py --all --dry-run` for the current measured
+set rather than relying on a copied count.
 
 `--emit` writes to `contracts/drafts/`, which is **git-ignored and ignored by the
 validator**. Every draft carries `draft: true`, which the schema forbids, so a
@@ -220,7 +222,7 @@ Then:
 
 ## Migration status
 
-Thirty-nine endpoints and three result tables are contracted. The remaining ledger lives in `docs/coverage.json`
+One hundred and twenty endpoints and three result tables are contracted. The remaining ledger lives in `docs/coverage.json`
 (399 endpoints) and is being migrated incrementally, so an endpoint without a
 contract is expected rather than a defect. What is *not* optional is that a
 contract, once written, is honoured by both SDKs.
@@ -231,13 +233,15 @@ What the extractor can currently reach, per `scripts/extract_contracts.py`:
 | --- | --- |
 | Endpoint sections found across chapters 01-17 and 24-27 | 386 |
 | ...with a parameter table it can parse | 370 |
-| ...whose methods the manual actually states | 110 |
-| Fields transcribed | ~4,770, of which ~180 nested |
-| Fields given `safeToOmit: true` from a confirmed live payload | 437, across 72 endpoints |
-| Drafts with no review note and no unmerged variant table | 130 |
-| Promoted so far | 39 endpoints + 3 tables |
-| Payload types the npm SDK now takes from contracts | 38 of 738 |
-| Sections with conditional variant tables left unmerged | 58 |
+| ...whose methods the manual actually states | 360 |
+| Fields transcribed across parsed tables | 4,798, of which 321 nested |
+| Promoted so far | 120 endpoints + 3 tables |
+| Payload types the npm SDK now takes from contracts | 81 of 738 |
+| Explicitly modelled conditional variant sets | 5 |
+| Sections with conditional variant tables left unmerged | 53 |
+| Enum fields whose complete value list is not stated | 95 |
+| Arrays whose element type is not stated | 109 |
+| Unrecognised Value Type cells | 25 |
 | Sections belonging to the shared `/post/TABLE` family | 89 |
 
 The 89 `/post/TABLE` sections (chapters 18-23) are one endpoint selected by a

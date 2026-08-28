@@ -41,6 +41,13 @@ CHAPTER = """# 99 DB — Synthetic
 | 8 | └ Item value | `"ITEMS[].ITEM_VALUE"` | Number | 1 | Optional |
 | 9 | Nested leaf | `"CFG.MODE"` | String | - | Optional |
 | 10 | Ambiguous | `"A" / "B"` | String | - | Optional |
+| 11 | Non-negative value | `"NON_NEGATIVE"` | Number (≥0) | - | Required |
+| 12 | Fixed code | `"CODE"` | String(7) | - | Required |
+| 13 | Fixed vector | `"VECTOR"` | Number,3 | - | Required |
+| 14 | Inline boolean default | `"INLINE_DEFAULT"` | Boolean (default false) | - | Optional |
+| 15 | Fixed numeric value | `"CONST_VALUE"` | Number (const 0.75) | - | Read Only |
+| 16 | Reversed numeric choices (Zero: 0 / One: 1) | `"REVERSED"` | Integer (enum) | - | Required |
+| 17 | Explicit paired fields | `"ENABLED"` / `"LIMIT"` | Boolean / Number | false / 0 | Optional / Required |
 
 ### Variant table
 
@@ -108,6 +115,76 @@ def test_ambiguous_keys_are_flagged_not_guessed(section: ex.Section):
 
     assert 'A" / "B' in ambiguous
     assert any("more than one" in note for note in ambiguous['A" / "B'].notes)
+
+
+def test_explicit_type_constraints_are_preserved(section: ex.Section):
+    fields = {field.key: field for field in section.tables[0].fields}
+    assert fields["NON_NEGATIVE"].type == "number"
+    assert fields["NON_NEGATIVE"].constraints == {"minimum": 0}
+    assert fields["CODE"].type == "string"
+    assert fields["CODE"].constraints == {"minLength": 7, "maxLength": 7}
+    assert fields["VECTOR"].type == "array"
+    assert fields["VECTOR"].items == {"type": "number"}
+    assert fields["VECTOR"].constraints == {"minItems": 3, "maxItems": 3}
+    assert fields["INLINE_DEFAULT"].type == "boolean"
+    assert fields["INLINE_DEFAULT"].documented_default is False
+    assert fields["CONST_VALUE"].constraints == {"const": 0.75}
+    assert fields["REVERSED"].enum == [0, 1]
+    assert fields["ENABLED"].type == "boolean"
+    assert fields["ENABLED"].documented_default is False
+    assert fields["ENABLED"].requirement == "optional"
+    assert fields["LIMIT"].type == "number"
+    assert fields["LIMIT"].documented_default == 0
+    assert fields["LIMIT"].requirement == "required"
+
+    draft_fields = {field["key"]: field for field in yaml.safe_load(ex.render_draft(section))["fields"]}
+    assert draft_fields["NON_NEGATIVE"]["minimum"] == 0
+    assert draft_fields["CODE"]["maxLength"] == 7
+    assert draft_fields["VECTOR"]["items"]["type"] == "number"
+    assert draft_fields["VECTOR"]["minItems"] == 3
+    assert draft_fields["INLINE_DEFAULT"]["documentedDefault"] is False
+    assert draft_fields["CONST_VALUE"]["const"] == 0.75
+
+
+def test_only_exact_parallel_columns_are_split_into_independent_fields(tmp_path: Path):
+    path = tmp_path / "99_DB_Parallel.md"
+    path.write_text(
+        """# 99 DB — Parallel
+
+## 1. `/db/PARALLEL` — Parallel fields
+
+| No. | Description | Key | Value Type | Default | Required |
+|-----|-------------|-----|------------|---------|----------|
+| 1 | Exact pair | `"FIRST"` / `"SECOND"` | String / Integer | `"A"` / 2 | Optional / Required |
+| 2 | Ambiguous pair | `"LEFT"` / `"RIGHT"` | String / Integer | - | Optional |
+""",
+        encoding="utf-8",
+    )
+    fields = ex.parse_chapter(path)[0].tables[0].fields
+    by_key = {field.key: field for field in fields}
+
+    assert {"FIRST", "SECOND"} <= set(by_key)
+    assert by_key["FIRST"].type == "string"
+    assert by_key["SECOND"].type == "integer"
+    # One Required value beside two keys is not enough to assign it safely.
+    assert 'LEFT" / "RIGHT' in by_key
+    assert any("more than one" in note for note in by_key['LEFT" / "RIGHT'].notes)
+
+
+def test_compact_object_arrays_and_literal_type_cells_are_transcribed_without_guessing():
+    assert ex._normalize_type("Array[{PY, PZ}]") == ("array", {"type": "object"}, None)
+    assert ex._normalize_type('"KDS(41-17-00:2019)"') == ("string", None, None)
+    assert ex._type_constraints('"KDS(41-17-00:2019)"') == {"const": "KDS(41-17-00:2019)"}
+    field_type, _, note = ex._normalize_type("Object (oneOf)")
+    assert field_type == "object"
+    assert "does not state" in note
+
+
+def test_report_prints_measured_stage_two_blockers(section: ex.Section, capsys: pytest.CaptureFixture[str]):
+    assert ex.run_report([section], {}) == 0
+    output = capsys.readouterr().out
+    assert "Stage 2 fidelity blockers:" in output
+    assert "conditional tables:" in output
 
 
 def test_conditional_variant_tables_are_reported_not_merged(section: ex.Section):
@@ -253,7 +330,10 @@ def test_draft_is_valid_yaml_but_cannot_validate_as_a_contract(section: ex.Secti
 
     errors = list(jsonschema.Draft202012Validator(schema).iter_errors(draft))
     assert errors, "a draft must not validate; review is what promotes it"
-    assert {tuple(e.path) for e in errors} == {("draft",)}, [
+    # `draft` is the deliberate gate. This synthetic table also carries an
+    # intentionally ambiguous multi-key row, which is now independently
+    # rejected by the wire-key schema rather than being allowed into a contract.
+    assert ("draft",) in {tuple(e.path) for e in errors}, [
         (list(e.path), e.message) for e in errors
     ]
 
@@ -385,6 +465,8 @@ def test_enum_values_are_read_only_when_the_same_manual_section_states_them(tmp_
 | 2 | Description choices (`"LEFT"` / `"RIGHT"`) | `"DESCRIBED"` | String (enum) | - | Required |
 | 5 | Numeric choices (0=Zero / 1=One / 2=Two) | `"NUMBERED"` | Integer (enum) | - | Required |
 | 6 | Symbolic choices (FIRST=First / SECOND=Second) | `"SYMBOLIC"` | String (enum) | - | Required |
+| 7 | Reverse symbolic choices (Static: STATIC / Stage: STAGE) | `"REVERSE_SYMBOLIC"` | String (enum) | - | Required |
+| 8 | Bare numeric choices (0/1/2) | `"BARE_NUMERIC"` | Integer (enum) | - | Required |
 | 3 | Settings | `"SETTINGS"` | Object | - | Required |
 | (1) | Table choices | `"KIND"` | String (enum) | - | Required |
 | 4 | Item choices | `"ITEMS"` | Array [String (enum)] | - | Required |
@@ -411,6 +493,8 @@ def test_enum_values_are_read_only_when_the_same_manual_section_states_them(tmp_
     assert fields["DESCRIBED"].enum == ["LEFT", "RIGHT"]
     assert fields["NUMBERED"].enum == [0, 1, 2]
     assert fields["SYMBOLIC"].enum == ["FIRST", "SECOND"]
+    assert fields["REVERSE_SYMBOLIC"].enum == ["STATIC", "STAGE"]
+    assert fields["BARE_NUMERIC"].enum == [0, 1, 2]
     assert fields["SETTINGS"].properties[0].enum == ["FIRST", "SECOND"]
     assert fields["ITEMS"].enum == ["ONE", "TWO"]
     assert not any("values are listed elsewhere" in note for field in ex._walk(parsed.tables[0].fields) for note in field.notes)

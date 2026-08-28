@@ -213,12 +213,49 @@ def _normalize_type(cell: str) -> tuple[Optional[str], Optional[dict], Optional[
     text = _clean(cell)
     if text in _EMPTY_CELLS:
         return None, None, "the manual leaves the Value Type column blank"
+    compact_array = re.match(r"^(String|Integer|Number|Boolean|Object|Real)\s*,\s*(\d+)$", text, re.IGNORECASE)
+    if compact_array:
+        inner, _, note = _normalize_type(compact_array.group(1))
+        return "array", ({"type": inner} if inner else None), note
     array = re.match(r"^Array\s*\[\s*(.+?)\s*\]$", text, re.IGNORECASE)
     if array:
+        # ``Array[{PY, PZ}]`` is the manual's compact spelling for an array of
+        # objects. Its named members still have to appear in adjacent rows;
+        # this only reads the container type the cell itself states.
+        if re.fullmatch(r"\{[^{}]+\}", array.group(1).strip()):
+            return "array", {"type": "object"}, None
         inner, _, note = _normalize_type(array.group(1))
         return "array", ({"type": inner} if inner else None), note
     base = text.lower()
     note = None
+    boolean_default = re.match(r"^boolean\s*\(\s*(?:기본|default)\s+(true|false)\s*\)$", base)
+    if boolean_default:
+        base = "boolean"
+    enum_wrapper = re.match(r"^enum\s*\(\s*(string|integer|number)\s*\)$", base)
+    if enum_wrapper:
+        base = enum_wrapper.group(1)
+        note = _ENUM_VALUES_ELSEWHERE
+    if re.match(r"^boolean\s*\(\s*(?:oneof|one of)\s*\)$", base):
+        base = "boolean"
+    object_shape = re.match(r"^object\s*\(\s*(?:oneof|[^)]*/[^)]*)\s*\)$", base)
+    if object_shape:
+        return (
+            "object",
+            None,
+            "the manual qualifies this object shape, but does not state a representable property schema",
+        )
+    if re.fullmatch(r'"[^"\\]+"', text):
+        return "string", None, None
+    const_type = re.match(r"^(string|integer|number|real)\s*\(\s*const(?:\s+[^)]*)?\s*\)$", base)
+    if const_type:
+        base = const_type.group(1)
+    constraint_base = re.match(
+        r"^(string|integer|number|real)\s*\((?:≥\s*-?\d+(?:\.\d+)?|>\s*-?\d+(?:\.\d+)?|"
+        r"-?\d+(?:\.\d+)?\s*~\s*-?\d+(?:\.\d+)?|0\s*(?:금지|초과\s*1\s*이하)|\d+)\)$",
+        base,
+    )
+    if constraint_base:
+        base = constraint_base.group(1)
     enum_hint = re.match(
         r"^(string|integer|number)\s*(?:\(\s*(enum|oneof|one of)(?:\s*:\s*[^)]*)?\s*\)|\s+(enum|oneof|one of))$",
         base,
@@ -226,7 +263,7 @@ def _normalize_type(cell: str) -> tuple[Optional[str], Optional[dict], Optional[
     if enum_hint:
         base = enum_hint.group(1)
         note = _ENUM_VALUES_ELSEWHERE
-    if base in {"number", "double", "float"}:
+    if base in {"number", "double", "float", "real"}:
         return "number", None, note
     if base in {"integer", "int"}:
         return "integer", None, note
@@ -239,6 +276,58 @@ def _normalize_type(cell: str) -> tuple[Optional[str], Optional[dict], Optional[
     if base.startswith("array"):
         return "array", None, "array element type not stated by the manual"
     return None, None, f"unrecognised Value Type {text!r}"
+
+
+def _number(text: str) -> int | float:
+    number = float(text)
+    return int(number) if number.is_integer() else number
+
+
+def _type_constraints(cell: str) -> dict[str, Any]:
+    """Return only range/length constraints spelled out by the manual type cell."""
+
+    text = _clean(cell)
+    string_const = re.fullmatch(r'"([^"\\]+)"', text)
+    if string_const:
+        return {"const": string_const.group(1)}
+    const = re.fullmatch(r"(?:Number|Integer|Real)\s*\(\s*const\s+(-?\d+(?:\.\d+)?)\s*\)", text, re.IGNORECASE)
+    if const:
+        return {"const": _number(const.group(1))}
+    compact_array = re.fullmatch(
+        r"(?:String|Integer|Number|Boolean|Object|Real)\s*,\s*(\d+)", text, re.IGNORECASE
+    )
+    if compact_array:
+        length = int(compact_array.group(1))
+        return {"minItems": length, "maxItems": length}
+    string_length = re.fullmatch(r"String\s*\(\s*(\d+)\s*\)", text, re.IGNORECASE)
+    if string_length:
+        length = int(string_length.group(1))
+        return {"minLength": length, "maxLength": length}
+
+    match = re.fullmatch(r"(?:Number|Integer|Real)\s*\((.+)\)", text, re.IGNORECASE)
+    if not match:
+        return {}
+    constraint = re.sub(r"\s+", "", match.group(1))
+    if constraint.lower() in {"0금지", "0notallowed"}:
+        return {"notEqual": 0}
+    if constraint == "0초과1이하":
+        return {"exclusiveMinimum": 0, "maximum": 1}
+    if match := re.fullmatch(r"≥(-?\d+(?:\.\d+)?)", constraint):
+        return {"minimum": _number(match.group(1))}
+    if match := re.fullmatch(r">(-?\d+(?:\.\d+)?)", constraint):
+        return {"exclusiveMinimum": _number(match.group(1))}
+    if match := re.fullmatch(r"(-?\d+(?:\.\d+)?)~(-?\d+(?:\.\d+)?)", constraint):
+        return {"minimum": _number(match.group(1)), "maximum": _number(match.group(2))}
+    return {}
+
+
+def _type_default(cell: str) -> Any | None:
+    """Read an explicit default only where the type cell itself spells it out."""
+
+    match = re.fullmatch(
+        r"Boolean\s*\(\s*(?:기본|default)\s+(true|false)\s*\)", _clean(cell), re.IGNORECASE
+    )
+    return match.group(1).lower() == "true" if match else None
 
 
 def _enum_values_from_inline_type(cell: str) -> list[Any]:
@@ -281,6 +370,45 @@ def _enum_values_from_description(text: str) -> list[Any]:
             values.append(value)
     if len(values) >= 2:
         return values
+
+    # Some chapters reverse the pair as `Simplified: 0 / General: 1`.
+    # A single colon-number can be a prose condition, so accept it only when
+    # the field's own enum description names at least two distinct values.
+    reverse_numeric: list[int | float] = []
+    for literal in re.findall(r":\s*(-?\d+(?:\.\d+)?)(?=\s*(?:[),/·;]|$))", text):
+        number = float(literal)
+        value = int(number) if number.is_integer() else number
+        if value not in reverse_numeric:
+            reverse_numeric.append(value)
+    if len(reverse_numeric) >= 2:
+        return reverse_numeric
+
+    # Design-code chapters also spell a choice as ``Static: STATIC / Stage:
+    # STAGE``. The right-hand tokens are the wire values; require two uppercase
+    # tokens so a single prose label or ``CODE: Standard`` cannot become an
+    # enum by accident.
+    reverse_symbolic: list[str] = []
+    for value in re.findall(r":\s*([A-Z][A-Z0-9_-]*)(?=\s*(?:[),/·;]|$))", text):
+        if value not in reverse_symbolic:
+            reverse_symbolic.append(value)
+    if len(reverse_symbolic) >= 2:
+        return reverse_symbolic
+
+    # A slash-separated number list such as ``(0/1/2)`` is likewise a finite
+    # set when the field itself is already typed enum. Do not accept a tilde or
+    # dash range here: those are bounds, not alternatives.
+    numeric_list = re.search(
+        r"(?<![A-Za-z0-9_.-])(-?\d+(?:\.\d+)?(?:\s*/\s*-?\d+(?:\.\d+)?)+)(?![A-Za-z0-9_.-])",
+        text,
+    )
+    if numeric_list:
+        listed: list[int | float] = []
+        for literal in re.split(r"\s*/\s*", numeric_list.group(1)):
+            value = _number(literal)
+            if value not in listed:
+                listed.append(value)
+        if len(listed) >= 2:
+            return listed
 
     # The same cell form is used for symbolic values, for example
     # ``Equivalent=... / Each=...``.  Requiring two distinct left-hand codes
@@ -333,6 +461,7 @@ class ParsedField:
     requirement: Optional[str]
     documented_default: Any
     enum: list[Any] = dataclass_field(default_factory=list)
+    constraints: dict[str, Any] = dataclass_field(default_factory=dict)
     condition: Optional[str] = None
     number: str = ""
     notes: list[str] = dataclass_field(default_factory=list)
@@ -630,6 +759,65 @@ def _apply_enum_values(tables: list[ParsedTable], values_by_path: dict[str, list
             field.notes.remove(_ENUM_VALUES_ELSEWHERE)
 
 
+def _parallel_cells(cell: str, count: int, *, key: bool = False) -> Optional[list[str]]:
+    """Split a manual row only when it explicitly gives one value per field.
+
+    The manual sometimes compresses independent keys into one row, using
+    matching slash-separated Value Type, Default and Required cells. It is safe
+    to restore those separate fields only when every column that makes a claim
+    has the same cardinality. A singleton such as ``Optional`` beside two keys
+    could apply to either key or both, so it deliberately returns ``None``.
+    """
+
+    text = _clean(cell)
+    if key:
+        quoted = re.findall(r'"([^"\\]+)"', text)
+        if len(quoted) == count:
+            return quoted
+    parts = [part.strip().strip('"') for part in re.split(r"\s*/\s*", text)]
+    if len(parts) != count or any(not part for part in parts):
+        return None
+    # ``Array [Number,4]/[Number,3]`` omits the repeated ``Array`` word in
+    # the second half, but its brackets make the repeated form explicit.
+    if parts[0].lower().startswith("array ["):
+        parts = [part if index == 0 or not part.startswith("[") else f"Array {part}" for index, part in enumerate(parts)]
+    return parts
+
+
+def _parallel_field_cells(
+    key_cell: str,
+    type_cell: Optional[str],
+    default_cell: Optional[str],
+    required_cell: Optional[str],
+) -> Optional[list[tuple[str, Optional[str], Optional[str], Optional[str]]]]:
+    """Return exact parallel field columns, or ``None`` when a row is ambiguous."""
+
+    raw_key = _clean(key_cell)
+    quoted = re.findall(r'"([^"\\]+)"', raw_key)
+    keys = quoted if len(quoted) > 1 else _parallel_cells(raw_key, 2, key=True)
+    if not keys or len(keys) < 2:
+        return None
+    columns = [type_cell, default_cell, required_cell]
+    parts: list[Optional[list[str]]] = []
+    for cell in columns:
+        if cell is None:
+            parts.append(None)
+            continue
+        split = _parallel_cells(cell, len(keys))
+        if split is None:
+            return None
+        parts.append(split)
+    return [
+        (
+            key,
+            parts[0][index] if parts[0] else None,
+            parts[1][index] if parts[1] else None,
+            parts[2][index] if parts[2] else None,
+        )
+        for index, key in enumerate(keys)
+    ]
+
+
 def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
     tables: list[ParsedTable] = []
     heading = ""
@@ -666,42 +854,66 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
             key = _clean(cells[key_column]).strip('"')
             if not key or key in _EMPTY_CELLS:
                 continue
-            if key in seen:
-                continue
-            seen.add(key)
-
-            notes: list[str] = []
-            if required_column is not None:
-                requirement, condition, note = _normalize_requirement(cells[required_column])
-            else:
-                requirement, condition, note = None, None, "the table has no Required column"
-            if note:
-                notes.append(note)
-            field_type, items, note = _normalize_type(cells[type_column]) if type_column is not None else (None, None, "the table has no Value Type column")
-            if note:
-                notes.append(note)
-            enum = _enum_values_from_inline_type(cells[type_column]) if type_column is not None else []
-            if not enum and note == _ENUM_VALUES_ELSEWHERE and desc_column is not None:
-                enum = _enum_values_from_description(cells[desc_column])
-            if enum and _ENUM_VALUES_ELSEWHERE in notes:
-                notes.remove(_ENUM_VALUES_ELSEWHERE)
-            default, note = _normalize_default(cells[default_column]) if default_column is not None else (None, "the table has no Default column")
-            if note:
-                notes.append(note)
-            fields.append(
-                ParsedField(
-                    key=key,
-                    description=_DESC_TREE.sub("", _clean(cells[desc_column])).strip() if desc_column is not None else "",
-                    type=field_type,
-                    items=items,
-                    requirement=requirement,
-                    documented_default=default,
-                    enum=enum,
-                    condition=condition,
-                    number=_clean(cells[0]) if cells else "",
-                    notes=notes,
-                )
+            parallel = _parallel_field_cells(
+                cells[key_column],
+                cells[type_column] if type_column is not None else None,
+                cells[default_column] if default_column is not None else None,
+                cells[required_column] if required_column is not None else None,
             )
+            entries = parallel or [
+                (
+                    key,
+                    cells[type_column] if type_column is not None else None,
+                    cells[default_column] if default_column is not None else None,
+                    cells[required_column] if required_column is not None else None,
+                )
+            ]
+            for entry_key, entry_type, entry_default, entry_required in entries:
+                if entry_key in seen:
+                    continue
+                seen.add(entry_key)
+
+                notes: list[str] = []
+                if entry_required is not None:
+                    requirement, condition, note = _normalize_requirement(entry_required)
+                else:
+                    requirement, condition, note = None, None, "the table has no Required column"
+                if note:
+                    notes.append(note)
+                field_type, items, note = _normalize_type(entry_type) if entry_type is not None else (None, None, "the table has no Value Type column")
+                if note:
+                    notes.append(note)
+                enum = _enum_values_from_inline_type(entry_type) if entry_type is not None else []
+                if not enum and note == _ENUM_VALUES_ELSEWHERE and desc_column is not None:
+                    enum = _enum_values_from_description(cells[desc_column])
+                if enum and _ENUM_VALUES_ELSEWHERE in notes:
+                    notes.remove(_ENUM_VALUES_ELSEWHERE)
+                constraints = _type_constraints(entry_type) if entry_type is not None else {}
+                default, note = _normalize_default(entry_default) if entry_default is not None else (None, "the table has no Default column")
+                if note:
+                    notes.append(note)
+                type_default = _type_default(entry_type) if entry_type is not None else None
+                if default is None and type_default is not None:
+                    default = type_default
+                elif type_default is not None and default != type_default:
+                    notes.append(
+                        f"the Default column says {default!r}, but the Value Type cell says {type_default!r}"
+                    )
+                fields.append(
+                    ParsedField(
+                        key=entry_key,
+                        description=_DESC_TREE.sub("", _clean(cells[desc_column])).strip() if desc_column is not None else "",
+                        type=field_type,
+                        items=items,
+                        requirement=requirement,
+                        documented_default=default,
+                        enum=enum,
+                        constraints=constraints,
+                        condition=condition,
+                        number=_clean(cells[0]) if cells else "",
+                        notes=notes,
+                    )
+                )
 
         if fields:
             tables.append(
@@ -974,6 +1186,8 @@ def _render_fields(
                     lines.append(f"{body}  enum: [{', '.join(_scalar(value) for value in parsed.enum)}]")
         else:
             lines.append(f"{body}type: string   # TODO(review): the manual did not state a type")
+        for key, value in parsed.constraints.items():
+            lines.append(f"{body}{key}: {_scalar(value)}")
         lines.append(
             f"{body}requirement: {parsed.requirement}"
             if parsed.requirement
@@ -1174,6 +1388,31 @@ def run_report(sections: list[Section], table_family: dict[str, int]) -> int:
     for reason, count in sorted(reasons.items(), key=lambda kv: -kv[1])[:8]:
         print(f"  {count:>5}  {reason}")
 
+    # Stage 2's blockers are intentionally measured here, rather than copied
+    # into a planning document by hand.  These are all review notes: a value
+    # not counted as parseable stays unverified rather than being guessed.
+    enum_missing = sum(_ENUM_VALUES_ELSEWHERE in field.notes for field in all_fields)
+    array_element_missing = sum(
+        "array element type not stated by the manual" in field.notes for field in all_fields
+    )
+    unrecognised_types = sum(
+        any(note.startswith("unrecognised Value Type") for note in field.notes) for field in all_fields
+    )
+    explicit_variants = sum(bool(section.variants) for section in sections)
+    unmerged_variant_tables = sum(
+        len(section.tables) > 1 and not section.variants for section in sections
+    )
+    print(
+        "\nStage 2 fidelity blockers: "
+        f"{enum_missing} enum value list(s) unstated, "
+        f"{array_element_missing} array element type(s) unstated, "
+        f"{unrecognised_types} unrecognised Value Type cell(s)."
+    )
+    print(
+        f"  conditional tables: {explicit_variants} explicitly modelled variant set(s), "
+        f"{unmerged_variant_tables} left unmerged because their selector is not explicit."
+    )
+
     # A section with no stated verbs cannot be promoted, so this is a headline
     # number, not a detail - and it was reported as 276 while the extractor could
     # read only the narrowest of the six forms the chapters use. Print it, so the
@@ -1319,6 +1558,27 @@ def run_check(sections: list[Section]) -> int:
                     problems.append(
                         f"{path.name}: {key} enum={declared_enum!r}, manual says {manual.enum!r}"
                     )
+            if manual.constraints and "field_value" not in overridden:
+                constraint_keys = {
+                    "minimum",
+                    "exclusiveMinimum",
+                    "maximum",
+                    "exclusiveMaximum",
+                    "notEqual",
+                    "const",
+                    "minItems",
+                    "maxItems",
+                    "minLength",
+                    "maxLength",
+                }
+                declared_constraints = {
+                    name: value for name, value in declared.items() if name in constraint_keys
+                }
+                if declared_constraints != manual.constraints:
+                    problems.append(
+                        f"{path.name}: {key} constraints={declared_constraints!r}, "
+                        f"manual says {manual.constraints!r}"
+                    )
 
         for key in contract_fields:
             if key not in manual_fields and "field_name" not in overridden:
@@ -1389,6 +1649,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--emit", nargs="+", metavar="ENDPOINT", help="write drafts for these endpoints or ids")
     parser.add_argument("--emit-all", action="store_true", help="write a draft for every parseable section")
     parser.add_argument("--check", action="store_true", help="check promoted contracts against the manual")
+    parser.add_argument("--report", action="store_true", help="print extraction coverage and blocker counts (the default mode)")
     args = parser.parse_args(argv)
 
     sections, table_family = load_manual(args.manual_api_repo)
