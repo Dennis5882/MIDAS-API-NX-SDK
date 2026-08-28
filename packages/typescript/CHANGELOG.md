@@ -6,6 +6,27 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.7.0 - 2026-08-28
+
+### Added
+
+- `/db/BODF` (Self-Weight) now has a reviewed language-neutral contract. Its
+  generated npm payload requires `LCNAME` and documents the self-weight factor
+  vector.
+
+### Changed
+
+- Contracted fixed-length arrays now generate TypeScript tuples. This preserves
+  documented array lengths at compile time rather than widening every vector to
+  `Array<number>`.
+
+### Compatibility
+
+- `resources.db.staticLoads.selfWeight` now requires `LCNAME`, and its `FV`
+  value must contain exactly three numbers. This corrects the published type to
+  the documented request shape; existing TypeScript calls that omitted the load
+  case name or supplied a non-three-value vector need updating.
+
 ## 2.6.1 - 2026-08-28
 
 ### Fixed

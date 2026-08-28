@@ -5,7 +5,7 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-08-28 — **PyPI and npm now share one version number, 2.6.1**,
+> Last updated: 2026-08-28 — **PyPI and npm now share one version number, 2.7.0**,
 > at the author's explicit request; the two streams were 2.3.5 and 2.4.0 and the
 > split was confusing for one package name. `CLAUDE.md`'s Releasing section was
 > reversed to match. This line tracks **release** state,
