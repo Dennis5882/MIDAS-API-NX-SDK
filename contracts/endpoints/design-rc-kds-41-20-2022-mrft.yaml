@@ -79,6 +79,7 @@ fields:
     description: >-
       모멘트 재분배 계수 (>0, ≤1)
     type: number
+    maximum: 1
     requirement: optional
     documentedDefault: 1
     documentedOptional: true

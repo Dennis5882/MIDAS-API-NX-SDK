@@ -77,6 +77,7 @@ fields:
     description: >-
       비틀림 감소계수 (>0, ≤1)
     type: number
+    maximum: 1
     requirement: required
     documentedDefault: 1
     documentedOptional: false

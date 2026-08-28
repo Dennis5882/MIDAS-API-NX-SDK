@@ -480,9 +480,10 @@
             "require_confirmation",
             "reject_request",
             "per_id_request",
+            "unwrap_table_by_shape",
             "warn"
           ],
-          "description": "normalize_defaults = fill the listed fields with `values` before sending. require_confirmation = refuse unless the caller passes an explicit confirmation flag. reject_request = raise a validation error instead of sending. per_id_request = issue one request per id, sequentially, stopping at the first failure. warn = document loudly; no behaviour change."
+          "description": "normalize_defaults = fill the listed fields with `values` before sending. require_confirmation = refuse unless the caller passes an explicit confirmation flag. reject_request = raise a validation error instead of sending. per_id_request = issue one request per id, sequentially, stopping at the first failure. unwrap_table_by_shape = locate an unstable result-table payload by its HEAD/DATA object shape, never by a top-level response key. warn = document loudly; no behaviour change."
         },
         "appliesTo": {
           "type": "array",
@@ -498,6 +499,14 @@
         "values": {
           "type": "object",
           "description": "Field to value map for normalize_defaults. Values must match the documented default; the rule exists to make the default explicit on the wire, not to invent one."
+        },
+        "responseCases": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": ["table_name", "result_table", "empty_with_table", "no_table"]
+          },
+          "description": "Observed result-table response shapes for unwrap_table_by_shape. table_name = the requested TABLE_NAME key, result_table = the live 'Result Table' key, empty_with_table = the live 'empty' key carrying a real table, no_table = no table-shaped value."
         },
         "reason": {
           "type": "string",
@@ -519,6 +528,21 @@
             "required": ["kind"]
           },
           "then": { "required": ["fields", "values"] }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "unwrap_table_by_shape" } },
+            "required": ["kind"]
+          },
+          "then": {
+            "required": ["responseCases"],
+            "properties": {
+              "responseCases": {
+                "minItems": 4,
+                "maxItems": 4
+              }
+            }
+          }
         }
       ]
     }

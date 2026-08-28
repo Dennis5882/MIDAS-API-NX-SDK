@@ -271,8 +271,9 @@ fields:
 
 sdkRules:
   - id: post-table-unwrap-by-shape
-    kind: warn
+    kind: unwrap_table_by_shape
     appliesTo: [POST]
+    responseCases: [table_name, result_table, empty_with_table, no_table]
     reason: >-
       The response's top-level key is unstable - TABLE_NAME, "Result Table" and
       "empty" have all been observed - so an SDK must locate the payload by

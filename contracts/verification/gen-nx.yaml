@@ -314,3 +314,83 @@ records:
       route returned a full JSON Schema on Gen NX.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-read-sweep-2026-08-07
+    endpoints: []
+    date: "2026-08-07"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 07/30/2026
+    level: read
+    outcome: success_empty
+    method: >-
+      scripts/live_readonly_sweep.py (read-only GET)
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-read-sweep-2026-08-11
+    endpoints: []
+    date: "2026-08-11"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 08/11/2026
+    level: read
+    outcome: success
+    method: >-
+      manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a fu
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-read-sweep-2026-08-17
+    endpoints: []
+    date: "2026-08-17"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 06/23/2026
+    level: read
+    outcome: success_empty
+    method: >-
+      2026-08-17: write-round-trip attempted (batch 10) -- fails on both products with "Wrong Key" specifically on the ITEMS field (every other field succeeds individually, each answering the normal "Wrong Field" for an incomplete payload). Tried real frame node ids, real plate node ids, and a single node -- all still "Wrong Key". Live /info's own schema says ITEMS is a plain integer array matching what
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-write-sweep-2026-08-07
+    endpoints: []
+    date: "2026-08-07"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 08/06/2026
+    level: write
+    outcome: success
+    method: >-
+      manual POST probe on a disposable minimal model (Node/Material/Section/Element), reproducing MAPI-2425's original crash payload (AUTO=true, TYPE=NSM, no PARAMETER) after the 08/06/2026 patch
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-write-sweep-2026-08-25
+    endpoints: []
+    date: "2026-08-25"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 08/20/2026
+    level: write
+    outcome: success
+    method: >-
+      scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 on Civil NX v2.2 (build 08/14/2026) via scripts/live_crud_check.py --tier extras5: create->GET->update->GET->delete succeeded. On Gen NX
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md

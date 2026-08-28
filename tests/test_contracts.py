@@ -315,7 +315,14 @@ def test_post_table_response_key_is_declared_unstable():
     """The one thing an SDK must not do to this endpoint is index it by key name."""
     contract = _load(ENDPOINT_DIR / "post-table.yaml")
     response = next(op for op in contract["operations"] if op["method"] == "POST")["response"]
+    rule = next(rule for rule in contract["sdkRules"] if rule["id"] == "post-table-unwrap-by-shape")
 
     assert response["keyStability"] == "unstable"
     assert "empty" in response["keyNote"]
-    assert any(rule["kind"] == "warn" for rule in contract["sdkRules"])
+    assert rule["kind"] == "unwrap_table_by_shape"
+    assert set(rule["responseCases"]) == {
+        "table_name",
+        "result_table",
+        "empty_with_table",
+        "no_table",
+    }

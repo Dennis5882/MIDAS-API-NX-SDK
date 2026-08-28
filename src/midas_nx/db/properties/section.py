@@ -69,7 +69,7 @@ class TaperedGroupPayload(TypedDict, total=False):
 
 class TaperedGroup(DbResource):
     ENDPOINT = "/db/TSGR"
-    NAME = "Tapered Group"
+    NAME = "/db/TSGR"
     PRODUCTS = frozenset({"gen", "civil"})
 
 
@@ -217,7 +217,7 @@ class SectionStressPoints(DbResource):
     """
 
     ENDPOINT = "/db/STRPSSM"
-    NAME = "Section Manager - Stress Points"
+    NAME = "/db/STRPSSM"
     PRODUCTS = CIVIL_ONLY
 
 
@@ -325,7 +325,7 @@ class ElementStiffnessScaleFactorPayload(TypedDict):
 
 class ElementStiffnessScaleFactor(DbResource):
     ENDPOINT = "/db/ESSF"
-    NAME = "Element Stiffness Scale Factor"
+    NAME = "/db/ESSF"
     PRODUCTS = frozenset({"gen", "civil"})
 
 

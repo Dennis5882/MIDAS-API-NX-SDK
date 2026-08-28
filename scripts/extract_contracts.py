@@ -221,6 +221,38 @@ def _normalize_requirement(cell: str) -> tuple[Optional[str], Optional[str], Opt
     return None, None, f"unrecognised Required value {raw!r}"
 
 
+_DESCRIPTION_CONDITION_MARKERS = (
+    "if ",
+    "when ",
+    "\uc77c \ub54c",
+    "\uacbd\uc6b0",
+    "\uc0ac\uc6a9 \uc2dc",
+    "\uc804\uc6a9",
+)
+
+
+def _condition_from_description(cell: str) -> Optional[str]:
+    """Keep one condition phrase the parameter description states verbatim.
+
+    ``Conditional Required`` is often terse in the Required column, while the
+    Description says exactly when it applies in a parenthesis or after a dash.
+    This deliberately retains the manual phrase rather than inferring a
+    selector from a sibling field or an example.
+    """
+
+    text = _clean(cell)
+
+    def says_when(value: str) -> bool:
+        return any(marker in value.lower() for marker in _DESCRIPTION_CONDITION_MARKERS)
+
+    candidates = [part.strip() for part in re.findall(r"\(([^()]*)\)", text) if says_when(part)]
+    dash_parts = re.split(r"\s+[\u2014\u2013]\s+", text)
+    if len(dash_parts) > 1:
+        candidates.extend(part.strip() for part in dash_parts[1:] if says_when(part))
+    distinct = list(dict.fromkeys(candidate for candidate in candidates if candidate))
+    return distinct[0] if len(distinct) == 1 else None
+
+
 def _normalize_type(cell: str) -> tuple[Optional[str], Optional[dict], Optional[str]]:
     """Return (type, items, note)."""
     text = _clean(cell)
@@ -803,12 +835,62 @@ def _section_schema_hints(lines: list[str]) -> dict[tuple[str, ...], list[dict[s
         except json.JSONDecodeError:
             continue
 
+        def condition_text(node: Any) -> Optional[str]:
+            """Render one exact JSON-Schema selector without inventing a rule.
+
+            The design-code chapters put conditional requiredness in ``allOf``
+            as a one-property ``if`` plus a ``then.required`` list.  A general
+            JSON Schema condition is more expressive than a contract field's
+            short ``condition`` string, so accept only the two literal forms
+            that can be transcribed losslessly: ``const`` and a finite scalar
+            ``enum`` on exactly one named property.
+            """
+
+            if not isinstance(node, dict):
+                return None
+            properties = node.get("properties")
+            if not isinstance(properties, dict) or len(properties) != 1:
+                return None
+            key, constraint = next(iter(properties.items()))
+            if not isinstance(key, str) or not isinstance(constraint, dict):
+                return None
+            if "const" in constraint and isinstance(constraint["const"], (str, int, float, bool)):
+                value = constraint["const"]
+                rendered = json.dumps(value) if isinstance(value, str) else str(value).lower()
+                return f"{key}={rendered}"
+            values = constraint.get("enum")
+            if (
+                isinstance(values, list)
+                and values
+                and all(isinstance(value, (str, int, float, bool)) for value in values)
+            ):
+                rendered = [json.dumps(value) if isinstance(value, str) else str(value).lower() for value in values]
+                return f"{key} ∈ {{{', '.join(rendered)}}}"
+            return None
+
         def visit(node: Any, prefix: tuple[str, ...] = ()) -> None:
             if not isinstance(node, dict):
                 return
             for branch_name in ("allOf", "anyOf", "oneOf"):
                 for branch in node.get(branch_name, []):
                     visit(branch, prefix)
+                    # A field table that says only "Conditional required" is
+                    # completed only when this *same manual schema* names both
+                    # the selector and the field that becomes required.  Do
+                    # not turn a prose example, or a general JSON-Schema
+                    # expression, into a condition claim.
+                    if not isinstance(branch, dict):
+                        continue
+                    condition = condition_text(branch.get("if"))
+                    then = branch.get("then")
+                    required = then.get("required") if isinstance(then, dict) else None
+                    if condition is None or not isinstance(required, list):
+                        continue
+                    for key in required:
+                        if isinstance(key, str):
+                            hints.setdefault(prefix + (key,), []).append(
+                                {"__conditional": condition}
+                            )
             properties = node.get("properties")
             if isinstance(properties, dict):
                 required = node.get("required", [])
@@ -826,6 +908,20 @@ def _section_schema_hints(lines: list[str]) -> dict[tuple[str, ...], list[dict[s
                     hint["__required"] = key in required_names
                     hints.setdefault(path, []).append(hint)
                     visit(child, path)
+            # ``Assign`` in the design-code chapters is a dictionary keyed by
+            # an ID string.  Its single ``patternProperties`` child is the
+            # record schema, not a field named by the regular expression.  At
+            # the endpoint root it is therefore safe to unwrap that one layer;
+            # doing this below a real field would fabricate a path, so do not.
+            pattern_properties = node.get("patternProperties")
+            if (
+                not prefix
+                and isinstance(pattern_properties, dict)
+                and len(pattern_properties) == 1
+            ):
+                child = next(iter(pattern_properties.values()))
+                if isinstance(child, dict):
+                    visit(child, prefix)
             if node.get("type") == "array":
                 # The extractor models Array[Object] children as properties of
                 # the array field, so retain the same path when walking items.
@@ -863,6 +959,18 @@ def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], 
                     ):
                         if note in field.notes:
                             field.notes.remove(note)
+
+                conditions = [entry["__conditional"] for entry in entries if "__conditional" in entry]
+                distinct_conditions = list(dict.fromkeys(conditions))
+                if (
+                    field.requirement == "conditional"
+                    and field.condition is None
+                    and len(distinct_conditions) == 1
+                ):
+                    field.condition = distinct_conditions[0]
+                    conditional_note = "the manual marks this conditional but does not state the condition"
+                    if conditional_note in field.notes:
+                        field.notes.remove(conditional_note)
 
                 default = _agreed_schema_value(entries, "default")
                 if "the table has no Default column" in field.notes and default is not None:
@@ -1144,6 +1252,10 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                         )
                         condition = f"{condition_field}={rendered_value}"
                         note = None
+                    else:
+                        condition = _condition_from_description(cells[desc_column])
+                        if condition is not None:
+                            note = None
                 if note:
                     notes.append(note)
                 field_type, items, note = _normalize_type(entry_type) if entry_type is not None else (None, None, "the table has no Value Type column")
@@ -1686,6 +1798,31 @@ def run_report(sections: list[Section], table_family: dict[str, int]) -> int:
         f"{array_element_missing} array element type(s) unstated, "
         f"{unrecognised_types} unrecognised Value Type cell(s)."
     )
+    # Keep the six recurring promotion notes measurable here.  These are field
+    # occurrences across every parsed manual table, deliberately not a
+    # hand-counted list of draft refusals: one endpoint can carry several notes
+    # and a single note can be repeated in nested rows.
+    promotion_note_counts = {
+        "conditional requirement has no stated condition": sum(
+            "the manual marks this conditional but does not state the condition" in field.notes
+            for field in all_fields
+        ),
+        "Required cell is blank": sum(
+            "the manual leaves the Required column blank" in field.notes for field in all_fields
+        ),
+        "enum values are unstated": enum_missing,
+        "array item type is unstated": array_element_missing,
+        "table has no Default column": sum(
+            "the table has no Default column" in field.notes for field in all_fields
+        ),
+        "non-literal System default kept verbatim": sum(
+            "non-literal default 'System' kept verbatim; confirm what the server does" in field.notes
+            for field in all_fields
+        ),
+    }
+    print("  promotion-note forms (field occurrences):")
+    for label, count in promotion_note_counts.items():
+        print(f"    {count:>5}  {label}")
     print(
         f"  conditional tables: {explicit_variants} explicitly modelled variant set(s), "
         f"{unmerged_variant_tables} left unmerged because their selector is not explicit."

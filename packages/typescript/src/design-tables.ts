@@ -5,7 +5,7 @@ import {
 } from "./post";
 
 export type DesignEndpointTableOptions = MemberDesignForcesTableOptions &
-  Pick<TableOptions, "exportPath">;
+  Pick<TableOptions, "exportPath" | "client">;
 
 function defineDesignTable(endpoint: string, tableType: string) {
   return (options?: DesignEndpointTableOptions) => getTableAt(endpoint, tableType, options);

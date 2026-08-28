@@ -6,6 +6,7 @@ import {
   MidasServerError,
   defineDbResource,
   resources,
+  unwrapTable,
 } from "../src";
 
 const metadata = {
@@ -19,6 +20,31 @@ const metadata = {
 
 function response(body: object, status = 200): Response {
   return new Response(JSON.stringify(body), { status });
+}
+
+type UnwrapResponseCase = "table_name" | "result_table" | "empty_with_table" | "no_table";
+
+function unwrapResponseCases(): UnwrapResponseCase[] {
+  const processLike = globalThis as typeof globalThis & {
+    process?: { env?: Record<string, string | undefined> };
+  };
+  const raw = processLike.process?.env?.MIDAS_UNWRAP_TABLE_RESPONSE_CASES;
+  if (!raw) return ["table_name", "result_table", "empty_with_table", "no_table"];
+  return JSON.parse(raw) as UnwrapResponseCase[];
+}
+
+function unwrapFixture(caseName: UnwrapResponseCase) {
+  const table = { HEAD: ["Node", "FX"], DATA: [["1", "-10"]] };
+  switch (caseName) {
+    case "table_name":
+      return { response: { "Requested table": table }, expected: table };
+    case "result_table":
+      return { response: { "Result Table": table }, expected: table };
+    case "empty_with_table":
+      return { response: { empty: table }, expected: table };
+    case "no_table":
+      return { response: { message: "" }, expected: {} };
+  }
 }
 
 describe("contract safety probes", () => {
@@ -67,5 +93,17 @@ describe("contract safety probes", () => {
 
     await expect(resource.deleteAll({ client })).rejects.toBeInstanceOf(DestructiveOperationError);
     expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("unwrap_table_by_shape: decodes every response case declared by the contract", () => {
+    const cases = unwrapResponseCases();
+    expect(cases).toEqual(
+      expect.arrayContaining(["table_name", "result_table", "empty_with_table", "no_table"]),
+    );
+
+    for (const caseName of cases) {
+      const { response, expected } = unwrapFixture(caseName);
+      expect(unwrapTable(response)).toEqual(expected);
+    }
   });
 });

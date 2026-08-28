@@ -1,0 +1,292 @@
+# /DESIGN/STEEL/KDS-41-30-2022/DREULT
+#
+# Drafted by scripts/extract_contracts.py from the official manual, then promoted
+# by scripts/promote_contract.py: products and verification status come from
+# docs/coverage.json's live record, not from the manual's framing. For /db/*
+# endpoints, the DELETE shape comes from measured /db/* DELETE behaviour.
+# safeToOmit is answered `true` only where a confirmed live payload actually
+# omitted the field.
+contractVersion: 1
+id: design-steel-kds-41-30-2022-dreult
+endpoint: /DESIGN/STEEL/KDS-41-30-2022/DREULT
+name: Steel Design Result (강재 설계 결과 이미지)
+
+products: [civil, gen]
+
+source:
+  manual:
+    status: documented
+    repo: Dennis5882/MIDAS-API
+    chapterFile: 25_Design_Steel_KDS41302022.md
+    section: "26. `DESIGN/STEEL/KDS-41-30-2022/DREULT` — Steel Design Result (강재 설계 결과 이미지)"
+  liveNotes:
+    - docs/live_verification_notes.md
+
+verification:
+  status: verified_both
+  records:
+    - product: civil
+      ref: db-read-sweep-2026-08-10
+    - product: gen
+      ref: db-read-sweep-2026-08-10
+
+operations:
+  - method: POST
+    risk: write
+    request:
+      wrapper: assign
+      itemSchema: fields
+    response:
+      wrapper: table
+      keyStability: stable
+
+fields:
+  - key: Argument
+    description: >-
+      Argument 래퍼
+    type: object
+    requirement: required
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+  - key: EXPORT_PATH
+    description: >-
+      이미지 저장 경로 및 파일명
+    type: string
+    requirement: required
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+  - key: FIGURE_NAME
+    description: >-
+      스마트 리포트 이미지 이름
+    type: string
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: SET_HIDDEN
+    description: >-
+      Hidden 옵션
+    type: boolean
+    requirement: optional
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: ACTIVE
+    description: >-
+      View/Active 설정 (Active 문서 참조)
+    type: object
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: WIDTH
+    description: >-
+      이미지 폭 px (100~10000)
+    type: integer
+    minimum: 100
+    maximum: 10000
+    requirement: optional
+    documentedDefault: 1000
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: HEIGHT
+    description: >-
+      이미지 높이 px (100~10000)
+    type: integer
+    minimum: 100
+    maximum: 10000
+    requirement: optional
+    documentedDefault: 1000
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: STAGE_NAME
+    description: >-
+      시공단계 이름
+    type: string
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: ANGLE
+    description: >-
+      뷰 각도
+    type: object
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: HORIZONTAL
+    description: >-
+      수평 회전각
+    type: number
+    requirement: optional
+    documentedDefault: 0
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: VERTICAL
+    description: >-
+      수직 회전각
+    type: number
+    requirement: optional
+    documentedDefault: 0
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: DISPLAY
+    description: >-
+      View/Display 설정 (Display 문서 참조)
+    type: object
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: PERSPECTIVE
+    description: >-
+      원근투영
+    type: boolean
+    requirement: optional
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: ZOOM_LEVEL
+    description: >-
+      줌 레벨 (25~200)
+    type: number
+    minimum: 25
+    maximum: 200
+    requirement: optional
+    documentedDefault: 100
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: BGCOLOR_TOP
+    description: >-
+      상단 배경색 (R/G/B, 0~255)
+    type: object
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: RESULT_GRAPHIC
+    description: >-
+      결과 그래픽 설정
+    type: object
+    requirement: required
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+  - key: CURRENT_MODE
+    description: >-
+      현재 모드 ("INFLL_DESIGN_STEEL"=Steel Design)
+    type: string
+    requirement: required
+    documentedDefault: null
+    documentedOptional: false
+    enum: [INFLL_DESIGN_STEEL]
+    safeToOmit: unverified
+    provenance: manual
+  - key: LOAD_CASE_COMB
+    description: >-
+      하중케이스/조합
+    type: object
+    requirement: required
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+  - key: TYPE
+    description: >-
+      하중 타입 ("CBS"=Steel Design Load Combination)
+    type: string
+    requirement: required
+    documentedDefault: null
+    documentedOptional: false
+    enum: [CBS]
+    safeToOmit: unverified
+    provenance: manual
+  - key: NAME
+    description: >-
+      하중 이름
+    type: string
+    requirement: required
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+  - key: COMPONENTS
+    description: >-
+      표시 성분 (COMP: Axial/Shear-y/Shear-z/Bend-y/Bend-z/Combined)
+    type: object
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: TYPE_OF_DISPLAY
+    description: >-
+      표시 타입 (CONTOUR / VALUES / LEGEND / CODE_CHECKING_RATIO)
+    type: object
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: CONTOUR
+    description: >-
+      Contour (OPT_CHECK, NUM_OF_COLOR 2~20, COLOR_TYPE vrgb/rgb/rbg/gray
+      scaled, OPTIONS.GRADIENT_FILL·CONTOUR_FILL)
+    type: object
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: VALUES
+    description: >-
+      Values (OPT_CHECK, DECIMAL_PT, VALUE_EXP, MINMAX_ONLY.MAXMIN, SET_ORIENT)
+    type: object
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: LEGEND
+    description: >-
+      Legend (OPT_CHECK, POSITION right/left/top/bottom, VALUE_EXP, DECIMAL_PT)
+    type: object
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: CODE_CHECKING_RATIO
+    description: >-
+      Code Checking Ratio (COMP=Combined일 때; CHECK,
+      DISPLAY_MEMBERS.BEAM·COLUMN·BRACE, COLUMN_SECTION_SIZE.SCALE_FACTOR,
+      VALUE_OPTION)
+    type: object
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+
+extraction:
+  source: 25_Design_Steel_KDS41302022.md line 5583
+  table: 파라미터

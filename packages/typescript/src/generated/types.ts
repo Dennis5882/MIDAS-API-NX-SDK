@@ -104,20 +104,54 @@ export namespace DbAnalysisControlTypes {
     CASE?: string;
     iNOG?: number;
   }
-  export interface EigenvalueAnalysisControlPayload {
-    TYPE?: string;
-    iFREQ?: number;
-    iITER?: number;
-    iDIM?: number;
-    TOL?: number;
-    bMINMAX?: boolean;
-    FRMIN?: number;
-    FRMAX?: number;
-    bSTRUM?: boolean;
-    bINCNL?: boolean;
-    iGNUM?: number;
-    vRITZ?: Array<EigenvalueRitzLoadCaseItem>;
-  }
+  /** Generated from contracts/endpoints/. */
+  export type EigenvalueAnalysisControlPayload = {
+    /** Type of Analysis (Subspace Iteration: "EIGEN" / Lanczos: "LANCZOS" / Ritz Vectors: "RITZ") */
+    TYPE: string;
+  } & (
+    {
+      TYPE: "EIGEN";
+      /** Number of Frequencies */
+      iFREQ: number;
+      /** Number of Iterations */
+      iITER: number;
+      /** Subspace Dimension */
+      iDIM?: number;
+      /** Convergence Tolerance */
+      TOL?: number;
+    } |
+    {
+      TYPE: "LANCZOS";
+      /** Number of Frequencies */
+      iFREQ: number;
+      /** Frequency Range of Interest */
+      bMINMAX?: boolean;
+      /** Search From [cps] (when bMINMAX is true, FRMIN < FRMAX) */
+      FRMIN: number;
+      /** Search To [cps] (when bMINMAX is true) */
+      FRMAX: number;
+      /** Sturm Sequence Check */
+      bSTRUM?: boolean;
+    } |
+    {
+      TYPE: "RITZ";
+      /** Include GL-link Force Vectors */
+      bINCNL?: boolean;
+      /** Number of Generations for Each GL-link Force */
+      iGNUM: number;
+      /** Load Cases */
+      vRITZ: Array<{
+        /** Load Case Type (Ground Acc.: "GROUND" / General: "CASE") */
+        KIND: string;
+        /** Load Case Name (KIND="CASE"일 때) */
+        CASE: string;
+        /** Ground Acc. 방향 (KIND="GROUND"일 때, "ACCX"/"ACCY"/"ACCZ") */
+        GROUND: string;
+        /** Number of Generations */
+        iNOG?: number;
+      }>;
+    }
+  );
   export interface EigenvalueFrequencyRangeHyperS {
     OPT_USE?: boolean;
     FREQ_MIN?: number;
@@ -132,14 +166,47 @@ export namespace DbAnalysisControlTypes {
     LOAD_NAME?: string;
     NUM_OF_GEN?: number;
   }
-  export interface EigenvalueAnalysisControlHyperSPayload {
-    ANAL_TYPE?: string;
-    FREQ_NO?: number;
-    FREQ_RANGE?: EigenvalueFrequencyRangeHyperS;
-    STURM_SEQ?: boolean;
-    GLINK_VECTOR?: EigenvalueGlinkVectorHyperS;
-    RITZ_LOAD?: Array<EigenvalueRitzLoadItemHyperS>;
-  }
+  /** Generated from contracts/endpoints/. */
+  export type EigenvalueAnalysisControlHyperSPayload = {
+    /** Eigen Vectors (Lanczos: "LANCZOS" / Ritz Vectors: "RITZ") */
+    ANAL_TYPE: "LANCZOS" | "RITZ";
+  } & (
+    {
+      ANAL_TYPE: "LANCZOS";
+      /** Number of Frequencies (1~1000) */
+      FREQ_NO: number;
+      /** Frequency range of interest */
+      FREQ_RANGE?: {
+        /** Use Option */
+        OPT_USE: boolean;
+        /** Search From (when OPT_USE true) */
+        FREQ_MIN: number;
+        /** To (when OPT_USE true) */
+        FREQ_MAX: number;
+      };
+      /** Sturm Sequence Check */
+      STURM_SEQ?: boolean;
+    } |
+    {
+      ANAL_TYPE: "RITZ";
+      /** Include GL-link Force Vectors */
+      GLINK_VECTOR?: {
+        /** Use Option */
+        OPT_USE: boolean;
+        /** Number of Generations (when OPT_USE true) */
+        GLINK_NUMBER: number;
+      };
+      /** Ritz Load Cases */
+      RITZ_LOAD: Array<{
+        /** Type (Ground Acc.: "GROUND" / Load: "LOAD") */
+        TYPE: "GROUND" | "LOAD";
+        /** Load Name ("ACCX"/"ACCY"/"ACCZ" 또는 하중케이스명) */
+        LOAD_NAME: string;
+        /** Number of Generations */
+        NUM_OF_GEN: number;
+      }>;
+    }
+  );
   export interface CreepShrinkageGeneralData {
     ITER?: number;
     TOL?: number;
@@ -177,51 +244,105 @@ export namespace DbAnalysisControlTypes {
     LOAD?: ConvergenceCriterionCheck;
     WORK?: ConvergenceCriterionCheck;
   }
+  /** Generated from contracts/endpoints/. */
   export interface HeatOfHydrationAnalysisControlHyperSPayload {
+    /** Final Stage (Last: true / Other: false) */
     FINAL_STAGE?: boolean;
-    STAGE_NAME?: string;
+    /** Stage Name (when FINAL_STAGE false) */
+    STAGE_NAME: string;
+    /** Initial Temperature */
     INIT_TEMP?: number;
-    EVAL?: string;
+    /** Element Stress Evaluation ("CENTER"/"GAUSS"/"NODAL") */
+    EVAL?: "CENTER" | "GAUSS" | "NODAL";
+    /** Creep & Shrinkage */
     OPT_IS_CREEP_SHRINKAGE?: boolean;
-    ITEM?: CreepShrinkageItem;
+    /** Creep & Shrinkage Settings (when option true) */
+    ITEM: {
+      /** Type ("CREEP"/"SHRINKAGE"/"BOTH") */
+      TYPE?: "CREEP" | "SHRINKAGE" | "BOTH";
+      /** Creep Calculation Method (General: 0 / Effective Modulus: 1) */
+      CREEP_CALC_METHOD?: number;
+      /** Effective Modulus Params (when method 1) */
+      M_EFF_MOD: JsonObject;
+    };
+    /** phi 1 */
+    PHI1: number;
+    /** day 1 */
+    DAY1: number;
+    /** phi 2 */
+    PHI2: number;
+    /** day 2 */
+    DAY2: number;
+    /** Use Equivalent Age by Time & Temperature */
     OPT_USE_EQUI_AGE?: boolean;
+    /** Include Selfweight Load */
     OPT_INCL_SELF_WEIGHT?: boolean;
-    SELF_WEIGHT_FACTOR?: number;
+    /** Self Weight Factor (when option true) */
+    SELF_WEIGHT_FACTOR: number;
+    /** Max. No. of Iterations per Increment */
     ITER?: number;
-    CONVERGENCE?: HeatOfHydrationConvergenceHyperS;
+    /** Convergence Criteria (DISP/LOAD/WORK 중 최소 1개 필수) */
+    CONVERGENCE?: {
+      /** Displacement(U) */
+      DISP?: JsonObject;
+      /** Load(P) */
+      LOAD?: JsonObject;
+      /** Work(W) */
+      WORK?: JsonObject;
+    };
+    /** Use Option */
+    OPT_CHECK: boolean;
+    /** Tolerance (when OPT_CHECK true) */
+    VALUE: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadAnalysisControlPayload {
+    /** Analysis Method (Exact: "EXACT" / Pivot: "PIVOT" / Quick: "QUICK") */
     METHOD?: string;
-    POINT?: string;
+    /** Load Point Selection (Influence Line Dependent: "INF" / All Points: "ALL") */
+    POINT: string;
+    /** Influence Generating Points (Number/Line Element: 0 / Distance: 1) */
     iIGP?: number;
-    iIGPN?: number;
-    DIST?: number;
-    PLATE?: string;
+    /** Number/Line Element (when iIGP=0) */
+    iIGPN: number;
+    /** Distance between Points (when iIGP=1) */
+    DIST: number;
+    /** Plate Options (Center: "CENTER" / Center+Nodal: "NODAL") */
+    PLATE: string;
+    /** Plate – Stress */
     bSTRCALC?: boolean;
+    /** Plate – Concurrent Force */
     bCONCURRENT?: boolean;
-    FRAME?: string;
+    /** Frame Options (Normal: "NORMAL" / Normal+Concurrent: "AXIAL") */
+    FRAME: string;
+    /** Frame – Combined Stress */
     bCSTRCALC?: boolean;
+    /** Link – Concurrent Force of Elastic/General Links */
     bCONCLINK?: boolean;
+    /** Filter – Reactions */
     bREAC?: boolean;
+    /** Reactions Option (All: false / Structure Group: true) */
     bRG?: boolean;
-    RGN?: string;
+    /** Reactions Group Name (when bRG true) */
+    RGN: string;
+    /** Filter – Displacements */
     bDISP?: boolean;
+    /** Displacements Option (All: false / Structure Group: true) */
     bDG?: boolean;
-    DGN?: string;
+    /** Displacements Group Name (when bDG true) */
+    DGN: string;
+    /** Filter – Forces/Moments */
     bFM?: boolean;
+    /** Forces/Moments Option (All: false / Structure Group: true) */
     bFG?: boolean;
-    FGN?: string;
+    /** Forces/Moments Group Name (when bFG true) */
+    FGN: string;
+    /** Filter – Elastic/General Link */
     bL?: boolean;
+    /** Link Option (All: false / Boundary Group: true) */
     bLG?: boolean;
-    LGN?: string;
-    MATTYPE?: number;
-    BRIDGETYPE?: number;
-    AKMATTYPE?: number;
-    AKBRIDGETYPE?: number;
-    MINFACTS2?: number;
-    MAXV?: number;
-    INCV?: number;
-    MAXSPACE?: number;
+    /** Link Group Name (when bLG true) */
+    LGN: string;
   }
   export interface MovingLoadAnalysisControlChinaPayload {
     POINT?: string;
@@ -404,25 +525,82 @@ export namespace DbAnalysisControlTypes {
     MAXIMUM_DISPLACEMENT?: number;
     LOAD_FACTORS?: Array<number>;
   }
-  export interface NonlinearAnalysisControlDataPayload {
+  /** Generated from contracts/endpoints/. */
+  export type NonlinearAnalysisControlDataPayload = {
+    /** Nonlinear Type (Geometry: "GEOM" / Material: "MATL" / Both: "GEOM+MATL") */
     NONLINEAR_TYPE?: string;
+    /** Iteration Method (Newton-Raphson: "NEWTON" / Arc-Length: "ARC" / Displacement-Control: "DISP") */
     ITERATION_METHOD?: string;
+    /** Energy Norm 사용 */
     OPT_ENERGY_NORM?: boolean;
-    ENERGY_NORM?: number;
+    /** Energy Norm */
+    ENERGY_NORM: number;
+    /** Displacement Norm 사용 */
     OPT_DISPLACEMENT_NORM?: boolean;
-    DISPLACEMENT_NORM?: number;
+    /** Displacement Norm */
+    DISPLACEMENT_NORM: number;
+    /** Force Norm 사용 */
     OPT_FORCE_NORM?: boolean;
-    FORCE_NORM?: number;
-    NUMBER_STEPS?: number;
-    MAX_ITERATIONS?: number;
-    NEWTON_ITEMS?: Array<NonlinearNewtonItem>;
-    INITIAL_FORCE_RATIO_ARC_LEN?: number;
-    MAXIMUM_DISPLACEMENT?: number;
-    ARCLEN_ITEMS?: Array<NonlinearArcLengthItem>;
-    MASTER_NODE?: number;
-    DIRECTION?: number;
-    DISPCT_ITEMS?: Array<NonlinearDisplacementControlItem>;
-  }
+    /** Force Norm */
+    FORCE_NORM: number;
+  } & (
+    {
+      ITERATION_METHOD: "NEWTON";
+      /** Number of Load Steps */
+      NUMBER_STEPS: number;
+      /** Maximum Number of Iterations/Load Step */
+      MAX_ITERATIONS: number;
+      /** Load Case Specific Data */
+      NEWTON_ITEMS: Array<{
+        /** Iteration Method ("NEWTON") */
+        ITERATION_METHOD?: string;
+        /** Load Case Name */
+        LCNAME: string;
+        /** Load Factor (Index: Step) */
+        LOAD_FACTORS?: Array<number>;
+      }>;
+    } |
+    {
+      ITERATION_METHOD: "ARC";
+      /** Number of Load Steps */
+      NUMBER_STEPS: number;
+      /** Maximum Number of Iterations/Load Step */
+      MAX_ITERATIONS: number;
+      /** Initial Force Ratio for Unit Arc-Length */
+      INITIAL_FORCE_RATIO_ARC_LEN: number;
+      /** Maximum Displacement Bound */
+      MAXIMUM_DISPLACEMENT?: number;
+      /** Load Case Specific Data */
+      ARCLEN_ITEMS: Array<{
+        /** Iteration Method ("ARC") */
+        ITERATION_METHOD?: string;
+        /** Load Case Name */
+        LCNAME: string;
+      }>;
+    } |
+    {
+      ITERATION_METHOD: "DISP";
+      /** Number of Steps */
+      NUMBER_STEPS: number;
+      /** Max Iterations/Load Step */
+      MAX_ITERATIONS: number;
+      /** Master Node ID */
+      MASTER_NODE: number;
+      /** Direction (Dx: 0 / Dy: 1 / Dz: 2) */
+      DIRECTION?: number;
+      /** Maximum Displacement */
+      MAXIMUM_DISPLACEMENT: number;
+      /** Load Case Specific Data */
+      DISPCT_ITEMS: Array<{
+        /** Iteration Method ("DISP") */
+        ITERATION_METHOD?: string;
+        /** Load Case Name */
+        LCNAME: string;
+        /** Master Node Displacement (Index: Step) */
+        LOAD_FACTORS?: Array<number>;
+      }>;
+    }
+  );
   export interface NonlinearLoadStepsHyperS {
     STEP_MODE?: string;
     NUMBER_STEPS?: number;
@@ -629,9 +807,19 @@ export namespace DbAnalysisControlTypes {
     LCNAME?: string;
     BGCNAME?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface AssignBoundaryCombinationHyperSPayload {
-    BC_ASSIGN?: Array<BoundaryCombinationAssignItem>;
-    BC_SELECT?: Array<string>;
+    /** Assign Boundary Combination to Analyses & Load Cases */
+    BC_ASSIGN: Array<{
+      /** Analysis Type */
+      ANAL_TYPE: "ST" | "MV" | "SM" | "EIGV" | "RS" | "LTH" | "NLTH" | "PO";
+      /** Load Case Name (ANAL_TYPE ∈ {ST, NLTH, PO}일 때 필수) */
+      LCNAME?: string;
+      /** Boundary Group Combination Name (빈 문자열 = 변경 없음) */
+      BGCNAME?: string;
+    }>;
+    /** Apply to Boundary Change */
+    BC_SELECT: Array<string>;
   }
 }
 
@@ -745,19 +933,16 @@ export namespace DbBoundaryTypes {
       WIDTH?: number;
     }>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ElasticLinkPayload {
-    NODE?: Array<number>;
+    /** Node Numbers [i-node, j-node] */
+    NODE: [number, number];
+    /** Boundary Group Name */
     BNGR_NAME?: string;
+    /** Beta Angle (°) */
     ANGLE?: number;
-    LINK?: string;
-    SDR?: Array<number>;
-    R_S?: Array<boolean>;
-    bSHEAR?: boolean;
-    DR?: Array<number>;
-    DIR?: number;
-    MLFC?: number;
-    RLFC?: number;
-    DRENDI?: number;
+    /** Link Type */
+    LINK: string;
   }
   export interface RigidLinkItem extends DbBaseTypes.ItemGroupFields {
     DOF?: number;
@@ -844,8 +1029,25 @@ export namespace DbBoundaryTypes {
     FLAG_J?: string;
     VALUE_J?: Array<number>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface BeamEndReleasePayload {
-    ITEMS: Array<BeamEndReleaseItem>;
+    /** Beam End Release (배열로 삽입) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Input Method · false=Relative, true=Value */
+      bVALUE?: boolean;
+      /** Release i-Node [Fx,Fy,Fz,Mx,My,Mz,Mb] */
+      FLAG_I: string;
+      /** Partial Fixity for i-Node [Fx,Fy,Fz,Mx,My,Mz,Mb] */
+      VALUE_I?: [number, number, number, number, number, number, number];
+      /** Release j-Node [Fx,Fy,Fz,Mx,My,Mz,Mb] */
+      FLAG_J: string;
+      /** Partial Fixity for j-Node [Fx,Fy,Fz,Mx,My,Mz,Mb] */
+      VALUE_J?: [number, number, number, number, number, number, number];
+    }>;
   }
   export interface BeamEndOffsetItem extends DbBaseTypes.ItemGroupFields {
     TYPE?: string;
@@ -886,19 +1088,45 @@ export namespace DbBoundaryTypes {
     N3?: Array<number>;
     N4?: Array<number>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface PlateEndReleasePayload {
-    ITEMS: Array<PlateEndReleaseItem>;
+    /** Plate End Release (배열로 삽입) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Position N1 [Fx,Fy,Fz,Mx,My] · 1=해제 */
+      N1: [number, number, number, number, number];
+      /** Position N2 [Fx,Fy,Fz,Mx,My] */
+      N2: [number, number, number, number, number];
+      /** Position N3 [Fx,Fy,Fz,Mx,My] */
+      N3: [number, number, number, number, number];
+      /** Position N4 [Fx,Fy,Fz,Mx,My] */
+      N4: [number, number, number, number, number];
+    }>;
   }
   export interface ForceDeformationFunctionItem {
     X?: number;
     Y?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ForceDeformationFunctionPayload {
-    NAME?: string;
+    /** Function Name */
+    NAME: string;
+    /** Type · "FORCE" (힘-변위) / "MOMENT" (모멘트-회전각) */
     TYPE?: string;
+    /** Symmetric · true=대칭, false=비대칭 */
     SYMM?: boolean;
+    /** Function ID */
     FUNC_ID?: number;
-    ITEMS?: Array<ForceDeformationFunctionItem>;
+    /** Function Data (X=변위/회전, Y=힘/모멘트) */
+    ITEMS: Array<{
+      /** X-Axis (Displacement m / Radian) */
+      X: number;
+      /** Y-Axis (Force kN / Moment kN·m) */
+      Y: number;
+    }>;
   }
   export interface SeismicDeviceCommon {
     NAME?: string;
@@ -1161,21 +1389,52 @@ export namespace DbConstructionStageTypes {
     BNGR_NAME?: string;
     POS?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ConstructionStagePayload {
-    NAME?: string;
-    NO?: number;
-    DURATION?: number;
+    /** 시공단계명 */
+    NAME: string;
+    /** 시공단계 지속 기간 (일) */
+    DURATION: number;
+    /** 결과 저장 – 단계 */
     bSV_RSLT?: boolean;
+    /** 결과 저장 – 추가 스텝 */
     bSV_STEP?: boolean;
+    /** 재료 비선형 해석을 위한 하중 증분 스텝 사용 여부 */
     bLOAD_STEP?: boolean;
-    INCRE_STEP?: number;
+    /** 하중 증분 스텝 수 (bLOAD_STEP=true 시) */
+    INCRE_STEP: number;
+    /** 추가 스텝 목록 */
     ADD_STEP?: Array<number>;
-    ACT_ELEM?: Array<ActivateElementItem>;
-    DACT_ELEM?: Array<DeactivateElementItem>;
-    ACT_BNGR?: Array<ActivateBoundaryGroupItem>;
+    /** 구조 그룹 활성화 목록 */
+    ACT_ELEM?: Array<{
+      /** 활성화할 구조 그룹명 */
+      GRUP_NAME: string;
+      /** 재료 나이 (일) */
+      AGE?: number;
+    }>;
+    /** 구조 그룹 비활성화 목록 */
+    DACT_ELEM?: Array<{
+      /** 요소력 재분배 (%) */
+      REDIST?: number;
+    }>;
+    /** 경계 그룹 활성화 목록 */
+    ACT_BNGR?: Array<{
+      /** 활성화할 경계 그룹명 */
+      BNGR_NAME: string;
+      /** 지점/스프링 위치 ("DEFORMED" / "ORIGINAL") */
+      POS: string;
+    }>;
+    /** 비활성화할 경계 그룹명 목록 */
     DACT_BNGR?: Array<string>;
-    ACT_LOAD?: Array<LoadGroupDayItem>;
-    DACT_LOAD?: Array<LoadGroupDayItem>;
+    /** 하중 그룹 활성화 목록 */
+    ACT_LOAD?: Array<{
+      /** 활성화할 하중 그룹명 */
+      LOAD_NAME: string;
+      /** 활성 일 ("FIRST" / "LAST" / 숫자 문자열) */
+      DAY?: string;
+    }>;
+    /** 하중 그룹 비활성화 목록 */
+    DACT_LOAD?: Array<JsonObject>;
   }
   export interface CompositeSectionPartInfo {
     PART?: number;
@@ -1206,27 +1465,56 @@ export namespace DbConstructionStageTypes {
   export interface TimeLoadItem extends DbBaseTypes.ItemGroupFields {
     DAY?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TimeLoadConstructionStagePayload {
-    ITEMS: Array<TimeLoadItem>;
+    /** 시공단계 시간 하중 목록 */
+    ITEMS: Array<{
+      /** 일련번호 */
+      ID?: number;
+      /** 하중 그룹명 */
+      GROUP_NAME?: string;
+      /** 시간 하중 (일) */
+      DAY: number;
+    }>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SetBackLoadPayload {
-    NODE1?: number;
-    NODE2?: number;
+    /** 절점 1 */
+    NODE1: number;
+    /** 절점 2 */
+    NODE2: number;
+    /** X 방향 변위 */
     DX?: number;
+    /** Y 방향 변위 */
     DY?: number;
+    /** Z 방향 변위 */
     DZ?: number;
-    LCNAME?: string;
+    /** 하중 케이스명 */
+    LCNAME: string;
+    /** 하중 그룹명 */
     GROUP_NAME?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface CamberConstructionStagePayload {
-    DEFORM?: number;
-    USER?: number;
+    /** 변형 캠버 */
+    DEFORM: number;
+    /** 사용자 정의 캠버 */
+    USER: number;
   }
   export interface CreepCoefficientItem extends DbBaseTypes.ItemGroupFields {
     CREEP?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface CreepCoefficientConstructionStagePayload {
-    ITEMS: Array<CreepCoefficientItem>;
+    /** 크리프 계수 목록 */
+    ITEMS: Array<{
+      /** 일련번호 */
+      ID?: number;
+      /** 하중 그룹명 */
+      GROUP_NAME?: string;
+      /** 크리프 계수 */
+      CREEP: number;
+    }>;
   }
   export interface AmbientTemperatureFunctionPayload {
     NAME?: string;
@@ -1250,14 +1538,36 @@ export namespace DbConstructionStageTypes {
     CCFC_NAME?: string;
     ETFC_NAME?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ElementConvectionBoundaryPayload {
-    ITEMS: Array<ElementConvectionBoundaryItem>;
+    /** 요소 대류 경계 목록 */
+    ITEMS: Array<{
+      /** 일련번호 */
+      ID?: number;
+      /** 경계 그룹명 */
+      GROUP_NAME?: string;
+      /** 면 번호 (Face#1 ~ Face#6) */
+      FACE_NO: number;
+      /** 대류 계수 함수명 */
+      CCFC_NAME: string;
+      /** 외기 온도 함수명 */
+      ETFC_NAME: string;
+    }>;
   }
   export interface PrescribedTemperatureItem extends DbBaseTypes.ItemGroupFields {
     TEMPER?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface PrescribedTemperaturePayload {
-    ITEMS: Array<PrescribedTemperatureItem>;
+    /** 지정 온도 목록 */
+    ITEMS: Array<{
+      /** 일련번호 */
+      ID?: number;
+      /** 경계 그룹명 */
+      GROUP_NAME?: string;
+      /** 온도 */
+      TEMPER: number;
+    }>;
   }
   export interface HeatSourceFunctionPayload {
     NAME?: string;
@@ -1273,31 +1583,59 @@ export namespace DbConstructionStageTypes {
     SCALE_FACTOR?: number;
     ITEM?: Array<DbBaseTypes.TimeValuePoint>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface AssignHeatSourcePayload {
-    FUNC_NAME?: string;
+    /** 열원 함수명 */
+    FUNC_NAME: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface PipeCoolingPayload {
-    NAME?: string;
+    /** 파이프 쿨링 이름 */
+    NAME: string;
+    /** 파이프 직경 */
     DIAMETER?: number;
+    /** 대류 계수 */
     COEF?: number;
+    /** 비열 */
     HEAT?: number;
+    /** 단위 중량 밀도 */
     DENSITY?: number;
+    /** 유입 온도 */
     TEMPER?: number;
+    /** 유량 */
     FLOW_RATE?: number;
+    /** 유입 시작 시간 */
     START_TIME?: number;
+    /** 유입 종료 시간 */
     END_TIME?: number;
-    ITEMS?: Array<number>;
+    /** 절점 목록 */
+    ITEMS: Array<number>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ConstructionStageForHydrationPayload {
-    NAME?: string;
+    /** 수화열 단계명 */
+    NAME: string;
+    /** 초기 온도 사용 여부 */
     bINITAL_TEMP?: boolean;
+    /** 초기 온도 */
     INITIAL_TEMP?: number;
-    ADD_STEP?: Array<number>;
-    ACT_ELEM?: Array<string>;
-    ACT_BNGR?: Array<string>;
-    DACT_BNGR?: Array<string>;
-    ACT_LOAD?: Array<LoadGroupDayItem>;
-    DACT_LOAD?: Array<LoadGroupDayItem>;
+    /** 추가 스텝 목록 */
+    ADD_STEP: Array<number>;
+    /** 활성화 구조 그룹 목록 */
+    ACT_ELEM: Array<string>;
+    /** 활성화 경계 그룹 목록 */
+    ACT_BNGR: Array<string>;
+    /** 비활성화 경계 그룹 목록 */
+    DACT_BNGR: Array<string>;
+    /** 활성화 하중 그룹 목록 */
+    ACT_LOAD?: Array<{
+      /** 하중 케이스명 */
+      LOAD_NAME?: string;
+      /** 활성화 일 */
+      DAY?: string;
+    }>;
+    /** 비활성화 하중 그룹 목록 */
+    DACT_LOAD?: Array<JsonObject>;
   }
 }
 
@@ -1404,10 +1742,15 @@ export namespace DbDesignTypes {
     /** 국부좌표 방향 반전 */
     bREVERSE?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface FrameDefinitionPayload {
+    /** 프레임 X방향 · 비횡구속·Sway: "Unbraced Sway" / 횡구속·Non-sway: "Braced Non-sway" */
     FRAMEX?: string;
+    /** 프레임 Y방향 · "Unbraced Sway" / "Braced Non-sway" */
     FRAMEY?: string;
+    /** 유효좌굴길이계수 자동 계산 */
     bAUTOKF?: boolean;
+    /** 설계 타입 · 3-D: "3D" / X-Z 평면: "XZ" / Y-Z 평면: "YZ" / X-Y 평면: "XY" */
     DT?: string;
   }
   /** Generated from contracts/endpoints/. */
@@ -1561,31 +1904,64 @@ export namespace DbDynamicLoadsTypes {
     SF?: number;
     LCT?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TimeHistoryGlobalControlPayload {
-    GNT?: number;
-    ILT?: number;
-    aILL?: Array<TimeHistoryInitialLoadItem>;
+    /** 기하 비선형 타입 (0=None, 1=Large Disp, 2=P-Delta) */
+    GNT: number;
+    /** 초기 하중 유형 (0=비선형 정적 해석, 1=정적/시공단계 결과 가져오기) */
+    ILT: number;
+    /** 초기 하중 목록 */
+    aILL?: Array<{
+      /** 정적 하중 케이스명 */
+      SLC: string;
+      /** 스케일 계수 */
+      SF: number;
+      /** 하중 케이스 타입 (1=Static, 18=Construction) */
+      LCT: number;
+    }>;
+    /** NL 초기 하중 무시 요소 옵션 */
     IEPI?: boolean;
+    /** 증분 스텝 수 */
     NSTEP?: number;
+    /** 결과 출력 방법 (false=최종 스텝만, true=스텝 증분) */
     bROT?: boolean;
+    /** 출력 스텝 증분 수 */
     SNIO?: number;
-    bPCF?: boolean;
-    MAXNS?: number;
-    MAXIT?: number;
+    /** 수렴 실패 허용 */
+    bPCF: boolean;
+    /** 최대 부분 스텝 수 */
+    MAXNS: number;
+    /** 최대 반복 횟수 */
+    MAXIT: number;
+    /** 변위 노름 사용 */
     bDN?: boolean;
+    /** 하중 노름 사용 */
     bFN?: boolean;
+    /** 에너지 노름 사용 */
     bEN?: boolean;
+    /** 변위 노름 값 */
     DN?: number;
+    /** 하중 노름 값 */
     FN?: number;
+    /** 에너지 노름 값 */
     EN?: number;
+    /** 선형 탐색 방법 사용 */
     bULSM?: boolean;
+    /** 선형 탐색 시작 반복 수 */
     ULSM?: number;
+    /** 시간이력 에너지 결과 출력 */
     ENERGYRESULT?: boolean;
+    /** 점성 감쇠기 / 오일 감쇠기 결과 */
     SDVI?: boolean;
+    /** 점탄성 감쇠기 결과 */
     SDVE?: boolean;
+    /** 강재 감쇠기 결과 */
     SDST?: boolean;
+    /** 이력 절연 장치 결과 */
     SDHY?: boolean;
+    /** 절연 장치 결과 */
     SDIS?: boolean;
+    /** 모델 항복 상태 */
     bMSSSTATUS?: boolean;
   }
   export interface HyperSIncrementStep {
@@ -1620,9 +1996,32 @@ export namespace DbDynamicLoadsTypes {
     SDHY?: boolean;
     SDIS?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TimeHistoryOutputOptionHyperSPayload {
-    OUT_OPT?: HyperSOutputOption;
-    RESULT_SELECTION?: HyperSResultSelection;
+    /** 비선형 해석 결과 출력 옵션 */
+    OUT_OPT: {
+      /** 비탄성 힌지 스텝별 출력 옵션 (0=전체 요소, 1=선택 요소, 2=미출력) */
+      HINGE_OUT: number;
+      /** 공통 설정 여부 (true=FIBER_OUT이 HINGE_OUT과 동일) */
+      COMMON_OPT: boolean;
+      /** 섬유 단면 스텝별 출력 옵션 (0=전체 요소, 1=선택 요소, 2=미출력) */
+      FIBER_OUT?: number;
+    };
+    /** 시간이력 결과 옵션 */
+    RESULT_SELECTION: {
+      /** 에너지 결과 출력 */
+      ENERGY_RESULT?: boolean;
+      /** 점성 감쇠기 / 오일 감쇠기 결과 */
+      SDVI?: boolean;
+      /** 점탄성 감쇠기 결과 */
+      SDVE?: boolean;
+      /** 강재 감쇠기 결과 */
+      SDST?: boolean;
+      /** 이력 절연 장치 결과 */
+      SDHY?: boolean;
+      /** 절연 장치 결과 */
+      SDIS?: boolean;
+    };
   }
   export interface TimeHistoryLoadCaseCommon {
     NAME?: string;
@@ -1680,17 +2079,29 @@ export namespace DbDynamicLoadsTypes {
     DAMP_FACTOR?: number;
     PHASE_ANGLE?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface GroundAccelerationPayload {
-    NAME?: string;
+    /** 시간이력 하중 케이스명 */
+    NAME: string;
+    /** 수평 지반 가속도 각도 */
     ANGLE?: number;
-    FUNCX?: string;
-    SCALEX?: number;
+    /** X방향 함수명 */
+    FUNCX: string;
+    /** X방향 스케일 계수 */
+    SCALEX: number;
+    /** X방향 도달 시간 */
     ATIMEX?: number;
-    FUNCY?: string;
-    SCALEY?: number;
+    /** Y방향 함수명 */
+    FUNCY: string;
+    /** Y방향 스케일 계수 */
+    SCALEY: number;
+    /** Y방향 도달 시간 */
     ATIMEY?: number;
-    FUNCZ?: string;
-    SCALEZ?: number;
+    /** Z방향 함수명 */
+    FUNCZ: string;
+    /** Z방향 스케일 계수 */
+    SCALEZ: number;
+    /** Z방향 도달 시간 */
     ATIMEZ?: number;
   }
   export interface DynamicNodalLoadItem {
@@ -1701,15 +2112,36 @@ export namespace DbDynamicLoadsTypes {
     ARRIVAL_TIME?: number;
     SCALE_FACTOR?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface DynamicNodalLoadPayload {
-    ITEMS: Array<DynamicNodalLoadItem>;
+    /** 동적 절점 하중 목록 */
+    ITEMS: Array<{
+      /** 일련번호 */
+      ID?: number;
+      /** 시간이력 하중 케이스명 */
+      THLCNAME: string;
+      /** 시간이력 함수명 (Force/Moment 타입만 사용 가능) */
+      FUNC_NAME: string;
+      /** 방향 ("X" / "Y" / "Z") */
+      DIR: string;
+      /** 도달 시간 */
+      ARRIVAL_TIME: number;
+      /** 스케일 계수 */
+      SCALE_FACTOR: number;
+    }>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TimeVaryingStaticLoadPayload {
-    THIS_LCNAME?: string;
-    SLOAD?: string;
-    THIS_FUNCNAME?: string;
+    /** 시간이력 하중 케이스명 */
+    THIS_LCNAME: string;
+    /** 정적 하중 케이스명 */
+    SLOAD: string;
+    /** 시간이력 함수명 (Normal 타입만 사용 가능) */
+    THIS_FUNCNAME: string;
+    /** 도달 시간 */
     ATIME?: number;
-    SCALE?: number;
+    /** 스케일 계수 */
+    SCALE: number;
   }
   export interface MultipleSupportExcitationItem {
     ID?: number;
@@ -1725,8 +2157,35 @@ export namespace DbDynamicLoadsTypes {
     SCALEZ?: number;
     ATIMEZ?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MultipleSupportExcitationPayload {
-    ITEMS: Array<MultipleSupportExcitationItem>;
+    /** 다중 지점 가진 목록 */
+    ITEMS: Array<{
+      /** 일련번호 */
+      ID?: number;
+      /** 시간이력 하중 케이스명 */
+      LCNAME: string;
+      /** 수평 지반 가속도 각도 */
+      ANGLE?: number;
+      /** X방향 함수명 (NormAccel/Acceleration 타입만) */
+      FUNCX: string;
+      /** X방향 스케일 계수 */
+      SCALEX: number;
+      /** X방향 도달 시간 */
+      ATIMEX?: number;
+      /** Y방향 함수명 */
+      FUNCY?: string;
+      /** Y방향 스케일 계수 */
+      SCALEY?: number;
+      /** Y방향 도달 시간 */
+      ATIMEY?: number;
+      /** Z방향 함수명 */
+      FUNCZ?: string;
+      /** Z방향 스케일 계수 */
+      SCALEZ?: number;
+      /** Z방향 도달 시간 */
+      ATIMEZ?: number;
+    }>;
   }
 }
 
@@ -3314,16 +3773,27 @@ export namespace DbPropertiesSectionTypes {
     SECT_NAME?: string;
     SECT_BEFORE?: SectBefore;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TaperedGroupPayload {
-    NAME?: string;
-    ELEMLIST?: Array<number>;
-    ZVAR?: string;
-    YVAR?: string;
-    ZEXP?: number;
+    /** Tapered Group Name */
+    NAME: string;
+    /** Element No. list */
+    ELEMLIST: Array<number>;
+    /** Z-axis Section Shape Variation · Linear: "LINEAR" / Polynomial: "POLY" */
+    ZVAR: string;
+    /** Y-axis Section Shape Variation · Linear: "LINEAR" / Polynomial: "POLY" */
+    YVAR: string;
+    /** Z axis Exponent */
+    ZEXP: number;
+    /** Z axis Symmetric Plane from i or j */
     ZFROM?: string;
+    /** Z axis Symmetric Plane Distance (m) */
     ZDIST?: number;
-    YEXP?: number;
+    /** Y axis Exponent */
+    YEXP: number;
+    /** Y axis Symmetric Plane from i or j */
     YFROM?: string;
+    /** Y axis Symmetric Plane Distance (m) */
     YDIST?: number;
   }
   export interface SectionStiffnessItem extends DbBaseTypes.ItemGroupFields {
@@ -3393,12 +3863,23 @@ export namespace DbPropertiesSectionTypes {
     PY?: number;
     PZ?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SectionStressPointsPayload {
+    /** Same Stress Points at i and j-end */
     OPT_SAME_J?: boolean;
-    POINT_SIZE_1?: number;
-    POINT_SIZE_2?: number;
-    POINT1?: Array<StressPoint>;
-    POINT2?: Array<StressPoint>;
+    /** Number of Stress Points (I) */
+    POINT_SIZE_1: number;
+    /** Number of Stress Points (J) */
+    POINT_SIZE_2: number;
+    /** Stress Point Coordinates (I) */
+    POINT1: Array<{
+      /** Point Y */
+      PY: number;
+      /** Point Z */
+      PZ: number;
+    }>;
+    /** Stress Point Coordinates (J) */
+    POINT2: Array<JsonObject>;
   }
   export interface PlateStiffnessScaleFactorItem extends DbBaseTypes.ItemGroupFields {
     AXIAL_X?: number;
@@ -3508,8 +3989,31 @@ export namespace DbPropertiesSectionTypes {
     IZZ_SF?: number;
     WGT_SF?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ElementStiffnessScaleFactorPayload {
-    ITEMS: Array<ElementStiffnessScaleFactorItem>;
+    /** Items (Array of Objects) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Area (Cross-sectional area) */
+      AREA_SF?: number;
+      /** Asy (Shear area, local y) */
+      ASY_SF?: number;
+      /** Asz (Shear area, local z) */
+      ASZ_SF?: number;
+      /** Ixx (Torsional resistance) */
+      IXX_SF?: number;
+      /** Iyy (Moment of Inertia, y-axis) */
+      IYY_SF?: number;
+      /** Izz (Moment of Inertia, z-axis) */
+      IZZ_SF?: number;
+      /** Weight */
+      WGT_SF?: number;
+      /** Boundary Group Name */
+      GROUP_NAME?: string;
+      /** Part(합성단면 전용) · Before: "Before" / After: "After" / All: "All" */
+      iPart?: string;
+    }>;
   }
   export interface FiberDivisionColor {
     R?: number;
@@ -3796,17 +4300,54 @@ export namespace DbPushoverTypes {
     MODE?: number;
     SF?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface PushoverLoadCaseHyperSPayload {
-    LCNAME?: string;
+    /** 이름 (길이 1~20, 중복 불가) */
+    LCNAME: string;
+    /** 설명 (길이 ≤80) */
     DESC?: string;
-    INCRE_STEP?: number;
-    NLTYPE?: string;
-    bUSEINITIAL?: boolean;
+    /** 증분 스텝 수(nstep), 값 > 0 (UI 기본 20) */
+    INCRE_STEP: number;
+    /** 기하비선형 유형 (None: NONE / P-Delta: PDELTA / Large Displacements: LARGE) */
+    NLTYPE: "NONE" | "PDELTA" | "LARGE";
+    /** 초기하중 사용 여부. true이면 bREACOUTPUT 필수, false이면 제공 불가 */
+    bUSEINITIAL: boolean;
+    /** 초기하중에 의한 누적 반력/층전단력 (bUSEINITIAL=true일 때 필수) */
     bREACOUTPUT?: boolean;
-    INCRE_METHOD?: string;
-    CTRL_OPT?: PushoverControlOptionHyperS;
-    LOADPATTERNTYPE?: string;
-    LOADPATTERN?: Array<PushoverLoadPatternItemHyperS>;
+    /** 증분 방법 (Load Control: LOAD / Displacement Control: DISP) */
+    INCRE_METHOD: "LOAD" | "DISP";
+    /** 제어 옵션 컨테이너 */
+    CTRL_OPT: {
+      /** 자동 증분 제어 (Auto-Stepping: AUTO / Equal Step: EQUAL / Incremental Control Function: INC_FUNC) */
+      STEPCTRLOPTION: "AUTO" | "EQUAL" | "INC_FUNC";
+      /** 증분 함수 이름 (STEPCTRLOPTION="INC_FUNC"일 때 필수, 그 외 제공 불가) */
+      INCFUNC_NAME?: string;
+      /** 현재 강성비(Cs), [0, 100] 범위 */
+      STIFF_RATIO: number;
+      /** 변위 제어 옵션 (Global: GLOBAL / Master Node: NODE) */
+      DISPCTRLOPTION: "GLOBAL" | "NODE";
+      /** 최대 병진 변위(GLOBAL일 때 필수, 값 > 0) */
+      GLOBAL_MAX_DISP?: number;
+      /** 절점 번호(NODE일 때 필수, ExistNode 통과 필요) */
+      MASTERNODE?: number;
+      /** 방향 (DX: DX / DY: DY / DZ: DZ) (NODE일 때 필수) */
+      MASTERDIRECTION?: "DX" | "DY" | "DZ";
+      /** 최대 변위(NODE일 때 필수, 값 != 0.0) */
+      MASTERMAXDISP?: number;
+    };
+    /** 하중 패턴 유형 (정적 하중케이스: LOAD / 균일 가속도: ACC / 모드형상: MODE / 정규화 모드형상: NOR_MODE) */
+    LOADPATTERNTYPE: "LOAD" | "ACC" | "MODE" | "NOR_MODE";
+    /** 하중 패턴 배열 (크기 ≥ 1; ACC/MODE/NOR_MODE는 원소 1개로 제한) */
+    LOADPATTERN: Array<{
+      /** 하중케이스 이름 (ExistStld 통과 필요, Static Load Case 이름) */
+      LCNAME: string;
+      /** 배율(Scale Factor), 값 != 0.0 (UI 기본 1.0) */
+      SF: number;
+      /** 방향 (DX: DX / DY: DY / DZ: DZ) */
+      DIR: "DX" | "DY" | "DZ";
+      /** 모드 번호, 값 > 0 */
+      MODE: number;
+    }>;
   }
 }
 
@@ -3840,8 +4381,29 @@ export namespace DbStaticLoadsTypes {
     MY?: number;
     MZ?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface NodalLoadPayload {
-    ITEMS: Array<NodalLoadItem>;
+    /** Nodal Load items */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Case Name */
+      LCNAME: string;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Nodal Load – FX */
+      FX?: number;
+      /** Nodal Load – FY */
+      FY?: number;
+      /** Nodal Load – FZ */
+      FZ?: number;
+      /** Nodal Load – MX */
+      MX?: number;
+      /** Nodal Load – MY */
+      MY?: number;
+      /** Nodal Load – MZ */
+      MZ?: number;
+    }>;
   }
   export interface BeamLoadItem extends DbBaseTypes.ItemGroupFields {
     LCNAME?: string;
@@ -3853,8 +4415,49 @@ export namespace DbStaticLoadsTypes {
     P?: Array<number>;
     USE_ECCEN?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface BeamLoadPayload {
-    ITEMS: Array<BeamLoadItem>;
+    /** Beam Load items */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Case Name */
+      LCNAME: string;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Load Classification ("BEAM" / "LINE" / "TYPICAL") */
+      CMD: string;
+      /** Load Type ("CONLOAD" / "CONMOMENT" / "UNILOAD" / "UNIMOMENT" / "PRESSURE") */
+      TYPE: string;
+      /** Direction ("LX" / "LY" / "LZ" / "GX" / "GY" / "GZ") */
+      DIRECTION: string;
+      /** Projection */
+      USE_PROJECTION?: boolean;
+      /** Distance [x1, x2, x3, x4] */
+      D?: [number, number, number, number];
+      /** Load [v1, v2, v3, v4] */
+      P?: [number, number, number, number];
+      /** Eccentricity */
+      USE_ECCEN?: boolean;
+      /** Eccentricity Type (0=Centroid, 1=Offset) */
+      ECCEN_TYPE?: number;
+      /** Eccentricity Direction ("LY" / "LZ" / "GX" / "GY" / "GZ") */
+      ECCEN_DIR: string;
+      /** Distance I-End */
+      I_END?: number;
+      /** J-End Option */
+      USE_J_END?: boolean;
+      /** Distance J-End */
+      J_END?: number;
+      /** Additional H from Top Option */
+      USE_ADDITIONAL?: boolean;
+      /** Distance I-End (additional) */
+      ADDITIONAL_I_END?: number;
+      /** J-End Option (additional) */
+      USE_ADDITIONAL_J_END?: boolean;
+      /** Distance J-End (additional) */
+      ADDITIONAL_J_END?: number;
+    }>;
   }
   export interface PressureLoadItem extends DbBaseTypes.ItemGroupFields {
     LCNAME?: string;
@@ -3879,8 +4482,23 @@ export namespace DbStaticLoadsTypes {
     LCNAME?: string;
     VALUES?: Array<SpecifiedDisplacementValue>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SpecifiedDisplacementPayload {
-    ITEMS: Array<SpecifiedDisplacementItem>;
+    /** Specified Displacement items */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Case Name */
+      LCNAME: string;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Displacements (Local) [Dx, Dy, Dz, Rx, Ry, Rz] */
+      VALUES?: [JsonObject, JsonObject, JsonObject, JsonObject, JsonObject, JsonObject];
+    }>;
+    /** Usage Flag */
+    OPT_FLAG?: boolean;
+    /** Displacement Value */
+    DISPLACEMENT?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface NodalMassPayload {
@@ -3901,14 +4519,27 @@ export namespace DbStaticLoadsTypes {
     LCNAME?: string;
     FACTOR?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface LoadsToMassPayload {
-    DIR?: string;
+    /** Mass Direction ("X" / "Y" / "Z" / "XY" / "YZ" / "XZ" / "XYZ") */
+    DIR: string;
+    /** Nodal Load */
     bNODAL?: boolean;
+    /** Beam Load */
     bBEAM?: boolean;
+    /** Floor Load */
     bFLOOR?: boolean;
+    /** Pressure (Hydrostatic) */
     bPRES?: boolean;
+    /** Gravity Acceleration */
     GRAV?: number;
-    vLC?: Array<LoadsToMassCase>;
+    /** Load Case List */
+    vLC: Array<{
+      /** Load Case Name */
+      LCNAME: string;
+      /** Scale Factor */
+      FACTOR: number;
+    }>;
   }
   export interface NodalBodyForcePayload {
     LCNAME?: string;
@@ -3930,11 +4561,29 @@ export namespace DbStaticLoadsTypes {
     LOAD_P3?: number;
     LOAD_P4?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface PressureLoadTypePayload {
-    NAME?: string;
-    DESC?: string;
-    ELEM_TYPE?: string;
-    PRESSURE_LOAD_ITEMS?: Array<PressureLoadTypeItem>;
+    /** Pressure Load Type Name */
+    NAME: string;
+    /** Description */
+    DESC: string;
+    /** Element Type */
+    ELEM_TYPE: string;
+    /** Pressure Load items */
+    PRESSURE_LOAD_ITEMS: Array<{
+      /** Load Case Name */
+      LOADCASENAME: string;
+      /** Load Type ("Uniform" / "Linear") */
+      LOADTYPE: string;
+      /** Load P1 */
+      LOAD_P1: number;
+      /** Load P2 */
+      LOAD_P2?: number;
+      /** Load P3 */
+      LOAD_P3?: number;
+      /** Load P4 */
+      LOAD_P4?: number;
+    }>;
   }
   export interface PlaneLoadTypePayload {
     NAME?: string;
@@ -3970,10 +4619,21 @@ export namespace DbStaticLoadsTypes {
     FLOOR_LOAD?: number;
     OPT_SUB_BEAM_WEIGHT?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface FloorLoadTypePayload {
-    NAME?: string;
+    /** Floor Load Type Name */
+    NAME: string;
+    /** Description */
     DESC?: string;
-    ITEM?: Array<FloorLoadTypeItem>;
+    /** Floor Load items */
+    ITEM: Array<{
+      /** Load Case Name */
+      LCNAME: string;
+      /** Floor Load (kN/m or equivalent) */
+      FLOOR_LOAD: number;
+      /** Consider Sub Beam Weight */
+      OPT_SUB_BEAM_WEIGHT?: boolean;
+    }>;
   }
   export interface FloorLoadPayload {
     FLOOR_LOAD_TYPE_NAME?: string;
@@ -3999,8 +4659,29 @@ export namespace DbStaticLoadsTypes {
     DIR?: string;
     SCALE_FACTOR?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface FinishingMaterialLoadPayload {
-    ITEMS: Array<FinishingMaterialLoadItem>;
+    /** Finishing Material Load items */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Case Name */
+      LCNAME: string;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Covering Type ("ENVELOP" / "FILL" / "SURROUND") */
+      COVERING_TYPE?: string;
+      /** Covering Range [+x, -y, -x, +y] ("FULL" / "HALF") */
+      COVERING_RANGE: [string, string, string, string];
+      /** Covering Thickness (d) */
+      THICKNESS?: number;
+      /** Filling Property (Density) */
+      DENSITY?: number;
+      /** Direction ("GX" / "GY" / "GZ") */
+      DIR?: string;
+      /** Scale Factor */
+      SCALE_FACTOR: number;
+    }>;
   }
   export interface SoilPropertyItem {
     HEIGHT?: number;
@@ -4010,36 +4691,80 @@ export namespace DbStaticLoadsTypes {
     KH?: number;
     DISP?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SoilPropertyPayload {
-    NAME?: string;
+    /** Soil Properties Name */
+    NAME: string;
+    /** Description */
     DESC?: string;
-    OPT_USE_N?: boolean;
-    GROUND_LEVEL?: number;
-    BEDROCK_LEVEL?: number;
-    FOOTING_LEVEL?: number;
-    ITEMS?: Array<SoilPropertyItem>;
+    /** Use N Value (true=N값 / false=내부마찰각) */
+    OPT_USE_N?: number;
+    /** Level of Ground Surface */
+    GROUND_LEVEL: number;
+    /** Level of Bedrock */
+    BEDROCK_LEVEL: number;
+    /** Level of Footing Bottom */
+    FOOTING_LEVEL: number;
+    /** Soil Characteristic items */
+    ITEMS: Array<{
+      /** Soil Layer Thickness */
+      HEIGHT: number;
+      /** Internal Friction Angle or N Value */
+      ANGLE_OR_N: number;
+      /** Unit Volume Weight of Soil */
+      DENSITY: number;
+      /** Shear Wave Velocity */
+      VS: number;
+      /** Coeff. of Horizontal Ground Reaction */
+      KH: number;
+      /** Relative Displacement */
+      DISP: number;
+    }>;
   }
   export interface StaticEarthPressureProfileItem {
     LEVEL?: number;
     SOIL_PRES?: number;
     ADD_PRES?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface StaticEarthPressurePayload {
-    LOADCASE?: string;
+    /** Load Case Name */
+    LOADCASE: string;
+    /** Load Direction ("XY" / "NORMAL") */
     DIR?: string;
-    ANGLE?: number;
+    /** Static Earth Pressure Angle */
+    ANGLE: number;
+    /** Inner Point */
     IN_PT?: Array<number>;
-    SF?: number;
-    EP_TYPE?: string;
-    SURCHARGE_LOAD?: number;
-    WATER_LEVEL?: number;
-    SOIL_PROP?: string;
-    SEL_TYPE?: string;
-    ELEM_TYPE?: string;
+    /** Scale Factor */
+    SF: number;
+    /** EP Type ("AT_REST" / "ACTIVE") */
+    EP_TYPE: string;
+    /** Surcharge Load */
+    SURCHARGE_LOAD: number;
+    /** Water Level */
+    WATER_LEVEL: number;
+    /** Soil Properties Name */
+    SOIL_PROP: string;
+    /** Selection Type ("GRUP" / "ELEMENT") */
+    SEL_TYPE: string;
+    /** Element Type ("FRAME" / "PLANAR") */
+    ELEM_TYPE: string;
+    /** Node List */
     NODE_LIST?: Array<number>;
+    /** Element List */
     ELEM_LIST?: Array<number>;
+    /** Loading Area Group Name */
     LOADING_AREA_GROUP?: number;
-    PRES_PROFILE_ITEMS?: Array<StaticEarthPressureProfileItem>;
+    /** Pressure Profile items */
+    PRES_PROFILE_ITEMS?: Array<{
+      /** Level of pressure profile point */
+      LEVEL: number;
+      /** Soil pressure at level */
+      SOIL_PRES: number;
+      /** Additional pressure at level */
+      ADD_PRES: number;
+    }>;
   }
   export interface SeismicEarthPressureProfileItem {
     LEVEL?: number;
@@ -4048,23 +4773,51 @@ export namespace DbStaticLoadsTypes {
     SEIS_PRES?: number;
     ADD_PRES?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SeismicEarthPressurePayload {
-    LOADCASE?: string;
+    /** Load Case Name */
+    LOADCASE: string;
+    /** Load Direction ("XY" / "NORMAL") */
     DIR?: string;
+    /** Seismic Earth Pressure Angle */
     ANGLE?: number;
-    IN_PT?: Array<number>;
+    /** Inner Point */
+    IN_PT?: number;
+    /** Scale Factor */
     SF?: number;
+    /** Design Code */
     CODE?: string;
-    SEIS_LOAD?: string;
+    /** Seismic Load Name */
+    SEIS_LOAD: string;
+    /** Soil Layer Parameter ("SINGLE" / "DOUBLE") */
     LAYER_PARAM?: string;
+    /** Soil Second Layer Level (Double Cosine) */
     LAYER_LV?: number;
-    SOIL_PROP?: string;
-    SEL_TYPE?: string;
+    /** Soil Properties Name */
+    SOIL_PROP: string;
+    /** Selection Type ("GROUP" / "ELEMENT") */
+    SEL_TYPE: string;
+    /** Element Type ("FRAME" / "PLANAR") */
     ELEM_TYPE?: string;
+    /** Node List */
     NODE_LIST?: Array<number>;
+    /** Element List */
     ELEM_LIST?: Array<number>;
+    /** Loading Area Group Name */
     LOADING_AREA_GROUP?: number;
-    PRES_PROFILE_ITEMS?: Array<SeismicEarthPressureProfileItem>;
+    /** Pressure Profile items */
+    PRES_PROFILE_ITEMS?: Array<{
+      /** Level */
+      LEVEL: number;
+      /** Horizontal Coefficient KH */
+      KH: number;
+      /** Relative Displacement */
+      REL_DISP: number;
+      /** Seismic Pressure */
+      SEIS_PRES: number;
+      /** Additional Pressure */
+      ADD_PRES?: number;
+    }>;
   }
   /** Generated from contracts/endpoints/. */
   export interface SeismicLoadParamPayload {
@@ -4126,8 +4879,19 @@ export namespace DbTemperaturePrestressTypes {
     LCNAME?: string;
     TEMP?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ElementTemperaturePayload {
-    ITEMS: Array<ElementTemperatureItem>;
+    /** Element Temperature (배열 오브젝트로 입력) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Case Name */
+      LCNAME: string;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Temperature */
+      TEMP: number;
+    }>;
   }
   export interface TemperatureGradientItem extends DbBaseTypes.ItemGroupFields {
     LCNAME?: string;
@@ -4139,8 +4903,31 @@ export namespace DbTemperaturePrestressTypes {
     USE_HY?: boolean;
     HY?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TemperatureGradientPayload {
-    ITEMS: Array<TemperatureGradientItem>;
+    /** Temperature Gradient (배열 오브젝트로 입력) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Case Name */
+      LCNAME: string;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Element Type · Beam: 1 · Plate: 2 */
+      TYPE: number;
+      /** T2z − T1z */
+      TZ: number;
+      /** Use Section Hz */
+      USE_HZ?: boolean;
+      /** Hz value (USE_HZ = false 일 때 사용) */
+      HZ?: number;
+      /** T2y − T1y (Beam 타입 전용) */
+      TY?: number;
+      /** Use Section Hy (Beam 타입 전용) */
+      USE_HY?: boolean;
+      /** Hy value (USE_HY = false 일 때 사용, Beam 전용) */
+      HY?: number;
+    }>;
   }
   export interface BeamSectionTemperatureItem extends DbBaseTypes.ItemGroupFields {
     LCNAME?: string;
@@ -4150,8 +4937,49 @@ export namespace DbTemperaturePrestressTypes {
     bPSC?: boolean;
     vSECTTMP?: Array<unknown>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface BeamSectionTemperaturePayload {
-    ITEMS: Array<BeamSectionTemperatureItem>;
+    /** Beam Section Temperature (배열 오브젝트로 입력) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Case Name */
+      LCNAME: string;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Direction · Local-y: "LY" · Local-z: "LZ" */
+      DIR?: string;
+      /** Ref. Position · "Centroid" · "+End(Top)" → "Top" · "-End(Bot)" → "Bot" */
+      REF?: string;
+      /** Number of Section Temperature (vSECTTMP 항목 수) */
+      NUM: number;
+      /** Section Type · General: false · PSC/Composite: true */
+      bPSC?: boolean;
+      /** Section Temperature List */
+      vSECTTMP: Array<JsonObject>;
+    }>;
+    /** Material Type · Element: "ELEMENT" · Input: "INPUT" */
+    TYPE?: string;
+    /** B Value */
+    VAL_B?: number;
+    /** H1 Value */
+    VAL_H1?: number;
+    /** H2 Value */
+    VAL_H2?: number;
+    /** T1 Value */
+    VAL_T1?: number;
+    /** T2 Value */
+    VAL_T2?: number;
+    /** Modulus of Elasticity (TYPE = "INPUT" 일 때) */
+    ELAST?: number;
+    /** Thermal Coefficient (TYPE = "INPUT" 일 때) */
+    THERMAL?: number;
+    /** B-Type (bPSC = true) · Section: 0 · Value: 1 */
+    OPT_B?: number;
+    /** H1-Type (bPSC = true) · Z1:0 · Z2:1 · Z3:2 · Value:3 */
+    OPT_H1?: number;
+    /** H2-Type (bPSC = true) · Z1:0 · Z2:1 · Z3:2 · Value:3 */
+    OPT_H2?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface SystemTemperaturePayload {
@@ -4166,35 +4994,70 @@ export namespace DbTemperaturePrestressTypes {
     LCNAME?: string;
     TEMPER?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface NodalTemperaturePayload {
-    ITEMS: Array<NodalTemperatureItem>;
+    /** Nodal Temperature (배열 오브젝트로 입력) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Case Name */
+      LCNAME: string;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Temperature */
+      TEMPER: number;
+    }>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TendonPropertyPayload {
-    NAME?: string;
+    /** Tendon Name */
+    NAME: string;
+    /** Tendon Type · Internal: "INTERNAL" · External: "EXTERNAL" */
     TYPE?: string;
+    /** Tensioning Type · Post-Tension: "POST" · Pre-Tension: "PRE" · External: 미사용 */
     LT?: string;
-    MATL?: number;
-    AREA?: number;
-    D_AREA?: number;
+    /** Tendon Material No. */
+    MATL: number;
+    /** Total Tendon Area */
+    AREA: number;
+    /** Diameter · Post: Duct 직경 · Pre: Strand 직경 · External: 미사용 */
+    D_AREA: number;
+    /** Anchorage Slip - Begin (Post/External 전용) */
     ASB?: number;
+    /** Anchorage Slip - End (Post/External 전용) */
     ASE?: number;
+    /** Bond Type (Post 전용) */
     bBONDED?: boolean;
+    /** External Cable Moment Magnifier (External 전용) */
     ALPHA?: number;
-    RM?: number;
-    RV?: number;
+    /** Relaxation Coefficient – Code */
+    RM: number;
+    /** Relaxation Coefficient – Factor */
+    RV: number;
+    /** Ultimate Strength */
     US?: number;
+    /** Yield Strength */
     YS?: number;
+    /** Curvature Friction Factor (Post/External 전용) */
     FF?: number;
+    /** Wobble Friction Factor (Post 전용, Magura/IRC/KSCE/IRC112 코드) */
     WF?: number;
+    /** Wobble Type (CEB-FIP/European 코드) · Fraction Factor: 0 · Unintentional Angular: 1 */
     W_TYPE?: number;
+    /** Unintentional Angular Disp. (W_TYPE=1) */
     W_ANGLE?: number;
+    /** Relaxation Coefficient Class (CEB-FIP 2010 전용) */
     TDMFK?: number;
-    FT?: number;
+    /** Relaxation Factor ξ (TB05/TB10092/Q-CR/AS/JTJ/JTG 코드) */
+    FT: number;
+    /** Low Relaxation (TB05/TB10092/Q-CR 코드) */
     LR?: boolean;
+    /** Overstress Reduction Factor 적용 (TB05/TB10092/Q-CR/JTG 코드) */
     bOSRF?: boolean;
-    FPK?: number;
-    bRELAX?: boolean;
-    TDMFNAME?: string;
+    /** Characteristic Strength fpk (TB05/TB10092/Q-CR/JTJ/JTG 코드) */
+    FPK: number;
+    /** Relaxation Function Name (User Defined) */
+    TDMFNAME: string;
   }
   export interface TendonProfilePayload {
     NAME?: string;
@@ -4233,8 +5096,29 @@ export namespace DbTemperaturePrestressTypes {
     END?: number;
     GROUTING?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TendonPrestressPayload {
-    ITEMS: Array<TendonPrestressItem>;
+    /** Tendon Prestress (배열 오브젝트로 입력) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Case Name */
+      LCNAME: string;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Tendon Profile Name */
+      TENDON_NAME: string;
+      /** Prestress Load Type · Stress: "STRESS" · Force: "FORCE" */
+      TYPE?: string;
+      /** Jacking Step · Begin: "BEGIN" · End: "END" · Both: "BOTH" */
+      ORDER?: string;
+      /** Jacking Force / Stress at Begin */
+      BEGIN: number;
+      /** Jacking Force / Stress at End */
+      END: number;
+      /** Grouting Stage */
+      GROUTING?: number;
+    }>;
   }
   export interface PrestressBeamLoadItem extends DbBaseTypes.ItemGroupFields {
     LCNAME?: string;
@@ -4244,18 +5128,50 @@ export namespace DbTemperaturePrestressTypes {
     DISTANCE_M?: number;
     DISTANCE_J?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface PrestressBeamLoadPayload {
-    ITEMS: Array<PrestressBeamLoadItem>;
+    /** Prestress Beam Loads (배열 오브젝트로 입력) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Case Name */
+      LCNAME: string;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Direction · Local y: 0 · Local z: 1 */
+      DIR?: number;
+      /** Tension */
+      TENSION: number;
+      /** Distance – I (Di) */
+      DISTANCE_I?: number;
+      /** Distance – M (Dm) */
+      DISTANCE_M?: number;
+      /** Distance – J (Dj) */
+      DISTANCE_J?: number;
+    }>;
   }
   export interface PretensionLoadItem extends DbBaseTypes.ItemGroupFields {
     LCNAME?: string;
     TENSION?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface PretensionLoadPayload {
-    ITEMS: Array<PretensionLoadItem>;
+    /** Pretension Loads (배열 오브젝트로 입력) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Case Name */
+      LCNAME: string;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Pretension Load */
+      TENSION: number;
+    }>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ExternalLoadCaseForPretensionPayload {
-    LCNAME_ITEM?: Array<string>;
+    /** Load Case Name (프리텐션 하중이 있는 케이스만 입력) */
+    LCNAME_ITEM: Array<string>;
   }
 }
 

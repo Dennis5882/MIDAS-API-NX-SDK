@@ -31,6 +31,7 @@ or malformed input).
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 import sys
@@ -59,6 +60,7 @@ _EXECUTABLE_RULE_KINDS = (
     "normalize_defaults",
     "per_id_request",
     "require_confirmation",
+    "unwrap_table_by_shape",
 )
 
 
@@ -439,8 +441,8 @@ def check_parity(contracts: list[tuple[Path, dict]], failures: Failures) -> Rule
             _check_typescript_normalization(path, contract, ts_resource, failures)
 
     declared = _rule_counts(contracts)
-    python_probes = _check_python_base_safety_rules(declared, failures)
-    typescript_probes = _check_typescript_base_safety_rules(declared, failures)
+    python_probes = _check_python_base_safety_rules(contracts, declared, failures)
+    typescript_probes = _check_typescript_base_safety_rules(contracts, declared, failures)
     return RuleExecution(declared, python_probes, typescript_probes)
 
 
@@ -628,8 +630,42 @@ def _check_typescript_normalization(
             )
 
 
-def _check_python_base_safety_rules(declared: Counter[str], failures: Failures) -> int:
-    """Exercise shared destructive safeguards once, not once per endpoint."""
+def _response_shape_cases(
+    contracts: list[tuple[Path, dict]], failures: Failures
+) -> list[str]:
+    """Read response fixtures from the contract rather than an SDK test."""
+    cases: set[str] = set()
+    for path, contract in contracts:
+        for rule in contract.get("sdkRules", []):
+            if rule["kind"] != "unwrap_table_by_shape":
+                continue
+            declared = rule.get("responseCases", [])
+            if len(declared) != 4:
+                failures.add(
+                    path.name,
+                    "unwrap_table_by_shape must declare the four observed response cases",
+                )
+            cases.update(declared)
+    return sorted(cases)
+
+
+def _table_shape_fixture(case: str) -> tuple[dict[str, Any], dict[str, Any]]:
+    table = {"HEAD": ["Node", "FX"], "DATA": [["1", "-10"]]}
+    if case == "table_name":
+        return {"Requested table": table}, table
+    if case == "result_table":
+        return {"Result Table": table}, table
+    if case == "empty_with_table":
+        return {"empty": table}, table
+    if case == "no_table":
+        return {"message": ""}, {}
+    raise ValueError(f"unknown unwrap_table_by_shape response case {case!r}")
+
+
+def _check_python_base_safety_rules(
+    contracts: list[tuple[Path, dict]], declared: Counter[str], failures: Failures
+) -> int:
+    """Exercise shared destructive safeguards and response decoding once per kind."""
     from midas_nx.client import DestructiveOperationError
     from midas_nx.db.base import DbResource
 
@@ -729,11 +765,25 @@ def _check_python_base_safety_rules(declared: Counter[str], failures: Failures) 
             )
         probes += 1
 
+    if declared["unwrap_table_by_shape"]:
+        from midas_nx.post.base import unwrap_table
+
+        for case in _response_shape_cases(contracts, failures):
+            response, expected = _table_shape_fixture(case)
+            if unwrap_table(response) != expected:
+                failures.add(
+                    "sdkRules",
+                    f"Python unwrap_table_by_shape failed contract response case {case!r}",
+                )
+        probes += 1
+
     return probes
 
 
-def _check_typescript_base_safety_rules(declared: Counter[str], failures: Failures) -> int:
-    """Run one npm ``DbResource`` probe for every contracted safety kind."""
+def _check_typescript_base_safety_rules(
+    contracts: list[tuple[Path, dict]], declared: Counter[str], failures: Failures
+) -> int:
+    """Run one npm implementation probe for every contracted safety kind."""
     required = [kind for kind in _EXECUTABLE_RULE_KINDS if declared[kind]]
     if not required:
         return 0
@@ -746,6 +796,11 @@ def _check_typescript_base_safety_rules(declared: Counter[str], failures: Failur
         "tests/contract-safety.test.ts",
         "--reporter=verbose",
     ]
+    environment = os.environ.copy()
+    if declared["unwrap_table_by_shape"]:
+        environment["MIDAS_UNWRAP_TABLE_RESPONSE_CASES"] = json.dumps(
+            _response_shape_cases(contracts, failures)
+        )
     try:
         result = subprocess.run(
             command,
@@ -754,6 +809,7 @@ def _check_typescript_base_safety_rules(declared: Counter[str], failures: Failur
             text=True,
             encoding="utf-8",
             errors="replace",
+            env=environment,
         )
     except OSError as exc:
         failures.add(
@@ -850,7 +906,7 @@ def main(argv: list[str]) -> int:
         print(
             "sdk rule execution: "
             f"{sum(parity.declared.values())} declared executable rules ({declared}); "
-            f"ran {parity.python_probes} Python and {parity.typescript_probes} npm base probes"
+            f"ran {parity.python_probes} Python and {parity.typescript_probes} npm rule-kind probes"
         )
 
     if failures:

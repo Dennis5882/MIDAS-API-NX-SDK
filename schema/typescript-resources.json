@@ -1994,7 +1994,7 @@
       "className": "FrameDefinition",
       "exportName": "frameDefinition",
       "endpoint": "/db/DCTL",
-      "name": "Definition of Frame",
+      "name": "프레임 정의",
       "products": [
         "civil",
         "gen"
@@ -5212,7 +5212,7 @@
       "className": "ElementStiffnessScaleFactor",
       "exportName": "elementStiffnessScaleFactor",
       "endpoint": "/db/ESSF",
-      "name": "Element Stiffness Scale Factor",
+      "name": "/db/ESSF",
       "products": [
         "civil",
         "gen"
@@ -5398,7 +5398,7 @@
       "className": "SectionStressPoints",
       "exportName": "sectionStressPoints",
       "endpoint": "/db/STRPSSM",
-      "name": "Section Manager - Stress Points",
+      "name": "/db/STRPSSM",
       "products": [
         "civil"
       ],
@@ -5428,7 +5428,7 @@
       "className": "TaperedGroup",
       "exportName": "taperedGroup",
       "endpoint": "/db/TSGR",
-      "name": "Tapered Group",
+      "name": "/db/TSGR",
       "products": [
         "civil",
         "gen"
@@ -5707,6 +5707,7 @@
       "methods": [
         "DELETE",
         "GET",
+        "POST",
         "PUT"
       ],
       "pythonModule": "midas_nx.db.pushover",

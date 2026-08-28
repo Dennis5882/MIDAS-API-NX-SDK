@@ -108,6 +108,44 @@ def test_exact_description_condition_completes_a_conditional_required_marker(sec
     assert not special.notes
 
 
+@pytest.mark.parametrize(
+    ("description_form", "expected_condition"),
+    [
+        pytest.param(
+            'Detail (MODE\uac00 USER\uc77c \ub54c \ud544\uc218)',
+            'MODE\uac00 USER\uc77c \ub54c \ud544\uc218',
+            id="parenthesized_korean_selector",
+        ),
+        pytest.param(
+            "Detail \u2014 OPT_USE\uac00 true\uc77c \ub54c \ud544\uc218",
+            "OPT_USE\uac00 true\uc77c \ub54c \ud544\uc218",
+            id="em_dash_korean_selector",
+        ),
+        pytest.param(
+            "Detail (when INPUT_MODE is MANUAL)",
+            "when INPUT_MODE is MANUAL",
+            id="parenthesized_english_selector",
+        ),
+    ],
+)
+def test_explicit_description_condition_forms_are_retained_verbatim(
+    description_form: str, expected_condition: str, tmp_path: Path
+):
+    path = tmp_path / "99_DB_DescriptionCondition.md"
+    path.write_text(
+        "## 1. `/db/DESCRIPTION-CONDITION` -- Description condition\n\n"
+        "| No. | Description | Key | Value Type | Default | Required |\n"
+        "|-----|-------------|-----|------------|---------|----------|\n"
+        f"| 1 | {description_form} | `DETAIL` | Number | - | Conditional Required |\n",
+        encoding="utf-8",
+    )
+
+    detail = ex.parse_chapter(path)[0].tables[0].fields[0]
+    assert detail.requirement == "conditional"
+    assert detail.condition == expected_condition
+    assert not detail.notes
+
+
 def test_dotted_paths_become_nested_fields(section: ex.Section):
     fields = {f.key: f for f in section.tables[0].fields}
 
@@ -231,6 +269,9 @@ def test_report_prints_measured_stage_two_blockers(section: ex.Section, capsys: 
     assert ex.run_report([section], {}) == 0
     output = capsys.readouterr().out
     assert "Stage 2 fidelity blockers:" in output
+    assert "promotion-note forms (field occurrences):" in output
+    assert "conditional requirement has no stated condition" in output
+    assert "non-literal System default kept verbatim" in output
     assert "conditional tables:" in output
 
 
@@ -652,6 +693,79 @@ def test_same_section_json_schema_supplies_a_missing_default_column_only(tmp_pat
     count = ex.parse_chapter(path)[0].tables[0].fields[0]
     assert count.documented_default == 0
     assert not count.notes
+
+
+@pytest.mark.parametrize(
+    ("schema_form", "record_schema"),
+    [
+        pytest.param(
+            "properties_record_wrapper",
+            '{"properties":{"Assign":{"type":"object","properties":{"MODE":{"type":"string","enum":["FIRST","SECOND"]}}}}}',
+            id="properties_record_wrapper",
+        ),
+        pytest.param(
+            "numeric_pattern_properties_record_wrapper",
+            '{"properties":{"Assign":{"type":"object","patternProperties":{"^[0-9]+$":{"type":"object","properties":{"MODE":{"type":"string","enum":["FIRST","SECOND"]}}}}}}}',
+            id="numeric_pattern_properties_record_wrapper",
+        ),
+    ],
+)
+def test_same_section_schema_record_wrapper_forms_supply_enum_values(
+    schema_form: str, record_schema: str, tmp_path: Path
+):
+    """Both documented record wrappers lead to the same manual field path."""
+    path = tmp_path / f"99_DB_{schema_form}.md"
+    path.write_text(
+        "## 1. `/db/RECORD-WRAPPER` -- Record wrapper\n\n"
+        "### JSON Schema\n\n```json\n"
+        + record_schema
+        + "\n```\n\n"
+        "| No. | Description | Key | Value Type | Default | Required |\n"
+        "|-----|-------------|-----|------------|---------|----------|\n"
+        "| 1 | Mode | `MODE` | String (enum) | - | Required |\n",
+        encoding="utf-8",
+    )
+
+    mode = ex.parse_chapter(path)[0].tables[0].fields[0]
+    assert mode.enum == ["FIRST", "SECOND"]
+    assert not mode.notes
+
+
+@pytest.mark.parametrize(
+    ("selector_schema", "expected_condition"),
+    [
+        pytest.param('{"const":true}', "OPT_USE=true", id="const_selector_then_required"),
+        pytest.param('{"enum":["AUTO","USER"]}', 'MODE ∈ {"AUTO", "USER"}', id="enum_selector_then_required"),
+    ],
+)
+def test_same_section_schema_conditional_required_forms_supply_exact_condition(
+    selector_schema: str, expected_condition: str, tmp_path: Path
+):
+    """Only literal schema selectors resolve a table's otherwise blank condition."""
+    path = tmp_path / "99_DB_ConditionalSchema.md"
+    path.write_text(
+        "## 1. `/db/CONDITIONAL-SCHEMA` -- Conditional schema\n\n"
+        "### JSON Schema\n\n```json\n"
+        '{"type":"object","properties":{"Assign":{"type":"object","properties":{"OPT_USE":{"type":"boolean"},"MODE":{"type":"string"},"DETAIL":{"type":"number"}},"allOf":[{"if":{"properties":{"'
+        + ("OPT_USE" if "OPT_USE" in expected_condition else "MODE")
+        + '":'
+        + selector_schema
+        + '},"required":["'
+        + ("OPT_USE" if "OPT_USE" in expected_condition else "MODE")
+        + '"]},"then":{"required":["DETAIL"]}}]}}}\n'
+        "```\n\n"
+        "| No. | Description | Key | Value Type | Default | Required |\n"
+        "|-----|-------------|-----|------------|---------|----------|\n"
+        "| 1 | Selector | `OPT_USE` | Boolean | - | Optional |\n"
+        "| 2 | Mode | `MODE` | String | - | Optional |\n"
+        "| 3 | Detail | `DETAIL` | Number | - | Conditional Required |\n",
+        encoding="utf-8",
+    )
+
+    detail = ex.parse_chapter(path)[0].tables[0].fields[2]
+    assert detail.requirement == "conditional"
+    assert detail.condition == expected_condition
+    assert not detail.notes
 
 
 def test_shipped_contracts_still_match_the_manual_if_it_is_present():

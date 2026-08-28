@@ -55,6 +55,7 @@ fields:
     description: >-
       설계 코드 — 가능값: AIK-SRC2K
     type: string
+    enum: [AIK-SRC2K]
     requirement: required
     documentedDefault: null
     documentedOptional: false

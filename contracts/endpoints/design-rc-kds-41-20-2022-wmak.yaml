@@ -79,6 +79,7 @@ fields:
     description: >-
       벽체 마크 이름 (최소 1자)
     type: string
+    minLength: 1
     requirement: required
     documentedDefault: null
     documentedOptional: false
@@ -90,6 +91,7 @@ fields:
     type: array
     items:
       type: integer
+    minItems: 1
     requirement: required
     documentedDefault: null
     documentedOptional: false

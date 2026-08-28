@@ -241,7 +241,7 @@ class FrameDefinitionPayload(TypedDict, total=False):
 
 class FrameDefinition(DbResource):
     ENDPOINT = "/db/DCTL"
-    NAME = "Definition of Frame"
+    NAME = "\ud504\ub808\uc784 \uc815\uc758"
 
 
 # --- 7. /db/LTSR — Limiting Slenderness Ratio -------------------------------

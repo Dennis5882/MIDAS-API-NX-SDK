@@ -139,7 +139,8 @@ def test_pushover_load_case_hyper_s_update_load_control_variant(civil_client):
 
 
 @responses.activate
-def test_pushover_load_case_hyper_s_create_raises_before_any_http_call(civil_client):
-    with pytest.raises(UnsupportedMethodError):
-        PushoverLoadCaseHyperS.create({1: {"LCNAME": "x"}}, client=civil_client)
-    assert len(responses.calls) == 0
+def test_pushover_load_case_hyper_s_create_sends_documented_assign_shape(civil_client):
+    responses.add(responses.POST, "https://x.test:443/civil/db/POLC-M1", json={}, status=200)
+    PushoverLoadCaseHyperS.create({1: {"LCNAME": "x"}}, client=civil_client)
+    sent = responses.calls[0].request
+    assert json.loads(sent.body) == {"Assign": {"1": {"LCNAME": "x"}}}

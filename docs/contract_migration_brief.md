@@ -80,35 +80,37 @@ threefold expansion of the contract set. Keep it that way.
 Both are the same shape as the bug this whole system was built to prevent: a
 rule that exists in both languages but is verified in only one.
 
-### D1 — completed: executable sdkRules run against both SDK bases
+### D1 — completed: executable sdkRules run against both SDK implementations
 
-`scripts/validate_contracts.py` now runs all three executable safety-rule
+`scripts/validate_contracts.py` now runs all four executable safety-rule
 kinds against recording clients. `normalize_defaults` is exercised against its
 actual resource for create and update; `per_id_request` and
 `require_confirmation` are each exercised once through the shared `DbResource`
-base in Python and npm, rather than repeating the same base-class check for
-every endpoint.
+base in Python and npm. `unwrap_table_by_shape` exercises the shared result
+table response decoder against the four response shapes declared in the
+contract, rather than repeating a uniform check for every endpoint.
 
 | kind | count | executed against either SDK? |
 | --- | ---: | --- |
 | `per_id_request` | 80 | **yes — Python + npm base probe** |
 | `require_confirmation` | 80 | **yes — Python + npm base probe** |
 | `normalize_defaults` | 1 | **yes — Python + npm resource probe** |
-| `node_id`, `warn` | 3 | no |
+| `unwrap_table_by_shape` | 1 | **yes — Python + npm response-shape probe** |
 
-The three remaining `node_id` / `warn` rules describe contract metadata or
-caller-facing warnings rather than an executable shared resource safeguard.
-The validator prints the declared-rule counts and the Python/npm probe counts,
-and no longer claims broader parity than it executed.
+`node_id` is a `recordKey.kind`, not an `sdkRule` kind. All 162 currently
+declared sdkRules are executable and covered by the validator; no `warn` rule
+remains. The validator prints the declared-rule counts and the Python/npm probe
+counts, and no longer claims broader parity than it executed.
 
 ### D2 — completed: live-hazard adapters have npm tests
 
 ```text
-packages/typescript/tests/   9 files, 50 tests
+packages/typescript/tests/   11 files, 53 tests
 post.ts          165 lines  ->  covered
 doc.ts            77 lines  ->  covered
 errors.ts         42 lines  ->  covered
-design-tables.ts  39 lines  ->  0 tests
+design-tables.ts  39 lines  ->  covered
+types.ts          30 lines  ->  covered
 ```
 
 `post.ts` contains `unwrapTable()`, the implementation of a documented live
@@ -121,7 +123,7 @@ carry a full table** — reading it as "no data" is a defect.
 TypeScript now pins the observed `TABLE_NAME`, `"Result Table"`, and `"empty"`
 keys, including an `"empty"` response carrying real data and a response with no
 table-shaped value. `doc.ts` and `errors.ts` have direct adapter tests as well.
-`design-tables.ts` remains a separate, non-hazard test gap.
+`design-tables.ts` and `types.ts` now have direct tests too.
 
 ## Order of work
 
