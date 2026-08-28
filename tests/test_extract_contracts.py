@@ -171,6 +171,23 @@ def test_only_exact_parallel_columns_are_split_into_independent_fields(tmp_path:
     assert any("more than one" in note for note in by_key['LEFT" / "RIGHT'].notes)
 
 
+@pytest.mark.parametrize(
+    ("manual_type", "item_type", "length"),
+    [
+        ("Array[Number,21]", "number", 21),
+        ("Array[Number, 6]", "number", 6),
+        ("Array[Integer,2]", "integer", 2),
+        ("Array[Boolean,6]", "boolean", 6),
+        ("Array[Object,3]", "object", 3),
+    ],
+)
+def test_fixed_length_array_forms_are_transcribed_without_nesting(
+    manual_type: str, item_type: str, length: int
+):
+    assert ex._normalize_type(manual_type) == ("array", {"type": item_type}, None)
+    assert ex._type_constraints(manual_type) == {"minItems": length, "maxItems": length}
+
+
 def test_compact_object_arrays_and_literal_type_cells_are_transcribed_without_guessing():
     assert ex._normalize_type("Array[{PY, PZ}]") == ("array", {"type": "object"}, None)
     assert ex._normalize_type('"KDS(41-17-00:2019)"') == ("string", None, None)
@@ -233,6 +250,40 @@ def test_explicit_variant_tables_preserve_their_discriminator_and_do_not_merge(t
     assert "unmergedTables" not in draft["extraction"]
     assert draft["variants"][0]["when"] == {"field": "TYPE", "equals": "FIRST"}
     assert draft["variants"][1]["fields"][0]["key"] == "SECOND_VALUE"
+
+
+def test_inline_boolean_variant_rows_preserve_branches_and_roman_children(tmp_path: Path):
+    """A divider row in one table is a variant only when it names a wire value."""
+    path = tmp_path / "99_DB_InlineVariants.md"
+    path.write_text(
+        """# 99 DB Inline variants
+
+## 1. `/db/INLINE-VARIANT` -- Inline variants
+
+| No. | Description | Key | Value Type | Default | Required |
+|-----|-------------|-----|------------|---------|----------|
+| 1 | Choose mode | `"OPT_MODE"` | Boolean | false | Optional |
+| | General (`OPT_MODE`=false) | | | | |
+| 2 | Items | `"ITEMS"` | Array[Object] | - | Required |
+| (i) | General value | `"VALUE"` | Number | - | Required |
+| | Optimized (`OPT_MODE`=true) | | | | |
+| 2 | Distance | `"DISTANCE"` | Number | - | Required |
+""",
+        encoding="utf-8",
+    )
+
+    parsed = ex.parse_chapter(path)[0]
+    assert [(variant.field, variant.equals) for variant in parsed.variants] == [
+        ("OPT_MODE", False),
+        ("OPT_MODE", True),
+    ]
+    assert [field.key for field in parsed.tables[0].fields] == ["OPT_MODE"]
+    items = parsed.variants[0].table.fields[0]
+    assert items.key == "ITEMS"
+    assert items.properties[0].key == "VALUE"
+
+    draft = yaml.safe_load(ex.render_draft(parsed))
+    assert draft["variants"][0]["when"] == {"field": "OPT_MODE", "equals": False}
 
 
 def test_manual_check_compares_explicit_variant_fields(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):

@@ -659,8 +659,17 @@ export namespace DbBoundaryTypes {
   export interface ConstraintItem extends DbBaseTypes.ItemGroupFields {
     CONSTRAINT?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ConstraintPayload {
-    ITEMS: Array<ConstraintItem>;
+    /** Constraint supports, supplied as an array. */
+    ITEMS: Array<{
+      /** Serial number. */
+      ID?: number;
+      /** Boundary group name. */
+      GROUP_NAME?: string;
+      /** Constraint state for DX, DY, DZ, RX, RY, RZ and RW. */
+      CONSTRAINT: string;
+    }>;
   }
   export interface PointSpringItem extends DbBaseTypes.ItemGroupFields {
     TYPE?: string;
@@ -677,13 +686,21 @@ export namespace DbBoundaryTypes {
   export interface PointSpringPayload {
     ITEMS: Array<PointSpringItem>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface GeneralSpringTypePayload {
-    NAME?: string;
+    /** General spring name. */
+    NAME: string;
+    /** Stiffness-matrix option. */
     OPT_STIFFNESS?: boolean;
+    /** 21-value stiffness matrix. */
     SPRING?: Array<number>;
+    /** Mass-matrix option. */
     OPT_MASS?: boolean;
+    /** 21-value mass matrix. */
     MASS?: Array<number>;
+    /** Damping-matrix option. */
     OPT_DAMPING?: boolean;
+    /** 21-value damping matrix. */
     DAMPING?: Array<number>;
   }
   export interface GeneralSpringSupportItem extends DbBaseTypes.ItemGroupFields {
@@ -2292,17 +2309,64 @@ export namespace DbMovingLoadsTypes {
     MAX_NUM_LOADED_LANES?: number;
     SELECTED_LANES?: Array<string>;
   }
-  export interface MovingLoadCaseChinaPayload {
-    LCNAME?: string;
+  /** Generated from contracts/endpoints/. */
+  export type MovingLoadCaseChinaPayload = {
+    /** Load case name. */
+    LCNAME: string;
+    /** Description. */
     DESC?: string;
+    /** Moving-load optimization. */
     OPT_AUTO_OPTIMIZE?: boolean;
-    BRIDGE_TYPE?: number;
-    SCALE_FACTOR_O?: Array<number>;
-    SCALE_FACTOR_N?: Array<number>;
-    SCALE_FACTOR_JTG?: Array<number>;
-    LOADING_EFFECT?: number;
-    SUB_LOAD_ITEMS?: Array<MovingLoadCaseChinaSubLoadItem>;
-  }
+    /** Bridge type. */
+    BRIDGE_TYPE: number;
+    /** Scale factors for an old urban bridge. */
+    SCALE_FACTOR_O: Array<number>;
+    /** Scale factors for a highway or new urban bridge. */
+    SCALE_FACTOR_N: Array<number>;
+    /** Scale factors for JTG B01-2014. */
+    SCALE_FACTOR_JTG: Array<number>;
+    /** Combination option. */
+    LOADING_EFFECT: number;
+  } & (
+    {
+      OPT_AUTO_OPTIMIZE: false;
+      /** Sub-load cases. */
+      SUB_LOAD_ITEMS: Array<{
+        /** Vehicle type. */
+        VEHICLE_TYPE: "VL" | "VC";
+        /** Vehicle class name. */
+        VEHICLE_CLASS: string;
+        /** Scale factor. */
+        SCALE_FACTOR: number;
+        /** Minimum number of loaded lanes. */
+        MIN_NUM_LOADED_LANES: number;
+        /** Maximum number of loaded lanes. */
+        MAX_NUM_LOADED_LANES: number;
+        /** Selected lanes. */
+        SELECTED_LANES: Array<string>;
+      }>;
+    } |
+    {
+      OPT_AUTO_OPTIMIZE: true;
+      /** Minimum vehicle distance. */
+      MIN_VEHICLE_DIST: number;
+      /** Loaded lane name. */
+      LOADED_LANE_NAME: string;
+      /** Minimum number of vehicles. */
+      MIN_NUM_VEHICLE: number;
+      /** Maximum number of vehicles. */
+      MAX_NUM_VEHICLE: number;
+      /** Assigned vehicles. */
+      AUTO_OPTIMIZE_ITEMS: Array<{
+        /** Vehicle type. */
+        VEHICLE_TYPE: "VL" | "VC";
+        /** Vehicle class name. */
+        VEHICLE_NAME: string;
+        /** Scale factor. */
+        SCALE_FACTOR: number;
+      }>;
+    }
+  );
   export interface MovingLoadCaseIndiaSubLoadItem {
     VEHICLE_CLASS_1?: string;
     SCALE_FACTOR?: number;

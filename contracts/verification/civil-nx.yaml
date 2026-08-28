@@ -322,3 +322,29 @@ records:
       rather than at nothing.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-gstp-crud-2026-07-26
+    endpoints: ["/db/GSTP"]
+    date: "2026-07-26"
+    nxVersion: MIDAS Civil NX 2026 (v2.1; build not recorded in the live notes)
+    level: write
+    outcome: success
+    method: Full create-read-update-read-delete-read round trip against a scratch document.
+    finding: >-
+      /db/GSTP was one of the nine boundary endpoints that completed the first
+      live CRUD pass on Civil NX.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-mvldch-product-support-2026-07-29
+    endpoints: ["/db/MVLDch"]
+    date: "2026-07-29"
+    nxVersion: MIDAS Civil NX 2026 (build not recorded in the live notes)
+    level: read
+    outcome: success
+    method: >-
+      GET probe during a cross-product sweep of every non-Hyper-S endpoint
+      previously marked Civil-only.
+    finding: /db/MVLDch answered on Civil NX during the paired product sweep.
+    evidence:
+      - docs/live_verification_notes.md

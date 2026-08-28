@@ -151,7 +151,7 @@ _DESC_TREE = re.compile(r"^[└├│─\s]+")
 # /db/RIGD's ITEMS array into four sibling keys no payload actually has - a
 # wrong contract that reached contracts/endpoints/ before type generation
 # from the same contract exposed it.
-_NUMBER_CHILD = re.compile(r"^\((\d+)\)$")
+_NUMBER_CHILD = re.compile(r"^\((?:\d+|[ivxlcdm]+)\)$", re.IGNORECASE)
 _NUMBER_PATH = re.compile(r"^\d+(?:-\d+)+$")
 
 
@@ -216,6 +216,17 @@ def _normalize_type(cell: str) -> tuple[Optional[str], Optional[dict], Optional[
     compact_array = re.match(r"^(String|Integer|Number|Boolean|Object|Real)\s*,\s*(\d+)$", text, re.IGNORECASE)
     if compact_array:
         inner, _, note = _normalize_type(compact_array.group(1))
+        return "array", ({"type": inner} if inner else None), note
+    fixed_array = re.match(
+        r"^Array\s*\[\s*(String|Integer|Number|Boolean|Object|Real)\s*,\s*(\d+)\s*\]$",
+        text,
+        re.IGNORECASE,
+    )
+    if fixed_array:
+        # ``Array[Number,21]`` is one 21-value number array, not an array
+        # whose elements are themselves 21-value arrays.  The comma-length
+        # form also appears without the outer ``Array[...]`` in older tables.
+        inner, _, note = _normalize_type(fixed_array.group(1))
         return "array", ({"type": inner} if inner else None), note
     array = re.match(r"^Array\s*\[\s*(.+?)\s*\]$", text, re.IGNORECASE)
     if array:
@@ -294,7 +305,9 @@ def _type_constraints(cell: str) -> dict[str, Any]:
     if const:
         return {"const": _number(const.group(1))}
     compact_array = re.fullmatch(
-        r"(?:String|Integer|Number|Boolean|Object|Real)\s*,\s*(\d+)", text, re.IGNORECASE
+        r"(?:Array\s*\[\s*)?(?:String|Integer|Number|Boolean|Object|Real)\s*,\s*(\d+)(?:\s*\])?",
+        text,
+        re.IGNORECASE,
     )
     if compact_array:
         length = int(compact_array.group(1))
@@ -633,13 +646,35 @@ class ParsedVariant:
     """One manual table selected by an explicitly documented discriminator."""
 
     field: str
-    equals: str | int | float
+    equals: str | int | float | bool
     table: ParsedTable
 
 
 _VARIANT_CONDITION = re.compile(
-    r'`([A-Za-z_][A-Za-z0-9_.]*)\s*=\s*(?:"([^"]+)"|(-?\d+(?:\.\d+)?))`'
+    r'`?([A-Za-z_][A-Za-z0-9_.]*)`?\s*=\s*(?:"([^"]+)"|(-?\d+(?:\.\d+)?)|(true|false))',
+    re.IGNORECASE,
 )
+
+
+def _variant_condition(text: str) -> tuple[str, str | int | float | bool] | None:
+    """Read one literal discriminator condition without inferring a value.
+
+    Conditions occur both in markdown headings (``TYPE = "FIRST"``) and in
+    blank-key divider rows inside a parameter table
+    (``OPT_AUTO_OPTIMIZE=false``). Boolean branches are wire values too, not
+    prose labels, so preserve them as booleans rather than strings.
+    """
+
+    matches = _VARIANT_CONDITION.findall(text)
+    if len(matches) != 1:
+        return None
+    field, string, numeric, boolean = matches[0]
+    if string:
+        return field, string
+    if numeric:
+        number = float(numeric)
+        return field, int(number) if number.is_integer() else number
+    return field, boolean.lower() == "true"
 
 
 def _explicit_variants(tables: list[ParsedTable]) -> list[ParsedVariant]:
@@ -656,15 +691,10 @@ def _explicit_variants(tables: list[ParsedTable]) -> list[ParsedVariant]:
         return []
     variants: list[ParsedVariant] = []
     for table in tables[1:]:
-        matches = _VARIANT_CONDITION.findall(table.heading)
-        if len(matches) != 1:
+        condition = _variant_condition(table.heading)
+        if condition is None:
             return []
-        field, string, numeric = matches[0]
-        if string:
-            value: str | int | float = string
-        else:
-            number = float(numeric)
-            value = int(number) if number.is_integer() else number
+        field, value = condition
         variants.append(ParsedVariant(field, value, table))
     if len({variant.field for variant in variants}) != 1:
         return []
@@ -845,6 +875,9 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
 
         fields: list[ParsedField] = []
         seen: set[str] = set()
+        inline_variants: list[tuple[str, int, list[ParsedField], set[str]]] = []
+        target_fields = fields
+        target_seen = seen
         row = index + 2
         while row < len(lines) and lines[row].startswith("|"):
             cells = [cell.strip() for cell in lines[row].strip("|").split("|")]
@@ -853,6 +886,28 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                 continue
             key = _clean(cells[key_column]).strip('"')
             if not key or key in _EMPTY_CELLS:
+                # Some manual tables use a blank-key row as an inline section
+                # divider, e.g. ``General Load (OPT_AUTO_OPTIMIZE=false)``.
+                # It is a variant only when it names one literal wire
+                # discriminator. Keep each branch separate so repeated field
+                # names are not flattened or deduplicated together.
+                # Chapters put this divider in either the No. or Description
+                # column, so inspect every non-key cell rather than assuming
+                # one column layout.
+                condition_text = next(
+                    (
+                        cell
+                        for cell_index, cell in enumerate(cells)
+                        if cell_index != key_column and _variant_condition(_clean(cell)) is not None
+                    ),
+                    "",
+                )
+                if _variant_condition(_clean(condition_text)) is not None:
+                    target_fields = []
+                    target_seen = set()
+                    inline_variants.append(
+                        (_clean(condition_text), offset + row, target_fields, target_seen)
+                    )
                 continue
             parallel = _parallel_field_cells(
                 cells[key_column],
@@ -869,9 +924,9 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                 )
             ]
             for entry_key, entry_type, entry_default, entry_required in entries:
-                if entry_key in seen:
+                if entry_key in target_seen:
                     continue
-                seen.add(entry_key)
+                target_seen.add(entry_key)
 
                 notes: list[str] = []
                 if entry_required is not None:
@@ -899,7 +954,7 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                     notes.append(
                         f"the Default column says {default!r}, but the Value Type cell says {type_default!r}"
                     )
-                fields.append(
+                target_fields.append(
                     ParsedField(
                         key=entry_key,
                         description=_DESC_TREE.sub("", _clean(cells[desc_column])).strip() if desc_column is not None else "",
@@ -923,6 +978,15 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                     fields=_nest(fields),
                 )
             )
+        for variant_heading, variant_line, variant_fields, _ in inline_variants:
+            if variant_fields:
+                tables.append(
+                    ParsedTable(
+                        heading=variant_heading,
+                        line=variant_line,
+                        fields=_nest(variant_fields),
+                    )
+                )
         index = row
     return tables
 

@@ -321,7 +321,40 @@ def _contract_interface_body(fields: list[dict[str, Any]], indent: str) -> str:
     return "\n".join(lines)
 
 
-def _contract_payload_fields() -> dict[str, list[dict[str, Any]]]:
+def _contract_payload_type(name: str, contract: dict[str, Any]) -> list[str]:
+    """Render a contract payload without flattening conditional branches.
+
+    A contract variant is a manual statement about one wire discriminator.  A
+    TypeScript intersection with a discriminated union keeps that fact visible:
+    callers must choose one documented branch instead of being offered a
+    misleading interface containing every branch's fields at once.
+    """
+
+    fields = contract["fields"]
+    variants = contract.get("variants", [])
+    lines = ["  /** Generated from contracts/endpoints/. */"]
+    if not variants:
+        lines.append(f"  export interface {name} {{")
+        lines.append(_contract_interface_body(fields, "    "))
+        lines.append("  }")
+        return lines
+
+    lines.append(f"  export type {name} = {{")
+    lines.append(_contract_interface_body(fields, "    "))
+    lines.append("  } & (")
+    for index, variant in enumerate(variants):
+        when = variant["when"]
+        lines.append("    {")
+        lines.append(f"      {when['field']}: {json.dumps(when['equals'])};")
+        body = _contract_interface_body(variant["fields"], "      ")
+        if body:
+            lines.append(body)
+        lines.append("    }" + (" |" if index < len(variants) - 1 else ""))
+    lines.append("  );")
+    return lines
+
+
+def _contract_payload_fields() -> dict[str, dict[str, Any]]:
     """Payload fields for the contract-derived DB resource shadow path.
 
     Plain-function and non-``/db`` resource contracts are still parity-only in
@@ -334,18 +367,21 @@ def _contract_payload_fields() -> dict[str, list[dict[str, Any]]]:
         return {}
     import yaml  # noqa: PLC0415
 
-    found: dict[str, list[dict[str, Any]]] = {}
+    found: dict[str, dict[str, Any]] = {}
     for path in sorted(contract_dir.glob("*.yaml")):
         contract = yaml.safe_load(path.read_text(encoding="utf-8"))
         if contract.get("endpoint", "").startswith("/db/") and contract.get("fields"):
-            found[contract["endpoint"]] = contract["fields"]
+            found[contract["endpoint"]] = {
+                "fields": contract["fields"],
+                "variants": contract.get("variants", []),
+            }
     return found
 
 
 def _render_types(
     modules: dict[str, ast.Module],
     type_keys: set[tuple[str, str]],
-    contract_types: dict[tuple[str, str], list[dict[str, Any]]] | None = None,
+    contract_types: dict[tuple[str, str], dict[str, Any]] | None = None,
 ) -> str:
     contract_types = contract_types or {}
     chunks = [
@@ -362,15 +398,12 @@ def _render_types(
         for node in tree.body:
             if not isinstance(node, ast.ClassDef) or (module, node.name) not in type_keys:
                 continue
-            fields = contract_types.get((module, node.name))
-            if fields is not None:
+            contract = contract_types.get((module, node.name))
+            if contract is not None:
                 # Sourced from the contract, not from this Python class. The
                 # class only supplies the name and where it sits, so the two
                 # SDKs keep the type names they already publish.
-                chunks.append("  /** Generated from contracts/endpoints/. */")
-                chunks.append(f"  export interface {node.name} {{")
-                chunks.append(_contract_interface_body(fields, "    "))
-                chunks.append("  }")
+                chunks.extend(_contract_payload_type(node.name, contract))
                 continue
             total = not any(
                 keyword.arg == "total" and isinstance(keyword.value, ast.Constant) and keyword.value.value is False

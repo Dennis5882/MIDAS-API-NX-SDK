@@ -283,3 +283,34 @@ records:
       rather than at nothing.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-gstp-matrix-order-2026-08-27
+    endpoints: ["/db/GSTP"]
+    date: "2026-08-27"
+    nxVersion: MIDAS Gen NX 2026 (build not recorded in the live notes)
+    level: write
+    outcome: success
+    method: >-
+      Posted a General Spring Type probe with a distinct value at each of the
+      21 matrix indices, then inspected the 6x6 grid in the product UI.
+    finding: >-
+      All 21 values matched the manual's diagonal-first, then row-by-row
+      off-diagonal mapping. The write completed and the displayed grid matched
+      every probe value.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-mvldch-product-support-2026-07-29
+    endpoints: ["/db/MVLDch"]
+    date: "2026-07-29"
+    nxVersion: MIDAS Gen NX 2026 (build not recorded in the live notes)
+    level: read
+    outcome: success_empty
+    method: >-
+      GET and GET /info probes during a cross-product sweep of every
+      non-Hyper-S endpoint previously marked Civil-only.
+    finding: >-
+      /db/MVLDch returned the standard empty-table response and its /info
+      route returned a full JSON Schema on Gen NX.
+    evidence:
+      - docs/live_verification_notes.md
