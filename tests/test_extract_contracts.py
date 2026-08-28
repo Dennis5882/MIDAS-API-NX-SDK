@@ -53,6 +53,7 @@ CHAPTER = """# 99 DB — Synthetic
 | 20 | Conditional from description (`MODE="SPECIAL"`) | `"SPECIAL_VALUE"` | Number | - | Conditional Required |
 | 21 | Empty item defaults | `"DEFAULT_ITEMS"` | Array [Number] | [] | Optional |
 | 22 | Empty object default | `"DEFAULT_OPTIONS"` | Object | {} | Optional |
+| 23 | Quoted string default | `"DEFAULT_MODE"` | String | `"FIRST"` | Optional |
 
 ### Variant table
 
@@ -154,6 +155,7 @@ def test_explicit_type_constraints_are_preserved(section: ex.Section):
     assert fields["CONST_VALUE"].constraints == {"const": 0.75}
     assert fields["DEFAULT_ITEMS"].documented_default == []
     assert fields["DEFAULT_OPTIONS"].documented_default == {}
+    assert fields["DEFAULT_MODE"].documented_default == "FIRST"
     assert fields["REVERSED"].enum == [0, 1]
     assert fields["ENABLED"].type == "boolean"
     assert fields["ENABLED"].documented_default is False
@@ -171,6 +173,7 @@ def test_explicit_type_constraints_are_preserved(section: ex.Section):
     assert draft_fields["CONST_VALUE"]["const"] == 0.75
     assert draft_fields["DEFAULT_ITEMS"]["documentedDefault"] == []
     assert draft_fields["DEFAULT_OPTIONS"]["documentedDefault"] == {}
+    assert draft_fields["DEFAULT_MODE"]["documentedDefault"] == "FIRST"
 
 
 def test_only_exact_parallel_columns_are_split_into_independent_fields(tmp_path: Path):

@@ -497,6 +497,18 @@ def _normalize_default(cell: str) -> tuple[Any, Optional[str]]:
         return low == "true", None
     if low in {"blank", "빈 문자열", '""'}:
         return "", None
+    # A quoted string is a complete literal default, just like a JSON array or
+    # object below. The manual uses this form for values such as ``"FIRST"``
+    # and ``"ACTIVE"``; retaining its quotes as part of the value would turn a
+    # documented fact into an unnecessary review note.
+    if text.startswith('"') and text.endswith('"'):
+        try:
+            literal = json.loads(text)
+        except json.JSONDecodeError:
+            pass
+        else:
+            if isinstance(literal, str):
+                return literal, None
     # ``[]``, ``{}``, and JSON lists such as ``[\"AXIAL\"]`` are complete,
     # typed defaults stated by the manual. Keeping them as strings makes a
     # documented default look unverified, while interpreting prose such as
