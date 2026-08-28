@@ -59,3 +59,28 @@ def test_contract_variants_render_as_a_discriminated_union():
     assert "OPT_MODE: true;" in rendered
     assert "GENERAL: number;" in rendered
     assert "OPTIMIZED: string;" in rendered
+
+
+def test_conflicting_legacy_payload_aliases_receive_distinct_contract_types():
+    """One reused Python TypedDict must not overwrite another endpoint contract."""
+    resources = generator._load_resources()
+    modules = generator._source_modules()
+    resource_keys = {(resource["pythonModule"], resource["className"]) for resource in resources}
+    type_keys = generator._collect_type_classes(modules, resource_keys)
+    generator._attach_payload_types(resources, type_keys)
+    contract_fields = generator._contract_payload_fields()
+
+    contract_types, supplemental = generator._contract_payload_types(
+        resources, contract_fields, type_keys
+    )
+    by_endpoint = {resource["endpoint"]: resource for resource in resources}
+    dynf = by_endpoint["/db/DYNF"]
+
+    assert by_endpoint["/db/DYFG"]["payloadTypeName"] == "RailwayDynamicFactorPayload"
+    assert dynf["payloadTypeName"] == "RailwayDynamicFactorByElementPayload"
+    assert contract_types[(dynf["pythonModule"], "RailwayDynamicFactorPayload")] == contract_fields["/db/DYFG"]
+    assert supplemental[dynf["pythonModule"]]["RailwayDynamicFactorByElementPayload"] == contract_fields["/db/DYNF"]
+
+    rendered = generator._render_types(modules, type_keys, contract_types, supplemental)
+    assert "export interface RailwayDynamicFactorPayload" in rendered
+    assert "export interface RailwayDynamicFactorByElementPayload" in rendered

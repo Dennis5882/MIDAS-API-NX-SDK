@@ -1,4 +1,4 @@
-import { designTables, operations, post, tables } from "../src";
+import { designTables, operations, post, resources, tables } from "../src";
 import { describe, expect, it } from "vitest";
 
 // This file is compiled by `npm run typecheck`. The unreachable block keeps
@@ -15,6 +15,14 @@ if (false) {
   tables.story.getStoryModeShapeTable({ modes: ["Mode1"] });
   post.getWallDesignForcesTable({ storyNames: ["1F"] });
   designTables.rcKds.getBeamDesignForcesTable({ exportPath: "C:/reports" });
+
+  // These endpoints shared a legacy Python payload name, but their reviewed
+  // contracts differ: DYFG requires HEIGHT_COVER while DYNF permits omission.
+  resources.db.movingLoads.railwayDynamicFactor.create({ 1: { INPUT_TYPE: 0, HEIGHT_COVER: 1 } });
+  resources.db.movingLoads.railwayDynamicFactorByElement.create({ 1: { INPUT_TYPE: 0 } });
+
+  // @ts-expect-error /db/DYFG requires HEIGHT_COVER in its contract payload
+  resources.db.movingLoads.railwayDynamicFactor.create({ 1: { INPUT_TYPE: 0 } });
 
   // Material tables do not accept analysis-result filters.
   // @ts-expect-error loadCaseNames is not supported by this wrapper

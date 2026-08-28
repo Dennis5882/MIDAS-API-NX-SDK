@@ -3623,8 +3623,8 @@
           "status": "implemented"
         }
       ],
-      "payloadTypeName": "RailwayDynamicFactorPayload",
-      "payloadType": "Types.DbMovingLoadsTypes.RailwayDynamicFactorPayload"
+      "payloadTypeName": "RailwayDynamicFactorByElementPayload",
+      "payloadType": "Types.DbMovingLoadsTypes.RailwayDynamicFactorByElementPayload"
     },
     {
       "className": "TrafficLineLanes",

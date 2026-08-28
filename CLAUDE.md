@@ -16,7 +16,7 @@ python scripts/validate_contracts.py   # validate contracts/ and check both SDKs
 
 cd packages/typescript
 npm ci                          # JavaScript/TypeScript dev setup
-npm run generate                # regenerate npm resources/types from reviewed Python metadata
+npm run generate                # regenerate npm resources/types from contracts, with reviewed Python fallback
 npm run typecheck
 npm test
 npm run build

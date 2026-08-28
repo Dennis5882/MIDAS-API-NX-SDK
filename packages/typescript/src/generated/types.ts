@@ -2603,6 +2603,21 @@ export namespace DbMovingLoadsTypes {
     MAINTAIN_TYPE?: number;
     /** Consider Reduced Dynamic Effect */
     OPT_REDUCE_EFF?: boolean;
+    /** Height of Cover (h) (OPT_REDUCE_EFF=true 시) */
+    HEIGHT_COVER: number;
+    /** Dynamic Factor (φ) (INPUT_TYPE=1 시) */
+    DYN_FACTOR?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RailwayDynamicFactorByElementPayload {
+    /** Input Type (0=Auto, 1=User) */
+    INPUT_TYPE: number;
+    /** Determinant Length (Lφ) */
+    LENGTH?: number;
+    /** Quality of Track Maintenance (0=Carefully, 1=Standard) */
+    MAINTAIN_TYPE?: number;
+    /** Consider Reduced Dynamic Effect */
+    OPT_REDUCE_EFF?: boolean;
     /** Height of Cover (h) */
     HEIGHT_COVER?: number;
     /** Dynamic Factor (φ) */
