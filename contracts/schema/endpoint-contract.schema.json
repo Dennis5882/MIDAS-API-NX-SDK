@@ -330,7 +330,7 @@
       "properties": {
         "key": {
           "type": "string",
-          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+          "pattern": "^[A-Za-z0-9_]+$",
           "description": "One literal wire-property name. A manual row that names multiple keys must be split or kept unpromoted."
         },
         "description": { "type": "string" },

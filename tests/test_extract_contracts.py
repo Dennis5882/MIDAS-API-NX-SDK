@@ -48,6 +48,9 @@ CHAPTER = """# 99 DB — Synthetic
 | 15 | Fixed numeric value | `"CONST_VALUE"` | Number (const 0.75) | - | Read Only |
 | 16 | Reversed numeric choices (Zero: 0 / One: 1) | `"REVERSED"` | Integer (enum) | - | Required |
 | 17 | Explicit paired fields | `"ENABLED"` / `"LIMIT"` | Boolean / Number | false / 0 | Optional / Required |
+| 18 | Digit-prefixed wire key | `"7TH_DOF_TYPE"` | Integer | 0 | Optional |
+| 19 | Escaped fixed vector | `"ESCAPED_VECTOR"` | Array \\[Number, 3\\] | - | Required |
+| 20 | Conditional from description (`MODE="SPECIAL"`) | `"SPECIAL_VALUE"` | Number | - | Conditional Required |
 
 ### Variant table
 
@@ -94,6 +97,14 @@ def test_inline_conditions_are_kept_verbatim(section: ex.Section):
     assert span.condition == "bEXACTSPAN=true"
 
 
+def test_exact_description_condition_completes_a_conditional_required_marker(section: ex.Section):
+    special = {field.key: field for field in section.tables[0].fields}["SPECIAL_VALUE"]
+
+    assert special.requirement == "conditional"
+    assert special.condition == 'MODE="SPECIAL"'
+    assert not special.notes
+
+
 def test_dotted_paths_become_nested_fields(section: ex.Section):
     fields = {f.key: f for f in section.tables[0].fields}
 
@@ -117,6 +128,13 @@ def test_ambiguous_keys_are_flagged_not_guessed(section: ex.Section):
     assert any("more than one" in note for note in ambiguous['A" / "B'].notes)
 
 
+def test_exact_digit_prefixed_wire_key_is_not_treated_as_an_ambiguous_label(section: ex.Section):
+    fields = {field.key: field for field in section.tables[0].fields}
+
+    assert fields["7TH_DOF_TYPE"].type == "integer"
+    assert not fields["7TH_DOF_TYPE"].notes
+
+
 def test_explicit_type_constraints_are_preserved(section: ex.Section):
     fields = {field.key: field for field in section.tables[0].fields}
     assert fields["NON_NEGATIVE"].type == "number"
@@ -126,6 +144,9 @@ def test_explicit_type_constraints_are_preserved(section: ex.Section):
     assert fields["VECTOR"].type == "array"
     assert fields["VECTOR"].items == {"type": "number"}
     assert fields["VECTOR"].constraints == {"minItems": 3, "maxItems": 3}
+    assert fields["ESCAPED_VECTOR"].type == "array"
+    assert fields["ESCAPED_VECTOR"].items == {"type": "number"}
+    assert fields["ESCAPED_VECTOR"].constraints == {"minItems": 3, "maxItems": 3}
     assert fields["INLINE_DEFAULT"].type == "boolean"
     assert fields["INLINE_DEFAULT"].documented_default is False
     assert fields["CONST_VALUE"].constraints == {"const": 0.75}
@@ -555,6 +576,66 @@ def test_enum_values_are_read_only_when_the_same_manual_section_states_them(tmp_
     assert draft_fields["INLINE"]["enum"] == ["AUTO", "MANUAL"]
     assert draft_fields["SETTINGS"]["properties"][0]["enum"] == ["FIRST", "SECOND"]
     assert draft_fields["ITEMS"]["items"]["enum"] == ["ONE", "TWO"]
+
+
+def test_markdown_numeric_enum_values_do_not_turn_ranges_or_ellipses_into_enums():
+    """Code-spanned alternatives are exact values; abbreviated ranges are not."""
+    assert ex._enum_values_from_description("Diagram type: Stress `0` / Force `1`") == [0, 1]
+    assert ex._enum_values_from_description("Allowed range `0` ~ `20`") == []
+    assert ex._enum_values_from_description("1=Method-1 … 4=Method-4") == []
+
+
+def test_same_section_json_schema_fills_only_exact_table_enum_and_array_gaps(tmp_path: Path):
+    path = tmp_path / "99_DB_SchemaHints.md"
+    path.write_text(
+        """## 1. `/db/HINTS` — Schema hints
+
+### JSON Schema
+
+```json
+{"type":"object","properties":{"Assign":{"type":"object","required":["MODE","VECTOR"],"properties":{"MODE":{"type":"string","enum":["FIRST","SECOND"]},"VECTOR":{"type":"array","minItems":3,"maxItems":3,"items":{"type":"number"}},"OPTIONAL_NOTE":{"type":"string"}}}}}
+```
+
+| No. | Description | Key | Value Type | Default | Required |
+|-----|-------------|-----|------------|---------|----------|
+| 1 | Mode | `"MODE"` | String (enum) | - | Required |
+| 2 | Vector | `"VECTOR"` | Array | - | Required |
+| 3 | Optional note | `"OPTIONAL_NOTE"` | String | - | |
+""",
+        encoding="utf-8",
+    )
+
+    fields = {field.key: field for field in ex.parse_chapter(path)[0].tables[0].fields}
+    assert fields["MODE"].enum == ["FIRST", "SECOND"]
+    assert not fields["MODE"].notes
+    assert fields["VECTOR"].items == {"type": "number"}
+    assert fields["VECTOR"].constraints == {"minItems": 3, "maxItems": 3}
+    assert not fields["VECTOR"].notes
+    assert fields["OPTIONAL_NOTE"].requirement == "optional"
+    assert not fields["OPTIONAL_NOTE"].notes
+
+
+def test_same_section_json_schema_supplies_a_missing_default_column_only(tmp_path: Path):
+    path = tmp_path / "99_DB_SchemaDefault.md"
+    path.write_text(
+        """## 1. `/db/DEFAULT` — Schema default
+
+### JSON Schema
+
+```json
+{"type":"object","properties":{"Assign":{"type":"object","properties":{"COUNT":{"type":"integer","default":0}}}}}
+```
+
+| No. | Description | Key | Value Type | Required |
+|-----|-------------|-----|------------|----------|
+| 1 | Count | `"COUNT"` | Integer | Optional |
+""",
+        encoding="utf-8",
+    )
+
+    count = ex.parse_chapter(path)[0].tables[0].fields[0]
+    assert count.documented_default == 0
+    assert not count.notes
 
 
 def test_shipped_contracts_still_match_the_manual_if_it_is_present():

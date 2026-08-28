@@ -41,6 +41,7 @@ not the manual's to claim.
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from collections import Counter
@@ -164,6 +165,10 @@ def _clean(cell: str) -> str:
     text = cell.strip()
     text = re.sub(r"\*\*(.*?)\*\*", r"\1", text)
     text = text.replace("`", "").strip()
+    # Some tables escape brackets solely to keep Markdown from interpreting an
+    # array type as a link.  The backslashes are presentation syntax, not part
+    # of the documented wire type (for example ``Array \[Number, 3\]``).
+    text = text.replace("\\[", "[").replace("\\]", "]")
     # Footnote markers: superscript digits and the "¹⁾" form the chapters use.
     text = re.sub(r"[\u00b9\u00b2\u00b3\u2070-\u209f]+\)?", "", text)
     return text.strip()
@@ -369,12 +374,38 @@ def _enum_values_from_description(text: str) -> list[Any]:
     The manual commonly writes integer alternatives as ``0=Simplified /
     1=General``.  Two or more distinct ``number=label`` pairs are a complete
     finite list; a lone condition such as ``MODE=0`` or a range like ``0~20``
-    is not, so neither becomes an enum here.
+    is not, so neither becomes an enum here.  Later chapters put each numeric
+    value in a Markdown code span (``Stress: `0` / Force: `1```); those spans
+    are likewise an explicit finite list, unless the text uses a range or an
+    ellipsis to leave values unstated.
     """
+
+    # An ellipsis is a shorthand for values the manual did not actually list
+    # (for example ``1=Method-1 … 4=Method-4``).  It is not evidence for the
+    # intervening values, so preserve the enum review note instead of making a
+    # partial claim.
+    if "..." in text or "…" in text:
+        return []
 
     quoted = _quoted_enum_values(text)
     if quoted:
         return quoted
+
+    # Numeric wire values in the manuals are often written as individual code
+    # spans.  Treat only two or more non-range spans as an enum.  A code span
+    # adjacent to ``~`` is a documented bound, not an alternative.
+    code_numeric: list[int | float] = []
+    for match in re.finditer(r"`\s*(-?\d+(?:\.\d+)?)\s*`", text):
+        before = text[: match.start()].rstrip()
+        after = text[match.end() :].lstrip()
+        if (before and before[-1] == "~") or (after and after[0] == "~"):
+            continue
+        value = _number(match.group(1))
+        if value not in code_numeric:
+            code_numeric.append(value)
+    if len(code_numeric) >= 2:
+        return code_numeric
+
     values: list[int | float] = []
     for literal in re.findall(r"(?<![A-Za-z0-9_.-])(-?\d+(?:\.\d+)?)\s*=", text):
         number = float(literal)
@@ -481,7 +512,11 @@ class ParsedField:
     properties: list["ParsedField"] = dataclass_field(default_factory=list)
 
 
-_PATH_SEGMENT = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)(\[\])?$")
+# JSON member names may begin with a digit.  ``7TH_DOF_TYPE`` is an exact,
+# quoted wire key in the bridge-operation chapter; rejecting it would turn a
+# documented property into an invented ambiguity.  Keep the rest deliberately
+# narrow so separators and prose still fail closed.
+_PATH_SEGMENT = re.compile(r"^([A-Za-z0-9_]+)(\[\])?$")
 
 
 def _split_path(key: str) -> Optional[list[tuple[str, bool]]]:
@@ -701,6 +736,133 @@ def _explicit_variants(tables: list[ParsedTable]) -> list[ParsedVariant]:
     if len({variant.equals for variant in variants}) != len(variants):
         return []
     return variants
+
+
+def _section_schema_hints(lines: list[str]) -> dict[tuple[str, ...], list[dict[str, Any]]]:
+    """Read exact property metadata from a section's own ``JSON Schema`` fence.
+
+    The manual's parameter table remains the primary transcription.  Several
+    chapters, however, render Markdown escapes in a table while the same
+    section's JSON Schema spells out array items or enum values exactly.  This
+    function reads only fenced JSON below a ``JSON Schema`` heading in that
+    *same endpoint section*; examples and neighbouring endpoint schemas are
+    deliberately excluded.
+    """
+
+    hints: dict[tuple[str, ...], list[dict[str, Any]]] = {}
+    for index, line in enumerate(lines):
+        if not re.fullmatch(r"#{2,}\s+JSON Schema\s*", line.strip(), re.IGNORECASE):
+            continue
+        start = next(
+            (position for position in range(index + 1, len(lines)) if lines[position].strip() == "```json"),
+            None,
+        )
+        if start is None:
+            continue
+        end = next(
+            (position for position in range(start + 1, len(lines)) if lines[position].strip() == "```"),
+            None,
+        )
+        if end is None:
+            continue
+        try:
+            schema = json.loads("\n".join(lines[start + 1 : end]))
+        except json.JSONDecodeError:
+            continue
+
+        def visit(node: Any, prefix: tuple[str, ...] = ()) -> None:
+            if not isinstance(node, dict):
+                return
+            for branch_name in ("allOf", "anyOf", "oneOf"):
+                for branch in node.get(branch_name, []):
+                    visit(branch, prefix)
+            properties = node.get("properties")
+            if isinstance(properties, dict):
+                required = node.get("required", [])
+                required_names = set(required) if isinstance(required, list) and all(isinstance(name, str) for name in required) else set()
+                for key, child in properties.items():
+                    if not isinstance(key, str) or not isinstance(child, dict):
+                        continue
+                    # Endpoint wrappers are message transport, not payload
+                    # members.  Table paths start immediately inside them.
+                    if not prefix and key in {"Argument", "Assign"}:
+                        visit(child, prefix)
+                        continue
+                    path = prefix + (key,)
+                    hint = dict(child)
+                    hint["__required"] = key in required_names
+                    hints.setdefault(path, []).append(hint)
+                    visit(child, path)
+            if node.get("type") == "array":
+                # The extractor models Array[Object] children as properties of
+                # the array field, so retain the same path when walking items.
+                visit(node.get("items"), prefix)
+
+        visit(schema)
+    return hints
+
+
+def _agreed_schema_value(entries: list[dict[str, Any]], key: str) -> Any | None:
+    """Return a value only when every same-path schema branch agrees on it."""
+
+    if not entries or any(key not in entry for entry in entries):
+        return None
+    values = [entry[key] for entry in entries]
+    if any(value != values[0] for value in values[1:]):
+        return None
+    return values[0]
+
+
+def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], list[dict[str, Any]]]) -> None:
+    """Fill only table gaps that the same section's JSON Schema states exactly."""
+
+    def visit(fields: list[ParsedField], prefix: tuple[str, ...] = ()) -> None:
+        for field in fields:
+            path = prefix + (field.key,)
+            entries = hints.get(path, [])
+            if entries:
+                required = _agreed_schema_value(entries, "__required")
+                if field.requirement is None and isinstance(required, bool):
+                    field.requirement = "required" if required else "optional"
+                    for note in (
+                        "the table has no Required column",
+                        "the manual leaves the Required column blank",
+                    ):
+                        if note in field.notes:
+                            field.notes.remove(note)
+
+                default = _agreed_schema_value(entries, "default")
+                if "the table has no Default column" in field.notes and default is not None:
+                    field.documented_default = default
+                    field.notes.remove("the table has no Default column")
+
+                enum = _agreed_schema_value(entries, "enum")
+                if not field.enum and isinstance(enum, list) and enum:
+                    field.enum = enum
+                    if _ENUM_VALUES_ELSEWHERE in field.notes:
+                        field.notes.remove(_ENUM_VALUES_ELSEWHERE)
+
+                items = _agreed_schema_value(entries, "items")
+                if field.type == "array" and field.items is None and isinstance(items, dict):
+                    item_type = items.get("type")
+                    if item_type in {"string", "number", "integer", "boolean", "object", "array"}:
+                        field.items = {"type": item_type}
+                        if "array element type not stated by the manual" in field.notes:
+                            field.notes.remove("array element type not stated by the manual")
+
+                for name in ("minimum", "maximum", "minItems", "maxItems", "minLength", "maxLength", "const"):
+                    value = _agreed_schema_value(entries, name)
+                    # Zero lower bounds are JSON Schema defaults, not a
+                    # documented restriction.  Keeping them would manufacture
+                    # drift against contracts that correctly omit a no-op.
+                    if name in {"minItems", "minLength"} and value == 0:
+                        continue
+                    if value is not None and name not in field.constraints:
+                        field.constraints[name] = value
+            visit(field.properties, path)
+
+    for table in tables:
+        visit(table.fields)
 
 
 @dataclass
@@ -933,6 +1095,22 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                     requirement, condition, note = _normalize_requirement(entry_required)
                 else:
                     requirement, condition, note = None, None, "the table has no Required column"
+                # Some chapters put only "conditional required" in the
+                # Required column but spell the one literal selector in the
+                # Description cell.  Preserve that exact condition when there
+                # is precisely one; two selectors or prose-only wording stay
+                # unresolved rather than being guessed.
+                if requirement == "conditional" and condition is None and desc_column is not None:
+                    description_condition = _variant_condition(_clean(cells[desc_column]))
+                    if description_condition is not None:
+                        condition_field, condition_value = description_condition
+                        rendered_value = (
+                            json.dumps(condition_value)
+                            if isinstance(condition_value, str)
+                            else str(condition_value).lower()
+                        )
+                        condition = f"{condition_field}={rendered_value}"
+                        note = None
                 if note:
                     notes.append(note)
                 field_type, items, note = _normalize_type(entry_type) if entry_type is not None else (None, None, "the table has no Value Type column")
@@ -1064,6 +1242,7 @@ def parse_chapter(path: Path) -> list[Section]:
             section.methods = toc_methods.get(section.endpoint, [])
         section.tables = _parse_tables(body, index)
         _apply_enum_values(section.tables, _enum_tables(body))
+        _apply_schema_hints(section.tables, _section_schema_hints(body))
         section.variants = _explicit_variants(section.tables)
         sections.append(section)
     return sections

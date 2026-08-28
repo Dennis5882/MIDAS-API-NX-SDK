@@ -74,7 +74,10 @@ NEEDS_HAND_REVIEW = {
     "/db/REBB": "its write path is broken server-side, not a shape question",
 }
 
-_FIELD_KEY = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+# A JSON wire member may start with a digit.  The manual documents
+# ``7TH_DOF_TYPE`` verbatim for /ope/GSBG, so the promotion gate must accept
+# the same literal-key grammar as the extractor and contract schema.
+_FIELD_KEY = re.compile(r"^[A-Za-z0-9_]+$")
 
 _DELETE_OPS = """  - method: DELETE
     variant: per_id
