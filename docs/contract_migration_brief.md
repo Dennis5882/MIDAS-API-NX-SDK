@@ -80,42 +80,34 @@ threefold expansion of the contract set. Keep it that way.
 Both are the same shape as the bug this whole system was built to prevent: a
 rule that exists in both languages but is verified in only one.
 
-### D1 — 164 sdkRules are declared, 1 is enforced
+### D1 — completed: executable sdkRules run against both SDK bases
 
-`_check_python_normalization()` in `scripts/validate_contracts.py` actually
-calls the SDK and inspects the payload it would send — but only for
-`kind: normalize_defaults`, of which there is exactly one (the `/db/NMAS`
-rotational-mass rule).
+`scripts/validate_contracts.py` now runs all three executable safety-rule
+kinds against recording clients. `normalize_defaults` is exercised against its
+actual resource for create and update; `per_id_request` and
+`require_confirmation` are each exercised once through the shared `DbResource`
+base in Python and npm, rather than repeating the same base-class check for
+every endpoint.
 
 | kind | count | executed against either SDK? |
 | --- | ---: | --- |
-| `per_id_request` | 80 | no |
-| `require_confirmation` | 80 | no |
-| `normalize_defaults` | 1 | **yes** |
+| `per_id_request` | 80 | **yes — Python + npm base probe** |
+| `require_confirmation` | 80 | **yes — Python + npm base probe** |
+| `normalize_defaults` | 1 | **yes — Python + npm resource probe** |
 | `node_id`, `warn` | 3 | no |
 
-The behaviour those 163 rules describe *is* implemented and *is* tested in both
-languages — but by tests written independently of the contract, which is exactly
-the coupling the contract system exists to create. The safeguards live in the
-`DbResource` / `db-resource.ts` base classes, so today they are uniform and the
-practical risk is low; the moment one endpoint needs to deviate, nothing
-notices.
+The three remaining `node_id` / `warn` rules describe contract metadata or
+caller-facing warnings rather than an executable shared resource safeguard.
+The validator prints the declared-rule counts and the Python/npm probe counts,
+and no longer claims broader parity than it executed.
 
-`validate_contracts.py` also prints `OK - contracts valid and both SDK surfaces
-match them`, which claims more than it checked.
-
-**Fix**: drive `per_id_request` and `require_confirmation` from the contract the
-way `normalize_defaults` already is — exercise the base class once per kind
-against a recording client, in both languages, and make the summary line state
-what was actually verified rather than implying all of it was.
-
-### D2 — the npm package's riskiest adapter has no tests
+### D2 — completed: live-hazard adapters have npm tests
 
 ```text
-packages/typescript/tests/   5 files, 27 tests
-post.ts          165 lines  ->  0 tests
-doc.ts            77 lines  ->  0 tests
-errors.ts         42 lines  ->  0 tests
+packages/typescript/tests/   9 files, 50 tests
+post.ts          165 lines  ->  covered
+doc.ts            77 lines  ->  covered
+errors.ts         42 lines  ->  covered
 design-tables.ts  39 lines  ->  0 tests
 ```
 
@@ -126,30 +118,26 @@ matching on key name is unsafe and the table must be found by its `HEAD`/`DATA`
 shape. `"empty"` is just the default key for a blank `TABLE_NAME` and **can
 carry a full table** — reading it as "no data" is a defect.
 
-Python pins this in `tests/post/test_post_base.py` against the keys actually
-observed live. TypeScript pins nothing.
-
-**Fix**: port those cases, including the `"empty"`-carries-a-real-table case and
-a response with no table-shaped value at all. Then cover `doc.ts` and
-`errors.ts`.
+TypeScript now pins the observed `TABLE_NAME`, `"Result Table"`, and `"empty"`
+keys, including an `"empty"` response carrying real data and a response with no
+table-shaped value. `doc.ts` and `errors.ts` have direct adapter tests as well.
+`design-tables.ts` remains a separate, non-hazard test gap.
 
 ## Order of work
 
 1. **D2 — `post.ts` tests.** Cheapest, and closes a live-hazard gap.
-2. **D1 — contract-driven verification of the other rule kinds.** One base class
-   per language unlocks 160 rules at once.
-3. **Conditional variant tables — 45 refusals, now the largest single blocker.**
+2. **Conditional variant tables — 45 refusals, now the largest single blocker.**
    This is a *schema design* question, not a parsing one:
    `contracts/schema/endpoint-contract.schema.json` has no way to express "these
    fields apply when `TYPE=X`". Do not invent a representation unilaterally;
    bring a proposal to the author first.
-4. Remaining extraction fidelity: conditional-without-condition (23), Required
+3. Remaining extraction fidelity: conditional-without-condition (23), Required
    column blank (15), enum values elsewhere (14), array element types (9).
-5. `no payload fields could be parsed` (16), and methods stated nowhere (26,
+4. `no payload fields could be parsed` (16), and methods stated nowhere (26,
    confined to `09_DB_Dynamic_Loads.md` and `10_DB_Construction_Stage.md`), are
    genuine manual gaps rather than extractor bugs. They need the manual repo,
    not code.
-6. **Stage 4 — Python derives from the contracts.** Deliberately last and
+5. **Stage 4 — Python derives from the contracts.** Deliberately last and
    deliberately unspecified. `src/midas_nx/` is hand-written and its public API
    is on PyPI; changing how it is produced needs the author's call, not an
    agent's. Until then Python stays a *subject* of the parity check, which is

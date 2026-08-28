@@ -27,7 +27,14 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.13"
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: packages/typescript/package-lock.json
       - run: pip install -e ".[dev]"
+      - run: npm ci
+        working-directory: packages/typescript
       - name: Validate contracts and check both SDKs against them
         run: python scripts/validate_contracts.py
       - name: Check promoted contracts against the official manual

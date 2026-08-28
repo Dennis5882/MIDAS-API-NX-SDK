@@ -18,8 +18,9 @@ It runs four kinds of check:
    ``safeToOmit`` must be covered by an SDK rule; a contract without a manual
    source must justify itself.
 4. **Parity** - the endpoint, products and methods each contract declares must
-   match what the Python package and the generated npm resource manifest expose,
-   and any ``normalize_defaults`` rule must actually be implemented in both.
+   match what the Python package and the generated npm resource manifest expose.
+   Every declared executable safety-rule kind is also run against the shared
+   Python and npm resource implementations.
 
 Parity uses the SDKs as *subjects*, never as sources. A mismatch is reported as
 an SDK defect, not as a reason to edit the contract.
@@ -31,7 +32,10 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 import sys
+from collections import Counter
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -47,9 +51,24 @@ RISKS_FILE = CONTRACTS / "safety" / "known-product-risks.yaml"
 VERIFICATION_DIR = CONTRACTS / "verification"
 TS_RESOURCES = ROOT / "schema" / "typescript-resources.json"
 TS_TABLES = ROOT / "packages" / "typescript" / "src" / "generated" / "tables.ts"
+TS_PACKAGE = ROOT / "packages" / "typescript"
 PY_POST = ROOT / "src" / "midas_nx" / "post"
 
 _ID_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
+_EXECUTABLE_RULE_KINDS = (
+    "normalize_defaults",
+    "per_id_request",
+    "require_confirmation",
+)
+
+
+@dataclass(frozen=True)
+class RuleExecution:
+    """The SDK behaviour probes actually run during a parity check."""
+
+    declared: Counter[str]
+    python_probes: int
+    typescript_probes: int
 
 
 class Failures:
@@ -310,7 +329,16 @@ def _python_resources() -> dict[str, Any]:
 _FUNCTION_ENDPOINTS = function_endpoints()
 
 
-def check_parity(contracts: list[tuple[Path, dict]], failures: Failures) -> None:
+def _rule_counts(contracts: list[tuple[Path, dict]]) -> Counter[str]:
+    return Counter(
+        rule["kind"]
+        for _, contract in contracts
+        for rule in contract.get("sdkRules", [])
+        if rule["kind"] in _EXECUTABLE_RULE_KINDS
+    )
+
+
+def check_parity(contracts: list[tuple[Path, dict]], failures: Failures) -> RuleExecution:
     try:
         python_resources = _python_resources()
     except Exception as exc:  # pragma: no cover - import failure is a hard stop
@@ -409,6 +437,11 @@ def check_parity(contracts: list[tuple[Path, dict]], failures: Failures) -> None
                     f"{sorted(products)}",
                 )
             _check_typescript_normalization(path, contract, ts_resource, failures)
+
+    declared = _rule_counts(contracts)
+    python_probes = _check_python_base_safety_rules(declared, failures)
+    typescript_probes = _check_typescript_base_safety_rules(declared, failures)
+    return RuleExecution(declared, python_probes, typescript_probes)
 
 
 def _load_tables() -> list[tuple[Path, dict]]:
@@ -595,6 +628,153 @@ def _check_typescript_normalization(
             )
 
 
+def _check_python_base_safety_rules(declared: Counter[str], failures: Failures) -> int:
+    """Exercise shared destructive safeguards once, not once per endpoint."""
+    from midas_nx.client import DestructiveOperationError
+    from midas_nx.db.base import DbResource
+
+    class _ProbeResource(DbResource):
+        ENDPOINT = "/db/CONTRACT-SAFETY-PROBE"
+        NAME = "Contract safety probe"
+        METHODS = frozenset({"DELETE"})
+
+    probes = 0
+    if declared["normalize_defaults"]:
+        # _check_python_normalization() already executes each declared rule
+        # against its actual resource above, for create and update.
+        probes += 1
+
+    if declared["per_id_request"]:
+
+        class _Recorder:
+            def __init__(self, fail_at: str | None = None) -> None:
+                self.calls: list[tuple[str, str, Any]] = []
+                self.fail_at = fail_at
+
+            def request(self, method: str, endpoint: str, body: Any = None) -> dict:
+                self.calls.append((method, endpoint, body))
+                if endpoint == self.fail_at:
+                    raise RuntimeError("recorded DELETE failure")
+                return {}
+
+            def check_product(self, products: Any, name: str) -> None:
+                return None
+
+        recorder = _Recorder()
+        try:
+            _ProbeResource.delete([7, 9], client=recorder)
+        except Exception as exc:  # pragma: no cover - reported, not raised
+            failures.add("sdkRules", f"Python base per_id_request raised: {exc}")
+        else:
+            expected = [
+                ("DELETE", "/db/CONTRACT-SAFETY-PROBE/7", None),
+                ("DELETE", "/db/CONTRACT-SAFETY-PROBE/9", None),
+            ]
+            if recorder.calls != expected:
+                failures.add(
+                    "sdkRules",
+                    "Python base per_id_request did not send one DELETE per id URL; "
+                    f"recorded {recorder.calls!r}",
+                )
+
+        failing = _Recorder("/db/CONTRACT-SAFETY-PROBE/7")
+        try:
+            _ProbeResource.delete([7, 9], client=failing)
+        except RuntimeError:
+            pass
+        except Exception as exc:  # pragma: no cover - reported, not raised
+            failures.add("sdkRules", f"Python base per_id_request raised {exc!r} on failure")
+        else:
+            failures.add("sdkRules", "Python base per_id_request did not propagate a DELETE failure")
+        if failing.calls != [("DELETE", "/db/CONTRACT-SAFETY-PROBE/7", None)]:
+            failures.add(
+                "sdkRules",
+                "Python base per_id_request continued after the first DELETE failure; "
+                f"recorded {failing.calls!r}",
+            )
+        probes += 1
+
+    if declared["require_confirmation"]:
+
+        class _Recorder:
+            def __init__(self) -> None:
+                self.calls: list[tuple[str, str, Any]] = []
+
+            def request(self, method: str, endpoint: str, body: Any = None) -> dict:
+                self.calls.append((method, endpoint, body))
+                return {}
+
+            def check_product(self, products: Any, name: str) -> None:
+                return None
+
+        recorder = _Recorder()
+        try:
+            _ProbeResource.delete_all(client=recorder)
+        except DestructiveOperationError:
+            pass
+        except Exception as exc:  # pragma: no cover - reported, not raised
+            failures.add(
+                "sdkRules",
+                f"Python base require_confirmation raised {exc!r} instead of DestructiveOperationError",
+            )
+        else:
+            failures.add(
+                "sdkRules",
+                "Python base require_confirmation allowed whole-table DELETE without confirm=True",
+            )
+        if recorder.calls:
+            failures.add(
+                "sdkRules",
+                "Python base require_confirmation sent a whole-table DELETE before rejecting it",
+            )
+        probes += 1
+
+    return probes
+
+
+def _check_typescript_base_safety_rules(declared: Counter[str], failures: Failures) -> int:
+    """Run one npm ``DbResource`` probe for every contracted safety kind."""
+    required = [kind for kind in _EXECUTABLE_RULE_KINDS if declared[kind]]
+    if not required:
+        return 0
+    command = [
+        "npm.cmd" if sys.platform == "win32" else "npm",
+        "exec",
+        "--",
+        "vitest",
+        "run",
+        "tests/contract-safety.test.ts",
+        "--reporter=verbose",
+    ]
+    try:
+        result = subprocess.run(
+            command,
+            cwd=TS_PACKAGE,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+    except OSError as exc:
+        failures.add(
+            "sdkRules",
+            f"npm base safety probes could not run; install npm dependencies first: {exc}",
+        )
+        return 0
+
+    output = (result.stdout + result.stderr).strip()
+    if result.returncode:
+        failures.add(
+            "sdkRules",
+            f"npm base safety probes failed; this is an SDK implementation defect:\n{output}",
+        )
+        return 0
+    for kind in required:
+        if f"{kind}:" not in output:
+            failures.add("sdkRules", f"npm base {kind} probe was not executed")
+    return len(required)
+
+
 def main(argv: list[str]) -> int:
     sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
     skip_parity = "--no-parity" in argv
@@ -620,8 +800,9 @@ def main(argv: list[str]) -> int:
     check_tables(
         tables, {c['endpoint'] for _, c in contracts}, risks, verification, failures
     )
+    parity: RuleExecution | None = None
     if not skip_parity:
-        check_parity(contracts, failures)
+        parity = check_parity(contracts, failures)
 
     crash_risk = sum(
         1
@@ -662,6 +843,15 @@ def main(argv: list[str]) -> int:
         + ". `unverified` is an honest gap, not a failure - it says nobody has"
         " omitted that field against a running product."
     )
+    if parity is not None:
+        declared = ", ".join(
+            f"{kind}={parity.declared[kind]}" for kind in _EXECUTABLE_RULE_KINDS
+        )
+        print(
+            "sdk rule execution: "
+            f"{sum(parity.declared.values())} declared executable rules ({declared}); "
+            f"ran {parity.python_probes} Python and {parity.typescript_probes} npm base probes"
+        )
 
     if failures:
         print(f"\n{len(failures.items)} problem(s):")
@@ -669,7 +859,13 @@ def main(argv: list[str]) -> int:
             print(f"  {where}: {message}")
         return 1
 
-    print("OK - contracts valid and both SDK surfaces match them.")
+    if parity is None:
+        print("OK - contracts valid; SDK parity and behaviour probes were skipped.")
+    else:
+        print(
+            "OK - contracts valid; endpoint parity and the declared sdkRule kinds "
+            "were checked against both SDKs."
+        )
     return 0
 
 
