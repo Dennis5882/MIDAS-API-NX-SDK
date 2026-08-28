@@ -13,7 +13,10 @@ from function_endpoints import (
     python_function_surfaces,
     typescript_function_surfaces,
 )
-from promote_contract import _non_db_resource_is_modelled
+from promote_contract import (
+    _non_db_delete_response_unknown,
+    _non_db_resource_is_modelled,
+)
 
 
 def test_plain_function_discovery_resolves_constant_routes_and_npm_metadata(tmp_path):
@@ -71,4 +74,20 @@ def test_non_db_resource_delete_never_inherits_db_delete_evidence():
         {"/DESIGN/EXAMPLE": ResourceEndpoint(surface, surface)},
     )
 
-    assert "not transferable" in reason
+    assert reason is None
+
+    promoted = _non_db_delete_response_unknown(
+        """  - method: DELETE
+    risk: destructive
+    mitigation: none
+    request:
+      wrapper: none
+    response:
+      wrapper: table
+      keyStability: stable
+"""
+    )
+
+    assert "wrapper: unknown" in promoted
+    assert "deletion scope or response shape" in promoted
+    assert "keyStability" not in promoted

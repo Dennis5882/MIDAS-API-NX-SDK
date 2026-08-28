@@ -112,10 +112,83 @@ def test_ambiguous_keys_are_flagged_not_guessed(section: ex.Section):
 
 def test_conditional_variant_tables_are_reported_not_merged(section: ex.Section):
     assert len(section.tables) == 2
+    assert section.variants == []
     main_keys = {f.key for f in section.tables[0].fields}
 
     assert "SPECIAL" not in main_keys
     assert section.tables[1].heading == "TYPE=SPECIAL 전용"
+
+
+def test_explicit_variant_tables_preserve_their_discriminator_and_do_not_merge(tmp_path: Path):
+    path = tmp_path / "99_DB_Variants.md"
+    path.write_text(
+        """# 99 DB — Variants
+
+## 1. `/db/VARIANT` — Explicit variants
+
+| No. | Description | Key | Value Type | Default | Required |
+|-----|-------------|-----|------------|---------|----------|
+| 1 | Select shape | `"TYPE"` | String | - | Required |
+
+### First (`TYPE = "FIRST"`)
+
+| No. | Description | Key | Value Type | Default | Required |
+|-----|-------------|-----|------------|---------|----------|
+| 2 | First-only value | `"FIRST_VALUE"` | Number | - | Required |
+
+### Second (`TYPE = "SECOND"`)
+
+| No. | Description | Key | Value Type | Default | Required |
+|-----|-------------|-----|------------|---------|----------|
+| 3 | Second-only value | `"SECOND_VALUE"` | String | - | Required |
+""",
+        encoding="utf-8",
+    )
+
+    parsed = ex.parse_chapter(path)[0]
+    assert [(variant.field, variant.equals) for variant in parsed.variants] == [
+        ("TYPE", "FIRST"),
+        ("TYPE", "SECOND"),
+    ]
+    assert {field.key for field in parsed.tables[0].fields} == {"TYPE"}
+
+    draft = yaml.safe_load(ex.render_draft(parsed))
+    assert "unmergedTables" not in draft["extraction"]
+    assert draft["variants"][0]["when"] == {"field": "TYPE", "equals": "FIRST"}
+    assert draft["variants"][1]["fields"][0]["key"] == "SECOND_VALUE"
+
+
+def test_manual_check_compares_explicit_variant_fields(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    path = tmp_path / "99_DB_VariantCheck.md"
+    path.write_text(
+        """# 99 DB — Variant check
+
+## 1. `/db/VARIANT-CHECK` — Explicit variants
+
+| No. | Description | Key | Value Type | Default | Required |
+|-----|-------------|-----|------------|---------|----------|
+| 1 | Select shape | `"TYPE"` | String | - | Required |
+
+### First (`TYPE = "FIRST"`)
+
+| No. | Description | Key | Value Type | Default | Required |
+|-----|-------------|-----|------------|---------|----------|
+| 2 | First-only value | `"FIRST_VALUE"` | Number | 1 | Required |
+""",
+        encoding="utf-8",
+    )
+    parsed = ex.parse_chapter(path)[0]
+    contract = yaml.safe_load(ex.render_draft(parsed))
+    contract.pop("draft")
+    endpoint_dir = tmp_path / "endpoints"
+    endpoint_dir.mkdir()
+    (endpoint_dir / "db-variant-check.yaml").write_text(yaml.safe_dump(contract), encoding="utf-8")
+    monkeypatch.setattr(ex, "ENDPOINT_DIR", endpoint_dir)
+
+    assert ex.run_check([parsed]) == 0
+    contract["variants"][0]["fields"][0]["documentedDefault"] = 0
+    (endpoint_dir / "db-variant-check.yaml").write_text(yaml.safe_dump(contract), encoding="utf-8")
+    assert ex.run_check([parsed]) == 1
 
 
 def test_draft_never_answers_safe_to_omit_from_the_manual(section: ex.Section):
@@ -225,6 +298,36 @@ def test_check_reports_drift_between_a_contract_and_the_manual(section: ex.Secti
     assert set(manual) >= {"NAME", "ITEMS", "ITEMS.ITEM_NAME", "CFG.MODE"}
 
 
+def test_manual_enum_comparison_uses_array_item_values_when_applicable(tmp_path: Path):
+    """A field enum and an array-item enum are intentionally different slots."""
+    path = tmp_path / "99_DB_ArrayEnum.md"
+    path.write_text(
+        """# 99 DB — Array enum
+
+## 1. `/db/ARRAY-ENUM` — Array enum
+
+| No. | Description | Key | Value Type | Default | Required |
+|-----|-------------|-----|------------|---------|----------|
+| 1 | Modes | `"MODES"` | Array [String (enum)] | - | Required |
+
+**`MODES` values (enum):**
+
+| Value | Description |
+|-------|-------------|
+| `"A"` | A |
+| `"B"` | B |
+""",
+        encoding="utf-8",
+    )
+    field = ex.parse_chapter(path)[0].tables[0].fields[0]
+    assert field.type == "array"
+    assert field.enum == ["A", "B"]
+    assert yaml.safe_load(ex.render_draft(ex.parse_chapter(path)[0]))["fields"][0]["items"]["enum"] == [
+        "A",
+        "B",
+    ]
+
+
 METHOD_DECLARATION_FORMS = {
     "colon inside the bold": "- **Methods**: `POST`, `GET`",
     "colon outside the bold": "**Active Methods:** `POST, GET`",
@@ -266,6 +369,57 @@ def test_a_section_that_states_no_methods_stays_empty(tmp_path: Path):
     path = tmp_path / "99_DB_Silent.md"
     path.write_text("# 99 DB — Silent\n\n## 1. `/db/SYNTH` — Synthetic\n\nNo verbs anywhere.\n", encoding="utf-8")
     assert ex.parse_chapter(path)[0].methods == []
+
+
+def test_enum_values_are_read_only_when_the_same_manual_section_states_them(tmp_path: Path):
+    """Cover the three enum forms used by the manual, including nested paths."""
+    path = tmp_path / "99_DB_Enums.md"
+    path.write_text(
+        """# 99 DB — Enums
+
+## 1. `/db/ENUM` — Enum forms
+
+| No. | Description | Key | Value Type | Default | Required |
+|-----|-------------|-----|------------|---------|----------|
+| 1 | Inline choices | `"INLINE"` | String (enum: `"AUTO"`/`"MANUAL"`) | - | Required |
+| 2 | Description choices (`"LEFT"` / `"RIGHT"`) | `"DESCRIBED"` | String (enum) | - | Required |
+| 5 | Numeric choices (0=Zero / 1=One / 2=Two) | `"NUMBERED"` | Integer (enum) | - | Required |
+| 6 | Symbolic choices (FIRST=First / SECOND=Second) | `"SYMBOLIC"` | String (enum) | - | Required |
+| 3 | Settings | `"SETTINGS"` | Object | - | Required |
+| (1) | Table choices | `"KIND"` | String (enum) | - | Required |
+| 4 | Item choices | `"ITEMS"` | Array [String (enum)] | - | Required |
+
+**`SETTINGS.KIND` values (enum):**
+
+| Value | Description |
+|-------|-------------|
+| `"FIRST"` | First |
+| `"SECOND"` | Second |
+
+**`ITEMS` values (enum):**
+
+| Value | Description | Value | Description |
+|-------|-------------|-------|-------------|
+| `"ONE"` | One | `"TWO"` | Two |
+""",
+        encoding="utf-8",
+    )
+
+    parsed = ex.parse_chapter(path)[0]
+    fields = {field.key: field for field in parsed.tables[0].fields}
+    assert fields["INLINE"].enum == ["AUTO", "MANUAL"]
+    assert fields["DESCRIBED"].enum == ["LEFT", "RIGHT"]
+    assert fields["NUMBERED"].enum == [0, 1, 2]
+    assert fields["SYMBOLIC"].enum == ["FIRST", "SECOND"]
+    assert fields["SETTINGS"].properties[0].enum == ["FIRST", "SECOND"]
+    assert fields["ITEMS"].enum == ["ONE", "TWO"]
+    assert not any("values are listed elsewhere" in note for field in ex._walk(parsed.tables[0].fields) for note in field.notes)
+
+    draft = yaml.safe_load(ex.render_draft(parsed))
+    draft_fields = {field["key"]: field for field in draft["fields"]}
+    assert draft_fields["INLINE"]["enum"] == ["AUTO", "MANUAL"]
+    assert draft_fields["SETTINGS"]["properties"][0]["enum"] == ["FIRST", "SECOND"]
+    assert draft_fields["ITEMS"]["items"]["enum"] == ["ONE", "TWO"]
 
 
 def test_shipped_contracts_still_match_the_manual_if_it_is_present():

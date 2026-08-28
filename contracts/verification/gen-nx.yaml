@@ -251,3 +251,19 @@ records:
       rather than at nothing.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-write-sweep-2026-08-11
+    endpoints: []
+    date: "2026-08-11"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 08/11/2026
+    level: write
+    outcome: success
+    method: >-
+      manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. PUT with DGNCODE='AIK-SRC2K' succeeded (echoed back cleanly), then reverted with DELETE (also succeeded, echoing the deleted record) -- full round trip on the real model, no lasting mutation left behind. Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank /doc/NEW document
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md

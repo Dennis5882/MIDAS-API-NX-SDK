@@ -322,7 +322,13 @@ def _contract_interface_body(fields: list[dict[str, Any]], indent: str) -> str:
 
 
 def _contract_payload_fields() -> dict[str, list[dict[str, Any]]]:
-    """Payload fields per endpoint, from contracts/endpoints/*.yaml."""
+    """Payload fields for the contract-derived DB resource shadow path.
+
+    Plain-function and non-``/db`` resource contracts are still parity-only in
+    this migration stage.  Letting either alter the generated npm types would
+    begin the Stage 3 generator switch before its byte-identical shadow check
+    has been completed.
+    """
     contract_dir = ROOT / "contracts" / "endpoints"
     if not contract_dir.is_dir():
         return {}
@@ -331,7 +337,7 @@ def _contract_payload_fields() -> dict[str, list[dict[str, Any]]]:
     found: dict[str, list[dict[str, Any]]] = {}
     for path in sorted(contract_dir.glob("*.yaml")):
         contract = yaml.safe_load(path.read_text(encoding="utf-8"))
-        if contract.get("fields"):
+        if contract.get("endpoint", "").startswith("/db/") and contract.get("fields"):
             found[contract["endpoint"]] = contract["fields"]
     return found
 

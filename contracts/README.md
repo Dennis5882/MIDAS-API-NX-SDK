@@ -53,6 +53,25 @@ There is deliberately no value meaning "read off an SDK". Do not guess a field o
 a behaviour into existence: if the manual does not describe it and nobody has
 observed it, it does not belong in a contract.
 
+## Unknown message shapes
+
+`request.wrapper` and `response.wrapper` describe only shapes supported by the
+permitted sources. Use `unknown` for a response when the manual establishes the
+route and method but says nothing about the response body. It is not shorthand
+for `table`, `message`, or an empty body, and it must not be narrowed from an
+SDK implementation. This matters for several non-`/db` design-resource DELETE
+examples: the manual shows a bodiless `requests.delete(...)` call but does not
+state its deletion scope or response.
+
+## Explicit payload variants
+
+Use `variants` only when every additional manual table names the same wire
+discriminator and an exact value, such as ``TYPE = "EIGEN"``. Each variant
+retains its source table and line, and its fields are not merged into the common
+field list. A heading like “LINEAR only” does not establish the selector value;
+it remains in `extraction.unmergedTables` until the manual states enough to
+model it without inference.
+
 ## `documentedOptional` versus `safeToOmit`
 
 These are modelled separately, and the distinction is the single most important

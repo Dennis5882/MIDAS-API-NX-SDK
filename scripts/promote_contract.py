@@ -211,7 +211,7 @@ def _non_db_resource_is_modelled(
     methods: set[str],
     products: set[str],
     resources: dict[str, ResourceEndpoint],
-) -> str:
+) -> str | None:
     """Describe the safe next step for a non-/db ``DbResource`` draft.
 
     This is a parity classification, not a source of contract facts.  In
@@ -243,12 +243,33 @@ def _non_db_resource_is_modelled(
             f"npm resource declares products {sorted(surface.typescript.products)}, "
             f"but live/manual ledger declares {sorted(products)}"
         )
-    if "DELETE" in methods:
-        return (
-            "non-/db resource DELETE needs its own manual/live semantics; "
-            "/db/* DELETE evidence is not transferable"
+    return None
+
+
+_DELETE_BLOCK = re.compile(r"(?ms)^(  - method: DELETE\n)(.*?)(?=^  - method:|\Z)")
+
+
+def _non_db_delete_response_unknown(text: str) -> str:
+    """Keep a documented bodiless DELETE without inventing its response shape."""
+
+    def replace(match: re.Match[str]) -> str:
+        block = match.group(2)
+        if "    request:\n      wrapper: none\n" not in block:
+            return match.group(0)
+        response = "    response:\n      wrapper: table\n      keyStability: stable\n"
+        if response not in block:
+            return match.group(0)
+        block = block.replace(
+            response,
+            "    response:\n      wrapper: unknown\n"
+            "    notes: >-\n"
+            "      The manual shows a bodyless DELETE at this endpoint, but does not\n"
+            "      state the deletion scope or response shape.\n",
+            1,
         )
-    return "non-/db resource promotion is deferred until the generator shadow workflow"
+        return match.group(1) + block
+
+    return _DELETE_BLOCK.sub(replace, text)
 
 
 def promote(
@@ -305,13 +326,16 @@ def promote(
         return None
 
     methods = _draft_methods(text)
+    non_db_resource = False
     if not endpoint.startswith("/db/"):
         if endpoint in resources:
             reason = _non_db_resource_is_modelled(endpoint, methods, set(entry["products"]), resources)
-            print(f"  {slug}: refused - non-db resource parity: {reason}")
-            return None
+            if reason is not None:
+                print(f"  {slug}: refused - non-db resource parity: {reason}")
+                return None
+            non_db_resource = True
         function_reason = _plain_function_is_modelled(endpoint, methods, functions)
-        if function_reason is not None:
+        if not non_db_resource and function_reason is not None:
             print(f"  {slug}: refused - plain-function parity: {function_reason}")
             return None
 
@@ -335,6 +359,8 @@ def promote(
     text = re.sub(r"^# DRAFT contract for .*?\n(#.*\n)*\n", "", text, flags=re.MULTILINE)
     text = text.replace("draft: true   # reviewing this file is what removes this line\n", "")
     text = _HEADER.format(endpoint=endpoint) + text
+    if non_db_resource:
+        text = _non_db_delete_response_unknown(text)
 
     text = text.replace("# TODO(review): confirm against live evidence, not the manual's framing.\n", "")
     text = text.replace(
@@ -351,9 +377,17 @@ def promote(
         flags=re.MULTILINE,
     )
     text = text.replace("   # TODO(review): product_crash_risk if it has ever ended a session", "")
-    text = text.replace(
-        "    mitigation: none   # TODO(review): see /db/NODE's contract for the two DELETE forms\n", ""
+    delete_mitigation_todo = (
+        "    mitigation: none   # TODO(review): see /db/NODE's contract for the two DELETE forms\n"
     )
+    # The draft comment points at the measured /db/* delete forms.  That
+    # evidence is applicable only to /db/* resources; for other documented
+    # resources, retain the honest current mitigation instead of erasing the
+    # required destructive-operation field.
+    if endpoint.startswith("/db/"):
+        text = text.replace(delete_mitigation_todo, "")
+    else:
+        text = text.replace(delete_mitigation_todo, "    mitigation: none\n")
 
     text = re.sub(
         r"^products: \[.*\]$",

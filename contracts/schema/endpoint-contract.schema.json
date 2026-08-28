@@ -216,6 +216,11 @@
       "description": "Per-field contract for the record payload (the value side of an ID-keyed Assign map, or the request Argument object).",
       "items": { "$ref": "#/$defs/field" }
     },
+    "variants": {
+      "type": "array",
+      "description": "Mutually exclusive manual field tables selected by one explicit discriminator. A table whose condition is not stated stays under extraction.unmergedTables instead of being guessed into this structure.",
+      "items": { "$ref": "#/$defs/variant" }
+    },
     "sdkRules": {
       "type": "array",
       "description": "Behaviour every SDK implementation must apply before the request reaches the product. These are the contract's teeth: an implementation that omits one is non-conforming, however well it types the payload.",
@@ -289,8 +294,8 @@
       "required": ["wrapper"],
       "properties": {
         "wrapper": {
-          "enum": ["none", "assign", "argument", "table", "message", "raw"],
-          "description": "assign = {\"Assign\": {id: payload}}. argument = {\"Argument\": payload}. table = a single object carrying HEAD/DATA or the record map. message = {\"message\": ...}. raw = the payload itself. none = no body."
+          "enum": ["none", "assign", "argument", "table", "message", "raw", "unknown"],
+          "description": "assign = {\"Assign\": {id: payload}}. argument = {\"Argument\": payload}. table = a single object carrying HEAD/DATA or the record map. message = {\"message\": ...}. raw = the payload itself. none = no body. unknown = the permitted sources establish neither a response body nor its shape."
         },
         "keyStability": {
           "enum": ["stable", "unstable"],
@@ -409,7 +414,41 @@
         "type": {
           "enum": ["string", "number", "integer", "boolean", "array", "object"]
         },
+        "enum": {
+          "type": "array",
+          "description": "Permitted primitive values for an array item when its manual type is an enum.",
+          "items": { "type": ["string", "number", "boolean"] }
+        },
         "description": { "type": "string" }
+      }
+    },
+    "variant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["when", "source", "fields"],
+      "properties": {
+        "when": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["field", "equals"],
+          "properties": {
+            "field": { "type": "string", "minLength": 1 },
+            "equals": { "type": ["string", "number"] }
+          }
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["table", "line"],
+          "properties": {
+            "table": { "type": "string" },
+            "line": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "fields": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/field" }
+        }
       }
     },
     "sdkRule": {

@@ -137,8 +137,10 @@ _DESC_COLUMNS = {"description", "설명"}
 _TYPE_COLUMNS = {"value type", "타입", "value 타입", "type"}
 _DEFAULT_COLUMNS = {"default", "기본값", "기본값/enum"}
 _REQUIRED_COLUMNS = {"required", "필수"}
+_ENUM_VALUE_COLUMNS = {"value", "값"}
 
 _EMPTY_CELLS = {"", "-", "—", "–", "n/a", "N/A"}
+_ENUM_VALUES_ELSEWHERE = "the manual types this as an enum but the values are listed elsewhere in the chapter"
 
 # The chapters draw nesting with a box-drawing marker in the Description column.
 _DESC_TREE = re.compile(r"^[└├│─\s]+")
@@ -211,16 +213,19 @@ def _normalize_type(cell: str) -> tuple[Optional[str], Optional[dict], Optional[
     text = _clean(cell)
     if text in _EMPTY_CELLS:
         return None, None, "the manual leaves the Value Type column blank"
-    array = re.match(r"^Array\s*\[\s*([A-Za-z]+)\s*\]$", text, re.IGNORECASE)
+    array = re.match(r"^Array\s*\[\s*(.+?)\s*\]$", text, re.IGNORECASE)
     if array:
         inner, _, note = _normalize_type(array.group(1))
         return "array", ({"type": inner} if inner else None), note
     base = text.lower()
     note = None
-    enum_hint = re.match(r"^(string|integer|number)\s*\((enum|oneof|one of)\)$", base)
+    enum_hint = re.match(
+        r"^(string|integer|number)\s*(?:\(\s*(enum|oneof|one of)(?:\s*:\s*[^)]*)?\s*\)|\s+(enum|oneof|one of))$",
+        base,
+    )
     if enum_hint:
         base = enum_hint.group(1)
-        note = "the manual types this as an enum but the values are listed elsewhere in the chapter"
+        note = _ENUM_VALUES_ELSEWHERE
     if base in {"number", "double", "float"}:
         return "number", None, note
     if base in {"integer", "int"}:
@@ -234,6 +239,72 @@ def _normalize_type(cell: str) -> tuple[Optional[str], Optional[dict], Optional[
     if base.startswith("array"):
         return "array", None, "array element type not stated by the manual"
     return None, None, f"unrecognised Value Type {text!r}"
+
+
+def _enum_values_from_inline_type(cell: str) -> list[Any]:
+    """Read only explicit enum literals from a Value Type cell."""
+
+    text = _clean(cell)
+    match = re.search(r"\b(?:enum|oneof|one of)\s*:\s*(.+?)\s*\)?$", text, re.IGNORECASE)
+    if not match:
+        return []
+    return _quoted_enum_values(match.group(1))
+
+
+def _quoted_enum_values(text: str) -> list[Any]:
+    """Return explicit double-quoted enum literals, preserving their order."""
+
+    values: list[Any] = []
+    for value in re.findall(r'"([^"\\]+)"', text):
+        if value not in values:
+            values.append(value)
+    return values
+
+
+def _enum_values_from_description(text: str) -> list[Any]:
+    """Read an explicitly enumerated description without treating ranges as enums.
+
+    The manual commonly writes integer alternatives as ``0=Simplified /
+    1=General``.  Two or more distinct ``number=label`` pairs are a complete
+    finite list; a lone condition such as ``MODE=0`` or a range like ``0~20``
+    is not, so neither becomes an enum here.
+    """
+
+    quoted = _quoted_enum_values(text)
+    if quoted:
+        return quoted
+    values: list[int | float] = []
+    for literal in re.findall(r"(?<![A-Za-z0-9_.-])(-?\d+(?:\.\d+)?)\s*=", text):
+        number = float(literal)
+        value = int(number) if number.is_integer() else number
+        if value not in values:
+            values.append(value)
+    if len(values) >= 2:
+        return values
+
+    # The same cell form is used for symbolic values, for example
+    # ``Equivalent=... / Each=...``.  Requiring two distinct left-hand codes
+    # keeps a condition on another field (``CODE=Standard``) out of this
+    # field's enum.
+    symbolic: list[str] = []
+    for value in re.findall(r"(?<![A-Za-z0-9_.-])([A-Za-z][A-Za-z0-9_/-]*)\s*=", text):
+        if value not in symbolic:
+            symbolic.append(value)
+    return symbolic if len(symbolic) >= 2 else []
+
+
+def _enum_scalar(cell: str) -> Any | None:
+    """Parse a complete value-table cell, or leave non-literal prose alone."""
+
+    text = _clean(cell)
+    if re.fullmatch(r'"[^"\\]+"', text):
+        return text[1:-1]
+    if text.lower() in {"true", "false"}:
+        return text.lower() == "true"
+    if re.fullmatch(r"-?\d+(?:\.\d+)?", text):
+        number = float(text)
+        return int(number) if number.is_integer() else number
+    return None
 
 
 def _normalize_default(cell: str) -> tuple[Any, Optional[str]]:
@@ -261,6 +332,7 @@ class ParsedField:
     items: Optional[dict]
     requirement: Optional[str]
     documented_default: Any
+    enum: list[Any] = dataclass_field(default_factory=list)
     condition: Optional[str] = None
     number: str = ""
     notes: list[str] = dataclass_field(default_factory=list)
@@ -427,6 +499,51 @@ class ParsedTable:
     fields: list[ParsedField]
 
 
+@dataclass(frozen=True)
+class ParsedVariant:
+    """One manual table selected by an explicitly documented discriminator."""
+
+    field: str
+    equals: str | int | float
+    table: ParsedTable
+
+
+_VARIANT_CONDITION = re.compile(
+    r'`([A-Za-z_][A-Za-z0-9_.]*)\s*=\s*(?:"([^"]+)"|(-?\d+(?:\.\d+)?))`'
+)
+
+
+def _explicit_variants(tables: list[ParsedTable]) -> list[ParsedVariant]:
+    """Model only an all-explicit, single-discriminator set of extra tables.
+
+    A heading such as ``LINEAR only`` does not say which wire value selects the
+    table, so it must stay unmerged.  Conversely, every extra table in the set
+    must name exactly one backtick-delimited ``FIELD = VALUE`` condition and all
+    must use the same field.  That makes the resulting discriminated shape a
+    transcription, not an inference from table order or SDK code.
+    """
+
+    if len(tables) < 2:
+        return []
+    variants: list[ParsedVariant] = []
+    for table in tables[1:]:
+        matches = _VARIANT_CONDITION.findall(table.heading)
+        if len(matches) != 1:
+            return []
+        field, string, numeric = matches[0]
+        if string:
+            value: str | int | float = string
+        else:
+            number = float(numeric)
+            value = int(number) if number.is_integer() else number
+        variants.append(ParsedVariant(field, value, table))
+    if len({variant.field for variant in variants}) != 1:
+        return []
+    if len({variant.equals for variant in variants}) != len(variants):
+        return []
+    return variants
+
+
 @dataclass
 class Section:
     chapter_file: str
@@ -438,10 +555,79 @@ class Section:
     source_url: Optional[str] = None
     methods: list[str] = dataclass_field(default_factory=list)
     tables: list[ParsedTable] = dataclass_field(default_factory=list)
+    variants: list[ParsedVariant] = dataclass_field(default_factory=list)
 
     @property
     def id(self) -> str:
         return _slug(self.endpoint)
+
+
+_ENUM_TABLE_HEADING = re.compile(r"\b(?:enum|oneof|one of)\b", re.IGNORECASE)
+
+
+def _enum_tables(lines: list[str]) -> dict[str, list[Any]]:
+    """Read ``**`PATH` values (enum):**`` tables from one endpoint section."""
+
+    found: dict[str, list[Any]] = {}
+    for index, line in enumerate(lines):
+        if not _ENUM_TABLE_HEADING.search(line):
+            continue
+        paths = re.findall(r"`([A-Za-z_][A-Za-z0-9_.]*)`", line)
+        if len(paths) != 1:
+            continue
+        table = index + 1
+        while table < len(lines) and not lines[table].startswith("#"):
+            if lines[table].startswith("|") and table + 1 < len(lines) and _DIVIDER.match(lines[table + 1]):
+                break
+            table += 1
+        if table >= len(lines) or not lines[table].startswith("|"):
+            continue
+        header = [_clean(cell).lower() for cell in lines[table].strip("|").split("|")]
+        value_columns = [i for i, cell in enumerate(header) if cell in _ENUM_VALUE_COLUMNS]
+        if not value_columns:
+            continue
+        values: list[Any] = []
+        row = table + 2
+        while row < len(lines) and lines[row].startswith("|"):
+            cells = [cell.strip() for cell in lines[row].strip("|").split("|")]
+            row += 1
+            if len(cells) != len(header):
+                continue
+            for column in value_columns:
+                value = _enum_scalar(cells[column])
+                if value is not None and value not in values:
+                    values.append(value)
+        if values:
+            found[paths[0]] = values
+    return found
+
+
+def _apply_enum_values(tables: list[ParsedTable], values_by_path: dict[str, list[Any]]) -> None:
+    """Attach manual enum values to their exact field, including nested paths."""
+
+    by_path: dict[str, ParsedField] = {}
+
+    def walk(fields: list[ParsedField], prefix: str = "") -> None:
+        for field in fields:
+            path = f"{prefix}.{field.key}" if prefix else field.key
+            by_path[path] = field
+            walk(field.properties, path)
+
+    for table in tables:
+        walk(table.fields)
+
+    for path, values in values_by_path.items():
+        field = by_path.get(path)
+        if field is None:
+            continue
+        if field.enum and field.enum != values:
+            field.notes.append(
+                f"the manual gives conflicting inline and table enum values for {path!r}; review both"
+            )
+            continue
+        field.enum = values
+        if _ENUM_VALUES_ELSEWHERE in field.notes:
+            field.notes.remove(_ENUM_VALUES_ELSEWHERE)
 
 
 def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
@@ -494,6 +680,11 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
             field_type, items, note = _normalize_type(cells[type_column]) if type_column is not None else (None, None, "the table has no Value Type column")
             if note:
                 notes.append(note)
+            enum = _enum_values_from_inline_type(cells[type_column]) if type_column is not None else []
+            if not enum and note == _ENUM_VALUES_ELSEWHERE and desc_column is not None:
+                enum = _enum_values_from_description(cells[desc_column])
+            if enum and _ENUM_VALUES_ELSEWHERE in notes:
+                notes.remove(_ENUM_VALUES_ELSEWHERE)
             default, note = _normalize_default(cells[default_column]) if default_column is not None else (None, "the table has no Default column")
             if note:
                 notes.append(note)
@@ -505,6 +696,7 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                     items=items,
                     requirement=requirement,
                     documented_default=default,
+                    enum=enum,
                     condition=condition,
                     number=_clean(cells[0]) if cells else "",
                     notes=notes,
@@ -595,6 +787,8 @@ def parse_chapter(path: Path) -> list[Section]:
         if not section.methods:
             section.methods = toc_methods.get(section.endpoint, [])
         section.tables = _parse_tables(body, index)
+        _apply_enum_values(section.tables, _enum_tables(body))
+        section.variants = _explicit_variants(section.tables)
         sections.append(section)
     return sections
 
@@ -776,6 +970,8 @@ def _render_fields(
             if parsed.items and parsed.items.get("type"):
                 lines.append(f"{body}items:")
                 lines.append(f"{body}  type: {parsed.items['type']}")
+                if parsed.type == "array" and parsed.enum:
+                    lines.append(f"{body}  enum: [{', '.join(_scalar(value) for value in parsed.enum)}]")
         else:
             lines.append(f"{body}type: string   # TODO(review): the manual did not state a type")
         lines.append(
@@ -790,6 +986,8 @@ def _render_fields(
                 lines.append(f"{body}condition: \"TODO(review): the manual does not state the condition\"")
         lines.append(f"{body}documentedDefault: {_scalar(parsed.documented_default)}")
         lines.append(f"{body}documentedOptional: {'true' if parsed.requirement == 'optional' else 'false'}")
+        if parsed.enum and parsed.type != "array":
+            lines.append(f"{body}enum: [{', '.join(_scalar(value) for value in parsed.enum)}]")
 
         # safeToOmit is a claim about the product, so it is only ever answered
         # `true` here from a payload a product actually accepted without the
@@ -900,10 +1098,25 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
         lines += _render_fields(main.fields, "  ", evidence)
         lines.append("")
 
+    if section.variants:
+        lines.append("variants:")
+        for variant in section.variants:
+            lines += [
+                "  - when:",
+                f"      field: {_scalar(variant.field)}",
+                f"      equals: {_scalar(variant.equals)}",
+                "    source:",
+                f"      table: {_scalar(variant.table.heading)}",
+                f"      line: {variant.table.line}",
+                "    fields:",
+            ]
+            lines += _render_fields(variant.table.fields, "      ")
+        lines.append("")
+
     lines.append("extraction:")
     lines.append(f"  source: {section.chapter_file} line {main.line if main else '?'}")
     lines.append(f"  table: {_scalar(main.heading if main else 'none found')}")
-    if len(section.tables) > 1:
+    if len(section.tables) > 1 and not section.variants:
         lines.append("  # Additional parameter tables in this section were NOT merged. They are")
         lines.append("  # usually conditional variants selected by a type/code field. Decide")
         lines.append("  # whether they belong in this contract's fields, as nested `properties`,")
@@ -1096,6 +1309,16 @@ def run_check(sections: list[Section]) -> int:
                     f"{path.name}: {key} documentedDefault={declared.get('documentedDefault')!r}, "
                     f"manual says {manual.documented_default!r}"
                 )
+            if manual.enum and "enum" not in overridden:
+                declared_enum = (
+                    declared.get("items", {}).get("enum", [])
+                    if manual.type == "array"
+                    else declared.get("enum", [])
+                )
+                if declared_enum != manual.enum:
+                    problems.append(
+                        f"{path.name}: {key} enum={declared_enum!r}, manual says {manual.enum!r}"
+                    )
 
         for key in contract_fields:
             if key not in manual_fields and "field_name" not in overridden:
@@ -1103,6 +1326,45 @@ def run_check(sections: list[Section]) -> int:
                     f"{path.name}: the contract declares {key!r}, which the manual's table does not - "
                     f"record it under manualDefects if the manual is the one that is wrong"
                 )
+
+        if section.variants:
+            declared_variants = {
+                (variant.get("when", {}).get("field"), variant.get("when", {}).get("equals")): variant
+                for variant in contract.get("variants", [])
+            }
+            for variant in section.variants:
+                label = f"{variant.field}={variant.equals!r}"
+                declared_variant = declared_variants.get((variant.field, variant.equals))
+                if declared_variant is None:
+                    problems.append(f"{path.name}: manual variant {label} is missing from the contract")
+                    continue
+                variant_manual = _flatten_manual(variant.table.fields)
+                variant_contract = _flatten_contract(declared_variant.get("fields", []))
+                for key, manual in variant_manual.items():
+                    declared = variant_contract.get(key)
+                    if declared is None:
+                        problems.append(f"{path.name}: variant {label} omits manual field {key!r}")
+                        continue
+                    if manual.type and declared["type"] != manual.type:
+                        problems.append(
+                            f"{path.name}: variant {label} field {key} typed {declared['type']!r}, "
+                            f"manual says {manual.type!r}"
+                        )
+                    if manual.requirement and declared["requirement"] != manual.requirement:
+                        problems.append(
+                            f"{path.name}: variant {label} field {key} requirement "
+                            f"{declared['requirement']!r}, manual says {manual.requirement!r}"
+                        )
+                    if declared.get("documentedDefault") != manual.documented_default:
+                        problems.append(
+                            f"{path.name}: variant {label} field {key} documentedDefault="
+                            f"{declared.get('documentedDefault')!r}, manual says {manual.documented_default!r}"
+                        )
+                for key in variant_contract:
+                    if key not in variant_manual:
+                        problems.append(
+                            f"{path.name}: variant {label} declares {key!r}, which its manual table does not"
+                        )
 
     print(f"checked {checked} promoted contract(s) against the manual")
     for note in skipped:
