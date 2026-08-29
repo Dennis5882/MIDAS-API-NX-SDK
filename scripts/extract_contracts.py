@@ -164,6 +164,12 @@ _DESC_TREE = re.compile(r"^[└├│─\s]+")
 # from the same contract exposed it.
 _NUMBER_CHILD = re.compile(r"^\((?:\d+|[ivxlcdm]+)\)$", re.IGNORECASE)
 _NUMBER_PATH = re.compile(r"^\d+(?:-\d+)+$")
+# A small group of manual tables marks an immediate array-item member with a
+# leading dash in the Description cell (for example ITEM followed by
+# `- Time` and `- Value`).  This is deliberately narrower than treating an
+# em dash in the No. column as structure: that form also appears for ordinary
+# root rows in the load-combination manuals.
+_DESC_ARRAY_CHILD = re.compile(r"^-\s+")
 
 
 def _slug(value: str) -> str:
@@ -646,6 +652,18 @@ def _nest(flat: list[ParsedField]) -> list[ParsedField]:
 
         # The No. column decides nesting unless the key itself spells out a
         # path, which is unambiguous and wins.
+        if (
+            _DESC_ARRAY_CHILD.match(entry.description)
+            and "." not in key
+            and last_root is not None
+            and last_root.type == "array"
+        ):
+            entry.notes.append(
+                f"the manual nests this under {last_root.key!r} by a dash description row"
+            )
+            _as_container(last_root, is_array=True)
+            last_root.properties.append(entry)
+            continue
         depth = 0
         if _NUMBER_CHILD.match(entry.number):
             depth = 1
@@ -1134,22 +1152,54 @@ def _structural_fields(section: "Section") -> tuple[list[ParsedField], list[Stru
 
 def _conditional_fields(section: "Section", fields: list[ParsedField]) -> tuple[list[ParsedField], set[int]]:
     """Merge audited conditional tables without guessing a payload branch."""
-    audited: dict[str, dict[int, tuple[str, str | int | float | bool]]] = {
-        "/ope/GSBG": {1: ("BATCH", True), 2: ("BATCH", False), 3: ("DGRM_TYPE", 0)}
+    Condition = tuple[str, str | int | float | bool]
+    audited: dict[str, dict[int, tuple[tuple[Condition, ...], str | None]]] = {
+        "/db/CCFC": {
+            1: ((("TYPE", "CONST"),), 'Constant 타입 (TYPE="CONST") 추가 파라미터'),
+            2: ((("TYPE", "USER"),), 'User 타입 (TYPE="USER") 추가 파라미터'),
+        },
+        "/db/ETFC": {
+            1: ((("TYPE", "CONST"),), 'Constant 타입 (TYPE="CONST") 추가 파라미터'),
+            2: ((("TYPE", "SINE"),), 'Sine 타입 (TYPE="SINE") 추가 파라미터'),
+            3: ((("TYPE", "USER"),), 'User 타입 (TYPE="USER") 추가 파라미터'),
+        },
+        "/db/PNLA": {
+            1: ((("ELEM_TYPE", "PLATE"),), 'ELEM_TYPE = "PLATE"'),
+            2: ((("SELECT_TYPE", "IN_GROUP"),), 'SELECT_TYPE = "IN_GROUP"'),
+            3: ((("ELEM_TYPE", "SOLID"),), 'ELEM_TYPE = "SOLID"'),
+        },
+        "/db/THFC": {
+            1: ((("FUNCTYPE", 1),), "Time Function (FUNCTYPE=1) 추가 파라미터"),
+            2: ((("FUNCTYPE", 2),), "Sinusoidal (FUNCTYPE=2) 추가 파라미터"),
+        },
+        # 05_DB_Boundary.md names both gates in every global-coordinate
+        # table.  REF_SYSTEM alone is not enough: INPUT_METHOD selects the
+        # Angle, 3Points, or Vector payload field.
+        "/db/NLNK": {
+            1: ((("REF_SYSTEM", 0),), "REF_SYSTEM=0 (요소계)"),
+            2: ((("REF_SYSTEM", 1), ("INPUT_METHOD", 0)), "REF_SYSTEM=1 (전역계) – Angle 방식"),
+            3: ((("REF_SYSTEM", 1), ("INPUT_METHOD", 1)), "REF_SYSTEM=1 (전역계) – 3Points 방식"),
+            4: ((("REF_SYSTEM", 1), ("INPUT_METHOD", 2)), "REF_SYSTEM=1 (전역계) – Vector 방식"),
+        },
+        "/ope/GSBG": {
+            1: ((("BATCH", True),), None),
+            2: ((("BATCH", False),), None),
+            3: ((("DGRM_TYPE", 0),), None),
+        },
     }
     merged = copy.deepcopy(fields)
     resolved: set[int] = set()
 
-    def annotate(entries: list[ParsedField], condition: tuple[str, str | int | float | bool], raw: str) -> None:
+    def annotate(entries: list[ParsedField], conditions: tuple[Condition, ...], raw: str) -> None:
         for entry in entries:
             entry.condition = entry.condition or raw
-            entry.applies_when.append(condition)
+            entry.applies_when.extend(conditions)
 
-    for index, condition in audited.get(section.endpoint, {}).items():
+    for index, (conditions, raw) in audited.get(section.endpoint, {}).items():
         if index >= len(section.tables):
             continue
         additions = copy.deepcopy(section.tables[index].fields)
-        annotate(additions, condition, section.tables[index].heading)
+        annotate(additions, conditions, raw or section.tables[index].heading)
         if _append_fields(merged, additions):
             resolved.add(index)
     return merged, resolved

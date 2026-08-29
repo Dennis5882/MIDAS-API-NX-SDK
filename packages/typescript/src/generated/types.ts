@@ -1002,18 +1002,30 @@ export namespace DbBoundaryTypes {
     DIST_RATIO_DZ?: number;
     COUPLED_INPUT_METHOD?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface GeneralLinkPayload {
-    NODE1?: number;
-    NODE2?: number;
+    /** Node 1 ID */
+    NODE1: number;
+    /** Node 2 ID */
+    NODE2: number;
+    /** Boundary Group Name */
     GROUP_NAME?: string;
-    PROP_NAME?: string;
+    /** General Link Property Name */
+    PROP_NAME: string;
+    /** Inelastic Hinge Property Name */
     IEHP_NAME?: string;
-    REF_SYSTEM?: number;
+    /** Reference Coordinate System · 0=Element, 1=Global */
+    REF_SYSTEM: number;
+    /** Beta Angle (°) Applies when REF_SYSTEM = 0. */
     BETA_ANGLE?: number;
-    INPUT_METHOD?: number;
-    ANGLE_VALUES?: unknown;
-    POINT_VALUES?: unknown;
-    VECTOR_VALUES?: unknown;
+    /** Input Method · 0=Angle Applies when REF_SYSTEM = 1 and INPUT_METHOD = 0. */
+    INPUT_METHOD: number;
+    /** Angle Values [about X, about y', about z''] Applies when REF_SYSTEM = 1 and INPUT_METHOD = 0. */
+    ANGLE_VALUES: Array<JsonObject>;
+    /** Point Values [P0[3], P1[3], P2[3]] Applies when REF_SYSTEM = 1 and INPUT_METHOD = 1. */
+    POINT_VALUES: [JsonObject, JsonObject, JsonObject];
+    /** Vector Points [V1[3], V2[3]] Applies when REF_SYSTEM = 1 and INPUT_METHOD = 2. */
+    VECTOR_VALUES: [JsonObject, JsonObject];
   }
   /** Generated from contracts/endpoints/. */
   export interface GeneralLinkHyperSPayload {
@@ -1541,22 +1553,47 @@ export namespace DbConstructionStageTypes {
       CREEP: number;
     }>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface AmbientTemperatureFunctionPayload {
-    NAME?: string;
-    TYPE?: string;
+    /** 함수명 */
+    NAME: string;
+    /** 함수 타입 ("CONST" / "SINE" / "USER") */
+    TYPE: string;
+    /** 온도 Applies when TYPE = "CONST". */
     TEMP?: number;
+    /** 최대 온도 (T) Applies when TYPE = "SINE". */
     MAX_TEMP?: number;
+    /** 평균 온도 (To) Applies when TYPE = "SINE". */
     MEAN_TEMP?: number;
+    /** 지연 시간 (to) Applies when TYPE = "SINE". */
     DELAY_TIME?: number;
-    SCALE_FACTOR?: number;
-    ITEM?: Array<DbBaseTypes.TimeValuePoint>;
+    /** 스케일 계수 Applies when TYPE = "USER". */
+    SCALE_FACTOR: number;
+    /** 함수 데이터 목록 Applies when TYPE = "USER". */
+    ITEM: Array<{
+      /** - 시간 */
+      TIME: number;
+      /** - 온도 */
+      VALUE: number;
+    }>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ConvectionCoefficientFunctionPayload {
-    NAME?: string;
-    TYPE?: string;
-    COEF?: number;
-    SCALE_FACTOR?: number;
-    ITEM?: Array<DbBaseTypes.TimeValuePoint>;
+    /** 함수명 */
+    NAME: string;
+    /** 함수 타입 ("CONST" / "USER") */
+    TYPE: string;
+    /** 대류 계수 Applies when TYPE = "CONST". */
+    COEF: number;
+    /** 스케일 계수 Applies when TYPE = "USER". */
+    SCALE_FACTOR: number;
+    /** 함수 데이터 목록 Applies when TYPE = "USER". */
+    ITEM: Array<{
+      /** - 시간 */
+      TIME: number;
+      /** - 대류 계수 */
+      VALUE: number;
+    }>;
   }
   export interface ElementConvectionBoundaryItem extends DbBaseTypes.ItemGroupFields {
     FACE_NO?: number;
@@ -2088,21 +2125,41 @@ export namespace DbDynamicLoadsTypes {
     INC_CTRL?: unknown;
     TIME_PARAM?: unknown;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TimeHistoryFunctionPayload {
-    NAME?: string;
+    /** 함수명 */
+    NAME: string;
+    /** 설명 */
     DESC?: string;
-    iTYPE?: number;
-    GRAV?: number;
-    FUNCTYPE?: number;
-    iMETHOD?: number;
-    SCALE?: number;
+    /** 데이터 타입 (1=정규화가속도, 2=가속도, 3=힘, 4=모멘트, 5=Normal) */
+    iTYPE: number;
+    /** 중력 가속도 */
+    GRAV: number;
+    /** 함수 타입 (1=Time Function, 2=Sinusoidal) */
+    FUNCTYPE: number;
+    /** 스케일 방법 (0=Scale Factor, 1=Max Value) Applies when FUNCTYPE = 1. */
+    iMETHOD: number;
+    /** 스케일 계수 (iMETHOD=0 시) Applies when FUNCTYPE = 1. */
+    SCALE: number;
+    /** 최대 값 (iMETHOD=1 시) Applies when FUNCTYPE = 1. */
     MAXVALUE?: number;
-    aFUNCDATA?: Array<DbBaseTypes.TimeValuePoint>;
-    CONS_A?: number;
-    CONS_C?: number;
-    FREQUENCY?: number;
-    DAMP_FACTOR?: number;
-    PHASE_ANGLE?: number;
+    /** 시간-값 데이터 목록 Applies when FUNCTYPE = 1. */
+    aFUNCDATA: Array<{
+      /** 시간 */
+      TIME: number;
+      /** 값 */
+      VALUE: number;
+    }>;
+    /** 상수 A Applies when FUNCTYPE = 2. */
+    CONS_A: number;
+    /** 상수 C Applies when FUNCTYPE = 2. */
+    CONS_C: number;
+    /** 주파수 Applies when FUNCTYPE = 2. */
+    FREQUENCY: number;
+    /** 감쇠 계수 Applies when FUNCTYPE = 2. */
+    DAMP_FACTOR: number;
+    /** 위상각 Applies when FUNCTYPE = 2. */
+    PHASE_ANGLE: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface GroundAccelerationPayload {
@@ -4975,22 +5032,39 @@ export namespace DbStaticLoadsTypes {
     LINELOAD?: unknown;
     AREALOAD?: unknown;
   }
+  /** Generated from contracts/endpoints/. */
   export interface PlaneLoadPayload {
-    LCNAME?: string;
-    LOAD_GROUP?: string;
-    PNLD_KEY?: number;
-    ELEM_TYPE?: string;
-    POINT_ORIGIN?: Array<number>;
-    AXIS_X?: Array<number>;
-    AXIS_Y?: Array<number>;
-    TOL?: number;
-    SELECT_TYPE?: string;
-    LOAD_DIR?: string;
-    PROJECT_TYPE?: string;
+    /** Load Case Name */
+    LCNAME: string;
+    /** Load Group Name */
+    LOAD_GROUP: string;
+    /** Defined Plane Load Key */
+    PNLD_KEY: number;
+    /** Element Type ("PLATE" / "SOLID") */
+    ELEM_TYPE: string;
+    /** First Point / Origin [x, y, z] */
+    POINT_ORIGIN: [number, number, number];
+    /** Second Point / on x-Axis [x, y, z] */
+    AXIS_X: [number, number, number];
+    /** Third Point / on x-y Plane [x, y, z] */
+    AXIS_Y: [number, number, number];
+    /** Tolerance */
+    TOL: number;
+    /** Element Selection ("ON_PLANE" / "IN_GROUP") */
+    SELECT_TYPE: string;
+    /** Load Direction ("NORMAL_PLANE" / "NORMAL_ELEM" / "GLOBAL_X" / "GLOBAL_Y" / "GLOBAL_Z") */
+    LOAD_DIR: string;
+    /** Projection Type ("NO" / "LOAD_DIR" / "LOAD_PLANE") */
+    PROJECT_TYPE: string;
+    /** Description */
     DESC?: string;
+    /** Node Defining Loading Area Applies when ELEM_TYPE = "PLATE". */
     bDEFINE_NODE?: boolean;
-    CONNECT_NODE?: Array<number>;
+    /** Loading Boundary Connecting Node Applies when ELEM_TYPE = "PLATE". */
+    CONNECT_NODE?: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
+    /** Element Group Name Applies when SELECT_TYPE = "IN_GROUP". */
     ELEM_GROUP?: string;
+    /** Solid Face No. (1~6) Applies when ELEM_TYPE = "SOLID". */
     FACE_NO?: number;
   }
   export interface FloorLoadTypeItem {

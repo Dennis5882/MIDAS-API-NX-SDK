@@ -461,6 +461,108 @@ def test_conditional_variant_tables_are_reported_not_merged(section: ex.Section)
     assert section.tables[1].heading == "TYPE=SPECIAL 전용"
 
 
+@pytest.mark.parametrize(
+    ("endpoint", "extra_headings", "expected"),
+    [
+        pytest.param(
+            "/db/CCFC",
+            ['Constant 타입 (TYPE="CONST")', 'User 타입 (TYPE="USER")'],
+            [("CONST_FIELD", [("TYPE", "CONST")]), ("USER_FIELD", [("TYPE", "USER")])],
+            id="exclusive-string-type-tables",
+        ),
+        pytest.param(
+            "/db/ETFC",
+            ['Constant 타입 (TYPE="CONST")', 'Sine 타입 (TYPE="SINE")', 'User 타입 (TYPE="USER")'],
+            [
+                ("CONST_FIELD", [("TYPE", "CONST")]),
+                ("SINE_FIELD", [("TYPE", "SINE")]),
+                ("USER_FIELD", [("TYPE", "USER")]),
+            ],
+            id="three-way-exclusive-string-type-tables",
+        ),
+        pytest.param(
+            "/db/PNLA",
+            ['ELEM_TYPE = "PLATE"', 'SELECT_TYPE = "IN_GROUP"', 'ELEM_TYPE = "SOLID"'],
+            [
+                ("PLATE_FIELD", [("ELEM_TYPE", "PLATE")]),
+                ("GROUP_FIELD", [("SELECT_TYPE", "IN_GROUP")]),
+                ("SOLID_FIELD", [("ELEM_TYPE", "SOLID")]),
+            ],
+            id="independent-string-selector-tables",
+        ),
+        pytest.param(
+            "/db/THFC",
+            ["Time Function (FUNCTYPE=1)", "Sinusoidal (FUNCTYPE=2)"],
+            [("TIME_FIELD", [("FUNCTYPE", 1)]), ("SINE_FIELD", [("FUNCTYPE", 2)])],
+            id="exclusive-integer-type-tables",
+        ),
+        pytest.param(
+            "/db/NLNK",
+            [
+                "REF_SYSTEM=0 (element)",
+                "REF_SYSTEM=1 (global) - angle",
+                "REF_SYSTEM=1 (global) - 3Points",
+                "REF_SYSTEM=1 (global) - vector",
+            ],
+            [
+                ("ELEMENT_FIELD", [("REF_SYSTEM", 0)]),
+                ("ANGLE_FIELD", [("REF_SYSTEM", 1), ("INPUT_METHOD", 0)]),
+                ("POINTS_FIELD", [("REF_SYSTEM", 1), ("INPUT_METHOD", 1)]),
+                ("VECTOR_FIELD", [("REF_SYSTEM", 1), ("INPUT_METHOD", 2)]),
+            ],
+            id="nested-integer-selectors-use-and-semantics",
+        ),
+    ],
+)
+def test_audited_conditional_table_forms_keep_source_text_and_structured_conditions(
+    endpoint: str,
+    extra_headings: list[str],
+    expected: list[tuple[str, list[tuple[str, str | int]]]],
+):
+    base = ex.ParsedField("BASE", "Base", "string", None, "required", None)
+    tables = [ex.ParsedTable("Base", 1, [base])]
+    for index, heading in enumerate(extra_headings, 1):
+        key = expected[index - 1][0]
+        field = ex.ParsedField(key, key, "number", None, "required", None)
+        tables.append(ex.ParsedTable(heading, index + 1, [field]))
+    section = ex.Section("manual.md", "1", endpoint, endpoint, endpoint, [], tables=tables)
+
+    fields, resolved = ex._conditional_fields(section, [base])
+
+    assert resolved == set(range(1, len(tables)))
+    by_key = {field.key: field for field in fields}
+    for key, conditions in expected:
+        assert by_key[key].applies_when == conditions
+        assert by_key[key].condition
+
+
+@pytest.mark.parametrize(
+    ("parent_type", "expect_child"),
+    [
+        pytest.param("Array[Object]", True, id="dash-row-after-array-is-an-item-property"),
+        pytest.param("Object", False, id="dash-row-after-non-array-is-not-inferred"),
+    ],
+)
+def test_dash_number_row_only_nests_under_an_explicit_array(parent_type: str, expect_child: bool, tmp_path: Path):
+    """The manual's dash marker is structural only with its Array parent."""
+    path = tmp_path / "99_DB_DashArray.md"
+    path.write_text(
+        "## 1. `/db/DASH-ARRAY` -- dash array rows\n\n"
+        "| No. | Description | Key | Value Type | Default | Required |\n"
+        "|---|---|---|---|---|---|\n"
+        f'| 1 | Values | `ITEM` | {parent_type} | - | Required |\n'
+        "| 2 | - Time | `TIME` | Number | - | Required |\n",
+        encoding="utf-8",
+    )
+
+    fields = ex.parse_chapter(path)[0].tables[0].fields
+    if expect_child:
+        assert [field.key for field in fields] == ["ITEM"]
+        assert [field.key for field in fields[0].properties] == ["TIME"]
+    else:
+        assert [field.key for field in fields] == ["ITEM", "TIME"]
+
+
 def test_structural_table_merge_uses_the_manual_named_object_path(tmp_path: Path):
     """A structural table goes below TCELEM, never beside it at record root."""
     path = tmp_path / "99_DB_Structural.md"
