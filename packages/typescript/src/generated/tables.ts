@@ -774,6 +774,34 @@ export const tableTypes = {
     /** Local coordinate system */
     localCoordinateSystem: "DISPLACEMENTL",
   },
+  elementWeightTable: {
+    /** Element Weight Table */
+    elementWeightTable: "ELEMENTWEIGHT",
+  },
+  loadSummaryTable: {
+    /** X direction */
+    xDirection: "LOAD_SUMMARY_X",
+    /** Y direction */
+    yDirection: "LOAD_SUMMARY_Y",
+    /** Z direction */
+    zDirection: "LOAD_SUMMARY_Z",
+  },
+  massSummaryTable: {
+    /** X direction */
+    xDirection: "MASS_SUMMARY_X",
+    /** Y direction */
+    yDirection: "MASS_SUMMARY_Y",
+    /** Z direction */
+    zDirection: "MASS_SUMMARY_Z",
+  },
+  materialTable: {
+    /** Material properties */
+    materialProperties: "MATERIAL",
+  },
+  nodalBodyForceTable: {
+    /** Nodal body force */
+    nodalBodyForce: "NODALBODYFORCE",
+  },
   reaction: {
     /** Global coordinate system */
     globalCoordinateSystem: "REACTIONG",
@@ -781,5 +809,53 @@ export const tableTypes = {
     localCoordinateSystem: "REACTIONL",
     /** Local - surface spring */
     localSurfaceSpring: "REACTIONSURFACESPRING",
+  },
+  restraintSupportsTable: {
+    /** Restraint supports */
+    restraintSupports: "SUPPORTS",
+  },
+  sectionTable: {
+    /** All sections */
+    allSections: "SECTIONALL",
+    /** Combined sections */
+    combinedSections: "SECTIONCOMBINED",
+    /** Composite sections */
+    compositeSections: "SECTIONCOMPOSITE",
+    /** Construction sections */
+    constructionSections: "SECTIONCONSTRUCTION",
+    /** DB/User sections */
+    dBUserSections: "SECTIONDB/USER",
+    /** PSC sections */
+    pSCSections: "SECTIONPSC",
+    /** SRC sections */
+    sRCSections: "SECTIONSRC",
+    /** Steel girder sections */
+    steelGirderSections: "SECTIONSTEELGIRDER",
+    /** Tapered sections */
+    taperedSections: "SECTIONTAPERED",
+    /** Value sections */
+    valueSections: "SECTIONVALUE",
+  },
+  storyLoadSummaryTable: {
+    /** X-direction story load */
+    xDirectionStoryLoad: "STORY_LOAD_X",
+    /** Y-direction story load */
+    yDirectionStoryLoad: "STORY_LOAD_Y",
+    /** Z-direction story load */
+    zDirectionStoryLoad: "STORY_LOAD_Z",
+  },
+  storyMassSummaryTable: {
+    /** Combined directional story mass */
+    combinedDirectionalStoryMass: "STORY_MASS",
+    /** X-direction story mass */
+    xDirectionStoryMass: "STORY_MASS_X",
+    /** Y-direction story mass */
+    yDirectionStoryMass: "STORY_MASS_Y",
+    /** Z-direction story mass */
+    zDirectionStoryMass: "STORY_MASS_Z",
+  },
+  storyWeightTable: {
+    /** Story weights by element category */
+    storyWeightsByElementCategory: "STORYWEIGHT",
   },
 } as const;
