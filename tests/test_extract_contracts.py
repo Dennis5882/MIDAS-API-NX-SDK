@@ -1311,6 +1311,34 @@ def test_repeated_child_key_is_retained_under_each_numbered_parent(tmp_path: Pat
     assert [field.key for field in fields[1].properties] == ["CODE"]
 
 
+@pytest.mark.parametrize(
+    ("table_default", "schema_default", "has_note"),
+    [
+        pytest.param("AUTO", '"AUTO"', False, id="matching_schema_string_confirms_bare_default"),
+        pytest.param("AUTO", '"MANUAL"', True, id="different_schema_default_stays_unverified"),
+    ],
+)
+def test_schema_default_confirms_only_the_same_bare_table_default(
+    table_default: str, schema_default: str, has_note: bool, tmp_path: Path
+):
+    path = tmp_path / "99_DB_BareDefault.md"
+    path.write_text(
+        "## 1. `/db/BARE-DEFAULT` -- Bare default\n\n"
+        "### JSON Schema\n\n```json\n"
+        '{"type":"object","properties":{"Assign":{"type":"object","properties":{"MODE":{"type":"string","default":'
+        + schema_default
+        + "}}}}}\n```\n\n"
+        "| No. | Description | Key | Value Type | Default | Required |\n"
+        "|-----|-------------|-----|------------|---------|----------|\n"
+        f"| 1 | Mode | `MODE` | String | {table_default} | Optional |\n",
+        encoding="utf-8",
+    )
+
+    mode = ex.parse_chapter(path)[0].tables[0].fields[0]
+    assert mode.documented_default == table_default
+    assert any(note.startswith("non-literal default ") for note in mode.notes) is has_note
+
+
 def test_shipped_contracts_still_match_the_manual_if_it_is_present():
     """Runs only where the sibling manual repo is checked out - CI does both."""
     manual_repo = ex.DEFAULT_MANUAL_REPO

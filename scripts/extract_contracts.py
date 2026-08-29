@@ -1581,9 +1581,20 @@ def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], 
                         field.notes.remove(conditional_note)
 
                 default = _agreed_schema_value(property_entries, "default")
-                if "the table has no Default column" in field.notes and default is not None:
-                    field.documented_default = default
-                    field.notes.remove("the table has no Default column")
+                if default is not None:
+                    if "the table has no Default column" in field.notes:
+                        field.documented_default = default
+                        field.notes.remove("the table has no Default column")
+                    # A bare string in a Markdown Default cell is ambiguous
+                    # by itself (``System`` may be a UI label). The same
+                    # section's JSON Schema ``default`` makes it an exact
+                    # documented wire value, but only if both sources agree.
+                    nonliteral_notes = [
+                        note for note in field.notes if note.startswith("non-literal default ")
+                    ]
+                    if field.documented_default == default and nonliteral_notes:
+                        for note in nonliteral_notes:
+                            field.notes.remove(note)
 
                 schema_enums = [_schema_enum_values(entry) for entry in property_entries]
                 enum = schema_enums[0] if schema_enums and all(value == schema_enums[0] for value in schema_enums) else None
