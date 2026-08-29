@@ -1651,10 +1651,16 @@ def _parallel_field_cells(
             # Optional``: there the singleton Required value cannot safely be
             # assigned to either differently typed key. The former is an exact
             # compact table notation for homogeneous vector components, so
-            # repeat its complete shared claim for every literal key.
+            # repeat its complete shared claim for every literal key. A
+            # key/description/type-only child table also makes this unambiguous:
+            # it has no Default or Required columns that could vary by key.
             if (
                 len(quoted) == len(keys)
-                and ("/" not in raw_key or _NUMBER_CHILD.match(_clean(number)) is not None)
+                and (
+                    "/" not in raw_key
+                    or _NUMBER_CHILD.match(_clean(number)) is not None
+                    or (default_cell is None and required_cell is None)
+                )
                 and all(cell is None or "/" not in _clean(cell) for cell in columns)
             ):
                 parts = [None if cell is None else [_clean(cell)] * len(keys) for cell in columns]

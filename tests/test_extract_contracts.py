@@ -367,6 +367,25 @@ def test_literal_key_groups_with_shared_metadata_are_split(
     assert all(field.type == "number" and field.documented_default == 0 for field in fields)
 
 
+def test_key_type_only_table_splits_quoted_literal_group_without_a_child_number(tmp_path: Path):
+    """A three-column child table gives one homogeneous type for every literal key."""
+
+    path = tmp_path / "99_DB_KeyTypeGroup.md"
+    path.write_text(
+        """## 1. `/db/GROUP` -- literal keys
+
+| Key | Description | Value Type |
+|---|---|---|
+| `"RC_C1L1"`/`"RC_C1F1"`/`"RC_C1L2"`/`"RC_C1F2"` | Case values | Number |
+""",
+        encoding="utf-8",
+    )
+
+    fields = ex.parse_chapter(path)[0].tables[0].fields
+    assert [field.key for field in fields] == ["RC_C1L1", "RC_C1F1", "RC_C1L2", "RC_C1F2"]
+    assert all(field.type == "number" for field in fields)
+
+
 @pytest.mark.parametrize(
     ("manual_key", "contract_key"),
     [
