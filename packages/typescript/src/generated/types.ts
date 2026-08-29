@@ -1631,19 +1631,37 @@ export namespace DbConstructionStageTypes {
       TEMPER: number;
     }>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface HeatSourceFunctionPayload {
-    NAME?: string;
-    TYPE?: string;
+    /** 함수명 */
+    NAME: string;
+    /** 함수 타입 ("CONST" / "FUNC" / "USER") */
+    TYPE: string;
+    /** 열원 온도 Applies when TYPE = "CONST". */
     TEMP_CONST?: number;
+    /** 콘크리트 데이터 사용 여부 (false) Applies when TYPE = "FUNC". */
     OPT_USE_CONC_DATA?: boolean;
+    /** 최대 단열 온도 상승 (K) Applies when TYPE = "FUNC" and OPT_USE_CONC_DATA = false. */
     K?: number;
+    /** 반응 속도 계수 (a) Applies when TYPE = "FUNC" and OPT_USE_CONC_DATA = false. */
     ALPHA?: number;
+    /** 시멘트 타입 (0=보통, 1=중용열, 2=조기강도, 3=고로슬래그, 4=플라이애시) Applies when TYPE = "FUNC" and OPT_USE_CONC_DATA = true. */
     CEMENT_TYPE?: number;
+    /** 온도 (0=10°C, 1=20°C, 2=30°C) Applies when TYPE = "FUNC" and OPT_USE_CONC_DATA = true. */
     TEMP_FUNC?: number;
+    /** 시멘트 함유량 Applies when TYPE = "FUNC" and OPT_USE_CONC_DATA = true. */
     CEMENT_CONT?: number;
+    /** 데이터 타입 (false=열원, true=온도) Applies when TYPE = "USER". */
     IS_ADIABATIC_TEMP?: boolean;
-    SCALE_FACTOR?: number;
-    ITEM?: Array<DbBaseTypes.TimeValuePoint>;
+    /** 스케일 계수 Applies when TYPE = "USER". */
+    SCALE_FACTOR: number;
+    /** 함수 데이터 목록 Applies when TYPE = "USER". */
+    ITEM: Array<{
+      /** - 시간 */
+      TIME: number;
+      /** - 값 (온도 또는 열원) */
+      VALUE: number;
+    }>;
   }
   /** Generated from contracts/endpoints/. */
   export interface AssignHeatSourcePayload {
@@ -3076,18 +3094,51 @@ export namespace DbMovingLoadsTypes {
     MAX_NUM_LOADED_LANES?: number;
     SELECTED_LANES?: Array<string>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadCaseIndiaPayload {
-    LCNAME?: string;
+    /** Load Case Name */
+    LCNAME: string;
+    /** Description */
     DESC?: string;
-    SCALE_FACTOR?: Array<number>;
+    /** Multiple Presence Factor [1-2, 3, 4, ≥5] */
+    SCALE_FACTOR: [number, number, number, number];
+    /** Auto Live Load Combinations */
     OPT_AUTO_LL?: boolean;
+    /** Load Cases for Permit Vehicle */
     OPT_LC_FOR_PERMIT_LOAD?: boolean;
-    NUM_LOADED_LANES?: number;
-    SUB_LOAD_ITEMS?: Array<MovingLoadCaseIndiaSubLoadItem>;
-    PERMIT_VEHICLE?: number;
-    REF_LANE?: number;
-    ECCEN?: number;
-    PERMIT_SCALE_FACTOR?: number;
+    /** Number of Loaded Lanes */
+    NUM_LOADED_LANES: number;
+    /** Sub-Load Cases */
+    SUB_LOAD_ITEMS: Array<{
+      /** Min. Number of Loaded Lanes */
+      MIN_NUM_LOADED_LANES: number;
+      /** Max. Number of Loaded Lanes */
+      MAX_NUM_LOADED_LANES: number;
+      /** Vehicle */
+      VEHICLE_CLASS_1: string;
+      /** Selected Lanes */
+      SELECTED_LANES: Array<string>;
+      /** Scale Factor Applies when OPT_AUTO_LL = true. */
+      SCALE_FACTOR: number;
+      /** Vehicle Class II Applies when OPT_AUTO_LL = true. */
+      VEHICLE_CLASS_2: string;
+      /** Vehicle Footway Applies when OPT_AUTO_LL = true. */
+      FOOTWAY: string;
+      /** Carriageway Width Applies when OPT_AUTO_LL = true. */
+      CARRIAGE_WAY_WIDTH?: number;
+      /** Carriageway Loading Applies when OPT_AUTO_LL = true. */
+      CARRIAGE_WAY_LOADING?: number;
+      /** Selected Lanes for Footway Applies when OPT_AUTO_LL = true. */
+      SELECTED_FOOTWAY_LANES: Array<string>;
+    }>;
+    /** Permit Vehicle ID Applies when OPT_LC_FOR_PERMIT_LOAD = true. */
+    PERMIT_VEHICLE: number;
+    /** Reference Lane ID Applies when OPT_LC_FOR_PERMIT_LOAD = true. */
+    REF_LANE: number;
+    /** Eccentricity Applies when OPT_LC_FOR_PERMIT_LOAD = true. */
+    ECCEN: number;
+    /** Scale Factor Applies when OPT_LC_FOR_PERMIT_LOAD = true. */
+    PERMIT_SCALE_FACTOR: number;
   }
   export interface MovingLoadCaseBsStraddleLaneItem {
     STARDD_LANE_1?: string;

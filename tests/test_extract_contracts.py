@@ -512,6 +512,22 @@ def test_conditional_variant_tables_are_reported_not_merged(section: ex.Section)
             ],
             id="nested-integer-selectors-use-and-semantics",
         ),
+        pytest.param(
+            "/db/HSFC",
+            [
+                'Constant (TYPE="CONST")',
+                'Code (TYPE="FUNC", OPT_USE_CONC_DATA=false)',
+                'Code (TYPE="FUNC", OPT_USE_CONC_DATA=true)',
+                'User (TYPE="USER")',
+            ],
+            [
+                ("CONST_FIELD", [("TYPE", "CONST")]),
+                ("FUNC_FALSE_FIELD", [("TYPE", "FUNC"), ("OPT_USE_CONC_DATA", False)]),
+                ("FUNC_TRUE_FIELD", [("TYPE", "FUNC"), ("OPT_USE_CONC_DATA", True)]),
+                ("USER_FIELD", [("TYPE", "USER")]),
+            ],
+            id="nested-boolean-selector-tables",
+        ),
     ],
 )
 def test_audited_conditional_table_forms_keep_source_text_and_structured_conditions(
@@ -561,6 +577,36 @@ def test_dash_number_row_only_nests_under_an_explicit_array(parent_type: str, ex
         assert [field.key for field in fields[0].properties] == ["TIME"]
     else:
         assert [field.key for field in fields] == ["ITEM", "TIME"]
+
+
+def test_conditional_array_table_merges_only_into_its_named_item_path():
+    """MVLDid's Auto table extends SUB_LOAD_ITEMS; it never creates root keys."""
+    base_item = ex.ParsedField("BASE", "base", "string", None, "required", None)
+    sub_load_items = ex.ParsedField("SUB_LOAD_ITEMS", "items", "array", {"type": "object"}, "required", None)
+    sub_load_items.properties = [base_item]
+    auto_sub_load_items = ex.ParsedField("SUB_LOAD_ITEMS", "items", "array", {"type": "object"}, "required", None)
+    auto_extra = ex.ParsedField("VEHICLE_CLASS_2", "auto-only", "string", None, "required", None)
+    auto_sub_load_items.properties = [auto_extra]
+    tables = [
+        ex.ParsedTable("Parameters", 1, [sub_load_items]),
+        ex.ParsedTable("Auto Live Load Combinations", 2, [
+            ex.ParsedField("NUM_LOADED_LANES", "count", "integer", None, "required", None),
+            auto_sub_load_items,
+        ]),
+        ex.ParsedTable("Permit Vehicle", 3, [
+            ex.ParsedField("PERMIT_VEHICLE", "permit", "integer", None, "required", None),
+        ]),
+    ]
+    section = ex.Section("manual.md", "1", "/db/MVLDid", "Moving Load Cases – India", "manual", [], tables=tables)
+
+    fields, resolved = ex._conditional_fields(section, tables[0].fields)
+
+    assert resolved == {1, 2}
+    assert [field.key for field in fields] == ["SUB_LOAD_ITEMS", "PERMIT_VEHICLE"]
+    child = fields[0].properties[1]
+    assert child.key == "VEHICLE_CLASS_2"
+    assert child.applies_when == [("OPT_AUTO_LL", True)]
+    assert fields[1].applies_when == [("OPT_LC_FOR_PERMIT_LOAD", True)]
 
 
 def test_structural_table_merge_uses_the_manual_named_object_path(tmp_path: Path):

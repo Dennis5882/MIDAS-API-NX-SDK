@@ -1172,6 +1172,28 @@ def _conditional_fields(section: "Section", fields: list[ParsedField]) -> tuple[
             1: ((("FUNCTYPE", 1),), "Time Function (FUNCTYPE=1) 추가 파라미터"),
             2: ((("FUNCTYPE", 2),), "Sinusoidal (FUNCTYPE=2) 추가 파라미터"),
         },
+        "/db/HSFC": {
+            1: ((("TYPE", "CONST"),), 'Constant 타입 (TYPE="CONST") 추가 파라미터'),
+            2: (
+                (("TYPE", "FUNC"), ("OPT_USE_CONC_DATA", False)),
+                'Code 타입 (TYPE="FUNC") - 콘크리트 데이터 미사용 (OPT_USE_CONC_DATA=false)',
+            ),
+            3: (
+                (("TYPE", "FUNC"), ("OPT_USE_CONC_DATA", True)),
+                'Code 타입 (TYPE="FUNC") - 콘크리트 데이터 사용 (OPT_USE_CONC_DATA=true)',
+            ),
+            4: ((("TYPE", "USER"),), 'User 타입 (TYPE="USER") 추가 파라미터'),
+        },
+        "/db/MVLDid": {
+            1: (
+                (("OPT_AUTO_LL", True),),
+                "Auto Live Load Combinations (OPT_AUTO_LL=true)",
+            ),
+            2: (
+                (("OPT_LC_FOR_PERMIT_LOAD", True),),
+                "Permit Vehicle (OPT_LC_FOR_PERMIT_LOAD=true)",
+            ),
+        },
         # 05_DB_Boundary.md names both gates in every global-coordinate
         # table.  REF_SYSTEM alone is not enough: INPUT_METHOD selects the
         # Angle, 3Points, or Vector payload field.
@@ -1190,6 +1212,22 @@ def _conditional_fields(section: "Section", fields: list[ParsedField]) -> tuple[
     merged = copy.deepcopy(fields)
     resolved: set[int] = set()
 
+    # HSFC documents OPT_USE_CONC_DATA in both FUNC subtables.  Its own
+    # applicability is TYPE=FUNC, while its value selects the sibling field
+    # set.  Do not assign either false or true branch to the shared selector.
+    shared_selector_conditions: dict[tuple[str, int, str], tuple[tuple[Condition, ...], str]] = {
+        ("/db/HSFC", 2, "OPT_USE_CONC_DATA"): ((("TYPE", "FUNC"),), 'Code 타입 (TYPE="FUNC")'),
+        ("/db/HSFC", 3, "OPT_USE_CONC_DATA"): ((("TYPE", "FUNC"),), 'Code 타입 (TYPE="FUNC")'),
+    }
+    # The India moving-load manual repeats SUB_LOAD_ITEMS for the Auto Live
+    # Load case and adds item members below it.  The named Array parent already
+    # exists in the general-load table, so merge only the documented item
+    # members at that path.  Treating them as root fields would recreate the
+    # RIGD/OFFS flattening defect.
+    conditional_child_paths: dict[tuple[str, int], tuple[str, ...]] = {
+        ("/db/MVLDid", 1): ("SUB_LOAD_ITEMS",),
+    }
+
     def annotate(entries: list[ParsedField], conditions: tuple[Condition, ...], raw: str) -> None:
         for entry in entries:
             entry.condition = entry.condition or raw
@@ -1199,7 +1237,23 @@ def _conditional_fields(section: "Section", fields: list[ParsedField]) -> tuple[
         if index >= len(section.tables):
             continue
         additions = copy.deepcopy(section.tables[index].fields)
-        annotate(additions, conditions, raw or section.tables[index].heading)
+        child_path = conditional_child_paths.get((section.endpoint, index))
+        if child_path is not None:
+            source = next((field for field in additions if field.key == child_path[-1]), None)
+            destination = _field_at_path(merged, child_path)
+            if source is None or destination is None:
+                continue
+            annotate(source.properties, conditions, raw or section.tables[index].heading)
+            if not _append_fields(destination.properties, source.properties):
+                continue
+            additions.remove(source)
+            # NUM_LOADED_LANES is a repeated scalar whose base declaration
+            # already applies to every payload shape.  Its Auto table does not
+            # add a distinct field, whereas SUB_LOAD_ITEMS adds item members.
+            additions = [field for field in additions if field.key != "NUM_LOADED_LANES"]
+        for addition in additions:
+            special = shared_selector_conditions.get((section.endpoint, index, addition.key))
+            annotate([addition], *(special or (conditions, raw or section.tables[index].heading)))
         if _append_fields(merged, additions):
             resolved.add(index)
     return merged, resolved
