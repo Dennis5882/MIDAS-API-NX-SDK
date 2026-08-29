@@ -768,6 +768,46 @@ export const tableTypes = {
     /** Beam member force under static prestress */
     beamMemberForceUnderStaticPrestress: "BEAMFORCESTP",
   },
+  beamForce: {
+    /** Beam force by member part */
+    beamForceByMemberPart: "BEAMFORCE",
+    /** Beam force by maximum value */
+    beamForceByMaximumValue: "BEAMFORCEVBM",
+  },
+  beamStressEquivalent: {
+    /** Detailed equivalent beam stress */
+    detailedEquivalentBeamStress: "BEAMSTRESSDETAIL",
+  },
+  beamStressPSC: {
+    /** PSC beam stress */
+    pSCBeamStress: "BEAMSTRESSPSC",
+    /** PSC beam stress with 7th DOF */
+    pSCBeamStressWith7thDOF: "BEAMSTRESS7DOFPSC",
+  },
+  beamStress: {
+    /** Beam stress */
+    beamStress: "BEAMSTRESS",
+    /** Beam stress with 7th DOF */
+    beamStressWith7thDOF: "BEAMSTRESS7DOF",
+    /** Beam stress by maximum value */
+    beamStressByMaximumValue: "BEAMSTRESSVBM",
+  },
+  cableConfiguration: {
+    /** Cable configuration */
+    cableConfiguration: "CABLECONFIG",
+  },
+  cableEfficiency: {
+    /** Cable efficiency; the manual specifies this EFFIENCY spelling. */
+    cableEfficiencyTheManualSpecifiesThisEFFIENCYSpelling: "CABLEEFFIENCY",
+  },
+  cableForce: {
+    /** Cable force */
+    cableForce: "CABLEFORCE",
+  },
+  concurrentJointForce: {
+    /** Concurrent joint force */
+    concurrentJointForce: "CONCURRENT_JOINT_FORCE",
+  },
   displacements: {
     /** Global coordinate system */
     globalCoordinateSystem: "DISPLACEMENTG",
@@ -857,5 +897,13 @@ export const tableTypes = {
   storyWeightTable: {
     /** Story weights by element category */
     storyWeightsByElementCategory: "STORYWEIGHT",
+  },
+  trussForce: {
+    /** Truss force */
+    trussForce: "TRUSSFORCE",
+  },
+  trussStress: {
+    /** Truss stress */
+    trussStress: "TRUSSSTRESS",
   },
 } as const;

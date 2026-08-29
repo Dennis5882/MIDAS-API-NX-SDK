@@ -1,0 +1,28 @@
+# Source: 19_POST_AnalysisResult_1.md section 10. No SDK source was used.
+contractVersion: 1
+id: post-beam-stress
+endpoint: /post/TABLE
+name: Beam Stress
+summary: Beam stresses, including 7th-DOF and maximum-value forms.
+products: [gen, civil]
+source:
+  manual:
+    status: documented
+    repo: Dennis5882/MIDAS-API
+    chapterFile: 19_POST_AnalysisResult_1.md
+    section: "10. Beam Stress"
+verification: {status: manual_only}
+risk: read_only
+tableTypes:
+  - value: BEAMSTRESS
+    description: Beam stress
+    head: [Index, Elem, Load, Part, Axial, Shear-y, Shear-z, Bend(+y), Bend(-y), Bend(+z), Bend(-z), Cb(min/max), Cb1(-y+z), Cb2(+y+z), Cb3(+y-z), Cb4(-y-z)]
+    provenance: manual
+  - value: BEAMSTRESS7DOF
+    description: Beam stress with 7th DOF
+    head: [Index, Elem, Load, Part, SectionPosition, Sax(Warping), Ssy(Mt), Ssy(Mw), Ssz(Mt), Ssz(Mw), Cb(Ssy), Cb(Ssz)]
+    provenance: manual
+  - value: BEAMSTRESSVBM
+    description: Beam stress by maximum value
+    head: [Index, Elem, Load, Part, Component, Axial, Shear-y, Shear-z, Bend(+y), Bend(-y), Bend(+z), Bend(-z), Cb(min/max), Cb1(-y+z), Cb2(+y+z), Cb3(+y-z), Cb4(-y-z)]
+    provenance: manual

@@ -1,0 +1,24 @@
+# Source: 19_POST_AnalysisResult_1.md section 8. No SDK source was used.
+contractVersion: 1
+id: post-beam-force
+endpoint: /post/TABLE
+name: Beam Force
+summary: Beam force components by member part or maximum-value component.
+products: [gen, civil]
+source:
+  manual:
+    status: documented
+    repo: Dennis5882/MIDAS-API
+    chapterFile: 19_POST_AnalysisResult_1.md
+    section: "8. Beam Force"
+verification: {status: manual_only}
+risk: read_only
+tableTypes:
+  - value: BEAMFORCE
+    description: Beam force by member part
+    head: [Index, Elem, Load, Part, Axial, Shear-y, Shear-z, Torsion, Moment-y, Moment-z, Bi-Moment, T-Moment, W-Moment]
+    provenance: manual
+  - value: BEAMFORCEVBM
+    description: Beam force by maximum value
+    head: [Index, Elem, Load, Part, Component, Axial, Shear-y, Shear-z, Torsion, Moment-y, Moment-z]
+    provenance: manual
