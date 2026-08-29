@@ -830,9 +830,23 @@ export const tableTypes = {
     /** Local coordinate system */
     localCoordinateSystem: "DISPLACEMENTL",
   },
+  elasticLink: {
+    /** Elastic-link force */
+    elasticLinkForce: "ELASTICLINK",
+    /** Elastic-link force by maximum value */
+    elasticLinkForceByMaximumValue: "ELASTICLINKVBM",
+  },
   elementWeightTable: {
     /** Element Weight Table */
     elementWeightTable: "ELEMENTWEIGHT",
+  },
+  generalLink: {
+    /** General-link force */
+    generalLinkForce: "GENERAL_LINK_FORCE",
+    /** General-link force by maximum value */
+    generalLinkForceByMaximumValue: "GENERAL_LINK_FORCEVBM",
+    /** General-link deformation */
+    generalLinkDeformation: "GENERAL_LINK_DEFORM",
   },
   loadSummaryTable: {
     /** X direction */
