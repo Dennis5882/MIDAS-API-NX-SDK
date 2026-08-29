@@ -1293,6 +1293,24 @@ def test_explicit_same_object_structure_clones_only_parsed_sibling_children(tmp_
     assert child["appliesWhen"] == [{"path": "TARGET.INPUT_METHOD", "equals": "KEYS"}]
 
 
+def test_repeated_child_key_is_retained_under_each_numbered_parent(tmp_path: Path):
+    path = tmp_path / "99_DB_RepeatedChild.md"
+    path.write_text(
+        "## 1. `/db/REPEATED-CHILD` -- Repeated child key\n\n"
+        "| No. | Description | Key | Value Type | Default | Required |\n"
+        "|-----|-------------|-----|------------|---------|----------|\n"
+        "| 1 | First object | `FIRST` | Object | - | Required |\n"
+        "| 1.1 | First code | `CODE` | String | - | Required |\n"
+        "| 2 | Second object | `SECOND` | Object | - | Required |\n"
+        "| 2.1 | Second code | `CODE` | String | - | Required |\n",
+        encoding="utf-8",
+    )
+
+    fields = ex.parse_chapter(path)[0].tables[0].fields
+    assert [field.key for field in fields[0].properties] == ["CODE"]
+    assert [field.key for field in fields[1].properties] == ["CODE"]
+
+
 def test_shipped_contracts_still_match_the_manual_if_it_is_present():
     """Runs only where the sibling manual repo is checked out - CI does both."""
     manual_repo = ex.DEFAULT_MANUAL_REPO

@@ -1802,6 +1802,15 @@ def _canonical_wire_property(cell: str) -> str:
     return text.strip('"')
 
 
+def _number_parent(number: str) -> str:
+    """Return the documented parent number for a dotted or dashed child row."""
+
+    text = _clean(number)
+    if not _NUMBER_PATH.fullmatch(text):
+        return ""
+    return re.sub(r"[-.]\d+$", "", text)
+
+
 def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
     tables: list[ParsedTable] = []
     heading = ""
@@ -1828,8 +1837,8 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
         required_column = next((i for i, h in enumerate(header) if h in _REQUIRED_COLUMNS), None)
 
         fields: list[ParsedField] = []
-        seen: set[str] = set()
-        inline_variants: list[tuple[str, int, list[ParsedField], set[str]]] = []
+        seen: set[tuple[str, str]] = set()
+        inline_variants: list[tuple[str, int, list[ParsedField], set[tuple[str, str]]]] = []
         target_fields = fields
         target_seen = seen
         row = index + 2
@@ -1879,9 +1888,13 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                 )
             ]
             for entry_key, entry_type, entry_default, entry_required in entries:
-                if entry_key in target_seen:
+                # ``CONCRETE.CODE`` and ``REBAR.CODE`` are different wire
+                # paths even though they share the last token. Only suppress
+                # a duplicate in the same numbered object scope.
+                entry_identity = (_number_parent(cells[0] if cells else ""), entry_key)
+                if entry_identity in target_seen:
                     continue
-                target_seen.add(entry_key)
+                target_seen.add(entry_identity)
 
                 notes: list[str] = []
                 if entry_required is not None:
