@@ -9,7 +9,7 @@
 contractVersion: 1
 id: db-strpssm
 endpoint: /db/STRPSSM
-name: /db/STRPSSM
+name: Section Manager – Stress Points
 
 products: [civil]
 

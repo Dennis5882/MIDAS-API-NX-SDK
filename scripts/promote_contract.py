@@ -206,6 +206,11 @@ def _ambiguous_draft_key(text: str) -> str | None:
     return walk(document.get("fields", []))
 
 
+def _endpoint_name_is_fallback(document: object, endpoint: str) -> bool:
+    """Whether a draft used its endpoint as a missing manual label fallback."""
+    return isinstance(document, dict) and document.get("name") == endpoint
+
+
 def _plain_function_is_modelled(
     endpoint: str,
     methods: set[str],
@@ -322,6 +327,14 @@ def promote(
         return None
     endpoint = endpoint_match.group(1)
 
+    # An endpoint string is the extractor's explicit fallback, not a label
+    # stated by the manual. Refuse it here so a missing label cannot quietly
+    # become permanent contract metadata when a draft is promoted in bulk.
+    draft_data = yaml.safe_load(text)
+    if _endpoint_name_is_fallback(draft_data, endpoint):
+        print(f"  {slug}: refused - the manual does not state a human-readable endpoint label")
+        return None
+
     if endpoint in NEEDS_HAND_REVIEW:
         print(f"  {slug}: refused - {NEEDS_HAND_REVIEW[endpoint]}")
         return None
@@ -349,7 +362,6 @@ def promote(
     # exemption: only the still-unresolved ``unmergedTables`` population is
     # the conditional-variant blocker.  Parsing YAML avoids a comment or a
     # prose mention accidentally changing promotion behaviour.
-    draft_data = yaml.safe_load(text)
     extraction = draft_data.get("extraction", {}) if isinstance(draft_data, dict) else {}
     if extraction.get("unmergedTables"):
         print(f"  {slug}: refused - the section has conditional variant tables nobody has merged")

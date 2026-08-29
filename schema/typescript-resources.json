@@ -3960,7 +3960,7 @@
       "className": "DomainElement",
       "exportName": "domainElement",
       "endpoint": "/db/DOEL",
-      "name": "/db/DOEL",
+      "name": "Domain-Element",
       "products": [
         "civil",
         "gen"
@@ -4020,7 +4020,7 @@
       "className": "MainDomain",
       "exportName": "mainDomain",
       "endpoint": "/db/MADO",
-      "name": "/db/MADO",
+      "name": "Define Domain",
       "products": [
         "civil",
         "gen"
@@ -4633,7 +4633,7 @@
       "className": "InelasticHingeProperty",
       "exportName": "inelasticHingeProperty",
       "endpoint": "/db/IEHG",
-      "name": "/db/IEHG",
+      "name": "Assign Inelastic Hinge Properties",
       "products": [
         "civil",
         "gen"
@@ -4784,7 +4784,7 @@
       "className": "ChangeProperty",
       "exportName": "changeProperty",
       "endpoint": "/db/EDMP",
-      "name": "/db/EDMP",
+      "name": "Change Property",
       "products": [
         "civil",
         "gen"
@@ -5089,7 +5089,7 @@
       "className": "TimeDependentMaterialFunction",
       "exportName": "timeDependentMaterialFunction",
       "endpoint": "/db/TDMF",
-      "name": "/db/TDMF",
+      "name": "Time Dependent Material – User Defined",
       "products": [
         "civil",
         "gen"
@@ -5120,7 +5120,7 @@
       "className": "TimeDependentMaterialLink",
       "exportName": "timeDependentMaterialLink",
       "endpoint": "/db/TMAT",
-      "name": "/db/TMAT",
+      "name": "Time Dependent Material Link",
       "products": [
         "civil",
         "gen"
@@ -5182,7 +5182,7 @@
       "className": "EffectiveWidthScaleFactor",
       "exportName": "effectiveWidthScaleFactor",
       "endpoint": "/db/EWSF",
-      "name": "/db/EWSF",
+      "name": "Effective Width Scale Factor",
       "products": [
         "civil"
       ],
@@ -5212,7 +5212,7 @@
       "className": "ElementStiffnessScaleFactor",
       "exportName": "elementStiffnessScaleFactor",
       "endpoint": "/db/ESSF",
-      "name": "/db/ESSF",
+      "name": "Element Stiffness Scale Factor",
       "products": [
         "civil",
         "gen"
@@ -5274,7 +5274,7 @@
       "className": "PlateStiffnessScaleFactor",
       "exportName": "plateStiffnessScaleFactor",
       "endpoint": "/db/PSSF",
-      "name": "/db/PSSF",
+      "name": "Section Manager – Plate Stiffness Scale Factor",
       "products": [
         "civil",
         "gen"
@@ -5398,7 +5398,7 @@
       "className": "SectionStressPoints",
       "exportName": "sectionStressPoints",
       "endpoint": "/db/STRPSSM",
-      "name": "/db/STRPSSM",
+      "name": "Section Manager – Stress Points",
       "products": [
         "civil"
       ],
@@ -5428,7 +5428,7 @@
       "className": "TaperedGroup",
       "exportName": "taperedGroup",
       "endpoint": "/db/TSGR",
-      "name": "/db/TSGR",
+      "name": "Tapered Group",
       "products": [
         "civil",
         "gen"
@@ -5459,7 +5459,7 @@
       "className": "VirtualBeam",
       "exportName": "virtualBeam",
       "endpoint": "/db/VBEM",
-      "name": "/db/VBEM",
+      "name": "Virtual Beam",
       "products": [
         "civil",
         "gen"
@@ -5490,7 +5490,7 @@
       "className": "VirtualSection",
       "exportName": "virtualSection",
       "endpoint": "/db/VSEC",
-      "name": "/db/VSEC",
+      "name": "Virtual Section",
       "products": [
         "civil",
         "gen"

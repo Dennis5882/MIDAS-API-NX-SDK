@@ -1730,17 +1730,22 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
 
 
 _TOC_METHOD_COLUMNS = {"methods", "active methods", "메서드"}
+_TOC_NAME_COLUMNS = {"function", "feature", "description", "name", "기능", "설명"}
 
 
-def _toc_methods(lines: list[str]) -> dict[str, list[str]]:
-    """Read methods out of a chapter's contents table.
+def _toc_metadata(lines: list[str]) -> dict[str, tuple[list[str], str]]:
+    """Read labels and, where present, methods from a chapter's contents table.
 
     15 chapters state each endpoint's verbs once, in the table of contents,
     rather than in the endpoint's own section. Without this the extractor falls
     back to the /db/* default of all four verbs, which is how /db/GRUP's first
     draft claimed a DELETE the endpoint does not serve.
+
+    The same tables carry the manual's human-readable resource labels in
+    chapters whose endpoint headings are deliberately terse. A methods column
+    is therefore optional here: several chapters have a label but no verbs.
     """
-    found: dict[str, list[str]] = {}
+    found: dict[str, tuple[list[str], str]] = {}
     for index, line in enumerate(lines):
         if not (line.startswith("|") and index + 1 < len(lines) and _DIVIDER.match(lines[index + 1])):
             continue
@@ -1748,7 +1753,8 @@ def _toc_methods(lines: list[str]) -> dict[str, list[str]]:
         if "endpoint" not in header:
             continue
         method_column = next((i for i, h in enumerate(header) if h in _TOC_METHOD_COLUMNS), None)
-        if method_column is None:
+        name_column = next((i for i, h in enumerate(header) if h in _TOC_NAME_COLUMNS), None)
+        if method_column is None and name_column is None:
             continue
         endpoint_column = header.index("endpoint")
         row = index + 2
@@ -1760,18 +1766,26 @@ def _toc_methods(lines: list[str]) -> dict[str, list[str]]:
             endpoint = re.search(r"/?[A-Za-z][A-Za-z0-9/_.\-]*/[A-Za-z0-9/_.\-]+", _clean(cells[endpoint_column]))
             if not endpoint:
                 continue
-            verbs = sorted(
-                {v for v in re.findall(r"[A-Z]+", cells[method_column]) if v in {"GET", "POST", "PUT", "DELETE"}}
+            verbs = (
+                sorted(
+                    {
+                        v
+                        for v in re.findall(r"[A-Z]+", cells[method_column])
+                        if v in {"GET", "POST", "PUT", "DELETE"}
+                    }
+                )
+                if method_column is not None
+                else []
             )
-            if verbs:
-                path = endpoint.group(0)
-                found[path if path.startswith("/") else "/" + path] = verbs
+            title = _clean(cells[name_column]) if name_column is not None else ""
+            path = endpoint.group(0)
+            found[path if path.startswith("/") else "/" + path] = (verbs, title)
     return found
 
 
 def parse_chapter(path: Path) -> list[Section]:
     lines = path.read_text(encoding="utf-8").splitlines()
-    toc_methods = _toc_methods(lines)
+    toc_metadata = _toc_metadata(lines)
     starts: list[tuple[int, re.Match[str]]] = []
     for index, line in enumerate(lines):
         match = _SECTION.match(line)
@@ -1786,11 +1800,13 @@ def parse_chapter(path: Path) -> list[Section]:
         if not endpoint.startswith("/"):
             endpoint = "/" + endpoint
         title = (match.group(3) or "").strip()
+        toc_methods, toc_title = toc_metadata.get(endpoint, ([], ""))
         if not title:
-            # Some manual sections put their human-readable label in the opening
-            # blockquote rather than on the endpoint heading. Only inspect the
-            # introductory metadata, so a bold note in Specifications cannot
-            # become the endpoint name.
+            # Name precedence follows the manual's increasingly indirect
+            # evidence: section heading, then opening blockquote, then chapter
+            # contents table. Each later form only fills a missing label.
+            # Only inspect introductory metadata, so a bold note in
+            # Specifications cannot become the endpoint name.
             for line in body:
                 if line.startswith("###"):
                     break
@@ -1798,6 +1814,8 @@ def parse_chapter(path: Path) -> list[Section]:
                 if blockquote_title:
                     title = blockquote_title.group(1).strip()
                     break
+        if not title:
+            title = toc_title
 
         section = Section(
             chapter_file=path.name,
@@ -1813,7 +1831,7 @@ def parse_chapter(path: Path) -> list[Section]:
             section.source_url = url.group(1)
         section.methods = _section_methods(body)
         if not section.methods:
-            section.methods = toc_methods.get(section.endpoint, [])
+            section.methods = toc_methods
         section.tables = _parse_tables(body, index)
         _apply_enum_values(section.tables, _enum_tables(body))
         _apply_schema_hints(section.tables, _section_schema_hints(body, section.endpoint))
@@ -2085,6 +2103,11 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
         f"name: {_scalar(section.title or section.endpoint)}",
     ]
 
+    if not section.title:
+        lines.append(
+            "# NOTE: the manual does not state a human-readable endpoint label; keep this draft unpromoted."
+        )
+
     lines += ["", "# TODO(review): confirm against live evidence, not the manual's framing.", "products: [gen, civil]", ""]
 
     lines += ["source:", "  manual:", "    status: documented", "    repo: Dennis5882/MIDAS-API"]
@@ -2203,6 +2226,11 @@ def run_report(sections: list[Section], table_family: dict[str, int]) -> int:
         fields += count
         multi += many
     print(f"{'TOTAL':<40}{total:>10}{with_fields:>13}{fields:>9}{multi:>13}")
+    unnamed = [section for section in sections if not section.title]
+    print(
+        f"\nname extraction: {len(unnamed)} section(s) have no human-readable label in the "
+        "heading, opening blockquote, or chapter contents table."
+    )
 
     # How trustworthy is that field count? Anything carrying a note needs a human
     # before it can be believed, and saying so is the difference between a draft

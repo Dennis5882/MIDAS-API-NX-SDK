@@ -69,7 +69,7 @@ class TaperedGroupPayload(TypedDict, total=False):
 
 class TaperedGroup(DbResource):
     ENDPOINT = "/db/TSGR"
-    NAME = "/db/TSGR"
+    NAME = "Tapered Group"
     PRODUCTS = frozenset({"gen", "civil"})
 
 
@@ -217,7 +217,7 @@ class SectionStressPoints(DbResource):
     """
 
     ENDPOINT = "/db/STRPSSM"
-    NAME = "/db/STRPSSM"
+    NAME = "Section Manager – Stress Points"
     PRODUCTS = CIVIL_ONLY
 
 
@@ -240,7 +240,7 @@ class PlateStiffnessScaleFactorPayload(TypedDict):
 
 class PlateStiffnessScaleFactor(DbResource):
     ENDPOINT = "/db/PSSF"
-    NAME = "/db/PSSF"
+    NAME = "Section Manager – Plate Stiffness Scale Factor"
     PRODUCTS = frozenset({"gen", "civil"})
 
 
@@ -253,7 +253,7 @@ class VirtualBeamPayload(TypedDict, total=False):
 
 class VirtualBeam(DbResource):
     ENDPOINT = "/db/VBEM"
-    NAME = "/db/VBEM"
+    NAME = "Virtual Beam"
     PRODUCTS = frozenset({"gen", "civil"})
 
 
@@ -274,7 +274,7 @@ class VirtualSectionPayload(TypedDict, total=False):
 
 class VirtualSection(DbResource):
     ENDPOINT = "/db/VSEC"
-    NAME = "/db/VSEC"
+    NAME = "Virtual Section"
     PRODUCTS = frozenset({"gen", "civil"})
 
 
@@ -303,7 +303,7 @@ class EffectiveWidthScaleFactor(DbResource):
     """
 
     ENDPOINT = "/db/EWSF"
-    NAME = "/db/EWSF"
+    NAME = "Effective Width Scale Factor"
     PRODUCTS = CIVIL_ONLY
 
 
@@ -325,7 +325,7 @@ class ElementStiffnessScaleFactorPayload(TypedDict):
 
 class ElementStiffnessScaleFactor(DbResource):
     ENDPOINT = "/db/ESSF"
-    NAME = "/db/ESSF"
+    NAME = "Element Stiffness Scale Factor"
     PRODUCTS = frozenset({"gen", "civil"})
 
 

@@ -109,7 +109,7 @@ class MainDomainPayload(TypedDict, total=False):
 
 class MainDomain(DbResource):
     ENDPOINT = "/db/MADO"
-    NAME = "/db/MADO"
+    NAME = "Define Domain"
     PRODUCTS = frozenset({"gen", "civil"})
 
 
@@ -163,5 +163,5 @@ class DomainElementPayload(TypedDict, total=False):
 
 class DomainElement(DbResource):
     ENDPOINT = "/db/DOEL"
-    NAME = "/db/DOEL"
+    NAME = "Domain-Element"
     PRODUCTS = frozenset({"gen", "civil"})

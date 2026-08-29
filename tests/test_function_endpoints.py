@@ -15,6 +15,7 @@ from function_endpoints import (
 )
 from promote_contract import (
     _ambiguous_draft_key,
+    _endpoint_name_is_fallback,
     _manual_selection_error,
     _non_db_delete_response_unknown,
     _non_db_resource_is_modelled,
@@ -39,6 +40,11 @@ def test_promotion_rejects_a_manual_row_that_still_names_multiple_fields():
     ) == 'SECOND" / "THIRD'
     assert _ambiguous_draft_key("fields:\n  - key: FIRST\n    properties:\n      - key: SECOND_2\n") is None
     assert _ambiguous_draft_key("fields:\n  - key: 7TH_DOF_TYPE\n") is None
+
+
+def test_promotion_recognizes_an_endpoint_string_as_a_missing_manual_label():
+    assert _endpoint_name_is_fallback({"name": "/db/EXAMPLE"}, "/db/EXAMPLE")
+    assert not _endpoint_name_is_fallback({"name": "Example Resource"}, "/db/EXAMPLE")
 
 
 def test_plain_function_discovery_resolves_constant_routes_and_npm_metadata(tmp_path):

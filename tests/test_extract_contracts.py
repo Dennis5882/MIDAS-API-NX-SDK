@@ -108,6 +108,66 @@ def test_section_title_reads_the_documented_intro_form(
     assert ex.parse_chapter(path)[0].title == expected_title
 
 
+@pytest.mark.parametrize(
+    ("label_header", "expected_title"),
+    [
+        pytest.param("기능", "Korean Function Label", id="korean-function-column"),
+        pytest.param("설명", "Korean Description Label", id="korean-description-column"),
+        pytest.param("Feature", "English Feature Label", id="english-feature-column"),
+    ],
+)
+def test_section_title_reads_the_documented_contents_table_label(
+    tmp_path: Path, label_header: str, expected_title: str
+):
+    path = tmp_path / "99_DB_Title.md"
+    path.write_text(
+        "# Synthetic\n\n"
+        f"| No. | Endpoint | {label_header} | Methods |\n"
+        "|---|---|---|---|\n"
+        f"| 1 | [`/db/TITLE`](#1-dbtitle) | {expected_title} | GET |\n\n"
+        "## 1. `/db/TITLE`\n",
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    assert section.title == expected_title
+    assert section.methods == ["GET"]
+
+
+@pytest.mark.parametrize(
+    ("heading", "intro", "expected_title"),
+    [
+        pytest.param(
+            "## 1. `/db/TITLE` - Heading Title",
+            "> **Blockquote Title** - endpoint description",
+            "Heading Title",
+            id="heading-before-blockquote-and-contents-table",
+        ),
+        pytest.param(
+            "## 1. `/db/TITLE`",
+            "> **Blockquote Title** - endpoint description",
+            "Blockquote Title",
+            id="blockquote-before-contents-table",
+        ),
+    ],
+)
+def test_section_title_uses_contents_table_only_after_heading_and_blockquote(
+    tmp_path: Path, heading: str, intro: str, expected_title: str
+):
+    path = tmp_path / "99_DB_Title.md"
+    path.write_text(
+        "# Synthetic\n\n"
+        "| No. | Endpoint | 기능 |\n"
+        "|---|---|---|\n"
+        "| 1 | [`/db/TITLE`](#1-dbtitle) | Contents Table Title |\n\n"
+        f"{heading}\n\n"
+        f"{intro}\n",
+        encoding="utf-8",
+    )
+
+    assert ex.parse_chapter(path)[0].title == expected_title
+
+
 def test_requiredness_and_defaults_come_from_the_table(section: ex.Section):
     fields = {f.key: f for f in section.tables[0].fields}
 

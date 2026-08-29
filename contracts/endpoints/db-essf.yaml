@@ -9,7 +9,7 @@
 contractVersion: 1
 id: db-essf
 endpoint: /db/ESSF
-name: /db/ESSF
+name: Element Stiffness Scale Factor
 
 products: [civil, gen]
 

@@ -9,7 +9,7 @@
 contractVersion: 1
 id: db-tsgr
 endpoint: /db/TSGR
-name: /db/TSGR
+name: Tapered Group
 
 products: [civil, gen]
 
