@@ -808,6 +808,10 @@ export const tableTypes = {
     /** Beam stress by maximum value */
     beamStressByMaximumValue: "BEAMSTRESSVBM",
   },
+  bucklingModeShape: {
+    /** Buckling mode shape */
+    bucklingModeShape: "BUCKLINGMODE",
+  },
   cableConfiguration: {
     /** Cable configuration */
     cableConfiguration: "CABLECONFIG",
@@ -1035,5 +1039,11 @@ export const tableTypes = {
   trussStress: {
     /** Truss stress */
     trussStress: "TRUSSSTRESS",
+  },
+  vibrationModeShape: {
+    /** Eigenvalue vibration mode shape */
+    eigenvalueVibrationModeShape: "EIGENVALUEMODE",
+    /** Participation-vector mode shape */
+    participationVectorModeShape: "PARTICIPATIONVECTORMODE",
   },
 } as const;
