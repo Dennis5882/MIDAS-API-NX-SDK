@@ -474,6 +474,24 @@ def _load_tables() -> list[tuple[Path, dict]]:
     return [(p, _load_yaml(p)) for p in sorted(TABLE_DIR.glob("*.yaml"))]
 
 
+def _sdk_names_table_type(source: str, value: str) -> bool:
+    """Recognise literal table strings and the audited X/Y/Z helper form.
+
+    The two SDKs deliberately expose directional summary tables through one
+    helper (``get_mass_summary_table("X")`` / ``defineDirectionalTable``),
+    rather than duplicating three wrappers.  A literal-only search wrongly
+    calls that public surface absent even though its prefix and direction are
+    fixed by the implementation.  Accept only the documented three-axis form;
+    every other TABLE_TYPE still has to be named literally.
+    """
+    if f'"{value}"' in source:
+        return True
+    prefix, separator, direction = value.rpartition("_")
+    if not separator or direction not in {"X", "Y", "Z"}:
+        return False
+    return f'"{prefix}_{{direction}}"' in source or f'"{prefix}_"' in source
+
+
 def check_tables(
     tables: list[tuple[Path, dict]],
     endpoints: set[str],
@@ -554,12 +572,12 @@ def check_tables(
             # variant without already knowing it exists. A value one language
             # names and the other does not is a table only one language's users
             # will discover.
-            if f'"{value}"' not in python_source:
+            if not _sdk_names_table_type(python_source, value):
                 failures.add(
                     path.name,
                     f"TABLE_TYPE {value!r} is not named anywhere in the Python SDK",
                 )
-            if f'"{value}"' not in typescript_source:
+            if not _sdk_names_table_type(typescript_source, value):
                 failures.add(
                     path.name,
                     f"TABLE_TYPE {value!r} is not named anywhere in the npm SDK - a "

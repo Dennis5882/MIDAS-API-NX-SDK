@@ -326,6 +326,9 @@ def test_every_table_routes_through_a_contracted_endpoint():
 
 def test_table_types_are_named_in_both_sdks():
     """A TABLE_TYPE only one language names is a table only its users will find."""
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from validate_contracts import _sdk_names_table_type  # noqa: PLC0415
+
     python_source = "\n".join(
         path.read_text(encoding="utf-8") for path in (ROOT / "src" / "midas_nx" / "post").glob("*.py")
     )
@@ -336,8 +339,8 @@ def test_table_types_are_named_in_both_sdks():
     for name, table in _tables().items():
         for entry in table["tableTypes"]:
             value = entry["value"]
-            assert f'"{value}"' in python_source, f"{name}: {value} unnamed in the Python SDK"
-            assert f'"{value}"' in npm_source, f"{name}: {value} unnamed in the npm SDK"
+            assert _sdk_names_table_type(python_source, value), f"{name}: {value} unnamed in the Python SDK"
+            assert _sdk_names_table_type(npm_source, value), f"{name}: {value} unnamed in the npm SDK"
 
 
 def test_unresolved_manual_contradictions_stay_unresolved():
