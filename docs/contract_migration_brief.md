@@ -44,6 +44,38 @@ The Python package reads nothing from `contracts/` at runtime and should not
 start: contracts are consumed at generation and validation time, so an installed
 `midas-nx` still needs only `requests`.
 
+### Continuation measurement — 2026-08-29
+
+The table above records the earlier baseline. Do not use it as current coverage.
+The following values were measured after Stage 2 and the result-table work:
+
+| surface | contracted | total | note |
+| --- | ---: | ---: | --- |
+| endpoint contracts | 246 | — | `post-table.yaml` is the shared-table family contract |
+| npm DB resources | 226 | 304 | 78 resources still have no committed endpoint contract |
+| `/post/TABLE` result tables | 87 | 87 | Chapter 23's other two routes are `/post/PM` and `/post/STEELCODECHECK`, not `TABLE_TYPE` tables |
+| active promotion candidates | 0 | 137 drafts | each remaining draft has a measured gate refusal |
+
+The remaining 78 npm resources are not a uniform parser backlog. They include
+unmerged conditional tables, missing Default/Required facts, incomplete enum or
+array-item facts, and documented live defects. `/db/STYP-M1` is a distinct
+manual gap: it appears in `INDEX.md`, but no endpoint section exists under
+`docs/manual/`, so the extractor has no manual source from which to draft a
+contract.
+
+The manual also uses dotted No.-column paths such as `14.4.1` to show nested
+payloads. Treating those as nesting is correct for newly parsed material, but
+an experimental check found 76 field-path disagreements across nine already
+promoted contracts. That is a contract-shape migration requiring review of
+each object path; do not enable it as an extractor-only change, because it
+would silently rewrite established contract meaning.
+
+Current validation exercises 311 declared executable rules: 154
+`per_id_request`, 154 `require_confirmation`, and one each of
+`normalize_defaults`, `reject_request`, and `unwrap_table_by_shape`. It runs
+one Python and one npm probe for every rule kind. The npm suite currently has
+11 files and 55 tests.
+
 ## The rules that are not negotiable
 
 These come from the author and are the reason the layout looks the way it does.
