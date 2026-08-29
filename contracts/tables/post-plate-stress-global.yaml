@@ -1,0 +1,16 @@
+# Source: 20_POST_AnalysisResult_2.md section 5. No SDK source was used.
+contractVersion: 1
+id: post-plate-stress-global
+endpoint: /post/TABLE
+name: Plate Stress Global
+summary: Global-coordinate plate stresses for both faces.
+products: [gen, civil]
+source:
+  manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "5. Plate Stress (Global)"}
+verification: {status: manual_only}
+risk: read_only
+tableTypes:
+  - value: PLATESTRESSG
+    description: Global plate stress
+    head: [Index, Elem, Load, Node, Part, Sig-XX, Sig-YY, Sig-ZZ, Sig-XY, Sig-YZ, Sig-XZ, Sig-Max, Sig-Min, ANG, Sig-EFF, Max-Shear, Part, Sig-XX, Sig-YY, Sig-ZZ, Sig-XY, Sig-YZ, Sig-XZ, Sig-Max, Sig-Min, ANG, Sig-EFF, Max-Shear]
+    provenance: manual

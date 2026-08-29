@@ -1,0 +1,20 @@
+# Source: 20_POST_AnalysisResult_2.md section 7. No SDK source was used.
+contractVersion: 1
+id: post-plate-strain-global
+endpoint: /post/TABLE
+name: Plate Strain Global
+summary: Global-coordinate plastic or total plate strains for both faces.
+products: [gen, civil]
+source:
+  manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "7. Plate Strain (Global)"}
+verification: {status: manual_only}
+risk: read_only
+tableTypes:
+  - value: PLATESTRAINPG
+    description: Global plastic plate strain
+    head: [Index, Elem, Load, Step, Node, Part, Strain-XX, Strain-YY, Strain-ZZ, Strain-XY, Strain-YZ, Strain-XZ, Strain-Max, Strain-Min, Angle, Max-Shear, Part, Strain-XX, Strain-YY, Strain-ZZ, Strain-XY, Strain-YZ, Strain-XZ, Strain-Max, Strain-Min, Angle, Max-Shear]
+    provenance: manual
+  - value: PLATESTRAINTG
+    description: Global total plate strain
+    head: [Index, Elem, Load, Step, Node, Part, Strain-XX, Strain-YY, Strain-ZZ, Strain-XY, Strain-YZ, Strain-XZ, Strain-Max, Strain-Min, Angle, Max-Shear, Part, Strain-XX, Strain-YY, Strain-ZZ, Strain-XY, Strain-YZ, Strain-XZ, Strain-Max, Strain-Min, Angle, Max-Shear]
+    provenance: manual

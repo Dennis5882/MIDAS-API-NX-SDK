@@ -842,6 +842,46 @@ export const tableTypes = {
     /** Nodal body force */
     nodalBodyForce: "NODALBODYFORCE",
   },
+  plateForceGlobal: {
+    /** Global plate force */
+    globalPlateForce: "PLATEFORCEG",
+  },
+  plateForceLocal: {
+    /** Local plate force */
+    localPlateForce: "PLATEFORCEL",
+  },
+  plateForceUnitLength: {
+    /** Local plate force per unit length */
+    localPlateForcePerUnitLength: "PLATEFORCEUL",
+    /** Global plate force per unit length */
+    globalPlateForcePerUnitLength: "PLATEFORCEUG",
+    /** Local plate force per unit length by maximum value */
+    localPlateForcePerUnitLengthByMaximumValue: "PLATEFORCEULVBM",
+    /** Global plate force per unit length by maximum value */
+    globalPlateForcePerUnitLengthByMaximumValue: "PLATEFORCEUGVBM",
+    /** Plate force in wall axis */
+    plateForceInWallAxis: "PLATEFORCEWA",
+  },
+  plateStrainGlobal: {
+    /** Global plastic plate strain */
+    globalPlasticPlateStrain: "PLATESTRAINPG",
+    /** Global total plate strain */
+    globalTotalPlateStrain: "PLATESTRAINTG",
+  },
+  plateStrainLocal: {
+    /** Local plastic plate strain */
+    localPlasticPlateStrain: "PLATESTRAINPL",
+    /** Local total plate strain */
+    localTotalPlateStrain: "PLATESTRAINTL",
+  },
+  plateStressGlobal: {
+    /** Global plate stress */
+    globalPlateStress: "PLATESTRESSG",
+  },
+  plateStressLocal: {
+    /** Local plate stress */
+    localPlateStress: "PLATESTRESSL",
+  },
   reaction: {
     /** Global coordinate system */
     globalCoordinateSystem: "REACTIONG",
