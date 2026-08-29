@@ -354,7 +354,13 @@ def _contract_payload_type(name: str, contract: dict[str, Any]) -> list[str]:
         when = variant["when"]
         lines.append("    {")
         lines.append(f"      {when['field']}: {json.dumps(when['equals'])};")
-        body = _contract_interface_body(variant["fields"], "      ")
+        # A manually transcribed variant table often repeats its discriminator
+        # as the first row (for example ``iMETHOD = 2`` followed by an
+        # ``iMETHOD`` parameter row). The literal branch discriminator is the
+        # more precise declaration; rendering the repeated general field would
+        # create an illegal duplicate TypeScript property.
+        branch_fields = [field for field in variant["fields"] if field.get("key") != when["field"]]
+        body = _contract_interface_body(branch_fields, "      ")
         if body:
             lines.append(body)
         lines.append("    }" + (" |" if index < len(variants) - 1 else ""))
@@ -527,7 +533,13 @@ def _contract_resource_surfaces() -> dict[str, dict[str, Any]]:
 
 
 def _contract_resource_mismatches(resource: dict[str, Any], surface: dict[str, Any]) -> list[str]:
-    """Compare a legacy SDK resource with the facts its contract owns."""
+    """Compare a legacy SDK resource with the facts its contract owns.
+
+    ``name`` is presentation metadata, not a wire/API fact. A few manual
+    sections name only their endpoint, while the legacy SDK supplied a friendly
+    label. The contract remains authoritative for the generated label, so
+    exclude it from the semantic shadow gate and compare executable facts.
+    """
 
     chapter = next(
         (manual.get("chapterFile") for manual in resource.get("manual", []) if manual.get("chapterFile")),
@@ -542,7 +554,7 @@ def _contract_resource_mismatches(resource: dict[str, Any], surface: dict[str, A
     return [
         f"{key}: SDK has {actual[key]!r}, contract has {surface[key]!r}"
         for key in actual
-        if actual[key] != surface[key]
+        if key != "name" and actual[key] != surface[key]
     ]
 
 

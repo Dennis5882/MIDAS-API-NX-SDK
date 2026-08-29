@@ -240,6 +240,83 @@ def test_only_exact_parallel_columns_are_split_into_independent_fields(tmp_path:
 
 
 @pytest.mark.parametrize(
+    ("number", "key_cell", "expected"),
+    [
+        ("1", '"R" "G" "B"', ["R", "G", "B"]),
+        ("(3)", '"FACTOR" / "CENT_F"', ["FACTOR", "CENT_F"]),
+        ("(4)", '"DT" / "DB"', ["DT", "DB"]),
+    ],
+)
+def test_literal_key_groups_with_shared_metadata_are_split(
+    tmp_path: Path, number: str, key_cell: str, expected: list[str]
+):
+    """The manual's one-row homogeneous field shorthand preserves every key."""
+
+    path = tmp_path / "99_DB_LiteralGroup.md"
+    path.write_text(
+        f"""## 1. `/db/GROUP` -- literal keys
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| {number} | Homogeneous values | {key_cell} | Number | 0 | Optional |
+""",
+        encoding="utf-8",
+    )
+    fields = ex.parse_chapter(path)[0].tables[0].fields
+    assert [field.key for field in fields] == expected
+    assert all(field.type == "number" and field.documented_default == 0 for field in fields)
+
+
+@pytest.mark.parametrize(
+    ("manual_key", "contract_key"),
+    [
+        ('"POINT"[].ITEM"', "POINT[].ITEM"),
+        ('"SPAN_BASE_ITEMS"[].ELEM_KEY"', "SPAN_BASE_ITEMS[].ELEM_KEY"),
+    ],
+)
+def test_quoted_array_member_paths_are_transcribed_without_quote_characters(
+    manual_key: str, contract_key: str
+):
+    assert ex._canonical_wire_property(manual_key) == contract_key
+
+
+@pytest.mark.parametrize(
+    ("property_schema", "expected"),
+    [
+        ({"enum": [0, 1]}, [0, 1]),
+        ({"oneOf": [{"const": "LEFT"}, {"const": "RIGHT"}]}, ["LEFT", "RIGHT"]),
+        ({"oneOf": [{"const": "D4"}, {"title": "remaining values"}]}, None),
+    ],
+)
+def test_schema_enum_forms_only_accept_complete_literal_lists(property_schema: dict, expected: list | None):
+    assert ex._schema_enum_values(property_schema) == expected
+
+
+def test_endpoint_named_schema_wrapper_is_not_a_payload_property(tmp_path: Path):
+    path = tmp_path / "99_DB_WrappedSchema.md"
+    path.write_text(
+        """## 1. `/db/WRAPPED` -- wrapped schema
+
+### JSON Schema
+```json
+{"WRAPPED": {"type": "object", "properties": {"POINT": {"type": "array", "items": {"type": "object", "properties": {"ITEM": {"type": "number"}}}}}}}
+```
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Point item | `"POINT"[].ITEM"` | Number | - | Optional |
+""",
+        encoding="utf-8",
+    )
+    field = ex.parse_chapter(path)[0].tables[0].fields[0]
+    assert field.key == "POINT"
+    assert field.type == "array"
+    assert field.items == {"type": "object"}
+    assert field.properties[0].key == "ITEM"
+    assert not field.notes
+
+
+@pytest.mark.parametrize(
     ("manual_type", "item_type", "length"),
     [
         ("Array[Number,21]", "number", 21),

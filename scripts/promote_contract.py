@@ -304,14 +304,18 @@ def promote(
     functions: dict[str, FunctionEndpoint],
     resources: dict[str, ResourceEndpoint],
     dry_run: bool,
+    candidate: Optional[str] = None,
 ) -> Optional[str]:
     """Return the record id this promotion needs, or None if it was refused."""
     draft_path = DRAFTS / f"{slug}.yaml"
-    if not draft_path.exists():
+    if candidate is None and not draft_path.exists():
         print(f"  {slug}: no draft - run scripts/extract_contracts.py --emit first")
         return None
 
-    text = draft_path.read_text(encoding="utf-8")
+    # ``--from-manual`` supplies this exact text in memory. It lets a parser
+    # improvement feed the promotion gate without rewriting contracts/drafts:
+    # those files are review artifacts, never generator cache.
+    text = candidate if candidate is not None else draft_path.read_text(encoding="utf-8")
     endpoint_match = re.search(r"^endpoint: (\S+)$", text, re.MULTILINE)
     if endpoint_match is None:
         print(f"  {slug}: draft has no endpoint")
@@ -474,14 +478,38 @@ def main(argv: list[str]) -> int:
     parser.add_argument("slugs", nargs="*", help="draft ids, e.g. db-grup")
     parser.add_argument("--all", action="store_true", help="promote every draft that qualifies")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--from-manual",
+        action="store_true",
+        help="render named sections in memory from the manual; never update contracts/drafts",
+    )
+    parser.add_argument("--manual-api-repo", type=Path, help="manual repository used with --from-manual")
     args = parser.parse_args(argv)
 
     coverage = _coverage()
     functions = function_endpoints()
     resources = resource_endpoints()
+    candidates: dict[str, str] = {}
+    if args.from_manual:
+        if args.manual_api_repo is None:
+            parser.error("--from-manual requires --manual-api-repo")
+        # Import only the manual extractor, never either SDK. This is kept
+        # opt-in so the ordinary draft-review workflow remains unchanged.
+        from extract_contracts import live_omission_evidence, load_manual, render_draft
+
+        evidence = live_omission_evidence()
+        sections, _ = load_manual(args.manual_api_repo)
+        candidates = {
+            section.id: render_draft(section, evidence.get(section.endpoint))
+            for section in sections
+        }
     existing = {path.stem for path in ENDPOINTS.glob("*.yaml")}
     slugs = args.slugs or (
-        [p.stem for p in sorted(DRAFTS.glob("*.yaml")) if p.stem not in existing] if args.all else []
+        sorted(slug for slug in candidates if slug not in existing)
+        if args.all and args.from_manual
+        else [p.stem for p in sorted(DRAFTS.glob("*.yaml")) if p.stem not in existing]
+        if args.all
+        else []
     )
     if not slugs:
         parser.error("name at least one draft, or pass --all")
@@ -489,13 +517,13 @@ def main(argv: list[str]) -> int:
     needed: dict[str, dict] = {}
     promoted = 0
     for slug in slugs:
-        record = promote(slug, coverage, functions, resources, args.dry_run)
+        candidate = candidates.get(slug)
+        record = promote(slug, coverage, functions, resources, args.dry_run, candidate)
         if record is None:
             continue
         promoted += 1
-        endpoint_match = re.search(
-            r"^endpoint: (\S+)$", (DRAFTS / f"{slug}.yaml").read_text(encoding="utf-8"), re.MULTILINE
-        )
+        endpoint_text = candidate if candidate is not None else (DRAFTS / f"{slug}.yaml").read_text(encoding="utf-8")
+        endpoint_match = re.search(r"^endpoint: (\S+)$", endpoint_text, re.MULTILINE)
         if endpoint_match is None:  # promote() already verified this draft.
             raise RuntimeError(f"{slug}: draft endpoint disappeared during promotion")
         endpoint = endpoint_match.group(1)

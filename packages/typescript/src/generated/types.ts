@@ -2229,8 +2229,30 @@ export namespace DbLoadCombinationsTypes {
     bCB?: boolean;
     vCOMB?: Array<LoadCombinationItem>;
   }
-  export interface LoadCombinationConcretePayload extends LoadCombinationPayload {
-    bES: boolean;
+  /** Generated from contracts/endpoints/. */
+  export interface LoadCombinationConcretePayload {
+    /** 조합 번호 (읽기 전용) */
+    NO?: number;
+    /** 조합 이름 */
+    NAME: string;
+    /** 활성 타입 · "INACTIVE" / "STRENGTH" / "SERVICE" */
+    ACTIVE?: string;
+    /** 콘크리트 설계 전용 옵션 (E) */
+    bES?: boolean;
+    /** 합산 방식 · 0=Add / 1=Envelope / 2=ABS / 3=SRSS */
+    iTYPE?: number;
+    /** 설명 */
+    DESC?: string;
+    /** 결과 타입 (읽기 전용) · false=General / true=Min/Max/All */
+    bCB?: boolean;
+    /** 조합 항목 배열 */
+    vCOMB: Array<JsonObject>;
+    /** (vCOMB) 해석 타입 */
+    ANAL: string;
+    /** (vCOMB) 하중케이스명 */
+    LCNAME: string;
+    /** (vCOMB) 계수 */
+    FACTOR: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface CuttingLinePayload {
@@ -2289,6 +2311,121 @@ export namespace DbLoadCombinationsTypes {
     G?: number;
     /** 선 색상 – 파랑(B) 값 (0–255) */
     B?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LoadCombinationCompositeSteelGirderPayload {
+    /** 조합 번호 (읽기 전용) */
+    NO?: number;
+    /** 조합 이름 */
+    NAME: string;
+    /** 활성 타입 · "INACTIVE" / "STRENGTH" / "SERVICE" */
+    ACTIVE?: string;
+    /** 합산 방식 · 0=Add / 1=Envelope / 3=SRSS */
+    iTYPE?: number;
+    /** 설명 */
+    DESC?: string;
+    /** 결과 타입 (읽기 전용) */
+    bCB?: boolean;
+    /** 조합 항목 배열 */
+    vCOMB: Array<JsonObject>;
+    /** (vCOMB) 해석 타입 */
+    ANAL: string;
+    /** (vCOMB) 하중케이스명 */
+    LCNAME: string;
+    /** (vCOMB) 계수 */
+    FACTOR: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LoadCombinationGeneralPayload {
+    /** 조합 번호 (읽기 전용) */
+    NO?: number;
+    /** 조합 이름 */
+    NAME: string;
+    /** 활성 타입 · "INACTIVE" / "ACTIVE" */
+    ACTIVE?: string;
+    /** 합산 방식 · 0=Add / 1=Envelope / 2=ABS / 3=SRSS */
+    iTYPE?: number;
+    /** 설명 */
+    DESC?: string;
+    /** 결과 타입 (읽기 전용) · false=General / true=Min/Max/All */
+    bCB?: boolean;
+    /** 조합 항목 배열 */
+    vCOMB: Array<JsonObject>;
+    /** (vCOMB) 해석 타입 */
+    ANAL: string;
+    /** (vCOMB) 하중케이스명 */
+    LCNAME: string;
+    /** (vCOMB) 계수 */
+    FACTOR: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LoadCombinationSRCPayload {
+    /** 조합 번호 (읽기 전용) */
+    NO?: number;
+    /** 조합 이름 */
+    NAME: string;
+    /** 활성 타입 · "INACTIVE" / "STRENGTH" / "SERVICE" */
+    ACTIVE?: string;
+    /** 합산 방식 · 0=Add / 1=Envelope / 3=SRSS */
+    iTYPE?: number;
+    /** 설명 */
+    DESC?: string;
+    /** 결과 타입 (읽기 전용) */
+    bCB?: boolean;
+    /** 조합 항목 배열 */
+    vCOMB: Array<JsonObject>;
+    /** (vCOMB) 해석 타입 */
+    ANAL: string;
+    /** (vCOMB) 하중케이스명 */
+    LCNAME: string;
+    /** (vCOMB) 계수 */
+    FACTOR: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LoadCombinationSeismicPayload {
+    /** 조합 번호 (읽기 전용) */
+    NO?: number;
+    /** 조합 이름 */
+    NAME: string;
+    /** 활성 타입 · "INACTIVE" / "ACTIVE" */
+    ACTIVE?: string;
+    /** 합산 방식 · 0=Add / 1=Envelope / 3=SRSS */
+    iTYPE?: number;
+    /** 설명 */
+    DESC?: string;
+    /** 결과 타입 (읽기 전용) */
+    bCB?: boolean;
+    /** 조합 항목 배열 */
+    vCOMB: Array<JsonObject>;
+    /** (vCOMB) 해석 타입 */
+    ANAL: string;
+    /** (vCOMB) 하중케이스명 */
+    LCNAME: string;
+    /** (vCOMB) 계수 */
+    FACTOR: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LoadCombinationSteelPayload {
+    /** 조합 번호 (읽기 전용) */
+    NO?: number;
+    /** 조합 이름 */
+    NAME: string;
+    /** 활성 타입 · "INACTIVE" / "STRENGTH" / "SERVICE" */
+    ACTIVE?: string;
+    /** 합산 방식 · 0=Add / 1=Envelope / 3=SRSS */
+    iTYPE?: number;
+    /** 설명 */
+    DESC?: string;
+    /** 결과 타입 (읽기 전용) · false=General / true=Min/Max/All */
+    bCB?: boolean;
+    /** 조합 항목 배열 */
+    vCOMB: Array<JsonObject>;
+    /** (vCOMB) 해석 타입 */
+    ANAL: string;
+    /** (vCOMB) 하중케이스명 */
+    LCNAME: string;
+    /** (vCOMB) 계수 */
+    FACTOR: number;
   }
 }
 
@@ -2597,19 +2734,43 @@ export namespace DbMovingLoadsTypes {
     CENT_F?: number;
     SPAN_START?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TrafficSurfaceLanesOptimizationPayload {
-    LANE_NAME?: string;
+    /** Lane Name */
+    LANE_NAME: string;
+    /** Skew Start */
     SKEW_START?: number;
+    /** Skew End */
     SKEW_END?: number;
-    MOVING?: string;
-    OPTIMIZE_WIDTH?: number;
-    LANE_WIDTH?: number;
+    /** Moving Direction */
+    MOVING: string;
+    /** Optimization Width */
+    OPTIMIZE_WIDTH: number;
+    /** Lane Width */
+    LANE_WIDTH: number;
+    /** Wheel Spacing */
     WHEEL_SPACE?: number;
+    /** Margin */
     MARGIN?: number;
-    OFFSET_TYPE?: number;
+    /** Offset Type (0=Fixed, 1=Division) */
+    OFFSET_TYPE: number;
+    /** Number of Division */
     DIVIDE_NUM?: number;
+    /** Analysis Lane Offset */
     ANALYSIS_LANE_OFFSET?: number;
-    ITEMS?: Array<SurfaceLaneOptimizationItem>;
+    /** Items */
+    ITEMS: Array<{
+      /** Node Key */
+      NODE_KEY: number;
+      /** Offset */
+      OFFSET?: number;
+      /** Impact Factor / Centrifugal Force */
+      FACTOR?: number;
+      /** Impact Factor / Centrifugal Force */
+      CENT_F?: number;
+      /** Span Start */
+      SPAN_START?: boolean;
+    }>;
   }
   export interface VehicleDefaultParams {
     UNIFORM_LOAD?: number;
@@ -3127,39 +3288,81 @@ export namespace DbNodeElementTypes {
     ANGLE?: number;
     STYPE?: number;
   }
-  export interface SkewPayload {
+  /** Generated from contracts/endpoints/. */
+  export type SkewPayload = {
+    /** Input Method • Angle: 1 */
     iMETHOD?: number;
+    /** About x */
     ANGLE_X?: number;
+    /** About y */
     ANGLE_Y?: number;
+    /** About z */
     ANGLE_Z?: number;
-    P0X?: number;
-    P0Y?: number;
-    P0Z?: number;
-    P1X?: number;
-    P1Y?: number;
-    P1Z?: number;
-    P2X?: number;
-    P2Y?: number;
-    P2Z?: number;
-    V1X?: number;
-    V1Y?: number;
-    V1Z?: number;
-    V2X?: number;
-    V2Y?: number;
-    V2Z?: number;
-    LV0X?: number;
-    LV0Y?: number;
-    LV0Z?: number;
-    LV1X?: number;
-    LV1Y?: number;
-    LV1Z?: number;
-    LV2X?: number;
-    LV2Y?: number;
-    LV2Z?: number;
-    REFTYPE?: number;
-    G_DIR?: number;
-    L_DIR?: number;
-  }
+  } & (
+    {
+      iMETHOD: 2;
+      /** P0 Coordinate (x, y, z) */
+      P0X?: number;
+      /** P0 Coordinate (x, y, z) */
+      P0Y?: number;
+      /** P0 Coordinate (x, y, z) */
+      P0Z?: number;
+      /** P1 Coordinate (x, y, z) */
+      P1X?: number;
+      /** P1 Coordinate (x, y, z) */
+      P1Y?: number;
+      /** P1 Coordinate (x, y, z) */
+      P1Z?: number;
+      /** P2 Coordinate (x, y, z) */
+      P2X?: number;
+      /** P2 Coordinate (x, y, z) */
+      P2Y?: number;
+      /** P2 Coordinate (x, y, z) */
+      P2Z?: number;
+    } |
+    {
+      iMETHOD: 3;
+      /** Direction Vector V1 (x, y, z) */
+      V1X?: number;
+      /** Direction Vector V1 (x, y, z) */
+      V1Y?: number;
+      /** Direction Vector V1 (x, y, z) */
+      V1Z?: number;
+      /** Direction Vector V2 (x, y, z) */
+      V2X?: number;
+      /** Direction Vector V2 (x, y, z) */
+      V2Y?: number;
+      /** Direction Vector V2 (x, y, z) */
+      V2Z?: number;
+    } |
+    {
+      iMETHOD: 4;
+      /** Direction Vector V0 (x, y, z) */
+      LV0X?: number;
+      /** Direction Vector V0 (x, y, z) */
+      LV0Y?: number;
+      /** Direction Vector V0 (x, y, z) */
+      LV0Z?: number;
+      /** Direction Vector V1 (x, y, z) */
+      LV1X?: number;
+      /** Direction Vector V1 (x, y, z) */
+      LV1Y?: number;
+      /** Direction Vector V1 (x, y, z) */
+      LV1Z?: number;
+      /** Direction Vector V2 (x, y, z) */
+      LV2X?: number;
+      /** Direction Vector V2 (x, y, z) */
+      LV2Y?: number;
+      /** Direction Vector V2 (x, y, z) */
+      LV2Z?: number;
+      /** Reference Type • Ref. Point: 1 (P0, P1 required) • Global Direction: 2 (P0 required) */
+      REFTYPE: number;
+      /** Global Direction • Global X: 0 • Global Y: 1 • Global Z: 2 */
+      G_DIR: number;
+      /** Local Direction • Local x: 0 • Local y: 1 • Local z: 2 */
+      L_DIR: number;
+    }
+  );
   /** Generated from contracts/endpoints/. */
   export interface MainDomainPayload {
     /** Domain Name */
@@ -3340,11 +3543,19 @@ export namespace DbProjectTypes {
   export interface NamedPlanePointItem {
     ITEM?: Array<number>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface NamedPlanePayload {
-    NAME?: string;
-    TYPE?: number;
+    /** Plane Name */
+    NAME: string;
+    /** Plane Type · 1=3 Points / 2=X-Y Plane / 3=X-Z Plane / 4=Y-Z Plane */
+    TYPE: number;
+    /** Tolerance */
     TOL?: number;
-    POINT?: Array<NamedPlanePointItem>;
+    POINT?: Array<{
+      /** Point Data (TYPE=1 시) · 1st/2nd/3rd 점 좌표 [X, Y, Z] */
+      ITEM?: Array<number>;
+    }>;
+    /** Coordinate (TYPE=2,3,4 시) · Z/Y/X 위치 */
     COORD?: number;
   }
   export interface _ColorPayload {
@@ -3385,9 +3596,27 @@ export namespace DbProjectTypes {
     /** Opacity Value (0.0–1.0) */
     FACT?: number;
   }
-  export interface SectionColorPayload extends _ColorPayload {
+  /** Generated from contracts/endpoints/. */
+  export interface SectionColorPayload {
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    W_R?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    HE_B?: number;
+    /** Opacity Boolean */
+    bBLEMD?: boolean;
+    /** Opacity Value (0.0–1.0) */
+    FACT?: number;
   }
-  export interface ThicknessColorPayload extends _ColorPayload {
+  /** Generated from contracts/endpoints/. */
+  export interface ThicknessColorPayload {
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    W_R?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    HE_B?: number;
+    /** Opacity Boolean */
+    bBLEMD?: boolean;
+    /** Opacity Value (0.0–1.0) */
+    FACT?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface FloorLoadColorPayload {
@@ -3420,13 +3649,24 @@ export namespace DbProjectTypes {
     ELEM_KEY?: number;
     SUPPORT?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SpanPayload {
-    NAME?: string;
-    bEXACTSPAN?: boolean;
-    DIRECTION?: number;
-    SECTTYPE?: number;
+    /** Span Name */
+    NAME: string;
+    /** Exact Span Option */
+    bEXACTSPAN: boolean;
+    /** Inner Direction of Multiple Girders · 0=(-) Local y / 1=(+) Local y / 2=Both / 3=None */
+    DIRECTION: number;
+    /** Assign Elements · 0=By Selection / 1=Number */
+    SECTTYPE: number;
+    /** Span List (bEXACTSPAN=true 시) */
     SPAN_LIST?: Array<number>;
-    SPAN_BASE_ITEMS?: Array<SpanBaseItem>;
+    SPAN_BASE_ITEMS?: Array<{
+      /** Span Base Items (bEXACTSPAN=true 시) · Element Key */
+      ELEM_KEY?: number;
+      /** Span Base Items · Support type · 0=None / 1=Start / 2=End */
+      SUPPORT?: number;
+    }>;
   }
   /** Generated from contracts/endpoints/. */
   export interface StoryPayload {
@@ -4135,15 +4375,51 @@ export namespace DbPropertiesSectionTypes {
     POINT_Y?: Array<number>;
     POINT_Z?: Array<number>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface FiberDivisionPayload {
-    NAME?: string;
-    SECT_KEY?: number;
-    ASSIGN_TYPE?: number;
-    FIMP_NAME?: Array<string>;
-    FIMP_COLOR?: Array<FiberDivisionColor>;
-    FIBR_BASE?: Array<FiberDivisionBaseItem>;
-    OPT_MONITORED_FIBER?: boolean;
-    MONITORED_FIBER?: Array<number>;
+    /** Fiber Division Name */
+    NAME: string;
+    /** Assigned Section ID */
+    SECT_KEY: number;
+    /** Assign Type */
+    ASSIGN_TYPE: number;
+    /** Inelastic Material Properties Name (6 elements) */
+    FIMP_NAME: [string, string, string, string, string, string];
+    /** Inelastic Material Properties Color (6 elements) */
+    FIMP_COLOR?: [JsonObject, JsonObject, JsonObject, JsonObject, JsonObject, JsonObject];
+    /** Color components */
+    R?: number;
+    /** Color components */
+    G?: number;
+    /** Color components */
+    B?: number;
+    /** Fiber Division Base Data */
+    FIBR_BASE: Array<{
+      /** Fiber Base Key */
+      FIBR_BASE_KEY: number;
+      /** Rebar Name */
+      REBAR_NAME: string;
+      /** Area */
+      AREA: number;
+      /** Center Y */
+      CENTER_Y: number;
+      /** Center Z */
+      CENTER_Z: number;
+      /** Fiber Material ID(FIMP_NAME/FIMP_COLOR 배열의 몇 번째 재료인지) */
+      FIBER_MATL_ID: number;
+      /** Area Consider Rebar */
+      AREA_CONSIDER_REBAR: number;
+      /** Is Rebar */
+      OPT_IS_REBAR: boolean;
+      /** Fiber 외곽 다각형 Point Y 목록 */
+      POINT_Y: Array<number>;
+      /** Fiber 외곽 다각형 Point Z 목록 */
+      POINT_Z: Array<number>;
+    }>;
+    /** Monitored Fiber 사용 여부 */
+    OPT_MONITORED_FIBER: boolean;
+    /** Monitored Fiber(FIBR_BASE 각 항목에 대응하는 0/1 플래그 배열) */
+    MONITORED_FIBER: Array<number>;
   }
 }
 

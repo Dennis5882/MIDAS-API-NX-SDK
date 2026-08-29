@@ -24,6 +24,30 @@ def test_contracted_resource_surfaces_match_the_legacy_sdk_anchor():
         assert resource["contractManualChapter"] == surface["manualChapter"]
 
 
+def test_resource_shadow_excludes_non_executable_display_names():
+    resource = {
+        "name": "Load Combinations - General",
+        "products": ["gen"],
+        "methods": ["GET"],
+        "manual": [{"chapterFile": "13_DB_Load_Combinations.md"}],
+    }
+    surface = {
+        "name": "Load Combinations – General",
+        "products": ["gen"],
+        "methods": ["GET"],
+        "manualChapter": "13_DB_Load_Combinations.md",
+    }
+    assert generator._contract_resource_mismatches(resource, surface) == []
+
+    surface["name"] = "/db/LCOM-GEN"
+    assert generator._contract_resource_mismatches(resource, surface) == []
+
+    surface["methods"] = ["POST"]
+    assert generator._contract_resource_mismatches(resource, surface) == [
+        "methods: SDK has ['GET'], contract has ['POST']"
+    ]
+
+
 def test_bodf_payload_comes_from_its_manual_contract():
     """The first static-load contract must not silently fall back to Python types."""
     resources = generator._load_resources()
@@ -76,6 +100,7 @@ def test_contract_variants_render_as_a_discriminated_union():
                     {
                         "when": {"field": "OPT_MODE", "equals": False},
                         "fields": [
+                            {"key": "OPT_MODE", "type": "boolean", "requirement": "optional"},
                             {"key": "GENERAL", "type": "number", "requirement": "required"}
                         ],
                     },
@@ -95,6 +120,7 @@ def test_contract_variants_render_as_a_discriminated_union():
     assert "OPT_MODE: true;" in rendered
     assert "GENERAL: number;" in rendered
     assert "OPTIMIZED: string;" in rendered
+    assert rendered.count("OPT_MODE?: boolean;") == 1
 
 
 def test_contract_fixed_length_arrays_render_as_tuples():

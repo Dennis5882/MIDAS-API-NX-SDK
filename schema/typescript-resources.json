@@ -2647,7 +2647,7 @@
       "className": "LoadCombinationCompositeSteelGirder",
       "exportName": "loadCombinationCompositeSteelGirder",
       "endpoint": "/db/LCOM-STLCOMP",
-      "name": "Load Combinations - Composite Steel Girder Design",
+      "name": "Load Combinations – Composite Steel Girder Design",
       "products": [
         "civil",
         "gen"
@@ -2670,14 +2670,14 @@
           "status": "implemented"
         }
       ],
-      "payloadTypeName": "LoadCombinationPayload",
-      "payloadType": "Types.DbLoadCombinationsTypes.LoadCombinationPayload"
+      "payloadTypeName": "LoadCombinationCompositeSteelGirderPayload",
+      "payloadType": "Types.DbLoadCombinationsTypes.LoadCombinationCompositeSteelGirderPayload"
     },
     {
       "className": "LoadCombinationConcrete",
       "exportName": "loadCombinationConcrete",
       "endpoint": "/db/LCOM-CONC",
-      "name": "Load Combinations - Concrete Design",
+      "name": "Load Combinations – Concrete Design",
       "products": [
         "civil",
         "gen"
@@ -2707,7 +2707,7 @@
       "className": "LoadCombinationGeneral",
       "exportName": "loadCombinationGeneral",
       "endpoint": "/db/LCOM-GEN",
-      "name": "Load Combinations - General",
+      "name": "Load Combinations – General",
       "products": [
         "civil",
         "gen"
@@ -2730,14 +2730,14 @@
           "status": "implemented"
         }
       ],
-      "payloadTypeName": "LoadCombinationPayload",
-      "payloadType": "Types.DbLoadCombinationsTypes.LoadCombinationPayload"
+      "payloadTypeName": "LoadCombinationGeneralPayload",
+      "payloadType": "Types.DbLoadCombinationsTypes.LoadCombinationGeneralPayload"
     },
     {
       "className": "LoadCombinationSRC",
       "exportName": "loadCombinationSRC",
       "endpoint": "/db/LCOM-SRC",
-      "name": "Load Combinations - SRC Design",
+      "name": "Load Combinations – SRC Design",
       "products": [
         "civil",
         "gen"
@@ -2760,14 +2760,14 @@
           "status": "implemented"
         }
       ],
-      "payloadTypeName": "LoadCombinationPayload",
-      "payloadType": "Types.DbLoadCombinationsTypes.LoadCombinationPayload"
+      "payloadTypeName": "LoadCombinationSRCPayload",
+      "payloadType": "Types.DbLoadCombinationsTypes.LoadCombinationSRCPayload"
     },
     {
       "className": "LoadCombinationSeismic",
       "exportName": "loadCombinationSeismic",
       "endpoint": "/db/LCOM-SEISMIC",
-      "name": "Load Combinations - Seismic Design",
+      "name": "Load Combinations – Seismic Design",
       "products": [
         "civil",
         "gen"
@@ -2790,14 +2790,14 @@
           "status": "implemented"
         }
       ],
-      "payloadTypeName": "LoadCombinationPayload",
-      "payloadType": "Types.DbLoadCombinationsTypes.LoadCombinationPayload"
+      "payloadTypeName": "LoadCombinationSeismicPayload",
+      "payloadType": "Types.DbLoadCombinationsTypes.LoadCombinationSeismicPayload"
     },
     {
       "className": "LoadCombinationSteel",
       "exportName": "loadCombinationSteel",
       "endpoint": "/db/LCOM-STEEL",
-      "name": "Load Combinations - Steel Design",
+      "name": "Load Combinations – Steel Design",
       "products": [
         "civil",
         "gen"
@@ -2820,8 +2820,8 @@
           "status": "implemented"
         }
       ],
-      "payloadTypeName": "LoadCombinationPayload",
-      "payloadType": "Types.DbLoadCombinationsTypes.LoadCombinationPayload"
+      "payloadTypeName": "LoadCombinationSteelPayload",
+      "payloadType": "Types.DbLoadCombinationsTypes.LoadCombinationSteelPayload"
     },
     {
       "className": "PlateCuttingLineDiagram",
@@ -4080,7 +4080,7 @@
       "className": "Skew",
       "exportName": "skew",
       "endpoint": "/db/SKEW",
-      "name": "Node Local Axis",
+      "name": "/db/SKEW",
       "products": [
         "civil",
         "gen"
@@ -5243,7 +5243,7 @@
       "className": "FiberDivision",
       "exportName": "fiberDivision",
       "endpoint": "/db/FIBR",
-      "name": "Fiber Division of Section",
+      "name": "/db/FIBR",
       "products": [
         "civil",
         "gen"

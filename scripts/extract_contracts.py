@@ -577,6 +577,7 @@ class ParsedField:
     notes: list[str] = dataclass_field(default_factory=list)
     properties: list["ParsedField"] = dataclass_field(default_factory=list)
     products: tuple[str, ...] = ()
+    shared_number_group: bool = False
 
 
 # JSON member names may begin with a digit.  ``7TH_DOF_TYPE`` is an exact,
@@ -648,6 +649,22 @@ def _nest(flat: list[ParsedField]) -> list[ParsedField]:
             depth = 1
         elif _NUMBER_PATH.match(entry.number):
             depth = entry.number.count("-")
+        if depth and entry.shared_number_group and "." not in key and not key.startswith("└"):
+            grouped_parent = by_depth.get(depth - 1)
+            if grouped_parent is not None:
+                entry.notes.append(
+                    f"the manual nests this under {grouped_parent.key!r} by numbering it "
+                    f"{entry.number!r}, not by naming a path"
+                )
+                _as_container(grouped_parent, is_array=grouped_parent.type == "array")
+                grouped_parent.properties.append(entry)
+                by_depth[depth] = entry
+                continue
+            # A compact row can give multiple siblings the same child number.
+            # Without an already-known numbered parent, the first key cannot
+            # become an invented parent for the following literal keys.
+            roots.append(entry)
+            continue
         if depth and "." not in key and not key.startswith("└"):
             parent = by_depth.get(depth - 1)
             if parent is not None:
@@ -1113,7 +1130,7 @@ def _structural_fields(section: "Section") -> tuple[list[ParsedField], list[Stru
     return fields, resolved
 
 
-def _section_schema_hints(lines: list[str]) -> dict[tuple[str, ...], list[dict[str, Any]]]:
+def _section_schema_hints(lines: list[str], endpoint: str) -> dict[tuple[str, ...], list[dict[str, Any]]]:
     """Read exact property metadata from a section's own ``JSON Schema`` fence.
 
     The manual's parameter table remains the primary transcription.  Several
@@ -1125,6 +1142,7 @@ def _section_schema_hints(lines: list[str]) -> dict[tuple[str, ...], list[dict[s
     """
 
     hints: dict[tuple[str, ...], list[dict[str, Any]]] = {}
+    endpoint_wrapper = endpoint.rsplit("/", 1)[-1]
     for index, line in enumerate(lines):
         if not re.fullmatch(r"#{2,}\s+JSON Schema\s*", line.strip(), re.IGNORECASE):
             continue
@@ -1144,6 +1162,12 @@ def _section_schema_hints(lines: list[str]) -> dict[tuple[str, ...], list[dict[s
             schema = json.loads("\n".join(lines[start + 1 : end]))
         except json.JSONDecodeError:
             continue
+        # Several DB chapters wrap their schema in the endpoint token itself
+        # (``{"NPLN": {...}}``), while their parameter table starts directly
+        # at the record payload. It is an exact transport wrapper only when it
+        # is the sole root member and exactly matches this endpoint.
+        if isinstance(schema, dict) and set(schema) == {endpoint_wrapper} and isinstance(schema[endpoint_wrapper], dict):
+            schema = schema[endpoint_wrapper]
 
         def condition_text(node: Any) -> Optional[str]:
             """Render one exact JSON-Schema selector without inventing a rule.
@@ -1210,7 +1234,7 @@ def _section_schema_hints(lines: list[str]) -> dict[tuple[str, ...], list[dict[s
                         continue
                     # Endpoint wrappers are message transport, not payload
                     # members.  Table paths start immediately inside them.
-                    if not prefix and key in {"Argument", "Assign"}:
+                    if not prefix and key in {"Argument", "Assign", endpoint_wrapper}:
                         visit(child, prefix)
                         continue
                     path = prefix + (key,)
@@ -1252,6 +1276,32 @@ def _agreed_schema_value(entries: list[dict[str, Any]], key: str) -> Any | None:
     return values[0]
 
 
+def _schema_enum_values(entry: dict[str, Any]) -> Optional[list[Any]]:
+    """Read a complete scalar enum from one manual JSON-Schema property.
+
+    Some design chapters use ``oneOf`` with one ``const`` per documented
+    choice rather than JSON Schema's compact ``enum`` keyword. Both forms
+    state the same finite wire-value set. A shortened ``oneOf`` (for example
+    an ellipsis entry or a branch without ``const``) stays unverified.
+    """
+
+    enum = entry.get("enum")
+    if isinstance(enum, list) and enum and all(isinstance(value, (str, int, float, bool)) for value in enum):
+        return enum
+    choices = entry.get("oneOf")
+    if not isinstance(choices, list) or not choices:
+        return None
+    values: list[Any] = []
+    for choice in choices:
+        if not isinstance(choice, dict) or "const" not in choice:
+            return None
+        value = choice["const"]
+        if not isinstance(value, (str, int, float, bool)) or value in values:
+            return None
+        values.append(value)
+    return values
+
+
 def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], list[dict[str, Any]]]) -> None:
     """Fill only table gaps that the same section's JSON Schema states exactly."""
 
@@ -1260,6 +1310,21 @@ def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], 
             path = prefix + (field.key,)
             entries = hints.get(path, [])
             if entries:
+                synthesized_note = (
+                    "no row of its own in the manual - inferred from the dotted paths of its "
+                    "children, so its requiredness and default are unknown"
+                )
+                # A parent introduced solely to represent an explicit
+                # ``PARENT[].CHILD`` path is no longer inferred when this
+                # section's own JSON Schema names that parent. The schema is
+                # direct manual evidence for the container and its
+                # requiredness; retain the note when there is no such source.
+                if (
+                    synthesized_note in field.notes
+                    and isinstance(_agreed_schema_value(entries, "type"), str)
+                    and isinstance(_agreed_schema_value(entries, "__required"), bool)
+                ):
+                    field.notes.remove(synthesized_note)
                 required = _agreed_schema_value(entries, "__required")
                 if field.requirement is None and isinstance(required, bool):
                     field.requirement = "required" if required else "optional"
@@ -1287,8 +1352,9 @@ def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], 
                     field.documented_default = default
                     field.notes.remove("the table has no Default column")
 
-                enum = _agreed_schema_value(entries, "enum")
-                if not field.enum and isinstance(enum, list) and enum:
+                schema_enums = [_schema_enum_values(entry) for entry in entries]
+                enum = schema_enums[0] if schema_enums and all(value == schema_enums[0] for value in schema_enums) else None
+                if not field.enum and _ENUM_VALUES_ELSEWHERE in field.notes and enum:
                     field.enum = enum
                     if _ENUM_VALUES_ELSEWHERE in field.notes:
                         field.notes.remove(_ENUM_VALUES_ELSEWHERE)
@@ -1432,6 +1498,7 @@ def _parallel_field_cells(
     type_cell: Optional[str],
     default_cell: Optional[str],
     required_cell: Optional[str],
+    number: str,
 ) -> Optional[list[tuple[str, Optional[str], Optional[str], Optional[str]]]]:
     """Return exact parallel field columns, or ``None`` when a row is ambiguous."""
 
@@ -1448,6 +1515,20 @@ def _parallel_field_cells(
             continue
         split = _parallel_cells(cell, len(keys))
         if split is None:
+            # A row such as ``"R" "G" "B" | Integer | 0 | Optional``
+            # names several literal wire keys but gives one *shared* claim in
+            # every other column. That is different from ``String / Integer |
+            # Optional``: there the singleton Required value cannot safely be
+            # assigned to either differently typed key. The former is an exact
+            # compact table notation for homogeneous vector components, so
+            # repeat its complete shared claim for every literal key.
+            if (
+                len(quoted) == len(keys)
+                and ("/" not in raw_key or _NUMBER_CHILD.match(_clean(number)) is not None)
+                and all(cell is None or "/" not in _clean(cell) for cell in columns)
+            ):
+                parts = [None if cell is None else [_clean(cell)] * len(keys) for cell in columns]
+                break
             return None
         parts.append(split)
     return [
@@ -1459,6 +1540,27 @@ def _parallel_field_cells(
         )
         for index, key in enumerate(keys)
     ]
+
+
+_QUOTED_ARRAY_PROPERTY = re.compile(
+    r'^"([A-Za-z_][A-Za-z0-9_]*)"\[\]\.(?:"?)([A-Za-z_][A-Za-z0-9_]*)(?:"?)$'
+)
+
+
+def _canonical_wire_property(cell: str) -> str:
+    """Transcribe a quoted array-member path into the contract's path syntax.
+
+    The manual writes both ``"POINT"[].ITEM"`` and
+    ``"SPAN_BASE_ITEMS"[].ELEM_KEY"``. Quotes decorate literal property
+    tokens; they are not wire characters. Preserve every other key spelling so
+    an unfamiliar decoration still reaches the review gate.
+    """
+
+    text = _clean(cell)
+    match = _QUOTED_ARRAY_PROPERTY.fullmatch(text)
+    if match:
+        return f"{match.group(1)}[].{match.group(2)}"
+    return text.strip('"')
 
 
 def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
@@ -1497,7 +1599,7 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
             row += 1
             if len(cells) != len(header):
                 continue
-            key = _clean(cells[key_column]).strip('"')
+            key = _canonical_wire_property(cells[key_column])
             if not key or key in _EMPTY_CELLS:
                 # Some manual tables use a blank-key row as an inline section
                 # divider, e.g. ``General Load (OPT_AUTO_OPTIMIZE=false)``.
@@ -1527,6 +1629,7 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                 cells[type_column] if type_column is not None else None,
                 cells[default_column] if default_column is not None else None,
                 cells[required_column] if required_column is not None else None,
+                cells[0] if cells else "",
             )
             entries = parallel or [
                 (
@@ -1600,6 +1703,7 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                         condition=condition,
                         number=_clean(cells[0]) if cells else "",
                         notes=notes,
+                        shared_number_group=parallel is not None,
                     )
                 )
 
@@ -1697,7 +1801,7 @@ def parse_chapter(path: Path) -> list[Section]:
             section.methods = toc_methods.get(section.endpoint, [])
         section.tables = _parse_tables(body, index)
         _apply_enum_values(section.tables, _enum_tables(body))
-        _apply_schema_hints(section.tables, _section_schema_hints(body))
+        _apply_schema_hints(section.tables, _section_schema_hints(body, section.endpoint))
         section.variants = _explicit_variants(section.tables)
         sections.append(section)
     return sections
@@ -2179,6 +2283,32 @@ def run_report(sections: list[Section], table_family: dict[str, int]) -> int:
     promoted = {path.stem for path in ENDPOINT_DIR.glob("*.yaml")} if ENDPOINT_DIR.is_dir() else set()
     drafted = {path.stem for path in DRAFT_DIR.glob("*.yaml")} if DRAFT_DIR.is_dir() else set()
     print(f"\npromoted contracts: {len(promoted)}   drafts awaiting review: {len(drafted - promoted)}")
+    resource_inventory = ROOT / "schema" / "typescript-resources.json"
+    if resource_inventory.is_file():
+        try:
+            resources = json.loads(resource_inventory.read_text(encoding="utf-8")).get("resources", [])
+            resource_endpoints = {
+                item["endpoint"]
+                for item in resources
+                if isinstance(item, dict) and isinstance(item.get("endpoint"), str)
+            }
+            contract_endpoints = {
+                next(
+                    (line.removeprefix("endpoint: ").strip() for line in path.read_text(encoding="utf-8").splitlines() if line.startswith("endpoint: ")),
+                    "",
+                )
+                for path in ENDPOINT_DIR.glob("*.yaml")
+            }
+        except (json.JSONDecodeError, OSError):
+            resource_endpoints = set()
+            contract_endpoints = set()
+        if resource_endpoints:
+            covered = resource_endpoints & contract_endpoints
+            print(
+                "npm resource contract coverage (committed inventory): "
+                f"{len(covered)} of {len(resource_endpoints)} covered; "
+                f"{len(resource_endpoints - covered)} without a contract."
+            )
     return 0
 
 
