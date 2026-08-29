@@ -452,6 +452,13 @@ def test_report_prints_measured_stage_two_blockers(section: ex.Section, capsys: 
     assert "conditional tables:" in output
 
 
+def test_report_measures_table_contract_coverage(section: ex.Section, capsys: pytest.CaptureFixture[str]):
+    assert ex.run_report([section], {"18_POST_PreProcess.md": 10}) == 0
+    output = capsys.readouterr().out
+    assert "table-contract coverage:" in output
+    assert "/post/PM and /post/STEELCODECHECK" in output
+
+
 def test_conditional_variant_tables_are_reported_not_merged(section: ex.Section):
     assert len(section.tables) == 2
     assert section.variants == []

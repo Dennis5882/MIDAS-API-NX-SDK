@@ -54,14 +54,15 @@ from typing import Any, Optional
 ROOT = Path(__file__).resolve().parent.parent
 DRAFT_DIR = ROOT / "contracts" / "drafts"
 ENDPOINT_DIR = ROOT / "contracts" / "endpoints"
+TABLE_DIR = ROOT / "contracts" / "tables"
 
 DEFAULT_MANUAL_REPO = Path(r"E:\AI Study\MIDAS-API")
 
 # Chapters 18-23 document the shared /post/TABLE family: one endpoint selected by
 # a TABLE_TYPE string, with response HEAD columns rather than a request payload.
-# That needs a two-layer contract (endpoint plus table), which this extractor
-# does not model yet - so it reports them rather than mangling them into
-# endpoint contracts.
+# Those use a two-layer contract (endpoint plus table).  This extractor only
+# emits endpoint drafts, so it reports their measured table-contract coverage
+# rather than mangling them into endpoint contracts.
 TABLE_FAMILY_CHAPTERS = {
     "18_POST_PreProcess.md",
     "19_POST_AnalysisResult_1.md",
@@ -2454,13 +2455,21 @@ def run_report(sections: list[Section], table_family: dict[str, int]) -> int:
 
     if table_family:
         skipped = sum(table_family.values())
+        table_contracts = list(TABLE_DIR.glob("*.yaml")) if TABLE_DIR.is_dir() else []
         print(
             f"\n{skipped} sections across {len(table_family)} chapters belong to the shared "
-            f"/post/TABLE family and are not endpoint contracts:"
+            f"/post/TABLE/table-result family and are not endpoint contracts:"
         )
         for chapter, count in sorted(table_family.items()):
             print(f"  {count:>3}  {chapter}")
-        print("  They need a two-layer contract (endpoint + table), which is not modelled yet.")
+        print(
+            "  table-contract coverage: "
+            f"{len(table_contracts)} contracted result tables."
+        )
+        print(
+            "  Chapter 23 also contains /post/PM and /post/STEELCODECHECK; "
+            "they are separate routes, not TABLE_TYPE result tables."
+        )
 
     promoted = {path.stem for path in ENDPOINT_DIR.glob("*.yaml")} if ENDPOINT_DIR.is_dir() else set()
     drafted = {path.stem for path in DRAFT_DIR.glob("*.yaml")} if DRAFT_DIR.is_dir() else set()
