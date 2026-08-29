@@ -322,9 +322,17 @@ def _contract_interface_body(fields: list[dict[str, Any]], indent: str) -> str:
         # `total=False`, so every field they produced was optional regardless of
         # what the manual said. This is the reversal paying for itself.
         optional = "" if field.get("requirement") == "required" else "?"
+        documentation = []
         if field.get("description"):
-            summary = " ".join(field["description"].split())
-            lines.append(f"{indent}/** {summary} */")
+            documentation.append(" ".join(field["description"].split()))
+        applies_when = field.get("appliesWhen", [])
+        if applies_when:
+            rendered = " and ".join(
+                f"{entry['path']} = {json.dumps(entry['equals'])}" for entry in applies_when
+            )
+            documentation.append(f"Applies when {rendered}.")
+        if documentation:
+            lines.append(f"{indent}/** {' '.join(documentation)} */")
         lines.append(f"{indent}{field['key']}{optional}: {_contract_field_type(field, indent)};")
     return "\n".join(lines)
 

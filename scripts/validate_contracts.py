@@ -58,6 +58,7 @@ PY_POST = ROOT / "src" / "midas_nx" / "post"
 _ID_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 _EXECUTABLE_RULE_KINDS = (
     "normalize_defaults",
+    "reject_request",
     "per_id_request",
     "require_confirmation",
     "unwrap_table_by_shape",
@@ -103,6 +104,16 @@ def _iter_fields(fields: list[dict]) -> list[dict]:
         out.append(field)
         out.extend(_iter_fields(field.get("properties") or []))
     return out
+
+
+def _field_paths(fields: list[dict], prefix: str = "") -> set[str]:
+    """Return declared field paths, including object and array-item members."""
+    paths: set[str] = set()
+    for field in fields or []:
+        path = f"{prefix}.{field['key']}" if prefix else field["key"]
+        paths.add(path)
+        paths.update(_field_paths(field.get("properties") or [], path))
+    return paths
 
 
 def check_schema(contracts: list[tuple[Path, dict]], failures: Failures) -> None:
@@ -205,6 +216,17 @@ def check_cross_references(
 
 def check_safety(contracts: list[tuple[Path, dict]], failures: Failures) -> None:
     for path, contract in contracts:
+        declared_paths = _field_paths(contract.get("fields", []))
+        for field in _iter_fields(contract.get("fields", [])):
+            for condition in field.get("appliesWhen", []):
+                condition_path = condition["path"]
+                if condition_path not in declared_paths:
+                    failures.add(
+                        path.name,
+                        f"field {field['key']!r} appliesWhen references undeclared field path "
+                        f"{condition_path!r}",
+                    )
+
         rules = contract.get("sdkRules", [])
         rules_by_method: dict[str, list[dict]] = {}
         for rule in rules:
@@ -678,6 +700,23 @@ def _check_python_base_safety_rules(
     if declared["normalize_defaults"]:
         # _check_python_normalization() already executes each declared rule
         # against its actual resource above, for create and update.
+        probes += 1
+
+    if declared["reject_request"]:
+        from midas_nx.client import MidasRequestError
+        from midas_nx.ope import generate_bridge_girder_diagram
+
+        try:
+            generate_bridge_girder_diagram({"BATCH": True, "BRDG_GROUP": "CONTRACT-PROBE"})
+        except MidasRequestError:
+            pass
+        except Exception as exc:  # pragma: no cover - reported, not raised
+            failures.add("sdkRules", f"Python reject_request raised {exc!r}")
+        else:
+            failures.add(
+                "sdkRules",
+                "Python reject_request allowed the /ope/GSBG batch-exclusive BRDG_GROUP field",
+            )
         probes += 1
 
     if declared["per_id_request"]:

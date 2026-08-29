@@ -1,4 +1,5 @@
 import { getDefaultClient, type MidasClient } from "./client";
+import { MidasRequestError } from "./errors";
 import type { HttpMethod, JsonObject, Product, RequestOptions } from "./types";
 
 export interface OperationMetadata {
@@ -54,6 +55,25 @@ export function definePostOperation<TArgument extends object = JsonObject>(
   metadata: OperationMetadata,
 ): PostOperation<TArgument> {
   const operation = async (argument: TArgument, options: OperationOptions = {}) => {
+    if (metadata.endpoint === "/ope/GSBG") {
+      const values = argument as Record<string, unknown>;
+      if (values.BATCH !== false) {
+        const forbidden = ["BRDG_GROUP", "COMPONENTS", "COMBINED_COMP", "7TH_DOF_TYPE"].filter(
+          (key) => key in values,
+        );
+        if (forbidden.length) {
+          throw new MidasRequestError(
+            `BATCH=true does not allow ${forbidden.join(", ")} for /ope/GSBG`,
+            { method: "POST", endpoint: metadata.endpoint },
+          );
+        }
+      } else if ("BATCH_LIST" in values) {
+        throw new MidasRequestError("BATCH=false does not allow BATCH_LIST for /ope/GSBG", {
+          method: "POST",
+          endpoint: metadata.endpoint,
+        });
+      }
+    }
     const client = options.client ?? getDefaultClient();
     client.checkProduct(metadata.products, metadata.endpoint);
     return postArgument(metadata.endpoint, argument, { ...options, client });

@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from typing import List, Optional, TypedDict, Union
 
-from .client import MidasClient
+from .client import MidasClient, MidasRequestError
 from .client import get_result as _get
 from .client import post_argument as _post
 
@@ -1032,4 +1032,19 @@ def generate_bridge_girder_diagram(
     structural than session-state-dependent now, and remains
     unexplained.
     """
+    batch = argument.get("BATCH", True)
+    if batch:
+        forbidden = {"BRDG_GROUP", "COMPONENTS", "COMBINED_COMP", "7TH_DOF_TYPE"} & argument.keys()
+        if forbidden:
+            raise MidasRequestError(
+                "BATCH=true does not allow " + ", ".join(sorted(forbidden)) + " for /ope/GSBG",
+                method="POST",
+                endpoint="/ope/GSBG",
+            )
+    elif "BATCH_LIST" in argument:
+        raise MidasRequestError(
+            "BATCH=false does not allow BATCH_LIST for /ope/GSBG",
+            method="POST",
+            endpoint="/ope/GSBG",
+        )
     return _post("/ope/GSBG", argument, client)

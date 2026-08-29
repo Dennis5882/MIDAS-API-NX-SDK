@@ -1,8 +1,10 @@
 import json
 
+import pytest
 import responses
 
 from midas_nx import ope
+from midas_nx.client import MidasRequestError
 
 # --- 1. PROJECTSTATUS --------------------------------------------------------
 
@@ -864,3 +866,16 @@ def test_generate_bridge_girder_diagram_force_single(gen_client):
     body = json.loads(sent.body)
     assert body["Argument"]["BATCH"] is False
     assert body["Argument"]["BRDG_GROUP"] == "BG_MAIN"
+
+
+@pytest.mark.parametrize(
+    ("argument", "forbidden"),
+    [
+        pytest.param({"BATCH": True, "BRDG_GROUP": "BG_MAIN"}, "BRDG_GROUP", id="batch-true-group"),
+        pytest.param({"COMPONENTS": 2}, "COMPONENTS", id="omitted-batch-defaults-true"),
+        pytest.param({"BATCH": False, "BATCH_LIST": ["OUT"]}, "BATCH_LIST", id="batch-false-list"),
+    ],
+)
+def test_generate_bridge_girder_diagram_rejects_manual_mutual_exclusions(argument, forbidden):
+    with pytest.raises(MidasRequestError, match=forbidden):
+        ope.generate_bridge_girder_diagram(argument)

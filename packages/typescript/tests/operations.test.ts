@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import {
   MidasClient,
+  MidasRequestError,
   MidasResultError,
   ProductMismatchError,
   designTables,
@@ -53,6 +54,17 @@ describe("generated API surface", () => {
     await expect(operations.ope.getStoryCheckParameter({ client })).rejects.toBeInstanceOf(
       ProductMismatchError,
     );
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("rejects the documented /ope/GSBG mutually exclusive arguments before sending", async () => {
+    const { client, fetch } = mockClient();
+    await expect(
+      operations.ope.generateBridgeGirderDiagram({ BATCH: true, BRDG_GROUP: "BG_MAIN" }, { client }),
+    ).rejects.toBeInstanceOf(MidasRequestError);
+    await expect(
+      operations.ope.generateBridgeGirderDiagram({ BATCH: false, BATCH_LIST: ["OUT"] }, { client }),
+    ).rejects.toBeInstanceOf(MidasRequestError);
     expect(fetch).not.toHaveBeenCalled();
   });
 });

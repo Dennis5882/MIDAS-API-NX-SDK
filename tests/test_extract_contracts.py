@@ -179,6 +179,20 @@ def test_requiredness_and_defaults_come_from_the_table(section: ex.Section):
     assert fields["COUNT"].documented_default == 0
 
 
+def test_render_draft_keeps_manual_condition_and_structured_applies_when(section: ex.Section):
+    field = next(field for field in section.tables[0].fields if field.key == "SPECIAL_VALUE")
+    field.condition = "MODE=\"SPECIAL\""
+    field.applies_when = [("MODE", "SPECIAL"), ("OPTIONS.ENABLED", True)]
+
+    rendered = yaml.safe_load(ex.render_draft(section))["fields"]
+    rendered_field = next(entry for entry in rendered if entry["key"] == "SPECIAL_VALUE")
+    assert rendered_field["condition"] == 'MODE="SPECIAL"'
+    assert rendered_field["appliesWhen"] == [
+        {"path": "MODE", "equals": "SPECIAL"},
+        {"path": "OPTIONS.ENABLED", "equals": True},
+    ]
+
+
 def test_inline_conditions_are_kept_verbatim(section: ex.Section):
     span = {f.key: f for f in section.tables[0].fields}["SPAN"]
 

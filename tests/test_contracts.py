@@ -140,6 +140,58 @@ def test_normalized_defaults_match_the_documented_default():
             assert float(value) == float(field["documentedDefault"])
 
 
+def test_applies_when_paths_are_declared_contract_fields():
+    """Structured conditions must never silently target a misspelled member."""
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from validate_contracts import Failures, check_safety  # noqa: PLC0415
+
+    contract = {
+        "fields": [
+            {
+                "key": "MODE",
+                "type": "integer",
+                "requirement": "required",
+                "documentedOptional": False,
+                "safeToOmit": "unverified",
+                "provenance": "manual",
+            },
+            {
+                "key": "OPTIONS",
+                "type": "object",
+                "requirement": "optional",
+                "documentedOptional": True,
+                "safeToOmit": "unverified",
+                "provenance": "manual",
+                "properties": [
+                    {
+                        "key": "DETAIL",
+                        "type": "number",
+                        "requirement": "conditional",
+                        "condition": "MODE=1",
+                        "appliesWhen": [{"path": "MODE", "equals": 1}],
+                        "documentedOptional": False,
+                        "safeToOmit": "unverified",
+                        "provenance": "manual",
+                    }
+                ],
+            },
+        ],
+        "operations": [],
+    }
+    failures = Failures()
+    check_safety([(Path("synthetic.yaml"), contract)], failures)
+    assert not failures.items
+
+    contract["fields"][1]["properties"][0]["appliesWhen"] = [
+        {"path": "MDOE", "equals": 1}
+    ]
+    failures = Failures()
+    check_safety([(Path("synthetic.yaml"), contract)], failures)
+    assert failures.items == [
+        ("synthetic.yaml", "field 'DETAIL' appliesWhen references undeclared field path 'MDOE'")
+    ]
+
+
 # ---------------------------------------------------------------------------
 # /db/NMAS - the rule the npm SDK was missing.
 # ---------------------------------------------------------------------------

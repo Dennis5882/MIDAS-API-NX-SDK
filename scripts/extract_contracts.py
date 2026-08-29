@@ -574,6 +574,7 @@ class ParsedField:
     enum: list[Any] = dataclass_field(default_factory=list)
     constraints: dict[str, Any] = dataclass_field(default_factory=dict)
     condition: Optional[str] = None
+    applies_when: list[tuple[str, str | int | float | bool]] = dataclass_field(default_factory=list)
     number: str = ""
     notes: list[str] = dataclass_field(default_factory=list)
     properties: list["ParsedField"] = dataclass_field(default_factory=list)
@@ -1129,6 +1130,29 @@ def _structural_fields(section: "Section") -> tuple[list[ParsedField], list[Stru
                 raise AssertionError("preflighted structural table merge became incompatible")
         resolved.append(merge)
     return fields, resolved
+
+
+def _conditional_fields(section: "Section", fields: list[ParsedField]) -> tuple[list[ParsedField], set[int]]:
+    """Merge audited conditional tables without guessing a payload branch."""
+    audited: dict[str, dict[int, tuple[str, str | int | float | bool]]] = {
+        "/ope/GSBG": {1: ("BATCH", True), 2: ("BATCH", False), 3: ("DGRM_TYPE", 0)}
+    }
+    merged = copy.deepcopy(fields)
+    resolved: set[int] = set()
+
+    def annotate(entries: list[ParsedField], condition: tuple[str, str | int | float | bool], raw: str) -> None:
+        for entry in entries:
+            entry.condition = entry.condition or raw
+            entry.applies_when.append(condition)
+
+    for index, condition in audited.get(section.endpoint, {}).items():
+        if index >= len(section.tables):
+            continue
+        additions = copy.deepcopy(section.tables[index].fields)
+        annotate(additions, condition, section.tables[index].heading)
+        if _append_fields(merged, additions):
+            resolved.add(index)
+    return merged, resolved
 
 
 def _section_schema_hints(lines: list[str], endpoint: str) -> dict[tuple[str, ...], list[dict[str, Any]]]:
@@ -2032,11 +2056,15 @@ def _render_fields(
             if parsed.requirement
             else f"{body}requirement: optional   # TODO(review): the manual did not state requiredness"
         )
-        if parsed.requirement == "conditional":
-            if parsed.condition:
-                lines.append(f"{body}condition: {_scalar(parsed.condition)}")
-            else:
-                lines.append(f"{body}condition: \"TODO(review): the manual does not state the condition\"")
+        if parsed.condition:
+            lines.append(f"{body}condition: {_scalar(parsed.condition)}")
+        elif parsed.requirement == "conditional":
+            lines.append(f"{body}condition: \"TODO(review): the manual does not state the condition\"")
+        if parsed.applies_when:
+            lines.append(f"{body}appliesWhen:")
+            for condition_path, equals in parsed.applies_when:
+                lines.append(f"{body}  - path: {_scalar(condition_path)}")
+                lines.append(f"{body}    equals: {_scalar(equals)}")
         lines.append(f"{body}documentedDefault: {_scalar(parsed.documented_default)}")
         lines.append(f"{body}documentedOptional: {'true' if parsed.requirement == 'optional' else 'false'}")
         if parsed.enum and parsed.type != "array":
@@ -2077,7 +2105,8 @@ def _render_fields(
 def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> str:
     main = section.tables[0] if section.tables else None
     fields, structural_merges = _structural_fields(section)
-    resolved_tables = {merge.table for merge in structural_merges}
+    fields, conditional_merges = _conditional_fields(section, fields)
+    resolved_tables = {merge.table for merge in structural_merges} | conditional_merges
     lines: list[str] = [
         f"# DRAFT contract for {section.endpoint} - extracted, not reviewed.",
         "#",
@@ -2236,12 +2265,18 @@ def run_report(sections: list[Section], table_family: dict[str, int]) -> int:
     # before it can be believed, and saying so is the difference between a draft
     # and a claim.
     all_fields = [f for section in sections for table in section.tables for f in _walk(table.fields)]
+    structured_conditions = 0
+    for section in sections:
+        rendered_fields, _ = _structural_fields(section)
+        rendered_fields, _ = _conditional_fields(section, rendered_fields)
+        structured_conditions += sum(len(field.applies_when) for field in _walk(rendered_fields))
     flagged = [f for f in all_fields if f.notes]
     nested = [f for f in all_fields if f.properties]
     print(
         f"\nacross every parsed table: {len(all_fields)} fields, {len(nested)} of them nested, "
         f"{len(flagged)} carrying a review note ({100 * len(flagged) // max(len(all_fields), 1)}%)."
     )
+    print(f"structured appliesWhen conditions extracted: {structured_conditions}")
     reasons: dict[str, int] = {}
     for entry in flagged:
         for note in entry.notes:
@@ -2441,7 +2476,9 @@ def run_check(sections: list[Section]) -> int:
         # Use the same closed structural merge map as draft emission.  Without
         # this, --check would wrongly call a nested supplementary-table field
         # contract drift simply because it only inspected the first table.
-        manual_fields = _flatten_manual(_structural_fields(section)[0])
+        manual_shape, _ = _structural_fields(section)
+        manual_shape, _ = _conditional_fields(section, manual_shape)
+        manual_fields = _flatten_manual(manual_shape)
         contract_fields = _flatten_contract(contract.get("fields", []))
         overridden = {
             d.get("describes") for d in contract.get("manualDefects", [])

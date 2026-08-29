@@ -428,3 +428,19 @@ records:
       rather than at nothing.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-read-sweep-2026-08-13
+    endpoints: []
+    date: "2026-08-13"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 08/12/2026
+    level: read
+    outcome: success
+    method: >-
+      Still blocked, not confirmed working on either product -- tracked here as 'attempted, not yet unblocked' rather than a success. 2026-07-31 on a real FCM bridge (Civil): BRDG_GROUP confirmed to be a plain /db/GRUP (StructureGroup) name -- creating one with the girder's element ids clears the 'group not found' error. Before that, every call failed 'post mode is required', which set_result_graphic()
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md

@@ -4,6 +4,8 @@ import {
   DestructiveOperationError,
   MidasClient,
   MidasServerError,
+  MidasRequestError,
+  operations,
   defineDbResource,
   resources,
   unwrapTable,
@@ -57,6 +59,16 @@ describe("contract safety probes", () => {
     expect(JSON.parse(String(fetch.mock.calls[0]?.[1]?.body))).toEqual({
       Assign: { "1": { mX: 1, rmX: 0, rmY: 0, rmZ: 0 } },
     });
+  });
+
+  it("reject_request: rejects /ope/GSBG batch-exclusive fields before sending", async () => {
+    const fetch = vi.fn<typeof globalThis.fetch>();
+    const client = new MidasClient({ fetch });
+
+    await expect(
+      operations.ope.generateBridgeGirderDiagram({ BATCH: true, BRDG_GROUP: "CONTRACT-PROBE" }, { client }),
+    ).rejects.toBeInstanceOf(MidasRequestError);
+    expect(fetch).not.toHaveBeenCalled();
   });
 
   it("per_id_request: sends one DELETE URL per id and stops after the first failure", async () => {

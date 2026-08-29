@@ -135,6 +135,30 @@ def test_contract_fixed_length_arrays_render_as_tuples():
     assert rendered == "[number, number, number]"
 
 
+def test_contract_applies_when_renders_as_member_jsdoc():
+    rendered = "\n".join(
+        generator._contract_payload_type(
+            "ConditionalPayload",
+            {
+                "fields": [
+                    {"key": "BATCH", "type": "boolean", "requirement": "optional"},
+                    {
+                        "key": "BATCH_LIST",
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "requirement": "conditional",
+                        "description": "Output group names.",
+                        "appliesWhen": [{"path": "BATCH", "equals": True}],
+                    },
+                ]
+            },
+        )
+    )
+
+    assert "/** Output group names. Applies when BATCH = true. */" in rendered
+    assert "BATCH_LIST?: Array<string>;" in rendered
+
+
 def test_conflicting_legacy_payload_aliases_receive_distinct_contract_types():
     """One reused Python TypedDict must not overwrite another endpoint contract."""
     resources = generator._load_resources()
