@@ -1397,11 +1397,19 @@ def _section_schema_hints(lines: list[str], endpoint: str) -> dict[tuple[str, ..
 
 
 def _agreed_schema_value(entries: list[dict[str, Any]], key: str) -> Any | None:
-    """Return a value only when every same-path schema branch agrees on it."""
+    """Return a value only when concrete same-path properties agree on it.
 
-    if not entries or any(key not in entry for entry in entries):
+    ``allOf.if/then`` contributes a small ``{"__conditional": ...}`` hint
+    at the field made conditionally required.  That marker records the
+    relation, but is not a competing property schema: it must not make an
+    otherwise explicit enum, default, or type look absent.  Real property
+    schemas remain deliberately strict -- every one that states *key* must
+    agree before we transcribe it.
+    """
+
+    values = [entry[key] for entry in entries if key in entry]
+    if not values:
         return None
-    values = [entry[key] for entry in entries]
     if any(value != values[0] for value in values[1:]):
         return None
     return values[0]
@@ -1441,6 +1449,13 @@ def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], 
             path = prefix + (field.key,)
             entries = hints.get(path, [])
             if entries:
+                # ``then.required`` contributes only ``__conditional``.  It
+                # describes a relationship between fields and must not act as
+                # a second, empty property schema when evaluating the
+                # concrete property metadata below.
+                property_entries = [
+                    entry for entry in entries if any(not key.startswith("__") for key in entry)
+                ]
                 synthesized_note = (
                     "no row of its own in the manual - inferred from the dotted paths of its "
                     "children, so its requiredness and default are unknown"
@@ -1452,11 +1467,11 @@ def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], 
                 # requiredness; retain the note when there is no such source.
                 if (
                     synthesized_note in field.notes
-                    and isinstance(_agreed_schema_value(entries, "type"), str)
-                    and isinstance(_agreed_schema_value(entries, "__required"), bool)
+                    and isinstance(_agreed_schema_value(property_entries, "type"), str)
+                    and isinstance(_agreed_schema_value(property_entries, "__required"), bool)
                 ):
                     field.notes.remove(synthesized_note)
-                required = _agreed_schema_value(entries, "__required")
+                required = _agreed_schema_value(property_entries, "__required")
                 if field.requirement is None and isinstance(required, bool):
                     field.requirement = "required" if required else "optional"
                     for note in (
@@ -1478,19 +1493,19 @@ def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], 
                     if conditional_note in field.notes:
                         field.notes.remove(conditional_note)
 
-                default = _agreed_schema_value(entries, "default")
+                default = _agreed_schema_value(property_entries, "default")
                 if "the table has no Default column" in field.notes and default is not None:
                     field.documented_default = default
                     field.notes.remove("the table has no Default column")
 
-                schema_enums = [_schema_enum_values(entry) for entry in entries]
+                schema_enums = [_schema_enum_values(entry) for entry in property_entries]
                 enum = schema_enums[0] if schema_enums and all(value == schema_enums[0] for value in schema_enums) else None
                 if not field.enum and _ENUM_VALUES_ELSEWHERE in field.notes and enum:
                     field.enum = enum
                     if _ENUM_VALUES_ELSEWHERE in field.notes:
                         field.notes.remove(_ENUM_VALUES_ELSEWHERE)
 
-                items = _agreed_schema_value(entries, "items")
+                items = _agreed_schema_value(property_entries, "items")
                 if field.type == "array" and field.items is None and isinstance(items, dict):
                     item_type = items.get("type")
                     if item_type in {"string", "number", "integer", "boolean", "object", "array"}:
@@ -1499,7 +1514,7 @@ def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], 
                             field.notes.remove("array element type not stated by the manual")
 
                 for name in ("minimum", "maximum", "minItems", "maxItems", "minLength", "maxLength", "const"):
-                    value = _agreed_schema_value(entries, name)
+                    value = _agreed_schema_value(property_entries, name)
                     # Zero lower bounds are JSON Schema defaults, not a
                     # documented restriction.  Keeping them would manufacture
                     # drift against contracts that correctly omit a no-op.

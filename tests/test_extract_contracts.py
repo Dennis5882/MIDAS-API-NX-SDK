@@ -1219,6 +1219,27 @@ def test_same_section_schema_conditional_required_forms_supply_exact_condition(
     assert not detail.notes
 
 
+def test_schema_conditional_marker_does_not_mask_same_field_enum(tmp_path: Path):
+    """A ``then.required`` marker is relation metadata, not a second schema."""
+    path = tmp_path / "99_DB_ConditionalEnumSchema.md"
+    path.write_text(
+        "## 1. `/db/CONDITIONAL-ENUM` -- Conditional enum\n\n"
+        "### JSON Schema\n\n```json\n"
+        '{"type":"object","properties":{"Assign":{"type":"object","properties":{"MODE":{"type":"string","enum":["AUTO","USER"]},"DETAIL":{"type":"string","enum":["FIRST","SECOND"]}},"allOf":[{"if":{"properties":{"MODE":{"const":"USER"}},"required":["MODE"]},"then":{"required":["DETAIL"]}}]}}}\n'
+        "```\n\n"
+        "| No. | Description | Key | Value Type | Default | Required |\n"
+        "|-----|-------------|-----|------------|---------|----------|\n"
+        "| 1 | Mode | `MODE` | String (enum) | - | Optional |\n"
+        "| 2 | Detail | `DETAIL` | String (enum) | - | Conditional Required |\n",
+        encoding="utf-8",
+    )
+
+    detail = ex.parse_chapter(path)[0].tables[0].fields[1]
+    assert detail.enum == ["FIRST", "SECOND"]
+    assert detail.condition == 'MODE="USER"'
+    assert not detail.notes
+
+
 def test_shipped_contracts_still_match_the_manual_if_it_is_present():
     """Runs only where the sibling manual repo is checked out - CI does both."""
     manual_repo = ex.DEFAULT_MANUAL_REPO
