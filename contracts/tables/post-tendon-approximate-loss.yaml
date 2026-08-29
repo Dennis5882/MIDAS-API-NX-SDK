@@ -8,5 +8,5 @@ source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 2
 verification: {status: manual_only}
 risk: read_only
 tableTypes:
-  - {value: TNDN_APPROX_LOSS_FORCE, description: Approximate tendon force loss, head: [Index, Elem, Part, ImmediateLoss, CreepLoss, ShrinkageLoss, RelaxationLoss, AllLoss, Stress(ImmediateLoss), Stress(AllLoss), Stress(AllLoss)/Stress], provenance: manual}
+  - {value: TNDN_APPROX_LOSS_FORCE, description: Approximate tendon force loss, head: [Index, Elem, Part, ImmediateLoss, CreepLoss, ShrinkageLoss, RelaxationLoss, AllLoss, Force(ImmediateLoss), Force(AllLoss), Force(AllLoss)/Force], provenance: manual}
   - {value: TNDN_APPROX_LOSS_STRESS, description: Approximate tendon stress loss, head: [Index, Elem, Part, ImmediateLoss, CreepLoss, ShrinkageLoss, RelaxationLoss, AllLoss, Stress(ImmediateLoss), Stress(AllLoss), Stress(AllLoss)/Stress], provenance: manual}

@@ -824,6 +824,18 @@ export const tableTypes = {
     /** Cable force */
     cableForce: "CABLEFORCE",
   },
+  compositeSectionConstructionStage: {
+    /** Composite-section beam force */
+    compositeSectionBeamForce: "COMPSECTBEAMFORCE",
+    /** Composite-section beam stress */
+    compositeSectionBeamStress: "COMPSECTBEAMSTRESS",
+  },
+  compositeSectionSelfConstraint: {
+    /** Composite-section self-constraint beam force */
+    compositeSectionSelfConstraintBeamForce: "SELF_CONST_BEAM_FORCE",
+    /** Composite-section self-constraint beam stress */
+    compositeSectionSelfConstraintBeamStress: "SELF_CONST_BEAM_STRESS",
+  },
   concurrentJointForce: {
     /** Concurrent joint force */
     concurrentJointForce: "CONCURRENT_JOINT_FORCE",
@@ -1038,6 +1050,10 @@ export const tableTypes = {
     /** Approximate tendon stress loss */
     approximateTendonStressLoss: "TNDN_APPROX_LOSS_STRESS",
   },
+  tendonArrangement: {
+    /** Tendon arrangement */
+    tendonArrangement: "TNDN_ARRANGEMENT",
+  },
   tendonCoordinates: {
     /** Tendon coordinates */
     tendonCoordinates: "TNDN_COORDINATES",
@@ -1045,6 +1061,12 @@ export const tableTypes = {
   tendonElongation: {
     /** Tendon elongation */
     tendonElongation: "TNDN_ELONGATION",
+  },
+  tendonLoss: {
+    /** Tendon loss in force terms */
+    tendonLossInForceTerms: "TNDN_LOSS_FORCE",
+    /** Tendon loss in stress terms */
+    tendonLossInStressTerms: "TNDN_LOSS_STRESS",
   },
   tendonStressLimitCheck: {
     /** Tendon stress limit check */
