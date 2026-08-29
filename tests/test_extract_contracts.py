@@ -1255,6 +1255,44 @@ def test_description_literal_condition_accepts_only_one_explicit_equality(
     assert ex._description_literal_condition(description) == expected
 
 
+@pytest.mark.parametrize(
+    ("description", "expected"),
+    [
+        pytest.param("Target (same structure as SOURCE)", "SOURCE", id="english_same_structure"),
+        pytest.param("Target (구조는 Part A와 동일)", "PART_A", id="korean_same_structure"),
+        pytest.param("Target object", None, id="no_explicit_inheritance"),
+    ],
+)
+def test_same_object_shape_reference_requires_an_explicit_manual_statement(
+    description: str, expected: str | None
+):
+    assert ex._same_object_shape_reference(description) == expected
+
+
+def test_explicit_same_object_structure_clones_only_parsed_sibling_children(tmp_path: Path):
+    path = tmp_path / "99_DB_SameStructure.md"
+    path.write_text(
+        "## 1. `/db/SAME-STRUCTURE` -- Same object structure\n\n"
+        "| No. | Description | Key | Value Type | Default | Required |\n"
+        "|-----|-------------|-----|------------|---------|----------|\n"
+        "| 1 | Source object | `SOURCE` | Object | - | Required |\n"
+        "| 1.1 | Input method | `INPUT_METHOD` | String | - | Required |\n"
+        "| 1.2 | Source child (INPUT_METHOD=KEYS) | `CHILD` | String | - | Conditional Required |\n"
+        "| 2 | Target (same structure as SOURCE) | `TARGET` | Object | - | Required |\n",
+        encoding="utf-8",
+    )
+
+    fields, _ = ex._structural_fields(ex.parse_chapter(path)[0])
+    target = next(field for field in fields if field.key == "TARGET")
+    assert [field.key for field in target.properties] == ["INPUT_METHOD", "CHILD"]
+    assert not target.properties[1].notes
+
+    draft = yaml.safe_load(ex.render_draft(ex.parse_chapter(path)[0]))
+    target_draft = next(field for field in draft["fields"] if field["key"] == "TARGET")
+    child = target_draft["properties"][1]
+    assert child["appliesWhen"] == [{"path": "TARGET.INPUT_METHOD", "equals": "KEYS"}]
+
+
 def test_shipped_contracts_still_match_the_manual_if_it_is_present():
     """Runs only where the sibling manual repo is checked out - CI does both."""
     manual_repo = ex.DEFAULT_MANUAL_REPO

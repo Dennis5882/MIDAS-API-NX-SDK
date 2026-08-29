@@ -1085,6 +1085,62 @@ def _append_fields(destination: list[ParsedField], additions: list[ParsedField])
     return True
 
 
+_SAME_OBJECT_SHAPE = re.compile(
+    r"(?:구조는\s*(?P<korean>[A-Za-z][A-Za-z0-9_ -]*?)(?:와\s*)?동일|"
+    r"same\s+structure\s+as\s+(?P<english>[A-Za-z][A-Za-z0-9_ -]*?)(?=[).,]|$))",
+    re.IGNORECASE,
+)
+
+
+def _same_object_shape_reference(description: str) -> str | None:
+    """Return the exact sibling object named as having the same structure.
+
+    A table may document one object in full and say that a sibling's structure
+    is identical. This is not a guessed shape: the sentence is the manual's
+    direct statement. Normalize only spelling separators (``Part A`` to
+    ``PART_A``) so it can be matched to the actual sibling key.
+    """
+
+    match = _SAME_OBJECT_SHAPE.search(description)
+    if match is None:
+        return None
+    raw = match.group("korean") or match.group("english")
+    if raw is None:
+        return None
+    return re.sub(r"[\s-]+", "_", raw.strip()).upper()
+
+
+def _inherit_documented_object_shapes(fields: list[ParsedField]) -> None:
+    """Clone an explicitly documented sibling object structure once.
+
+    Only empty object siblings with a direct ``same structure`` statement may
+    inherit. A source without parsed children leaves the target empty, rather
+    than fabricating a shape from a name alone.
+    """
+
+    by_key = {field.key: field for field in fields}
+    for target in fields:
+        source_key = _same_object_shape_reference(target.description)
+        source = by_key.get(source_key) if source_key else None
+        if (
+            source is None
+            or source is target
+            or source.type != "object"
+            or target.type != "object"
+            or not source.properties
+            or target.properties
+        ):
+            continue
+        target.properties = copy.deepcopy(source.properties)
+        # Numbering notes identify how the source table drew its child path;
+        # they would be false on an inherited sibling whose shape was stated
+        # in prose rather than repeated as numbered rows.
+        for child in _walk(target.properties):
+            child.notes = [
+                note for note in child.notes if not note.startswith("the manual nests this under ")
+            ]
+
+
 def _tag_products(fields: list[ParsedField], products: tuple[str, ...]) -> None:
     for field in fields:
         field.products = products
@@ -1120,6 +1176,8 @@ def _structural_fields(section: "Section") -> tuple[list[ParsedField], list[Stru
         fields.remove(source)
         if not _append_fields(parent.properties, [source]):
             fields.append(source)
+
+    _inherit_documented_object_shapes(fields)
 
     resolved: list[StructuralTableMerge] = []
     by_table = {merge.table: merge for merge in _STRUCTURAL_TABLE_SPLITS.get(section.endpoint, ())}
@@ -2190,11 +2248,35 @@ def _block(text: str, indent: str, prefix: str = "") -> list[str]:
 
 
 def _render_fields(
-    fields: list[ParsedField], indent: str, evidence: Optional[LiveOmission] = None
+    fields: list[ParsedField],
+    indent: str,
+    evidence: Optional[LiveOmission] = None,
+    prefix: tuple[str, ...] = (),
+    field_paths: set[str] | None = None,
 ) -> list[str]:
+    """Render fields with appliesWhen paths rooted at the payload record.
+
+    A condition written beside a nested field normally names its sibling
+    (``INPUT_METHOD=KEYS``), while a contract path is absolute
+    (``PART_A.INPUT_METHOD``). Prefer that sibling path when it exists; retain
+    an explicit root reference when the scoped path does not exist. An unknown
+    path is deliberately retained for the contract validator to reject.
+    """
+
+    if field_paths is None:
+        def paths(entries: list[ParsedField], parent: tuple[str, ...] = ()) -> set[str]:
+            found: set[str] = set()
+            for entry in entries:
+                path = parent + (entry.key,)
+                found.add(".".join(path))
+                found.update(paths(entry.properties, path))
+            return found
+
+        field_paths = paths(fields, prefix)
     lines: list[str] = []
     body = indent + "  "
     for parsed in fields:
+        current_path = prefix + (parsed.key,)
         lines.append(f"{indent}- key: {_scalar(parsed.key)}")
         if parsed.description:
             lines.append(f"{body}description: >-")
@@ -2224,7 +2306,9 @@ def _render_fields(
         if parsed.applies_when:
             lines.append(f"{body}appliesWhen:")
             for condition_path, equals in parsed.applies_when:
-                lines.append(f"{body}  - path: {_scalar(condition_path)}")
+                scoped = ".".join(prefix + tuple(condition_path.split(".")))
+                rendered_path = scoped if scoped in field_paths else condition_path
+                lines.append(f"{body}  - path: {_scalar(rendered_path)}")
                 lines.append(f"{body}    equals: {_scalar(equals)}")
         lines.append(f"{body}documentedDefault: {_scalar(parsed.documented_default)}")
         lines.append(f"{body}documentedOptional: {'true' if parsed.requirement == 'optional' else 'false'}")
@@ -2259,7 +2343,7 @@ def _render_fields(
             lines += _block(f"NOTE: {note}", body, prefix="# ")
         if parsed.properties:
             lines.append(f"{body}properties:")
-            lines += _render_fields(parsed.properties, body + "  ")
+            lines += _render_fields(parsed.properties, body + "  ", prefix=current_path, field_paths=field_paths)
     return lines
 
 
