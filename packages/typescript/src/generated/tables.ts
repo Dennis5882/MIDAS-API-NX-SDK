@@ -1022,6 +1022,16 @@ export const tableTypes = {
     /** Local solid stress */
     localSolidStress: "SOLIDSL",
   },
+  storyDisplacement: {
+    sTORYDISPLACEMENTX: "STORY_DISPLACEMENT_X",
+    sTORYDISPLACEMENTY: "STORY_DISPLACEMENT_Y",
+    sTORYDISPLACEMENTCOMB: "STORY_DISPLACEMENT_COMB",
+  },
+  storyDrift: {
+    sTORYDRIFTX: "STORY_DRIFT_X",
+    sTORYDRIFTY: "STORY_DRIFT_Y",
+    sTORYDRIFTCOMB: "STORY_DRIFT_COMB",
+  },
   storyLoadSummaryTable: {
     /** X-direction story load */
     xDirectionStoryLoad: "STORY_LOAD_X",
@@ -1039,6 +1049,9 @@ export const tableTypes = {
     yDirectionStoryMass: "STORY_MASS_Y",
     /** Z-direction story mass */
     zDirectionStoryMass: "STORY_MASS_Z",
+  },
+  storyShearForceRS: {
+    sTORYSHEARFORRS: "STORY_SHEAR_FOR_RS",
   },
   storyWeightTable: {
     /** Story weights by element category */

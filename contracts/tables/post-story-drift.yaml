@@ -1,0 +1,17 @@
+contractVersion: 1
+id: post-story-drift
+endpoint: /post/TABLE
+name: Story Drift
+products: [gen, civil]
+source:
+  manual:
+    status: documented
+    repo: Dennis5882/MIDAS-API
+    chapterFile: 21_POST_StoryTables.md
+    section: "1. Story Drift"
+verification: {status: manual_only}
+risk: read_only
+tableTypes:
+  - {value: STORY_DRIFT_X, provenance: manual}
+  - {value: STORY_DRIFT_Y, provenance: manual}
+  - {value: STORY_DRIFT_COMB, provenance: manual}

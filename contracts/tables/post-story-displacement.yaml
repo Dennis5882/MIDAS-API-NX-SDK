@@ -1,0 +1,17 @@
+contractVersion: 1
+id: post-story-displacement
+endpoint: /post/TABLE
+name: Story Displacement
+products: [gen, civil]
+source:
+  manual:
+    status: documented
+    repo: Dennis5882/MIDAS-API
+    chapterFile: 21_POST_StoryTables.md
+    section: "2. Story Displacement"
+verification: {status: manual_only}
+risk: read_only
+tableTypes:
+  - {value: STORY_DISPLACEMENT_X, provenance: manual}
+  - {value: STORY_DISPLACEMENT_Y, provenance: manual}
+  - {value: STORY_DISPLACEMENT_COMB, provenance: manual}

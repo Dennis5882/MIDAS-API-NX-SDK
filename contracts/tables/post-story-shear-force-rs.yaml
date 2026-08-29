@@ -1,0 +1,15 @@
+contractVersion: 1
+id: post-story-shear-force-rs
+endpoint: /post/TABLE
+name: Story Shear Force RS
+products: [gen, civil]
+source:
+  manual:
+    status: documented
+    repo: Dennis5882/MIDAS-API
+    chapterFile: 21_POST_StoryTables.md
+    section: "3. Story Shear Force (R.S. Analysis)"
+verification: {status: manual_only}
+risk: read_only
+tableTypes:
+  - {value: STORY_SHEAR_FOR_RS, provenance: manual}
