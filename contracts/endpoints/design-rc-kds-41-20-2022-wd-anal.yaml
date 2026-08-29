@@ -61,26 +61,27 @@ fields:
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
-  - key: WALL_IDS
-    description: >-
-      벽체 ID 지정 (KEYS=각각, TO=범위 예 "10to20", 생략 시 전체 벽체)
-    type: object
-    requirement: optional
-    documentedDefault: null
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: STORY
-    description: >-
-      대상 층 이름 목록 (예 ["B1F", "1F"], 생략 시 전체 층)
-    type: array
-    items:
-      type: string
-    requirement: optional
-    documentedDefault: null
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
+    properties:
+      - key: WALL_IDS
+        description: >-
+          벽체 ID 지정 (KEYS=각각, TO=범위 예 "10to20", 생략 시 전체 벽체)
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: STORY
+        description: >-
+          대상 층 이름 목록 (예 ["B1F", "1F"], 생략 시 전체 층)
+        type: array
+        items:
+          type: string
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
 
 extraction:
   source: 26_Design_RC_KDS41202022.md line 8479

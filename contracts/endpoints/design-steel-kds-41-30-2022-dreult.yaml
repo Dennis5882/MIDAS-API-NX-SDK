@@ -126,24 +126,25 @@ fields:
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
-  - key: HORIZONTAL
-    description: >-
-      수평 회전각
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: VERTICAL
-    description: >-
-      수직 회전각
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
+    properties:
+      - key: HORIZONTAL
+        description: >-
+          수평 회전각
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: VERTICAL
+        description: >-
+          수직 회전각
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
   - key: DISPLAY
     description: >-
       View/Display 설정 (Display 문서 참조)
@@ -191,101 +192,104 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
-  - key: CURRENT_MODE
-    description: >-
-      현재 모드 ("INFLL_DESIGN_STEEL"=Steel Design)
-    type: string
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    enum: [INFLL_DESIGN_STEEL]
-    safeToOmit: unverified
-    provenance: manual
-  - key: LOAD_CASE_COMB
-    description: >-
-      하중케이스/조합
-    type: object
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    safeToOmit: unverified
-    provenance: manual
-  - key: TYPE
-    description: >-
-      하중 타입 ("CBS"=Steel Design Load Combination)
-    type: string
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    enum: [CBS]
-    safeToOmit: unverified
-    provenance: manual
-  - key: NAME
-    description: >-
-      하중 이름
-    type: string
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    safeToOmit: unverified
-    provenance: manual
-  - key: COMPONENTS
-    description: >-
-      표시 성분 (COMP: Axial/Shear-y/Shear-z/Bend-y/Bend-z/Combined)
-    type: object
-    requirement: optional
-    documentedDefault: null
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: TYPE_OF_DISPLAY
-    description: >-
-      표시 타입 (CONTOUR / VALUES / LEGEND / CODE_CHECKING_RATIO)
-    type: object
-    requirement: optional
-    documentedDefault: null
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: CONTOUR
-    description: >-
-      Contour (OPT_CHECK, NUM_OF_COLOR 2~20, COLOR_TYPE vrgb/rgb/rbg/gray
-      scaled, OPTIONS.GRADIENT_FILL·CONTOUR_FILL)
-    type: object
-    requirement: optional
-    documentedDefault: null
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: VALUES
-    description: >-
-      Values (OPT_CHECK, DECIMAL_PT, VALUE_EXP, MINMAX_ONLY.MAXMIN, SET_ORIENT)
-    type: object
-    requirement: optional
-    documentedDefault: null
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: LEGEND
-    description: >-
-      Legend (OPT_CHECK, POSITION right/left/top/bottom, VALUE_EXP, DECIMAL_PT)
-    type: object
-    requirement: optional
-    documentedDefault: null
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: CODE_CHECKING_RATIO
-    description: >-
-      Code Checking Ratio (COMP=Combined일 때; CHECK,
-      DISPLAY_MEMBERS.BEAM·COLUMN·BRACE, COLUMN_SECTION_SIZE.SCALE_FACTOR,
-      VALUE_OPTION)
-    type: object
-    requirement: optional
-    documentedDefault: null
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
+    properties:
+      - key: CURRENT_MODE
+        description: >-
+          현재 모드 ("INFLL_DESIGN_STEEL"=Steel Design)
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        enum: [INFLL_DESIGN_STEEL]
+        safeToOmit: unverified
+        provenance: manual
+      - key: LOAD_CASE_COMB
+        description: >-
+          하중케이스/조합
+        type: object
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: TYPE
+            description: >-
+              하중 타입 ("CBS"=Steel Design Load Combination)
+            type: string
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            enum: [CBS]
+            safeToOmit: unverified
+            provenance: manual
+          - key: NAME
+            description: >-
+              하중 이름
+            type: string
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+      - key: COMPONENTS
+        description: >-
+          표시 성분 (COMP: Axial/Shear-y/Shear-z/Bend-y/Bend-z/Combined)
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: TYPE_OF_DISPLAY
+        description: >-
+          표시 타입 (CONTOUR / VALUES / LEGEND / CODE_CHECKING_RATIO)
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: CONTOUR
+            description: >-
+              Contour (OPT_CHECK, NUM_OF_COLOR 2~20, COLOR_TYPE vrgb/rgb/rbg/gray
+              scaled, OPTIONS.GRADIENT_FILL·CONTOUR_FILL)
+            type: object
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+          - key: VALUES
+            description: >-
+              Values (OPT_CHECK, DECIMAL_PT, VALUE_EXP, MINMAX_ONLY.MAXMIN, SET_ORIENT)
+            type: object
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+          - key: LEGEND
+            description: >-
+              Legend (OPT_CHECK, POSITION right/left/top/bottom, VALUE_EXP, DECIMAL_PT)
+            type: object
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+          - key: CODE_CHECKING_RATIO
+            description: >-
+              Code Checking Ratio (COMP=Combined일 때; CHECK,
+              DISPLAY_MEMBERS.BEAM·COLUMN·BRACE, COLUMN_SECTION_SIZE.SCALE_FACTOR,
+              VALUE_OPTION)
+            type: object
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
 
 extraction:
   source: 25_Design_Steel_KDS41302022.md line 5583

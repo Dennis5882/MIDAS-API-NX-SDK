@@ -95,33 +95,34 @@ fields:
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
-  - key: AXIAL
-    description: >-
-      축력
-    type: boolean
-    requirement: optional
-    documentedDefault: false
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: MOMENT
-    description: >-
-      모멘트
-    type: boolean
-    requirement: optional
-    documentedDefault: false
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: SHEAR
-    description: >-
-      전단력
-    type: boolean
-    requirement: optional
-    documentedDefault: false
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
+    properties:
+      - key: AXIAL
+        description: >-
+          축력
+        type: boolean
+        requirement: optional
+        documentedDefault: false
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: MOMENT
+        description: >-
+          모멘트
+        type: boolean
+        requirement: optional
+        documentedDefault: false
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: SHEAR
+        description: >-
+          전단력
+        type: boolean
+        requirement: optional
+        documentedDefault: false
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
 
 extraction:
   source: 26_Design_RC_KDS41202022.md line 3607

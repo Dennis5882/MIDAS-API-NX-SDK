@@ -61,46 +61,48 @@ fields:
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
-  - key: WALL_IDS
-    description: >-
-      벽 ID 지정
-    type: object
-    requirement: optional
-    documentedDefault: null
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: KEYS
-    description: >-
-      개별 벽 ID
-    type: array
-    items:
-      type: integer
-    requirement: optional
-    documentedDefault: null
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: TO
-    description: >-
-      벽 ID 범위 (예 "1to20")
-    type: string
-    requirement: optional
-    documentedDefault: null
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: STORY
-    description: >-
-      층 이름 목록
-    type: array
-    items:
-      type: string
-    requirement: optional
-    documentedDefault: null
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
+    properties:
+      - key: WALL_IDS
+        description: >-
+          벽 ID 지정
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: KEYS
+            description: >-
+              개별 벽 ID
+            type: array
+            items:
+              type: integer
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+          - key: TO
+            description: >-
+              벽 ID 범위 (예 "1to20")
+            type: string
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+      - key: STORY
+        description: >-
+          층 이름 목록
+        type: array
+        items:
+          type: string
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
 
 extraction:
   source: 26_Design_RC_KDS41202022.md line 11708

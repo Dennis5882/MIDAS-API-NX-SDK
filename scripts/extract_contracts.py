@@ -164,7 +164,7 @@ _DESC_TREE = re.compile(r"^[└├│─\s]+")
 # wrong contract that reached contracts/endpoints/ before type generation
 # from the same contract exposed it.
 _NUMBER_CHILD = re.compile(r"^\((?:\d+|[ivxlcdm]+)\)$", re.IGNORECASE)
-_NUMBER_PATH = re.compile(r"^\d+(?:-\d+)+$")
+_NUMBER_PATH = re.compile(r"^\d+(?:[-.]\d+)+$")
 # A small group of manual tables marks an immediate array-item member with a
 # leading dash in the Description cell (for example ITEM followed by
 # `- Time` and `- Value`).  This is deliberately narrower than treating an
@@ -639,7 +639,8 @@ def _nest(flat: list[ParsedField]) -> list[ParsedField]:
     Key column (`DATA1.DESIGN.C_FC`), a bracketed array path
     (`POINT_ITEMS[].POINT_LOAD`), a `└` tree marker that sometimes leaks out of
     the Description column into the Key, and - most often of all - the No.
-    column, where a parent is `4` and its children are `(1)`/`(2)` or `4-1`/`4-2`.
+    column, where a parent is `4` and its children are `(1)`/`(2)`, `4-1`/`4-2`,
+    or `4.1`/`4.2`.
     All four describe structure the contract can represent exactly, so they are
     reconstructed rather than flattened into keys no payload actually has.
     """
@@ -669,7 +670,7 @@ def _nest(flat: list[ParsedField]) -> list[ParsedField]:
         if _NUMBER_CHILD.match(entry.number):
             depth = 1
         elif _NUMBER_PATH.match(entry.number):
-            depth = entry.number.count("-")
+            depth = len(re.findall(r"[-.]\d+", entry.number))
         if depth and entry.shared_number_group and "." not in key and not key.startswith("└"):
             grouped_parent = by_depth.get(depth - 1)
             if grouped_parent is not None:

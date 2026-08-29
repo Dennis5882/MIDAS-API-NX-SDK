@@ -387,6 +387,28 @@ def test_key_type_only_table_splits_quoted_literal_group_without_a_child_number(
     assert all(field.type == "number" for field in fields)
 
 
+def test_dotted_numbering_nests_children_under_the_documented_parent(tmp_path: Path):
+    """The manual's 14.4.1 notation is a payload hierarchy, not a flat key list."""
+
+    path = tmp_path / "99_DB_DottedNumbering.md"
+    path.write_text(
+        """## 1. `/db/DOTTED` -- dotted numbering
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 14 | Root | `"ROOT"` | Object | - | Optional |
+| 14.4 | Child object | `"CHILD"` | Object | - | Optional |
+| 14.4.1 | Leaf | `"LEAF"` | String | - | Required |
+""",
+        encoding="utf-8",
+    )
+
+    root = ex.parse_chapter(path)[0].tables[0].fields[0]
+    assert root.key == "ROOT"
+    assert [field.key for field in root.properties] == ["CHILD"]
+    assert [field.key for field in root.properties[0].properties] == ["LEAF"]
+
+
 @pytest.mark.parametrize(
     ("manual_key", "contract_key"),
     [

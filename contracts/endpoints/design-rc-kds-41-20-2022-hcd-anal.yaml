@@ -59,35 +59,36 @@ fields:
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
-  - key: KEYS
-    description: >-
-      요소 ID 각각 지정
-    type: array
-    items:
-      type: integer
-    requirement: optional
-    documentedDefault: null
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: TO
-    description: >-
-      요소 ID 범위 (예 "1to160")
-    type: string
-    requirement: optional
-    documentedDefault: null
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: STRUCTURE_GROUP_NAME
-    description: >-
-      구조 그룹명
-    type: string
-    requirement: optional
-    documentedDefault: null
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
+    properties:
+      - key: KEYS
+        description: >-
+          요소 ID 각각 지정
+        type: array
+        items:
+          type: integer
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: TO
+        description: >-
+          요소 ID 범위 (예 "1to160")
+        type: string
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: STRUCTURE_GROUP_NAME
+        description: >-
+          구조 그룹명
+        type: string
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
 
 extraction:
   source: 26_Design_RC_KDS41202022.md line 8943

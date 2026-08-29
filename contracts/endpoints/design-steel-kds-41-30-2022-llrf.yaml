@@ -109,69 +109,70 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
-  - key: STORY
-    description: >-
-      층 이름
-    type: string
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    safeToOmit: unverified
-    provenance: manual
-  - key: XMIN
-    description: >-
-      X 최소 좌표
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: XMAX
-    description: >-
-      X 최대 좌표
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: YMIN
-    description: >-
-      Y 최소 좌표
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: YMAX
-    description: >-
-      Y 최대 좌표
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: RANGE_MAX
-    description: >-
-      Rmax (General Design Code 전용, enum 1~0.5)
-    type: number
-    requirement: optional
-    documentedDefault: 1
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: RANGE_MIN
-    description: >-
-      Rmin (General Design Code 전용, enum 1~0.5)
-    type: number
-    requirement: optional
-    documentedDefault: 0.5
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
+    properties:
+      - key: STORY
+        description: >-
+          층 이름
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: XMIN
+        description: >-
+          X 최소 좌표
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: XMAX
+        description: >-
+          X 최대 좌표
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: YMIN
+        description: >-
+          Y 최소 좌표
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: YMAX
+        description: >-
+          Y 최대 좌표
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: RANGE_MAX
+        description: >-
+          Rmax (General Design Code 전용, enum 1~0.5)
+        type: number
+        requirement: optional
+        documentedDefault: 1
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: RANGE_MIN
+        description: >-
+          Rmin (General Design Code 전용, enum 1~0.5)
+        type: number
+        requirement: optional
+        documentedDefault: 0.5
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
 
 extraction:
   source: 25_Design_Steel_KDS41302022.md line 614
