@@ -51,12 +51,12 @@ The following values were measured after Stage 2 and the result-table work:
 
 | surface | contracted | total | note |
 | --- | ---: | ---: | --- |
-| endpoint contracts | 246 | — | `post-table.yaml` is the shared-table family contract |
-| npm DB resources | 226 | 304 | 78 resources still have no committed endpoint contract |
+| endpoint contracts | 248 | — | `post-table.yaml` is the shared-table family contract |
+| npm DB resources | 228 | 304 | 76 resources still have no committed endpoint contract |
 | `/post/TABLE` result tables | 87 | 87 | Chapter 23's other two routes are `/post/PM` and `/post/STEELCODECHECK`, not `TABLE_TYPE` tables |
-| active promotion candidates | 0 | 137 drafts | each remaining draft has a measured gate refusal |
+| active promotion candidates | 0 | 135 drafts | each remaining draft has a measured gate refusal |
 
-The remaining 78 npm resources are not a uniform parser backlog. They include
+The remaining 76 npm resources are not a uniform parser backlog. They include
 unmerged conditional tables, missing Default/Required facts, incomplete enum or
 array-item facts, and documented live defects. `/db/STYP-M1` is a distinct
 manual gap: it appears in `INDEX.md`, but no endpoint section exists under
@@ -64,11 +64,11 @@ manual gap: it appears in `INDEX.md`, but no endpoint section exists under
 contract.
 
 The manual also uses dotted No.-column paths such as `14.4.1` to show nested
-payloads. Treating those as nesting is correct for newly parsed material, but
-an experimental check found 76 field-path disagreements across nine already
-promoted contracts. That is a contract-shape migration requiring review of
-each object path; do not enable it as an extractor-only change, because it
-would silently rewrite established contract meaning.
+payloads. The extractor now recognises that notation and the nine affected
+promoted design contracts were reviewed against their manual tables and request
+examples before their children moved under the documented object or array
+parents. Manual drift is zero after that shape migration; do not flatten future
+dotted rows back to record-root fields.
 
 Current validation exercises 311 declared executable rules: 154
 `per_id_request`, 154 `require_confirmation`, and one each of
