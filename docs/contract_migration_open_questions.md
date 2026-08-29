@@ -16,6 +16,14 @@
   predicate) or duplicating wire fields. Duplicating fields would make the
   contract ambiguous, so this table remains unmerged pending an author decision.
 
+## Manual-source gaps
+
+- `/db/STYP-M1` appears only in `docs/manual/INDEX.md` as “Structure Type
+  (Hyper-S)”. No `docs/manual/*.md` endpoint section, parameter table, or
+  method declaration describes it. The extractor therefore has no draft to
+  promote; retain the missing contract until a manual section, live `/info`, or
+  other permitted evidence is available.
+
 ## Python surface drift introduced by promotion (revisit after the Codex run)
 
 Three changes reached `src/midas_nx/` after the `py-v2.7.0` release commit
