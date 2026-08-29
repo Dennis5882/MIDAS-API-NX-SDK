@@ -1,0 +1,11 @@
+contractVersion: 1
+id: post-wall-force
+endpoint: /post/TABLE
+name: Wall Force
+summary: Wall force and moment at top and bottom positions.
+products: [gen, civil]
+source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "39. Wall Force"}}
+verification: {status: manual_only}
+risk: read_only
+tableTypes:
+  - {value: WALL_FORCE_MOMENT, description: Wall force and moment, head: [Index, Story, Level, Wall, Load, Part, Axial, Shear-y, Shear-z, Torsion, Moment-y, Moment-z, Part, Axial, Shear-y, Shear-z, Torsion, Moment-y, Moment-z], provenance: manual}

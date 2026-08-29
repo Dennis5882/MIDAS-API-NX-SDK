@@ -1032,6 +1032,32 @@ export const tableTypes = {
     /** Story weights by element category */
     storyWeightsByElementCategory: "STORYWEIGHT",
   },
+  tendonApproximateLoss: {
+    /** Approximate tendon force loss */
+    approximateTendonForceLoss: "TNDN_APPROX_LOSS_FORCE",
+    /** Approximate tendon stress loss */
+    approximateTendonStressLoss: "TNDN_APPROX_LOSS_STRESS",
+  },
+  tendonCoordinates: {
+    /** Tendon coordinates */
+    tendonCoordinates: "TNDN_COORDINATES",
+  },
+  tendonElongation: {
+    /** Tendon elongation */
+    tendonElongation: "TNDN_ELONGATION",
+  },
+  tendonStressLimitCheck: {
+    /** Tendon stress limit check */
+    tendonStressLimitCheck: "TNDN_STRS_LIMIT_CHECK",
+  },
+  tendonWeight: {
+    /** Tendon weight by profile */
+    tendonWeightByProfile: "TNDN_WEIGHT_PROFILE",
+    /** Tendon weight by property */
+    tendonWeightByProperty: "TNDN_WEIGHT_PROPERTY",
+    /** Tendon weight by group */
+    tendonWeightByGroup: "TNDN_WEIGHT_GROUP",
+  },
   trussForce: {
     /** Truss force */
     trussForce: "TRUSSFORCE",
@@ -1045,5 +1071,9 @@ export const tableTypes = {
     eigenvalueVibrationModeShape: "EIGENVALUEMODE",
     /** Participation-vector mode shape */
     participationVectorModeShape: "PARTICIPATIONVECTORMODE",
+  },
+  wallForce: {
+    /** Wall force and moment */
+    wallForceAndMoment: "WALL_FORCE_MOMENT",
   },
 } as const;

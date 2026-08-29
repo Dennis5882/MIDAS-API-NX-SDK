@@ -1,0 +1,10 @@
+contractVersion: 1
+id: post-tendon-coordinates
+endpoint: /post/TABLE
+name: Tendon Coordinates
+summary: Tendon profile coordinates by tendon and station.
+products: [gen, civil]
+source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "30. Tendon Coordinates"}}
+verification: {status: manual_only}
+risk: read_only
+tableTypes: [{value: TNDN_COORDINATES, description: Tendon coordinates, head: [Index, TendonName, "No", x, y, z], provenance: manual}]
