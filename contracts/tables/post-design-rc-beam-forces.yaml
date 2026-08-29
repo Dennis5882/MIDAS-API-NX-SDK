@@ -1,0 +1,9 @@
+contractVersion: 1
+id: post-design-rc-beam-forces
+endpoint: /post/TABLE
+name: RC Beam Design Forces
+products: [gen, civil]
+source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 23_POST_Design.md, section: "3. Concrete Design – Beam Design Forces"}}
+verification: {status: manual_only}
+risk: read_only
+tableTypes: [{value: BEAMDESIGNFORCES, head: [Index, Memb, Part, LComName, Type, Fz, Mx, "My(-)", "My(+)"], provenance: manual}]

@@ -846,6 +846,30 @@ export const tableTypes = {
   criteriaForRegularityInPlan: {
     cRITERIAFORREGULARITYINPLAN: "CRITERIA_FOR_REGULARITY_IN_PLAN",
   },
+  coldFormedSteelMemberDesignForces: {
+    cOLDFORMEDSTEELMEMBERDESIGNFORCES: "COLDFORMEDSTEELMEMBERDESIGNFORCES",
+  },
+  rCBeamDesignForces: {
+    bEAMDESIGNFORCES: "BEAMDESIGNFORCES",
+  },
+  rCBraceDesignForces: {
+    bRACEDESIGNFORCES: "BRACEDESIGNFORCES",
+  },
+  rCColumnDesignForces: {
+    cOLUMNDESIGNFORCES: "COLUMNDESIGNFORCES",
+  },
+  rCWallDesignForces: {
+    wALLDESIGNFORCES: "WALLDESIGNFORCES",
+  },
+  sRCBeamDesignForces: {
+    sRCBEAMDESIGNFORCES: "SRCBEAMDESIGNFORCES",
+  },
+  sRCColumnDesignForces: {
+    sRCCOLUMNDESIGNFORCES: "SRCCOLUMNDESIGNFORCES",
+  },
+  steelMemberDesignForces: {
+    sTEELMEMBERDESIGNFORCES: "STEELMEMBERDESIGNFORCES",
+  },
   displacements: {
     /** Global coordinate system */
     globalCoordinateSystem: "DISPLACEMENTG",

@@ -1,0 +1,9 @@
+contractVersion: 1
+id: post-design-rc-wall-forces
+endpoint: /post/TABLE
+name: RC Wall Design Forces
+products: [gen, civil]
+source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 23_POST_Design.md, section: "6. Concrete Design – Wall Design Forces"}}
+verification: {status: manual_only}
+risk: read_only
+tableTypes: [{value: WALLDESIGNFORCES, head: [Index, WID, Story, Part, LComName, Type, Fx, Fy, Fz, Mx, My, Mz], provenance: manual}]

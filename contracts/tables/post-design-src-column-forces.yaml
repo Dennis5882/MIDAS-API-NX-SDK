@@ -1,0 +1,9 @@
+contractVersion: 1
+id: post-design-src-column-forces
+endpoint: /post/TABLE
+name: SRC Column Design Forces
+products: [gen, civil]
+source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 23_POST_Design.md, section: "9. SRC Design – SRC Column Design Forces"}}
+verification: {status: manual_only}
+risk: read_only
+tableTypes: [{value: SRCCOLUMNDESIGNFORCES, head: [Index, Memb, Part, LComName, Type, Fx, Fy, Fz, Mx, My, Mz], provenance: manual}]
