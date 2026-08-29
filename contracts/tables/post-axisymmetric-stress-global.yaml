@@ -1,0 +1,10 @@
+contractVersion: 1
+id: post-axisymmetric-stress-global
+endpoint: /post/TABLE
+name: Axisymmetric Stress Global
+summary: Global axisymmetric stress values.
+products: [gen, civil]
+source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "19. Axisymmetric Stress (Global)"}}
+verification: {status: manual_only}
+risk: read_only
+tableTypes: [{value: AXISYMMETRICSG, description: Global axisymmetric stress, head: [Index, Elem, Load, Node, Sig-XX, Sig-YY, Sig-ZZ, Sig-XZ, Sig-P1, Sig-P2, Sig-P3, Max-Shear, Sig-EFF, Sig-OCT], provenance: manual}]

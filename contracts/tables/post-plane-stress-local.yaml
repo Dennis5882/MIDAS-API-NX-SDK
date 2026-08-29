@@ -1,0 +1,10 @@
+contractVersion: 1
+id: post-plane-stress-local
+endpoint: /post/TABLE
+name: Plane Stress Local
+summary: Local plane-stress values.
+products: [gen, civil]
+source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "10. Plane Stress (Local)"}}
+verification: {status: manual_only}
+risk: read_only
+tableTypes: [{value: PLANESTRESSSL, description: Local plane stress, head: [Index, Elem, Load, Node, Sig-xx, Sig-yy, Sig-xy, Sig-Max, Sig-Min, Angle, Sig-EFF, Max-Shear], provenance: manual}]

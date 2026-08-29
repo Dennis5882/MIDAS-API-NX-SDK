@@ -764,6 +764,22 @@ export const tableCount = 87 as const;
  * other than its default.
  */
 export const tableTypes = {
+  axisymmetricForceGlobal: {
+    /** Global axisymmetric force */
+    globalAxisymmetricForce: "AXISYMMETRICFG",
+  },
+  axisymmetricForceLocal: {
+    /** Local axisymmetric force */
+    localAxisymmetricForce: "AXISYMMETRICFL",
+  },
+  axisymmetricStressGlobal: {
+    /** Global axisymmetric stress */
+    globalAxisymmetricStress: "AXISYMMETRICSG",
+  },
+  axisymmetricStressLocal: {
+    /** Local axisymmetric stress */
+    localAxisymmetricStress: "AXISYMMETRICSL",
+  },
   beamForceStaticPrestress: {
     /** Beam member force under static prestress */
     beamMemberForceUnderStaticPrestress: "BEAMFORCESTP",
@@ -841,6 +857,38 @@ export const tableTypes = {
   nodalBodyForceTable: {
     /** Nodal body force */
     nodalBodyForce: "NODALBODYFORCE",
+  },
+  planeStrainForceGlobal: {
+    /** Global plane-strain force */
+    globalPlaneStrainForce: "PLANESTRAINFG",
+  },
+  planeStrainForceLocal: {
+    /** Local plane-strain force */
+    localPlaneStrainForce: "PLANESTRAINFL",
+  },
+  planeStrainStressGlobal: {
+    /** Global plane-strain stress */
+    globalPlaneStrainStress: "PLANESTRAINSG",
+  },
+  planeStrainStressLocal: {
+    /** Local plane-strain stress */
+    localPlaneStrainStress: "PLANESTRAINSL",
+  },
+  planeStressForceGlobal: {
+    /** Global plane-stress force */
+    globalPlaneStressForce: "PLANESTRESSFG",
+  },
+  planeStressForceLocal: {
+    /** Local plane-stress force */
+    localPlaneStressForce: "PLANESTRESSFL",
+  },
+  planeStressGlobal: {
+    /** Global plane stress */
+    globalPlaneStress: "PLANESTRESSSG",
+  },
+  planeStressLocal: {
+    /** Local plane stress */
+    localPlaneStress: "PLANESTRESSSL",
   },
   plateForceGlobal: {
     /** Global plate force */

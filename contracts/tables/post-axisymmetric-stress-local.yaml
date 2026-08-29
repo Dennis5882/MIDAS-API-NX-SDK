@@ -1,0 +1,10 @@
+contractVersion: 1
+id: post-axisymmetric-stress-local
+endpoint: /post/TABLE
+name: Axisymmetric Stress Local
+summary: Local axisymmetric stress values.
+products: [gen, civil]
+source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "18. Axisymmetric Stress (Local)"}}
+verification: {status: manual_only}
+risk: read_only
+tableTypes: [{value: AXISYMMETRICSL, description: Local axisymmetric stress, head: [Index, Elem, Load, Node, Sig-xx, Sig-yy, Sig-zz, Sig-xy, Sig-P1, Sig-P2, Sig-P3, Max-Shear, Sig-EFF, Sig-OCT], provenance: manual}]

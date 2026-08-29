@@ -1,0 +1,10 @@
+contractVersion: 1
+id: post-plane-stress-global
+endpoint: /post/TABLE
+name: Plane Stress Global
+summary: Global plane-stress values.
+products: [gen, civil]
+source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "11. Plane Stress (Global)"}}
+verification: {status: manual_only}
+risk: read_only
+tableTypes: [{value: PLANESTRESSSG, description: Global plane stress, head: [Index, Elem, Load, Node, Sig-XX, Sig-YY, Sig-ZZ, Sig-XY, Sig-YZ, Sig-XZ, Sig-Max, Sig-Min, Angle, Sig-EFF, Max-Shear], provenance: manual}]

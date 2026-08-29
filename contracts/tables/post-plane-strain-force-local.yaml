@@ -1,0 +1,10 @@
+contractVersion: 1
+id: post-plane-strain-force-local
+endpoint: /post/TABLE
+name: Plane Strain Force Local
+summary: Local plane-strain force components.
+products: [gen, civil]
+source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "12. Plane Strain Force (Local)"}}
+verification: {status: manual_only}
+risk: read_only
+tableTypes: [{value: PLANESTRAINFL, description: Local plane-strain force, head: [Index, Elem, Load, Node, Fx, Fy, Fz], provenance: manual}]
