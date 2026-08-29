@@ -1182,6 +1182,27 @@ def test_same_section_schema_record_wrapper_forms_supply_enum_values(
     assert not mode.notes
 
 
+def test_same_section_schema_additional_properties_record_map_supplies_array_item_type(tmp_path: Path):
+    """An ID-keyed map's value schema retains its child field path exactly."""
+    path = tmp_path / "99_DB_AdditionalPropertiesMap.md"
+    path.write_text(
+        "## 1. `/db/RECORD-MAP` -- Record map\n\n"
+        "### JSON Schema\n\n```json\n"
+        '{"type":"object","properties":{"Assign":{"type":"object","additionalProperties":{"type":"object","properties":{"SELECTED_MEMBERS":{"type":"object","additionalProperties":{"type":"object","properties":{"ELEM_LIST":{"type":"array","items":{"type":"integer"}}}}}}}}}}\n'
+        "```\n\n"
+        "| No. | Description | Key | Value Type | Default | Required |\n"
+        "|-----|-------------|-----|------------|---------|----------|\n"
+        "| 1 | Selected members | `SELECTED_MEMBERS` | Object | - | Required |\n"
+        "| 1.1 | Element list | `ELEM_LIST` | Array | - | Required |\n",
+        encoding="utf-8",
+    )
+
+    selected_members = ex.parse_chapter(path)[0].tables[0].fields[0]
+    element_list = selected_members.properties[0]
+    assert element_list.items == {"type": "integer"}
+    assert not any("array element type not stated" in note for note in element_list.notes)
+
+
 @pytest.mark.parametrize(
     ("selector_schema", "expected_condition"),
     [

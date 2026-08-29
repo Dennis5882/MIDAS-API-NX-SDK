@@ -1471,6 +1471,20 @@ def _section_schema_hints(lines: list[str], endpoint: str) -> dict[tuple[str, ..
                 child = next(iter(pattern_properties.values()))
                 if isinstance(child, dict):
                     visit(child, prefix)
+            # Some design schemas use ``additionalProperties`` rather than a
+            # numeric ``patternProperties`` for an ID-keyed record map.  When
+            # that map has no named siblings, its value schema describes the
+            # same table path -- the arbitrary ID is transport structure, not
+            # a payload member.  Unwrap only this exact map form; an
+            # ``additionalProperties`` schema alongside real properties has
+            # different JSON-Schema semantics and must not be flattened.
+            additional_properties = node.get("additionalProperties")
+            if (
+                not isinstance(properties, dict)
+                and isinstance(additional_properties, dict)
+                and isinstance(additional_properties.get("properties"), dict)
+            ):
+                visit(additional_properties, prefix)
             if node.get("type") == "array":
                 # The extractor models Array[Object] children as properties of
                 # the array field, so retain the same path when walking items.
