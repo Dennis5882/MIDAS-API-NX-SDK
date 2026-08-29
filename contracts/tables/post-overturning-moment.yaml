@@ -1,0 +1,15 @@
+contractVersion: 1
+id: post-overturning-moment
+endpoint: /post/TABLE
+name: Overturning Moment
+products: [gen, civil]
+source:
+  manual:
+    status: documented
+    repo: Dennis5882/MIDAS-API
+    chapterFile: 21_POST_StoryTables.md
+    section: "8. Overturning Moment"
+verification: {status: manual_only}
+risk: read_only
+tableTypes:
+  - {value: OVERTURNING_MOMENT, provenance: manual}

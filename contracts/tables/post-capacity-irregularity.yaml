@@ -1,0 +1,10 @@
+contractVersion: 1
+id: post-capacity-irregularity
+endpoint: /post/TABLE
+name: Capacity Irregularity Check
+products: [gen, civil]
+source:
+  manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 21_POST_StoryTables.md, section: "14. Capacity Irregularity Check (Weak Story)"}
+verification: {status: manual_only}
+risk: read_only
+tableTypes: [{value: CAPACITY_IRREGULARITY, provenance: manual}]

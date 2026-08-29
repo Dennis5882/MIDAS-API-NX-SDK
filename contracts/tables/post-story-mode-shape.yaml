@@ -1,0 +1,15 @@
+contractVersion: 1
+id: post-story-mode-shape
+endpoint: /post/TABLE
+name: Story Mode Shape
+products: [gen, civil]
+source:
+  manual:
+    status: documented
+    repo: Dennis5882/MIDAS-API
+    chapterFile: 21_POST_StoryTables.md
+    section: "5. Story Mode Shape"
+verification: {status: manual_only}
+risk: read_only
+tableTypes:
+  - {value: STORY_MODE_SHAPE, provenance: manual}

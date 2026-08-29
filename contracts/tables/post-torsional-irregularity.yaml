@@ -1,0 +1,10 @@
+contractVersion: 1
+id: post-torsional-irregularity
+endpoint: /post/TABLE
+name: Torsional Irregularity Check
+products: [gen, civil]
+source:
+  manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 21_POST_StoryTables.md, section: "11. Torsional Irregularity Check"}
+verification: {status: manual_only}
+risk: read_only
+tableTypes: [{value: TORSIONAL_IRREGULARITY_X, provenance: manual}, {value: TORSIONAL_IRREGULARITY_Y, provenance: manual}]

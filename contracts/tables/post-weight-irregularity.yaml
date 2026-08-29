@@ -1,0 +1,10 @@
+contractVersion: 1
+id: post-weight-irregularity
+endpoint: /post/TABLE
+name: Weight Irregularity Check
+products: [gen, civil]
+source:
+  manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 21_POST_StoryTables.md, section: "17. Weight Irregularity Check"}
+verification: {status: manual_only}
+risk: read_only
+tableTypes: [{value: WEIGHT_IRREGULARITY_X, provenance: manual}, {value: WEIGHT_IRREGULARITY_Y, provenance: manual}]

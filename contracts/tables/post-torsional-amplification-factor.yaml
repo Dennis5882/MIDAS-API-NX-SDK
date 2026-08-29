@@ -1,0 +1,10 @@
+contractVersion: 1
+id: post-torsional-amplification-factor
+endpoint: /post/TABLE
+name: Torsional Amplification Factor
+products: [gen, civil]
+source:
+  manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 21_POST_StoryTables.md, section: "12. Torsional Amplification Factor"}
+verification: {status: manual_only}
+risk: read_only
+tableTypes: [{value: TORSIONAL_AMPLIFICATION_FACTOR_X, provenance: manual}, {value: TORSIONAL_AMPLIFICATION_FACTOR_Y, provenance: manual}]

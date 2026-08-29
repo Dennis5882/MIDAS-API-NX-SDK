@@ -824,6 +824,9 @@ export const tableTypes = {
     /** Cable force */
     cableForce: "CABLEFORCE",
   },
+  capacityIrregularityCheck: {
+    cAPACITYIRREGULARITY: "CAPACITY_IRREGULARITY",
+  },
   compositeSectionConstructionStage: {
     /** Composite-section beam force */
     compositeSectionBeamForce: "COMPSECTBEAMFORCE",
@@ -839,6 +842,9 @@ export const tableTypes = {
   concurrentJointForce: {
     /** Concurrent joint force */
     concurrentJointForce: "CONCURRENT_JOINT_FORCE",
+  },
+  criteriaForRegularityInPlan: {
+    cRITERIAFORREGULARITYINPLAN: "CRITERIA_FOR_REGULARITY_IN_PLAN",
   },
   displacements: {
     /** Global coordinate system */
@@ -887,6 +893,9 @@ export const tableTypes = {
   nodalBodyForceTable: {
     /** Nodal body force */
     nodalBodyForce: "NODALBODYFORCE",
+  },
+  overturningMoment: {
+    oVERTURNINGMOMENT: "OVERTURNING_MOMENT",
   },
   planeStrainForceGlobal: {
     /** Global plane-strain force */
@@ -1022,6 +1031,13 @@ export const tableTypes = {
     /** Local solid stress */
     localSolidStress: "SOLIDSL",
   },
+  stiffnessIrregularityCheck: {
+    sTIFFNESSIRREGULARITYX: "STIFFNESS_IRREGULARITY_X",
+    sTIFFNESSIRREGULARITYY: "STIFFNESS_IRREGULARITY_Y",
+  },
+  storyAxialForceSum: {
+    sTORYAXIALFORCESUM: "STORY_AXIAL_FORCE_SUM",
+  },
   storyDisplacement: {
     sTORYDISPLACEMENTX: "STORY_DISPLACEMENT_X",
     sTORYDISPLACEMENTY: "STORY_DISPLACEMENT_Y",
@@ -1031,6 +1047,9 @@ export const tableTypes = {
     sTORYDRIFTX: "STORY_DRIFT_X",
     sTORYDRIFTY: "STORY_DRIFT_Y",
     sTORYDRIFTCOMB: "STORY_DRIFT_COMB",
+  },
+  storyEccentricity: {
+    sTORYECNTRICITY: "STORY_ECNTRICITY",
   },
   storyLoadSummaryTable: {
     /** X-direction story load */
@@ -1050,8 +1069,21 @@ export const tableTypes = {
     /** Z-direction story mass */
     zDirectionStoryMass: "STORY_MASS_Z",
   },
+  storyModeShape: {
+    sTORYMODESHAPE: "STORY_MODE_SHAPE",
+  },
+  storyShearForceCoefficient: {
+    sTORYSHEARFORCECOEFFICIENT: "STORY_SHEAR_FORCE_COEFFICIENT",
+  },
+  storyShearForceRatio: {
+    sTORYSHEARFORCERATIO: "STORY_SHEAR_FORCE_RATIO",
+  },
   storyShearForceRS: {
     sTORYSHEARFORRS: "STORY_SHEAR_FOR_RS",
+  },
+  storyStabilityCoefficient: {
+    sTORYSTABILITYCOEFFICIENTX: "STORY_STABILITY_COEFFICIENT_X",
+    sTORYSTABILITYCOEFFICIENTY: "STORY_STABILITY_COEFFICIENT_Y",
   },
   storyWeightTable: {
     /** Story weights by element category */
@@ -1093,6 +1125,14 @@ export const tableTypes = {
     /** Tendon weight by group */
     tendonWeightByGroup: "TNDN_WEIGHT_GROUP",
   },
+  torsionalAmplificationFactor: {
+    tORSIONALAMPLIFICATIONFACTORX: "TORSIONAL_AMPLIFICATION_FACTOR_X",
+    tORSIONALAMPLIFICATIONFACTORY: "TORSIONAL_AMPLIFICATION_FACTOR_Y",
+  },
+  torsionalIrregularityCheck: {
+    tORSIONALIRREGULARITYX: "TORSIONAL_IRREGULARITY_X",
+    tORSIONALIRREGULARITYY: "TORSIONAL_IRREGULARITY_Y",
+  },
   trussForce: {
     /** Truss force */
     trussForce: "TRUSSFORCE",
@@ -1100,6 +1140,9 @@ export const tableTypes = {
   trussStress: {
     /** Truss stress */
     trussStress: "TRUSSSTRESS",
+  },
+  ultimateStoryShearCheck: {
+    uLTIMATESTORYSHEARFORCECHECK: "ULTIMATE_STORY_SHEAR_FORCE_CHECK",
   },
   vibrationModeShape: {
     /** Eigenvalue vibration mode shape */
@@ -1110,5 +1153,9 @@ export const tableTypes = {
   wallForce: {
     /** Wall force and moment */
     wallForceAndMoment: "WALL_FORCE_MOMENT",
+  },
+  weightIrregularityCheck: {
+    wEIGHTIRREGULARITYX: "WEIGHT_IRREGULARITY_X",
+    wEIGHTIRREGULARITYY: "WEIGHT_IRREGULARITY_Y",
   },
 } as const;

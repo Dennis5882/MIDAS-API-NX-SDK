@@ -1,0 +1,16 @@
+contractVersion: 1
+id: post-story-stability-coefficient
+endpoint: /post/TABLE
+name: Story Stability Coefficient
+products: [gen, civil]
+source:
+  manual:
+    status: documented
+    repo: Dennis5882/MIDAS-API
+    chapterFile: 21_POST_StoryTables.md
+    section: "10. Story Stability Coefficient"
+verification: {status: manual_only}
+risk: read_only
+tableTypes:
+  - {value: STORY_STABILITY_COEFFICIENT_X, provenance: manual}
+  - {value: STORY_STABILITY_COEFFICIENT_Y, provenance: manual}

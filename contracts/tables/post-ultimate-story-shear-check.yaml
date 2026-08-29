@@ -1,0 +1,10 @@
+contractVersion: 1
+id: post-ultimate-story-shear-check
+endpoint: /post/TABLE
+name: Ultimate Story Shear Check
+products: [gen, civil]
+source:
+  manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 21_POST_StoryTables.md, section: "16. Ultimate Story Shear For Check"}
+verification: {status: manual_only}
+risk: read_only
+tableTypes: [{value: ULTIMATE_STORY_SHEAR_FORCE_CHECK, provenance: manual}]

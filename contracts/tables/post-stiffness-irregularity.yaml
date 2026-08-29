@@ -1,0 +1,10 @@
+contractVersion: 1
+id: post-stiffness-irregularity
+endpoint: /post/TABLE
+name: Stiffness Irregularity Check
+products: [gen, civil]
+source:
+  manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 21_POST_StoryTables.md, section: "13. Stiffness Irregularity Check (Soft Story)"}
+verification: {status: manual_only}
+risk: read_only
+tableTypes: [{value: STIFFNESS_IRREGULARITY_X, provenance: manual}, {value: STIFFNESS_IRREGULARITY_Y, provenance: manual}]
