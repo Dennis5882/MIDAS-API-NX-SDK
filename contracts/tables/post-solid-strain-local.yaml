@@ -1,0 +1,18 @@
+contractVersion: 1
+id: post-solid-strain-local
+endpoint: /post/TABLE
+name: Solid Strain Local
+summary: Local plastic or total solid strain values.
+products: [gen, civil]
+source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "24. Solid Strain (Local)"}}
+verification: {status: manual_only}
+risk: read_only
+tableTypes:
+  - value: SOLID_LOCA_PLAST_STRAIN
+    description: Local plastic solid strain
+    head: [Index, Elem, Load, Step, Node, Strain-xx, Strain-yy, Strain-zz, Strain-xy, Strain-yz, Strain-xz, Strain-P1, Strain-P2, Strain-P3, Max-Shear]
+    provenance: manual
+  - value: SOLID_LOCA_TOTAL_STRAIN
+    description: Local total solid strain
+    head: [Index, Elem, Load, Step, Node, Strain-xx, Strain-yy, Strain-zz, Strain-xy, Strain-yz, Strain-xz, Strain-P1, Strain-P2, Strain-P3, Max-Shear]
+    provenance: manual

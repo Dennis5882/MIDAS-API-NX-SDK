@@ -1,0 +1,18 @@
+contractVersion: 1
+id: post-solid-strain-global
+endpoint: /post/TABLE
+name: Solid Strain Global
+summary: Global plastic or total solid strain values.
+products: [gen, civil]
+source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "25. Solid Strain (Global)"}}
+verification: {status: manual_only}
+risk: read_only
+tableTypes:
+  - value: SOLID_GLOB_PLAST_STRAIN
+    description: Global plastic solid strain
+    head: [Index, Elem, Load, Step, Node, Strain-XX, Strain-YY, Strain-ZZ, Strain-XY, Strain-YZ, Strain-XZ, Strain-P1, Strain-P2, Strain-P3, Max-Shear]
+    provenance: manual
+  - value: SOLID_GLOB_TOTAL_STRAIN
+    description: Global total solid strain
+    head: [Index, Elem, Load, Step, Node, Strain-XX, Strain-YY, Strain-ZZ, Strain-XY, Strain-YZ, Strain-XZ, Strain-P1, Strain-P2, Strain-P3, Max-Shear]
+    provenance: manual

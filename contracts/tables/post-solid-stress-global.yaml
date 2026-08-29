@@ -1,0 +1,10 @@
+contractVersion: 1
+id: post-solid-stress-global
+endpoint: /post/TABLE
+name: Solid Stress Global
+summary: Global solid stress values and principal directions.
+products: [gen, civil]
+source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "23. Solid Stress (Global)"}}
+verification: {status: manual_only}
+risk: read_only
+tableTypes: [{value: SOLIDSG, description: Global solid stress, head: [Index, Elem, Load, Node, Sig-XX, Sig-YY, Sig-ZZ, Sig-XY, Sig-YZ, Sig-XZ, Sig-P1, Sig-P2, Sig-P3, Max-Shear, Sig-EFF, Sig-OCT, Sig-P1/ux, Sig-P1/uy, Sig-P1/uz, Sig-P2/ux, Sig-P2/uy, Sig-P2/uz, Sig-P3/ux, Sig-P3/uy, Sig-P3/uz], provenance: manual}]

@@ -964,6 +964,34 @@ export const tableTypes = {
     /** Value sections */
     valueSections: "SECTIONVALUE",
   },
+  solidForceGlobal: {
+    /** Global solid force */
+    globalSolidForce: "SOLIDFG",
+  },
+  solidForceLocal: {
+    /** Local solid force */
+    localSolidForce: "SOLIDFL",
+  },
+  solidStrainGlobal: {
+    /** Global plastic solid strain */
+    globalPlasticSolidStrain: "SOLID_GLOB_PLAST_STRAIN",
+    /** Global total solid strain */
+    globalTotalSolidStrain: "SOLID_GLOB_TOTAL_STRAIN",
+  },
+  solidStrainLocal: {
+    /** Local plastic solid strain */
+    localPlasticSolidStrain: "SOLID_LOCA_PLAST_STRAIN",
+    /** Local total solid strain */
+    localTotalSolidStrain: "SOLID_LOCA_TOTAL_STRAIN",
+  },
+  solidStressGlobal: {
+    /** Global solid stress */
+    globalSolidStress: "SOLIDSG",
+  },
+  solidStressLocal: {
+    /** Local solid stress */
+    localSolidStress: "SOLIDSL",
+  },
   storyLoadSummaryTable: {
     /** X-direction story load */
     xDirectionStoryLoad: "STORY_LOAD_X",
