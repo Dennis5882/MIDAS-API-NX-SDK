@@ -4080,7 +4080,7 @@
       "className": "Skew",
       "exportName": "skew",
       "endpoint": "/db/SKEW",
-      "name": "/db/SKEW",
+      "name": "Node Local Axis",
       "products": [
         "civil",
         "gen"
@@ -5243,7 +5243,7 @@
       "className": "FiberDivision",
       "exportName": "fiberDivision",
       "endpoint": "/db/FIBR",
-      "name": "/db/FIBR",
+      "name": "Fiber Division of Section",
       "products": [
         "civil",
         "gen"

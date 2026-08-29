@@ -9,7 +9,7 @@
 contractVersion: 1
 id: db-skew
 endpoint: /db/SKEW
-name: /db/SKEW
+name: Node Local Axis
 
 products: [civil, gen]
 

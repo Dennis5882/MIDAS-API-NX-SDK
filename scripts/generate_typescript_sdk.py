@@ -535,10 +535,9 @@ def _contract_resource_surfaces() -> dict[str, dict[str, Any]]:
 def _contract_resource_mismatches(resource: dict[str, Any], surface: dict[str, Any]) -> list[str]:
     """Compare a legacy SDK resource with the facts its contract owns.
 
-    ``name`` is presentation metadata, not a wire/API fact. A few manual
-    sections name only their endpoint, while the legacy SDK supplied a friendly
-    label. The contract remains authoritative for the generated label, so
-    exclude it from the semantic shadow gate and compare executable facts.
+    Endpoint labels are manual facts too. The manual and legacy surface use
+    different dash typography in a few labels, which is presentation-only, but
+    an endpoint string in place of a documented label is still a disagreement.
     """
 
     chapter = next(
@@ -551,10 +550,17 @@ def _contract_resource_mismatches(resource: dict[str, Any], surface: dict[str, A
         "methods": resource["methods"],
         "manualChapter": chapter,
     }
+    def same_value(key: str) -> bool:
+        if key != "name":
+            return actual[key] == surface[key]
+        return actual[key].replace("\u2013", "-").replace("\u2014", "-") == surface[key].replace(
+            "\u2013", "-"
+        ).replace("\u2014", "-")
+
     return [
         f"{key}: SDK has {actual[key]!r}, contract has {surface[key]!r}"
         for key in actual
-        if key != "name" and actual[key] != surface[key]
+        if not same_value(key)
     ]
 
 

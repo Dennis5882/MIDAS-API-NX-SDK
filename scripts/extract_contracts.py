@@ -72,6 +72,7 @@ TABLE_FAMILY_CHAPTERS = {
 }
 
 _SECTION = re.compile(r"^##\s+(\d+)\.\s*`?(/?[A-Za-z][A-Za-z0-9/_.\-]*/[A-Za-z0-9/_.\-]+)`?\s*(?:[—\-–]\s*(.*))?$")
+_BLOCKQUOTE_TITLE = re.compile(r"^>\s+\*\*([^*]+)\*\*(?:\s*[—\-–]\s*.*)?$")
 _DIVIDER = re.compile(r"^\|[\s:|-]+\|$")
 _SOURCE_URL = re.compile(r"\*\*Source\*\*:\s*\[[^\]]*\]\((https?://[^)]+)\)")
 # The chapters declare methods six ways, and each miss is expensive: without one
@@ -1784,11 +1785,25 @@ def parse_chapter(path: Path) -> list[Section]:
         endpoint = match.group(2)
         if not endpoint.startswith("/"):
             endpoint = "/" + endpoint
+        title = (match.group(3) or "").strip()
+        if not title:
+            # Some manual sections put their human-readable label in the opening
+            # blockquote rather than on the endpoint heading. Only inspect the
+            # introductory metadata, so a bold note in Specifications cannot
+            # become the endpoint name.
+            for line in body:
+                if line.startswith("###"):
+                    break
+                blockquote_title = _BLOCKQUOTE_TITLE.match(line)
+                if blockquote_title:
+                    title = blockquote_title.group(1).strip()
+                    break
+
         section = Section(
             chapter_file=path.name,
             number=match.group(1),
             endpoint=endpoint,
-            title=(match.group(3) or "").strip(),
+            title=title,
             heading=lines[index].lstrip("#").strip(),
             lines=body,
         )

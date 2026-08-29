@@ -472,6 +472,21 @@ def ensure_records(needed: dict[str, dict], dry_run: bool) -> None:
             path.write_text(text.rstrip("\n") + "\n" + "".join(additions), encoding="utf-8")
 
 
+def _manual_selection_error(
+    slugs: list[str], candidates: dict[str, str], existing: set[str], replace_existing: bool
+) -> str | None:
+    """Return a refusal reason for unsafe ``--from-manual`` selections."""
+    missing = sorted(set(slugs) - candidates.keys())
+    if missing:
+        return "--from-manual found no manual section for: " + ", ".join(missing) + "; refusing draft fallback"
+    overwritten = sorted(set(slugs) & existing)
+    if overwritten and not replace_existing:
+        return "--from-manual refuses to replace existing contract(s): " + ", ".join(
+            overwritten
+        ) + "; pass --replace-existing after review"
+    return None
+
+
 def main(argv: list[str]) -> int:
     sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -484,6 +499,11 @@ def main(argv: list[str]) -> int:
         help="render named sections in memory from the manual; never update contracts/drafts",
     )
     parser.add_argument("--manual-api-repo", type=Path, help="manual repository used with --from-manual")
+    parser.add_argument(
+        "--replace-existing",
+        action="store_true",
+        help="with --from-manual, explicitly allow reviewed replacement of existing contracts",
+    )
     args = parser.parse_args(argv)
 
     coverage = _coverage()
@@ -503,6 +523,8 @@ def main(argv: list[str]) -> int:
             section.id: render_draft(section, evidence.get(section.endpoint))
             for section in sections
         }
+    elif args.replace_existing:
+        parser.error("--replace-existing requires --from-manual")
     existing = {path.stem for path in ENDPOINTS.glob("*.yaml")}
     slugs = args.slugs or (
         sorted(slug for slug in candidates if slug not in existing)
@@ -513,6 +535,10 @@ def main(argv: list[str]) -> int:
     )
     if not slugs:
         parser.error("name at least one draft, or pass --all")
+    if args.from_manual:
+        selection_error = _manual_selection_error(slugs, candidates, existing, args.replace_existing)
+        if selection_error:
+            parser.error(selection_error)
 
     needed: dict[str, dict] = {}
     promoted = 0

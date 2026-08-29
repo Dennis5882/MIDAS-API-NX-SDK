@@ -24,7 +24,7 @@ def test_contracted_resource_surfaces_match_the_legacy_sdk_anchor():
         assert resource["contractManualChapter"] == surface["manualChapter"]
 
 
-def test_resource_shadow_excludes_non_executable_display_names():
+def test_resource_shadow_checks_documented_display_names_but_normalizes_dash_typography():
     resource = {
         "name": "Load Combinations - General",
         "products": ["gen"],
@@ -40,10 +40,13 @@ def test_resource_shadow_excludes_non_executable_display_names():
     assert generator._contract_resource_mismatches(resource, surface) == []
 
     surface["name"] = "/db/LCOM-GEN"
-    assert generator._contract_resource_mismatches(resource, surface) == []
+    assert generator._contract_resource_mismatches(resource, surface) == [
+        "name: SDK has 'Load Combinations - General', contract has '/db/LCOM-GEN'"
+    ]
 
     surface["methods"] = ["POST"]
     assert generator._contract_resource_mismatches(resource, surface) == [
+        "name: SDK has 'Load Combinations - General', contract has '/db/LCOM-GEN'",
         "methods: SDK has ['GET'], contract has ['POST']"
     ]
 

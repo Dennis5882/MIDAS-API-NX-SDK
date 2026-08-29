@@ -9,7 +9,7 @@
 contractVersion: 1
 id: db-fibr
 endpoint: /db/FIBR
-name: /db/FIBR
+name: Fiber Division of Section
 
 products: [civil, gen]
 

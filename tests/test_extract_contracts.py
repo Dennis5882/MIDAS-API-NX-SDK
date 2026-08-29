@@ -82,6 +82,32 @@ def test_section_metadata(section: ex.Section):
     assert section.source_url == "https://support.midasuser.com/hc/en-us/articles/1"
 
 
+@pytest.mark.parametrize(
+    ("heading", "intro", "expected_title"),
+    [
+        pytest.param(
+            "## 1. `/db/TITLE`",
+            "> **Title in Blockquote** - endpoint description",
+            "Title in Blockquote",
+            id="opening-blockquote-title",
+        ),
+        pytest.param(
+            "## 1. `/db/TITLE` - Title in Heading",
+            "> **Ignored Blockquote Title** - endpoint description",
+            "Title in Heading",
+            id="heading-title-wins",
+        ),
+    ],
+)
+def test_section_title_reads_the_documented_intro_form(
+    tmp_path: Path, heading: str, intro: str, expected_title: str
+):
+    path = tmp_path / "99_DB_Title.md"
+    path.write_text(f"# Synthetic\n\n{heading}\n\n{intro}\n\n### Specifications\n", encoding="utf-8")
+
+    assert ex.parse_chapter(path)[0].title == expected_title
+
+
 def test_requiredness_and_defaults_come_from_the_table(section: ex.Section):
     fields = {f.key: f for f in section.tables[0].fields}
 

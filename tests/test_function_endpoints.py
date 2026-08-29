@@ -15,9 +15,22 @@ from function_endpoints import (
 )
 from promote_contract import (
     _ambiguous_draft_key,
+    _manual_selection_error,
     _non_db_delete_response_unknown,
     _non_db_resource_is_modelled,
 )
+
+
+def test_from_manual_selection_requires_a_manual_candidate_and_explicit_replacement():
+    candidates = {"db-new": "endpoint: /db/NEW\n", "db-existing": "endpoint: /db/EXISTING\n"}
+
+    assert _manual_selection_error(["db-missing"], candidates, set(), False) == (
+        "--from-manual found no manual section for: db-missing; refusing draft fallback"
+    )
+    assert _manual_selection_error(["db-existing"], candidates, {"db-existing"}, False) == (
+        "--from-manual refuses to replace existing contract(s): db-existing; pass --replace-existing after review"
+    )
+    assert _manual_selection_error(["db-existing"], candidates, {"db-existing"}, True) is None
 
 
 def test_promotion_rejects_a_manual_row_that_still_names_multiple_fields():
