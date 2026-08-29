@@ -51,12 +51,12 @@ The following values were measured after Stage 2 and the result-table work:
 
 | surface | contracted | total | note |
 | --- | ---: | ---: | --- |
-| endpoint contracts | 248 | — | `post-table.yaml` is the shared-table family contract |
-| npm DB resources | 228 | 304 | 76 resources still have no committed endpoint contract |
+| endpoint contracts | 249 | — | `post-table.yaml` is the shared-table family contract |
+| npm DB resources | 229 | 304 | 75 resources still have no committed endpoint contract |
 | `/post/TABLE` result tables | 87 | 87 | Chapter 23's other two routes are `/post/PM` and `/post/STEELCODECHECK`, not `TABLE_TYPE` tables |
-| active promotion candidates | 0 | 135 drafts | each remaining draft has a measured gate refusal |
+| active promotion candidates | 0 | 134 drafts | each remaining draft has a measured gate refusal |
 
-The remaining 76 npm resources are not a uniform parser backlog. They include
+The remaining 75 npm resources are not a uniform parser backlog. They include
 unmerged conditional tables, missing Default/Required facts, incomplete enum or
 array-item facts, and documented live defects. `/db/STYP-M1` is a distinct
 manual gap: it appears in `INDEX.md`, but no endpoint section exists under

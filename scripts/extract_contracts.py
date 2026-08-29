@@ -240,6 +240,32 @@ _DESCRIPTION_CONDITION_MARKERS = (
 )
 
 
+_DESCRIPTION_LITERAL_CONDITION = re.compile(
+    r"`?([A-Za-z_][A-Za-z0-9_.]*)`?\s*=\s*`?([A-Za-z][A-Za-z0-9_-]*)`?"
+)
+
+
+def _description_literal_condition(text: str) -> tuple[str, str | int | float | bool] | None:
+    """Read one literal selector that a conditional field's description states.
+
+    Markdown tables use both JSON-like ``CODE=\"Standard\"`` and the shorter
+    manual spelling ``INPUT_METHOD=KEYS``. The latter is still an explicit
+    wire-value equality when it is the sole equality in that field's own
+    description. Do not accept prose alternatives, ranges, or more than one
+    equality: those need a human review rather than a guessed ``appliesWhen``.
+    """
+
+    structured = _variant_condition(text)
+    if structured is not None:
+        return structured
+    matches = _DESCRIPTION_LITERAL_CONDITION.findall(_clean(text))
+    distinct = list(dict.fromkeys(matches))
+    if len(distinct) != 1:
+        return None
+    path, value = distinct[0]
+    return path, value
+
+
 def _condition_from_description(cell: str) -> Optional[str]:
     """Keep one condition phrase the parameter description states verbatim.
 
@@ -1489,6 +1515,9 @@ def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], 
                     and len(distinct_conditions) == 1
                 ):
                     field.condition = distinct_conditions[0]
+                    structured_condition = _variant_condition(field.condition)
+                    if structured_condition is not None and structured_condition not in field.applies_when:
+                        field.applies_when.append(structured_condition)
                     conditional_note = "the manual marks this conditional but does not state the condition"
                     if conditional_note in field.notes:
                         field.notes.remove(conditional_note)
@@ -1807,7 +1836,7 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                 # is precisely one; two selectors or prose-only wording stay
                 # unresolved rather than being guessed.
                 if requirement == "conditional" and condition is None and desc_column is not None:
-                    description_condition = _variant_condition(_clean(cells[desc_column]))
+                    description_condition = _description_literal_condition(cells[desc_column])
                     if description_condition is not None:
                         condition_field, condition_value = description_condition
                         rendered_value = (
@@ -1816,11 +1845,15 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                             else str(condition_value).lower()
                         )
                         condition = f"{condition_field}={rendered_value}"
+                        applies_when = [(condition_field, condition_value)]
                         note = None
                     else:
                         condition = _condition_from_description(cells[desc_column])
                         if condition is not None:
                             note = None
+                        applies_when = []
+                else:
+                    applies_when = []
                 if note:
                     notes.append(note)
                 field_type, items, note = _normalize_type(entry_type) if entry_type is not None else (None, None, "the table has no Value Type column")
@@ -1853,6 +1886,7 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                         enum=enum,
                         constraints=constraints,
                         condition=condition,
+                        applies_when=applies_when,
                         number=_clean(cells[0]) if cells else "",
                         notes=notes,
                         shared_number_group=parallel is not None,

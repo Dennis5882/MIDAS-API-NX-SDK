@@ -1237,7 +1237,22 @@ def test_schema_conditional_marker_does_not_mask_same_field_enum(tmp_path: Path)
     detail = ex.parse_chapter(path)[0].tables[0].fields[1]
     assert detail.enum == ["FIRST", "SECOND"]
     assert detail.condition == 'MODE="USER"'
+    assert detail.applies_when == [("MODE", "USER")]
     assert not detail.notes
+
+
+@pytest.mark.parametrize(
+    ("description", "expected"),
+    [
+        pytest.param("Use a range (INPUT_METHOD=KEYS)", ("INPUT_METHOD", "KEYS"), id="bare_uppercase_value"),
+        pytest.param("Material strength (CODE=None)", ("CODE", "None"), id="bare_titlecase_value"),
+        pytest.param("Two choices (MODE=A, CODE=None)", None, id="multiple_equalities_stay_unverified"),
+    ],
+)
+def test_description_literal_condition_accepts_only_one_explicit_equality(
+    description: str, expected: tuple[str, str] | None
+):
+    assert ex._description_literal_condition(description) == expected
 
 
 def test_shipped_contracts_still_match_the_manual_if_it_is_present():
