@@ -2506,6 +2506,18 @@ def run_report(sections: list[Section], table_family: dict[str, int]) -> int:
                 f"{len(covered)} of {len(resource_endpoints)} covered; "
                 f"{len(resource_endpoints - covered)} without a contract."
             )
+            # A missing contract can still be a parser or review problem, but a
+            # resource absent from every parsed manual section has no manual
+            # payload source at all. Report that separately so it is not
+            # mistaken for an ordinary promotable draft.
+            manual_endpoints = {section.endpoint for section in sections}
+            no_manual_section = sorted(resource_endpoints - manual_endpoints)
+            print(
+                "npm resource manual-section coverage: "
+                f"{len(no_manual_section)} without a parsed manual section."
+            )
+            if no_manual_section:
+                print("  " + ", ".join(no_manual_section))
     return 0
 
 

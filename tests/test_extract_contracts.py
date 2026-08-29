@@ -8,6 +8,7 @@ into evidence, and the CI gate built on the difference between those two would
 stop meaning anything.
 """
 
+import json
 import sys
 from pathlib import Path
 
@@ -476,6 +477,29 @@ def test_report_measures_table_contract_coverage(section: ex.Section, capsys: py
     output = capsys.readouterr().out
     assert "table-contract coverage:" in output
     assert "/post/PM and /post/STEELCODECHECK" in output
+
+
+def test_report_separates_resources_with_no_parsed_manual_section(
+    section: ex.Section, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+):
+    inventory = tmp_path / "schema"
+    endpoints = tmp_path / "contracts" / "endpoints"
+    drafts = tmp_path / "contracts" / "drafts"
+    inventory.mkdir()
+    endpoints.mkdir(parents=True)
+    drafts.mkdir(parents=True)
+    (inventory / "typescript-resources.json").write_text(
+        json.dumps({"resources": [{"endpoint": "/db/SYNTH"}, {"endpoint": "/db/NOSECTION"}]}),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(ex, "ROOT", tmp_path)
+    monkeypatch.setattr(ex, "ENDPOINT_DIR", endpoints)
+    monkeypatch.setattr(ex, "DRAFT_DIR", drafts)
+
+    assert ex.run_report([section], {}) == 0
+    output = capsys.readouterr().out
+    assert "1 without a parsed manual section." in output
+    assert "/db/NOSECTION" in output
 
 
 def test_conditional_variant_tables_are_reported_not_merged(section: ex.Section):
