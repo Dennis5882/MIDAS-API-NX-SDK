@@ -525,7 +525,8 @@ def test_report_prints_measured_stage_two_blockers(section: ex.Section, capsys: 
     assert "promotion-note forms (field occurrences):" in output
     assert "conditional requirement has no stated condition" in output
     assert "non-literal System default kept verbatim" in output
-    assert "conditional tables:" in output
+    assert "supplementary tables:" in output
+    assert "unmerged supplementary tables by manual selector evidence:" in output
 
 
 def test_report_measures_table_contract_coverage(section: ex.Section, capsys: pytest.CaptureFixture[str]):
@@ -806,6 +807,80 @@ def test_explicit_variant_tables_preserve_their_discriminator_and_do_not_merge(t
     assert "unmergedTables" not in draft["extraction"]
     assert draft["variants"][0]["when"] == {"field": "TYPE", "equals": "FIRST"}
     assert draft["variants"][1]["fields"][0]["key"] == "SECOND_VALUE"
+
+
+def test_bold_table_labels_supply_literal_variant_selectors(tmp_path: Path):
+    """A bold label immediately preceding a table is equivalent to a heading."""
+
+    path = tmp_path / "99_DB_BoldVariant.md"
+    path.write_text(
+        """## 1. `/db/BOLD-VARIANT` -- bold variant labels
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Type | `TYPE` | String | - | Required |
+
+**Constant (`TYPE="CONST"`) additional parameters**
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 2 | Constant value | `CONST_VALUE` | Number | - | Required |
+
+**User (`TYPE="USER"`) additional parameters**
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 3 | User value | `USER_VALUE` | Number | - | Required |
+""",
+        encoding="utf-8",
+    )
+
+    parsed = ex.parse_chapter(path)[0]
+    assert [(variant.field, variant.equals) for variant in parsed.variants] == [
+        ("TYPE", "CONST"),
+        ("TYPE", "USER"),
+    ]
+
+
+def test_prose_and_inline_bold_emphasis_do_not_replace_a_table_heading(tmp_path: Path):
+    """Only a full bold label directly attached to a table becomes its heading."""
+
+    path = tmp_path / "99_DB_ProseBeforeTable.md"
+    path.write_text(
+        """## 1. `/db/PROSE-LABEL` -- prose before a table
+
+### Parameters
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Root | `ROOT` | String | - | Required |
+
+The following has the same child structure (all **Required**):
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 2 | Child | `CHILD` | String | - | Required |
+""",
+        encoding="utf-8",
+    )
+
+    tables = ex.parse_chapter(path)[0].tables
+    assert [table.heading for table in tables] == ["Parameters", "Parameters"]
+
+
+@pytest.mark.parametrize(
+    ("heading", "expected"),
+    [
+        pytest.param('Variant (`TYPE="A"` / `TYPE="B"`)', "selector with several values", id="repeated_string_assignments"),
+        pytest.param("Variant (`FLOOR_DIST_TYPE=1 or 2`)", "selector with several values", id="numeric_or_list"),
+        pytest.param('Variant (`TYPE="A"`)', "selector with one value", id="one_string_value"),
+        pytest.param("Variant (STYPE: 1)", "selector with one value", id="colon_numeric_value"),
+        pytest.param("Variant (`TYPE`)", "no selector stated", id="field_name_without_equality"),
+        pytest.param("Variant table", "no selector stated", id="label_only"),
+    ],
+)
+def test_selector_evidence_reports_only_explicit_manual_literals(heading: str, expected: str):
+    assert ex._selector_evidence(heading) == expected
 
 
 def test_inline_boolean_variant_rows_preserve_branches_and_roman_children(tmp_path: Path):

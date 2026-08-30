@@ -2091,6 +2091,7 @@ def _parallel_field_cells(
 _QUOTED_ARRAY_PROPERTY = re.compile(
     r'^"([A-Za-z_][A-Za-z0-9_]*)"\[\]\.(?:"?)([A-Za-z_][A-Za-z0-9_]*)(?:"?)$'
 )
+_BOLD_TABLE_LABEL = re.compile(r"^\*\*(?P<label>.+?)\*\*\s*$")
 
 
 def _canonical_wire_property(cell: str) -> str:
@@ -2126,6 +2127,24 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
         line = lines[index]
         if line.startswith("#"):
             heading = line.lstrip("#").strip()
+            index += 1
+            continue
+        # Supplementary parameter tables are sometimes introduced by a bold
+        # label rather than a Markdown heading. Only take a *whole* bold line
+        # when the next nonblank line is a parameter table. This deliberately
+        # ignores prose with bold emphasis (for example ``... **Required**``)
+        # and bold Request/Response labels that introduce code blocks.
+        label = _BOLD_TABLE_LABEL.fullmatch(line.strip())
+        if label:
+            next_index = index + 1
+            while next_index < len(lines) and not lines[next_index].strip():
+                next_index += 1
+            if (
+                next_index + 1 < len(lines)
+                and lines[next_index].startswith("|")
+                and _DIVIDER.match(lines[next_index + 1])
+            ):
+                heading = _clean(label.group("label"))
             index += 1
             continue
         if not (line.startswith("|") and index + 1 < len(lines) and _DIVIDER.match(lines[index + 1])):
@@ -2694,6 +2713,16 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
     fields, structural_merges = _structural_fields(section)
     fields, conditional_merges = _conditional_fields(section, fields)
     resolved_tables = {merge.table for merge in structural_merges} | conditional_merges
+    variant_table_indexes = {
+        index for index, table in enumerate(section.tables) if any(variant.table is table for variant in section.variants)
+    }
+    # A small reviewed set of historical contracts represents these tables as
+    # field-level appliesWhen entries instead of endpoint variants. Keep that
+    # settled contract shape while still retaining the bold manual label for
+    # measurement; a newly explicit label must not create a false drift claim.
+    rendered_variants = (
+        [] if variant_table_indexes and variant_table_indexes <= conditional_merges else section.variants
+    )
     lines: list[str] = [
         f"# DRAFT contract for {section.endpoint} - extracted, not reviewed.",
         "#",
@@ -2774,9 +2803,9 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
         lines += _render_fields(fields, "  ", evidence)
         lines.append("")
 
-    if section.variants:
+    if rendered_variants:
         lines.append("variants:")
-        for variant in section.variants:
+        for variant in rendered_variants:
             lines += [
                 "  - when:",
                 f"      field: {_scalar(variant.field)}",
@@ -2806,7 +2835,7 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
         for index, table in enumerate(section.tables[1:], start=1)
         if index not in resolved_tables
     ]
-    if unresolved and not section.variants:
+    if unresolved and not rendered_variants:
         lines.append("  # Additional parameter tables in this section were NOT merged. They are")
         lines.append("  # usually conditional variants selected by a type/code field. Decide")
         lines.append("  # whether they belong in this contract's fields, as nested `properties`,")
@@ -2823,6 +2852,66 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
 # ---------------------------------------------------------------------------
 # Modes
 # ---------------------------------------------------------------------------
+
+
+_SELECTOR_NAME = re.compile(r"`?([A-Za-z_][A-Za-z0-9_.]*)`?\s*(?:==|=|:)")
+_SELECTOR_ONE_VALUE = re.compile(
+    r"`?[A-Za-z_][A-Za-z0-9_.]*`?\s*(?:==|=|:)\s*"
+    r"(?:`?\"[^\"]+\"`?|`?-?\d+(?:\.\d+)?`?|`?(?:true|false)`?)",
+    re.IGNORECASE,
+)
+_SELECTOR_VALUE_LIST = re.compile(
+    r"`?[A-Za-z_][A-Za-z0-9_.]*`?\s*(?:==|=|:)\s*"
+    r"(?:`?\"[^\"]+\"`?|`?-?\d+(?:\.\d+)?`?|`?(?:true|false)`?)"
+    r"(?:\s*(?:/|,|\||\bor\b|또는)\s*"
+    r"(?:`?[A-Za-z_][A-Za-z0-9_.]*`?\s*(?:==|=|:)\s*)?"
+    r"(?:`?\"[^\"]+\"`?|`?-?\d+(?:\.\d+)?`?|`?(?:true|false)`?))+",
+    re.IGNORECASE,
+)
+
+
+def _selector_evidence(heading: str) -> str:
+    """Classify only the selector fact written in a supplementary-table label.
+
+    This is a report classifier, not a promotion rule.  It deliberately says
+    ``no selector stated`` for label-only tables rather than inferring a value
+    from a neighbouring enum row, and recognises only explicit literal lists.
+    """
+
+    if _SELECTOR_VALUE_LIST.search(heading):
+        return "selector with several values"
+    if _SELECTOR_ONE_VALUE.search(heading):
+        return "selector with one value"
+    if _SELECTOR_NAME.search(heading):
+        return "selector without a readable literal"
+    return "no selector stated"
+
+
+def _supplementary_table_measurement(sections: list[Section]) -> list[tuple[str, int, str, str, str]]:
+    """Return every extra table with its resolution and literal-selector evidence."""
+
+    measured: list[tuple[str, int, str, str, str]] = []
+    for section in sections:
+        base_fields, structural_merges = _structural_fields(section)
+        _, conditional_merges = _conditional_fields(section, base_fields)
+        structural_indexes = {merge.table for merge in structural_merges}
+        variant_indexes = {
+            index
+            for index, table in enumerate(section.tables)
+            if any(variant.table is table for variant in section.variants)
+        }
+        for index, table in enumerate(section.tables[1:], start=1):
+            resolution = (
+                "structural merge"
+                if index in structural_indexes
+                else "field appliesWhen merge"
+                if index in conditional_merges
+                else "explicit variant"
+                if index in variant_indexes
+                else "unmerged"
+            )
+            measured.append((section.endpoint, table.line, table.heading, resolution, _selector_evidence(table.heading)))
+    return measured
 
 
 def run_report(sections: list[Section], table_family: dict[str, int]) -> int:
@@ -2885,10 +2974,10 @@ def run_report(sections: list[Section], table_family: dict[str, int]) -> int:
     unrecognised_types = sum(
         any(note.startswith("unrecognised Value Type") for note in field.notes) for field in all_fields
     )
-    explicit_variants = sum(bool(section.variants) for section in sections)
-    unmerged_variant_tables = sum(
-        len(section.tables) > 1 and not section.variants for section in sections
-    )
+    supplementary = _supplementary_table_measurement(sections)
+    resolution_counts = Counter(entry[3] for entry in supplementary)
+    unmerged = [entry for entry in supplementary if entry[3] == "unmerged"]
+    unmerged_evidence = Counter(entry[4] for entry in unmerged)
     print(
         "\nStage 2 fidelity blockers: "
         f"{enum_missing} enum value list(s) unstated, "
@@ -2920,10 +3009,20 @@ def run_report(sections: list[Section], table_family: dict[str, int]) -> int:
     print("  promotion-note forms (field occurrences):")
     for label, count in promotion_note_counts.items():
         print(f"    {count:>5}  {label}")
-    print(
-        f"  conditional tables: {explicit_variants} explicitly modelled variant set(s), "
-        f"{unmerged_variant_tables} left unmerged because their selector is not explicit."
-    )
+    print(f"  supplementary tables: {len(supplementary)} total")
+    for resolution in ("explicit variant", "field appliesWhen merge", "structural merge", "unmerged"):
+        print(f"    {resolution_counts[resolution]:>5}  {resolution}")
+    print("  unmerged supplementary tables by manual selector evidence:")
+    for evidence in (
+        "selector with several values",
+        "selector with one value",
+        "selector without a readable literal",
+        "no selector stated",
+    ):
+        print(f"    {unmerged_evidence[evidence]:>5}  {evidence}")
+    print("  unmerged supplementary table detail:")
+    for endpoint, line, heading, _, evidence in unmerged:
+        print(f"    {endpoint} line {line}: [{evidence}] {heading}")
 
     # A section with no stated verbs cannot be promoted, so this is a headline
     # number, not a detail - and it was reported as 276 while the extractor could
@@ -3084,7 +3183,7 @@ def run_check(sections: list[Section]) -> int:
         # this, --check would wrongly call a nested supplementary-table field
         # contract drift simply because it only inspected the first table.
         manual_shape, _ = _structural_fields(section)
-        manual_shape, _ = _conditional_fields(section, manual_shape)
+        manual_shape, conditional_merges = _conditional_fields(section, manual_shape)
         manual_fields = _flatten_manual(manual_shape)
         contract_fields = _flatten_contract(contract.get("fields", []))
         overridden = {
@@ -3198,12 +3297,20 @@ def run_check(sections: list[Section]) -> int:
                     f"record it under manualDefects if the manual is the one that is wrong"
                 )
 
-        if section.variants:
+        variant_table_indexes = {
+            index
+            for index, table in enumerate(section.tables)
+            if any(variant.table is table for variant in section.variants)
+        }
+        check_variants = (
+            [] if variant_table_indexes and variant_table_indexes <= conditional_merges else section.variants
+        )
+        if check_variants:
             declared_variants = {
                 (variant.get("when", {}).get("field"), variant.get("when", {}).get("equals")): variant
                 for variant in contract.get("variants", [])
             }
-            for variant in section.variants:
+            for variant in check_variants:
                 label = f"{variant.field}={variant.equals!r}"
                 declared_variant = declared_variants.get((variant.field, variant.equals))
                 if declared_variant is None:

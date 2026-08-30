@@ -173,12 +173,13 @@ with a date, and re-run `--report` before quoting one.
    all (see `contract_migration_open_questions.md`). Do not invent a
    representation unilaterally; bring a proposal to the author first.
 
-   The report's `9 explicitly modelled variant set(s), 59 left unmerged` does
-   **not** measure progress here. `explicit_variants` counts sections whose table
-   *headings* declare a selector; the hand-curated `_conditional_fields` map —
-   eight endpoints as of this measurement — is invisible to it, and a section
-   merged by hand still counts among the 59. Fix the counter before using it to
-   judge this item.
+   Re-measured by `extract_contracts.py --report` on 2026-08-30: 253
+   supplementary tables comprise 24 explicit variants, 23 reviewed
+   field-level `appliesWhen` merges, 51 structural merges, and 155 unmerged
+   tables. The latter split into 4 labels that state several selector values,
+   53 that state one literal value, and 98 that state no selector. The report
+   prints every unmerged endpoint/table/line with that evidence classification;
+   use it rather than a hand-counted section total when judging this item.
 3. Remaining extraction fidelity, as field occurrences: conditional-without-
    condition (7), Required column blank (7), enum values unstated (20), array
    item type unstated (5), unrecognised Value Type cell (15).
@@ -356,17 +357,15 @@ inherits its section's heading and is filed as "selector not explicit" when the
 manual states the selector plainly. `/db/CCFC`'s `TYPE="CONST"` / `TYPE="USER"`
 and `/db/THFC`'s `FUNCTYPE=1` / `FUNCTYPE=2` are this case.
 
-Two scratch classifiers put the share of tables that already name a selector
-and one value at 40 and at 63 out of 176. **Do not quote either number** — that
-they disagree is the finding, and it says the population needs a real
-classifier before anyone designs schema around it. What both runs agree on:
-
-- a large minority already state the selector, many inside bold labels;
-- about nine need several values for one table (`FLOOR_DIST_TYPE = 1 or 2`,
-  `LOAD_MODEL=2/3`, `STANDARD_CODE: "NA"/"NB"/"NC"`);
-- the "unresolved" remainder is polluted with tables that are not variants —
-  prose picked up as a label (`없어 확정된 것은 아니다.`,
-  `아래와 동일한 하위 구조를 가짐:`), and ordinary continuation tables.
+The scratch classifiers are retired. The reproducible report now counts **253
+supplementary tables**: 24 explicit variants, 23 audited field-level
+`appliesWhen` merges, 51 structural merges, and 155 still unmerged. Of those
+155, the manual label names a selector with several values in 4 cases, one
+literal value in 53 cases, and no selector in 98 cases. `--report` prints the
+endpoint, source line, heading, and category for every unmerged table. Bold
+labels immediately before a table are now read; prose and inline bold emphasis
+are not labels. This is the measurement for the author's schema decision, not
+a claim that every one-value table is ready to promote.
 
 ### The proposal: unify `when` onto `appliesWhen`, do not invent
 
@@ -405,17 +404,16 @@ values, so the looser form cannot be used where the tighter one applies.
 
 Resolving a label against the discriminator's own enum row
 (`"TR"(Tresca)` in `MODEL_TYPE`'s Description, matching `#### Tresca ...`) was
-measured as a possible bridge: it resolves **2 of 176**. Not a lever.
+measured as a possible bridge: it resolves only two tables. Not a lever.
 
 ### Order — steps 0-2 need no author decision
 
-0. **Teach the extractor to read bold table labels**, and stop filing prose as
-   a variant label. Changes what the decision is about; needs no decision.
-1. **Fix the `9 explicitly modelled / 59 unmerged` counter.** The hand-curated
-   `_conditional_fields` map (eight endpoints) is invisible to it and a
-   hand-merged section still counts among the 59, so today there is no way to
-   measure step 0's effect.
-2. **Re-measure.** What remains after 0 and 1 is the real decision surface.
+0. ~~**Teach the extractor to read bold table labels**, and stop filing prose
+   as a variant label.~~ Done; fixtures cover bold labels and prose.
+1. ~~**Fix the counter.**~~ Done; it measures supplementary tables and their
+   actual resolution rather than sections.
+2. ~~**Re-measure.**~~ Done; the 253/155 evidence breakdown above is the real
+   decision surface.
 3. **Then** take the `when`/`in` proposal above to the author.
 
 ## What is mechanical, and what is not
