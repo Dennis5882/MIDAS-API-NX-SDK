@@ -18,11 +18,43 @@
 
 ## Manual-source gaps
 
-- `/db/STYP-M1` appears only in `docs/manual/INDEX.md` as “Structure Type
-  (Hyper-S)”. No `docs/manual/*.md` endpoint section, parameter table, or
-  method declaration describes it. The extractor therefore has no draft to
-  promote; retain the missing contract until a manual section, live `/info`, or
-  other permitted evidence is available.
+- ~~`/db/STYP-M1` appears only in `docs/manual/INDEX.md`.~~ Closed 2026-08-30:
+  the manual repo wrote the section (`5c92efe`), and
+  `npm resource manual-section coverage` is now 0 without a parsed section. The
+  contract still is not promoted, for the separate reason below.
+
+## `/db/STYP-M1` declares a DELETE nothing has verified
+
+The manual repo wrote this endpoint's first chapter section on 2026-08-30
+(`5c92efe`), closing the gap recorded above. Its payload agrees with the SDK
+exactly: the same six top-level fields and the same four `MASS_CONTROL`
+members that `GET /info/db/STYP-M1` returned on 2026-07-29 and again on
+2026-08-16. Two independent derivations landing on the same shape is the best
+evidence this repo has for any Hyper-S endpoint.
+
+The methods do not agree, and the contract is therefore not promoted.
+
+- The new section states `GET`, `PUT`, `DELETE`, and explains the missing POST
+  as `기본 레코드가 자동 생성됨`.
+- `StructureTypeHyperS` serves `GET`/`PUT` only.
+- The same chapter says required new-file data is GET/PUT only, in its preamble
+  (`02_DB_Project_Structure.md:15`) and for the classic `/db/STYP` in both its
+  contents table and its own Methods row.
+
+The section's own reason for dropping POST — the record is auto-created —
+is the chapter's reason for `/db/STYP` having no DELETE either. A record that
+must exist for the document to be valid has nothing to delete to.
+
+No live call has settled it. `docs/coverage.json` records a `write`-level
+verification for this endpoint, but `live_crud_check.py`'s case passes an empty
+create payload and a `None` expected-created value, and the sibling
+`StructureType` case above it is commented `GET/PUT only, no POST/DELETE`. The
+tier's summary sentence in coverage.json describes the tier, not this case: the
+POST and DELETE legs never ran here.
+
+So this is a documentation question, not an SDK one, and one line of the manual
+settles it. Until then the SDK keeps the narrower surface, which cannot destroy
+a record the product needs.
 
 ## Python surface drift introduced by promotion (revisit after the Codex run)
 
