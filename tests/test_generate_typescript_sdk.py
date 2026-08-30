@@ -13,7 +13,7 @@ import generate_typescript_sdk as generator  # noqa: E402
 def test_contracted_resource_surfaces_match_the_legacy_sdk_anchor():
     """A Stage 3 switch is allowed only when it preserves generated output."""
     resources = {resource["endpoint"]: resource for resource in generator._load_resources()}
-    contracts = generator._contract_resource_surfaces()
+    contracts = generator._contract_resource_surfaces(set(resources))
 
     assert contracts
     for endpoint, surface in contracts.items():
@@ -22,6 +22,12 @@ def test_contracted_resource_surfaces_match_the_legacy_sdk_anchor():
         assert resource["products"] == surface["products"]
         assert resource["methods"] == surface["methods"]
         assert resource["contractManualChapter"] == surface["manualChapter"]
+
+
+def test_contract_shadow_gate_covers_db_and_design_resources_only():
+    assert generator._is_contract_shadow_resource("/db/NODE")
+    assert generator._is_contract_shadow_resource("/DESIGN/RC/KDS-41-20-2022/DCO")
+    assert not generator._is_contract_shadow_resource("/view/DISPLAY")
 
 
 def test_resource_shadow_checks_documented_display_names_but_normalizes_dash_typography():

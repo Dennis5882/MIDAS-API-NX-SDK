@@ -5911,50 +5911,103 @@ export namespace DesignRcKdsRebarTypes {
     NAME?: string;
     DIST?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MomentRedistributionFactorPayload {
+    /** Assign 래퍼 (보 부재 ID 문자열 키) */
+    Assign: JsonObject;
+    /** 모멘트 재분배 계수 (>0, ≤1) */
     FACTOR?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TorsionReductionFactorPayload {
-    FACTOR?: number;
+    /** Assign 래퍼 (보 부재 ID 문자열 키) */
+    Assign: JsonObject;
+    /** 비틀림 감소계수 (>0, ≤1) */
+    FACTOR: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface BeamMomentCalculationMethodPayload {
-    CALC_METHOD?: string;
+    /** Assign 래퍼 (부재 ID 문자열 키) */
+    Assign: JsonObject;
+    /** 모멘트 산정 방법 (EACH=각 경간, EQUI=등가 골조) */
+    CALC_METHOD: "EACH" | "EQUI";
   }
+  /** Generated from contracts/endpoints/. */
   export interface DesignForcesForAssignedBeamPayload {
-    FORCE_TYPE?: string;
+    /** Assign 래퍼 (부재 ID 문자열 키) */
+    Assign: JsonObject;
+    /** 설계력 타입 (Subdivided Forces / Member Forces) */
+    FORCE_TYPE: "Subdivided Forces" | "Member Forces";
   }
+  /** Generated from contracts/endpoints/. */
   export interface PMCurveCalculationMethodPayload {
-    CALC_METHOD?: string;
+    /** Assign 래퍼 (부재 ID 문자열 키) */
+    Assign: JsonObject;
+    /** 산정 방법 (P=축력 고정, M/P=M·P비 고정) */
+    CALC_METHOD: "P" | "M/P";
   }
+  /** Generated from contracts/endpoints/. */
   export interface ModifyWallMarkDataPayload {
-    MARKNAME?: string;
-    WID_LIST?: Array<number>;
+    /** Assign 래퍼 (ID 문자열 키) */
+    Assign: JsonObject;
+    /** 벽체 마크 이름 (최소 1자) */
+    MARKNAME: string;
+    /** 대상 벽체 ID 목록 (최소 1개) */
+    WID_LIST: Array<number>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface BoundaryElementMethodByWallIdPayload {
+    /** Assign 래퍼 (인덱스 문자열 키, 1개) */
+    Assign: JsonObject;
+    /** 경계요소법 사용 여부 */
     BBNDR_ELEM_METHOD?: boolean;
-    NMETHOD_TYPE?: string;
+    /** 최하층 설정 사용 여부 */
     BBOT_STOR?: boolean;
+    /** 방식 타입 (Displacement Based Method / Stress Based Method) — BBNDR_ELEM_METHOD=true */
+    NMETHOD_TYPE?: "Displacement Based Method" | "Stress Based Method";
+    /** 층 이름 (BBOT_STOR=true일 때) */
     STOR_NAME?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface RebarExposureConditionPayload {
-    EXPOSURE?: string;
+    /** Assign 래퍼 (ID 문자열 키) */
+    Assign: JsonObject;
+    /** 노출 조건 (Dry=건조, Etc=기타) */
+    EXPOSURE: "Dry" | "Etc";
   }
+  /** Generated from contracts/endpoints/. */
   export interface LimitMaxRebarRatioPayload {
-    RHOW?: number;
-    RHOC?: number;
-    RHOR?: number;
+    /** Assign 래퍼 (ID 문자열 키, 1개) */
+    Assign: JsonObject;
+    /** 전단벽 설계 최대 철근비 Rhow */
+    RHOW: number;
+    /** 기둥 설계 최대 철근비 Rhoc */
+    RHOC: number;
+    /** 가새 설계 최대 철근비 Rhor */
+    RHOR: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface RebarDesignCriteriaByBeamMemberPayload {
-    MAIN_REBAR?: string;
-    STIRRUPS?: string;
-    STIRRUP_ARRANGEMENT?: number;
-    SIDE_BAR?: string;
+    /** 부재 ID 문자열을 키로 갖는 맵 */
+    Assign: JsonObject;
+    /** 주철근 규격 · 19종 (D4 ~ D57) */
+    MAIN_REBAR: "D4" | "D5" | "D6" | "D7" | "D8";
+    /** 스터럽(전단철근) 규격 · 19종 (D4 ~ D57) */
+    STIRRUPS: "D4" | "D5" | "D6" | "D7" | "D8";
+    /** 스터럽 다리 수 · 2 ~ 20 */
+    STIRRUP_ARRANGEMENT: number;
+    /** 측면철근 규격 · 19종 (D4 ~ D57) */
+    SIDE_BAR: "D4" | "D5" | "D6" | "D7" | "D8";
+    /** 상단 피복 거리 dT */
     DT?: number;
+    /** 하단 피복 거리 dB */
     DB?: number;
+    /** 복철근 설계 사용 */
     DOUBLY_REBAR?: boolean;
+    /** 복철근 k 계수 */
     DOUBLY_K?: number;
+    /** 철근 간격 제한 고려 */
     SPACING_LIMIT?: boolean;
-    SPLICED_BARS?: string;
   }
   export interface ColumnBraceRebarDesignCriteriaItem {
     MAIN_REBAR?: string;
@@ -5965,9 +6018,39 @@ export namespace DesignRcKdsRebarTypes {
     SPACING_LIMIT?: boolean;
     SPLICED_BARS?: string;
   }
-  export interface RebarDesignCriteriaByColumnMemberPayload extends ColumnBraceRebarDesignCriteriaItem {
+  /** Generated from contracts/endpoints/. */
+  export interface RebarDesignCriteriaByColumnMemberPayload {
+    /** 부재 ID 문자열을 키로 갖는 맵 */
+    Assign: JsonObject;
+    /** 주철근 규격 · 19종 (D4 ~ D57) */
+    MAIN_REBAR: "D4" | "D5" | "D6" | "D7" | "D8";
+    /** 띠철근/나선철근 규격 · 19종 (D4 ~ D57) */
+    TIES_SPIRALS: "D4" | "D5" | "D6" | "D7" | "D8";
+    /** 띠철근 다리 수 (local Y) · 2 ~ 20 */
+    ARRANGEMENT_Y: number;
+    /** 띠철근 다리 수 (local Z) · 2 ~ 20 */
+    ARRANGEMENT_Z: number;
+    /** 주철근 중심까지 피복 거리 do */
+    DO?: number;
+    /** 철근 간격 제한 고려 */
+    SPACING_LIMIT?: boolean;
   }
-  export interface RebarDesignCriteriaByBraceMemberPayload extends ColumnBraceRebarDesignCriteriaItem {
+  /** Generated from contracts/endpoints/. */
+  export interface RebarDesignCriteriaByBraceMemberPayload {
+    /** 부재 ID 문자열을 키로 갖는 맵 */
+    Assign: JsonObject;
+    /** 주철근 규격 · 19종 (D4 ~ D57) */
+    MAIN_REBAR: "D4" | "D5" | "D6" | "D7" | "D8";
+    /** 띠철근/나선철근 규격 · 19종 (D4 ~ D57) */
+    TIES_SPIRALS: "D4" | "D5" | "D6" | "D7" | "D8";
+    /** 띠철근 다리 수 (local Y) · 2 ~ 20 */
+    ARRANGEMENT_Y: number;
+    /** 띠철근 다리 수 (local Z) · 2 ~ 20 */
+    ARRANGEMENT_Z: number;
+    /** 주철근 중심까지 피복 거리 do */
+    DO?: number;
+    /** 철근 간격 제한 고려 */
+    SPACING_LIMIT?: boolean;
   }
   export interface RebarDesignCriteriaByWallMemberItem {
     STORY?: string;
@@ -6043,9 +6126,17 @@ export namespace DesignRcKdsRebarTypes {
   export interface EqualizeJointBeamRebarSelectedMember {
     ELEM_LIST?: Array<number>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface EqualizeJointBeamRebarPayload {
-    SELECT_ALL?: boolean;
-    SELECTED_MEMBERS?: Record<string, EqualizeJointBeamRebarSelectedMember>;
+    /** 인덱스 문자열을 키로 갖는 맵 */
+    Assign: JsonObject;
+    /** 모든 부재에 적용 */
+    SELECT_ALL: boolean;
+    /** 선택 부재 맵 (SELECT_ALL=false 일 때 필수). 키는 절점 ID 문자열 Applies when SELECT_ALL = false. */
+    SELECTED_MEMBERS?: {
+      /** 절점을 사이에 두는 정확히 2개의 요소 번호 */
+      ELEM_LIST: [number, number];
+    };
   }
   export interface RcBeamMainBarLayerEntry {
     LAYER?: number;
@@ -6128,8 +6219,37 @@ export namespace DesignRcKdsRebarTypes {
     USE_MODEL_THICKNESS?: boolean;
     THICKNESS?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ModifyWallRebarDataPayload {
-    ITEMS?: Array<RcWallRebarItem>;
+    /** 벽체 ID 문자열을 키로 갖는 맵 */
+    Assign: JsonObject;
+    /** 벽체 철근 항목 (min 1) */
+    ITEMS: Array<{
+      /** 서브 벽체 ID 생성 */
+      CREATE_SUB_WALL_ID?: boolean;
+      /** 서브 벽체 ID (읽기 전용, 생성 시 필수) */
+      SUB_WALL_ID?: number;
+      /** 층 범위 (FROM/TO, 생성 시 필수) */
+      STORY?: JsonObject;
+      /** 수직 철근 (NAME·DIST) */
+      VERTICAL_REBAR: JsonObject;
+      /** 수평 철근 (NAME·DIST) */
+      HORIZONTAL_REBAR: JsonObject;
+      /** 단부 철근 입력 사용 */
+      USE_END_REBAR?: boolean;
+      /** 단부 철근 (NAME·NUM·DIST, 사용 시 필수) */
+      END_REBAR?: JsonObject;
+      /** 경계요소 수평 철근 (NAME·DIST) */
+      BE_HORIZONTAL_REBAR?: JsonObject;
+      /** 경계요소 길이 */
+      BOUNDARY_ELEMENT_LENGTH?: number;
+      /** 콘크리트면~철근중심 거리 (DW·DE) */
+      CONCRETE_FACE_TO_CENTER_OF_REBAR: JsonObject;
+      /** 모델 두께 사용 */
+      USE_MODEL_THICKNESS?: boolean;
+      /** 벽체 두께 (USE_MODEL_THICKNESS=false 일 때 필수) */
+      THICKNESS?: number;
+    }>;
   }
   export interface RcBraceMainBarSpec {
     NAME?: string;
@@ -6152,8 +6272,12 @@ export namespace DesignRcKdsRebarTypes {
 }
 
 export namespace DesignRcKdsSetupTypes {
+  /** Generated from contracts/endpoints/. */
   export interface RcDesignCodeSelectionPayload {
-    DGNCODE?: string;
+    /** Assign 래퍼 (ID 문자열 키, 1개) */
+    Assign: JsonObject;
+    /** RC 설계 코드 · 현재 "KDS 41 20 : 2022" 1개 값만 지원 */
+    DGNCODE: "KDS 41 20 : 2022";
   }
   export interface ConcreteDesignCodeOptionShearWall {
     SPEC_RC_WALL?: boolean;
@@ -6179,26 +6303,85 @@ export namespace DesignRcKdsSetupTypes {
     BEAM_COL_JNT_DES?: boolean;
     JOINT?: ConcreteDesignCodeOptionJoint;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ConcreteDesignCodeOptionPayload {
-    DESIGN_CD?: string;
+    /** Assign 래퍼 (ID 문자열 키, 1개) */
+    Assign: JsonObject;
+    /** 설계 코드 (KDS 41 20 : 2022 고정) */
+    DESIGN_CD: "KDS 41 20 : 2022";
+    /** 내진설계 특별규정 적용 */
     SEISMIC_PROV?: boolean;
+    /** 비틀림 설계 */
     TORS_DES?: boolean;
+    /** 보 비틀림 감소계수 (≥0, TORS_DES=true일 때) */
     TORS_RDCT_FACT?: number;
+    /** 보 모멘트 재분배 계수 (>0, ≤1) */
     MOM_REDIST_FACT?: number;
-    MOM_CALC_MTHD?: string;
+    /** 보 모멘트 산정법 (Equivalent=등가철근, Each=개별철근) */
+    MOM_CALC_MTHD?: "Equivalent" | "Each";
+    /** 부재 배정 보에 세분화 부재력 사용 */
     USE_SUBDIV_FORCE?: boolean;
-    EXP_COND?: string;
-    PM_CRV_CALC?: string;
+    /** 노출조건 kcr (Dry / etc) */
+    EXP_COND?: "Dry" | "etc";
+    /** P-M 곡선 산정법 (KeepPConstant=P 고정, KeepMPConstant=M/P 고정) */
+    PM_CRV_CALC?: "KeepPConstant" | "KeepMPConstant";
+    /** 지하부재에 지하 하중조합 타입 사용 */
     UG_LC?: boolean;
-    CONC_STRS_STRN?: string;
-    FS_MAIN_BAR?: string;
-    SEISMIC?: ConcreteDesignCodeOptionSeismic;
+    /** 휨 콘크리트 응력-변형 타입 (Equivalent=등가 사각형, Parabola=포물선-사각형 평균) */
+    CONC_STRS_STRN?: "Equivalent" | "Parabola";
+    /** 보 설계 주철근 fs (2/3fy / ByProgram) */
+    FS_MAIN_BAR?: "2/3fy" | "ByProgram";
+    /** 내진 설계 파라미터 (SEISMIC_PROV=true일 때) */
+    SEISMIC?: {
+      /** 프레임 타입 (Special=특수, Intermediate=중간, Ordinary=보통 모멘트골조) */
+      FRAME_TYPE?: "Special" | "Intermediate" | "Ordinary";
+      /** 최상층 강기둥-약보 고려 */
+      STRONG_COL_WEAK_LAST?: boolean;
+      /** 전단벽 설정 (FRAME_TYPE=Special/Intermediate일 때) */
+      SHEAR_WALL?: {
+        /** 특수 철근콘크리트 구조벽 */
+        SPEC_RC_WALL?: boolean;
+        /** 경계요소법 (Displacement=변위기반, Stress=응력기반) */
+        BDRY_ELEM_MTHD?: "Displacement" | "Stress";
+        /** 변위 증폭계수 Cd (1.25/1.5/2/2.5/3/3.25/4/4.5/5/5.5/6/6.5) */
+        DEFL_AMP_FACT?: number;
+        /** 중요도 계수 Ie (1 / 1.2 / 1.5) */
+        IMP_FACT?: number;
+      };
+      /** 설계용 전단력 설정 */
+      SHEAR_DES?: {
+        /** 산정법 (MAX(Ve1,Ve2) / MIN(Ve1,Ve2) / Ve1 / Ve2) */
+        MTHD?: "MAX" | "MIN" | "Ve1" | "Ve2";
+        /** R·Vc ≥ max(Ve1,Ve2)/2 의 R (≥0, FRAME_TYPE=Special) */
+        R?: number;
+        /** a1: Ve1 = Vg + a1·Σ(Mn)/L */
+        A1?: number;
+        /** a2: Ve2 = Vg + a2·Veq */
+        A2?: number;
+      };
+      /** 보-기둥 접합부 설계 */
+      BEAM_COL_JNT_DES?: boolean;
+      /** 보-기둥 접합부 설정 */
+      JOINT?: {
+        /** 내진설계 제외 부재타입 (SUBBEAM=소보, CANTIL=캔틸레버, UGBEAMCOL=지하보/기둥) */
+        EXCL_MEM_TYPES?: Array<string>;
+        /** 검토 위치 (Top / Bottom) */
+        CHK_POS?: "Top" | "Bottom";
+      };
+    };
   }
+  /** Generated from contracts/endpoints/. */
   export interface DefinitionOfFramePayload {
-    FRAMEX?: string;
-    FRAMEY?: string;
+    /** Assign 래퍼 (ID 문자열 키, 1개) */
+    Assign: JsonObject;
+    /** X방향 프레임 (Unbraced Sway=비횡지지/횡변위, Braced Non-sway=횡지지/무횡변위) */
+    FRAMEX?: "Sway" | "Non-sway";
+    /** Y방향 프레임 (Unbraced Sway=비횡지지/횡변위, Braced Non-sway=횡지지/무횡변위) */
+    FRAMEY?: "Sway" | "Non-sway";
+    /** 유효좌굴길이계수 자동계산 */
     bAUTOKF?: boolean;
-    DT?: string;
+    /** 설계 타입 (3D / XZ / YZ / XY 평면) */
+    DT?: "3D" | "XZ" | "YZ" | "XY";
   }
   export interface LiveLoadReductionDataItem {
     STORY?: string;
@@ -6209,52 +6392,126 @@ export namespace DesignRcKdsSetupTypes {
     RANGE_MAX?: number;
     RANGE_MIN?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface LiveLoadReductionFactorPayload {
+    /** Assign 래퍼 (ID 문자열 키) */
+    Assign: JsonObject;
+    /** 계산 규칙 (0=일반 설계코드, 1=중국 기준) */
     CALC_RULE?: number;
+    /** 적용 성분 (ALL=전체, AXIAL=축력, MOMENTS=모멘트, SHEAR=전단) */
     APPLIED_COMP?: Array<string>;
+    /** 대상 활하중 케이스명 목록 */
     LIVE_LOAD_CASES?: Array<string>;
-    REDUCTION_DATA?: Array<LiveLoadReductionDataItem>;
+    /** 활하중 저감계수 테이블 데이터 */
+    REDUCTION_DATA: Array<{
+      /** 층 이름 */
+      STORY: string;
+      /** X 최소 좌표 */
+      XMIN?: number;
+      /** X 최대 좌표 */
+      XMAX?: number;
+      /** Y 최소 좌표 */
+      YMIN?: number;
+      /** Y 최대 좌표 */
+      YMAX?: number;
+      /** 최대값 Rmax (1~0.5, CALC_RULE=0일 때) */
+      RANGE_MAX?: number;
+      /** 최소값 Rmin (1~0.5, CALC_RULE=0일 때) */
+      RANGE_MIN?: number;
+    }>;
   }
   export interface LoadContributionBaseItem {
     FACTOR?: number;
     LOAD_CASE_NAME?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface LoadContributionForNonlinearLoadCasePayload {
-    NAME?: string;
+    /** Assign 래퍼 (ID 문자열 키) */
+    Assign: JsonObject;
+    /** 하중기여 이름 */
+    NAME: string;
+    /** 설명 */
     DESC?: string;
-    BASE_ITEM?: Array<LoadContributionBaseItem>;
+    /** 하중기여 항목 리스트 */
+    BASE_ITEM: Array<{
+      /** 계수 */
+      FACTOR: number;
+      /** 하중케이스 이름 */
+      LOAD_CASE_NAME: string;
+    }>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface StrengthReductionFactorsPayload {
+    /** Assign 래퍼 (ID 문자열 키, 1개) */
+    Assign: JsonObject;
+    /** 인장지배 φt */
     PHI_T?: number;
+    /** 나선철근 부재 φc1 */
     PHI_C1?: number;
+    /** 기타 철근 부재 φc2 */
     PHI_C2?: number;
+    /** 전단·비틀림 φv */
     PHI_V?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SeismicLoadCombinationTypePayload {
-    TYPE?: string;
+    /** Assign 래퍼 (요소 ID 문자열 키) */
+    Assign: JsonObject;
+    /** 부재 타입 (Special Seismic Loads / Vertical Seismic Forces) */
+    TYPE: "Special Seismic Loads" | "Vertical Seismic Forces";
   }
+  /** Generated from contracts/endpoints/. */
   export interface UndergroundLoadCombinationTypePayload {
+    /** Assign 래퍼 (요소 ID 문자열 키) */
+    Assign: JsonObject;
+    /** 지하 하중 여부 (true=지하하중용, false=비지하하중용) */
     bUNDERLOADTYPE?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ScaleUpFactorForEarthquakePayload {
+    /** Assign 래퍼 (요소 ID 문자열 키) */
+    Assign: JsonObject;
+    /** 하중케이스 축력 스케일 계수 */
     LC_AXIAL?: number;
+    /** 하중케이스 모멘트 스케일 계수 */
     LC_MOMENT?: number;
+    /** 하중케이스 전단 스케일 계수 */
     LC_SHEAR?: number;
+    /** 하중조합 축력 스케일 계수 */
     LCOM_AXIAL?: number;
+    /** 하중조합 모멘트 스케일 계수 */
     LCOM_MOMENT?: number;
+    /** 하중조합 전단 스케일 계수 */
     LCOM_SHEAR?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SeismicDesignTypePayload {
-    NTYPE?: string;
+    /** Assign 래퍼 (부재 ID 문자열 키) */
+    Assign: JsonObject;
+    /** 내진 설계 타입 (Seismic / Non-Seismic / Non-Seismic-Force-Resisting) */
+    NTYPE: "Seismic" | "Non-Seismic" | "Non-Seismic-Force-Resisting";
   }
+  /** Generated from contracts/endpoints/. */
   export interface SeismicColumnTypePayload {
-    TYPE?: string;
+    /** Assign 래퍼 (부재 ID 문자열 키) */
+    Assign: JsonObject;
+    /** 층 타입 (PILOTI / SOFT_STORY) */
+    TYPE: "PILOTI" | "SOFT_STORY";
   }
+  /** Generated from contracts/endpoints/. */
   export interface ModifyMemberTypePayload {
-    TYPE?: string;
+    /** Assign 래퍼 (요소 ID 문자열 키) */
+    Assign: JsonObject;
+    /** 부재 타입 (COLUMN=기둥, BEAM=보, BRACE=가새) */
+    TYPE: "COLUMN" | "BEAM" | "BRACE";
   }
+  /** Generated from contracts/endpoints/. */
   export interface MemberAssignmentPayload {
-    AELEM?: Array<number>;
+    /** Assign 래퍼 (부재 ID 문자열 키) */
+    Assign: JsonObject;
+    /** 요소 리스트 */
+    AELEM: Array<number>;
+    /** 국부좌표 방향 반전 */
     bREVERSE?: boolean;
   }
   export interface ModifyConcreteMaterialConcrete {
@@ -6276,31 +6533,95 @@ export namespace DesignRcKdsSetupTypes {
     FY?: number;
     FYS?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ModifyConcreteMaterialPayload {
-    CONCRETE?: ModifyConcreteMaterialConcrete;
-    REBAR?: ModifyConcreteMaterialRebar;
+    /** Assign 래퍼 (재질 ID 문자열 키) */
+    Assign: JsonObject;
+    /** 콘크리트 재료 */
+    CONCRETE: {
+      /** 코드 (None=사용자정의, Standard=표준) */
+      CODE: "None" | "Standard";
+      /** 경량콘크리트 계수(Lambda) 적용 */
+      LIGHTWEIGHT?: boolean;
+      /** Lambda 값 */
+      LAMBDA?: number;
+      /** 표준코드 (KS19(RC)) — CODE=Standard Applies when CONCRETE.CODE = "Standard". */
+      STANDARD_CODE?: "KS19(RC)";
+      /** 콘크리트 등급 (C15~C95 중 택1) — CODE=Standard Applies when CONCRETE.CODE = "Standard". */
+      GRADE?: "C15" | "C18" | "C21" | "C24" | "C27" | "C30" | "C35" | "C40" | "C45" | "C49" | "C50" | "C55" | "C60" | "C65" | "C70" | "C75" | "C80" | "C85" | "C90" | "C95";
+      /** 사용자정의 재료명 — CODE=None Applies when CONCRETE.CODE = "None". */
+      NAME?: string;
+      /** 설계 압축강도 fck (kN/mm — CODE=None 입력/Standard 자동 Applies when CONCRETE.CODE = "None". */
+      FC?: number;
+    };
+    /** 철근 재료 */
+    REBAR: {
+      /** 코드 (None=사용자정의, Standard=표준) */
+      CODE: "None" | "Standard";
+      /** 표준코드 (KS19(RC)) — CODE=Standard Applies when REBAR.CODE = "Standard". */
+      STANDARD_CODE?: "KS19(RC)";
+      /** 주철근 등급 (SD300/SD400/SD500/SD600/SD700/SD400S/SD500S/SD600S) — Standard Applies when REBAR.CODE = "Standard". */
+      MAIN_REBAR_GRADE?: "SD300" | "SD400" | "SD500" | "SD600" | "SD700" | "SD400S" | "SD500S" | "SD600S";
+      /** 보조철근 등급 (SD300~SD600S) — Standard Applies when REBAR.CODE = "Standard". */
+      SUB_REBAR_GRADE?: "SD300" | "SD400" | "SD500" | "SD600" | "SD700" | "SD400S" | "SD500S" | "SD600S";
+      /** 주철근 재료명 — CODE=None Applies when REBAR.CODE = "None". */
+      MAIN_REBAR_NAME?: string;
+      /** 보조철근 재료명 — CODE=None Applies when REBAR.CODE = "None". */
+      SUB_REBAR_NAME?: string;
+      /** 주철근 항복강도 Fy (kN/mm — None 입력/Standard 자동 Applies when REBAR.CODE = "None". */
+      FY?: number;
+      /** 보조철근 항복강도 Fys (kN/mm — None 입력/Standard 자동 Applies when REBAR.CODE = "None". */
+      FYS?: number;
+    };
   }
+  /** Generated from contracts/endpoints/. */
   export interface UnbracedLengthPayload {
+    /** Assign 래퍼 (ID 문자열 키) */
+    Assign: JsonObject;
+    /** 비지지 길이 Ly */
     LY?: number;
+    /** 비지지 길이 Lz */
     LZ?: number;
+    /** 횡좌굴 비지지 길이 Lb */
     LB?: number;
+    /** 횡좌굴 비지지 길이 미고려 */
     bNOTUSE?: boolean;
+    /** 비틀림 비지지 길이 Lt */
     LT?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface EffectiveLengthFactorPayload {
+    /** Assign 래퍼 (요소 ID 문자열 키) */
+    Assign: JsonObject;
+    /** Ky */
     Ky?: number;
+    /** Kz */
     Kz?: number;
+    /** Kt */
     Kt?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface EquivalentMomentCorrectionFactorPayload {
+    /** Assign 래퍼 (요소 ID 문자열 키) */
+    Assign: JsonObject;
+    /** 자동 계산 */
     OPT_AUTO?: boolean;
+    /** CMy */
     CMY?: number;
+    /** CMz */
     CMZ?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MomentMagnifierPayload {
+    /** Assign 래퍼 (요소 ID 문자열 키) */
+    Assign: JsonObject;
+    /** B1y - δby (Y축 1차 모멘트 확대) */
     B1Y_DELTA_BY?: number;
+    /** B1z - δbz (Z축 1차 모멘트 확대) */
     B1Z_DELTA_BZ?: number;
+    /** B2y - δsy (Y축 2차 모멘트 확대) */
     B2Y_DELTA_SY?: number;
+    /** B2z - δsz (Z축 2차 모멘트 확대) */
     B2Z_DELTA_SZ?: number;
   }
   export interface ModifyLiveLoadReductionComponents {
@@ -6308,38 +6629,87 @@ export namespace DesignRcKdsSetupTypes {
     MOMENT?: boolean;
     SHEAR?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ModifyLiveLoadReductionFactorPayload {
+    /** Assign 래퍼 (요소 ID 문자열 키) */
+    Assign: JsonObject;
+    /** 저감계수 (≥0.3, ≤1) */
     FACTOR?: number;
-    COMPONENTS?: ModifyLiveLoadReductionComponents;
+    /** 적용 성분 */
+    COMPONENTS?: {
+      /** 축력 */
+      AXIAL?: boolean;
+      /** 모멘트 */
+      MOMENT?: boolean;
+      /** 전단력 */
+      SHEAR?: boolean;
+    };
   }
   export interface HaunchPartSelector {
     INPUT_METHOD?: string;
     KEYS?: Array<number>;
     TO?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface HaunchedBeamAssignmentPayload {
-    NAME?: string;
-    PART_A?: HaunchPartSelector;
-    PART_B?: HaunchPartSelector;
-    PART_C?: HaunchPartSelector;
-    POS_TYPE?: number;
+    /** Assign 래퍼 (ID 문자열 키) */
+    Assign: JsonObject;
+    /** 헌치 이름 */
+    NAME: string;
+    /** Part A 요소 입력 (방식 1개만 사용) */
+    PART_A: {
+      /** 입력 방식 (KEYS=개별 ID, TO=ID 범위) */
+      INPUT_METHOD: "KEYS" | "TO";
+      /** 개별 요소 ID (INPUT_METHOD=KEYS, 최소 1개) Applies when PART_A.INPUT_METHOD = "KEYS". */
+      KEYS?: Array<number>;
+      /** ID 범위 (예 "101 to 105") (INPUT_METHOD=TO) Applies when PART_A.INPUT_METHOD = "TO". */
+      TO?: string;
+    };
+    /** Part B 요소 입력 (구조는 Part A와 동일) */
+    PART_B: {
+      /** 입력 방식 (KEYS=개별 ID, TO=ID 범위) */
+      INPUT_METHOD: "KEYS" | "TO";
+      /** 개별 요소 ID (INPUT_METHOD=KEYS, 최소 1개) Applies when PART_B.INPUT_METHOD = "KEYS". */
+      KEYS?: Array<number>;
+      /** ID 범위 (예 "101 to 105") (INPUT_METHOD=TO) Applies when PART_B.INPUT_METHOD = "TO". */
+      TO?: string;
+    };
+    /** Part C 요소 입력 (구조는 Part A와 동일) */
+    PART_C: {
+      /** 입력 방식 (KEYS=개별 ID, TO=ID 범위) */
+      INPUT_METHOD: "KEYS" | "TO";
+      /** 개별 요소 ID (INPUT_METHOD=KEYS, 최소 1개) Applies when PART_C.INPUT_METHOD = "KEYS". */
+      KEYS?: Array<number>;
+      /** ID 범위 (예 "101 to 105") (INPUT_METHOD=TO) Applies when PART_C.INPUT_METHOD = "TO". */
+      TO?: string;
+    };
+    /** 설계 위치 타입 (0=Part 1/2, 1=User) */
+    POS_TYPE: number;
+    /** 사용자 정의 L1 거리 (POS_TYPE=1일 때) */
     L1?: number;
+    /** 사용자 정의 L2 거리 (POS_TYPE=1일 때) */
     L2?: number;
   }
 }
 
 export namespace DesignSrcAiksrc2kTypes {
+  /** Generated from contracts/endpoints/. */
   export interface SrcDesignCodePayload {
-    DGNCODE?: string;
+    /** 설계 코드 — 가능값: AIK-SRC2K */
+    DGNCODE: "AIK-SRC2K";
   }
+  /** Generated from contracts/endpoints/. */
   export interface SrcDesignCodeOptionPayload {
-    DGNCODE?: string;
-    SEISMIC?: boolean;
+    /** 설계 코드. — AIK-SRC2K=AIK-SRC2K */
+    DGNCODE: string;
+    /** 내진설계 적용 여부. */
+    SEISMIC: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SrcDefinitionOfFramePayload {
-    FRAMEX?: string;
-    FRAMEY?: string;
+    /** 유효좌굴길이계수 자동계산 */
     bAUTOKF?: boolean;
+    /** 설계 타입 — 3D=3-D; XZ=X-Z 평면; YZ=Y-Z 평면; XY=X-Y 평면 */
     DT?: string;
   }
   export interface SrcLiveLoadReductionDataItem {
@@ -6351,47 +6721,99 @@ export namespace DesignSrcAiksrc2kTypes {
     RANGE_MAX?: number;
     RANGE_MIN?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SrcLiveLoadReductionFactorPayload {
+    /** — 0=일반 설계 기준; 1=중국 표준 기준 */
     CALC_RULE?: number;
+    /** 적용 성분 선택 */
     APPLIED_COMP?: Array<string>;
+    /** 활하중 케이스 이름 (사용자 정의 목록) */
     LIVE_LOAD_CASES?: Array<string>;
-    REDUCTION_DATA?: Array<SrcLiveLoadReductionDataItem>;
+    /** 활하중 저감계수 테이블 데이터 */
+    REDUCTION_DATA: Array<{
+      /** 층 이름 */
+      STORY: string;
+      /** X 최소 좌표 */
+      XMIN?: number;
+      /** X 최대 좌표 */
+      XMAX?: number;
+      /** Y 최소 좌표 */
+      YMIN?: number;
+      /** Y 최대 좌표 */
+      YMAX?: number;
+      /** 구간 최대값 (General Design Code 전용) — 가능값 11개: 1 ~ 0.5 */
+      RANGE_MAX?: number;
+      /** 구간 최소값 (General Design Code 전용) — 가능값 11개: 1 ~ 0.5 */
+      RANGE_MIN?: number;
+    }>;
   }
   export interface SrcLoadContributionBaseItem {
     FACTOR?: number;
     LOAD_CASE_NAME?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SrcLoadContributionForNonlinearLoadCasePayload {
-    NAME?: string;
+    /** 하중기여 이름 */
+    NAME: string;
+    /** 설명 */
     DESC?: string;
-    BASE_ITEM?: Array<SrcLoadContributionBaseItem>;
+    /** 하중기여 항목 */
+    BASE_ITEM: Array<{
+      /** 계수 */
+      FACTOR: number;
+      /** 하중케이스 이름 */
+      LOAD_CASE_NAME: string;
+    }>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SrcUnbracedLengthPayload {
+    /** 비지지 길이 Ly */
     LY?: number;
+    /** 비지지 길이 Lz */
     LZ?: number;
+    /** 횡방향 비지지 길이 */
     LB?: number;
+    /** 횡방향 비지지 길이 고려 안 함 */
     bNOTUSE?: boolean;
+    /** 비틀림 비지지 길이 */
     LT?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SrcEffectiveLengthFactorPayload {
+    /** Ky */
     Ky?: number;
+    /** Kz */
     Kz?: number;
+    /** Kt */
     Kt?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SrcLimitingSlendernessRatioPayload {
+    /** 세장비 검토 안 함 */
     bNOTCHECK?: boolean;
-    COMP?: number;
-    TENS?: number;
+    /** 압축재 세장비 제한값 */
+    COMP: number;
+    /** 인장재 세장비 제한값 */
+    TENS: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SrcEquivalentMomentCorrectionFactorPayload {
+    /** 자동 계산 */
     OPT_AUTO?: boolean;
+    /** CMy */
     CMY?: number;
+    /** CMz */
     CMZ?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SrcMomentMagnifierPayload {
+    /** B1y - Δby (1차 모멘트 Y) */
     B1Y_DELTA_BY?: number;
+    /** B1z - Δbz (1차 모멘트 Z) */
     B1Z_DELTA_BZ?: number;
+    /** B2y - Δsy (2차 모멘트 Y) */
     B2Y_DELTA_SY?: number;
+    /** B2z - Δsz (2차 모멘트 Z) */
     B2Z_DELTA_SZ?: number;
   }
   export interface SrcLiveLoadReductionComponents {
@@ -6399,23 +6821,44 @@ export namespace DesignSrcAiksrc2kTypes {
     MOMENT?: boolean;
     SHEAR?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SrcModifyLiveLoadReductionFactorPayload {
+    /** 저감계수 */
     FACTOR?: number;
-    COMPONENTS?: SrcLiveLoadReductionComponents;
+    /** 적용 성분 */
+    COMPONENTS?: {
+      /** 축력 */
+      AXIAL?: boolean;
+      /** 모멘트 */
+      MOMENT?: boolean;
+      /** 전단력 */
+      SHEAR?: boolean;
+    };
   }
+  /** Generated from contracts/endpoints/. */
   export interface SrcScaleUpFactorForEarthquakePayload {
+    /** 하중케이스 - 축력 증폭계수 */
     LC_AXIAL?: number;
+    /** 하중케이스 - 모멘트 증폭계수 */
     LC_MOMENT?: number;
+    /** 하중케이스 - 전단 증폭계수 */
     LC_SHEAR?: number;
+    /** 하중조합 - 축력 증폭계수 */
     LCOM_AXIAL?: number;
+    /** 하중조합 - 모멘트 증폭계수 */
     LCOM_MOMENT?: number;
+    /** 하중조합 - 전단 증폭계수 */
     LCOM_SHEAR?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SrcModifyMemberTypePayload {
-    TYPE?: string;
+    /** 부재 타입 — COLUMN=기둥; BEAM=보; BRACE=가새 */
+    TYPE: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SrcSeismicLoadCombinationTypePayload {
-    TYPE?: string;
+    /** 부재 타입 배정 — Special Seismic Loads=특별 지진하중; Vertical Seismic Forces=수직 지진력 */
+    TYPE: string;
   }
   export interface SrcMemberCheckPerformArgument {
     PERFORM_TYPE?: string;
@@ -6545,10 +6988,55 @@ export namespace DesignSrcAiksrc2kTypes {
     SUB_REBAR_GRADE?: string;
     FYS?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SrcModifyMaterialPayload {
-    STEEL?: SrcMaterialSteel;
-    CONCRETE?: SrcMaterialConcrete;
-    REINFORCEMENT?: SrcMaterialReinforcement;
+    /** 강재 재질 선택. */
+    STEEL: {
+      /** 강재 재질 코드 타입. — None=없음; Standard=표준 */
+      CODE: string;
+      /** CODE가 Standard일 때의 강재 표준 코드. 현재 KS22(S)만 지원됨. — KS22(S)=KS22(S) */
+      STANDARD_CODE?: string;
+      /** CODE가 Standard일 때의 강재 등급. — SS235=SS235; SS275=SS275; SS315=SS315; SS410=SS410; SS450=SS450; SS550=SS550; SM275=SM275; SM355=SM355; SM420=SM420; SM460=SM460; SM275TMC=SM275TMC; SM355TMC=SM355TMC …(전체 68개) */
+      GRADE?: string;
+      /** CODE가 None일 때의 사용자 정의 강재 이름. */
+      NAME?: string;
+      /** 탄성계수. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
+      ES?: number;
+      /** 인장강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
+      FU?: number;
+      /** CODE=None일 때의 항복강도. */
+      FY?: number;
+      /** 항복강도 Fy1. CODE가 Standard일 때 자동 입력. */
+      FY1?: number;
+      /** 항복강도 Fy2. CODE가 Standard일 때 자동 입력. */
+      FY2?: number;
+      /** 항복강도 Fy3. CODE가 Standard일 때 자동 입력. */
+      FY3?: number;
+      /** 항복강도 Fy4. CODE가 Standard일 때 자동 입력. */
+      FY4?: number;
+      /** 항복강도 Fy5. CODE가 Standard일 때 자동 입력. */
+      FY5?: number;
+    };
+    /** 콘크리트 재질 선택. */
+    CONCRETE: {
+      /** 설계기준압축강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
+      FC?: number;
+    };
+    /** 철근 재질 선택. */
+    REINFORCEMENT: {
+      /** CODE가 None일 때의 사용자 정의 주철근 이름. */
+      MAIN_REBAR_NAME?: string;
+      /** CODE가 Standard일 때의 주철근 등급. — SD300=SD300; SD400=SD400; SD500=SD500; SD600=SD600; SD700=SD700; SD400S=SD400S; SD500S=SD500S; SD600S=SD600S */
+      MAIN_REBAR_GRADE?: string;
+      /** 주철근 항복강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
+      FYR?: number;
+      /** CODE가 None일 때의 사용자 정의 보조철근 이름. */
+      SUB_REBAR_NAME?: string;
+      /** CODE가 Standard일 때의 보조철근 등급. — SD300=SD300; SD400=SD400; SD500=SD500; SD600=SD600; SD700=SD700; SD400S=SD400S; SD500S=SD500S; SD600S=SD600S */
+      SUB_REBAR_GRADE?: string;
+      /** 보조철근 항복강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
+      FYS?: number;
+    };
   }
   export interface SrcColumnSectionMainBar {
     USE_REBAR_SPACE?: boolean;
@@ -6562,12 +7050,34 @@ export namespace DesignSrcAiksrc2kTypes {
     NAME?: string;
     DIST?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SrcColumnSectionDataPayload {
-    MAIN_BAR?: SrcColumnSectionMainBar;
-    SHEAR_BAR?: SrcColumnSectionShearBar;
+    /** 주철근 데이터. */
+    MAIN_BAR: {
+      /** 자동 계산된 철근 간격. */
+      USE_REBAR_SPACE?: boolean;
+      /** 주철근 간격. USE_REBAR_SPACE가 false일 때 사용. */
+      REBAR_SPACE?: number;
+      /** 주철근 총 개수. 4의 배수여야 함. */
+      NUM: number;
+      /** 주철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+      NAME: string;
+      /** 사각형 단면의 철근 열 수. 2의 배수여야 함. */
+      ROW: number;
+      /** 콘크리트 피복 / 중심간 거리 d0. */
+      DO: number;
+    };
+    /** 후프/타이 철근 데이터. */
+    SHEAR_BAR: {
+      /** 후프/타이 철근 간격. USE_REBAR_SPACE가 false일 때 사용. */
+      DIST: number;
+    };
   }
+  /** Generated from contracts/endpoints/. */
   export interface SrcMemberAssignmentPayload {
-    AELEM?: Array<number>;
+    /** 요소 목록 */
+    AELEM: Array<number>;
+    /** 부재축 방향 반전 */
     bREVERSE?: boolean;
   }
   export interface SrcBeamRebarLayer {
@@ -6595,21 +7105,39 @@ export namespace DesignSrcAiksrc2kTypes {
 }
 
 export namespace DesignSteelKdsTypes {
+  /** Generated from contracts/endpoints/. */
   export interface SteelDesignCodeOptionPayload {
-    DGNCODE?: string;
+    /** Assign 래퍼 (ID 문자열 키) */
+    Assign: JsonObject;
+    /** 설계 코드 (KDS 41 30 : 2022 고정) */
+    DGNCODE: "KDS 41 30 : 2022";
+    /** 모든 보/거더 횡지지 가정 */
     LAT_BRACE?: boolean;
+    /** 보/기둥 처짐 검토 */
     DEFL_CHK?: boolean;
+    /** 내진설계 특별규정 적용 */
     SEISMIC?: boolean;
+    /** 원형단면 조합비 방법 (0=SRSS, 1=Linear Sum) */
     COMB_RATIO?: number;
-    SEIS_SYS?: string;
+    /** 내진 저항시스템 (SEISMIC=true일 때) — Special/Intermediate/Ordinary Moment Frames, Special/Ordinary Concentrically Braced Frames, Eccentrically Braced Frames, Buckling-Restrained Braced Frames, Special Plate Shear Walls */
+    SEIS_SYS?: "Special Moment Frames" | "Intermediate Moment Frames" | "Ordinary Moment Frames" | "Special Concentrically Braced Frames" | "Ordinary Concentrically Braced Frames" | "Eccentrically Braced Frames" | "Buckling-Restrained Braced Frames" | "Special Plate Shear Walls";
+    /** 최상층 강기둥-약보 고려 */
     COL_WEAK?: boolean;
+    /** 지하부재에 지하 하중조합 타입 사용 */
     UNDGR_LD?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface DefinitionOfFramePayload {
-    FRAMEX?: string;
-    FRAMEY?: string;
+    /** Assign 래퍼 (ID 1개만 허용, maxProperties=1) */
+    Assign: JsonObject;
+    /** X방향 프레임 ("Unbraced Sway"=비횡지지·Sway, "Braced Non-sway"=횡지지·Non-sway) */
+    FRAMEX?: "Unbraced Sway" | "Braced Non-sway";
+    /** Y방향 프레임 (값은 FRAMEX와 동일) */
+    FRAMEY?: "Unbraced Sway" | "Braced Non-sway";
+    /** 유효좌굴길이계수 자동계산 */
     bAUTOKF?: boolean;
-    DT?: string;
+    /** 설계 타입 ("3D"=3-D, "XZ"=X-Z평면, "YZ"=Y-Z평면, "XY"=X-Y평면) */
+    DT?: "3D" | "XZ" | "YZ" | "XY";
   }
   export interface LiveLoadReductionDataItem {
     STORY?: string;
@@ -6620,100 +7148,245 @@ export namespace DesignSteelKdsTypes {
     RANGE_MAX?: number;
     RANGE_MIN?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface LiveLoadReductionFactorPayload {
+    /** Assign 래퍼 */
+    Assign: JsonObject;
+    /** 계산 규칙 (0=by General Design Code, 1=by Chinese Standard) */
     CALC_RULE?: number;
+    /** 적용 성분 ("ALL","AXIAL","MOMENTS","SHEAR") */
     APPLIED_COMP?: Array<string>;
+    /** 활하중 케이스 이름 목록 */
     LIVE_LOAD_CASES?: Array<string>;
-    REDUCTION_DATA?: Array<LiveLoadReductionDataItem>;
+    /** 저감계수 테이블 데이터 */
+    REDUCTION_DATA: Array<{
+      /** 층 이름 */
+      STORY: string;
+      /** X 최소 좌표 */
+      XMIN?: number;
+      /** X 최대 좌표 */
+      XMAX?: number;
+      /** Y 최소 좌표 */
+      YMIN?: number;
+      /** Y 최대 좌표 */
+      YMAX?: number;
+      /** Rmax (General Design Code 전용, enum 1~0.5) */
+      RANGE_MAX?: number;
+      /** Rmin (General Design Code 전용, enum 1~0.5) */
+      RANGE_MIN?: number;
+    }>;
   }
   export interface LoadContributionBaseItem {
     FACTOR?: number;
     LOAD_CASE_NAME?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface LoadContributionForNonlinearLoadCasePayload {
-    NAME?: string;
+    /** Assign 래퍼 */
+    Assign: JsonObject;
+    /** 하중기여 이름 */
+    NAME: string;
+    /** 설명 */
     DESC?: string;
-    BASE_ITEM?: Array<LoadContributionBaseItem>;
+    /** 하중기여 항목 */
+    BASE_ITEM: Array<{
+      /** 계수 */
+      FACTOR: number;
+      /** 하중케이스 이름 */
+      LOAD_CASE_NAME: string;
+    }>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface StrengthReductionFactorsPayload {
+    /** Assign 래퍼 (ID 1개만 허용, maxProperties=1) */
+    Assign: JsonObject;
+    /** 총단면 항복 (φ_t1) */
     PHI_T1?: number;
+    /** 순단면 파단 (φ_t2) — 0.75 고정 read-only */
     PHI_T2?: number;
+    /** 압축부재 (φ_c) */
     PHI_C?: number;
+    /** 휨부재 (φ_b) */
     PHI_B?: number;
+    /** 전단 (φ_v) */
     PHI_V?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ServiceabilityParametersPayload {
+    /** Assign 래퍼 */
+    Assign: JsonObject;
+    /** 처짐 제어값 (span/n) */
     DEFLECT_CONTROL?: number;
+    /** 처짐 증폭계수 */
     DAF?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SeismicLoadCombinationTypePayload {
-    TYPE?: string;
+    /** Assign 래퍼 */
+    Assign: JsonObject;
+    /** 부재 타입 ("Special Seismic Loads", "Vertical Seismic Forces") */
+    TYPE: "Special Seismic Loads" | "Vertical Seismic Forces";
   }
+  /** Generated from contracts/endpoints/. */
   export interface UndergroundLoadCombinationTypePayload {
+    /** Assign 래퍼 */
+    Assign: JsonObject;
+    /** 지하 하중 타입 (true=지하 하중용, false=비지하 하중용) */
     bUNDERLOADTYPE?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ScaleUpFactorForEarthquakePayload {
+    /** Assign 래퍼 */
+    Assign: JsonObject;
+    /** 하중케이스 - 축력 증폭계수 */
     LC_AXIAL?: number;
+    /** 하중케이스 - 모멘트 증폭계수 */
     LC_MOMENT?: number;
+    /** 하중케이스 - 전단 증폭계수 */
     LC_SHEAR?: number;
+    /** 하중조합 - 축력 증폭계수 */
     LCOM_AXIAL?: number;
+    /** 하중조합 - 모멘트 증폭계수 */
     LCOM_MOMENT?: number;
+    /** 하중조합 - 전단 증폭계수 */
     LCOM_SHEAR?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface CombinedRatioCalculationMethodPayload {
-    METHOD?: string;
+    /** Assign 래퍼 */
+    Assign: JsonObject;
+    /** 조합강도 방법 ("SRSS", "Linear Sum") */
+    METHOD: "SRSS" | "Linear Sum";
   }
   export interface HaunchPartSelector {
     INPUT_METHOD?: string;
     KEYS?: Array<number>;
     TO?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface HaunchedBeamAssignmentPayload {
-    NAME?: string;
-    PART_A?: HaunchPartSelector;
-    PART_B?: HaunchPartSelector;
-    PART_C?: HaunchPartSelector;
-    POS_TYPE?: number;
+    /** Assign 래퍼 */
+    Assign: JsonObject;
+    /** 헌치 이름 */
+    NAME: string;
+    /** Part A 요소 입력 (방법 1개만 사용) */
+    PART_A: {
+      /** 입력 방법 ("KEYS"=개별 ID, "TO"=범위) */
+      INPUT_METHOD: "KEYS" | "TO";
+      /** 개별 요소 ID (INPUT_METHOD=KEYS, minItems 1) Applies when PART_A.INPUT_METHOD = "KEYS". */
+      KEYS?: Array<number>;
+      /** ID 범위 문자열 (INPUT_METHOD=TO, 예 "101 to 105") Applies when PART_A.INPUT_METHOD = "TO". */
+      TO?: string;
+    };
+    /** Part B 요소 입력 (구조는 PART_A와 동일) */
+    PART_B: {
+      /** 입력 방법 ("KEYS"=개별 ID, "TO"=범위) */
+      INPUT_METHOD: "KEYS" | "TO";
+      /** 개별 요소 ID (INPUT_METHOD=KEYS, minItems 1) Applies when PART_B.INPUT_METHOD = "KEYS". */
+      KEYS?: Array<number>;
+      /** ID 범위 문자열 (INPUT_METHOD=TO, 예 "101 to 105") Applies when PART_B.INPUT_METHOD = "TO". */
+      TO?: string;
+    };
+    /** Part C 요소 입력 (구조는 PART_A와 동일) */
+    PART_C: {
+      /** 입력 방법 ("KEYS"=개별 ID, "TO"=범위) */
+      INPUT_METHOD: "KEYS" | "TO";
+      /** 개별 요소 ID (INPUT_METHOD=KEYS, minItems 1) Applies when PART_C.INPUT_METHOD = "KEYS". */
+      KEYS?: Array<number>;
+      /** ID 범위 문자열 (INPUT_METHOD=TO, 예 "101 to 105") Applies when PART_C.INPUT_METHOD = "TO". */
+      TO?: string;
+    };
+    /** 설계 위치 타입 (0=Part 1/2, 1=User) */
+    POS_TYPE: number;
+    /** 사용자 정의 L1 거리 (POS_TYPE=1) */
     L1?: number;
+    /** 사용자 정의 L2 거리 (POS_TYPE=1) */
     L2?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface UnbracedLengthPayload {
+    /** Assign 래퍼 */
+    Assign: JsonObject;
+    /** 비지지 길이 Ly */
     LY?: number;
+    /** 비지지 길이 Lz */
     LZ?: number;
+    /** 횡비지지 길이 Lb */
     LB?: number;
+    /** 횡비지지 길이 미고려 */
     bNOTUSE?: boolean;
+    /** 비틀림 비지지 길이 Lt */
     LT?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface EffectiveLengthFactorPayload {
+    /** Assign 래퍼 */
+    Assign: JsonObject;
+    /** 유효좌굴길이계수 Ky */
     Ky?: number;
+    /** 유효좌굴길이계수 Kz */
     Kz?: number;
+    /** 유효좌굴길이계수 Kt */
     Kt?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface LimitingSlendernessRatioPayload {
+    /** Assign 래퍼 */
+    Assign: JsonObject;
+    /** 세장비 검토 안함 */
     bNOTCHECK?: boolean;
-    COMP?: number;
-    TENS?: number;
+    /** 압축 세장비 제한 */
+    COMP: number;
+    /** 인장 세장비 제한 */
+    TENS: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface EquivalentMomentCorrectionFactorPayload {
+    /** Assign 래퍼 */
+    Assign: JsonObject;
+    /** 자동계산 */
     OPT_AUTO?: boolean;
+    /** CMy */
     CMY?: number;
+    /** CMz */
     CMZ?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MomentMagnifierPayload {
+    /** Assign 래퍼 */
+    Assign: JsonObject;
+    /** B1y - Δby (1차 모멘트 Y) */
     B1Y_DELTA_BY?: number;
+    /** B1z - Δbz (1차 모멘트 Z) */
     B1Z_DELTA_BZ?: number;
+    /** B2y - Δsy (2차 모멘트 Y) */
     B2Y_DELTA_SY?: number;
+    /** B2z - Δsz (2차 모멘트 Z) */
     B2Z_DELTA_SZ?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface BendingCoefficientPayload {
+    /** Assign 래퍼 */
+    Assign: JsonObject;
+    /** 프로그램 자동계산 */
     AUTO_CAL?: boolean;
+    /** 휨계수 Cb 값 (AUTO_CAL=false일 때) */
     VALUE?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ModifyMemberTypePayload {
-    TYPE?: string;
+    /** Assign 래퍼 */
+    Assign: JsonObject;
+    /** 부재 타입 ("COLUMN", "BEAM", "BRACE") */
+    TYPE: "COLUMN" | "BEAM" | "BRACE";
   }
+  /** Generated from contracts/endpoints/. */
   export interface SeismicLoadResistingSystemByMemberPayload {
-    FRAME_TYPE?: string;
+    /** Assign 래퍼 */
+    Assign: JsonObject;
+    /** 내진 저항시스템 골조 타입 ("Special Concentrically Braced Frames", "Ordinary Concentrically Braced Frames", "Eccentrically Braced Frames", "Buckling Restrained Braced Frames", "Special Plate Shear Walls") */
+    FRAME_TYPE: "Special Concentrically Braced Frames" | "Ordinary Concentrically Braced Frames" | "Eccentrically Braced Frames" | "Buckling Restrained Braced Frames" | "Special Plate Shear Walls";
+    /** 가새 세장비 검토 / 링크 검토 (Buckling Restrained·Special Plate Shear Walls는 미지원 → false 강제) */
     CHECK_OPTION?: boolean;
   }
   export interface LiveLoadReductionComponents {
@@ -6721,27 +7394,60 @@ export namespace DesignSteelKdsTypes {
     MOMENT?: boolean;
     SHEAR?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ModifyLiveLoadReductionFactorPayload {
+    /** Assign 래퍼 */
+    Assign: JsonObject;
+    /** 저감계수 (범위 0.3 ~ 1.0) */
     FACTOR?: number;
-    COMPONENTS?: LiveLoadReductionComponents;
+    /** 적용 성분 */
+    COMPONENTS?: {
+      /** 축력 */
+      AXIAL?: boolean;
+      /** 모멘트 */
+      MOMENT?: boolean;
+      /** 전단력 */
+      SHEAR?: boolean;
+    };
   }
+  /** Generated from contracts/endpoints/. */
   export interface MemberAssignmentPayload {
-    AELEM?: Array<number>;
+    /** Assign 래퍼 */
+    Assign: JsonObject;
+    /** 요소 리스트 */
+    AELEM: Array<number>;
+    /** 로컬 방향 반전 */
     bREVERSE?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ModifySteelMaterialPayload {
-    CODE?: string;
-    STANDARD_CODE?: string;
-    GRADE?: string;
+    /** Assign 래퍼 (재질 ID 문자열 키) */
+    Assign: JsonObject;
+    /** 재질 코드 타입 ("None"=사용자정의, "Standard"=표준코드) */
+    CODE: "None" | "Standard";
+    /** 표준 코드 (CODE=Standard, 현재 "KS22(S)"만 지원) Applies when CODE = "Standard". */
+    STANDARD_CODE?: "KS22(S)";
+    /** 강종 Grade (CODE=Standard) — SS235/SS275/…/SM355/…/SN460/SHN460/HSB690/HSA650/… 등 KS22(S) 68종 Applies when CODE = "Standard". */
+    GRADE?: "SS235" | "SS275" | "SS315" | "SS410" | "SS450" | "SS550" | "SM275" | "SM355" | "SM420" | "SM460" | "SM275TMC" | "SM355TMC" | "SM420TMC" | "SM460TMC" | "SMA275A" | "SMA275B" | "SMA275C" | "SMA355A" | "SMA355B" | "SMA355C" | "SMA460" | "HSM500" | "SN275A" | "SN275B" | "SN275C" | "SN355" | "SN460" | "SHN275" | "SHN355" | "SHN420" | "SHN460" | "HSB380" | "HSB460" | "HSB690" | "HSA650" | "SGT275" | "SGT355" | "SGT410" | "SGT450" | "SGT550" | "SRT275" | "SRT355" | "SRT410" | "SRT450" | "SRT550" | "SNT275" | "SNT355" | "SNT460" | "SHT410" | "SHT460" | "SNRT295E" | "SNRT390E" | "SNRT275A" | "SNRT355A" | "SSC275" | "SWH275" | "SWH355" | "SWH420" | "SWH460" | "SF490" | "SF540" | "SDP1" | "SDP2" | "SDP3" | "SWPC1" | "SWPD1" | "SWPC" | "SWPD";
+    /** 사용자 정의 재질명 (CODE=None) Applies when CODE = "None". */
     NAME?: string;
-    ES?: number;
-    PS?: number;
-    FU?: number;
+    /** 항복강도 Fy (CODE=None) Applies when CODE = "None". */
     FY?: number;
+    /** 탄성계수 Es (CODE=None 입력 / Standard 자동채움) Applies when CODE = "None". */
+    ES?: number;
+    /** 포아송비 Ps (CODE=None 입력 / Standard 자동채움) Applies when CODE = "None". */
+    PS?: number;
+    /** 인장강도 Fu (CODE=None 입력 / Standard 자동채움) Applies when CODE = "None". */
+    FU?: number;
+    /** 항복강도 Fy1 (CODE=Standard 자동채움) */
     FY1?: number;
+    /** 항복강도 Fy2 (CODE=Standard 자동채움) */
     FY2?: number;
+    /** 항복강도 Fy3 (CODE=Standard 자동채움) */
     FY3?: number;
+    /** 항복강도 Fy4 (CODE=Standard 자동채움) */
     FY4?: number;
+    /** 항복강도 Fy5 (CODE=Standard 자동채움) */
     FY5?: number;
   }
   export interface PerformSteelCodeCheckArgument {

@@ -376,13 +376,18 @@ def _contract_payload_type(name: str, contract: dict[str, Any]) -> list[str]:
     return lines
 
 
-def _contract_payload_fields() -> dict[str, dict[str, Any]]:
-    """Payload fields for the contract-derived DB resource shadow path.
+def _is_contract_shadow_resource(endpoint: str) -> bool:
+    """Whether this resource family is covered by the contract shadow gate."""
 
-    Plain-function and non-``/db`` resource contracts are still parity-only in
-    this migration stage.  Letting either alter the generated npm types would
-    begin the Stage 3 generator switch before its byte-identical shadow check
-    has been completed.
+    return endpoint.startswith(("/db/", "/DESIGN/"))
+
+
+def _contract_payload_fields() -> dict[str, dict[str, Any]]:
+    """Payload fields for the contract-derived resource shadow path.
+
+    Plain-function contracts are still parity-only in this migration stage.
+    Letting them alter the generated npm types would begin the Stage 3 generator
+    switch before its byte-identical shadow check has been completed.
     """
     contract_dir = ROOT / "contracts" / "endpoints"
     if not contract_dir.is_dir():
@@ -392,7 +397,7 @@ def _contract_payload_fields() -> dict[str, dict[str, Any]]:
     found: dict[str, dict[str, Any]] = {}
     for path in sorted(contract_dir.glob("*.yaml")):
         contract = yaml.safe_load(path.read_text(encoding="utf-8"))
-        if contract.get("endpoint", "").startswith("/db/") and contract.get("fields"):
+        if _is_contract_shadow_resource(contract.get("endpoint", "")) and contract.get("fields"):
             found[contract["endpoint"]] = {
                 "fields": contract["fields"],
                 "variants": contract.get("variants", []),
@@ -501,8 +506,8 @@ def _contract_payload_defaults() -> dict[str, dict[str, Any]]:
     return defaults
 
 
-def _contract_resource_surfaces() -> dict[str, dict[str, Any]]:
-    """Read the contract-owned surface of each contracted DB resource.
+def _contract_resource_surfaces(resource_endpoints: set[str]) -> dict[str, dict[str, Any]]:
+    """Read the contract-owned surface of each contracted resource.
 
     Class and module names remain compatibility anchors while the public npm
     tree is still organised like the existing SDK.  The endpoint, display
@@ -527,7 +532,11 @@ def _contract_resource_surfaces() -> dict[str, dict[str, Any]]:
     for path in sorted(contract_dir.glob("*.yaml")):
         contract = yaml.safe_load(path.read_text(encoding="utf-8"))
         endpoint = contract.get("endpoint", "")
-        if not endpoint.startswith("/db/") or not contract.get("fields"):
+        if (
+            not _is_contract_shadow_resource(endpoint)
+            or endpoint not in resource_endpoints
+            or not contract.get("fields")
+        ):
             continue
         if endpoint in surfaces:
             raise ValueError(f"Duplicate resource contract for {endpoint}")
@@ -586,7 +595,6 @@ def _load_resources() -> list[dict[str, Any]]:
         coverage_by_endpoint[entry["endpoint"]].append(entry)
 
     payload_defaults = _contract_payload_defaults()
-    contract_surfaces = _contract_resource_surfaces()
 
     resources: list[dict[str, Any]] = []
     for cls in _all_subclasses(DbResource):
@@ -617,6 +625,14 @@ def _load_resources() -> list[dict[str, Any]]:
                 for match in matches
             ],
         }
+        resources.append(resource)
+
+    # Compare only contracts for actual ``DbResource`` classes. /DESIGN also
+    # contains plain operation routes, whose contracts are intentionally not
+    # resource surfaces and therefore must not be required to appear here.
+    contract_surfaces = _contract_resource_surfaces({resource["endpoint"] for resource in resources})
+    for resource in resources:
+        endpoint = resource["endpoint"]
         contract_surface = contract_surfaces.get(endpoint)
         if contract_surface is not None:
             mismatches = _contract_resource_mismatches(resource, contract_surface)
@@ -636,7 +652,6 @@ def _load_resources() -> list[dict[str, Any]]:
                 # metadata, below, reads this contract-owned chapter instead.
                 contractManualChapter=contract_surface["manualChapter"],
             )
-        resources.append(resource)
     return sorted(resources, key=lambda item: (item["pythonModule"], item["className"], item["endpoint"]))
 
 
