@@ -9,7 +9,7 @@
  * scripts/live_crud_check.py; never copy a live payload into this file.
  *
  * Usage:
- *   MIDAS_MAPI_KEY=... npm run live:crud -- --product gen --endpoints /db/NODE,/db/NMAS
+ *   MIDAS_MAPI_KEY=... npm run live:crud -- -- --product gen --endpoints /db/NODE,/db/NMAS
  *
  * This script intentionally requires an explicit endpoint selection. A broad
  * accidental run is not a useful substitute for reviewing fixtures in small
@@ -25,7 +25,7 @@ const fixture = JSON.parse(readFileSync(fixturePath, "utf8"));
 
 function usage(message) {
   if (message) console.error(message);
-  console.error("Usage: npm run live:crud -- --product gen|civil --endpoints /db/NODE,/db/NMAS [--table-type MASS_SUMMARY_X] [--mapi-key key] [--timeout ms]");
+  console.error("Usage: npm run live:crud -- -- --product gen|civil --endpoints /db/NODE,/db/NMAS [--table-type MASS_SUMMARY_X] [--mapi-key key] [--timeout ms]");
   process.exit(2);
 }
 
@@ -88,6 +88,12 @@ function requireStored(items, id, endpoint, step) {
   return stored;
 }
 
+function newlyCreatedIds(before, after) {
+  return Object.keys(after)
+    .map(Number)
+    .filter((id) => !Object.hasOwn(before, id));
+}
+
 function containsExpectedValue(value, expected) {
   if (Object.is(value, expected)) return true;
   if (typeof value !== "object" || value === null) return false;
@@ -122,7 +128,7 @@ async function runCase(liveCase, client) {
     throw new Error(`${liveCase.endpoint}: this harness refuses a no-DELETE case so the scratch document stays empty.`);
   }
   const setup = [];
-  let targetCreated = false;
+  const targetCreatedIds = new Set();
   let result;
   try {
     for (const prerequisite of liveCase.setup) {
@@ -132,14 +138,25 @@ async function runCase(liveCase, client) {
       if (!sourceResource.metadata.methods.includes("DELETE")) {
         throw new Error(`${liveCase.endpoint}: setup ${prerequisite.endpoint} cannot be individually cleaned up.`);
       }
+      const before = await sourceResource.items(client);
+      if (Object.hasOwn(before, prerequisite.id)) {
+        throw new Error(`${liveCase.endpoint}: setup ${prerequisite.endpoint}/${prerequisite.id} already exists; refusing to overwrite a scratch record.`);
+      }
       await sourceResource.create({ [prerequisite.id]: source.createPayload }, client);
-      requireStored(await sourceResource.items(client), prerequisite.id, prerequisite.endpoint, "setup POST");
-      setup.push({ resource: sourceResource, id: prerequisite.id, endpoint: prerequisite.endpoint });
+      const after = await sourceResource.items(client);
+      const createdIds = newlyCreatedIds(before, after);
+      setup.push({ resource: sourceResource, ids: createdIds, endpoint: prerequisite.endpoint });
+      requireStored(after, prerequisite.id, prerequisite.endpoint, "setup POST");
     }
 
+    const before = await resource.items(client);
+    if (Object.hasOwn(before, liveCase.id)) {
+      throw new Error(`${liveCase.endpoint}/${liveCase.id} already exists; refusing to overwrite a scratch record.`);
+    }
     await resource.create({ [liveCase.id]: liveCase.createPayload }, client);
-    targetCreated = true;
-    const created = requireStored(await resource.items(client), liveCase.id, liveCase.endpoint, "POST");
+    const afterCreate = await resource.items(client);
+    for (const id of newlyCreatedIds(before, afterCreate)) targetCreatedIds.add(id);
+    const created = requireStored(afterCreate, liveCase.id, liveCase.endpoint, "POST");
     requireExpectedValue(created, liveCase.expected.created, liveCase.endpoint, "POST");
     assertPayloadDefaults(resource, created, liveCase.endpoint, "POST");
 
@@ -149,24 +166,26 @@ async function runCase(liveCase, client) {
     assertPayloadDefaults(resource, updated, liveCase.endpoint, "PUT");
 
     await deleteAndVerify(resource, liveCase.id, client, liveCase.endpoint);
-    targetCreated = false;
+    targetCreatedIds.delete(liveCase.id);
     result = { endpoint: liveCase.endpoint, ok: true, confirmed: liveCase.confirmed };
   } catch (error) {
     result = { endpoint: liveCase.endpoint, ok: false, confirmed: liveCase.confirmed, error: errorText(error) };
   } finally {
     const cleanupErrors = [];
-    if (targetCreated) {
+    for (const id of targetCreatedIds) {
       try {
-        await deleteAndVerify(resource, liveCase.id, client, liveCase.endpoint);
+        await deleteAndVerify(resource, id, client, liveCase.endpoint);
       } catch (error) {
-        cleanupErrors.push(`${liveCase.endpoint}: ${errorText(error)}`);
+        cleanupErrors.push(`${liveCase.endpoint}/${id}: ${errorText(error)}`);
       }
     }
     for (const prerequisite of setup.reverse()) {
-      try {
-        await deleteAndVerify(prerequisite.resource, prerequisite.id, client, prerequisite.endpoint);
-      } catch (error) {
-        cleanupErrors.push(`${prerequisite.endpoint}: ${errorText(error)}`);
+      for (const id of prerequisite.ids) {
+        try {
+          await deleteAndVerify(prerequisite.resource, id, client, prerequisite.endpoint);
+        } catch (error) {
+          cleanupErrors.push(`${prerequisite.endpoint}/${id}: ${errorText(error)}`);
+        }
       }
     }
     if (cleanupErrors.length) {

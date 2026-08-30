@@ -7203,6 +7203,7 @@ products:
 | --- | --- | --- | --- |
 | `resources.db.nodeElement.node` | create, read, update, read, per-id delete, final read | pass | pass |
 | `resources.db.staticLoads.nodalMass` | same CRUD cycle, with its fixture omitting `rmX`/`rmY`/`rmZ` | pass | pass |
+| `resources.db.project.loadGroup` | create, read, update, read, per-id delete, final read | pass | pass |
 | `post.getTable("MASS_SUMMARY_X")` + `post.unwrapTable()` | seed a fixture Node and Nodal Mass, then read a populated table | pass | pass |
 
 For Nodal Mass, the record read back after both `POST` and `PUT` contained
@@ -7221,6 +7222,17 @@ Mass id and both were removed with individual-id DELETE calls. Final public
 This is explicitly npm-specific live evidence. `docs/coverage.json` remains
 unchanged: its historical `level` field means verification through the Python
 package, so an npm run must not silently widen that meaning.
+
+One runner limitation was also made explicit rather than misreported as an
+SDK regression. `/db/STLD` ignores the requested `Assign` id on a blank model
+and creates the next sequential id; its Python case intentionally runs after
+the base model has already allocated ids 1–2. The small npm batch does not
+recreate that base model, so it rejects that case as not equivalent instead of
+claiming it is npm evidence. The npm harness now tracks every id newly created
+by a selected case and deletes those ids individually even when a server has
+renumbered the requested record. A Gen NX probe confirmed the failing STLD
+case left its server-assigned id cleaned up (`{}` afterward). No coverage level
+was changed for STLD.
 
 ## Caveat — read before acting on this file
 
