@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 27_Design_SRC_AIKSRC2K.md
-    section: "7. `DESIGN/SRC/AIK-SRC2K/KFAC` — 유효좌굴길이계수(K)"
+    section: "7. `DESIGN/SRC/AIK-SRC2K/KFAC` — Effective Length Factor (K) (유효좌굴길이계수)"
   liveNotes:
     - docs/live_verification_notes.md
 

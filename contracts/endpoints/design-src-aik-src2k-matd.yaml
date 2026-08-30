@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 27_Design_SRC_AIKSRC2K.md
-    section: "24. `DESIGN/SRC/AIK-SRC2K/MATD` — SRC 재료 수정"
+    section: "24. `DESIGN/SRC/AIK-SRC2K/MATD` — Modify SRC Material (SRC 재료 수정)"
   liveNotes:
     - docs/live_verification_notes.md
 

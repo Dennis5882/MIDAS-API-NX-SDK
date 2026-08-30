@@ -21,7 +21,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 05_DB_Boundary.md
-    section: "1. `/db/CONS` -- Constraint Support"
+    section: "1. `/db/CONS` — Constraint Support"
   liveNotes:
     - docs/live_verification_notes.md
 

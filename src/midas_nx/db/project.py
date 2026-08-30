@@ -163,7 +163,7 @@ class ProjectInfo(DbResource):
 
 
 class StructureGroupPayload(TypedDict, total=False):
-    """docs/manual/02_DB_Project_Structure.md #4 — /db/GRUP Specifications table."""
+    """docs/manual/02_DB_Project_Structure.md #5 — /db/GRUP Specifications table."""
 
     NAME: str  # Structure Group Name, required
     P_TYPE: int  # Plane Type, default 0
@@ -179,7 +179,7 @@ class StructureGroup(DbResource):
 
 
 class BoundaryGroupPayload(TypedDict, total=False):
-    """docs/manual/02_DB_Project_Structure.md #5 — /db/BNGR Specifications table."""
+    """docs/manual/02_DB_Project_Structure.md #6 — /db/BNGR Specifications table."""
 
     NAME: str  # Boundary Group Name, required
     AUTOTYPE: int  # Auto-generated CR/SH groups for Composite Section: 0=Creep, 1=Shrinkage; default auto-assigned, optional
@@ -193,7 +193,7 @@ class BoundaryGroup(DbResource):
 
 
 class LoadGroupPayload(TypedDict, total=False):
-    """docs/manual/02_DB_Project_Structure.md #6 — /db/LDGR Specifications table."""
+    """docs/manual/02_DB_Project_Structure.md #7 — /db/LDGR Specifications table."""
 
     NAME: str  # Load Group Name, required
 
@@ -205,7 +205,7 @@ class LoadGroup(DbResource):
 
 
 class TendonGroupPayload(TypedDict, total=False):
-    """docs/manual/02_DB_Project_Structure.md #7 — /db/TDGR Specifications table."""
+    """docs/manual/02_DB_Project_Structure.md #8 — /db/TDGR Specifications table."""
 
     NAME: str  # Tendon Group Name, required
 
@@ -221,7 +221,7 @@ class NamedPlanePointItem(TypedDict, total=False):
 
 
 class NamedPlanePayload(TypedDict, total=False):
-    """docs/manual/02_DB_Project_Structure.md #8 — /db/NPLN Specifications table.
+    """docs/manual/02_DB_Project_Structure.md #9 — /db/NPLN Specifications table.
 
     2026-08-25 re-verification (article id `35805287066649`) corrected two
     values the SDK previously had wrong: `TOL` defaults to `0` (was
@@ -264,7 +264,7 @@ class _ColorPayload(TypedDict, total=False):
 
 
 class MaterialColorPayload(_ColorPayload):
-    """docs/manual/02_DB_Project_Structure.md #9 — /db/CO_M Specifications table."""
+    """docs/manual/02_DB_Project_Structure.md #10 — /db/CO_M Specifications table."""
 
 
 class MaterialColor(DbResource):
@@ -275,7 +275,7 @@ class MaterialColor(DbResource):
 
 
 class SectionColorPayload(_ColorPayload):
-    """docs/manual/02_DB_Project_Structure.md #10 — /db/CO_S Specifications table."""
+    """docs/manual/02_DB_Project_Structure.md #11 — /db/CO_S Specifications table."""
 
 
 class SectionColor(DbResource):
@@ -286,7 +286,7 @@ class SectionColor(DbResource):
 
 
 class ThicknessColorPayload(_ColorPayload):
-    """docs/manual/02_DB_Project_Structure.md #11 — /db/CO_T Specifications table."""
+    """docs/manual/02_DB_Project_Structure.md #12 — /db/CO_T Specifications table."""
 
 
 class ThicknessColor(DbResource):
@@ -297,7 +297,7 @@ class ThicknessColor(DbResource):
 
 
 class FloorLoadColorPayload(TypedDict, total=False):
-    """docs/manual/02_DB_Project_Structure.md #12 — /db/CO_F Specifications table."""
+    """docs/manual/02_DB_Project_Structure.md #13 — /db/CO_F Specifications table."""
 
     NAME: str  # Floor Load Type Name, required
     WF_R: int  # Wire Frame Red, 0-255, optional
@@ -326,7 +326,7 @@ class SpanBaseItem(TypedDict, total=False):
 
 
 class SpanPayload(TypedDict, total=False):
-    """docs/manual/02_DB_Project_Structure.md #13 — /db/SPAN Specifications table."""
+    """docs/manual/02_DB_Project_Structure.md #14 — /db/SPAN Specifications table."""
 
     NAME: str  # Span Name, required
     bEXACTSPAN: bool  # Exact Span Option, required
@@ -348,7 +348,7 @@ class Span(DbResource):
 
 
 class StoryPayload(TypedDict, total=False):
-    """docs/manual/02_DB_Project_Structure.md #14 — /db/STOR Specifications table."""
+    """docs/manual/02_DB_Project_Structure.md #15 — /db/STOR Specifications table."""
 
     STORY_NAME: str  # Story Name, required
     STORY_LEVEL: float  # Story Height (elevation), required

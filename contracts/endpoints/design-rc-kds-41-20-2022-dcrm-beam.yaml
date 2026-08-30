@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 26_Design_RC_KDS41202022.md
-    section: "29. `DESIGN/RC/KDS-41-20-2022/DCRM-BEAM` — 보 부재별 철근 설계기준"
+    section: "29. `DESIGN/RC/KDS-41-20-2022/DCRM-BEAM` — Design Criteria for Rebars by Beam Member (보 부재별 철근 설계기준)"
   liveNotes:
     - docs/live_verification_notes.md
 

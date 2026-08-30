@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 26_Design_RC_KDS41202022.md
-    section: "50. `DESIGN/RC/KDS-41-20-2022/WD-REPORT` — RC 벽체 설계 리포트"
+    section: "50. `DESIGN/RC/KDS-41-20-2022/WD-REPORT` — RC Wall Design Report (RC 벽체 설계 리포트)"
   liveNotes:
     - docs/live_verification_notes.md
 

@@ -1238,6 +1238,54 @@ def test_manual_check_compares_the_endpoint_label(tmp_path: Path, monkeypatch: p
     assert ex.run_check([parsed]) == 1
 
 
+def test_manual_check_compares_the_section_heading(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """A renumbered chapter leaves every contract below the insert pointing wrong.
+
+    Inserting /db/STYP-M1 at chapter 02's #4 on 2026-08-30 moved eleven
+    sections down one, and unifying chapters 24-27's labels rewrote 86 more
+    headings. Nothing compared `source.manual.section` against the chapter, so
+    103 contracts named a heading that no longer existed - the third blind spot
+    of this shape, after the endpoint label and the method set.
+
+    Dash spelling is exempt: 90 contracts write the manual's em dash as `--`,
+    and the npm shadow gate already treats that as presentation.
+    """
+    path = tmp_path / "99_DB_Sections.md"
+    path.write_text(
+        """# 99 DB — Sections
+
+## 7. `/db/SECTION-CHECK` — Section Check
+
+- **Methods**: `GET`, `PUT`
+
+| No. | Description | Key | Value Type | Default | Required |
+|-----|-------------|-----|------------|---------|----------|
+| 1 | Name | `"NAME"` | String | - | Required |
+""",
+        encoding="utf-8",
+    )
+    parsed = ex.parse_chapter(path)[0]
+    contract = yaml.safe_load(ex.render_draft(parsed))
+    contract.pop("draft")
+    endpoint_dir = tmp_path / "endpoints"
+    endpoint_dir.mkdir()
+    target = endpoint_dir / "db-section-check.yaml"
+    target.write_text(yaml.safe_dump(contract, allow_unicode=True), encoding="utf-8")
+    monkeypatch.setattr(ex, "ENDPOINT_DIR", endpoint_dir)
+
+    assert ex.run_check([parsed]) == 0
+
+    # The same heading spelled with ASCII dashes stays acceptable.
+    contract["source"]["manual"]["section"] = "7. `/db/SECTION-CHECK` -- Section Check"
+    target.write_text(yaml.safe_dump(contract, allow_unicode=True), encoding="utf-8")
+    assert ex.run_check([parsed]) == 0
+
+    # A stale section number does not.
+    contract["source"]["manual"]["section"] = "6. `/db/SECTION-CHECK` — Section Check"
+    target.write_text(yaml.safe_dump(contract, allow_unicode=True), encoding="utf-8")
+    assert ex.run_check([parsed]) == 1
+
+
 def test_enum_values_are_read_only_when_the_same_manual_section_states_them(tmp_path: Path):
     """Cover the three enum forms used by the manual, including nested paths."""
     path = tmp_path / "99_DB_Enums.md"

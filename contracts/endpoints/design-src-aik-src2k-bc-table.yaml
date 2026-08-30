@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 27_Design_SRC_AIKSRC2K.md
-    section: "16. `DESIGN/SRC/AIK-SRC2K/BC-TABLE` — SRC 보 검토 테이블"
+    section: "16. `DESIGN/SRC/AIK-SRC2K/BC-TABLE` — SRC Beam Checking Table (SRC 보 검토 테이블)"
   liveNotes:
     - docs/live_verification_notes.md
 

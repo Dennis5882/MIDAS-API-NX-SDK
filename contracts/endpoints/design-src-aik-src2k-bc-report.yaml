@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 27_Design_SRC_AIKSRC2K.md
-    section: "17. `DESIGN/SRC/AIK-SRC2K/BC-REPORT` — SRC 보 검토 리포트"
+    section: "17. `DESIGN/SRC/AIK-SRC2K/BC-REPORT` — SRC Beam Checking Report (SRC 보 검토 리포트)"
   liveNotes:
     - docs/live_verification_notes.md
 

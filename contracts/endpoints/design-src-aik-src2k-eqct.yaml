@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 27_Design_SRC_AIKSRC2K.md
-    section: "14. `DESIGN/SRC/AIK-SRC2K/EQCT` — 지진 하중조합 타입"
+    section: "14. `DESIGN/SRC/AIK-SRC2K/EQCT` — Seismic Load Combination Type (지진 하중조합 타입)"
   liveNotes:
     - docs/live_verification_notes.md
 

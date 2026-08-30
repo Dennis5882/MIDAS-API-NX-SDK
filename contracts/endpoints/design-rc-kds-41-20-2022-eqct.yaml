@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 26_Design_RC_KDS41202022.md
-    section: "6. `DESIGN/RC/KDS-41-20-2022/EQCT` — 지진 하중조합 타입"
+    section: "6. `DESIGN/RC/KDS-41-20-2022/EQCT` — Seismic Load Combination Type (지진 하중조합 타입)"
   liveNotes:
     - docs/live_verification_notes.md
 

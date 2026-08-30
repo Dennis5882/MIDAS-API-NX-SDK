@@ -21,7 +21,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 05_DB_Boundary.md
-    section: "3. `/db/GSTP` -- Define General Spring Type"
+    section: "3. `/db/GSTP` — Define General Spring Type"
   liveNotes:
     - docs/live_verification_notes.md
 

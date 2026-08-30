@@ -17,7 +17,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 24_DB_Design.md
-    section: "9. `/db/WMAK` — 벽체 마크 설계 수정"
+    section: "9. `/db/WMAK` — Modify Wall Mark Design (벽체 마크 설계 수정)"
   liveNotes:
     - docs/live_verification_notes.md
 

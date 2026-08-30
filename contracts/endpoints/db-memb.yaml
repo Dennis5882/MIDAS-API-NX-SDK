@@ -17,7 +17,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 24_DB_Design.md
-    section: "5. `/db/MEMB` — 설계 부재 배정"
+    section: "5. `/db/MEMB` — Member Assignment (설계 부재 배정)"
   liveNotes:
     - docs/live_verification_notes.md
 

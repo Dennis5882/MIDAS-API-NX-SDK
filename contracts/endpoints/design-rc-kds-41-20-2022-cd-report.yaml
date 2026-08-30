@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 26_Design_RC_KDS41202022.md
-    section: "44. `DESIGN/RC/KDS-41-20-2022/CD-REPORT` — RC 기둥 설계 리포트"
+    section: "44. `DESIGN/RC/KDS-41-20-2022/CD-REPORT` — RC Column Design Report (RC 기둥 설계 리포트)"
   liveNotes:
     - docs/live_verification_notes.md
 

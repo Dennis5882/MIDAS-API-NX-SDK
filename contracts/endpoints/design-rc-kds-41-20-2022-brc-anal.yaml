@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 26_Design_RC_KDS41202022.md
-    section: "60. `DESIGN/RC/KDS-41-20-2022/BRC-ANAL` — RC 가새 검토 수행"
+    section: "60. `DESIGN/RC/KDS-41-20-2022/BRC-ANAL` — RC Brace Check Perform (RC 가새 검토 수행)"
   liveNotes:
     - docs/live_verification_notes.md
 

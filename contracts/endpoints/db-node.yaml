@@ -22,7 +22,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 03_DB_Node_Element.md
-    section: "1. /db/NODE"
+    section: "1. `/db/NODE`"
     url: https://support.midasuser.com/hc/en-us/articles/35806845654169
   liveNotes:
     - docs/live_verification_notes.md

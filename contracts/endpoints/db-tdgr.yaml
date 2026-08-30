@@ -17,7 +17,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 02_DB_Project_Structure.md
-    section: "7. `/db/TDGR` — Tendon Group"
+    section: "8. `/db/TDGR` — Tendon Group"
   liveNotes:
     - docs/live_verification_notes.md
 

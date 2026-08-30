@@ -17,7 +17,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 24_DB_Design.md
-    section: "8. `/db/MBTP` — 부재 타입 수정"
+    section: "8. `/db/MBTP` — Modify Member Type (부재 타입 수정)"
   liveNotes:
     - docs/live_verification_notes.md
 

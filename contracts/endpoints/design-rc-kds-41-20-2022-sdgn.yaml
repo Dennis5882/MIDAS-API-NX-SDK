@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 26_Design_RC_KDS41202022.md
-    section: "9. `DESIGN/RC/KDS-41-20-2022/SDGN` — 내진 설계 타입"
+    section: "9. `DESIGN/RC/KDS-41-20-2022/SDGN` — Seismic Design Type (내진 설계 타입)"
   liveNotes:
     - docs/live_verification_notes.md
 

@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 27_Design_SRC_AIKSRC2K.md
-    section: "15. `DESIGN/SRC/AIK-SRC2K/BC-ANAL` — SRC 보 검토 수행"
+    section: "15. `DESIGN/SRC/AIK-SRC2K/BC-ANAL` — SRC Beam Checking Perform (SRC 보 검토 수행)"
   liveNotes:
     - docs/live_verification_notes.md
 

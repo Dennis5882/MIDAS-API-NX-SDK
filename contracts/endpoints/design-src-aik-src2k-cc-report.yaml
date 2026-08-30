@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 27_Design_SRC_AIKSRC2K.md
-    section: "20. `DESIGN/SRC/AIK-SRC2K/CC-REPORT` — SRC 기둥 검토 리포트"
+    section: "20. `DESIGN/SRC/AIK-SRC2K/CC-REPORT` — SRC Column Checking Report (SRC 기둥 검토 리포트)"
   liveNotes:
     - docs/live_verification_notes.md
 

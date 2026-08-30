@@ -21,7 +21,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 08_DB_Moving_Loads.md
-    section: "13. /db/MVLDch – Moving Load Cases – China"
+    section: 13. /db/MVLDch – Moving Load Cases – China
   liveNotes:
     - docs/live_verification_notes.md
 

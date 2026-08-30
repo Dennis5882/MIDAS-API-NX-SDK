@@ -134,6 +134,11 @@ def _verbs(text: str) -> list[str]:
 _TRANSLATED_SUFFIX = re.compile(r"\s*\((?=[^)]*[가-힣])[^)]*\)\s*$")
 
 
+def _plain_dashes(text: str) -> str:
+    """Fold the dash spellings the manual and the contracts disagree on."""
+    return text.replace("—", "-").replace("–", "-").replace("--", "-")
+
+
 def _english_label(title: str) -> str:
     return _TRANSLATED_SUFFIX.sub("", title).strip()
 
@@ -3062,6 +3067,23 @@ def run_check(sections: list[Section]) -> int:
         overridden = {
             d.get("describes") for d in contract.get("manualDefects", [])
         }
+
+        # The section heading, which carries its number. Inserting one endpoint
+        # renumbers every section below it - /db/STYP-M1 landing at 02's #4 on
+        # 2026-08-30 moved eleven - and a contract that still names the old
+        # number sends the next reader to the wrong endpoint's table. Cheap to
+        # check because the heading is transcribed verbatim, and the third
+        # blind spot of this shape after name and methods.
+        # Dash typography is presentation, and 90 contracts spell the manual's
+        # em dash as `--`; the npm shadow gate already exempts exactly this, so
+        # normalise before comparing or the real drift drowns in it.
+        if section.heading and "field_name" not in overridden:
+            declared_section = contract["source"]["manual"].get("section")
+            if _plain_dashes(declared_section or "") != _plain_dashes(section.heading):
+                problems.append(
+                    f"{path.name}: source.manual.section {declared_section!r}, "
+                    f"the chapter heading is {section.heading!r}"
+                )
 
         # The chapter's own Active Methods, against the verbs the contract serves.
         # Nothing compared these before, which is how /db/POLC-M1 kept a POST the

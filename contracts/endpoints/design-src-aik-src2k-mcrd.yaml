@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 27_Design_SRC_AIKSRC2K.md
-    section: "25. `DESIGN/SRC/AIK-SRC2K/MCRD` — SRC 기둥 단면 데이터 수정"
+    section: "25. `DESIGN/SRC/AIK-SRC2K/MCRD` — Modify SRC Column Section Data (SRC 기둥 단면 데이터 수정)"
   liveNotes:
     - docs/live_verification_notes.md
 

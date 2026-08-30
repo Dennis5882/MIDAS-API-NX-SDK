@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 27_Design_SRC_AIKSRC2K.md
-    section: "4. `DESIGN/SRC/AIK-SRC2K/LLRF` — 활하중 저감계수"
+    section: "4. `DESIGN/SRC/AIK-SRC2K/LLRF` — Live Load Reduction Factor (활하중 저감계수)"
   liveNotes:
     - docs/live_verification_notes.md
 

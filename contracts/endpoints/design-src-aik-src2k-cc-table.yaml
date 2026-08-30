@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 27_Design_SRC_AIKSRC2K.md
-    section: "19. `DESIGN/SRC/AIK-SRC2K/CC-TABLE` — SRC 기둥 검토 테이블"
+    section: "19. `DESIGN/SRC/AIK-SRC2K/CC-TABLE` — SRC Column Checking Table (SRC 기둥 검토 테이블)"
   liveNotes:
     - docs/live_verification_notes.md
 

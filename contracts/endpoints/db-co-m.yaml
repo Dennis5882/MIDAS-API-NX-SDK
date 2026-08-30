@@ -17,7 +17,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 02_DB_Project_Structure.md
-    section: "9. `/db/CO_M` — Material Color"
+    section: "10. `/db/CO_M` — Material Color"
   liveNotes:
     - docs/live_verification_notes.md
 

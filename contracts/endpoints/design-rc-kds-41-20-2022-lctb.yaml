@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 26_Design_RC_KDS41202022.md
-    section: "4. `DESIGN/RC/KDS-41-20-2022/LCTB` — 비선형 하중케이스 하중기여"
+    section: "4. `DESIGN/RC/KDS-41-20-2022/LCTB` — Load Contribution for Nonlinear Load Case (비선형 하중케이스 하중기여)"
   liveNotes:
     - docs/live_verification_notes.md
 

@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 27_Design_SRC_AIKSRC2K.md
-    section: "8. `DESIGN/SRC/AIK-SRC2K/LTSR` — 세장비 제한"
+    section: "8. `DESIGN/SRC/AIK-SRC2K/LTSR` — Limiting Slenderness Ratio (세장비 제한)"
   liveNotes:
     - docs/live_verification_notes.md
 

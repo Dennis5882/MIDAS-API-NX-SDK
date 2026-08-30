@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 26_Design_RC_KDS41202022.md
-    section: "24. `DESIGN/RC/KDS-41-20-2022/PMDM` — P-M 곡선 산정 방법"
+    section: "24. `DESIGN/RC/KDS-41-20-2022/PMDM` — P-M Curve Calculation Method (P-M 곡선 산정 방법)"
   liveNotes:
     - docs/live_verification_notes.md
 

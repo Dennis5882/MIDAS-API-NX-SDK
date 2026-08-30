@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 27_Design_SRC_AIKSRC2K.md
-    section: "18. `DESIGN/SRC/AIK-SRC2K/CC-ANAL` — SRC 기둥 검토 수행"
+    section: "18. `DESIGN/SRC/AIK-SRC2K/CC-ANAL` — SRC Column Checking Perform (SRC 기둥 검토 수행)"
   liveNotes:
     - docs/live_verification_notes.md
 

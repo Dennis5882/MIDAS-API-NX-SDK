@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 27_Design_SRC_AIKSRC2K.md
-    section: "2. `DESIGN/SRC/AIK-SRC2K/DCO` — 설계 코드 옵션"
+    section: "2. `DESIGN/SRC/AIK-SRC2K/DCO` — Design Code Option (설계 코드 옵션)"
   liveNotes:
     - docs/live_verification_notes.md
 

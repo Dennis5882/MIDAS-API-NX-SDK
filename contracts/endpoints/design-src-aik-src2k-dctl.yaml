@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 27_Design_SRC_AIKSRC2K.md
-    section: "3. `DESIGN/SRC/AIK-SRC2K/DCTL` — 프레임 정의"
+    section: "3. `DESIGN/SRC/AIK-SRC2K/DCTL` — Definition of Frame (프레임 정의)"
   liveNotes:
     - docs/live_verification_notes.md
 

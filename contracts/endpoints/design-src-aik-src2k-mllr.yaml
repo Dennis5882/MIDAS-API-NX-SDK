@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 27_Design_SRC_AIKSRC2K.md
-    section: "11. `DESIGN/SRC/AIK-SRC2K/MLLR` — 활하중 저감계수 수정"
+    section: "11. `DESIGN/SRC/AIK-SRC2K/MLLR` — Modify Live Load Reduction Factor (활하중 저감계수 수정)"
   liveNotes:
     - docs/live_verification_notes.md
 

@@ -17,7 +17,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 02_DB_Project_Structure.md
-    section: "14. `/db/STOR` — Story Data"
+    section: "15. `/db/STOR` — Story Data"
   liveNotes:
     - docs/live_verification_notes.md
 

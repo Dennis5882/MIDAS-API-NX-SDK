@@ -16,7 +16,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 06_DB_Static_Loads.md
-    section: "2. /db/BODF — Self-Weight"
+    section: 2. /db/BODF — Self-Weight
   liveNotes:
     - docs/live_verification_notes.md
 

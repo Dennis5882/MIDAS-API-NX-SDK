@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 27_Design_SRC_AIKSRC2K.md
-    section: "1. `DESIGN/SRC/AIK-SRC2K/DSRC` — SRC 설계 코드"
+    section: "1. `DESIGN/SRC/AIK-SRC2K/DSRC` — SRC Design Code (SRC 설계 코드)"
   liveNotes:
     - docs/live_verification_notes.md
 

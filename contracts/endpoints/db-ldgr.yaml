@@ -17,7 +17,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 02_DB_Project_Structure.md
-    section: "6. `/db/LDGR` — Load Group"
+    section: "7. `/db/LDGR` — Load Group"
   liveNotes:
     - docs/live_verification_notes.md
 

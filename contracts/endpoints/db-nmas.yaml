@@ -25,7 +25,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 06_DB_Static_Loads.md
-    section: "6. /db/NMAS — Nodal Masses"
+    section: 6. /db/NMAS — Nodal Masses
     url: https://support.midasuser.com/hc/en-us/articles/33016922742937
   liveNotes:
     - docs/live_verification_notes.md

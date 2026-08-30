@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 27_Design_SRC_AIKSRC2K.md
-    section: "10. `DESIGN/SRC/AIK-SRC2K/FMAG` — 모멘트 확대계수(B1/δb, B2/δs)"
+    section: "10. `DESIGN/SRC/AIK-SRC2K/FMAG` — Moment Magnifier(B1/Delta_b, B2/Delta_s) (모멘트 확대계수)"
   liveNotes:
     - docs/live_verification_notes.md
 

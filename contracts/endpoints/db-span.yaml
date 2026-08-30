@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 02_DB_Project_Structure.md
-    section: "13. `/db/SPAN` — Span Information"
+    section: "14. `/db/SPAN` — Span Information"
   liveNotes:
     - docs/live_verification_notes.md
 

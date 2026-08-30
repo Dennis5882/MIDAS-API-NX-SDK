@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 26_Design_RC_KDS41202022.md
-    section: "28. `DESIGN/RC/KDS-41-20-2022/LMRR` — 최대 철근비 제한"
+    section: "28. `DESIGN/RC/KDS-41-20-2022/LMRR` — Limiting Maximum Rebar Ratio (최대 철근비 제한)"
   liveNotes:
     - docs/live_verification_notes.md
 

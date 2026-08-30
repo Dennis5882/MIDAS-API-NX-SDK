@@ -17,7 +17,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 02_DB_Project_Structure.md
-    section: "12. `/db/CO_F` — Floor Load Color"
+    section: "13. `/db/CO_F` — Floor Load Color"
   liveNotes:
     - docs/live_verification_notes.md
 

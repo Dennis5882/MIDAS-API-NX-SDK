@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 26_Design_RC_KDS41202022.md
-    section: "20. `DESIGN/RC/KDS-41-20-2022/MRFT` — 모멘트 재분배 계수"
+    section: "20. `DESIGN/RC/KDS-41-20-2022/MRFT` — Moment Redistribution Factor (모멘트 재분배 계수)"
   liveNotes:
     - docs/live_verification_notes.md
 

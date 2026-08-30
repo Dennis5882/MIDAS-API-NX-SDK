@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 26_Design_RC_KDS41202022.md
-    section: "14. `DESIGN/RC/KDS-41-20-2022/LENG` — 비지지 길이(L, Lb)"
+    section: "14. `DESIGN/RC/KDS-41-20-2022/LENG` — Unbraced Length (L, Lb) (비지지 길이)"
   liveNotes:
     - docs/live_verification_notes.md
 

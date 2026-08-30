@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 26_Design_RC_KDS41202022.md
-    section: "27. `DESIGN/RC/KDS-41-20-2022/REXC` — 철근 노출 조건"
+    section: "27. `DESIGN/RC/KDS-41-20-2022/REXC` — Rebar Exposure Condition (철근 노출 조건)"
   liveNotes:
     - docs/live_verification_notes.md
 

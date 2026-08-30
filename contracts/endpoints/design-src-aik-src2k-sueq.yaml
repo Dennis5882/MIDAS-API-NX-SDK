@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 27_Design_SRC_AIKSRC2K.md
-    section: "12. `DESIGN/SRC/AIK-SRC2K/SUEQ` — 지진 스케일업 계수"
+    section: "12. `DESIGN/SRC/AIK-SRC2K/SUEQ` — Scale up Factor for Earthquake (지진 스케일업 계수)"
   liveNotes:
     - docs/live_verification_notes.md
 
