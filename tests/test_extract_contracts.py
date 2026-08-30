@@ -1261,6 +1261,36 @@ def test_manual_prose_compact_condition_pair_supplies_applies_when(
 
 
 @pytest.mark.parametrize(
+    ("value", "target"),
+    [
+        pytest.param("WID+STORY", "CURRENT_MODE_WID_STORY", id="first_parallel_branch"),
+        pytest.param("WID", "CURRENT_MODE_WID", id="second_parallel_branch"),
+    ],
+)
+def test_manual_prose_parallel_code_span_conditions_supply_applies_when(
+    value: str, target: str, tmp_path: Path
+):
+    """The Korean 'respectively' form maps only equal-length code-span pairs."""
+    path = tmp_path / "99_DB_ParallelProseConditions.md"
+    path.write_text(
+        "## 1. `/db/PARALLEL-CONDITIONS` -- Parallel prose conditions\n\n"
+        "| No. | Description | Key | Value Type | Default | Required |\n"
+        "|-----|-------------|-----|------------|---------|----------|\n"
+        "| 1 | Report type | `REPORT_TYPE` | String | - | Required |\n"
+        "| 2 | Story mode | `CURRENT_MODE_WID_STORY` | String | - | Conditional |\n"
+        "| 3 | Wall mode | `CURRENT_MODE_WID` | String | - | Conditional |\n\n"
+        '> `REPORT_TYPE`으로 출력 단위(`"WID+STORY"`/`"WID"`)를 정하고 각각 `CURRENT_MODE_WID_STORY`/`CURRENT_MODE_WID`로 모드를 지정합니다.\n',
+        encoding="utf-8",
+    )
+
+    fields = {field.key: field for field in ex.parse_chapter(path)[0].tables[0].fields}
+    conditional = fields[target]
+    assert conditional.condition == f'REPORT_TYPE="{value}"'
+    assert conditional.applies_when == [("REPORT_TYPE", value)]
+    assert not conditional.notes
+
+
+@pytest.mark.parametrize(
     ("selector_schema", "expected_condition"),
     [
         pytest.param('{"const":true}', "OPT_USE=true", id="const_selector_then_required"),

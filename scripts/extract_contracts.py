@@ -1675,6 +1675,11 @@ _COMPACT_PROSE_CONDITION_PAIR = re.compile(
     r'`(?P<first_target>[A-Za-z0-9_]+)`\s*,\s*`"(?P<second_value>[^"`]+)"`\s*이면\s*'
     r'`(?P<second_target>[A-Za-z0-9_]+)`'
 )
+_PARALLEL_PROSE_CONDITION_PAIR = re.compile(
+    r'`(?P<selector>[A-Za-z0-9_]+)`[^`\n]*\('
+    r'(?P<values>(?:`"[^"`]+"`\s*(?:/\s*)?){2,})\)'
+    r'[^\n]*각각\s*(?P<targets>(?:`[A-Za-z0-9_]+`\s*(?:/\s*)?){2,})'
+)
 
 
 def _apply_explicit_prose_conditions(tables: list[ParsedTable], lines: list[str]) -> None:
@@ -1687,27 +1692,35 @@ def _apply_explicit_prose_conditions(tables: list[ParsedTable], lines: list[str]
     keys. Examples and unstructured prose deliberately do not participate.
     """
 
-    pairs = list(_COMPACT_PROSE_CONDITION_PAIR.finditer("\n".join(lines)))
+    text = "\n".join(lines)
+    pairs: list[tuple[str, str, str]] = []
+    for match in _COMPACT_PROSE_CONDITION_PAIR.finditer(text):
+        selector = match.group("selector")
+        pairs.extend(
+            (
+                (selector, match.group("first_value"), match.group("first_target")),
+                (selector, match.group("second_value"), match.group("second_target")),
+            )
+        )
+    for match in _PARALLEL_PROSE_CONDITION_PAIR.finditer(text):
+        values = re.findall(r'`"([^"`]+)"`', match.group("values"))
+        targets = re.findall(r'`([A-Za-z0-9_]+)`', match.group("targets"))
+        if len(values) == len(targets) and len(values) >= 2:
+            pairs.extend((match.group("selector"), value, target) for value, target in zip(values, targets))
     for table in tables:
-        for match in pairs:
-            selector = match.group("selector")
-            for value_name, target_name in (
-                ("first_value", "first_target"),
-                ("second_value", "second_target"),
-            ):
-                value = match.group(value_name)
-                target = _field_at_path(table.fields, (match.group(target_name),))
-                if target is None or target.requirement != "conditional" or target.condition is not None:
-                    continue
-                target.condition = f'{selector}="{value}"'
-                condition = (selector, value)
-                if condition not in target.applies_when:
-                    target.applies_when.append(condition)
-                target.notes = [
-                    note
-                    for note in target.notes
-                    if note != "the manual marks this conditional but does not state the condition"
-                ]
+        for selector, value, target_name in pairs:
+            target = _field_at_path(table.fields, (target_name,))
+            if target is None or target.requirement != "conditional" or target.condition is not None:
+                continue
+            target.condition = f'{selector}="{value}"'
+            condition = (selector, value)
+            if condition not in target.applies_when:
+                target.applies_when.append(condition)
+            target.notes = [
+                note
+                for note in target.notes
+                if note != "the manual marks this conditional but does not state the condition"
+            ]
 
 
 def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], list[dict[str, Any]]]) -> None:
