@@ -1203,6 +1203,63 @@ def test_same_section_schema_additional_properties_record_map_supplies_array_ite
     assert not any("array element type not stated" in note for note in element_list.notes)
 
 
+def test_same_section_schema_expands_compact_one_of_keys_and_rehomes_their_children(tmp_path: Path):
+    """A compact selector row is safe only when its exact schema fills every path."""
+    path = tmp_path / "99_DB_CompactOneOf.md"
+    path.write_text(
+        "## 1. `/db/COMPACT-ONE-OF` -- Compact selector\n\n"
+        "### JSON Schema\n\n```json\n"
+        '{"type":"object","properties":{"Argument":{"type":"object","oneOf":[{"required":["ELEMS"]},{"required":["SECTIONS"]}],"properties":{"ELEMS":{"type":"object","properties":{"KEYS":{"type":"array","items":{"type":"integer"}},"TO":{"type":"string"},"STRUCTURE_GROUP_NAME":{"type":"string"}}},"SECTIONS":{"type":"array","items":{"type":"integer"}}}}}}\n'
+        "```\n\n"
+        "| No. | Description | Key | Value Type | Default | Required |\n"
+        "|-----|-------------|-----|------------|---------|----------|\n"
+        "| 1 | Argument wrapper | `Argument` | Object | - | Required |\n"
+        "| 2 | Target | `ELEMS` / `SECTIONS` | Object / Array | - | Conditional |\n"
+        "| 2.1 | Individual IDs / ID range / structure group | `KEYS` / `TO` / `STRUCTURE_GROUP_NAME` | Array[Int] / String / String | - | Optional |\n",
+        encoding="utf-8",
+    )
+
+    fields = {field.key: field for field in ex.parse_chapter(path)[0].tables[0].fields}
+    elems = fields["ELEMS"]
+    sections = fields["SECTIONS"]
+    assert [field.key for field in elems.properties] == ["KEYS", "TO", "STRUCTURE_GROUP_NAME"]
+    assert elems.properties[0].items == {"type": "integer"}
+    assert sections.items == {"type": "integer"}
+    assert elems.condition == 'oneOf: exactly one of "ELEMS", "SECTIONS" is required'
+    assert sections.condition == elems.condition
+    assert not any(_note for field in ex._walk(list(fields.values())) for _note in field.notes if "single field name" in _note)
+
+
+@pytest.mark.parametrize(
+    ("value", "target"),
+    [
+        pytest.param("MEMB", "CURRENT_MODE_MEMB", id="first_code_spanned_branch"),
+        pytest.param("PROP", "CURRENT_MODE_PROP", id="compact_second_code_spanned_branch"),
+    ],
+)
+def test_manual_prose_compact_condition_pair_supplies_applies_when(
+    value: str, target: str, tmp_path: Path
+):
+    """The explicit paired prose form is a condition source, unlike examples."""
+    path = tmp_path / "99_DB_ProseConditions.md"
+    path.write_text(
+        "## 1. `/db/PROSE-CONDITIONS` -- Prose conditions\n\n"
+        "| No. | Description | Key | Value Type | Default | Required |\n"
+        "|-----|-------------|-----|------------|---------|----------|\n"
+        "| 1 | Report type | `REPORT_TYPE` | String | - | Required |\n"
+        "| 2 | Member mode | `CURRENT_MODE_MEMB` | String | - | Conditional |\n"
+        "| 3 | Property mode | `CURRENT_MODE_PROP` | String | - | Conditional |\n\n"
+        '> `REPORT_TYPE="MEMB"`이면 `CURRENT_MODE_MEMB`, `"PROP"`이면 `CURRENT_MODE_PROP`를 사용합니다.\n',
+        encoding="utf-8",
+    )
+
+    fields = {field.key: field for field in ex.parse_chapter(path)[0].tables[0].fields}
+    conditional = fields[target]
+    assert conditional.condition == f'REPORT_TYPE="{value}"'
+    assert conditional.applies_when == [("REPORT_TYPE", value)]
+    assert not conditional.notes
+
+
 @pytest.mark.parametrize(
     ("selector_schema", "expected_condition"),
     [

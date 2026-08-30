@@ -1441,6 +1441,31 @@ def _section_schema_hints(lines: list[str], endpoint: str) -> dict[tuple[str, ..
                                 {"__conditional": condition}
                             )
             properties = node.get("properties")
+            # A few design-table parameter rows compact a mutually exclusive
+            # selector pair (for example ``"ELEMS" / "SECTIONS"``).  Preserve
+            # the exact one-of requirement only when every branch states one
+            # literal required property; broader JSON Schema expressions stay
+            # outside the extractor's lossless subset.
+            one_of = node.get("oneOf")
+            one_of_members: list[str] = []
+            if isinstance(one_of, list) and len(one_of) >= 2:
+                for branch in one_of:
+                    required_names = branch.get("required") if isinstance(branch, dict) else None
+                    if not (
+                        isinstance(required_names, list)
+                        and len(required_names) == 1
+                        and isinstance(required_names[0], str)
+                    ):
+                        one_of_members = []
+                        break
+                    one_of_members.append(required_names[0])
+                if len(set(one_of_members)) != len(one_of_members):
+                    one_of_members = []
+            if one_of_members:
+                for key in one_of_members:
+                    hints.setdefault(prefix + (key,), []).append(
+                        {"__one_of_required": tuple(one_of_members)}
+                    )
             if isinstance(properties, dict):
                 required = node.get("required", [])
                 required_names = set(required) if isinstance(required, list) and all(isinstance(name, str) for name in required) else set()
@@ -1539,6 +1564,152 @@ def _schema_enum_values(entry: dict[str, Any]) -> Optional[list[Any]]:
     return values
 
 
+_AMBIGUOUS_WIRE_KEY_NOTE = "is not a single field name"
+
+
+def _ambiguous_literal_keys(field: ParsedField) -> Optional[tuple[str, ...]]:
+    """Return a compact row's literal keys, never prose or decorated text."""
+
+    if "/" not in field.key:
+        return None
+    keys = tuple(part.strip().strip('"') for part in re.split(r"\s*/\s*", field.key))
+    if len(keys) < 2 or len(set(keys)) != len(keys):
+        return None
+    if not all(_PATH_SEGMENT.fullmatch(key) for key in keys):
+        return None
+    return keys
+
+
+def _schema_children(hints: dict[tuple[str, ...], list[dict[str, Any]]], parent: tuple[str, ...]) -> set[str]:
+    """List direct, concrete manual-schema property names below *parent*."""
+
+    return {
+        path[-1]
+        for path, entries in hints.items()
+        if path[:-1] == parent
+        and any(any(not key.startswith("__") for key in entry) for entry in entries)
+    }
+
+
+def _reconcile_schema_compact_key_rows(
+    tables: list[ParsedTable], hints: dict[tuple[str, ...], list[dict[str, Any]]]
+) -> None:
+    """Expand a compact multi-key row only when its own schema names every key.
+
+    A table such as ``"ELEMS" / "SECTIONS"`` cannot be split from its cells
+    alone: its type and requiredness claims may belong to different members.
+    Some manual sections also supply a same-section JSON Schema that names each
+    member and the children of the object alternative. In that narrow form the
+    schema is exact manual evidence, so repair both the sibling row and any
+    numbered compact child row. Every other multi-key spelling remains a
+    review note rather than becoming a guessed payload shape.
+    """
+
+    parent_paths = {
+        path[:-1]
+        for path, entries in hints.items()
+        if any(any(not key.startswith("__") for key in entry) for entry in entries)
+    }
+
+    def candidates(keys: tuple[str, ...]) -> list[tuple[str, ...]]:
+        return [path for path in parent_paths if set(keys).issubset(_schema_children(hints, path))]
+
+    def replace(fields: list[ParsedField], index: int, field: ParsedField, keys: tuple[str, ...]) -> list[ParsedField]:
+        expanded: list[ParsedField] = []
+        for key in keys:
+            clone = copy.deepcopy(field)
+            clone.key = key
+            clone.type = None
+            clone.items = None
+            clone.properties = []
+            clone.shared_number_group = False
+            clone.notes = [
+                note
+                for note in clone.notes
+                if _AMBIGUOUS_WIRE_KEY_NOTE not in note
+                and not note.startswith("unrecognised Value Type")
+                and not note.startswith("array element type not stated")
+                and not note.startswith("the manual nests this under ")
+            ]
+            expanded.append(clone)
+        fields[index : index + 1] = expanded
+        return expanded
+
+    for table in tables:
+        # Revisit the table after each replacement: a root compact row can
+        # first make an object alternative addressable, allowing its misplaced
+        # numbered compact children to be moved on the next pass.
+        for _ in range(len(_walk(table.fields)) + 1):
+            locations: list[tuple[list[ParsedField], int, ParsedField]] = []
+
+            def collect(fields: list[ParsedField]) -> None:
+                for index, field in enumerate(fields):
+                    locations.append((fields, index, field))
+                    collect(field.properties)
+
+            collect(table.fields)
+            repaired = False
+            for fields, index, field in locations:
+                keys = _ambiguous_literal_keys(field)
+                if keys is None:
+                    continue
+                matches = candidates(keys)
+                if len(matches) != 1:
+                    continue
+                parent = matches[0]
+                destination = _field_at_path(table.fields, parent)
+                if parent and destination is None:
+                    continue
+                expanded = replace(fields, index, field, keys)
+                if destination is not None and fields is not destination.properties:
+                    _append_fields(destination.properties, expanded)
+                    del fields[index : index + len(expanded)]
+                repaired = True
+                break
+            if not repaired:
+                break
+
+
+_COMPACT_PROSE_CONDITION_PAIR = re.compile(
+    r'`(?P<selector>[A-Za-z0-9_]+)\s*=\s*"(?P<first_value>[^"`]+)"`\s*이면\s*'
+    r'`(?P<first_target>[A-Za-z0-9_]+)`\s*,\s*`"(?P<second_value>[^"`]+)"`\s*이면\s*'
+    r'`(?P<second_target>[A-Za-z0-9_]+)`'
+)
+
+
+def _apply_explicit_prose_conditions(tables: list[ParsedTable], lines: list[str]) -> None:
+    """Attach only lossless two-branch conditions written in manual prose.
+
+    The RC report sections state a pair of conditional fields below the table
+    as ``REPORT_TYPE="MEMB"이면 CURRENT_MODE_MEMB, "PROP"이면
+    CURRENT_MODE_PROP``. The table's ``Conditional`` cell alone is incomplete,
+    but this exact code-spanned form names both selector values and both target
+    keys. Examples and unstructured prose deliberately do not participate.
+    """
+
+    pairs = list(_COMPACT_PROSE_CONDITION_PAIR.finditer("\n".join(lines)))
+    for table in tables:
+        for match in pairs:
+            selector = match.group("selector")
+            for value_name, target_name in (
+                ("first_value", "first_target"),
+                ("second_value", "second_target"),
+            ):
+                value = match.group(value_name)
+                target = _field_at_path(table.fields, (match.group(target_name),))
+                if target is None or target.requirement != "conditional" or target.condition is not None:
+                    continue
+                target.condition = f'{selector}="{value}"'
+                condition = (selector, value)
+                if condition not in target.applies_when:
+                    target.applies_when.append(condition)
+                target.notes = [
+                    note
+                    for note in target.notes
+                    if note != "the manual marks this conditional but does not state the condition"
+                ]
+
+
 def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], list[dict[str, Any]]]) -> None:
     """Fill only table gaps that the same section's JSON Schema states exactly."""
 
@@ -1579,6 +1750,27 @@ def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], 
                         if note in field.notes:
                             field.notes.remove(note)
 
+                schema_type = _agreed_schema_value(property_entries, "type")
+                nesting_type_notes = [
+                    note
+                    for note in field.notes
+                    if note.startswith("the manual types this ") and "but it has nested children" in note
+                ]
+                if (field.type is None or nesting_type_notes) and schema_type in {
+                    "string",
+                    "number",
+                    "integer",
+                    "boolean",
+                    "object",
+                    "array",
+                }:
+                    field.type = schema_type
+                    field.notes = [
+                        note
+                        for note in field.notes
+                        if not note.startswith("unrecognised Value Type") and note not in nesting_type_notes
+                    ]
+
                 conditions = [entry["__conditional"] for entry in entries if "__conditional" in entry]
                 distinct_conditions = list(dict.fromkeys(conditions))
                 if (
@@ -1593,6 +1785,24 @@ def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], 
                     conditional_note = "the manual marks this conditional but does not state the condition"
                     if conditional_note in field.notes:
                         field.notes.remove(conditional_note)
+
+                one_of_groups = [
+                    entry["__one_of_required"] for entry in entries if "__one_of_required" in entry
+                ]
+                distinct_one_of_groups = list(dict.fromkeys(one_of_groups))
+                if (
+                    field.requirement == "conditional"
+                    and field.condition is None
+                    and len(distinct_one_of_groups) == 1
+                ):
+                    members = distinct_one_of_groups[0]
+                    if isinstance(members, tuple) and field.key in members:
+                        field.condition = "oneOf: exactly one of " + ", ".join(
+                            json.dumps(member) for member in members
+                        ) + " is required"
+                        conditional_note = "the manual marks this conditional but does not state the condition"
+                        if conditional_note in field.notes:
+                            field.notes.remove(conditional_note)
 
                 default = _agreed_schema_value(property_entries, "default")
                 if default is not None:
@@ -2115,7 +2325,10 @@ def parse_chapter(path: Path) -> list[Section]:
             section.methods = toc_methods
         section.tables = _parse_tables(body, index)
         _apply_enum_values(section.tables, _enum_tables(body))
-        _apply_schema_hints(section.tables, _section_schema_hints(body, section.endpoint))
+        schema_hints = _section_schema_hints(body, section.endpoint)
+        _reconcile_schema_compact_key_rows(section.tables, schema_hints)
+        _apply_schema_hints(section.tables, schema_hints)
+        _apply_explicit_prose_conditions(section.tables, body)
         section.variants = _explicit_variants(section.tables)
         sections.append(section)
     return sections
