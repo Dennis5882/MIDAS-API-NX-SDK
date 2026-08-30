@@ -65,7 +65,11 @@ class StructureTypePayload(TypedDict, total=False):
     TEMP: float  # Initial Temperature, default 0
     bALIGNBEAM: bool  # Align Top of Beam Section, default false (manual-sourced, not live-verified)
     bALIGNSLAB: bool  # Align Top of Slab (Plate), default false (manual-sourced, not live-verified)
-    bROTRIGID: bool  # Considering Rotational Rigid, default false (manual-sourced, not live-verified)
+    # Accepted by both products, echoed back only by Gen: Civil takes a PUT
+    # carrying it without complaint and then omits it from every GET, though
+    # /info/db/STYP lists it identically on both (live 2026-08-30). Read it
+    # with a default rather than by subscript.
+    bROTRIGID: bool  # Considering Rotational Rigid, default false
 
 
 class StructureType(DbResource):

@@ -7041,6 +7041,55 @@ Two of these settle open questions. The manual documents `MASS_POS` under
 caller who sends it gets no signal that it was ignored. And the chapter's `⚠️`
 choosing `"3D"` over the article's `"_3D"` enum is correct: `_3D` is rejected.
 
+### Gen NX: the same dummy frame, and where the two products differ
+
+Everything above was Civil. Repeated on Gen NX with the same model built the
+same way — 3 nodes, 2 beams, one material, one section, a fixed base and a
+self-weight case — with each piece asserted by a `GET` before anything was read
+out of it.
+
+**Hyper-S is still Civil-only on this build.** `/db/STYP-M1`, `/db/POLC-M1`,
+`/db/MATL-M1`, `/db/EIGV-M1` and `/db/ACTL-M1` all answer **404** on Gen, and so
+do their `/info` routes. `HYPER_S_ONLY` matches reality as of 2026-08-30; that
+constant is still the right place to widen if Hyper-S ever reaches Gen.
+
+**The two products agree exactly.** Same model, same supports, same
+self-weight, node 3 displacement per structure type — Gen's numbers are
+identical to Civil's to the last digit, including which components are zeroed:
+
+| `STYP` | DX | DY | DZ | RX | RY |
+| --- | --- | --- | --- | --- | --- |
+| `0` (3D) | 0.015020 | 0.006429 | −0.021727 | −0.002223 | 0.005007 |
+| `1` (XZ) | 0.015020 | 0 | −0.017444 | 0 | 0.005007 |
+| `2` (YZ) | 0 | 0.006429 | −0.009211 | −0.002223 | 0 |
+| `3` (XY) | 0 | 0 | 0 | 0 | 0 |
+| `4` (RZ) | as 3D | | | | |
+
+So the degrees-of-freedom finding is a property of the setting, not of Civil.
+`DELETE /db/STYP` is refused on Gen too — all three shapes, with the model
+present and from a non-default state, `{"message": "error status"}`, nothing
+changed.
+
+**`bROTRIGID` is in both schemas and only one product's responses.**
+
+```
+gen    GET /db/STYP : {..., "bMASSOFFSET": true, "bROTRIGID": false, "bSELFWEIGHT": false}
+civil  GET /db/STYP : {..., "bMASSOFFSET": true, "bSELFWEIGHT": false}
+```
+
+`GET /info/db/STYP` returns the *same ten keys on both products*, `bROTRIGID`
+among them. Civil accepts a `PUT` carrying it — no error either way — and then
+never echoes it back, whether it was sent `true` or `false`. Gen always reports
+it.
+
+That is a response-shape difference the schema does not predict, on an endpoint
+neither the manual nor `/info` distinguishes by product. Code written against
+Gen that reads `STYP["bROTRIGID"]` raises `KeyError` on Civil. Read it with a
+default, and do not add it to a payload-shape check that runs against both.
+
+`StructureTypePayload` documents `bROTRIGID` without qualification, which is
+right for the request; the difference is in what comes back.
+
 ### What this says about normalization
 
 The manual repo's `⚠️` callouts exist because the official docs contradict
