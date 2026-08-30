@@ -628,6 +628,8 @@ export namespace DbAnalysisControlTypes {
     iINC_NLA?: number;
     iNLA_TYPE?: number;
     vEREC?: Array<ErectionLoadItem>;
+    bSDLE?: boolean;
+    vSDLE?: Array<string>;
     CPFC?: string;
     bEXT_REPL?: boolean;
     bCONV?: boolean;
@@ -3104,6 +3106,19 @@ export namespace DbMovingLoadsTypes {
     MAX_NUM_VEHICLE?: number;
     OPTIMIZE_ITEMS?: Array<MovingLoadCaseOptimizeItem>;
   }
+  export interface MovingLoadCaseAustraliaHeavyLoadLanes {
+    NA_LLAN_NAMES?: Array<string>;
+    STRAD_LLAN1_NAMES?: Array<string>;
+    STRAD_LLAN2_NAMES?: Array<string>;
+  }
+  export interface MovingLoadCaseAustraliaHeavyLoadPlatform {
+    MULTIPLE_FACTOR?: number;
+    VEHICLE_LOAD_NAME?: string;
+    VEHICLE_LOAD_NAME2?: string;
+    MIN_LOADED_LANE?: number;
+    MAX_LOADED_LANE?: number;
+    LINE_ITEMS?: MovingLoadCaseAustraliaHeavyLoadLanes;
+  }
   export interface MovingLoadCasePayload {
     LCNAME?: string;
     DESC?: string;
@@ -3111,6 +3126,7 @@ export namespace DbMovingLoadsTypes {
     DEFAULT?: MovingLoadCaseDefault;
     PERMIT_LOAD?: MovingLoadCasePermitLoad;
     AUTO_OPTIMIZE?: MovingLoadCaseAutoOptimize;
+    ASL?: MovingLoadCaseAustraliaHeavyLoadPlatform;
   }
   export interface MovingLoadCaseChinaSubLoadItem {
     VEHICLE_CLASS?: string;
@@ -3119,6 +3135,11 @@ export namespace DbMovingLoadsTypes {
     MIN_NUM_LOADED_LANES?: number;
     MAX_NUM_LOADED_LANES?: number;
     SELECTED_LANES?: Array<string>;
+  }
+  export interface MovingLoadCaseChinaOptimizeItem {
+    VEHICLE_TYPE?: string;
+    VEHICLE_NAME?: string;
+    SCALE_FACTOR?: number;
   }
   /** Generated from contracts/endpoints/. */
   export type MovingLoadCaseChinaPayload = {
@@ -3357,6 +3378,27 @@ export namespace DbMovingLoadsTypes {
     SUB_LOAD_DATAS?: Array<MovingLoadCasePolandSubLoadDataItem>;
     VEHICLE_LOAD_NAME?: string;
   }
+  export interface MovingLoadCasePolandOptimizeItem {
+    VEHICLE_TYPE?: string;
+    VEHICLE_NAME?: string;
+    SCALE_FACTOR?: number;
+  }
+  export interface MovingLoadCasePolandAutoOptimize {
+    MIN_VEHL_DIST?: number;
+    LANE_NAME?: string;
+    MIN_NUM_VEHICLE?: number;
+    MAX_NUM_VEHICLE?: number;
+    COMB_OPTION?: string;
+    OPTIMIZE_ITEMS?: Array<MovingLoadCasePolandOptimizeItem>;
+    VEHICLE_LOAD_NAME?: string;
+    NUM_LOADED_LANES?: number;
+  }
+  export interface MovingLoadCasePolandPermitLoad {
+    VEHICLE_LOAD_NAME?: string;
+    REF_LANE?: string;
+    ECC?: number;
+    SCALE_FACTOR?: number;
+  }
   export interface MovingLoadCasePolandPayload {
     LCNAME?: string;
     DESC?: string;
@@ -3364,6 +3406,8 @@ export namespace DbMovingLoadsTypes {
     bAUTO_OPTIMIZE?: boolean;
     bPERMIT_LOAD?: boolean;
     DEFAULT?: MovingLoadCasePolandDefault;
+    AUTO_OPTIMIZE?: MovingLoadCasePolandAutoOptimize;
+    PERMIT_LOAD?: MovingLoadCasePolandPermitLoad;
   }
   /** Generated from contracts/endpoints/. */
   export interface MovingLoadCaseTransversePayload {

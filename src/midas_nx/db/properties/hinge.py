@@ -18,11 +18,11 @@ from ..base import HYPER_S_ONLY, DbResource
 class InelasticHingeControlPayload(TypedDict, total=False):
     """docs/manual/04_DB_Properties.md #22 — /db/IEHC Specifications table.
 
-    The manual's worked example includes several Wall/Cover-division fields
-    (WallConsOut, WallDivNumZ, WallDivNumY, dR, WAreaSize,
-    OPT_ConsiderRebarAreaWall, CoverDivNumNy, CoverDivNumNz) not itemized in
-    its own Specifications table; included here since the example is the
-    more concrete source.
+    The manual's GEN-only table defines the Wall members below.  The live
+    Civil schema exposes the beam fields, while the live Gen schema exposes
+    both the beam and Wall fields.  ``WAreaSize`` is typed as Integer in the
+    table although the manual's worked example sends ``"AUTO"``; that
+    documented contradiction is retained in the field comment.
     """
 
     BEAM_LOC: int  # Reference Location for Distributed Hinges: I-End=0, Center=1, J-End=2; required
@@ -31,14 +31,17 @@ class InelasticHingeControlPayload(TypedDict, total=False):
     BeamDivNumNy: int  # Number of Divisions (Beam-Column) Ny, required
     BeamDivNumNz: int  # Number of Divisions (Beam-Column) Nz, required
     FAreaSizeCover: int  # Fiber Beam Areas Cover: Auto=0, Equal=1; required
-    WallConsOut: bool  # optional, undocumented in table
-    WallDivNumZ: int  # optional, undocumented in table
-    WallDivNumY: int  # optional, undocumented in table
-    dR: float  # optional, undocumented in table
-    WAreaSize: str  # optional, undocumented in table
-    OPT_ConsiderRebarAreaWall: bool  # optional, undocumented in table
-    CoverDivNumNy: int  # optional, undocumented in table
-    CoverDivNumNz: int  # optional, undocumented in table
+    BeamDivNumNyCover: int  # Beam-Column Cover Ny divisions, required
+    BeamDivNumNzCover: int  # Beam-Column Cover Nz divisions, required
+    WallConsOut: bool  # GEN only: required
+    WAreaSize: int | str  # GEN only: required; table=Integer, example="AUTO"
+    WallDivNumZ: int  # GEN only: required
+    WallDivNumY: int  # GEN only: required
+    WAreaSizeCover: int  # GEN only: required
+    WallDivNumZCover: int  # GEN only: required
+    WallDivNumYCover: int  # GEN only: required
+    OPT_ConsiderRebarAreaWall: bool  # GEN only: required
+    dR: float  # GEN only: required
 
 
 class InelasticHingeControl(DbResource):

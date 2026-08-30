@@ -460,6 +460,35 @@ def test_moving_load_case_create_optimization_variant(civil_client):
 
 
 @responses.activate
+def test_moving_load_case_preserves_australia_heavy_load_platform_variant(civil_client):
+    responses.add(responses.POST, "https://x.test:443/civil/db/MVLD", json={}, status=200)
+    MovingLoadCase.create(
+        {
+            1: {
+                "LCNAME": "MV_Australia_Heavy",
+                "DESC": "",
+                "TYPE": 0,
+                "ASL": {
+                    "MULTIPLE_FACTOR": 0.5,
+                    "VEHICLE_LOAD_NAME": "HLP",
+                    "VEHICLE_LOAD_NAME2": "M1600",
+                    "MIN_LOADED_LANE": 1,
+                    "MAX_LOADED_LANE": 2,
+                    "LINE_ITEMS": {
+                        "NA_LLAN_NAMES": ["LL_01"],
+                        "STRAD_LLAN1_NAMES": ["LL_01"],
+                        "STRAD_LLAN2_NAMES": ["LL_02"],
+                    },
+                },
+            }
+        },
+        client=civil_client,
+    )
+    body = json.loads(responses.calls[0].request.body)["Assign"]["1"]
+    assert body["ASL"]["LINE_ITEMS"]["STRAD_LLAN2_NAMES"] == ["LL_02"]
+
+
+@responses.activate
 def test_moving_load_case_delete_uses_per_id_urls(civil_client):
     for item_id in (1, 2):
         responses.add(
@@ -507,6 +536,81 @@ def test_moving_load_case_china_create_sends_bridge_type_scale_factors(civil_cli
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["BRIDGE_TYPE"] == 2
+
+
+@responses.activate
+def test_moving_load_case_china_preserves_optimization_variant(civil_client):
+    responses.add(responses.POST, "https://x.test:443/civil/db/MVLDch", json={}, status=200)
+    MovingLoadCaseChina.create(
+        {
+            1: {
+                "LCNAME": "MV_China_Optimize",
+                "DESC": "",
+                "OPT_AUTO_OPTIMIZE": True,
+                "BRIDGE_TYPE": 2,
+                "SCALE_FACTOR_O": [1.0] * 8,
+                "SCALE_FACTOR_N": [1.0] * 8,
+                "SCALE_FACTOR_JTG": [1.0] * 8,
+                "LOADING_EFFECT": 0,
+                "MIN_VEHICLE_DIST": 1.0,
+                "LOADED_LANE_NAME": "LL_01",
+                "MIN_NUM_VEHICLE": 1,
+                "MAX_NUM_VEHICLE": 2,
+                "AUTO_OPTIMIZE_ITEMS": [
+                    {"VEHICLE_TYPE": "VL", "VEHICLE_NAME": "CH_VEHICLE", "SCALE_FACTOR": 1.0}
+                ],
+            }
+        },
+        client=civil_client,
+    )
+    body = json.loads(responses.calls[0].request.body)["Assign"]["1"]
+    assert body["AUTO_OPTIMIZE_ITEMS"][0]["VEHICLE_NAME"] == "CH_VEHICLE"
+
+
+# --- 17. /db/MVLDpl ------------------------------------------------------------
+
+
+@responses.activate
+def test_moving_load_case_poland_preserves_documented_conditional_objects(civil_client):
+    responses.add(responses.POST, "https://x.test:443/civil/db/MVLDpl", json={}, status=200)
+    MovingLoadCasePoland.create(
+        {
+            1: {
+                "LCNAME": "MV_PL_Optimize",
+                "DESC": "",
+                "LOAD_MODEL": 1,
+                "bAUTO_OPTIMIZE": True,
+                "bPERMIT_LOAD": False,
+                "AUTO_OPTIMIZE": {
+                    "MIN_VEHL_DIST": 1.0,
+                    "LANE_NAME": "L1",
+                    "MIN_NUM_VEHICLE": 1,
+                    "MAX_NUM_VEHICLE": 2,
+                    "COMB_OPTION": "INDEPENDENT",
+                    "OPTIMIZE_ITEMS": [
+                        {"VEHICLE_TYPE": "VL", "VEHICLE_NAME": "VehicleS", "SCALE_FACTOR": 1.0}
+                    ],
+                },
+            },
+            2: {
+                "LCNAME": "MV_PL_Permit",
+                "DESC": "",
+                "LOAD_MODEL": 1,
+                "bAUTO_OPTIMIZE": False,
+                "bPERMIT_LOAD": True,
+                "PERMIT_LOAD": {
+                    "VEHICLE_LOAD_NAME": "UD_PermitTruck",
+                    "REF_LANE": "L1",
+                    "ECC": 1.2,
+                    "SCALE_FACTOR": 1.0,
+                },
+            },
+        },
+        client=civil_client,
+    )
+    body = json.loads(responses.calls[0].request.body)["Assign"]
+    assert body["1"]["AUTO_OPTIMIZE"]["OPTIMIZE_ITEMS"][0]["VEHICLE_TYPE"] == "VL"
+    assert body["2"]["PERMIT_LOAD"]["REF_LANE"] == "L1"
 
 
 # --- 14. /db/MVLDid -------------------------------------------------------------

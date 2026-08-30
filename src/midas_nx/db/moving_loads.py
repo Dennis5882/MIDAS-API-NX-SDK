@@ -589,10 +589,34 @@ class MovingLoadCaseAutoOptimize(TypedDict, total=False):
     OPTIMIZE_ITEMS: List[MovingLoadCaseOptimizeItem]  # required
 
 
+class MovingLoadCaseAustraliaHeavyLoadLanes(TypedDict, total=False):
+    """``ASL.LINE_ITEMS`` for Australia's Heavy Load Platform model."""
+
+    NA_LLAN_NAMES: List[str]  # Selected Lanes, required
+    STRAD_LLAN1_NAMES: List[str]  # Heavy Load Lanes Start, required
+    STRAD_LLAN2_NAMES: List[str]  # Heavy Load Lanes End, required
+
+
+class MovingLoadCaseAustraliaHeavyLoadPlatform(TypedDict, total=False):
+    """``ASL`` object required with Australia's ``LOAD_MODEL=2``.
+
+    The manual calls this Heavy Load Platform data; the current Civil and Gen
+    ``/info/db/MVLD`` schemas both expose it as a top-level payload member.
+    """
+
+    MULTIPLE_FACTOR: float  # Unobstructed Lane Scale Factor, required
+    VEHICLE_LOAD_NAME: str  # Heavy Load vehicle name, required
+    VEHICLE_LOAD_NAME2: str  # M1600/S1600 vehicle name, required
+    MIN_LOADED_LANE: int  # required
+    MAX_LOADED_LANE: int  # required
+    LINE_ITEMS: MovingLoadCaseAustraliaHeavyLoadLanes  # required
+
+
 class MovingLoadCasePayload(TypedDict, total=False):
     """docs/manual/08_DB_Moving_Loads.md #12 — /db/MVLD Specifications tables.
 
-    TYPE selects which of DEFAULT/PERMIT_LOAD/AUTO_OPTIMIZE is required
+    TYPE selects which of DEFAULT/PERMIT_LOAD/AUTO_OPTIMIZE is required.
+    Australia additionally uses ASL with its Heavy Load Platform model.
     (each is a distinct nested object key, per the manual's worked
     examples — flattened onto one payload as three optional keys, mirrors
     MaterialParam precedent).
@@ -604,6 +628,7 @@ class MovingLoadCasePayload(TypedDict, total=False):
     DEFAULT: MovingLoadCaseDefault  # required if TYPE=0
     PERMIT_LOAD: MovingLoadCasePermitLoad  # required if TYPE=1
     AUTO_OPTIMIZE: MovingLoadCaseAutoOptimize  # required if TYPE=2
+    ASL: MovingLoadCaseAustraliaHeavyLoadPlatform  # required for Australia's LOAD_MODEL=2
 
 
 class MovingLoadCase(DbResource):
@@ -623,6 +648,14 @@ class MovingLoadCaseChinaSubLoadItem(TypedDict, total=False):
     SELECTED_LANES: List[str]  # Selected Lanes, required
 
 
+class MovingLoadCaseChinaOptimizeItem(TypedDict, total=False):
+    """``AUTO_OPTIMIZE_ITEMS`` entry when ``OPT_AUTO_OPTIMIZE`` is true."""
+
+    VEHICLE_TYPE: str  # "VL"/"VC", required
+    VEHICLE_NAME: str  # Vehicle Class Name, required
+    SCALE_FACTOR: float  # required
+
+
 class MovingLoadCaseChinaPayload(TypedDict, total=False):
     """docs/manual/08_DB_Moving_Loads.md #13 — /db/MVLDch Specifications table."""
 
@@ -634,7 +667,12 @@ class MovingLoadCaseChinaPayload(TypedDict, total=False):
     SCALE_FACTOR_N: List[float]  # Scale Factor for Highway/New Urban Bridge, length 8, required
     SCALE_FACTOR_JTG: List[float]  # Scale Factor for JTG B01-2014, length 8, required
     LOADING_EFFECT: int  # Combined=0/Independent=1, required
-    SUB_LOAD_ITEMS: List[MovingLoadCaseChinaSubLoadItem]  # Sub-Load Cases, required
+    SUB_LOAD_ITEMS: List[MovingLoadCaseChinaSubLoadItem]  # required if OPT_AUTO_OPTIMIZE=false
+    MIN_VEHICLE_DIST: float  # required if OPT_AUTO_OPTIMIZE=true
+    LOADED_LANE_NAME: str  # required if OPT_AUTO_OPTIMIZE=true
+    MIN_NUM_VEHICLE: int  # required if OPT_AUTO_OPTIMIZE=true
+    MAX_NUM_VEHICLE: int  # required if OPT_AUTO_OPTIMIZE=true
+    AUTO_OPTIMIZE_ITEMS: List[MovingLoadCaseChinaOptimizeItem]  # required if OPT_AUTO_OPTIMIZE=true
 
 
 class MovingLoadCaseChina(DbResource):
@@ -902,6 +940,40 @@ class MovingLoadCasePolandDefault(TypedDict, total=False):
     VEHICLE_LOAD_NAME: str  # Vehicle Name, required (Vehicle K/Military only)
 
 
+class MovingLoadCasePolandOptimizeItem(TypedDict, total=False):
+    """``AUTO_OPTIMIZE.OPTIMIZE_ITEMS`` entry for Vehicle S/2S."""
+
+    VEHICLE_TYPE: str  # "VL"/"VC", required
+    VEHICLE_NAME: str  # Vehicle Name, required
+    SCALE_FACTOR: float  # required
+
+
+class MovingLoadCasePolandAutoOptimize(TypedDict, total=False):
+    """``AUTO_OPTIMIZE`` object for Poland moving-load cases.
+
+    ``LOAD_MODEL`` chooses the Vehicle S/2S members or the Vehicle
+    K/Military members documented in the same manual table.
+    """
+
+    MIN_VEHL_DIST: float  # required
+    LANE_NAME: str  # required
+    MIN_NUM_VEHICLE: int  # required for Vehicle S/2S
+    MAX_NUM_VEHICLE: int  # required for Vehicle S/2S
+    COMB_OPTION: str  # "COMBINED"/"INDEPENDENT", required for Vehicle S/2S
+    OPTIMIZE_ITEMS: List[MovingLoadCasePolandOptimizeItem]  # required for Vehicle S/2S
+    VEHICLE_LOAD_NAME: str  # required for Vehicle K/Military
+    NUM_LOADED_LANES: int  # required for Vehicle K/Military
+
+
+class MovingLoadCasePolandPermitLoad(TypedDict, total=False):
+    """``PERMIT_LOAD`` object when ``bPERMIT_LOAD`` is true."""
+
+    VEHICLE_LOAD_NAME: str  # required
+    REF_LANE: str  # required
+    ECC: float  # required
+    SCALE_FACTOR: float  # required
+
+
 class MovingLoadCasePolandPayload(TypedDict, total=False):
     """docs/manual/08_DB_Moving_Loads.md #17 — /db/MVLDpl Specifications table."""
 
@@ -911,6 +983,8 @@ class MovingLoadCasePolandPayload(TypedDict, total=False):
     bAUTO_OPTIMIZE: bool  # Moving Load Optimization, default false, optional
     bPERMIT_LOAD: bool  # Load Case for Permit Vehicle, default false, optional
     DEFAULT: MovingLoadCasePolandDefault  # Sub-Load Cases, required
+    AUTO_OPTIMIZE: MovingLoadCasePolandAutoOptimize  # required if bAUTO_OPTIMIZE=true
+    PERMIT_LOAD: MovingLoadCasePolandPermitLoad  # required if bPERMIT_LOAD=true
 
 
 class MovingLoadCasePoland(DbResource):

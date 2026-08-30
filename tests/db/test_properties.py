@@ -552,12 +552,26 @@ def test_inelastic_hinge_control_create_sends_documented_assign_shape(gen_client
                 "BeamDivNumNy": 15,
                 "BeamDivNumNz": 20,
                 "FAreaSizeCover": 1,
+                "BeamDivNumNyCover": 20,
+                "BeamDivNumNzCover": 15,
+                "WallConsOut": False,
+                "WAreaSize": "AUTO",
+                "WallDivNumZ": 8,
+                "WallDivNumY": 1,
+                "WAreaSizeCover": 1,
+                "WallDivNumZCover": 8,
+                "WallDivNumYCover": 1,
+                "OPT_ConsiderRebarAreaWall": False,
+                "dR": 0.4,
             }
         },
         client=gen_client,
     )
     sent = responses.calls[0].request
-    assert json.loads(sent.body)["Assign"]["1"]["BeamDivNumNy"] == 15
+    body = json.loads(sent.body)["Assign"]["1"]
+    assert body["BeamDivNumNy"] == 15
+    assert body["BeamDivNumNzCover"] == 15
+    assert body["WAreaSize"] == "AUTO"
 
 
 @responses.activate

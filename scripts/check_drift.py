@@ -22,8 +22,11 @@ import importlib
 import json
 import pkgutil
 import sys
+from functools import cache
 from pathlib import Path
 from typing import Optional
+
+import yaml
 
 import midas_nx
 from midas_nx.client import MidasAPIError, MidasClient
@@ -65,6 +68,43 @@ def _payload_fields(cls: type) -> Optional[set[str]]:
     payload = getattr(module, cls.__name__ + "Payload", None)
     annotations = getattr(payload, "__annotations__", None)
     return set(annotations.keys()) if annotations else None
+
+
+@cache
+def _contract_field_products() -> dict[str, dict[str, frozenset[str]]]:
+    """Return explicit top-level contract field product gates by endpoint.
+
+    A resource's Python ``TypedDict`` is shared by Civil and Gen, so it
+    represents their combined payload surface. Contracts may instead declare
+    a field as belonging to only one product. Applying that documented gate
+    here prevents a Gen-only field from becoming a false Civil drift report.
+    Fields without an explicit contract gate remain checked on both products.
+    """
+    result: dict[str, dict[str, frozenset[str]]] = {}
+    for path in (ROOT / "contracts" / "endpoints").glob("*.yaml"):
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+        if not isinstance(data, dict) or not isinstance(data.get("endpoint"), str):
+            continue
+        fields = data.get("fields")
+        if not isinstance(fields, list):
+            continue
+        gates: dict[str, frozenset[str]] = {}
+        for field in fields:
+            if not isinstance(field, dict):
+                continue
+            key = field.get("key")
+            products = field.get("products")
+            if isinstance(key, str) and isinstance(products, list) and all(isinstance(p, str) for p in products):
+                gates[key] = frozenset(products)
+        if gates:
+            result[data["endpoint"]] = gates
+    return result
+
+
+def _fields_for_product(sdk_fields: set[str], endpoint: str, product: str) -> set[str]:
+    """Remove only contract-declared fields unavailable in ``product``."""
+    gates = _contract_field_products().get(endpoint, {})
+    return {field for field in sdk_fields if product in gates.get(field, frozenset({"civil", "gen"}))}
 
 
 def _server_fields(info: object) -> set[str]:
@@ -125,10 +165,11 @@ def main() -> None:
     for cls in resources:
         if client.product.value not in cls.PRODUCTS:
             continue
-        sdk_fields = _payload_fields(cls)
-        if sdk_fields is None:
+        payload_fields = _payload_fields(cls)
+        if payload_fields is None:
             skipped_no_payload.append(cls.ENDPOINT)
             continue
+        sdk_fields = _fields_for_product(payload_fields, cls.ENDPOINT, client.product.value)
         try:
             info = cls.info(client=client)
         except MidasAPIError as exc:

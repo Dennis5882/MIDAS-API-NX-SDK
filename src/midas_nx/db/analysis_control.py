@@ -613,6 +613,8 @@ class ConstructionStageAnalysisControlDataPayload(TypedDict, total=False):
     iINC_NLA: int  # Linear=0/Nonlinear=1/Material Nonlinear=2 (1,2 are Civil NX only), default 0, optional
     iNLA_TYPE: int  # Independent=0/Accumulative=1, default 0, optional
     vEREC: List[ErectionLoadItem]  # Erection Load for Construction Stage, default [], optional
+    bSDLE: bool  # Secondary Dead Load Effect for Grid Model, default false, optional
+    vSDLE: List[str]  # Grid Analysis Load Case Names, required if bSDLE true
     CPFC: str  # Cable-Pretension Force Type: "INTERNAL"/"EXTERNAL", default "INTERNAL", optional
     bEXT_REPL: bool  # External Force Type replace, default false, optional
     bCONV: bool  # Convert Final Stage Member Forces to Initial Forces for Post C.S, default false, optional

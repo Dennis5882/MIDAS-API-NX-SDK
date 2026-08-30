@@ -7113,7 +7113,54 @@ object required when `iCODETYPE` is 2 or 3 (TB 10002-2017 / Q·CR
 the field; it is retained as an untyped object because its `BTYPE` branches
 have different members. No model data was read or changed by this check.
 
+### `/db/MVLD` exposes Australia's documented `ASL` branch on both products (2026-08-30)
+
+Read-only `GET /info/db/MVLD` against the same Civil NX and Gen NX sessions
+returned the identical `ASL` object: `MULTIPLE_FACTOR`, both vehicle-name
+members, the loaded-lane bounds, and `LINE_ITEMS`. Its nested properties were
+exactly `NA_LLAN_NAMES`, `STRAD_LLAN1_NAMES`, and `STRAD_LLAN2_NAMES`, matching
+the manual's Australia Heavy Load Platform table. The SDK had omitted this
+top-level branch; it is now structured on both Python and generated TypeScript
+surfaces. No model data was read or changed by this check.
+
+### `/db/MVLDch` Python payload now matches its contract branch (2026-08-30)
+
+Civil and Gen `/info/db/MVLDch` both expose the five members of the
+`OPT_AUTO_OPTIMIZE=true` branch: `MIN_VEHICLE_DIST`, `LOADED_LANE_NAME`, the
+two vehicle-count bounds, and `AUTO_OPTIMIZE_ITEMS`. The promoted contract and
+generated TypeScript discriminated union already contained that manual-defined
+branch, but Python had only the false/general-load branch. The Python payload
+now carries the same documented conditional fields. No model data was read or
+changed by this check.
+
+### `/db/STCT` exposes documented Grid Model fields on both products (2026-08-30)
+
+Civil and Gen `/info/db/STCT` both include `bSDLE` and `vSDLE`, the Grid Model
+secondary-dead-load option and its load-case list. They are documented in the
+Erection Load table but had been omitted from the Python and generated
+TypeScript payload surfaces. Both now match the server's top-level schema. No
+model data was read or changed by this check.
+
 ## Caveat — read before acting on this file
+
+### `/db/MVLDpl` exposes all documented conditional objects on both products (2026-08-30)
+
+Civil and Gen `GET /info/db/MVLDpl` return the same three conditional payload
+objects: `DEFAULT`, `AUTO_OPTIMIZE`, and `PERMIT_LOAD`. The latter two had been
+documented in the Poland moving-load table but were absent from the Python and
+generated TypeScript surfaces. Their nested members also match the manual's
+Vehicle S/2S, Vehicle K/Military, and permit-vehicle rows. No model data was
+read or changed by this check.
+
+### `/db/IEHC` distinguishes Civil beam fields from Gen wall fields (2026-08-30)
+
+Both products return the eight documented beam fields, including
+`BeamDivNumNyCover` and `BeamDivNumNzCover`; the earlier Python surface had
+instead exposed obsolete `CoverDivNum*` names. Gen additionally returns the
+nine Wall members documented as GEN-only, while Civil correctly omits them.
+The live drift checker now reads the corresponding contract product gates, so
+that documented product variation is not reported as a false discrepancy. No
+model data was read or changed by this check.
 
 This is evidence from **one MIDASIT account, one product license/edition,
 one point in time**, not from the manual. It is plausible some of the

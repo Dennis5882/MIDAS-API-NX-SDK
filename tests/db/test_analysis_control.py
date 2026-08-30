@@ -308,11 +308,23 @@ def test_nonlinear_analysis_control_hyper_s_create_raises_before_any_http_call(c
 def test_construction_stage_analysis_control_data_create_sends_documented_assign_shape(gen_client):
     responses.add(responses.POST, "https://x.test:443/gen/db/STCT", json={}, status=200)
     ConstructionStageAnalysisControlData.create(
-        {1: {"bLAST_FINAL": False, "FINAL_STAGE": "CS1", "iINC_NLA": 0, "iNLA_TYPE": 0, "bINC_PDL": True}},
+        {
+            1: {
+                "bLAST_FINAL": False,
+                "FINAL_STAGE": "CS1",
+                "iINC_NLA": 0,
+                "iNLA_TYPE": 0,
+                "bINC_PDL": True,
+                "bSDLE": True,
+                "vSDLE": ["GRID_DL"],
+            }
+        },
         client=gen_client,
     )
     sent = responses.calls[0].request
-    assert json.loads(sent.body)["Assign"]["1"]["FINAL_STAGE"] == "CS1"
+    body = json.loads(sent.body)["Assign"]["1"]
+    assert body["FINAL_STAGE"] == "CS1"
+    assert body["vSDLE"] == ["GRID_DL"]
 
 
 @responses.activate
