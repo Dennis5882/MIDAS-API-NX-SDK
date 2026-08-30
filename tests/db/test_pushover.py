@@ -138,9 +138,14 @@ def test_pushover_load_case_hyper_s_update_load_control_variant(civil_client):
     assert json.loads(sent.body)["Assign"]["1"]["CTRL_OPT"]["INCFUNC_NAME"] == "POFC_01"
 
 
-@responses.activate
-def test_pushover_load_case_hyper_s_create_sends_documented_assign_shape(civil_client):
-    responses.add(responses.POST, "https://x.test:443/civil/db/POLC-M1", json={}, status=200)
-    PushoverLoadCaseHyperS.create({1: {"LCNAME": "x"}}, client=civil_client)
-    sent = responses.calls[0].request
-    assert json.loads(sent.body) == {"Assign": {"1": {"LCNAME": "x"}}}
+def test_pushover_load_case_hyper_s_refuses_create(civil_client):
+    """14_DB_Pushover.md states GET/PUT/DELETE for this endpoint, not POST.
+
+    The chapter says so twice: in the endpoint's own Active Methods, and in the
+    preamble covering every -M1 endpoint. The contract briefly claimed POST
+    anyway, because the extractor read the chapter's closing general-vs-Hyper-S
+    comparison table as a declaration - which is why --check now compares the
+    verbs a contract serves against the ones its chapter states.
+    """
+    with pytest.raises(UnsupportedMethodError):
+        PushoverLoadCaseHyperS.create({1: {"LCNAME": "x"}}, client=civil_client)

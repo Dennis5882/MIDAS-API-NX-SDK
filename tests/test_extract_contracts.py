@@ -1031,6 +1031,114 @@ def test_a_section_that_states_no_methods_stays_empty(tmp_path: Path):
     assert ex.parse_chapter(path)[0].methods == []
 
 
+def test_a_comparison_table_is_not_a_method_declaration(tmp_path: Path):
+    """A chapter's trailing summary lands inside the last endpoint's section.
+
+    Only a heading that names an endpoint starts a new section, so a closing
+    "비교 요약" belongs to whichever endpoint came last. 14_DB_Pushover.md ends
+    with exactly this three-column comparison, and reading its first value
+    column handed /db/POLC-M1 the *general* endpoint's POST - a verb that same
+    chapter twice says Hyper-S does not serve.
+    """
+    path = tmp_path / "99_DB_Compare.md"
+    path.write_text(
+        """# 99 DB — Compare
+
+## 1. `/db/SYNTH-M1` — Synthetic Hyper-S
+
+### Active Methods
+
+`GET` · `PUT` · `DELETE`
+
+---
+
+## SYNTH vs SYNTH-M1 비교 요약
+
+| 항목 | 일반(General) | Hyper-S(-M1) |
+|------|:---:|:---:|
+| Active Methods | POST, GET, PUT, DELETE | GET, PUT, DELETE (POST 미지원) |
+""",
+        encoding="utf-8",
+    )
+    assert ex.parse_chapter(path)[0].methods == ["DELETE", "GET", "PUT"]
+
+
+def test_a_normalisation_callout_does_not_restore_the_verb_it_rejects(tmp_path: Path):
+    """The manual repo overrules the official docs in `> ⚠️` callouts.
+
+    Such a callout quotes the form it is rejecting in order to reject it, so a
+    scan that sweeps verbs out of one reinstates exactly the value the callout
+    exists to overrule.
+    """
+    path = tmp_path / "99_DB_Callout.md"
+    path.write_text(
+        """# 99 DB — Callout
+
+## 1. `/db/SYNTH-M1` — Synthetic Hyper-S
+
+### Active Methods
+
+`GET` · `PUT` · `DELETE`
+
+> ⚠️ 원문 아티클의 Active Methods 표는 `POST, GET, PUT, DELETE`로 표기돼 있으나,
+> 이 챕터는 POST 미지원을 전제한다. 실기 확인 전까지 `GET`/`PUT`/`DELETE`로 유지한다.
+
+### JSON Schema
+""",
+        encoding="utf-8",
+    )
+    assert ex.parse_chapter(path)[0].methods == ["DELETE", "GET", "PUT"]
+
+
+def test_manual_check_compares_declared_methods(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """A contract serving a verb the chapter never states is drift.
+
+    Nothing compared the two before, which is how /db/POLC-M1's misread POST
+    survived promotion into the contract and from there into both SDKs.
+    """
+    path = tmp_path / "99_DB_MethodCheck.md"
+    path.write_text(
+        """# 99 DB — Method check
+
+## 1. `/db/METHOD-CHECK` — Declared methods
+
+- **Methods**: `GET`, `PUT`
+
+| No. | Description | Key | Value Type | Default | Required |
+|-----|-------------|-----|------------|---------|----------|
+| 1 | Name | `"NAME"` | String | - | Required |
+""",
+        encoding="utf-8",
+    )
+    parsed = ex.parse_chapter(path)[0]
+    contract = yaml.safe_load(ex.render_draft(parsed))
+    contract.pop("draft")
+    endpoint_dir = tmp_path / "endpoints"
+    endpoint_dir.mkdir()
+    target = endpoint_dir / "db-method-check.yaml"
+    target.write_text(yaml.safe_dump(contract), encoding="utf-8")
+    monkeypatch.setattr(ex, "ENDPOINT_DIR", endpoint_dir)
+
+    assert ex.run_check([parsed]) == 0
+
+    contract["operations"].append({"method": "POST", "risk": "write"})
+    target.write_text(yaml.safe_dump(contract), encoding="utf-8")
+    assert ex.run_check([parsed]) == 1
+
+    # A verb the manual denies but a live call proved is a recorded defect, not
+    # a silent match - the same escape hatch the field checks already use.
+    contract["manualDefects"] = [
+        {
+            "describes": "method",
+            "manualSays": "GET, PUT",
+            "actual": "POST is served",
+            "evidence": "docs/live_verification_notes.md",
+        }
+    ]
+    target.write_text(yaml.safe_dump(contract), encoding="utf-8")
+    assert ex.run_check([parsed]) == 0
+
+
 def test_enum_values_are_read_only_when_the_same_manual_section_states_them(tmp_path: Path):
     """Cover the three enum forms used by the manual, including nested paths."""
     path = tmp_path / "99_DB_Enums.md"

@@ -96,8 +96,17 @@ _METHODS = re.compile(
     r"((?:[`\s]*[A-Z]+[,\s·`/]*)+)",
     re.MULTILINE,
 )
+# Anchored to the end of the row, so only the documented two-column form counts.
+# A section body runs to the next heading that names an endpoint, so a chapter's
+# trailing summary - whose heading names none - is absorbed into the last
+# endpoint's body. 14_DB_Pushover.md ends with
+# ``| Active Methods | POST, GET, PUT, DELETE | GET, PUT, DELETE (POST 미지원) |``
+# comparing the general and Hyper-S endpoints, and reading its first value column
+# gave /db/POLC-M1 the *general* endpoint's verbs: a POST that same chapter twice
+# says Hyper-S does not serve. A comparison is not a declaration.
 _METHODS_TABLE_ROW = re.compile(
-    r"^\s*\|\s*\*{0,2}(?:Active\s+|HTTP\s+|Supported\s+)?Methods?\*{0,2}\s*\|\s*([^|]+)\|", re.MULTILINE
+    r"^\s*\|\s*\*{0,2}(?:Active\s+|HTTP\s+|Supported\s+)?Methods?\*{0,2}\s*\|\s*([^|]+)\|\s*$",
+    re.MULTILINE,
 )
 # Some chapters number and localize this heading (for example,
 # ``### 1-1. HTTP 메서드 및 URL``).  ``HTTP`` still establishes that the
@@ -128,6 +137,13 @@ def _section_methods(lines: list[str]) -> list[str]:
 
     # `### Active Methods` puts the verbs on a following line; `### HTTP Methods`
     # puts them in the first column of a table. Both end at the next heading.
+    #
+    # Blockquotes in between are commentary, never the declaration. The manual
+    # repo normalizes the official docs' self-contradictions in `> ⚠️` callouts
+    # that quote the rejected form in order to overrule it - /db/POLC-M1's says
+    # the upstream `POST, GET, PUT, DELETE` table is untrusted and to keep
+    # `GET`/`PUT`/`DELETE` until live confirmation. Reading verbs out of such a
+    # callout restores exactly the value it exists to reject, so skip them.
     for index, line in enumerate(lines):
         if not _METHODS_HEADING.match(line):
             continue
@@ -135,6 +151,8 @@ def _section_methods(lines: list[str]) -> list[str]:
         for follow in lines[index + 1 :]:
             if follow.startswith("#"):
                 break
+            if follow.lstrip().startswith(">"):
+                continue
             if follow.startswith("|"):
                 cells = [cell.strip() for cell in follow.strip("|").split("|")]
                 verbs.update(_verbs(cells[0]) if cells else [])
@@ -3012,6 +3030,22 @@ def run_check(sections: list[Section]) -> int:
         overridden = {
             d.get("describes") for d in contract.get("manualDefects", [])
         }
+
+        # The chapter's own Active Methods, against the verbs the contract serves.
+        # Nothing compared these before, which is how /db/POLC-M1 kept a POST the
+        # chapter says twice that Hyper-S does not serve: the extractor misread a
+        # comparison table, promotion carried the extra verb into the contract,
+        # and both SDKs widened to match a contract nobody re-read against the
+        # manual. Only a section that states its verbs can contradict anything;
+        # where the manual is silent, emission falls back to the /db/* default
+        # and there is no manual claim to check against.
+        if section.methods and "method" not in overridden:
+            declared_methods = sorted({op["method"] for op in contract.get("operations", [])})
+            if declared_methods != sorted(section.methods):
+                problems.append(
+                    f"{path.name}: operations serve {declared_methods!r}, "
+                    f"the manual's Active Methods say {sorted(section.methods)!r}"
+                )
 
         for key, manual in manual_fields.items():
             if key not in contract_fields:

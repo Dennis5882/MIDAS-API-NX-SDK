@@ -392,3 +392,4 @@ class PushoverLoadCaseHyperS(DbResource):
     ENDPOINT = "/db/POLC-M1"
     NAME = "Pushover Load Case (Hyper-S)"
     PRODUCTS = HYPER_S_ONLY
+    METHODS = GET_PUT_DELETE_METHODS

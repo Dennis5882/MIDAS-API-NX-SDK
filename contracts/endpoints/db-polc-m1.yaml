@@ -62,14 +62,6 @@ operations:
     response:
       wrapper: table
       keyStability: stable
-  - method: POST
-    risk: write
-    request:
-      wrapper: assign
-      itemSchema: fields
-    response:
-      wrapper: table
-      keyStability: stable
   - method: PUT
     risk: write
     request:
