@@ -159,18 +159,48 @@ table-shaped value. `doc.ts` and `errors.ts` have direct adapter tests as well.
 
 ## Order of work
 
-1. **D2 — `post.ts` tests.** Cheapest, and closes a live-hazard gap.
-2. **Conditional variant tables — 45 refusals, now the largest single blocker.**
-   This is a *schema design* question, not a parsing one:
-   `contracts/schema/endpoint-contract.schema.json` has no way to express "these
-   fields apply when `TYPE=X`". Do not invent a representation unilaterally;
-   bring a proposal to the author first.
-3. Remaining extraction fidelity: conditional-without-condition (23), Required
-   column blank (15), enum values elsewhere (14), array element types (9).
-4. `no payload fields could be parsed` (16), and methods stated nowhere (26,
-   confined to `09_DB_Dynamic_Loads.md` and `10_DB_Construction_Stage.md`), are
-   genuine manual gaps rather than extractor bugs. They need the manual repo,
-   not code.
+Re-measured 2026-08-30. The list below carried its original 2026-08-28 counts
+long after the work had moved them, and a review repeated one of the stale
+figures back as if it were current — so treat any number here as a measurement
+with a date, and re-run `--report` before quoting one.
+
+1. ~~**D2 — `post.ts` tests.**~~ Done. `packages/typescript/tests/post.test.ts`
+   exists and the npm suite is 11 files, 55 tests.
+2. **Conditional variant tables — still the largest single blocker, and still an
+   author decision.** `contracts/schema/endpoint-contract.schema.json` has no way
+   to express "these fields apply when `TYPE=X`" beyond a single scalar `equals`;
+   `/db/FBLA`'s documented `FLOOR_DIST_TYPE = 1 or 2` cannot be transcribed at
+   all (see `contract_migration_open_questions.md`). Do not invent a
+   representation unilaterally; bring a proposal to the author first.
+
+   The report's `9 explicitly modelled variant set(s), 59 left unmerged` does
+   **not** measure progress here. `explicit_variants` counts sections whose table
+   *headings* declare a selector; the hand-curated `_conditional_fields` map —
+   eight endpoints as of this measurement — is invisible to it, and a section
+   merged by hand still counts among the 59. Fix the counter before using it to
+   judge this item.
+3. Remaining extraction fidelity, as field occurrences: conditional-without-
+   condition (7), Required column blank (7), enum values unstated (20), array
+   item type unstated (5), unrecognised Value Type cell (15).
+4. **16 sections have no parseable parameter table, and none of them is a manual
+   gap.** They are nine `/doc/*` endpoints in `01_DOC.md` and seven Hyper-S
+   `-M1` endpoints in `04_DB_Properties.md` — not, as this list previously said,
+   `09_DB_Dynamic_Loads.md` and `10_DB_Construction_Stage.md`. Both groups
+   document their payload in a form the extractor does not yet read rather than
+   failing to document it: `/doc/OPEN` carries a JSON Schema and no
+   Specifications table because its whole argument is one path string, and
+   `/db/MATL-M1` delegates with `기본 재료 구조는 /db/MATL과 동일하며` instead of
+   repeating the parent's table. Reading either is extractor work, not something
+   to ask the manual repo for.
+
+   The companion claim that 26 sections state their methods nowhere is also
+   spent: the count is now **0**, closed by teaching `_section_methods()` all six
+   forms the chapters use. What that function still gets wrong is reading verbs
+   out of text that is not a declaration — see the `/db/POLC-M1` entry in
+   `contract_migration_open_questions.md`.
+
+   The one real manual gap is `/db/STYP-M1`: `INDEX.md` lists it, no chapter
+   section describes it.
 5. **Stage 4 — Python derives from the contracts.** Deliberately last and
    deliberately unspecified. `src/midas_nx/` is hand-written and its public API
    is on PyPI; changing how it is produced needs the author's call, not an
