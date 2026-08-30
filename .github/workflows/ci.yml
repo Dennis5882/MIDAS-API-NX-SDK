@@ -64,6 +64,10 @@ jobs:
         working-directory: packages/typescript
       - run: npm run generate
         working-directory: packages/typescript
+      - name: Fail if generated ROADMAP.md drifted
+        run: |
+          python scripts/gen_roadmap.py
+          git diff --exit-code -- ROADMAP.md
       - name: Fail if generated TypeScript files drifted
         run: git diff --exit-code -- schema/typescript-resources.json schema/typescript-coverage.json packages/typescript/src/generated
       - run: npm run typecheck
