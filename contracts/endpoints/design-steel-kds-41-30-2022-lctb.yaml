@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-steel-kds-41-30-2022-lctb
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/LCTB
-name: Load Contribution for Nonlinear Load Case (비선형 하중케이스 하중기여)
+name: Load Contribution for Nonlinear Load Case
 
 products: [civil, gen]
 

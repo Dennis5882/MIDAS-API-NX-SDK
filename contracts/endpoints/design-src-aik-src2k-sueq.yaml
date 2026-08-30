@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-src-aik-src2k-sueq
 endpoint: /DESIGN/SRC/AIK-SRC2K/SUEQ
-name: 지진 스케일업 계수
+name: Scale up Factor for Earthquake
 
 products: [civil, gen]
 

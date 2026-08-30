@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-wd-table
 endpoint: /DESIGN/RC/KDS-41-20-2022/WD-TABLE
-name: RC 벽체 설계 테이블
+name: RC Wall Design Table
 
 products: [civil, gen]
 

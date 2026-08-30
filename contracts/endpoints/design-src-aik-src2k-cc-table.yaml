@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-src-aik-src2k-cc-table
 endpoint: /DESIGN/SRC/AIK-SRC2K/CC-TABLE
-name: SRC 기둥 검토 테이블
+name: SRC Column Checking Table
 
 products: [civil, gen]
 

@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-hcbm
 endpoint: /DESIGN/RC/KDS-41-20-2022/HCBM
-name: 헌치보 배정
+name: Haunched Beam Assignment
 
 products: [civil, gen]
 

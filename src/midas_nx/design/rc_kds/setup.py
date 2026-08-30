@@ -45,7 +45,7 @@ class RcDesignCodeSelectionPayload(TypedDict, total=False):
 
 class RcDesignCodeSelection(DbResource):
     ENDPOINT = "/DESIGN/RC/DRC"
-    NAME = "RC Design Code Selection"
+    NAME = "RC Design Code"
     METHODS = GET_PUT_DELETE_METHODS
 
 
@@ -110,7 +110,7 @@ class ConcreteDesignCodeOptionPayload(TypedDict, total=False):
 
 class ConcreteDesignCodeOption(DbResource):
     ENDPOINT = f"{_BASE}/DCO"
-    NAME = "Design Code Option (RC)"
+    NAME = "Concrete Design Code Option"
     METHODS = GET_PUT_DELETE_METHODS
 
 
@@ -392,7 +392,7 @@ class UnbracedLengthPayload(TypedDict, total=False):
 
 class UnbracedLength(DbResource):
     ENDPOINT = f"{_BASE}/LENG"
-    NAME = "Unbraced Length"
+    NAME = "Unbraced Length (L, Lb)"
 
 
 # --- 15. DESIGN/RC/KDS-41-20-2022/KFAC — Effective Length Factor -------------
@@ -408,7 +408,7 @@ class EffectiveLengthFactorPayload(TypedDict, total=False):
 
 class EffectiveLengthFactor(DbResource):
     ENDPOINT = f"{_BASE}/KFAC"
-    NAME = "Effective Length Factor"
+    NAME = "Effective Length Factor (K)"
 
 
 # --- 16. DESIGN/RC/KDS-41-20-2022/CMFT — Equivalent Moment Correction Factor ---
@@ -424,7 +424,7 @@ class EquivalentMomentCorrectionFactorPayload(TypedDict, total=False):
 
 class EquivalentMomentCorrectionFactor(DbResource):
     ENDPOINT = f"{_BASE}/CMFT"
-    NAME = "Equivalent Moment Correction Factor"
+    NAME = "Equivalent Moment Correction Factor(Cm)"
 
 
 # --- 17. DESIGN/RC/KDS-41-20-2022/FMAG — Moment Magnifier --------------------
@@ -441,7 +441,7 @@ class MomentMagnifierPayload(TypedDict, total=False):
 
 class MomentMagnifier(DbResource):
     ENDPOINT = f"{_BASE}/FMAG"
-    NAME = "Moment Magnifier"
+    NAME = "Moment Magnifier(B1/Delta_b, B2/Delta_s)"
 
 
 # --- 18. DESIGN/RC/KDS-41-20-2022/MLLR — Modify Live Load Reduction Factor ---

@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-src-aik-src2k-lctb
 endpoint: /DESIGN/SRC/AIK-SRC2K/LCTB
-name: 비선형 하중케이스 하중기여
+name: Load Contribution for Nonlinear Load Case
 
 products: [civil, gen]
 

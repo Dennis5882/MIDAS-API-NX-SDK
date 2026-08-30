@@ -1964,7 +1964,7 @@
       "className": "DesignMemberAssignment",
       "exportName": "designMemberAssignment",
       "endpoint": "/db/MEMB",
-      "name": "설계 부재 배정",
+      "name": "Member Assignment",
       "products": [
         "civil",
         "gen"
@@ -1994,7 +1994,7 @@
       "className": "FrameDefinition",
       "exportName": "frameDefinition",
       "endpoint": "/db/DCTL",
-      "name": "프레임 정의",
+      "name": "Definition of Frame",
       "products": [
         "civil",
         "gen"
@@ -2024,7 +2024,7 @@
       "className": "LimitingSlendernessRatio",
       "exportName": "limitingSlendernessRatio",
       "endpoint": "/db/LTSR",
-      "name": "세장비 제한",
+      "name": "Limiting Slenderness Ratio",
       "products": [
         "civil",
         "gen"
@@ -2054,7 +2054,7 @@
       "className": "ModifyMemberType",
       "exportName": "modifyMemberType",
       "endpoint": "/db/MBTP",
-      "name": "부재 타입 수정",
+      "name": "Modify Member Type",
       "products": [
         "civil",
         "gen"
@@ -2084,7 +2084,7 @@
       "className": "ModifyWallMark",
       "exportName": "modifyWallMark",
       "endpoint": "/db/WMAK",
-      "name": "벽체 마크 설계 수정",
+      "name": "Modify Wall Mark Design",
       "products": [
         "civil",
         "gen"
@@ -2114,7 +2114,7 @@
       "className": "RcDesignCode",
       "exportName": "rcDesignCode",
       "endpoint": "/db/DCON",
-      "name": "RC 설계 코드",
+      "name": "RC Design Code",
       "products": [
         "civil",
         "gen"
@@ -2173,7 +2173,7 @@
       "className": "SteelDesignCode",
       "exportName": "steelDesignCode",
       "endpoint": "/db/DSTL",
-      "name": "강재 설계 코드",
+      "name": "Design Steel Code",
       "products": [
         "civil",
         "gen"
@@ -2203,7 +2203,7 @@
       "className": "UnbracedLength",
       "exportName": "unbracedLength",
       "endpoint": "/db/LENG",
-      "name": "비지지 길이",
+      "name": "Unbraced Length",
       "products": [
         "civil",
         "gen"
@@ -6719,7 +6719,7 @@
       "className": "BeamMomentCalculationMethod",
       "exportName": "beamMomentCalculationMethod",
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/MCMB",
-      "name": "Beam Moment Calculation Method",
+      "name": "Moment Calculation Method for Beam",
       "products": [
         "civil",
         "gen"
@@ -6781,7 +6781,7 @@
       "className": "DesignForcesForAssignedBeam",
       "exportName": "designForcesForAssignedBeam",
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/DFBA",
-      "name": "Design Forces for Assigned Beam",
+      "name": "Design Force for Beam Assigned as Member",
       "products": [
         "civil",
         "gen"
@@ -6812,7 +6812,7 @@
       "className": "EqualizeJointBeamRebar",
       "exportName": "equalizeJointBeamRebar",
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCREM",
-      "name": "Equalize Joint Beam Rebar",
+      "name": "Same Beam Rebar at Joints",
       "products": [
         "civil",
         "gen"
@@ -6843,7 +6843,7 @@
       "className": "LimitMaxRebarRatio",
       "exportName": "limitMaxRebarRatio",
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/LMRR",
-      "name": "Limit Max Rebar Ratio",
+      "name": "Limiting Maximum Rebar Ratio",
       "products": [
         "civil",
         "gen"
@@ -7117,7 +7117,7 @@
       "className": "RebarDesignCriteriaByBeamMember",
       "exportName": "rebarDesignCriteriaByBeamMember",
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCRM-BEAM",
-      "name": "Rebar Design Criteria by Beam Member",
+      "name": "Design Criteria for Rebars by Beam Member",
       "products": [
         "civil",
         "gen"
@@ -7148,7 +7148,7 @@
       "className": "RebarDesignCriteriaByBraceMember",
       "exportName": "rebarDesignCriteriaByBraceMember",
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCRM-BRACE",
-      "name": "Rebar Design Criteria by Brace Member",
+      "name": "Design Criteria for Rebars by Brace Member",
       "products": [
         "civil",
         "gen"
@@ -7179,7 +7179,7 @@
       "className": "RebarDesignCriteriaByColumnMember",
       "exportName": "rebarDesignCriteriaByColumnMember",
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCRM-COLUMN",
-      "name": "Rebar Design Criteria by Column Member",
+      "name": "Design Criteria for Rebars by Column Member",
       "products": [
         "civil",
         "gen"
@@ -7302,7 +7302,7 @@
       "className": "ConcreteDesignCodeOption",
       "exportName": "concreteDesignCodeOption",
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCO",
-      "name": "Design Code Option (RC)",
+      "name": "Concrete Design Code Option",
       "products": [
         "civil",
         "gen"
@@ -7362,7 +7362,7 @@
       "className": "EffectiveLengthFactor",
       "exportName": "effectiveLengthFactor",
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/KFAC",
-      "name": "Effective Length Factor",
+      "name": "Effective Length Factor (K)",
       "products": [
         "civil",
         "gen"
@@ -7393,7 +7393,7 @@
       "className": "EquivalentMomentCorrectionFactor",
       "exportName": "equivalentMomentCorrectionFactor",
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/CMFT",
-      "name": "Equivalent Moment Correction Factor",
+      "name": "Equivalent Moment Correction Factor(Cm)",
       "products": [
         "civil",
         "gen"
@@ -7635,7 +7635,7 @@
       "className": "MomentMagnifier",
       "exportName": "momentMagnifier",
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/FMAG",
-      "name": "Moment Magnifier",
+      "name": "Moment Magnifier(B1/Delta_b, B2/Delta_s)",
       "products": [
         "civil",
         "gen"
@@ -7666,7 +7666,7 @@
       "className": "RcDesignCodeSelection",
       "exportName": "rcDesignCodeSelection",
       "endpoint": "/DESIGN/RC/DRC",
-      "name": "RC Design Code Selection",
+      "name": "RC Design Code",
       "products": [
         "civil",
         "gen"
@@ -7850,7 +7850,7 @@
       "className": "UnbracedLength",
       "exportName": "unbracedLength",
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/LENG",
-      "name": "Unbraced Length",
+      "name": "Unbraced Length (L, Lb)",
       "products": [
         "civil",
         "gen"
@@ -7941,7 +7941,7 @@
       "className": "SrcColumnSectionData",
       "exportName": "srcColumnSectionData",
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/MCRD",
-      "name": "SRC Column Section Data",
+      "name": "Modify SRC Column Section Data",
       "products": [
         "civil",
         "gen"
@@ -8057,7 +8057,7 @@
       "className": "SrcEffectiveLengthFactor",
       "exportName": "srcEffectiveLengthFactor",
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/KFAC",
-      "name": "Effective Length Factor",
+      "name": "Effective Length Factor (K)",
       "products": [
         "civil",
         "gen"
@@ -8087,7 +8087,7 @@
       "className": "SrcEquivalentMomentCorrectionFactor",
       "exportName": "srcEquivalentMomentCorrectionFactor",
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/CMFT",
-      "name": "Equivalent Moment Correction Factor",
+      "name": "Equivalent Moment Correction Factor(Cm)",
       "products": [
         "civil",
         "gen"
@@ -8263,7 +8263,7 @@
       "className": "SrcModifyMaterial",
       "exportName": "srcModifyMaterial",
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/MATD",
-      "name": "SRC Modify Material",
+      "name": "Modify SRC Material",
       "products": [
         "gen"
       ],
@@ -8321,7 +8321,7 @@
       "className": "SrcMomentMagnifier",
       "exportName": "srcMomentMagnifier",
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/FMAG",
-      "name": "Moment Magnifier",
+      "name": "Moment Magnifier(B1/Delta_b, B2/Delta_s)",
       "products": [
         "civil",
         "gen"
@@ -8411,7 +8411,7 @@
       "className": "SrcUnbracedLength",
       "exportName": "srcUnbracedLength",
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/LENG",
-      "name": "Unbraced Length",
+      "name": "Unbraced Length (L, Lb)",
       "products": [
         "civil",
         "gen"

@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-steel-kds-41-30-2022-dctl
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/DCTL
-name: Definition of Frame (프레임 정의)
+name: Definition of Frame
 
 products: [civil, gen]
 

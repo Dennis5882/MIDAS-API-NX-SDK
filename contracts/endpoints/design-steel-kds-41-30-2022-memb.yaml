@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-steel-kds-41-30-2022-memb
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/MEMB
-name: Member Assignment (설계 부재 배정)
+name: Member Assignment
 
 products: [civil, gen]
 

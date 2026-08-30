@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-scol
 endpoint: /DESIGN/RC/KDS-41-20-2022/SCOL
-name: 내진 기둥 타입
+name: Seismic Column Type
 
 products: [civil, gen]
 

@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-dco
 endpoint: /DESIGN/RC/KDS-41-20-2022/DCO
-name: 콘크리트 설계 코드 옵션
+name: Concrete Design Code Option
 
 products: [civil, gen]
 

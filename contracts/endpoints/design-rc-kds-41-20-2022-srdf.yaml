@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-srdf
 endpoint: /DESIGN/RC/KDS-41-20-2022/SRDF
-name: 강도감소계수
+name: Strength Reduction Factors
 
 products: [civil, gen]
 

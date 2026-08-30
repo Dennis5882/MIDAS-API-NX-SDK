@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-steel-kds-41-30-2022-srdf
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/SRDF
-name: Strength Reduction Factors (강도감소계수 φ)
+name: Strength Reduction Factors
 
 products: [civil, gen]
 

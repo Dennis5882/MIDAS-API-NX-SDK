@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-steel-kds-41-30-2022-cmft
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/CMFT
-name: Equivalent Moment Correction Factor (등가모멘트 보정계수 Cm)
+name: Equivalent Moment Correction Factor
 
 products: [civil, gen]
 

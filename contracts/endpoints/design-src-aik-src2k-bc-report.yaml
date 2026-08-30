@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-src-aik-src2k-bc-report
 endpoint: /DESIGN/SRC/AIK-SRC2K/BC-REPORT
-name: SRC 보 검토 리포트
+name: SRC Beam Checking Report
 
 products: [civil, gen]
 

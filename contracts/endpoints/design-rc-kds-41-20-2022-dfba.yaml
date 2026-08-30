@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-dfba
 endpoint: /DESIGN/RC/KDS-41-20-2022/DFBA
-name: 부재 배정된 보 설계력
+name: Design Force for Beam Assigned as Member
 
 products: [civil, gen]
 

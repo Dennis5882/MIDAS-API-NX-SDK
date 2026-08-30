@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-sdgn
 endpoint: /DESIGN/RC/KDS-41-20-2022/SDGN
-name: 내진 설계 타입
+name: Seismic Design Type
 
 products: [civil, gen]
 

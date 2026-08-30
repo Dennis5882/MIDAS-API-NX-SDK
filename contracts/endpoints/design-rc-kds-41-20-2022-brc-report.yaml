@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-brc-report
 endpoint: /DESIGN/RC/KDS-41-20-2022/BRC-REPORT
-name: RC 가새 검토 리포트
+name: RC Brace Check Report
 
 products: [civil, gen]
 

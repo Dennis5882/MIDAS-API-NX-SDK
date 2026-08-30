@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-wmak
 endpoint: /DESIGN/RC/KDS-41-20-2022/WMAK
-name: 벽체 마크 데이터 수정
+name: Modify Wall Mark Data
 
 products: [civil, gen]
 

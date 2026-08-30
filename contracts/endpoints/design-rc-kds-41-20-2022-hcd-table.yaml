@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-hcd-table
 endpoint: /DESIGN/RC/KDS-41-20-2022/HCD-TABLE
-name: RC 헌치보 설계 테이블
+name: RC Haunched Beam Design Table
 
 products: [civil, gen]
 

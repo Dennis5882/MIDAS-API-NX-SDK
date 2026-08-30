@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-src-aik-src2k-mllr
 endpoint: /DESIGN/SRC/AIK-SRC2K/MLLR
-name: 활하중 저감계수 수정
+name: Modify Live Load Reduction Factor
 
 products: [civil, gen]
 

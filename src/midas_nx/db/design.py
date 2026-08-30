@@ -60,7 +60,7 @@ class RcDesignCodePayload(TypedDict, total=False):
 
 class RcDesignCode(DbResource):
     ENDPOINT = "/db/DCON"
-    NAME = "RC 설계 코드"
+    NAME = "RC Design Code"
 
 
 # --- 2. /db/DSTL — Steel Design Code ----------------------------------------
@@ -79,7 +79,7 @@ class SteelDesignCodePayload(TypedDict, total=False):
 
 class SteelDesignCode(DbResource):
     ENDPOINT = "/db/DSTL"
-    NAME = "강재 설계 코드"
+    NAME = "Design Steel Code"
 
 
 # --- 3. /db/RCHK — Rebar Check Input (Beam/Column) --------------------------
@@ -205,7 +205,7 @@ class UnbracedLengthPayload(TypedDict, total=False):
 
 class UnbracedLength(DbResource):
     ENDPOINT = "/db/LENG"
-    NAME = "비지지 길이"
+    NAME = "Unbraced Length"
 
 
 # --- 5. /db/MEMB — Design Member Assignment ---------------------------------
@@ -224,7 +224,7 @@ class DesignMemberAssignmentPayload(TypedDict, total=False):
 
 class DesignMemberAssignment(DbResource):
     ENDPOINT = "/db/MEMB"
-    NAME = "설계 부재 배정"
+    NAME = "Member Assignment"
 
 
 # --- 6. /db/DCTL — Definition of Frame --------------------------------------
@@ -241,7 +241,7 @@ class FrameDefinitionPayload(TypedDict, total=False):
 
 class FrameDefinition(DbResource):
     ENDPOINT = "/db/DCTL"
-    NAME = "\ud504\ub808\uc784 \uc815\uc758"
+    NAME = "Definition of Frame"
 
 
 # --- 7. /db/LTSR — Limiting Slenderness Ratio -------------------------------
@@ -257,7 +257,7 @@ class LimitingSlendernessRatioPayload(TypedDict, total=False):
 
 class LimitingSlendernessRatio(DbResource):
     ENDPOINT = "/db/LTSR"
-    NAME = "세장비 제한"
+    NAME = "Limiting Slenderness Ratio"
 
 
 # --- 8. /db/MBTP — Modify Member Type ---------------------------------------
@@ -271,7 +271,7 @@ class ModifyMemberTypePayload(TypedDict, total=False):
 
 class ModifyMemberType(DbResource):
     ENDPOINT = "/db/MBTP"
-    NAME = "부재 타입 수정"
+    NAME = "Modify Member Type"
 
 
 # --- 9. /db/WMAK — Modify Wall Mark -----------------------------------------
@@ -286,7 +286,7 @@ class ModifyWallMarkPayload(TypedDict, total=False):
 
 class ModifyWallMark(DbResource):
     ENDPOINT = "/db/WMAK"
-    NAME = "벽체 마크 설계 수정"
+    NAME = "Modify Wall Mark Design"
 
 
 # --- 10. /db/REBB — Modify Beam Rebar ---------------------------------------

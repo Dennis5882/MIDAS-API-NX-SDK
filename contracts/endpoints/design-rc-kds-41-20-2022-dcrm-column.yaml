@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-dcrm-column
 endpoint: /DESIGN/RC/KDS-41-20-2022/DCRM-COLUMN
-name: 기둥 부재별 철근 설계기준
+name: Design Criteria for Rebars by Column Member
 
 products: [civil, gen]
 

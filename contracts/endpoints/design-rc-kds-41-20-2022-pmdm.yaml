@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-pmdm
 endpoint: /DESIGN/RC/KDS-41-20-2022/PMDM
-name: P-M 곡선 산정 방법
+name: P-M Curve Calculation Method
 
 products: [civil, gen]
 

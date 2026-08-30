@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-ulct
 endpoint: /DESIGN/RC/KDS-41-20-2022/ULCT
-name: 지하 하중조합 타입
+name: Underground Load Combination Type
 
 products: [gen]
 

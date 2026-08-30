@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-src-aik-src2k-memb
 endpoint: /DESIGN/SRC/AIK-SRC2K/MEMB
-name: 부재 배정
+name: Member Assignment
 
 products: [civil, gen]
 

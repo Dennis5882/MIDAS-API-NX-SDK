@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-src-aik-src2k-kfac
 endpoint: /DESIGN/SRC/AIK-SRC2K/KFAC
-name: 유효좌굴길이계수(K)
+name: Effective Length Factor (K)
 
 products: [civil, gen]
 

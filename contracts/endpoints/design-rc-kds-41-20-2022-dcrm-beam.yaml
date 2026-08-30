@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-dcrm-beam
 endpoint: /DESIGN/RC/KDS-41-20-2022/DCRM-BEAM
-name: 보 부재별 철근 설계기준
+name: Design Criteria for Rebars by Beam Member
 
 products: [civil, gen]
 

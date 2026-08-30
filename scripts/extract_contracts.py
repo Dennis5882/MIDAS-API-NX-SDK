@@ -125,6 +125,19 @@ def _verbs(text: str) -> list[str]:
     return sorted({v for v in re.findall(r"[A-Z]+", text) if v in _VERBS})
 
 
+# Chapters 24-27 label their sections `English (한글)`; every other chapter is
+# English alone. Both halves are the manual's, so neither is wrong - but the
+# label reaches PyPI and npm as a package-visible resource name, and INDEX.md
+# gives one English name per endpoint for the whole manual. Take the English.
+# Only a parenthetical that actually contains Hangul is a translation:
+# `Rebar Input for Checking (Beam/Column)` is one label, not two.
+_TRANSLATED_SUFFIX = re.compile(r"\s*\((?=[^)]*[가-힣])[^)]*\)\s*$")
+
+
+def _english_label(title: str) -> str:
+    return _TRANSLATED_SUFFIX.sub("", title).strip()
+
+
 def _section_methods(lines: list[str]) -> list[str]:
     """Read an endpoint section's HTTP verbs, in whichever form it declares them."""
     text = "\n".join(lines)
@@ -2656,7 +2669,7 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
         "draft: true   # reviewing this file is what removes this line",
         f"id: {section.id}",
         f"endpoint: {section.endpoint}",
-        f"name: {_scalar(section.title or section.endpoint)}",
+        f"name: {_scalar(_english_label(section.title) or section.endpoint)}",
     ]
 
     if not section.title:
@@ -3039,6 +3052,21 @@ def run_check(sections: list[Section]) -> int:
         # manual. Only a section that states its verbs can contradict anything;
         # where the manual is silent, emission falls back to the /db/* default
         # and there is no manual claim to check against.
+        # The label is a manual fact too, and it ships: it is the resource name
+        # in both packages. Nothing compared it - not this check, not
+        # validate_contracts.py, and the generator's shadow gate only reaches
+        # /db/*. So when chapters 24-27 labelled their sections in Korean and
+        # promotion copied that into the contracts, 113 of them took a Korean
+        # name and `/db/DCTL` carried one into src/midas_nx/ with every gate
+        # green: the gates all asked whether the surfaces agreed, and they did.
+        manual_label = _english_label(section.title)
+        if manual_label and "field_name" not in overridden:
+            if contract.get("name") != manual_label:
+                problems.append(
+                    f"{path.name}: name {contract.get('name')!r}, "
+                    f"the manual's section label says {manual_label!r}"
+                )
+
         if section.methods and "method" not in overridden:
             declared_methods = sorted({op["method"] for op in contract.get("operations", [])})
             if declared_methods != sorted(section.methods):

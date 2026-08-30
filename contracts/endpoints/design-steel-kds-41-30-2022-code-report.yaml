@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-steel-kds-41-30-2022-code-report
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/CODE-REPORT
-name: Steel Code Check Report (강재 코드 검토 보고서)
+name: Steel Code Check Report
 
 products: [civil, gen]
 

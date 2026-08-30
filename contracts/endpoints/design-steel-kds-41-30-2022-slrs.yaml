@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-steel-kds-41-30-2022-slrs
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/SLRS
-name: Seismic Load Resisting System by Member (부재별 내진 저항시스템)
+name: Seismic Load Resisting System by Member
 
 products: [civil, gen]
 

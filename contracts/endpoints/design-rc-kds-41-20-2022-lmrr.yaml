@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-lmrr
 endpoint: /DESIGN/RC/KDS-41-20-2022/LMRR
-name: 최대 철근비 제한
+name: Limiting Maximum Rebar Ratio
 
 products: [civil, gen]
 

@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-steel-kds-41-30-2022-dco
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/DCO
-name: Design Code Option (설계 코드 옵션)
+name: Design Code Option
 
 products: [civil, gen]
 

@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-dcrem
 endpoint: /DESIGN/RC/KDS-41-20-2022/DCREM
-name: 접합부 보 철근 동일화
+name: Same Beam Rebar at Joints
 
 products: [civil, gen]
 

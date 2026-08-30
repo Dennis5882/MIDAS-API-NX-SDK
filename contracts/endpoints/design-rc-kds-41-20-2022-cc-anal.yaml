@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-cc-anal
 endpoint: /DESIGN/RC/KDS-41-20-2022/CC-ANAL
-name: RC 기둥 검토 수행
+name: RC Column Check Perform
 
 products: [civil, gen]
 

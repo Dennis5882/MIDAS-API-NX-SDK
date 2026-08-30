@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-mbtp
 endpoint: /DESIGN/RC/KDS-41-20-2022/MBTP
-name: 부재 타입 수정
+name: Modify Member Type
 
 products: [civil, gen]
 

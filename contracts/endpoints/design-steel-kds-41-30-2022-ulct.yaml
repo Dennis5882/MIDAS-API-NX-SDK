@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-steel-kds-41-30-2022-ulct
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/ULCT
-name: Underground Load Combination Type (지하 하중조합 타입)
+name: Underground Load Combination Type
 
 products: [gen]
 

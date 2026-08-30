@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-sueq
 endpoint: /DESIGN/RC/KDS-41-20-2022/SUEQ
-name: 지진 스케일업 계수
+name: Scale up Factor for Earthquake
 
 products: [civil, gen]
 

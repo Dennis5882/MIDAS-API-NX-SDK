@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-steel-kds-41-30-2022-table
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/TABLE
-name: Steel Member Design Forces (강재 부재 설계 부재력)
+name: Steel Member Design Forces
 
 products: [civil, gen]
 

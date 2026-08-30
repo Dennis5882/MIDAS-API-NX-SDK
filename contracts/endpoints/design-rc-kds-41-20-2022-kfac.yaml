@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-kfac
 endpoint: /DESIGN/RC/KDS-41-20-2022/KFAC
-name: 유효좌굴길이계수(K)
+name: Effective Length Factor (K)
 
 products: [civil, gen]
 

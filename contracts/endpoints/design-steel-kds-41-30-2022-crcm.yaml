@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-steel-kds-41-30-2022-crcm
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/CRCM
-name: Combined Ratio Calculation Method for Circular Section (원형단면 조합비 계산법)
+name: Combined Ratio Calculation Method for Circular Section
 
 products: [civil, gen]
 

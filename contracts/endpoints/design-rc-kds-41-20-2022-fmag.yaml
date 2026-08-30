@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-fmag
 endpoint: /DESIGN/RC/KDS-41-20-2022/FMAG
-name: 모멘트 확대계수(B1/δb, B2/δs)
+name: Moment Magnifier(B1/Delta_b, B2/Delta_s)
 
 products: [civil, gen]
 

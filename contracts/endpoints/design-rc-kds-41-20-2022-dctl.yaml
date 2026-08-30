@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-dctl
 endpoint: /DESIGN/RC/KDS-41-20-2022/DCTL
-name: 프레임 정의
+name: Definition of Frame
 
 products: [civil, gen]
 

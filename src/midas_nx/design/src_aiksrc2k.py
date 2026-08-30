@@ -194,7 +194,7 @@ class SrcUnbracedLengthPayload(TypedDict, total=False):
 
 class SrcUnbracedLength(DbResource):
     ENDPOINT = f"{_BASE}/LENG"
-    NAME = "Unbraced Length"
+    NAME = "Unbraced Length (L, Lb)"
 
 
 # --- 7. DESIGN/SRC/AIK-SRC2K/KFAC — Effective Length Factor (K) -------------
@@ -210,7 +210,7 @@ class SrcEffectiveLengthFactorPayload(TypedDict, total=False):
 
 class SrcEffectiveLengthFactor(DbResource):
     ENDPOINT = f"{_BASE}/KFAC"
-    NAME = "Effective Length Factor"
+    NAME = "Effective Length Factor (K)"
 
 
 # --- 8. DESIGN/SRC/AIK-SRC2K/LTSR — Limiting Slenderness Ratio --------------
@@ -242,7 +242,7 @@ class SrcEquivalentMomentCorrectionFactorPayload(TypedDict, total=False):
 
 class SrcEquivalentMomentCorrectionFactor(DbResource):
     ENDPOINT = f"{_BASE}/CMFT"
-    NAME = "Equivalent Moment Correction Factor"
+    NAME = "Equivalent Moment Correction Factor(Cm)"
 
 
 # --- 10. DESIGN/SRC/AIK-SRC2K/FMAG — Moment Magnifier (B1/δb, B2/δs) --------
@@ -259,7 +259,7 @@ class SrcMomentMagnifierPayload(TypedDict, total=False):
 
 class SrcMomentMagnifier(DbResource):
     ENDPOINT = f"{_BASE}/FMAG"
-    NAME = "Moment Magnifier"
+    NAME = "Moment Magnifier(B1/Delta_b, B2/Delta_s)"
 
 
 # --- 11. DESIGN/SRC/AIK-SRC2K/MLLR — Modify Live Load Reduction Factor ------
@@ -889,7 +889,7 @@ class SrcModifyMaterialPayload(TypedDict, total=False):
 
 class SrcModifyMaterial(DbResource):
     ENDPOINT = f"{_BASE}/MATD"
-    NAME = "SRC Modify Material"
+    NAME = "Modify SRC Material"
     METHODS = GET_PUT_DELETE_METHODS
     #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
     #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
@@ -927,7 +927,7 @@ class SrcColumnSectionDataPayload(TypedDict, total=False):
 
 class SrcColumnSectionData(DbResource):
     ENDPOINT = f"{_BASE}/MCRD"
-    NAME = "SRC Column Section Data"
+    NAME = "Modify SRC Column Section Data"
 
 
 # --- 26. DESIGN/SRC/AIK-SRC2K/MEMB — Member Assignment ----------------------

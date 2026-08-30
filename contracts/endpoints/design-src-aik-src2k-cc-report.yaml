@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-src-aik-src2k-cc-report
 endpoint: /DESIGN/SRC/AIK-SRC2K/CC-REPORT
-name: SRC 기둥 검토 리포트
+name: SRC Column Checking Report
 
 products: [civil, gen]
 

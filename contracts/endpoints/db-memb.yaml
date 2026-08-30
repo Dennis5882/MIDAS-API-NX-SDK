@@ -8,7 +8,7 @@
 contractVersion: 1
 id: db-memb
 endpoint: /db/MEMB
-name: 설계 부재 배정
+name: Member Assignment
 
 products: [civil, gen]
 

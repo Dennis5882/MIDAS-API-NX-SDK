@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-rebw
 endpoint: /DESIGN/RC/KDS-41-20-2022/REBW
-name: 벽체 철근 데이터 수정
+name: Modify Wall Rebar Data
 
 products: [gen]
 

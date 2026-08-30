@@ -8,7 +8,7 @@
 contractVersion: 1
 id: db-dstl
 endpoint: /db/DSTL
-name: 강재 설계 코드
+name: Design Steel Code
 
 products: [civil, gen]
 

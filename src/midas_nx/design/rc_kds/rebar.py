@@ -88,7 +88,7 @@ class BeamMomentCalculationMethodPayload(TypedDict, total=False):
 
 class BeamMomentCalculationMethod(DbResource):
     ENDPOINT = f"{_BASE}/MCMB"
-    NAME = "Beam Moment Calculation Method"
+    NAME = "Moment Calculation Method for Beam"
 
 
 # --- 23. DESIGN/RC/KDS-41-20-2022/DFBA — Design Forces for Assigned Beam ---
@@ -102,7 +102,7 @@ class DesignForcesForAssignedBeamPayload(TypedDict, total=False):
 
 class DesignForcesForAssignedBeam(DbResource):
     ENDPOINT = f"{_BASE}/DFBA"
-    NAME = "Design Forces for Assigned Beam"
+    NAME = "Design Force for Beam Assigned as Member"
 
 
 # --- 24. DESIGN/RC/KDS-41-20-2022/PMDM — P-M Curve Calculation Method ------
@@ -187,7 +187,7 @@ class LimitMaxRebarRatioPayload(TypedDict, total=False):
 
 class LimitMaxRebarRatio(DbResource):
     ENDPOINT = f"{_BASE}/LMRR"
-    NAME = "Limit Max Rebar Ratio"
+    NAME = "Limiting Maximum Rebar Ratio"
     #: Active Methods per this endpoint's own manual section: GET/PUT/DELETE
     #: only — no POST.
     METHODS = GET_PUT_DELETE_METHODS
@@ -214,7 +214,7 @@ class RebarDesignCriteriaByBeamMemberPayload(TypedDict, total=False):
 
 class RebarDesignCriteriaByBeamMember(DbResource):
     ENDPOINT = f"{_BASE}/DCRM-BEAM"
-    NAME = "Rebar Design Criteria by Beam Member"
+    NAME = "Design Criteria for Rebars by Beam Member"
 
 
 # --- 30/31. Shared item — DCRM-COLUMN (#30) / DCRM-BRACE (#31) -------------
@@ -249,7 +249,7 @@ class RebarDesignCriteriaByColumnMemberPayload(ColumnBraceRebarDesignCriteriaIte
 
 class RebarDesignCriteriaByColumnMember(DbResource):
     ENDPOINT = f"{_BASE}/DCRM-COLUMN"
-    NAME = "Rebar Design Criteria by Column Member"
+    NAME = "Design Criteria for Rebars by Column Member"
 
 
 # --- 31. DESIGN/RC/KDS-41-20-2022/DCRM-BRACE — Rebar Design Criteria by Brace Member ---
@@ -263,7 +263,7 @@ class RebarDesignCriteriaByBraceMemberPayload(ColumnBraceRebarDesignCriteriaItem
 
 class RebarDesignCriteriaByBraceMember(DbResource):
     ENDPOINT = f"{_BASE}/DCRM-BRACE"
-    NAME = "Rebar Design Criteria by Brace Member"
+    NAME = "Design Criteria for Rebars by Brace Member"
 
 
 # --- 32. DESIGN/RC/KDS-41-20-2022/DCRM-WALL — Rebar Design Criteria by Wall Member ---
@@ -436,7 +436,7 @@ class EqualizeJointBeamRebarPayload(TypedDict, total=False):
 
 class EqualizeJointBeamRebar(DbResource):
     ENDPOINT = f"{_BASE}/DCREM"
-    NAME = "Equalize Joint Beam Rebar"
+    NAME = "Same Beam Rebar at Joints"
 
 
 # --- 35. DESIGN/RC/KDS-41-20-2022/REBB — Modify Beam Rebar Data ------------

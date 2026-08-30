@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-llrf
 endpoint: /DESIGN/RC/KDS-41-20-2022/LLRF
-name: 활하중 저감계수
+name: Live Load Reduction Factor
 
 products: [civil, gen]
 

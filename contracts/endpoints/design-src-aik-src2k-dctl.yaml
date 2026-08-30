@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-src-aik-src2k-dctl
 endpoint: /DESIGN/SRC/AIK-SRC2K/DCTL
-name: 프레임 정의
+name: Definition of Frame
 
 products: [civil, gen]
 

@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-bd-anal
 endpoint: /DESIGN/RC/KDS-41-20-2022/BD-ANAL
-name: RC 보 설계 수행
+name: RC Beam Design Perform
 
 products: [civil, gen]
 

@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-steel-kds-41-30-2022-fmag
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/FMAG
-name: Moment Magnifier (모멘트 증폭계수 B1/Δb, B2/Δs)
+name: Moment Magnifier
 
 products: [civil, gen]
 

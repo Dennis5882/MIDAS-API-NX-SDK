@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-steel-kds-41-30-2022-dreult
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/DREULT
-name: Steel Design Result (강재 설계 결과 이미지)
+name: Steel Design Result
 
 products: [civil, gen]
 

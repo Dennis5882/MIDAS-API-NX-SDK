@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-mcmb
 endpoint: /DESIGN/RC/KDS-41-20-2022/MCMB
-name: 보 모멘트 산정 방법
+name: Moment Calculation Method for Beam
 
 products: [civil, gen]
 

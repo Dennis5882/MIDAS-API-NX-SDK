@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-steel-kds-41-30-2022-ltsr
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/LTSR
-name: Limiting Slenderness Ratio (세장비 제한)
+name: Limiting Slenderness Ratio
 
 products: [civil, gen]
 

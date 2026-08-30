@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-src-aik-src2k-bc-table
 endpoint: /DESIGN/SRC/AIK-SRC2K/BC-TABLE
-name: SRC 보 검토 테이블
+name: SRC Beam Checking Table
 
 products: [civil, gen]
 

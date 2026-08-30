@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-steel-kds-41-30-2022-eqct
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/EQCT
-name: Seismic Load Combination Type (지진하중 조합 타입)
+name: Seismic Load Combination Type
 
 products: [civil, gen]
 

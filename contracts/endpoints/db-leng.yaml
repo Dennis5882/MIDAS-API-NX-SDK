@@ -8,7 +8,7 @@
 contractVersion: 1
 id: db-leng
 endpoint: /db/LENG
-name: 비지지 길이
+name: Unbraced Length
 
 products: [civil, gen]
 

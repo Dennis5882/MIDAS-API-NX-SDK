@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-cdesign
 endpoint: /DESIGN/RC/KDS-41-20-2022/CDESIGN
-name: RC 콘크리트 종합 설계 결과
+name: RC Concrete Design Result
 
 products: [civil, gen]
 

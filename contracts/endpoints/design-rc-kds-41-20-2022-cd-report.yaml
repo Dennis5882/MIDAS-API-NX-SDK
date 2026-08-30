@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-cd-report
 endpoint: /DESIGN/RC/KDS-41-20-2022/CD-REPORT
-name: RC 기둥 설계 리포트
+name: RC Column Design Report
 
 products: [civil, gen]
 

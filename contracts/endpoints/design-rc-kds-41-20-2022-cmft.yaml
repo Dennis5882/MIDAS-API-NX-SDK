@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-cmft
 endpoint: /DESIGN/RC/KDS-41-20-2022/CMFT
-name: 등가모멘트 보정계수(Cm)
+name: Equivalent Moment Correction Factor(Cm)
 
 products: [civil, gen]
 

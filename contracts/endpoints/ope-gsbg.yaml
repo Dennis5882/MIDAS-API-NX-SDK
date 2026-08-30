@@ -9,7 +9,7 @@
 contractVersion: 1
 id: ope-gsbg
 endpoint: /ope/GSBG
-name: Bridge Girder Diagram Image Export
+name: Bridge Girder Diagram Image Generation
 
 products: [civil, gen]
 

@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-steel-kds-41-30-2022-smodi
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/SMODI
-name: Modify Steel Material (강재 재질 수정)
+name: Modify Steel Material
 
 products: [civil, gen]
 

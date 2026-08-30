@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-wd-report
 endpoint: /DESIGN/RC/KDS-41-20-2022/WD-REPORT
-name: RC 벽체 설계 리포트
+name: RC Wall Design Report
 
 products: [civil, gen]
 

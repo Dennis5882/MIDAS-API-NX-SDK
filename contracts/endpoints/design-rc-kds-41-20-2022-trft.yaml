@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-trft
 endpoint: /DESIGN/RC/KDS-41-20-2022/TRFT
-name: 비틀림 감소계수
+name: Torsion Reduction Factor
 
 products: [gen]
 

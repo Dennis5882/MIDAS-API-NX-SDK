@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-drc
 endpoint: /DESIGN/RC/DRC
-name: RC 설계 코드 선택
+name: RC Design Code
 
 products: [civil, gen]
 

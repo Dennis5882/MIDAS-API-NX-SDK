@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-src-aik-src2k-cmft
 endpoint: /DESIGN/SRC/AIK-SRC2K/CMFT
-name: 등가모멘트 보정계수(Cm)
+name: Equivalent Moment Correction Factor(Cm)
 
 products: [civil, gen]
 

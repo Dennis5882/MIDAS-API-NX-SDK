@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-hcd-report
 endpoint: /DESIGN/RC/KDS-41-20-2022/HCD-REPORT
-name: RC 헌치보 설계 리포트
+name: RC Haunched Beam Design Report
 
 products: [civil, gen]
 

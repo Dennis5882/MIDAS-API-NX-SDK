@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-bc-anal
 endpoint: /DESIGN/RC/KDS-41-20-2022/BC-ANAL
-name: RC 보 검토 수행
+name: RC Beam Check Perform
 
 products: [civil, gen]
 

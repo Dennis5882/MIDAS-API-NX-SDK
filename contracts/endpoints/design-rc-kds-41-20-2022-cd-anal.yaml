@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-cd-anal
 endpoint: /DESIGN/RC/KDS-41-20-2022/CD-ANAL
-name: RC 기둥 설계 수행
+name: RC Column Design Perform
 
 products: [civil, gen]
 

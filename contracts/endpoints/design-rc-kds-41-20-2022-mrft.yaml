@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-mrft
 endpoint: /DESIGN/RC/KDS-41-20-2022/MRFT
-name: 모멘트 재분배 계수
+name: Moment Redistribution Factor
 
 products: [civil, gen]
 

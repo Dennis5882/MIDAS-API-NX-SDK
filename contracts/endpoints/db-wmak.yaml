@@ -8,7 +8,7 @@
 contractVersion: 1
 id: db-wmak
 endpoint: /db/WMAK
-name: 벽체 마크 설계 수정
+name: Modify Wall Mark Design
 
 products: [civil, gen]
 

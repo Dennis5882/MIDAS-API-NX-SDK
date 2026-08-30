@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-mllr
 endpoint: /DESIGN/RC/KDS-41-20-2022/MLLR
-name: 활하중 저감계수 수정
+name: Modify Live Load Reduction Factor
 
 products: [civil, gen]
 

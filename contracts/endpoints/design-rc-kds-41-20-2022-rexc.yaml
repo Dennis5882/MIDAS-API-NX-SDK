@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-rexc
 endpoint: /DESIGN/RC/KDS-41-20-2022/REXC
-name: 철근 노출 조건
+name: Rebar Exposure Condition
 
 products: [civil, gen]
 

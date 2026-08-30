@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-steel-kds-41-30-2022-sueq
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/SUEQ
-name: Scale up Factor for Earthquake (지진 증폭계수)
+name: Scale up Factor for Earthquake
 
 products: [civil, gen]
 

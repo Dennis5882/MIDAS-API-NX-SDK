@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-src-aik-src2k-fmag
 endpoint: /DESIGN/SRC/AIK-SRC2K/FMAG
-name: 모멘트 확대계수(B1/δb, B2/δs)
+name: Moment Magnifier(B1/Delta_b, B2/Delta_s)
 
 products: [civil, gen]
 

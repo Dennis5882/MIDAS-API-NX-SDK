@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-leng
 endpoint: /DESIGN/RC/KDS-41-20-2022/LENG
-name: 비지지 길이(L, Lb)
+name: Unbraced Length (L, Lb)
 
 products: [civil, gen]
 

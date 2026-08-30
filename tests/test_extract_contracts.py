@@ -1139,6 +1139,76 @@ def test_manual_check_compares_declared_methods(tmp_path: Path, monkeypatch: pyt
     assert ex.run_check([parsed]) == 0
 
 
+def test_a_translated_heading_yields_the_english_label(tmp_path: Path):
+    """Chapters 24-27 label sections `English (한글)`; the rest are English.
+
+    Both halves are the manual's, but the label ships as the resource name in
+    both packages and `INDEX.md` gives one English name per endpoint, so the
+    draft takes the English. A parenthetical with no Hangul is part of the
+    label, not a translation of it.
+    """
+    path = tmp_path / "99_DB_Labels.md"
+    path.write_text(
+        """# 99 DB — Labels
+
+## 1. `/db/TRANS` — Definition of Frame (프레임 정의)
+
+| No. | Description | Key | Value Type | Default | Required |
+|-----|-------------|-----|------------|---------|----------|
+| 1 | Name | `"NAME"` | String | - | Required |
+
+## 2. `/db/PLAIN` — Rebar Input for Checking (Beam/Column)
+
+| No. | Description | Key | Value Type | Default | Required |
+|-----|-------------|-----|------------|---------|----------|
+| 1 | Name | `"NAME"` | String | - | Required |
+""",
+        encoding="utf-8",
+    )
+    first, second = ex.parse_chapter(path)
+    assert yaml.safe_load(ex.render_draft(first))["name"] == "Definition of Frame"
+    assert yaml.safe_load(ex.render_draft(second))["name"] == "Rebar Input for Checking (Beam/Column)"
+
+
+def test_manual_check_compares_the_endpoint_label(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """The label is a manual fact, and it ships as the package resource name.
+
+    Nothing compared it: not this check, not validate_contracts.py, and the
+    generator's shadow gate reaches only /db/*. So when chapters 24-27 labelled
+    their sections in Korean, 113 contracts took a Korean name and /db/DCTL
+    carried one into src/midas_nx/ with every gate green - each gate asked
+    whether the surfaces agreed, and they did.
+    """
+    path = tmp_path / "99_DB_LabelCheck.md"
+    path.write_text(
+        """# 99 DB — Label check
+
+## 1. `/db/LABEL-CHECK` — Definition of Frame (프레임 정의)
+
+- **Methods**: `GET`, `PUT`
+
+| No. | Description | Key | Value Type | Default | Required |
+|-----|-------------|-----|------------|---------|----------|
+| 1 | Name | `"NAME"` | String | - | Required |
+""",
+        encoding="utf-8",
+    )
+    parsed = ex.parse_chapter(path)[0]
+    contract = yaml.safe_load(ex.render_draft(parsed))
+    contract.pop("draft")
+    endpoint_dir = tmp_path / "endpoints"
+    endpoint_dir.mkdir()
+    target = endpoint_dir / "db-label-check.yaml"
+    target.write_text(yaml.safe_dump(contract), encoding="utf-8")
+    monkeypatch.setattr(ex, "ENDPOINT_DIR", endpoint_dir)
+
+    assert ex.run_check([parsed]) == 0
+
+    contract["name"] = "프레임 정의"
+    target.write_text(yaml.safe_dump(contract, allow_unicode=True), encoding="utf-8")
+    assert ex.run_check([parsed]) == 1
+
+
 def test_enum_values_are_read_only_when_the_same_manual_section_states_them(tmp_path: Path):
     """Cover the three enum forms used by the manual, including nested paths."""
     path = tmp_path / "99_DB_Enums.md"

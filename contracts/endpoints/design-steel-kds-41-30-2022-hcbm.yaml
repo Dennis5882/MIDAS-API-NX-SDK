@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-steel-kds-41-30-2022-hcbm
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/HCBM
-name: Haunched Beam Assignment (헌치 보 배정)
+name: Haunched Beam Assignment
 
 products: [civil, gen]
 

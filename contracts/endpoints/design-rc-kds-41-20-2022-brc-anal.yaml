@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-brc-anal
 endpoint: /DESIGN/RC/KDS-41-20-2022/BRC-ANAL
-name: RC 가새 검토 수행
+name: RC Brace Check Perform
 
 products: [civil, gen]
 

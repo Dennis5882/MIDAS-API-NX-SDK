@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-bd-report
 endpoint: /DESIGN/RC/KDS-41-20-2022/BD-REPORT
-name: RC 보 설계 리포트
+name: RC Beam Design Report
 
 products: [civil, gen]
 

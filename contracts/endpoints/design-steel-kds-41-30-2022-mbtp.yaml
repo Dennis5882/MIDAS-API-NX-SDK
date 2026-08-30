@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-steel-kds-41-30-2022-mbtp
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/MBTP
-name: Modify Member Type (부재 타입 수정)
+name: Modify Member Type
 
 products: [civil, gen]
 

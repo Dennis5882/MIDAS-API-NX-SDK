@@ -9,7 +9,7 @@
 contractVersion: 1
 id: design-rc-kds-41-20-2022-hcd-anal
 endpoint: /DESIGN/RC/KDS-41-20-2022/HCD-ANAL
-name: RC 헌치보 설계 수행
+name: RC Haunched Beam Design Perform
 
 products: [civil, gen]
 
