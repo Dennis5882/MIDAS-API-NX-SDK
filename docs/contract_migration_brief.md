@@ -199,8 +199,11 @@ with a date, and re-run `--report` before quoting one.
    out of text that is not a declaration — see the `/db/POLC-M1` entry in
    `contract_migration_open_questions.md`.
 
-   The one real manual gap is `/db/STYP-M1`: `INDEX.md` lists it, no chapter
-   section describes it.
+   ~~The one real manual gap is `/db/STYP-M1`.~~ Closed 2026-08-30: the manual
+   repo wrote the section (`5c92efe`). `npm resource manual-section coverage`
+   is now **0 without a parsed section**. What still blocks that contract is
+   the extractor's child numbering, not the manual — see
+   `contract_migration_open_questions.md`.
 5. **Stage 4 — Python derives from the contracts.** Deliberately last and
    deliberately unspecified. `src/midas_nx/` is hand-written and its public API
    is on PyPI; changing how it is produced needs the author's call, not an
@@ -230,3 +233,101 @@ Release each time, even when one surface has no shipped change. `scripts/`,
 `docs/` and `.github/` ship in neither package and warrant no release on their
 own — much of the work above is exactly that, so expect to commit without
 releasing. The author picks the number.
+
+## Handoff — 2026-08-30, at `49f3eca` (post-2.7.1)
+
+Measured, not estimated. Every number below came from a command in this file;
+re-run them before quoting one, because the list above them is a record of
+counts that went stale while nobody re-measured.
+
+### State
+
+| | |
+| --- | ---: |
+| promoted endpoint contracts | 279 |
+| result-table contracts | 87 (139 `TABLE_TYPE` values) |
+| drafts awaiting review | 104 |
+| npm resources with no contract | 68 |
+| ...of which `/db/STYP-M1` is the only one with no draft either | 1 |
+| contracted fields / proven safe to omit / proven unsafe | 2162 / 123 / 5 |
+| Python tests · npm tests | 845 · 55 |
+
+All four gates are green at this commit: `pytest`, `validate_contracts.py`,
+`extract_contracts.py --check`, and npm `typecheck`/`test` with no generation
+drift. Both registries are published at 2.7.1.
+
+### The 104 refused drafts, partitioned by why
+
+`python scripts/promote_contract.py --all --dry-run` refuses every one of them.
+The refusals are not one backlog; they are five, and only one needs the author:
+
+| n | refusal | who unblocks it |
+| ---: | --- | --- |
+| 48 | unresolved review notes — missing Default/Required columns, non-literal defaults (`"System"`, `"Auto"`, `"ADD, REPLACE"`) | per-draft review against the manual |
+| 19 | conditional variant tables nobody has merged | **the author** — schema decision |
+| 16 | no payload fields could be parsed | extractor work (see below) |
+| ~10 | the manual is provably wrong live | `manualDefects` + `contracts/verification/`; evidence already in the repo |
+| 5 | the Key cell names several wire properties, not one | per-draft transcription |
+
+The 16 unparseable sections are **not** manual gaps: nine `/doc/*` sections in
+`01_DOC.md` carry a JSON Schema instead of a Specifications table, and seven
+Hyper-S `-M1` sections in `04_DB_Properties.md` delegate with
+`기본 재료 구조는 /db/MATL과 동일하며` rather than repeating the parent table.
+Reading either form is extractor work. Do not ask the manual repo for them.
+
+### Order for the next agent
+
+1. **`/db/STYP-M1` — smallest real win, and it closes the last no-draft
+   resource.** Two extractor edits, measured to change exactly one section and
+   zero promoted contracts, plus two enum-from-condition defects and one
+   boolean-rendered-as-string. Full measurement and the reason a one-line regex
+   change measures as a no-op: `contract_migration_open_questions.md`.
+2. **Widen the generator's shadow gate past `/db/*`**
+   (`scripts/generate_typescript_sdk.py:395`, `:530`). The Korean-label
+   question that justified the narrow filter is settled; 63 `/DESIGN/*`
+   contracts are currently unchecked against the npm surface. Every gate
+   widened on 2026-08-30 found real drift on its first run — 114 stale labels,
+   one wrong method set, 103 stale section strings. Expect this one to as well.
+3. **The 48 review-note drafts**, in chapter order. Mechanical, reviewable in
+   batches, and the largest single movement available without an author call.
+4. **The ~10 manual-is-wrong-live drafts.** The evidence exists —
+   `/db/SECF`'s key, `/db/PRES`'s `DIRECTION`, `/db/MVHL`'s
+   `VEHICLE_LOAD_NUM`, `/db/TDMT`'s whole code-name enum, `/db/REBW`'s entire
+   Specifications table. Each needs the manual's claim under `manualDefects`
+   and the product's behaviour under `contracts/verification/`, separately.
+   Never collapse the two into one.
+5. **The 16 unparseable sections** — JSON-Schema `/doc/*` bodies and delegating
+   `-M1` sections. Two distinct parsers, each worth its own commit.
+6. **Conditional variants — bring a proposal, do not choose.** 19 drafts and
+   the `/db/FBLA` `FLOOR_DIST_TYPE = 1 or 2` case both wait on one schema
+   decision the author has not made. Note that the report's
+   `9 explicitly modelled / 59 unmerged` counter does not measure progress here
+   and should be fixed before anyone quotes it.
+
+### Two reports owed to the manual repo, not to this one
+
+Both are live-measured and neither has been sent:
+
+- `02_DB_Project_Structure.md` declares `DELETE` for `/db/STYP-M1` in three
+  places. The server refuses all three DELETE forms on both products, from a
+  non-default state with a real model open. The official article is the
+  upstream source of the error, so it needs reporting to MIDAS IT as well.
+- `14_DB_Pushover.md`'s ⚠️ callout dismisses `/db/POLC-M1`'s POST as an
+  untrimmed template. POST works: it created a record that read back on the
+  next GET. The callout is what is wrong, and it should be reversed.
+
+`docs/coverage.json`'s `vendored_at_commit` is still `2cfb2bd`. Raise it past
+`5c92efe` once `/db/STYP-M1` is promoted, and confirm `check_manual_drift.py`
+reports `has_diff: false` — not before.
+
+### Corrections to earlier revisions of this file
+
+Stated here because each was believed and repeated:
+
+- `/post/PM` and `/post/STEELCODECHECK` are **implemented** in both SDKs
+  (`src/midas_nx/post/design.py`, `generated/operations.ts`) and marked
+  `implemented` in `docs/coverage.json`. They are uncontracted, which is a
+  different and much smaller thing than missing.
+- The `N-(M)` numbering fix touches one section, not 71 rows of reshaping.
+- `/db/STYP-M1` is no longer a manual gap.
+- The Korean-label decision is settled: English.
