@@ -51,10 +51,10 @@ The following values were measured after Stage 2 and the result-table work:
 
 | surface | contracted | total | note |
 | --- | ---: | ---: | --- |
-| endpoint contracts | 263 | — | `post-table.yaml` is the shared-table family contract |
+| endpoint contracts | 278 | — | `post-table.yaml` is the shared-table family contract |
 | npm DB resources | 236 | 304 | 68 resources still have no committed endpoint contract |
 | `/post/TABLE` result tables | 87 | 87 | Chapter 23's other two routes are `/post/PM` and `/post/STEELCODECHECK`, not `TABLE_TYPE` tables |
-| active promotion candidates | 15 | 120 drafts | re-run the dry-run gate after every extractor change; its output, not this table, is authoritative |
+| active promotion candidates | 0 | 105 drafts | re-run the dry-run gate after every extractor change; its output, not this table, is authoritative |
 
 The remaining 68 npm resources are not a uniform parser backlog. They include
 unmerged conditional tables, missing Default/Required facts, incomplete enum or
