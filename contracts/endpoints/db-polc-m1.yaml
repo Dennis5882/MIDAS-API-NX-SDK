@@ -62,6 +62,17 @@ operations:
     response:
       wrapper: table
       keyStability: stable
+  - method: POST
+    risk: write
+    summary: >-
+      Creates a record. The chapter says this endpoint has no POST; a live
+      call proved otherwise - see manualDefects.
+    request:
+      wrapper: assign
+      itemSchema: fields
+    response:
+      wrapper: table
+      keyStability: stable
   - method: PUT
     risk: write
     request:
@@ -311,6 +322,22 @@ sdkRules:
       product-side dialog.
     riskRef: db-delete-body-empties-table
     alternative: Use the per_id DELETE operation to remove selected records.
+
+manualDefects:
+  - describes: method
+    manualSays: >-
+      GET, PUT, DELETE. The chapter normalizes away the official article's
+      POST row, calling it an untrimmed copy of another endpoint's template,
+      and cites the chapter preamble stating that Hyper-S (-M1) endpoints do
+      not support POST.
+    actual: >-
+      POST is served. It created a Pushover Load Case that read back on a
+      following GET, and returned the same table shape PUT does.
+    evidence: >-
+      Civil NX 2026 v2.2, 2026-08-30. Two earlier attempts failed on a missing
+      static load case, identically under POST and PUT; with /db/STLD seeded
+      the POST succeeded. Contrast /db/STYP-M1, where an unserved method
+      answers {"message": "error status"} and changes nothing.
 
 knownDefects:
   - ref: db-delete-body-empties-table

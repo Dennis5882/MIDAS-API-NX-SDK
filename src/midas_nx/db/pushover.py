@@ -389,7 +389,16 @@ class PushoverLoadCaseHyperSPayload(TypedDict, total=False):
 
 
 class PushoverLoadCaseHyperS(DbResource):
+    """Serves POST, against what the chapter says - measured 2026-08-30.
+
+    14_DB_Pushover.md normalizes this endpoint to GET/PUT/DELETE and warns
+    that the official article's POST row is an untrimmed template. Live, on
+    Civil NX 2026 v2.2, POST creates a record that reads back on GET. The
+    normalization is the thing that is wrong; the article was right.
+
+    Reported to the manual repo; see docs/live_verification_notes.md.
+    """
+
     ENDPOINT = "/db/POLC-M1"
     NAME = "Pushover Load Case (Hyper-S)"
     PRODUCTS = HYPER_S_ONLY
-    METHODS = GET_PUT_DELETE_METHODS

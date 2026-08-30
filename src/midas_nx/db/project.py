@@ -97,24 +97,22 @@ class StructureTypeHyperSPayload(TypedDict, total=False):
 
 
 class StructureTypeHyperS(DbResource):
-    """Unlike the classic /db/STYP, this one serves DELETE.
+    """GET/PUT only, like the classic /db/STYP - measured, not assumed.
 
     The official article tags GET, PUT, DELETE under its own activeMethods
-    field, read directly from the source HTML on 2026-08-30; the SDK had
-    GET/PUT here by analogy to /db/STYP, which is documented GET/PUT-only
-    because new-file required data has nothing to POST or DELETE to. The
-    analogy was wrong about this endpoint and nothing had checked it.
+    field, and the manual chapter transcribes that faithfully. The server
+    disagrees: on Civil NX 2026 v2.2 (2026-08-30) all three DELETE forms
+    answer {"message": "error status"} and change nothing, and so does
+    POST. A DELETE this server does serve returns the deleted record - see
+    /db/NODE - so "error status" is a refusal, not an empty result.
 
-    What DELETE *does* here is still unknown - reset to defaults, or an
-    empty record the document cannot be valid without. Nobody has run it:
-    live_crud_check.py drives this case through PUT only. Read the response
-    back with GET before relying on it.
+    Reported to the manual repo; see docs/live_verification_notes.md.
     """
 
     ENDPOINT = "/db/STYP-M1"
     NAME = "Structure Type (Hyper-S)"
     PRODUCTS = HYPER_S_ONLY
-    METHODS = frozenset({"GET", "PUT", "DELETE"})
+    METHODS = _GET_PUT_ONLY
 
 
 class ProjectInfoPayload(TypedDict, total=False):

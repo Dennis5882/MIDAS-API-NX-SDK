@@ -6875,6 +6875,106 @@ fixtures (MATL/SECT/ELEM/NODE/DCON) cleaned up after. `pytest` (706),
 `ruff`, `mypy` all clean; no source changed this entry beyond the
 coverage.json/docstring notes already made.
 
+## 2026-08-30 — two documented method sets measured, both wrong (Civil NX 2026 v2.2)
+
+Live, against an empty Civil NX document (0 nodes/elements/materials/sections,
+checked first). Every write was captured and restored or deleted; nothing was
+left behind.
+
+Both findings came out of the same question — what does a documented method
+actually do — and they fail in opposite directions.
+
+### The two response shapes
+
+The server distinguishes "this method is not served here" from "this method ran
+and rejected your data", and it does not use HTTP status to do it:
+
+| response | meaning |
+| --- | --- |
+| `{"message": "error status"}` | the method is not served on that endpoint |
+| `{"error": {...}}` | the method ran; the payload or the model was wrong |
+| the table, echoed back | it worked |
+
+The control that establishes this: `POST /db/NODE` then `DELETE /db/NODE/1`
+returns `{"NODE": {"1": {...}}}` — a served DELETE **echoes the record it
+removed** — and the following GET answers `{"message": ""}`. So `error status`
+is a refusal, not an empty result, and neither is an `{"error": ...}` body.
+Note also that `{"message": "error status"}` carries no `error` key, so
+`MidasResultError` does not fire on it: another case for the "not every failure
+carries an `error` key" rule.
+
+### `/db/STYP-M1` does not serve DELETE, though the article says it does
+
+The official article (`56375311138201`) tags `GET, PUT, DELETE` in its own
+`activeMethods` field — read from the source HTML, not inferred — and
+`02_DB_Project_Structure.md` transcribes that faithfully.
+
+All three DELETE shapes answer `{"message": "error status"}` and change
+nothing:
+
+```
+DELETE /db/STYP-M1/1                    -> {"message": "error status"}
+DELETE /db/STYP-M1 {"Assign": {"1": {}}} -> {"message": "error status"}
+DELETE /db/STYP-M1  (no body)            -> {"message": "error status"}
+```
+
+`POST /db/STYP-M1` answers the same. The classic `/db/STYP`, which the manual
+documents as GET/PUT-only, answers identically to all of them — so the two
+endpoints behave the same way, and the chapter's general rule ("신규 파일 필수
+데이터는 GET / PUT만 동작") holds for the Hyper-S variant too. The article is
+the thing that is wrong.
+
+`StructureTypeHyperS` keeps `_GET_PUT_ONLY`. It was already right; it had been
+right by analogy rather than measurement, which is why this was worth checking.
+
+`GET /info/db/STYP-M1` also confirms `MASS_CONTROL` is a nested object with
+`MASS_TYPE`, `MASS_POS`, `SELFWEIGHT`, `MASS_AXIS` inside it — independent
+confirmation that the extractor's `2-(N)` flattening is a defect, not a
+reading of the payload. And `GET /db/STYP-M1` returns a record with no
+`MASS_AXIS` at all while `SELFWEIGHT` is `false`, which is the documented
+condition behaving as documented.
+
+### `/db/POLC-M1` does serve POST, though the chapter says it does not
+
+The reverse case, and the more expensive one. `14_DB_Pushover.md` normalizes
+this endpoint to GET/PUT/DELETE and warns in a `⚠️` callout that the official
+article's `POST, GET, PUT, DELETE` row is an untrimmed copy of another
+endpoint's template. Earlier the same day this SDK trimmed POST out of the
+contract, Python and npm on the strength of that callout.
+
+POST works:
+
+```
+POST /db/POLC-M1 {"Assign": {"1": {…LCNAME PROBE_POST…}}}
+  -> {"POLC-M1": {"1": {"LCNAME": "PROBE_POST", …}}}
+GET  /db/POLC-M1
+  -> {"POLC-M1": {"1": {"LCNAME": "PROBE_POST", …}}}
+```
+
+Two earlier attempts had failed — first `{"error": {"message": "INCFUNC_NAME
+not found."}}`, then `Load Case does not exist` — **identically under POST and
+PUT**. Those were the empty model missing the objects the payload referenced,
+not the method being absent; seeding `/db/STLD` with a `DEAD` load case was
+enough to make the same POST succeed. A failure that reproduces identically
+under a method the manual accepts is evidence about the model, not the route.
+
+`PushoverLoadCaseHyperS` gets its full method set back, and the contract
+records the disagreement under `manualDefects` with `describes: method` rather
+than silently matching the manual.
+
+### What this says about normalization
+
+The manual repo's `⚠️` callouts exist because the official docs contradict
+themselves, and following them is normally right — that rule is in CLAUDE.md
+and it stays. But a normalization is a judgement about a product, and this one
+was reasoned from consistency with sibling endpoints rather than measured. It
+was wrong, and it was wrong in the direction that removes a capability users
+have.
+
+Both of these were caught by asking the server. Neither would have been caught
+by any amount of re-reading, because both surfaces agreed with the document
+they were derived from.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,

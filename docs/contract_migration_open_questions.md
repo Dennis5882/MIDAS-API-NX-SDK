@@ -23,27 +23,24 @@
   `npm resource manual-section coverage` is now 0 without a parsed section. The
   contract still is not promoted, for the separate reason below.
 
-## `/db/STYP-M1`: DELETE settled, contract still blocked on nesting
+## `/db/STYP-M1`: methods settled live, contract blocked on nesting
 
 The manual repo wrote this endpoint's first chapter section on 2026-08-30
-(`5c92efe`), closing the source gap recorded above, then corrected its own
-unfounded explanation for the missing POST (`70a126b`) — a sentence copied from
-`/db/ACTL-M1`, where it had also been invented. The methods themselves are
-confirmed: the official article tags `GET, PUT, DELETE` under its own
-`activeMethods` field, read from the source HTML on 2026-08-30. Not inference.
+(`5c92efe`), closing the source gap, then removed its own unfounded reason for
+the missing POST (`70a126b`) — a sentence copied from `/db/ACTL-M1`, where it
+had also been invented.
 
-`StructureTypeHyperS` served `GET`/`PUT`, by analogy to the classic `/db/STYP`,
-which is documented GET/PUT-only because new-file required data has nothing to
-POST or DELETE to. The analogy was wrong here and nothing had checked it. The
-SDK now serves DELETE and says in the class docstring that its *behaviour* is
-unverified — reset to defaults, or an empty record the document cannot be valid
-without. `live_crud_check.py` drives this case through PUT only.
+The methods are now measured rather than argued. The official article tags
+`GET, PUT, DELETE`; the server serves **GET and PUT only**. All three DELETE
+forms, and POST, answer `{"message": "error status"}` and change nothing,
+exactly as the classic `/db/STYP` does. Full evidence, including the control
+that shows what a served DELETE returns, is in
+`docs/live_verification_notes.md` (2026-08-30). `StructureTypeHyperS` keeps
+`_GET_PUT_ONLY`; the manual repo has the article discrepancy to resolve.
 
-The payload agrees exactly with `GET /info/db/STYP-M1` from 2026-07-29 and
-2026-08-16: the same six top-level fields and the same four `MASS_CONTROL`
-members. A transcription from the official article and a live schema probe
-arriving independently at one shape is the strongest evidence this repo holds
-for any Hyper-S endpoint.
+The payload agrees exactly with `GET /info/db/STYP-M1`: the same six top-level
+fields and the same four `MASS_CONTROL` members, on 2026-07-29, 2026-08-16 and
+again on 2026-08-30.
 
 The contract is still not promoted, for a reason that is not about this
 endpoint:
@@ -52,18 +49,17 @@ endpoint:
   `2-(4)`. `_NUMBER_CHILD` recognises a bare `(1)` and the `4-1` form, but not
   the `N-(M)` hybrid, so the draft emits `MASS_TYPE`, `MASS_POS`, `SELFWEIGHT`
   and `MASS_AXIS` as root fields beside their own parent — the `/db/RIGD`
-  flattening defect again. **71 rows across the manual use this form.**
+  flattening defect again. `/info/db/STYP-M1` confirms the server nests them.
+  **71 rows across the manual use this numbering.**
 - Two conditional fields take their `enum` from the condition rather than the
-  value list: `MASS_POS` gets `[LUMPED]` (its condition) instead of
-  `[CENTROID, OFFSET]`, and `MASS_AXIS` gets `[CONSISTENT]` instead of
-  `[XYZ, XY, Z]`.
+  value list: `MASS_POS` gets `[LUMPED]` instead of `[CENTROID, OFFSET]`, and
+  `MASS_AXIS` gets `[CONSISTENT]` instead of `[XYZ, XY, Z]`.
 - `SELFWEIGHT`'s `appliesWhen` renders `equals: "true"` as a string where the
   field is boolean.
 
 Fixing the numbering reshapes those 71 rows wherever they appear, which is the
 reviewed contract-shape migration `contract_migration_brief.md` already refuses
-to do as an extractor-only change. Promote this endpoint as part of that work,
-not ahead of it.
+to do as an extractor-only change. Promote this endpoint as part of that work.
 
 ## Python surface drift introduced by promotion (revisit after the Codex run)
 

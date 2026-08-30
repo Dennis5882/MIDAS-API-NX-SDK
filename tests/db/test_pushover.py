@@ -138,14 +138,16 @@ def test_pushover_load_case_hyper_s_update_load_control_variant(civil_client):
     assert json.loads(sent.body)["Assign"]["1"]["CTRL_OPT"]["INCFUNC_NAME"] == "POFC_01"
 
 
-def test_pushover_load_case_hyper_s_refuses_create(civil_client):
-    """14_DB_Pushover.md states GET/PUT/DELETE for this endpoint, not POST.
+@responses.activate
+def test_pushover_load_case_hyper_s_create_sends_documented_assign_shape(civil_client):
+    """This endpoint serves POST, whatever 14_DB_Pushover.md says.
 
-    The chapter says so twice: in the endpoint's own Active Methods, and in the
-    preamble covering every -M1 endpoint. The contract briefly claimed POST
-    anyway, because the extractor read the chapter's closing general-vs-Hyper-S
-    comparison table as a declaration - which is why --check now compares the
-    verbs a contract serves against the ones its chapter states.
+    The chapter normalizes the official article's POST row away as an
+    untrimmed copy of another endpoint's template. Live on Civil NX 2026 v2.2
+    (2026-08-30) POST created a Pushover Load Case that read back on the
+    following GET, so the normalization is the error, not the article.
     """
-    with pytest.raises(UnsupportedMethodError):
-        PushoverLoadCaseHyperS.create({1: {"LCNAME": "x"}}, client=civil_client)
+    responses.add(responses.POST, "https://x.test:443/civil/db/POLC-M1", json={}, status=200)
+    PushoverLoadCaseHyperS.create({1: {"LCNAME": "x"}}, client=civil_client)
+    sent = responses.calls[0].request
+    assert json.loads(sent.body) == {"Assign": {"1": {"LCNAME": "x"}}}

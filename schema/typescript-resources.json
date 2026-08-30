@@ -4463,7 +4463,6 @@
         "civil"
       ],
       "methods": [
-        "DELETE",
         "GET",
         "PUT"
       ],
@@ -5708,6 +5707,7 @@
       "methods": [
         "DELETE",
         "GET",
+        "POST",
         "PUT"
       ],
       "pythonModule": "midas_nx.db.pushover",
