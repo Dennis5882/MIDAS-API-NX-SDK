@@ -7182,9 +7182,45 @@ surfaces agree against a real server, not merely against each other.
 empty model errored first — the unstable-top-level-key behaviour it exists for
 is still unobserved from JavaScript.
 
-Reproduction: install `midas-nx` from the registry, call the six checks above.
-No repository harness was added; adding a JS/TS live harness alongside the
-Python ones is the obvious next step if npm write coverage is wanted.
+Reproduction at the time: install `midas-nx` from the registry, call the six
+checks above. No repository harness existed yet; the next entry records the
+subsequent write-capable harness.
+
+### npm public-API write and populated-table verification (2026-08-31)
+
+The repository now has that reproducible harness at
+`packages/typescript/scripts/live-crud.mjs`. It imports the built npm package
+entry point (`dist/index.js`) and uses only its public `resources.db.*` and
+`post.*` APIs; it does not issue raw HTTP requests or import Python. Its
+payloads are read from the checked-in, language-neutral
+`schema/live-cases.json` fixture emitted by `scripts/live_crud_check.py`.
+
+On the confirmed-empty Gen NX 2026 v2.1 and Civil NX 2026 v2.2 sessions
+(both build 08/26/2026), the following npm-package round trips passed on both
+products:
+
+| npm public API | check | gen | civil |
+| --- | --- | --- | --- |
+| `resources.db.nodeElement.node` | create, read, update, read, per-id delete, final read | pass | pass |
+| `resources.db.staticLoads.nodalMass` | same CRUD cycle, with its fixture omitting `rmX`/`rmY`/`rmZ` | pass | pass |
+| `post.getTable("MASS_SUMMARY_X")` + `post.unwrapTable()` | seed a fixture Node and Nodal Mass, then read a populated table | pass | pass |
+
+For Nodal Mass, the record read back after both `POST` and `PUT` contained
+the generated resource's `payloadDefaults` (`rmX`, `rmY`, and `rmZ`, each
+`0.0`). This is live evidence that the npm public DB resource supplies the
+three omission-sensitive values before sending the request, rather than only
+declaring them in metadata.
+
+The populated `MASS_SUMMARY_X` responses had a top-level key of **`empty`**
+on both products while carrying a two-row `HEAD`/`DATA` table. `unwrapTable()`
+found that table by shape, as intended; treating the `empty` key as “no data”
+would have discarded real result rows. The table seed used its own Node/Nodal
+Mass id and both were removed with individual-id DELETE calls. Final public
+`items()` reads for `/db/NODE` and `/db/NMAS` returned `{}` on both products.
+
+This is explicitly npm-specific live evidence. `docs/coverage.json` remains
+unchanged: its historical `level` field means verification through the Python
+package, so an npm run must not silently widen that meaning.
 
 ## Caveat — read before acting on this file
 

@@ -105,6 +105,7 @@ import argparse
 import json
 import sys
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Sequence
 
 from midas_nx import doc
@@ -311,6 +312,8 @@ SIZE, HEIGHT, BAY = 0.6, 3.2, 4.0
 OK, REGRESSION, UNVERIFIED, BLOCKED = "ok", "regression", "unverified", "blocked"
 #: Quarantined: known to hang or kill the product, so not run by default.
 SKIPPED = "skipped"
+LIVE_CASES_PATH = Path(__file__).resolve().parents[1] / "schema" / "live-cases.json"
+LIVE_CASES_VERSION = 1
 
 
 class Case:
@@ -339,6 +342,7 @@ class Case:
         products: Optional[Sequence[str]] = None,
         needs: Sequence[str] = (),
         crashes: Optional[str] = None,
+        setup: Sequence[Dict[str, Any]] = (),
     ) -> None:
         self.resource = resource
         self.create_payload = create_payload
@@ -360,6 +364,10 @@ class Case:
         #: cost of running it is a forced restart plus the license-recovery
         #: dance, and it takes every case after it down with it.
         self.crashes = crashes
+        #: Records needed by the npm live harness before this case can run.
+        #: The Python runner already has its own base-model and tier seed
+        #: functions, but JavaScript must not retype those payloads.
+        self.setup = tuple(setup)
 
 
 class SeedStep:
@@ -943,6 +951,7 @@ def _static_cases() -> List[Case]:
             {"mX": 1.0, "mY": 1.0, "mZ": 2.0},
             lambda p: p.get("mZ"), 1.0, 2.0,
             item_id=3, confirmed=True,
+            setup=({"endpoint": "/db/NODE", "id": 3},),
         ),
     ]
 
@@ -3389,9 +3398,71 @@ def _mark(row: Dict[str, Any]) -> str:
             BLOCKED: "BLOCK", SKIPPED: "SKIP"}[row["classification"]]
 
 
+def _live_cases_fixture() -> Dict[str, Any]:
+    """Return the language-neutral source for Python and npm live checks.
+
+    This is deliberately derived from the canonical ``Case`` objects rather
+    than being a second, hand-maintained copy.  The npm harness does not import
+    this Python module; it reads the committed JSON emitted here.
+    """
+    cases: List[Dict[str, Any]] = []
+    for tier in TIERS:
+        for case in tier.cases():
+            resource = case.resource
+            cases.append({
+                "tier": tier.name,
+                "endpoint": resource.ENDPOINT,
+                "name": resource.NAME,
+                "id": case.item_id,
+                "products": list(case.products),
+                "methods": sorted(resource.METHODS),
+                "confirmed": case.confirmed,
+                "createPayload": case.create_payload,
+                "updatePayload": case.update_payload,
+                "expected": {
+                    "created": case.expect_created,
+                    "updated": case.expect_updated,
+                },
+                "needs": list(case.needs),
+                "setup": list(case.setup),
+                "crashes": case.crashes,
+            })
+    fixture = {"version": LIVE_CASES_VERSION, "cases": cases}
+    # Fail at generation time if a future Case grows a non-JSON wire value.
+    json.dumps(fixture, ensure_ascii=False, sort_keys=True)
+    return fixture
+
+
+def _write_live_cases(path: Path) -> None:
+    path.write_text(
+        json.dumps(_live_cases_fixture(), indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _check_live_cases(path: Path) -> bool:
+    """Return whether the checked-in npm fixture matches the Python cases."""
+    try:
+        actual = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        print(f"Missing live-case fixture: {path}", file=sys.stderr)
+        return False
+    except json.JSONDecodeError as exc:
+        print(f"Invalid live-case fixture {path}: {exc}", file=sys.stderr)
+        return False
+    expected = _live_cases_fixture()
+    if actual == expected:
+        return True
+    print(
+        f"Live-case fixture drifted: run python scripts/live_crud_check.py --emit-cases ({path})",
+        file=sys.stderr,
+    )
+    return False
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--product", choices=["gen", "civil"], required=True)
+    parser.add_argument("--product", choices=["gen", "civil"])
     parser.add_argument("--mapi-key", help="defaults to MIDAS_MAPI_KEY env var")
     parser.add_argument("--base-url", help="defaults to MIDAS_BASE_URL env var")
     parser.add_argument(
@@ -3413,7 +3484,35 @@ def main() -> int:
     )
     parser.add_argument("--timeout", type=float, default=60.0)
     parser.add_argument("--out", help="path to write the report JSON (optional)")
+    fixture_group = parser.add_mutually_exclusive_group()
+    fixture_group.add_argument(
+        "--emit-cases",
+        action="store_true",
+        help="write the language-neutral case fixture used by the npm live harness",
+    )
+    fixture_group.add_argument(
+        "--check-cases",
+        action="store_true",
+        help="fail when the checked-in language-neutral case fixture has drifted",
+    )
+    parser.add_argument(
+        "--cases-file",
+        type=Path,
+        default=LIVE_CASES_PATH,
+        help=f"case fixture path (default: {LIVE_CASES_PATH})",
+    )
     args = parser.parse_args()
+
+    if args.emit_cases:
+        _write_live_cases(args.cases_file)
+        print(f"Wrote {args.cases_file}")
+        return 0
+    if args.check_cases:
+        return 0 if _check_live_cases(args.cases_file) else 1
+    if not _check_live_cases(args.cases_file):
+        return 2
+    if not args.product:
+        parser.error("--product is required unless --emit-cases or --check-cases is used")
 
     tiers = TIERS
     if args.tier:

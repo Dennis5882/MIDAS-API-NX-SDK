@@ -39,6 +39,8 @@ jobs:
         run: python scripts/validate_contracts.py
       - name: Check promoted contracts against the official manual
         run: python scripts/extract_contracts.py --manual-api-repo MIDAS-API --check
+      - name: Fail if the shared live CRUD fixture drifted
+        run: python scripts/live_crud_check.py --check-cases
 
   typescript:
     runs-on: ubuntu-latest
