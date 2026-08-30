@@ -818,16 +818,16 @@
       "status": "implemented",
       "module": "midas_nx.db.properties.material",
       "live_verified": {
-        "date": "2026-07-30",
+        "date": "2026-08-31",
         "products": [
           "civil"
         ],
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
-        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation)",
-        "level": "read",
-        "outcome": "success_empty"
+        "method": "Read-only GET and /info schema checks were reconfirmed on 2026-07-30. A fresh scratch Civil NX model then passed direct POST -> GET -> PUT -> GET -> per-id DELETE -> GET checks for MATL-M1 PARAM[].P_TYPE Standard=0, Isotropic=1, and Orthotropic=2 on 2026-08-31; the model was reset with /doc/NEW afterwards.",
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -1987,18 +1987,18 @@
       "status": "implemented",
       "module": "midas_nx.db.boundary",
       "live_verified": {
-        "date": "2026-08-16",
+        "date": "2026-08-31",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "2026-08-16: write-round-trip attempted (batch 6) -- POST fails \"Wrong Field\" on both Gen NX and Civil NX (v2.1/v2.2, build 08/14/2026) even with the manual's own literal worked example and several hand-tried value variants; not resolved as a fixture problem. Same unresolved class as /db/NLLP, /db/WVLD, /db/GRDP, /db/TDMF, /db/RPSC, /db/STRPSSM, /db/THMS. Left at level: read.",
+        "method": "Fresh scratch-model verification on 2026-08-31: the current official BL2 request shape (COMMON, DIR, SDST_HYS_MODEL=BL2, K0, P1, ALPHA1, KB, BL2.BETA) passed POST -> GET -> PUT -> GET -> individual-id DELETE -> GET on both supplied Civil NX and Gen NX sessions. This supersedes the 2026-08-16 Wrong Field result, which used the manual page before its SDST/SDVE field correction. LY2/LY3/IK2 remain schema-confirmed only.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -2033,13 +2033,13 @@
       "status": "implemented",
       "module": "midas_nx.db.boundary",
       "live_verified": {
-        "date": "2026-08-27",
+        "date": "2026-08-31",
         "products": [
           "gen"
         ],
-        "method": "2026-08-16: write-round-trip attempted (batch 6) -- POST fails \"Wrong Field\" on both Gen NX and Civil NX (v2.1/v2.2, build 08/14/2026) even with the manual's own literal worked example; not resolved as a fixture problem at the time. Root-caused 2026-08-27 for the SLD variant: the manual's own Specifications table (article id 35948330042649) had SDIS_DEV_TYPE's third value wrong (documented as \"SB\", actually \"SLD\") and was missing QD/Pi_VALUE from the SB data object -- the 2026-08-16 attempt used the old wrong shape. Retested on Gen NX with the corrected SLD shape from the re-verified manual: POST/GET/DELETE round trip via midas_nx.db.boundary.SeismicDeviceIsolator succeeded and GET read the stored values back; record deleted after. The LRB variant still answers \"Wrong Field\" with the manual's own worked example even after the same correction pass (nested DX nesting, separate K0/KE) -- but GET /info/db/SDIS independently confirms the corrected LRB shape matches the schema exactly, so per this project's established Wrong-Field-usually-means-bad-value pattern this is suspected to be an unrecognized SDIS_HYS_MODEL literal, not a shape defect; left unresolved. NRB not attempted. Civil NX not reachable this session -- level bumped for Gen only, on the strength of the SLD round trip.",
+        "method": "2026-08-16 initially failed because the manual then documented SDIS_DEV_TYPE's third value as \"SB\" rather than \"SLD\" and omitted QD/Pi_VALUE. The corrected SLD branch (SDIS_DEV_TYPE=SLD with the SB object) was re-run on a fresh Gen scratch model on 2026-08-31 and passed POST -> GET -> PUT -> GET -> individual-id DELETE -> GET. LRB still returns Wrong Field with the corrected nested DX/K0/KE shape; /info confirms the shape, so its model literal/precondition remains unresolved. NRB has not been write-tested. Civil route /info remains 404.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026"
         },
         "level": "write",
         "outcome": "success"
@@ -4386,14 +4386,14 @@
       "status": "implemented",
       "module": "midas_nx.db.misc_loads",
       "live_verified": {
-        "date": "2026-08-16",
+        "date": "2026-08-31",
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET); manual documents gen+civil but 404s under Gen in three independent sessions (2026-07-22, 2026-07-26, 2026-07-29) Write round trip attempted 2026-08-16 (Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: POST with the manual's own full canonical example reproduced verbatim, and separately a bare {\"NAME\": \"...\"} payload, both answered the identical \"Wrong Field\". Not resolved as a fixture problem -- left at level=read pending further investigation (possibly a licensed offshore/marine module gate), same class of finding as /db/NLLP. Reconfirmed 2026-08-27 on Civil NX: bisected from the manual's full worked example down to a bare {\"NAME\": ...} payload, and even that minimal form still answers the identical \"Wrong Field\" seen 2026-08-16 -- confirms this is unrelated to the CREST/UNIT value correction (2026-08-25) specifically, the entire write path is still blocked. CREST/UNIT remain unverified by a live round trip.",
+        "method": "Gen route and /info are 404 in independent sessions. Civil re-tested on a fresh scratch model on 2026-08-31 with the official full request example, including the live-schema coefficient names DRAG_COEF_X/Y/Z and INER_COEF_X/Y/Z, and again with a bare NAME payload in the prior probe. Both return Wrong Field. This rules out the earlier CREST/UNIT correction and the coefficient-name mismatch as the cause; the entire Civil write path remains blocked by an undocumented product precondition or module gate.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026 — confirms 404, not supported"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -4726,18 +4726,18 @@
       "status": "implemented",
       "module": "midas_nx.db.analysis_control",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-08-31",
         "products": [
           "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
+        "method": "Fresh scratch-model verification on 2026-08-31 passed POST -> GET -> PUT -> GET -> individual-id DELETE -> GET on both Civil NX and Gen NX with iCODETYPE=0 and FREQ. The manual request example omits iSLCM and iBC although its table marks them required; sending iSLCM=0 and iBC=0 is accepted, but GET normalizes iSLCM away. USER_F=0 is rejected on both products with the explicit product error 'f > 0'; USER_F=3.0 passes. BRIDGE1/BRIDGE2 code branches remain schema-confirmed only.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {

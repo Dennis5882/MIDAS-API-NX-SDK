@@ -13,6 +13,11 @@ the bottom before acting on anything here.
 Date: 2026-07-15. One MIDASIT account, one Gen NX process, one Civil NX
 process, both freshly reset via `/doc/new` before testing.
 
+**Current live-session baseline (2026-08-31):** MIDAS Gen NX 2026 v2.1,
+Build 08/26/2026; MIDAS Civil NX 2026 v2.2, Build 08/26/2026. Record this
+baseline with every new live finding; it supersedes an endpoint's older build
+metadata only when that endpoint was actually exercised in this session.
+
 ## Method
 
 1. **Read-only smoke test**: every `DbResource` subclass across `db/`,
@@ -7161,6 +7166,45 @@ nine Wall members documented as GEN-only, while Civil correctly omits them.
 The live drift checker now reads the corresponding contract product gates, so
 that documented product variation is not reported as a false discrepancy. No
 model data was read or changed by this check.
+
+### `/db/MATL-M1` round-trips all three documented live `P_TYPE` branches (2026-08-31)
+
+On a fresh Civil NX scratch model, Standard (`P_TYPE=0`), Isotropic (`1`), and
+Orthotropic (`2`) Hyper-S materials each passed `POST -> GET -> PUT -> GET ->
+DELETE /db/MATL-M1/{id} -> GET`. The returned Standard branch includes `CODE`,
+`DB`, `USER_DEFINED`, and `THERMAL_TRANS`; the two user-defined branches return
+the nested `USER_DEFINED` and `THERMAL_TRANS` objects. This confirms the
+0-based `P_TYPE` branches and their nested shape through writes, not merely
+`/info` introspection.
+
+The product rejected all three first attempts solely because the material names
+exceeded its 16-character limit. Shorter names then passed unchanged. The
+manual's Hyper-S section has no field-level Specifications table and does not
+state that limit. The scratch model was reset with `/doc/NEW` after individual
+per-id deletion checks completed.
+
+### SDST, SDIS, MVCTch and WVLD re-check on fresh scratch models (2026-08-31)
+
+- **`/db/SDST`**: the current official BL2 payload passed `POST -> GET -> PUT
+  -> GET -> DELETE /db/SDST/{id} -> GET` on both Civil NX and Gen NX. The
+  stored `BL2.BETA` and updated `P1` values were read back. This replaces the
+  old `Wrong Field` result, which predated the manual's SDST/SDVE correction.
+- **`/db/SDIS`**: Civil again returned 404 for `/info/db/SDIS`. On Gen, the
+  corrected `SDIS_DEV_TYPE="SLD"` plus `SB` payload passed the same complete
+  round trip, including an updated `KV`. LRB and NRB remain unverified write
+  branches.
+- **`/db/MVCTch`**: Civil and Gen both passed the full round trip for the
+  `iCODETYPE=0` / `FREQ` branch. `FREQ.USER_F=0` fails explicitly with
+  `f > 0`; `USER_F=3.0` passes. The manual's request example omits `iSLCM`
+  and `iBC` even though its table calls them required. Both values can be sent
+  as zero, but the server normalizes `iSLCM` out of the GET response.
+- **`/db/WVLD`**: Gen remains a route and `/info` 404. Civil still returns
+  `Wrong Field` for the full official example, including the live-schema
+  `DRAG_COEF_X/Y/Z` and `INER_COEF_X/Y/Z` keys. It had also rejected a bare
+  `NAME` payload in the earlier probe. The live evidence therefore points to
+  an undocumented product precondition or module gate, not the documented
+  payload spelling. Every test record was targeted by its individual-id
+  delete; the scratch models contain no test records from this pass.
 
 This is evidence from **one MIDASIT account, one product license/edition,
 one point in time**, not from the manual. It is plausible some of the
