@@ -2510,6 +2510,17 @@ def live_omission_evidence() -> dict[str, LiveOmission]:
         except Exception:
             continue
 
+        # An empty create payload is the checker's marker for a record the
+        # product creates itself - UNIT, STYP, STYP-M1 and the four CO_*
+        # colour defaults, all GET/PUT-only. The POST leg never runs, so
+        # nothing was omitted from an accepted call: reading `sent` as "the
+        # product accepted every field's absence" turns a skipped request into
+        # blanket proof, and marks the whole payload safeToOmit on no evidence
+        # at all. That is the /db/NMAS shape exactly - the field whose omission
+        # the manual calls Optional and the server dies on.
+        if not sent:
+            continue
+
         products = keywords.get("products")
         found[endpoint] = LiveOmission(
             case=name,
@@ -2614,8 +2625,16 @@ def _render_fields(
         # `true` here from a payload a product actually accepted without the
         # field. Everything else stays `unverified`, which is the honest state,
         # not a lesser one.
+        # `evidence.sent` being empty means the payload it describes sent
+        # nothing, so it accepted nothing - see live_omission_evidence(). The
+        # source filters those out; this refuses to believe one handed over
+        # directly, because "absent from the empty set" is true of every field
+        # there has ever been.
         omitted_live = (
-            evidence is not None and indent == "  " and parsed.key not in evidence.sent
+            evidence is not None
+            and evidence.sent
+            and indent == "  "
+            and parsed.key not in evidence.sent
         )
         if omitted_live:
             assert evidence is not None

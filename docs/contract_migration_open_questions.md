@@ -23,38 +23,47 @@
   `npm resource manual-section coverage` is now 0 without a parsed section. The
   contract still is not promoted, for the separate reason below.
 
-## `/db/STYP-M1` declares a DELETE nothing has verified
+## `/db/STYP-M1`: DELETE settled, contract still blocked on nesting
 
 The manual repo wrote this endpoint's first chapter section on 2026-08-30
-(`5c92efe`), closing the gap recorded above. Its payload agrees with the SDK
-exactly: the same six top-level fields and the same four `MASS_CONTROL`
-members that `GET /info/db/STYP-M1` returned on 2026-07-29 and again on
-2026-08-16. Two independent derivations landing on the same shape is the best
-evidence this repo has for any Hyper-S endpoint.
+(`5c92efe`), closing the source gap recorded above, then corrected its own
+unfounded explanation for the missing POST (`70a126b`) — a sentence copied from
+`/db/ACTL-M1`, where it had also been invented. The methods themselves are
+confirmed: the official article tags `GET, PUT, DELETE` under its own
+`activeMethods` field, read from the source HTML on 2026-08-30. Not inference.
 
-The methods do not agree, and the contract is therefore not promoted.
+`StructureTypeHyperS` served `GET`/`PUT`, by analogy to the classic `/db/STYP`,
+which is documented GET/PUT-only because new-file required data has nothing to
+POST or DELETE to. The analogy was wrong here and nothing had checked it. The
+SDK now serves DELETE and says in the class docstring that its *behaviour* is
+unverified — reset to defaults, or an empty record the document cannot be valid
+without. `live_crud_check.py` drives this case through PUT only.
 
-- The new section states `GET`, `PUT`, `DELETE`, and explains the missing POST
-  as `기본 레코드가 자동 생성됨`.
-- `StructureTypeHyperS` serves `GET`/`PUT` only.
-- The same chapter says required new-file data is GET/PUT only, in its preamble
-  (`02_DB_Project_Structure.md:15`) and for the classic `/db/STYP` in both its
-  contents table and its own Methods row.
+The payload agrees exactly with `GET /info/db/STYP-M1` from 2026-07-29 and
+2026-08-16: the same six top-level fields and the same four `MASS_CONTROL`
+members. A transcription from the official article and a live schema probe
+arriving independently at one shape is the strongest evidence this repo holds
+for any Hyper-S endpoint.
 
-The section's own reason for dropping POST — the record is auto-created —
-is the chapter's reason for `/db/STYP` having no DELETE either. A record that
-must exist for the document to be valid has nothing to delete to.
+The contract is still not promoted, for a reason that is not about this
+endpoint:
 
-No live call has settled it. `docs/coverage.json` records a `write`-level
-verification for this endpoint, but `live_crud_check.py`'s case passes an empty
-create payload and a `None` expected-created value, and the sibling
-`StructureType` case above it is commented `GET/PUT only, no POST/DELETE`. The
-tier's summary sentence in coverage.json describes the tier, not this case: the
-POST and DELETE legs never ran here.
+- The Specifications table numbers `MASS_CONTROL`'s members `2-(1)` through
+  `2-(4)`. `_NUMBER_CHILD` recognises a bare `(1)` and the `4-1` form, but not
+  the `N-(M)` hybrid, so the draft emits `MASS_TYPE`, `MASS_POS`, `SELFWEIGHT`
+  and `MASS_AXIS` as root fields beside their own parent — the `/db/RIGD`
+  flattening defect again. **71 rows across the manual use this form.**
+- Two conditional fields take their `enum` from the condition rather than the
+  value list: `MASS_POS` gets `[LUMPED]` (its condition) instead of
+  `[CENTROID, OFFSET]`, and `MASS_AXIS` gets `[CONSISTENT]` instead of
+  `[XYZ, XY, Z]`.
+- `SELFWEIGHT`'s `appliesWhen` renders `equals: "true"` as a string where the
+  field is boolean.
 
-So this is a documentation question, not an SDK one, and one line of the manual
-settles it. Until then the SDK keeps the narrower surface, which cannot destroy
-a record the product needs.
+Fixing the numbering reshapes those 71 rows wherever they appear, which is the
+reviewed contract-shape migration `contract_migration_brief.md` already refuses
+to do as an extractor-only change. Promote this endpoint as part of that work,
+not ahead of it.
 
 ## Python surface drift introduced by promotion (revisit after the Codex run)
 

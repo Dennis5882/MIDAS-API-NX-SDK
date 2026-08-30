@@ -54,12 +54,7 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's MaterialColor case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
+    safeToOmit: unverified
     provenance: manual
   - key: W_G
     description: >-
@@ -68,12 +63,7 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's MaterialColor case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
+    safeToOmit: unverified
     provenance: manual
   - key: W_B
     description: >-
@@ -82,12 +72,7 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's MaterialColor case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
+    safeToOmit: unverified
     provenance: manual
   - key: HF_R
     description: >-
@@ -96,12 +81,7 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's MaterialColor case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
+    safeToOmit: unverified
     provenance: manual
   - key: HF_G
     description: >-
@@ -110,12 +90,7 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's MaterialColor case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
+    safeToOmit: unverified
     provenance: manual
   - key: HF_B
     description: >-
@@ -124,12 +99,7 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's MaterialColor case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
+    safeToOmit: unverified
     provenance: manual
   - key: HE_R
     description: >-
@@ -138,12 +108,7 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's MaterialColor case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
+    safeToOmit: unverified
     provenance: manual
   - key: HE_G
     description: >-
@@ -152,12 +117,7 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's MaterialColor case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
+    safeToOmit: unverified
     provenance: manual
   - key: HE_B
     description: >-
@@ -166,12 +126,7 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's MaterialColor case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
+    safeToOmit: unverified
     provenance: manual
   - key: bBLEMD
     description: >-
@@ -180,12 +135,7 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's MaterialColor case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
+    safeToOmit: unverified
     provenance: manual
   - key: FACT
     description: >-
@@ -194,12 +144,7 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's MaterialColor case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
+    safeToOmit: unverified
     provenance: manual
 
 extraction:

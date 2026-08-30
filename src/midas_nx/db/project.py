@@ -97,10 +97,24 @@ class StructureTypeHyperSPayload(TypedDict, total=False):
 
 
 class StructureTypeHyperS(DbResource):
+    """Unlike the classic /db/STYP, this one serves DELETE.
+
+    The official article tags GET, PUT, DELETE under its own activeMethods
+    field, read directly from the source HTML on 2026-08-30; the SDK had
+    GET/PUT here by analogy to /db/STYP, which is documented GET/PUT-only
+    because new-file required data has nothing to POST or DELETE to. The
+    analogy was wrong about this endpoint and nothing had checked it.
+
+    What DELETE *does* here is still unknown - reset to defaults, or an
+    empty record the document cannot be valid without. Nobody has run it:
+    live_crud_check.py drives this case through PUT only. Read the response
+    back with GET before relying on it.
+    """
+
     ENDPOINT = "/db/STYP-M1"
     NAME = "Structure Type (Hyper-S)"
     PRODUCTS = HYPER_S_ONLY
-    METHODS = _GET_PUT_ONLY
+    METHODS = frozenset({"GET", "PUT", "DELETE"})
 
 
 class ProjectInfoPayload(TypedDict, total=False):

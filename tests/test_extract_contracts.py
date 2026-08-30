@@ -879,6 +879,35 @@ def test_draft_answers_safe_to_omit_only_from_a_confirmed_live_payload(section: 
     assert "not that the resulting model" in fields["bFLAG"]["omissionEvidence"]
 
 
+def test_a_case_that_sends_no_create_payload_is_not_omission_evidence():
+    """An empty create payload is a skipped request, not an accepted one.
+
+    `live_crud_check.py` writes `{}` for records the product creates itself -
+    UNIT, STYP, STYP-M1 and the four CO_* colour defaults, all GET/PUT-only.
+    Its POST leg never runs there. Reading that as "the product accepted every
+    field's absence" turned a request nobody made into blanket proof: it marked
+    31 fields across four promoted contracts safeToOmit on no evidence at all.
+    That is the /db/NMAS shape exactly - the field the manual calls Optional
+    and the server dies without.
+    """
+    evidence = ex.live_omission_evidence()
+
+    assert evidence, "the checker should still yield evidence for ordinary cases"
+    for endpoint, omission in evidence.items():
+        assert omission.sent, f"{endpoint} claims evidence from an empty payload"
+
+
+def test_an_empty_live_payload_proves_nothing_about_omission(section: ex.Section):
+    """Belt and braces: even handed one directly, a draft must not believe it."""
+    evidence = ex.LiveOmission(
+        case="Singleton", endpoint="/db/SYNTH", sent=frozenset(), products="civil"
+    )
+    fields = {f["key"]: f for f in yaml.safe_load(ex.render_draft(section, evidence))["fields"]}
+
+    for key, field in fields.items():
+        assert field["safeToOmit"] == "unverified", key
+
+
 def test_nested_fields_are_never_given_live_evidence(section: ex.Section):
     """A top-level payload key says nothing about members inside it."""
     evidence = ex.LiveOmission(
