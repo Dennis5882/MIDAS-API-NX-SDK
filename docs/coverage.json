@@ -1740,18 +1740,18 @@
       "status": "implemented",
       "module": "midas_nx.db.boundary",
       "live_verified": {
-        "date": "2026-08-16",
+        "date": "2026-08-31",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip attempted 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: POST with the manual's own request-example payload reproduced verbatim (PROPERTY_NAME/DESC/APPLICATION_TYPE=ELEMENT/APPLICATION_TYPE_D=SPG/TOTAL_WEIGHT/OPT_USE_MASS) answered a generic \"Unknown Error\" on both products, on both a seeded and a completely fresh /doc/NEW document. Not resolved as a fixture problem -- left as level=read pending further investigation into /db/NLLP's undocumented preconditions. Reconfirmed 2026-08-27 on Civil NX: the manual's own unmodified worked example (PROPERTY_NAME/APPLICATION_TYPE=ELEMENT/APPLICATION_TYPE_D=SPG/...) still answers the identical \"Unknown Error\" seen 2026-08-16 on both products -- same standing failure, not resolved. Also blocks a genuine write test of /db/NLNK-M1 (PROP_NAME has nothing valid to reference).",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip attempted 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: POST with the manual's own request-example payload reproduced verbatim (PROPERTY_NAME/DESC/APPLICATION_TYPE=ELEMENT/APPLICATION_TYPE_D=SPG/TOTAL_WEIGHT/OPT_USE_MASS) answered a generic \"Unknown Error\" on both products, on both a seeded and a completely fresh /doc/NEW document. Not resolved as a fixture problem -- left as level=read pending further investigation into /db/NLLP's undocumented preconditions. Reconfirmed 2026-08-27 on Civil NX: the manual's own unmodified worked example (PROPERTY_NAME/APPLICATION_TYPE=ELEMENT/APPLICATION_TYPE_D=SPG/...) still answers the identical \"Unknown Error\" seen 2026-08-16 on both products. Re-run 2026-08-31 on empty scratch documents (Gen NX v2.1 / Civil NX v2.2, build 08/26/2026) again returned HTTP 201 with the same error body on both products; each individual test id was absent after cleanup. Also blocks a genuine write test of /db/NLNK-M1 (PROP_NAME has nothing valid to reference).",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
         "level": "read",
-        "outcome": "success_empty"
+        "outcome": "write_rejected"
       }
     },
     {
@@ -2037,7 +2037,7 @@
         "products": [
           "gen"
         ],
-        "method": "2026-08-16 initially failed because the manual then documented SDIS_DEV_TYPE's third value as \"SB\" rather than \"SLD\" and omitted QD/Pi_VALUE. The corrected SLD branch (SDIS_DEV_TYPE=SLD with the SB object) was re-run on a fresh Gen scratch model on 2026-08-31 and passed POST -> GET -> PUT -> GET -> individual-id DELETE -> GET. LRB still returns Wrong Field with the corrected nested DX/K0/KE shape; /info confirms the shape, so its model literal/precondition remains unresolved. NRB has not been write-tested. Civil route /info remains 404.",
+        "method": "2026-08-16 initially failed because the manual then documented SDIS_DEV_TYPE's third value as \"SB\" rather than \"SLD\" and omitted QD/Pi_VALUE. On a fresh Gen scratch model on 2026-08-31, the corrected SLD branch (SDIS_DEV_TYPE=SLD with the SB object) and the official NRB example each passed POST -> GET -> PUT -> GET -> individual-id DELETE -> GET; NRB's updated KV was read back. LRB still returns Wrong Field with the corrected nested DX/K0/KE shape; /info confirms the shape, so its model literal/precondition remains unresolved. Civil route /info remains 404.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026"
         },

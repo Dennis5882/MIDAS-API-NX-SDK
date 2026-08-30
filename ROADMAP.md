@@ -61,6 +61,7 @@ Live-verification evidence lives in each endpoint's `live_verified` entry in `do
 | 2026-08-16 | MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported | MIDAS Civil NX 2026 (v2.2), build 08/14/2026 |
 | 2026-08-16 | MIDAS Gen NX 2026 (v2.1), build 08/06/2026 | MIDAS Civil NX 2026 (v2.1), build 06/05/2026 |
 | 2026-08-16 | MIDAS Gen NX 2026 (v2.1), build 08/14/2026 | MIDAS Civil NX 2026 (v2.2), build 08/14/2026 |
+| 2026-08-16 | MIDAS Gen NX 2026 (v2.1), build 08/26/2026 | MIDAS Civil NX 2026 (v2.2), build 08/26/2026 |
 | 2026-08-17 | MIDAS Gen NX 2026 (v2.1), build 06/23/2026 | MIDAS Civil NX 2026 (v2.2), build 08/06/2026 |
 | 2026-08-17 | MIDAS Gen NX 2026 (v2.1), build 08/06/2026 | MIDAS Civil NX 2026 (v2.2), build 06/18/2026 |
 | 2026-08-17 | MIDAS Gen NX 2026 (v2.1), build 08/14/2026 | MIDAS Civil NX 2026 (v2.2), build 08/14/2026 |
@@ -78,6 +79,7 @@ Live-verification evidence lives in each endpoint's `live_verified` entry in `do
 | 2026-08-27 | MIDAS Gen NX 2026 (v2.1), build 08/12/2026 | MIDAS Civil NX 2026 (v2.2), build 08/12/2026 |
 | 2026-08-27 | MIDAS Gen NX 2026 (v2.1), build 08/20/2026 | ? |
 | 2026-08-31 | ? | MIDAS Civil NX 2026 (v2.2), build 08/26/2026 |
+| 2026-08-31 | MIDAS Gen NX 2026 (v2.1), build 08/14/2026 | MIDAS Civil NX 2026 (v2.2), build 08/14/2026 |
 | 2026-08-31 | MIDAS Gen NX 2026 (v2.1), build 08/26/2026 | ? |
 | 2026-08-31 | MIDAS Gen NX 2026 (v2.1), build 08/26/2026 | MIDAS Civil NX 2026 (v2.2), build 08/26/2026 |
 | 2026-08-31 | MIDAS Gen NX 2026 (v2.1), build 08/26/2026 — confirms 404, not supported | MIDAS Civil NX 2026 (v2.2), build 08/26/2026 |

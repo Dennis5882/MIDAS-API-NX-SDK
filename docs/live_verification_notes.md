@@ -7258,8 +7258,13 @@ verification record. It is not silently retyped from one live observation.
   old `Wrong Field` result, which predated the manual's SDST/SDVE correction.
 - **`/db/SDIS`**: Civil again returned 404 for `/info/db/SDIS`. On Gen, the
   corrected `SDIS_DEV_TYPE="SLD"` plus `SB` payload passed the same complete
-  round trip, including an updated `KV`. LRB and NRB remain unverified write
-  branches.
+  round trip, including an updated `KV`. The official `NRB` example subsequently
+  passed the same complete round trip and returned its updated `KV`; its record
+  was removed individually and a final GET returned an empty table. LRB still
+  returns `Wrong Field` with the official corrected `K0`/nested-`DX` shape,
+  even though Gen `/info` exposes that shape. This leaves the LRB
+  model-literal/precondition unresolved rather than treating it as a field-shape
+  defect.
 - **`/db/MVCTch`**: Civil and Gen both passed the full round trip for the
   `iCODETYPE=0` / `FREQ` branch. `FREQ.USER_F=0` fails explicitly with
   `f > 0`; `USER_F=3.0` passes. The manual's request example omits `iSLCM`
@@ -7272,6 +7277,17 @@ verification record. It is not silently retyped from one live observation.
   an undocumented product precondition or module gate, not the documented
   payload spelling. Every test record was targeted by its individual-id
   delete; the scratch models contain no test records from this pass.
+
+### `/db/NLLP` fresh-model re-check (2026-08-31)
+
+On both empty current-build scratch documents, the manual's exact
+`APPLICATION_TYPE="ELEMENT"` / `APPLICATION_TYPE_D="SPG"` request example
+again returned HTTP 201 with the error body `Unknown Error`. This is the same
+result as the seeded and fresh-document attempts recorded on 2026-08-16 and
+the Civil re-check on 2026-08-27. The record never materialized; individual-id
+cleanup and a final GET confirmed each NLLP table remained empty. The finding
+therefore remains an undocumented product precondition or module gate, not an
+SDK or documented-field-shape conclusion.
 
 This is evidence from **one MIDASIT account, one product license/edition,
 one point in time**, not from the manual. It is plausible some of the
