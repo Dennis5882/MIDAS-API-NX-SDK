@@ -20,6 +20,11 @@ source:
     chapterFile: 04_DB_Properties.md
     section: "22. `/db/IEHC`"
     url: https://support.midasuser.com/hc/en-us/articles/35944093809689
+  liveSchema:
+    checked: "2026-08-30"
+    products: [gen]
+    note: >-
+      Gen /info reports WAreaSize as string and WAreaSizeCover as integer.
   liveNotes:
     - docs/live_verification_notes.md
 
@@ -30,6 +35,8 @@ verification:
       ref: db-read-sweep-2026-07-26
     - product: gen
       ref: db-read-sweep-2026-07-26
+    - product: gen
+      ref: db-iehc-wareasize-type-2026-08-30
 
 operations:
   - method: DELETE
@@ -272,6 +279,18 @@ sdkRules:
 
 knownDefects:
   - ref: db-delete-body-empties-table
+
+manualDefects:
+  - describes: field_value
+    manualSays: >-
+      The Specifications table types WAreaSize as Integer, although the
+      chapter's Request Example sends the string "AUTO".
+    actual: >-
+      Gen NX /info types WAreaSize as string; its sibling WAreaSizeCover is
+      integer, so the mismatch is limited to WAreaSize.
+    evidence: >-
+      contracts/verification/gen-nx.yaml#db-iehc-wareasize-type-2026-08-30
+      and docs/live_verification_notes.md (2026-08-30).
 
 extraction:
   source: 04_DB_Properties.md line 1916

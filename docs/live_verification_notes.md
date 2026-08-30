@@ -7183,6 +7183,33 @@ manual's Hyper-S section has no field-level Specifications table and does not
 state that limit. The scratch model was reset with `/doc/NEW` after individual
 per-id deletion checks completed.
 
+### `/db/MATL-M1` is not `/db/MATL` plus Hyper-S additions (2026-08-31)
+
+The manual's `04_DB_Properties.md` statement that the Hyper-S endpoint has the
+same base material structure as `/db/MATL`, with additional Hyperelastic
+support, is contradicted by Civil NX `/info` output:
+
+```text
+/db/MATL     NAME, TYPE, PARAM, DAMP_RAT, HE_COND, HE_SPEC, PLMT, P_NAME, bMASS_DENS
+/db/MATL-M1  MATL_NAME, MATL_TYPE, PARAM, DAMP_RAT
+```
+
+The endpoint has different name/type wire keys and fewer top-level members;
+`HE_COND` and `HE_SPEC` are on `/db/MATL`, not `/db/MATL-M1`. The two material
+families also use different `PARAM[].P_TYPE` numbering and nesting, as the
+write round trips above confirm. A parent-field delegation would therefore be
+a wrong contract, not a useful fallback. This is a manual-structure defect to
+report upstream, not an SDK source for contract transcription.
+
+### `/db/IEHC` `WAreaSize` is a live string, not the table's integer (2026-08-30)
+
+Gen NX `/info/db/IEHC` types only `WAreaSize` as `string`; the sibling
+`WAreaSizeCover` is `integer`. The chapter's Specifications table calls
+`WAreaSize` Integer, while its own Request Example sends `"WAreaSize": "AUTO"`.
+The promoted contract deliberately retains the manual's Integer declaration
+and records this conflict separately under `manualDefects` plus the Gen
+verification record. It is not silently retyped from one live observation.
+
 ### SDST, SDIS, MVCTch and WVLD re-check on fresh scratch models (2026-08-31)
 
 - **`/db/SDST`**: the current official BL2 payload passed `POST -> GET -> PUT

@@ -410,3 +410,17 @@ records:
       rather than at nothing.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-iehc-wareasize-type-2026-08-30
+    endpoints: ["/db/IEHC"]
+    date: "2026-08-30"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 08/26/2026
+    level: read
+    outcome: success
+    method: GET /info/db/IEHC schema introspection on an empty scratch model.
+    finding: >-
+      WAreaSize is string live, while WAreaSizeCover is integer. The manual's
+      own Request Example sends WAreaSize as "AUTO" despite its Specifications
+      table calling it Integer.
+    evidence:
+      - docs/live_verification_notes.md
