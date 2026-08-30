@@ -1510,6 +1510,27 @@ def test_same_section_json_schema_supplies_a_missing_default_column_only(tmp_pat
     assert not count.notes
 
 
+def test_missing_default_column_is_recorded_once_in_extraction_not_per_field(tmp_path: Path):
+    path = tmp_path / "99_DB_NoDefaultColumn.md"
+    path.write_text(
+        """## 1. `/db/NO-DEFAULT` -- no Default column
+
+| No. | Description | Key | Value Type | Required |
+|---|---|---|---|---|
+| 1 | First | `FIRST` | String | Required |
+| 2 | Second | `SECOND` | Number | Optional |
+""",
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    assert all("the table has no Default column" not in field.notes for field in section.tables[0].fields)
+    draft = yaml.safe_load(ex.render_draft(section))
+    missing = draft["extraction"]["missingColumns"]
+    assert len(missing) == 1
+    assert missing[0]["columns"] == ["Default"]
+
+
 @pytest.mark.parametrize(
     ("schema_form", "record_schema"),
     [

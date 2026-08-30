@@ -672,6 +672,7 @@ class ParsedField:
     properties: list["ParsedField"] = dataclass_field(default_factory=list)
     products: tuple[str, ...] = ()
     shared_number_group: bool = False
+    default_column_missing: bool = False
 
 
 # JSON member names may begin with a digit.  ``7TH_DOF_TYPE`` is an exact,
@@ -865,6 +866,7 @@ class ParsedTable:
     heading: str
     line: int
     fields: list[ParsedField]
+    missing_columns: list[str] = dataclass_field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -1878,9 +1880,8 @@ def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], 
 
                 default = _agreed_schema_value(property_entries, "default")
                 if default is not None:
-                    if "the table has no Default column" in field.notes:
+                    if field.default_column_missing:
                         field.documented_default = default
-                        field.notes.remove("the table has no Default column")
                     # A bare string in a Markdown Default cell is ambiguous
                     # by itself (``System`` may be a UI label). The same
                     # section's JSON Schema ``default`` makes it an exact
@@ -2262,7 +2263,7 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                 if enum and _ENUM_VALUES_ELSEWHERE in notes:
                     notes.remove(_ENUM_VALUES_ELSEWHERE)
                 constraints = _type_constraints(entry_type) if entry_type is not None else {}
-                default, note = _normalize_default(entry_default) if entry_default is not None else (None, "the table has no Default column")
+                default, note = _normalize_default(entry_default) if entry_default is not None else (None, None)
                 if note:
                     notes.append(note)
                 type_default = _type_default(entry_type) if entry_type is not None else None
@@ -2287,6 +2288,7 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                         number=_clean(cells[0]) if cells else "",
                         notes=notes,
                         shared_number_group=parallel is not None,
+                        default_column_missing=default_column is None,
                     )
                 )
 
@@ -2296,6 +2298,7 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                     heading=heading or "(unlabelled table)",
                     line=offset + index + 1,
                     fields=_nest(fields),
+                    missing_columns=["Default"] if default_column is None else [],
                 )
             )
         for variant_heading, variant_line, variant_fields, _ in inline_variants:
@@ -2305,6 +2308,7 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                         heading=variant_heading,
                         line=variant_line,
                         fields=_nest(variant_fields),
+                        missing_columns=["Default"] if default_column is None else [],
                     )
                 )
         index = row
@@ -2821,6 +2825,13 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
     lines.append("extraction:")
     lines.append(f"  source: {section.chapter_file} line {main.line if main else '?'}")
     lines.append(f"  table: {_scalar(main.heading if main else 'none found')}")
+    missing_columns = [table for table in section.tables if table.missing_columns]
+    if missing_columns:
+        lines.append("  missingColumns:")
+        for table in missing_columns:
+            lines.append(f"    - heading: {_scalar(table.heading)}")
+            lines.append(f"      line: {table.line}")
+            lines.append(f"      columns: [{', '.join(_scalar(column) for column in table.missing_columns)}]")
     if structural_merges:
         lines.append("  structuralTables:")
         for merge in structural_merges:

@@ -987,19 +987,33 @@ export namespace DbBoundaryTypes {
       S_NODE: Array<number>;
     }>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface GeneralLinkPropertyPayload {
-    PROPERTY_NAME?: string;
+    /** General Link Property Name */
+    PROPERTY_NAME: string;
+    /** Description */
     DESC?: string;
-    APPLICATION_TYPE?: string;
-    APPLICATION_TYPE_D?: string;
+    /** Application Type */
+    APPLICATION_TYPE: string;
+    /** Property/Devices Type */
+    APPLICATION_TYPE_D: string;
+    /** Self-Weight (Total) */
     TOTAL_WEIGHT?: number;
+    /** Lumped Weight Ratio */
     L_WEIGHT_RATIO?: number;
+    /** Use Mass Option */
     OPT_USE_MASS?: boolean;
+    /** Mass (Total) */
     TOTAL_MASS?: number;
+    /** Lumped Mass Ratio */
     L_MASS_RATIO?: number;
+    /** Shear Spring Location Option */
     OPT_SHEAR_SPR_LOC?: boolean;
+    /** Distance Ratio from End I (Dy) */
     DIST_RATIO_DY?: number;
+    /** Distance Ratio from End I (Dz) */
     DIST_RATIO_DZ?: number;
+    /** Coupled Input Method */
     COUPLED_INPUT_METHOD?: number;
   }
   /** Generated from contracts/endpoints/. */
@@ -1187,33 +1201,97 @@ export namespace DbBoundaryTypes {
     OPT_EXFN_CE?: boolean;
     EXFN_CE?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SeismicDeviceViscousDamperPayload {
-    COMMON?: SeismicDeviceCommon;
+    /** Common Data */
+    COMMON: {
+      /** Name */
+      NAME: string;
+      /** Description */
+      DESC?: string;
+      /** Input Method · 0=사용자 입력, 1=참조 DB */
+      INPUT_METHOD: number;
+      /** Company */
+      COMPANY: string;
+      /** Product Name */
+      PRODUCT_NAME: string;
+      /** Type Number */
+      TYPE_NUMBER: string;
+    };
+    /** Device Type */
     DEVICE_TYPE?: string;
-    DAMPER_TYPE?: number;
-    DASHPOT_TYPE?: number;
-    INPUT_TYPE?: number;
-    INPUT_TYPE_EXFN?: number;
-    ITEM?: Array<SeismicDeviceViscousDamperItem>;
+    /** Damper Model · 0=Single Dashpot, 1=Kelvin(Voigt), 2=Maxwell */
+    DAMPER_TYPE: number;
+    /** Dashpot Type · 0=Linear Elastic, 1=Bilinear, 2=Exponential */
+    DASHPOT_TYPE: number;
+    /** Input Type · 0=감쇠비 α, 1=감쇠상수 C */
+    INPUT_TYPE: number;
+    /** Input Type (Exponential Function Type용) */
+    INPUT_TYPE_EXFN: number;
+    /** Property Data (DOF별 6항목) */
+    ITEM: Array<{
+      /** DOF 활성화 여부 */
+      OPT_DOF: boolean;
+      /** 초기 감쇠계수 CE */
+      CE: number;
+      /** 최대 감쇠력 P */
+      P1: number;
+      /** 이차 감쇠계수 C */
+      C1: number;
+      /** 감쇠 감소 계수 α */
+      ALPHA1: number;
+      /** 초기 강성 K */
+      K0: number;
+      /** 감쇠력(Exponential, Damping Force) */
+      EXFN_PY: number;
+      /** 기준 속도(Exponential, Reference Velocity) */
+      EXFN_VY: number;
+      /** 감쇠 지수(Exponential, Damping Exponent) */
+      EXFN_DE: number;
+      /** 감쇠계수(Exponential, Damping Coefficient) */
+      EXFN_DC: number;
+      /** Exponential 초기 감쇠계수 사용 여부 */
+      OPT_EXFN_CE: boolean;
+      /** Exponential 초기 감쇠계수 값 */
+      EXFN_CE: number;
+    }>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SeismicDeviceViscoelasticDamperPayload {
-    COMMON?: SeismicDeviceCommon;
-    MATERIAL_TYPE?: string;
-    SHEAR_AREA?: number;
-    THICKNESS?: number;
-    MULTIPL?: number;
-    DIR?: string;
-    FREQ?: number;
-    STIFF_FACTOR?: number;
-    DAMP_FACTOR?: number;
-    REF_T?: number;
-    LIMIT_DEF?: number;
-    EFF_STIFF?: number;
-    EQUI_DAMP?: number;
-    OPT_MOUNT_STIFF?: boolean;
-    MOUNT_STIFF?: number;
-    OPT_KINETIC_FRIC?: boolean;
-    KINETIC_FRIC?: number;
+    /** Common Data (SDVI와 동일 구조) */
+    COMMON: JsonObject;
+    /** Material Type · "GR100" / "GR300" / "SR05" / "GR400" / "CST" / "TRC" */
+    MATERIAL_TYPE: string;
+    /** Shear Area */
+    SHEAR_AREA: number;
+    /** Thickness */
+    THICKNESS: number;
+    /** Multiplier */
+    MULTIPL: number;
+    /** Direction("Dx"/"Dy"/"Dz" 등) */
+    DIR: string;
+    /** Frequency */
+    FREQ: number;
+    /** Stiffness Factor */
+    STIFF_FACTOR: number;
+    /** Damping Factor */
+    DAMP_FACTOR: number;
+    /** Reference Temperature */
+    REF_T: number;
+    /** Limit Deformation */
+    LIMIT_DEF: number;
+    /** Effective Stiffness */
+    EFF_STIFF: number;
+    /** Equivalent Damping */
+    EQUI_DAMP: number;
+    /** Use Mount Stiffness */
+    OPT_MOUNT_STIFF: boolean;
+    /** Mount Stiffness */
+    MOUNT_STIFF: number;
+    /** Use Kinetic Friction */
+    OPT_KINETIC_FRIC: boolean;
+    /** Kinetic Friction */
+    KINETIC_FRIC: number;
   }
   export interface SeismicDeviceSteelDamperBL2 {
     BETA?: number;
@@ -1243,18 +1321,30 @@ export namespace DbBoundaryTypes {
     LY3?: SeismicDeviceSteelDamperLY3;
     IK2?: SeismicDeviceSteelDamperIK2;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SeismicDeviceHystereticIsolatorPayload {
-    COMMON?: SeismicDeviceCommon;
-    SDHY_HYS_MODEL?: string;
-    MSS?: number;
-    K0?: number;
-    P1?: number;
-    P2?: number;
-    ALPHA1?: number;
-    ALPHA2?: number;
-    BETA?: number;
-    Phi?: number;
-    LAMBDA?: number;
+    /** Common Data */
+    COMMON: JsonObject;
+    /** Hysteresis Model · "DegradingBiLinear" 등 */
+    SDHY_HYS_MODEL: string;
+    /** Number of Shear Springs (MSS 전단 스프링 수) */
+    MSS: number;
+    /** K0 Initial Stiffness */
+    K0: number;
+    /** P1 Yield Strength */
+    P1: number;
+    /** P2 Yield Strength */
+    P2: number;
+    /** Alpha1 Stiffness Factor */
+    ALPHA1: number;
+    /** Alpha2 Stiffness Factor */
+    ALPHA2: number;
+    /** Beta(Exponent in Unloading Stiffness Calculation) */
+    BETA: number;
+    /** Phi */
+    Phi: number;
+    /** Lambda */
+    LAMBDA: number;
   }
   export interface SeismicDeviceIsolatorVerticalDX {
     OPT_CONS_NONL?: boolean;

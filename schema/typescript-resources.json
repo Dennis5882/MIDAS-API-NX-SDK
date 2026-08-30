@@ -1163,7 +1163,7 @@
       "className": "SeismicDeviceHystereticIsolator",
       "exportName": "seismicDeviceHystereticIsolator",
       "endpoint": "/db/SDHY",
-      "name": "Seismic Device - Hysteretic Isolator (MSS)",
+      "name": "Seismic Device – Hysteretic Isolator (MSS)",
       "products": [
         "gen"
       ],
@@ -1251,7 +1251,7 @@
       "className": "SeismicDeviceViscoelasticDamper",
       "exportName": "seismicDeviceViscoelasticDamper",
       "endpoint": "/db/SDVE",
-      "name": "Seismic Device - Viscoelastic Damper",
+      "name": "Seismic Device – Viscoelastic Damper",
       "products": [
         "civil",
         "gen"
@@ -1281,7 +1281,7 @@
       "className": "SeismicDeviceViscousDamper",
       "exportName": "seismicDeviceViscousDamper",
       "endpoint": "/db/SDVI",
-      "name": "Seismic Device - Viscous/Oil Damper",
+      "name": "Seismic Device – Viscous/Oil Damper",
       "products": [
         "civil",
         "gen"
