@@ -298,11 +298,9 @@ Reading either form is extractor work. Do not ask the manual repo for them.
    Never collapse the two into one.
 5. **The 16 unparseable sections** — JSON-Schema `/doc/*` bodies and delegating
    `-M1` sections. Two distinct parsers, each worth its own commit.
-6. **Conditional variants — bring a proposal, do not choose.** 19 drafts and
-   the `/db/FBLA` `FLOOR_DIST_TYPE = 1 or 2` case both wait on one schema
-   decision the author has not made. Note that the report's
-   `9 explicitly modelled / 59 unmerged` counter does not measure progress here
-   and should be fixed before anyone quotes it.
+6. **Conditional variants — the schema decision comes last, and by then it is
+   much smaller.** See the staged plan below. Steps 0-2 need no author
+   decision; do those first, because they change what the decision is about.
 
 ### Two reports owed to the manual repo, not to this one
 
@@ -331,3 +329,123 @@ Stated here because each was believed and repeated:
 - The `N-(M)` numbering fix touches one section, not 71 rows of reshaping.
 - `/db/STYP-M1` is no longer a manual gap.
 - The Korean-label decision is settled: English.
+
+## Conditional variants: a staged plan, with the schema decision last
+
+Measured 2026-08-30. Read this before treating the 19 refused drafts as one
+blocked queue — most of what looks like a schema problem is not one.
+
+### The counter is measuring the wrong thing
+
+176 supplementary tables sit in `extraction.unmergedTables` across 40
+endpoints. The extractor labels each with the nearest `#` heading, and the
+chapters label a variant table **two** ways:
+
+```text
+### 8-2. 파라미터                             <- what the extractor records
+| No. | ... |                                   (the common table)
+
+**Time Function (FUNCTYPE=1) 추가 파라미터**    <- the selector lives here
+| No. | ... |
+**Sinusoidal (FUNCTYPE=2) 추가 파라미터**
+| No. | ... |
+```
+
+A bold label is not a markdown heading, so every bold-labelled variant table
+inherits its section's heading and is filed as "selector not explicit" when the
+manual states the selector plainly. `/db/CCFC`'s `TYPE="CONST"` / `TYPE="USER"`
+and `/db/THFC`'s `FUNCTYPE=1` / `FUNCTYPE=2` are this case.
+
+Two scratch classifiers put the share of tables that already name a selector
+and one value at 40 and at 63 out of 176. **Do not quote either number** — that
+they disagree is the finding, and it says the population needs a real
+classifier before anyone designs schema around it. What both runs agree on:
+
+- a large minority already state the selector, many inside bold labels;
+- about nine need several values for one table (`FLOOR_DIST_TYPE = 1 or 2`,
+  `LOAD_MODEL=2/3`, `STANDARD_CODE: "NA"/"NB"/"NC"`);
+- the "unresolved" remainder is polluted with tables that are not variants —
+  prose picked up as a label (`없어 확정된 것은 아니다.`,
+  `아래와 동일한 하위 구조를 가짐:`), and ordinary continuation tables.
+
+### The proposal: unify `when` onto `appliesWhen`, do not invent
+
+The schema already carries two condition constructs, and they have diverged:
+
+| | shape | dotted path | AND | several values |
+| --- | --- | :-: | :-: | :-: |
+| field `appliesWhen` | `[{path, equals}]` | yes | yes | no |
+| `variant.when` | `{field, equals}` | no | no | no |
+
+Give `variant.when` the same shape as `appliesWhen`, and add `in` to both:
+
+```yaml
+variants:
+  - when: [{ path: FLOOR_DIST_TYPE, in: [1, 2] }]          # the OR case
+  - when: [{ path: STR.SPEC_CODE, equals: "KS_BRG" }]      # nested selector
+  - when: [{ path: TYPE,  equals: TENSTR },                # two-level
+            { path: STYPE, equals: 1 }]
+```
+
+One array-of-AND-conditions covers all three shapes that block drafts today.
+It is not a new concept: `/db/STYP-M1`'s draft already renders
+`appliesWhen: [{path: MASS_CONTROL.MASS_TYPE, equals: LUMPED}]`. Constrain
+`equals` and `in` as mutually exclusive and require `in` to carry two or more
+values, so the looser form cannot be used where the tighter one applies.
+
+**Deliberately out of scope**, and they should stay in `unmergedTables`:
+
+- **Presence-selected variants.** `/db/EPMT`'s
+  `Tresca / Von-Mises 공통 파라미터 (`"TRESCA"` or `"VMISES"` object)` switches
+  on *which object the payload carries*, not on a scalar's value. Different
+  mechanism; do not fold it into this decision.
+- **Label-only tables.** `/db/ELEM`'s `#### Wall`, `#### Plate`. `TYPE="WALL"`
+  is obvious to a human and is not written down. Leaving these unmerged is what
+  rule 3 requires, not a failure. Ask the manual repo to state the selector.
+
+Resolving a label against the discriminator's own enum row
+(`"TR"(Tresca)` in `MODEL_TYPE`'s Description, matching `#### Tresca ...`) was
+measured as a possible bridge: it resolves **2 of 176**. Not a lever.
+
+### Order — steps 0-2 need no author decision
+
+0. **Teach the extractor to read bold table labels**, and stop filing prose as
+   a variant label. Changes what the decision is about; needs no decision.
+1. **Fix the `9 explicitly modelled / 59 unmerged` counter.** The hand-curated
+   `_conditional_fields` map (eight endpoints) is invisible to it and a
+   hand-merged section still counts among the 59, so today there is no way to
+   measure step 0's effect.
+2. **Re-measure.** What remains after 0 and 1 is the real decision surface.
+3. **Then** take the `when`/`in` proposal above to the author.
+
+## What is mechanical, and what is not
+
+The 48 drafts refused for review notes carry 572 notes in 23 distinct forms.
+They are not equally hard, and the split is sharp:
+
+| notes | form | mechanical? |
+| ---: | --- | --- |
+| 262 | the table has no Default column | **yes** — `documentedDefault: null` already means "the manual gives none" |
+| 140 | the table has no Required column | **no** — `requirement` and `documentedOptional` have no "unstated" value |
+| 18 | the table has no Value Type column | no — same reason |
+| 99 | non-literal default `"System"`/`"Auto"`/`"ADD, REPLACE"` kept verbatim | no — needs a live check |
+| 12 | enum values are listed elsewhere in the chapter | partly — the values exist, finding them is reading |
+| 41 | cross-field constraints, type/child contradictions, unstated conditions | no |
+
+Partitioned by draft rather than by note:
+
+- **8 drafts are blocked only by "no Default column"** and are fully
+  mechanical: `db-sdhy`, `db-sdis`, `db-sdst`, `db-sdve`, `db-sdvi`,
+  `db-mvctch`, `db-nllp`, `db-wvld`.
+- **4 more** (`db-actl-m1`, `db-mcon`, `view-active`, `view-select`) are blocked
+  only by missing-whole-column notes, but include a missing Required or Value
+  Type column. They become mechanical **only if** the schema gains an
+  "unstated" requiredness — a small, separate author decision, and the honest
+  one, because inventing `optional` for a blank column is exactly the
+  `documentedOptional`/`safeToOmit` conflation the schema exists to prevent.
+- **36 drafts carry at least one judgment note** and are not batch work.
+
+Other mechanical items, for completeness: the `/db/STYP-M1` child numbering
+(measured: one section changes, zero promoted contracts), reading bold variant
+labels, and fixing the variant counter. Widening the generator's shadow gate is
+mechanical to apply but will surface drift that is not.
