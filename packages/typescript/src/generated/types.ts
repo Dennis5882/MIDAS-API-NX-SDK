@@ -373,6 +373,7 @@ export namespace DbAnalysisControlTypes {
     iBC?: number;
     FREQ?: unknown;
     BRIDGE1?: unknown;
+    BRIDGE2?: unknown;
   }
   /** Generated from contracts/endpoints/. */
   export interface MovingLoadAnalysisControlIndiaPayload {

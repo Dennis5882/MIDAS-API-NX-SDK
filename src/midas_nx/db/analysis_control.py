@@ -350,8 +350,8 @@ class MovingLoadAnalysisControl(DbResource):
 class MovingLoadAnalysisControlChinaPayload(TypedDict, total=False):
     """docs/manual/12_DB_Analysis_Control.md #10 — /db/MVCTch Specifications tables.
 
-    FREQ/BRIDGE1 are deeply nested, bridge-type-dependent objects — left as
-    Any for v1, matching the SectBefore.SECT_I precedent.
+    FREQ/BRIDGE1/BRIDGE2 are deeply nested, bridge-type-dependent objects —
+    left as Any for v1, matching the SectBefore.SECT_I precedent.
     """
 
     POINT: str  # "INF"/"ALL", required
@@ -382,6 +382,7 @@ class MovingLoadAnalysisControlChinaPayload(TypedDict, total=False):
     iBC: int  # Vehicle Load Class Type, optional
     FREQ: Any  # Frequency Data (JTG D60-2015/JTG 04): {"USER_F","SBEM_*","CBEM_*","ARCH_*","CABL_*","SUSP_*",...}
     BRIDGE1: Any  # Bridge Data (other codes): {"BTYPE","RC_*","STL_*","MBRG_*",...}
+    BRIDGE2: Any  # Bridge Data (iCODETYPE=2/3): {"BTYPE","RAIL_*","CULV_*",...}
 
 
 class MovingLoadAnalysisControlChina(DbResource):

@@ -193,7 +193,7 @@ def test_moving_load_analysis_control_also_works_on_gen_client(gen_client):
 
 
 @responses.activate
-def test_moving_load_analysis_control_china_leaves_freq_untyped(civil_client):
+def test_moving_load_analysis_control_china_preserves_conditional_variant_objects(civil_client):
     responses.add(responses.POST, "https://x.test:443/civil/db/MVCTch", json={}, status=200)
     MovingLoadAnalysisControlChina.create(
         {
@@ -204,12 +204,17 @@ def test_moving_load_analysis_control_china_leaves_freq_untyped(civil_client):
                 "FRAME": "AXIAL",
                 "bIF": True,
                 "FREQ": {"USER_F": 0, "SBEM_L": 30},
+                # ``BRIDGE2`` is the iCODETYPE=2/3 branch.  Its live schema
+                # is object-valued but its BTYPE variants are not one shared
+                # TypedDict, so this remains intentionally untyped.
+                "BRIDGE2": {"BTYPE": "RAILBRG", "GROUP": "Railway"},
             }
         },
         client=civil_client,
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["FREQ"]["SBEM_L"] == 30
+    assert json.loads(sent.body)["Assign"]["1"]["BRIDGE2"]["BTYPE"] == "RAILBRG"
 
 
 @responses.activate

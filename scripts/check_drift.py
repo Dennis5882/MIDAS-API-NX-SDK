@@ -67,6 +67,31 @@ def _payload_fields(cls: type) -> Optional[set[str]]:
     return set(annotations.keys()) if annotations else None
 
 
+def _server_fields(info: object) -> set[str]:
+    """Return the field names from either observed ``/info`` envelope.
+
+    Older NX builds returned the resource key directly (``{"NODE": {...}}``).
+    Current Civil and Gen builds wrap a JSON Schema below ``"Argument"`` and
+    place a ``"$schema"`` string first; its actual wire fields are under
+    ``Argument.properties``. Selecting the first top-level value makes the
+    schema URI look like an object and crashes before any drift can be
+    reported, while selecting ``Argument`` itself compares ``type`` and
+    ``properties`` rather than the endpoint's fields. Prefer the current
+    envelope, but retain the legacy direct-resource form.
+    """
+    if not isinstance(info, dict):
+        return set()
+    argument = info.get("Argument")
+    if isinstance(argument, dict):
+        properties = argument.get("properties")
+        return set(properties) if isinstance(properties, dict) else set(argument)
+    for value in info.values():
+        if isinstance(value, dict):
+            properties = value.get("properties")
+            return set(properties) if isinstance(properties, dict) else set(value)
+    return set()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--product", choices=["gen", "civil"], default="gen")
@@ -111,8 +136,7 @@ def main() -> None:
             continue
 
         checked += 1
-        server_schema = next(iter(info.values()), {}) if info else {}
-        server_fields = set(server_schema.keys())
+        server_fields = _server_fields(info)
 
         missing_in_sdk = sorted(server_fields - sdk_fields)
         missing_on_server = sorted(sdk_fields - server_fields)

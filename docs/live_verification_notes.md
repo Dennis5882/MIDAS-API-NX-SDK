@@ -7103,6 +7103,16 @@ Both of these were caught by asking the server. Neither would have been caught
 by any amount of re-reading, because both surfaces agreed with the document
 they were derived from.
 
+### `/db/MVCTch` exposes the documented `BRIDGE2` branch on both products (2026-08-30)
+
+Read-only `GET /info/db/MVCTch` against the supplied Civil NX and Gen NX
+sessions returned `BRIDGE2` under `Argument.properties` on both products.
+The official manual's China moving-load-control section documents it as the
+object required when `iCODETYPE` is 2 or 3 (TB 10002-2017 / Q·CR
+9300-2018). The Python and generated TypeScript payload surfaces had omitted
+the field; it is retained as an untyped object because its `BTYPE` branches
+have different members. No model data was read or changed by this check.
+
 ## Caveat — read before acting on this file
 
 This is evidence from **one MIDASIT account, one product license/edition,
