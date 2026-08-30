@@ -6924,6 +6924,17 @@ endpoints behave the same way, and the chapter's general rule ("신규 파일 �
 데이터는 GET / PUT만 동작") holds for the Hyper-S variant too. The article is
 the thing that is wrong.
 
+Repeated later the same session with the dummy frame in place (3 nodes, 2
+beams, a material, a section, a support and a load case) and with the record
+first set to a deliberately non-default state — `STYPE: "XZ"`, `GRAV: 9.81`,
+`TEMP: 15`, both align flags true, `MASS_TYPE: "CONSISTENT"`. A DELETE that
+reset the record to defaults would have been visible against that; all three
+shapes again answered `error status` and left every field untouched. So the
+question the manual section leaves open — whether DELETE resets to defaults or
+empties the record — has a third answer: it does neither, because it does
+nothing. An empty document was not what made the first result come out that
+way.
+
 `StructureTypeHyperS` keeps `_GET_PUT_ONLY`. It was already right; it had been
 right by analogy rather than measurement, which is why this was worth checking.
 
