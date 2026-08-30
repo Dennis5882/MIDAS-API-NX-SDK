@@ -1,7 +1,11 @@
-"""Source: docs/manual/02_DB_Project_Structure.md, items 1-14, plus STYP-M1
-(the Hyper-S variant of STYP: no Specifications table in the chapter file,
-so its `StructureTypeHyperSPayload` below is derived from `GET
-/info/db/STYP-M1` server introspection instead — see that class's docstring).
+"""Source: docs/manual/02_DB_Project_Structure.md, items 1-15.
+
+STYP-M1 had no chapter section until the manual repo wrote one on 2026-08-30;
+its `StructureTypeHyperSPayload` was derived from `GET /info/db/STYP-M1`
+server introspection, and the section that now exists agrees with it field for
+field. Measured the same day, STYP-M1 and STYP are two spellings of one model
+record — writing either changes the other — which is why neither serves POST
+or DELETE. See docs/live_verification_notes.md for the value mapping.
 
 UNIT/STYP are GET/PUT-only ("신규 파일의 필수 데이터: GET / PUT만 동작") — new-file
 required data doesn't support POST/DELETE. CO_M/CO_S/CO_T/CO_F (visual color
@@ -81,11 +85,19 @@ class MassControlHyperS(TypedDict, total=False):
 
 
 class StructureTypeHyperSPayload(TypedDict, total=False):
-    """No Specifications table exists for this Hyper-S variant of STYP in
-    the manual chapter. Field names/types below come directly from `GET
-    /info/db/STYP-M1` server introspection (confirmed live 2026-07-29,
-    Civil NX Hyper-S) instead of a transcribed table — see the v1.0.0
-    Hyper-S-stub decision in PLAN.md.
+    """Derived from `GET /info/db/STYP-M1` server introspection, and since
+    confirmed against the manual.
+
+    There was no Specifications table for this Hyper-S variant when these
+    fields were written (confirmed live 2026-07-29, Civil NX Hyper-S — see the
+    v1.0.0 Hyper-S-stub decision in PLAN.md). The manual repo wrote the section
+    on 2026-08-30 and it matches: same six keys, same four MASS_CONTROL
+    members.
+
+    MASS_POS applies only when MASS_TYPE is "LUMPED" and is required there;
+    sent under "CONSISTENT" the server accepts the call and discards the
+    field. MASS_AXIS applies only when SELFWEIGHT is true, and under
+    "CONSISTENT" only "XYZ" is accepted. STYPE is "3D", not "_3D".
     """
 
     STYPE: str  # Structure Type

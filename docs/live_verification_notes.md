@@ -6962,6 +6962,74 @@ under a method the manual accepts is evidence about the model, not the route.
 records the disagreement under `manualDefects` with `describes: method` rather
 than silently matching the manual.
 
+### `/db/STYP-M1` is the classic `/db/STYP`, not a separate record
+
+Measured the same session, on a 3-node 2-beam frame with a material, a section,
+a fixed base and a self-weight case — an empty document cannot show any of
+this, which is why the dummy model was built.
+
+Writing either endpoint changes the other. `PUT /db/STYP-M1` with
+`STYPE: "XZ", TEMP: 11` makes the classic read `STYP: 1, TEMP: 11`; `PUT
+/db/STYP` with `TEMP: 22` makes the Hyper-S one read `TEMP: 22`. They are two
+spellings of one model setting, which is also why neither serves POST or
+DELETE: the document cannot exist without exactly one of these records.
+
+| `/db/STYP-M1` | classic `/db/STYP` |
+| --- | --- |
+| `STYPE`: `3D` / `XZ` / `YZ` / `XY` / `RZ` | `STYP`: `0` / `1` / `2` / `3` / `4` |
+| `MASS_CONTROL.MASS_TYPE`: `LUMPED` / `CONSISTENT` | `MASS`: `1` / `2` |
+| `MASS_CONTROL.MASS_POS`: `CENTROID` / `OFFSET` | `bMASSOFFSET`: `true` / `false` |
+| `MASS_CONTROL.MASS_AXIS`: `XYZ` / `XY` / `Z` | `SMASS`: `1` / `2` / `3` |
+| `MASS_CONTROL.SELFWEIGHT` | `bSELFWEIGHT` |
+| `GRAV`, `TEMP`, `ALIGNBEAM`, `ALIGNSLAB` | same, `b`-prefixed for the booleans |
+
+`MASS_POS` maps the way round that reads backwards: `CENTROID` is
+`bMASSOFFSET: true`. Do not "correct" it. When `MASS_TYPE` is `CONSISTENT`,
+`bMASSOFFSET` is absent from the classic response entirely; when `SELFWEIGHT`
+is false, so is `SMASS`.
+
+### `STYPE` selects the model's active degrees of freedom
+
+Same model, same supports, self-weight in −Z, one analysis per structure type.
+Node 3 displacement:
+
+| `STYPE` | DX | DY | DZ | RX | RY |
+| --- | --- | --- | --- | --- | --- |
+| `3D` | 0.015020 | 0.006429 | −0.021727 | −0.002223 | 0.005007 |
+| `XZ` | 0.015020 | **0** | −0.017444 | **0** | 0.005007 |
+| `YZ` | **0** | 0.006429 | −0.009211 | −0.002223 | **0** |
+| `XY` | **0** | **0** | **0** | **0** | **0** |
+| `RZ` | as `3D` | | | | |
+
+`XZ` keeps DX/DZ/RY, `YZ` keeps DY/DZ/RX, and `XY` produces nothing at all here
+because the load is along the one axis that plane has no freedom in. `DZ`
+differs between `3D` and `XZ` (−0.021727 vs −0.017444) because the out-of-plane
+contribution is gone, not merely hidden. So a structure type is not a display
+setting: it changes the answer.
+
+A caution learned the hard way in the same session: an earlier run of this
+comparison had no supports at all, because `/db/CONS` was sent a 6-character
+`CONSTRAINT` where it wants 7 (`[DX,DY,DZ,RX,RY,RZ,RW]`) and the failure was
+not checked. That model still answered `{"message": "MIDAS CIVIL NX command
+complete"}` for four of the five types and produced a plausible-looking
+difference. Verify the fixture with a GET before reading anything into a
+result.
+
+### Conditional rules on `MASS_CONTROL`, as enforced
+
+| sent | result |
+| --- | --- |
+| `MASS_TYPE: LUMPED` with no `MASS_POS` | rejected, `Wrong Field` — genuinely required |
+| `MASS_TYPE: CONSISTENT`, `SELFWEIGHT: true`, `MASS_AXIS: XY` | rejected, `MASS_AXIS is XYZ if MASS_TYPE is CONSISTENT` |
+| `MASS_TYPE: CONSISTENT` with `MASS_POS` sent | **accepted, and `MASS_POS` silently dropped** |
+| `STYPE: "_3D"` | rejected, `Wrong Field` |
+| `STYPE: "3D"` | accepted |
+
+Two of these settle open questions. The manual documents `MASS_POS` under
+`CONSISTENT` as 불가 — the server does not refuse it, it discards it, so a
+caller who sends it gets no signal that it was ignored. And the chapter's `⚠️`
+choosing `"3D"` over the article's `"_3D"` enum is correct: `_3D` is rejected.
+
 ### What this says about normalization
 
 The manual repo's `⚠️` callouts exist because the official docs contradict
