@@ -6,6 +6,31 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.7.1 - 2026-08-30
+
+### Added
+
+- Result-table wrappers for the analysis, story and design-force tables,
+  generated from reviewed table contracts.
+
+### Changed
+
+- Payload types for the newly contracted endpoints are generated from
+  `contracts/` rather than from the reviewed Python model.
+- Resource metadata follows three same-day manual revisions: corrected English
+  labels for the design chapters, and `/db/POLC-M1` regaining `POST` after a
+  live Civil NX call disproved the chapter that denies it.
+
+### Compatibility
+
+- `EigenvalueAnalysisControlPayload`,
+  `EigenvalueAnalysisControlHyperSPayload`,
+  `NonlinearAnalysisControlDataPayload` and `SkewPayload` are now declared as
+  type aliases rather than interfaces. Names, namespaces and members are
+  unchanged, so assigning and reading them is unaffected; code that `extends`
+  one of them, or relies on declaration merging, needs updating.
+- `resources.db.pushover.pushoverLoadCaseHyperS` accepts `create()` again.
+
 ## 2.7.0 - 2026-08-28
 
 ### Added
