@@ -1,9 +1,11 @@
-# Codex task prompt — contract migration, decision-free batch
+# Codex task prompt — post-2026-08-31 batch
 
-Written 2026-08-30 at `3c97abf`, immediately after the 2.7.1 release. Paste the
-section below into Codex. Everything in it is work that needs **no decision from
-the author**; the items that do need one are named at the end so they are not
-started by accident.
+Rewritten 2026-08-31 at `54a6050`. The previous edition's four tasks are done or
+correctly refused; see "What the last batch settled" at the end. Paste the
+section below into Codex.
+
+The contract-shape queue is genuinely blocked on four author decisions, listed
+at the bottom. This batch is the work that does not touch them.
 
 ---
 
@@ -15,164 +17,162 @@ prompt and those disagree, they win.
 ## Hard rules
 
 1. **Neither SDK is a source for the other, and neither is a source for a
-   contract.** The only permitted contract sources are the manual repo
+   contract.** Permitted contract sources are exactly three: the manual repo
    (`E:\AI Study\MIDAS-API`, `docs/manual/*.md`),
    `docs/live_verification_notes.md`, and live `/info/{endpoint}` introspection.
 2. **Do not guess.** `unverified` is a correct answer; an invented one is not.
-   A field the manual does not describe does not go into a contract.
 3. **`documentedOptional` (a claim about the docs) and `safeToOmit` (a claim
-   about the product) are separate booleans.** "The manual says Optional" is
-   never evidence for `safeToOmit: true`. `/db/NMAS` is the endpoint where
+   about the product) are separate booleans.** `/db/NMAS` is the endpoint where
    believing the manual ends a live NX session.
-4. **A parity failure is an SDK defect, never a reason to edit a contract.**
-5. **Never hand-edit `contracts/drafts/` or `packages/typescript/src/generated/*`.**
-   A draft is extractor output. If a draft is wrong, fix the extractor.
-6. **Measure, do not assume.** Every number in the working docs carries a date
-   because several of them went stale and were repeated back as current. Re-run
-   the command before quoting a figure, and say what you measured.
-7. **Do not release.** Versions are lockstep across both registries and the
-   author picks the number. Expect to commit without releasing; `scripts/` and
-   `docs/` ship in neither package.
-8. **No live product calls in this batch.** Gen NX and Civil NX are not part of
-   this work. Every task below is decidable from the manual.
+4. **Where the manual and the product disagree, record both separately** — the
+   manual's claim under `manualDefects`, the product's behaviour under
+   `contracts/verification/`. Never collapse them.
+5. **A parity failure is an SDK defect, never a reason to edit a contract.**
+6. **Never hand-edit `contracts/drafts/` or `packages/typescript/src/generated/*`.**
+   Drafts are git-ignored build output; if a draft is wrong, fix the extractor.
+7. **`ROADMAP.md` is generated from `docs/coverage.json`.** Any commit that
+   touches coverage reruns `python scripts/gen_roadmap.py` in the same commit.
+   The 08-31 pass missed this and shipped stale counts.
+8. **Do not release.** The author picks the version; both registries move
+   together. `scripts/` and `docs/` ship in neither package.
 
-## Task 1 — `/db/STYP-M1`: fix the child numbering and promote it
+## Live-session rules — read before any product call
 
-The last npm resource with no contract *and* no draft. Blocked by one extractor
-gap.
+The author's Gen NX and Civil NX sessions are reachable and the last pass used
+them correctly. Keep it that way.
 
-The manual numbers `MASS_CONTROL`'s members `2-(1)` … `2-(4)`
-(`02_DB_Project_Structure.md`). `_NUMBER_CHILD` matches a bare `(1)` and
-`_NUMBER_PATH` matches `4-1`; neither matches the `N-(M)` hybrid, so the four
-members render as root fields beside their own parent — the `/db/RIGD`
-flattening defect. `GET /info/db/STYP-M1` confirms the server nests them.
+- **Ask the author before the first product call of a session**, and confirm
+  both documents are empty. Verify it yourself with `GET /db/NODE` and
+  `GET /db/ELEM` — an empty model answers `{"message": ""}`.
+- **`/doc/NEW` discards unsaved work and has crashed Gen NX** when a large real
+  model was open. Never call it without the author confirming the document does
+  not matter.
+- **Delete every test record by its own id** (`DELETE {endpoint}/{id}`).
+  `DELETE {endpoint}` with an ID-keyed `Assign` body empties the whole table.
+- **A 200 is not success.** `{"message": "error status"}` means the method is
+  not served; `{"error": {...}}` means it ran and was rejected; an echoed record
+  means it worked. `MidasResultError` does not fire on `error status`.
+- **Never hand-write a live payload.** Copy from `scripts/live_crud_check.py`'s
+  confirmed cases or from `contracts/`. A hand-written fixture produces
+  confident wrong findings.
+- Leave both models empty when you finish, and say so in the note.
 
-**Two edits are needed, not one.** Widening the regex alone measures as a no-op:
+## Task 1 — record the two live-versus-manual defects found on 08-30/08-31
 
-1. `_NUMBER_PATH` must match `2-(1)`.
-2. `depth = len(re.findall(r"[-.]\d+", entry.number))` must count a
-   parenthesised segment. `re.findall(r"[-.]\d+", "2-(1)")` returns `[]`
-   because `(` follows the dash, so a matching number still yields depth 0 and
-   the row stays at the root.
+Both are measured and neither is written down yet.
 
-Then fix three defects visible in the resulting draft:
-
-- `MASS_POS`'s `enum` is `[LUMPED]`, taken from its own condition instead of
-  its value list `[CENTROID, OFFSET]`.
-- `MASS_AXIS`'s `enum` is `[CONSISTENT]` instead of `[XYZ, XY, Z]`.
-- `SELFWEIGHT`'s `appliesWhen` renders `equals: "true"` as a string on a
-  boolean field.
-
-**Expected blast radius, already measured:** re-rendering all 387 manual
-sections with both numbering edits changes **exactly one** — this one — and no
-promoted contract at all. If your run changes more, stop and report it rather
-than accepting it; that is new information, not a green light.
-
-Add a test in `tests/test_extract_contracts.py` covering the `N-(M)` form and
-the depth count, following the section-heading test's shape.
-
-The endpoint's methods are settled and are **GET and PUT only**. The official
-article tags `DELETE`; the server refuses all three DELETE forms on both
-products, measured live 2026-08-30 with a real model open from a non-default
-state. Record the article's claim under `manualDefects` with
-`describes: method`; do not widen `METHODS`.
-
-Afterwards, `docs/coverage.json`'s `vendored_at_commit` may be raised past
-`5c92efe`. Do that only once this contract is promoted, then confirm
-`python scripts/check_manual_drift.py --manual-api-repo "E:\AI Study\MIDAS-API"`
-reports `has_diff: false`.
-
-## Task 2 — widen the TypeScript generator's shadow gate past `/db/*`
-
-`scripts/generate_typescript_sdk.py:395` and `:530` both filter contracts to
-`endpoint.startswith("/db/")`. That filter existed because the `/DESIGN/*`
-contracts carried Korean labels while both SDKs used English ones. **That
-question is settled — the labels are English**, applied in `5b92881`, and zero
-promoted contracts carry a Korean label today. The filter is now just 63
-unchecked contracts.
-
-Widen it to `/DESIGN/*` and run `npm run generate`. Every gate widened on
-2026-08-30 found real drift on its first run — 114 stale labels, one wrong
-method set, 103 stale section strings — so expect this one to find something.
-A disagreement between a contract and an SDK is an **SDK defect**; fix the SDK,
-never the contract. If a disagreement looks like a contract defect instead,
-stop and report it with the manual line that decides it.
-
-## Task 3 — make the variant population measurable
-
-Do **not** design variant schema. This task is only about being able to see
-what is there.
-
-**3a. Teach the extractor to read bold table labels.** It records the nearest
-`#` heading for each supplementary table. The chapters label them two ways:
+**1a. `/db/MATL-M1` is not "`/db/MATL` plus extras".** The manual says so at
+`04_DB_Properties.md:239` — *기본 재료 구조는 `/db/MATL`과 동일하며, Hyper-S 전용
+하이퍼엘라스틱 재료 모델을 추가로 지원합니다*. Live `/info` on Civil NX
+contradicts every part of it:
 
 ```text
-### 8-2. 파라미터                             <- what is recorded today
-| No. | ... |
-
-**Time Function (FUNCTYPE=1) 추가 파라미터**    <- the selector lives here
-| No. | ... |
-**Sinusoidal (FUNCTYPE=2) 추가 파라미터**
-| No. | ... |
+/db/MATL     9 props: NAME, TYPE, PARAM, DAMP_RAT, HE_COND, HE_SPEC, PLMT, P_NAME, bMASS_DENS
+/db/MATL-M1  4 props: MATL_NAME, MATL_TYPE, PARAM, DAMP_RAT
 ```
 
-A bold label is not a markdown heading, so a bold-labelled variant table
-inherits its section title and is filed as "selector not explicit" while the
-manual states the selector plainly. `/db/CCFC` (`TYPE="CONST"` / `"USER"`) and
-`/db/THFC` (`FUNCTYPE=1` / `=2`) are that case. Also stop filing prose as a
-label — `없어 확정된 것은 아니다.` and `아래와 동일한 하위 구조를 가짐:` are
-currently recorded as variant headings.
+The field names differ (`MATL_NAME`/`MATL_TYPE`, not `NAME`/`TYPE`), MATL-M1 has
+**fewer** fields rather than more, and the two `HE_*` fields — the ones that
+look like the Hyperelastic support the note claims is exclusive to MATL-M1 —
+are on `/db/MATL` and absent from `/db/MATL-M1`. This is the `/db/REBW` class of
+defect: a manual section wrong about its own endpoint's field names. Copying the
+parent's fields, which the delegating wording invites, would have produced a
+contract whose every top-level name is wrong.
 
-**3b. Fix the `9 explicitly modelled / 59 unmerged` counter.** It cannot
-measure 3a. `explicit_variants` counts sections whose table *headings* declare a
-selector; the hand-curated `_conditional_fields` map (eight endpoints) is
-invisible to it, and a section merged by hand still counts among the 59.
+Write it into `docs/live_verification_notes.md` with the `/info` output, and add
+it to the manual-repo report list in Task 2.
 
-**3c. Re-measure and write the result into
-`docs/contract_migration_brief.md`**, replacing the two scratch figures it
-currently refuses to quote (40 and 63 of 176). Report, per unmerged table,
-whether the manual states a selector field, one value, or several. That report
-is the deliverable — it is what the author's pending decision will be made on.
+**1b. `/db/IEHC`'s `WAreaSize` type.** `contracts/endpoints/db-iehc.yaml` types
+it `integer`, following the manual's Specifications table. Live `/info` on Gen
+types it **`string`**, and the manual's own worked example sends `"AUTO"`. Its
+sibling `WAreaSizeCover` really is `integer` live, so this is one field, not the
+table. Record the manual's claim under `manualDefects` and the live type under
+`contracts/verification/`; do not silently retype the contract.
 
-## Task 4 — the eight mechanically-promotable drafts
+(The rest of `db-iehc.yaml` is already correct — all nine Wall fields carry
+`products: [gen]`, matching both the manual's `#### GEN 전용 필드` heading and
+live, where Gen exposes 17 properties and Civil 8.)
 
-`db-sdhy`, `db-sdis`, `db-sdst`, `db-sdve`, `db-sdvi`, `db-mvctch`, `db-nllp`,
-`db-wvld` are refused **only** for `# NOTE: the table has no Default column`.
+## Task 2 — consolidate the manual-repo report
 
-That note records a structural fact — the manual's table has no Default column
-at all — and the schema already has the exact word for it:
-`documentedDefault: null` is documented as "the manual gives none". So the note
-is complete information filed as an unresolved question.
+Four findings are owed to `E:\AI Study\MIDAS-API` and none has been sent. Write
+them up as one document in this repo — do **not** edit the manual repo from
+here, and do not file anything in MIDASIT's Jira without the author's explicit
+go-ahead.
 
-There is already a precedent for clearing it in `extract_contracts.py`: when a
-section's JSON Schema supplies a `default`, the note is removed and the value
-recorded. Do the same for the whole-table case — verify the absence from the
-table's header row, record it once under `extraction`, and stop emitting a
-per-field review note. Fix it in the extractor, never in the drafts.
+| finding | what the manual says | what the product does |
+| --- | --- | --- |
+| `/db/STYP-M1` `DELETE` (3 places in `02_DB_Project_Structure.md`) | GET, PUT, DELETE | all three DELETE forms refused on both products, from a non-default state with a model open |
+| `/db/POLC-M1` POST (⚠️ callout in `14_DB_Pushover.md`) | "no POST; the article's row is an untrimmed template" | POST creates a record that reads back on the next GET |
+| `/db/MATL-M1` structure (`04_DB_Properties.md:239`) | same structure as `/db/MATL`, plus Hyperelastic | different field names, fewer fields, `HE_*` on the parent instead |
+| `/db/IEHC` `WAreaSize` | Integer | `string` live; the chapter's own example sends `"AUTO"` |
 
-Then `python scripts/promote_contract.py --all --dry-run` and promote those
-eight. Review each promoted contract against its manual section before
-committing; a bulk promotion that nobody read is how a wrong contract reaches
-`contracts/endpoints/`.
+Two of these originate in MIDASIT's official articles rather than the manual
+repo's transcription (`/db/STYP-M1`'s `activeMethods`, `/db/MATL-M1`'s note).
+Say which is which — the manual repo can fix its own text, but only MIDASIT can
+fix theirs.
 
-## What NOT to start
+## Task 3 — bring `PLAN.md` back to the measured state
 
-These are the author's calls and are explicitly out of scope:
+`CLAUDE.md` requires §2's status table and §4's milestone table to match the
+tree, and they do not. Measure, do not copy these:
 
-- **Conditional variant schema.** The proposal — give `variant.when` the shape
-  field-level `appliesWhen` already has, an ANDed array of `{path, equals}`,
-  and add `in` to both — is written up in `docs/contract_migration_brief.md`.
-  Task 3 produces the measurement it will be decided on. Do not implement it.
-- **Recording requiredness as "unstated".** Four further drafts (`db-actl-m1`,
-  `db-mcon`, `view-active`, `view-select`) are blocked by a missing Required or
-  Value Type column, and `requirement`/`documentedOptional` have no value for
-  "the manual does not say". Inventing `optional` for a blank column is exactly
-  the `documentedOptional`/`safeToOmit` conflation the schema exists to
-  prevent. Leave them.
-- **Stage 4 (Python generated from contracts).** Deliberately last and
-  deliberately unspecified. `src/midas_nx/` is hand-written and its public API
-  is on PyPI.
-- **Any release.**
+| PLAN.md says | measured 2026-08-31 |
+| --- | --- |
+| 845 Python tests | 863 |
+| 279 endpoint contracts, 2,162 fields, 104 drafts | 283, 2,228, 100 |
+| write coverage 162/399 | 165/399 (read 234) |
+
+Update the "Last updated" line in the same commit. `PLAN.md` goes stale fast —
+it spent three releases listing shipped work as pending — so verify each row
+against the tree rather than adjusting the numbers you find.
+
+## Task 4 — continue the live write-coverage push
+
+This is the largest body of available work and it needs no schema decision. 234
+of 399 endpoints are verified at `read` level only, and a read proves far less
+than a round trip: it shows the route exists and parses, while every
+field-name, enum and default defect found so far was invisible to reads.
+
+Read `docs/live_verification_notes.md`'s existing batches for the established
+method, then work in small batches. For each endpoint:
+
+1. Take the payload from `scripts/live_crud_check.py`'s confirmed cases or from
+   its contract. Never hand-write one.
+2. `POST -> GET -> PUT -> GET -> DELETE {endpoint}/{id} -> GET`, on an empty
+   scratch model, following the live-session rules above.
+3. Record the result in `docs/live_verification_notes.md` **and** set
+   `docs/coverage.json`'s `level` to `"write"` with the build baseline — then
+   rerun `gen_roadmap.py` in the same commit.
+4. A failure is a finding, not a blocked task. `"Wrong Field"` from a `/db/*`
+   write usually means a bad **value**, not a bad field name — vary the enum
+   value before varying the fields. Record what you tried.
+
+Three known-unresolved write paths are worth a fresh attempt with this method,
+and all three are already documented as unresolved rather than assumed broken:
+`/db/SDIS`'s LRB and NRB branches, `/db/WVLD` on Civil (suspected module gate,
+not payload spelling), and `/db/NLLP`.
+
+## What NOT to start — these are the author's calls
+
+All four block contract-shape work and none may be decided by an agent. Each
+has a proposal in `docs/contract_migration_brief.md`; bring questions, not
+implementations.
+
+- **D1 — non-literal defaults** (`System`, `Auto`, `ADD, REPLACE`). Blocks
+  `/db/STYP-M1`, whose draft is otherwise complete and correct, plus ~14 others.
+  Proposal: a `documentedDefaultNote`, mirroring the existing `enumNote`.
+- **D2 — requiredness unstated.** Blocks `db-mvctch` (76 notes) and `db-wvld`
+  (54). `requirement` has no value for "the manual does not say", and inventing
+  `optional` for a blank column is the `documentedOptional`/`safeToOmit`
+  conflation the schema exists to prevent.
+- **D3 — conditional variant schema.** 155 unmerged tables; 57 become
+  expressible. Proposal: give `variant.when` the shape field-level
+  `appliesWhen` already has, and add `in` to both.
+- **D4 — scalar `Argument`.** Nine `/doc/*` endpoints whose whole argument is a
+  string, not an object with fields.
+
+Also out of scope: Stage 4 (Python generated from contracts), and any release.
 
 ## Before every commit
 
@@ -181,10 +181,40 @@ pip install -e ".[dev]"
 pytest && ruff check src tests scripts && mypy
 python scripts/validate_contracts.py
 python scripts/extract_contracts.py --manual-api-repo "E:\AI Study\MIDAS-API" --check
+python scripts/gen_roadmap.py          # if coverage.json changed
 cd packages/typescript && npm run generate && npm run typecheck && npm test
-git status --short      # generation drift must be empty
+git status --short                     # generation drift must be empty
 ```
 
-CI runs all of it on Python 3.12/3.13 and Node 18/22 and fails on generated-file
-drift. Commit messages: imperative subject, body explaining *why*; match
-`git log`. One task per commit.
+Commit messages: imperative subject, body explaining *why*; match `git log`.
+One task per commit.
+
+---
+
+## What the last batch settled — verified 2026-08-31
+
+Kept so the same ground is not re-covered.
+
+- **`/db/STYP-M1` numbering** — fixed. The draft now nests all four
+  `MASS_CONTROL` members, with the correct enums (`[CENTROID, OFFSET]`,
+  `[XYZ, XY, Z]`) and a boolean `appliesWhen`. Only D1 blocks promotion.
+- **Shadow gate** — widened past `/db/*` to `/DESIGN/*`.
+- **Variant measurement** — the counter is reproducible now: 253 supplementary
+  tables, of which 155 unmerged, split 4 / 53 / 98 by selector evidence, with
+  per-table detail from `--report`. This is what D3 will be decided on.
+- **Missing Default columns** — recorded once under `extraction.missingColumns`;
+  four contracts promoted (SDHY, SDVE, SDVI, NLLP). The four not promoted were
+  correctly refused: SDIS and SDST are variant-blocked, MVCTch and WVLD are
+  Required-blocked.
+- **Live `/info` reconciliation** — `/db/MVCTch` `BRIDGE2`, `/db/MVLD` `ASL`,
+  `/db/MVLDch`'s auto-optimize branch, `/db/STCT`'s `bSDLE`/`vSDLE`, and
+  `/db/IEHC`'s beam-field renames. Independently re-verified against both
+  products; every claim held, including the nested member names.
+- **Live round trips (08-31)** — `/db/MATL-M1` all three `P_TYPE` branches,
+  `/db/SDST` on both products, `/db/SDIS`'s SLD branch on Gen, `/db/MVCTch`'s
+  `iCODETYPE=0` branch on both. Cleanup verified: both models answer
+  `{"message": ""}` for every endpoint touched.
+- **`/doc/*` and Hyper-S `-M1`** — correctly identified as blocked, not skipped.
+  `/doc/OPEN`'s `Argument` really is a bare string (D4), and `/db/MATL-M1`'s
+  "same structure as the parent" wording is provably wrong, so copying the
+  parent's fields would have been a guess. See Task 1a.
