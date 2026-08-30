@@ -7146,6 +7146,46 @@ Erection Load table but had been omitted from the Python and generated
 TypeScript payload surfaces. Both now match the server's top-level schema. No
 model data was read or changed by this check.
 
+### The npm package's first live session (2026-08-31)
+
+Until this date the npm package had never spoken to a MIDAS NX server. All
+three live harnesses — `live_crud_check.py`, `live_readonly_sweep.py`,
+`live_smoke.py` — are Python, and every npm test mocks `fetch`. Its HTTP layer,
+its error mapping and its `/post/TABLE` adapter are hand-written, and a mock
+agrees with whatever the author assumed.
+
+`midas-nx@2.7.1` was installed from the public npm registry into an empty
+project and run against both supplied sessions, read-only. Six checks per
+product, ten passing:
+
+| check | gen | civil |
+| --- | --- | --- |
+| `verifyConnection()` | `status: connected` | `status: connected` |
+| `resources.db.nodeElement.node.get()` | `{"message": ""}` | `{"message": ""}` |
+| `.info()` | 3 properties | 3 properties |
+| `client.request("GET", "/db/STYP")` | full record | full record |
+| 404 route -> `MidasNotFoundError` | `/info/db/WVLD` | `/info/db/SDIS` |
+| `/post/TABLE` `NODE` (POST-shaped read) | `MidasResultError` | `MidasResultError` |
+
+The last row is the interesting one and it is **not** a defect. Both models are
+empty, so the server answers **HTTP 200 with an error body** — `there was an
+error creating utbl.` The npm client detected the error inside a 200 and raised
+`MidasResultError`, which is the documented hazard this project exists to
+handle. The identical call from the Python SDK on the same two sessions
+produced the identical exception with the identical message, so the two
+surfaces agree against a real server, not merely against each other.
+
+**What this does not establish.** No npm write has ever reached a live product:
+`POST`/`PUT`/`DELETE`, and with them the `/db/NMAS` `rmX`/`rmY`/`rmZ`
+`payloadDefaults` rule, remain verified by test only on the npm side. And
+`unwrapTable()` was reached but never given a populated table, because the
+empty model errored first — the unstable-top-level-key behaviour it exists for
+is still unobserved from JavaScript.
+
+Reproduction: install `midas-nx` from the registry, call the six checks above.
+No repository harness was added; adding a JS/TS live harness alongside the
+Python ones is the obvious next step if npm write coverage is wanted.
+
 ## Caveat — read before acting on this file
 
 ### `/db/MVLDpl` exposes all documented conditional objects on both products (2026-08-30)
