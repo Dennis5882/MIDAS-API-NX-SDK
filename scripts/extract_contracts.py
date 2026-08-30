@@ -200,7 +200,11 @@ _DESC_TREE = re.compile(r"^[└├│─\s]+")
 # wrong contract that reached contracts/endpoints/ before type generation
 # from the same contract exposed it.
 _NUMBER_CHILD = re.compile(r"^\((?:\d+|[ivxlcdm]+)\)$", re.IGNORECASE)
-_NUMBER_PATH = re.compile(r"^\d+(?:[-.]\d+)+$")
+# A Project Structure table also uses hybrid segments such as ``2-(1)``.
+# They carry the same nesting meaning as ``2-1``: the parent record is row 2
+# and the parenthesised segment is one level, not decorative prose.
+_NUMBER_PATH = re.compile(r"^\d+(?:(?:[-.]\d+)|(?:[-.]\(\d+\)))+$")
+_NUMBER_PATH_SEGMENT = re.compile(r"[-.](?:\d+|\(\d+\))")
 # A small group of manual tables marks an immediate array-item member with a
 # leading dash in the Description cell (for example ITEM followed by
 # `- Time` and `- Value`).  This is deliberately narrower than treating an
@@ -299,6 +303,8 @@ def _description_literal_condition(text: str) -> tuple[str, str | int | float | 
     if len(distinct) != 1:
         return None
     path, value = distinct[0]
+    if value.lower() in {"true", "false"}:
+        return path, value.lower() == "true"
     return path, value
 
 
@@ -498,10 +504,6 @@ def _enum_values_from_description(text: str) -> list[Any]:
     if "..." in text or "…" in text:
         return []
 
-    quoted = _quoted_enum_values(text)
-    if quoted:
-        return quoted
-
     # Numeric wire values in the manuals are often written as individual code
     # spans.  Treat only two or more non-range spans as an enum.  A code span
     # adjacent to ``~`` is a documented bound, not an alternative.
@@ -564,6 +566,27 @@ def _enum_values_from_description(text: str) -> list[Any]:
                 listed.append(value)
         if len(listed) >= 2:
             return listed
+
+    # A quoted value on the right side of ``OTHER_FIELD=\"VALUE\"`` is a
+    # selector for this field, not one of this field's possible values. The
+    # manual expresses string enum alternatives as ``Label: `VALUE``` (often
+    # joined by ``/``). Require a label delimiter in the description: this
+    # keeps an incidental code-spanned field name such as ``TABLE_TYPE`` out
+    # of an otherwise numeric enum description.
+    code_symbolic: list[str] = []
+    for match in re.finditer(r"`\s*((?=[A-Z0-9_-]*[A-Z])[A-Z0-9_-]+)\s*`", text):
+        before = text[: match.start()]
+        if ":" not in before:
+            continue
+        symbolic_value = match.group(1)
+        if symbolic_value not in code_symbolic:
+            code_symbolic.append(symbolic_value)
+    if len(code_symbolic) >= 2:
+        return code_symbolic
+
+    quoted = _quoted_enum_values(text)
+    if quoted:
+        return quoted
 
     # The same cell form is used for symbolic values, for example
     # ``Equivalent=... / Each=...``.  Requiring two distinct left-hand codes
@@ -732,7 +755,7 @@ def _nest(flat: list[ParsedField]) -> list[ParsedField]:
         if _NUMBER_CHILD.match(entry.number):
             depth = 1
         elif _NUMBER_PATH.match(entry.number):
-            depth = len(re.findall(r"[-.]\d+", entry.number))
+            depth = len(_NUMBER_PATH_SEGMENT.findall(entry.number))
         if depth and entry.shared_number_group and "." not in key and not key.startswith("└"):
             grouped_parent = by_depth.get(depth - 1)
             if grouped_parent is not None:
@@ -2092,7 +2115,7 @@ def _number_parent(number: str) -> str:
     text = _clean(number)
     if not _NUMBER_PATH.fullmatch(text):
         return ""
-    return re.sub(r"[-.]\d+$", "", text)
+    return re.sub(r"[-.](?:\d+|\(\d+\))$", "", text)
 
 
 def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:

@@ -409,6 +409,40 @@ def test_dotted_numbering_nests_children_under_the_documented_parent(tmp_path: P
     assert [field.key for field in root.properties[0].properties] == ["LEAF"]
 
 
+def test_parenthesised_dash_numbering_nests_and_preserves_literal_conditions(tmp_path: Path):
+    """``2-(N)`` rows are child payload fields, not independent root keys."""
+
+    path = tmp_path / "99_DB_ParenthesisedNumbering.md"
+    path.write_text(
+        """## 1. `/db/PARENTHESISED` -- parenthesised numbering
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 2 | Mass control | `"MASS_CONTROL"` | Object | - | Required |
+| 2-(1) | Type: `LUMPED` / `CONSISTENT` | `"MASS_TYPE"` | String (enum) | - | Required |
+| 2-(2) | Position (`MASS_TYPE="LUMPED"`): `CENTROID` / `OFFSET` | `"MASS_POS"` | String (enum) | - | Conditional Required |
+| 2-(3) | Convert self-weight | `"SELFWEIGHT"` | Boolean | - | Required |
+| 2-(4) | Axis (`SELFWEIGHT=true`): `XYZ` / `XY` / `Z` | `"MASS_AXIS"` | String (enum) | - | Conditional Required |
+""",
+        encoding="utf-8",
+    )
+
+    root = ex.parse_chapter(path)[0].tables[0].fields[0]
+    assert root.key == "MASS_CONTROL"
+    assert [field.key for field in root.properties] == [
+        "MASS_TYPE",
+        "MASS_POS",
+        "SELFWEIGHT",
+        "MASS_AXIS",
+    ]
+    mass_type, mass_pos, _, mass_axis = root.properties
+    assert mass_type.enum == ["LUMPED", "CONSISTENT"]
+    assert mass_pos.enum == ["CENTROID", "OFFSET"]
+    assert mass_pos.applies_when == [("MASS_TYPE", "LUMPED")]
+    assert mass_axis.enum == ["XYZ", "XY", "Z"]
+    assert mass_axis.applies_when == [("SELFWEIGHT", True)]
+
+
 @pytest.mark.parametrize(
     ("manual_key", "contract_key"),
     [
