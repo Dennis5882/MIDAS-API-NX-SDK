@@ -60,7 +60,8 @@ function resourceFor(name) {
 function checkpointPath(product, saveDir, label) {
   const directory = saveDir.replaceAll("\\", "/").replace(/\/+$/, "");
   if (!/^[A-Za-z]:\/[^\0]*$/.test(directory)) throw new Error(`--save-dir must be an absolute Windows directory, got ${JSON.stringify(saveDir)}.`);
-  return `${directory}/midas-nx-${label}-${product}-${Date.now()}.${product === "civil" ? "mcbx" : "mgbx"}`;
+  // Product-native NX extension: Gen .mgbx, Civil .mcb (author-confirmed 2026-08-31).
+  return `${directory}/midas-nx-${label}-${product}-${Date.now()}.${product === "civil" ? "mcb" : "mgbx"}`;
 }
 
 async function requireEmpty(resourcesToCheck, client) {

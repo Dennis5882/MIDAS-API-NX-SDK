@@ -67,8 +67,11 @@ function checkpointPath(product, saveDir) {
   if (!/^[A-Za-z]:\/[^\0]*$/.test(directory)) {
     throw new Error(`--save-dir must be an absolute Windows directory on the NX machine, got ${JSON.stringify(saveDir)}.`);
   }
-  // SAVEAS uses the product-native NX extension: Gen .mgbx, Civil .mcbx.
-  const extension = product === "civil" ? "mcbx" : "mgbx";
+  // SAVEAS uses the product-native NX extension: Gen .mgbx, Civil .mcb.
+  // Confirmed by the author 2026-08-31. Civil also accepted .mcbx for SAVEAS
+  // in a 2026-07 round trip, but /doc/STAGAS rejected it outright, and the
+  // point of a checkpoint is a file the author can reopen normally.
+  const extension = product === "civil" ? "mcb" : "mgbx";
   return `${directory}/midas-nx-live-${product}-${Date.now()}.${extension}`;
 }
 

@@ -7354,9 +7354,20 @@ since MIDASIT's platform can change between now and then.
 
 The npm live harness now saved a checkpoint before every mutation. The
 author explicitly selected `C:/temp` as a known writable directory on the NX
-machines after the old inference from the authenticated MAPI account produced
-an invalid-path dialog. `SAVEAS` completed with the NX-native extension on
-both current sessions: `.mgbx` on Gen NX and `.mcbx` on Civil NX.
+machines — a directory they created themselves — after the old inference from
+the authenticated MAPI account produced an invalid-path dialog. `SAVEAS`
+answered `command complete` on both sessions.
+
+**Correction, 2026-08-31.** That run wrote `.mgbx` on Gen and **`.mcbx`** on
+Civil. Gen's is right; Civil's is not — the author, a MIDAS IT employee,
+confirms Civil NX's native extension is **`.mcb`**, and both harnesses now
+write that. `.mcbx` is not rejected outright: a 2026-07 `save_as` to `.mcbx`
+was verified by reopening the file with all 273 nodes intact (see the `/doc/*`
+lifecycle entry above). But `/doc/STAGAS` refused `.mcbx` in that same session
+and took `.mcb`, and a checkpoint the author cannot open normally is not a
+checkpoint. Note also that `command complete` is not evidence a file was
+written — this project's own rule — so nothing here establishes what the Civil
+`.mcbx` checkpoints actually are; they were not read back.
 
 Using only the built npm package's public `resources.db.*` surface, `/db/STLD`
 passed `POST -> GET -> PUT -> GET -> DELETE {id} -> GET` on both products.

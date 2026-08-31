@@ -160,8 +160,11 @@ Two things that have already caused rework:
   exist and raises exactly the blocking dialog the rule exists to avoid. Require an explicit
   writable directory on the NX machine instead, as
   `packages/typescript/scripts/live-crud.mjs` now does (`--save-dir`, refusing to run without
-  one). Note also that `/doc/SAVEAS` needs the product-native extension: `.mgbx` on Gen NX,
-  `.mcbx` on Civil NX.
+  one). Note also that `/doc/SAVEAS` needs the product-native extension: **`.mgbx` on Gen NX,
+  `.mcb` on Civil NX** (author-confirmed 2026-08-31). Civil did accept `.mcbx` for `SAVEAS` in a
+  2026-07 round trip that reopened with all 273 nodes, so it is not rejected — but `/doc/STAGAS`
+  refused `.mcbx` outright and took `.mcb`, and `.mcb` is the extension the product itself uses.
+  Write `.mcb`.
 - **`DELETE {endpoint}` with an ID-keyed `"Assign"` body empties the whole table**, ignoring the
   ids — for `/db/NODE` that takes the attached elements with it. This is what the manual documents,
   and it cost a model before it was caught. The undocumented `DELETE {endpoint}/{id}` is the one
