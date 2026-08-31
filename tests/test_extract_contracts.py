@@ -1606,6 +1606,23 @@ def test_markdown_numeric_enum_values_do_not_turn_ranges_or_ellipses_into_enums(
     assert ex._enum_values_from_description("1=Method-1 … 4=Method-4") == []
 
 
+@pytest.mark.parametrize(
+    ("description", "expected"),
+    [
+        (
+            "Material grade · `None`, `SD300`, `SD400`, `SD500`, `SD600`, "
+            "`SD700`, `SD400S`, `SD500S`, `SD600S`",
+            ["None", "SD300", "SD400", "SD500", "SD600", "SD700", "SD400S", "SD500S", "SD600S"],
+        ),
+        ("A documented range `D4` ~ `D57` is not an enumerated list", []),
+        ("Abbreviated values `ONE`, …, `NINE` are not an enumerated list", []),
+    ],
+    ids=["comma-separated-code-spans", "range-is-not-enum", "ellipsis-is-not-enum"],
+)
+def test_description_enum_parser_reads_only_complete_code_span_lists(description: str, expected: list[object]):
+    assert ex._enum_values_from_description(description) == expected
+
+
 def test_same_section_json_schema_fills_only_exact_table_enum_and_array_gaps(tmp_path: Path):
     path = tmp_path / "99_DB_SchemaHints.md"
     path.write_text(

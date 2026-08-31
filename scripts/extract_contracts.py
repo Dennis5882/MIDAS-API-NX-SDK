@@ -601,6 +601,16 @@ def _enum_values_from_description(text: str) -> list[Any]:
     if len(code_symbolic) >= 2:
         return code_symbolic
 
+    # Design-code tables sometimes list symbolic choices as a comma-separated
+    # run of individual code spans: ``None``, ``SD300``, ``SD400``.  Unlike a
+    # range (``D4 ~ D57``) or an ellipsis, every member is written explicitly.
+    # Read only a contiguous run, so unrelated backticked field names elsewhere
+    # in the description cannot become this field's enum.
+    if match := re.search(
+        r"`[A-Za-z0-9_.%/-]+`(?:\s*,\s*`[A-Za-z0-9_.%/-]+`)+", text
+    ):
+        return re.findall(r"`([A-Za-z0-9_.%/-]+)`", match.group(0))
+
     quoted = _quoted_enum_values(text)
     if quoted:
         return quoted
