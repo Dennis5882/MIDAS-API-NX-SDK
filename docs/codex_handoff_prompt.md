@@ -117,22 +117,20 @@ A bulk promotion nobody read is how a wrong contract reaches
 The author's decision: **collect these, do not act on them.** Do not edit the
 manual repo, do not contact MIDASIT, do not file anything in Jira.
 
-`docs/manual_repo_report_2026-08-31.md` is a dated snapshot of four findings.
-Convert it into a running register — rename it to something undated such as
-`docs/manual_defects_register.md`, give each entry a stable id, the date found,
-the evidence, and which side owns the correction (MIDASIT's official article
-versus the manual repo's own transcription). Fold in anything already recorded
-elsewhere that belongs, including the extension confusion:
+**Done 2026-08-31** — `docs/manual_defects_register.md` replaces the dated
+snapshot. Entries carry an `MD-nn` id, the date found, the evidence, and which
+side owns the correction. Five are recorded:
 
 - `/db/STYP-M1` `DELETE` — MIDASIT article `activeMethods`
 - `/db/POLC-M1` POST — manual-repo callout
 - `/db/MATL-M1` structure — MIDASIT article note
 - `/db/IEHC` `WAreaSize` type — manual-repo transcription
-- Civil NX's save extension — the manual's examples still show pre-NX
-  spellings; NX is `.mgbx` / `.mcbz`
+- Model file extensions — the manual's examples still show pre-NX spellings;
+  NX is `.mgbx` / `.mcbz`
 
-From now on a new manual-versus-product finding is appended there in the same
-commit that records the live evidence.
+A new manual-versus-product finding is appended there in the same commit that
+records the live evidence. The file collects only: no edit to the manual repo,
+no contact with MIDASIT, no Jira issue, without the author's go-ahead.
 
 ## Task 5 — prepare the release, do not cut it
 
