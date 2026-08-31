@@ -313,13 +313,20 @@ OK, REGRESSION, UNVERIFIED, BLOCKED = "ok", "regression", "unverified", "blocked
 #: Quarantined: known to hang or kill the product, so not run by default.
 SKIPPED = "skipped"
 LIVE_CASES_PATH = Path(__file__).resolve().parents[1] / "schema" / "live-cases.json"
-LIVE_CASES_VERSION = 2
+LIVE_CASES_VERSION = 3
 
-# Shared by the Python base model and the emitted npm live fixture.  STLD
-# assigns the next serial id instead of honoring the request key, so its CRUD
-# case needs these two preceding records to land at id 3.  Keep the payloads
-# here rather than reproducing them in JavaScript.
+# Shared by the Python base model and the emitted npm live fixture.  Keep
+# prerequisite records here rather than reproducing them in JavaScript. STLD
+# assigns the next serial id instead of honoring the request key, while SKEW
+# attaches to an already-existing node, so neither case can run on a truly
+# blank document.
 BASE_MODEL_SEEDS: Dict[str, Dict[str, Any]] = {
+    "skew_node": {
+        "endpoint": Node.ENDPOINT,
+        "records": {
+            "2": {"X": 0, "Y": 0, "Z": HEIGHT},
+        },
+    },
     "static_load_cases": {
         "endpoint": StaticLoadCase.ENDPOINT,
         "records": {
@@ -519,6 +526,7 @@ def _core_cases() -> List[Case]:
             {"iMETHOD": 1, "ANGLE_X": 0, "ANGLE_Y": 0, "ANGLE_Z": 45},
             lambda p: p.get("ANGLE_Z"), 30, 45,
             item_id=2, confirmed=True,
+            setup=({"seed": "skew_node"},),
         ),
         # /db/STLD renumbers: the server assigns NO sequentially rather than
         # honouring the "Assign" key, so this has to be the next free slot

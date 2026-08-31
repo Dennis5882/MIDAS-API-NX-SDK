@@ -7349,3 +7349,62 @@ future manual revision adds an explicit product note), that's the trigger
 to revisit `PRODUCTS` for the specific classes involved — cite this file's
 date and findings in that future change, and re-verify before trusting it,
 since MIDASIT's platform can change between now and then.
+
+### npm public-API checkpoint and unresolved-case re-check (2026-08-31)
+
+The npm live harness now saved a checkpoint before every mutation. The
+author explicitly selected `C:/temp` as a known writable directory on the NX
+machines after the old inference from the authenticated MAPI account produced
+an invalid-path dialog. `SAVEAS` completed with the NX-native extension on
+both current sessions: `.mgbx` on Gen NX and `.mcbx` on Civil NX.
+
+Using only the built npm package's public `resources.db.*` surface, `/db/STLD`
+passed `POST -> GET -> PUT -> GET -> DELETE {id} -> GET` on both products.
+The runner first created its documented `DL` and `LC_SCRATCH` static-load
+cases, so STLD's server-assigned sequential id matched the Python fixture;
+it then removed each target and prerequisite by its individual id.
+
+`/db/THIK` also passed the same public-API CRUD sequence on both products;
+the changed `T_IN` value was observed after `PUT`, and the final per-product
+`items()` call returned `{}` after the individual delete.
+
+`/db/SKEW` requires an existing target node, so its first npm attempt against
+an empty document correctly received the server's explicit “node no. 2 has
+not been specified” rejection. The shared fixture now declares a disposable
+node-2 seed. With that modelled prerequisite, SKEW passed the same CRUD cycle
+on both products; final public `items()` calls returned `{}` for both `NODE`
+and `SKEW` after the target and seed were each deleted by id.
+
+The following shared-fixture cases remain **unconfirmed** and reproduced their
+existing product rejections rather than becoming npm regressions:
+
+- Gen `/db/SDIS` LRB case: HTTP 201 with `Wrong Field`. Its fixture retains the
+  old scalar-`DX` shape, so this is not evidence against the later corrected
+  nested-`DX` manual shape; the corrected-shape LRB result remains separately
+  documented above as unresolved.
+- Civil `/db/WVLD`: HTTP 201 with `Wrong Field` for the full fixture payload.
+- Gen and Civil `/db/NLLP`: HTTP 201 with `Unknown Error` for the minimal
+  `ELEMENT`/`SPG` fixture payload.
+
+Final npm public-API `items()` calls returned `{}` for Gen `STLD`/`SDIS`/`NLLP`
+and Civil `STLD`/`WVLD`/`NLLP`. No coverage level changed: that ledger still
+denotes Python-package verification, while this entry records independent npm
+transport and public-resource evidence.
+
+### npm post-analysis result-table verification (2026-08-31)
+
+Pre-process CRUD is not sufficient evidence for result APIs. The npm package
+therefore now has a separate `live:analysis` runner that first refuses a
+non-empty fixture scope, then builds a minimal 0.6 m square C24 cantilever
+column through public resources (material, section, two nodes, beam, fixed
+base, `DL`, and self weight). It saves the completed dummy model under the
+author-selected `C:/temp` checkpoint directory before calling `doc.analyze()`.
+
+On both Gen NX and Civil NX, the solved model returned populated `HEAD`/`DATA`
+tables through the built npm package for `REACTIONG` (1 row), `DISPLACEMENTG`
+(1 row), and `BEAMFORCE` (5 rows). All three responses used the unstable
+top-level key `empty`; `post.unwrapTable()` found the table by shape rather
+than treating that key as no data. The runner deleted self weight, load case,
+constraint, element, both nodes, section, and material individually in reverse
+creation order. Final npm public-API GETs returned `{}` for each of those seven
+tables on both products.

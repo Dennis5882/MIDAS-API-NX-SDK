@@ -58,6 +58,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "live:crud": "npm run build && node scripts/live-crud.mjs",
+    "live:analysis": "npm run build && node scripts/live-analysis.mjs",
     "prepack": "npm run generate && npm run clean && npm run typecheck && npm test && npm run build"
   },
   "devDependencies": {

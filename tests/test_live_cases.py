@@ -35,7 +35,7 @@ def test_live_case_fixture_carries_static_load_case_seed() -> None:
     fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
     stld = next(case for case in fixture["cases"] if case["endpoint"] == "/db/STLD")
 
-    assert fixture["version"] == 2
+    assert fixture["version"] == 3
     assert fixture["seeds"]["static_load_cases"] == {
         "endpoint": "/db/STLD",
         "records": {
@@ -44,3 +44,14 @@ def test_live_case_fixture_carries_static_load_case_seed() -> None:
         },
     }
     assert stld["setup"] == [{"seed": "static_load_cases"}]
+
+
+def test_live_case_fixture_carries_skew_node_seed() -> None:
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    skew = next(case for case in fixture["cases"] if case["endpoint"] == "/db/SKEW")
+
+    assert fixture["seeds"]["skew_node"] == {
+        "endpoint": "/db/NODE",
+        "records": {"2": {"X": 0, "Y": 0, "Z": 3.2}},
+    }
+    assert skew["setup"] == [{"seed": "skew_node"}]

@@ -1,6 +1,16 @@
 {
-  "version": 2,
+  "version": 3,
   "seeds": {
+    "skew_node": {
+      "endpoint": "/db/NODE",
+      "records": {
+        "2": {
+          "X": 0,
+          "Y": 0,
+          "Z": 3.2
+        }
+      }
+    },
     "static_load_cases": {
       "endpoint": "/db/STLD",
       "records": {
@@ -173,7 +183,11 @@
         "updated": 45
       },
       "needs": [],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "skew_node"
+        }
+      ],
       "crashes": null
     },
     {
