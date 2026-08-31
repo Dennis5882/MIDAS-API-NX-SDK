@@ -7,11 +7,15 @@
  * installs, rather than raw HTTP or Python implementation details. Case
  * payloads come only from schema/live-cases.json, emitted by Python's
  * scripts/live_crud_check.py; never copy a live payload into this file.
- * Before any mutation it saves a timestamped checkpoint in an explicitly
- * configured directory on the NX machine, then creates and verifies a fresh
- * scratch document. An authenticated MAPI user is not a reliable Windows-
- * profile name, so never derive a server path from it.
- * Pass --no-save-before only when that side effect was explicitly reviewed.
+ * DESTRUCTIVE. Before any mutation it saves a timestamped checkpoint in an
+ * explicitly configured directory on the NX machine, then calls /doc/NEW and
+ * verifies the resulting document is empty. /doc/NEW DISCARDS UNSAVED WORK and
+ * has crashed Gen NX on a large real model, so never point this at a session
+ * holding a document that matters - get the open document confirmed disposable
+ * first. An authenticated MAPI user is not a reliable Windows-profile name, so
+ * never derive a server path from it.
+ * --no-save-before skips the checkpoint, not the /doc/NEW. It leaves the open
+ * document discarded with no backup; pass it only when that was reviewed.
  *
  * Usage:
  *   MIDAS_MAPI_KEY=... MIDAS_NX_SAVE_DIR=E:/NX-Scratch \\
@@ -32,6 +36,7 @@ const fixture = JSON.parse(readFileSync(fixturePath, "utf8"));
 function usage(message) {
   if (message) console.error(message);
   console.error("Usage: npm run live:crud -- -- --product gen|civil --endpoints /db/NODE,/db/NMAS [--table-type MASS_SUMMARY_X] [--save-dir E:/NX-Scratch] [--no-save-before] [--mapi-key key] [--timeout ms]");
+  console.error("DESTRUCTIVE: this calls /doc/NEW and discards the open document. --no-save-before removes the checkpoint, not the /doc/NEW.");
   process.exit(2);
 }
 

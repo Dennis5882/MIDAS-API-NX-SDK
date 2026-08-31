@@ -212,12 +212,16 @@ Two things that have already caused rework:
   answer a GET. `scripts/live_readonly_sweep.py`'s "GET only, safe" claim still holds for *data*
   safety, but keep working documents off `Program Files`-style paths before running it.
 - **Verifying against a live session: `scripts/live_readonly_sweep.py` is the safe one.** It
-  issues GET only, so it can run against a model the user has open. `scripts/live_smoke.py` calls
-  `/doc/NEW` and **discards unsaved work** — never run it against someone's open document without
-  asking first.
+  issues GET only, so it can run against a model the user has open. Three harnesses call
+  `/doc/NEW` and **discard unsaved work**: `scripts/live_smoke.py`, `scripts/live_crud_check.py`,
+  and — since 2026-09-01 — `packages/typescript/scripts/live-crud.mjs`. Never run one against
+  someone's open document without asking first. The npm one saves a checkpoint before the
+  `/doc/NEW` unless `--no-save-before` is passed; that flag removes the safety net, not the
+  destructive call.
 - **`scripts/live_crud_check.py` write coverage is tracked in the script itself.** Cases carry
-  `confirmed=True` only once someone has watched them pass live (all 43 as of 2026-07-29,
-  Civil NX, after `/db/NMAS`'s crash was root-caused and worked around — see above); a failure of
+  `confirmed=True` only once someone has watched them pass live (134 of 166 cases as of
+  2026-09-01; the first 43 landed 2026-07-29 on Civil NX, after `/db/NMAS`'s crash was
+  root-caused and worked around — see above); a failure of
   a confirmed case is a **regression** and exits 1, while a failure of an
   unconfirmed one exits 3 and means "triage the fixture first". Don't flip `confirmed` to silence
   a failure, and don't report an unconfirmed failure as an SDK defect — across three runs every
@@ -257,9 +261,9 @@ Two things that have already caused rework:
 - **`/doc/NEW` has crashed Gen NX** when the open document was a large real model (2026-07-26,
   v2.1 build 06/23/2026) — the "Failed to disconnect the work session" license dialog, which
   always kills the app and holds the license until the process is restarted properly. Harmless
-  a dozen times over against small scratch documents the same day. Never point `scripts/live_smoke.py`
-  or `scripts/live_crud_check.py` at a session holding a model that matters; get the user to
-  press New Project first and confirm the document is empty.
+  a dozen times over against small scratch documents the same day. Never point `scripts/live_smoke.py`,
+  `scripts/live_crud_check.py` or `packages/typescript/scripts/live-crud.mjs` at a session holding
+  a model that matters; get the user to press New Project first and confirm the document is empty.
 
 ## Releasing
 
