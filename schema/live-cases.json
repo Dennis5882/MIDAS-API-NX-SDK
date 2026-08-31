@@ -5352,7 +5352,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "COMMON": {
           "NAME": "SDST_CRUD",
@@ -5546,7 +5546,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "NAME": "PNLD_CRUD",
         "DESC": "",
@@ -6313,7 +6313,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "TYPE": "LANCZOS",
         "iFREQ": 30,
@@ -6755,7 +6755,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "bSPT": true,
         "bSPR": true,

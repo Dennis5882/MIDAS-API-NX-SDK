@@ -276,15 +276,15 @@
       "status": "implemented",
       "module": "midas_nx.db.project",
       "live_verified": {
-        "date": "2026-08-16",
+        "date": "2026-08-31",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products. Reconfirmed the same full round trip on both products 2026-08-31, build 08/26/2026.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
         "level": "write",
         "outcome": "success"
@@ -4607,15 +4607,15 @@
       "status": "implemented",
       "module": "midas_nx.db.analysis_control",
       "live_verified": {
-        "date": "2026-08-16",
+        "date": "2026-08-31",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "2026-08-16: write-round-trip confirmed live on Gen NX (batch 8); Civil NX fails -- TYPE=\"EIGEN\" (the manual's own worked example) is rejected outright with \"FREQ_RANGE is required for LANCZOS.\"; switching to the manual's LANCZOS payload (iFREQ/bMINMAX/FRMIN/FRMAX/bSTRUM) clears it on Gen but Civil answers the identical error even with that payload -- Civil evidently wants an undocumented field literally named FREQ_RANGE. Product-asymmetric; level reflects the Gen NX result.",
+        "method": "2026-08-31: full write round trip re-confirmed on Gen NX and, contrary to the earlier Civil result, passed on Civil NX 2026 v2.2 build 08/26/2026 with the same documented LANCZOS payload (TYPE/iFREQ/bMINMAX/FRMIN/FRMAX/bSTRUM); no FREQ_RANGE field was sent. Build-specific product observation; level reflects both products.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
         "level": "write",
         "outcome": "success_empty"
@@ -4654,15 +4654,15 @@
       "status": "implemented",
       "module": "midas_nx.db.analysis_control",
       "live_verified": {
-        "date": "2026-08-16",
+        "date": "2026-08-31",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "2026-08-16: write-round-trip confirmed live on Gen NX (batch 8); Civil NX fails -- POST succeeds but THETA reads back as 0 instead of the value sent, reproduced twice including after a fresh POST. Product-asymmetric; level reflects the Gen NX result.",
+        "method": "2026-08-16: write-round-trip confirmed live on Gen NX (batch 8); Civil NX fails -- POST succeeds but THETA reads back as 0 instead of the value sent, reproduced twice including after a fresh POST. Reproduced on Civil NX 2026 v2.2 build 08/26/2026 with the same fixture. Product-asymmetric; level reflects the Gen NX result.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
         "level": "write",
         "outcome": "success_empty"
@@ -4944,15 +4944,15 @@
       "status": "implemented",
       "module": "midas_nx.db.analysis_control",
       "live_verified": {
-        "date": "2026-08-16",
+        "date": "2026-08-31",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "2026-08-16: write-round-trip confirmed live on Gen NX (batch 8); Civil NX fails -- vBOUNDARY.vBG entries must reference real /db/BNGR boundary groups (the manual's own \"BG1\"/\"BG2\" example values are made up and answer \"Boundary Group not found: BG1\"); creating real BNGR groups with those names clears it on Gen but Civil answers the identical \"Boundary Group not found: BG1\" even with the real groups in place. Product-asymmetric; level reflects the Gen NX result.",
+        "method": "2026-08-31: full write round trip re-confirmed on Gen NX and, contrary to the earlier Civil result, passed on Civil NX 2026 v2.2 build 08/26/2026 when vBOUNDARY.vBG referenced the real BG1/BG2 /db/BNGR seed records. Build-specific product observation; level reflects both products.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
         "level": "write",
         "outcome": "success_empty"

@@ -2152,6 +2152,7 @@ def _extras6_cases() -> List[Case]:
              "DIR": "Dx", "SDST_HYS_MODEL": "BL2", "K0": 1000,
              "P1": 120, "ALPHA1": 0.2, "KB": 2000, "BL2": {"BETA": 0}},
             lambda p: p.get("P1"), 100, 120,
+            confirmed=True,
         ),
         Case(
             SeismicDeviceHystereticIsolator,
@@ -2264,6 +2265,7 @@ def _extras7_seeds() -> List[SeedStep]:
 def _extras7_cases() -> List[Case]:
     return [
         # id 1 is pnld_seed (see seed docstring); this case lands at id 2.
+        # Full CRUD re-confirmed on Gen NX and Civil NX 2026-08-31.
         Case(
             PlaneLoadType,
             {"NAME": "PNLD_CRUD", "DESC": "", "LTYPE": "AREA",
@@ -2277,7 +2279,7 @@ def _extras7_cases() -> List[Case]:
                           "X": [0, 4, 4, 0], "Y": [0, 0, -4, -4],
                           "LOAD": [-8.0, -8.0, -8.0, -8.0]}},
             lambda p: p["AREALOAD"]["LOAD"][0], -5.0, -8.0,
-            item_id=2, needs=("pnld_seed",),
+            item_id=2, needs=("pnld_seed",), confirmed=True,
         ),
         # POINT_ORIGIN/AXIS_X/AXIS_Y trace the base model's own plate (element
         # 4, nodes 5-8: (0,-4,0),(4,-4,0),(4,-8,0),(0,-8,0)) so ON_PLANE
@@ -2503,15 +2505,12 @@ def _extras8_cases() -> List[Case]:
         # confirmed live 2026-08-16 that "EIGEN" isn't accepted as a TYPE
         # value at all; the server evidently only recognises "LANCZOS" and
         # "RITZ" despite the manual and /info schema both listing EIGEN.
-        # Switched to the manual's Lanczos example instead, which passes
-        # clean on Gen NX. Product-asymmetric, confirmed live 2026-08-16:
-        # this exact LANCZOS payload (TYPE/iFREQ/bMINMAX/FRMIN/FRMAX/
-        # bSTRUM) still answers the identical "FREQ_RANGE is required for
-        # LANCZOS." on Civil NX -- Civil evidently wants a field literally
-        # named FREQ_RANGE that FRMIN/FRMAX/bMINMAX don't satisfy, and
-        # neither the manual nor /info document it. Never retried with a
-        # guessed FREQ_RANGE field. Split into two cases since only Gen's
-        # round trip actually completes.
+        # Switched to the manual's Lanczos example instead, which passed
+        # on Gen NX on 2026-08-16.  Civil NX then returned the identical
+        # FREQ_RANGE error, but Civil NX 2026 v2.2 build 08/26/2026 completed
+        # this exact documented payload on 2026-08-31 without FREQ_RANGE.
+        # Keep separate product cases so the fixture retains that evidence
+        # rather than inferring a version-independent product rule.
         Case(
             EigenvalueAnalysisControl,
             {"TYPE": "LANCZOS", "iFREQ": 30, "bMINMAX": True, "FRMIN": 0.1,
@@ -2519,7 +2518,7 @@ def _extras8_cases() -> List[Case]:
             {"TYPE": "LANCZOS", "iFREQ": 50, "bMINMAX": True, "FRMIN": 0.1,
              "FRMAX": 50, "bSTRUM": True},
             lambda p: p.get("iFREQ"), 30, 50,
-            item_id=1, products=("civil",),
+            item_id=1, products=("civil",), confirmed=True,
         ),
         Case(
             EigenvalueAnalysisControl,
@@ -2657,12 +2656,10 @@ def _extras8_cases() -> List[Case]:
         # vBOUNDARY.vBG entries must reference real /db/BNGR boundary
         # groups (bngr_seed above) -- the manual's own "BG1"/"BG2" example
         # values are made-up and answer "Boundary Group not found: BG1".
-        # That fix clears it on Gen NX (confirmed=True below), but
-        # confirmed live 2026-08-16 that Civil NX still answers the
-        # identical "Boundary Group not found: BG1" even with bngr_seed's
-        # real /db/BNGR groups in place -- never retried on Civil after
-        # this was found. Split into two cases since only Gen's round trip
-        # actually completes.
+        # It passed on Gen NX on 2026-08-16.  Civil NX then returned the
+        # identical error even with bngr_seed's real groups in place, but
+        # Civil NX 2026 v2.2 build 08/26/2026 completed the same fixture on
+        # 2026-08-31.  Keep separate product cases as build-specific evidence.
         Case(
             BoundaryChangeAssignment,
             {"bSPT": True, "bSPR": True, "bGSPR": False, "bCGLINK": False,
@@ -2674,7 +2671,7 @@ def _extras8_cases() -> List[Case]:
              "vBOUNDARY": [{"BGCNAME": "BGL1", "vBG": ["BG1", "BG2"]}],
              "vLOADANAL": [{"TYPE": "ST", "BGCNAME": "BGL1", "LCNAME": "LC_SCRATCH"}]},
             lambda p: p.get("bSPT"), True, False,
-            item_id=1, needs=("bngr_seed",), products=("civil",),
+            item_id=1, needs=("bngr_seed",), products=("civil",), confirmed=True,
         ),
         Case(
             BoundaryChangeAssignment,
@@ -3425,9 +3422,9 @@ TIERS: List[Tier] = [
     Tier("extras3", "batch 3: tractable subset of db.properties.*", _extras3_seeds, _extras3_cases),
     Tier("extras4", "batch 4: db.load_combinations in full", _no_seeds, _extras4_cases),
     Tier("extras5", "batch 5: db.dynamic_loads (9 of 12, Hyper-S variants deferred)", _extras5_seeds, _extras5_cases),
-    Tier("extras6", "batch 6: seismic-device family from db.boundary (SDVI/SDVE/SDST/SDHY/SDIS; all 5 fail live, DRLS deferred)", _no_seeds, _extras6_cases),
+    Tier("extras6", "batch 6: seismic-device family from db.boundary (SDST confirmed both products; SDVI/SDVE/SDHY/SDIS fail live; DRLS deferred)", _no_seeds, _extras6_cases),
     Tier("extras7", "batch 7: standalone/frame-attachable remainder of db.static_loads (PNLD/PNLA/FMLD/POSP/POSL confirmed; FBLA/EPST/EPSE fail live)", _extras7_seeds, _extras7_cases),
-    Tier("extras8", "batch 8: tractable subset of db.analysis_control (PDEL/BUCK/SMCT confirmed both products; EIGV/BCCT/HHCT/NLCT confirmed Gen only, all 4 fail on Civil; ACTL/MVCT fail on both)", _extras8_seeds, _extras8_cases),
+    Tier("extras8", "batch 8: tractable subset of db.analysis_control (PDEL/BUCK/SMCT/EIGV/BCCT confirmed both products; HHCT/NLCT confirmed Gen only and fail on Civil; ACTL/MVCT remain unresolved)", _extras8_seeds, _extras8_cases),
     Tier("extras9", "batch 9: db.node_element's Domain feature (MADO/SBDO/DOEL -- all 3 fail live, MADO silently drops writes on both products)", _extras9_seeds, _extras9_cases),
     Tier("extras10", "batch 10: standalone subset of db.construction_stage's heat-of-hydration family (ETFC/CCFC/HSFC/STBK/HSTG confirmed; HAHS needs a SOLID element this fixture lacks; HPCE fails live; HECB/HSPT/CSCS deferred)", _extras10_seeds, _extras10_cases),
     Tier("extras11", "batch 11a/c: /db/STCT (fails live -- iITER/TOL silently don't persist), /db/HSPT confirmed, /db/HECB fails live (same SOLID-element gap as HAHS)", _extras11_seeds, _extras11_cases),

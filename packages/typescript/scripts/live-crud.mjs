@@ -42,7 +42,18 @@ function parseArgs(argv) {
     const value = argv[index + 1];
     if (flag === "--no-save-before") {
       args.saveBefore = false;
-    } else if (flag === "--product" || flag === "--endpoints" || flag === "--table-type" || flag === "--save-dir" || flag === "--mapi-key" || flag === "--timeout") {
+    } else if (flag === "--endpoints") {
+      if (!value || value.startsWith("--")) usage("--endpoints needs a value.");
+      const endpoints = [value];
+      while (argv[index + 2] && !argv[index + 2].startsWith("--")) {
+        endpoints.push(argv[index + 2]);
+        index += 1;
+      }
+      // npm on PowerShell can split a comma-separated value into separate
+      // argv tokens. Accept both that form and the documented comma form.
+      args.endpoints = endpoints.join(",");
+      index += 1;
+    } else if (flag === "--product" || flag === "--table-type" || flag === "--save-dir" || flag === "--mapi-key" || flag === "--timeout") {
       if (!value || value.startsWith("--")) usage(`${flag} needs a value.`);
       args[flag.slice(2).replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())] = value;
       index += 1;
@@ -90,8 +101,11 @@ function findResource(value, endpoint, visited = new Set()) {
   return undefined;
 }
 
-function caseFor(endpoint) {
-  return fixture.cases.find((candidate) => candidate.endpoint === endpoint);
+function caseFor(endpoint, product) {
+  return fixture.cases.find(
+    (candidate) => candidate.endpoint === endpoint
+      && (!product || candidate.products.includes(product)),
+  );
 }
 
 function resourceFor(endpoint) {
@@ -248,8 +262,8 @@ async function runCase(liveCase, client) {
  * do not add a second hand-written payload here.
  */
 async function runPopulatedTable(tableType, client) {
-  const nodeCase = caseFor("/db/NODE");
-  const massCase = caseFor("/db/NMAS");
+  const nodeCase = caseFor("/db/NODE", client.product);
+  const massCase = caseFor("/db/NMAS", client.product);
   if (!nodeCase || !massCase) throw new Error("The shared fixture must contain /db/NODE and /db/NMAS cases.");
 
   const node = resourceFor(nodeCase.endpoint);
@@ -322,9 +336,17 @@ async function runPopulatedTable(tableType, client) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const selected = args.endpoints.split(",").map((endpoint) => endpoint.trim()).filter(Boolean);
-  const cases = selected.map((endpoint) => caseFor(endpoint) ?? usage(`${endpoint}: no case in ${fixturePath}.`));
+  const selected = args.endpoints
+    .split(/[\s,]+/)
+    // npm 12 on Windows can retain cmd.exe's caret quoting around a path.
+    // Caret is not valid in a MIDAS endpoint, so normalizing it is unambiguous.
+    .map((endpoint) => endpoint.replaceAll("^", ""))
+    .filter(Boolean);
   const client = new MidasClient({ mapiKey: args.mapiKey, product: args.product, timeout: args.timeout });
+  const cases = selected.map(
+    (endpoint) => caseFor(endpoint, args.product)
+      ?? usage(`${endpoint}: no ${args.product} case in ${fixturePath}.`),
+  );
   const health = await client.verifyConnection();
   if (health.status !== "connected") throw new Error(`Server reachable but not connected: ${JSON.stringify(health)}`);
   if (args.saveBefore) {

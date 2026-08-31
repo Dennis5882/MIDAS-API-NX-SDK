@@ -7553,11 +7553,14 @@ passed on Gen and Civil. The saved native checkpoints were
 the WMAK target and every prerequisite.
 
 The setup deliberately uses a PLATE only as a tested fixture prerequisite. A
-separate manual-shaped `TYPE: "WALL"` element probe succeeded on Gen but Civil
-NX v2.2 build 08/26/2026 rejected it as unsupported element type no. 5. That
-manual/product disagreement is recorded as MD-06 in the manual defects
-register; it does not establish that PLATE and WALL are interchangeable, so
-neither contract nor SDK behaviour was inferred from it.
+separate complete manual `TYPE: "WALL"` example (including `STYPE`, `WALL`,
+`W_CON`, and `W_TYPE`) succeeded on Gen but Civil NX v2.2 build 08/26/2026
+returned `[Error] Unable to add/modify the element. The element type no. 5 for
+the element no. 4 is not supported.` The manual's type table numbers PLATE as
+5 and WALL as 6, whereas a zero-based internal type number would make WALL 5.
+That numbering observation is recorded as MD-06; it does not establish that
+PLATE and WALL are interchangeable, so neither contract nor SDK behaviour was
+inferred from it.
 
 `/db/SDST` originally failed in the npm harness because its fixture stopped at
 the three selector fields. The manual marks `K0`, `P1`, `ALPHA1`, `KB`, and
@@ -7574,3 +7577,96 @@ with `Unknown Error` after saving
 after saving `C:/temp/midas-nx-live-civil-1788174467843.mcbz`. The fixture is
 not changed from that result: neither response identifies a field or enum to
 correct, so treating it as a payload-shape finding would be speculation.
+
+### extras7 fixture re-check and Civil WALL response quote (2026-08-31)
+
+With both scratch documents empty, the Python live runner re-ran `extras7` on
+Gen NX and Civil NX 2026 (v2.1/v2.2, build 08/26/2026). `/db/PNLD` completed
+`POST -> GET -> PUT -> GET -> DELETE {id} -> GET` on both products using its
+existing manual-derived fixture and disposable seed. The earlier coverage ledger
+already correctly recorded that write evidence; this run corrects the stale
+fixture `confirmed` flag. The checkpoints were
+`C:/temp/midas-nx-live-gen-extras7-20260831.mgbx` and
+`C:/temp/midas-nx-live-civil-extras7-20260831.mcbz`.
+
+The same run reproduced the established outcomes without changing their
+fixtures: Gen `/db/FBLA` returned `Unknown Error`; Gen `/db/EPST` and
+`/db/EPSE` returned `Wrong Field`; Civil `/db/FBLA` returned `Unknown Error`.
+The Civil runner skipped Gen-only earth-pressure cases and reported its existing
+incompatible POSL seed, while the independent PNLD case still completed and
+cleaned up. These remain product/precondition findings rather than shape changes.
+
+For MD-06, a separate Civil probe used the manual's complete `TYPE: "WALL"`
+element example and returned exactly `[Error] Unable to add/modify the element.
+The element type no. 5 for the element no. 4 is not supported.` It deleted every
+seed record individually; the final `NODE` and `ELEM` reads were both empty.
+
+The same PNLD fixture then passed through the built npm package's public
+`resources.db.*` surface on both products. The npm runner saved
+`C:/temp/midas-nx-live-gen-1788187237711.mgbx` and
+`C:/temp/midas-nx-live-civil-1788187248388.mcbz` before the round trips and
+reported `PASS /db/PNLD` for each. This is npm-specific evidence and therefore
+does not alter `docs/coverage.json`'s Python-package write ledger.
+
+### extras8 current-build re-check (2026-08-31)
+
+On empty scratch documents, the Python `extras8` runner re-ran the existing
+manual-derived control-data fixtures on Gen NX 2026 v2.1 and Civil NX 2026 v2.2,
+both build 08/26/2026. `/db/EIGV` completed the documented LANCZOS round trip
+on both products with `TYPE`, `iFREQ`, `bMINMAX`, `FRMIN`, `FRMAX`, and `bSTRUM`;
+no `FREQ_RANGE` field was sent. This supersedes the older Civil failure for this
+exact fixture on the current build, but does not establish a version-independent
+Civil behaviour or add an undocumented field to a contract.
+
+`/db/BCCT` likewise completed on both products when its `vBOUNDARY.vBG` values
+referenced the real `BG1` and `BG2` `/db/BNGR` seed records. This supersedes the
+older Civil failure for this fixture on the current build only. Both endpoints
+now have current Gen-and-Civil write evidence; the runner marks their Civil
+fixtures confirmed and deletes each disposable record after the test.
+
+The unresolved observations were kept distinct: Gen rejected `/db/ACTL` with
+`Wrong Field`; Civil accepted its request but read `TOL=0.0005` back as `0.001`.
+Both products returned `Unknown Error` for `/db/MVCT`; Civil still failed `/db/HHCT`
+by reading `THETA=0` after sending `1`, and `/db/NLCT` required
+`LINE_SEARCH_OPTION` when `OPT_ENABLE_LINE_SEARCH` was true. None of those
+outcomes identifies a manual-backed payload correction, so their fixtures and
+contracts remain unchanged.
+
+### extras6 fixture re-check (2026-08-31)
+
+The existing `/db/SDST` steel-damper fixture completed its full CRUD sequence
+on both empty scratch models (Gen NX v2.1 and Civil NX v2.2, build 08/26/2026).
+It was already write-covered, so this only corrects its stale fixture
+`confirmed` state. `/db/SDVI` and `/db/SDVE` both returned `Wrong Field` on
+both products; Gen's `/db/SDHY` and `/db/SDIS` did too. Their existing fixtures
+remain unconfirmed because the responses do not identify a manual-backed value
+change. Each run saved its checkpoint under `C:/temp` and deleted test records
+individually.
+
+The built npm package independently completed `/db/EIGV` and `/db/SDST` through
+its public `resources.db.*` surface on both products. It saved
+`C:/temp/midas-nx-live-gen-1788187895868.mgbx` and
+`C:/temp/midas-nx-live-civil-1788187934137.mcbz` before the checks. The npm
+harness now selects the product-specific fixture when one endpoint has separate
+Gen and Civil cases; previously it selected the first duplicate and incorrectly
+skipped Gen `/db/EIGV`. `/db/BCCT` is deliberately not counted as npm evidence:
+its Python fixture needs the tier-local `bngr_seed`, which the language-neutral
+fixture does not yet serialize for the npm harness, so the public API correctly
+returned `Not Found Key` without that prerequisite.
+
+The documented PowerShell invocation with two selected paths also completed
+after the harness normalized npm 12's retained cmd.exe caret quoting and its
+space-split comma value. `npm run live:crud -- -- --product gen --endpoints
+/db/EIGV,/db/SDST --save-dir C:/temp` saved
+`C:/temp/midas-nx-live-gen-1788188480567.mgbx` and passed both endpoints.
+
+### extras1 and extras3 current-build re-check (2026-08-31)
+
+The existing `/db/NLLP` seed again returned `Unknown Error` on both empty
+scratch models. Its dependent `/db/NLNK`, `/db/NLNK-M1` (Civil), and `/db/CGLP`
+were therefore correctly reported as blocked rather than tested against a
+missing prerequisite. No fixture was changed. The `extras3` re-check likewise
+left `/db/TDMF` and `/db/RPSC` failing at create on both products, and
+`/db/STRPSSM` failing at create on Civil. These are current-build reproductions,
+not evidence for changing fields, values, or contracts. All runs saved to
+`C:/temp` and left the throwaway documents empty after individual cleanup.

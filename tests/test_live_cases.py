@@ -145,3 +145,26 @@ def test_live_case_fixture_carries_manual_sdst_bl2_shape() -> None:
         "KB": 2000,
         "BL2": {"BETA": 0},
     }
+    assert sdst["confirmed"] is True
+
+
+def test_live_case_fixture_marks_reconfirmed_plane_load_type() -> None:
+    cases = json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
+    pnld = next(case for case in cases if case["endpoint"] == "/db/PNLD")
+
+    assert pnld["confirmed"] is True
+    assert pnld["id"] == 2
+    assert pnld["setup"] == []
+
+
+def test_live_case_fixture_marks_reconfirmed_civil_analysis_cases() -> None:
+    cases = json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
+    civil_cases = {
+        case["endpoint"]: case
+        for case in cases
+        if case["products"] == ["civil"]
+        and case["endpoint"] in {"/db/EIGV", "/db/BCCT"}
+    }
+
+    assert set(civil_cases) == {"/db/EIGV", "/db/BCCT"}
+    assert all(case["confirmed"] is True for case in civil_cases.values())
