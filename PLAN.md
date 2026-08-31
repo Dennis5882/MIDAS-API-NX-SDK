@@ -5,9 +5,11 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-08-31 — **2.7.2 published** to both registries, adding
-> D1 (`documentedDefaultNote`) and D2 (unstated requiredness) to the contract
-> schema and promoting 30 endpoint contracts on the back of them.
+> Last updated: 2026-08-31 — **2.7.3 prepared on `main`** after 2.7.2 shipped
+> the same day. 2.7.2 added D1 (`documentedDefaultNote`) and D2 (unstated
+> requiredness); 2.7.3 adds D3 (conditional variants) and D4 (non-field
+> arguments), closing all four contract-schema decisions. Contracts 279 → 319
+> across the two releases.
 > PyPI and npm have shared
 > one version number since 2026-08-28, at the author's explicit request; the two
 > streams were 2.3.5 and 2.4.0 and the split was confusing for one package name.
@@ -243,13 +245,13 @@ they're the ones worth re-checking before planning a release):
 
 | Axis | Artifact | State |
 |---|---|---|
-| Tests | 876 Python tests + 55 Vitest tests, mocked/local only | ✅ green |
+| Tests | 877 Python tests + 55 Vitest tests, mocked/local only | ✅ green |
 | CI | `.github/workflows/ci.yml` — Python checks on 3.12/3.13 plus npm generation/typecheck/tests/package smoke on Node.js 18/22, push+PR | ✅ running |
 | Static typing | mypy over `src/midas_nx`, config in `pyproject.toml`, own CI job | ✅ clean across all 41 modules |
 | Packaging verification | `package` CI job + `scripts/wheel_smoke_test.py` — builds the wheel, installs it into a clean venv, asserts `py.typed` shipped, `__version__` matches the distribution, and the `delete_all()` guard is armed | ✅ running |
 | TypeScript/npm SDK | `packages/typescript/` — ESM + CommonJS + declarations, Node.js 18+, Vitest/typecheck/build and packed-artifact smoke tests | ✅ npm `midas-nx` 2.7.0 published 2026-08-28; `js-v*` OIDC workflow and npm Trusted Publisher registration completed 2026-08-27. Versions have moved in lockstep with PyPI since 2.6.0 |
 | Cross-language generation | `scripts/generate_typescript_sdk.py`, `schema/typescript-{resources,coverage}.json`, `packages/typescript/src/generated/` | ✅ generated outputs committed; CI rejects drift. ⚠️ CI was red on `main` 2026-08-27 (`dcb98e0`..`21034f3`) because the committed npm surface had gone stale against its own generator — **py-v2.3.5 was tagged while it was red**. Fixed in `f303fd7`; the drift gate works, nobody read it |
-| Language-neutral contracts | `contracts/` + `scripts/{extract,promote,validate}_contract*.py`, own CI job | 🚧 **309 endpoints + 87 result tables**, 2,933 fields, with **75** drafts awaiting review (`extract_contracts.py --report`, not raw ignored draft files). Drafted from the manual by `extract_contracts.py`, promoted by `promote_contract.py`. Validates schema, cross-references, safety-rule coverage, manual drift, and **parity against both SDKs** — a disagreement is an SDK defect, not a reason to edit the contract. It has caught: npm able to crash a live NX session on `/db/NMAS`; `/db/GRUP` claiming a DELETE it does not serve; `/db/RIGD`/`/db/OFFS` flattening an `ITEMS` array; and 7 endpoints wrongly called Civil-only |
+| Language-neutral contracts | `contracts/` + `scripts/{extract,promote,validate}_contract*.py`, own CI job | 🚧 **319 endpoints + 87 result tables**, 3,010 fields, with **65** drafts awaiting review (`extract_contracts.py --report`, not raw ignored draft files). Drafted from the manual by `extract_contracts.py`, promoted by `promote_contract.py`. Validates schema, cross-references, safety-rule coverage, manual drift, and **parity against both SDKs** — a disagreement is an SDK defect, not a reason to edit the contract. It has caught: npm able to crash a live NX session on `/db/NMAS`; `/db/GRUP` claiming a DELETE it does not serve; `/db/RIGD`/`/db/OFFS` flattening an `ITEMS` array; and 7 endpoints wrongly called Civil-only |
 | Omission safety | `safeToOmit` in every contract field | 🚧 123 proven safe from confirmed live payloads, 5 proven unsafe, **2,100 honestly unverified**. The manual saying "Optional" is not evidence — that is what `documentedOptional` records, and `/db/NMAS` is where believing it kills the session |
 | Destructive-op safety | `delete()` per-id URL; `delete_all(confirm=True)` required, else `DestructiveOperationError` before sending | ✅ guarded |
 | Docs site | MkDocs Material + mkdocstrings (`mkdocs.yml`), built `--strict` on every PR | ✅ live at `dennis5882.github.io/MIDAS-API-NX-SDK/` (confirmed 2026-08-04 — this row had drifted stale, saying "GitHub Pages not yet enabled" after it already was) |
@@ -805,6 +807,7 @@ exactly why that's the honest framing rather than a stronger guarantee.
 | **2.6.1** ✅ | npm operation wrappers now enforce the reviewed Gen NX/Civil NX product availability before sending a request; validated against a real Civil NX session with full DB GET coverage and a model -> analysis -> result-table round trip. Python republished unchanged to preserve the shared version | published 2026-08-28 as `py-v2.6.1` and `js-v2.6.1` |
 | **2.7.0** ✅ | npm: `/db/BODF` generated from a reviewed contract, so `selfWeight` requires `LCNAME` and types `FV` as exactly three numbers; contracted fixed-length arrays now generate tuples rather than unbounded arrays. Python republished unchanged | published 2026-08-28 as `py-v2.7.0` and `js-v2.7.0` |
 | **2.7.1** ✅ | Catches both packages up to three same-day manual revisions. Python: 27 resource labels corrected to the manual's English, `/db/POLC-M1` regains POST after a live call disproved the chapter, `/ope/GSBG` **now raises** on contradictory `BATCH` payloads, and 11 chapter-02 docstring references follow the manual's renumbering. npm: 400 lines of new result-table wrappers, contract-generated payload types, and four payload interfaces re-declared as type aliases. Repo: `--check` gained label, method and section-heading comparisons, each of which found real drift; 31 `safeToOmit: true` claims retracted after the evidence behind them turned out to be a request that never ran | published 2026-08-30 as `py-v2.7.1` and `js-v2.7.1` |
+| **2.7.3** | D3 and D4, the last two contract-schema decisions. `variant.when` takes the `appliesWhen` shape — an ANDed array of `{path, equals|in}` — so a nested discriminator, a two-level selector and a table the manual gives several values for are all expressible; `request.itemSchema` gains `scalar` and `empty` for the nine `/doc/*` arguments that are a bare string or `{}` rather than a field list. Promoted 309 → 319. **npm breaking**: `FloorLoadPayload` is now a discriminated union with three required members. Python's packaged surface is unchanged. | prepared on `main` 2026-08-31 |
 | **2.7.2** | Contract-migration progress and the 2026-08-31 live-verification batch: Python payload documentation gained verified moving-load, analysis-control and inelastic-hinge members; npm generated types gained reviewed manual shapes for 30 newly promoted endpoint contracts (279 to 309), taking contract-owned npm resource facts to 251 of 304. The live harness now makes safe, verified checkpoints before dependent cases and records scratch-model evidence separately from manual facts. | published 2026-08-31 |
 | v0.16.0/Phase 7 (not started) | Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
 | v0.17.0+/Phase 8 (not started) | `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |

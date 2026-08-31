@@ -6,6 +6,29 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.7.3 - 2026-08-31
+
+### Compatibility — breaking
+
+- `FloorLoadPayload` (`/db/FBLA`) was a flat `interface` with every member
+  optional and is now a **discriminated union** on `FLOOR_DIST_TYPE`, with
+  `FLOOR_LOAD_TYPE_NAME`, `FLOOR_DIST_TYPE` and `NODES` required. Omitting one
+  of those three, `extends`-ing the payload, or setting fields the manual
+  documents under different `FLOOR_DIST_TYPE` values now fails typechecking.
+  No runtime behaviour changed and no runtime validation was added.
+
+### Changed
+
+- Generated payload declarations use 10 more reviewed endpoint contracts
+  (309 → 319): `/db/FBLA` and the nine `/doc/*` endpoints. 252 of the 304
+  generated resources now take their facts from a contract rather than the
+  reviewed Python fallback.
+- Conditional variants are generated from the contract's `when` conditions,
+  which now carry a dotted path and may name several documented values. A table
+  the manual shares between branches contributes its fields to each of them
+  rather than forming a union member that would match the same discriminator
+  twice.
+
 ## 2.7.2 - 2026-08-31
 
 ### Changed
