@@ -85,8 +85,8 @@ fields:
 
 variants:
   - when:
-      field: ANAL_TYPE
-      equals: LANCZOS
+      - path: ANAL_TYPE
+        equals: LANCZOS
     source:
       table: "Parameters — Lanczos (`ANAL_TYPE = \"LANCZOS\"`)"
       line: 596
@@ -153,8 +153,8 @@ variants:
         safeToOmit: unverified
         provenance: manual
   - when:
-      field: ANAL_TYPE
-      equals: RITZ
+      - path: ANAL_TYPE
+        equals: RITZ
     source:
       table: "Parameters — Ritz Vectors (`ANAL_TYPE = \"RITZ\"`)"
       line: 607

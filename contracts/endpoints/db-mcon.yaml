@@ -193,8 +193,8 @@ fields:
 
 variants:
   - when:
-      field: TYPE
-      equals: EX
+      - path: TYPE
+        equals: EX
     source:
       table: "TYPE=\"EX\"(Explicit)일 때 SLAVES[]"
       line: 1860
@@ -227,8 +227,8 @@ variants:
         safeToOmit: unverified
         provenance: manual
   - when:
-      field: TYPE
-      equals: WD
+      - path: TYPE
+        equals: WD
     source:
       table: "TYPE=\"WD\"(Weighted Displacement)일 때 SLAVES[]"
       line: 1868

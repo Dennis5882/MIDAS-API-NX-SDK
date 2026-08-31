@@ -358,22 +358,70 @@ def _contract_payload_type(name: str, contract: dict[str, Any]) -> list[str]:
     lines.append(f"  export type {name} = {{")
     lines.append(_contract_interface_body(fields, "    "))
     lines.append("  } & (")
+    # A variant whose condition names several values is the manual's shared
+    # table, not a further branch: /db/FBLA states one table for
+    # ``FLOOR_DIST_TYPE = 1 or 2`` alongside its ``= 1`` and ``= 2`` tables.
+    # Emitting it as its own union member would make two members match the same
+    # discriminator. Fold its fields into every branch it covers instead, which
+    # is what the manual says rather than a merge this code invented.
+    shared = [v for v in variants if any("in" in c for c in v["when"])]
+    branches = [v for v in variants if v not in shared]
+    if shared and branches:
+        variants = [
+            {**branch, "fields": branch["fields"] + [
+                field
+                for extra in shared
+                if _shared_covers(extra["when"], branch["when"])
+                for field in extra["fields"]
+            ]}
+            for branch in branches
+        ]
+
     for index, variant in enumerate(variants):
-        when = variant["when"]
+        conditions = variant["when"]
         lines.append("    {")
-        lines.append(f"      {when['field']}: {json.dumps(when['equals'])};")
+        # A condition path may be nested (``STR.SPEC_CODE``). Only a root-level
+        # discriminator can be narrowed as a property of this branch; a nested
+        # one is documentation the branch body already carries, so it is not
+        # emitted twice.
+        roots = [c for c in conditions if "." not in c["path"]]
+        for condition in roots:
+            if "in" in condition:
+                union = " | ".join(json.dumps(value) for value in condition["in"])
+                lines.append(f"      {condition['path']}: {union};")
+            else:
+                lines.append(f"      {condition['path']}: {json.dumps(condition['equals'])};")
         # A manually transcribed variant table often repeats its discriminator
         # as the first row (for example ``iMETHOD = 2`` followed by an
         # ``iMETHOD`` parameter row). The literal branch discriminator is the
         # more precise declaration; rendering the repeated general field would
         # create an illegal duplicate TypeScript property.
-        branch_fields = [field for field in variant["fields"] if field.get("key") != when["field"]]
+        narrowed = {condition["path"] for condition in roots}
+        branch_fields = [field for field in variant["fields"] if field.get("key") not in narrowed]
         body = _contract_interface_body(branch_fields, "      ")
         if body:
             lines.append(body)
         lines.append("    }" + (" |" if index < len(variants) - 1 else ""))
     lines.append("  );")
     return lines
+
+
+def _shared_covers(shared_when: list[dict], branch_when: list[dict]) -> bool:
+    """Whether a shared multi-value table applies to this single-value branch.
+
+    True when every condition of the branch is satisfied by the shared table's
+    own conditions on the same path - that is, the branch's value is among the
+    values the shared table names.
+    """
+    by_path = {condition["path"]: condition for condition in shared_when}
+    for condition in branch_when:
+        extra = by_path.get(condition["path"])
+        if extra is None:
+            return False
+        permitted = extra["in"] if "in" in extra else [extra["equals"]]
+        if condition.get("equals") not in permitted:
+            return False
+    return True
 
 
 def _is_contract_shadow_resource(endpoint: str) -> bool:

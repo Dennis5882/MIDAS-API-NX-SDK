@@ -318,8 +318,8 @@ def _description_literal_condition(text: str) -> tuple[str, str | int | float | 
         return None
     path, value = distinct[0]
     if value.lower() in {"true", "false"}:
-        return path, value.lower() == "true"
-    return path, value
+        return path, (value.lower() == "true",)
+    return path, (value,)
 
 
 def _condition_from_description(cell: str) -> Optional[str]:
@@ -684,7 +684,11 @@ class ParsedField:
     enum: list[Any] = dataclass_field(default_factory=list)
     constraints: dict[str, Any] = dataclass_field(default_factory=dict)
     condition: Optional[str] = None
-    applies_when: list[tuple[str, str | int | float | bool]] = dataclass_field(default_factory=list)
+    # (path, values). One value renders as `equals`, several as `in` - the
+    # manual's `A = 1 or 2` form, never a guessed alternative.
+    applies_when: list[tuple[str, tuple[str | int | float | bool, ...]]] = dataclass_field(
+        default_factory=list
+    )
     number: str = ""
     notes: list[str] = dataclass_field(default_factory=list)
     properties: list["ParsedField"] = dataclass_field(default_factory=list)
@@ -1071,38 +1075,102 @@ def _display_structural_fields(section: "Section") -> tuple[list[ParsedField], l
 
 @dataclass(frozen=True)
 class ParsedVariant:
-    """One manual table selected by an explicitly documented discriminator."""
+    """One manual table selected by an explicitly documented discriminator.
+
+    ``values`` holds every literal the manual states for this one table. It is
+    usually one, and renders as ``equals``; a heading such as
+    ``FLOOR_DIST_TYPE = 1 or 2`` names several for the same table and renders
+    as ``in``. Both are transcriptions - a value the manual does not write down
+    never reaches this tuple.
+    """
 
     field: str
-    equals: str | int | float | bool
+    values: tuple[str | int | float | bool, ...]
     table: ParsedTable
+
+    @property
+    def equals(self) -> str | int | float | bool:
+        """The single documented value, for the common one-value case."""
+        if len(self.values) != 1:
+            raise ValueError(f"{self.field} names {len(self.values)} values; use .values")
+        return self.values[0]
 
 
 _VARIANT_CONDITION = re.compile(
     r'`?([A-Za-z_][A-Za-z0-9_.]*)`?\s*=\s*(?:"([^"]+)"|(-?\d+(?:\.\d+)?)|(true|false))',
     re.IGNORECASE,
 )
+# One table, several documented values of the same field: the manual writes
+# ``FLOOR_DIST_TYPE = 1 or 2`` and ``LOAD_MODEL=2/3``. Only the alternatives
+# trailing a matched ``FIELD = VALUE`` count - a bare number elsewhere in a
+# heading is prose, not a second value.
+_VARIANT_ALTERNATIVE = re.compile(
+    # `.match(text, position)` already anchors here; Python's re has no \G.
+    r'\s*(?:or|,|/)\s*(?:"([^"]+)"|(-?\d+(?:\.\d+)?)|(true|false))',
+    re.IGNORECASE,
+)
 
 
-def _variant_condition(text: str) -> tuple[str, str | int | float | bool] | None:
-    """Read one literal discriminator condition without inferring a value.
+def _condition_value(string: str, numeric: str, boolean: str) -> str | int | float | bool:
+    """One matched literal, kept in the type the wire uses."""
+    if string:
+        return string
+    if numeric:
+        number = float(numeric)
+        return int(number) if number.is_integer() else number
+    return boolean.lower() == "true"
+
+
+def _variant_key(conditions: list[dict]) -> tuple[str | None, tuple]:
+    """Identify a declared variant by its single documented discriminator.
+
+    The schema allows several ANDed conditions, but a manual set the extractor
+    can transcribe is selected by one field; a hand-written contract using more
+    simply will not match a parsed one, which is the honest outcome.
+    """
+    if len(conditions) != 1:
+        return None, ()
+    condition = conditions[0]
+    values = tuple(condition["in"]) if "in" in condition else (condition.get("equals"),)
+    return condition.get("path"), values
+
+
+def _values_label(values: tuple) -> str:
+    return repr(values[0]) if len(values) == 1 else " or ".join(repr(value) for value in values)
+
+
+def _variant_condition(text: str) -> tuple[str, tuple[str | int | float | bool, ...]] | None:
+    """Read the literal discriminator condition without inferring a value.
 
     Conditions occur both in markdown headings (``TYPE = "FIRST"``) and in
     blank-key divider rows inside a parameter table
     (``OPT_AUTO_OPTIMIZE=false``). Boolean branches are wire values too, not
     prose labels, so preserve them as booleans rather than strings.
+
+    A heading may state several values for the *same* table - the manual writes
+    ``FLOOR_DIST_TYPE = 1 or 2`` and ``LOAD_MODEL=2/3``. Those are returned
+    together and become an ``in`` condition. Two *different* fields in one
+    heading are not a variant selector this function can resolve, so it
+    declines rather than picking one.
     """
 
-    matches = _VARIANT_CONDITION.findall(text)
-    if len(matches) != 1:
+    matches = list(_VARIANT_CONDITION.finditer(text))
+    if not matches:
         return None
-    field, string, numeric, boolean = matches[0]
-    if string:
-        return field, string
-    if numeric:
-        number = float(numeric)
-        return field, int(number) if number.is_integer() else number
-    return field, boolean.lower() == "true"
+    fields = {match.group(1) for match in matches}
+    if len(fields) != 1:
+        return None
+    values: list[str | int | float | bool] = []
+    for match in matches:
+        values.append(_condition_value(*match.group(2, 3, 4)))
+        # Consume ``or 2`` / ``/3`` / ``, 4`` immediately following this match.
+        position = match.end()
+        while (extra := _VARIANT_ALTERNATIVE.match(text, position)) is not None:
+            values.append(_condition_value(*extra.group(1, 2, 3)))
+            position = extra.end()
+    if len(set(values)) != len(values):
+        return None
+    return matches[0].group(1), tuple(values)
 
 
 def _explicit_variants(tables: list[ParsedTable]) -> list[ParsedVariant]:
@@ -1122,11 +1190,31 @@ def _explicit_variants(tables: list[ParsedTable]) -> list[ParsedVariant]:
         condition = _variant_condition(table.heading)
         if condition is None:
             return []
-        field, value = condition
-        variants.append(ParsedVariant(field, value, table))
+        field, values = condition
+        variants.append(ParsedVariant(field, values, table))
     if len({variant.field for variant in variants}) != 1:
         return []
-    if len({variant.equals for variant in variants}) != len(variants):
+
+    # Each documented value names exactly one branch, so the single-value
+    # tables must not collide. Two of them claiming the same value means the
+    # manual is separating them by something it never names as a wire field -
+    # /db/NLNK splits REF_SYSTEM=1 into Angle/3Points/Vector, /db/HSFC splits
+    # TYPE="FUNC" by whether concrete data is used. Those stay unmerged; a
+    # second discriminator that is not written down cannot be transcribed.
+    branches = [variant for variant in variants if len(variant.values) == 1]
+    claimed = [variant.equals for variant in branches]
+    if len(set(claimed)) != len(claimed):
+        return []
+
+    # A multi-value table is not a further branch: it is the table the manual
+    # shares between branches it has already defined, as /db/FBLA's
+    # ``FLOOR_DIST_TYPE = 1 or 2`` is shared by its ``= 1`` and ``= 2`` tables.
+    # Every value it names must therefore already have a branch of its own,
+    # otherwise it would introduce one nothing defines.
+    for variant in variants:
+        if len(variant.values) > 1 and not set(variant.values) <= set(claimed):
+            return []
+    if not branches:
         return []
     return variants
 
@@ -1334,6 +1422,12 @@ def _structural_fields(section: "Section") -> tuple[list[ParsedField], list[Stru
 def _conditional_fields(section: "Section", fields: list[ParsedField]) -> tuple[list[ParsedField], set[int]]:
     """Merge audited conditional tables without guessing a payload branch."""
     Condition = tuple[str, str | int | float | bool]
+
+    def as_values(condition: Condition) -> tuple[str, tuple]:
+        """Curated entries are written (field, scalar); store (field, values)."""
+        path, value = condition
+        return path, value if isinstance(value, tuple) else (value,)
+
     audited: dict[str, dict[int, tuple[tuple[Condition, ...], str | None]]] = {
         "/db/CCFC": {
             1: ((("TYPE", "CONST"),), 'Constant 타입 (TYPE="CONST") 추가 파라미터'),
@@ -1410,9 +1504,10 @@ def _conditional_fields(section: "Section", fields: list[ParsedField]) -> tuple[
     }
 
     def annotate(entries: list[ParsedField], conditions: tuple[Condition, ...], raw: str) -> None:
+        normalised = [as_values(condition) for condition in conditions]
         for entry in entries:
             entry.condition = entry.condition or raw
-            entry.applies_when.extend(conditions)
+            entry.applies_when.extend(normalised)
 
     for index, (conditions, raw) in audited.get(section.endpoint, {}).items():
         if index >= len(section.tables):
@@ -1808,7 +1903,7 @@ def _apply_explicit_prose_conditions(tables: list[ParsedTable], lines: list[str]
             if target is None or target.requirement != "conditional" or target.condition is not None:
                 continue
             target.condition = f'{selector}="{value}"'
-            condition = (selector, value)
+            condition = (selector, (value,))
             if condition not in target.applies_when:
                 target.applies_when.append(condition)
             target.notes = [
@@ -2267,14 +2362,13 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                 if requirement == "conditional" and condition is None and desc_column is not None:
                     description_condition = _description_literal_condition(cells[desc_column])
                     if description_condition is not None:
-                        condition_field, condition_value = description_condition
-                        rendered_value = (
-                            json.dumps(condition_value)
-                            if isinstance(condition_value, str)
-                            else str(condition_value).lower()
+                        condition_field, condition_values = description_condition
+                        rendered_value = " or ".join(
+                            json.dumps(value) if isinstance(value, str) else str(value).lower()
+                            for value in condition_values
                         )
                         condition = f"{condition_field}={rendered_value}"
-                        applies_when = [(condition_field, condition_value)]
+                        applies_when = [(condition_field, condition_values)]
                         note = None
                     else:
                         condition = _condition_from_description(cells[desc_column])
@@ -2703,11 +2797,15 @@ def _render_fields(
             lines.append(f"{body}condition: \"TODO(review): the manual does not state the condition\"")
         if parsed.applies_when:
             lines.append(f"{body}appliesWhen:")
-            for condition_path, equals in parsed.applies_when:
+            for condition_path, values in parsed.applies_when:
                 scoped = ".".join(prefix + tuple(condition_path.split(".")))
                 rendered_path = scoped if scoped in field_paths else condition_path
                 lines.append(f"{body}  - path: {_scalar(rendered_path)}")
-                lines.append(f"{body}    equals: {_scalar(equals)}")
+                if len(values) == 1:
+                    lines.append(f"{body}    equals: {_scalar(values[0])}")
+                else:
+                    lines.append(f"{body}    in:")
+                    lines += [f"{body}      - {_scalar(value)}" for value in values]
         lines.append(f"{body}documentedDefault: {_scalar(parsed.documented_default)}")
         if parsed.documented_default_note is not None:
             lines.append(f"{body}documentedDefaultNote: {_scalar(parsed.documented_default_note)}")
@@ -2756,6 +2854,42 @@ def _render_fields(
             lines.append(f"{body}properties:")
             lines += _render_fields(parsed.properties, body + "  ", prefix=current_path, field_paths=field_paths)
     return lines
+
+
+_ARGUMENT_SCHEMA = re.compile(
+    r'"Argument"\s*:\s*\{\s*"type"\s*:\s*"(?P<type>[a-z]+)"(?P<rest>.*?)\n\s*\}',
+    re.DOTALL,
+)
+
+
+_EMPTY_PROPERTIES = re.compile(r'"properties"\s*:\s*\{\s*\}')
+
+
+def _scalar_argument(section: "Section") -> tuple[str, Optional[str]] | None:
+    """Read a section's JSON Schema when it documents a non-`fields` argument.
+
+    Nine `/doc/*` sections carry a JSON Schema and no Specifications table, and
+    the reason is not that the payload is undocumented: `/doc/OPEN` and
+    `/doc/SAVEAS` take a bare path string, and `/doc/NEW`, `/doc/CLOSE` and
+    `/doc/SAVE` take an object the manual states is empty. Returns
+    ``("scalar", type)`` or ``("empty", None)``; anything else stays unread so
+    it cannot be mistaken for a documented shape.
+    """
+
+    match = _ARGUMENT_SCHEMA.search("\n".join(section.lines))
+    if match is None:
+        return None
+    argument_type = match.group("type")
+    if argument_type in {"string", "number", "integer", "boolean"}:
+        return "scalar", argument_type
+    if argument_type == "object":
+        rest = match.group("rest")
+        # `/doc/NEW` writes `"properties": {}` rather than omitting the
+        # key. An empty map is the manual saying the object carries
+        # nothing; a populated one is a payload not to flatten away.
+        if '"properties"' not in rest or _EMPTY_PROPERTIES.search(rest):
+            return "empty", None
+    return None
 
 
 def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> str:
@@ -2821,6 +2955,7 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
     ]
 
     methods = section.methods or ["GET", "POST", "PUT", "DELETE"]
+    argument = _scalar_argument(section) if not section.tables else None
     if not section.methods:
         lines.append("# TODO(review): the chapter did not state its methods; this is the /db/* default.")
     lines.append("operations:")
@@ -2833,6 +2968,12 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
         lines.append("    request:")
         if method in {"GET", "DELETE"}:
             lines.append("      wrapper: none")
+        elif argument is not None:
+            kind, scalar_type = argument
+            lines.append("      wrapper: argument")
+            lines.append(f"      itemSchema: {kind}")
+            if scalar_type is not None:
+                lines.append(f"      scalarType: {scalar_type}")
         else:
             lines.append("      wrapper: assign")
             lines.append("      itemSchema: fields")
@@ -2856,10 +2997,18 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
     if rendered_variants:
         lines.append("variants:")
         for variant in rendered_variants:
+            lines += ["  - when:"]
+            if len(variant.values) == 1:
+                lines += [
+                    f"      - path: {_scalar(variant.field)}",
+                    f"        equals: {_scalar(variant.equals)}",
+                ]
+            else:
+                # The manual states one table for several values of the same
+                # field; `in` says exactly that without duplicating the table.
+                lines += [f"      - path: {_scalar(variant.field)}", "        in:"]
+                lines += [f"          - {_scalar(value)}" for value in variant.values]
             lines += [
-                "  - when:",
-                f"      field: {_scalar(variant.field)}",
-                f"      equals: {_scalar(variant.equals)}",
                 "    source:",
                 f"      table: {_scalar(variant.table.heading)}",
                 f"      line: {variant.table.line}",
@@ -3208,6 +3357,21 @@ def _flatten_contract(fields: list[dict], prefix: str = "") -> dict[str, dict]:
     return out
 
 
+def _declares_non_field_argument(contract: dict) -> bool:
+    """Whether a contract documents a scalar or empty argument.
+
+    Mirrors promote_contract.py's gate of the same name: an empty `fields`
+    list is the right transcription when the manual states the argument is
+    one primitive or an empty object, so neither promotion nor the drift
+    check should read it as a parsing failure.
+    """
+    for operation in contract.get("operations", []) or []:
+        request = operation.get("request") or {}
+        if request.get("itemSchema") in {"scalar", "empty"}:
+            return True
+    return False
+
+
 def run_check(sections: list[Section]) -> int:
     try:
         import yaml
@@ -3238,6 +3402,13 @@ def run_check(sections: list[Section]) -> int:
             problems.append(f"{path.name}: claims a documented manual source, but no chapter section describes {contract['endpoint']}")
             continue
         if not section.tables:
+            # A section can document its argument without a Specifications
+            # table: `/doc/OPEN` sends a bare path string and `/doc/NEW` an
+            # empty object, both stated in the section's JSON Schema. A
+            # contract that declares that is checked against the schema by
+            # the validator, not against a table that does not exist.
+            if _declares_non_field_argument(contract):
+                continue
             problems.append(f"{path.name}: no parameter table could be parsed from {section.chapter_file}; cannot check")
             continue
         checked += 1
@@ -3380,12 +3551,12 @@ def run_check(sections: list[Section]) -> int:
         )
         if check_variants:
             declared_variants = {
-                (variant.get("when", {}).get("field"), variant.get("when", {}).get("equals")): variant
+                _variant_key(variant.get("when", [])): variant
                 for variant in contract.get("variants", [])
             }
             for variant in check_variants:
-                label = f"{variant.field}={variant.equals!r}"
-                declared_variant = declared_variants.get((variant.field, variant.equals))
+                label = f"{variant.field}={_values_label(variant.values)}"
+                declared_variant = declared_variants.get((variant.field, variant.values))
                 if declared_variant is None:
                     problems.append(f"{path.name}: manual variant {label} is missing from the contract")
                     continue

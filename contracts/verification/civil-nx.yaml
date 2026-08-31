@@ -492,3 +492,19 @@ records:
       rather than at nothing.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-write-sweep-2026-08-13
+    endpoints: []
+    date: "2026-08-13"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 07/29/2026
+    level: write
+    outcome: success
+    method: >-
+      manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. save_as() to a new .mcbx file succeeded; verified for real (not just a trusted response) by immediately open_project()-ing that same path and confirming all nodes came back. First tested on Gen NX 2026-08-13 (v2.1, build 08/12/2026): save_as() to a .mgbx path (built from verify_conne
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md

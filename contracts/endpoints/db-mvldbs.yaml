@@ -207,8 +207,8 @@ fields:
 
 variants:
   - when:
-      field: LOADMODEL
-      equals: STANDER
+      - path: LOADMODEL
+        equals: STANDER
     source:
       table: "LCDATA_STANDARD (LOADMODEL=\"STANDER\", General Load 시 대표 예시)"
       line: 1858

@@ -95,8 +95,8 @@ fields:
 
 variants:
   - when:
-      field: TYPE
-      equals: EIGEN
+      - path: TYPE
+        equals: EIGEN
     source:
       table: "Parameters — Eigen Vectors (Subspace Iteration, `TYPE = \"EIGEN\"`)"
       line: 427
@@ -138,8 +138,8 @@ variants:
         safeToOmit: unverified
         provenance: manual
   - when:
-      field: TYPE
-      equals: LANCZOS
+      - path: TYPE
+        equals: LANCZOS
     source:
       table: "Parameters — Eigen Vectors (Lanczos, `TYPE = \"LANCZOS\"`)"
       line: 436
@@ -190,8 +190,8 @@ variants:
         safeToOmit: unverified
         provenance: manual
   - when:
-      field: TYPE
-      equals: RITZ
+      - path: TYPE
+        equals: RITZ
     source:
       table: "Parameters — Ritz Vectors (`TYPE = \"RITZ\"`)"
       line: 446

@@ -64,6 +64,22 @@ COVERAGE = ROOT / "docs" / "coverage.json"
 #: Endpoints whose documented payload has been measured wrong against a running
 #: product. Each needs its correction and evidence written by hand; see
 #: docs/live_verification_notes.md and CLAUDE.md's live-behaviour section.
+def _declares_non_field_argument(draft: dict) -> bool:
+    """Whether the draft documents an argument that is not a field list.
+
+    Nine `/doc/*` sections have no Specifications table, and the reason is
+    not that the payload is undocumented: `/doc/OPEN` takes a bare path
+    string and `/doc/NEW` takes an object the manual states is empty. An
+    empty `fields` list is the correct transcription for both, so the
+    no-fields refusal must not fire when the request says so explicitly.
+    """
+    for operation in draft.get("operations", []) or []:
+        request = operation.get("request") or {}
+        if request.get("itemSchema") in {"scalar", "empty"}:
+            return True
+    return False
+
+
 NEEDS_HAND_REVIEW = {
     "/db/SECF": "its documented key is wrong live",
     "/db/PRES": "its documented default DIRECTION is wrong live",
@@ -369,7 +385,7 @@ def promote(
     if "TODO(review): the manual did not" in text:
         print(f"  {slug}: refused - the manual leaves a field's type or requiredness unstated")
         return None
-    if re.search(r"^fields: \[\]$", text, re.MULTILINE):
+    if re.search(r"^fields: \[\]$", text, re.MULTILINE) and not _declares_non_field_argument(draft_data):
         print(f"  {slug}: refused - no payload fields could be parsed")
         return None
     entry = coverage.get(endpoint)

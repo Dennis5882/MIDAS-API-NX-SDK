@@ -183,7 +183,13 @@ def test_requiredness_and_defaults_come_from_the_table(section: ex.Section):
 def test_render_draft_keeps_manual_condition_and_structured_applies_when(section: ex.Section):
     field = next(field for field in section.tables[0].fields if field.key == "SPECIAL_VALUE")
     field.condition = "MODE=\"SPECIAL\""
-    field.applies_when = [("MODE", "SPECIAL"), ("OPTIONS.ENABLED", True)]
+    field.applies_when = [
+        ("MODE", ("SPECIAL",)),
+        ("OPTIONS.ENABLED", (True,)),
+        # Several documented values for one path render as `in`, not as a
+        # repeated `equals` and not as a guess at the rest of the enum.
+        ("STAGE", (1, 2)),
+    ]
 
     rendered = yaml.safe_load(ex.render_draft(section))["fields"]
     rendered_field = next(entry for entry in rendered if entry["key"] == "SPECIAL_VALUE")
@@ -191,6 +197,7 @@ def test_render_draft_keeps_manual_condition_and_structured_applies_when(section
     assert rendered_field["appliesWhen"] == [
         {"path": "MODE", "equals": "SPECIAL"},
         {"path": "OPTIONS.ENABLED", "equals": True},
+        {"path": "STAGE", "in": [1, 2]},
     ]
 
 
@@ -438,9 +445,9 @@ def test_parenthesised_dash_numbering_nests_and_preserves_literal_conditions(tmp
     mass_type, mass_pos, _, mass_axis = root.properties
     assert mass_type.enum == ["LUMPED", "CONSISTENT"]
     assert mass_pos.enum == ["CENTROID", "OFFSET"]
-    assert mass_pos.applies_when == [("MASS_TYPE", "LUMPED")]
+    assert mass_pos.applies_when == [("MASS_TYPE", ("LUMPED",))]
     assert mass_axis.enum == ["XYZ", "XY", "Z"]
-    assert mass_axis.applies_when == [("SELFWEIGHT", True)]
+    assert mass_axis.applies_when == [("SELFWEIGHT", (True,))]
 
 
 @pytest.mark.parametrize(
@@ -655,7 +662,8 @@ def test_audited_conditional_table_forms_keep_source_text_and_structured_conditi
     assert resolved == set(range(1, len(tables)))
     by_key = {field.key: field for field in fields}
     for key, conditions in expected:
-        assert by_key[key].applies_when == conditions
+        expected_conditions = [(path, (v,) if not isinstance(v, tuple) else v) for path, v in conditions]
+        assert by_key[key].applies_when == expected_conditions
         assert by_key[key].condition
 
 
@@ -712,8 +720,8 @@ def test_conditional_array_table_merges_only_into_its_named_item_path():
     assert [field.key for field in fields] == ["SUB_LOAD_ITEMS", "PERMIT_VEHICLE"]
     child = fields[0].properties[1]
     assert child.key == "VEHICLE_CLASS_2"
-    assert child.applies_when == [("OPT_AUTO_LL", True)]
-    assert fields[1].applies_when == [("OPT_LC_FOR_PERMIT_LOAD", True)]
+    assert child.applies_when == [("OPT_AUTO_LL", (True,))]
+    assert fields[1].applies_when == [("OPT_LC_FOR_PERMIT_LOAD", (True,))]
 
 
 def test_structural_table_merge_uses_the_manual_named_object_path(tmp_path: Path):
@@ -805,7 +813,7 @@ def test_explicit_variant_tables_preserve_their_discriminator_and_do_not_merge(t
 
     draft = yaml.safe_load(ex.render_draft(parsed))
     assert "unmergedTables" not in draft["extraction"]
-    assert draft["variants"][0]["when"] == {"field": "TYPE", "equals": "FIRST"}
+    assert draft["variants"][0]["when"] == [{"path": "TYPE", "equals": "FIRST"}]
     assert draft["variants"][1]["fields"][0]["key"] == "SECOND_VALUE"
 
 
@@ -914,7 +922,7 @@ def test_inline_boolean_variant_rows_preserve_branches_and_roman_children(tmp_pa
     assert items.properties[0].key == "VALUE"
 
     draft = yaml.safe_load(ex.render_draft(parsed))
-    assert draft["variants"][0]["when"] == {"field": "OPT_MODE", "equals": False}
+    assert draft["variants"][0]["when"] == [{"path": "OPT_MODE", "equals": False}]
 
 
 def test_manual_check_compares_explicit_variant_fields(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
@@ -1782,7 +1790,7 @@ def test_manual_prose_compact_condition_pair_supplies_applies_when(
     fields = {field.key: field for field in ex.parse_chapter(path)[0].tables[0].fields}
     conditional = fields[target]
     assert conditional.condition == f'REPORT_TYPE="{value}"'
-    assert conditional.applies_when == [("REPORT_TYPE", value)]
+    assert conditional.applies_when == [("REPORT_TYPE", (value,))]
     assert not conditional.notes
 
 
@@ -1812,7 +1820,7 @@ def test_manual_prose_parallel_code_span_conditions_supply_applies_when(
     fields = {field.key: field for field in ex.parse_chapter(path)[0].tables[0].fields}
     conditional = fields[target]
     assert conditional.condition == f'REPORT_TYPE="{value}"'
-    assert conditional.applies_when == [("REPORT_TYPE", value)]
+    assert conditional.applies_when == [("REPORT_TYPE", (value,))]
     assert not conditional.notes
 
 
@@ -1871,15 +1879,15 @@ def test_schema_conditional_marker_does_not_mask_same_field_enum(tmp_path: Path)
     detail = ex.parse_chapter(path)[0].tables[0].fields[1]
     assert detail.enum == ["FIRST", "SECOND"]
     assert detail.condition == 'MODE="USER"'
-    assert detail.applies_when == [("MODE", "USER")]
+    assert detail.applies_when == [("MODE", ("USER",))]
     assert not detail.notes
 
 
 @pytest.mark.parametrize(
     ("description", "expected"),
     [
-        pytest.param("Use a range (INPUT_METHOD=KEYS)", ("INPUT_METHOD", "KEYS"), id="bare_uppercase_value"),
-        pytest.param("Material strength (CODE=None)", ("CODE", "None"), id="bare_titlecase_value"),
+        pytest.param("Use a range (INPUT_METHOD=KEYS)", ("INPUT_METHOD", ("KEYS",)), id="bare_uppercase_value"),
+        pytest.param("Material strength (CODE=None)", ("CODE", ("None",)), id="bare_titlecase_value"),
         pytest.param("Two choices (MODE=A, CODE=None)", None, id="multiple_equalities_stay_unverified"),
     ],
 )

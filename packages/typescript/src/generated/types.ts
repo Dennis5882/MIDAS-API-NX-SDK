@@ -5858,21 +5858,50 @@ export namespace DbStaticLoadsTypes {
       OPT_SUB_BEAM_WEIGHT?: boolean;
     }>;
   }
-  export interface FloorLoadPayload {
-    FLOOR_LOAD_TYPE_NAME?: string;
-    FLOOR_DIST_TYPE?: number;
+  /** Generated from contracts/endpoints/. */
+  export type FloorLoadPayload = {
+    /** Floor Load Type Name */
+    FLOOR_LOAD_TYPE_NAME: string;
+    /** Distribution Type (1=One Way / 2=Two Way / 3=Polygon-Centroid / 4=Polygon-Length) */
+    FLOOR_DIST_TYPE: number;
+    /** Load Direction ("LX" / "LY" / "LZ" / "GX" / "GY" / "GZ") */
     DIR?: string;
+    /** Projection */
     OPT_PROJECTION?: boolean;
+    /** Description */
     DESC?: string;
+    /** Load Group Name */
     GROUP_NAME?: string;
-    NODES?: Array<number>;
-    LOAD_ANGLE?: number;
-    OPT_ALLOW_POLYGON_TYPE_UNIT_AREA?: boolean;
-    OPT_EXCLUDE_INNER_ELEM_AREA?: boolean;
-    SUB_BEAM_NUM?: number;
-    SUB_BEAM_ANGLE?: number;
-    UNIT_SELF_WEIGHT?: number;
-  }
+    /** Nodes defining Loading Area */
+    NODES: Array<number>;
+  } & (
+    {
+      FLOOR_DIST_TYPE: 1;
+      /** Load Angle (A1) */
+      LOAD_ANGLE?: number;
+      /** Exclude Inner Element of Area */
+      OPT_EXCLUDE_INNER_ELEM_AREA?: boolean;
+      /** No. of Sub Beams */
+      SUB_BEAM_NUM?: number;
+      /** Sub-Beam Angle (A2) */
+      SUB_BEAM_ANGLE?: number;
+      /** Unit Self Weight */
+      UNIT_SELF_WEIGHT?: number;
+    } |
+    {
+      FLOOR_DIST_TYPE: 2;
+      /** Allow Polygon Type Unit Area */
+      OPT_ALLOW_POLYGON_TYPE_UNIT_AREA?: boolean;
+      /** Exclude Inner Element of Area */
+      OPT_EXCLUDE_INNER_ELEM_AREA?: boolean;
+      /** No. of Sub Beams */
+      SUB_BEAM_NUM?: number;
+      /** Sub-Beam Angle (A2) */
+      SUB_BEAM_ANGLE?: number;
+      /** Unit Self Weight */
+      UNIT_SELF_WEIGHT?: number;
+    }
+  );
   export interface FinishingMaterialLoadItem extends DbBaseTypes.ItemGroupFields {
     LCNAME?: string;
     COVERING_TYPE?: string;

@@ -122,8 +122,8 @@ fields:
 
 variants:
   - when:
-      field: iMETHOD
-      equals: 2
+      - path: iMETHOD
+        equals: 2
     source:
       table: iMETHOD = 2 (3 Points)
       line: 623
@@ -219,8 +219,8 @@ variants:
         safeToOmit: unverified
         provenance: manual
   - when:
-      field: iMETHOD
-      equals: 3
+      - path: iMETHOD
+        equals: 3
     source:
       table: iMETHOD = 3 (Vector)
       line: 632
@@ -289,8 +289,8 @@ variants:
         safeToOmit: unverified
         provenance: manual
   - when:
-      field: iMETHOD
-      equals: 4
+      - path: iMETHOD
+        equals: 4
     source:
       table: iMETHOD = 4 (Line Vector)
       line: 640

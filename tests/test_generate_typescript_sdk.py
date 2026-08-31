@@ -107,14 +107,14 @@ def test_contract_variants_render_as_a_discriminated_union():
                 ],
                 "variants": [
                     {
-                        "when": {"field": "OPT_MODE", "equals": False},
+                        "when": [{"path": "OPT_MODE", "equals": False}],
                         "fields": [
                             {"key": "OPT_MODE", "type": "boolean", "requirement": "optional"},
                             {"key": "GENERAL", "type": "number", "requirement": "required"}
                         ],
                     },
                     {
-                        "when": {"field": "OPT_MODE", "equals": True},
+                        "when": [{"path": "OPT_MODE", "equals": True}],
                         "fields": [
                             {"key": "OPTIMIZED", "type": "string", "requirement": "required"}
                         ],
@@ -130,6 +130,46 @@ def test_contract_variants_render_as_a_discriminated_union():
     assert "GENERAL: number;" in rendered
     assert "OPTIMIZED: string;" in rendered
     assert rendered.count("OPT_MODE?: boolean;") == 1
+
+
+def test_contract_shared_variant_table_folds_into_the_branches_it_covers():
+    """A multi-value condition is the manual's shared table, not a third branch.
+
+    /db/FBLA documents one table for ``FLOOR_DIST_TYPE = 1`` and another for
+    ``= 2``, then a third for ``= 1 or 2``. Emitting the third as its own union
+    member would give two members matching ``FLOOR_DIST_TYPE: 1``. Its fields
+    belong to both branches instead, which is what the heading says.
+    """
+    rendered = "\n".join(
+        generator._contract_payload_type(
+            "SharedPayload",
+            {
+                "fields": [{"key": "DIST", "type": "integer", "requirement": "required"}],
+                "variants": [
+                    {
+                        "when": [{"path": "DIST", "equals": 1}],
+                        "fields": [{"key": "ONLY_ONE", "type": "number", "requirement": "required"}],
+                    },
+                    {
+                        "when": [{"path": "DIST", "equals": 2}],
+                        "fields": [{"key": "ONLY_TWO", "type": "number", "requirement": "required"}],
+                    },
+                    {
+                        "when": [{"path": "DIST", "in": [1, 2]}],
+                        "fields": [{"key": "SHARED", "type": "string", "requirement": "required"}],
+                    },
+                ],
+            },
+        )
+    )
+
+    assert rendered.count("DIST: 1;") == 1
+    assert rendered.count("DIST: 2;") == 1
+    # The shared table contributes to both branches and forms none of its own.
+    assert rendered.count("SHARED: string;") == 2
+    assert "DIST: 1 | 2;" not in rendered
+    assert rendered.count("ONLY_ONE: number;") == 1
+    assert rendered.count("ONLY_TWO: number;") == 1
 
 
 def test_contract_fixed_length_arrays_render_as_tuples():

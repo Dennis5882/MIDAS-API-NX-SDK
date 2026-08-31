@@ -72,6 +72,45 @@ field list. A heading like “LINEAR only” does not establish the selector val
 it remains in `extraction.unmergedTables` until the manual states enough to
 model it without inference.
 
+`when` is an array of conditions combined with logical AND - the same shape a
+field's `appliesWhen` uses, so one construct covers a nested discriminator
+(`STR.SPEC_CODE`), a two-level selector, and the multi-value case below.
+
+### `in`: one table, several documented values
+
+A condition takes either `equals` (one literal) or `in` (two or more), never
+both. `in` transcribes a heading naming several values for the *same* table -
+`/db/FBLA`'s `FLOOR_DIST_TYPE = 1 or 2`, `LOAD_MODEL=2/3`. It is never a guess
+at the rest of an enum: every value in it is written in the manual.
+
+Such a table is the manual's **shared** table, not a further branch. `/db/FBLA`
+documents one table for `= 1`, one for `= 2`, and one for `= 1 or 2`; the third
+applies to both. So every value an `in` names must already have a single-value
+branch of its own, and TypeScript generation folds the shared fields into each
+branch it covers rather than emitting a union member that would match the same
+discriminator twice.
+
+What `in` deliberately does **not** solve: two tables claiming the *same* single
+value. `/db/NLNK` splits `REF_SYSTEM=1` into Angle/3Points/Vector and `/db/HSFC`
+splits `TYPE="FUNC"` by whether concrete data is used - in both the second
+selector is real but the manual never names it as a wire field. Those stay
+unmerged. A discriminator that is not written down cannot be transcribed.
+
+## Arguments that are not a field list
+
+`request.itemSchema` says what the argument carries: `fields` (this contract's
+field list), `scalar` (one primitive - name it in `scalarType`), `empty` (an
+object the manual documents as carrying nothing), or `none` (no body).
+
+Nine `/doc/*` sections have a JSON Schema and no Specifications table, and that
+is documentation rather than a gap: `/doc/OPEN` and `/doc/SAVEAS` take a bare
+path string; `/doc/NEW`, `/doc/CLOSE` and `/doc/SAVE` take `{}`. An empty
+`fields` list is the correct transcription for those, so promotion and the
+manual-drift check both accept it when the request says so explicitly.
+
+`scalar` and `empty` are claims about the documentation, not escape hatches. A
+body the permitted sources do not describe is still `none`.
+
 ## `documentedOptional` versus `safeToOmit`
 
 These are modelled separately, and the distinction is the single most important

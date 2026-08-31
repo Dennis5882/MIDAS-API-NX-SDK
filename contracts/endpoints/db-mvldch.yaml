@@ -160,8 +160,8 @@ fields:
 
 variants:
   - when:
-      field: OPT_AUTO_OPTIMIZE
-      equals: false
+      - path: OPT_AUTO_OPTIMIZE
+        equals: false
     source:
       table: General Load(OPT_AUTO_OPTIMIZE=false)
       line: 1605
@@ -229,8 +229,8 @@ variants:
             safeToOmit: unverified
             provenance: manual
   - when:
-      field: OPT_AUTO_OPTIMIZE
-      equals: true
+      - path: OPT_AUTO_OPTIMIZE
+        equals: true
     source:
       table: Moving Load Optimization(OPT_AUTO_OPTIMIZE=true)
       line: 1613

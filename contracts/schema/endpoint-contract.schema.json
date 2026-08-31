@@ -47,7 +47,12 @@
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
-      "items": { "enum": ["gen", "civil"] },
+      "items": {
+        "enum": [
+          "gen",
+          "civil"
+        ]
+      },
       "description": "Products that actually serve this route. Product support is an observed fact, not a manual claim: the manual's Civil-only framing was wrong for 32 of 47 endpoints (see contracts/README.md)."
     },
     "productsEvidence": {
@@ -58,27 +63,45 @@
       "type": "object",
       "additionalProperties": false,
       "description": "For ID-keyed endpoints, what the Assign map's keys mean.",
-      "required": ["kind"],
+      "required": [
+        "kind"
+      ],
       "properties": {
         "kind": {
-          "enum": ["record_id", "node_id", "element_id", "index", "singleton"],
+          "enum": [
+            "record_id",
+            "node_id",
+            "element_id",
+            "index",
+            "singleton"
+          ],
           "description": "singleton = the endpoint holds one settings record, not a table."
         },
-        "description": { "type": "string" }
+        "description": {
+          "type": "string"
+        }
       }
     },
     "source": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["manual"],
+      "required": [
+        "manual"
+      ],
       "properties": {
         "manual": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["status"],
+          "required": [
+            "status"
+          ],
           "properties": {
             "status": {
-              "enum": ["documented", "absent", "contradicted"],
+              "enum": [
+                "documented",
+                "absent",
+                "contradicted"
+              ],
               "description": "documented = the manual describes this endpoint and live behaviour matches. absent = no manual section exists (justification required). contradicted = a manual section exists but live behaviour disproves it (justification required); the contract records live behaviour and `manualDefects` records what the manual gets wrong."
             },
             "repo": {
@@ -106,14 +129,36 @@
           },
           "allOf": [
             {
-              "if": { "properties": { "status": { "const": "documented" } } },
-              "then": { "required": ["chapterFile", "section"] }
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "documented"
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "chapterFile",
+                  "section"
+                ]
+              }
             },
             {
               "if": {
-                "properties": { "status": { "enum": ["absent", "contradicted"] } }
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "absent",
+                      "contradicted"
+                    ]
+                  }
+                }
               },
-              "then": { "required": ["justification"] }
+              "then": {
+                "required": [
+                  "justification"
+                ]
+              }
             }
           ]
         },
@@ -122,17 +167,29 @@
           "additionalProperties": false,
           "description": "GET /info{endpoint} schema introspection, when it was used as a source.",
           "properties": {
-            "checked": { "type": "string", "format": "date" },
+            "checked": {
+              "type": "string",
+              "format": "date"
+            },
             "products": {
               "type": "array",
-              "items": { "enum": ["gen", "civil"] }
+              "items": {
+                "enum": [
+                  "gen",
+                  "civil"
+                ]
+              }
             },
-            "note": { "type": "string" }
+            "note": {
+              "type": "string"
+            }
           }
         },
         "liveNotes": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "description": "Repository-relative paths to prose evidence, normally docs/live_verification_notes.md."
         }
       }
@@ -140,10 +197,17 @@
     "verification": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["status"],
+      "required": [
+        "status"
+      ],
       "properties": {
         "status": {
-          "enum": ["manual_only", "verified_gen", "verified_civil", "verified_both"],
+          "enum": [
+            "manual_only",
+            "verified_gen",
+            "verified_civil",
+            "verified_both"
+          ],
           "description": "How far this contract has been checked against a running product. manual_only means transcribed but never called."
         },
         "records": {
@@ -152,9 +216,17 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["product", "ref"],
+            "required": [
+              "product",
+              "ref"
+            ],
             "properties": {
-              "product": { "enum": ["gen", "civil"] },
+              "product": {
+                "enum": [
+                  "gen",
+                  "civil"
+                ]
+              },
               "ref": {
                 "type": "string",
                 "description": "`id` of an entry in that product's verification file."
@@ -171,42 +243,82 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["method", "risk", "request", "response"],
+        "required": [
+          "method",
+          "risk",
+          "request",
+          "response"
+        ],
         "properties": {
-          "method": { "enum": ["GET", "POST", "PUT", "DELETE"] },
+          "method": {
+            "enum": [
+              "GET",
+              "POST",
+              "PUT",
+              "DELETE"
+            ]
+          },
           "variant": {
             "type": "string",
             "description": "Distinguishes two operations sharing a method, e.g. DELETE per-id versus DELETE whole-table."
           },
-          "summary": { "type": "string" },
+          "summary": {
+            "type": "string"
+          },
           "path": {
             "type": "string",
             "description": "Overrides `endpoint` when the operation uses a different path, e.g. /db/NODE/{id}."
           },
           "risk": {
-            "enum": ["read_only", "write", "destructive", "product_crash_risk"],
+            "enum": [
+              "read_only",
+              "write",
+              "destructive",
+              "product_crash_risk"
+            ],
             "description": "read_only = cannot change model data. write = mutates model data or writes a file on the NX host. destructive = removes data that cannot be recovered through the API. product_crash_risk = has been observed ending or hanging a live NX session."
           },
           "mitigation": {
-            "enum": ["none", "normalized", "confirmation_required", "opt_in_required", "warn_only"],
+            "enum": [
+              "none",
+              "normalized",
+              "confirmation_required",
+              "opt_in_required",
+              "warn_only"
+            ],
             "description": "What the SDKs do about `risk`. Deliberately separate from `risk`: /db/NMAS stays product_crash_risk because the server defect is real, while its mitigation is `normalized` because the SDKs make the crashing payload unreachable. Downgrading `risk` would lose the reason the rule exists."
           },
           "request": {
             "$ref": "#/$defs/message",
             "description": "Request body shape. Use wrapper `none` for bodiless requests."
           },
-          "response": { "$ref": "#/$defs/message" },
-          "notes": { "type": "string" }
+          "response": {
+            "$ref": "#/$defs/message"
+          },
+          "notes": {
+            "type": "string"
+          }
         },
         "allOf": [
           {
             "if": {
               "properties": {
-                "risk": { "enum": ["destructive", "product_crash_risk"] }
+                "risk": {
+                  "enum": [
+                    "destructive",
+                    "product_crash_risk"
+                  ]
+                }
               },
-              "required": ["risk"]
+              "required": [
+                "risk"
+              ]
             },
-            "then": { "required": ["mitigation"] }
+            "then": {
+              "required": [
+                "mitigation"
+              ]
+            }
           }
         ]
       }
@@ -214,17 +326,23 @@
     "fields": {
       "type": "array",
       "description": "Per-field contract for the record payload (the value side of an ID-keyed Assign map, or the request Argument object).",
-      "items": { "$ref": "#/$defs/field" }
+      "items": {
+        "$ref": "#/$defs/field"
+      }
     },
     "variants": {
       "type": "array",
       "description": "Mutually exclusive manual field tables selected by one explicit discriminator. A table whose condition is not stated stays under extraction.unmergedTables instead of being guessed into this structure.",
-      "items": { "$ref": "#/$defs/variant" }
+      "items": {
+        "$ref": "#/$defs/variant"
+      }
     },
     "sdkRules": {
       "type": "array",
       "description": "Behaviour every SDK implementation must apply before the request reaches the product. These are the contract's teeth: an implementation that omits one is non-conforming, however well it types the payload.",
-      "items": { "$ref": "#/$defs/sdkRule" }
+      "items": {
+        "$ref": "#/$defs/sdkRule"
+      }
     },
     "manualDefects": {
       "type": "array",
@@ -232,14 +350,34 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["describes", "manualSays", "actual", "evidence"],
+        "required": [
+          "describes",
+          "manualSays",
+          "actual",
+          "evidence"
+        ],
         "properties": {
           "describes": {
-            "enum": ["field_name", "field_value", "default", "requiredness", "enum", "method", "products", "behaviour"]
+            "enum": [
+              "field_name",
+              "field_value",
+              "default",
+              "requiredness",
+              "enum",
+              "method",
+              "products",
+              "behaviour"
+            ]
           },
-          "manualSays": { "type": "string" },
-          "actual": { "type": "string" },
-          "evidence": { "type": "string" },
+          "manualSays": {
+            "type": "string"
+          },
+          "actual": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "string"
+          },
           "reportedToVendor": {
             "type": "string",
             "description": "Vendor-report item identifier, e.g. \"A-1\". No internal tracker IDs here; this file is public."
@@ -252,19 +390,39 @@
       "description": "Provenance left by scripts/extract_contracts.py when this contract was drafted from a manual chapter. Kept after promotion: knowing which table a field list came from is what lets --check tell drift from a deliberate correction.",
       "additionalProperties": false,
       "properties": {
-        "source": { "type": "string", "description": "Chapter file and line the field table was read from." },
-        "table": { "type": "string", "description": "Heading of the table that produced `fields`." },
+        "source": {
+          "type": "string",
+          "description": "Chapter file and line the field table was read from."
+        },
+        "table": {
+          "type": "string",
+          "description": "Heading of the table that produced `fields`."
+        },
         "missingColumns": {
           "type": "array",
           "description": "Columns absent from an entire manual table. This is complete provenance, not a per-field uncertainty: `documentedDefault: null` records a missing Default column honestly.",
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["heading", "line", "columns"],
+            "required": [
+              "heading",
+              "line",
+              "columns"
+            ],
             "properties": {
-              "heading": { "type": "string" },
-              "line": { "type": "integer" },
-              "columns": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+              "heading": {
+                "type": "string"
+              },
+              "line": {
+                "type": "integer"
+              },
+              "columns": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              }
             }
           }
         },
@@ -275,9 +433,15 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "heading": { "type": "string" },
-              "fields": { "type": "integer" },
-              "line": { "type": "integer" },
+              "heading": {
+                "type": "string"
+              },
+              "fields": {
+                "type": "integer"
+              },
+              "line": {
+                "type": "integer"
+              },
               "resolution": {
                 "type": "string",
                 "description": "What review decided about this table: merged into fields, modelled as nested properties, split into its own contract, or deliberately out of scope."
@@ -286,35 +450,52 @@
           }
         },
         "structuralTables": {
-            "type": "array",
-            "description": "Supplementary manual tables whose named object or array destination was transcribed by the extractor. This is evidence of a structural merge, not a waiver for conditional variants.",
-            "items": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["heading", "line", "paths"],
-              "properties": {
-                "heading": { "type": "string" },
-                "line": { "type": "integer" },
-                "paths": {
-                  "type": "array",
-                  "minItems": 1,
-                  "items": { "type": "string" }
+          "type": "array",
+          "description": "Supplementary manual tables whose named object or array destination was transcribed by the extractor. This is evidence of a structural merge, not a waiver for conditional variants.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "heading",
+              "line",
+              "paths"
+            ],
+            "properties": {
+              "heading": {
+                "type": "string"
+              },
+              "line": {
+                "type": "integer"
+              },
+              "paths": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
                 }
               }
             }
           }
         }
-      },
+      }
+    },
     "knownDefects": {
       "type": "array",
       "description": "Product defects affecting this endpoint. References contracts/safety/known-product-risks.yaml.",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["ref"],
+        "required": [
+          "ref"
+        ],
         "properties": {
-          "ref": { "type": "string", "description": "`id` of a risk in contracts/safety/known-product-risks.yaml." },
-          "note": { "type": "string" }
+          "ref": {
+            "type": "string",
+            "description": "`id` of a risk in contracts/safety/known-product-risks.yaml."
+          },
+          "note": {
+            "type": "string"
+          }
         }
       }
     }
@@ -323,58 +504,148 @@
     "message": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["wrapper"],
+      "required": [
+        "wrapper"
+      ],
       "properties": {
         "wrapper": {
-          "enum": ["none", "assign", "argument", "table", "message", "raw", "unknown"],
+          "enum": [
+            "none",
+            "assign",
+            "argument",
+            "table",
+            "message",
+            "raw",
+            "unknown"
+          ],
           "description": "assign = {\"Assign\": {id: payload}}. argument = {\"Argument\": payload}. table = a single object carrying HEAD/DATA or the record map. message = {\"message\": ...}. raw = the payload itself. none = no body. unknown = the permitted sources establish neither a response body nor its shape."
         },
         "keyStability": {
-          "enum": ["stable", "unstable"],
+          "enum": [
+            "stable",
+            "unstable"
+          ],
           "description": "unstable means the top-level key varies across calls and must be matched by shape, never by name. Observed on /post/TABLE responses (\"Result Table\", \"empty\", or the requested TABLE_NAME)."
         },
-        "keyNote": { "type": "string" },
-        "itemSchema": {
-          "enum": ["fields", "none"],
-          "description": "fields = each record follows this contract's `fields` list."
+        "keyNote": {
+          "type": "string"
         },
-        "description": { "type": "string" },
+        "itemSchema": {
+          "enum": [
+            "fields",
+            "none",
+            "scalar",
+            "empty"
+          ],
+          "description": "fields = each record follows this contract's `fields` list. scalar = the whole argument is one primitive, not an object with fields (`/doc/OPEN` sends a bare path string); name its type in `scalarType`. empty = the argument is an object the manual documents as carrying nothing. Neither `scalar` nor `empty` is shorthand for an undocumented payload - use `none` for a body the sources do not describe."
+        },
+        "description": {
+          "type": "string"
+        },
         "errorShapes": {
           "type": "array",
           "description": "Failure bodies this operation is known to return. A 200 or 201 does not mean success on this API.",
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["shape"],
+            "required": [
+              "shape"
+            ],
             "properties": {
-              "httpStatus": { "type": "array", "items": { "type": "integer" } },
-              "shape": { "type": "string" },
-              "meaning": { "type": "string" }
+              "httpStatus": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "shape": {
+                "type": "string"
+              },
+              "meaning": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "scalarType": {
+          "enum": [
+            "string",
+            "number",
+            "integer",
+            "boolean"
+          ],
+          "description": "The primitive the manual documents for a `scalar` argument. Required when itemSchema is `scalar` and meaningless otherwise."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "itemSchema": {
+                "const": "scalar"
+              }
+            },
+            "required": [
+              "itemSchema"
+            ]
+          },
+          "then": {
+            "required": [
+              "scalarType"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "scalarType"
+              ]
             }
           }
         }
-      }
+      ]
     },
     "field": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["key", "type", "requirement", "documentedOptional", "safeToOmit", "provenance"],
+      "required": [
+        "key",
+        "type",
+        "requirement",
+        "documentedOptional",
+        "safeToOmit",
+        "provenance"
+      ],
       "properties": {
         "key": {
           "type": "string",
           "pattern": "^[A-Za-z0-9_]+$",
           "description": "One literal wire-property name. A manual row that names multiple keys must be split or kept unpromoted."
         },
-        "description": { "type": "string" },
+        "description": {
+          "type": "string"
+        },
         "products": {
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": { "enum": ["gen", "civil"] },
+          "items": {
+            "enum": [
+              "gen",
+              "civil"
+            ]
+          },
           "description": "Products to which this field applies when the manual explicitly labels a field group as product-specific. It never narrows the endpoint-level products list."
         },
         "type": {
-          "enum": ["string", "number", "integer", "boolean", "array", "object", "unstated"],
+          "enum": [
+            "string",
+            "number",
+            "integer",
+            "boolean",
+            "array",
+            "object",
+            "unstated"
+          ],
           "description": "The manual's Value Type, normalized. unstated means the manual did not give a type; it is not an inferred string or unknown JSON shape."
         },
         "items": {
@@ -383,11 +654,19 @@
         },
         "properties": {
           "type": "array",
-          "items": { "$ref": "#/$defs/field" },
+          "items": {
+            "$ref": "#/$defs/field"
+          },
           "description": "Nested fields when `type` is object, or when array elements are objects."
         },
         "requirement": {
-          "enum": ["required", "optional", "conditional", "read_only", "unstated"],
+          "enum": [
+            "required",
+            "optional",
+            "conditional",
+            "read_only",
+            "unstated"
+          ],
           "description": "The manual's Required column, normalized. read_only = the server returns it and ignores it on write. unstated means the manual gives no requiredness claim."
         },
         "condition": {
@@ -399,20 +678,7 @@
           "minItems": 1,
           "description": "Structured translation of the manual condition for generation and caller documentation. Every entry must name an existing contract field path; entries are combined with logical AND. It does not replace `condition`, which retains the manual's original wording.",
           "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["path", "equals"],
-            "properties": {
-              "path": {
-                "type": "string",
-                "pattern": "^[A-Za-z0-9_]+(?:\\.[A-Za-z0-9_]+)*$",
-                "description": "Existing field path in dot notation, including nested object or array-item properties."
-              },
-              "equals": {
-                "type": ["string", "number", "boolean"],
-                "description": "Literal value documented for the controlling field."
-              }
-            }
+            "$ref": "#/$defs/condition"
           }
         },
         "documentedDefault": {
@@ -423,11 +689,18 @@
           "description": "Exact Default-cell text where the manual describes a default but does not state a literal wire value. In this case documentedDefault is null. This records documentation, not observed product behaviour and makes no safeToOmit claim."
         },
         "documentedOptional": {
-          "type": ["boolean", "null"],
+          "type": [
+            "boolean",
+            "null"
+          ],
           "description": "Whether the official manual marks this field optional. Null is permitted only when requirement is unstated, so no documentation claim is invented. This is a statement about the documentation, never about observed behaviour."
         },
         "safeToOmit": {
-          "enum": [true, false, "unverified"],
+          "enum": [
+            true,
+            false,
+            "unverified"
+          ],
           "description": "Whether omitting the field is actually safe against a live product. Modelled separately from `documentedOptional` on purpose: /db/NMAS's rmX/rmY/rmZ are documentedOptional true and safeToOmit false, because omitting them crashes the product that documented them as optional. `unverified` is the honest answer for most fields and is not a lesser state - it says nobody has omitted this against a running product. `true` is a claim about the product and needs `omissionEvidence`; `false` needs `omissionEffect`, and if the field is also documentedOptional it must be covered by an sdkRule."
         },
         "omissionEffect": {
@@ -441,70 +714,187 @@
         "enum": {
           "type": "array",
           "description": "Permitted values. Where the manual contradicts itself, list every candidate and use `enumNote` to say which to try first.",
-          "items": { "type": ["string", "number", "boolean"] }
+          "items": {
+            "type": [
+              "string",
+              "number",
+              "boolean"
+            ]
+          }
         },
-        "enumNote": { "type": "string" },
-        "minimum": { "type": "number", "description": "Inclusive lower bound stated by the manual." },
-        "exclusiveMinimum": { "type": "number", "description": "Exclusive lower bound stated by the manual." },
-        "maximum": { "type": "number", "description": "Inclusive upper bound stated by the manual." },
-        "exclusiveMaximum": { "type": "number", "description": "Exclusive upper bound stated by the manual." },
-        "notEqual": { "type": ["string", "number", "boolean"], "description": "A value the manual explicitly forbids." },
-        "const": { "type": ["string", "number", "boolean"], "description": "The only value the manual permits." },
-        "minItems": { "type": "integer", "minimum": 0, "description": "Inclusive array length lower bound stated by the manual." },
-        "maxItems": { "type": "integer", "minimum": 0, "description": "Inclusive array length upper bound stated by the manual." },
-        "minLength": { "type": "integer", "minimum": 0, "description": "Inclusive string length lower bound stated by the manual." },
-        "maxLength": { "type": "integer", "minimum": 0, "description": "Inclusive string length upper bound stated by the manual." },
-        "unit": { "type": "string" },
+        "enumNote": {
+          "type": "string"
+        },
+        "minimum": {
+          "type": "number",
+          "description": "Inclusive lower bound stated by the manual."
+        },
+        "exclusiveMinimum": {
+          "type": "number",
+          "description": "Exclusive lower bound stated by the manual."
+        },
+        "maximum": {
+          "type": "number",
+          "description": "Inclusive upper bound stated by the manual."
+        },
+        "exclusiveMaximum": {
+          "type": "number",
+          "description": "Exclusive upper bound stated by the manual."
+        },
+        "notEqual": {
+          "type": [
+            "string",
+            "number",
+            "boolean"
+          ],
+          "description": "A value the manual explicitly forbids."
+        },
+        "const": {
+          "type": [
+            "string",
+            "number",
+            "boolean"
+          ],
+          "description": "The only value the manual permits."
+        },
+        "minItems": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Inclusive array length lower bound stated by the manual."
+        },
+        "maxItems": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Inclusive array length upper bound stated by the manual."
+        },
+        "minLength": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Inclusive string length lower bound stated by the manual."
+        },
+        "maxLength": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Inclusive string length upper bound stated by the manual."
+        },
+        "unit": {
+          "type": "string"
+        },
         "provenance": {
-          "enum": ["manual", "live_verified", "live_corrected", "info_schema"],
+          "enum": [
+            "manual",
+            "live_verified",
+            "live_corrected",
+            "info_schema"
+          ],
           "description": "Where this field's contract came from. manual = transcribed from the manual chapter. live_verified = manual matched a live check. live_corrected = the manual was wrong and a live check replaced it (record the mismatch under manualDefects). info_schema = taken from GET /info{endpoint}. No value here means an SDK implementation, which is never a permitted source."
         },
-        "provenanceNote": { "type": "string" }
+        "provenanceNote": {
+          "type": "string"
+        }
       },
       "allOf": [
         {
           "if": {
-            "properties": { "safeToOmit": { "const": false } },
-            "required": ["safeToOmit"]
+            "properties": {
+              "safeToOmit": {
+                "const": false
+              }
+            },
+            "required": [
+              "safeToOmit"
+            ]
           },
-          "then": { "required": ["omissionEffect"] }
-        },
-        {
-          "if": {
-            "properties": { "safeToOmit": { "const": true } },
-            "required": ["safeToOmit"]
-          },
-          "then": { "required": ["omissionEvidence"] }
-        },
-        {
-          "if": {
-            "properties": { "requirement": { "const": "conditional" } },
-            "required": ["requirement"]
-          },
-          "then": { "required": ["condition"] }
-        },
-        {
-          "if": { "required": ["documentedDefaultNote"] },
           "then": {
-            "properties": { "documentedDefault": { "const": null } }
+            "required": [
+              "omissionEffect"
+            ]
           }
         },
         {
           "if": {
-            "properties": { "requirement": { "const": "unstated" } },
-            "required": ["requirement"]
+            "properties": {
+              "safeToOmit": {
+                "const": true
+              }
+            },
+            "required": [
+              "safeToOmit"
+            ]
           },
           "then": {
-            "properties": { "documentedOptional": { "const": null } }
+            "required": [
+              "omissionEvidence"
+            ]
           }
         },
         {
           "if": {
-            "properties": { "documentedOptional": { "const": null } },
-            "required": ["documentedOptional"]
+            "properties": {
+              "requirement": {
+                "const": "conditional"
+              }
+            },
+            "required": [
+              "requirement"
+            ]
           },
           "then": {
-            "properties": { "requirement": { "const": "unstated" } }
+            "required": [
+              "condition"
+            ]
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "documentedDefaultNote"
+            ]
+          },
+          "then": {
+            "properties": {
+              "documentedDefault": {
+                "const": null
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "requirement": {
+                "const": "unstated"
+              }
+            },
+            "required": [
+              "requirement"
+            ]
+          },
+          "then": {
+            "properties": {
+              "documentedOptional": {
+                "const": null
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "documentedOptional": {
+                "const": null
+              }
+            },
+            "required": [
+              "documentedOptional"
+            ]
+          },
+          "then": {
+            "properties": {
+              "requirement": {
+                "const": "unstated"
+              }
+            }
           }
         }
       ]
@@ -512,52 +902,87 @@
     "valueType": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "properties": {
         "type": {
-          "enum": ["string", "number", "integer", "boolean", "array", "object"]
+          "enum": [
+            "string",
+            "number",
+            "integer",
+            "boolean",
+            "array",
+            "object"
+          ]
         },
         "enum": {
           "type": "array",
           "description": "Permitted primitive values for an array item when its manual type is an enum.",
-          "items": { "type": ["string", "number", "boolean"] }
+          "items": {
+            "type": [
+              "string",
+              "number",
+              "boolean"
+            ]
+          }
         },
-        "description": { "type": "string" }
+        "description": {
+          "type": "string"
+        }
       }
     },
     "variant": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["when", "source", "fields"],
+      "required": [
+        "when",
+        "source",
+        "fields"
+      ],
       "properties": {
         "when": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["field", "equals"],
-          "properties": {
-            "field": { "type": "string", "minLength": 1 },
-            "equals": { "type": ["string", "number", "boolean"] }
+          "type": "array",
+          "minItems": 1,
+          "description": "Conditions selecting this variant, combined with logical AND. Same shape as a field's `appliesWhen`, so a nested discriminator (`STR.SPEC_CODE`), a multi-value table (`FLOOR_DIST_TYPE = 1 or 2`) and a two-level selector (`TYPE` then `STYPE`) are all expressible without a second construct.",
+          "items": {
+            "$ref": "#/$defs/condition"
           }
         },
         "source": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["table", "line"],
+          "required": [
+            "table",
+            "line"
+          ],
           "properties": {
-            "table": { "type": "string" },
-            "line": { "type": "integer", "minimum": 1 }
+            "table": {
+              "type": "string"
+            },
+            "line": {
+              "type": "integer",
+              "minimum": 1
+            }
           }
         },
         "fields": {
           "type": "array",
-          "items": { "$ref": "#/$defs/field" }
+          "items": {
+            "$ref": "#/$defs/field"
+          }
         }
       }
     },
     "sdkRule": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "kind", "appliesTo", "reason"],
+      "required": [
+        "id",
+        "kind",
+        "appliesTo",
+        "reason"
+      ],
       "properties": {
         "id": {
           "type": "string",
@@ -577,12 +1002,23 @@
         "appliesTo": {
           "type": "array",
           "minItems": 1,
-          "items": { "enum": ["GET", "POST", "PUT", "DELETE"] }
+          "items": {
+            "enum": [
+              "GET",
+              "POST",
+              "PUT",
+              "DELETE"
+            ]
+          }
         },
-        "variant": { "type": "string" },
+        "variant": {
+          "type": "string"
+        },
         "fields": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "description": "Payload fields the rule covers, for normalize_defaults and reject_request."
         },
         "values": {
@@ -593,7 +1029,12 @@
           "type": "array",
           "uniqueItems": true,
           "items": {
-            "enum": ["table_name", "result_table", "empty_with_table", "no_table"]
+            "enum": [
+              "table_name",
+              "result_table",
+              "empty_with_table",
+              "no_table"
+            ]
           },
           "description": "Observed result-table response shapes for unwrap_table_by_shape. table_name = the requested TABLE_NAME key, result_table = the live 'Result Table' key, empty_with_table = the live 'empty' key carrying a real table, no_table = no table-shaped value."
         },
@@ -613,18 +1054,37 @@
       "allOf": [
         {
           "if": {
-            "properties": { "kind": { "const": "normalize_defaults" } },
-            "required": ["kind"]
+            "properties": {
+              "kind": {
+                "const": "normalize_defaults"
+              }
+            },
+            "required": [
+              "kind"
+            ]
           },
-          "then": { "required": ["fields", "values"] }
+          "then": {
+            "required": [
+              "fields",
+              "values"
+            ]
+          }
         },
         {
           "if": {
-            "properties": { "kind": { "const": "unwrap_table_by_shape" } },
-            "required": ["kind"]
+            "properties": {
+              "kind": {
+                "const": "unwrap_table_by_shape"
+              }
+            },
+            "required": [
+              "kind"
+            ]
           },
           "then": {
-            "required": ["responseCases"],
+            "required": [
+              "responseCases"
+            ],
             "properties": {
               "responseCases": {
                 "minItems": 4,
@@ -634,6 +1094,54 @@
           }
         }
       ]
+    },
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path"
+      ],
+      "oneOf": [
+        {
+          "required": [
+            "equals"
+          ]
+        },
+        {
+          "required": [
+            "in"
+          ]
+        }
+      ],
+      "description": "One documented condition on an existing field path. `equals` and `in` are mutually exclusive: use `in` only where the manual states that one table applies to several values of the same field, such as `FLOOR_DIST_TYPE = 1 or 2`.",
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_]+(?:\\.[A-Za-z0-9_]+)*$",
+          "description": "Existing field path in dot notation, including nested object or array-item properties."
+        },
+        "equals": {
+          "type": [
+            "string",
+            "number",
+            "boolean"
+          ],
+          "description": "The single literal value the manual documents."
+        },
+        "in": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "type": [
+              "string",
+              "number",
+              "boolean"
+            ]
+          },
+          "description": "Two or more literal values the manual documents for the same table. Never a guess at a value list the manual does not state."
+        }
+      }
     }
   }
 }

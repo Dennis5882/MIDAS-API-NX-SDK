@@ -158,8 +158,8 @@ fields:
 
 variants:
   - when:
-      field: ITERATION_METHOD
-      equals: NEWTON
+      - path: ITERATION_METHOD
+        equals: NEWTON
     source:
       table: "Parameters — Newton-Raphson (`ITERATION_METHOD = \"NEWTON\"`)"
       line: 1626
@@ -230,8 +230,8 @@ variants:
             # NOTE: the manual nests this under 'NEWTON_ITEMS' by numbering it '(5)',
             # not by naming a path
   - when:
-      field: ITERATION_METHOD
-      equals: ARC
+      - path: ITERATION_METHOD
+        equals: ARC
     source:
       table: "Parameters — Arc-Length (`ITERATION_METHOD = \"ARC\"`)"
       line: 1639
@@ -307,8 +307,8 @@ variants:
             # NOTE: the manual nests this under 'ARCLEN_ITEMS' by numbering it '(2)',
             # not by naming a path
   - when:
-      field: ITERATION_METHOD
-      equals: DISP
+      - path: ITERATION_METHOD
+        equals: DISP
     source:
       table: "Parameters — Displacement-Control (`ITERATION_METHOD = \"DISP\"`)"
       line: 1659

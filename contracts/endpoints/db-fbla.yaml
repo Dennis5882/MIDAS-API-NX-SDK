@@ -1,4 +1,4 @@
-# /db/NBOF
+# /db/FBLA
 #
 # Drafted by scripts/extract_contracts.py from the official manual, then promoted
 # by scripts/promote_contract.py: products and verification status come from
@@ -7,9 +7,9 @@
 # safeToOmit is answered `true` only where a confirmed live payload actually
 # omitted the field.
 contractVersion: 1
-id: db-nbof
-endpoint: /db/NBOF
-name: Nodal Body Force
+id: db-fbla
+endpoint: /db/FBLA
+name: Assign Floor Loads
 
 products: [civil, gen]
 
@@ -18,7 +18,7 @@ source:
     status: documented
     repo: Dennis5882/MIDAS-API
     chapterFile: 06_DB_Static_Loads.md
-    section: 8. /db/NBOF — Nodal Body Force
+    section: 14. /db/FBLA — Assign Floor Loads
   liveNotes:
     - docs/live_verification_notes.md
 
@@ -26,14 +26,14 @@ verification:
   status: verified_both
   records:
     - product: civil
-      ref: db-write-sweep-2026-07-29
+      ref: db-read-sweep-2026-08-16
     - product: gen
-      ref: db-write-sweep-2026-07-29
+      ref: db-read-sweep-2026-08-16
 
 operations:
   - method: DELETE
     variant: per_id
-    path: /db/NBOF/{id}
+    path: /db/FBLA/{id}
     risk: destructive
     mitigation: none
     summary: Delete exactly the record named in the path.
@@ -82,117 +82,154 @@ operations:
       keyStability: stable
 
 fields:
-  - key: LCNAME
+  - key: FLOOR_LOAD_TYPE_NAME
     description: >-
-      Load Case Name
+      Floor Load Type Name
     type: string
     requirement: required
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
-  - key: OPT_NODAL_MASS
+  - key: FLOOR_DIST_TYPE
     description: >-
-      Nodal Mass
-    type: boolean
-    requirement: optional
-    documentedDefault: false
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: OPT_LOAD_TO_MASS
-    description: >-
-      Load to Mass
-    type: boolean
-    requirement: optional
-    documentedDefault: false
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: OPT_STRUCT_MASS
-    description: >-
-      Structure Mass
-    type: boolean
-    requirement: optional
-    documentedDefault: false
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: X
-    description: >-
-      X-dir. Force Factor
-    type: number
+      Distribution Type (1=One Way / 2=Two Way / 3=Polygon-Centroid /
+      4=Polygon-Length)
+    type: integer
     requirement: required
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
-  - key: Y
+  - key: DIR
     description: >-
-      Y-dir. Force Factor
-    type: number
+      Load Direction ("LX" / "LY" / "LZ" / "GX" / "GY" / "GZ")
+    type: string
     requirement: optional
-    documentedDefault: 0
+    documentedDefault: LX
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
-  - key: Z
+  - key: OPT_PROJECTION
     description: >-
-      Z-dir. Force Factor
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: OPT_USE_GROUP
-    description: >-
-      Structure Group Option
+      Projection
     type: boolean
     requirement: optional
     documentedDefault: false
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
+  - key: DESC
+    description: >-
+      Description
+    type: string
+    requirement: optional
+    documentedDefault: ""
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: GROUP_NAME
+    description: >-
+      Load Group Name
+    type: string
+    requirement: optional
+    documentedDefault: ""
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: NODES
+    description: >-
+      Nodes defining Loading Area
+    type: array
+    items:
+      type: integer
+    requirement: required
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
 
 variants:
   - when:
-      - path: OPT_USE_GROUP
-        equals: true
+      - path: FLOOR_DIST_TYPE
+        equals: 1
     source:
-      table: OPT_USE_GROUP = true
-      line: 697
+      table: FLOOR_DIST_TYPE = 1
+      line: 1246
     fields:
-      - key: GROUP_NAME
+      - key: LOAD_ANGLE
         description: >-
-          Structure Group Name
-        type: string
-        requirement: unstated
-        documentedDefault: null
-        documentedOptional: null
+          Load Angle (A1)
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
         safeToOmit: unverified
         provenance: manual
   - when:
-      - path: OPT_USE_GROUP
-        equals: false
+      - path: FLOOR_DIST_TYPE
+        equals: 2
     source:
-      table: OPT_USE_GROUP = false
-      line: 699
+      table: FLOOR_DIST_TYPE = 2
+      line: 1248
     fields:
-      - key: KEY_NODE_ITEMS
+      - key: OPT_ALLOW_POLYGON_TYPE_UNIT_AREA
         description: >-
-          Node No. List
-        type: array
-        items:
-          type: integer
-        requirement: unstated
-        documentedDefault: null
-        documentedOptional: null
+          Allow Polygon Type Unit Area
+        type: boolean
+        requirement: optional
+        documentedDefault: false
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+  - when:
+      - path: FLOOR_DIST_TYPE
+        in:
+          - 1
+          - 2
+    source:
+      table: FLOOR_DIST_TYPE = 1 or 2
+      line: 1250
+    fields:
+      - key: OPT_EXCLUDE_INNER_ELEM_AREA
+        description: >-
+          Exclude Inner Element of Area
+        type: boolean
+        requirement: optional
+        documentedDefault: false
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: SUB_BEAM_NUM
+        description: >-
+          No. of Sub Beams
+        type: integer
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: SUB_BEAM_ANGLE
+        description: >-
+          Sub-Beam Angle (A2)
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: UNIT_SELF_WEIGHT
+        description: >-
+          Unit Self Weight
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
         safeToOmit: unverified
         provenance: manual
 
 sdkRules:
-  - id: db-nbof-delete-per-id
+  - id: db-fbla-delete-per-id
     kind: per_id_request
     appliesTo: [DELETE]
     variant: per_id
@@ -204,7 +241,7 @@ sdkRules:
       and stop at the first failure.
     riskRef: db-delete-body-empties-table
     alternative: Emptying the table on purpose is the separate whole_table operation.
-  - id: db-nbof-delete-all-confirmation
+  - id: db-fbla-delete-all-confirmation
     kind: require_confirmation
     appliesTo: [DELETE]
     variant: whole_table
@@ -218,5 +255,5 @@ knownDefects:
   - ref: db-delete-body-empties-table
 
 extraction:
-  source: 06_DB_Static_Loads.md line 687
+  source: 06_DB_Static_Loads.md line 1237
   table: 파라미터

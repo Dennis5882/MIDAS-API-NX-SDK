@@ -144,8 +144,8 @@ fields:
 
 variants:
   - when:
-      field: LTYPE
-      equals: POINT
+      - path: LTYPE
+        equals: POINT
     source:
       table: "LTYPE = \"POINT\""
       line: 979
@@ -196,8 +196,8 @@ variants:
             # NOTE: the manual nests this under 'POINTLOAD' by numbering it '(3)', not
             # by naming a path
   - when:
-      field: LTYPE
-      equals: LINE
+      - path: LTYPE
+        equals: LINE
     source:
       table: "LTYPE = \"LINE\""
       line: 984
@@ -269,8 +269,8 @@ variants:
             # NOTE: the manual nests this under 'LINELOAD' by numbering it '(4)', not
             # by naming a path
   - when:
-      field: LTYPE
-      equals: AREA
+      - path: LTYPE
+        equals: AREA
     source:
       table: "LTYPE = \"AREA\""
       line: 990
