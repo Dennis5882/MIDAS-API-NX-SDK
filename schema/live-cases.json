@@ -104,6 +104,86 @@
           ]
         }
       }
+    },
+    "member_node": {
+      "endpoint": "/db/NODE",
+      "records": {
+        "4": {
+          "X": 8.0,
+          "Y": 0,
+          "Z": 3.2
+        }
+      }
+    },
+    "member_beam": {
+      "endpoint": "/db/ELEM",
+      "records": {
+        "3": {
+          "TYPE": "BEAM",
+          "MATL": 1,
+          "SECT": 1,
+          "NODE": [
+            3,
+            4
+          ]
+        }
+      }
+    },
+    "wmak_thickness": {
+      "endpoint": "/db/THIK",
+      "records": {
+        "1": {
+          "NAME": "T_PLATE",
+          "TYPE": "VALUE",
+          "bINOUT": false,
+          "T_IN": 0.2,
+          "T_OUT": 0.0,
+          "O_VALUE": 0.0
+        }
+      }
+    },
+    "wmak_nodes": {
+      "endpoint": "/db/NODE",
+      "records": {
+        "1": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "2": {
+          "X": 4.0,
+          "Y": 0,
+          "Z": 0
+        },
+        "3": {
+          "X": 0,
+          "Y": 0,
+          "Z": 3.2
+        },
+        "4": {
+          "X": 4.0,
+          "Y": 0,
+          "Z": 3.2
+        }
+      }
+    },
+    "wmak_plate": {
+      "endpoint": "/db/ELEM",
+      "records": {
+        "4": {
+          "TYPE": "PLATE",
+          "MATL": 1,
+          "SECT": 1,
+          "NODE": [
+            1,
+            2,
+            4,
+            3
+          ],
+          "ANGLE": 0,
+          "STYPE": 1
+        }
+      }
     }
   },
   "cases": [
@@ -5283,7 +5363,14 @@
           "TYPE_NUMBER": "SD300-A"
         },
         "DIR": "Dx",
-        "SDST_HYS_MODEL": "BL2"
+        "SDST_HYS_MODEL": "BL2",
+        "K0": 1000,
+        "P1": 100,
+        "ALPHA1": 0.2,
+        "KB": 2000,
+        "BL2": {
+          "BETA": 0
+        }
       },
       "updatePayload": {
         "COMMON": {
@@ -5294,12 +5381,19 @@
           "PRODUCT_NAME": "SD-300",
           "TYPE_NUMBER": "SD300-A"
         },
-        "DIR": "Dy",
-        "SDST_HYS_MODEL": "BL2"
+        "DIR": "Dx",
+        "SDST_HYS_MODEL": "BL2",
+        "K0": 1000,
+        "P1": 120,
+        "ALPHA1": 0.2,
+        "KB": 2000,
+        "BL2": {
+          "BETA": 0
+        }
       },
       "expected": {
-        "created": "Dx",
-        "updated": "Dy"
+        "created": 100,
+        "updated": 120
       },
       "needs": [],
       "setup": [],
@@ -5388,13 +5482,15 @@
           "AR": 0.196,
           "TR": 0.15,
           "KE": 20000,
+          "K0": 20000,
           "K2": 2000,
           "QD": 80,
-          "DX": 0,
-          "OPT_CONS_NONL": false,
-          "BETA": 0.1,
-          "ALPHA": 0.5,
-          "SIGMA_V": 3000
+          "DX": {
+            "OPT_CONS_NONL": false,
+            "BETA": 0.1,
+            "ALPHA": 0.5,
+            "SIGMA_V": 3000
+          }
         }
       },
       "updatePayload": {
@@ -5416,13 +5512,15 @@
           "AR": 0.196,
           "TR": 0.15,
           "KE": 20000,
+          "K0": 20000,
           "K2": 2000,
           "QD": 80,
-          "DX": 0,
-          "OPT_CONS_NONL": false,
-          "BETA": 0.1,
-          "ALPHA": 0.5,
-          "SIGMA_V": 3000
+          "DX": {
+            "OPT_CONS_NONL": false,
+            "BETA": 0.1,
+            "ALPHA": 0.5,
+            "SIGMA_V": 3000
+          }
         }
       },
       "expected": {
@@ -7690,7 +7788,7 @@
       "tier": "extras13",
       "endpoint": "/db/LENG",
       "name": "Unbraced Length",
-      "id": 1,
+      "id": 2,
       "products": [
         "gen",
         "civil"
@@ -7723,7 +7821,20 @@
         "updated": 5.0
       },
       "needs": [],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "ltsr_material"
+        },
+        {
+          "seed": "ltsr_section"
+        },
+        {
+          "seed": "ltsr_nodes"
+        },
+        {
+          "seed": "ltsr_beam"
+        }
+      ],
       "crashes": null
     },
     {
@@ -7761,7 +7872,26 @@
         "updated": true
       },
       "needs": [],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "ltsr_material"
+        },
+        {
+          "seed": "ltsr_section"
+        },
+        {
+          "seed": "ltsr_nodes"
+        },
+        {
+          "seed": "ltsr_beam"
+        },
+        {
+          "seed": "member_node"
+        },
+        {
+          "seed": "member_beam"
+        }
+      ],
       "crashes": null
     },
     {
@@ -7923,7 +8053,20 @@
         "updated": "W1_RENAMED"
       },
       "needs": [],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "ltsr_material"
+        },
+        {
+          "seed": "wmak_thickness"
+        },
+        {
+          "seed": "wmak_nodes"
+        },
+        {
+          "seed": "wmak_plate"
+        }
+      ],
       "crashes": null
     },
     {

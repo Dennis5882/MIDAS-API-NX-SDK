@@ -29,6 +29,7 @@ Civil NX 2026 v2.2, both build 08/26/2026.
 | MD-03 | 2026-08-31 | `/db/MATL-M1` structure | `04_DB_Properties.md:239` — same base material structure as `/db/MATL`, plus Hyperelastic support | different top-level names (`MATL_NAME`/`MATL_TYPE`), four fields against `/db/MATL`'s nine, and the `HE_*` fields are on the parent instead | **MIDASIT article** note | open |
 | MD-04 | 2026-08-31 | `/db/IEHC` `WAreaSize` | the Specifications table types it Integer | Gen `/info` types it `string`; the chapter's own Request Example sends `"AUTO"` | **manual repo** transcription | open |
 | MD-05 | 2026-08-31 | model file extensions | the manual's examples still show pre-NX spellings | four extensions in two pairs: pre-NX `.mgb`/`.mcb`, NX `.mgbx`/`.mcbz`. Civil NX's own Export menu lists "MCBZ File" | **manual repo** | open |
+| MD-06 | 2026-08-31 | `/db/ELEM` `TYPE: "WALL"` on Civil | `03_DB_Node_Element.md` supplies a WALL-element request example for the shared Node/Element chapter | Gen accepted the manual-shaped WALL element; Civil NX v2.2 (08/26/2026) returned `element type no. 5 ... not supported` | **MIDASIT product/article** (support scope must be clarified) | open |
 
 ## Detail
 
@@ -99,12 +100,25 @@ The Export menus also differ by product in a way the manual does not state:
 Civil NX offers MCT and an "MCBZ File"; Gen NX offers MGTX/MGT variants and no
 MGBX. Both offer a product-named JSON export, which is `/doc/EXPORT`.
 
+### MD-06 — `/db/ELEM` `TYPE: "WALL"` on Civil
+
+The manual's element example uses `TYPE: "WALL"`, material 1, thickness/section
+1, and node order `[1, 2, 4, 3]`. On a disposable rectangular model, Gen NX
+accepted that request. Under the same shape and ids, Civil NX 2026 v2.2 build
+08/26/2026 returned an error saying element type no. 5 is not supported.
+
+This is not a claim that a PLATE is semantically interchangeable with a WALL.
+The separate `/db/WMAK` check merely established that its existing fixture
+round-trips when its `WID_LIST` references an actual PLATE on both products.
+No endpoint contract was changed: the evidence is insufficient to replace the
+manual's element-type statement or to infer product-specific WMAK semantics.
+
 ## Suggested follow-up, when the author chooses to act
 
 1. Review each finding against the current online article and manual source.
 2. Correct manual-repo-owned text (MD-02, MD-04, MD-05), preserving a visible
    note where the upstream article is contradictory.
-3. Escalate MD-01 and MD-03 to MIDASIT's documentation owner; those are
+3. Escalate MD-01, MD-03, and MD-06 to MIDASIT's documentation owner; those are
    official-source issues that the manual repo can only annotate.
 4. After any upstream or manual correction, re-run
    `scripts/check_manual_drift.py` before moving `vendored_at_commit`.

@@ -378,6 +378,47 @@ BASE_MODEL_SEEDS: Dict[str, Dict[str, Any]] = {
             "2": {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [2, 3]},
         },
     },
+    "member_node": {
+        "endpoint": Node.ENDPOINT,
+        "records": {
+            "4": {"X": 2 * BAY, "Y": 0, "Z": HEIGHT},
+        },
+    },
+    "member_beam": {
+        "endpoint": Element.ENDPOINT,
+        "records": {
+            "3": {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [3, 4]},
+        },
+    },
+    # WMAK's WID_LIST needs an existing plate element. Keep the thickness,
+    # nodes, and plate separate so the npm runner can clean each record by id.
+    "wmak_thickness": {
+        "endpoint": Thickness.ENDPOINT,
+        "records": {
+            "1": {
+                "NAME": "T_PLATE", "TYPE": "VALUE", "bINOUT": False,
+                "T_IN": 0.2, "T_OUT": 0.0, "O_VALUE": 0.0,
+            },
+        },
+    },
+    "wmak_nodes": {
+        "endpoint": Node.ENDPOINT,
+        "records": {
+            "1": {"X": 0, "Y": 0, "Z": 0},
+            "2": {"X": BAY, "Y": 0, "Z": 0},
+            "3": {"X": 0, "Y": 0, "Z": HEIGHT},
+            "4": {"X": BAY, "Y": 0, "Z": HEIGHT},
+        },
+    },
+    "wmak_plate": {
+        "endpoint": Element.ENDPOINT,
+        "records": {
+            "4": {
+                "TYPE": "PLATE", "MATL": 1, "SECT": 1,
+                "NODE": [1, 2, 4, 3], "ANGLE": 0, "STYPE": 1,
+            },
+        },
+    },
 }
 
 
@@ -2103,12 +2144,14 @@ def _extras6_cases() -> List[Case]:
             {"COMMON": {"NAME": "SDST_CRUD", "DESC": "", "INPUT_METHOD": 0,
                         "COMPANY": "", "PRODUCT_NAME": "SD-300",
                         "TYPE_NUMBER": "SD300-A"},
-             "DIR": "Dx", "SDST_HYS_MODEL": "BL2"},
+             "DIR": "Dx", "SDST_HYS_MODEL": "BL2", "K0": 1000,
+             "P1": 100, "ALPHA1": 0.2, "KB": 2000, "BL2": {"BETA": 0}},
             {"COMMON": {"NAME": "SDST_CRUD", "DESC": "", "INPUT_METHOD": 0,
                         "COMPANY": "", "PRODUCT_NAME": "SD-300",
                         "TYPE_NUMBER": "SD300-A"},
-             "DIR": "Dy", "SDST_HYS_MODEL": "BL2"},
-            lambda p: p.get("DIR"), "Dx", "Dy",
+             "DIR": "Dx", "SDST_HYS_MODEL": "BL2", "K0": 1000,
+             "P1": 120, "ALPHA1": 0.2, "KB": 2000, "BL2": {"BETA": 0}},
+            lambda p: p.get("P1"), 100, 120,
         ),
         Case(
             SeismicDeviceHystereticIsolator,
@@ -2131,18 +2174,18 @@ def _extras6_cases() -> List[Case]:
              "SDIS_DEV_TYPE": "LRB", "MSS": 8, "TAU_K": 1.0, "TAU_Q": 1.0,
              "KV": 150000,
              "LRB": {"SDIS_HYS_MODEL": "BiLinear", "AR": 0.196, "TR": 0.15,
-                      "KE": 20000, "K2": 2000, "QD": 80, "DX": 0,
-                      "OPT_CONS_NONL": False, "BETA": 0.1, "ALPHA": 0.5,
-                      "SIGMA_V": 3000}},
+                      "KE": 20000, "K0": 20000, "K2": 2000, "QD": 80,
+                      "DX": {"OPT_CONS_NONL": False, "BETA": 0.1,
+                             "ALPHA": 0.5, "SIGMA_V": 3000}}},
             {"COMMON": {"NAME": "SDIS_CRUD", "DESC": "", "INPUT_METHOD": 0,
                         "COMPANY": "", "PRODUCT_NAME": "LRB-500",
                         "TYPE_NUMBER": "LRB500-A"},
              "SDIS_DEV_TYPE": "LRB", "MSS": 8, "TAU_K": 1.0, "TAU_Q": 1.0,
              "KV": 160000,
              "LRB": {"SDIS_HYS_MODEL": "BiLinear", "AR": 0.196, "TR": 0.15,
-                      "KE": 20000, "K2": 2000, "QD": 80, "DX": 0,
-                      "OPT_CONS_NONL": False, "BETA": 0.1, "ALPHA": 0.5,
-                      "SIGMA_V": 3000}},
+                      "KE": 20000, "K0": 20000, "K2": 2000, "QD": 80,
+                      "DX": {"OPT_CONS_NONL": False, "BETA": 0.1,
+                             "ALPHA": 0.5, "SIGMA_V": 3000}}},
             lambda p: p.get("KV"), 150000, 160000,
             products=("gen",),
         ),
@@ -3089,7 +3132,8 @@ def _extras13_cases() -> List[Case]:
             lambda p: p.get("DGNCODE"), "Eurocode3-2:05", "AISC-ASD89",
             item_id=1,
         ),
-        # Keyed by a real base-model frame element id (1).
+        # Keyed by a real base-model BEAM element id (2).  The shared npm
+        # fixture provisions that element before the element-keyed CRUD case.
         Case(
             UnbracedLength,
             {"LY": 9.464111, "LZ": 4, "LB": 4, "bNOTUSE": False,
@@ -3097,7 +3141,13 @@ def _extras13_cases() -> List[Case]:
             {"LY": 9.464111, "LZ": 4, "LB": 4, "bNOTUSE": False,
              "bAUTOCALC": False, "LT": 5.0},
             lambda p: p.get("LT"), 9.464111, 5.0,
-            item_id=1,
+            item_id=2,
+            setup=(
+                {"seed": "ltsr_material"},
+                {"seed": "ltsr_section"},
+                {"seed": "ltsr_nodes"},
+                {"seed": "ltsr_beam"},
+            ),
         ),
         # AELEM must be elements of the same auto-detected member type
         # (COLUMN vs BEAM, from orientation) -- live-confirmed 2026-08-24:
@@ -3110,6 +3160,14 @@ def _extras13_cases() -> List[Case]:
             {"AELEM": [2, 3], "bREVERSE": True},
             lambda p: p.get("bREVERSE"), False, True,
             item_id=1,
+            setup=(
+                {"seed": "ltsr_material"},
+                {"seed": "ltsr_section"},
+                {"seed": "ltsr_nodes"},
+                {"seed": "ltsr_beam"},
+                {"seed": "member_node"},
+                {"seed": "member_beam"},
+            ),
         ),
         Case(
             FrameDefinition,
@@ -3151,15 +3209,20 @@ def _extras13_cases() -> List[Case]:
                 {"seed": "ltsr_beam"},
             ),
         ),
-        # WID_LIST references the base model's own PLATE element (id 4) --
-        # untested whether the server requires it to actually be flagged
-        # as a wall-type element rather than any plate.
+        # WID_LIST is model-keyed. The explicit PLATE prerequisite was
+        # verified through the npm public API on both products.
         Case(
             ModifyWallMark,
             {"MARKNAME": "W1", "WID_LIST": [4]},
             {"MARKNAME": "W1_RENAMED", "WID_LIST": [4]},
             lambda p: p.get("MARKNAME"), "W1", "W1_RENAMED",
             item_id=1,
+            setup=(
+                {"seed": "ltsr_material"},
+                {"seed": "wmak_thickness"},
+                {"seed": "wmak_nodes"},
+                {"seed": "wmak_plate"},
+            ),
         ),
     ]
 

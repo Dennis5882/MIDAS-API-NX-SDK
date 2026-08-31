@@ -57,11 +57,11 @@ def test_live_case_fixture_carries_skew_node_seed() -> None:
     assert skew["setup"] == [{"seed": "skew_node"}]
 
 
-def test_live_case_fixture_carries_ltsr_element_setup() -> None:
+def test_live_case_fixture_carries_design_element_setup() -> None:
     fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
     element_cases = [
         next(case for case in fixture["cases"] if case["endpoint"] == endpoint)
-        for endpoint in ("/db/LTSR", "/db/MBTP")
+        for endpoint in ("/db/LENG", "/db/LTSR", "/db/MBTP")
     ]
 
     for case in element_cases:
@@ -75,4 +75,73 @@ def test_live_case_fixture_carries_ltsr_element_setup() -> None:
     assert fixture["seeds"]["ltsr_beam"] == {
         "endpoint": "/db/ELEM",
         "records": {"2": {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [2, 3]}},
+    }
+
+
+def test_live_case_fixture_carries_design_member_setup() -> None:
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    memb = next(case for case in fixture["cases"] if case["endpoint"] == "/db/MEMB")
+
+    assert memb["setup"] == [
+        {"seed": "ltsr_material"},
+        {"seed": "ltsr_section"},
+        {"seed": "ltsr_nodes"},
+        {"seed": "ltsr_beam"},
+        {"seed": "member_node"},
+        {"seed": "member_beam"},
+    ]
+    assert fixture["seeds"]["member_beam"] == {
+        "endpoint": "/db/ELEM",
+        "records": {"3": {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [3, 4]}},
+    }
+
+
+def test_live_case_fixture_carries_wall_mark_plate_setup() -> None:
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    wmak = next(case for case in fixture["cases"] if case["endpoint"] == "/db/WMAK")
+
+    assert wmak["setup"] == [
+        {"seed": "ltsr_material"},
+        {"seed": "wmak_thickness"},
+        {"seed": "wmak_nodes"},
+        {"seed": "wmak_plate"},
+    ]
+    assert fixture["seeds"]["wmak_plate"] == {
+        "endpoint": "/db/ELEM",
+        "records": {
+            "4": {
+                "TYPE": "PLATE", "MATL": 1, "SECT": 1,
+                "NODE": [1, 2, 4, 3], "ANGLE": 0, "STYPE": 1,
+            },
+        },
+    }
+
+
+def test_live_case_fixture_carries_manual_sdis_lrb_shape() -> None:
+    cases = json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
+    sdis = next(case for case in cases if case["endpoint"] == "/db/SDIS")
+    lrb = sdis["createPayload"]["LRB"]
+
+    assert lrb["K0"] == 20000
+    assert lrb["DX"] == {
+        "OPT_CONS_NONL": False,
+        "BETA": 0.1,
+        "ALPHA": 0.5,
+        "SIGMA_V": 3000,
+    }
+
+
+def test_live_case_fixture_carries_manual_sdst_bl2_shape() -> None:
+    cases = json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
+    sdst = next(case for case in cases if case["endpoint"] == "/db/SDST")
+
+    assert {
+        key: sdst["createPayload"][key]
+        for key in ("K0", "P1", "ALPHA1", "KB", "BL2")
+    } == {
+        "K0": 1000,
+        "P1": 100,
+        "ALPHA1": 0.2,
+        "KB": 2000,
+        "BL2": {"BETA": 0},
     }

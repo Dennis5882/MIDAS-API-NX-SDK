@@ -7434,10 +7434,11 @@ and `SKEW` after the target and seed were each deleted by id.
 The following shared-fixture cases remain **unconfirmed** and reproduced their
 existing product rejections rather than becoming npm regressions:
 
-- Gen `/db/SDIS` LRB case: HTTP 201 with `Wrong Field`. Its fixture retains the
-  old scalar-`DX` shape, so this is not evidence against the later corrected
-  nested-`DX` manual shape; the corrected-shape LRB result remains separately
-  documented above as unresolved.
+- Gen `/db/SDIS` LRB case: HTTP 201 with `Wrong Field`. The fixture now uses
+  the manual's corrected nested `LRB.DX` object and includes `K0`; Gen's
+  `/info` exposes that exact nesting. The same response therefore remains an
+  unresolved product-value/precondition result, not evidence for changing
+  field names or nesting.
 - Civil `/db/WVLD`: HTTP 201 with `Wrong Field` for the full fixture payload.
 - Gen and Civil `/db/NLLP`: HTTP 201 with `Unknown Error` for the minimal
   `ELEMENT`/`SPG` fixture payload.
@@ -7525,3 +7526,51 @@ four seeds rather than trying to write to an empty document. The final npm
 checks saved `C:/temp/midas-nx-live-gen-1788173302760.mgbx` and
 `C:/temp/midas-nx-live-civil-1788173320331.mcbz`; all target and prerequisite
 tables were empty after individual cleanup.
+
+`/db/LENG` is another element-keyed design record. With the same BEAM id `2`
+and four reusable prerequisites, it completed the public npm CRUD sequence on
+both products. The shared fixture now uses that actual element id and declares
+the same setup. Its checkpoints were
+`C:/temp/midas-nx-live-gen-1788173496472.mgbx` and
+`C:/temp/midas-nx-live-civil-1788173505730.mcbz`.
+
+`/db/MEMB` needs two compatible BEAM elements rather than one. The fixture now
+adds node `4` and BEAM id `3` after the reusable element-2 chain, then groups
+`[2, 3]` exactly as its documented case specifies. It passed the full public
+npm CRUD sequence on Gen and Civil, with checkpoints
+`C:/temp/midas-nx-live-gen-1788173602613.mgbx` and
+`C:/temp/midas-nx-live-civil-1788173614217.mcbz`. Individual cleanup again
+left the target and all material, section, node, and element prerequisites
+empty on both products.
+
+`/db/WMAK` is also model-keyed. Its `WID_LIST: [4]` fixture now declares a
+disposable material, thickness, rectangular nodes, and PLATE element `4`,
+rather than relying on Python's prebuilt base model. Through the built npm
+package, the full `POST -> GET -> PUT -> GET -> DELETE {id} -> GET` sequence
+passed on Gen and Civil. The saved native checkpoints were
+`C:/temp/midas-nx-live-gen-1788174074805.mgbx` and
+`C:/temp/midas-nx-live-civil-1788174088855.mcbz`; individual cleanup removed
+the WMAK target and every prerequisite.
+
+The setup deliberately uses a PLATE only as a tested fixture prerequisite. A
+separate manual-shaped `TYPE: "WALL"` element probe succeeded on Gen but Civil
+NX v2.2 build 08/26/2026 rejected it as unsupported element type no. 5. That
+manual/product disagreement is recorded as MD-06 in the manual defects
+register; it does not establish that PLATE and WALL are interchangeable, so
+neither contract nor SDK behaviour was inferred from it.
+
+`/db/SDST` originally failed in the npm harness because its fixture stopped at
+the three selector fields. The manual marks `K0`, `P1`, `ALPHA1`, `KB`, and
+the selected `BL2.BETA` as required; after adding its documented BL2 example
+values, the built package completed the public CRUD sequence on both products.
+It read back the changed `P1` value after PUT, then deleted the record by id.
+The checkpoints were `C:/temp/midas-nx-live-gen-1788174337218.mgbx` and
+`C:/temp/midas-nx-live-civil-1788174348471.mcbz`.
+
+`/db/MVCT` was then exercised unchanged from the shared fixture through the
+built npm public resource on both empty scratch models. Gen returned HTTP 201
+with `Unknown Error` after saving
+`C:/temp/midas-nx-live-gen-1788174456882.mgbx`; Civil returned the same result
+after saving `C:/temp/midas-nx-live-civil-1788174467843.mcbz`. The fixture is
+not changed from that result: neither response identifies a field or enum to
+correct, so treating it as a payload-shape finding would be speculation.
