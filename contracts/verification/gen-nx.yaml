@@ -456,3 +456,35 @@ records:
       rather than at nothing.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-read-sweep-2026-08-01
+    endpoints: []
+    date: "2026-08-01"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 07/28/2026
+    level: read
+    outcome: success
+    method: >-
+      manual POST probe via midas_nx.ope.generate_load_combination_general. Gen NX: a full-fields KDS:2022/CONCRETE payload (2026-07-30) answered 'Wrong Field', not root-caused; the minimal AIK-SRC2K schema ({OPTION, DGNCODE, RS_SCALE_FACTOR: []}) also answered 'Wrong Field' (2026-08-01) -- reaches the server and is rejected there in both cases, confirming the route itself is live on Gen. Civil NX (2026
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-write-sweep-2026-08-31
+    endpoints: []
+    date: "2026-08-31"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 08/26/2026
+    level: write
+    outcome: success
+    method: >-
+      Fresh scratch-model verification on 2026-08-31 passed POST -> GET -> PUT -> GET -> individual-id DELETE -> GET on both Civil NX and Gen NX with iCODETYPE=0 and FREQ. The manual request example omits iSLCM and iBC although its table marks them required; sending iSLCM=0 and iBC=0 is accepted, but GET normalizes iSLCM away. USER_F=0 is rejected on both products with the explicit product error 'f > 0'
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md

@@ -444,3 +444,51 @@ records:
       rather than at nothing.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-read-sweep-2026-08-31
+    endpoints: []
+    date: "2026-08-31"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 08/26/2026
+    level: read
+    outcome: success_empty
+    method: >-
+      Gen route and /info are 404 in independent sessions. Civil re-tested on a fresh scratch model on 2026-08-31 with the official full request example, including the live-schema coefficient names DRAG_COEF_X/Y/Z and INER_COEF_X/Y/Z, and again with a bare NAME payload in the prior probe. Both return Wrong Field. This rules out the earlier CREST/UNIT correction and the coefficient-name mismatch as the c
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-write-sweep-2026-07-31
+    endpoints: []
+    date: "2026-07-31"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 07/29/2026
+    level: write
+    outcome: success
+    method: >-
+      manual POST probe on Civil NX against the real production model, using a user-provided path on the NX host machine. First 2 tries failed ('Please check the file name or extension' with a .mcbx path, then 'Please specify the correct stage name' with the post/TABLE-style qualified stage_step like 'CS7:001(last)') before succeeding with the plain stage NAME ('CS7', matching /db/STAG's own NAME field)
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-write-sweep-2026-08-31
+    endpoints: []
+    date: "2026-08-31"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 08/26/2026
+    level: write
+    outcome: success
+    method: >-
+      Fresh scratch-model verification on 2026-08-31 passed POST -> GET -> PUT -> GET -> individual-id DELETE -> GET on both Civil NX and Gen NX with iCODETYPE=0 and FREQ. The manual request example omits iSLCM and iBC although its table marks them required; sending iSLCM=0 and iBC=0 is accepted, but GET normalizes iSLCM away. USER_F=0 is rejected on both products with the explicit product error 'f > 0'
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md

@@ -344,36 +344,221 @@ export namespace DbAnalysisControlTypes {
     /** Link Group Name (when bLG true) */
     LGN: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadAnalysisControlChinaPayload {
-    POINT?: string;
+    /** Load Point ("INF" / "ALL") */
+    POINT: string;
+    /** Influence Generating Points (0/1) */
     iIGP?: number;
-    UNUMT?: number;
-    DIST?: number;
-    PLATE?: string;
+    /** Number/Line Element (when iIGP=0) */
+    UNUMT: number;
+    /** Distance between Points (when iIGP=1) */
+    DIST: number;
+    /** Plate Options ("CENTER" / "NODAL") */
+    PLATE: string;
+    /** Plate – Stress */
     bSTRCALC?: boolean;
-    FRAME?: string;
+    /** Frame Options ("NORMAL" / "AXIAL") */
+    FRAME: string;
+    /** Frame – Combined Stress */
     bCSTRCALC?: boolean;
+    /** Filter – Reactions */
     bREAC?: boolean;
+    /** Reactions Option (All/Group) */
     bRG?: boolean;
-    RGN?: string;
+    /** Reactions Group Name */
+    RGN: string;
+    /** Filter – Displacements */
     bDISP?: boolean;
+    /** Displacements Option (All/Group) */
     bDG?: boolean;
-    DGN?: string;
+    /** Displacements Group Name */
+    DGN: string;
+    /** Filter – Forces/Moments */
     bFM?: boolean;
+    /** Forces/Moments Option (All/Group) */
     bFG?: boolean;
-    FGN?: string;
+    /** Forces/Moments Group Name */
+    FGN: string;
+    /** Filter – Elastic/General Links */
     bL?: boolean;
+    /** Links Option (All/Group) */
     bLG?: boolean;
-    LGN?: string;
+    /** Links Group Name */
+    LGN: string;
+    /** Impact Factor 사용 */
     bIF?: boolean;
-    iCODETYPE?: number;
+    /** Code Type (0=JTG D60-2015/JTG04 / 1=Other Codes / 2=TB 10002-2017 / 3=Q/CR 9300-2018) */
+    iCODETYPE: number;
+    /** Natural Frequency Method (iCODETYPE=0일 때 필수. 0=User Input / 1=Simple Beam / 2=Continuous Beam / 3=Arch Bridge / 4=Cable Stayed Bridge / 5=Suspension Bridge) */
     iNFM?: number;
-    iSLCM?: number;
+    /** Span Length (0=Span Length by Lane Input / 1=Loaded Length by Influence Line) */
+    iSLCM: number;
+    /** Vehicle Load Class 사용 */
     bBC?: boolean;
-    iBC?: number;
-    FREQ?: unknown;
-    BRIDGE1?: unknown;
-    BRIDGE2?: unknown;
+    /** Vehicle Load Class Type (0=Class I / 1=Class II) */
+    iBC: number;
+    /** Frequency Data (iCODETYPE=0일 때 필수) */
+    FREQ?: {
+      /** f [Hz] */
+      USER_F?: unknown;
+      /** 연속보 a/b/L/E/Ic/mc */
+      CBEM_A?: unknown;
+      /** 연속보 a/b/L/E/Ic/mc */
+      CBEM_B?: unknown;
+      /** 연속보 a/b/L/E/Ic/mc */
+      CBEM_L?: unknown;
+      /** 연속보 a/b/L/E/Ic/mc */
+      CBEM_E?: unknown;
+      /** 연속보 a/b/L/E/Ic/mc */
+      CBEM_IC?: unknown;
+      /** 연속보 a/b/L/E/Ic/mc */
+      CBEM_MC?: unknown;
+      /** 아치교 n/f/L/E/Ic/mc */
+      ARCH_N?: unknown;
+      /** 아치교 n/f/L/E/Ic/mc */
+      ARCH_F?: unknown;
+      /** 아치교 n/f/L/E/Ic/mc */
+      ARCH_L?: unknown;
+      /** 아치교 n/f/L/E/Ic/mc */
+      ARCH_E?: unknown;
+      /** 아치교 n/f/L/E/Ic/mc */
+      ARCH_IC?: unknown;
+      /** 아치교 n/f/L/E/Ic/mc */
+      ARCH_MC?: unknown;
+      /** 현수교 L/E/I/Hg/m */
+      SUSP_L?: unknown;
+      /** 현수교 L/E/I/Hg/m */
+      SUSP_E?: unknown;
+      /** 현수교 L/E/I/Hg/m */
+      SUSP_I?: unknown;
+      /** 현수교 L/E/I/Hg/m */
+      SUSP_HG?: unknown;
+      /** 현수교 L/E/I/Hg/m */
+      SUSP_M?: unknown;
+    };
+    /** Bridge Data — Other Codes (iCODETYPE=1일 때 필수) */
+    BRIDGE1?: {
+      /** RC — Case 1 L1/F1/L2/F2 */
+      RC_C1L1?: number;
+      /** RC — Case 1 L1/F1/L2/F2 */
+      RC_C1F1?: number;
+      /** RC — Case 1 L1/F1/L2/F2 */
+      RC_C1L2?: number;
+      /** RC — Case 1 L1/F1/L2/F2 */
+      RC_C1F2?: number;
+      /** RC — Case 2 사용 여부 */
+      RC_bCASE2?: boolean;
+      /** RC — Case 2 L1/F1/L2/F2 (RC_bCASE2=true 시) */
+      RC_C2L1?: number;
+      /** RC — Case 2 L1/F1/L2/F2 (RC_bCASE2=true 시) */
+      RC_C2F1?: number;
+      /** RC — Case 2 L1/F1/L2/F2 (RC_bCASE2=true 시) */
+      RC_C2L2?: number;
+      /** RC — Case 2 L1/F1/L2/F2 (RC_bCASE2=true 시) */
+      RC_C2F2?: number;
+      /** RC — 구조 그룹명 */
+      RC_GROUP?: string;
+      /** Steel — Case 1 V1/V2 */
+      STL_C1V1?: number;
+      /** Steel — Case 1 V1/V2 */
+      STL_C1V2?: number;
+      /** Steel — Case 2 사용 여부 */
+      STL_bCASE2?: boolean;
+      /** Steel — Case 2 V1/V2 (STL_bCASE2=true 시) */
+      STL_C2V1?: number;
+      /** Steel — Case 2 V1/V2 (STL_bCASE2=true 시) */
+      STL_C2V2?: number;
+      /** Steel — 구조 그룹명 */
+      STL_GROUP?: string;
+      /** Old Urban Bridge — 차로하중 충격계수 L1/F1/L2/F2/F3/F4 */
+      MBRG_RL1?: number;
+      /** Old Urban Bridge — 차로하중 충격계수 L1/F1/L2/F2/F3/F4 */
+      MBRG_RF1?: number;
+      /** Old Urban Bridge — 차로하중 충격계수 L1/F1/L2/F2/F3/F4 */
+      MBRG_RL2?: number;
+      /** Old Urban Bridge — 차로하중 충격계수 L1/F1/L2/F2/F3/F4 */
+      MBRG_RF2?: number;
+      /** Old Urban Bridge — 차로하중 충격계수 L1/F1/L2/F2/F3/F4 */
+      MBRG_RF3?: number;
+      /** Old Urban Bridge — 차로하중 충격계수 L1/F1/L2/F2/F3/F4 */
+      MBRG_RF4?: number;
+      /** Old Urban Bridge — 차량하중 충격계수 F1/F2/F3 */
+      MBRG_CF1?: number;
+      /** Old Urban Bridge — 차량하중 충격계수 F1/F2/F3 */
+      MBRG_CF2?: number;
+      /** Old Urban Bridge — 차량하중 충격계수 F1/F2/F3 */
+      MBRG_CF3?: number;
+      /** Train — Sub-Type("SIMPLE"/"COMPOSITE"/"RCCONC"/"RCARCH") */
+      TRAIN_SUB_TYPE?: string;
+      /** Train — Value 1 / Value 2 */
+      TRAIN_NUMERATOR?: number;
+      /** Train — Value 1 / Value 2 */
+      TRAIN_DENOMINATOR?: number;
+      /** Train — Surcharge Thickness (TRAIN_SUB_TYPE="RCCONC" 전용) */
+      TRAIN_H?: number;
+      /** Train — Apply Loaded Span Length (RCCONC 전용, 0=미고려/1=고려) */
+      TRAIN_bCLSL?: number;
+      /** Train — Lambda / f (RCARCH 전용) */
+      TRAIN_LAMBDA?: number;
+      /** Train — Lambda / f (RCARCH 전용) */
+      TRAIN_F?: number;
+      /** Train — Apply Loaded Span Length (RCARCH 전용, 0=미고려/1=고려) */
+      TRAIN_bALSL?: number;
+      /** Train — 구조 그룹명 */
+      TRAIN_GROUP?: string;
+    };
+    /** Bridge Data — TB 10002-2017 / Q·CR 9300-2018 (iCODETYPE=2 또는 3일 때 필수) */
+    BRIDGE2?: {
+      /** RAILWAY — Sub-Type("SIMPLE"/"COMPOSITE"/"RCCONC"/"RCARCH") */
+      METHOD?: string;
+      /** RAILWAY(METHOD="SIMPLE") — Value 1/2 */
+      SIMPLE_U?: number;
+      /** RAILWAY(METHOD="SIMPLE") — Value 1/2 */
+      SIMPLE_L?: number;
+      /** RAILWAY(METHOD="COMPOSITE") — Value 1/2 */
+      COMPO_U?: number;
+      /** RAILWAY(METHOD="COMPOSITE") — Value 1/2 */
+      COMPO_L?: number;
+      /** RAILWAY(METHOD="RCCONC") — Value 1/2, Surcharge Thickness */
+      CONC_U?: number;
+      /** RAILWAY(METHOD="RCCONC") — Value 1/2, Surcharge Thickness */
+      CONC_L?: number;
+      /** RAILWAY(METHOD="RCCONC") — Value 1/2, Surcharge Thickness */
+      CONC_H?: number;
+      /** RAILWAY(METHOD="RCARCH") — Value 1/2, Lambda, f */
+      ARCH_U?: number;
+      /** RAILWAY(METHOD="RCARCH") — Value 1/2, Lambda, f */
+      ARCH_L?: number;
+      /** RAILWAY(METHOD="RCARCH") — Value 1/2, Lambda, f */
+      ARCH_LAMBDA?: number;
+      /** RAILWAY(METHOD="RCARCH") — Value 1/2, Lambda, f */
+      ARCH_F?: number;
+      /** RAILWAY(RCCONC/RCARCH) — Apply Loaded Span Length 여부 */
+      bCHECK?: boolean;
+      /** RAILWAY(RCCONC/RCARCH) — 구조 그룹명 */
+      GROUP?: string;
+      /** RAILBRG·RAILCUL 공통 — mu 산정용 Value 1/2/3 */
+      MU1?: number;
+      /** RAILBRG·RAILCUL 공통 — mu 산정용 Value 1/2/3 */
+      MU2?: number;
+      /** RAILBRG·RAILCUL 공통 — mu 산정용 Value 1/2/3 */
+      MU3?: number;
+      /** RAILBRG·RAILCUL 공통 — Apply Loaded Span Length 여부 */
+      bLFAI?: boolean;
+      /** RAILBRG·RAILCUL 공통 — Lfai (bLFAI=false 시) */
+      LFAI?: number;
+      /** RAILCUL 전용 — Apply Loaded Span Length (bLFAI=true 시) */
+      bLENGTH?: boolean;
+      /** RAILCUL 전용 — mu Reduction 산정용 Value 1/2/3 */
+      MUR1?: number;
+      /** RAILCUL 전용 — mu Reduction 산정용 Value 1/2/3 */
+      MUR2?: number;
+      /** RAILCUL 전용 — mu Reduction 산정용 Value 1/2/3 */
+      MUR3?: number;
+      /** RAILCUL 전용 — Surcharge Thickness */
+      HC?: number;
+    };
   }
   /** Generated from contracts/endpoints/. */
   export interface MovingLoadAnalysisControlIndiaPayload {
@@ -2638,30 +2823,209 @@ export namespace DbMiscLoadsTypes {
     Z?: number;
     T?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface WaveLoadPayload {
-    NAME?: string;
+    /** Wave Load Name */
+    NAME: string;
+    /** Description */
     DESC?: string;
+    /** Use Static Load Generation */
     bSTLD?: boolean;
+    /** Use Time History Load Generation */
     bTHIS?: boolean;
+    /** Time History Load Case Name */
     NAME_THIS?: string;
-    VERT_COORD?: string;
-    DENSITY?: number;
-    DEPTH?: number;
+    /** Vertical Coordinate ("GLOBAL_X"(⚠️ 미확인) / "GLOBAL_Y" / "GLOBAL_Z") */
+    VERT_COORD: string;
+    /** Water Weight Density */
+    DENSITY: number;
+    /** Water Depth */
+    DEPTH: number;
+    /** Use Self Weight */
     bSELFW?: boolean;
+    /** Use Buoyancy Load */
     bBUOYANT?: boolean;
-    COEF?: unknown;
-    CHAR?: unknown;
-    PROF?: unknown;
+    COEF?: {
+      /** Type ("CONST"(Constant) / ⚠️미확인(Linear Interpolation, 리터럴 값 원문 미공개)) */
+      TYPE: string;
+      /** Coefficients – Slender Element Array */
+      COEF_S?: Array<{
+        /** Structure Group Name */
+        GRUP?: string;
+        /** Diameter */
+        DIA?: number;
+        /** Drag Coefficient X */
+        DRAG_COEF_X?: number;
+        /** Drag Coefficient Y */
+        DRAG_COEF_Y?: number;
+        /** Drag Coefficient Z */
+        DRAG_COEF_Z?: number;
+        /** Inertia Coefficient X */
+        INER_COEF_X?: number;
+        /** Inertia Coefficient Y */
+        INER_COEF_Y?: number;
+        /** Inertia Coefficient Z */
+        INER_COEF_Z?: number;
+      }>;
+      /** Coefficients – Rigid Element Array */
+      COEF_R?: Array<{
+        /** Structure Group Name */
+        GRUP?: string;
+        /** Diameter */
+        DIA?: number;
+        /** Drag Coefficient X */
+        DRAG_COEF_X?: number;
+        /** Drag Coefficient Y */
+        DRAG_COEF_Y?: number;
+        /** Drag Coefficient Z */
+        DRAG_COEF_Z?: number;
+        /** Inertia Coefficient X */
+        INER_COEF_X?: number;
+        /** Inertia Coefficient Y */
+        INER_COEF_Y?: number;
+        /** Inertia Coefficient Z */
+        INER_COEF_Z?: number;
+      }>;
+      /** Override Coefficients with Structure Group */
+      bOVER?: boolean;
+      /** Override Slender Element Array */
+      OVER_S?: Array<{
+        /** Structure Group Name */
+        GRUP?: string;
+        /** Diameter */
+        DIA?: number;
+        /** Drag Coefficient X */
+        DRAG_COEF_X?: number;
+        /** Drag Coefficient Y */
+        DRAG_COEF_Y?: number;
+        /** Drag Coefficient Z */
+        DRAG_COEF_Z?: number;
+        /** Inertia Coefficient X */
+        INER_COEF_X?: number;
+        /** Inertia Coefficient Y */
+        INER_COEF_Y?: number;
+        /** Inertia Coefficient Z */
+        INER_COEF_Z?: number;
+      }>;
+      /** Override Rigid Element Array */
+      OVER_R?: Array<{
+        /** Structure Group Name */
+        GRUP?: string;
+        /** Diameter */
+        DIA?: number;
+        /** Drag Coefficient X */
+        DRAG_COEF_X?: number;
+        /** Drag Coefficient Y */
+        DRAG_COEF_Y?: number;
+        /** Drag Coefficient Z */
+        DRAG_COEF_Z?: number;
+        /** Inertia Coefficient X */
+        INER_COEF_X?: number;
+        /** Inertia Coefficient Y */
+        INER_COEF_Y?: number;
+        /** Inertia Coefficient Z */
+        INER_COEF_Z?: number;
+      }>;
+    };
+    CHAR?: {
+      /** Theory Type ("AIRY" / "STOKES" / "STREAM") */
+      THEORY: string;
+      /** Function Order (Stokes/Stream 이론에서 사용) */
+      FUNC?: number;
+      /** Wave Direction (degrees) */
+      DIR: number;
+      /** Wave Height */
+      HEIGHT: number;
+      /** Wave Length / Wave Period 선택 ("LENGTH" / "PERIOD") */
+      CHAR_TYPE: string;
+      /** Wave Length */
+      LENGTH?: number;
+      /** Wave Period */
+      PERIOD?: number;
+      /** Kinematics Factor */
+      K_FACTOR?: number;
+      /** Current Surface Velocity */
+      SURFACE_V?: number;
+      /** Current Bottom Velocity */
+      BOTTOM_Y?: number;
+    };
+    PROF?: {
+      /** Current Direction (degrees) */
+      CUR_DIR?: number;
+      /** Current Blockage Factor */
+      CUR_FACTOR?: number;
+      /** Grid Data (elevation × velocity points) */
+      GRID_DATA?: Array<{
+        /** Elevation */
+        D?: number;
+        /** Velocity */
+        V?: number;
+      }>;
+    };
+    /** Flood Condition (Structure Group Names) */
     FLOOD_GRUP?: Array<string>;
-    GROWTH?: Array<WaveLoadGrowthItem>;
+    /** Marine Growth Data */
+    GROWTH?: Array<{
+      /** Elevation */
+      Z?: number;
+      /** Thickness */
+      T?: number;
+    }>;
+    /** Grid X Size */
     GRID_X?: number;
+    /** Grid Y Size */
     GRID_Z?: number;
-    USERGRID?: unknown;
-    TRAJ?: unknown;
+    /** User Defined Grid Data (2D Array) */
+    USERGRID?: Array<{
+      /** X 좌표 */
+      X?: number;
+      /** Z 좌표 */
+      Z?: number;
+      /** Elevation */
+      ELEV?: number;
+      /** Velocity X */
+      VX?: number;
+      /** Current Velocity X */
+      VCX?: number;
+      /** Total Velocity */
+      VT?: number;
+      /** Velocity Z */
+      VZ?: number;
+      /** Acceleration X */
+      AX?: number;
+      /** Acceleration Z */
+      AZ?: number;
+    }>;
+    /** Trajectory Grid Data (2D Array) */
+    TRAJ?: Array<{
+      /** X 좌표 */
+      X?: number;
+      /** Z 좌표 */
+      Z?: number;
+      /** Elevation */
+      ELEV?: number;
+      /** Velocity X */
+      VX?: number;
+      /** Current Velocity X */
+      VCX?: number;
+      /** Total Velocity */
+      VT?: number;
+      /** Velocity Z */
+      VZ?: number;
+      /** Acceleration X */
+      AX?: number;
+      /** Acceleration Z */
+      AZ?: number;
+    }>;
+    /** Crest Critical Position (리터럴 값 원문 미공개, 예제 확인값 "MXM") */
     CREST?: string;
+    /** Crest Position Unit (리터럴 값 원문 미공개, 예제 확인값 "PHASE") */
     UNIT?: string;
+    /** Initial Position */
     INITAL_POS?: number;
+    /** Increase Step */
     STEP?: number;
+    /** Number of Positions */
     POS?: number;
   }
   /** Generated from contracts/endpoints/. */
@@ -4171,14 +4535,43 @@ export namespace DbPropertiesMaterialTypes {
     CODEMATLNAME?: string;
     DESIGN?: MaterialModifyConcreteDesign;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MaterialModifyConcretePayload {
-    TYPE?: string;
-    NAME?: string;
-    DATA1?: MaterialModifyConcreteData1;
-    REBAR_CODENAME?: string;
-    MAINREBAR_REBARNAME?: string;
+    /** Material Type (Concrete: "CONC") */
+    TYPE: string;
+    /** Material Name */
+    NAME: string;
+    /** Concrete Material Information */
+    DATA1: {
+      /** Material Code Name */
+      CODENAME: string;
+      /** Material Grade */
+      CODEMATLNAME: string;
+      /** Material Design Values */
+      DESIGN: {
+        /** Strength */
+        C_FC?: number;
+        /** (추정) Lambda 적용 여부 ⚠️표·예제에 근거 없음 */
+        bLAMBDA?: boolean;
+        /** (추정) Lambda 값 ⚠️표·예제에 근거 없음 */
+        dLAMBDA?: number;
+        /** Strength (Initial) */
+        C_FCI?: number;
+        /** (추정) Transfer 적용 여부 ⚠️표·예제에 근거 없음 */
+        bTRANSFER?: boolean;
+        /** (추정) Transfer 시 fci 값 ⚠️표·예제에 근거 없음 */
+        dTRANSFERFCI?: number;
+      };
+    };
+    /** Rebar Code Name */
+    REBAR_CODENAME: string;
+    /** Main Rebar Name */
+    MAINREBAR_REBARNAME: string;
+    /** Sub Rebar Name */
     SUBREBAR_REBARNAME?: string;
+    /** Main Rebar (fy) */
     MAINREBAR_B_FY?: number;
+    /** Sub Rebar (fy) */
     SUBREBAR_B_FY?: number;
   }
   /** Generated from contracts/endpoints/. */
@@ -5193,18 +5586,36 @@ export namespace DbStaticLoadsTypes {
       FACTOR: number;
     }>;
   }
-  export interface NodalBodyForcePayload {
-    LCNAME?: string;
+  /** Generated from contracts/endpoints/. */
+  export type NodalBodyForcePayload = {
+    /** Load Case Name */
+    LCNAME: string;
+    /** Nodal Mass */
     OPT_NODAL_MASS?: boolean;
+    /** Load to Mass */
     OPT_LOAD_TO_MASS?: boolean;
+    /** Structure Mass */
     OPT_STRUCT_MASS?: boolean;
-    X?: number;
+    /** X-dir. Force Factor */
+    X: number;
+    /** Y-dir. Force Factor */
     Y?: number;
+    /** Z-dir. Force Factor */
     Z?: number;
+    /** Structure Group Option */
     OPT_USE_GROUP?: boolean;
-    GROUP_NAME?: string;
-    KEY_NODE_ITEMS?: Array<number>;
-  }
+  } & (
+    {
+      OPT_USE_GROUP: true;
+      /** Structure Group Name */
+      GROUP_NAME?: string;
+    } |
+    {
+      OPT_USE_GROUP: false;
+      /** Node No. List */
+      KEY_NODE_ITEMS?: Array<number>;
+    }
+  );
   export interface PressureLoadTypeItem {
     LOADCASENAME?: string;
     LOADTYPE?: string;

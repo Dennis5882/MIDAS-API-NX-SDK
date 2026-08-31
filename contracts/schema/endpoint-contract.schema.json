@@ -374,7 +374,8 @@
           "description": "Products to which this field applies when the manual explicitly labels a field group as product-specific. It never narrows the endpoint-level products list."
         },
         "type": {
-          "enum": ["string", "number", "integer", "boolean", "array", "object"]
+          "enum": ["string", "number", "integer", "boolean", "array", "object", "unstated"],
+          "description": "The manual's Value Type, normalized. unstated means the manual did not give a type; it is not an inferred string or unknown JSON shape."
         },
         "items": {
           "$ref": "#/$defs/valueType",
@@ -386,8 +387,8 @@
           "description": "Nested fields when `type` is object, or when array elements are objects."
         },
         "requirement": {
-          "enum": ["required", "optional", "conditional", "read_only"],
-          "description": "The manual's Required column, normalized. read_only = the server returns it and ignores it on write."
+          "enum": ["required", "optional", "conditional", "read_only", "unstated"],
+          "description": "The manual's Required column, normalized. read_only = the server returns it and ignores it on write. unstated means the manual gives no requiredness claim."
         },
         "condition": {
           "type": "string",
@@ -422,8 +423,8 @@
           "description": "Exact Default-cell text where the manual describes a default but does not state a literal wire value. In this case documentedDefault is null. This records documentation, not observed product behaviour and makes no safeToOmit claim."
         },
         "documentedOptional": {
-          "type": "boolean",
-          "description": "Whether the official manual marks this field optional. A statement about the documentation, never about observed behaviour."
+          "type": ["boolean", "null"],
+          "description": "Whether the official manual marks this field optional. Null is permitted only when requirement is unstated, so no documentation claim is invented. This is a statement about the documentation, never about observed behaviour."
         },
         "safeToOmit": {
           "enum": [true, false, "unverified"],
@@ -486,6 +487,24 @@
           "if": { "required": ["documentedDefaultNote"] },
           "then": {
             "properties": { "documentedDefault": { "const": null } }
+          }
+        },
+        {
+          "if": {
+            "properties": { "requirement": { "const": "unstated" } },
+            "required": ["requirement"]
+          },
+          "then": {
+            "properties": { "documentedOptional": { "const": null } }
+          }
+        },
+        {
+          "if": {
+            "properties": { "documentedOptional": { "const": null } },
+            "required": ["documentedOptional"]
+          },
+          "then": {
+            "properties": { "requirement": { "const": "unstated" } }
           }
         }
       ]

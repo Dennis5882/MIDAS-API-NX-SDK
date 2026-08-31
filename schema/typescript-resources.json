@@ -174,7 +174,7 @@
       ],
       "manual": [
         {
-          "name": "Assign Boundary Combination (Hyper-S)",
+          "name": "Define Boundary Combination (Hyper-S)",
           "chapterFile": "12_DB_Analysis_Control.md",
           "status": "implemented"
         }
@@ -420,7 +420,7 @@
       "className": "MovingLoadAnalysisControlChina",
       "exportName": "movingLoadAnalysisControlChina",
       "endpoint": "/db/MVCTch",
-      "name": "Moving Load Analysis Control - China",
+      "name": "Moving Load Analysis Control – China",
       "products": [
         "civil",
         "gen"
@@ -2161,7 +2161,7 @@
       ],
       "manual": [
         {
-          "name": "Rebar Input for Checking (Beam/Column)",
+          "name": "Rebar Input for Checking - Beam/Column",
           "chapterFile": "24_DB_Design.md",
           "status": "implemented"
         }
@@ -2191,7 +2191,7 @@
       ],
       "manual": [
         {
-          "name": "Steel Design Code",
+          "name": "Design Steel Code",
           "chapterFile": "24_DB_Design.md",
           "status": "implemented"
         }

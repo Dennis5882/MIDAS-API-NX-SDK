@@ -1101,6 +1101,121 @@ def test_documented_default_note_requires_a_null_literal_default():
     assert not list(validator.iter_errors(field))
 
 
+@pytest.mark.parametrize(
+    ("value_type", "required", "expected_type", "expected_requirement"),
+    [
+        pytest.param(
+            "",
+            "Optional",
+            "unstated",
+            "optional",
+            id="blank_value_type_becomes_unstated_without_inventing_string",
+        ),
+        pytest.param(
+            "Number",
+            "",
+            "number",
+            "unstated",
+            id="blank_requiredness_becomes_unstated_without_inventing_optional",
+        ),
+    ],
+)
+def test_unstated_manual_columns_render_as_explicit_unknown_claims(
+    value_type: str,
+    required: str,
+    expected_type: str,
+    expected_requirement: str,
+    tmp_path: Path,
+):
+    path = tmp_path / "99_DB_UnstatedColumns.md"
+    path.write_text(
+        "## 1. `/db/UNSTATED` -- Unstated columns\n\n"
+        "| No. | Description | Key | Value Type | Default | Required |\n"
+        "|-----|-------------|-----|------------|---------|----------|\n"
+        f"| 1 | Field | `FIELD` | {value_type} | - | {required} |\n",
+        encoding="utf-8",
+    )
+
+    draft = yaml.safe_load(ex.render_draft(ex.parse_chapter(path)[0]))
+    field = draft["fields"][0]
+    assert field["type"] == expected_type
+    assert field["requirement"] == expected_requirement
+    assert field["documentedOptional"] is (True if expected_requirement == "optional" else None)
+
+
+@pytest.mark.parametrize(
+    ("cell", "requirement", "condition"),
+    [
+        pytest.param("GET only", "read_only", None, id="get_only_is_read_only"),
+        pytest.param(
+            "SRC: \ud544\uc218 / CONCRETE\u00b7STEEL: \uc120\ud0dd",
+            "conditional",
+            "SRC: \ud544\uc218 / CONCRETE\u00b7STEEL: \uc120\ud0dd",
+            id="source_specific_requiredness_preserves_manual_condition",
+        ),
+    ],
+)
+def test_documented_requiredness_forms_are_not_downgraded_to_unstated(
+    cell: str, requirement: str, condition: str | None
+):
+    actual_requirement, actual_condition, note = ex._normalize_requirement(cell)
+    assert (actual_requirement, actual_condition, note) == (requirement, condition, None)
+
+
+def test_report_counts_manual_columns_preserved_as_unstated(capsys: pytest.CaptureFixture[str]):
+    ex.run_report(
+        [
+            ex.Section(
+                "99_DB_Unstated.md",
+                "1",
+                endpoint="/db/UNSTATED",
+                title="Unstated",
+                heading="Unstated",
+                lines=[],
+                methods={"GET"},
+                tables=[
+                    ex.ParsedTable(
+                        heading="Parameters",
+                        line=1,
+                        fields=[
+                            ex.ParsedField("TYPE", "", None, None, "optional", None),
+                            ex.ParsedField("REQUIRED", "", "string", None, None, None),
+                        ],
+                    )
+                ],
+            )
+        ],
+        {},
+    )
+
+    assert "1 requiredness value(s), 1 Value Type value(s)" in capsys.readouterr().out
+
+
+def test_documented_optional_null_requires_unstated_requiredness():
+    """Null has one precise meaning, not a loophole for optional fields."""
+    jsonschema = pytest.importorskip("jsonschema")
+    import json
+
+    schema = json.loads(
+        (ROOT / "contracts" / "schema" / "endpoint-contract.schema.json").read_text(encoding="utf-8")
+    )
+    field = {
+        "key": "MODE",
+        "type": "unstated",
+        "requirement": "optional",
+        "documentedDefault": None,
+        "documentedOptional": None,
+        "safeToOmit": "unverified",
+        "provenance": "manual",
+    }
+    validator = jsonschema.Draft202012Validator(schema["$defs"]["field"])
+
+    assert any("'unstated' was expected" in error.message for error in validator.iter_errors(field))
+
+    field["requirement"] = "unstated"
+    assert not list(validator.iter_errors(field))
+
+
 def test_field_names_that_yaml_would_mangle_are_quoted(section: ex.Section):
     """`NO` is a real MIDAS field name and a YAML 1.1 boolean."""
     draft = yaml.safe_load(ex.render_draft(section))

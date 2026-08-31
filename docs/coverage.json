@@ -1,6 +1,6 @@
 {
   "vendored_from": "Dennis5882/MIDAS-API docs/manual/INDEX.md",
-  "vendored_at_commit": "2cfb2bd983d5ed97961be21ab3c5c0d02de5e15b",
+  "vendored_at_commit": "7920759854a50e41e5b9e090b93f925179ea3f98",
   "source_note": "Static snapshot; re-run scripts/vendor_coverage.py to refresh. POST result-table types and the three Design Code chapters (25-27) are not itemized by URL in INDEX.md and are represented as single aggregate rows rather than one row per table/check.",
   "endpoints": [
     {
@@ -4960,7 +4960,7 @@
     },
     {
       "endpoint": "/db/BCGD-M1",
-      "name": "Assign Boundary Combination (Hyper-S)",
+      "name": "Define Boundary Combination (Hyper-S)",
       "chapter_file": "12_DB_Analysis_Control.md",
       "products": [
         "civil"
@@ -5465,7 +5465,7 @@
     },
     {
       "endpoint": "/db/DSTL",
-      "name": "Steel Design Code",
+      "name": "Design Steel Code",
       "chapter_file": "24_DB_Design.md",
       "products": [
         "gen",
@@ -5488,7 +5488,7 @@
     },
     {
       "endpoint": "/db/RCHK",
-      "name": "Rebar Input for Checking (Beam/Column)",
+      "name": "Rebar Input for Checking - Beam/Column",
       "chapter_file": "24_DB_Design.md",
       "products": [
         "civil"
@@ -6387,7 +6387,7 @@
     },
     {
       "endpoint": "/post/BEAMDESIGNFORCES",
-      "name": "Concrete – Beam Design Force",
+      "name": "Concrete – Beam Design Forces",
       "chapter_file": "23_POST_Design.md",
       "products": [
         "gen",

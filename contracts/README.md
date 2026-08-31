@@ -116,6 +116,16 @@ not a claim about the server and is never evidence that a field is safe to
 omit. A same-section JSON Schema `default` may replace the note only when it
 states the identical literal value.
 
+## Unstated manual columns
+
+`requirement: unstated` and `documentedOptional: null` mean the manual did not
+state whether the field is required. They must occur together: `null` is not a
+third optionality state and says nothing about whether omitting the field works.
+Likewise, `type: unstated` records a missing Value Type cell instead of guessing
+`string`. A same-section JSON Schema can still supply either fact when the
+manual explicitly gives it there; otherwise the absence remains part of the
+contract.
+
 ## Risk and mitigation are separate axes
 
 `risk` describes the endpoint. `mitigation` describes what the SDKs do about it.

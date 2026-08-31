@@ -246,9 +246,23 @@ def _normalize_requirement(cell: str) -> tuple[Optional[str], Optional[str], Opt
     raw = _clean(cell)
     text = raw.lower()
     if text in _EMPTY_CELLS:
-        return None, None, "the manual leaves the Required column blank"
+        # Preserve the absence of a documentation claim. A later JSON Schema
+        # in this same manual section may still state requiredness; only the
+        # renderer turns an unresolved None into the explicit contract value
+        # ``unstated``.
+        return None, None, None
     if "read only" in text or "readonly" in text:
         return "read_only", None, None
+    if text in {"get only", "get-only"}:
+        # The manual's Required column uses this to say the member appears
+        # only in a GET response. That is the contract's read_only category,
+        # not an optional write claim.
+        return "read_only", None, None
+    if raw == "SRC: \ud544\uc218 / CONCRETE\u00b7STEEL: \uc120\ud0dd":
+        # This is a manual condition, not a missing requiredness value. Keep
+        # it verbatim because the table does not put the controlling
+        # CODE_SELECTION equality in this cell itself.
+        return "conditional", raw, None
 
     qualified = re.match(r"^(.*?)\s*[（(]\s*(.+?)\s*[)）]\s*$", raw)
     if qualified:
@@ -266,7 +280,7 @@ def _normalize_requirement(cell: str) -> tuple[Optional[str], Optional[str], Opt
     if text in _OPTIONAL_WORDS | {"x", "no", "n"}:
         return "optional", None, None
     if text in {"불명", "unknown", "미상"}:
-        return None, None, "the manual states outright that the requiredness is unknown"
+        return None, None, None
     return None, None, f"unrecognised Required value {raw!r}"
 
 
@@ -334,7 +348,10 @@ def _normalize_type(cell: str) -> tuple[Optional[str], Optional[dict], Optional[
     """Return (type, items, note)."""
     text = _clean(cell)
     if text in _EMPTY_CELLS:
-        return None, None, "the manual leaves the Value Type column blank"
+        # As with Required, leave this open for a same-section JSON Schema
+        # hint. If none exists, the contract renderer records ``unstated``
+        # rather than fabricating a string type.
+        return None, None, None
     compact_array = re.match(r"^(String|Integer|Number|Boolean|Object|Real)\s*,\s*(\d+)$", text, re.IGNORECASE)
     if compact_array:
         inner, _, note = _normalize_type(compact_array.group(1))
@@ -2241,7 +2258,7 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                 if entry_required is not None:
                     requirement, condition, note = _normalize_requirement(entry_required)
                 else:
-                    requirement, condition, note = None, None, "the table has no Required column"
+                    requirement, condition, note = None, None, None
                 # Some chapters put only "conditional required" in the
                 # Required column but spell the one literal selector in the
                 # Description cell.  Preserve that exact condition when there
@@ -2268,7 +2285,7 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                     applies_when = []
                 if note:
                     notes.append(note)
-                field_type, items, note = _normalize_type(entry_type) if entry_type is not None else (None, None, "the table has no Value Type column")
+                field_type, items, note = _normalize_type(entry_type) if entry_type is not None else (None, None, None)
                 if note:
                     notes.append(note)
                 enum = _enum_values_from_inline_type(entry_type) if entry_type is not None else []
@@ -2672,13 +2689,13 @@ def _render_fields(
                 if parsed.type == "array" and parsed.enum:
                     lines.append(f"{body}  enum: [{', '.join(_scalar(value) for value in parsed.enum)}]")
         else:
-            lines.append(f"{body}type: string   # TODO(review): the manual did not state a type")
+            lines.append(f"{body}type: unstated")
         for key, value in parsed.constraints.items():
             lines.append(f"{body}{key}: {_scalar(value)}")
         lines.append(
             f"{body}requirement: {parsed.requirement}"
             if parsed.requirement
-            else f"{body}requirement: optional   # TODO(review): the manual did not state requiredness"
+            else f"{body}requirement: unstated"
         )
         if parsed.condition:
             lines.append(f"{body}condition: {_scalar(parsed.condition)}")
@@ -2694,7 +2711,10 @@ def _render_fields(
         lines.append(f"{body}documentedDefault: {_scalar(parsed.documented_default)}")
         if parsed.documented_default_note is not None:
             lines.append(f"{body}documentedDefaultNote: {_scalar(parsed.documented_default_note)}")
-        lines.append(f"{body}documentedOptional: {'true' if parsed.requirement == 'optional' else 'false'}")
+        if parsed.requirement is None:
+            lines.append(f"{body}documentedOptional: null")
+        else:
+            lines.append(f"{body}documentedOptional: {'true' if parsed.requirement == 'optional' else 'false'}")
         if parsed.enum and parsed.type != "array":
             lines.append(f"{body}enum: [{', '.join(_scalar(value) for value in parsed.enum)}]")
 
@@ -3011,6 +3031,8 @@ def run_report(sections: list[Section], table_family: dict[str, int]) -> int:
     unrecognised_types = sum(
         any(note.startswith("unrecognised Value Type") for note in field.notes) for field in all_fields
     )
+    unstated_requirements = sum(field.requirement is None for field in all_fields)
+    unstated_types = sum(field.type is None for field in all_fields)
     supplementary = _supplementary_table_measurement(sections)
     resolution_counts = Counter(entry[3] for entry in supplementary)
     unmerged = [entry for entry in supplementary if entry[3] == "unmerged"]
@@ -3020,6 +3042,10 @@ def run_report(sections: list[Section], table_family: dict[str, int]) -> int:
         f"{enum_missing} enum value list(s) unstated, "
         f"{array_element_missing} array element type(s) unstated, "
         f"{unrecognised_types} unrecognised Value Type cell(s)."
+    )
+    print(
+        "  manual columns preserved as explicit contract uncertainty: "
+        f"{unstated_requirements} requiredness value(s), {unstated_types} Value Type value(s)."
     )
     # Keep the six recurring promotion notes measurable here.  These are field
     # occurrences across every parsed manual table, deliberately not a
@@ -3284,11 +3310,13 @@ def run_check(sections: list[Section]) -> int:
                 problems.append(f"{path.name}: {key} typed {declared['type']!r}, manual says {manual.type!r}")
             if manual.requirement and declared["requirement"] != manual.requirement:
                 problems.append(f"{path.name}: {key} requirement {declared['requirement']!r}, manual says {manual.requirement!r}")
-            documented_optional = manual.requirement == "optional"
-            if declared["documentedOptional"] != documented_optional:
+            documented_optional = "unstated" if manual.requirement is None else manual.requirement == "optional"
+            expected_documented_optional = None if documented_optional == "unstated" else documented_optional
+            if declared["documentedOptional"] != expected_documented_optional:
                 problems.append(
                     f"{path.name}: {key} documentedOptional={declared['documentedOptional']}, "
-                    f"manual's Required column says {'Optional' if documented_optional else 'not Optional'}"
+                    f"manual's Required column says "
+                    f"{'nothing' if documented_optional == 'unstated' else ('Optional' if documented_optional else 'not Optional')}"
                 )
             if declared.get("documentedDefault") != manual.documented_default and "default" not in overridden:
                 problems.append(
@@ -3377,6 +3405,15 @@ def run_check(sections: list[Section]) -> int:
                         problems.append(
                             f"{path.name}: variant {label} field {key} requirement "
                             f"{declared['requirement']!r}, manual says {manual.requirement!r}"
+                        )
+                    expected_documented_optional = (
+                        None if manual.requirement is None else manual.requirement == "optional"
+                    )
+                    if declared["documentedOptional"] != expected_documented_optional:
+                        problems.append(
+                            f"{path.name}: variant {label} field {key} documentedOptional="
+                            f"{declared['documentedOptional']!r}, manual says "
+                            f"{expected_documented_optional!r}"
                         )
                     if declared.get("documentedDefault") != manual.documented_default:
                         problems.append(
