@@ -55,3 +55,24 @@ def test_live_case_fixture_carries_skew_node_seed() -> None:
         "records": {"2": {"X": 0, "Y": 0, "Z": 3.2}},
     }
     assert skew["setup"] == [{"seed": "skew_node"}]
+
+
+def test_live_case_fixture_carries_ltsr_element_setup() -> None:
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    element_cases = [
+        next(case for case in fixture["cases"] if case["endpoint"] == endpoint)
+        for endpoint in ("/db/LTSR", "/db/MBTP")
+    ]
+
+    for case in element_cases:
+        assert case["id"] == 2
+        assert case["setup"] == [
+            {"seed": "ltsr_material"},
+            {"seed": "ltsr_section"},
+            {"seed": "ltsr_nodes"},
+            {"seed": "ltsr_beam"},
+        ]
+    assert fixture["seeds"]["ltsr_beam"] == {
+        "endpoint": "/db/ELEM",
+        "records": {"2": {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [2, 3]}},
+    }

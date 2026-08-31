@@ -7464,3 +7464,64 @@ than treating that key as no data. The runner deleted self weight, load case,
 constraint, element, both nodes, section, and material individually in reverse
 creation order. Final npm public-API GETs returned `{}` for each of those seven
 tables on both products.
+
+### npm blank-model design-control re-check (2026-08-31)
+
+With author-confirmed empty scratch documents, re-ran the shared npm fixture
+for `/db/DCON` and `/db/DSTL` exclusively through the built package's public
+`resources.db.*` surface. The runner saved native-format checkpoints before
+each mutation: `C:/temp/midas-nx-live-gen-1788171188500.mgbx` and
+`C:/temp/midas-nx-live-civil-1788171201694.mcbz`.
+
+- `/db/DCON` completed `POST -> GET -> PUT -> GET -> DELETE {id} -> GET` on
+  both Gen NX 2026 v2.1 and Civil NX 2026 v2.2 (both build 08/26/2026), using
+  the manual-listed `KCI-USD12` and `KCI-USD07` codes.
+- `/db/DSTL` completed the same sequence on Civil with `Eurocode3-2:05` and
+  `AISC-ASD89`. On Gen's otherwise empty document, its initial POST returned
+  HTTP 201 with the result error `[Error] Errors detected in Steel Design
+  Control Data.(Item:)`. The same response remained after creating the
+  manual's `EN05(S)` / `S450` steel material, an `H300x150` section, two beam
+  elements, and a design-member record. It is therefore not an empty-model
+  prerequisite. The response still does not distinguish a Gen product/license
+  gate from another server-side design-control condition, so no request shape
+  is inferred from it.
+
+Final npm public-API `items()` calls returned zero records for `NODE`, `ELEM`,
+`DCON`, and `DSTL` on both products. This is npm-specific transport evidence;
+it does not change the Python write-coverage ledger.
+
+The next small blank-model batch saved
+`C:/temp/midas-nx-live-gen-1788171319232.mgbx` and
+`C:/temp/midas-nx-live-civil-1788171326304.mcbz` before testing `/db/DCTL`
+and `/db/LTSR`.
+
+- `/db/DCTL` completed its full CRUD sequence on both products.
+- `/db/LTSR`'s original fixture target id `1` was rejected on both products at
+  POST with HTTP 201 and `Not Found Key`. The manual describes it as an
+  element-keyed record, and id 1 is not a BEAM in the scratch fixture. A
+  disposable manual-derived steel-beam model established that the actual BEAM
+  id `2` completes POST, GET, PUT, GET, DELETE-by-id, GET on both products.
+  The shared fixture now uses id `2` and declares its material, section, node,
+  and beam prerequisites so npm can make the same empty-document test without
+  copying a payload into JavaScript.
+
+The corrected npm run saved
+`C:/temp/midas-nx-live-gen-1788172728458.mgbx` and
+`C:/temp/midas-nx-live-civil-1788172738478.mcbz`; `/db/LTSR` passed through
+the built public package on both products. A separate Gen probe found the
+manual's `KS21(S)` / `SS400` material example returns `Unknown Error`, whereas
+the manual's `EN05(S)` / `S450` example round-trips. This is recorded as a
+product observation, not a manual correction: the server did not explain
+whether the difference is a license or supported-standard gate.
+
+Both products again returned zero records for `NODE`, `ELEM`, `DCTL`, and
+`LTSR` after the run; the modeled prerequisite runs likewise returned zero
+records for `MATL`, `SECT`, `NODE`, `ELEM`, `MEMB`, and `LTSR`.
+
+`/db/MBTP` is likewise element-keyed. Using the same official-manual-derived
+material, section, nodes, and BEAM id `2`, it completed the full public npm
+CRUD sequence on both products. Its shared fixture now declares those same
+four seeds rather than trying to write to an empty document. The final npm
+checks saved `C:/temp/midas-nx-live-gen-1788173302760.mgbx` and
+`C:/temp/midas-nx-live-civil-1788173320331.mcbz`; all target and prerequisite
+tables were empty after individual cleanup.

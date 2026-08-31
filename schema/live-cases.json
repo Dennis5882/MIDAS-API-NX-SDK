@@ -25,6 +25,85 @@
           "DESC": "crud fixture"
         }
       }
+    },
+    "ltsr_material": {
+      "endpoint": "/db/MATL",
+      "records": {
+        "1": {
+          "TYPE": "STEEL",
+          "NAME": "DB_Steel",
+          "HE_SPEC": 0,
+          "HE_COND": 0,
+          "PLMT": 0,
+          "P_NAME": "",
+          "bMASS_DENS": false,
+          "DAMP_RAT": 0.02,
+          "PARAM": [
+            {
+              "P_TYPE": 1,
+              "STANDARD": "EN05(S)",
+              "CODE": "",
+              "DB": "S450",
+              "bELAST": false
+            }
+          ]
+        }
+      }
+    },
+    "ltsr_section": {
+      "endpoint": "/db/SECT",
+      "records": {
+        "1": {
+          "SECTTYPE": "DBUSER",
+          "SECT_NAME": "H300x150",
+          "SECT_BEFORE": {
+            "OFFSET_PT": "CC",
+            "OFFSET_CENTER": 0,
+            "USER_OFFSET_REF": 0,
+            "HORZ_OFFSET_OPT": 0,
+            "USERDEF_OFFSET_YI": 0,
+            "VERT_OFFSET_OPT": 0,
+            "USERDEF_OFFSET_ZI": 0,
+            "USE_SHEAR_DEFORM": true,
+            "USE_WARPING_EFFECT": true,
+            "SHAPE": "H",
+            "DATATYPE": 1,
+            "SECT_I": {
+              "DB_NAME": "KS21",
+              "SECT_NAME": "H300x150x6.5/9"
+            }
+          }
+        }
+      }
+    },
+    "ltsr_nodes": {
+      "endpoint": "/db/NODE",
+      "records": {
+        "2": {
+          "X": 0,
+          "Y": 0,
+          "Z": 3.2
+        },
+        "3": {
+          "X": 4.0,
+          "Y": 0,
+          "Z": 3.2
+        }
+      }
+    },
+    "ltsr_beam": {
+      "endpoint": "/db/ELEM",
+      "records": {
+        "2": {
+          "TYPE": "BEAM",
+          "MATL": 1,
+          "SECT": 1,
+          "NODE": [
+            2,
+            3
+          ]
+        }
+      }
     }
   },
   "cases": [
@@ -7725,7 +7804,7 @@
       "tier": "extras13",
       "endpoint": "/db/LTSR",
       "name": "Limiting Slenderness Ratio",
-      "id": 1,
+      "id": 2,
       "products": [
         "gen",
         "civil"
@@ -7752,14 +7831,27 @@
         "updated": 200
       },
       "needs": [],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "ltsr_material"
+        },
+        {
+          "seed": "ltsr_section"
+        },
+        {
+          "seed": "ltsr_nodes"
+        },
+        {
+          "seed": "ltsr_beam"
+        }
+      ],
       "crashes": null
     },
     {
       "tier": "extras13",
       "endpoint": "/db/MBTP",
       "name": "Modify Member Type",
-      "id": 1,
+      "id": 2,
       "products": [
         "gen",
         "civil"
@@ -7782,7 +7874,20 @@
         "updated": "BEAM"
       },
       "needs": [],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "ltsr_material"
+        },
+        {
+          "seed": "ltsr_section"
+        },
+        {
+          "seed": "ltsr_nodes"
+        },
+        {
+          "seed": "ltsr_beam"
+        }
+      ],
       "crashes": null
     },
     {

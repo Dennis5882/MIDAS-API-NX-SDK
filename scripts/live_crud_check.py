@@ -334,6 +334,50 @@ BASE_MODEL_SEEDS: Dict[str, Dict[str, Any]] = {
             "2": {"NAME": "LC_SCRATCH", "TYPE": "L", "DESC": "crud fixture"},
         },
     },
+    # The LTSR record key is a real element id.  Python's base model already
+    # has beam 2; npm's empty-document harness needs the same minimal chain
+    # expressed as ordered, individually-cleanable setup records.
+    "ltsr_material": {
+        "endpoint": Material.ENDPOINT,
+        "records": {
+            "1": {
+                "TYPE": "STEEL", "NAME": "DB_Steel", "HE_SPEC": 0,
+                "HE_COND": 0, "PLMT": 0, "P_NAME": "",
+                "bMASS_DENS": False, "DAMP_RAT": 0.02,
+                "PARAM": [{"P_TYPE": 1, "STANDARD": "EN05(S)", "CODE": "",
+                           "DB": "S450", "bELAST": False}],
+            },
+        },
+    },
+    "ltsr_section": {
+        "endpoint": Section.ENDPOINT,
+        "records": {
+            "1": {
+                "SECTTYPE": "DBUSER", "SECT_NAME": "H300x150",
+                "SECT_BEFORE": {
+                    "OFFSET_PT": "CC", "OFFSET_CENTER": 0,
+                    "USER_OFFSET_REF": 0, "HORZ_OFFSET_OPT": 0,
+                    "USERDEF_OFFSET_YI": 0, "VERT_OFFSET_OPT": 0,
+                    "USERDEF_OFFSET_ZI": 0, "USE_SHEAR_DEFORM": True,
+                    "USE_WARPING_EFFECT": True, "SHAPE": "H", "DATATYPE": 1,
+                    "SECT_I": {"DB_NAME": "KS21", "SECT_NAME": "H300x150x6.5/9"},
+                },
+            },
+        },
+    },
+    "ltsr_nodes": {
+        "endpoint": Node.ENDPOINT,
+        "records": {
+            "2": {"X": 0, "Y": 0, "Z": HEIGHT},
+            "3": {"X": BAY, "Y": 0, "Z": HEIGHT},
+        },
+    },
+    "ltsr_beam": {
+        "endpoint": Element.ENDPOINT,
+        "records": {
+            "2": {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [2, 3]},
+        },
+    },
 }
 
 
@@ -3076,21 +3120,36 @@ def _extras13_cases() -> List[Case]:
             lambda p: p.get("DT"), "XY", "3D",
             item_id=1,
         ),
-        # Keyed by a real base-model frame element id (1).
+        # Keyed by a real base-model BEAM element id (2), not the design-member
+        # record id (1).  Both products returned "Not Found Key" for id 1 and
+        # completed the full CRUD cycle for id 2 on 2026-08-31.
         Case(
             LimitingSlendernessRatio,
             {"bNOTCHECK": False, "COMP": 150, "TENS": 400},
             {"bNOTCHECK": False, "COMP": 200, "TENS": 300},
             lambda p: p.get("COMP"), 150, 200,
-            item_id=1,
+            item_id=2,
+            setup=(
+                {"seed": "ltsr_material"},
+                {"seed": "ltsr_section"},
+                {"seed": "ltsr_nodes"},
+                {"seed": "ltsr_beam"},
+            ),
         ),
-        # Keyed by a real base-model frame element id (1).
+        # Keyed by a real base-model BEAM element id (2).  The shared npm
+        # fixture provisions that element before the element-keyed CRUD case.
         Case(
             ModifyMemberType,
             {"TYPE": "COLUMN"},
             {"TYPE": "BEAM"},
             lambda p: p.get("TYPE"), "COLUMN", "BEAM",
-            item_id=1,
+            item_id=2,
+            setup=(
+                {"seed": "ltsr_material"},
+                {"seed": "ltsr_section"},
+                {"seed": "ltsr_nodes"},
+                {"seed": "ltsr_beam"},
+            ),
         ),
         # WID_LIST references the base model's own PLATE element (id 4) --
         # untested whether the server requires it to actually be flagged
