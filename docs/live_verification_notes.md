@@ -7204,6 +7204,7 @@ products:
 | `resources.db.nodeElement.node` | create, read, update, read, per-id delete, final read | pass | pass |
 | `resources.db.staticLoads.nodalMass` | same CRUD cycle, with its fixture omitting `rmX`/`rmY`/`rmZ` | pass | pass |
 | `resources.db.project.loadGroup` | create, read, update, read, per-id delete, final read | pass | pass |
+| `resources.db.analysisControl.settlementAnalysisControlData` | same CRUD cycle for independent Boolean control data | pass | pass |
 | `post.getTable("MASS_SUMMARY_X")` + `post.unwrapTable()` | seed a fixture Node and Nodal Mass, then read a populated table | pass | pass |
 
 For Nodal Mass, the record read back after both `POST` and `PUT` contained
