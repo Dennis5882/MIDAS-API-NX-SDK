@@ -350,7 +350,7 @@ Pick any unchecked row, implement it in the listed `module`, add a test mirrorin
 | [x] | R | `/db/STCT` | Construction Stage Analysis Control Data | gen/civil | `midas_nx.db.analysis_control` |
 | [x] | W | `/db/STCT-M1` | Construction Stage Analysis Control Data (Hyper-S) | civil | `midas_nx.db.analysis_control` |
 | [x] | W | `/db/BCCT` | Boundary Change Assignment | gen/civil | `midas_nx.db.analysis_control` |
-| [x] | W | `/db/BCGD-M1` | Assign Boundary Combination (Hyper-S) | civil | `midas_nx.db.analysis_control` |
+| [x] | W | `/db/BCGD-M1` | Define Boundary Combination (Hyper-S) | civil | `midas_nx.db.analysis_control` |
 | [x] | W | `/db/BCGA-M1` | Assign Boundary Combination (Hyper-S) | civil | `midas_nx.db.analysis_control` |
 
 ## 13_DB_Load_Combinations.md (8/8)
@@ -446,7 +446,7 @@ Pick any unchecked row, implement it in the listed `module`, add a test mirrorin
 |---|---|---|---|---|---|
 | [x] | R | `/post/PM` | P-M Interaction Diagram | gen/civil | `midas_nx.post.design` |
 | [x] | R | `/post/STEELCODECHECK` | Steel Code Check | gen/civil | `midas_nx.post.design` |
-| [x] | R | `/post/BEAMDESIGNFORCES` | Concrete – Beam Design Force | gen/civil | `midas_nx.post.design` |
+| [x] | R | `/post/BEAMDESIGNFORCES` | Concrete – Beam Design Forces | gen/civil | `midas_nx.post.design` |
 | [x] | R | `/post/COLUMNDESIGNFORCES` | Concrete – Column Design Forces | gen/civil | `midas_nx.post.design` |
 | [x] | R | `/post/BRACEDESIGNFORCES` | Concrete – Brace Design Forces | gen/civil | `midas_nx.post.design` |
 | [x] | R | `/post/WALLDESIGNFORCES` | Concrete – Wall Design Forces | gen/civil | `midas_nx.post.design` |
@@ -460,8 +460,8 @@ Pick any unchecked row, implement it in the listed `module`, add a test mirrorin
 | | Live | Endpoint | Name | Products | Module |
 |---|---|---|---|---|---|
 | [x] | W | `/db/DCON` | RC Design Code | gen/civil | `midas_nx.db.design` |
-| [x] | W | `/db/DSTL` | Steel Design Code | gen/civil | `midas_nx.db.design` |
-| [x] | R | `/db/RCHK` | Rebar Input for Checking (Beam/Column) | civil | `midas_nx.db.design` |
+| [x] | W | `/db/DSTL` | Design Steel Code | gen/civil | `midas_nx.db.design` |
+| [x] | R | `/db/RCHK` | Rebar Input for Checking - Beam/Column | civil | `midas_nx.db.design` |
 | [x] | W | `/db/LENG` | Unbraced Length | gen/civil | `midas_nx.db.design` |
 | [x] | W | `/db/MEMB` | Member Assignment | gen/civil | `midas_nx.db.design` |
 | [x] | W | `/db/DCTL` | Definition of Frame | gen/civil | `midas_nx.db.design` |
