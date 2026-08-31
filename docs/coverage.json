@@ -1942,13 +1942,13 @@
           "gen",
           "civil"
         ],
-        "method": "2026-08-16: write-round-trip attempted (batch 6) -- POST fails \"Wrong Field\" on both Gen NX and Civil NX (v2.1/v2.2, build 08/14/2026) even with the manual's own literal worked example and several hand-tried value variants; not resolved as a fixture problem. Same unresolved class as /db/NLLP, /db/WVLD, /db/GRDP, /db/TDMF, /db/RPSC, /db/STRPSSM, /db/THMS. Left at level: read.",
+        "method": "Fresh scratch-model verification on 2026-09-01 via scripts/live_crud_check.py --tier extras6: the current official Request Example completed POST -> GET -> PUT -> GET -> individual-id DELETE -> GET on both supplied products. The prior 2026-08-16 Wrong Field result used a pre-correction fixture missing INPUT_TYPE_EXFN and the six EXFN_* / OPT_EXFN_CE fields on each SDVI ITEM. The repaired fixture sends all twelve documented ITEM fields for all six DOFs.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -1967,13 +1967,13 @@
           "gen",
           "civil"
         ],
-        "method": "2026-08-16: write-round-trip attempted (batch 6) -- POST fails \"Wrong Field\" on both Gen NX and Civil NX (v2.1/v2.2, build 08/14/2026) even with the manual's own literal worked example and several hand-tried value variants; not resolved as a fixture problem. Same unresolved class as /db/NLLP, /db/WVLD, /db/GRDP, /db/TDMF, /db/RPSC, /db/STRPSSM, /db/THMS. Left at level: read.",
+        "method": "Fresh scratch-model verification on 2026-09-01 via scripts/live_crud_check.py --tier extras6: the current official Request Example completed POST -> GET -> PUT -> GET -> individual-id DELETE -> GET on both supplied products. The prior 2026-08-16 Wrong Field result used a pre-correction fixture containing only COMMON, MATERIAL_TYPE, and SHEAR_AREA. The repaired fixture includes the fourteen additional Request-Example fields (THICKNESS through KINETIC_FRIC).",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -5137,17 +5137,16 @@
       "status": "implemented",
       "module": "midas_nx.db.load_combinations",
       "live_verified": {
-        "date": "2026-08-16",
+        "date": "2026-09-01",
         "products": [
-          "gen",
-          "civil"
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write attempt 2026-08-16 (build 08/14/2026): the same ANAL=\"ST\" payload that all 5 sibling LCOM-* endpoints accept passed a full create->GET->update->GET->delete round trip on Gen NX but Civil NX answered \"The Load Combination Type is not supported\" for the identical case -- a genuine product-asymmetric validation difference, not a fixture bug. The manual's own example uses ANAL=\"RS\"/\"CS\" instead of \"ST\"; testing that path needs a real /db/SPLC Response Spectrum Load Case fixture, deferred to a future db.dynamic_loads batch. Left at level=read pending a uniform pass.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write attempts: 2026-08-16 showed Gen accepts the static ANAL=\"ST\"/\"DL\" member while Civil rejects it. Re-tested 2026-09-01 on current builds via scripts/live_crud_check.py --tier extras4: Gen completed create->GET->update->GET->delete with that ST/DL shape. Civil used the manual-shaped ANAL=\"RS\" member and a real seeded /db/SPLC Response Spectrum Load Case named SPLC_LCOM_SEED, but the server still returned exactly \"The Load Combination Type is not supported\". This records Gen write coverage only; the Civil route remains read-only/unconfirmed.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
-        "level": "read",
+        "level": "write",
         "outcome": "success_empty"
       }
     },

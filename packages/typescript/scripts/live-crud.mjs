@@ -41,7 +41,14 @@ function usage(message) {
 }
 
 function parseArgs(argv) {
-  const args = { timeout: 30_000, saveBefore: true, saveDir: process.env.MIDAS_NX_SAVE_DIR };
+  const args = {
+    timeout: 30_000,
+    saveBefore: true,
+    saveDir: process.env.MIDAS_NX_SAVE_DIR,
+    // Keep the documented non-shell-history path working; an explicit
+    // --mapi-key remains available for an intentionally one-off session.
+    mapiKey: process.env.MIDAS_MAPI_KEY,
+  };
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index];
     const value = argv[index + 1];

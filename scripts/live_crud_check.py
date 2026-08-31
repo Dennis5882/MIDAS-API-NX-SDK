@@ -334,6 +334,32 @@ BASE_MODEL_SEEDS: Dict[str, Dict[str, Any]] = {
             "2": {"NAME": "LC_SCRATCH", "TYPE": "L", "DESC": "crud fixture"},
         },
     },
+    # The manual's LCOM-SEISMIC examples use ANAL="RS", which must reference
+    # an actual Response Spectrum Load Case rather than the base model's
+    # static DL. Keep the prerequisite records here for the npm harness too.
+    "lcom_seismic_spfc": {
+        "endpoint": ResponseSpectrumFunction.ENDPOINT,
+        "records": {
+            "1": {
+                "NAME": "SPFC_LCOM_SEED", "iTYPE": 2, "iMETHOD": 0,
+                "SCALE": 1.0, "GRAV": 9.806, "DRATIO": 0.05, "DESC": "",
+                "aFUNC": [
+                    {"PERIOD": 0.1, "VALUE": 0.5},
+                    {"PERIOD": 0.5, "VALUE": 1.0},
+                    {"PERIOD": 1.0, "VALUE": 0.3},
+                ],
+            },
+        },
+    },
+    "lcom_seismic_splc": {
+        "endpoint": ResponseSpectrumLoadCase.ENDPOINT,
+        "records": {
+            "1": {
+                "NAME": "SPLC_LCOM_SEED", "DIR": "XY", "SCALE": 1.0,
+                "PMFT": 1.0, "aFUNCNAME": ["SPFC_LCOM_SEED"],
+            },
+        },
+    },
     # The LTSR record key is a real element id.  Python's base model already
     # has beam 2; npm's empty-document harness needs the same minimal chain
     # expressed as ordered, individually-cleanable setup records.
@@ -489,9 +515,15 @@ class Case:
 class SeedStep:
     """One named, independently-failing piece of a tier's fixture."""
 
-    def __init__(self, name: str, run: Callable[[MidasClient], None]) -> None:
+    def __init__(
+        self,
+        name: str,
+        run: Callable[[MidasClient], None],
+        products: Optional[Sequence[str]] = None,
+    ) -> None:
         self.name = name
         self.run = run
+        self.products = frozenset(products or ("gen", "civil"))
 
 
 class Tier:
@@ -1816,6 +1848,27 @@ def _extras3_cases() -> List[Case]:
 # --------------------------------------------------------------------------
 
 
+def _extras4_seeds() -> List[SeedStep]:
+    """Civil-only prerequisite for the manual-shaped seismic combination.
+
+    The manual's ``ANAL=\"RS\"`` row names a Response Spectrum Load Case, not
+    a static load case. Keep the two records in the language-neutral seed map
+    too, so the npm harness can exercise the identical public API path.
+    """
+    def _response_spectrum_load_case(c: MidasClient) -> None:
+        ResponseSpectrumFunction.create(
+            BASE_MODEL_SEEDS["lcom_seismic_spfc"]["records"], client=c)
+        ResponseSpectrumLoadCase.create(
+            BASE_MODEL_SEEDS["lcom_seismic_splc"]["records"], client=c)
+
+    return [
+        SeedStep(
+            "lcom_seismic_splc", _response_spectrum_load_case,
+            products=("civil",),
+        ),
+    ]
+
+
 def _extras4_cases() -> List[Case]:
     lcom_case = lambda resource, active, **kw: Case(  # noqa: E731
         resource,
@@ -1832,21 +1885,36 @@ def _extras4_cases() -> List[Case]:
         lcom_case(LoadCombinationSteel, "STRENGTH", confirmed=True),
         lcom_case(LoadCombinationSRC, "STRENGTH", confirmed=True),
         lcom_case(LoadCombinationCompositeSteelGirder, "STRENGTH", confirmed=True),
-        # ⚠️ Product-asymmetric live 2026-08-16 (build 08/14/2026): the
-        # identical ANAL="ST" payload passed clean on Gen NX (create->GET->
-        # update->GET->delete, full round trip) but Civil NX answers "The
-        # Load Combination Type is not supported" for the same case, unlike
-        # the other five LCOM-* endpoints (all accept plain static "ST" on
-        # both products). The manual's own example uses ANAL="RS" (Response
-        # Spectrum) and ANAL="CS" (Construction Stage) instead; tried both
-        # against the base seed's "DL" case on Civil and got "Unknown
-        # Error" (DL is genuinely a plain static case, not RS/CS-typed, so
-        # those ANAL values don't resolve against it either). Needs a real
-        # /db/SPLC Response Spectrum Load Case fixture to test properly on
-        # Civil -- deferred to whichever future batch covers
-        # db.dynamic_loads. Left unconfirmed overall since it doesn't pass
-        # uniformly, even though the Gen NX round trip itself is clean.
-        lcom_case(LoadCombinationSeismic, "ACTIVE"),
+        # The Gen result is deliberately separate from Civil's manual-shaped
+        # RS case below. Gen re-confirmed this documented static-member shape
+        # on 2026-09-01; Civil has a different server-side type restriction.
+        lcom_case(
+            LoadCombinationSeismic, "ACTIVE", products=("gen",), confirmed=True,
+            # Python's base scratch model always creates DL. The npm harness
+            # intentionally starts from an empty document, so declare that
+            # manual-backed prerequisite explicitly for package consumers.
+            setup=({"seed": "static_load_cases"},),
+        ),
+        # The manual's LCOM-SEISMIC examples name response-spectrum entries
+        # with ANAL="RS". SPLC_LCOM_SEED is a real /db/SPLC record created
+        # from that same manual-backed fixture before this case runs.
+        Case(
+            LoadCombinationSeismic,
+            {"NAME": "LCOM_SEISMIC_RS", "ACTIVE": "ACTIVE", "iTYPE": 0,
+             "DESC": "1.0RS", "vCOMB": [
+                 {"ANAL": "RS", "LCNAME": "SPLC_LCOM_SEED", "FACTOR": 1.0},
+             ]},
+            {"NAME": "LCOM_SEISMIC_RS", "ACTIVE": "ACTIVE", "iTYPE": 0,
+             "DESC": "1.2RS", "vCOMB": [
+                 {"ANAL": "RS", "LCNAME": "SPLC_LCOM_SEED", "FACTOR": 1.2},
+             ]},
+            lambda p: p["vCOMB"][0].get("FACTOR"), 1.0, 1.2,
+            products=("civil",), needs=("lcom_seismic_splc",),
+            setup=(
+                {"seed": "lcom_seismic_spfc"},
+                {"seed": "lcom_seismic_splc"},
+            ),
+        ),
         Case(
             CuttingLine,
             {"NAME": "CUT_CRUD", "DIR": "NORMAL", "PT1X": 0, "PT1Y": 0, "PT1Z": 0,
@@ -2085,11 +2153,11 @@ def _extras6_cases() -> List[Case]:
     definition table (not node-keyed), so item_id=1 is free in a document
     that hasn't touched these tables yet -- no seed step needed.
 
-    Payloads transcribed from the manual's own POST examples (05_DB_Boundary
+    Payloads are transcribed from the manual's own POST examples (05_DB_Boundary
     #16-20), not the leaner Specifications tables, per this project's
-    standing preference for worked examples over tables when they disagree
-    -- SDVE's own example omits COMMON.COMPANY despite the table marking it
-    required, so it's kept in here anyway since sending it is harmless.
+    standing preference for worked examples over tables when they disagree.
+    In particular, SDVI's example sends all twelve ITEM fields and SDVE's
+    sends fourteen fields the earlier table-only fixture omitted.
 
     SDHY and SDIS are Gen-only per db/boundary.py's own PRODUCTS (404 on
     Civil, confirmed 2026-07-29). /db/DRLS (#24, also Gen-only) stays
@@ -2097,21 +2165,10 @@ def _extras6_cases() -> List[Case]:
     field to distinguish a create from an update, so it doesn't fit this
     checker's create/update/probe shape.
 
-    ⚠️ All 5 confirmed failing live 2026-08-16 (Civil NX v2.2 + Gen NX v2.1,
-    both build 08/14/2026): every POST answers "Wrong Field" -- including
-    the manual's own bare worked example transcribed verbatim, a
-    COMMON-only payload, and several enum/value variants tried by hand
-    (INPUT_METHOD=1, non-empty COMPANY/PRODUCT_NAME/TYPE_NUMBER, a
-    single-entry ITEM array). GET /db/SDVI's own /info schema matches the
-    manual's field names exactly, ruling out a field-name typo. None of
-    these cases have ever passed live; none are `confirmed=True`. Same
-    class of unresolved finding as /db/NLLP, /db/WVLD, /db/GRDP, /db/TDMF,
-    /db/RPSC, /db/STRPSSM, /db/THMS -- and notably NLLP (General Link
-    Properties, which these seismic devices are meant to be referenced
-    *from*) is the other confirmed-broken endpoint in this same
-    05_DB_Boundary chapter, strengthening rather than resolving the
-    suspicion that something chapter-wide (a licensed
-    isolator/damper-design module gate?) is missing on this session.
+    The pre-2026-08-25 fixtures omitted fields now present in the manual's
+    Request Examples. Their historical "Wrong Field" observations are not
+    evidence against these complete shapes; re-test the complete examples
+    before drawing a server-behaviour conclusion.
     """
 
     def _sdvi_common(name: str) -> dict:
@@ -2119,42 +2176,55 @@ def _extras6_cases() -> List[Case]:
                 "INPUT_METHOD": 0, "COMPANY": "SUMITOMO",
                 "PRODUCT_NAME": "OD-500", "TYPE_NUMBER": "OD500-A"}
 
+    def _sdvi_item(active: bool, *, ce: float = 0) -> dict:
+        """All twelve manual Request-Example fields, for each of six DOFs."""
+        return {
+            "OPT_DOF": active, "CE": ce, "P1": 1000 if active else 0,
+            "C1": 200 if active else 0, "ALPHA1": 0.5 if active else 1,
+            "K0": 0, "EXFN_PY": 1, "EXFN_VY": 1, "EXFN_DE": 0.3,
+            "EXFN_DC": 1, "OPT_EXFN_CE": False, "EXFN_CE": 1,
+        }
+
     return [
         Case(
             SeismicDeviceViscousDamper,
             {"COMMON": _sdvi_common("SDVI_CRUD"), "DEVICE_TYPE": "",
              "DAMPER_TYPE": 2, "DASHPOT_TYPE": 2, "INPUT_TYPE": 0,
+             "INPUT_TYPE_EXFN": 0,
              "ITEM": [
-                 {"OPT_DOF": True, "CE": 500, "P1": 1000, "C1": 200, "ALPHA1": 0.5, "K0": 0},
-                 {"OPT_DOF": False, "CE": 0, "P1": 0, "C1": 0, "ALPHA1": 1, "K0": 0},
-                 {"OPT_DOF": False, "CE": 0, "P1": 0, "C1": 0, "ALPHA1": 1, "K0": 0},
-                 {"OPT_DOF": False, "CE": 0, "P1": 0, "C1": 0, "ALPHA1": 1, "K0": 0},
-                 {"OPT_DOF": False, "CE": 0, "P1": 0, "C1": 0, "ALPHA1": 1, "K0": 0},
-                 {"OPT_DOF": False, "CE": 0, "P1": 0, "C1": 0, "ALPHA1": 1, "K0": 0},
+                 _sdvi_item(True, ce=500),
+                 _sdvi_item(False), _sdvi_item(False), _sdvi_item(False),
+                 _sdvi_item(False), _sdvi_item(False),
              ]},
             {"COMMON": _sdvi_common("SDVI_CRUD"), "DEVICE_TYPE": "",
              "DAMPER_TYPE": 2, "DASHPOT_TYPE": 2, "INPUT_TYPE": 0,
+             "INPUT_TYPE_EXFN": 0,
              "ITEM": [
-                 {"OPT_DOF": True, "CE": 800, "P1": 1000, "C1": 200, "ALPHA1": 0.5, "K0": 0},
-                 {"OPT_DOF": False, "CE": 0, "P1": 0, "C1": 0, "ALPHA1": 1, "K0": 0},
-                 {"OPT_DOF": False, "CE": 0, "P1": 0, "C1": 0, "ALPHA1": 1, "K0": 0},
-                 {"OPT_DOF": False, "CE": 0, "P1": 0, "C1": 0, "ALPHA1": 1, "K0": 0},
-                 {"OPT_DOF": False, "CE": 0, "P1": 0, "C1": 0, "ALPHA1": 1, "K0": 0},
-                 {"OPT_DOF": False, "CE": 0, "P1": 0, "C1": 0, "ALPHA1": 1, "K0": 0},
-             ]},
+                 _sdvi_item(True, ce=800),
+                 _sdvi_item(False), _sdvi_item(False), _sdvi_item(False),
+                 _sdvi_item(False), _sdvi_item(False),
+            ]},
             lambda p: p["ITEM"][0].get("CE"), 500, 800,
+            confirmed=True,
         ),
         Case(
             SeismicDeviceViscoelasticDamper,
             {"COMMON": {"NAME": "SDVE_CRUD", "DESC": "", "INPUT_METHOD": 0,
-                        "COMPANY": "SUMITOMO", "PRODUCT_NAME": "VE-200",
-                        "TYPE_NUMBER": "VE200-A"},
-             "MATERIAL_TYPE": "GR100", "SHEAR_AREA": 0.05},
+                        "PRODUCT_NAME": "GR100-Series", "TYPE_NUMBER": "GR100-200"},
+             "MATERIAL_TYPE": "GR100", "SHEAR_AREA": 0.05, "THICKNESS": 0.02,
+             "MULTIPL": 1, "DIR": "Dx", "FREQ": 0, "STIFF_FACTOR": 1,
+             "DAMP_FACTOR": 1, "REF_T": 20, "LIMIT_DEF": 0.3, "EFF_STIFF": 0,
+             "EQUI_DAMP": 0, "OPT_MOUNT_STIFF": True, "MOUNT_STIFF": 1200,
+             "OPT_KINETIC_FRIC": False, "KINETIC_FRIC": 0},
             {"COMMON": {"NAME": "SDVE_CRUD", "DESC": "", "INPUT_METHOD": 0,
-                        "COMPANY": "SUMITOMO", "PRODUCT_NAME": "VE-200",
-                        "TYPE_NUMBER": "VE200-A"},
-             "MATERIAL_TYPE": "GR100", "SHEAR_AREA": 0.08},
+                        "PRODUCT_NAME": "GR100-Series", "TYPE_NUMBER": "GR100-200"},
+             "MATERIAL_TYPE": "GR100", "SHEAR_AREA": 0.08, "THICKNESS": 0.02,
+             "MULTIPL": 1, "DIR": "Dx", "FREQ": 0, "STIFF_FACTOR": 1,
+             "DAMP_FACTOR": 1, "REF_T": 20, "LIMIT_DEF": 0.3, "EFF_STIFF": 0,
+            "EQUI_DAMP": 0, "OPT_MOUNT_STIFF": True, "MOUNT_STIFF": 1200,
+            "OPT_KINETIC_FRIC": False, "KINETIC_FRIC": 0},
             lambda p: p.get("SHEAR_AREA"), 0.05, 0.08,
+            confirmed=True,
         ),
         Case(
             SeismicDeviceSteelDamper,
@@ -3436,9 +3506,9 @@ TIERS: List[Tier] = [
     Tier("extras1", "batch 1 of read-only-verified db.project/db.boundary endpoints", _extras1_seeds, _extras1_cases),
     Tier("extras2", "batch 2: db.misc_loads in full + 3 of db.temperature_prestress", _extras2_seeds, _extras2_cases),
     Tier("extras3", "batch 3: tractable subset of db.properties.*", _extras3_seeds, _extras3_cases),
-    Tier("extras4", "batch 4: db.load_combinations in full", _no_seeds, _extras4_cases),
+    Tier("extras4", "batch 4: db.load_combinations in full", _extras4_seeds, _extras4_cases),
     Tier("extras5", "batch 5: db.dynamic_loads (9 of 12, Hyper-S variants deferred)", _extras5_seeds, _extras5_cases),
-    Tier("extras6", "batch 6: seismic-device family from db.boundary (SDST confirmed both products; SDVI/SDVE/SDHY/SDIS fail live; DRLS deferred)", _no_seeds, _extras6_cases),
+    Tier("extras6", "batch 6: seismic-device family from db.boundary (SDVI/SDVE/SDST confirmed both products; SDHY/SDIS legacy shapes remain unconfirmed; DRLS deferred)", _no_seeds, _extras6_cases),
     Tier("extras7", "batch 7: standalone/frame-attachable remainder of db.static_loads (PNLD/PNLA/FMLD/POSP/POSL confirmed; FBLA/EPST/EPSE fail live)", _extras7_seeds, _extras7_cases),
     Tier("extras8", "batch 8: tractable subset of db.analysis_control (PDEL/BUCK/SMCT/EIGV/BCCT confirmed both products; HHCT/NLCT confirmed Gen only and fail on Civil; ACTL/MVCT remain unresolved)", _extras8_seeds, _extras8_cases),
     Tier("extras9", "batch 9: db.node_element's Domain feature (MADO/SBDO/DOEL -- all 3 fail live, MADO silently drops writes on both products)", _extras9_seeds, _extras9_cases),
@@ -3722,7 +3792,7 @@ def main() -> int:
         # Seed steps fail independently, and a case is only blocked by the
         # step it actually declared a need for.
         failed_seeds: Dict[str, str] = {}
-        for step in tier.seeds():
+        for step in (step for step in tier.seeds() if product in step.products):
             try:
                 step.run(client)
             except MidasAPIError as exc:

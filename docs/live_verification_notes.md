@@ -7827,3 +7827,68 @@ build string was not re-read this session, so this entry does not establish it.
 No `docs/coverage.json` level changed - every endpoint swept is already recorded
 at `read` or better, and `level` denotes verification through the Python package
 in any case.
+
+### LCOM-SEISMIC real response-spectrum prerequisite re-check (2026-09-01)
+
+The earlier product asymmetry was re-tested with the manual's actual
+response-spectrum shape, rather than treating a static load case as a proxy.
+The Civil scratch fixture first created `/db/SPFC` `SPFC_LCOM_SEED`, then a
+real `/db/SPLC` Response Spectrum Load Case `SPLC_LCOM_SEED` referring to it.
+`/db/LCOM-SEISMIC` was then posted with `ANAL="RS"` and that real `LCNAME`.
+Civil NX 2026 v2.2, build 08/26/2026 still answered exactly:
+
+```text
+The Load Combination Type is not supported.
+```
+
+This removes the missing-fixture explanation, but does not justify inventing
+a different Civil payload: the documented RS path itself is refused on the
+current server. The Civil case remains explicitly unconfirmed.
+
+Gen NX 2026 v2.1, build 08/26/2026 independently completed the existing
+documented static-member `ANAL="ST"`, `LCNAME="DL"` create -> GET -> update
+-> GET -> delete sequence. `/db/LCOM-SEISMIC` therefore moves to Python write
+coverage for **Gen only**; it is not a claim that Civil supports the same
+operation. The built npm package's public `resources.db` entrypoint completed
+the same Gen round trip after its empty-document harness created the explicitly
+declared `static_load_cases` prerequisite. Both reports and checkpoints were
+saved under `C:/temp`.
+
+### Stage and extra resource re-check (2026-09-01)
+
+`STAG`, `TMLD`, `CRPC`, and `HSPT` completed their current fixtures on both
+products; Civil's `CMCS` completed as its Civil-only case. The remaining
+observations reproduce known product/server behaviour and do not change a
+contract: Gen accepted `STCT` but omitted the submitted `iITER` value on the
+readback, Civil returned `Key Already Exist` for the same resource, and `HECB`
+on both products rejected the scratch beam with the server message that the
+element type cannot receive an Element Convection Boundary. Checkpoints and
+reports were saved under `C:/temp`.
+
+### Complete SDVI and SDVE Request Examples re-check (2026-09-01)
+
+The earlier `Wrong Field` results for `/db/SDVI` and `/db/SDVE` pre-dated the
+manual's 2026-08-25 Request-Example corrections. The old SDVI fixture omitted
+`INPUT_TYPE_EXFN` and the six exponential-function fields in each `ITEM`; the
+old SDVE fixture contained only `COMMON`, `MATERIAL_TYPE`, and `SHEAR_AREA`.
+Those were incomplete test payloads, not evidence that the current documented
+routes reject their documented shapes.
+
+Using the complete current examples, both endpoints completed
+`POST -> GET -> PUT -> GET -> DELETE(id) -> GET` on Gen NX 2026 v2.1 and
+Civil NX 2026 v2.2, build 08/26/2026. SDVI sent all twelve documented fields
+for each of six DOFs; SDVE sent the fourteen Request-Example fields from
+`THICKNESS` through `KINETIC_FRIC`. Both fixtures are now confirmed and their
+coverage entries are write-level on both products. The old `Wrong Field`
+finding is superseded by this manual-backed rerun, not hidden by a weaker
+payload.
+
+The built npm package's public `resources.db` entries completed the same two
+full CRUD cycles on each product from a fresh `/doc/NEW` document. That adds
+SDVI and SDVE to the npm harness evidence without changing the Python-only
+meaning of `docs/coverage.json`'s `level` field.
+
+After this batch, each latest scratch document was saved under `C:/temp` with
+its product-native extension, then `/doc/NEW` was issued. Final read-only
+checks found `NODE=0` and `ELEM=0` on both Gen and Civil, so both open documents
+are empty.

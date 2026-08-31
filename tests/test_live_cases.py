@@ -157,6 +157,36 @@ def test_live_case_fixture_marks_reconfirmed_plane_load_type() -> None:
     assert pnld["setup"] == []
 
 
+def test_live_case_fixture_uses_complete_manual_seismic_damper_examples() -> None:
+    cases = json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
+    sdvi = next(case for case in cases if case["endpoint"] == "/db/SDVI")
+    sdve = next(case for case in cases if case["endpoint"] == "/db/SDVE")
+
+    assert sdvi["createPayload"]["INPUT_TYPE_EXFN"] == 0
+    assert sdvi["confirmed"] is True
+    assert set(sdvi["createPayload"]["ITEM"][0]) == {
+        "OPT_DOF", "CE", "P1", "C1", "ALPHA1", "K0", "EXFN_PY",
+        "EXFN_VY", "EXFN_DE", "EXFN_DC", "OPT_EXFN_CE", "EXFN_CE",
+    }
+    assert len(sdvi["createPayload"]["ITEM"]) == 6
+    assert {
+        key: sdve["createPayload"][key]
+        for key in (
+            "MATERIAL_TYPE", "SHEAR_AREA", "THICKNESS", "MULTIPL", "DIR",
+            "FREQ", "STIFF_FACTOR", "DAMP_FACTOR", "REF_T", "LIMIT_DEF",
+            "EFF_STIFF", "EQUI_DAMP", "OPT_MOUNT_STIFF", "MOUNT_STIFF",
+            "OPT_KINETIC_FRIC", "KINETIC_FRIC",
+        )
+    } == {
+        "MATERIAL_TYPE": "GR100", "SHEAR_AREA": 0.05, "THICKNESS": 0.02,
+        "MULTIPL": 1, "DIR": "Dx", "FREQ": 0, "STIFF_FACTOR": 1,
+        "DAMP_FACTOR": 1, "REF_T": 20, "LIMIT_DEF": 0.3, "EFF_STIFF": 0,
+        "EQUI_DAMP": 0, "OPT_MOUNT_STIFF": True, "MOUNT_STIFF": 1200,
+        "OPT_KINETIC_FRIC": False, "KINETIC_FRIC": 0,
+    }
+    assert sdve["confirmed"] is True
+
+
 def test_live_case_fixture_marks_reconfirmed_civil_analysis_cases() -> None:
     cases = json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
     civil_cases = {
@@ -225,3 +255,37 @@ def test_live_case_fixture_splits_product_asymmetric_response_spectrum_load() ->
         (["civil"], True),
         (["gen"], False),
     ]
+
+
+def test_live_case_fixture_splits_product_asymmetric_seismic_combination() -> None:
+    """Keep Gen's accepted ST shape separate from Civil's manual-shaped RS probe."""
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    seismic = [
+        case for case in fixture["cases"]
+        if case["endpoint"] == "/db/LCOM-SEISMIC"
+    ]
+
+    assert [
+        (case["products"], case["confirmed"], case["createPayload"]["vCOMB"])
+        for case in seismic
+    ] == [
+        (["gen"], True, [{"ANAL": "ST", "LCNAME": "DL", "FACTOR": 1.0}]),
+        (["civil"], False, [{
+            "ANAL": "RS", "LCNAME": "SPLC_LCOM_SEED", "FACTOR": 1.0,
+        }]),
+    ]
+    assert seismic[1]["needs"] == ["lcom_seismic_splc"]
+    assert seismic[0]["setup"] == [{"seed": "static_load_cases"}]
+    assert seismic[1]["setup"] == [
+        {"seed": "lcom_seismic_spfc"},
+        {"seed": "lcom_seismic_splc"},
+    ]
+    assert fixture["seeds"]["lcom_seismic_splc"] == {
+        "endpoint": "/db/SPLC",
+        "records": {
+            "1": {
+                "NAME": "SPLC_LCOM_SEED", "DIR": "XY", "SCALE": 1.0,
+                "PMFT": 1.0, "aFUNCNAME": ["SPFC_LCOM_SEED"],
+            },
+        },
+    }
