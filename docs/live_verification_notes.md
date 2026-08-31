@@ -7350,6 +7350,27 @@ to revisit `PRODUCTS` for the specific classes involved — cite this file's
 date and findings in that future change, and re-verify before trusting it,
 since MIDASIT's platform can change between now and then.
 
+### npm public-API Gen re-check: Node and Skew (2026-08-31)
+
+Before mutation, direct public GETs on the supplied Gen NX 2026 v2.1 build
+08/26/2026 session returned the documented empty-model shape for both
+`/db/NODE` and `/db/ELEM`. The built `midas-nx@2.7.3` package was then run
+through `packages/typescript/scripts/live-crud.mjs`, using only the shared
+`schema/live-cases.json` fixture and an author-approved `C:/temp` checkpoint:
+
+| npm public API | result |
+| --- | --- |
+| `resources.db.nodeElement.node` | `POST -> GET -> PUT -> GET -> DELETE {id} -> GET` passed |
+| `resources.db.nodeElement.skew` | the same cycle passed after the fixture's disposable node-2 seed |
+
+The runner saved `C:/temp/midas-nx-live-gen-1788162734155.mgbx` before the
+mutations and reported both cases as `PASS`; it verifies every target and seed
+with individual-id DELETE before reporting success. A subsequent independent
+GET could not run because the supplied Gen MAPI key then returned HTTP 401
+(`MAPI-Key is invalid`). That is an authentication-session interruption, not
+evidence about either endpoint; no coverage level changed because this remains
+npm-specific evidence.
+
 ### npm public-API checkpoint and unresolved-case re-check (2026-08-31)
 
 The npm live harness now saved a checkpoint before every mutation. The
