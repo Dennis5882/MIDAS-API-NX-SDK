@@ -7,13 +7,15 @@
  * installs, rather than raw HTTP or Python implementation details. Case
  * payloads come only from schema/live-cases.json, emitted by Python's
  * scripts/live_crud_check.py; never copy a live payload into this file.
- * Before any mutation it saves a timestamped checkpoint under the signed-in
- * user's Documents folder, preventing MIDAS NX's save dialog from blocking a
- * later analysis run. Pass --no-save-before only when that side effect was
- * explicitly reviewed.
+ * Before any mutation it saves a timestamped checkpoint in an explicitly
+ * configured directory on the NX machine, preventing MIDAS NX's save dialog
+ * from blocking a later analysis run. An authenticated MAPI user is not a
+ * reliable Windows-profile name, so never derive a server path from it.
+ * Pass --no-save-before only when that side effect was explicitly reviewed.
  *
  * Usage:
- *   MIDAS_MAPI_KEY=... npm run live:crud -- -- --product gen --endpoints /db/NODE,/db/NMAS
+ *   MIDAS_MAPI_KEY=... MIDAS_NX_SAVE_DIR=E:/NX-Scratch \\
+ *     npm run live:crud -- -- --product gen --endpoints /db/NODE,/db/NMAS
  *
  * This script intentionally requires an explicit endpoint selection. A broad
  * accidental run is not a useful substitute for reviewing fixtures in small
@@ -29,18 +31,18 @@ const fixture = JSON.parse(readFileSync(fixturePath, "utf8"));
 
 function usage(message) {
   if (message) console.error(message);
-  console.error("Usage: npm run live:crud -- -- --product gen|civil --endpoints /db/NODE,/db/NMAS [--table-type MASS_SUMMARY_X] [--no-save-before] [--mapi-key key] [--timeout ms]");
+  console.error("Usage: npm run live:crud -- -- --product gen|civil --endpoints /db/NODE,/db/NMAS [--table-type MASS_SUMMARY_X] [--save-dir E:/NX-Scratch] [--no-save-before] [--mapi-key key] [--timeout ms]");
   process.exit(2);
 }
 
 function parseArgs(argv) {
-  const args = { timeout: 30_000, saveBefore: true };
+  const args = { timeout: 30_000, saveBefore: true, saveDir: process.env.MIDAS_NX_SAVE_DIR };
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index];
     const value = argv[index + 1];
     if (flag === "--no-save-before") {
       args.saveBefore = false;
-    } else if (flag === "--product" || flag === "--endpoints" || flag === "--table-type" || flag === "--mapi-key" || flag === "--timeout") {
+    } else if (flag === "--product" || flag === "--endpoints" || flag === "--table-type" || flag === "--save-dir" || flag === "--mapi-key" || flag === "--timeout") {
       if (!value || value.startsWith("--")) usage(`${flag} needs a value.`);
       args[flag.slice(2).replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())] = value;
       index += 1;
@@ -54,17 +56,20 @@ function parseArgs(argv) {
   if (!args.endpoints) usage("--endpoints is required; select a reviewed small batch.");
   args.timeout = Number(args.timeout);
   if (!Number.isFinite(args.timeout) || args.timeout <= 0) usage("--timeout must be a positive number of milliseconds.");
+  if (args.saveBefore && !args.saveDir) {
+    usage("Set --save-dir (or MIDAS_NX_SAVE_DIR) to a known writable directory on the NX machine; the signed-in API user is not a safe path source.");
+  }
   return args;
 }
 
-function checkpointPath(product, health) {
-  if (typeof health.user !== "string" || !health.user.includes("@")) {
-    throw new Error("Cannot choose a safe automatic save path: verifyConnection() did not return the signed-in user.");
+function checkpointPath(product, saveDir) {
+  const directory = saveDir.replaceAll("\\", "/").replace(/\/+$/, "");
+  if (!/^[A-Za-z]:\/[^\0]*$/.test(directory)) {
+    throw new Error(`--save-dir must be an absolute Windows directory on the NX machine, got ${JSON.stringify(saveDir)}.`);
   }
-  const username = health.user.split("@", 1)[0].replace(/[^A-Za-z0-9._-]/g, "_");
   // SAVEAS uses the product-native NX extension: Gen .mgbx, Civil .mcbx.
   const extension = product === "civil" ? "mcbx" : "mgbx";
-  return `C:/Users/${username}/Documents/midas-nx-live-${product}-${Date.now()}.${extension}`;
+  return `${directory}/midas-nx-live-${product}-${Date.now()}.${extension}`;
 }
 
 function isResource(value) {
@@ -322,7 +327,7 @@ async function main() {
   const health = await client.verifyConnection();
   if (health.status !== "connected") throw new Error(`Server reachable but not connected: ${JSON.stringify(health)}`);
   if (args.saveBefore) {
-    const path = checkpointPath(args.product, health);
+    const path = checkpointPath(args.product, args.saveDir);
     await doc.saveAs(path, { client });
     console.log(`SAVED ${path}`);
   }
