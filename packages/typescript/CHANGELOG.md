@@ -10,9 +10,10 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ### Changed
 
-- Generated payload declarations now use 22 additional reviewed endpoint
-  contracts, including their documented nested shapes, requirements and enum
-  values.
+- Generated payload declarations now use **30 additional reviewed endpoint
+  contracts** (279 to 309 since 2.7.1), including their documented nested
+  shapes, requirements and enum values. 251 of the 304 generated resources now
+  take their facts from a contract rather than the reviewed Python fallback.
 - Resource metadata retains the manual's labels and punctuation for the
   reviewed analysis-control and seismic-device resources.
 - Adds maintainer-only live CRUD and analysis harnesses that make a verified
