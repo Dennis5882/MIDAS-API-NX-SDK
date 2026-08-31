@@ -38,18 +38,42 @@ export namespace DbAnalysisControlTypes {
     INTOUT?: string;
     CONVERGENCE?: TensionCompressionTrussConvergence;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MainControlDataHyperSPayload {
+    /** Auto Rotational DOF Constraint */
     ARCD?: boolean;
+    /** Auto Normal Rotation Constraint */
     ANRC?: boolean;
+    /** Consider Section Stiffness Scale Factor */
     CSECF?: boolean;
+    /** Consider Reinforcement for Section Stiffness */
     CRBAR?: boolean;
+    /** Transfer Reactions to Master Node */
     TRS?: boolean;
+    /** Change Local Axis of Tapered Section */
     CLATS?: boolean;
+    /** Calculate Equivalent Beam Stresses */
     BMSTRESS?: boolean;
+    /** Classical Formula for Solid Element */
     CLFORM?: boolean;
-    BSCHG?: string;
+    /** Beam Section Property Changes ("CONSTANT" / "CHANGE") */
+    BSCHG?: "CONSTANT" | "CHANGE";
+    /** Consider Initial Tension for Cable Element */
     CABINIT?: boolean;
-    TCELEM?: TensionCompressionTrussElement;
+    /** Tension/Compression Truss Element */
+    TCELEM?: {
+      /** Number of Increments */
+      NUMINC?: number;
+      /** Intermediate Output Request ("EVERY" / "LAST") */
+      INTOUT?: "EVERY" | "LAST";
+      /** Convergence Criteria */
+      CONVERGENCE?: {
+        /** 해당 기준 사용 여부 */
+        OPT_USE?: boolean;
+        /** 허용오차 (OPT_USE = true일 때 필수) */
+        VALUE?: number;
+      };
+    };
   }
   export interface PDeltaLoadCaseItem {
     LCNAME?: string;
@@ -1588,9 +1612,48 @@ export namespace DbBoundaryTypes {
     TYPE?: string;
     SLAVES?: Array<unknown>;
   }
-  export interface LinearConstraintPayload {
-    ITEMS: Array<LinearConstraintItem>;
-  }
+  /** Generated from contracts/endpoints/. */
+  export type LinearConstraintPayload = {
+    /** Linear Constraints (배열로 삽입) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** DOF of Constraint Node (6자리: DX∼RZ) */
+      SLAVE_TYPE: string;
+      /** Constraint Type · "EX"=Explicit, "WD"=Weighted Displacement */
+      TYPE: string;
+      /** Independent Nodes */
+      SLAVES: Array<{
+        /** Node ID */
+        NODE_KEY: number;
+        /** Coefficient */
+        COEFF: number;
+        /** Degree of Freedom · DX:0/DY:1/DZ:2/RX:3/RY:4/RZ:5 */
+        DOF: number;
+        /** Weight */
+        WEIGHT: number;
+      }>;
+    }>;
+  } & (
+    {
+      TYPE: "EX";
+      /** Node ID */
+      NODE_KEY: number;
+      /** Coefficient */
+      COEFF: number;
+      /** Degree of Freedom · DX:0/DY:1/DZ:2/RX:3/RY:4/RZ:5 */
+      DOF: number;
+    } |
+    {
+      TYPE: "WD";
+      /** Node ID */
+      NODE_KEY: number;
+      /** Weight */
+      WEIGHT: number;
+    }
+  );
   /** Generated from contracts/endpoints/. */
   export interface PanelZoneEffectPayload {
     /** Auto Calculate Panel Zone Offset Distances */
@@ -3670,21 +3733,54 @@ export namespace DbMovingLoadsTypes {
     OPTI_BASE?: MovingLoadCaseBsOptiBase;
     REMAINING_LANE?: Array<string>;
   }
-  export interface MovingLoadCaseBsPayload {
-    LCNAME?: string;
+  /** Generated from contracts/endpoints/. */
+  export type MovingLoadCaseBsPayload = {
+    /** Load Case Name */
+    LCNAME: string;
+    /** Description */
     DESC?: string;
+    /** Moving Load Optimization */
     bAUTOOPTIMIZE?: boolean;
-    LOADMODEL?: string;
+    /** Load Model · Standard(BD37/01,BS5400):"STANDER" · Special(BD86/11):"SPECAIL" · CS454 ALL Mode1:"ALL_MODE_1" · CS454 ALL Mode2:"ALL_MODE_2" */
+    LOADMODEL: string;
+    /** Auto Live Load Combination */
     bAUTOLIVELOADCOMB?: boolean;
-    DGNCOMBFACTORTYPE?: string;
-    COMBMETHOD?: string;
-    LCDATA_STANDARD?: MovingLoadCaseBsStandardData;
-    LCDATA_SPECIAL?: MovingLoadCaseBsSpecialData;
-    LCDATA_ALLMODE?: MovingLoadCaseBsAllModeData;
-    LCDATA_STANDARD_OPTI?: MovingLoadCaseBsStandardOptiData;
-    LCDATA_SPECIAL_OPTI?: MovingLoadCaseBsSpecialOptiData;
-    LCDATA_ALLMODE_OPTI?: MovingLoadCaseBsAllModeOptiData;
-  }
+    /** Design Combination Factor Type · "bAUTOLIVELOADCOMB"=true 시 · Ultimate:"ULTIMATE" · Serviceability:"SERVICEABIL" */
+    DGNCOMBFACTORTYPE: string;
+    /** Combination Method · "bAUTOLIVELOADCOMB"=true 시 · Comb.1:"COMB_1" · Comb.2/3:"COMB_2_3" */
+    COMBMETHOD: string;
+    /** Standard Load Case Data(General, LOADMODEL="STANDER") */
+    LCDATA_STANDARD: JsonObject;
+    /** Special Load Case Data(General, LOADMODEL="SPECAIL") */
+    LCDATA_SPECIAL: JsonObject;
+    /** CS 454 Assessment Data(General, LOADMODEL="ALL_MODE_1"/"ALL_MODE_2") */
+    LCDATA_ALLMODE: JsonObject;
+    /** Standard Load Case Data(Optimization, bAUTOOPTIMIZE=true & LOADMODEL="STANDER") */
+    LCDATA_STANDARD_OPTI: JsonObject;
+    /** Special Load Case Data(Optimization, LOADMODEL="SPECAIL") */
+    LCDATA_SPECIAL_OPTI: JsonObject;
+    /** CS 454 Assessment Data(Optimization, LOADMODEL="ALL_MODE_1"/"ALL_MODE_2") */
+    LCDATA_ALLMODE_OPTI: JsonObject;
+  } & (
+    {
+      LOADMODEL: "STANDER";
+      /** Loading Effect("INDEPEND") */
+      LOADINGEFFECT: string;
+      /** Sub-Load Cases */
+      SUBLOADDATA: Array<{
+        /** Scale Factor */
+        SCALEFACTOR: number;
+        /** Number of Loaded Lanes */
+        NUMLOADEDLANE: number;
+        /** Vehicle Name */
+        VEHICLE_NAME: string;
+        /** Selected Lanes */
+        SELECTEDLANES: Array<string>;
+        /** HB Straddling Two Lanes(STARDD_LANE_1/STARDD_LANE_2) */
+        STRAD_LANE: Array<JsonObject>;
+      }>;
+    }
+  );
   export interface MovingLoadCaseEurocodeStraddlingLaneItem {
     NAME1?: string;
     NAME2?: string;
