@@ -27,7 +27,7 @@ from .client import (
 #: Single source of truth for the package version — pyproject.toml declares
 #: ``dynamic = ["version"]`` and hatchling reads this line, so bumping it here
 #: bumps the distribution too. Don't add a second copy anywhere.
-__version__ = "2.7.2"
+__version__ = "2.7.3"
 
 __all__ = [
     "MidasAPI",
