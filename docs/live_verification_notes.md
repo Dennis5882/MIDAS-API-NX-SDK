@@ -7358,16 +7358,40 @@ machines — a directory they created themselves — after the old inference fro
 the authenticated MAPI account produced an invalid-path dialog. `SAVEAS`
 answered `command complete` on both sessions.
 
-**Correction, 2026-08-31.** That run wrote `.mgbx` on Gen and **`.mcbx`** on
-Civil. Gen's is right; Civil's is not — the author, a MIDAS IT employee,
-confirms Civil NX's native extension is **`.mcb`**, and both harnesses now
-write that. `.mcbx` is not rejected outright: a 2026-07 `save_as` to `.mcbx`
-was verified by reopening the file with all 273 nodes intact (see the `/doc/*`
-lifecycle entry above). But `/doc/STAGAS` refused `.mcbx` in that same session
-and took `.mcb`, and a checkpoint the author cannot open normally is not a
-checkpoint. Note also that `command complete` is not evidence a file was
-written — this project's own rule — so nothing here establishes what the Civil
-`.mcbx` checkpoints actually are; they were not read back.
+**Correction, 2026-08-31 — and the repo got this wrong twice before landing
+on it.** That run wrote `.mgbx` on Gen and `.mcbx` on Civil. Gen's is right.
+Civil's was first "corrected" to `.mcb`, which is also wrong: `.mcb` is the
+*pre-NX* Civil extension. The author, a MIDAS IT employee, gives the full set:
+
+| | Gen | Civil |
+| --- | --- | --- |
+| pre-NX | `.mgb` | `.mcb` |
+| **NX** | **`.mgbx`** | **`.mcbz`** |
+
+Civil NX's own Export menu lists "MCBZ File", which settles it. Both harnesses
+now write the NX pair.
+
+Two adjacent facts, so the next person does not re-derive them. `/doc/STAGAS`
+is the exception that genuinely wants the legacy `.mcb` — `.mcbx` failed there
+in 2026-07 with "Please check the file name or extension". And Civil does
+*tolerate* `.mcbx` for `SAVEAS`: the 2026-07 round trip wrote one and reopened
+it with all 273 nodes intact (see the `/doc/*` lifecycle entry above). Being
+accepted is not being native, and that tolerance is exactly what let the wrong
+spelling survive a live run without complaint.
+
+Note also that `command complete` is not evidence a file was written — this
+project's own rule — so nothing establishes what the Civil `.mcbx` checkpoints
+from this run actually are. They were never read back.
+
+**Export menus differ by product** (observed 2026-08-31, both products' own
+menus). Civil NX: MIDAS/Civil MCT, MXT (for FEA/GTS), AutoCAD DXF, Frame
+Section for Solid and for Plate, IDEA, IFC, **MIDAS CIVIL NX JSON File**, and
+**MCBZ File**. Gen NX: MGTX (for GEN NX), Batch midas Gen MGTX, MGT (for Gen),
+MGT (v885 for nGen), MXT, AutoCAD DXF, Midas Drawing, Frame Section for Solid,
+IDEA, IFC, and **MIDAS GEN NX JSON File** — with no MGBX entry, because that
+is a save format rather than an export. So `/doc/EXPORTMXT`'s text format is
+product-specific (MCT on Civil, MGT/MGTX on Gen), while `/doc/EXPORT`'s JSON
+is offered by both.
 
 Using only the built npm package's public `resources.db.*` surface, `/db/STLD`
 passed `POST -> GET -> PUT -> GET -> DELETE {id} -> GET` on both products.

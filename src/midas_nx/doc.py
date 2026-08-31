@@ -111,10 +111,17 @@ def save_as(path: str, client: Optional[MidasClient] = None) -> dict:
     from your own ``%USERPROFILE%`` or ``os.path.expanduser`` is a common way
     to get this wrong.
 
-    Build it from the server instead::
+    ``verify_connection()["user"]`` names the MAPI *account*, not the NX host's
+    Windows profile, so it is a hint and not a recipe::
 
         user = client.verify_connection()["user"]      # "someone@midasit.com"
         path = f"C:/Users/{user.split('@')[0]}/Documents/model.mgbx"
+
+    That worked on one machine in 2026-07 only because its Windows profile
+    happened to equal the address's local part. Where it does not, the path
+    cannot exist and you get the blocking dialog described below — which is
+    what happened on 2026-08-31. Prefer a directory the operator names
+    explicitly and has confirmed is writable there.
 
     A rejected path raises MIDAS's own "invalid path" dialog on that machine
     and blocks the session until a human dismisses it — while this call still
@@ -124,8 +131,12 @@ def save_as(path: str, client: Optional[MidasClient] = None) -> dict:
     proves nothing; :func:`open_project` on the same path is the check that
     asks the right filesystem.
 
-    Note also that the manual's example still uses the pre-NX ``.mcb``
-    extension; Gen NX 2026 writes ``.mgbx`` and Civil NX ``.mcbx``.
+    Note also that the manual's example still uses a pre-NX extension. The
+    four are distinct and easy to mix up (author-confirmed 2026-08-31):
+    legacy Gen ``.mgb`` and Civil ``.mcb``; **Gen NX ``.mgbx`` and Civil NX
+    ``.mcbz``**. Civil NX's own Export menu lists "MCBZ File". A 2026-07
+    ``save_as`` to ``.mcbx`` was accepted and reopened with all 273 nodes, so
+    Civil tolerates that spelling, but it is not the product's own.
     """
     return _post("/doc/SAVEAS", path, client)
 
@@ -146,7 +157,7 @@ def stage_as(stage_step: str, export_path: Optional[str] = None, client: Optiona
     export_path (Optional): file path to save to — must use the legacy
     ``.mcb`` extension (live-tested 2026-07-31: ``.mcbx`` fails with
     "Please check the file name or extension"), unlike save_as() which
-    wants the current NX-native extension.
+    wants the current NX-native extension (``.mcbz`` on Civil NX).
     """
     argument = {"STAGE_STEP": stage_step}
     if export_path is not None:
@@ -165,12 +176,24 @@ def import_mxt(path: str, client: Optional[MidasClient] = None) -> dict:
 
 
 def export_json(path: str, client: Optional[MidasClient] = None) -> dict:
-    """docs/manual/01_DOC.md #9 — /doc/EXPORT — Export to JSON."""
+    """docs/manual/01_DOC.md #9 — /doc/EXPORT — Export to JSON.
+
+    Both products offer this from their own Export menu, named for the
+    product: "MIDAS CIVIL NX JSON File" and "MIDAS GEN NX JSON File"
+    (observed 2026-08-31).
+    """
     return _post("/doc/EXPORT", path, client)
 
 
 def export_mxt(path: str, client: Optional[MidasClient] = None) -> dict:
-    """docs/manual/01_DOC.md #10 — /doc/EXPORTMXT — Export to mct/mgt."""
+    """docs/manual/01_DOC.md #10 — /doc/EXPORTMXT — Export to mct/mgt.
+
+    The text format is product-specific, and the Export menus differ by more
+    than its name (observed 2026-08-31): Civil NX offers "MIDAS/Civil MCT
+    File", while Gen NX offers "MGTX file (for GEN NX)", a batch MGTX, "MGT
+    File (for Gen)" and "MGT File (v885 for nGen)". Use the extension the
+    target product writes, not the other one's.
+    """
     return _post("/doc/EXPORTMXT", path, client)
 
 

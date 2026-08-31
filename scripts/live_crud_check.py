@@ -91,7 +91,7 @@ Check the file exists yourself afterwards; do not trust the response.
 Run with the dev environment active (``pip install -e ".[dev]"``), e.g.:
     python scripts/live_crud_check.py --product civil
     python scripts/live_crud_check.py --product civil --tier core,boundary
-    python scripts/live_crud_check.py --product civil --save-as C:/tmp/scratch.mcb
+    python scripts/live_crud_check.py --product civil --save-as C:/tmp/scratch.mcbz
     python scripts/live_crud_check.py --product civil --out crud.json
 
 Exit code 0 -> every case that ran completed a full round trip.

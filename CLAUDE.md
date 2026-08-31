@@ -160,11 +160,14 @@ Two things that have already caused rework:
   exist and raises exactly the blocking dialog the rule exists to avoid. Require an explicit
   writable directory on the NX machine instead, as
   `packages/typescript/scripts/live-crud.mjs` now does (`--save-dir`, refusing to run without
-  one). Note also that `/doc/SAVEAS` needs the product-native extension: **`.mgbx` on Gen NX,
-  `.mcb` on Civil NX** (author-confirmed 2026-08-31). Civil did accept `.mcbx` for `SAVEAS` in a
-  2026-07 round trip that reopened with all 273 nodes, so it is not rejected — but `/doc/STAGAS`
-  refused `.mcbx` outright and took `.mcb`, and `.mcb` is the extension the product itself uses.
-  Write `.mcb`.
+  one). **Four model extensions, two pairs, easy to mix up** (author-confirmed 2026-08-31):
+  pre-NX Gen `.mgb` / Civil `.mcb`; **NX Gen NX `.mgbx` / Civil NX `.mcbz`**. `/doc/SAVEAS` wants
+  the NX pair; `/doc/STAGAS` wants the legacy `.mcb` and rejects other spellings outright
+  ("Please check the file name or extension"). Civil also *tolerates* `.mcbx` for `SAVEAS` — a
+  2026-07 round trip wrote one and reopened it with 273 nodes — but it is not the product's own
+  extension and this repo got it wrong twice by assuming it was. The Export menus differ by
+  product too: Civil NX offers MCT and an "MCBZ File"; Gen NX offers MGTX/MGT variants and no
+  MGBX. Both offer a product-named JSON export, which is `/doc/EXPORT`.
 - **`DELETE {endpoint}` with an ID-keyed `"Assign"` body empties the whole table**, ignoring the
   ids — for `/db/NODE` that takes the attached elements with it. This is what the manual documents,
   and it cost a model before it was caught. The undocumented `DELETE {endpoint}/{id}` is the one
