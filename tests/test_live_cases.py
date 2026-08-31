@@ -29,3 +29,18 @@ def test_live_case_fixture_carries_confirmed_nmas_setup() -> None:
     assert nmas["confirmed"] is True
     assert nmas["createPayload"] == {"mX": 1.0, "mY": 1.0, "mZ": 1.0}
     assert nmas["setup"] == [{"endpoint": "/db/NODE", "id": 3}]
+
+
+def test_live_case_fixture_carries_static_load_case_seed() -> None:
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    stld = next(case for case in fixture["cases"] if case["endpoint"] == "/db/STLD")
+
+    assert fixture["version"] == 2
+    assert fixture["seeds"]["static_load_cases"] == {
+        "endpoint": "/db/STLD",
+        "records": {
+            "1": {"NAME": "DL", "TYPE": "D", "DESC": "Dead Load"},
+            "2": {"NAME": "LC_SCRATCH", "TYPE": "L", "DESC": "crud fixture"},
+        },
+    }
+    assert stld["setup"] == [{"seed": "static_load_cases"}]

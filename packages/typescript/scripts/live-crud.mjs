@@ -7,6 +7,10 @@
  * installs, rather than raw HTTP or Python implementation details. Case
  * payloads come only from schema/live-cases.json, emitted by Python's
  * scripts/live_crud_check.py; never copy a live payload into this file.
+ * Before any mutation it saves a timestamped checkpoint under the signed-in
+ * user's Documents folder, preventing MIDAS NX's save dialog from blocking a
+ * later analysis run. Pass --no-save-before only when that side effect was
+ * explicitly reviewed.
  *
  * Usage:
  *   MIDAS_MAPI_KEY=... npm run live:crud -- -- --product gen --endpoints /db/NODE,/db/NMAS
@@ -18,23 +22,25 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
-import { MidasClient, post, resources } from "../dist/index.js";
+import { doc, MidasClient, post, resources } from "../dist/index.js";
 
 const fixturePath = fileURLToPath(new URL("../../../schema/live-cases.json", import.meta.url));
 const fixture = JSON.parse(readFileSync(fixturePath, "utf8"));
 
 function usage(message) {
   if (message) console.error(message);
-  console.error("Usage: npm run live:crud -- -- --product gen|civil --endpoints /db/NODE,/db/NMAS [--table-type MASS_SUMMARY_X] [--mapi-key key] [--timeout ms]");
+  console.error("Usage: npm run live:crud -- -- --product gen|civil --endpoints /db/NODE,/db/NMAS [--table-type MASS_SUMMARY_X] [--no-save-before] [--mapi-key key] [--timeout ms]");
   process.exit(2);
 }
 
 function parseArgs(argv) {
-  const args = { timeout: 30_000 };
+  const args = { timeout: 30_000, saveBefore: true };
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index];
     const value = argv[index + 1];
-    if (flag === "--product" || flag === "--endpoints" || flag === "--table-type" || flag === "--mapi-key" || flag === "--timeout") {
+    if (flag === "--no-save-before") {
+      args.saveBefore = false;
+    } else if (flag === "--product" || flag === "--endpoints" || flag === "--table-type" || flag === "--mapi-key" || flag === "--timeout") {
       if (!value || value.startsWith("--")) usage(`${flag} needs a value.`);
       args[flag.slice(2).replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())] = value;
       index += 1;
@@ -49,6 +55,16 @@ function parseArgs(argv) {
   args.timeout = Number(args.timeout);
   if (!Number.isFinite(args.timeout) || args.timeout <= 0) usage("--timeout must be a positive number of milliseconds.");
   return args;
+}
+
+function checkpointPath(product, health) {
+  if (typeof health.user !== "string" || !health.user.includes("@")) {
+    throw new Error("Cannot choose a safe automatic save path: verifyConnection() did not return the signed-in user.");
+  }
+  const username = health.user.split("@", 1)[0].replace(/[^A-Za-z0-9._-]/g, "_");
+  // SAVEAS uses the product-native NX extension: Gen .mgbx, Civil .mcbx.
+  const extension = product === "civil" ? "mcbx" : "mgbx";
+  return `C:/Users/${username}/Documents/midas-nx-live-${product}-${Date.now()}.${extension}`;
 }
 
 function isResource(value) {
@@ -76,6 +92,25 @@ function resourceFor(endpoint) {
   const resource = findResource(resources.db, endpoint);
   if (!resource) throw new Error(`${endpoint}: no public resources.db entry exists in the built npm package.`);
   return resource;
+}
+
+function setupRecords(prerequisite, targetEndpoint) {
+  if (typeof prerequisite.seed === "string") {
+    const seed = fixture.seeds?.[prerequisite.seed];
+    if (!seed || typeof seed.endpoint !== "string" || typeof seed.records !== "object" || seed.records === null) {
+      throw new Error(`${targetEndpoint}: fixture seed ${prerequisite.seed} is invalid.`);
+    }
+    return { endpoint: seed.endpoint, records: seed.records };
+  }
+  if (typeof prerequisite.endpoint !== "string" || !Number.isInteger(prerequisite.id)) {
+    throw new Error(`${targetEndpoint}: fixture setup must name a seed or an endpoint/id source case.`);
+  }
+  const source = caseFor(prerequisite.endpoint);
+  if (!source) throw new Error(`${targetEndpoint}: fixture setup ${prerequisite.endpoint} has no source case.`);
+  return {
+    endpoint: prerequisite.endpoint,
+    records: { [prerequisite.id]: source.createPayload },
+  };
 }
 
 function errorText(error) {
@@ -132,21 +167,23 @@ async function runCase(liveCase, client) {
   let result;
   try {
     for (const prerequisite of liveCase.setup) {
-      const source = caseFor(prerequisite.endpoint);
-      if (!source) throw new Error(`${liveCase.endpoint}: fixture setup ${prerequisite.endpoint} has no source case.`);
-      const sourceResource = resourceFor(prerequisite.endpoint);
+      const source = setupRecords(prerequisite, liveCase.endpoint);
+      const sourceResource = resourceFor(source.endpoint);
       if (!sourceResource.metadata.methods.includes("DELETE")) {
-        throw new Error(`${liveCase.endpoint}: setup ${prerequisite.endpoint} cannot be individually cleaned up.`);
+        throw new Error(`${liveCase.endpoint}: setup ${source.endpoint} cannot be individually cleaned up.`);
       }
       const before = await sourceResource.items(client);
-      if (Object.hasOwn(before, prerequisite.id)) {
-        throw new Error(`${liveCase.endpoint}: setup ${prerequisite.endpoint}/${prerequisite.id} already exists; refusing to overwrite a scratch record.`);
+      const requestedIds = Object.keys(source.records).map(Number);
+      for (const id of requestedIds) {
+        if (Object.hasOwn(before, id)) {
+          throw new Error(`${liveCase.endpoint}: setup ${source.endpoint}/${id} already exists; refusing to overwrite a scratch record.`);
+        }
       }
-      await sourceResource.create({ [prerequisite.id]: source.createPayload }, client);
+      await sourceResource.create(source.records, client);
       const after = await sourceResource.items(client);
       const createdIds = newlyCreatedIds(before, after);
-      setup.push({ resource: sourceResource, ids: createdIds, endpoint: prerequisite.endpoint });
-      requireStored(after, prerequisite.id, prerequisite.endpoint, "setup POST");
+      setup.push({ resource: sourceResource, ids: createdIds, endpoint: source.endpoint });
+      for (const id of requestedIds) requireStored(after, id, source.endpoint, "setup POST");
     }
 
     const before = await resource.items(client);
@@ -284,6 +321,11 @@ async function main() {
   const client = new MidasClient({ mapiKey: args.mapiKey, product: args.product, timeout: args.timeout });
   const health = await client.verifyConnection();
   if (health.status !== "connected") throw new Error(`Server reachable but not connected: ${JSON.stringify(health)}`);
+  if (args.saveBefore) {
+    const path = checkpointPath(args.product, health);
+    await doc.saveAs(path, { client });
+    console.log(`SAVED ${path}`);
+  }
 
   const results = [];
   for (const liveCase of cases) {

@@ -1,5 +1,22 @@
 {
-  "version": 1,
+  "version": 2,
+  "seeds": {
+    "static_load_cases": {
+      "endpoint": "/db/STLD",
+      "records": {
+        "1": {
+          "NAME": "DL",
+          "TYPE": "D",
+          "DESC": "Dead Load"
+        },
+        "2": {
+          "NAME": "LC_SCRATCH",
+          "TYPE": "L",
+          "DESC": "crud fixture"
+        }
+      }
+    }
+  },
   "cases": [
     {
       "tier": "core",
@@ -190,7 +207,11 @@
         "updated": "crud updated"
       },
       "needs": [],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "static_load_cases"
+        }
+      ],
       "crashes": null
     },
     {

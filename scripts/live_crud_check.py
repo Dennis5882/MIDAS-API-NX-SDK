@@ -313,7 +313,21 @@ OK, REGRESSION, UNVERIFIED, BLOCKED = "ok", "regression", "unverified", "blocked
 #: Quarantined: known to hang or kill the product, so not run by default.
 SKIPPED = "skipped"
 LIVE_CASES_PATH = Path(__file__).resolve().parents[1] / "schema" / "live-cases.json"
-LIVE_CASES_VERSION = 1
+LIVE_CASES_VERSION = 2
+
+# Shared by the Python base model and the emitted npm live fixture.  STLD
+# assigns the next serial id instead of honoring the request key, so its CRUD
+# case needs these two preceding records to land at id 3.  Keep the payloads
+# here rather than reproducing them in JavaScript.
+BASE_MODEL_SEEDS: Dict[str, Dict[str, Any]] = {
+    "static_load_cases": {
+        "endpoint": StaticLoadCase.ENDPOINT,
+        "records": {
+            "1": {"NAME": "DL", "TYPE": "D", "DESC": "Dead Load"},
+            "2": {"NAME": "LC_SCRATCH", "TYPE": "L", "DESC": "crud fixture"},
+        },
+    },
+}
 
 
 class Case:
@@ -457,10 +471,8 @@ def _seed_model(client: MidasClient) -> None:
         client=client,
     )
     Constraint.create({1: {"ITEMS": [{"ID": 1, "CONSTRAINT": "1111111"}]}}, client=client)
-    StaticLoadCase.create({1: {"NAME": "DL", "TYPE": "D", "DESC": "Dead Load"}}, client=client)
     # A load case every load case below attaches to, that nothing deletes.
-    StaticLoadCase.create({2: {"NAME": "LC_SCRATCH", "TYPE": "L", "DESC": "crud fixture"}},
-                          client=client)
+    StaticLoadCase.create(BASE_MODEL_SEEDS["static_load_cases"]["records"], client=client)
     SelfWeight.create({1: {"LCNAME": "DL", "FV": [0, 0, -1]}}, client=client)
 
 
@@ -517,6 +529,7 @@ def _core_cases() -> List[Case]:
             {"NAME": "CRUDCASE", "TYPE": "L", "DESC": "crud updated"},
             lambda p: p.get("DESC"), "crud", "crud updated",
             item_id=3, confirmed=True,
+            setup=({"seed": "static_load_cases"},),
         ),
         # Loads reference LC_SCRATCH, which the seed creates and nothing deletes.
         Case(
@@ -3427,7 +3440,11 @@ def _live_cases_fixture() -> Dict[str, Any]:
                 "setup": list(case.setup),
                 "crashes": case.crashes,
             })
-    fixture = {"version": LIVE_CASES_VERSION, "cases": cases}
+    fixture = {
+        "version": LIVE_CASES_VERSION,
+        "seeds": BASE_MODEL_SEEDS,
+        "cases": cases,
+    }
     # Fail at generation time if a future Case grows a non-JSON wire value.
     json.dumps(fixture, ensure_ascii=False, sort_keys=True)
     return fixture
