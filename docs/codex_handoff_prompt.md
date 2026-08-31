@@ -1,7 +1,7 @@
 # Codex task prompt — mechanical work only
 
-Rewritten 2026-08-31 at HEAD `5b6f8ac`, after your last batch and two follow-up
-commits. Version stays **2.7.3** on both registries.
+Updated 2026-09-01 at HEAD `bc771c0`, after your live batch. Version stays
+**2.7.3** on both registries.
 
 **The division, set by the author.** Judgment-heavy work — schema design,
 deciding what a contradictory manual means, deciding what stays unmerged — is
@@ -11,21 +11,27 @@ to need a judgment call is one to **stop and report**, not to decide.
 
 ## What changed since your last batch
 
-Your four commits landed and all checks pass. Two follow-ups went in on top:
+Your two live commits landed and everything is green. Task 3 (the verbatim
+Civil WALL response) is **done** — MD-06 now quotes the server and reasons
+about the numbering without deciding Civil's support scope. That was the right
+shape of answer.
 
-- `c1e24f3` — `--emit-all` now **warns** when two manual sections render to one
-  draft name. The written count used to say 68 while 65 files existed, and that
-  discrepancy was the only symptom of a silent overwrite.
-- `5b6f8ac` — sections documenting **one route** are now folded into one.
-  `/DESIGN/RC/KDS-41-20-2022/TABLE` had three manual sections and
-  `/DESIGN/SRC/AIK-SRC2K/TABLE` two; each section states it shares a URI with
-  its siblings and differs only by `Argument.TABLE_TYPE`. Sections went 387 →
-  384. `/ope/GSBG` deliberately stays unfolded.
+Two things from that batch are worth naming because they change how the next
+one runs:
 
-Your extractor fix for comma-separated code-span enums is in and correct — it
-reads the complete `` `None`, `SD300`, … `` form and leaves ranges
-(`D4 ~ D57`) and ellipses alone. **Task 3 from the old prompt is closed**; see
-"Stop and report" for what is left and why it is not yours.
+- **You found a real harness defect.** `live-crud.mjs` had been saving a
+  checkpoint and then mutating *the caller's open document*. Its earlier
+  "empty scratch model" evidence was not what it claimed. Calling `/doc/NEW`
+  and verifying `/db/NODE` and `/db/ELEM` are empty is the right fix.
+- **One follow-up commit, `bc771c0`, made that destructiveness visible.**
+  CLAUDE.md named only the two Python harnesses as discarding unsaved work; the
+  npm one now appears in both places, and the script's own header and usage line
+  say what `--no-save-before` costs. Behaviour unchanged — only the warning.
+
+The number that moved least is the one Task 1 is about: **write coverage went
+165 → 166.** The 13 fixtures you raised to `confirmed` are worth more than that
+suggests — a confirmed case fails as a regression — but the ledger itself barely
+moved. This batch should move it.
 
 ---
 
@@ -76,7 +82,10 @@ prompt and those disagree, they win.
   Civil NX `.mcbz`**. `/doc/STAGAS` is the exception that wants legacy `.mcb`.
   This repo got Civil's wrong twice — do not re-derive it.
 - **`/doc/NEW` discards unsaved work and has crashed Gen NX.** Never call it
-  without the author confirming the open document does not matter.
+  without the author confirming the open document does not matter. Three
+  harnesses now call it: `live_smoke.py`, `live_crud_check.py`, and
+  `packages/typescript/scripts/live-crud.mjs`. `--no-save-before` removes the
+  npm harness's checkpoint, not its `/doc/NEW`.
 - **Delete every test record by its own id** (`DELETE {endpoint}/{id}`).
   `DELETE {endpoint}` with an ID-keyed `Assign` body empties the whole table.
 - **A 200 is not success.** `{"message": "error status"}` = method not served;
@@ -87,27 +96,31 @@ prompt and those disagree, they win.
 
 ## Task 1 — Python live write coverage (the main body of work)
 
-Measured today: **165 of 399 endpoints are write-verified, 234 are read-only.**
+Measured today: **166 of 399 rows are write-verified, 233 are read-only.**
 A read shows the route exists and parses. Every field-name, enum and default
 defect found in this project so far was invisible to one.
 
-The 234 read-only rows break down as `/DESIGN` 122, `/db` 80, `/post` 13,
+The 233 read-only rows break down as `/DESIGN` 122, `/db` 79, `/post` 13,
 `/ope` 12, `/view` 7.
 
-**Start where the fixture already exists.** `schema/live-cases.json` holds 165
-cases across 158 endpoints, 121 confirmed. **26 of those cases target an
-endpoint still recorded as `read`-level, and every one of them is unconfirmed** —
-the payload is written, nobody has watched it pass:
+`schema/live-cases.json` holds 166 cases across 158 endpoints, **134 confirmed**
+after your batch. **24 endpoints still recorded as `read`-level already carry a
+fixture** — the payload is written, nobody has watched it pass:
 
 ```text
 /db/ACTL  /db/CGLP  /db/DOEL  /db/EPSE  /db/EPST  /db/FBLA  /db/HAHS
 /db/HECB  /db/HPCE  /db/LCOM-SEISMIC  /db/MADO  /db/MVCT  /db/NLLP
-/db/NLNK  /db/NLNK-M1  /db/RPSC  /db/SBDO (x2)  /db/SDVE  /db/SDVI
-/db/SPLC  /db/STCT  /db/STRPSSM  /db/TDMF  /db/THMS  /db/WVLD
+/db/NLNK  /db/NLNK-M1  /db/RPSC  /db/SBDO  /db/SDVE  /db/SDVI
+/db/STCT  /db/STRPSSM  /db/TDMF  /db/THMS  /db/WVLD
 ```
 
-Three are known-failing (`MVCT`, `NLLP`, `WVLD`), so expect roughly 22
-candidates rather than 26. Work in small batches:
+You attempted most of these last batch and they reproduced product rejections —
+`SDVE`/`SDVI` answered `Wrong Field` on both products, `MVCT`/`NLLP`/`WVLD`
+still fail. **Two were never attempted at all: `/db/HECB` and `/db/STCT`.**
+Start there, then `/db/LCOM-SEISMIC` (Task 3), then re-attack a rejection with a
+different documented enum value rather than a different field set.
+
+Work in small batches:
 
 1. Take the payload from its existing case, or from the endpoint's contract.
 2. Run `POST → GET → PUT → GET → DELETE {endpoint}/{id} → GET` on an empty
@@ -130,13 +143,16 @@ name, an enum or a method. Write the evidence down and stop there.
 
 ## Task 2 — extend the npm live harness
 
-Measured today: **14 endpoints have completed the full public-API CRUD cycle on
-both products** — `NODE`, `NMAS`, `LDGR`, `SMCT`, `SKEW`, `STLD`, `THIK`,
-`DCTL`, `LTSR`, `MBTP`, `LENG`, `MEMB`, `WMAK`, `SDST`. Four populated result
-tables have been read (`MASS_SUMMARY_X`, `REACTIONG`, `DISPLACEMENTG`,
+Measured today: **17 endpoints have completed the full public-API CRUD cycle on
+both products** — the previous 14 plus `PNLD`, `EIGV` and `DCON`. Four populated
+result tables have been read (`MASS_SUMMARY_X`, `REACTIONG`, `DISPLACEMENTG`,
 `BEAMFORCE`), and five more endpoints have been created and deleted as analysis
-prerequisites. That is 14 of 399 against Python's 165 — the widest gap in the
-project, and it doubled in one batch.
+prerequisites. That is 17 against Python's 166 — still the widest gap in the
+project.
+
+Now that every npm run starts from `/doc/NEW`, its evidence means what it says.
+Re-running a fixture the Python harness has already confirmed is cheap and
+worth doing in the same batch as Task 1.
 
 `packages/typescript/scripts/live-crud.mjs` and `live-analysis.mjs` read the
 same `schema/live-cases.json` and exercise only the package's public API. Grow
@@ -152,25 +168,34 @@ Two constraints specific to this side:
 - Use `resources.db.<group>.<name>`, not raw `client.request`. The point is to
   exercise what a user touches.
 
-## Task 3 — quote the server on the Civil WALL rejection (small, precise)
+## Task 3 — `/db/LCOM-SEISMIC`, whose blocker you just removed
 
-MD-06 in `docs/manual_defects_register.md` records that Civil NX refused a
-manual-shaped `TYPE: "WALL"` element as "unsupported element type no. 5". Two
-problems with that entry as written, both fixable by one careful run:
+Its ledger entry from 2026-08-16 says the `ANAL="ST"` payload that all five
+sibling `LCOM-*` endpoints accept passed a full round trip on **Gen**, while
+Civil answered `"The Load Combination Type is not supported"`. The note then
+records why it was parked:
 
-1. **The verbatim server message was never recorded**, only a paraphrase. That
-   register may eventually be escalated to MIDASIT; a paraphrase cannot be.
-2. **The number contradicts the manual.** `03_DB_Node_Element.md`'s own element
-   type code table numbers **5 = Plate, 6 = Wall** — and in the same session a
-   PLATE element succeeded on Civil for the `/db/WMAK` fixture. So the server is
-   likely using a different, probably 0-based, internal numbering.
+> The manual's own example uses `ANAL="RS"`/`"CS"` instead of `"ST"`; testing
+> that path needs a real `/db/SPLC` Response Spectrum Load Case fixture,
+> deferred to a future `db.dynamic_loads` batch.
 
-Re-run the WALL probe on Civil, capture the **exact response body**, and update
-MD-06 with the quoted string plus a sentence noting that the manual's table
-numbers Wall as 6. If the message names a number, say which numbering makes it
-consistent with the PLATE result and which does not — but **do not** conclude
-whether Civil supports wall elements at all. That is a product-scope question
-for the author.
+**You built that fixture last batch.** `/db/SPLC` now round-trips on Civil with
+its `spfc_seed` prerequisite, so the deferral's stated condition is met.
+
+Seed a Response Spectrum Load Case, then run `LCOM-SEISMIC` with the manual's
+`ANAL="RS"` on Civil. Both outcomes are useful: a pass says the asymmetry was a
+payload value rather than a product limit, and a failure is a verbatim response
+worth recording.
+
+Two constraints:
+
+- **Do not raise the level from the 2026-08-16 record alone.** That Gen pass is
+  real, and the ledger has 9 gen-only writes as precedent, so raising it would
+  be defensible on convention — but it ran on build 06/23/2026, and every entry
+  raised this week was re-run first. Re-run it.
+- `/db/SPLC` is now `write` with `products: [civil]` while `LCOM-SEISMIC` sits
+  at `read` with both products, and SPLC's own note names LCOM-SEISMIC as
+  "same treatment". After this run the two should agree. Say which way, and why.
 
 ## Stop and report — do not decide these
 
@@ -230,7 +255,7 @@ cd packages/typescript && npm run generate && npm run typecheck && npm test
 git status --short                     # generation drift must be empty
 ```
 
-Baseline to beat: **890 Python tests, 55 npm tests**, all green at `5b6f8ac`.
+Baseline to beat: **896 Python tests, 55 npm tests**, all green at `bc771c0`.
 
 Commit messages: imperative subject, body explaining *why*. One task per commit.
 
@@ -246,8 +271,14 @@ Commit messages: imperative subject, body explaining *why*. One task per commit.
   resources take their facts from a contract; 52 use the reviewed Python
   fallback. npm's surface coverage is 399/399 — the gap is live evidence, not
   reach.
+- **`docs/coverage.json` carries one row per result table, not per route.**
+  `/DESIGN/RC/KDS-41-20-2022/TABLE` has three rows and
+  `/DESIGN/SRC/AIK-SRC2K/TABLE` two, because each `TABLE_TYPE` returns its own
+  table and verifying one does not verify the others. The contracts fold those
+  same sections into one endpoint each. Both are right; do not "reconcile" them.
 - **Six manual defects are registered** in `docs/manual_defects_register.md`,
-  labelled by which side owns the fix. Append new ones there; send nothing.
+  labelled by which side owns the fix, and MD-06 now quotes the server verbatim.
+  Append new ones there; send nothing.
 - **`/db/FBLA`'s shared table** — `= 1 or 2` alongside `= 1` and `= 2` — folds
   into both branches at generation time rather than forming a third union
   member. That is decided and implemented.
