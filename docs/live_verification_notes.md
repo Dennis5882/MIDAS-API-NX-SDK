@@ -7752,3 +7752,78 @@ Before closing this batch, the two latest scratch documents were saved as
 received `/doc/NEW`. Read-only table reads afterward returned zero `/db/NODE`
 records and zero `/db/ELEM` records on both products. The open documents are
 therefore empty at session end.
+
+### Both SDKs swept read-only across the whole generated surface (2026-09-01)
+
+Every earlier npm entry exercised a handful of endpoints. This is the breadth
+check - `scripts/live_readonly_sweep.py` and a JavaScript counterpart written to
+match it - run on **both** language surfaces against the same two sessions on
+the same day. It is **GET only**: no create/update/delete, no `/doc/*`, no
+`/doc/NEW`, no `/post/TABLE`. It ran against the documents the sessions already
+had open and left them untouched.
+
+The npm subject was the **packed artifact**, not the source tree: `npm pack`
+produced `midas-nx-2.7.3.tgz`, which was installed into a throwaway project with
+`npm install` and imported as `midas-nx`. Only `resources.db.*` and
+`resources.design.*` were called. The Python side ran the repo's own sweep plus
+two probes mirroring the npm ones, without `--record-coverage`.
+
+| check | calls per SDK | npm | PyPI |
+| --- | --- | --- | --- |
+| `get()` on every GET-capable resource, per declared product | 549 | 549 answered, 0 errors | 549 answered, 0 errors |
+| GET on the product a single-product resource does *not* declare | 57 | 57 refused with 404 | 57 refused with 404 |
+| `info()` on every GET-capable resource, per declared product | 549 | 399 schemas, 150 404s | 399 schemas, 150 404s |
+
+**The two SDKs swept exactly the same 549 (product, endpoint) pairs** - set
+equality, not just equal counts - and returned the same result for every one.
+`validate_contracts.py` already checks endpoint parity statically; this is the
+first time it has been checked against running products from both languages at
+once. Gen swept 267 resources and Civil 282; the npm passes took 22.9s and 25.3s.
+
+**Product gating is correct in both directions.** All 549 declared
+resource/product pairs answered, so the metadata is not wider than the server,
+and all 57 single-product resources 404 on the product they do not declare, so
+it is not narrower either. This is the systematic version of the check that
+found 32 wrongly-Civil-only endpoints in 2026-07; nothing of that kind remains.
+
+Thirteen resources returned data on an otherwise-empty document, all
+new-document defaults: `/db/CO_F`, `/db/CO_M`, `/db/CO_S`, `/db/CO_T`,
+`/db/STYP` and `/db/UNIT` on both products, plus `/db/STYP-M1` on Civil only,
+which is consistent with Hyper-S being Civil NX's solver. The other 536 returned
+`{"message": ""}`.
+
+**`/info` is served for `/db/*` only.** All 147 `/DESIGN/*` resource-product
+pairs 404 on introspection while the endpoint itself answers a plain GET. That
+is an API fact, not a URL-construction bug in either SDK - three casings were
+tried by hand on Gen:
+
+```text
+GET /DESIGN/RC/KDS-41-20-2022/DCTL        -> {"message": ""}
+GET /info/DESIGN/RC/KDS-41-20-2022/DCTL   -> 404
+GET /info/design/RC/KDS-41-20-2022/DCTL   -> 404
+GET /info/DESIGN/rc/kds-41-20-2022/dctl   -> 404
+GET /info/db/NODE                         -> full JSON Schema
+```
+
+This matters beyond the harnesses. `GET /info{endpoint}` is one of the three
+permitted contract sources, and for the design-code family it does not exist:
+those contracts can only be checked against the manual and against recorded live
+behaviour. `contracts/README.md` and `CLAUDE.md` now say so.
+
+Three `/db/*` endpoints also lack introspection, all Civil Hyper-S:
+`/db/IEHG-GL-M1`, `/db/IEHG-PSS-M1` and `/db/IEHG-TRUSS-M1`. They are the only
+exceptions among 402 `/db` resource-product pairs, and both SDKs found the same
+three.
+
+Both SDKs expose `info()` on design resources, where it can only ever 404. That is a
+documentation question, not a defect found here, and no SDK behaviour was
+changed on the strength of this run.
+
+Sessions were `connected` before and after, and `/db/NODE` and `/db/ELEM`
+returned zero records on both products afterwards - the sweeps issued no writes,
+and none of the roughly 2,300 GETs raised a modal dialog that blocked a session.
+The products were MIDAS Gen NX 2026 (v2.1) and MIDAS Civil NX 2026 (v2.2); the
+build string was not re-read this session, so this entry does not establish it.
+No `docs/coverage.json` level changed - every endpoint swept is already recorded
+at `read` or better, and `level` denotes verification through the Python package
+in any case.

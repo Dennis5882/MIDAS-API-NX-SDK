@@ -30,7 +30,15 @@ an implementation does not honour it.
 | --- | --- |
 | [`Dennis5882/MIDAS-API`](https://github.com/Dennis5882/MIDAS-API) `docs/manual/*.md` | Field names, types, defaults, requiredness, enums, methods |
 | `docs/live_verification_notes.md` | What a real Gen NX / Civil NX session actually did |
-| `GET /info{endpoint}` | The server's own schema, for endpoints the manual describes poorly |
+| `GET /info{endpoint}` | The server's own schema, for endpoints the manual describes poorly — **`/db/*` only**, see below |
+
+`/info` does not exist for every endpoint. Swept from both SDKs on 2026-09-01,
+it answered for 399 of 402 `/db/*` resource-product pairs and for **none of the
+147 `/DESIGN/*` pairs**, while the design endpoints themselves answer a plain
+GET. The three `/db/*` exceptions are the Civil Hyper-S trio `/db/IEHG-GL-M1`,
+`/db/IEHG-PSS-M1` and `/db/IEHG-TRUSS-M1`. So a design-code contract has two
+permitted sources, not three, and `provenance: info_schema` is not available to
+it — do not read a 404 there as a reason to fall back on an SDK.
 
 **Forbidden as a source: `src/midas_nx/` and `packages/typescript/src/`.** Not
 because they are untrustworthy — much of what is recorded here was learned while

@@ -218,6 +218,15 @@ Two things that have already caused rework:
   someone's open document without asking first. The npm one saves a checkpoint before the
   `/doc/NEW` unless `--no-save-before` is passed; that flag removes the safety net, not the
   destructive call.
+- **`/info/{endpoint}` introspection is served for `/db/*` only.** Swept from both SDKs
+  2026-09-01: it answered for 399 of 402 `/db/*` resource-product pairs and for **none of the
+  147 `/DESIGN/*` pairs**, even though those design endpoints answer a plain GET
+  (`GET /DESIGN/RC/KDS-41-20-2022/DCTL` returns `{"message": ""}` while
+  `GET /info/DESIGN/RC/KDS-41-20-2022/DCTL` is a 404, in every casing tried). It is an API
+  fact, not a URL bug in either SDK. This narrows `contracts/README.md`'s permitted sources
+  for the design-code family from three to two — the manual and recorded live behaviour — so
+  a design contract can never carry `provenance: info_schema`. The three `/db/*` exceptions
+  are the Civil Hyper-S trio `/db/IEHG-GL-M1`, `/db/IEHG-PSS-M1` and `/db/IEHG-TRUSS-M1`.
 - **`scripts/live_crud_check.py` write coverage is tracked in the script itself.** Cases carry
   `confirmed=True` only once someone has watched them pass live (134 of 166 cases as of
   2026-09-01; the first 43 landed 2026-07-29 on Civil NX, after `/db/NMAS`'s crash was
