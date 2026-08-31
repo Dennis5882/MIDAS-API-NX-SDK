@@ -5,8 +5,9 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-08-31 — **2.7.1 published**, catching both packages up to
-> three same-day revisions in the sibling manual repo. PyPI and npm have shared
+> Last updated: 2026-08-31 — **v2.7.2 prepared on `main`**. Its release tags
+> and registry publishes are pending; **2.7.1** remains the published version.
+> PyPI and npm have shared
 > one version number since 2026-08-28, at the author's explicit request; the two
 > streams were 2.3.5 and 2.4.0 and the split was confusing for one package name.
 > `CLAUDE.md`'s Releasing section was reversed to match. This line tracks
@@ -803,6 +804,7 @@ exactly why that's the honest framing rather than a stronger guarantee.
 | **2.6.1** ✅ | npm operation wrappers now enforce the reviewed Gen NX/Civil NX product availability before sending a request; validated against a real Civil NX session with full DB GET coverage and a model -> analysis -> result-table round trip. Python republished unchanged to preserve the shared version | published 2026-08-28 as `py-v2.6.1` and `js-v2.6.1` |
 | **2.7.0** ✅ | npm: `/db/BODF` generated from a reviewed contract, so `selfWeight` requires `LCNAME` and types `FV` as exactly three numbers; contracted fixed-length arrays now generate tuples rather than unbounded arrays. Python republished unchanged | published 2026-08-28 as `py-v2.7.0` and `js-v2.7.0` |
 | **2.7.1** ✅ | Catches both packages up to three same-day manual revisions. Python: 27 resource labels corrected to the manual's English, `/db/POLC-M1` regains POST after a live call disproved the chapter, `/ope/GSBG` **now raises** on contradictory `BATCH` payloads, and 11 chapter-02 docstring references follow the manual's renumbering. npm: 400 lines of new result-table wrappers, contract-generated payload types, and four payload interfaces re-declared as type aliases. Repo: `--check` gained label, method and section-heading comparisons, each of which found real drift; 31 `safeToOmit: true` claims retracted after the evidence behind them turned out to be a request that never ran | published 2026-08-30 as `py-v2.7.1` and `js-v2.7.1` |
+| **2.7.2** | Contract-migration progress and the 2026-08-31 live-verification batch: Python payload documentation gained verified moving-load, analysis-control and inelastic-hinge members; npm generated types gained reviewed manual shapes for 22 newly promoted endpoint contracts. The live harness now makes safe, verified checkpoints before dependent cases and records scratch-model evidence separately from manual facts. | prepared on `main` 2026-08-31; tags and publishes pending |
 | v0.16.0/Phase 7 (not started) | Excel round-trip extra (B2), 2 scenario examples (C3) | `pip install midas-nx[excel]` works, examples run against a live session |
 | v0.17.0+/Phase 8 (not started) | `recipes`/`easy` high-level layer (B1) once scenarios are validated from Phase 7 feedback, opt-in validation (B4) | |
 

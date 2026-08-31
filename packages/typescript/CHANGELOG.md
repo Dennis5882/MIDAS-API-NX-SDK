@@ -6,6 +6,24 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.7.2 - 2026-08-31
+
+### Changed
+
+- Generated payload declarations now use 22 additional reviewed endpoint
+  contracts, including their documented nested shapes, requirements and enum
+  values.
+- Resource metadata retains the manual's labels and punctuation for the
+  reviewed analysis-control and seismic-device resources.
+- Adds maintainer-only live CRUD and analysis harnesses that make a verified
+  checkpoint before dependent scratch-model cases.
+
+### Compatibility
+
+- The newly contracted payload declarations are more specific. Existing
+  TypeScript calls that supplied incomplete or incorrectly shaped payloads may
+  now fail typechecking; no general runtime payload validation was added.
+
 ## 2.7.1 - 2026-08-30
 
 ### Added
