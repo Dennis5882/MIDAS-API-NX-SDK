@@ -1,16 +1,21 @@
-# Codex task prompt — D1 and D2 approved
+# Codex task prompt — mechanical work only
 
-Rewritten 2026-08-31 at `fbb8d46`. The previous batch is done: the JS/TS live
-harness, the ROADMAP CI gate, and the first npm live write evidence all landed.
+Rewritten 2026-08-31 at 2.7.3, after the four contract-schema decisions closed.
 
-**The author has decided.** D1 and D2 are approved as proposed. D3 and D4 stay
-out of scope and will be discussed after a version bump. Manual-error findings
-are collected in one place rather than acted on. Paste the section below.
+**The division, set by the author.** Judgment-heavy work — schema design, deciding
+what a contradictory manual means, deciding what stays unmerged — is Claude's.
+Bounded, verifiable, repeatable work is yours. Every task below has an expected
+outcome you can check your run against; a task that turns out to need a judgment
+call is one to **stop and report**, not to decide.
+
+Nothing in `contracts/` is promotable right now — the dry run offers zero — so
+this batch is live verification, which is where the headroom is: 234 of 399
+endpoints are `read`-level only, and both harnesses already exist.
 
 ---
 
 You are working in `E:\AI Study\MIDAS-API-NX-SDK` on branch `main` — the
-`midas-nx` SDKs, published on PyPI and npm at 2.7.1. Read `CLAUDE.md`,
+`midas-nx` SDKs, published on PyPI and npm at **2.7.3**. Read `CLAUDE.md`,
 `contracts/README.md`, and `docs/contract_migration_brief.md` first. Where this
 prompt and those disagree, they win.
 
@@ -22,138 +27,126 @@ prompt and those disagree, they win.
    `docs/live_verification_notes.md`, and live `/info/{endpoint}` introspection.
 2. **Do not guess.** `unverified` is a correct answer; an invented one is not.
 3. **`documentedOptional` (docs) and `safeToOmit` (product) are separate.**
-   This matters more than usual in this batch — see D2 below.
-4. **Manual and product disagree → record both separately**, the manual's claim
-   under `manualDefects`, the product's under `contracts/verification/`.
+4. **Manual and product disagree → record both separately**: the manual's claim
+   under `manualDefects`, the product's under `contracts/verification/`, and a
+   line in `docs/manual_defects_register.md` naming the side that owns the fix.
 5. **A parity failure is an SDK defect, never a reason to edit a contract.**
 6. **Never hand-edit `contracts/drafts/` or `packages/typescript/src/generated/*`.**
-   Drafts are git-ignored build output; if a draft is wrong, fix the extractor.
+   Drafts are git-ignored build output. **Run
+   `python scripts/extract_contracts.py --manual-api-repo "E:\AI Study\MIDAS-API" --emit-all`
+   before judging what is promotable** — a stale draft directory silently
+   understated it by nine contracts once already.
 7. **`ROADMAP.md` is generated from `docs/coverage.json`** — rerun
-   `gen_roadmap.py` in the same commit. CI now enforces this.
-8. **Do not release.** Task 5 prepares a release; the author cuts it.
+   `gen_roadmap.py` in the same commit. CI fails if you forget.
+8. **Do not bump a version and do not release.** Not `src/midas_nx/__init__.py`,
+   not `package.json`. The author cuts releases. This was overstepped once.
 
-## Live-session rules — if you touch the products at all
+## Live-session rules — read before any product call
 
-This batch needs no live calls. If something makes one necessary:
-
-- **Ask the author first** and confirm both documents are empty
-  (`GET /db/NODE` and `GET /db/ELEM` answer `{"message": ""}`).
+- **Ask the author before the first product call of a session** and confirm both
+  documents are empty: `GET /db/NODE` and `GET /db/ELEM` answer
+  `{"message": ""}`.
 - **`--save-dir` is required and never inferred.** `verify_connection()["user"]`
-  is the MAPI account's email, not the NX host's Windows profile; deriving a
-  path from it raises the blocking dialog. `C:/temp` exists on both machines
-  and the author created it.
-- **Model extensions, four in two pairs**: pre-NX Gen `.mgb` / Civil `.mcb`;
-  **NX Gen NX `.mgbx` / Civil NX `.mcbz`**. `/doc/STAGAS` is the exception that
-  wants legacy `.mcb`. This repo got Civil's wrong twice; do not re-derive it.
-- **Delete every test record by its own id.** Leave both models empty.
+  is the MAPI account's email, not the NX host's Windows profile. `C:/temp`
+  exists on both machines; the author created it.
+- **Model extensions**: pre-NX Gen `.mgb` / Civil `.mcb`; **NX Gen NX `.mgbx` /
+  Civil NX `.mcbz`**. `/doc/STAGAS` is the exception that wants legacy `.mcb`.
+  This repo got Civil's wrong twice — do not re-derive it.
+- **`/doc/NEW` discards unsaved work and has crashed Gen NX.** Never call it
+  without the author confirming the open document does not matter.
+- **Delete every test record by its own id** (`DELETE {endpoint}/{id}`).
+  `DELETE {endpoint}` with an ID-keyed `Assign` body empties the whole table.
+- **A 200 is not success.** `{"message": "error status"}` = method not served;
+  `{"error": {...}}` = ran and rejected; an echoed record = success.
+- **Never hand-write a live payload.** Use `schema/live-cases.json` or a
+  contract. A hand-written fixture produces confident wrong findings.
+- Leave both models empty, and say so in the note.
 
-## Task 1 — D1: `documentedDefaultNote`
+## Task 1 — extend live write coverage (the main body of work)
 
-**Approved.** The manual's Default cell sometimes holds a description rather
-than a wire value — `System`, `Auto`, `ADD, REPLACE`. Today the extractor emits
-`# NOTE: non-literal default 'X' kept verbatim`, which is complete information
-filed as an open question, and promotion refuses it.
+165 of 399 endpoints are write-verified; 234 are read-only. A read shows the
+route exists and parses. Every field-name, enum and default defect found in this
+project so far was invisible to one.
 
-Add a `documentedDefaultNote` string to the field schema, mirroring the
-`enumNote` that already exists for the same situation on enums. Then:
+`schema/live-cases.json` holds **165 cases, 121 confirmed**. Work in small
+batches:
 
-- `documentedDefault: null` — the manual gives **no literal** value. This is
-  already what the schema says null means.
-- `documentedDefaultNote: "System"` — what the manual actually wrote.
-- `safeToOmit` stays `unverified`. A described default is not evidence about
-  the product. Do not let this batch move a single `safeToOmit`.
+1. Take the payload from a confirmed case or from the endpoint's contract.
+2. Run `POST → GET → PUT → GET → DELETE {endpoint}/{id} → GET` on an empty
+   scratch model.
+3. Record it in `docs/live_verification_notes.md`, set `docs/coverage.json`'s
+   `level` to `"write"` with the build baseline, and rerun `gen_roadmap.py` in
+   the same commit.
+4. A confirmed case that fails is a **regression** (exit 1). An unconfirmed one
+   that fails means triage the fixture first (exit 3). Never flip `confirmed` to
+   silence a failure.
 
-Clear the note in the extractor once the value is captured, the same way the
-JSON-Schema-supplied default already clears it.
+**A failure is a finding, not a blocked task.** `"Wrong Field"` from a `/db/*`
+write usually means a bad **value**, not a bad field name — vary the enum value
+before varying the fields, and record what you tried.
 
-## Task 2 — D2: requiredness may be recorded as unstated
+Known-unresolved and worth a fresh attempt: `/db/SDIS`'s LRB branch,
+`/db/WVLD` on Civil (suspected module gate), `/db/NLLP`.
 
-**Approved.** Some manual tables have no Required column at all, and
-`requirement` has no value meaning "the manual does not say". Inventing
-`optional` for a blank column is exactly the `documentedOptional`/`safeToOmit`
-conflation the schema exists to prevent, so:
+**Report, do not decide**, if a run suggests the manual is wrong about a field
+name, an enum or a method. Write the evidence down and stop there.
 
-- Add `"unstated"` to `requirement`'s enum.
-- Allow `documentedOptional: null`, **only** when `requirement` is `"unstated"`.
-  Enforce that pairing in the schema or the validator — `null` must mean "the
-  docs are silent", never "the docs say required".
-- Same treatment for a missing Value Type column where the type is genuinely
-  unstated; do not invent a type to fill it.
+## Task 2 — extend the npm live harness over the same fixture
 
-Update `contracts/README.md` for both D1 and D2 in the same commit that adds
-them. That file is authoritative and a schema change that is not described
-there is half-done.
+`packages/typescript/scripts/live-crud.mjs` and `live-analysis.mjs` read the
+same `schema/live-cases.json` and exercise only the package's public API. Seven
+endpoints and four result tables have npm evidence so far. Grow that set the
+same way, in batches.
 
-## Task 3 — promote what D1 and D2 unblock
+Two constraints specific to this side:
 
-Measured against the current tree, D1 and D2 together unblock **22 drafts** —
-16 by D1 alone, 5 by D2 alone, 1 needing both:
+- **`docs/coverage.json`'s `level` means verification through the Python
+  package** and has for its whole history. Record npm evidence in
+  `docs/live_verification_notes.md` as its own entry; do not widen `level` on an
+  npm run, which would make every historical row ambiguous.
+- Use `resources.db.<group>.<name>`, not raw `client.request`. The point is to
+  exercise what a user touches.
 
-```text
-D1: db-bngr db-cscs db-pnld db-sseis db-styp db-styp-m1
-    design-rc-kds-41-20-2022-wc-table design-src-aik-src2k-table
-    ope-lcom-conc ope-lcom-src ope-lcom-steel ope-linebmld
-    ope-storyprop ope-uslc view-display view-resultgraphic
-D2: db-matd db-mvctch db-nbof db-wvld doc-stagas
-D1+D2: ope-lcom-gen
-```
+## Task 3 — the twelve "enum values listed elsewhere" notes
 
-Expected outcome: promoted contracts **283 → 305**, npm resources whose facts a
-contract owns **240/304 → 250/304**, leaving 54 on the Python fallback.
-Re-measure rather than trusting these; if your run promotes a materially
-different set, stop and report it.
+Twelve fields across the refused drafts carry `the manual types this as an enum
+but the values are listed elsewhere in the chapter`. The values exist in the
+manual; finding them is reading, not deciding.
 
-`/db/STYP-M1` is in that list and is the one to do first — its draft has been
-complete and correct since the numbering fix and D1 was its only blocker. Once
-it is promoted, raise `docs/coverage.json`'s `vendored_at_commit` past `5c92efe`
-and confirm `check_manual_drift.py` reports `has_diff: false`.
+For each: locate the value list in the same chapter, confirm it belongs to that
+field, and teach the extractor to pick it up — **fix the extractor, never the
+draft**. If a value list is ambiguous about which field it belongs to, leave that
+one and say which.
 
-**Review each promoted contract against its manual section before committing.**
-A bulk promotion nobody read is how a wrong contract reaches
-`contracts/endpoints/`. Commit in small, reviewable groups, not one commit of 22.
+Expect this to unblock some of the 18 note-refused drafts. Re-emit drafts and
+rerun the dry run to see how many; promote only what the dry run offers, and
+review each against its manual section before committing.
 
-## Task 4 — make the manual-defect register a living document
+## Stop and report — do not decide these
 
-The author's decision: **collect these, do not act on them.** Do not edit the
-manual repo, do not contact MIDASIT, do not file anything in Jira.
+These are judgment calls, and getting one wrong puts a confidently wrong contract
+into the source of truth. Write down what you found and hand it back:
 
-**Done 2026-08-31** — `docs/manual_defects_register.md` replaces the dated
-snapshot. Entries carry an `MD-nn` id, the date found, the evidence, and which
-side owns the correction. Five are recorded:
+- **The 23 drafts refused for unmerged conditional variants.** `in` and the
+  array `when` shipped in 2.7.3 and handled every case where the manual states a
+  selector. What remains is 98 tables where the manual names **no** wire
+  discriminator — `/db/ELEM`'s `#### Wall`, `/db/NLNK`'s Angle/3Points/Vector.
+  `TYPE="WALL"` is obvious to a human and is not written down. Leaving these
+  unmerged is rule 2 working.
+- **The 7 drafts refused for "no payload fields could be parsed."** These are
+  Hyper-S `-M1` sections that delegate to a parent. Do not copy the parent's
+  fields: `/db/MATL-M1` says it matches `/db/MATL`, and live `/info` shows
+  different top-level names, fewer fields, and the `HE_*` fields on the parent
+  instead. The delegation claims are not trustworthy.
+- **Notes about a type that contradicts its own nested children, a conditional
+  with no stated condition, an unstated array item type, or a Korean cross-field
+  constraint** (`필수. true이면 BEAM_COLUMN/WALL 중 최소 1개`).
+- **Anything that would need a new schema construct.** All four decisions are
+  closed; a fifth needs the author.
 
-- `/db/STYP-M1` `DELETE` — MIDASIT article `activeMethods`
-- `/db/POLC-M1` POST — manual-repo callout
-- `/db/MATL-M1` structure — MIDASIT article note
-- `/db/IEHC` `WAreaSize` type — manual-repo transcription
-- Model file extensions — the manual's examples still show pre-NX spellings;
-  NX is `.mgbx` / `.mcbz`
-
-A new manual-versus-product finding is appended there in the same commit that
-records the live evidence. The file collects only: no edit to the manual repo,
-no contact with MIDASIT, no Jira issue, without the author's go-ahead.
-
-## Task 5 — prepare the release, do not cut it
-
-When Tasks 1–4 are done the author will cut a version. Prepare only:
-
-- Draft release notes at `docs/release_notes_vNEXT.md` and an `Unreleased`
-  section in `packages/typescript/CHANGELOG.md`. Leave the number out; the
-  author picks it, and both registries move together.
-- Lead with what actually changes for users. Note honestly that the Python and
-  npm **package surfaces** may be unchanged by this batch — it is contract and
-  schema work — and say which surface, if either, is the reason for the release.
-- Do not bump `src/midas_nx/__init__.py` or `package.json`.
-
-## What NOT to start
-
-- **D3 — conditional variant schema** (155 unmerged tables, 57 expressible) and
-  **D4 — scalar `Argument`** (nine `/doc/*` endpoints). The author will decide
-  these **after** the version bump. The measurement they will be decided on is
-  already in `docs/contract_migration_brief.md`; do not extend it, and do not
-  implement either.
-- **Stage 4** — Python generated from contracts.
-- **Any release.**
-- **Any external communication** about the manual defects.
+Also out of scope: Stage 4 (Python generated from contracts), any release, and
+any external communication about `docs/manual_defects_register.md` — no manual
+repo edit, no MIDASIT contact, no Jira issue.
 
 ## Before every commit
 
@@ -173,20 +166,19 @@ Commit messages: imperative subject, body explaining *why*. One task per commit.
 
 ## Settled — do not re-derive
 
-- **`/db/STYP-M1`** — numbering, enums and boolean condition all fixed; D1 was
-  the last blocker.
-- **Shadow gate** — widened past `/db/*` to `/DESIGN/*`.
-- **Variant measurement** — 253 supplementary tables, 155 unmerged, split
-  4 / 53 / 98 by selector evidence. This is what D3 will be decided on.
-- **npm live evidence (2026-08-31)** — seven endpoints round-tripped on both
-  products through the public API, four populated result tables read, and
-  `/db/NMAS`'s `payloadDefaults` confirmed to be sent on a real POST. All four
-  tables arrived under the unstable key `empty` and `unwrapTable()` found them
-  by shape. Harness: `packages/typescript/scripts/live-crud.mjs` and
-  `live-analysis.mjs`, reading `schema/live-cases.json`.
-- **npm independence** — the published package has zero runtime dependencies.
-  What still reads Python is the *generator*, for the 64 resources with no
-  contract, plus the `className`/`pythonModule` compatibility anchors. Task 3
-  moves that to 54.
-- **Model extensions** — pre-NX `.mgb`/`.mcb`, NX `.mgbx`/`.mcbz`; `/doc/STAGAS`
-  wants legacy `.mcb`. Wrong twice already.
+- **All four contract-schema decisions are closed.** D1 `documentedDefaultNote`
+  and D2 unstated requiredness shipped in 2.7.2; D3 array `when` with `in` and
+  D4 `scalar`/`empty` arguments shipped in 2.7.3. `contracts/README.md` states
+  each with its reasoning.
+- **319 endpoint contracts, 3,010 fields, 65 drafts awaiting review.** 252 of
+  the 304 npm resources take their facts from a contract; 52 use the reviewed
+  Python fallback.
+- **npm live evidence exists**: seven endpoints round-tripped on both products
+  through the public API, four populated result tables read, `/db/NMAS`'s
+  `payloadDefaults` confirmed sent on a real POST, and `unwrapTable()` shown
+  finding tables by shape under the unstable key `empty`.
+- **Five manual defects are registered** in `docs/manual_defects_register.md`,
+  labelled by which side owns the fix. Append new ones there; send nothing.
+- **`/db/FBLA`'s shared table** — `= 1 or 2` alongside `= 1` and `= 2` — folds
+  into both branches at generation time rather than forming a third union
+  member. That is decided and implemented.
