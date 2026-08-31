@@ -398,6 +398,27 @@
           "type": "string",
           "description": "Heading of the table that produced `fields`."
         },
+        "mergedSections": {
+          "type": "array",
+          "description": "Manual sections folded into this one contract because they document one route. The RC and SRC design chapters describe /DESIGN/.../TABLE once per result table and state that only Argument.TABLE_TYPE tells them apart; listing each section keeps that fold reviewable instead of leaving one section silently standing for the rest.",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "heading",
+              "line"
+            ],
+            "properties": {
+              "heading": {
+                "type": "string"
+              },
+              "line": {
+                "type": "integer"
+              }
+            }
+          }
+        },
         "missingColumns": {
           "type": "array",
           "description": "Columns absent from an entire manual table. This is complete provenance, not a per-field uncertainty: `documentedDefault: null` records a missing Default column honestly.",

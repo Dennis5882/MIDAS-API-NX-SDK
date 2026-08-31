@@ -46,7 +46,7 @@ import json
 import re
 import sys
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from dataclasses import field as dataclass_field
 from pathlib import Path
 from typing import Any, Optional
@@ -2071,6 +2071,9 @@ class Section:
     methods: list[str] = dataclass_field(default_factory=list)
     tables: list[ParsedTable] = dataclass_field(default_factory=list)
     variants: list[ParsedVariant] = dataclass_field(default_factory=list)
+    # Set when several manual sections documenting one route were folded
+    # into this one: (heading, line) for each, in chapter order.
+    merged_sections: tuple[tuple[str, int], ...] = ()
 
     @property
     def id(self) -> str:
@@ -2574,6 +2577,169 @@ def parse_chapter(path: Path) -> list[Section]:
     return sections
 
 
+def _merge_signature(field: ParsedField, ignore: str) -> tuple:
+    """Everything two sections must agree on for one field to be the same field.
+
+    `ignore` excuses the one field a shared route is allowed to differ on: its
+    description and its enum, and nothing else about it.
+    """
+    return (
+        field.key,
+        "" if field.key == ignore else field.description,
+        field.type,
+        repr(field.items),
+        field.requirement,
+        repr(field.documented_default),
+        field.documented_default_note,
+        () if field.key == ignore else tuple(repr(value) for value in field.enum),
+        repr(sorted(field.constraints.items())),
+        field.condition,
+        tuple(field.applies_when),
+        field.number,
+        tuple(field.notes),
+        field.products,
+        field.shared_number_group,
+        field.default_column_missing,
+        tuple(_merge_signature(child, ignore) for child in field.properties),
+    )
+
+
+def _tables_agree(left: Section, right: Section, ignore: str = "") -> bool:
+    """Do two sections describe the same request, excusing one enum field?
+
+    Headings and line numbers are deliberately not compared. The same table in
+    two sections sits at two different lines, and that is not a disagreement
+    about the endpoint.
+    """
+    if left.methods != right.methods or len(left.tables) != len(right.tables):
+        return False
+    for one, other in zip(left.tables, right.tables):
+        if tuple(one.missing_columns) != tuple(other.missing_columns):
+            return False
+        if [_merge_signature(f, ignore) for f in one.fields] != [
+            _merge_signature(f, ignore) for f in other.fields
+        ]:
+            return False
+    return True
+
+
+def _shared_route_discriminator(group: list[Section]) -> Optional[str]:
+    """The single field whose documentation is all that tells these sections apart.
+
+    Both chapters that do this state the value differently - the RC chapter
+    gives `TABLE_TYPE` a one-value enum column, the SRC chapter writes the
+    value into the description as "가능값" prose - so the candidate is any
+    top-level field, not only one already carrying an enum. That costs nothing
+    in safety: excusing a field that does not differ leaves the real difference
+    in place, so at most one key can ever explain a group.
+
+    Searched at the top level only. A nested field could in principle play the
+    same role, but nothing in the manual does it, and widening the search would
+    make a wrong fold easier to reach than a right one.
+    """
+    first = group[0]
+    candidates = dict.fromkeys(
+        field.key for table in first.tables for field in table.fields
+    )
+    explains = [
+        key for key in candidates
+        if all(_tables_agree(first, other, key) for other in group[1:])
+    ]
+    return explains[0] if len(explains) == 1 else None
+
+
+def _fold_discriminated(group: list[Section], key: str) -> Section:
+    """One section for one route, with the discriminator's values unioned.
+
+    Every section states its own value as fixed. The merged field keeps all of
+    their descriptions, joined, because "one of three" is a thing the manual
+    never says and the contract should not start saying on its behalf.
+    """
+    values: list[Any] = []
+    descriptions: list[str] = []
+    for section in group:
+        for table in section.tables:
+            for field in table.fields:
+                if field.key != key:
+                    continue
+                values += [value for value in field.enum if value not in values]
+                if field.description and field.description not in descriptions:
+                    descriptions.append(field.description)
+    description = " / ".join(descriptions)
+    tables = [
+        ParsedTable(
+            heading=table.heading,
+            line=table.line,
+            fields=[
+                replace(field, enum=list(values), description=description)
+                if field.key == key else field
+                for field in table.fields
+            ],
+            missing_columns=list(table.missing_columns),
+        )
+        for table in group[0].tables
+    ]
+    return replace(
+        group[0],
+        # Label each section before joining, so the merged name reads as three
+        # English labels rather than two labels and a stray parenthetical.
+        title=" / ".join(
+            dict.fromkeys(_english_label(s.title) or s.title for s in group if s.title)
+        ),
+        heading=" / ".join(dict.fromkeys(s.heading for s in group)),
+        tables=tables,
+        merged_sections=tuple(
+            (s.heading, s.tables[0].line if s.tables else 0) for s in group
+        ),
+    )
+
+
+def merge_shared_endpoint_sections(sections: list[Section]) -> list[Section]:
+    """Fold several manual sections documenting one route into one section.
+
+    The RC and SRC design chapters document `/DESIGN/.../TABLE` once per result
+    table, and say outright that those sections share a URI and are told apart
+    "only" by `Argument.TABLE_TYPE`. Left alone they render to one draft name
+    and silently overwrite each other; split into separate ids they would
+    invent routes the manual does not describe.
+
+    So fold, but only on the manual's own terms: either the sections agree
+    outright, or they agree everywhere except one enumerated field. Anything
+    wider is two documents disagreeing about one endpoint, which is a question
+    for a person - run_emit reports those rather than averaging them.
+    """
+    groups: dict[str, list[Section]] = {}
+    for section in sections:
+        groups.setdefault(section.id, []).append(section)
+
+    folded: dict[str, Section] = {}
+    for key, group in groups.items():
+        if len(group) == 1:
+            continue
+        first = group[0]
+        origins = tuple(
+            (s.heading, s.tables[0].line if s.tables else 0) for s in group
+        )
+        if all(_tables_agree(first, other) for other in group[1:]):
+            folded[key] = replace(first, merged_sections=origins)
+            continue
+        discriminator = _shared_route_discriminator(group)
+        if discriminator is not None:
+            folded[key] = _fold_discriminated(group, discriminator)
+
+    if not folded:
+        return sections
+    result: list[Section] = []
+    seen: set[str] = set()
+    for section in sections:
+        if section.id not in folded:
+            result.append(section)
+        elif section.id not in seen:
+            seen.add(section.id)
+            result.append(folded[section.id])
+    return result
+
+
 def load_manual(manual_repo: Path) -> tuple[list[Section], dict[str, int]]:
     manual_dir = manual_repo / "docs" / "manual"
     if not manual_dir.is_dir():
@@ -2589,7 +2755,7 @@ def load_manual(manual_repo: Path) -> tuple[list[Section], dict[str, int]]:
             )
             continue
         sections.extend(parse_chapter(path))
-    return sections, table_family
+    return merge_shared_endpoint_sections(sections), table_family
 
 
 # ---------------------------------------------------------------------------
@@ -3030,6 +3196,13 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
     lines.append("extraction:")
     lines.append(f"  source: {section.chapter_file} line {main.line if main else '?'}")
     lines.append(f"  table: {_scalar(main.heading if main else 'none found')}")
+    if section.merged_sections:
+        # Several manual sections describe this one route. Say which, so a
+        # reviewer can read each of them rather than trusting the fold.
+        lines.append("  mergedSections:")
+        for heading, origin in section.merged_sections:
+            lines.append(f"    - heading: {_scalar(heading)}")
+            lines.append(f"      line: {origin}")
     missing_columns = [table for table in section.tables if table.missing_columns]
     if missing_columns:
         lines.append("  missingColumns:")
@@ -3352,7 +3525,8 @@ def run_emit(sections: list[Section], targets: list[str], emit_all: bool) -> int
                 f"they share the draft name {section.id}.yaml. "
                 f"{previous.chapter_file} section {previous.number} was overwritten "
                 f"by {section.chapter_file} section {section.number} - only the last "
-                "one is reviewable.",
+                "one is reviewable. They disagree by more than one enumerated "
+                "field, so they were not folded into a single route.",
                 file=sys.stderr,
             )
         (DRAFT_DIR / f"{section.id}.yaml").write_text(draft, encoding="utf-8")

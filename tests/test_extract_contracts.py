@@ -567,6 +567,155 @@ def test_report_separates_resources_with_no_parsed_manual_section(
     assert "/db/NOSECTION" in output
 
 
+SHARED_ROUTE_CHAPTER = """# 98 Design — Synthetic shared route
+
+## 1. `/DESIGN/SYN/TABLE` — Alpha Forces (알파 설계력)
+
+> **공유 URI:** 1·2·3번은 동일한 URI를 사용하며 `TABLE_TYPE` 값으로만 구분됩니다.
+
+- **Methods**: `POST`
+
+### 파라미터
+
+| No. | Description | Key | Value Type | Default | Required |
+|-----|-------------|-----|------------|---------|----------|
+| 1 | Table title | `"TABLE_NAME"` | String | - | Optional |
+| 2 | Table type (fixed `"ALPHAFORCES"`) | `"TABLE_TYPE"` | String (enum) | - | Required |
+| 3 | Export path | `"EXPORT_PATH"` | String | - | Optional |
+
+## 2. `/DESIGN/SYN/TABLE` — Beta Forces (베타 설계력)
+
+- **Methods**: `POST`
+
+### 파라미터
+
+| No. | Description | Key | Value Type | Default | Required |
+|-----|-------------|-----|------------|---------|----------|
+| 1 | Table title | `"TABLE_NAME"` | String | - | Optional |
+| 2 | Table type (fixed `"BETAFORCES"`) | `"TABLE_TYPE"` | String (enum) | - | Required |
+| 3 | Export path | `"EXPORT_PATH"` | String | - | Optional |
+
+## 3. `/DESIGN/SYN/TABLE` — Gamma Forces (감마 설계력)
+
+- **Methods**: `POST`
+
+### 파라미터
+
+| No. | Description | Key | Value Type | Default | Required |
+|-----|-------------|-----|------------|---------|----------|
+| 1 | Table title | `"TABLE_NAME"` | String | - | Optional |
+| 2 | Table type (fixed `"GAMMAFORCES"`) | `"TABLE_TYPE"` | String (enum) | - | Required |
+| 3 | Export path | `"EXPORT_PATH"` | String | - | Optional |
+"""
+
+
+def _shared_route_sections(tmp_path: Path, chapter: str = SHARED_ROUTE_CHAPTER) -> list[ex.Section]:
+    path = tmp_path / "98_Design_Synthetic.md"
+    path.write_text(chapter, encoding="utf-8")
+    return ex.parse_chapter(path)
+
+
+def test_sections_sharing_one_route_fold_into_one_with_the_values_unioned(tmp_path: Path):
+    """Three manual sections, one URI: the contract must be one endpoint.
+
+    The RC design chapter documents /DESIGN/RC/KDS-41-20-2022/TABLE once per
+    result table and says the sections differ only by Argument.TABLE_TYPE.
+    Emitted apart they overwrote each other; emitted as three ids they would
+    invent two routes.
+    """
+    sections = _shared_route_sections(tmp_path)
+    assert [s.title for s in sections] == [
+        "Alpha Forces (알파 설계력)",
+        "Beta Forces (베타 설계력)",
+        "Gamma Forces (감마 설계력)",
+    ]
+
+    merged = ex.merge_shared_endpoint_sections(sections)
+    assert len(merged) == 1
+    folded = merged[0]
+    assert folded.endpoint == "/DESIGN/SYN/TABLE"
+
+    by_key = {field.key: field for field in folded.tables[0].fields}
+    assert by_key["TABLE_TYPE"].enum == ["ALPHAFORCES", "BETAFORCES", "GAMMAFORCES"]
+    # Each section calls its own value fixed. Keep all three claims rather than
+    # writing "one of three", which is a thing the manual never says.
+    assert by_key["TABLE_TYPE"].description.count("fixed") == 3
+    assert by_key["TABLE_NAME"].description == "Table title"
+
+    assert [heading.split(".")[0] for heading, _ in folded.merged_sections] == ["1", "2", "3"]
+    assert [line for _, line in folded.merged_sections] == sorted(
+        line for _, line in folded.merged_sections
+    )
+
+
+def test_a_folded_route_emits_one_draft_naming_every_section_it_came_from(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+):
+    endpoints = tmp_path / "contracts" / "endpoints"
+    drafts = tmp_path / "contracts" / "drafts"
+    endpoints.mkdir(parents=True)
+    monkeypatch.setattr(ex, "ROOT", tmp_path)
+    monkeypatch.setattr(ex, "ENDPOINT_DIR", endpoints)
+    monkeypatch.setattr(ex, "DRAFT_DIR", drafts)
+    monkeypatch.setattr(ex, "live_omission_evidence", dict)
+
+    merged = ex.merge_shared_endpoint_sections(_shared_route_sections(tmp_path))
+    assert ex.run_emit(merged, [], emit_all=True) == 0
+
+    captured = capsys.readouterr()
+    assert "WARNING" not in captured.err
+    assert "wrote 1 draft(s)" in captured.out
+
+    text = (drafts / "design-syn-table.yaml").read_text(encoding="utf-8")
+    assert "name: Alpha Forces / Beta Forces / Gamma Forces" in text
+    assert "enum: [ALPHAFORCES, BETAFORCES, GAMMAFORCES]" in text
+    assert "  mergedSections:" in text
+    assert text.count("    - heading:") == 3
+
+
+def test_a_route_whose_value_is_only_named_in_prose_folds_without_inventing_an_enum(
+    tmp_path: Path,
+):
+    """The SRC chapter writes the selector into the description, not a column.
+
+    Folding still has to happen - one URI is one endpoint - but the values it
+    never parsed as an enum must not appear as one. Both descriptions survive
+    so a reviewer can supply the enum from what the manual actually wrote.
+    """
+    chapter = SHARED_ROUTE_CHAPTER.replace(
+        'Table type (fixed `"ALPHAFORCES"`) | `"TABLE_TYPE"` | String (enum)',
+        "Table type - one of: `ALPHAFORCES` | `\"TABLE_TYPE\"` | String",
+    ).replace(
+        'Table type (fixed `"BETAFORCES"`) | `"TABLE_TYPE"` | String (enum)',
+        "Table type - one of: `BETAFORCES` | `\"TABLE_TYPE\"` | String",
+    ).replace(
+        'Table type (fixed `"GAMMAFORCES"`) | `"TABLE_TYPE"` | String (enum)',
+        "Table type - one of: `GAMMAFORCES` | `\"TABLE_TYPE\"` | String",
+    )
+    merged = ex.merge_shared_endpoint_sections(_shared_route_sections(tmp_path, chapter))
+    assert len(merged) == 1
+
+    table_type = {f.key: f for f in merged[0].tables[0].fields}["TABLE_TYPE"]
+    assert table_type.enum == []
+    for value in ("ALPHAFORCES", "BETAFORCES", "GAMMAFORCES"):
+        assert value in table_type.description
+
+
+def test_sections_disagreeing_about_more_than_one_field_are_left_unfolded(tmp_path: Path):
+    """Two documents about one endpoint is a question for a person.
+
+    /ope/GSBG is the live case: two chapters transcribe the same endpoint, one
+    with inline conditional requirements and one with bold variant headers.
+    Averaging them would publish a request shape neither chapter states.
+    """
+    chapter = SHARED_ROUTE_CHAPTER.replace(
+        "| 3 | Export path | `\"EXPORT_PATH\"` | String | - | Optional |\n\n## 2.",
+        "| 3 | Export path | `\"EXPORT_PATH\"` | String | - | Required |\n\n## 2.",
+    )
+    sections = _shared_route_sections(tmp_path, chapter)
+    assert ex.merge_shared_endpoint_sections(sections) == sections
+
+
 def test_emit_warns_when_two_manual_sections_share_a_draft_name(
     section: ex.Section,
     tmp_path: Path,
@@ -593,7 +742,14 @@ def test_emit_warns_when_two_manual_sections_share_a_draft_name(
         chapter_file="17_DB_Bridge.md",
         number="5",
         title="Repeated In Another Chapter",
+        tables=[
+            dataclasses.replace(section.tables[0], fields=section.tables[0].fields[:-1]),
+            *section.tables[1:],
+        ],
     )
+    # Folding is tried first and refuses these: they disagree about the field
+    # list itself, not about one enumerated value. What is left is the warning.
+    assert ex.merge_shared_endpoint_sections([section, repeat]) == [section, repeat]
     assert ex.run_emit([section, repeat], [], emit_all=True) == 0
 
     captured = capsys.readouterr()

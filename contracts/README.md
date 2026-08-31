@@ -96,6 +96,36 @@ splits `TYPE="FUNC"` by whether concrete data is used - in both the second
 selector is real but the manual never names it as a wire field. Those stay
 unmerged. A discriminator that is not written down cannot be transcribed.
 
+## One route, several manual sections
+
+An endpoint can be documented more than once. The RC and SRC design chapters
+describe `/DESIGN/RC/KDS-41-20-2022/TABLE` and `/DESIGN/SRC/AIK-SRC2K/TABLE`
+once per result table — five sections for two routes — and each of those
+sections says outright that it shares a URI with its siblings and is told apart
+*only* by `Argument.TABLE_TYPE`. Chapter 17 likewise repeats chapter 15's
+`/ope/GSBG` on purpose, for readers of the bridge chapter.
+
+One route is one contract. `scripts/extract_contracts.py` folds such sections
+when — and only when — the manual's own claim holds: their field tables agree
+everywhere, or agree everywhere except one field. The folded field keeps every
+value the sections named, as an `enum` where the chapter gave one, and keeps
+each section's description joined, because each section calls *its* value fixed
+and "one of three" is a thing the manual never says. `extraction.mergedSections`
+lists every section that went in, so the fold stays reviewable against the
+chapter rather than being taken on trust.
+
+Anything wider is refused, and the emit run says which sections it refused.
+`/ope/GSBG`'s two chapters transcribe one endpoint differently — one writes
+`Required (BATCH=true)` inline, the other uses the bold variant headers — and
+averaging them would publish a request shape neither chapter states. Splitting a
+shared route the other way, into one id per section, is equally wrong: it would
+invent routes the manual does not describe.
+
+Response columns are not part of the fold. They belong to a table contract under
+`contracts/tables/`, keyed by `TABLE_TYPE`. All five design-force tables are
+already contracted there against `/post/TABLE`, which chapter 23 documents as
+serving the same `TABLE_TYPE` values through the shared result-table route.
+
 ## Arguments that are not a field list
 
 `request.itemSchema` says what the argument carries: `fields` (this contract's
