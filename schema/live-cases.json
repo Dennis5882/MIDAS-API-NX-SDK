@@ -28,6 +28,7 @@
     },
     "ltsr_material": {
       "endpoint": "/db/MATL",
+      "replaceExisting": true,
       "records": {
         "1": {
           "TYPE": "STEEL",
@@ -52,6 +53,7 @@
     },
     "ltsr_section": {
       "endpoint": "/db/SECT",
+      "replaceExisting": true,
       "records": {
         "1": {
           "SECTTYPE": "DBUSER",
@@ -131,6 +133,7 @@
     },
     "wmak_thickness": {
       "endpoint": "/db/THIK",
+      "replaceExisting": true,
       "records": {
         "1": {
           "NAME": "T_PLATE",
@@ -4682,8 +4685,50 @@
       "name": "Response Spectrum Load Cases",
       "id": 1,
       "products": [
-        "gen",
         "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "NAME": "SPLC_CRUD",
+        "DIR": "XY",
+        "SCALE": 1.0,
+        "PMFT": 1.0,
+        "aFUNCNAME": [
+          "SPFC_SEED"
+        ]
+      },
+      "updatePayload": {
+        "NAME": "SPLC_CRUD",
+        "DIR": "XY",
+        "SCALE": 1.2,
+        "PMFT": 1.0,
+        "aFUNCNAME": [
+          "SPFC_SEED"
+        ]
+      },
+      "expected": {
+        "created": 1.0,
+        "updated": 1.2
+      },
+      "needs": [
+        "spfc_seed"
+      ],
+      "setup": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras5",
+      "endpoint": "/db/SPLC",
+      "name": "Response Spectrum Load Cases",
+      "id": 1,
+      "products": [
+        "gen"
       ],
       "methods": [
         "DELETE",
@@ -7178,7 +7223,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "NAME": "HSFC_CRUD",
         "TYPE": "CONST",
@@ -7739,7 +7784,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "DGNCODE": "KCI-USD12"
       },
@@ -7799,7 +7844,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "LY": 9.464111,
         "LZ": 4,
@@ -7852,7 +7897,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "AELEM": [
           2,
@@ -7909,7 +7954,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "FRAMEX": "Braced Non-sway",
         "FRAMEY": "Braced Non-sway",
@@ -7945,7 +7990,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "bNOTCHECK": false,
         "COMP": 150,
@@ -7992,7 +8037,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "TYPE": "COLUMN"
       },
@@ -8035,7 +8080,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "MARKNAME": "W1",
         "WID_LIST": [

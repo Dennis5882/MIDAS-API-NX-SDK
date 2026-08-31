@@ -7643,6 +7643,79 @@ remain unconfirmed because the responses do not identify a manual-backed value
 change. Each run saved its checkpoint under `C:/temp` and deleted test records
 individually.
 
+### extras13 Gen/Civil design fixture re-check (2026-09-01)
+
+After saving the pre-existing test model to `C:/temp`, the runner created and
+cleaned up fresh scratch models on Gen NX 2026 v2.1 and Civil NX 2026 v2.2,
+both build 08/26/2026. `/db/DCON`, `/db/LENG`, `/db/MEMB`, `/db/DCTL`,
+`/db/LTSR`, `/db/MBTP`, and `/db/WMAK` each completed
+`POST -> GET -> PUT -> GET -> DELETE {id} -> GET` on both products. The
+previous Civil-only coverage records are therefore now current dual-product
+evidence.
+
+`/db/DSTL` remains intentionally unconfirmed. Its existing Eurocode3-2:05 /
+AISC-ASD89 fixture completed on Civil, but Gen returned exactly
+`[Error] Errors detected in Steel Design Control Data.(Item:)` at POST. That
+is a product/build observation, not a basis for changing its manual-backed
+payload or contract. The checkpoints were
+`C:/temp/midas-nx-live-gen-extras13-20260901.mgbx` and
+`C:/temp/midas-nx-live-civil-extras13-20260901.mcbz`; all test records were
+deleted by individual id.
+
+The built npm package independently completed the same seven endpoints through
+its public `resources.db.*` API on both products. Before every npm batch, the
+harness saved the open document to `C:/temp`, called `doc.newProject()`, and
+verified `/db/NODE` and `/db/ELEM` were both empty before inserting fixture
+records. This caught a harness defect: it had previously saved a checkpoint but
+continued in the caller's open model. The fixture now explicitly permits only
+the new-document baseline records (`MATL`/`SECT`/`THIK` id 1) to be replaced by
+its own individually-cleanable prerequisites; every other setup collision still
+refuses to mutate. The Gen checkpoints included
+`C:/temp/midas-nx-live-gen-1788189466400.mgbx` and
+`C:/temp/midas-nx-live-gen-1788189527322.mgbx`; Civil used
+`C:/temp/midas-nx-live-civil-1788189535828.mcbz` and
+`C:/temp/midas-nx-live-civil-1788189577919.mcbz`. Follow-up reads confirmed
+both products ended with zero nodes and elements.
+
+### Civil response-spectrum load fixture re-check (2026-09-01)
+
+`/db/SPLC` again completed `POST -> GET -> PUT -> GET -> DELETE {id} -> GET`
+on Civil NX 2026 v2.2, build 08/26/2026, using the existing `SPFC_SEED`
+function prerequisite. The same fixture remains unconfirmed on Gen NX: its
+POST returns `Unknown Error`. The fixture is therefore recorded as two
+product-specific cases (Civil confirmed; Gen unconfirmed), rather than letting
+a Civil result claim a uniform cross-product result. The Civil checkpoint was
+`C:/temp/midas-nx-live-civil-extras5-20260901.mcbz`.
+
+In the same empty-scratch-model batch, `/db/SPFC`, `/db/THGC`, `/db/THFC`,
+`/db/THGA`, `/db/THNL`, and `/db/THSL` completed their existing Civil cases.
+`/db/THMS` returned `Wrong Field` at create; that response does not identify a
+manual-backed fixture correction, so it remains unconfirmed.
+
+### Domain feature current-build re-check (2026-09-01)
+
+On both empty scratch models, `/db/MADO`, `/db/SBDO`, and `/db/DOEL` again
+accepted their POSTs but had no requested record in the immediately following
+GET. `/db/MADO` is the prerequisite: it was absent at id 92 on both Gen NX
+v2.1 and Civil NX v2.2, build 08/26/2026. The `SBDO` and `DOEL` results remain
+downstream observations rather than independent failures, because their
+manual-shaped records reference that missing domain. No payload, contract, or
+coverage level was changed. Checkpoints are
+`C:/temp/midas-nx-live-gen-extras9-20260901.mgbx` and
+`C:/temp/midas-nx-live-civil-extras9-20260901.mcbz`.
+
+### Heat-source function fixture re-check (2026-09-01)
+
+`/db/HSFC` completed its full round trip on both current builds after the
+fixture created its two named prerequisite functions at ids 90 and 91, then
+used independent id 92 for the test record. The previous `confirmed: false`
+fixture state was stale evidence, not a product failure, and is now corrected.
+`/db/HAHS` still requires a SOLID element that this deliberately minimal model
+does not create; `/db/HPCE` still rejects its documented `ITEMS` array with
+`Wrong Key`. Both remain unconfirmed without any inferred payload change. The
+checkpoints are `C:/temp/midas-nx-live-gen-extras10-20260901.mgbx` and
+`C:/temp/midas-nx-live-civil-extras10-20260901.mcbz`.
+
 The built npm package independently completed `/db/EIGV` and `/db/SDST` through
 its public `resources.db.*` surface on both products. It saved
 `C:/temp/midas-nx-live-gen-1788187895868.mgbx` and
@@ -7670,3 +7743,12 @@ left `/db/TDMF` and `/db/RPSC` failing at create on both products, and
 `/db/STRPSSM` failing at create on Civil. These are current-build reproductions,
 not evidence for changing fields, values, or contracts. All runs saved to
 `C:/temp` and left the throwaway documents empty after individual cleanup.
+
+### Session-close scratch-state check (2026-09-01)
+
+Before closing this batch, the two latest scratch documents were saved as
+`C:/temp/midas-nx-live-gen-final-scratch-20260901.mgbx` and
+`C:/temp/midas-nx-live-civil-final-scratch-20260901.mcbz`, then each product
+received `/doc/NEW`. Read-only table reads afterward returned zero `/db/NODE`
+records and zero `/db/ELEM` records on both products. The open documents are
+therefore empty at session end.

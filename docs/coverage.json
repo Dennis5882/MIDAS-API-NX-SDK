@@ -3676,17 +3676,16 @@
       "status": "implemented",
       "module": "midas_nx.db.dynamic_loads",
       "live_verified": {
-        "date": "2026-08-16",
+        "date": "2026-09-01",
         "products": [
-          "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write attempt 2026-08-16 (build 08/14/2026): passed a full create->GET->update->GET->delete round trip on Civil NX but Gen NX answered \"Unknown Error\" on create with the identical payload, reproduced twice -- possibly needs an eigenvalue/modal analysis control setup on Gen that Civil doesn't require, not investigated further. Left at level=read pending a uniform pass, same treatment as LCOM-SEISMIC's reversed asymmetry earlier today.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Civil NX completed create->GET->update->GET->delete again on 2026-09-01, build 08/26/2026. Gen NX continues to answer \"Unknown Error\" on create with the identical payload; it may require eigenvalue/modal analysis control setup, which remains unverified. Coverage is deliberately Civil-only rather than treating that product difference as a payload or contract change.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
-        "level": "read",
+        "level": "write",
         "outcome": "success_empty"
       }
     },
@@ -4189,15 +4188,15 @@
       "status": "implemented",
       "module": "midas_nx.db.construction_stage",
       "live_verified": {
-        "date": "2026-08-17",
+        "date": "2026-09-01",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "2026-08-17: write-round-trip confirmed live (batch 10), both products. docs/coverage.json/live_crud_check.py's extras10 tier.",
+        "method": "2026-08-17: write-round-trip confirmed live (batch 10), both products. Reconfirmed on both current builds 2026-09-01 with the id-92 fixture after its two prerequisite function records.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
         "level": "write",
         "outcome": "success_empty"
@@ -5451,13 +5450,15 @@
       "status": "implemented",
       "module": "midas_nx.db.design",
       "live_verified": {
-        "date": "2026-08-24",
+        "date": "2026-09-01",
         "products": [
+          "gen",
           "civil"
         ],
-        "method": "2026-08-24 (batch 13): write-round-trip confirmed live on Civil NX (create->read->update->read->delete->read). Manual worked-example DGNCODE values (ACI318-19/ACI318M-19/ACI318-14/ACI318M-14, KDS 24 14 21 : 2021) all answer Wrong Field on this license, on both POST and PUT -- reads as a country-code license/module gate, not a request-shape bug. KCI-USD12/KCI-USD07 round-trip cleanly. Gen NX session was disconnected this session -- not yet run there; do not treat as Gen-confirmed.",
+        "method": "2026-08-24 (batch 13): write-round-trip confirmed live on Civil NX (create->read->update->read->delete->read). Manual worked-example DGNCODE values (ACI318-19/ACI318M-19/ACI318-14/ACI318M-14, KDS 24 14 21 : 2021) all answer Wrong Field on this license, on both POST and PUT -- reads as a country-code license/module gate, not a request-shape bug. KCI-USD12/KCI-USD07 round-trip cleanly. Reconfirmed on both Gen NX and Civil NX 2026-09-01, build 08/26/2026.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
         "level": "write",
         "outcome": "success_empty"
@@ -5474,13 +5475,14 @@
       "status": "implemented",
       "module": "midas_nx.db.design",
       "live_verified": {
-        "date": "2026-08-24",
+        "date": "2026-09-01",
         "products": [
           "civil"
         ],
-        "method": "2026-08-24 (batch 13): write-round-trip confirmed live on Civil NX (create->read->update->read->delete->read). Manual worked-example DGNCODE \"AISC(16th)-LRFD22\" (and every other tested non-Eurocode/ASD89 code -- KDS/KBC/CSA/GB/BS/AS/IS/DIN/SIA/NBR/JGJ/AIJ families) answers \"[Error] Errors detected in Steel Design Control Data.\" on this license, with or without a STEEL material present in the model -- same license/module gate as DCON. Eurocode3-2:05/AISC-ASD89 round-trip cleanly. Gen NX session was disconnected this session -- not yet run there; do not treat as Gen-confirmed.",
+        "method": "2026-08-24 (batch 13): write-round-trip confirmed live on Civil NX (create->read->update->read->delete->read). Manual worked-example DGNCODE \"AISC(16th)-LRFD22\" (and every other tested non-Eurocode/ASD89 code -- KDS/KBC/CSA/GB/BS/AS/IS/DIN/SIA/NBR/JGJ/AIJ families) answers \"[Error] Errors detected in Steel Design Control Data.\" on this license, with or without a STEEL material present in the model -- same license/module gate as DCON. Eurocode3-2:05/AISC-ASD89 round-trip cleanly on Civil. On 2026-09-01 Gen NX returned \"[Error] Errors detected in Steel Design Control Data.(Item:)\" for that same fixture; retain Civil-only write coverage.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
         "level": "write",
         "outcome": "success_empty"
@@ -5520,13 +5522,15 @@
       "status": "implemented",
       "module": "midas_nx.db.design",
       "live_verified": {
-        "date": "2026-08-24",
+        "date": "2026-09-01",
         "products": [
+          "gen",
           "civil"
         ],
-        "method": "2026-08-24 (batch 13): write-round-trip confirmed live on Civil NX (create->read->update->read->delete->read). Clean write round trip, no findings. Gen NX session was disconnected this session -- not yet run there; do not treat as Gen-confirmed.",
+        "method": "2026-08-24 (batch 13): write-round-trip confirmed live on Civil NX (create->read->update->read->delete->read). Reconfirmed the same clean full round trip on Gen NX and Civil NX 2026-09-01, build 08/26/2026.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
         "level": "write",
         "outcome": "success_empty"
@@ -5543,13 +5547,15 @@
       "status": "implemented",
       "module": "midas_nx.db.design",
       "live_verified": {
-        "date": "2026-08-24",
+        "date": "2026-09-01",
         "products": [
+          "gen",
           "civil"
         ],
-        "method": "2026-08-24 (batch 13): write-round-trip confirmed live on Civil NX (create->read->update->read->delete->read). AELEM must group elements sharing the same auto-detected member type (COLUMN vs BEAM, from orientation) -- grouping a vertical element with horizontal ones answers \"Not Same Member Type\"; elements sharing one orientation group and round-trip cleanly. Gen NX session was disconnected this session -- not yet run there; do not treat as Gen-confirmed.",
+        "method": "2026-08-24 (batch 13): write-round-trip confirmed live on Civil NX (create->read->update->read->delete->read). AELEM must group elements sharing the same auto-detected member type (COLUMN vs BEAM, from orientation) -- grouping a vertical element with horizontal ones answers \"Not Same Member Type\"; elements sharing one orientation group and round-trip cleanly. Reconfirmed the same full round trip on Gen NX and Civil NX 2026-09-01, build 08/26/2026.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
         "level": "write",
         "outcome": "success_empty"
@@ -5566,13 +5572,15 @@
       "status": "implemented",
       "module": "midas_nx.db.design",
       "live_verified": {
-        "date": "2026-08-24",
+        "date": "2026-09-01",
         "products": [
+          "gen",
           "civil"
         ],
-        "method": "2026-08-24 (batch 13): write-round-trip confirmed live on Civil NX (create->read->update->read->delete->read). Clean write round trip, no findings. Gen NX session was disconnected this session -- not yet run there; do not treat as Gen-confirmed.",
+        "method": "2026-08-24 (batch 13): write-round-trip confirmed live on Civil NX (create->read->update->read->delete->read). Reconfirmed the same clean full round trip on Gen NX and Civil NX 2026-09-01, build 08/26/2026.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
         "level": "write",
         "outcome": "success_empty"
@@ -5589,13 +5597,15 @@
       "status": "implemented",
       "module": "midas_nx.db.design",
       "live_verified": {
-        "date": "2026-08-24",
+        "date": "2026-09-01",
         "products": [
+          "gen",
           "civil"
         ],
-        "method": "2026-08-24 (batch 13): write-round-trip confirmed live on Civil NX (create->read->update->read->delete->read). Clean write round trip, no findings. Gen NX session was disconnected this session -- not yet run there; do not treat as Gen-confirmed.",
+        "method": "2026-08-24 (batch 13): write-round-trip confirmed live on Civil NX (create->read->update->read->delete->read). Reconfirmed the same clean full round trip on Gen NX and Civil NX 2026-09-01, build 08/26/2026.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
         "level": "write",
         "outcome": "success_empty"
@@ -5612,13 +5622,15 @@
       "status": "implemented",
       "module": "midas_nx.db.design",
       "live_verified": {
-        "date": "2026-08-24",
+        "date": "2026-09-01",
         "products": [
+          "gen",
           "civil"
         ],
-        "method": "2026-08-24 (batch 13): write-round-trip confirmed live on Civil NX (create->read->update->read->delete->read). Clean write round trip, no findings. Gen NX session was disconnected this session -- not yet run there; do not treat as Gen-confirmed.",
+        "method": "2026-08-24 (batch 13): write-round-trip confirmed live on Civil NX (create->read->update->read->delete->read). Reconfirmed the same clean full round trip on Gen NX and Civil NX 2026-09-01, build 08/26/2026.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
         "level": "write",
         "outcome": "success_empty"
@@ -5635,13 +5647,15 @@
       "status": "implemented",
       "module": "midas_nx.db.design",
       "live_verified": {
-        "date": "2026-08-24",
+        "date": "2026-09-01",
         "products": [
+          "gen",
           "civil"
         ],
-        "method": "2026-08-24 (batch 13): write-round-trip confirmed live on Civil NX (create->read->update->read->delete->read). Clean write round trip, no findings. Gen NX session was disconnected this session -- not yet run there; do not treat as Gen-confirmed.",
+        "method": "2026-08-24 (batch 13): write-round-trip confirmed live on Civil NX (create->read->update->read->delete->read). Reconfirmed the same clean full round trip on Gen NX and Civil NX 2026-09-01, build 08/26/2026.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
         "level": "write",
         "outcome": "success_empty"

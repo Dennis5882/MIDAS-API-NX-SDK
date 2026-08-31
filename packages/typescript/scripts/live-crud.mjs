@@ -8,9 +8,9 @@
  * payloads come only from schema/live-cases.json, emitted by Python's
  * scripts/live_crud_check.py; never copy a live payload into this file.
  * Before any mutation it saves a timestamped checkpoint in an explicitly
- * configured directory on the NX machine, preventing MIDAS NX's save dialog
- * from blocking a later analysis run. An authenticated MAPI user is not a
- * reliable Windows-profile name, so never derive a server path from it.
+ * configured directory on the NX machine, then creates and verifies a fresh
+ * scratch document. An authenticated MAPI user is not a reliable Windows-
+ * profile name, so never derive a server path from it.
  * Pass --no-save-before only when that side effect was explicitly reviewed.
  *
  * Usage:
@@ -120,7 +120,13 @@ function setupRecords(prerequisite, targetEndpoint) {
     if (!seed || typeof seed.endpoint !== "string" || typeof seed.records !== "object" || seed.records === null) {
       throw new Error(`${targetEndpoint}: fixture seed ${prerequisite.seed} is invalid.`);
     }
-    return { endpoint: seed.endpoint, records: seed.records };
+    return {
+      endpoint: seed.endpoint,
+      records: seed.records,
+      // Only an emitted fixture can opt into replacing a record supplied by
+      // /doc/NEW. Ordinary setup collisions remain a hard safety failure.
+      replaceExisting: seed.replaceExisting === true,
+    };
   }
   if (typeof prerequisite.endpoint !== "string" || !Number.isInteger(prerequisite.id)) {
     throw new Error(`${targetEndpoint}: fixture setup must name a seed or an endpoint/id source case.`);
@@ -130,6 +136,7 @@ function setupRecords(prerequisite, targetEndpoint) {
   return {
     endpoint: prerequisite.endpoint,
     records: { [prerequisite.id]: source.createPayload },
+    replaceExisting: false,
   };
 }
 
@@ -177,6 +184,15 @@ async function deleteAndVerify(resource, id, client, endpoint) {
   }
 }
 
+async function requireEmptyScratchDocument(client) {
+  const node = resourceFor("/db/NODE");
+  const element = resourceFor("/db/ELEM");
+  const [nodes, elements] = await Promise.all([node.items(client), element.items(client)]);
+  if (Object.keys(nodes).length || Object.keys(elements).length) {
+    throw new Error("/doc/NEW did not leave an empty NODE/ELEM scratch document; refusing live mutations.");
+  }
+}
+
 async function runCase(liveCase, client) {
   const resource = resourceFor(liveCase.endpoint);
   if (!liveCase.methods.includes("DELETE") || !resource.metadata.methods.includes("DELETE")) {
@@ -194,10 +210,14 @@ async function runCase(liveCase, client) {
       }
       const before = await sourceResource.items(client);
       const requestedIds = Object.keys(source.records).map(Number);
-      for (const id of requestedIds) {
-        if (Object.hasOwn(before, id)) {
+      const collisions = requestedIds.filter((id) => Object.hasOwn(before, id));
+      if (collisions.length && !source.replaceExisting) {
+        for (const id of collisions) {
           throw new Error(`${liveCase.endpoint}: setup ${source.endpoint}/${id} already exists; refusing to overwrite a scratch record.`);
         }
+      }
+      for (const id of collisions) {
+        await deleteAndVerify(sourceResource, id, client, source.endpoint);
       }
       await sourceResource.create(source.records, client);
       const after = await sourceResource.items(client);
@@ -354,6 +374,9 @@ async function main() {
     await doc.saveAs(path, { client });
     console.log(`SAVED ${path}`);
   }
+  await doc.newProject({ client });
+  await requireEmptyScratchDocument(client);
+  console.log("CREATED empty scratch document");
 
   const results = [];
   for (const liveCase of cases) {

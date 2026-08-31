@@ -339,6 +339,10 @@ BASE_MODEL_SEEDS: Dict[str, Dict[str, Any]] = {
     # expressed as ordered, individually-cleanable setup records.
     "ltsr_material": {
         "endpoint": Material.ENDPOINT,
+        # /doc/NEW supplies C24 at id 1. The npm harness may delete that
+        # disposable baseline record before it creates this fixture's S450;
+        # never infer this permission from an ordinary setup collision.
+        "replaceExisting": True,
         "records": {
             "1": {
                 "TYPE": "STEEL", "NAME": "DB_Steel", "HE_SPEC": 0,
@@ -351,6 +355,9 @@ BASE_MODEL_SEEDS: Dict[str, Dict[str, Any]] = {
     },
     "ltsr_section": {
         "endpoint": Section.ENDPOINT,
+        # /doc/NEW supplies an unrelated concrete Column at id 1. The npm
+        # fixture needs its own H beam section at that documented reference.
+        "replaceExisting": True,
         "records": {
             "1": {
                 "SECTTYPE": "DBUSER", "SECT_NAME": "H300x150",
@@ -394,6 +401,9 @@ BASE_MODEL_SEEDS: Dict[str, Dict[str, Any]] = {
     # nodes, and plate separate so the npm runner can clean each record by id.
     "wmak_thickness": {
         "endpoint": Thickness.ENDPOINT,
+        # The new-document baseline also reserves id 1 for a thickness. Use
+        # the fixture's named plate thickness instead of assuming equivalence.
+        "replaceExisting": True,
         "records": {
             "1": {
                 "NAME": "T_PLATE", "TYPE": "VALUE", "bINOUT": False,
@@ -1931,17 +1941,24 @@ def _extras5_cases() -> List[Case]:
         # reproduced twice. Possibly needs an eigenvalue/modal analysis
         # control setup on Gen that Civil doesn't require -- not
         # investigated further. Left unconfirmed rather than flag Gen as a
-        # false-positive regression every run. aFUNCNAME references the
-        # spfc_seed record by name.
-        Case(
-            ResponseSpectrumLoadCase,
-            {"NAME": "SPLC_CRUD", "DIR": "XY", "SCALE": 1.0, "PMFT": 1.0,
-             "aFUNCNAME": ["SPFC_SEED"]},
-            {"NAME": "SPLC_CRUD", "DIR": "XY", "SCALE": 1.2, "PMFT": 1.0,
-             "aFUNCNAME": ["SPFC_SEED"]},
-            lambda p: p.get("SCALE"), 1.0, 1.2,
-            needs=("spfc_seed",),
-        ),
+        # false-positive regression every run. Civil re-confirmed this full
+        # round trip on 2026-09-01; Gen still answers "Unknown Error".
+        # aFUNCNAME references the spfc_seed record by name.
+        *[
+            Case(
+                ResponseSpectrumLoadCase,
+                {"NAME": "SPLC_CRUD", "DIR": "XY", "SCALE": 1.0, "PMFT": 1.0,
+                 "aFUNCNAME": ["SPFC_SEED"]},
+                {"NAME": "SPLC_CRUD", "DIR": "XY", "SCALE": 1.2, "PMFT": 1.0,
+                 "aFUNCNAME": ["SPFC_SEED"]},
+                lambda p: p.get("SCALE"), 1.0, 1.2,
+                needs=("spfc_seed",), products=products, confirmed=confirmed,
+            )
+            for products, confirmed in (
+                (("civil",), True),
+                (("gen",), False),
+            )
+        ],
         # ⚠️ The manual flags this "CIVIL NX 전용" (Civil-only) in prose,
         # matching db/dynamic_loads.py's own docstring note that it was
         # already found to answer on Gen NX too (empty-table route+/info
@@ -2828,7 +2845,7 @@ def _extras10_cases() -> List[Case]:
             {"NAME": "HSFC_CRUD", "TYPE": "CONST", "TEMP_CONST": 10},
             {"NAME": "HSFC_CRUD", "TYPE": "CONST", "TEMP_CONST": 25},
             lambda p: p.get("TEMP_CONST"), 10, 25,
-            item_id=92, needs=("hsfc_seed",),
+            item_id=92, needs=("hsfc_seed",), confirmed=True,
         ),
         # ⚠️ Keyed by element id. Confirmed live 2026-08-16 (Civil NX
         # v2.2, build 08/14/2026) that Heat Source Assignment rejects both
@@ -3088,11 +3105,10 @@ def _extras13_cases() -> List[Case]:
     definitions, and mark overrides. All are simple singleton or
     element-keyed tables, no analysis run needed.
 
-    All 8 round-tripped clean on Civil NX 2026-08-24 (18/18 incl. core).
-    Gen NX was disconnected that session and has never run this tier --
-    confirmed stays False on every Case here until it does; don't flip it
-    from the Civil result alone (see EIGV/BCCT's batch-8/11 correction for
-    why that's a real mistake, not a formality).
+    On 2026-09-01, seven cases round-tripped on both current builds. DSTL
+    remains unconfirmed: its documented fixture completes on Civil but Gen
+    returns a Steel Design Control Data error. Keep that product difference
+    explicit rather than marking the shared case confirmed.
 
     Deferred: /db/RCHK
     (Civil-only, large nested vMAIN/vSUB_BAR/vLAYER rebar-check structures)
@@ -3120,7 +3136,7 @@ def _extras13_cases() -> List[Case]:
             {"DGNCODE": "KCI-USD12"},
             {"DGNCODE": "KCI-USD07"},
             lambda p: p.get("DGNCODE"), "KCI-USD12", "KCI-USD07",
-            item_id=1,
+            item_id=1, confirmed=True,
         ),
         Case(
             SteelDesignCode,
@@ -3138,7 +3154,7 @@ def _extras13_cases() -> List[Case]:
             {"LY": 9.464111, "LZ": 4, "LB": 4, "bNOTUSE": False,
              "bAUTOCALC": False, "LT": 5.0},
             lambda p: p.get("LT"), 9.464111, 5.0,
-            item_id=2,
+            item_id=2, confirmed=True,
             setup=(
                 {"seed": "ltsr_material"},
                 {"seed": "ltsr_section"},
@@ -3156,7 +3172,7 @@ def _extras13_cases() -> List[Case]:
             {"AELEM": [2, 3], "bREVERSE": False},
             {"AELEM": [2, 3], "bREVERSE": True},
             lambda p: p.get("bREVERSE"), False, True,
-            item_id=1,
+            item_id=1, confirmed=True,
             setup=(
                 {"seed": "ltsr_material"},
                 {"seed": "ltsr_section"},
@@ -3173,7 +3189,7 @@ def _extras13_cases() -> List[Case]:
             {"FRAMEX": "Braced Non-sway", "FRAMEY": "Unbraced Sway",
              "bAUTOKF": True, "DT": "3D"},
             lambda p: p.get("DT"), "XY", "3D",
-            item_id=1,
+            item_id=1, confirmed=True,
         ),
         # Keyed by a real base-model BEAM element id (2), not the design-member
         # record id (1).  Both products returned "Not Found Key" for id 1 and
@@ -3183,7 +3199,7 @@ def _extras13_cases() -> List[Case]:
             {"bNOTCHECK": False, "COMP": 150, "TENS": 400},
             {"bNOTCHECK": False, "COMP": 200, "TENS": 300},
             lambda p: p.get("COMP"), 150, 200,
-            item_id=2,
+            item_id=2, confirmed=True,
             setup=(
                 {"seed": "ltsr_material"},
                 {"seed": "ltsr_section"},
@@ -3198,7 +3214,7 @@ def _extras13_cases() -> List[Case]:
             {"TYPE": "COLUMN"},
             {"TYPE": "BEAM"},
             lambda p: p.get("TYPE"), "COLUMN", "BEAM",
-            item_id=2,
+            item_id=2, confirmed=True,
             setup=(
                 {"seed": "ltsr_material"},
                 {"seed": "ltsr_section"},
@@ -3213,7 +3229,7 @@ def _extras13_cases() -> List[Case]:
             {"MARKNAME": "W1", "WID_LIST": [4]},
             {"MARKNAME": "W1_RENAMED", "WID_LIST": [4]},
             lambda p: p.get("MARKNAME"), "W1", "W1_RENAMED",
-            item_id=1,
+            item_id=1, confirmed=True,
             setup=(
                 {"seed": "ltsr_material"},
                 {"seed": "wmak_thickness"},
@@ -3429,7 +3445,7 @@ TIERS: List[Tier] = [
     Tier("extras10", "batch 10: standalone subset of db.construction_stage's heat-of-hydration family (ETFC/CCFC/HSFC/STBK/HSTG confirmed; HAHS needs a SOLID element this fixture lacks; HPCE fails live; HECB/HSPT/CSCS deferred)", _extras10_seeds, _extras10_cases),
     Tier("extras11", "batch 11a/c: /db/STCT (fails live -- iITER/TOL silently don't persist), /db/HSPT confirmed, /db/HECB fails live (same SOLID-element gap as HAHS)", _extras11_seeds, _extras11_cases),
     Tier("extras12", "batch 12: db.bridge in full, all 4 confirmed (GSBG/GCMB/CAMB Civil-only, ULFC both products)", _extras12_seeds, _extras12_cases),
-    Tier("extras13", "batch 13: tractable non-rebar subset of db.design (8 of 13, all clean on Civil; Gen not yet run; RCHK/REBB/REBC/REBW/REBR deferred)", _no_seeds, _extras13_cases),
+    Tier("extras13", "batch 13: tractable non-rebar subset of db.design (7 confirmed both products; DSTL Civil-only success/Gen failure; RCHK/REBB/REBC/REBW/REBR deferred)", _no_seeds, _extras13_cases),
     Tier("extras14", "batch 14: the 12 Civil-only-by-design endpoints (5 db.moving_loads, 7 db.analysis_control Hyper-S/-M1), all confirmed", _extras14_seeds, _extras14_cases),
 ]
 

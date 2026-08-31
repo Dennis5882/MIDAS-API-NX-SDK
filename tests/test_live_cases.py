@@ -168,3 +168,60 @@ def test_live_case_fixture_marks_reconfirmed_civil_analysis_cases() -> None:
 
     assert set(civil_cases) == {"/db/EIGV", "/db/BCCT"}
     assert all(case["confirmed"] is True for case in civil_cases.values())
+
+
+def test_live_case_fixture_marks_current_design_round_trips() -> None:
+    cases = json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
+    confirmed = {
+        case["endpoint"]: case["confirmed"]
+        for case in cases
+        if case["endpoint"] in {
+            "/db/DCON", "/db/DSTL", "/db/LENG", "/db/MEMB",
+            "/db/DCTL", "/db/LTSR", "/db/MBTP", "/db/WMAK",
+        }
+    }
+
+    assert confirmed == {
+        "/db/DCON": True,
+        "/db/DSTL": False,
+        "/db/LENG": True,
+        "/db/MEMB": True,
+        "/db/DCTL": True,
+        "/db/LTSR": True,
+        "/db/MBTP": True,
+        "/db/WMAK": True,
+    }
+
+
+def test_live_case_fixture_marks_current_heat_source_round_trip() -> None:
+    cases = json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
+    hsfc = next(case for case in cases if case["endpoint"] == "/db/HSFC")
+
+    assert hsfc["confirmed"] is True
+    assert hsfc["id"] == 92
+    assert hsfc["needs"] == ["hsfc_seed"]
+
+
+def test_live_case_fixture_explicitly_replaces_new_project_baselines() -> None:
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    material = fixture["seeds"]["ltsr_material"]
+    section = fixture["seeds"]["ltsr_section"]
+    thickness = fixture["seeds"]["wmak_thickness"]
+
+    assert material["endpoint"] == "/db/MATL"
+    assert material["replaceExisting"] is True
+    assert material["records"]["1"]["PARAM"][0]["DB"] == "S450"
+    assert section["endpoint"] == "/db/SECT"
+    assert section["replaceExisting"] is True
+    assert thickness["endpoint"] == "/db/THIK"
+    assert thickness["replaceExisting"] is True
+
+
+def test_live_case_fixture_splits_product_asymmetric_response_spectrum_load() -> None:
+    cases = json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
+    splc = [case for case in cases if case["endpoint"] == "/db/SPLC"]
+
+    assert [(case["products"], case["confirmed"]) for case in splc] == [
+        (["civil"], True),
+        (["gen"], False),
+    ]
