@@ -3333,17 +3333,41 @@ def run_emit(sections: list[Section], targets: list[str], emit_all: bool) -> int
 
     DRAFT_DIR.mkdir(parents=True, exist_ok=True)
     evidence = live_omission_evidence()
-    written = skipped = 0
+    # One endpoint can hold several manual sections - a chapter that deliberately
+    # repeats another chapter's endpoint, or one endpoint documented once per
+    # result table.  They share a draft name, so the last one silently replaced
+    # the rest and only the count gave it away.  Keep last-write-wins, but say so.
+    written: dict[str, Section] = {}
+    overwritten = 0
+    skipped = 0
     for section in chosen:
         if section.id in promoted:
             skipped += 1
             continue
         draft = render_draft(section, evidence.get(section.endpoint))
+        if (previous := written.get(section.id)) is not None:
+            overwritten += 1
+            print(
+                f"WARNING: {section.endpoint} has more than one manual section and "
+                f"they share the draft name {section.id}.yaml. "
+                f"{previous.chapter_file} section {previous.number} was overwritten "
+                f"by {section.chapter_file} section {section.number} - only the last "
+                "one is reviewable.",
+                file=sys.stderr,
+            )
         (DRAFT_DIR / f"{section.id}.yaml").write_text(draft, encoding="utf-8")
-        written += 1
+        written[section.id] = section
         if not emit_all:
             print(f"  {section.endpoint:<45} -> contracts/drafts/{section.id}.yaml")
-    print(f"\nwrote {written} draft(s); skipped {skipped} already promoted to contracts/endpoints/")
+    print(
+        f"\nwrote {len(written)} draft(s); skipped {skipped} already promoted "
+        "to contracts/endpoints/"
+    )
+    if overwritten:
+        print(
+            f"{overwritten} further section(s) reused a draft name and replaced "
+            "what was there - see the warnings above before reviewing those drafts."
+        )
     print("Every draft needs review before it can validate - see the header of each file.")
     return 0
 

@@ -8,6 +8,7 @@ into evidence, and the CI gate built on the difference between those two would
 stop meaning anything.
 """
 
+import dataclasses
 import json
 import sys
 from pathlib import Path
@@ -564,6 +565,50 @@ def test_report_separates_resources_with_no_parsed_manual_section(
     output = capsys.readouterr().out
     assert "1 without a parsed manual section." in output
     assert "/db/NOSECTION" in output
+
+
+def test_emit_warns_when_two_manual_sections_share_a_draft_name(
+    section: ex.Section,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+):
+    """Two sections, one draft name: the later one wins and must say so.
+
+    A chapter that repeats another chapter's endpoint, and an endpoint
+    documented once per result table, both land here. Overwriting is
+    tolerable; overwriting in silence is not - the only symptom used to be a
+    written count larger than the number of files on disk.
+    """
+    endpoints = tmp_path / "contracts" / "endpoints"
+    drafts = tmp_path / "contracts" / "drafts"
+    endpoints.mkdir(parents=True)
+    monkeypatch.setattr(ex, "ROOT", tmp_path)
+    monkeypatch.setattr(ex, "ENDPOINT_DIR", endpoints)
+    monkeypatch.setattr(ex, "DRAFT_DIR", drafts)
+    monkeypatch.setattr(ex, "live_omission_evidence", dict)
+
+    repeat = dataclasses.replace(
+        section,
+        chapter_file="17_DB_Bridge.md",
+        number="5",
+        title="Repeated In Another Chapter",
+    )
+    assert ex.run_emit([section, repeat], [], emit_all=True) == 0
+
+    captured = capsys.readouterr()
+    assert [path.name for path in drafts.glob("*.yaml")] == ["db-synth.yaml"]
+    assert "wrote 1 draft(s)" in captured.out
+    assert "1 further section(s) reused a draft name" in captured.out
+    assert "WARNING: /db/SYNTH" in captured.err
+    assert (
+        f"{section.chapter_file} section {section.number} was overwritten "
+        "by 17_DB_Bridge.md section 5"
+    ) in captured.err
+    # Windows consoles are cp949 and stderr is not reconfigured, so a manual
+    # title in this message would crash the run it is trying to explain.
+    assert captured.err.isascii()
+    assert "Repeated In Another Chapter" in (drafts / "db-synth.yaml").read_text(encoding="utf-8")
 
 
 def test_conditional_variant_tables_are_reported_not_merged(section: ex.Section):
