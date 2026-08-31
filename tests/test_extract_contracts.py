@@ -1075,6 +1075,32 @@ def test_claiming_safe_to_omit_requires_evidence():
     assert not list(validator.iter_errors(field))
 
 
+def test_documented_default_note_requires_a_null_literal_default():
+    """Manual prose must never be mistaken for a literal wire default."""
+    jsonschema = pytest.importorskip("jsonschema")
+    import json
+
+    schema = json.loads(
+        (ROOT / "contracts" / "schema" / "endpoint-contract.schema.json").read_text(encoding="utf-8")
+    )
+    field = {
+        "key": "MODE",
+        "type": "string",
+        "requirement": "optional",
+        "documentedDefault": "AUTO",
+        "documentedDefaultNote": "Auto",
+        "documentedOptional": True,
+        "safeToOmit": "unverified",
+        "provenance": "manual",
+    }
+    validator = jsonschema.Draft202012Validator(schema["$defs"]["field"])
+
+    assert any("None was expected" in error.message for error in validator.iter_errors(field))
+
+    field["documentedDefault"] = None
+    assert not list(validator.iter_errors(field))
+
+
 def test_field_names_that_yaml_would_mangle_are_quoted(section: ex.Section):
     """`NO` is a real MIDAS field name and a YAML 1.1 boolean."""
     draft = yaml.safe_load(ex.render_draft(section))
@@ -1805,14 +1831,30 @@ def test_repeated_child_key_is_retained_under_each_numbered_parent(tmp_path: Pat
 
 
 @pytest.mark.parametrize(
-    ("table_default", "schema_default", "has_note"),
+    ("table_default", "schema_default", "expected_default", "expected_note"),
     [
-        pytest.param("AUTO", '"AUTO"', False, id="matching_schema_string_confirms_bare_default"),
-        pytest.param("AUTO", '"MANUAL"', True, id="different_schema_default_stays_unverified"),
+        pytest.param(
+            "AUTO",
+            '"AUTO"',
+            "AUTO",
+            None,
+            id="matching_schema_string_confirms_bare_default",
+        ),
+        pytest.param(
+            "AUTO",
+            '"MANUAL"',
+            None,
+            "AUTO",
+            id="different_schema_default_preserves_manual_prose_note",
+        ),
     ],
 )
 def test_schema_default_confirms_only_the_same_bare_table_default(
-    table_default: str, schema_default: str, has_note: bool, tmp_path: Path
+    table_default: str,
+    schema_default: str,
+    expected_default: str | None,
+    expected_note: str | None,
+    tmp_path: Path,
 ):
     path = tmp_path / "99_DB_BareDefault.md"
     path.write_text(
@@ -1828,8 +1870,32 @@ def test_schema_default_confirms_only_the_same_bare_table_default(
     )
 
     mode = ex.parse_chapter(path)[0].tables[0].fields[0]
-    assert mode.documented_default == table_default
-    assert any(note.startswith("non-literal default ") for note in mode.notes) is has_note
+    assert mode.documented_default == expected_default
+    assert mode.documented_default_note == expected_note
+    assert not any(note.startswith("non-literal default ") for note in mode.notes)
+
+
+@pytest.mark.parametrize(
+    "manual_default",
+    [
+        pytest.param("System", id="system_word_is_a_manual_note_not_a_wire_value"),
+        pytest.param("ADD, REPLACE", id="comma_separated_prose_is_a_manual_note_not_a_wire_value"),
+    ],
+)
+def test_nonliteral_default_renders_as_documented_default_note(manual_default: str, tmp_path: Path):
+    path = tmp_path / "99_DB_NonliteralDefault.md"
+    path.write_text(
+        "## 1. `/db/NONLITERAL-DEFAULT` -- Nonliteral default\n\n"
+        "| No. | Description | Key | Value Type | Default | Required |\n"
+        "|-----|-------------|-----|------------|---------|----------|\n"
+        f"| 1 | Mode | `MODE` | String | {manual_default} | Optional |\n",
+        encoding="utf-8",
+    )
+
+    draft = yaml.safe_load(ex.render_draft(ex.parse_chapter(path)[0]))
+    field = draft["fields"][0]
+    assert field["documentedDefault"] is None
+    assert field["documentedDefaultNote"] == manual_default
 
 
 def test_shipped_contracts_still_match_the_manual_if_it_is_present():

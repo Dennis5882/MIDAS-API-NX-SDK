@@ -663,6 +663,7 @@ class ParsedField:
     items: Optional[dict]
     requirement: Optional[str]
     documented_default: Any
+    documented_default_note: Optional[str] = None
     enum: list[Any] = dataclass_field(default_factory=list)
     constraints: dict[str, Any] = dataclass_field(default_factory=dict)
     condition: Optional[str] = None
@@ -1137,10 +1138,16 @@ def _append_fields(destination: list[ParsedField], additions: list[ParsedField])
         # Repeated NODE_KEY in MCON's two SLAVES layouts is the same field,
         # stated in both tables.  Preserve it once only when its documented
         # type and requirement agree; differing declarations remain blocked.
-        if (prior.type, prior.requirement, prior.documented_default) != (
+        if (
+            prior.type,
+            prior.requirement,
+            prior.documented_default,
+            prior.documented_default_note,
+        ) != (
             addition.type,
             addition.requirement,
             addition.documented_default,
+            addition.documented_default_note,
         ):
             return False
     return True
@@ -1279,8 +1286,18 @@ def _structural_fields(section: "Section") -> tuple[list[ParsedField], list[Stru
         compatible = all(
             all(
                 field.key not in keys
-                or (keys[field.key].type, keys[field.key].requirement, keys[field.key].documented_default)
-                == (field.type, field.requirement, field.documented_default)
+                or (
+                    keys[field.key].type,
+                    keys[field.key].requirement,
+                    keys[field.key].documented_default,
+                    keys[field.key].documented_default_note,
+                )
+                == (
+                    field.type,
+                    field.requirement,
+                    field.documented_default,
+                    field.documented_default_note,
+                )
                 for field in table.fields
             )
             for keys in destination_keys
@@ -1886,12 +1903,9 @@ def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], 
                     # by itself (``System`` may be a UI label). The same
                     # section's JSON Schema ``default`` makes it an exact
                     # documented wire value, but only if both sources agree.
-                    nonliteral_notes = [
-                        note for note in field.notes if note.startswith("non-literal default ")
-                    ]
-                    if field.documented_default == default and nonliteral_notes:
-                        for note in nonliteral_notes:
-                            field.notes.remove(note)
+                    if field.documented_default_note == default:
+                        field.documented_default = default
+                        field.documented_default_note = None
 
                 schema_enums = [_schema_enum_values(entry) for entry in property_entries]
                 enum = schema_enums[0] if schema_enums and all(value == schema_enums[0] for value in schema_enums) else None
@@ -2264,7 +2278,16 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                     notes.remove(_ENUM_VALUES_ELSEWHERE)
                 constraints = _type_constraints(entry_type) if entry_type is not None else {}
                 default, note = _normalize_default(entry_default) if entry_default is not None else (None, None)
-                if note:
+                # A prose Default cell (for example ``System`` or ``Auto``)
+                # establishes that the manual names a default, but not that it
+                # names a literal wire value. Preserve the exact source text
+                # separately instead of treating it as a value or a blocking
+                # review note. A same-section JSON Schema default can later
+                # confirm the literal and clear this note.
+                default_note = default if note and note.startswith("non-literal default ") else None
+                if default_note is not None:
+                    default = None
+                elif note:
                     notes.append(note)
                 type_default = _type_default(entry_type) if entry_type is not None else None
                 if default is None and type_default is not None:
@@ -2281,6 +2304,7 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                         items=items,
                         requirement=requirement,
                         documented_default=default,
+                        documented_default_note=default_note,
                         enum=enum,
                         constraints=constraints,
                         condition=condition,
@@ -2668,6 +2692,8 @@ def _render_fields(
                 lines.append(f"{body}  - path: {_scalar(rendered_path)}")
                 lines.append(f"{body}    equals: {_scalar(equals)}")
         lines.append(f"{body}documentedDefault: {_scalar(parsed.documented_default)}")
+        if parsed.documented_default_note is not None:
+            lines.append(f"{body}documentedDefaultNote: {_scalar(parsed.documented_default_note)}")
         lines.append(f"{body}documentedOptional: {'true' if parsed.requirement == 'optional' else 'false'}")
         if parsed.enum and parsed.type != "array":
             lines.append(f"{body}enum: [{', '.join(_scalar(value) for value in parsed.enum)}]")
@@ -3269,6 +3295,14 @@ def run_check(sections: list[Section]) -> int:
                     f"{path.name}: {key} documentedDefault={declared.get('documentedDefault')!r}, "
                     f"manual says {manual.documented_default!r}"
                 )
+            if (
+                declared.get("documentedDefaultNote") != manual.documented_default_note
+                and "default" not in overridden
+            ):
+                problems.append(
+                    f"{path.name}: {key} documentedDefaultNote={declared.get('documentedDefaultNote')!r}, "
+                    f"manual says {manual.documented_default_note!r}"
+                )
             if manual.enum and "enum" not in overridden:
                 declared_enum = (
                     declared.get("items", {}).get("enum", [])
@@ -3348,6 +3382,12 @@ def run_check(sections: list[Section]) -> int:
                         problems.append(
                             f"{path.name}: variant {label} field {key} documentedDefault="
                             f"{declared.get('documentedDefault')!r}, manual says {manual.documented_default!r}"
+                        )
+                    if declared.get("documentedDefaultNote") != manual.documented_default_note:
+                        problems.append(
+                            f"{path.name}: variant {label} field {key} documentedDefaultNote="
+                            f"{declared.get('documentedDefaultNote')!r}, "
+                            f"manual says {manual.documented_default_note!r}"
                         )
                 for key in variant_contract:
                     if key not in variant_manual:

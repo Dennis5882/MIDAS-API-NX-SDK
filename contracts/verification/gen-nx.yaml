@@ -424,3 +424,35 @@ records:
       table calling it Integer.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-read-sweep-2026-07-31
+    endpoints: []
+    date: "2026-07-31"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 07/28/2026
+    level: read
+    outcome: success
+    method: >-
+      manual POST probe via midas_nx.ope.generate_load_combination_steel with a minimal payload ({OPTION, DGNCODE} only); generated 2 real STRENGTH/SERVICE combinations on Gen NX. A later repeat call in a fresh iteration of the same model failed ('Set_DefaultLoadComb failed...') -- not yet reconciled with the first success, open question. Civil NX (2026-07-31): same Civil-404/Gen-ok split as LCOM-CONC -
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-read-sweep-2026-08-27
+    endpoints: []
+    date: "2026-08-27"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 08/20/2026
+    level: read
+    outcome: success
+    method: >-
+      Root cause found 2026-08-27: every historical 404 (2026-07-30 x3, 2026-08-01 x1 on Gen NX; 2026-07-31 on Civil NX against a real production bridge model) was hitting the misspelled URL /ope/STORPROP. The sibling manual repo's full re-verification pass found the real URL is /ope/STORYPROP (STORY+PROP) -- confirmed live the same day on Gen NX: POST /ope/STORPROP still 404s, POST /ope/STORYPROP route
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md

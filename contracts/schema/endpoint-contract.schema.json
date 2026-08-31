@@ -417,6 +417,10 @@
         "documentedDefault": {
           "description": "Value the manual says the server applies when the field is absent. Null means the manual gives none."
         },
+        "documentedDefaultNote": {
+          "type": "string",
+          "description": "Exact Default-cell text where the manual describes a default but does not state a literal wire value. In this case documentedDefault is null. This records documentation, not observed product behaviour and makes no safeToOmit claim."
+        },
         "documentedOptional": {
           "type": "boolean",
           "description": "Whether the official manual marks this field optional. A statement about the documentation, never about observed behaviour."
@@ -477,6 +481,12 @@
             "required": ["requirement"]
           },
           "then": { "required": ["condition"] }
+        },
+        {
+          "if": { "required": ["documentedDefaultNote"] },
+          "then": {
+            "properties": { "documentedDefault": { "const": null } }
+          }
         }
       ]
     },

@@ -3689,16 +3689,27 @@ export namespace DbProjectTypes {
     /** Temperature · "C" (Celsius) / "F" (Fahrenheit) */
     TEMPER?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface StructureTypePayload {
+    /** Structure Type · 0=3-D / 1=X-Z Plane / 2=Y-Z Plane / 3=X-Y Plane / 4=Constraint RZ */
     STYP?: number;
+    /** Mass Type · 1=Lumped Mass / 2=Consistent Mass */
     MASS?: number;
+    /** Consider Off-diagonal Masses */
     bMASSOFFSET?: boolean;
+    /** Convert Self-Weight to Mass */
     bSELFWEIGHT?: boolean;
+    /** Structure Mass Type (자중→질량 변환 시) · 1=Convert to X,Y,Z / 2=Convert to X,Y / 3=Convert to Z */
     SMASS?: number;
+    /** Gravity Acceleration (m/s */
     GRAV?: number;
+    /** Initial Temperature */
     TEMP?: number;
+    /** Align Top of Beam Section */
     bALIGNBEAM?: boolean;
+    /** Align Top of Slab (Plate) */
     bALIGNSLAB?: boolean;
+    /** Considering Rotational Rigid */
     bROTRIGID?: boolean;
   }
   export interface MassControlHyperS {
@@ -3707,13 +3718,29 @@ export namespace DbProjectTypes {
     SELFWEIGHT?: boolean;
     MASS_AXIS?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface StructureTypeHyperSPayload {
-    STYPE?: string;
+    /** Structure Type · 3-D: 3D / X-Z Plane: XZ / Y-Z Plane: YZ / X-Y Plane: XY / Constraint RZ: RZ */
+    STYPE?: "3D" | "XZ" | "YZ" | "XY" | "RZ";
+    /** Mass Control Parameter */
+    MASS_CONTROL: {
+      /** Mass Type · Lumped Mass: LUMPED / Consistent Mass: CONSISTENT */
+      MASS_TYPE: "LUMPED" | "CONSISTENT";
+      /** Mass Position (MASS_TYPE="LUMPED"일 때) · Centroid: CENTROID / Offset: OFFSET Applies when MASS_CONTROL.MASS_TYPE = "LUMPED". */
+      MASS_POS?: "CENTROID" | "OFFSET";
+      /** Convert Self-weight into Masses */
+      SELFWEIGHT: boolean;
+      /** Mass Axis (SELFWEIGHT=true일 때) · X,Y,Z: XYZ / X,Y: XY / Z: Z (MASS_TYPE="CONSISTENT"면 XYZ만 허용) Applies when MASS_CONTROL.SELFWEIGHT = true. */
+      MASS_AXIS?: "XYZ" | "XY" | "Z";
+    };
+    /** Gravity Acceleration */
     GRAV?: number;
+    /** Initial Temperature */
     TEMP?: number;
+    /** Align Top of Beam Section with Center Line (X-Y Plane) for Display */
     ALIGNBEAM?: boolean;
+    /** Align Top of Slab(Plate) Section with Center Line (X-Y Plane) for Display */
     ALIGNSLAB?: boolean;
-    MASS_CONTROL?: MassControlHyperS;
   }
   /** Generated from contracts/endpoints/. */
   export interface ProjectInfoPayload {
@@ -3769,8 +3796,11 @@ export namespace DbProjectTypes {
     /** Element List */
     E_LIST?: Array<number>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface BoundaryGroupPayload {
-    NAME?: string;
+    /** Boundary Group Name */
+    NAME: string;
+    /** Auto-generated boundary groups for CR/SH in Composite Section · 0=Creep / 1=Shrinkage */
     AUTOTYPE?: number;
   }
   /** Generated from contracts/endpoints/. */
@@ -5207,17 +5237,64 @@ export namespace DbStaticLoadsTypes {
       LOAD_P4?: number;
     }>;
   }
-  export interface PlaneLoadTypePayload {
-    NAME?: string;
+  /** Generated from contracts/endpoints/. */
+  export type PlaneLoadTypePayload = {
+    /** Load Type Name */
+    NAME: string;
+    /** Description */
     DESC?: string;
-    LTYPE?: string;
-    COPY_X?: Array<number>;
-    COPY_Y?: Array<number>;
+    /** Load Type ("POINT" / "LINE" / "AREA") */
+    LTYPE: string;
+    /** Copy in X-Direction */
+    COPY_X: Array<number>;
+    /** Copy in Y-Direction */
+    COPY_Y: Array<number>;
+    /** Sequence Number (Unique) */
     SEQ?: number;
-    POINTLOAD?: unknown;
-    LINELOAD?: unknown;
-    AREALOAD?: unknown;
-  }
+  } & (
+    {
+      LTYPE: "POINT";
+      /** Point Loads */
+      POINTLOAD: Array<{
+        /** Point X */
+        X?: number;
+        /** Point Y */
+        Y?: number;
+        /** Force */
+        F?: number;
+      }>;
+    } |
+    {
+      LTYPE: "LINE";
+      /** Line Loads */
+      LINELOAD: {
+        /** Uniform (true) / Trapezoidal (false) */
+        bUNIFORM?: boolean;
+        /** Coordinates of X1, X2 */
+        X?: [number, number];
+        /** Coordinates of Y1, Y2 */
+        Y?: [number, number];
+        /** Force (Uniform: [F1] / Trap: [F1, F2]) */
+        F?: [number, number];
+      };
+    } |
+    {
+      LTYPE: "AREA";
+      /** Area Loads */
+      AREALOAD: {
+        /** Uniform (true) / Trapezoidal (false) */
+        bUNIFORM?: boolean;
+        /** 3 Points (true) / 4 Points (false) */
+        b3PNT?: boolean;
+        /** Coordinates X1~X4 */
+        X?: [number, number, number, number];
+        /** Coordinates Y1~Y4 */
+        Y?: [number, number, number, number];
+        /** Load (Uniform: [F1] / Trap: [F1,F2,F3,F4]) */
+        LOAD?: [number, number, number, number];
+      };
+    }
+  );
   /** Generated from contracts/endpoints/. */
   export interface PlaneLoadPayload {
     /** Load Case Name */

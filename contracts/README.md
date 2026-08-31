@@ -106,6 +106,16 @@ round trip. A documented field absent from such a payload was omitted and the
 call still worked. `scripts/extract_contracts.py` reads those payloads and fills
 in `safeToOmit: true` with the case cited — 437 fields across 72 endpoints.
 
+## Documented defaults
+
+`documentedDefault` carries only a literal wire value that the manual states
+unambiguously. When a Default cell contains prose such as `System`, `Auto`, or
+`ADD, REPLACE`, keep `documentedDefault: null` and preserve the exact manual
+cell in `documentedDefaultNote`. The note records the manual's wording; it is
+not a claim about the server and is never evidence that a field is safe to
+omit. A same-section JSON Schema `default` may replace the note only when it
+states the identical literal value.
+
 ## Risk and mitigation are separate axes
 
 `risk` describes the endpoint. `mitigation` describes what the SDKs do about it.
