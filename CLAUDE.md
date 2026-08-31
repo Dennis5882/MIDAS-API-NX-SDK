@@ -152,9 +152,16 @@ Two things that have already caused rework:
   through MIDASIT's relay, so the product is often on another PC. `EXPORT_PATH`, `/doc/SAVEAS`,
   `/doc/OPEN`, report and image paths all resolve there. A path that doesn't exist on that machine
   raises a modal dialog *there* and blocks the session, while the HTTP call still answers
-  `{"message": "... command complete"}` — identical to success. Build paths from
-  `verify_connection()["user"]`, and verify a write with `/doc/OPEN`, never `os.path.exists()`.
-  This cost an afternoon of chasing a "broken" `/doc/SAVEAS` that was working fine.
+  `{"message": "... command complete"}` — identical to success. Verify a write with `/doc/OPEN`,
+  never `os.path.exists()`. This cost an afternoon of chasing a "broken" `/doc/SAVEAS` that was
+  working fine. **Do not derive the path from `verify_connection()["user"]`** — this rule used to
+  say to, and 2026-08-31 disproved it: that field is the MAPI account's email
+  (`sjj0507@midasit.com`), not the NX host's Windows profile, so a path built from it does not
+  exist and raises exactly the blocking dialog the rule exists to avoid. Require an explicit
+  writable directory on the NX machine instead, as
+  `packages/typescript/scripts/live-crud.mjs` now does (`--save-dir`, refusing to run without
+  one). Note also that `/doc/SAVEAS` needs the product-native extension: `.mgbx` on Gen NX,
+  `.mcbx` on Civil NX.
 - **`DELETE {endpoint}` with an ID-keyed `"Assign"` body empties the whole table**, ignoring the
   ids — for `/db/NODE` that takes the attached elements with it. This is what the manual documents,
   and it cost a model before it was caught. The undocumented `DELETE {endpoint}/{id}` is the one
