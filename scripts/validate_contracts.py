@@ -214,6 +214,34 @@ def check_cross_references(
                 )
 
 
+def check_variant_discriminators(
+    contracts: list[tuple[Path, dict]], failures: Failures
+) -> None:
+    """Refuse a contract whose variants claim one selector value twice.
+
+    A variant says "these fields apply when the request carries this value".
+    Two variants under the same condition therefore say one value selects two
+    different field sets, which no caller and no generated union can act on.
+    It means the real discriminator is wider than what was written down - the
+    `/db/ELEM` tables headed `STYPE: 1` are a tension-only truss and a
+    compression-only truss, separated by `TYPE`. The honest record for that is
+    an unmerged table, so this is an error rather than a merge to repair here.
+    """
+
+    for path, contract in contracts:
+        seen: dict[str, dict] = {}
+        for variant in contract.get("variants", []):
+            signature = json.dumps(variant.get("when"), sort_keys=True, ensure_ascii=False)
+            if signature in seen:
+                failures.add(
+                    path.name,
+                    f"two variants share the discriminator {signature} - one value "
+                    f"cannot select two different field sets",
+                )
+                continue
+            seen[signature] = variant
+
+
 def check_safety(contracts: list[tuple[Path, dict]], failures: Failures) -> None:
     for path, contract in contracts:
         declared_paths = _field_paths(contract.get("fields", []))
@@ -908,6 +936,7 @@ def main(argv: list[str]) -> int:
     failures = Failures()
     check_schema(contracts, failures)
     check_cross_references(contracts, risks, verification, failures)
+    check_variant_discriminators(contracts, failures)
     check_safety(contracts, failures)
     check_manual_source(contracts, failures)
     check_tables(

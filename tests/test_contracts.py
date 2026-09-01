@@ -64,6 +64,25 @@ def test_validator_passes():
     assert result.returncode == 0, result.stdout + result.stderr
 
 
+def test_no_contract_selects_two_field_sets_with_one_value():
+    """A variant discriminator must identify exactly one branch.
+
+    Two variants under the same condition say one wire value selects two
+    different field sets, which no caller and no generated union can act on.
+    It means the discriminator written down is narrower than the real one -
+    the `/db/ELEM` tables headed `STYPE: 1` are a tension-only truss and a
+    compression-only truss, told apart by `TYPE`. The honest record for that
+    is an unmerged table with a stated resolution, never a repeated variant.
+    """
+
+    for slug, contract in _contracts().items():
+        seen: set[str] = set()
+        for variant in contract.get("variants", []):
+            signature = json.dumps(variant["when"], sort_keys=True, ensure_ascii=False)
+            assert signature not in seen, f"{slug} repeats the discriminator {signature}"
+            seen.add(signature)
+
+
 def test_every_contract_declares_a_manual_source():
     for name, contract in _contracts().items():
         manual = contract["source"]["manual"]

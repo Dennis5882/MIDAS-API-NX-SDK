@@ -122,232 +122,6 @@ fields:
     safeToOmit: unverified
     provenance: manual
 
-variants:
-  - when:
-      - path: STYPE
-        equals: 1
-    source:
-      table: "Tension only — Truss (STYPE: 1)"
-      line: 208
-    fields:
-      - key: ANGLE
-        description: >-
-          Beta Angle
-        type: number
-        requirement: optional
-        documentedDefault: 0
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: STYPE
-        description: >-
-          Element Subtype • Truss: 1
-        type: integer
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: TENS
-        description: >-
-          Allowable Compression (Negative Value Only)
-        type: number
-        requirement: optional
-        documentedDefault: 0
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: T_LIMIT
-        description: >-
-          Tension Limit Value (Positive Value Only)
-        type: number
-        requirement: optional
-        documentedDefault: 0
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: T_bLMT
-        description: >-
-          Tension Limit
-        type: boolean
-        requirement: optional
-        documentedDefault: false
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-  - when:
-      - path: STYPE
-        equals: 2
-    source:
-      table: "Tension only — Hook (STYPE: 2)"
-      line: 218
-    fields:
-      - key: ANGLE
-        description: >-
-          Beta Angle
-        type: number
-        requirement: optional
-        documentedDefault: 0
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: STYPE
-        description: >-
-          Element Subtype • Hook: 2
-        type: integer
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: NON_LEN
-        description: >-
-          Hook Length
-        type: number
-        requirement: optional
-        documentedDefault: 0
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-  - when:
-      - path: STYPE
-        equals: 3
-    source:
-      table: "Tension only — Cable (STYPE: 3)"
-      line: 226
-    fields:
-      - key: ANGLE
-        description: >-
-          Beta Angle
-        type: number
-        requirement: optional
-        documentedDefault: 0
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: STYPE
-        description: >-
-          Element Subtype • Cable: 3
-        type: integer
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: CABLE
-        description: >-
-          Cable Type • Pretension: 1 • Horizontal: 2 • Lu: 3
-        type: integer
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: TENS
-        description: >-
-          Pretension / Horizontal
-        type: number
-        requirement: optional
-        documentedDefault: 0
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: NON_LEN
-        description: >-
-          Lu (Range: 0.5~1.5)
-        type: number
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-  - when:
-      - path: STYPE
-        equals: 1
-    source:
-      table: "Compression only — Truss (STYPE: 1)"
-      line: 236
-    fields:
-      - key: ANGLE
-        description: >-
-          Beta Angle
-        type: number
-        requirement: optional
-        documentedDefault: 0
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: STYPE
-        description: >-
-          Element Subtype • Truss: 1
-        type: integer
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: TENS
-        description: >-
-          Allowable Tension (Positive Value Only)
-        type: number
-        requirement: optional
-        documentedDefault: 0
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: T_bLMT
-        description: >-
-          Compression Limit
-        type: boolean
-        requirement: optional
-        documentedDefault: false
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: T_LIMIT
-        description: >-
-          Compression Limit Value (Negative Value Only)
-        type: number
-        requirement: optional
-        documentedDefault: null
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-  - when:
-      - path: STYPE
-        equals: 2
-    source:
-      table: "Compression only — Gap (STYPE: 2)"
-      line: 246
-    fields:
-      - key: ANGLE
-        description: >-
-          Beta Angle
-        type: number
-        requirement: optional
-        documentedDefault: 0
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: STYPE
-        description: >-
-          Element Subtype • Gap: 2
-        type: integer
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: NON_LEN
-        description: >-
-          Gap
-        type: number
-        requirement: optional
-        documentedDefault: 0
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-
 sdkRules:
   - id: db-elem-delete-per-id
     kind: per_id_request
@@ -384,18 +158,38 @@ extraction:
   # schema.
   unmergedTables:
     - heading: Beam, Truss, Plane Strain, Axisymmetric
-      resolution: "the manual labels these element-form field groups but gives no wire selector value; left unmerged"
+      resolution: "the discriminator is the pair (TYPE, STYPE): TYPE's wire values are in the chapter's footnoted element type code table rather than in these headings, and STYPE's values repeat across types - 1 is Truss under TENSTR and COMPTR but Membrane under WALL - so no heading here names a unique selector"
       fields: 1
       line: 202
+    - heading: "Tension only — Truss (STYPE: 1)"
+      resolution: "the discriminator is the pair (TYPE, STYPE): TYPE's wire values are in the chapter's footnoted element type code table rather than in these headings, and STYPE's values repeat across types - 1 is Truss under TENSTR and COMPTR but Membrane under WALL - so no heading here names a unique selector"
+      fields: 5
+      line: 208
+    - heading: "Tension only — Hook (STYPE: 2)"
+      resolution: "the discriminator is the pair (TYPE, STYPE): TYPE's wire values are in the chapter's footnoted element type code table rather than in these headings, and STYPE's values repeat across types - 1 is Truss under TENSTR and COMPTR but Membrane under WALL - so no heading here names a unique selector"
+      fields: 3
+      line: 218
+    - heading: "Tension only — Cable (STYPE: 3)"
+      resolution: "the discriminator is the pair (TYPE, STYPE): TYPE's wire values are in the chapter's footnoted element type code table rather than in these headings, and STYPE's values repeat across types - 1 is Truss under TENSTR and COMPTR but Membrane under WALL - so no heading here names a unique selector"
+      fields: 5
+      line: 226
+    - heading: "Compression only — Truss (STYPE: 1)"
+      resolution: "the discriminator is the pair (TYPE, STYPE): TYPE's wire values are in the chapter's footnoted element type code table rather than in these headings, and STYPE's values repeat across types - 1 is Truss under TENSTR and COMPTR but Membrane under WALL - so no heading here names a unique selector"
+      fields: 5
+      line: 236
+    - heading: "Compression only — Gap (STYPE: 2)"
+      resolution: "the discriminator is the pair (TYPE, STYPE): TYPE's wire values are in the chapter's footnoted element type code table rather than in these headings, and STYPE's values repeat across types - 1 is Truss under TENSTR and COMPTR but Membrane under WALL - so no heading here names a unique selector"
+      fields: 3
+      line: 246
     - heading: Wall
-      resolution: "the manual labels these element-form field groups but gives no wire selector value; left unmerged"
+      resolution: "the discriminator is the pair (TYPE, STYPE): TYPE's wire values are in the chapter's footnoted element type code table rather than in these headings, and STYPE's values repeat across types - 1 is Truss under TENSTR and COMPTR but Membrane under WALL - so no heading here names a unique selector"
       fields: 5
       line: 254
     - heading: Plate
-      resolution: "the manual labels these element-form field groups but gives no wire selector value; left unmerged"
+      resolution: "the discriminator is the pair (TYPE, STYPE): TYPE's wire values are in the chapter's footnoted element type code table rather than in these headings, and STYPE's values repeat across types - 1 is Truss under TENSTR and COMPTR but Membrane under WALL - so no heading here names a unique selector"
       fields: 2
       line: 264
     - heading: Plane Stress
-      resolution: "the manual labels these element-form field groups but gives no wire selector value; left unmerged"
+      resolution: "the discriminator is the pair (TYPE, STYPE): TYPE's wire values are in the chapter's footnoted element type code table rather than in these headings, and STYPE's values repeat across types - 1 is Truss under TENSTR and COMPTR but Membrane under WALL - so no heading here names a unique selector"
       fields: 2
       line: 271

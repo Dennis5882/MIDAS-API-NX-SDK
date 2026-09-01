@@ -1121,8 +1121,64 @@ def test_explicit_variants_keep_unlabelled_supplementary_tables_unmerged(tmp_pat
     assert draft["extraction"]["unmergedTables"] == [{"heading": "A label without a wire value", "fields": 1, "line": 12}]
 
 
+def test_a_repeated_heading_selector_is_not_a_discriminator(tmp_path: Path):
+    """One value cannot select two field sets, so neither table merges.
+
+    ``/db/ELEM`` heads five tables ``STYPE: 1`` to ``STYPE: 3`` across four
+    element types, so ``STYPE: 1`` heads both a tension-only and a
+    compression-only truss. The pair with ``TYPE`` is the real gate and the
+    headings name only half of it, so every table on the repeated field stays
+    unmerged rather than becoming a variant that claims a value twice.
+    """
+
+    path = tmp_path / "99_DB_HalfNamedGate.md"
+    path.write_text(
+        """## 1. `/db/HALF-GATE` -- half-named gate
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Subtype | `STYPE` | Integer | - | Required |
+
+### Tension only -- Truss (STYPE: 1)
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 2 | Allowable compression | `TENS` | Number | - | Required |
+
+### Compression only -- Truss (STYPE: 1)
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 3 | Allowable tension | `TENS_C` | Number | - | Required |
+
+### Cable (STYPE: 3)
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 4 | Cable option | `CABLE` | Integer | - | Required |
+
+### An independent gate (`INPUT="2D"`)
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 5 | Plan value | `PLAN` | Number | - | Required |
+""",
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    draft = yaml.safe_load(ex.render_draft(section))
+
+    # STYPE: 3 is unique but shares the field that repeated, so it goes too -
+    # a contract naming one STYPE branch and hiding two reads as complete.
+    assert [variant["when"] for variant in draft["variants"]] == [
+        [{"path": "INPUT", "equals": "2D"}]
+    ]
+    assert [table["heading"] for table in draft["extraction"]["unmergedTables"]] == [
+        "Tension only -- Truss (STYPE: 1)",
+        "Compression only -- Truss (STYPE: 1)",
+        "Cable (STYPE: 3)",
+    ]
+
+
 def test_manual_check_compares_repeated_literal_variants_in_source_order(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-    """Two manual tables may share one explicit selector without overwriting."""
+    """Two manual tables sharing one selector round-trip as unmerged tables."""
     path = tmp_path / "99_DB_RepeatedVariant.md"
     path.write_text(
         """## 1. `/db/REPEATED-VARIANT` -- repeated variant

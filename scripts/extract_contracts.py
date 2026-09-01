@@ -1229,18 +1229,36 @@ def _explicit_variants(tables: list[ParsedTable]) -> list[ParsedVariant]:
     is sufficient evidence for that one table, even when another table belongs
     to a different selector group. This avoids inferring a common discriminator
     from table order while allowing several independent optional groups.
+
+    A heading can still name only half of the real gate. ``/db/ELEM`` heads
+    five tables ``STYPE: 1`` through ``STYPE: 3`` under four different element
+    types, so ``STYPE: 1`` heads a tension-only truss and a compression-only
+    truss both; the discriminator is the pair with ``TYPE``, whose wire values
+    the chapter puts in a footnoted code table rather than in the headings.
+    Two headings claiming one value is therefore evidence that the heading is
+    not the whole gate. Every table gated on a repeated field stays unmerged -
+    a contract must never say that one value selects two different field sets.
     """
 
     if len(tables) < 2:
         return []
-    variants: list[ParsedVariant] = []
+    candidates: list[ParsedVariant] = []
     for table in tables[1:]:
         conditions = _variant_conditions(table.heading)
         if conditions is not None:
-            variants.append(ParsedVariant(conditions, table))
-    return variants
-
-
+            candidates.append(ParsedVariant(conditions, table))
+    repeated = Counter(candidate.conditions for candidate in candidates)
+    ambiguous = {
+        field
+        for conditions, count in repeated.items()
+        if count > 1
+        for field, _ in conditions
+    }
+    return [
+        candidate
+        for candidate in candidates
+        if not any(field in ambiguous for field, _ in candidate.conditions)
+    ]
 def _field_at_path(fields: list[ParsedField], path: tuple[str, ...]) -> Optional[ParsedField]:
     current = fields
     found: Optional[ParsedField] = None

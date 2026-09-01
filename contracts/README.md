@@ -104,6 +104,15 @@ splits `TYPE="FUNC"` by whether concrete data is used - in both the second
 selector is real but the manual never names it as a wire field. Those stay
 unmerged. A discriminator that is not written down cannot be transcribed.
 
+The same rule catches a heading that names only **half** of the gate.
+`/db/ELEM` heads five tables `STYPE: 1` through `STYPE: 3` across four element
+types, so `STYPE: 1` heads both a tension-only truss and a compression-only
+truss; the discriminator is the pair with `TYPE`, whose wire values the chapter
+puts in a footnoted code table rather than in the headings. A repeated value is
+the evidence, so the extractor leaves every table gated on a repeated field
+unmerged, and `validate_contracts.py` refuses any contract - hand-written
+included - whose variants claim one condition twice.
+
 **An unmerged table no longer blocks the contract.** The manual is not perfect
 and neither is the product, so a contract that says "these fields, and one table
 I could not model" is more useful than no contract at all. Record each such
