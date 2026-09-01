@@ -3774,6 +3774,10 @@ def main() -> int:
         + ", ".join(t.name for t in TIERS) + " (default: all)",
     )
     parser.add_argument(
+        "--endpoints",
+        help="comma-separated endpoint paths to run within the selected tier(s)",
+    )
+    parser.add_argument(
         "--save-as",
         help="save the currently open document here before /doc/NEW, so a "
         "save-changes dialog can't block the session",
@@ -3825,6 +3829,9 @@ def main() -> int:
             print(f"Unknown tier(s): {', '.join(unknown)}", file=sys.stderr)
             return 2
         tiers = [t for t in TIERS if t.name in wanted]
+    endpoints = None
+    if args.endpoints:
+        endpoints = {item.strip() for item in args.endpoints.split(",") if item.strip()}
 
     client = MidasClient(
         mapi_key=args.mapi_key, base_url=args.base_url,
@@ -3859,6 +3866,8 @@ def main() -> int:
         if aborted:
             break
         cases = [c for c in tier.cases() if product in c.products]
+        if endpoints is not None:
+            cases = [c for c in cases if c.resource.ENDPOINT in endpoints]
         if not cases:
             continue
         print(f"\n[{tier.name}] {tier.title}")
