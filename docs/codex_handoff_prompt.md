@@ -1,80 +1,196 @@
 # Codex task prompt — mechanical work only
 
-Updated 2026-09-01 at HEAD `31829dd`. Version stays **2.7.3** on both
-registries.
+Updated 2026-09-01 at HEAD `7985235`. Version stays **2.7.3** on both
+registries; do not bump it.
 
 **The division, set by the author.** Judgment-heavy work — schema design,
 deciding what a contradictory manual means, deciding what stays unmerged — is
 Claude's. Bounded, verifiable, repeatable work is yours. Every task below has a
-measured starting number you can check your run against; a task that turns out
+measured starting number you can check your run against. A task that turns out
 to need a judgment call is one to **stop and report**, not to decide.
 
-## What changed since your last batch
+## What your last two batches showed
 
-Your seismic-damper batch landed clean and moved write coverage 166 -> 169.
-Two results in it were better than the numbers suggest:
+`801abe0` is the model to repeat. Six live results, and the best ones are the
+ones you *refused* to claim:
 
-- **You root-caused `/db/SDVI` and `/db/SDVE`.** Their `Wrong Field` results
-  pre-dated the manual's 2026-08-25 Request-Example corrections - the old SDVI
-  fixture omitted `INPUT_TYPE_EXFN` and six exponential fields per `ITEM`, the
-  old SDVE fixture had three fields of fourteen. Complete examples pass on both
-  products. That is a lead, not just two endpoints: other fixtures may predate
-  the same correction.
-- **You settled `/db/LCOM-SEISMIC` honestly.** Building the real `/db/SPFC` +
-  `/db/SPLC` prerequisite removed the missing-fixture explanation, Civil still
-  refused `ANAL="RS"` with its own words, and you moved the entry to Gen-only
-  write instead of inventing a Civil payload. It and `/db/SPLC` are now
-  consistent - single-product writes pointing opposite ways.
+- `/db/HAHS` and `/db/HECB` went read → write once the fixture built a real
+  eight-node SOLID. `/db/HECB` kept `ITEMS[].ID=1` because the manual calls it
+  a serial number, and the earlier "element no. 1" error turned out to be the
+  fixture, not evidence to reinterpret the field.
+- `/db/HPCE` stayed read. You tried the SOLID's 8 nodes, the manual example's
+  6, then 4 and 2, got the identical `Wrong Key` every time, and **did not
+  invent a wire shape** to make it pass.
+- `/db/CSCS` stayed read. The manual's only COMPOSITE sample omits the
+  dimensions needed to build the prerequisite section, and you did not supply
+  them from either SDK.
+- `/db/STCT` stayed unconfirmed, but you disproved the standing hypothesis: the
+  documented Linear + Independent branch loses `iITER`/`TOL` too, so it was
+  never a branch-selection mistake.
 
-One decision landed on top of that, and it opens the work below.
+`92149a4` is the one to learn from. Three defects came out of it, all in the
+same place — writing down what the manual *means*:
 
-**An incomplete contract may now exist.** `promote_contract.py` used to refuse
-any draft whose manual section had a variant table nobody could merge, so 22
-drafts had no contract at all and their gap was not even countable. The manual
-is not perfect and neither is the product, so a contract will not always be
-either. Record the gap instead: every `extraction.unmergedTables` entry needs a
-`resolution`, and `--resolution` supplies it at promotion because drafts are
-regenerated build output. The old gate's real reason is kept - a contract
-carrying `unmergedTables` is **not** used as an npm payload source, so promoting
-one cannot narrow a published type. `/db/THIK` is the worked example: contract
-present, gap recorded, npm generation byte-identical.
+- `/db/ELEM` was promoted with `STYPE: 1` twice and `STYPE: 2` twice. The gate
+  is the pair with `TYPE`, whose values live in the chapter's footnoted code
+  table. The `resolution` said "the manual gives no wire selector value"; the
+  code table gives every one of them.
+- `/db/FIMP`'s table keys rows `"KENPAR"."FC"` and never lists the
+  `CONC`/`STEEL` parents, so the contract declared a three-level object as ten
+  flat top-level fields — replacing a correct payload with a wrong one.
+- The generated union then said `HYS_MODEL` could only be `"KPM"`, in a chapter
+  whose own callout says Kent & Park is one representative of many models.
+
+Both the extractor and the validator now refuse those shapes, so they cannot
+recur silently. The conclusion for this prompt: **live-harness work is yours;
+contract promotion is not.** The tasks below follow that split.
+
+## Measured starting state
+
+Run these first and confirm you see the same numbers. If any differ, say so
+before starting — it means something moved under you.
+
+```bash
+python -m pytest -q                       # 910 passed
+ruff check src tests scripts && mypy      # clean
+python scripts/validate_contracts.py      # OK, 337 contracts
+python scripts/check_manual_drift.py --manual-api-repo "E:\AI Study\MIDAS-API"
+                                          # {"has_diff": false}
+cd packages/typescript && npm run generate && npm run typecheck && npm test
+                                          # no drift, 55 tests
+```
+
+Coverage as `ROADMAP.md` reports it: **399/399 implemented, 171 write / 228
+read.** `schema/live-cases.json` holds **167 cases, 141 confirmed**.
+
+Contract drafts — clear and re-emit before judging anything about them.
+`contracts/drafts/` is git-ignored build output, and a stale copy has misled a
+run before:
+
+```bash
+rm -rf contracts/drafts
+MSYS_NO_PATHCONV=1 python scripts/extract_contracts.py \
+  --manual-api-repo "E:\AI Study\MIDAS-API" --emit-all     # 47 drafts
+python scripts/promote_contract.py --all --dry-run          # 0 promoted, 47 refused
+```
+
+**Zero of the 47 are promotable, and that is expected.** There are 126 blocking
+review notes across 31 drafts, and the large groups are all judgment: 26 "types
+this as an enum but the values are listed elsewhere", 18 "types this X but it
+has nested children", 7 "marks this conditional but does not state the
+condition". Nine more drafts sit in `NEEDS_HAND_REVIEW` because their documented
+payload is already measured wrong live. None of that is yours. Task 3 is the one
+bounded parser gap left in the pile.
 
 ---
 
-You are working in `E:\AI Study\MIDAS-API-NX-SDK` on branch `main` — the
-`midas-nx` SDKs, published on PyPI and npm at **2.7.3**. Read `CLAUDE.md`,
-`contracts/README.md`, and `docs/contract_migration_brief.md` first. Where this
-prompt and those disagree, they win.
+## Task 1 — `/db` write coverage (the main task)
 
-## Hard rules
+74 `/db` endpoints are still read-level. They split cleanly:
 
-1. **Neither SDK is a source for the other, and neither is a source for a
-   contract.** Permitted contract sources are exactly three: the manual repo
-   (`E:\AI Study\MIDAS-API`, `docs/manual/*.md`),
-   `docs/live_verification_notes.md`, and live `/info/{endpoint}` introspection.
-2. **Do not guess.** `unverified` is a correct answer; an invented one is not.
-3. **`documentedOptional` (docs) and `safeToOmit` (product) are separate.**
-4. **Manual and product disagree → record both separately**: the manual's claim
-   under `manualDefects`, the product's under `contracts/verification/`, and a
-   line in `docs/manual_defects_register.md` naming the side that owns the fix.
-   **Quote the server verbatim.** A paraphrase is not evidence — see Task 3.
-5. **A parity failure is an SDK defect, never a reason to edit a contract.**
-6. **Never hand-edit `contracts/drafts/` or `packages/typescript/src/generated/*`.**
-   Drafts are git-ignored build output. The directory held **377 stale files**
-   before it was cleared; it now holds exactly the 65 live drafts. Before
-   judging what is promotable, clear it and re-emit:
+- **19 already have a live case** that has not passed:
+  `/db/ACTL`, `/db/CGLP`, `/db/DOEL`, `/db/EPSE`, `/db/EPST`, `/db/FBLA`,
+  `/db/HPCE`, `/db/MADO`, `/db/MVCT`, `/db/NLLP`, `/db/NLNK`, `/db/NLNK-M1`,
+  `/db/RPSC`, `/db/SBDO`, `/db/STCT`, `/db/STRPSSM`, `/db/TDMF`, `/db/THMS`,
+  `/db/WVLD`
+- **55 have no case at all.** The biggest coherent cluster is moving-load and
+  lane — one manual chapter, 19 endpoints: `/db/LLANch`, `/db/LLANid`,
+  `/db/LLANop`, `/db/LLANtr`, `/db/MLSP`, `/db/MLSR`, `/db/MVCTbs`,
+  `/db/MVCTid`, `/db/MVCTtr`, `/db/MVHLtr`, `/db/MVLDbs`, `/db/MVLDch`,
+  `/db/MVLDeu`, `/db/MVLDid`, `/db/MVLDpl`, `/db/MVLDtr`, `/db/SINF`,
+  `/db/SLAN`, `/db/SLANch`, `/db/SLANop`
+
+**Start with the 19.** A fixture that exists is cheaper to triage than one you
+have to write, and three of them (`/db/HPCE`, `/db/STCT`, `/db/FBLA`) already
+have recorded findings to build on rather than rediscover.
+
+For each endpoint, in batches of at most 8:
+
+1. Read the manual chapter and this endpoint's entry in
+   `docs/live_verification_notes.md` **first**. Several already have a recorded
+   reason for failing.
+2. Build the fixture from the manual's own Request Example. **Never hand-write a
+   payload** — copy the documented one, or an existing confirmed case's.
+3. Run `python scripts/live_crud_check.py --tier <tier> --product gen` and the
+   same for `civil`, from a document the author has confirmed is empty.
+4. Classify honestly and record it:
+   - **passed** → `confirmed=True`, `level: "write"`, and set
+     `live_verified.date` to **the day the write actually happened**. Two
+     entries in `801abe0` kept an old date beside a new build and put a session
+     that never existed into `ROADMAP.md`'s version matrix.
+   - **failed on a fixture problem** → fix the fixture, rerun.
+   - **failed the same way with the documented payload** → leave it read-level
+     and write down everything you tried, as you did for `/db/HPCE`.
+5. `python scripts/gen_roadmap.py`, then update `PLAN.md`'s §2 coverage figures
+   and its "Last updated" line in the same commit.
+
+**Do not flip `confirmed` to silence a failure**, and do not report an
+unconfirmed failure as an SDK defect. Across every run so far, each one resolved
+to a fixture, a wrong documented value, or a product bug.
+
+Expected outcome to check against: each endpoint you finish moves write up by
+one and read down by one, and `ROADMAP.md` regenerates with no other change.
+
+## Task 2 — record what the npm package has actually proven
+
+`packages/typescript/scripts/live-crud.mjs` already reads the same
+`schema/live-cases.json` Python does and takes any endpoint through
+`--endpoints`, so this needs no new harness. The gap is the *record*:
+**npm-side live verification exists only as prose**, in about a dozen passages
+of `docs/live_verification_notes.md`. Nothing in `docs/coverage.json` or
+anywhere else says which endpoints the built npm package has been run against,
+so "how much of the npm surface is live-proven?" cannot be answered without
+reading 8,000 lines.
+
+Two steps, in order:
+
+1. **Read out what is already claimed.** Go through
+   `docs/live_verification_notes.md` and list every endpoint a passage says the
+   built npm package completed, with its date and product. Put the list in a
+   scratch file, report the count, and stop there. This step is a measurement,
+   not a schema change.
+2. **Then extend it by running.** Pick endpoints Python has confirmed but npm
+   has not, in batches of at most 8:
 
    ```bash
-   rm -f contracts/drafts/*.yaml
-   python scripts/extract_contracts.py --manual-api-repo "E:\AI Study\MIDAS-API" --emit-all
+   npm run live:crud -- -- --product gen --endpoints /db/AAA,/db/BBB \
+     --save-dir <a writable directory on the NX machine>
    ```
 
-   A stale draft directory understated promotability by nine contracts once
-   already.
-7. **`ROADMAP.md` is generated from `docs/coverage.json`** — rerun
-   `gen_roadmap.py` in the same commit. CI fails if you forget.
-8. **Do not bump a version and do not release.** Not `src/midas_nx/__init__.py`,
-   not `package.json`. The author cuts releases. This was overstepped once.
+   Record each result in `docs/live_verification_notes.md` in the same style as
+   the existing npm passages.
+
+**Where to record it structurally is Claude's call.** If step 1 makes it obvious
+that a field in `docs/coverage.json` would help, say so in your report and leave
+the schema alone.
+
+## Task 3 — the one parser gap worth fixing
+
+`scripts/extract_contracts.py` reads the manual's `└` tree markers to nest a
+field under the row above it, but only one level deep. The line is
+`key.lstrip("└").strip()`; `└ └ LAYER1` has a space between the glyphs, so one
+`└` survives, `_split_path` fails on it, and the row becomes a review note
+instead of a nested field.
+
+`27_Design_SRC_AIKSRC2K.md` uses `└`, `└ └` and `└ └ └`. Count the glyphs to get
+the depth and attach each entry to the last entry one level above it, the way
+the numbered-nesting branch already does with `by_depth`.
+
+Expected outcome: `design-src-aik-src2k-mrbd`'s four blocking notes
+(`└ └ LAYER1`, `└ └ LAYER2`, `└ └ └ NAME`, `└ └ └ NUM`) go to zero and the draft
+carries a nested structure instead. Whether it then promotes depends on the
+remaining gates — report what the dry run says, do not force it through. Add a
+test beside the existing tree-marker tests in `tests/test_extract_contracts.py`.
+
+**Only the tree-marker form.** The other 27 multi-key notes are rows where the
+manual writes several keys in one cell (`"DT" / "DB"`,
+`"MIN_NUM_VHL"/"MAX_NUM_VHL"`, `FREQ1/PERIOD1`). Splitting those looks equally
+mechanical and is not: `MIN_NUM_VHL` and `MAX_NUM_VHL` are each quoted
+independently elsewhere in `08_DB_Moving_Loads.md`, so they are two real fields,
+while `FREQ1` and `PERIOD1` appear nowhere else in the manual, so splitting them
+would be a guess. That distinction is Claude's to make.
+
+---
 
 ## Live-session rules — read before any product call
 
@@ -89,7 +205,7 @@ prompt and those disagree, they win.
   This repo got Civil's wrong twice — do not re-derive it.
 - **`/doc/NEW` discards unsaved work and has crashed Gen NX.** Never call it
   without the author confirming the open document does not matter. Three
-  harnesses now call it: `live_smoke.py`, `live_crud_check.py`, and
+  harnesses call it: `live_smoke.py`, `live_crud_check.py`, and
   `packages/typescript/scripts/live-crud.mjs`. `--no-save-before` removes the
   npm harness's checkpoint, not its `/doc/NEW`.
 - **Delete every test record by its own id** (`DELETE {endpoint}/{id}`).
@@ -100,244 +216,40 @@ prompt and those disagree, they win.
   contract. A hand-written fixture produces confident wrong findings.
 - Leave both models empty, and say so in the note.
 
-## Task 1 — promote the 22 drafts the old gate blocked
+## Not yours, and why
 
-320 contracts, 64 drafts, 0 promotable. **22 of those 64 are refused only for
-unmerged variant tables**, which is now a solvable refusal rather than a wall.
-
-The refusal message names how many tables lack a `resolution`. Supply one:
-
-```bash
-python scripts/promote_contract.py db-cscs \
-  --resolution "the manual names no wire discriminator for this table; left unmerged"
-```
-
-**Split the 22 before you write a single resolution.** Of the 116 unmerged
-tables across them, **44 have a heading that names a selector value** - things
-like `12-A. SECT — DB/User ("SECTTYPE": "DBUSER")`, `INPUT_METHOD = 0
-(Simplified)`, `SHAPE = "ELEMENT" 일 때 추가 파라미터:`. Those are **parser
-gaps, not manual gaps**. D3 shipped `variant.when` for exactly that shape in
-2.7.3; the heading forms above are variations its parser does not recognise yet.
-
-Writing "the manual names no wire discriminator" onto a heading that names one
-puts a false claim into the source of truth. Do not do it. That is the one way
-this task can go badly wrong.
-
-**12 drafts have no value-naming heading at all — promote these first:**
-
-```text
-db-cscs(1)  db-epmt(5)  db-impf(2)  db-nlct-m1(3)  db-nspr(4)  db-sdis(3)
-db-sdst(1)  db-spfc(11) db-splc(4)  db-stct(6)     ope-lcom-src(1)
-view-resultgraphic(10)
-```
-
-(the number is how many tables each needs a resolution for). Read each heading
-before writing its resolution — one sentence saying what that table is and why
-it stays out is the point, and they will not all be the same sentence.
-
-**10 drafts have at least one value-naming heading — teach the extractor first:**
-
-| draft | value-naming tables | of |
-| --- | ---: | ---: |
-| `db-tdna` | 7 | 7 |
-| `db-this-m1` | 7 | 8 |
-| `db-this` | 6 | 16 |
-| `db-elem` | 5 | 9 |
-| `db-sect` | 4 | 4 |
-| `db-swind` | 4 | 4 |
-| `db-mvldpl` | 4 | 6 |
-| `db-mvld` | 3 | 7 |
-| `db-sseis` | 3 | 3 |
-| `db-fimp` | 1 | 1 |
-
-Extend `_explicit_variants` in `scripts/extract_contracts.py` to read those
-heading forms, re-emit, and see what merges. A table that merges into a real
-`variants` entry is strictly better than one carrying a resolution — the
-contract then describes the endpoint completely and can own the npm payload
-type again. Whatever still will not merge afterwards gets a resolution like the
-first group.
-
-**Stop and report** any heading you cannot read confidently. `db-mvldpl`'s
-`Vehicle K/Military(LOAD_MODEL=2/3)` should become an `in: [2, 3]` condition —
-if it does not, say so rather than forcing it.
-
-Expected outcome you can check your run against: 12 drafts promotable straight
-away, and some subset of the other 10 merging into proper variants. Contracts
-320 -> at least 332.
-
-**The generation check is `types.ts`, not the whole tree.** The guard protects
-published payload types, because those are what break a caller. A contract may
-legitimately change resource *metadata* — a display name, most often dash
-typography, since the manual writes `—` where a hand-written fallback typed
-`-`. `_contract_resource_mismatches` already normalizes that difference when it
-compares, which is the project saying it is cosmetic. So: if
-`packages/typescript/src/generated/types.ts` changes after promoting a contract
-carrying `unmergedTables`, the guard is broken and that is a bug to report. A
-label change in `resources.ts` is expected and fine.
-
-## Task 2 — Python live write coverage
-
-Measured today: **169 of 399 rows are write-verified, 230 are read-only.**
-A read shows the route exists and parses. Every field-name, enum and default
-defect found in this project so far was invisible to one.
-
-The 230 read-only rows break down as `/DESIGN` 119, `/db` 79, `/post` 13,
-`/ope` 12, `/view` 7. **206 of them have no fixture at all** — that seam is
-where this work goes next, and writing a payload from the manual for an endpoint
-nobody has exercised is a different, slower job than re-running one.
-
-`schema/live-cases.json` holds 167 cases across 158 endpoints, **137 confirmed**
-after your batch. **21 endpoints still recorded as `read`-level already carry a
-fixture** — the payload is written, nobody has watched it pass:
-
-```text
-/db/ACTL  /db/CGLP  /db/DOEL  /db/EPSE  /db/EPST  /db/FBLA  /db/HAHS
-/db/HECB  /db/HPCE  /db/MADO  /db/MVCT  /db/NLLP  /db/NLNK  /db/NLNK-M1
-/db/RPSC  /db/SBDO  /db/STCT  /db/STRPSSM  /db/TDMF  /db/THMS  /db/WVLD
-```
-
-**Your own SDVI/SDVE result is the best thing to try here.** Both failed for
-months on an incomplete fixture, not a broken endpoint. Check the rest of this
-list the same way: does its fixture carry every field the manual's *current*
-Request Example shows? Fixtures older than the manual's 2026-08-25 re-sync may
-simply be short.
-
-Two of these have a recorded product answer rather than a shape problem:
-`/db/HECB`'s scratch beam cannot take an Element Convection Boundary, and Gen
-accepted `/db/STCT` while dropping the submitted `iITER` on readback — that
-second one is worth a closer look, it has the smell of a wrong field name.
-
-Work in small batches:
-
-1. Take the payload from its existing case, or from the endpoint's contract.
-2. Run `POST → GET → PUT → GET → DELETE {endpoint}/{id} → GET` on an empty
-   scratch model. Declare `setup=` seeds for element- or node-keyed records
-   rather than writing to an empty document — you established that pattern last
-   batch for `LTSR`/`MBTP`/`LENG`/`MEMB`/`WMAK`; reuse it.
-3. Record it in `docs/live_verification_notes.md`, set `docs/coverage.json`'s
-   `level` to `"write"` with the build baseline, and rerun `gen_roadmap.py` in
-   the same commit.
-4. A confirmed case that fails is a **regression** (exit 1). An unconfirmed one
-   that fails means triage the fixture first (exit 3). Never flip `confirmed` to
-   silence a failure.
-
-**A failure is a finding, not a blocked task.** `"Wrong Field"` from a `/db/*`
-write usually means a bad **value**, not a bad field name — vary the enum value
-before varying the fields, and record what you tried.
-
-**Report, do not decide**, if a run suggests the manual is wrong about a field
-name, an enum or a method. Write the evidence down and stop there.
-
-## Task 3 — extend the npm live harness
-
-Measured today: **about 20 endpoints have completed the full public-API CRUD
-cycle** — the previous 14 plus `PNLD`, `EIGV` and `DCON`. Four populated
-result tables have been read (`MASS_SUMMARY_X`, `REACTIONG`, `DISPLACEMENTG`,
-`BEAMFORCE`), and five more endpoints have been created and deleted as analysis
-prerequisites. That is roughly 20 against Python's 169 — still the widest gap in the
-project.
-
-Now that every npm run starts from `/doc/NEW`, its evidence means what it says.
-Re-running a fixture the Python harness has already confirmed is cheap and
-worth doing in the same batch as Task 1.
-
-`packages/typescript/scripts/live-crud.mjs` and `live-analysis.mjs` read the
-same `schema/live-cases.json` and exercise only the package's public API. Grow
-that set the same way, in batches.
-
-Two constraints specific to this side:
-
-- **`docs/coverage.json`'s `level` means verification through the Python
-  package** and has for its whole history. Record npm evidence in
-  `docs/live_verification_notes.md` as its own entry; do not widen `level` on an
-  npm run, which would make every historical row ambiguous. You got this right
-  last batch — keep doing it.
-- Use `resources.db.<group>.<name>`, not raw `client.request`. The point is to
-  exercise what a user touches.
-
-## Stop and report — do not decide these
-
-The dry run offers **0 of 64 drafts** right now. The refusals break down as:
-
-| count | reason | who |
-| --- | --- | --- |
-| 22 | unmerged variant tables with no `resolution` | **Task 1, yours** |
-| 18 | N unresolved review notes | stop and report |
-| 7 | no payload fields could be parsed | stop and report |
-| 8 | a documented value proven wrong live, or a broken write path | stop and report |
-| 7 | a Key cell naming two wire properties at once (`'DT" / "DB'`) | stop and report |
-| 1 | plain-function parity surface not discovered | stop and report |
-| 1 | no live-verification record in `docs/coverage.json` | stop and report |
-
-The 22 are Task 1. The rest are not a mechanical batch:
-
-- **A variant table whose heading names no value stays unmerged.** That is
-  rule 2 working, and Task 1 records it rather than solving it. `/db/ELEM`'s
-  `#### Wall` and `/db/NLNK`'s Angle/3Points/Vector are the standing examples:
-  `TYPE="WALL"` is obvious to a human and is not written down anywhere. Do not
-  infer one to make a draft merge — write the resolution and move on.
-- **The 7 refused for "no payload fields could be parsed."** These are Hyper-S
-  `-M1` sections that delegate to a parent. Do not copy the parent's fields:
-  `/db/MATL-M1` says it matches `/db/MATL`, and live `/info` shows different
-  top-level names, fewer fields, and the `HE_*` fields on the parent instead.
-  The delegation claims are not trustworthy.
-- **The remaining "values listed elsewhere" enum notes — 26 across 6 drafts**
-  (`db-thgc-m1`, and the RC `dcre`, `dcrm-wall`, `rebb`, `rebc`, `rebr`
-  drafts). Your rule already took the ones written as a complete list. What is
-  left is ranges and abbreviations: `19종 (D4 ~ D57)` names a count and two
-  endpoints, not nineteen values. **Do not extend the parser to expand a
-  range.** Only `dcrm-wall` is blocked by these alone; the rest carry other
-  notes too.
-- **A section fold the extractor refused.** `--emit-all` now warns when two
-  manual sections share a draft name and could not be folded. Today nothing
-  warns. If something starts to, read both sections and hand it back — the
-  refusal means they disagree by more than one field, which is two documents
-  about one endpoint, not an average waiting to be taken.
-- **Anything that would need a new schema construct.** All four contract-schema
-  decisions are closed; a fifth needs the author.
-
-Also out of scope: Stage 4 (Python generated from contracts), any release, and
-any external communication about `docs/manual_defects_register.md` — no manual
-repo edit, no MIDASIT contact, no Jira issue.
-
-## Before every commit
-
-```bash
-pip install -e ".[dev]"
-pytest && ruff check src tests scripts && mypy
-python scripts/validate_contracts.py
-python scripts/extract_contracts.py --manual-api-repo "E:\AI Study\MIDAS-API" --check
-python scripts/gen_roadmap.py          # if coverage.json changed
-cd packages/typescript && npm run generate && npm run typecheck && npm test
-git status --short                     # generation drift must be empty
-```
-
-Baseline to beat: **899 Python tests, 55 npm tests**, all green at `31829dd`.
-
-Commit messages: imperative subject, body explaining *why*. One task per commit.
-
----
+- **Promoting drafts and writing `resolution` text.** Three defects came from it
+  in one commit. If a draft looks promotable, report it instead.
+- **Editing `contracts/endpoints/*.yaml` by hand** — any contract's `fields`,
+  `variants` or `enum`.
+- **`docs/manual_defects_register.md` beyond appending a row with evidence.** No
+  manual-repo edit, no MIDASIT contact, no Jira issue.
+- **Version bumps and releases.** The shared number is the author's call.
+- Running any destructive harness against a session the author has not confirmed
+  is empty.
 
 ## Settled — do not re-derive
 
 - **All four contract-schema decisions are closed.** D1 `documentedDefaultNote`
   and D2 unstated requiredness shipped in 2.7.2; D3 array `when` with `in` and
-  D4 `scalar`/`empty` arguments shipped in 2.7.3. `contracts/README.md` states
-  each with its reasoning, and now also states the one-route section fold.
-- **320 endpoint contracts, 64 drafts.** npm's surface coverage is 399/399 —
-  the gap is live evidence, not reach.
+  D4 `scalar`/`empty` arguments in 2.7.3. `contracts/README.md` states each with
+  its reasoning, plus the one-route section fold and the repeated-selector rule.
 - **A contract carrying `extraction.unmergedTables` is never an npm payload
-  source.** That guard is what makes promoting an incomplete contract safe, and
-  it is checked by a test. If `npm run generate` produces a diff after you
-  promote one, the guard is broken — report it, do not work around it.
+  source.** That guard is what makes an incomplete contract safe, and a test
+  checks it. If `npm run generate` produces a `types.ts` diff after a promotion,
+  the guard is broken — report it, do not work around it. A label change in
+  `resources.ts` is expected and fine.
+- **A variant union is closed only where the contract proves it** — a declared
+  `enum` the branches cover exactly, or both values of a boolean. Otherwise
+  generation emits a trailing member carrying the remaining values. 11 of the 14
+  union payloads have one. Do not "tidy" them away.
 - **`docs/coverage.json` carries one row per result table, not per route.**
   `/DESIGN/RC/KDS-41-20-2022/TABLE` has three rows and
   `/DESIGN/SRC/AIK-SRC2K/TABLE` two, because each `TABLE_TYPE` returns its own
-  table and verifying one does not verify the others. The contracts fold those
-  same sections into one endpoint each. Both are right; do not "reconcile" them.
-- **Six manual defects are registered** in `docs/manual_defects_register.md`,
-  labelled by which side owns the fix, and MD-06 now quotes the server verbatim.
-  Append new ones there; send nothing.
+  table. The contracts fold those same sections into one endpoint each. Both are
+  right; do not "reconcile" them.
+- **Seven manual defects are registered** in `docs/manual_defects_register.md`,
+  each labelled by which side owns the fix. Append new ones there; send nothing.
 - **`/info` is a `/db/*` facility.** All 147 `/DESIGN/*` resource-product pairs
   404 on introspection while the endpoints answer a plain GET, so a design-code
   contract has two permitted sources rather than three and can never carry
@@ -346,10 +258,16 @@ Commit messages: imperative subject, body explaining *why*. One task per commit.
 - **Both SDKs were swept read-only across all 549 declared resource-product
   pairs on 2026-09-01** and agreed on every one, and all 57 single-product
   resources 404 on the product they do not declare. Product gating is settled in
-  both directions — do not re-derive it.
+  both directions.
 - **`/db/FBLA`'s shared table** — `= 1 or 2` alongside `= 1` and `= 2` — folds
   into both branches at generation time rather than forming a third union
-  member. That is decided and implemented.
+  member. Decided and implemented.
 - **`/db/NMAS` must be sent with `rmX`/`rmY`/`rmZ`.** Omitting them ends the
-  session on both products. Both SDKs fill them in, and the npm side is now
+  session on both products. Both SDKs fill them in, and the npm side is
   live-confirmed to do so on a real POST.
+
+## Before every commit
+
+Run the full set for each surface you touched — the block under "Measured
+starting state" is the whole list. `git diff --check` too; a trailing space in a
+YAML folded block has blocked a commit here before.
