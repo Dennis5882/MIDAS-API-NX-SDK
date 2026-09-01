@@ -2596,3 +2596,55 @@ def test_shipped_contracts_still_match_the_manual_if_it_is_present():
         pytest.skip("manual repo not available")
 
     assert ex.run_check(ex.load_manual(manual_repo)[0]) == 0
+
+
+BACKSLASH = chr(92)
+
+
+def test_an_escaped_pipe_does_not_delete_the_row_it_appears_in(tmp_path: Path):
+    r"""``\|`` is a literal pipe inside a cell, not a column boundary.
+
+    The manual writes alternatives as ``None \| 50% \| 100%``. Splitting
+    the row on every ``|`` gave it more cells than its header, and a row whose
+    cell count disagrees is dropped, so the field vanished with no diagnostic.
+    Ten rows across three chapters were lost that way -- among them
+    ``/ope/LCOM-GEN``'s ``CODE_SELECTION``, which the same section's JSON
+    Schema marks **required** and uses to select the whole request body.
+    """
+
+    path = tmp_path / "99_DB_Escaped.md"
+    path.write_text(
+        r"""## 1. `/db/ESCAPED` -- escaped pipe
+
+### JSON Schema
+
+```json
+{
+  "ESCAPED": {
+    "type": "object",
+    "properties": {
+      "OPTION": { "description": "Option", "type": "string" },
+      "SPLICED_BARS": { "description": "Splice", "type": "string" }
+    }
+  }
+}
+```
+
+### Specifications
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Option | `"OPTION"` | String | - | Optional |
+| 2 | Splice option (`None` \| `50%` \| `100%`) | `"SPLICED_BARS"` | String | `"50%"` | Optional |
+""",
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    assert [field.key for field in section.tables[0].fields] == ["OPTION", "SPLICED_BARS"]
+    # The escape belongs to the markdown, not to the documented text.
+    spliced = section.tables[0].fields[1]
+    assert spliced.description == "Splice option (None | 50% | 100%)"
+    assert BACKSLASH not in spliced.description
+    # A row the table does name is not a schema-only root.
+    assert section.schema_only_roots == ()

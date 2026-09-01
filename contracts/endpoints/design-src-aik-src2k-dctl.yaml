@@ -58,6 +58,24 @@ operations:
       keyStability: stable
 
 fields:
+  - key: FRAMEX
+    description: >-
+      X방향 프레임 — Unbraced Sway=비횡지지 | Sway; Braced Non-sway=횡지지 | Non-sway
+    type: string
+    requirement: optional
+    documentedDefault: Braced Non-sway
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: FRAMEY
+    description: >-
+      Y방향 프레임 — Unbraced Sway=비횡지지 | Sway; Braced Non-sway=횡지지 | Non-sway
+    type: string
+    requirement: optional
+    documentedDefault: Braced Non-sway
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
   - key: bAUTOKF
     description: >-
       유효좌굴길이계수 자동계산

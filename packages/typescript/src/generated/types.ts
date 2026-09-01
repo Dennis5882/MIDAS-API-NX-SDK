@@ -7301,6 +7301,8 @@ export namespace DesignRcKdsRebarTypes {
     DOUBLY_K?: number;
     /** 철근 간격 제한 고려 */
     SPACING_LIMIT?: boolean;
+    /** 이음 옵션 (None | 50% | 100%) */
+    SPLICED_BARS?: "None" | "50%" | "100%";
   }
   export interface ColumnBraceRebarDesignCriteriaItem {
     MAIN_REBAR?: string;
@@ -7327,6 +7329,8 @@ export namespace DesignRcKdsRebarTypes {
     DO?: number;
     /** 철근 간격 제한 고려 */
     SPACING_LIMIT?: boolean;
+    /** 이음 옵션 (None | 50% | 100%) */
+    SPLICED_BARS?: "None" | "50%" | "100%";
   }
   /** Generated from contracts/endpoints/. */
   export interface RebarDesignCriteriaByBraceMemberPayload {
@@ -7344,6 +7348,8 @@ export namespace DesignRcKdsRebarTypes {
     DO?: number;
     /** 철근 간격 제한 고려 */
     SPACING_LIMIT?: boolean;
+    /** 이음 옵션 (None | 50% | 100%) */
+    SPLICED_BARS?: "None" | "50%" | "100%";
   }
   export interface RebarDesignCriteriaByWallMemberItem {
     STORY?: string;
@@ -8000,6 +8006,10 @@ export namespace DesignSrcAiksrc2kTypes {
   }
   /** Generated from contracts/endpoints/. */
   export interface SrcDefinitionOfFramePayload {
+    /** X방향 프레임 — Unbraced Sway=비횡지지 | Sway; Braced Non-sway=횡지지 | Non-sway */
+    FRAMEX?: string;
+    /** Y방향 프레임 — Unbraced Sway=비횡지지 | Sway; Braced Non-sway=횡지지 | Non-sway */
+    FRAMEY?: string;
     /** 유효좌굴길이계수 자동계산 */
     bAUTOKF?: boolean;
     /** 설계 타입 — 3D=3-D; XZ=X-Z 평면; YZ=Y-Z 평면; XY=X-Y 평면 */

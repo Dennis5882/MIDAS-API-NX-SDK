@@ -60,6 +60,16 @@ fields:
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
+  - key: CODE_SELECTION
+    description: >-
+      설계 카테고리 선택 – 바디 구조 분기 키
+    type: string
+    requirement: required
+    documentedDefault: null
+    documentedDefaultNote: "CONCRETE | STEEL | SRC"
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
   - key: DGNCODE
     description: >-
       설계기준 코드 값. CODE_SELECTION="CONCRETE"일 때 const/기본값 "KDS 41 20 : 2022"

@@ -129,6 +129,23 @@ fields:
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
+  - key: SPLICED_BARS
+    description: >-
+      이음 옵션 (None | 50% | 100%)
+    type: string
+    requirement: optional
+    documentedDefault: "50%"
+    documentedOptional: true
+    enum: ["None", "50%", "100%"]
+    safeToOmit: unverified
+    provenance: manual
+    provenanceNote: >-
+      Transcribed from the Specifications row the extractor used to drop:
+      its Description cell writes the three options with GFM-escaped pipes
+      (`None \| 50% \| 100%`), the row was split on those pipes into more
+      cells than the header has, and a row whose cell count disagrees was
+      discarded. The section's own JSON Schema declares SPLICED_BARS, which
+      is how the loss was found - see MD-10.
 
 extraction:
   source: 26_Design_RC_KDS41202022.md line 5375

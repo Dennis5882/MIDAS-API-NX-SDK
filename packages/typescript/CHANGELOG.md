@@ -6,6 +6,17 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Fixed
+
+- Five documented fields were missing from the generated declarations:
+  `SPLICED_BARS` on `RebarDesignCriteriaBy{Beam,Column,Brace}MemberPayload`
+  (`"None" | "50%" | "100%"`, default `"50%"`) and `FRAMEX`/`FRAMEY` on
+  `SrcDefinitionOfFramePayload`. The manual documents each of them in a
+  Specifications row whose Description cell writes alternatives with GFM's
+  escaped pipe (`None \| 50% \| 100%`); the contract extractor split those
+  rows on every `|`, got more cells than the header has, and dropped the row.
+  All five are optional, so nothing that compiled before stops compiling.
+
 ## 2.7.4 - 2026-09-02
 
 ### Compatibility — breaking

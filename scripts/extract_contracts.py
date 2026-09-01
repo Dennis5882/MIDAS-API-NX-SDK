@@ -172,7 +172,7 @@ def _section_methods(lines: list[str]) -> list[str]:
             if follow.lstrip().startswith(">"):
                 continue
             if follow.startswith("|"):
-                cells = [cell.strip() for cell in follow.strip("|").split("|")]
+                cells = _split_row(follow)
                 verbs.update(_verbs(cells[0]) if cells else [])
             else:
                 verbs.update(_verbs(follow))
@@ -895,6 +895,30 @@ def _nest(flat: list[ParsedField]) -> list[ParsedField]:
             parent = existing
 
     return roots
+
+
+_ESCAPED_PIPE = "\\|"
+_PIPE_PLACEHOLDER = "\x00"
+
+
+def _split_row(line: str) -> list[str]:
+    r"""Split one markdown table row into cells, honouring escaped pipes.
+
+    ``\|`` is GFM's escape for a literal pipe inside a cell, and the manual
+    uses it to write alternatives - ``None \| 50% \| 100%``.  Splitting on
+    every ``|`` gives such a row more cells than its header has, and every
+    caller drops a row whose cell count disagrees, so one escaped pipe
+    silently deletes a documented field.  Ten rows across three chapters were
+    being lost that way, including ``/ope/LCOM-GEN``'s **required**
+    ``CODE_SELECTION`` body discriminator and ``SPLICED_BARS`` on the three
+    ``DCRM-*`` endpoints - five of the nine sections MD-10 recorded as a
+    Specifications table contradicting its own JSON Schema.
+
+    The escape is dropped from the cell text: ``\|`` means a literal ``|``.
+    """
+
+    parts = line.replace(_ESCAPED_PIPE, _PIPE_PLACEHOLDER).strip("|").split("|")
+    return [part.replace(_PIPE_PLACEHOLDER, "|").strip() for part in parts]
 
 
 def _walk(fields: list[ParsedField]) -> list[ParsedField]:
@@ -2220,14 +2244,14 @@ def _enum_tables(lines: list[str]) -> dict[str, list[Any]]:
             table += 1
         if table >= len(lines) or not lines[table].startswith("|"):
             continue
-        header = [_clean(cell).lower() for cell in lines[table].strip("|").split("|")]
+        header = [_clean(cell).lower() for cell in _split_row(lines[table])]
         value_columns = [i for i, cell in enumerate(header) if cell in _ENUM_VALUE_COLUMNS]
         if not value_columns:
             continue
         values: list[Any] = []
         row = table + 2
         while row < len(lines) and lines[row].startswith("|"):
-            cells = [cell.strip() for cell in lines[row].strip("|").split("|")]
+            cells = _split_row(lines[row])
             row += 1
             if len(cells) != len(header):
                 continue
@@ -2428,7 +2452,7 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
             index += 1
             continue
 
-        header = [cell.strip().lower() for cell in line.strip("|").split("|")]
+        header = [cell.lower() for cell in _split_row(line)]
         key_column = next((i for i, h in enumerate(header) if h in _KEY_COLUMNS), None)
         if key_column is None:
             index += 1
@@ -2446,7 +2470,7 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
         target_seen = seen
         row = index + 2
         while row < len(lines) and lines[row].startswith("|"):
-            cells = [cell.strip() for cell in lines[row].strip("|").split("|")]
+            cells = _split_row(lines[row])
             row += 1
             if len(cells) != len(header):
                 continue
@@ -2620,7 +2644,7 @@ def _toc_metadata(lines: list[str]) -> dict[str, tuple[list[str], str]]:
     for index, line in enumerate(lines):
         if not (line.startswith("|") and index + 1 < len(lines) and _DIVIDER.match(lines[index + 1])):
             continue
-        header = [cell.strip().lower() for cell in line.strip("|").split("|")]
+        header = [cell.lower() for cell in _split_row(line)]
         if "endpoint" not in header:
             continue
         method_column = next((i for i, h in enumerate(header) if h in _TOC_METHOD_COLUMNS), None)
@@ -2630,7 +2654,7 @@ def _toc_metadata(lines: list[str]) -> dict[str, tuple[list[str], str]]:
         endpoint_column = header.index("endpoint")
         row = index + 2
         while row < len(lines) and lines[row].startswith("|"):
-            cells = [cell.strip() for cell in lines[row].strip("|").split("|")]
+            cells = _split_row(lines[row])
             row += 1
             if len(cells) != len(header):
                 continue

@@ -33,7 +33,7 @@ Civil NX 2026 v2.2, both build 08/26/2026.
 | MD-07 | 2026-09-01 | `/db/FIMP` Kent & Park table | `04_DB_Properties.md:2103` keys the rows `"KENPAR"."FC"` and omits `CONC`/`STEEL` from Specifications entirely | the same article's Request Body nests them `CONC` > `KENPAR` > `FC`, three levels deep | **manual repo** transcription | open |
 | MD-08 | 2026-09-01 | `/db/CO_S`, `/db/CO_T` Specifications | one row keyed `"W_R" ~ "HE_B"` for No. `1-9` | the same section's JSON Schema and Request Example both list nine separate colour components, as `/db/CO_M`'s table does individually | **manual repo** transcription | open |
 | MD-09 | 2026-09-01 | `/DESIGN/RC/.../DCRM-*`, `/DESIGN/SRC/AIK-SRC2K/LLRF` | the JSON Schema `enum` lists 5 rebar sizes and 6 reduction factors | the same rows' descriptions say `19종 (D4 ~ D57)` and `가능값 11개`; LLRF's list carries the literal member `...(전체 11개)` | **manual repo** transcription | open |
-| MD-10 | 2026-09-01 | seven sections' Specifications tables | the table omits a root property the same section's JSON Schema declares | `/db/EPMT` (6 model objects), `/db/ELEM` (`C_RAT`, `LCAXIS`), `/db/FIMP`, `/db/RCHK`, `/ope/LCOM-GEN`, three `DCRM-*` (`SPLICED_BARS`), `/DESIGN/SRC/AIK-SRC2K/DCTL` (`FRAMEX`, `FRAMEY`) | **manual repo** transcription | open |
+| MD-10 | 2026-09-01 | four sections' Specifications tables | the table omits a root property the same section's JSON Schema declares | `/db/EPMT` (6 model objects), `/db/ELEM` (`C_RAT`, `LCAXIS`), `/db/FIMP`, `/db/RCHK`. Five more turned out to be this SDK's parser, not the manual - see the detail | **manual repo** transcription (4 of the original 9) | narrowed 2026-09-02 |
 
 ## Detail
 
@@ -190,21 +190,34 @@ declared scalar type, which is wide enough for every documented value.
 
 ### MD-10 - a Specifications table that is not the whole request
 
-Seven promoted contracts and two drafts are built from a table that omits a
-root property the same section's JSON Schema declares. `/db/FIMP` is the one
+**Five of the original nine were this repository's parser, not the manual.**
+The rows were there all along. `extract_contracts.py` split each table row on
+every `|`, including GFM's escaped `\|`, which the manual uses to write
+alternatives - ``None \| 50% \| 100%``. That gave the row more cells than its
+header has, and a row whose cell count disagrees was discarded with no
+diagnostic. Ten rows across three chapters were being deleted that way,
+among them `/ope/LCOM-GEN`'s `CODE_SELECTION`, which the same section's JSON
+Schema marks **required** and uses to select the whole request body.
+`_split_row` now honours the escape, and the five contracts built from those
+tables carry the recovered fields: `CODE_SELECTION`, `SPLICED_BARS` on the
+three `DCRM-*` endpoints, and `FRAMEX`/`FRAMEY` on `DCTL`. Three further rows
+(`HOOP_TYPE`, `HOOK_TYPE`, and a fourth `SPLICED_BARS`) belong to `REBC`,
+`REBR` and `DCRE`, which are still drafts, so nothing promoted was missing
+them.
+
+That leaves **two promoted contracts and two drafts** genuinely built from a
+table that omits a root its own JSON Schema declares. `/db/FIMP` is the one
 that caused damage (MD-07); the rest are recorded, not yet reconciled:
 
 | section | root(s) only the schema names |
 | --- | --- |
 | `/db/EPMT` | `TRESCA`, `VMISES`, `MOHRCL`, `DRUCKER`, `MASONRY`, `CONCDMG` |
 | `/db/ELEM` | `C_RAT`, `LCAXIS` |
-| `/db/RCHK` | `BEAM`, `COLM` |
-| `/ope/LCOM-GEN` | `CODE_SELECTION` |
-| `/DESIGN/RC/KDS-41-20-2022/DCRM-BEAM`, `-COLUMN`, `-BRACE` | `SPLICED_BARS` |
-| `/DESIGN/SRC/AIK-SRC2K/DCTL` | `FRAMEX`, `FRAMEY` |
+| `/db/RCHK` (draft) | `BEAM`, `COLM` |
+| `/db/FIMP` (draft) | `CONC`, `STEEL` - see MD-07 |
 
 Roots are the visible end of a wider pattern. Comparing every path, not just
-the top level, **44 of the 337 promoted contracts and 22 of the 47 drafts**
+the top level, **39 of the 337 promoted contracts and 22 of the 47 drafts**
 have at least one path their section's JSON Schema declares and their table
 never names. The extreme cases are whole subtrees: `/DESIGN/SRC/AIK-SRC2K/MRBD`
 gives 14 of 54 paths, `/db/POGD` 9 of 73, `/view/RESULTGRAPHIC` 11 of 66.
@@ -215,10 +228,13 @@ not the request at all; MRBD is listed in `NEEDS_HAND_REVIEW` by name because
 the tree-marker fix made it promotable while still a quarter complete.
 
 `extract_contracts.py` now emits a review note for this, so no further contract
-can be promoted from a table its own section contradicts. Reconciling the nine
-needs someone to read each section and decide how the two renderings relate -
-`/db/EPMT`'s six objects are `MODEL_TYPE` branches, `/db/ELEM`'s two are plain
-optional fields, and they are not the same kind of gap.
+can be promoted from a table its own section contradicts. Reconciling the four
+that remain needs someone to read each section and decide how the two
+renderings relate - `/db/EPMT`'s six objects are `MODEL_TYPE` branches,
+`/db/ELEM`'s two are plain optional fields, and they are not the same kind of
+gap. The parser finding is the reason to check the tooling before the source:
+over half of what looked like a documentation defect was this repo silently
+dropping rows it could not count.
 
 ## Suggested follow-up, when the author chooses to act
 
