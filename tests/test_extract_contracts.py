@@ -769,7 +769,7 @@ def test_emit_warns_when_two_manual_sections_share_a_draft_name(
 
 def test_conditional_variant_tables_are_reported_not_merged(section: ex.Section):
     assert len(section.tables) == 2
-    assert section.variants == []
+    assert [(variant.field, variant.equals) for variant in section.variants] == [("TYPE", "SPECIAL")]
     main_keys = {f.key for f in section.tables[0].fields}
 
     assert "SPECIAL" not in main_keys
@@ -1049,6 +1049,109 @@ def test_bold_table_labels_supply_literal_variant_selectors(tmp_path: Path):
         ("TYPE", "CONST"),
         ("TYPE", "USER"),
     ]
+
+
+def test_bold_table_label_survives_an_advisory_before_its_table(tmp_path: Path):
+    """A note between a bold selector label and table must not reuse the prior label."""
+    path = tmp_path / "99_DB_AdvisoryVariant.md"
+    path.write_text(
+        """## 1. `/db/ADVISORY-VARIANT` -- advisory variant
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Shape | `SHAPE` | String | - | Required |
+
+**Round (`SHAPE="ROUND"`)**
+
+> The manual explains this value before listing its fields.
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 2 | Radius | `RADIUS` | Number | - | Required |
+""",
+        encoding="utf-8",
+    )
+
+    parsed = ex.parse_chapter(path)[0]
+    assert [(variant.field, variant.equals) for variant in parsed.variants] == [("SHAPE", "ROUND")]
+
+
+@pytest.mark.parametrize(
+    ("heading", "expected"),
+    [
+        pytest.param('SHAPE = "ELEMENT" 추가 파라미터', (("SHAPE", ("ELEMENT",)),), id="quoted_string_equals"),
+        pytest.param('SECT (`"SECTTYPE": "DBUSER"`)', (("SECTTYPE", ("DBUSER",)),), id="backticked_quoted_key_colon"),
+        pytest.param("Truss (STYPE: 1)", (("STYPE", (1,)),), id="colon_numeric"),
+        pytest.param("Vehicle K/Military(LOAD_MODEL=2/3)", (("LOAD_MODEL", (2, 3)),), id="slash_numeric_list"),
+        pytest.param('Profile (INPUT=2D, CURVE="SPLINE")', (("INPUT", ("2D",)), ("CURVE", ("SPLINE",))), id="two_explicit_gates"),
+        pytest.param("M&S (DAMPING_METHOD=1)", (("DAMPING_METHOD", (1,)),), id="numeric_equals"),
+    ],
+)
+def test_variant_conditions_transcribe_manual_heading_forms(heading: str, expected: tuple[tuple[str, tuple], ...]):
+    assert ex._variant_conditions(heading) == expected
+
+
+def test_explicit_variants_keep_unlabelled_supplementary_tables_unmerged(tmp_path: Path):
+    """An explicit table can merge without guessing a label-only neighbour."""
+    path = tmp_path / "99_DB_PartialVariants.md"
+    path.write_text(
+        """## 1. `/db/PARTIAL-VARIANT` -- partial variants
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Type | `TYPE` | String | - | Required |
+
+### First (`TYPE="FIRST"`)
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 2 | First value | `FIRST_VALUE` | Number | - | Required |
+
+### A label without a wire value
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 3 | Unknown value | `UNKNOWN_VALUE` | Number | - | Required |
+""",
+        encoding="utf-8",
+    )
+
+    parsed = ex.parse_chapter(path)[0]
+    draft = yaml.safe_load(ex.render_draft(parsed))
+    assert [(variant.field, variant.equals) for variant in parsed.variants] == [("TYPE", "FIRST")]
+    assert draft["variants"][0]["when"] == [{"path": "TYPE", "equals": "FIRST"}]
+    assert draft["extraction"]["unmergedTables"] == [{"heading": "A label without a wire value", "fields": 1, "line": 12}]
+
+
+def test_manual_check_compares_repeated_literal_variants_in_source_order(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """Two manual tables may share one explicit selector without overwriting."""
+    path = tmp_path / "99_DB_RepeatedVariant.md"
+    path.write_text(
+        """## 1. `/db/REPEATED-VARIANT` -- repeated variant
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Type | `TYPE` | String | - | Required |
+
+### First group (`TYPE="A"`)
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 2 | First value | `FIRST_VALUE` | Number | - | Required |
+
+### Second group (`TYPE="A"`)
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 3 | Second value | `SECOND_VALUE` | Number | - | Required |
+""",
+        encoding="utf-8",
+    )
+    section = ex.parse_chapter(path)[0]
+    contract = yaml.safe_load(ex.render_draft(section))
+    contract.pop("draft")
+    endpoint_dir = tmp_path / "endpoints"
+    endpoint_dir.mkdir()
+    (endpoint_dir / "db-repeated-variant.yaml").write_text(yaml.safe_dump(contract), encoding="utf-8")
+    monkeypatch.setattr(ex, "ENDPOINT_DIR", endpoint_dir)
+
+    assert ex.run_check([section]) == 0
 
 
 def test_prose_and_inline_bold_emphasis_do_not_replace_a_table_heading(tmp_path: Path):

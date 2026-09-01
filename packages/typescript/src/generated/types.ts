@@ -4849,13 +4849,39 @@ export namespace DbPropertiesMaterialTypes {
     ECU?: number;
     STRENGTH_AFTER?: number;
   }
-  export interface InelasticMaterialPropertyPayload {
-    NAME?: string;
-    MATL_TYPE?: string;
-    HYS_MODEL?: string;
-    CONC?: unknown;
-    STEEL?: unknown;
-  }
+  /** Generated from contracts/endpoints/. */
+  export type InelasticMaterialPropertyPayload = {
+    /** Material Name */
+    NAME: string;
+    /** Material Type • Concrete: "CONC" • Steel: "STEEL" */
+    MATL_TYPE: string;
+    /** Hysteresis Model */
+    HYS_MODEL: string;
+  } & (
+    {
+      HYS_MODEL: "KPM";
+      /** Concrete Strength (fc') */
+      KENPAR: unknown;
+      /** Concrete Strength (fc') */
+      FC: unknown;
+      /** Partial Safety Factor */
+      PARTIAL_FACT: unknown;
+      /** Strength/Strain Factor */
+      K: unknown;
+      /** Peak Strain (εc0) */
+      EC0: unknown;
+      /** Hardening Strain Method · Manual: 0 / Calculation: 1 */
+      EC1_METHOD: unknown;
+      /** Hardening Strain Manual (εc1) */
+      EC1: unknown;
+      /** Hardening Strain Calculation (Z) */
+      Z: unknown;
+      /** Ultimate Strain (εcu) */
+      ECU: unknown;
+      /** Strength After Critical Strain · Zero: 0 / Keep: 1 */
+      STRENGTH_AFTER: unknown;
+    }
+  );
 }
 
 export namespace DbPropertiesSectionTypes {
@@ -6100,30 +6126,267 @@ export namespace DbStaticLoadsTypes {
     /** Response Modification Factor */
     RMF: number;
   }
-  export interface StaticWindLoadPayload {
-    WIND_CODE?: string;
+  /** Generated from contracts/endpoints/. */
+  export type StaticWindLoadPayload = {
+    /** Wind Load Code ("KDS(41-12: 2022)") */
+    WIND_CODE: "KDS(41-12: 2022)";
+    /** Description */
     DESC?: string;
-    WIND_ECCEN_X?: number;
-    WIND_ECCEN_Y?: number;
-    SCALE_FACTOR_X?: number;
-    SCALE_FACTOR_Y?: number;
-    PARAMETERS?: unknown;
-    STORY_WIND_PRESSURE?: unknown;
-    ADDITIONAL_LOAD?: unknown;
-  }
-  export interface StaticSeismicLoadPayload {
-    SEIS_CODE?: string;
+    /** Scale Factor X */
+    SCALE_FACTOR_X: number;
+    /** Scale Factor Y */
+    SCALE_FACTOR_Y: number;
+    /** KDS(41-12:2022) Parameters */
+    PARAMETERS: {
+      /** Input Method (0=Simplified / 1=General / 2=General+Vortex) */
+      INPUT_METHOD: number;
+    };
+  } & (
+    {
+      INPUT_METHOD: 0;
+      /** Basic Wind Speed */
+      WIND_SPEED: number;
+      /** Roof Height */
+      ROOF_HEIGHT?: number;
+      /** Exposure Coefficient CE */
+      CE?: number;
+    } |
+    {
+      INPUT_METHOD: 1;
+      /** Exposure Category (0=A / 1=B / 2=C / 3=D) */
+      EXP_CATEGORY: number;
+      /** Basic Wind Speed */
+      WIND_SPEED: number;
+      /** Importance Factor */
+      IMPORTANCE_FACTOR: number;
+      /** Roof Height */
+      ROOF_HEIGHT?: number;
+      /** Topographic Effect */
+      TOPOGRAPHIC_EFFECT?: JsonObject;
+      /** Use Topographic Effect */
+      OPT_USE?: boolean;
+      /** Topographic Factor KZT (OPT_USE=true) Applies when OPT_USE = true. */
+      KZT?: number;
+      /** Direction Factor X */
+      DIRECTION_FACTOR_X?: number;
+      /** Direction Factor Y */
+      DIRECTION_FACTOR_Y?: number;
+      /** Rigidity Classification */
+      RIGIDITY: number;
+      /** Gust Factor X */
+      GUST_FACTOR_X: number;
+      /** Gust Factor Y */
+      GUST_FACTOR_Y: number;
+      /** Force Coefficient */
+      FORCE_COEF?: JsonObject;
+      /** Building Type (0=Middle Low Rise / 1=High Rise) */
+      BUILDING_TYPE?: number;
+      /** Vibration Parameters */
+      VIBRATION_PARAMS?: JsonObject;
+      /** Across-wind Vibration */
+      ACROSS_WIND?: boolean;
+      /** Torsional-wind Vibration */
+      TORSIONAL_WIND?: boolean;
+      /** Wind Response */
+      WIND_RESPONSE?: boolean;
+      /** Building Length X */
+      BL_X: number;
+      /** Building Length Y */
+      BL_Y: number;
+      /** Natural Frequency X */
+      NO_X: number;
+      /** Natural Frequency Y */
+      NO_Y: number;
+      /** Torsional Natural Frequency */
+      NO_T: number;
+      /** Mass */
+      M?: number;
+      /** Mass in X direction */
+      MX?: number;
+      /** Mass in Y direction */
+      MY?: number;
+      /** Mass Moment of Inertia */
+      MI?: number;
+      /** Damping Ratio */
+      ZF: number;
+      /** Vibration Mode Coefficient */
+      VIBRATION_MODE: number;
+    } |
+    {
+      INPUT_METHOD: 2;
+      /** Roof Height */
+      ROOF_HEIGHT?: number;
+      /** Vortex Shedding DM */
+      DM: number;
+      /** Vortex Shedding DB */
+      DB: number;
+      /** Natural Frequency for Vortex */
+      N: number;
+      /** Mass for Vortex Check */
+      M?: number;
+      /** Damping Ratio for Vortex */
+      ZF: number;
+      /** Additional Story-level Wind Load */
+      ADDITIONAL_LOAD?: Array<{
+        /** Story Name */
+        STORY_NAME: string;
+        /** Along-wind Load X */
+        ALONG_X?: number;
+        /** Along-wind Load Y */
+        ALONG_Y?: number;
+        /** Across-wind Load X */
+        ACROSS_X?: number;
+        /** Across-wind Load Y */
+        ACROSS_Y?: number;
+        /** Torsional Wind Load RZ */
+        TORSIONAL_RZ?: number;
+        /** Torsional Wind Load RZ X */
+        TORSIONAL_RZ_X?: number;
+        /** Torsional Wind Load RZ Y */
+        TORSIONAL_RZ_Y?: number;
+      }>;
+    } |
+    {
+      WIND_CODE: "USER TYPE";
+      /** Description */
+      DESC?: string;
+      /** Wind Eccentricity Option X (0=Positive / 1=Negative / 2=None) */
+      WIND_ECCEN_X?: number;
+      /** Wind Eccentricity Option Y (0=Positive / 1=Negative / 2=None) */
+      WIND_ECCEN_Y?: number;
+      /** Scale Factor X */
+      SCALE_FACTOR_X: number;
+      /** Scale Factor Y */
+      SCALE_FACTOR_Y: number;
+      /** User-defined Story-level Wind Pressure */
+      STORY_WIND_PRESSURE: Array<{
+        /** Story Name */
+        STORY_NAME: string;
+        /** Wind Pressure X */
+        PRESS_X: number;
+        /** Wind Pressure Y */
+        PRESS_Y: number;
+      }>;
+      /** Additional Story-level Wind Load */
+      ADDITIONAL_LOAD?: Array<{
+        /** Along-wind Load X */
+        ALONG_X?: number;
+        /** Along-wind Load Y */
+        ALONG_Y?: number;
+        /** Torsional Wind Load RZ */
+        TORSIONAL_RZ?: number;
+      }>;
+    }
+  );
+  /** Generated from contracts/endpoints/. */
+  export type StaticSeismicLoadPayload = {
+    /** Seismic Load Code ("KDS(41-17-00:2019)") */
+    SEIS_CODE: "KDS(41-17-00:2019)";
+    /** Description */
     DESC?: string;
-    SCALE_FACTOR_X?: number;
-    SCALE_FACTOR_Y?: number;
+    /** Scale Factor X */
+    SCALE_FACTOR_X: number;
+    /** Scale Factor Y */
+    SCALE_FACTOR_Y: number;
+    /** Accidental Eccentricity X (0=Positive / 1=Negative / 2=None) */
     ACCIDENT_ECCEN_X?: number;
+    /** Accidental Eccentricity Y (0=Positive / 1=Negative / 2=None) */
     ACCIDENT_ECCEN_Y?: number;
+    /** Consider Accidental Torsion */
     ACCIDENT_TORSION?: boolean;
-    INHERENT_TORSION?: boolean;
-    PARAMETERS?: unknown;
-    SEISMIC_FORCE?: unknown;
-    ADDITIONAL_LOAD?: unknown;
-  }
+    /** KDS(41-17-00:2019) Parameters */
+    PARAMETERS: {
+      /** Seismic Zone (0=Zone1 / 1=Zone2) */
+      SEIS_ZONE: number;
+      /** Effective Peak Acceleration */
+      EPA: number;
+      /** Site Class (0=S1 / 1=S2 / 2=S3 / 3=S4 / 4=S5 / 5=S6) */
+      SITE_CLASS: number;
+      /** Short-period Site Coefficient FA */
+      FA?: number;
+      /** Long-period Site Coefficient FV */
+      FV?: number;
+      /** Design Spectral Acceleration at Short Period SDS */
+      SDS?: number;
+      /** Design Spectral Acceleration at 1-sec SD1 */
+      SD1?: number;
+      /** Seismic Use Group (0=Special / 1=I / 2=II) */
+      SEIS_USE_GROUP: number;
+      /** Importance Factor */
+      IMPORTANCE_FACTOR: number;
+      /** Period Method (0=Analytical / 1=Approximate) */
+      PERIOD_METHOD: number;
+    };
+  } & (
+    {
+      PERIOD_METHOD: 0;
+      /** Analytical Period X */
+      PERIOD_ANALYSIS_X: number;
+      /** Analytical Period Y */
+      PERIOD_ANALYSIS_Y: number;
+      /** Approximate Period X */
+      PERIOD_APPR_X: number;
+      /** Approximate Period Y */
+      PERIOD_APPR_Y: number;
+    } |
+    {
+      PERIOD_METHOD: 1;
+      /** Approximate Period X */
+      PERIOD_APPR_X: number;
+      /** Approximate Period Y */
+      PERIOD_APPR_Y: number;
+      /** Response Modification Factor X */
+      RESPONSE_MOD_FACTOR_X: number;
+      /** Response Modification Factor Y */
+      RESPONSE_MOD_FACTOR_Y: number;
+      /** Additional Story-level Seismic Load */
+      ADDITIONAL_LOAD?: {
+        /** Story Name */
+        STORY_NAME: string;
+        /** Additional Seismic Load X */
+        ALONG_X: number;
+        /** Additional Seismic Load Y */
+        ALONG_Y: number;
+        /** Additional Torsional Seismic Load RZ */
+        TORSIONAL_RZ: number;
+      };
+    } |
+    {
+      SEIS_CODE: "USER TYPE";
+      /** Description */
+      DESC?: string;
+      /** Scale Factor X */
+      SCALE_FACTOR_X: number;
+      /** Scale Factor Y */
+      SCALE_FACTOR_Y: number;
+      /** Accidental Eccentricity X (0=Positive / 1=Negative / 2=None) */
+      ACCIDENT_ECCEN_X?: number;
+      /** Accidental Eccentricity Y (0=Positive / 1=Negative / 2=None) */
+      ACCIDENT_ECCEN_Y?: number;
+      /** Consider Accidental Torsion */
+      ACCIDENT_TORSION?: boolean;
+      /** Consider Inherent Torsion */
+      INHERENT_TORSION?: boolean;
+      /** User-defined Story-level Seismic Force */
+      SEISMIC_FORCE: Array<{
+        /** Story Name */
+        STORY_NAME: string;
+        /** Seismic Force X */
+        FORCE_X: number;
+        /** Seismic Force Y */
+        FORCE_Y: number;
+      }>;
+      /** Additional Story-level Seismic Load */
+      ADDITIONAL_LOAD?: {
+        /** Additional Seismic Load X */
+        ALONG_X: number;
+        /** Additional Seismic Load Y */
+        ALONG_Y: number;
+        /** Additional Torsional Seismic Load RZ */
+        TORSIONAL_RZ: number;
+      };
+    }
+  );
 }
 
 export namespace DbTemperaturePrestressTypes {
@@ -6311,24 +6574,159 @@ export namespace DbTemperaturePrestressTypes {
     /** Relaxation Function Name (User Defined) */
     TDMFNAME: string;
   }
-  export interface TendonProfilePayload {
-    NAME?: string;
+  /** Generated from contracts/endpoints/. */
+  export type TendonProfilePayload = {
+    /** Tendon Name */
+    NAME: string;
+    /** Tendon Group No. */
     TDN_GRUP?: number;
-    TDN_PROP?: number;
-    ELEM?: Array<number>;
-    INPUT?: string;
-    CURVE?: string;
+    /** Tendon Property No. */
+    TDN_PROP: number;
+    /** Assigned Elements No. */
+    ELEM: Array<number>;
+    /** Input Type · 2D: "2D" · 3D: "3D" */
+    INPUT: string;
+    /** Curve Type · Spline: "SPLINE" · Round: "ROUND" */
+    CURVE: string;
+    /** Straight Length – Begin (Spline 전용) */
     BELENG?: number;
+    /** Straight Length – End (Spline 전용) */
     ELENG?: number;
+    /** Typical Tendon */
     bTP?: boolean;
+    /** No. of Tendons (bTP = true 일 때 필수) */
     CNT?: number;
-    LENG_OPT?: string;
+    /** Transfer Length Option · "USER" · "AUTO1" · "AUTO2" */
+    LENG_OPT: string;
+    /** Transfer Length – Begin */
     BLEN?: number;
+    /** Transfer Length – End */
     ELEN?: number;
+    /** Debonded Length – Begin (Pre-tensioning 전용) */
     DeBondBLEN?: number;
+    /** Debonded Length – End (Pre-tensioning 전용) */
     DeBondELEN?: number;
-    SHAPE?: string;
-  }
+    /** Reference Axis · "ELEMENT" · "STRAIGHT" · "CURVE" */
+    SHAPE: string;
+  } & (
+    {
+      SHAPE: "ELEMENT";
+      /** Profile Insertion Point · "END-I" · "END-J" */
+      INS_PT: string;
+      /** Profile Insertion Point Element No. */
+      INS_ELEM: number;
+      /** x Axis Direction · "I-J" · "J-I" */
+      AXIS_IJ?: string;
+      /** x Axis Rotation Angle */
+      XAR_ANGLE?: number;
+      /** Projection */
+      bPJ?: boolean;
+      /** Offset (y, z) */
+      OFF_YZ?: [number, number];
+    } |
+    {
+      SHAPE: "STRAIGHT";
+      /** Insertion Point [x, y, z] */
+      IP?: [number, number, number];
+      /** x Axis Direction · "X" · "Y" · "VECTOR" */
+      AXIS?: string;
+      /** Vector [x, y] */
+      VEC?: [number, number];
+      /** x Axis Rotation Angle */
+      XAR_ANGLE?: number;
+      /** Projection */
+      bPJ?: boolean;
+      /** Grad. Rot. Angle Type · "X" · "Y" */
+      GR_AXIS?: string;
+      /** Grad. Rot. Angle */
+      GR_ANGLE?: number;
+    } |
+    {
+      SHAPE: "CURVE";
+      /** Insertion Point [x, y, z] */
+      IP?: [number, number, number];
+      /** Radius Center (X, Y) */
+      RC?: [number, number];
+      /** Offset */
+      OFFSET?: number;
+      /** Direction · CW: "CW" · CCW: "CCW" */
+      DIR?: string;
+      /** x Axis Rotation Angle */
+      XAR_ANGLE?: number;
+      /** Grad. Rot. Angle Type · "X" · "Y" */
+      GR_AXIS?: string;
+      /** Grad. Rot. Angle */
+      GR_ANGLE?: number;
+    } |
+    {
+      INPUT: "2D";
+      CURVE: "SPLINE";
+      /** Profile in x-y plane */
+      PROFY: Array<{
+        /** Coordinates [x, y] */
+        PT: [number, number];
+        /** Fix Option */
+        bFIX?: boolean;
+        /** Radius (degree) */
+        R?: number;
+      }>;
+      /** Profile in x-z plane */
+      PROFZ: Array<{
+        /** BOT Option (ELEMENT 타입 전용) */
+        bBOTZ?: boolean;
+      }>;
+    } |
+    {
+      INPUT: "2D";
+      CURVE: "ROUND";
+      /** Profile in x-y plane */
+      PROFY: Array<{
+        /** Coordinates [x, y] */
+        PT: [number, number];
+        /** Radius (length) */
+        RADIUS?: number;
+        /** Add Option · None: "NONE" · Left: "LEFT" · Right: "RIGHT" */
+        OPT?: string;
+        /** Angle (OPT="LEFT"/"RIGHT" 일 때) */
+        ANGLE?: number;
+        /** Height (OPT="LEFT"/"RIGHT" 일 때) */
+        HEIGHT?: number;
+        /** Radius – length (OPT="LEFT"/"RIGHT" 일 때) */
+        RADIUS2?: number;
+      }>;
+      /** Profile in x-z plane */
+      PROFZ: Array<{
+        /** BOT Option (ELEMENT 타입 전용) */
+        bBOTZ?: boolean;
+      }>;
+    } |
+    {
+      INPUT: "3D";
+      CURVE: "SPLINE";
+      /** 3D Profile */
+      PROF: Array<{
+        /** Coordinates [x, y, z] */
+        PT: [number, number, number];
+        /** Fix Option */
+        bFIX?: boolean;
+        /** Radius – degree [Ry, Rz] */
+        R?: [number, number];
+      }>;
+    } |
+    {
+      INPUT: "3D";
+      CURVE: "ROUND";
+      /** 3D Profile */
+      PROF: Array<{
+        /** Coordinates [x, y, z] */
+        PT: [number, number, number];
+        /** Fix Option */
+        bFIX?: boolean;
+        /** Radius (length) */
+        RADIUS?: number;
+      }>;
+    }
+  );
   /** Generated from contracts/endpoints/. */
   export interface TendonLocationCompositeSectionPayload {
     /** Tendon Profile No. */

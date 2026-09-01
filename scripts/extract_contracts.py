@@ -1087,16 +1087,30 @@ def _display_structural_fields(section: "Section") -> tuple[list[ParsedField], l
 class ParsedVariant:
     """One manual table selected by an explicitly documented discriminator.
 
-    ``values`` holds every literal the manual states for this one table. It is
-    usually one, and renders as ``equals``; a heading such as
-    ``FLOOR_DIST_TYPE = 1 or 2`` names several for the same table and renders
-    as ``in``. Both are transcriptions - a value the manual does not write down
-    never reaches this tuple.
+    ``conditions`` preserves every literal selector the manual states for this
+    one table. A condition normally has one value and renders as ``equals``;
+    a heading such as ``FLOOR_DIST_TYPE = 1 or 2`` has several and renders as
+    ``in``. A heading can name independent gates too, for example
+    ``INPUT=2D, CURVE="SPLINE"``. Both forms are transcriptions - a value the
+    manual does not write down never reaches this tuple.
     """
 
-    field: str
-    values: tuple[str | int | float | bool, ...]
+    conditions: tuple[tuple[str, tuple[str | int | float | bool, ...]], ...]
     table: ParsedTable
+
+    @property
+    def field(self) -> str:
+        """The one selector field, retained for single-condition callers."""
+        if len(self.conditions) != 1:
+            raise ValueError("variant has several conditions; use .conditions")
+        return self.conditions[0][0]
+
+    @property
+    def values(self) -> tuple[str | int | float | bool, ...]:
+        """The one selector's values, retained for single-condition callers."""
+        if len(self.conditions) != 1:
+            raise ValueError("variant has several conditions; use .conditions")
+        return self.conditions[0][1]
 
     @property
     def equals(self) -> str | int | float | bool:
@@ -1107,7 +1121,9 @@ class ParsedVariant:
 
 
 _VARIANT_CONDITION = re.compile(
-    r'`?([A-Za-z_][A-Za-z0-9_.]*)`?\s*=\s*(?:"([^"]+)"|(-?\d+(?:\.\d+)?)|(true|false))',
+    r'(?P<field>"?[A-Za-z_][A-Za-z0-9_.]*"?)\s*(?:==|=|:)\s*'
+    r'(?:"(?P<string>[^"]+)"|(?P<numeric>-?\d+(?:\.\d+)?)(?![A-Za-z0-9_.-])|'
+    r'(?P<boolean>true|false)(?![A-Za-z0-9_.-])|(?P<bare>[A-Za-z0-9][A-Za-z0-9_.-]*))',
     re.IGNORECASE,
 )
 # One table, several documented values of the same field: the manual writes
@@ -1116,19 +1132,26 @@ _VARIANT_CONDITION = re.compile(
 # heading is prose, not a second value.
 _VARIANT_ALTERNATIVE = re.compile(
     # `.match(text, position)` already anchors here; Python's re has no \G.
-    r'\s*(?:or|,|/)\s*(?:"([^"]+)"|(-?\d+(?:\.\d+)?)|(true|false))',
+    r'\s*(?:or|,|/)\s*(?!"?[A-Za-z_][A-Za-z0-9_.]*"?\s*(?:==|=|:))'
+    r'(?:"(?P<string>[^"]+)"|(?P<numeric>-?\d+(?:\.\d+)?)(?![A-Za-z0-9_.-])|'
+    r'(?P<boolean>true|false)(?![A-Za-z0-9_.-]))',
     re.IGNORECASE,
 )
 
 
-def _condition_value(string: str, numeric: str, boolean: str) -> str | int | float | bool:
+def _condition_value(
+    string: str | None, numeric: str | None, boolean: str | None, bare: str | None
+) -> str | int | float | bool:
     """One matched literal, kept in the type the wire uses."""
     if string:
         return string
     if numeric:
         number = float(numeric)
         return int(number) if number.is_integer() else number
-    return boolean.lower() == "true"
+    if boolean:
+        return boolean.lower() == "true"
+    assert bare is not None
+    return bare
 
 
 def _variant_key(conditions: list[dict]) -> tuple[str | None, tuple]:
@@ -1149,83 +1172,72 @@ def _values_label(values: tuple) -> str:
     return repr(values[0]) if len(values) == 1 else " or ".join(repr(value) for value in values)
 
 
-def _variant_condition(text: str) -> tuple[str, tuple[str | int | float | bool, ...]] | None:
+def _variant_conditions(
+    text: str,
+) -> tuple[tuple[str, tuple[str | int | float | bool, ...]], ...] | None:
     """Read the literal discriminator condition without inferring a value.
 
     Conditions occur both in markdown headings (``TYPE = "FIRST"``) and in
     blank-key divider rows inside a parameter table
-    (``OPT_AUTO_OPTIMIZE=false``). Boolean branches are wire values too, not
-    prose labels, so preserve them as booleans rather than strings.
+    (``OPT_AUTO_OPTIMIZE=false``). The manuals also use quoted keys inside
+    backticks, colon notation, and bare string literals such as ``INPUT=2D``.
+    Boolean branches are wire values too, not prose labels, so preserve them as
+    booleans rather than strings.
 
     A heading may state several values for the *same* table - the manual writes
     ``FLOOR_DIST_TYPE = 1 or 2`` and ``LOAD_MODEL=2/3``. Those are returned
     together and become an ``in`` condition. Two *different* fields in one
-    heading are not a variant selector this function can resolve, so it
-    declines rather than picking one.
+    heading are independent gates, so retain them as an AND condition rather
+    than picking one. Repeated mentions of a field form one explicit value
+    list. This function never obtains a value from table order or prose.
     """
 
-    matches = list(_VARIANT_CONDITION.finditer(text))
+    matches = list(_VARIANT_CONDITION.finditer(text.replace("`", "")))
     if not matches:
         return None
-    fields = {match.group(1) for match in matches}
-    if len(fields) != 1:
-        return None
-    values: list[str | int | float | bool] = []
+    conditions: dict[str, list[str | int | float | bool]] = {}
     for match in matches:
-        values.append(_condition_value(*match.group(2, 3, 4)))
+        field = match.group("field").strip('"')
+        values = conditions.setdefault(field, [])
+        values.append(_condition_value(*match.group("string", "numeric", "boolean", "bare")))
         # Consume ``or 2`` / ``/3`` / ``, 4`` immediately following this match.
         position = match.end()
         while (extra := _VARIANT_ALTERNATIVE.match(text, position)) is not None:
-            values.append(_condition_value(*extra.group(1, 2, 3)))
+            values.append(_condition_value(*extra.group("string", "numeric", "boolean"), None))
             position = extra.end()
-    if len(set(values)) != len(values):
+    if any(len(set(values)) != len(values) for values in conditions.values()):
         return None
-    return matches[0].group(1), tuple(values)
+    return tuple((field, tuple(values)) for field, values in conditions.items())
+
+
+def _variant_condition(text: str) -> tuple[str, tuple[str | int | float | bool, ...]] | None:
+    """Return one condition for existing single-selector consumers.
+
+    Field-description parsing deliberately remains narrower than table-heading
+    parsing: a description with two equalities is ambiguous to its one field,
+    while a table heading can document two ANDed variant gates.
+    """
+    conditions = _variant_conditions(text)
+    return conditions[0] if conditions is not None and len(conditions) == 1 else None
 
 
 def _explicit_variants(tables: list[ParsedTable]) -> list[ParsedVariant]:
-    """Model only an all-explicit, single-discriminator set of extra tables.
+    """Model each supplementary table that explicitly names its wire gates.
 
     A heading such as ``LINEAR only`` does not say which wire value selects the
-    table, so it must stay unmerged.  Conversely, every extra table in the set
-    must name exactly one backtick-delimited ``FIELD = VALUE`` condition and all
-    must use the same field.  That makes the resulting discriminated shape a
-    transcription, not an inference from table order or SDK code.
+    table, so it stays unmerged. A literal condition in a table's own heading
+    is sufficient evidence for that one table, even when another table belongs
+    to a different selector group. This avoids inferring a common discriminator
+    from table order while allowing several independent optional groups.
     """
 
     if len(tables) < 2:
         return []
     variants: list[ParsedVariant] = []
     for table in tables[1:]:
-        condition = _variant_condition(table.heading)
-        if condition is None:
-            return []
-        field, values = condition
-        variants.append(ParsedVariant(field, values, table))
-    if len({variant.field for variant in variants}) != 1:
-        return []
-
-    # Each documented value names exactly one branch, so the single-value
-    # tables must not collide. Two of them claiming the same value means the
-    # manual is separating them by something it never names as a wire field -
-    # /db/NLNK splits REF_SYSTEM=1 into Angle/3Points/Vector, /db/HSFC splits
-    # TYPE="FUNC" by whether concrete data is used. Those stay unmerged; a
-    # second discriminator that is not written down cannot be transcribed.
-    branches = [variant for variant in variants if len(variant.values) == 1]
-    claimed = [variant.equals for variant in branches]
-    if len(set(claimed)) != len(claimed):
-        return []
-
-    # A multi-value table is not a further branch: it is the table the manual
-    # shares between branches it has already defined, as /db/FBLA's
-    # ``FLOOR_DIST_TYPE = 1 or 2`` is shared by its ``= 1`` and ``= 2`` tables.
-    # Every value it names must therefore already have a branch of its own,
-    # otherwise it would introduce one nothing defines.
-    for variant in variants:
-        if len(variant.values) > 1 and not set(variant.values) <= set(claimed):
-            return []
-    if not branches:
-        return []
+        conditions = _variant_conditions(table.heading)
+        if conditions is not None:
+            variants.append(ParsedVariant(conditions, table))
     return variants
 
 
@@ -2276,14 +2288,22 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
         # and bold Request/Response labels that introduce code blocks.
         label = _BOLD_TABLE_LABEL.fullmatch(line.strip())
         if label:
-            next_index = index + 1
-            while next_index < len(lines) and not lines[next_index].strip():
-                next_index += 1
-            if (
-                next_index + 1 < len(lines)
-                and lines[next_index].startswith("|")
-                and _DIVIDER.match(lines[next_index + 1])
-            ):
+            # Some manual labels carry an advisory blockquote before their
+            # table (TDNA's 2D Round profile is one). Keep that label only
+            # when a parameter table follows before another heading, another
+            # bold label, or a code fence; this still excludes bold prose that
+            # introduces an example rather than a table.
+            probe = index + 1
+            table_follows = False
+            while probe + 1 < len(lines):
+                candidate = lines[probe]
+                if candidate.startswith("#") or candidate.strip() == "```" or _BOLD_TABLE_LABEL.fullmatch(candidate.strip()):
+                    break
+                if candidate.startswith("|") and _DIVIDER.match(lines[probe + 1]):
+                    table_follows = True
+                    break
+                probe += 1
+            if table_follows:
                 heading = _clean(label.group("label"))
             index += 1
             continue
@@ -3072,10 +3092,10 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
     main = section.tables[0] if section.tables else None
     fields, structural_merges = _structural_fields(section)
     fields, conditional_merges = _conditional_fields(section, fields)
-    resolved_tables = {merge.table for merge in structural_merges} | conditional_merges
     variant_table_indexes = {
         index for index, table in enumerate(section.tables) if any(variant.table is table for variant in section.variants)
     }
+    resolved_tables = {merge.table for merge in structural_merges} | conditional_merges | variant_table_indexes
     # A small reviewed set of historical contracts represents these tables as
     # field-level appliesWhen entries instead of endpoint variants. Keep that
     # settled contract shape while still retaining the bold manual label for
@@ -3174,16 +3194,17 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
         lines.append("variants:")
         for variant in rendered_variants:
             lines += ["  - when:"]
-            if len(variant.values) == 1:
-                lines += [
-                    f"      - path: {_scalar(variant.field)}",
-                    f"        equals: {_scalar(variant.equals)}",
-                ]
-            else:
-                # The manual states one table for several values of the same
-                # field; `in` says exactly that without duplicating the table.
-                lines += [f"      - path: {_scalar(variant.field)}", "        in:"]
-                lines += [f"          - {_scalar(value)}" for value in variant.values]
+            for field, values in variant.conditions:
+                if len(values) == 1:
+                    lines += [
+                        f"      - path: {_scalar(field)}",
+                        f"        equals: {_scalar(values[0])}",
+                    ]
+                else:
+                    # The manual states one table for several values of the
+                    # same field; `in` says exactly that without duplicating it.
+                    lines += [f"      - path: {_scalar(field)}", "        in:"]
+                    lines += [f"          - {_scalar(value)}" for value in values]
             lines += [
                 "    source:",
                 f"      table: {_scalar(variant.table.heading)}",
@@ -3224,7 +3245,7 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
         for index, table in enumerate(section.tables[1:], start=1)
         if index not in resolved_tables
     ]
-    if unresolved and not rendered_variants:
+    if unresolved:
         lines.append("  # Additional parameter tables in this section were NOT merged. They are")
         lines.append("  # usually conditional variants selected by a type/code field. Decide")
         lines.append("  # whether they belong in this contract's fields, as nested `properties`,")
@@ -3758,16 +3779,37 @@ def run_check(sections: list[Section]) -> int:
             [] if variant_table_indexes and variant_table_indexes <= conditional_merges else section.variants
         )
         if check_variants:
-            declared_variants = {
-                _variant_key(variant.get("when", [])): variant
-                for variant in contract.get("variants", [])
+            # A promoted incomplete contract can consciously preserve an
+            # unmerged table with a reviewed resolution.  Do not turn a later
+            # extractor improvement into a false manual-drift failure for that
+            # earlier decision; newly emitted drafts will carry the variant.
+            resolved_unmerged = {
+                (entry.get("heading"), entry.get("line"))
+                for entry in contract.get("extraction", {}).get("unmergedTables", [])
+                if entry.get("resolution")
             }
+            check_variants = [
+                variant
+                for variant in check_variants
+                if (variant.table.heading, variant.table.line) not in resolved_unmerged
+            ]
+            declared_variants: dict[tuple, list[dict]] = {}
+            for declared in contract.get("variants", []):
+                key = tuple(_variant_key([condition]) for condition in declared.get("when", []))
+                declared_variants.setdefault(key, []).append(declared)
             for variant in check_variants:
-                label = f"{variant.field}={_values_label(variant.values)}"
-                declared_variant = declared_variants.get((variant.field, variant.values))
-                if declared_variant is None:
+                key = tuple((field, values) for field, values in variant.conditions)
+                label = ", ".join(f"{field}={_values_label(values)}" for field, values in variant.conditions)
+                matching_variants = declared_variants.get(key, [])
+                if not matching_variants:
                     problems.append(f"{path.name}: manual variant {label} is missing from the contract")
                     continue
+                # A manual can document two additive tables under the same
+                # literal selector (ELEM's tension and compression tables both
+                # say STYPE=1). The source line keeps their order, and the
+                # generated contract preserves it; compare each rather than
+                # letting a dict silently discard the first table.
+                declared_variant = matching_variants.pop(0)
                 variant_manual = _flatten_manual(variant.table.fields)
                 variant_contract = _flatten_contract(declared_variant.get("fields", []))
                 for key, manual in variant_manual.items():
