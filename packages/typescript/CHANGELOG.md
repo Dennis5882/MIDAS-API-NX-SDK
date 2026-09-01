@@ -6,6 +6,38 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.7.4 - 2026-09-02
+
+### Compatibility — breaking
+
+Three payload types were flat `interface`s with every member optional and are
+now **discriminated unions**, the same change `FloorLoadPayload` went through
+in 2.7.3. The version number is a patch; this section is the reason to read it
+anyway.
+
+| Type | Endpoint | Discriminator |
+| --- | --- | --- |
+| `StaticSeismicLoadPayload` | `/db/SSEIS` | `PERIOD_METHOD`, `SEIS_CODE` |
+| `StaticWindLoadPayload` | `/db/SWIND` | `INPUT_METHOD`, `WIND_CODE` |
+| `TendonProfilePayload` | `/db/TDNA` | `SHAPE`, `INPUT` + `CURVE` |
+
+Three things this affects:
+
+- **Fifteen members became required.** `SEIS_CODE`, `SCALE_FACTOR_X`,
+  `SCALE_FACTOR_Y` and `PARAMETERS` on the seismic payload; `WIND_CODE` and
+  the same three on the wind one; `NAME`, `TDN_PROP`, `ELEM`, `INPUT`,
+  `CURVE`, `LENG_OPT` and `SHAPE` on the tendon profile. The manual marks all
+  fifteen Required; the old declarations were wrong about that.
+- **They are `type`s now, not `interface`s.** Code that `extends` one, or
+  relies on declaration merging, no longer compiles.
+- **Branch fields no longer combine with any discriminator value.**
+  `STORY_WIND_PRESSURE` is documented under `WIND_CODE: "USER TYPE"` and
+  `SEISMIC_FORCE` under `SEIS_CODE: "USER TYPE"`; the flat interfaces offered
+  every branch's fields at once regardless.
+
+No runtime behaviour changed, and no runtime payload validation was added.
+This is the declaration moving towards the published manual.
+
 ### Fixed
 
 - `SectionColorPayload` (`/db/CO_S`, `/db/CO_T`) offered two of the nine
