@@ -150,6 +150,25 @@ def test_live_case_fixture_carries_manual_sdst_bl2_shape() -> None:
     assert sdst["confirmed"] is True
 
 
+def test_live_case_fixture_carries_complete_manual_splc_and_thms_shapes() -> None:
+    cases = json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
+    splc = [case for case in cases if case["endpoint"] == "/db/SPLC"]
+    thms = next(case for case in cases if case["endpoint"] == "/db/THMS")
+
+    assert all(case["confirmed"] is True for case in splc)
+    assert splc[0]["createPayload"]["aUSEMODE"] == [
+        {"bUSE": True, "MSFACTOR": 1},
+        {"bUSE": True, "MSFACTOR": 1},
+        {"bUSE": True, "MSFACTOR": 1},
+    ]
+    assert thms["confirmed"] is True
+    assert thms["createPayload"]["ITEMS"][0] == {
+        "ID": 1, "LCNAME": "THIS_SEED", "ANGLE": 0, "FUNCX": "THFC_SEED",
+        "SCALEX": 1.0, "ATIMEX": 0, "FUNCY": "THFC_SEED", "SCALEY": 1.0,
+        "ATIMEY": 0, "FUNCZ": "THFC_SEED", "SCALEZ": 0.667, "ATIMEZ": 0,
+    }
+
+
 def test_live_case_fixture_marks_reconfirmed_plane_load_type() -> None:
     cases = json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
     pnld = next(case for case in cases if case["endpoint"] == "/db/PNLD")
@@ -249,13 +268,13 @@ def test_live_case_fixture_explicitly_replaces_new_project_baselines() -> None:
     assert thickness["replaceExisting"] is True
 
 
-def test_live_case_fixture_splits_product_asymmetric_response_spectrum_load() -> None:
+def test_live_case_fixture_confirms_response_spectrum_load_on_both_products() -> None:
     cases = json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
     splc = [case for case in cases if case["endpoint"] == "/db/SPLC"]
 
     assert [(case["products"], case["confirmed"]) for case in splc] == [
         (["civil"], True),
-        (["gen"], False),
+        (["gen"], True),
     ]
 
 

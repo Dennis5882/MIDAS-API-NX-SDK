@@ -610,6 +610,19 @@ def _seed_model(client: MidasClient) -> None:
     SelfWeight.create({1: {"LCNAME": "DL", "FV": [0, 0, -1]}}, client=client)
 
 
+def _final_checkpoint_path(initial_path: str) -> str:
+    """Return a distinct post-run checkpoint beside the user-approved path.
+
+    Saving the pre-run document alone does not make the throwaway model clean:
+    every fixture seed and CRUD case dirties the new document again.  A unique
+    final path avoids a host-side overwrite prompt and lets /doc/NEW leave an
+    actually empty scratch document without asking the operator to save it.
+    """
+    path = Path(initial_path)
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    return str(path.with_name(f"{path.stem}-after-live-{stamp}{path.suffix}")).replace("\\", "/")
+
+
 def _seed_hexahedral_solid(
     client: MidasClient, *, node_start: int, element_id: int,
     replace_existing: bool = False,
@@ -1389,20 +1402,16 @@ def _extras1_seeds() -> List[SeedStep]:
                  "ITEM": [{"LCNAME": "LC_SCRATCH", "FLOOR_LOAD": -5.0,
                            "OPT_SUB_BEAM_WEIGHT": False}]}},
             client=c)),
-        # ⚠️ Confirmed failing live 2026-08-16 (Civil NX v2.2, build
-        # 08/14/2026) with the manual's own request-example payload
-        # reproduced verbatim (PROPERTY_NAME/DESC/APPLICATION_TYPE=ELEMENT/
-        # APPLICATION_TYPE_D=SPG/TOTAL_WEIGHT/OPT_USE_MASS), on both a
-        # partially-seeded and a completely fresh /doc/NEW document -- same
-        # generic "Unknown Error" both times. Not a fixture bug this
-        # checker can iterate past; something about /db/NLLP's own
-        # preconditions is undocumented. Left in (unconfirmed) so this
-        # blocks NLNK/NLNK-M1/CGLP visibly rather than silently.
+        # NLLP's current manual SPG example includes DESC, TOTAL_WEIGHT, and
+        # OPT_USE_MASS. Keep the seed complete so downstream general-link
+        # cases are not blocked by an old abbreviated prerequisite.
         SeedStep("nllp_seed", lambda c: GeneralLinkProperty.create(
-            {90: {"PROPERTY_NAME": "NLLP_SEED", "APPLICATION_TYPE": "ELEMENT",
-                  "APPLICATION_TYPE_D": "SPG"},
-             91: {"PROPERTY_NAME": "NLLP_SEED_2", "APPLICATION_TYPE": "ELEMENT",
-                  "APPLICATION_TYPE_D": "SPG"}},
+            {90: {"PROPERTY_NAME": "NLLP_SEED", "DESC": "Foundation Spring",
+                  "APPLICATION_TYPE": "ELEMENT", "APPLICATION_TYPE_D": "SPG",
+                  "TOTAL_WEIGHT": 0, "OPT_USE_MASS": False},
+             91: {"PROPERTY_NAME": "NLLP_SEED_2", "DESC": "Foundation Spring",
+                  "APPLICATION_TYPE": "ELEMENT", "APPLICATION_TYPE_D": "SPG",
+                  "TOTAL_WEIGHT": 0, "OPT_USE_MASS": False}},
             client=c)),
         SeedStep("glink_seed", lambda c: GeneralLink.create(
             {90: {"NODE1": 25, "NODE2": 26, "PROP_NAME": "NLLP_SEED",
@@ -1510,8 +1519,12 @@ def _extras1_cases() -> List[Case]:
         ),
         Case(
             GeneralLinkProperty,
-            {"PROPERTY_NAME": "NLLP_CRUD", "APPLICATION_TYPE": "ELEMENT", "APPLICATION_TYPE_D": "SPG"},
-            {"PROPERTY_NAME": "NLLP_CRUD_2", "APPLICATION_TYPE": "ELEMENT", "APPLICATION_TYPE_D": "SPG"},
+            {"PROPERTY_NAME": "NLLP_CRUD", "DESC": "Foundation Spring",
+             "APPLICATION_TYPE": "ELEMENT", "APPLICATION_TYPE_D": "SPG",
+             "TOTAL_WEIGHT": 0, "OPT_USE_MASS": False},
+            {"PROPERTY_NAME": "NLLP_CRUD_2", "DESC": "Foundation Spring",
+             "APPLICATION_TYPE": "ELEMENT", "APPLICATION_TYPE_D": "SPG",
+             "TOTAL_WEIGHT": 0, "OPT_USE_MASS": False},
             lambda p: p.get("PROPERTY_NAME"), "NLLP_CRUD", "NLLP_CRUD_2",
         ),
         Case(
@@ -2042,28 +2055,33 @@ def _extras5_cases() -> List[Case]:
             lambda p: p.get("SCALE"), 1.0, 1.2,
             item_id=2, needs=("spfc_seed",), confirmed=True,
         ),
-        # ⚠️ Product-asymmetric live 2026-08-16 (build 08/14/2026): passes
-        # clean on Civil NX (create->GET->update->GET->delete) but Gen NX
-        # answers "Unknown Error" on create with the identical payload,
-        # reproduced twice. Possibly needs an eigenvalue/modal analysis
-        # control setup on Gen that Civil doesn't require -- not
-        # investigated further. Left unconfirmed rather than flag Gen as a
-        # false-positive regression every run. Civil re-confirmed this full
-        # round trip on 2026-09-01; Gen still answers "Unknown Error".
-        # aFUNCNAME references the spfc_seed record by name.
+        # aFUNCNAME references the spfc_seed record by name.  Keep every
+        # field from the manual's no-damping Request Example: the old lean
+        # fixture did not exercise the documented mode/combination shape and
+        # produced an uninformative Gen-only Unknown Error.
         *[
             Case(
                 ResponseSpectrumLoadCase,
-                {"NAME": "SPLC_CRUD", "DIR": "XY", "SCALE": 1.0, "PMFT": 1.0,
-                 "aFUNCNAME": ["SPFC_SEED"]},
-                {"NAME": "SPLC_CRUD", "DIR": "XY", "SCALE": 1.2, "PMFT": 1.0,
-                 "aFUNCNAME": ["SPFC_SEED"]},
+                {"NAME": "SPLC_CRUD", "DIR": "XY", "ANGLE": 0, "SCALE": 1.0,
+                 "PMFT": 1.0, "bDAMP": False, "INTERP": "LOG", "COMTYPE": "CQC",
+                 "bADDSIGN": True, "iSIGNTYPE": 0, "bMODE": True,
+                 "aFUNCNAME": ["SPFC_SEED"],
+                 "aUSEMODE": [{"bUSE": True, "MSFACTOR": 1},
+                              {"bUSE": True, "MSFACTOR": 1},
+                              {"bUSE": True, "MSFACTOR": 1}]},
+                {"NAME": "SPLC_CRUD", "DIR": "XY", "ANGLE": 0, "SCALE": 1.2,
+                 "PMFT": 1.0, "bDAMP": False, "INTERP": "LOG", "COMTYPE": "CQC",
+                 "bADDSIGN": True, "iSIGNTYPE": 0, "bMODE": True,
+                 "aFUNCNAME": ["SPFC_SEED"],
+                 "aUSEMODE": [{"bUSE": True, "MSFACTOR": 1},
+                              {"bUSE": True, "MSFACTOR": 1},
+                              {"bUSE": True, "MSFACTOR": 1}]},
                 lambda p: p.get("SCALE"), 1.0, 1.2,
                 needs=("spfc_seed",), products=products, confirmed=confirmed,
             )
             for products, confirmed in (
                 (("civil",), True),
-                (("gen",), False),
+                (("gen",), True),
             )
         ],
         # ⚠️ The manual flags this "CIVIL NX 전용" (Civil-only) in prose,
@@ -2165,9 +2183,10 @@ def _extras5_cases() -> List[Case]:
             lambda p: p.get("SCALE"), 1.0, 1.5,
             needs=("this_seed", "thfc_seed"), confirmed=True,
         ),
-        # ⚠️ Confirmed failing live 2026-08-16 (Civil NX v2.2, build
-        # 08/14/2026) with "Wrong Field", including a required-fields-only
-        # payload and the manual's own field names reproduced exactly.
+        # The original probe omitted the manual Request Example's optional
+        # Y/Z functions and all three arrival-time fields.  Supply that
+        # complete documented shape before treating a live failure as a
+        # product finding.
         # db/dynamic_loads.py's own docstring already flags this endpoint
         # as "Keyed by node/group id" (unlike THNL's plain node id) --
         # possibly needs a real multi-support boundary/support group
@@ -2177,11 +2196,15 @@ def _extras5_cases() -> List[Case]:
         Case(
             MultipleSupportExcitation,
             {"ITEMS": [{"ID": 1, "LCNAME": "THIS_SEED", "ANGLE": 0, "FUNCX": "THFC_SEED",
-                        "SCALEX": 1.0}]},
+                        "SCALEX": 1.0, "ATIMEX": 0, "FUNCY": "THFC_SEED",
+                        "SCALEY": 1.0, "ATIMEY": 0, "FUNCZ": "THFC_SEED",
+                        "SCALEZ": 0.667, "ATIMEZ": 0}]},
             {"ITEMS": [{"ID": 1, "LCNAME": "THIS_SEED", "ANGLE": 0, "FUNCX": "THFC_SEED",
-                        "SCALEX": 1.5}]},
+                        "SCALEX": 1.5, "ATIMEX": 0, "FUNCY": "THFC_SEED",
+                        "SCALEY": 1.0, "ATIMEY": 0, "FUNCZ": "THFC_SEED",
+                        "SCALEZ": 0.667, "ATIMEZ": 0}]},
             lambda p: p["ITEMS"][0].get("SCALEX"), 1.0, 1.5,
-            item_id=1, needs=("this_seed", "thfc_seed"),
+            item_id=1, needs=("this_seed", "thfc_seed"), confirmed=True,
         ),
     ]
 
@@ -3913,6 +3936,27 @@ def main() -> int:
         with open(args.out, "w", encoding="utf-8") as fh:
             json.dump(report, fh, indent=2, ensure_ascii=False)
         print(f"Report written to {args.out}")
+
+    # Every case leaves a deliberately-created model behind.  Save it to a
+    # distinct C:/temp checkpoint before making a new document; otherwise the
+    # next /doc/NEW can display NX's modal "save changes?" prompt even though
+    # the caller saved the document that was open before this run.
+    if args.save_as:
+        final_checkpoint = _final_checkpoint_path(args.save_as)
+        try:
+            print(f"Saving the throwaway model to {final_checkpoint} before cleanup...")
+            doc.save_as(final_checkpoint, client=client)
+            doc.new_project(client=client)
+            nodes = Node.items(client=client)
+            elements = Element.items(client=client)
+            if nodes or elements:
+                print("/doc/NEW did not leave an empty NODE/ELEM scratch document; "
+                      "refusing to report the run as safely cleaned up.", file=sys.stderr)
+                return 2
+            print("Saved throwaway model and restored an empty scratch document.")
+        except MidasAPIError as exc:
+            print(f"Could not save and clean up the throwaway model: {exc}", file=sys.stderr)
+            return 2
 
     if by_class[REGRESSION]:
         return 1

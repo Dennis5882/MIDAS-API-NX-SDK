@@ -2781,13 +2781,19 @@
       "confirmed": false,
       "createPayload": {
         "PROPERTY_NAME": "NLLP_CRUD",
+        "DESC": "Foundation Spring",
         "APPLICATION_TYPE": "ELEMENT",
-        "APPLICATION_TYPE_D": "SPG"
+        "APPLICATION_TYPE_D": "SPG",
+        "TOTAL_WEIGHT": 0,
+        "OPT_USE_MASS": false
       },
       "updatePayload": {
         "PROPERTY_NAME": "NLLP_CRUD_2",
+        "DESC": "Foundation Spring",
         "APPLICATION_TYPE": "ELEMENT",
-        "APPLICATION_TYPE_D": "SPG"
+        "APPLICATION_TYPE_D": "SPG",
+        "TOTAL_WEIGHT": 0,
+        "OPT_USE_MASS": false
       },
       "expected": {
         "created": "NLLP_CRUD",
@@ -4800,19 +4806,61 @@
       "createPayload": {
         "NAME": "SPLC_CRUD",
         "DIR": "XY",
+        "ANGLE": 0,
         "SCALE": 1.0,
         "PMFT": 1.0,
+        "bDAMP": false,
+        "INTERP": "LOG",
+        "COMTYPE": "CQC",
+        "bADDSIGN": true,
+        "iSIGNTYPE": 0,
+        "bMODE": true,
         "aFUNCNAME": [
           "SPFC_SEED"
+        ],
+        "aUSEMODE": [
+          {
+            "bUSE": true,
+            "MSFACTOR": 1
+          },
+          {
+            "bUSE": true,
+            "MSFACTOR": 1
+          },
+          {
+            "bUSE": true,
+            "MSFACTOR": 1
+          }
         ]
       },
       "updatePayload": {
         "NAME": "SPLC_CRUD",
         "DIR": "XY",
+        "ANGLE": 0,
         "SCALE": 1.2,
         "PMFT": 1.0,
+        "bDAMP": false,
+        "INTERP": "LOG",
+        "COMTYPE": "CQC",
+        "bADDSIGN": true,
+        "iSIGNTYPE": 0,
+        "bMODE": true,
         "aFUNCNAME": [
           "SPFC_SEED"
+        ],
+        "aUSEMODE": [
+          {
+            "bUSE": true,
+            "MSFACTOR": 1
+          },
+          {
+            "bUSE": true,
+            "MSFACTOR": 1
+          },
+          {
+            "bUSE": true,
+            "MSFACTOR": 1
+          }
         ]
       },
       "expected": {
@@ -4839,23 +4887,65 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "NAME": "SPLC_CRUD",
         "DIR": "XY",
+        "ANGLE": 0,
         "SCALE": 1.0,
         "PMFT": 1.0,
+        "bDAMP": false,
+        "INTERP": "LOG",
+        "COMTYPE": "CQC",
+        "bADDSIGN": true,
+        "iSIGNTYPE": 0,
+        "bMODE": true,
         "aFUNCNAME": [
           "SPFC_SEED"
+        ],
+        "aUSEMODE": [
+          {
+            "bUSE": true,
+            "MSFACTOR": 1
+          },
+          {
+            "bUSE": true,
+            "MSFACTOR": 1
+          },
+          {
+            "bUSE": true,
+            "MSFACTOR": 1
+          }
         ]
       },
       "updatePayload": {
         "NAME": "SPLC_CRUD",
         "DIR": "XY",
+        "ANGLE": 0,
         "SCALE": 1.2,
         "PMFT": 1.0,
+        "bDAMP": false,
+        "INTERP": "LOG",
+        "COMTYPE": "CQC",
+        "bADDSIGN": true,
+        "iSIGNTYPE": 0,
+        "bMODE": true,
         "aFUNCNAME": [
           "SPFC_SEED"
+        ],
+        "aUSEMODE": [
+          {
+            "bUSE": true,
+            "MSFACTOR": 1
+          },
+          {
+            "bUSE": true,
+            "MSFACTOR": 1
+          },
+          {
+            "bUSE": true,
+            "MSFACTOR": 1
+          }
         ]
       },
       "expected": {
@@ -5251,7 +5341,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "ITEMS": [
           {
@@ -5259,7 +5349,14 @@
             "LCNAME": "THIS_SEED",
             "ANGLE": 0,
             "FUNCX": "THFC_SEED",
-            "SCALEX": 1.0
+            "SCALEX": 1.0,
+            "ATIMEX": 0,
+            "FUNCY": "THFC_SEED",
+            "SCALEY": 1.0,
+            "ATIMEY": 0,
+            "FUNCZ": "THFC_SEED",
+            "SCALEZ": 0.667,
+            "ATIMEZ": 0
           }
         ]
       },
@@ -5270,7 +5367,14 @@
             "LCNAME": "THIS_SEED",
             "ANGLE": 0,
             "FUNCX": "THFC_SEED",
-            "SCALEX": 1.5
+            "SCALEX": 1.5,
+            "ATIMEX": 0,
+            "FUNCY": "THFC_SEED",
+            "SCALEY": 1.0,
+            "ATIMEY": 0,
+            "FUNCZ": "THFC_SEED",
+            "SCALEZ": 0.667,
+            "ATIMEZ": 0
           }
         ]
       },

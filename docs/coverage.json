@@ -3678,15 +3678,16 @@
       "live_verified": {
         "date": "2026-09-01",
         "products": [
+          "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Civil NX completed create->GET->update->GET->delete again on 2026-09-01, build 08/26/2026. Gen NX continues to answer \"Unknown Error\" on create with the identical payload; it may require eigenvalue/modal analysis control setup, which remains unverified. Coverage is deliberately Civil-only rather than treating that product difference as a payload or contract change.",
+        "method": "2026-09-01: full write round trip confirmed on both products using scripts/live_crud_check.py --tier extras5. The fixture now carries the manual no-damping Request Example's ANGLE, bDAMP, INTERP, COMTYPE, bADDSIGN, iSIGNTYPE, bMODE, and three aUSEMODE entries; the old abbreviated Gen payload answered Unknown Error. POST->GET->PUT->GET->DELETE(id)->GET persisted SCALE 1.0->1.2.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
         "level": "write",
-        "outcome": "success_empty"
+        "outcome": "success"
       }
     },
     {
@@ -3916,12 +3917,12 @@
       "status": "implemented",
       "module": "midas_nx.db.dynamic_loads",
       "live_verified": {
-        "date": "2026-08-16",
+        "date": "2026-09-01",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write attempt 2026-08-16 (build 08/14/2026) via scripts/live_crud_check.py --tier extras5: POST answered \"Wrong Field\" on Civil NX with the manual's own field names and both a full and required-fields-only payload; same failure reproduces on Gen NX. db/dynamic_loads.py's own docstring already flags this as \"Keyed by node/group id\" (unlike THNL's plain node id) -- possibly needs a real multi-support boundary/support group defined first. Not resolved as a simple fixture problem; same class of finding as /db/NLLP, /db/WVLD, /db/GRDP, /db/TDMF, /db/RPSC, /db/STRPSSM.",
+        "method": "2026-09-01: full write round trip confirmed on both products using scripts/live_crud_check.py --tier extras5. The prior fixture omitted the manual Request Example's Y/Z time-history functions and all arrival-time fields. With the complete ITEMS object and real THIS/THFC seeds, POST->GET->PUT->GET->DELETE(id)->GET persisted SCALEX 1.0->1.5.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
@@ -4023,8 +4024,8 @@
         ],
         "method": "2026-08-17: write-round-trip confirmed live (batch 10), both products. docs/coverage.json/live_crud_check.py's extras10 tier.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
         "level": "write",
         "outcome": "success_empty"
@@ -4249,8 +4250,8 @@
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {

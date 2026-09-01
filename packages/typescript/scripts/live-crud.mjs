@@ -406,8 +406,20 @@ async function main() {
     console.log(`${result.ok ? "PASS" : result.confirmed ? "REGRESS" : "FAIL"} ${result.endpoint}${result.ok ? ` keys=${result.keys.join(",")} rows=${result.rows}` : ` ${result.error}`}`);
   }
   const failed = results.filter((result) => !result.ok);
-  if (!failed.length) return 0;
-  return failed.some((result) => result.confirmed) ? 1 : 3;
+  const exitCode = !failed.length ? 0 : failed.some((result) => result.confirmed) ? 1 : 3;
+
+  // Cases leave a throwaway model dirty even when every record was deleted.
+  // Save that model to a different timestamped checkpoint before /doc/NEW so
+  // the next live run cannot be blocked by NX's modal save-changes prompt.
+  if (args.saveBefore) {
+    const finalPath = checkpointPath(args.product, args.saveDir);
+    await doc.saveAs(finalPath, { client });
+    console.log(`SAVED throwaway model ${finalPath}`);
+    await doc.newProject({ client });
+    await requireEmptyScratchDocument(client);
+    console.log("RESTORED empty scratch document");
+  }
+  return exitCode;
 }
 
 main().then((code) => {

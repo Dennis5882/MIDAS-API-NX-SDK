@@ -7972,6 +7972,24 @@ the public `resources.db` API (`npm run live:crud`, not raw HTTP) on the same
 Gen NX build. Both completed their full CRUD cycles from a separately saved
 and newly created scratch document, which was left empty by the harness.
 
+### Dynamic-load fixture completion: SPLC and THMS (2026-09-01)
+
+The remaining `extras5` failures were also abbreviated fixtures, not product
+findings. `/db/SPLC` had retained only five core fields even though the manual
+no-damping Request Example also supplies `ANGLE`, `bDAMP`, `INTERP`,
+`COMTYPE`, `bADDSIGN`, `iSIGNTYPE`, `bMODE`, and three `aUSEMODE` entries.
+`/db/THMS` had sent only its X-direction function while the worked example
+includes the Y/Z functions and all three arrival-time fields.
+
+With the complete manual shapes and real `SPFC_SEED`, `THIS_SEED`, and
+`THFC_SEED` prerequisites in new scratch models, both endpoints completed
+`POST -> GET -> PUT -> GET -> DELETE(id) -> GET` on Gen NX and Civil NX.
+SPLC persisted `SCALE` 1.0 to 1.2; THMS persisted `SCALEX` 1.0 to 1.5.
+This supersedes the former Gen-only SPLC `Unknown Error` and cross-product
+THMS `Wrong Field` observations. Both products were Gen NX 2026 v2.1 / Civil
+NX 2026 v2.2, build 08/26/2026, and the harness returned both documents to an
+empty state after each run.
+
 ### CSCS composite-section fixture boundary (2026-09-01)
 
 `/db/CSCS` was rechecked on both products from a new scratch model with the
