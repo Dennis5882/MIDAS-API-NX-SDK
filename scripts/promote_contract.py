@@ -177,7 +177,9 @@ def _record_id(entry: dict) -> str:
 def _verification_block(entry: dict, product: str) -> str:
     live = entry["live_verified"]
     version = live.get("nx_versions", {}).get(product, f"MIDAS {product.title()} NX 2026")
-    method = " ".join(live.get("method", "").split())[:400]
+    # Truncation can land on a space, and a trailing space inside a YAML
+    # folded block is invisible until `git diff --check` rejects the commit.
+    method = " ".join(live.get("method", "").split())[:400].rstrip()
     return f"""
   - id: {_record_id(entry)}
     endpoints: []

@@ -163,9 +163,17 @@ if it does not, say so rather than forcing it.
 
 Expected outcome you can check your run against: 12 drafts promotable straight
 away, and some subset of the other 10 merging into proper variants. Contracts
-320 -> at least 332. `npm run generate` must stay byte-identical for anything
-promoted with `unmergedTables`; if it is not, the generator guard is broken and
-that is a bug to report, not to work around.
+320 -> at least 332.
+
+**The generation check is `types.ts`, not the whole tree.** The guard protects
+published payload types, because those are what break a caller. A contract may
+legitimately change resource *metadata* — a display name, most often dash
+typography, since the manual writes `—` where a hand-written fallback typed
+`-`. `_contract_resource_mismatches` already normalizes that difference when it
+compares, which is the project saying it is cosmetic. So: if
+`packages/typescript/src/generated/types.ts` changes after promoting a contract
+carrying `unmergedTables`, the guard is broken and that is a bug to report. A
+label change in `resources.ts` is expected and fine.
 
 ## Task 2 — Python live write coverage
 
