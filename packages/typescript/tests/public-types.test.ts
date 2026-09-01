@@ -33,6 +33,28 @@ if (false) {
   // @ts-expect-error /db/DYFG requires HEIGHT_COVER in its contract payload
   resources.db.movingLoads.railwayDynamicFactor.create({ 1: { INPUT_TYPE: 0 } });
 
+  // A discriminated payload must still accept the documented values the
+  // manual gives no table for. /db/FBLA documents FLOOR_DIST_TYPE 1 to 4 and
+  // supplies tables for 1 and 2 only, so 3 and 4 have to remain expressible.
+  resources.db.staticLoads.floorLoad.create({
+    1: { FLOOR_LOAD_TYPE_NAME: "FL1", FLOOR_DIST_TYPE: 3, NODES: [1, 2, 3, 4] },
+  });
+
+  resources.db.staticLoads.floorLoad.create({
+    1: { FLOOR_LOAD_TYPE_NAME: "FL1", FLOOR_DIST_TYPE: 1, NODES: [1, 2, 3, 4], LOAD_ANGLE: 30 },
+  });
+
+  // ...while a field the manual puts under another branch stays an error.
+  resources.db.staticLoads.floorLoad.create({
+    1: {
+      FLOOR_LOAD_TYPE_NAME: "FL1",
+      FLOOR_DIST_TYPE: 3,
+      NODES: [1],
+      // @ts-expect-error LOAD_ANGLE is documented under FLOOR_DIST_TYPE 1, not 3
+      LOAD_ANGLE: 30,
+    },
+  });
+
   // Material tables do not accept analysis-result filters.
   // @ts-expect-error loadCaseNames is not supported by this wrapper
   tables.preProcess.getMaterialTable({ loadCaseNames: ["DL(ST)"] });

@@ -6,6 +6,34 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Fixed
+
+- A discriminated payload no longer rejects the documented values the manual
+  gives no table for. `FloorLoadPayload` accepted only `FLOOR_DIST_TYPE` 1 and
+  2 while `/db/FBLA` documents 1 to 4, so Polygon-Centroid and Polygon-Length
+  were untypeable; `SkewPayload` lost `iMETHOD: 1` (Angle) and
+  `MovingLoadCaseBsPayload` lost every load model but `"STANDER"`. Each union
+  now carries a trailing member for the remaining values, which still denies
+  the other branches' fields, so setting `LOAD_ANGLE` under `FLOOR_DIST_TYPE:
+  3` remains an error. A union stays closed only where the contract proves it:
+  a declared `enum` the branches cover exactly, or both values of a boolean.
+  This widens 11 of the 14 generated union payloads. Code that relied on
+  exhaustiveness narrowing over one of those discriminators needs a default
+  case; nothing that compiled before stops compiling.
+
+### Changed
+
+- Generated payload declarations use 5 more reviewed endpoint contracts
+  (332 to 337). `/db/SSEIS`, `/db/SWIND` and `/db/TDNA` become discriminated
+  unions on `PERIOD_METHOD`/`SEIS_CODE`, `INPUT_METHOD`/`WIND_CODE` and
+  `SHAPE`/`INPUT`+`CURVE`; `/db/ELEM` and `/db/MVLD` keep their reviewed
+  fallback payloads, because each has manual tables no discriminator could
+  merge. 253 of the 304 generated resources now take their facts from a
+  contract.
+- `/db/FIMP` stays on its reviewed fallback. Its manual table keys rows
+  `"KENPAR"."FC"` and omits the `CONC`/`STEEL` parents, so a contract drafted
+  from it declared a three-level object as ten flat top-level fields.
+
 ## 2.7.3 - 2026-08-31
 
 ### Compatibility — breaking

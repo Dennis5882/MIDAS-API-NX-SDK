@@ -377,6 +377,37 @@ def _contract_payload_type(name: str, contract: dict[str, Any]) -> list[str]:
             for branch in branches
         ]
 
+    # A union of only the documented branches says every other value of the
+    # discriminator is illegal, and the manual rarely gives a table for all of
+    # them: /db/FBLA documents FLOOR_DIST_TYPE 1 to 4 and supplies tables for 1
+    # and 2, so 3 and 4 became untypeable. Exhaustiveness has to be proven, not
+    # assumed - a declared enum the branches cover exactly, or both values of a
+    # boolean. Otherwise a trailing member carries the remaining values, and
+    # denies each branch's own fields so a wrong-branch field is still an
+    # error. Widening the enums the extractor cannot yet read is what would
+    # narrow these unions again.
+    base_by_key = {field["key"]: field for field in fields}
+    selectors: dict[str, set[str]] = {}
+    for variant in variants:
+        for condition in variant["when"]:
+            if "." in condition["path"]:
+                continue
+            values = condition["in"] if "in" in condition else [condition["equals"]]
+            selectors.setdefault(condition["path"], set()).update(
+                json.dumps(value) for value in values
+            )
+    residual = [
+        key
+        for key in dict.fromkeys(
+            field["key"] for variant in variants for field in variant["fields"]
+        )
+        if key not in base_by_key and key not in selectors
+    ]
+    exhaustive = all(
+        _selector_is_exhaustive(base_by_key.get(path), values)
+        for path, values in selectors.items()
+    )
+
     for index, variant in enumerate(variants):
         conditions = variant["when"]
         lines.append("    {")
@@ -401,9 +432,32 @@ def _contract_payload_type(name: str, contract: dict[str, Any]) -> list[str]:
         body = _contract_interface_body(branch_fields, "      ")
         if body:
             lines.append(body)
-        lines.append("    }" + (" |" if index < len(variants) - 1 else ""))
+        last = index == len(variants) - 1 and exhaustive
+        lines.append("    }" + ("" if last else " |"))
+    if not exhaustive:
+        lines.append("    {")
+        for key in residual:
+            lines.append(f"      {key}?: never;")
+        lines.append("    }")
     lines.append("  );")
     return lines
+
+
+def _selector_is_exhaustive(field: dict[str, Any] | None, values: set[str]) -> bool:
+    """Whether the branches provably cover every value this selector allows.
+
+    Only two things prove it. A declared ``enum`` is the contract's own list of
+    legal values, so branches matching it leave nothing out. A boolean has
+    exactly two. A prose description that happens to name three values is not
+    evidence: reading it would be inferring the enum, which contracts forbid.
+    """
+
+    if field is None:
+        return False
+    if field.get("type") == "boolean":
+        return values == {"true", "false"}
+    declared = field.get("enum")
+    return bool(declared) and {json.dumps(value) for value in declared} == values
 
 
 def _shared_covers(shared_when: list[dict], branch_when: list[dict]) -> bool:

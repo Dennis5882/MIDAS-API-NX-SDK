@@ -174,6 +174,19 @@ export namespace DbAnalysisControlTypes {
         /** Number of Generations */
         iNOG?: number;
       }>;
+    } |
+    {
+      iFREQ?: never;
+      iITER?: never;
+      iDIM?: never;
+      TOL?: never;
+      bMINMAX?: never;
+      FRMIN?: never;
+      FRMAX?: never;
+      bSTRUM?: never;
+      bINCNL?: never;
+      iGNUM?: never;
+      vRITZ?: never;
     }
   );
   export interface EigenvalueFrequencyRangeHyperS {
@@ -809,6 +822,17 @@ export namespace DbAnalysisControlTypes {
         /** Master Node Displacement (Index: Step) */
         LOAD_FACTORS?: Array<number>;
       }>;
+    } |
+    {
+      NUMBER_STEPS?: never;
+      MAX_ITERATIONS?: never;
+      NEWTON_ITEMS?: never;
+      INITIAL_FORCE_RATIO_ARC_LEN?: never;
+      MAXIMUM_DISPLACEMENT?: never;
+      ARCLEN_ITEMS?: never;
+      MASTER_NODE?: never;
+      DIRECTION?: never;
+      DISPCT_ITEMS?: never;
     }
   );
   export interface NonlinearLoadStepsHyperS {
@@ -1652,6 +1676,12 @@ export namespace DbBoundaryTypes {
       NODE_KEY: number;
       /** Weight */
       WEIGHT: number;
+    } |
+    {
+      NODE_KEY?: never;
+      COEFF?: never;
+      DOF?: never;
+      WEIGHT?: never;
     }
   );
   /** Generated from contracts/endpoints/. */
@@ -3779,6 +3809,10 @@ export namespace DbMovingLoadsTypes {
         /** HB Straddling Two Lanes(STARDD_LANE_1/STARDD_LANE_2) */
         STRAD_LANE: Array<JsonObject>;
       }>;
+    } |
+    {
+      LOADINGEFFECT?: never;
+      SUBLOADDATA?: never;
     }
   );
   export interface MovingLoadCaseEurocodeStraddlingLaneItem {
@@ -4064,6 +4098,35 @@ export namespace DbNodeElementTypes {
       G_DIR: number;
       /** Local Direction • Local x: 0 • Local y: 1 • Local z: 2 */
       L_DIR: number;
+    } |
+    {
+      P0X?: never;
+      P0Y?: never;
+      P0Z?: never;
+      P1X?: never;
+      P1Y?: never;
+      P1Z?: never;
+      P2X?: never;
+      P2Y?: never;
+      P2Z?: never;
+      V1X?: never;
+      V1Y?: never;
+      V1Z?: never;
+      V2X?: never;
+      V2Y?: never;
+      V2Z?: never;
+      LV0X?: never;
+      LV0Y?: never;
+      LV0Z?: never;
+      LV1X?: never;
+      LV1Y?: never;
+      LV1Z?: never;
+      LV2X?: never;
+      LV2Y?: never;
+      LV2Z?: never;
+      REFTYPE?: never;
+      G_DIR?: never;
+      L_DIR?: never;
     }
   );
   /** Generated from contracts/endpoints/. */
@@ -4849,39 +4912,13 @@ export namespace DbPropertiesMaterialTypes {
     ECU?: number;
     STRENGTH_AFTER?: number;
   }
-  /** Generated from contracts/endpoints/. */
-  export type InelasticMaterialPropertyPayload = {
-    /** Material Name */
-    NAME: string;
-    /** Material Type • Concrete: "CONC" • Steel: "STEEL" */
-    MATL_TYPE: string;
-    /** Hysteresis Model */
-    HYS_MODEL: string;
-  } & (
-    {
-      HYS_MODEL: "KPM";
-      /** Concrete Strength (fc') */
-      KENPAR: unknown;
-      /** Concrete Strength (fc') */
-      FC: unknown;
-      /** Partial Safety Factor */
-      PARTIAL_FACT: unknown;
-      /** Strength/Strain Factor */
-      K: unknown;
-      /** Peak Strain (εc0) */
-      EC0: unknown;
-      /** Hardening Strain Method · Manual: 0 / Calculation: 1 */
-      EC1_METHOD: unknown;
-      /** Hardening Strain Manual (εc1) */
-      EC1: unknown;
-      /** Hardening Strain Calculation (Z) */
-      Z: unknown;
-      /** Ultimate Strain (εcu) */
-      ECU: unknown;
-      /** Strength After Critical Strain · Zero: 0 / Keep: 1 */
-      STRENGTH_AFTER: unknown;
-    }
-  );
+  export interface InelasticMaterialPropertyPayload {
+    NAME?: string;
+    MATL_TYPE?: string;
+    HYS_MODEL?: string;
+    CONC?: unknown;
+    STEEL?: unknown;
+  }
 }
 
 export namespace DbPropertiesSectionTypes {
@@ -5826,6 +5863,11 @@ export namespace DbStaticLoadsTypes {
         /** Load (Uniform: [F1] / Trap: [F1,F2,F3,F4]) */
         LOAD?: [number, number, number, number];
       };
+    } |
+    {
+      POINTLOAD?: never;
+      LINELOAD?: never;
+      AREALOAD?: never;
     }
   );
   /** Generated from contracts/endpoints/. */
@@ -5926,6 +5968,14 @@ export namespace DbStaticLoadsTypes {
       SUB_BEAM_ANGLE?: number;
       /** Unit Self Weight */
       UNIT_SELF_WEIGHT?: number;
+    } |
+    {
+      LOAD_ANGLE?: never;
+      OPT_EXCLUDE_INNER_ELEM_AREA?: never;
+      SUB_BEAM_NUM?: never;
+      SUB_BEAM_ANGLE?: never;
+      UNIT_SELF_WEIGHT?: never;
+      OPT_ALLOW_POLYGON_TYPE_UNIT_AREA?: never;
     }
   );
   export interface FinishingMaterialLoadItem extends DbBaseTypes.ItemGroupFields {
@@ -6276,6 +6326,45 @@ export namespace DbStaticLoadsTypes {
         /** Torsional Wind Load RZ */
         TORSIONAL_RZ?: number;
       }>;
+    } |
+    {
+      WIND_SPEED?: never;
+      ROOF_HEIGHT?: never;
+      CE?: never;
+      EXP_CATEGORY?: never;
+      IMPORTANCE_FACTOR?: never;
+      TOPOGRAPHIC_EFFECT?: never;
+      OPT_USE?: never;
+      KZT?: never;
+      DIRECTION_FACTOR_X?: never;
+      DIRECTION_FACTOR_Y?: never;
+      RIGIDITY?: never;
+      GUST_FACTOR_X?: never;
+      GUST_FACTOR_Y?: never;
+      FORCE_COEF?: never;
+      BUILDING_TYPE?: never;
+      VIBRATION_PARAMS?: never;
+      ACROSS_WIND?: never;
+      TORSIONAL_WIND?: never;
+      WIND_RESPONSE?: never;
+      BL_X?: never;
+      BL_Y?: never;
+      NO_X?: never;
+      NO_Y?: never;
+      NO_T?: never;
+      M?: never;
+      MX?: never;
+      MY?: never;
+      MI?: never;
+      ZF?: never;
+      VIBRATION_MODE?: never;
+      DM?: never;
+      DB?: never;
+      N?: never;
+      ADDITIONAL_LOAD?: never;
+      WIND_ECCEN_X?: never;
+      WIND_ECCEN_Y?: never;
+      STORY_WIND_PRESSURE?: never;
     }
   );
   /** Generated from contracts/endpoints/. */
@@ -6385,6 +6474,17 @@ export namespace DbStaticLoadsTypes {
         /** Additional Torsional Seismic Load RZ */
         TORSIONAL_RZ: number;
       };
+    } |
+    {
+      PERIOD_ANALYSIS_X?: never;
+      PERIOD_ANALYSIS_Y?: never;
+      PERIOD_APPR_X?: never;
+      PERIOD_APPR_Y?: never;
+      RESPONSE_MOD_FACTOR_X?: never;
+      RESPONSE_MOD_FACTOR_Y?: never;
+      ADDITIONAL_LOAD?: never;
+      INHERENT_TORSION?: never;
+      SEISMIC_FORCE?: never;
     }
   );
 }
@@ -6725,6 +6825,25 @@ export namespace DbTemperaturePrestressTypes {
         /** Radius (length) */
         RADIUS?: number;
       }>;
+    } |
+    {
+      INS_PT?: never;
+      INS_ELEM?: never;
+      AXIS_IJ?: never;
+      XAR_ANGLE?: never;
+      bPJ?: never;
+      OFF_YZ?: never;
+      IP?: never;
+      AXIS?: never;
+      VEC?: never;
+      GR_AXIS?: never;
+      GR_ANGLE?: never;
+      RC?: never;
+      OFFSET?: never;
+      DIR?: never;
+      PROFY?: never;
+      PROFZ?: never;
+      PROF?: never;
     }
   );
   /** Generated from contracts/endpoints/. */

@@ -89,6 +89,7 @@ NEEDS_HAND_REVIEW = {
     "/db/REBW": "every field name in its manual section is wrong live",
     "/db/REBC": "the official article itself is wrong about its array shape",
     "/db/REBB": "its write path is broken server-side, not a shape question",
+    "/db/FIMP": "its Specifications table states child keys without their parents",
 }
 
 # A JSON wire member may start with a digit.  The manual documents

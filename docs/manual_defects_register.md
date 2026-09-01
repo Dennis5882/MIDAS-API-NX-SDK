@@ -30,6 +30,7 @@ Civil NX 2026 v2.2, both build 08/26/2026.
 | MD-04 | 2026-08-31 | `/db/IEHC` `WAreaSize` | the Specifications table types it Integer | Gen `/info` types it `string`; the chapter's own Request Example sends `"AUTO"` | **manual repo** transcription | open |
 | MD-05 | 2026-08-31 | model file extensions | the manual's examples still show pre-NX spellings | four extensions in two pairs: pre-NX `.mgb`/`.mcb`, NX `.mgbx`/`.mcbz`. Civil NX's own Export menu lists "MCBZ File" | **manual repo** | open |
 | MD-06 | 2026-08-31 | `/db/ELEM` `TYPE: "WALL"` on Civil | `03_DB_Node_Element.md` supplies a WALL-element request example for the shared Node/Element chapter | Gen accepted the manual-shaped WALL element; Civil NX v2.2 (08/26/2026) returned the quoted unsupported-type error below | **MIDASIT product/article** (support scope must be clarified) | open |
+| MD-07 | 2026-09-01 | `/db/FIMP` Kent & Park table | `04_DB_Properties.md:2103` keys the rows `"KENPAR"."FC"` and omits `CONC`/`STEEL` from Specifications entirely | the same article's Request Body nests them `CONC` > `KENPAR` > `FC`, three levels deep | **manual repo** transcription | open |
 
 ## Detail
 
@@ -120,6 +121,30 @@ The separate `/db/WMAK` check merely established that its existing fixture
 round-trips when its `WID_LIST` references an actual PLATE on both products.
 No endpoint contract was changed: the evidence is insufficient to replace the
 manual's element-type statement or to infer product-specific WMAK semantics.
+
+### MD-07 - `/db/FIMP` Kent & Park parameter table
+
+The Specifications table for the Kent & Park hysteresis model keys its rows
+`"KENPAR"."FC"`, `"KENPAR"."PARTIAL_FACT"` and so on - a parent and a child,
+with no row for the parent itself - while `CONC` and `STEEL` appear only in the
+chapter's JSON Schema block and never in a Specifications table. The request
+example in the same article shows the real shape:
+
+```json
+{"NAME": "Conc_Kent&Park", "MATL_TYPE": "CONC", "HYS_MODEL": "KPM",
+ "CONC": {"KENPAR": {"FC": 30000, "PARTIAL_FACT": 1.0}}}
+```
+
+Read as a table of wire keys, the section therefore states a three-level object
+as ten flat top-level fields. A contract drafted from it said exactly that, so
+`/db/FIMP` is listed in `promote_contract.py`'s `NEEDS_HAND_REVIEW` and stays
+on its reviewed Python fallback, whose `CONC`/`STEEL` objects are correct.
+
+The chapter's own callout says this repository documents Kent & Park alone as
+a representative of a 5,900-line article covering many concrete and steel
+models. That is a deliberate, reasonable scope choice, and it is also why a
+generated union over `HYS_MODEL` must never treat `"KPM"` as the only legal
+value.
 
 ## Suggested follow-up, when the author chooses to act
 
