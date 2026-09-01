@@ -51,8 +51,9 @@ This is the declaration moving towards the published manual.
   "D8"` and the leg counts as `2 | 3 | 4 | 5 | 6`, while the same rows are
   described as `19종 (D4 ~ D57)` and `2 ~ 20` - so every bar size from D10 up
   was untypeable. `SrcLiveLoadReductionFactorPayload` went further and
-  accepted the literal string `...(전체 11개)`. Nine fields across four
-  endpoints widen to their declared scalar type; a list the manual's own
+  accepted the literal string `...(전체 11개)`. Fourteen fields across
+  four endpoints - nine distinct names - widen to their declared scalar
+  type; a list the manual's own
   description outsizes is no longer read as an enum.
 - A discriminated payload no longer rejects the documented values the manual
   gives no table for. `FloorLoadPayload` accepted only `FLOOR_DIST_TYPE` 1 and
@@ -63,7 +64,10 @@ This is the declaration moving towards the published manual.
   the other branches' fields, so setting `LOAD_ANGLE` under `FLOOR_DIST_TYPE:
   3` remains an error. A union stays closed only where the contract proves it:
   a declared `enum` the branches cover exactly, or both values of a boolean.
-  This widens 11 of the 14 generated union payloads. Code that relied on
+  This widens 10 of the 13 generated union payloads; the remaining three -
+  `NodalBodyForcePayload`, `MovingLoadCaseChinaPayload` and
+  `EigenvalueAnalysisControlHyperSPayload` - stay closed because the
+  contract proves they are. Code that relied on
   exhaustiveness narrowing over one of those discriminators needs a default
   case; nothing that compiled before stops compiling.
 

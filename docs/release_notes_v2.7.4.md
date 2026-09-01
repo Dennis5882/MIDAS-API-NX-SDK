@@ -42,8 +42,8 @@ all nine, and the sibling `/db/CO_M` lists them individually.
 `MAIN_REBAR` with description "19종 (D4 ~ D57)" and `enum: ["D4" … "D8"]` in the
 same object. Adopted as an enum it typed away every bar size from D10 up — the
 sizes rebar design actually uses. `SrcLiveLoadReductionFactorPayload` was
-blunter still: `...(전체 11개)` was a legal value. Nine fields across four
-endpoints widen to their declared scalar type.
+blunter still: `...(전체 11개)` was a legal value. Fourteen fields across four
+endpoints, nine distinct names, widen to their declared scalar type.
 
 **A union rejected discriminator values the manual documents.**
 `FloorLoadPayload` accepted only `FLOOR_DIST_TYPE` 1 and 2 while `/db/FBLA`
@@ -53,7 +53,7 @@ in the base table; `MovingLoadCaseBsPayload` lost every load model but
 declared `enum` the branches cover exactly, or both values of a boolean — and
 otherwise carries a trailing member for the rest. It still denies the other
 branches' fields, so `LOAD_ANGLE` under `FLOOR_DIST_TYPE: 3` remains an error.
-11 of the 14 union payloads gained one.
+10 of the 13 union payloads carry one; the other three are proven closed.
 
 ## Contracts
 
@@ -82,10 +82,15 @@ blocks promotion; nine sections are in that position, recorded as MD-10.
 
 ## Live verification
 
-**399/399 recorded, 172 write / 227 read.** `/db/HAHS`, `/db/HECB`, `/db/SPLC`
-and `/db/THMS` moved read → write. The last two are worth noting for what they
-were not: a Gen-only `Unknown Error` and a cross-product `Wrong Field` both
-turned out to be **abbreviated fixtures**, not product behaviour.
+**399/399 recorded, 172 write / 227 read** (165 write at 2.7.3). Seven endpoints
+moved read → write: `/db/HAHS`, `/db/HECB`, `/db/LCOM-SEISMIC`, `/db/SDVE`,
+`/db/SDVI`, `/db/SPLC` and `/db/THMS`.
+
+Four of them are worth noting for what their earlier failures were not.
+`/db/SPLC` answered a Gen-only `Unknown Error`, `/db/THMS` never round-tripped,
+and `/db/SDVE` and `/db/SDVI` answered `Wrong Field` on both products. All four
+were **abbreviated fixtures** — a payload missing fields the manual's own
+Request Example sends — not product behaviour.
 
 `/db/HPCE` and `/db/CSCS` deliberately stayed read-level — the first returns the
 same `Wrong Key` for every node-count tried, the second needs a COMPOSITE
