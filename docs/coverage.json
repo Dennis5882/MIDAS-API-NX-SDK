@@ -3924,11 +3924,11 @@
         ],
         "method": "2026-09-01: full write round trip confirmed on both products using scripts/live_crud_check.py --tier extras5. The prior fixture omitted the manual Request Example's Y/Z time-history functions and all arrival-time fields. With the complete ITEMS object and real THIS/THFC seeds, POST->GET->PUT->GET->DELETE(id)->GET persisted SCALEX 1.0->1.5.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -4250,8 +4250,8 @@
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
-        "level": "write",
-        "outcome": "success"
+        "level": "read",
+        "outcome": "success_empty"
       }
     },
     {

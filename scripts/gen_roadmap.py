@@ -106,6 +106,13 @@ def main() -> None:
         ]
 
     if sessions:
+        lines += [
+            "Each row is one `(date, Gen build, Civil build)` combination the "
+            "ledger cites, **not** one testing session. An entry's `date` is "
+            "when it reached its current level and its builds are from the most "
+            "recent check, so a row can pair an older date with a newer build.",
+            "",
+        ]
         lines.append("| Date | Gen NX build | Civil NX build |")
         lines.append("|---|---|---|")
         for date, gen_build, civil_build in sessions:

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -310,3 +311,47 @@ def test_live_case_fixture_splits_product_asymmetric_seismic_combination() -> No
             },
         },
     }
+
+
+def test_no_ledger_entry_contradicts_its_own_level() -> None:
+    """A `live_verified` entry's prose and its `level` must say the same thing.
+
+    Both halves are edited by hand, on different lines, and a batch touches
+    several entries at once - so an update can land on the neighbouring
+    endpoint. That happened: `/db/HPCE` was raised to `write` while its own
+    method text still ended "Not resolved as a fixture problem. Left at level:
+    read", and `/db/THMS` kept `read` under a method describing a completed
+    round trip that persisted `SCALEX` 1.0 to 1.5.
+
+    Neither needs outside evidence to catch. The entry disagrees with itself.
+    """
+
+    says_read = re.compile(
+        r"(?:left at level: read|remains read-level|stays read-level)", re.IGNORECASE
+    )
+    says_write = re.compile(
+        r"(?:full write round trip confirmed|write-round-trip confirmed)", re.IGNORECASE
+    )
+    problems: list[str] = []
+
+    def visit(node: object) -> None:
+        if isinstance(node, dict):
+            verified = node.get("live_verified")
+            endpoint = node.get("endpoint")
+            if endpoint and isinstance(verified, dict):
+                method = verified.get("method", "")
+                level = verified.get("level")
+                if says_read.search(method) and level == "write":
+                    problems.append(f"{endpoint}: method says read-level, level is write")
+                if says_write.search(method) and level != "write":
+                    problems.append(
+                        f"{endpoint}: method describes a write round trip, level is {level!r}"
+                    )
+            for value in node.values():
+                visit(value)
+        elif isinstance(node, list):
+            for value in node:
+                visit(value)
+
+    visit(json.loads((ROOT / "docs" / "coverage.json").read_text(encoding="utf-8")))
+    assert not problems, "\n".join(problems)
