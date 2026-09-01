@@ -58,7 +58,8 @@ branches' fields, so `LOAD_ANGLE` under `FLOOR_DIST_TYPE: 3` remains an error.
 ## Contracts
 
 **Promoted 319 → 337**, 3,160 fields, 47 drafts still awaiting review. 253 of
-the 304 npm resources take their facts from a contract.
+the 750 generated npm payload types now come from a contract, and 268 of the
+304 resources have one.
 
 Three extraction rules were added, each because it had already produced a wrong
 contract:

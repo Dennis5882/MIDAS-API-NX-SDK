@@ -69,13 +69,16 @@ This is the declaration moving towards the published manual.
 
 ### Changed
 
-- Generated payload declarations use 5 more reviewed endpoint contracts
-  (332 to 337). `/db/SSEIS`, `/db/SWIND` and `/db/TDNA` become discriminated
-  unions on `PERIOD_METHOD`/`SEIS_CODE`, `INPUT_METHOD`/`WIND_CODE` and
-  `SHAPE`/`INPUT`+`CURVE`; `/db/ELEM` and `/db/MVLD` keep their reviewed
-  fallback payloads, because each has manual tables no discriminator could
-  merge. 253 of the 304 generated resources now take their facts from a
-  contract.
+- Generated payload declarations use 18 more reviewed endpoint contracts
+  (319 to 337, counted from what 2.7.3 shipped). `/db/SSEIS`, `/db/SWIND` and
+  `/db/TDNA` become discriminated unions on `PERIOD_METHOD`/`SEIS_CODE`,
+  `INPUT_METHOD`/`WIND_CODE` and `SHAPE`/`INPUT`+`CURVE`; `/db/ELEM` and
+  `/db/MVLD` keep their reviewed fallback payloads, because each has manual
+  tables no discriminator could merge. **253 of the 750 generated payload
+  types** now come from a contract, and 268 of the 304 resources have one.
+  The 2.7.2 and 2.7.3 entries stated that first count against the resource
+  count, which is the wrong denominator - resources sharing one payload type
+  name collapse into a single type.
 - `/db/FIMP` stays on its reviewed fallback. Its manual table keys rows
   `"KENPAR"."FC"` and omits the `CONC`/`STEEL` parents, so a contract drafted
   from it declared a three-level object as ten flat top-level fields.
