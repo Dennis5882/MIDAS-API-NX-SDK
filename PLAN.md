@@ -261,13 +261,13 @@ they're the ones worth re-checking before planning a release):
 | Response handling | 200-with-`error` body, non-JSON body, empty-table shapes, failed-analysis message | ✅ hardened in v0.12.0/v0.14.0 |
 | Write verification | `scripts/live_crud_check.py` — create/read/update/delete round trips, 127 confirmed cases | ✅ **all 43** confirmed live on Civil NX 2026 v2.2, 40 of them on v2.1 too; 36 of the 43 also confirmed on Gen NX v2.1. `/db/NMAS` (the last holdout) used to crash **both** products, root-caused 2026-07-29 (omitted `rmX`/`rmY`/`rmZ`) and worked around in `NodalMass.create()`/`.update()` |
 | Version metadata | `__init__.py` `__version__` (hatchling `dynamic`) + `tests/test_version.py` + a tag↔`__version__` check in `publish.yml` | ✅ single source, enforced at release |
-| Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 399/399 recorded, split by `level`: **169 write / 230 read / 0 unverified** as of 2026-09-01. Write level means a call changed model data or wrote a host file; read includes route/schema checks and POST-shaped reads. The current build baseline is Gen NX 2026 v2.1 and Civil NX 2026 v2.2, both Build 08/26/2026. |
+| Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 399/399 recorded, split by `level`: **171 write / 228 read / 0 unverified** as of 2026-09-01. Write level means a call changed model data or wrote a host file; read includes route/schema checks and POST-shaped reads. The current build baseline is Gen NX 2026 v2.1 and Civil NX 2026 v2.2, both Build 08/26/2026. |
 | Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md`, `docs/ai-coding/`, `docs/index.md`, `docs/safety.md` risk levels, `docs/recipes/`, `docs/ko/python-basics.md` | ✅ first example read-only + AI-assistant path (v2.1.2); recipe pilot + ko minimal-Python primer + real-session-verified MAPI key step (2026-08-04); ⚠️ still text-only, no screenshots |
 | Practitioner layer | Excel round-trip, `recipes`/`easy`, opt-in validation | ❌ not started |
 
 ### Write-verification priority
 
-All 399 implemented endpoints answer a live GET or write; **169 have had a
+All 399 implemented endpoints answer a live GET or write; **171 have had a
 write round trip proven** against a real server, as of 2026-09-01 (see the
 "Live verification" row above — this count has grown across many sessions
 since the `scripts/live_crud_check.py` tiers below were first built, not in

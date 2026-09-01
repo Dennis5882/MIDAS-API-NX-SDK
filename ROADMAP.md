@@ -65,7 +65,6 @@ Live-verification evidence lives in each endpoint's `live_verified` entry in `do
 | 2026-08-17 | MIDAS Gen NX 2026 (v2.1), build 06/23/2026 | MIDAS Civil NX 2026 (v2.2), build 08/06/2026 |
 | 2026-08-17 | MIDAS Gen NX 2026 (v2.1), build 08/06/2026 | MIDAS Civil NX 2026 (v2.2), build 06/18/2026 |
 | 2026-08-17 | MIDAS Gen NX 2026 (v2.1), build 08/14/2026 | MIDAS Civil NX 2026 (v2.2), build 08/14/2026 |
-| 2026-08-17 | MIDAS Gen NX 2026 (v2.1), build 08/26/2026 | MIDAS Civil NX 2026 (v2.2), build 08/26/2026 |
 | 2026-08-24 | MIDAS Gen NX 2026 (v2.1), build 08/11/2026 | MIDAS Civil NX 2026 (v2.2), build 08/24/2026 |
 | 2026-08-25 | ? | MIDAS Civil NX 2026 (v2.2), build 08/24/2026 |
 | 2026-08-25 | MIDAS Gen NX 2026 (v2.1), build 08/20/2026 | MIDAS Civil NX 2026 (v2.2), build 07/29/2026 |
