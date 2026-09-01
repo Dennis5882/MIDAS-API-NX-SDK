@@ -149,13 +149,14 @@ reading 8,000 lines.
 
 Two steps, in order:
 
-1. **Read out what is already claimed.** 14 passages mention the npm harness
-   and name 11 endpoints between them, some only in passing (`/doc/NEW` is
-   the harness's own call, not a case). Go through them and list every
-   endpoint a passage actually says the built npm package *completed*, with
-   its date and product. Put the list in a scratch file, report the count,
-   and stop there. This step is a measurement, not a schema change.
-   Against 143 confirmed Python cases, expect the answer to be under ten.
+1. ~~**Read out what is already claimed.**~~ **Done** —
+   `docs/npm_live_evidence_scratch.md` has it: **23 `/db` endpoints and 4
+   result-table operations, 27 npm public-API operations**, each traced to
+   the passage that claims it, with the rejections and harness calls
+   (`/doc/NEW`, `SAVEAS`) deliberately excluded. Spot-checked against the
+   notes and correct. This prompt guessed "under ten" from a crude grep over
+   paragraphs mentioning the npm package; reading them properly more than
+   doubled it.
 2. **Then extend it by running.** Pick endpoints Python has confirmed but npm
    has not, in batches of at most 8:
 
@@ -163,6 +164,13 @@ Two steps, in order:
    npm run live:crud -- -- --product gen --endpoints /db/AAA,/db/BBB \
      --save-dir <a writable directory on the NX machine>
    ```
+
+   `scripts/live_crud_check.py` now takes the same `--endpoints`, so a batch
+   can be run through both packages against one selection. Both refuse an
+   endpoint with no case in the selected tiers before touching the product.
+
+   The 116 confirmed Python cases npm has never run are the pool. Start with
+   endpoints whose npm adapter does something beyond generated metadata.
 
    Record each result in `docs/live_verification_notes.md` in the same style as
    the existing npm passages.

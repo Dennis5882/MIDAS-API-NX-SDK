@@ -355,3 +355,39 @@ def test_no_ledger_entry_contradicts_its_own_level() -> None:
 
     visit(json.loads((ROOT / "docs" / "coverage.json").read_text(encoding="utf-8")))
     assert not problems, "\n".join(problems)
+
+
+def test_unknown_endpoint_selection_is_refused_before_any_product_call() -> None:
+    """`--endpoints` must reject a name the way `--tier` does.
+
+    The filter is applied inside the tier loop, which runs after `/doc/NEW`
+    has already discarded whatever the caller had open. A typo there used to
+    leave the run with zero cases: the document was gone and nothing was
+    tested. Both refusals must happen before the client is even built.
+    """
+
+    for arguments, expected in (
+        (["--endpoints", "/db/NOPE"], "No live case for endpoint /db/NOPE"),
+        (
+            ["--tier", "extras5", "--endpoints", "/db/NODE"],
+            "/db/NODE has no case in the selected tier(s)",
+        ),
+    ):
+        result = subprocess.run(
+            [
+                sys.executable,
+                "scripts/live_crud_check.py",
+                "--product",
+                "gen",
+                "--mapi-key",
+                "not-a-real-key",
+                *arguments,
+            ],
+            capture_output=True,
+            text=True,
+            cwd=ROOT,
+        )
+        assert result.returncode == 2, result.stdout + result.stderr
+        assert expected in result.stderr, result.stderr
+        # Nothing may have reached the product.
+        assert "mapikey/verify" not in result.stderr

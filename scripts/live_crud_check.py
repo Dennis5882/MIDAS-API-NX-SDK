@@ -3832,6 +3832,27 @@ def main() -> int:
     endpoints = None
     if args.endpoints:
         endpoints = {item.strip() for item in args.endpoints.split(",") if item.strip()}
+        # --tier refuses an unknown name before anything runs; this has to as
+        # well. The filter is applied inside the tier loop, which is after
+        # /doc/NEW has already discarded the caller's document - so a typo
+        # would cost them that document and then test nothing.
+        known: Dict[str, List[str]] = {}
+        for known_tier in TIERS:
+            for known_case in known_tier.cases():
+                known.setdefault(known_case.resource.ENDPOINT, []).append(known_tier.name)
+        selected = {t.name for t in tiers}
+        for endpoint in sorted(endpoints):
+            where = known.get(endpoint)
+            if where is None:
+                print(f"No live case for endpoint {endpoint}", file=sys.stderr)
+                return 2
+            if not selected.intersection(where):
+                print(
+                    f"{endpoint} has no case in the selected tier(s); it is in "
+                    f"{', '.join(sorted(set(where)))}",
+                    file=sys.stderr,
+                )
+                return 2
 
     client = MidasClient(
         mapi_key=args.mapi_key, base_url=args.base_url,
