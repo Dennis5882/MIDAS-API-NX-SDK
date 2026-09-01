@@ -1,6 +1,6 @@
 # Codex task prompt — mechanical work only
 
-Updated 2026-09-01 at HEAD `368f9d2`. Version stays **2.7.3** on both
+Updated 2026-09-01 at HEAD `ae4ec96`. Version stays **2.7.3** on both
 registries; do not bump it.
 
 **The division, set by the author.** Judgment-heavy work — schema design,
@@ -9,10 +9,10 @@ Claude's. Bounded, verifiable, repeatable work is yours. Every task below has a
 measured starting number you can check your run against. A task that turns out
 to need a judgment call is one to **stop and report**, not to decide.
 
-## What your last two batches showed
+## What your last three batches showed
 
-`801abe0` is the model to repeat. Six live results, and the best ones are the
-ones you *refused* to claim:
+`801abe0` and `d6d5ca1` are the model to repeat. The best results in both are
+the ones you *refused* to claim, and the ones you re-classified downward:
 
 - `/db/HAHS` and `/db/HECB` went read → write once the fixture built a real
   eight-node SOLID. `/db/HECB` kept `ITEMS[].ID=1` because the manual calls it
@@ -24,26 +24,29 @@ ones you *refused* to claim:
 - `/db/CSCS` stayed read. The manual's only COMPOSITE sample omits the
   dimensions needed to build the prerequisite section, and you did not supply
   them from either SDK.
-- `/db/STCT` stayed unconfirmed, but you disproved the standing hypothesis: the
-  documented Linear + Independent branch loses `iITER`/`TOL` too, so it was
-  never a branch-selection mistake.
+- `/db/SPLC` and `/db/THMS` were the opposite finding, and just as useful: a
+  Gen-only `Unknown Error` and a cross-product `Wrong Field` both turned out to
+  be **abbreviated fixtures**, not product behaviour. SPLC was missing eight
+  fields of the manual's no-damping example, THMS its Y/Z functions and every
+  arrival-time field. A standing product finding is worth re-testing against
+  the complete documented payload before anyone reports it.
 
-`92149a4` is the one to learn from. Three defects came out of it, all in the
-same place — writing down what the manual *means*:
+Two things to carry forward, both from writing results down rather than
+getting them:
 
-- `/db/ELEM` was promoted with `STYPE: 1` twice and `STYPE: 2` twice. The gate
-  is the pair with `TYPE`, whose values live in the chapter's footnoted code
-  table. The `resolution` said "the manual gives no wire selector value"; the
-  code table gives every one of them.
-- `/db/FIMP`'s table keys rows `"KENPAR"."FC"` and never lists the
-  `CONC`/`STEEL` parents, so the contract declared a three-level object as ten
-  flat top-level fields — replacing a correct payload with a wrong one.
-- The generated union then said `HYS_MODEL` could only be `"KPM"`, in a chapter
-  whose own callout says Kent & Park is one representative of many models.
+- **`d6d5ca1` credited the wrong endpoint with a write.** THMS did the round
+  trip; HPCE got `level: write` while its own method still ended "Left at
+  level: read" and its case was still `confirmed=False`. Neither needed
+  outside evidence to spot - each entry contradicted itself - so a test now
+  reads exactly that out of `docs/coverage.json`. A ledger entry is five
+  fields plus prose, and a batch edits several entries at once.
+- **`92149a4` produced three defects, all from writing down what the manual
+  *means***: `/db/ELEM` promoted with `STYPE: 1` twice, `/db/FIMP` declaring a
+  three-level object as ten flat fields, and a union saying `HYS_MODEL` could
+  only be `"KPM"`. The extractor and validator now refuse those shapes.
 
-Both the extractor and the validator now refuse those shapes, so they cannot
-recur silently. The conclusion for this prompt: **live-harness work is yours;
-contract promotion is not.** The tasks below follow that split.
+The conclusion this prompt is built on: **live-harness work is yours; contract
+promotion is not.**
 
 ## Measured starting state
 
@@ -51,7 +54,7 @@ Run these first and confirm you see the same numbers. If any differ, say so
 before starting — it means something moved under you.
 
 ```bash
-python -m pytest -q                       # 916 passed
+python -m pytest -q                       # 918 passed
 ruff check src tests scripts && mypy      # clean
 python scripts/validate_contracts.py      # OK, 337 contracts
 python scripts/check_manual_drift.py --manual-api-repo "E:\AI Study\MIDAS-API"
@@ -60,8 +63,8 @@ cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift, 55 tests
 ```
 
-Coverage as `ROADMAP.md` reports it: **399/399 implemented, 171 write / 228
-read.** `schema/live-cases.json` holds **167 cases, 141 confirmed**.
+Coverage as `ROADMAP.md` reports it: **399/399 implemented, 172 write / 227
+read.** `schema/live-cases.json` holds **167 cases, 143 confirmed**.
 
 Contract drafts — clear and re-emit before judging anything about them.
 `contracts/drafts/` is git-ignored build output, and a stale copy has misled a
@@ -86,13 +89,12 @@ bounded parser gap left in the pile.
 
 ## Task 1 — `/db` write coverage (the main task)
 
-74 `/db` endpoints are still read-level. They split cleanly:
+73 `/db` endpoints are still read-level. They split cleanly:
 
-- **19 already have a live case** that has not passed:
+- **18 already have a live case** that has not passed:
   `/db/ACTL`, `/db/CGLP`, `/db/DOEL`, `/db/EPSE`, `/db/EPST`, `/db/FBLA`,
   `/db/HPCE`, `/db/MADO`, `/db/MVCT`, `/db/NLLP`, `/db/NLNK`, `/db/NLNK-M1`,
-  `/db/RPSC`, `/db/SBDO`, `/db/STCT`, `/db/STRPSSM`, `/db/TDMF`, `/db/THMS`,
-  `/db/WVLD`
+  `/db/RPSC`, `/db/SBDO`, `/db/STCT`, `/db/STRPSSM`, `/db/TDMF`, `/db/WVLD`
 - **55 have no case at all.** The biggest coherent cluster is moving-load and
   lane — one manual chapter, 19 endpoints: `/db/LLANch`, `/db/LLANid`,
   `/db/LLANop`, `/db/LLANtr`, `/db/MLSP`, `/db/MLSR`, `/db/MVCTbs`,
@@ -100,7 +102,7 @@ bounded parser gap left in the pile.
   `/db/MVLDeu`, `/db/MVLDid`, `/db/MVLDpl`, `/db/MVLDtr`, `/db/SINF`,
   `/db/SLAN`, `/db/SLANch`, `/db/SLANop`
 
-**Start with the 19.** A fixture that exists is cheaper to triage than one you
+**Start with the 18.** A fixture that exists is cheaper to triage than one you
 have to write, and three of them (`/db/HPCE`, `/db/STCT`, `/db/FBLA`) already
 have recorded findings to build on rather than rediscover.
 
@@ -114,10 +116,13 @@ For each endpoint, in batches of at most 8:
 3. Run `python scripts/live_crud_check.py --tier <tier> --product gen` and the
    same for `civil`, from a document the author has confirmed is empty.
 4. Classify honestly and record it:
-   - **passed** → `confirmed=True`, `level: "write"`, and set
-     `live_verified.date` to **the day the write actually happened**. Two
-     entries in `801abe0` kept an old date beside a new build and put a session
-     that never existed into `ROADMAP.md`'s version matrix.
+   - **passed** → `confirmed=True`, `level: "write"`, `outcome`, the builds,
+     and `live_verified.date` set to **the day the write actually happened**.
+     All of them, on the entry that did the write. In `d6d5ca1` the SPLC/THMS
+     batch left `/db/THMS` at `read` under a method describing its own
+     completed round trip, and raised `/db/HPCE` to `write` without touching
+     its method, which still ends "Left at level: read". A test now fails on
+     either shape, so run the suite before committing a batch.
    - **failed on a fixture problem** → fix the fixture, rerun.
    - **failed the same way with the documented payload** → leave it read-level
      and write down everything you tried, as you did for `/db/HPCE`.
@@ -144,11 +149,13 @@ reading 8,000 lines.
 
 Two steps, in order:
 
-1. **Read out what is already claimed.** Go through
-   `docs/live_verification_notes.md` and list every endpoint a passage says the
-   built npm package completed, with its date and product. Put the list in a
-   scratch file, report the count, and stop there. This step is a measurement,
-   not a schema change.
+1. **Read out what is already claimed.** 14 passages mention the npm harness
+   and name 11 endpoints between them, some only in passing (`/doc/NEW` is
+   the harness's own call, not a case). Go through them and list every
+   endpoint a passage actually says the built npm package *completed*, with
+   its date and product. Put the list in a scratch file, report the count,
+   and stop there. This step is a measurement, not a schema change.
+   Against 143 confirmed Python cases, expect the answer to be under ten.
 2. **Then extend it by running.** Pick endpoints Python has confirmed but npm
    has not, in batches of at most 8:
 
@@ -245,6 +252,20 @@ looking for something in `contracts/drafts/`. All 47 are refused on purpose.
 - **`/db/FBLA`'s shared table** — `= 1 or 2` alongside `= 1` and `= 2` — folds
   into both branches at generation time rather than forming a third union
   member. Decided and implemented.
+- **A ledger entry must not contradict its own prose.** `tests/test_live_cases.py`
+  fails if a `method` describing a completed write round trip sits beside
+  `level: read`, or one ending "left at level: read" sits beside
+  `level: write`. Fix the entry, never the test.
+- **`ROADMAP.md`'s version table is not a list of sessions.** It is every
+  distinct `(date, Gen build, Civil build)` the ledger cites. An entry's
+  `date` is when it reached its current level and its builds come from the
+  most recent check, so an older date beside a newer build is normal - 122
+  entries look like that and are correct. Only move `date` when the *level*
+  moves.
+- **A list the manual's own description outsizes is not an enum.** A count or
+  range stated about the list (`19종 (D4 ~ D57)`, `2 ~ 20`) disqualifies it,
+  and the field keeps its declared scalar type. This is checked by a test over
+  every contract.
 - **A manual section states its request twice** - a Specifications table and
   often a JSON Schema - and where they disagree the table is the lossy one.
   44 of the 337 promoted contracts and 22 of the 47 drafts are missing at
