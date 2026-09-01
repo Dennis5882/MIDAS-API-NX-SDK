@@ -508,3 +508,35 @@ records:
       rather than at nothing.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-write-sweep-2026-08-27
+    endpoints: []
+    date: "2026-08-27"
+    nxVersion: MIDAS Civil NX 2026
+    level: write
+    outcome: success_empty
+    method: >-
+      scripts/live_crud_check.py (full CRUD round trip) Re-verified 2026-08-27: the previous COMP/TENS/MULTI shape (DIR 1-4, DV, a fictional SK field) answered "[Error] Point Spring value has(have) been incorrectly entered." live on Gen NX. The corrected shape (STIFF single number for COMP/TENS, FUNCTION for MULTI, DIR 0-6 including Vector, DV only meaningful for DIR=6) round-trips cleanly -- confirmed
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-write-sweep-2026-09-01
+    endpoints: []
+    date: "2026-09-01"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 08/26/2026
+    level: write
+    outcome: success_empty
+    method: >-
+      scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Civil NX completed create->GET->update->GET->delete again on 2026-09-01, build 08/26/2026. Gen NX continues to answer "Unknown Error" on create with the identical payload; it
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md

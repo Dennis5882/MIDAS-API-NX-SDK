@@ -1,0 +1,362 @@
+# /db/CSCS
+#
+# Drafted by scripts/extract_contracts.py from the official manual, then promoted
+# by scripts/promote_contract.py: products and verification status come from
+# docs/coverage.json's live record, not from the manual's framing. For /db/*
+# endpoints, the DELETE shape comes from measured /db/* DELETE behaviour.
+# safeToOmit is answered `true` only where a confirmed live payload actually
+# omitted the field.
+contractVersion: 1
+id: db-cscs
+endpoint: /db/CSCS
+name: Composite Section for Construction Stage
+
+products: [civil, gen]
+
+source:
+  manual:
+    status: documented
+    repo: Dennis5882/MIDAS-API
+    chapterFile: 10_DB_Construction_Stage.md
+    section: 2. /db/CSCS – Composite Section for Construction Stage
+  liveNotes:
+    - docs/live_verification_notes.md
+
+verification:
+  status: verified_both
+  records:
+    - product: civil
+      ref: db-read-sweep-2026-07-26
+    - product: gen
+      ref: db-read-sweep-2026-07-26
+
+operations:
+  - method: DELETE
+    variant: per_id
+    path: /db/CSCS/{id}
+    risk: destructive
+    mitigation: none
+    summary: Delete exactly the record named in the path.
+    request:
+      wrapper: none
+    response:
+      wrapper: table
+      keyStability: stable
+    notes: >-
+      Undocumented route, and the only DELETE form that deletes a selection
+      rather than the whole table - see risk db-delete-body-empties-table.
+  - method: DELETE
+    variant: whole_table
+    risk: destructive
+    mitigation: confirmation_required
+    summary: Empty the entire table.
+    request:
+      wrapper: assign
+      itemSchema: none
+      description: >-
+        The manual's documented form. The ids in that body are ignored.
+    response:
+      wrapper: message
+  - method: GET
+    risk: read_only
+    request:
+      wrapper: none
+    response:
+      wrapper: table
+      keyStability: stable
+  - method: POST
+    risk: write
+    request:
+      wrapper: assign
+      itemSchema: fields
+    response:
+      wrapper: table
+      keyStability: stable
+  - method: PUT
+    risk: write
+    request:
+      wrapper: assign
+      itemSchema: fields
+    response:
+      wrapper: table
+      keyStability: stable
+
+fields:
+  - key: SEC
+    description: >-
+      단면 ID
+    type: integer
+    requirement: required
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+  - key: ASTAGE
+    description: >-
+      활성 시공단계명
+    type: string
+    requirement: required
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+  - key: TYPE
+    description: >-
+      합성 타입 ("GENERAL" / "USER")
+    type: string
+    requirement: required
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+  - key: bTAP
+    description: >-
+      테이퍼 타입 여부
+    type: boolean
+    requirement: optional
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: vPARTINFO
+    description: >-
+      파트 정보 목록
+    type: array
+    items:
+      type: object
+    requirement: required
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+    properties:
+      - key: PART
+        description: >-
+          합성 단면 파트 번호
+        type: integer
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(1)', not
+        # by naming a path
+      - key: MTYPE
+        description: >-
+          재료 타입 ("ELEM" / "MATL")
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(2)', not
+        # by naming a path
+      - key: MAT
+        description: >-
+          재료 ID (MATL 타입: 재료 번호 문자열, ELEM 타입: 빈 문자열)
+        type: string
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(3)', not
+        # by naming a path
+      - key: CSTAGE
+        description: >-
+          합성 단계 (활성 단계: 빈 문자열, 목표 단계: 시공단계명)
+        type: string
+        requirement: optional
+        documentedDefault: ""
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(4)', not
+        # by naming a path
+      - key: AGE
+        description: >-
+          재료 나이 (일)
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(5)', not
+        # by naming a path
+      - key: PARTINFO_H
+        description: >-
+          부재의 공칭 치수 (h)
+        type: number
+        requirement: optional
+        documentedDefault: null
+        documentedDefaultNote: AUTO
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(6)', not
+        # by naming a path
+      - key: PARTINFO_VS
+        description: >-
+          체적-표면적 비 (v/s)
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(7)', not
+        # by naming a path
+      - key: PARTINFO_M
+        description: >-
+          노출 표면의 모듈 (M)
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(8)', not
+        # by naming a path
+      - key: AREA
+        description: >-
+          단면적 강성 스케일 계수
+        type: number
+        requirement: optional
+        documentedDefault: 1
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(9)', not
+        # by naming a path
+      - key: ASY
+        description: >-
+          유효 전단 면적 (y축) 강성 스케일 계수
+        type: number
+        requirement: optional
+        documentedDefault: 1
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(10)',
+        # not by naming a path
+      - key: ASZ
+        description: >-
+          유효 전단 면적 (z축) 강성 스케일 계수
+        type: number
+        requirement: optional
+        documentedDefault: 1
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(11)',
+        # not by naming a path
+      - key: IXX
+        description: >-
+          비틀림 저항 강성 스케일 계수
+        type: number
+        requirement: optional
+        documentedDefault: 1
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(12)',
+        # not by naming a path
+      - key: IYY
+        description: >-
+          관성 모멘트 (y축) 강성 스케일 계수
+        type: number
+        requirement: optional
+        documentedDefault: 1
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(13)',
+        # not by naming a path
+      - key: IZZ
+        description: >-
+          관성 모멘트 (z축) 강성 스케일 계수
+        type: number
+        requirement: optional
+        documentedDefault: 1
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(14)',
+        # not by naming a path
+      - key: WAREA
+        description: >-
+          자중 강성 스케일 계수
+        type: number
+        requirement: optional
+        documentedDefault: 1
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(15)',
+        # not by naming a path
+      - key: IW
+        description: >-
+          워핑 상수 강성 스케일 계수
+        type: number
+        requirement: optional
+        documentedDefault: 1
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(16)',
+        # not by naming a path
+  - key: OPT_UPDATE_ALL_H
+    description: >-
+      공칭 치수(h) 자동 계산 옵션
+    type: boolean
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+
+sdkRules:
+  - id: db-cscs-delete-per-id
+    kind: per_id_request
+    appliesTo: [DELETE]
+    variant: per_id
+    reason: >-
+      The manual's DELETE body form empties the whole table regardless of the
+      ids it names. Measured on /db/NODE, /db/STLD, /db/LDGR and /db/MATL and
+      treated as a property of /db/* DELETE, so an SDK's ordinary "delete these
+      ids" call must use the undocumented per-id URL. Requests go one at a time
+      and stop at the first failure.
+    riskRef: db-delete-body-empties-table
+    alternative: Emptying the table on purpose is the separate whole_table operation.
+  - id: db-cscs-delete-all-confirmation
+    kind: require_confirmation
+    appliesTo: [DELETE]
+    variant: whole_table
+    reason: >-
+      Emptying the table cannot be undone through the API and raises no
+      product-side dialog.
+    riskRef: db-delete-body-empties-table
+    alternative: Use the per_id DELETE operation to remove selected records.
+
+knownDefects:
+  - ref: db-delete-body-empties-table
+
+extraction:
+  source: 10_DB_Construction_Stage.md line 237
+  table: 2-2. 파라미터
+  missingColumns:
+    - heading: 2-2. 파라미터
+      line: 274
+      columns: [Default]
+  # Additional parameter tables in this section were NOT merged. They are
+  # usually conditional variants selected by a type/code field. Decide
+  # whether they belong in this contract's fields, as nested `properties`,
+  # or as a separate contract - do not assume the first table is the whole
+  # schema.
+  unmergedTables:
+    - heading: 2-2. 파라미터
+      resolution: "The supplementary table describes fields outside the documented request example without an explicit wire condition; left unmerged."
+      fields: 9
+      line: 274

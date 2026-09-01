@@ -1192,7 +1192,7 @@
       "className": "SeismicDeviceIsolator",
       "exportName": "seismicDeviceIsolator",
       "endpoint": "/db/SDIS",
-      "name": "Seismic Device - Isolator (MSS)",
+      "name": "Seismic Device – Isolator (MSS)",
       "products": [
         "gen"
       ],
@@ -1221,7 +1221,7 @@
       "className": "SeismicDeviceSteelDamper",
       "exportName": "seismicDeviceSteelDamper",
       "endpoint": "/db/SDST",
-      "name": "Seismic Device - Steel Damper",
+      "name": "Seismic Device – Steel Damper",
       "products": [
         "civil",
         "gen"

@@ -1,0 +1,302 @@
+# /view/RESULTGRAPHIC
+#
+# Drafted by scripts/extract_contracts.py from the official manual, then promoted
+# by scripts/promote_contract.py: products and verification status come from
+# docs/coverage.json's live record, not from the manual's framing. For /db/*
+# endpoints, the DELETE shape comes from measured /db/* DELETE behaviour.
+# safeToOmit is answered `true` only where a confirmed live payload actually
+# omitted the field.
+contractVersion: 1
+id: view-resultgraphic
+endpoint: /view/RESULTGRAPHIC
+name: Result Graphic
+
+products: [civil, gen]
+
+source:
+  manual:
+    status: documented
+    repo: Dennis5882/MIDAS-API
+    chapterFile: 16_VIEW.md
+    section: "7. `/view/RESULTGRAPHIC` — Result Graphic"
+  liveNotes:
+    - docs/live_verification_notes.md
+
+verification:
+  status: verified_both
+  records:
+    - product: civil
+      ref: db-read-sweep-2026-08-11
+    - product: gen
+      ref: db-read-sweep-2026-08-11
+
+operations:
+  - method: POST
+    risk: write
+    request:
+      wrapper: assign
+      itemSchema: fields
+    response:
+      wrapper: table
+      keyStability: stable
+
+fields:
+  - key: TYPE_OF_DISPLAY
+    description: >-
+      표시 유형(Type of Display)
+    type: object
+    requirement: optional
+    documentedDefault: null
+    documentedDefaultNote: System
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+    properties:
+      - key: CONTOUR
+        description: >-
+          컨투어 상세(Contour Details)
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: VALUES
+        description: >-
+          수치 출력 상세(Values Output Details)
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: LEGEND
+        description: >-
+          범례 상세(Legend Details)
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: DEFORM
+        description: >-
+          변형 상세(Deformation Details)
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: DISP_OPT
+        description: >-
+          표시 옵션 상세(Display Option Details)
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: MIRRORED
+        description: >-
+          대칭 모델 미러 상세(Symmetric Model Mirror)
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: CUTTING_DIAGRAM
+        description: >-
+          절단 다이어그램(Cutting Diagram)
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: CUTTING_PLANE
+        description: >-
+          절단 평면 상세(Cutting Plane Detail)
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: APPLIED_LOADS
+        description: >-
+          재하 하중(Applied Loads, 이동하중 추적)
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: ISO_SURFACE
+        description: >-
+          등가면 상세(IsoSurface Detail)
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: UNDEFORMED
+        description: >-
+          미변형 형상 표시(Display Undeformed Shape)
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: ARROW_SCALE_FACTOR
+        description: >-
+          화살표 스케일 계수(Arrow Scale Factor)
+        type: number
+        requirement: optional
+        documentedDefault: 1
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: OPT_CUR_STEP_DISPLACEMENT
+        description: >-
+          현재 스텝 변위
+        type: boolean
+        requirement: optional
+        documentedDefault: false
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: OPT_STAGE_STEP_REAL_DISPLACEMENT
+        description: >-
+          단계/스텝 실제 변위
+        type: boolean
+        requirement: optional
+        documentedDefault: false
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: OPT_INCLUDING_CAMBER_DISPLACEMENT
+        description: >-
+          캠버 변위 포함
+        type: boolean
+        requirement: optional
+        documentedDefault: false
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: OPT_CUR_STEP_FORCE
+        description: >-
+          현재 스텝 힘(Current Step Force)
+        type: boolean
+        requirement: optional
+        documentedDefault: false
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: YIELD_POINT
+        description: >-
+          항복점(Yield Point)
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: OPT_INCLUDE_IMPACT_FACTOR
+        description: >-
+          충격계수 포함(Include Impact Factor)
+        type: boolean
+        requirement: optional
+        documentedDefault: false
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: MODE_SHAPE
+        description: >-
+          모드 형상(Mode Shape)
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: SCALE_FACTOR
+        description: >-
+          스케일 계수(Scale Factor)
+        type: number
+        requirement: optional
+        documentedDefault: 1
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: OPT_CUBIC_INTERPOLATION
+        description: >-
+          3차 보간(Cubic Interpolation)
+        type: boolean
+        requirement: optional
+        documentedDefault: false
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: CUBIC_INTERPOLATION_FACTOR
+        description: >-
+          3차 보간 계수(Cubic Interpolation Factor)
+        type: number
+        requirement: optional
+        documentedDefault: 0.5
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+
+extraction:
+  source: 16_VIEW.md line 1424
+  table: "1) Type of Display — `Argument.TYPE_OF_DISPLAY` (Object, Optional)"
+  # Additional parameter tables in this section were NOT merged. They are
+  # usually conditional variants selected by a type/code field. Decide
+  # whether they belong in this contract's fields, as nested `properties`,
+  # or as a separate contract - do not assume the first table is the whole
+  # schema.
+  unmergedTables:
+    - heading: "2) Contour Details — `TYPE_OF_DISPLAY.CONTOUR`"
+      resolution: "TYPE_OF_DISPLAY tables are independently optional nested objects; the manual states no scalar discriminator or mutually exclusive branch; left unmerged."
+      fields: 1
+      line: 1452
+    - heading: "3) Values Output Details — `TYPE_OF_DISPLAY.VALUES`"
+      resolution: "TYPE_OF_DISPLAY tables are independently optional nested objects; the manual states no scalar discriminator or mutually exclusive branch; left unmerged."
+      fields: 1
+      line: 1466
+    - heading: "4) Legend Details — `TYPE_OF_DISPLAY.LEGEND`"
+      resolution: "TYPE_OF_DISPLAY tables are independently optional nested objects; the manual states no scalar discriminator or mutually exclusive branch; left unmerged."
+      fields: 1
+      line: 1481
+    - heading: "5) Deformation Details — `TYPE_OF_DISPLAY.DEFORM`"
+      resolution: "TYPE_OF_DISPLAY tables are independently optional nested objects; the manual states no scalar discriminator or mutually exclusive branch; left unmerged."
+      fields: 1
+      line: 1491
+    - heading: "6) Display Option Details — `TYPE_OF_DISPLAY.DISP_OPT`"
+      resolution: "TYPE_OF_DISPLAY tables are independently optional nested objects; the manual states no scalar discriminator or mutually exclusive branch; left unmerged."
+      fields: 1
+      line: 1502
+    - heading: "7) Symmetric Model Mirror Detail — `TYPE_OF_DISPLAY.MIRRORED`"
+      resolution: "TYPE_OF_DISPLAY tables are independently optional nested objects; the manual states no scalar discriminator or mutually exclusive branch; left unmerged."
+      fields: 1
+      line: 1511
+    - heading: "8) Cutting Diagram — `TYPE_OF_DISPLAY.CUTTING_DIAGRAM`"
+      resolution: "TYPE_OF_DISPLAY tables are independently optional nested objects; the manual states no scalar discriminator or mutually exclusive branch; left unmerged."
+      fields: 1
+      line: 1524
+    - heading: "9) Cutting Plane Detail Dialog — `TYPE_OF_DISPLAY.CUTTING_PLANE`"
+      resolution: "TYPE_OF_DISPLAY tables are independently optional nested objects; the manual states no scalar discriminator or mutually exclusive branch; left unmerged."
+      fields: 1
+      line: 1540
+    - heading: "10) Applied Loads (Moving Load Tracer Detail) — `TYPE_OF_DISPLAY.APPLIED_LOADS`"
+      resolution: "TYPE_OF_DISPLAY tables are independently optional nested objects; the manual states no scalar discriminator or mutually exclusive branch; left unmerged."
+      fields: 1
+      line: 1549
+    - heading: "11) IsoSurface Detail Dialog — `TYPE_OF_DISPLAY.ISO_SURFACE`"
+      resolution: "TYPE_OF_DISPLAY tables are independently optional nested objects; the manual states no scalar discriminator or mutually exclusive branch; left unmerged."
+      fields: 1
+      line: 1560
