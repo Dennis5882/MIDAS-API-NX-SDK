@@ -1,6 +1,6 @@
 # Codex task prompt — mechanical work only
 
-Updated 2026-09-01 at HEAD `7985235`. Version stays **2.7.3** on both
+Updated 2026-09-01 at HEAD `368f9d2`. Version stays **2.7.3** on both
 registries; do not bump it.
 
 **The division, set by the author.** Judgment-heavy work — schema design,
@@ -51,7 +51,7 @@ Run these first and confirm you see the same numbers. If any differ, say so
 before starting — it means something moved under you.
 
 ```bash
-python -m pytest -q                       # 910 passed
+python -m pytest -q                       # 916 passed
 ruff check src tests scripts && mypy      # clean
 python scripts/validate_contracts.py      # OK, 337 contracts
 python scripts/check_manual_drift.py --manual-api-repo "E:\AI Study\MIDAS-API"
@@ -74,7 +74,7 @@ MSYS_NO_PATHCONV=1 python scripts/extract_contracts.py \
 python scripts/promote_contract.py --all --dry-run          # 0 promoted, 47 refused
 ```
 
-**Zero of the 47 are promotable, and that is expected.** There are 126 blocking
+**Zero of the 47 are promotable, and that is expected.** There are 124 blocking
 review notes across 31 drafts, and the large groups are all judgment: 26 "types
 this as an enum but the values are listed elsewhere", 18 "types this X but it
 has nested children", 7 "marks this conditional but does not state the
@@ -164,31 +164,14 @@ Two steps, in order:
 that a field in `docs/coverage.json` would help, say so in your report and leave
 the schema alone.
 
-## Task 3 — the one parser gap worth fixing
+## Task 3 — nothing here for now
 
-`scripts/extract_contracts.py` reads the manual's `└` tree markers to nest a
-field under the row above it, but only one level deep. The line is
-`key.lstrip("└").strip()`; `└ └ LAYER1` has a space between the glyphs, so one
-`└` survives, `_split_path` fails on it, and the row becomes a review note
-instead of a nested field.
+The tree-marker parser gap this section used to describe is fixed, along with
+two shipped payload defects it turned up on the way. Contract work is now
+blocked on reading manual sections, which is Claude's half of the split.
 
-`27_Design_SRC_AIKSRC2K.md` uses `└`, `└ └` and `└ └ └`. Count the glyphs to get
-the depth and attach each entry to the last entry one level above it, the way
-the numbered-nesting branch already does with `by_depth`.
-
-Expected outcome: `design-src-aik-src2k-mrbd`'s four blocking notes
-(`└ └ LAYER1`, `└ └ LAYER2`, `└ └ └ NAME`, `└ └ └ NUM`) go to zero and the draft
-carries a nested structure instead. Whether it then promotes depends on the
-remaining gates — report what the dry run says, do not force it through. Add a
-test beside the existing tree-marker tests in `tests/test_extract_contracts.py`.
-
-**Only the tree-marker form.** The other 27 multi-key notes are rows where the
-manual writes several keys in one cell (`"DT" / "DB"`,
-`"MIN_NUM_VHL"/"MAX_NUM_VHL"`, `FREQ1/PERIOD1`). Splitting those looks equally
-mechanical and is not: `MIN_NUM_VHL` and `MAX_NUM_VHL` are each quoted
-independently elsewhere in `08_DB_Moving_Loads.md`, so they are two real fields,
-while `FREQ1` and `PERIOD1` appear nowhere else in the manual, so splitting them
-would be a guess. That distinction is Claude's to make.
+If Tasks 1 and 2 finish before new work is scoped, report and stop rather than
+looking for something in `contracts/drafts/`. All 47 are refused on purpose.
 
 ---
 
@@ -262,6 +245,13 @@ would be a guess. That distinction is Claude's to make.
 - **`/db/FBLA`'s shared table** — `= 1 or 2` alongside `= 1` and `= 2` — folds
   into both branches at generation time rather than forming a third union
   member. Decided and implemented.
+- **A manual section states its request twice** - a Specifications table and
+  often a JSON Schema - and where they disagree the table is the lossy one.
+  44 of the 337 promoted contracts and 22 of the 47 drafts are missing at
+  least one path their own section's schema declares; MD-10 in
+  `docs/manual_defects_register.md` has the measurement. A missing *root*
+  now blocks promotion outright. Do not try to close these by editing a
+  contract - each needs its section read.
 - **`/db/NMAS` must be sent with `rmX`/`rmY`/`rmZ`.** Omitting them ends the
   session on both products. Both SDKs fill them in, and the npm side is
   live-confirmed to do so on a real POST.

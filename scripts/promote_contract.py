@@ -90,6 +90,7 @@ NEEDS_HAND_REVIEW = {
     "/db/REBC": "the official article itself is wrong about its array shape",
     "/db/REBB": "its write path is broken server-side, not a shape question",
     "/db/FIMP": "its Specifications table states child keys without their parents",
+    "/DESIGN/SRC/AIK-SRC2K/MRBD": "its table gives 14 of the 54 paths its own JSON Schema declares",
 }
 
 # A JSON wire member may start with a digit.  The manual documents

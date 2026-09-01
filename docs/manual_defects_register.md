@@ -203,6 +203,17 @@ that caused damage (MD-07); the rest are recorded, not yet reconciled:
 | `/DESIGN/RC/KDS-41-20-2022/DCRM-BEAM`, `-COLUMN`, `-BRACE` | `SPLICED_BARS` |
 | `/DESIGN/SRC/AIK-SRC2K/DCTL` | `FRAMEX`, `FRAMEY` |
 
+Roots are the visible end of a wider pattern. Comparing every path, not just
+the top level, **44 of the 337 promoted contracts and 22 of the 47 drafts**
+have at least one path their section's JSON Schema declares and their table
+never names. The extreme cases are whole subtrees: `/DESIGN/SRC/AIK-SRC2K/MRBD`
+gives 14 of 54 paths, `/db/POGD` 9 of 73, `/view/RESULTGRAPHIC` 11 of 66.
+That is measurement, not a verdict - a schema path can be a wrapper the
+contract models elsewhere - but it is the number to start from. Only the root
+case blocks promotion, because a missing top-level branch means the table is
+not the request at all; MRBD is listed in `NEEDS_HAND_REVIEW` by name because
+the tree-marker fix made it promotable while still a quarter complete.
+
 `extract_contracts.py` now emits a review note for this, so no further contract
 can be promoted from a table its own section contradicts. Reconciling the nine
 needs someone to read each section and decide how the two renderings relate -
