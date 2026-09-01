@@ -57,6 +57,69 @@ fields:
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
+  - key: W_G
+    description: >-
+      Wire Frame / Hidden Fill / Hidden Edge RGB (0–255)
+    type: integer
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: W_B
+    description: >-
+      Wire Frame / Hidden Fill / Hidden Edge RGB (0–255)
+    type: integer
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: HF_R
+    description: >-
+      Wire Frame / Hidden Fill / Hidden Edge RGB (0–255)
+    type: integer
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: HF_G
+    description: >-
+      Wire Frame / Hidden Fill / Hidden Edge RGB (0–255)
+    type: integer
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: HF_B
+    description: >-
+      Wire Frame / Hidden Fill / Hidden Edge RGB (0–255)
+    type: integer
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: HE_R
+    description: >-
+      Wire Frame / Hidden Fill / Hidden Edge RGB (0–255)
+    type: integer
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: HE_G
+    description: >-
+      Wire Frame / Hidden Fill / Hidden Edge RGB (0–255)
+    type: integer
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
   - key: HE_B
     description: >-
       Wire Frame / Hidden Fill / Hidden Edge RGB (0–255)
@@ -86,5 +149,5 @@ fields:
     provenance: manual
 
 extraction:
-  source: 02_DB_Project_Structure.md line 949
+  source: 02_DB_Project_Structure.md line 1088
   table: Specifications

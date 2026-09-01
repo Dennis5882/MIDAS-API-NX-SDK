@@ -82,7 +82,6 @@ fields:
     requirement: required
     documentedDefault: null
     documentedOptional: false
-    enum: [D4, D5, D6, D7, D8]
     safeToOmit: unverified
     provenance: manual
   - key: TIES_SPIRALS
@@ -92,7 +91,6 @@ fields:
     requirement: required
     documentedDefault: null
     documentedOptional: false
-    enum: [D4, D5, D6, D7, D8]
     safeToOmit: unverified
     provenance: manual
   - key: ARRANGEMENT_Y
@@ -102,7 +100,6 @@ fields:
     requirement: required
     documentedDefault: null
     documentedOptional: false
-    enum: [2, 3, 4, 5, 6]
     safeToOmit: unverified
     provenance: manual
   - key: ARRANGEMENT_Z
@@ -112,7 +109,6 @@ fields:
     requirement: required
     documentedDefault: null
     documentedOptional: false
-    enum: [2, 3, 4, 5, 6]
     safeToOmit: unverified
     provenance: manual
   - key: DO

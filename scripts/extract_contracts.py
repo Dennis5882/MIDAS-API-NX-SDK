@@ -766,6 +766,7 @@ def _nest(flat: list[ParsedField]) -> list[ParsedField]:
     by_path: dict[tuple[str, ...], ParsedField] = {}
     last_root: Optional[ParsedField] = None
     by_depth: dict[int, ParsedField] = {}
+    by_tree_depth: dict[int, ParsedField] = {}
 
     for entry in flat:
         key = entry.key
@@ -816,9 +817,14 @@ def _nest(flat: list[ParsedField]) -> list[ParsedField]:
                 parent.properties.append(entry)
                 by_depth[depth] = entry
                 continue
-        tree_marked = key.startswith("└")
+        # The marker repeats once per level: `└ CHILD`, `└ └ GRANDCHILD`,
+        # `└ └ └ LEAF`. Glyphs are separated by a space, so counting them is
+        # the depth; stripping them as a set collapses every level onto the
+        # first and leaves the rest of the row unparseable.
+        tree_depth = key.count("└")
+        tree_marked = tree_depth > 0
         if tree_marked:
-            key = key.lstrip("└").strip()
+            key = key.lstrip("└ 	").strip()
 
         segments = _split_path(key)
         if segments is None:
@@ -829,14 +835,18 @@ def _nest(flat: list[ParsedField]) -> list[ParsedField]:
             roots.append(entry)
             continue
 
-        if tree_marked and len(segments) == 1 and last_root is not None:
-            entry.key = segments[0][0]
-            entry.notes.append(
-                f"the manual nests this under {last_root.key!r} with a tree marker rather than a path"
-            )
-            _as_container(last_root, is_array=False)
-            last_root.properties.append(entry)
-            continue
+        if tree_marked and len(segments) == 1:
+            tree_parent = last_root if tree_depth == 1 else by_tree_depth.get(tree_depth - 1)
+            if tree_parent is not None:
+                entry.key = segments[0][0]
+                entry.notes.append(
+                    f"the manual nests this under {tree_parent.key!r} with a tree marker "
+                    f"rather than a path"
+                )
+                _as_container(tree_parent, is_array=False)
+                tree_parent.properties.append(entry)
+                by_tree_depth[tree_depth] = entry
+                continue
 
         path: tuple[str, ...] = ()
         parent: Optional[ParsedField] = None
@@ -858,6 +868,7 @@ def _nest(flat: list[ParsedField]) -> list[ParsedField]:
                 (parent.properties if parent is not None else roots).append(entry)
                 if parent is None:
                     last_root = entry
+                    by_tree_depth.clear()
                     by_depth[0] = entry
                     by_depth.pop(1, None)
                 break
@@ -879,6 +890,7 @@ def _nest(flat: list[ParsedField]) -> list[ParsedField]:
                 (parent.properties if parent is not None else roots).append(existing)
                 if parent is None:
                     last_root = existing
+                    by_tree_depth.clear()
             _as_container(existing, is_array)
             parent = existing
 
@@ -1810,6 +1822,29 @@ def _ambiguous_literal_keys(field: ParsedField) -> Optional[tuple[str, ...]]:
     return keys
 
 
+def _range_row_endpoints(field: ParsedField) -> Optional[tuple[str, str, int]]:
+    """Read a row that names an interval of keys, with the count it claims.
+
+    `/db/CO_S` writes its nine RGB components as one row: No. ``1-9``, key
+    ``"W_R" ~ "HE_B"``. Read as two keys it loses seven documented fields, and
+    the endpoints alone do not say which lie between them. The count does not
+    come from anywhere but the No. column, and the members do not come from
+    anywhere but the section's own JSON Schema, so both have to be present and
+    agree before this row can be expanded.
+    """
+
+    match = re.fullmatch(r'\s*"?([A-Za-z_][\w]*)"?\s*[~∼]\s*"?([A-Za-z_][\w]*)"?\s*', field.key)
+    if match is None or match.group(1) == match.group(2):
+        return None
+    span = re.fullmatch(r"\s*(\d+)\s*[-–—~]\s*(\d+)\s*", field.number)
+    if span is None:
+        return None
+    count = int(span.group(2)) - int(span.group(1)) + 1
+    if count < 2:
+        return None
+    return match.group(1), match.group(2), count
+
+
 def _schema_children(hints: dict[tuple[str, ...], list[dict[str, Any]]], parent: tuple[str, ...]) -> set[str]:
     """List direct, concrete manual-schema property names below *parent*."""
 
@@ -1819,6 +1854,56 @@ def _schema_children(hints: dict[tuple[str, ...], list[dict[str, Any]]], parent:
         if path[:-1] == parent
         and any(any(not key.startswith("__") for key in entry) for entry in entries)
     }
+
+def _schema_child_order(
+    hints: dict[tuple[str, ...], list[dict[str, Any]]], parent: tuple[str, ...]
+) -> list[str]:
+    """The same children, in the order the manual's JSON Schema declares them.
+
+    A row naming an interval of keys is only expandable because the schema
+    states both the members and their sequence; a set would leave the interval
+    undefined.
+    """
+
+    seen: list[str] = []
+    for path, entries in hints.items():
+        if path[:-1] != parent or path[-1] in seen:
+            continue
+        if any(any(not key.startswith("__") for key in entry) for entry in entries):
+            seen.append(path[-1])
+    return seen
+
+
+def _expand_range_row(
+    field: ParsedField,
+    hints: dict[tuple[str, ...], list[dict[str, Any]]],
+    parent_paths: set[tuple[str, ...]],
+) -> Optional[tuple[str, ...]]:
+    """Name every key an interval row covers, or refuse to name any.
+
+    Three independent statements have to line up: the row's two endpoints, the
+    No. column's span, and the section's JSON Schema property order. When the
+    slice between the endpoints is exactly as long as the span claims, the
+    members are transcribed rather than guessed - `/db/CO_S`'s ``1-9`` and
+    ``"W_R" ~ "HE_B"`` select nine schema properties and the schema lists nine.
+    A mismatch means one of the three is wrong, and the row keeps its note.
+    """
+
+    bounds = _range_row_endpoints(field)
+    if bounds is None:
+        return None
+    first, last, count = bounds
+    for parent in parent_paths:
+        order = _schema_child_order(hints, parent)
+        if first not in order or last not in order:
+            continue
+        start, stop = order.index(first), order.index(last)
+        if start >= stop:
+            continue
+        span = tuple(order[start : stop + 1])
+        if len(span) == count:
+            return span
+    return None
 
 
 def _reconcile_schema_compact_key_rows(
@@ -1881,6 +1966,8 @@ def _reconcile_schema_compact_key_rows(
             repaired = False
             for fields, index, field in locations:
                 keys = _ambiguous_literal_keys(field)
+                if keys is None:
+                    keys = _expand_range_row(field, hints, parent_paths)
                 if keys is None:
                     continue
                 matches = candidates(keys)
@@ -2104,6 +2191,9 @@ class Section:
     # Set when several manual sections documenting one route were folded
     # into this one: (heading, line) for each, in chapter order.
     merged_sections: tuple[tuple[str, int], ...] = ()
+    # Root properties this section's own JSON Schema declares that its
+    # Specifications table never names, in schema order.
+    schema_only_roots: tuple[str, ...] = ()
 
     @property
     def id(self) -> str:
@@ -2178,6 +2268,9 @@ def _apply_enum_values(tables: list[ParsedTable], values_by_path: dict[str, list
             field.notes.remove(_ENUM_VALUES_ELSEWHERE)
 
 
+_RANGE_JOINED_KEYS = re.compile(r'\s*"?[A-Za-z_]\w*"?\s*[~∼]\s*"?[A-Za-z_]\w*"?\s*')
+
+
 def _parallel_cells(cell: str, count: int, *, key: bool = False) -> Optional[list[str]]:
     """Split a manual row only when it explicitly gives one value per field.
 
@@ -2213,6 +2306,12 @@ def _parallel_field_cells(
     """Return exact parallel field columns, or ``None`` when a row is ambiguous."""
 
     raw_key = _clean(key_cell)
+    # ``"W_R" ~ "HE_B"`` names the two ends of an interval, not two keys.
+    # Read as a parallel pair it silently drops the seven `/db/CO_S` colour
+    # components between them. Only the section's JSON Schema can say what an
+    # interval contains, so leave the row whole for _expand_range_row.
+    if _RANGE_JOINED_KEYS.fullmatch(raw_key):
+        return None
     quoted = re.findall(r'"([^"\\]+)"', raw_key)
     keys = quoted if len(quoted) > 1 else _parallel_cells(raw_key, 2, key=True)
     if not keys or len(keys) < 2:
@@ -2555,6 +2654,89 @@ def _toc_metadata(lines: list[str]) -> dict[str, tuple[list[str], str]]:
     return found
 
 
+_STATED_MEMBER_COUNT = re.compile(r"(\d+)\s*(?:종|개|가지)")
+_STATED_VALUE_RANGE = re.compile(r"([A-Za-z]*\d+(?:\.\d+)?)\s*[~∼]\s*([A-Za-z]*\d+(?:\.\d+)?)")
+
+
+def _sampled_enum_reason(field: ParsedField) -> Optional[str]:
+    """Say why this list is illustrative, or None when it is the whole enum."""
+
+    values = field.enum or []
+    description = field.description or ""
+    if any(isinstance(value, str) and "..." in value for value in values):
+        return (
+            "the manual's list ends in an ellipsis, so it is a sample; no enum is "
+            "transcribed and the field keeps its declared type"
+        )
+    stated = _STATED_MEMBER_COUNT.search(description)
+    if stated and int(stated.group(1)) != len(values):
+        return (
+            f"the manual's own description says this has {stated.group(1)} values and lists "
+            f"{len(values)}; the list is a sample, so no enum is transcribed"
+        )
+    spelt = {str(value) for value in values}
+    for first, last in _STATED_VALUE_RANGE.findall(description):
+        if first not in spelt or last not in spelt:
+            return (
+                f"the manual's own description spans {first} to {last} and the list omits an "
+                f"end of that range; it is a sample, so no enum is transcribed"
+            )
+    return None
+
+
+def _drop_sampled_enums(tables: list[ParsedTable]) -> None:
+    """Discard an enum the same description says is only a sample.
+
+    `/DESIGN/RC/KDS-41-20-2022/DCRM-BEAM` describes `MAIN_REBAR` as
+    "19종 (D4 ~ D57)" while the section's JSON Schema lists five values. The
+    schema is illustrating, not enumerating, and adopting it published a
+    TypeScript union that made every bar size from D10 up untypeable.
+
+    A count the manual states about its own list is the manual contradicting
+    itself, so neither half can be trusted as complete: keep the description,
+    which says how many there are, and drop the list, which does not have them.
+    The field stays its declared scalar type, which is wide enough for all of
+    them.
+    """
+
+    for table in tables:
+        for field in _walk(table.fields):
+            if not field.enum:
+                continue
+            reason = _sampled_enum_reason(field)
+            if reason is not None:
+                field.enum = None
+                field.notes.append(reason)
+
+
+def _schema_only_roots(
+    tables: list[ParsedTable], hints: dict[tuple[str, ...], list[dict[str, Any]]]
+) -> tuple[str, ...]:
+    """Root properties the section's JSON Schema declares and its table omits.
+
+    A chapter states its request twice - once as a Specifications table and
+    once as a JSON Schema - and where they disagree the table is the lossy
+    one. `/db/FIMP` is the case that shipped: its schema names `CONC` and
+    `STEEL`, its table names neither, and the contract drafted from the table
+    declared a three-level object as ten flat top-level fields.
+
+    A root the schema names and the table never mentions is therefore evidence
+    that the table is not the whole request, and a contract built from it would
+    be incomplete in a way nobody could see. Report it rather than repairing
+    it: which rendering is right, and how the two reconcile, is a review
+    decision.
+    """
+
+    declared = [
+        path[0]
+        for path, entries in hints.items()
+        if len(path) == 1
+        and any(any(not key.startswith("__") for key in entry) for entry in entries)
+    ]
+    named = {field.key for table in tables for field in _walk(table.fields)}
+    return tuple(dict.fromkeys(root for root in declared if root not in named))
+
+
 def parse_chapter(path: Path) -> list[Section]:
     lines = path.read_text(encoding="utf-8").splitlines()
     toc_metadata = _toc_metadata(lines)
@@ -2610,6 +2792,8 @@ def parse_chapter(path: Path) -> list[Section]:
         _reconcile_schema_compact_key_rows(section.tables, schema_hints)
         _apply_schema_hints(section.tables, schema_hints)
         _apply_explicit_prose_conditions(section.tables, body)
+        _drop_sampled_enums(section.tables)
+        section.schema_only_roots = _schema_only_roots(section.tables, schema_hints)
         section.variants = _explicit_variants(section.tables)
         sections.append(section)
     return sections
@@ -3204,6 +3388,15 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
             "",
         ]
     else:
+        if section.schema_only_roots:
+            missing = ", ".join(section.schema_only_roots)
+            lines += [
+                f"# NOTE: this section's own JSON Schema declares {missing} and the",
+                "# Specifications table below never names them, so the table is not the",
+                "# whole request. Reconcile the two renderings before promoting - a",
+                "# contract drafted from the table alone is what declared /db/FIMP's",
+                "# three-level object as ten flat top-level fields.",
+            ]
         lines.append("fields:")
         lines += _render_fields(fields, "  ", evidence)
         lines.append("")

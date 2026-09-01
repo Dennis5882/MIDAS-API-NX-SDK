@@ -8,6 +8,20 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ### Fixed
 
+- `SectionColorPayload` (`/db/CO_S`, `/db/CO_T`) offered two of the nine
+  documented colour components. The manual compresses them into one row keyed
+  `"W_R" ~ "HE_B"`, which was read as two literal keys, so `W_G`, `W_B`,
+  `HF_R`, `HF_G`, `HF_B`, `HE_R` and `HE_G` could not be set. All eleven
+  fields are now declared.
+- Rebar size and bar-count fields no longer reject documented values.
+  `RebarDesignCriteriaBy{Beam,Column,Brace}MemberPayload` typed `MAIN_REBAR`,
+  `STIRRUPS`, `SIDE_BAR` and `TIES_SPIRALS` as `"D4" | "D5" | "D6" | "D7" |
+  "D8"` and the leg counts as `2 | 3 | 4 | 5 | 6`, while the same rows are
+  described as `19종 (D4 ~ D57)` and `2 ~ 20` - so every bar size from D10 up
+  was untypeable. `SrcLiveLoadReductionFactorPayload` went further and
+  accepted the literal string `...(전체 11개)`. Nine fields across four
+  endpoints widen to their declared scalar type; a list the manual's own
+  description outsizes is no longer read as an enum.
 - A discriminated payload no longer rejects the documented values the manual
   gives no table for. `FloorLoadPayload` accepted only `FLOOR_DIST_TYPE` 1 and
   2 while `/db/FBLA` documents 1 to 4, so Polygon-Centroid and Polygon-Length

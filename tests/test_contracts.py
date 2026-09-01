@@ -18,6 +18,7 @@ it fail rather than ship.
 """
 
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -62,6 +63,36 @@ def test_validator_passes():
         text=True,
     )
     assert result.returncode == 0, result.stdout + result.stderr
+
+
+_STATED_COUNT = re.compile(r"(\d+)\s*(?:종|개|가지)")
+
+
+def test_no_contract_carries_an_enum_its_own_description_outsizes():
+    """A list the manual itself calls partial must not narrow a payload type.
+
+    `/DESIGN/RC/KDS-41-20-2022/DCRM-BEAM` describes `MAIN_REBAR` as
+    "19종 (D4 ~ D57)" and the chapter's JSON Schema lists five of them. Adopted
+    as an enum it published `"D4" | "D5" | "D6" | "D7" | "D8"`, making every
+    bar size from D10 up untypeable for npm callers. The count the manual
+    states about its own list is the evidence the list is a sample.
+    """
+
+    def check(fields: list[dict], slug: str, path: tuple[str, ...] = ()) -> None:
+        for field in fields or []:
+            here = path + (field["key"],)
+            stated = _STATED_COUNT.search(field.get("description") or "")
+            if stated and field.get("enum") is not None:
+                assert int(stated.group(1)) == len(field["enum"]), (
+                    f"{slug}: {'.'.join(here)} says {stated.group(1)} values, "
+                    f"enum lists {len(field['enum'])}"
+                )
+            check(field.get("properties"), slug, here)
+
+    for slug, contract in _contracts().items():
+        check(contract.get("fields"), slug)
+        for variant in contract.get("variants", []):
+            check(variant.get("fields"), slug)
 
 
 def test_no_contract_selects_two_field_sets_with_one_value():

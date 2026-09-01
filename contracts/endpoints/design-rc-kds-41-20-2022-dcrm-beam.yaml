@@ -82,7 +82,6 @@ fields:
     requirement: required
     documentedDefault: null
     documentedOptional: false
-    enum: [D4, D5, D6, D7, D8]
     safeToOmit: unverified
     provenance: manual
   - key: STIRRUPS
@@ -92,7 +91,6 @@ fields:
     requirement: required
     documentedDefault: null
     documentedOptional: false
-    enum: [D4, D5, D6, D7, D8]
     safeToOmit: unverified
     provenance: manual
   - key: STIRRUP_ARRANGEMENT
@@ -102,7 +100,6 @@ fields:
     requirement: required
     documentedDefault: null
     documentedOptional: false
-    enum: [2, 3, 4, 5, 6]
     safeToOmit: unverified
     provenance: manual
   - key: SIDE_BAR
@@ -112,7 +109,6 @@ fields:
     requirement: required
     documentedDefault: null
     documentedOptional: false
-    enum: [D4, D5, D6, D7, D8]
     safeToOmit: unverified
     provenance: manual
   - key: DT

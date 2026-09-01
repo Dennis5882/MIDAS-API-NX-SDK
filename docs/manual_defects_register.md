@@ -31,6 +31,9 @@ Civil NX 2026 v2.2, both build 08/26/2026.
 | MD-05 | 2026-08-31 | model file extensions | the manual's examples still show pre-NX spellings | four extensions in two pairs: pre-NX `.mgb`/`.mcb`, NX `.mgbx`/`.mcbz`. Civil NX's own Export menu lists "MCBZ File" | **manual repo** | open |
 | MD-06 | 2026-08-31 | `/db/ELEM` `TYPE: "WALL"` on Civil | `03_DB_Node_Element.md` supplies a WALL-element request example for the shared Node/Element chapter | Gen accepted the manual-shaped WALL element; Civil NX v2.2 (08/26/2026) returned the quoted unsupported-type error below | **MIDASIT product/article** (support scope must be clarified) | open |
 | MD-07 | 2026-09-01 | `/db/FIMP` Kent & Park table | `04_DB_Properties.md:2103` keys the rows `"KENPAR"."FC"` and omits `CONC`/`STEEL` from Specifications entirely | the same article's Request Body nests them `CONC` > `KENPAR` > `FC`, three levels deep | **manual repo** transcription | open |
+| MD-08 | 2026-09-01 | `/db/CO_S`, `/db/CO_T` Specifications | one row keyed `"W_R" ~ "HE_B"` for No. `1-9` | the same section's JSON Schema and Request Example both list nine separate colour components, as `/db/CO_M`'s table does individually | **manual repo** transcription | open |
+| MD-09 | 2026-09-01 | `/DESIGN/RC/.../DCRM-*`, `/DESIGN/SRC/AIK-SRC2K/LLRF` | the JSON Schema `enum` lists 5 rebar sizes and 6 reduction factors | the same rows' descriptions say `19종 (D4 ~ D57)` and `가능값 11개`; LLRF's list carries the literal member `...(전체 11개)` | **manual repo** transcription | open |
+| MD-10 | 2026-09-01 | seven sections' Specifications tables | the table omits a root property the same section's JSON Schema declares | `/db/EPMT` (6 model objects), `/db/ELEM` (`C_RAT`, `LCAXIS`), `/db/FIMP`, `/db/RCHK`, `/ope/LCOM-GEN`, three `DCRM-*` (`SPLICED_BARS`), `/DESIGN/SRC/AIK-SRC2K/DCTL` (`FRAMEX`, `FRAMEY`) | **manual repo** transcription | open |
 
 ## Detail
 
@@ -145,6 +148,66 @@ a representative of a 5,900-line article covering many concrete and steel
 models. That is a deliberate, reasonable scope choice, and it is also why a
 generated union over `HYS_MODEL` must never treat `"KPM"` as the only legal
 value.
+
+### MD-08 - `/db/CO_S` and `/db/CO_T` colour components
+
+The Specifications table compresses nine keys into one row:
+
+```text
+| 1-9 | Wire Frame / Hidden Fill / Hidden Edge RGB (0-255) | `"W_R"` ~ `"HE_B"` | Integer |
+```
+
+Read as a list of literal keys that is two fields, and both SDKs published
+exactly two: a caller could set the red component of the wire frame and the
+blue of the hidden edge, and nothing else. The section's own JSON Schema names
+all nine in order, its Request Example sends all nine, and the sibling
+`/db/CO_M` lists them individually - three independent statements against the
+one compressed row.
+
+The extractor now expands an interval row only when the No. column's span and
+the schema's property order agree on the count, which is transcription rather
+than inference. Both contracts were re-promoted and the npm
+`SectionColorPayload` carries eleven fields.
+
+### MD-09 - sampled `enum` lists presented as complete
+
+`26_Design_RC_KDS41202022.md:5076` declares
+
+```json
+"MAIN_REBAR": { "type": "string", "description": "주철근 규격 (전체 19종: D4 ~ D57)",
+                "enum": ["D4", "D5", "D6", "D7", "D8"] }
+```
+
+The description and the enum contradict each other in the same object. Taken
+as an enum it published `MAIN_REBAR: "D4" | "D5" | "D6" | "D7" | "D8"`, so an
+npm caller could not name D10 or anything above it - the sizes real rebar
+design uses. `/DESIGN/SRC/AIK-SRC2K/LLRF` is blunter still: its list carries
+the literal member `...(전체 11개)`, which would have been a legal value.
+
+Nine fields across four contracts were affected. A count or range the manual
+states about its own list now disqualifies the list, and the field keeps its
+declared scalar type, which is wide enough for every documented value.
+
+### MD-10 - a Specifications table that is not the whole request
+
+Seven promoted contracts and two drafts are built from a table that omits a
+root property the same section's JSON Schema declares. `/db/FIMP` is the one
+that caused damage (MD-07); the rest are recorded, not yet reconciled:
+
+| section | root(s) only the schema names |
+| --- | --- |
+| `/db/EPMT` | `TRESCA`, `VMISES`, `MOHRCL`, `DRUCKER`, `MASONRY`, `CONCDMG` |
+| `/db/ELEM` | `C_RAT`, `LCAXIS` |
+| `/db/RCHK` | `BEAM`, `COLM` |
+| `/ope/LCOM-GEN` | `CODE_SELECTION` |
+| `/DESIGN/RC/KDS-41-20-2022/DCRM-BEAM`, `-COLUMN`, `-BRACE` | `SPLICED_BARS` |
+| `/DESIGN/SRC/AIK-SRC2K/DCTL` | `FRAMEX`, `FRAMEY` |
+
+`extract_contracts.py` now emits a review note for this, so no further contract
+can be promoted from a table its own section contradicts. Reconciling the nine
+needs someone to read each section and decide how the two renderings relate -
+`/db/EPMT`'s six objects are `MODEL_TYPE` branches, `/db/ELEM`'s two are plain
+optional fields, and they are not the same kind of gap.
 
 ## Suggested follow-up, when the author chooses to act
 

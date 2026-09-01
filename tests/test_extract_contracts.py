@@ -1121,6 +1121,197 @@ def test_explicit_variants_keep_unlabelled_supplementary_tables_unmerged(tmp_pat
     assert draft["extraction"]["unmergedTables"] == [{"heading": "A label without a wire value", "fields": 1, "line": 12}]
 
 
+def test_a_key_range_row_names_every_key_the_schema_lists_between_its_ends(tmp_path: Path):
+    """`"W_R" ~ "HE_B"` is an interval, and the schema says what is inside it.
+
+    `/db/CO_S` compressed nine RGB components into one row and the parser read
+    the two ends as two parallel keys, dropping the seven between them from
+    both SDKs' payloads. The row's No. span says how many there are and the
+    section's JSON Schema says which, so all three have to agree.
+    """
+
+    path = tmp_path / "99_DB_Range.md"
+    path.write_text(
+        """## 1. `/db/RANGE-ROW` -- range row
+
+### JSON Schema
+
+```json
+{
+  "RANGE-ROW": {
+    "type": "object",
+    "properties": {
+      "W_R": { "description": "Red",   "type": "integer" },
+      "W_G": { "description": "Green", "type": "integer" },
+      "W_B": { "description": "Blue",  "type": "integer" },
+      "FACT": { "description": "Opacity", "type": "number" }
+    }
+  }
+}
+```
+
+### Specifications
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1-3 | RGB | `"W_R"` ~ `"W_B"` | Integer | - | Optional |
+| 4 | Opacity | `"FACT"` | Number | - | Optional |
+""",
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    assert [field.key for field in section.tables[0].fields] == ["W_R", "W_G", "W_B", "FACT"]
+
+
+def test_a_key_range_row_stays_unexpanded_when_the_count_disagrees(tmp_path: Path):
+    """Two statements agreeing is the evidence; one of them alone is not."""
+
+    path = tmp_path / "99_DB_RangeMismatch.md"
+    path.write_text(
+        """## 1. `/db/RANGE-MISMATCH` -- range row whose span is wrong
+
+### JSON Schema
+
+```json
+{
+  "RANGE-MISMATCH": {
+    "type": "object",
+    "properties": {
+      "W_R": { "description": "Red",   "type": "integer" },
+      "W_G": { "description": "Green", "type": "integer" },
+      "W_B": { "description": "Blue",  "type": "integer" }
+    }
+  }
+}
+```
+
+### Specifications
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1-7 | RGB | `"W_R"` ~ `"W_B"` | Integer | - | Optional |
+""",
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    keys = [field.key for field in section.tables[0].fields]
+    assert keys == ['W_R" ~ "W_B']
+    assert any("is not a single field name" in note for note in section.tables[0].fields[0].notes)
+
+
+def test_an_enum_the_manual_calls_a_sample_is_not_transcribed(tmp_path: Path):
+    """A list the manual's own description outsizes is illustrative.
+
+    `/DESIGN/RC/KDS-41-20-2022/DCRM-BEAM` describes `MAIN_REBAR` as
+    "19종 (D4 ~ D57)" and its schema lists five values; adopting them published
+    a union that made every bar size from D10 up untypeable.
+    """
+
+    path = tmp_path / "99_DB_SampledEnum.md"
+    path.write_text(
+        """## 1. `/db/SAMPLED-ENUM` -- sampled enum
+
+### JSON Schema
+
+```json
+{
+  "SAMPLED-ENUM": {
+    "type": "object",
+    "properties": {
+      "SIZE":  { "description": "Bar size", "type": "string", "enum": ["D4", "D5"] },
+      "GRADE": { "description": "Grade",    "type": "string", "enum": ["A", "B"] }
+    }
+  }
+}
+```
+
+### Specifications
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Bar size · 19종 (D4 ~ D57) | `"SIZE"` | String (enum) | - | Required |
+| 2 | Grade | `"GRADE"` | String (enum) | - | Required |
+""",
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    by_key = {field.key: field for field in section.tables[0].fields}
+    assert by_key["SIZE"].enum is None
+    assert any("is a sample" in note for note in by_key["SIZE"].notes)
+    # A list nothing contradicts is still transcribed.
+    assert by_key["GRADE"].enum == ["A", "B"]
+
+
+def test_a_schema_root_the_table_never_names_is_reported(tmp_path: Path):
+    """The table is the lossy rendering, and silence about that shipped once.
+
+    `/db/FIMP`'s schema names `CONC` and `STEEL`, its Specifications table
+    names neither, and the contract drafted from the table alone declared a
+    three-level object as ten flat top-level fields.
+    """
+
+    path = tmp_path / "99_DB_SchemaOnlyRoot.md"
+    path.write_text(
+        """## 1. `/db/SCHEMA-ONLY-ROOT` -- a root only the schema names
+
+### JSON Schema
+
+```json
+{
+  "SCHEMA-ONLY-ROOT": {
+    "type": "object",
+    "properties": {
+      "NAME": { "description": "Name", "type": "string" },
+      "CONC": { "description": "Concrete model", "type": "object" }
+    }
+  }
+}
+```
+
+### Specifications
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Name | `"NAME"` | String | - | Required |
+""",
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    assert section.schema_only_roots == ("CONC",)
+    assert "own JSON Schema declares CONC" in ex.render_draft(section)
+
+
+def test_a_tree_marker_nests_as_deep_as_it_repeats(tmp_path: Path):
+    """`└ └ LEAF` is two levels down, not one.
+
+    The marker was stripped as a set, so every level collapsed onto the first
+    and the rest of the row became an unparseable key.
+    """
+
+    path = tmp_path / "99_DB_DeepTree.md"
+    path.write_text(
+        """## 1. `/db/DEEP-TREE` -- nested tree markers
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Parent | `"PARENT"` | Object | - | Required |
+| 2 | Child | `└ CHILD` | Object | - | Required |
+| 3 | Leaf | `└ └ LEAF` | String | - | Required |
+""",
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    parent = section.tables[0].fields[0]
+    assert parent.key == "PARENT"
+    assert [child.key for child in parent.properties] == ["CHILD"]
+    assert [leaf.key for leaf in parent.properties[0].properties] == ["LEAF"]
+
+
 def test_a_repeated_heading_selector_is_not_a_discriminator(tmp_path: Path):
     """One value cannot select two field sets, so neither table merges.
 

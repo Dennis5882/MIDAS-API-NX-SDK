@@ -4397,6 +4397,20 @@ export namespace DbProjectTypes {
     /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
     W_R?: number;
     /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    W_G?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    W_B?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    HF_R?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    HF_G?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    HF_B?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    HE_R?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    HE_G?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
     HE_B?: number;
     /** Opacity Boolean */
     bBLEMD?: boolean;
@@ -4407,6 +4421,20 @@ export namespace DbProjectTypes {
   export interface ThicknessColorPayload {
     /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
     W_R?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    W_G?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    W_B?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    HF_R?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    HF_G?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    HF_B?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    HE_R?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    HE_G?: number;
     /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
     HE_B?: number;
     /** Opacity Boolean */
@@ -7256,13 +7284,13 @@ export namespace DesignRcKdsRebarTypes {
     /** 부재 ID 문자열을 키로 갖는 맵 */
     Assign: JsonObject;
     /** 주철근 규격 · 19종 (D4 ~ D57) */
-    MAIN_REBAR: "D4" | "D5" | "D6" | "D7" | "D8";
+    MAIN_REBAR: string;
     /** 스터럽(전단철근) 규격 · 19종 (D4 ~ D57) */
-    STIRRUPS: "D4" | "D5" | "D6" | "D7" | "D8";
+    STIRRUPS: string;
     /** 스터럽 다리 수 · 2 ~ 20 */
     STIRRUP_ARRANGEMENT: number;
     /** 측면철근 규격 · 19종 (D4 ~ D57) */
-    SIDE_BAR: "D4" | "D5" | "D6" | "D7" | "D8";
+    SIDE_BAR: string;
     /** 상단 피복 거리 dT */
     DT?: number;
     /** 하단 피복 거리 dB */
@@ -7288,9 +7316,9 @@ export namespace DesignRcKdsRebarTypes {
     /** 부재 ID 문자열을 키로 갖는 맵 */
     Assign: JsonObject;
     /** 주철근 규격 · 19종 (D4 ~ D57) */
-    MAIN_REBAR: "D4" | "D5" | "D6" | "D7" | "D8";
+    MAIN_REBAR: string;
     /** 띠철근/나선철근 규격 · 19종 (D4 ~ D57) */
-    TIES_SPIRALS: "D4" | "D5" | "D6" | "D7" | "D8";
+    TIES_SPIRALS: string;
     /** 띠철근 다리 수 (local Y) · 2 ~ 20 */
     ARRANGEMENT_Y: number;
     /** 띠철근 다리 수 (local Z) · 2 ~ 20 */
@@ -7305,9 +7333,9 @@ export namespace DesignRcKdsRebarTypes {
     /** 부재 ID 문자열을 키로 갖는 맵 */
     Assign: JsonObject;
     /** 주철근 규격 · 19종 (D4 ~ D57) */
-    MAIN_REBAR: "D4" | "D5" | "D6" | "D7" | "D8";
+    MAIN_REBAR: string;
     /** 띠철근/나선철근 규격 · 19종 (D4 ~ D57) */
-    TIES_SPIRALS: "D4" | "D5" | "D6" | "D7" | "D8";
+    TIES_SPIRALS: string;
     /** 띠철근 다리 수 (local Y) · 2 ~ 20 */
     ARRANGEMENT_Y: number;
     /** 띠철근 다리 수 (local Z) · 2 ~ 20 */
