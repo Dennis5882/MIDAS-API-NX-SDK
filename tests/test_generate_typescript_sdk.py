@@ -228,3 +228,18 @@ def test_conflicting_legacy_payload_aliases_receive_distinct_contract_types():
     rendered = generator._render_types(modules, type_keys, contract_types, supplemental)
     assert "export interface RailwayDynamicFactorPayload" in rendered
     assert "export interface RailwayDynamicFactorByElementPayload" in rendered
+
+
+def test_a_contract_with_unmerged_tables_does_not_become_a_payload_type():
+    """/db/THIK is contracted, and its payload still comes from the fallback.
+
+    Its manual section has one variant table nobody could merge, so the
+    contract records the gap instead of claiming a complete field list.
+    Generating a published payload type from that list would narrow
+    ThicknessPayload onto fields the manual documents elsewhere, and break
+    callers who set them.
+    """
+    fields = generator._contract_payload_fields()
+
+    assert "/db/THIK" not in fields
+    assert "/db/BODF" in fields, "an unqualified contract must still supply its payload"

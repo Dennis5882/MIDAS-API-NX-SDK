@@ -319,6 +319,27 @@ def _non_db_delete_response_unknown(text: str) -> str:
     return _DELETE_BLOCK.sub(replace, text)
 
 
+def _with_resolution(text: str, resolution: str) -> str:
+    """Write `resolution` onto every unmergedTables entry that lacks one.
+
+    Drafts are regenerated build output, so a reviewer cannot hand-edit one
+    to record this. They pass it at promotion time instead and it lands in
+    the contract.
+    """
+    out: list[str] = []
+    inside = False
+    for line in text.splitlines():
+        stripped = line.strip()
+        if stripped == "unmergedTables:":
+            inside = True
+        elif inside and line and not line.startswith(("    ", "\t")):
+            inside = False
+        out.append(line)
+        if inside and stripped.startswith("- heading:"):
+            out.append(f"      resolution: {json.dumps(resolution, ensure_ascii=False)}")
+    return "\n".join(out) + ("\n" if text.endswith("\n") else "")
+
+
 def promote(
     slug: str,
     coverage: dict[str, dict],
@@ -326,6 +347,7 @@ def promote(
     resources: dict[str, ResourceEndpoint],
     dry_run: bool,
     candidate: Optional[str] = None,
+    resolution: Optional[str] = None,
 ) -> Optional[str]:
     """Return the record id this promotion needs, or None if it was refused."""
     draft_path = DRAFTS / f"{slug}.yaml"
@@ -379,8 +401,28 @@ def promote(
     # the conditional-variant blocker.  Parsing YAML avoids a comment or a
     # prose mention accidentally changing promotion behaviour.
     extraction = draft_data.get("extraction", {}) if isinstance(draft_data, dict) else {}
-    if extraction.get("unmergedTables"):
-        print(f"  {slug}: refused - the section has conditional variant tables nobody has merged")
+    # An endpoint whose manual names no wire discriminator for one of its
+    # tables can still have a contract - having one beats being absent from
+    # the source of truth. What it may not do is pretend the gap is not
+    # there: every entry has to say what review decided, and while any is
+    # present the npm generator will not take this field list as a payload.
+    for table in extraction.get("unmergedTables") or []:
+        if resolution and not str(table.get("resolution") or "").strip():
+            table["resolution"] = resolution
+    if resolution:
+        text = _with_resolution(text, resolution)
+        draft_data = yaml.safe_load(text)
+        extraction = draft_data.get("extraction", {})
+    unresolved = [
+        table for table in extraction.get("unmergedTables") or []
+        if not str(table.get("resolution") or "").strip()
+    ]
+    if unresolved:
+        headings = ", ".join(str(t.get("heading", "?"))[:40] for t in unresolved[:2])
+        print(
+            f"  {slug}: refused - {len(unresolved)} unmerged variant table(s) with no "
+            f"`resolution` saying what review decided ({headings})"
+        )
         return None
     if "TODO(review): the manual did not" in text:
         print(f"  {slug}: refused - the manual leaves a field's type or requiredness unstated")
@@ -522,6 +564,12 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--all", action="store_true", help="promote every draft that qualifies")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
+        "--resolution",
+        help="what review decided about this draft's unmerged variant tables; "
+        "recorded on every one of them. 'The manual names no wire discriminator' "
+        "is a legitimate answer - the point is to say so, not to have solved it.",
+    )
+    parser.add_argument(
         "--from-manual",
         action="store_true",
         help="render named sections in memory from the manual; never update contracts/drafts",
@@ -572,7 +620,9 @@ def main(argv: list[str]) -> int:
     promoted = 0
     for slug in slugs:
         candidate = candidates.get(slug)
-        record = promote(slug, coverage, functions, resources, args.dry_run, candidate)
+        record = promote(
+            slug, coverage, functions, resources, args.dry_run, candidate, args.resolution
+        )
         if record is None:
             continue
         promoted += 1

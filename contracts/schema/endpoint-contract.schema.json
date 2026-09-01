@@ -449,10 +449,15 @@
         },
         "unmergedTables": {
           "type": "array",
-          "description": "Parameter tables in the same section that were NOT merged, usually conditional variants selected by a type or code field. Listed rather than merged or dropped: a partial field list presented as complete is its own kind of wrong answer.",
+          "description": "Parameter tables in the same section that were NOT merged, usually conditional variants selected by a type or code field. Listed rather than merged or dropped: a partial field list presented as complete is its own kind of wrong answer. A contract may carry these and still be promoted, but every entry needs a `resolution` saying what review decided - and while any are present the npm generator does not take this contract's field list as the published payload type, because narrowing a shipped type on an admittedly incomplete field list is exactly the wrong answer.",
           "items": {
             "type": "object",
             "additionalProperties": false,
+            "required": [
+              "heading",
+              "line",
+              "resolution"
+            ],
             "properties": {
               "heading": {
                 "type": "string"
@@ -465,7 +470,7 @@
               },
               "resolution": {
                 "type": "string",
-                "description": "What review decided about this table: merged into fields, modelled as nested properties, split into its own contract, or deliberately out of scope."
+                "description": "What review decided about this table: merged into fields, modelled as nested properties, split into its own contract, or deliberately out of scope because the manual names no wire discriminator. Required on a promoted contract: an unexplained gap is indistinguishable from an overlooked one."
               }
             }
           }

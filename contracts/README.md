@@ -104,6 +104,21 @@ splits `TYPE="FUNC"` by whether concrete data is used - in both the second
 selector is real but the manual never names it as a wire field. Those stay
 unmerged. A discriminator that is not written down cannot be transcribed.
 
+**An unmerged table no longer blocks the contract.** The manual is not perfect
+and neither is the product, so a contract that says "these fields, and one table
+I could not model" is more useful than no contract at all. Record each such
+table under `extraction.unmergedTables` with a `resolution` - "the manual names
+no wire discriminator; left unmerged" is a legitimate one, the point is to say
+so rather than to have solved it. `promote_contract.py --resolution` writes it,
+because drafts are regenerated build output and cannot be hand-edited.
+
+What such a contract may **not** do is narrow a published type. While any
+`unmergedTables` entry is present the npm generator ignores this contract's
+field list and keeps the reviewed fallback payload, so promoting an incomplete
+contract never breaks a caller who sets a field from the table nobody merged.
+Everything else - products, methods, risk, `sdkRules` - is owned by the contract
+as usual.
+
 ## One route, several manual sections
 
 An endpoint can be documented more than once. The RC and SRC design chapters

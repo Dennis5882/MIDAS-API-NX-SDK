@@ -445,7 +445,17 @@ def _contract_payload_fields() -> dict[str, dict[str, Any]]:
     found: dict[str, dict[str, Any]] = {}
     for path in sorted(contract_dir.glob("*.yaml")):
         contract = yaml.safe_load(path.read_text(encoding="utf-8"))
-        if _is_contract_shadow_resource(contract.get("endpoint", "")) and contract.get("fields"):
+        # A contract carrying unmergedTables knows it is incomplete: the manual
+        # names no wire discriminator for one of its tables. Its field list is
+        # still worth having in the source of truth, but narrowing a published
+        # payload type onto an admittedly partial list would break callers who
+        # set a field the manual documents in the table nobody could merge.
+        unmerged = (contract.get("extraction") or {}).get("unmergedTables")
+        if (
+            _is_contract_shadow_resource(contract.get("endpoint", ""))
+            and contract.get("fields")
+            and not unmerged
+        ):
             found[contract["endpoint"]] = {
                 "fields": contract["fields"],
                 "variants": contract.get("variants", []),
