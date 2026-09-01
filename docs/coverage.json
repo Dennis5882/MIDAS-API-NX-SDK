@@ -2011,13 +2011,13 @@
       "status": "implemented",
       "module": "midas_nx.db.boundary",
       "live_verified": {
-        "date": "2026-08-27",
+        "date": "2026-09-01",
         "products": [
           "gen"
         ],
-        "method": "2026-08-16: write-round-trip attempted (batch 6) -- POST fails \"Wrong Field\" on both Gen NX and Civil NX (v2.1/v2.2, build 08/14/2026) even with the manual's own literal worked example; not resolved as a fixture problem at the time. Root-caused 2026-08-27: the manual's own Specifications table (article id 35948292269977) was missing P1/P2/ALPHA1/ALPHA2/BETA/Phi/LAMBDA -- the 2026-08-16 worked example never sent them, hence \"Wrong Field\". Retested on Gen NX with the full field set from the re-verified manual: POST/GET/DELETE round trip via midas_nx.db.boundary.SeismicDeviceHystereticIsolator succeeded and GET read the stored values back; record deleted after. Civil NX not reachable this session -- level bumped for Gen only.",
+        "method": "2026-08-16: write-round-trip attempted (batch 6) -- POST fails \"Wrong Field\" on both Gen NX and Civil NX (v2.1/v2.2, build 08/14/2026) even with the manual's own literal worked example; not resolved as a fixture problem at the time. Root-caused 2026-08-27: the manual's own Specifications table (article id 35948292269977) was missing P1/P2/ALPHA1/ALPHA2/BETA/Phi/LAMBDA -- the 2026-08-16 worked example never sent them, hence \"Wrong Field\". Re-run 2026-09-01 with the complete current manual example through scripts/live_crud_check.py --tier extras6: Gen passed POST->GET->PUT->GET->DELETE(id)->GET and persisted K0 5000->6000. Civil is not a declared product for this endpoint, so level remains Gen-only write.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026"
         },
         "level": "write",
         "outcome": "success"
@@ -2033,7 +2033,7 @@
       "status": "implemented",
       "module": "midas_nx.db.boundary",
       "live_verified": {
-        "date": "2026-08-31",
+        "date": "2026-09-01",
         "products": [
           "gen"
         ],
@@ -3966,15 +3966,15 @@
       "status": "implemented",
       "module": "midas_nx.db.construction_stage",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-09-01",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too.",
+        "method": "2026-09-01: manual-backed scratch-model write probe on both products: created the documented minimum construction stage, then posted the documented CSCS body with the base section. Both correctly rejected it at Section Type because CSCS requires a COMPOSITE section. The manual's COMPOSITE/SOD_BOX example omits the dimensions required to create a valid section; Gen rejects that example with \"Section Dimensions has(have) been incorrectly entered.\" No dimensions were invented, so CSCS remains read-level pending a complete manual fixture or live product evidence.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -4144,12 +4144,13 @@
           "gen",
           "civil"
         ],
-        "method": "2026-08-17: write attempt fails live on both products (batch 11c) with \"[Error] The element no. 1 is an element type in which Element Convection Boundary cannot be entered.\" -- same failure shape as /db/HAHS (batch 10): likely needs a real SOLID element for heat-of-hydration, which this fixture's frame/plate base model doesn't build. ITEMS[0].ID=1 lines up with \"element no. 1\" in the error despite the manual describing ID as a plain serial number, not an element reference -- untested against a real SOLID element or a different ID value.",
+        "method": "2026-09-01: full write round trip confirmed on both products using scripts/live_crud_check.py --tier extras11. The dummy model follows the manual's eight-node SOLID form, activates it through a real structure group and construction stage, and keeps ITEMS[].ID=1 as the manual's serial number. POST->GET->PUT->GET->DELETE(id)->GET persisted FACE_NO 1->2.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
-        "level": "read"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -4163,15 +4164,15 @@
       "status": "implemented",
       "module": "midas_nx.db.construction_stage",
       "live_verified": {
-        "date": "2026-08-17",
+        "date": "2026-09-01",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "2026-08-17: write-round-trip confirmed live (batch 11c), both products. docs/coverage.json/live_crud_check.py extras11 tier. Keyed by construction stage number, not element/node id, per the manual's own note; the manual's worked example uses a made-up GROUP_NAME (\"BG_BASE\") -- used a real /db/BNGR group from the start instead.",
+        "method": "2026-08-17: write-round-trip confirmed live (batch 11c), both products. Reconfirmed 2026-09-01 through scripts/live_crud_check.py --tier extras11 with a real construction stage and boundary group: POST->GET->PUT->GET->DELETE(id)->GET persisted TEMPER 15->20. Keyed by construction stage number, not element/node id, per the manual's own note; the manual's worked example uses a made-up GROUP_NAME (\"BG_BASE\") -- used a real /db/BNGR group from the start instead.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
         "level": "write",
         "outcome": "success_empty"
@@ -4218,13 +4219,13 @@
           "gen",
           "civil"
         ],
-        "method": "2026-08-17: write-round-trip attempted (batch 10) -- POST rejects every element type the base seed model has (a frame element and a PLATE), both answering \"[Error] The element no. N is an element type in which Heat Source Assignment cannot be entered.\" on both Civil NX and Gen NX. Heat-of-hydration is normally applied to SOLID elements (mass concrete piers/footings), which this fixture doesn't build -- likely a scope gap (no SOLID geometry available) rather than a confirmed product defect; untested against a real SOLID element. Left at level: read.",
+        "method": "2026-09-01: full write round trip confirmed on both products using scripts/live_crud_check.py --tier extras10. The dummy model follows the manual's eight-node SOLID form at element 50; POST->GET->PUT->GET->DELETE(id)->GET persisted FUNC_NAME HSFC_SEED->HSFC_SEED_2.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -4238,15 +4239,15 @@
       "status": "implemented",
       "module": "midas_nx.db.construction_stage",
       "live_verified": {
-        "date": "2026-08-17",
+        "date": "2026-09-01",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "2026-08-17: write-round-trip attempted (batch 10) -- fails on both products with \"Wrong Key\" specifically on the ITEMS field (every other field succeeds individually, each answering the normal \"Wrong Field\" for an incomplete payload). Tried real frame node ids, real plate node ids, and a single node -- all still \"Wrong Key\". Live /info's own schema says ITEMS is a plain integer array matching what was sent. Also tried the undocumented START_STAGE/END_STAGE string fields /info reveals (absent from the manual) both empty and omitted -- no change. Not resolved as a fixture problem. Left at level: read.",
+        "method": "2026-08-17: write-round-trip attempted (batch 10) -- fails on both products with \"Wrong Key\" specifically on the ITEMS field (every other field succeeds individually, each answering the normal \"Wrong Field\" for an incomplete payload). Tried real frame node ids, real plate node ids, and a single node -- all still \"Wrong Key\". Live /info's own schema says ITEMS is a plain integer array matching what was sent. Also tried the undocumented START_STAGE/END_STAGE string fields /info reveals (absent from the manual) both empty and omitted -- no change. Re-tested 2026-09-01 on both current builds using an official-manual-shaped 8-node hexahedral SOLID dummy model: its 8-node list, the manual example's 6-node length, and shorter 4/2-node lists all return the identical Wrong Key. Not resolved as a fixture problem. Left at level: read.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
         "level": "read",
         "outcome": "success_empty"
@@ -4897,15 +4898,15 @@
       "status": "implemented",
       "module": "midas_nx.db.analysis_control",
       "live_verified": {
-        "date": "2026-08-17",
+        "date": "2026-09-01",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "2026-08-17: write attempt fails live on both products (batch 11). Civil NX: once a real construction stage exists, /db/STCT already holds an auto-populated default record at id 1 -- POST answers \"Key Already Exist\"; DELETE separately answers \"cannot be deleted when the Construction Stage is registered\". A manual PUT succeeds and echoes iITER/TOL correctly, but a follow-up GET drops both fields entirely. Gen NX: no pre-existing record, so POST itself succeeds, but the identical iITER/TOL silent-drop reproduces on the first GET after create. Every other field in the manual's own worked example payload persists correctly on both products -- only the two Linear-analysis-specific fields silently fail to round-trip, plausibly because iNLA_TYPE=1 (Accumulative) makes the server treat them as inapplicable without saying so.",
+        "method": "2026-09-01: re-tested from a real scratch construction-stage model with the manual's actual Linear + Independent branch (iINC_NLA=0, iNLA_TYPE=0). Civil still auto-creates and locks id 1 when a stage exists; PUT echoes iITER/TOL but GET omits both. Gen POST echoes them but the first GET also omits both. This rules out the former Linear+Accumulative branch mismatch: the documented branch itself silently loses both fields on both products.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
         "level": "read"
       }

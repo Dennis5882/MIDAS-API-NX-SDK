@@ -117,18 +117,20 @@ def test_live_case_fixture_carries_wall_mark_plate_setup() -> None:
     }
 
 
-def test_live_case_fixture_carries_manual_sdis_lrb_shape() -> None:
+def test_live_case_fixture_carries_manual_sdis_sld_shape() -> None:
     cases = json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
     sdis = next(case for case in cases if case["endpoint"] == "/db/SDIS")
-    lrb = sdis["createPayload"]["LRB"]
+    payload = sdis["createPayload"]
 
-    assert lrb["K0"] == 20000
-    assert lrb["DX"] == {
-        "OPT_CONS_NONL": False,
-        "BETA": 0.1,
-        "ALPHA": 0.5,
-        "SIGMA_V": 3000,
+    assert payload["SDIS_DEV_TYPE"] == "SLD"
+    assert payload["SB"] == {
+        "AS": 0.05,
+        "K0": 100000,
+        "QD": 2,
+        "Pi_VALUE": 0,
+        "MU0": 0.05,
     }
+    assert sdis["confirmed"] is True
 
 
 def test_live_case_fixture_carries_manual_sdst_bl2_shape() -> None:

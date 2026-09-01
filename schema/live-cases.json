@@ -5661,7 +5661,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "COMMON": {
           "NAME": "SDHY_CRUD",
@@ -5673,7 +5673,14 @@
         },
         "SDHY_HYS_MODEL": "DegradingBiLinear",
         "MSS": 8,
-        "K0": 5000
+        "K0": 5000,
+        "P1": 100,
+        "P2": 0,
+        "ALPHA1": 1,
+        "ALPHA2": 0,
+        "BETA": 0.5,
+        "Phi": 0,
+        "LAMBDA": 8
       },
       "updatePayload": {
         "COMMON": {
@@ -5686,7 +5693,14 @@
         },
         "SDHY_HYS_MODEL": "DegradingBiLinear",
         "MSS": 8,
-        "K0": 6000
+        "K0": 6000,
+        "P1": 100,
+        "P2": 0,
+        "ALPHA1": 1,
+        "ALPHA2": 0,
+        "BETA": 0.5,
+        "Phi": 0,
+        "LAMBDA": 8
       },
       "expected": {
         "created": 5000,
@@ -5710,35 +5724,27 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "COMMON": {
           "NAME": "SDIS_CRUD",
           "DESC": "",
           "INPUT_METHOD": 0,
           "COMPANY": "",
-          "PRODUCT_NAME": "LRB-500",
-          "TYPE_NUMBER": "LRB500-A"
+          "PRODUCT_NAME": "",
+          "TYPE_NUMBER": ""
         },
-        "SDIS_DEV_TYPE": "LRB",
+        "SDIS_DEV_TYPE": "SLD",
         "MSS": 8,
         "TAU_K": 1.0,
         "TAU_Q": 1.0,
         "KV": 150000,
-        "LRB": {
-          "SDIS_HYS_MODEL": "BiLinear",
-          "AR": 0.196,
-          "TR": 0.15,
-          "KE": 20000,
-          "K0": 20000,
-          "K2": 2000,
-          "QD": 80,
-          "DX": {
-            "OPT_CONS_NONL": false,
-            "BETA": 0.1,
-            "ALPHA": 0.5,
-            "SIGMA_V": 3000
-          }
+        "SB": {
+          "AS": 0.05,
+          "K0": 100000,
+          "QD": 2,
+          "Pi_VALUE": 0,
+          "MU0": 0.05
         }
       },
       "updatePayload": {
@@ -5747,28 +5753,20 @@
           "DESC": "",
           "INPUT_METHOD": 0,
           "COMPANY": "",
-          "PRODUCT_NAME": "LRB-500",
-          "TYPE_NUMBER": "LRB500-A"
+          "PRODUCT_NAME": "",
+          "TYPE_NUMBER": ""
         },
-        "SDIS_DEV_TYPE": "LRB",
+        "SDIS_DEV_TYPE": "SLD",
         "MSS": 8,
         "TAU_K": 1.0,
         "TAU_Q": 1.0,
         "KV": 160000,
-        "LRB": {
-          "SDIS_HYS_MODEL": "BiLinear",
-          "AR": 0.196,
-          "TR": 0.15,
-          "KE": 20000,
-          "K0": 20000,
-          "K2": 2000,
-          "QD": 80,
-          "DX": {
-            "OPT_CONS_NONL": false,
-            "BETA": 0.1,
-            "ALPHA": 0.5,
-            "SIGMA_V": 3000
-          }
+        "SB": {
+          "AS": 0.05,
+          "K0": 100000,
+          "QD": 2,
+          "Pi_VALUE": 0,
+          "MU0": 0.05
         }
       },
       "expected": {
@@ -7451,7 +7449,7 @@
       "tier": "extras10",
       "endpoint": "/db/HAHS",
       "name": "Assign Heat Source",
-      "id": 4,
+      "id": 50,
       "products": [
         "gen",
         "civil"
@@ -7462,7 +7460,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "FUNC_NAME": "HSFC_SEED"
       },
@@ -7474,7 +7472,8 @@
         "updated": "HSFC_SEED_2"
       },
       "needs": [
-        "hsfc_seed"
+        "hsfc_seed",
+        "solid10_seed"
       ],
       "setup": [],
       "crashes": null
@@ -7667,14 +7666,9 @@
         "bLAST_FINAL": false,
         "FINAL_STAGE": "CS_SEED",
         "iINC_NLA": 0,
-        "iNLA_TYPE": 1,
+        "iNLA_TYPE": 0,
         "iITER": 30,
         "TOL": 0.01,
-        "bINC_TDE": true,
-        "bCNS": true,
-        "TYPE": "BOTH",
-        "iITER_CR": 5,
-        "TOL_CR": 0.01,
         "CPFC": "EXTERNAL",
         "bCONV": true,
         "bTRUSS": true,
@@ -7686,14 +7680,9 @@
         "bLAST_FINAL": false,
         "FINAL_STAGE": "CS_SEED",
         "iINC_NLA": 0,
-        "iNLA_TYPE": 1,
+        "iNLA_TYPE": 0,
         "iITER": 50,
         "TOL": 0.01,
-        "bINC_TDE": true,
-        "bCNS": true,
-        "TYPE": "BOTH",
-        "iITER_CR": 5,
-        "TOL_CR": 0.01,
         "CPFC": "EXTERNAL",
         "bCONV": true,
         "bTRUSS": true,
@@ -7706,7 +7695,7 @@
         "updated": 50
       },
       "needs": [
-        "stage_1"
+        "stage11_seed"
       ],
       "setup": [],
       "crashes": null
@@ -7726,7 +7715,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "ITEMS": [
           {
@@ -7754,8 +7743,9 @@
         "updated": 2
       },
       "needs": [
-        "stage_1",
-        "hecb_seed"
+        "stage11_seed",
+        "hecb_seed",
+        "solid11_seed"
       ],
       "setup": [],
       "crashes": null
@@ -7799,7 +7789,7 @@
         "updated": 20.0
       },
       "needs": [
-        "stage_1",
+        "stage11_seed",
         "hecb_seed"
       ],
       "setup": [],

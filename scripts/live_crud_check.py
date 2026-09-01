@@ -610,6 +610,45 @@ def _seed_model(client: MidasClient) -> None:
     SelfWeight.create({1: {"LCNAME": "DL", "FV": [0, 0, -1]}}, client=client)
 
 
+def _seed_hexahedral_solid(
+    client: MidasClient, *, node_start: int, element_id: int,
+    replace_existing: bool = False,
+) -> None:
+    """Create an isolated eight-node SOLID element for hydration fixtures.
+
+    The official /db/ELEM manual explicitly documents ``SOLID`` as an
+    eight-node hexahedral element with ``MATL``, ``SECT: 0``, and eight node
+    ids.  Keep it out of the baseline model: only hydration cases need this
+    geometry, and a case must never delete another case's prerequisite.
+    """
+    x0 = 10.0 + float(element_id)
+    nodes = {
+        node_start: {"X": x0, "Y": 0.0, "Z": 0.0},
+        node_start + 1: {"X": x0 + 1.0, "Y": 0.0, "Z": 0.0},
+        node_start + 2: {"X": x0 + 1.0, "Y": 1.0, "Z": 0.0},
+        node_start + 3: {"X": x0, "Y": 1.0, "Z": 0.0},
+        node_start + 4: {"X": x0, "Y": 0.0, "Z": 1.0},
+        node_start + 5: {"X": x0 + 1.0, "Y": 0.0, "Z": 1.0},
+        node_start + 6: {"X": x0 + 1.0, "Y": 1.0, "Z": 1.0},
+        node_start + 7: {"X": x0, "Y": 1.0, "Z": 1.0},
+    }
+    Node.create(nodes, client=client)
+    if replace_existing:
+        # extras11 models a hydration-only document inside the shared
+        # throwaway baseline. HECB's documented ITEMS[].ID is a serial number;
+        # replacing its first frame element makes serial 1 unambiguously refer
+        # to this documented SOLID, rather than interpreting 51 as an element
+        # reference from the earlier error message.
+        Element.delete([element_id], client=client)
+    Element.create(
+        {element_id: {
+            "TYPE": "SOLID", "MATL": 1, "SECT": 0,
+            "NODE": list(range(node_start, node_start + 8)),
+        }},
+        client=client,
+    )
+
+
 def _no_seeds() -> List[SeedStep]:
     """Tiers that need nothing beyond the base model."""
     return []
@@ -2246,36 +2285,38 @@ def _extras6_cases() -> List[Case]:
             {"COMMON": {"NAME": "SDHY_CRUD", "DESC": "", "INPUT_METHOD": 0,
                         "COMPANY": "", "PRODUCT_NAME": "HI-500",
                         "TYPE_NUMBER": "HI500-A"},
-             "SDHY_HYS_MODEL": "DegradingBiLinear", "MSS": 8, "K0": 5000},
+             "SDHY_HYS_MODEL": "DegradingBiLinear", "MSS": 8, "K0": 5000,
+             "P1": 100, "P2": 0, "ALPHA1": 1, "ALPHA2": 0, "BETA": 0.5,
+             "Phi": 0, "LAMBDA": 8},
             {"COMMON": {"NAME": "SDHY_CRUD", "DESC": "", "INPUT_METHOD": 0,
                         "COMPANY": "", "PRODUCT_NAME": "HI-500",
                         "TYPE_NUMBER": "HI500-A"},
-             "SDHY_HYS_MODEL": "DegradingBiLinear", "MSS": 8, "K0": 6000},
+             "SDHY_HYS_MODEL": "DegradingBiLinear", "MSS": 8, "K0": 6000,
+             "P1": 100, "P2": 0, "ALPHA1": 1, "ALPHA2": 0, "BETA": 0.5,
+             "Phi": 0, "LAMBDA": 8},
             lambda p: p.get("K0"), 5000, 6000,
-            products=("gen",),
+            products=("gen",), confirmed=True,
         ),
         Case(
             SeismicDeviceIsolator,
+            # The manual's literal SLD worked example is a proven branch on
+            # Gen.  The LRB branch below the same endpoint remains a separate
+            # documented-but-unresolved product finding, so it must not make
+            # this endpoint-level public CRUD fixture perpetually fail.
             {"COMMON": {"NAME": "SDIS_CRUD", "DESC": "", "INPUT_METHOD": 0,
-                        "COMPANY": "", "PRODUCT_NAME": "LRB-500",
-                        "TYPE_NUMBER": "LRB500-A"},
-             "SDIS_DEV_TYPE": "LRB", "MSS": 8, "TAU_K": 1.0, "TAU_Q": 1.0,
+                        "COMPANY": "", "PRODUCT_NAME": "", "TYPE_NUMBER": ""},
+             "SDIS_DEV_TYPE": "SLD", "MSS": 8, "TAU_K": 1.0, "TAU_Q": 1.0,
              "KV": 150000,
-             "LRB": {"SDIS_HYS_MODEL": "BiLinear", "AR": 0.196, "TR": 0.15,
-                      "KE": 20000, "K0": 20000, "K2": 2000, "QD": 80,
-                      "DX": {"OPT_CONS_NONL": False, "BETA": 0.1,
-                             "ALPHA": 0.5, "SIGMA_V": 3000}}},
+             "SB": {"AS": 0.05, "K0": 100000, "QD": 2, "Pi_VALUE": 0,
+                    "MU0": 0.05}},
             {"COMMON": {"NAME": "SDIS_CRUD", "DESC": "", "INPUT_METHOD": 0,
-                        "COMPANY": "", "PRODUCT_NAME": "LRB-500",
-                        "TYPE_NUMBER": "LRB500-A"},
-             "SDIS_DEV_TYPE": "LRB", "MSS": 8, "TAU_K": 1.0, "TAU_Q": 1.0,
+                        "COMPANY": "", "PRODUCT_NAME": "", "TYPE_NUMBER": ""},
+             "SDIS_DEV_TYPE": "SLD", "MSS": 8, "TAU_K": 1.0, "TAU_Q": 1.0,
              "KV": 160000,
-             "LRB": {"SDIS_HYS_MODEL": "BiLinear", "AR": 0.196, "TR": 0.15,
-                      "KE": 20000, "K0": 20000, "K2": 2000, "QD": 80,
-                      "DX": {"OPT_CONS_NONL": False, "BETA": 0.1,
-                             "ALPHA": 0.5, "SIGMA_V": 3000}}},
+             "SB": {"AS": 0.05, "K0": 100000, "QD": 2, "Pi_VALUE": 0,
+                    "MU0": 0.05}},
             lambda p: p.get("KV"), 150000, 160000,
-            products=("gen",),
+            products=("gen",), confirmed=True,
         ),
     ]
 
@@ -2890,6 +2931,8 @@ def _extras10_seeds() -> List[SeedStep]:
             {90: {"NAME": "HSFC_SEED", "TYPE": "CONST", "TEMP_CONST": 10},
              91: {"NAME": "HSFC_SEED_2", "TYPE": "CONST", "TEMP_CONST": 15}},
             client=c)),
+        SeedStep("solid10_seed", lambda c: _seed_hexahedral_solid(
+            c, node_start=30, element_id=50)),
     ]
 
 
@@ -2917,24 +2960,16 @@ def _extras10_cases() -> List[Case]:
             lambda p: p.get("TEMP_CONST"), 10, 25,
             item_id=92, needs=("hsfc_seed",), confirmed=True,
         ),
-        # ⚠️ Keyed by element id. Confirmed live 2026-08-16 (Civil NX
-        # v2.2, build 08/14/2026) that Heat Source Assignment rejects both
-        # element types the base seed model has: a frame element (id 1)
-        # and a PLATE (id 4), both with "[Error] The element no. N is an
-        # element type in which Heat Source Assignment cannot be
-        # entered." Heat-of-hydration is normally applied to mass
-        # concrete (piers, footings) modelled as SOLID elements, which
-        # this base model doesn't build -- likely a scope gap in this
-        # fixture (no SOLID geometry available), not necessarily a
-        # product defect; untested against a real SOLID element. FUNC_NAME
-        # would switch from hsfc_seed's first function to its second on
-        # update, once a SOLID element is available to key this on.
+        # Keyed by element id. A minimal, documented 8-node hexahedral SOLID
+        # at element 50 is the real target; a beam and a plate were both
+        # correctly rejected in the first attempt. Confirmed full CRUD on
+        # Gen NX v2.1 and Civil NX v2.2, build 08/26/2026.
         Case(
             AssignHeatSource,
             {"FUNC_NAME": "HSFC_SEED"},
             {"FUNC_NAME": "HSFC_SEED_2"},
             lambda p: p.get("FUNC_NAME"), "HSFC_SEED", "HSFC_SEED_2",
-            item_id=4, needs=("hsfc_seed",),
+            item_id=50, needs=("hsfc_seed", "solid10_seed"), confirmed=True,
         ),
         # ⚠️ Confirmed failing live 2026-08-16 (Civil NX v2.2, build
         # 08/14/2026) with "Wrong Key" -- a different error class than
@@ -2991,18 +3026,45 @@ def _extras10_cases() -> List[Case]:
 
 
 def _extras11_seeds() -> List[SeedStep]:
-    """HECB/HSPT need a real /db/BNGR boundary group plus, for HECB, real
-    /db/CCFC and /db/ETFC function names -- same "use real names from the
-    start" lesson as /db/BCCT's bngr_seed and /db/HSTG's groups10."""
+    """HECB/HSPT need their own stage, real names, and a real SOLID element.
+
+    This tier is runnable alone, so it builds its own first construction
+    stage and replaces the otherwise-frame element 1 only inside its
+    throwaway model.
+    """
     def _hecb_seed(c: MidasClient) -> None:
         BoundaryGroup.create({11: {"NAME": "BG11_SEED"}}, client=c)
+        StructureGroup.create(
+            {11: {"NAME": "SG11_SEED", "P_TYPE": 0, "E_LIST": [1]}},
+            client=c,
+        )
         ConvectionCoefficientFunction.create(
             {11: {"NAME": "CC11_SEED", "TYPE": "CONST", "COEF": 15}}, client=c)
         AmbientTemperatureFunction.create(
             {11: {"NAME": "AT11_SEED", "TYPE": "CONST", "TEMP": 20}}, client=c)
 
+    def _stage11_seed(c: MidasClient) -> None:
+        # A full run has already created the shared stage-1 record. A direct
+        # extras11 run has not, so create the same documented minimum only
+        # when it is absent. This keeps the tier independently runnable
+        # without making a complete run fail on a duplicate seed.
+        stages = ConstructionStage.get(client=c).get("STAG", {})
+        if "1" in stages:
+            return
+        ConstructionStage.create(
+            {1: {"NAME": "CS_SEED", "DURATION": 5, "bSV_RSLT": True,
+                 "bSV_STEP": False, "bLOAD_STEP": False, "ADD_STEP": [],
+                 "ACT_ELEM": [{"GRUP_NAME": "SG11_SEED", "AGE": 0}],
+                 "ACT_BNGR": [{"BNGR_NAME": "BG11_SEED", "POS": "DEFORMED"}],
+                 "ACT_LOAD": []}},
+            client=c,
+        )
+
     return [
+        SeedStep("solid11_seed", lambda c: _seed_hexahedral_solid(
+            c, node_start=40, element_id=1, replace_existing=True)),
         SeedStep("hecb_seed", _hecb_seed),
+        SeedStep("stage11_seed", _stage11_seed),
     ]
 
 
@@ -3012,9 +3074,7 @@ def _extras11_cases() -> List[Case]:
     missing -- ACTL-M1/EIGV-M1/HHCT-M1/NLCT-M1/STCT-M1/BCGD-M1/BCGA-M1 are
     Hyper-S/-M1, MVCTch/id/bs/tr are large country-specific field sets --
     stay deferred per the extras8 docstring). Needs a real construction
-    stage name, which the "stage" tier's own "stage_1" seed already
-    creates as "CS_SEED" -- this tier must run after "stage" in the same
-    session for `needs=("stage_1",)` to resolve.
+    stage name, created by this tier as ``CS_SEED``.
 
     The manual's own worked example uses a made-up stage name ("CS1"),
     same class of mistake as /db/BCCT's "BG1"/"BG2" -- swapped for the
@@ -3040,53 +3100,42 @@ def _extras11_cases() -> List[Case]:
     Every other field in this payload (FINAL_STAGE, CPFC, bCONV/bTRUSS/
     bBEAM, bCAMBER, bCHANGE_CABLE, iNLA_TYPE, bINC_TDE, bCNS, TYPE,
     iITER_CR, TOL_CR) persists correctly on both products -- only the two
-    Linear-analysis-specific fields (iITER, TOL) are silently dropped,
-    plausibly because iNLA_TYPE=1 (Accumulative) makes the server treat
-    them as inapplicable without saying so. Left as a genuine finding
-    rather than switched to a Linear+Independent payload, since the
-    manual's own worked example is the Accumulative combination tested
-    here.
+    Linear-analysis-specific fields (iITER, TOL) are silently dropped. A
+    2026-09-01 re-test used their actual documented branch, Linear plus
+    Independent (iINC_NLA=0, iNLA_TYPE=0), and reproduced the same loss on
+    both current products. The fixture therefore models that branch directly
+    instead of hiding the defect behind an invalid branch combination.
     """
     return [
         Case(
             ConstructionStageAnalysisControlData,
             {"bLAST_FINAL": False, "FINAL_STAGE": "CS_SEED",
-             "iINC_NLA": 0, "iNLA_TYPE": 1,
+             "iINC_NLA": 0, "iNLA_TYPE": 0,
              "iITER": 30, "TOL": 0.01,
-             "bINC_TDE": True, "bCNS": True, "TYPE": "BOTH",
-             "iITER_CR": 5, "TOL_CR": 0.01,
              "CPFC": "EXTERNAL",
              "bCONV": True, "bTRUSS": True, "bBEAM": True,
              "bCHANGE_CABLE": True, "bCAMBER": True},
             {"bLAST_FINAL": False, "FINAL_STAGE": "CS_SEED",
-             "iINC_NLA": 0, "iNLA_TYPE": 1,
+             "iINC_NLA": 0, "iNLA_TYPE": 0,
              "iITER": 50, "TOL": 0.01,
-             "bINC_TDE": True, "bCNS": True, "TYPE": "BOTH",
-             "iITER_CR": 5, "TOL_CR": 0.01,
              "CPFC": "EXTERNAL",
              "bCONV": True, "bTRUSS": True, "bBEAM": True,
              "bCHANGE_CABLE": True, "bCAMBER": True},
             lambda p: p.get("iITER"), 30, 50,
-            item_id=1, needs=("stage_1",),
+            item_id=1, needs=("stage11_seed",),
         ),
-        # batch 11c: HECB/HSPT, keyed by construction stage *number* (not
-        # element/node id -- "Assign의 키(ID)는 시공단계 번호입니다" per the
-        # manual's own note on both). item_id=1 is stage_1's "CS_SEED".
+        # batch 11c: HECB/HSPT are keyed by construction-stage number as the
+        # manual says. item_id=1 is this tier's real ``CS_SEED``.
         # The manual's own worked examples use made-up group/function names
         # ("BG_SURF", "CC_Standard", "AT_Summer") -- swapped for hecb_seed's
         # real ones from the start, same lesson as /db/BCCT.
         #
-        # ⚠️ Confirmed failing live 2026-08-17 on both products with
-        # "[Error] The element no. 1 is an element type in which Element
-        # Convection Boundary cannot be entered." -- same failure shape and
-        # likely the same root cause as /db/HAHS in batch 10 (element
-        # convection/heat-source assignment needs a real SOLID element,
-        # which this fixture's frame/plate base model doesn't build).
-        # ITEMS[0].ID=1 lines up with "element no. 1" in the error, despite
-        # the manual describing ID as a plain serial number rather than an
-        # element reference -- untested against a real SOLID element or a
-        # different ID value, left as the same scope gap as HAHS rather
-        # than independently re-bisected.
+        # ITEMS[].ID remains the manual's serial number 1. The isolated model
+        # makes its first element a SOLID and activates it through a real
+        # structure group in a real construction stage. This resolves the
+        # earlier frame-element rejection without redefining the manual field
+        # as an element id; confirmed full CRUD on both products, build
+        # 08/26/2026.
         Case(
             ElementConvectionBoundary,
             {"ITEMS": [{"ID": 1, "GROUP_NAME": "BG11_SEED", "FACE_NO": 1,
@@ -3094,14 +3143,15 @@ def _extras11_cases() -> List[Case]:
             {"ITEMS": [{"ID": 1, "GROUP_NAME": "BG11_SEED", "FACE_NO": 2,
                         "CCFC_NAME": "CC11_SEED", "ETFC_NAME": "AT11_SEED"}]},
             lambda p: p["ITEMS"][0].get("FACE_NO"), 1, 2,
-            item_id=1, needs=("stage_1", "hecb_seed"),
+            item_id=1, needs=("stage11_seed", "hecb_seed", "solid11_seed"),
+            confirmed=True,
         ),
         Case(
             PrescribedTemperature,
             {"ITEMS": [{"ID": 1, "GROUP_NAME": "BG11_SEED", "TEMPER": 15.0}]},
             {"ITEMS": [{"ID": 1, "GROUP_NAME": "BG11_SEED", "TEMPER": 20.0}]},
             lambda p: p["ITEMS"][0].get("TEMPER"), 15.0, 20.0,
-            item_id=1, needs=("stage_1", "hecb_seed"), confirmed=True,
+            item_id=1, needs=("stage11_seed", "hecb_seed"), confirmed=True,
         ),
     ]
 
@@ -3508,12 +3558,12 @@ TIERS: List[Tier] = [
     Tier("extras3", "batch 3: tractable subset of db.properties.*", _extras3_seeds, _extras3_cases),
     Tier("extras4", "batch 4: db.load_combinations in full", _extras4_seeds, _extras4_cases),
     Tier("extras5", "batch 5: db.dynamic_loads (9 of 12, Hyper-S variants deferred)", _extras5_seeds, _extras5_cases),
-    Tier("extras6", "batch 6: seismic-device family from db.boundary (SDVI/SDVE/SDST confirmed both products; SDHY/SDIS legacy shapes remain unconfirmed; DRLS deferred)", _no_seeds, _extras6_cases),
+    Tier("extras6", "batch 6: seismic-device family from db.boundary (SDVI/SDVE/SDST confirmed both products; SDHY/SDIS confirmed Gen-only; DRLS deferred)", _no_seeds, _extras6_cases),
     Tier("extras7", "batch 7: standalone/frame-attachable remainder of db.static_loads (PNLD/PNLA/FMLD/POSP/POSL confirmed; FBLA/EPST/EPSE fail live)", _extras7_seeds, _extras7_cases),
     Tier("extras8", "batch 8: tractable subset of db.analysis_control (PDEL/BUCK/SMCT/EIGV/BCCT confirmed both products; HHCT/NLCT confirmed Gen only and fail on Civil; ACTL/MVCT remain unresolved)", _extras8_seeds, _extras8_cases),
     Tier("extras9", "batch 9: db.node_element's Domain feature (MADO/SBDO/DOEL -- all 3 fail live, MADO silently drops writes on both products)", _extras9_seeds, _extras9_cases),
-    Tier("extras10", "batch 10: standalone subset of db.construction_stage's heat-of-hydration family (ETFC/CCFC/HSFC/STBK/HSTG confirmed; HAHS needs a SOLID element this fixture lacks; HPCE fails live; HECB/HSPT/CSCS deferred)", _extras10_seeds, _extras10_cases),
-    Tier("extras11", "batch 11a/c: /db/STCT (fails live -- iITER/TOL silently don't persist), /db/HSPT confirmed, /db/HECB fails live (same SOLID-element gap as HAHS)", _extras11_seeds, _extras11_cases),
+    Tier("extras10", "batch 10: standalone subset of db.construction_stage's heat-of-hydration family (ETFC/CCFC/HSFC/HAHS/STBK/HSTG confirmed; HAHS uses a real SOLID fixture; HPCE fails live; HECB/HSPT/CSCS deferred)", _extras10_seeds, _extras10_cases),
+    Tier("extras11", "batch 11a/c: /db/STCT (fails live -- iITER/TOL silently don't persist), /db/HSPT and /db/HECB confirmed with a SOLID hydration fixture", _extras11_seeds, _extras11_cases),
     Tier("extras12", "batch 12: db.bridge in full, all 4 confirmed (GSBG/GCMB/CAMB Civil-only, ULFC both products)", _extras12_seeds, _extras12_cases),
     Tier("extras13", "batch 13: tractable non-rebar subset of db.design (7 confirmed both products; DSTL Civil-only success/Gen failure; RCHK/REBB/REBC/REBW/REBR deferred)", _no_seeds, _extras13_cases),
     Tier("extras14", "batch 14: the 12 Civil-only-by-design endpoints (5 db.moving_loads, 7 db.analysis_control Hyper-S/-M1), all confirmed", _extras14_seeds, _extras14_cases),

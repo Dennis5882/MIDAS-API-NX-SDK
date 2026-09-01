@@ -7892,3 +7892,100 @@ After this batch, each latest scratch document was saved under `C:/temp` with
 its product-native extension, then `/doc/NEW` was issued. Final read-only
 checks found `NODE=0` and `ELEM=0` on both Gen and Civil, so both open documents
 are empty.
+
+### Hydration SOLID-fixture re-check: HAHS and HECB (2026-09-01)
+
+The previous HAHS and HECB failures were deliberately re-run with a real
+dummy model, not the baseline frame/plate fixture.  The fixture follows the
+official `/db/ELEM` manual's eight-node hexahedral `SOLID` form
+(`TYPE="SOLID"`, `MATL=1`, `SECT=0`) and creates the needed nodes, element,
+real structure group, boundary group, functions, and construction stage from
+an empty `/doc/NEW` document.
+
+- `/db/HAHS` used an isolated SOLID at element 50.  Both Gen and Civil
+  completed `POST -> GET -> PUT -> GET -> DELETE(id) -> GET`; the heat-source
+  function changed from `HSFC_SEED` to `HSFC_SEED_2` on readback.
+- `/db/HECB` initially still failed when its `ITEMS[].ID` was changed to 51.
+  The manual calls this value a serial number, so the final fixture retained
+  `ID=1` and made the first element itself the SOLID.  With that model and a
+  real activated construction stage, both products completed the same full
+  CRUD cycle, including a persisted `FACE_NO` change from 1 to 2.  The earlier
+  "element no. 1" response was therefore a fixture symptom, not evidence to
+  reinterpret the documented field as an element id.
+
+These runs used MIDAS Gen NX 2026 v2.1 and MIDAS Civil NX 2026 v2.2, both
+build 08/26/2026.  Reports and saved scratch checkpoints are under `C:/temp`;
+each product was returned to a new empty document after the run.
+
+### Pipe-cooling SOLID-fixture re-check (2026-09-01)
+
+`/db/HPCE` was re-tried before calling its existing `Wrong Key` result a
+product defect.  Each product started from a new scratch document with the
+same manual-backed 8-node hexahedral SOLID used for HAHS/HECB.  The exact
+documented payload was then posted with its `ITEMS` array populated by that
+SOLID's real nodes: first all 8 nodes, then the 6-node length used by the
+manual Request Example.  Gen was also tried with 4 and 2 of those real nodes.
+
+Every attempt returned the identical `Wrong Key` response on Gen NX 2026 v2.1
+and Civil NX 2026 v2.2, build 08/26/2026.  This eliminates the earlier
+frame/plate-node fixture as the explanation, but does not license an invented
+wire shape: the manual and current `/info` both state `ITEMS` is an integer
+array.  HPCE therefore remains read-level/unconfirmed pending product evidence
+or corrected documentation.  The latest scratch checkpoints are under
+`C:/temp`, and both sessions were reset to an empty document afterwards.
+
+### STCT documented Linear/Independent branch re-check (2026-09-01)
+
+The original STCT fixture put the linear-only `iITER`/`TOL` fields beside the
+Accumulative stage choice (`iNLA_TYPE=1`).  The manual instead assigns those
+fields to the **Linear + Independent** branch, so a fresh scratch model with a
+real construction stage was tested on both products with
+`iINC_NLA=0`, `iNLA_TYPE=0`, `iITER=30`, and `TOL=0.01`.
+
+The result is the same defect on the correct branch: Gen NX POST echoes both
+values but its first GET omits them; Civil NX's stage creates the locked default
+record as before, and PUT echoes both values but its following GET omits them.
+Thus this is not a branch-selection or dummy-model issue.  The live fixture now
+uses the documented Linear/Independent combination and remains unconfirmed;
+the two fields cannot currently be verified as persisted.  Both products were
+MIDAS Gen NX 2026 v2.1 / Civil NX 2026 v2.2, build 08/26/2026, and were reset
+to empty scratch documents afterwards.
+
+### Seismic-device fixture completion: SDHY and SDIS (2026-09-01)
+
+The reusable Gen-only `extras6` fixture had drifted behind the corrected
+official manual: SDHY still sent only `COMMON`, `SDHY_HYS_MODEL`, `MSS`, and
+`K0`, omitting the documented `P1`, `P2`, `ALPHA1`, `ALPHA2`, `BETA`, `Phi`,
+and `LAMBDA` fields. It now sends the complete current Request Example.
+
+From a new saved scratch document, the public Python resources completed all
+five seismic-device cases. In particular, `/db/SDHY` persisted `K0` from 5000
+to 6000 and `/db/SDIS` used the manual's successful `SDIS_DEV_TYPE="SLD"`
+branch with its `SB` object, persisting `KV` from 150000 to 160000. Each did
+`POST -> GET -> PUT -> GET -> DELETE(id) -> GET`; the prior LRB `Wrong Field`
+finding is intentionally not hidden or reclassified by this endpoint-level
+SLD success. Gen NX 2026 v2.1 build 08/26/2026 was reset to an empty document
+after the run; SDHY and SDIS are Gen-only declared endpoints.
+
+The built npm package independently repeated `/db/SDHY` and `/db/SDIS` through
+the public `resources.db` API (`npm run live:crud`, not raw HTTP) on the same
+Gen NX build. Both completed their full CRUD cycles from a separately saved
+and newly created scratch document, which was left empty by the harness.
+
+### CSCS composite-section fixture boundary (2026-09-01)
+
+`/db/CSCS` was rechecked on both products from a new scratch model with the
+manual's minimum construction-stage record and the complete documented CSCS
+part-information body. The request was sent with the required `Assign`
+envelope. Gen NX and Civil NX both rejected the base model section at
+`Item:Section Type`, which is expected: the manual says this route requires a
+`COMPOSITE` section.
+
+The only manual `COMPOSITE`/`SOD_BOX` sample available for the prerequisite
+section omits the dimensions needed for a valid section; Gen NX rejects that
+literal sample with `Section Dimensions has(have) been incorrectly entered.`
+The missing geometry is not supplied by the `/db/CSCS` chapter, so the test
+does not invent it or infer it from either SDK. CSCS therefore remains
+read-level/unconfirmed pending a complete manual composite-section fixture or
+new live evidence. Both products were reset to empty scratch documents after
+the probe (Gen NX 2026 v2.1 and Civil NX 2026 v2.2, build 08/26/2026).
