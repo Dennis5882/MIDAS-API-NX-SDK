@@ -33,7 +33,7 @@ Civil NX 2026 v2.2, both build 08/26/2026.
 | MD-07 | 2026-09-01 | `/db/FIMP` Kent & Park table | `04_DB_Properties.md:2103` keys the rows `"KENPAR"."FC"` and omits `CONC`/`STEEL` from Specifications entirely | the same article's Request Body nests them `CONC` > `KENPAR` > `FC`, three levels deep | **manual repo** transcription | open |
 | MD-08 | 2026-09-01 | `/db/CO_S`, `/db/CO_T` Specifications | one row keyed `"W_R" ~ "HE_B"` for No. `1-9` | the same section's JSON Schema and Request Example both list nine separate colour components, as `/db/CO_M`'s table does individually | **manual repo** transcription | open |
 | MD-09 | 2026-09-01 | `/DESIGN/RC/.../DCRM-*`, `/DESIGN/SRC/AIK-SRC2K/LLRF` | the JSON Schema `enum` lists 5 rebar sizes and 6 reduction factors | the same rows' descriptions say `19종 (D4 ~ D57)` and `가능값 11개`; LLRF's list carries the literal member `...(전체 11개)` | **manual repo** transcription | open |
-| MD-10 | 2026-09-01 | four sections' Specifications tables | the table omits a root property the same section's JSON Schema declares | `/db/EPMT` (6 model objects), `/db/ELEM` (`C_RAT`, `LCAXIS`), `/db/FIMP`, `/db/RCHK`. Five more turned out to be this SDK's parser, not the manual - see the detail | **manual repo** transcription (4 of the original 9) | narrowed 2026-09-02 |
+| MD-10 | 2026-09-01 | four sections' Specifications tables | the table omits a root property the same section's JSON Schema declares | `/db/EPMT` (6 model objects) and `/db/ELEM` (`C_RAT`, `LCAXIS`) reconciled 2026-09-02; `/db/FIMP` and `/db/RCHK` still drafts. Five more turned out to be this SDK's parser, not the manual - see the detail | **manual repo** transcription (4 of the original 9) | 2 reconciled, 2 open |
 
 ## Detail
 
@@ -206,15 +206,40 @@ three `DCRM-*` endpoints, and `FRAMEX`/`FRAMEY` on `DCTL`. Three further rows
 them.
 
 That leaves **two promoted contracts and two drafts** genuinely built from a
-table that omits a root its own JSON Schema declares. `/db/FIMP` is the one
-that caused damage (MD-07); the rest are recorded, not yet reconciled:
+table that omits a root its own JSON Schema declares. Both promoted ones are
+now reconciled; both drafts are not.
 
-| section | root(s) only the schema names |
-| --- | --- |
-| `/db/EPMT` | `TRESCA`, `VMISES`, `MOHRCL`, `DRUCKER`, `MASONRY`, `CONCDMG` |
-| `/db/ELEM` | `C_RAT`, `LCAXIS` |
-| `/db/RCHK` (draft) | `BEAM`, `COLM` |
-| `/db/FIMP` (draft) | `CONC`, `STEEL` - see MD-07 |
+| section | root(s) only the schema names | state |
+| --- | --- | --- |
+| `/db/EPMT` | `TRESCA`, `VMISES`, `MOHRCL`, `DRUCKER`, `MASONRY`, `CONCDMG` | **reconciled** 2026-09-02 |
+| `/db/ELEM` | `C_RAT`, `LCAXIS` | **reconciled** 2026-09-02 |
+| `/db/RCHK` (draft) | `BEAM`, `COLM` | open |
+| `/db/FIMP` (draft) | `CONC`, `STEEL` | open - see MD-07 |
+
+**`/db/EPMT` was the one the earlier note got wrong.** Its contract said the
+six objects stayed unmerged because "the manual does not state a scalar wire
+discriminator". It does: Specifications row 2 enumerates `MODEL_TYPE` as
+`"TR"`/`"VM"`/`"MC"`/`"DP"`/`"MA"`/`"DM"` against the model each one selects,
+and each sub-table heading names the object that model fills. All six are now
+conditional `object` fields on `MODEL_TYPE`. Their *members* are still not
+transcribed, and that is the honest reason: none of those sub-tables has a
+Value Type column, so the manual gives no type for a single member, and the
+`MASONRY` object's `BM`/`BED_JOINT`/`HEAD_JOINT`/`GEOM` structure is stated in
+prose rather than as a table.
+
+**`/db/ELEM`'s two are plain fields with nothing stated about them.** The
+schema types and describes `C_RAT` (cable length ratio, number) and `LCAXIS`
+(local axis, integer); no table in the section names either - not the common
+keys and not any of the nine per-subtype tables, including the Cable table
+`C_RAT` clearly belongs with. Both are declared with `requirement: unstated`,
+which is the whole claim the manual supports.
+
+`/db/RCHK` stays open for a structural reason rather than a judgment one: its
+`BEAM` and `COLM` object headings are **bold prose**, not markdown headings,
+so the parser reads their contents as free-floating tables and attaches them
+to no root. Nothing is promoted from it, so nothing wrong has shipped. Its
+`MEMBTYPE == "COLUMN"` / `"COLM"` object pairing is *not* a defect - the wire
+value and the object key genuinely differ, and the manual states both.
 
 Roots are the visible end of a wider pattern. Comparing every path, not just
 the top level, **39 of the 337 promoted contracts and 22 of the 47 drafts**

@@ -121,6 +121,53 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+  - key: C_RAT
+    description: >-
+      Cable length ratio.
+    type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: manual
+    provenanceNote: >-
+      Declared by the section's JSON Schema, which types it and describes it,
+      and named by no Specifications table in the section - not the common keys
+      and not any of the nine per-subtype tables. The manual therefore states no
+      requiredness, no default and no subtype this belongs to, so none is
+      claimed here. See MD-10.
+  - key: LCAXIS
+    description: >-
+      Local axis.
+    type: integer
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: manual
+    provenanceNote: >-
+      Declared by the section's JSON Schema, which types it and describes it,
+      and named by no Specifications table in the section - not the common keys
+      and not any of the nine per-subtype tables. The manual therefore states no
+      requiredness, no default and no subtype this belongs to, so none is
+      claimed here. See MD-10.
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      No Specifications table in the section names C_RAT or LCAXIS - neither the
+      common keys nor any of the nine per-subtype tables, including the Cable
+      table (STYPE: 3) that C_RAT's own description belongs with.
+    actual: >-
+      The section's JSON Schema declares `"C_RAT": {"description": "CABLE LENGTH
+      RATIO", "type": "number"}` and `"LCAXIS": {"description": "LOCAL AXIS",
+      "type": "integer"}` among the request properties.
+    evidence: >-
+      docs/manual_defects_register.md MD-10, measured by comparing every
+      section's Specifications table against its own JSON Schema block. Both are
+      declared here with requirement `unstated`: the schema gives a type and a
+      description, and nothing in the section gives requiredness, a default, or
+      the element subtype either one applies to.
 
 sdkRules:
   - id: db-elem-delete-per-id

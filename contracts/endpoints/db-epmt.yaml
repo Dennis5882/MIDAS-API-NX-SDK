@@ -102,6 +102,140 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+  - key: TRESCA
+    description: >-
+      Tresca plasticity parameters.
+    type: object
+    requirement: required
+    condition: 'Model Type · "TR"(Tresca)'
+    appliesWhen:
+      - path: MODEL_TYPE
+        equals: "TR"
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+    provenanceNote: >-
+      Declared by the section's JSON Schema as an object, and assigned to this
+      MODEL_TYPE value by the Specifications row that enumerates the six models
+      together with the sub-table heading that names the object. The members are
+      deliberately not transcribed: those sub-tables carry no Value Type column,
+      so the manual states no type for any of them. See MD-10.
+  - key: VMISES
+    description: >-
+      Von Mises plasticity parameters.
+    type: object
+    requirement: required
+    condition: 'Model Type · "VM"(Von-Mises)'
+    appliesWhen:
+      - path: MODEL_TYPE
+        equals: "VM"
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+    provenanceNote: >-
+      Declared by the section's JSON Schema as an object, and assigned to this
+      MODEL_TYPE value by the Specifications row that enumerates the six models
+      together with the sub-table heading that names the object. The members are
+      deliberately not transcribed: those sub-tables carry no Value Type column,
+      so the manual states no type for any of them. See MD-10.
+  - key: MOHRCL
+    description: >-
+      Mohr-Coulomb plasticity parameters.
+    type: object
+    requirement: required
+    condition: 'Model Type · "MC"(Mohr-Coulomb)'
+    appliesWhen:
+      - path: MODEL_TYPE
+        equals: "MC"
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+    provenanceNote: >-
+      Declared by the section's JSON Schema as an object, and assigned to this
+      MODEL_TYPE value by the Specifications row that enumerates the six models
+      together with the sub-table heading that names the object. The members are
+      deliberately not transcribed: those sub-tables carry no Value Type column,
+      so the manual states no type for any of them. See MD-10.
+  - key: DRUCKER
+    description: >-
+      Drucker-Prager plasticity parameters.
+    type: object
+    requirement: required
+    condition: 'Model Type · "DP"(Drucker-Prager)'
+    appliesWhen:
+      - path: MODEL_TYPE
+        equals: "DP"
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+    provenanceNote: >-
+      Declared by the section's JSON Schema as an object, and assigned to this
+      MODEL_TYPE value by the Specifications row that enumerates the six models
+      together with the sub-table heading that names the object. The members are
+      deliberately not transcribed: those sub-tables carry no Value Type column,
+      so the manual states no type for any of them. See MD-10.
+  - key: MASONRY
+    description: >-
+      Masonry plasticity parameters.
+    type: object
+    requirement: required
+    condition: 'Model Type · "MA"(Masonry)'
+    appliesWhen:
+      - path: MODEL_TYPE
+        equals: "MA"
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+    provenanceNote: >-
+      Declared by the section's JSON Schema as an object, and assigned to this
+      MODEL_TYPE value by the Specifications row that enumerates the six models
+      together with the sub-table heading that names the object. The members are
+      deliberately not transcribed: those sub-tables carry no Value Type column,
+      so the manual states no type for any of them. See MD-10.
+  - key: CONCDMG
+    description: >-
+      Concrete Damage plasticity parameters.
+    type: object
+    requirement: required
+    condition: 'Model Type · "DM"(Concrete Damage)'
+    appliesWhen:
+      - path: MODEL_TYPE
+        equals: "DM"
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+    provenanceNote: >-
+      Declared by the section's JSON Schema as an object, and assigned to this
+      MODEL_TYPE value by the Specifications row that enumerates the six models
+      together with the sub-table heading that names the object. The members are
+      deliberately not transcribed: those sub-tables carry no Value Type column,
+      so the manual states no type for any of them. See MD-10.
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      The Specifications table lists two keys, NAME and MODEL_TYPE. The six
+      model-parameter objects appear only as sub-table headings
+      (`Tresca / Von-Mises 공통 파라미터 ("TRESCA" or "VMISES" object)`), never as rows
+      with a key of their own.
+    actual: >-
+      The same section's JSON Schema declares TRESCA, VMISES, MOHRCL, DRUCKER,
+      MASONRY and CONCDMG as object properties of the request, and its Request
+      Body sends `"MODEL_TYPE": "VM"` alongside a `"VMISES"` object. A contract
+      built from the table alone would be missing the entire payload below the
+      model type.
+    evidence: >-
+      docs/manual_defects_register.md MD-10, measured by comparing every
+      section's Specifications table against its own JSON Schema block. The
+      six objects are declared here as conditional fields on MODEL_TYPE, whose
+      six values the Specifications row does enumerate; their members are not,
+      because the sub-tables carry no Value Type column.
 
 sdkRules:
   - id: db-epmt-delete-per-id
@@ -149,22 +283,22 @@ extraction:
   # schema.
   unmergedTables:
     - heading: "Tresca / Von-Mises 공통 파라미터 (`\"TRESCA\"` or `\"VMISES\"` object)"
-      resolution: "The tables select among named payload objects; the manual does not state a scalar wire discriminator for their object-presence branches; left unmerged."
+      resolution: "MODEL_TYPE is the wire discriminator and the Specifications row enumerates all six of its values against the model each one selects, so the six objects are conditional fields on this contract rather than a gap. What stays unmerged is these tables' members: none of these sub-tables has a Value Type column, so the manual states no type for a single one of them, and the MASONRY object's BM/BED_JOINT/HEAD_JOINT/GEOM structure is given in prose rather than as a table."
       fields: 5
       line: 912
     - heading: "Mohr-Coulomb / Drucker-Prager 공통 파라미터 (`\"MOHRCL\"` or `\"DRUCKER\"` object)"
-      resolution: "The tables select among named payload objects; the manual does not state a scalar wire discriminator for their object-presence branches; left unmerged."
+      resolution: "MODEL_TYPE is the wire discriminator and the Specifications row enumerates all six of its values against the model each one selects, so the six objects are conditional fields on this contract rather than a gap. What stays unmerged is these tables' members: none of these sub-tables has a Value Type column, so the manual states no type for a single one of them, and the MASONRY object's BM/BED_JOINT/HEAD_JOINT/GEOM structure is given in prose rather than as a table."
       fields: 6
       line: 922
     - heading: "Masonry 파라미터 (`\"MASONRY\"` object)"
-      resolution: "The tables select among named payload objects; the manual does not state a scalar wire discriminator for their object-presence branches; left unmerged."
+      resolution: "MODEL_TYPE is the wire discriminator and the Specifications row enumerates all six of its values against the model each one selects, so the six objects are conditional fields on this contract rather than a gap. What stays unmerged is these tables' members: none of these sub-tables has a Value Type column, so the manual states no type for a single one of them, and the MASONRY object's BM/BED_JOINT/HEAD_JOINT/GEOM structure is given in prose rather than as a table."
       fields: 5
       line: 936
     - heading: "Masonry 파라미터 (`\"MASONRY\"` object)"
-      resolution: "The tables select among named payload objects; the manual does not state a scalar wire discriminator for their object-presence branches; left unmerged."
+      resolution: "MODEL_TYPE is the wire discriminator and the Specifications row enumerates all six of its values against the model each one selects, so the six objects are conditional fields on this contract rather than a gap. What stays unmerged is these tables' members: none of these sub-tables has a Value Type column, so the manual states no type for a single one of them, and the MASONRY object's BM/BED_JOINT/HEAD_JOINT/GEOM structure is given in prose rather than as a table."
       fields: 6
       line: 945
     - heading: "Concrete Damage 파라미터 (`\"CONCDMG\"` object)"
-      resolution: "The tables select among named payload objects; the manual does not state a scalar wire discriminator for their object-presence branches; left unmerged."
+      resolution: "MODEL_TYPE is the wire discriminator and the Specifications row enumerates all six of its values against the model each one selects, so the six objects are conditional fields on this contract rather than a gap. What stays unmerged is these tables' members: none of these sub-tables has a Value Type column, so the manual states no type for a single one of them, and the MASONRY object's BM/BED_JOINT/HEAD_JOINT/GEOM structure is given in prose rather than as a table."
       fields: 7
       line: 956
