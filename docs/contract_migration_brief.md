@@ -7,8 +7,9 @@ are, and what order the remaining work goes in.
 `CLAUDE.md` and `contracts/README.md` are authoritative. Where this file and
 either of those disagree, they win and this file is stale.
 
-Numbers below were measured on 2026-08-28 at `c2a4599`. Regenerate rather than
-trust them:
+**Current measurement: "Measurement — 2026-09-02" below.** The two earlier
+tables (2026-08-28 at `c2a4599`, 2026-08-29) are kept as history and are
+stale. Regenerate rather than trust any of them:
 
 ```bash
 python scripts/validate_contracts.py
@@ -75,6 +76,89 @@ Current validation exercises 311 declared executable rules: 154
 `normalize_defaults`, `reject_request`, and `unwrap_table_by_shape`. It runs
 one Python and one npm probe for every rule kind. The npm suite currently has
 11 files and 55 tests.
+
+## Measurement — 2026-09-02, at `3d36a91`
+
+Supersedes the two tables above. The wire facts are nearly migrated; the npm
+package's **public surface is not migrated at all**, and that gap is not a
+backlog.
+
+| npm artefact | count | contract-sourced | still Python |
+| --- | ---: | ---: | ---: |
+| DB resource **inventory** (which resources exist) | 304 | 0 | **304** |
+| DB resource facts (name / products / methods / chapter) | 304 | **268** | 36 |
+| Payload types | 750 | **253** | 497 |
+| Operation wrappers (`/doc`, `/ope`, `/view`, design) | 70 | 0 | **70** |
+| Result-table wrappers | 87 | 0 | **87** |
+
+337 endpoint contracts and 87 table contracts exist. 12 contracts reach
+nothing in npm; 13 contracted resources carry `unmergedTables`, so their
+payload stays on the Python type.
+
+### The blocker is that a contract cannot name anything
+
+A generated resource entry carries ten fields. Five are contract facts. The
+other five have **no property in `endpoint-contract.schema.json`** and no
+way to acquire one without a decision:
+
+| field | example | expressible in a contract today |
+| --- | --- | --- |
+| `endpoint` | `/db/BCGA-M1` | yes |
+| `name` | `Assign Boundary Combination (Hyper-S)` | yes |
+| `products` | `["civil"]` | yes |
+| `methods` | `[DELETE, GET, POST, PUT]` | yes |
+| `manual[].chapterFile` | `12_DB_Analysis_Control.md` | yes |
+| `className` | `AssignBoundaryCombinationHyperS` | **no** |
+| `exportName` | `assignBoundaryCombinationHyperS` | **no** |
+| `pythonModule` | `midas_nx.db.analysis_control` | **no** |
+| `modulePath` | `["db", "analysisControl"]` | **no** |
+| `payloadTypeName` | `AssignBoundaryCombinationHyperSPayload` | **no** |
+
+The same holds for the other two artefact kinds. An operation entry's *data*
+is `{endpoint, method, products}` — all three contract facts — but its
+function name (`exportBeamCheckReport`), its nesting (`design.rcKds.checks`),
+its argument type name and its JSDoc all come from the Python function, its
+module path and its docstring. All 87 result-table wrappers are generated
+from the Python AST even though all 87 tables are contracted.
+
+So the arithmetic that matters is not 268/304. It is this: **delete
+`src/midas_nx/` and `npm run generate` produces nothing at all**, because
+`_load_resources()` opens with `import midas_nx` and `_source_modules()`
+parses the package's AST. Contracts can only *correct* facts about something
+Python already declares; a contract for an endpoint with no `DbResource`
+subclass is skipped outright (`endpoint not in resource_endpoints`).
+
+### Why "compatibility anchors" cannot expire on their own
+
+`CLAUDE.md` and `generate_typescript_sdk.py` both say class and module names
+"remain compatibility anchors **until every resource is contracted**". That
+sentence describes a finish line the current design cannot cross: contracting
+all 304 resources would still leave every name and every module path with
+nowhere to live. Writing the 36 missing contracts is worth doing and does not
+move this at all.
+
+### The decision this needs (not to be made unilaterally)
+
+D1–D4 were schema decisions about what the *manual* says. This is the first
+one about what the *packages* are called, so it is larger, and both public
+APIs are already published under those names. Sketch, for the author:
+
+1. **Add a naming block to the contract schema** — something like
+   `surface: {className, exportName, modulePath, payloadTypeName}` — seeded
+   from today's generated output so the first commit changes no published
+   name. Every name in it is then a contract fact under review, not an
+   accident of a Python file's location.
+2. **Invert the generator**: iterate contracts, not `DbResource` subclasses;
+   fall back to Python only where a contract has no `surface` block. The
+   parity check flips with it — Python becomes a subject like npm already is.
+3. **Extend it to operations and tables**, which need the same block plus a
+   place for the wrapper's summary text that JSDoc currently takes from a
+   Python docstring.
+
+Step 1 alone ends the structural dependency for resources; steps 2–3 are
+what make `import midas_nx` deletable from the generator. None of it is
+mechanical, and none of it should start before the author has said which
+names the contracts are allowed to own.
 
 ## The rules that are not negotiable
 
@@ -205,7 +289,14 @@ with a date, and re-run `--report` before quoting one.
    is now **0 without a parsed section**. What still blocks that contract is
    the extractor's child numbering, not the manual — see
    `contract_migration_open_questions.md`.
-5. **Stage 4 — Python derives from the contracts.** Deliberately last and
+5. **Stage 3 completion — npm stops deriving from Python.** Newly separated
+   out on 2026-09-02, because it was being counted as part of "contract more
+   resources" and it is not. The wire facts are 268 of 304 contracted; the
+   npm package's names and module layout are 0 of 304, and no contract
+   property can hold them. See "Measurement — 2026-09-02" for the field-by-
+   field gap and the three-step sketch. **Needs the author's decision on
+   which names contracts may own before any code moves.**
+6. **Stage 4 — Python derives from the contracts.** Deliberately last and
    deliberately unspecified. `src/midas_nx/` is hand-written and its public API
    is on PyPI; changing how it is produced needs the author's call, not an
    agent's. Until then Python stays a *subject* of the parity check, which is
