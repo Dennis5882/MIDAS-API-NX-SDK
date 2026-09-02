@@ -234,6 +234,31 @@ keys and not any of the nine per-subtype tables, including the Cable table
 `C_RAT` clearly belongs with. Both are declared with `requirement: unstated`,
 which is the whole claim the manual supports.
 
+**A second row-dropping class, found by the same measurement — open.** Once
+escaped pipes stopped hiding it, counting every row in a keyed manual table
+that produces no field leaves **20 rows whose cell count is one short of
+their header**, because the row omits the leading No. cell. They are not one
+kind of loss:
+
+| section | rows | what is lost | state |
+| --- | --- | --- | --- |
+| `/db/POLC-M1` | 5 | **variant divider rows** (`INCRE_METHOD = "LOAD"인 경우`, ...) | promoted, 0 variants |
+| `/db/ULFC` | 2 | **variant divider rows** (`등호(Equality) 조건 (EQ=true)`, ...) | promoted, 0 variants |
+| `/ope/GUSTFACTOR` | 2 | **variant divider rows** (`STRUCTURE_TYPE = "RIGID"인 경우`) | draft |
+| `/db/THIS-M1` | 11 | nested field rows prefixed `- ` (`MODE_NO`, `MAX_ITER`, ...) | draft |
+
+No field is missing from the two promoted contracts - the rows under each
+divider parsed normally. What is missing is the split: `/db/POLC-M1` and
+`/db/ULFC` both carry 0 variants and 0 unmerged tables, so the npm generator
+takes their flat field list as the payload and offers every branch's fields
+at once - the same shape 2.7.3 and 2.7.4 corrected on six other endpoints.
+`/db/THIS-M1` is the different case: eleven documented nested fields are
+simply absent, and it is still a draft.
+
+Fixing this needs a decision the escaped-pipe fix did not: a short row has to
+be aligned to the header, and which column it omits is a judgment about the
+table's shape rather than a mechanical un-escape. Left open deliberately.
+
 `/db/RCHK` stays open for a structural reason rather than a judgment one: its
 `BEAM` and `COLM` object headings are **bold prose**, not markdown headings,
 so the parser reads their contents as free-floating tables and attaches them

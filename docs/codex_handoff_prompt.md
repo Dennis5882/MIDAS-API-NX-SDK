@@ -1,13 +1,33 @@
 # Codex task prompt — mechanical work only
 
-Updated 2026-09-01 at HEAD `ae4ec96`. Version stays **2.7.3** on both
-registries; do not bump it.
+Updated 2026-09-02 at HEAD `a93069b`. **2.7.4 is published** on both
+registries; the next number is the author's call, so do not bump it.
 
 **The division, set by the author.** Judgment-heavy work — schema design,
 deciding what a contradictory manual means, deciding what stays unmerged — is
 Claude's. Bounded, verifiable, repeatable work is yours. Every task below has a
 measured starting number you can check your run against. A task that turns out
 to need a judgment call is one to **stop and report**, not to decide.
+
+## What moved since your last batch
+
+Nothing in your half changed, but three things in the tree did:
+
+- **2.7.4 shipped** to PyPI and npm on 2026-09-02, including the three
+  discriminated-union conversions and the fixes for types that had been
+  outlawing documented values.
+- **`extract_contracts.py` was deleting table rows** that contain GFM's
+  escaped pipe (`\|`). Ten rows across three chapters, one of them
+  `/ope/LCOM-GEN`'s **required** `CODE_SELECTION`. Five contracts gained the
+  recovered fields, five optional fields reach the npm declarations, and
+  MD-10 dropped from nine sections to four. Task 3 below is the standing
+  check that should have caught it.
+- **`/db/EPMT` and `/db/ELEM` were reconciled** against their own JSON
+  Schemas. EPMT's contract had claimed the manual states no wire
+  discriminator for its six model objects; it does, and all six are now
+  conditional fields on `MODEL_TYPE`.
+
+Task 1 and Task 2 are unchanged and are still the main work.
 
 ## What your last three batches showed
 
@@ -54,9 +74,9 @@ Run these first and confirm you see the same numbers. If any differ, say so
 before starting — it means something moved under you.
 
 ```bash
-python -m pytest -q                       # 918 passed
+python -m pytest -q                       # 920 passed
 ruff check src tests scripts && mypy      # clean
-python scripts/validate_contracts.py      # OK, 337 contracts
+python scripts/validate_contracts.py      # OK, 337 contracts, 3,174 fields
 python scripts/check_manual_drift.py --manual-api-repo "E:\AI Study\MIDAS-API"
                                           # {"has_diff": false}
 cd packages/typescript && npm run generate && npm run typecheck && npm test
@@ -77,13 +97,19 @@ MSYS_NO_PATHCONV=1 python scripts/extract_contracts.py \
 python scripts/promote_contract.py --all --dry-run          # 0 promoted, 47 refused
 ```
 
-**Zero of the 47 are promotable, and that is expected.** There are 124 blocking
-review notes across 31 drafts, and the large groups are all judgment: 26 "types
-this as an enum but the values are listed elsewhere", 18 "types this X but it
-has nested children", 7 "marks this conditional but does not state the
-condition". Nine more drafts sit in `NEEDS_HAND_REVIEW` because their documented
-payload is already measured wrong live. None of that is yours. Task 3 is the one
-bounded parser gap left in the pile.
+**Zero of the 47 are promotable, and that is expected.** Grouping the refusals
+by their stated reason: **49 unresolved review notes across 21 drafts** (all
+judgment - an enum whose values live elsewhere, a type that has nested
+children, a condition the manual gestures at), 7 with no parseable payload
+fields, 8 whose key cell names two wire properties at once, and the rest in
+`NEEDS_HAND_REVIEW` because their documented payload is already measured wrong
+live. None of that is yours.
+
+> An earlier version of this prompt said "124 blocking review notes across 31
+> drafts". That number was never measured this way and was wrong; the figure
+> above is what `promote_contract.py --all --dry-run` actually prints. If a
+> number in this file disagrees with a command's output, the command wins -
+> say so in your report.
 
 ---
 
@@ -179,14 +205,45 @@ Two steps, in order:
 that a field in `docs/coverage.json` would help, say so in your report and leave
 the schema alone.
 
-## Task 3 — nothing here for now
+## Task 3 — count the manual rows the extractor still throws away
 
-The tree-marker parser gap this section used to describe is fixed, along with
-two shipped payload defects it turned up on the way. Contract work is now
-blocked on reading manual sections, which is Claude's half of the split.
+**Measure and report. Do not change the parser.** This task exists because the
+same measurement has now found two silent row-dropping bugs in a row, and
+nobody was running it as a check.
 
-If Tasks 1 and 2 finish before new work is scoped, report and stop rather than
-looking for something in `contracts/drafts/`. All 47 are refused on purpose.
+Every keyed manual table row that produces no field is a documented thing this
+repo cannot see. Two causes are already known and fixed or recorded:
+
+- `\|` (GFM's escaped pipe) made the row's cell count disagree with its
+  header, and each of the four split sites drops such a row. Ten rows, three
+  chapters, five of MD-10's nine sections. Fixed 2026-09-02 (`e9dddc8`).
+- A row that omits the leading No. cell is one cell short and drops the same
+  way. 20 rows: `/db/POLC-M1` (5) and `/db/ULFC` (2) lose **variant divider**
+  rows, `/ope/GUSTFACTOR` (2) the same, `/db/THIS-M1` (11) loses nested field
+  rows. Recorded under MD-10, open, and Claude's - aligning a short row to its
+  header is a judgment about the table's shape.
+
+What to build: a script under `scripts/` that walks the manual repo, and for
+every table with a recognised key column reports each row that yields no
+field, grouped by cause. Reuse `extract_contracts.py`'s own helpers
+(`_split_row`, `_canonical_wire_property`, `_KEY_COLUMNS`) rather than
+re-parsing markdown, so the report cannot drift from what the extractor
+actually does. Print a histogram, then the full list for any cause other than
+a blank key cell.
+
+The numbers to reproduce before you add anything to them:
+
+| cause | rows |
+| --- | --- |
+| blank key cell (mostly legitimate section dividers) | 71 |
+| cell count disagrees with the header | 20 |
+
+Then wire it into CI the way the drift check is wired, so the count cannot
+grow silently on the next manual sync. **A new cause you find is a report, not
+a fix**: say which rows, which endpoints, and whether each endpoint is
+promoted or a draft. Whether the parser should learn the shape is Claude's
+call - the escaped-pipe one was mechanical, the short-row one is not, and you
+cannot tell which a new case is without reading the section.
 
 ---
 
@@ -239,14 +296,15 @@ looking for something in `contracts/drafts/`. All 47 are refused on purpose.
   `resources.ts` is expected and fine.
 - **A variant union is closed only where the contract proves it** — a declared
   `enum` the branches cover exactly, or both values of a boolean. Otherwise
-  generation emits a trailing member carrying the remaining values. 11 of the 14
-  union payloads have one. Do not "tidy" them away.
+  generation emits a trailing member carrying the remaining values. 10 of the 13
+  union payloads have one; the other three are proven closed. Do not "tidy"
+  them away.
 - **`docs/coverage.json` carries one row per result table, not per route.**
   `/DESIGN/RC/KDS-41-20-2022/TABLE` has three rows and
   `/DESIGN/SRC/AIK-SRC2K/TABLE` two, because each `TABLE_TYPE` returns its own
   table. The contracts fold those same sections into one endpoint each. Both are
   right; do not "reconcile" them.
-- **Seven manual defects are registered** in `docs/manual_defects_register.md`,
+- **Ten manual defects are registered** in `docs/manual_defects_register.md`,
   each labelled by which side owns the fix. Append new ones there; send nothing.
 - **`/info` is a `/db/*` facility.** All 147 `/DESIGN/*` resource-product pairs
   404 on introspection while the endpoints answer a plain GET, so a design-code
@@ -275,12 +333,18 @@ looking for something in `contracts/drafts/`. All 47 are refused on purpose.
   and the field keeps its declared scalar type. This is checked by a test over
   every contract.
 - **A manual section states its request twice** - a Specifications table and
-  often a JSON Schema - and where they disagree the table is the lossy one.
-  44 of the 337 promoted contracts and 22 of the 47 drafts are missing at
-  least one path their own section's schema declares; MD-10 in
-  `docs/manual_defects_register.md` has the measurement. A missing *root*
-  now blocks promotion outright. Do not try to close these by editing a
-  contract - each needs its section read.
+  often a JSON Schema - and where they disagree the table is *usually* the
+  lossy one. 39 of the 337 promoted contracts and 22 of the 47 drafts are
+  missing at least one path their own section's schema declares; MD-10 in
+  `docs/manual_defects_register.md` has the measurement. A missing *root* now
+  blocks promotion outright, and four sections still have one - two promoted
+  and reconciled, two still drafts. Do not try to close these by editing a
+  contract; each needs its section read.
+
+  **Check the tooling before the source.** Five of MD-10's original nine
+  sections were not the manual at all - `extract_contracts.py` was deleting
+  the rows. Over half of what looked like a documentation defect was this
+  repo failing to count cells. Task 3 exists to keep measuring that.
 - **`/db/NMAS` must be sent with `rmX`/`rmY`/`rmZ`.** Omitting them ends the
   session on both products. Both SDKs fill them in, and the npm side is
   live-confirmed to do so on a real POST.

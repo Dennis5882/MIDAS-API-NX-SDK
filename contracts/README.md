@@ -320,7 +320,7 @@ validator**. Every draft carries `draft: true`, which the schema forbids, so a
 file moved into `contracts/endpoints/` without being read fails CI with one
 unambiguous message rather than passing as fact.
 
-Of roughly 4,770 fields the extractor can read, about a third carry a review note
+Of the 4,927 fields the extractor can read, 1,114 (22%) carry a review note
 — no Default column, an enum whose values live elsewhere in the chapter, a row
 naming two keys at once, a condition the manual gestures at but never states.
 Those notes travel into the draft. Clear them; don't delete them.
@@ -343,7 +343,7 @@ Then:
 
 ## Migration status
 
-One hundred and twenty endpoints and three result tables are contracted. The remaining ledger lives in `docs/coverage.json`
+Three hundred and thirty-seven endpoints and eighty-seven result tables are contracted. The remaining ledger lives in `docs/coverage.json`
 (399 endpoints) and is being migrated incrementally, so an endpoint without a
 contract is expected rather than a defect. What is *not* optional is that a
 contract, once written, is honoured by both SDKs.
@@ -352,18 +352,21 @@ What the extractor can currently reach, per `scripts/extract_contracts.py`:
 
 | | |
 | --- | --- |
-| Endpoint sections found across chapters 01-17 and 24-27 | 386 |
-| ...with a parameter table it can parse | 370 |
-| ...whose methods the manual actually states | 360 |
-| Fields transcribed across parsed tables | 4,798, of which 321 nested |
-| Promoted so far | 120 endpoints + 3 tables |
-| Payload types the npm SDK now takes from contracts | 81 of 738 |
-| DB resource metadata the npm SDK now takes from contracts | 83 of 304 |
-| Explicitly modelled conditional variant sets | 5 |
-| Sections with conditional variant tables left unmerged | 53 |
-| Enum fields whose complete value list is not stated | 95 |
-| Arrays whose element type is not stated | 109 |
-| Unrecognised Value Type cells | 25 |
+| Endpoints found across chapters 01-17 and 24-27 | 384 |
+| ...with a parameter table it can parse | 368 |
+| Fields transcribed across parsed tables | 4,927, of which 375 nested |
+| ...carrying a review note that has to be cleared before promotion | 1,114 (22%) |
+| Promoted so far | 337 endpoints + 87 tables |
+| Drafts awaiting review | 47 |
+| Payload types the npm SDK now takes from contracts | 253 of 750 |
+| DB resources the npm SDK now takes from contracts | 268 of 304 |
+| Contracts carrying explicit conditional variants | 14 |
+| Supplementary tables merged as an explicit variant | 78 |
+| ...merged structurally or by `appliesWhen` | 74 |
+| ...left unmerged, across 24 sections | 101 |
+| Enum fields whose complete value list is not stated | 20 |
+| Arrays whose element type is not stated | 5 |
+| Unrecognised Value Type cells | 15 |
 | Sections belonging to the shared `/post/TABLE` family | 89 |
 
 The 89 `/post/TABLE` sections (chapters 18-23) are one endpoint selected by a
