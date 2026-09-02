@@ -4,7 +4,7 @@ This file records changes to the JavaScript/TypeScript package published on
 npm as `midas-nx`. Python package history is tracked separately in the
 repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
-## Unreleased
+## 2.7.5 - 2026-09-02
 
 ### Compatibility — breaking
 

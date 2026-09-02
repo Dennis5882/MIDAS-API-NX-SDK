@@ -5,85 +5,14 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-09-02 — **2.7.4 published** to PyPI and npm. It was an
-> npm-only change again: three more payload types become discriminated unions,
-> and three shipped defects that made *documented* values untypeable are fixed
-> — nine colour components `/db/CO_S` never offered, every rebar size above D8,
-> and the discriminator values no manual table happens to cover.
-> Contracts 319 → 337.
->
-> **Since 2.7.4, unreleased on `main`:** `\|` is GFM's escape for a literal
-> pipe in a table cell, and `extract_contracts.py` was splitting rows on it,
-> which silently deleted ten documented rows across three chapters — including
-> `/ope/LCOM-GEN`'s **required** `CODE_SELECTION` body discriminator. Five of
-> the nine sections MD-10 blamed on the manual were this parser. Five optional
-> fields reach the npm declarations, and MD-10 is down to two open drafts.
-> PyPI and npm have shared
-> one version number since 2026-08-28, at the author's explicit request; the two
-> streams were 2.3.5 and 2.4.0 and the split was confusing for one package name.
-> `CLAUDE.md`'s Releasing section was reversed to match. This line tracks
-> **release** state,
-> not every edit; docs-only changes carry their own dates in
-> Cross-cutting/backlog without moving this line.
-> **npm v2.4.0 prepared 2026-08-27**: `db.staticLoads.nodalMass` could crash a
-> live MIDAS NX session — it sent payloads missing `rmX`/`rmY`/`rmZ` straight
-> through, the trigger root-caused on 2026-07-29 and fixed in Python the same
-> day. The npm package shipped a month later without the protection, because
-> the workaround was behaviour inside `NodalMass.create()` and the generator
-> only carries metadata and docstrings. Introduced `contracts/` (§1) so a
-> safety rule is a fact about the endpoint rather than a property of one
-> language binding, with `scripts/validate_contracts.py` failing CI when
-> either SDK stops honouring one. Two endpoints contracted so far.
-> **v2.3.5 shipped 2026-08-27**: closed out the sibling manual repo's
-> 24-chapter "전수 재검증" drift in full (`vendored_at_commit` now current,
-> `check_manual_drift.py` reports `has_diff: false`) — dozens of field-level
-> corrections across `db/boundary.py`, `db/design.py`, `db/properties/*`,
-> `db/analysis_control.py`, `db/dynamic_loads.py`, `ope.py`, `view.py`, and
-> `post/*.py`, each re-tested live on Gen and/or Civil NX rather than
-> applied from manual text alone. Root-caused three long-standing "Wrong
-> Field"-since-2026-08-16 stalls (`/db/GRDP`, `/db/SDHY`, `/db/SDIS`) down
-> to missing fields, not server bugs — all now `level: write`. Also caught
-> the manual repo's own re-verification introducing *new* wrong claims in
-> 6 places (Story Load Summary Table, `/db/REBW`, `/db/REBC`, `/db/REBB`,
-> `/db/LCOM-*`'s `NO` field, `/ope/MEMB`'s `ELEM_LIST`) by re-testing live
-> instead of trusting a "재검증" commit message — 2 of those (Story Load
-> Summary, `/db/REBC`) traced to MIDASIT's own official Zendesk docs being
-> stale, not just the vendored copy; filed/commented accordingly (see
-> `docs/vendor_report_ko.md` v1.3 and MAPI-949). Write coverage: 158/399 →
-> 162/399. **v2.3.2 shipped 2026-08-10**: `BRACEDESIGNFORCES` independently confirmed
-> crashing Gen NX (third of the Column/Beam/Brace Design-Forces family,
-> `post/design.py` docstring updated), plus two live-verification sweeps —
-> a full Gen NX `DbResource` GET sweep (266/266 clean, 32 new confirmations)
-> and a manual batch of 38 non-crash-family design-chapter ANAL/TABLE/
-> REPORT/CAPTURE endpoints (also clean, including the historically
-> hang-prone `WD-ANAL`). No behavior change beyond the docstring; bumped
-> because `post/design.py` ships in the wheel. `Verified on Gen NX`:
-> 266/399 → 337/399. See `docs/live_verification_notes.md`'s 2026-08-10
-> entries for the full detail.
-> **v2.3.1 shipped 2026-08-10**: a `/code-review` pass against v2.3.0's
-> commit found `get_concurrent_joint_force_table()` (added that release)
-> omitted `node_elems`/`components`/`opt_cs`/`stage_step`, with a
-> docstring wrongly claiming the manual doesn't document them for this
-> table — it does; the chapter's common 10-item parameter table applies
-> to all 13 tables, `ADDITIONAL` is added on top of them, and
-> `COMPONENTS` specifically drives which column blocks the response
-> repeats. All four now exposed and forwarded, docstring corrected. Also
-> regenerates `ROADMAP.md`, left stale by a v2.3.0 date fix
-> (2026-08-07 → 2026-08-10) applied after the last regeneration. See
-> `docs/release_notes_v2.3.1.md`.
->
-> Previously: **v2.3.0 shipped 2026-08-10** — manual-driven sync
-> (`76ebda9`): new endpoint `get_concurrent_joint_force_table()`
-> (`CONCURRENT_JOINT_FORCE`), `SWIND`/`SSEIS` gain a `"USER TYPE"` schema
-> variant (additive), `/ope/GSBG`'s new second listing in ch17 confirmed
-> to be the already-implemented endpoint, no code change needed there;
-> see `docs/release_notes_v2.3.0.md`.
->
-> **Release-by-release history lives in `docs/release_notes_v*.md`** (and,
-> for anything predating v1.0.0, in `docs/live_verification_notes.md` and
-> git history) — this header is kept to the current release plus one
-> "Previously" line so it doesn't re-accumulate the 200+ line chain trimmed
-> on 2026-08-04.
+> Last updated: 2026-09-02 — **2.7.5 prepared** for PyPI and npm, the first
+> release since 2.6.0 where *both* packaged surfaces actually change. Python:
+> two resource labels follow their manual sections. npm: `AXIS_VECTOR` becomes
+> `Array<number>` — its own documented value did not typecheck — and 49 fields
+> the manual requires only inside one branch stop being required of every
+> payload, a state in which `/db/CCFC`'s type could not be satisfied at all.
+> Contracts 337 → 342, and a contract's new `surface` block owns the npm names
+> for 273 of the 304 resources.
 
 ---
 
@@ -815,6 +744,7 @@ exactly why that's the honest framing rather than a stronger guarantee.
 | **2.6.1** ✅ | npm operation wrappers now enforce the reviewed Gen NX/Civil NX product availability before sending a request; validated against a real Civil NX session with full DB GET coverage and a model -> analysis -> result-table round trip. Python republished unchanged to preserve the shared version | published 2026-08-28 as `py-v2.6.1` and `js-v2.6.1` |
 | **2.7.0** ✅ | npm: `/db/BODF` generated from a reviewed contract, so `selfWeight` requires `LCNAME` and types `FV` as exactly three numbers; contracted fixed-length arrays now generate tuples rather than unbounded arrays. Python republished unchanged | published 2026-08-28 as `py-v2.7.0` and `js-v2.7.0` |
 | **2.7.1** ✅ | Catches both packages up to three same-day manual revisions. Python: 27 resource labels corrected to the manual's English, `/db/POLC-M1` regains POST after a live call disproved the chapter, `/ope/GSBG` **now raises** on contradictory `BATCH` payloads, and 11 chapter-02 docstring references follow the manual's renumbering. npm: 400 lines of new result-table wrappers, contract-generated payload types, and four payload interfaces re-declared as type aliases. Repo: `--check` gained label, method and section-heading comparisons, each of which found real drift; 31 `safeToOmit: true` claims retracted after the evidence behind them turned out to be a request that never ran | published 2026-08-30 as `py-v2.7.1` and `js-v2.7.1` |
+| **2.7.5** ✅ | The first release since 2.6.0 where both packaged surfaces change. Python: `RebarDesignCriteria` and `RebarDesignCriteriaByWallMember` take their manual sections' labels, which their three `DCRM-*` siblings already had. **npm breaking**: `AXIS_VECTOR` is `Array<number>` — the Specifications table typed it `Number` while the section's own schema and Request Example send six, so its documented value was a type error — and six payloads become contract-driven with required members. The larger fix goes the other way: **49 fields the manual requires only inside one branch** were typed required of every payload, so `ConvectionCoefficientFunctionPayload` demanded `COEF` and `SCALE_FACTOR` together and no caller could satisfy it. Contracts 337 → 342, `surface` blocks 0 → 273, drafts 47 → 42; MD-11 records the nine Value Types a section contradicts. | prepared 2026-09-02 |
 | **2.7.4** ✅ | npm only again; Python republished unchanged. **npm breaking**: `StaticSeismicLoadPayload`, `StaticWindLoadPayload` and `TendonProfilePayload` become discriminated unions with fifteen newly required members. The other direction matters more — three shipped defects made *documented* values untypeable: `/db/CO_S` offered two of nine colour components because the manual keys them `"W_R" ~ "HE_B"`, rebar sizes stopped at D8 against a description reading `19종 (D4 ~ D57)`, and a variant union outlawed every discriminator value no manual table covered. Contracts 319 → 337; `/db/FIMP` un-promoted for declaring a three-level object as ten flat fields. | published 2026-09-02 |
 | **2.7.3** ✅ | D3 and D4, the last two contract-schema decisions. `variant.when` takes the `appliesWhen` shape — an ANDed array of `{path, equals|in}` — so a nested discriminator, a two-level selector and a table the manual gives several values for are all expressible; `request.itemSchema` gains `scalar` and `empty` for the nine `/doc/*` arguments that are a bare string or `{}` rather than a field list. Promoted 309 → 319. **npm breaking**: `FloorLoadPayload` is now a discriminated union with three required members. Python's packaged surface is unchanged. | published 2026-08-31 as `py-v2.7.3` and `js-v2.7.3` |
 | **2.7.2** ✅ | Contract-migration progress and the 2026-08-31 live-verification batch: Python payload documentation gained verified moving-load, analysis-control and inelastic-hinge members; npm generated types gained reviewed manual shapes for 30 newly promoted endpoint contracts (279 to 309), taking contract-owned npm resource facts to 251 of 304. The live harness now makes safe, verified checkpoints before dependent cases and records scratch-model evidence separately from manual facts. | published 2026-08-31 |
