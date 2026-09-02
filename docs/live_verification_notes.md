@@ -8212,3 +8212,45 @@ for `/db/STLD` in 2026-07-26 (a POST under key `7` produced id `3`), so it is a
 `/db/*` property and not news — but a harness that deletes by the id it sent
 will silently fail to clean up. Match on a field you set, then delete by the id
 the table reports.
+
+## 2026-09-03 (later) — `/db/PRES`: B-4 measured, with the error string
+
+The last surviving claim of the vendor report's section B, tested against a
+real plate. The Gen document was confirmed empty first, seeded with
+`live_crud_check.py`'s own `_seed_model` — the repo's confirmed payloads, not a
+hand-written model — and every record deleted by id afterwards. `/doc/NEW` was
+neither needed nor called; all nine tables the seed touches read
+`{"message": ""}` at the end.
+
+Element 4 is the seed's plate. `ELEM_TYPE: "PLATE"`, `FACE_EDGE_TYPE: "FACE"`,
+`EDGE_FACE: 1`, `FORCES: [-10, -10, -10, -10]`, varying only `DIRECTION`:
+
+| `DIRECTION` | result |
+| --- | --- |
+| omitted | **rejected** — `[Error] Errors detected in Pressure Loads Data.(Item:Load Direction)` |
+| `"NORMAL"` | **rejected** — same message |
+| `"LZ"` (local z) | stored |
+| `"GZ"` (global Z) | stored |
+
+**B-4 holds, and both halves of the row are wrong for this combination.**
+`DIRECTION` is marked *Optional* with default `"NORMAL"`; omitting it fails,
+and the default it names is the one value this combination refuses. The
+official article's footnote availability matrix already said so — Normal is
+`-` for PLATE + FACE while Local x/y/z and Global X/Y/Z are `O` — so the
+matrix and the product agree and only the Specifications row is out of step.
+
+That is the whole of what survived section B's re-audit, now with a
+reproduction and the exact error text rather than an inference.
+
+### The `Assign` key is what selects the element
+
+The first attempt sent `{"Assign": {"1": {"ITEMS": [{"ID": 4, ...}]}}}` — the
+plate named in `ITEMS[].ID`, under key `1` — and was refused with
+`[Error] The element no. 1 is an element type in which Pressure loads cannot be
+assigned`, which is true of the seed's beam 1 and not of its plate 4. Moving
+the payload to key `4` stored it.
+
+So the server resolved the element from the `Assign` key, and `ITEMS[].ID`
+echoed back. `DbResource.create()` already keys by id, so both SDKs send this
+correctly; what the run corrects is the reading of the confirmed fixture, whose
+`ID` field looks like the selector and is not.
