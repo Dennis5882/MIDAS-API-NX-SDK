@@ -2337,6 +2337,14 @@ def _parallel_field_cells(
     if _RANGE_JOINED_KEYS.fullmatch(raw_key):
         return None
     quoted = re.findall(r'"([^"\\]+)"', raw_key)
+    if len(quoted) < 2:
+        # Chapter 14 writes the same compact notation with backticks rather
+        # than double quotes - `BEAM_CORE_DIV_Y` / `BEAM_CORE_DIV_Z`. That is a
+        # typography difference, not a different claim, and the shared-claim
+        # branch below is gated on the key being quoted literally at all, so
+        # reading only one form left the `/db/POGD` fibre-model rows and their
+        # siblings unparseable - which is what blocked that contract.
+        quoted = re.findall("`([^`]+)`", key_cell)
     keys = quoted if len(quoted) > 1 else _parallel_cells(raw_key, 2, key=True)
     if not keys or len(keys) < 2:
         return None

@@ -2648,3 +2648,44 @@ def test_an_escaped_pipe_does_not_delete_the_row_it_appears_in(tmp_path: Path):
     assert BACKSLASH not in spliced.description
     # A row the table does name is not a schema-only root.
     assert section.schema_only_roots == ()
+
+
+def test_backticked_parallel_keys_are_read_like_quoted_ones(tmp_path: Path):
+    """`A` / `B` and "A" / "B" are the same claim in different typography.
+
+    Chapter 14 writes its compact two-key rows with backticks. The parallel-cell
+    reader only recognised double quotes, so those rows became one field with a
+    compound key and `/db/POGD` could not be promoted. A row that shares one
+    type and states no Default or Required column cannot be assigning different
+    claims to its keys, which is what makes repeating the shared claim safe.
+    """
+
+    path = tmp_path / "99_DB_Parallel.md"
+    path.write_text(
+        """## 1. `/db/PARALLEL` -- backticked parallel keys
+
+### Specifications
+
+| Group | Key | Description | Value Type |
+|---|---|---|---|
+| fibre | `CORE_DIV_Y` / `CORE_DIV_Z` | Core divisions | Integer |
+""",
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    assert [field.key for field in section.tables[0].fields] == ["CORE_DIV_Y", "CORE_DIV_Z"]
+    assert {field.type for field in section.tables[0].fields} == {"integer"}
+
+
+def test_two_keys_the_manual_calls_alternatives_are_not_split():
+    """`FREQ1`/`PERIOD1` is one field named two ways, not two fields.
+
+    Its description says frequency when COEF_CALC=0 and period when
+    COEF_CALC=1, so splitting the row would declare that a caller may send
+    both. The row keeps a Default and a Required column, which is exactly the
+    evidence that its columns are not per-key, and the reader refuses it.
+    """
+
+    assert ex._parallel_field_cells("`FREQ1`/`PERIOD1`", "Number", "-", "Required", "3") is None
+    assert ex._parallel_field_cells("`FREQ2`/`PERIOD2`", "Number", "-", "Required", "5") is None
