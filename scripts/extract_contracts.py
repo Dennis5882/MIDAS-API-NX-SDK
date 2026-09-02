@@ -3629,6 +3629,25 @@ def live_omission_evidence() -> dict[str, LiveOmission]:
     return found
 
 
+#: A finding the permitted sources cannot reopen: the extractor did not fail
+#: to answer a question, it answered one. Two kinds qualify so far - how a
+#: structure the manual addressed by numbering or a tree marker was rebuilt,
+#: and why a list the manual's own description outsizes was not transcribed as
+#: an enum. Neither is waiting on a reader, and the manual states nothing more
+#: about either. They render as `# RESOLVED:` so promotion, which refuses a
+#: draft still carrying `# NOTE:`, does not treat a conclusion as a gap.
+_SETTLED_NOTE_MARKERS = (
+    "the manual nests this under ",
+    "no enum is transcribed",
+)
+
+
+def _note_marker(note: str) -> str:
+    """`RESOLVED` for a finding nothing can change, `NOTE` for a question."""
+
+    return "RESOLVED" if any(marker in note for marker in _SETTLED_NOTE_MARKERS) else "NOTE"
+
+
 def _block(text: str, indent: str, prefix: str = "") -> list[str]:
     """Wrap `text` at a readable width.
 
@@ -3761,7 +3780,7 @@ def _render_fields(
             lines.append(f"{body}# 'Optional' as an answer; that is what documentedOptional records.")
         lines.append(f"{body}provenance: manual")
         for note in parsed.notes:
-            lines += _block(f"NOTE: {note}", body, prefix="# ")
+            lines += _block(f"{_note_marker(note)}: {note}", body, prefix="# ")
         if parsed.properties:
             lines.append(f"{body}properties:")
             lines += _render_fields(parsed.properties, body + "  ", prefix=current_path, field_paths=field_paths)

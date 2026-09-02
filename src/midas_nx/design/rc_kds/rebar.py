@@ -298,7 +298,7 @@ class RebarDesignCriteriaByWallMemberPayload(TypedDict, total=False):
 
 class RebarDesignCriteriaByWallMember(DbResource):
     ENDPOINT = f"{_BASE}/DCRM-WALL"
-    NAME = "Rebar Design Criteria by Wall Member"
+    NAME = "Design Criteria for Rebars by Wall Member"
 
 
 # --- 33. DESIGN/RC/KDS-41-20-2022/DCRE — Rebar Design Criteria -------------
@@ -414,7 +414,7 @@ class RebarDesignCriteriaPayload(TypedDict, total=False):
 
 class RebarDesignCriteria(DbResource):
     ENDPOINT = f"{_BASE}/DCRE"
-    NAME = "Rebar Design Criteria"
+    NAME = "Design Criteria for Rebar"
 
 
 # --- 34. DESIGN/RC/KDS-41-20-2022/DCREM — Equalize Joint Beam Rebar --------

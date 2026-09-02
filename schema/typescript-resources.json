@@ -7087,7 +7087,7 @@
       "className": "RebarDesignCriteria",
       "exportName": "rebarDesignCriteria",
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCRE",
-      "name": "Rebar Design Criteria",
+      "name": "Design Criteria for Rebar",
       "products": [
         "civil",
         "gen"
@@ -7211,7 +7211,7 @@
       "className": "RebarDesignCriteriaByWallMember",
       "exportName": "rebarDesignCriteriaByWallMember",
       "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCRM-WALL",
-      "name": "Rebar Design Criteria by Wall Member",
+      "name": "Design Criteria for Rebars by Wall Member",
       "products": [
         "civil",
         "gen"

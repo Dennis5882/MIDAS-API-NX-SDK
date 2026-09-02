@@ -15,6 +15,24 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
   followed the contract, so the field's own documented value did not
   typecheck. Python has always had `List[float]`. Assigning a scalar now
   fails; send the vector.
+- **Three KDS rebar payloads are contract-driven and require their members.**
+  `RebarDesignCriteriaPayload` (`/DESIGN/RC/KDS-41-20-2022/DCRE`),
+  `RebarDesignCriteriaByWallMemberPayload` (`DCRM-WALL`) and
+  `ModifyColumnRebarDataPayload` (`REBC`) now state the manual's requiredness,
+  descriptions and enums - `SPLICED_BARS` (`"None" | "50%" | "100%"`),
+  `MATERIAL` (nine grades), `END_REBAR_METHOD` (`1`-`4`), `HOOP_TYPE`,
+  `HOOK_TYPE`. Their member shapes are inline, so `DcreBeamCriteria`,
+  `DcreColumnBraceCriteria`, `DcreWallCriteria`,
+  `RebarDesignCriteriaByWallMemberItem` and `RcColumnRebarItem` are still
+  exported but no longer what the payload refers to. Rebar *size* fields stay
+  plain `string`: chapter 26 says in each section that it prints only the first
+  5 of 19, so there is no enum to publish.
+- **Two resource labels follow the manual.**
+  `rebarDesignCriteria.name` is `"Design Criteria for Rebar"` and
+  `rebarDesignCriteriaByWallMember.name` is
+  `"Design Criteria for Rebars by Wall Member"`, matching their manual sections
+  and their three `DCRM-*` siblings, which already read that way. The Python
+  classes' `NAME` changed with them.
 - **`MaterialPayload` requires `TYPE`, `NAME` and `PARAM`.** `/db/MATL` is now
   contracted, and its manual states all three Required. `PARAM` is also
   `Array<...>`, not `Array<MaterialParam>`: the Specifications table types it

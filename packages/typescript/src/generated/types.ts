@@ -7467,8 +7467,32 @@ export namespace DesignRcKdsRebarTypes {
     DE?: number;
     DW?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface RebarDesignCriteriaByWallMemberPayload {
-    ITEMS?: Array<RebarDesignCriteriaByWallMemberItem>;
+    /** 벽체 ID 문자열을 키로 갖는 맵 */
+    Assign: {
+      /** 해당 벽체 ID의 층별 지정 목록 (min 1) */
+      ITEMS: Array<{
+        /** 층 이름 (최소 1자) */
+        STORY: string;
+        /** 수직 철근 규격 · 19종 (D4 ~ D57) */
+        VERTICAL_REBAR: string;
+        /** 수평 철근 규격 · 19종 (D4 ~ D57) */
+        HORIZONTAL_REBAR: string;
+        /** 단부 철근 규격 · 19종 (D4 ~ D57) */
+        END_REBAR: string;
+        /** 경계요소 수평 철근 규격 · 19종 (D4 ~ D57) */
+        BE_HORZ_REBAR: string;
+        /** 경계요소 수평 철근 간격 */
+        BE_HORZ_SPACE: number;
+        /** 경계요소 수직 철근 간격 */
+        BE_VERT_SPACE: number;
+        /** 단부 피복 거리 de (m) */
+        DE?: number;
+        /** 벽면 피복 거리 dw (m) */
+        DW?: number;
+      }>;
+    };
   }
   export interface DcreBeamCriteria {
     MAIN_REBAR?: Array<string>;
@@ -7521,11 +7545,123 @@ export namespace DesignRcKdsRebarTypes {
     MATERIAL_BY_DIAMETER_INPUT?: DcreWallMaterialByDiameterInput;
     ADDITIONAL_WALL_DATA?: DcreWallAdditionalData;
   }
+  /** Generated from contracts/endpoints/. */
   export interface RebarDesignCriteriaPayload {
-    BEAM?: DcreBeamCriteria;
-    COLUMN?: DcreColumnBraceCriteria;
-    BRACE?: DcreColumnBraceCriteria;
-    WALL?: DcreWallCriteria;
+    /** 인덱스 문자열 1개만 갖는 전역 설정 맵 */
+    Assign: {
+      /** 보 철근 기준 */
+      BEAM?: {
+        /** 주철근 규격 배열 (최대 5종) · 항목은 19종 (D4 ~ D57) */
+        MAIN_REBAR?: Array<string>;
+        /** 스터럽 규격 · 19종 */
+        STIRRUPS?: string;
+        /** 스터럽 다리 수 · 2 ~ 20 */
+        STIRRUP_ARRANGEMENT?: number;
+        /** 측면철근 규격 · 19종 */
+        SIDE_BAR?: string;
+        /** 상단 피복 */
+        DT?: number;
+        /** 하단 피복 */
+        DB?: number;
+        /** 복철근 설계 */
+        DOUBLY_REBAR?: boolean;
+        /** 복철근 k 계수 */
+        DOUBLY_K?: number;
+        /** 간격 제한 고려 */
+        SPACING_LIMIT?: boolean;
+        /** 이음 옵션 (None | 50% | 100%) */
+        SPLICED_BARS?: "None" | "50%" | "100%";
+      };
+      /** 기둥 철근 기준 */
+      COLUMN?: {
+        /** 주철근 규격 배열 (최대 5종) */
+        MAIN_REBAR?: Array<string>;
+        /** 띠철근/나선철근 규격 · 19종 */
+        TIES_SPIRALS?: string;
+        /** 다리 수 (Y) (전체 19종: 2 ~ 20) */
+        ARRANGEMENT_Y?: number;
+        /** 다리 수 (Z) (전체 19종: 2 ~ 20) */
+        ARRANGEMENT_Z?: number;
+        /** 주철근 중심 피복 do */
+        DO?: number;
+        /** 간격 제한 고려 */
+        SPACING_LIMIT?: boolean;
+        /** 이음 옵션 */
+        SPLICED_BARS?: "None" | "50%" | "100%";
+      };
+      /** 가새 철근 기준 */
+      BRACE?: {
+        /** 주철근 규격 배열 (최대 5종) */
+        MAIN_REBAR?: Array<string>;
+        /** 띠철근/나선철근 규격 · 19종 */
+        TIES_SPIRALS?: string;
+        /** 다리 수 (Y) (전체 19종: 2 ~ 20) */
+        ARRANGEMENT_Y?: number;
+        /** 다리 수 (Z) (전체 19종: 2 ~ 20) */
+        ARRANGEMENT_Z?: number;
+        /** 주철근 중심 피복 do */
+        DO?: number;
+        /** 간격 제한 고려 */
+        SPACING_LIMIT?: boolean;
+        /** 이음 옵션 */
+        SPLICED_BARS?: "None" | "50%" | "100%";
+      };
+      /** 벽체 철근 기준 */
+      WALL?: {
+        /** 수직 철근 규격 배열 (다중 선택) · 19종 */
+        VERTICAL_REBAR?: Array<string>;
+        /** 수평 철근 규격 (전체 19종: D4 ~ D57) */
+        HORIZONTAL_REBAR?: string;
+        /** 단부 철근 규격 (전체 19종: D4 ~ D57) */
+        END_REBAR?: string;
+        /** 경계요소 수평 철근 규격 (전체 19종: D4 ~ D57) */
+        BE_HORZ_REBAR?: string;
+        /** 경계요소 수평 간격 */
+        BE_HORZ_SPACE?: number;
+        /** 경계요소 수직 간격 */
+        BE_VERT_SPACE?: number;
+        /** 단부 첫 수직철근까지 거리 */
+        DE?: number;
+        /** 벽면까지 피복 거리 */
+        DW?: number;
+        /** 직경별 재질 사용 */
+        MATERIAL_BY_DIAMETER?: boolean;
+        /** 직경별 재질 입력 (사용 시) */
+        MATERIAL_BY_DIAMETER_INPUT?: {
+          /** 수직/단부 철근 재질 매핑 배열 */
+          VERTICAL_END_REBAR?: Array<{
+            /** 철근 직경 · 19종 (D4 ~ D57) */
+            REBAR_DIAMETER?: string;
+            /** 재질 등급 · None,SD300,SD400,SD500,SD600,SD700,SD400S,SD500S,SD600S */
+            MATERIAL?: "None" | "SD300" | "SD400" | "SD500" | "SD600" | "SD700" | "SD400S" | "SD500S" | "SD600S";
+          }>;
+          /** 수평 철근 재질 매핑 배열 */
+          HORIZONTAL_REBAR?: Array<{
+            /** 철근 직경 · 19종 (D4 ~ D57) */
+            REBAR_DIAMETER?: string;
+            /** 재질 등급 · None,SD300,SD400,SD500,SD600,SD700,SD400S,SD500S,SD600S */
+            MATERIAL?: "None" | "SD300" | "SD400" | "SD500" | "SD600" | "SD700" | "SD400S" | "SD500S" | "SD600S";
+          }>;
+        };
+        /** 벽체 추가 데이터 */
+        ADDITIONAL_WALL_DATA?: {
+          /** 면외 휨 설계 */
+          OUT_OF_PLANE_BENDING?: boolean;
+          /** 수직 철근 간격 설정 (UNIT: mm/in, LIST_FOR_DESIGN: 간격 값 배열) */
+          VERTICAL_REBAR_SPACING?: JsonObject;
+          /** 수평 철근 간격(from) */
+          HORIZONTAL_REBAR_SPACING_FROM?: number;
+          /** 단부 철근 설계 방법 (1=Method-1 … 4=Method-4) */
+          END_REBAR_METHOD?: number;
+          /** 단부 철근 4개 배근 간격 */
+          DIST1?: number;
+          /** 단부 철근 6개 배근 간격 */
+          DIST2?: number;
+          /** 단부 철근 8개 이상 배근 간격 */
+          DIST3?: number;
+        };
+      };
+    };
   }
   export interface EqualizeJointBeamRebarSelectedMember {
     ELEM_LIST?: Array<number>;
@@ -7593,9 +7729,84 @@ export namespace DesignRcKdsRebarTypes {
     HOOP_TYPE?: string;
     HOOK_TYPE?: number;
   }
-  export interface ModifyColumnRebarDataPayload {
-    ITEMS?: Array<RcColumnRebarItem>;
-  }
+  /** Generated from contracts/endpoints/. */
+  export type ModifyColumnRebarDataPayload = {
+    /** 단면 번호 문자열을 키로 갖는 맵 */
+    Assign: {
+      /** 콘크리트 기둥 철근 항목 (min 1) */
+      ITEMS: Array<{
+        /** 서브 단면 생성 여부 */
+        CREATE_SUB_SECTION?: boolean;
+        /** 서브 단면 ID (읽기 전용) */
+        ID?: number;
+        /** 요소 번호 입력 (CREATE_SUB_SECTION=true 일 때 필수) Applies when Assign.ITEMS.CREATE_SUB_SECTION = true. */
+        ELEMS?: {
+          /** 요소 ID 배열 */
+          KEYS?: Array<number>;
+          /** ID 범위 (예: "1to160") */
+          TO?: string;
+          /** 구조 그룹 이름 */
+          STRUCTURE_GROUP_NAME?: string;
+        };
+        /** 주철근 */
+        MAIN_BAR: {
+          /** 주철근 규격 · 19종 (D4 ~ D57) */
+          NAME: string;
+          /** 철근 총 개수 */
+          NUM: number;
+          /** 열(row) 수 */
+          ROW: number;
+          /** 코너 철근 사용 */
+          USE_CORNER: boolean;
+          /** 코너 철근 규격 (USE_CORNER=true 일 때) · 19종 Applies when Assign.ITEMS.MAIN_BAR.USE_CORNER = true. */
+          NAME_CORNER?: string;
+        };
+        /** 단부 전단철근 */
+        SHEAR_BAR_END: {
+          /** 후프 철근 규격 · 19종 (D4 ~ D57) */
+          NAME: string;
+          /** 다리 수 (local Y) */
+          LEG_Y: number;
+          /** 다리 수 (local Z) */
+          LEG_Z: number;
+          /** 철근 간격 @ */
+          DIST: number;
+        };
+        /** 중앙부 전단철근 */
+        SHEAR_BAR_CEN: {
+          /** 후프 철근 규격 · 19종 (D4 ~ D57) */
+          NAME: string;
+          /** 다리 수 (local Y) */
+          LEG_Y: number;
+          /** 다리 수 (local Z) */
+          LEG_Z: number;
+          /** 철근 간격 @ */
+          DIST: number;
+        };
+        /** 콘크리트면~철근중심 거리 (do) */
+        DO: number;
+        /** 후프 철근 타입 (Ties | Spirals) */
+        HOOP_TYPE?: "Ties" | "Spirals";
+        /** 후크 타입 (0: 90+(135 or 180) | 1: Both(135 or 180)) */
+        HOOK_TYPE?: number;
+      }>;
+    };
+  } & (
+    {
+      CREATE_SUB_SECTION: true;
+      /** 요소 ID 배열 */
+      KEYS?: Array<number>;
+      /** ID 범위 (예: "1to160") */
+      TO?: string;
+      /** 구조 그룹 이름 */
+      STRUCTURE_GROUP_NAME?: string;
+    } |
+    {
+      KEYS?: never;
+      TO?: never;
+      STRUCTURE_GROUP_NAME?: never;
+    }
+  );
   export interface RcWallStoryRange {
     FROM?: string;
     TO?: string;

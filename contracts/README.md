@@ -86,8 +86,8 @@ Three things to know:
   across that change. These are public API anchors on both registries; changing
   one is a breaking change, and now it is a breaking change you have to make on
   purpose.
-- **It is optional, and its absence means the Python fallback.** 270 of the 304
-  npm resources have one; the 34 without a contract keep taking their names from
+- **It is optional, and its absence means the Python fallback.** 273 of the 304
+  npm resources have one; the 31 without a contract keep taking their names from
   Python, exactly as they already do for `name` and `products`. `payloadTypeName`
   is separately optional: `/db/DRLS` is typed `JsonObject` and has no payload
   type of its own, so having no name there is a fact, not a gap.
@@ -397,10 +397,10 @@ What the extractor can currently reach, per `scripts/extract_contracts.py`:
 | ...with a parameter table it can parse | 368 |
 | Fields transcribed across parsed tables | 4,927, of which 375 nested |
 | ...carrying a review note that has to be cleared before promotion | 1,114 (22%) |
-| Promoted so far | 339 endpoints + 87 tables |
+| Promoted so far | 342 endpoints + 87 tables |
 | Drafts awaiting review | 47 |
-| Payload types the npm SDK now takes from contracts | 255 of 750 |
-| DB resources the npm SDK now takes from contracts | 270 of 304 |
+| Payload types the npm SDK now takes from contracts | 258 of 750 |
+| DB resources the npm SDK now takes from contracts | 273 of 304 |
 | Contracts carrying explicit conditional variants | 14 |
 | Supplementary tables merged as an explicit variant | 78 |
 | ...merged structurally or by `appliesWhen` | 74 |

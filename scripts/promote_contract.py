@@ -420,13 +420,20 @@ def promote(
         return None
 
     # A draft still carrying review notes is incomplete by its own admission.
-    # Promoting it in bulk would put "the manual left this blank" into the source
-    # of truth as though it were settled. The nesting notes are the exception:
-    # they record how a structure was reconstructed, not something unresolved.
+    # Promoting it in bulk would put "the manual left this blank" into the
+    # source of truth as though it were settled.
+    #
+    # Which findings are settled is the extractor's to say, not this gate's:
+    # it renders them `# RESOLVED:` (see _SETTLED_NOTE_MARKERS). A rebuilt
+    # nesting and a sampled enum both record an answer - the second says in
+    # its own text that no enum is transcribed, and nothing in the permitted
+    # sources holds the members it withheld. This used to be a substring test
+    # for the nesting wording alone, which left the sampled-enum conclusion
+    # blocking three contracts as though someone still had to decide it.
     notes = [
         line.strip()
         for line in text.splitlines()
-        if line.strip().startswith("# NOTE:") and "nests this under" not in line
+        if line.strip().startswith("# NOTE:")
     ]
     if notes:
         print(f"  {slug}: refused - {len(notes)} unresolved review note(s), e.g. {notes[0][8:60]}")

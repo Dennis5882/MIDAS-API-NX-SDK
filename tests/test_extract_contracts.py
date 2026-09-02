@@ -3240,3 +3240,55 @@ def test_a_field_two_branch_tables_document_applies_under_both(tmp_path: Path):
     assert by_key["ELAST"].applies_when == [("P_TYPE", (2,))]
     assert by_key["STANDARD"].applies_when == [("P_TYPE", (1,))]
 
+
+def test_a_finding_nothing_can_reopen_renders_as_resolved(tmp_path: Path):
+    """A conclusion and an open question do not deserve the same marker.
+
+    Promotion refuses a draft still carrying `# NOTE:`, which is right for a
+    gap and wrong for an answer. Deciding which is which belongs where the
+    evidence is - the extractor knows the sampled-enum rule fired and why -
+    so it renders a settled finding `# RESOLVED:`. Reading the sampled-enum
+    conclusion as unresolved held three contracts out of the source of truth
+    as though someone still had to choose.
+    """
+
+    path = tmp_path / "99_DB_Resolved.md"
+    path.write_text(
+        """## 1. `/db/RESOLVED-MARK` -- a settled finding and an open one
+
+### JSON Schema
+
+```json
+{
+  "RESOLVED-MARK": {
+    "type": "object",
+    "properties": {
+      "MAIN_REBAR": { "type": "string", "enum": ["D4", "D5"] },
+      "WIDTH": { "type": "number" }
+    }
+  }
+}
+```
+
+### Specifications
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Main rebar size, 19종 | `"MAIN_REBAR"` | String (enum) | - | Optional |
+| 2 | Width | `"WIDTH"` | String | - | Optional |
+""",
+        encoding="utf-8",
+    )
+
+    draft = ex.render_draft(ex.parse_chapter(path)[0])
+    resolved = [line.strip() for line in draft.splitlines() if line.strip().startswith("# RESOLVED:")]
+    notes = [line.strip() for line in draft.splitlines() if line.strip().startswith("# NOTE:")]
+    # The sampled enum is an answer: nothing in the manual holds the members
+    # its own description says it withheld.
+    assert any("19 values" in line for line in resolved)
+    # A Value Type the section contradicts is a question, and still blocks.
+    # A wrapped note keeps its marker only on the first line, which is the
+    # line promotion reads, so match on that.
+    assert any("Specifications table types this" in line for line in notes)
+    assert not any("Specifications table types this" in line for line in resolved)
+
