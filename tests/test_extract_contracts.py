@@ -2689,3 +2689,221 @@ def test_two_keys_the_manual_calls_alternatives_are_not_split():
 
     assert ex._parallel_field_cells("`FREQ1`/`PERIOD1`", "Number", "-", "Required", "3") is None
     assert ex._parallel_field_cells("`FREQ2`/`PERIOD2`", "Number", "-", "Required", "5") is None
+
+
+def test_a_compact_row_its_own_schema_names_key_by_key_is_split(tmp_path: Path):
+    """The schema says whether a slash joins two fields or renames one.
+
+    Chapter 26 compresses two fields into ``"DT" / "DB" | Number | 0``. The row
+    alone cannot say whether a caller sends both keys or picks between two
+    names for one, and `/db/THIS-M1` writes the second kind - which is why the
+    reader refuses every such row on the cells alone. Where the section's own
+    JSON Schema declares each key as a property of its own, they are separate
+    wire names, and it also states the type, requiredness and default the
+    compressed row had to share.
+    """
+
+    path = tmp_path / "99_DB_CompactSchema.md"
+    path.write_text(
+        """## 1. `/db/COMPACT` -- compact rows the schema resolves
+
+### JSON Schema
+
+```json
+{
+  "COMPACT": {
+    "type": "object",
+    "properties": {
+      "BEAM": {
+        "type": "object",
+        "properties": {
+          "DT": { "type": "number", "description": "Top cover", "default": 0 },
+          "DB": { "type": "number", "description": "Bottom cover", "default": 0 },
+          "DOUBLY_REBAR": { "type": "boolean", "description": "Doubly", "default": true },
+          "DOUBLY_K": { "type": "number", "description": "k factor", "default": 1 }
+        }
+      }
+    }
+  }
+}
+```
+
+### Specifications
+
+**Root**
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Beam criteria | `"BEAM"` | Object | - | Optional |
+
+**`BEAM` object**
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| a | Top / bottom cover | `"DT"` / `"DB"` | Number | `0` | Optional |
+| b | Doubly design / k | `"DOUBLY_REBAR"` / `"DOUBLY_K"` | Boolean / Number | `true` / `1` | Optional |
+""",
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    beam = section.tables[1].fields
+    assert [field.key for field in beam] == ["DT", "DB", "DOUBLY_REBAR", "DOUBLY_K"]
+    # Each key takes the claim the schema makes about it, not the row's shared one.
+    assert [field.type for field in beam] == ["number", "number", "boolean", "number"]
+    assert [field.documented_default for field in beam] == [0, 0, True, 1]
+    # The row described all of them at once; the schema describes each.
+    assert [field.description for field in beam] == ["Top cover", "Bottom cover", "Doubly", "k factor"]
+    assert all(not field.notes for field in beam)
+
+
+def test_a_compact_row_no_schema_names_keeps_its_review_note(tmp_path: Path):
+    """A slash the schema cannot vouch for is still an unanswered question.
+
+    `/db/THIS-M1`'s ``FREQ1/PERIOD1`` is one field the manual names two ways -
+    a frequency under one `COEF_CALC` value and a period under the other - and
+    its schema declares neither name. Splitting it would publish two fields
+    that do not exist, so the row stays whole and keeps the note that says so.
+    """
+
+    path = tmp_path / "99_DB_CompactUnnamed.md"
+    path.write_text(
+        """## 1. `/db/ALTERNATIVE` -- a compact row naming one field twice
+
+### JSON Schema
+
+```json
+{
+  "ALTERNATIVE": {
+    "type": "object",
+    "properties": {
+      "COEF_CALC": { "type": "integer", "description": "0 frequency, 1 period" }
+    }
+  }
+}
+```
+
+### Specifications
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Selector | `"COEF_CALC"` | Integer | `0` | Optional |
+| 2 | Frequency when 0, period when 1 | `"FREQ1"` / `"PERIOD1"` | Number | `0` | Optional |
+""",
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    keys = [field.key for field in section.tables[0].fields]
+    assert keys == ["COEF_CALC", 'FREQ1" / "PERIOD1']
+    compact = section.tables[0].fields[1]
+    assert any(ex._AMBIGUOUS_WIRE_KEY_NOTE in note for note in compact.notes)
+
+
+def test_a_member_object_table_is_read_under_the_object_it_describes(tmp_path: Path):
+    """A table of an object's fields is not a table of the request's roots.
+
+    Chapter 26 heads one table per member object rather than nesting the rows
+    under a parent row, so none of those rows is a root property and every
+    schema hint missed them: the KDS rebar sections were transcribed without a
+    single enum or requiredness the schema states, purely because of where the
+    manual put the row. A table is placed under an object only when no row of
+    it names a root property and that object declares every row it has.
+    """
+
+    path = tmp_path / "99_DB_MemberTable.md"
+    path.write_text(
+        """## 1. `/db/MEMBER` -- one table per member object
+
+### JSON Schema
+
+```json
+{
+  "MEMBER": {
+    "type": "object",
+    "properties": {
+      "WALL": {
+        "type": "object",
+        "required": ["GRADE"],
+        "properties": {
+          "GRADE": { "type": "string", "description": "Grade", "enum": ["SD400", "SD500"] },
+          "SPACING": { "type": "number", "description": "Spacing", "default": 0.2 }
+        }
+      }
+    }
+  }
+}
+```
+
+### Specifications
+
+**Root**
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Wall criteria | `"WALL"` | Object | - | Optional |
+
+**`WALL` object**
+
+| No. | Description | Key | Value Type |
+|---|---|---|---|
+| a | Rebar grade | `"GRADE"` | String (enum) |
+| b | Spacing | `"SPACING"` | Number |
+""",
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    grade, spacing = section.tables[1].fields
+    assert grade.enum == ["SD400", "SD500"]
+    assert grade.requirement == "required"
+    assert spacing.requirement == "optional"
+    assert spacing.documented_default == 0.2
+
+
+def test_a_bound_stated_for_another_kind_of_value_is_not_transcribed(tmp_path: Path):
+    """`minItems` on an integer is the manual disagreeing with itself.
+
+    `/DESIGN/RC/KDS-41-20-2022/REBR` declares ``NUM`` as an integer and bounds
+    it with ``minItems: 4`` while its table reads "min 4". The bound is real
+    and the keyword that carries it is not one an integer has, so publishing it
+    would put a restriction on the field that restricts nothing. Record the
+    disagreement and transcribe neither half.
+    """
+
+    path = tmp_path / "99_DB_Bound.md"
+    path.write_text(
+        """## 1. `/db/BOUND` -- a bound on the wrong kind of value
+
+### JSON Schema
+
+```json
+{
+  "BOUND": {
+    "type": "object",
+    "properties": {
+      "NUM": { "type": "integer", "description": "Bar count", "minItems": 4 },
+      "NAMES": { "type": "array", "description": "Bar names", "minItems": 2 }
+    }
+  }
+}
+```
+
+### Specifications
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Bar count (min 4) | `"NUM"` | Integer | - | Optional |
+| 2 | Bar names | `"NAMES"` | Array[String] | - | Optional |
+""",
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    num, names = section.tables[0].fields
+    assert "minItems" not in num.constraints
+    assert any("does not apply to" in note for note in num.notes)
+    # The same keyword on the kind of value it does bound is transcribed.
+    assert names.constraints["minItems"] == 2
+    assert not names.notes
+

@@ -2011,6 +2011,163 @@ def _reconcile_schema_compact_key_rows(
                 break
 
 
+def _schema_parents(hints: dict[tuple[str, ...], list[dict[str, Any]]]) -> dict[tuple[str, ...], set[str]]:
+    """Group a section's schema properties by the object that declares them."""
+
+    parents: dict[tuple[str, ...], set[str]] = {}
+    for path, entries in hints.items():
+        if path and any(any(not name.startswith("__") for name in entry) for entry in entries):
+            parents.setdefault(path[:-1], set()).add(path[-1])
+    return parents
+
+
+def _compact_row_defaults(field: ParsedField, count: int) -> Optional[list[Any]]:
+    """Read one documented default per key from a compact row's Default cell.
+
+    The cell is either a single claim shared by every key (``0``) or one claim
+    per key in row order (``0.3 / 0.15 / 0.1``). Anything else - prose, or a
+    list of the wrong length - is not a per-key statement and refuses.
+    """
+
+    if field.documented_default_note is None:
+        return [field.documented_default] * count
+    parts = re.split(r"\s*/\s*", field.documented_default_note.strip())
+    if len(parts) != count:
+        return None
+    values: list[Any] = []
+    for part in parts:
+        value, note = _normalize_default(part)
+        if note is not None:
+            return None
+        values.append(value)
+    return values
+
+
+def _expand_schema_named_compact_rows(
+    tables: list[ParsedTable], hints: dict[tuple[str, ...], list[dict[str, Any]]]
+) -> None:
+    """Split a compact key row whose own JSON Schema names each key separately.
+
+    ``"DE" / "DW" | Number | 0 | Optional`` compresses two fields into one row,
+    and the row alone cannot say whether the slash means "both keys, one shared
+    claim" or "one field the manual names two ways". `/db/THIS-M1` writes the
+    second kind - ``FREQ1/PERIOD1``, a frequency when ``COEF_CALC=0`` and a
+    period when it is 1 - so splitting every such row would publish fields that
+    do not exist.
+
+    The section's own JSON Schema decides which it is. Where the schema
+    declares every key in the row as a property of its own, they are distinct
+    wire names, and it states each one's type, requiredness and default
+    individually - the detail the compressed row had to drop. Where it declares
+    none of them, as every `/db/STCT`, `/db/MVLDeu`, `/db/MVHL` and
+    `/db/THIS-M1` compact row does, nothing is split and the review note stays.
+
+    Both statements have to agree before either is transcribed. A type or a
+    default the row states and the schema contradicts leaves the row whole,
+    rather than letting one source silently overrule the other.
+
+    _reconcile_schema_compact_key_rows handles the rows whose object *is* a
+    field of the same table, by moving them into it. These are the rows the
+    manual writes in a table of their own - a section that heads one table per
+    member object, as chapter 26 does - where there is no parent field to move
+    into and the row already sits at the right level.
+    """
+
+    scalar_types = {"string", "number", "integer", "boolean", "object", "array"}
+    children = _schema_parents(hints)
+    if not children:
+        return
+
+    def split(field: ParsedField) -> Optional[list[ParsedField]]:
+        if not any(_AMBIGUOUS_WIRE_KEY_NOTE in note for note in field.notes):
+            return None
+        keys = _ambiguous_literal_keys(field)
+        if keys is None:
+            return None
+        # Several objects may declare the same key set - chapter 26's COLUMN
+        # and BRACE are documented as having identical fields. Which object
+        # this table describes does not have to be decided: pooling every
+        # candidate's property schemas and requiring them to agree says the
+        # keys mean the same thing under all of them, which is the only claim
+        # being transcribed.
+        parents = [parent for parent, names in children.items() if set(keys) <= names]
+        if not parents:
+            return None
+        defaults = _compact_row_defaults(field, len(keys))
+        if defaults is None:
+            return None
+        clones: list[ParsedField] = []
+        for index, key in enumerate(keys):
+            entries = [
+                entry
+                for parent in parents
+                for entry in hints.get(parent + (key,), [])
+                if any(not name.startswith("__") for name in entry)
+            ]
+            schema_type = _agreed_schema_value(entries, "type")
+            if schema_type not in scalar_types:
+                return None
+            if field.type is not None and field.type != schema_type:
+                return None
+            required = _agreed_schema_value(entries, "__required")
+            if not isinstance(required, bool):
+                return None
+            requirement = "required" if required else "optional"
+            if field.requirement is not None and field.requirement != requirement:
+                return None
+            default = _agreed_schema_value(entries, "default")
+            if not field.default_column_missing and defaults[index] != default:
+                return None
+            clone = copy.deepcopy(field)
+            clone.key = key
+            clone.type = schema_type
+            clone.requirement = requirement
+            clone.documented_default = default
+            clone.documented_default_note = None
+            clone.shared_number_group = False
+            # The row describes every key at once ("horizontal / end / boundary
+            # rebar size"); the schema describes this one. Both are the
+            # manual's own words, and only one of them is about this field.
+            description = _agreed_schema_value(entries, "description")
+            if isinstance(description, str) and description:
+                clone.description = description
+            enums = [_schema_enum_values(entry) for entry in entries]
+            filled_enum = enums[0] if enums and all(value == enums[0] for value in enums) else None
+            if not clone.enum and filled_enum:
+                clone.enum = filled_enum
+            items = _agreed_schema_value(entries, "items")
+            if schema_type == "array" and clone.items is None and isinstance(items, dict):
+                item_type = items.get("type")
+                if item_type in scalar_types:
+                    clone.items = {"type": item_type}
+            clone.notes = [
+                note
+                for note in clone.notes
+                if _AMBIGUOUS_WIRE_KEY_NOTE not in note
+                and not note.startswith("unrecognised Value Type")
+                and not note.startswith("unrecognised Required value")
+                and not (note == _ENUM_VALUES_ELSEWHERE and filled_enum)
+                and not (note == "array element type not stated by the manual" and clone.items)
+            ]
+            clones.append(clone)
+        return clones
+
+    def visit(fields: list[ParsedField]) -> None:
+        index = 0
+        while index < len(fields):
+            field = fields[index]
+            visit(field.properties)
+            clones = split(field)
+            if clones is None:
+                index += 1
+                continue
+            fields[index : index + 1] = clones
+            index += len(clones)
+
+    for table in tables:
+        visit(table.fields)
+
+
 _COMPACT_PROSE_CONDITION_PAIR = re.compile(
     r'`(?P<selector>[A-Za-z0-9_]+)\s*=\s*"(?P<first_value>[^"`]+)"`\s*이면\s*'
     r'`(?P<first_target>[A-Za-z0-9_]+)`\s*,\s*`"(?P<second_value>[^"`]+)"`\s*이면\s*'
@@ -2064,13 +2221,56 @@ def _apply_explicit_prose_conditions(tables: list[ParsedTable], lines: list[str]
             ]
 
 
+# Which JSON Schema keyword can bound which kind of value. A bound stated for
+# a different kind is the manual contradicting its own type declaration, and
+# both halves cannot be right - see the note _apply_schema_hints attaches.
+_CONSTRAINT_APPLIES_TO: dict[str, set[str]] = {
+    "minimum": {"number", "integer"},
+    "maximum": {"number", "integer"},
+    "minItems": {"array"},
+    "maxItems": {"array"},
+    "minLength": {"string"},
+    "maxLength": {"string"},
+}
+
+
+def _table_schema_bases(
+    table: ParsedTable, children: dict[tuple[str, ...], set[str]]
+) -> tuple[tuple[str, ...], ...]:
+    """Where in the section's JSON Schema a whole parameter table sits.
+
+    Most sections write one table whose rows are the request's root
+    properties, and the root is where their schema hints are looked up.
+    Chapter 26 heads one table per member object instead - a `BEAM` table, a
+    `COLUMN` / `BRACE` table, a `WALL` table - and those rows are not root
+    properties at all, so every hint missed them: `/DESIGN/RC/KDS-41-20-2022`'s
+    rebar sections were transcribed without a single enum, default or
+    requiredness the schema states, purely because of where the manual put the
+    row.
+
+    A table is placed only when it cannot be the root table - no row of it
+    names a root property - and some object declares every one of its rows.
+    Several objects may qualify, as `COLUMN` and `BRACE` do; the caller pools
+    their property schemas and keeps only what they agree on, so the table does
+    not have to be assigned to one of them.
+    """
+
+    keys = [field.key for field in table.fields]
+    if len(keys) < 2 or any(not _PATH_SEGMENT.fullmatch(key) for key in keys):
+        return ((),)
+    if children.get((), set()) & set(keys):
+        return ((),)
+    bases = tuple(sorted(path for path, names in children.items() if path and set(keys) <= names))
+    return bases or ((),)
+
+
 def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], list[dict[str, Any]]]) -> None:
     """Fill only table gaps that the same section's JSON Schema states exactly."""
 
-    def visit(fields: list[ParsedField], prefix: tuple[str, ...] = ()) -> None:
+    def visit(fields: list[ParsedField], bases: tuple[tuple[str, ...], ...], prefix: tuple[str, ...] = ()) -> None:
         for field in fields:
             path = prefix + (field.key,)
-            entries = hints.get(path, [])
+            entries = [entry for base in bases for entry in hints.get(base + path, [])]
             if entries:
                 # ``then.required`` contributes only ``__conditional``.  It
                 # describes a relationship between fields and must not act as
@@ -2192,12 +2392,30 @@ def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], 
                     # drift against contracts that correctly omit a no-op.
                     if name in {"minItems", "minLength"} and value == 0:
                         continue
+                    # `/DESIGN/RC/KDS-41-20-2022/REBR` declares NUM as an
+                    # integer and bounds it with ``minItems: 4``, while its
+                    # own table reads "min 4". The bound is real; the keyword
+                    # that carries it is not one an integer has. Publishing it
+                    # would put a restriction on the field that restricts
+                    # nothing, so record the disagreement and transcribe
+                    # neither half.
+                    applies_to = _CONSTRAINT_APPLIES_TO.get(name)
+                    if value is not None and applies_to is not None and field.type not in applies_to:
+                        mismatch = (
+                            f"the manual's JSON Schema bounds this with {name}={value!r} "
+                            f"but types it as {field.type}, which that keyword does not "
+                            "apply to; no constraint is transcribed"
+                        )
+                        if mismatch not in field.notes:
+                            field.notes.append(mismatch)
+                        continue
                     if value is not None and name not in field.constraints:
                         field.constraints[name] = value
-            visit(field.properties, path)
+            visit(field.properties, bases, path)
 
+    children = _schema_parents(hints)
     for table in tables:
-        visit(table.fields)
+        visit(table.fields, _table_schema_bases(table, children))
 
 
 @dataclass
@@ -2822,6 +3040,7 @@ def parse_chapter(path: Path) -> list[Section]:
         _apply_enum_values(section.tables, _enum_tables(body))
         schema_hints = _section_schema_hints(body, section.endpoint)
         _reconcile_schema_compact_key_rows(section.tables, schema_hints)
+        _expand_schema_named_compact_rows(section.tables, schema_hints)
         _apply_schema_hints(section.tables, schema_hints)
         _apply_explicit_prose_conditions(section.tables, body)
         _drop_sampled_enums(section.tables)
