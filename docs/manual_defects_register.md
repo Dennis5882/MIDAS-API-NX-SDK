@@ -35,6 +35,7 @@ Civil NX 2026 v2.2, both build 08/26/2026.
 | MD-09 | 2026-09-01 | `/DESIGN/RC/.../DCRM-*`, `/DESIGN/SRC/AIK-SRC2K/LLRF` | the JSON Schema `enum` lists 5 rebar sizes and 6 reduction factors | the same rows' descriptions say `19종 (D4 ~ D57)` and `가능값 11개`; LLRF's list carries the literal member `...(전체 11개)` | **manual repo** transcription | open |
 | MD-10 | 2026-09-01 | four sections' Specifications tables | the table omits a root property the same section's JSON Schema declares | `/db/EPMT` (6 model objects) and `/db/ELEM` (`C_RAT`, `LCAXIS`) reconciled 2026-09-02; `/db/FIMP` and `/db/RCHK` still drafts. Five more turned out to be this SDK's parser, not the manual - see the detail | **manual repo** transcription (4 of the original 9) | 2 reconciled, 2 open |
 | MD-11 | 2026-09-02 | nine parameter rows' Value Type | the Specifications table's Value Type cell | the same section's own JSON Schema types the property differently. Seven are integer/number width; two change the shape of the value - `/db/SBDO` `AXIS_VECTOR` (Number vs an array of numbers, and its own Request Example sends six) and `/db/MATL` `PARAM` (Object vs array) | **manual repo** transcription | `/db/SBDO` and `/db/MATL` corrected in their contracts; 7 open |
+| MD-12 | 2026-09-02 | seven Hyper-S `-M1` sections, and the `/info` schema that substitutes for them | the section gives a URL, a methods line and a Zendesk link - no Specifications table and no JSON Schema, so live `/info` is the only permitted contract source | `/info` serves a full schema for four of them and 404s for three, and the schemas it serves are malformed twice over: every apostrophe in a `description` is escaped `\'`, which is not a JSON escape, and `maxItems` is stated on an array's `items` subschema instead of the array | **MIDASIT product** (`/info` output) and **MIDASIT article** (the missing section content) | open |
 
 ## Detail
 
@@ -346,3 +347,51 @@ the table's claim has to argue with the record rather than silently win.
    official-source issues that the manual repo can only annotate.
 4. After any upstream or manual correction, re-run
    `scripts/check_manual_drift.py` before moving `vendored_at_commit`.
+
+### MD-12 - the only source these endpoints have is itself malformed
+
+Seven `-M1` sections in `04_DB_Properties.md` are stubs: a URL, a methods
+line, a Zendesk link, and a one-line GET snippet. There is no Specifications
+table and no JSON Schema, so `contracts/README.md`'s three permitted sources
+reduce to one - live `/info` introspection. Three of the seven
+(`/db/IEHG-TRUSS-M1`, `/db/IEHG-GL-M1`, `/db/IEHG-PSS-M1`) 404 on `/info`,
+which leaves them with **no permitted source at all**; that split has now been
+observed three times, most recently in `schema/hyper-s-info.json`.
+
+The four that do answer carry two defects in the schema they return. Both are
+in the captured artifact verbatim, and a contract written from it must not
+transcribe either.
+
+**Apostrophes are escaped with a backslash inside a JSON string.** Eight
+`description` values across `/db/MATL-M1` and `/db/EPMT-M1`:
+
+| endpoint | path | `description` as served |
+| --- | --- | --- |
+| `/db/MATL-M1` | `PARAM[].USER_DEFINED.POISN` | `" Poisson\'s ratio"` |
+| `/db/MATL-M1` | `PARAM[].USER_DEFINED.POISN_M` | `" Poisson\'s ratio [xy,xz,yz]"` |
+| `/db/EPMT-M1` | `MASONRY.{BM,BED_JOINT,HEAD_JOINT}.YOUNG_S_MODULUS` | `" Young\'s Modulus"` |
+| `/db/EPMT-M1` | `MASONRY.{BM,BED_JOINT,HEAD_JOINT}.POSSIONS_S_RATIO` | `" Poisson\'s Ratio"` |
+
+`\'` is valid in JavaScript and PHP string literals and is not a JSON
+escape. A strict parser rejects it; a lenient one keeps the backslash, so the
+text reaches a reader as `Poisson\'s ratio`. The same objects also spell the
+key `POSSIONS_S_RATIO`, which is the server's own misspelling of "Poisson's"
+and is the wire name regardless.
+
+**`maxItems` is attached to the wrong schema.** Four array properties on
+`/db/MATL-M1`:
+
+```json
+"ELAST_M": {"description": " Modulii of elasticity [X,Y,Z]", "type": "array",
+             "items": {"type": "number", "maxItems": 3}}
+```
+
+`maxItems` constrains an array; here it sits on the `number` subschema
+describing each element, where JSON Schema ignores it. The intent is
+unambiguous - three components, named in the description - but as served the
+bound constrains nothing. `ELAST_M`, `THERMAL_M`, `SHEAR_M` and `POISN_M` all
+have it.
+
+This is the same shape as the rule `extract_contracts.py` already learned
+about the manual in 2.7.5: a bound stated for another kind of value is noted,
+not transcribed. It now has to hold for `/info` too.

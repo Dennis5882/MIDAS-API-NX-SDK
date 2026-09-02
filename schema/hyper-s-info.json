@@ -1,7 +1,8 @@
 {
   "capturedAt": "2026-09-02",
   "product": "civil",
-  "nxVersion": "civil",
+  "nxVersion": null,
+  "nxVersionNote": "The capture session reported program 'civil' but its NX build string was not recorded. Every other live record in this repo carries one (for example 'MIDAS Civil NX 2026 (v2.2), build 06/18/2026'); re-stamp this field on the next Civil NX session rather than inferring it.",
   "method": "GET /info/db/{endpoint}",
   "endpoints": {
     "/db/MATL-M1": {

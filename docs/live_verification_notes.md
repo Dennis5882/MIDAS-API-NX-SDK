@@ -8025,3 +8025,55 @@ GET response body was captured and no model data was changed. The top-level
 they serve GET but expose no introspection schema, so their assumed
 `INEL_PROP_NAME` shape remains labelled as sibling analogy rather than live
 schema evidence.
+
+### `/db/STYP-M1`'s contract and its `/info` schema were written from different sources and agree exactly (2026-09-02)
+
+`schema/hyper-s-info.json` deliberately includes `/db/STYP-M1`, which is not
+one of the seven uncontracted stubs. It is the one Hyper-S endpoint with a
+real manual section, so its contract was derived from the Specifications
+table with no reference to introspection - which makes the captured schema an
+independent check on it rather than a restatement.
+
+They agree on all ten paths, type for type:
+
+| path | `/info` | `contracts/endpoints/db-styp-m1.yaml` |
+| --- | --- | --- |
+| `STYPE` | string | string |
+| `GRAV` | number | number |
+| `TEMP` | number | number |
+| `ALIGNBEAM` | boolean | boolean |
+| `ALIGNSLAB` | boolean | boolean |
+| `MASS_CONTROL` | object | object |
+| `MASS_CONTROL.MASS_TYPE` | string | string |
+| `MASS_CONTROL.MASS_POS` | string | string |
+| `MASS_CONTROL.SELFWEIGHT` | boolean | boolean |
+| `MASS_CONTROL.MASS_AXIS` | string | string |
+
+The four nested members are the point. The manual never writes the path
+`MASS_CONTROL.MASS_TYPE`; it numbers those rows `2-(1)` through `2-(4)` under
+a row named `MASS_CONTROL` and leaves the reader to infer the nesting. The
+contract carries four notes saying exactly that, and the server's own schema
+now confirms the inference was right.
+
+That is a statement about the extractor, not just this endpoint. Rebuilding a
+structure the manual addressed by numbering is the most common finding in the
+whole contract set - 592 of them across 95 contracts - and this is the first
+time one has been checked against a source that states the path directly.
+
+### The `/info` schemas are malformed in two ways (2026-09-02)
+
+Captured verbatim, so both are in `schema/hyper-s-info.json` as served:
+apostrophes inside `description` strings are escaped `\'`, which is not a JSON
+escape (8 occurrences), and `maxItems` is stated on an array's `items`
+subschema rather than the array (4 occurrences on `/db/MATL-M1`). Registered
+as **MD-12**; a contract written from this artifact must not transcribe
+either.
+
+### What the capture did not record
+
+The session's Civil NX build string. `schema/hyper-s-info.json` carries
+`"nxVersion": null` and says so rather than naming a build it does not have,
+and the eight `docs/coverage.json` entries keep the `nx_versions` of the
+sessions that set their level. Every other live record in this repo carries a
+build; re-stamp this one on the next Civil NX session rather than inferring
+it from the dates around it.
