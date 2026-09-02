@@ -340,7 +340,7 @@ class TimeDependentMaterialStrengthPayload(TypedDict, total=False):
 
 class TimeDependentMaterialStrength(DbResource):
     ENDPOINT = "/db/TDME"
-    NAME = "Time Dependent Material - Compressive Strength"
+    NAME = "Time Dependent Material – Compressive Strength"
     PRODUCTS = frozenset({"gen", "civil"})
 
 

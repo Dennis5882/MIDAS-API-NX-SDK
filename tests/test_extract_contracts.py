@@ -56,6 +56,7 @@ CHAPTER = """# 99 DB — Synthetic
 | 21 | Empty item defaults | `"DEFAULT_ITEMS"` | Array [Number] | [] | Optional |
 | 22 | Empty object default | `"DEFAULT_OPTIONS"` | Object | {} | Optional |
 | 23 | Quoted string default | `"DEFAULT_MODE"` | String | `"FIRST"` | Optional |
+| 24 | Variant discriminator | `"TYPE"` | String | - | Required |
 
 ### Variant table
 
@@ -1329,6 +1330,7 @@ def test_a_repeated_heading_selector_is_not_a_discriminator(tmp_path: Path):
 | No. | Description | Key | Value Type | Default | Required |
 |---|---|---|---|---|---|
 | 1 | Subtype | `STYPE` | Integer | - | Required |
+| 2 | Input dimension | `INPUT` | String | - | Required |
 
 ### Tension only -- Truss (STYPE: 1)
 | No. | Description | Key | Value Type | Default | Required |
@@ -3503,3 +3505,63 @@ def test_every_measured_correction_describes_a_kind_the_schema_accepts():
         for key, entries in fields.items():
             for entry in entries:
                 assert entry.describes in allowed, f"{endpoint} {key}: {entry.describes}"
+
+
+def _table(heading: str, *keys: str) -> "ex.ParsedTable":
+    """A supplementary table under `heading`, documenting `keys`."""
+
+    return ex.ParsedTable(
+        heading=heading,
+        line=1,
+        fields=[_field("1", key, "String") for key in keys],
+        missing_columns=[],
+    )
+
+
+def test_a_colon_inside_a_documented_code_name_is_not_a_discriminator():
+    """`/db/TDME` heads two tables with lists of `CODENAME` values.
+
+    One of them is `INDIA(IRC:112-2011)`, and the colon inside that name has
+    the shape of a gate: field `IRC`, value `112-2011`. There is no `IRC` field
+    anywhere in the endpoint, and the real discriminator - `CODENAME` - never
+    appears in the `FIELD = VALUE` form the parser looks for. The contract that
+    came out said an endpoint branches on a field it does not have.
+    """
+
+    base = _table("common", "NAME", "TYPE", "CODENAME", "STRENGTH")
+    branch = _table("`CEB-FIP(1990)` · `INDIA(IRC:112-2011)` 전용 추가 필드", "iCTYPE")
+
+    assert ex._explicit_variants([base, branch]) == []
+
+
+def test_a_gate_in_parentheses_still_counts_when_the_field_is_real():
+    """The rule has to be about the field, not about the punctuation.
+
+    `/db/MVLDch` and `/db/MVLDpl` head four tables
+    `Moving Load Optimization(bAUTO_OPTIMIZE=true)` - parentheses attached to a
+    word, exactly like `INDIA(IRC:...)`. Reading the shape rather than the
+    field would have thrown these four away to catch the two.
+    """
+
+    base = _table("common", "NAME", "bAUTO_OPTIMIZE")
+    branch = _table("Moving Load Optimization(bAUTO_OPTIMIZE=true)", "OPT_FACTOR")
+
+    variants = ex._explicit_variants([base, branch])
+
+    assert [v.conditions for v in variants] == [(("bAUTO_OPTIMIZE", (True,)),)]
+
+
+def test_a_gate_may_name_a_field_only_a_branch_table_documents():
+    """The discriminator is not always in the first table.
+
+    Checking only the base table would drop a legitimate variant whose
+    selector the manual introduces alongside the branch it selects, so the
+    check spans every table in the section.
+    """
+
+    base = _table("common", "NAME")
+    branch = _table('Sub-branch (`MODE` = "FAST")', "MODE", "SPEED")
+
+    variants = ex._explicit_variants([base, branch])
+
+    assert [v.conditions for v in variants] == [(("MODE", ("FAST",)),)]

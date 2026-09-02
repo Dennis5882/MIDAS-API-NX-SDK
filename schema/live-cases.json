@@ -843,7 +843,7 @@
     {
       "tier": "props",
       "endpoint": "/db/TDME",
-      "name": "Time Dependent Material - Compressive Strength",
+      "name": "Time Dependent Material – Compressive Strength",
       "id": 2,
       "products": [
         "gen",

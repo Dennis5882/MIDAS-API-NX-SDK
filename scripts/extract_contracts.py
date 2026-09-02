@@ -1625,15 +1625,30 @@ def _explicit_variants(tables: list[ParsedTable]) -> list[ParsedVariant]:
     Two headings claiming one value is therefore evidence that the heading is
     not the whole gate. Every table gated on a repeated field stays unmerged -
     a contract must never say that one value selects two different field sets.
+
+    A gate must also name a field this section documents. `FIELD = VALUE` is a
+    shape, and a chapter can produce it by accident: `/db/TDME` heads two
+    tables with lists of code names, one of which is `INDIA(IRC:112-2011)`, and
+    the colon inside that name reads as a discriminator `IRC` on the value
+    `112-2011`. There is no `IRC` field anywhere in `/db/TDME`, and the real
+    discriminator - `CODENAME` - is never written in the `FIELD = VALUE` form
+    at all. Checking the field against the section is the same requirement the
+    contract schema already states for `appliesWhen`, and it is what separates
+    that accident from `Moving Load Optimization(bAUTO_OPTIMIZE=true)`, where
+    the parentheses look identical and the field is real.
     """
 
     if len(tables) < 2:
         return []
+    documented = {field.key for table in tables for field in _walk(table.fields)}
     candidates: list[ParsedVariant] = []
     for table in tables[1:]:
         conditions = _variant_conditions(table.heading)
-        if conditions is not None:
-            candidates.append(ParsedVariant(conditions, table))
+        if conditions is None:
+            continue
+        if any(field.split(".")[0] not in documented for field, _ in conditions):
+            continue
+        candidates.append(ParsedVariant(conditions, table))
     repeated = Counter(candidate.conditions for candidate in candidates)
     ambiguous = {
         field
@@ -3877,20 +3892,36 @@ def live_omission_evidence() -> dict[str, LiveOmission]:
 
 
 #: A finding the permitted sources cannot reopen: the extractor did not fail
-#: to answer a question, it answered one. Four kinds qualify so far - how a
+#: to answer a question, it answered one. Five kinds qualify so far - how a
 #: structure the manual addressed by numbering or a tree marker was rebuilt;
 #: why a list the manual's own description outsizes was not transcribed as an
-#: enum; a bound `/info` states about the wrong kind of value (MD-12); and a
+#: enum; a bound `/info` states about the wrong kind of value (MD-12); a
 #: value set that lives in a field's description rather than in an `enum`,
-#: where the sibling contract drafted from the same prose does the same. None
-#: is waiting on a reader, and no permitted source states more about it. They
-#: render as `# RESOLVED:` so promotion, which refuses a draft still carrying
+#: where the sibling contract drafted from the same prose does the same; and
+#: an observation someone made by running the endpoint. None is waiting on a
+#: reader, and no permitted source states more about it. They render as
+#: `# RESOLVED:` so promotion, which refuses a draft still carrying
 #: `# NOTE:`, does not treat a conclusion as a gap.
+#:
+#: The live-observation one is the widest and the reason it is safe: a live
+#: observation is a fact about the product, and no reading of the manual can
+#: overturn it. It is not the same as an *answer* - "omitting this was refused
+#: for one of the five values this variant covers" settles what was seen and
+#: leaves safeToOmit unverified, which is exactly the distinction the two
+#: booleans exist for.
+#:
+#: The sixth is the narrowest: the vendored manual's own callout has already
+#: adjudicated the point, so a reader has nothing left to decide. /db/TDME's
+#: Russian branch names a `CTYPE` beside the endpoint's top-level `TYPE`, and
+#: the chapter says outright that they are different fields carried across as
+#: they stand. Repeating that is a conclusion, not a question.
 _SETTLED_NOTE_MARKERS = (
     "the manual nests this under ",
     "no enum is transcribed",
     "is not transcribed (MD-12)",
     "the values live in the description",
+    "measured against a live product",
+    "the manual flags it in its own callout",
 )
 
 

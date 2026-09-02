@@ -540,3 +540,34 @@ records:
       rather than at nothing.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: tdme-codename-branches-2026-09-03
+    endpoints: ["/db/TDME"]
+    date: "2026-09-03"
+    nxVersion: >-
+      unknown - MIDAS Civil NX 2026, build string not readable through the
+      API. /mapikey/verify returns only the program name and no /doc route
+      serves a version, so this is left unstated rather than guessed.
+    level: write
+    outcome: success
+    method: >-
+      Against a document confirmed empty first (GET /db/NODE, /db/ELEM,
+      /db/MATL and /db/TDME all answered {"message": ""}), so no /doc/NEW was
+      needed or called; every record deleted by the id a GET reported, not the
+      id posted, because the server renumbers. The manual splits this endpoint
+      into eight branch tables by CODENAME group and states no wire
+      discriminator in any heading, so each group was POSTed with the four
+      common fields alone and then with its documented extras. Payloads come
+      from the section's own tables; the KDS-2016 case is its Request Example
+      verbatim.
+    finding: >-
+      CODENAME is the discriminator and the branch tables are real, but the
+      manual's uniform Required is not the product's behaviour: "ACI",
+      "Russian" and "KDS-2016" refuse a base-only record while "CEB-FIP(2010)"
+      and "European" store one and the server fills iCTYPE itself. Separately,
+      "Japan(hydration)" and "Japan(elastic)" answer Wrong Field in all seven
+      spellings tried - correctly, because those two codes are iGen's and this
+      API is not talking to iGen (MD-14). Identical on both products, checked
+      case for case.
+    evidence:
+      - docs/live_verification_notes.md
