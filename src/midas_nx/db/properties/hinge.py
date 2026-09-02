@@ -77,7 +77,7 @@ class InelasticHingePropertyHyperSPayload(TypedDict, total=False):
 
 class InelasticHingePropertyHyperSBeam(DbResource):
     ENDPOINT = "/db/IEHG-BEAM-M1"
-    NAME = "Assign Inelastic Hinge Properties (Beam, Hyper-S)"
+    NAME = "Assign Inelastic Hinges – Beam (Hyper-S)"
     PRODUCTS = HYPER_S_ONLY
 
 

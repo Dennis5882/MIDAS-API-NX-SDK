@@ -4649,7 +4649,9 @@ export namespace DbPropertiesHingeTypes {
     /** Name of Fiber Division */
     FIBER_NAME: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface InelasticHingePropertyHyperSPayload {
+    /** Inelastic Hinge Property Name */
     INEL_PROP_NAME?: string;
   }
 }
@@ -4746,11 +4748,57 @@ export namespace DbPropertiesMaterialTypes {
     PLASTIC_MATL_NAME?: string;
     THERMAL_TRANS?: MaterialHyperSThermalTransfer;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MaterialHyperSPayload {
+    /** Material Name */
     MATL_NAME?: string;
+    /** Material Type */
     MATL_TYPE?: string;
+    /** Damping Ratio */
     DAMP_RAT?: number;
-    PARAM?: Array<MaterialHyperSParam>;
+    /** Material Parameters */
+    PARAM?: Array<{
+      /** Type of Material (Standard:0, Isotropic:1, Orthotropic:2) */
+      P_TYPE?: number;
+      /** Standard */
+      STANDARD?: string;
+      /** Code */
+      CODE?: string;
+      /** DB Name */
+      DB?: string;
+      /** User Defined Properties */
+      USER_DEFINED?: {
+        /** User Elasticity */
+        bELAST?: number;
+        /** Poisson's ratio */
+        POISN?: number;
+        /** Coefficients of linear thermal */
+        THERMAL?: number;
+        /** Weight Density */
+        DEN?: number;
+        /** Modulii of elasticity [X,Y,Z] */
+        ELAST_M?: Array<number>;
+        /** Coefficients of linear thermal [X,Y,Z] */
+        THERMAL_M?: Array<number>;
+        /** Shear modulii [xy,xz,yz] */
+        SHEAR_M?: Array<number>;
+        /** Poisson's ratio [xy,xz,yz] */
+        POISN_M?: Array<number>;
+        /** Use Mass Density */
+        bMASS_DENS?: boolean;
+        /** Mass Density */
+        MASS?: number;
+      };
+      /** Plastic Material Name */
+      PLASTIC_MATL_NAME?: string;
+      /** Thermal Transfer */
+      THERMAL_TRANS?: {
+        /** Specific Heat */
+        HE_SPEC?: number;
+        /** Heat Conduction */
+        HE_COND?: number;
+      };
+    }>;
   }
   export interface MaterialModifyConcreteDesign {
     C_FC?: number;
@@ -4819,9 +4867,22 @@ export namespace DbPropertiesMaterialTypes {
   export interface InelasticFiberMaterialLinkHyperSSteel {
     STEEL_NAME?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface InelasticFiberMaterialLinkHyperSPayload {
-    CONCRETE?: InelasticFiberMaterialLinkHyperSConcrete;
-    STEEL?: InelasticFiberMaterialLinkHyperSSteel;
+    /** Concrete Material Setting */
+    CONCRETE?: {
+      /** Inelastic Material of Concrete */
+      UN_CONC_NAME?: string;
+      /** Confined Concrete for Columns */
+      CONF_CONC_NAME?: string;
+      /** Inelastic Material of Rebar */
+      REBAR_NAME?: string;
+    };
+    /** Steel Material Setting */
+    STEEL?: {
+      /** Inelastic Material of Steel */
+      STEEL_NAME?: string;
+    };
   }
   export interface TimeDependentMaterialFunctionValue {
     DAY?: number;
@@ -4958,15 +5019,153 @@ export namespace DbPropertiesMaterialTypes {
     COMP_ITEMS?: Array<PlasticMaterialHyperSConcreteDamageItem>;
     TENSILE_ITEMS?: Array<PlasticMaterialHyperSConcreteDamageItem>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface PlasticMaterialHyperSPayload {
+    /** Name */
     NAME?: string;
+    /** Model Type (Tresca:0, VonMises:1, MohrCoulomb:2, DruckerPrager:3, Masonry:4, ConcreteDamage:5) */
     MODEL_TYPE?: number;
-    TRESCA?: PlasticMaterialHyperSHardeningModel;
-    VMISES?: PlasticMaterialHyperSHardeningModel;
-    MOHRCL?: PlasticMaterialHyperSCoulombModel;
-    DRUCKER?: PlasticMaterialHyperSCoulombModel;
-    MASONRY?: PlasticMaterialHyperSMasonry;
-    CONCDMG?: PlasticMaterialHyperSConcreteDamage;
+    /** Tresca Model */
+    TRESCA?: {
+      /** Initial Uniaxial Yield Stress */
+      INIT_YIELD_STRESS?: number;
+      /** Hardening */
+      OPT_HARDENING?: boolean;
+      /** Hardening Type (Isotropic:0, Kinematic:1, Mixed:2) */
+      HARDENING_TYPE?: number;
+      /** Hardening Coefficient */
+      HARDENING_COEF?: number;
+      /** Back Stress Coefficient */
+      BACK_STRESS_COEF?: number;
+    };
+    /** Von Mises Model */
+    VMISES?: {
+      /** Initial Uniaxial Yield Stress */
+      INIT_YIELD_STRESS?: number;
+      /** Hardening */
+      OPT_HARDENING?: boolean;
+      /** Hardening Type (Isotropic:0, Kinematic:1, Mixed:2) */
+      HARDENING_TYPE?: number;
+      /** Hardening Coefficient */
+      HARDENING_COEF?: number;
+      /** Back Stress Coefficient */
+      BACK_STRESS_COEF?: number;
+    };
+    /** Mohr-Coulomb Model */
+    MOHRCL?: {
+      /** Initial Cohesion */
+      INIT_COHESION?: number;
+      /** Initial Friction Angle (deg) */
+      INIT_FRIC_ANGLE?: number;
+      /** Hardening */
+      OPT_HARDENING?: boolean;
+      /** Hardening Type (Isotropic:0) */
+      HARDENING_TYPE?: number;
+      /** Hardening Coefficient */
+      HARDENING_COEF?: number;
+      /** Back Stress Coefficient */
+      BACK_STRESS_COEF?: number;
+    };
+    /** Drucker-Prager Model */
+    DRUCKER?: {
+      /** Initial Cohesion */
+      INIT_COHESION?: number;
+      /** Initial Friction Angle (deg) */
+      INIT_FRIC_ANGLE?: number;
+      /** Hardening */
+      OPT_HARDENING?: boolean;
+      /** Hardening Type (Isotropic:0) */
+      HARDENING_TYPE?: number;
+      /** Hardening Coefficient */
+      HARDENING_COEF?: number;
+      /** Back Stress Coefficient */
+      BACK_STRESS_COEF?: number;
+    };
+    /** Masonry Model */
+    MASONRY?: {
+      /** Brick Material Properties */
+      BM?: {
+        /** Young's Modulus */
+        YOUNG_S_MODULUS?: number;
+        /** Poisson's Ratio */
+        POSSIONS_S_RATIO?: number;
+        /** Tension Strength */
+        TENSION_STRENGTH?: number;
+        /** Stiffness Reduction Factor */
+        STIFF_REDUCTION?: number;
+      };
+      /** Bed Joint Properties */
+      BED_JOINT?: {
+        /** Young's Modulus */
+        YOUNG_S_MODULUS?: number;
+        /** Poisson's Ratio */
+        POSSIONS_S_RATIO?: number;
+        /** Tension Strength */
+        TENSION_STRENGTH?: number;
+        /** Stiffness Reduction Factor */
+        STIFF_REDUCTION?: number;
+      };
+      /** Head Joint Properties */
+      HEAD_JOINT?: {
+        /** Young's Modulus */
+        YOUNG_S_MODULUS?: number;
+        /** Poisson's Ratio */
+        POSSIONS_S_RATIO?: number;
+        /** Tension Strength */
+        TENSION_STRENGTH?: number;
+        /** Stiffness Reduction Factor */
+        STIFF_REDUCTION?: number;
+      };
+      /** Geometry of Masonry Panel */
+      GEOM?: {
+        /** Brick Length */
+        BRICK_LENGTH?: number;
+        /** Brick Height */
+        BRICK_HEIGHT?: number;
+        /** Thickness of Bed */
+        THICKNESS_BED?: number;
+        /** Thickness of Head */
+        THICKNESS_HEAD?: number;
+      };
+      /** Material Coordinate System */
+      MAT_COORD?: {
+        /** Coordinate Type (Global:0, ElementLocal:1, GlobalZAngle:2) */
+        COORD_TYPE?: number;
+        /** Angle from Global X (deg) */
+        COORD_ANGLE?: number;
+      };
+    };
+    /** Concrete-Damage Model */
+    CONCDMG?: {
+      /** Dilation Angle (deg) */
+      DILIATION_ANGLE?: number;
+      /** Eccentricity */
+      ECCEN?: number;
+      /** fbo/fco */
+      FBO_FCO?: number;
+      /** K */
+      K?: number;
+      /** Viscosity Parameter */
+      VISCOSITY_PARAM?: number;
+      /** Compressive Behavior */
+      COMP_ITEMS?: Array<{
+        /** Inelastic Strain */
+        INELASTIC_STRAIN?: number;
+        /** Yield Stress */
+        YIELD_STRESS?: number;
+        /** Damage */
+        DAMAGE?: number;
+      }>;
+      /** Tensile Behavior */
+      TENSILE_ITEMS?: Array<{
+        /** Inelastic Strain */
+        INELASTIC_STRAIN?: number;
+        /** Yield Stress */
+        YIELD_STRESS?: number;
+        /** Damage */
+        DAMAGE?: number;
+      }>;
+    };
   }
   export interface InelasticMaterialKentParkParam {
     FC?: number;

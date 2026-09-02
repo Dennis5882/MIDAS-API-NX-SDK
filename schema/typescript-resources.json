@@ -4664,7 +4664,7 @@
       "className": "InelasticHingePropertyHyperSBeam",
       "exportName": "inelasticHingePropertyHyperSBeam",
       "endpoint": "/db/IEHG-BEAM-M1",
-      "name": "Assign Inelastic Hinge Properties (Beam, Hyper-S)",
+      "name": "Assign Inelastic Hinges – Beam (Hyper-S)",
       "products": [
         "civil"
       ],
@@ -4846,7 +4846,7 @@
       "className": "InelasticFiberMaterialLinkHyperS",
       "exportName": "inelasticFiberMaterialLinkHyperS",
       "endpoint": "/db/IMFM-M1",
-      "name": "Inelastic Material Properties for Fiber Model (Hyper-S)",
+      "name": "Inelastic Material Link for Auto Generation (Hyper-S)",
       "products": [
         "civil"
       ],

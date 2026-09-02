@@ -207,7 +207,7 @@ class InelasticFiberMaterialLinkHyperSPayload(TypedDict, total=False):
 
 class InelasticFiberMaterialLinkHyperS(DbResource):
     ENDPOINT = "/db/IMFM-M1"
-    NAME = "Inelastic Material Properties for Fiber Model (Hyper-S)"
+    NAME = "Inelastic Material Link for Auto Generation (Hyper-S)"
     PRODUCTS = HYPER_S_ONLY
 
 

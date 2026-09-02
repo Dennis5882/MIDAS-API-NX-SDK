@@ -6,6 +6,32 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Changed
+
+- **Four Hyper-S payload types come from a contract instead of a Python
+  `TypedDict`.** `MaterialHyperSPayload`, `PlasticMaterialHyperSPayload`,
+  `InelasticFiberMaterialLinkHyperSPayload` and
+  `InelasticHingePropertyHyperSPayload` now inline their members and carry the
+  server's own field descriptions as doc comments, which they had none of
+  before. The named interfaces they used to reference
+  (`MaterialHyperSParam`, `PlasticMaterialHyperSMasonry`,
+  `InelasticFiberMaterialLinkHyperSConcrete` and the rest) are still exported
+  and unchanged; the payloads no longer point at them.
+
+  Their manual sections state no request at all — a URL, a methods line and a
+  link — so these four are the first contracts sourced from live
+  `GET /info/db/...` introspection rather than the manual. Every member is
+  optional, because `/info` declares no `required` array and `optional` would
+  be a claim nobody has made.
+
+- **Two resource labels follow their manual sections.**
+  `db.properties.material.inelasticFiberMaterialLinkHyperS.name` is now
+  `"Inelastic Material Link for Auto Generation (Hyper-S)"` and
+  `db.properties.hinge.inelasticHingePropertyHyperSBeam.name`
+  `"Assign Inelastic Hinges - Beam (Hyper-S)"`. Both had been derived from
+  their parent endpoint's label; the first named a different feature, since
+  `/db/IMFM-M1` is a material link and `/db/IMFM` is fiber-model properties.
+
 ## 2.7.5 - 2026-09-02
 
 ### Compatibility — breaking

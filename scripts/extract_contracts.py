@@ -3630,15 +3630,20 @@ def live_omission_evidence() -> dict[str, LiveOmission]:
 
 
 #: A finding the permitted sources cannot reopen: the extractor did not fail
-#: to answer a question, it answered one. Two kinds qualify so far - how a
-#: structure the manual addressed by numbering or a tree marker was rebuilt,
-#: and why a list the manual's own description outsizes was not transcribed as
-#: an enum. Neither is waiting on a reader, and the manual states nothing more
-#: about either. They render as `# RESOLVED:` so promotion, which refuses a
-#: draft still carrying `# NOTE:`, does not treat a conclusion as a gap.
+#: to answer a question, it answered one. Four kinds qualify so far - how a
+#: structure the manual addressed by numbering or a tree marker was rebuilt;
+#: why a list the manual's own description outsizes was not transcribed as an
+#: enum; a bound `/info` states about the wrong kind of value (MD-12); and a
+#: value set that lives in a field's description rather than in an `enum`,
+#: where the sibling contract drafted from the same prose does the same. None
+#: is waiting on a reader, and no permitted source states more about it. They
+#: render as `# RESOLVED:` so promotion, which refuses a draft still carrying
+#: `# NOTE:`, does not treat a conclusion as a gap.
 _SETTLED_NOTE_MARKERS = (
     "the manual nests this under ",
     "no enum is transcribed",
+    "is not transcribed (MD-12)",
+    "the values live in the description",
 )
 
 

@@ -61,6 +61,29 @@ There is deliberately no value meaning "read off an SDK". Do not guess a field o
 a behaviour into existence: if the manual does not describe it and nobody has
 observed it, it does not belong in a contract.
 
+`info_schema` was unused until 2026-09-02, when four Hyper-S contracts were
+written from `schema/hyper-s-info.json` by
+[`scripts/contract_from_info.py`](../scripts/contract_from_info.py). Those four
+sections state a URL, their methods and nothing else, so `/info` is not a
+preference there but the only source there is. Reading it comes with two rules
+the script enforces, because a source nobody can cross-check is the one that
+most needs them:
+
+- **Silence is not permission.** `/info` declares no `required` array, so every
+  field is `unstated`. Not `optional` — that is a claim about documentation
+  that no document makes.
+- **A value set in a `description` is not an `enum`, and never a variant.** An
+  `/info` schema is flat and states no branch anywhere, so a discriminator read
+  out of prose would be an inference about the endpoint dressed as a fact about
+  the capture. `/db/MATL`'s contract, drafted from the manual's identical
+  prose, keeps its values in the description too. A gate has to come from the
+  manual or a live observation.
+
+Two defects in the served schemas are registered as **MD-12**: apostrophes
+escaped with a backslash, which is not a JSON escape, and `maxItems` stated on
+an array's `items` subschema where JSON Schema ignores it. The first is
+repaired in the prose, the second recorded and not transcribed.
+
 ## The names the packages publish
 
 Everything else in a contract records what the product and the manual say.

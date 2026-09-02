@@ -62,7 +62,7 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   endpoint/name/products/methods/manual-chapter surface from its contract; uncontracted resources
   still use the reviewed Python fallback. Since 2026-09-02 a contract's optional `surface` block
   also owns the **published npm names** — `className`, `exportName`, `modulePath`,
-  `payloadTypeName` — for the 273 resources that have one, and the generator raises if a name
+  `payloadTypeName` — for the 277 resources that have one, and the generator raises if a name
   disagrees with the contract, so moving a Python module can no longer rename an npm export in
   silence. This replaces the older "class and module names remain compatibility anchors until
   every resource is contracted" rule, which described a finish line the design could not reach:
@@ -72,7 +72,17 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   `_resource_identity`), but `import midas_nx` remains
   load-bearing — deleting `src/midas_nx/` breaks `npm run generate` and therefore `npm publish`,
   though a built `dist/` keeps working. What still needs Python: `pythonModule`, which no
-  contract records, and the 492 of 750 payload types that come from Python TypedDicts.
+  contract records, and the 488 of 750 payload types that come from Python TypedDicts.
+- `scripts/contract_from_info.py` — the one path into a contract that does not start at the
+  manual. Seven Hyper-S `-M1` sections state a URL, their methods and nothing else, so live
+  `/info` is their only permitted source; this fills a draft's `fields` from
+  `schema/hyper-s-info.json` and leaves every other decision the extractor made alone. It
+  writes `requirement: unstated` throughout — `/info` declares no `required` array, and
+  `optional` would be a claim nobody has made — and it will not turn a value set named in a
+  `description` into an `enum` or a variant: an `/info` schema is flat and states no branch
+  anywhere, so a gate has to come from the manual or a live observation. Three of the seven
+  (`/db/IEHG-GL-M1`, `/db/IEHG-PSS-M1`, `/db/IEHG-TRUSS-M1`) 404 on `/info` as well, which
+  leaves them with **no permitted source at all**; they cannot be contracted as things stand.
   See `docs/contract_migration_brief.md`.
 - `schema/typescript-resources.json` / `schema/typescript-coverage.json` — committed generator outputs.
   CI fails if either these schemas or `packages/typescript/src/generated/*` drift after regeneration.
