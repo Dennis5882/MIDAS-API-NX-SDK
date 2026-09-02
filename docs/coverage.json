@@ -357,7 +357,7 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
         },
-        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation) Write round trip confirmed 2026-08-16 (Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete succeeded.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET); write round trip confirmed 2026-08-16 (Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete succeeded. GET /info/db/STYP-M1 schema captured in schema/hyper-s-info.json on 2026-09-02 (Civil NX session reported program 'civil').",
         "level": "write",
         "outcome": "success"
       }
@@ -825,7 +825,7 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
         },
-        "method": "Read-only GET and /info schema checks were reconfirmed on 2026-07-30. A fresh scratch Civil NX model then passed direct POST -> GET -> PUT -> GET -> per-id DELETE -> GET checks for MATL-M1 PARAM[].P_TYPE Standard=0, Isotropic=1, and Orthotropic=2 on 2026-08-31; the model was reset with /doc/NEW afterwards.",
+        "method": "Read-only GET and /info schema checks were reconfirmed on 2026-07-30. A fresh scratch Civil NX model then passed direct POST -> GET -> PUT -> GET -> per-id DELETE -> GET checks for MATL-M1 PARAM[].P_TYPE Standard=0, Isotropic=1, and Orthotropic=2 on 2026-08-31; the model was reset with /doc/NEW afterwards. GET /info/db/MATL-M1 schema captured in schema/hyper-s-info.json on 2026-09-02 (Civil NX session reported program 'civil').",
         "level": "write",
         "outcome": "success"
       }
@@ -872,7 +872,7 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
         },
-        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/IMFM-M1 schema captured in schema/hyper-s-info.json on 2026-09-02 (Civil NX session reported program 'civil').",
         "level": "read",
         "outcome": "success_empty"
       }
@@ -1043,7 +1043,7 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
         },
-        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/EPMT-M1 schema captured in schema/hyper-s-info.json on 2026-09-02 (Civil NX session reported program 'civil').",
         "level": "read",
         "outcome": "success_empty"
       }
@@ -1361,7 +1361,7 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
         },
-        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/IEHG-BEAM-M1 schema captured in schema/hyper-s-info.json on 2026-09-02 (Civil NX session reported program 'civil').",
         "level": "read",
         "outcome": "success_empty"
       }
@@ -1383,7 +1383,7 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
         },
-        "method": "scripts/live_readonly_sweep.py (read-only GET); this endpoint's own GET /info/db/... route still 404'd on reconfirmation, so its INEL_PROP_NAME shape remains assumed by sibling analogy to /db/IEHG-BEAM-M1, not independently schema-confirmed",
+        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/IEHG-TRUSS-M1 returned the expected 404 in the schema/hyper-s-info.json capture on 2026-09-02, so its INEL_PROP_NAME shape remains assumed by sibling analogy to /db/IEHG-BEAM-M1, not independently schema-confirmed.",
         "level": "read",
         "outcome": "success_empty"
       }
@@ -1405,7 +1405,7 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
         },
-        "method": "scripts/live_readonly_sweep.py (read-only GET); this endpoint's own GET /info/db/... route still 404'd on reconfirmation, so its INEL_PROP_NAME shape remains assumed by sibling analogy to /db/IEHG-BEAM-M1, not independently schema-confirmed",
+        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/IEHG-GL-M1 returned the expected 404 in the schema/hyper-s-info.json capture on 2026-09-02, so its INEL_PROP_NAME shape remains assumed by sibling analogy to /db/IEHG-BEAM-M1, not independently schema-confirmed.",
         "level": "read",
         "outcome": "success_empty"
       }
@@ -1427,7 +1427,7 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
         },
-        "method": "scripts/live_readonly_sweep.py (read-only GET); this endpoint's own GET /info/db/... route still 404'd on reconfirmation, so its INEL_PROP_NAME shape remains assumed by sibling analogy to /db/IEHG-BEAM-M1, not independently schema-confirmed",
+        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/IEHG-PSS-M1 returned the expected 404 in the schema/hyper-s-info.json capture on 2026-09-02, so its INEL_PROP_NAME shape remains assumed by sibling analogy to /db/IEHG-BEAM-M1, not independently schema-confirmed.",
         "level": "read",
         "outcome": "success_empty"
       }

@@ -39,6 +39,8 @@ jobs:
         run: python scripts/validate_contracts.py
       - name: Check promoted contracts against the official manual
         run: python scripts/extract_contracts.py --manual-api-repo MIDAS-API --check
+      - name: Fail if keyed manual-table rows begin dropping
+        run: python scripts/report_dropped_manual_rows.py --manual-api-repo MIDAS-API --check
       - name: Fail if the shared live CRUD fixture drifted
         run: python scripts/live_crud_check.py --check-cases
 

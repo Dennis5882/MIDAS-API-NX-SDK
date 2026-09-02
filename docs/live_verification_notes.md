@@ -8007,3 +8007,21 @@ does not invent it or infer it from either SDK. CSCS therefore remains
 read-level/unconfirmed pending a complete manual composite-section fixture or
 new live evidence. Both products were reset to empty scratch documents after
 the probe (Gen NX 2026 v2.1 and Civil NX 2026 v2.2, build 08/26/2026).
+
+### Hyper-S `/info` schema artifact capture (2026-09-02)
+
+Civil NX's relay reported program `civil`. Read-only `GET /info/db/...` calls
+captured the complete response bodies in `schema/hyper-s-info.json`; no model
+GET response body was captured and no model data was changed. The top-level
+`Argument.properties` fields match the two earlier prose probes exactly:
+`MATL-M1` has `MATL_NAME`, `MATL_TYPE`, `DAMP_RAT`, and `PARAM`; `EPMT-M1` has
+`NAME`, `MODEL_TYPE`, `TRESCA`, `VMISES`, `MOHRCL`, `DRUCKER`, `MASONRY`, and
+`CONCDMG`; `IMFM-M1` has `CONCRETE` and `STEEL`; `IEHG-BEAM-M1` has
+`INEL_PROP_NAME`; and contracted `STYP-M1` has `STYPE`, `GRAV`, `TEMP`,
+`ALIGNBEAM`, `ALIGNSLAB`, and `MASS_CONTROL`.
+
+`GET /info/db/IEHG-TRUSS-M1`, `/info/db/IEHG-GL-M1`, and
+`/info/db/IEHG-PSS-M1` each returned the expected 404. The split still holds:
+they serve GET but expose no introspection schema, so their assumed
+`INEL_PROP_NAME` shape remains labelled as sibling analogy rather than live
+schema evidence.
