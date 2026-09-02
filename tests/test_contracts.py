@@ -468,7 +468,7 @@ def test_a_contracted_surface_matches_the_published_npm_names():
 def test_every_npm_resource_with_a_contract_has_taken_its_names_over():
     """A contracted resource whose names still live only in Python is a gap.
 
-    Not every npm resource has a contract - 36 do not, and they stay on the
+    Not every npm resource has a contract - 31 do not, and they stay on the
     reviewed Python fallback by design. But once an endpoint *is* contracted,
     leaving its names out means the contract is not yet the source for that
     endpoint, and nothing else would say so.
@@ -483,4 +483,48 @@ def test_every_npm_resource_with_a_contract_has_taken_its_names_over():
     )
     assert not missing, (
         "contracted npm resources with no `surface` block: " + ", ".join(missing)
+    )
+
+
+def test_a_settled_finding_is_marked_settled_in_every_contract():
+    """A contract promoted before the marker existed still called it a question.
+
+    ``# NOTE:`` is an open question that blocks promotion; ``# RESOLVED:`` is a
+    finding the permitted sources cannot reopen. The distinction shipped in
+    2.7.5, so the five contracts promoted with it said ``RESOLVED`` while 95
+    older ones said ``NOTE`` about the identical sentence - 592 blocks whose
+    marker recorded their promotion date rather than their status. Nothing but
+    this test notices, because ``--check`` compares what the manual asserts and
+    a comment is not that.
+    """
+
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import extract_contracts
+
+    marker = re.compile(r"^(\s*)# (NOTE|RESOLVED): (.*)$")
+    continuation = re.compile(r"^(\s*)# (?!NOTE:|RESOLVED:)(.*)$")
+    wrong: list[str] = []
+    for path in sorted(ENDPOINT_DIR.glob("*.yaml")):
+        lines = path.read_text(encoding="utf-8").splitlines()
+        index = 0
+        while index < len(lines):
+            head = marker.match(lines[index])
+            if not head:
+                index += 1
+                continue
+            indent, written, first = head.groups()
+            body, cursor = [first], index + 1
+            while cursor < len(lines):
+                tail = continuation.match(lines[cursor])
+                if not tail or tail.group(1) != indent:
+                    break
+                body.append(tail.group(2))
+                cursor += 1
+            expected = extract_contracts._note_marker(" ".join(body).strip())
+            if expected != written:
+                wrong.append(f"{path.name}:{index + 1} says {written}, renders as {expected}")
+            index = cursor
+
+    assert not wrong, (
+        "note markers disagree with extract_contracts._note_marker: " + "; ".join(wrong[:10])
     )

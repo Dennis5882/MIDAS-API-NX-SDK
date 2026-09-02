@@ -178,7 +178,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ACT_ELEM' by numbering it '(1)', not
+        # RESOLVED: the manual nests this under 'ACT_ELEM' by numbering it '(1)', not
         # by naming a path
       - key: AGE
         description: >-
@@ -189,7 +189,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ACT_ELEM' by numbering it '(2)', not
+        # RESOLVED: the manual nests this under 'ACT_ELEM' by numbering it '(2)', not
         # by naming a path
   - key: DACT_ELEM
     description: >-
@@ -217,7 +217,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'DACT_ELEM' by numbering it '(2)', not
+        # RESOLVED: the manual nests this under 'DACT_ELEM' by numbering it '(2)', not
         # by naming a path
   - key: ACT_BNGR
     description: >-
@@ -240,7 +240,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ACT_BNGR' by numbering it '(1)', not
+        # RESOLVED: the manual nests this under 'ACT_BNGR' by numbering it '(1)', not
         # by naming a path
       - key: POS
         description: >-
@@ -251,7 +251,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ACT_BNGR' by numbering it '(2)', not
+        # RESOLVED: the manual nests this under 'ACT_BNGR' by numbering it '(2)', not
         # by naming a path
   - key: DACT_BNGR
     description: >-
@@ -290,7 +290,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ACT_LOAD' by numbering it '(1)', not
+        # RESOLVED: the manual nests this under 'ACT_LOAD' by numbering it '(1)', not
         # by naming a path
       - key: DAY
         description: >-
@@ -301,7 +301,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ACT_LOAD' by numbering it '(2)', not
+        # RESOLVED: the manual nests this under 'ACT_LOAD' by numbering it '(2)', not
         # by naming a path
   - key: DACT_LOAD
     description: >-

@@ -166,7 +166,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'SUB_LOAD_ITEMS' by numbering it
+        # RESOLVED: the manual nests this under 'SUB_LOAD_ITEMS' by numbering it
         # '(ii)', not by naming a path
       - key: MAX_NUM_LOADED_LANES
         description: >-
@@ -177,7 +177,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'SUB_LOAD_ITEMS' by numbering it
+        # RESOLVED: the manual nests this under 'SUB_LOAD_ITEMS' by numbering it
         # '(iii)', not by naming a path
       - key: VEHICLE_CLASS_1
         description: >-
@@ -188,7 +188,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'SUB_LOAD_ITEMS' by numbering it
+        # RESOLVED: the manual nests this under 'SUB_LOAD_ITEMS' by numbering it
         # '(iv)', not by naming a path
       - key: SELECTED_LANES
         description: >-
@@ -201,7 +201,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'SUB_LOAD_ITEMS' by numbering it
+        # RESOLVED: the manual nests this under 'SUB_LOAD_ITEMS' by numbering it
         # '(v)', not by naming a path
       - key: SCALE_FACTOR
         description: >-
@@ -216,7 +216,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'SUB_LOAD_ITEMS' by numbering it
+        # RESOLVED: the manual nests this under 'SUB_LOAD_ITEMS' by numbering it
         # '(i)', not by naming a path
       - key: VEHICLE_CLASS_2
         description: >-
@@ -231,7 +231,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'SUB_LOAD_ITEMS' by numbering it
+        # RESOLVED: the manual nests this under 'SUB_LOAD_ITEMS' by numbering it
         # '(iii)', not by naming a path
       - key: FOOTWAY
         description: >-
@@ -246,7 +246,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'SUB_LOAD_ITEMS' by numbering it
+        # RESOLVED: the manual nests this under 'SUB_LOAD_ITEMS' by numbering it
         # '(iv)', not by naming a path
       - key: CARRIAGE_WAY_WIDTH
         description: >-
@@ -261,7 +261,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'SUB_LOAD_ITEMS' by numbering it
+        # RESOLVED: the manual nests this under 'SUB_LOAD_ITEMS' by numbering it
         # '(v)', not by naming a path
       - key: CARRIAGE_WAY_LOADING
         description: >-
@@ -276,7 +276,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'SUB_LOAD_ITEMS' by numbering it
+        # RESOLVED: the manual nests this under 'SUB_LOAD_ITEMS' by numbering it
         # '(vi)', not by naming a path
       - key: SELECTED_FOOTWAY_LANES
         description: >-
@@ -293,7 +293,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'SUB_LOAD_ITEMS' by numbering it
+        # RESOLVED: the manual nests this under 'SUB_LOAD_ITEMS' by numbering it
         # '(viii)', not by naming a path
   - key: PERMIT_VEHICLE
     description: >-

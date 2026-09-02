@@ -209,7 +209,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vBOUNDARY' by numbering it '(1)', not
+        # RESOLVED: the manual nests this under 'vBOUNDARY' by numbering it '(1)', not
         # by naming a path
       - key: vBG
         description: >-
@@ -222,7 +222,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vBOUNDARY' by numbering it '(2)', not
+        # RESOLVED: the manual nests this under 'vBOUNDARY' by numbering it '(2)', not
         # by naming a path
   - key: vLOADANAL
     description: >-
@@ -245,7 +245,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vLOADANAL' by numbering it '(1)', not
+        # RESOLVED: the manual nests this under 'vLOADANAL' by numbering it '(1)', not
         # by naming a path
       - key: BGCNAME
         description: >-
@@ -256,7 +256,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vLOADANAL' by numbering it '(2)', not
+        # RESOLVED: the manual nests this under 'vLOADANAL' by numbering it '(2)', not
         # by naming a path
       - key: LCNAME
         description: >-
@@ -267,7 +267,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vLOADANAL' by numbering it '(3)', not
+        # RESOLVED: the manual nests this under 'vLOADANAL' by numbering it '(3)', not
         # by naming a path
 
 sdkRules:

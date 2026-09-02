@@ -176,7 +176,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'POINTLOAD' by numbering it '(1)', not
+            # RESOLVED: the manual nests this under 'POINTLOAD' by numbering it '(1)', not
             # by naming a path
           - key: Y
             description: >-
@@ -187,7 +187,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'POINTLOAD' by numbering it '(2)', not
+            # RESOLVED: the manual nests this under 'POINTLOAD' by numbering it '(2)', not
             # by naming a path
           - key: F
             description: >-
@@ -198,7 +198,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'POINTLOAD' by numbering it '(3)', not
+            # RESOLVED: the manual nests this under 'POINTLOAD' by numbering it '(3)', not
             # by naming a path
   - when:
       - path: LTYPE
@@ -226,7 +226,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'LINELOAD' by numbering it '(1)', not
+            # RESOLVED: the manual nests this under 'LINELOAD' by numbering it '(1)', not
             # by naming a path
           - key: X
             description: >-
@@ -241,7 +241,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'LINELOAD' by numbering it '(2)', not
+            # RESOLVED: the manual nests this under 'LINELOAD' by numbering it '(2)', not
             # by naming a path
           - key: Y
             description: >-
@@ -256,7 +256,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'LINELOAD' by numbering it '(3)', not
+            # RESOLVED: the manual nests this under 'LINELOAD' by numbering it '(3)', not
             # by naming a path
           - key: F
             description: >-
@@ -271,7 +271,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'LINELOAD' by numbering it '(4)', not
+            # RESOLVED: the manual nests this under 'LINELOAD' by numbering it '(4)', not
             # by naming a path
   - when:
       - path: LTYPE
@@ -299,7 +299,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'AREALOAD' by numbering it '(1)', not
+            # RESOLVED: the manual nests this under 'AREALOAD' by numbering it '(1)', not
             # by naming a path
           - key: b3PNT
             description: >-
@@ -310,7 +310,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'AREALOAD' by numbering it '(2)', not
+            # RESOLVED: the manual nests this under 'AREALOAD' by numbering it '(2)', not
             # by naming a path
           - key: X
             description: >-
@@ -325,7 +325,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'AREALOAD' by numbering it '(3)', not
+            # RESOLVED: the manual nests this under 'AREALOAD' by numbering it '(3)', not
             # by naming a path
           - key: Y
             description: >-
@@ -340,7 +340,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'AREALOAD' by numbering it '(4)', not
+            # RESOLVED: the manual nests this under 'AREALOAD' by numbering it '(4)', not
             # by naming a path
           - key: LOAD
             description: >-
@@ -355,7 +355,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'AREALOAD' by numbering it '(5)', not
+            # RESOLVED: the manual nests this under 'AREALOAD' by numbering it '(5)', not
             # by naming a path
 
 sdkRules:

@@ -126,7 +126,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'PDEL_CASES' by numbering it '(1)',
+        # RESOLVED: the manual nests this under 'PDEL_CASES' by numbering it '(1)',
         # not by naming a path
       - key: FACTOR
         description: >-
@@ -137,7 +137,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'PDEL_CASES' by numbering it '(2)',
+        # RESOLVED: the manual nests this under 'PDEL_CASES' by numbering it '(2)',
         # not by naming a path
 
 sdkRules:

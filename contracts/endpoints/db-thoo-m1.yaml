@@ -97,7 +97,7 @@ fields:
         enum: [0, 1, 2]
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'OUT_OPT' by numbering it '(1)', not
+        # RESOLVED: the manual nests this under 'OUT_OPT' by numbering it '(1)', not
         # by naming a path
       - key: COMMON_OPT
         description: >-
@@ -108,7 +108,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'OUT_OPT' by numbering it '(2)', not
+        # RESOLVED: the manual nests this under 'OUT_OPT' by numbering it '(2)', not
         # by naming a path
       - key: FIBER_OUT
         description: >-
@@ -121,7 +121,7 @@ fields:
         enum: [0, 1, 2]
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'OUT_OPT' by numbering it '(3)', not
+        # RESOLVED: the manual nests this under 'OUT_OPT' by numbering it '(3)', not
         # by naming a path
   - key: RESULT_SELECTION
     description: >-
@@ -142,7 +142,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'RESULT_SELECTION' by numbering it
+        # RESOLVED: the manual nests this under 'RESULT_SELECTION' by numbering it
         # '(1)', not by naming a path
       - key: SDVI
         description: >-
@@ -153,7 +153,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'RESULT_SELECTION' by numbering it
+        # RESOLVED: the manual nests this under 'RESULT_SELECTION' by numbering it
         # '(2)', not by naming a path
       - key: SDVE
         description: >-
@@ -164,7 +164,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'RESULT_SELECTION' by numbering it
+        # RESOLVED: the manual nests this under 'RESULT_SELECTION' by numbering it
         # '(3)', not by naming a path
       - key: SDST
         description: >-
@@ -175,7 +175,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'RESULT_SELECTION' by numbering it
+        # RESOLVED: the manual nests this under 'RESULT_SELECTION' by numbering it
         # '(4)', not by naming a path
       - key: SDHY
         description: >-
@@ -186,7 +186,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'RESULT_SELECTION' by numbering it
+        # RESOLVED: the manual nests this under 'RESULT_SELECTION' by numbering it
         # '(5)', not by naming a path
       - key: SDIS
         description: >-
@@ -197,7 +197,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'RESULT_SELECTION' by numbering it
+        # RESOLVED: the manual nests this under 'RESULT_SELECTION' by numbering it
         # '(6)', not by naming a path
 
 sdkRules:

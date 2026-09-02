@@ -80,7 +80,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'STEEL' with a tree marker rather than
+        # RESOLVED: the manual nests this under 'STEEL' with a tree marker rather than
         # a path
       - key: STANDARD_CODE
         description: >-
@@ -91,7 +91,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'STEEL' with a tree marker rather than
+        # RESOLVED: the manual nests this under 'STEEL' with a tree marker rather than
         # a path
       - key: GRADE
         description: >-
@@ -104,7 +104,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'STEEL' with a tree marker rather than
+        # RESOLVED: the manual nests this under 'STEEL' with a tree marker rather than
         # a path
       - key: NAME
         description: >-
@@ -115,7 +115,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'STEEL' with a tree marker rather than
+        # RESOLVED: the manual nests this under 'STEEL' with a tree marker rather than
         # a path
       - key: ES
         description: >-
@@ -126,7 +126,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'STEEL' with a tree marker rather than
+        # RESOLVED: the manual nests this under 'STEEL' with a tree marker rather than
         # a path
       - key: FU
         description: >-
@@ -137,7 +137,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'STEEL' with a tree marker rather than
+        # RESOLVED: the manual nests this under 'STEEL' with a tree marker rather than
         # a path
       - key: FY
         description: >-
@@ -148,7 +148,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'STEEL' with a tree marker rather than
+        # RESOLVED: the manual nests this under 'STEEL' with a tree marker rather than
         # a path
       - key: FY1
         description: >-
@@ -159,7 +159,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'STEEL' with a tree marker rather than
+        # RESOLVED: the manual nests this under 'STEEL' with a tree marker rather than
         # a path
       - key: FY2
         description: >-
@@ -170,7 +170,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'STEEL' with a tree marker rather than
+        # RESOLVED: the manual nests this under 'STEEL' with a tree marker rather than
         # a path
       - key: FY3
         description: >-
@@ -181,7 +181,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'STEEL' with a tree marker rather than
+        # RESOLVED: the manual nests this under 'STEEL' with a tree marker rather than
         # a path
       - key: FY4
         description: >-
@@ -192,7 +192,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'STEEL' with a tree marker rather than
+        # RESOLVED: the manual nests this under 'STEEL' with a tree marker rather than
         # a path
       - key: FY5
         description: >-
@@ -203,7 +203,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'STEEL' with a tree marker rather than
+        # RESOLVED: the manual nests this under 'STEEL' with a tree marker rather than
         # a path
   - key: CONCRETE
     description: >-
@@ -224,7 +224,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'CONCRETE' with a tree marker rather
+        # RESOLVED: the manual nests this under 'CONCRETE' with a tree marker rather
         # than a path
   - key: REINFORCEMENT
     description: >-
@@ -245,7 +245,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'REINFORCEMENT' with a tree marker
+        # RESOLVED: the manual nests this under 'REINFORCEMENT' with a tree marker
         # rather than a path
       - key: MAIN_REBAR_GRADE
         description: >-
@@ -257,7 +257,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'REINFORCEMENT' with a tree marker
+        # RESOLVED: the manual nests this under 'REINFORCEMENT' with a tree marker
         # rather than a path
       - key: FYR
         description: >-
@@ -268,7 +268,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'REINFORCEMENT' with a tree marker
+        # RESOLVED: the manual nests this under 'REINFORCEMENT' with a tree marker
         # rather than a path
       - key: SUB_REBAR_NAME
         description: >-
@@ -279,7 +279,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'REINFORCEMENT' with a tree marker
+        # RESOLVED: the manual nests this under 'REINFORCEMENT' with a tree marker
         # rather than a path
       - key: SUB_REBAR_GRADE
         description: >-
@@ -291,7 +291,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'REINFORCEMENT' with a tree marker
+        # RESOLVED: the manual nests this under 'REINFORCEMENT' with a tree marker
         # rather than a path
       - key: FYS
         description: >-
@@ -302,7 +302,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'REINFORCEMENT' with a tree marker
+        # RESOLVED: the manual nests this under 'REINFORCEMENT' with a tree marker
         # rather than a path
 
 extraction:

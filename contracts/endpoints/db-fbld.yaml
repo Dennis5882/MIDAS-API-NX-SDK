@@ -126,7 +126,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEM' by numbering it '(1)', not by
+        # RESOLVED: the manual nests this under 'ITEM' by numbering it '(1)', not by
         # naming a path
       - key: FLOOR_LOAD
         description: >-
@@ -137,7 +137,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEM' by numbering it '(2)', not by
+        # RESOLVED: the manual nests this under 'ITEM' by numbering it '(2)', not by
         # naming a path
       - key: OPT_SUB_BEAM_WEIGHT
         description: >-
@@ -148,7 +148,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEM' by numbering it '(3)', not by
+        # RESOLVED: the manual nests this under 'ITEM' by numbering it '(3)', not by
         # naming a path
 
 sdkRules:

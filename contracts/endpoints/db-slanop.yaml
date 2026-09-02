@@ -207,7 +207,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(1)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(1)', not by
         # naming a path
       - key: OFFSET
         description: >-
@@ -218,7 +218,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(2)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(2)', not by
         # naming a path
       - key: FACTOR
         description: >-
@@ -229,7 +229,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(3)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(3)', not by
         # naming a path
       - key: CENT_F
         description: >-
@@ -240,7 +240,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(3)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(3)', not by
         # naming a path
       - key: SPAN_START
         description: >-
@@ -251,7 +251,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(4)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(4)', not by
         # naming a path
 
 sdkRules:

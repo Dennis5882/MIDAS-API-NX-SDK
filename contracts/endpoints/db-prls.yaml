@@ -108,7 +108,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(1)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(1)', not by
         # naming a path
       - key: GROUP_NAME
         description: >-
@@ -119,7 +119,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(2)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(2)', not by
         # naming a path
       - key: N1
         description: >-
@@ -134,7 +134,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(3)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(3)', not by
         # naming a path
       - key: N2
         description: >-
@@ -149,7 +149,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(4)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(4)', not by
         # naming a path
       - key: N3
         description: >-
@@ -164,7 +164,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(5)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(5)', not by
         # naming a path
       - key: N4
         description: >-
@@ -179,7 +179,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(6)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(6)', not by
         # naming a path
 
 sdkRules:

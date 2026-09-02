@@ -192,7 +192,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'RESULT_GRAPHIC' by numbering it
+        # RESOLVED: the manual nests this under 'RESULT_GRAPHIC' by numbering it
         # '12.1', not by naming a path
       - key: COMPONENTS
         description: >-
@@ -204,7 +204,7 @@ fields:
         enum: [Axial, Shear-y, Shear-z, Bend-y, Bend-z, Combined]
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'RESULT_GRAPHIC' by numbering it
+        # RESOLVED: the manual nests this under 'RESULT_GRAPHIC' by numbering it
         # '12.2', not by naming a path
       - key: TYPE_OF_DISPLAY
         description: >-
@@ -215,7 +215,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'RESULT_GRAPHIC' by numbering it
+        # RESOLVED: the manual nests this under 'RESULT_GRAPHIC' by numbering it
         # '12.3', not by naming a path
       - key: REINFORCEMENT
         description: >-
@@ -226,7 +226,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'RESULT_GRAPHIC' by numbering it
+        # RESOLVED: the manual nests this under 'RESULT_GRAPHIC' by numbering it
         # '12.4', not by naming a path
       - key: REINFORCEMENT_TYPE
         description: >-
@@ -238,7 +238,7 @@ fields:
         enum: [REBAR, AREA, RATIO]
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'RESULT_GRAPHIC' by numbering it
+        # RESOLVED: the manual nests this under 'RESULT_GRAPHIC' by numbering it
         # '12.5', not by naming a path
       - key: DISPLAY_MEMBERS
         description: >-
@@ -249,7 +249,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'RESULT_GRAPHIC' by numbering it
+        # RESOLVED: the manual nests this under 'RESULT_GRAPHIC' by numbering it
         # '12.6', not by naming a path
       - key: OUTPUT_COMPONENT
         description: >-
@@ -260,7 +260,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'RESULT_GRAPHIC' by numbering it
+        # RESOLVED: the manual nests this under 'RESULT_GRAPHIC' by numbering it
         # '12.7', not by naming a path
       - key: COLUMN_SECTION_SIZE
         description: >-
@@ -271,7 +271,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'RESULT_GRAPHIC' by numbering it
+        # RESOLVED: the manual nests this under 'RESULT_GRAPHIC' by numbering it
         # '12.8', not by naming a path
       - key: VALUE_OPTION
         description: >-
@@ -282,7 +282,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'RESULT_GRAPHIC' by numbering it
+        # RESOLVED: the manual nests this under 'RESULT_GRAPHIC' by numbering it
         # '12.9', not by naming a path
       - key: OUTPUT_SECT_LOCATION
         description: >-
@@ -293,7 +293,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'RESULT_GRAPHIC' by numbering it
+        # RESOLVED: the manual nests this under 'RESULT_GRAPHIC' by numbering it
         # '12.10', not by naming a path
 
 extraction:

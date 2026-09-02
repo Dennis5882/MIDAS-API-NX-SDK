@@ -135,7 +135,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'COMB_LIST' by numbering it '(2)', not
+        # RESOLVED: the manual nests this under 'COMB_LIST' by numbering it '(2)', not
         # by naming a path
   - key: bCHECK_GEOM_STIFF
     description: >-

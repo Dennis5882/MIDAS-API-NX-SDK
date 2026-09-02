@@ -88,7 +88,7 @@ fields:
         enum: [LUMPED, CONSISTENT]
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'MASS_CONTROL' by numbering it
+        # RESOLVED: the manual nests this under 'MASS_CONTROL' by numbering it
         # '2-(1)', not by naming a path
       - key: MASS_POS
         description: >-
@@ -105,7 +105,7 @@ fields:
         enum: [CENTROID, OFFSET]
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'MASS_CONTROL' by numbering it
+        # RESOLVED: the manual nests this under 'MASS_CONTROL' by numbering it
         # '2-(2)', not by naming a path
       - key: SELFWEIGHT
         description: >-
@@ -116,7 +116,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'MASS_CONTROL' by numbering it
+        # RESOLVED: the manual nests this under 'MASS_CONTROL' by numbering it
         # '2-(3)', not by naming a path
       - key: MASS_AXIS
         description: >-
@@ -133,7 +133,7 @@ fields:
         enum: [XYZ, XY, Z]
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'MASS_CONTROL' by numbering it
+        # RESOLVED: the manual nests this under 'MASS_CONTROL' by numbering it
         # '2-(4)', not by naming a path
   - key: GRAV
     description: >-

@@ -148,7 +148,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'UNIT' by numbering it '10.1', not by
+        # RESOLVED: the manual nests this under 'UNIT' by numbering it '10.1', not by
         # naming a path
       - key: DIST
         description: >-
@@ -159,7 +159,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'UNIT' by numbering it '10.2', not by
+        # RESOLVED: the manual nests this under 'UNIT' by numbering it '10.2', not by
         # naming a path
       - key: HEAT
         description: >-
@@ -170,7 +170,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'UNIT' by numbering it '10.3', not by
+        # RESOLVED: the manual nests this under 'UNIT' by numbering it '10.3', not by
         # naming a path
       - key: TEMP
         description: >-
@@ -181,7 +181,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'UNIT' by numbering it '10.4', not by
+        # RESOLVED: the manual nests this under 'UNIT' by numbering it '10.4', not by
         # naming a path
   - key: STYLES
     description: >-
@@ -203,7 +203,7 @@ fields:
         enum: [Default, Fixed, Scientific, General]
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'STYLES' by numbering it '11.1', not
+        # RESOLVED: the manual nests this under 'STYLES' by numbering it '11.1', not
         # by naming a path
       - key: PLACE
         description: >-
@@ -216,7 +216,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'STYLES' by numbering it '11.2', not
+        # RESOLVED: the manual nests this under 'STYLES' by numbering it '11.2', not
         # by naming a path
   - key: COMPONENTS
     description: >-

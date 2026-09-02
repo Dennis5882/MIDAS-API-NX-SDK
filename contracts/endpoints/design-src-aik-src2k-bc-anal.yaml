@@ -72,7 +72,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ELEMS' with a tree marker rather than
+        # RESOLVED: the manual nests this under 'ELEMS' with a tree marker rather than
         # a path
       - key: TO
         description: >-
@@ -83,7 +83,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ELEMS' with a tree marker rather than
+        # RESOLVED: the manual nests this under 'ELEMS' with a tree marker rather than
         # a path
       - key: STRUCTURE_GROUP_NAME
         description: >-
@@ -94,7 +94,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ELEMS' with a tree marker rather than
+        # RESOLVED: the manual nests this under 'ELEMS' with a tree marker rather than
         # a path
   - key: SECTIONS
     description: >-

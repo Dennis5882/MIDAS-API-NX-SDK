@@ -144,7 +144,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(1)', not
+        # RESOLVED: the manual nests this under 'vPARTINFO' by numbering it '(1)', not
         # by naming a path
       - key: MTYPE
         description: >-
@@ -155,7 +155,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(2)', not
+        # RESOLVED: the manual nests this under 'vPARTINFO' by numbering it '(2)', not
         # by naming a path
       - key: MAT
         description: >-
@@ -166,7 +166,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(3)', not
+        # RESOLVED: the manual nests this under 'vPARTINFO' by numbering it '(3)', not
         # by naming a path
       - key: CSTAGE
         description: >-
@@ -177,7 +177,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(4)', not
+        # RESOLVED: the manual nests this under 'vPARTINFO' by numbering it '(4)', not
         # by naming a path
       - key: AGE
         description: >-
@@ -188,7 +188,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(5)', not
+        # RESOLVED: the manual nests this under 'vPARTINFO' by numbering it '(5)', not
         # by naming a path
       - key: PARTINFO_H
         description: >-
@@ -200,7 +200,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(6)', not
+        # RESOLVED: the manual nests this under 'vPARTINFO' by numbering it '(6)', not
         # by naming a path
       - key: PARTINFO_VS
         description: >-
@@ -211,7 +211,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(7)', not
+        # RESOLVED: the manual nests this under 'vPARTINFO' by numbering it '(7)', not
         # by naming a path
       - key: PARTINFO_M
         description: >-
@@ -222,7 +222,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(8)', not
+        # RESOLVED: the manual nests this under 'vPARTINFO' by numbering it '(8)', not
         # by naming a path
       - key: AREA
         description: >-
@@ -233,7 +233,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(9)', not
+        # RESOLVED: the manual nests this under 'vPARTINFO' by numbering it '(9)', not
         # by naming a path
       - key: ASY
         description: >-
@@ -244,7 +244,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(10)',
+        # RESOLVED: the manual nests this under 'vPARTINFO' by numbering it '(10)',
         # not by naming a path
       - key: ASZ
         description: >-
@@ -255,7 +255,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(11)',
+        # RESOLVED: the manual nests this under 'vPARTINFO' by numbering it '(11)',
         # not by naming a path
       - key: IXX
         description: >-
@@ -266,7 +266,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(12)',
+        # RESOLVED: the manual nests this under 'vPARTINFO' by numbering it '(12)',
         # not by naming a path
       - key: IYY
         description: >-
@@ -277,7 +277,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(13)',
+        # RESOLVED: the manual nests this under 'vPARTINFO' by numbering it '(13)',
         # not by naming a path
       - key: IZZ
         description: >-
@@ -288,7 +288,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(14)',
+        # RESOLVED: the manual nests this under 'vPARTINFO' by numbering it '(14)',
         # not by naming a path
       - key: WAREA
         description: >-
@@ -299,7 +299,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(15)',
+        # RESOLVED: the manual nests this under 'vPARTINFO' by numbering it '(15)',
         # not by naming a path
       - key: IW
         description: >-
@@ -310,7 +310,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vPARTINFO' by numbering it '(16)',
+        # RESOLVED: the manual nests this under 'vPARTINFO' by numbering it '(16)',
         # not by naming a path
   - key: OPT_UPDATE_ALL_H
     description: >-

@@ -142,7 +142,7 @@ fields:
         enum: [0, 1, 2]
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'PARAMETERS' by numbering it '(1)',
+        # RESOLVED: the manual nests this under 'PARAMETERS' by numbering it '(1)',
         # not by naming a path
 
 variants:
@@ -544,7 +544,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
+            # RESOLVED: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
             # '(1)', not by naming a path
           - key: ALONG_X
             description: >-
@@ -555,7 +555,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
+            # RESOLVED: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
             # '(2)', not by naming a path
           - key: ALONG_Y
             description: >-
@@ -566,7 +566,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
+            # RESOLVED: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
             # '(3)', not by naming a path
           - key: ACROSS_X
             description: >-
@@ -577,7 +577,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
+            # RESOLVED: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
             # '(4)', not by naming a path
           - key: ACROSS_Y
             description: >-
@@ -588,7 +588,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
+            # RESOLVED: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
             # '(5)', not by naming a path
           - key: TORSIONAL_RZ
             description: >-
@@ -599,7 +599,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
+            # RESOLVED: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
             # '(6)', not by naming a path
           - key: TORSIONAL_RZ_X
             description: >-
@@ -610,7 +610,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
+            # RESOLVED: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
             # '(7)', not by naming a path
           - key: TORSIONAL_RZ_Y
             description: >-
@@ -621,7 +621,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
+            # RESOLVED: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
             # '(8)', not by naming a path
   - when:
       - path: WIND_CODE
@@ -708,7 +708,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'STORY_WIND_PRESSURE' by numbering it
+            # RESOLVED: the manual nests this under 'STORY_WIND_PRESSURE' by numbering it
             # '(1)', not by naming a path
           - key: PRESS_X
             description: >-
@@ -719,7 +719,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'STORY_WIND_PRESSURE' by numbering it
+            # RESOLVED: the manual nests this under 'STORY_WIND_PRESSURE' by numbering it
             # '(2)', not by naming a path
           - key: PRESS_Y
             description: >-
@@ -730,7 +730,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'STORY_WIND_PRESSURE' by numbering it
+            # RESOLVED: the manual nests this under 'STORY_WIND_PRESSURE' by numbering it
             # '(3)', not by naming a path
       - key: ADDITIONAL_LOAD
         description: >-
@@ -753,7 +753,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
+            # RESOLVED: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
             # '(2)', not by naming a path
           - key: ALONG_Y
             description: >-
@@ -764,7 +764,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
+            # RESOLVED: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
             # '(3)', not by naming a path
           - key: TORSIONAL_RZ
             description: >-
@@ -775,7 +775,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
+            # RESOLVED: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
             # '(4)', not by naming a path
 
 sdkRules:

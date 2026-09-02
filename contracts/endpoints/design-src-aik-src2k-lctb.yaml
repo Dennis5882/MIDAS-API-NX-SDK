@@ -94,7 +94,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'BASE_ITEM' with a tree marker rather
+        # RESOLVED: the manual nests this under 'BASE_ITEM' with a tree marker rather
         # than a path
       - key: LOAD_CASE_NAME
         description: >-
@@ -105,7 +105,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'BASE_ITEM' with a tree marker rather
+        # RESOLVED: the manual nests this under 'BASE_ITEM' with a tree marker rather
         # than a path
 
 extraction:

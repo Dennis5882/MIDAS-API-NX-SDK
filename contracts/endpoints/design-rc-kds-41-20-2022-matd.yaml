@@ -90,7 +90,7 @@ fields:
         enum: [None, Standard]
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'CONCRETE' by numbering it '2.1', not
+        # RESOLVED: the manual nests this under 'CONCRETE' by numbering it '2.1', not
         # by naming a path
       - key: LIGHTWEIGHT
         description: >-
@@ -101,7 +101,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'CONCRETE' by numbering it '2.2', not
+        # RESOLVED: the manual nests this under 'CONCRETE' by numbering it '2.2', not
         # by naming a path
       - key: LAMBDA
         description: >-
@@ -112,7 +112,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'CONCRETE' by numbering it '2.3', not
+        # RESOLVED: the manual nests this under 'CONCRETE' by numbering it '2.3', not
         # by naming a path
       - key: STANDARD_CODE
         description: >-
@@ -128,7 +128,7 @@ fields:
         enum: [KS19(RC)]
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'CONCRETE' by numbering it '2.4', not
+        # RESOLVED: the manual nests this under 'CONCRETE' by numbering it '2.4', not
         # by naming a path
       - key: GRADE
         description: >-
@@ -144,7 +144,7 @@ fields:
         enum: [C15, C18, C21, C24, C27, C30, C35, C40, C45, C49, C50, C55, C60, C65, C70, C75, C80, C85, C90, C95]
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'CONCRETE' by numbering it '2.5', not
+        # RESOLVED: the manual nests this under 'CONCRETE' by numbering it '2.5', not
         # by naming a path
       - key: NAME
         description: >-
@@ -159,7 +159,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'CONCRETE' by numbering it '2.6', not
+        # RESOLVED: the manual nests this under 'CONCRETE' by numbering it '2.6', not
         # by naming a path
       - key: FC
         description: >-
@@ -174,7 +174,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'CONCRETE' by numbering it '2.7', not
+        # RESOLVED: the manual nests this under 'CONCRETE' by numbering it '2.7', not
         # by naming a path
   - key: REBAR
     description: >-
@@ -196,7 +196,7 @@ fields:
         enum: [None, Standard]
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'REBAR' by numbering it '3.1', not by
+        # RESOLVED: the manual nests this under 'REBAR' by numbering it '3.1', not by
         # naming a path
       - key: STANDARD_CODE
         description: >-
@@ -212,7 +212,7 @@ fields:
         enum: [KS19(RC)]
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'REBAR' by numbering it '3.2', not by
+        # RESOLVED: the manual nests this under 'REBAR' by numbering it '3.2', not by
         # naming a path
       - key: MAIN_REBAR_GRADE
         description: >-
@@ -228,7 +228,7 @@ fields:
         enum: [SD300, SD400, SD500, SD600, SD700, SD400S, SD500S, SD600S]
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'REBAR' by numbering it '3.3', not by
+        # RESOLVED: the manual nests this under 'REBAR' by numbering it '3.3', not by
         # naming a path
       - key: SUB_REBAR_GRADE
         description: >-
@@ -244,7 +244,7 @@ fields:
         enum: [SD300, SD400, SD500, SD600, SD700, SD400S, SD500S, SD600S]
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'REBAR' by numbering it '3.4', not by
+        # RESOLVED: the manual nests this under 'REBAR' by numbering it '3.4', not by
         # naming a path
       - key: MAIN_REBAR_NAME
         description: >-
@@ -259,7 +259,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'REBAR' by numbering it '3.5', not by
+        # RESOLVED: the manual nests this under 'REBAR' by numbering it '3.5', not by
         # naming a path
       - key: SUB_REBAR_NAME
         description: >-
@@ -274,7 +274,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'REBAR' by numbering it '3.6', not by
+        # RESOLVED: the manual nests this under 'REBAR' by numbering it '3.6', not by
         # naming a path
       - key: FY
         description: >-
@@ -289,7 +289,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'REBAR' by numbering it '3.7', not by
+        # RESOLVED: the manual nests this under 'REBAR' by numbering it '3.7', not by
         # naming a path
       - key: FYS
         description: >-
@@ -304,7 +304,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'REBAR' by numbering it '3.8', not by
+        # RESOLVED: the manual nests this under 'REBAR' by numbering it '3.8', not by
         # naming a path
 
 extraction:

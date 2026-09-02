@@ -100,7 +100,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(1)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(1)', not by
         # naming a path
       - key: SUB_WALL_ID
         description: >-
@@ -112,7 +112,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(2)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(2)', not by
         # naming a path
       - key: STORY
         description: >-
@@ -124,7 +124,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(3)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(3)', not by
         # naming a path
       - key: VERTICAL_REBAR
         description: >-
@@ -135,7 +135,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(4)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(4)', not by
         # naming a path
       - key: HORIZONTAL_REBAR
         description: >-
@@ -146,7 +146,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(5)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(5)', not by
         # naming a path
       - key: USE_END_REBAR
         description: >-
@@ -157,7 +157,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(6)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(6)', not by
         # naming a path
       - key: END_REBAR
         description: >-
@@ -169,7 +169,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(7)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(7)', not by
         # naming a path
       - key: BE_HORIZONTAL_REBAR
         description: >-
@@ -180,7 +180,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(8)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(8)', not by
         # naming a path
       - key: BOUNDARY_ELEMENT_LENGTH
         description: >-
@@ -191,7 +191,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(9)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(9)', not by
         # naming a path
       - key: CONCRETE_FACE_TO_CENTER_OF_REBAR
         description: >-
@@ -202,7 +202,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(10)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(10)', not by
         # naming a path
       - key: USE_MODEL_THICKNESS
         description: >-
@@ -213,7 +213,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(11)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(11)', not by
         # naming a path
       - key: THICKNESS
         description: >-
@@ -225,7 +225,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(12)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(12)', not by
         # naming a path
 
 extraction:

@@ -189,7 +189,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'FIBR_BASE' by numbering it '(1)', not
+        # RESOLVED: the manual nests this under 'FIBR_BASE' by numbering it '(1)', not
         # by naming a path
       - key: REBAR_NAME
         description: >-
@@ -200,7 +200,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'FIBR_BASE' by numbering it '(2)', not
+        # RESOLVED: the manual nests this under 'FIBR_BASE' by numbering it '(2)', not
         # by naming a path
       - key: AREA
         description: >-
@@ -211,7 +211,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'FIBR_BASE' by numbering it '(3)', not
+        # RESOLVED: the manual nests this under 'FIBR_BASE' by numbering it '(3)', not
         # by naming a path
       - key: CENTER_Y
         description: >-
@@ -222,7 +222,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'FIBR_BASE' by numbering it '(4)', not
+        # RESOLVED: the manual nests this under 'FIBR_BASE' by numbering it '(4)', not
         # by naming a path
       - key: CENTER_Z
         description: >-
@@ -233,7 +233,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'FIBR_BASE' by numbering it '(5)', not
+        # RESOLVED: the manual nests this under 'FIBR_BASE' by numbering it '(5)', not
         # by naming a path
       - key: FIBER_MATL_ID
         description: >-
@@ -244,7 +244,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'FIBR_BASE' by numbering it '(6)', not
+        # RESOLVED: the manual nests this under 'FIBR_BASE' by numbering it '(6)', not
         # by naming a path
       - key: AREA_CONSIDER_REBAR
         description: >-
@@ -255,7 +255,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'FIBR_BASE' by numbering it '(7)', not
+        # RESOLVED: the manual nests this under 'FIBR_BASE' by numbering it '(7)', not
         # by naming a path
       - key: OPT_IS_REBAR
         description: >-
@@ -266,7 +266,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'FIBR_BASE' by numbering it '(8)', not
+        # RESOLVED: the manual nests this under 'FIBR_BASE' by numbering it '(8)', not
         # by naming a path
       - key: POINT_Y
         description: >-
@@ -279,7 +279,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'FIBR_BASE' by numbering it '(9)', not
+        # RESOLVED: the manual nests this under 'FIBR_BASE' by numbering it '(9)', not
         # by naming a path
       - key: POINT_Z
         description: >-
@@ -292,7 +292,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'FIBR_BASE' by numbering it '(10)',
+        # RESOLVED: the manual nests this under 'FIBR_BASE' by numbering it '(10)',
         # not by naming a path
   - key: OPT_MONITORED_FIBER
     description: >-

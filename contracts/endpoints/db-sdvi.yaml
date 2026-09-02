@@ -106,7 +106,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'COMMON' by numbering it '(1)', not by
+        # RESOLVED: the manual nests this under 'COMMON' by numbering it '(1)', not by
         # naming a path
       - key: DESC
         description: >-
@@ -117,7 +117,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'COMMON' by numbering it '(2)', not by
+        # RESOLVED: the manual nests this under 'COMMON' by numbering it '(2)', not by
         # naming a path
       - key: INPUT_METHOD
         description: >-
@@ -128,7 +128,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'COMMON' by numbering it '(3)', not by
+        # RESOLVED: the manual nests this under 'COMMON' by numbering it '(3)', not by
         # naming a path
       - key: COMPANY
         description: >-
@@ -139,7 +139,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'COMMON' by numbering it '(4)', not by
+        # RESOLVED: the manual nests this under 'COMMON' by numbering it '(4)', not by
         # naming a path
       - key: PRODUCT_NAME
         description: >-
@@ -150,7 +150,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'COMMON' by numbering it '(5)', not by
+        # RESOLVED: the manual nests this under 'COMMON' by numbering it '(5)', not by
         # naming a path
       - key: TYPE_NUMBER
         description: >-
@@ -161,7 +161,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'COMMON' by numbering it '(6)', not by
+        # RESOLVED: the manual nests this under 'COMMON' by numbering it '(6)', not by
         # naming a path
   - key: DEVICE_TYPE
     description: >-
@@ -231,7 +231,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEM' by numbering it '(1)', not by
+        # RESOLVED: the manual nests this under 'ITEM' by numbering it '(1)', not by
         # naming a path
       - key: CE
         description: >-
@@ -242,7 +242,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEM' by numbering it '(2)', not by
+        # RESOLVED: the manual nests this under 'ITEM' by numbering it '(2)', not by
         # naming a path
       - key: P1
         description: >-
@@ -253,7 +253,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEM' by numbering it '(3)', not by
+        # RESOLVED: the manual nests this under 'ITEM' by numbering it '(3)', not by
         # naming a path
       - key: C1
         description: >-
@@ -264,7 +264,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEM' by numbering it '(4)', not by
+        # RESOLVED: the manual nests this under 'ITEM' by numbering it '(4)', not by
         # naming a path
       - key: ALPHA1
         description: >-
@@ -275,7 +275,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEM' by numbering it '(5)', not by
+        # RESOLVED: the manual nests this under 'ITEM' by numbering it '(5)', not by
         # naming a path
       - key: K0
         description: >-
@@ -286,7 +286,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEM' by numbering it '(6)', not by
+        # RESOLVED: the manual nests this under 'ITEM' by numbering it '(6)', not by
         # naming a path
       - key: EXFN_PY
         description: >-
@@ -297,7 +297,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEM' by numbering it '(7)', not by
+        # RESOLVED: the manual nests this under 'ITEM' by numbering it '(7)', not by
         # naming a path
       - key: EXFN_VY
         description: >-
@@ -308,7 +308,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEM' by numbering it '(8)', not by
+        # RESOLVED: the manual nests this under 'ITEM' by numbering it '(8)', not by
         # naming a path
       - key: EXFN_DE
         description: >-
@@ -319,7 +319,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEM' by numbering it '(9)', not by
+        # RESOLVED: the manual nests this under 'ITEM' by numbering it '(9)', not by
         # naming a path
       - key: EXFN_DC
         description: >-
@@ -330,7 +330,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEM' by numbering it '(10)', not by
+        # RESOLVED: the manual nests this under 'ITEM' by numbering it '(10)', not by
         # naming a path
       - key: OPT_EXFN_CE
         description: >-
@@ -341,7 +341,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEM' by numbering it '(11)', not by
+        # RESOLVED: the manual nests this under 'ITEM' by numbering it '(11)', not by
         # naming a path
       - key: EXFN_CE
         description: >-
@@ -352,7 +352,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEM' by numbering it '(12)', not by
+        # RESOLVED: the manual nests this under 'ITEM' by numbering it '(12)', not by
         # naming a path
 
 sdkRules:

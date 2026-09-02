@@ -90,7 +90,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'MAIN_BAR' with a tree marker rather
+        # RESOLVED: the manual nests this under 'MAIN_BAR' with a tree marker rather
         # than a path
       - key: REBAR_SPACE
         description: >-
@@ -102,7 +102,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'MAIN_BAR' with a tree marker rather
+        # RESOLVED: the manual nests this under 'MAIN_BAR' with a tree marker rather
         # than a path
       - key: NUM
         description: >-
@@ -114,7 +114,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'MAIN_BAR' with a tree marker rather
+        # RESOLVED: the manual nests this under 'MAIN_BAR' with a tree marker rather
         # than a path
       - key: NAME
         description: >-
@@ -126,7 +126,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'MAIN_BAR' with a tree marker rather
+        # RESOLVED: the manual nests this under 'MAIN_BAR' with a tree marker rather
         # than a path
       - key: ROW
         description: >-
@@ -138,7 +138,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'MAIN_BAR' with a tree marker rather
+        # RESOLVED: the manual nests this under 'MAIN_BAR' with a tree marker rather
         # than a path
       - key: DO
         description: >-
@@ -150,7 +150,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'MAIN_BAR' with a tree marker rather
+        # RESOLVED: the manual nests this under 'MAIN_BAR' with a tree marker rather
         # than a path
   - key: SHEAR_BAR
     description: >-
@@ -171,7 +171,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'SHEAR_BAR' with a tree marker rather
+        # RESOLVED: the manual nests this under 'SHEAR_BAR' with a tree marker rather
         # than a path
 
 extraction:

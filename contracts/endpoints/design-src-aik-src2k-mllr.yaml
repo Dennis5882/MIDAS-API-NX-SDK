@@ -101,7 +101,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'COMPONENTS' with a tree marker rather
+        # RESOLVED: the manual nests this under 'COMPONENTS' with a tree marker rather
         # than a path
       - key: MOMENT
         description: >-
@@ -112,7 +112,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'COMPONENTS' with a tree marker rather
+        # RESOLVED: the manual nests this under 'COMPONENTS' with a tree marker rather
         # than a path
       - key: SHEAR
         description: >-
@@ -123,7 +123,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'COMPONENTS' with a tree marker rather
+        # RESOLVED: the manual nests this under 'COMPONENTS' with a tree marker rather
         # than a path
 
 extraction:

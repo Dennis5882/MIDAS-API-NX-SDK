@@ -115,7 +115,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'REDUCTION_DATA' with a tree marker
+        # RESOLVED: the manual nests this under 'REDUCTION_DATA' with a tree marker
         # rather than a path
       - key: XMIN
         description: >-
@@ -126,7 +126,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'REDUCTION_DATA' with a tree marker
+        # RESOLVED: the manual nests this under 'REDUCTION_DATA' with a tree marker
         # rather than a path
       - key: XMAX
         description: >-
@@ -137,7 +137,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'REDUCTION_DATA' with a tree marker
+        # RESOLVED: the manual nests this under 'REDUCTION_DATA' with a tree marker
         # rather than a path
       - key: YMIN
         description: >-
@@ -148,7 +148,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'REDUCTION_DATA' with a tree marker
+        # RESOLVED: the manual nests this under 'REDUCTION_DATA' with a tree marker
         # rather than a path
       - key: YMAX
         description: >-
@@ -159,7 +159,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'REDUCTION_DATA' with a tree marker
+        # RESOLVED: the manual nests this under 'REDUCTION_DATA' with a tree marker
         # rather than a path
       - key: RANGE_MAX
         description: >-
@@ -170,7 +170,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'REDUCTION_DATA' with a tree marker
+        # RESOLVED: the manual nests this under 'REDUCTION_DATA' with a tree marker
         # rather than a path
       - key: RANGE_MIN
         description: >-
@@ -181,7 +181,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'REDUCTION_DATA' with a tree marker
+        # RESOLVED: the manual nests this under 'REDUCTION_DATA' with a tree marker
         # rather than a path
 
 extraction:

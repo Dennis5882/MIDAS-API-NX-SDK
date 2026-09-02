@@ -82,7 +82,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ELEMS' by numbering it '3.1', not by
+        # RESOLVED: the manual nests this under 'ELEMS' by numbering it '3.1', not by
         # naming a path
       - key: TO
         description: >-
@@ -93,7 +93,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ELEMS' by numbering it '3.2', not by
+        # RESOLVED: the manual nests this under 'ELEMS' by numbering it '3.2', not by
         # naming a path
       - key: STRUCTURE_GROUP_NAME
         description: >-
@@ -104,7 +104,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ELEMS' by numbering it '3.3', not by
+        # RESOLVED: the manual nests this under 'ELEMS' by numbering it '3.3', not by
         # naming a path
   - key: SECTIONS
     description: >-

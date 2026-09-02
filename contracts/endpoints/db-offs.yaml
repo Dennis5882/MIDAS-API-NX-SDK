@@ -107,7 +107,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(1)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(1)', not by
         # naming a path
       - key: GROUP_NAME
         description: >-
@@ -118,7 +118,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(2)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(2)', not by
         # naming a path
       - key: TYPE
         description: >-
@@ -129,7 +129,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(3)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(3)', not by
         # naming a path
       - key: RGDXi
         description: >-
@@ -140,7 +140,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(4)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(4)', not by
         # naming a path
       - key: RGDYi
         description: >-
@@ -151,7 +151,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(5)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(5)', not by
         # naming a path
       - key: RGDZi
         description: >-
@@ -162,7 +162,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(6)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(6)', not by
         # naming a path
       - key: RGDXj
         description: >-
@@ -173,7 +173,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(7)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(7)', not by
         # naming a path
       - key: RGDYj
         description: >-
@@ -184,7 +184,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(8)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(8)', not by
         # naming a path
       - key: RGDZj
         description: >-
@@ -195,7 +195,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(9)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(9)', not by
         # naming a path
 
 sdkRules:

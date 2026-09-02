@@ -171,7 +171,7 @@ fields:
         enum: [0, 1]
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'PARAMETERS' by numbering it '(1)',
+        # RESOLVED: the manual nests this under 'PARAMETERS' by numbering it '(1)',
         # not by naming a path
       - key: EPA
         description: >-
@@ -182,7 +182,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'PARAMETERS' by numbering it '(2)',
+        # RESOLVED: the manual nests this under 'PARAMETERS' by numbering it '(2)',
         # not by naming a path
       - key: SITE_CLASS
         description: >-
@@ -194,7 +194,7 @@ fields:
         enum: [0, 1, 2, 3, 4, 5]
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'PARAMETERS' by numbering it '(3)',
+        # RESOLVED: the manual nests this under 'PARAMETERS' by numbering it '(3)',
         # not by naming a path
       - key: FA
         description: >-
@@ -206,7 +206,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'PARAMETERS' by numbering it '(4)',
+        # RESOLVED: the manual nests this under 'PARAMETERS' by numbering it '(4)',
         # not by naming a path
       - key: FV
         description: >-
@@ -218,7 +218,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'PARAMETERS' by numbering it '(5)',
+        # RESOLVED: the manual nests this under 'PARAMETERS' by numbering it '(5)',
         # not by naming a path
       - key: SDS
         description: >-
@@ -230,7 +230,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'PARAMETERS' by numbering it '(6)',
+        # RESOLVED: the manual nests this under 'PARAMETERS' by numbering it '(6)',
         # not by naming a path
       - key: SD1
         description: >-
@@ -242,7 +242,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'PARAMETERS' by numbering it '(7)',
+        # RESOLVED: the manual nests this under 'PARAMETERS' by numbering it '(7)',
         # not by naming a path
       - key: SEIS_USE_GROUP
         description: >-
@@ -254,7 +254,7 @@ fields:
         enum: [0, 1, 2]
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'PARAMETERS' by numbering it '(8)',
+        # RESOLVED: the manual nests this under 'PARAMETERS' by numbering it '(8)',
         # not by naming a path
       - key: IMPORTANCE_FACTOR
         description: >-
@@ -265,7 +265,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'PARAMETERS' by numbering it '(9)',
+        # RESOLVED: the manual nests this under 'PARAMETERS' by numbering it '(9)',
         # not by naming a path
       - key: PERIOD_METHOD
         description: >-
@@ -277,7 +277,7 @@ fields:
         enum: [0, 1]
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'PARAMETERS' by numbering it '(10)',
+        # RESOLVED: the manual nests this under 'PARAMETERS' by numbering it '(10)',
         # not by naming a path
 
 variants:
@@ -386,7 +386,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
+            # RESOLVED: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
             # '(1)', not by naming a path
           - key: ALONG_X
             description: >-
@@ -397,7 +397,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
+            # RESOLVED: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
             # '(2)', not by naming a path
           - key: ALONG_Y
             description: >-
@@ -408,7 +408,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
+            # RESOLVED: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
             # '(3)', not by naming a path
           - key: TORSIONAL_RZ
             description: >-
@@ -419,7 +419,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
+            # RESOLVED: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
             # '(4)', not by naming a path
   - when:
       - path: SEIS_CODE
@@ -524,7 +524,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'SEISMIC_FORCE' by numbering it '(1)',
+            # RESOLVED: the manual nests this under 'SEISMIC_FORCE' by numbering it '(1)',
             # not by naming a path
           - key: FORCE_X
             description: >-
@@ -535,7 +535,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'SEISMIC_FORCE' by numbering it '(2)',
+            # RESOLVED: the manual nests this under 'SEISMIC_FORCE' by numbering it '(2)',
             # not by naming a path
           - key: FORCE_Y
             description: >-
@@ -546,7 +546,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'SEISMIC_FORCE' by numbering it '(3)',
+            # RESOLVED: the manual nests this under 'SEISMIC_FORCE' by numbering it '(3)',
             # not by naming a path
       - key: ADDITIONAL_LOAD
         description: >-
@@ -567,7 +567,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
+            # RESOLVED: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
             # '(2)', not by naming a path
           - key: ALONG_Y
             description: >-
@@ -578,7 +578,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
+            # RESOLVED: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
             # '(3)', not by naming a path
           - key: TORSIONAL_RZ
             description: >-
@@ -589,7 +589,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
+            # RESOLVED: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
             # '(4)', not by naming a path
 
 sdkRules:

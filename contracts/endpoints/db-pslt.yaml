@@ -135,7 +135,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'PRESSURE_LOAD_ITEMS' by numbering it
+        # RESOLVED: the manual nests this under 'PRESSURE_LOAD_ITEMS' by numbering it
         # '(1)', not by naming a path
       - key: LOADTYPE
         description: >-
@@ -146,7 +146,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'PRESSURE_LOAD_ITEMS' by numbering it
+        # RESOLVED: the manual nests this under 'PRESSURE_LOAD_ITEMS' by numbering it
         # '(2)', not by naming a path
       - key: LOAD_P1
         description: >-
@@ -157,7 +157,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'PRESSURE_LOAD_ITEMS' by numbering it
+        # RESOLVED: the manual nests this under 'PRESSURE_LOAD_ITEMS' by numbering it
         # '(3)', not by naming a path
       - key: LOAD_P2
         description: >-
@@ -168,7 +168,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'PRESSURE_LOAD_ITEMS' by numbering it
+        # RESOLVED: the manual nests this under 'PRESSURE_LOAD_ITEMS' by numbering it
         # '(4)', not by naming a path
       - key: LOAD_P3
         description: >-
@@ -179,7 +179,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'PRESSURE_LOAD_ITEMS' by numbering it
+        # RESOLVED: the manual nests this under 'PRESSURE_LOAD_ITEMS' by numbering it
         # '(5)', not by naming a path
       - key: LOAD_P4
         description: >-
@@ -190,7 +190,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'PRESSURE_LOAD_ITEMS' by numbering it
+        # RESOLVED: the manual nests this under 'PRESSURE_LOAD_ITEMS' by numbering it
         # '(6)', not by naming a path
 
 sdkRules:

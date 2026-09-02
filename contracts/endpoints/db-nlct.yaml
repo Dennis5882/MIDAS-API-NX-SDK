@@ -208,7 +208,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'NEWTON_ITEMS' by numbering it '(1)',
+            # RESOLVED: the manual nests this under 'NEWTON_ITEMS' by numbering it '(1)',
             # not by naming a path
           - key: LCNAME
             description: >-
@@ -219,7 +219,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'NEWTON_ITEMS' by numbering it '(2)',
+            # RESOLVED: the manual nests this under 'NEWTON_ITEMS' by numbering it '(2)',
             # not by naming a path
           - key: LOAD_FACTORS
             description: >-
@@ -232,7 +232,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'NEWTON_ITEMS' by numbering it '(5)',
+            # RESOLVED: the manual nests this under 'NEWTON_ITEMS' by numbering it '(5)',
             # not by naming a path
   - when:
       - path: ITERATION_METHOD
@@ -298,7 +298,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'ARCLEN_ITEMS' by numbering it '(1)',
+            # RESOLVED: the manual nests this under 'ARCLEN_ITEMS' by numbering it '(1)',
             # not by naming a path
           - key: LCNAME
             description: >-
@@ -309,7 +309,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'ARCLEN_ITEMS' by numbering it '(2)',
+            # RESOLVED: the manual nests this under 'ARCLEN_ITEMS' by numbering it '(2)',
             # not by naming a path
   - when:
       - path: ITERATION_METHOD
@@ -384,7 +384,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'DISPCT_ITEMS' by numbering it '(1)',
+            # RESOLVED: the manual nests this under 'DISPCT_ITEMS' by numbering it '(1)',
             # not by naming a path
           - key: LCNAME
             description: >-
@@ -395,7 +395,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'DISPCT_ITEMS' by numbering it '(2)',
+            # RESOLVED: the manual nests this under 'DISPCT_ITEMS' by numbering it '(2)',
             # not by naming a path
           - key: LOAD_FACTORS
             description: >-
@@ -408,7 +408,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'DISPCT_ITEMS' by numbering it '(8)',
+            # RESOLVED: the manual nests this under 'DISPCT_ITEMS' by numbering it '(8)',
             # not by naming a path
 
 sdkRules:

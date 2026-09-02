@@ -109,7 +109,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'SELECTIONS' by numbering it '5.1',
+        # RESOLVED: the manual nests this under 'SELECTIONS' by numbering it '5.1',
         # not by naming a path
       - key: STORY
         description: >-
@@ -122,7 +122,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'SELECTIONS' by numbering it '5.2',
+        # RESOLVED: the manual nests this under 'SELECTIONS' by numbering it '5.2',
         # not by naming a path
   - key: EXPORT_PATH
     description: >-

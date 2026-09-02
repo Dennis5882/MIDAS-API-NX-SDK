@@ -146,7 +146,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vDAY' by numbering it '(1)', not by
+        # RESOLVED: the manual nests this under 'vDAY' by numbering it '(1)', not by
         # naming a path
       - key: VALUE
         description: >-
@@ -157,7 +157,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'vDAY' by numbering it '(2)', not by
+        # RESOLVED: the manual nests this under 'vDAY' by numbering it '(2)', not by
         # naming a path
   - key: CTYPE
     description: >-

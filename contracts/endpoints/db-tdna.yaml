@@ -490,7 +490,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'PROFY' by numbering it '(1)', not by
+            # RESOLVED: the manual nests this under 'PROFY' by numbering it '(1)', not by
             # naming a path
           - key: bFIX
             description: >-
@@ -501,7 +501,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'PROFY' by numbering it '(2)', not by
+            # RESOLVED: the manual nests this under 'PROFY' by numbering it '(2)', not by
             # naming a path
           - key: R
             description: >-
@@ -512,7 +512,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'PROFY' by numbering it '(3)', not by
+            # RESOLVED: the manual nests this under 'PROFY' by numbering it '(3)', not by
             # naming a path
       - key: PROFZ
         description: >-
@@ -535,7 +535,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'PROFZ' by numbering it '(4)', not by
+            # RESOLVED: the manual nests this under 'PROFZ' by numbering it '(4)', not by
             # naming a path
   - when:
       - path: INPUT
@@ -571,7 +571,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'PROFY' by numbering it '(1)', not by
+            # RESOLVED: the manual nests this under 'PROFY' by numbering it '(1)', not by
             # naming a path
           - key: RADIUS
             description: >-
@@ -582,7 +582,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'PROFY' by numbering it '(2)', not by
+            # RESOLVED: the manual nests this under 'PROFY' by numbering it '(2)', not by
             # naming a path
           - key: OPT
             description: >-
@@ -593,7 +593,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'PROFY' by numbering it '(3)', not by
+            # RESOLVED: the manual nests this under 'PROFY' by numbering it '(3)', not by
             # naming a path
           - key: ANGLE
             description: >-
@@ -604,7 +604,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'PROFY' by numbering it '(4)', not by
+            # RESOLVED: the manual nests this under 'PROFY' by numbering it '(4)', not by
             # naming a path
           - key: HEIGHT
             description: >-
@@ -615,7 +615,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'PROFY' by numbering it '(5)', not by
+            # RESOLVED: the manual nests this under 'PROFY' by numbering it '(5)', not by
             # naming a path
           - key: RADIUS2
             description: >-
@@ -626,7 +626,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'PROFY' by numbering it '(6)', not by
+            # RESOLVED: the manual nests this under 'PROFY' by numbering it '(6)', not by
             # naming a path
       - key: PROFZ
         description: >-
@@ -649,7 +649,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'PROFZ' by numbering it '(4)', not by
+            # RESOLVED: the manual nests this under 'PROFZ' by numbering it '(4)', not by
             # naming a path
   - when:
       - path: INPUT
@@ -685,7 +685,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'PROF' by numbering it '(1)', not by
+            # RESOLVED: the manual nests this under 'PROF' by numbering it '(1)', not by
             # naming a path
           - key: bFIX
             description: >-
@@ -696,7 +696,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'PROF' by numbering it '(2)', not by
+            # RESOLVED: the manual nests this under 'PROF' by numbering it '(2)', not by
             # naming a path
           - key: R
             description: >-
@@ -711,7 +711,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'PROF' by numbering it '(3)', not by
+            # RESOLVED: the manual nests this under 'PROF' by numbering it '(3)', not by
             # naming a path
   - when:
       - path: INPUT
@@ -747,7 +747,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'PROF' by numbering it '(1)', not by
+            # RESOLVED: the manual nests this under 'PROF' by numbering it '(1)', not by
             # naming a path
           - key: bFIX
             description: >-
@@ -758,7 +758,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'PROF' by numbering it '(2)', not by
+            # RESOLVED: the manual nests this under 'PROF' by numbering it '(2)', not by
             # naming a path
           - key: RADIUS
             description: >-
@@ -769,7 +769,7 @@ variants:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'PROF' by numbering it '(3)', not by
+            # RESOLVED: the manual nests this under 'PROF' by numbering it '(3)', not by
             # naming a path
 
 sdkRules:

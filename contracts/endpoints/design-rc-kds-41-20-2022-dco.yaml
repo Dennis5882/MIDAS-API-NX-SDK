@@ -208,7 +208,7 @@ fields:
         enum: [Special, Intermediate, Ordinary]
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'SEISMIC' by numbering it '14.1', not
+        # RESOLVED: the manual nests this under 'SEISMIC' by numbering it '14.1', not
         # by naming a path
       - key: STRONG_COL_WEAK_LAST
         description: >-
@@ -219,7 +219,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'SEISMIC' by numbering it '14.2', not
+        # RESOLVED: the manual nests this under 'SEISMIC' by numbering it '14.2', not
         # by naming a path
       - key: SHEAR_WALL
         description: >-
@@ -230,7 +230,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'SEISMIC' by numbering it '14.3', not
+        # RESOLVED: the manual nests this under 'SEISMIC' by numbering it '14.3', not
         # by naming a path
         properties:
           - key: SPEC_RC_WALL
@@ -242,7 +242,7 @@ fields:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'SHEAR_WALL' by numbering it '14.3.1',
+            # RESOLVED: the manual nests this under 'SHEAR_WALL' by numbering it '14.3.1',
             # not by naming a path
           - key: BDRY_ELEM_MTHD
             description: >-
@@ -254,7 +254,7 @@ fields:
             enum: [Displacement, Stress]
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'SHEAR_WALL' by numbering it '14.3.2',
+            # RESOLVED: the manual nests this under 'SHEAR_WALL' by numbering it '14.3.2',
             # not by naming a path
           - key: DEFL_AMP_FACT
             description: >-
@@ -266,7 +266,7 @@ fields:
             enum: [1.25, 1.5, 2, 2.5, 3, 3.25, 4, 4.5, 5, 5.5, 6, 6.5]
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'SHEAR_WALL' by numbering it '14.3.3',
+            # RESOLVED: the manual nests this under 'SHEAR_WALL' by numbering it '14.3.3',
             # not by naming a path
           - key: IMP_FACT
             description: >-
@@ -278,7 +278,7 @@ fields:
             enum: [1, 1.2, 1.5]
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'SHEAR_WALL' by numbering it '14.3.4',
+            # RESOLVED: the manual nests this under 'SHEAR_WALL' by numbering it '14.3.4',
             # not by naming a path
       - key: SHEAR_DES
         description: >-
@@ -289,7 +289,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'SEISMIC' by numbering it '14.4', not
+        # RESOLVED: the manual nests this under 'SEISMIC' by numbering it '14.4', not
         # by naming a path
         properties:
           - key: MTHD
@@ -302,7 +302,7 @@ fields:
             enum: [MAX, MIN, Ve1, Ve2]
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'SHEAR_DES' by numbering it '14.4.1',
+            # RESOLVED: the manual nests this under 'SHEAR_DES' by numbering it '14.4.1',
             # not by naming a path
           - key: R
             description: >-
@@ -314,7 +314,7 @@ fields:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'SHEAR_DES' by numbering it '14.4.2',
+            # RESOLVED: the manual nests this under 'SHEAR_DES' by numbering it '14.4.2',
             # not by naming a path
           - key: A1
             description: >-
@@ -325,7 +325,7 @@ fields:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'SHEAR_DES' by numbering it '14.4.3',
+            # RESOLVED: the manual nests this under 'SHEAR_DES' by numbering it '14.4.3',
             # not by naming a path
           - key: A2
             description: >-
@@ -336,7 +336,7 @@ fields:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'SHEAR_DES' by numbering it '14.4.4',
+            # RESOLVED: the manual nests this under 'SHEAR_DES' by numbering it '14.4.4',
             # not by naming a path
       - key: BEAM_COL_JNT_DES
         description: >-
@@ -347,7 +347,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'SEISMIC' by numbering it '14.5', not
+        # RESOLVED: the manual nests this under 'SEISMIC' by numbering it '14.5', not
         # by naming a path
       - key: JOINT
         description: >-
@@ -358,7 +358,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'SEISMIC' by numbering it '14.6', not
+        # RESOLVED: the manual nests this under 'SEISMIC' by numbering it '14.6', not
         # by naming a path
         properties:
           - key: EXCL_MEM_TYPES
@@ -372,7 +372,7 @@ fields:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'JOINT' by numbering it '14.6.1', not
+            # RESOLVED: the manual nests this under 'JOINT' by numbering it '14.6.1', not
             # by naming a path
           - key: CHK_POS
             description: >-
@@ -384,7 +384,7 @@ fields:
             enum: [Top, Bottom]
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'JOINT' by numbering it '14.6.2', not
+            # RESOLVED: the manual nests this under 'JOINT' by numbering it '14.6.2', not
             # by naming a path
 
 extraction:

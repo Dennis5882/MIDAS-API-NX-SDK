@@ -109,7 +109,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(1)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(1)', not by
         # naming a path
       - key: GROUP_NAME
         description: >-
@@ -120,7 +120,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(2)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(2)', not by
         # naming a path
       - key: AXIAL_X
         description: >-
@@ -131,7 +131,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(3)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(3)', not by
         # naming a path
       - key: AXIAL_Y
         description: >-
@@ -142,7 +142,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(4)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(4)', not by
         # naming a path
       - key: SHEAR
         description: >-
@@ -153,7 +153,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(5)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(5)', not by
         # naming a path
       - key: OUT_BENDING_X
         description: >-
@@ -164,7 +164,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(6)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(6)', not by
         # naming a path
       - key: OUT_BENDING_Y
         description: >-
@@ -175,7 +175,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(7)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(7)', not by
         # naming a path
       - key: OUT_TORSION
         description: >-
@@ -186,7 +186,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(8)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(8)', not by
         # naming a path
       - key: OUT_SHEAR_X
         description: >-
@@ -197,7 +197,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(9)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(9)', not by
         # naming a path
       - key: OUT_SHEAR_Y
         description: >-
@@ -208,7 +208,7 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEMS' by numbering it '(10)', not by
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(10)', not by
         # naming a path
 
 sdkRules:

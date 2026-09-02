@@ -201,7 +201,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'aFUNCDATA' by numbering it '(1)', not
+        # RESOLVED: the manual nests this under 'aFUNCDATA' by numbering it '(1)', not
         # by naming a path
       - key: VALUE
         description: >-
@@ -212,7 +212,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'aFUNCDATA' by numbering it '(2)', not
+        # RESOLVED: the manual nests this under 'aFUNCDATA' by numbering it '(2)', not
         # by naming a path
   - key: CONS_A
     description: >-

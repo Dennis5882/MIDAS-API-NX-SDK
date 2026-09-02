@@ -124,7 +124,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'FREQ_RANGE' by numbering it '(1)',
+            # RESOLVED: the manual nests this under 'FREQ_RANGE' by numbering it '(1)',
             # not by naming a path
           - key: FREQ_MIN
             description: >-
@@ -135,7 +135,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'FREQ_RANGE' by numbering it '(2)',
+            # RESOLVED: the manual nests this under 'FREQ_RANGE' by numbering it '(2)',
             # not by naming a path
           - key: FREQ_MAX
             description: >-
@@ -146,7 +146,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'FREQ_RANGE' by numbering it '(3)',
+            # RESOLVED: the manual nests this under 'FREQ_RANGE' by numbering it '(3)',
             # not by naming a path
       - key: STURM_SEQ
         description: >-
@@ -183,7 +183,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'GLINK_VECTOR' by numbering it '(1)',
+            # RESOLVED: the manual nests this under 'GLINK_VECTOR' by numbering it '(1)',
             # not by naming a path
           - key: GLINK_NUMBER
             description: >-
@@ -194,7 +194,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'GLINK_VECTOR' by numbering it '(2)',
+            # RESOLVED: the manual nests this under 'GLINK_VECTOR' by numbering it '(2)',
             # not by naming a path
       - key: RITZ_LOAD
         description: >-
@@ -218,7 +218,7 @@ variants:
             enum: [GROUND, LOAD]
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'RITZ_LOAD' by numbering it '(1)', not
+            # RESOLVED: the manual nests this under 'RITZ_LOAD' by numbering it '(1)', not
             # by naming a path
           - key: LOAD_NAME
             description: >-
@@ -229,7 +229,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'RITZ_LOAD' by numbering it '(2)', not
+            # RESOLVED: the manual nests this under 'RITZ_LOAD' by numbering it '(2)', not
             # by naming a path
           - key: NUM_OF_GEN
             description: >-
@@ -240,7 +240,7 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # NOTE: the manual nests this under 'RITZ_LOAD' by numbering it '(3)', not
+            # RESOLVED: the manual nests this under 'RITZ_LOAD' by numbering it '(3)', not
             # by naming a path
 
 sdkRules:

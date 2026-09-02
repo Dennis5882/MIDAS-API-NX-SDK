@@ -166,7 +166,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEM' by a dash description row
+        # RESOLVED: the manual nests this under 'ITEM' by a dash description row
       - key: VALUE
         description: >-
           - 대류 계수
@@ -176,7 +176,7 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # NOTE: the manual nests this under 'ITEM' by a dash description row
+        # RESOLVED: the manual nests this under 'ITEM' by a dash description row
 
 sdkRules:
   - id: db-ccfc-delete-per-id
