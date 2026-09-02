@@ -749,7 +749,57 @@ def _contract_surface_blocks() -> dict[str, dict[str, Any]]:
     return blocks
 
 
-def _load_resources() -> list[dict[str, Any]]:
+_RESOURCE_IDENTITY_KEYS = (
+    "className",
+    "exportName",
+    "modulePath",
+    "name",
+    "products",
+    "methods",
+)
+
+
+def _resource_identity(
+    surface: dict[str, Any] | None, fallback: dict[str, Any] | None
+) -> dict[str, Any]:
+    """What npm calls a resource, contract first and Python second.
+
+    The precedence is the whole point of the contract migration, so it lives in
+    one function rather than inline in a loop: a fact the contract states is the
+    fact, and the Python class answers only what no contract has claimed. A
+    `fallback` of ``None`` is an endpoint no Python class declares - the contract
+    then has to carry every key, and a missing one is a contract defect rather
+    than something to guess.
+    """
+
+    surface = surface or {}
+    fallback = fallback or {}
+    identity: dict[str, Any] = {}
+    for key in _RESOURCE_IDENTITY_KEYS:
+        if key in surface:
+            identity[key] = surface[key]
+        elif key in fallback:
+            identity[key] = fallback[key]
+        else:
+            raise KeyError(
+                f"neither the contract surface nor a Python class supplies {key!r}"
+            )
+    return identity
+
+
+_RESOURCE_SOURCE_COUNTS: dict[str, int] = {}
+
+
+def _python_resource_classes() -> dict[str, dict[str, Any]]:
+    """Every `DbResource` subclass the Python package declares, by endpoint.
+
+    This is the *fallback* source now, not the primary one.  An endpoint whose
+    contract carries a `surface` block gets its npm identity from the contract;
+    this supplies the rest, plus the one fact no contract records - which Python
+    module a class lives in, which the payload-type lookup still needs while 497
+    of the 750 payload types come from Python TypedDicts rather than contracts.
+    """
+
     sys.path.insert(0, str(PYTHON_SRC))
     import midas_nx  # noqa: PLC0415
     from midas_nx.db.base import DbResource  # noqa: PLC0415
@@ -757,26 +807,81 @@ def _load_resources() -> list[dict[str, Any]]:
     for module in pkgutil.walk_packages(midas_nx.__path__, midas_nx.__name__ + "."):
         importlib.import_module(module.name)
 
+    classes: dict[str, dict[str, Any]] = {}
+    for cls in _all_subclasses(DbResource):
+        classes[cls.ENDPOINT] = {
+            "className": cls.__name__,
+            "exportName": _camel(cls.__name__),
+            "endpoint": cls.ENDPOINT,
+            "name": cls.NAME or cls.__name__,
+            "products": sorted(cls.PRODUCTS),
+            "methods": sorted(cls.METHODS),
+            "pythonModule": cls.__module__,
+            "modulePath": _module_parts(cls.__module__),
+        }
+    return classes
+
+
+def _load_resources() -> list[dict[str, Any]]:
+    """Build the npm resource list, contracts first and Python second.
+
+    This used to iterate `DbResource` subclasses and let a contract correct the
+    facts it owned, which meant a contract could never do more than annotate
+    something Python had already declared.  It now iterates contracts that carry
+    a `surface` block and takes the endpoint's whole npm identity from there,
+    falling back to the Python class only for endpoints no contract covers.
+
+    Python has not stopped mattering: `pythonModule` has no home in a contract
+    and the payload-type lookup needs it, so `import midas_nx` is still
+    load-bearing.  What changed is the direction - the contract is the source
+    and Python fills its gaps, rather than the reverse.
+    """
+
+    python_classes = _python_resource_classes()
+
     coverage = json.loads((ROOT / "docs" / "coverage.json").read_text(encoding="utf-8"))
     coverage_by_endpoint: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for entry in coverage["endpoints"]:
         coverage_by_endpoint[entry["endpoint"]].append(entry)
 
     payload_defaults = _contract_payload_defaults()
+    surfaces = _contract_resource_surfaces(set(python_classes))
 
     resources: list[dict[str, Any]] = []
-    for cls in _all_subclasses(DbResource):
-        endpoint = cls.ENDPOINT
-        matches = coverage_by_endpoint.get(endpoint, [])
+    from_contract = 0
+    for endpoint, fallback in sorted(python_classes.items()):
+        manual = [
+            {
+                "name": match.get("name"),
+                "chapterFile": match.get("chapter_file"),
+                "status": match.get("status"),
+            }
+            for match in coverage_by_endpoint.get(endpoint, [])
+        ]
+        surface = surfaces.get(endpoint)
+        if surface is not None:
+            # The chapter comparison reads the ledger entry, so it has to
+            # see one: the fallback dict is class facts only.
+            mismatches = _contract_resource_mismatches({**fallback, "manual": manual}, surface)
+            if mismatches:
+                raise ValueError(
+                    f"{endpoint}: contract resource shadow differs from the SDK: "
+                    + "; ".join(mismatches)
+                )
+            from_contract += 1
+
+        identity = _resource_identity(surface, fallback)
         resource = {
-            "className": cls.__name__,
-            "exportName": _camel(cls.__name__),
+            "className": identity["className"],
+            "exportName": identity["exportName"],
             "endpoint": endpoint,
-            "name": cls.NAME or cls.__name__,
-            "products": sorted(cls.PRODUCTS),
-            "methods": sorted(cls.METHODS),
-            "pythonModule": cls.__module__,
-            "modulePath": _module_parts(cls.__module__),
+            "name": identity["name"],
+            "products": identity["products"],
+            "methods": identity["methods"],
+            # No contract records this. It is the Python module a class lives
+            # in, and the AST payload-type lookup is still keyed by it.
+            "pythonModule": fallback["pythonModule"],
+            "modulePath": identity["modulePath"],
             # Present only for endpoints with a contract rule; see
             # _contract_payload_defaults().
             **(
@@ -784,42 +889,16 @@ def _load_resources() -> list[dict[str, Any]]:
                 if endpoint in payload_defaults
                 else {}
             ),
-            "manual": [
-                {
-                    "name": match.get("name"),
-                    "chapterFile": match.get("chapter_file"),
-                    "status": match.get("status"),
-                }
-                for match in matches
-            ],
+            "manual": manual,
         }
+        if surface is not None:
+            # Keep the coverage ledger's richer manual entry in the committed
+            # manifest. Runtime npm metadata reads this contract-owned chapter.
+            resource["contractManualChapter"] = surface["manualChapter"]
         resources.append(resource)
 
-    # Compare only contracts for actual ``DbResource`` classes. /DESIGN also
-    # contains plain operation routes, whose contracts are intentionally not
-    # resource surfaces and therefore must not be required to appear here.
-    contract_surfaces = _contract_resource_surfaces({resource["endpoint"] for resource in resources})
-    for resource in resources:
-        endpoint = resource["endpoint"]
-        contract_surface = contract_surfaces.get(endpoint)
-        if contract_surface is not None:
-            mismatches = _contract_resource_mismatches(resource, contract_surface)
-            if mismatches:
-                raise ValueError(
-                    f"{endpoint}: contract resource shadow differs from the SDK: "
-                    + "; ".join(mismatches)
-                )
-            # `className` / `pythonModule` remain npm compatibility anchors,
-            # while all endpoint facts now originate in the contract.
-            resource.update(
-                name=contract_surface["name"],
-                products=contract_surface["products"],
-                methods=contract_surface["methods"],
-                # Keep the coverage ledger's richer manual entry in the
-                # committed manifest during the shadow phase. Runtime npm
-                # metadata, below, reads this contract-owned chapter instead.
-                contractManualChapter=contract_surface["manualChapter"],
-            )
+    _RESOURCE_SOURCE_COUNTS["contract"] = from_contract
+    _RESOURCE_SOURCE_COUNTS["python"] = len(resources) - from_contract
     return sorted(resources, key=lambda item: (item["pythonModule"], item["className"], item["endpoint"]))
 
 
@@ -1395,7 +1474,9 @@ def main() -> None:
         len(types) for types in supplemental_contract_types.values()
     )
     print(
-        f"Generated {len(resources)} TypeScript DB resources, "
+        f"Generated {len(resources)} TypeScript DB resources "
+        f"({_RESOURCE_SOURCE_COUNTS['contract']} identified by a contract, "
+        f"{_RESOURCE_SOURCE_COUNTS['python']} still by a Python class), "
         f"{len(operations)} operations, {len(tables)} table wrappers, "
         f"and {payload_type_count} payload types "
         f"({contract_type_count} of them from contracts, the rest still from Python)"

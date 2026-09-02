@@ -243,3 +243,67 @@ def test_a_contract_with_unmerged_tables_does_not_become_a_payload_type():
 
     assert "/db/THIK" not in fields
     assert "/db/BODF" in fields, "an unqualified contract must still supply its payload"
+
+
+def test_a_contract_surface_outranks_the_python_class():
+    """The contract is the source; the Python class answers what it does not.
+
+    Before the generator was inverted it iterated `DbResource` subclasses and
+    let a contract correct the facts it owned, so a contract could never do more
+    than annotate something Python had already declared. The precedence lives in
+    one function now, and this pins which way round it goes.
+    """
+
+    surface = {
+        "className": "FromContract",
+        "exportName": "fromContract",
+        "modulePath": ["db", "fromContract"],
+        "name": "From the contract",
+        "products": ["gen"],
+        "methods": ["GET"],
+    }
+    fallback = {
+        "className": "FromPython",
+        "exportName": "fromPython",
+        "modulePath": ["db", "fromPython"],
+        "name": "From Python",
+        "products": ["civil", "gen"],
+        "methods": ["DELETE", "GET", "POST", "PUT"],
+    }
+
+    assert generator._resource_identity(surface, fallback) == surface
+    # An endpoint no contract covers keeps every Python fact.
+    assert generator._resource_identity(None, fallback) == fallback
+    # A partial surface takes over only what it states.
+    partial = generator._resource_identity({"name": "Renamed"}, fallback)
+    assert partial["name"] == "Renamed"
+    assert partial["className"] == "FromPython"
+
+
+def test_a_contract_only_resource_needs_no_python_class():
+    """A surface that states everything stands without a Python class at all.
+
+    This is the capability the migration is for: today every contracted
+    endpoint also has a `DbResource` subclass, so nothing exercises it in the
+    real tree, and an untested path is how a migration quietly stops being
+    possible.
+    """
+
+    surface = {
+        "className": "ContractOnly",
+        "exportName": "contractOnly",
+        "modulePath": ["db", "contractOnly"],
+        "name": "Contract only",
+        "products": ["gen"],
+        "methods": ["GET"],
+    }
+    assert generator._resource_identity(surface, None) == surface
+
+
+def test_an_identity_nobody_supplies_is_refused_rather_than_guessed():
+    """A missing name is a contract defect, not something to invent."""
+
+    import pytest
+
+    with pytest.raises(KeyError, match="className"):
+        generator._resource_identity({"name": "No class name"}, None)

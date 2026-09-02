@@ -154,9 +154,21 @@ APIs are already published under those names. Sketch, for the author:
    resources with no contract keep their Python names, which is the same
    arrangement `name` and `products` already had; they are a shrinking
    remainder rather than a precondition.
-2. **Invert the generator**: iterate contracts, not `DbResource` subclasses;
-   fall back to Python only where a contract has no `surface` block. The
-   parity check flips with it — Python becomes a subject like npm already is.
+2. ~~**Invert the generator**~~ **Partly done 2026-09-02.** `_load_resources()`
+   now asks the contract first and the Python class second, through one
+   function, `_resource_identity(surface, fallback)`, whose precedence three
+   tests pin - including the case with **no** Python class, which nothing in
+   the real tree exercises yet and which is exactly the capability the
+   migration is for. **268 of 304** resources are identified by a contract,
+   36 by a Python class, and the generator prints that split on every run.
+   Generated output is byte-identical, as it has to be while both sources
+   exist and are required to agree.
+
+   What is **not** done: `import midas_nx` is still load-bearing.
+   `pythonModule` has no home in a contract and the payload-type lookup is
+   keyed by it while 497 of the 750 payload types come from Python
+   TypedDicts. So the direction is inverted but the dependency is not gone;
+   do not read the split as "88% independent".
 3. **Extend it to operations and tables**, which need the same block plus a
    place for the wrapper's summary text that JSDoc currently takes from a
    Python docstring.

@@ -68,10 +68,12 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   every resource is contracted" rule, which described a finish line the design could not reach:
   there was nowhere in a contract to put a name. Run it through `npm run generate`; do not
   hand-edit `packages/typescript/src/generated/*`.
-  The generator still *iterates* `DbResource` subclasses, so `import midas_nx` remains
+  The generator asks the contract first and the Python class second (one function,
+  `_resource_identity`), but `import midas_nx` remains
   load-bearing — deleting `src/midas_nx/` breaks `npm run generate` and therefore `npm publish`,
-  though a built `dist/` keeps working. Inverting that is the next step; see
-  `docs/contract_migration_brief.md`.
+  though a built `dist/` keeps working. What still needs Python: `pythonModule`, which no
+  contract records, and the 497 of 750 payload types that come from Python TypedDicts.
+  See `docs/contract_migration_brief.md`.
 - `schema/typescript-resources.json` / `schema/typescript-coverage.json` — committed generator outputs.
   CI fails if either these schemas or `packages/typescript/src/generated/*` drift after regeneration.
 - `docs/coverage.json` — the endpoint ledger. `ROADMAP.md` is **generated from it** — never hand-edit
