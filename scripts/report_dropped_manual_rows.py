@@ -112,16 +112,38 @@ def report(rows: list[DroppedRow]) -> Counter[str]:
 
 
 def main(argv: list[str]) -> int:
+    sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manual-api-repo", type=Path, default=extractor.DEFAULT_MANUAL_REPO)
     parser.add_argument("--check", action="store_true", help="fail if the established cause counts change")
     args = parser.parse_args(argv)
 
     counts = report(scan_manual(args.manual_api_repo))
-    if args.check and dict(counts) != EXPECTED_COUNTS:
-        print(f"\nExpected {EXPECTED_COUNTS}, got {dict(counts)}.", file=sys.stderr)
-        return 1
-    return 0
+    if not args.check:
+        return 0
+
+    drift = {
+        cause: (EXPECTED_COUNTS.get(cause, 0), counts.get(cause, 0))
+        for cause in set(EXPECTED_COUNTS) | set(counts)
+        if EXPECTED_COUNTS.get(cause, 0) != counts.get(cause, 0)
+    }
+    if not drift:
+        return 0
+
+    for cause, (expected, found) in sorted(drift.items()):
+        direction = "more" if found > expected else "fewer"
+        print(
+            f"\n{cause}: expected {expected}, found {found} "
+            f"({abs(found - expected)} {direction}).",
+            file=sys.stderr,
+        )
+    print(
+        "\nRows growing means the manual or the extractor started dropping more "
+        "of them; rows shrinking means something now reads them. Either way the "
+        "new count belongs in EXPECTED_COUNTS, in the commit that explains it.",
+        file=sys.stderr,
+    )
+    return 1
 
 
 if __name__ == "__main__":
