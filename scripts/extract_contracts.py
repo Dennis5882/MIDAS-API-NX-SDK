@@ -1166,6 +1166,74 @@ _MANUAL_TYPE_CORRECTIONS: dict[str, dict[tuple[str, ...], ManualTypeCorrection]]
     },
 }
 
+class ManualKeyCorrection(NamedTuple):
+    """One wire name the manual's table gets wrong, and what says so."""
+
+    key: str
+    manual_says: str
+    actual: str
+    evidence: str
+
+
+# A Key cell naming a property the server does not have. Unlike a wrong Value
+# Type, nothing inside the section can settle this - a name is not derivable
+# from a schema that never mentions it - so every entry here rests on live
+# `/info` introspection, which is a permitted source and is captured verbatim
+# in `schema/info-schemas.json`.
+_MANUAL_KEY_CORRECTIONS: dict[str, dict[tuple[str, ...], ManualKeyCorrection]] = {
+    "/db/TDME": {
+        ("SCALE",): ManualKeyCorrection(
+            key="aDATA",
+            manual_says=(
+                "The Specifications table gives the key `\"SCALE\"` to two different "
+                "rows: `5 Scale Factor` (Number) and `6 Function Data (Array of "
+                "{TIME, COMP, TENS, ELAST})` (Array[Object]). The vendored chapter "
+                "flags the duplicate in its own callout and transcribes both, because "
+                "no example in the section sends either row."
+            ),
+            actual=(
+                "`GET /info/db/TDME` lists `\"SCALE\"` as a `number` described "
+                "\"Scale Factor\" and a separate `\"aDATA\"` array whose items are "
+                "`{TIME, COMP, TENS, ELAST}`. Row 5 is correct; row 6's key is the "
+                "typo, and the array is `aDATA`. Civil NX and Gen NX return identical "
+                "schemas."
+            ),
+            evidence=(
+                "docs/live_verification_notes.md, \"an /info sweep of the 18 endpoints "
+                "no contract could reach\" (2026-09-02), captured verbatim in "
+                "schema/info-schemas.json. Registered as MD-13."
+            ),
+        ),
+    },
+}
+
+
+def _corrected_key(endpoint: str, key: str, declared: Optional[str]) -> str:
+    """A Key cell's reviewed wire name, applied while the row is still a row.
+
+    This has to run before the parser's duplicate-key suppression, which is
+    what makes the defect invisible: /db/TDME gives `"SCALE"` to a Number row
+    and to an Array[Object] row, both at the top level, so the second row's
+    identity collides with the first and it is dropped without a trace. Its
+    four documented children then attach to the scalar that remains, and the
+    section reads as one field that is a number and also has members.
+
+    Only the row whose own Value Type marks it the container is renamed, so a
+    table that repeats a name for some other reason is left alone.
+    """
+
+    corrections = _MANUAL_KEY_CORRECTIONS.get(endpoint)
+    if not corrections:
+        return key
+    correction = corrections.get((key,))
+    if correction is None or not declared:
+        return key
+    lowered = declared.lower()
+    if "array" in lowered or "object" in lowered:
+        return correction.key
+    return key
+
+
 _MANUAL_TYPE_CORRECTION_EVIDENCE = (
     "docs/manual_defects_register.md MD-11, found by comparing every parameter "
     "table's Value Type against the type its own section's JSON Schema declares - "
@@ -2933,7 +3001,7 @@ def _number_parent(number: str) -> str:
     return re.sub(r"[-.](?:\d+|\(\d+\))$", "", text)
 
 
-def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
+def _parse_tables(lines: list[str], offset: int, endpoint: str = "") -> list[ParsedTable]:
     tables: list[ParsedTable] = []
     heading = ""
     index = 0
@@ -3036,6 +3104,7 @@ def _parse_tables(lines: list[str], offset: int) -> list[ParsedTable]:
                 )
             ]
             for entry_key, entry_type, entry_default, entry_required in entries:
+                entry_key = _corrected_key(endpoint, entry_key, entry_type)
                 # ``CONCRETE.CODE`` and ``REBAR.CODE`` are different wire
                 # paths even though they share the last token. Only suppress
                 # a duplicate in the same numbered object scope.
@@ -3356,7 +3425,7 @@ def parse_chapter(path: Path) -> list[Section]:
         section.methods = _section_methods(body)
         if not section.methods:
             section.methods = toc_methods
-        section.tables = _parse_tables(body, index)
+        section.tables = _parse_tables(body, index, section.endpoint)
         _apply_enum_values(section.tables, _enum_tables(body))
         schema_hints = _section_schema_hints(body, section.endpoint)
         section.schema_hints = schema_hints
@@ -4022,12 +4091,21 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
         lines.append("")
 
     corrections = _MANUAL_TYPE_CORRECTIONS.get(section.endpoint)
-    if corrections:
+    key_corrections = _MANUAL_KEY_CORRECTIONS.get(section.endpoint)
+    if corrections or key_corrections:
         # The correction lives in the contract as a defect record, not only as
         # a corrected type: a manual re-sync that reinstates the table's claim
         # has to argue with this, rather than silently winning.
         lines.append("manualDefects:")
-        for correction in corrections.values():
+        for renamed in (key_corrections or {}).values():
+            lines.append("  - describes: field_name")
+            lines.append("    manualSays: >-")
+            lines += _block(renamed.manual_says, "      ")
+            lines.append("    actual: >-")
+            lines += _block(renamed.actual, "      ")
+            lines.append("    evidence: >-")
+            lines += _block(renamed.evidence, "      ")
+        for correction in (corrections or {}).values():
             lines.append("  - describes: field_value")
             lines.append("    manualSays: >-")
             lines += _block(correction.manual_says, "      ")

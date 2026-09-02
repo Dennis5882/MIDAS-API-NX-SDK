@@ -3395,3 +3395,36 @@ def test_a_word_in_the_no_column_is_not_read_as_a_sub_item_marker():
     assert not ex._is_number_subitem("User")
     assert ex._is_number_subitem("c")
     assert ex._is_number_subitem("iii")
+
+
+def test_a_key_the_server_disproves_is_renamed_before_the_duplicate_is_dropped():
+    """`/db/TDME` gives `"SCALE"` to a Number row and an Array[Object] row.
+
+    The parser suppresses a duplicate key in the same numbered scope, so the
+    second row vanished without a trace and its four documented children
+    attached to the scalar that remained - the section read as one field that
+    was a number and also had members. Renaming has to happen while the row is
+    still a row; afterwards there is only one field where the request has two.
+
+    `aDATA` is not a guess. `GET /info/db/TDME` lists both properties, and the
+    capture is in `schema/info-schemas.json`.
+    """
+
+    assert ex._corrected_key("/db/TDME", "SCALE", "Array [Object]") == "aDATA"
+    assert ex._corrected_key("/db/TDME", "SCALE", "Number") == "SCALE"
+    assert ex._corrected_key("/db/TDMT", "SCALE", "Array [Object]") == "SCALE"
+
+
+def test_a_renamed_key_carries_its_defect_record_into_the_draft(tmp_path: Path):
+    """The rename is only half of it; the reason has to travel with it.
+
+    A manual re-sync that reinstates the table's key has to argue with a
+    `manualDefects` entry, rather than silently winning.
+    """
+
+    correction = ex._MANUAL_KEY_CORRECTIONS["/db/TDME"][("SCALE",)]
+
+    assert correction.key == "aDATA"
+    assert "/info/db/TDME" in correction.actual
+    assert "schema/info-schemas.json" in correction.evidence
+    assert "MD-13" in correction.evidence
