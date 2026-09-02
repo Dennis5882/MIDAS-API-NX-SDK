@@ -315,22 +315,40 @@ def _contract_field_type(field: dict[str, Any], indent: str) -> str:
     return _CONTRACT_TS_TYPES.get(kind, "unknown")
 
 
+def _condition_text(entry: dict[str, Any]) -> str:
+    """Render one `appliesWhen` entry, in either form the schema allows."""
+
+    if "in" in entry:
+        values = " or ".join(json.dumps(value) for value in entry["in"])
+        return f"{entry['path']} is {values}"
+    return f"{entry['path']} = {json.dumps(entry['equals'])}"
+
+
 def _contract_interface_body(fields: list[dict[str, Any]], indent: str) -> str:
     lines: list[str] = []
     for field in fields:
+        applies_when = field.get("appliesWhen", [])
         # The contract knows requiredness; the Python TypedDicts are all
-        # `total=False`, so every field they produced was optional regardless of
-        # what the manual said. This is the reversal paying for itself.
-        optional = "" if field.get("requirement") == "required" else "?"
+        # `total=False`, so every field they produced was optional regardless
+        # of what the manual said. This is the reversal paying for itself.
+        #
+        # A field the manual requires *within one branch* is not one every
+        # payload carries, though. Typing it unconditionally required made
+        # `/db/CCFC` demand `COEF` (only under TYPE="CONST") alongside
+        # `SCALE_FACTOR` and `ITEM` (only under TYPE="USER"): no caller could
+        # satisfy the type without sending fields their own branch does not
+        # have. 49 fields across nine contracts were in that state, `/db/EPMT`
+        # asking for all six plasticity models at once. The condition moves
+        # into the doc comment, which is where a requiredness TypeScript
+        # cannot express belongs.
+        optional = "" if field.get("requirement") == "required" and not applies_when else "?"
         documentation = []
         if field.get("description"):
             documentation.append(" ".join(field["description"].split()))
-        applies_when = field.get("appliesWhen", [])
         if applies_when:
-            rendered = " and ".join(
-                f"{entry['path']} = {json.dumps(entry['equals'])}" for entry in applies_when
-            )
-            documentation.append(f"Applies when {rendered}.")
+            rendered = " and ".join(_condition_text(entry) for entry in applies_when)
+            verb = "Required when" if field.get("requirement") == "required" else "Applies when"
+            documentation.append(f"{verb} {rendered}.")
         if documentation:
             lines.append(f"{indent}/** {' '.join(documentation)} */")
         lines.append(f"{indent}{field['key']}{optional}: {_contract_field_type(field, indent)};")

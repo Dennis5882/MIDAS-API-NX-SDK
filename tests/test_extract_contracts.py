@@ -3121,3 +3121,122 @@ def test_a_value_type_the_same_section_contradicts_is_not_transcribed(tmp_path: 
     # A row the two agree on says nothing.
     assert angle.type == "number" and not angle.notes
 
+# A cut-down `/db/MATL` section: the endpoint name matters, because the curated
+# type correction and the conditional-table placement are both keyed by it.
+_MATL_SECTION = """## 1. `/db/MATL` -- Material Properties
+
+### JSON Schema
+
+```json
+{
+  "MATL": {
+    "type": "object",
+    "properties": {
+      "TYPE": { "type": "string" },
+      "PARAM": { "description": "Material Data", "type": "array" }
+    }
+  }
+}
+```
+
+### Specifications
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Material Type | `"TYPE"` | String | - | Required |
+| 9 | Material Parameter | `"PARAM"` | Object | - | Required |
+| (1) | Material Parameter Type | `"P_TYPE"` | Integer | - | Required |
+
+#### PARAM -- P_TYPE = 1 (Standard / DB)
+
+| Sub-No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| (2) | Standard Name | `"STANDARD"` | String | - | Required |
+| (3) | Code Name | `"CODE"` | String | Blank | Optional |
+
+#### PARAM -- P_TYPE = 2 (Isotropic / User)
+
+| Sub-No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| (2) | Modulus of Elasticity | `"ELAST"` | Number | - | Required |
+| (3) | Weight Density | `"DEN"` | Number | - | Required |
+
+#### PARAM -- P_TYPE = 3 (Orthotropic / User)
+
+| Sub-No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| (2) | Modulus of Elasticity (3 values) | `"ELAST_M"` | Array[Number,3] | - | Required |
+| (3) | Weight Density | `"DEN"` | Number | - | Required |
+"""
+
+
+def _matl_section(tmp_path: Path):
+    path = tmp_path / "99_DB_Matl.md"
+    path.write_text(_MATL_SECTION, encoding="utf-8")
+    return ex.parse_chapter(path)[0]
+
+
+def test_a_value_type_review_resolved_is_written_with_its_evidence(tmp_path: Path):
+    """The reviewed resolution of a self-contradicting Value Type, and why.
+
+    The extractor refuses to choose between a table and a schema that disagree,
+    because choosing takes the section's Request Example and the SDK that
+    already sends that shape. `/db/SBDO` and `/db/MATL` are the two whose
+    resolution has been checked against both, so they carry the corrected type
+    and a `manualDefects` entry - the record a manual re-sync has to argue with
+    rather than silently win against.
+    """
+
+    draft = ex.render_draft(_matl_section(tmp_path))
+    document = yaml.safe_load(draft)
+    param = next(field for field in document["fields"] if field["key"] == "PARAM")
+    assert param["type"] == "array"
+    assert param["items"] == {"type": "object"}
+    defects = document["manualDefects"]
+    assert [entry["describes"] for entry in defects] == ["field_value"]
+    assert "Object" in defects[0]["manualSays"]
+    assert "MD-11" in defects[0]["evidence"]
+    # The correction replaces the review note; nothing is left unresolved.
+    assert "JSON Schema types it" not in draft
+
+
+def test_a_branch_table_that_names_its_object_lands_inside_it(tmp_path: Path):
+    """`#### PARAM - P_TYPE = 1` describes a PARAM entry, not the request.
+
+    Merged at the root those rows become an endpoint-level branch, and the npm
+    generator built `MaterialPayload & {P_TYPE: 1; STANDARD: string; ...}` -
+    `STANDARD` beside `TYPE` and `NAME`, where no payload has ever carried it.
+    The section's own Request Example, and the Python TypedDict, put every one
+    of them inside a `PARAM` entry.
+    """
+
+    section = _matl_section(tmp_path)
+    fields, _ = ex._structural_fields(section)
+    fields, _ = ex._conditional_fields(section, fields)
+    assert {field.key for field in fields} == {"TYPE", "PARAM"}
+    param = next(field for field in fields if field.key == "PARAM")
+    assert {"P_TYPE", "STANDARD", "CODE", "ELAST", "DEN", "ELAST_M"} == {
+        child.key for child in param.properties
+    }
+
+
+def test_a_field_two_branch_tables_document_applies_under_both(tmp_path: Path):
+    """`DEN` is listed under P_TYPE 2 and again under P_TYPE 3.
+
+    `appliesWhen` entries are combined with AND, so keeping the first table's
+    condition and adding the second would be a contradiction rather than a
+    widening - and keeping only the first says an orthotropic material may not
+    carry a density. The values merge into the one `in` the schema has for
+    exactly this.
+    """
+
+    section = _matl_section(tmp_path)
+    fields, _ = ex._structural_fields(section)
+    fields, _ = ex._conditional_fields(section, fields)
+    param = next(field for field in fields if field.key == "PARAM")
+    by_key = {child.key: child for child in param.properties}
+    assert by_key["DEN"].applies_when == [("P_TYPE", (2, 3))]
+    # A field only one table documents keeps the one value.
+    assert by_key["ELAST"].applies_when == [("P_TYPE", (2,))]
+    assert by_key["STANDARD"].applies_when == [("P_TYPE", (1,))]
+

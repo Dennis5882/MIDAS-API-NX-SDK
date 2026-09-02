@@ -307,3 +307,44 @@ def test_an_identity_nobody_supplies_is_refused_rather_than_guessed():
 
     with pytest.raises(KeyError, match="className"):
         generator._resource_identity({"name": "No class name"}, None)
+
+def test_a_field_required_only_in_one_branch_is_not_required_of_every_payload():
+    """`requirement: required` plus an `appliesWhen` is a branch's requirement.
+
+    Typed unconditionally required it made `/db/CCFC` demand `COEF` (only under
+    TYPE="CONST") alongside `SCALE_FACTOR` and `ITEM` (only under TYPE="USER"),
+    so no caller could satisfy the type without sending fields their own branch
+    does not have. 49 fields across nine contracts were in that state. The
+    condition moves into the doc comment, which is where a requiredness
+    TypeScript cannot express belongs.
+    """
+
+    rendered = "\n".join(
+        generator._contract_payload_type(
+            "BranchPayload",
+            {
+                "fields": [
+                    {"key": "TYPE", "type": "string", "requirement": "required"},
+                    {
+                        "key": "COEF",
+                        "type": "number",
+                        "requirement": "required",
+                        "appliesWhen": [{"path": "TYPE", "equals": "CONST"}],
+                    },
+                    {
+                        "key": "DEN",
+                        "type": "number",
+                        "requirement": "required",
+                        "appliesWhen": [{"path": "P_TYPE", "in": [2, 3]}],
+                    },
+                ]
+            },
+        )
+    )
+    assert "TYPE: string;" in rendered
+    assert "COEF?: number;" in rendered
+    assert 'Required when TYPE = "CONST".' in rendered
+    # `in` is the form the schema has for a field two branch tables document.
+    assert "DEN?: number;" in rendered
+    assert "Required when P_TYPE is 2 or 3." in rendered
+

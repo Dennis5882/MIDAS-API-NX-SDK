@@ -49,7 +49,7 @@ from collections import Counter
 from dataclasses import dataclass, replace
 from dataclasses import field as dataclass_field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, NamedTuple, Optional
 
 ROOT = Path(__file__).resolve().parent.parent
 DRAFT_DIR = ROOT / "contracts" / "drafts"
@@ -1058,6 +1058,97 @@ _STRUCTURAL_ROOT_MOVES: dict[str, tuple[tuple[str, tuple[str, ...]], ...]] = {
 }
 
 
+class ManualTypeCorrection(NamedTuple):
+    """One Value Type the manual's table gets wrong, and what says so."""
+
+    type: str
+    items: Optional[dict]
+    manual_says: str
+    actual: str
+
+
+# A Specifications table's Value Type that the same section's JSON Schema
+# contradicts. MD-11 in docs/manual_defects_register.md lists all nine of
+# them; this is the closed set whose resolution has been checked against a
+# third statement - the section's own Request Example, and the SDK that
+# already sends that shape - and it is a transcription of that check, not a
+# rule that prefers one rendering over the other.
+#
+# Width disagreements are deliberately absent. Integer against Number changes
+# nothing a caller may send, and picking a side would narrow a field on no
+# evidence; those keep the review note instead.
+_MANUAL_TYPE_CORRECTIONS: dict[str, dict[tuple[str, ...], ManualTypeCorrection]] = {
+    "/db/MATL": {
+        ("PARAM",): ManualTypeCorrection(
+            type="array",
+            items={"type": "object"},
+            manual_says="The Specifications table types `PARAM` as `Object`.",
+            actual=(
+                "The same section's JSON Schema declares `\"PARAM\": {\"description\": "
+                "\"Material Data\", \"type\": \"array\"}`, and every Request Example in the "
+                "section sends `\"PARAM\": [{...}]` - one entry per material parameter "
+                "set. The Python SDK has typed it `List[MaterialParam]` since the "
+                "endpoint was added."
+            ),
+        ),
+    },
+    "/db/SBDO": {
+        ("AXIS_VECTOR",): ManualTypeCorrection(
+            type="array",
+            items={"type": "number"},
+            manual_says="The Specifications table types `AXIS_VECTOR` as `Number` with default 0.",
+            actual=(
+                "The same section's JSON Schema declares `\"AXIS_VECTOR\": {\"description\": "
+                "\"Axis Vector\", \"type\": \"array\", \"items\": {\"type\": \"number\"}}`, and the "
+                "section's own Request Example sends `\"AXIS_VECTOR\": [0, 0, 0, 0, 0, 0]`. "
+                "The Python SDK's payload has always typed it `List[float]`; only the "
+                "contract, and the npm payload generated from it, followed the table."
+            ),
+        ),
+    },
+}
+
+_MANUAL_TYPE_CORRECTION_EVIDENCE = (
+    "docs/manual_defects_register.md MD-11, found by comparing every parameter "
+    "table's Value Type against the type its own section's JSON Schema declares - "
+    "nine disagreements in the whole manual, of which this is one of the two that "
+    "change the shape of the value rather than its numeric width."
+)
+
+
+def _apply_manual_type_corrections(endpoint: str, fields: list[ParsedField]) -> None:
+    """Write the reviewed resolution of a self-contradicting Value Type.
+
+    The extractor refuses to choose between a table and a schema that disagree,
+    because choosing takes the section's Request Example and the SDK that
+    already sends the shape - neither of which it reads. This applies the
+    choice a person made, on the assembled request, and clears the note that
+    said nobody had made one. `render_draft` emits the same entries under
+    `manualDefects`, so the contract carries the reason and a manual re-sync
+    cannot quietly put the table's claim back.
+    """
+
+    corrections = _MANUAL_TYPE_CORRECTIONS.get(endpoint)
+    if not corrections:
+        return
+
+    def visit(items: list[ParsedField], prefix: tuple[str, ...] = ()) -> None:
+        for field in items:
+            path = prefix + (field.key,)
+            correction = corrections.get(path)
+            if correction is not None:
+                field.type = correction.type
+                field.items = dict(correction.items) if correction.items else None
+                field.notes = [
+                    note
+                    for note in field.notes
+                    if "JSON Schema types it" not in note
+                ]
+            visit(field.properties, path)
+
+    visit(fields)
+
+
 _STRUCTURAL_CONTAINERS: dict[str, tuple[str, ...]] = {
     # These names are headings in the manual's supplementary tables; the
     # table does not repeat a separate parent row in the base table.
@@ -1345,7 +1436,38 @@ def _append_fields(destination: list[ParsedField], additions: list[ParsedField])
             addition.documented_default_note,
         ):
             return False
+        _widen_repeated_condition(prior, addition)
     return True
+
+
+def _widen_repeated_condition(prior: ParsedField, addition: ParsedField) -> None:
+    """Let a field two branch tables both document apply under both values.
+
+    `/db/MATL` lists `DEN` and `MASS` under `P_TYPE = 2` and again under
+    `P_TYPE = 3`. Keeping only the table that got there first says an
+    orthotropic material may not carry a density. `appliesWhen` entries are
+    combined with AND, so two entries on the same path would be a
+    contradiction rather than a widening: the values merge into the one `in`
+    the schema has for exactly this.
+
+    Only a repeat on the same single path widens. Two different selectors
+    would mean the field applies under either, which `appliesWhen` cannot say,
+    and a prior with no condition at all already applies everywhere.
+    """
+
+    if not prior.applies_when or not addition.applies_when:
+        return
+    if len(prior.applies_when) != 1 or len(addition.applies_when) != 1:
+        return
+    (prior_path, prior_values), (added_path, added_values) = prior.applies_when[0], addition.applies_when[0]
+    if prior_path != added_path:
+        return
+    widened = prior_values + tuple(value for value in added_values if value not in prior_values)
+    if widened == prior_values:
+        return
+    prior.applies_when[0] = (prior_path, widened)
+    if addition.condition and addition.condition != prior.condition:
+        prior.condition = f"{prior.condition}; {addition.condition}" if prior.condition else addition.condition
 
 
 _SAME_OBJECT_SHAPE = re.compile(
@@ -1430,18 +1552,19 @@ def _structural_fields(section: "Section") -> tuple[list[ParsedField], list[Stru
 
     fields, resolved = _merged_structural_fields(section)
     hints = section.schema_hints
+    # `Assign` and `Argument` are message transport, and the endpoint token is
+    # the response's own name. Schema paths start inside them, so the merged
+    # tree has to be entered the same way before the two can be compared - but
+    # only when the wrapper is the whole root, never when it sits beside real
+    # payload members. Curated corrections are keyed the same way.
+    roots = fields
+    wrappers = _SCHEMA_TRANSPORT_WRAPPERS | {section.endpoint.rsplit("/", 1)[-1]}
+    while len(roots) == 1 and roots[0].key in wrappers and roots[0].properties:
+        roots = roots[0].properties
     if hints:
-        # `Assign` and `Argument` are message transport, and the endpoint token
-        # is the response's own name. Schema paths start inside them, so the
-        # merged tree has to be entered the same way before the two can be
-        # compared - but only when the wrapper is the whole root, never when it
-        # sits beside real payload members.
-        roots = fields
-        wrappers = _SCHEMA_TRANSPORT_WRAPPERS | {section.endpoint.rsplit("/", 1)[-1]}
-        while len(roots) == 1 and roots[0].key in wrappers and roots[0].properties:
-            roots = roots[0].properties
         _apply_schema_hints_to_fields(roots, hints)
         _drop_sampled_enums([ParsedTable(heading="", line=0, fields=fields)])
+    _apply_manual_type_corrections(section.endpoint, roots)
     return fields, resolved
 
 
@@ -1568,6 +1691,14 @@ def _conditional_fields(section: "Section", fields: list[ParsedField]) -> tuple[
             2: ((("SELECT_TYPE", "IN_GROUP"),), 'SELECT_TYPE = "IN_GROUP"'),
             3: ((("ELEM_TYPE", "SOLID"),), 'ELEM_TYPE = "SOLID"'),
         },
+        "/db/MATL": {
+            # The three tables describe one `PARAM` entry, not one request; see
+            # conditional_parent_paths below. Passing None keeps the manual's
+            # own heading as the condition text.
+            1: ((("P_TYPE", 1),), None),
+            2: ((("P_TYPE", 2),), None),
+            3: ((("P_TYPE", 3),), None),
+        },
         "/db/THFC": {
             1: ((("FUNCTYPE", 1),), "Time Function (FUNCTYPE=1) 추가 파라미터"),
             2: ((("FUNCTYPE", 2),), "Sinusoidal (FUNCTYPE=2) 추가 파라미터"),
@@ -1627,6 +1758,19 @@ def _conditional_fields(section: "Section", fields: list[ParsedField]) -> tuple[
     conditional_child_paths: dict[tuple[str, int], tuple[str, ...]] = {
         ("/db/MVLDid", 1): ("SUB_LOAD_ITEMS",),
     }
+    # A conditional table whose heading names the object it describes -
+    # `#### PARAM - P_TYPE = 1 (Standard / DB)` - lists that object's members,
+    # not the request's. Merged at the root they become an endpoint-level
+    # branch, and the npm generator built `MaterialPayload & {P_TYPE: 1;
+    # STANDARD: string; ...}`: `STANDARD` beside `TYPE` and `NAME`, where no
+    # payload has ever carried it. The manual's own Request Example, and the
+    # Python TypedDict, put every one of them inside a `PARAM` entry. Only
+    # headings that name the parent literally are listed here.
+    conditional_parent_paths: dict[tuple[str, int], tuple[str, ...]] = {
+        ("/db/MATL", 1): ("PARAM",),
+        ("/db/MATL", 2): ("PARAM",),
+        ("/db/MATL", 3): ("PARAM",),
+    }
 
     def annotate(entries: list[ParsedField], conditions: tuple[Condition, ...], raw: str) -> None:
         normalised = [as_values(condition) for condition in conditions]
@@ -1638,6 +1782,15 @@ def _conditional_fields(section: "Section", fields: list[ParsedField]) -> tuple[
         if index >= len(section.tables):
             continue
         additions = copy.deepcopy(section.tables[index].fields)
+        parent_path = conditional_parent_paths.get((section.endpoint, index))
+        if parent_path is not None:
+            destination = _field_at_path(merged, parent_path)
+            if destination is None:
+                continue
+            annotate(additions, conditions, raw or section.tables[index].heading)
+            if _append_fields(destination.properties, additions):
+                resolved.add(index)
+            continue
         child_path = conditional_child_paths.get((section.endpoint, index))
         if child_path is not None:
             source = next((field for field in additions if field.key == child_path[-1]), None)
@@ -3784,6 +3937,22 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
                 "    fields:",
             ]
             lines += _render_fields(variant.table.fields, "      ")
+        lines.append("")
+
+    corrections = _MANUAL_TYPE_CORRECTIONS.get(section.endpoint)
+    if corrections:
+        # The correction lives in the contract as a defect record, not only as
+        # a corrected type: a manual re-sync that reinstates the table's claim
+        # has to argue with this, rather than silently winning.
+        lines.append("manualDefects:")
+        for correction in corrections.values():
+            lines.append("  - describes: field_value")
+            lines.append("    manualSays: >-")
+            lines += _block(correction.manual_says, "      ")
+            lines.append("    actual: >-")
+            lines += _block(correction.actual, "      ")
+            lines.append("    evidence: >-")
+            lines += _block(_MANUAL_TYPE_CORRECTION_EVIDENCE, "      ")
         lines.append("")
 
     lines.append("extraction:")

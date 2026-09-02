@@ -1268,14 +1268,14 @@ export namespace DbBoundaryTypes {
     REF_SYSTEM: number;
     /** Beta Angle (°) Applies when REF_SYSTEM = 0. */
     BETA_ANGLE?: number;
-    /** Input Method · 0=Angle Applies when REF_SYSTEM = 1 and INPUT_METHOD = 0. */
-    INPUT_METHOD: number;
-    /** Angle Values [about X, about y', about z''] Applies when REF_SYSTEM = 1 and INPUT_METHOD = 0. */
-    ANGLE_VALUES: Array<JsonObject>;
-    /** Point Values [P0[3], P1[3], P2[3]] Applies when REF_SYSTEM = 1 and INPUT_METHOD = 1. */
-    POINT_VALUES: [JsonObject, JsonObject, JsonObject];
-    /** Vector Points [V1[3], V2[3]] Applies when REF_SYSTEM = 1 and INPUT_METHOD = 2. */
-    VECTOR_VALUES: [JsonObject, JsonObject];
+    /** Input Method · 0=Angle Required when REF_SYSTEM = 1 and INPUT_METHOD = 0. */
+    INPUT_METHOD?: number;
+    /** Angle Values [about X, about y', about z''] Required when REF_SYSTEM = 1 and INPUT_METHOD = 0. */
+    ANGLE_VALUES?: Array<JsonObject>;
+    /** Point Values [P0[3], P1[3], P2[3]] Required when REF_SYSTEM = 1 and INPUT_METHOD = 1. */
+    POINT_VALUES?: [JsonObject, JsonObject, JsonObject];
+    /** Vector Points [V1[3], V2[3]] Required when REF_SYSTEM = 1 and INPUT_METHOD = 2. */
+    VECTOR_VALUES?: [JsonObject, JsonObject];
   }
   /** Generated from contracts/endpoints/. */
   export interface GeneralLinkHyperSPayload {
@@ -1938,10 +1938,10 @@ export namespace DbConstructionStageTypes {
     MEAN_TEMP?: number;
     /** 지연 시간 (to) Applies when TYPE = "SINE". */
     DELAY_TIME?: number;
-    /** 스케일 계수 Applies when TYPE = "USER". */
-    SCALE_FACTOR: number;
-    /** 함수 데이터 목록 Applies when TYPE = "USER". */
-    ITEM: Array<{
+    /** 스케일 계수 Required when TYPE = "USER". */
+    SCALE_FACTOR?: number;
+    /** 함수 데이터 목록 Required when TYPE = "USER". */
+    ITEM?: Array<{
       /** - 시간 */
       TIME: number;
       /** - 온도 */
@@ -1954,12 +1954,12 @@ export namespace DbConstructionStageTypes {
     NAME: string;
     /** 함수 타입 ("CONST" / "USER") */
     TYPE: string;
-    /** 대류 계수 Applies when TYPE = "CONST". */
-    COEF: number;
-    /** 스케일 계수 Applies when TYPE = "USER". */
-    SCALE_FACTOR: number;
-    /** 함수 데이터 목록 Applies when TYPE = "USER". */
-    ITEM: Array<{
+    /** 대류 계수 Required when TYPE = "CONST". */
+    COEF?: number;
+    /** 스케일 계수 Required when TYPE = "USER". */
+    SCALE_FACTOR?: number;
+    /** 함수 데이터 목록 Required when TYPE = "USER". */
+    ITEM?: Array<{
       /** - 시간 */
       TIME: number;
       /** - 대류 계수 */
@@ -2024,10 +2024,10 @@ export namespace DbConstructionStageTypes {
     CEMENT_CONT?: number;
     /** 데이터 타입 (false=열원, true=온도) Applies when TYPE = "USER". */
     IS_ADIABATIC_TEMP?: boolean;
-    /** 스케일 계수 Applies when TYPE = "USER". */
-    SCALE_FACTOR: number;
-    /** 함수 데이터 목록 Applies when TYPE = "USER". */
-    ITEM: Array<{
+    /** 스케일 계수 Required when TYPE = "USER". */
+    SCALE_FACTOR?: number;
+    /** 함수 데이터 목록 Required when TYPE = "USER". */
+    ITEM?: Array<{
       /** - 시간 */
       TIME: number;
       /** - 값 (온도 또는 열원) */
@@ -2526,29 +2526,29 @@ export namespace DbDynamicLoadsTypes {
     GRAV: number;
     /** 함수 타입 (1=Time Function, 2=Sinusoidal) */
     FUNCTYPE: number;
-    /** 스케일 방법 (0=Scale Factor, 1=Max Value) Applies when FUNCTYPE = 1. */
-    iMETHOD: number;
-    /** 스케일 계수 (iMETHOD=0 시) Applies when FUNCTYPE = 1. */
-    SCALE: number;
+    /** 스케일 방법 (0=Scale Factor, 1=Max Value) Required when FUNCTYPE = 1. */
+    iMETHOD?: number;
+    /** 스케일 계수 (iMETHOD=0 시) Required when FUNCTYPE = 1. */
+    SCALE?: number;
     /** 최대 값 (iMETHOD=1 시) Applies when FUNCTYPE = 1. */
     MAXVALUE?: number;
-    /** 시간-값 데이터 목록 Applies when FUNCTYPE = 1. */
-    aFUNCDATA: Array<{
+    /** 시간-값 데이터 목록 Required when FUNCTYPE = 1. */
+    aFUNCDATA?: Array<{
       /** 시간 */
       TIME: number;
       /** 값 */
       VALUE: number;
     }>;
-    /** 상수 A Applies when FUNCTYPE = 2. */
-    CONS_A: number;
-    /** 상수 C Applies when FUNCTYPE = 2. */
-    CONS_C: number;
-    /** 주파수 Applies when FUNCTYPE = 2. */
-    FREQUENCY: number;
-    /** 감쇠 계수 Applies when FUNCTYPE = 2. */
-    DAMP_FACTOR: number;
-    /** 위상각 Applies when FUNCTYPE = 2. */
-    PHASE_ANGLE: number;
+    /** 상수 A Required when FUNCTYPE = 2. */
+    CONS_A?: number;
+    /** 상수 C Required when FUNCTYPE = 2. */
+    CONS_C?: number;
+    /** 주파수 Required when FUNCTYPE = 2. */
+    FREQUENCY?: number;
+    /** 감쇠 계수 Required when FUNCTYPE = 2. */
+    DAMP_FACTOR?: number;
+    /** 위상각 Required when FUNCTYPE = 2. */
+    PHASE_ANGLE?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface GroundAccelerationPayload {
@@ -3687,27 +3687,27 @@ export namespace DbMovingLoadsTypes {
       VEHICLE_CLASS_1: string;
       /** Selected Lanes */
       SELECTED_LANES: Array<string>;
-      /** Scale Factor Applies when OPT_AUTO_LL = true. */
-      SCALE_FACTOR: number;
-      /** Vehicle Class II Applies when OPT_AUTO_LL = true. */
-      VEHICLE_CLASS_2: string;
-      /** Vehicle Footway Applies when OPT_AUTO_LL = true. */
-      FOOTWAY: string;
+      /** Scale Factor Required when OPT_AUTO_LL = true. */
+      SCALE_FACTOR?: number;
+      /** Vehicle Class II Required when OPT_AUTO_LL = true. */
+      VEHICLE_CLASS_2?: string;
+      /** Vehicle Footway Required when OPT_AUTO_LL = true. */
+      FOOTWAY?: string;
       /** Carriageway Width Applies when OPT_AUTO_LL = true. */
       CARRIAGE_WAY_WIDTH?: number;
       /** Carriageway Loading Applies when OPT_AUTO_LL = true. */
       CARRIAGE_WAY_LOADING?: number;
-      /** Selected Lanes for Footway Applies when OPT_AUTO_LL = true. */
-      SELECTED_FOOTWAY_LANES: Array<string>;
+      /** Selected Lanes for Footway Required when OPT_AUTO_LL = true. */
+      SELECTED_FOOTWAY_LANES?: Array<string>;
     }>;
-    /** Permit Vehicle ID Applies when OPT_LC_FOR_PERMIT_LOAD = true. */
-    PERMIT_VEHICLE: number;
-    /** Reference Lane ID Applies when OPT_LC_FOR_PERMIT_LOAD = true. */
-    REF_LANE: number;
-    /** Eccentricity Applies when OPT_LC_FOR_PERMIT_LOAD = true. */
-    ECCEN: number;
-    /** Scale Factor Applies when OPT_LC_FOR_PERMIT_LOAD = true. */
-    PERMIT_SCALE_FACTOR: number;
+    /** Permit Vehicle ID Required when OPT_LC_FOR_PERMIT_LOAD = true. */
+    PERMIT_VEHICLE?: number;
+    /** Reference Lane ID Required when OPT_LC_FOR_PERMIT_LOAD = true. */
+    REF_LANE?: number;
+    /** Eccentricity Required when OPT_LC_FOR_PERMIT_LOAD = true. */
+    ECCEN?: number;
+    /** Scale Factor Required when OPT_LC_FOR_PERMIT_LOAD = true. */
+    PERMIT_SCALE_FACTOR?: number;
   }
   export interface MovingLoadCaseBsStraddleLaneItem {
     STARDD_LANE_1?: string;
@@ -4671,16 +4671,55 @@ export namespace DbPropertiesMaterialTypes {
     THERMAL_M?: Array<number>;
     SHEAR_M?: Array<number>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MaterialPayload {
-    TYPE?: string;
-    NAME?: string;
+    /** Material Type • Concrete: "CONC" • Steel: "STEEL" • SRC: "SRC" • Aluminum: "ALUMINUM" • User Defined: "USER" */
+    TYPE: string;
+    /** Material Name */
+    NAME: string;
+    /** Specific Heat */
     HE_SPEC?: number;
+    /** Heat Conduction */
     HE_COND?: number;
+    /** Plastic Material No. */
     PLMT?: number;
+    /** Plastic Material Name */
     P_NAME?: string;
+    /** Use Mass Density */
     bMASS_DENS?: boolean;
+    /** Damping Ratio */
     DAMP_RAT?: number;
-    PARAM?: Array<MaterialParam>;
+    /** Material Parameter */
+    PARAM: Array<{
+      /** Material Parameter Type • Standard: 1 • Isotropic: 2 • Orthotropic: 3 */
+      P_TYPE: number;
+      /** Standard Name Required when PARAM.P_TYPE = 1. */
+      STANDARD?: string;
+      /** Code Name Applies when PARAM.P_TYPE = 1. */
+      CODE?: string;
+      /** DB Name Required when PARAM.P_TYPE = 1. */
+      DB?: string;
+      /** Use Young's Modulus (User Option) Applies when PARAM.P_TYPE = 1. */
+      bELAST?: boolean;
+      /** Modulus of Elasticity Required when PARAM.P_TYPE = 2. */
+      ELAST?: number;
+      /** Poisson's Ratio Required when PARAM.P_TYPE = 2. */
+      POISN?: number;
+      /** Thermal Coefficient Required when PARAM.P_TYPE = 2. */
+      THERMAL?: number;
+      /** Weight Density Required when PARAM.P_TYPE is 2 or 3. */
+      DEN?: number;
+      /** Mass Density Required when PARAM.P_TYPE is 2 or 3. */
+      MASS?: number;
+      /** Modulus of Elasticity (3 values) Required when PARAM.P_TYPE = 3. */
+      ELAST_M?: Array<number>;
+      /** Poisson's Ratio (3 values) Required when PARAM.P_TYPE = 3. */
+      POISN_M?: Array<number>;
+      /** Thermal Coefficient (3 values) Required when PARAM.P_TYPE = 3. */
+      THERMAL_M?: Array<number>;
+      /** Shear Modulus (3 values) Required when PARAM.P_TYPE = 3. */
+      SHEAR_M?: Array<number>;
+    }>;
   }
   export interface MaterialHyperSUserDefined {
     bELAST?: boolean;

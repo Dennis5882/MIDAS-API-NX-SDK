@@ -62,7 +62,7 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   endpoint/name/products/methods/manual-chapter surface from its contract; uncontracted resources
   still use the reviewed Python fallback. Since 2026-09-02 a contract's optional `surface` block
   also owns the **published npm names** — `className`, `exportName`, `modulePath`,
-  `payloadTypeName` — for the 269 resources that have one, and the generator raises if a name
+  `payloadTypeName` — for the 270 resources that have one, and the generator raises if a name
   disagrees with the contract, so moving a Python module can no longer rename an npm export in
   silence. This replaces the older "class and module names remain compatibility anchors until
   every resource is contracted" rule, which described a finish line the design could not reach:
@@ -72,7 +72,7 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   `_resource_identity`), but `import midas_nx` remains
   load-bearing — deleting `src/midas_nx/` breaks `npm run generate` and therefore `npm publish`,
   though a built `dist/` keeps working. What still needs Python: `pythonModule`, which no
-  contract records, and the 496 of 750 payload types that come from Python TypedDicts.
+  contract records, and the 495 of 750 payload types that come from Python TypedDicts.
   See `docs/contract_migration_brief.md`.
 - `schema/typescript-resources.json` / `schema/typescript-coverage.json` — committed generator outputs.
   CI fails if either these schemas or `packages/typescript/src/generated/*` drift after regeneration.

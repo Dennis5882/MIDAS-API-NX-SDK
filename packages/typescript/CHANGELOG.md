@@ -15,6 +15,12 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
   followed the contract, so the field's own documented value did not
   typecheck. Python has always had `List[float]`. Assigning a scalar now
   fails; send the vector.
+- **`MaterialPayload` requires `TYPE`, `NAME` and `PARAM`.** `/db/MATL` is now
+  contracted, and its manual states all three Required. `PARAM` is also
+  `Array<...>`, not `Array<MaterialParam>`: the Specifications table types it
+  `Object` while the same section's JSON Schema says `array` and every Request
+  Example in the section sends `[{...}]`. Each entry now carries the manual's
+  own descriptions and, in its doc comment, which `P_TYPE` requires it.
 - **`SectionReinforcementPayload` requires its five members.**
   `OPT_MBAR_J`, `OPT_SBAR_J`, `OPT_CRACKED`, `SBAR_ITEMS` and `MBAR_ITEMS`
   are required, as `/db/RPSC`'s table states, and the two item arrays now
@@ -43,6 +49,18 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
   escaped pipe (`None \| 50% \| 100%`); the contract extractor split those
   rows on every `|`, got more cells than the header has, and dropped the row.
   All five are optional, so nothing that compiled before stops compiling.
+- **49 fields the manual requires only inside one branch are optional again.**
+  A `requirement: required` carrying an `appliesWhen` is a branch's
+  requirement, not the payload's, and typing it unconditionally required made
+  `ConvectionCoefficientFunctionPayload` demand `COEF` (only under
+  `TYPE: "CONST"`) together with `SCALE_FACTOR` and `ITEM` (only under
+  `TYPE: "USER"`) - no caller could satisfy the type without sending fields
+  their own branch does not have, and `InelasticMaterialPropertyPayload` asked
+  for all six plasticity models at once. The condition moved into the doc
+  comment (`Required when TYPE = "CONST".`). Nothing that constructed a payload
+  before stops compiling; code that *reads* one of these fields may now need a
+  guard under `strictNullChecks`. Affects `/db/CCFC`, `/db/EPMT`, `/db/ETFC`,
+  `/db/HSFC`, `/db/MVLDid`, `/db/NLNK`, `/db/THFC` and `/ope/GSBG`.
 - `/db/RPSC`'s two reinforcement item arrays no longer nest each item's
   fields under the first one. The manual numbers those supplementary tables
   `(1)`-`(n)` with no parent row of their own, and the extractor read the
