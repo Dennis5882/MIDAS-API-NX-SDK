@@ -502,7 +502,7 @@ class SeismicDeviceViscousDamperPayload(TypedDict, total=False):
 
 class SeismicDeviceViscousDamper(DbResource):
     ENDPOINT = "/db/SDVI"
-    NAME = "Seismic Device - Viscous/Oil Damper"
+    NAME = "Seismic Device – Viscous/Oil Damper"
     PRODUCTS = frozenset({"gen", "civil"})
 
 
@@ -539,7 +539,7 @@ class SeismicDeviceViscoelasticDamperPayload(TypedDict, total=False):
 
 class SeismicDeviceViscoelasticDamper(DbResource):
     ENDPOINT = "/db/SDVE"
-    NAME = "Seismic Device - Viscoelastic Damper"
+    NAME = "Seismic Device – Viscoelastic Damper"
     PRODUCTS = frozenset({"gen", "civil"})
 
 
@@ -595,7 +595,7 @@ class SeismicDeviceSteelDamperPayload(TypedDict, total=False):
 
 class SeismicDeviceSteelDamper(DbResource):
     ENDPOINT = "/db/SDST"
-    NAME = "Seismic Device - Steel Damper"
+    NAME = "Seismic Device – Steel Damper"
     PRODUCTS = frozenset({"gen", "civil"})
 
 
@@ -627,7 +627,7 @@ class SeismicDeviceHystereticIsolatorPayload(TypedDict, total=False):
 
 class SeismicDeviceHystereticIsolator(DbResource):
     ENDPOINT = "/db/SDHY"
-    NAME = "Seismic Device - Hysteretic Isolator (MSS)"
+    NAME = "Seismic Device – Hysteretic Isolator (MSS)"
     #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
     #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
     PRODUCTS = GEN_ONLY
@@ -713,7 +713,7 @@ class SeismicDeviceIsolatorPayload(TypedDict, total=False):
 
 class SeismicDeviceIsolator(DbResource):
     ENDPOINT = "/db/SDIS"
-    NAME = "Seismic Device - Isolator (MSS)"
+    NAME = "Seismic Device – Isolator (MSS)"
     #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
     #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
     PRODUCTS = GEN_ONLY

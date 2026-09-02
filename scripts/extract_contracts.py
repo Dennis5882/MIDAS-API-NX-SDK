@@ -200,6 +200,34 @@ _DESC_TREE = re.compile(r"^[└├│─\s]+")
 # wrong contract that reached contracts/endpoints/ before type generation
 # from the same contract exposed it.
 _NUMBER_CHILD = re.compile(r"^\((?:\d+|[ivxlcdm]+)\)$", re.IGNORECASE)
+
+#: A third level the chapters mark without parentheses: a bare letter (`a`,
+#: `b`, `c`) or a bare roman numeral (`i`, `ii`, `iii`). `/db/HHCT` numbers
+#: `7` > `(1)`-`(3)` > `i`/`ii`, and `/db/SWIND` marks a child of an object
+#: row with a letter while the parent's own No. cell is blank. Neither matches
+#: `_NUMBER_CHILD`, which requires the parentheses, so 183 rows across 18
+#: sections were read as root-level fields of the request.
+#:
+#: The damage is not only a wrong shape. `/db/SWIND` gives `OPT_USE` to both
+#: `TOPOGRAPHIC_EFFECT` and `FORCE_COEF`; flattened to the root the second
+#: overwrites the first and one documented field disappears. In `/db/HHCT` the
+#: rows after `TOL` were adopted by it, so a `Number` grew children.
+#:
+#: The list of roman numerals is closed on purpose. A permissive
+#: `[ivxlcdm]+` also matches `DB` and other words the No. column really does
+#: carry - `/db/SECT` numbers two rows `DB` and `User`.
+_ROMAN_SUBITEM = frozenset(
+    "i ii iii iv v vi vii viii ix x xi xii".split()
+)
+
+
+def _is_number_subitem(number: str) -> bool:
+    """Whether the No. cell marks a level below `(n)` without saying so."""
+
+    token = number.strip()
+    if len(token) == 1 and token.isalpha() and token.isascii():
+        return True
+    return token.lower() in _ROMAN_SUBITEM
 # A Project Structure table also uses hybrid segments such as ``2-(1)``.
 # They carry the same nesting meaning as ``2-1``: the parent record is row 2
 # and the parenthesised segment is one level, not decorative prose.
@@ -767,6 +795,9 @@ def _nest(flat: list[ParsedField]) -> list[ParsedField]:
     last_root: Optional[ParsedField] = None
     by_depth: dict[int, ParsedField] = {}
     by_tree_depth: dict[int, ParsedField] = {}
+    last_assigned_depth = 0
+    last_was_subitem = False
+    last_entry: Optional[ParsedField] = None
 
     for entry in flat:
         key = entry.key
@@ -785,15 +816,42 @@ def _nest(flat: list[ParsedField]) -> list[ParsedField]:
             _as_container(last_root, is_array=True)
             last_root.properties.append(entry)
             continue
+        # The row before this one, captured before `last_entry` moves on: the
+        # sub-item rule below asks what the *previous* row was.
+        previous = last_entry
+        last_entry = entry
         depth = 0
+        is_subitem = False
         if _NUMBER_CHILD.match(entry.number):
             depth = 1
         elif _NUMBER_PATH.match(entry.number):
             depth = len(_NUMBER_PATH_SEGMENT.findall(entry.number))
+        elif _is_number_subitem(entry.number):
+            is_subitem = True
+            # The marker says "another item", never how deep, and the chapters
+            # mean two different things by it. Read it against the row before:
+            #
+            #   after another bare marker -> a sibling of that row. Chapter 26
+            #     enumerates a request's own top-level members `a`, `b`, `c`,
+            #     `d`, and nesting `b` under `a` would bury MAIN_BAR_BOT inside
+            #     MAIN_BAR_TOP.
+            #   after a container row marked some other way -> its child. That
+            #     is /db/SWIND's blank-celled `TOPOGRAPHIC_EFFECT` and
+            #     /db/HHCT's `(3)` `M_GENERAL`.
+            #   after anything else -> a sibling, because there is nothing to
+            #     be a child of.
+            if last_was_subitem:
+                depth = last_assigned_depth
+            elif previous is not None and previous.type in {"object", "array"}:
+                depth = last_assigned_depth + 1
+            else:
+                depth = last_assigned_depth
+        last_was_subitem = is_subitem
         # The No. column says how deep the row is, not only who its parent is.
         # Keep it for the root branch below, where the loop over a dotted key
         # rebinds `depth` to a segment index.
         number_depth = depth
+        last_assigned_depth = depth
         if depth and entry.shared_number_group and "." not in key and not key.startswith("└"):
             grouped_parent = by_depth.get(depth - 1)
             if grouped_parent is not None:

@@ -5058,7 +5058,7 @@
       "className": "TimeDependentMaterialCreepShrinkage",
       "exportName": "timeDependentMaterialCreepShrinkage",
       "endpoint": "/db/TDMT",
-      "name": "Time Dependent Material - Creep/Shrinkage",
+      "name": "Time Dependent Material – Creep/Shrinkage",
       "products": [
         "civil",
         "gen"
@@ -5367,7 +5367,7 @@
       "className": "SectionStiffness",
       "exportName": "sectionStiffness",
       "endpoint": "/db/SECF",
-      "name": "Section Manager - Stiffness",
+      "name": "Section Manager – Stiffness",
       "products": [
         "civil",
         "gen"

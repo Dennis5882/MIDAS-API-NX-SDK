@@ -711,7 +711,7 @@
     {
       "tier": "props",
       "endpoint": "/db/SECF",
-      "name": "Section Manager - Stiffness",
+      "name": "Section Manager – Stiffness",
       "id": 1,
       "products": [
         "gen",
@@ -801,7 +801,7 @@
     {
       "tier": "props",
       "endpoint": "/db/TDMT",
-      "name": "Time Dependent Material - Creep/Shrinkage",
+      "name": "Time Dependent Material – Creep/Shrinkage",
       "id": 3,
       "products": [
         "gen",
@@ -3958,7 +3958,7 @@
     {
       "tier": "extras3",
       "endpoint": "/db/RPSC",
-      "name": "Section Manager - Reinforcements",
+      "name": "Section Manager – Reinforcements",
       "id": 1,
       "products": [
         "gen",
@@ -4262,7 +4262,7 @@
     {
       "tier": "extras4",
       "endpoint": "/db/LCOM-GEN",
-      "name": "Load Combinations - General",
+      "name": "Load Combinations – General",
       "id": 1,
       "products": [
         "gen",
@@ -4312,7 +4312,7 @@
     {
       "tier": "extras4",
       "endpoint": "/db/LCOM-CONC",
-      "name": "Load Combinations - Concrete Design",
+      "name": "Load Combinations – Concrete Design",
       "id": 1,
       "products": [
         "gen",
@@ -4362,7 +4362,7 @@
     {
       "tier": "extras4",
       "endpoint": "/db/LCOM-STEEL",
-      "name": "Load Combinations - Steel Design",
+      "name": "Load Combinations – Steel Design",
       "id": 1,
       "products": [
         "gen",
@@ -4412,7 +4412,7 @@
     {
       "tier": "extras4",
       "endpoint": "/db/LCOM-SRC",
-      "name": "Load Combinations - SRC Design",
+      "name": "Load Combinations – SRC Design",
       "id": 1,
       "products": [
         "gen",
@@ -4462,7 +4462,7 @@
     {
       "tier": "extras4",
       "endpoint": "/db/LCOM-STLCOMP",
-      "name": "Load Combinations - Composite Steel Girder Design",
+      "name": "Load Combinations – Composite Steel Girder Design",
       "id": 1,
       "products": [
         "gen",
@@ -4512,7 +4512,7 @@
     {
       "tier": "extras4",
       "endpoint": "/db/LCOM-SEISMIC",
-      "name": "Load Combinations - Seismic Design",
+      "name": "Load Combinations – Seismic Design",
       "id": 1,
       "products": [
         "gen"
@@ -4565,7 +4565,7 @@
     {
       "tier": "extras4",
       "endpoint": "/db/LCOM-SEISMIC",
-      "name": "Load Combinations - Seismic Design",
+      "name": "Load Combinations – Seismic Design",
       "id": 1,
       "products": [
         "civil"
@@ -5392,7 +5392,7 @@
     {
       "tier": "extras6",
       "endpoint": "/db/SDVI",
-      "name": "Seismic Device - Viscous/Oil Damper",
+      "name": "Seismic Device – Viscous/Oil Damper",
       "id": 1,
       "products": [
         "gen",
@@ -5618,7 +5618,7 @@
     {
       "tier": "extras6",
       "endpoint": "/db/SDVE",
-      "name": "Seismic Device - Viscoelastic Damper",
+      "name": "Seismic Device – Viscoelastic Damper",
       "id": 1,
       "products": [
         "gen",
@@ -5692,7 +5692,7 @@
     {
       "tier": "extras6",
       "endpoint": "/db/SDST",
-      "name": "Seismic Device - Steel Damper",
+      "name": "Seismic Device – Steel Damper",
       "id": 1,
       "products": [
         "gen",
@@ -5754,7 +5754,7 @@
     {
       "tier": "extras6",
       "endpoint": "/db/SDHY",
-      "name": "Seismic Device - Hysteretic Isolator (MSS)",
+      "name": "Seismic Device – Hysteretic Isolator (MSS)",
       "id": 1,
       "products": [
         "gen"
@@ -5817,7 +5817,7 @@
     {
       "tier": "extras6",
       "endpoint": "/db/SDIS",
-      "name": "Seismic Device - Isolator (MSS)",
+      "name": "Seismic Device – Isolator (MSS)",
       "id": 1,
       "products": [
         "gen"

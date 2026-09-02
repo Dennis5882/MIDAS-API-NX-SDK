@@ -142,8 +142,8 @@ fields:
         enum: [0, 1, 2]
         safeToOmit: unverified
         provenance: manual
-        # RESOLVED: the manual nests this under 'PARAMETERS' by numbering it '(1)',
-        # not by naming a path
+        # RESOLVED: the manual nests this under 'PARAMETERS' by numbering it
+        # '(1)', not by naming a path
 
 variants:
   - when:
@@ -235,28 +235,33 @@ variants:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-      - key: OPT_USE
-        description: >-
-          Use Topographic Effect
-        type: boolean
-        requirement: optional
-        documentedDefault: false
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: KZT
-        description: >-
-          Topographic Factor KZT (OPT_USE=true)
-        type: number
-        requirement: conditional
-        condition: OPT_USE=true
-        appliesWhen:
-          - path: OPT_USE
-            equals: true
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
+        properties:
+          - key: OPT_USE
+            description: >-
+              Use Topographic Effect
+            type: boolean
+            requirement: optional
+            documentedDefault: false
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'TOPOGRAPHIC_EFFECT' by numbering
+            # it 'a', not by naming a path
+          - key: KZT
+            description: >-
+              Topographic Factor KZT (OPT_USE=true)
+            type: number
+            requirement: conditional
+            condition: OPT_USE=true
+            appliesWhen:
+              - path: TOPOGRAPHIC_EFFECT.OPT_USE
+                equals: true
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'TOPOGRAPHIC_EFFECT' by numbering
+            # it 'a', not by naming a path
       - key: DIRECTION_FACTOR_X
         description: >-
           Direction Factor X
@@ -330,136 +335,165 @@ variants:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-      - key: ACROSS_WIND
-        description: >-
-          Across-wind Vibration
-        type: boolean
-        requirement: optional
-        documentedDefault: false
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: TORSIONAL_WIND
-        description: >-
-          Torsional-wind Vibration
-        type: boolean
-        requirement: optional
-        documentedDefault: false
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: WIND_RESPONSE
-        description: >-
-          Wind Response
-        type: boolean
-        requirement: optional
-        documentedDefault: false
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: BL_X
-        description: >-
-          Building Length X
-        type: number
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: BL_Y
-        description: >-
-          Building Length Y
-        type: number
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: NO_X
-        description: >-
-          Natural Frequency X
-        type: number
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: NO_Y
-        description: >-
-          Natural Frequency Y
-        type: number
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: NO_T
-        description: >-
-          Torsional Natural Frequency
-        type: number
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: M
-        description: >-
-          Mass
-        type: number
-        requirement: optional
-        documentedDefault: null
-        documentedDefaultNote: system
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: MX
-        description: >-
-          Mass in X direction
-        type: number
-        requirement: optional
-        documentedDefault: null
-        documentedDefaultNote: system
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: MY
-        description: >-
-          Mass in Y direction
-        type: number
-        requirement: optional
-        documentedDefault: null
-        documentedDefaultNote: system
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: MI
-        description: >-
-          Mass Moment of Inertia
-        type: number
-        requirement: optional
-        documentedDefault: null
-        documentedDefaultNote: system
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: ZF
-        description: >-
-          Damping Ratio
-        type: number
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: VIBRATION_MODE
-        description: >-
-          Vibration Mode Coefficient
-        type: number
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
+        properties:
+          - key: ACROSS_WIND
+            description: >-
+              Across-wind Vibration
+            type: boolean
+            requirement: optional
+            documentedDefault: false
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'VIBRATION_PARAMS' by numbering it
+            # 'a', not by naming a path
+          - key: TORSIONAL_WIND
+            description: >-
+              Torsional-wind Vibration
+            type: boolean
+            requirement: optional
+            documentedDefault: false
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'VIBRATION_PARAMS' by numbering it
+            # 'b', not by naming a path
+          - key: WIND_RESPONSE
+            description: >-
+              Wind Response
+            type: boolean
+            requirement: optional
+            documentedDefault: false
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'VIBRATION_PARAMS' by numbering it
+            # 'c', not by naming a path
+          - key: BL_X
+            description: >-
+              Building Length X
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'VIBRATION_PARAMS' by numbering it
+            # 'd', not by naming a path
+          - key: BL_Y
+            description: >-
+              Building Length Y
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'VIBRATION_PARAMS' by numbering it
+            # 'e', not by naming a path
+          - key: NO_X
+            description: >-
+              Natural Frequency X
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'VIBRATION_PARAMS' by numbering it
+            # 'f', not by naming a path
+          - key: NO_Y
+            description: >-
+              Natural Frequency Y
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'VIBRATION_PARAMS' by numbering it
+            # 'g', not by naming a path
+          - key: NO_T
+            description: >-
+              Torsional Natural Frequency
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'VIBRATION_PARAMS' by numbering it
+            # 'h', not by naming a path
+          - key: M
+            description: >-
+              Mass
+            type: number
+            requirement: optional
+            documentedDefault: null
+            documentedDefaultNote: system
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'VIBRATION_PARAMS' by numbering it
+            # 'i', not by naming a path
+          - key: MX
+            description: >-
+              Mass in X direction
+            type: number
+            requirement: optional
+            documentedDefault: null
+            documentedDefaultNote: system
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'VIBRATION_PARAMS' by numbering it
+            # 'j', not by naming a path
+          - key: MY
+            description: >-
+              Mass in Y direction
+            type: number
+            requirement: optional
+            documentedDefault: null
+            documentedDefaultNote: system
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'VIBRATION_PARAMS' by numbering it
+            # 'k', not by naming a path
+          - key: MI
+            description: >-
+              Mass Moment of Inertia
+            type: number
+            requirement: optional
+            documentedDefault: null
+            documentedDefaultNote: system
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'VIBRATION_PARAMS' by numbering it
+            # 'l', not by naming a path
+          - key: ZF
+            description: >-
+              Damping Ratio
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'VIBRATION_PARAMS' by numbering it
+            # 'm', not by naming a path
+          - key: VIBRATION_MODE
+            description: >-
+              Vibration Mode Coefficient
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'VIBRATION_PARAMS' by numbering it
+            # 'n', not by naming a path
   - when:
       - path: INPUT_METHOD
         equals: 2
@@ -708,8 +742,8 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # RESOLVED: the manual nests this under 'STORY_WIND_PRESSURE' by numbering it
-            # '(1)', not by naming a path
+            # RESOLVED: the manual nests this under 'STORY_WIND_PRESSURE' by numbering
+            # it '(1)', not by naming a path
           - key: PRESS_X
             description: >-
               Wind Pressure X
@@ -719,8 +753,8 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # RESOLVED: the manual nests this under 'STORY_WIND_PRESSURE' by numbering it
-            # '(2)', not by naming a path
+            # RESOLVED: the manual nests this under 'STORY_WIND_PRESSURE' by numbering
+            # it '(2)', not by naming a path
           - key: PRESS_Y
             description: >-
               Wind Pressure Y
@@ -730,8 +764,8 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-            # RESOLVED: the manual nests this under 'STORY_WIND_PRESSURE' by numbering it
-            # '(3)', not by naming a path
+            # RESOLVED: the manual nests this under 'STORY_WIND_PRESSURE' by numbering
+            # it '(3)', not by naming a path
       - key: ADDITIONAL_LOAD
         description: >-
           Additional Story-level Wind Load

@@ -112,12 +112,34 @@ def _declares_non_field_argument(draft: dict) -> bool:
     return False
 
 
+#: Endpoints whose draft must not be promoted from the manual alone.
+#:
+#: Three entries were removed on 2026-09-02 because the finding each cited had
+#: already been **retracted** on 2026-07-27, when every B-item of the vendor
+#: report was re-checked against the official Zendesk articles rather than
+#: against the vendored manual. Four of seven died on contact with the source,
+#: and this gate kept quoting them for over a month:
+#:
+#:   /db/TDMT  "its whole code-name enum is wrong live - the server wants
+#:             'European'". B-1 retracted: the article documents a complete
+#:             28-value enum and the vendored chapter now carries all 33 in a
+#:             footnoted code table (2026-08-25). The 16 values swept on
+#:             2026-07-26 were NAME values read as CODE values; `EUROPEAN` is
+#:             documented and the match is case-insensitive.
+#:   /db/TDME  "companion to /db/TDMT's enum finding". B-2 retracted: the
+#:             article gives "KDS-2016"; the probed "KDS2016" appears in no
+#:             official article and was a vendored-copy error.
+#:   /db/SECF  "its documented key is wrong live". B-3 retracted: "keyed by
+#:             element id" was this repo's own docstring, already corrected in
+#:             db/properties/section.py. The live finding stands; the
+#:             accusation against the manual does not.
+#:
+#: A gate that outlives its evidence is worse than no gate: it reads as a
+#: standing finding. Re-check an entry here against
+#: docs/live_verification_notes.md before adding to it.
 NEEDS_HAND_REVIEW = {
-    "/db/SECF": "its documented key is wrong live",
-    "/db/PRES": "its documented default DIRECTION is wrong live",
+    "/db/PRES": "the Specifications row's Optional/'NORMAL' default cannot hold for PLATE+FACE",
     "/db/MVHL": "its documented VEHICLE_LOAD_NUM is wrong live",
-    "/db/TDMT": "its whole code-name enum is wrong live - the server wants 'European'",
-    "/db/TDME": "companion to /db/TDMT's enum finding",
     "/db/REBW": "every field name in its manual section is wrong live",
     "/db/REBC": "the official article itself is wrong about its array shape",
     "/db/REBB": "its write path is broken server-side, not a shape question",

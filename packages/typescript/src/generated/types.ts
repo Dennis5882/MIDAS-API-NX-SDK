@@ -260,16 +260,50 @@ export namespace DbAnalysisControlTypes {
     M_GENERAL?: CreepShrinkageGeneralData;
     M_EFF_MOD?: CreepShrinkageEffectiveModulusData;
   }
+  /** Generated from contracts/endpoints/. */
   export interface HeatOfHydrationAnalysisControlPayload {
+    /** Final Stage (Last Stage: true / Other Stage: false) */
     FINAL_STAGE?: boolean;
-    STAGE_NAME?: string;
+    /** Construction Stage for Hydration (when FINAL_STAGE false) */
+    STAGE_NAME: string;
+    /** Integration Factor */
     THETA?: number;
+    /** Initial Temperature */
     INIT_TEMP?: number;
+    /** Element Stress Evaluation ("CENTER" / "GAUSS" / "NODAL") */
     EVAL?: string;
+    /** Creep & Shrinkage Option */
     OPT_IS_CREEP_SHRINKAGE?: boolean;
-    ITEM?: CreepShrinkageItem;
+    /** Creep & Shrinkage 설정 객체 */
+    ITEM?: {
+      /** Type (Creep: "CREEP" / Shrinkage: "SHRINK" / Both: "BOTH") */
+      TYPE?: string;
+      /** Creep Calculation Method (General: 0 / Effective Modulus: 1) */
+      CREEP_CALC_METHOD?: number;
+      /** General Data (when method 0) */
+      M_GENERAL?: {
+        /** Number of Iterations */
+        ITER?: number;
+        /** Tolerance */
+        TOL?: number;
+      };
+      /** Effective Modulus Data (when method 1) */
+      M_EFF_MOD: {
+        /** Phi1 */
+        PHI1: number;
+        /** Day1 */
+        DAY1: number;
+        /** Phi2 */
+        PHI2: number;
+        /** Day2 */
+        DAY2: number;
+      };
+    };
+    /** Use Equivalent Age by Time & Temperature */
     OPT_USE_EQUI_AGE?: boolean;
+    /** Include Self-weight Load */
     OPT_INCL_SELF_WEIGHT?: boolean;
+    /** Self-weight Factor */
     SELF_WEIGHT_FACTOR?: number;
   }
   export interface ConvergenceCriterionCheck {
@@ -300,16 +334,17 @@ export namespace DbAnalysisControlTypes {
       /** Creep Calculation Method (General: 0 / Effective Modulus: 1) */
       CREEP_CALC_METHOD?: number;
       /** Effective Modulus Params (when method 1) */
-      M_EFF_MOD: JsonObject;
+      M_EFF_MOD: {
+        /** phi 1 */
+        PHI1: number;
+        /** day 1 */
+        DAY1: number;
+        /** phi 2 */
+        PHI2: number;
+        /** day 2 */
+        DAY2: number;
+      };
     };
-    /** phi 1 */
-    PHI1: number;
-    /** day 1 */
-    DAY1: number;
-    /** phi 2 */
-    PHI2: number;
-    /** day 2 */
-    DAY2: number;
     /** Use Equivalent Age by Time & Temperature */
     OPT_USE_EQUI_AGE?: boolean;
     /** Include Selfweight Load */
@@ -325,12 +360,13 @@ export namespace DbAnalysisControlTypes {
       /** Load(P) */
       LOAD?: JsonObject;
       /** Work(W) */
-      WORK?: JsonObject;
+      WORK?: {
+        /** Use Option */
+        OPT_CHECK: boolean;
+        /** Tolerance (when OPT_CHECK true) */
+        VALUE: number;
+      };
     };
-    /** Use Option */
-    OPT_CHECK: boolean;
-    /** Tolerance (when OPT_CHECK true) */
-    VALUE: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface MovingLoadAnalysisControlPayload {
@@ -4910,19 +4946,28 @@ export namespace DbPropertiesMaterialTypes {
     /** Relaxation Time • Hour: 0 • Day: 1 */
     RELAXATION: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TimeDependentMaterialCreepShrinkagePayload {
-    NAME?: string;
-    CODE?: string;
-    STR?: number;
-    HU?: number;
-    MSIZE?: number;
+    /** Time Dependent Material Name */
+    NAME: string;
+    /** Code Name */
+    CODE: string;
+    /** Compression Strength */
+    STR: number;
+    /** Relative Humidity (CEB-FIP 2010/1990: 40~99%; 1978: 40~100%) */
+    HU: number;
+    /** Notional Size of Member */
+    MSIZE: number;
+    /** Type of Cement */
     CTYPE?: string;
-    AGE?: number;
+    /** Concrete Age */
+    AGE: number;
+    /** Type of Aggregate • 0: Basalt/dense limestone • 1: Quartzite • 2: Limestone • 3: Sandstone */
     TYPEOFAFFR?: number;
-    VOL?: number;
+    /** Volume/Surface Ratio */
+    VOL: number;
+    /** Curing Method • Moist: "MOIST" • Steam: "STEAM" */
     CMETHOD?: string;
-    TCODE?: number;
-    bSILICA?: boolean;
   }
   export interface TimeDependentMaterialStrengthPayload {
     NAME?: string;
@@ -5250,8 +5295,51 @@ export namespace DbPropertiesSectionTypes {
     J7?: number;
     J8?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SectionStiffnessPayload {
-    ITEMS: Array<SectionStiffnessItem>;
+    /** Stiffness Items (Array of Objects) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Boundary Group Name */
+      GROUP_NAME?: string;
+      /** Area Scale Factor (I) */
+      AREA_SF?: number;
+      /** Asy Scale Factor (I) */
+      ASY_SF?: number;
+      /** Asz Scale Factor (I) */
+      ASZ_SF?: number;
+      /** Ixx Scale Factor (I) */
+      IXX_SF?: number;
+      /** Iyy Scale Factor (I) */
+      IYY_SF?: number;
+      /** Izz Scale Factor (I) */
+      IZZ_SF?: number;
+      /** Weight Scale Factor */
+      WGT_SF?: number;
+      /** Warping Scale Factor (I) */
+      W_SF?: number;
+      /** Composite Section 적용 시점 · Before만: 1 / After만: 2 / Before+After: 3 */
+      IPART?: number;
+      /** Tapered Section — J단 별도 값 사용 여부 */
+      bDiffIJ?: boolean;
+      /** Area Scale Factor (J, Tapered) */
+      J1?: number;
+      /** Asy Scale Factor (J) */
+      J2?: number;
+      /** Asz Scale Factor (J) */
+      J3?: number;
+      /** Ixx Scale Factor (J) */
+      J4?: number;
+      /** Iyy Scale Factor (J) */
+      J5?: number;
+      /** Izz Scale Factor (J) */
+      J6?: number;
+      /** Weight Scale Factor (J) */
+      J7?: number;
+      /** Warping Scale Factor (J) */
+      J8?: number;
+    }>;
   }
   export interface SectionReinforcementShearItem {
     OPT_DR?: boolean;
@@ -6544,11 +6632,12 @@ export namespace DbStaticLoadsTypes {
       /** Roof Height */
       ROOF_HEIGHT?: number;
       /** Topographic Effect */
-      TOPOGRAPHIC_EFFECT?: JsonObject;
-      /** Use Topographic Effect */
-      OPT_USE?: boolean;
-      /** Topographic Factor KZT (OPT_USE=true) Applies when OPT_USE = true. */
-      KZT?: number;
+      TOPOGRAPHIC_EFFECT?: {
+        /** Use Topographic Effect */
+        OPT_USE?: boolean;
+        /** Topographic Factor KZT (OPT_USE=true) Applies when TOPOGRAPHIC_EFFECT.OPT_USE = true. */
+        KZT?: number;
+      };
       /** Direction Factor X */
       DIRECTION_FACTOR_X?: number;
       /** Direction Factor Y */
@@ -6564,35 +6653,36 @@ export namespace DbStaticLoadsTypes {
       /** Building Type (0=Middle Low Rise / 1=High Rise) */
       BUILDING_TYPE?: number;
       /** Vibration Parameters */
-      VIBRATION_PARAMS?: JsonObject;
-      /** Across-wind Vibration */
-      ACROSS_WIND?: boolean;
-      /** Torsional-wind Vibration */
-      TORSIONAL_WIND?: boolean;
-      /** Wind Response */
-      WIND_RESPONSE?: boolean;
-      /** Building Length X */
-      BL_X: number;
-      /** Building Length Y */
-      BL_Y: number;
-      /** Natural Frequency X */
-      NO_X: number;
-      /** Natural Frequency Y */
-      NO_Y: number;
-      /** Torsional Natural Frequency */
-      NO_T: number;
-      /** Mass */
-      M?: number;
-      /** Mass in X direction */
-      MX?: number;
-      /** Mass in Y direction */
-      MY?: number;
-      /** Mass Moment of Inertia */
-      MI?: number;
-      /** Damping Ratio */
-      ZF: number;
-      /** Vibration Mode Coefficient */
-      VIBRATION_MODE: number;
+      VIBRATION_PARAMS?: {
+        /** Across-wind Vibration */
+        ACROSS_WIND?: boolean;
+        /** Torsional-wind Vibration */
+        TORSIONAL_WIND?: boolean;
+        /** Wind Response */
+        WIND_RESPONSE?: boolean;
+        /** Building Length X */
+        BL_X: number;
+        /** Building Length Y */
+        BL_Y: number;
+        /** Natural Frequency X */
+        NO_X: number;
+        /** Natural Frequency Y */
+        NO_Y: number;
+        /** Torsional Natural Frequency */
+        NO_T: number;
+        /** Mass */
+        M?: number;
+        /** Mass in X direction */
+        MX?: number;
+        /** Mass in Y direction */
+        MY?: number;
+        /** Mass Moment of Inertia */
+        MI?: number;
+        /** Damping Ratio */
+        ZF: number;
+        /** Vibration Mode Coefficient */
+        VIBRATION_MODE: number;
+      };
     } |
     {
       INPUT_METHOD: 2;
@@ -6666,8 +6756,6 @@ export namespace DbStaticLoadsTypes {
       EXP_CATEGORY?: never;
       IMPORTANCE_FACTOR?: never;
       TOPOGRAPHIC_EFFECT?: never;
-      OPT_USE?: never;
-      KZT?: never;
       DIRECTION_FACTOR_X?: never;
       DIRECTION_FACTOR_Y?: never;
       RIGIDITY?: never;
@@ -6676,23 +6764,11 @@ export namespace DbStaticLoadsTypes {
       FORCE_COEF?: never;
       BUILDING_TYPE?: never;
       VIBRATION_PARAMS?: never;
-      ACROSS_WIND?: never;
-      TORSIONAL_WIND?: never;
-      WIND_RESPONSE?: never;
-      BL_X?: never;
-      BL_Y?: never;
-      NO_X?: never;
-      NO_Y?: never;
-      NO_T?: never;
-      M?: never;
-      MX?: never;
-      MY?: never;
-      MI?: never;
-      ZF?: never;
-      VIBRATION_MODE?: never;
       DM?: never;
       DB?: never;
       N?: never;
+      M?: never;
+      ZF?: never;
       ADDITIONAL_LOAD?: never;
       WIND_ECCEN_X?: never;
       WIND_ECCEN_Y?: never;
@@ -6903,30 +6979,31 @@ export namespace DbTemperaturePrestressTypes {
       /** Section Type · General: false · PSC/Composite: true */
       bPSC?: boolean;
       /** Section Temperature List */
-      vSECTTMP: Array<JsonObject>;
+      vSECTTMP: Array<{
+        /** Material Type · Element: "ELEMENT" · Input: "INPUT" */
+        TYPE?: string;
+        /** B Value */
+        VAL_B?: number;
+        /** H1 Value */
+        VAL_H1?: number;
+        /** H2 Value */
+        VAL_H2?: number;
+        /** T1 Value */
+        VAL_T1?: number;
+        /** T2 Value */
+        VAL_T2?: number;
+        /** Modulus of Elasticity (TYPE = "INPUT" 일 때) */
+        ELAST?: number;
+        /** Thermal Coefficient (TYPE = "INPUT" 일 때) */
+        THERMAL?: number;
+        /** B-Type (bPSC = true) · Section: 0 · Value: 1 */
+        OPT_B?: number;
+        /** H1-Type (bPSC = true) · Z1:0 · Z2:1 · Z3:2 · Value:3 */
+        OPT_H1?: number;
+        /** H2-Type (bPSC = true) · Z1:0 · Z2:1 · Z3:2 · Value:3 */
+        OPT_H2?: number;
+      }>;
     }>;
-    /** Material Type · Element: "ELEMENT" · Input: "INPUT" */
-    TYPE?: string;
-    /** B Value */
-    VAL_B?: number;
-    /** H1 Value */
-    VAL_H1?: number;
-    /** H2 Value */
-    VAL_H2?: number;
-    /** T1 Value */
-    VAL_T1?: number;
-    /** T2 Value */
-    VAL_T2?: number;
-    /** Modulus of Elasticity (TYPE = "INPUT" 일 때) */
-    ELAST?: number;
-    /** Thermal Coefficient (TYPE = "INPUT" 일 때) */
-    THERMAL?: number;
-    /** B-Type (bPSC = true) · Section: 0 · Value: 1 */
-    OPT_B?: number;
-    /** H1-Type (bPSC = true) · Z1:0 · Z2:1 · Z3:2 · Value:3 */
-    OPT_H1?: number;
-    /** H2-Type (bPSC = true) · Z1:0 · Z2:1 · Z3:2 · Value:3 */
-    OPT_H2?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface SystemTemperaturePayload {

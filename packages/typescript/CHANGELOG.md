@@ -6,7 +6,31 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Fixed — nested fields that were published at the top level
+
+- **`BeamSectionTemperaturePayload`, `StaticWindLoadPayload` and
+  `HeatOfHydrationAnalysisControlHyperSPayload` had members in the wrong
+  place.** The manual marks a third level of nesting with a bare letter or
+  roman numeral in its No. column (`a`, `b`, `c` / `i`, `ii`, `iii`), and the
+  extractor only knew the parenthesised `(1)` form, so 183 rows across 18
+  manual sections were read as top-level fields of the request.
+
+  `/db/BTMP` is the clearest case: `TYPE`, `VAL_B`, `VAL_H1`, `VAL_H2`,
+  `VAL_T1`, `VAL_T2`, `ELAST`, `THERMAL`, `OPT_B`, `OPT_H1` and `OPT_H2` were
+  declared at the top level of the payload. The section's own Request Example
+  sends them inside `ITEMS[].vSECTTMP[]`, three levels down. A caller
+  following the published type put them where the server does not look.
+
+  `/db/SWIND` lost a field outright: `TOPOGRAPHIC_EFFECT` and `FORCE_COEF`
+  both document their own `OPT_USE`, and flattened to the root the second
+  overwrote the first. Both are now declared, each inside its own object,
+  along with the thirteen `VIBRATION_PARAMS` members.
+
+  If you were constructing one of these payloads against the old shape, the
+  members move rather than disappear — the compiler will point at each one.
+
 ### Changed
+
 
 - **Four Hyper-S payload types come from a contract instead of a Python
   `TypedDict`.** `MaterialHyperSPayload`, `PlasticMaterialHyperSPayload`,
@@ -23,6 +47,19 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
   `GET /info/db/...` introspection rather than the manual. Every member is
   optional, because `/info` declares no `required` array and `optional` would
   be a claim nobody has made.
+
+- **Fifteen resource labels take the manual's en dash.** `db.*.name` for the
+  six `LCOM-*` load combinations, the five `SD*` seismic devices,
+  `/db/MVCTch`, `/db/RPSC`, `/db/SECF` and `/db/TDMT` read
+  `"Load Combinations – General"` rather than `"Load Combinations - General"`
+  and so on. The npm package had been publishing the en dash for thirteen of
+  them while the Python package published a hyphen; both now read what their
+  manual section reads.
+
+- **Three more endpoints are contract-driven**: `/db/HHCT`, `/db/SECF` and
+  `/db/TDMT`. `/db/TDMT` and `/db/SECF` had been held back by a review gate
+  quoting findings that were retracted on 2026-07-27, when the vendor report's
+  claims were re-checked against MIDASIT's own articles.
 
 - **Two resource labels follow their manual sections.**
   `db.properties.material.inelasticFiberMaterialLinkHyperS.name` is now

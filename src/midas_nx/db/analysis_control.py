@@ -387,7 +387,7 @@ class MovingLoadAnalysisControlChinaPayload(TypedDict, total=False):
 
 class MovingLoadAnalysisControlChina(DbResource):
     ENDPOINT = "/db/MVCTch"
-    NAME = "Moving Load Analysis Control - China"
+    NAME = "Moving Load Analysis Control – China"
 
 
 class MovingLoadAnalysisControlIndiaPayload(TypedDict, total=False):

@@ -56,7 +56,7 @@ class LoadCombinationGeneral(DbResource):
     """#1 — ACTIVE: "INACTIVE"/"ACTIVE". Supports iTYPE=2 (ABS)."""
 
     ENDPOINT = "/db/LCOM-GEN"
-    NAME = "Load Combinations - General"
+    NAME = "Load Combinations – General"
 
 
 class LoadCombinationConcrete(DbResource):
@@ -71,21 +71,21 @@ class LoadCombinationConcrete(DbResource):
     """
 
     ENDPOINT = "/db/LCOM-CONC"
-    NAME = "Load Combinations - Concrete Design"
+    NAME = "Load Combinations – Concrete Design"
 
 
 class LoadCombinationSteel(DbResource):
     """#3 — ACTIVE: "INACTIVE"/"STRENGTH"/"SERVICE". iTYPE=2 (ABS) not supported."""
 
     ENDPOINT = "/db/LCOM-STEEL"
-    NAME = "Load Combinations - Steel Design"
+    NAME = "Load Combinations – Steel Design"
 
 
 class LoadCombinationSRC(DbResource):
     """#4 — ACTIVE: "INACTIVE"/"STRENGTH"/"SERVICE". iTYPE=2 (ABS) not supported."""
 
     ENDPOINT = "/db/LCOM-SRC"
-    NAME = "Load Combinations - SRC Design"
+    NAME = "Load Combinations – SRC Design"
 
 
 class LoadCombinationCompositeSteelGirder(DbResource):
@@ -98,14 +98,14 @@ class LoadCombinationCompositeSteelGirder(DbResource):
     """
 
     ENDPOINT = "/db/LCOM-STLCOMP"
-    NAME = "Load Combinations - Composite Steel Girder Design"
+    NAME = "Load Combinations – Composite Steel Girder Design"
 
 
 class LoadCombinationSeismic(DbResource):
     """#6 — ACTIVE: "INACTIVE"/"ACTIVE". iTYPE=2 (ABS) not supported."""
 
     ENDPOINT = "/db/LCOM-SEISMIC"
-    NAME = "Load Combinations - Seismic Design"
+    NAME = "Load Combinations – Seismic Design"
 
 
 # --- 7. /db/CUTL — Cutting Line ---------------------------------------------

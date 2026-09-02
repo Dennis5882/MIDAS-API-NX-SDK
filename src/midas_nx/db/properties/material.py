@@ -275,7 +275,7 @@ class TimeDependentMaterialCreepShrinkagePayload(TypedDict, total=False):
 
 class TimeDependentMaterialCreepShrinkage(DbResource):
     ENDPOINT = "/db/TDMT"
-    NAME = "Time Dependent Material - Creep/Shrinkage"
+    NAME = "Time Dependent Material – Creep/Shrinkage"
     PRODUCTS = frozenset({"gen", "civil"})
 
 

@@ -108,8 +108,8 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(1)', not by
-        # naming a path
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(1)', not
+        # by naming a path
       - key: LCNAME
         description: >-
           Load Case Name
@@ -119,8 +119,8 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(2)', not by
-        # naming a path
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(2)', not
+        # by naming a path
       - key: GROUP_NAME
         description: >-
           Load Group Name
@@ -130,8 +130,8 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(3)', not by
-        # naming a path
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(3)', not
+        # by naming a path
       - key: DIR
         description: >-
           Direction · Local-y: "LY" · Local-z: "LZ"
@@ -141,8 +141,8 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(4)', not by
-        # naming a path
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(4)', not
+        # by naming a path
       - key: REF
         description: >-
           Ref. Position · "Centroid" · "+End(Top)" → "Top" · "-End(Bot)" → "Bot"
@@ -152,8 +152,8 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(5)', not by
-        # naming a path
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(5)', not
+        # by naming a path
       - key: NUM
         description: >-
           Number of Section Temperature (vSECTTMP 항목 수)
@@ -163,8 +163,8 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(6)', not by
-        # naming a path
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(6)', not
+        # by naming a path
       - key: bPSC
         description: >-
           Section Type · General: false · PSC/Composite: true
@@ -174,8 +174,8 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(7)', not by
-        # naming a path
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(7)', not
+        # by naming a path
       - key: vSECTTMP
         description: >-
           Section Temperature List
@@ -187,162 +187,130 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(8)', not by
-        # naming a path
-  - key: TYPE
-    description: >-
-      Material Type · Element: "ELEMENT" · Input: "INPUT"
-    type: string
-    requirement: optional
-    documentedDefault: ELEMENT
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's BeamSectionTemperature case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: VAL_B
-    description: >-
-      B Value
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's BeamSectionTemperature case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: VAL_H1
-    description: >-
-      H1 Value
-    type: number
-    requirement: optional
-    documentedDefault: null
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's BeamSectionTemperature case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: VAL_H2
-    description: >-
-      H2 Value
-    type: number
-    requirement: optional
-    documentedDefault: null
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's BeamSectionTemperature case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: VAL_T1
-    description: >-
-      T1 Value
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's BeamSectionTemperature case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: VAL_T2
-    description: >-
-      T2 Value
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's BeamSectionTemperature case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: ELAST
-    description: >-
-      Modulus of Elasticity (TYPE = "INPUT" 일 때)
-    type: number
-    requirement: optional
-    documentedDefault: null
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's BeamSectionTemperature case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: THERMAL
-    description: >-
-      Thermal Coefficient (TYPE = "INPUT" 일 때)
-    type: number
-    requirement: optional
-    documentedDefault: null
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's BeamSectionTemperature case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: OPT_B
-    description: >-
-      B-Type (bPSC = true) · Section: 0 · Value: 1
-    type: integer
-    requirement: optional
-    documentedDefault: 1
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's BeamSectionTemperature case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: OPT_H1
-    description: >-
-      H1-Type (bPSC = true) · Z1:0 · Z2:1 · Z3:2 · Value:3
-    type: integer
-    requirement: optional
-    documentedDefault: 3
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's BeamSectionTemperature case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: OPT_H2
-    description: >-
-      H2-Type (bPSC = true) · Z1:0 · Z2:1 · Z3:2 · Value:3
-    type: integer
-    requirement: optional
-    documentedDefault: 3
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's BeamSectionTemperature case completed a live
-      create-read-update-delete round trip on gen and civil without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
+        # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(8)', not
+        # by naming a path
+        properties:
+          - key: TYPE
+            description: >-
+              Material Type · Element: "ELEMENT" · Input: "INPUT"
+            type: string
+            requirement: optional
+            documentedDefault: ELEMENT
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'vSECTTMP' by numbering it 'i',
+            # not by naming a path
+          - key: VAL_B
+            description: >-
+              B Value
+            type: number
+            requirement: optional
+            documentedDefault: 0
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'vSECTTMP' by numbering it 'ii',
+            # not by naming a path
+          - key: VAL_H1
+            description: >-
+              H1 Value
+            type: number
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'vSECTTMP' by numbering it 'iii',
+            # not by naming a path
+          - key: VAL_H2
+            description: >-
+              H2 Value
+            type: number
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'vSECTTMP' by numbering it 'iv',
+            # not by naming a path
+          - key: VAL_T1
+            description: >-
+              T1 Value
+            type: number
+            requirement: optional
+            documentedDefault: 0
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'vSECTTMP' by numbering it 'v',
+            # not by naming a path
+          - key: VAL_T2
+            description: >-
+              T2 Value
+            type: number
+            requirement: optional
+            documentedDefault: 0
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'vSECTTMP' by numbering it 'vi',
+            # not by naming a path
+          - key: ELAST
+            description: >-
+              Modulus of Elasticity (TYPE = "INPUT" 일 때)
+            type: number
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'vSECTTMP' by numbering it 'vii',
+            # not by naming a path
+          - key: THERMAL
+            description: >-
+              Thermal Coefficient (TYPE = "INPUT" 일 때)
+            type: number
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'vSECTTMP' by numbering it 'viii',
+            # not by naming a path
+          - key: OPT_B
+            description: >-
+              B-Type (bPSC = true) · Section: 0 · Value: 1
+            type: integer
+            requirement: optional
+            documentedDefault: 1
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'vSECTTMP' by numbering it 'x',
+            # not by naming a path
+          - key: OPT_H1
+            description: >-
+              H1-Type (bPSC = true) · Z1:0 · Z2:1 · Z3:2 · Value:3
+            type: integer
+            requirement: optional
+            documentedDefault: 3
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'vSECTTMP' by numbering it 'xi',
+            # not by naming a path
+          - key: OPT_H2
+            description: >-
+              H2-Type (bPSC = true) · Z1:0 · Z2:1 · Z3:2 · Value:3
+            type: integer
+            requirement: optional
+            documentedDefault: 3
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'vSECTTMP' by numbering it 'xii',
+            # not by naming a path
 
 sdkRules:
   - id: db-btmp-delete-per-id

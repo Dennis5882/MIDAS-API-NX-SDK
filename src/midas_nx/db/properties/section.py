@@ -118,7 +118,7 @@ class SectionStiffnessPayload(TypedDict):
 
 class SectionStiffness(DbResource):
     ENDPOINT = "/db/SECF"
-    NAME = "Section Manager - Stiffness"
+    NAME = "Section Manager – Stiffness"
     PRODUCTS = frozenset({"gen", "civil"})
 
 
@@ -191,7 +191,7 @@ class SectionReinforcementPayload(TypedDict, total=False):
 
 class SectionReinforcement(DbResource):
     ENDPOINT = "/db/RPSC"
-    NAME = "Section Manager - Reinforcements"
+    NAME = "Section Manager – Reinforcements"
     PRODUCTS = frozenset({"gen", "civil"})
 
 

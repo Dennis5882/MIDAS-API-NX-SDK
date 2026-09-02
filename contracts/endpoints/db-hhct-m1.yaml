@@ -163,8 +163,8 @@ fields:
         enum: [CREEP, SHRINKAGE, BOTH]
         safeToOmit: unverified
         provenance: manual
-        # RESOLVED: the manual nests this under 'ITEM' by numbering it '(1)', not by
-        # naming a path
+        # RESOLVED: the manual nests this under 'ITEM' by numbering it '(1)', not
+        # by naming a path
       - key: CREEP_CALC_METHOD
         description: >-
           Creep Calculation Method (General: 0 / Effective Modulus: 1)
@@ -175,8 +175,8 @@ fields:
         enum: [0, 1]
         safeToOmit: unverified
         provenance: manual
-        # RESOLVED: the manual nests this under 'ITEM' by numbering it '(2)', not by
-        # naming a path
+        # RESOLVED: the manual nests this under 'ITEM' by numbering it '(2)', not
+        # by naming a path
       - key: M_EFF_MOD
         description: >-
           Effective Modulus Params (when method 1)
@@ -186,64 +186,53 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-        # RESOLVED: the manual nests this under 'ITEM' by numbering it '(3)', not by
-        # naming a path
-  - key: PHI1
-    description: >-
-      phi 1
-    type: number
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's HeatOfHydrationAnalysisControlHyperS case
-      completed a live create-read-update-delete round trip on civil without
-      this field in its payload. That is evidence the call is accepted, not that
-      the resulting model is what an engineer wanted.
-    provenance: manual
-  - key: DAY1
-    description: >-
-      day 1
-    type: integer
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's HeatOfHydrationAnalysisControlHyperS case
-      completed a live create-read-update-delete round trip on civil without
-      this field in its payload. That is evidence the call is accepted, not that
-      the resulting model is what an engineer wanted.
-    provenance: manual
-  - key: PHI2
-    description: >-
-      phi 2
-    type: number
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's HeatOfHydrationAnalysisControlHyperS case
-      completed a live create-read-update-delete round trip on civil without
-      this field in its payload. That is evidence the call is accepted, not that
-      the resulting model is what an engineer wanted.
-    provenance: manual
-  - key: DAY2
-    description: >-
-      day 2
-    type: integer
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's HeatOfHydrationAnalysisControlHyperS case
-      completed a live create-read-update-delete round trip on civil without
-      this field in its payload. That is evidence the call is accepted, not that
-      the resulting model is what an engineer wanted.
-    provenance: manual
+        # RESOLVED: the manual nests this under 'ITEM' by numbering it '(3)', not
+        # by naming a path
+        properties:
+          - key: PHI1
+            description: >-
+              phi 1
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'M_EFF_MOD' by numbering it 'a',
+            # not by naming a path
+          - key: DAY1
+            description: >-
+              day 1
+            type: integer
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'M_EFF_MOD' by numbering it 'b',
+            # not by naming a path
+          - key: PHI2
+            description: >-
+              phi 2
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'M_EFF_MOD' by numbering it 'c',
+            # not by naming a path
+          - key: DAY2
+            description: >-
+              day 2
+            type: integer
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'M_EFF_MOD' by numbering it 'd',
+            # not by naming a path
   - key: OPT_USE_EQUI_AGE
     description: >-
       Use Equivalent Age by Time & Temperature
@@ -324,8 +313,8 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # RESOLVED: the manual nests this under 'CONVERGENCE' by numbering it '(1)',
-        # not by naming a path
+        # RESOLVED: the manual nests this under 'CONVERGENCE' by numbering it
+        # '(1)', not by naming a path
       - key: LOAD
         description: >-
           Load(P)
@@ -335,8 +324,8 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # RESOLVED: the manual nests this under 'CONVERGENCE' by numbering it '(2)',
-        # not by naming a path
+        # RESOLVED: the manual nests this under 'CONVERGENCE' by numbering it
+        # '(2)', not by naming a path
       - key: WORK
         description: >-
           Work(W)
@@ -346,36 +335,31 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-        # RESOLVED: the manual nests this under 'CONVERGENCE' by numbering it '(3)',
-        # not by naming a path
-  - key: OPT_CHECK
-    description: >-
-      Use Option
-    type: boolean
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's HeatOfHydrationAnalysisControlHyperS case
-      completed a live create-read-update-delete round trip on civil without
-      this field in its payload. That is evidence the call is accepted, not that
-      the resulting model is what an engineer wanted.
-    provenance: manual
-  - key: VALUE
-    description: >-
-      Tolerance (when OPT_CHECK true)
-    type: number
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's HeatOfHydrationAnalysisControlHyperS case
-      completed a live create-read-update-delete round trip on civil without
-      this field in its payload. That is evidence the call is accepted, not that
-      the resulting model is what an engineer wanted.
-    provenance: manual
+        # RESOLVED: the manual nests this under 'CONVERGENCE' by numbering it
+        # '(3)', not by naming a path
+        properties:
+          - key: OPT_CHECK
+            description: >-
+              Use Option
+            type: boolean
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'WORK' by numbering it 'a', not by
+            # naming a path
+          - key: VALUE
+            description: >-
+              Tolerance (when OPT_CHECK true)
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'WORK' by numbering it 'b', not by
+            # naming a path
 
 sdkRules:
   - id: db-hhct-m1-delete-per-id
@@ -404,5 +388,5 @@ knownDefects:
   - ref: db-delete-body-empties-table
 
 extraction:
-  source: 12_DB_Analysis_Control.md line 840
+  source: 12_DB_Analysis_Control.md line 842
   table: Parameters

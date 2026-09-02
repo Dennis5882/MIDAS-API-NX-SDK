@@ -3292,3 +3292,106 @@ def test_a_finding_nothing_can_reopen_renders_as_resolved(tmp_path: Path):
     assert any("Specifications table types this" in line for line in notes)
     assert not any("Specifications table types this" in line for line in resolved)
 
+
+
+def _field(number: str, key: str, declared: str) -> "ex.ParsedField":
+    """A parsed row, as the No. column and Key column give it."""
+
+    return ex.ParsedField(key, key, declared, None, "required", None, number=number)
+
+
+def test_a_child_the_manual_marks_with_a_bare_letter_lands_inside_its_parent():
+    """`/db/SWIND` marks a member of an object row with `a`, `b`, `c`.
+
+    The No. column's parenthesised `(1)` was the only child marker the parser
+    knew, so 183 rows across 18 sections were read as top-level fields of the
+    request. `/db/SWIND` gives `OPT_USE` to both `TOPOGRAPHIC_EFFECT` and
+    `FORCE_COEF`; flattened, the second overwrote the first and a documented
+    field disappeared entirely.
+    """
+
+    fields = ex._nest(
+        [
+            _field("1", "INPUT_METHOD", "integer"),
+            _field("", "TOPOGRAPHIC_EFFECT", "object"),
+            _field("a", "OPT_USE", "boolean"),
+            _field("b", "KZT", "number"),
+            _field("", "FORCE_COEF", "object"),
+            _field("a", "OPT_USE", "boolean"),
+        ]
+    )
+
+    assert [field.key for field in fields] == [
+        "INPUT_METHOD",
+        "TOPOGRAPHIC_EFFECT",
+        "FORCE_COEF",
+    ]
+    assert [child.key for child in fields[1].properties] == ["OPT_USE", "KZT"]
+    assert [child.key for child in fields[2].properties] == ["OPT_USE"]
+
+
+def test_a_bare_marker_after_another_bare_marker_stays_its_sibling():
+    """Chapter 26 enumerates a request's own top-level members `a`, `b`, `c`.
+
+    Reading the marker as "one deeper" without looking at the row before it
+    buried `MAIN_BAR_BOT` inside `MAIN_BAR_TOP`. The marker says "another
+    item", never how deep.
+    """
+
+    fields = ex._nest(
+        [
+            _field("a", "MAIN_BAR_TOP", "object"),
+            _field("b", "MAIN_BAR_BOT", "object"),
+            _field("c", "SHEAR_BAR", "object"),
+        ]
+    )
+
+    assert [field.key for field in fields] == [
+        "MAIN_BAR_TOP",
+        "MAIN_BAR_BOT",
+        "SHEAR_BAR",
+    ]
+    assert all(not field.properties for field in fields)
+
+
+def test_a_roman_sub_item_goes_under_the_object_the_manual_numbered():
+    """`/db/HHCT` numbers `7` > `(1)`-`(3)` > `i`/`ii`.
+
+    Its third level made `TOL`, a `Number`, the parent of the branch that
+    follows it, because `i`/`ii` were read as root rows and the next `(3)`
+    then attached to the last of them.
+    """
+
+    fields = ex._nest(
+        [
+            _field("7", "ITEM", "object"),
+            _field("(1)", "TYPE", "string"),
+            _field("(3)", "M_GENERAL", "object"),
+            _field("i", "ITER", "integer"),
+            _field("ii", "TOL", "number"),
+            _field("(3)", "M_EFF_MOD", "object"),
+            _field("i", "PHI1", "number"),
+        ]
+    )
+
+    assert [field.key for field in fields] == ["ITEM"]
+    item = fields[0]
+    assert [child.key for child in item.properties] == ["TYPE", "M_GENERAL", "M_EFF_MOD"]
+    general = item.properties[1]
+    assert [child.key for child in general.properties] == ["ITER", "TOL"]
+    assert general.properties[1].type == "number"
+    assert not general.properties[1].properties
+    assert [child.key for child in item.properties[2].properties] == ["PHI1"]
+
+
+def test_a_word_in_the_no_column_is_not_read_as_a_sub_item_marker():
+    """`/db/SECT` numbers two rows `DB` and `User`.
+
+    A permissive roman-numeral pattern matches `DB`, which would make a
+    section-type divider row into a child of whatever preceded it.
+    """
+
+    assert not ex._is_number_subitem("DB")
+    assert not ex._is_number_subitem("User")
+    assert ex._is_number_subitem("c")
+    assert ex._is_number_subitem("iii")
