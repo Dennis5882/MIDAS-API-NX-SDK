@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-clwp
 endpoint: /db/CLWP
 name: Plate Cutting Line Diagram
+surface:
+  className: PlateCuttingLineDiagram
+  exportName: plateCuttingLineDiagram
+  modulePath: [db, loadCombinations]
+  payloadTypeName: PlateCuttingLineDiagramPayload
 
 products: [civil, gen]
 

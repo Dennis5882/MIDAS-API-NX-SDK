@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-nmas
 endpoint: /db/NMAS
 name: Nodal Masses
+surface:
+  className: NodalMass
+  exportName: nodalMass
+  modulePath: [db, staticLoads]
+  payloadTypeName: NodalMassPayload
 summary: >-
   Defines lumped masses on nodes. The Assign map is keyed by node number, not by
   a record id of its own.

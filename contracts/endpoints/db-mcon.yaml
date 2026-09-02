@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-mcon
 endpoint: /db/MCON
 name: Linear Constraints
+surface:
+  className: LinearConstraint
+  exportName: linearConstraint
+  modulePath: [db, boundary]
+  payloadTypeName: LinearConstraintPayload
 
 products: [civil, gen]
 

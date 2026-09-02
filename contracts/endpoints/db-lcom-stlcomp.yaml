@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-lcom-stlcomp
 endpoint: /db/LCOM-STLCOMP
 name: Load Combinations – Composite Steel Girder Design
+surface:
+  className: LoadCombinationCompositeSteelGirder
+  exportName: loadCombinationCompositeSteelGirder
+  modulePath: [db, loadCombinations]
+  payloadTypeName: LoadCombinationCompositeSteelGirderPayload
 
 products: [civil, gen]
 

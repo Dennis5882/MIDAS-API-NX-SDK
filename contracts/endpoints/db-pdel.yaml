@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-pdel
 endpoint: /db/PDEL
 name: P-Delta Analysis Control
+surface:
+  className: PDeltaAnalysisControl
+  exportName: pDeltaAnalysisControl
+  modulePath: [db, analysisControl]
+  payloadTypeName: PDeltaAnalysisControlPayload
 
 products: [civil, gen]
 

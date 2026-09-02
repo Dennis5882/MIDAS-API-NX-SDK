@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-ielc
 endpoint: /db/IELC
 name: Ignore Elements for Load Cases
+surface:
+  className: IgnoreElementForLoadCase
+  exportName: ignoreElementForLoadCase
+  modulePath: [db, miscLoads]
+  payloadTypeName: IgnoreElementForLoadCasePayload
 
 products: [civil, gen]
 

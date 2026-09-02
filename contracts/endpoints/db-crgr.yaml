@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-crgr
 endpoint: /db/CRGR
 name: Concurrent Reaction Group
+surface:
+  className: ConcurrentReactionGroup
+  exportName: concurrentReactionGroup
+  modulePath: [db, movingLoads]
+  payloadTypeName: StructureGroupNamesPayload
 
 products: [civil]
 

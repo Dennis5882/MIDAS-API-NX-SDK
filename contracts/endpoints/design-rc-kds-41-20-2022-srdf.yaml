@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-srdf
 endpoint: /DESIGN/RC/KDS-41-20-2022/SRDF
 name: Strength Reduction Factors
+surface:
+  className: StrengthReductionFactors
+  exportName: strengthReductionFactors
+  modulePath: [design, rcKds, setup]
+  payloadTypeName: StrengthReductionFactorsPayload
 
 products: [civil, gen]
 

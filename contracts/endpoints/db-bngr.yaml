@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-bngr
 endpoint: /db/BNGR
 name: Boundary Group
+surface:
+  className: BoundaryGroup
+  exportName: boundaryGroup
+  modulePath: [db, project]
+  payloadTypeName: BoundaryGroupPayload
 
 products: [civil, gen]
 

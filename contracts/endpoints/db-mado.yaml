@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-mado
 endpoint: /db/MADO
 name: Define Domain
+surface:
+  className: MainDomain
+  exportName: mainDomain
+  modulePath: [db, nodeElement]
+  payloadTypeName: MainDomainPayload
 
 products: [civil, gen]
 

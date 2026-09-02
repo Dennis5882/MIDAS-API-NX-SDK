@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-bcga-m1
 endpoint: /db/BCGA-M1
 name: Assign Boundary Combination (Hyper-S)
+surface:
+  className: AssignBoundaryCombinationHyperS
+  exportName: assignBoundaryCombinationHyperS
+  modulePath: [db, analysisControl]
+  payloadTypeName: AssignBoundaryCombinationHyperSPayload
 
 products: [civil]
 

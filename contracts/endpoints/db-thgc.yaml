@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-thgc
 endpoint: /db/THGC
 name: Time History Global Control
+surface:
+  className: TimeHistoryGlobalControl
+  exportName: timeHistoryGlobalControl
+  modulePath: [db, dynamicLoads]
+  payloadTypeName: TimeHistoryGlobalControlPayload
 
 products: [civil, gen]
 

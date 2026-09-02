@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-tdnt
 endpoint: /db/TDNT
 name: Tendon Property
+surface:
+  className: TendonProperty
+  exportName: tendonProperty
+  modulePath: [db, temperaturePrestress]
+  payloadTypeName: TendonPropertyPayload
 
 products: [civil, gen]
 

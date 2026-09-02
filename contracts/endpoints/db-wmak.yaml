@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-wmak
 endpoint: /db/WMAK
 name: Modify Wall Mark Design
+surface:
+  className: ModifyWallMark
+  exportName: modifyWallMark
+  modulePath: [db, design]
+  payloadTypeName: ModifyWallMarkPayload
 
 products: [civil, gen]
 

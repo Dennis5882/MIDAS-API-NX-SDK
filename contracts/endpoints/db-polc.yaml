@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-polc
 endpoint: /db/POLC
 name: Pushover Load Cases
+surface:
+  className: PushoverLoadCase
+  exportName: pushoverLoadCase
+  modulePath: [db, pushover]
+  payloadTypeName: PushoverLoadCasePayload
 
 products: [civil, gen]
 

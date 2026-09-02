@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-splc
 endpoint: /db/SPLC
 name: Response Spectrum Load Cases
+surface:
+  className: ResponseSpectrumLoadCase
+  exportName: responseSpectrumLoadCase
+  modulePath: [db, dynamicLoads]
+  payloadTypeName: ResponseSpectrumLoadCasePayload
 
 products: [civil, gen]
 

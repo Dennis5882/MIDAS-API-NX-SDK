@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-thoo-m1
 endpoint: /db/THOO-M1
 name: Time History Output Option (Hyper-S)
+surface:
+  className: TimeHistoryOutputOptionHyperS
+  exportName: timeHistoryOutputOptionHyperS
+  modulePath: [db, dynamicLoads]
+  payloadTypeName: TimeHistoryOutputOptionHyperSPayload
 
 products: [civil]
 

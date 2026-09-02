@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-rexc
 endpoint: /DESIGN/RC/KDS-41-20-2022/REXC
 name: Rebar Exposure Condition
+surface:
+  className: RebarExposureCondition
+  exportName: rebarExposureCondition
+  modulePath: [design, rcKds, rebar]
+  payloadTypeName: RebarExposureConditionPayload
 
 products: [civil, gen]
 

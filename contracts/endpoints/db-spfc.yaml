@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-spfc
 endpoint: /db/SPFC
 name: Response Spectrum Functions
+surface:
+  className: ResponseSpectrumFunction
+  exportName: responseSpectrumFunction
+  modulePath: [db, dynamicLoads]
+  payloadTypeName: ResponseSpectrumFunctionPayload
 
 products: [civil, gen]
 

@@ -143,11 +143,17 @@ D1–D4 were schema decisions about what the *manual* says. This is the first
 one about what the *packages* are called, so it is larger, and both public
 APIs are already published under those names. Sketch, for the author:
 
-1. **Add a naming block to the contract schema** — something like
-   `surface: {className, exportName, modulePath, payloadTypeName}` — seeded
-   from today's generated output so the first commit changes no published
-   name. Every name in it is then a contract fact under review, not an
-   accident of a Python file's location.
+1. ~~**Add a naming block to the contract schema**~~ **Done 2026-09-02.**
+   `surface: {className, exportName, modulePath, payloadTypeName}` is in the
+   schema and seeded into **268 of 304** contracts from the generator's own
+   committed output, so the published APIs did not change by a byte. The
+   generator raises on a disagreement — `className`/`exportName`/`modulePath`
+   as resources load, `payloadTypeName` after generation picks it, since a
+   legacy TypedDict shared by endpoints with different contracts is renamed on
+   the way through. Two tests fail first and name the endpoint. The 36
+   resources with no contract keep their Python names, which is the same
+   arrangement `name` and `products` already had; they are a shrinking
+   remainder rather than a precondition.
 2. **Invert the generator**: iterate contracts, not `DbResource` subclasses;
    fall back to Python only where a contract has no `surface` block. The
    parity check flips with it — Python becomes a subject like npm already is.
@@ -155,10 +161,14 @@ APIs are already published under those names. Sketch, for the author:
    place for the wrapper's summary text that JSDoc currently takes from a
    Python docstring.
 
-Step 1 alone ends the structural dependency for resources; steps 2–3 are
-what make `import midas_nx` deletable from the generator. None of it is
-mechanical, and none of it should start before the author has said which
-names the contracts are allowed to own.
+Step 1 gave the names a home; **steps 2–3 are what make `import midas_nx`
+deletable**. Measured 2026-09-02 by deleting `src/midas_nx/` in a worktree:
+`npm run build`, `typecheck` and `test` all pass from the committed
+generated files, but `npm run generate` dies on `ModuleNotFoundError: No
+module named 'midas_nx'`, and `prepack` runs `generate` first — so the
+package would be frozen at its last published state, usable but not
+releasable. Users of the published tarball are unaffected either way; it
+declares no dependencies.
 
 ## The rules that are not negotiable
 

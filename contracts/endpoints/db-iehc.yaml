@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-iehc
 endpoint: /db/IEHC
 name: Inelastic Hinge Control Data
+surface:
+  className: InelasticHingeControl
+  exportName: inelasticHingeControl
+  modulePath: [db, properties, hinge]
+  payloadTypeName: InelasticHingeControlPayload
 
 products: [civil, gen]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-etmp
 endpoint: /db/ETMP
 name: Element Temperature
+surface:
+  className: ElementTemperature
+  exportName: elementTemperature
+  modulePath: [db, temperaturePrestress]
+  payloadTypeName: ElementTemperaturePayload
 
 products: [civil, gen]
 

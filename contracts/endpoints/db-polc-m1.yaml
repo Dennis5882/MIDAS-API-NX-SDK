@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-polc-m1
 endpoint: /db/POLC-M1
 name: Pushover Load Case (Hyper-S)
+surface:
+  className: PushoverLoadCaseHyperS
+  exportName: pushoverLoadCaseHyperS
+  modulePath: [db, pushover]
+  payloadTypeName: PushoverLoadCaseHyperSPayload
 
 products: [civil]
 

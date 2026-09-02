@@ -7,6 +7,11 @@ contractVersion: 1
 id: db-gstp
 endpoint: /db/GSTP
 name: Define General Spring Type
+surface:
+  className: GeneralSpringType
+  exportName: generalSpringType
+  modulePath: [db, boundary]
+  payloadTypeName: GeneralSpringTypePayload
 summary: >-
   Defines a general spring type with symmetric 6x6 stiffness, mass and damping
   matrices represented by their 21 upper-triangular values.

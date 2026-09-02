@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-bmld
 endpoint: /db/BMLD
 name: Beam Loads
+surface:
+  className: BeamLoad
+  exportName: beamLoad
+  modulePath: [db, staticLoads]
+  payloadTypeName: BeamLoadPayload
 
 products: [civil, gen]
 

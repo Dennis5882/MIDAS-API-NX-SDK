@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-inmf
 endpoint: /db/INMF
 name: Small Displacement – Initial Element Force
+surface:
+  className: InitialElementForce
+  exportName: initialElementForce
+  modulePath: [db, miscLoads]
+  payloadTypeName: InitialElementForcePayload
 
 products: [civil, gen]
 

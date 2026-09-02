@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-ldsq
 endpoint: /db/LDSQ
 name: Load Sequence for Nonlinear
+surface:
+  className: LoadSequenceNonlinear
+  exportName: loadSequenceNonlinear
+  modulePath: [db, miscLoads]
+  payloadTypeName: LoadSequenceNonlinearPayload
 
 products: [civil, gen]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-epmt
 endpoint: /db/EPMT
 name: Plastic Material
+surface:
+  className: PlasticMaterial
+  exportName: plasticMaterial
+  modulePath: [db, properties, material]
+  payloadTypeName: PlasticMaterialPayload
 
 products: [civil, gen]
 

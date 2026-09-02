@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-eigv
 endpoint: /db/EIGV
 name: Eigenvalue Analysis Control
+surface:
+  className: EigenvalueAnalysisControl
+  exportName: eigenvalueAnalysisControl
+  modulePath: [db, analysisControl]
+  payloadTypeName: EigenvalueAnalysisControlPayload
 
 products: [civil, gen]
 

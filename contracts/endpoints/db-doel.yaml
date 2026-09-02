@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-doel
 endpoint: /db/DOEL
 name: Domain-Element
+surface:
+  className: DomainElement
+  exportName: domainElement
+  modulePath: [db, nodeElement]
+  payloadTypeName: DomainElementPayload
 
 products: [civil, gen]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-lcom-gen
 endpoint: /db/LCOM-GEN
 name: Load Combinations – General
+surface:
+  className: LoadCombinationGeneral
+  exportName: loadCombinationGeneral
+  modulePath: [db, loadCombinations]
+  payloadTypeName: LoadCombinationGeneralPayload
 
 products: [civil, gen]
 

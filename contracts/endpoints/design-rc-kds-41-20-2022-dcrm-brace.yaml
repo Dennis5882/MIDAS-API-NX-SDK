@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-dcrm-brace
 endpoint: /DESIGN/RC/KDS-41-20-2022/DCRM-BRACE
 name: Design Criteria for Rebars by Brace Member
+surface:
+  className: RebarDesignCriteriaByBraceMember
+  exportName: rebarDesignCriteriaByBraceMember
+  modulePath: [design, rcKds, rebar]
+  payloadTypeName: RebarDesignCriteriaByBraceMemberPayload
 
 products: [civil, gen]
 

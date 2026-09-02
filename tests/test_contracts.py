@@ -431,3 +431,56 @@ def test_post_table_response_key_is_declared_unstable():
         "empty_with_table",
         "no_table",
     }
+
+
+def test_a_contracted_surface_matches_the_published_npm_names():
+    """A contract's `surface` block owns the names npm actually publishes.
+
+    Before this block existed, `className`, `exportName`, `modulePath` and
+    `payloadTypeName` came only from a Python class and the file it sat in, so
+    moving a Python module renamed an npm export with nothing to object. The
+    generator refuses a disagreement now; this fails first, and says which
+    endpoint, without needing the generator to run.
+    """
+
+    manifest = json.loads(TS_RESOURCES.read_text(encoding="utf-8"))
+    published = {resource["endpoint"]: resource for resource in manifest["resources"]}
+
+    mismatches = []
+    for slug, contract in _contracts().items():
+        surface = contract.get("surface")
+        if not surface:
+            continue
+        resource = published.get(contract["endpoint"])
+        assert resource is not None, (
+            f"{slug} declares a surface for {contract['endpoint']}, which the npm "
+            "package does not expose"
+        )
+        for key, value in surface.items():
+            if resource.get(key) != value:
+                mismatches.append(
+                    f"{contract['endpoint']} {key}: contract {value!r}, npm "
+                    f"{resource.get(key)!r}"
+                )
+    assert not mismatches, "contract surface differs from the published npm names: " + "; ".join(mismatches)
+
+
+def test_every_npm_resource_with_a_contract_has_taken_its_names_over():
+    """A contracted resource whose names still live only in Python is a gap.
+
+    Not every npm resource has a contract - 36 do not, and they stay on the
+    reviewed Python fallback by design. But once an endpoint *is* contracted,
+    leaving its names out means the contract is not yet the source for that
+    endpoint, and nothing else would say so.
+    """
+
+    manifest = json.loads(TS_RESOURCES.read_text(encoding="utf-8"))
+    npm_endpoints = {resource["endpoint"] for resource in manifest["resources"]}
+    missing = sorted(
+        contract["endpoint"]
+        for contract in _contracts().values()
+        if contract["endpoint"] in npm_endpoints and not contract.get("surface")
+    )
+    assert not missing, (
+        "contracted npm resources with no `surface` block: " + ", ".join(missing)
+    )

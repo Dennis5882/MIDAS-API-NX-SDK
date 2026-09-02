@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-buck
 endpoint: /db/BUCK
 name: Buckling Analysis Control
+surface:
+  className: BucklingAnalysisControl
+  exportName: bucklingAnalysisControl
+  modulePath: [db, analysisControl]
+  payloadTypeName: BucklingAnalysisControlPayload
 
 products: [civil, gen]
 

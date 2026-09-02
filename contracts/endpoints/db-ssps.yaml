@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-ssps
 endpoint: /db/SSPS
 name: Surface Spring
+surface:
+  className: SurfaceSpring
+  exportName: surfaceSpring
+  modulePath: [db, boundary]
+  payloadTypeName: SurfaceSpringPayload
 
 products: [civil, gen]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-nlnk-m1
 endpoint: /db/NLNK-M1
 name: General Link (Hyper-S)
+surface:
+  className: GeneralLinkHyperS
+  exportName: generalLinkHyperS
+  modulePath: [db, boundary]
+  payloadTypeName: GeneralLinkHyperSPayload
 
 products: [civil]
 

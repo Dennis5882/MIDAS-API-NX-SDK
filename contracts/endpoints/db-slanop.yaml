@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-slanop
 endpoint: /db/SLANop
 name: Traffic Surface Lanes – Moving Load Optimization
+surface:
+  className: TrafficSurfaceLanesOptimization
+  exportName: trafficSurfaceLanesOptimization
+  modulePath: [db, movingLoads]
+  payloadTypeName: TrafficSurfaceLanesOptimizationPayload
 
 products: [civil, gen]
 

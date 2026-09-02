@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-smpt
 endpoint: /db/SMPT
 name: Settlement Group
+surface:
+  className: SettlementGroup
+  exportName: settlementGroup
+  modulePath: [db, miscLoads]
+  payloadTypeName: SettlementGroupPayload
 
 products: [civil, gen]
 

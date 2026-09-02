@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-cnld
 endpoint: /db/CNLD
 name: Nodal Loads
+surface:
+  className: NodalLoad
+  exportName: nodalLoad
+  modulePath: [db, staticLoads]
+  payloadTypeName: NodalLoadPayload
 
 products: [civil, gen]
 

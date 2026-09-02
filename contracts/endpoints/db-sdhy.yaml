@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-sdhy
 endpoint: /db/SDHY
 name: Seismic Device – Hysteretic Isolator (MSS)
+surface:
+  className: SeismicDeviceHystereticIsolator
+  exportName: seismicDeviceHystereticIsolator
+  modulePath: [db, boundary]
+  payloadTypeName: SeismicDeviceHystereticIsolatorPayload
 
 products: [gen]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-efct
 endpoint: /db/EFCT
 name: Small Displacement – Initial Force Control Data
+surface:
+  className: InitialForceControlData
+  exportName: initialForceControlData
+  modulePath: [db, miscLoads]
+  payloadTypeName: InitialForceControlDataPayload
 
 products: [civil, gen]
 

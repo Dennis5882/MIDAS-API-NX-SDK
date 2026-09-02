@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-gcmb
 endpoint: /db/GCMB
 name: General Camber Control
+surface:
+  className: GeneralCamberControl
+  exportName: generalCamberControl
+  modulePath: [db, bridge]
+  payloadTypeName: GeneralCamberControlPayload
 
 products: [civil]
 

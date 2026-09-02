@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-fmld
 endpoint: /db/FMLD
 name: Finishing Material Loads
+surface:
+  className: FinishingMaterialLoad
+  exportName: finishingMaterialLoad
+  modulePath: [db, staticLoads]
+  payloadTypeName: FinishingMaterialLoadPayload
 
 products: [civil, gen]
 

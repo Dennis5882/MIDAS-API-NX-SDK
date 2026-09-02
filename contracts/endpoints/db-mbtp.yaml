@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-mbtp
 endpoint: /db/MBTP
 name: Modify Member Type
+surface:
+  className: ModifyMemberType
+  exportName: modifyMemberType
+  modulePath: [db, design]
+  payloadTypeName: ModifyMemberTypePayload
 
 products: [civil, gen]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-tdcs
 endpoint: /db/TDCS
 name: Tendon Location for Composite Section
+surface:
+  className: TendonLocationCompositeSection
+  exportName: tendonLocationCompositeSection
+  modulePath: [db, temperaturePrestress]
+  payloadTypeName: TendonLocationCompositeSectionPayload
 
 products: [civil, gen]
 

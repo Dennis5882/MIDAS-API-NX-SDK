@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-btmp
 endpoint: /db/BTMP
 name: Beam Section Temperature
+surface:
+  className: BeamSectionTemperature
+  exportName: beamSectionTemperature
+  modulePath: [db, temperaturePrestress]
+  payloadTypeName: BeamSectionTemperaturePayload
 
 products: [civil, gen]
 

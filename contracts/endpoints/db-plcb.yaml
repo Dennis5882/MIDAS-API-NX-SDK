@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-plcb
 endpoint: /db/PLCB
 name: Pre-composite Section
+surface:
+  className: PreCompositeSection
+  exportName: preCompositeSection
+  modulePath: [db, miscLoads]
+  payloadTypeName: PreCompositeSectionPayload
 
 products: [civil]
 

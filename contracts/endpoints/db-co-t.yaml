@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-co-t
 endpoint: /db/CO_T
 name: Thickness Color
+surface:
+  className: ThicknessColor
+  exportName: thicknessColor
+  modulePath: [db, project]
+  payloadTypeName: ThicknessColorPayload
 
 products: [civil, gen]
 

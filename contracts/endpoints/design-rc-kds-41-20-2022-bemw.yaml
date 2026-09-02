@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-bemw
 endpoint: /DESIGN/RC/KDS-41-20-2022/BEMW
 name: Boundary Element Method by Wall ID
+surface:
+  className: BoundaryElementMethodByWallId
+  exportName: boundaryElementMethodByWallId
+  modulePath: [design, rcKds, rebar]
+  payloadTypeName: BoundaryElementMethodByWallIdPayload
 
 products: [civil, gen]
 

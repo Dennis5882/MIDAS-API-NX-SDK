@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-mvctch
 endpoint: /db/MVCTch
 name: Moving Load Analysis Control – China
+surface:
+  className: MovingLoadAnalysisControlChina
+  exportName: movingLoadAnalysisControlChina
+  modulePath: [db, analysisControl]
+  payloadTypeName: MovingLoadAnalysisControlChinaPayload
 
 products: [civil, gen]
 

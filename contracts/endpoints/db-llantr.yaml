@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-llantr
 endpoint: /db/LLANtr
 name: Traffic Line Lanes – Transverse
+surface:
+  className: TrafficLineLanesTransverse
+  exportName: trafficLineLanesTransverse
+  modulePath: [db, movingLoads]
+  payloadTypeName: TrafficLineLanesTransversePayload
 
 products: [civil, gen]
 

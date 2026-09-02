@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-gspr
 endpoint: /db/GSPR
 name: Assign General Spring Supports
+surface:
+  className: GeneralSpringSupport
+  exportName: generalSpringSupport
+  modulePath: [db, boundary]
+  payloadTypeName: GeneralSpringSupportPayload
 
 products: [civil, gen]
 

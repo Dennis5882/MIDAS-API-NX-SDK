@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-lcom-steel
 endpoint: /db/LCOM-STEEL
 name: Load Combinations – Steel Design
+surface:
+  className: LoadCombinationSteel
+  exportName: loadCombinationSteel
+  modulePath: [db, loadCombinations]
+  payloadTypeName: LoadCombinationSteelPayload
 
 products: [civil, gen]
 

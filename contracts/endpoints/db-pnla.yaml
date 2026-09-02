@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-pnla
 endpoint: /db/PNLA
 name: Assign Plane Loads
+surface:
+  className: PlaneLoad
+  exportName: planeLoad
+  modulePath: [db, staticLoads]
+  payloadTypeName: PlaneLoadPayload
 
 products: [civil, gen]
 

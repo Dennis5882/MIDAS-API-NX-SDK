@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-tmld
 endpoint: /db/TMLD
 name: Time Loads for Construction Stage
+surface:
+  className: TimeLoadConstructionStage
+  exportName: timeLoadConstructionStage
+  modulePath: [db, constructionStage]
+  payloadTypeName: TimeLoadConstructionStagePayload
 
 products: [civil, gen]
 

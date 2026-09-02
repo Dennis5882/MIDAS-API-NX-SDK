@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-posp
 endpoint: /db/POSP
 name: Parameter of Soil Properties
+surface:
+  className: SoilProperty
+  exportName: soilProperty
+  modulePath: [db, staticLoads]
+  payloadTypeName: SoilPropertyPayload
 
 products: [gen]
 

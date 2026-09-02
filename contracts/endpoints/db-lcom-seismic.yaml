@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-lcom-seismic
 endpoint: /db/LCOM-SEISMIC
 name: Load Combinations – Seismic Design
+surface:
+  className: LoadCombinationSeismic
+  exportName: loadCombinationSeismic
+  modulePath: [db, loadCombinations]
+  payloadTypeName: LoadCombinationSeismicPayload
 
 products: [civil, gen]
 

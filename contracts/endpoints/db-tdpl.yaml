@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-tdpl
 endpoint: /db/TDPL
 name: Tendon Prestress
+surface:
+  className: TendonPrestress
+  exportName: tendonPrestress
+  modulePath: [db, temperaturePrestress]
+  payloadTypeName: TendonPrestressPayload
 
 products: [civil, gen]
 

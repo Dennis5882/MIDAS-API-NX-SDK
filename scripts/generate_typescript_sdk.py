@@ -658,6 +658,12 @@ def _contract_resource_surfaces(resource_endpoints: set[str]) -> dict[str, dict[
             "methods": sorted({operation["method"] for operation in contract["operations"]}),
             "manualChapter": contract["source"]["manual"].get("chapterFile"),
         }
+        # The published npm names, where the contract has taken ownership of
+        # them. They are seeded from this generator's own committed output, so
+        # they rename nothing; recording them is what stops a Python module
+        # move from silently renaming an npm export.
+        for key, value in (contract.get("surface") or {}).items():
+            surfaces[endpoint][key] = value
     return surfaces
 
 
@@ -679,6 +685,12 @@ def _contract_resource_mismatches(resource: dict[str, Any], surface: dict[str, A
         "methods": resource["methods"],
         "manualChapter": chapter,
     }
+    # `surface` is optional: an endpoint whose contract has not taken the
+    # names over stays on the Python fallback, exactly as it does for `name`.
+    # Where it is present it is checked, so the two cannot drift apart.
+    for key in ("className", "exportName", "modulePath"):
+        if key in surface:
+            actual[key] = resource.get(key)
     def same_value(key: str) -> bool:
         if key != "name":
             return actual[key] == surface[key]
@@ -691,6 +703,50 @@ def _contract_resource_mismatches(resource: dict[str, Any], surface: dict[str, A
         for key in actual
         if not same_value(key)
     ]
+
+
+def _check_contract_payload_type_names(resources: list[dict[str, Any]]) -> None:
+    """Fail if a contracted payload type name no longer matches the contract.
+
+    Unlike the resource facts, this one cannot be checked while resources are
+    loaded: `_attach_payload_types` chooses the name and
+    `_contract_payload_types` may still rename it, when one legacy TypedDict
+    served several endpoints whose contracts disagree. So it is checked here,
+    against the name that will actually be published.
+    """
+
+    surfaces = _contract_surface_blocks()
+    mismatches = [
+        f"{resource['endpoint']}: payload type is "
+        f"{resource.get('payloadTypeName')!r}, contract says "
+        f"{surfaces[resource['endpoint']]['payloadTypeName']!r}"
+        for resource in resources
+        if "payloadTypeName" in surfaces.get(resource["endpoint"], {})
+        and resource.get("payloadTypeName")
+        != surfaces[resource["endpoint"]]["payloadTypeName"]
+    ]
+    if mismatches:
+        raise ValueError(
+            "contract surface differs from the generated payload types: "
+            + "; ".join(mismatches)
+        )
+
+
+def _contract_surface_blocks() -> dict[str, dict[str, Any]]:
+    """Every contract's `surface` block, keyed by endpoint."""
+
+    contract_dir = ROOT / "contracts" / "endpoints"
+    if not contract_dir.is_dir():
+        return {}
+    import yaml  # noqa: PLC0415
+
+    blocks: dict[str, dict[str, Any]] = {}
+    for path in sorted(contract_dir.glob("*.yaml")):
+        contract = yaml.safe_load(path.read_text(encoding="utf-8"))
+        surface = contract.get("surface")
+        if surface:
+            blocks[contract["endpoint"]] = surface
+    return blocks
 
 
 def _load_resources() -> list[dict[str, Any]]:
@@ -1223,6 +1279,7 @@ def main() -> None:
     contract_types, supplemental_contract_types = _contract_payload_types(
         resources, contract_fields, type_keys
     )
+    _check_contract_payload_type_names(resources)
     SCHEMA_DIR.mkdir(parents=True, exist_ok=True)
     TYPESCRIPT_SRC.joinpath("generated").mkdir(parents=True, exist_ok=True)
 

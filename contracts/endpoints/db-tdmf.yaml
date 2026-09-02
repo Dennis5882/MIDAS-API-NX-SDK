@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-tdmf
 endpoint: /db/TDMF
 name: Time Dependent Material – User Defined
+surface:
+  className: TimeDependentMaterialFunction
+  exportName: timeDependentMaterialFunction
+  modulePath: [db, properties, material]
+  payloadTypeName: TimeDependentMaterialFunctionPayload
 
 products: [civil, gen]
 

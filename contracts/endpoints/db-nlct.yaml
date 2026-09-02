@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-nlct
 endpoint: /db/NLCT
 name: Nonlinear Analysis Control Data
+surface:
+  className: NonlinearAnalysisControlData
+  exportName: nonlinearAnalysisControlData
+  modulePath: [db, analysisControl]
+  payloadTypeName: NonlinearAnalysisControlDataPayload
 
 products: [civil, gen]
 

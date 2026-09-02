@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-crpc
 endpoint: /db/CRPC
 name: Creep Coefficient for Construction Stage
+surface:
+  className: CreepCoefficientConstructionStage
+  exportName: creepCoefficientConstructionStage
+  modulePath: [db, constructionStage]
+  payloadTypeName: CreepCoefficientConstructionStagePayload
 
 products: [civil, gen]
 

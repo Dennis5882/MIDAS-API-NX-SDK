@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-tdgr
 endpoint: /db/TDGR
 name: Tendon Group
+surface:
+  className: TendonGroup
+  exportName: tendonGroup
+  modulePath: [db, project]
+  payloadTypeName: TendonGroupPayload
 
 products: [civil, gen]
 

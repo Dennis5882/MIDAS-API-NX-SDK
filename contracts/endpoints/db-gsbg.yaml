@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-gsbg
 endpoint: /db/GSBG
 name: Bridge Girder Diagrams
+surface:
+  className: BridgeGirderDiagram
+  exportName: bridgeGirderDiagram
+  modulePath: [db, bridge]
+  payloadTypeName: BridgeGirderDiagramPayload
 
 products: [civil]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-sseis
 endpoint: /db/SSEIS
 name: Static Seismic Load
+surface:
+  className: StaticSeismicLoad
+  exportName: staticSeismicLoad
+  modulePath: [db, staticLoads]
+  payloadTypeName: StaticSeismicLoadPayload
 
 products: [gen]
 

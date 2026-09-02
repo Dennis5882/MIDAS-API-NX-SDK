@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-steel-kds-41-30-2022-ulct
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/ULCT
 name: Underground Load Combination Type
+surface:
+  className: UndergroundLoadCombinationType
+  exportName: undergroundLoadCombinationType
+  modulePath: [design, steelKds]
+  payloadTypeName: UndergroundLoadCombinationTypePayload
 
 products: [gen]
 

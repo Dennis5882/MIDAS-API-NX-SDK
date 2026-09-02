@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-matd
 endpoint: /db/MATD
 name: Modify Concrete Materials
+surface:
+  className: MaterialModifyConcrete
+  exportName: materialModifyConcrete
+  modulePath: [db, properties, material]
+  payloadTypeName: MaterialModifyConcretePayload
 
 products: [civil, gen]
 

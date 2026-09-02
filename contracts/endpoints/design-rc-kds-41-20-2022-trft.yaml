@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-trft
 endpoint: /DESIGN/RC/KDS-41-20-2022/TRFT
 name: Torsion Reduction Factor
+surface:
+  className: TorsionReductionFactor
+  exportName: torsionReductionFactor
+  modulePath: [design, rcKds, rebar]
+  payloadTypeName: TorsionReductionFactorPayload
 
 products: [gen]
 

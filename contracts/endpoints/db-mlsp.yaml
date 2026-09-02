@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-mlsp
 endpoint: /db/MLSP
 name: Lane Support – Negative Moments at Interior Piers
+surface:
+  className: LaneSupportNegativeMoment
+  exportName: laneSupportNegativeMoment
+  modulePath: [db, movingLoads]
+  payloadTypeName: LaneSupportNegativeMomentPayload
 
 products: [civil, gen]
 

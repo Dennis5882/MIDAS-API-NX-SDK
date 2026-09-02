@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-stct
 endpoint: /db/STCT
 name: Construction Stage Analysis Control Data
+surface:
+  className: ConstructionStageAnalysisControlData
+  exportName: constructionStageAnalysisControlData
+  modulePath: [db, analysisControl]
+  payloadTypeName: ConstructionStageAnalysisControlDataPayload
 
 products: [civil, gen]
 

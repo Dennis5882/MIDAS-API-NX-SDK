@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-frls
 endpoint: /db/FRLS
 name: Beam End Release
+surface:
+  className: BeamEndRelease
+  exportName: beamEndRelease
+  modulePath: [db, boundary]
+  payloadTypeName: BeamEndReleasePayload
 
 products: [civil, gen]
 

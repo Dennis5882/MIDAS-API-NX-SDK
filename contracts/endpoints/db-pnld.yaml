@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-pnld
 endpoint: /db/PNLD
 name: Define Plane Load Type
+surface:
+  className: PlaneLoadType
+  exportName: planeLoadType
+  modulePath: [db, staticLoads]
+  payloadTypeName: PlaneLoadTypePayload
 
 products: [civil, gen]
 

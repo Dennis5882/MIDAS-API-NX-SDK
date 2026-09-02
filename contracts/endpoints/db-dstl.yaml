@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-dstl
 endpoint: /db/DSTL
 name: Design Steel Code
+surface:
+  className: SteelDesignCode
+  exportName: steelDesignCode
+  modulePath: [db, design]
+  payloadTypeName: SteelDesignCodePayload
 
 products: [civil, gen]
 

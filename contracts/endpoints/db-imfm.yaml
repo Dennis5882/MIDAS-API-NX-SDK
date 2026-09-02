@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-imfm
 endpoint: /db/IMFM
 name: Inelastic Material Properties for Fiber Model
+surface:
+  className: InelasticFiberMaterialLink
+  exportName: inelasticFiberMaterialLink
+  modulePath: [db, properties, material]
+  payloadTypeName: InelasticFiberMaterialLinkPayload
 
 products: [civil, gen]
 

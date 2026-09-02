@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-pslt
 endpoint: /db/PSLT
 name: Define Pressure Load Type
+surface:
+  className: PressureLoadType
+  exportName: pressureLoadType
+  modulePath: [db, staticLoads]
+  payloadTypeName: PressureLoadTypePayload
 
 products: [civil, gen]
 

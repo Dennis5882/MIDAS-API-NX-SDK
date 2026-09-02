@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-steel-kds-41-30-2022-fmag
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/FMAG
 name: Moment Magnifier
+surface:
+  className: MomentMagnifier
+  exportName: momentMagnifier
+  modulePath: [design, steelKds]
+  payloadTypeName: MomentMagnifierPayload
 
 products: [civil, gen]
 

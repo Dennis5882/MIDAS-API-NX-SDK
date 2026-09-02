@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-src-aik-src2k-mbtp
 endpoint: /DESIGN/SRC/AIK-SRC2K/MBTP
 name: Modify Member Type
+surface:
+  className: SrcModifyMemberType
+  exportName: srcModifyMemberType
+  modulePath: [design, srcAiksrc2k]
+  payloadTypeName: SrcModifyMemberTypePayload
 
 products: [civil, gen]
 

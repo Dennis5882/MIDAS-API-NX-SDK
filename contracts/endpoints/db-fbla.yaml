@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-fbla
 endpoint: /db/FBLA
 name: Assign Floor Loads
+surface:
+  className: FloorLoad
+  exportName: floorLoad
+  modulePath: [db, staticLoads]
+  payloadTypeName: FloorLoadPayload
 
 products: [civil, gen]
 

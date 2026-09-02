@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-actl-m1
 endpoint: /db/ACTL-M1
 name: Main Control Data (Hyper-S)
+surface:
+  className: MainControlDataHyperS
+  exportName: mainControlDataHyperS
+  modulePath: [db, analysisControl]
+  payloadTypeName: MainControlDataHyperSPayload
 
 products: [civil]
 

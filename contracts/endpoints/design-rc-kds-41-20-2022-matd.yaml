@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-matd
 endpoint: /DESIGN/RC/KDS-41-20-2022/MATD
 name: Modify Concrete Material
+surface:
+  className: ModifyConcreteMaterial
+  exportName: modifyConcreteMaterial
+  modulePath: [design, rcKds, setup]
+  payloadTypeName: ModifyConcreteMaterialPayload
 
 products: [gen]
 

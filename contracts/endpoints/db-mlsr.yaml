@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-mlsr
 endpoint: /db/MLSR
 name: Lane Support – Reactions at Interior Piers
+surface:
+  className: LaneSupportReaction
+  exportName: laneSupportReaction
+  modulePath: [db, movingLoads]
+  payloadTypeName: LaneSupportReactionPayload
 
 products: [civil, gen]
 

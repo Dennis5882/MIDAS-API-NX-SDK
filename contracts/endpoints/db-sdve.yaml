@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-sdve
 endpoint: /db/SDVE
 name: Seismic Device – Viscoelastic Damper
+surface:
+  className: SeismicDeviceViscoelasticDamper
+  exportName: seismicDeviceViscoelasticDamper
+  modulePath: [db, boundary]
+  payloadTypeName: SeismicDeviceViscoelasticDamperPayload
 
 products: [civil, gen]
 

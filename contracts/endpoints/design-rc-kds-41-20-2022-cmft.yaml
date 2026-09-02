@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-cmft
 endpoint: /DESIGN/RC/KDS-41-20-2022/CMFT
 name: Equivalent Moment Correction Factor(Cm)
+surface:
+  className: EquivalentMomentCorrectionFactor
+  exportName: equivalentMomentCorrectionFactor
+  modulePath: [design, rcKds, setup]
+  payloadTypeName: EquivalentMomentCorrectionFactorPayload
 
 products: [civil, gen]
 

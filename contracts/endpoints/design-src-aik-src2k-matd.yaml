@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-src-aik-src2k-matd
 endpoint: /DESIGN/SRC/AIK-SRC2K/MATD
 name: Modify SRC Material
+surface:
+  className: SrcModifyMaterial
+  exportName: srcModifyMaterial
+  modulePath: [design, srcAiksrc2k]
+  payloadTypeName: SrcModifyMaterialPayload
 
 products: [gen]
 

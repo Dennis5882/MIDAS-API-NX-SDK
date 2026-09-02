@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-pjcf
 endpoint: /db/PJCF
 name: Project Information
+surface:
+  className: ProjectInfo
+  exportName: projectInfo
+  modulePath: [db, project]
+  payloadTypeName: ProjectInfoPayload
 
 products: [civil, gen]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-eqct
 endpoint: /DESIGN/RC/KDS-41-20-2022/EQCT
 name: Seismic Load Combination Type
+surface:
+  className: SeismicLoadCombinationType
+  exportName: seismicLoadCombinationType
+  modulePath: [design, rcKds, setup]
+  payloadTypeName: SeismicLoadCombinationTypePayload
 
 products: [civil, gen]
 

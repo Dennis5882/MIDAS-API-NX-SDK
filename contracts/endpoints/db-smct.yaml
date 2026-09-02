@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-smct
 endpoint: /db/SMCT
 name: Settlement Analysis Control Data
+surface:
+  className: SettlementAnalysisControlData
+  exportName: settlementAnalysisControlData
+  modulePath: [db, analysisControl]
+  payloadTypeName: SettlementAnalysisControlDataPayload
 
 products: [civil, gen]
 

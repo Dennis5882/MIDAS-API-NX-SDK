@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-src-aik-src2k-memb
 endpoint: /DESIGN/SRC/AIK-SRC2K/MEMB
 name: Member Assignment
+surface:
+  className: SrcMemberAssignment
+  exportName: srcMemberAssignment
+  modulePath: [design, srcAiksrc2k]
+  payloadTypeName: SrcMemberAssignmentPayload
 
 products: [civil, gen]
 

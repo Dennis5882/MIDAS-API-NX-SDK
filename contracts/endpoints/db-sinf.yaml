@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-sinf
 endpoint: /db/SINF
 name: Plate Element for Influence Surface
+surface:
+  className: PlateElementForInfluenceSurface
+  exportName: plateElementForInfluenceSurface
+  modulePath: [db, movingLoads]
+  payloadTypeName: PlateElementForInfluenceSurfacePayload
 
 products: [civil, gen]
 

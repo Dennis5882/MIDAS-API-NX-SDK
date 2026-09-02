@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-elnk
 endpoint: /db/ELNK
 name: Elastic Link
+surface:
+  className: ElasticLink
+  exportName: elasticLink
+  modulePath: [db, boundary]
+  payloadTypeName: ElasticLinkPayload
 
 products: [civil, gen]
 

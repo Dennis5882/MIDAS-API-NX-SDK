@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-leng
 endpoint: /DESIGN/RC/KDS-41-20-2022/LENG
 name: Unbraced Length (L, Lb)
+surface:
+  className: UnbracedLength
+  exportName: unbracedLength
+  modulePath: [design, rcKds, setup]
+  payloadTypeName: UnbracedLengthPayload
 
 products: [civil, gen]
 

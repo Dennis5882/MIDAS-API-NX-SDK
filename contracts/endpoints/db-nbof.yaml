@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-nbof
 endpoint: /db/NBOF
 name: Nodal Body Force
+surface:
+  className: NodalBodyForce
+  exportName: nodalBodyForce
+  modulePath: [db, staticLoads]
+  payloadTypeName: NodalBodyForcePayload
 
 products: [civil, gen]
 

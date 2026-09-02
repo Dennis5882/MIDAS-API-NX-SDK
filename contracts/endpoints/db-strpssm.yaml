@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-strpssm
 endpoint: /db/STRPSSM
 name: Section Manager – Stress Points
+surface:
+  className: SectionStressPoints
+  exportName: sectionStressPoints
+  modulePath: [db, properties, section]
+  payloadTypeName: SectionStressPointsPayload
 
 products: [civil]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-elem
 endpoint: /db/ELEM
 name: Element
+surface:
+  className: Element
+  exportName: element
+  modulePath: [db, nodeElement]
+  payloadTypeName: ElementPayload
 
 products: [civil, gen]
 

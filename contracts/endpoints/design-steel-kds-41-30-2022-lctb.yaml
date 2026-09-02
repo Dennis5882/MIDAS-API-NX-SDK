@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-steel-kds-41-30-2022-lctb
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/LCTB
 name: Load Contribution for Nonlinear Load Case
+surface:
+  className: LoadContributionForNonlinearLoadCase
+  exportName: loadContributionForNonlinearLoadCase
+  modulePath: [design, steelKds]
+  payloadTypeName: LoadContributionForNonlinearLoadCasePayload
 
 products: [civil, gen]
 

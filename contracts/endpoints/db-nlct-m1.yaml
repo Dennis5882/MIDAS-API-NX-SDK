@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-nlct-m1
 endpoint: /db/NLCT-M1
 name: Nonlinear Analysis Control (Hyper-S)
+surface:
+  className: NonlinearAnalysisControlHyperS
+  exportName: nonlinearAnalysisControlHyperS
+  modulePath: [db, analysisControl]
+  payloadTypeName: NonlinearAnalysisControlHyperSPayload
 
 products: [civil]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-sdst
 endpoint: /db/SDST
 name: Seismic Device – Steel Damper
+surface:
+  className: SeismicDeviceSteelDamper
+  exportName: seismicDeviceSteelDamper
+  modulePath: [db, boundary]
+  payloadTypeName: SeismicDeviceSteelDamperPayload
 
 products: [civil, gen]
 

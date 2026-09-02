@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-mvctid
 endpoint: /db/MVCTid
 name: Moving Load Analysis Control – India
+surface:
+  className: MovingLoadAnalysisControlIndia
+  exportName: movingLoadAnalysisControlIndia
+  modulePath: [db, analysisControl]
+  payloadTypeName: MovingLoadAnalysisControlIndiaPayload
 
 products: [civil, gen]
 

@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-iepi
 endpoint: /db/IEPI
 name: Ignore Elements for Pushover Initial Load
+surface:
+  className: IgnoreElementsForPushoverInitialLoad
+  exportName: ignoreElementsForPushoverInitialLoad
+  modulePath: [db, pushover]
+  payloadTypeName: IgnoreElementsForPushoverInitialLoadPayload
 
 products: [civil, gen]
 

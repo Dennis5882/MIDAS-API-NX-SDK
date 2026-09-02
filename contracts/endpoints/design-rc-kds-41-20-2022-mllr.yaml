@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-mllr
 endpoint: /DESIGN/RC/KDS-41-20-2022/MLLR
 name: Modify Live Load Reduction Factor
+surface:
+  className: ModifyLiveLoadReductionFactor
+  exportName: modifyLiveLoadReductionFactor
+  modulePath: [design, rcKds, setup]
+  payloadTypeName: ModifyLiveLoadReductionFactorPayload
 
 products: [civil, gen]
 

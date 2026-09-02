@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-stmp
 endpoint: /db/STMP
 name: System Temperature
+surface:
+  className: SystemTemperature
+  exportName: systemTemperature
+  modulePath: [db, temperaturePrestress]
+  payloadTypeName: SystemTemperaturePayload
 
 products: [civil, gen]
 

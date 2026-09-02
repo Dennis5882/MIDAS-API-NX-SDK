@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-phge
 endpoint: /db/PHGE
 name: Assign Pushover Hinge Properties
+surface:
+  className: AssignPushoverHingeProperties
+  exportName: assignPushoverHingeProperties
+  modulePath: [db, pushover]
+  payloadTypeName: AssignPushoverHingePropertiesPayload
 
 products: [civil, gen]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-dcrm-beam
 endpoint: /DESIGN/RC/KDS-41-20-2022/DCRM-BEAM
 name: Design Criteria for Rebars by Beam Member
+surface:
+  className: RebarDesignCriteriaByBeamMember
+  exportName: rebarDesignCriteriaByBeamMember
+  modulePath: [design, rcKds, rebar]
+  payloadTypeName: RebarDesignCriteriaByBeamMemberPayload
 
 products: [civil, gen]
 

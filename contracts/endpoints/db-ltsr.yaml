@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-ltsr
 endpoint: /db/LTSR
 name: Limiting Slenderness Ratio
+surface:
+  className: LimitingSlendernessRatio
+  exportName: limitingSlendernessRatio
+  modulePath: [db, design]
+  payloadTypeName: LimitingSlendernessRatioPayload
 
 products: [civil, gen]
 

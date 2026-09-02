@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-cglp
 endpoint: /db/CGLP
 name: Change General Link Property
+surface:
+  className: ChangeGeneralLinkProperty
+  exportName: changeGeneralLinkProperty
+  modulePath: [db, boundary]
+  payloadTypeName: ChangeGeneralLinkPropertyPayload
 
 products: [civil, gen]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-posl
 endpoint: /db/POSL
 name: Parameter of Seismic Loads
+surface:
+  className: SeismicLoadParam
+  exportName: seismicLoadParam
+  modulePath: [db, staticLoads]
+  payloadTypeName: SeismicLoadParamPayload
 
 products: [civil, gen]
 

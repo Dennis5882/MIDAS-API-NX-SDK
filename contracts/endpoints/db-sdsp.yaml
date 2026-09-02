@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-sdsp
 endpoint: /db/SDSP
 name: Specified Displacements of Support
+surface:
+  className: SpecifiedDisplacement
+  exportName: specifiedDisplacement
+  modulePath: [db, staticLoads]
+  payloadTypeName: SpecifiedDisplacementPayload
 
 products: [civil, gen]
 

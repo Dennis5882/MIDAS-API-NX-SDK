@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-steel-kds-41-30-2022-mbtp
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/MBTP
 name: Modify Member Type
+surface:
+  className: ModifyMemberType
+  exportName: modifyMemberType
+  modulePath: [design, steelKds]
+  payloadTypeName: ModifyMemberTypePayload
 
 products: [civil, gen]
 

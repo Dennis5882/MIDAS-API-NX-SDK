@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-drc
 endpoint: /DESIGN/RC/DRC
 name: RC Design Code
+surface:
+  className: RcDesignCodeSelection
+  exportName: rcDesignCodeSelection
+  modulePath: [design, rcKds, setup]
+  payloadTypeName: RcDesignCodeSelectionPayload
 
 products: [civil, gen]
 

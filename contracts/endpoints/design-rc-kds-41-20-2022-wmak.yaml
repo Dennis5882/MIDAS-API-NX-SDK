@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-wmak
 endpoint: /DESIGN/RC/KDS-41-20-2022/WMAK
 name: Modify Wall Mark Data
+surface:
+  className: ModifyWallMarkData
+  exportName: modifyWallMarkData
+  modulePath: [design, rcKds, rebar]
+  payloadTypeName: ModifyWallMarkDataPayload
 
 products: [civil, gen]
 

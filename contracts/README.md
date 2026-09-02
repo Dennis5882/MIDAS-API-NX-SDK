@@ -61,6 +61,47 @@ There is deliberately no value meaning "read off an SDK". Do not guess a field o
 a behaviour into existence: if the manual does not describe it and nobody has
 observed it, it does not belong in a contract.
 
+## The names the packages publish
+
+Everything else in a contract records what the product and the manual say.
+`surface` records what the **packages called it**:
+
+```yaml
+surface:
+  className: Node
+  exportName: node
+  modulePath: [db, nodeElement]
+  payloadTypeName: NodePayload
+```
+
+It exists because those four were the last facts about an endpoint that lived
+only in a Python class and the file it happened to sit in. Moving a Python
+module renamed an npm export with nothing to object, which is the one thing
+`contracts/` is supposed to make impossible.
+
+Three things to know:
+
+- **It renamed nothing.** Every value was seeded from the generator's own
+  committed output on 2026-09-02, so the two published APIs are byte-identical
+  across that change. These are public API anchors on both registries; changing
+  one is a breaking change, and now it is a breaking change you have to make on
+  purpose.
+- **It is optional, and its absence means the Python fallback.** 268 of the 304
+  npm resources have one; the 36 without a contract keep taking their names from
+  Python, exactly as they already do for `name` and `products`. `payloadTypeName`
+  is separately optional: `/db/DRLS` is typed `JsonObject` and has no payload
+  type of its own, so having no name there is a fact, not a gap.
+- **The generator refuses a disagreement**, as it does for every other contract
+  fact. `className`/`exportName`/`modulePath` are checked as resources load;
+  `payloadTypeName` is checked after generation picks it, because a legacy
+  TypedDict shared by endpoints with different contracts gets renamed on the way
+  through.
+
+What this does **not** yet do is let a contract create anything. The generator
+still iterates `DbResource` subclasses, so a contract for an endpoint Python
+does not declare is skipped, and `npm run generate` needs `import midas_nx` to
+work at all. Inverting that is the next step.
+
 ## Unknown message shapes
 
 `request.wrapper` and `response.wrapper` describe only shapes supported by the

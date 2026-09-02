@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-sdis
 endpoint: /db/SDIS
 name: Seismic Device – Isolator (MSS)
+surface:
+  className: SeismicDeviceIsolator
+  exportName: seismicDeviceIsolator
+  modulePath: [db, boundary]
+  payloadTypeName: SeismicDeviceIsolatorPayload
 
 products: [gen]
 

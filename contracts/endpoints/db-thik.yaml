@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-thik
 endpoint: /db/THIK
 name: Thickness
+surface:
+  className: Thickness
+  exportName: thickness
+  modulePath: [db, properties, thickness]
+  payloadTypeName: ThicknessPayload
 
 products: [civil, gen]
 

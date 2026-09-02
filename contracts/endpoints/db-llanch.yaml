@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-llanch
 endpoint: /db/LLANch
 name: Traffic Line Lanes – China
+surface:
+  className: TrafficLineLanesChina
+  exportName: trafficLineLanesChina
+  modulePath: [db, movingLoads]
+  payloadTypeName: TrafficLineLanesChinaPayload
 
 products: [civil, gen]
 

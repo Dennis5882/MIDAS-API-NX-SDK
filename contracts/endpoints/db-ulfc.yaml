@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-ulfc
 endpoint: /db/ULFC
 name: Cable Control – Unknown Load Factor Constraints
+surface:
+  className: UnknownLoadFactorConstraint
+  exportName: unknownLoadFactorConstraint
+  modulePath: [db, bridge]
+  payloadTypeName: UnknownLoadFactorConstraintPayload
 
 products: [civil, gen]
 

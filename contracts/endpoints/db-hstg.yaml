@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-hstg
 endpoint: /db/HSTG
 name: Define Construction Stage for Hydration
+surface:
+  className: ConstructionStageForHydration
+  exportName: constructionStageForHydration
+  modulePath: [db, constructionStage]
+  payloadTypeName: ConstructionStageForHydrationPayload
 
 products: [civil, gen]
 

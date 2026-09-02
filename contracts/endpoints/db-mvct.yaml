@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-mvct
 endpoint: /db/MVCT
 name: Moving Load Analysis Control
+surface:
+  className: MovingLoadAnalysisControl
+  exportName: movingLoadAnalysisControl
+  modulePath: [db, analysisControl]
+  payloadTypeName: MovingLoadAnalysisControlPayload
 
 products: [civil, gen]
 

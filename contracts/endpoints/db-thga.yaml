@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-thga
 endpoint: /db/THGA
 name: Ground Acceleration
+surface:
+  className: GroundAcceleration
+  exportName: groundAcceleration
+  modulePath: [db, dynamicLoads]
+  payloadTypeName: GroundAccelerationPayload
 
 products: [civil, gen]
 

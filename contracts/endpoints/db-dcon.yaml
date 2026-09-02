@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-dcon
 endpoint: /db/DCON
 name: RC Design Code
+surface:
+  className: RcDesignCode
+  exportName: rcDesignCode
+  modulePath: [db, design]
+  payloadTypeName: RcDesignCodePayload
 
 products: [civil, gen]
 

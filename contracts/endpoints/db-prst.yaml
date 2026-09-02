@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-prst
 endpoint: /db/PRST
 name: Prestress Beam Loads
+surface:
+  className: PrestressBeamLoad
+  exportName: prestressBeamLoad
+  modulePath: [db, temperaturePrestress]
+  payloadTypeName: PrestressBeamLoadPayload
 
 products: [civil, gen]
 

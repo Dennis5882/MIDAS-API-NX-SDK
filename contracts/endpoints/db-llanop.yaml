@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-llanop
 endpoint: /db/LLANop
 name: Traffic Line Lanes – Moving Load Optimization
+surface:
+  className: TrafficLineLanesOptimization
+  exportName: trafficLineLanesOptimization
+  modulePath: [db, movingLoads]
+  payloadTypeName: TrafficLineLanesOptimizationPayload
 
 products: [civil, gen]
 

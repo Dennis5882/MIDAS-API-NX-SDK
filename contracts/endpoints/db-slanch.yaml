@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-slanch
 endpoint: /db/SLANch
 name: Traffic Surface Lanes – China
+surface:
+  className: TrafficSurfaceLanesChina
+  exportName: trafficSurfaceLanesChina
+  modulePath: [db, movingLoads]
+  payloadTypeName: TrafficSurfaceLanesChinaPayload
 
 products: [civil, gen]
 

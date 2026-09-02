@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-hecb
 endpoint: /db/HECB
 name: Element Convection Boundary
+surface:
+  className: ElementConvectionBoundary
+  exportName: elementConvectionBoundary
+  modulePath: [db, constructionStage]
+  payloadTypeName: ElementConvectionBoundaryPayload
 
 products: [civil, gen]
 

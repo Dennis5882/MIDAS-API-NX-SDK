@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-thms
 endpoint: /db/THMS
 name: Multiple Support Excitation
+surface:
+  className: MultipleSupportExcitation
+  exportName: multipleSupportExcitation
+  modulePath: [db, dynamicLoads]
+  payloadTypeName: MultipleSupportExcitationPayload
 
 products: [civil, gen]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-exld
 endpoint: /db/EXLD
 name: External Type Load Case for Pretension
+surface:
+  className: ExternalLoadCaseForPretension
+  exportName: externalLoadCaseForPretension
+  modulePath: [db, temperaturePrestress]
+  payloadTypeName: ExternalLoadCaseForPretensionPayload
 
 products: [civil, gen]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-mvcd
 endpoint: /db/MVCD
 name: Moving Load Code
+surface:
+  className: MovingLoadCode
+  exportName: movingLoadCode
+  modulePath: [db, movingLoads]
+  payloadTypeName: MovingLoadCodePayload
 
 products: [civil, gen]
 

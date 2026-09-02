@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-cmcs
 endpoint: /db/CMCS
 name: Camber for Construction Stage
+surface:
+  className: CamberConstructionStage
+  exportName: camberConstructionStage
+  modulePath: [db, constructionStage]
+  payloadTypeName: CamberConstructionStagePayload
 
 products: [civil]
 

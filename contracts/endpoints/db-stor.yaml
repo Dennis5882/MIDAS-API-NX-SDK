@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-stor
 endpoint: /db/STOR
 name: Story Data
+surface:
+  className: Story
+  exportName: story
+  modulePath: [db, project]
+  payloadTypeName: StoryPayload
 
 products: [gen]
 

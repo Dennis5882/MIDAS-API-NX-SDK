@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-cscs
 endpoint: /db/CSCS
 name: Composite Section for Construction Stage
+surface:
+  className: CompositeSectionConstructionStage
+  exportName: compositeSectionConstructionStage
+  modulePath: [db, constructionStage]
+  payloadTypeName: CompositeSectionConstructionStagePayload
 
 products: [civil, gen]
 

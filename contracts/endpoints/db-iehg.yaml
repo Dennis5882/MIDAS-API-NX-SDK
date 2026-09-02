@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-iehg
 endpoint: /db/IEHG
 name: Assign Inelastic Hinge Properties
+surface:
+  className: InelasticHingeProperty
+  exportName: inelasticHingeProperty
+  modulePath: [db, properties, hinge]
+  payloadTypeName: InelasticHingePropertyPayload
 
 products: [civil, gen]
 

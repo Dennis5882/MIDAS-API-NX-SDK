@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-leng
 endpoint: /db/LENG
 name: Unbraced Length
+surface:
+  className: UnbracedLength
+  exportName: unbracedLength
+  modulePath: [db, design]
+  payloadTypeName: UnbracedLengthPayload
 
 products: [civil, gen]
 

@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-co-f
 endpoint: /db/CO_F
 name: Floor Load Color
+surface:
+  className: FloorLoadColor
+  exportName: floorLoadColor
+  modulePath: [db, project]
+  payloadTypeName: FloorLoadColorPayload
 
 products: [civil, gen]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-etfc
 endpoint: /db/ETFC
 name: Ambient Temperature Functions
+surface:
+  className: AmbientTemperatureFunction
+  exportName: ambientTemperatureFunction
+  modulePath: [db, constructionStage]
+  payloadTypeName: AmbientTemperatureFunctionPayload
 
 products: [civil, gen]
 

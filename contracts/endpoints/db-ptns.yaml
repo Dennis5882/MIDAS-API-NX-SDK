@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-ptns
 endpoint: /db/PTNS
 name: Pretension Loads
+surface:
+  className: PretensionLoad
+  exportName: pretensionLoad
+  modulePath: [db, temperaturePrestress]
+  payloadTypeName: PretensionLoadPayload
 
 products: [civil, gen]
 

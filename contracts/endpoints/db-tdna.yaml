@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-tdna
 endpoint: /db/TDNA
 name: Tendon Profile
+surface:
+  className: TendonProfile
+  exportName: tendonProfile
+  modulePath: [db, temperaturePrestress]
+  payloadTypeName: TendonProfilePayload
 
 products: [civil, gen]
 

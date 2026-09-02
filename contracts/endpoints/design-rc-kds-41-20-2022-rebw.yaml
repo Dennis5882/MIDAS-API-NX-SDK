@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-rebw
 endpoint: /DESIGN/RC/KDS-41-20-2022/REBW
 name: Modify Wall Rebar Data
+surface:
+  className: ModifyWallRebarData
+  exportName: modifyWallRebarData
+  modulePath: [design, rcKds, rebar]
+  payloadTypeName: ModifyWallRebarDataPayload
 
 products: [gen]
 

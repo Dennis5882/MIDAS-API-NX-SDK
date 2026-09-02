@@ -7,6 +7,11 @@ contractVersion: 1
 id: db-mvldch
 endpoint: /db/MVLDch
 name: Moving Load Cases – China
+surface:
+  className: MovingLoadCaseChina
+  exportName: movingLoadCaseChina
+  modulePath: [db, movingLoads]
+  payloadTypeName: MovingLoadCaseChinaPayload
 summary: >-
   Defines China moving-load cases. The request has distinct general-load and
   moving-load-optimization payload branches selected by OPT_AUTO_OPTIMIZE.

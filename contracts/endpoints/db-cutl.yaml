@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-cutl
 endpoint: /db/CUTL
 name: Cutting Line
+surface:
+  className: CuttingLine
+  exportName: cuttingLine
+  modulePath: [db, loadCombinations]
+  payloadTypeName: CuttingLinePayload
 
 products: [civil, gen]
 

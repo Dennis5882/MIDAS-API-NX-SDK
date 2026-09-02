@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-mvhc
 endpoint: /db/MVHC
 name: Vehicle Classes
+surface:
+  className: VehicleClasses
+  exportName: vehicleClasses
+  modulePath: [db, movingLoads]
+  payloadTypeName: VehicleClassPayload
 
 products: [civil, gen]
 

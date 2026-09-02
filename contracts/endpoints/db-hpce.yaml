@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-hpce
 endpoint: /db/HPCE
 name: Pipe Cooling
+surface:
+  className: PipeCooling
+  exportName: pipeCooling
+  modulePath: [db, constructionStage]
+  payloadTypeName: PipeCoolingPayload
 
 products: [civil, gen]
 

@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-ldgr
 endpoint: /db/LDGR
 name: Load Group
+surface:
+  className: LoadGroup
+  exportName: loadGroup
+  modulePath: [db, project]
+  payloadTypeName: LoadGroupPayload
 
 products: [civil, gen]
 

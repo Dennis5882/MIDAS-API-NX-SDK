@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-ifgs
 endpoint: /db/IFGS
 name: Large Displacement – Initial Forces for Geometric Stiffness
+surface:
+  className: InitialForceGeometricStiffness
+  exportName: initialForceGeometricStiffness
+  modulePath: [db, miscLoads]
+  payloadTypeName: InitialForceGeometricStiffnessPayload
 
 products: [civil, gen]
 

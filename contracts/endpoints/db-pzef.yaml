@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-pzef
 endpoint: /db/PZEF
 name: Panel Zone Effects
+surface:
+  className: PanelZoneEffect
+  exportName: panelZoneEffect
+  modulePath: [db, boundary]
+  payloadTypeName: PanelZoneEffectPayload
 
 products: [civil, gen]
 

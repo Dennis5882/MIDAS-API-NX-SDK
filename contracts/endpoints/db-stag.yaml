@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-stag
 endpoint: /db/STAG
 name: Define Construction Stage
+surface:
+  className: ConstructionStage
+  exportName: constructionStage
+  modulePath: [db, constructionStage]
+  payloadTypeName: ConstructionStagePayload
 
 products: [civil, gen]
 

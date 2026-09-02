@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-bcgd-m1
 endpoint: /db/BCGD-M1
 name: Define Boundary Combination (Hyper-S)
+surface:
+  className: DefineBoundaryCombinationHyperS
+  exportName: defineBoundaryCombinationHyperS
+  modulePath: [db, analysisControl]
+  payloadTypeName: DefineBoundaryCombinationHyperSPayload
 
 products: [civil]
 

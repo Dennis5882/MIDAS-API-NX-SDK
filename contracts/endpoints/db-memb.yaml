@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-memb
 endpoint: /db/MEMB
 name: Member Assignment
+surface:
+  className: DesignMemberAssignment
+  exportName: designMemberAssignment
+  modulePath: [db, design]
+  payloadTypeName: DesignMemberAssignmentPayload
 
 products: [civil, gen]
 

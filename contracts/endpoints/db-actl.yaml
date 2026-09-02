@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-actl
 endpoint: /db/ACTL
 name: Main Control Data
+surface:
+  className: MainControlData
+  exportName: mainControlData
+  modulePath: [db, analysisControl]
+  payloadTypeName: MainControlDataPayload
 
 products: [civil, gen]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-mvldid
 endpoint: /db/MVLDid
 name: Moving Load Cases – India
+surface:
+  className: MovingLoadCaseIndia
+  exportName: movingLoadCaseIndia
+  modulePath: [db, movingLoads]
+  payloadTypeName: MovingLoadCaseIndiaPayload
 
 products: [civil, gen]
 

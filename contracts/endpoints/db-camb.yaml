@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-camb
 endpoint: /db/CAMB
 name: FCM Camber Control
+surface:
+  className: FcmCamberControl
+  exportName: fcmCamberControl
+  modulePath: [db, bridge]
+  payloadTypeName: FcmCamberControlPayload
 
 products: [civil]
 

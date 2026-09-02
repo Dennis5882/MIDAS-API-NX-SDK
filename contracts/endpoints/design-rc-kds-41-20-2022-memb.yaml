@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-memb
 endpoint: /DESIGN/RC/KDS-41-20-2022/MEMB
 name: Member Assignment
+surface:
+  className: MemberAssignment
+  exportName: memberAssignment
+  modulePath: [design, rcKds, setup]
+  payloadTypeName: MemberAssignmentPayload
 
 products: [civil, gen]
 

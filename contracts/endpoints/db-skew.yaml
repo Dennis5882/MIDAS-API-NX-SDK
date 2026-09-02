@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-skew
 endpoint: /db/SKEW
 name: Node Local Axis
+surface:
+  className: Skew
+  exportName: skew
+  modulePath: [db, nodeElement]
+  payloadTypeName: SkewPayload
 
 products: [civil, gen]
 

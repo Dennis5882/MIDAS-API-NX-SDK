@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-nspr
 endpoint: /db/NSPR
 name: Point Spring
+surface:
+  className: PointSpring
+  exportName: pointSpring
+  modulePath: [db, boundary]
+  payloadTypeName: PointSpringPayload
 
 products: [civil, gen]
 

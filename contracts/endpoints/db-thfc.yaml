@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-thfc
 endpoint: /db/THFC
 name: Time History Functions
+surface:
+  className: TimeHistoryFunction
+  exportName: timeHistoryFunction
+  modulePath: [db, dynamicLoads]
+  payloadTypeName: TimeHistoryFunctionPayload
 
 products: [civil, gen]
 

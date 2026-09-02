@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-hcbm
 endpoint: /DESIGN/RC/KDS-41-20-2022/HCBM
 name: Haunched Beam Assignment
+surface:
+  className: HaunchedBeamAssignment
+  exportName: haunchedBeamAssignment
+  modulePath: [design, rcKds, setup]
+  payloadTypeName: HaunchedBeamAssignmentPayload
 
 products: [civil, gen]
 

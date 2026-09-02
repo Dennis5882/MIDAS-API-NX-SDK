@@ -39,6 +39,37 @@
       "minLength": 1,
       "description": "Human-readable endpoint name as the manual titles it."
     },
+    "surface": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "What the published SDKs call this endpoint. Everything else in this file records what the product and the manual say; this records what the packages named it, so a name stops being an accident of a Python module's location and becomes a contract fact the generator checks. Seeded from the committed generator output, so adding it renamed nothing. Optional: an endpoint with no contracted surface stays on the reviewed Python fallback, which is the same arrangement `name` and `products` already have.",
+      "properties": {
+        "className": {
+          "type": "string",
+          "minLength": 1,
+          "description": "npm resource class name, e.g. `AssignBoundaryCombinationHyperS`. A public API anchor on both registries; changing one is a breaking change."
+        },
+        "exportName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "npm accessor name on its module object, e.g. `assignBoundaryCombinationHyperS`."
+        },
+        "modulePath": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Where the accessor sits in the npm tree, e.g. `[\"db\", \"analysisControl\"]`. Currently mirrors the Python module path; recording it here is what lets the two diverge later without either becoming wrong."
+        },
+        "payloadTypeName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Generated payload type name, e.g. `NodePayload`. Absent where the resource has no payload type of its own - `/db/DRLS` is typed `JsonObject`, and having no name is a fact rather than a gap."
+        }
+      }
+    },
     "summary": {
       "type": "string",
       "description": "One or two sentences on what the endpoint does."

@@ -7,6 +7,11 @@ contractVersion: 1
 id: db-cons
 endpoint: /db/CONS
 name: Constraint Support
+surface:
+  className: Constraint
+  exportName: constraint
+  modulePath: [db, boundary]
+  payloadTypeName: ConstraintPayload
 summary: >-
   Assigns seven-degree-of-freedom support constraints to nodes. Each
   CONSTRAINT string represents DX, DY, DZ, RX, RY, RZ and RW in that order.

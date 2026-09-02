@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-ccfc
 endpoint: /db/CCFC
 name: Convection Coefficient Functions
+surface:
+  className: ConvectionCoefficientFunction
+  exportName: convectionCoefficientFunction
+  modulePath: [db, constructionStage]
+  payloadTypeName: ConvectionCoefficientFunctionPayload
 
 products: [civil, gen]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-lcom-src
 endpoint: /db/LCOM-SRC
 name: Load Combinations – SRC Design
+surface:
+  className: LoadCombinationSRC
+  exportName: loadCombinationSRC
+  modulePath: [db, loadCombinations]
+  payloadTypeName: LoadCombinationSRCPayload
 
 products: [civil, gen]
 

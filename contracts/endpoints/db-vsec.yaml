@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-vsec
 endpoint: /db/VSEC
 name: Virtual Section
+surface:
+  className: VirtualSection
+  exportName: virtualSection
+  modulePath: [db, properties, section]
+  payloadTypeName: VirtualSectionPayload
 
 products: [civil, gen]
 

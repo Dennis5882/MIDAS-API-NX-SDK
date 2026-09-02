@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-src-aik-src2k-ltsr
 endpoint: /DESIGN/SRC/AIK-SRC2K/LTSR
 name: Limiting Slenderness Ratio
+surface:
+  className: SrcLimitingSlendernessRatio
+  exportName: srcLimitingSlendernessRatio
+  modulePath: [design, srcAiksrc2k]
+  payloadTypeName: SrcLimitingSlendernessRatioPayload
 
 products: [civil, gen]
 

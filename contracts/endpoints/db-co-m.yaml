@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-co-m
 endpoint: /db/CO_M
 name: Material Color
+surface:
+  className: MaterialColor
+  exportName: materialColor
+  modulePath: [db, project]
+  payloadTypeName: MaterialColorPayload
 
 products: [gen, civil]
 

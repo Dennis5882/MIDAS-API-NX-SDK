@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-styp-m1
 endpoint: /db/STYP-M1
 name: Structure Type (Hyper-S)
+surface:
+  className: StructureTypeHyperS
+  exportName: structureTypeHyperS
+  modulePath: [db, project]
+  payloadTypeName: StructureTypeHyperSPayload
 
 products: [civil]
 

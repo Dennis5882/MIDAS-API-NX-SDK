@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-co-s
 endpoint: /db/CO_S
 name: Section Color
+surface:
+  className: SectionColor
+  exportName: sectionColor
+  modulePath: [db, project]
+  payloadTypeName: SectionColorPayload
 
 products: [civil, gen]
 

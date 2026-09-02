@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-prls
 endpoint: /db/PRLS
 name: Plate End Release
+surface:
+  className: PlateEndRelease
+  exportName: plateEndRelease
+  modulePath: [db, boundary]
+  payloadTypeName: PlateEndReleasePayload
 
 products: [civil, gen]
 

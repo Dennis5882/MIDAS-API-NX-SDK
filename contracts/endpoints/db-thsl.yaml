@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-thsl
 endpoint: /db/THSL
 name: Time Varying Static Loads
+surface:
+  className: TimeVaryingStaticLoad
+  exportName: timeVaryingStaticLoad
+  modulePath: [db, dynamicLoads]
+  payloadTypeName: TimeVaryingStaticLoadPayload
 
 products: [civil, gen]
 

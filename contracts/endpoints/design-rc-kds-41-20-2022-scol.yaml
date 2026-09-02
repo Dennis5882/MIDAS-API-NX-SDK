@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-scol
 endpoint: /DESIGN/RC/KDS-41-20-2022/SCOL
 name: Seismic Column Type
+surface:
+  className: SeismicColumnType
+  exportName: seismicColumnType
+  modulePath: [design, rcKds, setup]
+  payloadTypeName: SeismicColumnTypePayload
 
 products: [civil, gen]
 

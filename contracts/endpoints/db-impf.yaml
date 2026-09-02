@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-impf
 endpoint: /db/IMPF
 name: Additional Impact Factor
+surface:
+  className: AdditionalImpactFactor
+  exportName: additionalImpactFactor
+  modulePath: [db, movingLoads]
+  payloadTypeName: AdditionalImpactFactorPayload
 
 products: [civil, gen]
 

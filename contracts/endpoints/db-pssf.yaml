@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-pssf
 endpoint: /db/PSSF
 name: Section Manager – Plate Stiffness Scale Factor
+surface:
+  className: PlateStiffnessScaleFactor
+  exportName: plateStiffnessScaleFactor
+  modulePath: [db, properties, section]
+  payloadTypeName: PlateStiffnessScaleFactorPayload
 
 products: [civil, gen]
 

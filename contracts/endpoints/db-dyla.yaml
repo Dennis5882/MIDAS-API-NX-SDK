@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-dyla
 endpoint: /db/DYLA
 name: Dynamic Load Allowance
+surface:
+  className: DynamicLoadAllowance
+  exportName: dynamicLoadAllowance
+  modulePath: [db, movingLoads]
+  payloadTypeName: DynamicLoadAllowancePayload
 
 products: [civil]
 

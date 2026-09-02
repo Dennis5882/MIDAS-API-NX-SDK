@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-steel-kds-41-30-2022-eqct
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/EQCT
 name: Seismic Load Combination Type
+surface:
+  className: SeismicLoadCombinationType
+  exportName: seismicLoadCombinationType
+  modulePath: [design, steelKds]
+  payloadTypeName: SeismicLoadCombinationTypePayload
 
 products: [civil, gen]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-grdp
 endpoint: /db/GRDP
 name: Group Damping
+surface:
+  className: GroupDamping
+  exportName: groupDamping
+  modulePath: [db, properties, damping]
+  payloadTypeName: GroupDampingPayload
 
 products: [civil, gen]
 

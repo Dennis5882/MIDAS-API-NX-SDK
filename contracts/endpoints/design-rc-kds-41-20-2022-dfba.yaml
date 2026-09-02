@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-dfba
 endpoint: /DESIGN/RC/KDS-41-20-2022/DFBA
 name: Design Force for Beam Assigned as Member
+surface:
+  className: DesignForcesForAssignedBeam
+  exportName: designForcesForAssignedBeam
+  modulePath: [design, rcKds, rebar]
+  payloadTypeName: DesignForcesForAssignedBeamPayload
 
 products: [civil, gen]
 

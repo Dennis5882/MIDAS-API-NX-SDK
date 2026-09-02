@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-unit
 endpoint: /db/UNIT
 name: Unit System
+surface:
+  className: Unit
+  exportName: unit
+  modulePath: [db, project]
+  payloadTypeName: UnitPayload
 
 products: [civil, gen]
 

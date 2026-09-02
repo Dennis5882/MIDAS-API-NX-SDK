@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-styp
 endpoint: /db/STYP
 name: Structure Type
+surface:
+  className: StructureType
+  exportName: structureType
+  modulePath: [db, project]
+  payloadTypeName: StructureTypePayload
 
 products: [civil, gen]
 

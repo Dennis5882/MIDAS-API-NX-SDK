@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-thnl
 endpoint: /db/THNL
 name: Dynamic Nodal Loads
+surface:
+  className: DynamicNodalLoad
+  exportName: dynamicNodalLoad
+  modulePath: [db, dynamicLoads]
+  payloadTypeName: DynamicNodalLoadPayload
 
 products: [civil, gen]
 

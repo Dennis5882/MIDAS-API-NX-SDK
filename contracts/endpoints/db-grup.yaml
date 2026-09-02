@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-grup
 endpoint: /db/GRUP
 name: Structure Group
+surface:
+  className: StructureGroup
+  exportName: structureGroup
+  modulePath: [db, project]
+  payloadTypeName: StructureGroupPayload
 
 products: [gen, civil]
 

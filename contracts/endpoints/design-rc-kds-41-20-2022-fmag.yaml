@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-fmag
 endpoint: /DESIGN/RC/KDS-41-20-2022/FMAG
 name: Moment Magnifier(B1/Delta_b, B2/Delta_s)
+surface:
+  className: MomentMagnifier
+  exportName: momentMagnifier
+  modulePath: [design, rcKds, setup]
+  payloadTypeName: MomentMagnifierPayload
 
 products: [civil, gen]
 

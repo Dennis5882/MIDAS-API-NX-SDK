@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-hsfc
 endpoint: /db/HSFC
 name: Heat Source Functions
+surface:
+  className: HeatSourceFunction
+  exportName: heatSourceFunction
+  modulePath: [db, constructionStage]
+  payloadTypeName: HeatSourceFunctionPayload
 
 products: [civil, gen]
 

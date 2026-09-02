@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-epse
 endpoint: /db/EPSE
 name: Seismic Earth Pressure
+surface:
+  className: SeismicEarthPressure
+  exportName: seismicEarthPressure
+  modulePath: [db, staticLoads]
+  payloadTypeName: SeismicEarthPressurePayload
 
 products: [civil, gen]
 

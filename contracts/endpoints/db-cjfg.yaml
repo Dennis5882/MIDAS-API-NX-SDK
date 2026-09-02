@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-cjfg
 endpoint: /db/CJFG
 name: Concurrent Joint Force Group
+surface:
+  className: ConcurrentJointForceGroup
+  exportName: concurrentJointForceGroup
+  modulePath: [db, movingLoads]
+  payloadTypeName: StructureGroupNamesPayload
 
 products: [civil]
 

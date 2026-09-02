@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-hspt
 endpoint: /db/HSPT
 name: Prescribed Temperature
+surface:
+  className: PrescribedTemperature
+  exportName: prescribedTemperature
+  modulePath: [db, constructionStage]
+  payloadTypeName: PrescribedTemperaturePayload
 
 products: [civil, gen]
 

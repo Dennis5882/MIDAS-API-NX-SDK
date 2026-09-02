@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-steel-kds-41-30-2022-kfac
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/KFAC
 name: Effective Length Factor
+surface:
+  className: EffectiveLengthFactor
+  exportName: effectiveLengthFactor
+  modulePath: [design, steelKds]
+  payloadTypeName: EffectiveLengthFactorPayload
 
 products: [civil, gen]
 

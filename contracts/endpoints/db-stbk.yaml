@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-stbk
 endpoint: /db/STBK
 name: Set-Back Loads for Nonlinear Construction Stage
+surface:
+  className: SetBackLoad
+  exportName: setBackLoad
+  modulePath: [db, constructionStage]
+  payloadTypeName: SetBackLoadPayload
 
 products: [civil, gen]
 

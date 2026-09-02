@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-mvldtr
 endpoint: /db/MVLDtr
 name: Moving Load Cases – Transverse
+surface:
+  className: MovingLoadCaseTransverse
+  exportName: movingLoadCaseTransverse
+  modulePath: [db, movingLoads]
+  payloadTypeName: MovingLoadCaseTransversePayload
 
 products: [civil, gen]
 

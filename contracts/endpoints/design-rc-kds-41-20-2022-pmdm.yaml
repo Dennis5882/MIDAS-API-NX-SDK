@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-pmdm
 endpoint: /DESIGN/RC/KDS-41-20-2022/PMDM
 name: P-M Curve Calculation Method
+surface:
+  className: PMCurveCalculationMethod
+  exportName: pMCurveCalculationMethod
+  modulePath: [design, rcKds, rebar]
+  payloadTypeName: PMCurveCalculationMethodPayload
 
 products: [civil, gen]
 

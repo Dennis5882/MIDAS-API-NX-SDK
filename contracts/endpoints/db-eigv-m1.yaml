@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-eigv-m1
 endpoint: /db/EIGV-M1
 name: Eigenvalue Analysis Control (Hyper-S)
+surface:
+  className: EigenvalueAnalysisControlHyperS
+  exportName: eigenvalueAnalysisControlHyperS
+  modulePath: [db, analysisControl]
+  payloadTypeName: EigenvalueAnalysisControlHyperSPayload
 
 products: [civil]
 

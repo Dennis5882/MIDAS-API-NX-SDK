@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-llan
 endpoint: /db/LLAN
 name: Traffic Line Lanes
+surface:
+  className: TrafficLineLanes
+  exportName: trafficLineLanes
+  modulePath: [db, movingLoads]
+  payloadTypeName: TrafficLineLanePayload
 
 products: [civil, gen]
 

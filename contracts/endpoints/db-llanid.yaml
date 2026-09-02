@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-llanid
 endpoint: /db/LLANid
 name: Traffic Line Lanes – India
+surface:
+  className: TrafficLineLanesIndia
+  exportName: trafficLineLanesIndia
+  modulePath: [db, movingLoads]
+  payloadTypeName: TrafficLineLanesIndiaPayload
 
 products: [civil, gen]
 

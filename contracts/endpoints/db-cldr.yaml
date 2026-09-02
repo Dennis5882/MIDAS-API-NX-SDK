@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-cldr
 endpoint: /db/CLDR
 name: Define Constraints Label Direction
+surface:
+  className: ConstraintLabelDirection
+  exportName: constraintLabelDirection
+  modulePath: [db, boundary]
+  payloadTypeName: ConstraintLabelDirectionPayload
 
 products: [civil, gen]
 

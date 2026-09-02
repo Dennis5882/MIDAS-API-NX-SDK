@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-sdvi
 endpoint: /db/SDVI
 name: Seismic Device – Viscous/Oil Damper
+surface:
+  className: SeismicDeviceViscousDamper
+  exportName: seismicDeviceViscousDamper
+  modulePath: [db, boundary]
+  payloadTypeName: SeismicDeviceViscousDamperPayload
 
 products: [civil, gen]
 

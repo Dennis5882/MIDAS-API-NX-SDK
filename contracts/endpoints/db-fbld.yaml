@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-fbld
 endpoint: /db/FBLD
 name: Define Floor Load Type
+surface:
+  className: FloorLoadType
+  exportName: floorLoadType
+  modulePath: [db, staticLoads]
+  payloadTypeName: FloorLoadTypePayload
 
 products: [civil, gen]
 

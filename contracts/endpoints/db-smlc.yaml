@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-smlc
 endpoint: /db/SMLC
 name: Settlement Load Cases
+surface:
+  className: SettlementLoadCase
+  exportName: settlementLoadCase
+  modulePath: [db, miscLoads]
+  payloadTypeName: SettlementLoadCasePayload
 
 products: [civil, gen]
 

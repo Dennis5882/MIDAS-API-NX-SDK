@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-gtmp
 endpoint: /db/GTMP
 name: Temperature Gradient
+surface:
+  className: TemperatureGradient
+  exportName: temperatureGradient
+  modulePath: [db, temperaturePrestress]
+  payloadTypeName: TemperatureGradientPayload
 
 products: [civil, gen]
 

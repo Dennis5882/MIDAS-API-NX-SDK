@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-mbtp
 endpoint: /DESIGN/RC/KDS-41-20-2022/MBTP
 name: Modify Member Type
+surface:
+  className: ModifyMemberType
+  exportName: modifyMemberType
+  modulePath: [design, rcKds, setup]
+  payloadTypeName: ModifyMemberTypePayload
 
 products: [civil, gen]
 

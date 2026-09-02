@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-mvhltr
 endpoint: /db/MVHLtr
 name: Vehicles – Transverse
+surface:
+  className: VehiclesTransverse
+  exportName: vehiclesTransverse
+  modulePath: [db, movingLoads]
+  payloadTypeName: VehicleTransversePayload
 
 products: [civil, gen]
 

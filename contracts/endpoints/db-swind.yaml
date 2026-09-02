@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-swind
 endpoint: /db/SWIND
 name: Static Wind Load
+surface:
+  className: StaticWindLoad
+  exportName: staticWindLoad
+  modulePath: [db, staticLoads]
+  payloadTypeName: StaticWindLoadPayload
 
 products: [gen]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-essf
 endpoint: /db/ESSF
 name: Element Stiffness Scale Factor
+surface:
+  className: ElementStiffnessScaleFactor
+  exportName: elementStiffnessScaleFactor
+  modulePath: [db, properties, section]
+  payloadTypeName: ElementStiffnessScaleFactorPayload
 
 products: [civil, gen]
 

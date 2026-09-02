@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-rigd
 endpoint: /db/RIGD
 name: Rigid Link
+surface:
+  className: RigidLink
+  exportName: rigidLink
+  modulePath: [db, boundary]
+  payloadTypeName: RigidLinkPayload
 
 products: [gen, civil]
 

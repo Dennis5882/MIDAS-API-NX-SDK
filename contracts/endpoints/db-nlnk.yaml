@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-nlnk
 endpoint: /db/NLNK
 name: General Link
+surface:
+  className: GeneralLink
+  exportName: generalLink
+  modulePath: [db, boundary]
+  payloadTypeName: GeneralLinkPayload
 
 products: [civil, gen]
 

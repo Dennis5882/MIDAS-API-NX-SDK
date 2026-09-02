@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-fibr
 endpoint: /db/FIBR
 name: Fiber Division of Section
+surface:
+  className: FiberDivision
+  exportName: fiberDivision
+  modulePath: [db, properties, section]
+  payloadTypeName: FiberDivisionPayload
 
 products: [civil, gen]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-kfac
 endpoint: /DESIGN/RC/KDS-41-20-2022/KFAC
 name: Effective Length Factor (K)
+surface:
+  className: EffectiveLengthFactor
+  exportName: effectiveLengthFactor
+  modulePath: [design, rcKds, setup]
+  payloadTypeName: EffectiveLengthFactorPayload
 
 products: [civil, gen]
 

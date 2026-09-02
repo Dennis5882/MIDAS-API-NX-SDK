@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-dynf
 endpoint: /db/DYNF
 name: Railway Dynamic Factor by Element
+surface:
+  className: RailwayDynamicFactorByElement
+  exportName: railwayDynamicFactorByElement
+  modulePath: [db, movingLoads]
+  payloadTypeName: RailwayDynamicFactorByElementPayload
 
 products: [civil]
 

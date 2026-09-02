@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-mvcttr
 endpoint: /db/MVCTtr
 name: Moving Load Analysis Control – Transverse
+surface:
+  className: MovingLoadAnalysisControlTransverse
+  exportName: movingLoadAnalysisControlTransverse
+  modulePath: [db, analysisControl]
+  payloadTypeName: MovingLoadAnalysisControlTransversePayload
 
 products: [civil, gen]
 

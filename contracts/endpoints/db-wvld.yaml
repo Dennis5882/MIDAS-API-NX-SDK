@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-wvld
 endpoint: /db/WVLD
 name: Wave Loads
+surface:
+  className: WaveLoad
+  exportName: waveLoad
+  modulePath: [db, miscLoads]
+  payloadTypeName: WaveLoadPayload
 
 products: [civil]
 

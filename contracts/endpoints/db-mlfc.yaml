@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-mlfc
 endpoint: /db/MLFC
 name: Force-Deformation Function
+surface:
+  className: ForceDeformationFunction
+  exportName: forceDeformationFunction
+  modulePath: [db, boundary]
+  payloadTypeName: ForceDeformationFunctionPayload
 
 products: [civil, gen]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-edmp
 endpoint: /db/EDMP
 name: Change Property
+surface:
+  className: ChangeProperty
+  exportName: changeProperty
+  modulePath: [db, properties, material]
+  payloadTypeName: ChangePropertyPayload
 
 products: [civil, gen]
 

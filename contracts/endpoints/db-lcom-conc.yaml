@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-lcom-conc
 endpoint: /db/LCOM-CONC
 name: Load Combinations – Concrete Design
+surface:
+  className: LoadCombinationConcrete
+  exportName: loadCombinationConcrete
+  modulePath: [db, loadCombinations]
+  payloadTypeName: LoadCombinationConcretePayload
 
 products: [civil, gen]
 

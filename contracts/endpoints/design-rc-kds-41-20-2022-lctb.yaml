@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-lctb
 endpoint: /DESIGN/RC/KDS-41-20-2022/LCTB
 name: Load Contribution for Nonlinear Load Case
+surface:
+  className: LoadContributionForNonlinearLoadCase
+  exportName: loadContributionForNonlinearLoadCase
+  modulePath: [design, rcKds, setup]
+  payloadTypeName: LoadContributionForNonlinearLoadCasePayload
 
 products: [civil, gen]
 

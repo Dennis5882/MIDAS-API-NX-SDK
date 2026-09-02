@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-dctl
 endpoint: /DESIGN/RC/KDS-41-20-2022/DCTL
 name: Definition of Frame
+surface:
+  className: DefinitionOfFrame
+  exportName: definitionOfFrame
+  modulePath: [design, rcKds, setup]
+  payloadTypeName: DefinitionOfFramePayload
 
 products: [civil, gen]
 

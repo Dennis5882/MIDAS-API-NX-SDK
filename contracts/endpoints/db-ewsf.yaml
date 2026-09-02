@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-ewsf
 endpoint: /db/EWSF
 name: Effective Width Scale Factor
+surface:
+  className: EffectiveWidthScaleFactor
+  exportName: effectiveWidthScaleFactor
+  modulePath: [db, properties, section]
+  payloadTypeName: EffectiveWidthScaleFactorPayload
 
 products: [civil]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-bcct
 endpoint: /db/BCCT
 name: Boundary Change Assignment
+surface:
+  className: BoundaryChangeAssignment
+  exportName: boundaryChangeAssignment
+  modulePath: [db, analysisControl]
+  payloadTypeName: BoundaryChangeAssignmentPayload
 
 products: [civil, gen]
 

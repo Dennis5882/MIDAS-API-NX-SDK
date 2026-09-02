@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-hahs
 endpoint: /db/HAHS
 name: Assign Heat Source
+surface:
+  className: AssignHeatSource
+  exportName: assignHeatSource
+  modulePath: [db, constructionStage]
+  payloadTypeName: AssignHeatSourcePayload
 
 products: [civil, gen]
 

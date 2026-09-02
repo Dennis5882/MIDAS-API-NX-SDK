@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-vbem
 endpoint: /db/VBEM
 name: Virtual Beam
+surface:
+  className: VirtualBeam
+  exportName: virtualBeam
+  modulePath: [db, properties, section]
+  payloadTypeName: VirtualBeamPayload
 
 products: [civil, gen]
 

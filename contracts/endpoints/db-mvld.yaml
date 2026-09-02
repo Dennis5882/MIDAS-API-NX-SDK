@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-mvld
 endpoint: /db/MVLD
 name: Moving Load Cases
+surface:
+  className: MovingLoadCase
+  exportName: movingLoadCase
+  modulePath: [db, movingLoads]
+  payloadTypeName: MovingLoadCasePayload
 
 products: [civil, gen]
 

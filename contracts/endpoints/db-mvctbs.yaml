@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-mvctbs
 endpoint: /db/MVCTbs
 name: Moving Load Analysis Control – BS
+surface:
+  className: MovingLoadAnalysisControlBS
+  exportName: movingLoadAnalysisControlBS
+  modulePath: [db, analysisControl]
+  payloadTypeName: MovingLoadAnalysisControlBSPayload
 
 products: [civil, gen]
 

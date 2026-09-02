@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-src-aik-src2k-dco
 endpoint: /DESIGN/SRC/AIK-SRC2K/DCO
 name: Design Code Option
+surface:
+  className: SrcDesignCodeOption
+  exportName: srcDesignCodeOption
+  modulePath: [design, srcAiksrc2k]
+  payloadTypeName: SrcDesignCodeOptionPayload
 
 products: [civil, gen]
 

@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-hhct-m1
 endpoint: /db/HHCT-M1
 name: Heat of Hydration Analysis Control (Hyper-S)
+surface:
+  className: HeatOfHydrationAnalysisControlHyperS
+  exportName: heatOfHydrationAnalysisControlHyperS
+  modulePath: [db, analysisControl]
+  payloadTypeName: HeatOfHydrationAnalysisControlHyperSPayload
 
 products: [civil]
 

@@ -9,6 +9,11 @@ contractVersion: 1
 id: db-offs
 endpoint: /db/OFFS
 name: Beam End Offsets
+surface:
+  className: BeamEndOffset
+  exportName: beamEndOffset
+  modulePath: [db, boundary]
+  payloadTypeName: BeamEndOffsetPayload
 
 products: [gen, civil]
 

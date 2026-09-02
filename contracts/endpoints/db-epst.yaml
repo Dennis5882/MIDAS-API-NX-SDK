@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-epst
 endpoint: /db/EPST
 name: Static Earth Pressure
+surface:
+  className: StaticEarthPressure
+  exportName: staticEarthPressure
+  modulePath: [db, staticLoads]
+  payloadTypeName: StaticEarthPressurePayload
 
 products: [gen]
 

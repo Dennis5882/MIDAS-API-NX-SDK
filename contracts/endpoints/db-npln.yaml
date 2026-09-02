@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-npln
 endpoint: /db/NPLN
 name: Named Plane
+surface:
+  className: NamedPlane
+  exportName: namedPlane
+  modulePath: [db, project]
+  payloadTypeName: NamedPlanePayload
 
 products: [civil, gen]
 

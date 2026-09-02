@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-tmat
 endpoint: /db/TMAT
 name: Time Dependent Material Link
+surface:
+  className: TimeDependentMaterialLink
+  exportName: timeDependentMaterialLink
+  modulePath: [db, properties, material]
+  payloadTypeName: TimeDependentMaterialLinkPayload
 
 products: [civil, gen]
 

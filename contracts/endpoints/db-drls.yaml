@@ -10,6 +10,10 @@ contractVersion: 1
 id: db-drls
 endpoint: /db/DRLS
 name: Diaphragm Disconnect
+surface:
+  className: DiaphragmDisconnect
+  exportName: diaphragmDisconnect
+  modulePath: [db, boundary]
 
 products: [gen]
 

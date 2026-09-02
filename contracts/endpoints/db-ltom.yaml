@@ -10,6 +10,11 @@ contractVersion: 1
 id: db-ltom
 endpoint: /db/LTOM
 name: Loads to Masses
+surface:
+  className: LoadsToMass
+  exportName: loadsToMass
+  modulePath: [db, staticLoads]
+  payloadTypeName: LoadsToMassPayload
 
 products: [civil, gen]
 

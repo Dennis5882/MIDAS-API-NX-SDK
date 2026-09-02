@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-rc-kds-41-20-2022-llrf
 endpoint: /DESIGN/RC/KDS-41-20-2022/LLRF
 name: Live Load Reduction Factor
+surface:
+  className: LiveLoadReductionFactor
+  exportName: liveLoadReductionFactor
+  modulePath: [design, rcKds, setup]
+  payloadTypeName: LiveLoadReductionFactorPayload
 
 products: [civil, gen]
 

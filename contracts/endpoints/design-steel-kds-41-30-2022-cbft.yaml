@@ -10,6 +10,11 @@ contractVersion: 1
 id: design-steel-kds-41-30-2022-cbft
 endpoint: /DESIGN/STEEL/KDS-41-30-2022/CBFT
 name: Bending Coefficient
+surface:
+  className: BendingCoefficient
+  exportName: bendingCoefficient
+  modulePath: [design, steelKds]
+  payloadTypeName: BendingCoefficientPayload
 
 products: [civil, gen]
 
