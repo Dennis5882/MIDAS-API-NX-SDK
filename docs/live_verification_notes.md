@@ -8144,3 +8144,71 @@ those members by product; a single shape would be wrong on one of them.
 Every other both-product endpoint returned byte-identical schemas on Gen and
 Civil - eight pairs, which is also the first systematic check that `/info`
 itself agrees across products.
+
+## 2026-09-03 — `/db/TDME`'s code-name branches, tested one at a time
+
+Both documents were confirmed empty first — `GET /db/NODE`, `/db/ELEM`,
+`/db/MATL` and `/db/TDME` all answered `{"message": ""}` on Gen NX and Civil NX
+— so no `/doc/NEW` was needed and none was called. Every record created was
+deleted by its own id, and both tables end empty.
+
+The manual splits `/db/TDME` into eight "전용 추가 필드" tables, one per group of
+`CODENAME` values, and the extractor refuses to promote a contract from them
+because nothing says what review decided about the split. This tests the split
+directly. Payloads come from the section's own tables, and the `KDS-2016` case
+is the manual's Request Example copied verbatim.
+
+### The manual's Required is not the product's, and it differs per branch
+
+| `CODENAME` | sent | result |
+| --- | --- | --- |
+| `CEB-FIP(2010)` | base fields only | **stored**, server filled `iCTYPE` |
+| `European` | base fields only | **stored**, server filled `iCTYPE: 2` |
+| `Russian` | base fields only | rejected, "input data contain errors" |
+| `ACI` | base fields only | rejected, "input data contain errors" |
+| `KDS-2016` | base fields only | rejected, "input data contain errors" |
+| `KDS-2016` | + `iCTYPE: 1`, `DENSITY: 230` | **stored** |
+
+Every one of those extra fields is marked **Required** in its branch table. For
+`CEB-FIP(2010)` and `European` the server supplies a value instead of refusing,
+and for `ACI`, `Russian` and `KDS-2016` it does refuse. That is exactly the
+`documentedOptional` / `safeToOmit` split this repo keeps as two booleans: the
+documentation's claim is uniform, the product's behaviour is not.
+
+Identical on both products, checked case for case.
+
+### Two of the documented code names belong to a different product
+
+`Japan(hydration)` and `Japan(elastic)` — entries 16 and 17 of the chapter's own
+`CODENAME` table, each with its own branch of extra fields — answer
+`Wrong Field` on Gen NX **and** Civil NX. Seven spellings were tried
+(`Japan(hydration)`, `Japan(elastic)`, `Japan (Hydration)`, `JAPAN(HYDRATION)`,
+`Japan(Hydration)`, `Japan(Elastic)`, bare `Japan`); all seven, both products.
+
+**The refusal is correct and the search was misdirected.** Those two codes are
+**iGen's**, and this API is not talking to iGen (author, 2026-09-03). Nothing
+is wrong with the product.
+
+Two things are worth keeping from it. The chapter's code table mixes another
+product's values into a list it presents as this endpoint's, with no marking —
+recorded as **MD-14**, owned by the manual repo. And this file's own diagnostic
+rule, `Wrong Field` = "the value is unknown, vary the value not the fields",
+is true but incomplete: it points at spelling, and the answer here was not a
+spelling. A value the product has never heard of and a value that belongs to a
+sibling product produce the identical error, so after two or three spellings
+the next question is which product the value is from, not which capitalisation.
+
+`/info/db/TDME` lists every field those two branches require
+(`TENS_STRN_FACTOR`, `bUSE`, `A`, `B`, `D`, `iCTYPE`, `iECTYPE`), so the
+endpoint's schema is shared across products even where the code names are not.
+
+### The server renumbers a posted record, and it cost a cleanup pass
+
+`POST /db/TDME` under key `901` echoed `{"TDME": {"901": {...}}}` and then
+stored the record as id `1`. The first probe's cleanup keyed off the id it had
+posted, found nothing, and left eight records behind; a second pass deleted
+them by the ids a `GET` actually reported. This is the same behaviour recorded
+for `/db/STLD` in 2026-07-26 (a POST under key `7` produced id `3`), so it is a
+`/db/*` property and not news — but a harness that deletes by the id it sent
+will silently fail to clean up. Match on a field you set, then delete by the id
+the table reports.

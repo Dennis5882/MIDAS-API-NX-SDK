@@ -37,6 +37,7 @@ Civil NX 2026 v2.2, both build 08/26/2026.
 | MD-11 | 2026-09-02 | nine parameter rows' Value Type | the Specifications table's Value Type cell | the same section's own JSON Schema types the property differently. Seven are integer/number width; two change the shape of the value - `/db/SBDO` `AXIS_VECTOR` (Number vs an array of numbers, and its own Request Example sends six) and `/db/MATL` `PARAM` (Object vs array) | **manual repo** transcription | `/db/SBDO` and `/db/MATL` corrected in their contracts; 7 open |
 | MD-12 | 2026-09-02 | seven Hyper-S `-M1` sections, and the `/info` schema that substitutes for them | the section gives a URL, a methods line and a Zendesk link - no Specifications table and no JSON Schema, so live `/info` is the only permitted contract source | `/info` serves a full schema for four of them and 404s for three, and the schemas it serves are malformed twice over: every apostrophe in a `description` is escaped `\'`, which is not a JSON escape, and `maxItems` is stated on an array's `items` subschema instead of the array | **MIDASIT product** (`/info` output) and **MIDASIT article** (the missing section content) | open |
 | MD-13 | 2026-09-02 | `/db/TDME` `"SCALE"` | the Specifications table gives the key `"SCALE"` to two different rows - "Scale Factor" (Number) and "Function Data" (Array[Object] of `{TIME, COMP, TENS, ELAST}`) | unknown; the section has no Request Example that sends either, so which row owns the name cannot be read from the chapter. The vendored manual flags this itself in a ⚠️ callout and transcribes both verbatim | **MIDASIT article** (the duplicate is in the source) | **answered 2026-09-02**: `/info` names the array `aDATA`; row 6's key is wrong |
+| MD-14 | 2026-09-03 | `/db/TDME` `CODENAME` `Japan(hydration)` / `Japan(elastic)` | `04_DB_Properties.md` lists both in its `CODENAME` code table (entries 16 and 17), each with its own table of required extra fields, and marks neither as belonging to a different product | both answer `Wrong Field` on Gen NX and Civil NX - **correctly**: these two codes are iGen's, and the NX API is not talking to iGen | **manual repo** - the code table needs to say which entries are not available through this API | open |
 
 ## Detail
 
@@ -424,3 +425,34 @@ So row 5 is correct and row 6's key is wrong; there was never a choice between
 two documented names, only one typo standing where a different name belongs.
 The contract records `aDATA` with `provenance: live_corrected` and this
 defect under `manualDefects`. Captured in `schema/info-schemas.json`.
+
+### MD-14 - a code table that mixes in another product's values
+
+`/db/TDME`'s `CODENAME` table lists 20 values. Eighteen are accepted through
+the NX API. `Japan(hydration)` and `Japan(elastic)` answer `Wrong Field` on Gen
+NX and Civil NX alike, in all seven spellings tried.
+
+**That refusal is correct.** Those two codes belong to **iGen**, a different
+MIDAS product, and this API is not talking to it (author, 2026-09-03). The
+product is not failing to honour its own documentation; the chapter is listing
+values from a product the reader cannot reach here and saying nothing about it.
+
+So the defect is a labelling one, and it is the manual repo's to fix: the code
+table should mark which entries this API serves. As it stands, a caller reading
+the table has no way to tell entry 16 from entry 15, and the only feedback is
+`Wrong Field` - which this file's own diagnostic reads as "unrecognised value",
+sending the reader off to try spellings. Seven were tried here before the
+answer turned out not to be a spelling at all.
+
+The extra fields those two branches require (`TENS_STRN_FACTOR`, `bUSE`, `A`,
+`B`, `D`, `iCTYPE`, `iECTYPE`) are all present in `/info/db/TDME`, so the
+endpoint's schema is shared across products even where the code names are not.
+A contract for `/db/TDME` should therefore carry the fields and leave those two
+code names out of the branch it declares for this API.
+
+> An earlier version of this entry claimed the product refuses a value its own
+> documentation gives it, and held the claim back pending a re-fetch of the
+> official article. The re-fetch was the right instinct and the conclusion was
+> still wrong: the missing context was not in the article, it was that a second
+> product exists. Recorded here because "check the source before accusing"
+> would not have caught this one either.
