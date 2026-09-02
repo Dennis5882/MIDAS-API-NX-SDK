@@ -2907,3 +2907,217 @@ def test_a_bound_stated_for_another_kind_of_value_is_not_transcribed(tmp_path: P
     assert names.constraints["minItems"] == 2
     assert not names.notes
 
+
+def test_a_list_this_section_already_proved_a_sample_is_one_everywhere(tmp_path: Path):
+    """The sentence that says "these are the first five" is written once.
+
+    Chapter 26 states its rebar-size list is 5 of 19 on the fields that carry a
+    description and then writes the identical five values, with no description
+    at all, on REBB's `NAME`. It is one list abbreviated once. Judging each
+    field alone publishes the abbreviation on exactly the fields the manual
+    forgot to annotate - a union that makes every bar size from D10 up
+    untypeable, which is the defect 2.7.4 shipped and had to correct.
+    """
+
+    path = tmp_path / "99_DB_SectionSample.md"
+    path.write_text(
+        """## 1. `/db/SECTION-SAMPLE` -- one abbreviated list, annotated once
+
+### JSON Schema
+
+```json
+{
+  "SECTION-SAMPLE": {
+    "type": "object",
+    "properties": {
+      "MAIN_REBAR": { "type": "string", "enum": ["D4", "D5", "D6", "D7", "D8"] },
+      "NAME": { "type": "string", "enum": ["D4", "D5", "D6", "D7", "D8"] },
+      "SPLICED_BARS": { "type": "string", "enum": ["None", "50%", "100%"] }
+    }
+  }
+}
+```
+
+### Specifications
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Main rebar size, 19종 | `"MAIN_REBAR"` | String (enum) | - | Optional |
+| 2 | Bar name | `"NAME"` | String (enum) | - | Optional |
+| 3 | Splice option | `"SPLICED_BARS"` | String (enum) | - | Optional |
+""",
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    main, name, spliced = section.tables[0].fields
+    assert not main.enum and "19 values and lists 5" in " ".join(main.notes)
+    assert not name.enum
+    assert any("writes the same list for 'MAIN_REBAR'" in note for note in name.notes)
+    # A list nothing in the section calls abbreviated is still transcribed.
+    assert spliced.enum == ["None", "50%", "100%"]
+
+
+def test_the_schema_is_read_again_once_the_tables_are_in_place(tmp_path: Path):
+    """A row's path is only correct after its table has been merged.
+
+    The schema starts inside `Assign`, which is message transport; a table row
+    written `Assign.GRADE` is at that path only in the assembled request. Read
+    per table while parsing, the two spellings never meet, so the same
+    section's own enum went untranscribed. Reading the schema a second time
+    against the finished paths reaches it, and because it only fills blanks it
+    cannot overrule what the first reading already settled.
+    """
+
+    path = tmp_path / "99_DB_Wrapped.md"
+    path.write_text(
+        """## 1. `/db/WRAPPED` -- an Assign-wrapped request
+
+### JSON Schema
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "Assign": {
+      "type": "object",
+      "properties": {
+        "GRADE": { "type": "string", "description": "Grade", "enum": ["A", "B"] },
+        "COUNT": { "type": "integer", "description": "Count" }
+      }
+    }
+  }
+}
+```
+
+### Specifications
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Record map | `"Assign"` | Object | - | Required |
+| 1-1 | Grade | `"Assign.GRADE"` | String (enum) | - | Optional |
+| 1-2 | Count | `"Assign.COUNT"` | Integer | - | Optional |
+""",
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    parsed = section.tables[0].fields[0].properties[0]
+    assert parsed.key == "GRADE" and not parsed.enum
+    fields, _ = ex._structural_fields(section)
+    merged = fields[0].properties[0]
+    assert merged.key == "GRADE"
+    assert merged.enum == ["A", "B"]
+    assert ex._ENUM_VALUES_ELSEWHERE not in merged.notes
+
+
+def test_rows_the_manual_all_numbers_as_children_stay_siblings(tmp_path: Path):
+    """`(1)` is a depth, not a parent.
+
+    A supplementary table that describes one item structure numbers every row
+    `(1)`-`(5)` and has no parent row of its own. Recording the first at depth
+    zero made it the parent of its own siblings: `/db/RCHK`'s `LAYER` became an
+    object holding `dD` and `BAR_NUM`, and `/db/RPSC`'s boolean `OPT_DR` an
+    object holding the twenty fields after it, both of which those sections'
+    request examples write beside them.
+    """
+
+    path = tmp_path / "99_DB_Orphan.md"
+    path.write_text(
+        """## 1. `/db/ORPHAN` -- a table whose rows are all numbered as children
+
+### Specifications
+
+**`ITEM` structure**
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| (1) | Layer number | `"LAYER"` | Integer | - | Required |
+| (2) | Cover | `"dD"` | Number | - | Required |
+| (3) | Bar count | `"BAR_NUM"` | Integer | - | Required |
+""",
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    fields = section.tables[0].fields
+    assert [field.key for field in fields] == ["LAYER", "dD", "BAR_NUM"]
+    assert all(not field.properties for field in fields)
+    assert [field.type for field in fields] == ["integer", "number", "integer"]
+
+
+def test_a_named_parent_still_adopts_the_rows_numbered_under_it(tmp_path: Path):
+    """The common form - a plain-numbered parent then `(1)`, `(2)` - is intact.
+
+    59 promoted contracts nest this way. The orphan rule above must separate
+    "no parent row exists" from "the parent row is right there".
+    """
+
+    path = tmp_path / "99_DB_Parented.md"
+    path.write_text(
+        """## 1. `/db/PARENTED` -- a named parent with numbered children
+
+### Specifications
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Items | `"ITEMS"` | Array[Object] | - | Required |
+| (1) | Layer number | `"LAYER"` | Integer | - | Required |
+| (2) | Cover | `"dD"` | Number | - | Required |
+""",
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    items = section.tables[0].fields[0]
+    assert items.key == "ITEMS"
+    assert [child.key for child in items.properties] == ["LAYER", "dD"]
+
+
+def test_a_value_type_the_same_section_contradicts_is_not_transcribed(tmp_path: Path):
+    """Two renderings of one property that cannot both be right.
+
+    Where a table compresses or omits, the schema completes it. Here they state
+    different things: `/db/SBDO` types `AXIS_VECTOR` Number in its table and an
+    array of numbers in its schema, and sends `[0, 0, 0, 0, 0, 0]` in its own
+    Request Example. Reading the table alone published an npm field a caller
+    cannot assign the documented value to. Choosing between them takes evidence
+    this function does not have, so it takes neither and says so.
+    """
+
+    path = tmp_path / "99_DB_TypeClash.md"
+    path.write_text(
+        """## 1. `/db/TYPE-CLASH` -- a table and a schema that disagree
+
+### JSON Schema
+
+```json
+{
+  "TYPE-CLASH": {
+    "type": "object",
+    "properties": {
+      "AXIS_VECTOR": { "type": "array", "items": { "type": "number" } },
+      "ANGLE": { "type": "number" }
+    }
+  }
+}
+```
+
+### Specifications
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Axis vector | `"AXIS_VECTOR"` | Number | `0` | Optional |
+| 2 | Angle | `"ANGLE"` | Number | `0` | Optional |
+""",
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    vector, angle = section.tables[0].fields
+    # The table's claim stands, unconfirmed, and the schema's is not adopted.
+    assert vector.type == "number"
+    assert any("JSON Schema types it 'array'" in note for note in vector.notes)
+    # A row the two agree on says nothing.
+    assert angle.type == "number" and not angle.notes
+

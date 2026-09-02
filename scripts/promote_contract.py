@@ -60,6 +60,38 @@ DRAFTS = ROOT / "contracts" / "drafts"
 ENDPOINTS = ROOT / "contracts" / "endpoints"
 VERIFICATION = ROOT / "contracts" / "verification"
 COVERAGE = ROOT / "docs" / "coverage.json"
+NPM_RESOURCES = ROOT / "schema" / "typescript-resources.json"
+
+#: The four npm names a contract owns once it has one. Since 2026-09-02 the
+#: generator asks the contract for these before it asks a Python class, and
+#: raises when the two disagree - so a promotion that leaves them out quietly
+#: keeps that endpoint on the Python fallback. tests/test_contracts.py fails
+#: when a contracted npm resource has no surface, which is how that is caught.
+_SURFACE_KEYS = ("className", "exportName", "modulePath", "payloadTypeName")
+
+
+def _npm_surface(endpoint: str) -> Optional[str]:
+    """Render the `surface:` block for one endpoint, from what npm publishes.
+
+    A plain-function endpoint has no resource entry and gets no block; there
+    is no class or module for a contract to own.
+    """
+
+    if not NPM_RESOURCES.exists():
+        return None
+    manifest = json.loads(NPM_RESOURCES.read_text(encoding="utf-8"))
+    entry = next(
+        (item for item in manifest.get("resources", []) if item.get("endpoint") == endpoint),
+        None,
+    )
+    if entry is None or any(key not in entry for key in _SURFACE_KEYS):
+        return None
+    block = ["surface:"]
+    for key in _SURFACE_KEYS:
+        value = entry[key]
+        rendered = "[" + ", ".join(value) + "]" if isinstance(value, list) else str(value)
+        block.append(f"  {key}: {rendered}")
+    return "".join(line + chr(10) for line in block)
 
 #: Endpoints whose documented payload has been measured wrong against a running
 #: product. Each needs its correction and evidence written by hand; see
@@ -521,6 +553,16 @@ def promote(
     if endpoint.startswith("/db/") and plain_delete:
         text = text.replace(plain_delete.group(0), _DELETE_OPS.format(endpoint=endpoint))
         text = text.replace("\nextraction:", _DELETE_RULES.format(id=slug) + "\nextraction:")
+
+    surface = _npm_surface(endpoint)
+    if surface:
+        text = re.sub(
+            "^(name: .*" + chr(10) + ")",
+            lambda match: match.group(1) + surface,
+            text,
+            count=1,
+            flags=re.MULTILINE,
+        )
 
     text = re.sub(r"\n{3,}", "\n\n", text)
     if not dry_run:

@@ -790,6 +790,10 @@ def _nest(flat: list[ParsedField]) -> list[ParsedField]:
             depth = 1
         elif _NUMBER_PATH.match(entry.number):
             depth = len(_NUMBER_PATH_SEGMENT.findall(entry.number))
+        # The No. column says how deep the row is, not only who its parent is.
+        # Keep it for the root branch below, where the loop over a dotted key
+        # rebinds `depth` to a segment index.
+        number_depth = depth
         if depth and entry.shared_number_group and "." not in key and not key.startswith("└"):
             grouped_parent = by_depth.get(depth - 1)
             if grouped_parent is not None:
@@ -869,8 +873,18 @@ def _nest(flat: list[ParsedField]) -> list[ParsedField]:
                 if parent is None:
                     last_root = entry
                     by_tree_depth.clear()
-                    by_depth[0] = entry
-                    by_depth.pop(1, None)
+                    # A row the manual numbered `(1)` is a child that never
+                    # found its parent - a supplementary table whose rows are
+                    # all `(1)`-`(5)`, such as `/db/RCHK`'s layer item
+                    # structure, has no parent row of its own. Recording it at
+                    # depth 0 made it the parent of its own siblings: `LAYER`
+                    # became an object holding `dD`, `BAR_NUM` and the rest,
+                    # which the section's schema and its request example both
+                    # write beside it. Keep the row at the depth the manual
+                    # gave it, so the siblings that follow stay siblings.
+                    by_depth[number_depth] = entry
+                    for deeper in [level for level in by_depth if level > number_depth]:
+                        del by_depth[deeper]
                 break
 
             if existing is None:
@@ -1396,7 +1410,42 @@ def _tag_products(fields: list[ParsedField], products: tuple[str, ...]) -> None:
         _tag_products(field.properties, products)
 
 
+_SCHEMA_TRANSPORT_WRAPPERS = frozenset({"Argument", "Assign"})
+
+
 def _structural_fields(section: "Section") -> tuple[list[ParsedField], list[StructuralTableMerge]]:
+    """Assemble one manual section's request, then let its schema fill the gaps.
+
+    Placing the supplementary tables is what makes the schema addressable. A
+    row in chapter 26's `WALL` table is at `Assign.WALL.HORIZONTAL_REBAR` only
+    once that table has been merged; before that it is a root row named
+    `HORIZONTAL_REBAR`, which the schema does not have and which collides with
+    the `MATERIAL_BY_DIAMETER_INPUT` member of the same name. So the section's
+    JSON Schema is read twice: once per table while parsing, for the tables
+    that never get merged, and once here against the finished paths.
+
+    It only ever fills what the tables left blank, so the second reading cannot
+    overrule the first - it reaches the fields the first could not address.
+    """
+
+    fields, resolved = _merged_structural_fields(section)
+    hints = section.schema_hints
+    if hints:
+        # `Assign` and `Argument` are message transport, and the endpoint token
+        # is the response's own name. Schema paths start inside them, so the
+        # merged tree has to be entered the same way before the two can be
+        # compared - but only when the wrapper is the whole root, never when it
+        # sits beside real payload members.
+        roots = fields
+        wrappers = _SCHEMA_TRANSPORT_WRAPPERS | {section.endpoint.rsplit("/", 1)[-1]}
+        while len(roots) == 1 and roots[0].key in wrappers and roots[0].properties:
+            roots = roots[0].properties
+        _apply_schema_hints_to_fields(roots, hints)
+        _drop_sampled_enums([ParsedTable(heading="", line=0, fields=fields)])
+    return fields, resolved
+
+
+def _merged_structural_fields(section: "Section") -> tuple[list[ParsedField], list[StructuralTableMerge]]:
     """Apply only pre-audited structural table paths for one manual section.
 
     The return value lists exactly the table resolutions that succeeded.  A
@@ -2264,8 +2313,12 @@ def _table_schema_bases(
     return bases or ((),)
 
 
-def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], list[dict[str, Any]]]) -> None:
-    """Fill only table gaps that the same section's JSON Schema states exactly."""
+def _apply_schema_hints_to_fields(
+    fields: list[ParsedField],
+    hints: dict[tuple[str, ...], list[dict[str, Any]]],
+    bases: tuple[tuple[str, ...], ...] = ((),),
+) -> None:
+    """Fill only gaps that the same section's JSON Schema states exactly."""
 
     def visit(fields: list[ParsedField], bases: tuple[tuple[str, ...], ...], prefix: tuple[str, ...] = ()) -> None:
         for field in fields:
@@ -2324,6 +2377,27 @@ def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], 
                         for note in field.notes
                         if not note.startswith("unrecognised Value Type") and note not in nesting_type_notes
                     ]
+                elif (
+                    field.type is not None
+                    and isinstance(schema_type, str)
+                    and schema_type != field.type
+                ):
+                    # A section states its request twice, and here the two
+                    # statements are not one lossy and one complete - they are
+                    # different. `/db/SBDO` types `AXIS_VECTOR` Number in the
+                    # table, `{"type": "array", "items": {"type": "number"}}` in
+                    # the schema, and sends `[0, 0, 0, 0, 0, 0]` in its own
+                    # request example; reading the table alone published an npm
+                    # field a caller cannot assign the documented value to.
+                    # Which one is right is a judgment with evidence outside
+                    # this function, so transcribe neither and say so.
+                    disagreement = (
+                        f"the manual's Specifications table types this {field.type!r} while the "
+                        f"same section's JSON Schema types it {schema_type!r}; the table's type "
+                        "is kept unconfirmed and no type is taken from the schema"
+                    )
+                    if disagreement not in field.notes:
+                        field.notes.append(disagreement)
 
                 conditions = [entry["__conditional"] for entry in entries if "__conditional" in entry]
                 distinct_conditions = list(dict.fromkeys(conditions))
@@ -2413,9 +2487,15 @@ def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], 
                         field.constraints[name] = value
             visit(field.properties, bases, path)
 
+    visit(fields, bases)
+
+
+def _apply_schema_hints(tables: list[ParsedTable], hints: dict[tuple[str, ...], list[dict[str, Any]]]) -> None:
+    """Fill each parameter table from the schema object it describes."""
+
     children = _schema_parents(hints)
     for table in tables:
-        visit(table.fields, _table_schema_bases(table, children))
+        _apply_schema_hints_to_fields(table.fields, hints, _table_schema_bases(table, children))
 
 
 @dataclass
@@ -2436,6 +2516,10 @@ class Section:
     # Root properties this section's own JSON Schema declares that its
     # Specifications table never names, in schema order.
     schema_only_roots: tuple[str, ...] = ()
+    # This section's own JSON Schema, keyed by wire path. Parsed once: the
+    # merged field tree is built four times per section and each build asks
+    # the schema to fill what the tables left out.
+    schema_hints: dict[tuple[str, ...], list[dict[str, Any]]] = dataclass_field(default_factory=dict)
 
     @property
     def id(self) -> str:
@@ -2934,8 +3018,14 @@ def _sampled_enum_reason(field: ParsedField) -> Optional[str]:
     return None
 
 
+def _enum_signature(values: list[Any]) -> tuple[tuple[str, Any], ...]:
+    """Identify one enum list, keeping ``True`` and ``1`` apart."""
+
+    return tuple((type(value).__name__, value) for value in values)
+
+
 def _drop_sampled_enums(tables: list[ParsedTable]) -> None:
-    """Discard an enum the same description says is only a sample.
+    """Discard an enum the section says is only a sample.
 
     `/DESIGN/RC/KDS-41-20-2022/DCRM-BEAM` describes `MAIN_REBAR` as
     "19종 (D4 ~ D57)" while the section's JSON Schema lists five values. The
@@ -2947,16 +3037,35 @@ def _drop_sampled_enums(tables: list[ParsedTable]) -> None:
     which says how many there are, and drop the list, which does not have them.
     The field stays its declared scalar type, which is wide enough for all of
     them.
+
+    The sentence that says so is not attached to every copy. Chapter 26 heads
+    each section with "아래는 앞 5개만 표기합니다" and then writes the identical
+    five rebar sizes on fields with a description that repeats the count and on
+    fields, such as REBB's `NAME`, with no description at all. It is one list
+    abbreviated once, so a list already proven to be a sample in this section
+    is a sample everywhere this section writes it. Reading each field alone
+    would publish the abbreviation on exactly the fields the manual forgot to
+    annotate.
     """
 
-    for table in tables:
-        for field in _walk(table.fields):
-            if not field.enum:
+    fields = [field for table in tables for field in _walk(table.fields) if field.enum]
+    reasons = {id(field): _sampled_enum_reason(field) for field in fields}
+    witnesses: dict[tuple[tuple[str, Any], ...], str] = {}
+    for field in fields:
+        if reasons[id(field)] is not None:
+            witnesses.setdefault(_enum_signature(field.enum), field.key)
+    for field in fields:
+        reason = reasons[id(field)]
+        if reason is None:
+            witness = witnesses.get(_enum_signature(field.enum))
+            if witness is None:
                 continue
-            reason = _sampled_enum_reason(field)
-            if reason is not None:
-                field.enum = None
-                field.notes.append(reason)
+            reason = (
+                f"this section writes the same list for {witness!r}, whose own description "
+                "says that list is a sample; no enum is transcribed"
+            )
+        field.enum = None
+        field.notes.append(reason)
 
 
 def _schema_only_roots(
@@ -3039,6 +3148,7 @@ def parse_chapter(path: Path) -> list[Section]:
         section.tables = _parse_tables(body, index)
         _apply_enum_values(section.tables, _enum_tables(body))
         schema_hints = _section_schema_hints(body, section.endpoint)
+        section.schema_hints = schema_hints
         _reconcile_schema_compact_key_rows(section.tables, schema_hints)
         _expand_schema_named_compact_rows(section.tables, schema_hints)
         _apply_schema_hints(section.tables, schema_hints)
