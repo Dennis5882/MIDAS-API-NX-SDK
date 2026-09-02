@@ -6,6 +6,33 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Compatibility — breaking
+
+- **`SectionBoundaryDataPayload.AXIS_VECTOR` is `Array<number>`, not
+  `number`.** `/db/SBDO`'s Specifications table types it `Number`; the same
+  section's JSON Schema types it an array of numbers and its own Request
+  Example sends `[0, 0, 0, 0, 0, 0]`. The contract followed the table and npm
+  followed the contract, so the field's own documented value did not
+  typecheck. Python has always had `List[float]`. Assigning a scalar now
+  fails; send the vector.
+- **`SectionReinforcementPayload` requires its five members.**
+  `OPT_MBAR_J`, `OPT_SBAR_J`, `OPT_CRACKED`, `SBAR_ITEMS` and `MBAR_ITEMS`
+  are required, as `/db/RPSC`'s table states, and the two item arrays now
+  carry their fields inline with the manual's descriptions and its
+  requiredness (`IJ`, `NAME`, `REF_Y`, `REF_Z`, `NUM` are required within
+  `MBAR_ITEMS`). The exported `SectionReinforcementShearItem` and
+  `SectionReinforcementLongitudinalItem` interfaces are unchanged and still
+  exported, but the payload no longer refers to them, so a value annotated
+  with one of those names no longer widens to the payload's member type.
+
+### Changed
+
+- `sectionReinforcement.name` is `"Section Manager – Reinforcements"`, the
+  manual's own section label, where it was `"Section Manager - Reinforcements"`
+  before. `/db/RPSC` is now contracted, and a contract's `surface` block owns
+  what npm publishes; the hyphen came from the Python class the resource used
+  to be described by.
+
 ### Fixed
 
 - Five documented fields were missing from the generated declarations:
@@ -16,6 +43,13 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
   escaped pipe (`None \| 50% \| 100%`); the contract extractor split those
   rows on every `|`, got more cells than the header has, and dropped the row.
   All five are optional, so nothing that compiled before stops compiling.
+- `/db/RPSC`'s two reinforcement item arrays no longer nest each item's
+  fields under the first one. The manual numbers those supplementary tables
+  `(1)`-`(n)` with no parent row of their own, and the extractor read the
+  first row as the parent of its own siblings: `OPT_DR`, a boolean, held the
+  twenty fields after it. The section's Request Example writes them side by
+  side. `/db/MATL` and `/db/RCHK` had the same shape and are not yet
+  contracted.
 
 ## 2.7.4 - 2026-09-02
 

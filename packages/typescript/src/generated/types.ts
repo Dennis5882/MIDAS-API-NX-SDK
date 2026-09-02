@@ -4159,7 +4159,7 @@ export namespace DbNodeElementTypes {
     /** UCS (Rebar Direction이 UCS인 경우) */
     STR_UCS?: string;
     /** Axis Vector (Rebar Direction이 Reference Axis인 경우) */
-    AXIS_VECTOR?: number;
+    AXIS_VECTOR?: Array<number>;
     /** Member Type • None: 0 • Slab: 1 • Mat: 2 */
     MEMBER_TYPE: number;
     /** Basic Rebar Option */
@@ -5048,12 +5048,78 @@ export namespace DbPropertiesSectionTypes {
     SPACING?: number;
     PART?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SectionReinforcementPayload {
-    OPT_MBAR_J?: boolean;
-    OPT_SBAR_J?: boolean;
-    OPT_CRACKED?: boolean;
-    SBAR_ITEMS?: Array<SectionReinforcementShearItem>;
-    MBAR_ITEMS?: Array<SectionReinforcementLongitudinalItem>;
+    /** Same Rebar Data at i and j-end (Longitudinal) */
+    OPT_MBAR_J: boolean;
+    /** Same Shear Rebar Data at i and j-end */
+    OPT_SBAR_J: boolean;
+    /** Cracked Section */
+    OPT_CRACKED: boolean;
+    /** Shear Reinforcement Data (Array, Index 0=i-section / 1=j-section) */
+    SBAR_ITEMS: Array<{
+      /** Diagonal Reinforcement (DR) */
+      OPT_DR?: boolean;
+      /** [DR] Pitch */
+      DR_PITCH?: number;
+      /** [DR] Angle */
+      DR_THETA?: number;
+      /** [DR] Area */
+      DR_AW?: number;
+      /** Steel Bar for Web (SBW) */
+      OPT_SBW?: boolean;
+      /** [SBW] Pitch */
+      SBW_PITCH?: number;
+      /** [SBW] Angle */
+      SBW_ANGLE?: number;
+      /** [SBW] Area */
+      SBW_AP?: number;
+      /** [SBW] Pre-force */
+      SBW_PS?: number;
+      /** [SBW] Shear Reduction Factor */
+      SBW_FACTOR?: number;
+      /** Torsional Reinforcement (TR) */
+      OPT_TR?: boolean;
+      /** [TR] Pitch */
+      TR_PITCH?: number;
+      /** [TR] Area (Web) */
+      TR_AWT?: number;
+      /** [TR] Area (Longitudinal) */
+      TR_ALT?: number;
+      /** Stirrup Exist */
+      OPT_SR?: boolean;
+      /** [SR] Pitch */
+      SR_PITCH?: number;
+      /** [SR] Area */
+      SR_AW?: number;
+      /** Enclosing Stirrup */
+      OPT_LBAR_FLG?: boolean;
+      /** (Enclosed 단면적 산정용) Cover Thickness */
+      LBAR_THICK?: number;
+      /** Include Flange/Cantilever · Off: 0 / On: 1 */
+      LBAR_INC_FC?: number;
+    }>;
+    /** Longitudinal Reinforcement Data (Array, Index 0=i-section / 1=j-section) */
+    MBAR_ITEMS: Array<{
+      /** Section Position · "I" / "J" */
+      IJ: string;
+      /** Bar Name */
+      NAME: string;
+      /** Reference Y · Centroid: 0 / Left: 1 */
+      REF_Y: number;
+      /** Distance from Reference (Y-dir) */
+      Y?: number;
+      /** Reference Z · Top: 0 / Bottom: 1 */
+      REF_Z: number;
+      /** Distance from Reference (Z-dir) */
+      Z?: number;
+      /** Number of Rebar */
+      NUM: number;
+      /** Spacing between Rebars */
+      SPACING?: number;
+      /** Part */
+      PART?: number;
+    }>;
   }
   export interface StressPoint {
     PY?: number;

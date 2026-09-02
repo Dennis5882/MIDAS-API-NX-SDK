@@ -34,6 +34,7 @@ Civil NX 2026 v2.2, both build 08/26/2026.
 | MD-08 | 2026-09-01 | `/db/CO_S`, `/db/CO_T` Specifications | one row keyed `"W_R" ~ "HE_B"` for No. `1-9` | the same section's JSON Schema and Request Example both list nine separate colour components, as `/db/CO_M`'s table does individually | **manual repo** transcription | open |
 | MD-09 | 2026-09-01 | `/DESIGN/RC/.../DCRM-*`, `/DESIGN/SRC/AIK-SRC2K/LLRF` | the JSON Schema `enum` lists 5 rebar sizes and 6 reduction factors | the same rows' descriptions say `19종 (D4 ~ D57)` and `가능값 11개`; LLRF's list carries the literal member `...(전체 11개)` | **manual repo** transcription | open |
 | MD-10 | 2026-09-01 | four sections' Specifications tables | the table omits a root property the same section's JSON Schema declares | `/db/EPMT` (6 model objects) and `/db/ELEM` (`C_RAT`, `LCAXIS`) reconciled 2026-09-02; `/db/FIMP` and `/db/RCHK` still drafts. Five more turned out to be this SDK's parser, not the manual - see the detail | **manual repo** transcription (4 of the original 9) | 2 reconciled, 2 open |
+| MD-11 | 2026-09-02 | nine parameter rows' Value Type | the Specifications table's Value Type cell | the same section's own JSON Schema types the property differently. Seven are integer/number width; two change the shape of the value - `/db/SBDO` `AXIS_VECTOR` (Number vs an array of numbers, and its own Request Example sends six) and `/db/MATL` `PARAM` (Object vs array) | **manual repo** transcription | `/db/SBDO` corrected in its contract; 8 open |
 
 ## Detail
 
@@ -285,6 +286,46 @@ renderings relate - `/db/EPMT`'s six objects are `MODEL_TYPE` branches,
 gap. The parser finding is the reason to check the tooling before the source:
 over half of what looked like a documentation defect was this repo silently
 dropping rows it could not count.
+
+### MD-11 - a Value Type its own section's JSON Schema contradicts
+
+A section states its request twice, and MD-08 through MD-10 are all cases
+where one rendering is *less* than the other. These nine are different: the
+two renderings state incompatible things about the same property, so neither
+can be read as an abbreviation of the other.
+
+| endpoint | path | table says | schema says |
+| --- | --- | --- | --- |
+| `/db/SBDO` | `AXIS_VECTOR` | Number | `array` of `number` |
+| `/db/MATL` | `PARAM` | Object | `array` |
+| `/ope/AUTOMESH` | `MESH_SIZE.LENGTH` | Number | `integer` |
+| `/ope/AUTOMESH` | `MESH_SIZE.DIV` | Number | `integer` |
+| `/db/RCHK` | `BEAM.vSUB_BAR.dSUB_BARNUM` | Integer | `number` |
+| `/db/RCHK` | `COLM.vLAYER.vPOSITION.BAR_NUM` | Number | `integer` |
+| `/db/RCHK` | `COLM.SUB_BAR.SUBBAR_NUM` | Integer | `number` |
+| `/db/RCHK` | `COLM.SUB_BAR.SUBBAR_NUM_Y` | Integer | `number` |
+| `/db/RCHK` | `COLM.SUB_BAR.SUBBAR_NUM_Z` | Integer | `number` |
+
+Seven are numeric width, where either reading accepts the values the other
+does and nothing a caller sends is refused by the difference. The two at the
+top are not: a caller who believes the table sends a scalar where the server
+wants a vector.
+
+`/db/SBDO`'s reached users. The contract followed the table, the npm payload
+followed the contract, and `SectionBoundaryDataPayload.AXIS_VECTOR` shipped
+as `number` - a field whose own documented value, `[0, 0, 0, 0, 0, 0]`, does
+not typecheck. Python was never wrong about it (`List[float]` since the
+endpoint was added), which is the same asymmetry `/db/CO_S` had: one surface
+read the schema, the other read the table, and only the contract could make
+them answer the same question. Corrected 2026-09-02 with a `manualDefects`
+entry; the npm type is now `Array<number>`, a breaking change for anyone
+assigning a scalar.
+
+`extract_contracts.py` now attaches a review note wherever the two
+disagree, so no further contract can be promoted from a Value Type its own
+section contradicts. It deliberately transcribes neither side: choosing
+between them took the Request Example and the Python SDK, and neither is a
+source the extractor reads for types.
 
 ## Suggested follow-up, when the author chooses to act
 

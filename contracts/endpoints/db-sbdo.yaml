@@ -159,12 +159,23 @@ fields:
     description: >-
       Axis Vector (Rebar Direction이 Reference Axis인 경우)
     products: [civil]
-    type: number
+    type: array
+    items:
+      type: number
     requirement: optional
     documentedDefault: 0
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
+    provenanceNote: >-
+      The section's Specifications table types this Number; its own JSON Schema
+      types it `{"type": "array", "items": {"type": "number"}}` and its own
+      Request Example sends `[0, 0, 0, 0, 0, 0]`. Two of the section's three
+      statements agree, and a vector is what the field is for. The
+      documentedDefault below stays 0 because that is what the table documents;
+      the example's all-zero vector does not contradict it, and nothing here
+      claims to know the wire default of a field whose type the manual gets
+      wrong. See MD-11.
   - key: MEMBER_TYPE
     description: >-
       Member Type • None: 0 • Slab: 1 • Mat: 2
@@ -305,6 +316,24 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+
+manualDefects:
+  - describes: field_value
+    manualSays: >-
+      The Specifications table types `AXIS_VECTOR` as `Number` with default 0.
+    actual: >-
+      The same section's JSON Schema declares `"AXIS_VECTOR": {"description":
+      "Axis Vector", "type": "array", "items": {"type": "number"}}`, and the
+      section's own Request Example sends `"AXIS_VECTOR": [0, 0, 0, 0, 0, 0]`.
+      The Python SDK's `SectionBoundaryDataPayload` has always typed it
+      `List[float]`; only the contract, and the npm payload generated from it,
+      followed the table.
+    evidence: >-
+      docs/manual_defects_register.md MD-11, found by comparing every parameter
+      table's Value Type against the type its own section's JSON Schema
+      declares - nine disagreements in the whole manual, of which this and
+      `/db/MATL`'s `PARAM` are the two that change the shape of the value
+      rather than its numeric width.
 
 sdkRules:
   - id: db-sbdo-delete-per-id

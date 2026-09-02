@@ -5336,7 +5336,7 @@
       "className": "SectionReinforcement",
       "exportName": "sectionReinforcement",
       "endpoint": "/db/RPSC",
-      "name": "Section Manager - Reinforcements",
+      "name": "Section Manager – Reinforcements",
       "products": [
         "civil",
         "gen"
