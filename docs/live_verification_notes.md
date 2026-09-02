@@ -8077,3 +8077,70 @@ and the eight `docs/coverage.json` entries keep the `nx_versions` of the
 sessions that set their level. Every other live record in this repo carries a
 build; re-stamp this one on the next Civil NX session rather than inferring
 it from the dates around it.
+
+## 2026-09-02 (later) — an `/info` sweep of the 18 endpoints no contract could reach
+
+Read-only `GET /info/db/...` for every remaining uncontracted `/db/*` resource,
+on each product it declares: **27 probes, all answered.** Captured verbatim in
+`schema/info-schemas.json`. No `/doc/NEW`, no write, and no GET response body
+recorded, so nothing here is model data. Both sessions verified as
+`sjj0507@midasit.com`; neither product's build string was recorded, and the
+artifact says so rather than naming one.
+
+Each of these endpoints was blocked by an ambiguity the manual states but does
+not resolve. The server resolves most of them outright.
+
+### `/db/TDME`: the duplicate `"SCALE"` is a wrong key, and the right one is `aDATA`
+
+MD-13. The Specifications table gives `"SCALE"` to both "Scale Factor"
+(Number) and "Function Data" (Array of `{TIME, COMP, TENS, ELAST}`), and the
+vendored manual's own ⚠️ callout says there is no example to tell them apart.
+There is now:
+
+```text
+SCALE   number   Scale Factor
+aDATA   array    Func Data   items -> TIME, COMP, TENS, ELAST
+```
+
+Row 5 is right and row 6's key is wrong: the array is `aDATA`. Civil and Gen
+return byte-identical schemas. This is the manual's error to fix, not a choice
+between two documented names, and it closes MD-13.
+
+### Three compact key rows name real, separate fields
+
+| endpoint | the manual's one cell | what `/info` lists |
+| --- | --- | --- |
+| `/db/MVLDeu` | `"SCALE_FACTOR1"/"SCALE_FACTOR2"/"SCALE_FACTOR3"` | all three, each `number` |
+| `/db/STCT-M1` | `bSDLE" / "vSDLE` | `bSDLE` boolean, `vSDLE` array of names |
+| `/db/THIS-M1` | `FREQ1/PERIOD1` | `DAMPING.FREQ1`, `DAMPING.FREQ2`, `DAMPING.PERIOD1`, `DAMPING.PERIOD2` |
+
+`/db/THIS-M1`'s is the most useful: the row names two of four real fields, and
+they are nested under `DAMPING` rather than at the root, which the table never
+says.
+
+`/db/POGD`'s refused cell is different in kind - `AIK-G-001-2021` is a design
+code name, not a wire property, and none of the endpoint's nine real
+properties is called anything like it.
+
+### `/db/REBW`'s field names, confirmed a third time and in full
+
+`GET /info/db/REBW` returns one `ITEMS` array whose members are `ID`,
+`bUSE_MODEL_THICK`, `THICK`, `DW`, `DE`, `VER_BAR`, `HOR_BAR`, `END_BAR`,
+`NUM_END_BAR`, `BE_HOR_BAR`, `BE_LENGTH`, `vSTORY_NAME`. That matches the
+2026-07-29 live PUT round trip exactly and adds the four the round trip never
+touched. The manual's Specifications table names none of them.
+
+`/db/PRES` and all four `/db/REB*` endpoints are the same shape: a single
+`ITEMS` array with everything inside it.
+
+### `/db/POGD` is not the same endpoint on both products
+
+The only pair in the sweep whose two schemas differ. Same nine top-level keys,
+but `NONL_OPT` and `PHOP_OPT` carry different members - Gen's `PHOP_OPT` opens
+with `bCONSREBARAREA1D` and `BEAM_CORE_SIZE` (fiber-model options), Civil's
+with `bASSIGNBYMEMBER` and `bTRI_SYM`. A contract for `/db/POGD` has to tag
+those members by product; a single shape would be wrong on one of them.
+
+Every other both-product endpoint returned byte-identical schemas on Gen and
+Civil - eight pairs, which is also the first systematic check that `/info`
+itself agrees across products.

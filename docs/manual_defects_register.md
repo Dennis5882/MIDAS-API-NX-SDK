@@ -36,7 +36,7 @@ Civil NX 2026 v2.2, both build 08/26/2026.
 | MD-10 | 2026-09-01 | four sections' Specifications tables | the table omits a root property the same section's JSON Schema declares | `/db/EPMT` (6 model objects) and `/db/ELEM` (`C_RAT`, `LCAXIS`) reconciled 2026-09-02; `/db/FIMP` and `/db/RCHK` still drafts. Five more turned out to be this SDK's parser, not the manual - see the detail | **manual repo** transcription (4 of the original 9) | 2 reconciled, 2 open |
 | MD-11 | 2026-09-02 | nine parameter rows' Value Type | the Specifications table's Value Type cell | the same section's own JSON Schema types the property differently. Seven are integer/number width; two change the shape of the value - `/db/SBDO` `AXIS_VECTOR` (Number vs an array of numbers, and its own Request Example sends six) and `/db/MATL` `PARAM` (Object vs array) | **manual repo** transcription | `/db/SBDO` and `/db/MATL` corrected in their contracts; 7 open |
 | MD-12 | 2026-09-02 | seven Hyper-S `-M1` sections, and the `/info` schema that substitutes for them | the section gives a URL, a methods line and a Zendesk link - no Specifications table and no JSON Schema, so live `/info` is the only permitted contract source | `/info` serves a full schema for four of them and 404s for three, and the schemas it serves are malformed twice over: every apostrophe in a `description` is escaped `\'`, which is not a JSON escape, and `maxItems` is stated on an array's `items` subschema instead of the array | **MIDASIT product** (`/info` output) and **MIDASIT article** (the missing section content) | open |
-| MD-13 | 2026-09-02 | `/db/TDME` `"SCALE"` | the Specifications table gives the key `"SCALE"` to two different rows - "Scale Factor" (Number) and "Function Data" (Array[Object] of `{TIME, COMP, TENS, ELAST}`) | unknown; the section has no Request Example that sends either, so which row owns the name cannot be read from the chapter. The vendored manual flags this itself in a ⚠️ callout and transcribes both verbatim | **MIDASIT article** (the duplicate is in the source); resolvable here by one live `GET /info/db/TDME` | open |
+| MD-13 | 2026-09-02 | `/db/TDME` `"SCALE"` | the Specifications table gives the key `"SCALE"` to two different rows - "Scale Factor" (Number) and "Function Data" (Array[Object] of `{TIME, COMP, TENS, ELAST}`) | unknown; the section has no Request Example that sends either, so which row owns the name cannot be read from the chapter. The vendored manual flags this itself in a ⚠️ callout and transcribes both verbatim | **MIDASIT article** (the duplicate is in the source) | **answered 2026-09-02**: `/info` names the array `aDATA`; row 6's key is wrong |
 
 ## Detail
 
@@ -415,9 +415,12 @@ also has four children, which is why `/db/TDME` refuses promotion. The note is
 genuinely open: no permitted source answers it. The manual states both, and
 neither the section's Request Example nor its Python example sends either row.
 
-**One live call settles it.** `/db/TDME` is a `/db/*` endpoint, so
-`GET /info/db/TDME` returns the server's own property list, and whichever name
-the array actually carries will be in it. That probe has not been run - the
-Hyper-S capture on 2026-09-02 covered eight endpoints and this was not one of
-them. Until then the contract stays a draft rather than shipping a guess about
-which of two documented fields owns the name.
+**One live call settled it**, the same day this was registered.
+`GET /info/db/TDME` lists `SCALE` as a `number` named "Scale Factor" and a
+separate `aDATA` array whose items are `{TIME, COMP, TENS, ELAST}` - the
+"Function Data" row's real key. Civil and Gen return identical schemas.
+
+So row 5 is correct and row 6's key is wrong; there was never a choice between
+two documented names, only one typo standing where a different name belongs.
+The contract records `aDATA` with `provenance: live_corrected` and this
+defect under `manualDefects`. Captured in `schema/info-schemas.json`.
