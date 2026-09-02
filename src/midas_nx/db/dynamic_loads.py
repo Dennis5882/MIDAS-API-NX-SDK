@@ -30,6 +30,20 @@ class ResponseSpectrumFunctionPayload(TypedDict, total=False):
     Korea/US/Eurocode/China/... code variants, each with its own extra
     keys) — only the common envelope + the User-defined "aFUNC" shape are
     typed for v1; code-specific extra keys go as extra dict keys.
+
+    ⚠️ **A design-code function needs ``CALC_OPT: True``.** Measured live
+    2026-09-03 on Gen NX. A code variant (``STR``/``OPT``/``VAL``) with no
+    ``aFUNC`` and no ``CALC_OPT`` is refused with
+    ``[Error] Spectrum Function Data (Name:...) contains errors.(Item:Spectrum
+    Data)`` — including the manual's own KDS(41-17-00:2019) worked example,
+    which is printed without it. ``CALC_OPT: True`` makes the server build the
+    curve (103 points for that example) from the code parameters.
+
+    Unlike ``/db/SECT``'s identically documented ``CALC_OPT``, this one is
+    honoured on PUT too, despite the manual marking it ``Create Only``. That
+    is the fix for the other half of the finding: changing ``VAL``/``OPT``
+    without ``CALC_OPT: True`` stores new code parameters against the curve
+    the old ones generated. See docs/live_verification_notes.md and MD-15.
     """
 
     NAME: str  # Response Spectrum Function Name, required
@@ -40,6 +54,7 @@ class ResponseSpectrumFunctionPayload(TypedDict, total=False):
     DRATIO: float  # Damping Ratio, default 0.05, optional
     DESC: str  # default "", optional
     aFUNC: List[ResponseSpectrumFunctionValue]  # User-defined function data, required for user-defined
+    CALC_OPT: bool  # code variants: build aFUNC from STR/OPT/VAL; default false, and required True when no aFUNC is sent - see class docstring
 
 
 class ResponseSpectrumFunction(DbResource):

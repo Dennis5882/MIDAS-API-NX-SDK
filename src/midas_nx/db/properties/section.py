@@ -31,10 +31,30 @@ class SectBefore(TypedDict, total=False):
 
 
 class SectionPayload(TypedDict, total=False):
-    """docs/manual/04_DB_Properties.md #12 — /db/SECT common Specifications table."""
+    """docs/manual/04_DB_Properties.md #12 — /db/SECT common Specifications table.
+
+    ⚠️ **A PUT never recomputes a VALUE section's stiffness.** Measured live
+    2026-09-03 on Gen NX. For ``SECTTYPE: "VALUE"`` the server derives
+    ``SECT_BEFORE.SECT_I.STIFF`` (AREA, ASY, ASZ, RXX, ...) and ``.DESIGN``
+    from ``vSIZE`` **on POST only**, which is what the manual's ``Create Only``
+    marking on ``CALC_OPT`` means. Changing ``vSIZE`` through ``update()``
+    stores the new dimensions and leaves the old properties in place — 200,
+    no error, and the record reads back looking self-consistent. Sending
+    ``CALC_OPT: true`` on the PUT does not help; a 0.3 m section resized to
+    0.9 m kept ``AREA`` 0.004533 where a fresh POST at 0.9 m gives 0.008433.
+    To resize a VALUE section, delete the record and POST it again.
+
+    A supplied ``STIFF`` always wins over the calculation, under every
+    ``CALC_OPT`` value including ``true``. ``CALC_OPT: false`` with no
+    ``STIFF`` to fall back on is refused on POST
+    (``[Error] Section input data contain errors.``) and silently accepted on
+    PUT — that asymmetry is the clearest demonstration of the create-only
+    rule. See docs/live_verification_notes.md.
+    """
 
     SECTTYPE: str  # "DBUSER"/"VALUE"/"SRC"/"COMBINED"/"PSC"/"TAPERED"/"COMPOSITE"/"SOD", required
     SECT_NAME: str  # Section Name, required
+    CALC_OPT: bool  # 12-B Value only: calculate STIFF/DESIGN from vSIZE; default true, honoured on POST only - see class docstring
     SECT_BEFORE: SectBefore  # required
 
 

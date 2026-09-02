@@ -257,9 +257,13 @@ Two things that have already caused rework:
   a failure, and don't report an unconfirmed failure as an SDK defect — across three runs every
   failure resolved to a fixture, a wrong documented value, or a product bug, and the one real SDK
   defect was a wrong docstring. Five documented values turned out to be wrong live — `/db/SECF`'s
-  key, `/db/PRES`'s default `DIRECTION`, `/db/MVHL`'s `VEHICLE_LOAD_NUM`, the `"KDS2016"`
-  time-dependent-material code name, and `/db/TDMT`'s whole code-name enum (it wants `"European"`,
-  not any CEB-FIP spelling) — so treat the manual's worked examples as a starting guess.
+  key, `/db/PRES`'s default `DIRECTION`, the `"KDS2016"` time-dependent-material code name,
+  and `/db/TDMT`'s whole code-name enum (it wants `"European"`, not any CEB-FIP spelling) — so
+  treat the manual's worked examples as a starting guess. `/db/MVHL`'s `VEHICLE_LOAD_NUM` used
+  to head that list and was **retracted 2026-09-03**: it is the endpoint's branch discriminator
+  (`1` standard, `2` user-defined) and behaves as documented. What is wrong there is the common
+  Specifications table stating branch-1 and branch-2 requiredness with no reference to the
+  branch — see MD-16.
 - **`"Wrong Field"` from a `/db/*` write usually means a bad *value*, not a bad field name.**
   Confirmed on `/db/TDMT` and `/db/TDME`: an unrecognised `CODE`/`CODENAME` answers `Wrong Field`,
   while a recognised one with the wrong companion fields answers `"[Error] ... input data contain

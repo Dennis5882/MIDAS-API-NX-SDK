@@ -286,6 +286,17 @@ def _normalize_requirement(cell: str) -> tuple[Optional[str], Optional[str], Opt
         # only in a GET response. That is the contract's read_only category,
         # not an optional write claim.
         return "read_only", None, None
+    if text in {"create only", "create-only"}:
+        # The sibling of "Get Only": the manual claims the server reads the
+        # field on POST and ignores it on PUT. It appears in exactly two cells
+        # in the whole manual, both a `CALC_OPT`, and on 2026-09-03 the two
+        # were measured against a live product and disagreed - /db/SECT
+        # behaves as the cell says and /db/SPFC does not (see
+        # docs/live_verification_notes.md, and MD-15). So this records the
+        # documentation like every other value here, and where a measurement
+        # contradicts it, _MANUAL_REQUIREDNESS_CORRECTIONS carries the
+        # correction rather than this function quietly picking a side.
+        return "create_only", None, None
     if raw == "SRC: \ud544\uc218 / CONCRETE\u00b7STEEL: \uc120\ud0dd":
         # This is a manual condition, not a missing requiredness value. Keep
         # it verbatim because the table does not put the controlling
@@ -1202,6 +1213,115 @@ _MANUAL_KEY_CORRECTIONS: dict[str, dict[tuple[str, ...], ManualKeyCorrection]] =
                 "docs/live_verification_notes.md, \"an /info sweep of the 18 endpoints "
                 "no contract could reach\" (2026-09-02), captured verbatim in "
                 "schema/info-schemas.json. Registered as MD-13."
+            ),
+        ),
+    },
+}
+
+
+class ManualRequirednessCorrection(NamedTuple):
+    """One Required or Default cell a live measurement disproves.
+
+    The third correction kind, and the one that needed a product rather than a
+    document. A wrong Value Type is settled by the same section's JSON Schema
+    and a wrong Key by `/info`; a wrong *requiredness* is settled by nothing
+    but sending the field and not sending it and watching what the server
+    does. So every entry here cites a run in
+    docs/live_verification_notes.md with the error string it produced.
+
+    `describes` names which cell is wrong, because these two go together more
+    often than not: a row that marks a field Optional and names a default is
+    making two claims, and /db/PRES gets both of them wrong at once.
+    """
+
+    describes: str
+    manual_says: str
+    actual: str
+    evidence: str
+
+
+# Measured contradictions of a Required or Default cell. Deliberately small:
+# a row belongs here only after someone has watched the product accept and
+# refuse the field, not after reading a second document about it.
+_MANUAL_REQUIREDNESS_CORRECTIONS: dict[str, dict[str, tuple[ManualRequirednessCorrection, ...]]] = {
+    "/db/SPFC": {
+        "CALC_OPT": (
+            ManualRequirednessCorrection(
+                describes="requiredness",
+                manual_says=(
+                    "The KDS(41-17-00:2019) parameter table marks `CALC_OPT` "
+                    "`Create Only`, which says the server reads it on POST and "
+                    "ignores it on PUT."
+                ),
+                actual=(
+                    "It is honoured on PUT. Sending `CALC_OPT: true` on a PUT "
+                    "rebuilt a spectrum that had been hand-set to a flat two-point "
+                    "curve into the 103-point curve the code parameters generate; "
+                    "sending `false`, or omitting it, left the stale curve in place "
+                    "while accepting new parameters. The cell is true of the "
+                    "manual's other `Create Only`, /db/SECT's, and not of this one."
+                ),
+                evidence=(
+                    "docs/live_verification_notes.md, \"what the manual's 'Create "
+                    "Only' actually means\" (2026-09-03), measured on Gen NX against "
+                    "an empty document. Registered as MD-15."
+                ),
+            ),
+            ManualRequirednessCorrection(
+                describes="behaviour",
+                manual_says=(
+                    "The section's KDS(41-17-00:2019) Request Body example omits "
+                    "`CALC_OPT` and supplies no `aFUNC`, presenting it as a working "
+                    "request."
+                ),
+                actual=(
+                    "That exact body is refused: `[Error] Spectrum Function Data "
+                    "(Name:...) contains errors.(Item:Spectrum Data)`. A "
+                    "design-spectrum function needs either `CALC_OPT: true`, so the "
+                    "server builds the curve from `STR`/`OPT`/`VAL`, or an explicit "
+                    "`aFUNC`. The documented default `false` is correct; it is the "
+                    "example that cannot run."
+                ),
+                evidence=(
+                    "docs/live_verification_notes.md, \"what the manual's 'Create "
+                    "Only' actually means\" (2026-09-03). Registered as MD-15."
+                ),
+            ),
+        ),
+    },
+    "/db/PRES": {
+        "DIRECTION": (
+            ManualRequirednessCorrection(
+                describes="requiredness",
+                manual_says="The Specifications table marks `DIRECTION` `Optional`.",
+                actual=(
+                    "On the commonest pressure load there is - a 4-node PLATE with "
+                    "`FACE_EDGE_TYPE: \"FACE\"` - omitting it is refused with "
+                    "`[Error] Errors detected in Pressure Loads Data.(Item:Load "
+                    "Direction)`. The official article's own availability matrix "
+                    "already implied it: Normal is `-` for PLATE + FACE while the "
+                    "local and global axes are `O`, so the matrix and the product "
+                    "agree and only this row is out of step."
+                ),
+                evidence=(
+                    "docs/live_verification_notes.md, \"/db/PRES: B-4 measured, with "
+                    "the error string\" (2026-09-03), against the plate in "
+                    "live_crud_check.py's own seed. Vendor report B-4."
+                ),
+            ),
+            ManualRequirednessCorrection(
+                describes="default",
+                manual_says="The same row gives `DIRECTION` the default `\"NORMAL\"`.",
+                actual=(
+                    "`\"NORMAL\"` is the one value that combination refuses, with the "
+                    "same error as omitting the field. `\"LZ\"` and `\"GZ\"` are stored. "
+                    "So both halves of the row are wrong for PLATE + FACE, not just "
+                    "the Required half."
+                ),
+                evidence=(
+                    "docs/live_verification_notes.md, \"/db/PRES: B-4 measured, with "
+                    "the error string\" (2026-09-03). Vendor report B-4."
+                ),
             ),
         ),
     },
@@ -4092,7 +4212,8 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
 
     corrections = _MANUAL_TYPE_CORRECTIONS.get(section.endpoint)
     key_corrections = _MANUAL_KEY_CORRECTIONS.get(section.endpoint)
-    if corrections or key_corrections:
+    measured = _MANUAL_REQUIREDNESS_CORRECTIONS.get(section.endpoint)
+    if corrections or key_corrections or measured:
         # The correction lives in the contract as a defect record, not only as
         # a corrected type: a manual re-sync that reinstates the table's claim
         # has to argue with this, rather than silently winning.
@@ -4113,6 +4234,15 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
             lines += _block(correction.actual, "      ")
             lines.append("    evidence: >-")
             lines += _block(_MANUAL_TYPE_CORRECTION_EVIDENCE, "      ")
+        for entries in (measured or {}).values():
+            for entry in entries:
+                lines.append(f"  - describes: {entry.describes}")
+                lines.append("    manualSays: >-")
+                lines += _block(entry.manual_says, "      ")
+                lines.append("    actual: >-")
+                lines += _block(entry.actual, "      ")
+                lines.append("    evidence: >-")
+                lines += _block(entry.evidence, "      ")
         lines.append("")
 
     lines.append("extraction:")

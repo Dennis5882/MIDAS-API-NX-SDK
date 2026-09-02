@@ -144,7 +144,14 @@ NEEDS_HAND_REVIEW = {
         "wrong in both halves. Needs the correction recorded, not the manual "
         "transcribed"
     ),
-    "/db/MVHL": "its documented VEHICLE_LOAD_NUM is wrong live",
+    "/db/MVHL": (
+        "measured 2026-09-03: VEHICLE_LOAD_NUM is a branch discriminator (1 "
+        "standard, 2 user-defined), and the common table states branch-1 and "
+        "branch-2 requiredness without it - VEHICLE_TYPE_NAME is required only "
+        "under 1, STANDARD_CODE under neither. Needs variants, not the table "
+        "transcribed. The older reason here, that the documented "
+        "VEHICLE_LOAD_NUM is wrong live, was retracted with the measurement"
+    ),
     "/db/REBW": "every field name in its manual section is wrong live",
     "/db/REBC": "the official article itself is wrong about its array shape",
     "/db/REBB": "its write path is broken server-side, not a shape question",

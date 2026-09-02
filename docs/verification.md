@@ -30,8 +30,8 @@ Nearly every substantive defect found in this project was invisible to reads:
   `"European"`, not any CEB-FIP spelling.
 - `/db/SECF` — documented as keyed by element id; it is keyed by section id.
 - `/db/PRES` — the documented default `DIRECTION` is rejected.
-- `/db/MVHL` — silently downgrades a standard vehicle to a user-defined one
-  when `VEHICLE_LOAD_NUM` isn't 1, and answers as if it succeeded.
+- `/db/MVHL` — `VEHICLE_TYPE_NAME` is not validated: a name no standard
+  vehicle has is stored verbatim, and it is what selects the axle loads.
 
 Every one of those endpoints answered a GET perfectly well the whole time.
 

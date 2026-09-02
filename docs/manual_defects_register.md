@@ -38,6 +38,9 @@ Civil NX 2026 v2.2, both build 08/26/2026.
 | MD-12 | 2026-09-02 | seven Hyper-S `-M1` sections, and the `/info` schema that substitutes for them | the section gives a URL, a methods line and a Zendesk link - no Specifications table and no JSON Schema, so live `/info` is the only permitted contract source | `/info` serves a full schema for four of them and 404s for three, and the schemas it serves are malformed twice over: every apostrophe in a `description` is escaped `\'`, which is not a JSON escape, and `maxItems` is stated on an array's `items` subschema instead of the array | **MIDASIT product** (`/info` output) and **MIDASIT article** (the missing section content) | open |
 | MD-13 | 2026-09-02 | `/db/TDME` `"SCALE"` | the Specifications table gives the key `"SCALE"` to two different rows - "Scale Factor" (Number) and "Function Data" (Array[Object] of `{TIME, COMP, TENS, ELAST}`) | unknown; the section has no Request Example that sends either, so which row owns the name cannot be read from the chapter. The vendored manual flags this itself in a ⚠️ callout and transcribes both verbatim | **MIDASIT article** (the duplicate is in the source) | **answered 2026-09-02**: `/info` names the array `aDATA`; row 6's key is wrong |
 | MD-14 | 2026-09-03 | `/db/TDME` `CODENAME` `Japan(hydration)` / `Japan(elastic)` | `04_DB_Properties.md` lists both in its `CODENAME` code table (entries 16 and 17), each with its own table of required extra fields, and marks neither as belonging to a different product | both answer `Wrong Field` on Gen NX and Civil NX - **correctly**: these two codes are iGen's, and the NX API is not talking to iGen | **manual repo** - the code table needs to say which entries are not available through this API | open |
+| MD-15 | 2026-09-03 | `Create Only`, in `/db/SECT` and `/db/SPFC` | the manual's only two `Create Only` cells, both a `CALC_OPT`, say the server honours the field on create and ignores it on modify | true of `/db/SECT` exactly; false of `/db/SPFC`, where `CALC_OPT: true` on a PUT rebuilds the spectrum. Separately, `/db/SPFC`'s KDS(41-17-00:2019) worked example is refused as printed - it omits `CALC_OPT` and supplies no `aFUNC` | **MIDASIT article** (one value used for two contracts, and an example that cannot run) | open |
+| MD-16 | 2026-09-03 | `/db/MVHL` common Specifications table | `VEHICLE_TYPE_NAME` and `STANDARD_CODE` Required, `USER_LOAD_TYPE` Optional, with no reference to the branch | `VEHICLE_LOAD_NUM` selects the branch: `1` needs the type name, `2` needs neither it nor `STANDARD_CODE`, which is not required under either. `USER_LOAD_TYPE` is ignored on input. The chapter's own KSCE-LSD15 examples show the branch; the table that claims to cover every code does not mention it | **MIDASIT article** (the table), which the manual repo transcribes faithfully | open |
+
 
 ## Detail
 
@@ -456,3 +459,90 @@ code names out of the branch it declares for this API.
 > still wrong: the missing context was not in the article, it was that a second
 > product exists. Recorded here because "check the source before accusing"
 > would not have caught this one either.
+
+### MD-15 - one Required value, two endpoints, two different meanings
+
+`Create Only` appears in exactly two Required cells in the whole manual, and
+both belong to a field called `CALC_OPT`:
+
+| chapter | endpoint | row | Default |
+| --- | --- | --- | --- |
+| `04_DB_Properties.md:1148` | `/db/SECT` (`SECTTYPE: "VALUE"`) | Calculation Options | `true` |
+| `09_DB_Dynamic_Loads.md:131` | `/db/SPFC` (KDS 41-17-00:2019) | 계산 옵션 | `false` |
+
+Read plainly the value says: the server honours the field on create and
+ignores it on modify. Measured on Gen NX on 2026-09-03, that is true of the
+first row and false of the second.
+
+`/db/SECT` matches it exactly. The identical body that POST refuses -
+`CALC_OPT: false` with no `SECT_I.STIFF` to fall back on, answered
+`[Error] Section input data contain errors.` - is accepted as a PUT, and a PUT
+that changes `vSIZE` never recomputes `STIFF`, not even with `CALC_OPT: true`
+sent explicitly.
+
+`/db/SPFC` does not. `CALC_OPT: true` on a PUT rebuilt a spectrum that had been
+hand-set to a flat two-point curve into the 103-point curve its code
+parameters generate; `false` and omission both left the stale curve while
+accepting new parameters.
+
+So the defect is not that either endpoint misbehaves - each is internally
+consistent - but that one Required value is being used for two different
+contracts, with nothing in either cell to tell them apart. A reader who
+generalises from the row they happen to meet first will be wrong about the
+other one half the time.
+
+**A second defect in the same section, found on the way.** `/db/SPFC`'s
+KDS(41-17-00:2019) Request Body example omits `CALC_OPT` and supplies no
+`aFUNC`. That exact body is refused:
+
+```text
+[Error] Spectrum Function Data (Name:KDS_2019_func) contains errors.(Item:Spectrum Data)
+```
+
+A design-spectrum function needs either `CALC_OPT: true`, so the server builds
+the curve from `STR`/`OPT`/`VAL`, or an explicit `aFUNC`. The documented
+default `false` is correct - it is the worked example that cannot run, which
+is the more serious of the two because a worked example is what a reader
+copies.
+
+Both are recorded in `contracts/endpoints/db-spfc.yaml` under `manualDefects`,
+and in `_MANUAL_REQUIREDNESS_CORRECTIONS` in `scripts/extract_contracts.py`
+so a re-extraction carries them forward. The contract schema now accepts
+`create_only` as a `requirement`, described as what the manual claims rather
+than as what the product does - which is what this entry is about.
+
+### MD-16 - a branch's requiredness stated as if there were no branch
+
+`/db/MVHL`'s common Specifications table marks eight fields Required or
+Optional without reference to `VEHICLE_LOAD_NUM`, which is the field that
+decides which of them apply. Measured on Civil NX, 2026-09-03:
+
+| No. | field | table says | measured |
+| --- | --- | --- | --- |
+| 4 | `VEHICLE_TYPE_NAME` | Required | required **only** under `VEHICLE_LOAD_NUM: 1`; omitting it there is refused with `(Item:Length of Vehicular Load Type(0 ~ 40 characters))` |
+| 5 | `STANDARD_CODE` | Required | **not required at all** - omitted, accepted, and stored without it |
+| 6 | `USER_LOAD_TYPE` | Optional | ignored on input under `MVLD_CODE: 2`; `"Train"`, `"Lane"`, `"Truck"`, `"TruckLane"` and omission all stored `"Truck/Lane"` |
+
+Same shape as `/db/FIMP`'s table stating child keys without their parents: the
+rows are not individually false so much as unqualified, and a caller reading
+row 4 as an unconditional requirement writes a request the server refuses.
+
+The chapter already contains the information. Its KSCE-LSD15 section, added
+2026-07-30, carries a Standard example with `"VEHICLE_LOAD_NUM": 1` and
+`VEHICLE_TYPE_NAME`, and a User Defined example with `"VEHICLE_LOAD_NUM": 2`,
+`USER_LOAD_TYPE` and no type name. What is missing is any statement that this
+is a branch, in the one table that presents itself as covering every code.
+
+Row 5 also has an independent confirmation predating this: `VehiclePayload`'s
+docstring records that a real production Eurocode PSC bridge model's
+predefined "Load Model 1" vehicle carries no `STANDARD_CODE` key at all.
+
+> This entry replaces a claim this repo carried for five weeks in three files:
+> that `VEHICLE_LOAD_NUM` was a *documented value wrong live*, and that sending
+> `2` made the product silently corrupt a standard vehicle. The observation was
+> accurate and reproduces exactly; the conclusion was not. `2` selects the
+> user-defined branch, and discarding branch 1's fields is that branch working.
+> The observation was made 2026-07-26, four days before the manual documented
+> the branch, and nobody re-read it afterwards. Fourth entry in the family that
+> includes the retracted B-1/B-2/B-3 and MD-14's iGen codes - see the
+> 2026-09-03 passage in `docs/live_verification_notes.md`.

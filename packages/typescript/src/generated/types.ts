@@ -2363,6 +2363,7 @@ export namespace DbDynamicLoadsTypes {
     DRATIO?: number;
     DESC?: string;
     aFUNC?: Array<ResponseSpectrumFunctionValue>;
+    CALC_OPT?: boolean;
   }
   export interface ResponseSpectrumUseMode {
     bUSE?: boolean;
@@ -5250,6 +5251,7 @@ export namespace DbPropertiesSectionTypes {
   export interface SectionPayload {
     SECTTYPE?: string;
     SECT_NAME?: string;
+    CALC_OPT?: boolean;
     SECT_BEFORE?: SectBefore;
   }
   /** Generated from contracts/endpoints/. */

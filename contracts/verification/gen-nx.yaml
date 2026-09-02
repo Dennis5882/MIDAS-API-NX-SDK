@@ -488,3 +488,31 @@ records:
       rather than at nothing.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: spfc-calc-opt-2026-09-03
+    endpoints: ["/db/SPFC", "/db/SECT"]
+    date: "2026-09-03"
+    nxVersion: >-
+      unknown - MIDAS Gen NX 2026, build string not readable through the API.
+      /mapikey/verify returns only the program name, and no /doc route serves a
+      version, so this is left unstated rather than guessed. Same reason
+      schema/info-schemas.json carries nxVersion: null.
+    level: write
+    outcome: success
+    method: >-
+      Against a document confirmed empty first, and with every record deleted by
+      id afterwards (no /doc/NEW). Both of the manual's "Create Only" cells are a
+      CALC_OPT, so both were driven the same way: POST the section's own worked
+      example with CALC_OPT true, false and omitted, with and without the derived
+      block (SECT_I.STIFF for /db/SECT, aFUNC for /db/SPFC), then PUT the same
+      bodies and read the record back each time.
+    finding: >-
+      The two cells do not mean the same thing. /db/SECT's is literal - the body
+      POST refuses (CALC_OPT false, no STIFF) is accepted as a PUT, and a PUT
+      that resizes vSIZE never recomputes STIFF even with CALC_OPT true, leaving
+      new dimensions against old section properties. /db/SPFC's is false -
+      CALC_OPT true on a PUT rebuilds the spectrum from the code parameters, and
+      false or omitted leaves a stale curve. The section's own KDS(41-17-00:2019)
+      worked example is refused as printed. /db/SPFC renumbers a POSTed record.
+    evidence:
+      - docs/live_verification_notes.md

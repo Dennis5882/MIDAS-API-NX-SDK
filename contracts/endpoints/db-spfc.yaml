@@ -34,6 +34,8 @@ verification:
       ref: db-write-sweep-2026-08-16
     - product: gen
       ref: db-write-sweep-2026-08-16
+    - product: gen
+      ref: spfc-calc-opt-2026-09-03
 
 operations:
   - method: DELETE
@@ -150,6 +152,37 @@ fields:
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
+
+manualDefects:
+  - describes: requiredness
+    manualSays: >-
+      The KDS(41-17-00:2019) parameter table marks `CALC_OPT` `Create Only`,
+      which says the server reads it on POST and ignores it on PUT.
+    actual: >-
+      It is honoured on PUT. Sending `CALC_OPT: true` on a PUT rebuilt a
+      spectrum that had been hand-set to a flat two-point curve into the
+      103-point curve the code parameters generate; sending `false`, or
+      omitting it, left the stale curve in place while accepting new
+      parameters. The cell is true of the manual's other `Create Only`,
+      /db/SECT's, and not of this one - which is why the contract schema's
+      `create_only` describes the documentation and not the behaviour.
+    evidence: >-
+      docs/live_verification_notes.md, "what the manual's 'Create Only'
+      actually means" (2026-09-03), measured on Gen NX against an empty
+      document. Registered as MD-15.
+  - describes: behaviour
+    manualSays: >-
+      The section's KDS(41-17-00:2019) Request Body example omits `CALC_OPT`
+      and supplies no `aFUNC`, presenting it as a working request.
+    actual: >-
+      That exact body is refused: `[Error] Spectrum Function Data (Name:...)
+      contains errors.(Item:Spectrum Data)`. A design-spectrum function needs
+      either `CALC_OPT: true`, so the server builds the curve from
+      `STR`/`OPT`/`VAL`, or an explicit `aFUNC`. The documented default
+      `false` is correct; it is the example that cannot run.
+    evidence: >-
+      docs/live_verification_notes.md, "what the manual's 'Create Only'
+      actually means" (2026-09-03). Registered as MD-15.
 
 sdkRules:
   - id: db-spfc-delete-per-id

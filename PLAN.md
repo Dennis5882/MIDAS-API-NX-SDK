@@ -235,8 +235,8 @@ What the live runs settled (see `docs/live_verification_notes.md` for the
 evidence): the `boundary` tier passed 9/9 first time, `stage` 4/4 and `moving`
 4/4 after fixture fixes, and three defects surfaced that no mocked test could
 have caught — `/db/SECF` is keyed by section id and the SDK's docstring said
-element id; `/db/MVHL` silently downgrades a standard vehicle to a
-user-defined one when `VEHICLE_LOAD_NUM` isn't 1; and `/db/TDMT` and
+element id; `/db/MVHL` accepts a `VEHICLE_TYPE_NAME` no standard vehicle has
+and stores it verbatim; and `/db/TDMT` and
 `/db/TDME` spell the same code differently
 (`CODE: "CEB_FIP_2010"`/`"KDS_2016"` vs. `CODENAME: "CEB-FIP(2010)"`/
 `"KDS-2016"`) — both documented correctly by the official articles, but easy

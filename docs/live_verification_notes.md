@@ -1615,7 +1615,7 @@ with a note saying a "missing after write" failure would mean the key was a
 section id, because the manual's worked example keys it `9001` right next to
 `/db/STRPSSM`'s `9003`, and `/db/STRPSSM` *is* section-keyed.
 
-### ⚠️ `/db/MVHL` silently downgrades a standard vehicle to a user-defined one
+### `/db/MVHL` stores a user-defined vehicle when asked for one [superseded]
 
 `VEHICLE_LOAD_NUM` must be `1` for a standard-DB vehicle. Send `2` and NX
 **discards `VEHICLE_TYPE_NAME` and `STANDARD_CODE`** and stores a user-defined
@@ -1634,6 +1634,17 @@ With `VEHICLE_LOAD_NUM: 1`, `DB-18`, `DB-24` and `DL-24` all store correctly
 under `STANDARD_CODE: "KS-RB"`. This joins `/db/CONS` truncating an 8-character
 `CONSTRAINT` and the empty-`VEH_DEFAULT` no-op as a **silent data-corruption**
 shape: the only defence is to read the record back and compare.
+
+> **Superseded 2026-09-03.** The observation reproduces exactly and the
+> record above is what the server stores. The conclusion drawn from it does
+> not hold: `VEHICLE_LOAD_NUM` is the endpoint's branch discriminator, `2`
+> selects the user-defined vehicle, and discarding `VEHICLE_TYPE_NAME` and
+> `STANDARD_CODE` is that branch behaving as documented - the KSCE-LSD15
+> article added a `"VEHICLE_LOAD_NUM": 2` User Defined example on
+> 2026-07-30, three days after this was written. Sent properly, branch 2
+> loses nothing. This is not a data-corruption case and does not belong
+> beside `/db/CONS`. See the 2026-09-03 entry at the end of this file for
+> the measured branch table and for what *is* wrong, which is requiredness.
 
 Also resolved: `/db/MVHC`'s `VEHICLE_LD_NAMES` takes the vehicle's
 `VEHICLE_LOAD_NAME` (`"KR(SRB)_DB-24"`), not the type name (`"DB-18"`) the
@@ -8254,3 +8265,160 @@ So the server resolved the element from the `Assign` key, and `ITEMS[].ID`
 echoed back. `DbResource.create()` already keys by id, so both SDKs send this
 correctly; what the run corrects is the reading of the confirmed fixture, whose
 `ID` field looks like the selector and is not.
+
+## 2026-09-03 (later still) — what the manual's "Create Only" actually means
+
+`Create Only` appears in exactly two Required cells in the whole manual, and
+both are a field named `CALC_OPT`: `/db/SECT`'s `SECTTYPE: "VALUE"` branch
+(default `true`) and `/db/SPFC`'s design-spectrum branch (default `false`).
+The extractor does not recognise the value and emits a note instead of a
+requiredness, so `/db/SECT` and `/db/SPFC` have both been sitting on it.
+
+Measured on Gen NX against an empty document, with every record deleted by id
+afterwards. `/doc/NEW` was neither needed nor called.
+
+**The two rows say the same thing and the product means two different things
+by it.** That is the finding: "Create Only" cannot be read off the manual into
+a contract as one shared semantic, because the manual's own two uses of it do
+not agree with each other.
+
+### `/db/SECT` — literal, and it leaves stale stiffness behind
+
+`CALC_OPT` is not a stored property. No GET on any of the seven sections
+created here returned the key. What it does is decide whether the server
+computes `SECT_I.STIFF` (`AREA`, `ASY`, `ASZ`, `RXX`...) and `SECT_I.DESIGN`
+from `vSIZE`, and it decides that **only on POST**:
+
+| POST | `STIFF` in the body | result |
+| --- | --- | --- |
+| `CALC_OPT` omitted | absent | computed from `vSIZE` |
+| `CALC_OPT: true` | absent | computed from `vSIZE` |
+| `CALC_OPT: false` | absent | **refused** - `[Error] Section input data contain errors.` |
+| `CALC_OPT` omitted | present | stored verbatim |
+| `CALC_OPT: true` | present | stored verbatim |
+| `CALC_OPT: false` | present | stored verbatim |
+
+So the documented default `true` is confirmed, and `false` is a real gate — it
+forbids the computation, which is why it fails when there is nothing to fall
+back on. But a supplied `STIFF` wins under every value, including `true`:
+`AREA: 0.999` on a 0.3 m H section was stored as `0.999`.
+
+The asymmetry that names the row is exact. **The identical body that POST
+refuses is accepted as a PUT:**
+
+```text
+POST {"CALC_OPT": false, ...no STIFF}  ->  [Error] Section input data contain errors.
+PUT  {"CALC_OPT": false, ...no STIFF}  ->  accepted, record keeps the STIFF it had
+```
+
+And `CALC_OPT: true` on a PUT does not compute anything:
+
+| step | `vSIZE[0]` | `STIFF.AREA` |
+| --- | --- | --- |
+| POST, `CALC_OPT` omitted | 0.3 | 0.004533 (computed) |
+| PUT to 0.9, `STIFF` stripped, no `CALC_OPT` | 0.9 | 0.004533 |
+| PUT to 0.9, `STIFF` stripped, `CALC_OPT: true` | 0.9 | 0.004533 |
+| POST a fresh section at 0.9 | 0.9 | **0.008433** |
+
+A section deliberately corrupted to `AREA: 0.777` stayed at `0.777` through a
+PUT with `CALC_OPT: true` and `STIFF` stripped.
+
+⚠️ **Resizing a `VALUE` section through PUT leaves the model carrying the new
+dimensions with the old section properties** — 200, no error, and the record
+reads back looking self-consistent unless the caller knows what `AREA` should
+have become. Same silent-corruption family as `/db/CONS` truncating an
+8-character `CONSTRAINT` and `/db/MVHL`'s empty `VEH_DEFAULT` no-op. Deleting
+and re-POSTing is the only way to recompute through the API.
+
+### `/db/SPFC` — the same words, and "Create Only" is wrong
+
+Here `CALC_OPT: true` is what makes the server build the 103-point `aFUNC`
+spectrum from the code parameters in `STR`/`OPT`/`VAL`. Omitted or `false`
+with no `aFUNC` supplied is refused:
+
+```text
+[Error] Spectrum Function Data (Name:KDS_None) contains errors.(Item:Spectrum Data)
+```
+
+Which means **the manual's own KDS(41-17-00:2019) worked example does not
+run** — it omits `CALC_OPT` and supplies no `aFUNC`. Registered as MD-15.
+
+Unlike `/db/SECT`, `CALC_OPT` is fully honoured on PUT. Starting from a record
+whose `aFUNC` had been hand-set to a 2-point flat curve at `0.5`, against code
+parameters that generate a peak of `0.0528`:
+
+| PUT (`aFUNC` stripped each time) | stored `aSRA` | stored curve |
+| --- | --- | --- |
+| `CALC_OPT: true` | [0.22, 0.154] | **103 pts, peak 0.0528 - recomputed** |
+| `CALC_OPT: false`, `aSRA` doubled | [0.44, 0.308] | 103 pts, peak 0.0528 - untouched |
+| `CALC_OPT` omitted, `aSRA` doubled | [0.44, 0.308] | 103 pts, peak 0.0528 - untouched |
+
+`true` on a PUT rebuilt the curve; `false` and omission left it alone. So the
+documented default `false` is confirmed for this endpoint too, and the
+`Create Only` cell is simply not true of it.
+
+Rows two and three are the stale-derived-data shape again, in a milder form:
+new code parameters can be stored against a curve they do not generate. Here,
+unlike `/db/SECT`, the caller has a fix — resend with `CALC_OPT: true`.
+
+`/db/SPFC` also renumbers a POSTed record, joining `/db/STLD` and `/db/TDME`.
+
+## 2026-09-03 (later still) — `/db/MVHL`: the finding was real, the reading was not
+
+`VEHICLE_LOAD_NUM` has been quoted in three places in this repo as a
+documented value that is wrong live, and as a silent-data-corruption case
+alongside `/db/CONS`. Measured properly on Civil NX, it is **neither**. It is
+the endpoint's branch discriminator, and it does exactly what the manual's own
+worked examples show.
+
+| `VEHICLE_LOAD_NUM` | companion fields | result |
+| --- | --- | --- |
+| `1` | `VEHICLE_TYPE_NAME` + `STANDARD_CODE` | stored intact - standard DB vehicle |
+| `2` | `USER_LOAD_TYPE` + `LOAD_ITEMS` | stored intact - all three axle loads kept |
+| `2` | `VEHICLE_TYPE_NAME` + `STANDARD_CODE` | branch-1 fields discarded, user-defined Truck/Lane stored |
+| `1` | no `VEHICLE_TYPE_NAME` | **refused** - `(Item:Length of Vehicular Load Type(0 ~ 40 characters))` |
+| `3` | - | **refused** - `Wrong Field` |
+| omitted | - | **refused** - `Wrong Field` |
+
+Row three is the 2026-07-26 observation, reproduced exactly. What it shows is
+not a product discarding a caller's data: it is **branch 2 ignoring branch 1's
+fields**, which is what selecting branch 2 means. The manual has said so since
+2026-07-30, when the KSCE-LSD15 article added a User Defined example carrying
+`"VEHICLE_LOAD_NUM": 2` with `USER_LOAD_TYPE` and no `VEHICLE_TYPE_NAME`.
+
+Sent properly, branch 2 is not lossy at all — `LOAD_ITEMS`' three axle loads
+came back field for field.
+
+This is the fourth finding in the same family as the retracted B-1/B-2/B-3 and
+the iGen code names: a real observation, correctly recorded, with a conclusion
+about the *manual* that the source did not support. The observation was made
+before the branch was documented, and nobody re-read it afterwards.
+
+### What is actually wrong is narrower, and it is requiredness
+
+The common Specifications table marks every branch-1 and branch-2 field
+without reference to the branch. Measured:
+
+| field | table says | measured |
+| --- | --- | --- |
+| `VEHICLE_TYPE_NAME` | Required | required **only** when `VEHICLE_LOAD_NUM: 1` |
+| `STANDARD_CODE` | Required | **not required at all** - omitted, accepted, stored without it |
+| `USER_LOAD_TYPE` | Optional | ignored on input under `MVLD_CODE: 2`; the server always stored `"Truck/Lane"`, for `"Train"`, `"Lane"`, `"Truck"`, `"TruckLane"` and omission alike |
+
+Same shape as `/db/FIMP`'s table stating child keys without their parents.
+Registered as MD-16. `STANDARD_CODE` confirms by a write what
+`VehiclePayload`'s docstring already recorded from a read of a real Eurocode
+model: its Load Model 1 entry carries no `STANDARD_CODE` key at all.
+
+### Two things that are not validated on write
+
+- `STANDARD_CODE` is checked against its own enum — `"NOT-A-CODE"` answers
+  `Wrong Field` — but **not against the vehicle or the moving-load code**.
+  `"KS-RB"` was accepted and stored on an `MVLD_CODE: 2` (AASHTO LRFD)
+  `HL-93TRK` vehicle.
+- `VEHICLE_TYPE_NAME` is **not validated at all**. `"NOT-A-VEHICLE"` was
+  accepted and stored verbatim. Since that name is what selects which standard
+  vehicle's axle loads the analysis uses, a typo here is silent.
+
+`/db/MVHL` renumbers a POSTed record too — keys 10-14, 20, 21 landed at ids
+4-10.

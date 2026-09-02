@@ -722,9 +722,10 @@
             "optional",
             "conditional",
             "read_only",
+            "create_only",
             "unstated"
           ],
-          "description": "The manual's Required column, normalized. read_only = the server returns it and ignores it on write. unstated means the manual gives no requiredness claim."
+          "description": "The manual's Required column, normalized. read_only = the server returns it and ignores it on write. create_only = the manual says the server honours it on create and ignores it on modify; like every value here it records the documentation, and 2026-09-03 measured one of the manual's two uses of it to be false, so a contract that carries it should say whether anyone has checked. unstated means the manual gives no requiredness claim."
         },
         "condition": {
           "type": "string",

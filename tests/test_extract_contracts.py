@@ -3428,3 +3428,78 @@ def test_a_renamed_key_carries_its_defect_record_into_the_draft(tmp_path: Path):
     assert "/info/db/TDME" in correction.actual
     assert "schema/info-schemas.json" in correction.evidence
     assert "MD-13" in correction.evidence
+
+
+def test_the_manuals_create_only_is_read_as_a_requiredness_not_dropped():
+    """`Create Only` is the sibling of `Get Only` and was going nowhere.
+
+    Both are the Required column naming a *method scope* rather than a
+    requiredness, and `Get Only` has always mapped to `read_only`. `Create
+    Only` fell through to the unrecognised-value note, so `/db/SECT` and
+    `/db/SPFC` each carried an open question instead of the claim the manual
+    actually makes.
+    """
+
+    assert ex._normalize_requirement("Create Only") == ("create_only", None, None)
+    assert ex._normalize_requirement("create-only") == ("create_only", None, None)
+    assert ex._normalize_requirement("Get Only") == ("read_only", None, None)
+
+
+def test_create_only_records_the_manuals_claim_and_not_the_products_behaviour():
+    """The manual uses this value twice and the product honours it once.
+
+    Measured 2026-09-03: `/db/SECT` matches the cell exactly, `/db/SPFC` does
+    not - `CALC_OPT: true` on a PUT rebuilds its spectrum. If `create_only`
+    ever came to mean "the server ignores this on PUT", the contract would be
+    asserting something false about one of the only two endpoints that use it.
+    So the correction lives beside the value, and this test is what keeps the
+    pair together.
+    """
+
+    assert "/db/SPFC" in ex._MANUAL_REQUIREDNESS_CORRECTIONS
+    entries = ex._MANUAL_REQUIREDNESS_CORRECTIONS["/db/SPFC"]["CALC_OPT"]
+    kinds = [entry.describes for entry in entries]
+
+    assert "requiredness" in kinds
+    assert any("honoured on PUT" in entry.actual for entry in entries)
+    assert all("MD-15" in entry.evidence for entry in entries)
+    assert "/db/SECT" not in ex._MANUAL_REQUIREDNESS_CORRECTIONS
+
+
+def test_a_measured_requiredness_correction_names_the_cell_it_disproves():
+    """`/db/PRES`'s row is wrong twice over, and they are different claims.
+
+    `Optional` and a default of `"NORMAL"` are two statements; the run that
+    disproved them refused the field's absence *and* the value it names. A
+    single defect record would have to pick one, and a reader would then have
+    the other reinstated by the next manual sync.
+    """
+
+    entries = ex._MANUAL_REQUIREDNESS_CORRECTIONS["/db/PRES"]["DIRECTION"]
+    kinds = {entry.describes for entry in entries}
+
+    assert kinds == {"requiredness", "default"}
+    assert all("live_verification_notes" in entry.evidence for entry in entries)
+
+
+def test_every_measured_correction_describes_a_kind_the_schema_accepts():
+    """`describes` is a closed enum in the contract schema.
+
+    These records are written straight into a draft, so a value the schema
+    does not know would only surface as a validation failure on whichever
+    endpoint happened to be promoted next.
+    """
+
+    schema = json.loads(
+        (ROOT / "contracts" / "schema" / "endpoint-contract.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    allowed = set(
+        schema["properties"]["manualDefects"]["items"]["properties"]["describes"]["enum"]
+    )
+
+    for endpoint, fields in ex._MANUAL_REQUIREDNESS_CORRECTIONS.items():
+        for key, entries in fields.items():
+            for entry in entries:
+                assert entry.describes in allowed, f"{endpoint} {key}: {entry.describes}"

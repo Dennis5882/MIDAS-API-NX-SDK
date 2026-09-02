@@ -1302,13 +1302,20 @@ def _moving_cases() -> List[Case]:
         ),
         # id 2: vehicle 1 is the seeded HL-93TRK the class/case reference.
         #
-        # ⚠️ VEHICLE_LOAD_NUM must be 1 for a standard vehicle. Sending 2
-        # (verified live 2026-07-26, on the Korea-standard fixture this
-        # replaced) makes NX **silently discard** VEHICLE_TYPE_NAME and
-        # STANDARD_CODE and store the record as a user-defined "Truck/Lane"
-        # vehicle instead — 200, no error, and the only way to notice is to
-        # read the record back. Same failure shape as /db/CONS truncating an
-        # 8-character CONSTRAINT.
+        # VEHICLE_LOAD_NUM is the endpoint's branch discriminator, not a
+        # count: 1 selects a standard DB vehicle (VEHICLE_TYPE_NAME +
+        # STANDARD_CODE), 2 a user-defined one (USER_LOAD_TYPE +
+        # LOAD_ITEMS). 3 and omission both answer Wrong Field. So this
+        # fixture sends 1 because it is a standard HL-93TDM; sending 2 here
+        # would build a user-defined vehicle and ignore the type name, which
+        # is the branch working, not the product discarding data.
+        #
+        # An earlier version of this comment called that a silent corruption
+        # alongside /db/CONS. Retracted 2026-09-03 after measuring both
+        # branches on Civil NX — sent properly, branch 2 keeps every field.
+        # What is worth knowing is the other way round: VEHICLE_TYPE_NAME is
+        # not validated at all, so "NOT-A-VEHICLE" stores verbatim.
+        # See docs/live_verification_notes.md and MD-16.
         Case(
             Vehicles,
             {"MVLD_CODE": 2, "VEHICLE_LOAD_NAME": "HL93TDM_CRUD",

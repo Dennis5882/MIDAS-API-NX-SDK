@@ -127,7 +127,7 @@ call("POST", "/db/NMAS", {"Assign": {"9101": {
 | 대상 | 입력 | 실제 결과 | 응답 |
 | --- | --- | --- | --- |
 | `/db/CONS` | `CONSTRAINT` 8자 | 앞 7자로 **절단** → 요청하지 않은 구속 생성 | 200. **응답은 8자 그대로 반환** |
-| `/db/MVHL` | `VEHICLE_LOAD_NUM: 2` | `VEHICLE_TYPE_NAME`·`STANDARD_CODE` **폐기**, 사용자정의 차량으로 저장 | 200, 오류 없음 |
+| `/db/MVHL` | `VEHICLE_TYPE_NAME: "NOT-A-VEHICLE"` | 존재하지 않는 표준 차량명이 **그대로 저장** | 200, 오류 없음 |
 | `/db/SECF` | element ID를 키로 사용 | **아무것도 저장되지 않음** | 200, 오류 없음 |
 
 ```python
@@ -142,15 +142,23 @@ call("GET", "/db/CONS")
 entered.`). **짧으면 거부하고 길면 조용히 잘라내는 비대칭**이 문제로 보입니다.
 
 ```python
-# /db/MVHL — VEHICLE_LOAD_NUM 을 2로 보낸 경우
-# 전송: {..., "VEHICLE_LOAD_NUM": 2, "VEHICLE_TYPE_NAME": "DB-18",
-#             "STANDARD_CODE": "KS-RB", ...}
-# 저장: {..., "VEHICLE_LOAD_NUM": 2, "USER_LOAD_TYPE": "Truck/Lane", ...}
-#       VEHICLE_TYPE_NAME 과 STANDARD_CODE 가 사라졌습니다.
+# /db/MVHL — 존재하지 않는 표준 차량명
+call("POST", "/db/MVHL", {"Assign": {"1": {
+    "MVLD_CODE": 2, "VEHICLE_LOAD_NAME": "NONSENSETYPE", "VEHICLE_LOAD_NUM": 1,
+    "VEHICLE_TYPE_NAME": "NOT-A-VEHICLE", "STANDARD_CODE": "AASHTO-LRFD",
+    "VEH_DEFAULT": {"DYN_LOAD_ALLOWANCE": 33, "CENT_F": False}}}})
+# 저장: {..., "VEHICLE_TYPE_NAME": "NOT-A-VEHICLE", ...}   그대로 저장됩니다.
 ```
 
-`VEHICLE_LOAD_NUM: 1`이면 `DB-18`·`DB-24`·`DL-24` 모두 정상 저장됩니다. 표준 차량 지정이
-실패했다면 오류로 알려주시는 편이 안전합니다.
+`STANDARD_CODE`는 자체 enum 검증을 받아 `"NOT-A-CODE"`는 `Wrong Field`로 거부되지만,
+`VEHICLE_TYPE_NAME`은 검증되지 않습니다. 이 이름이 어떤 표준 차량의 축하중을 쓸지를
+결정하므로, 오타 하나가 해석 결과를 조용히 바꿉니다. 같은 요청에서 `STANDARD_CODE`에
+AASHTO LRFD 차량과 한국 기준(`"KS-RB"`)을 함께 보내도 그대로 저장됩니다.
+
+> 보고서 이전 판에서는 이 자리에 `VEHICLE_LOAD_NUM: 2`가 표준 차량을 조용히
+> 사용자정의 차량으로 바꿈다고 적어 두었습니다. **철회합니다** — 2026-09-03 재측정 결과
+> `VEHICLE_LOAD_NUM`은 분기 선택자이고(`1`=표준, `2`=사용자정의), `2`를 보낸 뒤
+> 표준 차량 필드가 무시되는 것은 문서대로 동작한 것입니다. 제품 결함이 아닙니다.
 
 `/db/SECF`는 **단면 ID**를 키로 받습니다. element ID로 보내면 200이 반환되면서 아무것도
 저장되지 않습니다. 잘못된 키를 쓴 저희 쪽 실수였지만, 조회되지 않는 키에 대해 성공을

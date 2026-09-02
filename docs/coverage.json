@@ -1064,7 +1064,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_smoke.py",
+        "method": "scripts/live_smoke.py CALC_OPT measured 2026-09-03 on Gen NX: the manual's `Create Only` is literal here - the server derives SECT_I.STIFF/DESIGN from vSIZE on POST only, and a PUT that resizes a VALUE section keeps the old properties even with CALC_OPT: true. See docs/live_verification_notes.md and MD-15.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
           "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
@@ -3196,7 +3196,7 @@
           "civil",
           "gen"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too. Full write-round-trip confirmed live on Gen NX too, 2026-08-17 (batch 11b) -- the identical AASHTO LRFD fixture passes clean on both products; the 2026-08-10 note above was GET-only for Gen, this closes that to a real write proof.",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too. Full write-round-trip confirmed live on Gen NX too, 2026-08-17 (batch 11b) -- the identical AASHTO LRFD fixture passes clean on both products; the 2026-08-10 note above was GET-only for Gen, this closes that to a real write proof. VEHICLE_LOAD_NUM measured 2026-09-03 on Civil NX: it is the branch discriminator (1 standard, 2 user-defined), not a documented value wrong live - that reading is retracted. Both branches store intact when sent properly. VEHICLE_TYPE_NAME is not validated at all. See docs/live_verification_notes.md and MD-16.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
@@ -3656,7 +3656,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras5: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras5: create->GET->update->GET->delete all succeeded on both products. CALC_OPT measured 2026-09-03 on Gen NX: unlike /db/SECT's identically documented cell, it is honoured on PUT, and a code-variant function needs CALC_OPT: true - the section's own KDS(41-17-00:2019) worked example is refused as printed. See docs/live_verification_notes.md and MD-15.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
