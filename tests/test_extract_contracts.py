@@ -1313,6 +1313,85 @@ def test_a_tree_marker_nests_as_deep_as_it_repeats(tmp_path: Path):
     assert [leaf.key for leaf in parent.properties[0].properties] == ["LEAF"]
 
 
+def test_a_repeated_key_under_a_different_tree_parent_is_not_a_duplicate(tmp_path: Path):
+    """`NAME` under LAYER1 and `NAME` under LAYER2 are two fields.
+
+    Duplicate suppression scopes a repeated key by the No. column's parent,
+    because `CONCRETE.CODE` and `REBAR.CODE` share a last token and are not
+    the same field. A table that nests with `└` markers has no numbered scope,
+    so the check collapsed to the bare key and dropped every repeat anywhere
+    in the table.
+
+    A rebar table is nothing but repeats.
+    `/DESIGN/SRC/AIK-SRC2K/MRBD` kept 14 of the 54 paths its own JSON Schema
+    declares - 53 rows across that chapter, and none anywhere else - which is
+    what held it out of the source of truth. The running tree path is the
+    scope those rows do have.
+    """
+
+    path = tmp_path / "99_DESIGN_TreeRepeat.md"
+    path.write_text(
+        """## 1. `/DESIGN/TREE-REPEAT` -- repeated keys under tree markers
+
+| Key | Value Type | Description | Default | Required |
+|---|---|---|---|---|
+| `SECTOR_I` | Object | I-end rebar. | | |
+| └ `TOP` | Object | Top rebar. | | O |
+| └ └ `LAYER1` | Object | First layer. | | O |
+| └ └ └ `NAME` | String | Size. | | O |
+| └ └ └ `NUM` | Integer | Count. | | O |
+| └ └ `LAYER2` | Object | Second layer. | | |
+| └ └ └ `NAME` | String | Size. | | O |
+| └ └ └ `NUM` | Integer | Count. | | O |
+| `SECTOR_J` | Object | J-end rebar. | | |
+| └ `TOP` | Object | Top rebar. | | O |
+| └ └ `LAYER1` | Object | First layer. | | O |
+| └ └ └ `NAME` | String | Size. | | O |
+""",
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    roots = {field.key: field for field in section.tables[0].fields}
+    assert list(roots) == ["SECTOR_I", "SECTOR_J"]
+
+    top = roots["SECTOR_I"].properties[0]
+    assert [layer.key for layer in top.properties] == ["LAYER1", "LAYER2"]
+    # The second layer keeps its own NAME and NUM rather than losing them to
+    # the first layer's.
+    for layer in top.properties:
+        assert [leaf.key for leaf in layer.properties] == ["NAME", "NUM"]
+
+    # And a whole second sector repeating the same subtree survives too, which
+    # needs the root row itself to be part of the scope.
+    assert roots["SECTOR_J"].properties[0].properties[0].properties[0].key == "NAME"
+
+
+def test_a_table_without_tree_markers_keeps_its_numbered_duplicate_scope(tmp_path: Path):
+    """The tree scope must not loosen the check it sits beside.
+
+    Two rows numbered into the same object are still one field listed twice,
+    and a table with no markers never enters the tree path at all.
+    """
+
+    path = tmp_path / "99_DB_NumberedDuplicate.md"
+    path.write_text(
+        """## 1. `/db/NUMBERED-DUP` -- a key listed twice in one scope
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Parent | `"PARENT"` | Object | - | Required |
+| (1) | Child | `"CHILD"` | String | - | Required |
+| (1) | Child again | `"CHILD"` | String | - | Required |
+""",
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    parent = section.tables[0].fields[0]
+    assert [child.key for child in parent.properties] == ["CHILD"]
+
+
 def test_a_repeated_heading_selector_is_not_a_discriminator(tmp_path: Path):
     """One value cannot select two field sets, so neither table merges.
 

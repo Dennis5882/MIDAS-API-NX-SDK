@@ -215,6 +215,51 @@ fields:
     safeToOmit: unverified
     provenance: manual
     properties:
+      - key: CODE
+        description: >-
+          콘크리트 재질 코드 타입. — None=없음; Standard=표준
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: the manual nests this under 'CONCRETE' with a tree marker
+        # rather than a path
+      - key: STANDARD_CODE
+        description: >-
+          CODE가 Standard일 때의 콘크리트 표준 코드. 현재 KS19(RC)만 지원됨. — KS19(RC)=KS19(RC)
+        type: string
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: the manual nests this under 'CONCRETE' with a tree marker
+        # rather than a path
+      - key: NAME
+        description: >-
+          CODE가 None일 때의 사용자 정의 콘크리트 재질 이름.
+        type: string
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: the manual nests this under 'CONCRETE' with a tree marker
+        # rather than a path
+      - key: GRADE
+        description: >-
+          CODE가 Standard일 때의 콘크리트 등급. — C15=C15; C18=C18; C21=C21; C24=C24; C27=C27;
+          C30=C30; C35=C35; C40=C40; C45=C45; C49=C49; C50=C50; C55=C55 …(전체 20개)
+        type: string
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: the manual nests this under 'CONCRETE' with a tree marker
+        # rather than a path
       - key: FC
         description: >-
           설계기준압축강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력.
@@ -236,6 +281,28 @@ fields:
     safeToOmit: unverified
     provenance: manual
     properties:
+      - key: CODE
+        description: >-
+          철근 코드 타입. — None=없음; Standard=표준
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: the manual nests this under 'REINFORCEMENT' with a tree marker
+        # rather than a path
+      - key: STANDARD_CODE
+        description: >-
+          CODE가 Standard일 때의 철근 표준 코드. 현재 KS19(RC)만 지원됨. — KS19(RC)=KS19(RC)
+        type: string
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: the manual nests this under 'REINFORCEMENT' with a tree marker
+        # rather than a path
       - key: MAIN_REBAR_NAME
         description: >-
           CODE가 None일 때의 사용자 정의 주철근 이름.

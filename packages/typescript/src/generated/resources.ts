@@ -318,7 +318,7 @@ export const resources = {
       },
     },
     srcAiksrc2k: {
-      srcBeamSectionData: defineDbResource<Types.DesignSrcAiksrc2kTypes.SrcBeamSectionDataPayload>({"className":"SrcBeamSectionData","endpoint":"/DESIGN/SRC/AIK-SRC2K/MRBD","name":"SRC Beam Section Data","products":["civil","gen"],"methods":["DELETE","GET","POST","PUT"],"manualChapter":"27_Design_SRC_AIKSRC2K.md"}),
+      srcBeamSectionData: defineDbResource<Types.DesignSrcAiksrc2kTypes.SrcBeamSectionDataPayload>({"className":"SrcBeamSectionData","endpoint":"/DESIGN/SRC/AIK-SRC2K/MRBD","name":"Modify SRC Beam Section Data","products":["civil","gen"],"methods":["DELETE","GET","POST","PUT"],"manualChapter":"27_Design_SRC_AIKSRC2K.md"}),
       srcColumnSectionData: defineDbResource<Types.DesignSrcAiksrc2kTypes.SrcColumnSectionDataPayload>({"className":"SrcColumnSectionData","endpoint":"/DESIGN/SRC/AIK-SRC2K/MCRD","name":"Modify SRC Column Section Data","products":["civil","gen"],"methods":["DELETE","GET","POST","PUT"],"manualChapter":"27_Design_SRC_AIKSRC2K.md"}),
       srcDefinitionOfFrame: defineDbResource<Types.DesignSrcAiksrc2kTypes.SrcDefinitionOfFramePayload>({"className":"SrcDefinitionOfFrame","endpoint":"/DESIGN/SRC/AIK-SRC2K/DCTL","name":"Definition of Frame","products":["civil","gen"],"methods":["DELETE","GET","PUT"],"manualChapter":"27_Design_SRC_AIKSRC2K.md"}),
       srcDesignCode: defineDbResource<Types.DesignSrcAiksrc2kTypes.SrcDesignCodePayload>({"className":"SrcDesignCode","endpoint":"/DESIGN/SRC/AIK-SRC2K/DSRC","name":"SRC Design Code","products":["civil","gen"],"methods":["DELETE","PUT"],"manualChapter":"27_Design_SRC_AIKSRC2K.md"}),

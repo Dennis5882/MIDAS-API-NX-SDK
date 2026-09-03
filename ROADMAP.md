@@ -613,4 +613,4 @@ Pick any unchecked row, implement it in the listed `module`, add a test mirrorin
 | [x] | R | `/DESIGN/SRC/AIK-SRC2K/MATD` | SRC Modify Material | gen | `midas_nx.design.src_aiksrc2k` |
 | [x] | R | `/DESIGN/SRC/AIK-SRC2K/MCRD` | SRC Column Section Data | gen/civil | `midas_nx.design.src_aiksrc2k` |
 | [x] | R | `/DESIGN/SRC/AIK-SRC2K/MEMB` | Member Assignment | gen/civil | `midas_nx.design.src_aiksrc2k` |
-| [x] | R | `/DESIGN/SRC/AIK-SRC2K/MRBD` | SRC Beam Section Data | gen/civil | `midas_nx.design.src_aiksrc2k` |
+| [x] | R | `/DESIGN/SRC/AIK-SRC2K/MRBD` | Modify SRC Beam Section Data | gen/civil | `midas_nx.design.src_aiksrc2k` |

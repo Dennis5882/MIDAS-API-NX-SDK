@@ -9675,11 +9675,23 @@ export namespace DesignSrcAiksrc2kTypes {
     };
     /** 콘크리트 재질 선택. */
     CONCRETE: {
+      /** 콘크리트 재질 코드 타입. — None=없음; Standard=표준 */
+      CODE: string;
+      /** CODE가 Standard일 때의 콘크리트 표준 코드. 현재 KS19(RC)만 지원됨. — KS19(RC)=KS19(RC) */
+      STANDARD_CODE?: string;
+      /** CODE가 None일 때의 사용자 정의 콘크리트 재질 이름. */
+      NAME?: string;
+      /** CODE가 Standard일 때의 콘크리트 등급. — C15=C15; C18=C18; C21=C21; C24=C24; C27=C27; C30=C30; C35=C35; C40=C40; C45=C45; C49=C49; C50=C50; C55=C55 …(전체 20개) */
+      GRADE?: string;
       /** 설계기준압축강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
       FC?: number;
     };
     /** 철근 재질 선택. */
     REINFORCEMENT: {
+      /** 철근 코드 타입. — None=없음; Standard=표준 */
+      CODE: string;
+      /** CODE가 Standard일 때의 철근 표준 코드. 현재 KS19(RC)만 지원됨. — KS19(RC)=KS19(RC) */
+      STANDARD_CODE?: string;
       /** CODE가 None일 때의 사용자 정의 주철근 이름. */
       MAIN_REBAR_NAME?: string;
       /** CODE가 Standard일 때의 주철근 등급. — SD300=SD300; SD400=SD400; SD500=SD500; SD600=SD600; SD700=SD700; SD400S=SD400S; SD500S=SD500S; SD600S=SD600S */
@@ -9725,6 +9737,8 @@ export namespace DesignSrcAiksrc2kTypes {
     };
     /** 후프/타이 철근 데이터. */
     SHEAR_BAR: {
+      /** 후프/타이 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+      NAME: string;
       /** 후프/타이 철근 간격. USE_REBAR_SPACE가 false일 때 사용. */
       DIST: number;
     };
@@ -9750,13 +9764,137 @@ export namespace DesignSrcAiksrc2kTypes {
     STIRRUP_SPACE?: number;
     STIRRUP_NUM?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SrcBeamSectionDataPayload {
-    BAR_SECTOR_I?: SrcBeamBarSector;
-    BAR_SECTOR_M?: SrcBeamBarSector;
-    BAR_SECTOR_J?: SrcBeamBarSector;
-    DT?: number;
-    DB?: number;
-    SHEAR_BAR?: string;
+    /** I단면 철근 배치. */
+    BAR_SECTOR_I?: {
+      /** 상부 철근 배치. */
+      TOP: {
+        /** 상부 철근 1단. */
+        LAYER1: {
+          /** 상부 철근 1단의 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+          NAME: string;
+          /** 상부 철근 1단의 철근 개수. */
+          NUM: number;
+        };
+        /** 상부 철근 2단. */
+        LAYER2?: {
+          /** 상부 철근 2단의 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+          NAME: string;
+          /** 상부 철근 2단의 철근 개수. */
+          NUM: number;
+        };
+      };
+      /** 하부 철근 배치. */
+      BOT: {
+        /** 하부 철근 1단. */
+        LAYER1: {
+          /** 하부 철근 1단의 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+          NAME: string;
+          /** 하부 철근 1단의 철근 개수. */
+          NUM: number;
+        };
+        /** 하부 철근 2단. */
+        LAYER2?: {
+          /** 하부 철근 2단의 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+          NAME: string;
+          /** 하부 철근 2단의 철근 개수. */
+          NUM: number;
+        };
+      };
+      /** I단면 스터럽 간격. */
+      STIRRUP_SPACE: number;
+      /** I단면 스터럽 세트 수. */
+      STIRRUP_NUM?: number;
+    };
+    /** M단면 철근 배치. */
+    BAR_SECTOR_M?: {
+      /** 상부 철근 배치. */
+      TOP: {
+        /** 상부 철근 1단. */
+        LAYER1: {
+          /** 상부 철근 1단의 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+          NAME: string;
+          /** 상부 철근 1단의 철근 개수. */
+          NUM: number;
+        };
+        /** 상부 철근 2단. */
+        LAYER2?: {
+          /** 상부 철근 2단의 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+          NAME: string;
+          /** 상부 철근 2단의 철근 개수. */
+          NUM: number;
+        };
+      };
+      /** 하부 철근 배치. */
+      BOT: {
+        /** 하부 철근 1단. */
+        LAYER1: {
+          /** 하부 철근 1단의 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+          NAME: string;
+          /** 하부 철근 1단의 철근 개수. */
+          NUM: number;
+        };
+        /** 하부 철근 2단. */
+        LAYER2?: {
+          /** 하부 철근 2단의 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+          NAME: string;
+          /** 하부 철근 2단의 철근 개수. */
+          NUM: number;
+        };
+      };
+      /** M단면 스터럽 간격. */
+      STIRRUP_SPACE: number;
+      /** M단면 스터럽 세트 수. */
+      STIRRUP_NUM?: number;
+    };
+    /** J단면 철근 배치. */
+    BAR_SECTOR_J?: {
+      /** 상부 철근 배치. */
+      TOP: {
+        /** 상부 철근 1단. */
+        LAYER1: {
+          /** 상부 철근 1단의 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+          NAME: string;
+          /** 상부 철근 1단의 철근 개수. */
+          NUM: number;
+        };
+        /** 상부 철근 2단. */
+        LAYER2?: {
+          /** 상부 철근 2단의 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+          NAME: string;
+          /** 상부 철근 2단의 철근 개수. */
+          NUM: number;
+        };
+      };
+      /** 하부 철근 배치. */
+      BOT: {
+        /** 하부 철근 1단. */
+        LAYER1: {
+          /** 하부 철근 1단의 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+          NAME: string;
+          /** 하부 철근 1단의 철근 개수. */
+          NUM: number;
+        };
+        /** 하부 철근 2단. */
+        LAYER2?: {
+          /** 하부 철근 2단의 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+          NAME: string;
+          /** 하부 철근 2단의 철근 개수. */
+          NUM: number;
+        };
+      };
+      /** J단면 스터럽 간격. */
+      STIRRUP_SPACE: number;
+      /** J단면 스터럽 세트 수. */
+      STIRRUP_NUM?: number;
+    };
+    /** 상부 철근 피복 두께. */
+    DT: number;
+    /** 하부 철근 피복 두께. */
+    DB: number;
+    /** 스터럽 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+    SHEAR_BAR: string;
   }
 }
 

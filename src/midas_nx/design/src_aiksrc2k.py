@@ -992,4 +992,6 @@ class SrcBeamSectionDataPayload(TypedDict, total=False):
 
 class SrcBeamSectionData(DbResource):
     ENDPOINT = f"{_BASE}/MRBD"
-    NAME = "SRC Beam Section Data"
+    #: The manual's own section label, which this used to shorten. The contract
+    #: owns published names now and the drift check compares them to the label.
+    NAME = "Modify SRC Beam Section Data"

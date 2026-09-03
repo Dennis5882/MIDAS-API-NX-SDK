@@ -7918,7 +7918,7 @@
       "className": "SrcBeamSectionData",
       "exportName": "srcBeamSectionData",
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/MRBD",
-      "name": "SRC Beam Section Data",
+      "name": "Modify SRC Beam Section Data",
       "products": [
         "civil",
         "gen"
@@ -7936,7 +7936,7 @@
       ],
       "manual": [
         {
-          "name": "SRC Beam Section Data",
+          "name": "Modify SRC Beam Section Data",
           "chapterFile": "27_Design_SRC_AIKSRC2K.md",
           "status": "implemented"
         }

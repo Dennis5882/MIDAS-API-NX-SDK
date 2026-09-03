@@ -3196,6 +3196,36 @@ def _canonical_wire_property(cell: str) -> str:
     return text.strip('"')
 
 
+def _tree_scope(cell: str, scope: dict) -> tuple | None:
+    """The running `└`-tree path of a row, or None if it carries no marker.
+
+    Duplicate suppression needs a scope, and a tree-marked table gives it one
+    the No. column cannot: the ancestors a row sits under. The marker repeats
+    once per level, so counting glyphs is the depth; recording the key at that
+    depth and discarding anything deeper keeps `scope` a live path from the
+    table's roots down to this row.
+
+    Two rows are the same field only when their whole path matches, which is
+    what lets `NAME` recur under LAYER1 and LAYER2, under TOP and BOT, and
+    under three bar sectors, without the later ones being read as repeats of
+    the first.
+    """
+    depth = cell.count("└")
+    key = _canonical_wire_property(cell)
+    if not depth:
+        # A root row opens a new path rather than clearing one. It has to stay
+        # in the scope: BAR_SECTOR_I, _M and _J each hold the identical
+        # TOP/LAYER1/NAME subtree, and a path that started below the sector
+        # would make the second and third sectors repeats of the first.
+        scope.clear()
+        scope[0] = key
+        return None
+    scope[depth] = key
+    for deeper in [level for level in scope if level > depth]:
+        del scope[deeper]
+    return tuple(scope[level] for level in sorted(scope))
+
+
 def _number_parent(number: str) -> str:
     """Return the documented parent number for a dotted or dashed child row."""
 
@@ -3276,9 +3306,13 @@ def _parse_tables(lines: list[str], offset: int, endpoint: str = "") -> list[Par
 
         fields: list[ParsedField] = []
         seen: set[tuple[str, str]] = set()
+        # The `└`-tree path of the row last read, per table and per inline
+        # variant, so a repeated key is only suppressed under the same parents.
+        scope: dict[int, str] = {}
         inline_variants: list[tuple[str, int, list[ParsedField], set[tuple[str, str]]]] = []
         target_fields = fields
         target_seen = seen
+        target_scope = scope
         row = index + 2
         while row < len(lines) and lines[row].startswith("|"):
             cells = _split_row(lines[row])
@@ -3306,6 +3340,7 @@ def _parse_tables(lines: list[str], offset: int, endpoint: str = "") -> list[Par
                 if _variant_condition(_clean(condition_text)) is not None:
                     target_fields = []
                     target_seen = set()
+                    target_scope = {}
                     inline_variants.append(
                         (_clean(condition_text), offset + row, target_fields, target_seen)
                     )
@@ -3330,7 +3365,22 @@ def _parse_tables(lines: list[str], offset: int, endpoint: str = "") -> list[Par
                 # ``CONCRETE.CODE`` and ``REBAR.CODE`` are different wire
                 # paths even though they share the last token. Only suppress
                 # a duplicate in the same numbered object scope.
-                entry_identity = (_number_parent(cells[0] if cells else ""), entry_key)
+                #
+                # A table that nests with `└` markers instead of a No. column
+                # has no numbered scope at all, so this used to collapse to the
+                # bare key and drop every repeat anywhere in the table. That is
+                # exactly what a rebar table is: `NAME` and `NUM` recur under
+                # LAYER1 and LAYER2, under TOP and BOT, under three bar sectors.
+                # 53 rows across ch27 were lost that way, 40 of them from
+                # /DESIGN/SRC/AIK-SRC2K/MRBD, which kept 14 of its 54 paths and
+                # was held out of the source of truth for it. The running tree
+                # path is the scope those rows do have.
+                tree_scope = _tree_scope(cells[0] if cells else "", target_scope)
+                entry_identity = (
+                    tree_scope
+                    if tree_scope is not None
+                    else (_number_parent(cells[0] if cells else ""), entry_key)
+                )
                 if entry_identity in target_seen:
                     continue
                 target_seen.add(entry_identity)

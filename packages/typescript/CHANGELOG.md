@@ -6,12 +6,12 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
-### Changed — six payload types are now generated from contracts
+### Changed — seven payload types are now generated from contracts
 
 - `SectionPayload`, `PressureLoadPayload`, `WallRebarPayload`,
-  `ColumnRebarPayload`, `BeamRebarPayload` and
-  `InelasticMaterialPropertyPayload` now come from `contracts/endpoints/`
-  rather than from the Python TypedDict. For the first two that means a **discriminated union**
+  `ColumnRebarPayload`, `BeamRebarPayload`,
+  `InelasticMaterialPropertyPayload` and `SrcBeamSectionDataPayload` now come
+  from `contracts/endpoints/` rather than from the Python TypedDict. For the first two that means a **discriminated union**
   over the field the manual actually branches on, with the fields the manual
   marks Required no longer optional.
 
@@ -78,6 +78,32 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
   A record with no `ITEMS` at all is left alone — that is a different request,
   not a missing field.
+
+### Fixed — three payload types were missing fields their manual documents
+
+- **`SrcBeamSectionDataPayload`, `SrcModifyMaterialPayload` and
+  `SrcColumnSectionDataPayload` dropped fields the manual states.** The generator
+  reads the manual's parameter tables through an extractor that suppresses a
+  repeated key inside the same numbered scope — `CONCRETE.CODE` and
+  `REBAR.CODE` are different fields that share a last token. A table that
+  nests with `└` depth markers instead of a No. column has no numbered scope,
+  so the check collapsed to the bare key and dropped every repeat anywhere in
+  the table.
+
+  A rebar table is nothing but repeats. `/DESIGN/SRC/AIK-SRC2K/MRBD` published
+  14 of the 54 paths its own JSON Schema declares: `NAME` and `NUM` recur under
+  `LAYER1` and `LAYER2`, under `TOP` and `BOT`, and under all three of
+  `BAR_SECTOR_I`/`_M`/`_J`, and only the first of each survived. `MATD` lost
+  `CONCRETE.CODE` — a **required** field — along with `CONCRETE.STANDARD_CODE`,
+  `.NAME`, `.GRADE` and `REINFORCEMENT.CODE`/`.STANDARD_CODE`; `MCRD` lost
+  `SHEAR_BAR.NAME`. 53 rows across the chapter in total, and none anywhere
+  else. Nothing that was published is removed.
+
+### Changed — `srcBeamSectionData.metadata.name`
+
+- Now `"Modify SRC Beam Section Data"`, the manual's own section label, which
+  this package had shortened to `"SRC Beam Section Data"`. Display metadata
+  only: the export, the endpoint and the payload type are unchanged.
 
 ### Fixed — branch fields that were published at the top level
 

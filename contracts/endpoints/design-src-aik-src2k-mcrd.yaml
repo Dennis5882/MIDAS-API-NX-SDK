@@ -162,6 +162,18 @@ fields:
     safeToOmit: unverified
     provenance: manual
     properties:
+      - key: NAME
+        description: >-
+          후프/타이 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13;
+          D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개)
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: the manual nests this under 'SHEAR_BAR' with a tree marker
+        # rather than a path
       - key: DIST
         description: >-
           후프/타이 철근 간격. USE_REBAR_SPACE가 false일 때 사용.
