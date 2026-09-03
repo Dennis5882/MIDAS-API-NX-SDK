@@ -138,7 +138,6 @@ def _declares_non_field_argument(draft: dict) -> bool:
 #: standing finding. Re-check an entry here against
 #: docs/live_verification_notes.md before adding to it.
 NEEDS_HAND_REVIEW = {
-    "/db/REBB": "its write path is broken server-side, not a shape question",
     "/db/FIMP": "its Specifications table states child keys without their parents",
     "/DESIGN/SRC/AIK-SRC2K/MRBD": "its table gives 14 of the 54 paths its own JSON Schema declares",
 }

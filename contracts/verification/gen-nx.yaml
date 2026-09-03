@@ -666,3 +666,35 @@ records:
       vendored chapter, so the defect is upstream of the manual repo.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-rebb-write-path-2026-08-27
+    endpoints: ["/db/REBB"]
+    date: "2026-08-27"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 06/23/2026
+    level: read
+    outcome: success
+    method: >-
+      A real target was built from scratch for this specifically - a C24
+      concrete MATL, a SECT with SHAPE "SB" following live_crud_check.py's
+      confirmed fixture pattern, a beam ELEM using it, and a DCON design code -
+      then POST /db/REBB was retried with this SDK's shape, the official
+      Zendesk article's own embedded JSON Schema block (LAYER1/LAYER2, DT/DB,
+      additionalProperties false), mixtures of the two, and a literally empty
+      item. GET /info/db/REBB was pulled field for field in the same session.
+      All fixtures were cleaned up afterwards.
+    finding: >-
+      Every write answered "Wrong Field", the empty item included - which rules
+      out the request body, since an empty object cannot contain a wrong field.
+      verify_connection() reported connected rather than a blocked-modal false
+      positive and an unrelated GET /db/NODE succeeded, so the session was
+      fine. Recorded as risk db-rebb-write-path-refuses-every-payload, the same
+      class as /db/NLLP and /db/WVLD. The /info schema is what the field names
+      rest on: vMAIN_BAR_TOP/BOT arrays of {NAME, NUM} inside BAR_SECTOR_I/M/J,
+      flat SKIN_BAR_NAME/NUM, MAIN_BAR_DC_TOP/BOT, three undocumented
+      bSAME_SIZE_* flags, and no CREATE_SUB_SECTION or ELEMS. It agrees with
+      the section's own worked example and disagrees with its parameter table,
+      and the official article contradicts itself the same way in one document.
+      The level stays read: nothing was written, because nothing could be.
+    riskRef: db-rebb-write-path-refuses-every-payload
+    evidence:
+      - docs/live_verification_notes.md

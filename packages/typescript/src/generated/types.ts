@@ -2288,8 +2288,113 @@ export namespace DbDesignTypes {
     bSAME_SIZE_IMJ?: boolean;
     bSAME_SIZE_LAYER?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface BeamRebarPayload {
-    ITEMS?: Array<BeamRebarItem>;
+    /** Concrete Beam Rebar Items */
+    ITEMS: Array<{
+      /** ID */
+      ID?: number;
+      /** Bar Sector-I */
+      BAR_SECTOR_I: {
+        /** Main Bar List : Top (size = 1 or 2) */
+        vMAIN_BAR_TOP: Array<{
+          /** Name */
+          NAME: string;
+          /** Number */
+          NUM: number;
+        }>;
+        /** Main Bar List : Bottom (size = 1 or 2) */
+        vMAIN_BAR_BOT: Array<{
+          /** Name */
+          NAME: string;
+          /** Number */
+          NUM: number;
+        }>;
+        /** Shear Bar */
+        SHEAR_BAR: {
+          /** Name */
+          NAME: string;
+          /** Leg */
+          LEG: number;
+          /** Dist */
+          DIST: number;
+        };
+        /** Skin Bar Name */
+        SKIN_BAR_NAME?: string;
+        /** Skin Bar Number */
+        SKIN_BAR_NUM?: number;
+      };
+      /** Bar Sector-M */
+      BAR_SECTOR_M: {
+        /** Main Bar List : Top (size = 1 or 2) */
+        vMAIN_BAR_TOP: Array<{
+          /** Name */
+          NAME: string;
+          /** Number */
+          NUM: number;
+        }>;
+        /** Main Bar List : Bottom (size = 1 or 2) */
+        vMAIN_BAR_BOT: Array<{
+          /** Name */
+          NAME: string;
+          /** Number */
+          NUM: number;
+        }>;
+        /** Shear Bar */
+        SHEAR_BAR: {
+          /** Name */
+          NAME: string;
+          /** Leg */
+          LEG: number;
+          /** Dist */
+          DIST: number;
+        };
+        /** Skin Bar Name */
+        SKIN_BAR_NAME?: string;
+        /** Skin Bar Number */
+        SKIN_BAR_NUM?: number;
+      };
+      /** Bar Sector-J */
+      BAR_SECTOR_J: {
+        /** Main Bar List : Top (size = 1 or 2) */
+        vMAIN_BAR_TOP: Array<{
+          /** Name */
+          NAME: string;
+          /** Number */
+          NUM: number;
+        }>;
+        /** Main Bar List : Bottom (size = 1 or 2) */
+        vMAIN_BAR_BOT: Array<{
+          /** Name */
+          NAME: string;
+          /** Number */
+          NUM: number;
+        }>;
+        /** Shear Bar */
+        SHEAR_BAR: {
+          /** Name */
+          NAME: string;
+          /** Leg */
+          LEG: number;
+          /** Dist */
+          DIST: number;
+        };
+        /** Skin Bar Name */
+        SKIN_BAR_NAME?: string;
+        /** Skin Bar Number */
+        SKIN_BAR_NUM?: number;
+      };
+      /** Dc Top : Outest bar center ~ Concrete Face */
+      MAIN_BAR_DC_TOP: number;
+      /** Dc Bottom : Outest bar center ~ Concrete Face */
+      MAIN_BAR_DC_BOT: number;
+      /** Same Main Bar Size at Top and Bottom */
+      bSAME_SIZE_TOP_BOT?: boolean;
+      /** Same Main Bar Size at I,M,J */
+      bSAME_SIZE_IMJ?: boolean;
+      /** Same Main Bar Size at Each Layer */
+      bSAME_SIZE_LAYER?: boolean;
+    }>;
   }
   export interface ColumnMainBarItem {
     NAME?: string;

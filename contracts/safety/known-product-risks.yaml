@@ -167,3 +167,39 @@ risks:
     evidence:
       - docs/live_verification_notes.md
 
+
+  - id: db-rebb-write-path-refuses-every-payload
+    title: POST/PUT /db/REBB answers "Wrong Field" whatever the body
+    severity: write
+    endpoints: ["/db/REBB"]
+    products: [gen]
+    symptom: >-
+      Every write answers {"error": ... "Wrong Field"} and changes nothing. The
+      message names no field, so it reads as a payload problem and invites a
+      caller to keep permuting field names.
+    rootCause: >-
+      Unknown, and not the request body. A literally empty item, {"ITEMS":
+      [{}]}, fails identically to a fully specified one - which is what rules
+      the payload out, because an empty object cannot contain a wrong field.
+      Same class as the standing /db/NLLP and /db/WVLD write failures.
+    ruledOut: >-
+      Not a missing target: a C24 material, an SB section, a beam element using
+      it and a design code were built from scratch for the test. Not the
+      payload shape: this SDK's shape, the official article's own embedded
+      LAYER1/LAYER2 + DT/DB schema, mixtures of the two, and an empty item all
+      answered the same. Not the session: verify_connection() reported a clean
+      connected status rather than a blocked-modal false positive, and an
+      unrelated GET /db/NODE succeeded in the same session. GET /db/REBB works
+      throughout.
+    mitigation: none
+    sdkRule: db-rebb-write-path-unconfirmed
+    status: >-
+      Open. Observed on one account and one session, so it is recorded as a
+      standing failure rather than proven universal - what is proven is that no
+      request body fixes it. This is why /db/REBB's field names rest on the
+      /info schema and the section's own example rather than on a round trip:
+      there is no write to confirm them with.
+    firstObserved: "2026-08-27"
+    lastChecked: "2026-08-27"
+    evidence:
+      - docs/live_verification_notes.md
