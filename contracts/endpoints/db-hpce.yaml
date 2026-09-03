@@ -179,6 +179,54 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+  - key: START_STAGE
+    description: >-
+      Start Stage
+    type: string
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - the whole
+    # manual was searched for the name, not just this section.
+    # The section documents START_TIME/END_TIME, integer hours of flow. The
+    # server declares those and this pair of stage names as well. Found by
+    # /info on 2026-08-17 while root-causing this endpoint's live write
+    # failure, and sent both empty and omitted with no change to the error -
+    # so the pair is declared and recorded, and nothing is claimed about what
+    # it does. That failure is still open; see docs/live_verification_notes.md.
+  - key: END_STAGE
+    description: >-
+      End Stage
+    type: string
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - the whole
+    # manual was searched for the name, not just this section.
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      /db/HPCE takes ten fields, among them `START_TIME` and `END_TIME`,
+      integer hours of inflow.
+    actual: >-
+      `GET /info/db/HPCE` declares those two and also `START_STAGE` and
+      `END_STAGE`, both strings. The pair was already found on 2026-08-17
+      while root-causing this endpoint's live write failure, and recorded
+      in docs/live_verification_notes.md; sending them empty and omitting
+      them both left the error unchanged, so nothing is claimed here about
+      what they do. The gap this sweep found is that the finding never
+      reached the contract.
+    evidence: >-
+      Found by scripts/info_baseline.py --against-contracts on 2026-09-04,
+      sweeping the 2026-09-03 /info capture against every contract. The
+      manual was then searched in full for the name, not just this
+      section. Also docs/live_verification_notes.md, 2026-08-17.
+      Registered as MD-41.
 
 sdkRules:
   - id: db-hpce-delete-per-id

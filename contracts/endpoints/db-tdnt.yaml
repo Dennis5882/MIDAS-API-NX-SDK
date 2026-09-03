@@ -305,6 +305,48 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+  - key: bRELAX
+    description: >-
+      Relaxation coefficient - Check Box
+    type: boolean
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: live_verified
+    # RESOLVED: measured against a live product. Present in a real PSC bridge
+    # model's tendon data on Civil NX on 2026-07-30 and in /info/db/TDNT,
+    # absent from the manual's Specifications table. Carried by
+    # src/midas_nx/db/temperature_prestress.py ever since and missing from
+    # this contract until 2026-09-04.
+    # The section documents the whole relaxation group - RM, RV, FT, LR,
+    # TDMFK, TDMFNAME - with no field that turns it on, and the server
+    # declares one. No gate is written into this contract from that: an /info
+    # schema states no branch anywhere, so which fields this flag governs
+    # would have to come from the manual or a live observation, and neither
+    # says.
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      /db/TDNT's parameter table documents the whole relaxation group -
+      `RM`, `RV`, `FT`, `LR`, `TDMFK`, `TDMFNAME` - and no field that
+      turns it on.
+    actual: >-
+      `GET /info/db/TDNT` declares `bRELAX`, a boolean described "
+      Relaxation coefficient - Check Box". It was found in a real PSC
+      bridge model's tendon data on Civil NX on 2026-07-30 and has been in
+      src/midas_nx/db/temperature_prestress.py ever since; it never
+      reached this contract. No gate is written into the contract from it:
+      an /info schema states no branch, so which of the relaxation fields
+      this flag governs would have to come from the manual or a live
+      observation, and neither says.
+    evidence: >-
+      Found by scripts/info_baseline.py --against-contracts on 2026-09-04,
+      sweeping the 2026-09-03 /info capture against every contract. The
+      manual was then searched in full for the name, not just this
+      section. Also docs/live_verification_notes.md, 2026-07-30.
+      Registered as MD-41.
 
 sdkRules:
   - id: db-tdnt-delete-per-id

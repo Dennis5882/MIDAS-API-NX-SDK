@@ -94,6 +94,17 @@ fields:
     safeToOmit: unverified
     provenance: manual
 
+infoOnly:
+  - path: DUMMY
+    reason: >-
+      The record this endpoint takes is documented as an empty object - the
+      Assign key is a node id and the value is `{}` - and a JSON Schema cannot
+      declare an object with no properties. `GET /info/db/DRLS` therefore
+      declares exactly one, an integer named DUMMY described as " dummy".
+      Publishing it as a field would put a meaningless member into the payload
+      type of an endpoint whose whole request shape is the key set, so this
+      contract records the property and declines it instead.
+
 sdkRules:
   - id: db-drls-delete-per-id
     kind: per_id_request

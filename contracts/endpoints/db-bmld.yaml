@@ -316,6 +316,62 @@ fields:
         provenance: manual
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(19)', not by
         # naming a path
+      - key: VX
+        description: >-
+          Vector X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        # RESOLVED: declared by /info and absent from the manual - the whole
+        # manual was searched for the name, not just this section.
+        # One of three vector components the server declares on a beam load
+        # item. The section documents nineteen members and a DIRECTION enum of
+        # six axis names, with nothing that takes a vector.
+      - key: VY
+        description: >-
+          Vector Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        # RESOLVED: declared by /info and absent from the manual - the whole
+        # manual was searched for the name, not just this section.
+      - key: VZ
+        description: >-
+          Vector Z
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        # RESOLVED: declared by /info and absent from the manual - the whole
+        # manual was searched for the name, not just this section.
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      The /db/BMLD `ITEMS` entry has nineteen members, listed (1) to (19),
+      and a `DIRECTION` enum of six axis names.
+    actual: >-
+      `GET /info/db/BMLD` declares three more on the same entry: `VX`,
+      `VY` and `VZ`, numbers described "Vector X/Y/Z". Nothing in the
+      section takes a vector. This contract records the three fields and
+      no rule about when they apply: an /info schema states no branch, and
+      whether they pair with some `DIRECTION` value the manual does not
+      document is not something a schema can say.
+    evidence: >-
+      Found by scripts/info_baseline.py --against-contracts on 2026-09-04,
+      sweeping the 2026-09-03 /info capture against every contract. The
+      manual was then searched in full for the name, not just this
+      section. The only VX in the manual belongs to a different endpoint's
+      USERGRID/TRAJ grid points in 11_DB_Settlement_Misc_Loads.md, where
+      it means a wave velocity. Registered as MD-41.
 
 sdkRules:
   - id: db-bmld-delete-per-id

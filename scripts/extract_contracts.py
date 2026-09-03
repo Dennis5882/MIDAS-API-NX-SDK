@@ -4401,6 +4401,23 @@ _SETTLED_NOTE_MARKERS = (
     # a description column, wearing a marker that claimed evidence nobody had
     # looked for. If you cannot name the sections, you have not found them.
     "stated in these sibling sections:",
+    # The server's own schema declares a property and the manual documents it
+    # nowhere. Settled because both halves have been established rather than
+    # assumed: /info is the product, and "the manual does not say" is a claim
+    # about the whole manual, so the phrase is only honest after a search of
+    # every chapter - MD-24 is what happens when one section is read instead.
+    # It says nothing about requiredness, which stays `unstated`: an /info
+    # schema declares no `required` array and the manual made no claim to
+    # normalize.
+    "declared by /info and absent from the manual",
+    # The manual and the server both name this field, and they do not name it
+    # the same. Spelling, depth, or both. Settled for the same reason the
+    # marker above is - /info is the product - and held to a higher bar than
+    # that one, because dropping or renaming a documented field changes a
+    # shipped payload type: the phrase belongs only on a field whose contract
+    # also carries the matching `describes: field_name` manualDefect, so the
+    # manual's claim survives next to the correction instead of vanishing.
+    "/info declares this field differently",
 )
 
 

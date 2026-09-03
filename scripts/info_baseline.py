@@ -12,9 +12,14 @@ guessing:
     against 26 endpoints and changed none of them; the baseline now covers
     every endpoint that answers, so the next patch gets a real comparison.
   * **Does a contract record what the product declares?** ``--against-contracts``
-    is offline and reports properties ``/info`` declares that no contract has.
-    That sweep is what found MD-34 (`/db/REBR`'s whole item shape), MD-35 (four
-    fields on all six `/db/LCOM-*`) and MD-36.
+    is offline and sweeps both directions - properties ``/info`` declares that no
+    contract has, and names a contract publishes that ``/info`` declares nowhere.
+    The forward pass found MD-34 (`/db/REBR`'s whole item shape), MD-35 (four
+    fields on all six `/db/LCOM-*`) and MD-36. The reverse pass is where a wrong
+    *name* shows up instead of a missing one, which the forward pass cannot see:
+    it found MD-37 (`/db/POGD-M1`'s `UPLIFT` for `UPLIFTING`) and MD-38
+    (`/db/STRPSSM`'s `PY` for `Y`). Read the reverse list weakly - the printed
+    preamble says why, and `/db/STBK` is the counter-example that sets the bar.
 
 ``--capture`` is the only mode that talks to a product, and it issues **GET
 only**, so it is safe against an open model - the same guarantee
@@ -107,6 +112,36 @@ def _contract_documents() -> dict[str, dict]:
     return found
 
 
+def _contract_leaves(contract: dict) -> set[str]:
+    """Every wire name this contract names anywhere, variants included.
+
+    The reverse sweep compares against this rather than against paths. A
+    contract and /info disagree about nesting often enough that a path
+    mismatch is not evidence of anything; a wire name /info never mentions
+    at any depth is. /db/POGD-M1 is the case that made this worth having -
+    the contract said `UPLIFT` where the server says `UPLIFTING`, and a
+    one-directional sweep reported the second as missing while saying
+    nothing at all about the first.
+    """
+    out: set[str] = set()
+
+    def walk(fields: Iterable[dict] | None) -> None:
+        for field in fields or []:
+            out.add(field["key"])
+            walk(field.get("properties"))
+
+    walk(contract.get("fields"))
+    for variant in contract.get("variants") or []:
+        walk(variant.get("fields"))
+    # The envelope is documentation of the wrapper, not of the record.
+    return out - {"Assign", "Argument"}
+
+
+def _info_only(contract: dict) -> set[str]:
+    """Paths this contract says the server declares but no caller should send."""
+    return {entry["path"] for entry in contract.get("infoOnly") or []}
+
+
 def _contract_paths(contract: dict) -> set[str]:
     out: set[str] = set()
 
@@ -185,7 +220,9 @@ def against_contracts() -> int:
         declared.setdefault(endpoint, set()).update(_paths(schema))
 
     rows: list[tuple[int, str, list[str]]] = []
+    phantom: list[tuple[str, list[str]]] = []
     skipped: list[str] = []
+    waived = 0
     compared = 0
     for endpoint, paths in sorted(declared.items()):
         contract = contracts.get(endpoint)
@@ -197,6 +234,8 @@ def against_contracts() -> int:
         compared += 1
         known = _contract_paths(contract)
         leaves = {p.rsplit(".", 1)[-1] for p in known}
+        declines = _info_only(contract)
+        waived += len(declines)
         # Generous on purpose: a property counts as recorded if its full path is
         # known *or* its own name appears anywhere in the contract. /info and
         # the manual disagree about nesting often enough that a path mismatch
@@ -204,15 +243,27 @@ def against_contracts() -> int:
         missing = sorted(
             p for p in paths
             if p not in known and p.rsplit(".", 1)[-1] not in leaves
+            and p not in declines
         )
         if missing:
             rows.append((len(missing), endpoint, missing))
 
+        # And the other direction: a wire name the contract publishes that the
+        # server declares nowhere. Compared by leaf name, never by path, for
+        # the same reason the forward pass is.
+        info_leaves = {p.rsplit(".", 1)[-1] for p in paths}
+        unknown = sorted(_contract_leaves(contract) - info_leaves)
+        if unknown:
+            phantom.append((endpoint, unknown))
+
     rows.sort(key=lambda row: (-row[0], row[1]))
+    phantom.sort(key=lambda row: (-len(row[1]), row[0]))
     print(f"contracts compared: {compared}")
     print(f"skipped, field list admittedly incomplete (unmergedTables): {len(skipped)}")
+    print(f"properties waived as infoOnly: {waived}")
     print(f"endpoints with an unrecorded /info property: {len(rows)}")
     print(f"unrecorded properties in total: {sum(n for n, _, _ in rows)}")
+    print(f"endpoints publishing a name /info never declares: {len(phantom)}")
     print()
     print("A large count is usually not a defect. /info describes the whole")
     print("record including computed read-only members, while a manual section")
@@ -224,6 +275,28 @@ def against_contracts() -> int:
         print(f"{count:4}  {endpoint}")
         for index in range(0, len(missing), 6):
             print("        " + ", ".join(missing[index:index + 6]))
+
+    print()
+    print("=" * 70)
+    print("Names this contract publishes that /info declares nowhere.")
+    print()
+    print("Read these the other way round from the list above, and read them")
+    print("weakly. /info listing a property is not the same as the server")
+    print("accepting only those: /db/STBK's LCNAME appears in neither product's")
+    print("schema, and scripts/live_crud_check.py runs a confirmed round trip")
+    print("that sends it on both. So a name here supports a note, never a")
+    print("removal. What it is good for is the case where the manual and the")
+    print("server both name a field and name it differently - /db/POGD-M1's")
+    print("UPLIFT for UPLIFTING, /db/STRPSSM's PY for Y - because there a")
+    print("caller following the manual sends a key the server never mentions")
+    print("while the one it does mention goes unsent. Removing a documented")
+    print("field takes what settled /db/REBC: a live comparison in which the")
+    print("documented shape was refused and the other accepted.")
+    print()
+    for endpoint, unknown in phantom:
+        print(f"{len(unknown):4}  {endpoint}")
+        for index in range(0, len(unknown), 6):
+            print("        " + ", ".join(unknown[index:index + 6]))
     return 0
 
 

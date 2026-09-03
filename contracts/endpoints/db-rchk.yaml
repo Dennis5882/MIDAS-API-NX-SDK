@@ -405,6 +405,20 @@ fields:
             provenance: manual
             # RESOLVED: the manual nests this under 'vSUB_BAR' by numbering it 'xii',
             # not by naming a path
+      - key: OPTION_IMJSAME
+        description: >-
+          IMJ Same Option (it needs only I)
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        # RESOLVED: declared by /info and absent from the manual - the whole
+        # manual was searched for the name, not just this section.
+        # Civil NX only, like the endpoint. The server's own description says the
+        # flag is read from the I entry alone; no contract rule is written from
+        # that, because a description is not a branch.
   - key: COLM
     type: object
     requirement: conditional
@@ -1004,6 +1018,20 @@ manualDefects:
       docs/manual/24_DB_Design.md section 3's four 파라미터 tables against the
       JSON Schema printed above them in the same section, and against the
       section's own POST/PUT Request Body. Registered as MD-27.
+
+  - describes: field_name
+    manualSays: >-
+      The `BEAM` object holds `vMAIN` and `vSUB_BAR` and nothing else.
+    actual: >-
+      `GET /info/db/RCHK` declares a third member, `OPTION_IMJSAME`, a
+      boolean described " IMJ Same Option (it needs only I)". No rule is
+      written from that description: it reads like a statement about which
+      sector entry the server consults, and a description is not a branch.
+    evidence: >-
+      Found by scripts/info_baseline.py --against-contracts on 2026-09-04,
+      sweeping the 2026-09-03 /info capture against every contract. The
+      manual was then searched in full for the name, not just this
+      section. Civil NX only, as the endpoint is. Registered as MD-41.
 
 sdkRules:
   - id: db-rchk-delete-per-id

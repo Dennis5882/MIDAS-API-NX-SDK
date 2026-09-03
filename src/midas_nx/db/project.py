@@ -154,6 +154,16 @@ class ProjectInfoPayload(TypedDict, total=False):
     APPROVE: str  # Approver Name, optional
     ADATE: str  # Approver Date, optional
     COMMENT: str  # Comments, optional
+    # Five properties of the model file itself, returned by this endpoint and
+    # documented in no chapter (checked 2026-09-04). Plainly server-computed —
+    # a caller cannot set the file's size — but /info states no requiredness
+    # and the manual has no Required cell for them to normalize, so they are
+    # typed like the rest rather than marked read-only.
+    FILE_NAME: str  # Model File Name
+    DIR: str  # Model File Directory
+    FILE_SIZE: str  # Model File Size
+    CREATED: str  # Model File Created Time
+    MODIFIED: str  # Model File Modified Time
 
 
 class ProjectInfo(DbResource):
@@ -347,6 +357,21 @@ class Span(DbResource):
     PRODUCTS = CIVIL_ONLY
 
 
+class StoryAreaItem(TypedDict, total=False):
+    """One entry of /db/STOR's `STORY_AREA_ITEMS`.
+
+    /db/STOR's own section documents fifteen properties and stops. The
+    manual does document this sixteenth one — in another chapter:
+    `/ope/STOR`'s POST response in 15_OPE.md is the same record field for
+    field with this array added, and the prose under it names it outright.
+    `/info/db/STOR` agrees, member for member. See MD-39.
+    """
+
+    X: float  # X Factor
+    Y: float  # Y Factor
+    Z: float  # Z Factor
+
+
 class StoryPayload(TypedDict, total=False):
     """docs/manual/02_DB_Project_Structure.md #15 — /db/STOR Specifications table."""
 
@@ -365,6 +390,7 @@ class StoryPayload(TypedDict, total=False):
     SEIS_INHERENT_ECCENT_Y: float  # Seismic Inherent Eccentricity Y-Dir, required
     SEIS_TORSIONAL_AMP_FACTOR_X: float  # Seismic Torsional Amplification Factor X-Dir, required
     SEIS_TORSIONAL_AMP_FACTOR_Y: float  # Seismic Torsional Amplification Factor Y-Dir, required
+    STORY_AREA_ITEMS: List[StoryAreaItem]  # Story Area Items; see below
 
 
 class Story(DbResource):

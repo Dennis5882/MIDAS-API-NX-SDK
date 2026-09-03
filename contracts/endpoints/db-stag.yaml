@@ -319,6 +319,48 @@ fields:
       in its payload. That is evidence the call is accepted, not that the
       resulting model is what an engineer wanted.
     provenance: manual
+  - key: "NO"
+    description: >-
+      Construction Stage NO.
+    type: integer
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: live_verified
+    # RESOLVED: measured against a live product. Read from a real cable-stayed
+    # bridge model on Civil NX on 2026-07-30, one of six schema gaps that
+    # cross-model spot-checking found that day, and confirmed in
+    # /info/db/STAG. src/midas_nx/db/construction_stage.py has carried it
+    # since; this contract did not, which is the gap the 2026-09-04 /info
+    # sweep actually found here - not a new fact about the product, a fact
+    # the repository already had and had never migrated into contracts/.
+    # The same wire name is documented Read Only on /db/STLD and on all six
+    # /db/LCOM-*, where it is the ordering index the GUI shows. Requirement
+    # stays `unstated` all the same: that is a claim those sections make about
+    # their own endpoints, not one this section makes about this one.
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      /db/STAG's Specifications table lists the construction stage's own
+      fields and no ordering index.
+    actual: >-
+      The record carries `NO`, an integer the server describes "
+      Construction Stage NO.". It was read from a real cable-stayed bridge
+      model on Civil NX on 2026-07-30 - one of six schema gaps that day's
+      cross-model spot-checking found - and has been in
+      src/midas_nx/db/construction_stage.py ever since. It never reached
+      this contract. The same wire name is documented Read Only on
+      /db/STLD and on all six /db/LCOM-*; requirement here stays
+      `unstated`, because that is a claim those sections make about their
+      own endpoints.
+    evidence: >-
+      Found by scripts/info_baseline.py --against-contracts on 2026-09-04,
+      sweeping the 2026-09-03 /info capture against every contract. The
+      manual was then searched in full for the name, not just this
+      section. Also docs/live_verification_notes.md, 2026-07-30.
+      Registered as MD-41.
 
 sdkRules:
   - id: db-stag-delete-per-id

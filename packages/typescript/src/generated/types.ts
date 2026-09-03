@@ -1750,7 +1750,20 @@ export namespace DbBoundaryTypes {
   /** Generated from contracts/endpoints/. */
   export interface SeismicDeviceViscoelasticDamperPayload {
     /** Common Data (SDVI와 동일 구조) */
-    COMMON: JsonObject;
+    COMMON: {
+      /** Name */
+      NAME: string;
+      /** Description */
+      DESC?: string;
+      /** Input Method · 0=사용자 입력, 1=참조 DB */
+      INPUT_METHOD: number;
+      /** Company */
+      COMPANY: string;
+      /** Product Name */
+      PRODUCT_NAME: string;
+      /** Type Number */
+      TYPE_NUMBER: string;
+    };
     /** Material Type · "GR100" / "GR300" / "SR05" / "GR400" / "CST" / "TRC" */
     MATERIAL_TYPE: string;
     /** Shear Area */
@@ -1815,7 +1828,20 @@ export namespace DbBoundaryTypes {
   /** Generated from contracts/endpoints/. */
   export interface SeismicDeviceHystereticIsolatorPayload {
     /** Common Data */
-    COMMON: JsonObject;
+    COMMON: {
+      /** Name */
+      NAME: string;
+      /** Description */
+      DESC?: string;
+      /** Input Method · 0=사용자 입력, 1=참조 DB */
+      INPUT_METHOD: number;
+      /** Company */
+      COMPANY: string;
+      /** Product Name */
+      PRODUCT_NAME: string;
+      /** Type Number */
+      TYPE_NUMBER: string;
+    };
     /** Hysteresis Model · "DegradingBiLinear" 등 */
     SDHY_HYS_MODEL: string;
     /** Number of Shear Springs (MSS 전단 스프링 수) */
@@ -2098,6 +2124,8 @@ export namespace DbConstructionStageTypes {
     }>;
     /** 하중 그룹 비활성화 목록 */
     DACT_LOAD?: Array<JsonObject>;
+    /** Construction Stage NO. */
+    NO?: number;
   }
   export interface CompositeSectionPartInfo {
     PART?: number;
@@ -2316,6 +2344,10 @@ export namespace DbConstructionStageTypes {
     END_TIME?: number;
     /** 절점 목록 */
     ITEMS: Array<number>;
+    /** Start Stage */
+    START_STAGE?: string;
+    /** End Stage */
+    END_STAGE?: string;
   }
   /** Generated from contracts/endpoints/. */
   export interface ConstructionStageForHydrationPayload {
@@ -2395,6 +2427,7 @@ export namespace DbDesignTypes {
   export interface BeamCheckRebar {
     vMAIN?: Array<BeamMainRebarSectorItem>;
     vSUB_BAR?: Array<BeamSubRebarSectorItem>;
+    OPTION_IMJSAME?: boolean;
   }
   export interface ColumnRebarPositionEntry {
     POSITION?: string;
@@ -2485,6 +2518,8 @@ export namespace DbDesignTypes {
         /** 종방향 철근 개수 */
         dLONGIBARNUM?: number;
       }>;
+      /** IMJ Same Option (it needs only I) */
+      OPTION_IMJSAME?: boolean;
     };
     COLM?: {
       /** 종방향 철근 레이어 배열 */
@@ -5188,6 +5223,16 @@ export namespace DbProjectTypes {
     ADATE?: string;
     /** Comments */
     COMMENT?: string;
+    /** Model File Name */
+    FILE_NAME?: string;
+    /** Model File Directory */
+    DIR?: string;
+    /** Model File Size */
+    FILE_SIZE?: string;
+    /** Model File Created Time */
+    CREATED?: string;
+    /** Model File Modified Time */
+    MODIFIED?: string;
   }
   /** Generated from contracts/endpoints/. */
   export interface StructureGroupPayload {
@@ -5373,6 +5418,11 @@ export namespace DbProjectTypes {
       SUPPORT?: number;
     }>;
   }
+  export interface StoryAreaItem {
+    X?: number;
+    Y?: number;
+    Z?: number;
+  }
   /** Generated from contracts/endpoints/. */
   export interface StoryPayload {
     /** Story Name */
@@ -5405,6 +5455,15 @@ export namespace DbProjectTypes {
     SEIS_TORSIONAL_AMP_FACTOR_X: number;
     /** Seismic Torsional Amplification Factor Y-Dir */
     SEIS_TORSIONAL_AMP_FACTOR_Y: number;
+    /** Story Area Items */
+    STORY_AREA_ITEMS?: Array<{
+      /** X Factor */
+      X?: number;
+      /** Y Factor */
+      Y?: number;
+      /** Z Factor */
+      Z?: number;
+    }>;
   }
 }
 
@@ -5790,6 +5849,8 @@ export namespace DbPropertiesMaterialTypes {
     CTYPE: string;
     /** Relaxation Time • Hour: 0 • Day: 1 */
     RELAXATION: number;
+    /** Elast */
+    ELAST?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface TimeDependentMaterialCreepShrinkagePayload {
@@ -6779,6 +6840,9 @@ export namespace DbPropertiesSectionTypes {
     SPACING?: number;
     PART?: number;
   }
+  export interface SectionReinforcementGroup {
+    MBAR_ITEMS?: Array<SectionReinforcementLongitudinalItem>;
+  }
   /** Generated from contracts/endpoints/. */
   export interface SectionReinforcementPayload {
     /** Same Rebar Data at i and j-end (Longitudinal) */
@@ -6830,31 +6894,34 @@ export namespace DbPropertiesSectionTypes {
       /** Include Flange/Cantilever · Off: 0 / On: 1 */
       LBAR_INC_FC?: number;
     }>;
-    /** Longitudinal Reinforcement Data (Array, Index 0=i-section / 1=j-section) */
-    MBAR_ITEMS: Array<{
-      /** Section Position · "I" / "J" */
-      IJ: string;
-      /** Bar Name */
-      NAME: string;
-      /** Reference Y · Centroid: 0 / Left: 1 */
-      REF_Y: number;
-      /** Distance from Reference (Y-dir) */
-      Y?: number;
-      /** Reference Z · Top: 0 / Bottom: 1 */
-      REF_Z: number;
-      /** Distance from Reference (Z-dir) */
-      Z?: number;
-      /** Number of Rebar */
-      NUM: number;
-      /** Spacing between Rebars */
-      SPACING?: number;
-      /** Part */
-      PART?: number;
+    /** Longitudinal Reinforcement Properties */
+    MBARS: Array<{
+      /** Longitudinal Reinforcement Data (Array, Index 0=i-section / 1=j-section) */
+      MBAR_ITEMS: Array<{
+        /** Section Position · "I" / "J" */
+        IJ: string;
+        /** Bar Name */
+        NAME: string;
+        /** Reference Y · Centroid: 0 / Left: 1 */
+        REF_Y: number;
+        /** Distance from Reference (Y-dir) */
+        Y?: number;
+        /** Reference Z · Top: 0 / Bottom: 1 */
+        REF_Z: number;
+        /** Distance from Reference (Z-dir) */
+        Z?: number;
+        /** Number of Rebar */
+        NUM: number;
+        /** Spacing between Rebars */
+        SPACING?: number;
+        /** Part */
+        PART?: number;
+      }>;
     }>;
   }
   export interface StressPoint {
-    PY?: number;
-    PZ?: number;
+    Y?: number;
+    Z?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface SectionStressPointsPayload {
@@ -6867,12 +6934,17 @@ export namespace DbPropertiesSectionTypes {
     /** Stress Point Coordinates (I) */
     POINT1: Array<{
       /** Point Y */
-      PY: number;
+      Y: number;
       /** Point Z */
-      PZ: number;
+      Z: number;
     }>;
     /** Stress Point Coordinates (J) */
-    POINT2: Array<JsonObject>;
+    POINT2: Array<{
+      /** Point Y */
+      Y: number;
+      /** Point Z */
+      Z: number;
+    }>;
   }
   export interface PlateStiffnessScaleFactorItem extends DbBaseTypes.ItemGroupFields {
     AXIAL_X?: number;
@@ -7310,13 +7382,13 @@ export namespace DbPushoverTypes {
   }
   export interface AxialYieldStopHyperS {
     OPT_USE?: boolean;
-    BEAM?: boolean;
+    BEAM_COLUMN?: boolean;
     WALL?: boolean;
     TRUSS?: boolean;
   }
   export interface SupportDzDirStopHyperS {
     OPT_USE?: boolean;
-    UPLIFT?: boolean;
+    UPLIFTING?: boolean;
     COLLAPSE?: boolean;
   }
   export interface AnalysisStopHyperS {
@@ -7407,8 +7479,8 @@ export namespace DbPushoverTypes {
       AXIAL_YIELD?: {
         /** 사용 여부 */
         OPT_USE: boolean;
-        /** Beam */
-        BEAM?: boolean;
+        /** Beam/Column */
+        BEAM_COLUMN?: boolean;
         /** Wall */
         WALL?: boolean;
         /** Truss */
@@ -7418,8 +7490,8 @@ export namespace DbPushoverTypes {
       SUPPORT_DZ_DIR?: {
         /** 사용 여부 */
         OPT_USE: boolean;
-        /** Uplift */
-        UPLIFT?: boolean;
+        /** Uplifting */
+        UPLIFTING?: boolean;
         /** Collapse */
         COLLAPSE?: boolean;
       };
@@ -7723,6 +7795,9 @@ export namespace DbStaticLoadsTypes {
     D?: Array<number>;
     P?: Array<number>;
     USE_ECCEN?: boolean;
+    VX?: number;
+    VY?: number;
+    VZ?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface BeamLoadPayload {
@@ -7766,6 +7841,12 @@ export namespace DbStaticLoadsTypes {
       USE_ADDITIONAL_J_END?: boolean;
       /** Distance J-End (additional) */
       ADDITIONAL_J_END?: number;
+      /** Vector X */
+      VX?: number;
+      /** Vector Y */
+      VY?: number;
+      /** Vector Z */
+      VZ?: number;
     }>;
   }
   export interface PressureLoadItem extends DbBaseTypes.ItemGroupFields {
@@ -8780,6 +8861,8 @@ export namespace DbTemperaturePrestressTypes {
     FPK: number;
     /** Relaxation Function Name (User Defined) */
     TDMFNAME: string;
+    /** Relaxation coefficient - Check Box */
+    bRELAX?: boolean;
   }
   /** Generated from contracts/endpoints/. */
   export type TendonProfilePayload = {

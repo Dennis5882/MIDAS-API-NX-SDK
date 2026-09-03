@@ -93,7 +93,19 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   batch of contract work: it is what found MD-34, where a contract written from the
   manual, promoted, and reviewed through its generated npm diff still had a shape the
   server refuses. Reviewing a generated diff proves the generator followed the
-  contract; only `/info` proves the contract followed the product.
+  contract; only `/info` proves the contract followed the product. It sweeps **both
+  directions** — properties `/info` declares that no contract records, and names a
+  contract publishes that `/info` declares nowhere. The second list is short (4 hits
+  across 381 contracts) and is where a wrong *name* shows up rather than a missing
+  one, which a one-directional sweep cannot see: MD-37 and MD-38 were both found
+  that way. **Read the second list weakly.** `/info` listing a property is not the
+  same as the server accepting only those — `/db/STBK`'s `LCNAME` is in neither
+  product's schema and `scripts/live_crud_check.py` sends it in a confirmed round
+  trip that passes on both — so absence from `/info` supports a note, never deleting
+  a documented field. Removing one takes what settled `/db/REBC`: a live comparison
+  where the documented shape was refused and the other accepted. A contract may
+  waive a property it deliberately does not publish with `infoOnly`, which exists
+  for placeholders like `/db/DRLS`'s `DUMMY`, not for anything a caller might send.
 - `schema/typescript-resources.json` / `schema/typescript-coverage.json` — committed generator outputs.
   CI fails if either these schemas or `packages/typescript/src/generated/*` drift after regeneration.
 - `docs/coverage.json` — the endpoint ledger. `ROADMAP.md` is **generated from it** — never hand-edit

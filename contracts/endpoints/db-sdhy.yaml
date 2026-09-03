@@ -94,6 +94,73 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+    properties:
+      - key: NAME
+        description: >-
+          Name
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: stated elsewhere in the same section - the row says only
+        # `Common Data`, and the section's own Request Example sends the object
+        # with these members. The full list with types and requiredness is
+        # /db/SDVI's table, section 16 of the same chapter, which /db/SDVE's row
+        # names outright as the shared structure. GET /info/db/SDHY declares
+        # exactly these six.
+      - key: DESC
+        description: >-
+          Description
+        type: string
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: INPUT_METHOD
+        description: >-
+          Input Method · 0=사용자 입력, 1=참조 DB
+        type: integer
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: COMPANY
+        description: >-
+          Company
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: stated elsewhere in the same section - the section's own
+        # Request Example omits COMPANY while /db/SDVI's table marks it
+        # Required, so the two halves of the cross-reference disagree. The
+        # table is what this contract records; safeToOmit stays unverified
+        # because an example is not a measurement. GET /info declares the
+        # property on both products.
+      - key: PRODUCT_NAME
+        description: >-
+          Product Name
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: TYPE_NUMBER
+        description: >-
+          Type Number
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
   - key: SDHY_HYS_MODEL
     description: >-
       Hysteresis Model · "DegradingBiLinear" 등
@@ -184,6 +251,29 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      Row 1 of the Specifications table is `Common Data`, an Object marked
+      Required, and the table gives it no members.
+    actual: >-
+      The section's own Request Example sends the object with `NAME`,
+      `DESC`, `INPUT_METHOD`, `PRODUCT_NAME` and `TYPE_NUMBER`; the full
+      list with types and requiredness is /db/SDVI's table in section 16,
+      which /db/SDVE's matching row names as the shared structure. `GET
+      /info/db/SDHY` declares all six, `COMPANY` included. The extractor
+      cannot follow a cross-reference, which is why the object was
+      published with no members at all until 2026-09-04.
+      src/midas_nx/db/boundary.py has had them the whole time, as
+      `SeismicDeviceCommon`; this is a contract that was behind its own
+      SDK.
+    evidence: >-
+      Found by scripts/info_baseline.py --against-contracts on 2026-09-04,
+      sweeping the 2026-09-03 /info capture against every contract. The
+      manual was then searched in full for the name, not just this
+      section. docs/manual/05_DB_Boundary.md sections 16, 17 and 19.
+      Registered as MD-41.
 
 sdkRules:
   - id: db-sdhy-delete-per-id

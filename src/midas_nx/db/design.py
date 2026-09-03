@@ -126,6 +126,7 @@ class BeamCheckRebar(TypedDict, total=False):
 
     vMAIN: List[BeamMainRebarSectorItem]  # Main (longitudinal) rebar, required
     vSUB_BAR: List[BeamSubRebarSectorItem]  # Sub (transverse) rebar, required
+    OPTION_IMJSAME: bool  # IMJ Same Option ("it needs only I"); /info declares it and the manual documents it nowhere (checked across every chapter, 2026-09-04)
 
 
 class ColumnRebarPositionEntry(TypedDict, total=False):

@@ -306,6 +306,10 @@ class PipeCoolingPayload(TypedDict, total=False):
     START_TIME: int  # Inflow Start Time, default 0, optional
     END_TIME: int  # Inflow End Time, default 0, optional
     ITEMS: List[int]  # Node List, required
+    START_STAGE: str  # Start Stage; /info declares it and the manual documents it nowhere (checked across every chapter, 2026-09-04)
+    END_STAGE: str  # End Stage; same. Both were found via /info on 2026-08-17
+    # while root-causing this endpoint's still-open live write failure, and
+    # sending them empty and omitting them both left the error unchanged.
 
 
 class PipeCooling(DbResource):

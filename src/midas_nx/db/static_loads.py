@@ -81,6 +81,10 @@ class BeamLoadItem(ItemGroupFields, total=False):
     D: List[float]  # Distance [x1,x2,x3,x4], default 0, optional
     P: List[float]  # Load [v1,v2,v3,v4], default 0, optional
     USE_ECCEN: bool  # default false, optional
+    VX: float  # Vector X; /info declares it and the manual documents it nowhere (checked across every chapter, 2026-09-04)
+    VY: float  # Vector Y; same
+    VZ: float  # Vector Z; same. The manual documents nineteen members and a
+    # six-name DIRECTION enum, with nothing that takes a vector.
 
 
 class BeamLoadPayload(TypedDict):

@@ -70,6 +70,11 @@ build itself** and is no longer resting on an unrecorded one.
 | MD-34 | 2026-09-04 | `/db/REBR`, the whole item shape | each `ITEMS` entry has a single `MAIN_BAR` object, a top-level `DO`, a string `HOOP_TYPE` defaulting to `"Ties"`, and an optional `CREATE_SUB_SECTION` with `ELEMS` | `GET /info/db/REBR` declares `vMAIN_BAR`, an array whose entries each carry `D0` (a zero), an integer `HOOP_TYPE` (1=Tied, 2=Spiral), and no `CREATE_SUB_SECTION` or `ELEMS` at all - field for field the shape `/db/REBC` was found to have on 2026-08-27 | **manual repo** transcription | open |
 | MD-35 | 2026-09-04 | all six `/db/LCOM-*`, four fields | the chapter's "LCOM 타입별 비교 요약" table gives five of the six an em dash under 추가 필드 and gives `LCOM-CONC` only `bES`; no Parameters row names `iSERV_TYPE`, `nLCOMTYPE` or `nSEISTYPE` anywhere | `GET /info/db/LCOM-*` declares all four on all six, on both products | **manual repo** transcription | open |
 | MD-36 | 2026-09-04 | `/db/LCOM-*` and `/db/POGD`, member rows | rows written `| — | (vCOMB) ... |` and `| — | (INITLOAD) ... |` name their parent in the Description cell and leave the No. column an em dash | they are members of that array; the contracts published `ANAL`/`LCNAME`/`FACTOR` and `LC_NAME`/`LC_TYPE`/`SF` as siblings of the array containing them | **this SDK** extractor | fixed |
+| MD-37 | 2026-09-04 | `/db/POGD-M1` `ANALYSIS_STOP`, four claims | `AXIAL_YIELD.BEAM`, `SUPPORT_DZ_DIR.UPLIFT`, a `WALL` in both stop groups, and a `SYMMETRIC` marked Required in `PO_HINGE_OPT.BILINEAR`/`.TRILINEAR` | `GET /info/db/POGD-M1` declares `BEAM_COLUMN` and `UPLIFTING` for the first two - and the manual is its own second witness on `BEAM_COLUMN`, which it uses four rows earlier for the same checkbox in the sibling `SHEAR_YIELD` group. `WALL` and `SYMMETRIC` it declares nowhere; both are kept, see below | **manual repo** transcription | partly fixed |
+| MD-38 | 2026-09-04 | `/db/STRPSSM` `POINT1`/`POINT2` entries | each entry is `{"PY": ..., "PZ": ...}`, in the Specifications rows and the Request Example alike | `GET /info/db/STRPSSM` declares `{"Y": ..., "Z": ...}` and gives those two properties the descriptions `"PY"` and `"PZ"` - the section read the description as the key | **manual repo** transcription | open |
+| MD-39 | 2026-09-04 | `/db/STOR` `STORY_AREA_ITEMS` | the section's JSON Schema, Request Example and Specifications table all give fifteen properties and stop | there is a sixteenth, an array of `{X, Y, Z}` factors. The manual documents it - in chapter 15, where `/ope/STOR`'s POST response is the same record field for field with this array added and the prose names it | **manual repo** transcription | open |
+| MD-40 | 2026-09-04 | `/db/RPSC` `MBAR_ITEMS` | row 5 puts it at the root beside `SBAR_ITEMS` (row 4), the two described identically | `GET /info/db/RPSC` has `SBAR_ITEMS` at the root as documented and `MBAR_ITEMS` one level down, inside an array named `MBARS` the section never mentions. The pair really is asymmetric | **manual repo** transcription | open |
+| MD-41 | 2026-09-04 | nine `/db/*` sections, fifteen fields | each section's Specifications table (and, where it has one, its JSON Schema) presents a complete field list | `GET /info` declares one to six more on each: `/db/BMLD` `ITEMS.VX/VY/VZ`, `/db/HPCE` `START_STAGE`/`END_STAGE`, `/db/PJCF`'s five model-file properties, `/db/RCHK` `BEAM.OPTION_IMJSAME`, `/db/SDVE` and `/db/SDHY` `COMMON`'s six members, `/db/STAG` `NO`, `/db/TDMF` `ELAST`, `/db/TDNT` `bRELAX`. Three of the fifteen were already known - `STAG.NO` and `TDNT.bRELAX` from real models on 2026-07-30, `HPCE`'s pair from /info on 2026-08-17 - and had reached `src/midas_nx/` but never `contracts/` | **manual repo** transcription, except `/db/SDVE` and `/db/SDHY` where the manual defers to `/db/SDVI`'s table and **this SDK**'s extractor cannot follow a cross-reference | open |
 
 
 ## Detail
@@ -1355,3 +1360,63 @@ same nesting the manual does. Both SDKs' hand-written Python TypedDicts had it
 right all along (`vCOMB: List[LoadCombinationItem]`), which is the tell that
 should have been noticed: when a generated type is vaguer than the hand-written
 one it replaced, the contract is usually wrong.
+
+### MD-37 through MD-41 - what a schema is evidence of, and what it is not
+
+Five findings from one change: `scripts/info_baseline.py --against-contracts`
+learned to look in both directions. It had only ever asked which properties
+`/info` declares that no contract records. The reverse question - which names a
+contract publishes that `/info` declares nowhere - takes four endpoints across
+381 contracts, and two of the four were real.
+
+`/db/POGD-M1` is the worst of them. The manual spells the Uplifting checkbox
+`UPLIFT` in six places: its JSON Schema, both `allOf` cross-field rules, the
+Specifications table, the request and response examples, and the Python
+sample. The server calls it `UPLIFTING`. Six agreeing statements inside one
+section is not six witnesses - it is one transcription, copied. The sibling
+case in the same table is the useful one: `AXIAL_YIELD.BEAM` against
+`SHEAR_YIELD.BEAM_COLUMN`, the same Beam/Column checkbox spelled two ways four
+rows apart, and the server using the second in both groups. **The manual
+disagreeing with itself is worth more than the manual agreeing with itself.**
+
+`/db/STRPSSM` has the clearest cause of any defect in this register.
+`GET /info/db/STRPSSM` declares each stress point as `{"Y", "Z"}` and gives
+those two properties the descriptions `"PY"` and `"PZ"`. The section publishes
+`PY`/`PZ` as the keys. Somebody read down the description column.
+
+**The correction that did not happen.** `WALL` and `SYMMETRIC` were removed
+from `/db/POGD-M1` and then put back, and the reason is the calibration this
+whole tranche turns on. `/db/STBK`'s `LCNAME` is declared by neither product's
+`/info` schema, and `scripts/live_crud_check.py` runs a confirmed
+create-read-update-delete round trip that sends it, on both products, and
+passes. So an `/info` property list is evidence about what the server
+*declares*, and that is not the same as what it *accepts*. Absence from `/info`
+supports a note; it does not support deleting a field the manual documents -
+and `SYMMETRIC` is one the manual marks Required and lists in its own schema's
+`required` array, so removing it would have broken every caller who follows the
+documentation.
+
+What settled `/db/REBC`, and `/db/REBR` after it, was a different kind of
+evidence and worth restating next to this one: a live POST comparison in which
+the documented shape was refused with `Wrong Field` and the `/info` shape was
+accepted. A schema absence and a refused request are not interchangeable, and
+MD-34's success does not license MD-37's shortcut.
+
+**Three of these were already in the repository.** `/db/STAG`'s `NO` and
+`/db/TDNT`'s `bRELAX` were found in real production models on 2026-07-30 and
+have been in `src/midas_nx/` ever since; `/db/HPCE`'s `START_STAGE`/`END_STAGE`
+were found by `/info` on 2026-08-17 and written into
+`docs/live_verification_notes.md`. None of them ever reached `contracts/`, and
+the sweep rediscovered them from the product. That is not a discovery, it is a
+migration gap - the contracts were behind their own SDK - and it is the second
+thing the reverse sweep is good for.
+
+**And three standing live failures now have a cause to test.** `/db/RPSC`,
+`/db/STRPSSM` and `/db/TDMF` are three of the four endpoints whose *own* manual
+worked example has been failing live on both products since 2026-08-16, left
+open in `docs/live_verification_notes.md` as wanting "a fresh angle rather than
+more payload guessing". MD-38 says STRPSSM's example sends `PY`/`PZ` where the
+server wants `Y`/`Z`; MD-40 says RPSC's sends `MBAR_ITEMS` at the root where
+the server wants it inside `MBARS`; `/db/TDMF` is missing an `ELAST` the server
+declares. These are candidate causes and nothing more - confirming any of them
+takes a live POST, which is the author's call to make.

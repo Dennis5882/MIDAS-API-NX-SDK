@@ -125,7 +125,7 @@ fields:
     safeToOmit: unverified
     provenance: manual
     properties:
-      - key: PY
+      - key: Y
         description: >-
           Point Y
         type: number
@@ -133,10 +133,11 @@ fields:
         documentedDefault: null
         documentedOptional: false
         safeToOmit: unverified
-        provenance: manual
+        provenance: live_corrected
         # RESOLVED: the manual nests this under 'POINT1' by numbering it '(1)', not by
-        # naming a path
-      - key: PZ
+        # naming a path. Its key there is `PY`; the server's is `Y`, whose own
+        # /info description is the string "PY". See MD-38.
+      - key: Z
         description: >-
           Point Z
         type: number
@@ -144,9 +145,10 @@ fields:
         documentedDefault: null
         documentedOptional: false
         safeToOmit: unverified
-        provenance: manual
+        provenance: live_corrected
         # RESOLVED: the manual nests this under 'POINT1' by numbering it '(2)', not by
-        # naming a path
+        # naming a path. Its key there is `PZ`; the server's is `Z`, whose own
+        # /info description is the string "PZ". See MD-38.
   - key: POINT2
     description: >-
       Stress Point Coordinates (J)
@@ -158,6 +160,52 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+    # RESOLVED: the manual gives the point pair once, as rows (1) and (2) under
+    # POINT1, and its Request Example sends POINT2 with entries of the same
+    # shape. This contract left POINT2's entries undescribed until 2026-09-04;
+    # GET /info/db/STRPSSM declares the two arrays identically.
+    properties:
+      - key: Y
+        description: >-
+          Point Y
+        type: number
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: live_corrected
+        # RESOLVED: the manual nests this under 'POINT2' by numbering it '(1)', not by
+        # naming a path. Its key there is `PY`; the server's is `Y`, whose own
+        # /info description is the string "PY". See MD-38.
+      - key: Z
+        description: >-
+          Point Z
+        type: number
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: live_corrected
+        # RESOLVED: the manual nests this under 'POINT2' by numbering it '(2)', not by
+        # naming a path. Its key there is `PZ`; the server's is `Z`, whose own
+        # /info description is the string "PZ". See MD-38.
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      Each `POINT1`/`POINT2` entry is `{"PY": ..., "PZ": ...}` - stated in the
+      Specifications rows (1) and (2) and in the Request Example.
+    actual: >-
+      `GET /info/db/STRPSSM` declares the entry as `{"Y": ..., "Z": ...}`, and
+      gives each of those properties the description `"PY"` and `"PZ"`
+      respectively. The section appears to have read the server's description
+      as the wire key.
+    evidence: >-
+      GET /info/db/STRPSSM on Civil NX, captured 2026-09-03 in the full /info
+      sweep, against docs/manual/04_DB_Properties.md section 17 lines 1727-1740.
+      Found by the reverse direction of scripts/info_baseline.py
+      --against-contracts, which was added the same day for this class of
+      finding. Registered as MD-38.
 
 sdkRules:
   - id: db-strpssm-delete-per-id

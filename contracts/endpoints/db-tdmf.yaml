@@ -178,6 +178,40 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+  - key: ELAST
+    description: >-
+      Elast
+    type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - the whole
+    # manual was searched for the name, not just this section.
+    # Chapter 4's Specifications table and the section's own JSON Schema both
+    # list seven properties and this is not among them.
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      /db/TDMF has seven properties - `NAME`, `FTYPE`, `SCALE`, `CTYPE`,
+      `DESC`, `RELAXATION`, `vDAY` - stated identically in the section's
+      JSON Schema and its Specifications table.
+    actual: >-
+      `GET /info/db/TDMF` declares an eighth, `ELAST`, a number described
+      " Elast". Worth more than an eighth row: a live POST of this
+      section's own worked example has answered "Wrong Field" on both
+      products since 2026-08-16 and was left unresolved for want of a
+      fresh angle. A field the server declares and the example never sends
+      is a candidate cause. It has not been tested, and this contract
+      claims nothing about it.
+    evidence: >-
+      Found by scripts/info_baseline.py --against-contracts on 2026-09-04,
+      sweeping the 2026-09-03 /info capture against every contract. The
+      manual was then searched in full for the name, not just this
+      section. Also docs/live_verification_notes.md, 2026-08-16.
+      Registered as MD-41.
 
 sdkRules:
   - id: db-tdmf-delete-per-id

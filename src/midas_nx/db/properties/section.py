@@ -177,7 +177,8 @@ class SectionReinforcementLongitudinalItem(TypedDict, total=False):
     """docs/manual/04_DB_Properties.md #16 — /db/RPSC "MBAR_ITEMS[]" entry.
 
     Added 2026-08-27 along with the parent payload's MBAR_ITEMS field — see
-    SectionReinforcementPayload's docstring.
+    SectionReinforcementPayload's docstring. The members are the manual's,
+    unchanged; only where the array hangs was wrong. See MD-40.
     """
 
     IJ: str  # Section Position: "I" / "J", required
@@ -191,6 +192,12 @@ class SectionReinforcementLongitudinalItem(TypedDict, total=False):
     PART: int  # optional, requiredness not specified by the manual
 
 
+class SectionReinforcementGroup(TypedDict, total=False):
+    """One entry of /db/RPSC's `MBARS`, which carries only `MBAR_ITEMS`."""
+
+    MBAR_ITEMS: List[SectionReinforcementLongitudinalItem]
+
+
 class SectionReinforcementPayload(TypedDict, total=False):
     """docs/manual/04_DB_Properties.md #16 — /db/RPSC. Keyed by section id.
 
@@ -198,15 +205,22 @@ class SectionReinforcementPayload(TypedDict, total=False):
     entirely missing from this payload — the manual's Specifications table
     lists it as a sibling of `SBAR_ITEMS`, both required (article id
     `35943227821465`). Added, plus the shear-item field expansion documented
-    on SectionReinforcementShearItem. Manual-sourced, not independently
-    live-tested.
+    on SectionReinforcementShearItem.
+
+    ⚠️ 2026-09-04: and added at the wrong depth. `/info/db/RPSC` declares
+    `SBAR_ITEMS` at the root as documented, and `MBAR_ITEMS` one level down
+    inside an array named `MBARS` that the manual never mentions. The pair
+    really is asymmetric; the section reads as though it tidied that away.
+    A live POST of the manual's own worked example has been failing on both
+    products since 2026-08-16 and was left unresolved — this is a concrete
+    cause to test, not a confirmed one. See MD-40.
     """
 
     OPT_MBAR_J: bool  # Same Rebar Data at i and j-end (Longitudinal), required
     OPT_SBAR_J: bool  # Same Shear Rebar Data at i and j-end, required
     OPT_CRACKED: bool  # Cracked Section, required
     SBAR_ITEMS: List[SectionReinforcementShearItem]  # [i-section, j-section], required
-    MBAR_ITEMS: List[SectionReinforcementLongitudinalItem]  # [i-section, j-section], required
+    MBARS: List[SectionReinforcementGroup]  # required
 
 
 class SectionReinforcement(DbResource):
@@ -216,8 +230,16 @@ class SectionReinforcement(DbResource):
 
 
 class StressPoint(TypedDict, total=False):
-    PY: float  # Point Y, required
-    PZ: float  # Point Z, required
+    """⚠️ 2026-09-04: the manual's keys are `PY`/`PZ`, in its Specifications
+    rows and its Request Example alike. `/info/db/STRPSSM` declares `Y` and
+    `Z`, and gives them the descriptions `"PY"` and `"PZ"` — the section
+    appears to have read the description as the key. A live POST of the
+    manual's own example has been failing since 2026-08-16; this is the
+    likeliest cause and has not been confirmed by a round trip. See MD-38.
+    """
+
+    Y: float  # Point Y, required
+    Z: float  # Point Z, required
 
 
 class SectionStressPointsPayload(TypedDict, total=False):

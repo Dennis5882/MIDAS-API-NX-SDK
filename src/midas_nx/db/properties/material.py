@@ -226,6 +226,11 @@ class TimeDependentMaterialFunctionPayload(TypedDict, total=False):
     vDAY: List[TimeDependentMaterialFunctionValue]  # required
     CTYPE: str  # FTYPE=CREEP only: "SC"=Specific Creep, "CF"=Creep Function, "CC"=Creep Coefficient; required
     RELAXATION: int  # FTYPE=RELAX only: Hour=0, Day=1; required
+    ELAST: float  # Elast; /info declares it and the manual documents it nowhere (checked across every chapter, 2026-09-04). The section's
+    # Specifications table and its own JSON Schema both list seven properties
+    # and stop. A live POST of the manual's own worked example has answered
+    # "Wrong Field" on both products since 2026-08-16 and was left unresolved;
+    # this is a candidate cause, not a confirmed one.
 
 
 class TimeDependentMaterialFunction(DbResource):

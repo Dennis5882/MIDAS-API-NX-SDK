@@ -117,17 +117,26 @@ class AxialYieldStopHyperS(TypedDict, total=False):
     if false, none may be provided."""
 
     OPT_USE: bool  # required
-    BEAM: bool  # optional
-    WALL: bool  # optional
+    BEAM_COLUMN: bool  # optional. Manual says BEAM here and BEAM_COLUMN in the
+    # sibling SHEAR_YIELD group; /info/db/POGD-M1 says BEAM_COLUMN in both. MD-37.
+    WALL: bool  # optional. Not declared by /info in either ANALYSIS_STOP group;
+    # kept because /info listing a property is not the same as the server
+    # accepting only those — /db/STBK's LCNAME is in no /info schema and its
+    # confirmed live round trip sends it on both products. MD-37.
     TRUSS: bool  # optional
 
 
 class SupportDzDirStopHyperS(TypedDict, total=False):
-    """If OPT_USE is true, at least one of UPLIFT/COLLAPSE must be true;
-    if false, neither may be provided."""
+    """If OPT_USE is true, at least one of UPLIFTING/COLLAPSE must be true;
+    if false, neither may be provided.
+
+    The manual spells the first field `UPLIFT` in six places — its JSON
+    Schema, both allOf rules, the Specifications table, both examples and
+    the Python sample. `/info/db/POGD-M1` declares `UPLIFTING`. MD-37.
+    """
 
     OPT_USE: bool  # required
-    UPLIFT: bool  # optional
+    UPLIFTING: bool  # optional
     COLLAPSE: bool  # optional
 
 
@@ -182,13 +191,15 @@ class TrilinearStiffnessReductionHyperS(TypedDict, total=False):
     TENS_A2: float  # required
     COMP_A1: float  # required
     COMP_A2: float  # required
-    SYMMETRIC: bool  # required
+    SYMMETRIC: bool  # required. Not declared by /info; kept, because dropping a
+    # documented-required field on an omission from a schema already shown
+    # incomplete would break every caller following the manual. MD-37.
 
 
 class BilinearStiffnessReductionHyperS(TypedDict, total=False):
     TENS_A1: float  # required
     COMP_A1: float  # required
-    SYMMETRIC: bool  # required
+    SYMMETRIC: bool  # required. Same as Trilinear's. MD-37.
 
 
 class PushoverHingeOptionHyperS(TypedDict, total=False):

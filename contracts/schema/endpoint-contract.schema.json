@@ -544,6 +544,25 @@
         }
       }
     },
+    "infoOnly": {
+      "type": "array",
+      "description": "Properties GET /info{endpoint} declares that this contract deliberately does not publish as fields, each with the reason. It is a waiver for scripts/info_baseline.py --against-contracts, not for anything else: without it the sweep reports the same property forever and the next person re-investigates it. Use it only where publishing the property would mislead a caller - /db/DRLS's DUMMY is the case it exists for, a placeholder the server declares because its record is documented as an empty object and a JSON Schema cannot have no properties. A property that is real but read-only is a field with requirement read_only or unstated, not an entry here.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "reason"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Dotted property path as /info declares it, array steps elided."
+          },
+          "reason": {
+            "type": "string",
+            "description": "Why no caller should send this and no payload type should offer it."
+          }
+        }
+      }
+    },
     "knownDefects": {
       "type": "array",
       "description": "Product defects affecting this endpoint. References contracts/safety/known-product-risks.yaml.",

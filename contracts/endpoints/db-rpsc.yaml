@@ -307,9 +307,9 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
-  - key: MBAR_ITEMS
+  - key: MBARS
     description: >-
-      Longitudinal Reinforcement Data (Array, Index 0=i-section / 1=j-section)
+      Longitudinal Reinforcement Properties
     type: array
     items:
       type: object
@@ -317,89 +317,126 @@ fields:
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified
-    provenance: manual
+    provenance: live_corrected
+    # RESOLVED: /info declares this field differently - by depth, not by name.
+    # The manual puts MBAR_ITEMS at the root beside SBAR_ITEMS, and
+    # the two really are asymmetric - GET /info/db/RPSC declares SBAR_ITEMS at
+    # the root and MBAR_ITEMS one level down, inside this array. A section that
+    # flattens one of a pair and not the other is easy to read as tidying up an
+    # inconsistency; it is not. See MD-40.
     properties:
-      - key: IJ
+      - key: MBAR_ITEMS
         description: >-
-          Section Position · "I" / "J"
-        type: string
+          Longitudinal Reinforcement Data (Array, Index 0=i-section / 1=j-section)
+        type: array
+        items:
+          type: object
         requirement: required
         documentedDefault: null
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-      - key: NAME
-        description: >-
-          Bar Name
-        type: string
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: REF_Y
-        description: >-
-          Reference Y · Centroid: 0 / Left: 1
-        type: integer
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: Y
-        description: >-
-          Distance from Reference (Y-dir)
-        type: number
-        requirement: optional
-        documentedDefault: 0
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: REF_Z
-        description: >-
-          Reference Z · Top: 0 / Bottom: 1
-        type: integer
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: Z
-        description: >-
-          Distance from Reference (Z-dir)
-        type: number
-        requirement: optional
-        documentedDefault: 0
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: NUM
-        description: >-
-          Number of Rebar
-        type: integer
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: SPACING
-        description: >-
-          Spacing between Rebars
-        type: number
-        requirement: optional
-        documentedDefault: 0
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: PART
-        description: >-
-          Part
-        type: integer
-        requirement: unstated
-        documentedDefault: null
-        documentedOptional: null
-        safeToOmit: unverified
-        provenance: manual
+        properties:
+          - key: IJ
+            description: >-
+              Section Position · "I" / "J"
+            type: string
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: NAME
+            description: >-
+              Bar Name
+            type: string
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: REF_Y
+            description: >-
+              Reference Y · Centroid: 0 / Left: 1
+            type: integer
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: Y
+            description: >-
+              Distance from Reference (Y-dir)
+            type: number
+            requirement: optional
+            documentedDefault: 0
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+          - key: REF_Z
+            description: >-
+              Reference Z · Top: 0 / Bottom: 1
+            type: integer
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: Z
+            description: >-
+              Distance from Reference (Z-dir)
+            type: number
+            requirement: optional
+            documentedDefault: 0
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+          - key: NUM
+            description: >-
+              Number of Rebar
+            type: integer
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: SPACING
+            description: >-
+              Spacing between Rebars
+            type: number
+            requirement: optional
+            documentedDefault: 0
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+          - key: PART
+            description: >-
+              Part
+            type: integer
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      `MBAR_ITEMS` is a root property of the record, listed as row 5 beside
+      `SBAR_ITEMS` as row 4, both `Array[Object]` and both described as
+      "Array, Index 0=i-section / 1=j-section".
+    actual: >-
+      `GET /info/db/RPSC` declares five root properties - `MBARS`,
+      `OPT_CRACKED`, `OPT_MBAR_J`, `OPT_SBAR_J`, `SBAR_ITEMS`. `SBAR_ITEMS` is
+      at the root as documented; `MBAR_ITEMS` is not, and lives inside `MBARS`,
+      an array the section never mentions. The members of `MBAR_ITEMS` are the
+      nine the manual gives, unchanged - only its depth is wrong.
+    evidence: >-
+      GET /info/db/RPSC on Gen NX and Civil NX, captured 2026-09-03 in the full
+      /info sweep, against docs/manual/04_DB_Properties.md section 16. The
+      section was itself rewritten on 2026-08-25 to add MBAR_ITEMS, which had
+      been missing entirely; the correction restored the fields and placed them
+      at the wrong depth. Registered as MD-40.
 
 sdkRules:
   - id: db-rpsc-delete-per-id

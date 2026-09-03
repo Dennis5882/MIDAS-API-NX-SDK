@@ -356,6 +356,87 @@ fields:
       in its payload. That is evidence the call is accepted, not that the
       resulting model is what an engineer wanted.
     provenance: manual
+  - key: FILE_NAME
+    description: >-
+      Model File Name
+    type: string
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - the whole
+    # manual was searched for the name, not just this section.
+    # One of five properties of the model file itself that the server
+    # returns from this endpoint and the section's twenty documented
+    # properties do not mention. Plainly computed rather than sent - a
+    # caller cannot set the file's size - but /info declares no default and
+    # states no requiredness, and read_only is a normalization of a Required
+    # column this section never fills in for them.
+  - key: DIR
+    description: >-
+      Model File Directory
+    type: string
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - the whole
+    # manual was searched for the name, not just this section.
+  - key: FILE_SIZE
+    description: >-
+      Model File Size
+    type: string
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - the whole
+    # manual was searched for the name, not just this section.
+  - key: CREATED
+    description: >-
+      Model File Created Time
+    type: string
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - the whole
+    # manual was searched for the name, not just this section.
+  - key: MODIFIED
+    description: >-
+      Model File Modified Time
+    type: string
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - the whole
+    # manual was searched for the name, not just this section.
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      /db/PJCF's record has twenty properties, all of them project
+      metadata a caller types in - project name, revision, reviewers,
+      dates, comments.
+    actual: >-
+      `GET /info/db/PJCF` declares five more, all about the model file
+      itself: `FILE_NAME`, `DIR`, `FILE_SIZE`, `CREATED` and `MODIFIED`,
+      every one a string. They are plainly computed rather than sent - a
+      caller cannot set the file's size - but /info states no requiredness
+      and this section has no Required cell for them to normalize, so the
+      contract records them as `unstated` rather than promoting them to
+      `read_only` on an inference.
+    evidence: >-
+      Found by scripts/info_baseline.py --against-contracts on 2026-09-04,
+      sweeping the 2026-09-03 /info capture against every contract. The
+      manual was then searched in full for the name, not just this
+      section. Registered as MD-41.
 
 sdkRules:
   - id: db-pjcf-delete-per-id

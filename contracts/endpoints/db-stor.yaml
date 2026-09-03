@@ -219,6 +219,72 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+  - key: STORY_AREA_ITEMS
+    description: >-
+      Story Area Items
+    type: array
+    items:
+      type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: manual
+    # RESOLVED: stated elsewhere in the same section - in a different chapter,
+    # in fact. /db/STOR's own JSON Schema, Request Example and Specifications
+    # table all give fifteen properties and stop. /ope/STOR's POST response
+    # in 15_OPE.md is the same record field for field with this array added,
+    # and its prose names it: 층 면적 좌표 목록(STORY_AREA_ITEMS). The manual
+    # documents /db/STOR's sixteenth property in the section for a different
+    # endpoint. GET /info/db/STOR agrees, member for member. See MD-39.
+    properties:
+      - key: X
+        description: >-
+          X Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: manual
+      - key: Y
+        description: >-
+          Y Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: manual
+      - key: Z
+        description: >-
+          Z Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: manual
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      /db/STOR's JSON Schema, Request Example and Specifications table
+      each give the same fifteen properties and stop.
+    actual: >-
+      There is a sixteenth: `STORY_AREA_ITEMS`, an array of `{X, Y, Z}`
+      factors. The manual does document it, in another chapter -
+      /ope/STOR's POST response in 15_OPE.md is this record field for
+      field with the array added, and the prose under it names it: 층 면적 좌표
+      목록(STORY_AREA_ITEMS). So this is an incompleteness rather than a
+      contradiction, and the contract takes the field from the manual,
+      with /info agreeing member for member.
+    evidence: >-
+      Found by scripts/info_baseline.py --against-contracts on 2026-09-04,
+      sweeping the 2026-09-03 /info capture against every contract. The
+      manual was then searched in full for the name, not just this
+      section. docs/manual/02_DB_Project_Structure.md section 15 against
+      docs/manual/15_OPE.md's /ope/STOR. Registered as MD-39.
 
 sdkRules:
   - id: db-stor-delete-per-id

@@ -6,6 +6,51 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Fixed — two payloads named fields the server does not
+
+- `SectionStressPointsPayload`'s `POINT1`/`POINT2` entries are `{Y, Z}`, not
+  `{PY, PZ}`. `GET /info/db/STRPSSM` declares `Y` and `Z` and gives them the
+  descriptions `"PY"` and `"PZ"` — the manual section took the description for
+  the key. `POINT2` also gains its item shape, which it never had: the manual
+  states the pair once, under `POINT1`, and sends both arrays the same way.
+
+- `PushoverGlobalControlHyperSPayload`'s `ANALYSIS_STOP.AXIAL_YIELD.BEAM` is
+  `BEAM_COLUMN`, and `.SUPPORT_DZ_DIR.UPLIFT` is `UPLIFTING`. The manual
+  spells the second `UPLIFT` in six places; the first it spells both ways, four
+  rows apart, in sibling groups describing the same checkbox — and the server
+  uses `BEAM_COLUMN` in both. Nothing was removed from this type: `WALL` and
+  `SYMMETRIC` are not in `/info` either and are kept, because `/db/STBK` ships
+  an `LCNAME` no `/info` schema declares and a confirmed live round trip sends
+  it successfully on both products. See MD-37, MD-38.
+
+### Changed — `SectionReinforcementPayload.MBAR_ITEMS` moved into `MBARS`
+
+- **Breaking.** `/db/RPSC`'s longitudinal reinforcement is
+  `MBARS: Array<{ MBAR_ITEMS: [...] }>`, not a root `MBAR_ITEMS`. `SBAR_ITEMS`
+  stays at the root, where the manual puts it and where the server has it. The
+  pair genuinely is asymmetric and the manual's table reads as though that had
+  been tidied away. The item members are unchanged — only the depth. See MD-40.
+
+### Added — fields the server declares and the manual does not
+
+- `StoryPayload.STORY_AREA_ITEMS` (`Array<{X, Y, Z}>`). Documented in the
+  manual, in another chapter: `/ope/STOR`'s POST response is `/db/STOR`'s
+  record field for field with this array added. See MD-39.
+
+- `SeismicDeviceViscoelasticDamperPayload.COMMON` and
+  `SeismicDeviceHystereticIsolatorPayload.COMMON` were `JsonObject` and now
+  carry their six members. Both sections describe the object by pointing at
+  `/db/SDVI`'s table rather than repeating it, and a cross-reference is the one
+  thing the contract extractor cannot follow. The Python TypedDicts have had
+  these all along.
+
+- `RebarCheckInputPayload.BEAM.OPTION_IMJSAME`; `BeamLoadPayload.ITEMS`'s
+  `VX`/`VY`/`VZ`; `TimeDependentMaterialFunctionPayload.ELAST`;
+  `PipeCoolingPayload.START_STAGE`/`END_STAGE`; `ProjectInfoPayload`'s five
+  model-file properties (`FILE_NAME`, `DIR`, `FILE_SIZE`, `CREATED`,
+  `MODIFIED`); `ConstructionStagePayload.NO`;
+  `TendonPropertyPayload.bRELAX`. All additive.
+
 ### Fixed — `/db/REBR`'s payload type was the shape the server refuses
 
 - `BraceRebarPayload` and the exported `BraceMainBarSpec` described a single
