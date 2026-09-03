@@ -5536,7 +5536,38 @@ export namespace DbPropertiesDampingTypes {
     /** Damping Ratio Mode 2 */
     DAMPING_MODE_2_DEFAULT: number;
     /** 그룹별 Rayleigh 감쇠 오버라이드 */
-    GROUP_DAMPING_ITEMS: Array<JsonObject>;
+    GROUP_DAMPING_ITEMS: Array<{
+      /** Damping Ratio Type · Material: "MATERIAL" / Structure Group: "STRUCTURE" / Boundary: "BOUNDARY" */
+      GROUP_TYPE: string;
+      /** Damping Ratio Name(재료는 ID, 구조군/경계군은 이름) */
+      GROUP_NAME: string;
+      /** Stiffness Proportional 값 */
+      STIFF_COEF: number;
+      /** Stiffness Proportional 옵션 */
+      OPT_STIFF_PROP?: boolean;
+      /** Mass Proportional 값 */
+      MASS_COEF: number;
+      /** Mass Proportional 옵션 */
+      OPT_MASS_PROP?: boolean;
+      /** 직접 입력/모드 기반 산정 · Direct: 0 / Calculate from Modal Damping: 1 */
+      DIRECT_CALC_MODE: number;
+      /** 계수 산정 기준 · Frequency: 0 / Period: 1 */
+      FREQ_PERIOD_MODE: number;
+      /** Frequency Mode 1 */
+      FREQ_MODE_1: number;
+      /** Frequency Mode 2 */
+      FREQ_MODE_2: number;
+      /** Period Mode 1 */
+      PERIOD_MODE_1: number;
+      /** Period Mode 2 */
+      PERIOD_MODE_2: number;
+      /** Using Material Data / Direct Define Mode Index */
+      DAMPING_RATIO_MODE?: number;
+      /** Damping Ratio Mode 1 */
+      DAMPING_RATIO_MODE_1: number;
+      /** Damping Ratio Mode 2 */
+      DAMPING_RATIO_MODE_2: number;
+    }>;
     /** Priority: Material Data vs Structure Group(요소 쪽) */
     ELEM_GROUP_PRIORITY: number;
     /** Priority between Structure Groups(요소 쪽) */

@@ -5235,6 +5235,18 @@ def run_check(sections: list[Section]) -> int:
         overridden = {
             d.get("describes") for d in contract.get("manualDefects", [])
         }
+        # Fields the manual states in prose instead of a table. The parser
+        # reads tables, so it cannot see them, and without this every one of
+        # them looks like a field the contract invented. A `field_name`
+        # manualDefect would silence them, but it would also silence the whole
+        # contract and it would be a lie: the manual is not wrong here, it just
+        # wrote a paragraph. Each entry names the line and quotes the sentence,
+        # so the claim stays checkable against the chapter.
+        prose_fields = {
+            path
+            for entry in (contract.get("extraction") or {}).get("prose", [])
+            for path in entry.get("paths", [])
+        }
 
         # The section heading, which carries its number. Inserting one endpoint
         # renumbers every section below it - /db/STYP-M1 landing at 02's #4 on
@@ -5367,6 +5379,8 @@ def run_check(sections: list[Section]) -> int:
                     )
 
         for key in contract_fields:
+            if key in prose_fields:
+                continue
             if key not in manual_fields and "field_name" not in overridden:
                 problems.append(
                     f"{path.name}: the contract declares {key!r}, which the manual's table does not - "

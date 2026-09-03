@@ -31,6 +31,15 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
   pair genuinely is asymmetric and the manual's table reads as though that had
   been tidied away. The item members are unchanged — only the depth. See MD-40.
 
+### Fixed — `GroupDampingPayload.GROUP_DAMPING_ITEMS` had no item type
+
+- It was `Array<JsonObject>`. It is now an array of fifteen described members
+  — `GROUP_TYPE`, `GROUP_NAME`, and the twelve Rayleigh fields that mirror the
+  payload's own `*_DEFAULT` roots without the suffix. The manual states all
+  fifteen, in a sentence rather than a table row, which is why the contract
+  generator could not see them; `GET /info/db/GRDP` declares the same fifteen.
+  The Python `GroupDampingRayleighItem` has had them since 2.4.0. See MD-42.
+
 ### Added — fields the server declares and the manual does not
 
 - `StoryPayload.STORY_AREA_ITEMS` (`Array<{X, Y, Z}>`). Documented in the

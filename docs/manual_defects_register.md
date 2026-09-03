@@ -75,6 +75,7 @@ build itself** and is no longer resting on an unrecorded one.
 | MD-39 | 2026-09-04 | `/db/STOR` `STORY_AREA_ITEMS` | the section's JSON Schema, Request Example and Specifications table all give fifteen properties and stop | there is a sixteenth, an array of `{X, Y, Z}` factors. The manual documents it - in chapter 15, where `/ope/STOR`'s POST response is the same record field for field with this array added and the prose names it | **manual repo** transcription | open |
 | MD-40 | 2026-09-04 | `/db/RPSC` `MBAR_ITEMS` | row 5 puts it at the root beside `SBAR_ITEMS` (row 4), the two described identically | `GET /info/db/RPSC` has `SBAR_ITEMS` at the root as documented and `MBAR_ITEMS` one level down, inside an array named `MBARS` the section never mentions. The pair really is asymmetric | **manual repo** transcription | open |
 | MD-41 | 2026-09-04 | nine `/db/*` sections, fifteen fields | each section's Specifications table (and, where it has one, its JSON Schema) presents a complete field list | `GET /info` declares one to six more on each: `/db/BMLD` `ITEMS.VX/VY/VZ`, `/db/HPCE` `START_STAGE`/`END_STAGE`, `/db/PJCF`'s five model-file properties, `/db/RCHK` `BEAM.OPTION_IMJSAME`, `/db/SDVE` and `/db/SDHY` `COMMON`'s six members, `/db/STAG` `NO`, `/db/TDMF` `ELAST`, `/db/TDNT` `bRELAX`. Three of the fifteen were already known - `STAG.NO` and `TDNT.bRELAX` from real models on 2026-07-30, `HPCE`'s pair from /info on 2026-08-17 - and had reached `src/midas_nx/` but never `contracts/` | **manual repo** transcription, except `/db/SDVE` and `/db/SDHY` where the manual defers to `/db/SDVI`'s table and **this SDK**'s extractor cannot follow a cross-reference | open |
+| MD-42 | 2026-09-04 | `/db/GRDP` `GROUP_DAMPING_ITEMS[]`, fifteen members | one sentence under the Specifications tables says the array overrides rows 7-18 per group using "`_DEFAULT` 접미사만 빠진 이름", then lists all fifteen - in prose, not a table row | the members are real and the manual is right about every one of them; `GET /info/db/GRDP` declares exactly those fifteen on both products. `scripts/extract_contracts.py` reads tables, so the contract shipped the array with no members and npm published `Array<JsonObject>` | **this SDK** extractor | fixed |
 
 
 ## Detail
@@ -1420,3 +1421,30 @@ server wants `Y`/`Z`; MD-40 says RPSC's sends `MBAR_ITEMS` at the root where
 the server wants it inside `MBARS`; `/db/TDMF` is missing an `ELAST` the server
 declares. These are candidate causes and nothing more - confirming any of them
 takes a live POST, which is the author's call to make.
+
+### MD-42 - the fourth standing live failure, and what the sweep says about it
+
+`/db/GRDP` is the one endpoint in this batch where the sweep's answer is that
+nothing is wrong. The manual documents `GROUP_DAMPING_ITEMS`'s fifteen members
+in a sentence rather than a table - it says they are rows 7 to 18 with the
+`_DEFAULT` suffix taken off, plus `GROUP_TYPE`/`GROUP_NAME`, and names each one
+- and `/info` declares exactly those fifteen. Manual and server agree
+completely. `src/midas_nx/db/properties/damping.py` has had them since
+2026-08-27; only the contract was behind, for the third time in this batch.
+
+That matters for a question that was open. `/db/GRDP` is the fourth of the four
+endpoints whose own manual worked example has failed live on both products
+since 2026-08-16. MD-38, MD-40 and MD-41 give the other three a shape defect to
+test. This one has none: whatever makes `/db/GRDP` answer `"Wrong Field"`, it
+is not the request shape, and the note's own suspicion - the fixture naming a
+material by id where the model has no such group - survives as the better
+lead. **A sweep that finds nothing is a result.**
+
+The fix needed a new mechanism rather than a `field_name` manualDefect. That
+waiver turns off the extra-field check for a whole contract and asserts the
+manual is wrong, and here the manual is right. `extraction.prose` records the
+sentence instead: its line, its text verbatim, and the paths it documents, so
+the drift check accepts exactly those fields and nothing else, and the claim
+stays checkable against the chapter. The npm signature was MD-36's again, and
+it is worth saying twice: `Array<JsonObject>`, an array whose items nothing
+described, sitting next to a hand-written Python TypedDict that had all fifteen.
