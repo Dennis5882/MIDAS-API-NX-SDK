@@ -537,6 +537,10 @@
               }
             }
           }
+        },
+        "note": {
+          "type": "string",
+          "description": "Why this contract's fields come from where they do, when that is not the manual table `source` names. Needed for the case where the manual section is the thing that is wrong: /db/REBW's extracted draft was discarded rather than reviewed, because promoting any part of it would have put a schema the server does not implement into the source of truth."
         }
       }
     },

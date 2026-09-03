@@ -6,7 +6,7 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
-### Changed — `SectionPayload` and `PressureLoadPayload` are generated from contracts
+### Changed — `SectionPayload`, `PressureLoadPayload` and `WallRebarPayload` are generated from contracts
 
 - These two now come from `contracts/endpoints/` rather than from the Python
   TypedDict, which changes their shape: each is a **discriminated union** over
@@ -25,6 +25,13 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
   members and the discriminant. The compiler points at each one, and the
   branches match what the endpoints already accepted — this narrows the type to
   what the server takes, it does not change any request the SDK sends.
+
+  `WallRebarPayload` is a plainer change: `ITEMS` becomes required and its
+  entry type is inlined rather than referring to the exported `WallRebarItem`
+  interface, which stays exported and unchanged. No field is renamed — this
+  package already shipped the server-confirmed names, because the manual
+  section for `/db/REBW` documents a schema the product does not implement and
+  the SDK was corrected in 2026-07.
 
   `VehiclePayload` and `TimeDependentMaterialStrengthPayload` were listed here
   in an earlier draft of this entry and are **not** affected. Their contracts

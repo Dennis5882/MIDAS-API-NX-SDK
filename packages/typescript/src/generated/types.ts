@@ -2326,8 +2326,55 @@ export namespace DbDesignTypes {
     BE_LENGTH?: number;
     vSTORY_NAME?: Array<string>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface WallRebarPayload {
-    ITEMS?: Array<WallRebarItem>;
+    /** Concrete Wall Rebar Items */
+    ITEMS: Array<{
+      /** ID */
+      ID?: number;
+      /** Use Model Thickness */
+      bUSE_MODEL_THICK?: boolean;
+      /** Thickness (Input check-off Use Model Thickness) */
+      THICK?: number;
+      /** Dw (Concrete Face ~ Rebar Center) */
+      DW?: number;
+      /** De (Concrete Face ~ Rebar Center) */
+      DE?: number;
+      /** Vertical Rebar */
+      VER_BAR?: {
+        /** Name */
+        NAME?: string;
+        /** Space */
+        DIST?: number;
+      };
+      /** Horizontal Rebar */
+      HOR_BAR?: {
+        /** Name */
+        NAME?: string;
+        /** Space */
+        DIST?: number;
+      };
+      /** End Rebar */
+      END_BAR?: {
+        /** Name */
+        NAME?: string;
+        /** Space */
+        DIST?: number;
+      };
+      /** End Rebar Num */
+      NUM_END_BAR?: number;
+      /** Boundary Element Horizontal Rebar */
+      BE_HOR_BAR?: {
+        /** Name */
+        NAME?: string;
+        /** Space */
+        DIST?: number;
+      };
+      /** Boundary Element Length */
+      BE_LENGTH?: number;
+      /** Story Key List */
+      vSTORY_NAME?: Array<string>;
+    }>;
   }
   export interface BraceMainBarSpec {
     NAME?: string;

@@ -607,3 +607,35 @@ records:
       seed's beam 1 and not of its plate 4.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-rebw-live-shape-2026-07-29
+    endpoints: ["/db/REBW"]
+    date: "2026-07-29"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 07/28/2026
+    level: write
+    outcome: success
+    method: >-
+      Against a real production Gen NX model - a KDS/Korean-code building,
+      4044 nodes, 4686 elements, with 102 populated wall-rebar rows - not a
+      scratch document. Three independent checks: GET /db/REBW read back, GET
+      /info/db/REBW pulled for the server's own Argument schema, and a PUT
+      round trip on wall 101 that backed up the record, changed VER_BAR.DIST
+      from 0.2 to 0.99, confirmed the change on a fresh GET, then restored the
+      original and confirmed the restore byte-for-byte. No /doc/NEW was called;
+      nothing in the model was left changed.
+    finding: >-
+      Every field name in the manual's Specifications table and JSON Schema is
+      wrong for this endpoint. The server answers to ID, bUSE_MODEL_THICK,
+      THICK, top-level DW and DE, VER_BAR, HOR_BAR, END_BAR, NUM_END_BAR,
+      BE_HOR_BAR, BE_LENGTH and vSTORY_NAME. Two differences are structural:
+      the rebar-centre distances are top-level rather than members of a
+      CONCRETE_FACE_TO_CENTER_OF_REBAR object, and stories are a flat name list
+      rather than a {FROM, TO} range. The PUT is what makes these the write
+      contract and not only the read shape. /db/REBB in the same chapter and
+      /DESIGN/RC/KDS-41-20-2022/REBW - the same 102 walls - both matched their
+      own documentation exactly in this session, isolating the defect to one
+      manual section. MIDASIT's own Zendesk article 59359110968345 carries the
+      same wrong names, so the vendored chapter transcribes its source
+      faithfully and the source is what disagrees with the product.
+    evidence:
+      - docs/live_verification_notes.md

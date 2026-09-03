@@ -4861,7 +4861,16 @@ def run_check(sections: list[Section]) -> int:
 
         for key, manual in manual_fields.items():
             if key not in contract_fields:
-                problems.append(f"{path.name}: the manual documents {key!r}, the contract does not")
+                # A `field_name` defect relaxes this the same way it relaxes
+                # the mirror check below. It has to work in both directions:
+                # the defect says the manual's field list is wrong, and a wrong
+                # list can name fields the server does not have as easily as it
+                # can omit ones it does. /db/REBW is the case that needs both -
+                # twelve documented names the server answers to none of.
+                if "field_name" not in overridden:
+                    problems.append(
+                        f"{path.name}: the manual documents {key!r}, the contract does not"
+                    )
                 continue
             declared = contract_fields[key]
             if manual.type and declared["type"] != manual.type and "field_value" not in overridden:
@@ -4975,6 +4984,14 @@ def run_check(sections: list[Section]) -> int:
                 for variant in check_variants
                 if (variant.table.heading, variant.table.line) not in resolved_unmerged
             ]
+            # A variant gates on a field name, so a `field_name` defect takes
+            # its gates with it. /db/REBW's three branch tables all gate on
+            # fields the server does not have - CREATE_SUB_WALL_ID,
+            # USE_END_REBAR, USE_MODEL_THICKNESS - and a contract cannot
+            # declare a branch on a field that does not exist. The defect entry
+            # is where that is recorded, in full, once.
+            if "field_name" in overridden:
+                check_variants = []
             declared_variants: dict[tuple, list[dict]] = {}
             for declared in contract.get("variants", []):
                 key = tuple(_variant_key([condition]) for condition in declared.get("when", []))
