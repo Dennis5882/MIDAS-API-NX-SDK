@@ -6,6 +6,15 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.7.6 - 2026-09-03
+
+> **Breaking, despite the patch number.** The version is kept aligned with
+> PyPI, so read this section rather than the number. Two `create()`/`update()`
+> calls now throw where they previously sent a request, and several payload
+> types moved fields into the object the server actually reads them from.
+> Nothing here changes a request the SDK sends on your behalf — it changes
+> which requests it will send at all, and where the types say fields belong.
+
 ### Changed — seven payload types are now generated from contracts
 
 - `SectionPayload`, `PressureLoadPayload`, `WallRebarPayload`,

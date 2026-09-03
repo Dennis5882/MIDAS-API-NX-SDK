@@ -5,23 +5,24 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-09-03 — **2.7.5 published** to PyPI and npm, the first
-> release since 2.6.0 where *both* packaged surfaces actually change. Python:
-> two resource labels follow their manual sections. npm: `AXIS_VECTOR` becomes
-> `Array<number>` — its own documented value did not typecheck — and 49 fields
-> the manual requires only inside one branch stop being required of every
-> payload, a state in which `/db/CCFC`'s type could not be satisfied at all.
+> Last updated: 2026-09-03 — **2.7.6 published** to PyPI and npm. Both
+> packaged surfaces change, and **both change in breaking ways despite the
+> patch number**, which is kept aligned across the two registries rather than
+> derived from semver: `create()`/`update()` now refuse two payloads they used
+> to send, and several npm payload types moved fields into the object the
+> server actually reads them from. The changelog leads with that so nobody is
+> ambushed by a number that looks safe.
 >
-> Since then, unreleased: the **Hyper-S `/info` schemas are captured** in
-> `schema/hyper-s-info.json`, and four contracts are written from them —
-> the first to carry `provenance: info_schema`, and the only ones whose
-> section states no request at all. Two more Python labels were the
-> disagreement again, one of them naming a different feature entirely
-> (`/db/IMFM-M1` is a material *link*, not `/db/IMFM` plus Hyper-S). Three
-> Hyper-S endpoints remain uncontractable in principle: no manual table and a
-> 404 on `/info` leaves them no permitted source.
+> Also in it, from before the release was cut: the **Hyper-S `/info` schemas
+> are captured** in `schema/hyper-s-info.json`, and four contracts are written
+> from them — the first to carry `provenance: info_schema`, and the only ones
+> whose section states no request at all. Two Python labels were the
+> contract/SDK disagreement again, one of them naming a different feature
+> entirely (`/db/IMFM-M1` is a material *link*, not `/db/IMFM` plus Hyper-S).
+> Three Hyper-S endpoints remain uncontractable in principle: no manual table
+> and a 404 on `/info` leaves them no permitted source.
 >
-> **The hand-review gate is empty as of 2026-09-03.** Six endpoints had been
+> **2.7.6 empties the hand-review gate.** Six endpoints had been
 > held out of the source of truth because transcribing their manual sections
 > would have put something false into it; all six are contracted now, and
 > `promote_contract.py`'s `NEEDS_HAND_REVIEW` holds nothing. Three of them
@@ -774,6 +775,7 @@ exactly why that's the honest framing rather than a stronger guarantee.
 | **2.6.1** ✅ | npm operation wrappers now enforce the reviewed Gen NX/Civil NX product availability before sending a request; validated against a real Civil NX session with full DB GET coverage and a model -> analysis -> result-table round trip. Python republished unchanged to preserve the shared version | published 2026-08-28 as `py-v2.6.1` and `js-v2.6.1` |
 | **2.7.0** ✅ | npm: `/db/BODF` generated from a reviewed contract, so `selfWeight` requires `LCNAME` and types `FV` as exactly three numbers; contracted fixed-length arrays now generate tuples rather than unbounded arrays. Python republished unchanged | published 2026-08-28 as `py-v2.7.0` and `js-v2.7.0` |
 | **2.7.1** ✅ | Catches both packages up to three same-day manual revisions. Python: 27 resource labels corrected to the manual's English, `/db/POLC-M1` regains POST after a live call disproved the chapter, `/ope/GSBG` **now raises** on contradictory `BATCH` payloads, and 11 chapter-02 docstring references follow the manual's renumbering. npm: 400 lines of new result-table wrappers, contract-generated payload types, and four payload interfaces re-declared as type aliases. Repo: `--check` gained label, method and section-heading comparisons, each of which found real drift; 31 `safeToOmit: true` claims retracted after the evidence behind them turned out to be a request that never ran | published 2026-08-30 as `py-v2.7.1` and `js-v2.7.1` |
+| **2.7.6** ✅ | Empties `promote_contract.py`'s hand-review gate: the six endpoints held out of the source of truth because transcribing their manual sections would have put something false into it are all contracted. Three take their fields from the server (`/db/REBW`, `/db/REBC`, `/db/REBB`), and for the first two MIDASIT's own articles carry the same wrong shapes, so the vendored chapters transcribe their source faithfully. **Breaking in both surfaces, despite the patch number**, which is kept aligned rather than semver-derived: `create()`/`update()` now refuse a `/db/MVHL` empty `VEH_DEFAULT` and a `/db/PRES` item with no `DIRECTION` — the second because omitting the field is *how* its documented default gets applied, and that default is the one value a plate face refuses. Four shipped npm type defects found while contracting: a variant's branch attached to the payload root instead of the object holding its gate (`/db/SWIND`'s `WIND_SPEED` was a top-level member, not a `PARAMETERS` one); a multi-value branch table dropped when it overlapped no other; 53 rows dropped from `└`-nested tables, two of them required; and a changelog entry claiming two payload types were contract-generated when they were not. Contracts 342 → 358, `surface` blocks 273 → 289, drafts 42 → 26. | published 2026-09-03 as `py-v2.7.6` and `js-v2.7.6` |
 | **2.7.5** ✅ | The first release since 2.6.0 where both packaged surfaces change. Python: `RebarDesignCriteria` and `RebarDesignCriteriaByWallMember` take their manual sections' labels, which their three `DCRM-*` siblings already had. **npm breaking**: `AXIS_VECTOR` is `Array<number>` — the Specifications table typed it `Number` while the section's own schema and Request Example send six, so its documented value was a type error — and six payloads become contract-driven with required members. The larger fix goes the other way: **49 fields the manual requires only inside one branch** were typed required of every payload, so `ConvectionCoefficientFunctionPayload` demanded `COEF` and `SCALE_FACTOR` together and no caller could satisfy it. Contracts 337 → 342, `surface` blocks 0 → 273, drafts 47 → 42; MD-11 records the nine Value Types a section contradicts. | prepared 2026-09-02 |
 | **2.7.4** ✅ | npm only again; Python republished unchanged. **npm breaking**: `StaticSeismicLoadPayload`, `StaticWindLoadPayload` and `TendonProfilePayload` become discriminated unions with fifteen newly required members. The other direction matters more — three shipped defects made *documented* values untypeable: `/db/CO_S` offered two of nine colour components because the manual keys them `"W_R" ~ "HE_B"`, rebar sizes stopped at D8 against a description reading `19종 (D4 ~ D57)`, and a variant union outlawed every discriminator value no manual table covered. Contracts 319 → 337; `/db/FIMP` un-promoted for declaring a three-level object as ten flat fields. | published 2026-09-02 |
 | **2.7.3** ✅ | D3 and D4, the last two contract-schema decisions. `variant.when` takes the `appliesWhen` shape — an ANDed array of `{path, equals|in}` — so a nested discriminator, a two-level selector and a table the manual gives several values for are all expressible; `request.itemSchema` gains `scalar` and `empty` for the nine `/doc/*` arguments that are a bare string or `{}` rather than a field list. Promoted 309 → 319. **npm breaking**: `FloorLoadPayload` is now a discriminated union with three required members. Python's packaged surface is unchanged. | published 2026-08-31 as `py-v2.7.3` and `js-v2.7.3` |
