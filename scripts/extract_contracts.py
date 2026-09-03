@@ -4866,8 +4866,19 @@ def run_check(sections: list[Section]) -> int:
             declared = contract_fields[key]
             if manual.type and declared["type"] != manual.type and "field_value" not in overridden:
                 problems.append(f"{path.name}: {key} typed {declared['type']!r}, manual says {manual.type!r}")
-            if manual.requirement and declared["requirement"] != manual.requirement:
+            if (
+                manual.requirement
+                and declared["requirement"] != manual.requirement
+                and "requiredness" not in overridden
+            ):
                 problems.append(f"{path.name}: {key} requirement {declared['requirement']!r}, manual says {manual.requirement!r}")
+            # Deliberately *not* relaxed by a `requiredness` defect. The two
+            # fields answer different questions: `requirement` is what the
+            # contract asks a caller to do, which a live measurement can
+            # overrule, while `documentedOptional` is what the manual's
+            # Required column says, which no measurement changes. A defect
+            # entry records that the column is wrong about the product; it does
+            # not license restating the column itself.
             documented_optional = "unstated" if manual.requirement is None else manual.requirement == "optional"
             expected_documented_optional = None if documented_optional == "unstated" else documented_optional
             if declared["documentedOptional"] != expected_documented_optional:
@@ -4945,6 +4956,19 @@ def run_check(sections: list[Section]) -> int:
                 (entry.get("heading"), entry.get("line"))
                 for entry in contract.get("extraction", {}).get("unmergedTables", [])
                 if entry.get("resolution")
+            }
+            # A heading can state a condition and a parent object at once, and
+            # then the same table is both a branch and a merge - the KDS
+            # column-rebar endpoint's `CREATE_SUB_SECTION == true 일 때 - ELEMS`
+            # is the case. Merging it is the placement that puts the fields
+            # where the server looks, so a structuralTables entry that says in
+            # its `note` why it was merged answers this table too. The note is
+            # what makes the exemption narrow: an ordinary merge, of a heading
+            # that never stated a condition, carries none and is unaffected.
+            resolved_unmerged |= {
+                (entry.get("heading"), entry.get("line"))
+                for entry in contract.get("extraction", {}).get("structuralTables", [])
+                if entry.get("note")
             }
             check_variants = [
                 variant

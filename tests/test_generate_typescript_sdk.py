@@ -172,6 +172,166 @@ def test_contract_shared_variant_table_folds_into_the_branches_it_covers():
     assert rendered.count("ONLY_TWO: number;") == 1
 
 
+def test_a_variant_attaches_to_the_object_holding_its_discriminator():
+    """A branch's fields are siblings of the field it gates on, at any depth.
+
+    /db/SWIND and /db/SSEIS gate on PARAMETERS.INPUT_METHOD and
+    PARAMETERS.PERIOD_METHOD; /db/PRES and /db/MCON on a member of an ITEMS
+    element. Attaching those unions at the payload root published WIND_SPEED,
+    EXP_CATEGORY and PERIOD_APPR_X as top-level members - where the server does
+    not look, the same defect the /db/BTMP nesting fix corrected one level down.
+    """
+    rendered = "\n".join(
+        generator._contract_payload_type(
+            "NestedGatePayload",
+            {
+                "fields": [
+                    {
+                        "key": "PARAMETERS",
+                        "type": "object",
+                        "requirement": "required",
+                        "properties": [
+                            {"key": "INPUT_METHOD", "type": "integer", "requirement": "required"}
+                        ],
+                    }
+                ],
+                "variants": [
+                    {
+                        "when": [{"path": "PARAMETERS.INPUT_METHOD", "equals": 0}],
+                        "fields": [
+                            {"key": "WIND_SPEED", "type": "number", "requirement": "required"}
+                        ],
+                    },
+                    {
+                        "when": [{"path": "PARAMETERS.INPUT_METHOD", "equals": 1}],
+                        "fields": [
+                            {"key": "EXP_CATEGORY", "type": "integer", "requirement": "required"}
+                        ],
+                    },
+                ],
+            },
+        )
+    )
+
+    # The union sits inside PARAMETERS, so the branch fields are indented past
+    # it rather than declared beside it.
+    parameters = rendered.index("PARAMETERS:")
+    assert rendered.index("WIND_SPEED") > parameters
+    assert "    } & (" in rendered, rendered
+    # And the payload root is a plain object: nothing was intersected there.
+    assert not rendered.rstrip().endswith(");")
+    assert rendered.rstrip().endswith("};")
+
+
+def test_a_variant_gating_inside_an_array_attaches_to_the_element():
+    """/db/PRES's FACE_EDGE_TYPE lives in ITEMS[], so FORCES does too.
+
+    The manual numbers the branch rows `(11)`, continuing the ITEMS numbering,
+    and the section's own JSON request example sends FORCES inside the array
+    entry.
+    """
+    rendered = "\n".join(
+        generator._contract_payload_type(
+            "ItemGatePayload",
+            {
+                "fields": [
+                    {
+                        "key": "ITEMS",
+                        "type": "array",
+                        "requirement": "required",
+                        "properties": [
+                            {"key": "KIND", "type": "string", "requirement": "required"}
+                        ],
+                    }
+                ],
+                "variants": [
+                    {
+                        "when": [{"path": "ITEMS.KIND", "equals": "A"}],
+                        "fields": [{"key": "ONLY_A", "type": "number", "requirement": "required"}],
+                    },
+                    {
+                        "when": [{"path": "ITEMS.KIND", "equals": "B"}],
+                        "fields": [{"key": "ONLY_B", "type": "number", "requirement": "required"}],
+                    },
+                ],
+            },
+        )
+    )
+
+    # The intersection has to be parenthesised inside Array<>, or the union
+    # would bind to the array rather than to its element type.
+    assert "ITEMS: Array<({" in rendered, rendered
+    assert "ONLY_A: number;" in rendered
+    assert rendered.rstrip().endswith("};")
+
+
+def test_a_multi_value_table_overlapping_nothing_is_a_branch_not_a_shared_table():
+    """Overlap decides it, not the plural.
+
+    /db/PRES states one table for ``FACE_EDGE_TYPE = "FACE" or "PRES"`` and
+    another for ``= "EDGE"``. Neither covers the other, so both are branches.
+    Reading every multi-value table as the /db/FBLA shared kind folded this one
+    into branches it does not cover and then dropped it: /db/PRES lost FORCES,
+    /db/MVHL lost the South African VEH_ZA, /db/TDME lost four of six.
+    """
+    rendered = "\n".join(
+        generator._contract_payload_type(
+            "DisjointPayload",
+            {
+                "fields": [
+                    {
+                        "key": "KIND",
+                        "type": "string",
+                        "requirement": "required",
+                        "enum": ["FACE", "PRES", "EDGE"],
+                    }
+                ],
+                "variants": [
+                    {
+                        "when": [{"path": "KIND", "in": ["FACE", "PRES"]}],
+                        "fields": [{"key": "FORCES", "type": "number", "requirement": "required"}],
+                    },
+                    {
+                        "when": [{"path": "KIND", "equals": "EDGE"}],
+                        "fields": [{"key": "EDGES", "type": "number", "requirement": "required"}],
+                    },
+                ],
+            },
+        )
+    )
+
+    assert '"FACE" | "PRES";' in rendered
+    assert "FORCES: number;" in rendered
+    assert "EDGES: number;" in rendered
+    # Every enum member is covered, so no residual `?: never` member is needed.
+    assert "?: never" not in rendered
+
+
+def test_a_variant_gating_on_a_field_the_contract_never_declares_stays_at_the_root():
+    """/db/MVLD's LOAD_MODEL is declared inside a sibling variant, not in fields.
+
+    Where the contract says nothing, the branch is left where it already was
+    rather than given an invented home - no permitted source states which
+    object holds it.
+    """
+    rendered = "\n".join(
+        generator._contract_payload_type(
+            "UndeclaredGatePayload",
+            {
+                "fields": [{"key": "TYPE", "type": "integer", "requirement": "required"}],
+                "variants": [
+                    {
+                        "when": [{"path": "LOAD_MODEL", "equals": 2}],
+                        "fields": [{"key": "EXTRA", "type": "number", "requirement": "required"}],
+                    }
+                ],
+            },
+        )
+    )
+
+    assert rendered.rstrip().endswith(");")
+    assert "LOAD_MODEL: 2;" in rendered
+
 def test_contract_fixed_length_arrays_render_as_tuples():
     rendered = generator._contract_field_type(
         {"type": "array", "items": {"type": "number"}, "minItems": 3, "maxItems": 3},

@@ -530,6 +530,10 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              "note": {
+                "type": "string",
+                "description": "Why this placement is the one the contract keeps, where the heading could reasonably have been read another way. A heading that states a condition and a parent object at once is the case that needs it: the table can be merged into the parent or kept as a variant, and only one of those puts the fields where the server looks."
               }
             }
           }
@@ -1079,6 +1083,14 @@
           },
           "description": "Payload fields the rule covers, for normalize_defaults and reject_request."
         },
+        "rejects": {
+          "enum": [
+            "empty_value",
+            "omission",
+            "forbidden_combination"
+          ],
+          "description": "What a reject_request rule refuses about the fields it lists. empty_value = the field is present but carries a value the server accepts and discards, such as /db/MVHL's empty VEH_DEFAULT. omission = the field is absent, so the server applies a documented default that it then refuses, such as /db/PRES's DIRECTION. forbidden_combination = the fields are individually valid and may not be sent together, such as /ope/GSBG's batch and single-group sets. The three need different checks and the kind alone does not say which, so it is stated rather than inferred from the rule's prose."
+        },
         "values": {
           "type": "object",
           "description": "Field to value map for normalize_defaults. Values must match the documented default; the rule exists to make the default explicit on the wire, not to invent one."
@@ -1149,6 +1161,24 @@
                 "maxItems": 4
               }
             }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "reject_request"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "fields",
+              "rejects"
+            ]
           }
         }
       ]

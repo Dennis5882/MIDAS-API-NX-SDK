@@ -292,12 +292,33 @@ _CONTRACT_TS_TYPES = {
 }
 
 
-def _contract_field_type(field: dict[str, Any], indent: str) -> str:
-    """Render one contract field as a TypeScript type."""
+def _contract_field_type(
+    field: dict[str, Any],
+    indent: str,
+    attach: dict[str, list[str]] | None = None,
+    path: str = "",
+) -> str:
+    """Render one contract field as a TypeScript type.
+
+    ``attach`` carries variant unions down to the fields that hold their
+    discriminators, keyed by dotted field path so a gate nested several levels
+    down attaches where it belongs rather than at the nearest root. Where one
+    lands, the union is intersected with that object - inside the element type
+    when the field is an array. See ``_contract_payload_type``.
+    """
     kind = field.get("type")
+    # `key` is absent when a caller renders a bare type rather than a member.
+    key = field.get("key", "")
+    here = f"{path}.{key}" if path else key
+    branches = (attach or {}).get(here) if here else None
     if field.get("properties"):
-        body = _contract_interface_body(field["properties"], indent + "  ")
+        body = _contract_interface_body(field["properties"], indent + "  ", attach, here)
         inner = "{\n" + body + f"\n{indent}}}"
+        if branches:
+            union = "\n".join(f"{indent}  {line}" for line in branches)
+            inner += " & (\n" + union + f"\n{indent})"
+            if kind == "array":
+                inner = f"({inner})"
         return f"Array<{inner}>" if kind == "array" else inner
     if kind == "array":
         item = (field.get("items") or {}).get("type")
@@ -324,7 +345,12 @@ def _condition_text(entry: dict[str, Any]) -> str:
     return f"{entry['path']} = {json.dumps(entry['equals'])}"
 
 
-def _contract_interface_body(fields: list[dict[str, Any]], indent: str) -> str:
+def _contract_interface_body(
+    fields: list[dict[str, Any]],
+    indent: str,
+    attach: dict[str, list[str]] | None = None,
+    path: str = "",
+) -> str:
     lines: list[str] = []
     for field in fields:
         applies_when = field.get("appliesWhen", [])
@@ -351,7 +377,10 @@ def _contract_interface_body(fields: list[dict[str, Any]], indent: str) -> str:
             documentation.append(f"{verb} {rendered}.")
         if documentation:
             lines.append(f"{indent}/** {' '.join(documentation)} */")
-        lines.append(f"{indent}{field['key']}{optional}: {_contract_field_type(field, indent)};")
+        lines.append(
+            f"{indent}{field['key']}{optional}: "
+            f"{_contract_field_type(field, indent, attach, path)};"
+        )
     return "\n".join(lines)
 
 
@@ -362,6 +391,22 @@ def _contract_payload_type(name: str, contract: dict[str, Any]) -> list[str]:
     TypeScript intersection with a discriminated union keeps that fact visible:
     callers must choose one documented branch instead of being offered a
     misleading interface containing every branch's fields at once.
+
+    A variant's fields are siblings of the field it gates on, so each union
+    attaches where its own discriminator lives - and only a root-level
+    discriminator makes that the payload root. Six contracts gate on a field
+    the manual nests: ``/db/SWIND`` and ``/db/SSEIS`` inside ``PARAMETERS``,
+    ``/db/PRES``, ``/db/MCON`` and the KDS column-rebar endpoint inside an
+    array element. Attaching those at the root published ``WIND_SPEED``,
+    ``EXP_CATEGORY`` and ``PERIOD_APPR_X`` as top-level payload members, which
+    is where the server does not look - the same defect the ``/db/BTMP``
+    nesting fix corrected one level further down.
+
+    Two of them branch on **two** axes at two depths: ``/db/SWIND`` selects a
+    ``PARAMETERS`` shape with the root ``WIND_CODE`` and then branches again on
+    ``PARAMETERS.INPUT_METHOD``. So the variants are grouped by where they
+    attach and each group becomes its own union, rather than one union per
+    contract.
     """
 
     fields = contract["fields"]
@@ -373,16 +418,66 @@ def _contract_payload_type(name: str, contract: dict[str, Any]) -> list[str]:
         lines.append("  }")
         return lines
 
+    groups: dict[str | None, list[dict[str, Any]]] = {}
+    for variant in variants:
+        groups.setdefault(_variant_attach_key(fields, variant), []).append(variant)
+
+    nested = {
+        key: _variant_union(_attach_base(fields, key), group)
+        for key, group in groups.items()
+        if key is not None
+    }
+    root = groups.get(None)
+
     lines.append(f"  export type {name} = {{")
-    lines.append(_contract_interface_body(fields, "    "))
+    lines.append(_contract_interface_body(fields, "    ", nested or None))
+    if root is None:
+        lines.append("  };")
+        return lines
     lines.append("  } & (")
-    # A variant whose condition names several values is the manual's shared
-    # table, not a further branch: /db/FBLA states one table for
-    # ``FLOOR_DIST_TYPE = 1 or 2`` alongside its ``= 1`` and ``= 2`` tables.
-    # Emitting it as its own union member would make two members match the same
-    # discriminator. Fold its fields into every branch it covers instead, which
-    # is what the manual says rather than a merge this code invented.
-    shared = [v for v in variants if any("in" in c for c in v["when"])]
+    lines.extend(f"    {line}" for line in _variant_union(fields, root))
+    lines.append("  );")
+    return lines
+
+
+def _attach_base(fields: list[dict[str, Any]], path: str) -> list[dict[str, Any]]:
+    """The declared members of the object a nested union attaches to.
+
+    Exhaustiveness is judged against the discriminator's own declaration, so it
+    has to be looked up beside the branch rather than at the payload root.
+    """
+    for step in path.split("."):
+        fields = next(
+            (field.get("properties") or [] for field in fields if field["key"] == step), []
+        )
+    return fields
+
+
+def _variant_union(base: list[dict[str, Any]], variants: list[dict[str, Any]]) -> list[str]:
+    """One discriminated union, rendered without a leading indent.
+
+    The caller decides how far in it sits, which is what lets the same union be
+    emitted at the payload root or spliced into a nested object.
+    """
+    # A multi-value table is the manual's *shared* table only when it overlaps
+    # another one: /db/FBLA states a table for ``FLOOR_DIST_TYPE = 1 or 2``
+    # alongside its ``= 1`` and ``= 2`` tables, and emitting that as its own
+    # union member would make two members match the same discriminator. Fold
+    # its fields into every branch it covers instead.
+    #
+    # Overlap is what decides it, not the plural on its own. A table naming
+    # several values that no other table names is an ordinary branch that
+    # happens to cover more than one value - /db/PRES's ``FACE_EDGE_TYPE =
+    # "FACE" or "PRES"`` against its separate ``= "EDGE"``. Treating every
+    # plural table as shared dropped those branches entirely, because folding
+    # keeps only the single-value ones: /db/PRES lost FORCES, /db/MVHL lost the
+    # South African VEH_ZA, and /db/TDME lost four of its six code branches.
+    shared = [
+        v
+        for v in variants
+        if any("in" in c for c in v["when"])
+        and any(_shared_covers(v["when"], other["when"]) for other in variants if other is not v)
+    ]
     branches = [v for v in variants if v not in shared]
     if shared and branches:
         variants = [
@@ -404,7 +499,7 @@ def _contract_payload_type(name: str, contract: dict[str, Any]) -> list[str]:
     # denies each branch's own fields so a wrong-branch field is still an
     # error. Widening the enums the extractor cannot yet read is what would
     # narrow these unions again.
-    base_by_key = {field["key"]: field for field in fields}
+    base_by_key = {field["key"]: field for field in base}
     selectors: dict[str, set[str]] = {}
     for variant in variants:
         for condition in variant["when"]:
@@ -426,20 +521,21 @@ def _contract_payload_type(name: str, contract: dict[str, Any]) -> list[str]:
         for path, values in selectors.items()
     )
 
+    lines: list[str] = []
     for index, variant in enumerate(variants):
         conditions = variant["when"]
-        lines.append("    {")
-        # A condition path may be nested (``STR.SPEC_CODE``). Only a root-level
-        # discriminator can be narrowed as a property of this branch; a nested
-        # one is documentation the branch body already carries, so it is not
-        # emitted twice.
+        lines.append("{")
+        # A condition path may be nested (``STR.SPEC_CODE``). Only a
+        # discriminator declared beside this branch can be narrowed as one of
+        # its properties; a deeper one is documentation the branch body already
+        # carries, so it is not emitted twice.
         roots = [c for c in conditions if "." not in c["path"]]
         for condition in roots:
             if "in" in condition:
                 union = " | ".join(json.dumps(value) for value in condition["in"])
-                lines.append(f"      {condition['path']}: {union};")
+                lines.append(f"  {condition['path']}: {union};")
             else:
-                lines.append(f"      {condition['path']}: {json.dumps(condition['equals'])};")
+                lines.append(f"  {condition['path']}: {json.dumps(condition['equals'])};")
         # A manually transcribed variant table often repeats its discriminator
         # as the first row (for example ``iMETHOD = 2`` followed by an
         # ``iMETHOD`` parameter row). The literal branch discriminator is the
@@ -447,18 +543,55 @@ def _contract_payload_type(name: str, contract: dict[str, Any]) -> list[str]:
         # create an illegal duplicate TypeScript property.
         narrowed = {condition["path"] for condition in roots}
         branch_fields = [field for field in variant["fields"] if field.get("key") not in narrowed]
-        body = _contract_interface_body(branch_fields, "      ")
-        if body:
-            lines.append(body)
+        # One entry per line, because the caller indents this union line by
+        # line to place it - a joined block would keep its own indentation and
+        # land at the wrong depth wherever the union is not at the root.
+        lines.extend(_contract_interface_body(branch_fields, "  ").splitlines())
         last = index == len(variants) - 1 and exhaustive
-        lines.append("    }" + ("" if last else " |"))
+        lines.append("}" + ("" if last else " |"))
     if not exhaustive:
-        lines.append("    {")
+        lines.append("{")
         for key in residual:
-            lines.append(f"      {key}?: never;")
-        lines.append("    }")
-    lines.append("  );")
+            lines.append(f"  {key}?: never;")
+        lines.append("}")
     return lines
+
+
+def _variant_attach_key(fields: list[dict[str, Any]], variant: dict[str, Any]) -> str | None:
+    """The dotted path of the object whose members this variant's fields join.
+
+    That is the object holding its discriminator, at whatever depth the
+    contract declares it - a gate found only at the nearest root would attach
+    the branch above the object it belongs to, which is the bug this returns a
+    full path to avoid.
+
+    ``None`` means the payload root, either because the gate is a root field or
+    because the contract declares it nowhere. The second case is left where it
+    already was rather than given an invented home: ``/db/MVLD``'s
+    ``LOAD_MODEL`` is declared inside a sibling variant, and no permitted source
+    says which object holds it.
+
+    A variant gating on two fields at two depths would have no single place to
+    attach. None does, and one appearing is a contract to look at rather than a
+    default to pick, so it raises.
+    """
+    attachments = set()
+    for condition in variant["when"]:
+        # Gates come in both spellings the corpus uses: a bare field name that
+        # may live anywhere (`FACE_EDGE_TYPE`) and a path already rooted at the
+        # payload (`PARAMETERS.INPUT_METHOD`). Resolving the last segment
+        # against the contract's own tree answers both, and answers with the
+        # canonical path rather than trusting the spelling.
+        found = _field_path(fields, condition["path"].rsplit(".", 1)[-1])
+        # The array marker is a rendering detail; the attach point is the field.
+        parent = found.rsplit(".", 1)[0].replace("[]", "") if found and "." in found else None
+        attachments.add(parent)
+    if len(attachments) != 1:
+        raise ValueError(
+            "one variant's discriminators sit at different depths, so its branch "
+            f"has no single place to attach: {sorted(c['path'] for c in variant['when'])}"
+        )
+    return attachments.pop()
 
 
 def _selector_is_exhaustive(field: dict[str, Any] | None, values: set[str]) -> bool:
@@ -636,34 +769,79 @@ def _contract_payload_defaults() -> dict[str, dict[str, Any]]:
     return defaults
 
 
-def _contract_rejected_empty_fields() -> dict[str, list[str]]:
-    """Read ``reject_request`` rules that name payload fields.
+# Metadata keys that change what DbResource does at runtime, as opposed to
+# describing the endpoint. Every one is derived from a contract rule.
+_RUNTIME_BEHAVIOUR_KEYS = ("payloadDefaults", "rejectEmptyFields", "requiredExplicitFields")
+
+
+def _field_path(fields: list[dict[str, Any]], key: str, prefix: str = "") -> str | None:
+    """Where a contract declares ``key``, written the way a runtime walks it.
+
+    An array field becomes ``ITEMS[].DIRECTION`` and an object field
+    ``PARENT.CHILD``, so a rule that names a bare field key still reaches the
+    right place when the manual nests it. Returns None when the contract does
+    not declare the key at all, which the caller turns into an error rather
+    than a silently skipped rule.
+    """
+    for field in fields or []:
+        step = "[]" if field.get("type") == "array" else ""
+        here = f"{prefix}{field['key']}"
+        if field["key"] == key:
+            return here
+        found = _field_path(field.get("properties") or [], key, f"{here}{step}.")
+        if found is not None:
+            return found
+    return None
+
+
+def _contract_reject_rules() -> dict[str, dict[str, list[str]]]:
+    """Read ``reject_request`` rules, split by what each one actually refuses.
 
     The sibling of ``_contract_payload_defaults()`` and there for the same
-    reason. ``/db/MVHL``'s ``VEH_DEFAULT: {}`` is accepted by the server and
-    silently stores nothing, so a caller who reads the manual - every member of
-    that object is documented Optional - gets a success-shaped response and no
-    vehicle. A rule written in one language would reach one language's users.
+    reason: a rule written in one language reaches one language's users.
 
-    Only the field list travels. What counts as a rejection is the runtime's,
-    and it is deliberately narrow: an empty object, sent explicitly. Omitting
-    the field entirely is a different request and is left alone.
+    ``rejects`` is what keeps the two apart, and it is a contract field rather
+    than a guess because the kind alone does not say which check to run.
+    ``empty_value`` is ``/db/MVHL``'s ``VEH_DEFAULT: {}`` - accepted by the
+    server, stored as nothing, answered with a success-shaped body.
+    ``omission`` is ``/db/PRES``'s ``DIRECTION`` - absent, so the server
+    applies a documented default it then refuses. Running either check on the
+    other's fields would be wrong in both directions.
+    ``forbidden_combination`` travels to neither: those rules name several
+    fields that are individually valid, and no generic runtime check follows
+    from a field list alone.
+
+    Field names are resolved against the contract's own field tree, so a rule
+    may name the key the manual uses and the runtime still receives the path.
     """
     contract_dir = ROOT / "contracts" / "endpoints"
     if not contract_dir.is_dir():
         return {}
     import yaml  # noqa: PLC0415
 
-    rejected: dict[str, list[str]] = {}
+    wanted = {"empty_value": "rejectEmptyFields", "omission": "requiredExplicitFields"}
+    rules: dict[str, dict[str, list[str]]] = {}
     for path in sorted(contract_dir.glob("*.yaml")):
         contract = yaml.safe_load(path.read_text(encoding="utf-8"))
-        fields: list[str] = []
         for rule in contract.get("sdkRules", []):
-            if rule.get("kind") == "reject_request":
-                fields += [f for f in rule.get("fields", []) if f not in fields]
-        if fields:
-            rejected[contract["endpoint"]] = fields
-    return rejected
+            if rule.get("kind") != "reject_request":
+                continue
+            metadata_key = wanted.get(rule.get("rejects"))
+            if metadata_key is None:
+                continue
+            for name in rule.get("fields", []):
+                resolved = _field_path(contract.get("fields", []), name)
+                if resolved is None:
+                    raise ValueError(
+                        f"{path.name}: sdkRule {rule['id']} names the field "
+                        f"{name!r}, which the contract does not declare"
+                    )
+                bucket = rules.setdefault(contract["endpoint"], {}).setdefault(
+                    metadata_key, []
+                )
+                if resolved not in bucket:
+                    bucket.append(resolved)
+    return rules
 
 
 def _contract_resource_surfaces(resource_endpoints: set[str]) -> dict[str, dict[str, Any]]:
@@ -893,7 +1071,7 @@ def _load_resources() -> list[dict[str, Any]]:
         coverage_by_endpoint[entry["endpoint"]].append(entry)
 
     payload_defaults = _contract_payload_defaults()
-    rejected_empty_fields = _contract_rejected_empty_fields()
+    reject_rules = _contract_reject_rules()
     surfaces = _contract_resource_surfaces(set(python_classes))
 
     resources: list[dict[str, Any]] = []
@@ -938,11 +1116,7 @@ def _load_resources() -> list[dict[str, Any]]:
                 if endpoint in payload_defaults
                 else {}
             ),
-            **(
-                {"rejectEmptyFields": rejected_empty_fields[endpoint]}
-                if endpoint in rejected_empty_fields
-                else {}
-            ),
+            **reject_rules.get(endpoint, {}),
             "manual": manual,
         }
         if surface is not None:
@@ -993,10 +1167,12 @@ def _render_tree(resources: list[dict[str, Any]]) -> str:
                 )
                 if chapter:
                     metadata["manualChapter"] = chapter
-                if "payloadDefaults" in value:
-                    metadata["payloadDefaults"] = value["payloadDefaults"]
-                if "rejectEmptyFields" in value:
-                    metadata["rejectEmptyFields"] = value["rejectEmptyFields"]
+                # Contract-derived runtime behaviour, listed in one place: a
+                # rule that reaches the manifest and not this dict would be a
+                # rule the npm package documents and never runs.
+                for behaviour in _RUNTIME_BEHAVIOUR_KEYS:
+                    if behaviour in value:
+                        metadata[behaviour] = value[behaviour]
                 encoded = json.dumps(metadata, ensure_ascii=False, separators=(",", ":"))
                 payload = value.get("payloadType", "JsonObject")
                 lines.append(f"{pad}  {key}: defineDbResource<{payload}>({encoded}),")

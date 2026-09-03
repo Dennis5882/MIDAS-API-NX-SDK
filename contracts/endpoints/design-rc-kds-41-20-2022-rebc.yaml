@@ -360,44 +360,6 @@ fields:
             # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(9)', not
             # by naming a path
 
-variants:
-  - when:
-      - path: CREATE_SUB_SECTION
-        equals: true
-    source:
-      table: CREATE_SUB_SECTION == true 일 때 — ELEMS (KEYS / TO / STRUCTURE_GROUP_NAME 중 택1)
-      line: 6678
-    fields:
-      - key: KEYS
-        description: >-
-          요소 ID 배열
-        type: array
-        items:
-          type: integer
-        requirement: optional
-        documentedDefault: null
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: TO
-        description: >-
-          ID 범위 (예: "1to160")
-        type: string
-        requirement: optional
-        documentedDefault: null
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: STRUCTURE_GROUP_NAME
-        description: >-
-          구조 그룹 이름
-        type: string
-        requirement: optional
-        documentedDefault: null
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-
 extraction:
   source: 26_Design_RC_KDS41202022.md line 6643
   table: Root / Item
@@ -415,3 +377,13 @@ extraction:
       line: 6678
       paths:
         - Assign.ITEMS.ELEMS
+      note: >-
+        This heading states a condition and a parent at once, so the table was
+        first recorded twice - once merged here, where the heading's own `ELEMS`
+        puts it and where the item table's row (3) declares the object, and once
+        again as a variant gating on `CREATE_SUB_SECTION`. The variant was
+        removed 2026-09-03: its three fields are these three, and a branch has
+        to attach to the object holding its discriminator, which would have put
+        `KEYS`, `TO` and `STRUCTURE_GROUP_NAME` beside `ELEMS` rather than
+        inside it. The condition is not lost - `ELEMS` itself carries it as
+        `requirement: conditional` with the matching `appliesWhen`.

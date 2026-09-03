@@ -1675,7 +1675,7 @@ export namespace DbBoundaryTypes {
   /** Generated from contracts/endpoints/. */
   export type LinearConstraintPayload = {
     /** Linear Constraints (배열로 삽입) */
-    ITEMS: Array<{
+    ITEMS: Array<({
       /** Serial Number */
       ID?: number;
       /** Load Group Name */
@@ -1695,31 +1695,31 @@ export namespace DbBoundaryTypes {
         /** Weight */
         WEIGHT: number;
       }>;
-    }>;
-  } & (
-    {
-      TYPE: "EX";
-      /** Node ID */
-      NODE_KEY: number;
-      /** Coefficient */
-      COEFF: number;
-      /** Degree of Freedom · DX:0/DY:1/DZ:2/RX:3/RY:4/RZ:5 */
-      DOF: number;
-    } |
-    {
-      TYPE: "WD";
-      /** Node ID */
-      NODE_KEY: number;
-      /** Weight */
-      WEIGHT: number;
-    } |
-    {
-      NODE_KEY?: never;
-      COEFF?: never;
-      DOF?: never;
-      WEIGHT?: never;
-    }
-  );
+    } & (
+      {
+        TYPE: "EX";
+        /** Node ID */
+        NODE_KEY: number;
+        /** Coefficient */
+        COEFF: number;
+        /** Degree of Freedom · DX:0/DY:1/DZ:2/RX:3/RY:4/RZ:5 */
+        DOF: number;
+      } |
+      {
+        TYPE: "WD";
+        /** Node ID */
+        NODE_KEY: number;
+        /** Weight */
+        WEIGHT: number;
+      } |
+      {
+        NODE_KEY?: never;
+        COEFF?: never;
+        DOF?: never;
+        WEIGHT?: never;
+      }
+    ))>;
+  };
   /** Generated from contracts/endpoints/. */
   export interface PanelZoneEffectPayload {
     /** Auto Calculate Panel Zone Offset Distances */
@@ -6208,9 +6208,45 @@ export namespace DbStaticLoadsTypes {
     FORCES?: Array<number>;
     EDGE_LOADS?: Array<number>;
   }
-  export interface PressureLoadPayload {
-    ITEMS: Array<PressureLoadItem>;
-  }
+  /** Generated from contracts/endpoints/. */
+  export type PressureLoadPayload = {
+    /** Pressure Load items */
+    ITEMS: Array<({
+      /** Serial Number */
+      ID?: number;
+      /** Load Case Name */
+      LCNAME: string;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Command Type ("PRES") */
+      CMD?: string;
+      /** Element Type ("PLATE" / "SOLID" / "PLANE") */
+      ELEM_TYPE?: "PLATE" | "SOLID" | "PLANE";
+      /** Pressure Type ("FACE" / "EDGE" / "PRES") */
+      FACE_EDGE_TYPE: "FACE" | "EDGE" | "PRES";
+      /** Direction ("NORMAL" / "LX" / "LY" / "LZ" / "GX" / "GY" / "GZ" / "VECTOR") */
+      DIRECTION?: "NORMAL" | "LX" | "LY" | "LZ" | "GX" | "GY" | "GZ" | "VECTOR";
+      /** Vector [X, Y, Z] (if DIRECTION="VECTOR") Applies when ITEMS.DIRECTION = "VECTOR". */
+      VECTORS?: [number, number, number];
+      /** Projection (GX/GY/GZ only) */
+      OPT_PROJECTION?: boolean;
+      /** Face/Edge Number (Solid: 1~6, Plate/Plane: 1~4) */
+      EDGE_FACE: number;
+      /** The /db/PSLT pressure load type this item refers to. */
+      PSLT_KEY?: number;
+    } & (
+      {
+        FACE_EDGE_TYPE: "FACE" | "PRES";
+        /** Forces [PU,0,0,0,0] or [0,P1,P2,P3,P4] */
+        FORCES: Array<number>;
+      } |
+      {
+        FACE_EDGE_TYPE: "EDGE";
+        /** Edge Loads [EPU,0,0] or [0,EP1,EP2] */
+        EDGE_LOADS: [number, number, number];
+      }
+    ))>;
+  };
   export interface SpecifiedDisplacementValue {
     OPT_FLAG?: boolean;
     DISPLACEMENT?: number;
@@ -6723,114 +6759,115 @@ export namespace DbStaticLoadsTypes {
     PARAMETERS: {
       /** Input Method (0=Simplified / 1=General / 2=General+Vortex) */
       INPUT_METHOD: number;
-    };
-  } & (
-    {
-      INPUT_METHOD: 0;
-      /** Basic Wind Speed */
-      WIND_SPEED: number;
-      /** Roof Height */
-      ROOF_HEIGHT?: number;
-      /** Exposure Coefficient CE */
-      CE?: number;
-    } |
-    {
-      INPUT_METHOD: 1;
-      /** Exposure Category (0=A / 1=B / 2=C / 3=D) */
-      EXP_CATEGORY: number;
-      /** Basic Wind Speed */
-      WIND_SPEED: number;
-      /** Importance Factor */
-      IMPORTANCE_FACTOR: number;
-      /** Roof Height */
-      ROOF_HEIGHT?: number;
-      /** Topographic Effect */
-      TOPOGRAPHIC_EFFECT?: {
-        /** Use Topographic Effect */
-        OPT_USE?: boolean;
-        /** Topographic Factor KZT (OPT_USE=true) Applies when TOPOGRAPHIC_EFFECT.OPT_USE = true. */
-        KZT?: number;
-      };
-      /** Direction Factor X */
-      DIRECTION_FACTOR_X?: number;
-      /** Direction Factor Y */
-      DIRECTION_FACTOR_Y?: number;
-      /** Rigidity Classification */
-      RIGIDITY: number;
-      /** Gust Factor X */
-      GUST_FACTOR_X: number;
-      /** Gust Factor Y */
-      GUST_FACTOR_Y: number;
-      /** Force Coefficient */
-      FORCE_COEF?: JsonObject;
-      /** Building Type (0=Middle Low Rise / 1=High Rise) */
-      BUILDING_TYPE?: number;
-      /** Vibration Parameters */
-      VIBRATION_PARAMS?: {
-        /** Across-wind Vibration */
-        ACROSS_WIND?: boolean;
-        /** Torsional-wind Vibration */
-        TORSIONAL_WIND?: boolean;
-        /** Wind Response */
-        WIND_RESPONSE?: boolean;
-        /** Building Length X */
-        BL_X: number;
-        /** Building Length Y */
-        BL_Y: number;
-        /** Natural Frequency X */
-        NO_X: number;
-        /** Natural Frequency Y */
-        NO_Y: number;
-        /** Torsional Natural Frequency */
-        NO_T: number;
-        /** Mass */
+    } & (
+      {
+        INPUT_METHOD: 0;
+        /** Basic Wind Speed */
+        WIND_SPEED: number;
+        /** Roof Height */
+        ROOF_HEIGHT?: number;
+        /** Exposure Coefficient CE */
+        CE?: number;
+      } |
+      {
+        INPUT_METHOD: 1;
+        /** Exposure Category (0=A / 1=B / 2=C / 3=D) */
+        EXP_CATEGORY: number;
+        /** Basic Wind Speed */
+        WIND_SPEED: number;
+        /** Importance Factor */
+        IMPORTANCE_FACTOR: number;
+        /** Roof Height */
+        ROOF_HEIGHT?: number;
+        /** Topographic Effect */
+        TOPOGRAPHIC_EFFECT?: {
+          /** Use Topographic Effect */
+          OPT_USE?: boolean;
+          /** Topographic Factor KZT (OPT_USE=true) Applies when TOPOGRAPHIC_EFFECT.OPT_USE = true. */
+          KZT?: number;
+        };
+        /** Direction Factor X */
+        DIRECTION_FACTOR_X?: number;
+        /** Direction Factor Y */
+        DIRECTION_FACTOR_Y?: number;
+        /** Rigidity Classification */
+        RIGIDITY: number;
+        /** Gust Factor X */
+        GUST_FACTOR_X: number;
+        /** Gust Factor Y */
+        GUST_FACTOR_Y: number;
+        /** Force Coefficient */
+        FORCE_COEF?: JsonObject;
+        /** Building Type (0=Middle Low Rise / 1=High Rise) */
+        BUILDING_TYPE?: number;
+        /** Vibration Parameters */
+        VIBRATION_PARAMS?: {
+          /** Across-wind Vibration */
+          ACROSS_WIND?: boolean;
+          /** Torsional-wind Vibration */
+          TORSIONAL_WIND?: boolean;
+          /** Wind Response */
+          WIND_RESPONSE?: boolean;
+          /** Building Length X */
+          BL_X: number;
+          /** Building Length Y */
+          BL_Y: number;
+          /** Natural Frequency X */
+          NO_X: number;
+          /** Natural Frequency Y */
+          NO_Y: number;
+          /** Torsional Natural Frequency */
+          NO_T: number;
+          /** Mass */
+          M?: number;
+          /** Mass in X direction */
+          MX?: number;
+          /** Mass in Y direction */
+          MY?: number;
+          /** Mass Moment of Inertia */
+          MI?: number;
+          /** Damping Ratio */
+          ZF: number;
+          /** Vibration Mode Coefficient */
+          VIBRATION_MODE: number;
+        };
+      } |
+      {
+        INPUT_METHOD: 2;
+        /** Roof Height */
+        ROOF_HEIGHT?: number;
+        /** Vortex Shedding DM */
+        DM: number;
+        /** Vortex Shedding DB */
+        DB: number;
+        /** Natural Frequency for Vortex */
+        N: number;
+        /** Mass for Vortex Check */
         M?: number;
-        /** Mass in X direction */
-        MX?: number;
-        /** Mass in Y direction */
-        MY?: number;
-        /** Mass Moment of Inertia */
-        MI?: number;
-        /** Damping Ratio */
+        /** Damping Ratio for Vortex */
         ZF: number;
-        /** Vibration Mode Coefficient */
-        VIBRATION_MODE: number;
-      };
-    } |
-    {
-      INPUT_METHOD: 2;
-      /** Roof Height */
-      ROOF_HEIGHT?: number;
-      /** Vortex Shedding DM */
-      DM: number;
-      /** Vortex Shedding DB */
-      DB: number;
-      /** Natural Frequency for Vortex */
-      N: number;
-      /** Mass for Vortex Check */
-      M?: number;
-      /** Damping Ratio for Vortex */
-      ZF: number;
-      /** Additional Story-level Wind Load */
-      ADDITIONAL_LOAD?: Array<{
-        /** Story Name */
-        STORY_NAME: string;
-        /** Along-wind Load X */
-        ALONG_X?: number;
-        /** Along-wind Load Y */
-        ALONG_Y?: number;
-        /** Across-wind Load X */
-        ACROSS_X?: number;
-        /** Across-wind Load Y */
-        ACROSS_Y?: number;
-        /** Torsional Wind Load RZ */
-        TORSIONAL_RZ?: number;
-        /** Torsional Wind Load RZ X */
-        TORSIONAL_RZ_X?: number;
-        /** Torsional Wind Load RZ Y */
-        TORSIONAL_RZ_Y?: number;
-      }>;
-    } |
+        /** Additional Story-level Wind Load */
+        ADDITIONAL_LOAD?: Array<{
+          /** Story Name */
+          STORY_NAME: string;
+          /** Along-wind Load X */
+          ALONG_X?: number;
+          /** Along-wind Load Y */
+          ALONG_Y?: number;
+          /** Across-wind Load X */
+          ACROSS_X?: number;
+          /** Across-wind Load Y */
+          ACROSS_Y?: number;
+          /** Torsional Wind Load RZ */
+          TORSIONAL_RZ?: number;
+          /** Torsional Wind Load RZ X */
+          TORSIONAL_RZ_X?: number;
+          /** Torsional Wind Load RZ Y */
+          TORSIONAL_RZ_Y?: number;
+        }>;
+      }
+    );
+  } & (
     {
       WIND_CODE: "USER TYPE";
       /** Description */
@@ -6863,29 +6900,10 @@ export namespace DbStaticLoadsTypes {
       }>;
     } |
     {
-      WIND_SPEED?: never;
-      ROOF_HEIGHT?: never;
-      CE?: never;
-      EXP_CATEGORY?: never;
-      IMPORTANCE_FACTOR?: never;
-      TOPOGRAPHIC_EFFECT?: never;
-      DIRECTION_FACTOR_X?: never;
-      DIRECTION_FACTOR_Y?: never;
-      RIGIDITY?: never;
-      GUST_FACTOR_X?: never;
-      GUST_FACTOR_Y?: never;
-      FORCE_COEF?: never;
-      BUILDING_TYPE?: never;
-      VIBRATION_PARAMS?: never;
-      DM?: never;
-      DB?: never;
-      N?: never;
-      M?: never;
-      ZF?: never;
-      ADDITIONAL_LOAD?: never;
       WIND_ECCEN_X?: never;
       WIND_ECCEN_Y?: never;
       STORY_WIND_PRESSURE?: never;
+      ADDITIONAL_LOAD?: never;
     }
   );
   /** Generated from contracts/endpoints/. */
@@ -6926,41 +6944,42 @@ export namespace DbStaticLoadsTypes {
       IMPORTANCE_FACTOR: number;
       /** Period Method (0=Analytical / 1=Approximate) */
       PERIOD_METHOD: number;
-    };
+    } & (
+      {
+        PERIOD_METHOD: 0;
+        /** Analytical Period X */
+        PERIOD_ANALYSIS_X: number;
+        /** Analytical Period Y */
+        PERIOD_ANALYSIS_Y: number;
+        /** Approximate Period X */
+        PERIOD_APPR_X: number;
+        /** Approximate Period Y */
+        PERIOD_APPR_Y: number;
+      } |
+      {
+        PERIOD_METHOD: 1;
+        /** Approximate Period X */
+        PERIOD_APPR_X: number;
+        /** Approximate Period Y */
+        PERIOD_APPR_Y: number;
+        /** Response Modification Factor X */
+        RESPONSE_MOD_FACTOR_X: number;
+        /** Response Modification Factor Y */
+        RESPONSE_MOD_FACTOR_Y: number;
+        /** Additional Story-level Seismic Load */
+        ADDITIONAL_LOAD?: {
+          /** Story Name */
+          STORY_NAME: string;
+          /** Additional Seismic Load X */
+          ALONG_X: number;
+          /** Additional Seismic Load Y */
+          ALONG_Y: number;
+          /** Additional Torsional Seismic Load RZ */
+          TORSIONAL_RZ: number;
+        };
+      }
+    );
   } & (
-    {
-      PERIOD_METHOD: 0;
-      /** Analytical Period X */
-      PERIOD_ANALYSIS_X: number;
-      /** Analytical Period Y */
-      PERIOD_ANALYSIS_Y: number;
-      /** Approximate Period X */
-      PERIOD_APPR_X: number;
-      /** Approximate Period Y */
-      PERIOD_APPR_Y: number;
-    } |
-    {
-      PERIOD_METHOD: 1;
-      /** Approximate Period X */
-      PERIOD_APPR_X: number;
-      /** Approximate Period Y */
-      PERIOD_APPR_Y: number;
-      /** Response Modification Factor X */
-      RESPONSE_MOD_FACTOR_X: number;
-      /** Response Modification Factor Y */
-      RESPONSE_MOD_FACTOR_Y: number;
-      /** Additional Story-level Seismic Load */
-      ADDITIONAL_LOAD?: {
-        /** Story Name */
-        STORY_NAME: string;
-        /** Additional Seismic Load X */
-        ALONG_X: number;
-        /** Additional Seismic Load Y */
-        ALONG_Y: number;
-        /** Additional Torsional Seismic Load RZ */
-        TORSIONAL_RZ: number;
-      };
-    } |
     {
       SEIS_CODE: "USER TYPE";
       /** Description */
@@ -6997,15 +7016,9 @@ export namespace DbStaticLoadsTypes {
       };
     } |
     {
-      PERIOD_ANALYSIS_X?: never;
-      PERIOD_ANALYSIS_Y?: never;
-      PERIOD_APPR_X?: never;
-      PERIOD_APPR_Y?: never;
-      RESPONSE_MOD_FACTOR_X?: never;
-      RESPONSE_MOD_FACTOR_Y?: never;
-      ADDITIONAL_LOAD?: never;
       INHERENT_TORSION?: never;
       SEISMIC_FORCE?: never;
+      ADDITIONAL_LOAD?: never;
     }
   );
 }
@@ -8119,7 +8132,7 @@ export namespace DesignRcKdsRebarTypes {
     HOOK_TYPE?: number;
   }
   /** Generated from contracts/endpoints/. */
-  export type ModifyColumnRebarDataPayload = {
+  export interface ModifyColumnRebarDataPayload {
     /** 단면 번호 문자열을 키로 갖는 맵 */
     Assign: {
       /** 콘크리트 기둥 철근 항목 (min 1) */
@@ -8180,22 +8193,7 @@ export namespace DesignRcKdsRebarTypes {
         HOOK_TYPE?: number;
       }>;
     };
-  } & (
-    {
-      CREATE_SUB_SECTION: true;
-      /** 요소 ID 배열 */
-      KEYS?: Array<number>;
-      /** ID 범위 (예: "1to160") */
-      TO?: string;
-      /** 구조 그룹 이름 */
-      STRUCTURE_GROUP_NAME?: string;
-    } |
-    {
-      KEYS?: never;
-      TO?: never;
-      STRUCTURE_GROUP_NAME?: never;
-    }
-  );
+  }
   export interface RcWallStoryRange {
     FROM?: string;
     TO?: string;

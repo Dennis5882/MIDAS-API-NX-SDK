@@ -6,9 +6,9 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
-### Changed — `SectionPayload`, `VehiclePayload` and `TimeDependentMaterialStrengthPayload` are generated from contracts
+### Changed — `SectionPayload` and `PressureLoadPayload` are generated from contracts
 
-- These three now come from `contracts/endpoints/` rather than from the Python
+- These two now come from `contracts/endpoints/` rather than from the Python
   TypedDict, which changes their shape: each is a **discriminated union** over
   the field the manual actually branches on, with the fields the manual marks
   Required no longer optional.
@@ -16,14 +16,22 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
   `SectionPayload` branches on `SECTTYPE` (`DBUSER`, `VALUE`, `SRC`, `PSC`),
   and each branch carries its own `SECT_BEFORE`. `CALC_OPT` has not been
   removed — it moved into the `VALUE` branch, which is the only one the manual
-  documents it for. `VehiclePayload` branches on `STANDARD_CODE` for the
-  country-specific `VEH_*` object. `TimeDependentMaterialStrengthPayload`
-  branches on `TYPE` and `CODENAME`.
+  documents it for. `PressureLoadPayload` branches on `FACE_EDGE_TYPE` inside
+  each `ITEMS` entry: `FORCES` for `"FACE"`/`"PRES"`, `EDGE_LOADS` for
+  `"EDGE"`. It also gains `PSLT_KEY`, a `/db/PSLT` reference both products'
+  `/info` schema declares and the manual chapter never mentions.
 
   Code that built one of these as a partial object will now need the required
   members and the discriminant. The compiler points at each one, and the
   branches match what the endpoints already accepted — this narrows the type to
   what the server takes, it does not change any request the SDK sends.
+
+  `VehiclePayload` and `TimeDependentMaterialStrengthPayload` were listed here
+  in an earlier draft of this entry and are **not** affected. Their contracts
+  carry `extraction.unmergedTables` — the manual names no wire discriminator
+  for one of their tables — and a contract that admits its field list is
+  partial is deliberately not allowed to narrow a published type. Both remain
+  the Python-derived interfaces they were.
 
 ### Added — `/db/MVHL` refuses an empty `VEH_DEFAULT`
 
@@ -34,6 +42,57 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
   `VEH_DEFAULT` entirely is unaffected — nine of the documented
   `STANDARD_CODE` values carry their own object instead.
 
+### Added — `/db/PRES` requires an explicit `DIRECTION`
+
+- `pressureLoad.create()` and `.update()` now throw `MidasRequestError` when an
+  entry of `ITEMS` omits `DIRECTION`. The manual marks that field Optional with
+  the default `"NORMAL"`, and on a `PLATE` with `FACE_EDGE_TYPE: "FACE"` — the
+  commonest pressure load there is — the server applies that default and then
+  refuses the record, with the same error it gives for `"NORMAL"` sent
+  explicitly. There is no default the SDK could substitute: which way a
+  pressure acts is an engineering decision, so you are asked rather than
+  guessed for.
+
+  Sending `"NORMAL"` yourself is unaffected. The section's own availability
+  matrix marks it valid for the other three `ELEM_TYPE`/`FACE_EDGE_TYPE`
+  pairs, and refusing a value you typed would overrule that.
+
+  A record with no `ITEMS` at all is left alone — that is a different request,
+  not a missing field.
+
+### Fixed — branch fields that were published at the top level
+
+- **`StaticWindLoadPayload`, `StaticSeismicLoadPayload` and
+  `LinearConstraintPayload` declared a whole conditional branch in the wrong
+  object.** A manual branch table gates on one field and adds siblings of it,
+  so the branch belongs wherever that field lives. The generator attached every
+  branch to the payload root instead.
+
+  `/db/SWIND` is the clearest case: `INPUT_METHOD`, `WIND_SPEED`,
+  `EXP_CATEGORY`, `ROOF_HEIGHT` and the rest were published as top-level
+  members, while the section's own worked examples send all of them inside
+  `PARAMETERS` — which is also where the contract declares the `INPUT_METHOD`
+  they branch on. `/db/SSEIS` had the same shape with `PERIOD_METHOD` and the
+  period fields; `/db/MCON`'s `TYPE` branch belongs inside an `ITEMS` entry.
+
+  `ModifyColumnRebarDataPayload` loses `KEYS`, `TO` and `STRUCTURE_GROUP_NAME`
+  from its root for a related reason: the manual states them once, under a
+  heading naming both a condition and a parent object, and the contract had
+  recorded that one table twice - correctly inside `ELEMS`, and again as a
+  root-level branch. The `ELEMS` copy is the one that survives.
+
+  This is the same defect as the field-level nesting fix below, one level up:
+  a caller following the published type put the fields where the server does
+  not look. The members move rather than disappear, and the compiler will point
+  at each one.
+
+- **A branch table naming several values was dropped instead of emitted.** A
+  multi-value condition was read as the manual's *shared supplement* table —
+  `/db/FBLA` states one for `FLOOR_DIST_TYPE = 1 or 2` beside its `= 1` and
+  `= 2` tables — and folded into the branches it covers. When it covers none of
+  them it is an ordinary branch that happens to span two values, and folding
+  discarded it: `/db/PRES`'s `FACE_EDGE_TYPE = "FACE" or "PRES"` branch took
+  `FORCES` with it. Overlap now decides which kind a table is.
 
 ### Fixed — nested fields that were published at the top level
 
