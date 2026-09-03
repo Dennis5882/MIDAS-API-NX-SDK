@@ -8467,9 +8467,15 @@ and the colour tables are product defaults. They are not residue from this
 session's earlier write probes, all of which were deleted by id and confirmed
 empty before the patch went on.
 
-The npm sweep is worth keeping in mind as a gap: there is no committed
-read-only counterpart to `scripts/live_readonly_sweep.py` on the npm side, so
-this one was written for the session. `packages/typescript/scripts/` carries
-only `live-crud.mjs` and `live-analysis.mjs`, both of which call `/doc/NEW`
-and discard unsaved work. A GET-only npm harness would be the safe one to
-have, and does not exist yet.
+The npm sweep was written for the session at first, because
+`packages/typescript/scripts/` carried only `live-crud.mjs` and
+`live-analysis.mjs`, both of which call `/doc/NEW` and discard unsaved work -
+so the npm package had no safe harness at all. It has one now:
+`packages/typescript/scripts/live-readonly.mjs`, `npm run live:readonly`,
+committed the same day and re-run against both products to the same counts.
+
+Having one per SDK is not duplication. Each imports its own package, so a
+wrong endpoint string, a wrong product gate or a broken response unwrapping in
+that package answers 404 there and nowhere else - the Python sweep cannot see
+an npm defect. That the two agree exactly (282 Civil, 267 Gen) is itself the
+cross-check.

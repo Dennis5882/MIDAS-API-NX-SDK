@@ -232,13 +232,19 @@ Two things that have already caused rework:
   pattern: some read-shaped commands write an auxiliary/cache file next to the document even to
   answer a GET. `scripts/live_readonly_sweep.py`'s "GET only, safe" claim still holds for *data*
   safety, but keep working documents off `Program Files`-style paths before running it.
-- **Verifying against a live session: `scripts/live_readonly_sweep.py` is the safe one.** It
-  issues GET only, so it can run against a model the user has open. Three harnesses call
-  `/doc/NEW` and **discard unsaved work**: `scripts/live_smoke.py`, `scripts/live_crud_check.py`,
-  and — since 2026-09-01 — `packages/typescript/scripts/live-crud.mjs`. Never run one against
-  someone's open document without asking first. The npm one saves a checkpoint before the
-  `/doc/NEW` unless `--no-save-before` is passed; that flag removes the safety net, not the
-  destructive call.
+- **Verifying against a live session: the two read-only sweeps are the safe ones.** Python's
+  `scripts/live_readonly_sweep.py` and — since 2026-09-03 — npm's
+  `packages/typescript/scripts/live-readonly.mjs` (`npm run live:readonly -- -- --product gen`)
+  issue GET only, so either can run against a model the user has open. Prefer the one matching
+  the surface you are checking: each imports its own SDK, so a wrong endpoint string or product
+  gate in that package shows up as a 404 there and nowhere else. They proved equal on
+  2026-09-03 (282 Civil resources, 267 Gen). A clean sweep proves routes exist and parse and
+  nothing about request shapes — every field-name, enum and default defect found so far was
+  invisible to a GET. Three harnesses call `/doc/NEW` and **discard unsaved work**:
+  `scripts/live_smoke.py`, `scripts/live_crud_check.py`, and — since 2026-09-01 —
+  `packages/typescript/scripts/live-crud.mjs`. Never run one against someone's open document
+  without asking first. The npm one saves a checkpoint before the `/doc/NEW` unless
+  `--no-save-before` is passed; that flag removes the safety net, not the destructive call.
 - **`/info/{endpoint}` introspection is served for `/db/*` only.** Swept from both SDKs
   2026-09-01: it answered for 399 of 402 `/db/*` resource-product pairs and for **none of the
   147 `/DESIGN/*` pairs**, even though those design endpoints answer a plain GET
