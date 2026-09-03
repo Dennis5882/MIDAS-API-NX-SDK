@@ -1,0 +1,759 @@
+# /db/POGD-M1
+#
+# Drafted by scripts/extract_contracts.py from the official manual, then promoted
+# by scripts/promote_contract.py: products and verification status come from
+# docs/coverage.json's live record, not from the manual's framing. For /db/*
+# endpoints, the DELETE shape comes from measured /db/* DELETE behaviour.
+# safeToOmit is answered `true` only where a confirmed live payload actually
+# omitted the field.
+contractVersion: 1
+id: db-pogd-m1
+endpoint: /db/POGD-M1
+name: Pushover Global Control (Hyper-S)
+surface:
+  className: PushoverAnalysisControlDataHyperS
+  exportName: pushoverAnalysisControlDataHyperS
+  modulePath: [db, pushover]
+  payloadTypeName: PushoverAnalysisControlDataHyperSPayload
+
+products: [civil]
+
+source:
+  manual:
+    status: documented
+    repo: Dennis5882/MIDAS-API
+    chapterFile: 14_DB_Pushover.md
+    section: "2. `/db/POGD-M1` — Pushover Global Control (Hyper-S)"
+  liveNotes:
+    - docs/live_verification_notes.md
+
+verification:
+  status: verified_civil
+  records:
+    - product: civil
+      ref: db-read-sweep-2026-07-26
+
+operations:
+  - method: DELETE
+    variant: per_id
+    path: /db/POGD-M1/{id}
+    risk: destructive
+    mitigation: none
+    summary: Delete exactly the record named in the path.
+    request:
+      wrapper: none
+    response:
+      wrapper: table
+      keyStability: stable
+    notes: >-
+      Undocumented route, and the only DELETE form that deletes a selection
+      rather than the whole table - see risk db-delete-body-empties-table.
+  - method: DELETE
+    variant: whole_table
+    risk: destructive
+    mitigation: confirmation_required
+    summary: Empty the entire table.
+    request:
+      wrapper: assign
+      itemSchema: none
+      description: >-
+        The manual's documented form. The ids in that body are ignored.
+    response:
+      wrapper: message
+  - method: GET
+    risk: read_only
+    request:
+      wrapper: none
+    response:
+      wrapper: table
+      keyStability: stable
+  - method: PUT
+    risk: write
+    request:
+      wrapper: assign
+      itemSchema: fields
+    response:
+      wrapper: table
+      keyStability: stable
+
+fields:
+  - key: GEO_NONL_TYPE
+    description: >-
+      기하비선형 유형 (None: 0 / Large Displacements: 1 / P-Delta: 2). GEO_NONL_TYPE이 1
+      또는 2이면 INIT_LOAD_TYPE은 반드시 0이어야 함
+    type: integer
+    requirement: required
+    documentedDefault: null
+    documentedOptional: false
+    enum: [0, 1, 2]
+    safeToOmit: unverified
+    provenance: manual
+  - key: INIT_LOAD_TYPE
+    description: >-
+      초기하중 유형 (비선형 정적해석 수행: 0 / 정적·시공단계 해석 결과 가져오기: 1)
+    type: integer
+    requirement: required
+    documentedDefault: null
+    documentedOptional: false
+    enum: [0, 1]
+    safeToOmit: unverified
+    provenance: manual
+  - key: INIT_LOAD_LIST
+    description: >-
+      초기하중 하중케이스 목록 (INIT_LOAD_TYPE=1일 때 IGNORE_ELEM 지정 불가)
+    type: array
+    items:
+      type: object
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+    properties:
+      - key: LC_NAME
+        description: >-
+          하중케이스 이름 (길이 ≥1)
+        type: string
+        requirement: conditional
+        condition: 배열 사용 시
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: LC_TYPE
+        description: >-
+          하중케이스 타입 (Static: STATIC / Stage: STAGE)
+        type: string
+        requirement: conditional
+        condition: 배열 사용 시
+        documentedDefault: null
+        documentedOptional: false
+        enum: [STATIC, STAGE]
+        safeToOmit: unverified
+        provenance: manual
+      - key: SF
+        description: >-
+          배율(Scale Factor), 0 불가
+        type: number
+        requirement: conditional
+        condition: 배열 사용 시
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+  - key: IGNORE_ELEM
+    description: >-
+      초기하중 산정 시 요소 무시 옵션 (Ignore Elements for Initial Load). INIT_LOAD_TYPE=1이면
+      제공 불가
+    type: boolean
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: ANALYSIS_STOP
+    description: >-
+      해석 중단(Analysis Stop) 조건 그룹
+    type: object
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+    properties:
+      - key: SHEAR_YIELD
+        description: >-
+          전단 성분 항복(Shear Component Yield)
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: OPT_USE
+            description: >-
+              사용 여부
+            type: boolean
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual adds a cross-field rule to this Required cell:
+            # true이면 BEAM_COLUMN/WALL 중 최소 1개는 true, false이면 둘 다 미기재
+          - key: BEAM_COLUMN
+            description: >-
+              Beam/Column
+            type: boolean
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+          - key: WALL
+            description: >-
+              Wall
+            type: boolean
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+      - key: AXIAL_YIELD
+        description: >-
+          축방향 성분 붕괴/좌굴(Axial Component Collapse)
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: OPT_USE
+            description: >-
+              사용 여부
+            type: boolean
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual adds a cross-field rule to this Required cell:
+            # true이면 BEAM/WALL/TRUSS 중 최소 1개는 true, false이면 모두 미기재
+          - key: BEAM
+            description: >-
+              Beam
+            type: boolean
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+          - key: WALL
+            description: >-
+              Wall
+            type: boolean
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+          - key: TRUSS
+            description: >-
+              Truss
+            type: boolean
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+      - key: SUPPORT_DZ_DIR
+        description: >-
+          지점 들뜸/붕괴 : Dz 방향(Support Uplifting/Collapse)
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: OPT_USE
+            description: >-
+              사용 여부
+            type: boolean
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual adds a cross-field rule to this Required cell:
+            # true이면 UPLIFT/COLLAPSE 중 최소 1개는 true, false이면 둘 다 미기재
+          - key: UPLIFT
+            description: >-
+              Uplift
+            type: boolean
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+          - key: COLLAPSE
+            description: >-
+              Collapse
+            type: boolean
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+  - key: ITER_CTRL
+    description: >-
+      반복 제어(Iteration Controls)
+    type: object
+    requirement: required
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+    properties:
+      - key: PERMIT_FAIL
+        description: >-
+          수렴 실패 허용(Permit Convergence Failure)
+        type: boolean
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: MAX_ITER
+        description: >-
+          최대 반복횟수(Maximum Iteration), ≥1
+        type: integer
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: NORM_CTRL
+        description: >-
+          수렴 기준(Convergence Criteria)
+        type: object
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: the manual adds a cross-field rule to this Required cell:
+        # DISP/FORCE/ENERGY 중 최소 1개는 OPT_USE=true
+        properties:
+          - key: DISP
+            description: >-
+              변위 노름(Displacement norm)
+            type: object
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            properties:
+              - key: OPT_USE
+                description: >-
+                  사용 여부
+                type: boolean
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+              - key: VALUE
+                description: >-
+                  허용오차 값 (>0). DISP.OPT_USE=true일 때 필수, false이면 제공 불가
+                type: number
+                requirement: conditional
+                condition: DISP.OPT_USE=true
+                appliesWhen:
+                  - path: ITER_CTRL.NORM_CTRL.DISP.OPT_USE
+                    equals: true
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+          - key: FORCE
+            description: >-
+              하중 노름(Force norm)
+            type: object
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            properties:
+              - key: OPT_USE
+                description: >-
+                  사용 여부
+                type: boolean
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+              - key: VALUE
+                description: >-
+                  허용오차 값 (>0). FORCE.OPT_USE=true일 때 필수, false이면 제공 불가
+                type: number
+                requirement: conditional
+                condition: FORCE.OPT_USE=true
+                appliesWhen:
+                  - path: ITER_CTRL.NORM_CTRL.FORCE.OPT_USE
+                    equals: true
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+          - key: ENERGY
+            description: >-
+              에너지 노름(Energy norm)
+            type: object
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            properties:
+              - key: OPT_USE
+                description: >-
+                  사용 여부
+                type: boolean
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+              - key: VALUE
+                description: >-
+                  허용오차 값 (>0). ENERGY.OPT_USE=true일 때 필수, false이면 제공 불가
+                type: number
+                requirement: conditional
+                condition: ENERGY.OPT_USE=true
+                appliesWhen:
+                  - path: ITER_CTRL.NORM_CTRL.ENERGY.OPT_USE
+                    equals: true
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+      - key: STIFF_UPD_SCHEME
+        description: >-
+          강성 갱신 방식 (Custom: 0 / Full Newton-Raphson: 1 / Initial Stiffness: 2)
+        type: integer
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        enum: [0, 1, 2]
+        safeToOmit: unverified
+        provenance: manual
+      - key: ITER_BEF_UPDATE
+        description: >-
+          강성 갱신 전 반복횟수. STIFF_UPD_SCHEME=0일 때 필수, 1·2이면 제공 불가
+        type: integer
+        requirement: conditional
+        condition: STIFF_UPD_SCHEME=0
+        appliesWhen:
+          - path: ITER_CTRL.STIFF_UPD_SCHEME
+            equals: 0
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: MAX_BISECT_LEVEL
+        description: >-
+          최대 이분(Bisection) 레벨
+        type: integer
+        requirement: optional
+        documentedDefault: 5
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: SMART_BISECT
+        description: >-
+          Smart Bisection 사용
+        type: boolean
+        requirement: optional
+        documentedDefault: false
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: DIVERGENCE_THRESHOLD
+        description: >-
+          발산 임계값(Divergence Threshold)
+        type: number
+        requirement: optional
+        documentedDefault: 3
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: LINE_SEARCH
+        description: >-
+          Line Search 사용
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: OPT_USE
+            description: >-
+              사용 여부. false이면 세부 필드 모두 제공 불가, true이면 LINE_SEARCH_OPT 필수
+            type: boolean
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: LINE_SEARCH_OPT
+            description: >-
+              Line Search 옵션 (Auto: AUTO / User: USER). AUTO이면 세부값 제공 불가, USER이면 세부값 모두
+              필수
+            type: string
+            requirement: conditional
+            condition: LINE_SEARCH.OPT_USE=true일 때 필수
+            documentedDefault: null
+            documentedOptional: false
+            enum: [AUTO, USER]
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the 필수 column marks this 조건부 필수 without naming the
+            # condition, which is stated elsewhere in the same section - twice. Row
+            # 6-9-a's own description says "true이면 LINE_SEARCH_OPT 필수", and the
+            # section's JSON Schema carries the matching rule "If OPT_USE is true,
+            # LINE_SEARCH_OPT is required." Both are the manual's own words.
+          - key: START_ITER_NO
+            description: >-
+              Line Search 시작 반복 횟수 (USER일 때 필수)
+            type: integer
+            requirement: conditional
+            condition: USER일 때 필수
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: MAX_LINE_SEARCH_ITER
+            description: >-
+              반복당 최대 Line Search 횟수 (USER일 때 필수)
+            type: integer
+            requirement: conditional
+            condition: USER일 때 필수
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: LINE_SEARCH_TOL
+            description: >-
+              Line Search 허용오차 (USER일 때 필수)
+            type: number
+            requirement: conditional
+            condition: USER일 때 필수
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+  - key: PO_HINGE_OPT
+    description: >-
+      Pushover 힌지 데이터 옵션
+    type: object
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+    properties:
+      - key: ASSIGN_BY_MEMBER
+        description: >-
+          부재에만 힌지 속성 지정
+        type: boolean
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: TRILINEAR
+        description: >-
+          Skeleton Curve 기본 강성 저감비 (Trilinear)
+        type: object
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: TENS_A1
+            description: >-
+              α1 (+)
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: TENS_A2
+            description: >-
+              α2 (+)
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: COMP_A1
+            description: >-
+              α1 (-)
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: COMP_A2
+            description: >-
+              α2 (-)
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: SYMMETRIC
+            description: >-
+              대칭 여부(SYMMETRIC)
+            type: boolean
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+      - key: BILINEAR
+        description: >-
+          힌지 속성 기본 강성 저감비 (Bilinear)
+        type: object
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: TENS_A1
+            description: >-
+              α1 (+)
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: COMP_A1
+            description: >-
+              α1 (-)
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: SYMMETRIC
+            description: >-
+              대칭 여부(SYMMETRIC)
+            type: boolean
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+      - key: NONL_TYPE
+        description: >-
+          점 스프링 지점 & 탄성링크 비선형 유형
+        type: object
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: PSPRING_SUP
+            description: >-
+              점 스프링 지점 적용 방식 (Apply Nonlinear: 0 / Linear: 1)
+            type: integer
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            enum: [0, 1]
+            safeToOmit: unverified
+            provenance: manual
+          - key: EL
+            description: >-
+              탄성링크 적용 방식 (Apply Nonlinear: 0 / Linear: 1)
+            type: integer
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            enum: [0, 1]
+            safeToOmit: unverified
+            provenance: manual
+      - key: LOC_BEAM
+        description: >-
+          분포힌지 기준 위치 (I-End: 0 / Mid-span: 1 / J-End: 2)
+        type: integer
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        enum: [0, 1, 2]
+        safeToOmit: unverified
+        provenance: manual
+      - key: CALC_YIELDS
+        description: >-
+          좌굴 고려 Beam 항복면 계산
+        type: boolean
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+  - key: MISC
+    description: >-
+      Pushover 기타(Misc) 옵션
+    type: object
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+    properties:
+      - key: SHOW_GRAPH_AFTER
+        description: >-
+          해석 후 Pushover 곡선 결과 표시
+        type: boolean
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: SHOW_GRAPH_DURING
+        description: >-
+          해석 중 Pushover 곡선 표시
+        type: boolean
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+
+sdkRules:
+  - id: db-pogd-m1-delete-per-id
+    kind: per_id_request
+    appliesTo: [DELETE]
+    variant: per_id
+    reason: >-
+      The manual's DELETE body form empties the whole table regardless of the
+      ids it names. Measured on /db/NODE, /db/STLD, /db/LDGR and /db/MATL and
+      treated as a property of /db/* DELETE, so an SDK's ordinary "delete these
+      ids" call must use the undocumented per-id URL. Requests go one at a time
+      and stop at the first failure.
+    riskRef: db-delete-body-empties-table
+    alternative: Emptying the table on purpose is the separate whole_table operation.
+  - id: db-pogd-m1-delete-all-confirmation
+    kind: require_confirmation
+    appliesTo: [DELETE]
+    variant: whole_table
+    reason: >-
+      Emptying the table cannot be undone through the API and raises no
+      product-side dialog.
+    riskRef: db-delete-body-empties-table
+    alternative: Use the per_id DELETE operation to remove selected records.
+
+knownDefects:
+  - ref: db-delete-body-empties-table
+
+extraction:
+  source: 14_DB_Pushover.md line 973
+  table: Parameters

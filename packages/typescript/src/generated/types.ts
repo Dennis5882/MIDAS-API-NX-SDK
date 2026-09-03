@@ -1027,22 +1027,241 @@ export namespace DbAnalysisControlTypes {
     bCALC_CSP?: boolean;
     bSELFCONS?: boolean;
   }
+  export interface LineSearchHyperSStct {
+    OPT_USE?: boolean;
+    LINE_SEARCH_TYPE?: string;
+    MAX_LN_SRCH_ITER?: number;
+    LN_SEARCH_TOL?: number;
+  }
+  export interface NonlinearAdvancedHyperSStct {
+    USE_DEF_SETTINGS?: boolean;
+    STIFF_UPD_SCHEME?: number;
+    ITER_BEF_UPDATE?: number;
+    TERMINATE_ON_FAIL_CONV?: boolean;
+    MAX_ITER_INCREMENT?: number;
+    MAX_BISECT_LEVEL?: number;
+    SMART_BISECT?: boolean;
+    DIVERG_THRESH?: number;
+    ENABLE_LINE_SEARCH?: boolean;
+    LINE_SEARCH?: LineSearchHyperSStct;
+  }
+  export interface ConvergenceCriterionHyperSStct {
+    OPT_USE?: boolean;
+    VALUE?: number;
+  }
+  export interface NonlinearControlHyperSStct {
+    iLSTEP?: number;
+    INTOUT?: string;
+    ADVANCED?: NonlinearAdvancedHyperSStct;
+    DISP?: ConvergenceCriterionHyperSStct;
+    LOAD?: ConvergenceCriterionHyperSStct;
+    WORK?: ConvergenceCriterionHyperSStct;
+  }
+  /** Generated from contracts/endpoints/. */
   export interface ConstructionStageAnalysisControlDataHyperSPayload {
+    /** Final Stage Option (Last: true / Other: false) */
     bLAST_FINAL?: boolean;
-    ANAL_TYPE?: ConstructionStageAnalysisTypeHyperS;
-    RESTART_CS_ANAL?: ConstructionStageRestartHyperS;
-    ERECTION_LOAD?: Array<ErectionLoadItem>;
+    /** Final Stage Name */
+    FINAL_STAGE?: string;
+    /** Analysis Type 설정 */
+    ANAL_TYPE: {
+      /** 해석 타입 (Linear: 0 / Geometric Nonlinear: 1 / Material Nonlinear: 2 / Geometric+Material Nonlinear: 3) */
+      iINC_NLA?: number;
+      /** 단계 옵션 (Independent: 0 / Accumulative: 1) — `iINC_NLA`=2 또는 3이면 `iNLA_TYPE`=1만 허용 */
+      iNLA_TYPE?: number;
+      /** Include Equilibrium Element Nodal Forces (`iINC_NLA`=1 & `iNLA_TYPE`=0일 때만) */
+      bIEMF?: boolean;
+      /** Include P-Delta Effect (`iINC_NLA`=0일 때만) */
+      bINC_PDL?: boolean;
+      /** Include Time Dependent Effect (`iNLA_TYPE`=1 & `iINC_NLA`∈{0,1}일 때만) */
+      bINC_TDE?: boolean;
+    };
+    /** Restart C.S. Analysis 설정 */
+    RESTART_CS_ANAL?: {
+      /** Restart 해석 사용 여부 */
+      OPT_USE?: boolean;
+      /** Restart 대상 시공단계 목록 */
+      RESTART_STAGE?: Array<string>;
+    };
+    /** Erection Load 목록 */
+    ERECTION_LOAD?: Array<{
+      /** Erection Load Case Name */
+      LTYPECC?: string;
+      /** Load Type for C.S (`"D"`, `"W"`, …) */
+      EREC?: string;
+      /** Load Case Name List */
+      vLCNAME?: Array<string>;
+    }>;
+    /** Self-weight Dead Load for Erection 사용 */
     bSDLE?: boolean;
+    /** Self-weight Dead Load for Erection 목록 */
     vSDLE?: Array<string>;
-    TIME_DEP_CONTROL?: TimeDependentControlHyperS;
-    CABLE_CONTROL?: CableControlHyperS;
-    INITIAL_CONTROL?: InitialForceControlHyperS;
-    INITIAL_DISP?: InitialDisplacementHyperS;
-    STRESS_DECREASE?: StressDecreaseHyperS;
+    /** Time Dependent Control */
+    TIME_DEP_CONTROL?: {
+      /** 크리프·건조수축 설정 */
+      CREEP_SHRINKAGE?: {
+        /** 사용 여부 */
+        OPT_USE?: boolean;
+        /** (`"CREEP"`/`"SHRINKAGE"`/`"BOTH"`) */
+        TYPE?: string;
+        /** Only User's Creep Coefficient */
+        bOUCC?: boolean;
+        /** 내부 스텝 설정 */
+        INTERNAL_STEP?: {
+          /** 사용 여부 */
+          OPT_USE?: boolean;
+          /** 내부 스텝 수 */
+          iITS?: number;
+        };
+        /** 자동 시간 스텝 설정 */
+        AUTO_TIME_STEP?: {
+          /** 사용 여부 */
+          OPT_USE?: boolean;
+          /** 10일까지의 분할 수 */
+          iT10?: number;
+          /** 100일까지의 분할 수 */
+          iT100?: number;
+          /** 1,000일까지의 분할 수 */
+          iT1K?: number;
+          /** 5,000일까지의 분할 수 */
+          iT5K?: number;
+          /** 10,000일까지의 분할 수 */
+          iT10K?: number;
+        };
+        /** Tendon Tension Loss Effect */
+        bTTLE_CS?: boolean;
+        /** Re-bar Confinement Effect */
+        bRCE?: boolean;
+      };
+      /** Variation of Comp. Strength */
+      bVAR?: boolean;
+      /** Apply Time Dep. Elastic Modulus to Post C.S */
+      bAPPLY_ELA?: boolean;
+      /** Tendon Tension Loss (Elastic Shortening) */
+      bTTLE_ES?: boolean;
+      /** Tendon Tension Loss (Elastic Shortening) Type */
+      iTTLE_ES?: number;
+    };
+    /** Cable Control */
+    CABLE_CONTROL?: {
+      /** Cable-Pretension Force Type (`"INTERNAL"`/`"EXTERNAL"`) */
+      CPFC?: string;
+      /** External Force Replace */
+      bEXT_REPL?: boolean;
+    };
+    /** Initial Force Control */
+    INITIAL_CONTROL?: {
+      /** Convert Final Stage Forces to Initial Forces */
+      bCONV?: boolean;
+      /** Truss */
+      bTRUSS?: boolean;
+      /** Beam */
+      bBEAM?: boolean;
+      /** Change Cable to Equivalent Truss */
+      bCHANGE_CABLE?: boolean;
+      /** Apply Initial Member Force to C.S */
+      bAPPLY_IMF?: boolean;
+    };
+    /** Initial Displacement Control */
+    INITIAL_DISP?: {
+      /** Initial Tangent Displacement Control */
+      ITD_CONTROL?: {
+        /** 사용 여부 */
+        OPT_USE?: boolean;
+        /** 적용 대상 구분 */
+        ITD?: string;
+        /** 대상 그룹명 */
+        GROUP?: string;
+        /** Lack of Fit Force 사용 여부 */
+        LFFC_OPT_USE?: boolean;
+        /** Lack of Fit 그룹명 */
+        LFFGR?: string;
+      };
+      /** Apply Camber Displacement */
+      bCAMBER?: boolean;
+    };
+    /** Stress Decrease Control */
+    STRESS_DECREASE?: {
+      /** Stress Decrease 사용 */
+      OPT_USE?: boolean;
+      /** Stress Decrease 옵션 */
+      iSDOPT?: number;
+      /** Stress Decrease 상수 */
+      SDCONST?: number;
+    };
+    /** Beam Section Property Option (Constant: 0 / Change with Tendon: 1) */
     iBSC?: number;
-    FRAME_OUTPUT?: FrameOutputHyperS;
+    /** Frame Output 설정 */
+    FRAME_OUTPUT?: {
+      /** Request Example only - no Parameters row describes this key */
+      bCALC_CFF?: boolean;
+      /** Request Example only - no Parameters row describes this key */
+      bCALC_CSP?: boolean;
+      /** Request Example only - no Parameters row describes this key */
+      bSELFCONS?: boolean;
+    };
+    /** Save Output of Current Stage (Beam/Truss) */
     bSAVE_OCS?: boolean;
-    NONL_CONTROL?: unknown;
+    /** Nonlinear Analysis Control (`iINC_NLA` ≠ 0일 때) */
+    NONL_CONTROL?: {
+      /** 증분 스텝 수 */
+      iLSTEP?: number;
+      /** 중간 출력 요청 */
+      INTOUT?: "EVERY" | "LAST";
+      /** 고급 설정 */
+      ADVANCED?: {
+        /** 기본 설정 사용 */
+        USE_DEF_SETTINGS: boolean;
+        /** 강성 업데이트 방식 (0=Custom, 1=Full Newton-Raphson, 2=Initial Stiffness) */
+        STIFF_UPD_SCHEME?: number;
+        /** 강성 업데이트 전 반복 횟수 */
+        ITER_BEF_UPDATE?: number;
+        /** 수렴 실패 시 종료 */
+        TERMINATE_ON_FAIL_CONV?: boolean;
+        /** 증분당 최대 반복 횟수 */
+        MAX_ITER_INCREMENT?: number;
+        /** 최대 이분법 수준 */
+        MAX_BISECT_LEVEL?: number;
+        /** 스마트 이분법 */
+        SMART_BISECT?: boolean;
+        /** 발산 임계값 */
+        DIVERG_THRESH?: number;
+        /** 선형 탐색 사용 */
+        ENABLE_LINE_SEARCH?: boolean;
+        /** 선형 탐색 설정 */
+        LINE_SEARCH?: {
+          /** 사용 여부 */
+          OPT_USE: boolean;
+          /** 선형 탐색 방식 */
+          LINE_SEARCH_TYPE?: "AUTO" | "USER";
+          /** 최대 선형 탐색 반복 횟수 */
+          MAX_LN_SRCH_ITER?: number;
+          /** 선형 탐색 허용오차 */
+          LN_SEARCH_TOL?: number;
+        };
+      };
+      /** 변위 수렴기준 */
+      DISP?: {
+        /** 사용 여부 */
+        OPT_USE: boolean;
+        /** 수렴 허용값 */
+        VALUE?: number;
+      };
+      /** 하중 수렴기준 */
+      LOAD?: {
+        /** 사용 여부 */
+        OPT_USE: boolean;
+        /** 수렴 허용값 */
+        VALUE?: number;
+      };
+      /** 일 수렴기준 */
+      WORK?: {
+        /** 사용 여부 */
+        OPT_USE: boolean;
+        /** 수렴 허용값 */
+        VALUE?: number;
+      };
+    };
   }
   export interface BoundaryGroupCombinationItem {
     BGCNAME?: string;
@@ -2840,6 +3059,12 @@ export namespace DbDynamicLoadsTypes {
     ANAL_METHOD?: number;
     TH_TYPE?: number;
   }
+  export interface HyperSSubsequentLoad {
+    OPT_USE?: boolean;
+    SUBSEQ_LOAD?: number;
+    LCTYPE?: string;
+    CASE?: string;
+  }
   export interface TimeHistoryLoadCaseHyperSPayload {
     NAME?: string;
     DESC?: string;
@@ -2851,7 +3076,7 @@ export namespace DbDynamicLoadsTypes {
     GEOM_NL_TYPE?: number;
     INIT_METHOD?: string;
     USE_INIT_LOAD?: boolean;
-    SUBSEQ?: unknown;
+    SUBSEQ?: HyperSSubsequentLoad;
     CUM_DVA?: boolean;
     KEEP_LOAD?: boolean;
     KEEP_ACC?: boolean;
@@ -6699,15 +6924,154 @@ export namespace DbPushoverTypes {
     SHOW_GRAPH_AFTER?: boolean;
     SHOW_GRAPH_DURING?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface PushoverAnalysisControlDataHyperSPayload {
-    GEO_NONL_TYPE?: number;
-    INIT_LOAD_TYPE?: number;
-    INIT_LOAD_LIST?: Array<DbBaseTypes.InitialLoadCaseItem>;
+    /** 기하비선형 유형 (None: 0 / Large Displacements: 1 / P-Delta: 2). GEO_NONL_TYPE이 1 또는 2이면 INIT_LOAD_TYPE은 반드시 0이어야 함 */
+    GEO_NONL_TYPE: number;
+    /** 초기하중 유형 (비선형 정적해석 수행: 0 / 정적·시공단계 해석 결과 가져오기: 1) */
+    INIT_LOAD_TYPE: number;
+    /** 초기하중 하중케이스 목록 (INIT_LOAD_TYPE=1일 때 IGNORE_ELEM 지정 불가) */
+    INIT_LOAD_LIST?: Array<{
+      /** 하중케이스 이름 (길이 ≥1) */
+      LC_NAME?: string;
+      /** 하중케이스 타입 (Static: STATIC / Stage: STAGE) */
+      LC_TYPE?: "STATIC" | "STAGE";
+      /** 배율(Scale Factor), 0 불가 */
+      SF?: number;
+    }>;
+    /** 초기하중 산정 시 요소 무시 옵션 (Ignore Elements for Initial Load). INIT_LOAD_TYPE=1이면 제공 불가 */
     IGNORE_ELEM?: boolean;
-    ANALYSIS_STOP?: AnalysisStopHyperS;
-    ITER_CTRL?: IterationControlHyperS;
-    PO_HINGE_OPT?: PushoverHingeOptionHyperS;
-    MISC?: PushoverMiscOptionHyperS;
+    /** 해석 중단(Analysis Stop) 조건 그룹 */
+    ANALYSIS_STOP?: {
+      /** 전단 성분 항복(Shear Component Yield) */
+      SHEAR_YIELD?: {
+        /** 사용 여부 */
+        OPT_USE: boolean;
+        /** Beam/Column */
+        BEAM_COLUMN?: boolean;
+        /** Wall */
+        WALL?: boolean;
+      };
+      /** 축방향 성분 붕괴/좌굴(Axial Component Collapse) */
+      AXIAL_YIELD?: {
+        /** 사용 여부 */
+        OPT_USE: boolean;
+        /** Beam */
+        BEAM?: boolean;
+        /** Wall */
+        WALL?: boolean;
+        /** Truss */
+        TRUSS?: boolean;
+      };
+      /** 지점 들뜸/붕괴 : Dz 방향(Support Uplifting/Collapse) */
+      SUPPORT_DZ_DIR?: {
+        /** 사용 여부 */
+        OPT_USE: boolean;
+        /** Uplift */
+        UPLIFT?: boolean;
+        /** Collapse */
+        COLLAPSE?: boolean;
+      };
+    };
+    /** 반복 제어(Iteration Controls) */
+    ITER_CTRL: {
+      /** 수렴 실패 허용(Permit Convergence Failure) */
+      PERMIT_FAIL?: boolean;
+      /** 최대 반복횟수(Maximum Iteration), ≥1 */
+      MAX_ITER: number;
+      /** 수렴 기준(Convergence Criteria) */
+      NORM_CTRL: {
+        /** 변위 노름(Displacement norm) */
+        DISP: {
+          /** 사용 여부 */
+          OPT_USE: boolean;
+          /** 허용오차 값 (>0). DISP.OPT_USE=true일 때 필수, false이면 제공 불가 Applies when ITER_CTRL.NORM_CTRL.DISP.OPT_USE = true. */
+          VALUE?: number;
+        };
+        /** 하중 노름(Force norm) */
+        FORCE: {
+          /** 사용 여부 */
+          OPT_USE: boolean;
+          /** 허용오차 값 (>0). FORCE.OPT_USE=true일 때 필수, false이면 제공 불가 Applies when ITER_CTRL.NORM_CTRL.FORCE.OPT_USE = true. */
+          VALUE?: number;
+        };
+        /** 에너지 노름(Energy norm) */
+        ENERGY: {
+          /** 사용 여부 */
+          OPT_USE: boolean;
+          /** 허용오차 값 (>0). ENERGY.OPT_USE=true일 때 필수, false이면 제공 불가 Applies when ITER_CTRL.NORM_CTRL.ENERGY.OPT_USE = true. */
+          VALUE?: number;
+        };
+      };
+      /** 강성 갱신 방식 (Custom: 0 / Full Newton-Raphson: 1 / Initial Stiffness: 2) */
+      STIFF_UPD_SCHEME: number;
+      /** 강성 갱신 전 반복횟수. STIFF_UPD_SCHEME=0일 때 필수, 1·2이면 제공 불가 Applies when ITER_CTRL.STIFF_UPD_SCHEME = 0. */
+      ITER_BEF_UPDATE?: number;
+      /** 최대 이분(Bisection) 레벨 */
+      MAX_BISECT_LEVEL?: number;
+      /** Smart Bisection 사용 */
+      SMART_BISECT?: boolean;
+      /** 발산 임계값(Divergence Threshold) */
+      DIVERGENCE_THRESHOLD?: number;
+      /** Line Search 사용 */
+      LINE_SEARCH?: {
+        /** 사용 여부. false이면 세부 필드 모두 제공 불가, true이면 LINE_SEARCH_OPT 필수 */
+        OPT_USE: boolean;
+        /** Line Search 옵션 (Auto: AUTO / User: USER). AUTO이면 세부값 제공 불가, USER이면 세부값 모두 필수 */
+        LINE_SEARCH_OPT?: "AUTO" | "USER";
+        /** Line Search 시작 반복 횟수 (USER일 때 필수) */
+        START_ITER_NO?: number;
+        /** 반복당 최대 Line Search 횟수 (USER일 때 필수) */
+        MAX_LINE_SEARCH_ITER?: number;
+        /** Line Search 허용오차 (USER일 때 필수) */
+        LINE_SEARCH_TOL?: number;
+      };
+    };
+    /** Pushover 힌지 데이터 옵션 */
+    PO_HINGE_OPT?: {
+      /** 부재에만 힌지 속성 지정 */
+      ASSIGN_BY_MEMBER: boolean;
+      /** Skeleton Curve 기본 강성 저감비 (Trilinear) */
+      TRILINEAR: {
+        /** α1 (+) */
+        TENS_A1: number;
+        /** α2 (+) */
+        TENS_A2: number;
+        /** α1 (-) */
+        COMP_A1: number;
+        /** α2 (-) */
+        COMP_A2: number;
+        /** 대칭 여부(SYMMETRIC) */
+        SYMMETRIC: boolean;
+      };
+      /** 힌지 속성 기본 강성 저감비 (Bilinear) */
+      BILINEAR: {
+        /** α1 (+) */
+        TENS_A1: number;
+        /** α1 (-) */
+        COMP_A1: number;
+        /** 대칭 여부(SYMMETRIC) */
+        SYMMETRIC: boolean;
+      };
+      /** 점 스프링 지점 & 탄성링크 비선형 유형 */
+      NONL_TYPE: {
+        /** 점 스프링 지점 적용 방식 (Apply Nonlinear: 0 / Linear: 1) */
+        PSPRING_SUP: number;
+        /** 탄성링크 적용 방식 (Apply Nonlinear: 0 / Linear: 1) */
+        EL: number;
+      };
+      /** 분포힌지 기준 위치 (I-End: 0 / Mid-span: 1 / J-End: 2) */
+      LOC_BEAM: number;
+      /** 좌굴 고려 Beam 항복면 계산 */
+      CALC_YIELDS: boolean;
+    };
+    /** Pushover 기타(Misc) 옵션 */
+    MISC?: {
+      /** 해석 후 Pushover 곡선 결과 표시 */
+      SHOW_GRAPH_AFTER: boolean;
+      /** 해석 중 Pushover 곡선 표시 */
+      SHOW_GRAPH_DURING: boolean;
+    };
   }
   /** Generated from contracts/endpoints/. */
   export interface IgnoreElementsForPushoverInitialLoadPayload {

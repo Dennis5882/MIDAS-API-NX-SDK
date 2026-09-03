@@ -320,6 +320,23 @@ def _normalize_requirement(cell: str) -> tuple[Optional[str], Optional[str], Opt
         return "optional", None, None
     if text in {"불명", "unknown", "미상"}:
         return None, None, None
+
+    # A cell that answers the column and then adds a cross-field rule.
+    # /db/POGD-M1 writes four of them - "필수. true이면 BEAM_COLUMN/WALL 중 최소
+    # 1개는 true, false이면 둘 다 미기재" - and the rule is about two *other*
+    # fields, so it is neither a condition on this one (which is what
+    # `qualified` above captures) nor a reason to lose the requiredness the
+    # column does state. Take the word, keep the sentence as a note. Anything
+    # mentioning 조건부 is already handled above and never reaches here.
+    sentence = re.match(r"^([^.。]+)[.。]\s*(\S.*)$", raw.strip())
+    if sentence:
+        head = sentence.group(1).strip().lower()
+        rest = sentence.group(2).strip()
+        if head in _REQUIRED_WORDS:
+            return "required", None, f"the manual adds a cross-field rule to this Required cell: {rest}"
+        if head in _OPTIONAL_WORDS:
+            return "optional", None, f"the manual adds a cross-field rule to this Optional cell: {rest}"
+
     return None, None, f"unrecognised Required value {raw!r}"
 
 
@@ -1130,6 +1147,22 @@ _STRUCTURAL_TABLE_SPLITS: dict[str, tuple[StructuralTableMerge, ...]] = {
     "/db/SBDO": (
         StructuralTableMerge(1, ((),), ("civil",)),
         StructuralTableMerge(2, ((),), ("gen",)),
+    ),
+    # Tables 1-4 each name one destination object in the heading and carry rows
+    # that parse to it directly, including TIME_DEP_CONTROL's dotted
+    # `CREEP_SHRINKAGE.*` keys and the `"bTTLE_ES"` / `"iTTLE_ES"` cell, both of
+    # which the parser already resolves. Table 5 (NONL_CONTROL) and table 6
+    # (나머지 객체) are deliberately absent: table 5 states `ADVANCED`'s whole
+    # subtree as prose inside one cell and keys three sibling objects
+    # `"DISP"/"LOAD"/"WORK"`, and table 6 puts each row's parent in an `Object`
+    # column this parser drops, so its twelve rows have six different
+    # destinations and no single target could hold them. Both are hand-resolved
+    # in the contract against the section's Request Body example.
+    "/db/STCT-M1": (
+        StructuralTableMerge(1, (("ANAL_TYPE",),)),
+        StructuralTableMerge(2, (("RESTART_CS_ANAL",),)),
+        StructuralTableMerge(3, (("ERECTION_LOAD",),)),
+        StructuralTableMerge(4, (("TIME_DEP_CONTROL",),)),
     ),
     # Each heading names the object it belongs to outright - "INCREMENT_STEP
     # 서브 파라미터", "HINGE_OPT 서브 파라미터" - and both tables are flat, so the
@@ -4080,6 +4113,15 @@ _SETTLED_NOTE_MARKERS = (
     "measured against a live product",
     "the manual flags it in its own callout",
     "Request Example",
+    # The requiredness word was read and the rule after it kept verbatim.
+    # There is nothing left for a reviewer to decide: the column answered, and
+    # the sentence is about other fields, which no requiredness value can say.
+    "adds a cross-field rule to this",
+    # A column left something out that the same section supplies elsewhere - a
+    # sibling row's description, the section's own JSON Schema, its Request
+    # Example. Settled for the same reason those are: the manual answered it,
+    # just not in the cell the parser reads.
+    "stated elsewhere in the same section",
 )
 
 
@@ -4170,8 +4212,21 @@ def _render_fields(
         if parsed.applies_when:
             lines.append(f"{body}appliesWhen:")
             for condition_path, values in parsed.applies_when:
-                scoped = ".".join(prefix + tuple(condition_path.split(".")))
-                rendered_path = scoped if scoped in field_paths else condition_path
+                # Try the field's own scope first, then each shorter one. A
+                # condition beside a nested field usually names a sibling, but
+                # /db/POGD-M1 writes `DISP.OPT_USE=true일 때 필수` beside
+                # ITER_CTRL.NORM_CTRL.DISP.VALUE - a path rooted one level up,
+                # at the object the three norms hang off. Longest scope wins,
+                # which keeps the sibling preference this already had, and a
+                # path that resolves nowhere is still retained verbatim for the
+                # contract validator to reject rather than guessed at.
+                parts = tuple(condition_path.split("."))
+                rendered_path = condition_path
+                for depth in range(len(prefix), -1, -1):
+                    scoped = ".".join(prefix[:depth] + parts)
+                    if scoped in field_paths:
+                        rendered_path = scoped
+                        break
                 lines.append(f"{body}  - path: {_scalar(rendered_path)}")
                 if len(values) == 1:
                     lines.append(f"{body}    equals: {_scalar(values[0])}")

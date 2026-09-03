@@ -327,11 +327,29 @@ class HyperSAnalysisCase(TypedDict, total=False):
     TH_TYPE: int  # Transient=0, Periodic=1; required
 
 
+class HyperSSubsequentLoad(TypedDict, total=False):
+    """THIS-M1's "SUBSEQ" sub-object, used when INIT_METHOD="ORDER".
+
+    Typed as of 2026-09-03 against contracts/endpoints/db-this-m1.yaml. Unlike
+    this payload's other sub-objects it carries no branch: the manual states
+    all four members in the common table, so narrowing it hides nothing.
+    """
+
+    OPT_USE: bool  # optional
+    SUBSEQ_LOAD: int  # required
+    LCTYPE: str  # required
+    CASE: str  # required
+
+
 class TimeHistoryLoadCaseHyperSPayload(TypedDict, total=False):
     """docs/manual/09_DB_Dynamic_Loads.md #7 — /db/THIS-M1 Specifications table
-    (Hyper-S). DAMPING/NONL_CTRL_PARAM/INC_CTRL/TIME_PARAM sub-objects are
-    left as Any given their size (nested modal overrides, convergence/
-    line-search control) — see the manual for their full shape.
+    (Hyper-S). DAMPING/NONL_CTRL_PARAM/INC_CTRL/TIME_PARAM stay Any, now for a
+    sharper reason than size: contracts/endpoints/db-this-m1.yaml models each
+    of them as variant-selected (DAMPING_METHOD, COEF_INPUT, ANAL_METHOD), and
+    this TypedDict does not branch, so any single narrowed type would hide the
+    members of the branches it does not describe. NONL_CTRL_PARAM has a second
+    reason: its BOUNDARY_NL_ANAL child is documented with no parent path at all
+    -- see MD-23. SUBSEQ was the one sub-object with no branch, and is typed.
 
     **`GEOM_NL_TYPE`/`INC_STEP`/`SUBSEQ`/`INC_CTRL`/`TIME_PARAM` added
     2026-08-27**, discovered live rather than from the manual text alone:
@@ -364,7 +382,7 @@ class TimeHistoryLoadCaseHyperSPayload(TypedDict, total=False):
     GEOM_NL_TYPE: int  # Geometric Nonlinearity Type, default 0, optional (ANAL_TYPE=1 only). Live-confirmed 2026-08-27 (server default 0).
     INIT_METHOD: str  # "INIT" / "ORDER", required
     USE_INIT_LOAD: bool  # required
-    SUBSEQ: Any  # {"OPT_USE","SUBSEQ_LOAD","LCTYPE","CASE"}, required when INIT_METHOD="ORDER". Live-discovered 2026-08-27, not independently round-tripped.
+    SUBSEQ: HyperSSubsequentLoad  # required when INIT_METHOD="ORDER". Live-discovered 2026-08-27, not independently round-tripped.
     CUM_DVA: bool  # Cumulative Displacement/Velocity/Acceleration, optional
     KEEP_LOAD: bool  # Maintain final-step load state, optional
     KEEP_ACC: bool  # Maintain final-step acceleration, optional

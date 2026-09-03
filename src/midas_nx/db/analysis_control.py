@@ -795,6 +795,68 @@ class FrameOutputHyperS(TypedDict, total=False):
     bSELFCONS: bool  # Self-constrained Forces & Stresses, optional
 
 
+class LineSearchHyperSStct(TypedDict, total=False):
+    """STCT-M1's "NONL_CONTROL"."ADVANCED"."LINE_SEARCH" sub-object.
+
+    Named apart from NLCT-M1's line-search object on purpose: the manual warns
+    that §16's ADVANCED uses different key names and string enums for the same
+    concepts, and that the two must not be mixed.
+    """
+
+    OPT_USE: bool  # required
+    LINE_SEARCH_TYPE: str  # "AUTO"/"USER", default "AUTO"
+    MAX_LN_SRCH_ITER: int  # LINE_SEARCH_TYPE="USER" only
+    LN_SEARCH_TOL: float  # LINE_SEARCH_TYPE="USER" only
+
+
+class NonlinearAdvancedHyperSStct(TypedDict, total=False):
+    """STCT-M1's "NONL_CONTROL"."ADVANCED" sub-object.
+
+    The manual states this whole subtree as prose inside one Description cell
+    (MD-21); the key names below are the section's Request Example, and a live
+    GET on 2026-08-27 returned ``{"USE_DEF_SETTINGS": true}`` for a record the
+    server filled in itself.
+    """
+
+    USE_DEF_SETTINGS: bool  # default true, required
+    STIFF_UPD_SCHEME: int  # Custom=0, Full Newton-Raphson=1, Initial Stiffness=2; USE_DEF_SETTINGS=false only
+    ITER_BEF_UPDATE: int  # STIFF_UPD_SCHEME=0 only
+    TERMINATE_ON_FAIL_CONV: bool
+    MAX_ITER_INCREMENT: int
+    MAX_BISECT_LEVEL: int
+    SMART_BISECT: bool
+    DIVERG_THRESH: float
+    ENABLE_LINE_SEARCH: bool  # default true
+    LINE_SEARCH: LineSearchHyperSStct  # required when ENABLE_LINE_SEARCH=true
+
+
+class ConvergenceCriterionHyperSStct(TypedDict, total=False):
+    """One of STCT-M1's "NONL_CONTROL" DISP/LOAD/WORK convergence criteria.
+
+    The manual keys all three in a single cell as ``"DISP"/"LOAD"/"WORK"``
+    (MD-21); the Request Example sends them as three sibling objects.
+    """
+
+    OPT_USE: bool  # default false, required
+    VALUE: float  # > 0, required when OPT_USE=true
+
+
+class NonlinearControlHyperSStct(TypedDict, total=False):
+    """STCT-M1's "NONL_CONTROL" sub-object, used when ANAL_TYPE.iINC_NLA != 0.
+
+    Typed out as of 2026-09-03 against contracts/endpoints/db-stct-m1.yaml.
+    The shape matches what a live GET returned on 2026-08-27 for a record the
+    server populated itself -- see this module's payload docstring.
+    """
+
+    iLSTEP: int  # >= 1
+    INTOUT: str  # "EVERY"/"LAST", default "LAST"
+    ADVANCED: NonlinearAdvancedHyperSStct
+    DISP: ConvergenceCriterionHyperSStct
+    LOAD: ConvergenceCriterionHyperSStct
+    WORK: ConvergenceCriterionHyperSStct
+
+
 class ConstructionStageAnalysisControlDataHyperSPayload(TypedDict, total=False):
     """docs/manual/12_DB_Analysis_Control.md #18 — /db/STCT-M1 Specifications tables.
 
@@ -803,12 +865,11 @@ class ConstructionStageAnalysisControlDataHyperSPayload(TypedDict, total=False):
     Property Option concept as legacy STCT's `iBSC`, but a **different
     default** -- STCT-M1 defaults to `1`, STCT defaults to `0`),
     `FRAME_OUTPUT`, `bSAVE_OCS`, and `NONL_CONTROL`. `NONL_CONTROL`'s own
-    internal shape (`iLSTEP`/`INTOUT`/`ADVANCED`/`DISP`/`LOAD`/`WORK`) is
-    left as `Any` given its size and nesting, matching this file's existing
-    convention for `ITER_PARAM`/`NONL_CTRL_PARAM` elsewhere -- see the
-    manual for the full shape; note its `ADVANCED` sub-object uses
-    different key names/types than the similarly-named one under
-    `NLCT-M1` (§16) despite the same underlying concept.
+    internal shape (`iLSTEP`/`INTOUT`/`ADVANCED`/`DISP`/`LOAD`/`WORK`) was
+    left as `Any` until 2026-09-03 and is now `NonlinearControlHyperSStct`,
+    matching contracts/endpoints/db-stct-m1.yaml; note its `ADVANCED`
+    sub-object uses different key names/types than the similarly-named one
+    under `NLCT-M1` (§16) despite the same underlying concept.
 
     **Live-confirmed 2026-08-27 on Civil NX**: all four fields are real.
     A plain `POST /db/STCT-M1` (no explicit values for any of them) came
@@ -829,6 +890,7 @@ class ConstructionStageAnalysisControlDataHyperSPayload(TypedDict, total=False):
     """
 
     bLAST_FINAL: bool  # optional
+    FINAL_STAGE: str  # Final Stage Name; undocumented, declared by /info -- see MD-22
     ANAL_TYPE: ConstructionStageAnalysisTypeHyperS  # required
     RESTART_CS_ANAL: ConstructionStageRestartHyperS  # optional
     ERECTION_LOAD: List[ErectionLoadItem]  # optional
@@ -842,7 +904,7 @@ class ConstructionStageAnalysisControlDataHyperSPayload(TypedDict, total=False):
     iBSC: int  # Beam Section Property Option: Constant=0/Change with Tendon=1, default 1 (NOT 0 -- differs from legacy STCT), optional
     FRAME_OUTPUT: FrameOutputHyperS  # optional
     bSAVE_OCS: bool  # Save Output of Current Stage (Beam/Truss), default false, optional
-    NONL_CONTROL: Any  # {"iLSTEP","INTOUT","ADVANCED","DISP","LOAD","WORK"}, required if ANAL_TYPE.iINC_NLA != 0
+    NONL_CONTROL: NonlinearControlHyperSStct  # required if ANAL_TYPE.iINC_NLA != 0
 
 
 class ConstructionStageAnalysisControlDataHyperS(DbResource):

@@ -24,6 +24,27 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
     interfaces. Both interfaces are still exported and unchanged; nothing was
     removed.
 
+### Changed — two more Hyper-S payload types now come from contracts
+
+- `ConstructionStageAnalysisControlDataHyperSPayload` (`/db/STCT-M1`) and
+  `PushoverAnalysisControlDataHyperSPayload` (`/db/POGD-M1`) are generated from
+  `contracts/endpoints/` instead of the Python TypedDict. Both gain required
+  members where the manual marks them Required — `ANAL_TYPE` and `ITER_CTRL`
+  respectively, among others — so a partial object will now be flagged by the
+  compiler.
+
+  `/db/STCT-M1` also fills in what was previously `NONL_CONTROL: unknown`: its
+  `iLSTEP`, `INTOUT`, `ADVANCED` (with a nested `LINE_SEARCH`) and the three
+  `DISP`/`LOAD`/`WORK` convergence criteria are typed, and the payload gains
+  `FINAL_STAGE`, a root property live `/info` declares that the manual's
+  Parameters table never listed.
+
+  `TimeHistoryLoadCaseHyperSPayload` (`/db/THIS-M1`) is **unchanged**. That
+  endpoint is now contracted too, but its contract records one manual table it
+  could not place, and a contract carrying an unresolved table deliberately
+  does not narrow the published type — an incomplete field list is not a
+  better type than the one you had.
+
 ### Fixed — `INIT_LOAD_TYPE`'s second value is 1, not 0
 
 - The manual prints `0` as the literal for **both** of this field's two

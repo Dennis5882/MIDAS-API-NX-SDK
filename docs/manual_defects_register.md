@@ -54,6 +54,9 @@ build itself** and is no longer resting on an unrecorded one.
 | MD-18 | 2026-09-03 | `/db/THGC-M1` `INIT_LOAD_TYPE` | the main Specifications table types it `Integer(enum)` and prints both options with the literal `0` - "0=비선형 정적 해석, 0=정적/시공단계 결과 가져오기" | the options are `0` and `1`; live `/info` describes the same field as "Initial Load Type (Perform NL Static:0, Import Static:1)". A duplicate literal is self-refuting rather than merely unverified - the row as printed cannot be followed at all | **manual repo** transcription (to be checked against the MIDASIT article) | open |
 | MD-19 | 2026-09-03 | `/db/THGC-M1` `ITER_PARAM.LINE_SEARCH` children | the sub-parameter table marks all five Required - `OPT_USE`, `LINE_SEARCH_OPT`, `START_ITER_NO`, `MAX_LINE_SEARCH_ITER`, `LINE_SEARCH_TOL` | unmeasured. The same section's Python example sends `{"OPT_USE": False}` and omits the other four, so the chapter contradicts itself the way MD-16 describes | **manual repo** transcription | open, unmeasured |
 | MD-20 | 2026-09-03 | `/db/THGC-M1` "ITER_PARAM 서브 파라미터" Key column | `NORM_CTRL`'s children are stated as a path on one row - "`DISP` → `{OPT_USE, VALUE}`", repeated for `FORCE` and `ENERGY` - and `LINE_SEARCH`'s five children follow as sibling rows marked only by a "-" in the 설명 column | read as printed the table yields a field named `{OPT_USE, VALUE}` and puts ten children beside the two parents that own them; the section's own Request Example nests all of them | **manual repo** transcription | open |
+| MD-21 | 2026-09-03 | `/db/STCT-M1`, five Key cells and one table's destinations | row 5 is keyed `"bSDLE"` / `"vSDLE"`; TIME_DEP_CONTROL has `"bTTLE_ES"` / `"iTTLE_ES"`; NONL_CONTROL keys three sibling objects `"DISP"/"LOAD"/"WORK"` and states `ADVANCED`'s whole subtree as prose in one cell; the "나머지 객체" table puts each row's parent in an `Object` column and keys `"bTRUSS"` / `"bBEAM"` and `"OPT_USE"` / `"iSDOPT"` / `"SDCONST"` | each is a set of sibling properties, sent that way by the section's own Request Body; `/info` independently confirms `bSDLE` and `vSDLE` as two of sixteen root properties | **manual repo** transcription | open |
+| MD-22 | 2026-09-03 | `/db/STCT-M1` `FINAL_STAGE` | the top-level Parameters table lists fourteen rows and none of them names a final-stage name | `GET /info/db/STCT-M1` declares sixteen root properties, and `FINAL_STAGE` (string, "Final Stage Name") is the one the table has no counterpart for - the field the table's own `bLAST_FINAL: false` "Other Stage" option has to be answered with | **manual repo** transcription | open |
+| MD-23 | 2026-09-03 | `/db/THIS-M1` `FREQ1`/`PERIOD1` and `FREQ2`/`PERIOD2` | the `COEF_INPUT=1` damping table keys two wire properties in each of rows 3 and 5 | they are mutually exclusive, selected by `COEF_CALC` (0=Frequency, 1=Period) - the row directly above them - and each row's own description says so | **manual repo** transcription | open |
 
 
 ## Detail
@@ -728,3 +731,79 @@ no judgment involved. `ITER_PARAM` was deliberately left out of that registry
 and its subtree hand-resolved in `contracts/endpoints/db-thgc-m1.yaml`, because
 a mechanical merge of this table would encode the broken shape rather than the
 documented one.
+
+### MD-21 - one section, five multi-key cells and a table keyed outside its Key column
+
+`/db/STCT-M1` is the densest instance of MD-20's family found so far. Six of
+its supplementary tables describe one record, and five Key cells across them do
+not name a single wire property:
+
+| where | the cell prints | what it means |
+| --- | --- | --- |
+| top-level row 5 | `` `"bSDLE"` / `"vSDLE"` `` (Value Type `Boolean / Array [String]`) | two root properties |
+| TIME_DEP_CONTROL | `` `"bTTLE_ES"` / `"iTTLE_ES"` `` | two properties of that object |
+| NONL_CONTROL | `` `"DISP"`/`"LOAD"`/`"WORK"` `` | three sibling objects, each `{OPT_USE, VALUE}` |
+| NONL_CONTROL | `` `"ADVANCED"` `` with its ten children and nested `LINE_SEARCH` as prose in the Description cell | an object the Key column never enumerates |
+| "나머지 객체" | `` `"bTRUSS"` / `"bBEAM"` ``, and `` `"OPT_USE"` / `"iSDOPT"` / `"SDCONST"` `` | two, and three, properties |
+
+The "나머지 객체" table has a second problem on top of the multi-key cells: it
+states each row's parent in an `Object` column rather than in the key, so its
+twelve rows belong to four different objects. No entry in
+`scripts/extract_contracts.py`'s structural-split registry can express that -
+a `StructuralTableMerge` appends a table's whole field list to each of its
+targets - which is why that table and NONL_CONTROL are resolved by hand in the
+contract while the other four merge mechanically.
+
+**The top-level split has independent confirmation.** `GET /info/db/STCT-M1`,
+captured 2026-09-03, declares sixteen root properties including `bSDLE`
+(boolean, "Secondary Dead Load Effect") and `vSDLE` (array, "SDL Load Case
+Names") as two separate entries. The section's Request Body sends them as
+sibling keys, and so does the Python SDK, which had already split them.
+
+### MD-22 - a root property the top-level table does not have
+
+The same `/info` capture answers a second question about `/db/STCT-M1`. Its
+sixteen root properties line up with the manual's fourteen rows once `bSDLE`
+and `vSDLE` are counted separately - except for one:
+
+> `FINAL_STAGE` | string | Final Stage Name
+
+The manual's top-level Parameters table has no row for it. It is also the field
+the table's own first row implies: `bLAST_FINAL` is documented as "Final Stage
+Option (Last: true / Other: false)", and "Other" has to name the stage
+somewhere.
+
+Recorded in the contract as `requirement: unstated`, not `optional`. `/info`
+declares no `required` array, and the manual makes no claim about this field at
+all, so "Optional" would be a claim nobody has made. Same shape as MD-10.
+
+### MD-23 - two keys in a cell, with the discriminator on the row above
+
+`/db/THIS-M1`'s damping table, `COEF_INPUT=1` branch:
+
+| No. | 설명 | Key | Value Type |
+| --- | --- | --- | --- |
+| 2 | 계산 기준 (0=Frequency, 1=Period) | `COEF_CALC` | Integer(enum) |
+| 3 | 모드1 주파수(COEF_CALC=0) / 주기(COEF_CALC=1) | `` `FREQ1`/`PERIOD1` `` | Number |
+| 5 | 모드2 주파수(FREQ1≠FREQ2)/주기(PERIOD1≠PERIOD2) | `` `FREQ2`/`PERIOD2` `` | Number |
+
+Unlike the rest of this family, the answer is directly above the question:
+`COEF_CALC` is row 2 of the same table, and row 3's own description states the
+mapping. The contract declares four fields, each `conditional` on the
+`COEF_CALC` value its row names.
+
+`FREQ2`/`PERIOD2`'s description is less careful - "모드2 주파수(FREQ1≠FREQ2)" is
+a constraint between the two modes, not a statement of which key applies - but
+row 3 settles the pattern for both, and the same `COEF_CALC` governs.
+
+> **What was not done here.** This section's other loose end is
+> `BOUNDARY_NL_ANAL`, an object the manual names once - as a table heading -
+> and never places. Its two members are typed; its parent is not stated
+> anywhere, no Request Example nests it, and the common table has no row for
+> it. A 2026-08-27 live round trip saw the server auto-fill `NONL_CTRL_PARAM`
+> "including a nested BOUNDARY_NL_ANAL", which proves it exists without saying
+> whether it sits directly under `NONL_CTRL_PARAM` or under its `ITER_CTRL`.
+> The contract keeps it under `extraction.unmergedTables` with that reasoning
+> as its `resolution`, which also stops the npm generator from publishing an
+> admittedly incomplete field list as the payload type. Settling it needs a
+> POST, and no confirmed fixture for this endpoint exists to build one from.
