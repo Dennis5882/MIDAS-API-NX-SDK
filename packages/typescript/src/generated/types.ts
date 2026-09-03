@@ -2309,8 +2309,58 @@ export namespace DbDesignTypes {
     NUM_BAR_BC_JOINT?: number;
     HOOK_TYPE?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ColumnRebarPayload {
-    ITEMS?: Array<ColumnRebarItem>;
+    /** Concrete Column Rebar Items */
+    ITEMS: Array<{
+      /** ID */
+      ID?: number;
+      /** Main Bar List */
+      vMAIN_BAR?: Array<{
+        /** Main Name */
+        NAME?: string;
+        /** Number */
+        NUM?: number;
+        /** Row */
+        ROW?: number;
+        /** Concrete Face ~ Center of Rebar */
+        D0?: number;
+        /** Use Corner Bar */
+        bUSE_CORNER?: boolean;
+        /** Corner Name */
+        NAME_CORNER?: string;
+      }>;
+      /** Shear Bar-End */
+      SHEAR_BAR_END: {
+        /** Name */
+        NAME?: string;
+        /** Leg y */
+        LEG_Y?: number;
+        /** Leg z */
+        LEG_Z?: number;
+        /** Dist */
+        DIST?: number;
+      };
+      /** Shear Bar-Center */
+      SHEAR_BAR_CEN: {
+        /** Name */
+        NAME?: string;
+        /** Leg y */
+        LEG_Y?: number;
+        /** Leg z */
+        LEG_Z?: number;
+        /** Dist */
+        DIST?: number;
+      };
+      /** Hoop Type (1=Tied, 2=Spiral) */
+      HOOP_TYPE?: number;
+      /** Same Rebar Spaces at End and Center */
+      bSAME_SPACE_END_CEN?: boolean;
+      /** Number of Rebars of Beam-Column Joint */
+      NUM_BAR_BC_JOINT?: number;
+      /** Hook Type (0: 90+(135 or 180) / 1: Both(135 or 180)) */
+      HOOK_TYPE?: number;
+    }>;
   }
   export interface WallRebarItem {
     ID?: number;

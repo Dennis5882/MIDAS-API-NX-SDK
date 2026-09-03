@@ -639,3 +639,30 @@ records:
       faithfully and the source is what disagrees with the product.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-rebc-live-shape-2026-08-27
+    endpoints: ["/db/REBC"]
+    date: "2026-08-27"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 08/20/2026
+    level: write
+    outcome: success
+    method: >-
+      A comparison rather than a single check, because three sources disagreed.
+      Both candidate payload shapes were POSTed to the same Gen NX session -
+      the single-object MAIN_BAR form that MIDASIT's Zendesk article 
+      49513980544793 documents, and the vMAIN_BAR array form. Then a full
+      POST -> GET -> PUT -> DELETE -> GET round trip on the shape that was
+      accepted, and a fresh GET /info/db/REBC pulled field for field.
+    finding: >-
+      The documented single-object shape answers "Wrong Field" - rejected
+      outright. The array shape answers "Column Rebars has been entered in the
+      section no. 1, which has not been specified", a domain error, which means
+      the shape itself was accepted and only the target section was missing.
+      That distinction is what settled it. The round trip then confirmed full
+      CRUD including a DELETE that actually removes the record, contradicting
+      the chapter's POST-only callout, and GET /db/REBC answers cleanly on its
+      own. /info confirmed every field name plus HOOK_TYPE, which the SDK was
+      missing. The official article carries the same wrong shape as the
+      vendored chapter, so the defect is upstream of the manual repo.
+    evidence:
+      - docs/live_verification_notes.md

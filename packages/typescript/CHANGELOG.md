@@ -6,12 +6,13 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
-### Changed — `SectionPayload`, `PressureLoadPayload` and `WallRebarPayload` are generated from contracts
+### Changed — four payload types are now generated from contracts
 
-- These two now come from `contracts/endpoints/` rather than from the Python
-  TypedDict, which changes their shape: each is a **discriminated union** over
-  the field the manual actually branches on, with the fields the manual marks
-  Required no longer optional.
+- `SectionPayload`, `PressureLoadPayload`, `WallRebarPayload` and
+  `ColumnRebarPayload` now come from `contracts/endpoints/` rather than from
+  the Python TypedDict. For the first two that means a **discriminated union**
+  over the field the manual actually branches on, with the fields the manual
+  marks Required no longer optional.
 
   `SectionPayload` branches on `SECTTYPE` (`DBUSER`, `VALUE`, `SRC`, `PSC`),
   and each branch carries its own `SECT_BEFORE`. `CALC_OPT` has not been
@@ -26,12 +27,15 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
   branches match what the endpoints already accepted — this narrows the type to
   what the server takes, it does not change any request the SDK sends.
 
-  `WallRebarPayload` is a plainer change: `ITEMS` becomes required and its
-  entry type is inlined rather than referring to the exported `WallRebarItem`
-  interface, which stays exported and unchanged. No field is renamed — this
-  package already shipped the server-confirmed names, because the manual
-  section for `/db/REBW` documents a schema the product does not implement and
-  the SDK was corrected in 2026-07.
+  `WallRebarPayload` and `ColumnRebarPayload` are plainer: `ITEMS` becomes
+  required and its entry type is inlined rather than referring to the exported
+  `WallRebarItem` / `ColumnRebarItem` interface, both of which stay exported
+  and unchanged. No field is renamed. Those two endpoints are the pair whose
+  manual sections document schemas the product does not implement — including
+  in MIDASIT's own articles, not just the vendored copy — and this package
+  already shipped the server-confirmed names, corrected in 2026-07 and
+  2026-08. `ColumnRebarPayload` also gains `HOOK_TYPE`, the one field of
+  `/db/REBC` where the manual survived the comparison intact.
 
   `VehiclePayload` and `TimeDependentMaterialStrengthPayload` were listed here
   in an earlier draft of this entry and are **not** affected. Their contracts
