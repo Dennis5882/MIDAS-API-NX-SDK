@@ -6,6 +6,35 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Changed — `SectionPayload`, `VehiclePayload` and `TimeDependentMaterialStrengthPayload` are generated from contracts
+
+- These three now come from `contracts/endpoints/` rather than from the Python
+  TypedDict, which changes their shape: each is a **discriminated union** over
+  the field the manual actually branches on, with the fields the manual marks
+  Required no longer optional.
+
+  `SectionPayload` branches on `SECTTYPE` (`DBUSER`, `VALUE`, `SRC`, `PSC`),
+  and each branch carries its own `SECT_BEFORE`. `CALC_OPT` has not been
+  removed — it moved into the `VALUE` branch, which is the only one the manual
+  documents it for. `VehiclePayload` branches on `STANDARD_CODE` for the
+  country-specific `VEH_*` object. `TimeDependentMaterialStrengthPayload`
+  branches on `TYPE` and `CODENAME`.
+
+  Code that built one of these as a partial object will now need the required
+  members and the discriminant. The compiler points at each one, and the
+  branches match what the endpoints already accepted — this narrows the type to
+  what the server takes, it does not change any request the SDK sends.
+
+### Added — `/db/MVHL` refuses an empty `VEH_DEFAULT`
+
+- `vehicles.create()` and `.update()` now throw `MidasRequestError` when
+  `VEH_DEFAULT` is sent as `{}`. The server accepts that body, answers
+  `{"message": ""}` with no error object, and stores nothing, so the only
+  previous signal was a later `get()` showing no vehicle. Omitting
+  `VEH_DEFAULT` entirely is unaffected — nine of the documented
+  `STANDARD_CODE` values carry their own object instead.
+
+
 ### Fixed — nested fields that were published at the top level
 
 - **`BeamSectionTemperaturePayload`, `StaticWindLoadPayload` and

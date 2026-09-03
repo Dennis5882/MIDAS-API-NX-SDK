@@ -3680,3 +3680,87 @@ call({"NAME": "x"})
     section = ex.parse_chapter(path)[0]
 
     assert [table.heading for table in section.tables] == ["Specifications"]
+
+
+def test_a_row_numbered_under_a_boolean_becomes_its_sibling_not_its_member():
+    """`/db/SPLC` writes `30 bNDP` (Boolean) then `(1) NDP` (Number).
+
+    `NDP` is the value that flag turns on. Retyping `bNDP` to an object to
+    hold it resolves a contradiction between the Value Type column and the No.
+    column by discarding one of them, and produces a payload shape - `{"bNDP":
+    {"NDP": 1}}` - that no request example in the manual sends.
+    """
+
+    parent = _field("30", "bNDP", "Boolean")
+    child = _field("(1)", "NDP", "Number")
+
+    roots = ex._nest([parent, child])
+
+    assert [f.key for f in roots] == ["bNDP", "NDP"]
+    assert parent.type.lower() == "boolean"
+    assert parent.properties == []
+    assert any("cannot hold members" in note for note in child.notes)
+
+
+def test_a_row_numbered_under_a_real_object_is_still_its_member():
+    """The rule is about scalars, and must not touch ordinary nesting.
+
+    `SECT_BEFORE` is an Object with twelve numbered members, and 365 fields
+    across the manual are nested exactly this way.
+    """
+
+    parent = _field("3", "SECT_BEFORE", "Object")
+    child = _field("(1)", "SHAPE", "String")
+
+    roots = ex._nest([parent, child])
+
+    assert [f.key for f in roots] == ["SECT_BEFORE"]
+    assert [f.key for f in parent.properties] == ["SHAPE"]
+
+
+def test_the_sibling_lands_beside_its_scalar_inside_a_shared_parent():
+    """A scalar nested two deep keeps its orphan at its own level, not the root.
+
+    Promoting the row all the way out would put a member of one object beside
+    the request's top-level fields, which is the /db/BTMP failure in reverse.
+    """
+
+    grandparent = _field("4", "GROUP", "Object")
+    parent = _field("4-1", "FLAG", "Boolean")
+    child = _field("4-1-2", "VALUE", "Number")
+
+    roots = ex._nest([grandparent, parent, child])
+
+    assert [f.key for f in roots] == ["GROUP"]
+    assert [f.key for f in grandparent.properties] == ["FLAG", "VALUE"]
+    assert parent.properties == []
+
+
+def test_a_reviewed_renesting_is_checked_by_name_rather_than_read_as_drift():
+    """A `field_name` defect says the table's own paths are wrong.
+
+    The base-field comparison has honoured that override since it was
+    introduced; the variant comparison did not, so `/db/SECT` - whose four
+    SECTTYPE tables number their rows against a table they are not in - looked
+    like 30 separate drift failures for a correction that was the point of the
+    contract. Comparing by name keeps type, requiredness and default checked,
+    and still catches a field that simply vanished.
+    """
+
+    source = ROOT / "scripts" / "extract_contracts.py"
+    body = source.read_text(encoding="utf-8")
+
+    assert 'renested = "field_name" in overridden' in body
+    assert body.count("key.rsplit(\".\", 1)[-1]") == 2
+
+
+def test_the_seventh_settled_marker_is_the_sections_own_worked_payload():
+    """A Request Example is the manual speaking in the wire's own grammar.
+
+    It is the only thing that places `/db/SECT`'s variant fields, so a note
+    citing one is a conclusion rather than a question - and promotion refuses a
+    draft still carrying `# NOTE:`.
+    """
+
+    assert ex._note_marker("the section's Request Example places it under X") == "RESOLVED"
+    assert ex._note_marker("somebody should work out where this goes") == "NOTE"

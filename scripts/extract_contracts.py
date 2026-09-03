@@ -770,6 +770,30 @@ def _split_path(key: str) -> Optional[list[tuple[str, bool]]]:
     return segments
 
 
+#: Value Types that cannot hold members. When the No. column numbers a row as
+#: the child of one of these, the manual is not describing containment - it is
+#: pointing at the row above. `/db/SPLC` writes `30 bNDP` (Boolean) then
+#: `(1) NDP` (Number, Required), and `NDP` is the value that flag turns on, a
+#: sibling rather than a member. Measured across the manual, five rows are
+#: numbered under a declared scalar and all five read that way; two of them
+#: are independently settled - `/db/SECT`'s `CALC_OPT` was driven live on
+#: 2026-09-03 as the boolean the table says it is, and `/db/REBW`'s section is
+#: already known wrong field-for-field against a live model.
+#:
+#: Retyping the parent to `object` is the same shape of invention as reading a
+#: gate out of a code name: it resolves a contradiction between two statements
+#: by silently discarding one. The row is kept at the parent's own level with a
+#: note instead, and which value gates it is left for review - the manual
+#: states the pairing, never the trigger.
+_SCALAR_TYPES = frozenset({"string", "number", "integer", "boolean"})
+
+
+def _can_hold_children(field: ParsedField) -> bool:
+    # `_nest` runs before the Value Type is normalized in some paths and after
+    # it in others, so compare case-insensitively rather than depend on which.
+    return (field.type or "").lower() not in _SCALAR_TYPES
+
+
 def _as_container(field: ParsedField, is_array: bool) -> None:
     """Make a field able to hold children, without discarding what it declared."""
     if is_array:
@@ -787,6 +811,34 @@ def _as_container(field: ParsedField, is_array: bool) -> None:
                 f"the manual types this {field.type!r} but it has nested children; treated as object"
             )
         field.type = "object"
+
+
+def _place_beside_scalar(
+    entry: ParsedField,
+    parent: ParsedField,
+    by_depth: dict[int, ParsedField],
+    depth: int,
+    roots: list[ParsedField],
+) -> None:
+    """Put a row the manual numbered under a scalar next to it, not inside it.
+
+    See `_SCALAR_TYPES`. The row keeps the parent's own level, so a payload
+    that had `{"bNDP": {"NDP": 1}}` now has `{"bNDP": ..., "NDP": ...}`, which
+    is what the manual's own request examples send.
+    """
+    entry.notes.append(
+        f"the manual numbers this {entry.number!r}, under {parent.key!r}, which it "
+        f"types {parent.type!r} - a value that cannot hold members. Read as the "
+        f"row above pointing at this one rather than containing it, so it is kept "
+        f"beside {parent.key!r}. Which value of {parent.key!r} requires it is not "
+        f"stated in the table; add appliesWhen if a permitted source says"
+    )
+    grandparent = by_depth.get(depth - 2)
+    if grandparent is not None and _can_hold_children(grandparent):
+        grandparent.properties.append(entry)
+    else:
+        roots.append(entry)
+    by_depth[depth - 1] = entry
 
 
 def _nest(flat: list[ParsedField]) -> list[ParsedField]:
@@ -865,6 +917,9 @@ def _nest(flat: list[ParsedField]) -> list[ParsedField]:
         last_assigned_depth = depth
         if depth and entry.shared_number_group and "." not in key and not key.startswith("└"):
             grouped_parent = by_depth.get(depth - 1)
+            if grouped_parent is not None and not _can_hold_children(grouped_parent):
+                _place_beside_scalar(entry, grouped_parent, by_depth, depth, roots)
+                continue
             if grouped_parent is not None:
                 entry.notes.append(
                     f"the manual nests this under {grouped_parent.key!r} by numbering it "
@@ -881,6 +936,9 @@ def _nest(flat: list[ParsedField]) -> list[ParsedField]:
             continue
         if depth and "." not in key and not key.startswith("└"):
             parent = by_depth.get(depth - 1)
+            if parent is not None and not _can_hold_children(parent):
+                _place_beside_scalar(entry, parent, by_depth, depth, roots)
+                continue
             if parent is not None:
                 entry.notes.append(
                     f"the manual nests this under {parent.key!r} by numbering it "
@@ -3944,6 +4002,14 @@ def live_omission_evidence() -> dict[str, LiveOmission]:
 #: Russian branch names a `CTYPE` beside the endpoint's top-level `TYPE`, and
 #: the chapter says outright that they are different fields carried across as
 #: they stand. Repeating that is a conclusion, not a question.
+#:
+#: The seventh is the same idea one step over: the section's own Request
+#: Example answers it. A worked payload is a statement by the same source, in
+#: the wire's own grammar, and it is the only thing that places /db/SECT's four
+#: SECTTYPE tables - their No. columns number against a table they are not in,
+#: so read literally they nest a section's dimensions inside a boolean flag.
+#: Citing the example is not a reading of the table; it is preferring the half
+#: of the manual that cannot be ambiguous about structure.
 _SETTLED_NOTE_MARKERS = (
     "the manual nests this under ",
     "no enum is transcribed",
@@ -3951,6 +4017,7 @@ _SETTLED_NOTE_MARKERS = (
     "the values live in the description",
     "measured against a live product",
     "the manual flags it in its own callout",
+    "Request Example",
 )
 
 
@@ -4903,6 +4970,25 @@ def run_check(sections: list[Section]) -> int:
                 declared_variant = matching_variants.pop(0)
                 variant_manual = _flatten_manual(variant.table.fields)
                 variant_contract = _flatten_contract(declared_variant.get("fields", []))
+                # A `field_name` defect record already says the table's own
+                # paths are wrong, and re-nesting changes every path in both
+                # directions at once. The base-field comparison above has
+                # honoured that override since it was introduced; this loop did
+                # not, which made a reviewed correction look like drift.
+                # /db/SECT is the case: its four SECTTYPE tables number their
+                # rows against the common table's SECT_BEFORE, so read
+                # literally they put a section's dimensions inside a boolean.
+                # Compare by name rather than by path when that is recorded, so
+                # a re-nested field is still checked for type, requiredness and
+                # default, and a field that simply vanished is still caught.
+                renested = "field_name" in overridden
+                if renested:
+                    variant_manual = {
+                        key.rsplit(".", 1)[-1]: value for key, value in variant_manual.items()
+                    }
+                    variant_contract = {
+                        key.rsplit(".", 1)[-1]: value for key, value in variant_contract.items()
+                    }
                 for key, manual in variant_manual.items():
                     declared = variant_contract.get(key)
                     if declared is None:
@@ -4938,8 +5024,24 @@ def run_check(sections: list[Section]) -> int:
                             f"{declared.get('documentedDefaultNote')!r}, "
                             f"manual says {manual.documented_default_note!r}"
                         )
+                # Re-nesting introduces the containers the fields were moved
+                # into, and those are documented - just in a different table of
+                # the same section. /db/SECT's `SECT_BEFORE` is in the common
+                # table and `SECT_I` in 12-A, and the SRC table describes
+                # `SECT_I` as an Object without listing the members its own
+                # example sends. Widen to the section, not to nothing: a name
+                # that appears in no table here is still an invention.
+                documented_names = (
+                    {
+                        field.key
+                        for table in section.tables
+                        for field in _walk(table.fields)
+                    }
+                    if renested
+                    else set(variant_manual)
+                )
                 for key in variant_contract:
-                    if key not in variant_manual:
+                    if key not in variant_manual and key not in documented_names:
                         problems.append(
                             f"{path.name}: variant {label} declares {key!r}, which its manual table does not"
                         )

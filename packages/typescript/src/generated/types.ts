@@ -5248,12 +5248,123 @@ export namespace DbPropertiesSectionTypes {
     DATATYPE?: number;
     SECT_I?: unknown;
   }
-  export interface SectionPayload {
-    SECTTYPE?: string;
-    SECT_NAME?: string;
-    CALC_OPT?: boolean;
-    SECT_BEFORE?: SectBefore;
-  }
+  /** Generated from contracts/endpoints/. */
+  export type SectionPayload = {
+    /** Section Data Type */
+    SECTTYPE: string;
+    /** Section Name */
+    SECT_NAME: string;
+    /** Section Data (Before Stage) */
+    SECT_BEFORE: {
+      /** Section Shape */
+      SHAPE: string;
+      /** Offset Direction */
+      OFFSET_PT?: string;
+      /** Center Location (0: Centroid, 1: Center of Section) */
+      OFFSET_CENTER?: number;
+      /** Horizontal Offset Option (0: Extreme Fiber, 1: User) */
+      HORZ_OFFSET_OPT?: number;
+      /** Horizontal Offset Value (I-end) */
+      USERDEF_OFFSET_YI?: number;
+      /** Horizontal Offset Value (J-end, Tapered only) */
+      USERDEF_OFFSET_YJ?: number;
+      /** Vertical Offset Option */
+      VERT_OFFSET_OPT?: number;
+      /** Vertical Offset Value (I-end) */
+      USERDEF_OFFSET_ZI?: number;
+      /** Vertical Offset Value (J-end, Tapered only) */
+      USERDEF_OFFSET_ZJ?: number;
+      /** User Type Offset Reference (0: Centroid, 1: Extreme Fiber) */
+      USER_OFFSET_REF?: number;
+      /** Consider Shear Deformation */
+      USE_SHEAR_DEFORM?: boolean;
+      /** Consider Warping Effect */
+      USE_WARPING_EFFECT?: boolean;
+    };
+  } & (
+    {
+      SECTTYPE: "DBUSER";
+      /** Section Specifications for the I-end. */
+      SECT_BEFORE: {
+        /** Data Type · DB: 1 · User: 2 */
+        DATATYPE: number;
+        /** Section Specifications */
+        SECT_I: {
+          /** DB Name Required when SECT_BEFORE.DATATYPE = 1. */
+          DB_NAME?: string;
+          /** Section Name of DB Required when SECT_BEFORE.DATATYPE = 1. */
+          SECT_NAME?: string;
+          /** Dimension of Section Required when SECT_BEFORE.DATATYPE = 2. */
+          vSIZE?: Array<number>;
+        };
+      };
+    } |
+    {
+      SECTTYPE: "VALUE";
+      /** Calculation Options */
+      CALC_OPT?: boolean;
+      /** Section Specifications for the I-end. */
+      SECT_BEFORE: {
+        /** Section Specifications */
+        SECT_I: {
+          /** Dimension of Section */
+          vSIZE: Array<number>;
+        };
+      };
+    } |
+    {
+      SECTTYPE: "SRC";
+      /** Section Specifications for the I-end. */
+      SECT_BEFORE: {
+        /** SRC Type · DB: 1 · User: 2 */
+        SRC_TYPE: number;
+        /** E Ratio (Steel/Concrete) */
+        MATL_ELAST: number;
+        /** Density Ratio */
+        MATL_DENS: number;
+        /** Poisson's Ratio (Steel) */
+        MATL_POIS_S: number;
+        /** Poisson's Ratio (Concrete) */
+        MATL_POIS_C: number;
+        /** Stiffness Reduction Factor (Concrete) */
+        MATL_STIF_FACTOR: number;
+        /** Steel Section (DB/User) */
+        SECT_I: {
+          /** DB Name */
+          DB_NAME: string;
+          /** Section Name of DB */
+          SECT_NAME: string;
+        };
+        /** Concrete Dimensions */
+        SECT_J: {
+          /** Dimension of Section */
+          vSIZE: Array<number>;
+        };
+      };
+    } |
+    {
+      SECTTYPE: "PSC";
+      /** Section Specifications for the I-end. */
+      SECT_BEFORE: {
+        /** Section Specifications */
+        SECT_I: {
+          /** Outer-Height array */
+          vSIZE_PSC_A: Array<number>;
+          /** Outer-Breadth array */
+          vSIZE_PSC_B: Array<number>;
+          /** Inner-Height array */
+          vSIZE_PSC_C: Array<number>;
+          /** Inner-Breadth array */
+          vSIZE_PSC_D: Array<number>;
+        };
+        /** Web Thickness Check [i, j] */
+        USE_WEB_THICK: Array<boolean>;
+      };
+    } |
+    {
+      CALC_OPT?: never;
+    }
+  );
   /** Generated from contracts/endpoints/. */
   export interface TaperedGroupPayload {
     /** Tapered Group Name */
