@@ -303,6 +303,16 @@ def _normalize_requirement(cell: str) -> tuple[Optional[str], Optional[str], Opt
         # CODE_SELECTION equality in this cell itself.
         return "conditional", raw, None
 
+    mixed = re.fullmatch(
+        r"Optional\s*\((.+)\)\s*/\s*Required\s*\((.+)\)",
+        raw,
+        re.IGNORECASE,
+    )
+    if mixed:
+        # One field can be optional in one documented branch and required in
+        # another. Keep the whole branch statement rather than flattening one.
+        return "conditional", raw, None
+
     qualified = re.match(r"^(.*?)\s*[（(]\s*(.+?)\s*[)）]\s*$", raw)
     if qualified:
         base = qualified.group(1).strip().lower()
@@ -310,7 +320,12 @@ def _normalize_requirement(cell: str) -> tuple[Optional[str], Optional[str], Opt
         if base in _REQUIRED_WORDS or "조건부" in base:
             return "conditional", condition, None
         if base in _OPTIONAL_WORDS:
-            return "optional", None, f"the manual qualifies this Optional with {condition!r}"
+            suffix = (
+                "; this documents the effect of omission rather than a condition on the field"
+                if "생략 시" in condition
+                else ""
+            )
+            return "optional", None, f"the manual qualifies this Optional with {condition!r}{suffix}"
 
     if "조건부" in text or "conditional" in text:
         return "conditional", None, "the manual marks this conditional but does not state the condition"
@@ -1227,6 +1242,16 @@ _STRUCTURAL_ROOT_MOVES: dict[str, tuple[tuple[str, tuple[str, ...]], ...]] = {
     "/DESIGN/RC/KDS-41-20-2022/REBB": (("ITEMS", ("Assign",)),),
     "/DESIGN/RC/KDS-41-20-2022/REBC": (("ITEMS", ("Assign",)),),
     "/DESIGN/RC/KDS-41-20-2022/REBR": (("ITEMS", ("Assign",)),),
+    # The table writes these child paths relative to DIVIDE. Its parent rows,
+    # JSON Schema and Request Examples all place both objects inside DIVIDE.
+    "/ope/DIVIDEELEM": (
+        ("OPTION", ("DIVIDE",)),
+        ("MERGE_DUPLICATE_NODES", ("DIVIDE",)),
+    ),
+    # The child rows shorten FLEXIBLE_PARAM.TOPOGRAPHIC_EFFECT.* to
+    # TOPOGRAPHIC_EFFECT.*; the parent row, schema and examples retain the
+    # enclosing FLEXIBLE_PARAM object.
+    "/ope/GUSTFACTOR": (("TOPOGRAPHIC_EFFECT", ("FLEXIBLE_PARAM",)),),
 }
 
 
@@ -1496,6 +1521,38 @@ def _apply_manual_type_corrections(endpoint: str, fields: list[ParsedField]) -> 
             visit(field.properties, path)
 
     visit(fields)
+
+
+_REVIEWED_FIELD_CONDITIONS: dict[
+    str,
+    dict[tuple[str, ...], tuple[str, tuple[str, tuple[str | int | float | bool, ...]] | None]],
+] = {
+    "/ope/GUSTFACTOR": {
+        ("RIGID_PARAM",): ("STRUCTURE_TYPE = RIGID인 경우", ("STRUCTURE_TYPE", ("RIGID",))),
+        ("FLEXIBLE_PARAM",): (
+            "STRUCTURE_TYPE = FLEXIBLE인 경우",
+            ("STRUCTURE_TYPE", ("FLEXIBLE",)),
+        ),
+    },
+}
+
+
+def _apply_reviewed_field_conditions(endpoint: str, fields: list[ParsedField]) -> None:
+    """Apply only conditions written elsewhere in the same manual section."""
+
+    unresolved = "the manual marks this conditional but does not state the condition"
+    for path, (condition, structured) in _REVIEWED_FIELD_CONDITIONS.get(endpoint, {}).items():
+        field = _field_at_path(fields, path)
+        if field is None or field.requirement != "conditional" or unresolved not in field.notes:
+            continue
+        field.condition = condition
+        if structured is not None:
+            field.applies_when = [structured]
+        field.notes.remove(unresolved)
+        field.notes.append(
+            "the condition is stated elsewhere in the same section and retained without "
+            "inventing a stricter selector"
+        )
 
 
 _STRUCTURAL_CONTAINERS: dict[str, tuple[str, ...]] = {
@@ -1929,6 +1986,7 @@ def _structural_fields(section: "Section") -> tuple[list[ParsedField], list[Stru
         _apply_schema_hints_to_fields(roots, hints)
         _drop_sampled_enums([ParsedTable(heading="", line=0, fields=fields)])
     _apply_manual_type_corrections(section.endpoint, roots)
+    _apply_reviewed_field_conditions(section.endpoint, roots)
     return fields, resolved
 
 
@@ -1957,6 +2015,10 @@ def _merged_structural_fields(section: "Section") -> tuple[list[ParsedField], li
         source = next((field for field in fields if field.key == key), None)
         parent = _field_at_path(fields, parent_path)
         if source is None or parent is None or source is parent:
+            continue
+        prior = next((field for field in parent.properties if field.key == key), None)
+        if prior is not None and source.properties and _append_fields(prior.properties, source.properties):
+            fields.remove(source)
             continue
         fields.remove(source)
         if not _append_fields(parent.properties, [source]):
@@ -2855,13 +2917,16 @@ def _apply_schema_hints_to_fields(
                 )
                 # A parent introduced solely to represent an explicit
                 # ``PARENT[].CHILD`` path is no longer inferred when this
-                # section's own JSON Schema names that parent. The schema is
-                # direct manual evidence for the container and its
-                # requiredness; retain the note when there is no such source.
+                # section's own JSON Schema names that parent: the schema is
+                # direct manual evidence that the container exists, which is
+                # what this note doubts. Requiredness is a separate question
+                # and is not required for the note to go - when the schema
+                # states none, `requirement` stays `unstated` just below, which
+                # is where that gap is recorded. Retain the note when the
+                # schema names no such parent at all.
                 if (
                     synthesized_note in field.notes
                     and isinstance(_agreed_schema_value(property_entries, "type"), str)
-                    and isinstance(_agreed_schema_value(property_entries, "__required"), bool)
                 ):
                     field.notes.remove(synthesized_note)
                 required = _agreed_schema_value(property_entries, "__required")
@@ -3145,6 +3210,8 @@ def _parallel_field_cells(
     default_cell: Optional[str],
     required_cell: Optional[str],
     number: str,
+    *,
+    allow_shared_slash: bool = False,
 ) -> Optional[list[tuple[str, Optional[str], Optional[str], Optional[str]]]]:
     """Return exact parallel field columns, or ``None`` when a row is ambiguous."""
 
@@ -3155,6 +3222,12 @@ def _parallel_field_cells(
     # interval contains, so leave the row whole for _expand_range_row.
     if _RANGE_JOINED_KEYS.fullmatch(raw_key):
         return None
+    braced = re.fullmatch(r"(.+?)\.\{([A-Za-z_][A-Za-z0-9_]*(?:\s*,\s*[A-Za-z_][A-Za-z0-9_]*)+)\}", raw_key)
+    braced_keys = (
+        [f"{braced.group(1)}.{name.strip()}" for name in braced.group(2).split(",")]
+        if braced
+        else []
+    )
     quoted = re.findall(r'"([^"\\]+)"', raw_key)
     if len(quoted) < 2:
         # Chapter 14 writes the same compact notation with backticks rather
@@ -3164,10 +3237,20 @@ def _parallel_field_cells(
         # reading only one form left the `/db/POGD` fibre-model rows and their
         # siblings unparseable - which is what blocked that contract.
         quoted = re.findall("`([^`]+)`", key_cell)
-    keys = quoted if len(quoted) > 1 else _parallel_cells(raw_key, 2, key=True)
+    keys = braced_keys or (quoted if len(quoted) > 1 else _parallel_cells(raw_key, 2, key=True))
     if not keys or len(keys) < 2:
         return None
     columns = [type_cell, default_cell, required_cell]
+    if allow_shared_slash:
+        return [
+            (
+                key,
+                _clean(type_cell) if type_cell is not None else None,
+                _clean(default_cell) if default_cell is not None else None,
+                _clean(required_cell) if required_cell is not None else None,
+            )
+            for key in keys
+        ]
     parts: list[Optional[list[str]]] = []
     for cell in columns:
         if cell is None:
@@ -3184,17 +3267,19 @@ def _parallel_field_cells(
             # repeat its complete shared claim for every literal key. A
             # key/description/type-only child table also makes this unambiguous:
             # it has no Default or Required columns that could vary by key.
-            if (
-                len(quoted) == len(keys)
+            may_share = (
+                (len(quoted) == len(keys) or bool(braced_keys))
                 and (
                     "/" not in raw_key
+                    or allow_shared_slash
                     or _NUMBER_CHILD.match(_clean(number)) is not None
                     or (default_cell is None and required_cell is None)
                 )
-                and all(cell is None or "/" not in _clean(cell) for cell in columns)
-            ):
-                parts = [None if cell is None else [_clean(cell)] * len(keys) for cell in columns]
-                break
+                and (allow_shared_slash or "/" not in _clean(cell))
+            )
+            if may_share:
+                parts.append([_clean(cell)] * len(keys))
+                continue
             return None
         parts.append(split)
     return [
@@ -3206,6 +3291,19 @@ def _parallel_field_cells(
         )
         for index, key in enumerate(keys)
     ]
+
+
+# These rows name several distinct properties and then state one homogeneous
+# claim for all of them. They cannot be inferred from punctuation alone:
+# `/db/THIS-M1` uses the same slash form for mutually exclusive alternative
+# names. Each entry below was reviewed against the row's own Description in
+# the official manual, which maps the names positionally (lane 1/2/3+, or
+# minimum/maximum) and never describes them as alternatives.
+_REVIEWED_SHARED_COMPACT_KEYS = {
+    ("/db/MVLDeu", 'SCALE_FACTOR1"/"SCALE_FACTOR2"/"SCALE_FACTOR3'),
+    ("/db/MVLDeu", 'MULTI_FACTOR1"/"MULTI_FACTOR2"/"MULTI_FACTOR3'),
+    ("/db/MVLDeu", 'MIN_NUM_VHL"/"MAX_NUM_VHL'),
+}
 
 
 _QUOTED_ARRAY_PROPERTY = re.compile(
@@ -3239,6 +3337,23 @@ def _canonical_wire_property(cell: str) -> str:
     if match:
         return f"{match.group(1)}[].{match.group(2)}"
     return text.strip('"')
+
+
+def _key_cell_annotation(cell: str) -> tuple[str, str]:
+    """Separate a literal Key from values documented in the same cell.
+
+    Chapter 14's supplementary tables sometimes use the Key column as a
+    compact ``KEY · choices`` column, for example
+    ``RCDGNCODE · "KISTEC2019" / "MOE2019"``.  The text after the middle dot
+    describes values of the first property; it is not a list of additional
+    wire properties.  Require one literal code span before the separator so
+    ordinary prose containing a middle dot is left untouched.
+    """
+
+    match = re.fullmatch(r"\s*(`[^`]+`)\s*·\s*(\S.*)", cell)
+    if match is None:
+        return cell, ""
+    return match.group(1), match.group(2).strip()
 
 
 def _tree_scope(cell: str, scope: dict) -> tuple | None:
@@ -3364,7 +3479,8 @@ def _parse_tables(lines: list[str], offset: int, endpoint: str = "") -> list[Par
             row += 1
             if len(cells) != len(header):
                 continue
-            key = _canonical_wire_property(cells[key_column])
+            key_cell, key_annotation = _key_cell_annotation(cells[key_column])
+            key = _canonical_wire_property(key_cell)
             if not key or key in _EMPTY_CELLS:
                 # Some manual tables use a blank-key row as an inline section
                 # divider, e.g. ``General Load (OPT_AUTO_OPTIMIZE=false)``.
@@ -3391,11 +3507,13 @@ def _parse_tables(lines: list[str], offset: int, endpoint: str = "") -> list[Par
                     )
                 continue
             parallel = _parallel_field_cells(
-                cells[key_column],
+                key_cell,
                 cells[type_column] if type_column is not None else None,
                 cells[default_column] if default_column is not None else None,
                 cells[required_column] if required_column is not None else None,
                 cells[0] if cells else "",
+                allow_shared_slash=(endpoint, _clean(key_cell).strip('"'))
+                in _REVIEWED_SHARED_COMPACT_KEYS,
             )
             entries = parallel or [
                 (
@@ -3466,6 +3584,8 @@ def _parse_tables(lines: list[str], offset: int, endpoint: str = "") -> list[Par
                 enum = _enum_values_from_inline_type(entry_type) if entry_type is not None else []
                 if not enum and note == _ENUM_VALUES_ELSEWHERE and desc_column is not None:
                     enum = _enum_values_from_description(cells[desc_column])
+                if not enum and key_annotation:
+                    enum = _enum_values_from_description(key_annotation)
                 if enum and _ENUM_VALUES_ELSEWHERE in notes:
                     notes.remove(_ENUM_VALUES_ELSEWHERE)
                 constraints = _type_constraints(entry_type) if entry_type is not None else {}
@@ -3491,7 +3611,18 @@ def _parse_tables(lines: list[str], offset: int, endpoint: str = "") -> list[Par
                 target_fields.append(
                     ParsedField(
                         key=entry_key,
-                        description=_DESC_TREE.sub("", _clean(cells[desc_column])).strip() if desc_column is not None else "",
+                        description=(
+                            " — ".join(
+                                part
+                                for part in (
+                                    _DESC_TREE.sub("", _clean(cells[desc_column])).strip()
+                                    if desc_column is not None
+                                    else "",
+                                    _clean(key_annotation),
+                                )
+                                if part
+                            )
+                        ),
                         type=field_type,
                         items=items,
                         requirement=requirement,
@@ -4122,6 +4253,7 @@ _SETTLED_NOTE_MARKERS = (
     # Example. Settled for the same reason those are: the manual answered it,
     # just not in the cell the parser reads.
     "stated elsewhere in the same section",
+    "documents the effect of omission",
 )
 
 

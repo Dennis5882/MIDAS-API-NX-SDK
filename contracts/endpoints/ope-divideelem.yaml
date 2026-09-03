@@ -1,0 +1,356 @@
+# /ope/DIVIDEELEM
+#
+# Drafted by scripts/extract_contracts.py from the official manual, then promoted
+# by scripts/promote_contract.py: products and verification status come from
+# docs/coverage.json's live record, not from the manual's framing. For /db/*
+# endpoints, the DELETE shape comes from measured /db/* DELETE behaviour.
+# safeToOmit is answered `true` only where a confirmed live payload actually
+# omitted the field.
+contractVersion: 1
+id: ope-divideelem
+endpoint: /ope/DIVIDEELEM
+name: Divide Elements
+
+products: [civil, gen]
+
+source:
+  manual:
+    status: documented
+    repo: Dennis5882/MIDAS-API
+    chapterFile: 15_OPE.md
+    section: "2. `/ope/DIVIDEELEM` — Divide Elements"
+  liveNotes:
+    - docs/live_verification_notes.md
+
+verification:
+  status: verified_both
+  records:
+    - product: civil
+      ref: db-write-sweep-2026-07-30
+    - product: gen
+      ref: db-write-sweep-2026-07-30
+
+operations:
+  - method: POST
+    risk: write
+    request:
+      wrapper: assign
+      itemSchema: fields
+    response:
+      wrapper: table
+      keyStability: stable
+
+fields:
+  - key: TARGETS
+    description: >-
+      분할 대상 요소 ID
+    type: array
+    items:
+      type: integer
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: START_NUMBER
+    description: >-
+      시작 노드/요소 번호
+    type: object
+    requirement: optional
+    documentedDefault: null
+    documentedDefaultNote: System
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+    properties:
+      - key: NODE_NUMBER
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: NUMBER_OPTION
+            description: >-
+              노드 번호 옵션 · 최소 미사용: "Smallest" / 최대+1: "Largest" / 사용자지정: "User"
+            type: string
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+          - key: USER_NUM
+            description: >-
+              사용자 지정 노드 번호 (NUMBER_OPTION="User"일 때)
+            type: integer
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+      - key: ELEM_NUMBER
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: NUMBER_OPTION
+            description: >-
+              요소 번호 옵션 (노드와 동일 enum)
+            type: string
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+          - key: USER_NUM
+            description: >-
+              사용자 지정 요소 번호
+            type: integer
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+  - key: DIVIDE
+    description: >-
+      분할 설정
+    type: object
+    requirement: required
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+    properties:
+      - key: ELEM_TYPE
+        description: >-
+          요소 타입 · 선요소: "Frame" / 벽: "Wall" / 평면: "Planar" / 솔리드: "Solid"
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: DIV_METHOD
+        description: >-
+          분할 방법 · 등분할: "Equal" / 비등분할: "Unequal" / 비율분할: "ParametricUnequal" /
+          평행브레이싱: "ParallelBracing" / 노드기준: "DividebyNode"
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: OPTION
+        description: >-
+          분할 옵션 (DIV_METHOD별 하위 객체 중 하나)
+        type: object
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: EQUAL_OPTION
+            type: object
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            properties:
+              - key: NUM_X
+                description: >-
+                  Equal: X/Y/Z 방향 분할수 (Frame=X만, Planar=X,Y, Wall=X,Z, Solid=X,Y,Z)
+                type: integer
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+              - key: NUM_Y
+                description: >-
+                  Equal: X/Y/Z 방향 분할수 (Frame=X만, Planar=X,Y, Wall=X,Z, Solid=X,Y,Z)
+                type: integer
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+              - key: NUM_Z
+                description: >-
+                  Equal: X/Y/Z 방향 분할수 (Frame=X만, Planar=X,Y, Wall=X,Z, Solid=X,Y,Z)
+                type: integer
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+          - key: UNEQUAL_OPTION
+            type: object
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            properties:
+              - key: DIST_X
+                description: >-
+                  Unequal: X/Y/Z 방향 비등분할 거리 문자열 (예: "3@2.0")
+                type: string
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+              - key: DIST_Y
+                description: >-
+                  Unequal: X/Y/Z 방향 비등분할 거리 문자열 (예: "3@2.0")
+                type: string
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+              - key: DIST_Z
+                description: >-
+                  Unequal: X/Y/Z 방향 비등분할 거리 문자열 (예: "3@2.0")
+                type: string
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+          - key: PARAMETRIC_OPTION
+            type: object
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            properties:
+              - key: RATIO_X
+                description: >-
+                  ParametricUnequal: X/Y/Z 방향 비율 문자열 (예: "3@0.3")
+                type: string
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+              - key: RATIO_Y
+                description: >-
+                  ParametricUnequal: X/Y/Z 방향 비율 문자열 (예: "3@0.3")
+                type: string
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+              - key: RATIO_Z
+                description: >-
+                  ParametricUnequal: X/Y/Z 방향 비율 문자열 (예: "3@0.3")
+                type: string
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+          - key: PARALLEL_OPTION
+            type: object
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            properties:
+              - key: NUM_OF_DIVISIONS
+                description: >-
+                  ParallelBracing: 분할 수 / 기준 기둥(Post) 요소 목록
+                type: integer
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+              - key: MAIN_POST_ELEM
+                description: >-
+                  ParallelBracing: 분할 수 / 기준 기둥(Post) 요소 목록
+                type: array
+                items:
+                  type: integer
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+          - key: BY_NODE_OPTION
+            type: object
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            properties:
+              - key: ELEM_NUM
+                description: >-
+                  DividebyNode: 대상 요소번호 / 분할기준 노드번호
+                type: integer
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+              - key: NODE_NUM
+                description: >-
+                  DividebyNode: 대상 요소번호 / 분할기준 노드번호
+                type: integer
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+      - key: SUBDIVIDE_ELEM
+        description: >-
+          선요소 재분할 여부
+        type: boolean
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: MERGE_DUPLICATE_NODES
+        description: >-
+          중복 노드 병합
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: OPT_CHECK
+            description: >-
+              활성화 여부
+            type: boolean
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+          - key: TOLERANCE
+            description: >-
+              병합 허용오차
+            type: number
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+
+extraction:
+  source: 15_OPE.md line 246
+  table: Parameters

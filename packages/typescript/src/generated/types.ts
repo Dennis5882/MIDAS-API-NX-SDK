@@ -4403,33 +4403,78 @@ export namespace DbMovingLoadsTypes {
     NAME?: string;
     SCALE_FACTOR?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadCaseEurocodePayload {
-    LCNAME?: string;
-    OPT_AUTO_OPTIMIZE?: boolean;
-    TYPE_LOADMODEL?: number;
+    /** Load Case Name */
+    LCNAME: string;
+    /** Description */
     DESC?: string;
+    /** Load Model Type */
+    TYPE_LOADMODEL: number;
+    /** Moving Load Optimization (General Load: false / Optimization: true) */
+    OPT_AUTO_OPTIMIZE?: boolean;
+    /** Ignore ψ(1) factor */
     OPT_LEADING?: boolean;
+    /** Load Case – Vehicle */
     VHLNAME1?: string;
+    /** Load Case – Footway */
     VHLNAME2?: string;
+    /** Selected Lanes */
     SLN_LIST?: Array<string>;
+    /** Remaining Area */
     SRA_LIST?: Array<string>;
+    /** Footway Lanes (LM1) */
     FLN_LIST?: Array<string>;
-    STL_LIST?: Array<MovingLoadCaseEurocodeStraddlingLaneItem>;
+    /** Straddling Lanes — (1) Start Lane "NAME1", (2) End Lane "NAME2" */
+    STL_LIST?: Array<{
+      /** Start Lane */
+      NAME1?: string;
+      /** End Lane */
+      NAME2?: string;
+    }>;
+    /** Loading Effect (Combined: 0 / Independent: 1) */
     OPT_COMB?: number;
-    SUB_LOAD_LIST?: Array<MovingLoadCaseEurocodeSubLoadItem>;
+    /** Sub-Load Cases — (1) Vehicle Load Type "TYPE", (2) Name "NAME", (3) Scale Factor "SCALE_FACTOR", (4) Min. Loaded Lanes "MIN_LOAD_LANE_TYPE", (5) Max. Loaded Lanes "MAX_LOAD_LANE_TYPE", (6) Selected Lanes "SLN_LIST" */
+    SUB_LOAD_LIST?: Array<{
+      /** Vehicle Load Type */
+      TYPE?: number;
+      /** Name */
+      NAME?: string;
+      /** Scale Factor */
+      SCALE_FACTOR?: number;
+      /** Min. Loaded Lanes */
+      MIN_LOAD_LANE_TYPE?: number;
+      /** Max. Loaded Lanes */
+      MAX_LOAD_LANE_TYPE?: number;
+      /** Selected Lanes */
+      SLN_LIST?: Array<string>;
+    }>;
+    /** Ignore ψ1 factor */
     OPT_PSI_FACTOR?: boolean;
+    /** ψ1 factor for Lane 1/2/3+ */
     SCALE_FACTOR1?: number;
+    /** ψ1 factor for Lane 1/2/3+ */
     SCALE_FACTOR2?: number;
+    /** ψ1 factor for Lane 1/2/3+ */
     SCALE_FACTOR3?: number;
+    /** Multi Presence Factor for Lane 1/2/3+ */
     MULTI_FACTOR1?: number;
+    /** Multi Presence Factor for Lane 1/2/3+ */
     MULTI_FACTOR2?: number;
+    /** Multi Presence Factor for Lane 1/2/3+ */
     MULTI_FACTOR3?: number;
+    /** Min. Vehicle Distance */
     MINVHLDIST?: number;
+    /** Assignment Lane */
     OPTIMIZE_LANE_NAME?: string;
+    /** Number of Loaded Lane */
     LOADEDLANE?: number;
+    /** Min./Max. Number of Vehicle */
     MIN_NUM_VHL?: number;
+    /** Min./Max. Number of Vehicle */
     MAX_NUM_VHL?: number;
-    OPTIMIZE_LIST?: Array<MovingLoadCaseEurocodeOptimizeItem>;
+    /** Sub-Load Cases for Optimization — (1) Type "TYPE", (2) Name "NAME", (3) Scale Factor "SCALE_FACTOR" */
+    OPTIMIZE_LIST?: Array<JsonObject>;
   }
   export interface MovingLoadCasePolandSubLoadDataItem {
     VEHICLE_NAME?: string;
@@ -6841,16 +6886,156 @@ export namespace DbPushoverTypes {
     bBUCKLING?: boolean;
     bCALCAXIALFORCE?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface PushoverAnalysisControlDataPayload {
+    /** 기하비선형 타입 · None: "NONE" / Large Displacements: "LARGE_DISP" */
     GEOMNONLINEAR_TYPE?: string;
+    /** 초기하중 방법 · 비선형 정적해석 수행: "PERFORM_ANAL" / 정적·시공단계 해석결과 가져오기: "IMPORT_RESULT" */
     INITLOADMETHOD?: string;
-    INITLOAD?: Array<DbBaseTypes.InitialLoadCaseItem>;
+    /** 초기하중 케이스 목록 */
+    INITLOAD?: Array<JsonObject>;
+    /** (INITLOAD) 하중케이스명 */
+    LC_NAME: string;
+    /** (INITLOAD) 하중케이스 타입 */
+    LC_TYPE: string;
+    /** (INITLOAD) 축척계수 */
+    SF: number;
+    /** 초기하중이 비선형 정적해석일 때, 무시 요소(IEPI) 고려 여부 */
     bCONSIGNOREELEM?: boolean;
-    NONL_OPT?: NonlinearAnalysisOptionPOGD;
-    PHOP_OPT?: PushoverHingeDataOptionPOGD;
-    NODECONNECTIVITY?: string;
-    bSHOWGRAPHAFTER?: boolean;
-    bSHOWGRAPGHDURING?: boolean;
+    /** 비선형 해석 옵션 */
+    NONL_OPT: {
+      /** 수렴 실패 허용 */
+      bPERMITFAIL?: boolean;
+      /** 서브스텝 최대 수 */
+      SUBSTEP?: number;
+      /** 최대 반복 횟수 */
+      MAXITER?: number;
+      /** 변위 노름 사용 여부/값 */
+      bDISPLNORM?: boolean;
+      /** 변위 노름 사용 여부/값 */
+      DISPLNORM?: number;
+      /** 하중 노름 사용 여부/값 */
+      bFORCENORM?: boolean;
+      /** 하중 노름 사용 여부/값 */
+      FORCENORM?: number;
+      /** 에너지 노름 사용 여부/값 */
+      bENERGYNORM?: boolean;
+      /** 에너지 노름 사용 여부/값 */
+      ENERGYNORM?: number;
+      /** 전단 성분 항복 시 정지 */
+      bSHEARYIELDSTOP?: boolean;
+      /** 〃 – 보/기둥 */
+      BSHEARYIELDSTOPBEAM?: boolean;
+      /** 〃 – 벽체 */
+      bSHEARYIELDSTOPWALL?: boolean;
+      /** 축력 성분 붕괴/좌굴 시 정지 */
+      bAXIALYIELDSTOP?: boolean;
+      /** 〃 – 보/기둥 */
+      bAXIALYIELDSTOPBEAM?: boolean;
+      /** 〃 – 벽체 */
+      bAXIALYIELDSTOPWALL?: boolean;
+      /** 〃 – 트러스 */
+      bAXIALYIELDSTOPTRUSS?: boolean;
+      /** 지점 부상/붕괴(Dz방향) 시 정지 */
+      bSUPPORTDZDIRSTOP?: boolean;
+      /** 〃 – 부상(Uplifting) */
+      bSUPPORTSTOPUPLIFTING?: boolean;
+      /** 〃 – 붕괴(Collapse) */
+      bSUPPORTSTOPCOLLAPSE?: boolean;
+    };
+    /** 푸시오버 힌지 데이터 옵션 */
+    PHOP_OPT?: {
+      /** 철근량 고려 */
+      bCONSREBARAREA1D?: boolean;
+      /** 코어 영역 크기 타입 · Auto: "AUTO" / Equal: "EQUAL" */
+      BEAM_CORE_SIZE?: string;
+      /** 코어 분할 수 (y/z) */
+      BEAM_CORE_DIV_Y?: number;
+      /** 코어 분할 수 (y/z) */
+      BEAM_CORE_DIV_Z?: number;
+      /** 커버 영역 크기 타입 */
+      BEAM_COVER_SIZE?: string;
+      /** 커버 분할 수 (y/z) */
+      BEAM_COVER_DIV_Y?: number;
+      /** 커버 분할 수 (y/z) */
+      BEAM_COVER_DIV_Z?: number;
+      /** 철근량 고려 */
+      bCONSREBARAREAWALL?: boolean;
+      /** 판 타입 면외 비선형성 고려 */
+      bWALLCONSOUT?: boolean;
+      /** 코어/커버 크기 타입 */
+      WALL_CORE_SIZE?: string;
+      /** 코어/커버 크기 타입 */
+      WALL_COVER_SIZE?: string;
+      /** 코어 분할 수 (z/y) */
+      WALL_CORE_DIV_Z?: number;
+      /** 코어 분할 수 (z/y) */
+      WALL_CORE_DIV_Y?: number;
+      /** 커버 분할 수 (z/y) */
+      WALL_COVER_DIV_Z?: number;
+      /** 커버 분할 수 (z/y) */
+      WALL_COVER_DIV_Y?: number;
+      /** 스프링 전단 계수 */
+      SHEAR_R?: number;
+      /** 모멘트-회전 보/기둥 힌지속성을 부재단위로만 배정 */
+      bASSIGNBYMEMBER?: boolean;
+      /** 대칭 여부 */
+      bTRI_SYM?: boolean;
+      /** 인장 α1/α2 */
+      TRI_TENS_A1?: number;
+      /** 인장 α1/α2 */
+      TRI_TENS_A2?: number;
+      /** 압축 α1/α2 */
+      TRI_COMP_A1?: number;
+      /** 압축 α1/α2 */
+      TRI_COMP_A2?: number;
+      /** 대칭 여부 */
+      bBI_SYM?: boolean;
+      /** 인장/압축 α1 */
+      BI_TENS_A1?: number;
+      /** 인장/압축 α1 */
+      BI_COMP_A1?: number;
+      /** 점 스프링 지지 적용 타입 — "APPLY" / "ASSUME" */
+      PSPR_APPLY_TYPE?: "APPLY" | "ASSUME";
+      /** 탄성링크 적용 타입 — "APPLY" / "ASSUME" */
+      ELNK_APPLY_TYPE?: "APPLY" | "ASSUME";
+      /** 참조 코드/매뉴얼 사용 */
+      bUSEAUTOCALCREFERENCE?: boolean;
+      /** RC 참조 설계기준 — "KISTEC2019" / "KISTEC2013" / "MOE2019" / "MOE2018" / "AIK-G-001-2021" */
+      RCDGNCODE?: "KISTEC2019" | "KISTEC2013" | "MOE2019" | "MOE2018" | "AIK-G-001-2021";
+      /** 보/분포힌지 기준 위치 — I단: "I" / J단: "J" / 중앙: "M" */
+      LOC_BEAM?: "I" | "J" | "M";
+      /** 기둥 기준 위치 */
+      LOC_COLUMN?: string;
+      /** 벽체 축척계수 */
+      SF_WALL?: number;
+      /** 취성 축척계수 사용/값 */
+      bSF_BRITTLE?: boolean;
+      /** 취성 축척계수 사용/값 */
+      SF_BRITTLE?: number;
+      /** 지진 축척계수 사용/값 */
+      bSF_EARTHQUAKE?: boolean;
+      /** 지진 축척계수 사용/값 */
+      SF_EARTHQUAKE?: number;
+      /** 원형철근 축척계수 사용/값 */
+      bSF_SMOOTH_BAR?: boolean;
+      /** 원형철근 축척계수 사용/값 */
+      SF_SMOOTH_BAR?: number;
+      /** 2차 내진요소 그룹명 */
+      SND_SEIS_GRUP?: string;
+      /** 신뢰도 계수 */
+      CONFIDENCE?: number;
+      /** 좌굴 고려 항복면 계산 */
+      bBUCKLING?: boolean;
+      /** 축력 고려 Mc 계산(AIJ) */
+      bCALCAXIALFORCE?: boolean;
+    };
+    /** 벽체 노드 연결성 · 핀: "PINNED" / 고정: "FIXED" */
+    NODECONNECTIVITY: string;
+    /** 해석 후 푸시오버 곡선 결과 표시 */
+    bSHOWGRAPHAFTER: boolean;
+    /** 해석 중 푸시오버 곡선 표시 */
+    bSHOWGRAPGHDURING: boolean;
   }
   export interface ShearYieldStopHyperS {
     OPT_USE?: boolean;

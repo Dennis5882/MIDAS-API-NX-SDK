@@ -2772,6 +2772,86 @@ def test_two_keys_the_manual_calls_alternatives_are_not_split():
     assert ex._parallel_field_cells("`FREQ2`/`PERIOD2`", "Number", "-", "Required", "5") is None
 
 
+def test_reviewed_homogeneous_slash_row_can_repeat_its_shared_claims():
+    assert ex._parallel_field_cells(
+        '`SCALE_FACTOR1`/`SCALE_FACTOR2`/`SCALE_FACTOR3`',
+        "Number",
+        "-",
+        "Required (LM5)",
+        "15",
+        allow_shared_slash=True,
+    ) == [
+        ("SCALE_FACTOR1", "Number", "-", "Required (LM5)"),
+        ("SCALE_FACTOR2", "Number", "-", "Required (LM5)"),
+        ("SCALE_FACTOR3", "Number", "-", "Required (LM5)"),
+    ]
+
+
+def test_mixed_optional_and_required_branches_remain_conditional():
+    raw = "Optional (LM1) / Required (LM3/4, Optimization)"
+    assert ex._normalize_requirement(raw) == ("conditional", raw, None)
+
+
+def test_reviewed_condition_is_taken_from_the_same_section_only():
+    field = _field("1", "RIGID_PARAM", "Object")
+    field.requirement = "conditional"
+    field.notes = ["the manual marks this conditional but does not state the condition"]
+    ex._apply_reviewed_field_conditions("/ope/GUSTFACTOR", [field])
+    assert field.condition == "STRUCTURE_TYPE = RIGID인 경우"
+    assert field.applies_when == [("STRUCTURE_TYPE", ("RIGID",))]
+    assert all("does not state" not in note for note in field.notes)
+
+
+@pytest.mark.parametrize(
+    ("key_cell", "type_cell", "expected"),
+    [
+        (
+            "OPTION.EQUAL_OPTION.{NUM_X,NUM_Y,NUM_Z}",
+            "Integer",
+            [
+                ("OPTION.EQUAL_OPTION.NUM_X", "Integer", None, "Required"),
+                ("OPTION.EQUAL_OPTION.NUM_Y", "Integer", None, "Required"),
+                ("OPTION.EQUAL_OPTION.NUM_Z", "Integer", None, "Required"),
+            ],
+        ),
+        (
+            "OPTION.PARALLEL_OPTION.{NUM_OF_DIVISIONS,MAIN_POST_ELEM}",
+            "Integer/Array",
+            [
+                ("OPTION.PARALLEL_OPTION.NUM_OF_DIVISIONS", "Integer", None, "Required"),
+                ("OPTION.PARALLEL_OPTION.MAIN_POST_ELEM", "Array", None, "Required"),
+            ],
+        ),
+    ],
+    ids=("homogeneous-members", "parallel-member-types"),
+)
+def test_braced_key_sets_expand_under_their_documented_parent(
+    key_cell: str,
+    type_cell: str,
+    expected: list[tuple[str, str | None, str | None, str | None]],
+):
+    assert ex._parallel_field_cells(key_cell, type_cell, None, "Required", "") == expected
+
+
+@pytest.mark.parametrize(
+    ("cell", "key", "annotation"),
+    [
+        (
+            '`RCDGNCODE` · "KISTEC2019" / "KISTEC2013" / "MOE2019"',
+            "`RCDGNCODE`",
+            '"KISTEC2019" / "KISTEC2013" / "MOE2019"',
+        ),
+        ('`LOC_BEAM` · I단: "I" / J단: "J" / 중앙: "M"', "`LOC_BEAM`", 'I단: "I" / J단: "J" / 중앙: "M"'),
+        ('`PLAIN`', '`PLAIN`', ""),
+    ],
+    ids=("quoted-values", "labelled-values", "no-annotation"),
+)
+def test_key_column_value_annotations_are_not_wire_properties(
+    cell: str, key: str, annotation: str
+):
+    assert ex._key_cell_annotation(cell) == (key, annotation)
+
+
 def test_a_compact_row_its_own_schema_names_key_by_key_is_split(tmp_path: Path):
     """The schema says whether a slash joins two fields or renames one.
 

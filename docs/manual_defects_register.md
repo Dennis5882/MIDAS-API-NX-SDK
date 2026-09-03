@@ -57,6 +57,8 @@ build itself** and is no longer resting on an unrecorded one.
 | MD-21 | 2026-09-03 | `/db/STCT-M1`, five Key cells and one table's destinations | row 5 is keyed `"bSDLE"` / `"vSDLE"`; TIME_DEP_CONTROL has `"bTTLE_ES"` / `"iTTLE_ES"`; NONL_CONTROL keys three sibling objects `"DISP"/"LOAD"/"WORK"` and states `ADVANCED`'s whole subtree as prose in one cell; the "나머지 객체" table puts each row's parent in an `Object` column and keys `"bTRUSS"` / `"bBEAM"` and `"OPT_USE"` / `"iSDOPT"` / `"SDCONST"` | each is a set of sibling properties, sent that way by the section's own Request Body; `/info` independently confirms `bSDLE` and `vSDLE` as two of sixteen root properties | **manual repo** transcription | open |
 | MD-22 | 2026-09-03 | `/db/STCT-M1` `FINAL_STAGE` | the top-level Parameters table lists fourteen rows and none of them names a final-stage name | `GET /info/db/STCT-M1` declares sixteen root properties, and `FINAL_STAGE` (string, "Final Stage Name") is the one the table has no counterpart for - the field the table's own `bLAST_FINAL: false` "Other Stage" option has to be answered with | **manual repo** transcription | open |
 | MD-23 | 2026-09-03 | `/db/THIS-M1` `FREQ1`/`PERIOD1` and `FREQ2`/`PERIOD2` | the `COEF_INPUT=1` damping table keys two wire properties in each of rows 3 and 5 | they are mutually exclusive, selected by `COEF_CALC` (0=Frequency, 1=Period) - the row directly above them - and each row's own description says so | **manual repo** transcription | open |
+| MD-24 | 2026-09-04 | `/DESIGN/RC/KDS-41-20-2022/BRD-TABLE` and `CD-TABLE`, `ELEMS` / `SECTIONS` | both rows are marked 조건부 and no condition is stated anywhere in either section - not in the 설명 column, not in the section's own JSON Schema, which requires only `TABLE_TYPE` and carries no `if`/`then` | unknown, and deliberately left that way. The same chapter states this exact condition explicitly fifteen times elsewhere - `요소 번호 입력 (CREATE_SUB_SECTION=true 일 때 필수)`, with a matching `then: {required: ["ELEMS"]}` - so the omission is not a house style | **manual repo** transcription | open; blocks two contracts |
+| MD-25 | 2026-09-04 | `/db/MVLDeu` `OPT_COMB`, `STL_LIST`, `SUB_LOAD_LIST` | `OPT_COMB` is typed `String` in the row whose own description gives its values as `0`/`1`; `STL_LIST` and `SUB_LOAD_LIST` are typed `Array[Object]` with no member rows, their members named only inside the parent row's description | `OPT_COMB` is an integer - both Request Body examples send `"OPT_COMB": 1` unquoted; the two arrays carry exactly the members their descriptions number, and the examples send them literally | **manual repo** transcription | open |
 
 
 ## Detail
@@ -807,3 +809,61 @@ row 3 settles the pattern for both, and the same `COEF_CALC` governs.
 > as its `resolution`, which also stops the npm generator from publishing an
 > admittedly incomplete field list as the payload type. Settling it needs a
 > POST, and no confirmed fixture for this endpoint exists to build one from.
+
+### MD-24 - 조건부 with no condition, in a chapter that states them elsewhere
+
+`/DESIGN/RC/KDS-41-20-2022/BRD-TABLE` and `/DESIGN/RC/KDS-41-20-2022/CD-TABLE`
+each mark `ELEMS` and `SECTIONS` 조건부 in the 필수 column and never say what the
+condition is. `ELEMS` appears exactly twice in the whole BRD-TABLE section: once
+in the JSON Schema, which lists it as a property and requires only
+`TABLE_TYPE`, with no `if`/`then` anywhere; and once in the parameter row. There
+is no Request Example for either endpoint that would settle it.
+
+What makes this a defect rather than a gap is that the same chapter knows how to
+write the condition. Fifteen rows in `26_Design_RC_KDS41202022.md` state it in
+the cell itself:
+
+> | (3) | 요소 번호 입력 (`CREATE_SUB_SECTION`=true 일 때 필수) | `"ELEMS"` | Object | — | 조건부 |
+
+and back it with a matching `"then": { "required": ["ELEMS"] }` in the same
+section's JSON Schema. Two sections use the same 조건부 marker with neither.
+
+**Both contracts stay unpromoted.** This entry exists partly to stop the gap
+being closed by paraphrase. The 설명 column reads "요소 지정 — KEYS/TO/
+STRUCTURE_GROUP_NAME 중 하나", which describes `ELEMS`'s own internal shape -
+which of its three sub-keys to use - and says nothing about when `ELEMS` itself
+is required. Turning that into `condition: 요소 지정 시` produces a sentence that
+is both circular and unsourced, and a first pass at these two contracts on
+2026-09-04 did exactly that before it was caught. The honest state is the one
+the extractor already reports: "the manual marks this conditional but does not
+state the condition", which is an unresolved review note and blocks promotion,
+as it should.
+
+### MD-25 - a Value Type and two item shapes the same section settles
+
+`/db/MVLDeu`'s Specifications table understates three rows, and each time the
+same section carries the answer a few lines later.
+
+| row | the table says | the section's own Request Body |
+| --- | --- | --- |
+| 12 `OPT_COMB` | `String`, described as "Loading Effect (Combined: `0` / Independent: `1`)" | `"OPT_COMB": 1` — unquoted, in both examples that set it |
+| 11 `STL_LIST` | `Array[Object]`, members only in the description as `(1)` `"NAME1"`, `(2)` `"NAME2"` | `[{"NAME1": "LL_03", "NAME2": "LL_04"}]` |
+| 13 `SUB_LOAD_LIST` | `Array[Object]`, six members named in the description | a sub-load case carrying all six, with `SLN_LIST` an array of lane names |
+
+`OPT_COMB` is MD-11's family: a Value Type column the same section contradicts,
+in this case with its own worked examples rather than a JSON Schema.
+
+The two arrays are worth recording for a different reason. The numbering
+convention in their descriptions — `(1)`, `(2)`, … followed by the quoted key —
+is the same one this manual uses in rows of its own elsewhere, and which the
+extractor already resolves into nested `properties` when the members get their
+own rows. Here it is compressed into one cell, so nothing resolves it
+automatically.
+
+**Why that matters beyond tidiness.** Before this endpoint was contracted, the
+npm package published `MovingLoadCaseEurocodeStraddlingLaneItem` and
+`MovingLoadCaseEurocodeSubLoadItem` from the Python TypedDicts. A contract
+transcribing the rows exactly as typed would have replaced both with
+`JsonObject` and shipped a *less* precise type than the one it replaced —
+caught on 2026-09-04 while reviewing the generated diff, which is the reason
+that diff gets read rather than skimmed.

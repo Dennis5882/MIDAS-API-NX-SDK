@@ -24,6 +24,23 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
     interfaces. Both interfaces are still exported and unchanged; nothing was
     removed.
 
+### Changed — `/db/MVLDeu` and `/db/POGD` payload types now come from contracts
+
+- `MovingLoadCaseEurocodePayload` and `PushoverAnalysisControlDataPayload` are
+  generated from `contracts/endpoints/` instead of the Python TypedDict, and
+  gain the members the manual marks Required — `LCNAME` and `TYPE_LOADMODEL`
+  on the first, among others.
+
+- `STL_LIST` and `SUB_LOAD_LIST` are now inline object types rather than
+  references to the exported `MovingLoadCaseEurocodeStraddlingLaneItem` and
+  `MovingLoadCaseEurocodeSubLoadItem` interfaces. The members are unchanged and
+  both interfaces are still exported; nothing was removed.
+
+- `MovingLoadCasePermitPayload` and `TimeHistoryLoadCasePayload` are
+  **unchanged** even though `/db/MVLDpl` and `/db/THIS` are now contracted:
+  both contracts carry manual tables they could not place, and a contract with
+  an unresolved table deliberately does not narrow the published type.
+
 ### Changed — two more Hyper-S payload types now come from contracts
 
 - `ConstructionStageAnalysisControlDataHyperSPayload` (`/db/STCT-M1`) and
