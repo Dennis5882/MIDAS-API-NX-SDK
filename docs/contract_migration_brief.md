@@ -688,3 +688,112 @@ contract taking over a payload type usually makes members required, which is a
 breaking change for npm users and belongs in `packages/typescript/CHANGELOG.md`
 under `Unreleased` with the reason. **Do not bump the version** — one number
 covers both registries and the author picks it.
+
+## Handoff — 2026-09-04, at the end of the draft backlog
+
+**This section supersedes the 2026-09-03 handoff above.** Its counts are stale
+and its central table — "the 22 refused drafts" — is spent: **every draft that
+can be contracted has been.** What remains of that section that is still worth
+reading is its list of traps, which all still hold.
+
+### State
+
+| | value |
+| --- | ---: |
+| endpoint contracts | 381 |
+| contract fields | 4,560 |
+| npm resources identified by a contract | 301 of 304 |
+| payload types generated from contracts | 281 of 759 |
+| drafts on disk | 29 |
+| drafts the promotion gate refuses | **3** |
+| manual defects registered | MD-33 |
+
+```bash
+python scripts/validate_contracts.py | head -3
+python scripts/promote_contract.py --all --dry-run | tail -1
+python scripts/extract_contracts.py --check | tail -1
+```
+
+### The three that are left, and why nobody can finish them
+
+`db-iehg-gl-m1`, `db-iehg-pss-m1`, `db-iehg-truss-m1`. Their manual sections
+state a URL and a methods line and nothing else, and live `/info` — their only
+other permitted source — answers 404, re-confirmed on the 09/02/2026 patch
+build with `/db/IEHG-BEAM-M1` and `/db/MATL-M1` answering in the same session
+as controls. **Do not contract them from a sibling endpoint's shape or from an
+SDK.** They unblock when the vendor publishes the sections or `/info` starts
+serving. Nothing else about them is actionable.
+
+### What the last batch changed outside the contracts
+
+Six defects in the tooling were found by drafts that would not promote, and
+each was fixed at the tool rather than papered over in a contract. They are
+listed because each one silently affected work that had already shipped.
+
+1. **`generate_typescript_sdk.py` published the `Assign` envelope as a payload
+   member** in 60 types. `DbResource.create()` builds that envelope itself, so
+   satisfying the type sent `{"Assign": {"1": {"Assign": ...}}}`.
+   `_strip_assign_envelope` removes it. This is the largest npm-facing change
+   in the batch and it is a fix, not a narrowing.
+2. **`extract_contracts.py` read a negated condition as a positive one.**
+   `(SELECTION_TYPE="ALL"이면 무시됨)` names the value at which a field does
+   **not** apply; the parser turned it into `appliesWhen: SELECTION_TYPE=ALL`,
+   the exact opposite. `_CONDITION_NEGATIONS` now stops the structured
+   translation and emits a note instead. No shipped contract carried an
+   inverted condition — checked across all of them — but `/ope/MEMB` would
+   have been the first.
+3. **`(2)a`/`(2)b`/`(2)c` numbering had no pattern**, so those rows fell to
+   depth 0. In `/db/REBR` that put `NAME`/`NUM`/`ROW` at the root of the
+   request instead of inside `MAIN_BAR`, and parented the `(3)` row on `ROW`,
+   an Integer. `_NUMBER_PAREN_SUBITEM` reads it as depth 2. Nine rows in
+   chapter 24 use the form and nothing else in the manual does.
+4. **`function_endpoints.py` could not see an endpoint whose literal lives in a
+   helper.** Where one URL serves several documented tables, both SDKs put the
+   literal in `_get_rc_design_forces_table` / `defineDesignTable` and give each
+   table a thin wrapper. Two contracts were refused for "no parity surface"
+   while both SDKs had shipped one for months. Python-side private helpers now
+   resolve to a fixpoint; the npm factory is read directly. 80 → 82 endpoints.
+5. **The `schema_only_roots` note fired on roots that had already been
+   placed.** It asks what the *tables* name, which is all it can see, but by
+   render time the assembled field list is available. `/db/RCHK`'s BEAM and
+   COLM appear only as table headings and are assembled in full, so the note
+   was asking a reviewer to reconcile two renderings that already agreed.
+6. **`_STRUCTURAL_TABLE_SPLITS` had one entry that should never have been
+   there.** `/DESIGN/RC/KDS-41-20-2022/REBB`'s sector table keys three rows
+   with more than one property each and states two rows' members one level up,
+   so merging it produced ten flat siblings where the schema has a two-level
+   tree. Registering a table is not free: check that its rows parse to single
+   keys at one destination before adding one.
+
+### Two judgement rules this batch established
+
+Both came up more than once and neither is in the schema.
+
+**Integer versus number, where the table and the schema disagree.** Prefer the
+narrower type *only when narrowing cannot exclude a value the field's own
+description admits*. `/db/RCHK`'s five contested fields are all rebar counts,
+so `integer` is safe for all five (MD-27). `/ope/AUTOMESH` has one of each in
+the same object: `DIV` is a division count and takes `integer`, while `LENGTH`
+is a mesh size in model units and keeps `Number`, because `integer` would
+exclude values the row admits (MD-28). The rule is not "prefer the narrower".
+
+**A mutually exclusive pair, both marked Required.** Record each `conditional`
+with the manual's own phrase and **no `appliesWhen`**. The manual names no
+discriminator because there is none — which of the two to send is the caller's
+choice, not a branch the payload declares. Three instances now:
+`/ope/AUTOMESH`'s `LENGTH`/`DIV` (MD-28), and `ELEMS`/`SECTIONS` on both
+`CD-TABLE` and `BRD-TABLE` (MD-33).
+
+### One correction worth reading before trusting a register entry
+
+MD-24 concluded that chapter 26 states no condition for `CD-TABLE`'s and
+`BRD-TABLE`'s `ELEMS`/`SECTIONS`, and blocked both contracts on that basis. The
+rejection it recorded was right — the drafted conditions were circular
+paraphrases of the 설명 column, and the note attached to them falsely claimed
+the condition was in the same section. The conclusion was wrong: the chapter
+states this exact pair as an either/or in seven of its nine BD/CD/BRD sections,
+in the row and in a schema `oneOf`. Nobody had swept for it.
+
+The lesson is narrow and worth keeping: **"the manual does not say" is a claim
+about the whole manual, and needs a search, not a reading of one section.** A
+one-line grep over the chapter would have found it either time.

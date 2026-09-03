@@ -6,6 +6,77 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Removed — the `Assign` envelope is no longer a member of 60 payload types
+
+- **This is a fix, not a narrowing.** `DbResource.create()` and `.update()`
+  build the `{"Assign": {"<id>": ...}}` envelope themselves, from the keys of
+  the `ItemMap` you pass. The manual's Parameters tables open with a row for
+  that envelope, and the contract generator was emitting it as a payload
+  member — so 60 interfaces demanded an `Assign` that, if you supplied it,
+  produced `{"Assign": {"1": {"Assign": ...}}}` on the wire.
+
+- Two shapes were affected and both are gone: `Assign: JsonObject` sitting
+  beside the real fields (56 types, such as `EffectiveLengthFactorPayload`,
+  whose `Ky`/`Kz`/`Kt` are the record), and `Assign` carrying the record as its
+  own members (4 types, such as `RebarDesignCriteriaPayload`), whose members are
+  now the payload's own.
+
+- If you were satisfying the compiler with a dummy `Assign: {}`, delete it. If
+  you were reaching through `payload.Assign.ITEMS`, drop the `Assign` step.
+  Nothing else about these types changed. The endpoints generated from Python
+  TypedDicts — the same design endpoints under `/DESIGN/SRC/AIK-SRC2K/`, for
+  instance — never had the member, so the two families now agree.
+
+### Changed — eleven more endpoints take their payload type from a contract
+
+- `/db/REBR`, `/db/RCHK`, `/ope/AUTOMESH`, `/ope/MEMB`, `/ope/SECTPROP`,
+  `/ope/PROJECTSTATUS`, `/DESIGN/RC/KDS-41-20-2022/REBB`, `.../REBR`,
+  `.../CD-TABLE`, `.../BRD-TABLE` and `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK` now
+  generate their payload types from
+  `contracts/endpoints/`. As with earlier contract takeovers, members the
+  manual marks Required become required, and nested objects that were opaque
+  aliases are spelled out:
+
+  - `BraceRebarPayload` gains the full `ITEMS` item — `MAIN_BAR`,
+    `SHEAR_BAR_END`/`SHEAR_BAR_CEN`, `ELEMS` and `ID`. Previously it was
+    `{ ITEMS?: Array<BraceRebarItem> }`.
+  - `RebarCheckInputPayload`'s `BEAM` and `COLM` were `BeamCheckRebar` /
+    `ColumnCheckRebar` references and are now inlined with their full subtrees.
+    Both interfaces are still exported and unchanged.
+  - `MemberAssignmentPayload`'s `ELEM_LIST` is `Array<number>`; the manual's
+    table typed it only `Array`.
+  - `SectionPropertiesPayload` and `ProjectStatusPayload` type their `DATA`
+    rows as `Array<Array<string>>`. The values arrive as strings, quoted, in
+    the manual's own Response JSON — including the numeric ones.
+
+  - `AutoMeshPlanarAreaPayload`'s `MESHER.INCLUDE_INTERIOR_LINES` gains the
+    three members the manual's table points at instead of listing, and
+    `MESH_SIZE.DIV` is documented as the alternative to `LENGTH` rather than
+    required alongside it.
+  - The `CD-TABLE` and `BRD-TABLE` payloads document `ELEMS` and `SECTIONS` as
+    alternatives — give one or the other.
+
+### Added — a warning on `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK`
+
+- The SRC optimal-design endpoint now carries a contract `warn` rule and a
+  named entry in the repository's known-product-risks list. Nothing about the
+  npm function changes — it already carried the warning in its own
+  documentation — but the risk is now stated in the language-neutral source
+  both packages are generated from, so it cannot be lost in one of them. The
+  endpoint ends the NX session when the open model holds a section SRC design
+  cannot use, and MIDASIT has classified it as an unofficial API with paused
+  development.
+
+### Removed — `LAYER` from `RcBeamMainBarLayerEntry`
+
+- `/DESIGN/RC/KDS-41-20-2022/REBB`'s main-bar array item is `{ NAME, NUM }`.
+  The `LAYER` member was this SDK's own inference and no statement in the
+  manual chapter names it; the chapter-24 sibling dropped the same inference in
+  2.5.0 against a live schema pull, and this one was missed then. The two now
+  agree. `ModifyBeamRebarDataPayload` also takes its whole shape from the
+  contract, which follows that section's worked examples — as both SDKs
+  already did.
+
 ### Changed — `TimeHistoryGlobalControlHyperSPayload` now comes from a contract
 
 - `/db/THGC-M1`'s payload type is generated from

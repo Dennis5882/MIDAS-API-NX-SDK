@@ -72,7 +72,7 @@ set*.  It does **not** imply each row can be made a TypeScript `oneOf`: `MVLDid`
 absence-based User branch and `MVLD` lacks a documented wire discriminator for
 some national-code tables.
 
-### B. Structural table splits (20)
+### B. Structural table splits (21)
 
 These are not evidence for a payload union.  Their additional tables describe a
 named nested object/array, a product partition, or a presentation-oriented
@@ -90,6 +90,7 @@ grouping.  They still need a human to verify the object path from the manual;
 | `/db/MVCTch` | `12_DB_Analysis_Control.md:1075-1166`, Impact Factor tables | One analysis-control record split into field groups; the headings do not state a selector. |
 | `/db/POGD` | `14_DB_Pushover.md:147-230` | Parameter groups accompany a single object-shaped control record; no table heading gives a discriminator. |
 | `/db/RCHK` | `24_DB_Design.md:386-455` | `vMAIN`, `vLAYER`, `LAYER`, and `POSITION` are nested collection/detail tables, not branch alternatives. |
+| `/db/REBR` | `24_DB_Design.md:1998`, `SHEAR_BAR_END / SHEAR_BAR_CEN 객체 (공통 구조)` | One heading states the structure both objects share, so its four rows belong to both - the chapter-26 `.../REBR` pattern in chapter 24. The section's third table is **not** registered: its `(1)` row is the item's own `ID` while its a/b/c rows are `ELEMS` members, two destinations no single target could hold (MD-26). |
 | `/db/RPSC` | `04_DB_Properties.md:1635-1690`, `SBAR_ITEMS[]` / `MBAR_ITEMS[]` | The latter two tables are array-item schemas for named fields. |
 | `/db/SBDO` | `03_DB_Node_Element.md:844-875`, Civil NX Only / GEN NX Only | Product-specific field partition, not a value selected in the payload. |
 | `/db/STCT-M1` | `12_DB_Analysis_Control.md:2314-2360`, `ANAL_TYPE` / `RESTART_CS_ANAL` / `ERECTION_LOAD` / `TIME_DEP_CONTROL` | Each heading names the object or array its rows belong to. The section's other two sub-tables are **not** registered: `NONL_CONTROL` states `ADVANCED` as prose and keys three sibling objects in one cell, and "나머지 객체" puts each row's parent in an `Object` column, so its rows have four destinations no single target could hold (MD-21). |
@@ -132,6 +133,15 @@ not inferred from either SDK.  A table with no such path remains
 | `.../REBB` | `Assign.{sectionId}.ITEMS[].BAR_SECTOR_{I,M,J}` and `.ELEMS` |
 | `.../REBC` | `Assign.{sectionId}.ITEMS[].MAIN_BAR`, `.SHEAR_BAR_{END,CEN}`, and `.ELEMS` |
 | `.../REBR` | `Assign.{sectionId}.ITEMS[].MAIN_BAR`, `.SHEAR_BAR_{END,CEN}`, and `.ELEMS` |
+
+> **2026-09-04.** `.../REBB`'s sector table was **removed** from the registry.
+> Three of its rows key more than one property at once and two unnumbered rows
+> state the members of `LAYER1`/`LAYER2` rather than of the sector, so merging
+> it produced ten flat siblings where the schema has a two-level tree. Only its
+> `ELEMS` table stays registered; the sector subtree is hand-resolved in the
+> contract, which follows the section's worked examples on the section's own
+> instruction (MD-29). Registering a table is not free - check that its rows
+> parse to single keys at one destination first.
 
 The structural classification removes exactly the multi-table blocker; it does
 not make absent manual facts true.  On 2026-08-29, the ordinary promotion gate

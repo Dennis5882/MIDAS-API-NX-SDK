@@ -231,6 +231,16 @@ def _is_number_subitem(number: str) -> bool:
 # A Project Structure table also uses hybrid segments such as ``2-(1)``.
 # They carry the same nesting meaning as ``2-1``: the parent record is row 2
 # and the parenthesised segment is one level, not decorative prose.
+#: Chapter 24 writes a two-level path with no separator at all: `(2)` is the
+#: parent row and `(2)a`, `(2)b`, `(2)c` are its members. The parenthesised
+#: number is a path segment here, not a sibling marker, so this is depth 2 -
+#: and reading it as anything else is not a cosmetic error. Unmatched, these
+#: rows fell to depth 0, which put `/db/REBR`'s `NAME`/`NUM`/`ROW` at the root
+#: of the request instead of inside `MAIN_BAR`, and left the `(3)` after them
+#: parented on `ROW`, an Integer. The section's own JSON Schema shows the
+#: shape those rows describe.
+_NUMBER_PAREN_SUBITEM = re.compile(r"^\((?:\d+|[ivxlcdm]+)\)[a-z]$", re.IGNORECASE)
+
 _NUMBER_PATH = re.compile(r"^\d+(?:(?:[-.]\d+)|(?:[-.]\(\d+\)))+$")
 _NUMBER_PATH_SEGMENT = re.compile(r"[-.](?:\d+|\(\d+\))")
 # A small group of manual tables marks an immediate array-item member with a
@@ -368,6 +378,49 @@ _DESCRIPTION_CONDITION_MARKERS = (
 _DESCRIPTION_LITERAL_CONDITION = re.compile(
     r"`?([A-Za-z_][A-Za-z0-9_.]*)`?\s*=\s*`?([A-Za-z][A-Za-z0-9_-]*)`?"
 )
+
+
+# A description can name the value at which a field applies, or the value at
+# which it does *not* - ``(SELECTION_TYPE="ALL"이면 무시됨)`` is the second, and
+# reading it as the first inverts the condition into the exact opposite of what
+# the manual says.  The equality alone cannot tell them apart, so a phrase
+# carrying one of these verbs stops the structured translation and keeps the
+# manual's wording as the condition for a reviewer to translate by hand.
+_CONDITION_NEGATIONS = (
+    "무시",       # 무시 - ignored
+    "제외",       # 제외 - excluded
+    "사용하지",  # 사용하지 (않음) - not used
+    "사용 안",       # 사용 안 (함)
+    "해당 없",       # 해당 없(음)
+    "불필요",  # 불필요 - unnecessary
+    "ignored",
+    "not used",
+    "not required",
+)
+
+
+def _condition_negates(text: str) -> bool:
+    """Whether a condition phrase names the value the field does *not* apply at."""
+
+    lowered = _clean(text).lower()
+    return any(marker in lowered for marker in _CONDITION_NEGATIONS)
+
+
+def _negated_condition_phrase(cell: str) -> Optional[str]:
+    """Return the parenthesised phrase that states when the field does not apply.
+
+    Kept verbatim for the same reason ``_condition_from_description`` keeps its
+    own: the contract's ``condition`` records the manual's sentence, and only
+    the hand-written ``appliesWhen`` turns it around.
+    """
+
+    text = _clean(cell)
+    parts = [part.strip() for part in re.findall(r"\(([^()]*)\)", text)]
+    parts.extend(
+        part.strip() for part in re.split(r"\s+[—–]\s+", text)[1:]
+    )
+    negating = [part for part in parts if part and _condition_negates(part)]
+    return negating[0] if len(negating) == 1 else None
 
 
 def _description_literal_condition(text: str) -> tuple[str, str | int | float | bool] | None:
@@ -919,6 +972,8 @@ def _nest(flat: list[ParsedField]) -> list[ParsedField]:
         is_subitem = False
         if _NUMBER_CHILD.match(entry.number):
             depth = 1
+        elif _NUMBER_PAREN_SUBITEM.match(entry.number):
+            depth = 2
         elif _NUMBER_PATH.match(entry.number):
             depth = len(_NUMBER_PATH_SEGMENT.findall(entry.number))
         elif _is_number_subitem(entry.number):
@@ -1159,6 +1214,17 @@ _STRUCTURAL_TABLE_SPLITS: dict[str, tuple[StructuralTableMerge, ...]] = {
         StructuralTableMerge(1, (("SBAR_ITEMS",),)),
         StructuralTableMerge(2, (("MBAR_ITEMS",),)),
     ),
+    # The chapter-24 counterpart of the chapter-26 `/DESIGN/.../REBR` entry
+    # below, and registered for the same reason: one table headed
+    # "`SHEAR_BAR_END` / `SHEAR_BAR_CEN` 객체 (공통 구조)" states the structure both
+    # objects share, so its four rows belong to both. The section's third table
+    # (index 2) is deliberately absent: its `(1)` row is the item's own `ID`
+    # while its a/b/c rows are `ELEMS` members, so the table has two
+    # destinations and appending its whole field list to either would be wrong.
+    # It is resolved by hand in the contract against the section's JSON Schema.
+    "/db/REBR": (
+        StructuralTableMerge(1, (("Assign", "ITEMS", "SHEAR_BAR_END"), ("Assign", "ITEMS", "SHEAR_BAR_CEN"))),
+    ),
     "/db/SBDO": (
         StructuralTableMerge(1, ((),), ("civil",)),
         StructuralTableMerge(2, ((),), ("gen",)),
@@ -1211,8 +1277,15 @@ _STRUCTURAL_TABLE_SPLITS: dict[str, tuple[StructuralTableMerge, ...]] = {
         StructuralTableMerge(4, (("Assign", "WALL", "MATERIAL_BY_DIAMETER_INPUT", "VERTICAL_END_REBAR"), ("Assign", "WALL", "MATERIAL_BY_DIAMETER_INPUT", "HORIZONTAL_REBAR"))),
         StructuralTableMerge(5, (("Assign", "WALL", "ADDITIONAL_WALL_DATA"),)),
     ),
+    # Only the ELEMS table (index 2) is registered. The sector table (index 1)
+    # is not mergeable as parsed: three of its rows key more than one property
+    # at once - `"LAYER1"` / `"LAYER2"`, `"NAME"` / `"LEG"` / `"DIST"` and
+    # `"NAME"` / `"NUM"` - and its two unnumbered rows state the members of
+    # LAYER1/LAYER2 rather than of the sector. Merged as parsed it produced ten
+    # flat siblings where the schema has a two-level tree. It is hand-resolved
+    # in the contract, which follows the section's worked examples rather than
+    # this table - on the section's own instruction. See MD-29.
     "/DESIGN/RC/KDS-41-20-2022/REBB": (
-        StructuralTableMerge(1, (("Assign", "ITEMS", "BAR_SECTOR_I"), ("Assign", "ITEMS", "BAR_SECTOR_M"), ("Assign", "ITEMS", "BAR_SECTOR_J"))),
         StructuralTableMerge(2, (("Assign", "ITEMS", "ELEMS"),)),
     ),
     "/DESIGN/RC/KDS-41-20-2022/REBC": (
@@ -1239,6 +1312,10 @@ _STRUCTURAL_ROOT_MOVES: dict[str, tuple[tuple[str, tuple[str, ...]], ...]] = {
         ("BRACE", ("Assign",)),
         ("WALL", ("Assign",)),
     ),
+    # Chapter 24 uses the same ID-keyed Assign map for its rebar endpoints, and
+    # numbers `"Assign"` and `"ITEMS"` both `1`, so they parse as siblings. The
+    # section's JSON Schema places ITEMS inside the Assign value.
+    "/db/REBR": (("ITEMS", ("Assign",)),),
     "/DESIGN/RC/KDS-41-20-2022/REBB": (("ITEMS", ("Assign",)),),
     "/DESIGN/RC/KDS-41-20-2022/REBC": (("ITEMS", ("Assign",)),),
     "/DESIGN/RC/KDS-41-20-2022/REBR": (("ITEMS", ("Assign",)),),
@@ -1247,6 +1324,15 @@ _STRUCTURAL_ROOT_MOVES: dict[str, tuple[tuple[str, tuple[str, ...]], ...]] = {
     "/ope/DIVIDEELEM": (
         ("OPTION", ("DIVIDE",)),
         ("MERGE_DUPLICATE_NODES", ("DIVIDE",)),
+    ),
+    # Two objects whose own rows (1-5 and 3-2) name the full path while their
+    # member rows drop the parent - MESHER.INCLUDE_INTERIOR_NODES followed by
+    # INCLUDE_INTERIOR_NODES.OPT_CHECK, and PROPERTY.ELEMENT_SUB_TYPE followed
+    # by ELEMENT_SUB_TYPE.TYPE. The JSON Schema and both Request Examples nest
+    # them. Same shape as /ope/GUSTFACTOR below.
+    "/ope/AUTOMESH": (
+        ("INCLUDE_INTERIOR_NODES", ("MESHER",)),
+        ("ELEMENT_SUB_TYPE", ("PROPERTY",)),
     ),
     # The child rows shorten FLEXIBLE_PARAM.TOPOGRAPHIC_EFFECT.* to
     # TOPOGRAPHIC_EFFECT.*; the parent row, schema and examples retain the
@@ -3559,7 +3645,10 @@ def _parse_tables(lines: list[str], offset: int, endpoint: str = "") -> list[Par
                 # is precisely one; two selectors or prose-only wording stay
                 # unresolved rather than being guessed.
                 if requirement == "conditional" and condition is None and desc_column is not None:
-                    description_condition = _description_literal_condition(cells[desc_column])
+                    negated = _condition_negates(cells[desc_column])
+                    description_condition = (
+                        None if negated else _description_literal_condition(cells[desc_column])
+                    )
                     if description_condition is not None:
                         condition_field, condition_values = description_condition
                         rendered_value = " or ".join(
@@ -3569,6 +3658,20 @@ def _parse_tables(lines: list[str], offset: int, endpoint: str = "") -> list[Par
                         condition = f"{condition_field}={rendered_value}"
                         applies_when = [(condition_field, condition_values)]
                         note = None
+                    elif negated:
+                        condition = (
+                            _negated_condition_phrase(cells[desc_column])
+                            or _condition_from_description(cells[desc_column])
+                        )
+                        if condition is not None:
+                            note = (
+                                "the manual states this condition negatively - it names the "
+                                f"value at which the field does not apply ({condition}), so the "
+                                "equality in it must not be read as an appliesWhen. Write the "
+                                "appliesWhen by hand, and only where the manual states the "
+                                "field's full value set"
+                            )
+                        applies_when = []
                     else:
                         condition = _condition_from_description(cells[desc_column])
                         if condition is not None:
@@ -4254,6 +4357,20 @@ _SETTLED_NOTE_MARKERS = (
     # just not in the cell the parser reads.
     "stated elsewhere in the same section",
     "documents the effect of omission",
+    # A table and its own section's JSON Schema disagree on integer versus
+    # number and nothing in the section breaks the tie. Both renderings are
+    # documentation, and the narrower one names a subset of the wider, so a
+    # caller following it cannot send a value the other reading refuses.
+    # Settled because the choice and its reason are written down; only a live
+    # measurement could change it, and that is a new fact, not a review.
+    "the narrower of the two documented types",
+    # A section omits what its siblings state about the same field. Weaker
+    # evidence than the same-section marker above and easier to abuse, so the
+    # phrase demands the sibling sections be listed by name rather than
+    # gestured at - MD-24 is what happens otherwise: a condition invented from
+    # a description column, wearing a marker that claimed evidence nobody had
+    # looked for. If you cannot name the sections, you have not found them.
+    "stated in these sibling sections:",
 )
 
 
@@ -4549,8 +4666,20 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
             "",
         ]
     else:
-        if section.schema_only_roots:
-            missing = ", ".join(section.schema_only_roots)
+        # `_schema_only_roots` asks what the *tables* name, because that is all
+        # it can see. The question the note asks is narrower - whether the
+        # contract being written is missing a root the schema declares - and by
+        # here that is answerable: a structural merge or a reviewed handler may
+        # already have placed one. `/db/RCHK`'s BEAM and COLM appear only as
+        # table headings, never as a row, yet both are assembled with their full
+        # subtrees. Reporting them anyway asks a reviewer to reconcile two
+        # renderings that already agree.
+        unplaced = tuple(
+            root for root in section.schema_only_roots
+            if not any(field.key == root for field in fields)
+        )
+        if unplaced:
+            missing = ", ".join(unplaced)
             lines += [
                 f"# NOTE: this section's own JSON Schema declares {missing} and the",
                 "# Specifications table below never names them, so the table is not the",

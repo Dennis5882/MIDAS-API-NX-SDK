@@ -1,0 +1,430 @@
+# /db/REBR
+#
+# Drafted by scripts/extract_contracts.py from the official manual, then promoted
+# by scripts/promote_contract.py: products and verification status come from
+# docs/coverage.json's live record, not from the manual's framing. For /db/*
+# endpoints, the DELETE shape comes from measured /db/* DELETE behaviour.
+# safeToOmit is answered `true` only where a confirmed live payload actually
+# omitted the field.
+contractVersion: 1
+id: db-rebr
+endpoint: /db/REBR
+name: Modify Brace Rebar Data
+surface:
+  className: BraceRebar
+  exportName: braceRebar
+  modulePath: [db, design]
+  payloadTypeName: BraceRebarPayload
+
+products: [gen]
+
+source:
+  manual:
+    status: documented
+    repo: Dennis5882/MIDAS-API
+    chapterFile: 24_DB_Design.md
+    section: "13. `/db/REBR` — Modify Brace Rebar Data (가새 철근 데이터 수정)"
+  liveNotes:
+    - docs/live_verification_notes.md
+
+verification:
+  status: verified_gen
+  records:
+    - product: gen
+      ref: db-read-sweep-2026-07-26
+
+operations:
+  - method: DELETE
+    variant: per_id
+    path: /db/REBR/{id}
+    risk: destructive
+    mitigation: none
+    summary: Delete exactly the record named in the path.
+    request:
+      wrapper: none
+    response:
+      wrapper: table
+      keyStability: stable
+    notes: >-
+      Undocumented route, and the only DELETE form that deletes a selection
+      rather than the whole table - see risk db-delete-body-empties-table.
+  - method: DELETE
+    variant: whole_table
+    risk: destructive
+    mitigation: confirmation_required
+    summary: Empty the entire table.
+    request:
+      wrapper: assign
+      itemSchema: none
+      description: >-
+        The manual's documented form. The ids in that body are ignored.
+    response:
+      wrapper: message
+  - method: GET
+    risk: read_only
+    request:
+      wrapper: none
+    response:
+      wrapper: table
+      keyStability: stable
+  - method: POST
+    risk: write
+    request:
+      wrapper: assign
+      itemSchema: fields
+    response:
+      wrapper: table
+      keyStability: stable
+  - method: PUT
+    risk: write
+    request:
+      wrapper: assign
+      itemSchema: fields
+    response:
+      wrapper: table
+      keyStability: stable
+
+fields:
+  - key: Assign
+    description: >-
+      단면 번호 문자열을 키로 갖는 맵
+    type: object
+    requirement: required
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+    properties:
+      - key: ITEMS
+        description: >-
+          콘크리트 가새 철근 항목 (min 1)
+        type: array
+        items:
+          type: object
+        minItems: 1
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: CREATE_SUB_SECTION
+            description: >-
+              서브 단면 생성 여부
+            type: boolean
+            requirement: optional
+            documentedDefault: false
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(1)', not
+            # by naming a path
+          - key: ID
+            description: >-
+              서브 단면 ID (읽기 전용)
+            type: integer
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the Parameters table has no row for this field, but it is
+            # stated elsewhere in the same section - the JSON Schema declares it on
+            # the ITEMS item as `"ID": {"type": "integer", "description": "read
+            # only"}`, and the third table numbers it `(1)`, one level above its own
+            # a/b/c rows. Requirement follows that table's Optional cell, as chapter
+            # 26's REBC row for the same field does. See MD-26.
+          - key: ELEMS
+            description: >-
+              요소 번호 입력 (CREATE_SUB_SECTION=true 일 때. KEYS / TO /
+              STRUCTURE_GROUP_NAME 중 택1)
+            type: object
+            requirement: conditional
+            condition: CREATE_SUB_SECTION=true
+            appliesWhen:
+              - path: Assign.ITEMS.CREATE_SUB_SECTION
+                equals: true
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the Parameters table has no row for this object either, but
+            # it is stated elsewhere in the same section twice over - the JSON Schema
+            # declares it with the condition verbatim (`CREATE_SUB_SECTION=true 일
+            # 때. KEYS / TO / STRUCTURE_GROUP_NAME 중 택1`), and the third table's own
+            # heading repeats it. Chapter 26's REBC/REBR sections carry the same
+            # object as an ordinary table row. See MD-26.
+            properties:
+              - key: KEYS
+                description: >-
+                  요소 ID 배열
+                type: array
+                items:
+                  type: integer
+                requirement: optional
+                documentedDefault: null
+                documentedOptional: true
+                safeToOmit: unverified
+                provenance: manual
+              - key: TO
+                description: >-
+                  ID 범위 (예: "1to160")
+                type: string
+                requirement: optional
+                documentedDefault: null
+                documentedOptional: true
+                safeToOmit: unverified
+                provenance: manual
+              - key: STRUCTURE_GROUP_NAME
+                description: >-
+                  구조 그룹 이름
+                type: string
+                requirement: optional
+                documentedDefault: null
+                documentedOptional: true
+                safeToOmit: unverified
+                provenance: manual
+          - key: MAIN_BAR
+            description: >-
+              주철근
+            type: object
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(2)', not
+            # by naming a path
+            properties:
+              - key: NAME
+                description: >-
+                  규격 · D4~D57
+                type: string
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+                # RESOLVED: the manual nests this under 'MAIN_BAR' by numbering it '(2)a',
+                # not by naming a path
+              - key: NUM
+                description: >-
+                  개수 (min 4)
+                type: integer
+                minimum: 4
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+                # RESOLVED: the bound is stated elsewhere in the same section - the row's
+                # own description says (min 4), and the section's JSON Schema repeats it as
+                # `"NUM": {"type": "integer", "description": "min 4"}`. Transcribed as
+                # `minimum: 4` so the two siblings agree; chapter 26's REBR states the same
+                # bound with a misapplied `minItems` keyword. See MD-30.
+                # RESOLVED: the manual nests this under 'MAIN_BAR' by numbering it '(2)b',
+                # not by naming a path
+              - key: ROW
+                description: >-
+                  열(row) 수
+                type: integer
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+                # RESOLVED: the manual nests this under 'MAIN_BAR' by numbering it '(2)c',
+                # not by naming a path
+          - key: SHEAR_BAR_END
+            description: >-
+              단부 전단철근
+            type: object
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(3)', not
+            # by naming a path
+            properties:
+              - key: NAME
+                description: >-
+                  후프 철근 규격 · D4~D57
+                type: string
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+              - key: LEG_Y
+                description: >-
+                  다리 개수 (local Y)
+                type: integer
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+              - key: LEG_Z
+                description: >-
+                  다리 개수 (local Z)
+                type: integer
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+              - key: DIST
+                description: >-
+                  철근 간격 @
+                type: number
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+          - key: SHEAR_BAR_CEN
+            description: >-
+              중앙부 전단철근
+            type: object
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(4)', not
+            # by naming a path
+            properties:
+              - key: NAME
+                description: >-
+                  후프 철근 규격 · D4~D57
+                type: string
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+              - key: LEG_Y
+                description: >-
+                  다리 개수 (local Y)
+                type: integer
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+              - key: LEG_Z
+                description: >-
+                  다리 개수 (local Z)
+                type: integer
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+              - key: DIST
+                description: >-
+                  철근 간격 @
+                type: number
+                requirement: required
+                documentedDefault: null
+                documentedOptional: false
+                safeToOmit: unverified
+                provenance: manual
+          - key: DO
+            description: >-
+              콘크리트면~철근중심 거리 (do)
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(5)', not
+            # by naming a path
+          - key: HOOP_TYPE
+            description: >-
+              후프 철근 타입 · "Ties" / "Spirals"
+            type: string
+            requirement: optional
+            documentedDefault: Ties
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(6)', not
+            # by naming a path
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      The 파라미터 table numbers the ITEMS item's members `(1)` to `(6)` and has
+      no row for `ID` or for `ELEMS`. Its third table, headed
+      "`CREATE_SUB_SECTION == true` 일 때 — `ELEMS`", then lists four rows at two
+      different levels without saying so: `(1)` `ID` and a/b/c `KEYS`/`TO`/
+      `STRUCTURE_GROUP_NAME`.
+    actual: >-
+      The section's own JSON Schema declares both missing members on the ITEMS
+      item - `ID` as a read-only integer and `ELEMS` as an object whose
+      description carries the condition verbatim - and places `KEYS`, `TO` and
+      `STRUCTURE_GROUP_NAME` inside `ELEMS`, not beside `ID`. Chapter 26's
+      `/DESIGN/RC/KDS-41-20-2022/REBC` and `.../REBR` document the same two
+      members as ordinary numbered rows of their Parameters tables, so this is
+      chapter 24 leaving out what its sibling chapter states. Same shape as
+      MD-22: a row the table does not have, supplied by a second statement in
+      the same section. The npm and Python surfaces are unaffected - both
+      already send `ELEMS` - so this is a documentation defect only.
+    evidence: >-
+      docs/manual/24_DB_Design.md section 13's 파라미터 and ELEMS tables against
+      the JSON Schema printed immediately above them in the same section, and
+      against docs/manual/26_DESIGN_RC_KDS.md's REBC/REBR Parameters tables.
+      Registered as MD-26.
+
+sdkRules:
+  - id: db-rebr-delete-per-id
+    kind: per_id_request
+    appliesTo: [DELETE]
+    variant: per_id
+    reason: >-
+      The manual's DELETE body form empties the whole table regardless of the
+      ids it names. Measured on /db/NODE, /db/STLD, /db/LDGR and /db/MATL and
+      treated as a property of /db/* DELETE, so an SDK's ordinary "delete these
+      ids" call must use the undocumented per-id URL. Requests go one at a time
+      and stop at the first failure.
+    riskRef: db-delete-body-empties-table
+    alternative: Emptying the table on purpose is the separate whole_table operation.
+  - id: db-rebr-delete-all-confirmation
+    kind: require_confirmation
+    appliesTo: [DELETE]
+    variant: whole_table
+    reason: >-
+      Emptying the table cannot be undone through the API and raises no
+      product-side dialog.
+    riskRef: db-delete-body-empties-table
+    alternative: Use the per_id DELETE operation to remove selected records.
+
+knownDefects:
+  - ref: db-delete-body-empties-table
+
+extraction:
+  source: 24_DB_Design.md line 1982
+  table: 파라미터
+  structuralTables:
+    - heading: SHEAR_BAR_END / SHEAR_BAR_CEN 객체 (공통 구조)
+      line: 1998
+      paths:
+        - Assign.ITEMS.SHEAR_BAR_END
+        - Assign.ITEMS.SHEAR_BAR_CEN
+    - heading: "CREATE_SUB_SECTION == true 일 때 — ELEMS (KEYS / TO /
+        STRUCTURE_GROUP_NAME 중 택1)"
+      line: 2007
+      paths:
+        - Assign.ITEMS
+        - Assign.ITEMS.ELEMS
+      note: >-
+        Hand-resolved rather than registered. This table has two destinations:
+        its `(1)` row is the item's own `ID` and its a/b/c rows are members of
+        `ELEMS`, one level deeper. A `StructuralTableMerge` appends a table's
+        whole field list to each target, so no registry entry could split it,
+        and merging it to either target alone would place three fields wrong.
+        The split follows the section's JSON Schema. The field list below is
+        complete, so this is not an `unmergedTables` entry. See MD-26.

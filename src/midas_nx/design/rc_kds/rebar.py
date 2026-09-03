@@ -453,9 +453,16 @@ class RcBeamMainBarLayerEntry(TypedDict, total=False):
     db/design.py's identical ch24 REBB precedent), the array-of-layers shape
     is used here, with per-item fields {LAYER, NAME, NUM} inferred from the
     layer-object Parameters table.
+
+    2026-09-04: dropped the inferred ``LAYER`` field, which no statement in
+    chapter 26 names as a property. The schema rendering carries the layer in
+    the key (``LAYER1``/``LAYER2``) and the array rendering carries it in the
+    item's position, so an array item has only the two members the layer rows
+    give. The chapter-24 sibling ``db/design.py:BeamMainBarLayerEntry`` dropped
+    the same inference on 2026-08-27 against a live ``GET /info/db/REBB``; this
+    one was missed then. Recorded as MD-29.
     """
 
-    LAYER: int  # Layer number (1 or 2), required
     NAME: str  # Rebar size, D4~D57 (19 total), required
     NUM: int  # Rebar count, required
 

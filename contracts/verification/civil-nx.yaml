@@ -731,3 +731,19 @@ records:
       records, not a product defect.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-read-sweep-2026-08-25
+    endpoints: []
+    date: "2026-08-25"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 08/06/2026
+    level: read
+    outcome: success_empty
+    method: >-
+      manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a fu
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md

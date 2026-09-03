@@ -168,6 +168,40 @@ risks:
       - docs/live_verification_notes.md
 
 
+  - id: temp-src-ocheck-ends-the-session
+    title: POST /TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK ends the NX session
+    severity: crash
+    endpoints: ["/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK"]
+    products: [gen, civil]
+    symptom: >-
+      The call never answers. It times out client-side after 30-35 seconds, the
+      product raises its "Failed to disconnect the work session" licence dialog,
+      and every following call times out or reports a disconnected session. The
+      licence is held until the process is restarted properly.
+    rootCause: >-
+      Unknown, and MIDASIT has not committed to one. The trigger is a precondition
+      of the model rather than of the request: a run against a document with a
+      real section SRC design cannot use crashes, while the identical call against
+      a document with no sections answers a clean `Section 1 does not exist.`
+      error and leaves the session healthy.
+    ruledOut: >-
+      Not build-dependent: reproduced on Gen NX 2026 v2.1 build 08/11/2026 and on
+      Civil NX 2026 v2.2 builds 08/12/2026 and 08/24/2026. Not fixed by the path
+      move: MIDASIT relocated the route to the /TEMP/ prefix on 2026-08-06 to mark
+      it as an unofficial, paused-development API, and the new path reproduces the
+      crash identically. Not a payload problem: the same shape that crashes
+      against a model with sections is answered cleanly against an empty one.
+    mitigation: none
+    sdkRule: temp-src-ocheck-unofficial-and-unsafe
+    status: >-
+      Open, and expected to stay open. MIDASIT classified it as an unofficial API
+      with paused development and no fix timeline, which is what the /TEMP/ prefix
+      records. Four reproductions across two products and four builds; each needed
+      a full product restart to recover.
+    firstObserved: "2026-07-31"
+    lastChecked: "2026-08-24"
+    evidence:
+      - docs/live_verification_notes.md
   - id: db-rebb-write-path-refuses-every-payload
     title: POST/PUT /db/REBB answers "Wrong Field" whatever the body
     severity: write

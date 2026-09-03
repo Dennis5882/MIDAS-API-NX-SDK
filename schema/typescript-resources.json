@@ -1906,7 +1906,7 @@
       "className": "BraceRebar",
       "exportName": "braceRebar",
       "endpoint": "/db/REBR",
-      "name": "Modify Brace Rebar",
+      "name": "Modify Brace Rebar Data",
       "products": [
         "gen"
       ],
@@ -2144,7 +2144,7 @@
       "className": "RebarCheckInput",
       "exportName": "rebarCheckInput",
       "endpoint": "/db/RCHK",
-      "name": "Rebar Check Input (Beam/Column)",
+      "name": "Rebar Input for Checking - Beam/Column",
       "products": [
         "civil"
       ],

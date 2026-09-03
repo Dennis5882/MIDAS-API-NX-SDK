@@ -57,8 +57,16 @@ build itself** and is no longer resting on an unrecorded one.
 | MD-21 | 2026-09-03 | `/db/STCT-M1`, five Key cells and one table's destinations | row 5 is keyed `"bSDLE"` / `"vSDLE"`; TIME_DEP_CONTROL has `"bTTLE_ES"` / `"iTTLE_ES"`; NONL_CONTROL keys three sibling objects `"DISP"/"LOAD"/"WORK"` and states `ADVANCED`'s whole subtree as prose in one cell; the "나머지 객체" table puts each row's parent in an `Object` column and keys `"bTRUSS"` / `"bBEAM"` and `"OPT_USE"` / `"iSDOPT"` / `"SDCONST"` | each is a set of sibling properties, sent that way by the section's own Request Body; `/info` independently confirms `bSDLE` and `vSDLE` as two of sixteen root properties | **manual repo** transcription | open |
 | MD-22 | 2026-09-03 | `/db/STCT-M1` `FINAL_STAGE` | the top-level Parameters table lists fourteen rows and none of them names a final-stage name | `GET /info/db/STCT-M1` declares sixteen root properties, and `FINAL_STAGE` (string, "Final Stage Name") is the one the table has no counterpart for - the field the table's own `bLAST_FINAL: false` "Other Stage" option has to be answered with | **manual repo** transcription | open |
 | MD-23 | 2026-09-03 | `/db/THIS-M1` `FREQ1`/`PERIOD1` and `FREQ2`/`PERIOD2` | the `COEF_INPUT=1` damping table keys two wire properties in each of rows 3 and 5 | they are mutually exclusive, selected by `COEF_CALC` (0=Frequency, 1=Period) - the row directly above them - and each row's own description says so | **manual repo** transcription | open |
-| MD-24 | 2026-09-04 | `/DESIGN/RC/KDS-41-20-2022/BRD-TABLE` and `CD-TABLE`, `ELEMS` / `SECTIONS` | both rows are marked 조건부 and no condition is stated anywhere in either section - not in the 설명 column, not in the section's own JSON Schema, which requires only `TABLE_TYPE` and carries no `if`/`then` | unknown, and deliberately left that way. The same chapter states this exact condition explicitly fifteen times elsewhere - `요소 번호 입력 (CREATE_SUB_SECTION=true 일 때 필수)`, with a matching `then: {required: ["ELEMS"]}` - so the omission is not a house style | **manual repo** transcription | open; blocks two contracts |
+| MD-24 | 2026-09-04 | `/DESIGN/RC/KDS-41-20-2022/BRD-TABLE` and `CD-TABLE`, `ELEMS` / `SECTIONS` | both rows are marked 조건부 and no condition is stated anywhere in either section - not in the 설명 column, not in the section's own JSON Schema, which requires only `TABLE_TYPE` and carries no `if`/`then` | unknown, and deliberately left that way. The same chapter states this exact condition explicitly fifteen times elsewhere - `요소 번호 입력 (CREATE_SUB_SECTION=true 일 때 필수)`, with a matching `then: {required: ["ELEMS"]}` - so the omission is not a house style | **manual repo** transcription | superseded in part by MD-33 - the rejected paraphrase stands rejected, but the condition is stated elsewhere in the chapter and both contracts are now promoted |
 | MD-25 | 2026-09-04 | `/db/MVLDeu` `OPT_COMB`, `STL_LIST`, `SUB_LOAD_LIST` | `OPT_COMB` is typed `String` in the row whose own description gives its values as `0`/`1`; `STL_LIST` and `SUB_LOAD_LIST` are typed `Array[Object]` with no member rows, their members named only inside the parent row's description | `OPT_COMB` is an integer - both Request Body examples send `"OPT_COMB": 1` unquoted; the two arrays carry exactly the members their descriptions number, and the examples send them literally | **manual repo** transcription | open |
+| MD-26 | 2026-09-04 | `/db/REBR` `ID` and `ELEMS` | the 파라미터 table numbers the ITEMS item's members `(1)`-`(6)` and has a row for neither; the section's third table then lists four rows at two different levels without saying so | the section's own JSON Schema declares both on the ITEMS item and places `KEYS`/`TO`/`STRUCTURE_GROUP_NAME` inside `ELEMS`; chapter 26's REBC/REBR document the same two members as ordinary numbered rows | **manual repo** transcription | open |
+| MD-27 | 2026-09-04 | `/db/RCHK`, five count fields | four 파라미터 tables type `dSUB_BARNUM`, `SUBBAR_NUM`, `SUBBAR_NUM_Y`, `SUBBAR_NUM_Z` Integer and `BAR_NUM` (under `vPOSITION`) Number; the section's own JSON Schema types the first four `number` and `BAR_NUM` `integer` - the opposite way round in every case | the schema is internally consistent, the tables are not: `BAR_NUM` is typed Integer in one table and Number in another for the same name and the same description | **manual repo** transcription | open |
+| MD-28 | 2026-09-04 | `/ope/AUTOMESH` `MESH_SIZE`, `INCLUDE_INTERIOR_LINES` | rows 2-1/2-2 mark `LENGTH` and `DIV` both **Required** while each says the two cannot be used together, and type both Number where the schema says `integer`; row 1-6 declares `INCLUDE_INTERIOR_LINES` and lists none of its members | the two size fields are alternatives - each Request Example sends one; `DIV` is a count and `LENGTH` a model-unit length, so they do not resolve the same way; the missing members are the same three rows 1-5-a..c give, and the schema and second example both carry them | **manual repo** transcription | open |
+| MD-29 | 2026-09-04 | `/DESIGN/RC/KDS-41-20-2022/REBB`, the whole item shape | the JSON Schema and 파라미터 tables give `MAIN_BAR_TOP`/`MAIN_BAR_BOT` as `{LAYER1, LAYER2}` objects, a `SKIN_BAR` object, and cover distances named `DT`/`DB`, and name no `bSAME_SIZE_*` field | the section's own Request Body, Response Body and Python example all send `vMAIN_BAR_TOP`/`vMAIN_BAR_BOT` arrays, flat `SKIN_BAR_NAME`/`SKIN_BAR_NUM`, `MAIN_BAR_DC_TOP`/`MAIN_BAR_DC_BOT` and three `bSAME_SIZE_*` booleans - and the section says outright to follow the examples | **manual repo** transcription | open |
+| MD-30 | 2026-09-04 | `/DESIGN/RC/KDS-41-20-2022/REBR` `MAIN_BAR.NUM` | the JSON Schema writes the minimum as `"minItems": 4` on a field it types `integer` - a keyword that applies to arrays and does nothing here | the bound is 4 and the Parameters row states it in prose in the same section (철근 총 개수 (min 4)); transcribed as `minimum: 4`, and the chapter-24 sibling `/db/REBR` now carries the same | **manual repo** transcription | open |
+| MD-31 | 2026-09-04 | `/DESIGN/RC/KDS-41-20-2022/TABLE` `NODE_ELEMS` | row 8 types it `Object (oneOf)` and lists none of its members | the section's JSON Schema declares `KEYS`, `TO` and `STRUCTURE_GROUP_NAME` under a `oneOf`, and the Request Body sends `{"KEYS": [915]}` | **manual repo** transcription | open |
+| MD-32 | 2026-09-04 | `/DESIGN/SRC/AIK-SRC2K/OCHECK`, the route itself | section 21 prints `{base url}/DESIGN/SRC/AIK-SRC2K/OCHECK` as the Input URI and documents the endpoint like any other in the chapter | that path returns a clean 404; MIDASIT moved the route to `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK` on 2026-08-06 to mark it unofficial with paused development, and the route that does answer ends the NX session on any model holding a section SRC design cannot use | **manual repo** transcription | open |
+| MD-33 | 2026-09-04 | `/DESIGN/RC/KDS-41-20-2022/CD-TABLE` and `.../BRD-TABLE`, `ELEMS`/`SECTIONS` | both rows are marked 조건부 and neither states a condition; the sections' own JSON Schemas carry no branch keyword | the two are alternatives - exactly one of them - which chapter 26 states for the same field pair in seven of its nine BD/CD/BRD sections, in the row and in a schema `oneOf` | **manual repo** transcription | open |
 
 
 ## Detail
@@ -839,6 +847,18 @@ the extractor already reports: "the manual marks this conditional but does not
 state the condition", which is an unresolved review note and blocks promotion,
 as it should.
 
+> **Superseded in part, 2026-09-04.** The paragraph above says the condition is
+> unknown "and deliberately left that way". The first half is no longer true.
+> A sweep of every 조건부 `ELEMS`/`SECTIONS` row in chapter 26 found that seven
+> of the nine BD/CD/BRD sections state this exact pair as an either/or, in the
+> row and in a schema `oneOf`, and that these two are the only ones that do not.
+> [MD-33](#md-33---two-sections-that-drop-what-their-seven-siblings-state)
+> records that and both contracts are promoted. What stands here unchanged is
+> the rejection of the drafted conditions `요소 지정 시` / `단면 번호 지정 시`:
+> those were paraphrases of the 설명 column, they were circular, and the note
+> attached to them claimed the condition was stated in the same section, which
+> it is not. The lesson below about the marker phrase stands too.
+
 ### MD-25 - a Value Type and two item shapes the same section settles
 
 `/db/MVLDeu`'s Specifications table understates three rows, and each time the
@@ -867,3 +887,348 @@ transcribing the rows exactly as typed would have replaced both with
 `JsonObject` and shipped a *less* precise type than the one it replaced —
 caught on 2026-09-04 while reviewing the generated diff, which is the reason
 that diff gets read rather than skimmed.
+
+### MD-26 - two members a sibling chapter documents and this one does not
+
+`/db/REBR`'s 파라미터 table presents itself as the whole ITEMS item. It numbers
+six members `(1)` to `(6)`, and the section's own JSON Schema - printed
+directly above it - declares eight:
+
+| JSON Schema property | 파라미터 row |
+| --- | --- |
+| `CREATE_SUB_SECTION` | `(1)` |
+| `ID` | **none** |
+| `ELEMS` | **none** |
+| `MAIN_BAR` | `(2)`, with `(2)a`/`(2)b`/`(2)c` |
+| `SHEAR_BAR_END` | `(3)` |
+| `SHEAR_BAR_CEN` | `(4)` |
+| `DO` | `(5)` |
+| `HOOP_TYPE` | `(6)` |
+
+The section does not leave the two undocumented. Its third table is headed
+"**`CREATE_SUB_SECTION == true` 일 때 — `ELEMS` (KEYS / TO /
+STRUCTURE_GROUP_NAME 중 택1)**", and the JSON Schema carries the same condition
+as `ELEMS`'s own description. What the table does not say is that its four rows
+belong to two different levels:
+
+| No. | Key | where it actually belongs |
+| --- | --- | --- |
+| `(1)` | `"ID"` | the ITEMS item, beside `CREATE_SUB_SECTION` |
+| a | `"KEYS"` | inside `ELEMS` |
+| b | `"TO"` | inside `ELEMS` |
+| c | `"STRUCTURE_GROUP_NAME"` | inside `ELEMS` |
+
+The `(1)` versus a/b/c numbering is the only thing distinguishing them, and no
+row names `ELEMS` itself. Merged as parsed, `KEYS`/`TO`/`STRUCTURE_GROUP_NAME`
+would sit beside `ID` at item level and `ELEMS` would not exist.
+
+**Chapter 26 documents the same shape correctly.**
+`/DESIGN/RC/KDS-41-20-2022/REBC` and `.../REBR` give `ID` and `ELEMS` ordinary
+numbered rows in their Parameters tables, with `ELEMS`'s condition stated in
+its own description cell. So this is chapter 24 leaving out what its sibling
+chapter states about a near-identical payload, not a gap in what MIDASIT knows.
+
+Same shape as MD-22: a member the table has no row for, supplied by a second
+statement inside the same section. Neither SDK is affected - both already send
+`ELEMS` - so this is a documentation defect only.
+
+> **What the extractor learned here.** The `(2)a`/`(2)b`/`(2)c` numbering had
+> no pattern in `scripts/extract_contracts.py`, so those rows fell to depth 0.
+> That put `NAME`/`NUM`/`ROW` at the root of the request instead of inside
+> `MAIN_BAR`, and left the `(3)` row after them parented on `ROW`, an Integer.
+> The parenthesised number is a path segment, not a sibling marker;
+> `_NUMBER_PAREN_SUBITEM` now reads it as depth 2. Nine rows in chapter 24 use
+> this form and nothing else in the manual does.
+
+### MD-27 - a table and its own schema, disagreeing five times in both directions
+
+`/db/RCHK` states its request twice, and the two renderings disagree about
+integer versus number on every field that counts rebars:
+
+| field | 파라미터 table | JSON Schema |
+| --- | --- | --- |
+| `BEAM.vSUB_BAR.dSUB_BARNUM` | Integer | `number` |
+| `COLM.SUB_BAR.SUBBAR_NUM` | Integer | `number` |
+| `COLM.SUB_BAR.SUBBAR_NUM_Y` | Integer | `number` |
+| `COLM.SUB_BAR.SUBBAR_NUM_Z` | Integer | `number` |
+| `COLM.vLAYER.vPOSITION.BAR_NUM` | Number | `integer` |
+
+The last row runs the other way, and it is the one the section settles. The
+same key, with the same description (철근 개수), also appears in the 보 철근
+레이어 table for `POS_TOP_LAYERS` / `POS_BOT_LAYERS`, where the table types it
+**Integer** and the schema types it `integer`. So three statements say integer
+and one says number, and the contract records `integer`.
+
+The other four have no third statement. The section's POST/PUT Request Body
+sends `"SUBBAR_NUM": 12` and `"dSUB_BARNUM": 2` - whole numbers, which satisfy
+both readings, so the example cannot break the tie. The contract keeps the
+tables' `Integer` as **the narrower of the two documented types**: every value
+it admits is one the schema's reading also admits, so a caller following the
+contract cannot be led into a request the other rendering would refuse. The
+reverse choice has no such guarantee.
+
+Worth stating plainly: **no published surface distinguishes the two.**
+TypeScript has a single `number` type, and none of these five is a Python
+TypedDict member - they live inside `RebarCheckPayload`'s nested objects,
+generated from this contract. So the entry records a documentation
+contradiction and the reasoning used to settle it, and changes nothing a caller
+sees. Only a live POST sending a fractional count could turn it into a fact,
+and none has been made.
+
+The Hungarian prefix is not evidence either way here, and was not used as any:
+`dSUB_BARNUM` carries the `d`-for-double prefix and is typed Integer by the
+table, while `SUBBAR_NUM` carries no prefix and is typed the same way.
+
+### MD-28 - two mutually exclusive Required fields, and a row that points instead of listing
+
+`/ope/AUTOMESH` gathers three separate findings in one section.
+
+**Both halves of a mutually exclusive pair are marked Required.**
+
+| No. | 설명 | Key | 필수 |
+| --- | --- | --- | --- |
+| 2-1 | 길이 기준 (`DIV`와 동시 사용 불가) | `MESH_SIZE.LENGTH` | **Required** |
+| 2-2 | 분할수 기준 (`LENGTH`와 동시 사용 불가) | `MESH_SIZE.DIV` | **Required** |
+
+No payload can satisfy both cells, and the section's own two Request Bodies
+prove it: one sends `"MESH_SIZE": { "LENGTH": 1 }` and the other
+`"MESH_SIZE": { "DIV": 3 }`. Each is recorded `conditional`, carrying its own
+row's phrase as the condition and **no `appliesWhen`** - the manual names no
+discriminator field, because which one to send is a modelling choice, not a
+branch the payload declares. `documentedOptional` stays `false`: the manual
+does say Required, and that flag records the documentation.
+
+**The same two fields are also typed both ways, and do not resolve the same
+way.** The table says Number for both; the JSON Schema says `integer` for both.
+
+- `DIV` is 분할수, a division count. `integer` is kept - the narrower of the
+  two documented types, and the Request Example's `3` satisfies either reading,
+  so narrowing costs nothing.
+- `LENGTH` is a mesh size in model length units. Here the narrower reading
+  would exclude values the row's own description admits, and no third statement
+  supports it, so the table's `Number` is kept.
+
+This is where [MD-27](#md-27---a-table-and-its-own-schema-disagreeing-five-times-in-both-directions)'s
+rule stops being mechanical. There, all five contested fields were counts and
+all five went the same way. The rule is not "prefer the narrower type"; it is
+"prefer the narrower type **when narrowing cannot exclude a value the field's
+own description admits**". A length fails that test and a count passes it.
+
+**A row that points at another row instead of listing its members.** Row 1-6
+declares `MESHER.INCLUDE_INTERIOR_LINES` and writes 구조는 1-5와 동일 where its
+member rows would go. So the table names three fields fewer than the request
+has: `OPT_CHECK`, `OPTION`, `VALUE`. The JSON Schema declares the identical
+trio under `INCLUDE_INTERIOR_LINES`, and the second Request Body sends
+`{ "OPT_CHECK": true, "OPTION": "User", "VALUE": [2] }`.
+
+They are transcribed rather than left out, because a payload type built from
+the table alone would refuse a call the manual itself prints. `VALUE`'s
+condition is rooted on **this** object's `OPTION`, not on the sibling's - the
+two objects have the same shape, not a shared instance. Same family as MD-22
+and MD-26.
+
+> **What the extractor learned here.** Rows 1-5-a to 1-5-c and 3-2-a/3-2-b
+> write their paths relative to the object rather than the request root
+> (`INCLUDE_INTERIOR_NODES.OPT_CHECK`, not
+> `MESHER.INCLUDE_INTERIOR_NODES.OPT_CHECK`), so the extractor built a second
+> root-level container for each and reported both as having "no row of its own".
+> Both are now in `_STRUCTURAL_ROOT_MOVES`, alongside `/ope/GUSTFACTOR`, which
+> shortens its paths the same way.
+
+### MD-29 - a section that documents its request twice and says which one to believe
+
+`/DESIGN/RC/KDS-41-20-2022/REBB` prints a JSON Schema, then four Parameters
+tables, then a Request Body, a Response Body and a Python example. The two
+halves do not describe the same payload:
+
+| the schema and tables | the three examples |
+| --- | --- |
+| `MAIN_BAR_TOP` / `MAIN_BAR_BOT`, each `{LAYER1, LAYER2}` objects | `vMAIN_BAR_TOP` / `vMAIN_BAR_BOT`, arrays |
+| `SKIN_BAR`, an object of `{NAME, NUM}` | flat `SKIN_BAR_NAME` / `SKIN_BAR_NUM` |
+| `DT` / `DB` | `MAIN_BAR_DC_TOP` / `MAIN_BAR_DC_BOT` |
+| — | `bSAME_SIZE_TOP_BOT`, `bSAME_SIZE_IMJ`, `bSAME_SIZE_LAYER` |
+| `CREATE_SUB_SECTION`, `ELEMS`, `DT`, `DB` | not sent |
+
+The section resolves it itself, in a callout directly above the examples:
+
+> **예제 표기 차이:** ... 실제 전송 시에는 아래 예제 형식을 그대로 따르는 것이
+> 안전합니다.
+
+The contract follows the examples, and records the schema-and-table rendering
+here. Both SDKs already did the same, with the reasoning written into
+`RcBeamRebarSector`'s docstring since before this contract existed.
+
+**Corroboration, and what it is not.** The chapter-24 sibling `/db/REBB` was
+contracted from `GET /info/db/REBB` and live verification, and its shape is the
+example rendering exactly - `vMAIN_BAR_TOP`, `SKIN_BAR_NAME`, `MAIN_BAR_DC_TOP`
+and all three `bSAME_SIZE_*` flags, with no `LAYER1`/`LAYER2` and no `DT`/`DB`.
+That raises confidence and it is **not** the source: a sibling endpoint is not
+a permitted source, `/info` does not serve `/DESIGN/*` (see `CLAUDE.md`), and
+every field in this contract is transcribed from chapter 26's own text.
+
+**What is still unknown.** `vMAIN_BAR_TOP` is `[]` in every one of the three
+examples, so the array's item shape is never shown by an example. The item is
+recorded as `{NAME, NUM}` - the two members the manual's own layer rows give
+(레이어 내 철근 규격 / 레이어 내 철근 개수). No layer-number property is
+transcribed: the schema rendering carries the layer in the key and the array
+rendering carries it in the position, and no row of chapter 26 names one as a
+field.
+
+`src/midas_nx/design/rc_kds/rebar.py` had inferred a `LAYER: int` there. It is
+dropped, because nothing documents it. The chapter-24 sibling dropped the same
+inference on 2026-08-27 against a live `/info` pull and this one was missed
+then; the two now agree. This removes `LAYER` from the exported npm interface
+`RcBeamMainBarLayerEntry` - a breaking removal, recorded in
+`packages/typescript/CHANGELOG.md`.
+
+> **What the extractor learned here.** The sector table was registered in
+> `_STRUCTURAL_TABLE_SPLITS` and should not have been. Three of its rows key
+> more than one property at once (`"LAYER1"` / `"LAYER2"`,
+> `"NAME"` / `"LEG"` / `"DIST"`, `"NAME"` / `"NUM"` - the MD-20 family), and two
+> unnumbered rows state the members of `LAYER1`/`LAYER2` rather than of the
+> sector, so merging it produced ten flat siblings where the schema has a
+> two-level tree. Only the `ELEMS` table stays registered.
+
+### MD-30 - the right number under the wrong keyword
+
+`/DESIGN/RC/KDS-41-20-2022/REBR`'s JSON Schema:
+
+```json
+"NUM": { "type": "integer", "description": "철근 총 개수", "minItems": 4 }
+```
+
+`minItems` constrains array length. On an integer it is inert - a JSON Schema
+validator ignores it, so the schema as written places no bound at all. What the
+bound is, is not in doubt: the section's Parameters row for the same field says
+철근 총 개수 (min 4), and the chapter-24 sibling `/db/REBR` says 개수 (min 4) in
+its row and repeats it in its schema's `description`.
+
+Both contracts now carry `minimum: 4`, which is what all three statements mean.
+Small, and worth recording for one reason: a machine reading these schemas gets
+no bound, and a person reading them gets the right one.
+
+### MD-31 - a `oneOf` in the type cell, and no member rows
+
+`/DESIGN/RC/KDS-41-20-2022/TABLE` (manual sections 67-69, one endpoint
+discriminated by `TABLE_TYPE`) types its `NODE_ELEMS` row:
+
+| No. | 설명 | Key | Value 타입 | 필수 |
+| --- | --- | --- | --- | --- |
+| 8 | 노드/요소 선택 (`KEYS`/`TO`/`STRUCTURE_GROUP_NAME` 중 하나) | `"NODE_ELEMS"` | Object (oneOf) | 선택 |
+
+`Object (oneOf)` is not a shape, and no row lists a member. The section's own
+JSON Schema declares all three properties with a `oneOf` requiring exactly one,
+and the Request Body and Python example both send `{"KEYS": [915]}`.
+
+All three are transcribed, each `optional`. The `oneOf` names none of them
+required on its own, and a contract has no way to write "exactly one of these",
+so the manual's own 중 하나 stays in the description - the same treatment
+`/db/REBR`'s and `/DESIGN/.../REBC`'s `ELEMS` already get.
+
+> **What the promotion gate learned here.** This draft and its
+> `/DESIGN/SRC/AIK-SRC2K/TABLE` sibling were also refused for "no generic
+> plain-function parity surface was discovered", which was wrong: both SDKs
+> have shipped these endpoints for months. Where one URL serves several
+> documented tables, each SDK puts the endpoint literal in a helper -
+> `_get_rc_design_forces_table` in Python, `defineDesignTable` in
+> `design-tables.ts` - and gives each table a thin wrapper. Both discoveries
+> read only the public function's own body, so neither saw the literal.
+> `scripts/function_endpoints.py` now resolves module-private helpers to a
+> fixpoint on the Python side and reads the npm factory on the other, which
+> raised the discovered plain-function surface from 80 endpoints to 82.
+
+### MD-32 - a documented URL that 404s, in front of a route that kills the session
+
+Section 21 of chapter 27 documents `OCHECK` the way it documents everything
+else: an Input URI, Active Methods, a JSON Schema, a Parameters table, a worked
+example. Nothing marks it as different.
+
+Two things are wrong with that, and they compound.
+
+**The URL does not answer.** MIDASIT moved the route to
+`/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK` on 2026-08-06, and the documented path now
+cleanly 404s. The `/TEMP/` prefix is the status marker: it says this is an
+unofficial API whose development is paused. A reader following the manual gets
+a 404 with no hint that the endpoint exists elsewhere, or that its existence
+elsewhere is a warning.
+
+**The route that does answer ends the session.** Called against a model holding
+a real section SRC design cannot use, it never responds: the client times out
+after 30-35 seconds, the product raises its "Failed to disconnect the work
+session" licence dialog, and the licence is held until the process is properly
+restarted. Reproduced four times:
+
+| date | product / build | outcome |
+| --- | --- | --- |
+| 2026-07-31 | Civil NX, old path, real production bridge model | session died |
+| 2026-08-07 | Gen NX v2.1, `/TEMP/` path | identical crash |
+| 2026-08-13 | Civil NX v2.2 build 08/12/2026, purpose-built dummy model | identical crash |
+| 2026-08-24 | Civil NX v2.2 build 08/24/2026, same dummy model | identical crash |
+
+The path move is not a fix, and the crash is not build-dependent.
+
+Two controls make the precondition clear rather than assumed: the same call
+against a document with **no sections** answers a clean
+`Section 1 does not exist.` error and leaves the session healthy, on both
+products. So the trigger is a property of the caller's model, not of the
+request - which is why the contract records `mitigation: warn_only` rather than
+`normalized`. There is no field an SDK could add or normalise. `/db/NMAS` is
+the contrast: there, three omitted fields caused it and filling them in made
+the crash unreachable.
+
+The contract records the route the product serves, with
+`source.manual.status: contradicted`, and carries a `warn` sdkRule and the
+`temp-src-ocheck-ends-the-session` entry in
+`contracts/safety/known-product-risks.yaml`. Both SDKs already carried the
+warning on the function; nothing about the published surface changes.
+
+### MD-33 - two sections that drop what their seven siblings state
+
+Chapter 26's design-check endpoints all take the same either/or target
+selector: give `ELEMS` **or** `SECTIONS`, not both. Nine sections form the
+BD/CD/BRD family, and seven of them say so twice over - in the Parameters row
+(`ELEMS`/`SECTIONS` 중 하나) and in a JSON Schema `oneOf`:
+
+```json
+"oneOf": [
+  { "required": ["ELEMS"],    "not": { "required": ["SECTIONS"] } },
+  { "required": ["SECTIONS"], "not": { "required": ["ELEMS"] } }
+]
+```
+
+| section | row says 중 하나 | schema `oneOf` |
+| --- | --- | --- |
+| 39 BD-ANAL, 40 BD-TABLE, 41 BD-REPORT | yes | yes |
+| 42 CD-ANAL, 44 CD-REPORT | yes | yes |
+| 45 BRD-ANAL, 47 BRD-REPORT | yes | yes |
+| **43 CD-TABLE** | **no** | **no** |
+| **46 BRD-TABLE** | **no** | **no** |
+
+The two outliers mark both rows 조건부 and then state no condition. What their
+`ELEMS` rows do carry - 요소 지정 — `KEYS`/`TO`/`STRUCTURE_GROUP_NAME` 중 하나 -
+is about what goes **inside** `ELEMS`, not about when `ELEMS` is needed. Their
+schemas have `required: ["TABLE_TYPE"]` and no branch keyword at all.
+
+Both contracts record `requirement: conditional` with the condition
+`ELEMS/SECTIONS 중 하나` and **no `appliesWhen`**. The manual names no
+discriminator field, because there is none: which of the two to send is the
+caller's choice, not a branch the payload declares. Same shape as
+[MD-28](#md-28---two-mutually-exclusive-required-fields-and-a-row-that-points-instead-of-listing)'s
+`MESH_SIZE.LENGTH`/`DIV`.
+
+> **Correcting MD-24.** These two endpoints were left unpromoted on 2026-09-03
+> after a drafted condition was rejected, and
+> [MD-24](#md-24----------with-no-condition-in-a-chapter-that-states-them-elsewhere) recorded why. That
+> rejection was right about the specific claim: the conditions written were
+> `요소 지정 시` and `단면 번호 지정 시`, per-field paraphrases of the 설명
+> column that say "`ELEMS` is required when elements are specified" - circular,
+> and not what the manual says. The note attached to them also claimed the
+> condition was "stated elsewhere in the same section", which was false.
+>
+> What MD-24 got wrong was its conclusion that the manual states no condition
+> here at all. It does, for this exact pair, seven times - just never inside
+> these two sections. The sweep that found that had not been run. So the
+> endpoints are contracted now, with a different condition from the rejected
+> one and evidence that can be checked by grepping the chapter. MD-24 stands as
+> a record of the invented paraphrase; it no longer stands as a reason to leave
+> these two uncontracted.

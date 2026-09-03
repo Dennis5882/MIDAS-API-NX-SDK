@@ -185,7 +185,7 @@ class RebarCheckInput(DbResource):
     """
 
     ENDPOINT = "/db/RCHK"
-    NAME = "Rebar Check Input (Beam/Column)"
+    NAME = "Rebar Input for Checking - Beam/Column"
     PRODUCTS = CIVIL_ONLY
 
 
@@ -587,7 +587,7 @@ class BraceRebarPayload(TypedDict, total=False):
 
 class BraceRebar(DbResource):
     ENDPOINT = "/db/REBR"
-    NAME = "Modify Brace Rebar"
+    NAME = "Modify Brace Rebar Data"
     #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
     #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
     PRODUCTS = GEN_ONLY

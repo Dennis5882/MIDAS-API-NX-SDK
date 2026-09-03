@@ -635,6 +635,62 @@ def _is_contract_shadow_resource(endpoint: str) -> bool:
     return endpoint.startswith(("/db/", "/DESIGN/"))
 
 
+def _strip_assign_envelope(contract: dict[str, Any]) -> tuple[list[dict], list[dict]]:
+    """Return the record a caller passes, with the request envelope removed.
+
+    The manual's Parameters tables open with a row for ``"Assign"``, the
+    ID-keyed map the request body is wrapped in. That row is documentation of
+    the envelope, not of the record - and ``DbResource.create``/``.update``
+    build the envelope themselves, from the ``ItemMap`` keys the caller passes.
+    Emitting the row into the payload type therefore published 60 interfaces
+    demanding a member the SDK adds, so satisfying the type sent
+    ``{"Assign": {"1": {"Assign": ...}}}``. Two shapes appear and both mean the
+    same thing:
+
+      ``Assign: JsonObject`` beside the real fields - a placeholder row, as in
+        ``/DESIGN/RC/KDS-41-20-2022/KFAC``, whose ``Ky``/``Kz``/``Kt`` are the
+        record.
+      ``Assign`` carrying the record as its own ``properties`` - as in
+        ``/db/REBR``, where the table nests ``ITEMS`` beneath it.
+
+    Every caller of this function is a ``DbResource``, and a ``DbResource``
+    always addresses one record per ID - so a top-level ``Assign`` is the
+    envelope by construction, whatever the methods are. Keying the rule on an
+    ``assign`` request wrapper instead left the two ``LCTB`` contracts behind:
+    they are GET/DELETE only, so they declare no request wrapper at all, while
+    their row still reads "Assign 래퍼 (ID 문자열 키)" and their chapter-27 twin
+    - generated from Python, not from a contract - has never had the member.
+    """
+
+    fields = contract.get("fields") or []
+    variants = contract.get("variants") or []
+    envelope = next((field for field in fields if field["key"] == "Assign"), None)
+    if envelope is None:
+        return fields, variants
+    siblings = [field for field in fields if field is not envelope]
+    inner = envelope.get("properties") or []
+    if inner and siblings:
+        # No contract does this today. If one appears, which half is the record
+        # is a question for a reviewer, not for a default.
+        return fields, variants
+    record = inner or siblings
+
+    def rerooted(path: str) -> str:
+        return path[len("Assign.") :] if path.startswith("Assign.") else path
+
+    def reroot(node: Any) -> Any:
+        if isinstance(node, dict):
+            return {
+                key: rerooted(value) if key == "path" and isinstance(value, str) else reroot(value)
+                for key, value in node.items()
+            }
+        if isinstance(node, list):
+            return [reroot(item) for item in node]
+        return node
+
+    return reroot(record), reroot(variants)
+
+
 def _contract_payload_fields() -> dict[str, dict[str, Any]]:
     """Payload fields for the contract-derived resource shadow path.
 
@@ -661,10 +717,8 @@ def _contract_payload_fields() -> dict[str, dict[str, Any]]:
             and contract.get("fields")
             and not unmerged
         ):
-            found[contract["endpoint"]] = {
-                "fields": contract["fields"],
-                "variants": contract.get("variants", []),
-            }
+            fields, variants = _strip_assign_envelope(contract)
+            found[contract["endpoint"]] = {"fields": fields, "variants": variants}
     return found
 
 

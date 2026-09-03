@@ -993,6 +993,10 @@
             ]
           }
         },
+        "items": {
+          "$ref": "#/$defs/valueType",
+          "description": "Element type when this item is itself an array. The manual's own notation nests (`Array [Array [String]]`), so this does too. Omit it where no permitted source states the inner element type - an omitted `items` says nobody has said, which is not the same as a row of unknown JSON."
+        },
         "description": {
           "type": "string"
         }
