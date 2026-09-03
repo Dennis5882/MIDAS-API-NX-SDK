@@ -560,3 +560,131 @@ Other mechanical items, for completeness: the `/db/STYP-M1` child numbering
 (measured: one section changes, zero promoted contracts), reading bold variant
 labels, and fixing the variant counter. Widening the generator's shadow gate is
 mechanical to apply but will surface drift that is not.
+
+## Handoff — 2026-09-03, at `9a8db9d`
+
+**This section supersedes "What is mechanical, and what is not" above**, which
+was measured when 48 drafts were refused and is stale in its counts, though its
+reasoning about note forms still holds.
+
+### State
+
+| | value |
+| --- | ---: |
+| endpoint contracts | 362 |
+| contract fields | 4,110 |
+| npm resources identified by a contract | 293 of 304 |
+| payload types generated from contracts | 275 of 759 |
+| drafts on disk | 29 |
+| drafts the promotion gate refuses | 22 |
+| structural table splits registered | 20 |
+
+Regenerate rather than trust the table:
+
+```bash
+python scripts/validate_contracts.py | head -4
+python scripts/promote_contract.py --all --dry-run | tail -1
+```
+
+### The 22 refused drafts
+
+Three of them cannot be contracted by anyone, and the rest are ordinary work.
+
+**No permitted source exists (3).** `db-iehg-gl-m1`, `db-iehg-pss-m1`,
+`db-iehg-truss-m1`. Their manual sections state a URL and a methods line and
+nothing else, and live `/info` — their only other permitted source — answers
+404. Re-confirmed on the 09/02/2026 patch build on 2026-09-03, with
+`/db/IEHG-BEAM-M1` and `/db/MATL-M1` answering in the same session as controls,
+so the 404 is about these three endpoints and not about the session or the
+build. **Do not contract them from a sibling endpoint's shape or from an SDK.**
+They unblock when the vendor publishes the sections or `/info` starts serving.
+
+**Everything else (19), by what is in the way.** Each group has a worked
+example committed; follow it rather than inventing an approach.
+
+| group | drafts | precedent to follow |
+| --- | --- | --- |
+| a Key cell naming more than one wire property | `db-mvldeu`, `ope-divideelem` | `db-stct-m1.yaml` (MD-21), `db-this-m1.yaml` (MD-23) |
+| a Key cell that is not a key at all | `db-pogd` | see the note below — this one is a parser bug |
+| supplementary tables needing a variant-or-structural call | `db-mvldpl`, `db-this` | `db-stct-m1.yaml`'s `extraction` block |
+| `conditional` with the condition stated elsewhere in the section | `design-rc-kds-41-20-2022-brd-table`, `...-cd-table`, `ope-gustfactor` | `db-pogd-m1.yaml`'s `LINE_SEARCH_OPT` |
+| array element type the manual never states | `ope-memb`, `ope-projectstatus`, `ope-sectprop` | none yet — one policy call, then four identical applications |
+| a section whose own JSON Schema contradicts its table | `db-rchk` (10 notes) | `db-thgc-m1.yaml` (MD-18), MD-11's entries |
+| single notes | `db-rebr`, `...-rebb`, `...-rebr`, `...-table`, `ope-automesh` | — |
+| no live-verification record yet | `design-src-aik-src2k-ocheck` | run `scripts/live_readonly_sweep.py`, record in `docs/coverage.json` |
+| plain-function parity surface missing | `design-src-aik-src2k-table` | plumbing, not a contract decision |
+
+`db-pogd` is worth calling out because the draft is misleading: the refusal
+names `AIK-G-001-2021`, which is not a field. It is the last of five enum
+values in `RCDGNCODE`'s row, and the parser took it for a key. Fix it in
+`scripts/extract_contracts.py` and re-emit; do not encode it in the contract.
+
+### What changed in the extractor on 2026-09-03
+
+Four changes, all in `scripts/extract_contracts.py`. Anything drafted before
+this commit should be re-emitted before it is reviewed.
+
+1. **A Required cell that answers the column and then adds a cross-field rule**
+   (`필수. true이면 BEAM_COLUMN/WALL 중 최소 1개는 true, ...`) now yields the
+   requiredness plus a note, instead of `None` plus "unrecognised Required
+   value". Losing the word used to force the contract into `unstated`, which
+   claims the manual said nothing — false of a cell beginning 필수.
+2. **`appliesWhen` paths resolve against each enclosing scope, longest first.**
+   A condition written beside a nested field may be rooted one or more levels
+   up; `/db/POGD-M1` writes `DISP.OPT_USE=...` beside
+   `ITER_CTRL.NORM_CTRL.DISP.VALUE`. A path that resolves nowhere is still kept
+   verbatim for the validator to reject.
+3. **Two new `_SETTLED_NOTE_MARKERS`**: `adds a cross-field rule to this` and
+   `stated elsewhere in the same section`. Both describe findings a reviewer
+   cannot change, so they render `RESOLVED`.
+4. **Three endpoints added to `_STRUCTURAL_TABLE_SPLITS`**: `/db/STCT-M1`
+   (4 of its 6 tables), `/db/THGC-M1` (2 of 3). The tables left out of the
+   registry are documented in the comment beside each entry and in
+   `docs/variant_table_survey.md` §B.
+
+### Traps, in the order they will be hit
+
+Each of these cost time on 2026-09-03. None is guessable from the schema alone.
+
+1. **`documentedOptional: null` and `requirement: unstated` are biconditional.**
+   A `conditional` field therefore needs a boolean `documentedOptional`. Where
+   the manual states only a condition and no requiredness word, `unstated` is
+   the honest answer and the condition belongs in the description; keep
+   `conditional` only where the manual also says 필수/Required.
+2. **`surface` must carry the *published* npm names, not names derived from the
+   contract id.** `tests/test_contracts.py` compares against
+   `schema/typescript-resources.json`. `/db/STCT-M1` is
+   `ConstructionStageAnalysisControlDataHyperS` — with `Data`.
+3. **A hand-written `# RESOLVED:` comment must contain a phrase from
+   `_SETTLED_NOTE_MARKERS`**, because `_note_marker()` recomputes the prefix and
+   a test compares the two. Reword the note; do not change the prefix.
+4. **`manualDefects` with `describes: field_name` relaxes the whole contract's**
+   extra-field and variant drift checks, not just one field. That is the only
+   exemption available, so it is the right tool when a Key column really is
+   wrong — and the wrong tool for anything else.
+5. **An `unmergedTables` entry with a `resolution` is a legal, promotable
+   state**, and it deliberately stops the npm generator from publishing that
+   contract's field list as the payload type. `/db/THIS-M1` is the worked
+   example: an admittedly incomplete field list must not narrow a shipped type.
+6. **Line endings differ by file and a careless rewrite shows up as a whole-file
+   diff.** `contracts/**.yaml` and `src/midas_nx/db/dynamic_loads.py` are LF;
+   `src/midas_nx/db/analysis_control.py` and `docs/**.md` are CRLF; freshly
+   emitted drafts are CRLF. Read with universal newlines, write with the
+   `newline=` the file already uses. `contracts/drafts/` is gitignored, so draft
+   edits never reach a commit — only the promoted contract does.
+7. **Git Bash rewrites a `/db/X` argument into a Windows path.** Prefix with
+   `MSYS_NO_PATHCONV=1`, the same trap `CLAUDE.md` records for `gen_endpoint.py`.
+
+### The loop, after every promotion
+
+```bash
+python scripts/validate_contracts.py
+python -m pytest -q
+cd packages/typescript && npm run generate && npm run typecheck && npm test
+```
+
+Review the `packages/typescript/src/generated/` diff rather than skimming it: a
+contract taking over a payload type usually makes members required, which is a
+breaking change for npm users and belongs in `packages/typescript/CHANGELOG.md`
+under `Unreleased` with the reason. **Do not bump the version** — one number
+covers both registries and the author picks it.
