@@ -5426,12 +5426,460 @@ export namespace DbPropertiesMaterialTypes {
     ECU?: number;
     STRENGTH_AFTER?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface InelasticMaterialPropertyPayload {
-    NAME?: string;
-    MATL_TYPE?: string;
-    HYS_MODEL?: string;
-    CONC?: unknown;
-    STEEL?: unknown;
+    /** Material Name */
+    NAME: string;
+    /** Material Type - Concrete: "CONC" / Steel: "STEEL" */
+    MATL_TYPE: "CONC" | "STEEL";
+    /** Hysteresis Model */
+    HYS_MODEL: string;
+    /** Concrete Model */
+    CONC?: {
+      /** Kent & Park model parameters */
+      KENPAR?: {
+        /** Concrete Strength (fc') */
+        FC: number;
+        /** Peak Strain (ec0) */
+        EC0: number;
+        /** Strength/Strain Factor */
+        K: number;
+        /** Ultimate Strain (ecu) */
+        ECU: number;
+        /** Partial Safety Factor */
+        PARTIAL_FACT: number;
+        /** Hardening Strain Method - Manual: 0 / Calculation: 1 */
+        EC1_METHOD: number;
+        /** Hardening Strain Manual (ec1) */
+        EC1: number;
+        /** Hardening Strain Calculation (Z) */
+        Z: number;
+        /** Strength After Critical Strain - Zero: 0 / Keep: 1 */
+        STRENGTH_AFTER: number;
+      };
+      /** JPSTND */
+      JPSTND?: {
+        /** fc */
+        FC?: number;
+        /** epeak */
+        EPEAK?: number;
+        /** Partial Safety Factor */
+        PARTIAL_FACT?: number;
+      };
+      /** JP_H14 */
+      JP_H14?: {
+        /** Earthquake Type */
+        EARTHQUAKE_TYPE?: number;
+        /** Ec */
+        EC?: number;
+        /** σck */
+        SIGMA_CK?: number;
+        /** σsy */
+        SIGMA_SY?: number;
+        /** α */
+        ALPHA?: number;
+        /** σbt */
+        SIGMA_BT?: number;
+        /** Ah */
+        AH?: number;
+        /** s */
+        S?: number;
+        /** d */
+        D?: number;
+        /** β */
+        BETA?: number;
+        /** Strength after Critical Strain Property */
+        STRENGTH_LIMIT?: number;
+      };
+      /** NAGOYA */
+      NAGOYA?: {
+        /** σck */
+        SIGMA_CK?: number;
+        /** εcc */
+        EPSILON_CC?: number;
+        /** K */
+        K?: number;
+        /** εcu */
+        EPSILON_CU?: number;
+        /** εt0 */
+        EPSILON_T0?: number;
+        /** εtu */
+        EPSILON_TU?: number;
+        /** εt1 */
+        EPSILON_T1?: number;
+        /** Strength after Critical Strain Property */
+        STRENGTH_AFTER?: number;
+      };
+      /** TRILIN */
+      TRILIN?: {
+        /** Input method : σ - ε / σ - α */
+        INPUT_METHOD?: number;
+        /** SIGMA_Y_ITEMS */
+        SIGMA_Y_ITEMS?: Array<number>;
+        /** εt */
+        EPSILON_T_ITEMS?: Array<number>;
+        /** εy */
+        EPSILON_Y_ITEMS?: Array<number>;
+        /** K */
+        K_ITEMS?: Array<number>;
+        /** εcu */
+        EPSILON_CU?: number;
+      };
+      /** CHGB02 */
+      CHGB02?: {
+        /** fc* */
+        FCK?: number;
+        /** εc */
+        EC?: number;
+        /** ft* */
+        FTK?: number;
+        /** εt */
+        ET?: number;
+      };
+      /** MANDER */
+      MANDER?: {
+        /** Concrete Type */
+        CONC_TYPE?: number;
+        /** Confined Conrete Data */
+        KE?: {
+          /** Section & Confinement Rebar Type */
+          SC_REBAR_TYPE?: number;
+          /** Use Area of Effective Concrete Core (Acc) */
+          OPT_ACC?: boolean;
+          /** Area of Effective Concrete Core (Acc) */
+          ACC?: number;
+          /** Use Total Area of Effectively Confined Core Concrete */
+          OPT_AE?: boolean;
+          /** Total Area of Effectively Confined Core Concrete */
+          AE?: number;
+          /** Use Ae / Acc = Ae / (Ac (1-ρcc)) */
+          OPT_KE?: boolean;
+          /** Ae / Acc = Ae / (Ac (1-ρcc)) */
+          KE?: number;
+          /** Use The Effective Lateral confining stress on the Concrete (Circular) */
+          OPT_FL?: boolean;
+          /** The Effective Lateral confining stress on the Concrete (Circular) */
+          FL?: number;
+        };
+        /** Confined Concrete Strength & Strain */
+        CCS?: {
+          /** Use Strength of Confined Concrete (fcc) */
+          OPT_FCC?: boolean;
+          /** Strength of Confined Concrete (fcc) */
+          FCC?: number;
+          /** Use Strain for Confined Concrete corresponding to fcc (ecc) */
+          OPT_EPSILON_CC?: boolean;
+          /** Strain for Confined Concrete corresponding to fcc (ecc) */
+          EPSILON_CC?: number;
+          /** Use Yield Strain for confined Concrete */
+          OPT_EPSILON_CY?: boolean;
+          /** Yield Strain for confined Concrete */
+          EPSILON_CY?: number;
+          /** Enable Ultimate Strain for Concrete Group */
+          OPT_ENABLE_EPSILON_CU?: boolean;
+          /** Use Ratio of the Volume of Transverse... (ρs) */
+          USE_RHO_S?: boolean;
+          /** Ratio of the Volume of Transverse... (ρs) */
+          RHO_S?: number;
+          /** Ultimate Strain for Confined Concrete - Steel Matrial */
+          IDX_STEEL_MATERIAL?: number;
+          /** Use Ultimate Strain for Confined Concrete - eCU */
+          USE_EPSILON_CU?: boolean;
+          /** Ultimate Strain for Confined Concrete -d eCU */
+          EPSILON_CU?: number;
+        };
+        /** Unconfined Concrete Data */
+        UCD?: {
+          /** Use Unconfined Concrete Strength */
+          OPT_FCO?: boolean;
+          /** Unconfined Concrete Strength */
+          FCO?: number;
+          /** Use Unconfined Concrete Strain */
+          OPT_EPSILON_CO?: boolean;
+          /** Unconfined Concrete Strain */
+          EPSILON_CO?: number;
+          /** Use Yield Strain for unconfined Concrete */
+          OPT_EPSILON_CY?: boolean;
+          /** Yield Strain for unconfined Concrete */
+          EPSILON_CY?: number;
+          /** Use Spalling Strain for Unconfined */
+          OPT_EPSILON_SP?: boolean;
+          /** Spalling Strain for Unconfined */
+          EPSILON_SP?: number;
+          /** Elastic Modulus of Concrete Index */
+          IDX_EC?: number;
+          /** Elastic Modulus of Concrete */
+          EC?: number;
+          /** Tensile Strength of Concrete Index */
+          IDX_FT?: number;
+          /** Tensile Strength of Concrete */
+          FT?: number;
+          /** Tensile Strain of Concrete */
+          EPSILON_T?: number;
+        };
+        /** Field 2 */
+        FIELD_2?: {
+          /** nRectSectAutoorUser */
+          nRectSectAutoorUser?: number;
+          /** nCircSectAutoorUser */
+          nCircSectAutoorUser?: number;
+          /** dXdirectionbc */
+          dXdirectionbc?: number;
+          /** dXdirectionwxi */
+          dXdirectionwxi?: number;
+          /** nXdirectionn */
+          nXdirectionn?: number;
+          /** dYdirectiondc */
+          dYdirectiondc?: number;
+          /** dYdirectionwyj */
+          dYdirectionwyj?: number;
+          /** nYdirectionm */
+          nYdirectionm?: number;
+          /** dds */
+          dds?: number;
+          /** nLongiRebarType */
+          nLongiRebarType?: number;
+          /** nLongiRebarNum */
+          nLongiRebarNum?: number;
+          /** strLongiRebarSize */
+          strLongiRebarSize?: string;
+          /** dLongiRebarArea */
+          dLongiRebarArea?: number;
+          /** bLongiRebarRatio */
+          bLongiRebarRatio?: boolean;
+          /** dLongiRebarRatio */
+          dLongiRebarRatio?: number;
+          /** nGeneralRebarType */
+          nGeneralRebarType?: number;
+          /** strGeneralRebarSize */
+          strGeneralRebarSize?: string;
+          /** dGeneralRebarArea */
+          dGeneralRebarArea?: number;
+          /** dHoopsSpaceS1 */
+          dHoopsSpaceS1?: number;
+          /** dClearHoopsSpaceS2 */
+          dClearHoopsSpaceS2?: number;
+          /** nGeneralRebarNumX */
+          nGeneralRebarNumX?: number;
+          /** nGeneralRebarNumY */
+          nGeneralRebarNumY?: number;
+          /** dGeneralAsx */
+          dGeneralAsx?: number;
+          /** dGeneralAsy */
+          dGeneralAsy?: number;
+          /** bRectStrengthfyh */
+          bRectStrengthfyh?: boolean;
+          /** dRectStrengthfyh */
+          dRectStrengthfyh?: number;
+          /** bGeneralAsx */
+          bGeneralAsx?: boolean;
+          /** bGeneralAsy */
+          bGeneralAsy?: boolean;
+          /** bRectRatiopx */
+          bRectRatiopx?: boolean;
+          /** dRectRatiopx */
+          dRectRatiopx?: number;
+          /** bRectRatiopy */
+          bRectRatiopy?: boolean;
+          /** dRectRatiopy */
+          dRectRatiopy?: number;
+          /** bRectStressflx */
+          bRectStressflx?: boolean;
+          /** dRectStressflx */
+          dRectStressflx?: number;
+          /** bRectStressfly */
+          bRectStressfly?: boolean;
+          /** dRectStressfly */
+          dRectStressfly?: number;
+          /** bCircularStrengthfyh */
+          bCircularStrengthfyh?: boolean;
+          /** dCircularStrengthfyh */
+          dCircularStrengthfyh?: number;
+          /** bGeneralRebarArea */
+          bGeneralRebarArea?: boolean;
+          /** bCircularRatiops */
+          bCircularRatiops?: boolean;
+          /** dCircularRatiops */
+          dCircularRatiops?: number;
+        };
+      };
+      /** JP_H24 */
+      JP_H24?: {
+        /** Ec */
+        EC?: number;
+        /** σck */
+        SIGMA_CK?: number;
+        /** σsy */
+        SIGMA_SY?: number;
+        /** α */
+        ALPHA?: number;
+        /** σbt */
+        SIGMA_BT?: number;
+        /** Ah */
+        AH?: number;
+        /** s */
+        S?: number;
+        /** d */
+        D?: number;
+        /** β */
+        BETA?: number;
+        /** Strength after Critical Strain Property */
+        STRENGTH_LIMIT?: number;
+      };
+      /** CHGB10 */
+      CHGB10?: {
+        /** fc.r */
+        FCR?: number;
+        /** ft.r */
+        FTR?: number;
+        /** εc.r */
+        ECR?: number;
+        /** εt.r */
+        ETR?: number;
+        /** Ec */
+        EC?: number;
+      };
+    };
+    /** Steel Model */
+    STEEL?: {
+      /** Menegoto-Pinto Model */
+      MENEGO?: {
+        /** fy */
+        FY?: number;
+        /** E */
+        E?: number;
+        /** b */
+        B?: number;
+        /** Partial Safety Factor */
+        PARTIAL_FACT?: number;
+      };
+      /** Bilinear Model */
+      BILINE?: {
+        /** fY */
+        FY?: number;
+        /** E1 */
+        E1?: number;
+        /** E2/E1 */
+        E2E1?: number;
+        /** Partial Safety Factor */
+        PARTIAL_FACT?: number;
+      };
+      /** Asymmetrical Bilinear Steel Model */
+      GENBIL?: {
+        /** σY */
+        SIGMA_Y?: number;
+        /** σCY */
+        SIGMA_CY?: number;
+        /** ε1 */
+        EPSILON_1?: number;
+        /** ε2 */
+        EPSILON_2?: number;
+        /** E */
+        E_ITEMS?: Array<number>;
+      };
+      /** Trilinear Steel Model */
+      TRILIN?: {
+        /** Input method : σ - ε / σ - α */
+        INPUT_METHOD?: number;
+        /** σy */
+        SIGMA_Y_ITEMS?: Array<number>;
+        /** εy */
+        EPSILON_Y_ITEMS?: Array<number>;
+        /** K */
+        K_ITEMS?: Array<number>;
+      };
+      /** Park Model */
+      PARKMD?: {
+        /** fy */
+        FY?: number;
+        /** fu */
+        FU?: number;
+        /** Es */
+        ES?: number;
+        /** εsh */
+        EPSILON_SH?: number;
+        /** εsu */
+        EPSILON_SU?: number;
+      };
+      /** Japan Roadway Specification Model */
+      JPROAD?: {
+        /** σy */
+        SIGMA_Y?: number;
+        /** Es */
+        ES?: number;
+        /** εst */
+        EPSILON_ST?: number;
+      };
+      /** CHGB10 */
+      CHGB10?: {
+        /** fyr */
+        FYR?: number;
+        /** fstr */
+        FSTR?: number;
+        /** εc */
+        EPSILON_C?: number;
+        /** εt */
+        EPSILON_T?: number;
+        /** Euy */
+        EUY?: number;
+        /** Eu */
+        EU?: number;
+        /** K */
+        K?: number;
+      };
+      /** Energy Based Model */
+      ENRGDS?: {
+        /** Shape of Curve (General / Perfect Plastic) */
+        SHAPE_OF_CURVE?: number;
+        /** Enable Strength Loss Boolean */
+        OPT_STRENGTH_LOSS?: boolean;
+        /** Use Strength Loss Boolean */
+        OPT_USE_STRENGTH_LOSS?: boolean;
+        /** Is Symmetric Boolean */
+        OPT_SYMMETRIC?: boolean;
+        /** Input Type */
+        INPUT_TYPE?: number;
+        /** Force Moment Ratio Itmes */
+        FMR_ITEMS?: Array<{
+          /** ITEMS */
+          ITEMS?: Array<number>;
+        }>;
+        /** Yield Strength (+, -) */
+        YIELD_STRENGTHS?: Array<number>;
+        /** Yield Strian - User Defined */
+        OPT_USE_YIELD_STRAIN?: boolean;
+        /** Yield Strain Items */
+        YIELD_STRAINS?: Array<number>;
+        /** Elastic Modulus */
+        ELASTIC_MODULUS?: number;
+        /** Use Total Strength Loss at Point E, -E */
+        OPT_USE_TOTAL_STR_LOSS_AT_E?: boolean;
+        /** Enable Total Strength Loss at Point E, -E */
+        OPT_TOTAL_STR_LOSS_AT_E?: boolean;
+        /** Use Cyclic Degration */
+        OPT_CYCLIC_DEGRATION?: boolean;
+        /** A - B (Cyclic Degenration : +) */
+        A_B_P?: number;
+        /** C (Cyclic Degenration : +) */
+        C_P?: number;
+        /** D (Cyclic Degenration : +) */
+        D_P?: number;
+        /** E (Cyclic Degenration : +) */
+        E_P?: number;
+        /** A - B (Cyclic Degenration : -) */
+        A_B_M?: number;
+        /** C (Cyclic Degenration : -) */
+        C_M?: number;
+        /** D (Cyclic Degenration : -) */
+        D_M?: number;
+        /** E (Cyclic Degenration : -) */
+        E_M?: number;
+        /** Unloading Stiffness Factor Boolean */
+        OPT_UNLOADING_STIFF_FACTOR?: boolean;
+        /** Unloading Stiffness Factor */
+        UNLOADING_STIFF_FACTOR?: number;
+      };
+    };
   }
 }
 

@@ -631,3 +631,28 @@ records:
       be back-stamped.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: info-schema-sweep-2026-09-01
+    endpoints: []
+    date: "2026-09-01"
+    nxVersion: >-
+      MIDAS Civil NX 2026 (v2.2), build 08/26/2026
+    level: read
+    outcome: success
+    method: >-
+      GET /info/{endpoint} swept from both SDKs across every declared
+      resource-product pair, and the answers captured verbatim into
+      schema/info-schemas.json. Read-only: /info returns a request schema and
+      touches no model data.
+    finding: >-
+      /info is served for /db/* only. It answered for 399 of 402 /db/*
+      resource-product pairs and for none of the 147 /DESIGN/* pairs, even
+      though those design endpoints answer a plain GET - an API fact, not a URL
+      bug in either SDK. The three /db/* exceptions are the Civil Hyper-S trio
+      /db/IEHG-GL-M1, /db/IEHG-PSS-M1 and /db/IEHG-TRUSS-M1, which 404 and are
+      therefore left with no permitted contract source at all. This is the
+      capture that /db/FIMP, /db/REBB, /db/REBC and /db/REBW's field trees rest
+      on; for /db/FIMP the Civil and Gen schemas are identical.
+    evidence:
+      - docs/live_verification_notes.md
+      - schema/info-schemas.json

@@ -6,11 +6,12 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
-### Changed — five payload types are now generated from contracts
+### Changed — six payload types are now generated from contracts
 
 - `SectionPayload`, `PressureLoadPayload`, `WallRebarPayload`,
-  `ColumnRebarPayload` and `BeamRebarPayload` now come from
-  `contracts/endpoints/` rather than from the Python TypedDict. For the first two that means a **discriminated union**
+  `ColumnRebarPayload`, `BeamRebarPayload` and
+  `InelasticMaterialPropertyPayload` now come from `contracts/endpoints/`
+  rather than from the Python TypedDict. For the first two that means a **discriminated union**
   over the field the manual actually branches on, with the fields the manual
   marks Required no longer optional.
 
@@ -36,6 +37,13 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
   server-confirmed names, corrected in 2026-07 and 2026-08.
   `ColumnRebarPayload` also gains `HOOK_TYPE`, the one field of `/db/REBC`
   where the manual survived the comparison intact.
+
+  `InelasticMaterialPropertyPayload` grows the most: 171 members it did not
+  declare before. `/db/FIMP` carries seventeen hysteresis-model objects under
+  `CONC` and `STEEL`, and the manual documents one of them — its own callout
+  says so, pointing at a 5900-line source article it does not transcribe. The
+  rest come from the server's own `/info` schema, which both products serve
+  identically. Nothing that was there is removed.
 
   `VehiclePayload` and `TimeDependentMaterialStrengthPayload` were listed here
   in an earlier draft of this entry and are **not** affected. Their contracts
