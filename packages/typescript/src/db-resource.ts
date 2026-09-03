@@ -1,5 +1,6 @@
 import {
   DestructiveOperationError,
+  MidasRequestError,
   UnsupportedMethodError,
 } from "./errors";
 import { getDefaultClient, type MidasClient } from "./client";
@@ -43,6 +44,22 @@ export interface DbResourceMetadata {
    * Generated from `contracts/endpoints/*.yaml`; see `contracts/README.md`.
    */
   payloadDefaults?: Readonly<Record<string, unknown>>;
+  /**
+   * Payload fields this endpoint's contract refuses to send as an empty
+   * object, checked on `create()` and `update()`.
+   *
+   * `/db/MVHL`'s `VEH_DEFAULT` is the case that motivated it: the server
+   * accepts `VEH_DEFAULT: {}`, answers `{"message": ""}` with no error object,
+   * and stores nothing - a following `get()` shows the vehicle was never
+   * created. Every member of that object is documented Optional, so an empty
+   * one reads as "all defaults", and nothing in the response says otherwise.
+   *
+   * Only an explicitly empty object is refused. Omitting the field is a
+   * different request and is left alone.
+   *
+   * Generated from `contracts/endpoints/*.yaml`; see `contracts/README.md`.
+   */
+  rejectEmptyFields?: readonly string[];
 }
 
 export class DbResource<TPayload extends object = JsonObject> {
@@ -87,6 +104,29 @@ export class DbResource<TPayload extends object = JsonObject> {
    * Apply the contract's required-explicit field values to every record,
    * without overriding anything the caller supplied.
    */
+  /** Refuse the payload shapes the contract records as silently discarded. */
+  private rejectEmpty(items: ItemMap<TPayload>, method: HttpMethod): void {
+    const fields = this.metadata.rejectEmptyFields;
+    if (!fields?.length) return;
+    for (const [id, payload] of Object.entries(items)) {
+      const values = payload as Record<string, unknown>;
+      for (const field of fields) {
+        const value = values[field];
+        if (
+          typeof value === "object" &&
+          value !== null &&
+          !Array.isArray(value) &&
+          Object.keys(value).length === 0
+        ) {
+          throw new MidasRequestError(
+            `${field} must not be empty for ${this.metadata.endpoint}: the server accepts the request and saves nothing (record ${id})`,
+            { method, endpoint: this.metadata.endpoint },
+          );
+        }
+      }
+    }
+  }
+
   private normalize(items: ItemMap<TPayload>): ItemMap<TPayload> {
     const defaults = this.metadata.payloadDefaults;
     if (!defaults) return items;
@@ -97,6 +137,7 @@ export class DbResource<TPayload extends object = JsonObject> {
 
   async create(items: ItemMap<TPayload>, client: MidasClient = getDefaultClient()): Promise<JsonObject> {
     this.check(client, "POST");
+    this.rejectEmpty(items, "POST");
     return client.request("POST", this.metadata.endpoint, {
       Assign: stringifyKeys(this.normalize(items)),
     });
@@ -104,6 +145,7 @@ export class DbResource<TPayload extends object = JsonObject> {
 
   async update(items: ItemMap<TPayload>, client: MidasClient = getDefaultClient()): Promise<JsonObject> {
     this.check(client, "PUT");
+    this.rejectEmpty(items, "PUT");
     return client.request("PUT", this.metadata.endpoint, {
       Assign: stringifyKeys(this.normalize(items)),
     });

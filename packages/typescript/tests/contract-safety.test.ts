@@ -71,6 +71,37 @@ describe("contract safety probes", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
+  it("reject_request: refuses an empty object in a field the contract names", async () => {
+    // /db/MVHL's VEH_DEFAULT. The server takes `{}`, answers with no error and
+    // stores nothing, so the caller's next GET is what tells them - which is
+    // exactly the class of defect a contract rule exists to keep out of one
+    // language. The field list is generated from contracts/endpoints/.
+    const fetch = vi.fn<typeof globalThis.fetch>();
+    const client = new MidasClient({ fetch });
+    const resource = defineDbResource({ ...metadata, rejectEmptyFields: ["VEH_DEFAULT"] });
+
+    await expect(
+      resource.create({ 1: { MVLD_CODE: 2, VEH_DEFAULT: {} } }, client),
+    ).rejects.toBeInstanceOf(MidasRequestError);
+    await expect(
+      resource.update({ 1: { MVLD_CODE: 2, VEH_DEFAULT: {} } }, client),
+    ).rejects.toBeInstanceOf(MidasRequestError);
+    expect(fetch).not.toHaveBeenCalled();
+
+    // Omitting the field is a different request and stays allowed.
+    const allowed = vi
+      .fn<typeof globalThis.fetch>()
+      .mockImplementation(async () => response({ message: "ok" }));
+    await resource.create({ 1: { MVLD_CODE: 2 } }, new MidasClient({ fetch: allowed }));
+    expect(allowed).toHaveBeenCalledOnce();
+  });
+
+  it("reject_request: the generated /db/MVHL resource carries the contract's field", () => {
+    expect(resources.db.movingLoads.vehicles.metadata.rejectEmptyFields).toEqual([
+      "VEH_DEFAULT",
+    ]);
+  });
+
   it("per_id_request: sends one DELETE URL per id and stops after the first failure", async () => {
     const resource = defineDbResource(metadata);
     const successfulFetch = vi

@@ -20,6 +20,15 @@ behaviour under `contracts/verification/`, separately, as
 Session baseline for every 2026-08-31 entry: MIDAS Gen NX 2026 v2.1 and MIDAS
 Civil NX 2026 v2.2, both build 08/26/2026.
 
+The 2026-09-03 entries (MD-14 through MD-17) were found on the build that
+preceded the 09/02/2026 patch, which was installed part-way through that same
+day. The build they ran on is not recorded, because the API does not report one
+and nobody read the About dialog before the patch went on - see
+docs/live_verification_notes.md. A GET-only sweep from each SDK immediately
+after the patch (282 of 282 on Civil NX v2.2, 267 of 267 on Gen NX v2.1, both
+build 09/02/2026) found no route changed, so nothing in these entries is
+known to be patch-specific.
+
 ## Register
 
 | id | found | endpoint / topic | manual says | product does | correction owned by | status |

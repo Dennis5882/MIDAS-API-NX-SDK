@@ -545,9 +545,12 @@ records:
     endpoints: ["/db/TDME"]
     date: "2026-09-03"
     nxVersion: >-
-      unknown - MIDAS Civil NX 2026, build string not readable through the
-      API. /mapikey/verify returns only the program name and no /doc route
-      serves a version, so this is left unstated rather than guessed.
+      unknown - MIDAS Civil NX 2026 (v2.2), build string not readable through the
+      API, and this session predates the 09/02/2026 patch installed on
+      2026-09-03. /mapikey/verify returns only the program name and no /doc
+      route serves a version, so the build is left unstated rather than
+      guessed - including backwards from the About dialog of a build that was
+      not yet installed when this ran.
     level: write
     outcome: success
     method: >-
@@ -569,5 +572,62 @@ records:
       spellings tried - correctly, because those two codes are iGen's and this
       API is not talking to iGen (MD-14). Identical on both products, checked
       case for case.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: mvhl-load-num-branches-2026-09-03
+    endpoints: ["/db/MVHL"]
+    date: "2026-09-03"
+    nxVersion: >-
+      unknown - MIDAS Civil NX 2026 (v2.2), build string not readable through the
+      API, and this session predates the 09/02/2026 patch installed on
+      2026-09-03. /mapikey/verify returns only the program name and no /doc
+      route serves a version, so the build is left unstated rather than
+      guessed - including backwards from the About dialog of a build that was
+      not yet installed when this ran.
+    level: write
+    outcome: success
+    method: >-
+      Against a document confirmed empty first, seeded only with
+      /db/MVCD CODE "AASHTO LRFD" and cleaned up by id afterwards; no /doc/NEW.
+      The standard payload is live_crud_check.py's confirmed HL-93TRK fixture;
+      the user-defined one follows the chapter's own User Defined example moved
+      onto AASHTO-LRFD's VEH_DEFAULT/LOAD_ITEMS pair. VEHICLE_LOAD_NUM was
+      varied across 1, 2, 3 and omission, then each branch's companion fields
+      were omitted one shape at a time.
+    finding: >-
+      VEHICLE_LOAD_NUM is the branch discriminator: 1 selects a standard DB
+      vehicle and 2 a user-defined one; 3 and omission both answer Wrong Field.
+      Branch 2 sent properly keeps every field, all three axle loads included,
+      so the 2026-07-26 "silent downgrade" was branch 2 ignoring branch 1's
+      fields - the documented contract, not a defect, and that reading is
+      retracted. VEHICLE_TYPE_NAME is required only under branch 1 and is not
+      validated at all ("NOT-A-VEHICLE" stored verbatim); STANDARD_CODE is
+      required under neither, is enum-checked ("NOT-A-CODE" answers Wrong
+      Field) but not cross-checked against the vehicle ("KS-RB" stored on an
+      AASHTO LRFD HL-93TRK); USER_LOAD_TYPE is ignored on input under
+      MVLD_CODE 2. The server also renumbers a POSTed record. Registered as
+      MD-16.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: readonly-sweep-2026-09-03-patch
+    endpoints: []
+    date: "2026-09-03"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 09/02/2026
+    level: read
+    outcome: success
+    method: >-
+      GET-only sweep of every resource this SDK declares for Civil NX, run
+      immediately after the 09/02/2026 patch was installed, and deliberately
+      run from the Python SDK via scripts/live_readonly_sweep.py so the sweep exercises the surface it is checking.
+      282 GET-capable civil resources were swept.
+    finding: >-
+      282 of 282 answered, 0 failed. No route moved, disappeared or changed shape across the patch.
+      The build string is still not readable through the API - /mapikey/verify
+      returns only the program name, and /doc/VERSION, /doc/INFO, /version and
+      /doc/ABOUT all 404 on both products - so it is transcribed from the
+      product's About dialog, which is why records that predate a patch cannot
+      be back-stamped.
     evidence:
       - docs/live_verification_notes.md

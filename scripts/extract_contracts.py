@@ -3108,7 +3108,18 @@ def _parallel_field_cells(
 _QUOTED_ARRAY_PROPERTY = re.compile(
     r'^"([A-Za-z_][A-Za-z0-9_]*)"\[\]\.(?:"?)([A-Za-z_][A-Za-z0-9_]*)(?:"?)$'
 )
-_BOLD_TABLE_LABEL = re.compile(r"^\*\*(?P<label>.+?)\*\*\s*$")
+#: A whole-line bold label introducing a parameter table, optionally followed
+#: by nothing but a link to the official article it transcribes. The nine
+#: country objects in ch08's /db/MVHL section are labelled that way -
+#: ``**VEH_AU (Australia, `STANDARD_CODE: "AUSTRALIA"`)** - [원문](...)`` - and
+#: requiring the line to end at the closing ``**`` skipped every one of them,
+#: so five tables inherited whatever heading came before. Measured across the
+#: manual: the trailing-link form occurs five times and is a table label every
+#: time. Prose with bold emphasis still fails, because the label must be the
+#: whole line up to that link.
+_BOLD_TABLE_LABEL = re.compile(
+    r"^\*\*(?P<label>.+?)\*\*\s*(?:[-–—]\s*\[[^\]]*\]\([^)]*\)\s*)?$"
+)
 
 
 def _canonical_wire_property(cell: str) -> str:
@@ -3140,8 +3151,22 @@ def _parse_tables(lines: list[str], offset: int, endpoint: str = "") -> list[Par
     tables: list[ParsedTable] = []
     heading = ""
     index = 0
+    fenced = False
     while index < len(lines):
         line = lines[index]
+        # A `#` inside a fenced block is a comment in whatever language the
+        # block is, not a Markdown heading. Reading them as headings gave five
+        # of ch08's country tables the heading of the *previous* country's
+        # Python example - `# Canada 표준 차량 ...` sat above the Australia
+        # table - so a contract drafted from it would have cited the wrong
+        # source for the right fields.
+        if line.lstrip().startswith("```"):
+            fenced = not fenced
+            index += 1
+            continue
+        if fenced:
+            index += 1
+            continue
         if line.startswith("#"):
             heading = line.lstrip("#").strip()
             index += 1
@@ -3162,7 +3187,11 @@ def _parse_tables(lines: list[str], offset: int, endpoint: str = "") -> list[Par
             table_follows = False
             while probe + 1 < len(lines):
                 candidate = lines[probe]
-                if candidate.startswith("#") or candidate.strip() == "```" or _BOLD_TABLE_LABEL.fullmatch(candidate.strip()):
+                if (
+                    candidate.startswith("#")
+                    or candidate.lstrip().startswith("```")
+                    or _BOLD_TABLE_LABEL.fullmatch(candidate.strip())
+                ):
                     break
                 if candidate.startswith("|") and _DIVIDER.match(lines[probe + 1]):
                     table_follows = True

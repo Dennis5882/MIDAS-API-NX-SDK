@@ -1,7 +1,9 @@
 import json
 
+import pytest
 import responses
 
+from midas_nx.client import MidasRequestError
 from midas_nx.db.moving_loads import (
     AdditionalImpactFactor,
     ConcurrentJointForceGroup,
@@ -1084,3 +1086,67 @@ def test_railway_dynamic_factor_by_element_create_keyed_by_element_id(civil_clie
     body = json.loads(sent.body)["Assign"]
     assert body["249"]["MAINTAIN_TYPE"] == 1
     assert body["88"]["DYN_FACTOR"] == 1.3
+
+
+@responses.activate
+def test_vehicles_refuses_an_empty_veh_default(civil_client):
+    """The server takes `VEH_DEFAULT: {}` and stores nothing.
+
+    Every member of that object is documented Optional, so an empty one reads
+    as "all defaults"; the response is `{"message": ""}` with no error object
+    and the vehicle is simply absent from the next GET. Nothing tells the
+    caller, which is why the refusal belongs in the SDK rather than in a
+    docstring. Contract rule db-mvhl-veh-default-not-empty.
+    """
+    responses.add(responses.POST, "https://x.test:443/civil/db/MVHL", json={}, status=200)
+
+    with pytest.raises(MidasRequestError):
+        Vehicles.create(
+            {1: {"MVLD_CODE": 2, "VEHICLE_LOAD_NAME": "UD", "VEH_DEFAULT": {}}},
+            client=civil_client,
+        )
+
+    assert not responses.calls, "the request must not reach the product"
+
+
+@responses.activate
+def test_vehicles_update_refuses_an_empty_veh_default_too(civil_client):
+    """A PUT that empties the object is the same silent loss as a POST."""
+    responses.add(responses.PUT, "https://x.test:443/civil/db/MVHL", json={}, status=200)
+
+    with pytest.raises(MidasRequestError):
+        Vehicles.update(
+            {1: {"MVLD_CODE": 2, "VEHICLE_LOAD_NAME": "UD", "VEH_DEFAULT": {}}},
+            client=civil_client,
+        )
+
+    assert not responses.calls
+
+
+@responses.activate
+def test_vehicles_still_allows_omitting_veh_default_entirely(civil_client):
+    """Omission is a different request and stays the caller's to make.
+
+    Nine of the fourteen documented STANDARD_CODE values carry their own
+    VEH_* object instead of VEH_DEFAULT, so refusing the field's absence would
+    break every one of them. Only the explicitly empty object is refused.
+    """
+    responses.add(responses.POST, "https://x.test:443/civil/db/MVHL", json={}, status=200)
+
+    Vehicles.create(
+        {
+            1: {
+                "MVLD_CODE": 8,
+                "VEHICLE_LOAD_NAME": "CA(Auto)_CL-625Truck",
+                "VEHICLE_LOAD_NUM": 1,
+                "VEHICLE_TYPE_NAME": "CL-625Truck",
+                "STANDARD_CODE": "CANADA",
+                "VEH_CA": {"DYN_LOAD_ALLOWANCE": 0, "DYNA": {"DYNA_FACTOR": 0}},
+            }
+        },
+        client=civil_client,
+    )
+
+    sent = json.loads(responses.calls[0].request.body)["Assign"]["1"]
+    assert sent["VEH_CA"]["DYNA"]["DYNA_FACTOR"] == 0
+    assert "VEH_DEFAULT" not in sent

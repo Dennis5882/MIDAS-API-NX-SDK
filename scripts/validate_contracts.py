@@ -763,6 +763,34 @@ def _check_python_base_safety_rules(
                 "sdkRules",
                 "Python reject_request allowed the /ope/GSBG batch-exclusive BRDG_GROUP field",
             )
+
+        # The second reject_request shape, and a different one: a field the
+        # server accepts and discards, on a DbResource rather than an
+        # operation. /db/MVHL's VEH_DEFAULT answers {"message": ""} for an
+        # empty object and stores no vehicle, so the caller's only signal is a
+        # later GET. One probe per kind would have left this to whichever
+        # language happened to implement it.
+        from midas_nx.db.moving_loads import Vehicles
+
+        try:
+            Vehicles.create({1: {"MVLD_CODE": 2, "VEH_DEFAULT": {}}})
+        except MidasRequestError:
+            pass
+        except Exception:  # pragma: no cover - reported, not raised
+            # Anything else means the call reached the transport, so the rule
+            # did not fire. Whatever the transport then said - a 401 without a
+            # key, a timeout with one - is not the finding; the finding is that
+            # the request was allowed to leave.
+            failures.add(
+                "sdkRules",
+                "Python reject_request let an empty /db/MVHL VEH_DEFAULT reach the "
+                "transport; the server accepts it and silently stores nothing",
+            )
+        else:
+            failures.add(
+                "sdkRules",
+                "Python reject_request allowed an empty /db/MVHL VEH_DEFAULT",
+            )
         probes += 1
 
     if declared["per_id_request"]:

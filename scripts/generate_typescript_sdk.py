@@ -636,6 +636,36 @@ def _contract_payload_defaults() -> dict[str, dict[str, Any]]:
     return defaults
 
 
+def _contract_rejected_empty_fields() -> dict[str, list[str]]:
+    """Read ``reject_request`` rules that name payload fields.
+
+    The sibling of ``_contract_payload_defaults()`` and there for the same
+    reason. ``/db/MVHL``'s ``VEH_DEFAULT: {}`` is accepted by the server and
+    silently stores nothing, so a caller who reads the manual - every member of
+    that object is documented Optional - gets a success-shaped response and no
+    vehicle. A rule written in one language would reach one language's users.
+
+    Only the field list travels. What counts as a rejection is the runtime's,
+    and it is deliberately narrow: an empty object, sent explicitly. Omitting
+    the field entirely is a different request and is left alone.
+    """
+    contract_dir = ROOT / "contracts" / "endpoints"
+    if not contract_dir.is_dir():
+        return {}
+    import yaml  # noqa: PLC0415
+
+    rejected: dict[str, list[str]] = {}
+    for path in sorted(contract_dir.glob("*.yaml")):
+        contract = yaml.safe_load(path.read_text(encoding="utf-8"))
+        fields: list[str] = []
+        for rule in contract.get("sdkRules", []):
+            if rule.get("kind") == "reject_request":
+                fields += [f for f in rule.get("fields", []) if f not in fields]
+        if fields:
+            rejected[contract["endpoint"]] = fields
+    return rejected
+
+
 def _contract_resource_surfaces(resource_endpoints: set[str]) -> dict[str, dict[str, Any]]:
     """Read the contract-owned surface of each contracted resource.
 
@@ -863,6 +893,7 @@ def _load_resources() -> list[dict[str, Any]]:
         coverage_by_endpoint[entry["endpoint"]].append(entry)
 
     payload_defaults = _contract_payload_defaults()
+    rejected_empty_fields = _contract_rejected_empty_fields()
     surfaces = _contract_resource_surfaces(set(python_classes))
 
     resources: list[dict[str, Any]] = []
@@ -905,6 +936,11 @@ def _load_resources() -> list[dict[str, Any]]:
             **(
                 {"payloadDefaults": payload_defaults[endpoint]}
                 if endpoint in payload_defaults
+                else {}
+            ),
+            **(
+                {"rejectEmptyFields": rejected_empty_fields[endpoint]}
+                if endpoint in rejected_empty_fields
                 else {}
             ),
             "manual": manual,
@@ -959,6 +995,8 @@ def _render_tree(resources: list[dict[str, Any]]) -> str:
                     metadata["manualChapter"] = chapter
                 if "payloadDefaults" in value:
                     metadata["payloadDefaults"] = value["payloadDefaults"]
+                if "rejectEmptyFields" in value:
+                    metadata["rejectEmptyFields"] = value["rejectEmptyFields"]
                 encoded = json.dumps(metadata, ensure_ascii=False, separators=(",", ":"))
                 payload = value.get("payloadType", "JsonObject")
                 lines.append(f"{pad}  {key}: defineDbResource<{payload}>({encoded}),")

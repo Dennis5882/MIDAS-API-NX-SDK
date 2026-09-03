@@ -3565,3 +3565,118 @@ def test_a_gate_may_name_a_field_only_a_branch_table_documents():
     variants = ex._explicit_variants([base, branch])
 
     assert [v.conditions for v in variants] == [(("MODE", ("FAST",)),)]
+
+
+def test_a_hash_comment_in_a_code_block_is_not_a_table_heading(tmp_path: Path):
+    """`# Canada 표준 차량 ...` sits inside a Python example, not above a table.
+
+    ch08 alternates a country's parameter table with a runnable example, and
+    the example's first line is a comment naming that country. Reading it as a
+    Markdown heading gave five tables the heading of the *previous* country -
+    the Australia table was labelled Canada - so a contract drafted from one
+    would have cited the wrong article for the right fields.
+    """
+
+    path = tmp_path / "99_DB_Fenced.md"
+    path.write_text(
+        '''## 1. `/db/FENCED` -- fenced comment
+
+### Specifications
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Name | `NAME` | String | - | Required |
+
+### First country
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | First factor | `FIRST` | Number | - | Required |
+
+```python
+# An example for the first country
+call({"FIRST": 1})
+```
+
+### Second country
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Second factor | `SECOND` | Number | - | Required |
+''',
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    headings = [table.heading for table in section.tables]
+
+    assert headings == ["Specifications", "First country", "Second country"]
+    assert "An example for the first country" not in headings
+
+
+def test_a_bold_label_followed_only_by_its_source_link_still_labels_the_table(
+    tmp_path: Path,
+):
+    """ch08 labels nine objects `**VEH_XX (Country, gate)** - [원문](url)`.
+
+    Requiring the line to end at the closing `**` skipped every one, and the
+    gate those labels state - `STANDARD_CODE: "AUSTRALIA"` - went with them.
+    Measured across the manual, the trailing-link form appears five times and
+    introduces a parameter table every time.
+    """
+
+    path = tmp_path / "99_DB_Labelled.md"
+    path.write_text(
+        '''## 1. `/db/LABELLED` -- labelled tables
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Standard code | `STANDARD_CODE` | String | - | Required |
+
+**VEH_AU (Australia, `STANDARD_CODE: "AUSTRALIA"`)** - [source](https://example.invalid/1)
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Allowance | `DYN_LOAD_ALLOWANCE` | Number | 0 | Optional |
+''',
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+
+    assert section.tables[1].heading.startswith("VEH_AU (Australia")
+    assert [v.conditions for v in section.variants] == [
+        (("STANDARD_CODE", ("AUSTRALIA",)),)
+    ]
+
+
+def test_bold_prose_that_introduces_an_example_is_still_not_a_heading(tmp_path: Path):
+    """The widened label must not start swallowing bold prose.
+
+    The rule that keeps it narrow is unchanged: a bold line only becomes a
+    heading when a parameter table follows it before the next heading, label or
+    fence. A bold line introducing a code block does not.
+    """
+
+    path = tmp_path / "99_DB_Prose.md"
+    path.write_text(
+        '''## 1. `/db/PROSE` -- bold prose
+
+### Specifications
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Name | `NAME` | String | - | Required |
+
+**Request Example** - [source](https://example.invalid/2)
+
+```python
+call({"NAME": "x"})
+```
+''',
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+
+    assert [table.heading for table in section.tables] == ["Specifications"]

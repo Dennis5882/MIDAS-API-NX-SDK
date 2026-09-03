@@ -8422,3 +8422,54 @@ model: its Load Model 1 entry carries no `STANDARD_CODE` key at all.
 
 `/db/MVHL` renumbers a POSTed record too — keys 10-14, 20, 21 landed at ids
 4-10.
+
+## 2026-09-03 (patch) — build 09/02/2026 on both products, and a read-only sweep from each SDK
+
+The author installed the latest patch mid-session and read the build off each
+product's About dialog:
+
+| product | version | build |
+| --- | --- | --- |
+| MIDAS Gen NX 2026 | v2.1 | 09/02/2026 |
+| MIDAS Civil NX 2026 | v2.2 | 09/02/2026 |
+
+**The API still does not report this.** `/mapikey/verify` answers only
+`{"user", "program", "connectionID", "keyVerified", "status"}`, and
+`/doc/VERSION`, `/doc/INFO`, `/version` and `/doc/ABOUT` all 404 on both
+products after the patch as before it. So the About dialog remains the only
+source, and a build string can only be attached to a session someone was
+watching. That is why the four records written earlier today say the build is
+unknown rather than citing 09/02/2026: those runs happened before this patch
+was installed, and back-stamping them with a build that did not exist yet
+would turn a gap into a false citation. `schema/info-schemas.json` and
+`schema/hyper-s-info.json` keep `nxVersion: null` for the same reason.
+
+Both sessions survived the patch: the `connectionID`s (`tZwG5G-fSg` for Gen,
+`maTuEDSLQw` for Civil) were unchanged afterwards.
+
+### The sweep, run from a different SDK per product
+
+Deliberately split, so each language surface drove a real product rather than
+both being checked by the one that is easier to script:
+
+| product | driver | resources | result |
+| --- | --- | --- | --- |
+| Civil NX | Python, `scripts/live_readonly_sweep.py` | 282 GET-capable | **282 ok, 0 failed** |
+| Gen NX | npm, the built `dist/` walked resource by resource | 268 declare gen, 267 serve GET | **267 ok, 0 failed** |
+
+No route moved, disappeared or changed shape across the patch, on either
+product or through either SDK.
+
+On Gen, 261 tables were empty and six carried data — `/db/UNIT`, `/db/STYP`
+and the four colour tables `/db/CO_F`, `/db/CO_M`, `/db/CO_S`, `/db/CO_T`.
+Those are what any document has: units and a structure type are not optional,
+and the colour tables are product defaults. They are not residue from this
+session's earlier write probes, all of which were deleted by id and confirmed
+empty before the patch went on.
+
+The npm sweep is worth keeping in mind as a gap: there is no committed
+read-only counterpart to `scripts/live_readonly_sweep.py` on the npm side, so
+this one was written for the session. `packages/typescript/scripts/` carries
+only `live-crud.mjs` and `live-analysis.mjs`, both of which call `/doc/NEW`
+and discard unsaved work. A GET-only npm harness would be the safe one to
+have, and does not exist yet.

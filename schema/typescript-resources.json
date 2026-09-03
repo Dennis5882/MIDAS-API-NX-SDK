@@ -3916,6 +3916,9 @@
         "db",
         "movingLoads"
       ],
+      "rejectEmptyFields": [
+        "VEH_DEFAULT"
+      ],
       "manual": [
         {
           "name": "Vehicles (AASHTO / LRFD / Canada / BS / Eurocode / Korea 등)",

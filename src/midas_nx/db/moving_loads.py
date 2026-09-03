@@ -17,8 +17,9 @@ docs/live_verification_notes.md for the full evidence.
 """
 from __future__ import annotations
 
-from typing import Any, List, TypedDict
+from typing import Any, List, Optional, TypedDict
 
+from ..client import MidasClient, MidasRequestError
 from .base import CIVIL_ONLY, DbResource
 
 # --- 1. /db/MVCD — Moving Load Code ------------------------------------------
@@ -501,8 +502,47 @@ class VehiclePayload(TypedDict, total=False):
 
 
 class Vehicles(DbResource):
+    """See :class:`VehiclePayload`.
+
+    :meth:`create`/:meth:`update` refuse an empty ``VEH_DEFAULT``, which the
+    server accepts and then silently saves nothing for.
+    """
+
     ENDPOINT = "/db/MVHL"
     NAME = "Vehicles"
+
+    @classmethod
+    def _reject_empty_defaults(cls, items: dict) -> None:
+        """Refuse the one payload shape the server accepts and discards.
+
+        ``VEH_DEFAULT: {}`` answers ``{"message": ""}`` with no error object
+        and stores nothing - a following GET shows the vehicle was never
+        created. Every member of the object is documented Optional, so an empty
+        one looks like a reasonable way to say "all defaults", and the response
+        gives the caller no reason to think otherwise. Contract rule
+        db-mvhl-veh-default-not-empty; see docs/live_verification_notes.md.
+        """
+        for key, item in items.items():
+            if isinstance(item, dict) and item.get("VEH_DEFAULT") == {}:
+                raise MidasRequestError(
+                    "VEH_DEFAULT must not be empty for /db/MVHL: the server "
+                    "accepts the request and saves nothing (Hint: send the "
+                    "vehicle's parameters, or omit VEH_DEFAULT and send the "
+                    "STANDARD_CODE's own VEH_* object) "
+                    f"(record {key})",
+                    method="POST",
+                    endpoint=cls.ENDPOINT,
+                )
+
+    @classmethod
+    def create(cls, items: dict, client: Optional[MidasClient] = None) -> dict:
+        cls._reject_empty_defaults(items)
+        return super().create(items, client=client)
+
+    @classmethod
+    def update(cls, items: dict, client: Optional[MidasClient] = None) -> dict:
+        cls._reject_empty_defaults(items)
+        return super().update(items, client=client)
 
 
 # --- 11. /db/MVHLtr — Vehicles – Transverse -----------------------------------

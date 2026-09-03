@@ -493,10 +493,13 @@ records:
     endpoints: ["/db/SPFC", "/db/SECT"]
     date: "2026-09-03"
     nxVersion: >-
-      unknown - MIDAS Gen NX 2026, build string not readable through the API.
-      /mapikey/verify returns only the program name, and no /doc route serves a
-      version, so this is left unstated rather than guessed. Same reason
-      schema/info-schemas.json carries nxVersion: null.
+      unknown - MIDAS Gen NX 2026 (v2.1), build string not readable through the
+      API, and this session predates the 09/02/2026 patch installed on
+      2026-09-03. /mapikey/verify returns only the program name and no /doc
+      route serves a version, so the build is left unstated rather than
+      guessed - including backwards from the About dialog of a build that was
+      not yet installed when this ran. Same reason schema/info-schemas.json
+      carries nxVersion: null.
     level: write
     outcome: success
     method: >-
@@ -521,9 +524,12 @@ records:
     endpoints: ["/db/TDME"]
     date: "2026-09-03"
     nxVersion: >-
-      unknown - MIDAS Gen NX 2026, build string not readable through the
-      API. /mapikey/verify returns only the program name and no /doc route
-      serves a version, so this is left unstated rather than guessed.
+      unknown - MIDAS Gen NX 2026 (v2.1), build string not readable through the
+      API, and this session predates the 09/02/2026 patch installed on
+      2026-09-03. /mapikey/verify returns only the program name and no /doc
+      route serves a version, so the build is left unstated rather than
+      guessed - including backwards from the About dialog of a build that was
+      not yet installed when this ran.
     level: write
     outcome: success
     method: >-
@@ -545,5 +551,26 @@ records:
       spellings tried - correctly, because those two codes are iGen's and this
       API is not talking to iGen (MD-14). Identical on both products, checked
       case for case.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: readonly-sweep-2026-09-03-patch
+    endpoints: []
+    date: "2026-09-03"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 09/02/2026
+    level: read
+    outcome: success
+    method: >-
+      GET-only sweep of every resource this SDK declares for Gen NX, run
+      immediately after the 09/02/2026 patch was installed, and deliberately
+      run from the npm package's built dist/, not the Python SDK so the sweep exercises the surface it is checking.
+      268 of the 304 generated resources declare gen; 267 of those serve GET and every one was called.
+    finding: >-
+      267 answered, 0 failed. 261 were empty and the 6 carrying data are the defaults any document has - /db/UNIT, /db/STYP and the four colour tables - not residue from an earlier session. No route moved, disappeared or changed shape across the patch.
+      The build string is still not readable through the API - /mapikey/verify
+      returns only the program name, and /doc/VERSION, /doc/INFO, /version and
+      /doc/ABOUT all 404 on both products - so it is transcribed from the
+      product's About dialog, which is why records that predate a patch cannot
+      be back-stamped.
     evidence:
       - docs/live_verification_notes.md
