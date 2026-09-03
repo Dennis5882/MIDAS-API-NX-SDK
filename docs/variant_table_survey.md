@@ -72,7 +72,7 @@ set*.  It does **not** imply each row can be made a TypeScript `oneOf`: `MVLDid`
 absence-based User branch and `MVLD` lacks a documented wire discriminator for
 some national-code tables.
 
-### B. Structural table splits (18)
+### B. Structural table splits (19)
 
 These are not evidence for a payload union.  Their additional tables describe a
 named nested object/array, a product partition, or a presentation-oriented
@@ -92,6 +92,7 @@ grouping.  They still need a human to verify the object path from the manual;
 | `/db/RCHK` | `24_DB_Design.md:386-455` | `vMAIN`, `vLAYER`, `LAYER`, and `POSITION` are nested collection/detail tables, not branch alternatives. |
 | `/db/RPSC` | `04_DB_Properties.md:1635-1690`, `SBAR_ITEMS[]` / `MBAR_ITEMS[]` | The latter two tables are array-item schemas for named fields. |
 | `/db/SBDO` | `03_DB_Node_Element.md:844-875`, Civil NX Only / GEN NX Only | Product-specific field partition, not a value selected in the payload. |
+| `/db/THGC-M1` | `09_DB_Dynamic_Loads.md:1054-1090`, `INCREMENT_STEP` / `HINGE_OPT` | Each heading names the object its rows belong to, and both tables are flat. The section's third sub-table, `ITER_PARAM`, is **not** registered: its Key column states paths rather than property names (MD-20), so merging it as parsed would encode a broken shape. |
 | `/db/WVLD` | `11_DB_Settlement_Misc_Loads.md:357-474`, `COEF`, `CHAR`, `PROF` | Named nested objects and array-element tables. |
 | `/DESIGN/RC/KDS-41-20-2022/DCRE` | `26_Design_RC_KDS41202022.md:5865-5930` | `BEAM`, `COLUMN`, `BRACE`, and `WALL` object trees are components of the one global settings payload. |
 | `/DESIGN/RC/KDS-41-20-2022/DCRM-WALL` | `26_Design_RC_KDS41202022.md:5524-5548` | `Assign.{wallId}.ITEMS[]` plus its item schema. |
@@ -121,6 +122,7 @@ not inferred from either SDK.  A table with no such path remains
 | `/db/RCHK` | conditional `BEAM` / `COLM` objects; `BEAM.vMAIN[].POS_*_LAYERS[]`; `COLM.vLAYER[].vPOSITION[]` |
 | `/db/RPSC` | `SBAR_ITEMS[]`; `MBAR_ITEMS[]` |
 | `/db/SBDO` | root Civil-only fields, `products: [civil]`; root GEN-only fields, `products: [gen]` |
+| `/db/THGC-M1` | `INCREMENT_STEP`; `HINGE_OPT` |
 | `/db/WVLD` | `COEF` and its four item arrays; `CHAR`; `PROF.GRID_DATA[]`; root misc; `GROWTH[]`; `USERGRID[]` / `TRAJ[]` items |
 | `/view/DISPLAY` | coexisting `Argument.NODE`, `ELEMENT`, `PROPERTY`, `GROUP_SELECTION` / `BOUNDARY`, `LOAD`, `MISC`, `VIEW` |
 | `.../DCRE` | `Assign.BEAM`, `COLUMN`, `BRACE`, `WALL`, including its material-map arrays and `ADDITIONAL_WALL_DATA` |

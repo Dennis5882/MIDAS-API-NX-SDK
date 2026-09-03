@@ -3,7 +3,9 @@
 Unlike most Hyper-S "-M1" variants elsewhere in the manual (documented as
 thin stubs), THGC-M1/THOO-M1/THIS-M1 here have full Specifications tables —
 implemented, with deeply-nested control sub-objects left as Any (matching
-the SECT_I precedent) given their size.
+the SECT_I precedent) given their size. THGC-M1's are the exception as of
+2026-09-03: contracts/endpoints/db-thgc-m1.yaml resolves all three of its
+sub-parameter tables, so the types below spell them out rather than defer.
 """
 from __future__ import annotations
 
@@ -150,24 +152,83 @@ class HyperSIncrementStep(TypedDict, total=False):
     STEP_INC: int  # Step Increment (OUT_TYPE=1), required if OUT_TYPE=1
 
 
-class HyperSHingeOption(TypedDict, total=False):
-    """THGC-M1's "HINGE_OPT" sub-object."""
+class HyperSNormCriterion(TypedDict, total=False):
+    """One convergence norm inside THGC-M1's "ITER_PARAM"."NORM_CTRL"."""
 
-    PSPRING_SUP: int  # P-spring support treatment, optional
-    EL: int  # Element data, optional
+    OPT_USE: bool  # Use this norm, required
+    VALUE: float  # Convergence tolerance, required
+
+
+class HyperSNormControl(TypedDict, total=False):
+    """THGC-M1's "ITER_PARAM"."NORM_CTRL" sub-object.
+
+    The manual's ITER_PARAM table states these three as paths — a row keyed
+    ``DISP`` -> ``{OPT_USE, VALUE}`` rather than as keys of their own. The
+    section's request example nests them literally, which is what settles it.
+    """
+
+    DISP: HyperSNormCriterion  # Displacement norm, optional
+    FORCE: HyperSNormCriterion  # Force norm, optional
+    ENERGY: HyperSNormCriterion  # Energy norm, optional
+
+
+class HyperSLineSearch(TypedDict, total=False):
+    """THGC-M1's "ITER_PARAM"."LINE_SEARCH" sub-object.
+
+    The manual marks all five Required, while the same section's Python example
+    sends ``{"OPT_USE": False}`` and omits the other four. Nobody has put either
+    form to a running product — registered as MD-19 in
+    docs/manual_defects_register.md. Sending all five is the documented form.
+    """
+
+    OPT_USE: bool  # Use line search, default true, required
+    LINE_SEARCH_OPT: int  # Auto=0, User-defined=1; default 0, required
+    START_ITER_NO: int  # Line-search starting iteration number, required
+    MAX_LINE_SEARCH_ITER: int  # Maximum line-search iterations, required
+    LINE_SEARCH_TOL: float  # Line-search tolerance, required
+
+
+class HyperSIterationParameters(TypedDict, total=False):
+    """THGC-M1's "ITER_PARAM" sub-object."""
+
+    PERMIT_FAIL: bool  # Allow convergence failure, default true, optional
+    MAX_ITER: int  # Maximum iteration count, required
+    NORM_CTRL: HyperSNormControl  # Convergence criteria, optional
+    STIFF_UPD_SCHEME: int  # Custom=0, FullNR=1, InitStiff=2; default 1, optional
+    ITER_BEF_UPDATE: int  # Iterations before update, default 5, required if STIFF_UPD_SCHEME=0
+    MAX_BISECT_LEVEL: int  # Maximum bisection level, default 5, optional
+    SMART_BISECT: bool  # Smart bisection, default false, optional
+    DIVERGENCE_THRESHOLD: float  # Divergence threshold, default 3, optional
+    LINE_SEARCH: HyperSLineSearch  # Line-search options, optional
+
+
+class HyperSHingeOption(TypedDict, total=False):
+    """THGC-M1's "HINGE_OPT" sub-object.
+
+    Both members are 0/1 enums deciding whether the nonlinear property is
+    applied or the component is treated as linear — not the "P-spring support
+    treatment"/"element data" this docstring claimed until 2026-09-03, which
+    predated the manual's own 2026-08-25 correction of the same two rows.
+    """
+
+    PSPRING_SUP: int  # Point Spring Support: nonlinear=0, linear=1; default 0, optional
+    EL: int  # Elastic Link: nonlinear=0, linear=1; default 1, optional
 
 
 class TimeHistoryGlobalControlHyperSPayload(TypedDict, total=False):
     """docs/manual/09_DB_Dynamic_Loads.md #4 — /db/THGC-M1 Specifications table
-    (Hyper-S). ITER_PARAM is left as Any given its size (nested convergence
-    norms, line-search options) — see the manual for its full shape.
+    (Hyper-S), reconciled with contracts/endpoints/db-thgc-m1.yaml.
+
+    INIT_LOAD_TYPE's second value is 1, not the 0 the manual prints for both of
+    its two options — an enum cannot name one literal twice. Corrected against
+    GET /info/db/THGC-M1 (Civil NX, 2026-09-03) and registered as MD-18.
     """
 
     GEO_NONL_TYPE: int  # None=0, Large Disp=1, P-Delta=2; required
-    INIT_LOAD_TYPE: int  # Nonlinear static=0, Retrieve static/construction stage results=1; required
+    INIT_LOAD_TYPE: int  # Perform NL static=0, Import static/construction stage=1; required (MD-18)
     INIT_LOAD_LIST: List[InitialLoadCaseItem]  # optional
     INCREMENT_STEP: HyperSIncrementStep  # optional
-    ITER_PARAM: Any  # {"PERMIT_FAIL","MAX_ITER","NORM_CTRL",...}, required
+    ITER_PARAM: HyperSIterationParameters  # required
     IGNORE_ELEM: bool  # Ignore NL Initial Load Elements, default false, optional
     SEQ_LOAD_TYPE: int  # Undeformed=0, Deformed=1; default 1, optional
     HINGE_OPT: HyperSHingeOption  # optional

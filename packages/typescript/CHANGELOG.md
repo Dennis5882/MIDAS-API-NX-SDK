@@ -6,6 +6,32 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Changed — `TimeHistoryGlobalControlHyperSPayload` now comes from a contract
+
+- `/db/THGC-M1`'s payload type is generated from
+  `contracts/endpoints/db-thgc-m1.yaml` rather than from the Python TypedDict.
+  Three consequences, in order of how likely they are to reach you:
+
+  - **`ITER_PARAM` was `unknown` and is now a typed object.** Its convergence
+    norms (`NORM_CTRL.DISP`/`FORCE`/`ENERGY`, each `{OPT_USE, VALUE}`) and its
+    line-search options are spelled out. Code that assembled this object
+    untyped keeps working; code that assigned an arbitrary value to it no
+    longer compiles.
+  - **`GEO_NONL_TYPE`, `INIT_LOAD_TYPE` and `ITER_PARAM` are required**, as the
+    manual marks them. A partial payload will now be flagged by the compiler.
+  - `INCREMENT_STEP` and `HINGE_OPT` are inlined in the payload rather than
+    referencing the exported `HyperSIncrementStep` / `HyperSHingeOption`
+    interfaces. Both interfaces are still exported and unchanged; nothing was
+    removed.
+
+### Fixed — `INIT_LOAD_TYPE`'s second value is 1, not 0
+
+- The manual prints `0` as the literal for **both** of this field's two
+  options. Live `GET /info/db/THGC-M1` gives `Perform NL Static:0, Import
+  Static:1`, and the contract and both SDKs now document `1`. This is a
+  documentation fix in the types and comments — no request the SDK sends
+  changes. Recorded as MD-18 in `docs/manual_defects_register.md`.
+
 ## 2.7.6 - 2026-09-03
 
 > **Breaking, despite the patch number.** The version is kept aligned with

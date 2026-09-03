@@ -51,6 +51,9 @@ build itself** and is no longer resting on an unrecorded one.
 | MD-15 | 2026-09-03 | `Create Only`, in `/db/SECT` and `/db/SPFC` | the manual's only two `Create Only` cells, both a `CALC_OPT`, say the server honours the field on create and ignores it on modify | true of `/db/SECT` exactly; false of `/db/SPFC`, where `CALC_OPT: true` on a PUT rebuilds the spectrum. Separately, `/db/SPFC`'s KDS(41-17-00:2019) worked example is refused as printed - it omits `CALC_OPT` and supplies no `aFUNC` | **MIDASIT article** (one value used for two contracts, and an example that cannot run) | open |
 | MD-16 | 2026-09-03 | `/db/MVHL` common Specifications table | `VEHICLE_TYPE_NAME` and `STANDARD_CODE` Required, `USER_LOAD_TYPE` Optional, with no reference to the branch | `VEHICLE_LOAD_NUM` selects the branch: `1` needs the type name, `2` needs neither it nor `STANDARD_CODE`, which is not required under either. `USER_LOAD_TYPE` is ignored on input. The chapter's own KSCE-LSD15 examples show the branch; the table that claims to cover every code does not mention it | **MIDASIT article** (the table), which the manual repo transcribes faithfully | open |
 | MD-17 | 2026-09-03 | `/db/PRES` `DIRECTION`, and the section's own example | the Specifications row marks `DIRECTION` Optional with the default `"NORMAL"`, and the section's Python example assigns a PLATE + FACE load with that value | on a PLATE with `FACE_EDGE_TYPE: "FACE"` both the omission and `"NORMAL"` are refused with the same `(Item:Load Direction)` error. The same section's own availability matrix already marks Normal `-` for that pair, and its JSON request example sends `"LZ"` | **MIDASIT article** (the row, and one of its two examples) | open |
+| MD-18 | 2026-09-03 | `/db/THGC-M1` `INIT_LOAD_TYPE` | the main Specifications table types it `Integer(enum)` and prints both options with the literal `0` - "0=비선형 정적 해석, 0=정적/시공단계 결과 가져오기" | the options are `0` and `1`; live `/info` describes the same field as "Initial Load Type (Perform NL Static:0, Import Static:1)". A duplicate literal is self-refuting rather than merely unverified - the row as printed cannot be followed at all | **manual repo** transcription (to be checked against the MIDASIT article) | open |
+| MD-19 | 2026-09-03 | `/db/THGC-M1` `ITER_PARAM.LINE_SEARCH` children | the sub-parameter table marks all five Required - `OPT_USE`, `LINE_SEARCH_OPT`, `START_ITER_NO`, `MAX_LINE_SEARCH_ITER`, `LINE_SEARCH_TOL` | unmeasured. The same section's Python example sends `{"OPT_USE": False}` and omits the other four, so the chapter contradicts itself the way MD-16 describes | **manual repo** transcription | open, unmeasured |
+| MD-20 | 2026-09-03 | `/db/THGC-M1` "ITER_PARAM 서브 파라미터" Key column | `NORM_CTRL`'s children are stated as a path on one row - "`DISP` → `{OPT_USE, VALUE}`", repeated for `FORCE` and `ENERGY` - and `LINE_SEARCH`'s five children follow as sibling rows marked only by a "-" in the 설명 column | read as printed the table yields a field named `{OPT_USE, VALUE}` and puts ten children beside the two parents that own them; the section's own Request Example nests all of them | **manual repo** transcription | open |
 
 
 ## Detail
@@ -619,3 +622,109 @@ integer referring to a `/db/PSLT` pressure load type. Both products return it
 and their schemas agree. It is in the contract as `requirement: unstated` -
 `/info` declares no `required` array, and reading the manual's silence as
 "Optional" would be a claim nobody has made.
+
+### MD-18 - an enum that names one literal twice
+
+`/db/THGC-M1`'s main Specifications table types `INIT_LOAD_TYPE` as
+`Integer(enum)` and names exactly two options, then prints `0` as the literal
+for both:
+
+> | 2 | 초기 하중 유형 (0=비선형 정적 해석, 0=정적/시공단계 결과 가져오기) | `INIT_LOAD_TYPE` | Integer(enum) | - | Required |
+
+An enum cannot carry the same literal twice, so unlike most rows in this
+register this one is not merely unverified - it is unusable as printed. A
+caller who wants "정적/시공단계 결과 가져오기" has no value to send.
+
+The live `/info` schema answers it. Captured 2026-09-03 during the full sweep
+of `GET /info/{endpoint}` over every `/db/*` resource on both products:
+
+> `INIT_LOAD_TYPE` | integer | Initial Load Type (Perform NL Static:0, Import Static:1)
+
+The two options correspond to the manual's two, in the same order, so the
+correction is one literal and not a new value set. That distinction is why the
+contract records `provenance: live_corrected` on this field alone and keeps
+`enum` sourced to the manual, which is the side that declares there is an enum
+at all: `/info` states no `enum` anywhere, and this repo does not promote a
+value set named in an `/info` description into one.
+
+`TimeHistoryGlobalControlHyperSPayload` in `src/midas_nx/db/dynamic_loads.py`
+already carried `1` in its trailing comment. That agreement is corroboration,
+not a source - `contracts/README.md` forbids an SDK as a contract source, and
+the SDK comment on its own records nobody's measurement.
+
+### MD-19 - a switch's children marked Required, and an example that omits them
+
+`/db/THGC-M1`'s "ITER_PARAM 서브 파라미터" table marks all five children of
+`LINE_SEARCH` Required. The same section's Python example sends the object with
+one key:
+
+```python
+"LINE_SEARCH": {
+    "OPT_USE": False
+}
+```
+
+This is MD-16's shape - requiredness stated with no reference to the switch
+that governs it - and the reading that reconciles the two is that the other
+four apply only when `OPT_USE` is true. **That reading is not recorded as
+fact.** Nobody has put either form to a running product, so the contract keeps
+the table's claim in `requirement` and leaves every `safeToOmit` on the five
+`unverified`.
+
+Measuring it is not something the read-only sweeps can do: `/db/THGC-M1` serves
+GET, PUT and DELETE and no POST, so the only way to ask is a PUT that rewrites
+the model's global solver settings. That belongs in a write harness against a
+document confirmed disposable, not in a sweep that runs beside open work.
+
+The three sub-parameter tables in this section are otherwise clean. All three -
+`INCREMENT_STEP`, `ITER_PARAM`, `HINGE_OPT` - were merged into the object field
+each names when the contract was reviewed, and the section's own request example
+nests every one of them under its parent in a single payload, so none of them is
+a conditional variant.
+
+### MD-20 - a Key column that states paths instead of property names
+
+`/db/THGC-M1`'s "ITER_PARAM 서브 파라미터" table names eighteen rows, and two of
+its groups are not addressable from what the Key column prints.
+
+| the row prints | what it means |
+| --- | --- |
+| `` `DISP` → `{OPT_USE, VALUE}` `` (and the same for `FORCE`, `ENERGY`) | `NORM_CTRL.DISP` is an object with two members; the cell names a path and a set, not a property |
+| five rows keyed `OPT_USE`, `LINE_SEARCH_OPT`, `START_ITER_NO`, `MAX_LINE_SEARCH_ITER`, `LINE_SEARCH_TOL`, each prefixed "-" in the 설명 column only | the children of `LINE_SEARCH`, which is itself a row of the same table |
+
+Parsed exactly as written, the table produces a field literally named
+`{OPT_USE, VALUE}` and places ten children as siblings of the two parents that
+own them. This is not a subtle mismatch - the resulting payload has no valid
+shape at all.
+
+The section resolves it two paragraphs later. Its Request Body example nests
+every one of them:
+
+```json
+"ITER_PARAM": {
+  "NORM_CTRL": {
+    "DISP":   {"OPT_USE": true, "VALUE": 0.001},
+    "FORCE":  {"OPT_USE": true, "VALUE": 0.001},
+    "ENERGY": {"OPT_USE": true, "VALUE": 0.001}
+  },
+  "LINE_SEARCH": {
+    "OPT_USE": true, "LINE_SEARCH_OPT": 1, "START_ITER_NO": 3,
+    "MAX_LINE_SEARCH_ITER": 4, "LINE_SEARCH_TOL": 0.5
+  }
+}
+```
+
+Same family as MD-07 (`/db/FIMP`, rows keyed `"KENPAR"."FC"` with the parents
+omitted), MD-08 (`/db/CO_S`, one row keyed `"W_R" ~ "HE_B"`) and MD-13
+(`/db/TDME`, one key given to two rows): a Key cell carrying a path or a set
+rather than one wire property, with the same section's own example carrying the
+answer.
+
+**What was done about it.** The section's other two sub-tables -
+`INCREMENT_STEP` and `HINGE_OPT` - have this problem nowhere: each heading names
+its destination object and each table is flat, so both were added to
+`scripts/extract_contracts.py`'s `_STRUCTURAL_TABLE_SPLITS` and now merge with
+no judgment involved. `ITER_PARAM` was deliberately left out of that registry
+and its subtree hand-resolved in `contracts/endpoints/db-thgc-m1.yaml`, because
+a mechanical merge of this table would encode the broken shape rather than the
+documented one.

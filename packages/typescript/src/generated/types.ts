@@ -2659,19 +2659,126 @@ export namespace DbDynamicLoadsTypes {
     OUT_TYPE?: number;
     STEP_INC?: number;
   }
+  export interface HyperSNormCriterion {
+    OPT_USE?: boolean;
+    VALUE?: number;
+  }
+  export interface HyperSNormControl {
+    DISP?: HyperSNormCriterion;
+    FORCE?: HyperSNormCriterion;
+    ENERGY?: HyperSNormCriterion;
+  }
+  export interface HyperSLineSearch {
+    OPT_USE?: boolean;
+    LINE_SEARCH_OPT?: number;
+    START_ITER_NO?: number;
+    MAX_LINE_SEARCH_ITER?: number;
+    LINE_SEARCH_TOL?: number;
+  }
+  export interface HyperSIterationParameters {
+    PERMIT_FAIL?: boolean;
+    MAX_ITER?: number;
+    NORM_CTRL?: HyperSNormControl;
+    STIFF_UPD_SCHEME?: number;
+    ITER_BEF_UPDATE?: number;
+    MAX_BISECT_LEVEL?: number;
+    SMART_BISECT?: boolean;
+    DIVERGENCE_THRESHOLD?: number;
+    LINE_SEARCH?: HyperSLineSearch;
+  }
   export interface HyperSHingeOption {
     PSPRING_SUP?: number;
     EL?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TimeHistoryGlobalControlHyperSPayload {
-    GEO_NONL_TYPE?: number;
-    INIT_LOAD_TYPE?: number;
-    INIT_LOAD_LIST?: Array<DbBaseTypes.InitialLoadCaseItem>;
-    INCREMENT_STEP?: HyperSIncrementStep;
-    ITER_PARAM?: unknown;
+    /** 기하 비선형 타입 (0=None, 1=Large Disp, 2=P-Delta) */
+    GEO_NONL_TYPE: number;
+    /** 초기 하중 유형 (0=비선형 정적 해석, 1=정적/시공단계 결과 가져오기) */
+    INIT_LOAD_TYPE: number;
+    /** 초기 하중 목록 */
+    INIT_LOAD_LIST?: Array<{
+      /** 하중 케이스명 */
+      LC_NAME: string;
+      /** 스케일 계수 */
+      SF: number;
+      /** 하중 케이스 타입 */
+      LC_TYPE: string;
+    }>;
+    /** 초기 하중 케이스 증분 스텝 */
+    INCREMENT_STEP?: {
+      /** 증분 스텝 수 */
+      NSTEP?: number;
+      /** 결과 출력 타입 (0=최종 스텝만, 1=스텝 증분) */
+      OUT_TYPE?: number;
+      /** 스텝 증분 수 */
+      STEP_INC?: number;
+    };
+    /** 반복 파라미터 */
+    ITER_PARAM: {
+      /** 수렴 실패 허용 */
+      PERMIT_FAIL?: boolean;
+      /** 최대 반복 횟수 */
+      MAX_ITER: number;
+      /** 수렴 판정 기준 */
+      NORM_CTRL?: {
+        /** 변위 노름 */
+        DISP?: {
+          /** 사용 여부 */
+          OPT_USE: boolean;
+          /** 수렴 허용값 */
+          VALUE: number;
+        };
+        /** 하중 노름 */
+        FORCE?: {
+          /** 사용 여부 */
+          OPT_USE: boolean;
+          /** 수렴 허용값 */
+          VALUE: number;
+        };
+        /** 에너지 노름 */
+        ENERGY?: {
+          /** 사용 여부 */
+          OPT_USE: boolean;
+          /** 수렴 허용값 */
+          VALUE: number;
+        };
+      };
+      /** 강성 업데이트 방식 (0=Custom, 1=FullNR, 2=InitStiff) */
+      STIFF_UPD_SCHEME?: number;
+      /** 강성 업데이트 전 반복 횟수 */
+      ITER_BEF_UPDATE?: number;
+      /** 최대 이분법 수준 */
+      MAX_BISECT_LEVEL?: number;
+      /** 스마트 이분법 */
+      SMART_BISECT?: boolean;
+      /** 발산 임계값 */
+      DIVERGENCE_THRESHOLD?: number;
+      /** 선형 탐색 옵션 */
+      LINE_SEARCH?: {
+        /** 선형 탐색 사용 여부 */
+        OPT_USE: boolean;
+        /** 선형 탐색 옵션 (0=자동, 1=사용자 정의) */
+        LINE_SEARCH_OPT: number;
+        /** 선형 탐색 시작 반복 번호 */
+        START_ITER_NO: number;
+        /** 최대 선형 탐색 반복 횟수 */
+        MAX_LINE_SEARCH_ITER: number;
+        /** 선형 탐색 허용오차 */
+        LINE_SEARCH_TOL: number;
+      };
+    };
+    /** NL 해석 초기 하중 요소 무시 여부 */
     IGNORE_ELEM?: boolean;
+    /** 적용 변위 기준 (0=미변형, 1=변형) */
     SEQ_LOAD_TYPE?: number;
-    HINGE_OPT?: HyperSHingeOption;
+    /** 비탄성 힌지 데이터 옵션 */
+    HINGE_OPT?: {
+      /** Point Spring Support (0=비선형 특성 적용, 1=선형으로 간주) */
+      PSPRING_SUP?: number;
+      /** Elastic Link (0=비선형 특성 적용, 1=선형으로 간주) */
+      EL?: number;
+    };
   }
   export interface HyperSOutputOption {
     HINGE_OUT?: number;

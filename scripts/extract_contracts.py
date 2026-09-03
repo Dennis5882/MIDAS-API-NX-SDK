@@ -1131,6 +1131,18 @@ _STRUCTURAL_TABLE_SPLITS: dict[str, tuple[StructuralTableMerge, ...]] = {
         StructuralTableMerge(1, ((),), ("civil",)),
         StructuralTableMerge(2, ((),), ("gen",)),
     ),
+    # Each heading names the object it belongs to outright - "INCREMENT_STEP
+    # 서브 파라미터", "HINGE_OPT 서브 파라미터" - and both tables are flat, so the
+    # rows land where the heading says. The section's third sub-table,
+    # "ITER_PARAM 서브 파라미터" (index 2), is deliberately absent: its Key column
+    # states paths rather than property names (`DISP` -> `{OPT_USE, VALUE}`) and
+    # lists LINE_SEARCH's five children as sibling rows, so merging it as parsed
+    # would invent a field named '{OPT_USE, VALUE}' and flatten two levels. That
+    # one is recorded as a manual defect and resolved by hand in the contract.
+    "/db/THGC-M1": (
+        StructuralTableMerge(1, (("INCREMENT_STEP",),)),
+        StructuralTableMerge(3, (("HINGE_OPT",),)),
+    ),
     "/db/WVLD": (
         StructuralTableMerge(1, (("COEF",),)),
         StructuralTableMerge(2, (("COEF", "COEF_S"), ("COEF", "COEF_R"), ("COEF", "OVER_S"), ("COEF", "OVER_R"))),
