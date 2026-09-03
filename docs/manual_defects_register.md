@@ -49,6 +49,7 @@ known to be patch-specific.
 | MD-14 | 2026-09-03 | `/db/TDME` `CODENAME` `Japan(hydration)` / `Japan(elastic)` | `04_DB_Properties.md` lists both in its `CODENAME` code table (entries 16 and 17), each with its own table of required extra fields, and marks neither as belonging to a different product | both answer `Wrong Field` on Gen NX and Civil NX - **correctly**: these two codes are iGen's, and the NX API is not talking to iGen | **manual repo** - the code table needs to say which entries are not available through this API | open |
 | MD-15 | 2026-09-03 | `Create Only`, in `/db/SECT` and `/db/SPFC` | the manual's only two `Create Only` cells, both a `CALC_OPT`, say the server honours the field on create and ignores it on modify | true of `/db/SECT` exactly; false of `/db/SPFC`, where `CALC_OPT: true` on a PUT rebuilds the spectrum. Separately, `/db/SPFC`'s KDS(41-17-00:2019) worked example is refused as printed - it omits `CALC_OPT` and supplies no `aFUNC` | **MIDASIT article** (one value used for two contracts, and an example that cannot run) | open |
 | MD-16 | 2026-09-03 | `/db/MVHL` common Specifications table | `VEHICLE_TYPE_NAME` and `STANDARD_CODE` Required, `USER_LOAD_TYPE` Optional, with no reference to the branch | `VEHICLE_LOAD_NUM` selects the branch: `1` needs the type name, `2` needs neither it nor `STANDARD_CODE`, which is not required under either. `USER_LOAD_TYPE` is ignored on input. The chapter's own KSCE-LSD15 examples show the branch; the table that claims to cover every code does not mention it | **MIDASIT article** (the table), which the manual repo transcribes faithfully | open |
+| MD-17 | 2026-09-03 | `/db/PRES` `DIRECTION`, and the section's own example | the Specifications row marks `DIRECTION` Optional with the default `"NORMAL"`, and the section's Python example assigns a PLATE + FACE load with that value | on a PLATE with `FACE_EDGE_TYPE: "FACE"` both the omission and `"NORMAL"` are refused with the same `(Item:Load Direction)` error. The same section's own availability matrix already marks Normal `-` for that pair, and its JSON request example sends `"LZ"` | **MIDASIT article** (the row, and one of its two examples) | open |
 
 
 ## Detail
@@ -555,3 +556,50 @@ predefined "Load Model 1" vehicle carries no `STANDARD_CODE` key at all.
 > the branch, and nobody re-read it afterwards. Fourth entry in the family that
 > includes the retracted B-1/B-2/B-3 and MD-14's iGen codes - see the
 > 2026-09-03 passage in `docs/live_verification_notes.md`.
+
+### MD-17 - a row, an example and a matrix that disagree inside one section
+
+`/db/PRES` section 10 of `06_DB_Static_Loads.md` makes three statements about
+`DIRECTION` and they do not agree with each other. Measured on Gen NX,
+2026-09-03, against the plate in `scripts/live_crud_check.py`'s own seed -
+element 4, `ELEM_TYPE: "PLATE"`, `FACE_EDGE_TYPE: "FACE"`, `EDGE_FACE: 1`,
+varying only this field:
+
+| `DIRECTION` | result |
+| --- | --- |
+| omitted | **refused** - `[Error] Errors detected in Pressure Loads Data.(Item:Load Direction)` |
+| `"NORMAL"` | **refused** - same message |
+| `"LZ"` | stored |
+| `"GZ"` | stored |
+
+| the section says | where | agrees with the product |
+| --- | --- | --- |
+| Optional, default `"NORMAL"` | Specifications row (7) | **no**, in both halves |
+| `"DIRECTION": "NORMAL"` on a PLATE + FACE load | Python example | **no** |
+| `"DIRECTION": "LZ"` on a PLATE + FACE load | JSON request example | yes |
+| Normal is `-` for PLATE + FACE | availability matrix | yes |
+
+So the correction is not a discovery about the product - the section already
+documents the product correctly, twice. Two of its four statements were written
+without reference to the other two, and the Required column is the one a caller
+reads first.
+
+That both halves of row (7) are wrong matters more than either alone. A wrong
+default a caller could ignore; here omitting the field is how the default gets
+applied, so the row is wrong in the direction that makes following it fail.
+There is also no default an SDK can substitute - which way a pressure acts is
+an engineering decision - so both SDKs require the field on the wire instead
+(contract rule `db-pres-direction-must-be-explicit`) and leave `"NORMAL"` alone
+when a caller types it, because the matrix says it is right for the other three
+`ELEM_TYPE`/`FACE_EDGE_TYPE` pairs.
+
+This is vendor report **B-4**, which survived the 2026-09-01 re-audit that
+retracted B-1, B-2, B-3 and B-7 - narrowed then, and now measured with the
+error string rather than inferred.
+
+**A separate, smaller thing in the same section.** `GET /info/db/PRES` declares
+an eleventh member of `ITEMS` that the chapter never mentions: `PSLT_KEY`, an
+integer referring to a `/db/PSLT` pressure load type. Both products return it
+and their schemas agree. It is in the contract as `requirement: unstated` -
+`/info` declares no `required` array, and reading the manual's silence as
+"Optional" would be a claim nobody has made.

@@ -138,12 +138,6 @@ def _declares_non_field_argument(draft: dict) -> bool:
 #: standing finding. Re-check an entry here against
 #: docs/live_verification_notes.md before adding to it.
 NEEDS_HAND_REVIEW = {
-    "/db/PRES": (
-        "measured 2026-09-03: with PLATE+FACE, omitting DIRECTION and sending "
-        "'NORMAL' are both refused, so the row's Optional/'NORMAL' default is "
-        "wrong in both halves. Needs the correction recorded, not the manual "
-        "transcribed"
-    ),
     "/db/REBW": "every field name in its manual section is wrong live",
     "/db/REBC": "the official article itself is wrong about its array shape",
     "/db/REBB": "its write path is broken server-side, not a shape question",

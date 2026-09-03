@@ -574,3 +574,36 @@ records:
       be back-stamped.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: pres-direction-2026-09-03
+    endpoints: ["/db/PRES"]
+    date: "2026-09-03"
+    nxVersion: >-
+      unknown - MIDAS Gen NX 2026 (v2.1), build string not readable through the
+      API, and this session predates the 09/02/2026 patch installed on
+      2026-09-03. /mapikey/verify returns only the program name and no /doc
+      route serves a version, so the build is left unstated rather than
+      guessed - including backwards from the About dialog of a build that was
+      not yet installed when this ran.
+    level: write
+    outcome: success
+    method: >-
+      Against a document confirmed empty first and seeded with
+      scripts/live_crud_check.py's own _seed_model - the repo's confirmed
+      payloads, not a hand-written model - then every record deleted by id
+      afterwards. No /doc/NEW was needed or called. Element 4 is the seed's
+      plate: ELEM_TYPE PLATE, FACE_EDGE_TYPE FACE, EDGE_FACE 1, FORCES
+      [-10, -10, -10, -10], varying only DIRECTION.
+    finding: >-
+      Omitting DIRECTION and sending the documented default "NORMAL" are both
+      refused with the same message, [Error] Errors detected in Pressure Loads
+      Data.(Item:Load Direction); "LZ" and "GZ" are stored. So both halves of
+      the Specifications row are wrong for this combination, and the official
+      article's own availability matrix already said so - Normal is "-" for
+      PLATE + FACE while the local and global axes are "O". Separately, the
+      element is resolved from the Assign key and not from ITEMS[].ID: the same
+      body under key 1 was refused with [Error] The element no. 1 is an element
+      type in which Pressure loads cannot be assigned, which is true of the
+      seed's beam 1 and not of its plate 4.
+    evidence:
+      - docs/live_verification_notes.md

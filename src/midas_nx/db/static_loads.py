@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any, List, Optional, TypedDict
 
-from ..client import MidasClient
+from ..client import MidasClient, MidasRequestError
 from .base import GEN_ONLY, DbResource, ItemGroupFields
 
 
@@ -136,9 +136,54 @@ class PressureLoadPayload(TypedDict):
 
 
 class PressureLoad(DbResource):
+    """See :class:`PressureLoadItem`.
+
+    :meth:`create`/:meth:`update` require an explicit ``DIRECTION`` on every
+    item, because the documented default is one the product refuses.
+    """
+
     ENDPOINT = "/db/PRES"
     NAME = "Assign Pressure Loads"
     PRODUCTS = frozenset({"gen", "civil"})
+
+    @classmethod
+    def _require_direction(cls, items: dict, method: str) -> None:
+        """Refuse an item that leaves DIRECTION to the documented default.
+
+        Omitting it makes the server apply ``"NORMAL"``, and on a PLATE with
+        FACE_EDGE_TYPE ``"FACE"`` it then refuses the record with
+        ``[Error] Errors detected in Pressure Loads Data.(Item:Load
+        Direction)``. The caller never chose that value - the manual told them
+        the field was optional - so requiring it here replaces a default
+        nobody typed with a decision somebody made. Sending ``"NORMAL"``
+        explicitly is left alone: it is a valid choice for the other three
+        documented ELEM_TYPE/FACE_EDGE_TYPE pairs. Contract rule
+        db-pres-direction-must-be-explicit.
+        """
+        for key, item in items.items():
+            if not isinstance(item, dict):
+                continue
+            for index, entry in enumerate(item.get("ITEMS") or []):
+                if isinstance(entry, dict) and "DIRECTION" not in entry:
+                    raise MidasRequestError(
+                        "DIRECTION must be sent explicitly for /db/PRES: the "
+                        'documented default "NORMAL" is refused on a PLATE '
+                        'with FACE_EDGE_TYPE "FACE" (Hint: "LZ" is the '
+                        "element local axis normal to a plate face) "
+                        f"(record {key}, ITEMS[{index}])",
+                        method=method,
+                        endpoint=cls.ENDPOINT,
+                    )
+
+    @classmethod
+    def create(cls, items: dict, client: Optional[MidasClient] = None) -> dict:
+        cls._require_direction(items, "POST")
+        return super().create(items, client=client)
+
+    @classmethod
+    def update(cls, items: dict, client: Optional[MidasClient] = None) -> dict:
+        cls._require_direction(items, "PUT")
+        return super().update(items, client=client)
 
 
 class SpecifiedDisplacementValue(TypedDict, total=False):

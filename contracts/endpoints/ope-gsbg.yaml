@@ -242,6 +242,7 @@ sdkRules:
     kind: reject_request
     appliesTo: [POST]
     fields: [BATCH_LIST, BRDG_GROUP, COMPONENTS, COMBINED_COMP, 7TH_DOF_TYPE]
+    rejects: forbidden_combination
     reason: >-
       The manual explicitly forbids BRDG_GROUP, COMPONENTS, COMBINED_COMP, and
       7TH_DOF_TYPE when BATCH=true (including omission), and forbids BATCH_LIST

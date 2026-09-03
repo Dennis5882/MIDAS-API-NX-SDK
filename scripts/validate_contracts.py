@@ -791,6 +791,32 @@ def _check_python_base_safety_rules(
                 "sdkRules",
                 "Python reject_request allowed an empty /db/MVHL VEH_DEFAULT",
             )
+
+        # The third reject_request shape: not a value the server discards but
+        # a value it never sees. /db/PRES's DIRECTION is documented Optional
+        # with a default the product refuses, so the omission is what fails.
+        # Probed separately because the check is the opposite one - the field
+        # has to be absent for the rule to fire - and a runtime that only
+        # implemented the empty-object case would pass every probe above.
+        from midas_nx.db.static_loads import PressureLoad
+
+        try:
+            PressureLoad.create(
+                {4: {"ITEMS": [{"LCNAME": "CONTRACT-PROBE", "FACE_EDGE_TYPE": "FACE"}]}}
+            )
+        except MidasRequestError:
+            pass
+        except Exception:  # pragma: no cover - reported, not raised
+            failures.add(
+                "sdkRules",
+                "Python reject_request let a /db/PRES item with no DIRECTION reach the "
+                "transport; the server applies the documented default and refuses it",
+            )
+        else:
+            failures.add(
+                "sdkRules",
+                "Python reject_request allowed a /db/PRES item with no DIRECTION",
+            )
         probes += 1
 
     if declared["per_id_request"]:

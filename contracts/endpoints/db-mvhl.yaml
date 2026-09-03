@@ -1027,6 +1027,7 @@ sdkRules:
     kind: reject_request
     appliesTo: [POST, PUT]
     fields: [VEH_DEFAULT]
+    rejects: empty_value
     reason: >-
       An empty VEH_DEFAULT is accepted and silently saves nothing. The failure
       is invisible to the caller - success-shaped response, no error key - so

@@ -60,6 +60,28 @@ export interface DbResourceMetadata {
    * Generated from `contracts/endpoints/*.yaml`; see `contracts/README.md`.
    */
   rejectEmptyFields?: readonly string[];
+  /**
+   * Payload fields this endpoint's contract requires be present, checked on
+   * `create()` and `update()`. A path may name an array's entries -
+   * `ITEMS[].DIRECTION` - in which case every entry is checked.
+   *
+   * The opposite of `payloadDefaults`, and it exists for the case that one
+   * cannot cover: a documented default the product refuses. `/db/PRES`'s
+   * `DIRECTION` is the case that motivated it. The manual marks it Optional
+   * with the default `"NORMAL"`, and on a `PLATE` with `FACE_EDGE_TYPE`
+   * `"FACE"` - the commonest pressure load there is - the server refuses both
+   * the omission and that value, with the same message. Filling the default in
+   * would send a value known to fail; there is no other value an SDK could
+   * supply without deciding which way the pressure acts. So the caller is
+   * asked, before the request goes out.
+   *
+   * Sending the documented value explicitly is left alone: it is legitimate
+   * for the other element-type combinations the manual's own availability
+   * matrix lists.
+   *
+   * Generated from `contracts/endpoints/*.yaml`; see `contracts/README.md`.
+   */
+  requiredExplicitFields?: readonly string[];
 }
 
 export class DbResource<TPayload extends object = JsonObject> {
@@ -127,6 +149,63 @@ export class DbResource<TPayload extends object = JsonObject> {
     }
   }
 
+  /**
+   * Refuse a record that leaves a contract-required field to a default the
+   * product does not accept. See `requiredExplicitFields`.
+   */
+  private requireExplicit(items: ItemMap<TPayload>, method: HttpMethod): void {
+    const paths = this.metadata.requiredExplicitFields;
+    if (!paths?.length) return;
+    for (const [id, payload] of Object.entries(items)) {
+      for (const path of paths) {
+        for (const [where, holder] of this.resolve(payload as Record<string, unknown>, path, id)) {
+          const field = path.slice(path.lastIndexOf(".") + 1);
+          if (holder[field] === undefined) {
+            throw new MidasRequestError(
+              `${field} must be sent explicitly for ${this.metadata.endpoint}: its documented default is one the product refuses (${where})`,
+              { method, endpoint: this.metadata.endpoint },
+            );
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Every object a dotted path addresses, with a label naming where it sits.
+   * `A[].B` yields one entry per element of `A`; a missing or wrongly typed
+   * step yields none, because a field cannot be absent from a place the
+   * caller never sent.
+   */
+  private resolve(
+    payload: Record<string, unknown>,
+    path: string,
+    id: string,
+  ): [string, Record<string, unknown>][] {
+    const steps = path.split(".").slice(0, -1);
+    let holders: [string, Record<string, unknown>][] = [[`record ${id}`, payload]];
+    for (const step of steps) {
+      const array = step.endsWith("[]");
+      const key = array ? step.slice(0, -2) : step;
+      const next: [string, Record<string, unknown>][] = [];
+      for (const [where, holder] of holders) {
+        const value = holder[key];
+        if (array) {
+          if (!Array.isArray(value)) continue;
+          value.forEach((entry, index) => {
+            if (entry && typeof entry === "object" && !Array.isArray(entry)) {
+              next.push([`${where}, ${key}[${index}]`, entry as Record<string, unknown>]);
+            }
+          });
+        } else if (value && typeof value === "object" && !Array.isArray(value)) {
+          next.push([`${where}, ${key}`, value as Record<string, unknown>]);
+        }
+      }
+      holders = next;
+    }
+    return holders;
+  }
+
   private normalize(items: ItemMap<TPayload>): ItemMap<TPayload> {
     const defaults = this.metadata.payloadDefaults;
     if (!defaults) return items;
@@ -138,6 +217,7 @@ export class DbResource<TPayload extends object = JsonObject> {
   async create(items: ItemMap<TPayload>, client: MidasClient = getDefaultClient()): Promise<JsonObject> {
     this.check(client, "POST");
     this.rejectEmpty(items, "POST");
+    this.requireExplicit(items, "POST");
     return client.request("POST", this.metadata.endpoint, {
       Assign: stringifyKeys(this.normalize(items)),
     });
@@ -146,6 +226,7 @@ export class DbResource<TPayload extends object = JsonObject> {
   async update(items: ItemMap<TPayload>, client: MidasClient = getDefaultClient()): Promise<JsonObject> {
     this.check(client, "PUT");
     this.rejectEmpty(items, "PUT");
+    this.requireExplicit(items, "PUT");
     return client.request("PUT", this.metadata.endpoint, {
       Assign: stringifyKeys(this.normalize(items)),
     });

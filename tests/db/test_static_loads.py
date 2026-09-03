@@ -1,7 +1,9 @@
 import json
 
+import pytest
 import responses
 
+from midas_nx.client import MidasRequestError
 from midas_nx.db.static_loads import (
     BeamLoad,
     FinishingMaterialLoad,
@@ -102,6 +104,85 @@ def test_pressure_load_create_keyed_by_element_id(gen_client):
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["116"]["ITEMS"][0]["FORCES"] == [-10, 0, 0, 0, 0]
+
+
+@responses.activate
+def test_pressure_load_refuses_an_item_without_a_direction(gen_client):
+    """Omission is what fails, not a wrong value.
+
+    The manual marks DIRECTION Optional with the default "NORMAL". On a PLATE
+    with FACE_EDGE_TYPE "FACE" the server applies that default and then refuses
+    the record with "[Error] Errors detected in Pressure Loads Data.(Item:Load
+    Direction)" - the identical message it gives for "NORMAL" sent explicitly.
+    There is no default an SDK could fill in instead, so it asks. Contract rule
+    db-pres-direction-must-be-explicit.
+    """
+    responses.add(responses.POST, "https://x.test:443/gen/db/PRES", json={}, status=200)
+
+    with pytest.raises(MidasRequestError, match=r"ITEMS\[0\]"):
+        PressureLoad.create(
+            {116: {"ITEMS": [{"LCNAME": "LC", "ELEM_TYPE": "PLATE", "FACE_EDGE_TYPE": "FACE"}]}},
+            client=gen_client,
+        )
+
+    assert not responses.calls, "the request must not reach the product"
+
+
+@responses.activate
+def test_pressure_load_update_requires_a_direction_too(gen_client):
+    """A PUT that drops the field is the same refused request as a POST."""
+    responses.add(responses.PUT, "https://x.test:443/gen/db/PRES", json={}, status=200)
+
+    with pytest.raises(MidasRequestError):
+        PressureLoad.update({116: {"ITEMS": [{"LCNAME": "LC"}]}}, client=gen_client)
+
+    assert not responses.calls
+
+
+@responses.activate
+def test_pressure_load_still_allows_normal_sent_explicitly(gen_client):
+    """The value is legitimate; only leaving it to the default is not.
+
+    The section's own availability matrix marks NORMAL available for
+    PLATE+EDGE, SOLID+PRES and PLANE+EDGE. Refusing it outright would break
+    three of the four documented combinations to protect the fourth.
+    """
+    responses.add(responses.POST, "https://x.test:443/gen/db/PRES", json={}, status=200)
+
+    PressureLoad.create(
+        {
+            116: {
+                "ITEMS": [
+                    {
+                        "LCNAME": "LC",
+                        "ELEM_TYPE": "SOLID",
+                        "FACE_EDGE_TYPE": "PRES",
+                        "DIRECTION": "NORMAL",
+                        "EDGE_FACE": 1,
+                        "FORCES": [-10, 0, 0, 0, 0],
+                    }
+                ]
+            }
+        },
+        client=gen_client,
+    )
+
+    sent = json.loads(responses.calls[0].request.body)["Assign"]["116"]
+    assert sent["ITEMS"][0]["DIRECTION"] == "NORMAL"
+
+
+@responses.activate
+def test_pressure_load_leaves_a_record_without_items_alone(gen_client):
+    """No ITEMS means the rule has no field to be missing from.
+
+    ITEMS' own requiredness is a separate row of the same table; inventing a
+    check for it here would refuse the DELETE-shaped bodies that carry none.
+    """
+    responses.add(responses.POST, "https://x.test:443/gen/db/PRES", json={}, status=200)
+
+    PressureLoad.create({116: {}}, client=gen_client)
+
+    assert len(responses.calls) == 1
 
 
 @responses.activate

@@ -102,6 +102,70 @@ describe("contract safety probes", () => {
     ]);
   });
 
+  it("reject_request: refuses a record that omits a field the contract requires explicitly", async () => {
+    // /db/PRES's DIRECTION, nested one array deep. The manual marks it
+    // Optional with the default "NORMAL", and on a PLATE with FACE_EDGE_TYPE
+    // "FACE" the server refuses both the omission and that value. There is no
+    // default an SDK could fill in - which way the pressure acts is the
+    // engineer's decision - so the request is stopped and the caller asked.
+    const fetch = vi.fn<typeof globalThis.fetch>();
+    const client = new MidasClient({ fetch });
+    const resource = defineDbResource({
+      ...metadata,
+      requiredExplicitFields: ["ITEMS[].DIRECTION"],
+    });
+    const item = { LCNAME: "LC", ELEM_TYPE: "PLATE", FACE_EDGE_TYPE: "FACE", EDGE_FACE: 1 };
+
+    await expect(resource.create({ 4: { ITEMS: [item] } }, client)).rejects.toBeInstanceOf(
+      MidasRequestError,
+    );
+    await expect(resource.update({ 4: { ITEMS: [item] } }, client)).rejects.toBeInstanceOf(
+      MidasRequestError,
+    );
+    // The second entry is the one missing it; the message has to say which.
+    await expect(
+      resource.create({ 4: { ITEMS: [{ ...item, DIRECTION: "LZ" }, item] } }, client),
+    ).rejects.toThrow(/ITEMS\[1\]/);
+    expect(fetch).not.toHaveBeenCalled();
+
+    // Sending the documented value explicitly stays the caller's to make: it
+    // is valid for the other ELEM_TYPE/FACE_EDGE_TYPE pairs the manual lists.
+    const allowed = vi
+      .fn<typeof globalThis.fetch>()
+      .mockImplementation(async () => response({ message: "ok" }));
+    await resource.create(
+      { 4: { ITEMS: [{ ...item, DIRECTION: "NORMAL" }] } },
+      new MidasClient({ fetch: allowed }),
+    );
+    expect(allowed).toHaveBeenCalledOnce();
+  });
+
+  it("reject_request: an absent or wrongly typed container is not a missing field", async () => {
+    // A record with no ITEMS at all never reaches the field, so there is
+    // nothing for this rule to say about it. Refusing it here would invent a
+    // requirement the contract does not state - ITEMS' own requiredness is a
+    // separate row - and would break the DELETE-shaped bodies that carry none.
+    const fetch = vi
+      .fn<typeof globalThis.fetch>()
+      .mockImplementation(async () => response({ message: "ok" }));
+    const client = new MidasClient({ fetch });
+    const resource = defineDbResource({
+      ...metadata,
+      requiredExplicitFields: ["ITEMS[].DIRECTION"],
+    });
+
+    await resource.create({ 4: {} }, client);
+    await resource.create({ 4: { ITEMS: [] } }, client);
+    await resource.create({ 4: { ITEMS: "not an array" } }, client);
+    expect(fetch).toHaveBeenCalledTimes(3);
+  });
+
+  it("reject_request: the generated /db/PRES resource carries the contract's path", () => {
+    expect(resources.db.staticLoads.pressureLoad.metadata.requiredExplicitFields).toEqual([
+      "ITEMS[].DIRECTION",
+    ]);
+  });
+
   it("per_id_request: sends one DELETE URL per id and stops after the first failure", async () => {
     const resource = defineDbResource(metadata);
     const successfulFetch = vi
