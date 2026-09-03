@@ -686,3 +686,28 @@ records:
       it does.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: hyper-s-info-404-recheck-2026-09-03
+    endpoints: ["/db/IEHG-GL-M1", "/db/IEHG-PSS-M1", "/db/IEHG-TRUSS-M1"]
+    date: "2026-09-03"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 09/02/2026
+    level: read
+    outcome: success
+    method: >-
+      GET only, on the patched build, with controls in the same session. The
+      previous capture of these 404s is dated 2026-09-02 and predates the
+      patch, and "uncontractable in principle" is too strong a claim to leave
+      resting on a build nobody recorded. /info was requested for the three
+      targets and for two siblings whose /info is known to answer,
+      /db/IEHG-BEAM-M1 and /db/MATL-M1, plus a plain GET on each route.
+    finding: >-
+      Unchanged. The three still 404 on /info while both controls return a
+      schema in the same session, so the 404 belongs to those three endpoints
+      and not to the session, the key or the build. Their plain routes answer
+      {"message": ""}, so they are served endpoints with no schema route rather
+      than absent ones - already recorded, and re-confirmed. They therefore
+      still have no permitted contract source: the manual states a URL and a
+      methods line and nothing else, /info states nothing, and neither SDK may
+      be read as a source.
+    evidence:
+      - docs/live_verification_notes.md

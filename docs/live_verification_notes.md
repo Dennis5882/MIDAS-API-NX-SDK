@@ -8520,3 +8520,35 @@ A live call cannot confirm *why*, and this one does not try to. That the two
 codes belong to iGen is the author's knowledge (2026-09-03); what a probe can
 establish is that the refusal is real, reproducible on a known build, on both
 products, and not an artefact of the companion fields. It is.
+
+## 2026-09-03 (patched build) — the three uncontractable Hyper-S endpoints, re-checked
+
+"Uncontractable in principle" is a strong claim, and it was resting on an
+`/info` capture dated 2026-09-02 — the day before the 09/02/2026 patch went on.
+Re-probed on the patched build. GET only.
+
+| | Civil NX v2.2 | Gen NX v2.1 |
+| --- | --- | --- |
+| `/info/db/IEHG-BEAM-M1` (control) | schema returned | 404 |
+| `/info/db/MATL-M1` (control) | schema returned | 404 |
+| `/info/db/IEHG-GL-M1` | **404** | 404 |
+| `/info/db/IEHG-PSS-M1` | **404** | 404 |
+| `/info/db/IEHG-TRUSS-M1` | **404** | 404 |
+| `GET /db/IEHG-{GL,PSS,TRUSS}-M1` | `{"message": ""}` | 404 |
+
+**Nothing moved.** The claim stands, and now on a build that is on the record.
+
+The controls are what make that worth writing down. `/info/db/IEHG-BEAM-M1` —
+the sibling in the same family, same chapter, same product — answers in the
+same session, so the 404 on the other three is a property of those three
+endpoints rather than of the session, the key or the build.
+
+Two things this re-confirms rather than discovers. The routes themselves are
+served on Civil: `GET /db/IEHG-GL-M1` answers `{"message": ""}`, so these are
+real endpoints with no schema route, not absent ones — already recorded, and
+still true. And Gen 404s on every row including both controls, which is
+`HYPER_S_ONLY` behaving as `db/base.py` documents.
+
+So the three keep no permitted source: the manual gives them a URL and a
+methods line, `/info` gives nothing, and this repo does not read a request
+shape out of an SDK. They stay uncontracted until one of those changes.

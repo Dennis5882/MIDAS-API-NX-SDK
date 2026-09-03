@@ -20,7 +20,10 @@ that ROADMAP.md doesn't capture.
 > contract/SDK disagreement again, one of them naming a different feature
 > entirely (`/db/IMFM-M1` is a material *link*, not `/db/IMFM` plus Hyper-S).
 > Three Hyper-S endpoints remain uncontractable in principle: no manual table
-> and a 404 on `/info` leaves them no permitted source.
+> and a 404 on `/info` leaves them no permitted source. Re-checked 2026-09-03
+> on build 09/02/2026 with `/db/IEHG-BEAM-M1` as a control in the same session
+> — unchanged, and now on a recorded build. Their plain routes do answer, so
+> they are served endpoints with no schema route rather than absent ones.
 >
 > **2.7.6 empties the hand-review gate.** Six endpoints had been
 > held out of the source of truth because transcribing their manual sections
