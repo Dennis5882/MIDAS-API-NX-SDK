@@ -37,6 +37,10 @@ verification:
       ref: db-write-sweep-2026-08-27
     - product: civil
       ref: tdme-codename-branches-2026-09-03
+    - product: civil
+      ref: tdme-japan-codenames-2026-09-03-patched
+    - product: gen
+      ref: tdme-japan-codenames-2026-09-03-patched
     - product: gen
       ref: tdme-codename-branches-2026-09-03
 
@@ -147,10 +151,14 @@ fields:
     # carries eighteen. "Japan(hydration)" and "Japan(elastic)" are iGen's,
     # a different MIDAS product, and both answer Wrong Field on Gen NX and
     # Civil NX - measured against a live product on 2026-09-03, seven
-    # spellings, both products. Declaring them would say this API serves a
-    # value it does not. Registered as MD-14; the fields those two branches
-    # need are still in /info/db/TDME, because the schema is shared across
-    # products even where the code names are not.
+    # spellings, both products, and re-measured the same day on build
+    # 09/02/2026 with each branch's own companion fields supplied. The answer
+    # stayed Wrong Field rather than becoming "input data contain errors",
+    # which is what a recognised code name with wrong companions returns, so
+    # the value itself is what this API does not know. Declaring them would
+    # say this API serves a value it does not. Registered as MD-14; the fields
+    # those two branches need are still in /info/db/TDME, because the schema
+    # is shared across products even where the code names are not.
   - key: STRENGTH
     description: >-
       Compression Strength
@@ -460,7 +468,10 @@ manualDefects:
       own table of extra fields and neither marked as belonging elsewhere.
     actual: >-
       Both answer `Wrong Field` on Gen NX and Civil NX, in all seven spellings
-      tried. That refusal is correct: the two codes are iGen's, a different
+      tried, and again on build 09/02/2026 with each branch's documented
+      companion fields supplied - so it is the code name that is unknown, not
+      its companions that are missing. That refusal is correct: the two codes
+      are iGen's, a different
       MIDAS product, and this API is not talking to iGen. The product is not
       failing to honour its documentation - the table is listing values the
       reader cannot reach here and saying nothing about it. This contract's

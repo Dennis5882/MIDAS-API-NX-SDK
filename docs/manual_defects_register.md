@@ -27,7 +27,8 @@ and nobody read the About dialog before the patch went on - see
 docs/live_verification_notes.md. A GET-only sweep from each SDK immediately
 after the patch (282 of 282 on Civil NX v2.2, 267 of 267 on Gen NX v2.1, both
 build 09/02/2026) found no route changed, so nothing in these entries is
-known to be patch-specific.
+known to be patch-specific. **MD-14 has since been re-measured on the patched
+build itself** and is no longer resting on an unrecorded one.
 
 ## Register
 
@@ -46,7 +47,7 @@ known to be patch-specific.
 | MD-11 | 2026-09-02 | nine parameter rows' Value Type | the Specifications table's Value Type cell | the same section's own JSON Schema types the property differently. Seven are integer/number width; two change the shape of the value - `/db/SBDO` `AXIS_VECTOR` (Number vs an array of numbers, and its own Request Example sends six) and `/db/MATL` `PARAM` (Object vs array) | **manual repo** transcription | `/db/SBDO` and `/db/MATL` corrected in their contracts; 7 open |
 | MD-12 | 2026-09-02 | seven Hyper-S `-M1` sections, and the `/info` schema that substitutes for them | the section gives a URL, a methods line and a Zendesk link - no Specifications table and no JSON Schema, so live `/info` is the only permitted contract source | `/info` serves a full schema for four of them and 404s for three, and the schemas it serves are malformed twice over: every apostrophe in a `description` is escaped `\'`, which is not a JSON escape, and `maxItems` is stated on an array's `items` subschema instead of the array | **MIDASIT product** (`/info` output) and **MIDASIT article** (the missing section content) | open |
 | MD-13 | 2026-09-02 | `/db/TDME` `"SCALE"` | the Specifications table gives the key `"SCALE"` to two different rows - "Scale Factor" (Number) and "Function Data" (Array[Object] of `{TIME, COMP, TENS, ELAST}`) | unknown; the section has no Request Example that sends either, so which row owns the name cannot be read from the chapter. The vendored manual flags this itself in a ⚠️ callout and transcribes both verbatim | **MIDASIT article** (the duplicate is in the source) | **answered 2026-09-02**: `/info` names the array `aDATA`; row 6's key is wrong |
-| MD-14 | 2026-09-03 | `/db/TDME` `CODENAME` `Japan(hydration)` / `Japan(elastic)` | `04_DB_Properties.md` lists both in its `CODENAME` code table (entries 16 and 17), each with its own table of required extra fields, and marks neither as belonging to a different product | both answer `Wrong Field` on Gen NX and Civil NX - **correctly**: these two codes are iGen's, and the NX API is not talking to iGen | **manual repo** - the code table needs to say which entries are not available through this API | open |
+| MD-14 | 2026-09-03 | `/db/TDME` `CODENAME` `Japan(hydration)` / `Japan(elastic)` | `04_DB_Properties.md` lists both in its `CODENAME` code table (entries 16 and 17), each with its own table of required extra fields, and marks neither as belonging to a different product | both answer `Wrong Field` on Gen NX and Civil NX - **correctly**: these two codes are iGen's, and the NX API is not talking to iGen | **manual repo** - the code table needs to say which entries are not available through this API | open; re-measured 2026-09-03 on build 09/02/2026, both products |
 | MD-15 | 2026-09-03 | `Create Only`, in `/db/SECT` and `/db/SPFC` | the manual's only two `Create Only` cells, both a `CALC_OPT`, say the server honours the field on create and ignores it on modify | true of `/db/SECT` exactly; false of `/db/SPFC`, where `CALC_OPT: true` on a PUT rebuilds the spectrum. Separately, `/db/SPFC`'s KDS(41-17-00:2019) worked example is refused as printed - it omits `CALC_OPT` and supplies no `aFUNC` | **MIDASIT article** (one value used for two contracts, and an example that cannot run) | open |
 | MD-16 | 2026-09-03 | `/db/MVHL` common Specifications table | `VEHICLE_TYPE_NAME` and `STANDARD_CODE` Required, `USER_LOAD_TYPE` Optional, with no reference to the branch | `VEHICLE_LOAD_NUM` selects the branch: `1` needs the type name, `2` needs neither it nor `STANDARD_CODE`, which is not required under either. `USER_LOAD_TYPE` is ignored on input. The chapter's own KSCE-LSD15 examples show the branch; the table that claims to cover every code does not mention it | **MIDASIT article** (the table), which the manual repo transcribes faithfully | open |
 | MD-17 | 2026-09-03 | `/db/PRES` `DIRECTION`, and the section's own example | the Specifications row marks `DIRECTION` Optional with the default `"NORMAL"`, and the section's Python example assigns a PLATE + FACE load with that value | on a PLATE with `FACE_EDGE_TYPE: "FACE"` both the omission and `"NORMAL"` are refused with the same `(Item:Load Direction)` error. The same section's own availability matrix already marks Normal `-` for that pair, and its JSON request example sends `"LZ"` | **MIDASIT article** (the row, and one of its two examples) | open |
@@ -462,6 +463,21 @@ The extra fields those two branches require (`TENS_STRN_FACTOR`, `bUSE`, `A`,
 endpoint's schema is shared across products even where the code names are not.
 A contract for `/db/TDME` should therefore carry the fields and leave those two
 code names out of the branch it declares for this API.
+
+**Re-measured 2026-09-03 on build 09/02/2026**, both products, after the patch
+landed - the original pass predates it and its build was never captured. The
+refusal reproduces exactly, with a `CEB-FIP(2010)` control storing in the same
+session to show the write path was working.
+
+That pass added something the first did not try. The first varied only the
+spelling, seven times; this one also supplied each branch's own documented
+companion fields (`TENS_STRN_FACTOR`, `bUSE`, `A`, `B`, `D` for Hydration,
+`iECTYPE` for Elastic). The answer stayed `Wrong Field` and never became
+`[Error] ... input data contain errors` - the message a *recognised* code name
+with wrong companions produces. That rules out the last reading in which the
+name is known and only its extra fields were missing, and leaves the value
+itself unknown to this API, which is what "these are iGen's" predicts. A live
+call cannot confirm the *why*, and the probe did not try to.
 
 > An earlier version of this entry claimed the product refuses a value its own
 > documentation gives it, and held the claim back pending a re-fetch of the

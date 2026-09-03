@@ -723,3 +723,33 @@ records:
     evidence:
       - docs/live_verification_notes.md
       - schema/info-schemas.json
+
+  - id: tdme-japan-codenames-2026-09-03-patched
+    endpoints: ["/db/TDME"]
+    date: "2026-09-03"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 09/02/2026
+    level: write
+    outcome: success
+    method: >-
+      A re-measurement of the narrow claim in MD-14, on a build that is on the
+      record - the earlier pass predates the 09/02/2026 patch and its build was
+      never captured. Against a document confirmed empty first (GET /db/NODE,
+      /db/ELEM, /db/MATL and /db/TDME all answered {"message": ""}), so no
+      /doc/NEW was needed or called. The payload is live_crud_check.py's
+      confirmed /db/TDME case with CODENAME varied and nothing else, plus each
+      Japan branch's own documented companion fields in a second pass. Every
+      record deleted by the id a GET reported, and the table read back empty.
+    finding: >-
+      Japan(hydration) and Japan(elastic) still answer Wrong Field, with and
+      without their branch fields. The CEB-FIP(2010) control stored in the same
+      session, so the write path was working and the refusal is about the
+      value. New relative to the earlier pass, which varied only spelling:
+      supplying TENS_STRN_FACTOR/bUSE/A/B/D and iECTYPE does not change the
+      answer to "[Error] ... input data contain errors", which is the message a
+      recognised code name with wrong companions produces. That rules out the
+      reading in which the name is known and only its extra fields were
+      missing. Why the value is unknown - that these two codes are iGen's - is
+      not something a live call can establish, and this record does not claim
+      it does.
+    evidence:
+      - docs/live_verification_notes.md

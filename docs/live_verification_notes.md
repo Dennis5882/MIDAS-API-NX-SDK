@@ -8479,3 +8479,44 @@ wrong endpoint string, a wrong product gate or a broken response unwrapping in
 that package answers 404 there and nowhere else - the Python sweep cannot see
 an npm defect. That the two agree exactly (282 Civil, 267 Gen) is itself the
 cross-check.
+
+## 2026-09-03 (patched build) — MD-14's two Japan code names, re-measured on 09/02/2026
+
+The earlier `/db/TDME` probe ran before the 09/02/2026 patch was installed, so
+its build was never recorded. This re-runs the narrow part of it against a
+build both About dialogs name — MIDAS Gen NX 2026 (v2.1) and MIDAS Civil NX
+2026 (v2.2), both build 09/02/2026 — because "we do not know which build that
+was" is a weak place to leave a claim that a documented value does not work.
+
+Both documents were confirmed empty first (`GET /db/NODE`, `/db/ELEM`,
+`/db/MATL`, `/db/TDME` all `{"message": ""}`), so no `/doc/NEW` was needed or
+called. The payload is `live_crud_check.py`'s confirmed `/db/TDME` case with
+`CODENAME` varied and nothing else. Both tables were empty again afterwards,
+each record deleted by the id a `GET` reported.
+
+| sent | Gen NX | Civil NX |
+| --- | --- | --- |
+| `CEB-FIP(2010)` (control) | **stored** | **stored** |
+| `Japan(hydration)`, name only | `Wrong Field` | `Wrong Field` |
+| `Japan(hydration)` + `TENS_STRN_FACTOR`, `bUSE`, `A`, `B`, `D` | `Wrong Field` | `Wrong Field` |
+| `Japan(elastic)`, name only | `Wrong Field` | `Wrong Field` |
+| `Japan(elastic)` + `iECTYPE` | `Wrong Field` | `Wrong Field` |
+
+**MD-14 stands, on a build that is now on the record.** The control stored on
+both products in the same session, so the write path was working and the
+refusal is about the value.
+
+**One thing is new.** The earlier pass varied only the spelling — seven of
+them. This pass supplied each branch's own documented companion fields as well,
+and the answer did not move: still `Wrong Field`, never `[Error] ... input data
+contain errors`. Those two error strings are this file's standing diagnostic
+pair — the second means the value was recognised and its companions were wrong.
+Getting the first with the companions present rules out the remaining reading
+in which the code name is known and only its extra fields were missing. What
+is left is the value itself being unknown to this API, which is what "these are
+iGen's" predicts.
+
+A live call cannot confirm *why*, and this one does not try to. That the two
+codes belong to iGen is the author's knowledge (2026-09-03); what a probe can
+establish is that the refusal is real, reproducible on a known build, on both
+products, and not an artefact of the companion fields. It is.
