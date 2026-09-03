@@ -753,3 +753,29 @@ records:
       it does.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: standing-write-failures-recheck-2026-09-03
+    endpoints: ["/db/NLLP", "/db/GRDP", "/db/TDMF", "/db/RPSC", "/db/REBB"]
+    date: "2026-09-03"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 09/02/2026
+    level: write
+    outcome: success
+    method: >-
+      A new build can fix things, so the failures this repo carries forward
+      were re-asked rather than assumed. Payloads from schema/live-cases.json,
+      the committed fixture the harness emits; none of these declares a needs
+      seed, so a direct probe sends what the harness would. No /doc/NEW - the
+      tables were checked empty first, and a refused write changes nothing.
+    finding: >-
+      Nothing was fixed by the patch. /db/NLLP still answers Unknown Error and
+      /db/GRDP, /db/TDMF, /db/RPSC and /db/REBB still answer Wrong Field, each
+      with the same message as before. Two of these are root-caused and three
+      are not: /db/NLLP was bisected to a single field across four
+      APPLICATION_TYPE combinations, and /db/REBB was tested down to a
+      literally empty item, which cannot contain a wrong field. The rest are
+      confirmed=False cases whose cause has never been isolated, so this record
+      says their symptom survives the patch and nothing more - it is not
+      evidence that the product is at fault for those.
+    riskRef: db-rebb-write-path-refuses-every-payload
+    evidence:
+      - docs/live_verification_notes.md

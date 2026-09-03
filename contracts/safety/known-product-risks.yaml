@@ -200,6 +200,6 @@ risks:
       /info schema and the section's own example rather than on a round trip:
       there is no write to confirm them with.
     firstObserved: "2026-08-27"
-    lastChecked: "2026-08-27"
+    lastChecked: "2026-09-03"
     evidence:
       - docs/live_verification_notes.md

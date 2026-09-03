@@ -711,3 +711,23 @@ records:
       be read as a source.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: standing-write-failures-recheck-2026-09-03
+    endpoints: ["/db/NLLP", "/db/WVLD", "/db/GRDP", "/db/TDMF", "/db/RPSC", "/db/STRPSSM"]
+    date: "2026-09-03"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 09/02/2026
+    level: write
+    outcome: success
+    method: >-
+      The Civil half of the same pass. Payloads from schema/live-cases.json;
+      none declares a needs seed. No /doc/NEW - tables checked empty first.
+    finding: >-
+      Nothing was fixed by the patch. /db/NLLP answers Unknown Error;
+      /db/WVLD, /db/GRDP, /db/TDMF, /db/RPSC and /db/STRPSSM answer Wrong
+      Field. Only /db/NLLP is root-caused among these - bisected 2026-08-31 to
+      a single field across four APPLICATION_TYPE combinations, all answering
+      identically. The other five are confirmed=False cases whose cause has
+      never been isolated; their symptom surviving the patch is what this
+      records, not a product defect.
+    evidence:
+      - docs/live_verification_notes.md

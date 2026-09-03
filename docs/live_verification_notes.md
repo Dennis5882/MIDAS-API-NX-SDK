@@ -8552,3 +8552,41 @@ still true. And Gen 404s on every row including both controls, which is
 So the three keep no permitted source: the manual gives them a URL and a
 methods line, `/info` gives nothing, and this repo does not read a request
 shape out of an SDK. They stay uncontracted until one of those changes.
+
+## 2026-09-03 (patched build) — the standing write failures, re-asked
+
+A new build can fix things, so the failures this repo carries forward were
+re-asked rather than assumed. Payloads come from `schema/live-cases.json`, the
+committed fixture the harness emits; none of these six declares a `needs` seed,
+so a direct probe reproduces what the harness would send. No `/doc/NEW` — the
+tables were checked empty first, and a refused write changes nothing.
+
+| endpoint | Civil NX v2.2 | Gen NX v2.1 |
+| --- | --- | --- |
+| `/db/NLLP` | `Unknown Error` | `Unknown Error` |
+| `/db/WVLD` | `Wrong Field` | not declared for Gen |
+| `/db/GRDP` | `Wrong Field` | `Wrong Field` |
+| `/db/TDMF` | `Wrong Field` | `Wrong Field` |
+| `/db/RPSC` | `Wrong Field` | `Wrong Field` |
+| `/db/STRPSSM` | `Wrong Field` | not declared for Gen |
+| `/db/REBB` (empty item) | not declared for Civil | `Wrong Field` |
+
+**Nothing was fixed by the patch.** Every one reproduces, with the same message
+as before.
+
+**Two of these are root-caused and five are not, and the difference matters.**
+`/db/NLLP` was bisected on 2026-08-31 to a single field across four
+`(APPLICATION_TYPE, APPLICATION_TYPE_D)` combinations, all answering the
+identical `Unknown Error`; `/db/REBB` was tested down to a literally empty item
+on 2026-08-27, which cannot contain a wrong field. Those two are product-side
+by elimination. `/db/WVLD`, `/db/GRDP`, `/db/TDMF`, `/db/RPSC` and
+`/db/STRPSSM` are `confirmed=False` cases whose cause has never been isolated —
+this repo's own rule is that an unconfirmed failure is not an SDK defect until
+someone triages the fixture, and across three earlier runs most such failures
+turned out to be a fixture or a wrong documented value rather than the product.
+Re-running them proves the symptom survives the patch. It does not promote any
+of the five to a product defect, and this entry is not evidence for that claim.
+
+What the re-check is worth: `db-rebb-write-path-refuses-every-payload` now has
+a `lastChecked` on a build that is on the record, and the five unconfirmed
+cases are known to be still worth triaging rather than possibly already fixed.
