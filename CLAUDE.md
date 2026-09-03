@@ -222,6 +222,16 @@ Two things that have already caused rework:
   fallible, and cross-check `/info/db/...` against real populated data before trusting a
   Specifications table that's never been checked against a live model with actual data in it.
   `WallRebarPayload`/`WallRebarItem` in `db/design.py` now documents the server-confirmed shape.
+  **`/db/REBC` is the second confirmed case**, found 2026-08-27: the manual and MIDASIT's own
+  article both give a single-object `MAIN_BAR` with a top-level `DO`, and a live POST comparison
+  settled it — the documented shape answers `Wrong Field` while the server's `vMAIN_BAR` array
+  with a per-entry `D0` answers a *domain* error naming the missing target section. That
+  distinction between "shape refused" and "shape accepted, target missing" is the cheapest way to
+  tell a wrong payload from a wrong model, and it is worth reaching for before permuting field
+  names. Both endpoints, plus `/db/REBB` and `/db/FIMP`, are now contracted from `/info` with
+  `provenance: live_corrected` and the manual's claim recorded under `manualDefects` — that is the
+  pattern to follow when a section is wrong rather than merely stale, and
+  `contracts/endpoints/db-rebw.yaml` is the worked example.
 - **A GET can still pop a modal dialog if the open document lives under `Program Files`** (or any
   other path a standard account can't write to) — confirmed live 2026-07-29 with `GET /db/CAMB`
   (FCM Camber Control, a plain read): with the product's own bundled tutorial file open from
@@ -265,7 +275,12 @@ Two things that have already caused rework:
   defect was a wrong docstring. Five documented values turned out to be wrong live — `/db/SECF`'s
   key, `/db/PRES`'s default `DIRECTION`, the `"KDS2016"` time-dependent-material code name,
   and `/db/TDMT`'s whole code-name enum (it wants `"European"`, not any CEB-FIP spelling) — so
-  treat the manual's worked examples as a starting guess. `/db/MVHL`'s `VEHICLE_LOAD_NUM` used
+  treat the manual's worked examples as a starting guess. `/db/PRES`'s case was measured in
+  full on 2026-09-03 and is worse than a wrong default: omitting the field is *how* the bad
+  default gets applied, so both halves of the row fail together. Both SDKs now require
+  `DIRECTION` explicitly rather than substitute anything — there is no value an SDK could pick,
+  because which way a pressure acts is an engineering decision (contract rule
+  `db-pres-direction-must-be-explicit`). `/db/MVHL`'s `VEHICLE_LOAD_NUM` used
   to head that list and was **retracted 2026-09-03**: it is the endpoint's branch discriminator
   (`1` standard, `2` user-defined) and behaves as documented. What is wrong there is the common
   Specifications table stating branch-1 and branch-2 requiredness with no reference to the
