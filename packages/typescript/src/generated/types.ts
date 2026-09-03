@@ -2921,73 +2921,60 @@ export namespace DbDesignTypes {
       vSTORY_NAME?: Array<string>;
     }>;
   }
-  export interface BraceMainBarSpec {
+  export interface BraceMainBarItem {
     NAME?: string;
     NUM?: number;
     ROW?: number;
+    D0?: number;
   }
   export interface BraceRebarItem {
-    CREATE_SUB_SECTION?: boolean;
     ID?: number;
-    ELEMS?: unknown;
-    MAIN_BAR?: BraceMainBarSpec;
+    vMAIN_BAR?: Array<BraceMainBarItem>;
     SHEAR_BAR_END?: HoopShearBarSpec;
     SHEAR_BAR_CEN?: HoopShearBarSpec;
-    DO?: number;
-    HOOP_TYPE?: string;
+    HOOP_TYPE?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface BraceRebarPayload {
-    /** 콘크리트 가새 철근 항목 (min 1) */
+    /** Concrete Brace Rebar Items */
     ITEMS: Array<{
-      /** 서브 단면 생성 여부 */
-      CREATE_SUB_SECTION?: boolean;
-      /** 서브 단면 ID (읽기 전용) */
+      /** ID (read only) */
       ID?: number;
-      /** 요소 번호 입력 (CREATE_SUB_SECTION=true 일 때. KEYS / TO / STRUCTURE_GROUP_NAME 중 택1) Applies when ITEMS.CREATE_SUB_SECTION = true. */
-      ELEMS?: {
-        /** 요소 ID 배열 */
-        KEYS?: Array<number>;
-        /** ID 범위 (예: "1to160") */
-        TO?: string;
-        /** 구조 그룹 이름 */
-        STRUCTURE_GROUP_NAME?: string;
-      };
-      /** 주철근 */
-      MAIN_BAR: {
-        /** 규격 · D4~D57 */
-        NAME: string;
-        /** 개수 (min 4) */
-        NUM: number;
-        /** 열(row) 수 */
-        ROW: number;
-      };
-      /** 단부 전단철근 */
+      /** Main Bar List */
+      vMAIN_BAR?: Array<{
+        /** Main Name */
+        NAME?: string;
+        /** Number */
+        NUM?: number;
+        /** Row */
+        ROW?: number;
+        /** Concrete Face ~ Center of Rebar */
+        D0?: number;
+      }>;
+      /** Shear Bar-End */
       SHEAR_BAR_END: {
-        /** 후프 철근 규격 · D4~D57 */
-        NAME: string;
-        /** 다리 개수 (local Y) */
-        LEG_Y: number;
-        /** 다리 개수 (local Z) */
-        LEG_Z: number;
-        /** 철근 간격 @ */
-        DIST: number;
+        /** Name */
+        NAME?: string;
+        /** Leg y */
+        LEG_Y?: number;
+        /** Leg z */
+        LEG_Z?: number;
+        /** Dist */
+        DIST?: number;
       };
-      /** 중앙부 전단철근 */
+      /** Shear Bar-Center */
       SHEAR_BAR_CEN: {
-        /** 후프 철근 규격 · D4~D57 */
-        NAME: string;
-        /** 다리 개수 (local Y) */
-        LEG_Y: number;
-        /** 다리 개수 (local Z) */
-        LEG_Z: number;
-        /** 철근 간격 @ */
-        DIST: number;
+        /** Name */
+        NAME?: string;
+        /** Leg y */
+        LEG_Y?: number;
+        /** Leg z */
+        LEG_Z?: number;
+        /** Dist */
+        DIST?: number;
       };
-      /** 콘크리트면~철근중심 거리 (do) */
-      DO: number;
-      /** 후프 철근 타입 · "Ties" / "Spirals" */
-      HOOP_TYPE?: string;
+      /** Hoop Type (1=Tied, 2=Spiral) */
+      HOOP_TYPE?: number;
     }>;
   }
 }
@@ -3467,6 +3454,10 @@ export namespace DbLoadCombinationsTypes {
     DESC?: string;
     bCB?: boolean;
     vCOMB?: Array<LoadCombinationItem>;
+    bES?: boolean;
+    iSERV_TYPE?: number;
+    nLCOMTYPE?: number;
+    nSEISTYPE?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface LoadCombinationConcretePayload {
@@ -3484,14 +3475,21 @@ export namespace DbLoadCombinationsTypes {
     DESC?: string;
     /** 결과 타입 (읽기 전용) · false=General / true=Min/Max/All */
     bCB?: boolean;
+    /** EC Serv Type */
+    iSERV_TYPE?: number;
+    /** EC Lcom Type */
+    nLCOMTYPE?: number;
+    /** EC Seis Type */
+    nSEISTYPE?: number;
     /** 조합 항목 배열 */
-    vCOMB: Array<JsonObject>;
-    /** (vCOMB) 해석 타입 */
-    ANAL: string;
-    /** (vCOMB) 하중케이스명 */
-    LCNAME: string;
-    /** (vCOMB) 계수 */
-    FACTOR: number;
+    vCOMB: Array<{
+      /** 해석 타입 */
+      ANAL: string;
+      /** 하중케이스명 */
+      LCNAME: string;
+      /** 계수 */
+      FACTOR: number;
+    }>;
   }
   /** Generated from contracts/endpoints/. */
   export interface CuttingLinePayload {
@@ -3565,14 +3563,23 @@ export namespace DbLoadCombinationsTypes {
     DESC?: string;
     /** 결과 타입 (읽기 전용) */
     bCB?: boolean;
+    /** E (Concrete design only) */
+    bES?: boolean;
+    /** EC Serv Type */
+    iSERV_TYPE?: number;
+    /** EC Lcom Type */
+    nLCOMTYPE?: number;
+    /** EC Seis Type */
+    nSEISTYPE?: number;
     /** 조합 항목 배열 */
-    vCOMB: Array<JsonObject>;
-    /** (vCOMB) 해석 타입 */
-    ANAL: string;
-    /** (vCOMB) 하중케이스명 */
-    LCNAME: string;
-    /** (vCOMB) 계수 */
-    FACTOR: number;
+    vCOMB: Array<{
+      /** 해석 타입 */
+      ANAL: string;
+      /** 하중케이스명 */
+      LCNAME: string;
+      /** 계수 */
+      FACTOR: number;
+    }>;
   }
   /** Generated from contracts/endpoints/. */
   export interface LoadCombinationGeneralPayload {
@@ -3588,14 +3595,23 @@ export namespace DbLoadCombinationsTypes {
     DESC?: string;
     /** 결과 타입 (읽기 전용) · false=General / true=Min/Max/All */
     bCB?: boolean;
+    /** E (Concrete design only) */
+    bES?: boolean;
+    /** EC Serv Type */
+    iSERV_TYPE?: number;
+    /** EC Lcom Type */
+    nLCOMTYPE?: number;
+    /** EC Seis Type */
+    nSEISTYPE?: number;
     /** 조합 항목 배열 */
-    vCOMB: Array<JsonObject>;
-    /** (vCOMB) 해석 타입 */
-    ANAL: string;
-    /** (vCOMB) 하중케이스명 */
-    LCNAME: string;
-    /** (vCOMB) 계수 */
-    FACTOR: number;
+    vCOMB: Array<{
+      /** 해석 타입 */
+      ANAL: string;
+      /** 하중케이스명 */
+      LCNAME: string;
+      /** 계수 */
+      FACTOR: number;
+    }>;
   }
   /** Generated from contracts/endpoints/. */
   export interface LoadCombinationSRCPayload {
@@ -3611,14 +3627,23 @@ export namespace DbLoadCombinationsTypes {
     DESC?: string;
     /** 결과 타입 (읽기 전용) */
     bCB?: boolean;
+    /** E (Concrete design only) */
+    bES?: boolean;
+    /** EC Serv Type */
+    iSERV_TYPE?: number;
+    /** EC Lcom Type */
+    nLCOMTYPE?: number;
+    /** EC Seis Type */
+    nSEISTYPE?: number;
     /** 조합 항목 배열 */
-    vCOMB: Array<JsonObject>;
-    /** (vCOMB) 해석 타입 */
-    ANAL: string;
-    /** (vCOMB) 하중케이스명 */
-    LCNAME: string;
-    /** (vCOMB) 계수 */
-    FACTOR: number;
+    vCOMB: Array<{
+      /** 해석 타입 */
+      ANAL: string;
+      /** 하중케이스명 */
+      LCNAME: string;
+      /** 계수 */
+      FACTOR: number;
+    }>;
   }
   /** Generated from contracts/endpoints/. */
   export interface LoadCombinationSeismicPayload {
@@ -3634,14 +3659,23 @@ export namespace DbLoadCombinationsTypes {
     DESC?: string;
     /** 결과 타입 (읽기 전용) */
     bCB?: boolean;
+    /** E (Concrete design only) */
+    bES?: boolean;
+    /** EC Serv Type */
+    iSERV_TYPE?: number;
+    /** EC Lcom Type */
+    nLCOMTYPE?: number;
+    /** EC Seis Type */
+    nSEISTYPE?: number;
     /** 조합 항목 배열 */
-    vCOMB: Array<JsonObject>;
-    /** (vCOMB) 해석 타입 */
-    ANAL: string;
-    /** (vCOMB) 하중케이스명 */
-    LCNAME: string;
-    /** (vCOMB) 계수 */
-    FACTOR: number;
+    vCOMB: Array<{
+      /** 해석 타입 */
+      ANAL: string;
+      /** 하중케이스명 */
+      LCNAME: string;
+      /** 계수 */
+      FACTOR: number;
+    }>;
   }
   /** Generated from contracts/endpoints/. */
   export interface LoadCombinationSteelPayload {
@@ -3657,14 +3691,23 @@ export namespace DbLoadCombinationsTypes {
     DESC?: string;
     /** 결과 타입 (읽기 전용) · false=General / true=Min/Max/All */
     bCB?: boolean;
+    /** E (Concrete design only) */
+    bES?: boolean;
+    /** EC Serv Type */
+    iSERV_TYPE?: number;
+    /** EC Lcom Type */
+    nLCOMTYPE?: number;
+    /** EC Seis Type */
+    nSEISTYPE?: number;
     /** 조합 항목 배열 */
-    vCOMB: Array<JsonObject>;
-    /** (vCOMB) 해석 타입 */
-    ANAL: string;
-    /** (vCOMB) 하중케이스명 */
-    LCNAME: string;
-    /** (vCOMB) 계수 */
-    FACTOR: number;
+    vCOMB: Array<{
+      /** 해석 타입 */
+      ANAL: string;
+      /** 하중케이스명 */
+      LCNAME: string;
+      /** 계수 */
+      FACTOR: number;
+    }>;
   }
 }
 
@@ -7115,13 +7158,14 @@ export namespace DbPushoverTypes {
     /** 초기하중 방법 · 비선형 정적해석 수행: "PERFORM_ANAL" / 정적·시공단계 해석결과 가져오기: "IMPORT_RESULT" */
     INITLOADMETHOD?: string;
     /** 초기하중 케이스 목록 */
-    INITLOAD?: Array<JsonObject>;
-    /** (INITLOAD) 하중케이스명 */
-    LC_NAME: string;
-    /** (INITLOAD) 하중케이스 타입 */
-    LC_TYPE: string;
-    /** (INITLOAD) 축척계수 */
-    SF: number;
+    INITLOAD?: Array<{
+      /** 하중케이스명 */
+      LC_NAME: string;
+      /** 하중케이스 타입 */
+      LC_TYPE: string;
+      /** 축척계수 */
+      SF: number;
+    }>;
     /** 초기하중이 비선형 정적해석일 때, 무시 요소(IEPI) 고려 여부 */
     bCONSIGNOREELEM?: boolean;
     /** 비선형 해석 옵션 */

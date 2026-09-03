@@ -141,6 +141,66 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+  - key: bES
+    description: >-
+      E (Concrete design only)
+    type: boolean
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: measured against a live product - GET /info/db/LCOM-GEN
+    # declares this on both Civil and Gen. The chapter's own "LCOM 타입별 비교 요약"
+    # table says this endpoint has no 추가 필드 at all, and no Parameters row
+    # names it. Recorded `unstated`: /info declares no `required` array and
+    # the manual makes no claim about this field, so "Optional" would be a
+    # claim nobody has made. See MD-35.
+  - key: iSERV_TYPE
+    description: >-
+      EC Serv Type
+    type: integer
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: measured against a live product - GET /info/db/LCOM-GEN
+    # declares this on both Civil and Gen. The chapter's own "LCOM 타입별 비교 요약"
+    # table says this endpoint has no 추가 필드 at all, and no Parameters row
+    # names it. Recorded `unstated`: /info declares no `required` array and
+    # the manual makes no claim about this field, so "Optional" would be a
+    # claim nobody has made. See MD-35.
+  - key: nLCOMTYPE
+    description: >-
+      EC Lcom Type
+    type: integer
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: measured against a live product - GET /info/db/LCOM-GEN
+    # declares this on both Civil and Gen. The chapter's own "LCOM 타입별 비교 요약"
+    # table says this endpoint has no 추가 필드 at all, and no Parameters row
+    # names it. Recorded `unstated`: /info declares no `required` array and
+    # the manual makes no claim about this field, so "Optional" would be a
+    # claim nobody has made. See MD-35.
+  - key: nSEISTYPE
+    description: >-
+      EC Seis Type
+    type: integer
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: measured against a live product - GET /info/db/LCOM-GEN
+    # declares this on both Civil and Gen. The chapter's own "LCOM 타입별 비교 요약"
+    # table says this endpoint has no 추가 필드 at all, and no Parameters row
+    # names it. Recorded `unstated`: /info declares no `required` array and
+    # the manual makes no claim about this field, so "Optional" would be a
+    # claim nobody has made. See MD-35.
   - key: vCOMB
     description: >-
       조합 항목 배열
@@ -152,34 +212,47 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
-  - key: ANAL
-    description: >-
-      (vCOMB) 해석 타입
-    type: string
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    safeToOmit: unverified
-    provenance: manual
-  - key: LCNAME
-    description: >-
-      (vCOMB) 하중케이스명
-    type: string
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    safeToOmit: unverified
-    provenance: manual
-  - key: FACTOR
-    description: >-
-      (vCOMB) 계수
-    type: number
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    safeToOmit: unverified
-    provenance: manual
+    properties:
+      - key: ANAL
+        description: >-
+          해석 타입
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: the manual nests this under 'vCOMB' by naming it in the
+        # description, with no number of its own - `| — | (vCOMB) ... |`. The
+        # contract published it as a sibling of vCOMB until 2026-09-04; GET
+        # /info/db/LCOM-GEN declares it inside. See MD-35.
+      - key: LCNAME
+        description: >-
+          하중케이스명
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: the manual nests this under 'vCOMB' by naming it in the
+        # description, with no number of its own - `| — | (vCOMB) ... |`. The
+        # contract published it as a sibling of vCOMB until 2026-09-04; GET
+        # /info/db/LCOM-GEN declares it inside. See MD-35.
+      - key: FACTOR
+        description: >-
+          계수
+        type: number
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
 
+        # RESOLVED: the manual nests this under 'vCOMB' by naming it in the
+        # description, with no number of its own - `| — | (vCOMB) ... |`. The
+        # contract published it as a sibling of vCOMB until 2026-09-04; GET
+        # /info/db/LCOM-GEN declares it inside. See MD-35.
 sdkRules:
   - id: db-lcom-gen-delete-per-id
     kind: per_id_request
@@ -205,6 +278,25 @@ sdkRules:
 
 knownDefects:
   - ref: db-delete-body-empties-table
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      The Parameters table names six fields, and the chapter's own
+      "LCOM 타입별 비교 요약" table states this endpoint's 추가 필드 as none at all (an em dash).
+    actual: >-
+      `GET /info/db/LCOM-GEN` declares four more on both Civil and Gen: `bES`
+      ("E (Concrete design only)"), `iSERV_TYPE` ("EC Serv Type"), `nLCOMTYPE`
+      ("EC Lcom Type") and `nSEISTYPE` ("EC Seis Type"). The same four appear on
+      all six `/db/LCOM-*` endpoints, so the summary table's per-endpoint 추가 필드
+      column does not describe what the server accepts. Recorded `unstated`, not
+      `optional`: /info declares no `required` array and the manual makes no
+      claim about these fields at all. Same shape as MD-10 and MD-22.
+    evidence: >-
+      GET /info/db/LCOM-GEN on Civil NX and Gen NX, captured 2026-09-03 in the full
+      /info sweep, against docs/manual/13_DB_Load_Combinations.md's Parameters
+      table for this section and its "LCOM 타입별 비교 요약" table. Registered as
+      MD-35.
 
 extraction:
   source: 13_DB_Load_Combinations.md line 102

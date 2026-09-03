@@ -558,25 +558,39 @@ class WallRebar(DbResource):
 # --- 13. /db/REBR — Modify Brace Rebar --------------------------------------
 
 
-class BraceMainBarSpec(TypedDict, total=False):
-    """REBR ITEMS.MAIN_BAR."""
+class BraceMainBarItem(TypedDict, total=False):
+    """REBR ITEMS.vMAIN_BAR entry.
+
+    ⚠️ Rewritten 2026-09-04, the same way `ColumnMainBarItem` above was on
+    2026-08-27 and for the same reason. The manual gives this endpoint a
+    single `MAIN_BAR` object with a top-level `DO`, plus
+    `CREATE_SUB_SECTION`/`ELEMS`. `GET /info/db/REBR` declares none of that:
+    it takes `vMAIN_BAR`, an array whose entries each carry their own `D0`
+    (a zero, not the letter), and has no `CREATE_SUB_SECTION` or `ELEMS` at
+    all - field for field, the shape `/db/REBC` was found to have.
+
+    No POST comparison has been run against `/db/REBR` itself, so this rests
+    on the `/info` schema plus that precedent rather than on a round trip of
+    its own. What `/db/REBC` established is what happens to a caller who
+    follows the documented shape there: `"Wrong Field"`, refused outright.
+    Recorded as MD-34.
+    """
 
     NAME: str  # Main rebar size, D4~D57, required
-    NUM: int  # Rebar count (min 4), required
+    NUM: int  # Total rebar count (min 4), required
     ROW: int  # Number of rows, required
+    D0: float  # Concrete-face-to-rebar-center distance, required
 
 
 class BraceRebarItem(TypedDict, total=False):
-    """ITEMS entry."""
+    """ITEMS entry. See BraceMainBarItem's docstring for the 2026-09-04
+    rewrite context."""
 
-    CREATE_SUB_SECTION: bool  # default false, optional
-    ID: int  # Sub Section ID, read-only, optional
-    ELEMS: SubSectionElems  # required if CREATE_SUB_SECTION=true
-    MAIN_BAR: BraceMainBarSpec  # required
+    ID: int  # Sub Section number, read-only
+    vMAIN_BAR: List[BraceMainBarItem]  # Main Bar List, required
     SHEAR_BAR_END: HoopShearBarSpec  # required
     SHEAR_BAR_CEN: HoopShearBarSpec  # required
-    DO: float  # Concrete-face-to-rebar-center distance, required
-    HOOP_TYPE: str  # "Ties"/"Spirals", default "Ties", optional
+    HOOP_TYPE: int  # 1=Tied, 2=Spiral -- Integer, not the string the manual gives
 
 
 class BraceRebarPayload(TypedDict, total=False):

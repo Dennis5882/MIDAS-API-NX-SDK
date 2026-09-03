@@ -6,6 +6,40 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Fixed — `/db/REBR`'s payload type was the shape the server refuses
+
+- `BraceRebarPayload` and the exported `BraceMainBarSpec` described a single
+  `MAIN_BAR` object with a top-level `DO`, a string `HOOP_TYPE`, and
+  `CREATE_SUB_SECTION`/`ELEMS`. `GET /info/db/REBR` declares none of that. The
+  type is now `vMAIN_BAR`, an array whose entries each carry `D0` (a zero, not
+  the letter), with an integer `HOOP_TYPE` and no sub-section fields.
+
+- `BraceMainBarSpec` is renamed `BraceMainBarItem` and loses nothing but the
+  wrong nesting. This is the same correction `/db/REBC` received in 2.5.0, for
+  the same reason and with the same evidence: chapter 24 describes both
+  endpoints identically and the server takes both identically, which is not how
+  the chapter describes them.
+
+### Fixed — `vCOMB` and `INITLOAD` members were published outside their array
+
+- All six `LoadCombination*Payload` types declared `ANAL`, `LCNAME` and
+  `FACTOR` as siblings of `vCOMB`, which was therefore typed
+  `Array<JsonObject>` — an array whose items nothing described. `vCOMB` is now
+  `Array<{ANAL, LCNAME, FACTOR}>`. `PushoverAnalysisControlDataPayload`'s
+  `INITLOAD` gains its `{LC_NAME, LC_TYPE, SF}` items the same way.
+
+- The manual states this nesting outright (`| — | (vCOMB) 해석 타입 | "ANAL" |`)
+  and the contract generator did not read that form. The Python TypedDicts had
+  it right, so this aligns the npm types with what `midas-nx` on PyPI already
+  published.
+
+### Added — four fields on every `/db/LCOM-*` payload
+
+- `bES`, `iSERV_TYPE`, `nLCOMTYPE` and `nSEISTYPE` are optional members of all
+  six load-combination payload types. `GET /info/db/LCOM-*` declares them on
+  every endpoint and both products; the manual's comparison table says five of
+  the six have no additional fields at all. Additive — no existing code breaks.
+
 ### Removed — the `Assign` envelope is no longer a member of 60 payload types
 
 - **This is a fix, not a narrowing.** `DbResource.create()` and `.update()`

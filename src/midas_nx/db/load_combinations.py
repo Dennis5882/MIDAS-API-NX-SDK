@@ -42,14 +42,28 @@ class LoadCombinationPayload(TypedDict, total=False):
     bCB: bool  # (Read-only) min/max cb type: false=General/true=Min/Max/All
     vCOMB: List[LoadCombinationItem]  # Combination List, required
 
+    # 2026-09-04: four fields the chapter names on none of these endpoints -
+    # its "LCOM 타입별 비교 요약" table gives five of the six an em dash under
+    # 추가 필드 and gives LCOM-CONC only bES. GET /info/db/LCOM-* declares all
+    # four on all six, on both products. Recorded here for the same reason the
+    # contracts record them: a caller cannot set a field the type does not have.
+    # See MD-35.
+    bES: bool  # E (Concrete design only) -- /info only, requiredness unstated
+    iSERV_TYPE: int  # EC Serv Type -- /info only, requiredness unstated
+    nLCOMTYPE: int  # EC Lcom Type -- /info only, requiredness unstated
+    nSEISTYPE: int  # EC Seis Type -- /info only, requiredness unstated
+
 
 class LoadCombinationConcretePayload(LoadCombinationPayload):
     """docs/manual/13_DB_Load_Combinations.md #2 — /db/LCOM-CONC Specifications table.
 
     ACTIVE: "INACTIVE"/"STRENGTH"/"SERVICE".
-    """
 
-    bES: bool  # Concrete design only option (E), default false, optional
+    `bES` moved to the base payload on 2026-09-04: the chapter documents it
+    here only, but /info declares it on all six endpoints. This subclass is
+    kept because it is a published name and because ACTIVE's value set really
+    does differ, which no field list records.
+    """
 
 
 class LoadCombinationGeneral(DbResource):

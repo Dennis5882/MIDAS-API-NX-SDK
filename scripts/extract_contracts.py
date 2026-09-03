@@ -250,6 +250,15 @@ _NUMBER_PATH_SEGMENT = re.compile(r"[-.](?:\d+|\(\d+\))")
 # root rows in the load-combination manuals.
 _DESC_ARRAY_CHILD = re.compile(r"^-\s+")
 
+# Two chapters mark a member by naming its parent in the Description cell and
+# leaving the No. column an em dash: `| — | (vCOMB) 해석 타입 | "ANAL" | ...`.
+# This is the most explicit nesting form in the whole manual - the parent is
+# named, not implied by adjacency or by a number - and it was the one form
+# nothing read, so 21 rows across chapters 13 and 14 became root fields. Six
+# /db/LCOM-* contracts and /db/POGD published ANAL/LCNAME/FACTOR and
+# LC_NAME/LC_TYPE/SF as siblings of the array that contains them.
+_DESC_NAMED_PARENT = re.compile(r"^\((?P<parent>[A-Za-z_][A-Za-z0-9_]*)\)\s*")
+
 
 def _slug(value: str) -> str:
     return re.sub(r"-+", "-", re.sub(r"[^a-z0-9]+", "-", value.lower())).strip("-")
@@ -949,6 +958,27 @@ def _nest(flat: list[ParsedField]) -> list[ParsedField]:
 
     for entry in flat:
         key = entry.key
+
+        # A parent named outright in the Description cell wins over every
+        # positional rule below: it is a statement, not an inference from where
+        # the row sits. Only an already-seen field can be the target, so a
+        # parenthesis that happens to look like a key cannot invent one.
+        named_parent = _DESC_NAMED_PARENT.match(entry.description or "")
+        if named_parent and "." not in key and not key.startswith("└"):
+            wanted = named_parent.group("parent")
+            target = next(
+                (field for field in _walk(roots) if field.key == wanted and _can_hold_children(field)),
+                None,
+            )
+            if target is not None:
+                entry.description = entry.description[named_parent.end():].strip()
+                entry.notes.append(
+                    f"the manual nests this under {target.key!r} by naming it in the "
+                    f"description, with no number of its own"
+                )
+                _as_container(target, is_array=target.type == "array")
+                target.properties.append(entry)
+                continue
 
         # The No. column decides nesting unless the key itself spells out a
         # path, which is unambiguous and wins.

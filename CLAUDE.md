@@ -84,6 +84,16 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   (`/db/IEHG-GL-M1`, `/db/IEHG-PSS-M1`, `/db/IEHG-TRUSS-M1`) 404 on `/info` as well, which
   leaves them with **no permitted source at all**; they cannot be contracted as things stand.
   See `docs/contract_migration_brief.md`.
+- `schema/info-baseline.json` — every `GET /info{endpoint}` the products answer, both
+  products, captured read-only 2026-09-03. It is the server's own schema, never model
+  data. `scripts/info_baseline.py` captures it (`--capture`, GET only, safe against an
+  open model), diffs a fresh capture against it (`--diff`, which is how a product
+  patch's effect on the API surface gets measured), and sweeps it against every
+  contract offline (`--against-contracts`). That last mode is worth running after any
+  batch of contract work: it is what found MD-34, where a contract written from the
+  manual, promoted, and reviewed through its generated npm diff still had a shape the
+  server refuses. Reviewing a generated diff proves the generator followed the
+  contract; only `/info` proves the contract followed the product.
 - `schema/typescript-resources.json` / `schema/typescript-coverage.json` — committed generator outputs.
   CI fails if either these schemas or `packages/typescript/src/generated/*` drift after regeneration.
 - `docs/coverage.json` — the endpoint ledger. `ROADMAP.md` is **generated from it** — never hand-edit

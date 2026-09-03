@@ -67,6 +67,9 @@ build itself** and is no longer resting on an unrecorded one.
 | MD-31 | 2026-09-04 | `/DESIGN/RC/KDS-41-20-2022/TABLE` `NODE_ELEMS` | row 8 types it `Object (oneOf)` and lists none of its members | the section's JSON Schema declares `KEYS`, `TO` and `STRUCTURE_GROUP_NAME` under a `oneOf`, and the Request Body sends `{"KEYS": [915]}` | **manual repo** transcription | open |
 | MD-32 | 2026-09-04 | `/DESIGN/SRC/AIK-SRC2K/OCHECK`, the route itself | section 21 prints `{base url}/DESIGN/SRC/AIK-SRC2K/OCHECK` as the Input URI and documents the endpoint like any other in the chapter | that path returns a clean 404; MIDASIT moved the route to `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK` on 2026-08-06 to mark it unofficial with paused development, and the route that does answer ends the NX session on any model holding a section SRC design cannot use | **manual repo** transcription | open |
 | MD-33 | 2026-09-04 | `/DESIGN/RC/KDS-41-20-2022/CD-TABLE` and `.../BRD-TABLE`, `ELEMS`/`SECTIONS` | both rows are marked 조건부 and neither states a condition; the sections' own JSON Schemas carry no branch keyword | the two are alternatives - exactly one of them - which chapter 26 states for the same field pair in seven of its nine BD/CD/BRD sections, in the row and in a schema `oneOf` | **manual repo** transcription | open |
+| MD-34 | 2026-09-04 | `/db/REBR`, the whole item shape | each `ITEMS` entry has a single `MAIN_BAR` object, a top-level `DO`, a string `HOOP_TYPE` defaulting to `"Ties"`, and an optional `CREATE_SUB_SECTION` with `ELEMS` | `GET /info/db/REBR` declares `vMAIN_BAR`, an array whose entries each carry `D0` (a zero), an integer `HOOP_TYPE` (1=Tied, 2=Spiral), and no `CREATE_SUB_SECTION` or `ELEMS` at all - field for field the shape `/db/REBC` was found to have on 2026-08-27 | **manual repo** transcription | open |
+| MD-35 | 2026-09-04 | all six `/db/LCOM-*`, four fields | the chapter's "LCOM 타입별 비교 요약" table gives five of the six an em dash under 추가 필드 and gives `LCOM-CONC` only `bES`; no Parameters row names `iSERV_TYPE`, `nLCOMTYPE` or `nSEISTYPE` anywhere | `GET /info/db/LCOM-*` declares all four on all six, on both products | **manual repo** transcription | open |
+| MD-36 | 2026-09-04 | `/db/LCOM-*` and `/db/POGD`, member rows | rows written `| — | (vCOMB) ... |` and `| — | (INITLOAD) ... |` name their parent in the Description cell and leave the No. column an em dash | they are members of that array; the contracts published `ANAL`/`LCNAME`/`FACTOR` and `LC_NAME`/`LC_TYPE`/`SF` as siblings of the array containing them | **this SDK** extractor | fixed |
 
 
 ## Detail
@@ -1232,3 +1235,123 @@ caller's choice, not a branch the payload declares. Same shape as
 > one and evidence that can be checked by grepping the chapter. MD-24 stands as
 > a record of the invented paraphrase; it no longer stands as a reason to leave
 > these two uncontracted.
+
+### MD-34 - the third endpoint in this family the chapter describes wrongly
+
+Chapter 24 describes `/db/REBR` the same way it describes `/db/REBC`, and the
+server takes both the same way, which is not the way the chapter describes:
+
+| the chapter | `GET /info/db/REBR` |
+| --- | --- |
+| `MAIN_BAR`, one object of `{NAME, NUM, ROW}` | `vMAIN_BAR`, an **array** |
+| `DO` on the item, a Number | `D0` inside each array entry - a **zero**, not the letter |
+| `HOOP_TYPE`, String `"Ties"` / `"Spirals"`, default `"Ties"` | `HOOP_TYPE`, **integer**, `1=Tied, 2=Spiral` |
+| `CREATE_SUB_SECTION` and `ELEMS` | neither exists |
+
+`/db/REBW` was the first endpoint in this chapter found wrong about its own
+field names (2026-07-29), `/db/REBC` the second (2026-08-27). This is the
+third, and the cheapest of the three to establish: `/db/REBC`'s was settled by
+POSTing both candidate shapes to one live session - the documented form
+answered `Wrong Field`, the array form answered a domain error naming the
+missing target section - and this section makes every one of the same claims
+about the sibling endpoint.
+
+**What has not been done.** No POST comparison has been run against `/db/REBR`
+itself. The contract rests on the `/info` schema plus the `/db/REBC`
+precedent, and says so. `/db/REBC`'s round trip is what establishes the
+*consequence* - refusal, not silent misbehaviour - and that consequence is
+assumed here rather than measured.
+
+**The chapter-26 sibling is not affected, and that is deliberate.**
+`/DESIGN/RC/KDS-41-20-2022/REBR` is a different URL, and its section is
+internally consistent: its JSON Schema, its Parameters table, its Request and
+Response bodies and its Python example all agree on `MAIN_BAR`, a top-level
+`DO` and a string `HOOP_TYPE`. `/info` does not serve `/DESIGN/*`, so there is
+no permitted source that contradicts it, and a sibling endpoint's shape is not
+one. Its contract is left alone. The same split already exists for `REBC`,
+whose two chapters describe the same-named data differently for two different
+URLs, with live evidence for only the `/db/*` one.
+
+> **How this was found, and why it matters more than the finding.** This
+> contract was written from the manual earlier the same day, promoted, and its
+> generated npm diff reviewed - the review that is supposed to catch exactly
+> this. It did not, and could not: the manual's shape generates a perfectly
+> coherent TypeScript type. What caught it was sweeping the 2026-09-03 `/info`
+> capture against every contract and asking which declared properties no
+> contract records. `/db/REBR` reported two, `ITEMS.vMAIN_BAR` and
+> `ITEMS.vMAIN_BAR.D0`, which is what a wrong shape looks like from that angle.
+>
+> Reviewing a generated diff proves the generator did what the contract says.
+> It cannot prove the contract is right about the product. Only a source that
+> is the product can do that, and for `/db/*` that source is `/info`.
+
+### MD-35 - a summary table that says "no additional fields", and four of them
+
+Chapter 13 ends with a comparison table meant to tell a reader what is
+different about each of the six load-combination endpoints:
+
+| 엔드포인트 | 추가 필드 |
+| --- | --- |
+| `LCOM-GEN` | — |
+| `LCOM-CONC` | `bES` |
+| `LCOM-STEEL` | — |
+| `LCOM-SRC` | — |
+| `LCOM-STLCOMP` | — |
+| `LCOM-SEISMIC` | — |
+
+`GET /info/db/LCOM-*`, captured 2026-09-03 on both products, declares the same
+four extra properties on **all six**:
+
+| property | /info type | /info description |
+| --- | --- | --- |
+| `bES` | boolean | E (Concrete design only) |
+| `iSERV_TYPE` | integer | EC Serv Type |
+| `nLCOMTYPE` | integer | EC Lcom Type |
+| `nSEISTYPE` | integer | EC Seis Type |
+
+Twelve schemas, six endpoints, two products, no exceptions. So the 추가 필드
+column does not describe what the server accepts, and the three `EC` fields are
+named nowhere in the chapter at all.
+
+All four are recorded on all six contracts with `requirement: unstated` -
+`/info` declares no `required` array and the manual makes no claim about them,
+so `optional` would be a claim nobody has made. Same shape as MD-10 and MD-22.
+
+`bES`'s own description still says "Concrete design only", which may well be
+true of what the field *does* while being false of where it is *accepted*. That
+distinction is not resolvable from a schema, and nothing here claims to resolve
+it: the contracts record that the field exists on all six, not that it is
+meaningful on all six.
+
+### MD-36 - the most explicit nesting form in the manual, and the one nothing read
+
+Two chapters mark an array member by naming its parent outright and leaving the
+No. column an em dash:
+
+```
+| 7 | 조합 항목 배열      | `"vCOMB"`  | Array  | — | **Required** |
+| — | (vCOMB) 해석 타입   | `"ANAL"`   | String | — | **Required** |
+| — | (vCOMB) 하중케이스명 | `"LCNAME"` | String | — | **Required** |
+| — | (vCOMB) 계수        | `"FACTOR"` | Number | — | **Required** |
+```
+
+This is the clearest statement of structure anywhere in the manual - the parent
+is *named*, not implied by a number, by indentation, or by which row came
+before. It is also the only form `scripts/extract_contracts.py` did not read,
+so all 21 such rows became root fields. Seven contracts published members as
+siblings of the array that contains them: `ANAL`/`LCNAME`/`FACTOR` on all six
+`/db/LCOM-*`, and `LC_NAME`/`LC_TYPE`/`SF` on `/db/POGD`.
+
+**This one is ours, not the manual's** - hence the source column. It is
+recorded here anyway, because the register is where this project keeps what it
+got wrong about a manual section, and because the failure mode is worth naming:
+the parser had rules for four *implicit* nesting forms and none for the
+explicit one.
+
+The npm effect was visible and nobody looked: `vCOMB` was published as
+`Array<JsonObject>` - an array whose item shape the contract could not state,
+because the item's three members were sitting outside it. `/info` shows the
+same nesting the manual does. Both SDKs' hand-written Python TypedDicts had it
+right all along (`vCOMB: List[LoadCombinationItem]`), which is the tell that
+should have been noticed: when a generated type is vaguer than the hand-written
+one it replaced, the contract is usually wrong.

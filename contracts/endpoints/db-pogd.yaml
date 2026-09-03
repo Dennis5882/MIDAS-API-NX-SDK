@@ -116,33 +116,46 @@ fields:
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
-  - key: LC_NAME
-    description: >-
-      (INITLOAD) 하중케이스명
-    type: string
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    safeToOmit: unverified
-    provenance: manual
-  - key: LC_TYPE
-    description: >-
-      (INITLOAD) 하중케이스 타입
-    type: string
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    safeToOmit: unverified
-    provenance: manual
-  - key: SF
-    description: >-
-      (INITLOAD) 축척계수
-    type: number
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    safeToOmit: unverified
-    provenance: manual
+    properties:
+      - key: LC_NAME
+        description: >-
+          하중케이스명
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: the manual nests this under 'INITLOAD' by naming it in the
+        # description, with no number of its own - `| — | (INITLOAD) ... |`. The
+        # contract published it as a sibling of INITLOAD until 2026-09-04; GET
+        # /info/db/POGD declares it inside. See MD-35.
+      - key: LC_TYPE
+        description: >-
+          하중케이스 타입
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: the manual nests this under 'INITLOAD' by naming it in the
+        # description, with no number of its own - `| — | (INITLOAD) ... |`. The
+        # contract published it as a sibling of INITLOAD until 2026-09-04; GET
+        # /info/db/POGD declares it inside. See MD-35.
+      - key: SF
+        description: >-
+          축척계수
+        type: number
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: the manual nests this under 'INITLOAD' by naming it in the
+        # description, with no number of its own - `| — | (INITLOAD) ... |`. The
+        # contract published it as a sibling of INITLOAD until 2026-09-04; GET
+        # /info/db/POGD declares it inside. See MD-35.
   - key: bCONSIGNOREELEM
     description: >-
       초기하중이 비선형 정적해석일 때, 무시 요소(IEPI) 고려 여부
