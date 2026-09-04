@@ -8814,3 +8814,45 @@ the npm harness deliberately refuses cases it cannot clean up. None of these
 attempts is included in the 32-endpoint count. Final direct GETs returned
 `{"message": ""}` for NODE and ELEM on both products, independently confirming
 that both sessions were left on empty documents.
+
+## 2026-09-05 (later) — every historical non-TEMP crash path re-checked; zero crashes
+
+The author clarified the scope as endpoints that have **not** been moved under
+`/TEMP`. Accordingly `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK` was deliberately not
+called and its standing risk was not changed. Everything else with a recorded
+product-crash history was re-run against the same continuously-running Gen NX
+2026 v2.1 and Civil NX 2026 v2.2 sessions, both build 09/02/2026. Every risky
+call was followed by a real `GET /db/NODE`; `verify_connection()` alone was not
+used as proof of liveness.
+
+| Historical crash path | Gen NX | Civil NX |
+| --- | --- | --- |
+| `/post/TABLE`, all eight Design Forces `TABLE_TYPE`s | all returned `{"message": ""}`; alive after each | all returned the normal `there was an error creating utbl` no-result error; alive after each |
+| `/DESIGN/RC/KDS-41-20-2022/TABLE`, Column/Brace/Beam | all returned empty dictionaries; alive after each | all returned the normal `there was an error creating utbl` no-result error; alive after each |
+| `/ope/EDMP` | returned clean `Unknown Error`; alive | returned clean `Unknown Error`; alive |
+| `/ope/USLC` | `command complete`; alive | `command complete`; alive |
+| `PUT /db/THNL` | full create/read/update/read/delete/read round trip passed | full create/read/update/read/delete/read round trip passed |
+| raw `POST /db/NMAS` with `rmX`/`rmY`/`rmZ` omitted | returned, GET stored all three as `0`; alive | returned, GET stored all three as `0`; alive |
+
+The eight `/post/TABLE` values were `BEAMDESIGNFORCES`,
+`COLUMNDESIGNFORCES`, `BRACEDESIGNFORCES`, `WALLDESIGNFORCES`,
+`STEELMEMBERDESIGNFORCES`, `SRCBEAMDESIGNFORCES`,
+`SRCCOLUMNDESIGNFORCES`, and `COLDFORMEDSTEELMEMBERDESIGNFORCES`. This is the
+independent later-build re-test their docstrings had asked for after the single
+clean 2026-08-11 pass. It establishes that none reproduces its old blank-model
+crash on the current build. It does not claim that a populated, analysed and
+designed production model exercises the same product path.
+
+EDMP and USLC used the exact prior crash-reproduction setup recorded on
+2026-08-07: the repository's common disposable model seed plus a real concrete
+load combination. THNL used its confirmed `schema/live-cases.json` case through
+`scripts/live_crud_check.py`. NMAS bypassed the SDK normalizer intentionally:
+its body was derived from the shared confirmed case with only the three
+rotational-mass fields removed. The old NMAS mitigation therefore remains in
+both SDKs despite another clean raw call.
+
+All modified models were checkpointed under `C:/temp` with their product-native
+extensions before cleanup. Final direct NODE/ELEM reads on both products were
+empty. The many `/doc/NEW` calls involved in the isolated harnesses also
+returned cleanly, but this was not a large-real-model reproduction of that
+endpoint's old crash and is not claimed as one.

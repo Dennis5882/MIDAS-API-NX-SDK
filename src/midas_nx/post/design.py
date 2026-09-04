@@ -125,6 +125,13 @@ def get_beam_design_forces_table(
     historically-confirmed crash — could be intermittent/non-deterministic
     rather than fixed; needs an independent second re-test before drawing
     any conclusion.
+
+    That independent second blank-document re-test completed 2026-09-05 on
+    Gen NX v2.1 build 09/02/2026: ``{"message": ""}``, followed by a
+    successful ``GET /db/NODE``. Civil NX v2.2 on the same build returned its
+    established no-result error and also stayed responsive. The old blank-
+    document crash no longer reproduces on the current build; a populated,
+    analysed and designed-model path was not re-tested.
     """
     return _get_design_forces_table(
         TABLE_TYPE_BEAM_DESIGN_FORCES,
@@ -162,6 +169,12 @@ def get_column_design_forces_table(
     healthy. A single clean pass is not independent proof the MAPI-2431
     risk is gone — treat as reduced-but-not-cleared until a real-model
     retest.
+
+    Re-tested independently 2026-09-05 on Gen NX v2.1 build 09/02/2026:
+    clean empty response and a successful liveness GET. Civil NX v2.2 on the
+    same build returned its established no-result error and stayed responsive.
+    This clears the old blank-document repro on the current build; a populated,
+    analysed and designed-model path was not re-tested.
     """
     return _get_design_forces_table(
         TABLE_TYPE_COLUMN_DESIGN_FORCES,
@@ -202,6 +215,13 @@ def get_brace_design_forces_table(
     historically-confirmed crash — could be intermittent/non-deterministic
     rather than fixed; needs an independent second re-test before drawing
     any conclusion.
+
+    That independent second blank-document re-test completed 2026-09-05 on
+    Gen NX v2.1 build 09/02/2026: clean empty response and a successful
+    liveness GET. Civil NX v2.2 on the same build returned its established
+    no-result error and stayed responsive. The old blank-document crash no
+    longer reproduces on the current build; a populated, analysed and
+    designed-model path was not re-tested.
     """
     return _get_design_forces_table(
         TABLE_TYPE_BRACE_DESIGN_FORCES,
@@ -245,6 +265,12 @@ def get_wall_design_forces_table(
     healthy. A single clean pass against a call that shares this
     module's confirmed-crashing helper is not independent proof the risk
     is gone — treat as reduced-but-not-cleared until a real-model retest.
+
+    Re-tested independently 2026-09-05 on Gen NX v2.1 build 09/02/2026:
+    clean empty response and a successful liveness GET. Civil NX v2.2 on the
+    same build returned its established no-result error and stayed responsive.
+    This clears the blank-document risk on the current build; a populated,
+    analysed and designed-model path was not re-tested.
     """
     return get_table(
         TABLE_TYPE_WALL_DESIGN_FORCES,
@@ -279,6 +305,12 @@ def get_steel_member_design_forces_table(
     healthy. A single clean pass against a call that shares this
     module's confirmed-crashing helper is not independent proof the risk
     is gone — treat as reduced-but-not-cleared until a real-model retest.
+
+    Re-tested independently 2026-09-05 on Gen NX v2.1 build 09/02/2026:
+    clean empty response and a successful liveness GET. Civil NX v2.2 on the
+    same build returned its established no-result error and stayed responsive.
+    This clears the blank-document risk on the current build; a populated,
+    analysed and designed-model path was not re-tested.
     """
     return _get_design_forces_table(
         TABLE_TYPE_STEEL_MEMBER_DESIGN_FORCES,
@@ -316,6 +348,12 @@ def get_src_beam_design_forces_table(
     healthy. A single clean pass against a call that shares this
     module's confirmed-crashing helper is not independent proof the risk
     is gone — treat as reduced-but-not-cleared until a real-model retest.
+
+    Re-tested independently 2026-09-05 on Gen NX v2.1 build 09/02/2026:
+    clean empty response and a successful liveness GET. Civil NX v2.2 on the
+    same build returned its established no-result error and stayed responsive.
+    This clears the blank-document risk on the current build; a populated,
+    analysed and designed-model path was not re-tested.
     """
     return _get_design_forces_table(
         TABLE_TYPE_SRC_BEAM_DESIGN_FORCES,
@@ -350,6 +388,12 @@ def get_src_column_design_forces_table(
     healthy. A single clean pass against a call that shares this
     module's confirmed-crashing helper is not independent proof the risk
     is gone — treat as reduced-but-not-cleared until a real-model retest.
+
+    Re-tested independently 2026-09-05 on Gen NX v2.1 build 09/02/2026:
+    clean empty response and a successful liveness GET. Civil NX v2.2 on the
+    same build returned its established no-result error and stayed responsive.
+    This clears the blank-document risk on the current build; a populated,
+    analysed and designed-model path was not re-tested.
     """
     return _get_design_forces_table(
         TABLE_TYPE_SRC_COLUMN_DESIGN_FORCES,
@@ -384,6 +428,12 @@ def get_cold_formed_steel_member_design_forces_table(
     healthy. A single clean pass against a call that shares this
     module's confirmed-crashing helper is not independent proof the risk
     is gone — treat as reduced-but-not-cleared until a real-model retest.
+
+    Re-tested independently 2026-09-05 on Gen NX v2.1 build 09/02/2026:
+    clean empty response and a successful liveness GET. Civil NX v2.2 on the
+    same build returned its established no-result error and stayed responsive.
+    This clears the blank-document risk on the current build; a populated,
+    analysed and designed-model path was not re-tested.
     """
     return _get_design_forces_table(
         TABLE_TYPE_COLD_FORMED_STEEL_MEMBER_DESIGN_FORCES,

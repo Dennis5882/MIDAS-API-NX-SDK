@@ -37,6 +37,13 @@ export const tables = {
      * historically-confirmed crash  -  could be intermittent/non-deterministic
      * rather than fixed; needs an independent second re-test before drawing
      * any conclusion.
+     *
+     * That independent second blank-document re-test completed 2026-09-05 on
+     * Gen NX v2.1 build 09/02/2026: ``{"message": ""}``, followed by a
+     * successful ``GET /db/NODE``. Civil NX v2.2 on the same build returned its
+     * established no-result error and also stayed responsive. The old blank-
+     * document crash no longer reproduces on the current build; a populated,
+     * analysed and designed-model path was not re-tested.
      */
     getBeamDesignForcesTable: defineTable<Pick<TableOptions, "components" | "nodeElements" | "parts" | "styles" | "tableName" | "unit">>("BEAMDESIGNFORCES"),
     /**
@@ -57,6 +64,13 @@ export const tables = {
      * historically-confirmed crash  -  could be intermittent/non-deterministic
      * rather than fixed; needs an independent second re-test before drawing
      * any conclusion.
+     *
+     * That independent second blank-document re-test completed 2026-09-05 on
+     * Gen NX v2.1 build 09/02/2026: clean empty response and a successful
+     * liveness GET. Civil NX v2.2 on the same build returned its established
+     * no-result error and stayed responsive. The old blank-document crash no
+     * longer reproduces on the current build; a populated, analysed and
+     * designed-model path was not re-tested.
      */
     getBraceDesignForcesTable: defineTable<Pick<TableOptions, "components" | "nodeElements" | "parts" | "styles" | "tableName" | "unit">>("BRACEDESIGNFORCES"),
     /**
@@ -71,6 +85,12 @@ export const tables = {
      * healthy. A single clean pass against a call that shares this
      * module's confirmed-crashing helper is not independent proof the risk
      * is gone  -  treat as reduced-but-not-cleared until a real-model retest.
+     *
+     * Re-tested independently 2026-09-05 on Gen NX v2.1 build 09/02/2026:
+     * clean empty response and a successful liveness GET. Civil NX v2.2 on the
+     * same build returned its established no-result error and stayed responsive.
+     * This clears the blank-document risk on the current build; a populated,
+     * analysed and designed-model path was not re-tested.
      */
     getColdFormedSteelMemberDesignForcesTable: defineTable<Pick<TableOptions, "components" | "nodeElements" | "parts" | "styles" | "tableName" | "unit">>("COLDFORMEDSTEELMEMBERDESIGNFORCES"),
     /**
@@ -88,6 +108,12 @@ export const tables = {
      * healthy. A single clean pass is not independent proof the MAPI-2431
      * risk is gone  -  treat as reduced-but-not-cleared until a real-model
      * retest.
+     *
+     * Re-tested independently 2026-09-05 on Gen NX v2.1 build 09/02/2026:
+     * clean empty response and a successful liveness GET. Civil NX v2.2 on the
+     * same build returned its established no-result error and stayed responsive.
+     * This clears the old blank-document repro on the current build; a populated,
+     * analysed and designed-model path was not re-tested.
      */
     getColumnDesignForcesTable: defineTable<Pick<TableOptions, "components" | "nodeElements" | "parts" | "styles" | "tableName" | "unit">>("COLUMNDESIGNFORCES"),
     /**
@@ -105,6 +131,12 @@ export const tables = {
      * healthy. A single clean pass against a call that shares this
      * module's confirmed-crashing helper is not independent proof the risk
      * is gone  -  treat as reduced-but-not-cleared until a real-model retest.
+     *
+     * Re-tested independently 2026-09-05 on Gen NX v2.1 build 09/02/2026:
+     * clean empty response and a successful liveness GET. Civil NX v2.2 on the
+     * same build returned its established no-result error and stayed responsive.
+     * This clears the blank-document risk on the current build; a populated,
+     * analysed and designed-model path was not re-tested.
      */
     getSrcBeamDesignForcesTable: defineTable<Pick<TableOptions, "components" | "nodeElements" | "parts" | "styles" | "tableName" | "unit">>("SRCBEAMDESIGNFORCES"),
     /**
@@ -119,6 +151,12 @@ export const tables = {
      * healthy. A single clean pass against a call that shares this
      * module's confirmed-crashing helper is not independent proof the risk
      * is gone  -  treat as reduced-but-not-cleared until a real-model retest.
+     *
+     * Re-tested independently 2026-09-05 on Gen NX v2.1 build 09/02/2026:
+     * clean empty response and a successful liveness GET. Civil NX v2.2 on the
+     * same build returned its established no-result error and stayed responsive.
+     * This clears the blank-document risk on the current build; a populated,
+     * analysed and designed-model path was not re-tested.
      */
     getSrcColumnDesignForcesTable: defineTable<Pick<TableOptions, "components" | "nodeElements" | "parts" | "styles" | "tableName" | "unit">>("SRCCOLUMNDESIGNFORCES"),
     /**
@@ -133,6 +171,12 @@ export const tables = {
      * healthy. A single clean pass against a call that shares this
      * module's confirmed-crashing helper is not independent proof the risk
      * is gone  -  treat as reduced-but-not-cleared until a real-model retest.
+     *
+     * Re-tested independently 2026-09-05 on Gen NX v2.1 build 09/02/2026:
+     * clean empty response and a successful liveness GET. Civil NX v2.2 on the
+     * same build returned its established no-result error and stayed responsive.
+     * This clears the blank-document risk on the current build; a populated,
+     * analysed and designed-model path was not re-tested.
      */
     getSteelMemberDesignForcesTable: defineTable<Pick<TableOptions, "components" | "nodeElements" | "parts" | "styles" | "tableName" | "unit">>("STEELMEMBERDESIGNFORCES"),
     /**
@@ -156,6 +200,12 @@ export const tables = {
      * healthy. A single clean pass against a call that shares this
      * module's confirmed-crashing helper is not independent proof the risk
      * is gone  -  treat as reduced-but-not-cleared until a real-model retest.
+     *
+     * Re-tested independently 2026-09-05 on Gen NX v2.1 build 09/02/2026:
+     * clean empty response and a successful liveness GET. Civil NX v2.2 on the
+     * same build returned its established no-result error and stayed responsive.
+     * This clears the blank-document risk on the current build; a populated,
+     * analysed and designed-model path was not re-tested.
      */
     getWallDesignForcesTable: defineTable<Pick<TableOptions, "components" | "nodeElements" | "storyNames" | "styles" | "tableName" | "unit">>("WALLDESIGNFORCES"),
   },

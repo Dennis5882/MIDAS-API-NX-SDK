@@ -130,9 +130,17 @@ risks:
       this does not establish is that the defect is fixed - an uninitialized
       read is exactly the bug that hides when the memory happens to be zero, and
       these were near-empty scratch documents.
+
+      Re-checked 2026-09-05 on the same continuously-running 09/02/2026 build
+      sessions after the wider non-TEMP crash-family sweep: one additional raw
+      POST per product omitted rmX/rmY/rmZ by deriving the payload from the
+      shared live fixture and removing only those three keys. Both calls
+      returned normally, GET stored all three omitted fields as 0, and a
+      follow-up NODE read confirmed each session remained responsive. This is
+      corroboration on the same build, not a reason to remove the mitigation.
     firstObserved: "2026-07-29"
     rootCausedOn: "2026-07-29"
-    lastChecked: "2026-09-04"
+    lastChecked: "2026-09-05"
     evidence:
       - docs/live_verification_notes.md
     reportedToVendor: A-1
