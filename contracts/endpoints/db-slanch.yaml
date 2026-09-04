@@ -87,33 +87,163 @@ operations:
       keyStability: stable
 
 fields:
-  - key: NODE
+  - key: NAME
     description: >-
-      Node No.
-    type: integer
-    requirement: required
+      Name of Surface Lane
+    type: string
+    requirement: unstated
     documentedDefault: null
-    documentedOptional: false
+    documentedOptional: null
     safeToOmit: unverified
     provenance: manual
-  - key: OFFSET
+    # RESOLVED: taken from the section's Request Example and its Python
+    # example, which agree. This section has exactly one Parameters table
+    # and it describes LANE_ITEMS' members, not the record's own - so the
+    # record's eight fields have no table anywhere. GET /info/db/SLANch
+    # declares them and one more, SEQ. See MD-43.
+  - key: WIDTH
     description: >-
-      Offset Distance to Lane Center
+      Lane Width
     type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
     safeToOmit: unverified
     provenance: manual
-  - key: SPAN_LENGTH
+  - key: WHEEL_SPACE
     description: >-
-      Span Length
+      Wheel Spacing
     type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
     safeToOmit: unverified
     provenance: manual
+  - key: SKEW_START
+    description: >-
+      Skew Start
+    type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: manual
+  - key: SKEW_END
+    description: >-
+      Skew End
+    type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: manual
+  - key: bOPTIMIZE
+    description: >-
+      Transverse Lane Optimization
+    type: boolean
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: manual
+  - key: ALLOW_WIDTH
+    description: >-
+      Allow Width for Optimization
+    type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: manual
+  - key: MV_DIR
+    description: >-
+      Moving Direction ("FORWARD" / "BACKWARD" / "BOTH")
+    type: string
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: manual
+  - key: SEQ
+    description: >-
+      Sequence Number (Must be Unique)
+    type: integer
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - the whole
+    # manual was searched for the name, not just this section. The sibling
+    # /db/SLAN documents SEQ as row 9 of its own Parameters table, Integer,
+    # default 1, Optional; requirement here stays `unstated`, because that
+    # is a claim /db/SLAN's section makes about /db/SLAN.
+  - key: LANE_ITEMS
+    description: >-
+      Lane Items
+    type: array
+    items:
+      type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: manual
+    # RESOLVED: stated elsewhere in the same section - the Request Example
+    # sends it, and the section's one Parameters table is headed
+    # "Parameters - LANE_ITEMS" and lists its three members. Until
+    # 2026-09-04 this contract had those three members as its only fields,
+    # at the root, and the array itself did not exist. See MD-43.
+    properties:
+      - key: NODE
+        description: >-
+          Node No.
+        type: integer
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: OFFSET
+        description: >-
+          Offset Distance to Lane Center
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: SPAN_LENGTH
+        description: >-
+          Span Length
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      Section 8's only Parameters table is headed "Parameters - LANE_ITEMS" and
+      gives three rows: `NODE`, `OFFSET`, `SPAN_LENGTH`.
+    actual: >-
+      Those three are members of the `LANE_ITEMS` array, not the record. The
+      record's own eight fields - `NAME`, `WIDTH`, `WHEEL_SPACE`,
+      `SKEW_START`, `SKEW_END`, `bOPTIMIZE`, `ALLOW_WIDTH`, `MV_DIR` - appear
+      only in the Request Example and the Python example, with no Specifications
+      row anywhere, and `GET /info/db/SLANch` declares a ninth, `SEQ`. The
+      sibling `/db/SLAN` one section earlier tables all nine properly, so this
+      is a gap in one section rather than a convention. This contract carried
+      the three array members as its only fields, at the root, until 2026-09-04
+      - a payload type that named nothing the record actually holds.
+    evidence: >-
+      GET /info/db/SLANch on Civil NX, captured 2026-09-03, against
+      docs/manual/08_DB_Moving_Loads.md section 8 (lines 632-680) and section 7's
+      own table for comparison. Found by scripts/info_baseline.py
+      --against-contracts, which reported 13 declared properties against a
+      contract sharing none of them. Registered as MD-43.
 
 sdkRules:
   - id: db-slanch-delete-per-id

@@ -31,6 +31,50 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
   pair genuinely is asymmetric and the manual's table reads as though that had
   been tidied away. The item members are unchanged — only the depth. See MD-40.
 
+### Fixed — `TrafficSurfaceLanesChinaPayload` described the wrong thing entirely
+
+- **Breaking.** It had three members: `NODE`, `OFFSET`, `SPAN_LENGTH`. Those
+  are the members of the `LANE_ITEMS` array, not of the record. The type now
+  has `NAME`, `WIDTH`, `WHEEL_SPACE`, `SKEW_START`, `SKEW_END`, `bOPTIMIZE`,
+  `ALLOW_WIDTH`, `MV_DIR`, `SEQ` and `LANE_ITEMS`, which is what `/db/SLANch`
+  takes. `/db/SLANch`'s manual section has exactly one Parameters table and it
+  describes the array; the record's own fields appear only in its examples, so
+  the contract generator took the sub-table for the whole thing. The Python
+  `TrafficSurfaceLanesChinaPayload` has been correct throughout. See MD-43.
+
+### Fixed — five arrays and one object had no item shape
+
+- `SurfaceLaneItem` (`/db/SLAN` `LANE_ITEMS`) gains its nine members, seven of
+  them carrying the design-code condition the manual states in words. No
+  structured gate is generated: the code is a model-wide setting, not a field
+  of this payload, so there is nothing to gate on.
+- `PushoverLoadCasePayload.LOADPATTERN` gains `LCNAME`, `DIR`, `MODE` and `SF`,
+  three of them documented as applying for a given `LOADPATTERNTYPE` — that one
+  *is* a field of the record, so the condition is rendered.
+- `GeneralLinkPayload` and `GeneralLinkHyperSPayload`'s `ANGLE_VALUES`,
+  `POINT_VALUES` and `VECTOR_VALUES` gain their `{VALUE}` member.
+- `MainControlDataHyperSPayload`'s `TCELEM.CONVERGENCE` gains the `DISPL`,
+  `LOAD` and `WORK` level it was missing. Its `OPT_USE`/`VALUE` sat one level
+  too high — `{OPT_USE, VALUE}` where the server wants
+  `{DISPL: {...}, LOAD: {...}, WORK: {...}}`. **Breaking** for anyone who wrote
+  the shorter shape, which the server would not have accepted. See MD-44.
+
+### Fixed — an exactly-bounded array lost its tuple type when its items gained one
+
+- `GeneralLinkPayload.POINT_VALUES` and `.VECTOR_VALUES` are fixed-length
+  tuples again. The generator's rule for preserving `minItems == maxItems` ran
+  only on arrays of scalars, so describing an array's item type silently
+  dropped the manual's stated length in the same change.
+
+### Added — `/db/LLANtr` and `/db/SLANop` fields the manual does not document
+
+- `TrafficLineLanesTransversePayload.SPECIAL_LANE_ITEMS`
+  (`Array<{ELEMS, FACTOR}>`), described by the server as "Used only when
+  importing" — which is all that is known about when it applies.
+- `TrafficSurfaceLanesOptimizationPayload.OPT_STRADD` (BS straddling lane) and
+  `CHINA_ITEMS` (`Array<{NODE_KEY, OFFSET, SPAN_LENGTH, SPAN_START}>`). See
+  MD-45.
+
 ### Fixed — `GroupDampingPayload.GROUP_DAMPING_ITEMS` had no item type
 
 - It was `Array<JsonObject>`. It is now an array of fifteen described members

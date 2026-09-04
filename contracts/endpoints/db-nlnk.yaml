@@ -186,6 +186,25 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+    properties:
+      - key: VALUE
+        description: >-
+          Value [x, y, z]
+        type: array
+        items:
+          type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: the manual nests this under its array by naming it in a
+        # sentence rather than a table row - "각 ANGLE_VALUES/POINT_VALUES/"
+        # "VECTOR_VALUES 배열 원소는 {\"VALUE\": [x, y, z]} 형태의 object다"
+        # - and the parser reads tables. The three arrays shipped with no
+        # members at all until 2026-09-04. GET /info declares VALUE on each,
+        # as an array. See MD-44.
+        # The sentence is in section 10, /db/NLNK-M1's, and ends "(NLNK와 동일)" - it names this endpoint outright as the one it is describing.
   - key: POINT_VALUES
     description: >-
       Point Values [P0[3], P1[3], P2[3]]
@@ -205,6 +224,18 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+    properties:
+      - key: VALUE
+        description: >-
+          Value [x, y, z]
+        type: array
+        items:
+          type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: manual
   - key: VECTOR_VALUES
     description: >-
       Vector Points [V1[3], V2[3]]
@@ -225,6 +256,18 @@ fields:
     safeToOmit: unverified
     provenance: manual
 
+    properties:
+      - key: VALUE
+        description: >-
+          Value [x, y, z]
+        type: array
+        items:
+          type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: manual
 sdkRules:
   - id: db-nlnk-delete-per-id
     kind: per_id_request
@@ -254,3 +297,14 @@ knownDefects:
 extraction:
   source: 05_DB_Boundary.md line 783
   table: 요청 파라미터
+  prose:
+    - line: 884
+      quote: >-
+        각 ANGLE_VALUES/POINT_VALUES/VECTOR_VALUES 배열 원소는 {"VALUE": [x, y, z]} 형태의 object다(NLNK와 동일).
+      # The sentence sits in section 10, /db/NLNK-M1's, and ends
+      # "(NLNK와 동일)" - it names this endpoint outright as the one it
+      # is also describing, so it documents both arrays' members.
+      paths:
+        - ANGLE_VALUES.VALUE
+        - POINT_VALUES.VALUE
+        - VECTOR_VALUES.VALUE

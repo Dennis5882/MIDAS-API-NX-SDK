@@ -180,6 +180,122 @@ fields:
     safeToOmit: unverified
     provenance: manual
 
+    properties:
+      - key: NODE
+        description: >-
+          Node Key
+        type: integer
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: OFFSET
+        description: >-
+          Offset Distance to Lane Center
+        type: number
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: IMPACT_FACTOR
+        description: >-
+          Impact Factor
+        type: number
+        requirement: conditional
+        condition: "Korea, AASHTO Standard, Taiwan"
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: the manual nests this under 'LANE_ITEMS' in a second
+        # table headed "Parameters - LANE_ITEMS (코드별 추가 필드)", whose rows
+        # are design codes rather than field numbers. No `appliesWhen` is
+        # written from it: the code is a model-wide setting, not a property of
+        # this payload, so the manual names no wire discriminator and this
+        # contract will not invent one. The condition keeps the manual's own
+        # code list. GET /info/db/SLAN repeats each restriction in the
+        # field's own description. See MD-44.
+      - key: bSPAN_START
+        description: >-
+          Is Span Start
+        type: boolean
+        requirement: conditional
+        condition: "Korea, AASHTO Standard, Taiwan, AASHTO LRFD, PENNDOT, Australia, Poland"
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: CENTRI_FORCE
+        description: >-
+          Centrifugal Force (Only Use AASHTO LRFD)
+        type: number
+        requirement: conditional
+        condition: "AASHTO LRFD"
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: IMPACT_SPAN_TYPE
+        description: >-
+          Impact Span Type (Only Use India Code)
+        type: string
+        requirement: conditional
+        condition: "India"
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: IMPACT_FACTOR_INDIA
+        description: >-
+          IF/CDA (Only Use India Code)
+        type: number
+        requirement: conditional
+        condition: "India"
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: SPAN_LENGTH
+        description: >-
+          Span Length (Only Use India Code)
+        type: number
+        requirement: conditional
+        condition: "India"
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: ECCEN_VERT_LOAD
+        description: >-
+          Eccentricity of Vertical Loads (Only Use EuroCode)
+        type: number
+        requirement: conditional
+        condition: "Eurocode"
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      `LANE_ITEMS` is row 10, `Array[Object]`, Required, and its members are
+      given in a second table whose rows are design codes - six rows naming
+      between two and five keys each.
+    actual: >-
+      The members are the nine those rows name between them, and `GET
+      /info/db/SLAN` declares exactly those nine. This contract published
+      `LANE_ITEMS` with no members at all until 2026-09-04, so the npm payload
+      type had an array whose item shape nothing described. The manual is not
+      wrong here - the second table is a legitimate way to state a per-code
+      field set, and the extractor read it as a variant table it could not
+      attach.
+    evidence: >-
+      GET /info/db/SLAN on Civil NX, captured 2026-09-03, against
+      docs/manual/08_DB_Moving_Loads.md section 7's two Parameters tables.
+      Registered as MD-44.
+
 sdkRules:
   - id: db-slan-delete-per-id
     kind: per_id_request

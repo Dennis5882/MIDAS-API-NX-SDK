@@ -289,6 +289,82 @@ fields:
     safeToOmit: unverified
     provenance: manual
 
+    properties:
+      - key: LCNAME
+        description: >-
+          하중케이스명
+        type: string
+        requirement: conditional
+        condition: 'LOADPATTERNTYPE="LOAD"'
+        appliesWhen:
+          - path: LOADPATTERNTYPE
+            equals: "LOAD"
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: the manual nests this under 'LOADPATTERN' in a second
+        # table headed "LOADPATTERN 배열 항목 - LOADPATTERNTYPE 별 필드", whose
+        # first column is the value of LOADPATTERNTYPE. That value is a root
+        # field of this same record, so the condition can be structured here,
+        # unlike /db/SLAN's design-code table. GET /info/db/POLC repeats each
+        # branch in the field's own description - "(if Used Load Pattern=ACC)"
+        # and so on. See MD-44.
+      - key: DIR
+        description: >-
+          방향 ("DX"/"DY"/"DZ")
+        type: string
+        requirement: conditional
+        condition: 'LOADPATTERNTYPE="ACC"'
+        appliesWhen:
+          - path: LOADPATTERNTYPE
+            equals: "ACC"
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: MODE
+        description: >-
+          모드 번호
+        type: integer
+        requirement: conditional
+        condition: 'LOADPATTERNTYPE="MODE" 또는 "NOR_MODE"'
+        appliesWhen:
+          - path: LOADPATTERNTYPE
+            in: ["MODE", "NOR_MODE"]
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: SF
+        description: >-
+          축척계수
+        type: number
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: the manual nests this under 'LOADPATTERN' by naming it in
+        # every one of the second table's three branches, so unlike its
+        # siblings it carries no condition. /info gives it no description at
+        # all, which is consistent with a field that applies throughout.
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      `LOADPATTERN` is row 22, `Array [Object]`, Required, and a second table
+      gives its members per `LOADPATTERNTYPE`: `LCNAME`/`SF` for `"LOAD"`,
+      `DIR`/`SF` for `"ACC"`, `MODE`/`SF` for `"MODE"` and `"NOR_MODE"`.
+    actual: >-
+      Those four are the members, and `GET /info/db/POLC` declares exactly
+      them, repeating each branch in the property's own description. This
+      contract published the array with no members until 2026-09-04. As with
+      /db/SLAN, the manual is not wrong - the branch table is a reasonable way
+      to state it, and the extractor could not attach it.
+    evidence: >-
+      GET /info/db/POLC on Civil NX, captured 2026-09-03, against
+      docs/manual/14_DB_Pushover.md lines 1556-1572. Registered as MD-44.
+
 sdkRules:
   - id: db-polc-delete-per-id
     kind: per_id_request

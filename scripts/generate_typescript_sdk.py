@@ -319,21 +319,34 @@ def _contract_field_type(
             inner += " & (\n" + union + f"\n{indent})"
             if kind == "array":
                 inner = f"({inner})"
-        return f"Array<{inner}>" if kind == "array" else inner
+        return _array_of(field, inner) if kind == "array" else inner
     if kind == "array":
         item = (field.get("items") or {}).get("type")
-        rendered_item = _CONTRACT_TS_TYPES.get(item, "unknown")
-        minimum = field.get("minItems")
-        maximum = field.get("maxItems")
-        # A matching pair of bounds is an exact contract fact, not a runtime
-        # guess. Preserve it as a tuple so TypeScript callers cannot submit a
-        # too-short vector to a field such as /db/BODF's FV.
-        if isinstance(minimum, int) and minimum == maximum:
-            return "[" + ", ".join([rendered_item] * minimum) + "]"
-        return f"Array<{rendered_item}>"
+        return _array_of(field, _CONTRACT_TS_TYPES.get(item, "unknown"))
     if field.get("enum") and kind == "string":
         return " | ".join(f'"{value}"' for value in field["enum"])
     return _CONTRACT_TS_TYPES.get(kind, "unknown")
+
+
+def _array_of(field: dict[str, Any], item: str) -> str:
+    """`Array<item>`, or a fixed tuple where the contract bounds it exactly.
+
+    A matching pair of bounds is an exact contract fact, not a runtime guess.
+    Preserving it as a tuple is what stops a TypeScript caller submitting a
+    too-short vector to a field such as /db/BODF's FV.
+
+    This used to live only on the path for arrays of scalars, so an array that
+    gained a described item type silently lost its documented length: giving
+    /db/NLNK's POINT_VALUES its `{VALUE}` member on 2026-09-04 turned
+    `[JsonObject, JsonObject, JsonObject]` into a plain `Array<...>`, dropping
+    the manual's "P0[3], P1[3], P2[3]" in the same change that made the item
+    describable. Both paths go through here now.
+    """
+
+    minimum = field.get("minItems")
+    if isinstance(minimum, int) and minimum == field.get("maxItems"):
+        return "[" + ", ".join([item] * minimum) + "]"
+    return f"Array<{item}>"
 
 
 def _condition_text(entry: dict[str, Any]) -> str:

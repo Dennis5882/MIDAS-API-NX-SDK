@@ -130,6 +130,55 @@ fields:
         provenance: manual
         # RESOLVED: the manual nests this under 'LANE_ITEMS' by numbering it '(2)',
         # not by naming a path
+  - key: SPECIAL_LANE_ITEMS
+    description: >-
+      Used only when importing
+    type: array
+    items:
+      type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - the whole
+    # manual was searched for the name, not just this section.
+    # The server's own description is the whole of what is known about
+    # when this applies. No rule is written from it.
+    properties:
+      - key: ELEMS
+        description: >-
+          Key Elements
+        type: array
+        items:
+          type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FACTOR
+        description: >-
+          Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      /db/LLANtr's record is `LL_NAME` and `LANE_ITEMS`.
+    actual: >-
+      `GET /info/db/LLANtr` declares a third property, `SPECIAL_LANE_ITEMS`, an
+      array of `{ELEMS, FACTOR}` described " Used only when importing". That
+      description is the whole of what is known about when it applies; no
+      contract rule is written from it.
+    evidence: >-
+      GET /info/db/LLANtr on Civil NX, captured 2026-09-03, against
+      docs/manual/08_DB_Moving_Loads.md section 5. Registered as MD-45.
 
 sdkRules:
   - id: db-llantr-delete-per-id

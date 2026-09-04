@@ -76,6 +76,9 @@ build itself** and is no longer resting on an unrecorded one.
 | MD-40 | 2026-09-04 | `/db/RPSC` `MBAR_ITEMS` | row 5 puts it at the root beside `SBAR_ITEMS` (row 4), the two described identically | `GET /info/db/RPSC` has `SBAR_ITEMS` at the root as documented and `MBAR_ITEMS` one level down, inside an array named `MBARS` the section never mentions. The pair really is asymmetric | **manual repo** transcription | open |
 | MD-41 | 2026-09-04 | nine `/db/*` sections, fifteen fields | each section's Specifications table (and, where it has one, its JSON Schema) presents a complete field list | `GET /info` declares one to six more on each: `/db/BMLD` `ITEMS.VX/VY/VZ`, `/db/HPCE` `START_STAGE`/`END_STAGE`, `/db/PJCF`'s five model-file properties, `/db/RCHK` `BEAM.OPTION_IMJSAME`, `/db/SDVE` and `/db/SDHY` `COMMON`'s six members, `/db/STAG` `NO`, `/db/TDMF` `ELAST`, `/db/TDNT` `bRELAX`. Three of the fifteen were already known - `STAG.NO` and `TDNT.bRELAX` from real models on 2026-07-30, `HPCE`'s pair from /info on 2026-08-17 - and had reached `src/midas_nx/` but never `contracts/` | **manual repo** transcription, except `/db/SDVE` and `/db/SDHY` where the manual defers to `/db/SDVI`'s table and **this SDK**'s extractor cannot follow a cross-reference | open |
 | MD-42 | 2026-09-04 | `/db/GRDP` `GROUP_DAMPING_ITEMS[]`, fifteen members | one sentence under the Specifications tables says the array overrides rows 7-18 per group using "`_DEFAULT` 접미사만 빠진 이름", then lists all fifteen - in prose, not a table row | the members are real and the manual is right about every one of them; `GET /info/db/GRDP` declares exactly those fifteen on both products. `scripts/extract_contracts.py` reads tables, so the contract shipped the array with no members and npm published `Array<JsonObject>` | **this SDK** extractor | fixed |
+| MD-43 | 2026-09-04 | `/db/SLANch`, the whole record | section 8's only Parameters table is headed "Parameters - LANE_ITEMS" and gives three rows: `NODE`, `OFFSET`, `SPAN_LENGTH` | those three are members of the `LANE_ITEMS` array. The record's own eight fields appear only in the Request Example and the Python example, with no Specifications row anywhere, and `/info` declares a ninth, `SEQ`. The sibling `/db/SLAN` one section earlier tables all nine properly | **manual repo** transcription | open |
+| MD-44 | 2026-09-04 | five arrays and one object across `/db/SLAN`, `/db/POLC`, `/db/ACTL-M1`, `/db/NLNK`, `/db/NLNK-M1` | each states its members somewhere other than a numbered table row - a per-code table, a per-branch table, a sub-table heading naming three children, a sentence | the members are real and the manual is right about every one of them; the extractor reads numbered table rows and read none of these | **this SDK** extractor | fixed |
+| MD-45 | 2026-09-04 | `/db/LLANtr` `SPECIAL_LANE_ITEMS`, `/db/SLANop` `OPT_STRADD` and `CHINA_ITEMS` | neither section documents them | `GET /info` declares them on both endpoints. `SPECIAL_LANE_ITEMS` carries the server's own description " Used only when importing", which is the whole of what is known about when it applies; `CHINA_ITEMS` has no description at all, only its members' | **manual repo** transcription | open |
 
 
 ## Detail
@@ -1448,3 +1451,49 @@ the drift check accepts exactly those fields and nothing else, and the claim
 stays checkable against the chapter. The npm signature was MD-36's again, and
 it is worth saying twice: `Array<JsonObject>`, an array whose items nothing
 described, sitting next to a hand-written Python TypedDict that had all fifteen.
+
+### MD-43 through MD-45 - the contracts were behind their own SDK, six times
+
+This batch was meant to be the tail of the `/info` sweep: a few arrays whose
+members no contract recorded. What it actually found is that **six of the eight
+endpoints were already correct in `src/midas_nx/`** and wrong only in
+`contracts/` - the file this repository calls the source of truth. The npm
+package, which generates from the contract, shipped the damage; PyPI, which
+does not, did not.
+
+`/db/SLANch` is the worst of it and the clearest statement of the problem. Its
+contract's entire field list was `NODE`, `OFFSET`, `SPAN_LENGTH` - the three
+members of the `LANE_ITEMS` array, published at the root as though they were
+the record. `TrafficSurfaceLanesChinaPayload` on npm therefore named **nothing
+the record actually holds**, while `TrafficSurfaceLanesChinaPayload` in Python
+had all eight documented fields plus the array. Same package name, same version
+number, two registries, and one of them describing a different endpoint.
+
+The cause is a single extractor blind spot with five faces. Each of these
+sections does state its members; none states them as a numbered row in the
+table the parser reads:
+
+| endpoint | where the members are | what shipped |
+| --- | --- | --- |
+| `/db/SLANch` | a sub-table headed for the array, mistaken for the main table | three array members as the whole payload |
+| `/db/SLAN` | a second table whose rows are design codes | `Array<JsonObject>` |
+| `/db/POLC` | a second table whose rows are `LOADPATTERNTYPE` values | `Array<JsonObject>` |
+| `/db/ACTL-M1` | a sub-table heading naming three children at once | two fields one level too high |
+| `/db/NLNK`, `-M1` | one sentence, ending "(NLNK와 동일)" | `Array<JsonObject>` |
+
+Two of those are now expressible. `extraction.prose` took the sentence, the
+same mechanism MD-42 needed. `/db/POLC`'s branch table became a real
+`appliesWhen` on `LOADPATTERNTYPE`, because that value is a field of the same
+record. `/db/SLAN`'s could not: its rows are design codes, and the code is a
+model-wide setting rather than a property of this payload, so the manual names
+no wire discriminator and the contract records the condition in words with no
+structured gate. That distinction - a condition on a sibling field versus a
+condition on the world - is the one worth keeping straight.
+
+**A generator defect fell out of the fix.** Giving `/db/NLNK`'s `POINT_VALUES`
+its `{VALUE}` member turned `[JsonObject, JsonObject, JsonObject]` into a plain
+`Array<...>`: the tuple rule that preserves an exactly-bounded array lived only
+on the path for arrays of scalars, so an array *gained* a described item type
+and *lost* its documented length in the same change. Both paths go through one
+helper now. It is the second time this batch that making a type more precise
+was the thing that exposed an imprecision elsewhere.

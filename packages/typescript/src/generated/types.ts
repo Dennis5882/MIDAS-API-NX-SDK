@@ -68,10 +68,27 @@ export namespace DbAnalysisControlTypes {
       INTOUT?: "EVERY" | "LAST";
       /** Convergence Criteria */
       CONVERGENCE?: {
-        /** 해당 기준 사용 여부 */
-        OPT_USE?: boolean;
-        /** 허용오차 (OPT_USE = true일 때 필수) */
-        VALUE?: number;
+        /** Displacement Convergence (변위 U) */
+        DISPL?: {
+          /** 해당 기준 사용 여부 */
+          OPT_USE?: boolean;
+          /** 허용오차 (OPT_USE = true일 때 필수) */
+          VALUE?: number;
+        };
+        /** Load Convergence (하중 P) */
+        LOAD?: {
+          /** 해당 기준 사용 여부 */
+          OPT_USE?: boolean;
+          /** 허용오차 (OPT_USE = true일 때 필수) */
+          VALUE?: number;
+        };
+        /** Work Convergence (일 W) */
+        WORK?: {
+          /** 해당 기준 사용 여부 */
+          OPT_USE?: boolean;
+          /** 허용오차 (OPT_USE = true일 때 필수) */
+          VALUE?: number;
+        };
       };
     };
   }
@@ -1526,11 +1543,29 @@ export namespace DbBoundaryTypes {
     /** Input Method · 0=Angle Required when REF_SYSTEM = 1 and INPUT_METHOD = 0. */
     INPUT_METHOD?: number;
     /** Angle Values [about X, about y', about z''] Required when REF_SYSTEM = 1 and INPUT_METHOD = 0. */
-    ANGLE_VALUES?: Array<JsonObject>;
+    ANGLE_VALUES?: Array<{
+      /** Value [x, y, z] */
+      VALUE?: Array<number>;
+    }>;
     /** Point Values [P0[3], P1[3], P2[3]] Required when REF_SYSTEM = 1 and INPUT_METHOD = 1. */
-    POINT_VALUES?: [JsonObject, JsonObject, JsonObject];
+    POINT_VALUES?: [{
+      /** Value [x, y, z] */
+      VALUE?: Array<number>;
+    }, {
+      /** Value [x, y, z] */
+      VALUE?: Array<number>;
+    }, {
+      /** Value [x, y, z] */
+      VALUE?: Array<number>;
+    }];
     /** Vector Points [V1[3], V2[3]] Required when REF_SYSTEM = 1 and INPUT_METHOD = 2. */
-    VECTOR_VALUES?: [JsonObject, JsonObject];
+    VECTOR_VALUES?: [{
+      /** Value [x, y, z] */
+      VALUE?: Array<number>;
+    }, {
+      /** Value [x, y, z] */
+      VALUE?: Array<number>;
+    }];
   }
   /** Generated from contracts/endpoints/. */
   export interface GeneralLinkHyperSPayload {
@@ -1547,11 +1582,20 @@ export namespace DbBoundaryTypes {
     /** Input Method · 0=Angle, 1=3 Points, 2=Vector */
     INPUT_METHOD: number;
     /** Angle Values [about X, about y', about z''] */
-    ANGLE_VALUES: Array<JsonObject>;
+    ANGLE_VALUES: Array<{
+      /** Value [x, y, z] */
+      VALUE?: Array<number>;
+    }>;
     /** Point Values [P0[3], P1[3], P2[3]] */
-    POINT_VALUES: Array<JsonObject>;
+    POINT_VALUES: Array<{
+      /** Value [x, y, z] */
+      VALUE?: Array<number>;
+    }>;
     /** Vector Values [V1[3], V2[3]] */
-    VECTOR_VALUES: Array<JsonObject>;
+    VECTOR_VALUES: Array<{
+      /** Value [x, y, z] */
+      VALUE?: Array<number>;
+    }>;
     /** Boundary Group Name */
     GROUP_NAME?: string;
   }
@@ -1720,7 +1764,7 @@ export namespace DbBoundaryTypes {
     /** Input Type (Exponential Function Type용) */
     INPUT_TYPE_EXFN: number;
     /** Property Data (DOF별 6항목) */
-    ITEM: Array<{
+    ITEM: [{
       /** DOF 활성화 여부 */
       OPT_DOF: boolean;
       /** 초기 감쇠계수 CE */
@@ -1745,7 +1789,132 @@ export namespace DbBoundaryTypes {
       OPT_EXFN_CE: boolean;
       /** Exponential 초기 감쇠계수 값 */
       EXFN_CE: number;
-    }>;
+    }, {
+      /** DOF 활성화 여부 */
+      OPT_DOF: boolean;
+      /** 초기 감쇠계수 CE */
+      CE: number;
+      /** 최대 감쇠력 P */
+      P1: number;
+      /** 이차 감쇠계수 C */
+      C1: number;
+      /** 감쇠 감소 계수 α */
+      ALPHA1: number;
+      /** 초기 강성 K */
+      K0: number;
+      /** 감쇠력(Exponential, Damping Force) */
+      EXFN_PY: number;
+      /** 기준 속도(Exponential, Reference Velocity) */
+      EXFN_VY: number;
+      /** 감쇠 지수(Exponential, Damping Exponent) */
+      EXFN_DE: number;
+      /** 감쇠계수(Exponential, Damping Coefficient) */
+      EXFN_DC: number;
+      /** Exponential 초기 감쇠계수 사용 여부 */
+      OPT_EXFN_CE: boolean;
+      /** Exponential 초기 감쇠계수 값 */
+      EXFN_CE: number;
+    }, {
+      /** DOF 활성화 여부 */
+      OPT_DOF: boolean;
+      /** 초기 감쇠계수 CE */
+      CE: number;
+      /** 최대 감쇠력 P */
+      P1: number;
+      /** 이차 감쇠계수 C */
+      C1: number;
+      /** 감쇠 감소 계수 α */
+      ALPHA1: number;
+      /** 초기 강성 K */
+      K0: number;
+      /** 감쇠력(Exponential, Damping Force) */
+      EXFN_PY: number;
+      /** 기준 속도(Exponential, Reference Velocity) */
+      EXFN_VY: number;
+      /** 감쇠 지수(Exponential, Damping Exponent) */
+      EXFN_DE: number;
+      /** 감쇠계수(Exponential, Damping Coefficient) */
+      EXFN_DC: number;
+      /** Exponential 초기 감쇠계수 사용 여부 */
+      OPT_EXFN_CE: boolean;
+      /** Exponential 초기 감쇠계수 값 */
+      EXFN_CE: number;
+    }, {
+      /** DOF 활성화 여부 */
+      OPT_DOF: boolean;
+      /** 초기 감쇠계수 CE */
+      CE: number;
+      /** 최대 감쇠력 P */
+      P1: number;
+      /** 이차 감쇠계수 C */
+      C1: number;
+      /** 감쇠 감소 계수 α */
+      ALPHA1: number;
+      /** 초기 강성 K */
+      K0: number;
+      /** 감쇠력(Exponential, Damping Force) */
+      EXFN_PY: number;
+      /** 기준 속도(Exponential, Reference Velocity) */
+      EXFN_VY: number;
+      /** 감쇠 지수(Exponential, Damping Exponent) */
+      EXFN_DE: number;
+      /** 감쇠계수(Exponential, Damping Coefficient) */
+      EXFN_DC: number;
+      /** Exponential 초기 감쇠계수 사용 여부 */
+      OPT_EXFN_CE: boolean;
+      /** Exponential 초기 감쇠계수 값 */
+      EXFN_CE: number;
+    }, {
+      /** DOF 활성화 여부 */
+      OPT_DOF: boolean;
+      /** 초기 감쇠계수 CE */
+      CE: number;
+      /** 최대 감쇠력 P */
+      P1: number;
+      /** 이차 감쇠계수 C */
+      C1: number;
+      /** 감쇠 감소 계수 α */
+      ALPHA1: number;
+      /** 초기 강성 K */
+      K0: number;
+      /** 감쇠력(Exponential, Damping Force) */
+      EXFN_PY: number;
+      /** 기준 속도(Exponential, Reference Velocity) */
+      EXFN_VY: number;
+      /** 감쇠 지수(Exponential, Damping Exponent) */
+      EXFN_DE: number;
+      /** 감쇠계수(Exponential, Damping Coefficient) */
+      EXFN_DC: number;
+      /** Exponential 초기 감쇠계수 사용 여부 */
+      OPT_EXFN_CE: boolean;
+      /** Exponential 초기 감쇠계수 값 */
+      EXFN_CE: number;
+    }, {
+      /** DOF 활성화 여부 */
+      OPT_DOF: boolean;
+      /** 초기 감쇠계수 CE */
+      CE: number;
+      /** 최대 감쇠력 P */
+      P1: number;
+      /** 이차 감쇠계수 C */
+      C1: number;
+      /** 감쇠 감소 계수 α */
+      ALPHA1: number;
+      /** 초기 강성 K */
+      K0: number;
+      /** 감쇠력(Exponential, Damping Force) */
+      EXFN_PY: number;
+      /** 기준 속도(Exponential, Reference Velocity) */
+      EXFN_VY: number;
+      /** 감쇠 지수(Exponential, Damping Exponent) */
+      EXFN_DE: number;
+      /** 감쇠계수(Exponential, Damping Coefficient) */
+      EXFN_DC: number;
+      /** Exponential 초기 감쇠계수 사용 여부 */
+      OPT_EXFN_CE: boolean;
+      /** Exponential 초기 감쇠계수 값 */
+      EXFN_CE: number;
+    }];
   }
   /** Generated from contracts/endpoints/. */
   export interface SeismicDeviceViscoelasticDamperPayload {
@@ -4132,6 +4301,10 @@ export namespace DbMovingLoadsTypes {
     ELEM?: number;
     FACTOR?: number;
   }
+  export interface SpecialLineLaneTransverseItem {
+    ELEMS?: Array<number>;
+    FACTOR?: number;
+  }
   /** Generated from contracts/endpoints/. */
   export interface TrafficLineLanesTransversePayload {
     /** Name of Line Lane */
@@ -4142,6 +4315,13 @@ export namespace DbMovingLoadsTypes {
       ELEM: number;
       /** Factor */
       FACTOR: number;
+    }>;
+    /** Used only when importing */
+    SPECIAL_LANE_ITEMS?: Array<{
+      /** Key Elements */
+      ELEMS?: Array<number>;
+      /** Factor */
+      FACTOR?: number;
     }>;
   }
   /** Generated from contracts/endpoints/. */
@@ -4207,7 +4387,26 @@ export namespace DbMovingLoadsTypes {
     /** Sequence Number (Unique) */
     SEQ?: number;
     /** Lane Items */
-    LANE_ITEMS: Array<JsonObject>;
+    LANE_ITEMS: Array<{
+      /** Node Key */
+      NODE: number;
+      /** Offset Distance to Lane Center */
+      OFFSET: number;
+      /** Impact Factor */
+      IMPACT_FACTOR?: number;
+      /** Is Span Start */
+      bSPAN_START?: boolean;
+      /** Centrifugal Force (Only Use AASHTO LRFD) */
+      CENTRI_FORCE?: number;
+      /** Impact Span Type (Only Use India Code) */
+      IMPACT_SPAN_TYPE?: string;
+      /** IF/CDA (Only Use India Code) */
+      IMPACT_FACTOR_INDIA?: number;
+      /** Span Length (Only Use India Code) */
+      SPAN_LENGTH?: number;
+      /** Eccentricity of Vertical Loads (Only Use EuroCode) */
+      ECCEN_VERT_LOAD?: number;
+    }>;
   }
   export interface SurfaceLaneChinaItem {
     NODE?: number;
@@ -4216,18 +4415,45 @@ export namespace DbMovingLoadsTypes {
   }
   /** Generated from contracts/endpoints/. */
   export interface TrafficSurfaceLanesChinaPayload {
-    /** Node No. */
-    NODE: number;
-    /** Offset Distance to Lane Center */
-    OFFSET?: number;
-    /** Span Length */
-    SPAN_LENGTH?: number;
+    /** Name of Surface Lane */
+    NAME?: string;
+    /** Lane Width */
+    WIDTH?: number;
+    /** Wheel Spacing */
+    WHEEL_SPACE?: number;
+    /** Skew Start */
+    SKEW_START?: number;
+    /** Skew End */
+    SKEW_END?: number;
+    /** Transverse Lane Optimization */
+    bOPTIMIZE?: boolean;
+    /** Allow Width for Optimization */
+    ALLOW_WIDTH?: number;
+    /** Moving Direction ("FORWARD" / "BACKWARD" / "BOTH") */
+    MV_DIR?: string;
+    /** Sequence Number (Must be Unique) */
+    SEQ?: number;
+    /** Lane Items */
+    LANE_ITEMS?: Array<{
+      /** Node No. */
+      NODE: number;
+      /** Offset Distance to Lane Center */
+      OFFSET?: number;
+      /** Span Length */
+      SPAN_LENGTH?: number;
+    }>;
   }
   export interface SurfaceLaneOptimizationItem {
     NODE_KEY?: number;
     OFFSET?: number;
     FACTOR?: number;
     CENT_F?: number;
+    SPAN_START?: boolean;
+  }
+  export interface SurfaceLaneOptimizationChinaItem {
+    NODE_KEY?: number;
+    OFFSET?: number;
+    SPAN_LENGTH?: number;
     SPAN_START?: boolean;
   }
   /** Generated from contracts/endpoints/. */
@@ -4265,6 +4491,19 @@ export namespace DbMovingLoadsTypes {
       /** Impact Factor / Centrifugal Force */
       CENT_F?: number;
       /** Span Start */
+      SPAN_START?: boolean;
+    }>;
+    /** BS Straddling Lane Boolean */
+    OPT_STRADD?: boolean;
+    /** China lane items */
+    CHINA_ITEMS?: Array<{
+      /** Node Key */
+      NODE_KEY?: number;
+      /** Offset */
+      OFFSET?: number;
+      /** Span Length */
+      SPAN_LENGTH?: number;
+      /** Span Start Boolean */
       SPAN_START?: boolean;
     }>;
   }
@@ -7694,7 +7933,16 @@ export namespace DbPushoverTypes {
     /** 하중 패턴 타입 · 정적하중: "LOAD" / 균등가속도: "ACC" / 모드형상: "MODE" / 정규화모드형상×질량: "NOR_MODE" */
     LOADPATTERNTYPE: string;
     /** 하중 패턴 목록 */
-    LOADPATTERN: Array<JsonObject>;
+    LOADPATTERN: Array<{
+      /** 하중케이스명 Applies when LOADPATTERNTYPE = "LOAD". */
+      LCNAME?: string;
+      /** 방향 ("DX"/"DY"/"DZ") Applies when LOADPATTERNTYPE = "ACC". */
+      DIR?: string;
+      /** 모드 번호 Applies when LOADPATTERNTYPE is "MODE" or "NOR_MODE". */
+      MODE?: number;
+      /** 축척계수 */
+      SF: number;
+    }>;
   }
   export interface PushoverControlOptionHyperS {
     STEPCTRLOPTION?: string;

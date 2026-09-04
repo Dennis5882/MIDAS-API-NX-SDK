@@ -257,24 +257,113 @@ fields:
         safeToOmit: unverified
         provenance: manual
         properties:
-          - key: OPT_USE
+          - key: DISPL
             description: >-
-              해당 기준 사용 여부
-            type: boolean
-            requirement: unstated
+              Displacement Convergence (변위 U)
+            type: object
+            requirement: optional
             documentedDefault: null
-            documentedOptional: null
+            documentedOptional: true
             safeToOmit: unverified
             provenance: manual
-          - key: VALUE
+            # RESOLVED: the manual nests this under 'CONVERGENCE' in the heading of the
+            # sub-table itself - "CONVERGENCE 객체 - DISPL(변위 U) / LOAD(하중 P) /
+            # WORK(일 W) 각각" - so the two rows below it describe each of three
+            # children, not CONVERGENCE directly, and the section's Request Body sends
+            # exactly that. This contract had OPT_USE and VALUE hanging straight off
+            # CONVERGENCE until 2026-09-04, one level short of where the server looks.
+            # GET /info/db/ACTL-M1 declares all three children. See MD-44.
+            properties:
+              - key: OPT_USE
+                description: >-
+                  해당 기준 사용 여부
+                type: boolean
+                requirement: unstated
+                documentedDefault: null
+                documentedOptional: null
+                safeToOmit: unverified
+                provenance: manual
+              - key: VALUE
+                description: >-
+                  허용오차 (OPT_USE = true일 때 필수)
+                type: number
+                requirement: unstated
+                documentedDefault: null
+                documentedOptional: null
+                safeToOmit: unverified
+                provenance: manual
+          - key: LOAD
             description: >-
-              허용오차 (OPT_USE = true일 때 필수)
-            type: number
-            requirement: unstated
+              Load Convergence (하중 P)
+            type: object
+            requirement: optional
             documentedDefault: null
-            documentedOptional: null
+            documentedOptional: true
             safeToOmit: unverified
             provenance: manual
+            properties:
+              - key: OPT_USE
+                description: >-
+                  해당 기준 사용 여부
+                type: boolean
+                requirement: unstated
+                documentedDefault: null
+                documentedOptional: null
+                safeToOmit: unverified
+                provenance: manual
+              - key: VALUE
+                description: >-
+                  허용오차 (OPT_USE = true일 때 필수)
+                type: number
+                requirement: unstated
+                documentedDefault: null
+                documentedOptional: null
+                safeToOmit: unverified
+                provenance: manual
+          - key: WORK
+            description: >-
+              Work Convergence (일 W)
+            type: object
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            properties:
+              - key: OPT_USE
+                description: >-
+                  해당 기준 사용 여부
+                type: boolean
+                requirement: unstated
+                documentedDefault: null
+                documentedOptional: null
+                safeToOmit: unverified
+                provenance: manual
+              - key: VALUE
+                description: >-
+                  허용오차 (OPT_USE = true일 때 필수)
+                type: number
+                requirement: unstated
+                documentedDefault: null
+                documentedOptional: null
+                safeToOmit: unverified
+                provenance: manual
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      The `CONVERGENCE` sub-table has two rows, `OPT_USE` and `VALUE`.
+    actual: >-
+      They belong to each of three children. The sub-table's own heading says
+      so - "CONVERGENCE 객체 - DISPL(변위 U) / LOAD(하중 P) / WORK(일 W) 각각" -
+      and the section's Request Body sends
+      `{"DISPL": {...}, "LOAD": {...}, "WORK": {...}}`. `GET /info/db/ACTL-M1`
+      declares the same three. This contract had both rows hanging straight off
+      `CONVERGENCE` until 2026-09-04, one level short of where the server looks.
+      The manual states it; a heading that names three children and a table that
+      describes all of them is a form the extractor does not read.
+    evidence: >-
+      GET /info/db/ACTL-M1 on Civil NX, captured 2026-09-03, against
+      docs/manual/12_DB_Analysis_Control.md lines 158-200. Registered as MD-44.
 
 sdkRules:
   - id: db-actl-m1-delete-per-id

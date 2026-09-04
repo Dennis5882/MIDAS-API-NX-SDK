@@ -253,6 +253,84 @@ fields:
         provenance: manual
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(4)', not by
         # naming a path
+  - key: OPT_STRADD
+    description: >-
+      BS Straddling Lane Boolean
+    type: boolean
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - the whole
+    # manual was searched for the name, not just this section.
+  - key: CHINA_ITEMS
+    description: >-
+      China lane items
+    type: array
+    items:
+      type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - the whole
+    # manual was searched for the name, not just this section.
+    # /info gives this array no description of its own, only its
+    # members'. The name is the only statement of what it is for.
+    properties:
+      - key: NODE_KEY
+        description: >-
+          Node Key
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: OFFSET
+        description: >-
+          Offset
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SPAN_LENGTH
+        description: >-
+          Span Length
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SPAN_START
+        description: >-
+          Span Start Boolean
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      /db/SLANop's Parameters table gives the lane fields and one item array.
+    actual: >-
+      `GET /info/db/SLANop` declares two more properties: `OPT_STRADD`, a
+      boolean described " BS Straddling Lane Boolean", and `CHINA_ITEMS`, an
+      array of `{NODE_KEY, OFFSET, SPAN_LENGTH, SPAN_START}` with no description
+      of its own. The endpoint is the moving-load-optimization lane, and the
+      manual documents neither the BS straddling option nor a China-specific
+      item list for it.
+    evidence: >-
+      GET /info/db/SLANop on Civil NX, captured 2026-09-03, against
+      docs/manual/08_DB_Moving_Loads.md section 9. Registered as MD-45.
 
 sdkRules:
   - id: db-slanop-delete-per-id

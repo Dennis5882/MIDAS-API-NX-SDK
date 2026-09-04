@@ -163,11 +163,24 @@ class LineLaneTransverseItem(TypedDict, total=False):
     FACTOR: float  # Factor, required
 
 
+class SpecialLineLaneTransverseItem(TypedDict, total=False):
+    """One entry of /db/LLANtr's SPECIAL_LANE_ITEMS.
+
+    Undocumented: `GET /info/db/LLANtr` declares the array and describes it
+    " Used only when importing", which is the whole of what is known about
+    when it applies. MD-45.
+    """
+
+    ELEMS: List[int]  # Key Elements
+    FACTOR: float  # Factor
+
+
 class TrafficLineLanesTransversePayload(TypedDict, total=False):
     """docs/manual/08_DB_Moving_Loads.md #5 — /db/LLANtr Specifications table."""
 
     LL_NAME: str  # Name of Line Lane, required
     LANE_ITEMS: List[LineLaneTransverseItem]  # required
+    SPECIAL_LANE_ITEMS: List[SpecialLineLaneTransverseItem]  # see above; MD-45
 
 
 class TrafficLineLanesTransverse(DbResource):
@@ -270,6 +283,9 @@ class TrafficSurfaceLanesChinaPayload(TypedDict, total=False):
     bOPTIMIZE: bool  # Transverse Lane Optimization, default false, optional
     ALLOW_WIDTH: float  # Allow Width for Optimization, default 0, optional
     MV_DIR: str  # Moving Direction, required
+    SEQ: int  # Sequence Number (must be unique); /info declares it and the manual documents it nowhere (checked across every chapter, 2026-09-04) for
+    # this endpoint. The sibling /db/SLAN tables it as row 9, Integer,
+    # default 1, Optional. MD-43.
     LANE_ITEMS: List[SurfaceLaneChinaItem]  # required
 
 
@@ -289,6 +305,20 @@ class SurfaceLaneOptimizationItem(TypedDict, total=False):
     SPAN_START: bool  # Span Start, default false, optional
 
 
+class SurfaceLaneOptimizationChinaItem(TypedDict, total=False):
+    """One entry of /db/SLANop's CHINA_ITEMS.
+
+    Undocumented: `GET /info/db/SLANop` declares the array with no description
+    of its own, only its members'. The name is the only statement of what it is
+    for. MD-45.
+    """
+
+    NODE_KEY: int  # Node Key
+    OFFSET: float  # Offset
+    SPAN_LENGTH: float  # Span Length
+    SPAN_START: bool  # Span Start
+
+
 class TrafficSurfaceLanesOptimizationPayload(TypedDict, total=False):
     """docs/manual/08_DB_Moving_Loads.md #9 — /db/SLANop Specifications table."""
 
@@ -304,6 +334,9 @@ class TrafficSurfaceLanesOptimizationPayload(TypedDict, total=False):
     DIVIDE_NUM: int  # Number of Division, optional
     ANALYSIS_LANE_OFFSET: float  # Analysis Lane Offset, optional
     ITEMS: List[SurfaceLaneOptimizationItem]  # required
+    OPT_STRADD: bool  # BS Straddling Lane; /info declares it and the manual
+    # documents it nowhere (checked across every chapter, 2026-09-04). MD-45.
+    CHINA_ITEMS: List[SurfaceLaneOptimizationChinaItem]  # see above; MD-45
 
 
 class TrafficSurfaceLanesOptimization(DbResource):
