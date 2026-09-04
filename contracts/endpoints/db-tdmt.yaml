@@ -194,6 +194,58 @@ fields:
       without this field in its payload. That is evidence the call is accepted,
       not that the resulting model is what an engineer wanted.
     provenance: manual
+  - key: TCODE
+    description: >-
+      Type of Code
+    type: integer
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: live_verified
+    provenanceNote: >-
+      Confirmed live 2026-07-30 against a real PSC bridge model whose
+      concrete (C40/50) uses CODE="EUROPEAN", and declared by GET
+      /info/db/TDMT on both products. requirement stays `unstated`: the
+      manual documents no EUROPEAN branch at all, so there is no
+      requiredness claim to normalise and no documented condition for an
+      `appliesWhen` to translate. See docs/live_verification_notes.md and
+      MD-47.
+  - key: bSILICA
+    description: >-
+      SilicaFume
+    type: boolean
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: live_verified
+    provenanceNote: >-
+      See TCODE above; the two arrived together, from the same model and the
+      same /info schema.
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      Section 6's "Specifications (공통 키 + CEB-FIP)" table documents ten keys
+      across two code branches - CEB-FIP (`MSIZE`, `TYPEOFAFFR`) and ACI
+      (`VOL`, `CMETHOD`) - and its `CODE` value table lists 33 codes.
+    actual: >-
+      `CODE="EUROPEAN"` is a third branch with two dedicated fields, `TCODE`
+      and `bSILICA`, and the Specifications table names neither. Both were
+      read off a real PSC bridge model's C40/50 concrete on 2026-07-30 and
+      both are declared by `GET /info/db/TDMT` on Civil NX and Gen NX. The
+      gap is wider than these two: /info declares roughly seventy fields here,
+      spanning JSCE, GB, JTG and other codes the table lists in `CODE` and
+      then documents no fields for. Only the EUROPEAN pair is contracted,
+      because only that pair has been seen in real data; the rest stays an
+      open gap rather than a transcription of /info.
+    evidence: >-
+      docs/live_verification_notes.md, the 2026-07-30 cross-check entry, and
+      GET /info/db/TDMT on both products captured 2026-09-03. Found by
+      validate_contracts.py's field-parity check: both fields had been in
+      TimeDependentMaterialCreepShrinkagePayload since 2026-07-30 and in no
+      contract. Registered as MD-47.
 
 sdkRules:
   - id: db-tdmt-delete-per-id

@@ -126,6 +126,31 @@ fields:
         provenance: manual
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(3)', not by
         # naming a path
+        properties:
+          - key: FROM
+            description: >-
+              시작 층
+            type: string
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: stated elsewhere in the same section - the
+            # section's own JSON Schema declares this object's members
+            # with their types and its own `required` list, and the "철근 하위
+            # 객체 필드 요약" table at line 6906 names them again. The
+            # Parameters row only lists them inside its description cell,
+            # which is why the parser saw an object with nothing in it.
+          - key: TO
+            description: >-
+              종료 층
+            type: string
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
       - key: VERTICAL_REBAR
         description: >-
           수직 철근 (NAME·DIST)
@@ -137,6 +162,28 @@ fields:
         provenance: manual
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(4)', not by
         # naming a path
+        properties:
+          - key: NAME
+            description: >-
+              수직 철근 규격 (전체 19종: D4 ~ D57)
+            type: string
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # no enum is transcribed: the JSON Schema's `enum` lists five
+            # sizes while its own description says 전체 19종: D4 ~ D57, so
+            # the list is an abbreviation rather than the value set.
+          - key: DIST
+            description: >-
+              수직 철근 간격
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
       - key: HORIZONTAL_REBAR
         description: >-
           수평 철근 (NAME·DIST)
@@ -148,6 +195,28 @@ fields:
         provenance: manual
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(5)', not by
         # naming a path
+        properties:
+          - key: NAME
+            description: >-
+              수평 철근 규격 (전체 19종: D4 ~ D57)
+            type: string
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # no enum is transcribed: the JSON Schema's `enum` lists five
+            # sizes while its own description says 전체 19종: D4 ~ D57, so
+            # the list is an abbreviation rather than the value set.
+          - key: DIST
+            description: >-
+              수평 철근 간격
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
       - key: USE_END_REBAR
         description: >-
           단부 철근 입력 사용
@@ -171,6 +240,37 @@ fields:
         provenance: manual
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(7)', not by
         # naming a path
+        properties:
+          - key: NAME
+            description: >-
+              단부(수직) 철근 규격 (전체 19종: D4 ~ D57)
+            type: string
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # no enum is transcribed: the JSON Schema's `enum` lists five
+            # sizes while its own description says 전체 19종: D4 ~ D57, so
+            # the list is an abbreviation rather than the value set.
+          - key: NUM
+            description: >-
+              단부 철근 개수
+            type: integer
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: DIST
+            description: >-
+              단부 철근 간격
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
       - key: BE_HORIZONTAL_REBAR
         description: >-
           경계요소 수평 철근 (NAME·DIST)
@@ -182,6 +282,28 @@ fields:
         provenance: manual
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(8)', not by
         # naming a path
+        properties:
+          - key: NAME
+            description: >-
+              경계요소 수평 철근 규격 (전체 19종: D4 ~ D57)
+            type: string
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # no enum is transcribed: the JSON Schema's `enum` lists five
+            # sizes while its own description says 전체 19종: D4 ~ D57, so
+            # the list is an abbreviation rather than the value set.
+          - key: DIST
+            description: >-
+              경계요소 수평 철근 간격
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
       - key: BOUNDARY_ELEMENT_LENGTH
         description: >-
           경계요소 길이
@@ -204,6 +326,25 @@ fields:
         provenance: manual
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(10)', not by
         # naming a path
+        properties:
+          - key: DW
+            description: >-
+              콘크리트면~수직 철근중심 (dw)
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: DE
+            description: >-
+              콘크리트면~경계요소 철근중심 (de)
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
       - key: USE_MODEL_THICKNESS
         description: >-
           모델 두께 사용
@@ -231,3 +372,22 @@ fields:
 extraction:
   source: 26_Design_RC_KDS41202022.md line 6888
   table: 파라미터
+  prose:
+    - line: 6910
+      quote: >-
+        | `VERTICAL_REBAR` / `HORIZONTAL_REBAR` / `BE_HORIZONTAL_REBAR` |
+        `NAME` (19종 D4 ~ D57) · `DIST` | 규격 · 간격 |
+      paths: [ITEMS.VERTICAL_REBAR.NAME, ITEMS.VERTICAL_REBAR.DIST,
+              ITEMS.HORIZONTAL_REBAR.NAME, ITEMS.HORIZONTAL_REBAR.DIST,
+              ITEMS.BE_HORIZONTAL_REBAR.NAME, ITEMS.BE_HORIZONTAL_REBAR.DIST]
+    - line: 6911
+      quote: '| `END_REBAR` | `NAME` (19종) · `NUM` · `DIST` | 규격 · 개수 · 간격 |'
+      paths: [ITEMS.END_REBAR.NAME, ITEMS.END_REBAR.NUM, ITEMS.END_REBAR.DIST]
+    - line: 6912
+      quote: >-
+        | `CONCRETE_FACE_TO_CENTER_OF_REBAR` | `DW` · `DE` | 수직/경계요소 철근 피복 |
+      paths: [ITEMS.CONCRETE_FACE_TO_CENTER_OF_REBAR.DW,
+              ITEMS.CONCRETE_FACE_TO_CENTER_OF_REBAR.DE]
+    - line: 6913
+      quote: '| `STORY` | `FROM` · `TO` | 시작/종료 층 문자열 |'
+      paths: [ITEMS.STORY.FROM, ITEMS.STORY.TO]

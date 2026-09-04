@@ -227,11 +227,28 @@ class CreepShrinkageEffectiveModulusData(TypedDict, total=False):
 
 
 class CreepShrinkageItem(TypedDict, total=False):
-    """Shared "ITEM" shape used by both HHCT and HHCT-M1."""
+    """/db/HHCT's "ITEM" shape.
+
+    Not shared with /db/HHCT-M1, which the docstring here used to claim: the
+    Hyper-S endpoint has no ``M_GENERAL``. Both sources agree — the manual
+    documents ``M_GENERAL`` in section 7's table (line 726) and nowhere in
+    section 8's, and ``GET /info/db/HHCT-M1``'s ``ITEM`` declares only
+    ``TYPE``, ``CREEP_CALC_METHOD`` and ``M_EFF_MOD`` where
+    ``/info/db/HHCT``'s declares ``M_GENERAL`` too. See
+    ``CreepShrinkageItemHyperS``.
+    """
 
     TYPE: str  # "CREEP"/"SHRINK"/"BOTH", default "CREEP", optional
     CREEP_CALC_METHOD: int  # General=0/Effective Modulus=1, default 0, optional
     M_GENERAL: CreepShrinkageGeneralData  # optional, used when method=0
+    M_EFF_MOD: CreepShrinkageEffectiveModulusData  # required when method=1
+
+
+class CreepShrinkageItemHyperS(TypedDict, total=False):
+    """/db/HHCT-M1's "ITEM" shape: CreepShrinkageItem without ``M_GENERAL``."""
+
+    TYPE: str  # "CREEP"/"SHRINKAGE"/"BOTH", default "BOTH", optional
+    CREEP_CALC_METHOD: int  # General=0/Effective Modulus=1, default 0, optional
     M_EFF_MOD: CreepShrinkageEffectiveModulusData  # required when method=1
 
 
@@ -280,7 +297,7 @@ class HeatOfHydrationAnalysisControlHyperSPayload(TypedDict, total=False):
     INIT_TEMP: float  # default 20, optional
     EVAL: str  # "CENTER"/"GAUSS"/"NODAL", default "GAUSS", optional
     OPT_IS_CREEP_SHRINKAGE: bool  # default true, optional
-    ITEM: CreepShrinkageItem  # required if OPT_IS_CREEP_SHRINKAGE true
+    ITEM: CreepShrinkageItemHyperS  # required if OPT_IS_CREEP_SHRINKAGE true
     OPT_USE_EQUI_AGE: bool  # default true, optional
     OPT_INCL_SELF_WEIGHT: bool  # default false, optional
     SELF_WEIGHT_FACTOR: float  # required if OPT_INCL_SELF_WEIGHT true

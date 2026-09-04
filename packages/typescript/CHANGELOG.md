@@ -6,6 +6,50 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Changed — the four traffic-line-lane payloads take `COMMON` and `LANE_ITEMS`
+
+- **Breaking.** `TrafficLineLanePayload`, `TrafficLineLanesChinaPayload` and
+  `TrafficLineLanesIndiaPayload` published a flat record: the ten common lane
+  properties at the root for `/db/LLAN`, the five lane-item members at the root
+  for the other two. The server takes neither. All three records are
+  `{ COMMON: {...}, LANE_ITEMS: [...] }` — the manual's Request Example, its
+  Python example, `scripts/live_crud_check.py`'s confirmed round trip and
+  `GET /info` all agree, and the contracts' own `extraction.table` had recorded
+  the headings `Parameters – COMMON` and `Parameters – LANE_ITEMS` since the
+  day they were drafted. `TrafficLineLanesOptimizationPayload` keeps its flat
+  root, which is right for that endpoint, and gains the six members its
+  `LANE_ITEMS` never had.
+- Anyone whose calls worked was already sending the nested shape and passing an
+  object the type did not describe; the type now describes it. Anyone following
+  the type was getting a rejection from the server.
+
+### Added — five endpoints gained the members their objects never had
+
+- `MovingLoadCaseBsPayload`'s six `LCDATA_*` objects were typed as bare objects
+  with nothing inside. They now carry what the manual states, including the
+  `SUBLOADDATA` array and its straddling-lane pairs. The manual's own callout
+  says its summary table lists principal fields rather than every field, and
+  the contract records that.
+- `ModifyWallRebarDataPayload`'s `STORY`, `VERTICAL_REBAR`, `HORIZONTAL_REBAR`,
+  `END_REBAR`, `BE_HORIZONTAL_REBAR` and `CONCRETE_FACE_TO_CENTER_OF_REBAR`
+  gained their members, from the section's own JSON Schema and its sub-object
+  summary table.
+- `MovingLoadAnalysisControlPayload` gained the eight Russia-code fields the
+  manual states in a sentence after its table.
+- `TimeDependentMaterialCreepShrinkagePayload` gained `TCODE` and `bSILICA`,
+  the `CODE="EUROPEAN"` branch confirmed live on 2026-07-30 and declared by
+  `/info` on both products. See MD-47.
+- `ElasticLinkPayload` gained the eight fields each `LINK` type adds, with
+  per-type "Applies when" documentation. `DIR` carries no enum: the two link
+  types that use it document two different ranges.
+
+### Removed — `HeatOfHydrationAnalysisControlHyperSPayload.ITEM.M_GENERAL`
+
+- **Breaking.** `/db/HHCT-M1`'s `ITEM` has no `M_GENERAL`. The Python TypedDict
+  shared one item type with `/db/HHCT`, which does have it; the manual
+  documents it only in `/db/HHCT`'s table and `GET /info/db/HHCT-M1` declares
+  only `TYPE`, `CREEP_CALC_METHOD` and `M_EFF_MOD`. `/db/HHCT` is unaffected.
+
 ### Fixed — two payloads named fields the server does not
 
 - `SectionStressPointsPayload`'s `POINT1`/`POINT2` entries are `{Y, Z}`, not

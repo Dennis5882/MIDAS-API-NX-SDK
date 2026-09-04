@@ -507,31 +507,37 @@
           }
         },
         "prose": {
-      "type": "array",
-      "description": "Fields the manual states somewhere other than a row of a parameter table - in a sentence, or inside another table's cell. scripts/extract_contracts.py reads rows, so it cannot see these, and its drift check would otherwise report every one as a field the contract invented. This is not a manualDefect: the manual documents them, it just did not write a row, and recording it that way keeps the whole-contract `field_name` waiver for cases where the manual is actually wrong. /db/GRDP is the worked example for a sentence - one names the fifteen members of GROUP_DAMPING_ITEMS by saying they are the `_DEFAULT` fields without the suffix. /db/ELNK is the worked example for a cell: a second table lists each `LINK` type's extra keys in its 추가 키 column, which is where all eight of the record's conditional fields are stated and the reason `quote` may hold a table row verbatim.",
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["line", "quote", "paths"],
-        "properties": {
-          "line": {
-            "type": "integer",
-            "description": "Line in the chapter file where the sentence begins."
-          },
-          "quote": {
-            "type": "string",
-            "description": "The sentence itself, verbatim, so the claim can be checked without opening the chapter."
-          },
-          "paths": {
-            "type": "array",
-            "minItems": 1,
-            "items": {"type": "string"},
-            "description": "Dotted contract paths the sentence documents."
+          "type": "array",
+          "description": "Fields the manual states somewhere other than a row of a parameter table - in a sentence, or inside another table's cell. scripts/extract_contracts.py reads rows, so it cannot see these, and its drift check would otherwise report every one as a field the contract invented. This is not a manualDefect: the manual documents them, it just did not write a row, and recording it that way keeps the whole-contract `field_name` waiver for cases where the manual is actually wrong. /db/GRDP is the worked example for a sentence - one names the fifteen members of GROUP_DAMPING_ITEMS by saying they are the `_DEFAULT` fields without the suffix. /db/ELNK is the worked example for a cell: a second table lists each `LINK` type's extra keys in its 추가 키 column, which is where all eight of the record's conditional fields are stated and the reason `quote` may hold a table row verbatim.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "line",
+              "quote",
+              "paths"
+            ],
+            "properties": {
+              "line": {
+                "type": "integer",
+                "description": "Line in the chapter file where the sentence begins."
+              },
+              "quote": {
+                "type": "string",
+                "description": "The sentence itself, verbatim, so the claim can be checked without opening the chapter."
+              },
+              "paths": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                },
+                "description": "Dotted contract paths the sentence documents."
+              }
+            }
           }
-        }
-      }
-    },
-    "structuralTables": {
+        },
+        "structuralTables": {
           "type": "array",
           "description": "Supplementary manual tables whose named object or array destination was transcribed by the extractor. This is evidence of a structural merge, not a waiver for conditional variants.",
           "items": {
@@ -575,7 +581,10 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["path", "reason"],
+        "required": [
+          "path",
+          "reason"
+        ],
         "properties": {
           "path": {
             "type": "string",
@@ -584,6 +593,28 @@
           "reason": {
             "type": "string",
             "description": "Why no caller should send this and no payload type should offer it."
+          }
+        }
+      }
+    },
+    "sdkOnly": {
+      "type": "array",
+      "description": "Wire names the Python SDK publishes that this contract deliberately does not, each with the reason. It is a waiver for validate_contracts.py's field-parity check and for nothing else. The check exists because check_parity compares routes, verbs, products and rules and never a field name, which let /db/ELNK publish four fields beside a twelve-key TypedDict; an entry here is how a difference stops being reported forever without anyone deciding it. Use it only where the SDK's name is not a name the server takes - a grouping key a TypedDict invented to organise its own documentation is the case. A name the server does take is a missing field, and the fix is to source it from the manual, a live record or /info. The TypedDict itself is never the source: it is the subject the check measures.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "reason"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The key as the Python payload TypedDict spells it."
+          },
+          "reason": {
+            "type": "string",
+            "description": "Why this contract records no field of that name, and what evidence settled it."
           }
         }
       }

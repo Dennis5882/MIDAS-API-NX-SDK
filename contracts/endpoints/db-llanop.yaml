@@ -215,6 +215,77 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+    properties:
+      - key: ELEM
+        description: >-
+          Element No.
+        type: integer
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: stated elsewhere in the same section - row 14
+        # describes LANE_ITEMS as "(ELEM, ECC, 코드별 추가 필드)", and this
+        # section's Request Example and Python example send ELEM, ECC,
+        # FACT, SPAN_START and CENT_F between them. The per-code list row
+        # 14 points at is stated in these sibling sections: section 2,
+        # /db/LLAN, whose "Parameters - LANE_ITEMS (코드별 추가 필드)" table is
+        # the only place the six keys and their codes are written down.
+        # The gate is the active moving-load code, which is /db/MVCD's
+        # record and not a field of this one, so `condition` carries the
+        # manual's wording and no `appliesWhen` accompanies it: every
+        # entry of `appliesWhen` must name a field path in this contract,
+        # and there is none to name.
+      - key: ECC
+        description: >-
+          Eccentricity
+        type: number
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: FACT
+        description: >-
+          Impact Factor
+        type: number
+        requirement: conditional
+        condition: 'LANE_ITEMS (코드별 추가 필드): Korea, AASHTO Standard, Taiwan'
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: SPAN_START
+        description: >-
+          Span Start
+        type: boolean
+        requirement: conditional
+        condition: 'LANE_ITEMS (코드별 추가 필드): Korea, AASHTO Standard, Taiwan / AASHTO LRFD / PENNDOT / Australia, Poland'
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: CENT_F
+        description: >-
+          Centrifugal Force Factor
+        type: number
+        requirement: conditional
+        condition: 'LANE_ITEMS (코드별 추가 필드): AASHTO LRFD'
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: ECCEN_VERT_LOAD
+        description: >-
+          Eccentricity Considering Cant (vertical load)
+        type: number
+        requirement: conditional
+        condition: 'LANE_ITEMS (코드별 추가 필드): Eurocode'
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
 
 sdkRules:
   - id: db-llanop-delete-per-id
@@ -245,3 +316,11 @@ knownDefects:
 extraction:
   source: 08_DB_Moving_Loads.md line 497
   table: Parameters
+  prose:
+    - line: 513
+      quote: >-
+        | 14 | Lane Items (ELEM, ECC, 코드별 추가 필드) | `"LANE_ITEMS"` |
+        Array[Object] | – | Required |
+      paths: [LANE_ITEMS.ELEM, LANE_ITEMS.ECC, LANE_ITEMS.FACT,
+              LANE_ITEMS.SPAN_START, LANE_ITEMS.CENT_F,
+              LANE_ITEMS.ECCEN_VERT_LOAD]

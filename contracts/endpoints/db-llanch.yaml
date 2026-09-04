@@ -87,51 +87,172 @@ operations:
       keyStability: stable
 
 fields:
-  - key: ELEM
+  - key: COMMON
     description: >-
-      Element No.
-    type: integer
+      Common lane properties
+    type: object
     requirement: required
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
-  - key: ECC
+    # RESOLVED: stated elsewhere in the same section - the Request Example
+    # and the Python example both nest these ten under COMMON. The members
+    # and their descriptions are /db/LLAN's, which is what this section
+    # points at rather than restating. Until 2026-09-04 this contract
+    # published its LANE_ITEMS rows at the root and had neither key.
+    properties:
+      - key: LL_NAME
+        description: >-
+          Name of Line Lane
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: WIDTH
+        description: >-
+          Lane Width
+        type: number
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: WHEEL_SPACE
+        description: >-
+          Wheel Spacing
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: OPT_AUTO_LANE
+        description: >-
+          Transverse Lane Optimization
+        type: boolean
+        requirement: optional
+        documentedDefault: false
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: ALLOW_WIDTH
+        description: >-
+          Allow Width for Optimization
+        type: number
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: LOAD_DIST
+        description: >-
+          Load Distribution ("LANE" / "CROSS")
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: GROUP_NAME
+        description: >-
+          Name of Structure Group
+        type: string
+        requirement: optional
+        documentedDefault: ""
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: SKEW_START
+        description: >-
+          Skew Start
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: SKEW_END
+        description: >-
+          Skew End
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: MOVING
+        description: >-
+          Moving Direction ("FORWARD" / "BACKWARD" / "BOTH")
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+  - key: LANE_ITEMS
     description: >-
-      Eccentricity
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
+      Lane Items
+    type: array
+    items:
+      type: object
+    requirement: required
+    documentedDefault: null
+    documentedOptional: false
     safeToOmit: unverified
     provenance: manual
-  - key: SPAN
-    description: >-
-      Span Length
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: SPAN_START
-    description: >-
-      Span Start
-    type: boolean
-    requirement: optional
-    documentedDefault: false
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: SCALE_FACTOR
-    description: >-
-      Scale Factor
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
+    # RESOLVED: stated elsewhere in the same section - this section's one
+    # parameter table is headed "Parameters - LANE_ITEMS" and describes
+    # these members, not the record's own. extraction.table has recorded
+    # that heading since the draft was made.
+    properties:
+      - key: ELEM
+        description: >-
+          Element No.
+        type: integer
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: ECC
+        description: >-
+          Eccentricity
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: SPAN
+        description: >-
+          Span Length
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: SPAN_START
+        description: >-
+          Span Start
+        type: boolean
+        requirement: optional
+        documentedDefault: false
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: SCALE_FACTOR
+        description: >-
+          Scale Factor
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
 
 sdkRules:
   - id: db-llanch-delete-per-id
@@ -162,3 +283,20 @@ knownDefects:
 extraction:
   source: 08_DB_Moving_Loads.md line 297
   table: Parameters – LANE_ITEMS
+  structuralTables:
+    - heading: Parameters – LANE_ITEMS
+      line: 296
+      paths: [LANE_ITEMS]
+      note: >-
+        The section's only parameter table, and its heading names where its
+        five rows go. Until 2026-09-04 the contract published them at the
+        root, which made its npm payload type describe a record neither the
+        manual's examples nor GET /info/db/LLANch recognise.
+  prose:
+    - line: 294
+      quote: >-
+        LLAN COMMON과 동일 구조 (`"LL_NAME"`, `"LOAD_DIST"`, `"MOVING"` 등)
+      paths: [COMMON, COMMON.LL_NAME, COMMON.WIDTH, COMMON.WHEEL_SPACE,
+              COMMON.OPT_AUTO_LANE, COMMON.ALLOW_WIDTH, COMMON.LOAD_DIST,
+              COMMON.GROUP_NAME, COMMON.SKEW_START, COMMON.SKEW_END,
+              COMMON.MOVING]

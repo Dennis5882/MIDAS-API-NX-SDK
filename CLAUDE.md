@@ -47,6 +47,23 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   about the product) are separate booleans and must stay that way, and `risk`
   (what the endpoint is) and `mitigation` (what the SDKs do) are separate axes —
   a mitigated crash risk is still a crash risk.
+  Since 2026-09-04 that parity has a fifth check, `check_field_parity`, and it
+  exists because the other four never compared a **field name**: they compare
+  routes, verbs, `products` and executable rules, which is how `/db/ELNK`
+  published four fields beside a twelve-key TypedDict for months with every gate
+  green. It resolves `surface.payloadTypeName` to the Python TypedDict of that
+  name **in the module the endpoint's resource lives in** — the name alone is
+  not unique, the RC and steel design chapters both having an `SRDF` and a
+  `LENG` — follows nested TypedDicts, and fails on any wire name the SDK ships
+  that the contract records nowhere. **One direction only.** A contract naming
+  more than a TypedDict is the intended state; the reverse is the defect. Its
+  first run found 73 keys across twelve endpoints, of which exactly one was an
+  SDK defect (`/db/HHCT-M1`'s `M_GENERAL`) and the rest were contracts behind
+  their own SDK — including three that published a flat record the server has
+  never accepted, and `/db/LLAN`, where the flat shape had also manufactured ten
+  false `safeToOmit: true` claims. Fixing one takes a permitted source; a
+  TypedDict is the subject the check measures, never a source. `sdkOnly` waives
+  a name the server does not take.
 - `src/midas_nx/` — the only thing that ships in the wheel (`packages = ["src/midas_nx"]`).
   - `client.py` — `MidasClient`, `Product` enum, exception hierarchy rooted at `MidasAPIError`.
   - `db/` — `/db/*` endpoints as `DbResource` subclasses.

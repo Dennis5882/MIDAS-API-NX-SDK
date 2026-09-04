@@ -279,6 +279,11 @@ export namespace DbAnalysisControlTypes {
     M_GENERAL?: CreepShrinkageGeneralData;
     M_EFF_MOD?: CreepShrinkageEffectiveModulusData;
   }
+  export interface CreepShrinkageItemHyperS {
+    TYPE?: string;
+    CREEP_CALC_METHOD?: number;
+    M_EFF_MOD?: CreepShrinkageEffectiveModulusData;
+  }
   /** Generated from contracts/endpoints/. */
   export interface HeatOfHydrationAnalysisControlPayload {
     /** Final Stage (Last Stage: true / Other Stage: false) */
@@ -435,6 +440,22 @@ export namespace DbAnalysisControlTypes {
     bLG?: boolean;
     /** Link Group Name (when bLG true) */
     LGN: string;
+    /** Mat Type */
+    MATTYPE?: number;
+    /** Bridge Type */
+    BRIDGETYPE?: number;
+    /** Mat Type AK */
+    AKMATTYPE?: number;
+    /** Bridge Type AK */
+    AKBRIDGETYPE?: number;
+    /** Minimum Factor (최소계수) */
+    MINFACTS2?: number;
+    /** Max Successive Vehicle (최대 연속 차량) */
+    MAXV?: number;
+    /** Increment Vehicle (차량 증분) */
+    INCV?: number;
+    /** Max Spacing Train (열차 최대 간격) */
+    MAXSPACE?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface MovingLoadAnalysisControlChinaPayload {
@@ -4256,26 +4277,44 @@ export namespace DbMovingLoadsTypes {
   }
   /** Generated from contracts/endpoints/. */
   export interface TrafficLineLanePayload {
-    /** Name of Line Lane */
-    LL_NAME: string;
-    /** Lane Width */
-    WIDTH: number;
-    /** Wheel Spacing */
-    WHEEL_SPACE?: number;
-    /** Transverse Lane Optimization */
-    OPT_AUTO_LANE?: boolean;
-    /** Allow Width for Optimization */
-    ALLOW_WIDTH?: number;
-    /** Load Distribution ("LANE" / "CROSS") */
-    LOAD_DIST: string;
-    /** Name of Structure Group */
-    GROUP_NAME?: string;
-    /** Skew Start */
-    SKEW_START?: number;
-    /** Skew End */
-    SKEW_END?: number;
-    /** Moving Direction ("FORWARD" / "BACKWARD" / "BOTH") */
-    MOVING: string;
+    /** Common lane properties */
+    COMMON: {
+      /** Name of Line Lane */
+      LL_NAME: string;
+      /** Lane Width */
+      WIDTH: number;
+      /** Wheel Spacing */
+      WHEEL_SPACE?: number;
+      /** Transverse Lane Optimization */
+      OPT_AUTO_LANE?: boolean;
+      /** Allow Width for Optimization */
+      ALLOW_WIDTH?: number;
+      /** Load Distribution ("LANE" / "CROSS") */
+      LOAD_DIST: string;
+      /** Name of Structure Group */
+      GROUP_NAME?: string;
+      /** Skew Start */
+      SKEW_START?: number;
+      /** Skew End */
+      SKEW_END?: number;
+      /** Moving Direction ("FORWARD" / "BACKWARD" / "BOTH") */
+      MOVING: string;
+    };
+    /** Lane Items */
+    LANE_ITEMS: Array<{
+      /** Element No. */
+      ELEM: number;
+      /** Eccentricity */
+      ECC?: number;
+      /** Impact Factor */
+      FACT?: number;
+      /** Span Start */
+      SPAN_START?: boolean;
+      /** Centrifugal Force Factor */
+      CENT_F?: number;
+      /** Eccentricity Considering Cant (vertical load) */
+      ECCEN_VERT_LOAD?: number;
+    }>;
   }
   export interface LineLaneChinaItem {
     ELEM?: number;
@@ -4286,16 +4325,42 @@ export namespace DbMovingLoadsTypes {
   }
   /** Generated from contracts/endpoints/. */
   export interface TrafficLineLanesChinaPayload {
-    /** Element No. */
-    ELEM: number;
-    /** Eccentricity */
-    ECC?: number;
-    /** Span Length */
-    SPAN?: number;
-    /** Span Start */
-    SPAN_START?: boolean;
-    /** Scale Factor */
-    SCALE_FACTOR?: number;
+    /** Common lane properties */
+    COMMON: {
+      /** Name of Line Lane */
+      LL_NAME: string;
+      /** Lane Width */
+      WIDTH: number;
+      /** Wheel Spacing */
+      WHEEL_SPACE?: number;
+      /** Transverse Lane Optimization */
+      OPT_AUTO_LANE?: boolean;
+      /** Allow Width for Optimization */
+      ALLOW_WIDTH?: number;
+      /** Load Distribution ("LANE" / "CROSS") */
+      LOAD_DIST: string;
+      /** Name of Structure Group */
+      GROUP_NAME?: string;
+      /** Skew Start */
+      SKEW_START?: number;
+      /** Skew End */
+      SKEW_END?: number;
+      /** Moving Direction ("FORWARD" / "BACKWARD" / "BOTH") */
+      MOVING: string;
+    };
+    /** Lane Items */
+    LANE_ITEMS: Array<{
+      /** Element No. */
+      ELEM: number;
+      /** Eccentricity */
+      ECC?: number;
+      /** Span Length */
+      SPAN?: number;
+      /** Span Start */
+      SPAN_START?: boolean;
+      /** Scale Factor */
+      SCALE_FACTOR?: number;
+    }>;
   }
   export interface LineLaneIndiaItem {
     ELEM?: number;
@@ -4306,16 +4371,42 @@ export namespace DbMovingLoadsTypes {
   }
   /** Generated from contracts/endpoints/. */
   export interface TrafficLineLanesIndiaPayload {
-    /** Element No. */
-    ELEM: number;
-    /** Eccentricity */
-    ECC?: number;
-    /** Option (0=IF/CDA, 1=Span Length) */
-    IMPACT_SPAN?: number;
-    /** Scale Factor (when IMPACT_SPAN=0) */
-    IMPACT_FACTOR?: number;
-    /** Span Length (when IMPACT_SPAN=1) */
-    SPAN?: number;
+    /** Common lane properties */
+    COMMON: {
+      /** Name of Line Lane */
+      LL_NAME: string;
+      /** Lane Width */
+      WIDTH: number;
+      /** Wheel Spacing */
+      WHEEL_SPACE?: number;
+      /** Transverse Lane Optimization */
+      OPT_AUTO_LANE?: boolean;
+      /** Allow Width for Optimization */
+      ALLOW_WIDTH?: number;
+      /** Load Distribution ("LANE" / "CROSS") */
+      LOAD_DIST: string;
+      /** Name of Structure Group */
+      GROUP_NAME?: string;
+      /** Skew Start */
+      SKEW_START?: number;
+      /** Skew End */
+      SKEW_END?: number;
+      /** Moving Direction ("FORWARD" / "BACKWARD" / "BOTH") */
+      MOVING: string;
+    };
+    /** Lane Items */
+    LANE_ITEMS: Array<{
+      /** Element No. */
+      ELEM: number;
+      /** Eccentricity */
+      ECC?: number;
+      /** Option (0=IF/CDA, 1=Span Length) */
+      IMPACT_SPAN?: number;
+      /** Scale Factor (when IMPACT_SPAN=0) */
+      IMPACT_FACTOR?: number;
+      /** Span Length (when IMPACT_SPAN=1) */
+      SPAN?: number;
+    }>;
   }
   export interface LineLaneTransverseItem {
     ELEM?: number;
@@ -4373,7 +4464,20 @@ export namespace DbMovingLoadsTypes {
     /** Margin */
     MARGIN?: number;
     /** Lane Items (ELEM, ECC, 코드별 추가 필드) */
-    LANE_ITEMS: Array<JsonObject>;
+    LANE_ITEMS: Array<{
+      /** Element No. */
+      ELEM: number;
+      /** Eccentricity */
+      ECC?: number;
+      /** Impact Factor */
+      FACT?: number;
+      /** Span Start */
+      SPAN_START?: boolean;
+      /** Centrifugal Force Factor */
+      CENT_F?: number;
+      /** Eccentricity Considering Cant (vertical load) */
+      ECCEN_VERT_LOAD?: number;
+    }>;
   }
   export interface SurfaceLaneItem {
     NODE?: number;
@@ -4910,17 +5014,119 @@ export namespace DbMovingLoadsTypes {
     /** Combination Method · "bAUTOLIVELOADCOMB"=true 시 · Comb.1:"COMB_1" · Comb.2/3:"COMB_2_3" */
     COMBMETHOD: string;
     /** Standard Load Case Data(General, LOADMODEL="STANDER") */
-    LCDATA_STANDARD: JsonObject;
+    LCDATA_STANDARD: {
+      /** Loading Effect ("INDEPEND") */
+      LOADINGEFFECT: string;
+      /** Sub-Load Cases */
+      SUBLOADDATA: Array<{
+        /** Scale Factor */
+        SCALEFACTOR: number;
+        /** Number of Loaded Lanes */
+        NUMLOADEDLANE: number;
+        /** Vehicle Name */
+        VEHICLE_NAME: string;
+        /** Selected Lanes */
+        SELECTEDLANES: Array<string>;
+        /** HB Straddling Two Lanes (STARDD_LANE_1/STARDD_LANE_2) */
+        STRAD_LANE: Array<{
+          /** HB Straddling Two Lanes - lane 1 */
+          STARDD_LANE_1: string;
+          /** HB Straddling Two Lanes - lane 2 */
+          STARDD_LANE_2: string;
+        }>;
+      }>;
+    };
     /** Special Load Case Data(General, LOADMODEL="SPECAIL") */
-    LCDATA_SPECIAL: JsonObject;
+    LCDATA_SPECIAL: {
+      /** Standard vehicle name */
+      VEHICLE_NAME: string;
+      /** Special vehicle name (the manual's own key spelling) */
+      SPECIAL_VIHICLE_NAME: string;
+      /** Selected Lanes */
+      SELECTEDLANES: Array<string>;
+      /** HB Straddling Two Lanes pairs */
+      STRAD_LANE: Array<{
+        /** HB Straddling Two Lanes - lane 1 */
+        STARDD_LANE_1: string;
+        /** HB Straddling Two Lanes - lane 2 */
+        STARDD_LANE_2: string;
+      }>;
+    };
     /** CS 454 Assessment Data(General, LOADMODEL="ALL_MODE_1"/"ALL_MODE_2") */
-    LCDATA_ALLMODE: JsonObject;
+    LCDATA_ALLMODE: {
+      /** Standard vehicle name */
+      VEHICLE_NAME: string;
+      /** Special vehicle name (the manual's own key spelling) */
+      SPECIAL_VIHICLE_NAME: string;
+      /** Selected Lanes */
+      SELECTEDLANES: Array<string>;
+      /** HB Straddling Two Lanes pairs */
+      STRAD_LANE: Array<{
+        /** HB Straddling Two Lanes - lane 1 */
+        STARDD_LANE_1: string;
+        /** HB Straddling Two Lanes - lane 2 */
+        STARDD_LANE_2: string;
+      }>;
+      /** Remaining lanes */
+      REMAINING_LANE?: Array<string>;
+    };
     /** Standard Load Case Data(Optimization, bAUTOOPTIMIZE=true & LOADMODEL="STANDER") */
-    LCDATA_STANDARD_OPTI: JsonObject;
+    LCDATA_STANDARD_OPTI: {
+      /** Loading Effect */
+      LOADINGEFFECT: string;
+      /** Optimization base settings */
+      OPTI_BASE: {
+        /** Minimum vehicle distance */
+        MINVEHLDIST: number;
+        /** Assign Lane */
+        ASSIGN_LANE: string;
+        /** Number of Loaded Lanes */
+        NUMLOADEDLANES: number;
+      };
+      /** Optimization vehicle list */
+      OPTI_VEHICLE_BASE: Array<{
+        /** Vehicle Type ("VL" vehicle load / "VC" vehicle class) */
+        VEHICLE_TYPE: string;
+        /** Vehicle Name */
+        VEHICLE_NAME: string;
+        /** Scale Factor */
+        SCALE_FACTOR: number;
+      }>;
+    };
     /** Special Load Case Data(Optimization, LOADMODEL="SPECAIL") */
-    LCDATA_SPECIAL_OPTI: JsonObject;
+    LCDATA_SPECIAL_OPTI: {
+      /** Standard vehicle name */
+      VEHICLE_NAME: string;
+      /** Special vehicle name (the manual's own key spelling) */
+      SPECIAL_VIHICLE_NAME: string;
+      /** Optimization base settings */
+      OPTI_BASE: {
+        /** Minimum vehicle distance */
+        MINVEHLDIST: number;
+        /** Assign Lane */
+        ASSIGN_LANE: string;
+        /** Number of Loaded Lanes */
+        NUMLOADEDLANES: number;
+      };
+    };
     /** CS 454 Assessment Data(Optimization, LOADMODEL="ALL_MODE_1"/"ALL_MODE_2") */
-    LCDATA_ALLMODE_OPTI: JsonObject;
+    LCDATA_ALLMODE_OPTI: {
+      /** Standard vehicle name */
+      VEHICLE_NAME: string;
+      /** Special vehicle name (the manual's own key spelling) */
+      SPECIAL_VIHICLE_NAME: string;
+      /** Optimization base settings */
+      OPTI_BASE: {
+        /** Minimum vehicle distance */
+        MINVEHLDIST: number;
+        /** Assign Lane */
+        ASSIGN_LANE: string;
+        /** Number of Loaded Lanes */
+        NUMLOADEDLANES: number;
+      };
+      /** Remaining lanes */
+      REMAINING_LANE?: Array<string>;
+    };
   } & (
     {
       LOADMODEL: "STANDER";
@@ -6164,6 +6370,10 @@ export namespace DbPropertiesMaterialTypes {
     VOL: number;
     /** Curing Method • Moist: "MOIST" • Steam: "STEAM" */
     CMETHOD?: string;
+    /** Type of Code */
+    TCODE?: number;
+    /** SilicaFume */
+    bSILICA?: boolean;
   }
   export interface TimeDependentMaterialStrengthPayload {
     NAME?: string;
@@ -10291,21 +10501,53 @@ export namespace DesignRcKdsRebarTypes {
       /** 서브 벽체 ID (읽기 전용, 생성 시 필수) */
       SUB_WALL_ID?: number;
       /** 층 범위 (FROM/TO, 생성 시 필수) */
-      STORY?: JsonObject;
+      STORY?: {
+        /** 시작 층 */
+        FROM: string;
+        /** 종료 층 */
+        TO: string;
+      };
       /** 수직 철근 (NAME·DIST) */
-      VERTICAL_REBAR: JsonObject;
+      VERTICAL_REBAR: {
+        /** 수직 철근 규격 (전체 19종: D4 ~ D57) */
+        NAME: string;
+        /** 수직 철근 간격 */
+        DIST: number;
+      };
       /** 수평 철근 (NAME·DIST) */
-      HORIZONTAL_REBAR: JsonObject;
+      HORIZONTAL_REBAR: {
+        /** 수평 철근 규격 (전체 19종: D4 ~ D57) */
+        NAME: string;
+        /** 수평 철근 간격 */
+        DIST: number;
+      };
       /** 단부 철근 입력 사용 */
       USE_END_REBAR?: boolean;
       /** 단부 철근 (NAME·NUM·DIST, 사용 시 필수) */
-      END_REBAR?: JsonObject;
+      END_REBAR?: {
+        /** 단부(수직) 철근 규격 (전체 19종: D4 ~ D57) */
+        NAME: string;
+        /** 단부 철근 개수 */
+        NUM: number;
+        /** 단부 철근 간격 */
+        DIST: number;
+      };
       /** 경계요소 수평 철근 (NAME·DIST) */
-      BE_HORIZONTAL_REBAR?: JsonObject;
+      BE_HORIZONTAL_REBAR?: {
+        /** 경계요소 수평 철근 규격 (전체 19종: D4 ~ D57) */
+        NAME: string;
+        /** 경계요소 수평 철근 간격 */
+        DIST: number;
+      };
       /** 경계요소 길이 */
       BOUNDARY_ELEMENT_LENGTH?: number;
       /** 콘크리트면~철근중심 거리 (DW·DE) */
-      CONCRETE_FACE_TO_CENTER_OF_REBAR: JsonObject;
+      CONCRETE_FACE_TO_CENTER_OF_REBAR: {
+        /** 콘크리트면~수직 철근중심 (dw) */
+        DW: number;
+        /** 콘크리트면~경계요소 철근중심 (de) */
+        DE: number;
+      };
       /** 모델 두께 사용 */
       USE_MODEL_THICKNESS?: boolean;
       /** 벽체 두께 (USE_MODEL_THICKNESS=false 일 때 필수) */

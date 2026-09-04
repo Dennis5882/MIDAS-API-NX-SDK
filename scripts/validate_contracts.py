@@ -21,6 +21,13 @@ It runs four kinds of check:
    match what the Python package and the generated npm resource manifest expose.
    Every declared executable safety-rule kind is also run against the shared
    Python and npm resource implementations.
+5. **Field parity** - no contract may omit a wire name its own Python payload
+   TypedDict publishes. Check 4 compares routes, verbs, products and rules and
+   never once compares a field name, which is why /db/ELNK published four
+   fields beside a twelve-key TypedDict for months with every check green.
+   Enforced in one direction only: a contract ahead of a TypedDict is the
+   intended state, because a TypedDict is documentation and npm generates its
+   payload types from the contract.
 
 Parity uses the SDKs as *subjects*, never as sources. A mismatch is reported as
 an SDK defect, not as a reason to edit the contract.
@@ -494,6 +501,182 @@ def check_parity(contracts: list[tuple[Path, dict]], failures: Failures) -> Rule
     python_probes = _check_python_base_safety_rules(contracts, declared, failures)
     typescript_probes = _check_typescript_base_safety_rules(contracts, declared, failures)
     return RuleExecution(declared, python_probes, typescript_probes)
+
+
+_ENVELOPE_KEYS = frozenset({"Assign", "Argument"})
+
+
+def _contract_leaves(contract: dict) -> set[str]:
+    """Every wire name a contract names anywhere, variants included.
+
+    Compared by leaf name rather than by path on purpose. A contract and an
+    SDK disagree about nesting often enough that a path mismatch is evidence
+    of nothing; a name one of them has never heard of is evidence. This is the
+    same reading `scripts/info_baseline.py`'s reverse sweep takes.
+    """
+    out: set[str] = set()
+
+    def walk(fields: list[dict] | None) -> None:
+        for field in fields or []:
+            out.add(field["key"])
+            walk(field.get("properties"))
+
+    walk(contract.get("fields"))
+    for variant in contract.get("variants") or []:
+        walk(variant.get("fields"))
+    return out - _ENVELOPE_KEYS
+
+
+def _payload_leaves(payload: type) -> set[str]:
+    """Every wire name a payload TypedDict names, nested TypedDicts followed.
+
+    Python models a nested record as a sibling TypedDict referenced from an
+    annotation - `LANE_ITEMS: List[LineLaneItem]` - so reading only the payload
+    type's own keys sees the array and none of its members. Following the
+    annotations is what makes this comparable with a contract's `properties`.
+    """
+    import typing
+
+    seen: set[type] = set()
+    out: set[str] = set()
+
+    def walk(typed_dict: type) -> None:
+        if typed_dict in seen:
+            return
+        seen.add(typed_dict)
+        try:
+            hints = typing.get_type_hints(typed_dict)
+        except Exception:  # noqa: BLE001 - a forward ref that will not resolve
+            hints = dict(getattr(typed_dict, "__annotations__", {}))
+        for key, annotation in hints.items():
+            out.add(key)
+            pending = [annotation]
+            while pending:
+                current = pending.pop()
+                pending.extend(typing.get_args(current))
+                if isinstance(current, type) and hasattr(current, "__required_keys__"):
+                    walk(current)
+
+    walk(payload)
+    return out - _ENVELOPE_KEYS
+
+
+
+def _python_payload_types() -> dict[str, dict[str, type]]:
+    """Every TypedDict the package defines, by class name and then by module.
+
+    `surface.payloadTypeName` is the contract's own record of the published npm
+    name, and the Python TypedDict carries the same name for the 280 resources
+    that have a surface block. That shared name is the join - but it is not
+    unique on the Python side: 21 names are defined in two or three modules,
+    because the RC and steel design chapters both have an endpoint called SRDF
+    and their payloads are different. npm namespaces those; Python does not.
+    Keeping the module lets the caller pick the one belonging to the resource
+    it is actually checking, instead of whichever module imported first.
+    """
+    sys.path.insert(0, str(ROOT / "src"))
+    import importlib
+    import pkgutil
+
+    import midas_nx
+
+    found: dict[str, dict[str, type]] = {}
+    for module in pkgutil.walk_packages(midas_nx.__path__, "midas_nx."):
+        imported = importlib.import_module(module.name)
+        for name, obj in vars(imported).items():
+            if (
+                isinstance(obj, type)
+                and hasattr(obj, "__required_keys__")
+                and obj.__module__ == module.name
+            ):
+                found.setdefault(name, {})[module.name] = obj
+    return found
+
+
+@dataclass(frozen=True)
+class FieldParity:
+    """What the field-name comparison actually looked at."""
+
+    compared: int
+    skipped_incomplete: int
+    no_python_type: int
+    ambiguous: int
+
+
+def check_field_parity(
+    contracts: list[tuple[Path, dict]], failures: Failures
+) -> FieldParity:
+    """Fail when a contract omits a wire name its own Python SDK publishes.
+
+    `check_parity` compares endpoints, methods, products and normalization
+    rules, and never compares field names. That gap is why /db/ELNK published
+    four fields for months while the TypedDict two directories away published
+    twelve, and why /db/SLANch shipped an npm payload type naming nothing the
+    record holds: every automated check passed the whole time.
+
+    One direction only. A contract naming more than the TypedDict is the
+    expected state - a TypedDict is documentation, npm generates its payload
+    types from the contract, and the contract is meant to run ahead. The
+    reverse is the defect: a name the SDK ships and the source of truth has
+    never recorded.
+
+    This uses the SDK as a subject, exactly as the rest of parity does. A
+    failure here says the contract is incomplete, and the fix is to source the
+    field from the manual, a live record or /info - never to copy the
+    TypedDict, which is not a permitted source.
+    """
+    payload_types = _python_payload_types()
+    resources = _python_resources()
+    compared = skipped_incomplete = no_python_type = ambiguous = 0
+
+    for path, contract in contracts:
+        name = (contract.get("surface") or {}).get("payloadTypeName")
+        if not name:
+            continue
+        candidates = payload_types.get(name) or {}
+        resource = resources.get(contract["endpoint"])
+        module = getattr(resource, "__module__", None)
+        if module in candidates:
+            payload = candidates[module]
+        elif len(candidates) == 1:
+            payload = next(iter(candidates.values()))
+        elif candidates:
+            # The name is defined in several modules and none of them is the
+            # one this endpoint's resource lives in, so there is no honest way
+            # to say which payload belongs to this contract. Comparing a
+            # guess is worse than comparing nothing: it reports the other
+            # chapter's fields as missing from this one.
+            ambiguous += 1
+            failures.add(
+                path.name,
+                f"payloadTypeName {name!r} is defined in "
+                f"{', '.join(sorted(candidates))} and in none of them does this "
+                f"endpoint's resource live, so field parity cannot tell which "
+                f"payload this contract describes",
+            )
+            continue
+        else:
+            # A contract may name an npm type with no Python counterpart; the
+            # generator builds those from the contract alone.
+            no_python_type += 1
+            continue
+        if (contract.get("extraction") or {}).get("unmergedTables"):
+            # The contract says its own field list is incomplete, and the npm
+            # generator already refuses to publish a payload type from it.
+            skipped_incomplete += 1
+            continue
+        compared += 1
+        waived = {entry["name"] for entry in contract.get("sdkOnly") or []}
+        missing = sorted(_payload_leaves(payload) - _contract_leaves(contract) - waived)
+        if missing:
+            failures.add(
+                path.name,
+                f"Python {name} names {len(missing)} field(s) this contract records "
+                f"nowhere: {', '.join(missing)}. Source them from the manual, a live "
+                f"record or /info - the TypedDict is not a permitted source",
+            )
+
+    return FieldParity(compared, skipped_incomplete, no_python_type, ambiguous)
 
 
 def _load_tables() -> list[tuple[Path, dict]]:
@@ -997,8 +1180,10 @@ def main(argv: list[str]) -> int:
         tables, {c['endpoint'] for _, c in contracts}, risks, verification, failures
     )
     parity: RuleExecution | None = None
+    field_parity: FieldParity | None = None
     if not skip_parity:
         parity = check_parity(contracts, failures)
+        field_parity = check_field_parity(contracts, failures)
 
     crash_risk = sum(
         1
@@ -1047,6 +1232,16 @@ def main(argv: list[str]) -> int:
             "sdk rule execution: "
             f"{sum(parity.declared.values())} declared executable rules ({declared}); "
             f"ran {parity.python_probes} Python and {parity.typescript_probes} npm rule-kind probes"
+        )
+    if field_parity is not None:
+        print(
+            f"field parity: {field_parity.compared} contract(s) compared against the "
+            f"Python payload type of the same name, "
+            f"{field_parity.skipped_incomplete} skipped as admittedly incomplete "
+            f"(unmergedTables), {field_parity.no_python_type} naming a type Python does "
+            f"not define, {field_parity.ambiguous} whose type name Python defines in several "
+            f"modules. Only the direction that matters is enforced: a wire name the SDK "
+            f"ships and no contract records."
         )
 
     if failures:

@@ -5160,6 +5160,32 @@ def _flatten_manual(fields: list[ParsedField], prefix: str = "") -> dict[str, Pa
     return out
 
 
+def _under_structural_destination(
+    key: str, destinations: set[str], manual_fields: dict[str, dict]
+) -> bool:
+    """Whether a contract path is a declared structural destination or inside one.
+
+    `extraction.structuralTables` records that a supplementary table's heading
+    named where its rows go - "Parameters - COMMON" puts its ten rows under
+    `COMMON`. The parser cannot represent that: it flattens every table in the
+    section into one namespace, so it holds `LL_NAME` where the contract holds
+    `COMMON.LL_NAME`. Comparing those as strings reports drift on a contract
+    that is right and passes one that is wrong, which is exactly what happened
+    to the four /db/LLAN* contracts.
+
+    The destination itself is exempt because no table row names it - the
+    heading does. Everything under it is exempt only if its own leaf name is a
+    field the manual's tables state, so a member the manual never mentions is
+    still reported.
+    """
+    if key in destinations:
+        return True
+    for destination in destinations:
+        if key.startswith(f"{destination}."):
+            return key[len(destination) + 1:] in manual_fields
+    return False
+
+
 def _flatten_contract(fields: list[dict], prefix: str = "") -> dict[str, dict]:
     out: dict[str, dict] = {}
     for entry in fields:
@@ -5247,6 +5273,20 @@ def run_check(sections: list[Section]) -> int:
             for entry in (contract.get("extraction") or {}).get("prose", [])
             for path in entry.get("paths", [])
         }
+        # Destinations a supplementary table's own heading names. The parser
+        # flattens every table it reads into one namespace, so a section whose
+        # tables are headed "Parameters - COMMON" and "Parameters - LANE_ITEMS"
+        # yields the members and loses where they go. A contract that puts them
+        # back where the heading says - and the server agrees - then reads as
+        # drift on every single member, which is how the four /db/LLAN*
+        # contracts came to publish a flat record: the shape that passed the
+        # check was the wrong one. The exemption is narrow on purpose: the leaf
+        # still has to be a name the manual's tables state.
+        structural_paths = {
+            path
+            for entry in (contract.get("extraction") or {}).get("structuralTables", [])
+            for path in entry.get("paths", [])
+        }
 
         # The section heading, which carries its number. Inserting one endpoint
         # renumbers every section below it - /db/STYP-M1 landing at 02's #4 on
@@ -5297,7 +5337,24 @@ def run_check(sections: list[Section]) -> int:
                 )
 
         for key, manual in manual_fields.items():
-            if key not in contract_fields:
+            declared = contract_fields.get(key)
+            if declared is None:
+                # The same flattening the mirror check works around, seen from
+                # the other side: a supplementary table's heading named a
+                # destination the parser cannot represent, so the manual holds
+                # `ELEM` where the contract holds `LANE_ITEMS.ELEM`. Look under
+                # each declared destination before calling the field missing,
+                # or a contract gets told to delete the nesting that makes it
+                # right.
+                declared = next(
+                    (
+                        contract_fields[f"{destination}.{key}"]
+                        for destination in sorted(structural_paths)
+                        if f"{destination}.{key}" in contract_fields
+                    ),
+                    None,
+                )
+            if declared is None:
                 # A `field_name` defect relaxes this the same way it relaxes
                 # the mirror check below. It has to work in both directions:
                 # the defect says the manual's field list is wrong, and a wrong
@@ -5309,7 +5366,6 @@ def run_check(sections: list[Section]) -> int:
                         f"{path.name}: the manual documents {key!r}, the contract does not"
                     )
                 continue
-            declared = contract_fields[key]
             if manual.type and declared["type"] != manual.type and "field_value" not in overridden:
                 problems.append(f"{path.name}: {key} typed {declared['type']!r}, manual says {manual.type!r}")
             if (
@@ -5380,6 +5436,8 @@ def run_check(sections: list[Section]) -> int:
 
         for key in contract_fields:
             if key in prose_fields:
+                continue
+            if _under_structural_destination(key, structural_paths, manual_fields):
                 continue
             if key not in manual_fields and "field_name" not in overridden:
                 problems.append(

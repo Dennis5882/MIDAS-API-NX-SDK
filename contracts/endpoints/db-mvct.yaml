@@ -294,6 +294,96 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+  - key: MATTYPE
+    description: >-
+      Mat Type
+    type: integer
+    requirement: conditional
+    condition: 'Russia 코드 적용 시 추가 파라미터'
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+    # RESOLVED: the manual nests this under the section's Parameters table
+    # by writing a sentence after it rather than adding rows - one
+    # blockquote at line 988 names all eight Russia-code keys with their
+    # types, and the parser reads rows. See extraction.prose. The gate is
+    # the active moving-load code, which is /db/MVCD's record and not a
+    # field of this one, so `condition` carries the manual's wording and
+    # no `appliesWhen` accompanies it: every entry of `appliesWhen` must
+    # name a field path in this contract, and there is none to name.
+    # Descriptions are the server's own, from GET /info/db/MVCT; the
+    # sentence glosses only four of the eight.
+  - key: BRIDGETYPE
+    description: >-
+      Bridge Type
+    type: integer
+    requirement: conditional
+    condition: 'Russia 코드 적용 시 추가 파라미터'
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+  - key: AKMATTYPE
+    description: >-
+      Mat Type AK
+    type: integer
+    requirement: conditional
+    condition: 'Russia 코드 적용 시 추가 파라미터'
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+  - key: AKBRIDGETYPE
+    description: >-
+      Bridge Type AK
+    type: integer
+    requirement: conditional
+    condition: 'Russia 코드 적용 시 추가 파라미터'
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+  - key: MINFACTS2
+    description: >-
+      Minimum Factor (최소계수)
+    type: number
+    requirement: conditional
+    condition: 'Russia 코드 적용 시 추가 파라미터'
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+  - key: MAXV
+    description: >-
+      Max Successive Vehicle (최대 연속 차량)
+    type: integer
+    requirement: conditional
+    condition: 'Russia 코드 적용 시 추가 파라미터'
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+  - key: INCV
+    description: >-
+      Increment Vehicle (차량 증분)
+    type: integer
+    requirement: conditional
+    condition: 'Russia 코드 적용 시 추가 파라미터'
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+  - key: MAXSPACE
+    description: >-
+      Max Spacing Train (열차 최대 간격)
+    type: number
+    requirement: conditional
+    condition: 'Russia 코드 적용 시 추가 파라미터'
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
 
 sdkRules:
   - id: db-mvct-delete-per-id
@@ -324,3 +414,12 @@ knownDefects:
 extraction:
   source: 12_DB_Analysis_Control.md line 959
   table: Parameters
+  prose:
+    - line: 988
+      quote: >-
+        > **Russia 코드** 적용 시 추가 파라미터: `MATTYPE`, `BRIDGETYPE`,
+        `AKMATTYPE`, `AKBRIDGETYPE`(Integer), `MINFACTS2`(Number, 최소계수),
+        `MAXV`(Integer, 최대 연속 차량), `INCV`(Integer, 차량 증분),
+        `MAXSPACE`(Number, 열차 최대 간격).
+      paths: [MATTYPE, BRIDGETYPE, AKMATTYPE, AKBRIDGETYPE, MINFACTS2, MAXV,
+              INCV, MAXSPACE]

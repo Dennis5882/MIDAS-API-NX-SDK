@@ -87,146 +87,224 @@ operations:
       keyStability: stable
 
 fields:
-  - key: LL_NAME
+  - key: COMMON
     description: >-
-      Name of Line Lane
-    type: string
+      Common lane properties
+    type: object
     requirement: required
     documentedDefault: null
     documentedOptional: false
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's TrafficLineLanes case completed a live
-      create-read-update-delete round trip on both_products without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
+    safeToOmit: unverified
     provenance: manual
-  - key: WIDTH
+    # RESOLVED: stated elsewhere in the same section - the table these ten
+    # came from is headed "Parameters - COMMON", and the Request Example,
+    # the Python example and scripts/live_crud_check.py's confirmed
+    # payload all nest them under that key. Until 2026-09-04 this contract
+    # published them at the root and had neither COMMON nor LANE_ITEMS, so
+    # its npm payload type described a flat record the server has never
+    # accepted. GET /info/db/LLAN declares exactly COMMON, LANE_ITEMS and
+    # SPECIAL_LANE_ITEMS.
+    properties:
+      - key: LL_NAME
+        description: >-
+          Name of Line Lane
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # Until 2026-09-04 all ten of these carried `safeToOmit: true` and
+        # an omission-evidence sentence naming the confirmed live
+        # TrafficLineLanes payload. That payload sends nine of them; it
+        # omits only ALLOW_WIDTH. The claim came from comparing the
+        # payload's top-level keys against a field list that was flat when
+        # the payload is not, so every member of COMMON read as absent. A
+        # wrong shape does not stay a shape problem - it manufactures
+        # false claims on the axis the safety rules read.
+      - key: WIDTH
+        description: >-
+          Lane Width
+        type: number
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: WHEEL_SPACE
+        description: >-
+          Wheel Spacing
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: OPT_AUTO_LANE
+        description: >-
+          Transverse Lane Optimization
+        type: boolean
+        requirement: optional
+        documentedDefault: false
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: ALLOW_WIDTH
+        description: >-
+          Allow Width for Optimization
+        type: number
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: true
+        omissionEvidence: >-
+          scripts/live_crud_check.py's TrafficLineLanes case completed a
+          live create-read-update-delete round trip on both_products without
+          this field in its payload. That is evidence the call is accepted,
+          not that the resulting model is what an engineer wanted.
+        provenance: manual
+      - key: LOAD_DIST
+        description: >-
+          Load Distribution ("LANE" / "CROSS")
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: GROUP_NAME
+        description: >-
+          Name of Structure Group
+        type: string
+        requirement: optional
+        documentedDefault: ""
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: SKEW_START
+        description: >-
+          Skew Start
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: SKEW_END
+        description: >-
+          Skew End
+        type: number
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: MOVING
+        description: >-
+          Moving Direction ("FORWARD" / "BACKWARD" / "BOTH")
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+  - key: LANE_ITEMS
     description: >-
-      Lane Width
-    type: number
+      Lane Items
+    type: array
+    items:
+      type: object
     requirement: required
     documentedDefault: null
     documentedOptional: false
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's TrafficLineLanes case completed a live
-      create-read-update-delete round trip on both_products without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
+    safeToOmit: unverified
     provenance: manual
-  - key: WHEEL_SPACE
-    description: >-
-      Wheel Spacing
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's TrafficLineLanes case completed a live
-      create-read-update-delete round trip on both_products without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: OPT_AUTO_LANE
-    description: >-
-      Transverse Lane Optimization
-    type: boolean
-    requirement: optional
-    documentedDefault: false
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's TrafficLineLanes case completed a live
-      create-read-update-delete round trip on both_products without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: ALLOW_WIDTH
-    description: >-
-      Allow Width for Optimization
-    type: number
-    requirement: optional
-    documentedDefault: null
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's TrafficLineLanes case completed a live
-      create-read-update-delete round trip on both_products without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: LOAD_DIST
-    description: >-
-      Load Distribution ("LANE" / "CROSS")
-    type: string
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's TrafficLineLanes case completed a live
-      create-read-update-delete round trip on both_products without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: GROUP_NAME
-    description: >-
-      Name of Structure Group
-    type: string
-    requirement: optional
-    documentedDefault: ""
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's TrafficLineLanes case completed a live
-      create-read-update-delete round trip on both_products without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: SKEW_START
-    description: >-
-      Skew Start
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's TrafficLineLanes case completed a live
-      create-read-update-delete round trip on both_products without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: SKEW_END
-    description: >-
-      Skew End
-    type: number
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's TrafficLineLanes case completed a live
-      create-read-update-delete round trip on both_products without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
-  - key: MOVING
-    description: >-
-      Moving Direction ("FORWARD" / "BACKWARD" / "BOTH")
-    type: string
-    requirement: required
-    documentedDefault: null
-    documentedOptional: false
-    safeToOmit: true
-    omissionEvidence: >-
-      scripts/live_crud_check.py's TrafficLineLanes case completed a live
-      create-read-update-delete round trip on both_products without this field
-      in its payload. That is evidence the call is accepted, not that the
-      resulting model is what an engineer wanted.
-    provenance: manual
+    # RESOLVED: stated elsewhere in the same section - the second
+    # parameter table is headed "Parameters - LANE_ITEMS (코드별 추가 필드)" and
+    # both examples send an array of objects.
+    properties:
+      - key: ELEM
+        description: >-
+          Element No.
+        type: integer
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: stated elsewhere in the same section - the Request
+        # Example and the Python example send it in every LANE_ITEMS
+        # entry, and the per-code table names only the keys each code
+        # *adds*. The sibling sections /db/LLANch and /db/LLANid table it
+        # as row 1, Integer, Required.
+      - key: ECC
+        description: >-
+          Eccentricity
+        type: number
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: stated elsewhere in the same section - the "Parameters
+        # - LANE_ITEMS (코드별 추가 필드)" table lists it for every code it names
+        # and marks it "(Optional)" in its first row. That table has no
+        # Default column, hence null.
+      - key: FACT
+        description: >-
+          Impact Factor
+        type: number
+        requirement: conditional
+        condition: 'LANE_ITEMS (코드별 추가 필드): Korea, AASHTO Standard, Taiwan'
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: stated elsewhere in the same section, in the 코드별
+        # table's 추가 Key cell for Korea / AASHTO Standard / Taiwan,
+        # glossed 충격계수. The gate is the active moving-load code, which is
+        # /db/MVCD's record and not a field of this one, so `condition`
+        # carries the manual's wording and no `appliesWhen` accompanies
+        # it: every entry of `appliesWhen` must name a field path in this
+        # contract, and there is none to name.
+      - key: SPAN_START
+        description: >-
+          Span Start
+        type: boolean
+        requirement: conditional
+        condition: 'LANE_ITEMS (코드별 추가 필드): Korea, AASHTO Standard, Taiwan / AASHTO LRFD / PENNDOT / Australia, Poland'
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: stated elsewhere in the same section - four of the six
+        # 코드별 rows name it, glossed 경간시작.
+      - key: CENT_F
+        description: >-
+          Centrifugal Force Factor
+        type: number
+        requirement: conditional
+        condition: 'LANE_ITEMS (코드별 추가 필드): AASHTO LRFD'
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: stated elsewhere in the same section, in the AASHTO
+        # LRFD row, glossed 원심력계수. scripts/live_crud_check.py's confirmed
+        # TrafficLineLanes payload seeds AASHTO LRFD and sends CENT_F:
+        # 0.5.
+      - key: ECCEN_VERT_LOAD
+        description: >-
+          Eccentricity Considering Cant (vertical load)
+        type: number
+        requirement: conditional
+        condition: 'LANE_ITEMS (코드별 추가 필드): Eurocode'
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: stated elsewhere in the same section, in the Eurocode
+        # row, glossed 캔트 고려 수직편심.
 
 sdkRules:
   - id: db-llan-delete-per-id
@@ -257,3 +335,54 @@ knownDefects:
 extraction:
   source: 08_DB_Moving_Loads.md line 180
   table: Parameters – COMMON
+  structuralTables:
+    - heading: Parameters – COMMON
+      line: 179
+      paths: [COMMON]
+      note: >-
+        The heading names the destination, and the record has no other shape:
+        the Request Example, the Python example, scripts/live_crud_check.py's
+        confirmed payload and GET /info/db/LLAN all nest these ten under
+        COMMON. `extraction.table` has said "Parameters – COMMON" since the
+        draft was made; until 2026-09-04 the contract published the rows at
+        the root anyway.
+    - heading: Parameters – LANE_ITEMS (코드별 추가 필드)
+      line: 198
+      paths: [LANE_ITEMS]
+      note: >-
+        A heading that states a destination and a condition at once. The
+        condition is the active moving-load code - /db/MVCD's record, not a
+        field of this one - so the rows are merged into LANE_ITEMS and each
+        carries the code list as `condition` text. There is no field here for
+        an `appliesWhen` to name.
+  prose:
+    - line: 168
+      quote: >-
+        "LANE_ITEMS": [ {"ELEM": 1, "ECC": -1.5}, {"ELEM": 2, "ECC": -1.5},
+        {"ELEM": 3, "ECC": -1.5} ]
+      paths: [LANE_ITEMS.ELEM]
+    - line: 202
+      quote: >-
+        | KSCE-LSD15, Canada, BS, Russia, South Africa | `"ECC"` |
+        Eccentricity (Optional) |
+      paths: [LANE_ITEMS.ECC]
+    - line: 203
+      quote: >-
+        | Korea, AASHTO Standard, Taiwan | `"ECC"`, `"FACT"`, `"SPAN_START"` |
+        ECC·충격계수·경간시작 |
+      paths: [LANE_ITEMS.ECC, LANE_ITEMS.FACT, LANE_ITEMS.SPAN_START]
+    - line: 204
+      quote: >-
+        | AASHTO LRFD | `"ECC"`, `"SPAN_START"`, `"CENT_F"` |
+        ECC·경간시작·원심력계수 |
+      paths: [LANE_ITEMS.ECC, LANE_ITEMS.SPAN_START, LANE_ITEMS.CENT_F]
+    - line: 205
+      quote: '| PENNDOT | `"ECC"`, `"SPAN_START"` | ECC·경간시작 |'
+      paths: [LANE_ITEMS.ECC, LANE_ITEMS.SPAN_START]
+    - line: 206
+      quote: >-
+        | Eurocode | `"ECC"`, `"ECCEN_VERT_LOAD"` | ECC·캔트 고려 수직편심 |
+      paths: [LANE_ITEMS.ECC, LANE_ITEMS.ECCEN_VERT_LOAD]
+    - line: 207
+      quote: '| Australia, Poland | `"ECC"`, `"SPAN_START"` | ECC·경간시작 |'
+      paths: [LANE_ITEMS.ECC, LANE_ITEMS.SPAN_START]

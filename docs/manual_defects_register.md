@@ -81,6 +81,7 @@ build itself** and is no longer resting on an unrecorded one.
 | MD-45 | 2026-09-04 | `/db/LLANtr` `SPECIAL_LANE_ITEMS`, `/db/SLANop` `OPT_STRADD` and `CHINA_ITEMS` | neither section documents them | `GET /info` declares them on both endpoints. `SPECIAL_LANE_ITEMS` carries the server's own description " Used only when importing", which is the whole of what is known about when it applies; `CHINA_ITEMS` has no description at all, only its members' | **manual repo** transcription | open |
 | MD-46 | 2026-09-04 | ten `/db/*` sections, 73 fields | each documents one endpoint with one Specifications table and says nothing about either product | the two products declare different records. `/db/SPLC` differs by 15 fields, `/db/POSL` by 11, `/db/POGD` by 20, `/db/SBDO` by 16, `/db/IEHC` by 9, and `/db/ACTL`, `/db/BCCT`, `/db/EPSE`, `/db/POLC`, `/db/THGC` by one to four each. Mostly it is the products' own feature sets - Gen NX has walls and fiber hinges, Civil NX has bridge seismic parameters - not a transcription slip | **manual repo** transcription | open |
 
+| MD-47 | 2026-09-04 | `/db/TDMT` `TCODE` and `bSILICA` | section 6's "Specifications (공통 키 + CEB-FIP)" table documents two code branches, CEB-FIP and ACI, while its `CODE` value table lists 33 codes | `CODE="EUROPEAN"` is a third branch with two dedicated fields the table names nowhere. Both were read off a real PSC bridge model's C40/50 concrete on 2026-07-30 and both are declared by `GET /info/db/TDMT` on either product. The gap is wider than these two: /info declares roughly seventy fields here, spanning codes the value table lists and the field table then ignores | **manual repo** transcription | open |
 
 ## Detail
 
@@ -1571,3 +1572,72 @@ The practical form of this, for anyone changing a contract from a schema:
   the defect (MD-34, MD-37, MD-38).
 * A live round trip contradicts `/info` → the round trip wins, and say so where
   the field is declared.
+
+
+### MD-47 and the check that found it - the contract was behind its own SDK, twelve more times
+
+MD-43 through MD-45 each began the same way: a contract published fewer fields
+than the Python TypedDict two directories away, and every automated gate was
+green while it did. That is not bad luck. `validate_contracts.py`'s parity
+check compares an endpoint's route, its verbs, its `products` list and its
+executable safety rules against both SDKs, and has never compared a field
+name. `/db/ELNK` published four fields beside a twelve-key TypedDict for
+months on exactly that hole.
+
+`check_field_parity` closes it. It resolves each contract's
+`surface.payloadTypeName` to the Python TypedDict of that name **in the module
+the endpoint's resource lives in** - the name alone is not unique, because the
+RC and steel design chapters both have an `SRDF` and a `LENG` and their
+payloads differ - follows nested TypedDicts through their annotations, and
+fails on any wire name the SDK ships that the contract records nowhere. It
+enforces one direction only. A contract naming more than a TypedDict is the
+intended state: a TypedDict is documentation, npm generates its payload types
+from the contract, and the contract is meant to run ahead.
+
+It found 73 keys across twelve endpoints on its first run. Four resolved to
+the name collision above and were false. The rest were real, and they split
+into three kinds:
+
+**A wrong shape, four times.** `/db/LLAN`, `/db/LLANch` and `/db/LLANid`
+published a flat record. The server takes `{COMMON: {...}, LANE_ITEMS: [...]}`
+and always has - the manual's Request Example, its Python example,
+`scripts/live_crud_check.py`'s confirmed round trip and `GET /info` all agree,
+and the second table's heading says so outright. So does the contract's own
+`extraction.table`, which has recorded `Parameters – COMMON` since the draft
+was made. The promotion read a heading that named a destination as though it
+named the record. `/db/LLANop` is flat at the root, correctly, and had an empty
+`LANE_ITEMS`.
+
+**A second consequence, and the reason this kind of error is expensive.**
+`/db/LLAN`'s ten common fields all carried `safeToOmit: true` with an
+omission-evidence sentence naming the confirmed live payload. That payload
+sends nine of them. The claim came from comparing the payload's top-level keys
+against a field list that was flat when the payload is not, so every member of
+`COMMON` read as absent. A wrong shape does not stay a shape problem; it
+manufactures false claims on the axis the safety rules read.
+
+**An empty object, five times.** `/db/MVLDbs`'s six `LCDATA_*` objects and the
+design `/DESIGN/RC/KDS-41-20-2022/REBW`'s six had no members at all. Both
+sections state them - MVLDbs in a second table using `SUBLOADDATA[].FIELD`
+path notation and a 주요 필드 summary table, REBW in its own JSON Schema and a
+하위 객체 필드 요약 table - and the parser reads numbered rows.
+
+**A missing branch, once.** `/db/TDMT`'s `CODE="EUROPEAN"`, registered above.
+
+**And one SDK defect, which is what the check is nominally for.**
+`/db/HHCT-M1`'s `ITEM` had an `M_GENERAL` the endpoint does not have. Python
+shared one item TypedDict between `/db/HHCT` and `/db/HHCT-M1`; the manual
+documents `M_GENERAL` only in `/db/HHCT`'s table and `GET /info/db/HHCT-M1`
+declares only `TYPE`, `CREEP_CALC_METHOD` and `M_EFF_MOD`. Both sources agree
+against the SDK, so the SDK was the thing that changed - the one case in
+twelve where the contract was right.
+
+**What the drift checker had to learn.** Putting the LLAN fields back where
+the heading says made `scripts/extract_contracts.py --check` report every
+single member as invented: it flattens each section's tables into one
+namespace, so it holds `LL_NAME` where a correct contract holds
+`COMMON.LL_NAME`. Comparing those as strings passes the wrong shape and fails
+the right one. `extraction.structuralTables` already existed to record that a
+table's heading named its destination; the drift check simply never consulted
+it. It does now, in both directions, and only for a leaf the manual's tables
+actually state - so a member the manual never mentions is still reported.

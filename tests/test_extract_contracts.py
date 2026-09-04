@@ -3923,3 +3923,26 @@ def test_the_seventh_settled_marker_is_the_sections_own_worked_payload():
 
     assert ex._note_marker("the section's Request Example places it under X") == "RESOLVED"
     assert ex._note_marker("somebody should work out where this goes") == "NOTE"
+
+
+def test_a_declared_structural_destination_is_not_drift():
+    """A heading that names where its rows go must not read as an invented field.
+
+    The parser flattens every table in a section into one namespace, so it
+    holds `LL_NAME` where a correct contract holds `COMMON.LL_NAME`. Comparing
+    those as strings passes the flat shape the server refuses and fails the
+    nested one it takes - which is what kept the four /db/LLAN* contracts flat.
+    The exemption stays narrow: the leaf still has to be a name the manual's
+    tables state.
+    """
+    from extract_contracts import _under_structural_destination
+
+    manual = {"LL_NAME": object(), "WIDTH": object()}
+    destinations = {"COMMON"}
+
+    assert _under_structural_destination("COMMON", destinations, manual)
+    assert _under_structural_destination("COMMON.LL_NAME", destinations, manual)
+    # A member the manual never mentions is still reported.
+    assert not _under_structural_destination("COMMON.INVENTED", destinations, manual)
+    # And nothing outside a declared destination is exempt.
+    assert not _under_structural_destination("LANE_ITEMS.ELEM", destinations, manual)

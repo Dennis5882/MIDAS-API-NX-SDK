@@ -528,3 +528,65 @@ def test_a_settled_finding_is_marked_settled_in_every_contract():
     assert not wrong, (
         "note markers disagree with extract_contracts._note_marker: " + "; ".join(wrong[:10])
     )
+
+
+def test_field_parity_reads_nested_typed_dicts_and_variants():
+    """The join has to see through both sides' nesting, or it lies twice.
+
+    Python models a nested record as a sibling TypedDict named from an
+    annotation, and a contract models a branch as a `variants` entry. A
+    comparison that reads neither reports a member of `LANE_ITEMS` as missing
+    and a variant field as invented - which is how the first draft of this
+    check called /db/SKEW twenty-seven fields short of a contract that had
+    them all.
+    """
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from typing import List, TypedDict  # noqa: PLC0415
+
+    from validate_contracts import (  # noqa: PLC0415
+        _contract_leaves,
+        _payload_leaves,
+    )
+
+    class Item(TypedDict, total=False):
+        ELEM: int
+
+    class Payload(TypedDict, total=False):
+        Assign: dict
+        LANE_ITEMS: List[Item]
+        METHOD: str
+
+    assert _payload_leaves(Payload) == {"LANE_ITEMS", "ELEM", "METHOD"}
+
+    contract = {
+        "fields": [
+            {"key": "METHOD"},
+            {"key": "LANE_ITEMS", "properties": [{"key": "ELEM"}]},
+        ],
+        "variants": [{"fields": [{"key": "ONLY_IN_A_BRANCH"}]}],
+    }
+    leaves = _contract_leaves(contract)
+    assert leaves == {"METHOD", "LANE_ITEMS", "ELEM", "ONLY_IN_A_BRANCH"}
+    assert not _payload_leaves(Payload) - leaves
+
+
+def test_field_parity_never_guesses_between_two_payloads_of_one_name():
+    """`surface.payloadTypeName` is an npm name, and npm namespaces it.
+
+    Python does not: 21 TypedDict names are defined in more than one module,
+    because the RC and steel design chapters both have an SRDF and a LENG and
+    their payloads differ. Picking whichever module imported first reported the
+    other chapter's fields as missing from this one.
+    """
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from validate_contracts import _python_payload_types  # noqa: PLC0415
+
+    types = _python_payload_types()
+    collisions = {name: mods for name, mods in types.items() if len(mods) > 1}
+    assert "StrengthReductionFactorsPayload" in collisions, (
+        "the RC/steel collision is what this check has to survive; if it is "
+        "gone, confirm the join is still per-module before deleting this test"
+    )
+    rc = collisions["StrengthReductionFactorsPayload"]["midas_nx.design.rc_kds.setup"]
+    steel = collisions["StrengthReductionFactorsPayload"]["midas_nx.design.steel_kds"]
+    assert set(rc.__annotations__) != set(steel.__annotations__)
