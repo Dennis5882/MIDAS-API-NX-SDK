@@ -8590,3 +8590,80 @@ of the five to a product defect, and this entry is not evidence for that claim.
 What the re-check is worth: `db-rebb-write-path-refuses-every-payload` now has
 a `lastChecked` on a build that is on the record, and the five unconfirmed
 cases are known to be still worth triaging rather than possibly already fixed.
+## 2026-09-04 — `/db/NMAS`'s crash does not reproduce, on either product
+
+Re-test of the 2026-07-29 root cause, at the author's explicit request and with
+explicit consent that a crash was acceptable. **It did not crash.** Roughly 500
+omitted-`rmX`/`rmY`/`rmZ` writes across both products, in three escalating
+rounds, and neither session ever stopped answering.
+
+Both documents were confirmed empty first — `/db/NODE`, `/db/ELEM` and
+`/db/NMAS` all returned the empty-table `{"message": ""}` — so `/doc/NEW` was
+never called and there was no unsaved work at risk. Every payload came from
+`scripts/live_crud_check.py`'s confirmed cases rather than being hand-written.
+`verify_connection()` was not used as the liveness probe, because the relay
+answers `"connected"` while a modal dialog holds the product; each probe is a
+`GET /db/NODE` with a 20s timeout.
+
+| Round | What it did | Civil NX | Gen NX |
+| --- | --- | --- | --- |
+| 1 | control (`NodalMass.create`, `rm*` filled) then 8 omission variants on fresh nodes: all three omitted, `mX` alone, `rmZ` alone missing, `rmX` alone missing, empty record, `PUT` | alive | alive |
+| 2 | 200 sequential `POST`s with `rm*` omitted, one per fresh node, probing every 50 | alive | alive |
+| 3 | an eight-node frame with real `BEAM` elements and a constraint, `rm*` omitted on every connected node, then 40 `PUT`/`DELETE`/`POST` cycles | alive | alive |
+
+Round 3 exists because round 2 did not test what it claimed to. Its element
+seed failed `Key Already Exist` on nodes that round 1 had already created, so
+the elements were never made and the "connected node" writes went to nodes that
+did not exist — which is what the `Unknown Error` replies in that round mean.
+Rebuilt on an untouched id range, the frame came up with 8 elements on Civil and
+10 on Gen, and the omission still did not crash either.
+
+**The server now applies the documented default, on both products.** The write
+response is a poor witness: a full-fields `POST` echoes all six fields back, an
+omitted-fields `POST` echoes back only what was sent, and reading the echo alone
+suggests the record is stored without them. It is not. `GET /db/NMAS/3002` on a
+record written with `rm*` omitted returns
+`{"mX": 10, "mY": 10, "mZ": 10, "rmX": 0, "rmY": 0, "rmZ": 0}` — identically on
+Civil and Gen. So the default is applied; the write response just does not
+report it. This confirms the 2026-08-13 finding, which saw the same thing on
+Civil NX v2.2 build 08/12/2026 on one installation, and extends it to Gen.
+
+Worth naming the trap, because this session fell into it: the response body of a
+write is what the server accepted, not what it stored. Only a read says what was
+stored.
+
+**One long call is worth recording.** In round 2 on Civil, one of the 200 writes
+took **21.7 seconds** while every other call in the same run was ~0.1s. That is
+inside the 15–60s window the crash used to present as, and it is the only trace
+of the old behaviour seen all day. It did not recur, and the session answered
+normally immediately afterwards. Not evidence of anything on its own; recorded
+because a latency spike in exactly that range on exactly that call is not a
+coincidence worth discarding either.
+
+**The workaround stays.** `NodalMass.create()`/`.update()` still fill
+`rmX`/`rmY`/`rmZ` with `0.0`, and `contracts/safety/known-product-risks.yaml`
+still carries the risk. Three reasons, in order of weight: one clean session on
+one build on one machine does not overturn 15+ reproductions across multiple
+versions, builds, models and calling machines; the products auto-update, so an
+SDK release cannot assume its users are on this build or later; and the
+workaround costs a caller nothing, since it sends the values the manual already
+documents as the default. This repo's own rule applies — a mitigated crash risk
+is still a crash risk, and `risk` and `mitigation` are separate axes.
+
+**The build is not on the record.** The API reports no version (`/doc/VERSION`
+and `/doc/INFO` both 404), and nobody read the About dialog before the run. The
+last recorded builds are Civil NX v2.2 and Gen NX v2.1, both 09/02/2026, from
+the 2026-09-03 patch entry; this session is that build or later. Reading the
+About dialog on both products would pin it, and is worth doing before this is
+quoted at MIDASIT — it is the difference between "fixed at some point" and
+"fixed in a build we can name".
+
+**What this does not establish.** Not that the defect is fixed: an
+uninitialized-value read is exactly the kind of bug that hides when memory
+happens to be zero, and the scratch documents here were about as clean as a
+session gets. It establishes that it no longer reproduces on demand, which is
+weaker and still worth knowing — the vendor report's A-1 can say so.
+
+The model left behind on each product is a scratch document holding ~230 nodes,
+8–10 beam elements and their nodal masses. Nothing was deleted; both documents
+were empty throwaways when the run started.

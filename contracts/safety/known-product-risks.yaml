@@ -111,9 +111,28 @@ risks:
       rmX/rmY/rmZ as 0, meaning the server now applies the documented default.
       That is one build on one installation, not every deployed installation, so
       the SDK rule stays.
+
+      Re-measured 2026-09-04 on BOTH products, hard, with the author's consent
+      that a crash was acceptable: roughly 500 omitted-field writes over three
+      rounds - single calls, 200 sequential writes, and an eight-node frame with
+      real beam elements and a constraint - and neither session ever stopped
+      answering. A read back of a record written without the fields returns
+      rmX/rmY/rmZ as 0 on both products, so the server applies the documented
+      default rather than storing the record without them; the write response
+      does not report that, and reading the echo alone suggests otherwise.
+
+      The rule still stays, and the severity is unchanged. One clean session on
+      one build on one machine does not overturn 15+ reproductions across
+      several versions, builds, models and calling machines; the products
+      auto-update, so an SDK release cannot assume its users are on this build;
+      and sending the values costs a caller nothing, because they are the
+      documented default. A mitigated crash risk is still a crash risk. What
+      this does not establish is that the defect is fixed - an uninitialized
+      read is exactly the bug that hides when the memory happens to be zero, and
+      these were near-empty scratch documents.
     firstObserved: "2026-07-29"
     rootCausedOn: "2026-07-29"
-    lastChecked: "2026-08-13"
+    lastChecked: "2026-09-04"
     evidence:
       - docs/live_verification_notes.md
     reportedToVendor: A-1

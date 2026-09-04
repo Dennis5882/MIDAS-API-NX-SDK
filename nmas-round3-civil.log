@@ -1,0 +1,37 @@
+=== round 3: connected frame on fresh ids, civil (nodes 3000.., elements 3000..) ===
+
+[setup]
+  nodes ok
+  elements ok
+  constraint ok
+  model now holds 8 element(s)
+  probe after setup: alive (0.0s)
+
+[attack] NMAS, rmX/rmY/rmZ omitted, on the eight element-connected nodes
+  node 3000: 0.1s {'NMAS': {'3000': {'mX': 10, 'mY': 10, 'mZ': 10}}}
+  probe after node 3000: alive (0.0s)
+  node 3001: 0.1s {'NMAS': {'3001': {'mX': 10, 'mY': 10, 'mZ': 10}}}
+  probe after node 3001: alive (0.0s)
+  node 3002: 0.1s {'NMAS': {'3002': {'mX': 10, 'mY': 10, 'mZ': 10}}}
+  probe after node 3002: alive (0.0s)
+  node 3003: 0.1s {'NMAS': {'3003': {'mX': 10, 'mY': 10, 'mZ': 10}}}
+  probe after node 3003: alive (0.0s)
+  node 3004: 0.1s {'NMAS': {'3004': {'mX': 10, 'mY': 10, 'mZ': 10}}}
+  probe after node 3004: alive (0.0s)
+  node 3005: 0.1s {'NMAS': {'3005': {'mX': 10, 'mY': 10, 'mZ': 10}}}
+  probe after node 3005: alive (0.0s)
+  node 3006: 0.1s {'NMAS': {'3006': {'mX': 10, 'mY': 10, 'mZ': 10}}}
+  probe after node 3006: alive (0.0s)
+  node 3007: 0.1s {'NMAS': {'3007': {'mX': 10, 'mY': 10, 'mZ': 10}}}
+  probe after node 3007: alive (0.0s)
+
+[thrash] 40 PUT/DELETE/POST cycles on a connected node, rm* always omitted
+  probe thrash 10: alive (0.0s)
+  probe thrash 20: alive (0.0s)
+  probe thrash 30: alive (0.0s)
+  probe after thrash: alive (0.0s)
+
+=== summary ===
+  product        civil
+  elements       8
+  session after  ALIVE -- crash NOT reproduced
