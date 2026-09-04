@@ -46,13 +46,51 @@ import io
 import json
 import pathlib
 import sys
-from typing import Any, Iterable
+from typing import Any, Iterable, TypedDict
 
-sys.stdout.reconfigure(encoding="utf-8")
+sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 BASELINE = ROOT / "schema" / "info-baseline.json"
 CONTRACTS = ROOT / "contracts" / "endpoints"
+
+# These are ceilings, not exact totals.  A count going down means a contract
+# learned more of the product schema and is the outcome this check exists to
+# encourage.  A new endpoint or a larger per-endpoint count is silent drift.
+# Keeping the expectation per endpoint prevents one repaired contract from
+# hiding a newly missing property in another.
+class _AgainstContractsExpectation(TypedDict):
+    contractsComparedAtLeast: int
+    unmergedTablesSkippedAtMost: int
+    infoOnlyWaiversAtMost: int
+    unrecordedInfoPropertiesAtMost: dict[str, int]
+    contractOnlyNamesAtMost: dict[str, int]
+
+
+EXPECTED_AGAINST_CONTRACTS: _AgainstContractsExpectation = {
+    "contractsComparedAtLeast": 205,
+    "unmergedTablesSkippedAtMost": 17,
+    "infoOnlyWaiversAtMost": 1,
+    "unrecordedInfoPropertiesAtMost": {
+        "/db/SECT": 995,
+        "/db/MATD": 172,
+        "/db/NLLP": 66,
+        "/db/TDMT": 60,
+        "/db/SWIND": 40,
+        "/db/SSEIS": 34,
+        "/db/MVCTch": 9,
+        "/db/LLANop": 8,
+        "/db/LLAN": 3,
+        "/db/LLANch": 3,
+        "/db/LLANid": 2,
+    },
+    "contractOnlyNamesAtMost": {
+        "/db/POGD-M1": 2,
+        "/db/LLANop": 1,
+        "/db/SMLC": 1,
+        "/db/STBK": 1,
+    },
+}
 
 
 # --- reading a capture ------------------------------------------------------
@@ -211,7 +249,72 @@ def diff(fresh_path: pathlib.Path) -> int:
     return 1
 
 
-def against_contracts() -> int:
+def _check_against_contracts(
+    *,
+    compared: int,
+    skipped: int,
+    waived: int,
+    unrecorded: dict[str, int],
+    contract_only: dict[str, int],
+) -> int:
+    """Fail only when the established sweep gets less complete or drifts up."""
+    errors: list[str] = []
+    minimum = EXPECTED_AGAINST_CONTRACTS["contractsComparedAtLeast"]
+    if compared < minimum:
+        errors.append(f"contracts compared fell from {minimum} to {compared}")
+
+    for label, found, ceiling in (
+        (
+            "unmergedTables skips",
+            skipped,
+            EXPECTED_AGAINST_CONTRACTS["unmergedTablesSkippedAtMost"],
+        ),
+        (
+            "infoOnly waivers",
+            waived,
+            EXPECTED_AGAINST_CONTRACTS["infoOnlyWaiversAtMost"],
+        ),
+    ):
+        if found > ceiling:
+            errors.append(f"{label} grew from {ceiling} to {found}")
+
+    for label, found, expected in (
+        (
+            "unrecorded /info properties",
+            unrecorded,
+            EXPECTED_AGAINST_CONTRACTS["unrecordedInfoPropertiesAtMost"],
+        ),
+        (
+            "contract-only names",
+            contract_only,
+            EXPECTED_AGAINST_CONTRACTS["contractOnlyNamesAtMost"],
+        ),
+    ):
+        for endpoint in sorted(set(found) | set(expected)):
+            actual_count = found.get(endpoint, 0)
+            ceiling = expected.get(endpoint, 0)
+            if actual_count > ceiling:
+                errors.append(
+                    f"{label} for {endpoint} grew from {ceiling} to {actual_count}"
+                )
+
+    if not errors:
+        print("\nOK - /info-to-contract differences did not grow.")
+        return 0
+
+    print("\n/info-to-contract standing check failed:", file=sys.stderr)
+    for error in errors:
+        print(f"  - {error}", file=sys.stderr)
+    print(
+        "Counts may shrink without updating the expectation. Growth must be "
+        "reviewed and recorded in EXPECTED_AGAINST_CONTRACTS with the change "
+        "that explains it.",
+        file=sys.stderr,
+    )
+    return 1
+
+
+def against_contracts(*, check: bool = False) -> int:
     capture = _load(BASELINE)
     contracts = _contract_documents()
 
@@ -297,7 +400,15 @@ def against_contracts() -> int:
         print(f"{len(unknown):4}  {endpoint}")
         for index in range(0, len(unknown), 6):
             print("        " + ", ".join(unknown[index:index + 6]))
-    return 0
+    if not check:
+        return 0
+    return _check_against_contracts(
+        compared=compared,
+        skipped=len(skipped),
+        waived=waived,
+        unrecorded={endpoint: count for count, endpoint, _ in rows},
+        contract_only={endpoint: len(names) for endpoint, names in phantom},
+    )
 
 
 def divergence() -> int:
@@ -455,12 +566,20 @@ def main() -> int:
         choices=["civil", "gen"],
         help="repeatable; defaults to both",
     )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="with --against-contracts, fail when established differences grow",
+    )
     args = parser.parse_args()
+
+    if args.check and not args.against_contracts:
+        parser.error("--check requires --against-contracts")
 
     if args.divergence:
         return divergence()
     if args.against_contracts:
-        return against_contracts()
+        return against_contracts(check=args.check)
     if args.diff:
         return diff(pathlib.Path(args.diff))
     return capture(pathlib.Path(args.out), args.product or ["civil", "gen"])
