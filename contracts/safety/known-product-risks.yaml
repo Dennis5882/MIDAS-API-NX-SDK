@@ -112,9 +112,9 @@ risks:
       That is one build on one installation, not every deployed installation, so
       the SDK rule stays.
 
-      Re-measured 2026-09-04 on BOTH products, hard, with the author's consent
-      that a crash was acceptable: roughly 500 omitted-field writes over three
-      rounds - single calls, 200 sequential writes, and an eight-node frame with
+      Re-measured 2026-09-04 on BOTH products - Civil NX 2026 v2.2 and Gen NX
+      2026 v2.1, both build 09/02/2026 - hard, with the author's consent that a
+      crash was acceptable: roughly 500 omitted-field writes over three rounds - single calls, 200 sequential writes, and an eight-node frame with
       real beam elements and a constraint - and neither session ever stopped
       answering. A read back of a record written without the fields returns
       rmX/rmY/rmZ as 0 on both products, so the server applies the documented

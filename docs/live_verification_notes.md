@@ -8593,7 +8593,8 @@ cases are known to be still worth triaging rather than possibly already fixed.
 ## 2026-09-04 — `/db/NMAS`'s crash does not reproduce, on either product
 
 Re-test of the 2026-07-29 root cause, at the author's explicit request and with
-explicit consent that a crash was acceptable. **It did not crash.** Roughly 500
+explicit consent that a crash was acceptable. Civil NX 2026 v2.2 and Gen NX
+2026 v2.1, both build 09/02/2026 — see the build note at the end of this entry. **It did not crash.** Roughly 500
 omitted-`rmX`/`rmY`/`rmZ` writes across both products, in three escalating
 rounds, and neither session ever stopped answering.
 
@@ -8650,13 +8651,21 @@ workaround costs a caller nothing, since it sends the values the manual already
 documents as the default. This repo's own rule applies — a mitigated crash risk
 is still a crash risk, and `risk` and `mitigation` are separate axes.
 
-**The build is not on the record.** The API reports no version (`/doc/VERSION`
-and `/doc/INFO` both 404), and nobody read the About dialog before the run. The
-last recorded builds are Civil NX v2.2 and Gen NX v2.1, both 09/02/2026, from
-the 2026-09-03 patch entry; this session is that build or later. Reading the
-About dialog on both products would pin it, and is worth doing before this is
-quoted at MIDASIT — it is the difference between "fixed at some point" and
-"fixed in a build we can name".
+**The build is on the record: Civil NX 2026 v2.2 and Gen NX 2026 v2.1, both
+build 09/02/2026.** The author confirmed it, and the session evidence agrees
+independently. `verify_connection()` returned `connectionID` `maTuEDSLQw` for
+Civil and `tZwG5G-fSg` for Gen today — the same two ids the 2026-09-03 patch
+entry recorded after the author read the build off each About dialog. A
+`connectionID` does not survive a product restart, so both processes have been
+running continuously since that reading, which is also why no auto-update can
+have slipped in between. The API still reports no version itself
+(`/doc/VERSION` and `/doc/INFO` 404, as that entry documents), so this is the
+strongest anchor available short of reading the dialog again, and it is a
+checkable one rather than an assumption.
+
+That makes this a build MIDASIT can be given a name for. The 2026-08-13
+observation was Civil NX v2.2 build 08/12/2026 on one installation; this is
+both products on 09/02/2026.
 
 **What this does not establish.** Not that the defect is fixed: an
 uninitialized-value read is exactly the kind of bug that hides when memory
