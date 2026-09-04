@@ -1183,17 +1183,17 @@
       "status": "implemented",
       "module": "midas_nx.db.properties.*",
       "live_verified": {
-        "date": "2026-08-16",
+        "date": "2026-09-04",
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET); manual documents gen+civil but 404s under Gen in three independent sessions (2026-07-22, 2026-07-26, 2026-07-29) Write round trip attempted 2026-08-16 (Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras3: POST with the manual's own canonical example (id 9003, matching the pattern of a Section-Manager-generated id rather than the plain running section id used elsewhere) still answered \"Wrong Field\" against the base seed's plain DBUSER rectangular section. Left at level=read -- may need a genuine PSC/RC-designated section to test properly, not resolved as a simple fixture problem.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET); manual documents gen+civil but 404s under Gen in three independent sessions (2026-07-22, 2026-07-26, 2026-07-29). A write round trip attempted 2026-08-16 with the manual's stale PY/PZ point keys answered \"Wrong Field\". Re-tested 2026-09-04 via scripts/live_crud_check.py --tier extras3 after live /info evidence corrected each point to {Y, Z}: the contract-derived case completed POST, GET, PUT, GET, per-id DELETE, and deletion verification on an empty Civil NX scratch model.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 09/02/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {

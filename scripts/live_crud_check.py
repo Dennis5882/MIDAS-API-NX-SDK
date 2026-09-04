@@ -1834,33 +1834,42 @@ def _extras3_cases() -> List[Case]:
             lambda p: p.get("SCALE"), 1.0, 1.2,
         ),
         # ⚠️ Confirmed failing live 2026-08-16 (Civil NX v2.2, build
-        # 08/14/2026), including the manual's own Request Body example
-        # verbatim. RPSC/STRPSSM's own worked examples key at ids 401/9003
-        # rather than a plain running number, and both describe "PSC/RC
-        # 단면" specifically -- our base seed's section is a plain DBUSER
-        # rectangular column, which may not carry a Section Manager
-        # reinforcement/stress-point slot at all. Genuinely unresolved
-        # either way (fixture-shaped or not); not swept under a workaround.
+        # 08/14/2026). Later /info evidence corrected RPSC to nested
+        # MBARS[].MBAR_ITEMS[] (MD-40) and STRPSSM points to Y/Z (MD-38),
+        # so these fixtures follow the live-corrected contracts rather than
+        # the stale manual examples. Their worked examples key at ids
+        # 401/9003 and describe "PSC/RC 단면" specifically -- our base
+        # seed's section is a plain DBUSER rectangular column, which may not
+        # carry a Section Manager reinforcement/stress-point slot at all.
+        # Genuinely unresolved either way; not swept under a workaround.
         # Keyed by section id; section 1 is the base seed's column section.
         Case(
             SectionReinforcement,
             {"OPT_MBAR_J": False, "OPT_SBAR_J": False, "OPT_CRACKED": False,
-             "SBAR_ITEMS": [{"OPT_DR": False}, {"OPT_DR": False}]},
+             "SBAR_ITEMS": [{"OPT_DR": False}, {"OPT_DR": False}],
+             "MBARS": [{"MBAR_ITEMS": [
+                 {"IJ": "I", "NAME": "D25", "REF_Y": 0, "Y": 0,
+                  "REF_Z": 1, "Z": 0.05, "NUM": 4, "SPACING": 0.15},
+             ]}]},
             {"OPT_MBAR_J": False, "OPT_SBAR_J": False, "OPT_CRACKED": True,
-             "SBAR_ITEMS": [{"OPT_DR": False}, {"OPT_DR": False}]},
+             "SBAR_ITEMS": [{"OPT_DR": False}, {"OPT_DR": False}],
+             "MBARS": [{"MBAR_ITEMS": [
+                 {"IJ": "I", "NAME": "D25", "REF_Y": 0, "Y": 0,
+                  "REF_Z": 1, "Z": 0.05, "NUM": 4, "SPACING": 0.15},
+             ]}]},
             lambda p: p.get("OPT_CRACKED"), False, True,
             item_id=1,
         ),
         Case(
             SectionStressPoints,
             {"OPT_SAME_J": True, "POINT_SIZE_1": 2, "POINT_SIZE_2": 2,
-             "POINT1": [{"PY": 0.00583, "PZ": 0.00476}, {"PY": -0.00506, "PZ": 0.00097}],
-             "POINT2": [{"PY": 0.00583, "PZ": 0.00476}, {"PY": -0.00506, "PZ": 0.00097}]},
+             "POINT1": [{"Y": 0.00583, "Z": 0.00476}, {"Y": -0.00506, "Z": 0.00097}],
+             "POINT2": [{"Y": 0.00583, "Z": 0.00476}, {"Y": -0.00506, "Z": 0.00097}]},
             {"OPT_SAME_J": True, "POINT_SIZE_1": 2, "POINT_SIZE_2": 2,
-             "POINT1": [{"PY": 0.006, "PZ": 0.00476}, {"PY": -0.00506, "PZ": 0.00097}],
-             "POINT2": [{"PY": 0.006, "PZ": 0.00476}, {"PY": -0.00506, "PZ": 0.00097}]},
-            lambda p: p["POINT1"][0].get("PY"), 0.00583, 0.006,
-            item_id=1, products=("civil",),
+             "POINT1": [{"Y": 0.006, "Z": 0.00476}, {"Y": -0.00506, "Z": 0.00097}],
+             "POINT2": [{"Y": 0.006, "Z": 0.00476}, {"Y": -0.00506, "Z": 0.00097}]},
+            lambda p: p["POINT1"][0].get("Y"), 0.00583, 0.006,
+            item_id=1, products=("civil",), confirmed=True,
         ),
         # Keyed by element id; element 4 is the base seed's plate.
         Case(

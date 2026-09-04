@@ -8712,3 +8712,52 @@ for the unrecognised spelling. This independently repeats the older Gen-only
 measurements: `BEAMFORCESTP` and `REACTIONLSURFACESPRING` are recognised.
 Per the handoff boundary, the contracts and their `resolved` flags were not
 changed here.
+
+## 2026-09-04 (last) — the 18 existing unconfirmed CRUD cases re-run; `/db/STRPSSM` closed
+
+Both open documents were confirmed empty before the first destructive call:
+`GET /db/NODE` and `GET /db/ELEM` each returned `{"message": ""}` on Gen and
+Civil. The runs then used `scripts/live_crud_check.py` in batches of at most
+eight, with its own seeded throwaway model and save-before-`/doc/NEW`
+checkpoint under `C:/temp`. Every payload came from the harness's contract-led
+case definitions; none was composed at the prompt. The harness saved each
+resulting scratch model and restored an empty document after every batch.
+
+The products were the continuously running sessions already tied to their
+About dialogs: Gen NX 2026 v2.1 and Civil NX 2026 v2.2, both build 09/02/2026
+(`connectionID` `tZwG5G-fSg` and `maTuEDSLQw`).
+
+| Endpoint | Gen NX | Civil NX | Classification |
+| --- | --- | --- | --- |
+| `/db/ACTL` | create refused | update completed, updated value did not read back | remains unconfirmed |
+| `/db/CGLP` | blocked by prerequisite seed | blocked by prerequisite seed | remains unconfirmed |
+| `/db/DOEL` | create response accepted, record absent on GET | create response accepted, record absent on GET | remains unconfirmed |
+| `/db/EPSE` | create refused | product-specific case not selected | remains unconfirmed |
+| `/db/EPST` | create refused | prerequisite seed refused | remains unconfirmed |
+| `/db/FBLA` | create refused | create refused | remains unconfirmed |
+| `/db/HPCE` | create refused | create refused | remains unconfirmed |
+| `/db/MADO` | create response accepted, record absent on GET | create response accepted, record absent on GET | remains unconfirmed |
+| `/db/MVCT` | create refused | create refused | remains unconfirmed |
+| `/db/NLLP` | `Unknown Error` | `Unknown Error` | remains unconfirmed |
+| `/db/NLNK` | blocked by NLLP seed | blocked by NLLP seed | remains unconfirmed |
+| `/db/NLNK-M1` | product-specific case not selected | blocked by NLLP seed | remains unconfirmed |
+| `/db/RPSC` | `Wrong Field` | `Wrong Field` | remains unconfirmed |
+| `/db/SBDO` | create response accepted, record absent on GET | create response accepted, record absent on GET | remains unconfirmed |
+| `/db/STCT` | create response accepted, record absent on GET | create refused against the auto-populated stage-control record | remains unconfirmed |
+| `/db/STRPSSM` | not served for Gen | **full CRUD round trip passed** | promoted to write-confirmed |
+| `/db/TDMF` | create refused | create refused | remains unconfirmed |
+| `/db/WVLD` | product-specific case not selected | create refused | remains unconfirmed |
+
+Two fixtures were stale against the live-corrected contracts and were repaired
+before the final isolated run. `/db/RPSC` now sends longitudinal reinforcement
+at `MBARS[].MBAR_ITEMS[]` while leaving `SBAR_ITEMS` at the root (MD-40); it
+still returned `Wrong Field` on both products, so no conclusion beyond the
+observed failure is claimed. `/db/STRPSSM` now sends `{Y, Z}` points rather
+than the manual's erroneous `{PY, PZ}` spelling (MD-38). On Civil it then
+passed POST, GET, PUT, GET, per-id DELETE, and deletion verification using
+section id 1. This isolates the former failure to the stale point-key shape.
+
+Result-state changes: `schema/live-cases.json` remains 167 cases and moves from
+143 to **144 confirmed**; repository coverage moves from 172 write / 227 read
+to **173 write / 226 read**. No other endpoint was promoted, and no failed
+unconfirmed case is labelled an SDK or product defect.
