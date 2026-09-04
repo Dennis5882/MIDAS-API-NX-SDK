@@ -6,6 +6,12 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.7.8 - 2026-09-05
+
+> A one-value fix, and the value is one the server was refusing. Nothing is
+> removed, no exported name moves, and no type changes shape. If you call
+> the surface-spring reaction table, your calls start working.
+
 ### Fixed — `tables.reaction.localSurfaceSpring` sent a string the server refuses
 
 - The value is `REACTIONLSURFACESPRING`, with an L that `/post/TABLE`'s

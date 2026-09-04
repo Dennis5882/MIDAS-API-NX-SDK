@@ -5,64 +5,62 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-09-04 — **2.7.7 published** to PyPI and npm; Civil live
-> write coverage extended through `/db/STRPSSM`. This is the
-> largest breaking npm release the contract work has produced, and the patch
-> number does not say so, because the version is kept aligned across the two
-> registries rather than derived from semver. Sixty payload types lose the
-> `Assign` envelope the client builds for you, one exported interface is
-> renamed, and eighteen records change shape. Every one of those removals is a
-> field the server does not take or a nesting it does not accept — the types
-> were describing requests that would have been rejected. `src/midas_nx/`
-> ships two corrected resource labels and nothing else behavioural; its
-> TypedDicts move with the contracts.
+> Last updated: 2026-09-05 — **2.7.8 published** to PyPI and npm. A one-value
+> fix in both packages, and the value is one the server was refusing.
+> `/post/TABLE`'s surface-spring reaction type is `REACTIONLSURFACESPRING`,
+> with an L that the Specifications table and the JSON Schema enum both drop.
+> Only the section's request example has it. The contract had followed the
+> other two on the reasoning that two sources beat one, and **both products
+> refuse the majority spelling** — so every caller of that one table type got
+> an error instead of a table, in both languages, for as long as the constant
+> has existed. Nothing is removed and no name moves; calls that failed start
+> working.
 >
-> **The contracts gained a check that compares field names.** The four parity
-> checks that came before compare routes, verbs, `products` and executable
-> rules, and never a field name, which is how `/db/ELNK` published four fields
-> beside a twelve-key TypedDict with every gate green. `check_field_parity`
-> resolves each contract's `surface.payloadTypeName` to the Python TypedDict
-> of that name **in the module the endpoint's resource lives in** — the name
-> alone is not unique — and fails on any wire name an SDK ships that no
-> contract records. One direction only: a contract naming more than a
-> TypedDict is the intended state.
+> **A wire value is not a majority opinion**, and this release is the
+> measurement. The same live run asked the other `/post/TABLE` contradiction
+> — `BEAMFORCESTP` against the schema enum's `BEAMFORCESIP` — and there the
+> identical 2-1 reading was right. Three documents agreeing is three
+> transcriptions of one source, so a 2-1 split carries no information at all
+> about which way the server goes. Both contracts had said so honestly, with
+> `resolved: false` and "nobody has asked the server"; the answer took one
+> call each.
+> `tests/test_contracts.py::test_a_table_type_contradiction_is_settled_live_or_left_open`
+> now refuses to let a `describes: table_type` defect be marked resolved on
+> anything but a live check. Result-table contradictions 2 → 0.
 >
-> Its first run found 73 keys across twelve endpoints. **Exactly one was an
-> SDK defect** (`/db/HHCT-M1`'s `ITEM.M_GENERAL`, which neither the manual nor
-> `/info` gives that endpoint); the other eleven were contracts behind their
-> own SDK, three of them publishing a flat record the server has never
-> accepted. `/db/LLAN` is the expensive case: its wrong shape had also
-> manufactured ten false `safeToOmit: true` claims, because promotion compared
-> a confirmed live payload's top-level keys against a flat field list. A wrong
-> shape does not stay a shape problem — it manufactures false claims on the
-> axis the safety rules read.
+> **Every non-`/TEMP` crash path was re-checked on build 09/02/2026, and none
+> reproduces.** Eight Design Forces `TABLE_TYPE`s, the three
+> `/DESIGN/RC/KDS-41-20-2022/TABLE` variants, `/ope/EDMP`, `/ope/USLC`,
+> `PUT /db/THNL`, and a raw `/db/NMAS` with `rmX`/`rmY`/`rmZ` omitted, on both
+> products. Every risky call was followed by a real `GET /db/NODE` rather than
+> `verify_connection()`, which answers "connected" through the relay while a
+> modal dialog holds the session and therefore cannot tell a live session from
+> a blocked one. **Nothing is cleared.** The design-forces docstrings record
+> the independent second blank-document pass they had asked for and say in the
+> same breath that a populated, analysed, designed model was not exercised;
+> the NMAS mitigation stays, because an uninitialized read is exactly the
+> defect that hides when the memory happens to be zero.
 >
-> A second blind spot sat behind the first: the check skipped any contract
-> declaring part of its field list missing, and twenty do, which was another
-> **214 unchecked names**. `extraction.unmergedTables` entries now record
-> `fieldNames`, so the waiver is per-name rather than per-contract — `fields`
-> had always given the count, and a count says a gap exists without saying
-> what is in it. Writing the names down exposed a parser defect on its own
-> (MD-48): a Key cell can name several properties at once (`"bSD" / "iSDOPT"
-> / "SDCONST"`) and the table parser returns the whole cell as one key,
-> invisible for as long as it only fed a count. 214 → 84 → 0.
+> **`/db/STRPSSM` moved read → write**, and the reason is worth keeping: the
+> fixture had been failing `Wrong Field` since 2026-08-16 under a recorded
+> guess that it needed a genuine PSC/RC section. It needed `Y`/`Z` — the
+> manual's `PY`/`PZ` were `/info`'s *descriptions*, taken for the keys (MD-38).
+> 172 → 173 write, 227 → 226 read.
 >
-> **`schema/info-baseline.json` is committed**: every `GET /info{endpoint}`
-> both products answer, captured read-only. It is swept against every contract
-> in both directions, and the reverse direction — names a contract publishes
-> that `/info` declares nowhere — is where a wrong *name* shows up rather than
-> a missing one. Read it weakly: `/db/STBK` ships an `LCNAME` no `/info`
-> schema declares and a confirmed round trip sends it successfully on both
-> products, so absence supports a note, never a deletion. The sweep also
-> settled that **`products: [civil, gen]` says the route answers on both,
-> never that the record is the same** — ten of the 177 both-product endpoints
-> declare different schemas, and 72 npm field comments now say which product
-> declares them (MD-46).
+> **The `/info` sweep is a standing check now.** `info_baseline.py
+> --against-contracts --check` holds a per-endpoint ceiling and runs in CI, so
+> a count going down passes and a new or growing difference fails. Keyed per
+> endpoint deliberately: a single total would let one contract lose a property
+> while another gains one, and the value of that sweep is in the small numbers
+> — a count of one or two is what a missing table row looks like, while
+> `/db/SECT`'s 995 is the section-property tree and means nothing.
 >
-> Contracts 358 → 381 of 399 endpoints, `surface` blocks 289 → 301, manual
-> defects MD-17 → MD-48. `/db/NMAS`'s crash **does not reproduce** on build
-> 09/02/2026 on either product; the workaround stays, since the fix is not on
-> the record as one.
+> npm live evidence 23 → 32 `/db` endpoints on both products, which also
+> exposed a gap worth naming: `schema/live-cases.json` emits each case's own
+> setup but not the common base model Python's harness builds first, so the
+> npm harness cannot run thirteen confirmed cases and prints `REGRESS` for
+> them. That is a hole in the file's claim to be the language-neutral source,
+> not a package regression.
 
 ---
 
@@ -232,11 +230,11 @@ they're the ones worth re-checking before planning a release):
 
 | Axis | Artifact | State |
 |---|---|---|
-| Tests | 996 Python tests + 60 Vitest tests, mocked/local only | ✅ green |
+| Tests | 999 Python tests + 60 Vitest tests, mocked/local only | ✅ green |
 | CI | `.github/workflows/ci.yml` — Python checks on 3.12/3.13 plus npm generation/typecheck/tests/package smoke on Node.js 18/22, push+PR | ✅ running |
 | Static typing | mypy over `src/midas_nx`, config in `pyproject.toml`, own CI job | ✅ clean across all 41 modules |
 | Packaging verification | `package` CI job + `scripts/wheel_smoke_test.py` — builds the wheel, installs it into a clean venv, asserts `py.typed` shipped, `__version__` matches the distribution, and the `delete_all()` guard is armed | ✅ running |
-| TypeScript/npm SDK | `packages/typescript/` — ESM + CommonJS + declarations, Node.js 18+, Vitest/typecheck/build and packed-artifact smoke tests | ✅ npm `midas-nx` 2.7.7 published 2026-09-04; `js-v*` OIDC workflow and npm Trusted Publisher registration completed 2026-08-27. Versions have moved in lockstep with PyPI since 2.6.0 |
+| TypeScript/npm SDK | `packages/typescript/` — ESM + CommonJS + declarations, Node.js 18+, Vitest/typecheck/build and packed-artifact smoke tests | ✅ npm `midas-nx` 2.7.8 published 2026-09-05; `js-v*` OIDC workflow and npm Trusted Publisher registration completed 2026-08-27. Versions have moved in lockstep with PyPI since 2.6.0 |
 | Cross-language generation | `scripts/generate_typescript_sdk.py`, `schema/typescript-{resources,coverage}.json`, `packages/typescript/src/generated/` | ✅ generated outputs committed; CI rejects drift. ⚠️ CI was red on `main` 2026-08-27 (`dcb98e0`..`21034f3`) because the committed npm surface had gone stale against its own generator — **py-v2.3.5 was tagged while it was red**. Fixed in `f303fd7`; the drift gate works, nobody read it |
 | Language-neutral contracts | `contracts/` + `scripts/{extract,promote,validate}_contract*.py`, own CI job | 🚧 **381 endpoints + 87 result tables**, 4,916 fields, with **3** drafts awaiting review (`extract_contracts.py --report`, not raw ignored draft files). Drafted from the manual by `extract_contracts.py`, promoted by `promote_contract.py`. Validates schema, cross-references, safety-rule coverage, manual drift, and **parity against both SDKs** — a disagreement is an SDK defect, not a reason to edit the contract. It has caught: npm able to crash a live NX session on `/db/NMAS`; `/db/GRUP` claiming a DELETE it does not serve; `/db/RIGD`/`/db/OFFS` flattening an `ITEMS` array; 7 endpoints wrongly called Civil-only; and — since the fifth check, `check_field_parity`, started comparing **field names** on 2026-09-04 — twelve contracts that had fallen behind their own SDK, three of them publishing a flat record the server has never accepted |
 | Omission safety | `safeToOmit` in every contract field | 🚧 119 proven safe from confirmed live payloads, 8 proven unsafe, **4,789 honestly unverified**. The proven-safe count went *down* in 2.7.7: `/db/LLAN`'s contract published a flat record, so promotion compared a confirmed live payload's top-level keys against a flat field list and manufactured ten `safeToOmit: true` claims nobody had earned. The manual saying "Optional" is not evidence — that is what `documentedOptional` records, and `/db/NMAS` is where believing it kills the session |
@@ -794,6 +792,7 @@ exactly why that's the honest framing rather than a stronger guarantee.
 | **2.6.1** ✅ | npm operation wrappers now enforce the reviewed Gen NX/Civil NX product availability before sending a request; validated against a real Civil NX session with full DB GET coverage and a model -> analysis -> result-table round trip. Python republished unchanged to preserve the shared version | published 2026-08-28 as `py-v2.6.1` and `js-v2.6.1` |
 | **2.7.0** ✅ | npm: `/db/BODF` generated from a reviewed contract, so `selfWeight` requires `LCNAME` and types `FV` as exactly three numbers; contracted fixed-length arrays now generate tuples rather than unbounded arrays. Python republished unchanged | published 2026-08-28 as `py-v2.7.0` and `js-v2.7.0` |
 | **2.7.1** ✅ | Catches both packages up to three same-day manual revisions. Python: 27 resource labels corrected to the manual's English, `/db/POLC-M1` regains POST after a live call disproved the chapter, `/ope/GSBG` **now raises** on contradictory `BATCH` payloads, and 11 chapter-02 docstring references follow the manual's renumbering. npm: 400 lines of new result-table wrappers, contract-generated payload types, and four payload interfaces re-declared as type aliases. Repo: `--check` gained label, method and section-heading comparisons, each of which found real drift; 31 `safeToOmit: true` claims retracted after the evidence behind them turned out to be a request that never ran | published 2026-08-30 as `py-v2.7.1` and `js-v2.7.1` |
+| **2.7.8** ✅ | A one-value fix in both packages, and the value is one the server was refusing. `/post/TABLE`'s surface-spring reaction type is `REACTIONLSURFACESPRING`; the Specifications table and the JSON Schema enum both drop the L and only the request example has it, so the contract took the majority and **both products refuse it**. Every caller of that table type got an error instead of a table, in both languages, for as long as the constant has existed. The same live run confirmed `BEAMFORCESTP`, where the identical 2-1 reading was right — which is the finding worth keeping: **a wire value is not a majority opinion**, and three documents agreeing is three transcriptions of one source. A `describes: table_type` defect can now be marked resolved only on a live check; result-table contradictions 2 → 0. Also in it, none of it shipped: every non-`/TEMP` crash path re-checked on build 09/02/2026 with a real `GET /db/NODE` as the liveness proof and **nothing cleared**; `/db/STRPSSM` read → write once `PY`/`PZ` turned out to be `/info`'s descriptions rather than its keys (172 → 173 write); the `/info`-to-contract sweep wired into CI as a per-endpoint ceiling; npm live evidence 23 → 32 endpoints. | published 2026-09-05 as `py-v2.7.8` and `js-v2.7.8` |
 | **2.7.7** ✅ | Gives the contracts a check that compares **field names**, which the four parity checks that came before never did: `check_field_parity` resolves a contract's `surface.payloadTypeName` to the Python TypedDict of that name in the endpoint's own module and fails on any wire name an SDK ships that no contract records. Its first run found 73 keys across twelve endpoints; **exactly one was an SDK defect** (`/db/HHCT-M1`'s `ITEM.M_GENERAL`), the rest contracts behind their own SDK, three of them publishing a flat record the server has never accepted — and `/db/LLAN`'s wrong shape had also manufactured ten false `safeToOmit: true` claims. Itemising the `unmergedTables` waiver by `fieldNames` closed another 214 unchecked names and exposed a parser defect of its own (MD-48: a Key cell can name several properties at once). `schema/info-baseline.json` — every `GET /info{endpoint}` both products answer — is committed and swept against every contract in both directions. **The largest breaking npm release so far, despite the patch number**: sixty payload types lose the `Assign` envelope the client builds for you, `BraceMainBarSpec` is renamed `BraceMainBarItem`, and eighteen records change shape, every one of them a shape the server refuses. Python ships two corrected labels and nothing else behavioural. Contracts 358 → 381 of 399, `surface` blocks 289 → 301, manual defects MD-17 → MD-48. | published 2026-09-04 as `py-v2.7.7` and `js-v2.7.7` |
 | **2.7.6** ✅ | Empties `promote_contract.py`'s hand-review gate: the six endpoints held out of the source of truth because transcribing their manual sections would have put something false into it are all contracted. Three take their fields from the server (`/db/REBW`, `/db/REBC`, `/db/REBB`), and for the first two MIDASIT's own articles carry the same wrong shapes, so the vendored chapters transcribe their source faithfully. **Breaking in both surfaces, despite the patch number**, which is kept aligned rather than semver-derived: `create()`/`update()` now refuse a `/db/MVHL` empty `VEH_DEFAULT` and a `/db/PRES` item with no `DIRECTION` — the second because omitting the field is *how* its documented default gets applied, and that default is the one value a plate face refuses. Four shipped npm type defects found while contracting: a variant's branch attached to the payload root instead of the object holding its gate (`/db/SWIND`'s `WIND_SPEED` was a top-level member, not a `PARAMETERS` one); a multi-value branch table dropped when it overlapped no other; 53 rows dropped from `└`-nested tables, two of them required; and a changelog entry claiming two payload types were contract-generated when they were not. Contracts 342 → 358, `surface` blocks 273 → 289, drafts 42 → 26. | published 2026-09-03 as `py-v2.7.6` and `js-v2.7.6` |
 | **2.7.5** ✅ | The first release since 2.6.0 where both packaged surfaces change. Python: `RebarDesignCriteria` and `RebarDesignCriteriaByWallMember` take their manual sections' labels, which their three `DCRM-*` siblings already had. **npm breaking**: `AXIS_VECTOR` is `Array<number>` — the Specifications table typed it `Number` while the section's own schema and Request Example send six, so its documented value was a type error — and six payloads become contract-driven with required members. The larger fix goes the other way: **49 fields the manual requires only inside one branch** were typed required of every payload, so `ConvectionCoefficientFunctionPayload` demanded `COEF` and `SCALE_FACTOR` together and no caller could satisfy it. Contracts 337 → 342, `surface` blocks 0 → 273, drafts 47 → 42; MD-11 records the nine Value Types a section contradicts. | prepared 2026-09-02 |
