@@ -1,6 +1,6 @@
 {
   "name": "midas-nx",
-  "version": "2.7.6",
+  "version": "2.7.7",
   "description": "Unified TypeScript SDK for the MIDAS NX Open API (Civil NX + Gen NX) - employee-led open source",
   "license": "MIT",
   "author": "Dennis5882",

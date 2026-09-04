@@ -4,7 +4,18 @@ This file records changes to the JavaScript/TypeScript package published on
 npm as `midas-nx`. Python package history is tracked separately in the
 repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
-## Unreleased
+## 2.7.7 - 2026-09-04
+
+> **The largest breaking release so far, and the number does not say so.**
+> The version is kept aligned with PyPI rather than derived from semver, so
+> read this section rather than the digits. Sixty payload types lose a member
+> (`Assign`, which the client builds for you and never wanted from you), one
+> exported interface is renamed (`BraceMainBarSpec` -> `BraceMainBarItem`), and
+> eighteen more records change shape or drop a name, because the shape they
+> published is one the server refuses. Every removal below is a field the
+> server does not take or a nesting it does not accept; nothing that worked on
+> the wire stops working. If your build breaks, the type was describing a
+> request that would have been rejected.
 
 ### Changed — `SeismicDeviceSteelDamperPayload` is generated from its contract
 
