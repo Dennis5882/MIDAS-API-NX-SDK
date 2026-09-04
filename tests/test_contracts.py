@@ -393,27 +393,43 @@ def test_table_types_are_named_in_both_sdks():
             assert _sdk_names_table_type(npm_source, value), f"{name}: {value} unnamed in the npm SDK"
 
 
-def test_unresolved_manual_contradictions_stay_unresolved():
-    """Where the manual disagrees with itself, say so instead of picking a winner.
+def test_a_table_type_contradiction_is_settled_live_or_left_open():
+    """Counting documents cannot settle a wire string. Only the server can.
 
-    /post/TABLE has two live examples: the manual's schema, table and example
-    disagree about `REACTIONSURFACESPRING` and about `BEAMFORCESTP`. Each
-    contract declares the majority spelling *and* records that nobody has asked
-    the server which one it accepts.
+    Both of /post/TABLE's spelling contradictions were declared by majority -
+    two of the manual's three statements against one - and on 2026-09-04 the
+    products were finally asked. The majority was right about `BEAMFORCESTP`
+    and **wrong** about the surface-spring reaction type: the lone request
+    example had it, and both SDKs had been shipping a string the server
+    refuses.
+
+    So a `describes: table_type` defect may be resolved only by evidence of a
+    live check. Every other kind - a column the docs omit, a field a revision
+    dropped - is settled by reading the source, and those stay as they are.
+    An unresolved defect of any kind must still say what is unknown.
     """
-    unresolved = [
+    defects = [
         (name, defect)
         for name, table in _tables().items()
         for defect in table.get("manualDefects", [])
-        if defect.get("resolved") is False
     ]
+    assert defects, "the known /post/TABLE contradictions should be recorded"
 
-    assert unresolved, "the two known /post/TABLE spelling contradictions should be recorded"
-    for name, defect in unresolved:
-        assert defect["evidence"].strip(), f"{name}: unresolved defect with no evidence"
-        assert "not " in defect["actual"].lower() or "unknown" in defect["actual"].lower(), (
-            f"{name}: an unresolved contradiction must say what is still unknown"
-        )
+    for name, defect in defects:
+        evidence = defect["evidence"].strip()
+        assert evidence, f"{name}: defect with no evidence"
+
+        if defect.get("resolved") is False:
+            assert "not " in defect["actual"].lower() or "unknown" in defect["actual"].lower(), (
+                f"{name}: an unresolved contradiction must say what is still unknown"
+            )
+            continue
+
+        if defect["describes"] == "table_type":
+            assert "live" in evidence.lower(), (
+                f"{name}: a TABLE_TYPE spelling cannot be settled by counting the "
+                f"manual's own statements - resolving one takes a live check"
+            )
 
 
 def test_post_table_response_key_is_declared_unstable():

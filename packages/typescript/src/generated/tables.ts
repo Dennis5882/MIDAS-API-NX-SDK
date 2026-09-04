@@ -1049,7 +1049,7 @@ export const tableTypes = {
     /** Local coordinate system */
     localCoordinateSystem: "REACTIONL",
     /** Local - surface spring */
-    localSurfaceSpring: "REACTIONSURFACESPRING",
+    localSurfaceSpring: "REACTIONLSURFACESPRING",
   },
   restraintSupportsTable: {
     /** Restraint supports */

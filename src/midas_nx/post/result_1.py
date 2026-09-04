@@ -15,7 +15,11 @@ from .base import NodeElemsSelector, TableStyles, TableUnit, get_table
 # 1. Reaction — OPT_CS/STAGE_STEP not supported for the Local Surface Spring variant
 TABLE_TYPE_REACTION_GLOBAL = "REACTIONG"
 TABLE_TYPE_REACTION_LOCAL = "REACTIONL"
-TABLE_TYPE_REACTION_LOCAL_SURFACE_SPRING = "REACTIONSURFACESPRING"
+# The extra L is the server's spelling, confirmed live 2026-09-04 on both
+# products. The manual's Specifications table and its JSON Schema both drop
+# it and only its request example has it right; this SDK followed the
+# majority and shipped a string the server refuses. See MD-49.
+TABLE_TYPE_REACTION_LOCAL_SURFACE_SPRING = "REACTIONLSURFACESPRING"
 
 # 2. Displacements
 TABLE_TYPE_DISPLACEMENT_GLOBAL = "DISPLACEMENTG"

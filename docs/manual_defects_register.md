@@ -80,10 +80,9 @@ build itself** and is no longer resting on an unrecorded one.
 | MD-44 | 2026-09-04 | five arrays and one object across `/db/SLAN`, `/db/POLC`, `/db/ACTL-M1`, `/db/NLNK`, `/db/NLNK-M1` | each states its members somewhere other than a numbered table row - a per-code table, a per-branch table, a sub-table heading naming three children, a sentence | the members are real and the manual is right about every one of them; the extractor reads numbered table rows and read none of these | **this SDK** extractor | fixed |
 | MD-45 | 2026-09-04 | `/db/LLANtr` `SPECIAL_LANE_ITEMS`, `/db/SLANop` `OPT_STRADD` and `CHINA_ITEMS` | neither section documents them | `GET /info` declares them on both endpoints. `SPECIAL_LANE_ITEMS` carries the server's own description " Used only when importing", which is the whole of what is known about when it applies; `CHINA_ITEMS` has no description at all, only its members' | **manual repo** transcription | open |
 | MD-46 | 2026-09-04 | ten `/db/*` sections, 73 fields | each documents one endpoint with one Specifications table and says nothing about either product | the two products declare different records. `/db/SPLC` differs by 15 fields, `/db/POSL` by 11, `/db/POGD` by 20, `/db/SBDO` by 16, `/db/IEHC` by 9, and `/db/ACTL`, `/db/BCCT`, `/db/EPSE`, `/db/POLC`, `/db/THGC` by one to four each. Mostly it is the products' own feature sets - Gen NX has walls and fiber hinges, Civil NX has bridge seismic parameters - not a transcription slip | **manual repo** transcription | open |
-| MD-49 | 2026-09-04 | `/post/TABLE` surface-spring reaction `TABLE_TYPE` | the JSON Schema and Specifications table give `REACTIONSURFACESPRING`; the Request Example alone gives `REACTIONLSURFACESPRING` | on both Gen NX and Civil NX, build 09/02/2026, `REACTIONSURFACESPRING` is refused with `there was an error creating utbl`, while `REACTIONLSURFACESPRING` is recognised and reaches the expected no-analysis-result response | **MIDASIT article** (schema and table) and this SDK's contract/constant | open; contract decision deferred |
-
 | MD-47 | 2026-09-04 | `/db/TDMT` `TCODE` and `bSILICA` | section 6's "Specifications (공통 키 + CEB-FIP)" table documents two code branches, CEB-FIP and ACI, while its `CODE` value table lists 33 codes | `CODE="EUROPEAN"` is a third branch with two dedicated fields the table names nowhere. Both were read off a real PSC bridge model's C40/50 concrete on 2026-07-30 and both are declared by `GET /info/db/TDMT` on either product. The gap is wider than these two: /info declares roughly seventy fields here, spanning codes the value table lists and the field table then ignores | **manual repo** transcription | open |
 | MD-48 | 2026-09-04 | `/db/MVHL` `VEH_EUROCODE`, 48 fields | section 10's Specifications table documents `VEH_DEFAULT` and no country object at all | `GET /info/db/MVHL` declares eleven more - `VEH_FR`, `VEH_CN`, `VEH_IN`, `VEH_CA`, `VEH_BS`, `VEH_EUROCODE`, `VEH_RU`, `VEH_KSCE_LSD15`, `VEH_AU`, `VEH_PL`, `VEH_ZA` - and a real Eurocode "Load Model 1" vehicle read on 2026-07-30 used `VEH_EUROCODE` instead of `VEH_DEFAULT`, omitting `STANDARD_CODE` the table marks Required. Four of the eleven have their own manual tables; `VEH_EUROCODE` has none | **manual repo** transcription | open |
+| MD-49 | 2026-09-04 | `/post/TABLE` surface-spring reaction `TABLE_TYPE` | the JSON Schema and Specifications table give `REACTIONSURFACESPRING`; the Request Example alone gives `REACTIONLSURFACESPRING` | on both Gen NX and Civil NX, build 09/02/2026, `REACTIONSURFACESPRING` is refused with `there was an error creating utbl`, while `REACTIONLSURFACESPRING` is recognised and reaches the expected no-analysis-result response | **MIDASIT article** (schema and table), which this SDK followed into both packages | open upstream; corrected here |
 
 ## Detail
 
@@ -1697,3 +1696,44 @@ goes through `_REVIEWED_SHARED_COMPACT_KEYS`, which demands a named review per
 row, because a merged row becomes a published field and a waived one does not.
 No contract *field* carries a packed name - the only non-identifier key in all
 381 is `/ope/GSBG`'s `7TH_DOF_TYPE`, which is the server's own spelling.
+
+### MD-49 - counting the manual's own statements settled one string and broke the other
+
+Two `/post/TABLE` `TABLE_TYPE` values had the same shape of problem: the
+manual states each three times and one of the three disagrees. Both
+contracts declared the majority spelling and both said out loud, in a
+`manualDefects` entry with `resolved: false`, that nobody had asked the
+server. On 2026-09-04 both were asked, on Gen NX 2026 v2.1 and Civil NX
+2026 v2.2, build 09/02/2026.
+
+| value sent | server |
+| --- | --- |
+| `BEAMFORCESTP` (table + example) | recognised |
+| `BEAMFORCESIP` (JSON Schema enum) | refused |
+| `REACTIONSURFACESPRING` (table + JSON Schema enum) | **refused** |
+| `REACTIONLSURFACESPRING` (request example alone) | **recognised** |
+
+The probe reads a distinction this repo already relies on elsewhere:
+`[empty] Cannot generate table data as there is no analysis result` is a
+`TABLE_TYPE` the product knows and cannot fill, while `there was an error
+creating utbl` is one it does not know. Stable across both products and
+both pairs.
+
+**The majority was right once and wrong once, and the wrong one shipped.**
+Both SDKs' surface-spring reaction constant carried
+`REACTIONSURFACESPRING`, a string the server refuses on both products, for as
+long as the constant has existed. Every caller of that one table type got a
+refusal. Corrected here: the contract takes `provenance: live_corrected`,
+Python's `TABLE_TYPE_REACTION_LOCAL_SURFACE_SPRING` and npm's
+`reaction.localSurfaceSpring` take the extra L, and `BEAMFORCESTP`'s entry
+takes `provenance: live_verified` because it is now confirmed rather than
+merely outvoted.
+
+The reason to keep this row after fixing it is the method, not the string.
+A wire value is not a majority opinion. Three documents agreeing is three
+transcriptions of one source, and this pair is the measurement showing that
+a 2-1 split carries no information at all about which way the server goes.
+`tests/test_contracts.py::test_a_table_type_contradiction_is_settled_live_or_left_open`
+now refuses to let a `describes: table_type` defect be marked resolved on
+anything but a live check. The upstream typos are unfixed and remain a
+vendor-report item.

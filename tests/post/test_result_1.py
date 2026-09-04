@@ -36,7 +36,7 @@ def test_get_reaction_table_accepts_local_surface_spring_variant(gen_client):
     responses.add(responses.POST, "https://x.test:443/gen/post/TABLE", json={}, status=200)
     result_1.get_reaction_table(result_1.TABLE_TYPE_REACTION_LOCAL_SURFACE_SPRING, client=gen_client)
     sent = responses.calls[0].request
-    assert json.loads(sent.body)["Argument"]["TABLE_TYPE"] == "REACTIONSURFACESPRING"
+    assert json.loads(sent.body)["Argument"]["TABLE_TYPE"] == "REACTIONLSURFACESPRING"
 
 
 @responses.activate

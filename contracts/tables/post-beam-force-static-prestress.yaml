@@ -38,11 +38,11 @@ tableTypes:
   - value: BEAMFORCESTP
     description: Beam member force under static prestress
     head: ["Index", "Elem", "Load", "Part", "Type", "Axial", "Shear-z", "Moment-y"]
-    provenance: manual
+    provenance: live_verified
     provenanceNote: >-
       The spelling used by the manual's request example and its Specifications
-      table, which agree. Its JSON Schema enum says BEAMFORCESIP; see
-      manualDefects.
+      table, which agree, and confirmed live against both products. Its JSON
+      Schema enum says BEAMFORCESIP; see manualDefects.
 
 requestFields:
   unsupported:
@@ -61,14 +61,21 @@ manualDefects:
       The official JSON Schema enum gives "BEAMFORCESIP", with an I. The request
       example and the Specifications table both give "BEAMFORCESTP", with a T.
     actual: >-
-      BEAMFORCESTP is taken as correct - two sources against one, and STP reads
-      as an abbreviation of Static Prestress while SIP reads as nothing. Not
-      confirmed against a running product.
+      BEAMFORCESTP is correct and the schema enum is the typo, as the majority
+      reading guessed. The guess is no longer the reason: both products refuse
+      BEAMFORCESIP and accept BEAMFORCESTP.
     evidence: >-
       Cross-checked 2026-08-26 against official article id 36011373070745. The
       manual repo was corrected to BEAMFORCESTP at that point; the schema typo is
-      a vendor-report item.
-    resolved: false
+      a vendor-report item. Settled live 2026-09-04 on Gen NX 2026 v2.1 and
+      Civil NX 2026 v2.2, both build 09/02/2026, by sending both spellings
+      against the same document: BEAMFORCESIP answers "there was an error
+      creating utbl" and BEAMFORCESTP answers "[empty] Cannot generate table data
+      as there is no analysis result". The same run overturned the identical
+      majority reading on /post/TABLE's surface-spring reaction type, so the two
+      results are worth reading together - counting sources settled one and
+      broke the other. See docs/live_verification_notes.md.
+    resolved: true
 
   - describes: field_name
     manualSays: >-

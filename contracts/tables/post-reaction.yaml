@@ -46,7 +46,7 @@ tableTypes:
         head: ["Load", "FX(kN)", "FY(kN)", "FZ(kN)"]
         note: >-
           Returned in a top-level SUB_TABLES array alongside DATA, and absent
-          from REACTIONL and REACTIONSURFACESPRING. A construction-stage query
+          from REACTIONL and REACTIONLSURFACESPRING. A construction-stage query
           adds Stage and Step here too. Older revisions of the manual did not
           document it at all.
     provenance: manual
@@ -58,7 +58,7 @@ tableTypes:
       Same shape as REACTIONG with lower-case component names. No SUB_TABLES.
     provenance: manual
 
-  - value: REACTIONSURFACESPRING
+  - value: REACTIONLSURFACESPRING
     description: Local - surface spring
     head:
       - Index
@@ -73,11 +73,11 @@ tableTypes:
     headNote: >-
       A different structure entirely from the other two variants, keyed by
       element rather than node. Does not support OPT_CS or STAGE_STEP.
-    provenance: manual
+    provenance: live_corrected
     provenanceNote: >-
-      The spelling is the one the manual's Specifications table and its JSON
-      Schema enum agree on. See manualDefects - one request example disagrees
-      and nobody has asked the server which it accepts.
+      The spelling is the one the server accepts, which is the one the manual's
+      Specifications table and its JSON Schema enum both get wrong. Only the
+      request example has it right. See manualDefects.
 
 requestFields:
   unsupported: []
@@ -89,15 +89,23 @@ manualDefects:
       "REACTIONSURFACESPRING", while the "Reaction(Local-Surface Spring)"
       request example alone gives "REACTIONLSURFACESPRING", with an extra L.
     actual: >-
-      Unknown. Two of the three places agree on REACTIONSURFACESPRING and that
-      is what this contract declares, but no live call has been made to find out
-      which string the server accepts.
+      The lone request example is right and the two agreeing sources are wrong.
+      On both products the server refuses REACTIONSURFACESPRING and accepts
+      REACTIONLSURFACESPRING. This contract had declared the majority spelling
+      and both SDKs shipped it, so every caller of this one table type was
+      sending a string the server does not know.
     evidence: >-
-      Cross-checked 2026-08-26 against official article id 36009349748249. Two
-      sources agree, one disagrees; treated as a single-instance typo in the
-      example rather than a second valid value. Not verified against a running
-      product, and left open for a vendor report.
-    resolved: false
+      Cross-checked 2026-08-26 against official article id 36009349748249, where
+      two sources agree and one disagrees - which is why the majority was taken
+      and why it was wrong. Settled live 2026-09-04 on Gen NX 2026 v2.1 and
+      Civil NX 2026 v2.2, both build 09/02/2026, by sending both spellings
+      against the same document: REACTIONSURFACESPRING answers "there was an
+      error creating utbl" and REACTIONLSURFACESPRING answers "[empty] Cannot
+      generate table data as there is no analysis result". That pair is the
+      product's own distinction between a TABLE_TYPE it does not know and one it
+      knows but cannot fill. Recorded as MD-49; see
+      docs/live_verification_notes.md.
+    resolved: true
 
   - describes: head
     manualSays: >-

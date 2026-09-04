@@ -6,6 +6,23 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Fixed — `tables.reaction.localSurfaceSpring` sent a string the server refuses
+
+- The value is `REACTIONLSURFACESPRING`, with an L that `/post/TABLE`'s
+  Specifications table and its JSON Schema enum both drop. Only the
+  section's request example has it, and the contract had followed the other
+  two on the reasoning that two sources beat one. **Both products refuse the
+  majority spelling**, so every call through this one table type came back
+  as an error rather than a table.
+- Settled live on 2026-09-04, Gen NX 2026 v2.1 and Civil NX 2026 v2.2, both
+  build 09/02/2026, by sending each spelling against the same document:
+  `there was an error creating utbl` is a `TABLE_TYPE` the product does not
+  know, `[empty] Cannot generate table data as there is no analysis result`
+  is one it knows and cannot fill. The same run confirmed `BEAMFORCESTP`,
+  where the identical majority reading happened to be right. See MD-49.
+- No exported name changes and nothing else about the wrapper moves. If you
+  were passing the constant, your calls start working.
+
 ## 2.7.7 - 2026-09-04
 
 > **The largest breaking release so far, and the number does not say so.**
