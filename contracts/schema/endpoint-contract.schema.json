@@ -508,7 +508,7 @@
         },
         "prose": {
       "type": "array",
-      "description": "Fields the manual states in a sentence rather than a table row. scripts/extract_contracts.py reads tables, so it cannot see these, and its drift check would otherwise report every one as a field the contract invented. This is not a manualDefect: the manual documents them, it just wrote a paragraph, and recording it that way keeps the whole-contract `field_name` waiver for cases where the manual is actually wrong. /db/GRDP is the worked example - one sentence names the fifteen members of GROUP_DAMPING_ITEMS by saying they are the `_DEFAULT` fields without the suffix.",
+      "description": "Fields the manual states somewhere other than a row of a parameter table - in a sentence, or inside another table's cell. scripts/extract_contracts.py reads rows, so it cannot see these, and its drift check would otherwise report every one as a field the contract invented. This is not a manualDefect: the manual documents them, it just did not write a row, and recording it that way keeps the whole-contract `field_name` waiver for cases where the manual is actually wrong. /db/GRDP is the worked example for a sentence - one names the fifteen members of GROUP_DAMPING_ITEMS by saying they are the `_DEFAULT` fields without the suffix. /db/ELNK is the worked example for a cell: a second table lists each `LINK` type's extra keys in its 추가 키 column, which is where all eight of the record's conditional fields are stated and the reason `quote` may hold a table row verbatim.",
       "items": {
         "type": "object",
         "additionalProperties": false,

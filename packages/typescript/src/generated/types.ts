@@ -1478,6 +1478,22 @@ export namespace DbBoundaryTypes {
     ANGLE?: number;
     /** Link Type */
     LINK: string;
+    /** SDx SDy SDz SRx SRy SRz Applies when LINK is "GEN" or "TENS" or "COMP". */
+    SDR?: [number, number, number, number, number, number];
+    /** R_SDx R_SDy R_SDz R_SRx R_SRy R_SRz Applies when LINK = "GEN". */
+    R_S?: [boolean, boolean, boolean, boolean, boolean, boolean];
+    /** SHEAR Applies when LINK is "GEN" or "MULTILINEAR" or "RAILINTERACT". */
+    bSHEAR?: boolean;
+    /** DRy DRz Applies when LINK = "GEN". */
+    DR?: [number, number];
+    /** Direction Applies when LINK is "MULTILINEAR" or "RAILINTERACT". */
+    DIR?: number;
+    /** Function Applies when LINK = "MULTILINEAR". */
+    MLFC?: number;
+    /** Rail Track Interaction Function Applies when LINK = "RAILINTERACT". */
+    RLFC?: number;
+    /** DistRatioEndI Applies when LINK is "MULTILINEAR" or "RAILINTERACT". */
+    DRENDI?: number;
   }
   export interface RigidLinkItem extends DbBaseTypes.ItemGroupFields {
     DOF?: number;
