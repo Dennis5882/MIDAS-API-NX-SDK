@@ -83,7 +83,7 @@ build itself** and is no longer resting on an unrecorded one.
 | MD-47 | 2026-09-04 | `/db/TDMT` `TCODE` and `bSILICA` | section 6's "Specifications (공통 키 + CEB-FIP)" table documents two code branches, CEB-FIP and ACI, while its `CODE` value table lists 33 codes | `CODE="EUROPEAN"` is a third branch with two dedicated fields the table names nowhere. Both were read off a real PSC bridge model's C40/50 concrete on 2026-07-30 and both are declared by `GET /info/db/TDMT` on either product. The gap is wider than these two: /info declares roughly seventy fields here, spanning codes the value table lists and the field table then ignores | **manual repo** transcription | open |
 | MD-48 | 2026-09-04 | `/db/MVHL` `VEH_EUROCODE`, 48 fields | section 10's Specifications table documents `VEH_DEFAULT` and no country object at all | `GET /info/db/MVHL` declares eleven more - `VEH_FR`, `VEH_CN`, `VEH_IN`, `VEH_CA`, `VEH_BS`, `VEH_EUROCODE`, `VEH_RU`, `VEH_KSCE_LSD15`, `VEH_AU`, `VEH_PL`, `VEH_ZA` - and a real Eurocode "Load Model 1" vehicle read on 2026-07-30 used `VEH_EUROCODE` instead of `VEH_DEFAULT`, omitting `STANDARD_CODE` the table marks Required. Four of the eleven have their own manual tables; `VEH_EUROCODE` has none | **manual repo** transcription | open |
 | MD-49 | 2026-09-04 | `/post/TABLE` surface-spring reaction `TABLE_TYPE` | the JSON Schema and Specifications table give `REACTIONSURFACESPRING`; the Request Example alone gives `REACTIONLSURFACESPRING` | on both Gen NX and Civil NX, build 09/02/2026, `REACTIONSURFACESPRING` is refused with `there was an error creating utbl`, while `REACTIONLSURFACESPRING` is recognised and reaches the expected no-analysis-result response | **MIDASIT article** (schema and table), which this SDK followed into both packages | open upstream; corrected here |
-| MD-50 | 2026-09-05 | `/db/MVCTch` `FREQ`, `BRIDGE1.BTYPE`, `BRIDGE2.BTYPE`, 9 fields | section 10 documents all of them - `FREQ`'s 25 keys across a two-Key-column table, and each `BTYPE` in the bold sentence that introduces its field table, enum included | this repo read neither. Every key in the `FREQ` table's *second* Key column was dropped whole (`SBEM_L`/`E`/`IC`/`MC`, `iARCH_TYPE`, `CABL_A`/`CABL_L`) while the first column extracted correctly, packed cells included - so it is a table shape the parser reads half of, not MD-48's packed cell. `BTYPE` is the selector deciding which of its table's fields apply, so neither object was usable without it | **this SDK** extractor | fixed here, parser unfixed |
+| MD-50 | 2026-09-05 | `/db/MVCTch` `FREQ`, `BRIDGE1.BTYPE`, `BRIDGE2.BTYPE`, 9 fields | section 10 documents all of them - `FREQ`'s 25 keys across a two-Key-column table, and each `BTYPE` in the bold sentence that introduces its field table, enum included | this repo read neither. Every key in the `FREQ` table's *second* Key column was dropped whole (`SBEM_L`/`E`/`IC`/`MC`, `iARCH_TYPE`, `CABL_A`/`CABL_L`) while the first column extracted correctly, packed cells included - so it is a table shape the parser reads half of, not MD-48's packed cell. `BTYPE` is the selector deciding which of its table's fields apply, so neither object was usable without it | **this SDK** extractor | fixed here; parser deliberately unfixed (one such table in the whole manual) and guarded by a CI count |
 
 ## Detail
 
@@ -1780,6 +1780,17 @@ nothing; `/db/MVCTch` was 9 and meant a chapter this repo half-read. That is
 the shape the sweep is for, and it is now a CI ceiling rather than something
 someone remembers to run.
 
-The parser is unfixed. Teaching it a second Key column is a judgment about
-table shape rather than a transcription, and one more sweep would say whether
-any other section is laid out this way.
+**The parser stays unfixed, and the sweep is why.** Every table in all 27
+chapters was scanned for a header row carrying two or more Key columns.
+There is exactly one: this table. Teaching the extractor a second Key column
+would be code written for a single table in the whole manual, and code that
+runs once is code nobody maintains correctly.
+
+What the measurement earns instead is a guard.
+`scripts/report_dropped_manual_rows.py` counts a third cause now, **second
+key column ignored**, standing at 3 rows - the three `FREQ` rows whose second
+Key cell names a property. It runs in CI with the other two causes, so a
+manual sync that introduces a second such table fails the build and someone
+reads the section instead of finding out months later from an `/info` sweep.
+If that count ever grows, the parser change stops being code for one table
+and becomes worth writing.

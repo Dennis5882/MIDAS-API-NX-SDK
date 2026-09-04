@@ -18,6 +18,7 @@ import extract_contracts as extractor
 EXPECTED_COUNTS = {
     "blank key cell": 71,
     "cell count disagrees with header": 20,
+    "second key column ignored": 3,
 }
 
 
@@ -57,10 +58,10 @@ def scan_lines(chapter: str, lines: list[str]) -> list[DroppedRow]:
             continue
 
         header = [cell.lower() for cell in extractor._split_row(lines[index])]
-        key_column = next(
-            (column for column, name in enumerate(header) if name in extractor._KEY_COLUMNS),
-            None,
-        )
+        key_columns = [
+            column for column, name in enumerate(header) if name in extractor._KEY_COLUMNS
+        ]
+        key_column = key_columns[0] if key_columns else None
         if key_column is None:
             index += 1
             continue
@@ -83,6 +84,24 @@ def scan_lines(chapter: str, lines: list[str]) -> list[DroppedRow]:
                 key = extractor._canonical_wire_property(cells[key_column])
                 if not key:
                     rows.append(DroppedRow("blank key cell", chapter, endpoint, row + 1, key, tuple(cells)))
+                # A table can carry two Key/설명 column pairs side by side, which
+                # is how a 25-key object fits on a page. The extractor reads the
+                # first pair and the second is lost whole - not a dropped row but
+                # a dropped half-table, which is why /db/MVCTch's FREQ object was
+                # missing seven documented keys until the /info sweep said so.
+                # See MD-50.
+                for column in key_columns[1:]:
+                    if extractor._canonical_wire_property(cells[column]):
+                        rows.append(
+                            DroppedRow(
+                                "second key column ignored",
+                                chapter,
+                                endpoint,
+                                row + 1,
+                                cells[column],
+                                tuple(cells),
+                            )
+                        )
             row += 1
         index = row
     return rows
