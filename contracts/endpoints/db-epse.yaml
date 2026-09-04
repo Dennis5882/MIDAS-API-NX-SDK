@@ -180,6 +180,7 @@ fields:
   - key: SEL_TYPE
     description: >-
       Selection Type ("GROUP" / "ELEMENT")
+    products: [gen]
     type: string
     requirement: required
     documentedDefault: null
@@ -220,6 +221,11 @@ fields:
   - key: LOADING_AREA_GROUP
     description: >-
       Loading Area Group Name
+    products: [gen]
+    # NOTE: /info evidence, not the manual's. GET /info/db/EPSE declares this
+    # on gen and not on the other product, captured 2026-09-03. The section
+    # says nothing about either product, so this tag records a measurement
+    # rather than a documentation claim. See MD-46.
     type: integer
     requirement: optional
     documentedDefault: null
@@ -293,6 +299,46 @@ fields:
         provenance: manual
         # RESOLVED: the manual nests this under 'PRES_PROFILE_ITEMS' by numbering it
         # '(5)', not by naming a path
+  - key: LOAD_TYPE
+    description: >-
+      Loading Type
+    products: [civil]
+    type: string
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - the whole
+    # manual was searched for the name, not just this section.
+    # Civil NX only. The section describes one endpoint for both products and
+    # says nothing about either; the `products` tag is a measurement from
+    # /info, not a documentation claim. See MD-46.
+  - key: WIDTH
+    description: >-
+      Width
+    products: [civil]
+    type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - the whole
+    # manual was searched for the name, not just this section.
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      /db/EPSE's Specifications table gives one shape for both products.
+    actual: >-
+      The two products declare four fields between them that the other does
+      not: `LOAD_TYPE` and `WIDTH` on Civil NX, `LOADING_AREA_GROUP` and
+      `SEL_TYPE` on Gen NX. The Civil pair was in no contract at all; the Gen
+      pair was in this one untagged, claimed for both.
+    evidence: >-
+      GET /info/db/EPSE on both products, captured 2026-09-03, compared by
+      scripts/info_baseline.py --divergence. Registered as MD-46.
 
 sdkRules:
   - id: db-epse-delete-per-id

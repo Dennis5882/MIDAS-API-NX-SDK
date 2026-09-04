@@ -358,6 +358,9 @@ def _condition_text(entry: dict[str, Any]) -> str:
     return f"{entry['path']} = {json.dumps(entry['equals'])}"
 
 
+_PRODUCT_LABELS = {"gen": "Gen NX", "civil": "Civil NX"}
+
+
 def _contract_interface_body(
     fields: list[dict[str, Any]],
     indent: str,
@@ -388,6 +391,16 @@ def _contract_interface_body(
             rendered = " and ".join(_condition_text(entry) for entry in applies_when)
             verb = "Required when" if field.get("requirement") == "required" else "Applies when"
             documentation.append(f"{verb} {rendered}.")
+        # `products` on a resource says which products answer the route;
+        # `products` on a field says which of them declare this key, and the
+        # two are not the same question. 53 fields across eight contracts
+        # narrow it, and until 2026-09-04 none of that reached a caller: the
+        # generator read the resource-level list and ignored the field-level
+        # one, so a Civil NX caller of /db/POGD saw twenty Gen-only fiber-model
+        # options offered as if they were theirs.
+        products = field.get("products")
+        if products and len(products) == 1:
+            documentation.append(f"{_PRODUCT_LABELS[products[0]]} only.")
         if documentation:
             lines.append(f"{indent}/** {' '.join(documentation)} */")
         lines.append(

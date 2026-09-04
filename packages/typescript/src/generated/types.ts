@@ -21,12 +21,14 @@ export namespace DbAnalysisControlTypes {
     BMSTRESS?: boolean;
     /** Consider Reinforcement for Section Stiffness Calculation */
     CRBAR?: boolean;
-    /** Change Local Axis of Tapered Section for Force / Stress Calculation */
+    /** Change Local Axis of Tapered Section for Force / Stress Calculation Civil NX only. */
     CLATS?: boolean;
     /** Number of Iterations / Load Case */
     ITER: number;
     /** Convergence Tolerance */
     TOL: number;
+    /** Auto Constraint for Wall Elements Connectivity Gen NX only. */
+    ACWC?: boolean;
   }
   export interface TensionCompressionTrussConvergence {
     DISPL?: DbBaseTypes.OptUseToleranceValue;
@@ -1305,9 +1307,9 @@ export namespace DbAnalysisControlTypes {
     bPSSF?: boolean;
     /** Beam End Release */
     bRLS?: boolean;
-    /** Wall Stiffness Scale Factor */
+    /** Wall Stiffness Scale Factor Gen NX only. */
     bWSSF?: boolean;
-    /** Element Stiffness Scale Factor */
+    /** Element Stiffness Scale Factor Gen NX only. */
     bESSF?: boolean;
     /** Constrain DOF associated with specified displacements / settlements by boundary group combinations */
     bCDOF?: boolean;
@@ -3285,6 +3287,8 @@ export namespace DbDynamicLoadsTypes {
     SDIS?: boolean;
     /** 모델 항복 상태 */
     bMSSSTATUS?: boolean;
+    /** Convert the stiffness scale factors of plate-based walls with inelastic hinges to CRB walls Gen NX only. */
+    bCONV_WALL_STIFF?: boolean;
   }
   export interface HyperSIncrementStep {
     NSTEP?: number;
@@ -5307,41 +5311,41 @@ export namespace DbNodeElementTypes {
     V2: number;
     /** Domain Name */
     DOMAIN_NAME: string;
-    /** Member Type Civil • None: 0 • Plate Beam (1D): 1 • Plate Column (1D): 2 • Shell: 3 */
+    /** Member Type Civil • None: 0 • Plate Beam (1D): 1 • Plate Column (1D): 2 • Shell: 3 Civil NX only. */
     MEMB_TYPE_CIVIL: number;
-    /** Rebar Direction • Local: 0 • UCS: 1 • Reference Axis: 2 */
+    /** Rebar Direction • Local: 0 • UCS: 1 • Reference Axis: 2 Civil NX only. */
     REBAR_AXIS_TYPE?: number;
-    /** UCS (Rebar Direction이 UCS인 경우) */
+    /** UCS (Rebar Direction이 UCS인 경우) Civil NX only. */
     STR_UCS?: string;
-    /** Axis Vector (Rebar Direction이 Reference Axis인 경우) */
+    /** Axis Vector (Rebar Direction이 Reference Axis인 경우) Civil NX only. */
     AXIS_VECTOR?: Array<number>;
-    /** Member Type • None: 0 • Slab: 1 • Mat: 2 */
+    /** Member Type • None: 0 • Slab: 1 • Mat: 2 Gen NX only. */
     MEMBER_TYPE: number;
-    /** Basic Rebar Option */
+    /** Basic Rebar Option Gen NX only. */
     OPT_BASIC_REBAR?: boolean;
-    /** Top Rebar Name (X-Dir) */
+    /** Top Rebar Name (X-Dir) Gen NX only. */
     TOP_REBAR_NAME_X?: string;
-    /** Top Rebar Space (X-Dir) */
+    /** Top Rebar Space (X-Dir) Gen NX only. */
     TOP_REBAR_SPACE_X?: number;
-    /** Bottom Rebar Name (X-Dir) */
+    /** Bottom Rebar Name (X-Dir) Gen NX only. */
     BOTTOM_REBAR_NAME_X?: string;
-    /** Bottom Rebar Space (X-Dir) */
+    /** Bottom Rebar Space (X-Dir) Gen NX only. */
     BOTTOM_REBAR_SPACE_X?: number;
-    /** Top Rebar Name (Y-Dir) */
+    /** Top Rebar Name (Y-Dir) Gen NX only. */
     TOP_REBAR_NAME_Y?: string;
-    /** Top Rebar Space (Y-Dir) */
+    /** Top Rebar Space (Y-Dir) Gen NX only. */
     TOP_REBAR_SPACE_Y?: number;
-    /** Bottom Rebar Name (Y-Dir) */
+    /** Bottom Rebar Name (Y-Dir) Gen NX only. */
     BOTTOM_REBAR_NAME_Y?: string;
-    /** Bottom Rebar Space (Y-Dir) */
+    /** Bottom Rebar Space (Y-Dir) Gen NX only. */
     BOTTOM_REBAR_SPACE_Y?: number;
-    /** Rebar Material Option */
+    /** Rebar Material Option Gen NX only. */
     OPT_REBAR_MATL?: boolean;
-    /** Rebar Material Key */
+    /** Rebar Material Key Gen NX only. */
     REBAR_MATL_KEY?: number;
-    /** Use Mt */
+    /** Use Mt Gen NX only. */
     bUseMt: boolean;
-    /** Thickness */
+    /** Thickness Gen NX only. */
     THICKNESS: number;
   }
   /** Generated from contracts/endpoints/. */
@@ -5833,23 +5837,23 @@ export namespace DbPropertiesHingeTypes {
     BeamDivNumNyCover: number;
     /** Number of divisions(Beam-Column, Cover) — Nz */
     BeamDivNumNzCover: number;
-    /** Consider Out of Plane Nonlinearity of Plate Type */
+    /** Consider Out of Plane Nonlinearity of Plate Type Gen NX only. */
     WallConsOut: boolean;
-    /** Fiber Wall Areas Core */
+    /** Fiber Wall Areas Core Gen NX only. */
     WAreaSize: number;
-    /** Number of divisions — z, Core */
+    /** Number of divisions — z, Core Gen NX only. */
     WallDivNumZ: number;
-    /** Number of divisions — y, Core */
+    /** Number of divisions — y, Core Gen NX only. */
     WallDivNumY: number;
-    /** Fiber Wall Areas Cover */
+    /** Fiber Wall Areas Cover Gen NX only. */
     WAreaSizeCover: number;
-    /** Number of divisions — z, Cover */
+    /** Number of divisions — z, Cover Gen NX only. */
     WallDivNumZCover: number;
-    /** Number of divisions — y, Cover */
+    /** Number of divisions — y, Cover Gen NX only. */
     WallDivNumYCover: number;
-    /** Wall, Consider Rebar Area */
+    /** Wall, Consider Rebar Area Gen NX only. */
     OPT_ConsiderRebarAreaWall: boolean;
-    /** Shear Spring Location */
+    /** Shear Spring Location Gen NX only. */
     dR: number;
   }
   /** Generated from contracts/endpoints/. */
@@ -7534,13 +7538,13 @@ export namespace DbPushoverTypes {
       bSHEARYIELDSTOP?: boolean;
       /** 〃 – 보/기둥 */
       BSHEARYIELDSTOPBEAM?: boolean;
-      /** 〃 – 벽체 */
+      /** 〃 – 벽체 Gen NX only. */
       bSHEARYIELDSTOPWALL?: boolean;
       /** 축력 성분 붕괴/좌굴 시 정지 */
       bAXIALYIELDSTOP?: boolean;
       /** 〃 – 보/기둥 */
       bAXIALYIELDSTOPBEAM?: boolean;
-      /** 〃 – 벽체 */
+      /** 〃 – 벽체 Gen NX only. */
       bAXIALYIELDSTOPWALL?: boolean;
       /** 〃 – 트러스 */
       bAXIALYIELDSTOPTRUSS?: boolean;
@@ -7553,37 +7557,37 @@ export namespace DbPushoverTypes {
     };
     /** 푸시오버 힌지 데이터 옵션 */
     PHOP_OPT?: {
-      /** 철근량 고려 */
+      /** 철근량 고려 Gen NX only. */
       bCONSREBARAREA1D?: boolean;
-      /** 코어 영역 크기 타입 · Auto: "AUTO" / Equal: "EQUAL" */
+      /** 코어 영역 크기 타입 · Auto: "AUTO" / Equal: "EQUAL" Gen NX only. */
       BEAM_CORE_SIZE?: string;
-      /** 코어 분할 수 (y/z) */
+      /** 코어 분할 수 (y/z) Gen NX only. */
       BEAM_CORE_DIV_Y?: number;
-      /** 코어 분할 수 (y/z) */
+      /** 코어 분할 수 (y/z) Gen NX only. */
       BEAM_CORE_DIV_Z?: number;
-      /** 커버 영역 크기 타입 */
+      /** 커버 영역 크기 타입 Gen NX only. */
       BEAM_COVER_SIZE?: string;
-      /** 커버 분할 수 (y/z) */
+      /** 커버 분할 수 (y/z) Gen NX only. */
       BEAM_COVER_DIV_Y?: number;
-      /** 커버 분할 수 (y/z) */
+      /** 커버 분할 수 (y/z) Gen NX only. */
       BEAM_COVER_DIV_Z?: number;
-      /** 철근량 고려 */
+      /** 철근량 고려 Gen NX only. */
       bCONSREBARAREAWALL?: boolean;
-      /** 판 타입 면외 비선형성 고려 */
+      /** 판 타입 면외 비선형성 고려 Gen NX only. */
       bWALLCONSOUT?: boolean;
-      /** 코어/커버 크기 타입 */
+      /** 코어/커버 크기 타입 Gen NX only. */
       WALL_CORE_SIZE?: string;
-      /** 코어/커버 크기 타입 */
+      /** 코어/커버 크기 타입 Gen NX only. */
       WALL_COVER_SIZE?: string;
-      /** 코어 분할 수 (z/y) */
+      /** 코어 분할 수 (z/y) Gen NX only. */
       WALL_CORE_DIV_Z?: number;
-      /** 코어 분할 수 (z/y) */
+      /** 코어 분할 수 (z/y) Gen NX only. */
       WALL_CORE_DIV_Y?: number;
-      /** 커버 분할 수 (z/y) */
+      /** 커버 분할 수 (z/y) Gen NX only. */
       WALL_COVER_DIV_Z?: number;
-      /** 커버 분할 수 (z/y) */
+      /** 커버 분할 수 (z/y) Gen NX only. */
       WALL_COVER_DIV_Y?: number;
-      /** 스프링 전단 계수 */
+      /** 스프링 전단 계수 Gen NX only. */
       SHEAR_R?: number;
       /** 모멘트-회전 보/기둥 힌지속성을 부재단위로만 배정 */
       bASSIGNBYMEMBER?: boolean;
@@ -7607,9 +7611,9 @@ export namespace DbPushoverTypes {
       PSPR_APPLY_TYPE?: "APPLY" | "ASSUME";
       /** 탄성링크 적용 타입 — "APPLY" / "ASSUME" */
       ELNK_APPLY_TYPE?: "APPLY" | "ASSUME";
-      /** 참조 코드/매뉴얼 사용 */
+      /** 참조 코드/매뉴얼 사용 Gen NX only. */
       bUSEAUTOCALCREFERENCE?: boolean;
-      /** RC 참조 설계기준 — "KISTEC2019" / "KISTEC2013" / "MOE2019" / "MOE2018" / "AIK-G-001-2021" */
+      /** RC 참조 설계기준 — "KISTEC2019" / "KISTEC2013" / "MOE2019" / "MOE2018" / "AIK-G-001-2021" Gen NX only. */
       RCDGNCODE?: "KISTEC2019" | "KISTEC2013" | "MOE2019" | "MOE2018" | "AIK-G-001-2021";
       /** 보/분포힌지 기준 위치 — I단: "I" / J단: "J" / 중앙: "M" */
       LOC_BEAM?: "I" | "J" | "M";
@@ -7920,15 +7924,15 @@ export namespace DbPushoverTypes {
     MASTERDIRECTION: string;
     /** 마스터 노드 최대 변위 */
     MASTERMAXDISP: number;
-    /** 층간변형각 제한 사용 */
+    /** 층간변형각 제한 사용 Gen NX only. */
     bLIMITDEFORMANGLE?: boolean;
-    /** 층간변형각 제한값 (1/[rad]) */
+    /** 층간변형각 제한값 (1/[rad]) Gen NX only. */
     LIMITDEFORMANGLE: number;
-    /** 모든 수직요소의 최대 층간변위 */
+    /** 모든 수직요소의 최대 층간변위 Gen NX only. */
     bDRIFTMAX?: boolean;
-    /** 바닥 다이아프램 중심 층간변위 */
+    /** 바닥 다이아프램 중심 층간변위 Gen NX only. */
     bDRIFTCENTER?: boolean;
-    /** 층 평균변위로 계산된 층간변위 */
+    /** 층 평균변위로 계산된 층간변위 Gen NX only. */
     bDRIFTAVER?: boolean;
     /** 하중 패턴 타입 · 정적하중: "LOAD" / 균등가속도: "ACC" / 모드형상: "MODE" / 정규화모드형상×질량: "NOR_MODE" */
     LOADPATTERNTYPE: string;
@@ -8624,7 +8628,7 @@ export namespace DbStaticLoadsTypes {
     LAYER_LV?: number;
     /** Soil Properties Name */
     SOIL_PROP: string;
-    /** Selection Type ("GROUP" / "ELEMENT") */
+    /** Selection Type ("GROUP" / "ELEMENT") Gen NX only. */
     SEL_TYPE: string;
     /** Element Type ("FRAME" / "PLANAR") */
     ELEM_TYPE?: string;
@@ -8632,7 +8636,7 @@ export namespace DbStaticLoadsTypes {
     NODE_LIST?: Array<number>;
     /** Element List */
     ELEM_LIST?: Array<number>;
-    /** Loading Area Group Name */
+    /** Loading Area Group Name Gen NX only. */
     LOADING_AREA_GROUP?: number;
     /** Pressure Profile items */
     PRES_PROFILE_ITEMS?: Array<{
@@ -8647,6 +8651,10 @@ export namespace DbStaticLoadsTypes {
       /** Additional Pressure */
       ADD_PRES?: number;
     }>;
+    /** Loading Type Civil NX only. */
+    LOAD_TYPE?: string;
+    /** Width Civil NX only. */
+    WIDTH?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface SeismicLoadParamPayload {
@@ -8654,11 +8662,11 @@ export namespace DbStaticLoadsTypes {
     NAME: string;
     /** Seismic Load Code */
     CODE?: string;
-    /** Seismic Calculation Method ("RES_DISP" / "EQV_STATIC") */
+    /** Seismic Calculation Method ("RES_DISP" / "EQV_STATIC") Gen NX only. */
     METHOD?: string;
     /** Seismic Zone */
     SZ: string;
-    /** Effective Peak Ground Acceleration */
+    /** Effective Peak Ground Acceleration Gen NX only. */
     EPA: number;
     /** Site Class */
     SC: string;
@@ -8666,16 +8674,24 @@ export namespace DbStaticLoadsTypes {
     FA: number;
     /** Long-period Site Coefficient */
     FV: number;
-    /** Design Spectral Acceleration at Short Period */
+    /** Design Spectral Acceleration at Short Period Gen NX only. */
     SDS: number;
-    /** Design Spectral Acceleration at 1-sec Period */
+    /** Design Spectral Acceleration at 1-sec Period Gen NX only. */
     SD1: number;
-    /** Seismic User Group */
+    /** Seismic User Group Gen NX only. */
     USER_GROUP?: string;
-    /** Importance Factor */
+    /** Importance Factor Gen NX only. */
     IF: number;
-    /** Response Modification Factor */
+    /** Response Modification Factor Gen NX only. */
     RMF: number;
+    /** Damping Ratio Civil NX only. */
+    DAMP_RATIO?: number;
+    /** Seismic Risk Factor Civil NX only. */
+    SRF?: number;
+    /** EPGAeff Gen NX only. */
+    EPGAeff?: number;
+    /** Kae Gen NX only. */
+    Kae?: number;
   }
   /** Generated from contracts/endpoints/. */
   export type StaticWindLoadPayload = {

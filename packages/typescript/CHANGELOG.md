@@ -31,6 +31,28 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
   pair genuinely is asymmetric and the manual's table reads as though that had
   been tidied away. The item members are unchanged — only the depth. See MD-40.
 
+### Added — payload fields now say which product declares them
+
+- 72 field doc comments gained "Gen NX only." or "Civil NX only.". Contracts
+  have carried a per-field `products` list for a while — `/db/SBDO`'s and
+  `/db/IEHC`'s since before this release — and the generator ignored it,
+  reading only the resource-level list. A Civil NX caller of
+  `PushoverGlobalControlPayload` was offered twenty Gen-only fiber-model
+  options as if they were theirs.
+
+- The tags themselves come from comparing both products' `/info` schemas across
+  all 177 endpoints that answer on both. Ten declare different records:
+  `/db/ACTL`, `/db/BCCT`, `/db/EPSE`, `/db/IEHC`, `/db/POGD`, `/db/POLC`,
+  `/db/POSL`, `/db/SBDO`, `/db/SPLC` and `/db/THGC`. Mostly this is the two
+  products' own feature sets rather than a documentation slip — Gen NX has
+  walls and fiber hinges, Civil NX has bridge seismic parameters. See MD-46.
+
+- Eight of those fields were in no contract at all and are new to the types:
+  `AnalysisControlPayload.ACWC`, `TimeHistoryGlobalControlPayload`'s
+  `bCONV_WALL_STIFF`, `SeismicEarthPressurePayload`'s `LOAD_TYPE` and `WIDTH`,
+  and `SeismicLoadParamPayload`'s `DAMP_RATIO`, `SRF`, `EPGAeff` and `Kae`.
+  Additive.
+
 ### Fixed — `TrafficSurfaceLanesChinaPayload` described the wrong thing entirely
 
 - **Breaking.** It had three members: `NODE`, `OFFSET`, `SPAN_LENGTH`. Those

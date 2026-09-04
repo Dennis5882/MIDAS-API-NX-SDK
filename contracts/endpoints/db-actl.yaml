@@ -144,6 +144,11 @@ fields:
   - key: CLATS
     description: >-
       Change Local Axis of Tapered Section for Force / Stress Calculation
+    products: [civil]
+    # NOTE: /info evidence, not the manual's. GET /info/db/ACTL declares this
+    # on civil and not on the other product, captured 2026-09-03. The section
+    # says nothing about either product, so this tag records a measurement
+    # rather than a documentation claim. See MD-46.
     type: boolean
     requirement: optional
     documentedDefault: false
@@ -168,6 +173,36 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+  - key: ACWC
+    description: >-
+      Auto Constraint for Wall Elements Connectivity
+    products: [gen]
+    type: boolean
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - the whole
+    # manual was searched for the name, not just this section.
+    # Gen NX only. The section describes one endpoint for both products and
+    # says nothing about either; the `products` tag is a measurement from
+    # /info, not a documentation claim. See MD-46.
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      /db/ACTL's Specifications table lists the analysis control options, and
+      makes no distinction between the two products.
+    actual: >-
+      `GET /info/db/ACTL` declares `ACWC` (" Auto Constraint for Wall Elements
+      Connectivity") on Gen NX and not on Civil NX, and `CLATS` on Civil NX and
+      not on Gen NX. The table gives both products one shape. `CLATS` was
+      already in this contract, untagged - a claim that Civil's field is also
+      Gen's.
+    evidence: >-
+      GET /info/db/ACTL on both products, captured 2026-09-03, compared by
+      scripts/info_baseline.py --divergence. Registered as MD-46.
 
 sdkRules:
   - id: db-actl-delete-per-id

@@ -225,6 +225,7 @@ fields:
   - key: bLIMITDEFORMANGLE
     description: >-
       층간변형각 제한 사용
+    products: [gen]
     type: boolean
     requirement: optional
     documentedDefault: false
@@ -234,6 +235,11 @@ fields:
   - key: LIMITDEFORMANGLE
     description: >-
       층간변형각 제한값 (1/[rad])
+    products: [gen]
+    # NOTE: /info evidence, not the manual's. GET /info/db/POLC declares this
+    # on gen and not on the other product, captured 2026-09-03. The section
+    # says nothing about either product, so this tag records a measurement
+    # rather than a documentation claim. See MD-46.
     type: number
     requirement: required
     documentedDefault: null
@@ -243,6 +249,7 @@ fields:
   - key: bDRIFTMAX
     description: >-
       모든 수직요소의 최대 층간변위
+    products: [gen]
     type: boolean
     requirement: optional
     documentedDefault: false
@@ -252,6 +259,7 @@ fields:
   - key: bDRIFTCENTER
     description: >-
       바닥 다이아프램 중심 층간변위
+    products: [gen]
     type: boolean
     requirement: optional
     documentedDefault: false
@@ -261,6 +269,7 @@ fields:
   - key: bDRIFTAVER
     description: >-
       층 평균변위로 계산된 층간변위
+    products: [gen]
     type: boolean
     requirement: optional
     documentedDefault: false

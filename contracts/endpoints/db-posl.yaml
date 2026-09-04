@@ -113,6 +113,7 @@ fields:
   - key: METHOD
     description: >-
       Seismic Calculation Method ("RES_DISP" / "EQV_STATIC")
+    products: [gen]
     type: string
     requirement: optional
     documentedDefault: null
@@ -136,6 +137,11 @@ fields:
   - key: EPA
     description: >-
       Effective Peak Ground Acceleration
+    products: [gen]
+    # NOTE: /info evidence, not the manual's. GET /info/db/POSL declares this
+    # on gen and not on the other product, captured 2026-09-03. The section
+    # says nothing about either product, so this tag records a measurement
+    # rather than a documentation claim. See MD-46.
     type: number
     requirement: required
     documentedDefault: null
@@ -177,6 +183,7 @@ fields:
   - key: SDS
     description: >-
       Design Spectral Acceleration at Short Period
+    products: [gen]
     type: number
     requirement: required
     documentedDefault: null
@@ -191,6 +198,7 @@ fields:
   - key: SD1
     description: >-
       Design Spectral Acceleration at 1-sec Period
+    products: [gen]
     type: number
     requirement: required
     documentedDefault: null
@@ -205,6 +213,7 @@ fields:
   - key: USER_GROUP
     description: >-
       Seismic User Group
+    products: [gen]
     type: string
     requirement: optional
     documentedDefault: null
@@ -219,6 +228,7 @@ fields:
   - key: IF
     description: >-
       Importance Factor
+    products: [gen]
     type: number
     requirement: required
     documentedDefault: null
@@ -233,6 +243,7 @@ fields:
   - key: RMF
     description: >-
       Response Modification Factor
+    products: [gen]
     type: number
     requirement: required
     documentedDefault: null
@@ -244,6 +255,72 @@ fields:
       its payload. That is evidence the call is accepted, not that the resulting
       model is what an engineer wanted.
     provenance: manual
+  - key: DAMP_RATIO
+    description: >-
+      Damping Ratio
+    products: [civil]
+    type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - the whole
+    # manual was searched for the name, not just this section.
+    # Civil NX only. The section describes one endpoint for both products and
+    # says nothing about either; the `products` tag is a measurement from
+    # /info, not a documentation claim. See MD-46.
+  - key: SRF
+    description: >-
+      Seismic Risk Factor
+    products: [civil]
+    type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - the whole
+    # manual was searched for the name, not just this section.
+  - key: EPGAeff
+    description: >-
+      EPGAeff
+    products: [gen]
+    type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - the whole
+    # manual was searched for the name, not just this section.
+  - key: Kae
+    description: >-
+      Kae
+    products: [gen]
+    type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - the whole
+    # manual was searched for the name, not just this section.
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      /db/POSL's Specifications table gives one shape for both products.
+    actual: >-
+      Eleven fields differ. Civil NX declares `DAMP_RATIO` and `SRF`; Gen NX
+      declares `EPA`, `EPGAeff`, `IF`, `Kae`, `METHOD`, `RMF`, `SD1`, `SDS` and
+      `USER_GROUP`. This is the widest split of the ten divergent endpoints
+      after `/db/SPLC` and `/db/SBDO`, and it is the shape of the two products'
+      seismic-parameter dialogs rather than a documentation slip. Seven of the
+      Gen nine were already here untagged; the other four were in no contract.
+    evidence: >-
+      GET /info/db/POSL on both products, captured 2026-09-03, compared by
+      scripts/info_baseline.py --divergence. Registered as MD-46.
 
 sdkRules:
   - id: db-posl-delete-per-id

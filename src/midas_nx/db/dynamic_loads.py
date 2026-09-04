@@ -137,6 +137,8 @@ class TimeHistoryGlobalControlPayload(TypedDict, total=False):
     SDHY: bool  # Hysteretic Isolation Device Results, default true, optional
     SDIS: bool  # Isolation Device Results, default true, optional
     bMSSSTATUS: bool  # Model Yield Status, default true, optional
+    bCONV_WALL_STIFF: bool  # Convert plate-based wall stiffness scale factors
+    # to CRB walls. Gen NX only; /info declares it and the manual documents it nowhere (checked across every chapter, 2026-09-04). MD-46.
 
 
 class TimeHistoryGlobalControl(DbResource):

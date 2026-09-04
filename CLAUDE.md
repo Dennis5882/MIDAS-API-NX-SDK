@@ -106,6 +106,16 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   where the documented shape was refused and the other accepted. A contract may
   waive a property it deliberately does not publish with `infoOnly`, which exists
   for placeholders like `/db/DRLS`'s `DUMMY`, not for anything a caller might send.
+  `--divergence` answers a third question: **`products: [civil, gen]` says the route
+  answers on both, never that the record is the same.** Ten of the 177 both-product
+  endpoints declare different schemas, so a field listed without its own `products`
+  is a claim about both products that is sometimes false; tag it (MD-46).
+  **`/info` is neither a superset nor a subset of what the server accepts.** It
+  declares `/db/POSL`'s `CODE` on Civil NX, which refuses it live even as an empty
+  string, and omits `/db/STBK`'s `LCNAME`, which a confirmed round trip sends
+  successfully. It is a schema document with its own errors — like the manual, just
+  produced closer to the code and right far more often. Where `/info` and a live
+  round trip disagree, the round trip wins.
 - `schema/typescript-resources.json` / `schema/typescript-coverage.json` — committed generator outputs.
   CI fails if either these schemas or `packages/typescript/src/generated/*` drift after regeneration.
 - `docs/coverage.json` — the endpoint ledger. `ROADMAP.md` is **generated from it** — never hand-edit

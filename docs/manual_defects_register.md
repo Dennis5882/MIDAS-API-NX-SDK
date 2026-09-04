@@ -79,6 +79,7 @@ build itself** and is no longer resting on an unrecorded one.
 | MD-43 | 2026-09-04 | `/db/SLANch`, the whole record | section 8's only Parameters table is headed "Parameters - LANE_ITEMS" and gives three rows: `NODE`, `OFFSET`, `SPAN_LENGTH` | those three are members of the `LANE_ITEMS` array. The record's own eight fields appear only in the Request Example and the Python example, with no Specifications row anywhere, and `/info` declares a ninth, `SEQ`. The sibling `/db/SLAN` one section earlier tables all nine properly | **manual repo** transcription | open |
 | MD-44 | 2026-09-04 | five arrays and one object across `/db/SLAN`, `/db/POLC`, `/db/ACTL-M1`, `/db/NLNK`, `/db/NLNK-M1` | each states its members somewhere other than a numbered table row - a per-code table, a per-branch table, a sub-table heading naming three children, a sentence | the members are real and the manual is right about every one of them; the extractor reads numbered table rows and read none of these | **this SDK** extractor | fixed |
 | MD-45 | 2026-09-04 | `/db/LLANtr` `SPECIAL_LANE_ITEMS`, `/db/SLANop` `OPT_STRADD` and `CHINA_ITEMS` | neither section documents them | `GET /info` declares them on both endpoints. `SPECIAL_LANE_ITEMS` carries the server's own description " Used only when importing", which is the whole of what is known about when it applies; `CHINA_ITEMS` has no description at all, only its members' | **manual repo** transcription | open |
+| MD-46 | 2026-09-04 | ten `/db/*` sections, 73 fields | each documents one endpoint with one Specifications table and says nothing about either product | the two products declare different records. `/db/SPLC` differs by 15 fields, `/db/POSL` by 11, `/db/POGD` by 20, `/db/SBDO` by 16, `/db/IEHC` by 9, and `/db/ACTL`, `/db/BCCT`, `/db/EPSE`, `/db/POLC`, `/db/THGC` by one to four each. Mostly it is the products' own feature sets - Gen NX has walls and fiber hinges, Civil NX has bridge seismic parameters - not a transcription slip | **manual repo** transcription | open |
 
 
 ## Detail
@@ -1497,3 +1498,76 @@ on the path for arrays of scalars, so an array *gained* a described item type
 and *lost* its documented length in the same change. Both paths go through one
 helper now. It is the second time this batch that making a type more precise
 was the thing that exposed an imprecision elsewhere.
+
+### MD-46 - `products: [civil, gen]` was never a claim about the record
+
+A contract's `products` list says which products answer the route. It has been
+read, by the generator and by everything downstream, as though it also said the
+record is the same on both. For ten endpoints it is not.
+
+`scripts/info_baseline.py --divergence` asks the question of all 177 pairs that
+answer `/info` on both products. Ten differ. `docs/live_verification_notes.md`
+concluded on 2026-09-03 that `/db/POGD` was "the only pair in the sweep whose
+two schemas differ" and that every other both-product endpoint returned
+byte-identical schemas - true of the nine endpoints that sweep covered, and the
+reason the sentence is worth revisiting rather than trusting. Nine of ten were
+invisible to it.
+
+The prescription was already written down there: "A contract for `/db/POGD` has
+to tag those members by product; a single shape would be wrong on one of them."
+That is what this does, for all ten. 45 fields gained a `products` tag, and
+eight that no contract recorded at all were added with one.
+
+**Most of this is not a defect in the manual so much as a limit of it.** Gen NX
+is a building product and Civil NX a bridge product; `/db/IEHC`'s nine Gen-only
+fields are wall-discretization options and `/db/POSL`'s Civil-only pair are
+bridge seismic parameters. A single Specifications table per endpoint cannot say
+that, and none of these sections tries to. It is registered here because a
+contract that repeats the table unqualified turns a limit of the documentation
+into a false statement about the product.
+
+**Two things the tags were not reaching.** The npm generator read the
+resource-level `products` and ignored the field-level one entirely, so 53
+narrowed fields - including `/db/SBDO`'s and `/db/IEHC`'s, tagged long before
+this batch - reached no caller of either SDK. A Civil NX user of `/db/POGD` was
+offered twenty Gen-only fiber-model options as if they were theirs. The field
+doc comments now say "Gen NX only" / "Civil NX only". And `--divergence` marks
+a contract that has declared its own field list incomplete, because `/db/SPLC`
+carries four `unmergedTables` entries and its fifteen absent fields are a known
+gap rather than a finding - the one endpoint of the ten this batch leaves open,
+deliberately.
+
+### What `/info` is evidence of, both directions, settled
+
+Two counter-examples now bound it from opposite sides, and neither is
+hypothetical.
+
+**Declared, and refused.** `GET /info/db/POSL` declares `CODE` on *both*
+products. A live test on 2026-08-16 found Civil NX answers `"Wrong Field"` for
+it, "even as an empty string", along with every one of
+`METHOD`/`EPA`/`SDS`/`SD1`/`USER_GROUP`/`IF`/`RMF`. So `/info` lists a property
+the product will not take.
+
+**Undeclared, and accepted.** `GET /info/db/STBK` declares no `LCNAME` on
+either product. `scripts/live_crud_check.py` runs a confirmed
+create-read-update-delete round trip that sends it, on both, and passes. So
+`/info` omits a property the product does take.
+
+`/info` is therefore neither a superset nor a subset of what the server
+accepts. It is a schema document with its own errors - like the manual, just
+produced closer to the code and, on the evidence of MD-34 and MD-38, right far
+more often. That refines this morning's rule rather than overturning it: only
+`/info` proves the *contract followed the product's declared schema*, and only
+a round trip proves the product accepts a payload. Where the two disagree, the
+round trip wins, and `/db/POSL`'s contract is the worked example - `CODE` is
+tagged from the live finding, not from `/info`.
+
+The practical form of this, for anyone changing a contract from a schema:
+
+* `/info` declares it and the manual does not → add the field, `unstated`.
+* `/info` does not declare it and the manual does → keep the field, add a note.
+  Never delete on that alone (`/db/POGD-M1`'s `WALL`, MD-37).
+* `/info` and the manual name it differently → the server's name, and register
+  the defect (MD-34, MD-37, MD-38).
+* A live round trip contradicts `/info` → the round trip wins, and say so where
+  the field is declared.

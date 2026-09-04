@@ -300,6 +300,85 @@ def against_contracts() -> int:
     return 0
 
 
+def divergence() -> int:
+    """Where the two products declare different schemas for one endpoint.
+
+    `products: [civil, gen]` on a contract says the route answers on both. It
+    does not say the record is the same, and for ten endpoints it is not. A
+    field the contract lists unqualified is a claim about both products, so
+    each of these needs a per-field `products` tag or the contract is wrong on
+    one product - which is what `docs/live_verification_notes.md` concluded for
+    /db/POGD on 2026-09-03, from a sweep of nine endpoints. This is the same
+    question asked of all 177 pairs that answer on both.
+    """
+    capture = _load(BASELINE)
+    contracts = _contract_documents()
+
+    def tagged(contract: dict | None) -> dict[str, list[str] | None]:
+        out: dict[str, list[str] | None] = {}
+        if not contract:
+            return out
+
+        def walk(fields: Iterable[dict] | None) -> None:
+            for field in fields or []:
+                out[field["key"]] = field.get("products")
+                walk(field.get("properties"))
+
+        walk(contract.get("fields"))
+        for variant in contract.get("variants") or []:
+            walk(variant.get("fields"))
+        return out
+
+    both = 0
+    rows: list[tuple[str, list[str], list[str], list[str]]] = []
+    for endpoint, per_product in sorted(capture["endpoints"].items()):
+        civil = (per_product.get("civil") or {}).get("schema")
+        gen = (per_product.get("gen") or {}).get("schema")
+        if not (civil and gen):
+            continue
+        both += 1
+        pc = _paths(civil, with_types=True)
+        pg = _paths(gen, with_types=True)
+        only_civil = sorted(set(pc) - set(pg))
+        only_gen = sorted(set(pg) - set(pc))
+        retyped = sorted(p for p in set(pc) & set(pg) if pc[p] != pg[p])
+        if only_civil or only_gen or retyped:
+            rows.append((endpoint, only_civil, only_gen, retyped))
+
+    print(f"baseline: {BASELINE.name}, captured {capture['capturedAt']}")
+    print(f"endpoints answering /info on both products: {both}")
+    print(f"of those, declaring different schemas: {len(rows)}")
+    print()
+    print("A field listed on a contract without a `products` tag is a claim")
+    print("about both products. Below, `untagged` counts the ones this contract")
+    print("makes that claim for and /info contradicts; `absent` counts the ones")
+    print("no contract records at all.")
+    print()
+    for endpoint, only_civil, only_gen, retyped in rows:
+        contract = contracts.get(endpoint)
+        have = tagged(contract)
+        # A contract that has declared its own field list incomplete is not
+        # making the claim this mode checks for, so `absent` there is a known
+        # gap rather than a finding. Say which, instead of counting it twice.
+        incomplete = bool((contract or {}).get("extraction", {}).get("unmergedTables"))
+        suffix = ("" if contract else "   (no contract)")
+        if incomplete:
+            suffix = "   (field list declared incomplete: unmergedTables)"
+        print(f"{endpoint}{suffix}")
+        for label, names in (("civil only", only_civil), ("gen only", only_gen),
+                             ("retyped", retyped)):
+            if not names:
+                continue
+            leaves = [n.rsplit(".", 1)[-1] for n in names]
+            untagged = [n for n in leaves if n in have and not have[n]]
+            absent = [n for n in leaves if n not in have]
+            print(f"    {label:10} {len(names):3}"
+                  f"   untagged {len(untagged):3}   absent {len(absent):3}")
+            for index in range(0, len(names), 5):
+                print("        " + ", ".join(names[index:index + 5]))
+    return 0
+
+
 def capture(out_path: pathlib.Path, products: list[str]) -> int:
     sys.path.insert(0, str(ROOT / "src"))
     sys.path.insert(0, str(ROOT / "scripts"))
@@ -364,6 +443,11 @@ def main() -> int:
         action="store_true",
         help="offline: which declared properties no contract records",
     )
+    mode.add_argument(
+        "--divergence",
+        action="store_true",
+        help="offline: where the two products declare different schemas",
+    )
     parser.add_argument("--out", default="info-capture.json", help="--capture output path")
     parser.add_argument(
         "--product",
@@ -373,6 +457,8 @@ def main() -> int:
     )
     args = parser.parse_args()
 
+    if args.divergence:
+        return divergence()
     if args.against_contracts:
         return against_contracts()
     if args.diff:

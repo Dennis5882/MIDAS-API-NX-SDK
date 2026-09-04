@@ -31,7 +31,9 @@ class MainControlDataPayload(TypedDict, total=False):
     TRS: bool  # Transfer Reactions of Slave Node to Master Node, default false, optional
     BMSTRESS: bool  # Calculate Equivalent Beam Stresses (Von-Mises/Max-Shear), default false, optional
     CRBAR: bool  # Consider Reinforcement for Section Stiffness Calc, default false, optional
-    CLATS: bool  # Change Local Axis of Tapered Section for Force/Stress Calc, default false, optional
+    CLATS: bool  # Change Local Axis of Tapered Section for Force/Stress Calc, default false, optional. Civil NX only
+    ACWC: bool  # Auto Constraint for Wall Elements Connectivity. Gen NX only;
+    # /info declares it and the manual documents it nowhere (checked across every chapter, 2026-09-04). MD-46.
     ITER: int  # Number of Iterations / Load Case, required
     TOL: float  # Convergence Tolerance, required
 

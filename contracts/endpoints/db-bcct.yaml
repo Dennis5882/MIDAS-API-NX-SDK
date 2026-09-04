@@ -153,6 +153,7 @@ fields:
   - key: bWSSF
     description: >-
       Wall Stiffness Scale Factor
+    products: [gen]
     type: boolean
     requirement: optional
     documentedDefault: false
@@ -167,6 +168,11 @@ fields:
   - key: bESSF
     description: >-
       Element Stiffness Scale Factor
+    products: [gen]
+    # NOTE: /info evidence, not the manual's. GET /info/db/BCCT declares this
+    # on gen and not on the other product, captured 2026-09-03. The section
+    # says nothing about either product, so this tag records a measurement
+    # rather than a documentation claim. See MD-46.
     type: boolean
     requirement: optional
     documentedDefault: false

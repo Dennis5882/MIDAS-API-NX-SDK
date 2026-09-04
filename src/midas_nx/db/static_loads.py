@@ -588,11 +588,13 @@ class SeismicEarthPressurePayload(TypedDict, total=False):
     LAYER_PARAM: str  # "SINGLE"/"DOUBLE", default "SINGLE", optional
     LAYER_LV: float  # Soil Second Layer Level (Double Cosine), default 0, optional
     SOIL_PROP: str  # Soil Properties Name (/db/POSP name), required
-    SEL_TYPE: str  # "GROUP"/"ELEMENT", required
+    SEL_TYPE: str  # "GROUP"/"ELEMENT", required. Gen NX only
     ELEM_TYPE: str  # "FRAME"/"PLANAR", required
     NODE_LIST: List[int]  # optional
     ELEM_LIST: List[int]  # optional
-    LOADING_AREA_GROUP: int  # optional
+    LOADING_AREA_GROUP: int  # optional. Gen NX only
+    LOAD_TYPE: str  # Loading Type. Civil NX only; /info declares it and the manual documents it nowhere (checked across every chapter, 2026-09-04). MD-46.
+    WIDTH: float  # Width. Civil NX only; same. MD-46.
     PRES_PROFILE_ITEMS: List[SeismicEarthPressureProfileItem]  # optional
 
 
@@ -633,6 +635,9 @@ class SeismicLoadParamPayload(TypedDict, total=False):
     RMF: float  # Response Modification Factor, required. Gen NX only
     SRF: float  # Seismic Risk Factor. Civil NX only, undocumented -- Civil's equivalent of EPA
     DAMP_RATIO: float  # Damping Ratio. Civil NX only, undocumented
+    EPGAeff: float  # Gen NX only, undocumented. Named in this docstring since
+    # 2026-08-16 and never actually typed; /info/db/POSL declares it. MD-46.
+    Kae: float  # Gen NX only, undocumented. Same. MD-46.
 
 
 class SeismicLoadParam(DbResource):

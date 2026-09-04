@@ -8156,6 +8156,17 @@ Every other both-product endpoint returned byte-identical schemas on Gen and
 Civil - eight pairs, which is also the first systematic check that `/info`
 itself agrees across products.
 
+> **Superseded in part, 2026-09-04.** "The only pair in the sweep" was accurate
+> about a sweep of nine endpoints, and it is not true of the API.
+> `scripts/info_baseline.py --divergence` asks the same question of all **177**
+> pairs that answer `/info` on both products and finds **ten** that differ:
+> `/db/ACTL`, `/db/BCCT`, `/db/EPSE`, `/db/IEHC`, `/db/POGD`, `/db/POLC`,
+> `/db/POSL`, `/db/SBDO`, `/db/SPLC`, `/db/THGC`. `/db/SPLC` differs by fifteen
+> fields and `/db/POGD` by twenty, so this one was not even the widest. What
+> stands is the conclusion drawn from it - "a contract has to tag those members
+> by product; a single shape would be wrong on one of them" - which is now done
+> for nine of the ten. See MD-46.
+
 ## 2026-09-03 — `/db/TDME`'s code-name branches, tested one at a time
 
 Both documents were confirmed empty first — `GET /db/NODE`, `/db/ELEM`,

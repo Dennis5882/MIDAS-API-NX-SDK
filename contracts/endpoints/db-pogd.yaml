@@ -277,6 +277,7 @@ fields:
       - key: bSHEARYIELDSTOPWALL
         description: >-
           〃 – 벽체
+        products: [gen]
         type: boolean
         requirement: optional
         documentedDefault: false
@@ -304,6 +305,11 @@ fields:
       - key: bAXIALYIELDSTOPWALL
         description: >-
           〃 – 벽체
+        products: [gen]
+        # NOTE: /info evidence, not the manual's. GET /info/db/POGD declares this
+        # on gen and not on the other product, captured 2026-09-03. The section
+        # says nothing about either product, so this tag records a measurement
+        # rather than a documentation claim. See MD-46.
         type: boolean
         requirement: optional
         documentedDefault: false
@@ -359,6 +365,7 @@ fields:
       - key: bCONSREBARAREA1D
         description: >-
           철근량 고려
+        products: [gen]
         type: boolean
         requirement: optional
         documentedDefault: null
@@ -368,6 +375,7 @@ fields:
       - key: BEAM_CORE_SIZE
         description: >-
           코어 영역 크기 타입 · Auto: "AUTO" / Equal: "EQUAL"
+        products: [gen]
         type: string
         requirement: optional
         documentedDefault: null
@@ -377,6 +385,7 @@ fields:
       - key: BEAM_CORE_DIV_Y
         description: >-
           코어 분할 수 (y/z)
+        products: [gen]
         type: integer
         requirement: optional
         documentedDefault: null
@@ -386,6 +395,7 @@ fields:
       - key: BEAM_CORE_DIV_Z
         description: >-
           코어 분할 수 (y/z)
+        products: [gen]
         type: integer
         requirement: optional
         documentedDefault: null
@@ -395,6 +405,7 @@ fields:
       - key: BEAM_COVER_SIZE
         description: >-
           커버 영역 크기 타입
+        products: [gen]
         type: string
         requirement: optional
         documentedDefault: null
@@ -404,6 +415,7 @@ fields:
       - key: BEAM_COVER_DIV_Y
         description: >-
           커버 분할 수 (y/z)
+        products: [gen]
         type: integer
         requirement: optional
         documentedDefault: null
@@ -413,6 +425,7 @@ fields:
       - key: BEAM_COVER_DIV_Z
         description: >-
           커버 분할 수 (y/z)
+        products: [gen]
         type: integer
         requirement: optional
         documentedDefault: null
@@ -422,6 +435,7 @@ fields:
       - key: bCONSREBARAREAWALL
         description: >-
           철근량 고려
+        products: [gen]
         type: boolean
         requirement: optional
         documentedDefault: null
@@ -431,6 +445,7 @@ fields:
       - key: bWALLCONSOUT
         description: >-
           판 타입 면외 비선형성 고려
+        products: [gen]
         type: boolean
         requirement: optional
         documentedDefault: null
@@ -440,6 +455,7 @@ fields:
       - key: WALL_CORE_SIZE
         description: >-
           코어/커버 크기 타입
+        products: [gen]
         type: string
         requirement: optional
         documentedDefault: null
@@ -449,6 +465,7 @@ fields:
       - key: WALL_COVER_SIZE
         description: >-
           코어/커버 크기 타입
+        products: [gen]
         type: string
         requirement: optional
         documentedDefault: null
@@ -458,6 +475,7 @@ fields:
       - key: WALL_CORE_DIV_Z
         description: >-
           코어 분할 수 (z/y)
+        products: [gen]
         type: integer
         requirement: optional
         documentedDefault: null
@@ -467,6 +485,7 @@ fields:
       - key: WALL_CORE_DIV_Y
         description: >-
           코어 분할 수 (z/y)
+        products: [gen]
         type: integer
         requirement: optional
         documentedDefault: null
@@ -476,6 +495,7 @@ fields:
       - key: WALL_COVER_DIV_Z
         description: >-
           커버 분할 수 (z/y)
+        products: [gen]
         type: integer
         requirement: optional
         documentedDefault: null
@@ -485,6 +505,7 @@ fields:
       - key: WALL_COVER_DIV_Y
         description: >-
           커버 분할 수 (z/y)
+        products: [gen]
         type: integer
         requirement: optional
         documentedDefault: null
@@ -494,6 +515,7 @@ fields:
       - key: SHEAR_R
         description: >-
           스프링 전단 계수
+        products: [gen]
         type: number
         requirement: optional
         documentedDefault: null
@@ -604,6 +626,7 @@ fields:
       - key: bUSEAUTOCALCREFERENCE
         description: >-
           참조 코드/매뉴얼 사용
+        products: [gen]
         type: boolean
         requirement: optional
         documentedDefault: null
@@ -614,6 +637,7 @@ fields:
         description: >-
           RC 참조 설계기준 — "KISTEC2019" / "KISTEC2013" / "MOE2019" / "MOE2018" /
           "AIK-G-001-2021"
+        products: [gen]
         type: string
         requirement: optional
         documentedDefault: null

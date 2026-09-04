@@ -348,6 +348,32 @@ fields:
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
+  - key: bCONV_WALL_STIFF
+    description: >-
+      Convert the stiffness scale factors of plate-based walls with inelastic hinges to CRB walls
+    products: [gen]
+    type: boolean
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - the whole
+    # manual was searched for the name, not just this section.
+    # Gen NX only. The section describes one endpoint for both products and
+    # says nothing about either; the `products` tag is a measurement from
+    # /info, not a documentation claim. See MD-46.
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      /db/THGC's Specifications table gives one shape for both products.
+    actual: >-
+      `GET /info/db/THGC` declares `bCONV_WALL_STIFF` on Gen NX only - a wall
+      option, which fits a building product having it and a bridge product not.
+    evidence: >-
+      GET /info/db/THGC on both products, captured 2026-09-03, compared by
+      scripts/info_baseline.py --divergence. Registered as MD-46.
 
 sdkRules:
   - id: db-thgc-delete-per-id
