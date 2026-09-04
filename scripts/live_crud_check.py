@@ -313,7 +313,7 @@ OK, REGRESSION, UNVERIFIED, BLOCKED = "ok", "regression", "unverified", "blocked
 #: Quarantined: known to hang or kill the product, so not run by default.
 SKIPPED = "skipped"
 LIVE_CASES_PATH = Path(__file__).resolve().parents[1] / "schema" / "live-cases.json"
-LIVE_CASES_VERSION = 3
+LIVE_CASES_VERSION = 4
 
 # Shared by the Python base model and the emitted npm live fixture.  Keep
 # prerequisite records here rather than reproducing them in JavaScript. STLD
@@ -548,66 +548,84 @@ class Tier:
 # --------------------------------------------------------------------------
 
 
+# The base model, as data rather than as nine call sites.
+#
+# Python built this by calling typed resources with inline literals, so it
+# existed only inside _seed_model and only Python could replay it. The npm
+# harness starts from a genuinely empty /doc/NEW, which is why thirteen cases
+# confirmed here could not resolve their node/element/material/section
+# preconditions there and reported REGRESS for a model that was never built.
+# schema/live-cases.json claims to be the language-neutral source both
+# harnesses read; a base model only one of them can build is a hole in that
+# claim. Emitting these steps closes it, and _seed_model now executes the same
+# list it emits, so the two cannot drift.
+BASE_MODEL_STEPS: List[Dict[str, Any]] = [
+    {"resource": Unit, "method": "PUT",
+     "records": {1: {"DIST": "M", "FORCE": "KN"}}},
+    {"resource": Material, "method": "POST",
+     "records": {1: {"TYPE": "CONC", "NAME": "C24",
+                     "PARAM": [{"P_TYPE": 1, "STANDARD": "KS01(RC)",
+                                "DB": "C24"}]}}},
+    {"resource": Section, "method": "POST",
+     "records": {1: {"SECTTYPE": "DBUSER", "SECT_NAME": "Column",
+                     "SECT_BEFORE": {"USE_SHEAR_DEFORM": True, "SHAPE": "SB",
+                                     "DATATYPE": 2,
+                                     "SECT_I": {"vSIZE": [SIZE, SIZE]}}}}},
+    # Thickness 1 backs the plate element; the props tier's own THIK case
+    # takes id 2 so it can be deleted without taking the plate with it.
+    {"resource": Thickness, "method": "POST",
+     "records": {1: {"NAME": "T_SEED", "TYPE": "VALUE", "bINOUT": False,
+                     "T_IN": 0.20, "T_OUT": 0, "O_VALUE": 0}}},
+    {"resource": Node, "method": "POST",
+     "records": {
+         1: {"X": 0, "Y": 0, "Z": 0},
+         2: {"X": 0, "Y": 0, "Z": HEIGHT},
+         3: {"X": BAY, "Y": 0, "Z": HEIGHT},
+         4: {"X": 2 * BAY, "Y": 0, "Z": HEIGHT},
+         # Plate corners, offset in -Y so they can't be confused with the frame.
+         5: {"X": 0, "Y": -BAY, "Z": 0},
+         6: {"X": BAY, "Y": -BAY, "Z": 0},
+         7: {"X": BAY, "Y": -2 * BAY, "Z": 0},
+         8: {"X": 0, "Y": -2 * BAY, "Z": 0},
+         # A free, unconnected pair for the link/constraint cases. Nothing
+         # else attaches to these, so ELNK/RIGD/MCON can't collide with a
+         # real element - but they do collide with *each other*, so those
+         # three cases rely on each deleting itself before the next runs.
+         21: {"X": 0, "Y": 2 * BAY, "Z": 0},
+         22: {"X": 0, "Y": 2 * BAY, "Z": HEIGHT},
+     }},
+    {"resource": Element, "method": "POST",
+     "records": {
+         1: {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [1, 2]},
+         2: {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [2, 3]},
+         3: {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [3, 4]},
+         4: {"TYPE": "PLATE", "MATL": 1, "SECT": 1, "NODE": [5, 6, 7, 8]},
+     }},
+    {"resource": Constraint, "method": "POST",
+     "records": {1: {"ITEMS": [{"ID": 1, "CONSTRAINT": "1111111"}]}}},
+    # A load case every load case below attaches to, that nothing deletes.
+    {"resource": StaticLoadCase, "method": "POST",
+     "records": BASE_MODEL_SEEDS["static_load_cases"]["records"]},
+    {"resource": SelfWeight, "method": "POST",
+     "records": {1: {"LCNAME": "DL", "FV": [0, 0, -1]}}},
+]
+
+
 def _seed_model(client: MidasClient) -> None:
-    """Minimum model the cases attach to.
+    """Minimum model the cases attach to, replayed from BASE_MODEL_STEPS.
 
     Ids are chosen so that nothing here collides with a case:
       nodes    1-2 frame, 3-4 beam chain, 5-8 plate corners, 21-22 free pair
       elements 1-3 beams, 4 plate
       material 1, section 1, thickness 1, load cases 1 (DL) and 2 (LC_SCRATCH)
     """
-    Unit.update({1: {"DIST": "M", "FORCE": "KN"}}, client=client)
-    Material.create(
-        {1: {"TYPE": "CONC", "NAME": "C24",
-             "PARAM": [{"P_TYPE": 1, "STANDARD": "KS01(RC)", "DB": "C24"}]}},
-        client=client,
-    )
-    Section.create(
-        {1: {"SECTTYPE": "DBUSER", "SECT_NAME": "Column",
-             "SECT_BEFORE": {"USE_SHEAR_DEFORM": True, "SHAPE": "SB", "DATATYPE": 2,
-                             "SECT_I": {"vSIZE": [SIZE, SIZE]}}}},
-        client=client,
-    )
-    # Thickness 1 backs the plate element; the props tier's own THIK case
-    # takes id 2 so it can be deleted without taking the plate with it.
-    Thickness.create(
-        {1: {"NAME": "T_SEED", "TYPE": "VALUE", "bINOUT": False,
-             "T_IN": 0.20, "T_OUT": 0, "O_VALUE": 0}},
-        client=client,
-    )
-    Node.create(
-        {
-            1: {"X": 0, "Y": 0, "Z": 0},
-            2: {"X": 0, "Y": 0, "Z": HEIGHT},
-            3: {"X": BAY, "Y": 0, "Z": HEIGHT},
-            4: {"X": 2 * BAY, "Y": 0, "Z": HEIGHT},
-            # Plate corners, offset in -Y so they can't be confused with the frame.
-            5: {"X": 0, "Y": -BAY, "Z": 0},
-            6: {"X": BAY, "Y": -BAY, "Z": 0},
-            7: {"X": BAY, "Y": -2 * BAY, "Z": 0},
-            8: {"X": 0, "Y": -2 * BAY, "Z": 0},
-            # A free, unconnected pair for the link/constraint cases. Nothing
-            # else attaches to these, so ELNK/RIGD/MCON can't collide with a
-            # real element — but they do collide with *each other*, so those
-            # three cases rely on each deleting itself before the next runs.
-            21: {"X": 0, "Y": 2 * BAY, "Z": 0},
-            22: {"X": 0, "Y": 2 * BAY, "Z": HEIGHT},
-        },
-        client=client,
-    )
-    Element.create(
-        {
-            1: {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [1, 2]},
-            2: {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [2, 3]},
-            3: {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [3, 4]},
-            4: {"TYPE": "PLATE", "MATL": 1, "SECT": 1, "NODE": [5, 6, 7, 8]},
-        },
-        client=client,
-    )
-    Constraint.create({1: {"ITEMS": [{"ID": 1, "CONSTRAINT": "1111111"}]}}, client=client)
-    # A load case every load case below attaches to, that nothing deletes.
-    StaticLoadCase.create(BASE_MODEL_SEEDS["static_load_cases"]["records"], client=client)
-    SelfWeight.create({1: {"LCNAME": "DL", "FV": [0, 0, -1]}}, client=client)
+    for step in BASE_MODEL_STEPS:
+        resource = step["resource"]
+        records = step["records"]
+        if step["method"] == "PUT":
+            resource.update(records, client=client)
+        else:
+            resource.create(records, client=client)
 
 
 def _final_checkpoint_path(initial_path: str) -> str:
@@ -3745,6 +3763,21 @@ def _live_cases_fixture() -> Dict[str, Any]:
     fixture = {
         "version": LIVE_CASES_VERSION,
         "seeds": BASE_MODEL_SEEDS,
+        # The model every case attaches to, in the order it must be built.
+        # Without it a harness starting from an empty /doc/NEW cannot resolve
+        # any case's node/element/material/section preconditions, which is
+        # what the npm side hit.
+        "baseModel": [
+            {
+                "endpoint": step["resource"].ENDPOINT,
+                "method": step["method"],
+                # Ids are ints in BASE_MODEL_STEPS because that reads better
+                # beside the payloads; JSON has only string keys, so stringify
+                # here or --check-cases sees drift on every run.
+                "records": {str(k): v for k, v in step["records"].items()},
+            }
+            for step in BASE_MODEL_STEPS
+        ],
         "cases": cases,
     }
     # Fail at generation time if a future Case grows a non-JSON wire value.

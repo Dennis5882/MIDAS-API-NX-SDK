@@ -36,7 +36,7 @@ def test_live_case_fixture_carries_static_load_case_seed() -> None:
     fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
     stld = next(case for case in fixture["cases"] if case["endpoint"] == "/db/STLD")
 
-    assert fixture["version"] == 3
+    assert fixture["version"] == 4
     assert fixture["seeds"]["static_load_cases"] == {
         "endpoint": "/db/STLD",
         "records": {
@@ -391,3 +391,53 @@ def test_unknown_endpoint_selection_is_refused_before_any_product_call() -> None
         assert expected in result.stderr, result.stderr
         # Nothing may have reached the product.
         assert "mapikey/verify" not in result.stderr
+
+
+def test_both_harnesses_build_the_same_base_model() -> None:
+    """The fixture must carry the model, not just the cases that attach to it.
+
+    Python built the base model by calling typed resources with inline literals
+    inside ``_seed_model``, so only Python could replay it. The npm harness
+    starts from a genuinely empty ``/doc/NEW``, which is why thirteen cases
+    confirmed here reported ``REGRESS`` there against preconditions no one had
+    created. A base model only one harness can build is a hole in this file's
+    claim to be the language-neutral source both read.
+    """
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    steps = fixture["baseModel"]
+
+    assert steps, "the fixture must carry the base model every case attaches to"
+    for step in steps:
+        assert step["endpoint"].startswith("/db/"), step
+        assert step["method"] in {"POST", "PUT"}, step
+        assert step["records"], f"{step['endpoint']}: a step with no records builds nothing"
+
+    # Order is load-bearing: an element cannot reference a node, a material or a
+    # section that a later step creates.
+    order = [step["endpoint"] for step in steps]
+    for earlier, later in (("/db/NODE", "/db/ELEM"),
+                           ("/db/MATL", "/db/ELEM"),
+                           ("/db/SECT", "/db/ELEM"),
+                           ("/db/STLD", "/db/BODF")):
+        assert order.index(earlier) < order.index(later), (
+            f"{earlier} must be built before {later}"
+        )
+
+
+def test_the_npm_harness_reads_the_base_model_from_the_fixture() -> None:
+    """It may replay the emitted steps and may not carry its own copy.
+
+    A hand-written second copy is how the two harnesses would drift back apart,
+    and a payload written into a harness rather than measured is the mistake
+    this repository has paid for more than once.
+    """
+    source = (ROOT / "packages" / "typescript" / "scripts" / "live-crud.mjs").read_text(
+        encoding="utf-8"
+    )
+
+    assert "fixture.baseModel" in source, "the npm harness must build the emitted base model"
+    assert "buildBaseModel(client)" in source, "and must call it before running any case"
+
+    built = source.index("await buildBaseModel(client);")
+    first_case = source.index("for (const liveCase of cases)")
+    assert built < first_case, "the base model must be built before the first case runs"

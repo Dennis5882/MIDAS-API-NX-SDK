@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "seeds": {
     "skew_node": {
       "endpoint": "/db/NODE",
@@ -231,6 +231,214 @@
       }
     }
   },
+  "baseModel": [
+    {
+      "endpoint": "/db/UNIT",
+      "method": "PUT",
+      "records": {
+        "1": {
+          "DIST": "M",
+          "FORCE": "KN"
+        }
+      }
+    },
+    {
+      "endpoint": "/db/MATL",
+      "method": "POST",
+      "records": {
+        "1": {
+          "TYPE": "CONC",
+          "NAME": "C24",
+          "PARAM": [
+            {
+              "P_TYPE": 1,
+              "STANDARD": "KS01(RC)",
+              "DB": "C24"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "endpoint": "/db/SECT",
+      "method": "POST",
+      "records": {
+        "1": {
+          "SECTTYPE": "DBUSER",
+          "SECT_NAME": "Column",
+          "SECT_BEFORE": {
+            "USE_SHEAR_DEFORM": true,
+            "SHAPE": "SB",
+            "DATATYPE": 2,
+            "SECT_I": {
+              "vSIZE": [
+                0.6,
+                0.6
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "endpoint": "/db/THIK",
+      "method": "POST",
+      "records": {
+        "1": {
+          "NAME": "T_SEED",
+          "TYPE": "VALUE",
+          "bINOUT": false,
+          "T_IN": 0.2,
+          "T_OUT": 0,
+          "O_VALUE": 0
+        }
+      }
+    },
+    {
+      "endpoint": "/db/NODE",
+      "method": "POST",
+      "records": {
+        "1": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "2": {
+          "X": 0,
+          "Y": 0,
+          "Z": 3.2
+        },
+        "3": {
+          "X": 4.0,
+          "Y": 0,
+          "Z": 3.2
+        },
+        "4": {
+          "X": 8.0,
+          "Y": 0,
+          "Z": 3.2
+        },
+        "5": {
+          "X": 0,
+          "Y": -4.0,
+          "Z": 0
+        },
+        "6": {
+          "X": 4.0,
+          "Y": -4.0,
+          "Z": 0
+        },
+        "7": {
+          "X": 4.0,
+          "Y": -8.0,
+          "Z": 0
+        },
+        "8": {
+          "X": 0,
+          "Y": -8.0,
+          "Z": 0
+        },
+        "21": {
+          "X": 0,
+          "Y": 8.0,
+          "Z": 0
+        },
+        "22": {
+          "X": 0,
+          "Y": 8.0,
+          "Z": 3.2
+        }
+      }
+    },
+    {
+      "endpoint": "/db/ELEM",
+      "method": "POST",
+      "records": {
+        "1": {
+          "TYPE": "BEAM",
+          "MATL": 1,
+          "SECT": 1,
+          "NODE": [
+            1,
+            2
+          ]
+        },
+        "2": {
+          "TYPE": "BEAM",
+          "MATL": 1,
+          "SECT": 1,
+          "NODE": [
+            2,
+            3
+          ]
+        },
+        "3": {
+          "TYPE": "BEAM",
+          "MATL": 1,
+          "SECT": 1,
+          "NODE": [
+            3,
+            4
+          ]
+        },
+        "4": {
+          "TYPE": "PLATE",
+          "MATL": 1,
+          "SECT": 1,
+          "NODE": [
+            5,
+            6,
+            7,
+            8
+          ]
+        }
+      }
+    },
+    {
+      "endpoint": "/db/CONS",
+      "method": "POST",
+      "records": {
+        "1": {
+          "ITEMS": [
+            {
+              "ID": 1,
+              "CONSTRAINT": "1111111"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "endpoint": "/db/STLD",
+      "method": "POST",
+      "records": {
+        "1": {
+          "NAME": "DL",
+          "TYPE": "D",
+          "DESC": "Dead Load"
+        },
+        "2": {
+          "NAME": "LC_SCRATCH",
+          "TYPE": "L",
+          "DESC": "crud fixture"
+        }
+      }
+    },
+    {
+      "endpoint": "/db/BODF",
+      "method": "POST",
+      "records": {
+        "1": {
+          "LCNAME": "DL",
+          "FV": [
+            0,
+            0,
+            -1
+          ]
+        }
+      }
+    }
+  ],
   "cases": [
     {
       "tier": "core",

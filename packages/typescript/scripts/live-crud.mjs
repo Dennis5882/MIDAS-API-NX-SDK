@@ -205,6 +205,37 @@ async function requireEmptyScratchDocument(client) {
   }
 }
 
+/**
+ * Build the model every case attaches to, from the shared fixture.
+ *
+ * This harness used to start each case against a genuinely empty /doc/NEW,
+ * so thirteen cases that pass under Python failed here on missing
+ * node/element/material/section preconditions and printed REGRESS for a
+ * model that was never built. The steps come from schema/live-cases.json's
+ * baseModel, which Python emits from the same list its own _seed_model
+ * executes - never hand-write one here.
+ */
+async function buildBaseModel(client) {
+  const steps = fixture.baseModel;
+  if (!Array.isArray(steps) || !steps.length) {
+    throw new Error("The shared fixture has no baseModel; re-emit it with python scripts/live_crud_check.py --emit-cases.");
+  }
+  for (const step of steps) {
+    const resource = resourceFor(step.endpoint);
+    const ids = Object.keys(step.records).map(Number);
+    if (step.method === "PUT") {
+      await resource.update(step.records, client);
+    } else {
+      await resource.create(step.records, client);
+    }
+    const stored = await resource.items(client);
+    for (const id of ids) {
+      requireStored(stored, id, step.endpoint, `base model ${step.method}`);
+    }
+  }
+  console.log(`BUILT base model (${steps.length} steps)`);
+}
+
 async function runCase(liveCase, client) {
   const resource = resourceFor(liveCase.endpoint);
   if (!liveCase.methods.includes("DELETE") || !resource.metadata.methods.includes("DELETE")) {
@@ -389,6 +420,7 @@ async function main() {
   await doc.newProject({ client });
   await requireEmptyScratchDocument(client);
   console.log("CREATED empty scratch document");
+  await buildBaseModel(client);
 
   const results = [];
   for (const liveCase of cases) {
