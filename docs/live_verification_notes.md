@@ -8761,3 +8761,56 @@ Result-state changes: `schema/live-cases.json` remains 167 cases and moves from
 143 to **144 confirmed**; repository coverage moves from 172 write / 227 read
 to **173 write / 226 read**. No other endpoint was promoted, and no failed
 unconfirmed case is labelled an SDK or product defect.
+
+## 2026-09-05 — npm public-API CRUD evidence extended from 23 to 32 DB endpoints
+
+Ran the built npm 2.7.7 package through
+`packages/typescript/scripts/live-crud.mjs`, not raw HTTP and not Python. Each
+run supplied `--save-dir C:/temp`; the harness checkpointed the open document,
+called `/doc/NEW`, verified NODE/ELEM were empty, used only cases emitted in
+`schema/live-cases.json`, deleted each test record through the public
+resource's per-id `delete()` method, saved the throwaway model separately, and
+restored an empty document. Batches never exceeded eight endpoints.
+
+The same nine previously unrecorded resources completed create, read-back,
+update, updated read-back, individual delete, and deletion verification on
+both MIDAS Gen NX 2026 v2.1 and MIDAS Civil NX 2026 v2.2, build 09/02/2026:
+
+| Public npm resource endpoint | Gen | Civil |
+| --- | --- | --- |
+| `/db/MVCD` | pass | pass |
+| `/db/TDGR` | pass | pass |
+| `/db/NPLN` | pass | pass |
+| `/db/ETFC` | pass | pass |
+| `/db/CCFC` | pass | pass |
+| `/db/HSFC` | pass | pass |
+| `/db/MLFC` | pass | pass |
+| `/db/CUTL` | pass | pass |
+| `/db/CLWP` | pass | pass |
+
+This is evidence for the installed-user path that generated metadata alone
+cannot provide: resource discovery through `resources.db`, request wrapping,
+response unwrapping, stored-value checks, PUT handling, and per-id deletion all
+ran through the built package. The npm inventory therefore moves from 23 to
+**32 distinct `/db` endpoints**, plus the existing four result-table
+operations (36 public-API operations total). `docs/coverage.json` stays
+unchanged because its current rows record product endpoint evidence rather
+than which language client supplied it; adding a language-evidence dimension
+would be a schema decision, not a live-run side effect.
+
+The wider selection also exposed a harness boundary that must not be called an
+SDK regression. Python's live checker constructs a common base model before
+its cases; `schema/live-cases.json` currently emits explicit per-case setup but
+not that common model, while the npm checker begins from a genuinely empty
+document. Consequently CNLD, BMLD, CONS, ESSF, SECF, TSGR and TDMT could not
+resolve their node/element/material/section preconditions; GSTP, TDME, IFGS,
+THGC, THFC and SPFC likewise did not persist without the base model; and the
+LCOM-GEN/LCOM-CONC fixtures referenced load case `DL`, which did not exist.
+The npm script prints `REGRESS` because these cases are confirmed in the
+Python-driven fixture, but this run does **not** establish a package regression:
+the two harnesses did not create equivalent starting models. `/db/GRUP` was
+also rejected locally before its write because it has no DELETE operation and
+the npm harness deliberately refuses cases it cannot clean up. None of these
+attempts is included in the 32-endpoint count. Final direct GETs returned
+`{"message": ""}` for NODE and ELEM on both products, independently confirming
+that both sessions were left on empty documents.

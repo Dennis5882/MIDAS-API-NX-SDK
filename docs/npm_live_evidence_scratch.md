@@ -32,6 +32,15 @@ when the notes explicitly say the built npm package completed the operation.
 | `/db/SDVE` | 2026-09-01 | Gen, Civil |
 | `/db/SDHY` | 2026-09-01 | Gen |
 | `/db/SDIS` | 2026-09-01 | Gen |
+| `/db/MVCD` | 2026-09-05 | Gen, Civil |
+| `/db/TDGR` | 2026-09-05 | Gen, Civil |
+| `/db/NPLN` | 2026-09-05 | Gen, Civil |
+| `/db/ETFC` | 2026-09-05 | Gen, Civil |
+| `/db/CCFC` | 2026-09-05 | Gen, Civil |
+| `/db/HSFC` | 2026-09-05 | Gen, Civil |
+| `/db/MLFC` | 2026-09-05 | Gen, Civil |
+| `/db/CUTL` | 2026-09-05 | Gen, Civil |
+| `/db/CLWP` | 2026-09-05 | Gen, Civil |
 
 ## Completed result-table operations
 
@@ -51,6 +60,11 @@ when the notes explicitly say the built npm package completed the operation.
   a completed endpoint operation.
 - `/doc/NEW`, `SAVEAS`, and the model-building prerequisites are harness
   operations, not selected endpoint cases.
+- The 2026-09-05 empty-document sweep also selected cases whose Python fixture
+  relies on that harness's common base model. The shared JSON carries each
+  case's explicit prerequisites but not the common nodes/elements/materials,
+  so those npm attempts are not counted as endpoint evidence. See the live
+  notes for the exact boundary and results.
 
-**Count:** 23 distinct `/db` endpoints and 4 distinct result-table operations;
-27 distinct npm public-API operations overall.
+**Count:** 32 distinct `/db` endpoints and 4 distinct result-table operations;
+36 distinct npm public-API operations overall.
