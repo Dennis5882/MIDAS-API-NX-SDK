@@ -8687,3 +8687,28 @@ weaker and still worth knowing — the vendor report's A-1 can say so.
 The model left behind on each product is a scratch document holding ~230 nodes,
 8–10 beam elements and their nodal masses. Nothing was deleted; both documents
 were empty throwaways when the run started.
+
+## 2026-09-04 (later) — the two unresolved `/post/TABLE` spellings, compared live
+
+POST-shaped reads only: no `/doc/NEW`, model mutation, export path or deletion.
+The calls used `midas_nx.post.base.get_table()` with an empty `TABLE_NAME` and
+sent each spelling of each disputed `TABLE_TYPE` against the same open document.
+Both products were connected under the same continuously-running sessions
+recorded above: MIDAS Gen NX 2026 v2.1 and MIDAS Civil NX 2026 v2.2, both build
+09/02/2026 (`connectionID` `tZwG5G-fSg` and `maTuEDSLQw`, respectively).
+
+| `TABLE_TYPE` sent | Gen NX body | Civil NX body |
+| --- | --- | --- |
+| `BEAMFORCESTP` | `{"error":{"message":"[empty] Cannot generate table data as there is no analysis result."}}` | `{"error":{"message":"[empty] Cannot generate table data as there is no analysis result."}}` |
+| `BEAMFORCESIP` | `{"error":{"message":"MIDAS GEN NX there was an error creating utbl. (ex PostMode ...)"}}` | `{"error":{"message":"MIDAS CIVIL NX there was an error creating utbl. (ex PostMode ...)"}}` |
+| `REACTIONSURFACESPRING` | `{"error":{"message":"MIDAS GEN NX there was an error creating utbl. (ex PostMode ...)"}}` | `{"error":{"message":"MIDAS CIVIL NX there was an error creating utbl. (ex PostMode ...)"}}` |
+| `REACTIONLSURFACESPRING` | `{"error":{"message":"[empty] Cannot generate table data as there is no analysis result."}}` | `{"error":{"message":"[empty] Cannot generate table data as there is no analysis result."}}` |
+
+The distinction is stable across products: `Cannot generate ... no analysis
+result` means the product recognised the table type but the scratch document
+could not provide its data; `there was an error creating utbl` is the response
+for the unrecognised spelling. This independently repeats the older Gen-only
+`BEAMFORCESTP` finding and settles the direction of both contradictions as
+measurements: `BEAMFORCESTP` and `REACTIONLSURFACESPRING` are recognised.
+Per the handoff boundary, the contracts and their `resolved` flags were not
+changed here.
