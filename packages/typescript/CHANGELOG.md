@@ -6,6 +6,38 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Added — the `/info` sweep's small-count tail, and what it was pointing at
+
+- `TrafficLineLanePayload`, `TrafficLineLanesChinaPayload`,
+  `TrafficLineLanesIndiaPayload` and `TrafficLineLanesOptimizationPayload`
+  gain `SPECIAL_LANE_ITEMS`, an array the server declares on all four and the
+  manual documents on none. Its members differ per endpoint (7, 6, 5 and 8
+  respectively). The server's own description — "Used only when importing" —
+  is the whole of what is known about when it applies, and no rule is
+  generated from it. `TrafficLineLanesOptimizationPayload` also gains the
+  root `OPT_STRADD`. Same finding as `/db/LLANtr`'s in 2.7.7, reaching its
+  four siblings.
+
+- `MovingLoadAnalysisControlChinaPayload` gains nine fields its **manual
+  documents and this repo could not read** — the `FREQ` object's `SBEM_L`,
+  `SBEM_E`, `SBEM_IC`, `SBEM_MC`, `iARCH_TYPE`, `CABL_A` and `CABL_L`, plus a
+  `BTYPE` on each of `BRIDGE1` and `BRIDGE2` with the enum each accepts
+  (`"RC" | "STEEL" | "MBRG" | "TRAIN"` and
+  `"RAILWAY" | "RAILBRG" | "RAILCUL"`).
+
+- Two separate causes, and the diagnosis matters because one of them looks
+  like a defect this repo already fixed. `FREQ`'s table has **two Key/설명
+  column pairs side by side** and the parser reads only the first — the
+  first column's packed cells extracted correctly, so this is not MD-48's
+  packed Key cell. Each `BTYPE` is stated in the **bold sentence introducing**
+  its table rather than in a row of it, enum included; it is the selector
+  deciding which of that table's fields apply, so neither object was usable
+  without it. See MD-50.
+
+- The seven `FREQ` keys are typed `unknown`, like the eighteen siblings from
+  the same table: it is a Key/설명 table and states no Value Type. Taking
+  `/info`'s `number` for all 25 is a separate change with its own evidence.
+
 ## 2.7.8 - 2026-09-05
 
 > A one-value fix, and the value is one the server was refusing. Nothing is

@@ -78,11 +78,6 @@ EXPECTED_AGAINST_CONTRACTS: _AgainstContractsExpectation = {
         "/db/TDMT": 60,
         "/db/SWIND": 40,
         "/db/SSEIS": 34,
-        "/db/MVCTch": 9,
-        "/db/LLANop": 8,
-        "/db/LLAN": 3,
-        "/db/LLANch": 3,
-        "/db/LLANid": 2,
     },
     "contractOnlyNamesAtMost": {
         "/db/POGD-M1": 2,

@@ -549,9 +549,25 @@ export namespace DbAnalysisControlTypes {
       SUSP_HG?: unknown;
       /** 현수교 L/E/I/Hg/m */
       SUSP_M?: unknown;
+      /** 단순보 L/E/Ic/mc */
+      SBEM_L?: unknown;
+      /** 단순보 L/E/Ic/mc */
+      SBEM_E?: unknown;
+      /** 단순보 L/E/Ic/mc */
+      SBEM_IC?: unknown;
+      /** 단순보 L/E/Ic/mc */
+      SBEM_MC?: unknown;
+      /** 아치교 형식 */
+      iARCH_TYPE?: number;
+      /** 사장교 a/L */
+      CABL_A?: unknown;
+      /** 사장교 a/L */
+      CABL_L?: unknown;
     };
     /** Bridge Data — Other Codes (iCODETYPE=1일 때 필수) */
     BRIDGE1?: {
+      /** Bridge Type — 이 표의 필드가 어느 형식에 속하는지 고르는 선택자 */
+      BTYPE?: "RC" | "STEEL" | "MBRG" | "TRAIN";
       /** RC — Case 1 L1/F1/L2/F2 */
       RC_C1L1?: number;
       /** RC — Case 1 L1/F1/L2/F2 */
@@ -623,6 +639,8 @@ export namespace DbAnalysisControlTypes {
     };
     /** Bridge Data — TB 10002-2017 / Q·CR 9300-2018 (iCODETYPE=2 또는 3일 때 필수) */
     BRIDGE2?: {
+      /** Bridge Type — 이 표의 필드가 어느 형식에 속하는지 고르는 선택자 */
+      BTYPE?: "RAILWAY" | "RAILBRG" | "RAILCUL";
       /** RAILWAY — Sub-Type("SIMPLE"/"COMPOSITE"/"RCCONC"/"RCARCH") */
       METHOD?: string;
       /** RAILWAY(METHOD="SIMPLE") — Value 1/2 */
@@ -4358,6 +4376,23 @@ export namespace DbMovingLoadsTypes {
       /** Eccentricity Considering Cant (vertical load) */
       ECCEN_VERT_LOAD?: number;
     }>;
+    /** Used only when importing */
+    SPECIAL_LANE_ITEMS?: Array<{
+      /** CE */
+      CENT_F?: number;
+      /** Eccentricity */
+      ECC?: number;
+      /** Eccen. Vert. Loads */
+      ECCEN_VERT_LOAD?: number;
+      /** Key Elements */
+      ELEMS?: Array<number>;
+      /** Factor */
+      FACT?: number;
+      /** Span Start */
+      SPAN_START?: boolean;
+      /** Span Start No */
+      SPAN_START_NO_LIST?: Array<number>;
+    }>;
   }
   export interface LineLaneChinaItem {
     ELEM?: number;
@@ -4404,6 +4439,21 @@ export namespace DbMovingLoadsTypes {
       /** Scale Factor */
       SCALE_FACTOR?: number;
     }>;
+    /** Used only when importing */
+    SPECIAL_LANE_ITEMS?: Array<{
+      /** Eccentricity */
+      ECC?: number;
+      /** Key Elements */
+      ELEMS?: Array<number>;
+      /** Scale Factor */
+      SCALE_FACTOR?: number;
+      /** Span */
+      SPAN?: number;
+      /** Span Start */
+      SPAN_START?: boolean;
+      /** Span Start No */
+      SPAN_START_NO_LIST?: Array<number>;
+    }>;
   }
   export interface LineLaneIndiaItem {
     ELEM?: number;
@@ -4448,6 +4498,19 @@ export namespace DbMovingLoadsTypes {
       /** Scale Factor (when IMPACT_SPAN=0) */
       IMPACT_FACTOR?: number;
       /** Span Length (when IMPACT_SPAN=1) */
+      SPAN?: number;
+    }>;
+    /** Used only when importing */
+    SPECIAL_LANE_ITEMS?: Array<{
+      /** Eccentricity */
+      ECC?: number;
+      /** Key Elements */
+      ELEMS?: Array<number>;
+      /** Impact Factor */
+      IMPACT_FACTOR?: number;
+      /** Impact Span */
+      IMPACT_SPAN?: number;
+      /** Span */
       SPAN?: number;
     }>;
   }
@@ -4520,6 +4583,27 @@ export namespace DbMovingLoadsTypes {
       CENT_F?: number;
       /** Eccentricity Considering Cant (vertical load) */
       ECCEN_VERT_LOAD?: number;
+    }>;
+    /** Use Straddling Lane Type */
+    OPT_STRADD?: boolean;
+    /** Used only when importing */
+    SPECIAL_LANE_ITEMS?: Array<{
+      /** CE */
+      CENT_F?: number;
+      /** Eccentricity */
+      ECC?: number;
+      /** Key Elements */
+      ELEMS?: Array<number>;
+      /** Factor */
+      FACT?: number;
+      /** Scale Factor */
+      SCALE_FACTOR?: number;
+      /** Span */
+      SPAN?: number;
+      /** Span Start */
+      SPAN_START?: boolean;
+      /** Span Start No */
+      SPAN_START_NO_LIST?: Array<number>;
     }>;
   }
   export interface SurfaceLaneItem {

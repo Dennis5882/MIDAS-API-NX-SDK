@@ -305,7 +305,107 @@ fields:
         provenance: manual
         # RESOLVED: stated elsewhere in the same section, in the Eurocode
         # row, glossed 캔트 고려 수직편심.
+  - key: SPECIAL_LANE_ITEMS
+    description: >-
+      Used only when importing
+    type: array
+    items:
+      type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - the whole
+    # manual was searched for the name, not just this section.
+    # The server's own description is the whole of what is known about
+    # when this applies. No rule is written from it.
+    properties:
+      - key: CENT_F
+        description: >-
+          CE
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ECC
+        description: >-
+          Eccentricity
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ECCEN_VERT_LOAD
+        description: >-
+          Eccen. Vert. Loads
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ELEMS
+        description: >-
+          Key Elements
+        type: array
+        items:
+          type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FACT
+        description: >-
+          Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SPAN_START
+        description: >-
+          Span Start
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SPAN_START_NO_LIST
+        description: >-
+          Span Start No
+        type: array
+        items:
+          type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
 
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      /db/LLAN's record is `COMMON` and `LANE_ITEMS`.
+    actual: >-
+      `GET /info/db/LLAN` declares a further property, `SPECIAL_LANE_ITEMS`,
+      an array of {`CENT_F`, `ECC`, `ECCEN_VERT_LOAD`, `ELEMS`, `FACT`,
+      `SPAN_START`, `SPAN_START_NO_LIST`} described " Used only when
+      importing". That description is the whole of what is known about when
+      it applies; no contract rule is written from it. The name appears
+      nowhere in the manual - the whole repo was searched, not just this
+      section.
+    evidence: >-
+      GET /info/db/LLAN on Civil NX, captured 2026-09-03, against
+      docs/manual/08_DB_Moving_Loads.md. The same undocumented array is on
+      /db/LLANtr, where it was first registered as MD-45; this is that
+      finding reaching its siblings.
 sdkRules:
   - id: db-llan-delete-per-id
     kind: per_id_request
