@@ -4839,6 +4839,16 @@ def render_draft(section: Section, evidence: Optional[LiveOmission] = None) -> s
             lines.append(f"    - heading: {_scalar(table.heading)}")
             lines.append(f"      fields: {len(table.fields)}")
             lines.append(f"      line: {table.line}")
+            # Which names, not just how many. validate_contracts.py's
+            # field-parity check waives a name this table accounts for and
+            # reports one that no table and no contract does; with only a count
+            # it had to skip the whole contract, and 214 wire names the SDKs
+            # ship went unchecked behind twenty of these entries.
+            names = _unmerged_field_names(table)
+            if names:
+                lines.append(
+                    "      fieldNames: [" + ", ".join(_scalar(n) for n in names) + "]"
+                )
     return "\n".join(lines) + "\n"
 
 
@@ -5160,6 +5170,62 @@ def _flatten_manual(fields: list[ParsedField], prefix: str = "") -> dict[str, Pa
     return out
 
 
+_KEY_CELL_ANNOTATION = re.compile(r"\((?:OPT|VAL|STR)\)$")
+_KEY_CELL_RANGE = re.compile(r'^(?P<stem>\w+?)(?P<first>\d+)"?\s*~\s*"?(?P=stem)(?P<last>\d+)$')
+
+
+def _unpack_key_cell(key: str) -> list[str]:
+    """The wire names one Key cell holds, in cell order.
+
+    A Key cell can name several properties at once, and the table parser hands
+    the whole cell back as one key: `"bSD" / "iSDOPT" / "SDCONST"` arrives as a
+    single 27-character string that is not a wire name at all. That is
+    invisible while the cell only ever feeds a *count*, which is what
+    `unmergedTables` recorded until 2026-09-04; the moment the names are
+    written down it is the difference between a waiver that accounts for three
+    fields and one that accounts for none of them.
+
+    Every form handled here was read in the manual. A slash- or comma-joined
+    list maps its names positionally to the Type and Description columns beside
+    it (`Boolean / Integer / Number`, `Stress Decrease 사용 / 옵션 / 상수`); a
+    `A1 ~ A4` range is written out in full by its own Description ("3+ Lane
+    Factors (L1~L4)"); a trailing `(OPT)`/`(VAL)`/`(STR)` is chapter 14's
+    column grouping, not part of the name. This is a transcription, not an
+    inference, and it is used only for `unmergedTables[].fieldNames` - the
+    merged-field path keeps `_REVIEWED_SHARED_COMPACT_KEYS`, which requires a
+    named review per row because a merged row becomes a published field.
+    """
+    text = key.strip().strip('"')
+    match = _KEY_CELL_RANGE.fullmatch(text)
+    if match:
+        stem = match.group("stem")
+        first, last = int(match.group("first")), int(match.group("last"))
+        if 0 < last - first < 12:
+            return [f"{stem}{index}" for index in range(first, last + 1)]
+    out: list[str] = []
+    for piece in re.split(r'"?\s*[/,]\s*"?', text):
+        piece = re.sub(r"\(.*?\)$", "", piece.strip().strip('"')).strip()
+        piece = _KEY_CELL_ANNOTATION.sub("", piece).strip().strip('"')
+        if piece:
+            out.append(piece)
+    return out or [text]
+
+
+def _unmerged_field_names(table: "ParsedTable") -> list[str]:
+    """Every wire name an unmerged table holds, table order, nested included."""
+    out: list[str] = []
+
+    def walk(fields: list) -> None:
+        for entry in fields:
+            for piece in _unpack_key_cell(entry.key):
+                if piece not in out:
+                    out.append(piece)
+            walk(entry.properties or [])
+
+    walk(table.fields)
+    return out
+
+
 def _under_structural_destination(
     key: str, destinations: set[str], manual_fields: dict[str, dict]
 ) -> bool:
@@ -5443,6 +5509,32 @@ def run_check(sections: list[Section]) -> int:
                 problems.append(
                     f"{path.name}: the contract declares {key!r}, which the manual's table does not - "
                     f"record it under manualDefects if the manual is the one that is wrong"
+                )
+
+        # An unmergedTables entry that records its table's field names is a
+        # waiver validate_contracts.py's field-parity check honours, so the
+        # names have to keep matching the table they claim to transcribe. A
+        # chapter edit that adds a row to an unmerged table would otherwise
+        # widen the waiver silently, which is the one way this mechanism could
+        # turn into fiction.
+        tables_by_key = {(t.heading, t.line): t for t in section.tables}
+        for entry in contract.get("extraction", {}).get("unmergedTables", []):
+            declared = entry.get("fieldNames")
+            if not declared:
+                continue
+            table = tables_by_key.get((entry.get("heading"), entry.get("line")))
+            if table is None:
+                problems.append(
+                    f"{path.name}: unmergedTables names a table "
+                    f"{entry.get('heading')!r} at line {entry.get('line')} that "
+                    f"this section does not have"
+                )
+                continue
+            actual = _unmerged_field_names(table)
+            if list(declared) != actual:
+                problems.append(
+                    f"{path.name}: unmergedTables[{entry.get('heading')!r}] records "
+                    f"{list(declared)!r}, the table holds {actual!r}"
                 )
 
         variant_table_indexes = {

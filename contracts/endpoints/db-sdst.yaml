@@ -96,6 +96,70 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+    properties:
+      - key: NAME
+        description: >-
+          Name
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: stated in these sibling sections: section 16,
+        # `/db/SDVI`, whose 요청 파라미터 table gives COMMON's six members as
+        # rows (1) to (6) - this section's own row says "Common Data" and
+        # stops there. This section's Request Example sends five of the
+        # six, omitting COMPANY, and GET /info/db/SDST declares all six
+        # with the same names and types on the product that answers. Until
+        # 2026-09-04 COMMON was an object with nothing in it, so the npm
+        # payload type offered a bare object where the server requires a
+        # name.
+      - key: DESC
+        description: >-
+          Description
+        type: string
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: INPUT_METHOD
+        description: >-
+          Input Method · 0=사용자 입력, 1=참조 DB
+        type: integer
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: COMPANY
+        description: >-
+          Company
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: PRODUCT_NAME
+        description: >-
+          Product Name
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: TYPE_NUMBER
+        description: >-
+          Type Number
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
   - key: DIR
     description: >-
       Direction
@@ -151,6 +215,132 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+  - key: BL2
+    description: >-
+      Degrading Bilinear 하위 데이터
+    type: object
+    requirement: conditional
+    condition: 'SDST_HYS_MODEL = "BL2"'
+    appliesWhen:
+      - path: SDST_HYS_MODEL
+        equals: "BL2"
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+    # RESOLVED: stated elsewhere in the same section - the
+    # "`SDST_HYS_MODEL` 별 하위 객체" table at line 1533 gives one row per
+    # model, naming the object in its Key column and its members, with
+    # glosses, in a 하위 필드 cell. The parser reads Key columns, so it saw
+    # four object names and none of their members, and the contract
+    # carried neither until 2026-09-04. GET /info/db/SDST declares BL2,
+    # LY2, LY3 and IK2 with exactly these members.
+    properties:
+      - key: BETA
+        description: >-
+          Exponent in Unloading Stiffness Calculation (β)
+        type: number
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+  - key: LY2
+    description: >-
+      Low Yielding Steel (LY2) 하위 데이터
+    type: object
+    requirement: conditional
+    condition: 'SDST_HYS_MODEL = "LY2"'
+    appliesWhen:
+      - path: SDST_HYS_MODEL
+        equals: "LY2"
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+    properties:
+      - key: ALPHA2
+        description: >-
+          Stiffness Factor (α2)
+        type: number
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: THETA
+        description: >-
+          Strength Factor (θ)
+        type: number
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+  - key: LY3
+    description: >-
+      Low Yielding Steel (LY3) 하위 데이터
+    type: object
+    requirement: conditional
+    condition: 'SDST_HYS_MODEL = "LY3"'
+    appliesWhen:
+      - path: SDST_HYS_MODEL
+        equals: "LY3"
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+    properties:
+      - key: ALPHA2
+        description: >-
+          Stiffness Factor (α2)
+        type: number
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: THETA
+        description: >-
+          Strength Factor (θ)
+        type: number
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: GAMMA
+        description: >-
+          Stiffness Ratio (γ)
+        type: number
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+  - key: IK2
+    description: >-
+      Isotropic-Kinematic (IK2) 하위 데이터
+    type: object
+    requirement: conditional
+    condition: 'SDST_HYS_MODEL = "IK2"'
+    appliesWhen:
+      - path: SDST_HYS_MODEL
+        equals: "IK2"
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+    properties:
+      - key: GAMMA
+        description: >-
+          Isotropic Factor (γ)
+        type: number
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
 
 sdkRules:
   - id: db-sdst-delete-per-id
@@ -188,13 +378,30 @@ extraction:
     - heading: "`SDST_HYS_MODEL` 별 하위 객체"
       line: 1533
       columns: [Default]
-  # Additional parameter tables in this section were NOT merged. They are
-  # usually conditional variants selected by a type/code field. Decide
-  # whether they belong in this contract's fields, as nested `properties`,
-  # or as a separate contract - do not assume the first table is the whole
-  # schema.
-  unmergedTables:
+  structuralTables:
     - heading: "`SDST_HYS_MODEL` 별 하위 객체"
-      resolution: "The hysteresis sub-object table enumerates object keys but does not state a complete field-level discriminator condition for each sub-object; left unmerged."
-      fields: 4
       line: 1533
+      paths: [BL2, LY2, LY3, IK2]
+      note: >-
+        Recorded as unmerged until 2026-09-04, on the reading that the table
+        "enumerates object keys but does not state a complete field-level
+        discriminator". It does state one: its Model column gives the literal
+        SDST_HYS_MODEL value for each row, and row 3 of the Specifications
+        table lists the same four literals against the same four objects. What
+        the table does not do is put the members in a Key column - they are in
+        a 하위 필드 cell - which is why the parser saw four names and no
+        members and this contract published four bare objects. Merged, with
+        each object's gate kept as `appliesWhen` on SDST_HYS_MODEL.
+  prose:
+    - line: 1291
+      quote: >-
+        | (1) | Name | `"NAME"` | String | Required | ... | (6) | Type Number |
+        `"TYPE_NUMBER"` | String | Required |  (section 16, /db/SDVI)
+      paths: [COMMON.NAME, COMMON.DESC, COMMON.INPUT_METHOD, COMMON.COMPANY,
+              COMMON.PRODUCT_NAME, COMMON.TYPE_NUMBER]
+    - line: 1536
+      quote: >-
+        | `"BL2"` | `"BL2"` | `BETA`(Exponent in Unloading Stiffness
+        Calculation) | ... | `"IK2"` | `"IK2"` | `GAMMA`(Isotropic Factor) |
+      paths: [BL2.BETA, LY2.ALPHA2, LY2.THETA, LY3.ALPHA2, LY3.THETA,
+              LY3.GAMMA, IK2.GAMMA]

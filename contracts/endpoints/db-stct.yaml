@@ -163,23 +163,35 @@ extraction:
       resolution: "The supplementary tables describe analysis options and partial conditions, but no complete discriminator condition applies to each field set; left unmerged."
       fields: 3
       line: 2046
+      fieldNames: ["vEREC", "LTYPECC", "EREC", "vLCNAME", "bSDLE", "vSDLE"]
     - heading: Parameters — Cable-Pretension / Initial Force Control
       resolution: "The supplementary tables describe analysis options and partial conditions, but no complete discriminator condition applies to each field set; left unmerged."
       fields: 7
       line: 2066
+      fieldNames: ["CPFC", "bEXT_REPL", "bCONV", "bTRUSS", "bBEAM", "bCHANGE_CABLE",
+                   "bAPPLY_IMF"]
     - heading: Parameters — Initial Displacement / Camber / 기타
       resolution: "The supplementary tables describe analysis options and partial conditions, but no complete discriminator condition applies to each field set; left unmerged."
       fields: 12
       line: 2078
+      fieldNames: ["bITD", "ITD", "GROUP", "bLFFC", "LFFGR", "bCAMBER", "bCALC_CFF",
+                   "bCALC_CSP", "bSELFCONS", "bSAVE_OCS", "bSD", "iSDOPT", "SDCONST",
+                   "iBSC"]
     - heading: "Parameters — Linear & Independent Stage"
       resolution: "The supplementary tables describe analysis options and partial conditions, but no complete discriminator condition applies to each field set; left unmerged."
       fields: 3
       line: 2101
+      fieldNames: ["bINC_PDL", "iITER", "TOL"]
     - heading: "Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2)"
       resolution: "The supplementary tables describe analysis options and partial conditions, but no complete discriminator condition applies to each field set; left unmerged."
       fields: 9
       line: 2109
+      fieldNames: ["iLSTEP", "iMAXITER", "CF", "BSSTEP", "ADSTEP", "bENEG", "EV", "bDISP",
+                   "DV", "bFORC", "FV", "bIEMF"]
     - heading: "Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)"
       resolution: "The supplementary tables describe analysis options and partial conditions, but no complete discriminator condition applies to each field set; left unmerged."
       fields: 15
       line: 2123
+      fieldNames: ["bINC_TDE", "bCNS", "TYPE", "iITER_CR", "TOL_CR", "bOUCC", "bITS",
+                   "iITS", "bATS", "iT10", "iT100", "iT1K", "iT5K", "iT10K", "bTTLE_CS",
+                   "bRCE", "bVAR", "bTTLE_ES", "iTTLE_ES", "bAPPLY_ELA"]

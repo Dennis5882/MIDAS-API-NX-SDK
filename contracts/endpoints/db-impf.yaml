@@ -145,7 +145,10 @@ extraction:
       resolution: "The lane and span-mode tables name modes but do not state a wire discriminator tying a record to each table; left unmerged."
       fields: 5
       line: 2760
+      fieldNames: ["ID", "LANE_TYPE", "LANE_NAME", "FACT_TYPE", "FACTOR"]
     - heading: Line Lane (Effective Span Length – Auto Calculation)
       resolution: "The lane and span-mode tables name modes but do not state a wire discriminator tying a record to each table; left unmerged."
       fields: 7
       line: 2770
+      fieldNames: ["ID", "LANE_TYPE", "LANE_NAME", "ELEMTYPE", "FACT_TYPE", "PARTS",
+                   "COMPONENTS"]

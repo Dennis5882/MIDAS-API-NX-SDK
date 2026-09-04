@@ -114,6 +114,322 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+  - key: DEFAULT
+    description: >-
+      General Load 데이터
+    type: object
+    requirement: conditional
+    condition: 'TYPE=0 (General)'
+    appliesWhen:
+      - path: TYPE
+        equals: 0
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+    # RESOLVED: stated elsewhere in the same section - row 3 of the
+    # "Parameters - 공통" table documents TYPE as the selector (0=General,
+    # 1=Permit, 2=Optimization) and the section carries one Request
+    # Example per value, each sending exactly one of these objects. The
+    # parser reads table rows, so it took the three common fields and none
+    # of the three objects the examples put them beside; this contract
+    # published LCNAME/DESC/TYPE and nothing to carry the load case until
+    # 2026-09-04. GET /info/db/MVLD declares DEFAULT, PERMIT_LOAD,
+    # AUTO_OPTIMIZE and ASL. Each object's own members are the field lists
+    # this contract declares incomplete under extraction.unmergedTables;
+    # what is recorded here is what the section's Request Examples send.
+    properties:
+      - key: SCALE_FACTORS
+        description: >-
+          차선 수별 스케일 계수
+        type: array
+        items:
+          type: number
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: COMB_OPTION
+        description: >-
+          조합 옵션
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: LANE_FACTOR_TYPE
+        description: >-
+          Lane Factor 종류
+        type: integer
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: SUB_LOAD_DATAS
+        description: >-
+          Sub Load Case 목록
+        type: array
+        items:
+          type: object
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: VEHICLE_TYPE
+            description: >-
+              Vehicle Type ("VL" / "VC")
+            type: string
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: VEHICLE_NAME
+            description: >-
+              Vehicle Name
+            type: string
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: SCALE_FACTOR
+            description: >-
+              Scale Factor
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: MIN_LOADED_LANE
+            description: >-
+              Min. Number of Loaded Lanes
+            type: integer
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: MAX_LOADED_LANE
+            description: >-
+              Max. Number of Loaded Lanes
+            type: integer
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: LANE_NAMES
+            description: >-
+              Lane Names
+            type: array
+            items:
+              type: string
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+  - key: PERMIT_LOAD
+    description: >-
+      Permit Vehicle 데이터
+    type: object
+    requirement: conditional
+    condition: 'TYPE=1 (Permit)'
+    appliesWhen:
+      - path: TYPE
+        equals: 1
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+    properties:
+      - key: VEHICLE_LOAD_NAME
+        description: >-
+          Vehicle Load Name
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: REF_LANE
+        description: >-
+          Reference Lane
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: SCALE_FACTOR
+        description: >-
+          Scale Factor
+        type: number
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+  - key: AUTO_OPTIMIZE
+    description: >-
+      Moving Load Optimization 데이터
+    type: object
+    requirement: conditional
+    condition: 'TYPE=2 (Optimization)'
+    appliesWhen:
+      - path: TYPE
+        equals: 2
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+    properties:
+      - key: LANE_NAME
+        description: >-
+          Lane Name
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: SCALE_FACTORS
+        description: >-
+          차선 수별 스케일 계수
+        type: array
+        items:
+          type: number
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: MIN_VEHL_DIST
+        description: >-
+          Minimum Vehicle Distance
+        type: number
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: MIN_NUM_VEHICLE
+        description: >-
+          Min. Number of Vehicles
+        type: integer
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: MAX_NUM_VEHICLE
+        description: >-
+          Max. Number of Vehicles
+        type: integer
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: OPTIMIZE_ITEMS
+        description: >-
+          최적화 대상 차량 목록
+        type: array
+        items:
+          type: object
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: VEHICLE_TYPE
+            description: >-
+              Vehicle Type ("VL" / "VC")
+            type: string
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: VEHICLE_NAME
+            description: >-
+              Vehicle Name
+            type: string
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: SCALE_FACTOR
+            description: >-
+              Scale Factor
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+  - key: ASL
+    description: >-
+      Australia Heavy Load Platform 병용 데이터
+    type: object
+    requirement: conditional
+    condition: 'Australia, LOAD_MODEL=2 (Heavy Load Platform)'
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+    # RESOLVED: the manual flags it in its own callout - the ⚠️ note at
+    # line 1452 says Heavy Load Platform (`LOAD_MODEL=2`) uses a separate
+    # `ASL` object "DEFAULT 대신/함께", and the bold table label at line 1463
+    # repeats the gate. No `appliesWhen` accompanies the condition: the
+    # gate is DEFAULT.LOAD_MODEL, which lives in a table this contract
+    # declares unmerged, so there is no field path here to name.
+    properties:
+      - key: MULTIPLE_FACTOR
+        description: >-
+          Unobstructed Lane Scale Factor
+        type: number
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: VEHICLE_LOAD_NAME
+        description: >-
+          Load Case Data — Heavy Load 차량 이름
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: VEHICLE_LOAD_NAME2
+        description: >-
+          Load Case Data — M1600/S1600 차량 이름
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: MIN_LOADED_LANE
+        description: >-
+          Min. Number of Loaded Lanes
+        type: integer
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
 
 variants:
   - when:
@@ -389,15 +705,62 @@ extraction:
       resolution: "the manual labels these national/default field groups but gives no wire selector value; left unmerged"
       fields: 4
       line: 1423
+      fieldNames: ["LANE_FACTOR_TYPE", "SCALE_FACTORS", "COMB_OPTION", "SUB_LOAD_DATAS",
+                   "VEHICLE_TYPE", "VEHICLE_NAME", "SCALE_FACTOR", "MIN_LOADED_LANE",
+                   "MAX_LOADED_LANE", "LANE_NAMES"]
     - heading: Parameters – DEFAULT (Korea – 추가 필드)
       resolution: "the manual labels these national/default field groups but gives no wire selector value; left unmerged"
       fields: 5
       line: 1438
+      fieldNames: ["LANE_FACTOR_TYPE", "_2_LANE_FACTOR_1", "_2_LANE_FACTOR_2",
+                   "_3_LANE_FACTOR_1", "_3_LANE_FACTOR_2", "_3_LANE_FACTOR_3",
+                   "_3_LANE_FACTOR_4"]
     - heading: Parameters – DEFAULT (Australia – 추가 필드)
       resolution: "the manual labels these national/default field groups but gives no wire selector value; left unmerged"
       fields: 3
       line: 1456
+      fieldNames: ["LOAD_MODEL", "LOAD_COMB_TYPE", "FATIGUE"]
     - heading: Parameters – DEFAULT (Russia – 추가 필드)
       resolution: "the manual labels these national/default field groups but gives no wire selector value; left unmerged"
       fields: 1
       line: 1481
+      fieldNames: ["LOAD_COMB_TYPE"]
+  prose:
+    - line: 1346
+      quote: >-
+        "TYPE": 0, "DEFAULT": { "SCALE_FACTORS": [...], "COMB_OPTION":
+        "COMBINED", "LANE_FACTOR_TYPE": 1, "SUB_LOAD_DATAS": [ ... ] }
+      paths: [DEFAULT, DEFAULT.SCALE_FACTORS, DEFAULT.COMB_OPTION,
+              DEFAULT.LANE_FACTOR_TYPE, DEFAULT.SUB_LOAD_DATAS,
+              DEFAULT.SUB_LOAD_DATAS.VEHICLE_TYPE,
+              DEFAULT.SUB_LOAD_DATAS.VEHICLE_NAME,
+              DEFAULT.SUB_LOAD_DATAS.SCALE_FACTOR,
+              DEFAULT.SUB_LOAD_DATAS.MIN_LOADED_LANE,
+              DEFAULT.SUB_LOAD_DATAS.MAX_LOADED_LANE,
+              DEFAULT.SUB_LOAD_DATAS.LANE_NAMES]
+    - line: 1377
+      quote: >-
+        "TYPE": 1, "PERMIT_LOAD": { "VEHICLE_LOAD_NAME": "UD_PermitTruck",
+        "REF_LANE": "LL_01", "SCALE_FACTOR": 1 }
+      paths: [PERMIT_LOAD, PERMIT_LOAD.VEHICLE_LOAD_NAME, PERMIT_LOAD.REF_LANE,
+              PERMIT_LOAD.SCALE_FACTOR]
+    - line: 1398
+      quote: >-
+        "TYPE": 2, "AUTO_OPTIMIZE": { "LANE_NAME": "LL_01", "SCALE_FACTORS":
+        [...], "MIN_VEHL_DIST": 1, "MIN_NUM_VEHICLE": 1, "MAX_NUM_VEHICLE": 2,
+        "OPTIMIZE_ITEMS": [{"VEHICLE_TYPE": "VL", "VEHICLE_NAME": "HL-93TRK",
+        "SCALE_FACTOR": 1}] }
+      paths: [AUTO_OPTIMIZE, AUTO_OPTIMIZE.LANE_NAME,
+              AUTO_OPTIMIZE.SCALE_FACTORS, AUTO_OPTIMIZE.MIN_VEHL_DIST,
+              AUTO_OPTIMIZE.MIN_NUM_VEHICLE, AUTO_OPTIMIZE.MAX_NUM_VEHICLE,
+              AUTO_OPTIMIZE.OPTIMIZE_ITEMS,
+              AUTO_OPTIMIZE.OPTIMIZE_ITEMS.VEHICLE_TYPE,
+              AUTO_OPTIMIZE.OPTIMIZE_ITEMS.VEHICLE_NAME,
+              AUTO_OPTIMIZE.OPTIMIZE_ITEMS.SCALE_FACTOR]
+    - line: 1463
+      quote: >-
+        **ASL (Australia Heavy Load Platform 병용, `LOAD_MODEL`=2)** - rows 1 to
+        4: MULTIPLE_FACTOR, VEHICLE_LOAD_NAME, VEHICLE_LOAD_NAME2,
+        MIN_LOADED_LANE
+      paths: [ASL, ASL.MULTIPLE_FACTOR, ASL.VEHICLE_LOAD_NAME,
+              ASL.VEHICLE_LOAD_NAME2, ASL.MIN_LOADED_LANE]

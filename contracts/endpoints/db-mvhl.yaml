@@ -343,6 +343,471 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
+  - key: VEH_EUROCODE
+    description: >-
+      EUROCODE Moving Load Code
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SUB_TYPE
+        description: >-
+          SUB_TYPE
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        # RESOLVED: declared by /info and absent from the manual - the
+        # whole manual was searched for VEH_EUROCODE, and section 10's
+        # Specifications table documents VEH_DEFAULT and no country object
+        # at all. This one was read off a real Eurocode "Load Model 1"
+        # vehicle (MVLD_CODE 11) on 2026-07-30, which used VEH_EUROCODE
+        # instead of VEH_DEFAULT and omitted STANDARD_CODE entirely; see
+        # docs/live_verification_notes.md. requirement stays `unstated`
+        # throughout: an /info schema declares no `required` array and the
+        # manual made no claim to normalise. Three load-model-specific
+        # arrays /info also declares - LOADCASES, VEHICLES and PERMIT_LOAD
+        # - are deliberately not transcribed: they are branch trees for
+        # LM1/LM2/LM3 and rail HSLM-A/B that no permitted source describes
+        # a gate for, the same treatment SECT_I's tree has. See MD-48.
+      - key: SEL_VEHICLE
+        description: >-
+          Select Vehicle
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: AMP
+        description: >-
+          Amplification
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: AMP2
+        description: >-
+          Amplification2
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: AMP_VALUES
+        description: >-
+          Amplification Value Array
+        type: array
+        items:
+          type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TANDEM_ADJUST_VALUES
+        description: >-
+          Tandem System Adjustment Factor Array
+        type: array
+        items:
+          type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TANDEM_LOADS
+        description: >-
+          Tandem System Axle Loads Array
+        type: array
+        items:
+          type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: UDL_ADJUST_VALUES
+        description: >-
+          UDL System Adjustment Factor Array
+        type: array
+        items:
+          type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: UDL_LOADS
+        description: >-
+          UDL System Uniformly Dist. Loads Array
+        type: array
+        items:
+          type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: USE_DYNAMIC_FACTOR2_0
+        description: >-
+          Use Dynamic Amplication Factor 2_0
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: USE_DYNAMIC_FACTOR2_1
+        description: >-
+          Use Dynamic Amplication Factor 2_1
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: USE_POINT_LOAD3_0
+        description: >-
+          Use Point Load 3_0
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: USE_POINT_LOAD3_1
+        description: >-
+          Use Point Load 3_1
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: VAR_SPACING
+        description: >-
+          Use Variable Axle Spacing
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: MAX_SPACING
+        description: >-
+          Max. Spacing
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: MIN_SPACING
+        description: >-
+          Min. Spacing
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: WHEEL_SPACING
+        description: >-
+          Wheel Spacing for Static Load
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: LM3_LOADCASE1
+        description: >-
+          LM3 Load Case1 Boolean
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: LM3_LOADCASE2
+        description: >-
+          LM3 Load Case2 Boolean
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ADJUSTMENT
+        description: >-
+          Adjustment Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ADJUSTMENT2
+        description: >-
+          Adjustment2 Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: AXLE_NUM
+        description: >-
+          Axle No.
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FOOTWAY
+        description: >-
+          Footway
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: INTERVAL
+        description: >-
+          Two Vehicle Interval
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DYNAMIC_FACTOR
+        description: >-
+          Dynamic Amplification Factor
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: USER_INPUT
+        description: >-
+          User Input
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DSPACE
+        description: >-
+          Space
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: W1
+        description: >-
+          W1
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DD1
+        description: >-
+          DD1
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: D1
+        description: >-
+          D1
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: W2
+        description: >-
+          W2
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DD2
+        description: >-
+          DD2
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: D2
+        description: >-
+          D2
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PRESSURE_LOAD
+        description: >-
+          Pressure Load
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: V_LOAD_FACTOR
+        description: >-
+          Eccentricity of Lateral Displacement of Vertival Loads Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: LONGI_DIST
+        description: >-
+          Consider Longitudinal Distrtibution of Point Loads
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DIST_RAIL_SUPPORT
+        description: >-
+          Distance between Rail Support Points
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ECCEN_VERT_LOAD
+        description: >-
+          Eccentricity of Lateral Displacement of Vertical Loads
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ECCEN_VERT_LOAD_VALUE
+        description: >-
+          Eccentricity of Lateral Displacement of Vertical Loads Value
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HSLMA_NUM
+        description: >-
+          HSLMA Number
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HSLMA_LENGTH
+        description: >-
+          HSLMA Length
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HSLMA_SPACING
+        description: >-
+          HSLMA Spacing
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HSLMA_FORCE
+        description: >-
+          HSLMA Force
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HSLMB_NUM
+        description: >-
+          HSLMB Number
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HSLMB_FORCE
+        description: >-
+          HSLMB Force
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HSLMB_DIST
+        description: >-
+          HSLMB Distance
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PHI_DYN_EFF1
+        description: >-
+          PhiDynEff 1
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PHI_DYN_EFF2
+        description: >-
+          PhiDynEff 2
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
 
 variants:
   - when:
@@ -1072,6 +1537,8 @@ extraction:
         members.
       fields: 10
       line: 859
+      fieldNames: ["UNIFORM_LOAD", "DYN_LOAD_ALLOWANCE", "W1", "W2", "D1", "D2", "PL",
+                   "PLM", "PLV", "CENT_F"]
     - heading: "Parameters – LOAD_ITEMS (사용자 정의 차량)"
       resolution: >-
         Merged as nested properties of the field this table describes, not as
@@ -1079,6 +1546,7 @@ extraction:
         members.
       fields: 2
       line: 874
+      fieldNames: ["POINT_LOAD", "POINT_DIST"]
     - heading: "Parameters – VEH_KSCE_LSD15 (`STANDARD_CODE: \"KSCE-LSD15\"` 전용)"
       resolution: >-
         Merged as a STANDARD_CODE variant, with the table's rows nested under the
@@ -1090,6 +1558,11 @@ extraction:
         object of this name.
       fields: 16
       line: 883
+      fieldNames: ["LOAD_TYPE", "LOADED_LENGTH", "W1", "W2", "D1", "D2", "EXP",
+                   "DYN_LOAD_ALLOWANCE", "LENGTH_LANE", "LENGTH_LANE_USER",
+                   "CONVERT_DIST_LOAD", "UNIFORM_LOAD_NUM", "UNIFORM_LOAD_DIST",
+                   "UNIFORM_LOAD_W", "UNIFORM_LOAD_LOAD_LENGTH_L", "POINT_ITEMS",
+                   "POINT_LOAD", "POINT_DIST", "POINT_DIST2"]
     - heading: "VEH_CA (Canada, STANDARD_CODE: \"CANADA\")"
       resolution: >-
         Merged as a STANDARD_CODE variant, with the table's rows nested under the
@@ -1101,6 +1574,9 @@ extraction:
         object of this name.
       fields: 8
       line: 977
+      fieldNames: ["DYNA_FACTOR", "DYNA", "DYNA_FACT_1_AXLE", "DYNA_FACT_2_AXLE",
+                   "DYNA_FACT_3_AXLE", "UNIFORM_LOAD", "LOAD_ITEMS", "PERMIT_LOAD",
+                   "IMPACT_FACTOR", "AXLE_TYPES", "PERMIT_LOADS"]
     - heading: "VEH_AU (Australia, STANDARD_CODE: \"AUSTRALIA\")"
       resolution: >-
         Merged as a STANDARD_CODE variant, with the table's rows nested under the
@@ -1112,6 +1588,9 @@ extraction:
         object of this name.
       fields: 12
       line: 1009
+      fieldNames: ["DYN_LOAD_ALLOWANCE", "FATIGUE", "DYN_LOAD_ALLOWANCE2", "INCRE_LENGTH",
+                   "W2", "VAR_SPACING", "UNIFORM_LOAD", "LOAD_ITEMS", "W1", "D1",
+                   "GROUP_NUM", "PERMIT_LOAD"]
     - heading: "VEH_ZA (South Africa, STANDARD_CODE: \"NA\"/\"NB\"/\"NC\")"
       resolution: >-
         Merged as a STANDARD_CODE variant, with the table's rows nested under the
@@ -1123,6 +1602,9 @@ extraction:
         object of this name.
       fields: 17
       line: 1049
+      fieldNames: ["INCRE_LENGTH", "INCRE_LENGTH_VALUE", "UNIT_NUM", "OPPOSITE", "W1", "W2",
+                   "W3", "LOADED_LENGTH", "PA", "PB", "D1", "D2", "DELTA", "PRESSURE_LOAD",
+                   "NUM_LOAD_ARRAY", "POINT_DIST_ARRAY", "PERMIT_LOAD"]
     - heading: "VEH_CN (China, STANDARD_CODE는 JTG/JTJ/CJJ/TB 등 원문 표 참고)"
       resolution: >-
         Left unmerged. The heading says the STANDARD_CODE values are in the
@@ -1132,6 +1614,11 @@ extraction:
         select it.
       fields: 27
       line: 1092
+      fieldNames: ["IMPACT_COEF", "CROWD_WIDTH", "DD", "TRUCK_TYPE", "P_", "QM", "QQ", "PA",
+                   "D1", "PB", "D2", "W_TRAILER", "D_TRAILER", "LOAD_ITEMS", "TRAIN_TYPE",
+                   "W1", "W2", "FD", "BD", "P_SUBWAY", "D_SUBWAY", "CARRIAGE_DIST",
+                   "NUM_CARRIAGE", "P_OPPOSITE", "LOAD_ITEMS2", "VEHICLE_LOAD_USER_NUM",
+                   "W_CROWD", "W_PRES_1", "W_PRES_2", "DB"]
     - heading: "VEH_PL (Poland, STANDARD_CODE는 원문 표 참고)"
       resolution: >-
         Left unmerged. The heading says the STANDARD_CODE values are in the
@@ -1141,6 +1628,10 @@ extraction:
         select it.
       fields: 13
       line: 1141
+      fieldNames: ["SEL_VEHICLE", "SUB_TYPE", "PRESSURE_LOAD", "DSPACE",
+                   "DYNAMIC_AMP_FACTOR", "USER_INPUT", "AMP", "LOAD_ITEMS",
+                   "NOSE_TAIL_DIST", "NUM_VEHICLE", "TOTAL_LOAD", "TRACKED_LENGTH",
+                   "WHEEL_SPACING", "PERMIT_LOAD"]
   # The chapter names nine country objects and tables five of them. VEH_BS,
   # VEH_EUROCODE, VEH_RU and VEH_IN are named in the 2026-08-25 callout with
   # no table at all - its own words are that the sources are too large and

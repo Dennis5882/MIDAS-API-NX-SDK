@@ -2020,18 +2020,61 @@ export namespace DbBoundaryTypes {
   export interface SeismicDeviceSteelDamperIK2 {
     GAMMA?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SeismicDeviceSteelDamperPayload {
-    COMMON?: SeismicDeviceCommon;
-    DIR?: string;
-    SDST_HYS_MODEL?: string;
-    K0?: number;
-    P1?: number;
-    ALPHA1?: number;
-    KB?: number;
-    BL2?: SeismicDeviceSteelDamperBL2;
-    LY2?: SeismicDeviceSteelDamperLY2;
-    LY3?: SeismicDeviceSteelDamperLY3;
-    IK2?: SeismicDeviceSteelDamperIK2;
+    /** Common Data */
+    COMMON: {
+      /** Name */
+      NAME: string;
+      /** Description */
+      DESC?: string;
+      /** Input Method · 0=사용자 입력, 1=참조 DB */
+      INPUT_METHOD: number;
+      /** Company */
+      COMPANY: string;
+      /** Product Name */
+      PRODUCT_NAME: string;
+      /** Type Number */
+      TYPE_NUMBER: string;
+    };
+    /** Direction */
+    DIR: string;
+    /** Hysteresis Model · Degrading Bilinear: "BL2" / Low Yielding Steel(LY2): "LY2" / Low Yielding Steel(LY3): "LY3" / Isotropic-Kinematic(IK2): "IK2" */
+    SDST_HYS_MODEL: string;
+    /** Initial Stiffness (K0) */
+    K0: number;
+    /** Yield Strength (P1) */
+    P1: number;
+    /** Stiffness Factor (α1) */
+    ALPHA1: number;
+    /** Mounting Parts Stiffness (Kb) */
+    KB: number;
+    /** Degrading Bilinear 하위 데이터 Applies when SDST_HYS_MODEL = "BL2". */
+    BL2?: {
+      /** Exponent in Unloading Stiffness Calculation (β) */
+      BETA: number;
+    };
+    /** Low Yielding Steel (LY2) 하위 데이터 Applies when SDST_HYS_MODEL = "LY2". */
+    LY2?: {
+      /** Stiffness Factor (α2) */
+      ALPHA2: number;
+      /** Strength Factor (θ) */
+      THETA: number;
+    };
+    /** Low Yielding Steel (LY3) 하위 데이터 Applies when SDST_HYS_MODEL = "LY3". */
+    LY3?: {
+      /** Stiffness Factor (α2) */
+      ALPHA2: number;
+      /** Strength Factor (θ) */
+      THETA: number;
+      /** Stiffness Ratio (γ) */
+      GAMMA: number;
+    };
+    /** Isotropic-Kinematic (IK2) 하위 데이터 Applies when SDST_HYS_MODEL = "IK2". */
+    IK2?: {
+      /** Isotropic Factor (γ) */
+      GAMMA: number;
+    };
   }
   /** Generated from contracts/endpoints/. */
   export interface SeismicDeviceHystereticIsolatorPayload {

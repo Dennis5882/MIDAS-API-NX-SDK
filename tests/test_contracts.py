@@ -590,3 +590,26 @@ def test_field_parity_never_guesses_between_two_payloads_of_one_name():
     rc = collisions["StrengthReductionFactorsPayload"]["midas_nx.design.rc_kds.setup"]
     steel = collisions["StrengthReductionFactorsPayload"]["midas_nx.design.steel_kds"]
     assert set(rc.__annotations__) != set(steel.__annotations__)
+
+
+def test_every_unmerged_table_records_the_names_it_holds():
+    """A declared gap has to say what is in it, or it waives everything.
+
+    `fields` counts an unmerged table's rows. A count cannot be a waiver:
+    validate_contracts.py used to skip any contract carrying one, which left
+    214 wire names the SDKs ship unchecked across twenty contracts. Every entry
+    now names them, and scripts/extract_contracts.py --check verifies the list
+    still matches the table.
+    """
+    import yaml  # noqa: PLC0415
+
+    missing = []
+    for path in sorted((ROOT / "contracts" / "endpoints").glob("*.yaml")):
+        contract = yaml.safe_load(path.read_text(encoding="utf-8"))
+        for entry in (contract.get("extraction") or {}).get("unmergedTables", []):
+            names = entry.get("fieldNames")
+            if not names:
+                missing.append(f"{path.name}: {entry.get('heading')!r}")
+                continue
+            assert len(names) == len(set(names)), f"{path.name}: duplicate names"
+    assert not missing, "unmergedTables entries with no fieldNames: " + ", ".join(missing)

@@ -94,6 +94,69 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+    properties:
+      - key: NAME
+        description: >-
+          Name
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: stated in these sibling sections: section 16,
+        # `/db/SDVI`, whose 요청 파라미터 table gives COMMON's six members as
+        # rows (1) to (6) - this section's own row says "Common Data" and
+        # stops there. This section's Request Example sends five of the
+        # six, omitting COMPANY, and GET /info/db/SDIS declares all six
+        # with the same names and types. Until 2026-09-04 COMMON was an
+        # object with nothing in it, so the npm payload type offered a
+        # bare object where the server requires a name.
+      - key: DESC
+        description: >-
+          Description
+        type: string
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: INPUT_METHOD
+        description: >-
+          Input Method · 0=사용자 입력, 1=참조 DB
+        type: integer
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: COMPANY
+        description: >-
+          Company
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: PRODUCT_NAME
+        description: >-
+          Product Name
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: TYPE_NUMBER
+        description: >-
+          Type Number
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
   - key: SDIS_DEV_TYPE
     description: >-
       Device Type · "LRB" / "NRB" / "SLD"(데이터는 "SB" 객체에 담김)
@@ -219,11 +282,22 @@ extraction:
       resolution: "The LRB and NRB tables describe payload objects; their object-presence selection is not an explicit scalar discriminator; left unmerged."
       fields: 5
       line: 1714
+      fieldNames: ["SDIS_HYS_MODEL", "KE", "AR", "TR", "K0", "K2", "QD", "DX",
+                   "OPT_CONS_NONL", "BETA", "ALPHA", "SIGMA_V"]
     - heading: NRB 객체
       resolution: "The LRB and NRB tables describe payload objects; their object-presence selection is not an explicit scalar discriminator; left unmerged."
       fields: 1
       line: 1731
+      fieldNames: ["AR", "TR", "KH", "DX"]
     - heading: NRB 객체
       resolution: "The LRB and NRB tables describe payload objects; their object-presence selection is not an explicit scalar discriminator; left unmerged."
       fields: 1
       line: 1740
+      fieldNames: ["AS", "K0", "QD", "Pi_VALUE", "MU0"]
+  prose:
+    - line: 1291
+      quote: >-
+        | (1) | Name | `"NAME"` | String | Required | ... | (6) | Type Number |
+        `"TYPE_NUMBER"` | String | Required |  (section 16, /db/SDVI)
+      paths: [COMMON.NAME, COMMON.DESC, COMMON.INPUT_METHOD, COMMON.COMPANY,
+              COMMON.PRODUCT_NAME, COMMON.TYPE_NUMBER]

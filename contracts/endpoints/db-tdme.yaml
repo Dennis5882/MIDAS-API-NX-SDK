@@ -546,6 +546,7 @@ extraction:
         from table order.
       fields: 2
       line: 610
+      fieldNames: ["A", "B"]
     - heading: "`CEB-FIP(1990)` · `Ohzagi` · `European` · `INDIA(IRC:112-2011)` · `KCI-USD12` 전용 추가 필드"
       resolution: >-
         Merged as an explicit variant. The heading names CODENAME values rather
@@ -557,6 +558,7 @@ extraction:
         from table order.
       fields: 1
       line: 617
+      fieldNames: ["iCTYPE"]
     - heading: "`CEB-FIP(2010)` · `INDIA(IRC:112-2020)` 전용 추가 필드"
       resolution: >-
         Merged as an explicit variant. The heading names CODENAME values rather
@@ -568,6 +570,7 @@ extraction:
         from table order.
       fields: 2
       line: 623
+      fieldNames: ["iCTYPE", "nAGGRE"]
     - heading: "`Russian` 전용 추가 필드"
       resolution: >-
         Merged as an explicit variant. The heading names CODENAME values rather
@@ -579,6 +582,7 @@ extraction:
         from table order.
       fields: 5
       line: 630
+      fieldNames: ["iCTYPE", "CMETH", "CTYPE", "MAXS", "PZ"]
     - heading: "`GILBERT AND RANZI`, **`KDS-2016`** 전용 추가 필드"
       resolution: >-
         Merged as an explicit variant. The heading names CODENAME values rather
@@ -590,6 +594,7 @@ extraction:
         from table order.
       fields: 2
       line: 643
+      fieldNames: ["iCTYPE", "DENSITY"]
     - heading: "`Japan (Hydration)` 전용 추가 필드"
       resolution: >-
         Left out on purpose. This branch's CODENAME belongs to iGen, a different
@@ -599,6 +604,7 @@ extraction:
         here would say this API serves a value it does not.
       fields: 6
       line: 650
+      fieldNames: ["TENS_STRN_FACTOR", "bUSE", "A", "B", "D", "iCTYPE"]
     - heading: "`Japan (Elastic)` 전용 추가 필드"
       resolution: >-
         Left out on purpose. This branch's CODENAME belongs to iGen, a different
@@ -608,3 +614,4 @@ extraction:
         here would say this API serves a value it does not.
       fields: 1
       line: 661
+      fieldNames: ["iECTYPE"]

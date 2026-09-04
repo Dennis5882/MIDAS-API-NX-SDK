@@ -560,3 +560,4 @@ extraction:
       resolution: "The supplementary table follows an AIK-SRC2K prose label, but its table heading names no wire condition; left unmerged."
       fields: 3
       line: 3797
+      fieldNames: ["OPTION", "DGNCODE", "RS_SCALE_FACTOR", "LOAD_CASE", "FACTOR"]

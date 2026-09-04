@@ -252,15 +252,23 @@ extraction:
       resolution: "The LOAD_MODEL tables are nested under separate General Load and Moving Load Optimization groups. Their complete gates also depend on the enclosing bAUTO_OPTIMIZE/bPERMIT_LOAD state, which these table headings do not repeat; left unmerged so repeated LOAD_MODEL values cannot be published as overlapping variants."
       fields: 2
       line: 2175
+      fieldNames: ["DEFAULT", "COMB_OPTION", "SUB_LOAD_DATAS", "VEHICLE_NAME",
+                   "SCALE_FACTOR", "MIN_LOADED_LANE", "MAX_LOADED_LANE", "LANE_NAMES"]
     - heading: Vehicle K/Military(LOAD_MODEL=2/3)
       resolution: "The LOAD_MODEL tables are nested under separate General Load and Moving Load Optimization groups. Their complete gates also depend on the enclosing bAUTO_OPTIMIZE/bPERMIT_LOAD state, which these table headings do not repeat; left unmerged so repeated LOAD_MODEL values cannot be published as overlapping variants."
       fields: 2
       line: 2183
+      fieldNames: ["DEFAULT", "VEHICLE_LOAD_NAME", "SUB_LOAD_DATAS", "LANE_NAMES"]
     - heading: Vehicle S/2S(LOAD_MODEL=1)
       resolution: "The LOAD_MODEL tables are nested under separate General Load and Moving Load Optimization groups. Their complete gates also depend on the enclosing bAUTO_OPTIMIZE/bPERMIT_LOAD state, which these table headings do not repeat; left unmerged so repeated LOAD_MODEL values cannot be published as overlapping variants."
       fields: 2
       line: 2189
+      fieldNames: ["AUTO_OPTIMIZE", "MIN_VEHL_DIST", "LANE_NAME", "MIN_NUM_VEHICLE",
+                   "MAX_NUM_VEHICLE", "COMB_OPTION", "OPTIMIZE_ITEMS", "VEHICLE_TYPE",
+                   "VEHICLE_NAME", "SCALE_FACTOR"]
     - heading: Vehicle K/Military(LOAD_MODEL=2/3)
       resolution: "The LOAD_MODEL tables are nested under separate General Load and Moving Load Optimization groups. Their complete gates also depend on the enclosing bAUTO_OPTIMIZE/bPERMIT_LOAD state, which these table headings do not repeat; left unmerged so repeated LOAD_MODEL values cannot be published as overlapping variants."
       fields: 1
       line: 2199
+      fieldNames: ["AUTO_OPTIMIZE", "VEHICLE_LOAD_NAME", "MIN_VEHL_DIST", "LANE_NAME",
+                   "NUM_LOADED_LANES"]

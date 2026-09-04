@@ -213,35 +213,44 @@ extraction:
       resolution: "the discriminator is the pair (TYPE, STYPE): TYPE's wire values are in the chapter's footnoted element type code table rather than in these headings, and STYPE's values repeat across types - 1 is Truss under TENSTR and COMPTR but Membrane under WALL - so no heading here names a unique selector"
       fields: 1
       line: 202
+      fieldNames: ["ANGLE"]
     - heading: "Tension only — Truss (STYPE: 1)"
       resolution: "the discriminator is the pair (TYPE, STYPE): TYPE's wire values are in the chapter's footnoted element type code table rather than in these headings, and STYPE's values repeat across types - 1 is Truss under TENSTR and COMPTR but Membrane under WALL - so no heading here names a unique selector"
       fields: 5
       line: 208
+      fieldNames: ["ANGLE", "STYPE", "TENS", "T_LIMIT", "T_bLMT"]
     - heading: "Tension only — Hook (STYPE: 2)"
       resolution: "the discriminator is the pair (TYPE, STYPE): TYPE's wire values are in the chapter's footnoted element type code table rather than in these headings, and STYPE's values repeat across types - 1 is Truss under TENSTR and COMPTR but Membrane under WALL - so no heading here names a unique selector"
       fields: 3
       line: 218
+      fieldNames: ["ANGLE", "STYPE", "NON_LEN"]
     - heading: "Tension only — Cable (STYPE: 3)"
       resolution: "the discriminator is the pair (TYPE, STYPE): TYPE's wire values are in the chapter's footnoted element type code table rather than in these headings, and STYPE's values repeat across types - 1 is Truss under TENSTR and COMPTR but Membrane under WALL - so no heading here names a unique selector"
       fields: 5
       line: 226
+      fieldNames: ["ANGLE", "STYPE", "CABLE", "TENS", "NON_LEN"]
     - heading: "Compression only — Truss (STYPE: 1)"
       resolution: "the discriminator is the pair (TYPE, STYPE): TYPE's wire values are in the chapter's footnoted element type code table rather than in these headings, and STYPE's values repeat across types - 1 is Truss under TENSTR and COMPTR but Membrane under WALL - so no heading here names a unique selector"
       fields: 5
       line: 236
+      fieldNames: ["ANGLE", "STYPE", "TENS", "T_bLMT", "T_LIMIT"]
     - heading: "Compression only — Gap (STYPE: 2)"
       resolution: "the discriminator is the pair (TYPE, STYPE): TYPE's wire values are in the chapter's footnoted element type code table rather than in these headings, and STYPE's values repeat across types - 1 is Truss under TENSTR and COMPTR but Membrane under WALL - so no heading here names a unique selector"
       fields: 3
       line: 246
+      fieldNames: ["ANGLE", "STYPE", "NON_LEN"]
     - heading: Wall
       resolution: "the discriminator is the pair (TYPE, STYPE): TYPE's wire values are in the chapter's footnoted element type code table rather than in these headings, and STYPE's values repeat across types - 1 is Truss under TENSTR and COMPTR but Membrane under WALL - so no heading here names a unique selector"
       fields: 5
       line: 254
+      fieldNames: ["ANGLE", "STYPE", "WALL", "W_CON", "W_TYPE"]
     - heading: Plate
       resolution: "the discriminator is the pair (TYPE, STYPE): TYPE's wire values are in the chapter's footnoted element type code table rather than in these headings, and STYPE's values repeat across types - 1 is Truss under TENSTR and COMPTR but Membrane under WALL - so no heading here names a unique selector"
       fields: 2
       line: 264
+      fieldNames: ["ANGLE", "STYPE"]
     - heading: Plane Stress
       resolution: "the discriminator is the pair (TYPE, STYPE): TYPE's wire values are in the chapter's footnoted element type code table rather than in these headings, and STYPE's values repeat across types - 1 is Truss under TENSTR and COMPTR but Membrane under WALL - so no heading here names a unique selector"
       fields: 2
       line: 271
+      fieldNames: ["ANGLE", "STYPE"]

@@ -227,43 +227,58 @@ extraction:
       resolution: "The code-specific tables name standards, but the headings do not state precise wire selector values for every table; left unmerged."
       fields: 1
       line: 65
+      fieldNames: ["aFUNC", "PERIOD", "VALUE"]
     - heading: "KDS(41-17-00:2019) 추가 파라미터"
       resolution: "The code-specific tables name standards, but the headings do not state precise wire selector values for every table; left unmerged."
       fields: 4
       line: 116
+      fieldNames: ["STR", "SPEC_CODE", "OPT", "SC_", "iSEISZONE", "VAL", "aSRA", "aSCP",
+                   "PERIOD", "IE", "R_", "ZONEFACTOR", "CALC_OPT"]
     - heading: "KDS(17-10-00:2018) 추가 파라미터"
       resolution: "The code-specific tables name standards, but the headings do not state precise wire selector values for every table; left unmerged."
       fields: 4
       line: 134
+      fieldNames: ["SC_", "iSEISZONE", "aSCP", "PERIOD", "IE"]
     - heading: KS_BRG (한국 교량) 추가 파라미터
       resolution: "The code-specific tables name standards, but the headings do not state precise wire selector values for every table; left unmerged."
       fields: 5
       line: 144
+      fieldNames: ["EPA", "PERIOD", "SPTYPE", "IE", "R_"]
     - heading: EURO2004 주요 추가 파라미터
       resolution: "The code-specific tables name standards, but the headings do not state precise wire selector values for every table; left unmerged."
       fields: 3
       line: 230
+      fieldNames: ["SPECTYPE", "GROUTYPE", "NATIONALANNEX"]
     - heading: GB50011-2010 추가 파라미터
       resolution: "The code-specific tables name standards, but the headings do not state precise wire selector values for every table; left unmerged."
       fields: 9
       line: 288
+      fieldNames: ["SFI", "SC_", "EQ_", "NSC", "nLForce", "aTG", "DP", "MaxEQ", "PERIOD"]
     - heading: JPN2000(Arch.2000) 추가 파라미터
       resolution: "The code-specific tables name standards, but the headings do not state precise wire selector values for every table; left unmerged."
       fields: 4
       line: 334
+      fieldNames: ["iSEISZONEFACTOR", "SOILCLASS", "PERIOD", "CO"]
     - heading: JPN2000(Arch.2000) 추가 파라미터
       resolution: "The code-specific tables name standards, but the headings do not state precise wire selector values for every table; left unmerged."
       fields: 5
       line: 343
+      fieldNames: ["SOILCLASS", "iSEISZONE", "iEQMETHOD", "PERIOD", "CZ"]
     - heading: Taiwan(2022) 추가 파라미터
       resolution: "The code-specific tables name standards, but the headings do not state precise wire selector values for every table; left unmerged."
       fields: 15
       line: 391
+      fieldNames: ["SOILCLASS", "iSEISZONE", "iSPECTYPE", "iSPECUSE", "iSUBZONE", "aSRA",
+                   "aSRA_T", "aNSF", "aSMF", "DP", "PERIOD", "IF", "SMFACTOR", "RMFACTOR",
+                   "FUNDAMENTAL_PERIOD"]
     - heading: 공통 추가 파라미터 (3개 코드 공통)
       resolution: "The code-specific tables name standards, but the headings do not state precise wire selector values for every table; left unmerged."
       fields: 8
       line: 449
+      fieldNames: ["SOILCLASS", "iSEISZONE", "DP", "PERIOD", "IE", "R_", "DPFAC",
+                   "USERDEFSEISZONE"]
     - heading: Canada NBC95 추가 파라미터
       resolution: "The code-specific tables name standards, but the headings do not state precise wire selector values for every table; left unmerged."
       fields: 4
       line: 502
+      fieldNames: ["ZA", "ZV", "PERIOD", "V"]

@@ -183,15 +183,19 @@ extraction:
       resolution: "The supplementary tables label spring modes, but do not explicitly state TYPE equals a value at each table; left unmerged."
       fields: 1
       line: 167
+      fieldNames: ["SDR", "F_S", "DAMPING", "Cr"]
     - heading: COMP(Compression-Only) / TENS(Tension-Only) 전용
       resolution: "The supplementary tables label spring modes, but do not explicitly state TYPE equals a value at each table; left unmerged."
       fields: 1
       line: 176
+      fieldNames: ["STIFF", "DIR", "DV"]
     - heading: MULTI(Multi-Linear) 전용
       resolution: "The supplementary tables label spring modes, but do not explicitly state TYPE equals a value at each table; left unmerged."
       fields: 1
       line: 184
+      fieldNames: ["FUNCTION", "DIR", "DV"]
     - heading: "By Surface Spring Function 전용(`FormType`=1일 때 공통 추가)"
       resolution: "The supplementary tables label spring modes, but do not explicitly state TYPE equals a value at each table; left unmerged."
       fields: 1
       line: 192
+      fieldNames: ["EFFAREA", "DK"]

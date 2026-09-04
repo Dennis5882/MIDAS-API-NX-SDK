@@ -141,6 +141,114 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+    properties:
+      - key: DISP
+        description: >-
+          변위 수렴 기준
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # RESOLVED: stated elsewhere in the same section - the sentence at
+        # line 1880 names the three sub-objects ("`DISP`(변위) / `LOAD`(하중)
+        # / `WORK`(일) 각각 — 최소 1개는 `OPT_USE=true`") and the table below it
+        # gives the two members each one holds. The parser reads tables,
+        # so it took the members and lost the three objects they belong
+        # to, and this contract carried CONV_CRITERIA as an empty object
+        # until 2026-09-04. GET /info/db/NLCT-M1 declares DISP, LOAD and
+        # WORK with exactly OPT_USE and VALUE. The "최소 1개" rule is a
+        # cross-field constraint no per-field requiredness can express, so
+        # each object stays optional and the sentence is kept verbatim
+        # here.
+        properties:
+          - key: OPT_USE
+            description: >-
+              해당 기준 사용 여부
+            type: boolean
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: VALUE
+            description: >-
+              허용오차 (0 초과 1 이하)
+            type: number
+            requirement: conditional
+            condition: '`OPT_USE=true`일 때 필수'
+            appliesWhen:
+              - path: CONV_CRITERIA.DISP.OPT_USE
+                equals: true
+            documentedDefault: 0.001
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+      - key: LOAD
+        description: >-
+          하중 수렴 기준
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: OPT_USE
+            description: >-
+              해당 기준 사용 여부
+            type: boolean
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: VALUE
+            description: >-
+              허용오차 (0 초과 1 이하)
+            type: number
+            requirement: conditional
+            condition: '`OPT_USE=true`일 때 필수'
+            appliesWhen:
+              - path: CONV_CRITERIA.LOAD.OPT_USE
+                equals: true
+            documentedDefault: 0.001
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+      - key: WORK
+        description: >-
+          일 수렴 기준
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: OPT_USE
+            description: >-
+              해당 기준 사용 여부
+            type: boolean
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: VALUE
+            description: >-
+              허용오차 (0 초과 1 이하)
+            type: number
+            requirement: conditional
+            condition: '`OPT_USE=true`일 때 필수'
+            appliesWhen:
+              - path: CONV_CRITERIA.WORK.OPT_USE
+                equals: true
+            documentedDefault: 0.001
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
   - key: ADVANCED
     description: >-
       고급 설정 (미지정 시 서버 기본값 적용)
@@ -195,11 +303,34 @@ extraction:
       resolution: "The nested LOAD_STEPS, CONV_CRITERIA, and ADVANCED tables describe objects and conditions but do not state a complete wire discriminator for each table; left unmerged."
       fields: 11
       line: 1864
-    - heading: Parameters — CONV_CRITERIA 객체
-      resolution: "The nested LOAD_STEPS, CONV_CRITERIA, and ADVANCED tables describe objects and conditions but do not state a complete wire discriminator for each table; left unmerged."
-      fields: 2
-      line: 1882
+      fieldNames: ["STEP_MODE", "NUMBER_STEPS", "OUTPUT", "MANUAL_STEPS", "MIN_ARC_RATIO",
+                   "MAX_ARC_RATIO", "MAX_ARC_INCREMENTS", "MASTER_NODE", "MAX_DISP",
+                   "DIRECTION", "REF_NODE"]
     - heading: Parameters — ADVANCED 객체 (고급 비선형 설정, 전체 Optional — 미지정 시 서버 기본값 사용)
       resolution: "The nested LOAD_STEPS, CONV_CRITERIA, and ADVANCED tables describe objects and conditions but do not state a complete wire discriminator for each table; left unmerged."
       fields: 12
       line: 1889
+      fieldNames: ["OPT_USE_DEFAULT", "STIFF_UPDATE_SCHEME", "ITER_BEFORE_STIFF_UPDATE",
+                   "OPT_TERMINATE_ON_FAILED_CONV", "MAX_ITER_PER_INCREMENT",
+                   "MAX_BISECTION_LEVEL", "OPT_SMART_BISECTION", "DIVERGENCE_THRESHOLD",
+                   "OPT_ENABLE_LINE_SEARCH", "LINE_SEARCH_OPTION",
+                   "MAX_LINE_SEARCH_PER_ITER", "LINE_SEARCH_TOL"]
+  structuralTables:
+    - heading: Parameters — CONV_CRITERIA 객체
+      line: 1882
+      paths: [CONV_CRITERIA.DISP, CONV_CRITERIA.DISP.OPT_USE,
+              CONV_CRITERIA.DISP.VALUE, CONV_CRITERIA.LOAD,
+              CONV_CRITERIA.LOAD.OPT_USE, CONV_CRITERIA.LOAD.VALUE,
+              CONV_CRITERIA.WORK, CONV_CRITERIA.WORK.OPT_USE,
+              CONV_CRITERIA.WORK.VALUE]
+      note: >-
+        Recorded as unmerged until 2026-09-04 on the reading that it stated no
+        wire discriminator. It states no branch because there is none: the
+        sentence above it says the same two members belong to each of three
+        sub-objects, all three independently optional. Merged into the three
+        objects the sentence names.
+  prose:
+    - line: 1880
+      quote: >-
+        `DISP`(변위) / `LOAD`(하중) / `WORK`(일) 각각 — 최소 1개는 `OPT_USE=true`:
+      paths: [CONV_CRITERIA.DISP, CONV_CRITERIA.LOAD, CONV_CRITERIA.WORK]

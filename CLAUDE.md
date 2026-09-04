@@ -64,6 +64,16 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   false `safeToOmit: true` claims. Fixing one takes a permitted source; a
   TypedDict is the subject the check measures, never a source. `sdkOnly` waives
   a name the server does not take.
+  A contract that declares part of its field list missing does **not** get
+  skipped — twenty do, and skipping them was worth another 214 unchecked names.
+  Each `extraction.unmergedTables` entry records `fieldNames`, so the waiver is
+  per-name: a name that table accounts for is a declared gap, a name in neither
+  the contract nor any of those lists is a defect. `fields` had always given the
+  count, and a count cannot be a waiver — it says a gap exists without saying
+  what is in it. Writing the names down also exposed a parser defect on its own
+  (MD-48): a Key cell can name several properties at once — `"bSD" / "iSDOPT" /
+  "SDCONST"` — and the table parser returns the whole cell as one key, invisible
+  for as long as it only fed a count.
 - `src/midas_nx/` — the only thing that ships in the wheel (`packages = ["src/midas_nx"]`).
   - `client.py` — `MidasClient`, `Product` enum, exception hierarchy rooted at `MidasAPIError`.
   - `db/` — `/db/*` endpoints as `DbResource` subclasses.

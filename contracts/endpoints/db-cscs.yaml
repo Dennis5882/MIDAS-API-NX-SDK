@@ -365,3 +365,5 @@ extraction:
       resolution: "The supplementary table describes fields outside the documented request example without an explicit wire condition; left unmerged."
       fields: 9
       line: 274
+      fieldNames: ["CY", "CZ", "CYI", "CZI", "CYJ", "CZJ", "STIFF_USER",
+                   "STIFF_USER_TAPERED_I", "STIFF_USER_TAPERED_J"]

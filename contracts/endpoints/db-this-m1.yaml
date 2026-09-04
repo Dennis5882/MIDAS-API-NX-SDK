@@ -390,6 +390,169 @@ fields:
         provenance: manual
         # RESOLVED: the manual nests this under 'NONL_CTRL_PARAM' by numbering it
         # '(3)', not by naming a path
+  - key: INC_CTRL
+    description: >-
+      증분 제어 (Increment Control)
+    type: object
+    requirement: conditional
+    condition: 'ANAL_METHOD=2 Static 전용'
+    appliesWhen:
+      - path: ANAL_CASE.ANAL_METHOD
+        equals: 2
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+    # RESOLVED: the manual nests this under its own table heading - "증분 제어
+    # (ANAL_METHOD=2 Static 전용, `INC_CTRL`)" names the condition and the
+    # object in one line, and `INC_METHOD=1(`DISP_CTRL` 오브젝트)` names the
+    # second object as a sub-row. Until 2026-09-04 this contract kept the
+    # three tables as variants and offered their rows at the root, so a
+    # caller following it sent INC_METHOD where the server wants
+    # INC_CTRL.INC_METHOD. GET /info/db/THIS-M1 declares INC_CTRL with
+    # INC_METHOD, SF and DISP_CTRL, and DISP_CTRL with exactly these five.
+    # See extraction.structuralTables.
+    properties:
+      - key: INC_METHOD
+        description: >-
+          증분 방법 (0=Load Control, 1=Displacement Control)
+        type: integer
+        enum: [0, 1]
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: SF
+        description: >-
+          Scale Factor
+        type: number
+        requirement: conditional
+        condition: 'INC_METHOD=0'
+        appliesWhen:
+          - path: INC_CTRL.INC_METHOD
+            equals: 0
+        documentedDefault: 1
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: DISP_CTRL
+        description: >-
+          변위 제어 오브젝트
+        type: object
+        requirement: conditional
+        condition: 'INC_METHOD=1(`DISP_CTRL` 오브젝트)'
+        appliesWhen:
+          - path: INC_CTRL.INC_METHOD
+            equals: 1
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: CTRL_OPT
+            description: >-
+              제어 옵션 (0=Global, 1=Master Node Control)
+            type: integer
+            enum: [0, 1]
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: MAX_TRANS_DISP
+            description: >-
+              최대 병진 변위(Global 전용)
+            type: number
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+          - key: MASTER_NODE
+            description: >-
+              Master Node No.(Master Node Control 전용)
+            type: integer
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+          - key: MASTER_DIR
+            description: >-
+              Master Direction(0/1/2, Master Node Control 전용)
+            type: integer
+            enum: [0, 1, 2]
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+          - key: MAX_DISP
+            description: >-
+              최대 변위(Master Node Control 전용)
+            type: number
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+  - key: TIME_PARAM
+    description: >-
+      시간 적분 방법 (Time Parameters)
+    type: object
+    requirement: conditional
+    condition: 'ANAL_METHOD=1 Direct Integration 전용'
+    appliesWhen:
+      - path: ANAL_CASE.ANAL_METHOD
+        equals: 1
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+    # RESOLVED: the manual nests this under its own table heading - "시간 적분
+    # 방법 (ANAL_METHOD=1 Direct Integration 전용, `TIME_PARAM`)". Same
+    # correction as INC_CTRL above, same day, same evidence: /info
+    # declares TIME_PARAM holding these four.
+    properties:
+      - key: METHOD
+        description: >-
+          적분 방법 (0=Newmark, 1=HHT)
+        type: integer
+        enum: [0, 1]
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: NEWMARK_METHOD
+        description: >-
+          Newmark 방법 타입(METHOD=0) 0=Constant/1=Linear Accel./2=User Input
+        type: integer
+        enum: [0, 1, 2]
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: GAMMA
+        description: >-
+          Gamma(NEWMARK_METHOD=2 시)
+        type: number
+        requirement: optional
+        documentedDefault: 0.5
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: BETA
+        description: >-
+          Beta(NEWMARK_METHOD=2 시)
+        type: number
+        requirement: optional
+        documentedDefault: 0.25
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
 
 variants:
   - when:
@@ -547,139 +710,6 @@ variants:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
-  - when:
-      - path: ANAL_METHOD
-        equals: 2
-    source:
-      table: 증분 제어 (ANAL_METHOD=2 Static 전용, INC_CTRL)
-      line: 1783
-    fields:
-      - key: INC_METHOD
-        description: >-
-          증분 방법 (0=Load Control, 1=Displacement Control)
-        type: integer
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        enum: [0, 1]
-        safeToOmit: unverified
-        provenance: manual
-  - when:
-      - path: INC_METHOD
-        equals: 0
-    source:
-      table: INC_METHOD=0
-      line: 1786
-    fields:
-      - key: SF
-        description: >-
-          Scale Factor
-        type: number
-        requirement: optional
-        documentedDefault: 1
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-  - when:
-      - path: INC_METHOD
-        equals: 1
-    source:
-      table: INC_METHOD=1(DISP_CTRL 오브젝트)
-      line: 1788
-    fields:
-      - key: CTRL_OPT
-        description: >-
-          제어 옵션 (0=Global, 1=Master Node Control)
-        type: integer
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        enum: [0, 1]
-        safeToOmit: unverified
-        provenance: manual
-      - key: MAX_TRANS_DISP
-        description: >-
-          최대 병진 변위(Global 전용)
-        type: number
-        requirement: optional
-        documentedDefault: null
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: MASTER_NODE
-        description: >-
-          Master Node No.(Master Node Control 전용)
-        type: integer
-        requirement: optional
-        documentedDefault: null
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: MASTER_DIR
-        description: >-
-          Master Direction(0/1/2, Master Node Control 전용)
-        type: integer
-        requirement: optional
-        documentedDefault: null
-        documentedOptional: true
-        enum: [0, 1, 2]
-        safeToOmit: unverified
-        provenance: manual
-      - key: MAX_DISP
-        description: >-
-          최대 변위(Master Node Control 전용)
-        type: number
-        requirement: optional
-        documentedDefault: null
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-  - when:
-      - path: ANAL_METHOD
-        equals: 1
-    source:
-      table: 시간 적분 방법 (ANAL_METHOD=1 Direct Integration 전용, TIME_PARAM)
-      line: 1797
-    fields:
-      - key: METHOD
-        description: >-
-          적분 방법 (0=Newmark, 1=HHT)
-        type: integer
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        enum: [0, 1]
-        safeToOmit: unverified
-        provenance: manual
-      - key: NEWMARK_METHOD
-        description: >-
-          Newmark 방법 타입(METHOD=0) 0=Constant/1=Linear Accel./2=User Input
-        type: integer
-        requirement: optional
-        documentedDefault: null
-        documentedOptional: true
-        enum: [0, 1, 2]
-        safeToOmit: unverified
-        provenance: manual
-      - key: GAMMA
-        description: >-
-          Gamma(NEWMARK_METHOD=2 시)
-        type: number
-        requirement: optional
-        documentedDefault: 0.5
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: BETA
-        description: >-
-          Beta(NEWMARK_METHOD=2 시)
-        type: number
-        requirement: optional
-        documentedDefault: 0.25
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-
 sdkRules:
   - id: db-this-m1-delete-per-id
     kind: per_id_request
@@ -737,6 +767,7 @@ extraction:
     - heading: 비선형 경계요소 해석 (BOUNDARY_NL_ANAL)
       fields: 2
       line: 1806
+      fieldNames: ["METHOD", "TOL"]
       resolution: >-
         Left unmerged deliberately, and the field list is therefore incomplete.
         The manual names this object and types its two members (METHOD, TOL)
@@ -749,3 +780,31 @@ extraction:
         sits directly under NONL_CTRL_PARAM or under its ITER_CTRL. Guessing
         between the two would put an unverifiable path in the source of truth,
         and settling it needs a POST for which no confirmed fixture exists.
+  structuralTables:
+    - heading: 증분 제어 (ANAL_METHOD=2 Static 전용, `INC_CTRL`)
+      line: 1783
+      paths: [INC_CTRL]
+      note: >-
+        A heading that states a condition and a parent object at once. Kept as
+        a variant until 2026-09-04, which put INC_METHOD at the root; the
+        server wants it inside INC_CTRL, and GET /info/db/THIS-M1 declares the
+        object. Merged into the parent the heading names, with the condition
+        kept on the parent.
+    - heading: INC_METHOD=0
+      line: 1786
+      paths: [INC_CTRL.SF]
+      note: >-
+        A sub-row of the INC_CTRL table, gating one field inside the object
+        rather than opening a record-level branch.
+    - heading: INC_METHOD=1(`DISP_CTRL` 오브젝트)
+      line: 1788
+      paths: [INC_CTRL.DISP_CTRL]
+      note: >-
+        The same heading names both the gate and a second object one level
+        down, which is the shape /info declares.
+    - heading: 시간 적분 방법 (ANAL_METHOD=1 Direct Integration 전용, `TIME_PARAM`)
+      line: 1797
+      paths: [TIME_PARAM]
+      note: >-
+        As INC_CTRL above: condition and parent object in one heading, merged
+        into the parent.

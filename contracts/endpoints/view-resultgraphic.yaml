@@ -264,39 +264,57 @@ extraction:
       resolution: "TYPE_OF_DISPLAY tables are independently optional nested objects; the manual states no scalar discriminator or mutually exclusive branch; left unmerged."
       fields: 1
       line: 1452
+      fieldNames: ["CONTOUR", "OPT_CHECK", "NUM_OF_COLOR", "COLOR_TYPE", "OPTIONS",
+                   "CONTOUR_FILL", "GRADIENT_FILL"]
     - heading: "3) Values Output Details — `TYPE_OF_DISPLAY.VALUES`"
       resolution: "TYPE_OF_DISPLAY tables are independently optional nested objects; the manual states no scalar discriminator or mutually exclusive branch; left unmerged."
       fields: 1
       line: 1466
+      fieldNames: ["VALUES", "OPT_CHECK", "VALUE_EXP", "DECIMAL_PT", "SET_ORIENT",
+                   "MINMAX_ONLY", "MAXMIN", "LIMIT_SCALE"]
     - heading: "4) Legend Details — `TYPE_OF_DISPLAY.LEGEND`"
       resolution: "TYPE_OF_DISPLAY tables are independently optional nested objects; the manual states no scalar discriminator or mutually exclusive branch; left unmerged."
       fields: 1
       line: 1481
+      fieldNames: ["LEGEND", "OPT_CHECK", "POSITION", "VALUE_EXP", "DECIMAL_PT"]
     - heading: "5) Deformation Details — `TYPE_OF_DISPLAY.DEFORM`"
       resolution: "TYPE_OF_DISPLAY tables are independently optional nested objects; the manual states no scalar discriminator or mutually exclusive branch; left unmerged."
       fields: 1
       line: 1491
+      fieldNames: ["DEFORM", "OPT_CHECK", "SCALE_FACTOR", "REAL_DEFORM", "REL_DISP",
+                   "REAL_DISP"]
     - heading: "6) Display Option Details — `TYPE_OF_DISPLAY.DISP_OPT`"
       resolution: "TYPE_OF_DISPLAY tables are independently optional nested objects; the manual states no scalar discriminator or mutually exclusive branch; left unmerged."
       fields: 1
       line: 1502
+      fieldNames: ["DISP_OPT", "OPT_CHECK", "ELEMENT_CENTER", "VALUE_MAX"]
     - heading: "7) Symmetric Model Mirror Detail — `TYPE_OF_DISPLAY.MIRRORED`"
       resolution: "TYPE_OF_DISPLAY tables are independently optional nested objects; the manual states no scalar discriminator or mutually exclusive branch; left unmerged."
       fields: 1
       line: 1511
+      fieldNames: ["MIRRORED", "OPT_CHECK", "MIRROR_BY_1", "DIRECTION", "OFFSET",
+                   "MIRROR_BY_2"]
     - heading: "8) Cutting Diagram — `TYPE_OF_DISPLAY.CUTTING_DIAGRAM`"
       resolution: "TYPE_OF_DISPLAY tables are independently optional nested objects; the manual states no scalar discriminator or mutually exclusive branch; left unmerged."
       fields: 1
       line: 1524
+      fieldNames: ["CUTTING_DIAGRAM", "OPT_CHECK", "CUTTING_MODE", "CUTTING_NAME",
+                   "NORMAL_TO_PLANE", "SCALE_FACTOR", "REVERSE", "VALUE_OUTPUT",
+                   "MINMAX_ONLY"]
     - heading: "9) Cutting Plane Detail Dialog — `TYPE_OF_DISPLAY.CUTTING_PLANE`"
       resolution: "TYPE_OF_DISPLAY tables are independently optional nested objects; the manual states no scalar discriminator or mutually exclusive branch; left unmerged."
       fields: 1
       line: 1540
+      fieldNames: ["CUTTING_PLANE", "OPT_CHECK", "PLANE_NAME", "FREE_EDGE"]
     - heading: "10) Applied Loads (Moving Load Tracer Detail) — `TYPE_OF_DISPLAY.APPLIED_LOADS`"
       resolution: "TYPE_OF_DISPLAY tables are independently optional nested objects; the manual states no scalar discriminator or mutually exclusive branch; left unmerged."
       fields: 1
       line: 1549
+      fieldNames: ["APPLIED_LOADS", "OPT_CHECK", "SCALE_FACTOR", "OPT_LOAD_VALUES",
+                   "VALUE_TYPE", "VALUE_DECIMAL_PT"]
     - heading: "11) IsoSurface Detail Dialog — `TYPE_OF_DISPLAY.ISO_SURFACE`"
       resolution: "TYPE_OF_DISPLAY tables are independently optional nested objects; the manual states no scalar discriminator or mutually exclusive branch; left unmerged."
       fields: 1
       line: 1560
+      fieldNames: ["ISO_SURFACE", "OPT_CHECK", "DRAW_POLYLINE", "TRANSPARENCY", "FREE_EDGE",
+                   "VALUE_MODE", "VALUE_TYPE", "VALUE"]

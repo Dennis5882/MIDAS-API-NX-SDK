@@ -196,3 +196,5 @@ extraction:
       resolution: "the manual names no wire discriminator for this table; left unmerged"
       fields: 8
       line: 1396
+      fieldNames: ["TYPE", "STYPE", "RIB_POS", "SECTION", "THIKNESS", "DBNAME", "XZ",
+                   "bRIB", "SHAPE", "NAME", "DIST"]

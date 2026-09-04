@@ -291,19 +291,29 @@ extraction:
       resolution: "MODEL_TYPE is the wire discriminator and the Specifications row enumerates all six of its values against the model each one selects, so the six objects are conditional fields on this contract rather than a gap. What stays unmerged is these tables' members: none of these sub-tables has a Value Type column, so the manual states no type for a single one of them, and the MASONRY object's BM/BED_JOINT/HEAD_JOINT/GEOM structure is given in prose rather than as a table."
       fields: 5
       line: 912
+      fieldNames: ["INIT_YIELD_STRESS", "OPT_HARDENING", "HARDENING_TYPE", "HARDENING_COEF",
+                   "BACK_STRESS_COEF"]
     - heading: "Mohr-Coulomb / Drucker-Prager 공통 파라미터 (`\"MOHRCL\"` or `\"DRUCKER\"` object)"
       resolution: "MODEL_TYPE is the wire discriminator and the Specifications row enumerates all six of its values against the model each one selects, so the six objects are conditional fields on this contract rather than a gap. What stays unmerged is these tables' members: none of these sub-tables has a Value Type column, so the manual states no type for a single one of them, and the MASONRY object's BM/BED_JOINT/HEAD_JOINT/GEOM structure is given in prose rather than as a table."
       fields: 6
       line: 922
+      fieldNames: ["INIT_COHESION", "INIT_FRIC_ANGLE", "OPT_HARDENING", "HARDENING_TYPE",
+                   "HARDENING_COEF", "BACK_STRESS_COEF"]
     - heading: "Masonry 파라미터 (`\"MASONRY\"` object)"
       resolution: "MODEL_TYPE is the wire discriminator and the Specifications row enumerates all six of its values against the model each one selects, so the six objects are conditional fields on this contract rather than a gap. What stays unmerged is these tables' members: none of these sub-tables has a Value Type column, so the manual states no type for a single one of them, and the MASONRY object's BM/BED_JOINT/HEAD_JOINT/GEOM structure is given in prose rather than as a table."
       fields: 5
       line: 936
+      fieldNames: ["YOUNG_S_MODULUS", "POSSIONS_S_RATIO", "TENSION_STRENGTH",
+                   "SOFTENING_PARAMETER", "HARDENING_PARAM"]
     - heading: "Masonry 파라미터 (`\"MASONRY\"` object)"
       resolution: "MODEL_TYPE is the wire discriminator and the Specifications row enumerates all six of its values against the model each one selects, so the six objects are conditional fields on this contract rather than a gap. What stays unmerged is these tables' members: none of these sub-tables has a Value Type column, so the manual states no type for a single one of them, and the MASONRY object's BM/BED_JOINT/HEAD_JOINT/GEOM structure is given in prose rather than as a table."
       fields: 6
       line: 945
+      fieldNames: ["BRICK_LENGTH", "BRICK_HEIGHT", "THICKNESS_BED", "THICKNESS_HEAD",
+                   "COORD_TYPE", "COORD_ANGLE"]
     - heading: "Concrete Damage 파라미터 (`\"CONCDMG\"` object)"
       resolution: "MODEL_TYPE is the wire discriminator and the Specifications row enumerates all six of its values against the model each one selects, so the six objects are conditional fields on this contract rather than a gap. What stays unmerged is these tables' members: none of these sub-tables has a Value Type column, so the manual states no type for a single one of them, and the MASONRY object's BM/BED_JOINT/HEAD_JOINT/GEOM structure is given in prose rather than as a table."
       fields: 7
       line: 956
+      fieldNames: ["DILIATION_ANGLE", "ECCEN", "FBO_FCO", "K", "VISCOSITY_PARAM",
+                   "COMP_ITEMS", "TENSILE_ITEMS"]

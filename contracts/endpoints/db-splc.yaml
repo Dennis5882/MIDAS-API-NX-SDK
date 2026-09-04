@@ -304,15 +304,22 @@ extraction:
       resolution: "The damping tables name modes but do not state a complete wire condition selecting each supplementary field set; left unmerged."
       fields: 2
       line: 648
+      fieldNames: ["DALL", "aDAMPING", "iMODE", "DAMPING"]
     - heading: "Mass & Stiffness Proportional 감쇠 추가 파라미터"
       resolution: "The damping tables name modes but do not state a complete wire condition selecting each supplementary field set; left unmerged."
       fields: 10
       line: 657
+      fieldNames: ["iCOEF", "bMASSP", "bSTIFFP", "MASSC", "STIFFC", "iCALC", "FP1", "FP2",
+                   "DR1", "DR2"]
     - heading: "Mass & Stiffness Proportional 감쇠 추가 파라미터"
       resolution: "The damping tables name modes but do not state a complete wire condition selecting each supplementary field set; left unmerged."
       fields: 6
       line: 672
+      fieldNames: ["bACCECC", "bACCECC_AUTO", "ACCECC_PERCENT", "bACCECC_CONSIDER_GL",
+                   "bACCECC_MINIMUM_TORSION", "aACCECC_ECCEN_LIST", "STORY", "CROSS",
+                   "ALONG"]
     - heading: "Mass & Stiffness Proportional 감쇠 추가 파라미터"
       resolution: "The damping tables name modes but do not state a complete wire condition selecting each supplementary field set; left unmerged."
       fields: 1
       line: 692
+      fieldNames: ["bNDP", "NDP"]

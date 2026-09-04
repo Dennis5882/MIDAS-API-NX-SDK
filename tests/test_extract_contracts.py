@@ -1119,7 +1119,17 @@ def test_explicit_variants_keep_unlabelled_supplementary_tables_unmerged(tmp_pat
     draft = yaml.safe_load(ex.render_draft(parsed))
     assert [(variant.field, variant.equals) for variant in parsed.variants] == [("TYPE", "FIRST")]
     assert draft["variants"][0]["when"] == [{"path": "TYPE", "equals": "FIRST"}]
-    assert draft["extraction"]["unmergedTables"] == [{"heading": "A label without a wire value", "fields": 1, "line": 12}]
+    assert draft["extraction"]["unmergedTables"] == [
+        {
+            "heading": "A label without a wire value",
+            "fields": 1,
+            "line": 12,
+            # The count says a gap exists; the names say what is in it, which
+            # is what lets validate_contracts.py waive per name instead of
+            # skipping the contract. See MD-48.
+            "fieldNames": ["UNKNOWN_VALUE"],
+        }
+    ]
 
 
 def test_a_key_range_row_names_every_key_the_schema_lists_between_its_ends(tmp_path: Path):
@@ -3946,3 +3956,31 @@ def test_a_declared_structural_destination_is_not_drift():
     assert not _under_structural_destination("COMMON.INVENTED", destinations, manual)
     # And nothing outside a declared destination is exempt.
     assert not _under_structural_destination("LANE_ITEMS.ELEM", destinations, manual)
+
+
+def test_a_packed_key_cell_becomes_the_names_it_holds():
+    """A Key cell can name several properties, and the parser returns one key.
+
+    That is harmless while the cell only feeds a count, and wrong the moment
+    the names are used as a waiver: `"bSD" / "iSDOPT" / "SDCONST"` recorded
+    verbatim accounts for no field at all, and all three then read as names
+    nobody has looked at. Only the three forms the manual actually uses are
+    unpacked, and only for unmergedTables[].fieldNames.
+    """
+    from extract_contracts import _unpack_key_cell
+
+    assert _unpack_key_cell('bSD" / "iSDOPT" / "SDCONST') == ["bSD", "iSDOPT", "SDCONST"]
+    assert _unpack_key_cell('_3_LANE_FACTOR_1" ~ "_3_LANE_FACTOR_4') == [
+        "_3_LANE_FACTOR_1", "_3_LANE_FACTOR_2", "_3_LANE_FACTOR_3", "_3_LANE_FACTOR_4",
+    ]
+    assert _unpack_key_cell("SFI(STR)") == ["SFI"]
+    assert _unpack_key_cell('SEL_VEHICLE"(표준)/"SUB_TYPE"(User)') == [
+        "SEL_VEHICLE", "SUB_TYPE",
+    ]
+    # An ordinary key is returned unchanged, quotes and all removed.
+    assert _unpack_key_cell('"DYNA_FACTOR"') == ["DYNA_FACTOR"]
+    assert _unpack_key_cell("NODE") == ["NODE"]
+    # A range whose ends do not share a stem is not a range, and there is no
+    # separator to fall back on, so the cell survives intact and stays visible
+    # as the oddity it is rather than being guessed at.
+    assert _unpack_key_cell('A1" ~ "B4') == ['A1" ~ "B4']

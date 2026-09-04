@@ -496,6 +496,14 @@
               "fields": {
                 "type": "integer"
               },
+              "fieldNames": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                },
+                "description": "The wire names this unmerged table holds, in table order, nested rows included. `fields` counts them; this says which they are, and that is the difference between a declared gap and an unmeasurable one. Before it existed, validate_contracts.py's field-parity check skipped a contract with any unmergedTables entry outright, on the reasoning that it had admitted its list was incomplete - so 214 wire names the SDKs ship went unchecked, and no gate could tell a name this table accounts for from a name nobody has looked at. With the names recorded the waiver is itemised: a name here is a declared gap, and a name that is in neither the contract nor any of these lists is a defect the check reports. scripts/extract_contracts.py emits it and --check verifies it still matches the table, so it cannot drift into fiction."
+              },
               "line": {
                 "type": "integer"
               },

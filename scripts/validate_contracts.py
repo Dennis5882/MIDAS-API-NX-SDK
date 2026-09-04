@@ -598,7 +598,7 @@ class FieldParity:
     """What the field-name comparison actually looked at."""
 
     compared: int
-    skipped_incomplete: int
+    partially_declared: int
     no_python_type: int
     ambiguous: int
 
@@ -627,7 +627,7 @@ def check_field_parity(
     """
     payload_types = _python_payload_types()
     resources = _python_resources()
-    compared = skipped_incomplete = no_python_type = ambiguous = 0
+    compared = partially_declared = no_python_type = ambiguous = 0
 
     for path, contract in contracts:
         name = (contract.get("surface") or {}).get("payloadTypeName")
@@ -660,13 +660,25 @@ def check_field_parity(
             # generator builds those from the contract alone.
             no_python_type += 1
             continue
-        if (contract.get("extraction") or {}).get("unmergedTables"):
-            # The contract says its own field list is incomplete, and the npm
-            # generator already refuses to publish a payload type from it.
-            skipped_incomplete += 1
-            continue
         compared += 1
         waived = {entry["name"] for entry in contract.get("sdkOnly") or []}
+        # A contract may declare part of its field list missing, and 20 do.
+        # That used to skip the whole contract, which left 214 wire names the
+        # SDKs ship unchecked and could not tell a declared gap from an
+        # unexamined one. Each unmergedTables entry now records the names its
+        # table holds, so the waiver is itemised: a name that table accounts
+        # for is a declared gap, and a name in neither the contract nor any of
+        # those tables is a defect. That itemisation is what found /db/THIS-M1
+        # publishing INC_METHOD at the root of a record whose server-declared
+        # shape puts it inside INC_CTRL.
+        declared_gaps = {
+            name
+            for entry in (contract.get("extraction") or {}).get("unmergedTables", [])
+            for name in entry.get("fieldNames") or []
+        }
+        if declared_gaps:
+            partially_declared += 1
+        waived |= declared_gaps
         missing = sorted(_payload_leaves(payload) - _contract_leaves(contract) - waived)
         if missing:
             failures.add(
@@ -676,7 +688,7 @@ def check_field_parity(
                 f"record or /info - the TypedDict is not a permitted source",
             )
 
-    return FieldParity(compared, skipped_incomplete, no_python_type, ambiguous)
+    return FieldParity(compared, partially_declared, no_python_type, ambiguous)
 
 
 def _load_tables() -> list[tuple[Path, dict]]:
@@ -1237,8 +1249,8 @@ def main(argv: list[str]) -> int:
         print(
             f"field parity: {field_parity.compared} contract(s) compared against the "
             f"Python payload type of the same name, "
-            f"{field_parity.skipped_incomplete} skipped as admittedly incomplete "
-            f"(unmergedTables), {field_parity.no_python_type} naming a type Python does "
+            f"{field_parity.partially_declared} of them waiving part of the comparison "
+            f"through unmergedTables, {field_parity.no_python_type} naming a type Python does "
             f"not define, {field_parity.ambiguous} whose type name Python defines in several "
             f"modules. Only the direction that matters is enforced: a wire name the SDK "
             f"ships and no contract records."

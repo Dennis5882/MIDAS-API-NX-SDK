@@ -6,6 +6,35 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Changed — `SeismicDeviceSteelDamperPayload` is generated from its contract
+
+- **Breaking.** `/db/SDST`'s contract declared its field list incomplete, so
+  the generator fell back to the reviewed Python model for this type. The one
+  table it was missing — `SDST_HYS_MODEL` 별 하위 객체 — is now merged, so the
+  type comes from the contract: `COMMON`, `DIR`, `SDST_HYS_MODEL`, `K0`, `P1`,
+  `ALPHA1` and `KB` are required, as the manual marks them, where the fallback
+  made every field optional. `COMMON` gained its six members and each
+  hysteresis object its own, with "Applies when `SDST_HYS_MODEL` = …" on the
+  four branches.
+
+### Added — five more records gained members their objects never had
+
+- `TimeHistoryLoadCaseHyperSPayload` gained `INC_CTRL` and `TIME_PARAM`. The
+  contract had kept both tables as record-level branches, which put
+  `INC_METHOD` and `METHOD` at the root; the manual's headings name the objects
+  ("증분 제어 (ANAL_METHOD=2 Static 전용, `INC_CTRL`)") and `GET
+  /info/db/THIS-M1` declares them, `INC_CTRL` holding a `DISP_CTRL` of its own.
+- `NonlinearAnalysisControlHyperSPayload`'s `CONV_CRITERIA` gained `DISP`,
+  `LOAD` and `WORK`, each with `OPT_USE` and `VALUE`.
+- `SeismicDeviceIsolatorPayload`'s and `SeismicDeviceSteelDamperPayload`'s
+  `COMMON` gained its six members, from `/db/SDVI`'s table one section over.
+- `MovingLoadCasePayload` gained `DEFAULT`, `PERMIT_LOAD`, `AUTO_OPTIMIZE` and
+  `ASL` — the four objects `TYPE` selects between, which the contract had
+  published none of, leaving a load-case type with nothing to carry the load.
+- `VehiclePayload` gained `VEH_EUROCODE` with 48 members, from `/info` and the
+  2026-07-30 live reading of a real Eurocode Load Model 1 vehicle. Its three
+  load-model branch arrays are deliberately still untyped. See MD-48.
+
 ### Changed — the four traffic-line-lane payloads take `COMMON` and `LANE_ITEMS`
 
 - **Breaking.** `TrafficLineLanePayload`, `TrafficLineLanesChinaPayload` and

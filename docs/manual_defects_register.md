@@ -82,6 +82,7 @@ build itself** and is no longer resting on an unrecorded one.
 | MD-46 | 2026-09-04 | ten `/db/*` sections, 73 fields | each documents one endpoint with one Specifications table and says nothing about either product | the two products declare different records. `/db/SPLC` differs by 15 fields, `/db/POSL` by 11, `/db/POGD` by 20, `/db/SBDO` by 16, `/db/IEHC` by 9, and `/db/ACTL`, `/db/BCCT`, `/db/EPSE`, `/db/POLC`, `/db/THGC` by one to four each. Mostly it is the products' own feature sets - Gen NX has walls and fiber hinges, Civil NX has bridge seismic parameters - not a transcription slip | **manual repo** transcription | open |
 
 | MD-47 | 2026-09-04 | `/db/TDMT` `TCODE` and `bSILICA` | section 6's "Specifications (공통 키 + CEB-FIP)" table documents two code branches, CEB-FIP and ACI, while its `CODE` value table lists 33 codes | `CODE="EUROPEAN"` is a third branch with two dedicated fields the table names nowhere. Both were read off a real PSC bridge model's C40/50 concrete on 2026-07-30 and both are declared by `GET /info/db/TDMT` on either product. The gap is wider than these two: /info declares roughly seventy fields here, spanning codes the value table lists and the field table then ignores | **manual repo** transcription | open |
+| MD-48 | 2026-09-04 | `/db/MVHL` `VEH_EUROCODE`, 48 fields | section 10's Specifications table documents `VEH_DEFAULT` and no country object at all | `GET /info/db/MVHL` declares eleven more - `VEH_FR`, `VEH_CN`, `VEH_IN`, `VEH_CA`, `VEH_BS`, `VEH_EUROCODE`, `VEH_RU`, `VEH_KSCE_LSD15`, `VEH_AU`, `VEH_PL`, `VEH_ZA` - and a real Eurocode "Load Model 1" vehicle read on 2026-07-30 used `VEH_EUROCODE` instead of `VEH_DEFAULT`, omitting `STANDARD_CODE` the table marks Required. Four of the eleven have their own manual tables; `VEH_EUROCODE` has none | **manual repo** transcription | open |
 
 ## Detail
 
@@ -1641,3 +1642,57 @@ the right one. `extraction.structuralTables` already existed to record that a
 table's heading named its destination; the drift check simply never consulted
 it. It does now, in both directions, and only for a leaf the manual's tables
 actually state - so a member the manual never mentions is still reported.
+
+
+### MD-48 and the second blind spot - twenty contracts nothing was checking
+
+MD-47 closed the hole where no gate compared a field name. It left a second
+one open in the same breath: `check_field_parity` skipped any contract with an
+`extraction.unmergedTables` entry, on the reasoning that such a contract has
+already admitted its field list is incomplete. Twenty contracts carry one. The
+skip was worth 214 wire names the SDKs ship and no gate looked at - three times
+the 73 the check had just found, hidden behind an admission that was true but
+far too broad.
+
+**The fix is itemisation, not a wider net.** An `unmergedTables` entry now
+records `fieldNames`: the wire names its table holds, in table order. `fields`
+had always given the count, and a count is exactly what cannot be used as a
+waiver - it says a gap exists without saying what is in it. With the names
+written down the waiver is per-name: a name the table accounts for is a
+declared gap, a name in neither the contract nor any of those lists is a
+defect the check reports. `scripts/extract_contracts.py` emits the list for new
+drafts and `--check` verifies it still matches the table, so a chapter edit
+that adds a row cannot widen a waiver in silence.
+
+That took the blind spot from 214 names to 84, and the 84 were all real:
+
+* **`/db/THIS-M1` published a shape the server does not take.** The manual's
+  headings name two objects and the condition on each in one line - `증분 제어
+  (ANAL_METHOD=2 Static 전용, INC_CTRL)`, `시간 적분 방법 (ANAL_METHOD=1 Direct
+  Integration 전용, TIME_PARAM)` - and the contract kept both as record-level
+  branches, offering `INC_METHOD` and `METHOD` at the root. `/info` declares
+  `INC_CTRL` holding `INC_METHOD`, `SF` and a `DISP_CTRL` of its own. Same
+  species as `/db/LLAN` in MD-47, found by the same check one layer deeper.
+* **`/db/MVLD` had no load case.** `TYPE` selects between `DEFAULT`,
+  `PERMIT_LOAD` and `AUTO_OPTIMIZE`, the section carries one worked Request
+  Example per value, and the contract published `LCNAME`, `DESC`, `TYPE` and
+  nothing else. Australia's `ASL` makes four.
+* **Four empty objects**: `/db/SDIS` and `/db/SDST`'s `COMMON` (tabled one
+  section over, in `/db/SDVI`), `/db/NLCT-M1`'s `CONV_CRITERIA` (three
+  sub-objects named in a sentence above the table that gives their two
+  members), `/db/SDST`'s four hysteresis objects (named in a cell).
+* **`/db/MVHL`'s `VEH_EUROCODE`**, registered above.
+
+**And a parser defect the names exposed on their own.** 64 of the recorded
+names came back as things like `bSD" / "iSDOPT" / "SDCONST` or `SFI(STR)` or
+`_3_LANE_FACTOR_1" ~ "_3_LANE_FACTOR_4`. A Key cell can name several
+properties at once, and the table parser hands the whole cell back as one key.
+While that cell only ever fed a count it was invisible; the moment the names
+are written down it is the difference between a waiver accounting for three
+fields and one accounting for none - which is why sixteen of `/db/STCT`'s
+"missing" names were never missing at all. `_unpack_key_cell` transcribes the
+three forms that occur, and only for `fieldNames`: the merged-field path still
+goes through `_REVIEWED_SHARED_COMPACT_KEYS`, which demands a named review per
+row, because a merged row becomes a published field and a waived one does not.
+No contract *field* carries a packed name - the only non-identifier key in all
+381 is `/ope/GSBG`'s `7TH_DOF_TYPE`, which is the server's own spelling.
