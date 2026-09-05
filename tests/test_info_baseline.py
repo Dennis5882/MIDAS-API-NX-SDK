@@ -101,3 +101,36 @@ def test_divergence_check_rejects_an_untagged_field(
     assert _run_divergence_check((both, different, untagged, absent)) == 1
     captured = capsys.readouterr()
     assert "untagged product-specific fields for /db/ACTL must be 0, found 1" in captured.err
+
+
+def test_divergence_check_rejects_a_new_absent_field(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The absent ceiling has to bite, not just tolerate a shrink.
+
+    `untagged` and `absent` fail for different reasons and only the first was
+    covered. An absent field is one no contract records at all, so a contract
+    losing a divergent field - or a new divergent endpoint arriving with none
+    recorded - is the case this ceiling exists for.
+    """
+    both, different, untagged, absent = _established_divergence()
+    absent["/db/POGD"] = 1
+
+    assert _run_divergence_check((both, different, untagged, absent)) == 1
+    captured = capsys.readouterr()
+    assert "absent product-specific fields for /db/POGD grew from 0 to 1" in captured.err
+
+
+def test_divergence_check_rejects_a_newly_divergent_endpoint(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Ten endpoints declare different schemas. An eleventh needs a decision.
+
+    A product patch can make a record diverge that did not before, and every
+    field of it then needs a `products` tag or it becomes a claim about both
+    products that is false on one.
+    """
+    both, different, untagged, absent = _established_divergence()
+
+    assert _run_divergence_check((both, different + 1, untagged, absent)) == 1
+    assert "declaring different schemas grew from 10 to 11" in capsys.readouterr().err

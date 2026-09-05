@@ -1575,6 +1575,19 @@ The practical form of this, for anyone changing a contract from a schema:
 * A live round trip contradicts `/info` → the round trip wins, and say so where
   the field is declared.
 
+**Held by CI since 2026-09-05.** Tagging all ten was a one-off pass, and a
+one-off pass on 73 fields decays: a contract gaining one field on a divergent
+endpoint without a `products` tag re-introduces exactly this defect, silently,
+and only someone remembering to run `--divergence` would notice.
+`scripts/info_baseline.py --divergence --check` now runs in CI and treats the
+two failure modes differently, because they are different questions.
+**`untagged` fails on one** - it is already at the floor, and any value above
+zero is a false claim being published. **`absent` is a per-endpoint ceiling**
+that may fall for free; all 15 sit on `/db/SPLC`, whose field list is
+deliberately incomplete through `unmergedTables`. The guard was verified by
+removing `/db/ACTL`'s `CLATS` tag and watching the real command exit 1 naming
+that endpoint - a check whose whole job is to fail is worth seeing fail once.
+
 
 ### MD-47 and the check that found it - the contract was behind its own SDK, twelve more times
 

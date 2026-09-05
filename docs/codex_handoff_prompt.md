@@ -1,6 +1,6 @@
 # Codex task prompt — mechanical work only
 
-Updated 2026-09-05 at `012d5b4`. **2.7.8 is published** on both registries; the
+Updated 2026-09-05 at `3c47a7a`. **2.7.8 is published** on both registries; the
 next number is the author's call, so do not bump it.
 
 **The division, set by the author.** Judgment-heavy work — schema design,
@@ -10,6 +10,7 @@ measured starting number you can check your run against. A task that turns out
 to need a judgment call is one to **stop and report**, not to decide.
 
 **Task 1 is the one that matters most and it needs a live session.** Task 2 is
+already done — it is kept below only for what was added to it. Task 5 is
 offline and you can start it right now.
 
 ## Your last batch, and what it settled
@@ -68,7 +69,7 @@ Run these first and confirm you see the same numbers. **If any differ, say so
 before starting** — it means something moved under you.
 
 ```bash
-python -m pytest -q                       # 1001 passed
+python -m pytest -q                       # 1006 passed
 ruff check src tests scripts && mypy      # clean; 41 source files
 python scripts/validate_contracts.py      # OK; 381 endpoints, 4916 fields,
                                           # 0 unresolved manual contradictions
@@ -78,6 +79,8 @@ MSYS_NO_PATHCONV=1 python scripts/extract_contracts.py \
   --manual-api-repo "E:\AI Study\MIDAS-API" --check    # OK - no drift
 python scripts/info_baseline.py --against-contracts --check
                                           # OK - differences did not grow
+python scripts/info_baseline.py --divergence --check
+                                          # OK - tagging remains complete
 python scripts/report_dropped_manual_rows.py \
   --manual-api-repo "E:\AI Study\MIDAS-API" --check    # blank 71, short row 20,
                                           # second key column 3
@@ -158,65 +161,23 @@ run. That is exactly what the change was supposed to make impossible.
 
 ---
 
-## Task 2 — guard the product-divergence tagging the way you guarded the sweep
+## Task 2 — DONE (`3c47a7a`), nothing left here
 
-**Offline. Start here if no live session is available.** Same shape as the check
-you built in `d82869f`, so this should be short.
+You built it and it is correct. `--divergence --check` is in CI beside the
+sweep, `untagged` fails on 1 rather than tolerating a baseline, and `absent`
+is a per-endpoint ceiling holding `/db/SPLC`'s 15.
 
-### Why this task exists
+Two things were added on top rather than sent back:
 
-`scripts/info_baseline.py --divergence` answers a question the other sweep
-cannot: **`products: [civil, gen]` says the route answers on both, never that
-the record is the same.** Ten of the 177 both-product endpoints declare
-different schemas, so a field listed without its own `products` tag is a claim
-about both products that is sometimes false. That is MD-46, and 72 npm field
-comments came out of it.
-
-The tagging is currently **complete** — `untagged` is 0 across all ten — and
-nothing holds it there. A contract gaining a field on a divergent endpoint
-without a `products` tag would silently re-introduce exactly the false claim
-MD-46 records, and only someone remembering to run `--divergence` would notice.
-
-### What to build
-
-Add `--check` support to `--divergence`, backed by a committed expectation, and
-wire it into `.github/workflows/ci.yml` beside your existing
-`--against-contracts --check` step.
-
-The current state, which is what your expectation should record:
-
-```text
-endpoints answering /info on both products: 177
-of those, declaring different schemas: 10
-untagged (a contract claims both products; /info contradicts it): 0
-absent  (no contract records the field at all): 15
-```
-
-All 15 `absent` are on **`/db/SPLC`**, whose field list is already declared
-incomplete through `unmergedTables` — 2 Civil-only (`CQCRATIO`, `iANGLETYPE`)
-and 13 Gen-only. A known, recorded state, not a gap to close here.
-
-Shape it like the other check, and let the two differ where the questions
-differ:
-
-- **`untagged` must be 0 and stay 0.** This is not a ceiling that may drift
-  down; it is already at the floor, and any value above it is a false claim
-  being published. Fail on 1.
-- **`absent` is a per-endpoint ceiling**, like the other check: it may fall for
-  free, and growth must be reviewed.
-
-### Done when
-
-`python scripts/info_baseline.py --divergence --check` exits 0 on this tree,
-exits non-zero with a readable diff when you fabricate an untagged field to test
-it, and CI runs it. Add a test beside `tests/test_info_baseline.py`'s existing
-three.
-
-**Not yours:** closing any of the 15 `absent` fields on `/db/SPLC`. That
-contract is deliberately incomplete and merging its tables is contract work.
-
----
-
+- **The guard was verified end to end.** The unit tests exercise
+  `_check_divergence` with synthetic counts, which proves the comparison and
+  not the pipeline feeding it. `/db/ACTL`'s `CLATS` had its `products` tag
+  removed, the real command exited 1 naming that endpoint, and the tag was
+  put back. Worth doing for any check whose whole job is to fail: a guard
+  that has never fired on real input is a guard nobody has seen work.
+- **Two ceiling tests.** `untagged` rejection was covered and growth was not,
+  so a new absent field and an eleventh divergent endpoint now both have a
+  test. The sibling check had them; this one should match.
 ## Task 3 — npm live evidence beyond 32, now that it can get there
 
 Do this after Task 1: its fifteen endpoints are the first fifteen of this, and
