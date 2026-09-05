@@ -215,7 +215,7 @@ came back the same, so start from the two things that pass first:
   persist `TOL`. Product behaviour on both sides, not coverage.
 
 That script's other list is worth more than the fixture side and is **not**
-yours: 64 disagreements across 18 endpoints sit on cases confirmed live, where
+yours: 27 disagreements across 8 endpoints sit on cases confirmed live, where
 the product accepted the payload and the contract is what is behind. Closing
 one takes a permitted source. Report, do not merge.
 

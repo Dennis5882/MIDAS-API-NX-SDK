@@ -141,7 +141,7 @@ def get_story_load_summary_table(
     example but missing from its own Specifications table (a manual
     self-contradiction; the example wins per this repo's convention).
 
-    2026-08-06 manual update (MAPI-949): TABLE_TYPE renamed
+    2026-08-06 manual update: TABLE_TYPE renamed
     STORY_LOAD_SUMMARY_{dir} -> STORY_LOAD_{dir}, matching STORY_MASS's
     naming (the other half of the same ticket, already reflected below).
     This call also gained unit/styles/components/load_case_names.

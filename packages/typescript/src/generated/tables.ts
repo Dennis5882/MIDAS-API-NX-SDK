@@ -15,7 +15,7 @@ export const tables = {
      * broader ``post/*`` sweep, once 2026-08-07 post-patch on build
      * 08/06/2026 against a blank ``/doc/NEW`` document): the call hangs, then
      * ``verify_connection()`` shows disconnected and every ``/db/*`` call
-     * 404s. Same failure signature as `MAPI-2431` (Column Design Forces)  -
+     * 404s. Same failure signature as the Column Design Forces crash  -
      * but that crash was reproduced against a *different* endpoint,
      * ``/DESIGN/RC/KDS-41-20-2022/TABLE`` in
      * :func:`midas_nx.design.rc_kds.checks.get_column_design_forces_table`,
@@ -99,14 +99,14 @@ export const tables = {
      *  WARNING: Shares the ``/post/TABLE`` helper with :func:`get_beam_design_forces_table`
      * (confirmed crashing Gen NX, clean on Civil NX)  -  the same
      * ``TABLE_TYPE`` crashes Gen NX via the sibling
-     * ``/DESIGN/RC/KDS-41-20-2022/TABLE`` endpoint too (`MAPI-2431`). Not
+     * ``/DESIGN/RC/KDS-41-20-2022/TABLE`` endpoint too. Not
      * independently tested via this exact route on Gen; confirmed clean on
      * Civil NX 2026-08-07.
      *
      * Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank
      * ``/doc/NEW`` document: clean empty response, no crash, session stayed
-     * healthy. A single clean pass is not independent proof the MAPI-2431
-     * risk is gone  -  treat as reduced-but-not-cleared until a real-model
+     * healthy. A single clean pass is not independent proof that risk is
+     * gone  -  treat as reduced-but-not-cleared until a real-model
      * retest.
      *
      * Re-tested independently 2026-09-05 on Gen NX v2.1 build 09/02/2026:
@@ -187,8 +187,8 @@ export const tables = {
      * own geometry instead of member-end selection).
      *
      * story_names: restrict to specific story names, e.g. ["1F", "2F"];
-     * omitting it selects all stories. Added in the 2026-08-06 manual update
-     * (MAPI-1671)  -  the ticket's own request example used the key "STORY",
+     * omitting it selects all stories. Added in the 2026-08-06 manual
+     * update, whose own request example used the key "STORY",
      * but the shipped param is "STORY_NAMES", matching ch20/ch21's naming.
      *
      *  WARNING: Shares the ``/post/TABLE`` helper with :func:`get_beam_design_forces_table`
@@ -251,7 +251,7 @@ export const tables = {
      * example but missing from its own Specifications table (a manual
      * self-contradiction; the example wins per this repo's convention).
      *
-     * 2026-08-06 manual update (MAPI-949): TABLE_TYPE renamed
+     * 2026-08-06 manual update: TABLE_TYPE renamed
      * STORY_LOAD_SUMMARY_{dir} -> STORY_LOAD_{dir}, matching STORY_MASS's
      * naming (the other half of the same ticket, already reflected below).
      * This call also gained unit/styles/components/load_case_names.

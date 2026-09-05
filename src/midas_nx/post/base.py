@@ -101,8 +101,8 @@ def get_table(
     this SDK's own get_wall_force_table() no longer accepts either.
     story_names: Story-series (ch21) and Wall Force (ch20) tables — restrict
     to specific story names; omitting it selects all stories. Also accepted
-    by Wall Design Forces (ch23) as of the 2026-08-06 manual update
-    (MAPI-1671); that endpoint's own Specifications table numbers it as
+    by Wall Design Forces (ch23) as of the 2026-08-06 manual update;
+    that endpoint's own Specifications table numbers it as
     param 9, alongside the existing member-scope/unit/style/component
     params.
     modes: Story Mode Shape (ch21) only — mode filter, e.g. ["Mode1", "Mode2"];

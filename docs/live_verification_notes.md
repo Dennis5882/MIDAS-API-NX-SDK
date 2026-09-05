@@ -9000,20 +9000,28 @@ against both SDKs, against `/info`, and against the manual, and had **nothing
 comparing them against the fixtures** — the fourth artefact claiming to know an
 endpoint's shape, and the one deciding what a live run actually sends.
 
-`scripts/check_fixture_contract.py` does, and its first run found 118
-disagreements that split into two opposite kinds:
+`scripts/check_fixture_contract.py` does, and it found 81 disagreements that
+split into two opposite kinds:
 
 - **54 across 8 endpoints on cases that have never passed.** The payload is the
   suspect. `/db/ACTL` sends a Civil-only field on Gen; `/db/FBLA` sends a name
   recorded nowhere; `/db/MVCT`, `/db/NLNK`, `/db/NLNK-M1` and `/db/TDMF` omit
   fields their contracts mark required. Each had failed for months under a
   recorded reason that never mentioned the payload's own shape.
-- **64 across 18 endpoints on `confirmed` cases**, which read the other way
+- **27 across 8 endpoints on `confirmed` cases**, which read the other way
   round entirely. The product accepted that exact payload, so the **contract**
   is what is behind: a name it records nowhere is a field it is missing, and a
   `required` field an accepted call omitted is a requirement the product does
-  not enforce. That second list is 64 live observations that were sitting
-  unread, against 119 proven `safeToOmit` fields in the whole repository.
+  not enforce. 21 of the 27 are the first kind -- `/db/EIGV` alone sends five
+  names (`FRMIN`, `FRMAX`, `iFREQ`, `bMINMAX`, `bSTRUM`) that no contract
+  records, on both products, in a round trip that passes.
+
+  That count was first reported as 64, and the 37 that came off it are worth
+  the correction: a field carrying `safeToOmit: true` is **already** the record
+  of an accepted call that omitted it, derived by `extract_contracts.py` from
+  these same confirmed payloads. Counting those as unread observations repeated
+  the exact mistake the tool exists to stop -- treating a recorded fact as a
+  new one.
 
 Both lists are held as a baseline in CI, in both directions: a new finding
 fails, and so does one that disappears without being recorded. Nothing was

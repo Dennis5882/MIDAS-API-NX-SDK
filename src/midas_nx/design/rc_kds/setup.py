@@ -20,7 +20,7 @@ _BASE = "/DESIGN/RC/KDS-41-20-2022"
 
 
 # --- 0. DESIGN/RC/DRC — RC Design Code Selection -----------------------------
-# Added to the manual 2026-08-06 (MAPI-1365) — a chapter-level "which RC
+# Added to the manual 2026-08-06 — a chapter-level "which RC
 # design code is active" selector, numbered "## 0." because it predates and
 # sits outside the KDS-41-20-2022/<CODE> numbering the other 69 endpoints
 # share.

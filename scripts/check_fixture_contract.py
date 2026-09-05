@@ -3,8 +3,8 @@
 The repository already compares contracts against both SDKs, against `/info`,
 and against the manual.  Nothing compared them against the **fixtures**, which
 is the fourth thing that claims to know an endpoint's shape -- and the one that
-decides what a live run actually sends.  Its first run found 118 disagreements,
-and they divide into two opposite kinds.
+decides what a live run actually sends.  It finds 81 disagreements, and they
+divide into two opposite kinds.
 
 **54 across 8 endpoints are on cases nobody has watched pass**, where the
 payload is the suspect: `/db/ACTL` sends `CLATS` on Gen, a field the contract
@@ -13,12 +13,17 @@ anywhere; `/db/MVCT`, `/db/NLNK`, `/db/NLNK-M1` and `/db/TDMF` omit fields
 their contracts mark **required**.  Every one had failed live for months under
 a recorded reason that never mentioned the payload's own shape.
 
-**64 across 18 endpoints are on `confirmed` cases**, and those read the other
-way round.  The product accepted that exact payload, so the contract is what is
+**27 across 8 endpoints are on `confirmed` cases**, and those read the other way
+round.  The product accepted that exact payload, so the contract is what is
 behind: a name it records nowhere is a field it is missing, and a `required`
 field the accepted call omitted is a requirement the product does not enforce.
-The second kind is the more valuable of the two -- only 119 of 4,916 fields
-have a proven `safeToOmit`, and these are 64 live observations sitting unread.
+
+That second count started at 64 and is 27 because a `safeToOmit: true` field is
+**already** the record of an accepted call that left it out -- the extractor
+derives that from these same confirmed payloads.  Counting those again would
+report a read observation as an unread one, which is precisely the error this
+tool exists to stop making about fixtures.  21 of the 27 are the other kind: a
+wire name an accepted call sent that no contract records.
 
 Three things are checked per case, per product it declares:
 
@@ -127,11 +132,7 @@ KNOWN: Dict[str, List[str]] = {'/db/ACTL': ['gen: sends CLATS, tagged civil-only
               'gen: omits required CTYPE',
               'gen: omits required RELAXATION']}
 
-KNOWN_CONTRACT_GAPS: Dict[str, List[str]] = {'/db/CCFC': ['civil: omits required ITEM',
-              'civil: omits required SCALE_FACTOR',
-              'gen: omits required ITEM',
-              'gen: omits required SCALE_FACTOR'],
- '/db/EIGV': ['civil: sends FRMAX, recorded nowhere',
+KNOWN_CONTRACT_GAPS: Dict[str, List[str]] = {'/db/EIGV': ['civil: sends FRMAX, recorded nowhere',
               'civil: sends FRMIN, recorded nowhere',
               'civil: sends bMINMAX, recorded nowhere',
               'civil: sends bSTRUM, recorded nowhere',
@@ -143,13 +144,6 @@ KNOWN_CONTRACT_GAPS: Dict[str, List[str]] = {'/db/CCFC': ['civil: omits required
               'gen: sends iFREQ, recorded nowhere'],
  '/db/EIGV-M1': ['civil: sends FREQ_NO, recorded nowhere',
                  'civil: sends FREQ_RANGE, recorded nowhere'],
- '/db/ETFC': ['civil: omits required ITEM',
-              'civil: omits required SCALE_FACTOR',
-              'gen: omits required ITEM',
-              'gen: omits required SCALE_FACTOR'],
- '/db/HHCT-M1': ['civil: omits required ITEM',
-                 'civil: omits required SELF_WEIGHT_FACTOR',
-                 'civil: omits required STAGE_NAME'],
  '/db/HSFC': ['civil: omits required ITEM',
               'civil: omits required SCALE_FACTOR',
               'gen: omits required ITEM',
@@ -159,33 +153,11 @@ KNOWN_CONTRACT_GAPS: Dict[str, List[str]] = {'/db/CCFC': ['civil: omits required
  '/db/NLCT': ['gen: sends MAX_ITERATIONS, recorded nowhere',
               'gen: sends NEWTON_ITEMS, recorded nowhere',
               'gen: sends NUMBER_STEPS, recorded nowhere'],
- '/db/PNLA': ['civil: omits required LOAD_GROUP', 'gen: omits required LOAD_GROUP'],
  '/db/PNLD': ['civil: sends AREALOAD, recorded nowhere',
               'gen: sends AREALOAD, recorded nowhere'],
  '/db/SDIS': ['gen: omits required LRB', 'gen: omits required NRB'],
- '/db/SMLC': ['civil: omits required KEY', 'gen: omits required KEY'],
- '/db/STAG': ['civil: omits required INCRE_STEP', 'gen: omits required INCRE_STEP'],
- '/db/TDMT': ['civil: omits required VOL', 'gen: omits required VOL'],
- '/db/THFC': ['civil: omits required CONS_A',
-              'civil: omits required CONS_C',
-              'civil: omits required DAMP_FACTOR',
-              'civil: omits required FREQUENCY',
-              'civil: omits required PHASE_ANGLE',
-              'gen: omits required CONS_A',
-              'gen: omits required CONS_C',
-              'gen: omits required DAMP_FACTOR',
-              'gen: omits required FREQUENCY',
-              'gen: omits required PHASE_ANGLE'],
  '/db/THIS': ['civil: sends DALL, recorded nowhere',
-              'gen: sends DALL, recorded nowhere'],
- '/db/TSGR': ['civil: omits required YEXP',
-              'civil: omits required ZEXP',
-              'gen: omits required YEXP',
-              'gen: omits required ZEXP'],
- '/db/ULFC': ['civil: omits required LB_VALUE',
-              'civil: omits required UB_VALUE',
-              'gen: omits required LB_VALUE',
-              'gen: omits required UB_VALUE']}
+              'gen: sends DALL, recorded nowhere']}
 
 BOTH = ("civil", "gen")
 
@@ -225,7 +197,13 @@ def _findings(case: dict, document: dict) -> List[str]:
                 other = "/".join(sorted(products))
                 out.append(f"{product}: sends {field['key']}, tagged {other}-only")
             if (field.get("requirement") == "required"
-                    and product in products and field["key"] not in keys):
+                    and product in products and field["key"] not in keys
+                    and field.get("safeToOmit") is not True):
+                # safeToOmit: true already records that an accepted call left
+                # this field out -- extract_contracts.py derives it from these
+                # same confirmed payloads. Reporting it again would count a
+                # read observation as an unread one, which is the mistake this
+                # tool exists to avoid making about fixtures.
                 out.append(f"{product}: omits required {field['key']}")
         for key in sorted(keys - recorded - waived):
             out.append(f"{product}: sends {key}, recorded nowhere")

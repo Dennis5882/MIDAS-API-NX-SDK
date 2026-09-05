@@ -597,14 +597,15 @@ def get_column_design_forces_table(
     model), ruling out model content as the cause. No data loss either
     time after the standard crash-recovery cycle (dismiss dialogs →
     relaunch → New Project → close → reconnect with the same MAPI key).
-    Root cause unidentified; reported to MIDASIT (`MAPI-2431`). Not yet
+    Root cause unidentified; reported to MIDASIT. Not yet
     tested on Civil NX. Same endpoint/underlying helper as
     :func:`get_brace_design_forces_table` and
     :func:`get_beam_design_forces_table` — treat those as equally at
     risk until independently tested.
 
-    ⚠️ Re-tested 2026-08-07 on the same patch build that fixed `MAPI-2425`/
-    `MAPI-2426` (Gen NX v975, build 08/06/2026) — **not fixed**. MIDASIT
+    ⚠️ Re-tested 2026-08-07 on the same patch build that fixed two
+    neighbouring crash reports (Gen NX v975, build 08/06/2026) — **not
+    fixed**. MIDASIT
     couldn't reproduce it on their side and asked for the test model;
     re-tested two cases instead of sharing one. Against the currently-open
     real model (small, no design run yet): no crash, clean empty response.
@@ -618,7 +619,7 @@ def get_column_design_forces_table(
     ⚠️ Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), a fresh
     blank ``/doc/NEW`` document (0 nodes) — same repro shape as the
     crashing case above: this time a clean empty response, no crash,
-    session stayed healthy. This is MAPI-2431's most reliably-reproducing
+    session stayed healthy. This is that crash's most reliably-reproducing
     case (crashed twice independently, reconfirmed not-fixed as recently
     as 2026-08-07), so a clean pass here is the strongest single data
     point yet, but the 2026-08-07 note above already shows this call
@@ -626,7 +627,7 @@ def get_column_design_forces_table(
     63-node real model) — treat as reduced-but-not-cleared until an
     independent second re-test.
 
-    ✅ **Fixed, confirmed 2026-08-25.** MIDASIT root-caused MAPI-2431 as
+    ✅ **Fixed, confirmed 2026-08-25.** MIDASIT root-caused it as
     missing guard code for a Design API call made with no analysis run,
     and shipped a fix in the 2026-08-11 patch build. Re-tested on Gen NX
     v2.1, build 08/20/2026 (a different, later build than the 08-11
@@ -671,15 +672,15 @@ def get_brace_design_forces_table(
 
     ⚠️ Shares the same ``TABLE`` endpoint/helper as
     :func:`get_column_design_forces_table`, which crashed Gen NX
-    (reproduced twice, reported to MIDASIT as `MAPI-2431`) — not
+    (reproduced twice, reported to MIDASIT) — not
     independently tested on Gen, but treat as equally at risk until it is.
     Confirmed clean on Civil NX 2026-08-07 (informative ``"there was an
     error creating utbl (ex PostMode ...)"`` error, no crash).
 
     Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank
     ``/doc/NEW`` document: clean empty response, no crash, session stayed
-    healthy. A single clean pass is not independent proof the MAPI-2431
-    risk is gone — treat as reduced-but-not-cleared until a real-model
+    healthy. A single clean pass is not independent proof that risk is
+    gone — treat as reduced-but-not-cleared until a real-model
     retest.
 
     ✅ **Fixed, confirmed 2026-08-25**, same as
@@ -724,7 +725,7 @@ def get_beam_design_forces_table(
 
     ⚠️ Shares the same ``TABLE`` endpoint/helper as
     :func:`get_column_design_forces_table`, which crashed Gen NX
-    (reproduced twice, reported to MIDASIT as `MAPI-2431`) — not
+    (reproduced twice, reported to MIDASIT) — not
     independently tested on Gen via this exact endpoint, but the sibling
     :func:`midas_nx.post.design.get_beam_design_forces_table` (different
     endpoint, ``/post/TABLE``, same ``TABLE_TYPE``) is independently
@@ -735,7 +736,7 @@ def get_beam_design_forces_table(
 
     Re-tested 2026-08-11 on Gen NX (v2.1, build 08/11/2026), blank
     ``/doc/NEW`` document: clean empty response, no crash, session stayed
-    healthy. A single clean pass is not independent proof the MAPI-2431/
+    healthy. A single clean pass is not independent proof that
     sibling-crash risk is gone — treat as reduced-but-not-cleared until a
     real-model retest.
 

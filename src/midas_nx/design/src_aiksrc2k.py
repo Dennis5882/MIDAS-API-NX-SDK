@@ -598,8 +598,8 @@ def perform_src_optimal_design(
     "HEAD": ["No", "Name", "SteelSize", "Astl", "COM", "Axial", "Ben-y",
     "Ben-z", "Shear"], "DATA": [[...], ...]}}``.
 
-    🛑 UNOFFICIAL, PAUSED-DEVELOPMENT API — MIDASIT confirmed (Jira
-    MAPI-2429, 2026-08-06) this endpoint was mid-development and shelved,
+    🛑 UNOFFICIAL, PAUSED-DEVELOPMENT API — MIDASIT confirmed on
+    2026-08-06 that this endpoint was mid-development and shelved,
     with no resume date, and moved its own path from
     ``/DESIGN/SRC/AIK-SRC2K/OCHECK`` to ``/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK``
     specifically to mark it unofficial. **The path move is not a fix**:
@@ -737,7 +737,7 @@ def get_src_beam_design_forces_table(
     "DATA": [[...], ...]}}``.
 
     Shares the ``TABLE_TYPE``-crash pattern seen across the wider
-    Design-Forces family (`MAPI-2431` and siblings) — presumed at risk on
+    Design-Forces family — presumed at risk on
     Gen until independently confirmed on real data. Re-tested 2026-08-11
     on Gen NX (v2.1, build 08/11/2026), blank ``/doc/NEW`` document: clean
     empty response, no crash, session stayed healthy. A single clean pass
@@ -779,7 +779,7 @@ def get_src_column_design_forces_table(
     "DATA": [[...], ...]}}``.
 
     Shares the ``TABLE_TYPE``-crash pattern seen across the wider
-    Design-Forces family (`MAPI-2431` and siblings) — presumed at risk on
+    Design-Forces family — presumed at risk on
     Gen until independently confirmed on real data. Re-tested 2026-08-11
     on Gen NX (v2.1, build 08/11/2026), blank ``/doc/NEW`` document: clean
     empty response, no crash, session stayed healthy. A single clean pass

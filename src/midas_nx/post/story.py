@@ -246,10 +246,10 @@ class StoryStabilityCalculationMethod(TypedDict, total=False):
     This enum's wording has flipped twice — keep the history so it isn't
     flipped a third time on a stale assumption. The official Specifications
     table originally misspelled the first value as "Drfit on the Center of
-    Mass"; MIDASIT confirmed 2026-07-30 (Jira MAPI-2009) that only the
+    Mass"; MIDASIT confirmed 2026-07-30 that only the
     spelling was a typo and the product screen for this table (#10 Story
     Stability Coefficient) genuinely used "on", unlike #13/#17. That has
-    since been superseded: a follow-up report (Jira MAPI-2375) noted the API
+    since been superseded: a follow-up report noted the API
     actually mixes an ignored `SET_STORY_DRIFT_METHOD` field with the real
     `SET_CALCULATION_METHOD.STORY_DRIFT_METHOD` one, and MIDASIT's developer
     decided 2026-08-10 to unify the product UI and API enum on "at" across
