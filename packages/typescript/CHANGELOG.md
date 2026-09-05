@@ -6,6 +6,12 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.7.9 - 2026-09-06
+
+> Additive only. Four lane payload types and one moving-load control type
+> gain members the server declares, and seven doc comments drop the vendor's
+> internal ticket ids. **Nothing is removed and no exported name moves.**
+
 ### Added — the `/info` sweep's small-count tail, and what it was pointing at
 
 - `TrafficLineLanePayload`, `TrafficLineLanesChinaPayload`,
@@ -37,6 +43,13 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 - The seven `FREQ` keys are typed `unknown`, like the eighteen siblings from
   the same table: it is a Key/설명 table and states no Value Type. Taking
   `/info`'s `number` for all 25 is a separate change with its own evidence.
+
+### Changed — doc comments no longer carry MIDAS IT's internal ticket ids
+
+- Seven doc comments in `operations` and `tables` named `MAPI-xxxx` issues
+  from the vendor's own tracker, generated from the Python docstrings they
+  mirror. Every finding they record stays word for word; only the ticket id
+  is gone. Nothing else about those wrappers moves.
 
 ## 2.7.8 - 2026-09-05
 
