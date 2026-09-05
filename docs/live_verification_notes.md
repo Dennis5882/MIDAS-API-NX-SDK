@@ -8957,3 +8957,65 @@ this is the same refusal on the side that had been calling it a regression.
 about the endpoint is in doubt -- the shape passes on both products whenever
 either tier runs alone.
 
+## 2026-09-05 — Task 4: the seventeen re-probed on build 09/02/2026, and what the fixtures themselves say
+
+Every recorded reason in this file is a lead rather than a conclusion, so the
+seventeen `/db` endpoints that have a live case and have never passed were run
+again against the current builds. **All of them still fail**, and two were
+probed field by field rather than only re-run.
+
+| endpoint | Gen, build 09/02/2026 |
+| --- | --- |
+| `/db/ACTL` | `Wrong Field` |
+| `/db/EPSE`, `/db/EPST`, `/db/RPSC`, `/db/TDMF` | `Wrong Field` |
+| `/db/HPCE` | `Wrong Key` |
+| `/db/FBLA`, `/db/MVCT`, `/db/NLLP` | `Unknown Error` |
+| `/db/MADO`, `/db/DOEL`, `/db/SBDO` | POST accepted, record absent on read-back |
+| `/db/CGLP`, `/db/NLNK` | blocked; their `nllp_seed`/`glink_seed` fail first |
+
+### `/db/ACTL`: both halves of the old finding reproduce
+
+The 2026-08-16 entry recorded Gen refusing every POST and Civil never
+persisting `TOL`. Both hold on build 09/02/2026, and the Gen half was narrowed:
+three payloads were sent, each derived from committed sources rather than
+written by hand — the fixture as committed, the fixture filtered to the fields
+the contract tags for Gen, and the two fields the contract marks `required`.
+**All three answer `Wrong Field`.** Civil accepts all three and reads back
+correctly, then fails `read_updated`: `updated to 0.0005, read back 0.001`.
+
+So the fixture is not the explanation on either product. `/db/ACTL` is a
+product-behaviour item, not a coverage one.
+
+### `/db/FBLA`: the obvious suspect is not the cause
+
+Its payload carries `LOAD_ANGLE`, which no contract records. Sending the
+contract's seven keys without it answers the same `Unknown Error` on both
+products, so the extra key is a real fixture defect and **not** why the call
+fails.
+
+### The check that should have existed: fixtures against contracts
+
+Chasing those two made the gap obvious. This repository compares contracts
+against both SDKs, against `/info`, and against the manual, and had **nothing
+comparing them against the fixtures** — the fourth artefact claiming to know an
+endpoint's shape, and the one deciding what a live run actually sends.
+
+`scripts/check_fixture_contract.py` does, and its first run found 118
+disagreements that split into two opposite kinds:
+
+- **54 across 8 endpoints on cases that have never passed.** The payload is the
+  suspect. `/db/ACTL` sends a Civil-only field on Gen; `/db/FBLA` sends a name
+  recorded nowhere; `/db/MVCT`, `/db/NLNK`, `/db/NLNK-M1` and `/db/TDMF` omit
+  fields their contracts mark required. Each had failed for months under a
+  recorded reason that never mentioned the payload's own shape.
+- **64 across 18 endpoints on `confirmed` cases**, which read the other way
+  round entirely. The product accepted that exact payload, so the **contract**
+  is what is behind: a name it records nowhere is a field it is missing, and a
+  `required` field an accepted call omitted is a requirement the product does
+  not enforce. That second list is 64 live observations that were sitting
+  unread, against 119 proven `safeToOmit` fields in the whole repository.
+
+Both lists are held as a baseline in CI, in both directions: a new finding
+fails, and so does one that disappears without being recorded. Nothing was
+merged from them — a fixture is never a source for a contract.
+

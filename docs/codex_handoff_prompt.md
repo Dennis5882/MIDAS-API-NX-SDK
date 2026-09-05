@@ -202,6 +202,23 @@ reason for failing was a specific, plausible, wrong guess that had stood three
 weeks. Treat every recorded reason in `docs/live_verification_notes.md` as a
 lead, not a conclusion.
 
+**All 17 were re-run on build 09/02/2026 and all 17 still fail** — the table of
+what each answers is in the live notes. Two were probed field by field and both
+came back the same, so start from the two things that pass first:
+
+- `python scripts/check_fixture_contract.py` names, per endpoint, every key the
+  payload sends that the contract does not license and every `required` key it
+  omits. Five of the 17 have one. Held in CI as a baseline, in both directions.
+- `/db/ACTL` is **not** one to spend time on. Three payloads derived from the
+  contract — including one carrying only its two `required` fields — all answer
+  `Wrong Field` on Gen, while Civil accepts every one and then refuses to
+  persist `TOL`. Product behaviour on both sides, not coverage.
+
+That script's other list is worth more than the fixture side and is **not**
+yours: 64 disagreements across 18 endpoints sit on cases confirmed live, where
+the product accepted the payload and the contract is what is behind. Closing
+one takes a permitted source. Report, do not merge.
+
 **Five of the 17 changed shape in 2.7.7 or 2.7.8 — build from the contract, not
 from memory:**
 

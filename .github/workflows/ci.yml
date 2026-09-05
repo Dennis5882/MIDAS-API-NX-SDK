@@ -47,6 +47,10 @@ jobs:
         run: python scripts/report_dropped_manual_rows.py --manual-api-repo MIDAS-API --check
       - name: Fail if the shared live CRUD fixture drifted
         run: python scripts/live_crud_check.py --check-cases
+      - name: Fail if a live fixture and its contract disagree in a new way
+        run: python scripts/check_fixture_contract.py --check
+      - name: Fail if the unmerged-table report is out of date
+        run: python scripts/report_unmerged_tables.py --check
 
   typescript:
     runs-on: ubuntu-latest
