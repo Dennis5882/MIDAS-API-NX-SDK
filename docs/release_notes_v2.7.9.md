@@ -19,7 +19,7 @@ This repository has always forbidden naming that tracker in release notes. The
 packaged surfaces are more public than a release note, and had been missed.
 
 **Every finding stays, word for word.** Only the id goes: "reported to MIDASIT
-(`MAPI-2431`)" becomes "reported to MIDASIT", "root-caused MAPI-2431 as"
+(`MAPI-xxxx`)" becomes "reported to MIDASIT", "root-caused MAPI-xxxx as"
 becomes "root-caused it as", and every dated confirmation keeps its date. The
 crash histories, the re-test records, and the "reduced but not cleared"
 judgements are all still there.
