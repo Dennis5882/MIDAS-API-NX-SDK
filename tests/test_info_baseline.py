@@ -57,3 +57,47 @@ def test_against_contracts_check_rejects_growth_per_endpoint(
     assert _run_check(counts) == 1
     captured = capsys.readouterr()
     assert "unrecorded /info properties for /db/NEW grew from 0 to 1" in captured.err
+
+
+def _established_divergence() -> tuple[int, int, dict[str, int], dict[str, int]]:
+    expected = info_baseline.EXPECTED_DIVERGENCE
+    return (
+        expected["endpointsAnsweringBothAtLeast"],
+        expected["divergentSchemasAtMost"],
+        {},
+        dict(expected["absentFieldsAtMost"]),
+    )
+
+
+def _run_divergence_check(
+    counts: tuple[int, int, dict[str, int], dict[str, int]],
+) -> int:
+    both, different, untagged, absent = counts
+    return info_baseline._check_divergence(
+        both=both,
+        different=different,
+        untagged=untagged,
+        absent=absent,
+    )
+
+
+def test_divergence_check_accepts_established_counts() -> None:
+    assert _run_divergence_check(_established_divergence()) == 0
+
+
+def test_divergence_check_accepts_repaired_absent_fields() -> None:
+    both, different, untagged, absent = _established_divergence()
+    absent["/db/SPLC"] -= 1
+
+    assert _run_divergence_check((both, different, untagged, absent)) == 0
+
+
+def test_divergence_check_rejects_an_untagged_field(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    both, different, untagged, absent = _established_divergence()
+    untagged["/db/ACTL"] = 1
+
+    assert _run_divergence_check((both, different, untagged, absent)) == 1
+    captured = capsys.readouterr()
+    assert "untagged product-specific fields for /db/ACTL must be 0, found 1" in captured.err

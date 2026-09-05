@@ -67,6 +67,12 @@ class _AgainstContractsExpectation(TypedDict):
     contractOnlyNamesAtMost: dict[str, int]
 
 
+class _DivergenceExpectation(TypedDict):
+    endpointsAnsweringBothAtLeast: int
+    divergentSchemasAtMost: int
+    absentFieldsAtMost: dict[str, int]
+
+
 EXPECTED_AGAINST_CONTRACTS: _AgainstContractsExpectation = {
     "contractsComparedAtLeast": 205,
     "unmergedTablesSkippedAtMost": 17,
@@ -85,6 +91,16 @@ EXPECTED_AGAINST_CONTRACTS: _AgainstContractsExpectation = {
         "/db/SMLC": 1,
         "/db/STBK": 1,
     },
+}
+
+# Product-specific field tags are complete today.  Unlike the standing sweep
+# above, `untagged` therefore has no tolerated baseline: one such field is one
+# false cross-product claim.  Missing contract fields remain a per-endpoint
+# ceiling because /db/SPLC deliberately records an incomplete field list.
+EXPECTED_DIVERGENCE: _DivergenceExpectation = {
+    "endpointsAnsweringBothAtLeast": 177,
+    "divergentSchemasAtMost": 10,
+    "absentFieldsAtMost": {"/db/SPLC": 15},
 }
 
 
@@ -406,7 +422,56 @@ def against_contracts(*, check: bool = False) -> int:
     )
 
 
-def divergence() -> int:
+def _check_divergence(
+    *,
+    both: int,
+    different: int,
+    untagged: dict[str, int],
+    absent: dict[str, int],
+) -> int:
+    """Fail when product divergence becomes less completely accounted for."""
+    errors: list[str] = []
+    minimum = EXPECTED_DIVERGENCE["endpointsAnsweringBothAtLeast"]
+    if both < minimum:
+        errors.append(f"endpoints answering on both products fell from {minimum} to {both}")
+
+    ceiling = EXPECTED_DIVERGENCE["divergentSchemasAtMost"]
+    if different > ceiling:
+        errors.append(f"endpoints declaring different schemas grew from {ceiling} to {different}")
+
+    for endpoint, count in sorted(untagged.items()):
+        if count:
+            errors.append(
+                f"untagged product-specific fields for {endpoint} must be 0, found {count}"
+            )
+
+    expected_absent = EXPECTED_DIVERGENCE["absentFieldsAtMost"]
+    for endpoint in sorted(set(absent) | set(expected_absent)):
+        actual_count = absent.get(endpoint, 0)
+        endpoint_ceiling = expected_absent.get(endpoint, 0)
+        if actual_count > endpoint_ceiling:
+            errors.append(
+                f"absent product-specific fields for {endpoint} grew from "
+                f"{endpoint_ceiling} to {actual_count}"
+            )
+
+    if not errors:
+        print("\nOK - product-divergence tagging remains complete.")
+        return 0
+
+    print("\n/info product-divergence check failed:", file=sys.stderr)
+    for error in errors:
+        print(f"  - {error}", file=sys.stderr)
+    print(
+        "Absent counts may shrink without updating the expectation. Any "
+        "untagged field or growth must be reviewed and recorded with the "
+        "change that explains it.",
+        file=sys.stderr,
+    )
+    return 1
+
+
+def divergence(*, check: bool = False) -> int:
     """Where the two products declare different schemas for one endpoint.
 
     `products: [civil, gen]` on a contract says the route answers on both. It
@@ -460,6 +525,8 @@ def divergence() -> int:
     print("makes that claim for and /info contradicts; `absent` counts the ones")
     print("no contract records at all.")
     print()
+    untagged_counts: dict[str, int] = {}
+    absent_counts: dict[str, int] = {}
     for endpoint, only_civil, only_gen, retyped in rows:
         contract = contracts.get(endpoint)
         have = tagged(contract)
@@ -478,11 +545,20 @@ def divergence() -> int:
             leaves = [n.rsplit(".", 1)[-1] for n in names]
             untagged = [n for n in leaves if n in have and not have[n]]
             absent = [n for n in leaves if n not in have]
+            untagged_counts[endpoint] = untagged_counts.get(endpoint, 0) + len(untagged)
+            absent_counts[endpoint] = absent_counts.get(endpoint, 0) + len(absent)
             print(f"    {label:10} {len(names):3}"
                   f"   untagged {len(untagged):3}   absent {len(absent):3}")
             for index in range(0, len(names), 5):
                 print("        " + ", ".join(names[index:index + 5]))
-    return 0
+    if not check:
+        return 0
+    return _check_divergence(
+        both=both,
+        different=len(rows),
+        untagged=untagged_counts,
+        absent=absent_counts,
+    )
 
 
 def capture(out_path: pathlib.Path, products: list[str]) -> int:
@@ -564,15 +640,15 @@ def main() -> int:
     parser.add_argument(
         "--check",
         action="store_true",
-        help="with --against-contracts, fail when established differences grow",
+        help="with --against-contracts or --divergence, fail when established differences grow",
     )
     args = parser.parse_args()
 
-    if args.check and not args.against_contracts:
-        parser.error("--check requires --against-contracts")
+    if args.check and not (args.against_contracts or args.divergence):
+        parser.error("--check requires --against-contracts or --divergence")
 
     if args.divergence:
-        return divergence()
+        return divergence(check=args.check)
     if args.against_contracts:
         return against_contracts(check=args.check)
     if args.diff:
