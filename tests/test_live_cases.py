@@ -15,6 +15,28 @@ FIXTURE = ROOT / "schema" / "live-cases.json"
 
 
 @pytest.mark.parametrize(
+    "endpoint,code",
+    [("/db/LLANch", "CHINA"), ("/db/SLANch", "CHINA"),
+     ("/db/LLANid", "INDIA"), ("/db/LLANtr", "TRANS"),
+     ("/db/LLANop", "KSCE-LSD15"), ("/db/SLAN", "KSCE-LSD15"),
+     ("/db/SLANop", "KSCE-LSD15")],
+)
+def test_manual_lane_fixture_keeps_its_own_code_and_model_references(endpoint, code) -> None:
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    case = next(c for c in fixture["cases"] if c["endpoint"] == endpoint)
+    seed = fixture["seeds"][f"lane_code_{code}"]
+    assert seed["records"]["1"]["CODE"] == code
+    assert case["setup"] == [{"seed": f"lane_code_{code}"}]
+    if endpoint in {"/db/LLANch", "/db/LLANid"}:
+        assert "LL_NAME" not in case["createPayload"]
+        assert case["createPayload"]["COMMON"]["LL_NAME"]
+    if endpoint.startswith("/db/SLAN"):
+        payload = case["createPayload"]
+        items = payload.get("ITEMS", payload.get("LANE_ITEMS"))
+        assert {p.get("NODE_KEY", p.get("NODE")) for p in items} <= {5, 6, 7, 8}
+
+
+@pytest.mark.parametrize(
     "endpoint,seed_names",
     [
         ("/db/TDMT", ["tdmt_seed"]),
@@ -626,4 +648,3 @@ def test_a_case_whose_id_a_seed_already_owns_is_blocked_not_regressed() -> None:
     assert row["classification"] == live.BLOCKED
     assert row["ok"] is False
     assert "already exists" in row["steps"]["create"]["error"]
-

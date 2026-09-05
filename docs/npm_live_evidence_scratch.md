@@ -58,6 +58,15 @@ when the notes explicitly say the built npm package completed the operation.
 | `/db/LCOM-GEN` | 2026-09-05 | Gen, Civil |
 | `/db/LCOM-CONC` | 2026-09-05 | Gen, Civil |
 
+| `/db/LLANch` | 2026-09-06 | Civil |
+| `/db/SLANch` | 2026-09-06 | Civil |
+| `/db/LLANid` | 2026-09-06 | Civil |
+| `/db/LLANtr` | 2026-09-06 | Civil |
+| `/db/MVHLtr` | 2026-09-06 | Civil |
+| `/db/MLSP` | 2026-09-06 | Civil |
+| `/db/MLSR` | 2026-09-06 | Civil |
+| `/db/MVLDtr` | 2026-09-06 | Civil |
+
 ## Completed result-table operations
 
 | TABLE_TYPE | Date | Products |
@@ -83,5 +92,5 @@ when the notes explicitly say the built npm package completed the operation.
   the fifteen affected endpoints were re-run on both products on 2026-09-05.
   They are counted above; see the live notes for the run.
 
-**Count:** 47 distinct `/db` endpoints and 4 distinct result-table operations;
-51 distinct npm public-API operations overall.
+**Count:** 55 distinct `/db` endpoints and 4 distinct result-table operations;
+59 distinct npm public-API operations overall.

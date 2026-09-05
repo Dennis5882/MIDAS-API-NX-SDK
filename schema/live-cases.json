@@ -1,6 +1,136 @@
 {
   "version": 5,
   "seeds": {
+    "lane_code_CHINA": {
+      "endpoint": "/db/MVCD",
+      "records": {
+        "1": {
+          "CODE": "CHINA"
+        }
+      }
+    },
+    "lane_code_INDIA": {
+      "endpoint": "/db/MVCD",
+      "records": {
+        "1": {
+          "CODE": "INDIA"
+        }
+      }
+    },
+    "lane_code_TRANS": {
+      "endpoint": "/db/MVCD",
+      "records": {
+        "1": {
+          "CODE": "TRANS"
+        }
+      }
+    },
+    "lane_code_KSCE-LSD15": {
+      "endpoint": "/db/MVCD",
+      "records": {
+        "1": {
+          "CODE": "KSCE-LSD15"
+        }
+      }
+    },
+    "lane_code_BS": {
+      "endpoint": "/db/MVCD",
+      "records": {
+        "1": {
+          "CODE": "BS"
+        }
+      }
+    },
+    "lane_code_AASHTO LRFD": {
+      "endpoint": "/db/MVCD",
+      "records": {
+        "1": {
+          "CODE": "AASHTO LRFD"
+        }
+      }
+    },
+    "lane_code_KOREA": {
+      "endpoint": "/db/MVCD",
+      "records": {
+        "1": {
+          "CODE": "KOREA"
+        }
+      }
+    },
+    "impact_manual_lane": {
+      "endpoint": "/db/LLAN",
+      "records": {
+        "1": {
+          "COMMON": {
+            "LL_NAME": "LL_01",
+            "LOAD_DIST": "LANE",
+            "GROUP_NAME": "",
+            "SKEW_START": 0,
+            "SKEW_END": 0,
+            "MOVING": "FORWARD",
+            "WHEEL_SPACE": 1.8,
+            "WIDTH": 3,
+            "OPT_AUTO_LANE": true,
+            "ALLOW_WIDTH": 3
+          },
+          "LANE_ITEMS": [
+            {
+              "ELEM": 1,
+              "ECC": -1.5
+            },
+            {
+              "ELEM": 2,
+              "ECC": -1.5
+            },
+            {
+              "ELEM": 3,
+              "ECC": -1.5
+            }
+          ]
+        }
+      }
+    },
+    "transverse_case_lane": {
+      "endpoint": "/db/LLANtr",
+      "records": {
+        "1": {
+          "LL_NAME": "LL_01",
+          "LANE_ITEMS": [
+            {
+              "ELEM": 1,
+              "FACTOR": 1.1
+            },
+            {
+              "ELEM": 2,
+              "FACTOR": 1.1
+            },
+            {
+              "ELEM": 3,
+              "FACTOR": 1.1
+            }
+          ]
+        }
+      }
+    },
+    "transverse_case_vehicle": {
+      "endpoint": "/db/MVHLtr",
+      "records": {
+        "1": {
+          "NAME": "Trans_Medians",
+          "P": 120,
+          "W": 2.3,
+          "LW": 10,
+          "NUM": 4,
+          "DW": 0.3,
+          "DV": 0.4,
+          "DE": 0.5,
+          "OPT_MEDIAN_STRIP": true,
+          "ML": 15,
+          "MW": 1,
+          "LEFT_LANES": 2
+        }
+      }
+    },
     "tdmt_seed": {
       "endpoint": "/db/TDMT",
       "records": {
@@ -1200,6 +1330,1461 @@
     }
   ],
   "cases": [
+    {
+      "tier": "lanes_china",
+      "endpoint": "/db/LLANch",
+      "name": "Traffic Line Lanes – China",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "COMMON": {
+          "LL_NAME": "LL_01",
+          "LOAD_DIST": "LANE",
+          "GROUP_NAME": "",
+          "SKEW_START": 0,
+          "SKEW_END": 0,
+          "MOVING": "BOTH",
+          "WHEEL_SPACE": 1.8,
+          "WIDTH": 3,
+          "OPT_AUTO_LANE": true,
+          "ALLOW_WIDTH": 3
+        },
+        "LANE_ITEMS": [
+          {
+            "ELEM": 1,
+            "ECC": -1.5,
+            "SPAN": 12,
+            "SPAN_START": true,
+            "SCALE_FACTOR": 1.1
+          }
+        ]
+      },
+      "updatePayload": {
+        "COMMON": {
+          "LL_NAME": "LL_01",
+          "LOAD_DIST": "LANE",
+          "GROUP_NAME": "",
+          "SKEW_START": 0,
+          "SKEW_END": 0,
+          "MOVING": "BOTH",
+          "WHEEL_SPACE": 1.8,
+          "WIDTH": 3,
+          "OPT_AUTO_LANE": true,
+          "ALLOW_WIDTH": 3
+        },
+        "LANE_ITEMS": [
+          {
+            "ELEM": 1,
+            "ECC": 0,
+            "SPAN": 12,
+            "SPAN_START": true,
+            "SCALE_FACTOR": 1.1
+          }
+        ]
+      },
+      "expected": {
+        "created": -1.5,
+        "updated": 0
+      },
+      "needs": [
+        "lane_code_CHINA"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_CHINA"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "lanes_china",
+      "endpoint": "/db/LLANch",
+      "name": "Traffic Line Lanes – China",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "COMMON": {
+          "LL_NAME": "LL_01",
+          "LOAD_DIST": "LANE",
+          "GROUP_NAME": "",
+          "SKEW_START": 0,
+          "SKEW_END": 0,
+          "MOVING": "BOTH",
+          "WHEEL_SPACE": 1.8,
+          "WIDTH": 3,
+          "OPT_AUTO_LANE": true,
+          "ALLOW_WIDTH": 3
+        },
+        "LANE_ITEMS": [
+          {
+            "ELEM": 1,
+            "ECC": -1.5,
+            "SPAN": 12,
+            "SPAN_START": true,
+            "SCALE_FACTOR": 1.1
+          }
+        ]
+      },
+      "updatePayload": {
+        "COMMON": {
+          "LL_NAME": "LL_01",
+          "LOAD_DIST": "LANE",
+          "GROUP_NAME": "",
+          "SKEW_START": 0,
+          "SKEW_END": 0,
+          "MOVING": "BOTH",
+          "WHEEL_SPACE": 1.8,
+          "WIDTH": 3,
+          "OPT_AUTO_LANE": true,
+          "ALLOW_WIDTH": 3
+        },
+        "LANE_ITEMS": [
+          {
+            "ELEM": 1,
+            "ECC": 0,
+            "SPAN": 12,
+            "SPAN_START": true,
+            "SCALE_FACTOR": 1.1
+          }
+        ]
+      },
+      "expected": {
+        "created": -1.5,
+        "updated": 0
+      },
+      "needs": [
+        "lane_code_CHINA"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_CHINA"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "lanes_china",
+      "endpoint": "/db/SLANch",
+      "name": "Traffic Surface Lanes – China",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "NAME": "LL_01",
+        "WIDTH": 3,
+        "WHEEL_SPACE": 1.8,
+        "SKEW_START": 10,
+        "SKEW_END": 15,
+        "bOPTIMIZE": true,
+        "ALLOW_WIDTH": 3,
+        "MV_DIR": "BOTH",
+        "LANE_ITEMS": [
+          {
+            "NODE": 5,
+            "OFFSET": -1.5,
+            "SPAN_LENGTH": 12
+          },
+          {
+            "NODE": 6,
+            "OFFSET": -1.5,
+            "SPAN_LENGTH": 12
+          }
+        ]
+      },
+      "updatePayload": {
+        "NAME": "LL_01",
+        "WIDTH": 3,
+        "WHEEL_SPACE": 1.8,
+        "SKEW_START": 10,
+        "SKEW_END": 15,
+        "bOPTIMIZE": true,
+        "ALLOW_WIDTH": 3,
+        "MV_DIR": "BOTH",
+        "LANE_ITEMS": [
+          {
+            "NODE": 5,
+            "OFFSET": 0,
+            "SPAN_LENGTH": 12
+          },
+          {
+            "NODE": 6,
+            "OFFSET": -1.5,
+            "SPAN_LENGTH": 12
+          }
+        ]
+      },
+      "expected": {
+        "created": -1.5,
+        "updated": 0
+      },
+      "needs": [
+        "lane_code_CHINA"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_CHINA"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "lanes_china",
+      "endpoint": "/db/SLANch",
+      "name": "Traffic Surface Lanes – China",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "NAME": "LL_01",
+        "WIDTH": 3,
+        "WHEEL_SPACE": 1.8,
+        "SKEW_START": 10,
+        "SKEW_END": 15,
+        "bOPTIMIZE": true,
+        "ALLOW_WIDTH": 3,
+        "MV_DIR": "BOTH",
+        "LANE_ITEMS": [
+          {
+            "NODE": 5,
+            "OFFSET": -1.5,
+            "SPAN_LENGTH": 12
+          },
+          {
+            "NODE": 6,
+            "OFFSET": -1.5,
+            "SPAN_LENGTH": 12
+          }
+        ]
+      },
+      "updatePayload": {
+        "NAME": "LL_01",
+        "WIDTH": 3,
+        "WHEEL_SPACE": 1.8,
+        "SKEW_START": 10,
+        "SKEW_END": 15,
+        "bOPTIMIZE": true,
+        "ALLOW_WIDTH": 3,
+        "MV_DIR": "BOTH",
+        "LANE_ITEMS": [
+          {
+            "NODE": 5,
+            "OFFSET": 0,
+            "SPAN_LENGTH": 12
+          },
+          {
+            "NODE": 6,
+            "OFFSET": -1.5,
+            "SPAN_LENGTH": 12
+          }
+        ]
+      },
+      "expected": {
+        "created": -1.5,
+        "updated": 0
+      },
+      "needs": [
+        "lane_code_CHINA"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_CHINA"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "lanes_india",
+      "endpoint": "/db/LLANid",
+      "name": "Traffic Line Lanes – India",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "COMMON": {
+          "LL_NAME": "LL_01",
+          "LOAD_DIST": "LANE",
+          "GROUP_NAME": "",
+          "SKEW_START": 0,
+          "SKEW_END": 0,
+          "MOVING": "BOTH",
+          "WHEEL_SPACE": 1.8,
+          "WIDTH": 0,
+          "OPT_AUTO_LANE": false,
+          "ALLOW_WIDTH": 0
+        },
+        "LANE_ITEMS": [
+          {
+            "ELEM": 1,
+            "ECC": -1.5,
+            "SPAN": 12,
+            "IMPACT_SPAN": 1,
+            "IMPACT_FACTOR": 0
+          }
+        ]
+      },
+      "updatePayload": {
+        "COMMON": {
+          "LL_NAME": "LL_01",
+          "LOAD_DIST": "LANE",
+          "GROUP_NAME": "",
+          "SKEW_START": 0,
+          "SKEW_END": 0,
+          "MOVING": "BOTH",
+          "WHEEL_SPACE": 1.8,
+          "WIDTH": 0,
+          "OPT_AUTO_LANE": false,
+          "ALLOW_WIDTH": 0
+        },
+        "LANE_ITEMS": [
+          {
+            "ELEM": 1,
+            "ECC": 0,
+            "SPAN": 12,
+            "IMPACT_SPAN": 1,
+            "IMPACT_FACTOR": 0
+          }
+        ]
+      },
+      "expected": {
+        "created": -1.5,
+        "updated": 0
+      },
+      "needs": [
+        "lane_code_INDIA"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_INDIA"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "lanes_india",
+      "endpoint": "/db/LLANid",
+      "name": "Traffic Line Lanes – India",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "COMMON": {
+          "LL_NAME": "LL_01",
+          "LOAD_DIST": "LANE",
+          "GROUP_NAME": "",
+          "SKEW_START": 0,
+          "SKEW_END": 0,
+          "MOVING": "BOTH",
+          "WHEEL_SPACE": 1.8,
+          "WIDTH": 0,
+          "OPT_AUTO_LANE": false,
+          "ALLOW_WIDTH": 0
+        },
+        "LANE_ITEMS": [
+          {
+            "ELEM": 1,
+            "ECC": -1.5,
+            "SPAN": 12,
+            "IMPACT_SPAN": 1,
+            "IMPACT_FACTOR": 0
+          }
+        ]
+      },
+      "updatePayload": {
+        "COMMON": {
+          "LL_NAME": "LL_01",
+          "LOAD_DIST": "LANE",
+          "GROUP_NAME": "",
+          "SKEW_START": 0,
+          "SKEW_END": 0,
+          "MOVING": "BOTH",
+          "WHEEL_SPACE": 1.8,
+          "WIDTH": 0,
+          "OPT_AUTO_LANE": false,
+          "ALLOW_WIDTH": 0
+        },
+        "LANE_ITEMS": [
+          {
+            "ELEM": 1,
+            "ECC": 0,
+            "SPAN": 12,
+            "IMPACT_SPAN": 1,
+            "IMPACT_FACTOR": 0
+          }
+        ]
+      },
+      "expected": {
+        "created": -1.5,
+        "updated": 0
+      },
+      "needs": [
+        "lane_code_INDIA"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_INDIA"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "lanes_transverse",
+      "endpoint": "/db/LLANtr",
+      "name": "Traffic Line Lanes – Transverse",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "LL_NAME": "LL_01",
+        "LANE_ITEMS": [
+          {
+            "ELEM": 1,
+            "FACTOR": 1.1
+          },
+          {
+            "ELEM": 2,
+            "FACTOR": 1.1
+          },
+          {
+            "ELEM": 3,
+            "FACTOR": 1.1
+          }
+        ]
+      },
+      "updatePayload": {
+        "LL_NAME": "LL_01",
+        "LANE_ITEMS": [
+          {
+            "ELEM": 1,
+            "FACTOR": 1.1
+          },
+          {
+            "ELEM": 2,
+            "FACTOR": 1.1
+          },
+          {
+            "ELEM": 3,
+            "FACTOR": 1.1
+          }
+        ]
+      },
+      "expected": {
+        "created": 1.1,
+        "updated": 1.1
+      },
+      "needs": [
+        "lane_code_TRANS"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_TRANS"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "lanes_transverse",
+      "endpoint": "/db/LLANtr",
+      "name": "Traffic Line Lanes – Transverse",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "LL_NAME": "LL_01",
+        "LANE_ITEMS": [
+          {
+            "ELEM": 1,
+            "FACTOR": 1.1
+          },
+          {
+            "ELEM": 2,
+            "FACTOR": 1.1
+          },
+          {
+            "ELEM": 3,
+            "FACTOR": 1.1
+          }
+        ]
+      },
+      "updatePayload": {
+        "LL_NAME": "LL_01",
+        "LANE_ITEMS": [
+          {
+            "ELEM": 1,
+            "FACTOR": 1.1
+          },
+          {
+            "ELEM": 2,
+            "FACTOR": 1.1
+          },
+          {
+            "ELEM": 3,
+            "FACTOR": 1.1
+          }
+        ]
+      },
+      "expected": {
+        "created": 1.1,
+        "updated": 1.1
+      },
+      "needs": [
+        "lane_code_TRANS"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_TRANS"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "lanes_transverse",
+      "endpoint": "/db/MVHLtr",
+      "name": "Vehicles – Transverse",
+      "id": 1,
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "NAME": "Trans_Medians",
+        "P": 120,
+        "W": 2.3,
+        "LW": 10,
+        "NUM": 4,
+        "DW": 0.3,
+        "DV": 0.4,
+        "DE": 0.5,
+        "OPT_MEDIAN_STRIP": true,
+        "ML": 15,
+        "MW": 1,
+        "LEFT_LANES": 2
+      },
+      "updatePayload": {
+        "NAME": "Trans_Medians",
+        "P": 120,
+        "W": 2.3,
+        "LW": 10,
+        "NUM": 4,
+        "DW": 0.3,
+        "DV": 0.4,
+        "DE": 0,
+        "OPT_MEDIAN_STRIP": true,
+        "ML": 15,
+        "MW": 1,
+        "LEFT_LANES": 2
+      },
+      "expected": {
+        "created": 0.5,
+        "updated": 0
+      },
+      "needs": [
+        "lane_code_TRANS"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_TRANS"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "lanes_optimization",
+      "endpoint": "/db/LLANop",
+      "name": "Traffic Line Lanes – Moving Load Optimization",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "LL_NAME": "LL_01",
+        "LOAD_DIST": "LANE",
+        "GROUP_NAME": "",
+        "SKEW_START": 0,
+        "SKEW_END": 0,
+        "MOVING": "BOTH",
+        "OPTIM_WIDTH": 5,
+        "LANE_WIDTH": 3,
+        "OFFSET_TYPE": 0,
+        "DIVIDE_NUM": 2,
+        "ANAL_LANE_OFFSET": 1,
+        "WHEEL_SPACE": 1.8288,
+        "MARGIN": 0.1,
+        "LANE_ITEMS": [
+          {
+            "ELEM": 1,
+            "ECC": -1.5,
+            "FACT": 1.25,
+            "SPAN_START": true
+          },
+          {
+            "ELEM": 2,
+            "ECC": -1.5,
+            "FACT": 1.25,
+            "SPAN_START": false
+          }
+        ]
+      },
+      "updatePayload": {
+        "LL_NAME": "LL_01",
+        "LOAD_DIST": "LANE",
+        "GROUP_NAME": "",
+        "SKEW_START": 0,
+        "SKEW_END": 0,
+        "MOVING": "BOTH",
+        "OPTIM_WIDTH": 5,
+        "LANE_WIDTH": 3,
+        "OFFSET_TYPE": 0,
+        "DIVIDE_NUM": 2,
+        "ANAL_LANE_OFFSET": 1,
+        "WHEEL_SPACE": 1.8288,
+        "MARGIN": 0.1,
+        "LANE_ITEMS": [
+          {
+            "ELEM": 1,
+            "ECC": 0,
+            "FACT": 1.25,
+            "SPAN_START": true
+          },
+          {
+            "ELEM": 2,
+            "ECC": -1.5,
+            "FACT": 1.25,
+            "SPAN_START": false
+          }
+        ]
+      },
+      "expected": {
+        "created": -1.5,
+        "updated": 0
+      },
+      "needs": [
+        "lane_code_KSCE-LSD15"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_KSCE-LSD15"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "lanes_optimization",
+      "endpoint": "/db/SLAN",
+      "name": "Traffic Surface Lanes",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "NAME": "LL_01",
+        "WIDTH": 3,
+        "WHEEL_SPACE": 1.8,
+        "SKEW_START": 10,
+        "SKEW_END": 15,
+        "bOPTIMIZE": true,
+        "ALLOW_WIDTH": 3,
+        "MV_DIR": "BOTH",
+        "LANE_ITEMS": [
+          {
+            "NODE": 5,
+            "OFFSET": -1.5
+          },
+          {
+            "NODE": 6,
+            "OFFSET": -1.5
+          },
+          {
+            "NODE": 7,
+            "OFFSET": -1.5
+          },
+          {
+            "NODE": 8,
+            "OFFSET": -1.5
+          }
+        ]
+      },
+      "updatePayload": {
+        "NAME": "LL_01",
+        "WIDTH": 3,
+        "WHEEL_SPACE": 1.8,
+        "SKEW_START": 10,
+        "SKEW_END": 15,
+        "bOPTIMIZE": true,
+        "ALLOW_WIDTH": 3,
+        "MV_DIR": "BOTH",
+        "LANE_ITEMS": [
+          {
+            "NODE": 5,
+            "OFFSET": 0
+          },
+          {
+            "NODE": 6,
+            "OFFSET": -1.5
+          },
+          {
+            "NODE": 7,
+            "OFFSET": -1.5
+          },
+          {
+            "NODE": 8,
+            "OFFSET": -1.5
+          }
+        ]
+      },
+      "expected": {
+        "created": -1.5,
+        "updated": 0
+      },
+      "needs": [
+        "lane_code_KSCE-LSD15"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_KSCE-LSD15"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "lanes_optimization",
+      "endpoint": "/db/SLANop",
+      "name": "Traffic Surface Lanes – Moving Load Optimization",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "LANE_NAME": "LL_01",
+        "SKEW_START": 10,
+        "SKEW_END": 15,
+        "MOVING": "BOTH",
+        "OPTIMIZE_WIDTH": 4,
+        "LANE_WIDTH": 3,
+        "WHEEL_SPACE": 1.8288,
+        "MARGIN": 0.1,
+        "OFFSET_TYPE": 0,
+        "DIVIDE_NUM": 2,
+        "ITEMS": [
+          {
+            "NODE_KEY": 5,
+            "OFFSET": -1.5,
+            "FACTOR": 1.25,
+            "SPAN_START": true
+          },
+          {
+            "NODE_KEY": 6,
+            "OFFSET": -1.5,
+            "FACTOR": 1.25,
+            "SPAN_START": false
+          }
+        ]
+      },
+      "updatePayload": {
+        "LANE_NAME": "LL_01",
+        "SKEW_START": 10,
+        "SKEW_END": 15,
+        "MOVING": "BOTH",
+        "OPTIMIZE_WIDTH": 4,
+        "LANE_WIDTH": 3,
+        "WHEEL_SPACE": 1.8288,
+        "MARGIN": 0.1,
+        "OFFSET_TYPE": 0,
+        "DIVIDE_NUM": 2,
+        "ITEMS": [
+          {
+            "NODE_KEY": 5,
+            "OFFSET": 0,
+            "FACTOR": 1.25,
+            "SPAN_START": true
+          },
+          {
+            "NODE_KEY": 6,
+            "OFFSET": -1.5,
+            "FACTOR": 1.25,
+            "SPAN_START": false
+          }
+        ]
+      },
+      "expected": {
+        "created": -1.5,
+        "updated": 0
+      },
+      "needs": [
+        "lane_code_KSCE-LSD15"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_KSCE-LSD15"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "lanes_bs",
+      "endpoint": "/db/LLANop",
+      "name": "Traffic Line Lanes – Moving Load Optimization",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "LL_NAME": "LL_01",
+        "LOAD_DIST": "LANE",
+        "GROUP_NAME": "",
+        "SKEW_START": 0,
+        "SKEW_END": 0,
+        "MOVING": "BOTH",
+        "OPTIM_WIDTH": 5,
+        "LANE_WIDTH": 3,
+        "OFFSET_TYPE": 0,
+        "DIVIDE_NUM": 2,
+        "ANAL_LANE_OFFSET": 1,
+        "WHEEL_SPACE": 0,
+        "MARGIN": 0.1,
+        "LANE_ITEMS": [
+          {
+            "ELEM": 1,
+            "ECC": -1.5,
+            "FACT": 1.25,
+            "SPAN_START": true
+          },
+          {
+            "ELEM": 2,
+            "ECC": -1.5,
+            "FACT": 1.25,
+            "SPAN_START": false
+          }
+        ]
+      },
+      "updatePayload": {
+        "LL_NAME": "LL_01",
+        "LOAD_DIST": "LANE",
+        "GROUP_NAME": "",
+        "SKEW_START": 0,
+        "SKEW_END": 0,
+        "MOVING": "BOTH",
+        "OPTIM_WIDTH": 5,
+        "LANE_WIDTH": 3,
+        "OFFSET_TYPE": 0,
+        "DIVIDE_NUM": 2,
+        "ANAL_LANE_OFFSET": 1,
+        "WHEEL_SPACE": 0,
+        "MARGIN": 0.1,
+        "LANE_ITEMS": [
+          {
+            "ELEM": 1,
+            "ECC": 0,
+            "FACT": 1.25,
+            "SPAN_START": true
+          },
+          {
+            "ELEM": 2,
+            "ECC": -1.5,
+            "FACT": 1.25,
+            "SPAN_START": false
+          }
+        ]
+      },
+      "expected": {
+        "created": -1.5,
+        "updated": 0
+      },
+      "needs": [
+        "lane_code_BS"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_BS"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "lanes_bs",
+      "endpoint": "/db/SLAN",
+      "name": "Traffic Surface Lanes",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "NAME": "LL_01",
+        "WIDTH": 3,
+        "WHEEL_SPACE": 0,
+        "SKEW_START": 10,
+        "SKEW_END": 15,
+        "bOPTIMIZE": true,
+        "ALLOW_WIDTH": 3,
+        "MV_DIR": "BOTH",
+        "LANE_ITEMS": [
+          {
+            "NODE": 5,
+            "OFFSET": -1.5
+          },
+          {
+            "NODE": 6,
+            "OFFSET": -1.5
+          },
+          {
+            "NODE": 7,
+            "OFFSET": -1.5
+          },
+          {
+            "NODE": 8,
+            "OFFSET": -1.5
+          }
+        ]
+      },
+      "updatePayload": {
+        "NAME": "LL_01",
+        "WIDTH": 3,
+        "WHEEL_SPACE": 0,
+        "SKEW_START": 10,
+        "SKEW_END": 15,
+        "bOPTIMIZE": true,
+        "ALLOW_WIDTH": 3,
+        "MV_DIR": "BOTH",
+        "LANE_ITEMS": [
+          {
+            "NODE": 5,
+            "OFFSET": 0
+          },
+          {
+            "NODE": 6,
+            "OFFSET": -1.5
+          },
+          {
+            "NODE": 7,
+            "OFFSET": -1.5
+          },
+          {
+            "NODE": 8,
+            "OFFSET": -1.5
+          }
+        ]
+      },
+      "expected": {
+        "created": -1.5,
+        "updated": 0
+      },
+      "needs": [
+        "lane_code_BS"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_BS"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "lanes_bs",
+      "endpoint": "/db/SLANop",
+      "name": "Traffic Surface Lanes – Moving Load Optimization",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "LANE_NAME": "LL_01",
+        "SKEW_START": 10,
+        "SKEW_END": 15,
+        "MOVING": "BOTH",
+        "OPTIMIZE_WIDTH": 4,
+        "LANE_WIDTH": 3,
+        "WHEEL_SPACE": 0,
+        "MARGIN": 0.1,
+        "OFFSET_TYPE": 0,
+        "DIVIDE_NUM": 2,
+        "ITEMS": [
+          {
+            "NODE_KEY": 5,
+            "OFFSET": -1.5,
+            "FACTOR": 1.25,
+            "SPAN_START": true
+          },
+          {
+            "NODE_KEY": 6,
+            "OFFSET": -1.5,
+            "FACTOR": 1.25,
+            "SPAN_START": false
+          }
+        ]
+      },
+      "updatePayload": {
+        "LANE_NAME": "LL_01",
+        "SKEW_START": 10,
+        "SKEW_END": 15,
+        "MOVING": "BOTH",
+        "OPTIMIZE_WIDTH": 4,
+        "LANE_WIDTH": 3,
+        "WHEEL_SPACE": 0,
+        "MARGIN": 0.1,
+        "OFFSET_TYPE": 0,
+        "DIVIDE_NUM": 2,
+        "ITEMS": [
+          {
+            "NODE_KEY": 5,
+            "OFFSET": 0,
+            "FACTOR": 1.25,
+            "SPAN_START": true
+          },
+          {
+            "NODE_KEY": 6,
+            "OFFSET": -1.5,
+            "FACTOR": 1.25,
+            "SPAN_START": false
+          }
+        ]
+      },
+      "expected": {
+        "created": -1.5,
+        "updated": 0
+      },
+      "needs": [
+        "lane_code_BS"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_BS"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "moving_aux",
+      "endpoint": "/db/MLSP",
+      "name": "Lane Support – Negative Moments at Interior Piers",
+      "id": 1,
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "TYPE": "UserInput",
+        "ELEMENT_NO": 2,
+        "ELEMENT_TYPE": "BEAM",
+        "POSITION": "Both"
+      },
+      "updatePayload": {
+        "TYPE": "UserInput",
+        "ELEMENT_NO": 2,
+        "ELEMENT_TYPE": "BEAM",
+        "POSITION": "End-I"
+      },
+      "expected": {
+        "created": "Both",
+        "updated": "End-I"
+      },
+      "needs": [
+        "lane_code_AASHTO LRFD"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_AASHTO LRFD"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "moving_aux",
+      "endpoint": "/db/MLSR",
+      "name": "Lane Support – Reactions at Interior Piers",
+      "id": 1,
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "NODE": 0
+      },
+      "updatePayload": {
+        "NODE": 0
+      },
+      "expected": {
+        "created": 0,
+        "updated": 0
+      },
+      "needs": [
+        "lane_code_AASHTO LRFD"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_AASHTO LRFD"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "moving_aux",
+      "endpoint": "/db/SINF",
+      "name": "Plate Element for Influence Surface",
+      "id": 1,
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "ELEM_LISTS": [
+          4
+        ]
+      },
+      "updatePayload": {
+        "ELEM_LISTS": [
+          4
+        ]
+      },
+      "expected": {
+        "created": [
+          4
+        ],
+        "updated": [
+          4
+        ]
+      },
+      "needs": [
+        "lane_code_AASHTO LRFD"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_AASHTO LRFD"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "moving_impact",
+      "endpoint": "/db/IMPF",
+      "name": "Additional Impact Factor",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "ITEMS": [
+          {
+            "ID": 1,
+            "LANE_TYPE": "LINE",
+            "LANE_NAME": "LL_01",
+            "FACT_TYPE": "IMPACT_FACT",
+            "FACTOR": 0.3
+          }
+        ]
+      },
+      "updatePayload": {
+        "ITEMS": [
+          {
+            "ID": 1,
+            "LANE_TYPE": "LINE",
+            "LANE_NAME": "LL_01",
+            "FACT_TYPE": "IMPACT_FACT",
+            "FACTOR": 0.3
+          }
+        ]
+      },
+      "expected": {
+        "created": 0.3,
+        "updated": 0.3
+      },
+      "needs": [
+        "lane_code_KOREA",
+        "impact_manual_lane"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_KOREA"
+        },
+        {
+          "seed": "impact_manual_lane"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "moving_impact",
+      "endpoint": "/db/IMPF",
+      "name": "Additional Impact Factor",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "ITEMS": [
+          {
+            "ID": 1,
+            "LANE_TYPE": "LINE",
+            "LANE_NAME": "LL_01",
+            "FACT_TYPE": "IMPACT_FACT",
+            "FACTOR": 0.3
+          }
+        ]
+      },
+      "updatePayload": {
+        "ITEMS": [
+          {
+            "ID": 1,
+            "LANE_TYPE": "LINE",
+            "LANE_NAME": "LL_01",
+            "FACT_TYPE": "IMPACT_FACT",
+            "FACTOR": 0.3
+          }
+        ]
+      },
+      "expected": {
+        "created": 0.3,
+        "updated": 0.3
+      },
+      "needs": [
+        "lane_code_KOREA",
+        "impact_manual_lane"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_KOREA"
+        },
+        {
+          "seed": "impact_manual_lane"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "moving_transverse_case",
+      "endpoint": "/db/MVLDtr",
+      "name": "Moving Load Cases – Transverse",
+      "id": 1,
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "LCNAME": "MV_Case1",
+        "DESC": "",
+        "MVHL_NAME": "Trans_Medians",
+        "SCALEFACTOR": 1,
+        "LLAN_NAME": "LL_01",
+        "NUM_LANE": 3,
+        "ITEMS": [
+          1,
+          1,
+          0.9,
+          0.75
+        ]
+      },
+      "updatePayload": {
+        "LCNAME": "MV_Case1",
+        "DESC": "",
+        "MVHL_NAME": "Trans_Medians",
+        "SCALEFACTOR": 1,
+        "LLAN_NAME": "LL_01",
+        "NUM_LANE": 3,
+        "ITEMS": [
+          1,
+          1,
+          0.9,
+          0.75
+        ]
+      },
+      "expected": {
+        "created": "MV_Case1",
+        "updated": "MV_Case1"
+      },
+      "needs": [
+        "lane_code_TRANS",
+        "transverse_case_lane",
+        "transverse_case_vehicle"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_TRANS"
+        },
+        {
+          "seed": "transverse_case_lane"
+        },
+        {
+          "seed": "transverse_case_vehicle"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
     {
       "tier": "core",
       "endpoint": "/db/GRUP",

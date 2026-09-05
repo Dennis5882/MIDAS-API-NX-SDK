@@ -102,6 +102,7 @@ Exit code 3 -> only unverified failures / blocked cases (triage the fixtures).
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import sys
 from datetime import datetime, timezone
@@ -218,16 +219,29 @@ from midas_nx.db.misc_loads import (
     WaveLoad,
 )
 from midas_nx.db.moving_loads import (
+    AdditionalImpactFactor,
     ConcurrentJointForceGroup,
     ConcurrentReactionGroup,
     DynamicLoadAllowance,
+    LaneSupportNegativeMoment,
+    LaneSupportReaction,
     MovingLoadCase,
+    MovingLoadCaseTransverse,
     MovingLoadCode,
+    PlateElementForInfluenceSurface,
     RailwayDynamicFactor,
     RailwayDynamicFactorByElement,
     TrafficLineLanes,
+    TrafficLineLanesChina,
+    TrafficLineLanesIndia,
+    TrafficLineLanesOptimization,
+    TrafficLineLanesTransverse,
+    TrafficSurfaceLanes,
+    TrafficSurfaceLanesChina,
+    TrafficSurfaceLanesOptimization,
     VehicleClasses,
     Vehicles,
+    VehiclesTransverse,
 )
 from midas_nx.db.node_element import (
     DomainElement,
@@ -3602,8 +3616,201 @@ def _extras14_cases() -> List[Case]:
     ]
 
 
+# 2026-09-05, both public SDKs on disposable base models; see live notes.
+# These are payload/code-specific observations, not endpoint product gates.
+_LANE_LIVE_CONFIRMED = {
+    "/db/LLANch": {"civil"},
+    "/db/LLANid": {"civil"},
+    "/db/LLANtr": {"civil", "gen"},
+    "/db/LLANop": {"civil"},
+    "/db/SLAN": {"civil", "gen"},
+    "/db/SLANch": {"civil"},
+    "/db/SLANop": {"civil"},
+}
+
+
+def _manual_lane_cases(resources, code: str, products=None) -> List[Case]:
+    """Replay ch08 sections 3-9's JSON examples with existing model IDs.
+
+    The snapshot is extracted from the manual, not an SDK. Surface paths
+    attach to the base model's plate corners (5-8). The update changes the
+    first eccentricity/offset to its documented default 0; transverse lanes
+    use the documented factor itself for a write/read/idempotence check.
+    """
+    path = Path(__file__).parent / "fixtures" / "lane_manual_examples.json"
+    examples = json.loads(path.read_text(encoding="utf-8"))["examples"]
+    cases = []
+    for resource in resources:
+        payload = copy.deepcopy(examples[resource.ENDPOINT])
+        if code == "BS":
+            # The manual examples' 1.8/1.8288 spacing is rejected under BS
+            # on Gen (2026-09-05). Try this field's own documented default,
+            # not an invented wheel count or a different lane width.
+            payload["WHEEL_SPACE"] = 0
+        entries_key = "ITEMS" if "ITEMS" in payload else "LANE_ITEMS"
+        entries = payload[entries_key]
+        surface = resource.ENDPOINT.startswith("/db/SLAN")
+        if surface:
+            node_key = "NODE_KEY" if entries_key == "ITEMS" else "NODE"
+            for index, entry in enumerate(entries):
+                entry[node_key] = 5 + index
+        probe_key = "OFFSET" if surface else "ECC"
+        if resource.ENDPOINT == "/db/LLANtr":
+            probe_key = "FACTOR"
+        updated = copy.deepcopy(payload)
+        if probe_key != "FACTOR":
+            updated[entries_key][0][probe_key] = 0
+        for product in products or ("gen", "civil"):
+            cases.append(Case(
+                resource, copy.deepcopy(payload), copy.deepcopy(updated),
+                lambda p, key=entries_key, field=probe_key: p[key][0][field],
+                entries[0][probe_key], updated[entries_key][0][probe_key],
+                item_id=1, confirmed=product in _LANE_LIVE_CONFIRMED[resource.ENDPOINT],
+                products=(product,), needs=(f"lane_code_{code}",),
+            ))
+    return cases
+
+
+def _lane_code_seed(code: str, products=None) -> List[SeedStep]:
+    """Select the moving-load code, whether or not another tier already did.
+
+    CODE literals are from ch08 section 1's CODE value table.
+
+    Every lane tier seeds this same /db/MVCD record with a different CODE, so
+    a POST answers `Key Already Exist` for every tier after the first and
+    blocks its whole tier -- confirmed live 2026-09-06 on Gen, where selecting
+    four lane tiers together left one running and blocked five cases. The
+    record is a single-row selector rather than a table, so a PUT is what
+    changing it means; /db/MVCD declares PUT.
+    """
+    def select(client: MidasClient) -> None:
+        records = {1: {"CODE": code}}
+        try:
+            MovingLoadCode.create(records, client=client)
+        except MidasAPIError:
+            # Deliberately POST first and fall back, rather than reading the
+            # record and branching. A seed that reads state back cannot be
+            # replayed from an emitted payload, so branching here would take
+            # all thirteen ch08 cases away from the npm harness to fix a
+            # Python-only collision.
+            MovingLoadCode.update(records, client=client)
+
+    return [SeedStep(f"lane_code_{code}", select, products=products)]
+
+
+def _moving_manual_body(endpoint: str, block: int = 0) -> dict:
+    path = Path(__file__).parent / "fixtures" / "moving_aux_manual_examples.json"
+    examples = json.loads(path.read_text(encoding="utf-8"))["examples"]
+    return copy.deepcopy(examples[endpoint][block]["Assign"])
+
+
+def _moving_aux_cases() -> List[Case]:
+    # Source JSON snapshots retain the original IDs. Only model references
+    # are remapped: beam 2, supported node 1, and plate 4 already exist.
+    mlsp_records = _moving_manual_body("/db/MLSP", 1)
+    mlsp = copy.deepcopy(mlsp_records["1"])
+    mlsp["ELEMENT_NO"] = 2
+    mlsp_updated = copy.deepcopy(mlsp)
+    mlsp_updated["POSITION"] = mlsp_records["2"]["POSITION"]
+    mlsr = next(iter(_moving_manual_body("/db/MLSR").values()))
+    sinf = next(iter(_moving_manual_body("/db/SINF").values()))
+    sinf["ELEM_LISTS"] = [4]
+    return [
+        Case(LaneSupportNegativeMoment, mlsp, mlsp_updated,
+             lambda p: p["POSITION"], mlsp["POSITION"], mlsp_updated["POSITION"],
+             confirmed=True, needs=("lane_code_AASHTO LRFD",)),
+        Case(LaneSupportReaction, mlsr, copy.deepcopy(mlsr),
+             lambda p: p["NODE"], mlsr["NODE"], mlsr["NODE"],
+             confirmed=True, needs=("lane_code_AASHTO LRFD",)),
+        Case(PlateElementForInfluenceSurface, sinf, copy.deepcopy(sinf),
+             lambda p: p["ELEM_LISTS"], sinf["ELEM_LISTS"], sinf["ELEM_LISTS"],
+             needs=("lane_code_AASHTO LRFD",)),
+    ]
+
+
+def _transverse_vehicle_cases() -> List[Case]:
+    # Both products reject the manual's first, median-disabled example.
+    # Test its second complete example independently, without filling in
+    # unstated values for the omitted median fields.
+    payload = _moving_manual_body("/db/MVHLtr")["2"]
+    updated = copy.deepcopy(payload)
+    updated["DE"] = 0  # section 11's documented default
+    return [Case(VehiclesTransverse, payload, updated, lambda p: p["DE"],
+                 payload["DE"], 0, confirmed=True, needs=("lane_code_TRANS",))]
+
+
+def _impact_seeds() -> List[SeedStep]:
+    return _lane_code_seed("KOREA") + [
+        SeedStep("impact_manual_lane", lambda c: TrafficLineLanes.create(
+            _moving_manual_body("/db/LLAN"), client=c)),
+    ]
+
+
+def _impact_cases() -> List[Case]:
+    payload = next(iter(_moving_manual_body("/db/IMPF").values()))
+    # Section 26's first example is an element-keyed impact factor; keep the
+    # manual value and verify idempotent PUT, without inventing a new factor.
+    return [Case(AdditionalImpactFactor, copy.deepcopy(payload), copy.deepcopy(payload),
+                 lambda p: p["ITEMS"][0]["FACTOR"], 0.3, 0.3, item_id=2,
+                 products=(product,), confirmed=product == "civil",
+                 needs=("lane_code_KOREA", "impact_manual_lane"))
+            for product in ("gen", "civil")]
+
+
+def _transverse_load_seeds() -> List[SeedStep]:
+    return _lane_code_seed("TRANS") + [
+        SeedStep("transverse_case_lane", lambda c: TrafficLineLanesTransverse.create(
+            {1: _manual_lane_cases([TrafficLineLanesTransverse], "TRANS")[0].create_payload},
+            client=c)),
+        SeedStep("transverse_case_vehicle", lambda c: VehiclesTransverse.create(
+            {1: _transverse_vehicle_cases()[0].create_payload}, client=c)),
+    ]
+
+
+def _transverse_load_cases() -> List[Case]:
+    payload = _moving_manual_body("/db/MVLDtr")["1"]
+    # Bind the manual's vehicle reference to its median-enabled example,
+    # which actually passed; do not use the rejected basic example as a seed.
+    payload["MVHL_NAME"] = _transverse_vehicle_cases()[0].create_payload["NAME"]
+    # Confirmed on both products 2026-09-06. It had been blocked on Gen by the
+    # /db/MVCD seed collision above, not by anything about this endpoint.
+    return [Case(MovingLoadCaseTransverse, payload, copy.deepcopy(payload),
+                 lambda p: p["LCNAME"], payload["LCNAME"], payload["LCNAME"],
+                 confirmed=True,
+                 needs=("lane_code_TRANS", "transverse_case_lane", "transverse_case_vehicle"))]
+
+
 #: Priority order — what a modelling script needs, not the manual's order.
 TIERS: List[Tier] = [
+    Tier("lanes_china", "manual China line/surface lanes",
+         lambda: _lane_code_seed("CHINA"),
+         lambda: _manual_lane_cases([TrafficLineLanesChina, TrafficSurfaceLanesChina], "CHINA")),
+    Tier("lanes_india", "manual India line lane",
+         lambda: _lane_code_seed("INDIA"),
+         lambda: _manual_lane_cases([TrafficLineLanesIndia], "INDIA")),
+    Tier("lanes_transverse", "manual transverse line lane",
+         lambda: _lane_code_seed("TRANS"),
+         lambda: _manual_lane_cases([TrafficLineLanesTransverse], "TRANS")
+         + _transverse_vehicle_cases()),
+    Tier("lanes_optimization", "manual surface and optimization lanes",
+         lambda: _lane_code_seed("KSCE-LSD15", ("civil",)),
+         lambda: _manual_lane_cases([
+             TrafficLineLanesOptimization, TrafficSurfaceLanes,
+             TrafficSurfaceLanesOptimization,
+         ], "KSCE-LSD15", ("civil",))),
+    # ch08 lists BS for the general/optimization lane family. Gen refuses
+    # KSCE-LSD15 at code selection (recorded 2026-07-29 and rechecked today).
+    Tier("lanes_bs", "manual general/optimization lanes under Gen-available BS",
+         lambda: _lane_code_seed("BS", ("gen",)),
+         lambda: _manual_lane_cases([
+             TrafficLineLanesOptimization, TrafficSurfaceLanes,
+             TrafficSurfaceLanesOptimization,
+         ], "BS", ("gen",))),
+    Tier("moving_aux", "manual interior supports and influence-surface plate",
+         lambda: _lane_code_seed("AASHTO LRFD"), _moving_aux_cases),
+    Tier("moving_impact", "manual Korea lane impact factor", _impact_seeds, _impact_cases),
+    Tier("moving_transverse_case", "manual transverse load case with real lane and vehicle",
+         _transverse_load_seeds, _transverse_load_cases),
     Tier("core", "baseline model, groups and static loads", _no_seeds, _core_cases),
     Tier("props", "material / section sub-types", _props_seeds, _props_cases),
     Tier("boundary", "springs and links", _boundary_seeds, _boundary_cases),

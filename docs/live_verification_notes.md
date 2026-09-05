@@ -9027,3 +9027,63 @@ Both lists are held as a baseline in CI, in both directions: a new finding
 fails, and so does one that disappears without being recorded. Nothing was
 merged from them — a fixture is never a source for a contract.
 
+## 2026-09-06 — chapter 08 moving-load and lane family, both products
+
+Thirteen `/db` endpoints from chapter 08 gained a live case, replaying the
+manual's own JSON examples from `scripts/fixtures/*.json` with only the model
+references remapped to the seeded base model. Both documents were confirmed
+empty first, with each product's own MAPI key.
+
+| endpoint | Gen | Civil |
+| --- | --- | --- |
+| `/db/LLANtr`, `/db/MVHLtr` | PASS | PASS |
+| `/db/MLSP`, `/db/MLSR`, `/db/MVLDtr` | PASS | PASS |
+| `/db/SLAN` | PASS (under `BS`) | PASS (under `KSCE-LSD15`) |
+| `/db/LLANch`, `/db/SLANch` | code unavailable | PASS |
+| `/db/LLANid` | code unavailable | PASS |
+| `/db/IMPF` | code unavailable | PASS |
+| `/db/LLANop`, `/db/SLANop` | refused under `BS` | PASS |
+| `/db/SINF` | POST accepted, record absent | POST accepted, record absent |
+
+**Which moving-load code a product offers decides most of this table.**
+`POST /db/MVCD` answers `[Error] ... (Item:Unavailable moving load code)` on Gen
+for `CHINA`, `INDIA` and `KOREA`, so the lanes those codes exist for cannot be
+written there at all. That is a product capability, not a payload defect, and
+the cases are split per product rather than carrying a payload that fails on
+one of them. `BS` is the code chapter 08 lists for the general/optimization
+family on Gen, and under it `/db/SLAN` passes while `/db/LLANop` and
+`/db/SLANop` are still refused.
+
+### The tiers could not be run together, and that was the finding
+
+Every lane tier seeds the same single-row `/db/MVCD` selector with its own
+`CODE`, by POST. The first tier in a selection wins and every later one answers
+`Key Already Exist`, taking its whole tier down with it: selecting four lane
+tiers on Gen left one running and blocked five cases that pass individually.
+`/db/MLSP`, `/db/MLSR` and `/db/MVLDtr` looked like failures for that reason
+alone.
+
+The seed now POSTs and falls back to PUT on the refusal — `/db/MVCD` declares
+PUT, and the record is a selector rather than a table, so changing it is what a
+second tier means. Four lane tiers selected together on Gen then pass all five
+cases where one had passed before.
+
+**It POSTs first deliberately rather than reading the record and branching.**
+Reading state back would have made the seed one the npm harness cannot replay
+from an emitted payload, which is how `pjcf_unlock`, `solid11_seed` and
+`stage11_seed` came to be excluded — so branching would have taken all thirteen
+of these cases away from npm to fix a Python-only collision. The first attempt
+did exactly that and the emitter caught it.
+
+This is the same collision class as `/db/SPLC`'s, and the second one found in
+two days: a seed that owns a fixed id is a shared resource whether or not it
+was written as one.
+
+### What is not claimed
+
+`/db/SINF` accepts its POST on both products and the record is absent on read
+back, so it stays read-level and unconfirmed. `/db/MVLDbs`, `/db/MVLDch`,
+`/db/MVLDeu` and `/db/MVLDid` have **no live case**; an earlier draft of this
+work recorded them as write citing `live_crud_check.py`, and that citation had
+no case behind it, so they are back at read.
+
