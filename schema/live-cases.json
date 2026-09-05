@@ -1,6 +1,775 @@
 {
-  "version": 4,
+  "version": 5,
   "seeds": {
+    "tdmt_seed": {
+      "endpoint": "/db/TDMT",
+      "records": {
+        "1": {
+          "NAME": "TD_SEED",
+          "CODE": "European",
+          "STR": 24000,
+          "HU": 70,
+          "MSIZE": 0.2,
+          "CTYPE": "RS",
+          "AGE": 28
+        },
+        "2": {
+          "NAME": "TD_SEED_2",
+          "CODE": "European",
+          "STR": 30000,
+          "HU": 65,
+          "MSIZE": 0.25,
+          "CTYPE": "RS",
+          "AGE": 28
+        }
+      }
+    },
+    "tdme_seed": {
+      "endpoint": "/db/TDME",
+      "records": {
+        "1": {
+          "NAME": "TD_SEED",
+          "TYPE": "CODE",
+          "CODENAME": "CEB-FIP(2010)",
+          "STRENGTH": 24000
+        }
+      }
+    },
+    "spring_types": {
+      "endpoint": "/db/GSTP",
+      "records": {
+        "1": {
+          "NAME": "GS_SEED",
+          "OPT_STIFFNESS": true,
+          "SPRING": [
+            1000,
+            0,
+            0,
+            0,
+            0,
+            0,
+            500,
+            0,
+            0,
+            0,
+            0,
+            500,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "2": {
+          "NAME": "GS_SEED_2",
+          "OPT_STIFFNESS": true,
+          "SPRING": [
+            2000,
+            0,
+            0,
+            0,
+            0,
+            0,
+            800,
+            0,
+            0,
+            0,
+            0,
+            800,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "groups": {
+      "steps": [
+        {
+          "endpoint": "/db/GRUP",
+          "records": {
+            "2": {
+              "NAME": "SG_SEED"
+            }
+          }
+        },
+        {
+          "endpoint": "/db/BNGR",
+          "records": {
+            "2": {
+              "NAME": "BG_SEED"
+            }
+          }
+        },
+        {
+          "endpoint": "/db/LDGR",
+          "records": {
+            "1": {
+              "NAME": "LG_SEED"
+            }
+          }
+        }
+      ]
+    },
+    "stage_1": {
+      "endpoint": "/db/STAG",
+      "records": {
+        "1": {
+          "NAME": "CS_SEED",
+          "DURATION": 5,
+          "bSV_RSLT": true,
+          "bSV_STEP": false,
+          "bLOAD_STEP": false,
+          "ADD_STEP": []
+        }
+      }
+    },
+    "mvcd": {
+      "endpoint": "/db/MVCD",
+      "records": {
+        "1": {
+          "CODE": "AASHTO LRFD"
+        }
+      }
+    },
+    "lane": {
+      "endpoint": "/db/LLAN",
+      "records": {
+        "1": {
+          "COMMON": {
+            "LL_NAME": "LL_SEED",
+            "LOAD_DIST": "LANE",
+            "GROUP_NAME": "",
+            "SKEW_START": 0,
+            "SKEW_END": 0,
+            "MOVING": "BOTH",
+            "WHEEL_SPACE": 1.8,
+            "WIDTH": 3,
+            "OPT_AUTO_LANE": false
+          },
+          "LANE_ITEMS": [
+            {
+              "ELEM": 2,
+              "ECC": 0,
+              "CENT_F": 0.5
+            },
+            {
+              "ELEM": 3,
+              "ECC": 0,
+              "CENT_F": 0.5
+            }
+          ]
+        }
+      }
+    },
+    "vehicle": {
+      "endpoint": "/db/MVHL",
+      "records": {
+        "1": {
+          "MVLD_CODE": 2,
+          "VEHICLE_LOAD_NAME": "HL93TRK_SEED",
+          "VEHICLE_LOAD_NUM": 1,
+          "VEHICLE_TYPE_NAME": "HL-93TRK",
+          "STANDARD_CODE": "AASHTO-LRFD",
+          "VEH_DEFAULT": {
+            "DYN_LOAD_ALLOWANCE": 33,
+            "CENT_F": false
+          }
+        }
+      }
+    },
+    "extras1_nodes": {
+      "endpoint": "/db/NODE",
+      "records": {
+        "23": {
+          "X": 0,
+          "Y": 12.0,
+          "Z": 0
+        },
+        "24": {
+          "X": 0,
+          "Y": 12.0,
+          "Z": 3.2
+        },
+        "25": {
+          "X": 4.0,
+          "Y": 12.0,
+          "Z": 0
+        },
+        "26": {
+          "X": 4.0,
+          "Y": 12.0,
+          "Z": 3.2
+        }
+      }
+    },
+    "fbld_seed": {
+      "endpoint": "/db/FBLD",
+      "records": {
+        "90": {
+          "NAME": "FBLD_SEED",
+          "DESC": "",
+          "ITEM": [
+            {
+              "LCNAME": "DL",
+              "FLOOR_LOAD": 4.0,
+              "OPT_SUB_BEAM_WEIGHT": true
+            }
+          ]
+        }
+      }
+    },
+    "nllp_seed": {
+      "endpoint": "/db/NLLP",
+      "records": {
+        "90": {
+          "PROPERTY_NAME": "NLLP_SEED",
+          "DESC": "Foundation Spring",
+          "APPLICATION_TYPE": "ELEMENT",
+          "APPLICATION_TYPE_D": "SPG",
+          "TOTAL_WEIGHT": 0,
+          "OPT_USE_MASS": false
+        },
+        "91": {
+          "PROPERTY_NAME": "NLLP_SEED_2",
+          "DESC": "Foundation Spring",
+          "APPLICATION_TYPE": "ELEMENT",
+          "APPLICATION_TYPE_D": "SPG",
+          "TOTAL_WEIGHT": 0,
+          "OPT_USE_MASS": false
+        }
+      }
+    },
+    "glink_seed": {
+      "endpoint": "/db/NLNK",
+      "records": {
+        "90": {
+          "NODE1": 25,
+          "NODE2": 26,
+          "PROP_NAME": "NLLP_SEED",
+          "REF_SYSTEM": 0,
+          "BETA_ANGLE": 0
+        }
+      }
+    },
+    "smpt_seed": {
+      "endpoint": "/db/SMPT",
+      "records": {
+        "90": {
+          "NAME": "SG_SEED",
+          "SETTLE": 20,
+          "ITEMS": [
+            1,
+            2
+          ]
+        }
+      }
+    },
+    "vsec_seed": {
+      "endpoint": "/db/VSEC",
+      "records": {
+        "90": {
+          "NAME": "VS_SEED_1",
+          "CENT_CALC_TYPE": 0,
+          "CEN_PT_X": 0,
+          "CEN_PT_Y": 0,
+          "CEN_PT_Z": 0,
+          "NORMAL_X": 1,
+          "NORMAL_Y": 0,
+          "NORMAL_Z": 0,
+          "NODE_LIST": [
+            5,
+            6,
+            7,
+            8
+          ],
+          "ELEM_LIST": [
+            4
+          ]
+        },
+        "91": {
+          "NAME": "VS_SEED_2",
+          "CENT_CALC_TYPE": 0,
+          "CEN_PT_X": 0,
+          "CEN_PT_Y": 0,
+          "CEN_PT_Z": 0,
+          "NORMAL_X": 1,
+          "NORMAL_Y": 0,
+          "NORMAL_Z": 0,
+          "NODE_LIST": [
+            5,
+            6,
+            7,
+            8
+          ],
+          "ELEM_LIST": [
+            4
+          ]
+        }
+      }
+    },
+    "lcom_seismic_splc": {
+      "endpoint": "/db/SPLC",
+      "records": {
+        "1": {
+          "NAME": "SPLC_LCOM_SEED",
+          "DIR": "XY",
+          "SCALE": 1.0,
+          "PMFT": 1.0,
+          "aFUNCNAME": [
+            "SPFC_LCOM_SEED"
+          ]
+        }
+      }
+    },
+    "spfc_seed": {
+      "endpoint": "/db/SPFC",
+      "records": {
+        "90": {
+          "NAME": "SPFC_SEED",
+          "iTYPE": 2,
+          "iMETHOD": 0,
+          "SCALE": 1.0,
+          "GRAV": 9.806,
+          "DRATIO": 0.05,
+          "DESC": "",
+          "aFUNC": [
+            {
+              "PERIOD": 0.1,
+              "VALUE": 0.5
+            },
+            {
+              "PERIOD": 0.5,
+              "VALUE": 1.0
+            },
+            {
+              "PERIOD": 1.0,
+              "VALUE": 0.3
+            }
+          ]
+        }
+      },
+      "allowRenumbering": true
+    },
+    "thfc_seed": {
+      "endpoint": "/db/THFC",
+      "records": {
+        "90": {
+          "NAME": "THFC_SEED",
+          "DESC": "",
+          "iTYPE": 2,
+          "GRAV": 9.806,
+          "FUNCTYPE": 1,
+          "iMETHOD": 0,
+          "SCALE": 1.0,
+          "aFUNCDATA": [
+            {
+              "TIME": 0,
+              "VALUE": 0
+            },
+            {
+              "TIME": 0.1,
+              "VALUE": 0.5
+            },
+            {
+              "TIME": 0.2,
+              "VALUE": 1.0
+            }
+          ]
+        }
+      },
+      "allowRenumbering": true
+    },
+    "thfc_force_seed": {
+      "endpoint": "/db/THFC",
+      "records": {
+        "91": {
+          "NAME": "THFC_FORCE_SEED",
+          "DESC": "",
+          "iTYPE": 3,
+          "GRAV": 9.806,
+          "FUNCTYPE": 1,
+          "iMETHOD": 0,
+          "SCALE": 1.0,
+          "aFUNCDATA": [
+            {
+              "TIME": 0,
+              "VALUE": 0
+            },
+            {
+              "TIME": 0.1,
+              "VALUE": 0.5
+            }
+          ]
+        }
+      },
+      "allowRenumbering": true
+    },
+    "this_seed": {
+      "endpoint": "/db/THIS",
+      "records": {
+        "90": {
+          "COMMON": {
+            "NAME": "THIS_SEED",
+            "iATYPE": 1,
+            "iAMETHOD": 1,
+            "iTHTYPE": 1,
+            "ENDTIME": 30.0,
+            "INC": 0.01,
+            "iOUT": 1,
+            "INITMETHOD": "INIT",
+            "INITLOAD": 0,
+            "bDVA": false,
+            "bKEEP": false,
+            "iMDTYPE": 1
+          },
+          "DALL": 0.05
+        }
+      },
+      "allowRenumbering": true
+    },
+    "pnld_seed": {
+      "endpoint": "/db/PNLD",
+      "records": {
+        "90": {
+          "NAME": "PNLD_SEED",
+          "DESC": "",
+          "LTYPE": "AREA",
+          "COPY_X": [
+            0
+          ],
+          "COPY_Y": [
+            0
+          ],
+          "AREALOAD": {
+            "bUNIFORM": true,
+            "b3PNT": false,
+            "X": [
+              0,
+              4,
+              4,
+              0
+            ],
+            "Y": [
+              0,
+              0,
+              -4,
+              -4
+            ],
+            "LOAD": [
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0
+            ]
+          }
+        }
+      }
+    },
+    "posp_seed": {
+      "endpoint": "/db/POSP",
+      "records": {
+        "90": {
+          "NAME": "POSP_SEED",
+          "DESC": "",
+          "OPT_USE_N": false,
+          "GROUND_LEVEL": 0.0,
+          "BEDROCK_LEVEL": -25.0,
+          "FOOTING_LEVEL": -10.0,
+          "ITEMS": [
+            {
+              "HEIGHT": 5.0,
+              "ANGLE_OR_N": 28,
+              "DENSITY": 17.0,
+              "VS": 150,
+              "KH": 10000,
+              "DISP": 0.001
+            },
+            {
+              "HEIGHT": 5.0,
+              "ANGLE_OR_N": 32,
+              "DENSITY": 18.0,
+              "VS": 200,
+              "KH": 20000,
+              "DISP": 0.001
+            },
+            {
+              "HEIGHT": 15.0,
+              "ANGLE_OR_N": 35,
+              "DENSITY": 19.0,
+              "VS": 300,
+              "KH": 50000,
+              "DISP": 0.001
+            }
+          ]
+        }
+      }
+    },
+    "posl_seed": {
+      "endpoint": "/db/POSL",
+      "records": {
+        "90": {
+          "NAME": "POSL_SEED",
+          "CODE": "KDS(41-17-00:2019)",
+          "METHOD": "EQV_STATIC",
+          "SZ": "1",
+          "EPA": 0.22,
+          "SC": "S2",
+          "FA": 1.0,
+          "FV": 1.4,
+          "SDS": 0.2933,
+          "SD1": 0.1467,
+          "USER_GROUP": "1",
+          "IF": 1.5,
+          "RMF": 3.0
+        }
+      }
+    },
+    "bngr_seed": {
+      "endpoint": "/db/BNGR",
+      "records": {
+        "1": {
+          "NAME": "BG1"
+        },
+        "2": {
+          "NAME": "BG2"
+        }
+      }
+    },
+    "mado_seed": {
+      "endpoint": "/db/MADO",
+      "records": {
+        "90": {
+          "NAME": "DM1_SEED",
+          "TYPE": 4,
+          "MATL": 1,
+          "PROP": 1,
+          "SUB_TYPE": 1
+        },
+        "91": {
+          "NAME": "DM2_SEED",
+          "TYPE": 4,
+          "MATL": 1,
+          "PROP": 1,
+          "SUB_TYPE": 1
+        }
+      }
+    },
+    "groups10": {
+      "steps": [
+        {
+          "endpoint": "/db/GRUP",
+          "records": {
+            "90": {
+              "NAME": "SG10_SEED"
+            }
+          }
+        },
+        {
+          "endpoint": "/db/BNGR",
+          "records": {
+            "90": {
+              "NAME": "BG10_SEED"
+            }
+          }
+        }
+      ]
+    },
+    "hsfc_seed": {
+      "endpoint": "/db/HSFC",
+      "records": {
+        "90": {
+          "NAME": "HSFC_SEED",
+          "TYPE": "CONST",
+          "TEMP_CONST": 10
+        },
+        "91": {
+          "NAME": "HSFC_SEED_2",
+          "TYPE": "CONST",
+          "TEMP_CONST": 15
+        }
+      }
+    },
+    "solid10_seed": {
+      "steps": [
+        {
+          "endpoint": "/db/NODE",
+          "records": {
+            "30": {
+              "X": 60.0,
+              "Y": 0.0,
+              "Z": 0.0
+            },
+            "31": {
+              "X": 61.0,
+              "Y": 0.0,
+              "Z": 0.0
+            },
+            "32": {
+              "X": 61.0,
+              "Y": 1.0,
+              "Z": 0.0
+            },
+            "33": {
+              "X": 60.0,
+              "Y": 1.0,
+              "Z": 0.0
+            },
+            "34": {
+              "X": 60.0,
+              "Y": 0.0,
+              "Z": 1.0
+            },
+            "35": {
+              "X": 61.0,
+              "Y": 0.0,
+              "Z": 1.0
+            },
+            "36": {
+              "X": 61.0,
+              "Y": 1.0,
+              "Z": 1.0
+            },
+            "37": {
+              "X": 60.0,
+              "Y": 1.0,
+              "Z": 1.0
+            }
+          }
+        },
+        {
+          "endpoint": "/db/ELEM",
+          "records": {
+            "50": {
+              "TYPE": "SOLID",
+              "MATL": 1,
+              "SECT": 0,
+              "NODE": [
+                30,
+                31,
+                32,
+                33,
+                34,
+                35,
+                36,
+                37
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "hecb_seed": {
+      "steps": [
+        {
+          "endpoint": "/db/BNGR",
+          "records": {
+            "11": {
+              "NAME": "BG11_SEED"
+            }
+          }
+        },
+        {
+          "endpoint": "/db/GRUP",
+          "records": {
+            "11": {
+              "NAME": "SG11_SEED",
+              "P_TYPE": 0,
+              "E_LIST": [
+                1
+              ]
+            }
+          }
+        },
+        {
+          "endpoint": "/db/CCFC",
+          "records": {
+            "11": {
+              "NAME": "CC11_SEED",
+              "TYPE": "CONST",
+              "COEF": 15
+            }
+          }
+        },
+        {
+          "endpoint": "/db/ETFC",
+          "records": {
+            "11": {
+              "NAME": "AT11_SEED",
+              "TYPE": "CONST",
+              "TEMP": 20
+            }
+          }
+        }
+      ]
+    },
+    "bridge_group": {
+      "endpoint": "/db/GRUP",
+      "records": {
+        "12": {
+          "NAME": "SG12_SEED"
+        },
+        "13": {
+          "NAME": "SG12_SEED_2"
+        }
+      }
+    },
+    "sg14_seed": {
+      "endpoint": "/db/GRUP",
+      "records": {
+        "14": {
+          "NAME": "SG14_SEED"
+        }
+      }
+    },
+    "bngr14_seed": {
+      "endpoint": "/db/BNGR",
+      "records": {
+        "14": {
+          "NAME": "BG14_SEED"
+        }
+      }
+    },
+    "dl14_seed": {
+      "endpoint": "/db/STLD",
+      "records": {
+        "14": {
+          "NAME": "DL14_SEED",
+          "TYPE": "D",
+          "DESC": ""
+        }
+      }
+    },
+    "mvcd_ksce_seed": {
+      "endpoint": "/db/MVCD",
+      "records": {
+        "1": {
+          "CODE": "KSCE-LSD15"
+        }
+      }
+    },
+    "bcgd_m1_seed": {
+      "endpoint": "/db/BCGD-M1",
+      "records": {
+        "1": {
+          "BCG_NAME": "BCGD14_SEED",
+          "GROUP_LIST": [
+            "BG14_SEED"
+          ]
+        }
+      }
+    },
     "skew_node": {
       "endpoint": "/db/NODE",
       "records": {
@@ -50,20 +819,6 @@
               "PERIOD": 1.0,
               "VALUE": 0.3
             }
-          ]
-        }
-      }
-    },
-    "lcom_seismic_splc": {
-      "endpoint": "/db/SPLC",
-      "records": {
-        "1": {
-          "NAME": "SPLC_LCOM_SEED",
-          "DIR": "XY",
-          "SCALE": 1.0,
-          "PMFT": 1.0,
-          "aFUNCNAME": [
-            "SPFC_LCOM_SEED"
           ]
         }
       }
@@ -230,6 +985,11 @@
         }
       }
     }
+  },
+  "unsupportedSeeds": {
+    "pjcf_unlock": "ValueError: DELETE /db/PJCF/1 is not an Assign POST",
+    "solid11_seed": "ValueError: DELETE /db/ELEM/1 is not an Assign POST",
+    "stage11_seed": "ValueError: GET /db/STAG is not an Assign POST"
   },
   "baseModel": [
     {
@@ -467,6 +1227,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -496,6 +1257,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -526,6 +1288,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -560,6 +1323,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -600,6 +1364,7 @@
           "seed": "skew_node"
         }
       ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -638,6 +1403,7 @@
           "seed": "static_load_cases"
         }
       ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -680,6 +1446,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -750,6 +1517,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -790,6 +1558,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -820,6 +1589,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -860,6 +1630,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -914,6 +1685,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -962,6 +1734,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -1004,6 +1777,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -1044,8 +1818,15 @@
         "created": 70,
         "updated": 60
       },
-      "needs": [],
-      "setup": [],
+      "needs": [
+        "tdmt_seed"
+      ],
+      "setup": [
+        {
+          "seed": "tdmt_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -1080,8 +1861,15 @@
         "created": 24000,
         "updated": 30000
       },
-      "needs": [],
-      "setup": [],
+      "needs": [
+        "tdme_seed"
+      ],
+      "setup": [
+        {
+          "seed": "tdme_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -1116,7 +1904,15 @@
         "tdmt_seed",
         "tdme_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "tdmt_seed"
+        },
+        {
+          "seed": "tdme_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -1191,6 +1987,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -1267,8 +2064,15 @@
         "created": "GS_CRUD",
         "updated": "GS_CRUD_2"
       },
-      "needs": [],
-      "setup": [],
+      "needs": [
+        "spring_types"
+      ],
+      "setup": [
+        {
+          "seed": "spring_types"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -1312,7 +2116,12 @@
       "needs": [
         "spring_types"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "spring_types"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -1395,6 +2204,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -1443,6 +2253,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -1499,6 +2310,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -1581,6 +2393,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -1631,6 +2444,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -1677,6 +2491,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -1771,6 +2586,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -1823,6 +2639,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -1875,6 +2692,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -1921,6 +2739,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -1969,6 +2788,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -2033,6 +2853,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -2077,6 +2898,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -2121,6 +2943,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -2160,6 +2983,7 @@
           "id": 3
         }
       ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -2237,7 +3061,12 @@
       "needs": [
         "groups"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "groups"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -2282,7 +3111,15 @@
         "groups",
         "stage_1"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "groups"
+        },
+        {
+          "seed": "stage_1"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -2327,7 +3164,15 @@
         "groups",
         "stage_1"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "groups"
+        },
+        {
+          "seed": "stage_1"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -2360,7 +3205,12 @@
       "needs": [
         "stage_1"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "stage_1"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -2436,7 +3286,12 @@
       "needs": [
         "mvcd"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "mvcd"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -2484,7 +3339,12 @@
       "needs": [
         "mvcd"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "mvcd"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -2523,7 +3383,15 @@
         "mvcd",
         "vehicle"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "mvcd"
+        },
+        {
+          "seed": "vehicle"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -2609,7 +3477,18 @@
         "lane",
         "vehicle"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "mvcd"
+        },
+        {
+          "seed": "lane"
+        },
+        {
+          "seed": "vehicle"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -2644,6 +3523,9 @@
         "pjcf_unlock"
       ],
       "setup": [],
+      "blockedSeeds": [
+        "pjcf_unlock"
+      ],
       "crashes": null
     },
     {
@@ -2679,6 +3561,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -2713,6 +3596,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -2743,6 +3627,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -2777,6 +3662,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -2807,6 +3693,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -2837,6 +3724,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -2867,6 +3755,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -2897,7 +3786,12 @@
       "needs": [
         "fbld_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "fbld_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -2969,6 +3863,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -3009,6 +3904,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -3049,7 +3945,15 @@
         "nllp_seed",
         "extras1_nodes"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "nllp_seed"
+        },
+        {
+          "seed": "extras1_nodes"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -3085,7 +3989,15 @@
         "nllp_seed",
         "extras1_nodes"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "nllp_seed"
+        },
+        {
+          "seed": "extras1_nodes"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -3120,7 +4032,15 @@
         "nllp_seed",
         "glink_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "nllp_seed"
+        },
+        {
+          "seed": "glink_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -3227,6 +4147,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -3289,6 +4210,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -3322,6 +4244,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -3351,6 +4274,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -3392,7 +4316,12 @@
       "needs": [
         "smpt_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "smpt_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -3438,7 +4367,12 @@
       "needs": [
         "smpt_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "smpt_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -3478,6 +4412,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -3520,6 +4455,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -3655,6 +4591,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -3689,6 +4626,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -3721,6 +4659,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -3759,6 +4698,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -3845,6 +4785,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -3899,6 +4840,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -3933,6 +4875,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -4003,6 +4946,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -4057,6 +5001,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -4089,6 +5034,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -4161,6 +5107,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -4243,6 +5190,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -4316,6 +5264,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -4356,6 +5305,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -4418,6 +5368,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -4451,7 +5402,12 @@
       "needs": [
         "vsec_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "vsec_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -4497,6 +5453,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -4547,6 +5504,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -4597,6 +5555,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -4647,6 +5606,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -4697,6 +5657,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -4747,6 +5708,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -4800,6 +5762,7 @@
           "seed": "static_load_cases"
         }
       ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -4858,6 +5821,7 @@
           "seed": "lcom_seismic_splc"
         }
       ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -4904,6 +5868,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -4954,6 +5919,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -5025,7 +5991,12 @@
       "needs": [
         "spfc_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "spfc_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -5110,7 +6081,12 @@
       "needs": [
         "spfc_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "spfc_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -5195,7 +6171,12 @@
       "needs": [
         "spfc_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "spfc_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -5286,6 +6267,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -5345,7 +6327,12 @@
       "needs": [
         "this_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "this_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -5418,7 +6405,15 @@
         "thfc_seed",
         "thfc_force_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "thfc_seed"
+        },
+        {
+          "seed": "thfc_force_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -5471,7 +6466,15 @@
         "this_seed",
         "thfc_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "this_seed"
+        },
+        {
+          "seed": "thfc_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -5522,7 +6525,15 @@
         "this_seed",
         "thfc_force_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "this_seed"
+        },
+        {
+          "seed": "thfc_force_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -5563,7 +6574,15 @@
         "this_seed",
         "thfc_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "this_seed"
+        },
+        {
+          "seed": "thfc_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -5626,7 +6645,15 @@
         "this_seed",
         "thfc_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "this_seed"
+        },
+        {
+          "seed": "thfc_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -5853,6 +6880,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -5927,6 +6955,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -5989,6 +7018,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -6052,6 +7082,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -6119,6 +7150,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -6210,7 +7242,12 @@
       "needs": [
         "pnld_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "pnld_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -6284,7 +7321,12 @@
       "needs": [
         "pnld_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "pnld_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -6334,7 +7376,12 @@
       "needs": [
         "fbld_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "fbld_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -6399,6 +7446,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -6490,6 +7538,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -6558,7 +7607,12 @@
       "needs": [
         "posp_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "posp_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -6600,6 +7654,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -6653,6 +7708,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -6724,7 +7780,15 @@
         "posp_seed",
         "posl_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "posp_seed"
+        },
+        {
+          "seed": "posl_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -6771,6 +7835,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -6823,6 +7888,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -6887,6 +7953,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -6926,6 +7993,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -6965,6 +8033,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -7026,6 +8095,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -7087,6 +8157,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -7159,6 +8230,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -7191,6 +8263,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -7260,6 +8333,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -7329,6 +8403,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -7405,7 +8480,12 @@
       "needs": [
         "bngr_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "bngr_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -7482,7 +8562,12 @@
       "needs": [
         "bngr_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "bngr_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -7522,7 +8607,12 @@
       "needs": [
         "mado_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "mado_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -7581,7 +8671,12 @@
       "needs": [
         "mado_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "mado_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -7646,7 +8741,12 @@
       "needs": [
         "mado_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "mado_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -7682,7 +8782,12 @@
       "needs": [
         "mado_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "mado_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -7717,6 +8822,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -7751,6 +8857,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -7786,7 +8893,12 @@
       "needs": [
         "hsfc_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "hsfc_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -7819,7 +8931,15 @@
         "hsfc_seed",
         "solid10_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "hsfc_seed"
+        },
+        {
+          "seed": "solid10_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -7878,6 +8998,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -7920,6 +9041,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -7987,7 +9109,12 @@
       "needs": [
         "groups10"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "groups10"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -8042,6 +9169,9 @@
         "stage11_seed"
       ],
       "setup": [],
+      "blockedSeeds": [
+        "stage11_seed"
+      ],
       "crashes": null
     },
     {
@@ -8091,7 +9221,15 @@
         "hecb_seed",
         "solid11_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "hecb_seed"
+        }
+      ],
+      "blockedSeeds": [
+        "stage11_seed",
+        "solid11_seed"
+      ],
       "crashes": null
     },
     {
@@ -8136,7 +9274,14 @@
         "stage11_seed",
         "hecb_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "hecb_seed"
+        }
+      ],
+      "blockedSeeds": [
+        "stage11_seed"
+      ],
       "crashes": null
     },
     {
@@ -8179,7 +9324,12 @@
       "needs": [
         "bridge_group"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "bridge_group"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -8214,7 +9364,12 @@
       "needs": [
         "bridge_group"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "bridge_group"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -8257,7 +9412,12 @@
       "needs": [
         "bridge_group"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "bridge_group"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -8304,6 +9464,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -8334,6 +9495,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -8364,6 +9526,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -8417,6 +9580,7 @@
           "seed": "ltsr_beam"
         }
       ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -8474,6 +9638,7 @@
           "seed": "member_beam"
         }
       ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -8510,6 +9675,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -8557,6 +9723,7 @@
           "seed": "ltsr_beam"
         }
       ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -8600,6 +9767,7 @@
           "seed": "ltsr_beam"
         }
       ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -8649,6 +9817,7 @@
           "seed": "wmak_plate"
         }
       ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -8687,7 +9856,12 @@
       "needs": [
         "sg14_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "sg14_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -8726,7 +9900,12 @@
       "needs": [
         "sg14_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "sg14_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -8764,7 +9943,15 @@
         "sg14_seed",
         "mvcd_ksce_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "sg14_seed"
+        },
+        {
+          "seed": "mvcd_ksce_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -8793,7 +9980,12 @@
       "needs": [
         "mvcd_ksce_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "mvcd_ksce_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -8834,7 +10026,12 @@
       "needs": [
         "mvcd_ksce_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "mvcd_ksce_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -8867,7 +10064,12 @@
       "needs": [
         "mvcd_ksce_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "mvcd_ksce_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -8896,6 +10098,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -8932,6 +10135,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -8963,6 +10167,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -9017,6 +10222,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -9053,6 +10259,7 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -9089,7 +10296,12 @@
       "needs": [
         "bngr14_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "bngr14_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -9149,7 +10361,15 @@
         "dl14_seed",
         "bcgd_m1_seed"
       ],
-      "setup": [],
+      "setup": [
+        {
+          "seed": "dl14_seed"
+        },
+        {
+          "seed": "bcgd_m1_seed"
+        }
+      ],
+      "blockedSeeds": [],
       "crashes": null
     }
   ]

@@ -27,11 +27,17 @@
  */
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { classifyResult, exitCodeFor, verifyRenumberedSeed } from "./live-harness-support.mjs";
 
 import { doc, MidasClient, post, resources } from "../dist/index.js";
 
 const fixturePath = fileURLToPath(new URL("../../../schema/live-cases.json", import.meta.url));
 const fixture = JSON.parse(readFileSync(fixturePath, "utf8"));
+
+// Pinned so a stale checkout fails loudly instead of silently building an
+// older model. tests/test_live_cases.py fails if this drifts from
+// LIVE_CASES_VERSION in scripts/live_crud_check.py.
+const EXPECTED_FIXTURE_VERSION = 5;
 
 function usage(message) {
   if (message) console.error(message);
@@ -126,30 +132,37 @@ function resourceFor(endpoint) {
   return resource;
 }
 
+/** One prerequisite becomes one or more POSTs, replayed in the emitted order. */
 function setupRecords(prerequisite, targetEndpoint) {
   if (typeof prerequisite.seed === "string") {
     const seed = fixture.seeds?.[prerequisite.seed];
-    if (!seed || typeof seed.endpoint !== "string" || typeof seed.records !== "object" || seed.records === null) {
+    // A seed that builds its records with several POSTs is emitted as a
+    // "steps" list; a single-POST seed keeps the flat shape the base model
+    // also uses. Both replay identically from here.
+    const steps = seed && Array.isArray(seed.steps) ? seed.steps : [seed];
+    if (!seed || steps.some((step) => !step || typeof step.endpoint !== "string"
+      || typeof step.records !== "object" || step.records === null)) {
       throw new Error(`${targetEndpoint}: fixture seed ${prerequisite.seed} is invalid.`);
     }
-    return {
-      endpoint: seed.endpoint,
-      records: seed.records,
+    return steps.map((step) => ({
+      endpoint: step.endpoint,
+      records: step.records,
       // Only an emitted fixture can opt into replacing a record supplied by
       // /doc/NEW. Ordinary setup collisions remain a hard safety failure.
-      replaceExisting: seed.replaceExisting === true,
-    };
+      replaceExisting: step.replaceExisting === true,
+      allowRenumbering: step.allowRenumbering === true,
+    }));
   }
   if (typeof prerequisite.endpoint !== "string" || !Number.isInteger(prerequisite.id)) {
     throw new Error(`${targetEndpoint}: fixture setup must name a seed or an endpoint/id source case.`);
   }
   const source = caseFor(prerequisite.endpoint);
   if (!source) throw new Error(`${targetEndpoint}: fixture setup ${prerequisite.endpoint} has no source case.`);
-  return {
+  return [{
     endpoint: prerequisite.endpoint,
     records: { [prerequisite.id]: source.createPayload },
     replaceExisting: false,
-  };
+  }];
 }
 
 function errorText(error) {
@@ -244,31 +257,41 @@ async function runCase(liveCase, client) {
   const setup = [];
   const targetCreatedIds = new Set();
   let result;
+  // A failure before the endpoint under test is touched says nothing about
+  // that endpoint, so it is reported blocked rather than as a regression --
+  // the same split scripts/live_crud_check.py makes for a failed seed step.
+  let phase = "setup";
   try {
     for (const prerequisite of liveCase.setup) {
-      const source = setupRecords(prerequisite, liveCase.endpoint);
-      const sourceResource = resourceFor(source.endpoint);
-      if (!sourceResource.metadata.methods.includes("DELETE")) {
-        throw new Error(`${liveCase.endpoint}: setup ${source.endpoint} cannot be individually cleaned up.`);
-      }
-      const before = await sourceResource.items(client);
-      const requestedIds = Object.keys(source.records).map(Number);
-      const collisions = requestedIds.filter((id) => Object.hasOwn(before, id));
-      if (collisions.length && !source.replaceExisting) {
+      for (const source of setupRecords(prerequisite, liveCase.endpoint)) {
+        const sourceResource = resourceFor(source.endpoint);
+        if (!sourceResource.metadata.methods.includes("DELETE")) {
+          throw new Error(`${liveCase.endpoint}: setup ${source.endpoint} cannot be individually cleaned up.`);
+        }
+        const before = await sourceResource.items(client);
+        const requestedIds = Object.keys(source.records).map(Number);
+        const collisions = requestedIds.filter((id) => Object.hasOwn(before, id));
+        if (collisions.length && !source.replaceExisting) {
+          for (const id of collisions) {
+            throw new Error(`${liveCase.endpoint}: setup ${source.endpoint}/${id} already exists; refusing to overwrite a scratch record.`);
+          }
+        }
         for (const id of collisions) {
-          throw new Error(`${liveCase.endpoint}: setup ${source.endpoint}/${id} already exists; refusing to overwrite a scratch record.`);
+          await deleteAndVerify(sourceResource, id, client, source.endpoint);
+        }
+        await sourceResource.create(source.records, client);
+        const after = await sourceResource.items(client);
+        const createdIds = newlyCreatedIds(before, after);
+        setup.push({ resource: sourceResource, ids: createdIds, endpoint: source.endpoint });
+        if (source.allowRenumbering) {
+          verifyRenumberedSeed(source, after, createdIds);
+        } else {
+          for (const id of requestedIds) requireStored(after, id, source.endpoint, "setup POST");
         }
       }
-      for (const id of collisions) {
-        await deleteAndVerify(sourceResource, id, client, source.endpoint);
-      }
-      await sourceResource.create(source.records, client);
-      const after = await sourceResource.items(client);
-      const createdIds = newlyCreatedIds(before, after);
-      setup.push({ resource: sourceResource, ids: createdIds, endpoint: source.endpoint });
-      for (const id of requestedIds) requireStored(after, id, source.endpoint, "setup POST");
     }
 
+    phase = "case";
     const before = await resource.items(client);
     if (Object.hasOwn(before, liveCase.id)) {
       throw new Error(`${liveCase.endpoint}/${liveCase.id} already exists; refusing to overwrite a scratch record.`);
@@ -289,7 +312,10 @@ async function runCase(liveCase, client) {
     targetCreatedIds.delete(liveCase.id);
     result = { endpoint: liveCase.endpoint, ok: true, confirmed: liveCase.confirmed };
   } catch (error) {
-    result = { endpoint: liveCase.endpoint, ok: false, confirmed: liveCase.confirmed, error: errorText(error) };
+    result = {
+      endpoint: liveCase.endpoint, ok: false, confirmed: liveCase.confirmed,
+      blocked: phase === "setup", error: errorText(error),
+    };
   } finally {
     const cleanupErrors = [];
     for (const id of targetCreatedIds) {
@@ -405,6 +431,13 @@ async function main() {
     // Caret is not valid in a MIDAS endpoint, so normalizing it is unambiguous.
     .map((endpoint) => endpoint.replaceAll("^", ""))
     .filter(Boolean);
+  if (fixture.version !== EXPECTED_FIXTURE_VERSION) {
+    throw new Error(
+      `schema/live-cases.json is version ${fixture.version}, this harness expects `
+      + `${EXPECTED_FIXTURE_VERSION}. Re-emit it with `
+      + "python scripts/live_crud_check.py --emit-cases, or update this checkout.",
+    );
+  }
   const client = new MidasClient({ mapiKey: args.mapiKey, product: args.product, timeout: args.timeout });
   const cases = selected.map(
     (endpoint) => caseFor(endpoint, args.product)
@@ -428,17 +461,33 @@ async function main() {
       console.log(`SKIP ${liveCase.endpoint} does not support ${args.product}.`);
       continue;
     }
+    // Some Python seed steps read state back or delete a record, which this
+    // harness cannot replay from an emitted POST. The fixture names those and
+    // says why, so report the case blocked rather than running it with the
+    // setup silently shortened and reading the result as an SDK defect.
+    const blockedSeeds = liveCase.blockedSeeds ?? [];
+    if (blockedSeeds.length) {
+      const why = blockedSeeds
+        .map((name) => `${name} (${fixture.unsupportedSeeds?.[name] ?? "reason not emitted"})`)
+        .join("; ");
+      const result = {
+        endpoint: liveCase.endpoint, ok: false, confirmed: liveCase.confirmed,
+        blocked: true, error: `the shared fixture cannot express seed ${why}`,
+      };
+      results.push(result);
+      console.log(`${classifyResult(result)} ${result.endpoint} ${result.error}`);
+      continue;
+    }
     const result = await runCase(liveCase, client);
     results.push(result);
-    console.log(`${result.ok ? "PASS" : result.confirmed ? "REGRESS" : "FAIL"} ${result.endpoint}${result.error ? ` ${result.error}` : ""}`);
+    console.log(`${classifyResult(result)} ${result.endpoint}${result.error ? ` ${result.error}` : ""}`);
   }
   if (args.tableType) {
     const result = await runPopulatedTable(args.tableType, client);
     results.push(result);
-    console.log(`${result.ok ? "PASS" : result.confirmed ? "REGRESS" : "FAIL"} ${result.endpoint}${result.ok ? ` keys=${result.keys.join(",")} rows=${result.rows}` : ` ${result.error}`}`);
+    console.log(`${classifyResult(result)} ${result.endpoint}${result.ok ? ` keys=${result.keys.join(",")} rows=${result.rows}` : ` ${result.error}`}`);
   }
-  const failed = results.filter((result) => !result.ok);
-  const exitCode = !failed.length ? 0 : failed.some((result) => result.confirmed) ? 1 : 3;
+  const exitCode = exitCodeFor(results);
 
   // Cases leave a throwaway model dirty even when every record was deleted.
   // Save that model to a different timestamped checkpoint before /doc/NEW so

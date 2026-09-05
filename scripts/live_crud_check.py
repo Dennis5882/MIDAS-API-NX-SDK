@@ -106,7 +106,7 @@ import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Sequence
+from typing import Any, Callable, Dict, List, Optional, Sequence, Set, Tuple
 
 from midas_nx import doc
 from midas_nx.client import MidasAPIError, MidasClient
@@ -313,7 +313,7 @@ OK, REGRESSION, UNVERIFIED, BLOCKED = "ok", "regression", "unverified", "blocked
 #: Quarantined: known to hang or kill the product, so not run by default.
 SKIPPED = "skipped"
 LIVE_CASES_PATH = Path(__file__).resolve().parents[1] / "schema" / "live-cases.json"
-LIVE_CASES_VERSION = 4
+LIVE_CASES_VERSION = 5
 
 # Shared by the Python base model and the emitted npm live fixture.  Keep
 # prerequisite records here rather than reproducing them in JavaScript. STLD
@@ -887,7 +887,7 @@ def _props_cases() -> List[Case]:
             {"NAME": "TDMT_CRUD", "CODE": "European", "STR": 24000, "HU": 60,
              "MSIZE": 0.2, "CTYPE": "RS", "AGE": 28},
             lambda p: p.get("HU"), 70, 60,
-            item_id=3, confirmed=True,
+            item_id=3, confirmed=True, needs=("tdmt_seed",),
         ),
         Case(
             TimeDependentMaterialStrength,
@@ -896,7 +896,7 @@ def _props_cases() -> List[Case]:
             {"NAME": "TDME_CRUD", "TYPE": "CODE", "CODENAME": "CEB-FIP(2010)",
              "STRENGTH": 30000},
             lambda p: p.get("STRENGTH"), 24000, 30000,
-            item_id=2, confirmed=True,
+            item_id=2, confirmed=True, needs=("tdme_seed",),
         ),
         # Keyed by material id (the manual's example keys it "2", a material
         # number, not a running id). Material 1 is the seeded C24.
@@ -960,7 +960,7 @@ def _boundary_cases() -> List[Case]:
              "SPRING": [1500, 0, 0, 0, 0, 0, 600, 0, 0, 0, 0, 600,
                         0, 0, 0, 0, 0, 0, 0, 0, 0]},
             lambda p: p.get("NAME"), "GS_CRUD", "GS_CRUD_2",
-            item_id=3, confirmed=True,
+            item_id=3, confirmed=True, needs=("spring_types",),
         ),
         Case(
             GeneralSpringSupport,
@@ -3731,6 +3731,84 @@ def _mark(row: Dict[str, Any]) -> str:
             BLOCKED: "BLOCK", SKIPPED: "SKIP"}[row["classification"]]
 
 
+#: Seeds the products renumber to the next free id instead of honouring the
+#: requested "Assign" key -- confirmed live 2026-08-16, see _extras5_seeds().
+#: The npm harness verifies these by NAME rather than by id.  Nothing else is
+#: listed: renumbering is a live observation, never something to assume for a
+#: seed nobody has watched.
+RENUMBERING_SEEDS = frozenset({
+    "spfc_seed", "thfc_seed", "thfc_force_seed", "this_seed",
+})
+
+
+def _exportable_tier_seeds() -> Tuple[Dict[str, Dict[str, Any]], Dict[str, str]]:
+    """Export every tier seed the shared fixture can express, and name the rest.
+
+    Capture each step's own calls; never reconstruct its payload.  The boundary
+    is mechanical rather than a list of tiers someone happened to look at: a
+    seed the npm harness can replay is a **sequence of ``{"Assign": ...}``
+    POSTs**, because that is what ``setupRecords`` in live-crud.mjs sends and
+    ``runCase`` already replays several prerequisites in order.  A seed that
+    reads state back or deletes something cannot be replayed that way, and
+    saying "one POST" instead would be the same arbitrary limit one tier wider.
+
+    Returns the exportable seeds and, separately, a reason for each seed that
+    cannot be expressed.  An unexportable seed must stay **visible**.  Dropping
+    it silently is what let the npm harness run a case half-seeded, and a
+    half-seeded case fails in a way that looks exactly like an SDK defect --
+    the one thing this harness exists not to do.
+    """
+    class Recorder(MidasClient):
+        def __init__(self, product: str) -> None:
+            super().__init__(mapi_key="offline-fixture", product=product)
+            self.calls: List[Dict[str, Any]] = []
+
+        def request(self, method, command, body=None, **kwargs):  # type: ignore[override]
+            if method != "POST" or not isinstance(body, dict) or set(body) != {"Assign"}:
+                raise ValueError(f"{method} {command} is not an Assign POST")
+            self.calls.append({"endpoint": command, "records": body["Assign"]})
+            return {}
+
+    def record(step: SeedStep) -> Tuple[Optional[List[Dict[str, Any]]], str]:
+        # A product-gated seed is still exportable; try the products the step
+        # itself declares rather than reporting a product gate as a shape
+        # problem.
+        reason = "declares no product"
+        for product in sorted(step.products):
+            recorder = Recorder(product)
+            try:
+                step.run(recorder)
+            except Exception as exc:  # noqa: BLE001 - the message is the payload
+                reason = f"{type(exc).__name__}: {exc}"[:160]
+                continue
+            if not recorder.calls:
+                return None, "issued no request"
+            return recorder.calls, ""
+        return None, reason
+
+    seeds: Dict[str, Dict[str, Any]] = {}
+    unsupported: Dict[str, str] = {}
+    for tier in TIERS:
+        for step in tier.seeds():
+            calls, reason = record(step)
+            if calls is None:
+                unsupported[step.name] = reason
+                continue
+            if step.name in RENUMBERING_SEEDS:
+                for call in calls:
+                    call["allowRenumbering"] = True
+            # One POST keeps the flat shape BASE_MODEL_SEEDS also uses; more
+            # than one is a "steps" list the npm side replays in order.
+            seeds[step.name] = calls[0] if len(calls) == 1 else {"steps": calls}
+    return seeds, unsupported
+
+
+def _declared_seeds(case: Case) -> Set[str]:
+    """Seed names a case already names in its own ``setup``."""
+    return {step["seed"] for step in case.setup
+            if isinstance(step, dict) and isinstance(step.get("seed"), str)}
+
+
 def _live_cases_fixture() -> Dict[str, Any]:
     """Return the language-neutral source for Python and npm live checks.
 
@@ -3738,6 +3816,13 @@ def _live_cases_fixture() -> Dict[str, Any]:
     than being a second, hand-maintained copy.  The npm harness does not import
     this Python module; it reads the committed JSON emitted here.
     """
+    shared_seeds, unsupported_seeds = _exportable_tier_seeds()
+    # BASE_MODEL_SEEDS is hand-curated and referenced by name from cases' own
+    # setup, so it wins a name collision with an exported tier seed. One name
+    # collides today: lcom_seismic_splc, whose tier step is the SPFC+SPLC pair
+    # that /db/LCOM-SEISMIC already spells out as two separate setup entries.
+    # tests/test_live_cases.py pins both halves of that.
+    all_seeds = {**shared_seeds, **BASE_MODEL_SEEDS}
     cases: List[Dict[str, Any]] = []
     for tier in TIERS:
         for case in tier.cases():
@@ -3757,12 +3842,37 @@ def _live_cases_fixture() -> Dict[str, Any]:
                     "updated": case.expect_updated,
                 },
                 "needs": list(case.needs),
-                "setup": list(case.setup),
+                # A case that already spells out a seed keeps its own ordering;
+                # only the needs it never expressed as setup are prepended.
+                "setup": [
+                    {"seed": name} for name in case.needs
+                    if name in all_seeds and name not in _declared_seeds(case)
+                ] + list(case.setup),
+                # Needs this fixture cannot express as a replayable POST, and
+                # that the case does not already spell out itself. The npm
+                # harness must report such a case blocked, exactly as the
+                # Python runner reports a case whose seed step failed -- never
+                # run it with the setup silently shortened.
+                "blockedSeeds": [
+                    n for n in case.needs
+                    if n not in all_seeds and n not in _declared_seeds(case)
+                ],
                 "crashes": case.crashes,
             })
+            unknown = [n for n in case.needs
+                       if n not in all_seeds and n not in unsupported_seeds]
+            if unknown:
+                raise ValueError(
+                    f"{resource.ENDPOINT}: needs {unknown}, which names no seed "
+                    "step in any tier. A need resolving to nothing would emit "
+                    "an incomplete setup that no reader could see."
+                )
     fixture = {
         "version": LIVE_CASES_VERSION,
-        "seeds": BASE_MODEL_SEEDS,
+        "seeds": all_seeds,
+        # Named, with the reason, so a harness can refuse a case instead of
+        # guessing why its preconditions are missing.
+        "unsupportedSeeds": unsupported_seeds,
         # The model every case attaches to, in the order it must be built.
         # Without it a harness starting from an empty /doc/NEW cannot resolve
         # any case's node/element/material/section preconditions, which is

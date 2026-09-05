@@ -8,8 +8,33 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "schema" / "live-cases.json"
+
+
+@pytest.mark.parametrize(
+    "endpoint,seed_names",
+    [
+        ("/db/TDMT", ["tdmt_seed"]),
+        ("/db/TDME", ["tdme_seed"]),
+        ("/db/GSTP", ["spring_types"]),
+        ("/db/THFC", ["thfc_seed", "thfc_force_seed"]),
+        ("/db/SPLC", ["spfc_seed"]),
+    ],
+    ids=["creep-sequential-ids", "strength-sequential-id", "spring-sequential-ids",
+         "time-history-two-functions", "spectrum-function-reference"],
+)
+def test_shared_fixture_includes_required_tier_seeds(endpoint, seed_names) -> None:
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    cases = [case for case in fixture["cases"] if case["endpoint"] == endpoint]
+    assert cases
+    for case in cases:
+        assert case["setup"] == [{"seed": name} for name in seed_names]
+        assert all(name in case["needs"] for name in seed_names)
+        for name in seed_names:
+            assert fixture["seeds"][name]["records"]
 
 
 def test_live_case_fixture_matches_python_source() -> None:
@@ -36,7 +61,7 @@ def test_live_case_fixture_carries_static_load_case_seed() -> None:
     fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
     stld = next(case for case in fixture["cases"] if case["endpoint"] == "/db/STLD")
 
-    assert fixture["version"] == 4
+    assert fixture["version"] == 5
     assert fixture["seeds"]["static_load_cases"] == {
         "endpoint": "/db/STLD",
         "records": {
@@ -176,7 +201,11 @@ def test_live_case_fixture_marks_reconfirmed_plane_load_type() -> None:
 
     assert pnld["confirmed"] is True
     assert pnld["id"] == 2
-    assert pnld["setup"] == []
+    # This used to assert an empty setup, which recorded the old emitter's
+    # behaviour rather than the case's: /db/PNLD declares pnld_seed and the
+    # Python runner has always built it. The npm harness gets it too now.
+    assert pnld["needs"] == ["pnld_seed"]
+    assert pnld["setup"] == [{"seed": "pnld_seed"}]
 
 
 def test_live_case_fixture_uses_complete_manual_seismic_damper_examples() -> None:
@@ -441,3 +470,109 @@ def test_the_npm_harness_reads_the_base_model_from_the_fixture() -> None:
     built = source.index("await buildBaseModel(client);")
     first_case = source.index("for (const liveCase of cases)")
     assert built < first_case, "the base model must be built before the first case runs"
+
+
+def test_every_declared_need_resolves_to_a_seed_or_a_stated_reason() -> None:
+    """A need that resolves to nothing is worse than one that cannot be met.
+
+    The npm harness used to receive only the seeds an emitter happened to
+    export, and dropped the rest with no record, so a case ran with its setup
+    silently shortened and failed exactly the way an SDK defect fails. Every
+    name must land in one of two places: the seeds the fixture can replay, or
+    the seeds it cannot, each with the reason it cannot.
+    """
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    seeds = set(fixture["seeds"])
+    unsupported = fixture["unsupportedSeeds"]
+
+    unresolved = {
+        (case["endpoint"], name)
+        for case in fixture["cases"]
+        for name in case["needs"]
+        if name not in seeds and name not in unsupported
+    }
+    assert not unresolved, f"needs resolving to nothing: {sorted(unresolved)}"
+
+    for name, reason in unsupported.items():
+        assert reason.strip(), f"{name} is unsupported without saying why"
+
+    for case in fixture["cases"]:
+        expected = [name for name in case["needs"] if name in unsupported]
+        assert case["blockedSeeds"] == expected, case["endpoint"]
+
+
+def test_a_seed_is_excluded_only_because_it_cannot_be_replayed() -> None:
+    """The boundary is the harness's own vocabulary, not a hand-picked list.
+
+    live-crud.mjs replays a prerequisite as a sequence of Assign POSTs, so a
+    seed that reads state back or deletes a record cannot be expressed and
+    every other seed can. An exclusion for any other reason is someone's
+    convenience, and the count is here to make that visible.
+    """
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    unsupported = fixture["unsupportedSeeds"]
+
+    assert set(unsupported) == {"pjcf_unlock", "solid11_seed", "stage11_seed"}
+    for name, reason in unsupported.items():
+        assert "is not an Assign POST" in reason, f"{name}: {reason}"
+
+    multi_step = {name for name, seed in fixture["seeds"].items() if "steps" in seed}
+    assert multi_step, "a seed built from several POSTs must still be exported"
+
+
+def test_the_npm_harness_blocks_a_case_it_cannot_seed() -> None:
+    """It must refuse such a case, and must not read the refusal as a regression.
+
+    scripts/live_crud_check.py calls a case whose seed step failed BLOCKED and
+    exits 3, because that result says nothing about the endpoint under test.
+    The npm harness had no such class, so a missing seed record was reported as
+    a package regression on a confirmed case.
+    """
+    source = (ROOT / "packages" / "typescript" / "scripts" / "live-crud.mjs").read_text(
+        encoding="utf-8"
+    )
+    support = (
+        ROOT / "packages" / "typescript" / "scripts" / "live-harness-support.mjs"
+    ).read_text(encoding="utf-8")
+
+    assert "liveCase.blockedSeeds" in source, "the npm harness must read the blocked list"
+    assert "fixture.unsupportedSeeds" in source, "and must report why the seed is missing"
+    assert "classifyResult" in source and "exitCodeFor" in source
+
+    # The two decisions Python already makes, in one place npm can test.
+    assert 'return "BLOCK"' in support
+    assert "result.confirmed && !result.blocked" in support
+
+
+def test_the_npm_harness_pins_the_fixture_version() -> None:
+    """A stale checkout must fail loudly, not build an older model in silence."""
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    source = (ROOT / "packages" / "typescript" / "scripts" / "live-crud.mjs").read_text(
+        encoding="utf-8"
+    )
+    pinned = re.search(r"const EXPECTED_FIXTURE_VERSION = (\d+);", source)
+    assert pinned, "live-crud.mjs must pin the fixture version it was written for"
+    assert int(pinned.group(1)) == fixture["version"]
+
+
+def test_a_hand_curated_base_seed_wins_a_name_collision() -> None:
+    """One name exists in both places and they are not the same record.
+
+    ``lcom_seismic_splc`` is a base-model seed holding the SPLC record, and
+    also a tier seed step that creates SPFC *and* SPLC. Merging the exported
+    tier seeds over the base ones replaced a record cases reference by name
+    with a two-step composite, which duplicated the SPFC create for the one
+    case that already spells out both halves. The hand-curated record wins,
+    and a second collision must be looked at rather than merged.
+    """
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    seed = fixture["seeds"]["lcom_seismic_splc"]
+
+    assert seed["endpoint"] == "/db/SPLC"
+    assert "steps" not in seed, "the base-model record must survive the merge"
+    assert set(seed["records"]) == {"1"}
+
+    seismic = [case for case in fixture["cases"] if case["endpoint"] == "/db/LCOM-SEISMIC"]
+    for case in seismic:
+        seeds = [step["seed"] for step in case["setup"] if "seed" in step]
+        assert len(seeds) == len(set(seeds)), f"{case['endpoint']} seeds a record twice"

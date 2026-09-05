@@ -8856,3 +8856,47 @@ extensions before cleanup. Final direct NODE/ELEM reads on both products were
 empty. The many `/doc/NEW` calls involved in the isolated harnesses also
 returned cleanly, but this was not a large-real-model reproduction of that
 endpoint's old crash and is not claimed as one.
+
+## 2026-09-05 — Task 1 shared-model harness disagreement rechecked
+
+Both products answered direct `GET /db/NODE` and `GET /db/ELEM` with empty
+documents before this run. Gen's built npm 2.7.8 harness then replayed the
+version-4 shared fixture, printing `BUILT base model (9 steps)`, for the
+two cases that had disagreed in the earlier session:
+
+| Endpoint | npm on Gen | Python on Gen, same selection |
+| --- | --- | --- |
+| `/db/TDMT` | `id 3 missing after POST` | full create/read/update/read/delete/read PASS |
+| `/db/GSTP` | `id 3 missing after POST` | full create/read/update/read/delete/read PASS |
+
+npm exited 1; Python exited 0. Both harnesses saved their throwaway models
+under `C:/temp` and restored an empty document. Civil received no mutations
+in this recheck. Product builds were not queried again in this run; no new
+build-specific claim is made.
+
+An offline comparison identifies the setup difference: Python's main loop
+runs **every seed in each selected tier**, regardless of the selected cases'
+`needs`. npm's `runCase` replays only the case's emitted `setup`. Both of
+these cases had empty `needs` and `setup` in `schema/live-cases.json`, so
+Python's props tier created TDMT records 1 and 2 before testing record 3 and
+npm did not. Sharing `baseModel` closed the common prefix and nothing else;
+it never established that the harnesses begin each case in the same state.
+
+The handoff's explicit stop-on-disagreement condition was reached. This
+recheck adds no npm PASS evidence and does not classify either failure as a
+package defect.
+
+**Offline follow-up, 2026-09-05, fixture version 5.** The emitter now exports
+every tier seed the npm harness can replay -- a sequence of `{"Assign": ...}`
+POSTs captured from the seed step's own calls -- rather than a hand-picked
+three tiers. 34 of the 37 tier seeds export; the three that do not
+(`pjcf_unlock`, `solid11_seed`, `stage11_seed`) read state back or delete a
+record, are named in `unsupportedSeeds` with the reason, and the four cases
+needing them carry `blockedSeeds` so npm refuses them instead of running them
+half-seeded. Cases carrying setup went 21 to 66. A failure before the endpoint
+under test is touched is now classified `BLOCK` and exits 3, the same split
+the Python runner has always made, so `id 3 missing after POST` would not have
+been printed as `REGRESS` under this build. **None of this is a live result.**
+Whether TDMT and GSTP now agree across the two harnesses is exactly what the
+next live session has to answer, and the products' builds were not queried
+again here.

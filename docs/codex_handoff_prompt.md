@@ -1,6 +1,6 @@
 # Codex task prompt — mechanical work only
 
-Updated 2026-09-05 at `3c47a7a`. **2.7.8 is published** on both registries; the
+Updated 2026-09-05 at `HEAD_SHA`. **2.7.8 is published** on both registries; the
 next number is the author's call, so do not bump it.
 
 **The division, set by the author.** Judgment-heavy work — schema design,
@@ -9,8 +9,10 @@ Claude's. Bounded, verifiable, repeatable work is yours. Every task below has a
 measured starting number you can check your run against. A task that turns out
 to need a judgment call is one to **stop and report**, not to decide.
 
-**Task 1 is the one that matters most and it needs a live session.** Task 2 is
-already done — it is kept below only for what was added to it. Task 5 is
+**Task 1 is the one that matters most and it needs a live session.** Its
+offline half was rewritten after your recheck — read it again before running
+anything, the fixture version and the outcome vocabulary both changed. Task 2
+is already done and is kept below only for what was added to it. Task 5 is
 offline and you can start it right now.
 
 ## Your last batch, and what it settled
@@ -36,7 +38,9 @@ All four commits landed, and two of them changed what this repo believes.
 - **The npm CRUD batch** (`1686a93`) took npm evidence 23 → 32 endpoints, and
   the part worth repeating is the part you *refused* to claim: thirteen
   `REGRESS` prints you did not report as a package regression, with the reason
-  written down. **You were right, and it has been fixed** — see Task 1.
+  written down. **You were right**, and it took two passes to actually fix:
+  sharing the base model closed the common prefix, and your own recheck found
+  the rest — the per-tier seeds. Both halves are in. See Task 1.
 
 ## What moved since your batch
 
@@ -69,7 +73,7 @@ Run these first and confirm you see the same numbers. **If any differ, say so
 before starting** — it means something moved under you.
 
 ```bash
-python -m pytest -q                       # 1006 passed
+python -m pytest -q                       # 1016 passed
 ruff check src tests scripts && mypy      # clean; 41 source files
 python scripts/validate_contracts.py      # OK; 381 endpoints, 4916 fields,
                                           # 0 unresolved manual contradictions
@@ -87,12 +91,13 @@ python scripts/report_dropped_manual_rows.py \
 python scripts/live_crud_check.py --check-cases        # silent; exit 0
 cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # 304 resources (301 by contract),
-                                          # 764 payload types; no drift; 60 tests
+                                          # 764 payload types; no drift; 70 tests
 ```
 
 Coverage as `ROADMAP.md` reports it: **399/399 implemented, 173 write / 226
-read.** `schema/live-cases.json` is **version 4** and holds **167 cases, 144
-confirmed**, plus **9 base-model steps**. npm live evidence stands at **32 `/db`
+read.** `schema/live-cases.json` is **version 5** and holds **167 cases, 144
+confirmed**, plus **9 base-model steps**, **46 named seeds** and **3
+unsupported seeds** that block 4 cases on the npm side by design. npm live evidence stands at **32 `/db`
 endpoints**. Drafts: 3, all the IEHG trio, all refused for a reason that will
 not go away — that is the finished state, not a backlog.
 
@@ -101,63 +106,78 @@ not go away — that is the finished state, not a backlog.
 
 ---
 
-## Task 1 — prove the base model actually unblocks your thirteen
+## Task 1 — prove the two harnesses now begin each case in the same state
 
 **Live. Destructive: this calls `/doc/NEW`.** Needs the author's go-ahead and a
 document they have confirmed is disposable.
 
-### Why this task exists
+### What changed since your run, and why you were right to stop
 
-You reported thirteen `REGRESS` prints and refused to call them a package
-regression, and the reason you wrote down was correct. The fix is in — but
-**nobody has run it against a product**, and a fix to a live harness that has
-never been run live is a claim, not a result. It was written by someone with no
-live session; this is the half of the seam only a live run closes.
+Your recheck hit the handoff's stop-on-disagreement condition and you reported
+it instead of deciding it. That was correct, and the offline half is now done.
+
+Sharing `baseModel` had closed the **common prefix** and nothing else. Python's
+main loop runs **every seed step in a selected tier**, whatever the cases'
+`needs` say; npm replays only what the fixture emitted for that case. So
+`/db/TDMT` had records 1 and 2 under Python and an empty table under npm, and
+`id 3 missing after POST` was the honest symptom of a model that was never
+built — not of a package defect.
+
+Fixture **version 5** closes it:
+
+- Every tier seed the npm harness can replay is exported: **34 of 37**. The
+  boundary is the harness's own vocabulary — a sequence of `{"Assign": ...}`
+  POSTs, captured from the seed step's own calls, never retyped.
+- The three that cannot (`pjcf_unlock`, `solid11_seed`, `stage11_seed`) read
+  state back or delete a record. They are named in `unsupportedSeeds` **with
+  the reason**, and the four cases needing them carry `blockedSeeds`.
+- Cases carrying setup went **21 → 66**.
+- npm gained the `BLOCK` class it never had. A failure before the endpoint
+  under test is touched now exits **3**, not 1 — the same split
+  `live_crud_check.py` has always made. Your `id 3 missing after POST` would
+  print `BLOCK`, not `REGRESS`, under this build.
+
+**None of that is a live result.** Two harnesses that agree offline are two
+harnesses nobody has watched. That is your half.
 
 ### What to run
 
-Exactly the thirteen, plus the two that failed for the neighbouring reason:
-
-```
-/db/CNLD, /db/BMLD, /db/CONS, /db/ESSF, /db/SECF, /db/TSGR, /db/TDMT,
-/db/GSTP, /db/TDME, /db/IFGS, /db/THGC, /db/THFC, /db/SPLC
-```
-
-plus `/db/LCOM-GEN` and `/db/LCOM-CONC`, whose fixtures referenced load case
-`DL` — the base model's `/db/STLD` step creates it, so those two should now
-resolve for the same reason.
-
-In batches of at most 8, on **both** products:
+The two that disagreed, first and alone:
 
 ```bash
-npm run live:crud -- -- --product gen --endpoints /db/CNLD,/db/BMLD,... \
-  --save-dir <a writable directory on the NX machine>
+npm run live:crud -- -- --product gen --endpoints /db/TDMT,/db/GSTP   --save-dir <a writable directory on the NX machine>
+python scripts/live_crud_check.py --endpoints /db/TDMT,/db/GSTP --product gen
+```
+
+Then the rest of the original thirteen, plus the two that failed for the
+neighbouring reason, in batches of at most 8, on **both** products:
+
+```
+/db/CNLD, /db/BMLD, /db/CONS, /db/ESSF, /db/SECF, /db/TSGR, /db/TDME,
+/db/IFGS, /db/THGC, /db/THFC, /db/SPLC, /db/LCOM-GEN, /db/LCOM-CONC
 ```
 
 The harness prints `BUILT base model (9 steps)` after `CREATED empty scratch
-document`. If that line is missing the fixture is stale — re-emit with
-`python scripts/live_crud_check.py --emit-cases` and say so in your report.
+document`. It also **refuses to start** if `schema/live-cases.json` is not
+version 5 — that error means a stale checkout, not a product problem.
 
 ### What the outcomes mean
 
-- **`PASS`** — the hole is closed. Record it and extend
+- **`PASS` on both harnesses** — the seam is closed. Record it and extend
   `docs/npm_live_evidence_scratch.md`, which is Task 3 anyway.
-- **`REGRESS` still, on a *different* error** — the interesting case, and a
-  genuine finding: the base model built, so a missing precondition is no longer
-  the explanation. Report the error verbatim; do **not** relabel it a package
-  regression on your own, because the third possibility below is real.
-- **The base model itself fails to build** — a step's records did not store.
-  Stop the batch and report which step and which id. That is a defect in
-  `7d2698e` and not yours to fix.
+- **`BLOCK`** — a precondition the fixture could not build. Report which seed
+  and which id. Not a package defect, and not yours to fix.
+- **`REGRESS` on a *different* error than before** — the interesting case. The
+  seeds built, so a missing precondition is no longer the explanation. Report
+  the error verbatim; do **not** relabel it a package regression yourself.
+- **The two harnesses still disagree** — stop and report, exactly as you did.
+  Three of the 37 seeds are still unexportable by design, so a disagreement on
+  `/db/PJCF`, `/db/STCT`, `/db/HECB` or `/db/HSPT` is expected and is not the
+  finding; npm should print `BLOCK` for those four rather than running them.
 
-Also confirm the negative: **Python's own runs must be unchanged.** Put the same
-selection through `python scripts/live_crud_check.py --endpoints ...` on both
-products. `_seed_model` now executes the emitted list instead of inline
-literals, and the two are supposed to be identical; a Python-side difference
-would mean the refactor changed the model.
-
-**Stop and report if** the two harnesses now disagree about any case both can
-run. That is exactly what the change was supposed to make impossible.
+Also confirm the negative: **Python's own runs must be unchanged.** Its seed
+steps were not touched; only what gets emitted for npm was. A Python-side
+difference would mean the export changed the model, which it must not.
 
 ---
 
