@@ -8900,3 +8900,60 @@ been printed as `REGRESS` under this build. **None of this is a live result.**
 Whether TDMT and GSTP now agree across the two harnesses is exactly what the
 next live session has to answer, and the products' builds were not queried
 again here.
+
+## 2026-09-05 — Task 1 closed live: the two harnesses now agree, and one Python-side collision surfaced
+
+Fixture version 5, npm built from 2.7.8 sources. Both products answered
+`GET /db/NODE` and `GET /db/ELEM` with empty documents before the session,
+checked with each product's own MAPI key -- an earlier check in this session
+read one key for both products and proved nothing, which is worth writing down
+because `verify_connection()` answered `connected` either way.
+
+### The fifteen, both harnesses, both products
+
+`/db/TDMT`, `/db/GSTP`, `/db/CNLD`, `/db/BMLD`, `/db/CONS`, `/db/ESSF`,
+`/db/SECF`, `/db/TSGR`, `/db/TDME`, `/db/IFGS`, `/db/THGC`, `/db/THFC`,
+`/db/SPLC`, `/db/LCOM-GEN`, `/db/LCOM-CONC`.
+
+| harness | Gen | Civil |
+| --- | --- | --- |
+| npm `live:crud` | 15 PASS | 15 PASS |
+| `live_crud_check.py` | 15 PASS | 14 PASS, 1 blocked (below) |
+
+`BUILT base model (9 steps)` printed on every npm run. **The two cases that
+disagreed on 2026-09-04 -- `/db/TDMT` and `/db/GSTP` -- now pass on both
+harnesses.** They failed `id 3 missing after POST` because npm replayed no tier
+seed, so the records the case counts on were never created; version 5 emits
+them and the symptom is gone. The remaining eleven of the original thirteen,
+plus `/db/LCOM-GEN` and `/db/LCOM-CONC`, pass as well.
+
+### `/db/SPLC` on Civil: a fixture collision, not a regression
+
+Selecting extras4 and extras5 together on Civil answers **`POST /db/SPLC -> 201
+with an error body: Key Already Exist`**. Alone, the same case passes on the
+same product in the same session.
+
+The cause is a cross-tier id collision that predates this work and had simply
+never been selected together. `_extras4_seeds`' `lcom_seismic_splc` is
+Civil-only and creates `/db/SPLC` id 1; extras5's Civil `/db/SPLC` case owns id
+1 too. The Python runner executes **every seed step of a selected tier**
+regardless of any case's `needs`, so choosing both tiers hands the case's id to
+a seed. Gen never sees it because that seed does not run there.
+
+Requesting a different id is not a fix: this load-case family renumbers a
+requested `Assign` key to the next free slot (confirmed live 2026-08-16, see
+`_extras5_seeds()`), so a case asking for id 2 would land at 1 when extras4 was
+not selected and fail its own read-back.
+
+What changed is the **classification**. `_run_case` now checks whether the
+case's id is already present before creating it, and reports `BLOCK` (exit 3,
+"fixture problem") rather than `REGRESS` (exit 1, "treat as an SDK defect").
+Verified live in both directions on Civil: the two-tier selection prints
+`BLOCK /db/SPLC` and exits 3, the single-case selection still prints `PASS` and
+exits 0. The npm harness has refused a setup collision since it was written;
+this is the same refusal on the side that had been calling it a regression.
+
+**The underlying collision is still there and still needs a decision.** Nothing
+about the endpoint is in doubt -- the shape passes on both products whenever
+either tier runs alone.
+

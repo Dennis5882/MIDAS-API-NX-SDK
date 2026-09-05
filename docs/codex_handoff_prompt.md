@@ -9,11 +9,9 @@ Claude's. Bounded, verifiable, repeatable work is yours. Every task below has a
 measured starting number you can check your run against. A task that turns out
 to need a judgment call is one to **stop and report**, not to decide.
 
-**Task 1 is the one that matters most and it needs a live session.** Its
-offline half was rewritten after your recheck — read it again before running
-anything, the fixture version and the outcome vocabulary both changed. Task 2
-is already done and is kept below only for what was added to it. Task 5 is
-offline and you can start it right now.
+**Tasks 1, 2 and 5 are done** — kept below for what they settled and what
+they left open. **Task 4 is what is left and it needs a live session**; Task 3
+is now a by-product of it rather than a task of its own.
 
 ## Your last batch, and what it settled
 
@@ -97,7 +95,7 @@ cd packages/typescript && npm run generate && npm run typecheck && npm test
 Coverage as `ROADMAP.md` reports it: **399/399 implemented, 173 write / 226
 read.** `schema/live-cases.json` is **version 5** and holds **167 cases, 144
 confirmed**, plus **9 base-model steps**, **46 named seeds** and **3
-unsupported seeds** that block 4 cases on the npm side by design. npm live evidence stands at **32 `/db`
+unsupported seeds** that block 4 cases on the npm side by design. npm live evidence stands at **47 `/db`
 endpoints**. Drafts: 3, all the IEHG trio, all refused for a reason that will
 not go away — that is the finished state, not a backlog.
 
@@ -106,78 +104,40 @@ not go away — that is the finished state, not a backlog.
 
 ---
 
-## Task 1 — prove the two harnesses now begin each case in the same state
+## Task 1 — DONE (2026-09-05), and what it turned up
 
-**Live. Destructive: this calls `/doc/NEW`.** Needs the author's go-ahead and a
-document they have confirmed is disposable.
+Closed live on both products. Fixture version 5, npm built from 2.7.8 sources,
+both documents confirmed empty with each product's **own** MAPI key first --
+an earlier check in that session read one key for both products and proved
+nothing, while `verify_connection()` answered `connected` either way.
 
-### What changed since your run, and why you were right to stop
+The fifteen: `/db/TDMT`, `/db/GSTP`, `/db/CNLD`, `/db/BMLD`, `/db/CONS`,
+`/db/ESSF`, `/db/SECF`, `/db/TSGR`, `/db/TDME`, `/db/IFGS`, `/db/THGC`,
+`/db/THFC`, `/db/SPLC`, `/db/LCOM-GEN`, `/db/LCOM-CONC`.
 
-Your recheck hit the handoff's stop-on-disagreement condition and you reported
-it instead of deciding it. That was correct, and the offline half is now done.
+| harness | Gen | Civil |
+| --- | --- | --- |
+| npm `live:crud` | 15 PASS | 15 PASS |
+| `live_crud_check.py` | 15 PASS | 14 PASS, 1 blocked |
 
-Sharing `baseModel` had closed the **common prefix** and nothing else. Python's
-main loop runs **every seed step in a selected tier**, whatever the cases'
-`needs` say; npm replays only what the fixture emitted for that case. So
-`/db/TDMT` had records 1 and 2 under Python and an empty table under npm, and
-`id 3 missing after POST` was the honest symptom of a model that was never
-built — not of a package defect.
+**The two you reported now pass on both harnesses.** `/db/TDMT` and `/db/GSTP`
+failed `id 3 missing after POST` because npm replayed no tier seed; version 5
+emits them and the symptom is gone.
 
-Fixture **version 5** closes it:
+One thing surfaced that was not yours and not the change's: selecting extras4
+and extras5 together on Civil answers `Key Already Exist` on `/db/SPLC`.
+extras4's Civil-only `lcom_seismic_splc` seed creates `/db/SPLC` id 1 and
+extras5's Civil case owns the same id, and the Python runner executes every
+seed step of a selected tier whatever the cases' `needs` say. Alone, the case
+passes on the same product in the same session. Asking for a different id is
+not the fix -- this load-case family renumbers a requested key to the next free
+slot, so a case asking for 2 would land at 1 when extras4 was not selected.
 
-- Every tier seed the npm harness can replay is exported: **34 of 37**. The
-  boundary is the harness's own vocabulary — a sequence of `{"Assign": ...}`
-  POSTs, captured from the seed step's own calls, never retyped.
-- The three that cannot (`pjcf_unlock`, `solid11_seed`, `stage11_seed`) read
-  state back or delete a record. They are named in `unsupportedSeeds` **with
-  the reason**, and the four cases needing them carry `blockedSeeds`.
-- Cases carrying setup went **21 → 66**.
-- npm gained the `BLOCK` class it never had. A failure before the endpoint
-  under test is touched now exits **3**, not 1 — the same split
-  `live_crud_check.py` has always made. Your `id 3 missing after POST` would
-  print `BLOCK`, not `REGRESS`, under this build.
-
-**None of that is a live result.** Two harnesses that agree offline are two
-harnesses nobody has watched. That is your half.
-
-### What to run
-
-The two that disagreed, first and alone:
-
-```bash
-npm run live:crud -- -- --product gen --endpoints /db/TDMT,/db/GSTP   --save-dir <a writable directory on the NX machine>
-python scripts/live_crud_check.py --endpoints /db/TDMT,/db/GSTP --product gen
-```
-
-Then the rest of the original thirteen, plus the two that failed for the
-neighbouring reason, in batches of at most 8, on **both** products:
-
-```
-/db/CNLD, /db/BMLD, /db/CONS, /db/ESSF, /db/SECF, /db/TSGR, /db/TDME,
-/db/IFGS, /db/THGC, /db/THFC, /db/SPLC, /db/LCOM-GEN, /db/LCOM-CONC
-```
-
-The harness prints `BUILT base model (9 steps)` after `CREATED empty scratch
-document`. It also **refuses to start** if `schema/live-cases.json` is not
-version 5 — that error means a stale checkout, not a product problem.
-
-### What the outcomes mean
-
-- **`PASS` on both harnesses** — the seam is closed. Record it and extend
-  `docs/npm_live_evidence_scratch.md`, which is Task 3 anyway.
-- **`BLOCK`** — a precondition the fixture could not build. Report which seed
-  and which id. Not a package defect, and not yours to fix.
-- **`REGRESS` on a *different* error than before** — the interesting case. The
-  seeds built, so a missing precondition is no longer the explanation. Report
-  the error verbatim; do **not** relabel it a package regression yourself.
-- **The two harnesses still disagree** — stop and report, exactly as you did.
-  Three of the 37 seeds are still unexportable by design, so a disagreement on
-  `/db/PJCF`, `/db/STCT`, `/db/HECB` or `/db/HSPT` is expected and is not the
-  finding; npm should print `BLOCK` for those four rather than running them.
-
-Also confirm the negative: **Python's own runs must be unchanged.** Its seed
-steps were not touched; only what gets emitted for npm was. A Python-side
-difference would mean the export changed the model, which it must not.
+What changed is the classification: `_run_case` now checks whether the id is
+already present and reports `BLOCK` (exit 3, fixture problem) rather than
+`REGRESS` (exit 1, treat as an SDK defect), verified live in both directions.
+**The collision itself is still open and still needs a decision** -- see the
+live notes. Nothing about the endpoint is in doubt.
 
 ---
 
@@ -198,15 +158,16 @@ Two things were added on top rather than sent back:
 - **Two ceiling tests.** `untagged` rejection was covered and growth was not,
   so a new absent field and an eleventh divergent endpoint now both have a
   test. The sibling check had them; this one should match.
-## Task 3 — npm live evidence beyond 32, now that it can get there
+## Task 3 — npm live evidence, now a by-product rather than a task
 
-Do this after Task 1: its fifteen endpoints are the first fifteen of this, and
-the base model is what makes the rest reachable at all.
+**Started; 32 → 47 on 2026-09-05.** Task 1's fifteen were recorded as they
+passed, which is how this should keep going: it is the record kept while Task 4
+runs, not a separate errand.
 
 `packages/typescript/scripts/live-crud.mjs` reads the same
 `schema/live-cases.json` Python does. The gap is the *record* — npm-side live
 verification exists only as prose, inventoried in
-`docs/npm_live_evidence_scratch.md` at **32 `/db` endpoints** plus four
+`docs/npm_live_evidence_scratch.md` at **47 `/db` endpoints** plus four
 result-table operations.
 
 The pool is the endpoints Python has confirmed (144 cases) that npm has not run.
@@ -279,7 +240,30 @@ to a fixture, a wrong documented value, or a product bug.
 
 ---
 
-## Task 5 — measure the 602 waived names against `/info`
+## Task 5 — DONE (`8423d9e`), and the answer was not the expected one
+
+Report: `docs/unmerged_tables_against_info.md`, regenerated by
+`scripts/report_unmerged_tables.py` (`--check` keeps it honest).
+
+**Of the 534 names on endpoints `/info` answers for, 533 are declared.** The one
+that is not is `/db/ELEM`'s `W_CON`. The other 68 sit on `/view/RESULTGRAPHIC`
+and `/ope/LCOM-SRC`, where `/info` is not served at all — one source because a
+second cannot exist, which is a different finding from one that is absent, and
+counted separately for that reason.
+
+So "does a second source exist" was the wrong question; almost always it does.
+The axis that separates these tables is **whether the second source agrees on
+shape**: 53 of the 93 tables have one `/info` object holding every name in them,
+25 have all their names declared under no common parent. Counting distinct
+parents would have measured how common the leaf names are rather than the
+table's shape — `NAME` repeats across every branch of `/db/MVHL` — so each
+scattered table also names the object covering the most of it, which separates
+one stray name (`VEH_PL` covers 13 of 14) from a table `/info` spreads evenly.
+
+Merging any of them is still a judgement call and still Claude's.
+
+<details>
+<summary>Original brief</summary>
 
 **Offline. Measure and report; change nothing.**
 
@@ -326,6 +310,8 @@ Put the report in `docs/`; it is a working document someone will reopen, not
 terminal output. **Do not merge a table, do not edit any contract, and do not
 draw a conclusion about what a table means.** Say which tables have a second
 source and which do not.
+
+</details>
 
 ---
 

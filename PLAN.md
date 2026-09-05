@@ -5,7 +5,7 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-09-05 — **2.7.8 published** to PyPI and npm. A one-value
+> Last updated: 2026-09-05 — **2.7.8 published** to PyPI and npm; the live harness seam closed the same day, below. A one-value
 > fix in both packages, and the value is one the server was refusing.
 > `/post/TABLE`'s surface-spring reaction type is `REACTIONLSURFACESPRING`,
 > with an L that the Specifications table and the JSON Schema enum both drop.
@@ -61,6 +61,26 @@ that ROADMAP.md doesn't capture.
 > npm harness cannot run thirteen confirmed cases and prints `REGRESS` for
 > them. That is a hole in the file's claim to be the language-neutral source,
 > not a package regression.
+>
+> **Closed 2026-09-05, in two passes, and the second one was the real hole.**
+> Sharing the base model closed only the common prefix: Python's runner
+> executes **every seed step of a selected tier** whatever the cases' `needs`
+> say, while npm replays only what the fixture emitted for that case. Fixture
+> **version 5** exports every tier seed npm can replay — 34 of 37, the boundary
+> being a sequence of `{"Assign": ...}` POSTs captured from the seed step's own
+> calls — and names the other three in `unsupportedSeeds` **with the reason**,
+> so the four cases needing them are refused rather than run half-seeded. Cases
+> carrying setup 21 → 66. Confirmed live on both products: all fifteen affected
+> endpoints PASS on both harnesses, and npm live evidence is **47 `/db`
+> endpoints**.
+>
+> Both harnesses now also **read a result the same way**. A failure before the
+> endpoint under test is touched is `BLOCK` and exit 3 — "triage the fixture"
+> — not `REGRESS` and exit 1. npm never had that class, and Python had it only
+> for a seed step that threw: a pre-existing cross-tier id collision on Civil
+> (`/db/SPLC`, whose id extras4's Civil-only seed occupies) reported as a
+> regression on a shape both products accept. Two harnesses reading one fixture
+> must also read one result, or comparing them measures the harnesses.
 
 ---
 
@@ -230,7 +250,7 @@ they're the ones worth re-checking before planning a release):
 
 | Axis | Artifact | State |
 |---|---|---|
-| Tests | 999 Python tests + 60 Vitest tests, mocked/local only | ✅ green |
+| Tests | 1017 Python tests + 70 Vitest tests, mocked/local only | ✅ green |
 | CI | `.github/workflows/ci.yml` — Python checks on 3.12/3.13 plus npm generation/typecheck/tests/package smoke on Node.js 18/22, push+PR | ✅ running |
 | Static typing | mypy over `src/midas_nx`, config in `pyproject.toml`, own CI job | ✅ clean across all 41 modules |
 | Packaging verification | `package` CI job + `scripts/wheel_smoke_test.py` — builds the wheel, installs it into a clean venv, asserts `py.typed` shipped, `__version__` matches the distribution, and the `delete_all()` guard is armed | ✅ running |
@@ -244,7 +264,7 @@ they're the ones worth re-checking before planning a release):
 | Schema drift (live) | `scripts/check_drift.py` (`/info/db/...` vs TypedDict) | ✅ local dev tool |
 | Scaffolding | `scripts/gen_endpoint.py` | ✅ in the documented add-an-endpoint loop |
 | Response handling | 200-with-`error` body, non-JSON body, empty-table shapes, failed-analysis message | ✅ hardened in v0.12.0/v0.14.0 |
-| Write verification | `scripts/live_crud_check.py` — create/read/update/delete round trips, 144 of 167 cases confirmed | ✅ `/db/STRPSSM` joined the confirmed set on Civil NX 2026 v2.2 after replacing the stale manual `PY`/`PZ` point keys with live `/info`'s `Y`/`Z`. `/db/NMAS` used to crash **both** products, root-caused 2026-07-29 (omitted `rmX`/`rmY`/`rmZ`) and worked around in `NodalMass.create()`/`.update()` |
+| Write verification | `scripts/live_crud_check.py` and `packages/typescript/scripts/live-crud.mjs`, both replaying `schema/live-cases.json` v5 — create/read/update/delete round trips, 144 of 167 cases confirmed | ✅ `/db/STRPSSM` joined the confirmed set on Civil NX 2026 v2.2 after replacing the stale manual `PY`/`PZ` point keys with live `/info`'s `Y`/`Z`. `/db/NMAS` used to crash **both** products, root-caused 2026-07-29 (omitted `rmX`/`rmY`/`rmZ`) and worked around in `NodalMass.create()`/`.update()` |
 | Version metadata | `__init__.py` `__version__` (hatchling `dynamic`) + `tests/test_version.py` + a tag↔`__version__` check in `publish.yml` | ✅ single source, enforced at release |
 | Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 399/399 recorded, split by `level`: **173 write / 226 read / 0 unverified** as of 2026-09-04. Write level means a call changed model data or wrote a host file; read includes route/schema checks and POST-shaped reads. The current build baseline is Gen NX 2026 v2.1 and Civil NX 2026 v2.2, both Build 09/02/2026. |
 | Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md`, `docs/ai-coding/`, `docs/index.md`, `docs/safety.md` risk levels, `docs/recipes/`, `docs/ko/python-basics.md` | ✅ first example read-only + AI-assistant path (v2.1.2); recipe pilot + ko minimal-Python primer + real-session-verified MAPI key step (2026-08-04); ⚠️ still text-only, no screenshots |

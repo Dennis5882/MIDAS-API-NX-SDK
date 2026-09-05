@@ -3657,6 +3657,29 @@ def _run_case(case: Case, client: MidasClient) -> Dict[str, Any]:
             )
         return actual
 
+    # A case whose id is already taken cannot say anything about its endpoint,
+    # and calling that a regression is how a fixture collision reads as an SDK
+    # defect. /db/SPLC is the confirmed case: extras4's Civil-only
+    # lcom_seismic_splc seed occupies id 1, and extras5's Civil /db/SPLC case
+    # owns the same id, so selecting both tiers answers "Key Already Exist" for
+    # a shape both products accept when either tier runs alone. The npm harness
+    # has refused a setup collision since it was written; this is the same
+    # refusal on the side that had been reporting it as a regression.
+    if "POST" in res.METHODS:
+        try:
+            occupied = case.item_id in res.items(client=client)
+        except MidasAPIError:
+            occupied = False
+        if occupied:
+            row["steps"]["create"] = {
+                "ok": False,
+                "error": (f"{res.ENDPOINT}: id {case.item_id} already exists before "
+                          "this case ran; a seed in this selection owns it"),
+            }
+            row["ok"] = False
+            row["classification"] = BLOCKED
+            return row
+
     try:
         if "POST" in res.METHODS:
             record("create", lambda: res.create({case.item_id: case.create_payload},

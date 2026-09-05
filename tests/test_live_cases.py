@@ -576,3 +576,54 @@ def test_a_hand_curated_base_seed_wins_a_name_collision() -> None:
     for case in seismic:
         seeds = [step["seed"] for step in case["setup"] if "seed" in step]
         assert len(seeds) == len(set(seeds)), f"{case['endpoint']} seeds a record twice"
+
+
+def _live_crud_module():
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "live_crud_check_under_test", ROOT / "scripts" / "live_crud_check.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_a_case_whose_id_a_seed_already_owns_is_blocked_not_regressed() -> None:
+    """A taken id says nothing about the endpoint, so it cannot be a regression.
+
+    Confirmed live on Civil 2026-09-05: extras4's Civil-only lcom_seismic_splc
+    seed creates /db/SPLC id 1 and extras5's Civil /db/SPLC case owns the same
+    id, so selecting both tiers answered `Key Already Exist` for a shape both
+    products accept whenever either tier runs alone. That printed REGRESS and
+    exited 1 -- "treat as an SDK defect" -- for a collision inside the fixture.
+    Asking for a different id is not the fix: this load-case family renumbers a
+    requested key to the next free slot, so a case asking for 2 lands at 1 when
+    the other tier was not selected.
+    """
+    live = _live_crud_module()
+
+    class _Resource:
+        ENDPOINT = "/db/FAKE"
+        NAME = "Fake"
+        METHODS = frozenset({"POST", "PUT", "DELETE"})
+
+        @staticmethod
+        def items(client=None):
+            return {1: {"NAME": "taken by a seed"}}
+
+        @staticmethod
+        def create(records, client=None):
+            raise AssertionError("a case must not POST over a record it does not own")
+
+    case = live.Case(
+        _Resource, {"NAME": "x"}, {"NAME": "y"},
+        lambda payload: payload.get("NAME"), "x", "y",
+        item_id=1, confirmed=True,
+    )
+    row = live._run_case(case, client=None)
+
+    assert row["classification"] == live.BLOCKED
+    assert row["ok"] is False
+    assert "already exists" in row["steps"]["create"]["error"]
+

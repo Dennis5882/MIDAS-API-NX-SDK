@@ -42,6 +42,22 @@ when the notes explicitly say the built npm package completed the operation.
 | `/db/CUTL` | 2026-09-05 | Gen, Civil |
 | `/db/CLWP` | 2026-09-05 | Gen, Civil |
 
+| `/db/CNLD` | 2026-09-05 | Gen, Civil |
+| `/db/BMLD` | 2026-09-05 | Gen, Civil |
+| `/db/CONS` | 2026-09-05 | Gen, Civil |
+| `/db/ESSF` | 2026-09-05 | Gen, Civil |
+| `/db/SECF` | 2026-09-05 | Gen, Civil |
+| `/db/TSGR` | 2026-09-05 | Gen, Civil |
+| `/db/TDMT` | 2026-09-05 | Gen, Civil |
+| `/db/TDME` | 2026-09-05 | Gen, Civil |
+| `/db/GSTP` | 2026-09-05 | Gen, Civil |
+| `/db/IFGS` | 2026-09-05 | Gen, Civil |
+| `/db/THGC` | 2026-09-05 | Gen, Civil |
+| `/db/THFC` | 2026-09-05 | Gen, Civil |
+| `/db/SPLC` | 2026-09-05 | Gen, Civil |
+| `/db/LCOM-GEN` | 2026-09-05 | Gen, Civil |
+| `/db/LCOM-CONC` | 2026-09-05 | Gen, Civil |
+
 ## Completed result-table operations
 
 | TABLE_TYPE | Date | Products |
@@ -60,11 +76,12 @@ when the notes explicitly say the built npm package completed the operation.
   a completed endpoint operation.
 - `/doc/NEW`, `SAVEAS`, and the model-building prerequisites are harness
   operations, not selected endpoint cases.
-- The 2026-09-05 empty-document sweep also selected cases whose Python fixture
-  relies on that harness's common base model. The shared JSON carries each
-  case's explicit prerequisites but not the common nodes/elements/materials,
-  so those npm attempts are not counted as endpoint evidence. See the live
-  notes for the exact boundary and results.
+- The 2026-09-05 empty-document sweep selected cases whose Python fixture
+  relied on that harness's common base model, which the shared JSON did not
+  carry, so those npm attempts were not counted. **Resolved.** Fixture version
+  5 emits the base model and every tier seed the npm harness can replay, and
+  the fifteen affected endpoints were re-run on both products on 2026-09-05.
+  They are counted above; see the live notes for the run.
 
-**Count:** 32 distinct `/db` endpoints and 4 distinct result-table operations;
-36 distinct npm public-API operations overall.
+**Count:** 47 distinct `/db` endpoints and 4 distinct result-table operations;
+51 distinct npm public-API operations overall.
