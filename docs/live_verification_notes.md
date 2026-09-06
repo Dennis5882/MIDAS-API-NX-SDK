@@ -9000,28 +9000,42 @@ against both SDKs, against `/info`, and against the manual, and had **nothing
 comparing them against the fixtures** — the fourth artefact claiming to know an
 endpoint's shape, and the one deciding what a live run actually sends.
 
-`scripts/check_fixture_contract.py` does, and it found 81 disagreements that
-split into two opposite kinds:
+`scripts/check_fixture_contract.py` does. **Its first three counts were all
+wrong, each for its own reason, and the sequence is the finding worth keeping.**
 
-- **54 across 8 endpoints on cases that have never passed.** The payload is the
-  suspect. `/db/ACTL` sends a Civil-only field on Gen; `/db/FBLA` sends a name
-  recorded nowhere; `/db/MVCT`, `/db/NLNK`, `/db/NLNK-M1` and `/db/TDMF` omit
-  fields their contracts mark required. Each had failed for months under a
-  recorded reason that never mentioned the payload's own shape.
-- **27 across 8 endpoints on `confirmed` cases**, which read the other way
-  round entirely. The product accepted that exact payload, so the **contract**
-  is what is behind: a name it records nowhere is a field it is missing, and a
-  `required` field an accepted call omitted is a requirement the product does
-  not enforce. 21 of the 27 are the first kind -- `/db/EIGV` alone sends five
-  names (`FRMIN`, `FRMAX`, `iFREQ`, `bMINMAX`, `bSTRUM`) that no contract
-  records, on both products, in a round trip that passes.
+| reported | when | what was wrong with it |
+| --- | --- | --- |
+| 64 contract gaps | 2026-09-05 | counted `safeToOmit: true` fields, which are *already* the record of an accepted call that omitted them |
+| 81 total, 54 + 27 | 2026-09-05 | the checker read only `document["fields"]` and ignored `appliesWhen` |
+| **41 + 2** | 2026-09-06 | current |
 
-  That count was first reported as 64, and the 37 that came off it are worth
-  the correction: a field carrying `safeToOmit: true` is **already** the record
-  of an accepted call that omitted it, derived by `extract_contracts.py` from
-  these same confirmed payloads. Counting those as unread observations repeated
-  the exact mistake the tool exists to stop -- treating a recorded fact as a
-  new one.
+The second correction removed 38 findings and is the instructive one, because
+every one of them read as a hard defect and none was:
+
+- **A name declared in a `variant` counted as recorded nowhere.** `/db/EIGV`'s
+  `FRMIN`, `FRMAX`, `iFREQ`, `bMINMAX` and `bSTRUM`, `/db/THIS`'s `DALL`,
+  `/db/NBOF`'s `KEY_NODE_ITEMS`, `/db/PNLD`'s `AREALOAD`, `/db/NLCT`'s three
+  and `/db/FBLA`'s `LOAD_ANGLE` are all declared in a variant of their own
+  contract. The list that was written up as "21 wire names an accepted round
+  trip sent that no contract records" was, almost entirely, a checker that had
+  not looked in the right place.
+- **A `required` field carrying an `appliesWhen` counted as missing from every
+  payload**, rather than from the branch that selects it. `/db/NLNK`'s four and
+  `/db/HSFC`'s two already carried their condition.
+
+`/db/MVCT`'s `DIST` has no `appliesWhen` and is still reported, which is what
+separates this from silencing the check.
+
+What survives is **41 fixture leads across 5 endpoints** — `/db/ACTL`,
+`/db/GRDP`, `/db/MVCT`, `/db/NLNK-M1`, `/db/TDMF` — and **2 contract gaps on
+one confirmed endpoint**, `/db/SDIS`'s `LRB` and `NRB`.
+
+**The generalization.** A checker that compares two artefacts is a third claim
+about the shape, and it is wrong until something disagrees with it. This one
+was believed for a day, written into a release note, and handed to another
+agent as a task list, on nothing but its own output. A new checker's first
+findings are a hypothesis; confirm a sample of them against the artefacts by
+hand before reporting a count as a fact.
 
 Both lists are held as a baseline in CI, in both directions: a new finding
 fails, and so does one that disappears without being recorded. Nothing was
@@ -9087,3 +9101,65 @@ back, so it stays read-level and unconfirmed. `/db/MVLDbs`, `/db/MVLDch`,
 work recorded them as write citing `live_crud_check.py`, and that citation had
 no case behind it, so they are back at read.
 
+## 2026-09-06 — moving-load controls pass; country load cases remain unresolved
+
+The Gen NX 2026 v2.1 build 08/26/2026 and Civil NX 2026 v2.2 build
+08/27/2026 sessions were checkpointed under `C:/temp`, replaced with a
+throwaway base model, and restored to an empty scratch document after each
+Python and npm run. The fixtures replay the first JSON Request Body from the
+vendored manual commit `7920759`; the two SDKs consumed the same emitted case
+data.
+
+`/db/MVCTbs` and `/db/MVCTtr` completed create/read/update/read/delete on both
+products. `/db/MVCTid` completed the same round trip on Civil; Gen does not
+offer the `INDIA` moving-load code. Their manual `iIGP` and
+`INFL_GEN_POINT` branches are now represented as `appliesWhen`, so the fixture
+checker no longer asks a Number/Line payload to invent the mutually exclusive
+Distance value. Write coverage moved from 185 to 188 endpoints, and npm DB
+evidence from 55 to 58.
+
+The adjacent country/code-specific load cases did not earn write evidence:
+
+| endpoint | Gen | Civil |
+| --- | --- | --- |
+| `/db/MVLDbs` | not run | not run |
+| `/db/MVLDch` | code unavailable | `Non-existent Vehicle ... in Sub-Load Case` |
+| `/db/MVLDid` | code unavailable | `Number of Sub-Load Cases` |
+| `/db/MVLDeu` | `Unknown Error` | `Unknown Error` |
+| `/db/MVLDpl` | `POLAND` code unavailable | POST accepted, id 1 absent on read-back |
+
+`/db/MVLDbs` stopped at the required offline gate: its contract currently
+marks the mutually exclusive `LCDATA_*` objects required at the record root,
+so the manual's own `LOADMODEL="STANDER"` example appears to omit five required
+sibling branches. Expressing the two-value ALL_MODE branch with the present
+condition model needs a contract-shape decision; the live case was therefore
+not run and the gate was not waived.
+
+For the four attempted endpoints, the lane records were mechanical clones of
+the manual's own lane Request Body with only record ids and the lane names
+referenced by the target Request Body remapped. No vehicle definition was
+invented. The China result confirms that its documented vehicle label is a
+model reference, not a self-contained definition. India and Eurocode still
+need a manual- or `/info`-backed prerequisite before their failures can be
+classified further. Poland's Civil no-persistence response is retained as an
+unconfirmed product observation. Python and npm returned the same outcomes.
+
+## 2026-09-06 — Hyper-S controls: PUT-only write verification on Civil
+
+Civil NX 2026 v2.2 build 08/27/2026 was checkpointed under `C:/temp`, replaced
+with a disposable base model, and restored to an empty scratch document after
+each run. The complete `/db/THGC-M1` and `/db/THOO-M1` Request Bodies were
+copied from chapter 09 at the vendored manual commit `7920759`; they were not
+inferred from either SDK.
+
+Both endpoints completed PUT/read/per-id DELETE/read through Python and the
+published npm surface. They deliberately have no POST step because their
+declared operations are GET, PUT, and DELETE. This moves both endpoints from
+read to write evidence on Civil.
+
+The first npm attempt exposed two harness defects rather than product defects:
+the harness unconditionally called POST, and its nested-object expectation used
+JavaScript reference identity. The harness now selects POST and/or PUT from the
+emitted case methods and compares expected arrays/objects structurally. Unit
+tests cover the nested `OUT_OPT` shape that found the latter defect. The rerun
+passed both endpoints and restored the empty document.

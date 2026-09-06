@@ -1,8 +1,9 @@
 # Codex task prompt — mechanical work only
 
-Updated 2026-09-06 at `d05c831`. **2.7.9 is published** on both registries.
-Nothing in either packaged surface has changed since, so **no release is
-warranted right now** — and when one is, the number is the author's call.
+Updated 2026-09-06 at `219b4d7`. **2.7.9 is published** on both registries,
+and **a release is now warranted and unreleased**: `UNUMT` and `DIST` became
+optional on three generated npm payload types. As always the number is the
+author's call — do not bump it.
 
 **The division, set by the author.** Judgment-heavy work — schema design,
 deciding what a contradictory manual means, deciding what stays unmerged — is
@@ -21,31 +22,31 @@ Run these first and confirm you see the same numbers. **If any differ, say so
 before starting** — it means something moved under you.
 
 ```bash
-python -m pytest -q                       # 1023 passed, 1 FAILED - EXPECTED
+python -m pytest -q                       # 1026 passed, 1 FAILED - EXPECTED
 ruff check src tests scripts && mypy      # clean
 python scripts/validate_contracts.py      # OK; 381 endpoints, 4956 fields,
                                           # 119 proven safe, 8 unsafe,
                                           # 0 unresolved manual contradictions
 python scripts/check_manual_drift.py --manual-api-repo "E:\AI Study\MIDAS-API"
-                                          # has_diff: TRUE, 9 chapters - EXPECTED
+                                          # has_diff: TRUE, 10 chapters - EXPECTED
 MSYS_NO_PATHCONV=1 python scripts/extract_contracts.py \
-  --manual-api-repo "E:\AI Study\MIDAS-API" --check    # 16 disagreements - EXPECTED
+  --manual-api-repo "E:\AI Study\MIDAS-API" --check    # 19 disagreements - EXPECTED
 python scripts/info_baseline.py --against-contracts --check   # OK
 python scripts/info_baseline.py --divergence --check          # OK
 python scripts/report_dropped_manual_rows.py \
   --manual-api-repo "E:\AI Study\MIDAS-API" --check           # OK
 python scripts/live_crud_check.py --check-cases        # silent; exit 0
-python scripts/check_fixture_contract.py --check       # 54 fixture leads over 8
-                                          # endpoints, 27 contract gaps over 8
+python scripts/check_fixture_contract.py --check       # 41 fixture leads over 5
+                                          # endpoints, 2 contract gaps over 1
 python scripts/report_unmerged_tables.py --check       # report is current
 cd packages/typescript && npm run generate && npm run typecheck && npm test
-                                          # no drift; 70 tests
+                                          # no drift; 75 tests
 ```
 
-Coverage as `ROADMAP.md` reports it: **399/399 implemented, 185 write / 214
-read.** `schema/live-cases.json` is **version 5**: 188 cases over 171
-endpoints, 158 confirmed, 9 base-model steps, 56 named seeds, and 3 unsupported
-seeds named with their reason. npm live evidence: **55 `/db` endpoints**.
+Coverage as `ROADMAP.md` reports it: **399/399 implemented, 190 write / 209
+read.** `schema/live-cases.json` is **version 5**: 200 cases over 180
+endpoints, 165 confirmed, 9 base-model steps, 62 named seeds, and 3 unsupported
+seeds named with their reason. npm live evidence: **60 `/db` endpoints**.
 Drafts: 3, the IEHG trio, refused for a reason that will not go away — that is
 the finished state, not a backlog.
 
@@ -60,13 +61,17 @@ the finished state, not a backlog.
 
 One pytest case fails —
 `test_shipped_contracts_still_match_the_manual_if_it_is_present` — and
-`check_manual_drift.py` reports `has_diff: true` over nine chapters. Both are
+`check_manual_drift.py` reports `has_diff: true` over ten chapters. Both are
 detecting the same thing: the sibling manual repo at `E:\AI Study\MIDAS-API`
-gained `205d5f0 docs: 정기 점검 (2026-09-06)` while this repository still
-records `7920759` in `docs/coverage.json`'s `vendored_at_commit`.
+is two local commits ahead of its origin: `205d5f0 docs: 정기 점검 (2026-09-06)`
+and follow-up `ff88259 docs(manual): ope/MEMB 요청 키 AELEM 재정정, SSEIS 원문
+오염 로케일별 명시`. This repository and the manual repo's `origin/main`
+still record `7920759`; the extraction check remains at 19 disagreements.
+The manual working tree is currently clean, but those unpushed commits are
+external drift all the same. Do not consume or edit them from this repository.
 
-**That commit is not ready to be reflected.** The author is still checking it —
-it has known errors, and it has not been pushed to the manual repo's own
+**Those commits are not ready to be reflected.** The author is still checking
+them, and they have not been pushed to the manual repo's own
 `origin/main`. `CLAUDE.md` records the pattern: a bulk `정기 점검` sync is
 often followed within a day by self-audit `fix(manual):` commits correcting its
 own transcription, and this repository has already been burned by treating one
@@ -105,31 +110,30 @@ written against, and you will "find" disagreements that are just this drift.
 
 ---
 
-## Task A — the 42 `/db` endpoints with no live case at all
+## Task A — the 33 `/db` endpoints with no live case at all
 
 **Live. Destructive: `/doc/NEW`.** The largest single block of remaining work,
 and the only one that moves `ROADMAP.md`'s write count.
 
-60 `/db` endpoints are still short of write level. 18 have a case that has
-never passed (Task B). The other **42 have no case at all**:
+55 `/db` endpoints are still short of write level. 22 have a case that has
+never passed (Task B). The other **33 have no case at all**:
 
 | chapter | count | endpoints |
 | --- | ---: | --- |
 | 04 Properties | 13 | `EPMT`, `EPMT-M1`, `FIBR`, `FIMP`, `IEHC`, `IEHG`, `IEHG-BEAM-M1`, `IEHG-GL-M1`, `IEHG-PSS-M1`, `IEHG-TRUSS-M1`, `IMFM`, `IMFM-M1`, `MATD` |
 | 07 Temperature/Prestress | 7 | `EXLD`, `PRST`, `PTNS`, `TDCS`, `TDNA`, `TDNT`, `TDPL` |
 | 14 Pushover | 6 | `IEPI`, `PHGE`, `POGD`, `POGD-M1`, `POLC`, `POLC-M1` |
-| 08 Moving Loads | 5 | `MVLDbs`, `MVLDch`, `MVLDeu`, `MVLDid`, `MVLDpl` |
+| 08 Moving Loads | 1 | `MVLDbs` |
 | 24 Design | 4 | `RCHK`, `REBB`, `REBR`, `REBW` |
-| 12 Analysis Control | 3 | `MVCTbs`, `MVCTid`, `MVCTtr` |
-| 09 Dynamic Loads | 2 | `THGC-M1`, `THOO-M1` |
 | 05 Boundary | 1 | `DRLS` |
 | 10 Construction Stage | 1 | `CSCS` |
 
-Chapter 08's lane family closed in 2.7.9 — thirteen endpoints, both products —
-so **the five `/db/MVLD*` left here are what remains of that chapter**, and the
-three `/db/MVCT*` in chapter 12 are their analysis-control siblings. That is
-the most coherent group and the one with the freshest evidence next to it:
-read `docs/live_verification_notes.md`'s 2026-09-05 entries before starting.
+The three `/db/MVCT*` analysis-control siblings are now confirmed, and four of
+the five `/db/MVLD*` endpoints have honest unconfirmed cases (Task B). The one
+remaining endpoint with no case is `/db/MVLDbs`: its contract marks mutually
+exclusive `LCDATA_*` objects required together, and representing its two-value
+ALL_MODE condition needs a contract-shape decision. Do not waive the fixture
+gate or run it until that decision is made.
 **Which moving-load code a product offers decides what can be written at all** —
 `POST /db/MVCD` answers "Unavailable moving load code" on Gen NX for `CHINA`,
 `INDIA` and `KOREA`. Split the cases per product rather than writing one
@@ -178,30 +182,30 @@ its own field *names*, and `REBB`/`REBW` are on this list.
 
 ---
 
-## Task B — the 18 that have a case and have never passed
+## Task B — the 22 that have a case and have never passed
 
-**Live.** All were re-run on build 09/02/2026 on 2026-09-05 and all still fail;
-the table of what each answers is in the live notes. `/db/SINF` joined this
-list in 2.7.9 — it gained a case during the chapter 08 work that has not
-passed.
+**Live.** The original 18 were re-run on build 09/02/2026 on 2026-09-05 and
+still fail; the table of what each answers is in the live notes. Four manual
+moving-load cases joined on 2026-09-06 and carry their exact current errors in
+that file.
 
 `/db/ACTL`, `/db/CGLP`, `/db/DOEL`, `/db/EPSE`, `/db/EPST`, `/db/FBLA`,
-`/db/HPCE`, `/db/MADO`, `/db/MVCT`, `/db/NLLP`, `/db/NLNK`, `/db/NLNK-M1`,
-`/db/RPSC`, `/db/SBDO`, `/db/SINF`, `/db/STCT`, `/db/TDMF`, `/db/WVLD`
+`/db/HPCE`, `/db/MADO`, `/db/MVCT`, `/db/MVLDch`, `/db/MVLDeu`,
+`/db/MVLDid`, `/db/MVLDpl`, `/db/NLLP`, `/db/NLNK`, `/db/NLNK-M1`, `/db/RPSC`,
+`/db/SBDO`, `/db/SINF`, `/db/STCT`, `/db/TDMF`, `/db/WVLD`
 
 Start where the offline evidence already points.
-`python scripts/check_fixture_contract.py` names **54 concrete leads across 8
-endpoints**, and they are the cheapest thing in this document:
+`python scripts/check_fixture_contract.py` names **41 concrete leads across 5
+endpoints**. It now understands root `appliesWhen` and counts variant fields as
+recorded names; the larger old count was partly checker blindness, not missing
+contract fields:
 
 | endpoint | what the checker says |
 | --- | --- |
 | `/db/GRDP` | omits 14 `required` fields, on both products |
-| `/db/NLNK` | omits `ANGLE_VALUES`, `INPUT_METHOD`, `POINT_VALUES`, `VECTOR_VALUES` |
 | `/db/NLNK-M1` | the same four plus `BETA_ANGLE`, `REF_SYSTEM` |
 | `/db/TDMF` | omits `CTYPE`, `RELAXATION` |
 | `/db/MVCT` | omits `DIST` |
-| `/db/NLCT` | sends `MAX_ITERATIONS`, `NEWTON_ITEMS`, `NUMBER_STEPS` on civil, recorded nowhere |
-| `/db/FBLA` | sends `LOAD_ANGLE`, recorded nowhere |
 | `/db/ACTL` | sends `CLATS` on Gen, tagged Civil-only |
 
 Fill a missing `required` field from the **contract's own** description, enum or
@@ -232,7 +236,7 @@ it fine. By design, not a gap.
 `scripts/live_crud_check.py`'s confirmed cases statically and answers
 `safeToOmit: true` where a confirmed payload actually omitted a documented
 field. It runs at **draft** time and nothing revisits it — its own docstring
-still says "116 cases marked `confirmed=True`", and there are now **158**.
+still says "116 cases marked `confirmed=True`", and there are now **165**.
 `extract_contracts.py --check` compares field *sets* against the manual and
 never looks at `safeToOmit`, so CI has been green over the whole gap.
 
@@ -288,38 +292,21 @@ commit, never at the end.
 
 ---
 
-## Task D — the 21 wire names an accepted round trip sent that no contract records
+## Task D — closed, and it was never a task
 
-**Offline to find; closing one needs a permitted source. Report, do not merge.**
+The 21 names were already declared in their own contracts' `variants`. The
+checker read only the root `fields` array and called them unrecorded. It now
+counts variant keys as recorded names, without guessing that a variant field is
+required at the record root. The confirmed side is down to `/db/SDIS`'s `LRB`
+and `NRB`, which belong to Task C.
 
-`check_fixture_contract.py`'s second list holds 27 disagreements on `confirmed`
-cases. 21 are this kind: the product accepted a payload carrying a name the
-contract has nowhere.
-
-| endpoint | names | products |
-| --- | --- | --- |
-| `/db/EIGV` | `FRMIN`, `FRMAX`, `iFREQ`, `bMINMAX`, `bSTRUM` | both |
-| `/db/NLCT` | `MAX_ITERATIONS`, `NEWTON_ITEMS`, `NUMBER_STEPS` | gen |
-| `/db/EIGV-M1` | `FREQ_NO`, `FREQ_RANGE` | civil |
-| `/db/PNLD` | `AREALOAD` | both |
-| `/db/THIS` | `DALL` | both |
-| `/db/NBOF` | `KEY_NODE_ITEMS` | both |
-
-For each, report what the manual's section and `schema/info-baseline.json` state
-about that name. Both are permitted sources, and a name `/info` declares plus a
-round trip that sent it is about as settled as this repository gets. **Do not
-add the field to a contract** — write down what the two sources say and hand it
-back. `/db/THIS`'s `DALL` is already described in `CLAUDE.md` as a live fact,
-which is a hint about how the rest will read.
-
-`/db/NLCT` appears in **both** halves of the checker's report — the same three
-names are a fixture lead on civil (never passed) and a contract gap on gen
-(confirmed). That is one finding, not two, and it says the contract is missing
-the names rather than the fixture inventing them.
-
-The other 6 of the 27 are `required` fields a confirmed call omitted
-(`/db/HSFC`'s `ITEM`/`SCALE_FACTOR`, `/db/SDIS`'s `LRB`/`NRB`) and belong to
-Task C.
+**Do not treat this as a task that got done quickly.** It was a list of 21
+defects that did not exist, written up from a checker's first run and handed
+over as work. A checker that compares two artefacts is a third claim about the
+shape, and its first output is a hypothesis: confirm a sample by hand against
+the artefacts before reporting a count as a fact. The same run also mis-read
+`/db/NLNK`'s four and `/db/HSFC`'s two, which already carried the `appliesWhen`
+that says when they apply. 38 of 81 findings were the checker.
 
 ---
 
@@ -381,6 +368,16 @@ transcription.
   products** — 13 endpoints, write coverage 173 → 185, npm evidence 47 → 55.
 - **35 internal tracker ids were removed from `src/midas_nx` docstrings**; they
   had been reaching every PyPI install and seven places in the npm package.
+
+## One small follow-up, and it is yours
+
+`/db/MVCTbs`, `/db/MVCTid` and `/db/MVCTtr` now declare `UNUMT` and `DIST` as
+branch-conditional in their contracts, and the npm types followed. The Python
+TypedDicts in `src/midas_nx/db/analysis_control.py` still carry a trailing
+`# ... required` on both, which is now the manual's requiredness stated without
+the branch that governs it — the same defect class as MD-16. Update the comment
+to name the condition; do not change the annotations, since a TypedDict here is
+documentation and the contract is the source.
 
 ## Three decisions that are open and are not yours
 

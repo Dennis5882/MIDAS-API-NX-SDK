@@ -75,9 +75,16 @@ MD-50.
 - **Fixtures are now checked against contracts.** Contracts were compared
   against both SDKs, against `/info` and against the manual; nothing compared
   them against the fixtures, which decide what a live run actually sends.
-  `scripts/check_fixture_contract.py` finds 81 disagreements and splits them by
-  whether the case has ever passed live — 54 where the payload is the suspect,
-  27 where the product accepted the payload and the contract is what is behind.
+  `scripts/check_fixture_contract.py` splits its findings by whether the case
+  has ever passed live: where the payload is the suspect, and where the product
+  accepted the payload so the contract is what is behind.
+
+  **Correction, 2026-09-06.** This section first said 81 findings, 54 and 27.
+  Those counts were the checker's own defect, not the repository's state: it
+  read only a contract's base `fields`, so a name declared in a `variant` and a
+  `required` field carrying an `appliesWhen` condition both counted as defects.
+  38 of the 81 came off when it was fixed. The real numbers are **41 fixture
+  leads across 5 endpoints and 2 contract gaps on one**.
 
 - **The 602 waived field names were measured** against `/info`. 533 of the 534
   it can speak to are declared, so "does a second source exist" was the wrong
