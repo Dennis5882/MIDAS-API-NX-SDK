@@ -125,6 +125,9 @@ from midas_nx.db.analysis_control import (
     MainControlData,
     MainControlDataHyperS,
     MovingLoadAnalysisControl,
+    MovingLoadAnalysisControlBS,
+    MovingLoadAnalysisControlIndia,
+    MovingLoadAnalysisControlTransverse,
     NonlinearAnalysisControlData,
     NonlinearAnalysisControlHyperS,
     PDeltaAnalysisControl,
@@ -194,7 +197,9 @@ from midas_nx.db.dynamic_loads import (
     ResponseSpectrumLoadCase,
     TimeHistoryFunction,
     TimeHistoryGlobalControl,
+    TimeHistoryGlobalControlHyperS,
     TimeHistoryLoadCase,
+    TimeHistoryOutputOptionHyperS,
     TimeVaryingStaticLoad,
 )
 from midas_nx.db.load_combinations import (
@@ -226,6 +231,10 @@ from midas_nx.db.moving_loads import (
     LaneSupportNegativeMoment,
     LaneSupportReaction,
     MovingLoadCase,
+    MovingLoadCaseChina,
+    MovingLoadCaseEurocode,
+    MovingLoadCaseIndia,
+    MovingLoadCasePoland,
     MovingLoadCaseTransverse,
     MovingLoadCode,
     PlateElementForInfluenceSurface,
@@ -3704,6 +3713,103 @@ def _moving_manual_body(endpoint: str, block: int = 0) -> dict:
     return copy.deepcopy(examples[endpoint][block]["Assign"])
 
 
+def _moving_control_manual_body(endpoint: str) -> dict:
+    """Return a ch12 moving-load-control record from the vendored manual."""
+    path = Path(__file__).parent / "fixtures" / "moving_control_manual_examples.json"
+    examples = json.loads(path.read_text(encoding="utf-8"))["examples"]
+    return copy.deepcopy(examples[endpoint]["1"])
+
+
+def _moving_control_cases(resource, code: str, products=None) -> List[Case]:
+    """Replay one complete ch12 JSON example without inventing update values."""
+    payload = _moving_control_manual_body(resource.ENDPOINT)
+    probe_key = "LOAD_POINT_SEL" if resource is MovingLoadAnalysisControlTransverse else "iIGP"
+    return [Case(
+        resource, copy.deepcopy(payload), copy.deepcopy(payload),
+        lambda p, key=probe_key: p[key], payload[probe_key], payload[probe_key],
+        products=(product,), confirmed=True, needs=(f"lane_code_{code}",),
+    ) for product in products or ("gen", "civil")]
+
+
+def _moving_case_manual_body(endpoint: str) -> dict:
+    """Return ch08's first complete country/code-specific load-case record."""
+    path = Path(__file__).parent / "fixtures" / "moving_case_manual_examples.json"
+    examples = json.loads(path.read_text(encoding="utf-8"))["examples"]
+    return copy.deepcopy(examples[endpoint]["1"])
+
+
+def _moving_case_lane_seed(
+    name: str, resource, lane_names: Sequence[str], *, generic: bool = False,
+) -> SeedStep:
+    """Clone a manual lane example under the names referenced by a case.
+
+    Only the record id and ``LL_NAME`` are remapped. Both values come from the
+    target section's own Request Body; the lane's fields stay byte-for-byte
+    with the vendored manual example. POST-then-PUT keeps the seed replayable
+    when several code tiers share /db/LLAN in one product session.
+    """
+    if generic:
+        template = next(iter(_moving_manual_body("/db/LLAN").values()))
+    else:
+        path = Path(__file__).parent / "fixtures" / "lane_manual_examples.json"
+        examples = json.loads(path.read_text(encoding="utf-8"))["examples"]
+        template = examples[resource.ENDPOINT]
+    records = {}
+    for item_id, lane_name in enumerate(lane_names, start=1):
+        payload = copy.deepcopy(template)
+        payload["COMMON"]["LL_NAME"] = lane_name
+        records[item_id] = payload
+
+    def seed(client: MidasClient) -> None:
+        try:
+            resource.create(records, client=client)
+        except MidasAPIError:
+            resource.update(records, client=client)
+
+    return SeedStep(name, seed)
+
+
+def _moving_country_case(resource, code: str, products=None) -> List[Case]:
+    payload = _moving_case_manual_body(resource.ENDPOINT)
+    return [Case(
+        resource, copy.deepcopy(payload), copy.deepcopy(payload),
+        lambda p: p["LCNAME"], payload["LCNAME"], payload["LCNAME"],
+        products=(product,), needs=(f"lane_code_{code}", f"moving_case_lanes_{code}"),
+    ) for product in products or ("gen", "civil")]
+
+
+def _moving_case_lane_seeds(
+    code: str, resource, lane_names: Sequence[str], products=None, *, generic=False,
+) -> List[SeedStep]:
+    lane = _moving_case_lane_seed(
+        f"moving_case_lanes_{code}", resource, lane_names, generic=generic,
+    )
+    if products:
+        lane.products = frozenset(products)
+    return _lane_code_seed(code, products) + [lane]
+
+
+def _dynamic_hypers_cases() -> List[Case]:
+    """Replay ch09's complete PUT-only Hyper-S control examples."""
+    path = Path(__file__).parent / "fixtures" / "dynamic_hypers_manual_examples.json"
+    examples = json.loads(path.read_text(encoding="utf-8"))["examples"]
+    cases = []
+    for resource, probe in (
+        (TimeHistoryGlobalControlHyperS, ("GEO_NONL_TYPE", 1)),
+        (TimeHistoryOutputOptionHyperS, ("OUT_OPT", {
+            "HINGE_OUT": 1, "COMMON_OPT": False, "FIBER_OUT": 1,
+        })),
+    ):
+        payload = copy.deepcopy(examples[resource.ENDPOINT]["1"])
+        key, expected = probe
+        cases.append(Case(
+            resource, copy.deepcopy(payload), copy.deepcopy(payload),
+            lambda p, field=key: p[field], expected, expected,
+            confirmed=True, products=("civil",),
+        ))
+    return cases
+
+
 def _moving_aux_cases() -> List[Case]:
     # Source JSON snapshots retain the original IDs. Only model references
     # are remapped: beam 2, supported node 1, and plate 4 already exist.
@@ -3811,6 +3917,35 @@ TIERS: List[Tier] = [
     Tier("moving_impact", "manual Korea lane impact factor", _impact_seeds, _impact_cases),
     Tier("moving_transverse_case", "manual transverse load case with real lane and vehicle",
          _transverse_load_seeds, _transverse_load_cases),
+    Tier("moving_control_bs", "manual BS moving-load analysis control",
+         lambda: _lane_code_seed("BS"),
+         lambda: _moving_control_cases(MovingLoadAnalysisControlBS, "BS")),
+    Tier("moving_control_india", "manual India moving-load analysis control",
+         lambda: _lane_code_seed("INDIA", ("civil",)),
+         lambda: _moving_control_cases(
+             MovingLoadAnalysisControlIndia, "INDIA", ("civil",))),
+    Tier("moving_control_transverse", "manual transverse moving-load analysis control",
+         lambda: _lane_code_seed("TRANS"),
+         lambda: _moving_control_cases(MovingLoadAnalysisControlTransverse, "TRANS")),
+    Tier("moving_case_china", "manual China moving-load case",
+         lambda: _moving_case_lane_seeds(
+             "CHINA", TrafficLineLanesChina, ("LL_01", "LL_02"), ("civil",)),
+         lambda: _moving_country_case(MovingLoadCaseChina, "CHINA", ("civil",))),
+    Tier("moving_case_india", "manual India moving-load case",
+         lambda: _moving_case_lane_seeds(
+             "INDIA", TrafficLineLanesIndia, ("LL_01", "LL_02"), ("civil",)),
+         lambda: _moving_country_case(MovingLoadCaseIndia, "INDIA", ("civil",))),
+    Tier("moving_case_eurocode", "manual Eurocode moving-load case",
+         lambda: _moving_case_lane_seeds(
+             "EUROCODE", TrafficLineLanes,
+             ("LL_01", "LL_02", "LL_03", "LL_04"), generic=True),
+         lambda: _moving_country_case(MovingLoadCaseEurocode, "EUROCODE")),
+    Tier("moving_case_poland", "manual Poland moving-load case",
+         lambda: _moving_case_lane_seeds(
+             "POLAND", TrafficLineLanes, ("L1", "L2"), ("civil",), generic=True),
+         lambda: _moving_country_case(MovingLoadCasePoland, "POLAND", ("civil",))),
+    Tier("dynamic_hypers_controls", "manual Hyper-S time-history controls",
+         _no_seeds, _dynamic_hypers_cases),
     Tier("core", "baseline model, groups and static loads", _no_seeds, _core_cases),
     Tier("props", "material / section sub-types", _props_seeds, _props_cases),
     Tier("boundary", "springs and links", _boundary_seeds, _boundary_cases),

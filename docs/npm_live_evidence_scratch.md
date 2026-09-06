@@ -66,6 +66,11 @@ when the notes explicitly say the built npm package completed the operation.
 | `/db/MLSP` | 2026-09-06 | Civil |
 | `/db/MLSR` | 2026-09-06 | Civil |
 | `/db/MVLDtr` | 2026-09-06 | Civil |
+| `/db/MVCTbs` | 2026-09-06 | Gen, Civil |
+| `/db/MVCTid` | 2026-09-06 | Civil |
+| `/db/MVCTtr` | 2026-09-06 | Gen, Civil |
+| `/db/THGC-M1` | 2026-09-06 | Civil |
+| `/db/THOO-M1` | 2026-09-06 | Civil |
 
 ## Completed result-table operations
 
@@ -83,6 +88,11 @@ when the notes explicitly say the built npm package completed the operation.
 - Explicit rejections or unresolved cases (`/db/MVCT`, `/db/SDIS` LRB,
   `/db/WVLD`, `/db/NLLP`, Gen `/db/DSTL`, and `/db/BCCT`) are not evidence of
   a completed endpoint operation.
+- The 2026-09-06 country/code-specific moving-load attempts are not completed
+  evidence: `/db/MVLDch` rejected a nonexistent vehicle, `/db/MVLDid` rejected
+  the sub-load-case count, `/db/MVLDeu` returned `Unknown Error` on both
+  products, and `/db/MVLDpl` did not persist on Civil while Gen refused the
+  `POLAND` code. `/db/MVLDbs` never passed the offline fixture/contract gate.
 - `/doc/NEW`, `SAVEAS`, and the model-building prerequisites are harness
   operations, not selected endpoint cases.
 - The 2026-09-05 empty-document sweep selected cases whose Python fixture
@@ -92,5 +102,5 @@ when the notes explicitly say the built npm package completed the operation.
   the fifteen affected endpoints were re-run on both products on 2026-09-05.
   They are counted above; see the live notes for the run.
 
-**Count:** 55 distinct `/db` endpoints and 4 distinct result-table operations;
-59 distinct npm public-API operations overall.
+**Count:** 60 distinct `/db` endpoints and 4 distinct result-table operations;
+64 distinct npm public-API operations overall.

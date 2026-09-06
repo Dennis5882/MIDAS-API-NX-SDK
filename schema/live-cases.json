@@ -131,6 +131,302 @@
         }
       }
     },
+    "moving_case_lanes_CHINA": {
+      "endpoint": "/db/LLANch",
+      "records": {
+        "1": {
+          "COMMON": {
+            "LL_NAME": "LL_01",
+            "LOAD_DIST": "LANE",
+            "GROUP_NAME": "",
+            "SKEW_START": 0,
+            "SKEW_END": 0,
+            "MOVING": "BOTH",
+            "WHEEL_SPACE": 1.8,
+            "WIDTH": 3,
+            "OPT_AUTO_LANE": true,
+            "ALLOW_WIDTH": 3
+          },
+          "LANE_ITEMS": [
+            {
+              "ELEM": 1,
+              "ECC": -1.5,
+              "SPAN": 12,
+              "SPAN_START": true,
+              "SCALE_FACTOR": 1.1
+            }
+          ]
+        },
+        "2": {
+          "COMMON": {
+            "LL_NAME": "LL_02",
+            "LOAD_DIST": "LANE",
+            "GROUP_NAME": "",
+            "SKEW_START": 0,
+            "SKEW_END": 0,
+            "MOVING": "BOTH",
+            "WHEEL_SPACE": 1.8,
+            "WIDTH": 3,
+            "OPT_AUTO_LANE": true,
+            "ALLOW_WIDTH": 3
+          },
+          "LANE_ITEMS": [
+            {
+              "ELEM": 1,
+              "ECC": -1.5,
+              "SPAN": 12,
+              "SPAN_START": true,
+              "SCALE_FACTOR": 1.1
+            }
+          ]
+        }
+      }
+    },
+    "moving_case_lanes_INDIA": {
+      "endpoint": "/db/LLANid",
+      "records": {
+        "1": {
+          "COMMON": {
+            "LL_NAME": "LL_01",
+            "LOAD_DIST": "LANE",
+            "GROUP_NAME": "",
+            "SKEW_START": 0,
+            "SKEW_END": 0,
+            "MOVING": "BOTH",
+            "WHEEL_SPACE": 1.8,
+            "WIDTH": 0,
+            "OPT_AUTO_LANE": false,
+            "ALLOW_WIDTH": 0
+          },
+          "LANE_ITEMS": [
+            {
+              "ELEM": 1,
+              "ECC": -1.5,
+              "SPAN": 12,
+              "IMPACT_SPAN": 1,
+              "IMPACT_FACTOR": 0
+            }
+          ]
+        },
+        "2": {
+          "COMMON": {
+            "LL_NAME": "LL_02",
+            "LOAD_DIST": "LANE",
+            "GROUP_NAME": "",
+            "SKEW_START": 0,
+            "SKEW_END": 0,
+            "MOVING": "BOTH",
+            "WHEEL_SPACE": 1.8,
+            "WIDTH": 0,
+            "OPT_AUTO_LANE": false,
+            "ALLOW_WIDTH": 0
+          },
+          "LANE_ITEMS": [
+            {
+              "ELEM": 1,
+              "ECC": -1.5,
+              "SPAN": 12,
+              "IMPACT_SPAN": 1,
+              "IMPACT_FACTOR": 0
+            }
+          ]
+        }
+      }
+    },
+    "lane_code_EUROCODE": {
+      "endpoint": "/db/MVCD",
+      "records": {
+        "1": {
+          "CODE": "EUROCODE"
+        }
+      }
+    },
+    "moving_case_lanes_EUROCODE": {
+      "endpoint": "/db/LLAN",
+      "records": {
+        "1": {
+          "COMMON": {
+            "LL_NAME": "LL_01",
+            "LOAD_DIST": "LANE",
+            "GROUP_NAME": "",
+            "SKEW_START": 0,
+            "SKEW_END": 0,
+            "MOVING": "FORWARD",
+            "WHEEL_SPACE": 1.8,
+            "WIDTH": 3,
+            "OPT_AUTO_LANE": true,
+            "ALLOW_WIDTH": 3
+          },
+          "LANE_ITEMS": [
+            {
+              "ELEM": 1,
+              "ECC": -1.5
+            },
+            {
+              "ELEM": 2,
+              "ECC": -1.5
+            },
+            {
+              "ELEM": 3,
+              "ECC": -1.5
+            }
+          ]
+        },
+        "2": {
+          "COMMON": {
+            "LL_NAME": "LL_02",
+            "LOAD_DIST": "LANE",
+            "GROUP_NAME": "",
+            "SKEW_START": 0,
+            "SKEW_END": 0,
+            "MOVING": "FORWARD",
+            "WHEEL_SPACE": 1.8,
+            "WIDTH": 3,
+            "OPT_AUTO_LANE": true,
+            "ALLOW_WIDTH": 3
+          },
+          "LANE_ITEMS": [
+            {
+              "ELEM": 1,
+              "ECC": -1.5
+            },
+            {
+              "ELEM": 2,
+              "ECC": -1.5
+            },
+            {
+              "ELEM": 3,
+              "ECC": -1.5
+            }
+          ]
+        },
+        "3": {
+          "COMMON": {
+            "LL_NAME": "LL_03",
+            "LOAD_DIST": "LANE",
+            "GROUP_NAME": "",
+            "SKEW_START": 0,
+            "SKEW_END": 0,
+            "MOVING": "FORWARD",
+            "WHEEL_SPACE": 1.8,
+            "WIDTH": 3,
+            "OPT_AUTO_LANE": true,
+            "ALLOW_WIDTH": 3
+          },
+          "LANE_ITEMS": [
+            {
+              "ELEM": 1,
+              "ECC": -1.5
+            },
+            {
+              "ELEM": 2,
+              "ECC": -1.5
+            },
+            {
+              "ELEM": 3,
+              "ECC": -1.5
+            }
+          ]
+        },
+        "4": {
+          "COMMON": {
+            "LL_NAME": "LL_04",
+            "LOAD_DIST": "LANE",
+            "GROUP_NAME": "",
+            "SKEW_START": 0,
+            "SKEW_END": 0,
+            "MOVING": "FORWARD",
+            "WHEEL_SPACE": 1.8,
+            "WIDTH": 3,
+            "OPT_AUTO_LANE": true,
+            "ALLOW_WIDTH": 3
+          },
+          "LANE_ITEMS": [
+            {
+              "ELEM": 1,
+              "ECC": -1.5
+            },
+            {
+              "ELEM": 2,
+              "ECC": -1.5
+            },
+            {
+              "ELEM": 3,
+              "ECC": -1.5
+            }
+          ]
+        }
+      }
+    },
+    "lane_code_POLAND": {
+      "endpoint": "/db/MVCD",
+      "records": {
+        "1": {
+          "CODE": "POLAND"
+        }
+      }
+    },
+    "moving_case_lanes_POLAND": {
+      "endpoint": "/db/LLAN",
+      "records": {
+        "1": {
+          "COMMON": {
+            "LL_NAME": "L1",
+            "LOAD_DIST": "LANE",
+            "GROUP_NAME": "",
+            "SKEW_START": 0,
+            "SKEW_END": 0,
+            "MOVING": "FORWARD",
+            "WHEEL_SPACE": 1.8,
+            "WIDTH": 3,
+            "OPT_AUTO_LANE": true,
+            "ALLOW_WIDTH": 3
+          },
+          "LANE_ITEMS": [
+            {
+              "ELEM": 1,
+              "ECC": -1.5
+            },
+            {
+              "ELEM": 2,
+              "ECC": -1.5
+            },
+            {
+              "ELEM": 3,
+              "ECC": -1.5
+            }
+          ]
+        },
+        "2": {
+          "COMMON": {
+            "LL_NAME": "L2",
+            "LOAD_DIST": "LANE",
+            "GROUP_NAME": "",
+            "SKEW_START": 0,
+            "SKEW_END": 0,
+            "MOVING": "FORWARD",
+            "WHEEL_SPACE": 1.8,
+            "WIDTH": 3,
+            "OPT_AUTO_LANE": true,
+            "ALLOW_WIDTH": 3
+          },
+          "LANE_ITEMS": [
+            {
+              "ELEM": 1,
+              "ECC": -1.5
+            },
+            {
+              "ELEM": 2,
+              "ECC": -1.5
+            },
+            {
+              "ELEM": 3,
+              "ECC": -1.5
+            }
+          ]
+        }
+      }
+    },
     "tdmt_seed": {
       "endpoint": "/db/TDMT",
       "records": {
@@ -2782,6 +3078,960 @@
           "seed": "transverse_case_vehicle"
         }
       ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "moving_control_bs",
+      "endpoint": "/db/MVCTbs",
+      "name": "Moving Load Analysis Control – BS",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "iIGP": 0,
+        "UNUMT": 3,
+        "PLATE": "NODAL",
+        "bSTRCALC": true,
+        "bCONCURRENT": true,
+        "FRAME": "AXIAL",
+        "bCSTRCALC": true,
+        "bREAC": true,
+        "bRGP": false,
+        "RGP": "",
+        "bDISP": true,
+        "bDGP": false,
+        "DGP": "",
+        "bFM": true,
+        "bFGP": false,
+        "FGP": "",
+        "bL": true,
+        "bLG": false,
+        "LGP": "",
+        "NUMLANE": 0
+      },
+      "updatePayload": {
+        "iIGP": 0,
+        "UNUMT": 3,
+        "PLATE": "NODAL",
+        "bSTRCALC": true,
+        "bCONCURRENT": true,
+        "FRAME": "AXIAL",
+        "bCSTRCALC": true,
+        "bREAC": true,
+        "bRGP": false,
+        "RGP": "",
+        "bDISP": true,
+        "bDGP": false,
+        "DGP": "",
+        "bFM": true,
+        "bFGP": false,
+        "FGP": "",
+        "bL": true,
+        "bLG": false,
+        "LGP": "",
+        "NUMLANE": 0
+      },
+      "expected": {
+        "created": 0,
+        "updated": 0
+      },
+      "needs": [
+        "lane_code_BS"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_BS"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "moving_control_bs",
+      "endpoint": "/db/MVCTbs",
+      "name": "Moving Load Analysis Control – BS",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "iIGP": 0,
+        "UNUMT": 3,
+        "PLATE": "NODAL",
+        "bSTRCALC": true,
+        "bCONCURRENT": true,
+        "FRAME": "AXIAL",
+        "bCSTRCALC": true,
+        "bREAC": true,
+        "bRGP": false,
+        "RGP": "",
+        "bDISP": true,
+        "bDGP": false,
+        "DGP": "",
+        "bFM": true,
+        "bFGP": false,
+        "FGP": "",
+        "bL": true,
+        "bLG": false,
+        "LGP": "",
+        "NUMLANE": 0
+      },
+      "updatePayload": {
+        "iIGP": 0,
+        "UNUMT": 3,
+        "PLATE": "NODAL",
+        "bSTRCALC": true,
+        "bCONCURRENT": true,
+        "FRAME": "AXIAL",
+        "bCSTRCALC": true,
+        "bREAC": true,
+        "bRGP": false,
+        "RGP": "",
+        "bDISP": true,
+        "bDGP": false,
+        "DGP": "",
+        "bFM": true,
+        "bFGP": false,
+        "FGP": "",
+        "bL": true,
+        "bLG": false,
+        "LGP": "",
+        "NUMLANE": 0
+      },
+      "expected": {
+        "created": 0,
+        "updated": 0
+      },
+      "needs": [
+        "lane_code_BS"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_BS"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "moving_control_india",
+      "endpoint": "/db/MVCTid",
+      "name": "Moving Load Analysis Control – India",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "iIGP": 0,
+        "UNUMT": 3,
+        "PLATE": "NODAL",
+        "bSTRCALC": true,
+        "FRAME": "AXIAL",
+        "bCSTRCALC": true,
+        "bREAC": true,
+        "bRGP": false,
+        "RGP": "",
+        "bDISP": true,
+        "bDGP": false,
+        "DGP": "",
+        "bFM": true,
+        "bFGP": false,
+        "FGP": "",
+        "bL": true,
+        "bLG": false,
+        "LGP": "",
+        "BRIDGE": 0,
+        "TRACKS": 0,
+        "WIDTHTYPE": 0,
+        "WIDTH": 0,
+        "DEPTH": 10,
+        "VHMAX": 10
+      },
+      "updatePayload": {
+        "iIGP": 0,
+        "UNUMT": 3,
+        "PLATE": "NODAL",
+        "bSTRCALC": true,
+        "FRAME": "AXIAL",
+        "bCSTRCALC": true,
+        "bREAC": true,
+        "bRGP": false,
+        "RGP": "",
+        "bDISP": true,
+        "bDGP": false,
+        "DGP": "",
+        "bFM": true,
+        "bFGP": false,
+        "FGP": "",
+        "bL": true,
+        "bLG": false,
+        "LGP": "",
+        "BRIDGE": 0,
+        "TRACKS": 0,
+        "WIDTHTYPE": 0,
+        "WIDTH": 0,
+        "DEPTH": 10,
+        "VHMAX": 10
+      },
+      "expected": {
+        "created": 0,
+        "updated": 0
+      },
+      "needs": [
+        "lane_code_INDIA"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_INDIA"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "moving_control_transverse",
+      "endpoint": "/db/MVCTtr",
+      "name": "Moving Load Analysis Control – Transverse",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "LOAD_POINT_SEL": 1,
+        "INFL_GEN_POINT": 0,
+        "NUM_UNIT_LOAD": 3,
+        "ANALYSIS_RESULT": 2,
+        "OPT_COMBINED_STR": true,
+        "OPT_REACTIONS": true,
+        "OPT_DISPLACEMENTS": true,
+        "OPT_FORCE": false
+      },
+      "updatePayload": {
+        "LOAD_POINT_SEL": 1,
+        "INFL_GEN_POINT": 0,
+        "NUM_UNIT_LOAD": 3,
+        "ANALYSIS_RESULT": 2,
+        "OPT_COMBINED_STR": true,
+        "OPT_REACTIONS": true,
+        "OPT_DISPLACEMENTS": true,
+        "OPT_FORCE": false
+      },
+      "expected": {
+        "created": 1,
+        "updated": 1
+      },
+      "needs": [
+        "lane_code_TRANS"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_TRANS"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "moving_control_transverse",
+      "endpoint": "/db/MVCTtr",
+      "name": "Moving Load Analysis Control – Transverse",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "LOAD_POINT_SEL": 1,
+        "INFL_GEN_POINT": 0,
+        "NUM_UNIT_LOAD": 3,
+        "ANALYSIS_RESULT": 2,
+        "OPT_COMBINED_STR": true,
+        "OPT_REACTIONS": true,
+        "OPT_DISPLACEMENTS": true,
+        "OPT_FORCE": false
+      },
+      "updatePayload": {
+        "LOAD_POINT_SEL": 1,
+        "INFL_GEN_POINT": 0,
+        "NUM_UNIT_LOAD": 3,
+        "ANALYSIS_RESULT": 2,
+        "OPT_COMBINED_STR": true,
+        "OPT_REACTIONS": true,
+        "OPT_DISPLACEMENTS": true,
+        "OPT_FORCE": false
+      },
+      "expected": {
+        "created": 1,
+        "updated": 1
+      },
+      "needs": [
+        "lane_code_TRANS"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_TRANS"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "moving_case_china",
+      "endpoint": "/db/MVLDch",
+      "name": "Moving Load Cases – China",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "LCNAME": "MV_Case1",
+        "DESC": "",
+        "OPT_AUTO_OPTIMIZE": false,
+        "BRIDGE_TYPE": 2,
+        "SCALE_FACTOR_O": [
+          1,
+          1,
+          0.8,
+          0.67,
+          0.6,
+          0.55,
+          0.55,
+          0.55
+        ],
+        "SCALE_FACTOR_N": [
+          1,
+          1,
+          0.78,
+          0.67,
+          0.6,
+          0.55,
+          0.52,
+          0.5
+        ],
+        "SCALE_FACTOR_JTG": [
+          1.2,
+          1,
+          0.78,
+          0.67,
+          0.6,
+          0.55,
+          0.52,
+          0.5
+        ],
+        "LOADING_EFFECT": 1,
+        "SUB_LOAD_ITEMS": [
+          {
+            "VEHICLE_CLASS": "CH(CJJ11)_C-CD(A/B)",
+            "VEHICLE_TYPE": "VL",
+            "SCALE_FACTOR": 1,
+            "MIN_NUM_LOADED_LANES": 1,
+            "MAX_NUM_LOADED_LANES": 2,
+            "SELECTED_LANES": [
+              "LL_01",
+              "LL_02"
+            ]
+          }
+        ]
+      },
+      "updatePayload": {
+        "LCNAME": "MV_Case1",
+        "DESC": "",
+        "OPT_AUTO_OPTIMIZE": false,
+        "BRIDGE_TYPE": 2,
+        "SCALE_FACTOR_O": [
+          1,
+          1,
+          0.8,
+          0.67,
+          0.6,
+          0.55,
+          0.55,
+          0.55
+        ],
+        "SCALE_FACTOR_N": [
+          1,
+          1,
+          0.78,
+          0.67,
+          0.6,
+          0.55,
+          0.52,
+          0.5
+        ],
+        "SCALE_FACTOR_JTG": [
+          1.2,
+          1,
+          0.78,
+          0.67,
+          0.6,
+          0.55,
+          0.52,
+          0.5
+        ],
+        "LOADING_EFFECT": 1,
+        "SUB_LOAD_ITEMS": [
+          {
+            "VEHICLE_CLASS": "CH(CJJ11)_C-CD(A/B)",
+            "VEHICLE_TYPE": "VL",
+            "SCALE_FACTOR": 1,
+            "MIN_NUM_LOADED_LANES": 1,
+            "MAX_NUM_LOADED_LANES": 2,
+            "SELECTED_LANES": [
+              "LL_01",
+              "LL_02"
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "created": "MV_Case1",
+        "updated": "MV_Case1"
+      },
+      "needs": [
+        "lane_code_CHINA",
+        "moving_case_lanes_CHINA"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_CHINA"
+        },
+        {
+          "seed": "moving_case_lanes_CHINA"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "moving_case_india",
+      "endpoint": "/db/MVLDid",
+      "name": "Moving Load Cases – India",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "LCNAME": "MV_India_1",
+        "DESC": "",
+        "SCALE_FACTOR": [
+          1,
+          0.9,
+          0.8,
+          0.8
+        ],
+        "NUM_LOADED_LANES": 2,
+        "SUB_LOAD_ITEMS": [
+          {
+            "VEHICLE_CLASS_1": "IN(IRC)_(25t1)_BroadGauge-1676mm",
+            "SCALE_FACTOR": 1,
+            "MIN_NUM_LOADED_LANES": 1,
+            "MAX_NUM_LOADED_LANES": 2,
+            "SELECTED_LANES": [
+              "LL_01",
+              "LL_02"
+            ]
+          }
+        ]
+      },
+      "updatePayload": {
+        "LCNAME": "MV_India_1",
+        "DESC": "",
+        "SCALE_FACTOR": [
+          1,
+          0.9,
+          0.8,
+          0.8
+        ],
+        "NUM_LOADED_LANES": 2,
+        "SUB_LOAD_ITEMS": [
+          {
+            "VEHICLE_CLASS_1": "IN(IRC)_(25t1)_BroadGauge-1676mm",
+            "SCALE_FACTOR": 1,
+            "MIN_NUM_LOADED_LANES": 1,
+            "MAX_NUM_LOADED_LANES": 2,
+            "SELECTED_LANES": [
+              "LL_01",
+              "LL_02"
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "created": "MV_India_1",
+        "updated": "MV_India_1"
+      },
+      "needs": [
+        "lane_code_INDIA",
+        "moving_case_lanes_INDIA"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_INDIA"
+        },
+        {
+          "seed": "moving_case_lanes_INDIA"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "moving_case_eurocode",
+      "endpoint": "/db/MVLDeu",
+      "name": "Moving Load Cases – Eurocode",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "LCNAME": "MV_Case1",
+        "OPT_AUTO_OPTIMIZE": false,
+        "TYPE_LOADMODEL": 1,
+        "DESC": "",
+        "VHLNAME1": "EU_(R)_LoadModel1",
+        "VHLNAME2": "EU_(FF)_Uniformload(Road)",
+        "OPT_LEADING": false,
+        "SLN_LIST": [
+          "LL_01",
+          "LL_02"
+        ],
+        "SRA_LIST": [
+          "LL_04"
+        ],
+        "FLN_LIST": [
+          "LL_03"
+        ]
+      },
+      "updatePayload": {
+        "LCNAME": "MV_Case1",
+        "OPT_AUTO_OPTIMIZE": false,
+        "TYPE_LOADMODEL": 1,
+        "DESC": "",
+        "VHLNAME1": "EU_(R)_LoadModel1",
+        "VHLNAME2": "EU_(FF)_Uniformload(Road)",
+        "OPT_LEADING": false,
+        "SLN_LIST": [
+          "LL_01",
+          "LL_02"
+        ],
+        "SRA_LIST": [
+          "LL_04"
+        ],
+        "FLN_LIST": [
+          "LL_03"
+        ]
+      },
+      "expected": {
+        "created": "MV_Case1",
+        "updated": "MV_Case1"
+      },
+      "needs": [
+        "lane_code_EUROCODE",
+        "moving_case_lanes_EUROCODE"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_EUROCODE"
+        },
+        {
+          "seed": "moving_case_lanes_EUROCODE"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "moving_case_eurocode",
+      "endpoint": "/db/MVLDeu",
+      "name": "Moving Load Cases – Eurocode",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "LCNAME": "MV_Case1",
+        "OPT_AUTO_OPTIMIZE": false,
+        "TYPE_LOADMODEL": 1,
+        "DESC": "",
+        "VHLNAME1": "EU_(R)_LoadModel1",
+        "VHLNAME2": "EU_(FF)_Uniformload(Road)",
+        "OPT_LEADING": false,
+        "SLN_LIST": [
+          "LL_01",
+          "LL_02"
+        ],
+        "SRA_LIST": [
+          "LL_04"
+        ],
+        "FLN_LIST": [
+          "LL_03"
+        ]
+      },
+      "updatePayload": {
+        "LCNAME": "MV_Case1",
+        "OPT_AUTO_OPTIMIZE": false,
+        "TYPE_LOADMODEL": 1,
+        "DESC": "",
+        "VHLNAME1": "EU_(R)_LoadModel1",
+        "VHLNAME2": "EU_(FF)_Uniformload(Road)",
+        "OPT_LEADING": false,
+        "SLN_LIST": [
+          "LL_01",
+          "LL_02"
+        ],
+        "SRA_LIST": [
+          "LL_04"
+        ],
+        "FLN_LIST": [
+          "LL_03"
+        ]
+      },
+      "expected": {
+        "created": "MV_Case1",
+        "updated": "MV_Case1"
+      },
+      "needs": [
+        "lane_code_EUROCODE",
+        "moving_case_lanes_EUROCODE"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_EUROCODE"
+        },
+        {
+          "seed": "moving_case_lanes_EUROCODE"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "moving_case_poland",
+      "endpoint": "/db/MVLDpl",
+      "name": "Moving Load Cases – Poland",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "LCNAME": "MV1",
+        "DESC": "",
+        "LOAD_MODEL": 1,
+        "bAUTO_OPTIMIZE": false,
+        "bPERMIT_LOAD": false,
+        "DEFAULT": {
+          "COMB_OPTION": "INDEPENDENT",
+          "SUB_LOAD_DATAS": [
+            {
+              "VEHICLE_NAME": "VehicleS",
+              "SCALE_FACTOR": 1,
+              "MIN_LOADED_LANE": 1,
+              "MAX_LOADED_LANE": 2,
+              "LANE_NAMES": [
+                "L1",
+                "L2"
+              ]
+            }
+          ]
+        }
+      },
+      "updatePayload": {
+        "LCNAME": "MV1",
+        "DESC": "",
+        "LOAD_MODEL": 1,
+        "bAUTO_OPTIMIZE": false,
+        "bPERMIT_LOAD": false,
+        "DEFAULT": {
+          "COMB_OPTION": "INDEPENDENT",
+          "SUB_LOAD_DATAS": [
+            {
+              "VEHICLE_NAME": "VehicleS",
+              "SCALE_FACTOR": 1,
+              "MIN_LOADED_LANE": 1,
+              "MAX_LOADED_LANE": 2,
+              "LANE_NAMES": [
+                "L1",
+                "L2"
+              ]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "created": "MV1",
+        "updated": "MV1"
+      },
+      "needs": [
+        "lane_code_POLAND",
+        "moving_case_lanes_POLAND"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_POLAND"
+        },
+        {
+          "seed": "moving_case_lanes_POLAND"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "dynamic_hypers_controls",
+      "endpoint": "/db/THGC-M1",
+      "name": "Time History Global Control (Hyper-S)",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "GEO_NONL_TYPE": 1,
+        "INIT_LOAD_TYPE": 0,
+        "INIT_LOAD_LIST": [
+          {
+            "LC_NAME": "DL",
+            "SF": 0.75,
+            "LC_TYPE": "ST"
+          }
+        ],
+        "INCREMENT_STEP": {
+          "NSTEP": 10,
+          "OUT_TYPE": 1,
+          "STEP_INC": 1
+        },
+        "ITER_PARAM": {
+          "PERMIT_FAIL": true,
+          "MAX_ITER": 30,
+          "NORM_CTRL": {
+            "DISP": {
+              "OPT_USE": true,
+              "VALUE": 0.001
+            },
+            "FORCE": {
+              "OPT_USE": true,
+              "VALUE": 0.001
+            },
+            "ENERGY": {
+              "OPT_USE": true,
+              "VALUE": 0.001
+            }
+          },
+          "STIFF_UPD_SCHEME": 0,
+          "ITER_BEF_UPDATE": 5,
+          "MAX_BISECT_LEVEL": 5,
+          "SMART_BISECT": false,
+          "DIVERGENCE_THRESHOLD": 3,
+          "LINE_SEARCH": {
+            "OPT_USE": true,
+            "LINE_SEARCH_OPT": 1,
+            "START_ITER_NO": 3,
+            "MAX_LINE_SEARCH_ITER": 4,
+            "LINE_SEARCH_TOL": 0.5
+          }
+        },
+        "IGNORE_ELEM": false,
+        "SEQ_LOAD_TYPE": 1,
+        "HINGE_OPT": {
+          "PSPRING_SUP": 0,
+          "EL": 1
+        }
+      },
+      "updatePayload": {
+        "GEO_NONL_TYPE": 1,
+        "INIT_LOAD_TYPE": 0,
+        "INIT_LOAD_LIST": [
+          {
+            "LC_NAME": "DL",
+            "SF": 0.75,
+            "LC_TYPE": "ST"
+          }
+        ],
+        "INCREMENT_STEP": {
+          "NSTEP": 10,
+          "OUT_TYPE": 1,
+          "STEP_INC": 1
+        },
+        "ITER_PARAM": {
+          "PERMIT_FAIL": true,
+          "MAX_ITER": 30,
+          "NORM_CTRL": {
+            "DISP": {
+              "OPT_USE": true,
+              "VALUE": 0.001
+            },
+            "FORCE": {
+              "OPT_USE": true,
+              "VALUE": 0.001
+            },
+            "ENERGY": {
+              "OPT_USE": true,
+              "VALUE": 0.001
+            }
+          },
+          "STIFF_UPD_SCHEME": 0,
+          "ITER_BEF_UPDATE": 5,
+          "MAX_BISECT_LEVEL": 5,
+          "SMART_BISECT": false,
+          "DIVERGENCE_THRESHOLD": 3,
+          "LINE_SEARCH": {
+            "OPT_USE": true,
+            "LINE_SEARCH_OPT": 1,
+            "START_ITER_NO": 3,
+            "MAX_LINE_SEARCH_ITER": 4,
+            "LINE_SEARCH_TOL": 0.5
+          }
+        },
+        "IGNORE_ELEM": false,
+        "SEQ_LOAD_TYPE": 1,
+        "HINGE_OPT": {
+          "PSPRING_SUP": 0,
+          "EL": 1
+        }
+      },
+      "expected": {
+        "created": 1,
+        "updated": 1
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "dynamic_hypers_controls",
+      "endpoint": "/db/THOO-M1",
+      "name": "Time History Output Option (Hyper-S)",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "OUT_OPT": {
+          "HINGE_OUT": 1,
+          "COMMON_OPT": false,
+          "FIBER_OUT": 1
+        },
+        "RESULT_SELECTION": {
+          "ENERGY_RESULT": true,
+          "SDVI": true,
+          "SDVE": true,
+          "SDST": true,
+          "SDHY": true,
+          "SDIS": true
+        }
+      },
+      "updatePayload": {
+        "OUT_OPT": {
+          "HINGE_OUT": 1,
+          "COMMON_OPT": false,
+          "FIBER_OUT": 1
+        },
+        "RESULT_SELECTION": {
+          "ENERGY_RESULT": true,
+          "SDVI": true,
+          "SDVE": true,
+          "SDST": true,
+          "SDHY": true,
+          "SDIS": true
+        }
+      },
+      "expected": {
+        "created": {
+          "HINGE_OUT": 1,
+          "COMMON_OPT": false,
+          "FIBER_OUT": 1
+        },
+        "updated": {
+          "HINGE_OUT": 1,
+          "COMMON_OPT": false,
+          "FIBER_OUT": 1
+        }
+      },
+      "needs": [],
+      "setup": [],
       "blockedSeeds": [],
       "crashes": null
     },

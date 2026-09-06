@@ -3713,16 +3713,16 @@
       "status": "implemented",
       "module": "midas_nx.db.dynamic_loads",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-09-06",
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py and packages/typescript/scripts/live-crud.mjs: the vendored ch09 Request Body completed PUT/read/per-id DELETE/read through both public SDKs on a disposable Civil model; this resource has no POST method.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/27/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -3735,16 +3735,16 @@
       "status": "implemented",
       "module": "midas_nx.db.dynamic_loads",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-09-06",
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_crud_check.py and packages/typescript/scripts/live-crud.mjs: the vendored ch09 Request Body completed PUT/read/per-id DELETE/read through both public SDKs on a disposable Civil model; this resource has no POST method.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/27/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -4740,18 +4740,16 @@
       "status": "implemented",
       "module": "midas_nx.db.analysis_control",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-09-06",
         "products": [
-          "civil",
-          "gen"
+          "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
+        "method": "scripts/live_crud_check.py replayed the vendored manual Request Body through create/read/update/read/delete on Civil NX; npm replayed the same emitted fixture.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/27/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success_round_trip"
       }
     },
     {
@@ -4765,18 +4763,18 @@
       "status": "implemented",
       "module": "midas_nx.db.analysis_control",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-09-06",
         "products": [
           "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
+        "method": "scripts/live_crud_check.py replayed the vendored manual Request Body through create/read/update/read/delete on Gen NX and Civil NX; npm replayed the same emitted fixture.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/27/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success_round_trip"
       }
     },
     {
@@ -4790,18 +4788,18 @@
       "status": "implemented",
       "module": "midas_nx.db.analysis_control",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-09-06",
         "products": [
           "civil",
           "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too.",
+        "method": "scripts/live_crud_check.py replayed the vendored manual Request Body through create/read/update/read/delete on Gen NX and Civil NX; npm replayed the same emitted fixture.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/27/2026",
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success_round_trip"
       }
     },
     {
