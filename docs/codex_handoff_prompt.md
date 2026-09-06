@@ -10,9 +10,8 @@ Claude's. Bounded, verifiable, repeatable work is yours. Every task below has a
 measured starting number you can check your run against. A task that turns out
 to need a judgment call is one to **stop and report**, not to decide.
 
-**Start at Task 0.** It is new, it is the only thing currently red, and it is
-the reason the numbers below moved. After it: Task A if a product session is
-available, Task C if not.
+**Read "The one thing that is red, and is not yours" before anything else.**
+Then: Task A if a product session is available, Task C if not.
 
 ---
 
@@ -22,15 +21,15 @@ Run these first and confirm you see the same numbers. **If any differ, say so
 before starting** — it means something moved under you.
 
 ```bash
-python -m pytest -q                       # 1023 passed, 1 FAILED (see Task 0)
+python -m pytest -q                       # 1023 passed, 1 FAILED - EXPECTED
 ruff check src tests scripts && mypy      # clean
 python scripts/validate_contracts.py      # OK; 381 endpoints, 4956 fields,
                                           # 119 proven safe, 8 unsafe,
                                           # 0 unresolved manual contradictions
 python scripts/check_manual_drift.py --manual-api-repo "E:\AI Study\MIDAS-API"
-                                          # has_diff: TRUE, 9 chapters (Task 0)
+                                          # has_diff: TRUE, 9 chapters - EXPECTED
 MSYS_NO_PATHCONV=1 python scripts/extract_contracts.py \
-  --manual-api-repo "E:\AI Study\MIDAS-API" --check    # 16 disagreements (Task 0)
+  --manual-api-repo "E:\AI Study\MIDAS-API" --check    # 16 disagreements - EXPECTED
 python scripts/info_baseline.py --against-contracts --check   # OK
 python scripts/info_baseline.py --divergence --check          # OK
 python scripts/report_dropped_manual_rows.py \
@@ -55,69 +54,54 @@ the finished state, not a backlog.
 
 ---
 
-## Task 0 — reflect the manual repo's 2026-09-06 sync
+## The one thing that is red, and is not yours
 
-**Offline. Currently the only red check in the repository.** One pytest case
-fails (`test_shipped_contracts_still_match_the_manual_if_it_is_present`) and it
-fails for a good reason: the sibling manual repo gained
-`205d5f0 docs: 정기 점검 (2026-09-06)` and this repository still records
-`7920759` in `docs/coverage.json`'s `vendored_at_commit`.
+**Do not reflect the 2026-09-06 manual sync. The author has said so directly.**
 
-Nine chapters changed: `02`, `04`, `06`, `07`, `09`, `11`, `17`, `19`, `25`.
+One pytest case fails —
+`test_shipped_contracts_still_match_the_manual_if_it_is_present` — and
+`check_manual_drift.py` reports `has_diff: true` over nine chapters. Both are
+detecting the same thing: the sibling manual repo at `E:\AI Study\MIDAS-API`
+gained `205d5f0 docs: 정기 점검 (2026-09-06)` while this repository still
+records `7920759` in `docs/coverage.json`'s `vendored_at_commit`.
 
-**Read this before touching `vendored_at_commit`.** Two things make that field
-the last edit of this task, not the first:
+**That commit is not ready to be reflected.** The author is still checking it —
+it has known errors, and it has not been pushed to the manual repo's own
+`origin/main`. `CLAUDE.md` records the pattern: a bulk `정기 점검` sync is
+often followed within a day by self-audit `fix(manual):` commits correcting its
+own transcription, and this repository has already been burned by treating one
+as final.
 
-- `205d5f0` is **unpushed** — it exists only in the local manual repo, not on
-  its `origin/main`. It is the author's in-flight work.
-- `CLAUDE.md` records that a bulk `정기 점검` sync is often followed within a
-  day by self-audit `fix(manual):` commits correcting its own transcription.
-  That has happened before on this exact pattern.
+So this red check is **a correct detection of a real state**, not a defect to
+clear. Concretely, do not:
 
-So: **do the reflection, report it, and ask the author before bumping
-`vendored_at_commit`.** Bumping it to an unpushed commit that then gets amended
-is how this repository would end up claiming to reflect a manual that no longer
-exists.
+- edit any contract to match the new manual text,
+- touch `vendored_at_commit`,
+- re-anchor the twelve `extraction.unmergedTables` entries whose titles and line
+  numbers the sync moved (`db-this.yaml` ×10, `db-this-m1.yaml`, `db-splc.yaml`),
+- add the four fields the sync documents (`db-matd.yaml`'s `bSERVCHECK`,
+  `dSHORTTERM`, `dLONGTERM`; `db-tdna.yaml`'s `bPJ` under `SHAPE='CURVE'`),
+- or `git -C "E:\AI Study\MIDAS-API" checkout`/`reset` anything to make the
+  check pass. **The manual repo is not yours to change.**
 
-`extract_contracts.py --check` names 16 disagreements in three groups.
+If you find yourself with a green `extract_contracts --check`, you have done
+something on this list — say so and revert it.
 
-**Twelve are mechanical re-anchoring — these are yours.** The sync renumbered
-and retitled headings, so `extraction.unmergedTables` entries no longer resolve
-to a table that exists:
+The work is real and will come back as its own task once the author has
+verified the sync. It is written down here so nobody rediscovers it as a
+surprise, not so that it gets done now.
 
-| contract | entries | what moved |
-| --- | ---: | --- |
-| `db-this.yaml` | 10 | section headings `6-3.` through `6-8.` and their sub-tables |
-| `db-this-m1.yaml` | 1 | `비선형 경계요소 해석 (BOUNDARY_NL_ANAL)` |
-| `db-splc.yaml` | 1 | `Mass & Stiffness Proportional 감쇠 추가 파라미터` |
+**One consequence for the tasks below.** Every manual line number cited in a
+contract — `extraction.unmergedTables` anchors especially — is against
+`7920759`, not against what is in the manual working tree right now. When a
+task tells you to read a manual section, read it at the vendored commit:
 
-Re-point each entry at the table's new title and line. **The `fieldNames` list
-in each entry does not change** — if it would, that is not re-anchoring and you
-should stop: it means the table's contents moved, not its heading.
+```bash
+git -C "E:\AI Study\MIDAS-API" show 7920759:docs/manual/12_DB_Analysis_Control.md
+```
 
-One of them is worth reporting rather than silently fixing: `db-this.yaml`
-names `6-6. Nonlinear + Direct Integration (Transient)` **twice**, at lines
-1371 and 1381. Check whether the manual now has two headings with that number.
-If it does, that is a manual defect (a duplicate section number), and it goes
-in `docs/manual_defects_register.md` — not worked around in the contract.
-
-**Four are new content.** The sync documents fields the contracts do not have:
-
-| contract | fields |
-| --- | --- |
-| `db-matd.yaml` | `bSERVCHECK`, `dSHORTTERM`, `dLONGTERM` |
-| `db-tdna.yaml` | `bPJ`, in variant `SHAPE='CURVE'` only |
-
-Transcribe each from the manual's own row: type, `requirement`,
-`documentedOptional`, description. **`safeToOmit` stays `unverified`** — the
-manual saying "Optional" is `documentedOptional` and nothing else; nobody has
-omitted these against a running product. If a row does not state the field's
-type or requiredness outright, **stop and report that row** rather than
-inferring it.
-
-When the contracts are green again, re-run `npm run generate` and review the
-generated diff. Finish with the drift checker reporting `has_diff: false` —
-**after** the author has confirmed the manual commit is final.
+Reading the working tree instead will show you rows the contracts were never
+written against, and you will "find" disagreements that are just this drift.
 
 ---
 
@@ -342,8 +326,9 @@ Task C.
 ## Task E — merge the unmerged extraction tables, easiest first
 
 **Offline. The measurement is done; the merging is not, and most of it is
-Claude's.** Note that Task 0 re-anchors twelve of these entries — **do Task 0
-first**, or you will merge against titles that no longer exist.
+Claude's.** Read each manual section at the vendored commit `7920759`, not in
+the working tree — twelve of these entries anchor at titles and line numbers
+the unreflected 2026-09-06 sync has already moved.
 
 `docs/unmerged_tables_against_info.md` splits the 93 tables (602 field names)
 that 19 contracts declare missing:
@@ -399,9 +384,9 @@ transcription.
 
 ## Three decisions that are open and are not yours
 
-- **Whether the 2026-09-06 manual sync is final.** It is unpushed, and this
-  repository has been burned by a `정기 점검` commit that got corrected the next
-  day. See Task 0.
+- **Whether the 2026-09-06 manual sync is correct.** The author is checking it
+  and has said outright that it still has errors. Until that finishes, nothing
+  in this repository moves toward it — see the red-and-not-yours section.
 - **`/db/SPLC`'s cross-tier id collision.** extras4's Civil-only
   `lcom_seismic_splc` seed creates `/db/SPLC` id 1 and extras5's Civil case owns
   the same id, so the pair answers `Key Already Exist` for a shape both products
