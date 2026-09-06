@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { classifyResult, exitCodeFor, verifyRenumberedSeed } from "../scripts/live-harness-support.mjs";
+import {
+  classifyResult, containsExpectedValue, exitCodeFor, supportedCaseWrites,
+  verifyRenumberedSeed,
+} from "../scripts/live-harness-support.mjs";
 
 describe("renumbered live seed verification", () => {
   it.each([
@@ -29,6 +32,38 @@ describe("renumbered live seed verification", () => {
       { endpoint: "/db/TEST", records: { 90: { NAME: "seed" }, 91: { NAME: "seed" } } },
       { 1: { NAME: "seed" }, 2: { NAME: "other" } }, [1, 2],
     )).toThrow("did not preserve the seed name");
+  });
+});
+
+describe("live expected-value matching", () => {
+  it("finds a scalar nested in a live response", () => {
+    expect(containsExpectedValue({ record: { mode: 1 } }, 1)).toBe(true);
+  });
+
+  it("compares an expected object by value rather than reference identity", () => {
+    expect(containsExpectedValue(
+      { OUT_OPT: { HINGE_OUT: 1, COMMON_OPT: false, FIBER_OUT: 1 } },
+      { HINGE_OUT: 1, COMMON_OPT: false, FIBER_OUT: 1 },
+    )).toBe(true);
+  });
+
+  it("does not accept a different object or array", () => {
+    expect(containsExpectedValue({ OUT_OPT: { HINGE_OUT: 0 } }, { HINGE_OUT: 1 })).toBe(false);
+    expect(containsExpectedValue({ values: [1, 2] }, [1, 3])).toBe(false);
+  });
+});
+
+describe("live write-method selection", () => {
+  it("runs PUT without inventing a POST step for a PUT-only resource", () => {
+    expect(supportedCaseWrites(
+      ["DELETE", "GET", "PUT"], ["DELETE", "GET", "PUT"],
+    )).toEqual({ supportsPost: false, supportsPut: true });
+  });
+
+  it("runs both writes when the case and resource support both", () => {
+    expect(supportedCaseWrites(
+      ["DELETE", "GET", "POST", "PUT"], ["DELETE", "GET", "POST", "PUT"],
+    )).toEqual({ supportsPost: true, supportsPut: true });
   });
 });
 

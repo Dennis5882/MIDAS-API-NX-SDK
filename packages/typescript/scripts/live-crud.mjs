@@ -27,7 +27,10 @@
  */
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { classifyResult, exitCodeFor, verifyRenumberedSeed } from "./live-harness-support.mjs";
+import {
+  classifyResult, containsExpectedValue, exitCodeFor, supportedCaseWrites,
+  verifyRenumberedSeed,
+} from "./live-harness-support.mjs";
 
 import { doc, MidasClient, post, resources } from "../dist/index.js";
 
@@ -181,12 +184,6 @@ function newlyCreatedIds(before, after) {
     .filter((id) => !Object.hasOwn(before, id));
 }
 
-function containsExpectedValue(value, expected) {
-  if (Object.is(value, expected)) return true;
-  if (typeof value !== "object" || value === null) return false;
-  return Object.values(value).some((child) => containsExpectedValue(child, expected));
-}
-
 function requireExpectedValue(value, expected, endpoint, step) {
   if (expected === null || expected === undefined) return;
   if (!containsExpectedValue(value, expected)) {
@@ -293,20 +290,33 @@ async function runCase(liveCase, client) {
 
     phase = "case";
     const before = await resource.items(client);
-    if (Object.hasOwn(before, liveCase.id)) {
+    const { supportsPost, supportsPut } = supportedCaseWrites(
+      liveCase.methods, resource.metadata.methods,
+    );
+    if (!supportsPost && !supportsPut) {
+      throw new Error(`${liveCase.endpoint}: fixture has neither a POST nor PUT write operation.`);
+    }
+    if (supportsPost && Object.hasOwn(before, liveCase.id)) {
       throw new Error(`${liveCase.endpoint}/${liveCase.id} already exists; refusing to overwrite a scratch record.`);
     }
-    await resource.create({ [liveCase.id]: liveCase.createPayload }, client);
-    const afterCreate = await resource.items(client);
-    for (const id of newlyCreatedIds(before, afterCreate)) targetCreatedIds.add(id);
-    const created = requireStored(afterCreate, liveCase.id, liveCase.endpoint, "POST");
-    requireExpectedValue(created, liveCase.expected.created, liveCase.endpoint, "POST");
-    assertPayloadDefaults(resource, created, liveCase.endpoint, "POST");
+    if (supportsPost) {
+      await resource.create({ [liveCase.id]: liveCase.createPayload }, client);
+      const afterCreate = await resource.items(client);
+      for (const id of newlyCreatedIds(before, afterCreate)) targetCreatedIds.add(id);
+      const created = requireStored(afterCreate, liveCase.id, liveCase.endpoint, "POST");
+      requireExpectedValue(created, liveCase.expected.created, liveCase.endpoint, "POST");
+      assertPayloadDefaults(resource, created, liveCase.endpoint, "POST");
+    }
 
-    await resource.update({ [liveCase.id]: liveCase.updatePayload }, client);
-    const updated = requireStored(await resource.items(client), liveCase.id, liveCase.endpoint, "PUT");
-    requireExpectedValue(updated, liveCase.expected.updated, liveCase.endpoint, "PUT");
-    assertPayloadDefaults(resource, updated, liveCase.endpoint, "PUT");
+    if (supportsPut) {
+      const beforeUpdate = await resource.items(client);
+      await resource.update({ [liveCase.id]: liveCase.updatePayload }, client);
+      const afterUpdate = await resource.items(client);
+      for (const id of newlyCreatedIds(beforeUpdate, afterUpdate)) targetCreatedIds.add(id);
+      const updated = requireStored(afterUpdate, liveCase.id, liveCase.endpoint, "PUT");
+      requireExpectedValue(updated, liveCase.expected.updated, liveCase.endpoint, "PUT");
+      assertPayloadDefaults(resource, updated, liveCase.endpoint, "PUT");
+    }
 
     await deleteAndVerify(resource, liveCase.id, client, liveCase.endpoint);
     targetCreatedIds.delete(liveCase.id);

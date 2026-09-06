@@ -25,6 +25,40 @@ export function verifyRenumberedSeed(source, after, createdIds) {
   }
 }
 
+function sameStructuredValue(value, expected) {
+  if (Object.is(value, expected)) return true;
+  if (typeof value !== "object" || value === null
+    || typeof expected !== "object" || expected === null) return false;
+
+  if (Array.isArray(expected)) {
+    return Array.isArray(value) && value.length === expected.length
+      && value.every((child, index) => sameStructuredValue(child, expected[index]));
+  }
+  if (!Array.isArray(value)) {
+    const valueKeys = Object.keys(value);
+    const expectedKeys = Object.keys(expected);
+    return valueKeys.length === expectedKeys.length
+      && expectedKeys.every((key) => Object.hasOwn(value, key)
+        && sameStructuredValue(value[key], expected[key]));
+  }
+  return false;
+}
+
+/** True when a fixture value occurs anywhere in a live response tree. */
+export function containsExpectedValue(value, expected) {
+  if (sameStructuredValue(value, expected)) return true;
+  if (typeof value !== "object" || value === null) return false;
+  return Object.values(value).some((child) => containsExpectedValue(child, expected));
+}
+
+/** Select only write methods supported by both the emitted case and resource. */
+export function supportedCaseWrites(caseMethods, resourceMethods) {
+  return {
+    supportsPost: caseMethods.includes("POST") && resourceMethods.includes("POST"),
+    supportsPut: caseMethods.includes("PUT") && resourceMethods.includes("PUT"),
+  };
+}
+
 /**
  * Classify one case result the way scripts/live_crud_check.py classifies its
  * own rows, and for the same reason.
