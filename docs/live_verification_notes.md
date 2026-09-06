@@ -13,10 +13,20 @@ the bottom before acting on anything here.
 Date: 2026-07-15. One MIDASIT account, one Gen NX process, one Civil NX
 process, both freshly reset via `/doc/new` before testing.
 
-**Current live-session baseline (2026-08-31):** MIDAS Gen NX 2026 v2.1,
-Build 08/26/2026; MIDAS Civil NX 2026 v2.2, Build 08/26/2026. Record this
-baseline with every new live finding; it supersedes an endpoint's older build
-metadata only when that endpoint was actually exercised in this session.
+**Current live-session baseline (2026-09-06, author-confirmed):** MIDAS Gen NX
+2026 v2.1, Build 09/02/2026; MIDAS Civil NX 2026 v2.2, Build 09/02/2026.
+Record this baseline with every new live finding; it supersedes an endpoint's
+older build metadata only when that endpoint was actually exercised in this
+session.
+
+**The API reports no build.** There is no `/doc/*`, `/ope/*` or `/view/*`
+endpoint that returns one, and `verify_connection()` answers only `user`,
+`program`, `connectionID`, `keyVerified` and `status` - confirmed 2026-09-06.
+So every build string in this file and in `docs/coverage.json` is a human
+reading the product's About dialog. **A build string you did not read is not a
+measurement**; leave the field out rather than carry one forward from a
+neighbouring entry. That is exactly how five 2026-09-06 entries came to claim
+Builds 08/26 and 08/27 on machines running 09/02.
 
 ## Method
 
@@ -9133,8 +9143,9 @@ no case behind it, so they are back at read.
 
 ## 2026-09-06 — moving-load controls pass; country load cases remain unresolved
 
-The Gen NX 2026 v2.1 build 08/26/2026 and Civil NX 2026 v2.2 build
-08/27/2026 sessions were checkpointed under `C:/temp`, replaced with a
+The Gen NX 2026 v2.1 and Civil NX 2026 v2.2 sessions - both Build 09/02/2026,
+author-confirmed 2026-09-06; the entry first recorded 08/26 and 08/27, which
+nothing could have measured - were checkpointed under `C:/temp`, replaced with a
 throwaway base model, and restored to an empty scratch document after each
 Python and npm run. The fixtures replay the first JSON Request Body from the
 vendored manual commit `7920759`; the two SDKs consumed the same emitted case
@@ -9176,7 +9187,8 @@ unconfirmed product observation. Python and npm returned the same outcomes.
 
 ## 2026-09-06 — Hyper-S controls: PUT-only write verification on Civil
 
-Civil NX 2026 v2.2 build 08/27/2026 was checkpointed under `C:/temp`, replaced
+Civil NX 2026 v2.2, Build 09/02/2026 (author-confirmed; recorded as 08/27 at
+the time, which nothing could have measured) was checkpointed under `C:/temp`, replaced
 with a disposable base model, and restored to an empty scratch document after
 each run. The complete `/db/THGC-M1` and `/db/THOO-M1` Request Bodies were
 copied from chapter 09 at the vendored manual commit `7920759`; they were not

@@ -39,9 +39,8 @@ goes looking for a behaviour change that is not there.
 ## Also in this release, none of it in either package
 
 - **Five endpoints moved from read to write evidence**, run through both public
-  SDKs on Gen NX 2026 v2.1 build 08/26/2026 and Civil NX 2026 v2.2 build
-  08/27/2026. `/db/MVCTbs` and `/db/MVCTtr` completed a full round trip on both
-  products, `/db/MVCTid` on Civil only — Gen does not offer the `INDIA`
+  SDKs on Gen NX 2026 v2.1 and Civil NX 2026 v2.2, both Build 09/02/2026.
+  `/db/MVCTbs` and `/db/MVCTtr` completed a full round trip on both products, `/db/MVCTid` on Civil only — Gen does not offer the `INDIA`
   moving-load code — and `/db/THGC-M1` and `/db/THOO-M1` completed
   PUT/read/per-id DELETE/read on Civil. Write coverage **185 → 190**, live cases
   188 → 200, confirmed 158 → 165, npm live evidence 55 → 60.
