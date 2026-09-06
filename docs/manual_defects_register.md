@@ -84,6 +84,7 @@ build itself** and is no longer resting on an unrecorded one.
 | MD-48 | 2026-09-04 | `/db/MVHL` `VEH_EUROCODE`, 48 fields | section 10's Specifications table documents `VEH_DEFAULT` and no country object at all | `GET /info/db/MVHL` declares eleven more - `VEH_FR`, `VEH_CN`, `VEH_IN`, `VEH_CA`, `VEH_BS`, `VEH_EUROCODE`, `VEH_RU`, `VEH_KSCE_LSD15`, `VEH_AU`, `VEH_PL`, `VEH_ZA` - and a real Eurocode "Load Model 1" vehicle read on 2026-07-30 used `VEH_EUROCODE` instead of `VEH_DEFAULT`, omitting `STANDARD_CODE` the table marks Required. Four of the eleven have their own manual tables; `VEH_EUROCODE` has none | **manual repo** transcription | open |
 | MD-49 | 2026-09-04 | `/post/TABLE` surface-spring reaction `TABLE_TYPE` | the JSON Schema and Specifications table give `REACTIONSURFACESPRING`; the Request Example alone gives `REACTIONLSURFACESPRING` | on both Gen NX and Civil NX, build 09/02/2026, `REACTIONSURFACESPRING` is refused with `there was an error creating utbl`, while `REACTIONLSURFACESPRING` is recognised and reaches the expected no-analysis-result response | **MIDASIT article** (schema and table), which this SDK followed into both packages | open upstream; corrected here |
 | MD-50 | 2026-09-05 | `/db/MVCTch` `FREQ`, `BRIDGE1.BTYPE`, `BRIDGE2.BTYPE`, 9 fields | section 10 documents all of them - `FREQ`'s 25 keys across a two-Key-column table, and each `BTYPE` in the bold sentence that introduces its field table, enum included | this repo read neither. Every key in the `FREQ` table's *second* Key column was dropped whole (`SBEM_L`/`E`/`IC`/`MC`, `iARCH_TYPE`, `CABL_A`/`CABL_L`) while the first column extracted correctly, packed cells included - so it is a table shape the parser reads half of, not MD-48's packed cell. `BTYPE` is the selector deciding which of its table's fields apply, so neither object was usable without it | **this SDK** extractor | fixed here; parser deliberately unfixed (one such table in the whole manual) and guarded by a CI count |
+| MD-51 | 2026-09-06 | `/ope/MEMB` `SELECTION_TYPE` | the official Specifications table's row 2 gives the key as `"SELETION_TYPE"`, missing a C | both of the same article's own Input JSON examples send `"SELECTION_TYPE"`, and that is what the server accepts. Found while re-verifying the neighbouring `ELEM_LIST` claim against the raw article (`49514964272665`, `updated_at` 2026-07-30); our vendored copy had normalised the spelling, so nothing here had ever surfaced it | **MIDASIT article** (table only) | open upstream; already correct here and in the vendored manual |
 
 ## Detail
 
@@ -385,6 +386,23 @@ extractor reads for types. The two resolutions above are transcribed in
 `_MANUAL_TYPE_CORRECTIONS`, a closed list that also writes each one's
 `manualDefects` entry into the contract - so a manual re-sync that reinstates
 the table's claim has to argue with the record rather than silently win.
+
+### MD-51 - a Specifications table key with a letter missing
+
+`/ope/MEMB`'s official article states the selection-type key three times. Two
+of them - both Input JSON format examples - say `"SELECTION_TYPE"`. The
+Specifications table says **`"SELETION_TYPE"`**.
+
+It has never reached anything here, because the vendored manual transcribes the
+correct spelling and both SDKs send `SELECTION_TYPE`, which the server accepts.
+It surfaced only because the sibling manual repo asked for a re-check of a
+different claim about the same article and the raw body was read end to end.
+
+The reason it is worth recording rather than shrugging at: **a normalised
+vendored copy hides upstream typos by design**, and that is usually right - the
+repo follows the normalised form on purpose. The cost is that nobody
+downstream can report the original. Reading the raw article is the only way
+these surface, and it is not something any check here does routinely.
 
 ## Suggested follow-up, when the author chooses to act
 

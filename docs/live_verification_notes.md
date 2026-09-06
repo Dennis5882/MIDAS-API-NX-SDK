@@ -6779,6 +6779,36 @@ re-verification went wrong:
    rejected as "no valid element information" on Gen NX *and* Civil NX
    identically.
 
+   **Re-verified 2026-09-06** after the sibling manual repo asked for a
+   re-check, claiming the article's request example carries
+   `"AELEM": [1, 2]` and that `[640, 692]` was our own example value.
+   Re-fetched the same article (`updated_at` 2026-07-30T05:16:25Z, the same
+   revision as 8/27) and the claim does not hold: the Input JSON example
+   sends `"ELEM_LIST": [640, 692]`, the Output example returns
+   `"AELEM": [640, 692]`, and the Specifications table row 3 is
+   `"ELEM_LIST"` / Array / `Required(*)`. Whole-body counts: `ELEM_LIST` 2
+   (example + table), `AELEM` 1 (response only). **The table and the request
+   example agree**; only the response differs, which the article states
+   plainly. `AELEM` belongs to the neighbouring `/db/MEMB` (Design Member
+   Assignment, ch24), an `"Assign"`-wrapped id-keyed record - an easy pair
+   to confuse, and both are implemented here with their own key.
+
+   Two things this re-check did produce, and both are on us:
+
+   - **The official Specifications table row 2 spells the key
+     `"SELETION_TYPE"`**, missing a C, while both request examples and the
+     live server use `SELECTION_TYPE`. Our vendored copy normalised it, so
+     nobody had seen it. Recorded as MD-51.
+   - **The 2026-08-27 test's own record is thinner than it reads.** The
+     `AELEM` rejection's HTTP status and full response body were never
+     written down - only the message string - the two-keys-at-once case was
+     never tried, and no build was recorded for that session;
+     `docs/coverage.json`'s `/ope/MEMB` entry still describes only the
+     2026-07-30 `ASSIGN_TYPE=AUTO`/`SELECTION_TYPE=ALL` probe and is still
+     `level: read`. There is no case for it in `live_crud_check.py` either,
+     so it cannot be re-run mechanically. Answering the rest takes a new
+     live session. Reply drafted in `docs/ope_memb_elem_list_response.md`.
+
 No SDK or docs changes needed — all 4 already match the SDK's current
 code; this pass only strengthens the evidence trail before any of them
 go to Jira. Test fixtures (nodes/elements/STLD/LCOM-GEN records) created
