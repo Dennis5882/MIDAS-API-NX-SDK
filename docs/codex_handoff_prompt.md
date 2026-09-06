@@ -43,7 +43,7 @@ cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 75 tests
 ```
 
-Coverage as `ROADMAP.md` reports it: **399/399 implemented, 190 write / 209
+Coverage as `ROADMAP.md` reports it: **399/399 implemented, 191 write / 208
 read.** `schema/live-cases.json` is **version 5**: 200 cases over 180
 endpoints, 165 confirmed, 9 base-model steps, 62 named seeds, and 3 unsupported
 seeds named with their reason. npm live evidence: **60 `/db` endpoints**.
@@ -416,6 +416,13 @@ documentation and the contract is the source.
 - **Three harnesses call `/doc/NEW` and discard unsaved work**:
   `scripts/live_smoke.py`, `scripts/live_crud_check.py`, and
   `packages/typescript/scripts/live-crud.mjs`.
+- **`POST /doc/NEW` needs `{"Argument": {}}`.** With no request body it is
+  HTTP 500 (`Cannot read properties of null (reading 'Argument')`) and the
+  document is **not** reset. Assert the reset - GET `/db/NODE`, `/db/ELEM`
+  and whatever table the run touches, expecting `{"message": ""}` - rather
+  than assuming it. A probe run on 2026-09-06 had to be thrown away and
+  repeated because it ignored that 500 and every later probe ran on an
+  accumulated model.
 - **Never hand-write a live payload.** Use `schema/live-cases.json` or a
   contract; a fixture written from memory produces confident wrong findings.
 - **npm argument passing differs by shell.** Bash takes one `--`

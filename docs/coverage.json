@@ -6025,17 +6025,18 @@
       "status": "implemented",
       "module": "midas_nx.ope",
       "live_verified": {
-        "date": "2026-07-30",
+        "date": "2026-09-06",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "manual POST probe via midas_nx.ope.assign_members (ASSIGN_TYPE=AUTO, SELECTION_TYPE=ALL) Re-checked on Civil NX 2026-07-30 with the same shape (ASSIGN_TYPE=AUTO, SELECTION_TYPE=ALL) -- worked identically.",
+        "method": "manual POST probe via midas_nx.ope.assign_members (ASSIGN_TYPE=AUTO, SELECTION_TYPE=ALL) Re-checked on Civil NX 2026-07-30 with the same shape (ASSIGN_TYPE=AUTO, SELECTION_TYPE=ALL) -- worked identically. Raised to write level 2026-09-06 by a five-probe comparison on both products, each probe run on a throwaway model rebuilt and verified empty first: ELEM_LIST assigns a design member and it reads back on GET /db/MEMB; AELEM answers HTTP 200 with \"There is no valid element information.\" and creates nothing, identically to sending no element list at all; sending both keys adopts ELEM_LIST and ignores AELEM. Request bodies are the manual's own Request Example with element ids remapped. The nx_versions below are the 2026-07-30 probe's -- the API exposes no endpoint reporting a build, so the 2026-09-06 run could not record its own.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 07/29/2026"
         },
-        "level": "read"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {

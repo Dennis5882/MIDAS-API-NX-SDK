@@ -9193,3 +9193,68 @@ JavaScript reference identity. The harness now selects POST and/or PUT from the
 emitted case methods and compares expected arrays/objects structurally. Unit
 tests cover the nested `OUT_OPT` shape that found the latter defect. The rerun
 passed both endpoints and restored the empty document.
+
+## 2026-09-06 (later) - /ope/MEMB settled by measurement, on both products
+
+The sibling manual repo asked for a re-check of the `ELEM_LIST` vs `AELEM`
+question and was right that the 2026-08-27 record was thinner than it read.
+Rather than reconstruct the missing answers, the whole thing was measured
+again on Gen NX and Civil NX. Both sessions were confirmed empty first with
+**each product's own key** (`verify_connection()` reporting `program: "gen"`
+and `program: "civil"` respectively), and **every probe got its own
+`/doc/NEW` plus a verified-empty check before the throwaway model was
+rebuilt**, so no probe could see another's members. The model is
+`schema/live-cases.json`'s base model; elements 2 and 3 are its two collinear
+horizontal beams. Probe bodies are the article's own Request Example with the
+element ids remapped.
+
+Identical on both products:
+
+| # | sent | POST | body | `GET /db/MEMB` after |
+| --- | --- | ---: | --- | --- |
+| A | `ELEM_LIST: [2,3]`, `SELECTION` | 200 | `{"MEMB": {"1": {"AELEM": [2,3], "bREVERSE": false}}}` | member created |
+| B | `AELEM: [2,3]`, `SELECTION` | **200** | `{"error": {"message": "There is no valid element information."}}` | `{"message": ""}` - nothing created |
+| C | `ELEM_LIST: [2]` **and** `AELEM: [3]` | 200 | `{"MEMB": {"1": {"AELEM": [2], ...}}}` | member is `[2]` |
+| D | `AELEM: [2,3]`, `AUTO`/`ALL` | 200 | `{"1": {"AELEM": [1]}, "2": {"AELEM": [2,3]}}` | whole model auto-assigned |
+| E | **no element list**, `SELECTION` | 200 | `{"error": {"message": "There is no valid element information."}}` | `{"message": ""}` |
+
+**B and E are identical, down to the status code and message string.** Sending
+`AELEM` is indistinguishable from sending no element list at all, which is the
+signature of a key the request schema does not have - not of a bad value. That
+is the cleanest form this question could have been settled in, and it took a
+negative control (E) that the 2026-08-27 pass never ran.
+
+The other three answers:
+
+- **`SELECTION_TYPE` is not the confound it looked like.** `ALL` does ignore
+  the element list (D), but it ignores `ELEM_LIST` just as thoroughly. It is
+  not a condition under which `AELEM` starts working.
+- **Both keys at once: `ELEM_LIST` wins and `AELEM` is ignored outright** (C),
+  with no conflict and no warning.
+- **The rejection is HTTP 200**, not a 4xx. One more instance of the rule, now
+  with the status code written down.
+
+Two things fell out that nobody was looking for:
+
+- **`bREVERSE` disagrees between the POST echo and the stored record.** All
+  three successful probes, both products: POST answers `"bREVERSE": false` and
+  an immediate `GET /db/MEMB` returns `true` for that same member. **The POST
+  response body is not the stored record**, so do not assert against it.
+- **`POST /doc/NEW` with no request body is HTTP 500** - `{"error":
+  {"message": "Cannot read properties of null (reading 'Argument')"}}` from the
+  relay - and the document is **not** reset. It needs `{"Argument": {}}`, which
+  answers `200 "... command complete"` and does clear. The first run of this
+  probe ignored that status and every probe after it ran on an accumulated
+  model; the results were discarded and the run above replaced them. The
+  failure is loud, and it was still missed by not reading it - which is the
+  argument for asserting the reset rather than assuming it.
+
+`/ope/MEMB` moves to **write** level on both products on this run: it created
+design members and the members were read back. Both sessions were left on an
+empty document, confirmed on `/db/NODE`, `/db/ELEM` and `/db/MEMB`.
+
+Product build strings are not recorded: the API exposes no endpoint that
+reports them, so that one field of the sibling repo's request cannot be
+answered from a script.
+
+Full reply in `docs/ope_memb_elem_list_response.md`.
