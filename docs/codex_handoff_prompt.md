@@ -1,9 +1,9 @@
 # Codex task prompt — mechanical work only
 
-Updated 2026-09-06 at `219b4d7`. **2.7.9 is published** on both registries,
-and **a release is now warranted and unreleased**: `UNUMT` and `DIST` became
-optional on three generated npm payload types. As always the number is the
-author's call — do not bump it.
+Updated 2026-09-06 at `acbbec4`. **2.8.0 is published** on both registries —
+that release carried the `UNUMT`/`DIST` optionality. Nothing in either packaged
+surface has changed since, so **no release is warranted right now**; when one
+is, the number is the author's call.
 
 **The division, set by the author.** Judgment-heavy work — schema design,
 deciding what a contradictory manual means, deciding what stays unmerged — is
