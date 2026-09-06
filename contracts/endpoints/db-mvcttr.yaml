@@ -110,6 +110,10 @@ fields:
       Number/Line Element (when method 0)
     type: integer
     requirement: required
+    condition: when method 0
+    appliesWhen:
+      - path: INFL_GEN_POINT
+        equals: 0
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified
@@ -119,6 +123,10 @@ fields:
       Distance between Points (when method 1)
     type: number
     requirement: required
+    condition: when method 1
+    appliesWhen:
+      - path: INFL_GEN_POINT
+        equals: 1
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified

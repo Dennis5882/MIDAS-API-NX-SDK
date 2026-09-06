@@ -695,10 +695,10 @@ export namespace DbAnalysisControlTypes {
   export interface MovingLoadAnalysisControlIndiaPayload {
     /** Influence Generating Points (0/1) */
     iIGP?: number;
-    /** Number/Line Element (when iIGP=0) */
-    UNUMT: number;
-    /** Distance between Points (when iIGP=1) */
-    DIST: number;
+    /** Number/Line Element (when iIGP=0) Required when iIGP = 0. */
+    UNUMT?: number;
+    /** Distance between Points (when iIGP=1) Required when iIGP = 1. */
+    DIST?: number;
     /** Plate Options ("CENTER" / "NODAL") */
     PLATE: string;
     /** Plate – Stress */
@@ -748,10 +748,10 @@ export namespace DbAnalysisControlTypes {
   export interface MovingLoadAnalysisControlBSPayload {
     /** Influence Generating Points (0/1) */
     iIGP?: number;
-    /** Number/Line Element (when iIGP=0) */
-    UNUMT: number;
-    /** Distance between Points (when iIGP=1) */
-    DIST: number;
+    /** Number/Line Element (when iIGP=0) Required when iIGP = 0. */
+    UNUMT?: number;
+    /** Distance between Points (when iIGP=1) Required when iIGP = 1. */
+    DIST?: number;
     /** Plate Options ("CENTER" / "NODAL") */
     PLATE: string;
     /** Plate – Stress */
@@ -795,10 +795,10 @@ export namespace DbAnalysisControlTypes {
     LOAD_POINT_SEL: number;
     /** Influence Generation Method (Number/Line: 0 / Distance: 1) */
     INFL_GEN_POINT?: number;
-    /** Number/Line Element (when method 0) */
-    NUM_UNIT_LOAD: number;
-    /** Distance between Points (when method 1) */
-    DISTANCE: number;
+    /** Number/Line Element (when method 0) Required when INFL_GEN_POINT = 0. */
+    NUM_UNIT_LOAD?: number;
+    /** Distance between Points (when method 1) Required when INFL_GEN_POINT = 1. */
+    DISTANCE?: number;
     /** Analysis Results Type (Normal: 1 / Normal+Concurrent Force/Stress: 2) */
     ANALYSIS_RESULT: number;
     /** Combined Stress */

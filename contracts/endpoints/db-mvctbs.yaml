@@ -101,6 +101,10 @@ fields:
       Number/Line Element (when iIGP=0)
     type: integer
     requirement: required
+    condition: when iIGP=0
+    appliesWhen:
+      - path: iIGP
+        equals: 0
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified
@@ -110,6 +114,10 @@ fields:
       Distance between Points (when iIGP=1)
     type: number
     requirement: required
+    condition: when iIGP=1
+    appliesWhen:
+      - path: iIGP
+        equals: 1
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified
