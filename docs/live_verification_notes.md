@@ -9270,3 +9270,26 @@ reports them, so that one field of the sibling repo's request cannot be
 answered from a script.
 
 Full reply in `docs/ope_memb_elem_list_response.md`.
+
+**Follow-up the same day: the documentation half was a locale difference, and
+this repository got it wrong.** The sibling repo quoted the article's request
+example as `"AELEM": [1, 2]`; the reply above re-fetched the article, found
+`"ELEM_LIST": [640, 692]`, and reported their citation as mistaken. Both
+readings were real. Article `49514964272665`, `updated_at`
+`2026-07-30T05:16:25Z` in both cases, and the **`ko` and `en-us` locales carry
+different Input JSON examples** - `ko` sends `AELEM`, `en-us` sends
+`ELEM_LIST`, while both Specifications tables say `ELEM_LIST`. Recorded as
+MD-52.
+
+The live run is what settles it, and it still points the same way: `ELEM_LIST`
+assigns the member, `AELEM` is not read. The `ko` example is the wrong one, and
+the sibling repo has already reverted its own chapter back to `ELEM_LIST`
+(`0270fad`).
+
+The lesson is not about this endpoint. **A vendored citation records a URL but
+not a locale**, so two people can transcribe the same article id faithfully and
+end up with different field names - and every manual-versus-article comparison
+here that fetched a single locale has the same blind spot. "I re-fetched it and
+you are wrong" was reported in good faith with the raw body in hand; the step
+missing from it was asking why a careful person would be reading something
+else.

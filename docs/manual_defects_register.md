@@ -85,6 +85,7 @@ build itself** and is no longer resting on an unrecorded one.
 | MD-49 | 2026-09-04 | `/post/TABLE` surface-spring reaction `TABLE_TYPE` | the JSON Schema and Specifications table give `REACTIONSURFACESPRING`; the Request Example alone gives `REACTIONLSURFACESPRING` | on both Gen NX and Civil NX, build 09/02/2026, `REACTIONSURFACESPRING` is refused with `there was an error creating utbl`, while `REACTIONLSURFACESPRING` is recognised and reaches the expected no-analysis-result response | **MIDASIT article** (schema and table), which this SDK followed into both packages | open upstream; corrected here |
 | MD-50 | 2026-09-05 | `/db/MVCTch` `FREQ`, `BRIDGE1.BTYPE`, `BRIDGE2.BTYPE`, 9 fields | section 10 documents all of them - `FREQ`'s 25 keys across a two-Key-column table, and each `BTYPE` in the bold sentence that introduces its field table, enum included | this repo read neither. Every key in the `FREQ` table's *second* Key column was dropped whole (`SBEM_L`/`E`/`IC`/`MC`, `iARCH_TYPE`, `CABL_A`/`CABL_L`) while the first column extracted correctly, packed cells included - so it is a table shape the parser reads half of, not MD-48's packed cell. `BTYPE` is the selector deciding which of its table's fields apply, so neither object was usable without it | **this SDK** extractor | fixed here; parser deliberately unfixed (one such table in the whole manual) and guarded by a CI count |
 | MD-51 | 2026-09-06 | `/ope/MEMB` `SELECTION_TYPE` | the official Specifications table's row 2 gives the key as `"SELETION_TYPE"`, missing a C | both of the same article's own Input JSON examples send `"SELECTION_TYPE"`, and that is what the server accepts. Found while re-verifying the neighbouring `ELEM_LIST` claim against the raw article (`49514964272665`, `updated_at` 2026-07-30); our vendored copy had normalised the spelling, so nothing here had ever surfaced it | **MIDASIT article** (table only) | open upstream; already correct here and in the vendored manual |
+| MD-52 | 2026-09-06 | `/ope/MEMB` request example, `ko` vs `en-us` | the **same article id** `49514964272665`, with the **same `updated_at`**, serves a different Input JSON example per locale: `ko` sends `"AELEM": [1, 2]`, `en-us` sends `"ELEM_LIST": [640, 692]`. Both locales' Specifications tables say `ELEM_LIST` | live on both products, `ELEM_LIST` assigns the member and `AELEM` is not read at all - byte-identical to sending no element list - so the `ko` example is the wrong one. `AELEM` is the response key, and separately the request key of the neighbouring `/db/MEMB` | **MIDASIT article** (`ko` locale) | open upstream; the vendored manual carries the correct `ELEM_LIST` |
 
 ## Detail
 
@@ -403,6 +404,42 @@ vendored copy hides upstream typos by design**, and that is usually right - the
 repo follows the normalised form on purpose. The cost is that nobody
 downstream can report the original. Reading the raw article is the only way
 these surface, and it is not something any check here does routinely.
+
+### MD-52 - one article id, two locales, two different request examples
+
+This one cost a round trip with the sibling manual repo and neither side was
+misreading anything.
+
+They quoted `/ope/MEMB`'s official request example as `"AELEM": [1, 2]`. This
+repository had recorded it as `"ELEM_LIST": [640, 692]` and, on re-fetching the
+article, confirmed its own reading and reported theirs as a mis-citation. Both
+fetches were real. The article is `49514964272665` in both cases, `updated_at`
+is `2026-07-30T05:16:25Z` in both cases, and the bodies differ:
+
+| | `en-us` | `ko` |
+| --- | --- | --- |
+| Input JSON example | `"ELEM_LIST": [640, 692]` | `"AELEM": [1, 2]` |
+| Output JSON example | `"AELEM": [640, 692]` | `"AELEM": [1, 2]` |
+| Specifications row 3 | `"ELEM_LIST"` | `"ELEM_LIST"` |
+| body counts | ELEM_LIST 2, AELEM 1 | ELEM_LIST 1, AELEM 5 |
+
+So `en-us` is internally consistent and `ko` contradicts its own table. The
+live run settles which is right: `ELEM_LIST` assigns the member on both
+products, and `AELEM` produces the same HTTP 200 error as sending no element
+list at all. **The `ko` example is wrong.**
+
+Two things follow, and the second is bigger than this endpoint.
+
+**A vendored citation must name its locale.** `docs/manual/*.md` records a
+source URL but not which locale it was read in, so two people can transcribe
+the same id faithfully and end up with different field names. Every
+manual-versus-article comparison this repository has ever done that fetched one
+locale carries the same blind spot.
+
+**"I re-fetched the article and you are wrong" is not sound on its own.** That
+is what was reported here, in good faith, with the raw body in hand. The
+missing step was asking why a careful person would read something different -
+which, once asked, has exactly one cheap answer to check.
 
 ## Suggested follow-up, when the author chooses to act
 
