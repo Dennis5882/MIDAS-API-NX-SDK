@@ -6,6 +6,48 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.8.0 - 2026-09-06
+
+> Three payload types stop requiring two fields that cannot both be supplied.
+> **Nothing is removed, no exported name moves, and no field changes type** -
+> this widens what type-checks rather than narrowing it.
+
+### Fixed - two mutually exclusive fields were both marked required
+
+- `MovingLoadAnalysisControlIndiaPayload` and
+  `MovingLoadAnalysisControlBSPayload` make `UNUMT` and `DIST` optional;
+  `MovingLoadAnalysisControlTransversePayload` does the same for
+  `NUM_UNIT_LOAD` and `DISTANCE`.
+
+- These are branches, not siblings. One is the Number/Line element, the other
+  the distance between points, and the influence-generation selector
+  (`iIGP`, or `INFL_GEN_POINT`) decides which of the two applies. **A record
+  carrying both is not a thing the endpoint accepts**, so requiring both
+  described a payload no caller could construct.
+
+- The manual states the branch in the description text of each row - "(when
+  iIGP=0)", "(when method 1)" - so it was documented all along, just not in a
+  form the generator could read. The three contracts now carry it as
+  `appliesWhen`, which is where the generated optionality comes from. Existing
+  code that sets both fields still compiles; nothing that used to type-check
+  stops.
+
+### Changed - the live harness runs against the resource it was given
+
+Not shipped in the package; these are `scripts/` in this repository.
+
+- `containsExpectedValue` compared with `Object.is`, which is reference
+  identity for an object or array, so a fixture whose expected value was a
+  nested object could never match a live response - the assertion passed
+  nothing at all. It now compares structurally, with a unit test on the nested
+  shape that exposed it.
+
+- `runCase` called POST unconditionally, so a resource declaring GET, PUT and
+  DELETE and no POST could not be exercised from this package while Python ran
+  it fine. It now selects POST and/or PUT from the intersection of the emitted
+  case's methods and the resource's own, and refuses a case offering neither
+  rather than silently doing nothing.
+
 ## 2.7.9 - 2026-09-06
 
 > Additive only. Four lane payload types and one moving-load control type
