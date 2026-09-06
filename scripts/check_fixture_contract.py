@@ -3,27 +3,17 @@
 The repository already compares contracts against both SDKs, against `/info`,
 and against the manual.  Nothing compared them against the **fixtures**, which
 is the fourth thing that claims to know an endpoint's shape -- and the one that
-decides what a live run actually sends.  It finds 81 disagreements, and they
-divide into two opposite kinds.
+decides what a live run actually sends. Its current baseline has 41 fixture
+leads across 5 endpoints and 2 contract gaps on one confirmed endpoint.
 
-**54 across 8 endpoints are on cases nobody has watched pass**, where the
-payload is the suspect: `/db/ACTL` sends `CLATS` on Gen, a field the contract
-tags Civil-only; `/db/FBLA` sends `LOAD_ANGLE`, a name no contract records
-anywhere; `/db/MVCT`, `/db/NLNK`, `/db/NLNK-M1` and `/db/TDMF` omit fields
-their contracts mark **required**.  Every one had failed live for months under
-a recorded reason that never mentioned the payload's own shape.
+The fixture-side leads are on cases nobody has watched pass, where the payload
+is the suspect: `/db/ACTL` sends `CLATS` on Gen, while `/db/GRDP`, `/db/MVCT`,
+`/db/NLNK-M1`, and `/db/TDMF` omit fields their contracts mark **required**.
 
-**27 across 8 endpoints are on `confirmed` cases**, and those read the other way
-round.  The product accepted that exact payload, so the contract is what is
-behind: a name it records nowhere is a field it is missing, and a `required`
-field the accepted call omitted is a requirement the product does not enforce.
-
-That second count started at 64 and is 27 because a `safeToOmit: true` field is
-**already** the record of an accepted call that left it out -- the extractor
-derives that from these same confirmed payloads.  Counting those again would
-report a read observation as an unread one, which is precisely the error this
-tool exists to stop making about fixtures.  21 of the 27 are the other kind: a
-wire name an accepted call sent that no contract records.
+The confirmed side reads the other way round. The product accepted that exact
+payload, so the contract is what is behind: today that is `/db/SDIS` omitting
+two fields still declared required. A `safeToOmit: true` field is already the
+record of an accepted call that left it out, so it is not counted again.
 
 Three things are checked per case, per product it declares:
 
@@ -33,9 +23,11 @@ Three things are checked per case, per product it declares:
    entry lists it, which is the same per-name waiver `check_field_parity` uses.
    A declared gap is a gap; a name in neither place is a defect.
 
-Only top-level keys are compared.  Most contracts do not itemise nested
-members, so descending would report the contract's own known gaps as fixture
-defects, which is the opposite of useful.
+Only top-level keys are compared. Variant keys count as recorded, and
+`appliesWhen` decides whether a root field is required for the selected
+payload branch. Most contracts do not itemise nested members, so descending
+would report the contract's own known gaps as fixture defects, which is the
+opposite of useful.
 
     python scripts/check_fixture_contract.py            # report
     python scripts/check_fixture_contract.py --check    # exit 1 on a new one
@@ -79,8 +71,6 @@ CONTRACTS = ROOT / "contracts" / "endpoints"
 #: observation. A fixture is never a source for a contract, which is why these
 #: are held here rather than merged.
 KNOWN: Dict[str, List[str]] = {'/db/ACTL': ['gen: sends CLATS, tagged civil-only'],
- '/db/FBLA': ['civil: sends LOAD_ANGLE, recorded nowhere',
-              'gen: sends LOAD_ANGLE, recorded nowhere'],
  '/db/GRDP': ['civil: omits required DAMPING_MODE_1_DEFAULT',
               'civil: omits required DAMPING_MODE_2_DEFAULT',
               'civil: omits required DIRECT_CALC_MODE_DEFAULT',
@@ -110,17 +100,6 @@ KNOWN: Dict[str, List[str]] = {'/db/ACTL': ['gen: sends CLATS, tagged civil-only
               'gen: omits required STRAIN_VALUE_PRIORITY',
               'gen: omits required bExistElement'],
  '/db/MVCT': ['civil: omits required DIST', 'gen: omits required DIST'],
- '/db/NLCT': ['civil: sends MAX_ITERATIONS, recorded nowhere',
-              'civil: sends NEWTON_ITEMS, recorded nowhere',
-              'civil: sends NUMBER_STEPS, recorded nowhere'],
- '/db/NLNK': ['civil: omits required ANGLE_VALUES',
-              'civil: omits required INPUT_METHOD',
-              'civil: omits required POINT_VALUES',
-              'civil: omits required VECTOR_VALUES',
-              'gen: omits required ANGLE_VALUES',
-              'gen: omits required INPUT_METHOD',
-              'gen: omits required POINT_VALUES',
-              'gen: omits required VECTOR_VALUES'],
  '/db/NLNK-M1': ['civil: omits required ANGLE_VALUES',
                  'civil: omits required BETA_ANGLE',
                  'civil: omits required INPUT_METHOD',
@@ -132,32 +111,9 @@ KNOWN: Dict[str, List[str]] = {'/db/ACTL': ['gen: sends CLATS, tagged civil-only
               'gen: omits required CTYPE',
               'gen: omits required RELAXATION']}
 
-KNOWN_CONTRACT_GAPS: Dict[str, List[str]] = {'/db/EIGV': ['civil: sends FRMAX, recorded nowhere',
-              'civil: sends FRMIN, recorded nowhere',
-              'civil: sends bMINMAX, recorded nowhere',
-              'civil: sends bSTRUM, recorded nowhere',
-              'civil: sends iFREQ, recorded nowhere',
-              'gen: sends FRMAX, recorded nowhere',
-              'gen: sends FRMIN, recorded nowhere',
-              'gen: sends bMINMAX, recorded nowhere',
-              'gen: sends bSTRUM, recorded nowhere',
-              'gen: sends iFREQ, recorded nowhere'],
- '/db/EIGV-M1': ['civil: sends FREQ_NO, recorded nowhere',
-                 'civil: sends FREQ_RANGE, recorded nowhere'],
- '/db/HSFC': ['civil: omits required ITEM',
-              'civil: omits required SCALE_FACTOR',
-              'gen: omits required ITEM',
-              'gen: omits required SCALE_FACTOR'],
- '/db/NBOF': ['civil: sends KEY_NODE_ITEMS, recorded nowhere',
-              'gen: sends KEY_NODE_ITEMS, recorded nowhere'],
- '/db/NLCT': ['gen: sends MAX_ITERATIONS, recorded nowhere',
-              'gen: sends NEWTON_ITEMS, recorded nowhere',
-              'gen: sends NUMBER_STEPS, recorded nowhere'],
- '/db/PNLD': ['civil: sends AREALOAD, recorded nowhere',
-              'gen: sends AREALOAD, recorded nowhere'],
- '/db/SDIS': ['gen: omits required LRB', 'gen: omits required NRB'],
- '/db/THIS': ['civil: sends DALL, recorded nowhere',
-              'gen: sends DALL, recorded nowhere']}
+KNOWN_CONTRACT_GAPS: Dict[str, List[str]] = {
+    '/db/SDIS': ['gen: omits required LRB', 'gen: omits required NRB'],
+}
 
 BOTH = ("civil", "gen")
 
@@ -184,11 +140,32 @@ def _waived_names(document: dict) -> Set[str]:
 
 
 def _findings(case: dict, document: dict) -> List[str]:
-    fields = document.get("fields") or []
-    recorded = {field["key"] for field in fields}
+    def matches(conditions: list, payload: dict) -> bool:
+        """Whether a structured manual condition is active for a payload."""
+        for condition in conditions:
+            value = payload
+            for part in condition["path"].split("."):
+                if not isinstance(value, dict) or part not in value:
+                    return False
+                value = value[part]
+            if "equals" in condition and value != condition["equals"]:
+                return False
+            if "in" in condition and value not in condition["in"]:
+                return False
+        return True
+
+    base_fields = document.get("fields") or []
+    variants = document.get("variants") or []
+    variant_fields = [field for variant in variants for field in variant.get("fields") or []]
+    recorded = {field["key"] for field in base_fields + variant_fields}
     waived = _waived_names(document)
     keys = set(case["createPayload"]) | set(case["updatePayload"])
     out: List[str] = []
+    # Variant fields may be top-level branches (MVLDch) or rows belonging to
+    # an already-declared nested object (MVLDbs). They count as recorded wire
+    # names, but this intentionally top-level checker must not guess which
+    # variant fields are required at the record root.
+    fields = base_fields
 
     for product in sorted(case["products"]):
         for field in fields:
@@ -198,6 +175,8 @@ def _findings(case: dict, document: dict) -> List[str]:
                 out.append(f"{product}: sends {field['key']}, tagged {other}-only")
             if (field.get("requirement") == "required"
                     and product in products and field["key"] not in keys
+                    and (matches(field.get("appliesWhen") or [], case["createPayload"])
+                         or matches(field.get("appliesWhen") or [], case["updatePayload"]))
                     and field.get("safeToOmit") is not True):
                 # safeToOmit: true already records that an accepted call left
                 # this field out -- extract_contracts.py derives it from these
