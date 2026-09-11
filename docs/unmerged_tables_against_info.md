@@ -44,26 +44,26 @@ not the same finding as a source that is absent.
 | [`/db/NLCT-M1`](#dbnlctm1) | 2 | 23 | 23 | 100% |
 | [`/db/MVLD`](#dbmvld) | 4 | 21 | 21 | 100% |
 | [`/db/SDIS`](#dbsdis) | 3 | 21 | 21 | 100% |
-| [`/db/TDME`](#dbtdme) | 4 | 14 | 14 | 100% |
 | [`/db/IMPF`](#dbimpf) | 2 | 12 | 12 | 100% |
 | [`/db/NSPR`](#dbnspr) | 4 | 12 | 12 | 100% |
 | [`/db/THIK`](#dbthik) | 1 | 11 | 11 | 100% |
 | [`/db/CSCS`](#dbcscs) | 1 | 9 | 9 | 100% |
+| [`/db/TDME`](#dbtdme) | 2 | 7 | 7 | 100% |
 | [`/ope/LCOM-SRC`](#opelcomsrc) | 1 | 5 | -- | n/a |
-| **total** | **87** | **591** | **522** | **88%** |
+| **total** | **85** | **584** | **515** | **88%** |
 
-Of the **523** names on endpoints `/info` answers for, **522** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
+Of the **516** names on endpoints `/info` answers for, **515** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
 
 ### What each table has, as a count
 
 | what the measurement found | tables |
 | --- | ---: |
-| whole table, one object | 47 |
+| whole table, one object | 45 |
 | whole table, several objects | 3 |
 | whole table, scattered | 25 |
 | partly declared | 1 |
 | out of reach | 11 |
-| **all** | **87** |
+| **all** | **85** |
 
 *one object* means `/info` has a single object holding every name in that table; *scattered* means it declares them all but under no common parent, so the table's shape is not something the baseline confirms. Neither is a recommendation -- a table with two sources still needs its manual section read before anything moves.
 
@@ -312,22 +312,6 @@ Baseline answers on `gen`. 21 of 21 names declared across 3 tables.
 - **NRB 객체** declared: `AR` at `NRB.AR`, `TR` at `NRB.TR`, `KH` at `NRB.KH`, `DX` at `NRB.DX`
 - **NRB 객체** declared: `AS` at `SB.AS`, `K0` at `SB.K0`, `QD` at `SB.QD`, `Pi_VALUE` at `SB.Pi_VALUE`, `MU0` at `SB.MU0`
 
-## `/db/TDME`
-
-Baseline answers on `civil`, `gen`. 14 of 14 names declared across 4 tables.
-
-| table | names | declared | not declared | nesting |
-| --- | ---: | ---: | ---: | --- |
-| `Russian` 전용 추가 필드 | 5 | 5 | 0 | one object: `(root)` |
-| `GILBERT AND RANZI`, **`KDS-2016`** 전용 추가 필드 | 2 | 2 | 0 | one object: `(root)` |
-| `Japan (Hydration)` 전용 추가 필드 | 6 | 6 | 0 | one object: `(root)` |
-| `Japan (Elastic)` 전용 추가 필드 | 1 | 1 | 0 | one object: `(root)` |
-
-- **`Russian` 전용 추가 필드** declared: `iCTYPE` at `iCTYPE`, `CMETH` at `CMETH`, `CTYPE` at `CTYPE`, `MAXS` at `MAXS`, `PZ` at `PZ`
-- **`GILBERT AND RANZI`, **`KDS-2016`** 전용 추가 필드** declared: `iCTYPE` at `iCTYPE`, `DENSITY` at `DENSITY`
-- **`Japan (Hydration)` 전용 추가 필드** declared: `TENS_STRN_FACTOR` at `TENS_STRN_FACTOR`, `bUSE` at `bUSE`, `A` at `A`, `B` at `B`, `D` at `D`, `iCTYPE` at `iCTYPE`
-- **`Japan (Elastic)` 전용 추가 필드** declared: `iECTYPE` at `iECTYPE`
-
 ## `/db/IMPF`
 
 Baseline answers on `civil`, `gen`. 12 of 12 names declared across 2 tables.
@@ -375,6 +359,18 @@ Baseline answers on `civil`, `gen`. 9 of 9 names declared across 1 tables.
 | 2-2. 파라미터 | 9 | 9 | 0 | one object: `vPARTINFO` |
 
 - **2-2. 파라미터** declared: `CY` at `vPARTINFO.CY`, `CZ` at `vPARTINFO.CZ`, `CYI` at `vPARTINFO.CYI`, `CZI` at `vPARTINFO.CZI`, `CYJ` at `vPARTINFO.CYJ`, `CZJ` at `vPARTINFO.CZJ`, `STIFF_USER` at `vPARTINFO.STIFF_USER`, `STIFF_USER_TAPERED_I` at `vPARTINFO.STIFF_USER_TAPERED_I`, `STIFF_USER_TAPERED_J` at `vPARTINFO.STIFF_USER_TAPERED_J`
+
+## `/db/TDME`
+
+Baseline answers on `civil`, `gen`. 7 of 7 names declared across 2 tables.
+
+| table | names | declared | not declared | nesting |
+| --- | ---: | ---: | ---: | --- |
+| `Japan (Hydration)` 전용 추가 필드 | 6 | 6 | 0 | one object: `(root)` |
+| `Japan (Elastic)` 전용 추가 필드 | 1 | 1 | 0 | one object: `(root)` |
+
+- **`Japan (Hydration)` 전용 추가 필드** declared: `TENS_STRN_FACTOR` at `TENS_STRN_FACTOR`, `bUSE` at `bUSE`, `A` at `A`, `B` at `B`, `D` at `D`, `iCTYPE` at `iCTYPE`
+- **`Japan (Elastic)` 전용 추가 필드** declared: `iECTYPE` at `iECTYPE`
 
 ## `/ope/LCOM-SRC`
 

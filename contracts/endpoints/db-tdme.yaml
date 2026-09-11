@@ -535,30 +535,6 @@ extraction:
   # or as a separate contract - do not assume the first table is the whole
   # schema.
   unmergedTables:
-    - heading: "`Russian` 전용 추가 필드"
-      resolution: >-
-        Merged as an explicit variant. The heading names CODENAME values rather
-        than writing CODENAME = "...", so the extractor cannot gate it and
-        deliberately no longer tries - reading a gate out of the colon in
-        INDIA(IRC:112-2011) is what it used to do. The field comes from this
-        section's own row 3 (Code Name, "CODENAME", marked TYPE=CODE) and the
-        literals from its own footnoted code table, so nothing here is inferred
-        from table order.
-      fields: 5
-      line: 630
-      fieldNames: ["iCTYPE", "CMETH", "CTYPE", "MAXS", "PZ"]
-    - heading: "`GILBERT AND RANZI`, **`KDS-2016`** 전용 추가 필드"
-      resolution: >-
-        Merged as an explicit variant. The heading names CODENAME values rather
-        than writing CODENAME = "...", so the extractor cannot gate it and
-        deliberately no longer tries - reading a gate out of the colon in
-        INDIA(IRC:112-2011) is what it used to do. The field comes from this
-        section's own row 3 (Code Name, "CODENAME", marked TYPE=CODE) and the
-        literals from its own footnoted code table, so nothing here is inferred
-        from table order.
-      fields: 2
-      line: 643
-      fieldNames: ["iCTYPE", "DENSITY"]
     - heading: "`Japan (Hydration)` 전용 추가 필드"
       resolution: >-
         Left out on purpose. This branch's CODENAME belongs to iGen, a different
