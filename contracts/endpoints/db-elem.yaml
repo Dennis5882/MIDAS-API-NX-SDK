@@ -126,6 +126,15 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+  - key: ANGLE
+    description: >-
+      Beta Angle
+    type: number
+    requirement: optional
+    documentedDefault: 0
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
   - key: C_RAT
     description: >-
       Cable length ratio.
@@ -209,11 +218,6 @@ extraction:
   # or as a separate contract - do not assume the first table is the whole
   # schema.
   unmergedTables:
-    - heading: Beam, Truss, Plane Strain, Axisymmetric
-      resolution: "the discriminator is the pair (TYPE, STYPE): TYPE's wire values are in the chapter's footnoted element type code table rather than in these headings, and STYPE's values repeat across types - 1 is Truss under TENSTR and COMPTR but Membrane under WALL - so no heading here names a unique selector"
-      fields: 1
-      line: 202
-      fieldNames: ["ANGLE"]
     - heading: "Tension only — Truss (STYPE: 1)"
       resolution: "the discriminator is the pair (TYPE, STYPE): TYPE's wire values are in the chapter's footnoted element type code table rather than in these headings, and STYPE's values repeat across types - 1 is Truss under TENSTR and COMPTR but Membrane under WALL - so no heading here names a unique selector"
       fields: 5
@@ -254,3 +258,11 @@ extraction:
       fields: 2
       line: 271
       fieldNames: ["ANGLE", "STYPE"]
+  structuralTables:
+    - heading: Beam, Truss, Plane Strain, Axisymmetric
+      line: 202
+      paths: [<root>]
+      note: >-
+        The manual repeats ANGLE across later subtype tables and GET
+        /info/db/ELEM declares it at record root. This records that placement
+        without inventing the incomplete TYPE/STYPE discriminator pair.

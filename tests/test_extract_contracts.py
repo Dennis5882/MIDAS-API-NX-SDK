@@ -958,6 +958,131 @@ def test_structural_table_merge_uses_the_manual_named_object_path(tmp_path: Path
     assert draft["extraction"]["structuralTables"][0]["paths"] == ["TCELEM"]
 
 
+@pytest.mark.parametrize(
+    ("endpoint", "base_rows", "extra_heading", "extra_rows", "table_index", "expected_path"),
+    [
+        (
+            "/db/ELEM",
+            '| 1 | Element type | `TYPE` | String | `"BEAM"` | Optional |',
+            "Beam, Truss, Plane Strain, Axisymmetric",
+            '| 2 | Beta angle | `ANGLE` | Number | 0 | Optional |',
+            1,
+            ("ANGLE",),
+        ),
+        (
+            "/db/STCT",
+            '| 1 | Analysis type | `iINC_NLA` | Integer | 0 | Optional |',
+            "Parameters — Linear & Independent Stage",
+            "\n".join(
+                [
+                    '| 2 | Include P-Delta | `bINC_PDL` | Boolean | false | Optional |',
+                    '| 3 | Iterations | `iITER` | Integer | - | Optional |',
+                    '| 4 | Tolerance | `TOL` | Number | - | Optional |',
+                ]
+            ),
+            4,
+            ("TOL",),
+        ),
+    ],
+    ids=["elem-root-subtype-row", "stct-root-mode-table"],
+)
+def test_reviewed_single_object_tables_merge_at_info_path(
+    tmp_path: Path,
+    endpoint: str,
+    base_rows: str,
+    extra_heading: str,
+    extra_rows: str,
+    table_index: int,
+    expected_path: tuple[str, ...],
+):
+    """A reviewed one-object table is placed exactly where /info reports it."""
+    path = tmp_path / "99_DB_InfoPlaced.md"
+    filler_tables = "\n".join(
+        f"""### Unrelated table {index}
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Unrelated | `UNRELATED_{index}` | Number | - | Optional |
+"""
+        for index in range(1, table_index)
+    )
+    path.write_text(
+        f"""## 1. `{endpoint}` — info-placed table
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+{base_rows}
+
+{filler_tables}
+### {extra_heading}
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+{extra_rows}
+""",
+        encoding="utf-8",
+    )
+
+    draft = yaml.safe_load(ex.render_draft(ex.parse_chapter(path)[0]))
+    field: dict = {entry["key"]: entry for entry in draft["fields"]}[expected_path[0]]
+    for segment in expected_path[1:]:
+        field = {entry["key"]: entry for entry in field["properties"]}[segment]
+    assert field["key"] == expected_path[-1]
+    unmerged = draft["extraction"].get("unmergedTables", [])
+    assert extra_heading not in {entry["heading"] for entry in unmerged}
+
+
+def test_reviewed_nested_info_container_keeps_unknown_requiredness(tmp_path: Path):
+    """A heading-named container gets /info nesting but no invented optionality."""
+    path = tmp_path / "09_DB_Dynamic_Loads.md"
+    filler_tables = "\n".join(
+        f"""### Unrelated table {index}
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Unrelated | `UNRELATED_{index}` | Number | - | Optional |
+"""
+        for index in range(1, 8)
+    )
+    path.write_text(
+        f"""## 1. `/db/THIS-M1` — time history
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Nonlinear control | `NONL_CTRL_PARAM` | Object | - | Optional |
+| (2) | Iteration control | `ITER_CTRL` | Object | - | Required |
+
+{filler_tables}
+### Boundary nonlinear analysis (`BOUNDARY_NL_ANAL`)
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Method | `METHOD` | Integer | 0 | Optional |
+| 2 | Tolerance | `TOL` | Number | 1e-08 | Optional |
+""",
+        encoding="utf-8",
+    )
+
+    draft = yaml.safe_load(ex.render_draft(ex.parse_chapter(path)[0]))
+    nonl = {entry["key"]: entry for entry in draft["fields"]}["NONL_CTRL_PARAM"]
+    iteration = {entry["key"]: entry for entry in nonl["properties"]}["ITER_CTRL"]
+    container = {entry["key"]: entry for entry in iteration["properties"]}["BOUNDARY_NL_ANAL"]
+    assert container["requirement"] == "unstated"
+    assert container["documentedOptional"] is None
+    assert [entry["key"] for entry in container["properties"]] == ["METHOD", "TOL"]
+    unmerged = draft["extraction"].get("unmergedTables", [])
+    assert "Boundary nonlinear analysis (`BOUNDARY_NL_ANAL`)" not in {
+        entry["heading"] for entry in unmerged
+    }
+
+
+def test_this_m1_reviewed_table_mapping_keeps_the_measured_full_path():
+    merge = ex._STRUCTURAL_TABLE_SPLITS["/db/THIS-M1"][0]
+    assert merge.table == 8
+    assert merge.targets == (("NONL_CTRL_PARAM", "ITER_CTRL", "BOUNDARY_NL_ANAL"),)
+    assert ex._STRUCTURAL_CONTAINER_PATHS["/db/THIS-M1"] == merge.targets
+
+
 def test_product_partition_stays_on_fields_not_the_endpoint(tmp_path: Path):
     path = tmp_path / "99_DB_ProductSplit.md"
     path.write_text(

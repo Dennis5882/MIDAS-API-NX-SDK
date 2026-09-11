@@ -123,6 +123,33 @@ fields:
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
+  - key: bINC_PDL
+    description: >-
+      Include P-Delta Effect
+    type: boolean
+    requirement: optional
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: iITER
+    description: >-
+      Number of Iterations
+    type: integer
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: TOL
+    description: >-
+      Convergence Tolerance
+    type: number
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
 
 sdkRules:
   - id: db-stct-delete-per-id
@@ -177,11 +204,6 @@ extraction:
       fieldNames: ["bITD", "ITD", "GROUP", "bLFFC", "LFFGR", "bCAMBER", "bCALC_CFF",
                    "bCALC_CSP", "bSELFCONS", "bSAVE_OCS", "bSD", "iSDOPT", "SDCONST",
                    "iBSC"]
-    - heading: "Parameters — Linear & Independent Stage"
-      resolution: "The supplementary tables describe analysis options and partial conditions, but no complete discriminator condition applies to each field set; left unmerged."
-      fields: 3
-      line: 2101
-      fieldNames: ["bINC_PDL", "iITER", "TOL"]
     - heading: "Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2)"
       resolution: "The supplementary tables describe analysis options and partial conditions, but no complete discriminator condition applies to each field set; left unmerged."
       fields: 9
@@ -195,3 +217,11 @@ extraction:
       fieldNames: ["bINC_TDE", "bCNS", "TYPE", "iITER_CR", "TOL_CR", "bOUCC", "bITS",
                    "iITS", "bATS", "iT10", "iT100", "iT1K", "iT5K", "iT10K", "bTTLE_CS",
                    "bRCE", "bVAR", "bTTLE_ES", "iTTLE_ES", "bAPPLY_ELA"]
+  structuralTables:
+    - heading: "Parameters — Linear & Independent Stage"
+      line: 2101
+      paths: [<root>]
+      note: >-
+        The heading does not state a complete wire discriminator, so no branch
+        is invented. The manual's three rows and GET /info/db/STCT agree that
+        the members live at record root.

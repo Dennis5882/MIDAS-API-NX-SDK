@@ -3580,26 +3580,160 @@ export namespace DbDynamicLoadsTypes {
     LCTYPE?: string;
     CASE?: string;
   }
-  export interface TimeHistoryLoadCaseHyperSPayload {
-    NAME?: string;
+  /** Generated from contracts/endpoints/. */
+  export type TimeHistoryLoadCaseHyperSPayload = {
+    /** 하중 케이스명 */
+    NAME: string;
+    /** 설명 */
     DESC?: string;
-    ANAL_CASE?: HyperSAnalysisCase;
-    ENDTIME?: number;
-    TIME_INC?: number;
-    OUTPUT_STEP?: number;
-    INC_STEP?: number;
+    /** 해석 케이스 옵션 */
+    ANAL_CASE: {
+      /** 해석 타입 (0=Linear, 1=Nonlinear) */
+      ANAL_TYPE: number;
+      /** 해석 방법 (0=Modal, 1=Direct Integration, 2=Static) */
+      ANAL_METHOD: number;
+      /** 시간이력 타입 (0=Transient, 1=Periodic) — Nonlinear+Direct Integration/Static은 Periodic 거부 */
+      TH_TYPE?: number;
+    };
+    /** 기하 비선형 타입 (0=None, 1=P-Delta, 2=Large Displacements, ANAL_TYPE=Nonlinear 시) */
     GEOM_NL_TYPE?: number;
-    INIT_METHOD?: string;
-    USE_INIT_LOAD?: boolean;
-    SUBSEQ?: HyperSSubsequentLoad;
-    CUM_DVA?: boolean;
-    KEEP_LOAD?: boolean;
+    /** 종료 시간 */
+    ENDTIME: number;
+    /** 시간 증분 */
+    TIME_INC: number;
+    /** 출력 스텝 증분 수 */
+    OUTPUT_STEP: number;
+    /** 증분 스텝 수 (Nonlinear+Static일 때 사실상 필수) */
+    INC_STEP?: number;
+    /** 초기 하중 방법 ("INIT" / "ORDER") */
+    INIT_METHOD: "INIT" | "ORDER";
+    /** 초기 하중 사용 (INIT_METHOD=INIT 시) */
+    USE_INIT_LOAD: boolean;
+    /** D/V/A 결과 누적 (USE_INIT_LOAD=true 시) */
+    CUM_DVA: boolean;
+    /** 최종 스텝 하중 유지 */
+    KEEP_LOAD: boolean;
+    /** 후속 하중 옵션 (INIT_METHOD=ORDER 시) */
+    SUBSEQ: {
+      /** 후속 하중 사용 */
+      OPT_USE?: boolean;
+      /** 후속 하중 타입 (0=하중케이스, 1=초기요소력, 2=기하강성초기력) */
+      SUBSEQ_LOAD: number;
+      /** 하중 케이스 타입 ("ST" / "CS" / "TH") */
+      LCTYPE: "ST" | "CS" | "TH";
+      /** 하중 케이스명 */
+      CASE: string;
+    };
+    /** 최종 스텝 가속도 유지 */
     KEEP_ACC?: boolean;
-    DAMPING?: unknown;
-    NONL_CTRL_PARAM?: unknown;
-    INC_CTRL?: unknown;
-    TIME_PARAM?: unknown;
-  }
+    /** 감쇠 설정 */
+    DAMPING: {
+      /** 감쇠 방법 (0=Direct Modal, 1=M&S Proportional, 2=Strain Energy, 3=Element M&S — Modal+Element(3) 조합은 거부됨) */
+      DAMPING_METHOD: number;
+      /** 전체 모드 감쇠비 (DAMPING_METHOD=0 시) */
+      ALL_DAMPING_RATIO: number;
+      /** 모드별 감쇠비 오버라이드 목록 */
+      MODAL_DAMPING_RATIO?: Array<JsonObject>;
+    } & (
+      {
+        DAMPING_METHOD: 1;
+        /** 계수 산정 방식 (0=Direct Specification, 1=Calculate from Modal Damping) */
+        COEF_INPUT: number;
+      } |
+      {
+        COEF_INPUT?: never;
+      }
+    );
+    /** 비선형 제어 파라미터 (ANAL_TYPE=1 시) */
+    NONL_CTRL_PARAM?: {
+      /** 반복 수행 여부 */
+      PERFORM_ITER: boolean;
+      /** 반복 제어 파라미터 */
+      ITER_CTRL: {
+        BOUNDARY_NL_ANAL?: {
+          /** 적분법 (0=Fehlberg, 1=Cash-Karp, 2=Dormand-Prince) */
+          METHOD?: number;
+          /** 허용 오차 */
+          TOL?: number;
+        };
+      };
+      /** 감쇠 매트릭스 업데이트 (0/1/2, DAMPING_METHOD가 M&S(1)/Element M&S(3)일 때만) */
+      DAMP_UPDATE?: number;
+    };
+    /** 증분 제어 (Increment Control) Applies when ANAL_CASE.ANAL_METHOD = 2. */
+    INC_CTRL?: {
+      /** 증분 방법 (0=Load Control, 1=Displacement Control) */
+      INC_METHOD: number;
+      /** Scale Factor Applies when INC_CTRL.INC_METHOD = 0. */
+      SF?: number;
+      /** 변위 제어 오브젝트 Applies when INC_CTRL.INC_METHOD = 1. */
+      DISP_CTRL?: {
+        /** 제어 옵션 (0=Global, 1=Master Node Control) */
+        CTRL_OPT: number;
+        /** 최대 병진 변위(Global 전용) */
+        MAX_TRANS_DISP?: number;
+        /** Master Node No.(Master Node Control 전용) */
+        MASTER_NODE?: number;
+        /** Master Direction(0/1/2, Master Node Control 전용) */
+        MASTER_DIR?: number;
+        /** 최대 변위(Master Node Control 전용) */
+        MAX_DISP?: number;
+      };
+    };
+    /** 시간 적분 방법 (Time Parameters) Applies when ANAL_CASE.ANAL_METHOD = 1. */
+    TIME_PARAM?: {
+      /** 적분 방법 (0=Newmark, 1=HHT) */
+      METHOD: number;
+      /** Newmark 방법 타입(METHOD=0) 0=Constant/1=Linear Accel./2=User Input */
+      NEWMARK_METHOD?: number;
+      /** Gamma(NEWMARK_METHOD=2 시) */
+      GAMMA?: number;
+      /** Beta(NEWMARK_METHOD=2 시) */
+      BETA?: number;
+    };
+  } & (
+    {
+      COEF_INPUT: 0;
+      /** 질량 비례 사용 (USE_MASS/USE_STIFF 중 최소 1개는 true) */
+      USE_MASS?: boolean;
+      /** 질량 계수(Rm) */
+      MASS_VALUE?: number;
+      /** 강성 비례 사용 */
+      USE_STIFF?: boolean;
+      /** 강성 계수(Rk) */
+      STIFF_VALUE?: number;
+    } |
+    {
+      COEF_INPUT: 1;
+      /** 계산 기준 (0=Frequency, 1=Period) */
+      COEF_CALC: number;
+      /** 모드1 주파수 (COEF_CALC=0) */
+      FREQ1?: number;
+      /** 모드1 주기 (COEF_CALC=1) */
+      PERIOD1?: number;
+      /** 모드1 감쇠비 */
+      DR1: number;
+      /** 모드2 주파수 (FREQ1≠FREQ2) */
+      FREQ2?: number;
+      /** 모드2 주기 (PERIOD1≠PERIOD2) */
+      PERIOD2?: number;
+      /** 모드2 감쇠비 */
+      DR2: number;
+    } |
+    {
+      USE_MASS?: never;
+      MASS_VALUE?: never;
+      USE_STIFF?: never;
+      STIFF_VALUE?: never;
+      COEF_CALC?: never;
+      FREQ1?: never;
+      PERIOD1?: never;
+      DR1?: never;
+      FREQ2?: never;
+      PERIOD2?: never;
+      DR2?: never;
+    }
+  );
   /** Generated from contracts/endpoints/. */
   export interface TimeHistoryFunctionPayload {
     /** 함수명 */

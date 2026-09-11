@@ -1223,6 +1223,10 @@ _STRUCTURAL_TABLE_SPLITS: dict[str, tuple[StructuralTableMerge, ...]] = {
         StructuralTableMerge(1, ((),)),
         StructuralTableMerge(2, ((),)),
     ),
+    # The first subtype table adds one record member. The chapter repeats
+    # ANGLE in the later subtype tables, while /info declares it at record
+    # root; this entry settles placement only and makes no discriminator claim.
+    "/db/ELEM": (StructuralTableMerge(1, ((),)),),
     "/db/GRDP": (StructuralTableMerge(1, ((),)),),
     "/db/IEHC": (StructuralTableMerge(1, ((),), ("gen",)),),
     "/db/IMFM": (StructuralTableMerge(1, ((),)),),
@@ -1259,6 +1263,10 @@ _STRUCTURAL_TABLE_SPLITS: dict[str, tuple[StructuralTableMerge, ...]] = {
         StructuralTableMerge(1, ((),), ("civil",)),
         StructuralTableMerge(2, ((),), ("gen",)),
     ),
+    # This heading describes a mode, not a complete wire discriminator. The
+    # three rows and /info nevertheless agree that their storage path is the
+    # record root, so they can be transcribed without inventing a branch.
+    "/db/STCT": (StructuralTableMerge(4, ((),)),),
     # Tables 1-4 each name one destination object in the heading and carry rows
     # that parse to it directly, including TIME_DEP_CONTROL's dotted
     # `CREEP_SHRINKAGE.*` keys and the `"bTTLE_ES"` / `"iTTLE_ES"` cell, both of
@@ -1274,6 +1282,16 @@ _STRUCTURAL_TABLE_SPLITS: dict[str, tuple[StructuralTableMerge, ...]] = {
         StructuralTableMerge(2, (("RESTART_CS_ANAL",),)),
         StructuralTableMerge(3, (("ERECTION_LOAD",),)),
         StructuralTableMerge(4, (("TIME_DEP_CONTROL",),)),
+    ),
+    # The manual names BOUNDARY_NL_ANAL in the table heading and types its two
+    # members. /info supplies the otherwise unstated nesting beneath
+    # NONL_CTRL_PARAM.ITER_CTRL; _STRUCTURAL_CONTAINER_PATHS creates that named
+    # container before these rows are appended.
+    "/db/THIS-M1": (
+        StructuralTableMerge(
+            8,
+            (("NONL_CTRL_PARAM", "ITER_CTRL", "BOUNDARY_NL_ANAL"),),
+        ),
     ),
     # Each heading names the object it belongs to outright - "INCREMENT_STEP
     # 서브 파라미터", "HINGE_OPT 서브 파라미터" - and both tables are flat, so the
@@ -1675,6 +1693,15 @@ _STRUCTURAL_CONTAINERS: dict[str, tuple[str, ...]] = {
     # These names are headings in the manual's supplementary tables; the
     # table does not repeat a separate parent row in the base table.
     "/db/WVLD": ("COEF", "CHAR", "PROF"),
+}
+
+
+# Containers named by a manual table heading whose full nesting is supplied by
+# the committed /info baseline. Unlike _STRUCTURAL_CONTAINERS these may be
+# nested. The leaf has no row of its own, so its requiredness and default stay
+# unstated; only the table's child rows inherit the manual's claims.
+_STRUCTURAL_CONTAINER_PATHS: dict[str, tuple[tuple[str, ...], ...]] = {
+    "/db/THIS-M1": (("NONL_CTRL_PARAM", "ITER_CTRL", "BOUNDARY_NL_ANAL"),),
 }
 
 
@@ -2126,6 +2153,20 @@ def _merged_structural_fields(section: "Section") -> tuple[list[ParsedField], li
     for key in _STRUCTURAL_CONTAINERS.get(section.endpoint, ()):
         if _field_at_path(fields, (key,)) is None:
             fields.append(_manual_container(key))
+
+    for path in _STRUCTURAL_CONTAINER_PATHS.get(section.endpoint, ()):
+        if not path or _field_at_path(fields, path) is not None:
+            continue
+        parent = _field_at_path(fields, path[:-1])
+        if parent is None:
+            continue
+        container = _manual_container(path[-1])
+        container.requirement = None
+        container.notes.append(
+            "the manual names this container in the table heading and the nesting is "
+            "declared by /info; no source states its requiredness or default"
+        )
+        parent.properties.append(container)
 
     for key, parent_path in _STRUCTURAL_ROOT_MOVES.get(section.endpoint, ()):
         source = next((field for field in fields if field.key == key), None)
@@ -4424,6 +4465,10 @@ _SETTLED_NOTE_MARKERS = (
     # schema declares no `required` array and the manual made no claim to
     # normalize.
     "declared by /info and absent from the manual",
+    # A manual heading names a container and its member table, but not the
+    # container's parent. The committed /info baseline can settle that path
+    # without saying anything about requiredness or defaults.
+    "the nesting is declared by /info",
     # The manual and the server both name this field, and they do not name it
     # the same. Spelling, depth, or both. Settled for the same reason the
     # marker above is - /info is the product - and held to a higher bar than

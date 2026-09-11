@@ -378,6 +378,38 @@ fields:
         provenance: manual
         # RESOLVED: the manual nests this under 'NONL_CTRL_PARAM' by numbering it
         # '(2)', not by naming a path
+        properties:
+          - key: BOUNDARY_NL_ANAL
+            type: object
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual names this object in the table heading and
+            # types its members; the nesting is declared by /info at
+            # NONL_CTRL_PARAM.ITER_CTRL; neither source states the container's
+            # requiredness or default.
+            properties:
+              - key: METHOD
+                description: >-
+                  적분법 (0=Fehlberg, 1=Cash-Karp, 2=Dormand-Prince)
+                type: integer
+                requirement: optional
+                documentedDefault: 0
+                documentedOptional: true
+                enum: [0, 1, 2]
+                safeToOmit: unverified
+                provenance: manual
+              - key: TOL
+                description: >-
+                  허용 오차
+                type: number
+                requirement: optional
+                documentedDefault: 1.0e-08
+                documentedOptional: true
+                safeToOmit: unverified
+                provenance: manual
       - key: DAMP_UPDATE
         description: >-
           감쇠 매트릭스 업데이트 (0/1/2, DAMPING_METHOD가 M&S(1)/Element M&S(3)일 때만)
@@ -763,24 +795,15 @@ extraction:
   # whether they belong in this contract's fields, as nested `properties`,
   # or as a separate contract - do not assume the first table is the whole
   # schema.
-  unmergedTables:
-    - heading: 비선형 경계요소 해석 (BOUNDARY_NL_ANAL)
-      fields: 2
-      line: 1806
-      fieldNames: ["METHOD", "TOL"]
-      resolution: >-
-        Left unmerged deliberately, and the field list is therefore incomplete.
-        The manual names this object and types its two members (METHOD, TOL)
-        but never says where it hangs: BOUNDARY_NL_ANAL appears exactly once in
-        the whole chapter, as this table's heading, with no Request Example
-        nesting it and no row for it in the common table. A 2026-08-27 live
-        round trip recorded in docs/live_verification_notes.md observed the
-        server auto-filling NONL_CTRL_PARAM "including a nested
-        BOUNDARY_NL_ANAL", which establishes that it exists but not whether it
-        sits directly under NONL_CTRL_PARAM or under its ITER_CTRL. Guessing
-        between the two would put an unverifiable path in the source of truth,
-        and settling it needs a POST for which no confirmed fixture exists.
   structuralTables:
+    - heading: 비선형 경계요소 해석 (BOUNDARY_NL_ANAL)
+      line: 1806
+      paths: [NONL_CTRL_PARAM.ITER_CTRL.BOUNDARY_NL_ANAL]
+      note: >-
+        The manual heading names the object and its table types METHOD and TOL.
+        GET /info/db/THIS-M1 places that object beneath
+        NONL_CTRL_PARAM.ITER_CTRL, resolving the path without inferring it from
+        either SDK.
     - heading: 증분 제어 (ANAL_METHOD=2 Static 전용, `INC_CTRL`)
       line: 1783
       paths: [INC_CTRL]

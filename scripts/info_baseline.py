@@ -74,8 +74,8 @@ class _DivergenceExpectation(TypedDict):
 
 
 EXPECTED_AGAINST_CONTRACTS: _AgainstContractsExpectation = {
-    "contractsComparedAtLeast": 205,
-    "unmergedTablesSkippedAtMost": 17,
+    "contractsComparedAtLeast": 206,
+    "unmergedTablesSkippedAtMost": 16,
     "infoOnlyWaiversAtMost": 1,
     "unrecordedInfoPropertiesAtMost": {
         "/db/SECT": 995,
@@ -84,6 +84,11 @@ EXPECTED_AGAINST_CONTRACTS: _AgainstContractsExpectation = {
         "/db/TDMT": 60,
         "/db/SWIND": 40,
         "/db/SSEIS": 34,
+        # Closing THIS-M1's final unmerged manual table makes the standing
+        # comparison visible for the first time. These 20 /info properties
+        # have no matching row in the vendored manual; the ceiling records the
+        # observed gap without guessing that they are request fields.
+        "/db/THIS-M1": 20,
     },
     "contractOnlyNamesAtMost": {
         "/db/POGD-M1": 2,

@@ -22,15 +22,15 @@ Run these first and confirm you see the same numbers. **If any differ, say so
 before starting** — it means something moved under you.
 
 ```bash
-python -m pytest -q                       # 1029 passed, 1 FAILED - EXPECTED
+python -m pytest -q                       # 1033 passed, 1 FAILED - EXPECTED
 ruff check src tests scripts && mypy      # clean
-python scripts/validate_contracts.py      # OK; 381 endpoints, 4956 fields,
+python scripts/validate_contracts.py      # OK; 381 endpoints, 4963 fields,
                                           # 140 proven safe, 8 unsafe,
                                           # 0 unresolved manual contradictions
 python scripts/check_manual_drift.py --manual-api-repo "E:\AI Study\MIDAS-API"
                                           # has_diff: TRUE, 10 chapters - EXPECTED
 MSYS_NO_PATHCONV=1 python scripts/extract_contracts.py \
-  --manual-api-repo "E:\AI Study\MIDAS-API" --check    # 17 disagreements - EXPECTED
+  --manual-api-repo "E:\AI Study\MIDAS-API" --check    # 16 disagreements - EXPECTED
 python scripts/info_baseline.py --against-contracts --check   # OK
 python scripts/info_baseline.py --divergence --check          # OK
 python scripts/report_dropped_manual_rows.py \
@@ -66,7 +66,7 @@ detecting the same thing: the sibling manual repo at `E:\AI Study\MIDAS-API`
 is two local commits ahead of its origin: `205d5f0 docs: 정기 점검 (2026-09-06)`
 and follow-up `ff88259 docs(manual): ope/MEMB 요청 키 AELEM 재정정, SSEIS 원문
 오염 로케일별 명시`. This repository and the manual repo's `origin/main`
-still record `7920759`; the extraction check now reports 17 disagreements
+still record `7920759`; the extraction check now reports 16 disagreements
 because the follow-up removed the two `/ope/MEMB` differences.
 The manual working tree is currently clean, but those unpushed commits are
 external drift all the same. Do not consume or edit them from this repository.
@@ -275,18 +275,21 @@ Claude's.** Read each manual section at the vendored commit `7920759`, not in
 the working tree — twelve of these entries anchor at titles and line numbers
 the unreflected 2026-09-06 sync has already moved.
 
-`docs/unmerged_tables_against_info.md` splits the 93 tables (602 field names)
+`docs/unmerged_tables_against_info.md` splits the 90 tables (596 field names)
 that 19 contracts declare missing:
 
 | what the measurement found | tables |
 | --- | ---: |
-| whole table declared, **one `/info` object holds it** | 53 |
+| whole table declared, **one `/info` object holds it** | 50 |
 | whole table declared, several objects | 3 |
 | whole table declared, no common parent | 25 |
 | partly declared | 1 |
 | outside `/info`'s reach (`/view`, `/ope`) | 11 |
 
-**Your part is the 53.** For each, `/info` has a single object holding every
+**Your remaining part is the 50.** The first three-table batch merged
+`/db/THIS-M1`'s `BOUNDARY_NL_ANAL`, `/db/STCT`'s Linear & Independent Stage,
+and `/db/ELEM`'s Beam/Truss/Plane Strain/Axisymmetric table. For each remaining
+table, `/info` has a single object holding every
 name in the table, so the shape is not in question — the work is transcribing
 the manual's rows into the contract at that path, then rerunning
 `validate_contracts.py`, `info_baseline.py --against-contracts --check` and
