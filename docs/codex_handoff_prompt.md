@@ -275,20 +275,22 @@ Claude's.** Read each manual section at the vendored commit `7920759`, not in
 the working tree — twelve of these entries anchor at titles and line numbers
 the unreflected 2026-09-06 sync has already moved.
 
-`docs/unmerged_tables_against_info.md` splits the 90 tables (596 field names)
+`docs/unmerged_tables_against_info.md` splits the 87 tables (591 field names)
 that 19 contracts declare missing:
 
 | what the measurement found | tables |
 | --- | ---: |
-| whole table declared, **one `/info` object holds it** | 50 |
+| whole table declared, **one `/info` object holds it** | 47 |
 | whole table declared, several objects | 3 |
 | whole table declared, no common parent | 25 |
 | partly declared | 1 |
 | outside `/info`'s reach (`/view`, `/ope`) | 11 |
 
-**Your remaining part is the 50.** The first three-table batch merged
+**Your remaining part is the 47.** The first three-table batch merged
 `/db/THIS-M1`'s `BOUNDARY_NL_ANAL`, `/db/STCT`'s Linear & Independent Stage,
-and `/db/ELEM`'s Beam/Truss/Plane Strain/Axisymmetric table. For each remaining
+and `/db/ELEM`'s Beam/Truss/Plane Strain/Axisymmetric table. A second batch
+removed three stale `/db/TDME` unmerged markers whose tables were already
+represented by explicit variants. For each remaining
 table, `/info` has a single object holding every
 name in the table, so the shape is not in question — the work is transcribing
 the manual's rows into the contract at that path, then rerunning

@@ -44,26 +44,26 @@ not the same finding as a source that is absent.
 | [`/db/NLCT-M1`](#dbnlctm1) | 2 | 23 | 23 | 100% |
 | [`/db/MVLD`](#dbmvld) | 4 | 21 | 21 | 100% |
 | [`/db/SDIS`](#dbsdis) | 3 | 21 | 21 | 100% |
-| [`/db/TDME`](#dbtdme) | 7 | 19 | 19 | 100% |
+| [`/db/TDME`](#dbtdme) | 4 | 14 | 14 | 100% |
 | [`/db/IMPF`](#dbimpf) | 2 | 12 | 12 | 100% |
 | [`/db/NSPR`](#dbnspr) | 4 | 12 | 12 | 100% |
 | [`/db/THIK`](#dbthik) | 1 | 11 | 11 | 100% |
 | [`/db/CSCS`](#dbcscs) | 1 | 9 | 9 | 100% |
 | [`/ope/LCOM-SRC`](#opelcomsrc) | 1 | 5 | -- | n/a |
-| **total** | **90** | **596** | **527** | **88%** |
+| **total** | **87** | **591** | **522** | **88%** |
 
-Of the **528** names on endpoints `/info` answers for, **527** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
+Of the **523** names on endpoints `/info` answers for, **522** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
 
 ### What each table has, as a count
 
 | what the measurement found | tables |
 | --- | ---: |
-| whole table, one object | 50 |
+| whole table, one object | 47 |
 | whole table, several objects | 3 |
 | whole table, scattered | 25 |
 | partly declared | 1 |
 | out of reach | 11 |
-| **all** | **90** |
+| **all** | **87** |
 
 *one object* means `/info` has a single object holding every name in that table; *scattered* means it declares them all but under no common parent, so the table's shape is not something the baseline confirms. Neither is a recommendation -- a table with two sources still needs its manual section read before anything moves.
 
@@ -314,21 +314,15 @@ Baseline answers on `gen`. 21 of 21 names declared across 3 tables.
 
 ## `/db/TDME`
 
-Baseline answers on `civil`, `gen`. 19 of 19 names declared across 7 tables.
+Baseline answers on `civil`, `gen`. 14 of 14 names declared across 4 tables.
 
 | table | names | declared | not declared | nesting |
 | --- | ---: | ---: | ---: | --- |
-| `ACI`, `Korean Standard` 전용 추가 필드 | 2 | 2 | 0 | one object: `(root)` |
-| `CEB-FIP(1990)` · `Ohzagi` · `European` · `INDIA(IRC:112-2011)` · `KCI-USD12` 전용 추가 필드 | 1 | 1 | 0 | one object: `(root)` |
-| `CEB-FIP(2010)` · `INDIA(IRC:112-2020)` 전용 추가 필드 | 2 | 2 | 0 | one object: `(root)` |
 | `Russian` 전용 추가 필드 | 5 | 5 | 0 | one object: `(root)` |
 | `GILBERT AND RANZI`, **`KDS-2016`** 전용 추가 필드 | 2 | 2 | 0 | one object: `(root)` |
 | `Japan (Hydration)` 전용 추가 필드 | 6 | 6 | 0 | one object: `(root)` |
 | `Japan (Elastic)` 전용 추가 필드 | 1 | 1 | 0 | one object: `(root)` |
 
-- **`ACI`, `Korean Standard` 전용 추가 필드** declared: `A` at `A`, `B` at `B`
-- **`CEB-FIP(1990)` · `Ohzagi` · `European` · `INDIA(IRC:112-2011)` · `KCI-USD12` 전용 추가 필드** declared: `iCTYPE` at `iCTYPE`
-- **`CEB-FIP(2010)` · `INDIA(IRC:112-2020)` 전용 추가 필드** declared: `iCTYPE` at `iCTYPE`, `nAGGRE` at `nAGGRE`
 - **`Russian` 전용 추가 필드** declared: `iCTYPE` at `iCTYPE`, `CMETH` at `CMETH`, `CTYPE` at `CTYPE`, `MAXS` at `MAXS`, `PZ` at `PZ`
 - **`GILBERT AND RANZI`, **`KDS-2016`** 전용 추가 필드** declared: `iCTYPE` at `iCTYPE`, `DENSITY` at `DENSITY`
 - **`Japan (Hydration)` 전용 추가 필드** declared: `TENS_STRN_FACTOR` at `TENS_STRN_FACTOR`, `bUSE` at `bUSE`, `A` at `A`, `B` at `B`, `D` at `D`, `iCTYPE` at `iCTYPE`
