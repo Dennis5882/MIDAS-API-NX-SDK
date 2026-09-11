@@ -144,7 +144,11 @@ fields:
     documentedDefault: null
     documentedDefaultNote: Auto
     documentedOptional: true
-    safeToOmit: unverified
+    safeToOmit: true
+    omissionEvidence: >-
+      scripts/live_crud_check.py's confirmed PlaneLoadType case completed
+      create/read/update/read/delete on Gen and Civil without this field. The
+      public SDK sends no endpoint-specific normalization for this record.
     provenance: manual
 
 variants:

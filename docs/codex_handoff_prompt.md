@@ -22,15 +22,15 @@ Run these first and confirm you see the same numbers. **If any differ, say so
 before starting** — it means something moved under you.
 
 ```bash
-python -m pytest -q                       # 1026 passed, 1 FAILED - EXPECTED
+python -m pytest -q                       # 1029 passed, 1 FAILED - EXPECTED
 ruff check src tests scripts && mypy      # clean
 python scripts/validate_contracts.py      # OK; 381 endpoints, 4956 fields,
-                                          # 119 proven safe, 8 unsafe,
+                                          # 140 proven safe, 8 unsafe,
                                           # 0 unresolved manual contradictions
 python scripts/check_manual_drift.py --manual-api-repo "E:\AI Study\MIDAS-API"
                                           # has_diff: TRUE, 10 chapters - EXPECTED
 MSYS_NO_PATHCONV=1 python scripts/extract_contracts.py \
-  --manual-api-repo "E:\AI Study\MIDAS-API" --check    # 19 disagreements - EXPECTED
+  --manual-api-repo "E:\AI Study\MIDAS-API" --check    # 17 disagreements - EXPECTED
 python scripts/info_baseline.py --against-contracts --check   # OK
 python scripts/info_baseline.py --divergence --check          # OK
 python scripts/report_dropped_manual_rows.py \
@@ -66,7 +66,8 @@ detecting the same thing: the sibling manual repo at `E:\AI Study\MIDAS-API`
 is two local commits ahead of its origin: `205d5f0 docs: 정기 점검 (2026-09-06)`
 and follow-up `ff88259 docs(manual): ope/MEMB 요청 키 AELEM 재정정, SSEIS 원문
 오염 로케일별 명시`. This repository and the manual repo's `origin/main`
-still record `7920759`; the extraction check remains at 19 disagreements.
+still record `7920759`; the extraction check now reports 17 disagreements
+because the follow-up removed the two `/ope/MEMB` differences.
 The manual working tree is currently clean, but those unpushed commits are
 external drift all the same. Do not consume or edit them from this repository.
 
@@ -228,67 +229,24 @@ it fine. By design, not a gap.
 
 ---
 
-## Task C — re-derive `safeToOmit` from evidence already collected
+## Task C — completed: re-derived `safeToOmit` from recorded evidence
 
-**Offline. Start here when no product session is available.**
+Completed 2026-09-12; the per-endpoint classification and rationale are in
+`docs/safe_to_omit_survey.md`.
 
-`extract_contracts.py`'s `live_omission_evidence()` reads
-`scripts/live_crud_check.py`'s confirmed cases statically and answers
-`safeToOmit: true` where a confirmed payload actually omitted a documented
-field. It runs at **draft** time and nothing revisits it — its own docstring
-still says "116 cases marked `confirmed=True`", and there are now **165**.
-`extract_contracts.py --check` compares field *sets* against the manual and
-never looks at `safeToOmit`, so CI has been green over the whole gap.
+The measured starting count was no longer 60: `/db/NMAS`'s three crashing
+omissions had already been fixed at `safeToOmit: false`, leaving 57 candidates
+across 16 endpoints. Of those, 21 same-level, same-product, applicable-branch
+omissions are now `true`; 36 remain honestly `unverified` because the case ran
+a different conditional branch/product, omitted response metadata, or was
+being compared with an `Assign` wrapper rather than a record member.
 
-Across the 125 endpoints that have live omission evidence, 113 fields already
-carry `safeToOmit: true` and **60 more, across 19 endpoints, are still
-`unverified` while a confirmed payload omitted them**:
-
-| endpoint | fields | endpoint | fields |
-| --- | ---: | --- | ---: |
-| `/db/STCT-M1` | 14 | `/db/SDIS` | 2 |
-| `/db/HSFC` | 9 | `/db/TDMT` | 2 |
-| `/db/PJCF` | 5 | `/db/LLAN` | 1 |
-| `/db/ELNK` | 4 | `/db/PNLD` | 1 |
-| `/db/GSTP` | 4 | `/db/STAG` | 1 |
-| `/db/MVLD` | 3 | `/db/THGC` | 1 |
-| **`/db/NMAS`** | **3** | `/DESIGN/…/LENG` | 1 |
-| `/db/SDST` | 3 | `/DESIGN/…/LTSR` | 1 |
-| `/db/MVHL` | 2 | `/DESIGN/…/MBTP` | 1 |
-| `/db/POSL` | 2 | | |
-
-**It is not a bulk edit. Four traps make it a task you must stop on, and the
-first one is a live demonstration that the derivation is unsound on its own.**
-
-- **`/db/NMAS`'s `rmX`, `rmY`, `rmZ` are in that list and omitting them kills
-  the product.** That is the crash this repository spent 15+ reproductions
-  root-causing. They appear as candidates only because `NodalMass.create()`
-  fills them in before sending, so the *case* omits them and the *wire payload*
-  does not. Marking these three `safeToOmit: true` would publish the exact
-  opposite of the most expensive finding in the repository. **If your reasoning
-  would have said `true` for these, your reasoning is wrong** — say so in your
-  report and re-check the other 57 with that in mind.
-- **The three `/DESIGN/*` `Assign` entries are the request wrapper**, not a
-  field. Evidence about nothing.
-- **The `/db/LLAN` failure mode.** In 2.7.7 that contract published a flat
-  record while the payload was nested, so comparing top-level keys against a
-  flat field list manufactured **ten** `safeToOmit: true` claims nobody had
-  earned, and the proven-safe count went *down* when they were removed. A field
-  counts as omitted only if contract and payload are keyed at the same level.
-  `/db/STCT-M1`'s 14 are exactly the shape to be suspicious of.
-- **A `read_only` or `create_only` field was never going to be sent.** Its
-  absence from a create payload is evidence about nothing. `/db/PJCF`'s
-  `CREATED`, `MODIFIED` and `FILE_SIZE` look like that.
-
-So: **report all 60 with your judgement of which is which, per endpoint, and
-apply only those where the levels genuinely match and no SDK rule fills the
-field in behind the case's back.** Where unsure, list it and leave it
-`unverified` — that value is an honest gap and costs nothing, while a wrong
-`true` is the `/db/NMAS` shape exactly.
-
-`validate_contracts.py` and `check_fixture_contract.py` must both stay green,
-and the second one's baseline will move as you go — update it in the same
-commit, never at the end.
+`live_omission_evidence()` now retains payload values and products, and draft
+rendering refuses to infer omission safety unless every `appliesWhen` predicate
+and product tag matches the case that actually ran. Parametrized tests cover
+the matching branch, different branch, and different product forms. This does
+not try to infer which `/info` fields are response-only; those still require
+review rather than an automatic `true`.
 
 ---
 

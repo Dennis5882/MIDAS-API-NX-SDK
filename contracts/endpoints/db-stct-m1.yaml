@@ -180,7 +180,12 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: unverified
+    safeToOmit: true
+    omissionEvidence: >-
+      scripts/live_crud_check.py's confirmed
+      ConstructionStageAnalysisControlDataHyperS case completed
+      PUT/read/per-id DELETE/read on Civil without this top-level field. The
+      public SDK sends no endpoint-specific normalization for this record.
     provenance: manual
     properties:
       - key: OPT_USE
@@ -212,7 +217,12 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: unverified
+    safeToOmit: true
+    omissionEvidence: >-
+      scripts/live_crud_check.py's confirmed
+      ConstructionStageAnalysisControlDataHyperS case completed
+      PUT/read/per-id DELETE/read on Civil without this top-level field. The
+      public SDK sends no endpoint-specific normalization for this record.
     provenance: manual
     properties:
       - key: LTYPECC
@@ -253,7 +263,12 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: unverified
+    safeToOmit: true
+    omissionEvidence: >-
+      scripts/live_crud_check.py's confirmed
+      ConstructionStageAnalysisControlDataHyperS case completed
+      PUT/read/per-id DELETE/read on Civil without this top-level field. The
+      public SDK sends no endpoint-specific normalization for this record.
     provenance: live_corrected
     provenanceNote: >-
       Split out of the manual's row 5, which gives one Key cell -
@@ -271,7 +286,12 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: unverified
+    safeToOmit: true
+    omissionEvidence: >-
+      scripts/live_crud_check.py's confirmed
+      ConstructionStageAnalysisControlDataHyperS case completed
+      PUT/read/per-id DELETE/read on Civil without this top-level field. The
+      public SDK sends no endpoint-specific normalization for this record.
     provenance: live_corrected
     provenanceNote: >-
       The second half of the manual's row 5 - see `bSDLE`. Registered as MD-21.
@@ -282,7 +302,12 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: unverified
+    safeToOmit: true
+    omissionEvidence: >-
+      scripts/live_crud_check.py's confirmed
+      ConstructionStageAnalysisControlDataHyperS case completed
+      PUT/read/per-id DELETE/read on Civil without this top-level field. The
+      public SDK sends no endpoint-specific normalization for this record.
     provenance: manual
     properties:
       - key: CREEP_SHRINKAGE
@@ -485,7 +510,12 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: unverified
+    safeToOmit: true
+    omissionEvidence: >-
+      scripts/live_crud_check.py's confirmed
+      ConstructionStageAnalysisControlDataHyperS case completed
+      PUT/read/per-id DELETE/read on Civil without this top-level field. The
+      public SDK sends no endpoint-specific normalization for this record.
     provenance: manual
     properties:
       # RESOLVED: merged from the section's "나머지 객체" table, whose parent for
@@ -518,7 +548,12 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: unverified
+    safeToOmit: true
+    omissionEvidence: >-
+      scripts/live_crud_check.py's confirmed
+      ConstructionStageAnalysisControlDataHyperS case completed
+      PUT/read/per-id DELETE/read on Civil without this top-level field. The
+      public SDK sends no endpoint-specific normalization for this record.
     provenance: manual
     properties:
       # RESOLVED: merged from the "나머지 객체" table; its `bTRUSS` / `bBEAM` row
@@ -576,7 +611,12 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: unverified
+    safeToOmit: true
+    omissionEvidence: >-
+      scripts/live_crud_check.py's confirmed
+      ConstructionStageAnalysisControlDataHyperS case completed
+      PUT/read/per-id DELETE/read on Civil without this top-level field. The
+      public SDK sends no endpoint-specific normalization for this record.
     provenance: manual
     properties:
       # RESOLVED: merged from the "나머지 객체" table; `ITD_CONTROL`'s five children
@@ -653,7 +693,12 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: unverified
+    safeToOmit: true
+    omissionEvidence: >-
+      scripts/live_crud_check.py's confirmed
+      ConstructionStageAnalysisControlDataHyperS case completed
+      PUT/read/per-id DELETE/read on Civil without this top-level field. The
+      public SDK sends no endpoint-specific normalization for this record.
     provenance: manual
     properties:
       # RESOLVED: merged from the "나머지 객체" table, whose single row names all
@@ -694,7 +739,12 @@ fields:
     requirement: optional
     documentedDefault: 1
     documentedOptional: true
-    safeToOmit: unverified
+    safeToOmit: true
+    omissionEvidence: >-
+      scripts/live_crud_check.py's confirmed
+      ConstructionStageAnalysisControlDataHyperS case completed
+      PUT/read/per-id DELETE/read on Civil without this top-level field. The
+      public SDK sends no endpoint-specific normalization for this record.
     provenance: manual
     # RESOLVED: the manual types this 'Integer' and the values live in the
     # description, so no enum is transcribed. Its own callout warns that the
@@ -706,7 +756,12 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: unverified
+    safeToOmit: true
+    omissionEvidence: >-
+      scripts/live_crud_check.py's confirmed
+      ConstructionStageAnalysisControlDataHyperS case completed
+      PUT/read/per-id DELETE/read on Civil without this top-level field. The
+      public SDK sends no endpoint-specific normalization for this record.
     provenance: manual
     properties:
       # RESOLVED: no Parameters table describes this object anywhere in the
@@ -747,7 +802,12 @@ fields:
     requirement: optional
     documentedDefault: false
     documentedOptional: true
-    safeToOmit: unverified
+    safeToOmit: true
+    omissionEvidence: >-
+      scripts/live_crud_check.py's confirmed
+      ConstructionStageAnalysisControlDataHyperS case completed
+      PUT/read/per-id DELETE/read on Civil without this top-level field. The
+      public SDK sends no endpoint-specific normalization for this record.
     provenance: manual
   - key: NONL_CONTROL
     description: >-
@@ -756,7 +816,12 @@ fields:
     requirement: optional
     documentedDefault: null
     documentedOptional: true
-    safeToOmit: unverified
+    safeToOmit: true
+    omissionEvidence: >-
+      scripts/live_crud_check.py's confirmed
+      ConstructionStageAnalysisControlDataHyperS case completed
+      PUT/read/per-id DELETE/read on Civil without this top-level field. The
+      public SDK sends no endpoint-specific normalization for this record.
     provenance: manual
     properties:
       # RESOLVED: merged from the section's NONL_CONTROL table. Two of its four

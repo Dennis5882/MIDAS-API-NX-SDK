@@ -132,7 +132,11 @@ fields:
     requirement: optional
     documentedDefault: false
     documentedOptional: true
-    safeToOmit: unverified
+    safeToOmit: true
+    omissionEvidence: >-
+      scripts/live_crud_check.py's confirmed GeneralSpringType case completed
+      create/read/update/read/delete on Gen and Civil without this field. The
+      public SDK sends no endpoint-specific normalization for this record.
     provenance: manual
   - key: MASS
     description: 21-value mass matrix.
@@ -144,7 +148,11 @@ fields:
     requirement: optional
     documentedDefault: 0
     documentedOptional: true
-    safeToOmit: unverified
+    safeToOmit: true
+    omissionEvidence: >-
+      scripts/live_crud_check.py's confirmed GeneralSpringType case completed
+      create/read/update/read/delete on Gen and Civil without this field. The
+      public SDK sends no endpoint-specific normalization for this record.
     provenance: manual
   - key: OPT_DAMPING
     description: Damping-matrix option.
@@ -152,7 +160,11 @@ fields:
     requirement: optional
     documentedDefault: false
     documentedOptional: true
-    safeToOmit: unverified
+    safeToOmit: true
+    omissionEvidence: >-
+      scripts/live_crud_check.py's confirmed GeneralSpringType case completed
+      create/read/update/read/delete on Gen and Civil without this field. The
+      public SDK sends no endpoint-specific normalization for this record.
     provenance: manual
   - key: DAMPING
     description: 21-value damping matrix.
@@ -164,7 +176,11 @@ fields:
     requirement: optional
     documentedDefault: 0
     documentedOptional: true
-    safeToOmit: unverified
+    safeToOmit: true
+    omissionEvidence: >-
+      scripts/live_crud_check.py's confirmed GeneralSpringType case completed
+      create/read/update/read/delete on Gen and Civil without this field. The
+      public SDK sends no endpoint-specific normalization for this record.
     provenance: manual
 
 sdkRules:

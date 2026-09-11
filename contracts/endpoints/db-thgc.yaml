@@ -356,7 +356,11 @@ fields:
     requirement: unstated
     documentedDefault: null
     documentedOptional: null
-    safeToOmit: unverified
+    safeToOmit: true
+    omissionEvidence: >-
+      scripts/live_crud_check.py's confirmed TimeHistoryGlobalControl case
+      completed create/read/update/read/delete on Gen without this Gen-only
+      field. The public SDK sends no endpoint-specific normalization for it.
     provenance: info_schema
     # RESOLVED: declared by /info and absent from the manual - the whole
     # manual was searched for the name, not just this section.

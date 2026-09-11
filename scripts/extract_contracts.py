@@ -4248,17 +4248,18 @@ class LiveOmission:
     endpoint: str
     sent: frozenset[str]
     products: str
+    payload: dict[str, Any] = dataclass_field(default_factory=dict)
+    product_names: frozenset[str] = frozenset({"gen", "civil"})
 
 
 def live_omission_evidence() -> dict[str, LiveOmission]:
     """Which fields a confirmed live write actually omitted, per endpoint.
 
-    `scripts/live_crud_check.py` carries 116 cases marked `confirmed=True`,
-    meaning someone watched that exact payload complete a create-read-update-
-    delete round trip against a running product. A documented field absent from
-    such a payload was omitted and the call still worked - which is evidence
-    about the product, and therefore the only kind of thing `safeToOmit: true`
-    is allowed to rest on.
+    `scripts/live_crud_check.py` carries cases marked `confirmed=True`, meaning
+    someone watched that exact payload complete its supported write/read/delete
+    round trip against a running product. A documented field absent from such a
+    payload is omission evidence only for the products and conditional branch
+    that payload actually exercised.
 
     Read statically, through `ast`. Importing the checker would be reading an
     SDK to learn about the API; this reads a record of what a server did.
@@ -4312,7 +4313,8 @@ def live_omission_evidence() -> dict[str, LiveOmission]:
         if endpoint is None or endpoint in found:
             continue
         try:
-            sent = frozenset(ast.literal_eval(payload).keys())
+            literal_payload = ast.literal_eval(payload)
+            sent = frozenset(literal_payload.keys())
         except Exception:
             continue
 
@@ -4328,11 +4330,23 @@ def live_omission_evidence() -> dict[str, LiveOmission]:
             continue
 
         products = keywords.get("products")
+        product_names = frozenset({"gen", "civil"})
+        if products is not None:
+            try:
+                literal_products = ast.literal_eval(products)
+            except Exception:
+                literal_products = None
+            if isinstance(literal_products, (tuple, list, set, frozenset)):
+                names = frozenset(value for value in literal_products if isinstance(value, str))
+                if names:
+                    product_names = names
         found[endpoint] = LiveOmission(
             case=name,
             endpoint=endpoint,
             sent=sent,
             products=ast.unparse(products) if products is not None else "gen and civil",
+            payload=literal_payload,
+            product_names=product_names,
         )
     return found
 
@@ -4477,6 +4491,20 @@ def _render_fields(
         field_paths = paths(fields, prefix)
     lines: list[str] = []
     body = indent + "  "
+
+    def condition_was_exercised(parsed: ParsedField) -> bool:
+        if evidence is None:
+            return False
+        for condition_path, values in parsed.applies_when:
+            value: Any = evidence.payload
+            for part in condition_path.split("."):
+                if not isinstance(value, dict) or part not in value:
+                    return False
+                value = value[part]
+            if value not in values:
+                return False
+        return True
+
     for parsed in fields:
         current_path = prefix + (parsed.key,)
         lines.append(f"{indent}- key: {_scalar(parsed.key)}")
@@ -4553,6 +4581,8 @@ def _render_fields(
             and evidence.sent
             and indent == "  "
             and parsed.key not in evidence.sent
+            and condition_was_exercised(parsed)
+            and (not parsed.products or bool(set(parsed.products) & evidence.product_names))
         )
         if omitted_live:
             assert evidence is not None

@@ -1678,6 +1678,40 @@ def test_nested_fields_are_never_given_live_evidence(section: ex.Section):
         assert child["safeToOmit"] == "unverified", child["key"]
 
 
+@pytest.mark.parametrize(
+    ("payload", "field_products", "evidence_products", "expected"),
+    [
+        pytest.param({"MODE": "OFF"}, (), frozenset({"gen", "civil"}), "unverified",
+                     id="different-conditional-branch-is-not-omission-evidence"),
+        pytest.param({"MODE": "ON"}, (), frozenset({"gen", "civil"}), True,
+                     id="matching-conditional-branch-is-omission-evidence"),
+        pytest.param({"MODE": "ON"}, ("gen",), frozenset({"civil"}), "unverified",
+                     id="different-product-is-not-omission-evidence"),
+    ],
+)
+def test_live_omission_evidence_matches_the_exercised_branch_and_product(
+    payload, field_products, evidence_products, expected,
+):
+    fields = [
+        ex.ParsedField(
+            key="MODE", description="selector", type="string", items=None,
+            requirement="required", documented_default=None,
+        ),
+        ex.ParsedField(
+            key="VALUE", description="branch value", type="number", items=None,
+            requirement="conditional", documented_default=None,
+            applies_when=[("MODE", ("ON",))], products=field_products,
+        ),
+    ]
+    evidence = ex.LiveOmission(
+        case="Synthetic", endpoint="/db/SYNTH", sent=frozenset(payload),
+        products="test products", payload=payload, product_names=evidence_products,
+    )
+    rendered = yaml.safe_load("fields:\n" + "\n".join(ex._render_fields(fields, "  ", evidence)))
+
+    assert rendered["fields"][1]["safeToOmit"] == expected
+
+
 def test_draft_is_valid_yaml_but_cannot_validate_as_a_contract(section: ex.Section):
     """A draft must be unusable until read, and unusable for one obvious reason."""
     jsonschema = pytest.importorskip("jsonschema")

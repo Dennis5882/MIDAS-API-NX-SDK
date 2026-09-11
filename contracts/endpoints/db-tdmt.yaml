@@ -201,7 +201,12 @@ fields:
     requirement: unstated
     documentedDefault: null
     documentedOptional: null
-    safeToOmit: unverified
+    safeToOmit: true
+    omissionEvidence: >-
+      scripts/live_crud_check.py's confirmed TimeDependentMaterialCreepShrinkage
+      European-code case completed create/read/update/read/delete on Gen and
+      Civil without this field. The public SDK sends no endpoint-specific
+      normalization for this record.
     provenance: live_verified
     provenanceNote: >-
       Confirmed live 2026-07-30 against a real PSC bridge model whose
@@ -218,7 +223,12 @@ fields:
     requirement: unstated
     documentedDefault: null
     documentedOptional: null
-    safeToOmit: unverified
+    safeToOmit: true
+    omissionEvidence: >-
+      scripts/live_crud_check.py's confirmed TimeDependentMaterialCreepShrinkage
+      European-code case completed create/read/update/read/delete on Gen and
+      Civil without this field. The public SDK sends no endpoint-specific
+      normalization for this record.
     provenance: live_verified
     provenanceNote: >-
       See TCODE above; the two arrived together, from the same model and the
