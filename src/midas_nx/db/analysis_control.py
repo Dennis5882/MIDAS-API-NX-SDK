@@ -413,8 +413,8 @@ class MovingLoadAnalysisControlIndiaPayload(TypedDict, total=False):
     """docs/manual/12_DB_Analysis_Control.md #11 — /db/MVCTid Specifications table."""
 
     iIGP: int  # default 0, optional
-    UNUMT: int  # Number/Line Element (when iIGP=0), required
-    DIST: float  # Distance between Points (when iIGP=1), required
+    UNUMT: int  # Number/Line Element, required when iIGP=0
+    DIST: float  # Distance between Points, required when iIGP=1
     PLATE: str  # "CENTER"/"NODAL", required
     bSTRCALC: bool  # default false, optional
     FRAME: str  # "NORMAL"/"AXIAL", required
@@ -448,8 +448,8 @@ class MovingLoadAnalysisControlBSPayload(TypedDict, total=False):
     """docs/manual/12_DB_Analysis_Control.md #12 — /db/MVCTbs Specifications table."""
 
     iIGP: int  # default 0, optional
-    UNUMT: int  # Number/Line Element (when iIGP=0), required
-    DIST: float  # Distance between Points (when iIGP=1), required
+    UNUMT: int  # Number/Line Element, required when iIGP=0
+    DIST: float  # Distance between Points, required when iIGP=1
     PLATE: str  # "CENTER"/"NODAL", required
     bSTRCALC: bool  # default false, optional
     bCONCURRENT: bool  # Plate - Concurrent Force, default false, optional
@@ -480,8 +480,8 @@ class MovingLoadAnalysisControlTransversePayload(TypedDict, total=False):
 
     LOAD_POINT_SEL: int  # Influence Line Dependent=1/All Point=2, required
     INFL_GEN_POINT: int  # Number/Line=0/Distance=1, default 0, optional
-    NUM_UNIT_LOAD: int  # Number/Line Element (when method 0), required
-    DISTANCE: float  # Distance between Points (when method 1), required
+    NUM_UNIT_LOAD: int  # Number/Line Element, required when INFL_GEN_POINT=0
+    DISTANCE: float  # Distance between Points, required when INFL_GEN_POINT=1
     ANALYSIS_RESULT: int  # Normal=1/Normal+Concurrent Force/Stress=2, required
     OPT_COMBINED_STR: bool  # Combined Stress, default false, optional
     OPT_REACTIONS: bool  # Reactions, default false, optional

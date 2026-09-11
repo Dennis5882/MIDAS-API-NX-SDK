@@ -330,15 +330,12 @@ transcription.
 - **35 internal tracker ids were removed from `src/midas_nx` docstrings**; they
   had been reaching every PyPI install and seven places in the npm package.
 
-## One small follow-up, and it is yours
+## One small follow-up — completed
 
-`/db/MVCTbs`, `/db/MVCTid` and `/db/MVCTtr` now declare `UNUMT` and `DIST` as
-branch-conditional in their contracts, and the npm types followed. The Python
-TypedDicts in `src/midas_nx/db/analysis_control.py` still carry a trailing
-`# ... required` on both, which is now the manual's requiredness stated without
-the branch that governs it — the same defect class as MD-16. Update the comment
-to name the condition; do not change the annotations, since a TypedDict here is
-documentation and the contract is the source.
+Completed after the first Task E batch. `/db/MVCTbs`, `/db/MVCTid` and
+`/db/MVCTtr` now name the governing `iIGP` / `INFL_GEN_POINT` value in the
+Python TypedDict comments. The annotations did not change; the contracts remain
+the source for branch-conditional requiredness.
 
 ## Three decisions that are open and are not yours
 
