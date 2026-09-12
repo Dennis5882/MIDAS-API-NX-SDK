@@ -1,9 +1,18 @@
 # Codex task prompt — mechanical work only
 
-Updated 2026-09-06 at `acbbec4`. **2.8.0 is published** on both registries —
-that release carried the `UNUMT`/`DIST` optionality. Nothing in either packaged
-surface has changed since, so **no release is warranted right now**; when one
-is, the number is the author's call.
+Updated 2026-09-12 at `64c4b56`, after the previous round's sixteen commits
+were reviewed and pushed. **2.8.0 is published** on both registries — that
+release carried the `UNUMT`/`DIST` optionality. Nothing in either packaged
+surface has changed since: the last round touched contracts, fixtures, the
+extractor and docs, and **the generated npm types did not move**. So **no
+release is warranted right now**; when one is, the number is the author's call.
+
+**What the previous round actually did**, because the numbers below have all
+moved: 21 `safeToOmit` claims grounded in recorded live calls with a guard in
+the extractor so the derivation can no longer outrun its evidence (Task C, now
+closed); 21 unmerged tables merged, 93 → 72 (Task E); five case-less endpoints
+given honest unconfirmed cases (Task A). The `/db/NMAS` trap in Task C was
+spotted and refused, which is the outcome that task was written to test.
 
 **The division, set by the author.** Judgment-heavy work — schema design,
 deciding what a contradictory manual means, deciding what stays unmerged — is
@@ -12,7 +21,19 @@ measured starting number you can check your run against. A task that turns out
 to need a judgment call is one to **stop and report**, not to decide.
 
 **Read "The one thing that is red, and is not yours" before anything else.**
-Then: Task A if a product session is available, Task C if not.
+
+Then, in this order, because the offline queue is now empty and the live one is
+not:
+
+1. **Task B-1** — run the five cases added last round but never run. Cheapest
+   write coverage left, and the only work here with no prior failure to explain.
+2. **Task B-2** — the 22 that have failed, starting from the offline leads.
+3. **Task A** — build cases for the 25 buildable endpoints with none.
+
+Task C is closed and Task E's mechanical set is exhausted; both sections stay
+because they say what re-opens them. **If no product session is available,
+report that rather than inventing offline work** — the last round finished the
+offline queue, and the honest answer is that this round needs a product.
 
 ---
 
@@ -22,7 +43,7 @@ Run these first and confirm you see the same numbers. **If any differ, say so
 before starting** — it means something moved under you.
 
 ```bash
-python -m pytest -q                       # 1050 passed, 1 FAILED - EXPECTED
+python -m pytest -q                       # 1051 passed, 1 FAILED - EXPECTED
 ruff check src tests scripts && mypy      # clean
 python scripts/validate_contracts.py      # OK; 381 endpoints, 5061 fields,
                                           # 140 proven safe, 8 unsafe,
@@ -44,11 +65,12 @@ cd packages/typescript && npm run generate && npm run typecheck && npm test
 ```
 
 Coverage as `ROADMAP.md` reports it: **399/399 implemented, 191 write / 208
-read.** `schema/live-cases.json` is **version 5**: 200 cases over 180
-endpoints, 165 confirmed, 9 base-model steps, 62 named seeds, and 3 unsupported
-seeds named with their reason. npm live evidence: **60 `/db` endpoints**.
-Drafts: 3, the IEHG trio, refused for a reason that will not go away — that is
-the finished state, not a backlog.
+read** — unchanged, because the last round added cases nobody has run.
+`schema/live-cases.json` is **version 5**: 206 cases over 185 endpoints, 165
+confirmed, 9 base-model steps, 63 named seeds. npm live evidence: **60 `/db`
+endpoints**. `extraction.unmergedTables`: **72 tables, 482 names, 15
+contracts**. Drafts: 3, the IEHG trio, refused for a reason that will not go
+away — that is the finished state, not a backlog.
 
 > If a number here disagrees with a command's output, **the command wins** —
 > say so in your report.
@@ -62,18 +84,28 @@ the finished state, not a backlog.
 One pytest case fails —
 `test_shipped_contracts_still_match_the_manual_if_it_is_present` — and
 `check_manual_drift.py` reports `has_diff: true` over ten chapters. Both are
-detecting the same thing: the sibling manual repo at `E:\AI Study\MIDAS-API`
-is two local commits ahead of its origin: `205d5f0 docs: 정기 점검 (2026-09-06)`
-and follow-up `ff88259 docs(manual): ope/MEMB 요청 키 AELEM 재정정, SSEIS 원문
-오염 로케일별 명시`. This repository and the manual repo's `origin/main`
-still record `7920759`; the extraction check now reports 16 disagreements
-because the follow-up removed the two `/ope/MEMB` differences.
-The manual working tree is currently clean, but those unpushed commits are
-external drift all the same. Do not consume or edit them from this repository.
+detecting the same thing: this repository records `vendored_at_commit`
+`7920759`, and the sibling manual repo at `E:\AI Study\MIDAS-API` has moved
+four commits past it:
 
-**Those commits are not ready to be reflected.** The author is still checking
-them, and they have not been pushed to the manual repo's own
-`origin/main`. `CLAUDE.md` records the pattern: a bulk `정기 점검` sync is
+| commit | what it is |
+| --- | --- |
+| `205d5f0` | `docs: 정기 점검 (2026-09-06)` — the bulk sync |
+| `ff88259` | `/ope/MEMB` 요청 키 AELEM 재정정, SSEIS 원문 오염 로케일별 명시 |
+| `0270fad` | `/ope/MEMB` 요청 키 **ELEM_LIST로 복귀** (한/영 로케일 분기 확인) |
+| `f868e41` | `check_diff`에 로케일 판정 추가 |
+
+**All four are pushed; the manual repo's `origin/main` is `f868e41` and its
+working tree is clean.** An earlier version of this section said they were
+unpushed local commits — that is no longer true, and it changes nothing about
+what you may do. CI clones that origin, which is why the red is now the same
+red locally and in Actions. The extraction check reports **15 disagreements**;
+the two `/ope/MEMB` ones came off when `0270fad` reverted to the key this
+repository had already measured. Do not consume or edit those commits from
+here.
+
+**Those commits are still not ready to be reflected.** The author is checking
+them. `CLAUDE.md` records the pattern: a bulk `정기 점검` sync is
 often followed within a day by self-audit `fix(manual):` commits correcting its
 own transcription, and this repository has already been burned by treating one
 as final.
@@ -83,15 +115,23 @@ clear. Concretely, do not:
 
 - edit any contract to match the new manual text,
 - touch `vendored_at_commit`,
-- re-anchor the twelve `extraction.unmergedTables` entries whose titles and line
-  numbers the sync moved (`db-this.yaml` ×10, `db-this-m1.yaml`, `db-splc.yaml`),
+- re-anchor the ten `extraction.unmergedTables` entries in `db-this.yaml` whose
+  titles and line numbers the sync moved,
 - add the four fields the sync documents (`db-matd.yaml`'s `bSERVCHECK`,
   `dSHORTTERM`, `dLONGTERM`; `db-tdna.yaml`'s `bPJ` under `SHAPE='CURVE'`),
 - or `git -C "E:\AI Study\MIDAS-API" checkout`/`reset` anything to make the
   check pass. **The manual repo is not yours to change.**
 
+That list said twelve entries last round and says ten now. `db-this-m1.yaml`'s
+and `db-splc.yaml`'s came off legitimately: both tables were **merged**, not
+re-anchored, and both sections are byte-identical at `7920759` and at the
+manual's current `f868e41`, so the text they were transcribed from is the
+vendored text either way. That is the only way an entry may leave this list —
+**prove the section did not move, in your report, before you touch one.**
+
 If you find yourself with a green `extract_contracts --check`, you have done
-something on this list — say so and revert it.
+something on this list — say so and revert it. A drop in the count is not the
+same thing: it has to come with the two sentences above.
 
 The work is real and will come back as its own task once the author has
 verified the sync. It is written down here so nobody rediscovers it as a
@@ -111,30 +151,40 @@ written against, and you will "find" disagreements that are just this drift.
 
 ---
 
-## Task A — the 33 `/db` endpoints with no live case at all
+## Task A — the 28 `/db` endpoints with no live case at all
 
 **Live. Destructive: `/doc/NEW`.** The largest single block of remaining work,
 and the only one that moves `ROADMAP.md`'s write count.
 
-55 `/db` endpoints are still short of write level. 22 have a case that has
-never passed (Task B). The other **33 have no case at all**:
+55 `/db` endpoints are still short of write level. 27 have a case (Task B).
+The other **28 have no case at all**:
 
 | chapter | count | endpoints |
 | --- | ---: | --- |
-| 04 Properties | 13 | `EPMT`, `EPMT-M1`, `FIBR`, `FIMP`, `IEHC`, `IEHG`, `IEHG-BEAM-M1`, `IEHG-GL-M1`, `IEHG-PSS-M1`, `IEHG-TRUSS-M1`, `IMFM`, `IMFM-M1`, `MATD` |
-| 07 Temperature/Prestress | 7 | `EXLD`, `PRST`, `PTNS`, `TDCS`, `TDNA`, `TDNT`, `TDPL` |
-| 14 Pushover | 6 | `IEPI`, `PHGE`, `POGD`, `POGD-M1`, `POLC`, `POLC-M1` |
-| 08 Moving Loads | 1 | `MVLDbs` |
+| 04 Properties | 9 | `EPMT`, `EPMT-M1`, `FIBR`, `FIMP`, `IEHC`, `IEHG`, `IEHG-BEAM-M1`, `IMFM`, `IMFM-M1` |
+| 07 Temperature/Prestress | 5 | `PTNS`, `TDCS`, `TDNA`, `TDNT`, `TDPL` |
+| 14 Pushover | 4 | `PHGE`, `POGD`, `POGD-M1`, `POLC-M1` |
 | 24 Design | 4 | `RCHK`, `REBB`, `REBR`, `REBW` |
+| — no permitted source | 3 | `IEHG-GL-M1`, `IEHG-PSS-M1`, `IEHG-TRUSS-M1` |
+| 08 Moving Loads | 1 | `MVLDbs` |
 | 05 Boundary | 1 | `DRLS` |
 | 10 Construction Stage | 1 | `CSCS` |
 
-The three `/db/MVCT*` analysis-control siblings are now confirmed, and four of
-the five `/db/MVLD*` endpoints have honest unconfirmed cases (Task B). The one
-remaining endpoint with no case is `/db/MVLDbs`: its contract marks mutually
-exclusive `LCDATA_*` objects required together, and representing its two-value
-ALL_MODE condition needs a contract-shape decision. Do not waive the fixture
-gate or run it until that decision is made.
+Five came off this list in the last round — `/db/IEPI`, `/db/EXLD`, `/db/PRST`,
+`/db/POLC`, `/db/MATD` — and **none of them is finished**. They have cases
+nobody has run, which is why `ROADMAP.md`'s write count did not move. Running
+them is the first item of Task B.
+
+`/db/TDNA` is on this list and `db-tdna.yaml` is also named in the red section:
+the sync documents a `bPJ` under `SHAPE='CURVE'` that you may not add. A case
+for `/db/TDNA` must be built from the section at `7920759`, which has no such
+field. If the fixture you derive needs it, stop — that is the sync asking to be
+reflected through a side door.
+
+`/db/MVLDbs` still has no case: its contract marks mutually exclusive
+`LCDATA_*` objects required together, and representing its two-value ALL_MODE
+condition needs a contract-shape decision. Do not waive the fixture gate or run
+it until that decision is made.
 **Which moving-load code a product offers decides what can be written at all** —
 `POST /db/MVCD` answers "Unavailable moving load code" on Gen NX for `CHINA`,
 `INDIA` and `KOREA`. Split the cases per product rather than writing one
@@ -183,12 +233,24 @@ its own field *names*, and `REBB`/`REBW` are on this list.
 
 ---
 
-## Task B — the 22 that have a case and have never passed
+## Task B — the 27 that have a case and no passing run
 
-**Live.** The original 18 were re-run on build 09/02/2026 on 2026-09-05 and
-still fail; the table of what each answers is in the live notes. Four manual
-moving-load cases joined on 2026-09-06 and carry their exact current errors in
-that file.
+**Live. Start with the five, they are the cheapest write coverage left.**
+
+**B-1: five nobody has run at all.** `/db/IEPI`, `/db/EXLD`, `/db/PRST`,
+`/db/POLC` (split gen/civil), `/db/MATD`. Added 2026-09-12 in tier `extras15`,
+built from the vendored manual's own request bodies, and clean against
+`check_fixture_contract.py`. They have never touched a product. Two depend on
+the `prestress_load_cases` seed, `/db/MATD` PUTs the base model's material 1,
+and `/db/POLC`'s Gen-only stopping conditions are already split out — so the
+whole batch is one selection in one session. **This is the only item here with
+no prior failure to explain**, which makes it the highest yield per run and
+the honest first thing to do.
+
+**B-2: 22 that have failed.** The original 18 were re-run on build 09/02/2026
+on 2026-09-05 and still fail; the table of what each answers is in the live
+notes. Four manual moving-load cases joined on 2026-09-06 and carry their exact
+current errors in that file.
 
 `/db/ACTL`, `/db/CGLP`, `/db/DOEL`, `/db/EPSE`, `/db/EPST`, `/db/FBLA`,
 `/db/HPCE`, `/db/MADO`, `/db/MVCT`, `/db/MVLDch`, `/db/MVLDeu`,
@@ -248,6 +310,16 @@ the matching branch, different branch, and different product forms. This does
 not try to infer which `/info` fields are response-only; those still require
 review rather than an automatic `true`.
 
+**What re-opens it, and this is the part to carry forward.** The derivation
+runs at draft time and nothing revisits it — that is exactly how 60 fields
+drifted out of date behind a green CI. Every Task B run that flips a case to
+`confirmed=True` adds evidence this survey has not seen. So **re-run the survey
+at the end of any session that confirms a case**, and say in your report how
+many candidates it names; do not let the next round rediscover a stale number.
+The 36 still-`unverified` rows in `docs/safe_to_omit_survey.md` each name the
+branch or product that would settle them, so a run that exercises one is a
+direct answer rather than a new investigation.
+
 ---
 
 ## Task D — closed, and it was never a task
@@ -270,15 +342,16 @@ that says when they apply. 38 of 81 findings were the checker.
 
 ---
 
-## Task E — merge the unmerged extraction tables, easiest first
+## Task E — merge the unmerged extraction tables: your part is done
 
-**Offline. The measurement is done; the merging is not, and most of it is
-Claude's.** Read each manual section at the vendored commit `7920759`, not in
-the working tree — twelve of these entries anchor at titles and line numbers
-the unreflected 2026-09-06 sync has already moved.
+**Offline. Do not start here.** The mechanical set is exhausted, and the next
+section says so with the evidence. Read it before deciding otherwise. Read any
+manual section at the vendored commit `7920759`, not in the working tree — ten
+of these entries anchor at titles and line numbers the unreflected 2026-09-06
+sync has already moved.
 
 `docs/unmerged_tables_against_info.md` splits the 72 tables (482 field names)
-that 19 contracts declare missing:
+that 15 contracts declare missing:
 
 | what the measurement found | tables |
 | --- | ---: |
@@ -288,7 +361,11 @@ that 19 contracts declare missing:
 | partly declared | 1 |
 | outside `/info`'s reach (`/view`, `/ope`) | 11 |
 
-**Your remaining part is the 32.** The first three-table batch merged
+**Eleven batches merged 21 tables and 120 names, 93 → 72, and then an audit
+found nothing mechanical left among the 32.** The batch history below is kept
+because it names what each merge preserved — conditions, gates, nesting — and
+that is the standard the next merge has to meet, whoever does it. The first
+three-table batch merged
 `/db/THIS-M1`'s `BOUNDARY_NL_ANAL`, `/db/STCT`'s Linear & Independent Stage,
 and `/db/ELEM`'s Beam/Truss/Plane Strain/Axisymmetric table. A second batch
 removed three stale `/db/TDME` unmerged markers whose tables were already
@@ -378,6 +455,17 @@ transcription.
   products** — 13 endpoints, write coverage 173 → 185, npm evidence 47 → 55.
 - **35 internal tracker ids were removed from `src/midas_nx` docstrings**; they
   had been reaching every PyPI install and seven places in the npm package.
+- **`safeToOmit` can no longer outrun its evidence.** The derivation used to
+  compare key sets and nothing else, which is how `/db/LLAN` manufactured ten
+  claims from a nesting mismatch. It now requires the confirmed case to have
+  satisfied every `appliesWhen` predicate and to have run on a product the
+  field applies to, with tests for the matching branch, a different branch and
+  a different product.
+- **A merged table keeps its conditions.** Across eleven batches the merges
+  preserved heading-level gates (`iINC_NLA in [1, 2]`, `iNLA_TYPE=1`), field-
+  level ones (`DIR=6` on `DV`, `ELEMTYPE in [BEAM, PLATE]` on `PARTS`), and
+  `/info`-settled nesting — and `/db/NSPR`, `/db/IMPF` and `/db/NLCT-M1` moved
+  their npm payload generation off the Python fallback as a consequence.
 
 ## One small follow-up — completed
 
@@ -386,11 +474,29 @@ Completed after the first Task E batch. `/db/MVCTbs`, `/db/MVCTid` and
 Python TypedDict comments. The annotations did not change; the contracts remain
 the source for branch-conditional requiredness.
 
-## Three decisions that are open and are not yours
+## Five decisions that are open and are not yours
 
 - **Whether the 2026-09-06 manual sync is correct.** The author is checking it
   and has said outright that it still has errors. Until that finishes, nothing
   in this repository moves toward it — see the red-and-not-yours section.
+- **`/db/SPLC`'s `NDP` requiredness.** Merging the 비소산 요소 설계 table gave
+  the contract a Gen-only `NDP` marked `required` with no condition, and the
+  confirmed Gen case — which passed before the field existed — omits it, so
+  `check_fixture_contract.py` now carries it as a live-confirmed contract gap.
+  The manual numbers it `(1)` beneath the Optional `bNDP` switch, which reads
+  as a branch but is never stated as a wire rule. Leaving it as a baseline
+  entry was right. **Do not resolve it either way**: an `appliesWhen` nobody
+  documented and a `safeToOmit: true` for a field that did not exist when the
+  call ran are both claims the sources do not support. This is MD-16's shape —
+  requiredness stated without the branch that governs it — and it is the
+  author's call.
+- **`/db/THIS-M1`'s 20 unrecorded `/info` properties.** Closing that contract's
+  last unmerged table made the standing `/info` comparison visible for the
+  first time, and 20 properties have no row in the vendored manual. The ceiling
+  in `info_baseline.py` records the number without claiming they are request
+  fields, which is the right holding position. Deciding what they are needs the
+  weak-reading rule: `/info` declaring a property is not the server accepting
+  only those. Do not raise that ceiling to absorb anything new.
 - **`/db/SPLC`'s cross-tier id collision.** extras4's Civil-only
   `lcom_seismic_splc` seed creates `/db/SPLC` id 1 and extras5's Civil case owns
   the same id, so the pair answers `Key Already Exist` for a shape both products
@@ -452,6 +558,13 @@ the source for branch-conditional requiredness.
   `src/midas_nx` docstrings on 2026-09-05, and one survived into
   `docs/release_notes_v2.7.9.md` and had to be scrubbed before the release went
   out. `docs/` working files are where that mapping lives.
+- **An official article has a locale, and the locales differ.** Help-centre
+  article 49514964272665 carries the same id and the same `updated_at` in `ko`
+  and `en-us` and a **different request example in each** — that is MD-52, and
+  it is how a documentation dispute ran for a round with both sides reading
+  real text. When you quote the official source, name the locale you read; a
+  citation without one is not checkable. `f868e41` in the manual repo adds a
+  locale judgement to its own sync checker for the same reason.
 - **A 200 does not mean success**, and error bodies also arrive under 201.
 - **`DELETE {endpoint}` with an ID-keyed body empties the whole table.**
 - **Never commit a GET response body** — it is the author's model contents.
