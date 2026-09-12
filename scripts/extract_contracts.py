@@ -500,7 +500,11 @@ def _normalize_type(cell: str) -> tuple[Optional[str], Optional[dict], Optional[
         # form also appears without the outer ``Array[...]`` in older tables.
         inner, _, note = _normalize_type(fixed_array.group(1))
         return "array", ({"type": inner} if inner else None), note
-    array = re.match(r"^Array\s*\[\s*(.+?)\s*\]$", text, re.IGNORECASE)
+    array = re.match(
+        r"^Array\s*\[\s*(.+?)\s*\](?:\s*\([^)]*\))?$",
+        text,
+        re.IGNORECASE,
+    )
     if array:
         # ``Array[{PY, PZ}]`` is the manual's compact spelling for an array of
         # objects. Its named members still have to appear in adjacent rows;
@@ -584,6 +588,13 @@ def _type_constraints(cell: str) -> dict[str, Any]:
     if compact_array:
         length = int(compact_array.group(1))
         return {"minItems": length, "maxItems": length}
+    minimum_array = re.fullmatch(
+        r"Array\s*\[[^]]+\]\s*\(\s*≥\s*(\d+)\s*개\s*\)",
+        text,
+        re.IGNORECASE,
+    )
+    if minimum_array:
+        return {"minItems": int(minimum_array.group(1))}
     string_length = re.fullmatch(r"String\s*\(\s*(\d+)\s*\)", text, re.IGNORECASE)
     if string_length:
         length = int(string_length.group(1))
@@ -1215,8 +1226,17 @@ class StructuralTableMerge:
 class StructuralTableRequirements:
     """Requiredness stated once for a supplementary table and its exceptions."""
 
-    default: str
-    overrides: tuple[tuple[str, str], ...] = ()
+    default: Optional[str]
+    overrides: tuple[tuple[str, Optional[str]], ...] = ()
+    conditions: tuple[
+        tuple[
+            str,
+            str,
+            str,
+            tuple[str | int | float | bool, ...],
+        ],
+        ...,
+    ] = ()
 
 
 # The paths below are transcriptions of the parameter headings and surrounding
@@ -1286,12 +1306,15 @@ _STRUCTURAL_TABLE_SPLITS: dict[str, tuple[StructuralTableMerge, ...]] = {
     # discriminator, so retain that scope on the fields without inventing a
     # branch between bNDP and NDP.
     "/db/SPLC": (StructuralTableMerge(4, ((),), ("gen",)),),
-    # The heading names ADVANCED and states that the object is wholly optional;
-    # its first row alone says Required. The LOAD_STEPS table stays unmerged:
-    # some descriptions say "required" while others only say "used when", so
-    # treating every selector phrase as conditional requiredness would overstate
-    # the manual.
-    "/db/NLCT-M1": (StructuralTableMerge(3, (("ADVANCED",),)),),
+    # Both headings name their destination object. LOAD_STEPS keeps the
+    # difference between descriptions that explicitly say "required" and
+    # descriptions that only say a field is used under a selector; ADVANCED's
+    # heading states table-wide optionality and its first row alone says
+    # Required.
+    "/db/NLCT-M1": (
+        StructuralTableMerge(1, (("LOAD_STEPS",),)),
+        StructuralTableMerge(3, (("ADVANCED",),)),
+    ),
     # Tables 1-4 each name one destination object in the heading and carry rows
     # that parse to it directly, including TIME_DEP_CONTROL's dotted
     # `CREEP_SHRINKAGE.*` keys and the `"bTTLE_ES"` / `"iTTLE_ES"` cell, both of
@@ -1381,6 +1404,27 @@ _STRUCTURAL_TABLE_REQUIREMENTS: dict[
     ("/db/NLCT-M1", 3): StructuralTableRequirements(
         "optional",
         (("OPT_USE_DEFAULT", "required"),),
+    ),
+    ("/db/NLCT-M1", 1): StructuralTableRequirements(
+        None,
+        (
+            ("STEP_MODE", "required"),
+            ("NUMBER_STEPS", "conditional"),
+            ("OUTPUT", "conditional"),
+            ("MAX_DISP", "conditional"),
+        ),
+        (
+            ("NUMBER_STEPS", 'STEP_MODE="AUTO"일 때 필수', "STEP_MODE", ("AUTO",)),
+            ("OUTPUT", 'STEP_MODE="AUTO"일 때 필수', "STEP_MODE", ("AUTO",)),
+            ("MANUAL_STEPS", 'STEP_MODE="MANUAL"일 때', "STEP_MODE", ("MANUAL",)),
+            ("MIN_ARC_RATIO", 'ITER_METHOD="ARC"', "ITER_METHOD", ("ARC",)),
+            ("MAX_ARC_RATIO", 'ITER_METHOD="ARC"', "ITER_METHOD", ("ARC",)),
+            ("MAX_ARC_INCREMENTS", 'ITER_METHOD="ARC"', "ITER_METHOD", ("ARC",)),
+            ("MASTER_NODE", 'ITER_METHOD="DISP"', "ITER_METHOD", ("DISP",)),
+            ("MAX_DISP", 'ITER_METHOD="DISP"', "ITER_METHOD", ("DISP",)),
+            ("DIRECTION", 'ITER_METHOD="DISP"', "ITER_METHOD", ("DISP",)),
+            ("REF_NODE", 'ITER_METHOD="DISP"', "ITER_METHOD", ("DISP",)),
+        ),
     ),
 }
 
@@ -2190,6 +2234,38 @@ def _apply_structural_table_requirements(
     overrides = dict(claims.overrides)
     for field in fields:
         field.requirement = overrides.get(field.key, claims.default)
+    by_key = {field.key: field for field in fields}
+    for key, condition, path, values in claims.conditions:
+        field = by_key.get(key)
+        if field is None:
+            continue
+        field.condition = condition
+        field.applies_when = [(path, values)]
+
+    if endpoint == "/db/NLCT-M1" and table_index == 1:
+        # REF_NODE's two children are stated inline in its own Description
+        # rather than as rows. Preserve exactly those type/required/default
+        # claims; the prose does not state NODE's requiredness.
+        ref_node = by_key.get("REF_NODE")
+        if ref_node is not None:
+            ref_node.properties = [
+                ParsedField(
+                    key="OPT_USE",
+                    description="기준(상대) 절점 사용 여부",
+                    type="boolean",
+                    items=None,
+                    requirement="required",
+                    documented_default=None,
+                ),
+                ParsedField(
+                    key="NODE",
+                    description="기준(상대) 절점 ID",
+                    type="integer",
+                    items=None,
+                    requirement=None,
+                    documented_default=0,
+                ),
+            ]
 
 
 _SCHEMA_TRANSPORT_WRAPPERS = frozenset({"Argument", "Assign"})

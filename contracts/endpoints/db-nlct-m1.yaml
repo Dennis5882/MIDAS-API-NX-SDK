@@ -132,6 +132,167 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+    properties:
+      - key: STEP_MODE
+        description: >-
+          스텝 모드 (Required). ITER_METHOD="ARC"일 때는 UI상 "AUTO"로 고정
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        enum: [AUTO, MANUAL]
+        safeToOmit: unverified
+        provenance: manual
+      - key: NUMBER_STEPS
+        description: 스텝 수 (STEP_MODE="AUTO"일 때 필수)
+        type: integer
+        minimum: 1
+        requirement: conditional
+        condition: STEP_MODE="AUTO"일 때 필수
+        appliesWhen:
+          - path: LOAD_STEPS.STEP_MODE
+            equals: AUTO
+        documentedDefault: 1
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: OUTPUT
+        description: 중간 출력 (STEP_MODE="AUTO"일 때 필수)
+        type: string
+        requirement: conditional
+        condition: STEP_MODE="AUTO"일 때 필수
+        appliesWhen:
+          - path: LOAD_STEPS.STEP_MODE
+            equals: AUTO
+        documentedDefault: EVERY
+        documentedOptional: false
+        enum: [EVERY, LAST]
+        safeToOmit: unverified
+        provenance: manual
+      - key: MANUAL_STEPS
+        description: 사용자 정의 스텝 목록 (STEP_MODE="MANUAL"일 때)
+        type: array
+        items:
+          type: number
+        minItems: 1
+        requirement: unstated
+        condition: STEP_MODE="MANUAL"일 때
+        appliesWhen:
+          - path: LOAD_STEPS.STEP_MODE
+            equals: MANUAL
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: manual
+      - key: MIN_ARC_RATIO
+        description: (ITER_METHOD="ARC") 최소 호장 조정 비율
+        type: number
+        exclusiveMinimum: 0
+        requirement: unstated
+        condition: ITER_METHOD="ARC"
+        appliesWhen:
+          - path: ITER_METHOD
+            equals: ARC
+        documentedDefault: 0.25
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: manual
+      - key: MAX_ARC_RATIO
+        description: (ITER_METHOD="ARC") 최대 호장 조정 비율
+        type: number
+        exclusiveMinimum: 0
+        requirement: unstated
+        condition: ITER_METHOD="ARC"
+        appliesWhen:
+          - path: ITER_METHOD
+            equals: ARC
+        documentedDefault: 4
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: manual
+      - key: MAX_ARC_INCREMENTS
+        description: (ITER_METHOD="ARC") 최대 호장 증분 수
+        type: integer
+        minimum: 1
+        requirement: unstated
+        condition: ITER_METHOD="ARC"
+        appliesWhen:
+          - path: ITER_METHOD
+            equals: ARC
+        documentedDefault: 100
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: manual
+      - key: MASTER_NODE
+        description: (ITER_METHOD="DISP") 주 절점 ID
+        type: integer
+        requirement: unstated
+        condition: ITER_METHOD="DISP"
+        appliesWhen:
+          - path: ITER_METHOD
+            equals: DISP
+        documentedDefault: 0
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: manual
+      - key: MAX_DISP
+        description: >-
+          (ITER_METHOD="DISP") 최대 변위 — 서버가 0을 채우면 검증 실패하므로 명시적 값 필수
+        type: number
+        notEqual: 0
+        requirement: conditional
+        condition: ITER_METHOD="DISP"
+        appliesWhen:
+          - path: ITER_METHOD
+            equals: DISP
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: DIRECTION
+        description: (ITER_METHOD="DISP") 방향
+        type: string
+        requirement: unstated
+        condition: ITER_METHOD="DISP"
+        appliesWhen:
+          - path: ITER_METHOD
+            equals: DISP
+        documentedDefault: DX
+        documentedOptional: null
+        enum: [DX, DY, DZ]
+        safeToOmit: unverified
+        provenance: manual
+      - key: REF_NODE
+        description: >-
+          (ITER_METHOD="DISP") 기준(상대) 절점 — 하위 OPT_USE(Boolean, Required)/NODE(Integer,
+          OPT_USE=false시 기본 0)
+        type: object
+        requirement: unstated
+        condition: ITER_METHOD="DISP"
+        appliesWhen:
+          - path: ITER_METHOD
+            equals: DISP
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: OPT_USE
+            description: 기준(상대) 절점 사용 여부
+            type: boolean
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+          - key: NODE
+            description: 기준(상대) 절점 ID
+            type: integer
+            requirement: unstated
+            documentedDefault: 0
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
   - key: CONV_CRITERIA
     description: >-
       Convergence Criteria
@@ -394,20 +555,15 @@ knownDefects:
 extraction:
   source: 12_DB_Analysis_Control.md line 1847
   table: Parameters — 공통
-  # Additional parameter tables in this section were NOT merged. They are
-  # usually conditional variants selected by a type/code field. Decide
-  # whether they belong in this contract's fields, as nested `properties`,
-  # or as a separate contract - do not assume the first table is the whole
-  # schema.
-  unmergedTables:
-    - heading: "Parameters — LOAD_STEPS 객체 (`ITER_METHOD`별 사용 필드가 다름)"
-      resolution: "The nested LOAD_STEPS, CONV_CRITERIA, and ADVANCED tables describe objects and conditions but do not state a complete wire discriminator for each table; left unmerged."
-      fields: 11
-      line: 1864
-      fieldNames: ["STEP_MODE", "NUMBER_STEPS", "OUTPUT", "MANUAL_STEPS", "MIN_ARC_RATIO",
-                   "MAX_ARC_RATIO", "MAX_ARC_INCREMENTS", "MASTER_NODE", "MAX_DISP",
-                   "DIRECTION", "REF_NODE"]
   structuralTables:
+    - heading: "Parameters — LOAD_STEPS 객체 (`ITER_METHOD`별 사용 필드가 다름)"
+      line: 1864
+      paths: [LOAD_STEPS]
+      note: >-
+        Each row keeps its own literal selector. Only STEP_MODE, the two AUTO
+        fields and MAX_DISP are called Required; applicability alone is not
+        promoted into conditional requiredness. REF_NODE's two inline children
+        retain only the type, requiredness and default claims the row states.
     - heading: Parameters — CONV_CRITERIA 객체
       line: 1882
       paths: [CONV_CRITERIA.DISP, CONV_CRITERIA.DISP.OPT_USE,

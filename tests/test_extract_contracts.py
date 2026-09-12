@@ -518,6 +518,14 @@ def test_fixed_length_array_forms_are_transcribed_without_nesting(
     assert ex._type_constraints(manual_type) == {"minItems": length, "maxItems": length}
 
 
+def test_array_item_type_with_a_minimum_count_suffix_is_transcribed():
+    """NLCT-M1 states both Number items and a one-item minimum in one cell."""
+    manual_type = "Array [Number] (≥1개)"
+
+    assert ex._normalize_type(manual_type) == ("array", {"type": "number"}, None)
+    assert ex._type_constraints(manual_type) == {"minItems": 1}
+
+
 def test_compact_object_arrays_and_literal_type_cells_are_transcribed_without_guessing():
     assert ex._normalize_type("Array[{PY, PZ}]") == ("array", {"type": "object"}, None)
     assert ex._normalize_type('"KDS(41-17-00:2019)"') == ("string", None, None)
@@ -1034,10 +1042,10 @@ def test_impf_factor_tables_merge_into_items_and_keep_parts_element_gate():
     ]
 
 
-def test_nlct_m1_advanced_table_uses_heading_optionality_and_row_override(
+def test_nlct_m1_tables_preserve_required_and_applicable_branch_claims(
     tmp_path: Path,
 ):
-    """The ADVANCED heading scopes Optional; its first row explicitly overrides it."""
+    """LOAD_STEPS and ADVANCED keep the exact strength of each manual claim."""
     path = tmp_path / "12_DB_Analysis_Control.md"
     path.write_text(
         '''## 16. `/db/NLCT-M1` -- nonlinear control
@@ -1045,12 +1053,17 @@ def test_nlct_m1_advanced_table_uses_heading_optionality_and_row_override(
 ### Parameters — 공통
 | Key | Value Type | Default | Required |
 |---|---|---|---|
+| `LOAD_STEPS` | Object | - | Required |
 | `ADVANCED` | Object | - | Optional |
 
 ### Parameters — LOAD_STEPS 객체
 | Key | Value Type | Default | Description |
 |---|---|---|---|
-| `STEP_MODE` | String | - | mode |
+| `STEP_MODE` | String (enum: `"AUTO"`/`"MANUAL"`) | - | 스텝 모드 (Required) |
+| `NUMBER_STEPS` | Integer (≥1) | 1 | 스텝 수 (`STEP_MODE="AUTO"`일 때 필수) |
+| `MANUAL_STEPS` | Array [Number] (≥1개) | - | 사용자 정의 스텝 목록 (`STEP_MODE="MANUAL"`일 때) |
+| `MAX_DISP` | Number (0 금지) | - | (`ITER_METHOD="DISP"`) 최대 변위 — 명시적 값 필수 |
+| `REF_NODE` | Object | - | (`ITER_METHOD="DISP"`) 기준 절점 — 하위 `OPT_USE`(Boolean, Required)/`NODE`(Integer, `OPT_USE=false`시 기본 0) |
 
 ### Parameters — CONV_CRITERIA 객체
 | Key | Value Type | Default | Description |
@@ -1069,7 +1082,22 @@ def test_nlct_m1_advanced_table_uses_heading_optionality_and_row_override(
     section = ex.parse_chapter(path)[0]
     fields, resolved = ex._structural_fields(section)
 
-    assert [merge.table for merge in resolved] == [3]
+    assert [merge.table for merge in resolved] == [1, 3]
+    load_steps = next(field for field in fields if field.key == "LOAD_STEPS")
+    load_by_key = {field.key: field for field in load_steps.properties}
+    assert load_by_key["STEP_MODE"].requirement == "required"
+    assert load_by_key["NUMBER_STEPS"].requirement == "conditional"
+    assert load_by_key["NUMBER_STEPS"].applies_when == [("STEP_MODE", ("AUTO",))]
+    assert load_by_key["MANUAL_STEPS"].requirement is None
+    assert load_by_key["MANUAL_STEPS"].applies_when == [("STEP_MODE", ("MANUAL",))]
+    assert load_by_key["MANUAL_STEPS"].items == {"type": "number"}
+    assert load_by_key["MANUAL_STEPS"].constraints == {"minItems": 1}
+    assert load_by_key["MAX_DISP"].requirement == "conditional"
+    assert load_by_key["MAX_DISP"].applies_when == [("ITER_METHOD", ("DISP",))]
+    assert [(field.key, field.requirement) for field in load_by_key["REF_NODE"].properties] == [
+        ("OPT_USE", "required"),
+        ("NODE", None),
+    ]
     advanced = next(field for field in fields if field.key == "ADVANCED")
     assert [(field.key, field.requirement) for field in advanced.properties] == [
         ("OPT_USE_DEFAULT", "required"),

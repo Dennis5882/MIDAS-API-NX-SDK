@@ -22,9 +22,9 @@ Run these first and confirm you see the same numbers. **If any differ, say so
 before starting** — it means something moved under you.
 
 ```bash
-python -m pytest -q                       # 1049 passed, 1 FAILED - EXPECTED
+python -m pytest -q                       # 1050 passed, 1 FAILED - EXPECTED
 ruff check src tests scripts && mypy      # clean
-python scripts/validate_contracts.py      # OK; 381 endpoints, 5048 fields,
+python scripts/validate_contracts.py      # OK; 381 endpoints, 5061 fields,
                                           # 140 proven safe, 8 unsafe,
                                           # 0 unresolved manual contradictions
 python scripts/check_manual_drift.py --manual-api-repo "E:\AI Study\MIDAS-API"
@@ -275,18 +275,18 @@ Claude's.** Read each manual section at the vendored commit `7920759`, not in
 the working tree — twelve of these entries anchor at titles and line numbers
 the unreflected 2026-09-06 sync has already moved.
 
-`docs/unmerged_tables_against_info.md` splits the 73 tables (493 field names)
+`docs/unmerged_tables_against_info.md` splits the 72 tables (482 field names)
 that 19 contracts declare missing:
 
 | what the measurement found | tables |
 | --- | ---: |
-| whole table declared, **one `/info` object holds it** | 33 |
+| whole table declared, **one `/info` object holds it** | 32 |
 | whole table declared, several objects | 3 |
 | whole table declared, no common parent | 25 |
 | partly declared | 1 |
 | outside `/info`'s reach (`/view`, `/ope`) | 11 |
 
-**Your remaining part is the 33.** The first three-table batch merged
+**Your remaining part is the 32.** The first three-table batch merged
 `/db/THIS-M1`'s `BOUNDARY_NL_ANAL`, `/db/STCT`'s Linear & Independent Stage,
 and `/db/ELEM`'s Beam/Truss/Plane Strain/Axisymmetric table. A second batch
 removed three stale `/db/TDME` unmerged markers whose tables were already
@@ -312,8 +312,11 @@ payload branch; the three damping/accidental-eccentricity tables remain because
 their complete wire conditions or nesting are not yet established. A tenth
 batch merged `/db/NLCT-M1`'s `ADVANCED` table. The heading explicitly makes
 the members optional and the `OPT_USE_DEFAULT` row explicitly overrides that
-one member to Required; `LOAD_STEPS` remains because its descriptions mix
-conditional requiredness with fields that merely apply to a branch. For each
+one member to Required. An eleventh batch merged its `LOAD_STEPS` table while
+preserving the distinction between conditionally Required fields and fields
+that merely apply under a selector. It also transcribed the two `REF_NODE`
+children stated inline, completing NLCT-M1 and moving npm payload generation
+from the Python fallback to the contract. For each
 remaining table, `/info` has a single object holding every
 name in the table, so the shape is not in question — the work is transcribing
 the manual's rows into the contract at that path, then rerunning

@@ -942,12 +942,97 @@ export namespace DbAnalysisControlTypes {
     LOAD?: DbBaseTypes.OptUseToleranceValue;
     WORK?: DbBaseTypes.OptUseToleranceValue;
   }
+  /** Generated from contracts/endpoints/. */
   export interface NonlinearAnalysisControlHyperSPayload {
-    LC_SCOPE?: string;
-    NONLINEAR_TYPE?: string;
-    ITER_METHOD?: string;
-    LOAD_STEPS?: NonlinearLoadStepsHyperS;
-    CONV_CRITERIA?: NonlinearConvergenceCriteriaHyperS;
+    /** Load Case Scope (전체: "ALL" / 선택: "SELECT", 기본 "ALL") */
+    LC_SCOPE?: "ALL" | "SELECT";
+    /** Load Case Name (LC_SCOPE="SELECT"로 신규 생성 시 필수. 기존 항목 수정 시 미지정하면 기존 값 유지) */
+    LOAD_CASE?: string;
+    /** Nonlinear Type ("GEOM" / "MATL" / "GEOM_MATL") */
+    NONLINEAR_TYPE: "GEOM" | "MATL" | "GEOM_MATL";
+    /** Iteration Method (Force: "FORCE" / Arc Length: "ARC" / Displacement: "DISP") */
+    ITER_METHOD: "FORCE" | "ARC" | "DISP";
+    /** Load Steps 설정 */
+    LOAD_STEPS: {
+      /** 스텝 모드 (Required). ITER_METHOD="ARC"일 때는 UI상 "AUTO"로 고정 */
+      STEP_MODE: "AUTO" | "MANUAL";
+      /** 스텝 수 (STEP_MODE="AUTO"일 때 필수) Applies when LOAD_STEPS.STEP_MODE = "AUTO". */
+      NUMBER_STEPS?: number;
+      /** 중간 출력 (STEP_MODE="AUTO"일 때 필수) Applies when LOAD_STEPS.STEP_MODE = "AUTO". */
+      OUTPUT?: "EVERY" | "LAST";
+      /** 사용자 정의 스텝 목록 (STEP_MODE="MANUAL"일 때) Applies when LOAD_STEPS.STEP_MODE = "MANUAL". */
+      MANUAL_STEPS?: Array<number>;
+      /** (ITER_METHOD="ARC") 최소 호장 조정 비율 Applies when ITER_METHOD = "ARC". */
+      MIN_ARC_RATIO?: number;
+      /** (ITER_METHOD="ARC") 최대 호장 조정 비율 Applies when ITER_METHOD = "ARC". */
+      MAX_ARC_RATIO?: number;
+      /** (ITER_METHOD="ARC") 최대 호장 증분 수 Applies when ITER_METHOD = "ARC". */
+      MAX_ARC_INCREMENTS?: number;
+      /** (ITER_METHOD="DISP") 주 절점 ID Applies when ITER_METHOD = "DISP". */
+      MASTER_NODE?: number;
+      /** (ITER_METHOD="DISP") 최대 변위 — 서버가 0을 채우면 검증 실패하므로 명시적 값 필수 Applies when ITER_METHOD = "DISP". */
+      MAX_DISP?: number;
+      /** (ITER_METHOD="DISP") 방향 Applies when ITER_METHOD = "DISP". */
+      DIRECTION?: "DX" | "DY" | "DZ";
+      /** (ITER_METHOD="DISP") 기준(상대) 절점 — 하위 OPT_USE(Boolean, Required)/NODE(Integer, OPT_USE=false시 기본 0) Applies when ITER_METHOD = "DISP". */
+      REF_NODE?: {
+        /** 기준(상대) 절점 사용 여부 */
+        OPT_USE: boolean;
+        /** 기준(상대) 절점 ID */
+        NODE?: number;
+      };
+    };
+    /** Convergence Criteria */
+    CONV_CRITERIA: {
+      /** 변위 수렴 기준 */
+      DISP?: {
+        /** 해당 기준 사용 여부 */
+        OPT_USE: boolean;
+        /** 허용오차 (0 초과 1 이하) Applies when CONV_CRITERIA.DISP.OPT_USE = true. */
+        VALUE?: number;
+      };
+      /** 하중 수렴 기준 */
+      LOAD?: {
+        /** 해당 기준 사용 여부 */
+        OPT_USE: boolean;
+        /** 허용오차 (0 초과 1 이하) Applies when CONV_CRITERIA.LOAD.OPT_USE = true. */
+        VALUE?: number;
+      };
+      /** 일 수렴 기준 */
+      WORK?: {
+        /** 해당 기준 사용 여부 */
+        OPT_USE: boolean;
+        /** 허용오차 (0 초과 1 이하) Applies when CONV_CRITERIA.WORK.OPT_USE = true. */
+        VALUE?: number;
+      };
+    };
+    /** 고급 설정 (미지정 시 서버 기본값 적용) */
+    ADVANCED?: {
+      /** 기본 설정 사용 여부 (Required — true면 아래 필드 모두 미지정 허용) */
+      OPT_USE_DEFAULT: boolean;
+      /** 강성 갱신 방식 */
+      STIFF_UPDATE_SCHEME?: "CUSTOM" | "FULL_NEWTON_RAPHSON" | "INITIAL_STIFF";
+      /** 강성 갱신 전 반복 횟수 (CUSTOM이 아니면 방식별 서버 자동값 적용) */
+      ITER_BEFORE_STIFF_UPDATE?: number;
+      /** 수렴 실패 시 해석 종료 여부 */
+      OPT_TERMINATE_ON_FAILED_CONV?: boolean;
+      /** 증분당 최대 반복 횟수 */
+      MAX_ITER_PER_INCREMENT?: number;
+      /** 최대 이분(Bisection) 단계 */
+      MAX_BISECTION_LEVEL?: number;
+      /** Smart Bisection 사용 여부 */
+      OPT_SMART_BISECTION?: boolean;
+      /** 발산 판정 임계값 */
+      DIVERGENCE_THRESHOLD?: number;
+      /** Line Search 사용 여부 */
+      OPT_ENABLE_LINE_SEARCH?: boolean;
+      /** Line Search 방식 */
+      LINE_SEARCH_OPTION?: "AUTO" | "MANUAL";
+      /** 반복당 최대 Line Search 횟수 */
+      MAX_LINE_SEARCH_PER_ITER?: number;
+      /** Line Search 허용오차 */
+      LINE_SEARCH_TOL?: number;
+    };
   }
   export interface ConstructionStageAnalysisControlDataPayload {
     bLAST_FINAL?: boolean;
