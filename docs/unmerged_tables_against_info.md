@@ -36,7 +36,6 @@ not the same finding as a source that is absent.
 | [`/db/SPFC`](#dbspfc) | 11 | 74 | 74 | 100% |
 | [`/view/RESULTGRAPHIC`](#viewresultgraphic) | 10 | 63 | -- | n/a |
 | [`/db/THIS`](#dbthis) | 10 | 41 | 41 | 100% |
-| [`/db/STCT`](#dbstct) | 3 | 38 | 38 | 100% |
 | [`/db/ELEM`](#dbelem) | 8 | 30 | 29 | 96% |
 | [`/db/EPMT`](#dbepmt) | 5 | 29 | 29 | 100% |
 | [`/db/MVLDpl`](#dbmvldpl) | 4 | 27 | 27 | 100% |
@@ -49,21 +48,22 @@ not the same finding as a source that is absent.
 | [`/db/THIK`](#dbthik) | 1 | 11 | 11 | 100% |
 | [`/db/CSCS`](#dbcscs) | 1 | 9 | 9 | 100% |
 | [`/db/TDME`](#dbtdme) | 2 | 7 | 7 | 100% |
+| [`/db/STCT`](#dbstct) | 1 | 6 | 6 | 100% |
 | [`/ope/LCOM-SRC`](#opelcomsrc) | 1 | 5 | -- | n/a |
-| **total** | **83** | **563** | **494** | **87%** |
+| **total** | **81** | **531** | **462** | **87%** |
 
-Of the **495** names on endpoints `/info` answers for, **494** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
+Of the **463** names on endpoints `/info` answers for, **462** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
 
 ### What each table has, as a count
 
 | what the measurement found | tables |
 | --- | ---: |
-| whole table, one object | 43 |
+| whole table, one object | 41 |
 | whole table, several objects | 3 |
 | whole table, scattered | 25 |
 | partly declared | 1 |
 | out of reach | 11 |
-| **all** | **83** |
+| **all** | **81** |
 
 *one object* means `/info` has a single object holding every name in that table; *scattered* means it declares them all but under no common parent, so the table's shape is not something the baseline confirms. Neither is a recommendation -- a table with two sources still needs its manual section read before anything moves.
 
@@ -176,20 +176,6 @@ Baseline answers on `civil`, `gen`. 41 of 41 names declared across 10 tables.
 - **6-7. Nonlinear + Static** declared: `bCUMULATE` at `bCUMULATE`, `bITER` at `bITER`, `iINCCTRL` at `iINCCTRL`
 - **증분 방법(iINCCTRL) 세부 파라미터** declared: `bCONV` at `bCONV`, `iMSTEP` at `iMSTEP`, `bEN` at `bEN`, `EN` at `EN`
 - **6-8. 반복 제어 파라미터 (Nonlinear 공통)** declared: `iMAXITER` at `iMAXITER`, `bDN` at `bDN`, `DN` at `DN`, `bFN` at `bFN`, `FN` at `FN`, `bULSM` at `bULSM`, `ULSM` at `ULSM`, `iRKM` at `iRKM`, `dTOL` at `dTOL`
-
-## `/db/STCT`
-
-Baseline answers on `civil`, `gen`. 38 of 38 names declared across 3 tables.
-
-| table | names | declared | not declared | nesting |
-| --- | ---: | ---: | ---: | --- |
-| Parameters — Erection Load (C.S. 출력용 사하중 구분) | 6 | 6 | 0 | scattered; `(root)` covers 3 of 6 |
-| Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2) | 12 | 12 | 0 | one object: `(root)` |
-| Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1) | 20 | 20 | 0 | one object: `(root)` |
-
-- **Parameters — Erection Load (C.S. 출력용 사하중 구분)** declared: `vEREC` at `vEREC`, `LTYPECC` at `vEREC.LTYPECC`, `EREC` at `vEREC.EREC`, `vLCNAME` at `vEREC.vLCNAME`, `bSDLE` at `bSDLE`, `vSDLE` at `vSDLE`
-- **Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2)** declared: `iLSTEP` at `iLSTEP`, `iMAXITER` at `iMAXITER`, `CF` at `CF`, `BSSTEP` at `BSSTEP`, `ADSTEP` at `ADSTEP`, `bENEG` at `bENEG`, `EV` at `EV`, `bDISP` at `bDISP`, `DV` at `DV`, `bFORC` at `bFORC`, `FV` at `FV`, `bIEMF` at `bIEMF`
-- **Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)** declared: `bINC_TDE` at `bINC_TDE`, `bCNS` at `bCNS`, `TYPE` at `TYPE`, `iITER_CR` at `iITER_CR`, `TOL_CR` at `TOL_CR`, `bOUCC` at `bOUCC`, `bITS` at `bITS`, `iITS` at `iITS`, `bATS` at `bATS`, `iT10` at `iT10`, `iT100` at `iT100`, `iT1K` at `iT1K`, `iT5K` at `iT5K`, `iT10K` at `iT10K`, `bTTLE_CS` at `bTTLE_CS`, `bRCE` at `bRCE`, `bVAR` at `bVAR`, `bTTLE_ES` at `bTTLE_ES`, `iTTLE_ES` at `iTTLE_ES`, `bAPPLY_ELA` at `bAPPLY_ELA`
 
 ## `/db/ELEM`
 
@@ -367,6 +353,16 @@ Baseline answers on `civil`, `gen`. 7 of 7 names declared across 2 tables.
 
 - **`Japan (Hydration)` 전용 추가 필드** declared: `TENS_STRN_FACTOR` at `TENS_STRN_FACTOR`, `bUSE` at `bUSE`, `A` at `A`, `B` at `B`, `D` at `D`, `iCTYPE` at `iCTYPE`
 - **`Japan (Elastic)` 전용 추가 필드** declared: `iECTYPE` at `iECTYPE`
+
+## `/db/STCT`
+
+Baseline answers on `civil`, `gen`. 6 of 6 names declared across 1 tables.
+
+| table | names | declared | not declared | nesting |
+| --- | ---: | ---: | ---: | --- |
+| Parameters — Erection Load (C.S. 출력용 사하중 구분) | 6 | 6 | 0 | scattered; `(root)` covers 3 of 6 |
+
+- **Parameters — Erection Load (C.S. 출력용 사하중 구분)** declared: `vEREC` at `vEREC`, `LTYPECC` at `vEREC.LTYPECC`, `EREC` at `vEREC.EREC`, `vLCNAME` at `vEREC.vLCNAME`, `bSDLE` at `bSDLE`, `vSDLE` at `vSDLE`
 
 ## `/ope/LCOM-SRC`
 

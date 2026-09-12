@@ -355,6 +355,326 @@ fields:
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
+  - key: iLSTEP
+    description: Number of Load Steps
+    type: integer
+    requirement: optional
+    condition: Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2)
+    appliesWhen: [{path: iINC_NLA, in: [1, 2]}]
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: iMAXITER
+    description: Maximum Number of Iterations
+    type: integer
+    requirement: optional
+    condition: Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2)
+    appliesWhen: [{path: iINC_NLA, in: [1, 2]}]
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: CF
+    description: Convergence Failure 사용
+    type: boolean
+    requirement: optional
+    condition: Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2)
+    appliesWhen: [{path: iINC_NLA, in: [1, 2]}]
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: BSSTEP
+    description: Max Bi-Section Level for a Load Step
+    type: integer
+    requirement: optional
+    condition: Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2)
+    appliesWhen: [{path: iINC_NLA, in: [1, 2]}]
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: ADSTEP
+    description: Max Allowable Diverged Steps
+    type: integer
+    requirement: optional
+    condition: Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2)
+    appliesWhen: [{path: iINC_NLA, in: [1, 2]}]
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bENEG
+    description: Energy Norm 사용 / 값
+    type: boolean
+    requirement: optional
+    condition: Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2)
+    appliesWhen: [{path: iINC_NLA, in: [1, 2]}]
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: EV
+    description: Energy Norm 사용 / 값
+    type: number
+    requirement: optional
+    condition: Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2)
+    appliesWhen: [{path: iINC_NLA, in: [1, 2]}]
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bDISP
+    description: Displacement Norm 사용 / 값
+    type: boolean
+    requirement: optional
+    condition: Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2)
+    appliesWhen: [{path: iINC_NLA, in: [1, 2]}]
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: DV
+    description: Displacement Norm 사용 / 값
+    type: number
+    requirement: optional
+    condition: Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2)
+    appliesWhen: [{path: iINC_NLA, in: [1, 2]}]
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bFORC
+    description: Force Norm 사용 / 값
+    type: boolean
+    requirement: optional
+    condition: Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2)
+    appliesWhen: [{path: iINC_NLA, in: [1, 2]}]
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: FV
+    description: Force Norm 사용 / 값
+    type: number
+    requirement: optional
+    condition: Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2)
+    appliesWhen: [{path: iINC_NLA, in: [1, 2]}]
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bIEMF
+    description: Include Equilibrium Element Nodal Forces
+    type: boolean
+    requirement: optional
+    condition: Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2)
+    appliesWhen: [{path: iINC_NLA, in: [1, 2]}]
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bINC_TDE
+    description: Include Time Dependent Effect
+    type: boolean
+    requirement: optional
+    condition: Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)
+    appliesWhen: [{path: iNLA_TYPE, equals: 1}]
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bCNS
+    description: Creep & Shrinkage 사용
+    type: boolean
+    requirement: optional
+    condition: Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)
+    appliesWhen: [{path: iNLA_TYPE, equals: 1}]
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: TYPE
+    description: Creep & Shrinkage Type ("CREEP"/"SHRINK"/"BOTH")
+    type: string
+    requirement: optional
+    condition: Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)
+    appliesWhen: [{path: iNLA_TYPE, equals: 1}]
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: iITER_CR
+    description: Number of Creep Iterations
+    type: integer
+    requirement: optional
+    condition: Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)
+    appliesWhen: [{path: iNLA_TYPE, equals: 1}]
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: TOL_CR
+    description: Creep Tolerance
+    type: number
+    requirement: optional
+    condition: Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)
+    appliesWhen: [{path: iNLA_TYPE, equals: 1}]
+    documentedDefault: 0
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bOUCC
+    description: Only User's Creep Coefficient
+    type: boolean
+    requirement: optional
+    condition: Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)
+    appliesWhen: [{path: iNLA_TYPE, equals: 1}]
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bITS
+    description: Internal Time Step for Creep 사용
+    type: boolean
+    requirement: optional
+    condition: Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)
+    appliesWhen: [{path: iNLA_TYPE, equals: 1}]
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: iITS
+    description: Internal Time Step for Creep 값
+    type: integer
+    requirement: required
+    condition: Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)
+    appliesWhen: [{path: iNLA_TYPE, equals: 1}]
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+  - key: bATS
+    description: Auto Time Step Generation for Large Time Gap
+    type: boolean
+    requirement: optional
+    condition: Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)
+    appliesWhen: [{path: iNLA_TYPE, equals: 1}]
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: iT10
+    description: Time Gap Steps (T>10 / >100 / >1000 / >5000 / >10000)
+    type: integer
+    requirement: optional
+    condition: Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)
+    appliesWhen: [{path: iNLA_TYPE, equals: 1}]
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: iT100
+    description: Time Gap Steps (T>10 / >100 / >1000 / >5000 / >10000)
+    type: integer
+    requirement: optional
+    condition: Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)
+    appliesWhen: [{path: iNLA_TYPE, equals: 1}]
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: iT1K
+    description: Time Gap Steps (T>10 / >100 / >1000 / >5000 / >10000)
+    type: integer
+    requirement: optional
+    condition: Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)
+    appliesWhen: [{path: iNLA_TYPE, equals: 1}]
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: iT5K
+    description: Time Gap Steps (T>10 / >100 / >1000 / >5000 / >10000)
+    type: integer
+    requirement: optional
+    condition: Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)
+    appliesWhen: [{path: iNLA_TYPE, equals: 1}]
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: iT10K
+    description: Time Gap Steps (T>10 / >100 / >1000 / >5000 / >10000)
+    type: integer
+    requirement: optional
+    condition: Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)
+    appliesWhen: [{path: iNLA_TYPE, equals: 1}]
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bTTLE_CS
+    description: Tendon Tension Loss Effect (Creep&Shrinkage)
+    type: boolean
+    requirement: optional
+    condition: Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)
+    appliesWhen: [{path: iNLA_TYPE, equals: 1}]
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bRCE
+    description: Consider Re-bar Confinement Effect
+    type: boolean
+    requirement: optional
+    condition: Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)
+    appliesWhen: [{path: iNLA_TYPE, equals: 1}]
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bVAR
+    description: Variation of Comp. Strength
+    type: boolean
+    requirement: optional
+    condition: Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)
+    appliesWhen: [{path: iNLA_TYPE, equals: 1}]
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bTTLE_ES
+    description: Tendon Tension Loss Effect (Elastic Shortening) 사용 / 타입
+    type: boolean
+    requirement: optional
+    condition: Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)
+    appliesWhen: [{path: iNLA_TYPE, equals: 1}]
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: iTTLE_ES
+    description: Tendon Tension Loss Effect (Elastic Shortening) 사용 / 타입
+    type: integer
+    requirement: optional
+    condition: Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)
+    appliesWhen: [{path: iNLA_TYPE, equals: 1}]
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bAPPLY_ELA
+    description: Apply Time Dependent Elastic Modulus to Post C.S
+    type: boolean
+    requirement: optional
+    condition: Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)
+    appliesWhen: [{path: iNLA_TYPE, equals: 1}]
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
 
 sdkRules:
   - id: db-stct-delete-per-id
@@ -396,19 +716,6 @@ extraction:
       fields: 3
       line: 2046
       fieldNames: ["vEREC", "LTYPECC", "EREC", "vLCNAME", "bSDLE", "vSDLE"]
-    - heading: "Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2)"
-      resolution: "The supplementary tables describe analysis options and partial conditions, but no complete discriminator condition applies to each field set; left unmerged."
-      fields: 9
-      line: 2109
-      fieldNames: ["iLSTEP", "iMAXITER", "CF", "BSSTEP", "ADSTEP", "bENEG", "EV", "bDISP",
-                   "DV", "bFORC", "FV", "bIEMF"]
-    - heading: "Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)"
-      resolution: "The supplementary tables describe analysis options and partial conditions, but no complete discriminator condition applies to each field set; left unmerged."
-      fields: 15
-      line: 2123
-      fieldNames: ["bINC_TDE", "bCNS", "TYPE", "iITER_CR", "TOL_CR", "bOUCC", "bITS",
-                   "iITS", "bATS", "iT10", "iT100", "iT1K", "iT5K", "iT10K", "bTTLE_CS",
-                   "bRCE", "bVAR", "bTTLE_ES", "iTTLE_ES", "bAPPLY_ELA"]
   structuralTables:
     - heading: "Parameters — Cable-Pretension / Initial Force Control"
       line: 2066

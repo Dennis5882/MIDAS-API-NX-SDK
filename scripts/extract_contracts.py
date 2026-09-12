@@ -2302,6 +2302,16 @@ def _conditional_fields(section: "Section", fields: list[ParsedField]) -> tuple[
             1: ((("FUNCTYPE", 1),), "Time Function (FUNCTYPE=1) 추가 파라미터"),
             2: ((("FUNCTYPE", 2),), "Sinusoidal (FUNCTYPE=2) 추가 파라미터"),
         },
+        "/db/STCT": {
+            5: (
+                (("iINC_NLA", (1, 2)),),
+                "Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2)",
+            ),
+            6: (
+                (("iNLA_TYPE", 1),),
+                "Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)",
+            ),
+        },
         "/db/HSFC": {
             1: ((("TYPE", "CONST"),), 'Constant 타입 (TYPE="CONST") 추가 파라미터'),
             2: (
@@ -3484,11 +3494,16 @@ _REVIEWED_SHARED_COMPACT_KEYS = {
     ("/db/MVLDeu", 'SCALE_FACTOR1"/"SCALE_FACTOR2"/"SCALE_FACTOR3'),
     ("/db/MVLDeu", 'MULTI_FACTOR1"/"MULTI_FACTOR2"/"MULTI_FACTOR3'),
     ("/db/MVLDeu", 'MIN_NUM_VHL"/"MAX_NUM_VHL'),
+    ("/db/STCT", 'iT10" / "iT100" / "iT1K" / "iT5K" / "iT10K'),
 }
 
 
 _REVIEWED_SHARED_DEFAULT_REQUIRED_KEYS = {
     ("/db/STCT", 'bSD" / "iSDOPT" / "SDCONST'),
+    ("/db/STCT", 'bENEG" / "EV'),
+    ("/db/STCT", 'bDISP" / "DV'),
+    ("/db/STCT", 'bFORC" / "FV'),
+    ("/db/STCT", 'bTTLE_ES" / "iTTLE_ES'),
 }
 
 

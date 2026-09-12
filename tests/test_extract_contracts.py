@@ -869,6 +869,28 @@ def test_audited_conditional_table_forms_keep_source_text_and_structured_conditi
         assert by_key[key].condition
 
 
+def test_stct_conditional_tables_keep_multi_value_and_accumulative_selectors():
+    """STCT's last two table headings state the exact root-field gates."""
+    base = ex.ParsedField("BASE", "Base", "string", None, "required", None)
+    fillers = [ex.ParsedTable(f"Filler {index}", index, []) for index in range(1, 5)]
+    nonlinear = ex.ParsedField("NONLINEAR", "Nonlinear", "number", None, "optional", None)
+    time_effect = ex.ParsedField("TIME_EFFECT", "Time", "number", None, "optional", None)
+    tables = [
+        ex.ParsedTable("Base", 0, [base]),
+        *fillers,
+        ex.ParsedTable("Nonlinear", 5, [nonlinear]),
+        ex.ParsedTable("Time dependent", 6, [time_effect]),
+    ]
+    section = ex.Section("manual.md", "1", "/db/STCT", "STCT", "STCT", [], tables=tables)
+
+    fields, resolved = ex._conditional_fields(section, [base])
+    by_key = {field.key: field for field in fields}
+
+    assert resolved == {5, 6}
+    assert by_key["NONLINEAR"].applies_when == [("iINC_NLA", (1, 2))]
+    assert by_key["TIME_EFFECT"].applies_when == [("iNLA_TYPE", (1,))]
+
+
 @pytest.mark.parametrize(
     ("parent_type", "expect_child"),
     [
@@ -2991,6 +3013,63 @@ def test_reviewed_mixed_type_row_repeats_only_shared_default_and_required_cells(
         ("iSDOPT", "Integer", "-", "Optional"),
         ("SDCONST", "Number", "-", "Optional"),
     ]
+
+
+@pytest.mark.parametrize(
+    ("key_cell", "type_cell", "expected_keys"),
+    [
+        pytest.param(
+            '`"bENEG"` / `"EV"`',
+            "Boolean / Number",
+            ["bENEG", "EV"],
+            id="energy-norm-boolean-and-value",
+        ),
+        pytest.param(
+            '`"bDISP"` / `"DV"`',
+            "Boolean / Number",
+            ["bDISP", "DV"],
+            id="displacement-norm-boolean-and-value",
+        ),
+        pytest.param(
+            '`"bFORC"` / `"FV"`',
+            "Boolean / Number",
+            ["bFORC", "FV"],
+            id="force-norm-boolean-and-value",
+        ),
+        pytest.param(
+            '`"bTTLE_ES"` / `"iTTLE_ES"`',
+            "Boolean / Integer",
+            ["bTTLE_ES", "iTTLE_ES"],
+            id="elastic-loss-boolean-and-type",
+        ),
+    ],
+)
+def test_stct_reviewed_mixed_rows_repeat_their_row_level_claims(
+    key_cell: str, type_cell: str, expected_keys: list[str]
+):
+    parsed = ex._parallel_field_cells(
+        key_cell,
+        type_cell,
+        "-",
+        "Optional",
+        "-",
+        allow_shared_default_required=True,
+    )
+    assert parsed is not None
+    assert [key for key, *_ in parsed] == expected_keys
+
+
+def test_stct_reviewed_time_gap_row_repeats_its_homogeneous_claims():
+    parsed = ex._parallel_field_cells(
+        '`"iT10"` / `"iT100"` / `"iT1K"` / `"iT5K"` / `"iT10K"`',
+        "Integer",
+        "-",
+        "Optional",
+        "-",
+        allow_shared_slash=True,
+    )
+    assert parsed is not None
+    assert [key for key, *_ in parsed] == ["iT10", "iT100", "iT1K", "iT5K", "iT10K"]
 
 
 def test_mixed_optional_and_required_branches_remain_conditional():
