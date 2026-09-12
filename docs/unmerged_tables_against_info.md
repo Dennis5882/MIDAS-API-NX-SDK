@@ -39,29 +39,29 @@ not the same finding as a source that is absent.
 | [`/db/ELEM`](#dbelem) | 8 | 30 | 29 | 96% |
 | [`/db/EPMT`](#dbepmt) | 5 | 29 | 29 | 100% |
 | [`/db/MVLDpl`](#dbmvldpl) | 4 | 27 | 27 | 100% |
-| [`/db/NLCT-M1`](#dbnlctm1) | 2 | 23 | 23 | 100% |
 | [`/db/SPLC`](#dbsplc) | 3 | 23 | 23 | 100% |
 | [`/db/MVLD`](#dbmvld) | 4 | 21 | 21 | 100% |
 | [`/db/SDIS`](#dbsdis) | 3 | 21 | 21 | 100% |
+| [`/db/NLCT-M1`](#dbnlctm1) | 1 | 11 | 11 | 100% |
 | [`/db/THIK`](#dbthik) | 1 | 11 | 11 | 100% |
 | [`/db/CSCS`](#dbcscs) | 1 | 9 | 9 | 100% |
 | [`/db/TDME`](#dbtdme) | 2 | 7 | 7 | 100% |
 | [`/db/STCT`](#dbstct) | 1 | 6 | 6 | 100% |
 | [`/ope/LCOM-SRC`](#opelcomsrc) | 1 | 5 | -- | n/a |
-| **total** | **74** | **505** | **436** | **86%** |
+| **total** | **73** | **493** | **424** | **86%** |
 
-Of the **437** names on endpoints `/info` answers for, **436** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
+Of the **425** names on endpoints `/info` answers for, **424** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
 
 ### What each table has, as a count
 
 | what the measurement found | tables |
 | --- | ---: |
-| whole table, one object | 34 |
+| whole table, one object | 33 |
 | whole table, several objects | 3 |
 | whole table, scattered | 25 |
 | partly declared | 1 |
 | out of reach | 11 |
-| **all** | **74** |
+| **all** | **73** |
 
 *one object* means `/info` has a single object holding every name in that table; *scattered* means it declares them all but under no common parent, so the table's shape is not something the baseline confirms. Neither is a recommendation -- a table with two sources still needs its manual section read before anything moves.
 
@@ -234,18 +234,6 @@ Baseline answers on `civil`, `gen`. 27 of 27 names declared across 4 tables.
 - **Vehicle S/2S(LOAD_MODEL=1)** declared: `AUTO_OPTIMIZE` at `AUTO_OPTIMIZE`, `MIN_VEHL_DIST` at `AUTO_OPTIMIZE.MIN_VEHL_DIST`, `LANE_NAME` at `AUTO_OPTIMIZE.LANE_NAME`, `MIN_NUM_VEHICLE` at `AUTO_OPTIMIZE.MIN_NUM_VEHICLE`, `MAX_NUM_VEHICLE` at `AUTO_OPTIMIZE.MAX_NUM_VEHICLE`, `COMB_OPTION` at `AUTO_OPTIMIZE.COMB_OPTION`, `OPTIMIZE_ITEMS` at `AUTO_OPTIMIZE.OPTIMIZE_ITEMS`, `VEHICLE_TYPE` at `AUTO_OPTIMIZE.OPTIMIZE_ITEMS.VEHICLE_TYPE`, `VEHICLE_NAME` at `AUTO_OPTIMIZE.OPTIMIZE_ITEMS.VEHICLE_NAME`, `SCALE_FACTOR` at `AUTO_OPTIMIZE.OPTIMIZE_ITEMS.SCALE_FACTOR`
 - **Vehicle K/Military(LOAD_MODEL=2/3)** declared: `AUTO_OPTIMIZE` at `AUTO_OPTIMIZE`, `VEHICLE_LOAD_NAME` at `AUTO_OPTIMIZE.VEHICLE_LOAD_NAME`, `MIN_VEHL_DIST` at `AUTO_OPTIMIZE.MIN_VEHL_DIST`, `LANE_NAME` at `AUTO_OPTIMIZE.LANE_NAME`, `NUM_LOADED_LANES` at `AUTO_OPTIMIZE.NUM_LOADED_LANES`
 
-## `/db/NLCT-M1`
-
-Baseline answers on `civil`. 23 of 23 names declared across 2 tables.
-
-| table | names | declared | not declared | nesting |
-| --- | ---: | ---: | ---: | --- |
-| Parameters — LOAD_STEPS 객체 (`ITER_METHOD`별 사용 필드가 다름) | 11 | 11 | 0 | one object: `LOAD_STEPS` |
-| Parameters — ADVANCED 객체 (고급 비선형 설정, 전체 Optional — 미지정 시 서버 기본값 사용) | 12 | 12 | 0 | one object: `ADVANCED` |
-
-- **Parameters — LOAD_STEPS 객체 (`ITER_METHOD`별 사용 필드가 다름)** declared: `STEP_MODE` at `LOAD_STEPS.STEP_MODE`, `NUMBER_STEPS` at `LOAD_STEPS.NUMBER_STEPS`, `OUTPUT` at `LOAD_STEPS.OUTPUT`, `MANUAL_STEPS` at `LOAD_STEPS.MANUAL_STEPS`, `MIN_ARC_RATIO` at `LOAD_STEPS.MIN_ARC_RATIO`, `MAX_ARC_RATIO` at `LOAD_STEPS.MAX_ARC_RATIO`, `MAX_ARC_INCREMENTS` at `LOAD_STEPS.MAX_ARC_INCREMENTS`, `MASTER_NODE` at `LOAD_STEPS.MASTER_NODE`, `MAX_DISP` at `LOAD_STEPS.MAX_DISP`, `DIRECTION` at `LOAD_STEPS.DIRECTION`, `REF_NODE` at `LOAD_STEPS.REF_NODE`
-- **Parameters — ADVANCED 객체 (고급 비선형 설정, 전체 Optional — 미지정 시 서버 기본값 사용)** declared: `OPT_USE_DEFAULT` at `ADVANCED.OPT_USE_DEFAULT`, `STIFF_UPDATE_SCHEME` at `ADVANCED.STIFF_UPDATE_SCHEME`, `ITER_BEFORE_STIFF_UPDATE` at `ADVANCED.ITER_BEFORE_STIFF_UPDATE`, `OPT_TERMINATE_ON_FAILED_CONV` at `ADVANCED.OPT_TERMINATE_ON_FAILED_CONV`, `MAX_ITER_PER_INCREMENT` at `ADVANCED.MAX_ITER_PER_INCREMENT`, `MAX_BISECTION_LEVEL` at `ADVANCED.MAX_BISECTION_LEVEL`, `OPT_SMART_BISECTION` at `ADVANCED.OPT_SMART_BISECTION`, `DIVERGENCE_THRESHOLD` at `ADVANCED.DIVERGENCE_THRESHOLD`, `OPT_ENABLE_LINE_SEARCH` at `ADVANCED.OPT_ENABLE_LINE_SEARCH`, `LINE_SEARCH_OPTION` at `ADVANCED.LINE_SEARCH_OPTION`, `MAX_LINE_SEARCH_PER_ITER` at `ADVANCED.MAX_LINE_SEARCH_PER_ITER`, `LINE_SEARCH_TOL` at `ADVANCED.LINE_SEARCH_TOL`
-
 ## `/db/SPLC`
 
 Baseline answers on `civil`, `gen`. 23 of 23 names declared across 3 tables.
@@ -289,6 +277,16 @@ Baseline answers on `gen`. 21 of 21 names declared across 3 tables.
 - **LRB 객체** declared: `SDIS_HYS_MODEL` at `LRB.SDIS_HYS_MODEL`, `KE` at `LRB.KE`, `AR` at `LRB.AR`, `TR` at `LRB.TR`, `K0` at `LRB.K0`, `K2` at `LRB.K2`, `QD` at `LRB.QD`, `DX` at `LRB.DX`, `OPT_CONS_NONL` at `LRB.DX.OPT_CONS_NONL`, `BETA` at `LRB.DX.BETA`, `ALPHA` at `LRB.DX.ALPHA`, `SIGMA_V` at `LRB.DX.SIGMA_V`
 - **NRB 객체** declared: `AR` at `NRB.AR`, `TR` at `NRB.TR`, `KH` at `NRB.KH`, `DX` at `NRB.DX`
 - **NRB 객체** declared: `AS` at `SB.AS`, `K0` at `SB.K0`, `QD` at `SB.QD`, `Pi_VALUE` at `SB.Pi_VALUE`, `MU0` at `SB.MU0`
+
+## `/db/NLCT-M1`
+
+Baseline answers on `civil`. 11 of 11 names declared across 1 tables.
+
+| table | names | declared | not declared | nesting |
+| --- | ---: | ---: | ---: | --- |
+| Parameters — LOAD_STEPS 객체 (`ITER_METHOD`별 사용 필드가 다름) | 11 | 11 | 0 | one object: `LOAD_STEPS` |
+
+- **Parameters — LOAD_STEPS 객체 (`ITER_METHOD`별 사용 필드가 다름)** declared: `STEP_MODE` at `LOAD_STEPS.STEP_MODE`, `NUMBER_STEPS` at `LOAD_STEPS.NUMBER_STEPS`, `OUTPUT` at `LOAD_STEPS.OUTPUT`, `MANUAL_STEPS` at `LOAD_STEPS.MANUAL_STEPS`, `MIN_ARC_RATIO` at `LOAD_STEPS.MIN_ARC_RATIO`, `MAX_ARC_RATIO` at `LOAD_STEPS.MAX_ARC_RATIO`, `MAX_ARC_INCREMENTS` at `LOAD_STEPS.MAX_ARC_INCREMENTS`, `MASTER_NODE` at `LOAD_STEPS.MASTER_NODE`, `MAX_DISP` at `LOAD_STEPS.MAX_DISP`, `DIRECTION` at `LOAD_STEPS.DIRECTION`, `REF_NODE` at `LOAD_STEPS.REF_NODE`
 
 ## `/db/THIK`
 

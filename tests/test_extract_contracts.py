@@ -1034,6 +1034,49 @@ def test_impf_factor_tables_merge_into_items_and_keep_parts_element_gate():
     ]
 
 
+def test_nlct_m1_advanced_table_uses_heading_optionality_and_row_override(
+    tmp_path: Path,
+):
+    """The ADVANCED heading scopes Optional; its first row explicitly overrides it."""
+    path = tmp_path / "12_DB_Analysis_Control.md"
+    path.write_text(
+        '''## 16. `/db/NLCT-M1` -- nonlinear control
+
+### Parameters — 공통
+| Key | Value Type | Default | Required |
+|---|---|---|---|
+| `ADVANCED` | Object | - | Optional |
+
+### Parameters — LOAD_STEPS 객체
+| Key | Value Type | Default | Description |
+|---|---|---|---|
+| `STEP_MODE` | String | - | mode |
+
+### Parameters — CONV_CRITERIA 객체
+| Key | Value Type | Default | Description |
+|---|---|---|---|
+| `OPT_USE` | Boolean | - | use |
+
+### Parameters — ADVANCED 객체 (고급 비선형 설정, 전체 Optional — 미지정 시 서버 기본값 사용)
+| Key | Value Type | Default | Description |
+|---|---|---|---|
+| `OPT_USE_DEFAULT` | Boolean | - | 기본 설정 사용 여부 (Required — true면 아래 필드 모두 미지정 허용) |
+| `MAX_ITER_PER_INCREMENT` | Integer | 50 | 증분당 최대 반복 횟수 |
+''',
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+    fields, resolved = ex._structural_fields(section)
+
+    assert [merge.table for merge in resolved] == [3]
+    advanced = next(field for field in fields if field.key == "ADVANCED")
+    assert [(field.key, field.requirement) for field in advanced.properties] == [
+        ("OPT_USE_DEFAULT", "required"),
+        ("MAX_ITER_PER_INCREMENT", "optional"),
+    ]
+
+
 def test_structural_table_merge_uses_the_manual_named_object_path(tmp_path: Path):
     """A structural table goes below TCELEM, never beside it at record root."""
     path = tmp_path / "99_DB_Structural.md"

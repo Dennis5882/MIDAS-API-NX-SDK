@@ -1211,6 +1211,14 @@ class StructuralTableMerge:
     products: tuple[str, ...] = ()
 
 
+@dataclass(frozen=True)
+class StructuralTableRequirements:
+    """Requiredness stated once for a supplementary table and its exceptions."""
+
+    default: str
+    overrides: tuple[tuple[str, str], ...] = ()
+
+
 # The paths below are transcriptions of the parameter headings and surrounding
 # prose in docs/manual, recorded in docs/variant_table_survey.md §B.  This is a
 # closed allow-list, not a heuristic: any other extra table remains unmerged.
@@ -1278,6 +1286,12 @@ _STRUCTURAL_TABLE_SPLITS: dict[str, tuple[StructuralTableMerge, ...]] = {
     # discriminator, so retain that scope on the fields without inventing a
     # branch between bNDP and NDP.
     "/db/SPLC": (StructuralTableMerge(4, ((),), ("gen",)),),
+    # The heading names ADVANCED and states that the object is wholly optional;
+    # its first row alone says Required. The LOAD_STEPS table stays unmerged:
+    # some descriptions say "required" while others only say "used when", so
+    # treating every selector phrase as conditional requiredness would overstate
+    # the manual.
+    "/db/NLCT-M1": (StructuralTableMerge(3, (("ADVANCED",),)),),
     # Tables 1-4 each name one destination object in the heading and carry rows
     # that parse to it directly, including TIME_DEP_CONTROL's dotted
     # `CREEP_SHRINKAGE.*` keys and the `"bTTLE_ES"` / `"iTTLE_ES"` cell, both of
@@ -1358,6 +1372,16 @@ _STRUCTURAL_TABLE_SPLITS: dict[str, tuple[StructuralTableMerge, ...]] = {
         StructuralTableMerge(3, (("Assign", "ITEMS", "ELEMS"),)),
     ),
     "/view/DISPLAY": tuple(StructuralTableMerge(index, (("Argument",),)) for index in range(1, 7)),
+}
+
+
+_STRUCTURAL_TABLE_REQUIREMENTS: dict[
+    tuple[str, int], StructuralTableRequirements
+] = {
+    ("/db/NLCT-M1", 3): StructuralTableRequirements(
+        "optional",
+        (("OPT_USE_DEFAULT", "required"),),
+    ),
 }
 
 
@@ -2148,6 +2172,26 @@ def _tag_products(fields: list[ParsedField], products: tuple[str, ...]) -> None:
         _tag_products(field.properties, products)
 
 
+def _apply_structural_table_requirements(
+    endpoint: str,
+    table_index: int,
+    fields: list[ParsedField],
+) -> None:
+    """Apply requiredness that the manual states at table or row level.
+
+    Tables registered here have no Required column. Their heading makes one
+    exact claim for every row, while named row descriptions override it. This
+    is deliberately a closed review map: a missing entry stays unstated.
+    """
+
+    claims = _STRUCTURAL_TABLE_REQUIREMENTS.get((endpoint, table_index))
+    if claims is None:
+        return
+    overrides = dict(claims.overrides)
+    for field in fields:
+        field.requirement = overrides.get(field.key, claims.default)
+
+
 _SCHEMA_TRANSPORT_WRAPPERS = frozenset({"Argument", "Assign"})
 
 
@@ -2241,13 +2285,15 @@ def _merged_structural_fields(section: "Section") -> tuple[list[ParsedField], li
         merge = by_table.get(index)
         if merge is None:
             continue
+        source_fields = copy.deepcopy(table.fields)
+        _apply_structural_table_requirements(section.endpoint, index, source_fields)
         if section.endpoint == "/DESIGN/RC/KDS-41-20-2022/DCRE" and index == 4:
             # The manual says the two arrays share the same item structure.
             # Its one table lists the two array names followed by their shared
             # REBAR_DIAMETER/MATERIAL item rows, so retain that hierarchy for
             # both arrays instead of putting the item rows beside them.
             parent = _field_at_path(fields, ("Assign", "WALL", "MATERIAL_BY_DIAMETER_INPUT"))
-            rows = {field.key: copy.deepcopy(field) for field in _walk(table.fields)}
+            rows = {field.key: copy.deepcopy(field) for field in _walk(source_fields)}
             if parent is not None and {"VERTICAL_END_REBAR", "HORIZONTAL_REBAR", "REBAR_DIAMETER", "MATERIAL"} <= rows.keys():
                 children = [rows["REBAR_DIAMETER"], rows["MATERIAL"]]
                 vertical = rows["VERTICAL_END_REBAR"]
@@ -2286,14 +2332,14 @@ def _merged_structural_fields(section: "Section") -> tuple[list[ParsedField], li
                     field.documented_default,
                     field.documented_default_note,
                 )
-                for field in table.fields
+                for field in source_fields
             )
             for keys in destination_keys
         )
         if not compatible:
             continue
         for destination in destinations:
-            additions = copy.deepcopy(table.fields)
+            additions = copy.deepcopy(source_fields)
             if merge.products:
                 _tag_products(additions, merge.products)
             if not _append_fields(destination, additions):

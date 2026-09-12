@@ -263,6 +263,107 @@ fields:
       its payload. That is evidence the call is accepted, not that the resulting
       model is what an engineer wanted.
     provenance: manual
+    properties:
+      - key: OPT_USE_DEFAULT
+        description: 기본 설정 사용 여부 (Required — true면 아래 필드 모두 미지정 허용)
+        type: boolean
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: STIFF_UPDATE_SCHEME
+        description: 강성 갱신 방식
+        type: string
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        enum: [CUSTOM, FULL_NEWTON_RAPHSON, INITIAL_STIFF]
+        safeToOmit: unverified
+        provenance: manual
+      - key: ITER_BEFORE_STIFF_UPDATE
+        description: 강성 갱신 전 반복 횟수 (CUSTOM이 아니면 방식별 서버 자동값 적용)
+        type: integer
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: OPT_TERMINATE_ON_FAILED_CONV
+        description: 수렴 실패 시 해석 종료 여부
+        type: boolean
+        requirement: optional
+        documentedDefault: false
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: MAX_ITER_PER_INCREMENT
+        description: 증분당 최대 반복 횟수
+        type: integer
+        requirement: optional
+        documentedDefault: 50
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: MAX_BISECTION_LEVEL
+        description: 최대 이분(Bisection) 단계
+        type: integer
+        minimum: 0
+        maximum: 20
+        requirement: optional
+        documentedDefault: 5
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: OPT_SMART_BISECTION
+        description: Smart Bisection 사용 여부
+        type: boolean
+        requirement: optional
+        documentedDefault: false
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: DIVERGENCE_THRESHOLD
+        description: 발산 판정 임계값
+        type: number
+        requirement: optional
+        documentedDefault: 3
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: OPT_ENABLE_LINE_SEARCH
+        description: Line Search 사용 여부
+        type: boolean
+        requirement: optional
+        documentedDefault: true
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: LINE_SEARCH_OPTION
+        description: Line Search 방식
+        type: string
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        enum: [AUTO, MANUAL]
+        safeToOmit: unverified
+        provenance: manual
+      - key: MAX_LINE_SEARCH_PER_ITER
+        description: 반복당 최대 Line Search 횟수
+        type: integer
+        requirement: optional
+        documentedDefault: 4
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: LINE_SEARCH_TOL
+        description: Line Search 허용오차
+        type: number
+        requirement: optional
+        documentedDefault: 0.5
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
 
 sdkRules:
   - id: db-nlct-m1-delete-per-id
@@ -306,15 +407,6 @@ extraction:
       fieldNames: ["STEP_MODE", "NUMBER_STEPS", "OUTPUT", "MANUAL_STEPS", "MIN_ARC_RATIO",
                    "MAX_ARC_RATIO", "MAX_ARC_INCREMENTS", "MASTER_NODE", "MAX_DISP",
                    "DIRECTION", "REF_NODE"]
-    - heading: Parameters — ADVANCED 객체 (고급 비선형 설정, 전체 Optional — 미지정 시 서버 기본값 사용)
-      resolution: "The nested LOAD_STEPS, CONV_CRITERIA, and ADVANCED tables describe objects and conditions but do not state a complete wire discriminator for each table; left unmerged."
-      fields: 12
-      line: 1889
-      fieldNames: ["OPT_USE_DEFAULT", "STIFF_UPDATE_SCHEME", "ITER_BEFORE_STIFF_UPDATE",
-                   "OPT_TERMINATE_ON_FAILED_CONV", "MAX_ITER_PER_INCREMENT",
-                   "MAX_BISECTION_LEVEL", "OPT_SMART_BISECTION", "DIVERGENCE_THRESHOLD",
-                   "OPT_ENABLE_LINE_SEARCH", "LINE_SEARCH_OPTION",
-                   "MAX_LINE_SEARCH_PER_ITER", "LINE_SEARCH_TOL"]
   structuralTables:
     - heading: Parameters — CONV_CRITERIA 객체
       line: 1882
@@ -329,6 +421,12 @@ extraction:
         sentence above it says the same two members belong to each of three
         sub-objects, all three independently optional. Merged into the three
         objects the sentence names.
+    - heading: Parameters — ADVANCED 객체 (고급 비선형 설정, 전체 Optional — 미지정 시 서버 기본값 사용)
+      line: 1889
+      paths: [ADVANCED]
+      note: >-
+        The heading makes every member optional, while OPT_USE_DEFAULT's own
+        description explicitly marks that one member Required.
   prose:
     - line: 1880
       quote: >-
