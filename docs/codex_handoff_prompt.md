@@ -22,7 +22,7 @@ Run these first and confirm you see the same numbers. **If any differ, say so
 before starting** — it means something moved under you.
 
 ```bash
-python -m pytest -q                       # 1033 passed, 1 FAILED - EXPECTED
+python -m pytest -q                       # 1038 passed, 1 FAILED - EXPECTED
 ruff check src tests scripts && mypy      # clean
 python scripts/validate_contracts.py      # OK; 381 endpoints, 4963 fields,
                                           # 140 proven safe, 8 unsafe,
@@ -275,24 +275,27 @@ Claude's.** Read each manual section at the vendored commit `7920759`, not in
 the working tree — twelve of these entries anchor at titles and line numbers
 the unreflected 2026-09-06 sync has already moved.
 
-`docs/unmerged_tables_against_info.md` splits the 85 tables (584 field names)
+`docs/unmerged_tables_against_info.md` splits the 83 tables (563 field names)
 that 19 contracts declare missing:
 
 | what the measurement found | tables |
 | --- | ---: |
-| whole table declared, **one `/info` object holds it** | 45 |
+| whole table declared, **one `/info` object holds it** | 43 |
 | whole table declared, several objects | 3 |
 | whole table declared, no common parent | 25 |
 | partly declared | 1 |
 | outside `/info`'s reach (`/view`, `/ope`) | 11 |
 
-**Your remaining part is the 45.** The first three-table batch merged
+**Your remaining part is the 43.** The first three-table batch merged
 `/db/THIS-M1`'s `BOUNDARY_NL_ANAL`, `/db/STCT`'s Linear & Independent Stage,
 and `/db/ELEM`'s Beam/Truss/Plane Strain/Axisymmetric table. A second batch
 removed three stale `/db/TDME` unmerged markers whose tables were already
 represented by explicit variants; a third batch cleared the two remaining
 stale Russian and Gilbert/KDS markers. The two Japan tables remain deliberately
-unmerged because both products reject those iGen-only branches. For each remaining
+unmerged because both products reject those iGen-only branches. A fourth batch
+merged `/db/STCT`'s Cable-Pretension/Initial Force and Initial
+Displacement/Camber tables at record root, preserving their four explicit
+field-level conditions. For each remaining
 table, `/info` has a single object holding every
 name in the table, so the shape is not in question — the work is transcribing
 the manual's rows into the contract at that path, then rerunning

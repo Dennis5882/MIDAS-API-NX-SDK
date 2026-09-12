@@ -1263,10 +1263,16 @@ _STRUCTURAL_TABLE_SPLITS: dict[str, tuple[StructuralTableMerge, ...]] = {
         StructuralTableMerge(1, ((),), ("civil",)),
         StructuralTableMerge(2, ((),), ("gen",)),
     ),
-    # This heading describes a mode, not a complete wire discriminator. The
-    # three rows and /info nevertheless agree that their storage path is the
-    # record root, so they can be transcribed without inventing a branch.
-    "/db/STCT": (StructuralTableMerge(4, ((),)),),
+    # These headings group coexisting analysis controls; they do not state a
+    # complete discriminator for the whole table. The manual supplies the
+    # rows and GET /info/db/STCT places every member at record root, so merge
+    # the tables there without inventing a branch. Tables 5 and 6 remain out:
+    # their conditional/multi-key notation needs separate parser work.
+    "/db/STCT": (
+        StructuralTableMerge(2, ((),)),
+        StructuralTableMerge(3, ((),)),
+        StructuralTableMerge(4, ((),)),
+    ),
     # Tables 1-4 each name one destination object in the heading and carry rows
     # that parse to it directly, including TIME_DEP_CONTROL's dotted
     # `CREEP_SHRINKAGE.*` keys and the `"bTTLE_ES"` / `"iTTLE_ES"` cell, both of
@@ -1661,6 +1667,12 @@ _REVIEWED_FIELD_CONDITIONS: dict[
     str,
     dict[tuple[str, ...], tuple[str, tuple[str, tuple[str | int | float | bool, ...]] | None]],
 ] = {
+    "/db/STCT": {
+        ("bTRUSS",): ("when bCONV true", ("bCONV", (True,))),
+        ("bBEAM",): ("when bCONV true", ("bCONV", (True,))),
+        ("GROUP",): ('ITD="GROUP"일 때', ("ITD", ("GROUP",))),
+        ("LFFGR",): ("bLFFC=true일 때", ("bLFFC", (True,))),
+    },
     "/ope/GUSTFACTOR": {
         ("RIGID_PARAM",): ("STRUCTURE_TYPE = RIGID인 경우", ("STRUCTURE_TYPE", ("RIGID",))),
         ("FLEXIBLE_PARAM",): (
@@ -1677,12 +1689,16 @@ def _apply_reviewed_field_conditions(endpoint: str, fields: list[ParsedField]) -
     unresolved = "the manual marks this conditional but does not state the condition"
     for path, (condition, structured) in _REVIEWED_FIELD_CONDITIONS.get(endpoint, {}).items():
         field = _field_at_path(fields, path)
-        if field is None or field.requirement != "conditional" or unresolved not in field.notes:
+        if field is None:
+            continue
+        unresolved_condition = field.condition in {None, "조건부"} or unresolved in field.notes
+        if not unresolved_condition:
             continue
         field.condition = condition
         if structured is not None:
             field.applies_when = [structured]
-        field.notes.remove(unresolved)
+        if unresolved in field.notes:
+            field.notes.remove(unresolved)
         field.notes.append(
             "the condition is stated elsewhere in the same section and retained without "
             "inventing a stricter selector"
@@ -3369,6 +3385,7 @@ def _parallel_field_cells(
     number: str,
     *,
     allow_shared_slash: bool = False,
+    allow_shared_default_required: bool = False,
 ) -> Optional[list[tuple[str, Optional[str], Optional[str], Optional[str]]]]:
     """Return exact parallel field columns, or ``None`` when a row is ambiguous."""
 
@@ -3409,12 +3426,19 @@ def _parallel_field_cells(
             for key in keys
         ]
     parts: list[Optional[list[str]]] = []
-    for cell in columns:
+    for column_index, cell in enumerate(columns):
         if cell is None:
             parts.append(None)
             continue
         split = _parallel_cells(cell, len(keys))
         if split is None:
+            # `/db/STCT` writes three independently typed stress-decrease
+            # controls in one row, while its one Default and Required cells
+            # apply to the row as a whole. This opt-in repeats only those two
+            # shared claims; the Value Type column must still map one-for-one.
+            if allow_shared_default_required and column_index in {1, 2}:
+                parts.append([_clean(cell)] * len(keys))
+                continue
             # A row such as ``"R" "G" "B" | Integer | 0 | Optional``
             # names several literal wire keys but gives one *shared* claim in
             # every other column. That is different from ``String / Integer |
@@ -3460,6 +3484,11 @@ _REVIEWED_SHARED_COMPACT_KEYS = {
     ("/db/MVLDeu", 'SCALE_FACTOR1"/"SCALE_FACTOR2"/"SCALE_FACTOR3'),
     ("/db/MVLDeu", 'MULTI_FACTOR1"/"MULTI_FACTOR2"/"MULTI_FACTOR3'),
     ("/db/MVLDeu", 'MIN_NUM_VHL"/"MAX_NUM_VHL'),
+}
+
+
+_REVIEWED_SHARED_DEFAULT_REQUIRED_KEYS = {
+    ("/db/STCT", 'bSD" / "iSDOPT" / "SDCONST'),
 }
 
 
@@ -3671,6 +3700,8 @@ def _parse_tables(lines: list[str], offset: int, endpoint: str = "") -> list[Par
                 cells[0] if cells else "",
                 allow_shared_slash=(endpoint, _clean(key_cell).strip('"'))
                 in _REVIEWED_SHARED_COMPACT_KEYS,
+                allow_shared_default_required=(endpoint, _clean(key_cell).strip('"'))
+                in _REVIEWED_SHARED_DEFAULT_REQUIRED_KEYS,
             )
             entries = parallel or [
                 (

@@ -35,8 +35,8 @@ not the same finding as a source that is absent.
 | [`/db/MVHL`](#dbmvhl) | 8 | 115 | 115 | 100% |
 | [`/db/SPFC`](#dbspfc) | 11 | 74 | 74 | 100% |
 | [`/view/RESULTGRAPHIC`](#viewresultgraphic) | 10 | 63 | -- | n/a |
-| [`/db/STCT`](#dbstct) | 5 | 59 | 59 | 100% |
 | [`/db/THIS`](#dbthis) | 10 | 41 | 41 | 100% |
+| [`/db/STCT`](#dbstct) | 3 | 38 | 38 | 100% |
 | [`/db/ELEM`](#dbelem) | 8 | 30 | 29 | 96% |
 | [`/db/EPMT`](#dbepmt) | 5 | 29 | 29 | 100% |
 | [`/db/MVLDpl`](#dbmvldpl) | 4 | 27 | 27 | 100% |
@@ -50,20 +50,20 @@ not the same finding as a source that is absent.
 | [`/db/CSCS`](#dbcscs) | 1 | 9 | 9 | 100% |
 | [`/db/TDME`](#dbtdme) | 2 | 7 | 7 | 100% |
 | [`/ope/LCOM-SRC`](#opelcomsrc) | 1 | 5 | -- | n/a |
-| **total** | **85** | **584** | **515** | **88%** |
+| **total** | **83** | **563** | **494** | **87%** |
 
-Of the **516** names on endpoints `/info` answers for, **515** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
+Of the **495** names on endpoints `/info` answers for, **494** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
 
 ### What each table has, as a count
 
 | what the measurement found | tables |
 | --- | ---: |
-| whole table, one object | 45 |
+| whole table, one object | 43 |
 | whole table, several objects | 3 |
 | whole table, scattered | 25 |
 | partly declared | 1 |
 | out of reach | 11 |
-| **all** | **85** |
+| **all** | **83** |
 
 *one object* means `/info` has a single object holding every name in that table; *scattered* means it declares them all but under no common parent, so the table's shape is not something the baseline confirms. Neither is a recommendation -- a table with two sources still needs its manual section read before anything moves.
 
@@ -149,24 +149,6 @@ Baseline answers on `civil`, `gen`. 74 of 74 names declared across 11 tables.
 - **10) Applied Loads (Moving Load Tracer Detail) — `TYPE_OF_DISPLAY.APPLIED_LOADS`** not declared: `APPLIED_LOADS`, `OPT_CHECK`, `SCALE_FACTOR`, `OPT_LOAD_VALUES`, `VALUE_TYPE`, `VALUE_DECIMAL_PT`
 - **11) IsoSurface Detail Dialog — `TYPE_OF_DISPLAY.ISO_SURFACE`** not declared: `ISO_SURFACE`, `OPT_CHECK`, `DRAW_POLYLINE`, `TRANSPARENCY`, `FREE_EDGE`, `VALUE_MODE`, `VALUE_TYPE`, `VALUE`
 
-## `/db/STCT`
-
-Baseline answers on `civil`, `gen`. 59 of 59 names declared across 5 tables.
-
-| table | names | declared | not declared | nesting |
-| --- | ---: | ---: | ---: | --- |
-| Parameters — Erection Load (C.S. 출력용 사하중 구분) | 6 | 6 | 0 | scattered; `(root)` covers 3 of 6 |
-| Parameters — Cable-Pretension / Initial Force Control | 7 | 7 | 0 | one object: `(root)` |
-| Parameters — Initial Displacement / Camber / 기타 | 14 | 14 | 0 | one object: `(root)` |
-| Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2) | 12 | 12 | 0 | one object: `(root)` |
-| Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1) | 20 | 20 | 0 | one object: `(root)` |
-
-- **Parameters — Erection Load (C.S. 출력용 사하중 구분)** declared: `vEREC` at `vEREC`, `LTYPECC` at `vEREC.LTYPECC`, `EREC` at `vEREC.EREC`, `vLCNAME` at `vEREC.vLCNAME`, `bSDLE` at `bSDLE`, `vSDLE` at `vSDLE`
-- **Parameters — Cable-Pretension / Initial Force Control** declared: `CPFC` at `CPFC`, `bEXT_REPL` at `bEXT_REPL`, `bCONV` at `bCONV`, `bTRUSS` at `bTRUSS`, `bBEAM` at `bBEAM`, `bCHANGE_CABLE` at `bCHANGE_CABLE`, `bAPPLY_IMF` at `bAPPLY_IMF`
-- **Parameters — Initial Displacement / Camber / 기타** declared: `bITD` at `bITD`, `ITD` at `ITD`, `GROUP` at `GROUP`, `bLFFC` at `bLFFC`, `LFFGR` at `LFFGR`, `bCAMBER` at `bCAMBER`, `bCALC_CFF` at `bCALC_CFF`, `bCALC_CSP` at `bCALC_CSP`, `bSELFCONS` at `bSELFCONS`, `bSAVE_OCS` at `bSAVE_OCS`, `bSD` at `bSD`, `iSDOPT` at `iSDOPT`, `SDCONST` at `SDCONST`, `iBSC` at `iBSC`
-- **Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2)** declared: `iLSTEP` at `iLSTEP`, `iMAXITER` at `iMAXITER`, `CF` at `CF`, `BSSTEP` at `BSSTEP`, `ADSTEP` at `ADSTEP`, `bENEG` at `bENEG`, `EV` at `EV`, `bDISP` at `bDISP`, `DV` at `DV`, `bFORC` at `bFORC`, `FV` at `FV`, `bIEMF` at `bIEMF`
-- **Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)** declared: `bINC_TDE` at `bINC_TDE`, `bCNS` at `bCNS`, `TYPE` at `TYPE`, `iITER_CR` at `iITER_CR`, `TOL_CR` at `TOL_CR`, `bOUCC` at `bOUCC`, `bITS` at `bITS`, `iITS` at `iITS`, `bATS` at `bATS`, `iT10` at `iT10`, `iT100` at `iT100`, `iT1K` at `iT1K`, `iT5K` at `iT5K`, `iT10K` at `iT10K`, `bTTLE_CS` at `bTTLE_CS`, `bRCE` at `bRCE`, `bVAR` at `bVAR`, `bTTLE_ES` at `bTTLE_ES`, `iTTLE_ES` at `iTTLE_ES`, `bAPPLY_ELA` at `bAPPLY_ELA`
-
 ## `/db/THIS`
 
 Baseline answers on `civil`, `gen`. 41 of 41 names declared across 10 tables.
@@ -194,6 +176,20 @@ Baseline answers on `civil`, `gen`. 41 of 41 names declared across 10 tables.
 - **6-7. Nonlinear + Static** declared: `bCUMULATE` at `bCUMULATE`, `bITER` at `bITER`, `iINCCTRL` at `iINCCTRL`
 - **증분 방법(iINCCTRL) 세부 파라미터** declared: `bCONV` at `bCONV`, `iMSTEP` at `iMSTEP`, `bEN` at `bEN`, `EN` at `EN`
 - **6-8. 반복 제어 파라미터 (Nonlinear 공통)** declared: `iMAXITER` at `iMAXITER`, `bDN` at `bDN`, `DN` at `DN`, `bFN` at `bFN`, `FN` at `FN`, `bULSM` at `bULSM`, `ULSM` at `ULSM`, `iRKM` at `iRKM`, `dTOL` at `dTOL`
+
+## `/db/STCT`
+
+Baseline answers on `civil`, `gen`. 38 of 38 names declared across 3 tables.
+
+| table | names | declared | not declared | nesting |
+| --- | ---: | ---: | ---: | --- |
+| Parameters — Erection Load (C.S. 출력용 사하중 구분) | 6 | 6 | 0 | scattered; `(root)` covers 3 of 6 |
+| Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2) | 12 | 12 | 0 | one object: `(root)` |
+| Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1) | 20 | 20 | 0 | one object: `(root)` |
+
+- **Parameters — Erection Load (C.S. 출력용 사하중 구분)** declared: `vEREC` at `vEREC`, `LTYPECC` at `vEREC.LTYPECC`, `EREC` at `vEREC.EREC`, `vLCNAME` at `vEREC.vLCNAME`, `bSDLE` at `bSDLE`, `vSDLE` at `vSDLE`
+- **Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2)** declared: `iLSTEP` at `iLSTEP`, `iMAXITER` at `iMAXITER`, `CF` at `CF`, `BSSTEP` at `BSSTEP`, `ADSTEP` at `ADSTEP`, `bENEG` at `bENEG`, `EV` at `EV`, `bDISP` at `bDISP`, `DV` at `DV`, `bFORC` at `bFORC`, `FV` at `FV`, `bIEMF` at `bIEMF`
+- **Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)** declared: `bINC_TDE` at `bINC_TDE`, `bCNS` at `bCNS`, `TYPE` at `TYPE`, `iITER_CR` at `iITER_CR`, `TOL_CR` at `TOL_CR`, `bOUCC` at `bOUCC`, `bITS` at `bITS`, `iITS` at `iITS`, `bATS` at `bATS`, `iT10` at `iT10`, `iT100` at `iT100`, `iT1K` at `iT1K`, `iT5K` at `iT5K`, `iT10K` at `iT10K`, `bTTLE_CS` at `bTTLE_CS`, `bRCE` at `bRCE`, `bVAR` at `bVAR`, `bTTLE_ES` at `bTTLE_ES`, `iTTLE_ES` at `iTTLE_ES`, `bAPPLY_ELA` at `bAPPLY_ELA`
 
 ## `/db/ELEM`
 

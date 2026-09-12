@@ -972,6 +972,22 @@ def test_structural_table_merge_uses_the_manual_named_object_path(tmp_path: Path
         (
             "/db/STCT",
             '| 1 | Analysis type | `iINC_NLA` | Integer | 0 | Optional |',
+            "Parameters — Cable-Pretension / Initial Force Control",
+            '| 2 | Cable force type | `CPFC` | String | `"INTERNAL"` | Optional |',
+            2,
+            ("CPFC",),
+        ),
+        (
+            "/db/STCT",
+            '| 1 | Analysis type | `iINC_NLA` | Integer | 0 | Optional |',
+            "Parameters — Initial Displacement / Camber / 기타",
+            '| 2 | Initial tangent displacement | `bITD` | Boolean | false | Optional |',
+            3,
+            ("bITD",),
+        ),
+        (
+            "/db/STCT",
+            '| 1 | Analysis type | `iINC_NLA` | Integer | 0 | Optional |',
             "Parameters — Linear & Independent Stage",
             "\n".join(
                 [
@@ -984,7 +1000,12 @@ def test_structural_table_merge_uses_the_manual_named_object_path(tmp_path: Path
             ("TOL",),
         ),
     ],
-    ids=["elem-root-subtype-row", "stct-root-mode-table"],
+    ids=[
+        "elem-root-subtype-row",
+        "stct-root-cable-controls",
+        "stct-root-displacement-controls",
+        "stct-root-mode-table",
+    ],
 )
 def test_reviewed_single_object_tables_merge_at_info_path(
     tmp_path: Path,
@@ -2956,6 +2977,22 @@ def test_reviewed_homogeneous_slash_row_can_repeat_its_shared_claims():
     ]
 
 
+def test_reviewed_mixed_type_row_repeats_only_shared_default_and_required_cells():
+    """STCT maps three types positionally while sharing the row-level claims."""
+    assert ex._parallel_field_cells(
+        '`"bSD"` / `"iSDOPT"` / `"SDCONST"`',
+        "Boolean / Integer / Number",
+        "-",
+        "Optional",
+        "-",
+        allow_shared_default_required=True,
+    ) == [
+        ("bSD", "Boolean", "-", "Optional"),
+        ("iSDOPT", "Integer", "-", "Optional"),
+        ("SDCONST", "Number", "-", "Optional"),
+    ]
+
+
 def test_mixed_optional_and_required_branches_remain_conditional():
     raw = "Optional (LM1) / Required (LM3/4, Optimization)"
     assert ex._normalize_requirement(raw) == ("conditional", raw, None)
@@ -2969,6 +3006,42 @@ def test_reviewed_condition_is_taken_from_the_same_section_only():
     assert field.condition == "STRUCTURE_TYPE = RIGID인 경우"
     assert field.applies_when == [("STRUCTURE_TYPE", ("RIGID",))]
     assert all("does not state" not in note for note in field.notes)
+
+
+@pytest.mark.parametrize(
+    ("key", "requirement", "placeholder", "expected_condition", "expected_applies_when"),
+    [
+        pytest.param(
+            "GROUP",
+            "conditional",
+            "조건부",
+            'ITD="GROUP"일 때',
+            [("ITD", ("GROUP",))],
+            id="conditional-placeholder-uses-description-selector",
+        ),
+        pytest.param(
+            "bTRUSS",
+            "optional",
+            None,
+            "when bCONV true",
+            [("bCONV", (True,))],
+            id="optional-field-keeps-explicit-use-condition",
+        ),
+    ],
+)
+def test_stct_reviewed_field_conditions_preserve_the_manual_selector(
+    key: str,
+    requirement: str,
+    placeholder: str | None,
+    expected_condition: str,
+    expected_applies_when: list[tuple[str, tuple[object, ...]]],
+):
+    field = _field("1", key, "String")
+    field.requirement = requirement
+    field.condition = placeholder
+    ex._apply_reviewed_field_conditions("/db/STCT", [field])
+    assert field.condition == expected_condition
+    assert field.applies_when == expected_applies_when
 
 
 @pytest.mark.parametrize(

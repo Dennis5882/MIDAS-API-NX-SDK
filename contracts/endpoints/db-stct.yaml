@@ -123,6 +123,211 @@ fields:
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
+  - key: CPFC
+    description: >-
+      Cable-Pretension Force Type (Internal: "INTERNAL" / External: "EXTERNAL")
+    type: string
+    requirement: optional
+    documentedDefault: INTERNAL
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bEXT_REPL
+    description: >-
+      External Force Type (대체 여부)
+    type: boolean
+    requirement: optional
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bCONV
+    description: >-
+      Convert Final Stage Member Forces to Initial Forces for Post C.S
+    type: boolean
+    requirement: optional
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bTRUSS
+    description: >-
+      Truss (when bCONV true)
+    type: boolean
+    requirement: optional
+    condition: when bCONV true
+    appliesWhen:
+      - path: bCONV
+        equals: true
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bBEAM
+    description: >-
+      Beam (when bCONV true)
+    type: boolean
+    requirement: optional
+    condition: when bCONV true
+    appliesWhen:
+      - path: bCONV
+        equals: true
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bCHANGE_CABLE
+    description: >-
+      Change Cable Element to Equivalent Truss for Post C.S.
+    type: boolean
+    requirement: optional
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bAPPLY_IMF
+    description: >-
+      Apply Initial Member Force to C.S
+    type: boolean
+    requirement: optional
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bITD
+    description: >-
+      Initial Tangent Displacement 사용
+    type: boolean
+    requirement: optional
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: ITD
+    description: >-
+      Initial Tangent Displacement Type (All: "ALL" / Structure Group: "GROUP")
+    type: string
+    requirement: optional
+    documentedDefault: ALL
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: GROUP
+    description: >-
+      Structure Group Name (ITD="GROUP"일 때)
+    type: string
+    requirement: conditional
+    condition: ITD="GROUP"일 때
+    appliesWhen:
+      - path: ITD
+        equals: GROUP
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+  - key: bLFFC
+    description: >-
+      Lack-of-Fit Force Control 사용
+    type: boolean
+    requirement: optional
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: LFFGR
+    description: >-
+      Lack-of-Fit Group Name (bLFFC=true일 때)
+    type: string
+    requirement: conditional
+    condition: bLFFC=true일 때
+    appliesWhen:
+      - path: bLFFC
+        equals: true
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
+  - key: bCAMBER
+    description: >-
+      Apply Camber Displacement to C.S.
+    type: boolean
+    requirement: optional
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bCALC_CFF
+    description: >-
+      Calculate Concurrent Forces of Frame
+    type: boolean
+    requirement: optional
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bCALC_CSP
+    description: >-
+      Calculate Output of Each Part of Composite Section
+    type: boolean
+    requirement: optional
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bSELFCONS
+    description: >-
+      Self-constrained Forces & Stresses
+    type: boolean
+    requirement: optional
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bSAVE_OCS
+    description: >-
+      Save Output of Construction Stage
+    type: boolean
+    requirement: optional
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: bSD
+    description: >-
+      Stress Decrease 사용 / 옵션 / 상수
+    type: boolean
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: iSDOPT
+    description: >-
+      Stress Decrease 사용 / 옵션 / 상수
+    type: integer
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: SDCONST
+    description: >-
+      Stress Decrease 사용 / 옵션 / 상수
+    type: number
+    requirement: optional
+    documentedDefault: null
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: iBSC
+    description: >-
+      Beam Section Property Option (Constant: 0 / Change with Tendon: 1)
+    type: integer
+    requirement: optional
+    documentedDefault: 0
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
   - key: bINC_PDL
     description: >-
       Include P-Delta Effect
@@ -191,19 +396,6 @@ extraction:
       fields: 3
       line: 2046
       fieldNames: ["vEREC", "LTYPECC", "EREC", "vLCNAME", "bSDLE", "vSDLE"]
-    - heading: Parameters — Cable-Pretension / Initial Force Control
-      resolution: "The supplementary tables describe analysis options and partial conditions, but no complete discriminator condition applies to each field set; left unmerged."
-      fields: 7
-      line: 2066
-      fieldNames: ["CPFC", "bEXT_REPL", "bCONV", "bTRUSS", "bBEAM", "bCHANGE_CABLE",
-                   "bAPPLY_IMF"]
-    - heading: Parameters — Initial Displacement / Camber / 기타
-      resolution: "The supplementary tables describe analysis options and partial conditions, but no complete discriminator condition applies to each field set; left unmerged."
-      fields: 12
-      line: 2078
-      fieldNames: ["bITD", "ITD", "GROUP", "bLFFC", "LFFGR", "bCAMBER", "bCALC_CFF",
-                   "bCALC_CSP", "bSELFCONS", "bSAVE_OCS", "bSD", "iSDOPT", "SDCONST",
-                   "iBSC"]
     - heading: "Parameters — Nonlinear Analysis (`iINC_NLA` = 1 또는 2)"
       resolution: "The supplementary tables describe analysis options and partial conditions, but no complete discriminator condition applies to each field set; left unmerged."
       fields: 9
@@ -218,6 +410,21 @@ extraction:
                    "iITS", "bATS", "iT10", "iT100", "iT1K", "iT5K", "iT10K", "bTTLE_CS",
                    "bRCE", "bVAR", "bTTLE_ES", "iTTLE_ES", "bAPPLY_ELA"]
   structuralTables:
+    - heading: "Parameters — Cable-Pretension / Initial Force Control"
+      line: 2066
+      paths: [<root>]
+      note: >-
+        The heading groups coexisting controls rather than a discriminated
+        payload. The manual's rows and GET /info/db/STCT agree that all seven
+        members live at record root.
+    - heading: "Parameters — Initial Displacement / Camber / 기타"
+      line: 2078
+      paths: [<root>]
+      note: >-
+        The heading groups coexisting controls rather than a discriminated
+        payload. The manual's rows and GET /info/db/STCT agree that all fourteen
+        members live at record root; the two field-level conditions remain on
+        GROUP and LFFGR.
     - heading: "Parameters — Linear & Independent Stage"
       line: 2101
       paths: [<root>]
