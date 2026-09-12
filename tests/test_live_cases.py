@@ -94,6 +94,34 @@ def test_live_case_fixture_carries_static_load_case_seed() -> None:
     assert stld["setup"] == [{"seed": "static_load_cases"}]
 
 
+def test_extras15_fixture_keeps_manual_dependencies_and_product_fields() -> None:
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    cases = [case for case in fixture["cases"] if case["tier"] == "extras15"]
+
+    assert {case["endpoint"] for case in cases} == {
+        "/db/IEPI", "/db/EXLD", "/db/PRST", "/db/POLC", "/db/MATD",
+    }
+    assert all(case["confirmed"] is False for case in cases)
+
+    seed = fixture["seeds"]["prestress_load_cases"]
+    assert seed["endpoint"] == "/db/STLD"
+    assert seed["allowRenumbering"] is True
+    assert {record["NAME"] for record in seed["records"].values()} == {
+        "PS15_SEED", "PS16_SEED",
+    }
+    for endpoint in ("/db/EXLD", "/db/PRST"):
+        case = next(case for case in cases if case["endpoint"] == endpoint)
+        assert case["setup"] == [{"seed": "prestress_load_cases"}]
+
+    polc = {case["products"][0]: case for case in cases if case["endpoint"] == "/db/POLC"}
+    gen_only = {
+        "bLIMITDEFORMANGLE", "LIMITDEFORMANGLE", "bDRIFTMAX",
+        "bDRIFTCENTER", "bDRIFTAVER",
+    }
+    assert gen_only <= set(polc["gen"]["createPayload"])
+    assert gen_only.isdisjoint(polc["civil"]["createPayload"])
+
+
 def test_live_case_fixture_carries_skew_node_seed() -> None:
     fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
     skew = next(case for case in fixture["cases"] if case["endpoint"] == "/db/SKEW")

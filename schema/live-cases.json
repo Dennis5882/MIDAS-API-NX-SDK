@@ -1196,6 +1196,22 @@
         }
       }
     },
+    "prestress_load_cases": {
+      "endpoint": "/db/STLD",
+      "records": {
+        "15": {
+          "NAME": "PS15_SEED",
+          "TYPE": "PS",
+          "DESC": "prestress fixture"
+        },
+        "16": {
+          "NAME": "PS16_SEED",
+          "TYPE": "PS",
+          "DESC": "prestress fixture"
+        }
+      },
+      "allowRenumbering": true
+    },
     "skew_node": {
       "endpoint": "/db/NODE",
       "records": {
@@ -13204,6 +13220,338 @@
           "seed": "bcgd_m1_seed"
         }
       ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras15",
+      "endpoint": "/db/IEPI",
+      "name": "Ignore Elements for Pushover Initial Load",
+      "id": 1,
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "B_IGNORE": false
+      },
+      "updatePayload": {
+        "B_IGNORE": true
+      },
+      "expected": {
+        "created": false,
+        "updated": true
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras15",
+      "endpoint": "/db/EXLD",
+      "name": "External Type Load Case for Pretension",
+      "id": 1,
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "LCNAME_ITEM": [
+          "PS15_SEED"
+        ]
+      },
+      "updatePayload": {
+        "LCNAME_ITEM": [
+          "PS15_SEED",
+          "PS16_SEED"
+        ]
+      },
+      "expected": {
+        "created": [
+          "PS15_SEED"
+        ],
+        "updated": [
+          "PS15_SEED",
+          "PS16_SEED"
+        ]
+      },
+      "needs": [
+        "prestress_load_cases"
+      ],
+      "setup": [
+        {
+          "seed": "prestress_load_cases"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras15",
+      "endpoint": "/db/PRST",
+      "name": "Prestress Beam Loads",
+      "id": 1,
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "ITEMS": [
+          {
+            "ID": 1,
+            "LCNAME": "PS15_SEED",
+            "GROUP_NAME": "",
+            "DIR": 1,
+            "TENSION": 1360,
+            "DISTANCE_I": 0.2,
+            "DISTANCE_M": 0.3,
+            "DISTANCE_J": 0.4
+          }
+        ]
+      },
+      "updatePayload": {
+        "ITEMS": [
+          {
+            "ID": 1,
+            "LCNAME": "PS15_SEED",
+            "GROUP_NAME": "",
+            "DIR": 1,
+            "TENSION": 1500,
+            "DISTANCE_I": 0.2,
+            "DISTANCE_M": 0.3,
+            "DISTANCE_J": 0.4
+          }
+        ]
+      },
+      "expected": {
+        "created": 1360,
+        "updated": 1500
+      },
+      "needs": [
+        "prestress_load_cases"
+      ],
+      "setup": [
+        {
+          "seed": "prestress_load_cases"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras15",
+      "endpoint": "/db/POLC",
+      "name": "Pushover Load Cases",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "LCNAME": "PUSH_ACC_X",
+        "DESC": "",
+        "INCRE_STEP": 10,
+        "bCONS_PDELTA": false,
+        "bUSEINITIAL": false,
+        "bREACOUTPUT": false,
+        "INCRE_METHOD": "LOAD",
+        "STEPCTRLOPTION": "EQUAL",
+        "INCFUNC_KEY": 0,
+        "STIFF_RATIO": 0,
+        "bLIMITDEFORMANGLE": true,
+        "LIMITDEFORMANGLE": 10,
+        "bDRIFTMAX": true,
+        "bDRIFTCENTER": false,
+        "bDRIFTAVER": false,
+        "DISPCTRLOPTION": "GLOBAL",
+        "GLOBAL_MAX_DISP": 0,
+        "MASTERNODE": 0,
+        "MASTERDIRECTION": "",
+        "MASTERMAXDISP": 0,
+        "LOADPATTERNTYPE": "ACC",
+        "LOADPATTERN": [
+          {
+            "DIR": "DX",
+            "SF": 1
+          }
+        ]
+      },
+      "updatePayload": {
+        "LCNAME": "PUSH_ACC_X",
+        "DESC": "",
+        "INCRE_STEP": 12,
+        "bCONS_PDELTA": false,
+        "bUSEINITIAL": false,
+        "bREACOUTPUT": false,
+        "INCRE_METHOD": "LOAD",
+        "STEPCTRLOPTION": "EQUAL",
+        "INCFUNC_KEY": 0,
+        "STIFF_RATIO": 0,
+        "bLIMITDEFORMANGLE": true,
+        "LIMITDEFORMANGLE": 10,
+        "bDRIFTMAX": true,
+        "bDRIFTCENTER": false,
+        "bDRIFTAVER": false,
+        "DISPCTRLOPTION": "GLOBAL",
+        "GLOBAL_MAX_DISP": 0,
+        "MASTERNODE": 0,
+        "MASTERDIRECTION": "",
+        "MASTERMAXDISP": 0,
+        "LOADPATTERNTYPE": "ACC",
+        "LOADPATTERN": [
+          {
+            "DIR": "DX",
+            "SF": 1
+          }
+        ]
+      },
+      "expected": {
+        "created": 10,
+        "updated": 12
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras15",
+      "endpoint": "/db/POLC",
+      "name": "Pushover Load Cases",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "LCNAME": "PUSH_ACC_X",
+        "DESC": "",
+        "INCRE_STEP": 10,
+        "bCONS_PDELTA": false,
+        "bUSEINITIAL": false,
+        "bREACOUTPUT": false,
+        "INCRE_METHOD": "LOAD",
+        "STEPCTRLOPTION": "EQUAL",
+        "INCFUNC_KEY": 0,
+        "STIFF_RATIO": 0,
+        "DISPCTRLOPTION": "GLOBAL",
+        "GLOBAL_MAX_DISP": 0,
+        "MASTERNODE": 0,
+        "MASTERDIRECTION": "",
+        "MASTERMAXDISP": 0,
+        "LOADPATTERNTYPE": "ACC",
+        "LOADPATTERN": [
+          {
+            "DIR": "DX",
+            "SF": 1
+          }
+        ]
+      },
+      "updatePayload": {
+        "LCNAME": "PUSH_ACC_X",
+        "DESC": "",
+        "INCRE_STEP": 12,
+        "bCONS_PDELTA": false,
+        "bUSEINITIAL": false,
+        "bREACOUTPUT": false,
+        "INCRE_METHOD": "LOAD",
+        "STEPCTRLOPTION": "EQUAL",
+        "INCFUNC_KEY": 0,
+        "STIFF_RATIO": 0,
+        "DISPCTRLOPTION": "GLOBAL",
+        "GLOBAL_MAX_DISP": 0,
+        "MASTERNODE": 0,
+        "MASTERDIRECTION": "",
+        "MASTERMAXDISP": 0,
+        "LOADPATTERNTYPE": "ACC",
+        "LOADPATTERN": [
+          {
+            "DIR": "DX",
+            "SF": 1
+          }
+        ]
+      },
+      "expected": {
+        "created": 10,
+        "updated": 12
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras15",
+      "endpoint": "/db/MATD",
+      "name": "Modify Concrete Materials",
+      "id": 1,
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "methods": [
+        "GET",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {},
+      "updatePayload": {
+        "TYPE": "CONC",
+        "NAME": "C16/20",
+        "DATA1": {
+          "CODENAME": "EN(RC)",
+          "CODEMATLNAME": "C16/20",
+          "DESIGN": {
+            "C_FC": 16000,
+            "C_FCI": 11200
+          }
+        },
+        "REBAR_CODENAME": "EN04(RC)",
+        "MAINREBAR_REBARNAME": "ClassB",
+        "SUBREBAR_REBARNAME": "ClassC",
+        "MAINREBAR_B_FY": 500000,
+        "SUBREBAR_B_FY": 600000
+      },
+      "expected": {
+        "created": null,
+        "updated": "C16/20"
+      },
+      "needs": [],
+      "setup": [],
       "blockedSeeds": [],
       "crashes": null
     }

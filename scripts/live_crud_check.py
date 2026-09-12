@@ -280,6 +280,7 @@ from midas_nx.db.properties.damping import GroupDamping
 from midas_nx.db.properties.material import (
     ChangeProperty,
     Material,
+    MaterialModifyConcrete,
     TimeDependentMaterialCreepShrinkage,
     TimeDependentMaterialFunction,
     TimeDependentMaterialLink,
@@ -298,6 +299,10 @@ from midas_nx.db.properties.section import (
     VirtualSection,
 )
 from midas_nx.db.properties.thickness import Thickness
+from midas_nx.db.pushover import (
+    IgnoreElementsForPushoverInitialLoad,
+    PushoverLoadCase,
+)
 from midas_nx.db.static_loads import (
     BeamLoad,
     FinishingMaterialLoad,
@@ -322,7 +327,9 @@ from midas_nx.db.static_loads import (
 from midas_nx.db.temperature_prestress import (
     BeamSectionTemperature,
     ElementTemperature,
+    ExternalLoadCaseForPretension,
     NodalTemperature,
+    PrestressBeamLoad,
     SystemTemperature,
     TemperatureGradient,
 )
@@ -3625,6 +3632,179 @@ def _extras14_cases() -> List[Case]:
     ]
 
 
+def _extras15_seeds() -> List[SeedStep]:
+    """Load cases used by the manual's prestress examples.
+
+    /db/STLD is a known renumbering table, so the cases refer to these records
+    by NAME and the emitted fixture marks the seed accordingly.
+    """
+    return [
+        SeedStep(
+            "prestress_load_cases",
+            lambda client: StaticLoadCase.create(
+                {
+                    15: {"NAME": "PS15_SEED", "TYPE": "PS", "DESC": "prestress fixture"},
+                    16: {"NAME": "PS16_SEED", "TYPE": "PS", "DESC": "prestress fixture"},
+                },
+                client=client,
+            ),
+        ),
+    ]
+
+
+def _polc_acceleration_payload(*, steps: int, product: str) -> Dict[str, Any]:
+    """Return the manual's complete uniform-acceleration POLC branch.
+
+    Five stopping-condition members are tagged Gen-only in the contract. The
+    manual's shared example includes them, so remove them only for the Civil
+    fixture instead of sending a known other-product field.
+    """
+    payload: Dict[str, Any] = {
+        "LCNAME": "PUSH_ACC_X",
+        "DESC": "",
+        "INCRE_STEP": steps,
+        "bCONS_PDELTA": False,
+        "bUSEINITIAL": False,
+        "bREACOUTPUT": False,
+        "INCRE_METHOD": "LOAD",
+        "STEPCTRLOPTION": "EQUAL",
+        "INCFUNC_KEY": 0,
+        "STIFF_RATIO": 0,
+        "bLIMITDEFORMANGLE": True,
+        "LIMITDEFORMANGLE": 10,
+        "bDRIFTMAX": True,
+        "bDRIFTCENTER": False,
+        "bDRIFTAVER": False,
+        "DISPCTRLOPTION": "GLOBAL",
+        "GLOBAL_MAX_DISP": 0,
+        "MASTERNODE": 0,
+        "MASTERDIRECTION": "",
+        "MASTERMAXDISP": 0,
+        "LOADPATTERNTYPE": "ACC",
+        "LOADPATTERN": [{"DIR": "DX", "SF": 1}],
+    }
+    if product == "civil":
+        for key in (
+            "bLIMITDEFORMANGLE",
+            "LIMITDEFORMANGLE",
+            "bDRIFTMAX",
+            "bDRIFTCENTER",
+            "bDRIFTAVER",
+        ):
+            del payload[key]
+    return payload
+
+
+def _extras15_cases() -> List[Case]:
+    """Batch 15: tractable pushover and prestress assignments.
+
+    The vendored manual identifies /db/IEPI's Assign key as an element id and
+    documents B_IGNORE as the only record member. The base model owns element
+    id 1. The same beam can carry /db/PRST; its load-case dependency is the
+    replayable STLD seed above. /db/EXLD exercises that seed's two names using
+    the exact array shape in the manual.
+    """
+    return [
+        Case(
+            IgnoreElementsForPushoverInitialLoad,
+            {"B_IGNORE": False},
+            {"B_IGNORE": True},
+            lambda payload: payload.get("B_IGNORE"),
+            False,
+            True,
+            item_id=1,
+            confirmed=False,
+        ),
+        Case(
+            ExternalLoadCaseForPretension,
+            {"LCNAME_ITEM": ["PS15_SEED"]},
+            {"LCNAME_ITEM": ["PS15_SEED", "PS16_SEED"]},
+            lambda payload: payload.get("LCNAME_ITEM"),
+            ["PS15_SEED"],
+            ["PS15_SEED", "PS16_SEED"],
+            item_id=1,
+            needs=("prestress_load_cases",),
+            confirmed=False,
+        ),
+        Case(
+            PrestressBeamLoad,
+            {
+                "ITEMS": [{
+                    "ID": 1,
+                    "LCNAME": "PS15_SEED",
+                    "GROUP_NAME": "",
+                    "DIR": 1,
+                    "TENSION": 1360,
+                    "DISTANCE_I": 0.2,
+                    "DISTANCE_M": 0.3,
+                    "DISTANCE_J": 0.4,
+                }],
+            },
+            {
+                "ITEMS": [{
+                    "ID": 1,
+                    "LCNAME": "PS15_SEED",
+                    "GROUP_NAME": "",
+                    "DIR": 1,
+                    "TENSION": 1500,
+                    "DISTANCE_I": 0.2,
+                    "DISTANCE_M": 0.3,
+                    "DISTANCE_J": 0.4,
+                }],
+            },
+            lambda payload: payload["ITEMS"][0].get("TENSION"),
+            1360,
+            1500,
+            item_id=1,
+            needs=("prestress_load_cases",),
+            confirmed=False,
+        ),
+        # Uniform acceleration needs neither a prior analysis result nor an
+        # extra static-load reference. Split products because the contract's
+        # /info evidence marks five stopping-condition fields Gen-only.
+        *[
+            Case(
+                PushoverLoadCase,
+                _polc_acceleration_payload(steps=10, product=product),
+                _polc_acceleration_payload(steps=12, product=product),
+                lambda payload: payload.get("INCRE_STEP"),
+                10,
+                12,
+                item_id=1,
+                products=(product,),
+                confirmed=False,
+            )
+            for product in ("gen", "civil")
+        ],
+        # MATD is GET/PUT-only and id 1 is the base model's concrete material.
+        # Its create payload is intentionally unused by the harness; the PUT
+        # body below is the vendored manual's complete Request Body record.
+        Case(
+            MaterialModifyConcrete,
+            {},
+            {
+                "TYPE": "CONC",
+                "NAME": "C16/20",
+                "DATA1": {
+                    "CODENAME": "EN(RC)",
+                    "CODEMATLNAME": "C16/20",
+                    "DESIGN": {"C_FC": 16000, "C_FCI": 11200},
+                },
+                "REBAR_CODENAME": "EN04(RC)",
+                "MAINREBAR_REBARNAME": "ClassB",
+                "SUBREBAR_REBARNAME": "ClassC",
+                "MAINREBAR_B_FY": 500000,
+                "SUBREBAR_B_FY": 600000,
+            },
+            lambda payload: payload.get("NAME"),
+            None,
+            "C16/20",
+            item_id=1,
+            confirmed=False,
+        ),
+    ]
+
+
 # 2026-09-05, both public SDKs on disposable base models; see live notes.
 # These are payload/code-specific observations, not endpoint product gates.
 _LANE_LIVE_CONFIRMED = {
@@ -3966,6 +4146,7 @@ TIERS: List[Tier] = [
     Tier("extras12", "batch 12: db.bridge in full, all 4 confirmed (GSBG/GCMB/CAMB Civil-only, ULFC both products)", _extras12_seeds, _extras12_cases),
     Tier("extras13", "batch 13: tractable non-rebar subset of db.design (7 confirmed both products; DSTL Civil-only success/Gen failure; RCHK/REBB/REBC/REBW/REBR deferred)", _no_seeds, _extras13_cases),
     Tier("extras14", "batch 14: the 12 Civil-only-by-design endpoints (5 db.moving_loads, 7 db.analysis_control Hyper-S/-M1), all confirmed", _extras14_seeds, _extras14_cases),
+    Tier("extras15", "batch 15: tractable pushover and prestress assignments", _extras15_seeds, _extras15_cases),
 ]
 
 
@@ -4102,7 +4283,7 @@ def _mark(row: Dict[str, Any]) -> str:
 #: listed: renumbering is a live observation, never something to assume for a
 #: seed nobody has watched.
 RENUMBERING_SEEDS = frozenset({
-    "spfc_seed", "thfc_seed", "thfc_force_seed", "this_seed",
+    "prestress_load_cases", "spfc_seed", "thfc_seed", "thfc_force_seed", "this_seed",
 })
 
 
