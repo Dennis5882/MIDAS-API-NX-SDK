@@ -5645,8 +5645,27 @@ export namespace DbMovingLoadsTypes {
     PARTS?: Array<boolean>;
     COMPONENTS?: Array<boolean>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface AdditionalImpactFactorPayload {
-    ITEMS?: Array<AdditionalImpactFactorItem>;
+    /** Additional Impact Factor Items */
+    ITEMS: Array<{
+      /** Serial Number Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER" or "EFF_SPAN_LEN_AUTO". */
+      ID?: number;
+      /** Lane Type ("LINE" / "SURFACE"); the EFF_SPAN_LEN_AUTO table states "LINE" Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER" or "EFF_SPAN_LEN_AUTO". */
+      LANE_TYPE?: string;
+      /** Lane Name Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER" or "EFF_SPAN_LEN_AUTO". */
+      LANE_NAME?: string;
+      /** Factor Type ("IMPACT_FACT" / "EFF_SPAN_LEN_USER" / "EFF_SPAN_LEN_AUTO") Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER" or "EFF_SPAN_LEN_AUTO". */
+      FACT_TYPE?: string;
+      /** Factor Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER". */
+      FACTOR?: number;
+      /** Element Type ("BEAM" / "TRUSS" / "PLATE") Required when ITEMS.FACT_TYPE = "EFF_SPAN_LEN_AUTO". */
+      ELEMTYPE?: string;
+      /** Parts (Beam: [i, 1/4, 1/2, 3/4, j] / Plate: [cent, i, j, k, l]) Applies when ITEMS.FACT_TYPE = "EFF_SPAN_LEN_AUTO" and ITEMS.ELEMTYPE is "BEAM" or "PLATE". */
+      PARTS?: Array<boolean>;
+      /** Components (Beam: [My_max, My_min, Mz_max, Mz_min, Fx_max, Fx_min] / Truss: [Max, Min] / Plate: [Mxx_max, Mxx_min, Myy_max, Myy_min, Fxx_max, Fxx_min, Fyy_max, Fyy_min]) Required when ITEMS.FACT_TYPE = "EFF_SPAN_LEN_AUTO". */
+      COMPONENTS?: Array<boolean>;
+    }>;
   }
   /** Generated from contracts/endpoints/. */
   export interface RailwayDynamicFactorPayload {

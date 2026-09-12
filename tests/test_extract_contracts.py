@@ -1001,6 +1001,39 @@ def test_nspr_surface_function_table_merges_into_items_with_form_type_gate():
     assert children["DK"].applies_when == [("FormType", (1,))]
 
 
+def test_impf_factor_tables_merge_into_items_and_keep_parts_element_gate():
+    """IMPF widens shared item fields and keeps PARTS off the Truss branch."""
+    items = ex.ParsedField("ITEMS", "items", "array", {"type": "object"}, "required", None)
+    common_id = ex.ParsedField("ID", "id", "integer", None, "required", None)
+    user_factor = ex.ParsedField("FACTOR", "factor", "number", None, "required", None)
+    auto_id = ex.ParsedField("ID", "id", "integer", None, "required", None)
+    element_type = ex.ParsedField("ELEMTYPE", "element", "string", None, "required", None)
+    parts = ex.ParsedField("PARTS", "parts", "array", {"type": "boolean"}, "conditional", None)
+    parts.condition = "Beam/Plate만"
+    tables = [
+        ex.ParsedTable("Base", 0, [items]),
+        ex.ParsedTable("User", 1, [common_id, user_factor]),
+        ex.ParsedTable("Auto", 2, [auto_id, element_type, parts]),
+    ]
+    section = ex.Section("manual.md", "1", "/db/IMPF", "IMPF", "IMPF", [], tables=tables)
+
+    fields, resolved = ex._conditional_fields(section, [items])
+    children = {field.key: field for field in fields[0].properties}
+
+    assert resolved == {1, 2}
+    assert children["ID"].applies_when == [
+        ("FACT_TYPE", ("IMPACT_FACT", "EFF_SPAN_LEN_USER", "EFF_SPAN_LEN_AUTO"))
+    ]
+    assert children["FACTOR"].applies_when == [
+        ("FACT_TYPE", ("IMPACT_FACT", "EFF_SPAN_LEN_USER"))
+    ]
+    assert children["ELEMTYPE"].applies_when == [("FACT_TYPE", ("EFF_SPAN_LEN_AUTO",))]
+    assert children["PARTS"].applies_when == [
+        ("FACT_TYPE", ("EFF_SPAN_LEN_AUTO",)),
+        ("ELEMTYPE", ("BEAM", "PLATE")),
+    ]
+
+
 def test_structural_table_merge_uses_the_manual_named_object_path(tmp_path: Path):
     """A structural table goes below TCELEM, never beside it at record root."""
     path = tmp_path / "99_DB_Structural.md"

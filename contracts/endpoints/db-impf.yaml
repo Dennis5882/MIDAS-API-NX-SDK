@@ -98,6 +98,115 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+    properties:
+      - key: ID
+        description: Serial Number
+        type: integer
+        requirement: required
+        condition: Line Lane / Surface Lane (Impact Factor, Effective Span Length – User Input); Line Lane (Effective Span Length – Auto Calculation)
+        appliesWhen:
+          - path: ITEMS.FACT_TYPE
+            in: [IMPACT_FACT, EFF_SPAN_LEN_USER, EFF_SPAN_LEN_AUTO]
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: LANE_TYPE
+        description: >-
+          Lane Type ("LINE" / "SURFACE"); the EFF_SPAN_LEN_AUTO table states "LINE"
+        type: string
+        requirement: required
+        condition: Line Lane / Surface Lane (Impact Factor, Effective Span Length – User Input); Line Lane (Effective Span Length – Auto Calculation)
+        appliesWhen:
+          - path: ITEMS.FACT_TYPE
+            in: [IMPACT_FACT, EFF_SPAN_LEN_USER, EFF_SPAN_LEN_AUTO]
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: LANE_NAME
+        description: Lane Name
+        type: string
+        requirement: required
+        condition: Line Lane / Surface Lane (Impact Factor, Effective Span Length – User Input); Line Lane (Effective Span Length – Auto Calculation)
+        appliesWhen:
+          - path: ITEMS.FACT_TYPE
+            in: [IMPACT_FACT, EFF_SPAN_LEN_USER, EFF_SPAN_LEN_AUTO]
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: FACT_TYPE
+        description: >-
+          Factor Type ("IMPACT_FACT" / "EFF_SPAN_LEN_USER" / "EFF_SPAN_LEN_AUTO")
+        type: string
+        requirement: required
+        condition: Line Lane / Surface Lane (Impact Factor, Effective Span Length – User Input); Line Lane (Effective Span Length – Auto Calculation)
+        appliesWhen:
+          - path: ITEMS.FACT_TYPE
+            in: [IMPACT_FACT, EFF_SPAN_LEN_USER, EFF_SPAN_LEN_AUTO]
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: FACTOR
+        description: Factor
+        type: number
+        requirement: required
+        condition: Line Lane / Surface Lane (Impact Factor, Effective Span Length – User Input)
+        appliesWhen:
+          - path: ITEMS.FACT_TYPE
+            in: [IMPACT_FACT, EFF_SPAN_LEN_USER]
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: ELEMTYPE
+        description: Element Type ("BEAM" / "TRUSS" / "PLATE")
+        type: string
+        requirement: required
+        condition: Line Lane (Effective Span Length – Auto Calculation)
+        appliesWhen:
+          - path: ITEMS.FACT_TYPE
+            equals: EFF_SPAN_LEN_AUTO
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: PARTS
+        description: >-
+          Parts (Beam: [i, 1/4, 1/2, 3/4, j] / Plate: [cent, i, j, k, l])
+        type: array
+        items:
+          type: boolean
+        requirement: conditional
+        condition: Beam/Plate만 — ⚠️ Truss 예제에는 PARTS 필드 자체가 없음, 2026-08-25 확인
+        appliesWhen:
+          - path: ITEMS.FACT_TYPE
+            equals: EFF_SPAN_LEN_AUTO
+          - path: ITEMS.ELEMTYPE
+            in: [BEAM, PLATE]
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: COMPONENTS
+        description: >-
+          Components (Beam: [My_max, My_min, Mz_max, Mz_min, Fx_max, Fx_min] /
+          Truss: [Max, Min] / Plate: [Mxx_max, Mxx_min, Myy_max, Myy_min,
+          Fxx_max, Fxx_min, Fyy_max, Fyy_min])
+        type: array
+        items:
+          type: boolean
+        requirement: required
+        condition: Line Lane (Effective Span Length – Auto Calculation)
+        appliesWhen:
+          - path: ITEMS.FACT_TYPE
+            equals: EFF_SPAN_LEN_AUTO
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
 
 sdkRules:
   - id: db-impf-delete-per-id
@@ -135,20 +244,3 @@ extraction:
     - heading: Line Lane (Effective Span Length – Auto Calculation)
       line: 2770
       columns: [Default]
-  # Additional parameter tables in this section were NOT merged. They are
-  # usually conditional variants selected by a type/code field. Decide
-  # whether they belong in this contract's fields, as nested `properties`,
-  # or as a separate contract - do not assume the first table is the whole
-  # schema.
-  unmergedTables:
-    - heading: Line Lane / Surface Lane (Impact Factor, Effective Span Length – User Input)
-      resolution: "The lane and span-mode tables name modes but do not state a wire discriminator tying a record to each table; left unmerged."
-      fields: 5
-      line: 2760
-      fieldNames: ["ID", "LANE_TYPE", "LANE_NAME", "FACT_TYPE", "FACTOR"]
-    - heading: Line Lane (Effective Span Length – Auto Calculation)
-      resolution: "The lane and span-mode tables name modes but do not state a wire discriminator tying a record to each table; left unmerged."
-      fields: 7
-      line: 2770
-      fieldNames: ["ID", "LANE_TYPE", "LANE_NAME", "ELEMTYPE", "FACT_TYPE", "PARTS",
-                   "COMPONENTS"]

@@ -43,26 +43,25 @@ not the same finding as a source that is absent.
 | [`/db/NLCT-M1`](#dbnlctm1) | 2 | 23 | 23 | 100% |
 | [`/db/MVLD`](#dbmvld) | 4 | 21 | 21 | 100% |
 | [`/db/SDIS`](#dbsdis) | 3 | 21 | 21 | 100% |
-| [`/db/IMPF`](#dbimpf) | 2 | 12 | 12 | 100% |
 | [`/db/THIK`](#dbthik) | 1 | 11 | 11 | 100% |
 | [`/db/CSCS`](#dbcscs) | 1 | 9 | 9 | 100% |
 | [`/db/TDME`](#dbtdme) | 2 | 7 | 7 | 100% |
 | [`/db/STCT`](#dbstct) | 1 | 6 | 6 | 100% |
 | [`/ope/LCOM-SRC`](#opelcomsrc) | 1 | 5 | -- | n/a |
-| **total** | **77** | **519** | **450** | **86%** |
+| **total** | **75** | **507** | **438** | **86%** |
 
-Of the **451** names on endpoints `/info` answers for, **450** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
+Of the **439** names on endpoints `/info` answers for, **438** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
 
 ### What each table has, as a count
 
 | what the measurement found | tables |
 | --- | ---: |
-| whole table, one object | 37 |
+| whole table, one object | 35 |
 | whole table, several objects | 3 |
 | whole table, scattered | 25 |
 | partly declared | 1 |
 | out of reach | 11 |
-| **all** | **77** |
+| **all** | **75** |
 
 *one object* means `/info` has a single object holding every name in that table; *scattered* means it declares them all but under no common parent, so the table's shape is not something the baseline confirms. Neither is a recommendation -- a table with two sources still needs its manual section read before anything moves.
 
@@ -292,18 +291,6 @@ Baseline answers on `gen`. 21 of 21 names declared across 3 tables.
 - **LRB 객체** declared: `SDIS_HYS_MODEL` at `LRB.SDIS_HYS_MODEL`, `KE` at `LRB.KE`, `AR` at `LRB.AR`, `TR` at `LRB.TR`, `K0` at `LRB.K0`, `K2` at `LRB.K2`, `QD` at `LRB.QD`, `DX` at `LRB.DX`, `OPT_CONS_NONL` at `LRB.DX.OPT_CONS_NONL`, `BETA` at `LRB.DX.BETA`, `ALPHA` at `LRB.DX.ALPHA`, `SIGMA_V` at `LRB.DX.SIGMA_V`
 - **NRB 객체** declared: `AR` at `NRB.AR`, `TR` at `NRB.TR`, `KH` at `NRB.KH`, `DX` at `NRB.DX`
 - **NRB 객체** declared: `AS` at `SB.AS`, `K0` at `SB.K0`, `QD` at `SB.QD`, `Pi_VALUE` at `SB.Pi_VALUE`, `MU0` at `SB.MU0`
-
-## `/db/IMPF`
-
-Baseline answers on `civil`, `gen`. 12 of 12 names declared across 2 tables.
-
-| table | names | declared | not declared | nesting |
-| --- | ---: | ---: | ---: | --- |
-| Line Lane / Surface Lane (Impact Factor, Effective Span Length – User Input) | 5 | 5 | 0 | one object: `ITEMS` |
-| Line Lane (Effective Span Length – Auto Calculation) | 7 | 7 | 0 | one object: `ITEMS` |
-
-- **Line Lane / Surface Lane (Impact Factor, Effective Span Length – User Input)** declared: `ID` at `ITEMS.ID`, `LANE_TYPE` at `ITEMS.LANE_TYPE`, `LANE_NAME` at `ITEMS.LANE_NAME`, `FACT_TYPE` at `ITEMS.FACT_TYPE`, `FACTOR` at `ITEMS.FACTOR`
-- **Line Lane (Effective Span Length – Auto Calculation)** declared: `ID` at `ITEMS.ID`, `LANE_TYPE` at `ITEMS.LANE_TYPE`, `LANE_NAME` at `ITEMS.LANE_NAME`, `ELEMTYPE` at `ITEMS.ELEMTYPE`, `FACT_TYPE` at `ITEMS.FACT_TYPE`, `PARTS` at `ITEMS.PARTS`, `COMPONENTS` at `ITEMS.COMPONENTS`
 
 ## `/db/THIK`
 

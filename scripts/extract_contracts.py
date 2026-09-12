@@ -1690,6 +1690,12 @@ _REVIEWED_ADDITIONAL_FIELD_CONDITIONS: dict[
     "/db/NSPR": {
         ("ITEMS", "DV"): ("DIR=6일 때", ("DIR", (6,))),
     },
+    "/db/IMPF": {
+        ("ITEMS", "PARTS"): (
+            "Beam/Plate만 — ⚠️ Truss 예제에는 PARTS 필드 자체가 없음, 2026-08-25 확인",
+            ("ELEMTYPE", ("BEAM", "PLATE")),
+        ),
+    },
 }
 
 
@@ -2346,6 +2352,16 @@ def _conditional_fields(section: "Section", fields: list[ParsedField]) -> tuple[
                 "By Surface Spring Function 전용(`FormType`=1일 때 공통 추가)",
             ),
         },
+        "/db/IMPF": {
+            1: (
+                (("FACT_TYPE", ("IMPACT_FACT", "EFF_SPAN_LEN_USER")),),
+                "Line Lane / Surface Lane (Impact Factor, Effective Span Length – User Input)",
+            ),
+            2: (
+                (("FACT_TYPE", "EFF_SPAN_LEN_AUTO"),),
+                "Line Lane (Effective Span Length – Auto Calculation)",
+            ),
+        },
         "/db/HSFC": {
             1: ((("TYPE", "CONST"),), 'Constant 타입 (TYPE="CONST") 추가 파라미터'),
             2: (
@@ -2417,6 +2433,8 @@ def _conditional_fields(section: "Section", fields: list[ParsedField]) -> tuple[
         ("/db/NSPR", 2): ("ITEMS",),
         ("/db/NSPR", 3): ("ITEMS",),
         ("/db/NSPR", 4): ("ITEMS",),
+        ("/db/IMPF", 1): ("ITEMS",),
+        ("/db/IMPF", 2): ("ITEMS",),
     }
 
     def annotate(entries: list[ParsedField], conditions: tuple[Condition, ...], raw: str) -> None:
