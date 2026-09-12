@@ -4,7 +4,7 @@ The repository already compares contracts against both SDKs, against `/info`,
 and against the manual.  Nothing compared them against the **fixtures**, which
 is the fourth thing that claims to know an endpoint's shape -- and the one that
 decides what a live run actually sends. Its current baseline has 41 fixture
-leads across 5 endpoints and 2 contract gaps on one confirmed endpoint.
+leads across 5 endpoints and 3 contract gaps on two confirmed endpoints.
 
 The fixture-side leads are on cases nobody has watched pass, where the payload
 is the suspect: `/db/ACTL` sends `CLATS` on Gen, while `/db/GRDP`, `/db/MVCT`,
@@ -12,8 +12,9 @@ is the suspect: `/db/ACTL` sends `CLATS` on Gen, while `/db/GRDP`, `/db/MVCT`,
 
 The confirmed side reads the other way round. The product accepted that exact
 payload, so the contract is what is behind: today that is `/db/SDIS` omitting
-two fields still declared required. A `safeToOmit: true` field is already the
-record of an accepted call that left it out, so it is not counted again.
+two fields still declared required and `/db/SPLC` omitting `NDP`. A
+`safeToOmit: true` field is already the record of an accepted call that left
+it out, so it is not counted again.
 
 Three things are checked per case, per product it declares:
 
@@ -113,6 +114,7 @@ KNOWN: Dict[str, List[str]] = {'/db/ACTL': ['gen: sends CLATS, tagged civil-only
 
 KNOWN_CONTRACT_GAPS: Dict[str, List[str]] = {
     '/db/SDIS': ['gen: omits required LRB', 'gen: omits required NRB'],
+    '/db/SPLC': ['gen: omits required NDP'],
 }
 
 BOTH = ("civil", "gen")

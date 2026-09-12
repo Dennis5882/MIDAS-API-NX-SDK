@@ -37,7 +37,7 @@ python scripts/report_dropped_manual_rows.py \
   --manual-api-repo "E:\AI Study\MIDAS-API" --check           # OK
 python scripts/live_crud_check.py --check-cases        # silent; exit 0
 python scripts/check_fixture_contract.py --check       # 41 fixture leads over 5
-                                          # endpoints, 2 contract gaps over 1
+                                          # endpoints, 3 contract gaps over 2
 python scripts/report_unmerged_tables.py --check       # report is current
 cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 75 tests
@@ -255,8 +255,10 @@ review rather than an automatic `true`.
 The 21 names were already declared in their own contracts' `variants`. The
 checker read only the root `fields` array and called them unrecorded. It now
 counts variant keys as recorded names, without guessing that a variant field is
-required at the record root. The confirmed side is down to `/db/SDIS`'s `LRB`
-and `NRB`, which belong to Task C.
+required at the record root. The confirmed side contains `/db/SDIS`'s `LRB`
+and `NRB`, plus `/db/SPLC`'s newly declared `NDP`. They remain explicit
+contract-gap leads rather than being converted into conditional omission
+claims without a documented branch condition.
 
 **Do not treat this as a task that got done quickly.** It was a list of 21
 defects that did not exist, written up from a checker's first run and handed
