@@ -1683,6 +1683,16 @@ _REVIEWED_FIELD_CONDITIONS: dict[
 }
 
 
+_REVIEWED_ADDITIONAL_FIELD_CONDITIONS: dict[
+    str,
+    dict[tuple[str, ...], tuple[str, tuple[str, tuple[str | int | float | bool, ...]]]],
+] = {
+    "/db/NSPR": {
+        ("ITEMS", "DV"): ("DIR=6일 때", ("DIR", (6,))),
+    },
+}
+
+
 def _apply_reviewed_field_conditions(endpoint: str, fields: list[ParsedField]) -> None:
     """Apply only conditions written elsewhere in the same manual section."""
 
@@ -1703,6 +1713,21 @@ def _apply_reviewed_field_conditions(endpoint: str, fields: list[ParsedField]) -
             "the condition is stated elsewhere in the same section and retained without "
             "inventing a stricter selector"
         )
+
+
+def _apply_reviewed_additional_field_conditions(endpoint: str, fields: list[ParsedField]) -> None:
+    """Append a second manual gate to fields already gated by their table."""
+
+    for path, (condition, structured) in _REVIEWED_ADDITIONAL_FIELD_CONDITIONS.get(
+        endpoint, {}
+    ).items():
+        field = _field_at_path(fields, path)
+        if field is None:
+            continue
+        if condition not in (field.condition or ""):
+            field.condition = f"{field.condition}; {condition}" if field.condition else condition
+        if structured not in field.applies_when:
+            field.applies_when.append(structured)
 
 
 _STRUCTURAL_CONTAINERS: dict[str, tuple[str, ...]] = {
@@ -2312,6 +2337,11 @@ def _conditional_fields(section: "Section", fields: list[ParsedField]) -> tuple[
                 "Parameters — Time Dependent Effect (누가 단계, `iNLA_TYPE` = 1)",
             ),
         },
+        "/db/NSPR": {
+            1: ((("TYPE", "LINEAR"),), "LINEAR 전용"),
+            2: ((("TYPE", ("COMP", "TENS")),), "COMP(Compression-Only) / TENS(Tension-Only) 전용"),
+            3: ((("TYPE", "MULTI"),), "MULTI(Multi-Linear) 전용"),
+        },
         "/db/HSFC": {
             1: ((("TYPE", "CONST"),), 'Constant 타입 (TYPE="CONST") 추가 파라미터'),
             2: (
@@ -2379,6 +2409,9 @@ def _conditional_fields(section: "Section", fields: list[ParsedField]) -> tuple[
         ("/db/MATL", 1): ("PARAM",),
         ("/db/MATL", 2): ("PARAM",),
         ("/db/MATL", 3): ("PARAM",),
+        ("/db/NSPR", 1): ("ITEMS",),
+        ("/db/NSPR", 2): ("ITEMS",),
+        ("/db/NSPR", 3): ("ITEMS",),
     }
 
     def annotate(entries: list[ParsedField], conditions: tuple[Condition, ...], raw: str) -> None:
@@ -2419,6 +2452,7 @@ def _conditional_fields(section: "Section", fields: list[ParsedField]) -> tuple[
             annotate([addition], *(special or (conditions, raw or section.tables[index].heading)))
         if _append_fields(merged, additions):
             resolved.add(index)
+    _apply_reviewed_additional_field_conditions(section.endpoint, merged)
     return merged, resolved
 
 
