@@ -2341,6 +2341,10 @@ def _conditional_fields(section: "Section", fields: list[ParsedField]) -> tuple[
             1: ((("TYPE", "LINEAR"),), "LINEAR 전용"),
             2: ((("TYPE", ("COMP", "TENS")),), "COMP(Compression-Only) / TENS(Tension-Only) 전용"),
             3: ((("TYPE", "MULTI"),), "MULTI(Multi-Linear) 전용"),
+            4: (
+                (("FormType", 1),),
+                "By Surface Spring Function 전용(`FormType`=1일 때 공통 추가)",
+            ),
         },
         "/db/HSFC": {
             1: ((("TYPE", "CONST"),), 'Constant 타입 (TYPE="CONST") 추가 파라미터'),
@@ -2412,6 +2416,7 @@ def _conditional_fields(section: "Section", fields: list[ParsedField]) -> tuple[
         ("/db/NSPR", 1): ("ITEMS",),
         ("/db/NSPR", 2): ("ITEMS",),
         ("/db/NSPR", 3): ("ITEMS",),
+        ("/db/NSPR", 4): ("ITEMS",),
     }
 
     def annotate(entries: list[ParsedField], conditions: tuple[Condition, ...], raw: str) -> None:

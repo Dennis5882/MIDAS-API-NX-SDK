@@ -978,6 +978,29 @@ def test_nspr_type_tables_merge_into_items_and_widen_shared_direction_fields():
     ]
 
 
+def test_nspr_surface_function_table_merges_into_items_with_form_type_gate():
+    """The heading states FormType=1 and /info places both fields in ITEMS."""
+    form_type = ex.ParsedField("FormType", "form", "integer", None, "optional", 0)
+    items = ex.ParsedField("ITEMS", "items", "array", {"type": "object"}, "required", None)
+    items.properties = [form_type]
+    fillers = [ex.ParsedTable(f"Filler {index}", index, []) for index in range(1, 4)]
+    effarea = ex.ParsedField("EFFAREA", "width", "number", None, "optional", 0)
+    dk = ex.ParsedField("DK", "modulus", "array", {"type": "number"}, "optional", 0)
+    tables = [
+        ex.ParsedTable("Base", 0, [items]),
+        *fillers,
+        ex.ParsedTable("Surface function", 4, [effarea, dk]),
+    ]
+    section = ex.Section("manual.md", "1", "/db/NSPR", "NSPR", "NSPR", [], tables=tables)
+
+    fields, resolved = ex._conditional_fields(section, [items])
+    children = {field.key: field for field in fields[0].properties}
+
+    assert 4 in resolved
+    assert children["EFFAREA"].applies_when == [("FormType", (1,))]
+    assert children["DK"].applies_when == [("FormType", (1,))]
+
+
 def test_structural_table_merge_uses_the_manual_named_object_path(tmp_path: Path):
     """A structural table goes below TCELEM, never beside it at record root."""
     path = tmp_path / "99_DB_Structural.md"

@@ -49,21 +49,20 @@ not the same finding as a source that is absent.
 | [`/db/TDME`](#dbtdme) | 2 | 7 | 7 | 100% |
 | [`/db/STCT`](#dbstct) | 1 | 6 | 6 | 100% |
 | [`/ope/LCOM-SRC`](#opelcomsrc) | 1 | 5 | -- | n/a |
-| [`/db/NSPR`](#dbnspr) | 1 | 2 | 2 | 100% |
-| **total** | **78** | **521** | **452** | **86%** |
+| **total** | **77** | **519** | **450** | **86%** |
 
-Of the **453** names on endpoints `/info` answers for, **452** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
+Of the **451** names on endpoints `/info` answers for, **450** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
 
 ### What each table has, as a count
 
 | what the measurement found | tables |
 | --- | ---: |
-| whole table, one object | 38 |
+| whole table, one object | 37 |
 | whole table, several objects | 3 |
 | whole table, scattered | 25 |
 | partly declared | 1 |
 | out of reach | 11 |
-| **all** | **78** |
+| **all** | **77** |
 
 *one object* means `/info` has a single object holding every name in that table; *scattered* means it declares them all but under no common parent, so the table's shape is not something the baseline confirms. Neither is a recommendation -- a table with two sources still needs its manual section read before anything moves.
 
@@ -357,14 +356,4 @@ Baseline answers on `civil`, `gen`. 6 of 6 names declared across 1 tables.
 | Parameters | 5 | 0 | 5 | -- |
 
 - **Parameters** not declared: `OPTION`, `DGNCODE`, `RS_SCALE_FACTOR`, `LOAD_CASE`, `FACTOR`
-
-## `/db/NSPR`
-
-Baseline answers on `civil`, `gen`. 2 of 2 names declared across 1 tables.
-
-| table | names | declared | not declared | nesting |
-| --- | ---: | ---: | ---: | --- |
-| By Surface Spring Function 전용(`FormType`=1일 때 공통 추가) | 2 | 2 | 0 | one object: `ITEMS` |
-
-- **By Surface Spring Function 전용(`FormType`=1일 때 공통 추가)** declared: `EFFAREA` at `ITEMS.EFFAREA`, `DK` at `ITEMS.DK`
 

@@ -1445,8 +1445,39 @@ export namespace DbBoundaryTypes {
     DV?: Array<number>;
     FUNCTION?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface PointSpringPayload {
-    ITEMS: Array<PointSpringItem>;
+    /** Point Spring (배열로 삽입) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Spring Type · "LINEAR" / "COMP" / "TENS" / "MULTI" */
+      TYPE: string;
+      /** Boundary Group Name */
+      GROUP_NAME?: string;
+      /** Create Function Type · 0=점 스프링 함수, 1=면 스프링 함수 */
+      FormType?: number;
+      /** Spring Stiffness [SDx, SDy, SDz, SRx, SRy, SRz] Required when ITEMS.TYPE = "LINEAR". */
+      SDR?: [number, number, number, number, number, number];
+      /** Fixed Option [SDx, SDy, SDz, SRx, SRy, SRz] Applies when ITEMS.TYPE = "LINEAR". */
+      F_S?: [boolean, boolean, boolean, boolean, boolean, boolean];
+      /** Damping Constant 사용 여부 Applies when ITEMS.TYPE = "LINEAR". */
+      DAMPING?: boolean;
+      /** Damping [Cx, Cy, Cz, CRx, CRy, CRz] Applies when ITEMS.TYPE = "LINEAR". */
+      Cr?: [number, number, number, number, number, number];
+      /** Stiffness Required when ITEMS.TYPE is "COMP" or "TENS". */
+      STIFF?: number;
+      /** Direction · Dx(+):0 / Dx(–):1 / Dy(+):2 / Dy(–):3 / Dz(+):4 / Dz(–):5 / Vector:6 Required when ITEMS.TYPE is "COMP" or "TENS" or "MULTI". */
+      DIR?: number;
+      /** Normal Vector(DIR=6일 때) Applies when ITEMS.TYPE is "COMP" or "TENS" or "MULTI" and ITEMS.DIR = 6. */
+      DV?: [number, number, number];
+      /** Force-Deformation 함수 ID(/db/MLFC에서 정의) Required when ITEMS.TYPE = "MULTI". */
+      FUNCTION?: number;
+      /** Width of Frame Applies when ITEMS.FormType = 1. */
+      EFFAREA?: number;
+      /** Modulus of Subgrade Reaction [Kx, Ky, Kz] Applies when ITEMS.FormType = 1. */
+      DK?: [number, number, number];
+    }>;
   }
   /** Generated from contracts/endpoints/. */
   export interface GeneralSpringTypePayload {
