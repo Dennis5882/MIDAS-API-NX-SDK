@@ -324,6 +324,25 @@ the manual's rows into the contract at that path, then rerunning
 `npm run generate`. Batches of at most 3 tables, one commit each, and stop at
 the first table whose manual row says something the `/info` object does not.
 
+An audit after the eleventh batch found **no further mechanical merge among
+those 32**. Do not rescan them as if they were an unreviewed queue:
+
+- `/db/MVHL` 2: the contract is hand-resolved, but the extractor cannot yet
+  reproduce the documented nesting; its markers are intentional.
+- `/db/SPFC` 2, `/db/THIS` 10, `/db/MVLD` 3 and `/db/SPLC` 1: the manual does
+  not state a complete wire discriminator for the table.
+- `/db/ELEM` 7: the headings state `STYPE` but not the complete `TYPE`/`STYPE`
+  discriminator pair.
+- `/db/EPMT` 2: the supplementary rows omit Value Type.
+- `/db/SDIS` 2: two identically titled `NRB 객체` tables map to different
+  parents, which needs a judgment rather than a title-based merge.
+- `/db/CSCS` 1: the manual itself says the nine members' meanings are inferred
+  and unconfirmed.
+- `/db/TDME` 2: both products reject the remaining iGen-only Japan branches.
+
+The report also has one partly-declared ELEM table, 25 scattered tables and 11
+outside `/info`; those were never in the mechanical one-object set.
+
 The 25 scattered ones are **not** yours. `/info` declares every name but under
 no common parent, so what the table means is a judgement. Each report row names
 the object covering the most of it — `VEH_PL` covers 13 of 14, `VEH_CN` 28 of
