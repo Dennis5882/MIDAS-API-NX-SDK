@@ -39,8 +39,8 @@ not the same finding as a source that is absent.
 | [`/db/ELEM`](#dbelem) | 8 | 30 | 29 | 96% |
 | [`/db/EPMT`](#dbepmt) | 5 | 29 | 29 | 100% |
 | [`/db/MVLDpl`](#dbmvldpl) | 4 | 27 | 27 | 100% |
-| [`/db/SPLC`](#dbsplc) | 4 | 25 | 25 | 100% |
 | [`/db/NLCT-M1`](#dbnlctm1) | 2 | 23 | 23 | 100% |
+| [`/db/SPLC`](#dbsplc) | 3 | 23 | 23 | 100% |
 | [`/db/MVLD`](#dbmvld) | 4 | 21 | 21 | 100% |
 | [`/db/SDIS`](#dbsdis) | 3 | 21 | 21 | 100% |
 | [`/db/THIK`](#dbthik) | 1 | 11 | 11 | 100% |
@@ -48,20 +48,20 @@ not the same finding as a source that is absent.
 | [`/db/TDME`](#dbtdme) | 2 | 7 | 7 | 100% |
 | [`/db/STCT`](#dbstct) | 1 | 6 | 6 | 100% |
 | [`/ope/LCOM-SRC`](#opelcomsrc) | 1 | 5 | -- | n/a |
-| **total** | **75** | **507** | **438** | **86%** |
+| **total** | **74** | **505** | **436** | **86%** |
 
-Of the **439** names on endpoints `/info` answers for, **438** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
+Of the **437** names on endpoints `/info` answers for, **436** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
 
 ### What each table has, as a count
 
 | what the measurement found | tables |
 | --- | ---: |
-| whole table, one object | 35 |
+| whole table, one object | 34 |
 | whole table, several objects | 3 |
 | whole table, scattered | 25 |
 | partly declared | 1 |
 | out of reach | 11 |
-| **all** | **75** |
+| **all** | **74** |
 
 *one object* means `/info` has a single object holding every name in that table; *scattered* means it declares them all but under no common parent, so the table's shape is not something the baseline confirms. Neither is a recommendation -- a table with two sources still needs its manual section read before anything moves.
 
@@ -234,22 +234,6 @@ Baseline answers on `civil`, `gen`. 27 of 27 names declared across 4 tables.
 - **Vehicle S/2S(LOAD_MODEL=1)** declared: `AUTO_OPTIMIZE` at `AUTO_OPTIMIZE`, `MIN_VEHL_DIST` at `AUTO_OPTIMIZE.MIN_VEHL_DIST`, `LANE_NAME` at `AUTO_OPTIMIZE.LANE_NAME`, `MIN_NUM_VEHICLE` at `AUTO_OPTIMIZE.MIN_NUM_VEHICLE`, `MAX_NUM_VEHICLE` at `AUTO_OPTIMIZE.MAX_NUM_VEHICLE`, `COMB_OPTION` at `AUTO_OPTIMIZE.COMB_OPTION`, `OPTIMIZE_ITEMS` at `AUTO_OPTIMIZE.OPTIMIZE_ITEMS`, `VEHICLE_TYPE` at `AUTO_OPTIMIZE.OPTIMIZE_ITEMS.VEHICLE_TYPE`, `VEHICLE_NAME` at `AUTO_OPTIMIZE.OPTIMIZE_ITEMS.VEHICLE_NAME`, `SCALE_FACTOR` at `AUTO_OPTIMIZE.OPTIMIZE_ITEMS.SCALE_FACTOR`
 - **Vehicle K/Military(LOAD_MODEL=2/3)** declared: `AUTO_OPTIMIZE` at `AUTO_OPTIMIZE`, `VEHICLE_LOAD_NAME` at `AUTO_OPTIMIZE.VEHICLE_LOAD_NAME`, `MIN_VEHL_DIST` at `AUTO_OPTIMIZE.MIN_VEHL_DIST`, `LANE_NAME` at `AUTO_OPTIMIZE.LANE_NAME`, `NUM_LOADED_LANES` at `AUTO_OPTIMIZE.NUM_LOADED_LANES`
 
-## `/db/SPLC`
-
-Baseline answers on `civil`, `gen`. 25 of 25 names declared across 4 tables.
-
-| table | names | declared | not declared | nesting |
-| --- | ---: | ---: | ---: | --- |
-| Modal 감쇠 추가 파라미터 | 4 | 4 | 0 | scattered; `(root)` covers 2 of 4 |
-| Mass & Stiffness Proportional 감쇠 추가 파라미터 | 10 | 10 | 0 | one object: `(root)` |
-| Mass & Stiffness Proportional 감쇠 추가 파라미터 | 9 | 9 | 0 | scattered; `(root)` covers 6 of 9 |
-| Mass & Stiffness Proportional 감쇠 추가 파라미터 | 2 | 2 | 0 | one object: `(root)` |
-
-- **Modal 감쇠 추가 파라미터** declared: `DALL` at `DALL`, `aDAMPING` at `aDAMPING`, `iMODE` at `aDAMPING.iMODE`, `DAMPING` at `aDAMPING.DAMPING`
-- **Mass & Stiffness Proportional 감쇠 추가 파라미터** declared: `iCOEF` at `iCOEF`, `bMASSP` at `bMASSP`, `bSTIFFP` at `bSTIFFP`, `MASSC` at `MASSC`, `STIFFC` at `STIFFC`, `iCALC` at `iCALC`, `FP1` at `FP1`, `FP2` at `FP2`, `DR1` at `DR1`, `DR2` at `DR2`
-- **Mass & Stiffness Proportional 감쇠 추가 파라미터** declared: `bACCECC` at `bACCECC`, `bACCECC_AUTO` at `bACCECC_AUTO`, `ACCECC_PERCENT` at `ACCECC_PERCENT`, `bACCECC_CONSIDER_GL` at `bACCECC_CONSIDER_GL`, `bACCECC_MINIMUM_TORSION` at `bACCECC_MINIMUM_TORSION`, `aACCECC_ECCEN_LIST` at `aACCECC_ECCEN_LIST`, `STORY` at `aACCECC_ECCEN_LIST.STORY`, `CROSS` at `aACCECC_ECCEN_LIST.CROSS`, `ALONG` at `aACCECC_ECCEN_LIST.ALONG`
-- **Mass & Stiffness Proportional 감쇠 추가 파라미터** declared: `bNDP` at `bNDP`, `NDP` at `NDP`
-
 ## `/db/NLCT-M1`
 
 Baseline answers on `civil`. 23 of 23 names declared across 2 tables.
@@ -261,6 +245,20 @@ Baseline answers on `civil`. 23 of 23 names declared across 2 tables.
 
 - **Parameters — LOAD_STEPS 객체 (`ITER_METHOD`별 사용 필드가 다름)** declared: `STEP_MODE` at `LOAD_STEPS.STEP_MODE`, `NUMBER_STEPS` at `LOAD_STEPS.NUMBER_STEPS`, `OUTPUT` at `LOAD_STEPS.OUTPUT`, `MANUAL_STEPS` at `LOAD_STEPS.MANUAL_STEPS`, `MIN_ARC_RATIO` at `LOAD_STEPS.MIN_ARC_RATIO`, `MAX_ARC_RATIO` at `LOAD_STEPS.MAX_ARC_RATIO`, `MAX_ARC_INCREMENTS` at `LOAD_STEPS.MAX_ARC_INCREMENTS`, `MASTER_NODE` at `LOAD_STEPS.MASTER_NODE`, `MAX_DISP` at `LOAD_STEPS.MAX_DISP`, `DIRECTION` at `LOAD_STEPS.DIRECTION`, `REF_NODE` at `LOAD_STEPS.REF_NODE`
 - **Parameters — ADVANCED 객체 (고급 비선형 설정, 전체 Optional — 미지정 시 서버 기본값 사용)** declared: `OPT_USE_DEFAULT` at `ADVANCED.OPT_USE_DEFAULT`, `STIFF_UPDATE_SCHEME` at `ADVANCED.STIFF_UPDATE_SCHEME`, `ITER_BEFORE_STIFF_UPDATE` at `ADVANCED.ITER_BEFORE_STIFF_UPDATE`, `OPT_TERMINATE_ON_FAILED_CONV` at `ADVANCED.OPT_TERMINATE_ON_FAILED_CONV`, `MAX_ITER_PER_INCREMENT` at `ADVANCED.MAX_ITER_PER_INCREMENT`, `MAX_BISECTION_LEVEL` at `ADVANCED.MAX_BISECTION_LEVEL`, `OPT_SMART_BISECTION` at `ADVANCED.OPT_SMART_BISECTION`, `DIVERGENCE_THRESHOLD` at `ADVANCED.DIVERGENCE_THRESHOLD`, `OPT_ENABLE_LINE_SEARCH` at `ADVANCED.OPT_ENABLE_LINE_SEARCH`, `LINE_SEARCH_OPTION` at `ADVANCED.LINE_SEARCH_OPTION`, `MAX_LINE_SEARCH_PER_ITER` at `ADVANCED.MAX_LINE_SEARCH_PER_ITER`, `LINE_SEARCH_TOL` at `ADVANCED.LINE_SEARCH_TOL`
+
+## `/db/SPLC`
+
+Baseline answers on `civil`, `gen`. 23 of 23 names declared across 3 tables.
+
+| table | names | declared | not declared | nesting |
+| --- | ---: | ---: | ---: | --- |
+| Modal 감쇠 추가 파라미터 | 4 | 4 | 0 | scattered; `(root)` covers 2 of 4 |
+| Mass & Stiffness Proportional 감쇠 추가 파라미터 | 10 | 10 | 0 | one object: `(root)` |
+| 우발 편심(Accidental Eccentricity) 파라미터 | 9 | 9 | 0 | scattered; `(root)` covers 6 of 9 |
+
+- **Modal 감쇠 추가 파라미터** declared: `DALL` at `DALL`, `aDAMPING` at `aDAMPING`, `iMODE` at `aDAMPING.iMODE`, `DAMPING` at `aDAMPING.DAMPING`
+- **Mass & Stiffness Proportional 감쇠 추가 파라미터** declared: `iCOEF` at `iCOEF`, `bMASSP` at `bMASSP`, `bSTIFFP` at `bSTIFFP`, `MASSC` at `MASSC`, `STIFFC` at `STIFFC`, `iCALC` at `iCALC`, `FP1` at `FP1`, `FP2` at `FP2`, `DR1` at `DR1`, `DR2` at `DR2`
+- **우발 편심(Accidental Eccentricity) 파라미터** declared: `bACCECC` at `bACCECC`, `bACCECC_AUTO` at `bACCECC_AUTO`, `ACCECC_PERCENT` at `ACCECC_PERCENT`, `bACCECC_CONSIDER_GL` at `bACCECC_CONSIDER_GL`, `bACCECC_MINIMUM_TORSION` at `bACCECC_MINIMUM_TORSION`, `aACCECC_ECCEN_LIST` at `aACCECC_ECCEN_LIST`, `STORY` at `aACCECC_ECCEN_LIST.STORY`, `CROSS` at `aACCECC_ECCEN_LIST.CROSS`, `ALONG` at `aACCECC_ECCEN_LIST.ALONG`
 
 ## `/db/MVLD`
 

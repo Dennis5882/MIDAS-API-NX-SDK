@@ -257,6 +257,24 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+  - key: bNDP
+    description: 비소산 요소 설계
+    products: [gen]
+    type: boolean
+    requirement: optional
+    documentedDefault: false
+    documentedOptional: true
+    safeToOmit: unverified
+    provenance: manual
+  - key: NDP
+    description: 비소산 계수
+    products: [gen]
+    type: number
+    requirement: required
+    documentedDefault: null
+    documentedOptional: false
+    safeToOmit: unverified
+    provenance: manual
 
 sdkRules:
   - id: db-splc-delete-per-id
@@ -311,15 +329,17 @@ extraction:
       line: 657
       fieldNames: ["iCOEF", "bMASSP", "bSTIFFP", "MASSC", "STIFFC", "iCALC", "FP1", "FP2",
                    "DR1", "DR2"]
-    - heading: "Mass & Stiffness Proportional 감쇠 추가 파라미터"
+    - heading: "우발 편심(Accidental Eccentricity) 파라미터"
       resolution: "The damping tables name modes but do not state a complete wire condition selecting each supplementary field set; left unmerged."
       fields: 6
       line: 672
       fieldNames: ["bACCECC", "bACCECC_AUTO", "ACCECC_PERCENT", "bACCECC_CONSIDER_GL",
                    "bACCECC_MINIMUM_TORSION", "aACCECC_ECCEN_LIST", "STORY", "CROSS",
                    "ALONG"]
-    - heading: "Mass & Stiffness Proportional 감쇠 추가 파라미터"
-      resolution: "The damping tables name modes but do not state a complete wire condition selecting each supplementary field set; left unmerged."
-      fields: 1
+  structuralTables:
+    - heading: 비소산 요소 설계 파라미터
       line: 692
-      fieldNames: ["bNDP", "NDP"]
+      paths: [<root>]
+      note: >-
+        The manual marks this table GEN NX only, and GET /info/db/SPLC places
+        both members at record root. The product label is not a payload branch.

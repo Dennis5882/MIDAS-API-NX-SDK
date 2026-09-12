@@ -1273,6 +1273,11 @@ _STRUCTURAL_TABLE_SPLITS: dict[str, tuple[StructuralTableMerge, ...]] = {
         StructuralTableMerge(3, ((),)),
         StructuralTableMerge(4, ((),)),
     ),
+    # The final table is explicitly marked GEN NX only, and /info places both
+    # members at record root. It is a product qualification, not a payload
+    # discriminator, so retain that scope on the fields without inventing a
+    # branch between bNDP and NDP.
+    "/db/SPLC": (StructuralTableMerge(4, ((),), ("gen",)),),
     # Tables 1-4 each name one destination object in the heading and carry rows
     # that parse to it directly, including TIME_DEP_CONTROL's dotted
     # `CREEP_SHRINKAGE.*` keys and the `"bTTLE_ES"` / `"iTTLE_ES"` cell, both of
@@ -3577,7 +3582,8 @@ _QUOTED_ARRAY_PROPERTY = re.compile(
 #: time. Prose with bold emphasis still fails, because the label must be the
 #: whole line up to that link.
 _BOLD_TABLE_LABEL = re.compile(
-    r"^\*\*(?P<label>.+?)\*\*\s*(?:[-–—]\s*\[[^\]]*\]\([^)]*\)\s*)?$"
+    r"^\*\*(?P<label>.+?)\*\*\s*(?:\*\([^)]*\)\*\s*)?"
+    r"(?:[-–—]\s*\[[^\]]*\]\([^)]*\)\s*)?$"
 )
 
 

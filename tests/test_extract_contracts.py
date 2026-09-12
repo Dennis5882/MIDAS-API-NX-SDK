@@ -4216,6 +4216,32 @@ def test_a_bold_label_followed_only_by_its_source_link_still_labels_the_table(
     ]
 
 
+def test_a_bold_label_keeps_a_trailing_product_qualifier_out_of_the_title(
+    tmp_path: Path,
+):
+    """SPLC's two GEN-only labels end in italic product metadata."""
+    path = tmp_path / "99_DB_ProductLabel.md"
+    path.write_text(
+        '''## 1. `/db/SPLC` -- labelled tables
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Name | `NAME` | String | - | Required |
+
+**비소산 요소 설계 파라미터** *(GEN NX only)*
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 2 | Design | `bNDP` | Boolean | false | Optional |
+''',
+        encoding="utf-8",
+    )
+
+    section = ex.parse_chapter(path)[0]
+
+    assert section.tables[1].heading == "비소산 요소 설계 파라미터"
+
+
 def test_bold_prose_that_introduces_an_example_is_still_not_a_heading(tmp_path: Path):
     """The widened label must not start swallowing bold prose.
 
