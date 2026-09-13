@@ -1593,8 +1593,10 @@ def _extras1_cases() -> List[Case]:
         ),
         Case(
             GeneralLinkHyperS,
-            {"PROP_NAME": "NLLP_SEED", "NODE1": 23, "NODE2": 24},
-            {"PROP_NAME": "NLLP_SEED_2", "NODE1": 23, "NODE2": 24},
+            {"PROP_NAME": "NLLP_SEED", "NODE1": 23, "NODE2": 24,
+             "REF_SYSTEM": 0, "BETA_ANGLE": 0},
+            {"PROP_NAME": "NLLP_SEED_2", "NODE1": 23, "NODE2": 24,
+             "REF_SYSTEM": 0, "BETA_ANGLE": 15},
             lambda p: p.get("PROP_NAME"), "NLLP_SEED", "NLLP_SEED_2",
             item_id=2, products=civil, needs=("nllp_seed", "extras1_nodes"),
         ),
@@ -1837,6 +1839,51 @@ def _extras3_seeds() -> List[SeedStep]:
     ]
 
 
+def _group_damping_payload(freq_mode_1: float) -> Dict[str, Any]:
+    """Return chapter 04's complete `/db/GRDP` Request Body record."""
+    return {
+        "STIFF_COEF_DEFAULT": 0.0848826377636192,
+        "MASS_COEF_DEFAULT": 0.04188790133333333,
+        "OPT_CALC_WHEN_USED": True,
+        "OPT_MASS_PROP_DEFAULT": True,
+        "OPT_STIFF_PROP_DEFAULT": True,
+        "DIRECT_CALC_MODE_DEFAULT": 1,
+        "FREQ_PERIOD_MODE_DEFAULT": 0,
+        "FREQ_MODE_1_DEFAULT": freq_mode_1,
+        "FREQ_MODE_2_DEFAULT": 0.2,
+        "PERIOD_MODE_1_DEFAULT": 0,
+        "PERIOD_MODE_2_DEFAULT": 0,
+        "DAMPING_MODE_1_DEFAULT": 0.06,
+        "DAMPING_MODE_2_DEFAULT": 0.07,
+        "bExistElement": True,
+        "bExistStrain": True,
+        "GROUP_DAMPING_ITEMS": [{
+            "GROUP_TYPE": "MATERIAL", "GROUP_NAME": "1",
+            "STIFF_COEF": 0.005787452574792216,
+            "OPT_STIFF_PROP": True,
+            "MASS_COEF": 0.06854383854545451,
+            "OPT_MASS_PROP": True,
+            "DIRECT_CALC_MODE": 1,
+            "FREQ_PERIOD_MODE": 0,
+            "FREQ_MODE_1": 0.5,
+            "FREQ_MODE_2": 0.6,
+            "PERIOD_MODE_1": 0,
+            "PERIOD_MODE_2": 0,
+            "DAMPING_RATIO_MODE": 0,
+            "DAMPING_RATIO_MODE_1": 0.02,
+            "DAMPING_RATIO_MODE_2": 0.02,
+        }],
+        "STRAIN_GROUP_ITEMS": [{
+            "GROUP_TYPE": "MATERIAL", "GROUP_NAME": "1",
+            "DAMPING_RATIO": 0.02,
+        }],
+        "ELEM_GROUP_PRIORITY": 0,
+        "ELEM_VALUE_PRIORITY": 0,
+        "STRAIN_GROUP_PRIORITY": 0,
+        "STRAIN_VALUE_PRIORITY": 0,
+    }
+
+
 def _extras3_cases() -> List[Case]:
     return [
         # GROUP_NAME references the base seed's material by name ("C24").
@@ -1849,17 +1896,10 @@ def _extras3_cases() -> List[Case]:
             # generic "Wrong Field" either way. Not resolved as a fixture
             # problem; same class of finding as /db/NLLP and /db/WVLD.
             GroupDamping,
-            {"bExistStrain": True, "OPT_CALC_WHEN_USED": True,
-             "OPT_MASS_PROP_DEFAULT": True, "OPT_STIFF_PROP_DEFAULT": True,
-             "STIFF_COEF_DEFAULT": 0.0849, "MASS_COEF_DEFAULT": 0.0419,
-             "STRAIN_GROUP_ITEMS": [{"GROUP_TYPE": "MATERIAL", "GROUP_NAME": "1",
-                                      "DAMPING_RATIO": 0.05}]},
-            {"bExistStrain": True, "OPT_CALC_WHEN_USED": True,
-             "OPT_MASS_PROP_DEFAULT": True, "OPT_STIFF_PROP_DEFAULT": True,
-             "STIFF_COEF_DEFAULT": 0.0849, "MASS_COEF_DEFAULT": 0.0419,
-             "STRAIN_GROUP_ITEMS": [{"GROUP_TYPE": "MATERIAL", "GROUP_NAME": "1",
-                                      "DAMPING_RATIO": 0.03}]},
-            lambda p: p["STRAIN_GROUP_ITEMS"][0].get("DAMPING_RATIO"), 0.05, 0.03,
+            _group_damping_payload(0.1),
+            _group_damping_payload(0.5),
+            lambda p: p.get("FREQ_MODE_1_DEFAULT"), 0.1, 0.5,
+            confirmed=True,
         ),
         # Keyed by material id; material 1 is the base seed's C24.
         Case(
@@ -1875,12 +1915,12 @@ def _extras3_cases() -> List[Case]:
             # tried) -- same "Wrong Field". Same class of finding as
             # /db/NLLP, /db/WVLD, /db/GRDP.
             TimeDependentMaterialFunction,
-            {"NAME": "Shrinkage_User", "FTYPE": "SHRINK", "SCALE": 1.0,
-             "DESC": "", "vDAY": [{"DAY": 28, "VALUE": 0.0001}, {"DAY": 90, "VALUE": 0.0002},
-                                   {"DAY": 365, "VALUE": 0.0003}, {"DAY": 3650, "VALUE": 0.0004}]},
-            {"NAME": "Shrinkage_User", "FTYPE": "SHRINK", "SCALE": 1.2,
-             "DESC": "", "vDAY": [{"DAY": 28, "VALUE": 0.0001}, {"DAY": 90, "VALUE": 0.0002},
-                                   {"DAY": 365, "VALUE": 0.0003}, {"DAY": 3650, "VALUE": 0.0004}]},
+            {"NAME": "CreepFunc_1", "FTYPE": "CREEP", "CTYPE": "CC", "SCALE": 1.0,
+             "DESC": "", "vDAY": [{"DAY": 28, "VALUE": 0.5}, {"DAY": 90, "VALUE": 1.0},
+                                   {"DAY": 365, "VALUE": 1.5}, {"DAY": 3650, "VALUE": 2.0}]},
+            {"NAME": "CreepFunc_1", "FTYPE": "CREEP", "CTYPE": "CC", "SCALE": 1.2,
+             "DESC": "", "vDAY": [{"DAY": 28, "VALUE": 0.5}, {"DAY": 90, "VALUE": 1.0},
+                                   {"DAY": 365, "VALUE": 1.5}, {"DAY": 3650, "VALUE": 2.0}]},
             lambda p: p.get("SCALE"), 1.0, 1.2,
         ),
         # ⚠️ Confirmed failing live 2026-08-16 (Civil NX v2.2, build
@@ -2653,15 +2693,16 @@ def _extras8_seeds() -> List[SeedStep]:
     return [
         SeedStep("bngr_seed", lambda c: BoundaryGroup.create(
             {1: {"NAME": "BG1"}, 2: {"NAME": "BG2"}}, client=c)),
-    ]
+    ] + _lane_code_seed("AASHTO LRFD")
 
 
 def _extras8_cases() -> List[Case]:
     """batch 8: the tractable subset of db.analysis_control -- 9 of its 21
     endpoints. All 9 are singleton "control data" tables (one record, id 1,
     no per-model geometry to reference beyond the base seed's own load
-    cases "DL"/"LC_SCRATCH"), so no seed step is needed beyond bngr_seed
-    above. Deferred: the 5 Hyper-S (``-M1``) variants (Civil-only, deeply
+    cases "DL"/"LC_SCRATCH"). BCCT needs bngr_seed and MVCT needs the
+    documented AASHTO LRFD moving-load-code selector. Deferred: the 5 Hyper-S
+    (``-M1``) variants (Civil-only, deeply
     nested payloads) and the 4 country-specific MVCT variants (MVCTch/id/
     bs/tr -- large, code-specific field sets not worth the fixture cost
     yet).
@@ -2783,19 +2824,10 @@ def _extras8_cases() -> List[Case]:
             lambda p: p.get("THETA"), 1, 0.5,
             item_id=1, products=("gen",), confirmed=True,
         ),
-        # ⚠️ Confirmed failing live 2026-08-16 on both products, with two
-        # different errors depending on payload completeness: the manual's
-        # full worked example answers "Unknown Error" on Civil NX (same as
-        # /db/FBLA's and /db/EPST's unresolved class) and on Gen NX too,
-        # while a stripped-down minimal payload answers "Wrong Field"
-        # instead on Civil -- field names both match /info's own live
-        # schema. Given /db/MVCT sits downstream of the
-        # "moving" tier's whole AASHTO LRFD moving-load fixture chain
-        # (code -> lane -> vehicle -> case), it may need that entire
-        # prerequisite chain built first rather than being a standalone
-        # control table like its siblings in this batch -- untested here,
-        # left as a genuine finding rather than pulled into this tier's
-        # scope.
+        # The complete manual payload answered "Unknown Error" on an empty
+        # document. A 2026-09-14 isolated rerun established the missing
+        # prerequisite: selecting the manual's AASHTO LRFD code is sufficient.
+        # No lane, vehicle, or moving-load case is needed for this control.
         Case(
             MovingLoadAnalysisControl,
             {"METHOD": "EXACT", "POINT": "INF", "iIGP": 0, "iIGPN": 3,
@@ -2813,7 +2845,7 @@ def _extras8_cases() -> List[Case]:
              "bFM": True, "bFG": False, "FGN": "",
              "bL": True, "bLG": False, "LGN": ""},
             lambda p: p.get("iIGPN"), 3, 5,
-            item_id=1,
+            item_id=1, needs=("lane_code_AASHTO LRFD",), confirmed=True,
         ),
         Case(
             SettlementAnalysisControlData,
@@ -4215,7 +4247,7 @@ TIERS: List[Tier] = [
     Tier("extras5", "batch 5: db.dynamic_loads (9 of 12, Hyper-S variants deferred)", _extras5_seeds, _extras5_cases),
     Tier("extras6", "batch 6: seismic-device family from db.boundary (SDVI/SDVE/SDST confirmed both products; SDHY/SDIS confirmed Gen-only; DRLS deferred)", _no_seeds, _extras6_cases),
     Tier("extras7", "batch 7: standalone/frame-attachable remainder of db.static_loads (PNLD/PNLA/FMLD/POSP/POSL confirmed; FBLA/EPST/EPSE fail live)", _extras7_seeds, _extras7_cases),
-    Tier("extras8", "batch 8: tractable subset of db.analysis_control (PDEL/BUCK/SMCT/EIGV/BCCT confirmed both products; HHCT/NLCT confirmed Gen only and fail on Civil; ACTL/MVCT remain unresolved)", _extras8_seeds, _extras8_cases),
+    Tier("extras8", "batch 8: tractable subset of db.analysis_control (PDEL/BUCK/SMCT/EIGV/BCCT/MVCT confirmed both products; HHCT/NLCT confirmed Gen only and fail on Civil; ACTL remains unresolved)", _extras8_seeds, _extras8_cases),
     Tier("extras9", "batch 9: db.node_element's Domain feature (MADO/SBDO/DOEL -- all 3 fail live, MADO silently drops writes on both products)", _extras9_seeds, _extras9_cases),
     Tier("extras10", "batch 10: standalone subset of db.construction_stage's heat-of-hydration family (ETFC/CCFC/HSFC/HAHS/STBK/HSTG confirmed; HAHS uses a real SOLID fixture; HPCE fails live; HECB/HSPT/CSCS deferred)", _extras10_seeds, _extras10_cases),
     Tier("extras11", "batch 11a/c: /db/STCT (fails live -- iITER/TOL silently don't persist), /db/HSPT and /db/HECB confirmed with a SOLID hydration fixture", _extras11_seeds, _extras11_cases),

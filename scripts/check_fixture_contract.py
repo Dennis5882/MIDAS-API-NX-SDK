@@ -3,12 +3,14 @@
 The repository already compares contracts against both SDKs, against `/info`,
 and against the manual.  Nothing compared them against the **fixtures**, which
 is the fourth thing that claims to know an endpoint's shape -- and the one that
-decides what a live run actually sends. Its current baseline has 41 fixture
-leads across 5 endpoints and 3 contract gaps on two confirmed endpoints.
+decides what a live run actually sends. Its current baseline has 1 fixture
+lead on 1 endpoint and 3 contract gaps on two confirmed endpoints.
 
-The fixture-side leads are on cases nobody has watched pass, where the payload
-is the suspect: `/db/ACTL` sends `CLATS` on Gen, while `/db/GRDP`, `/db/MVCT`,
-`/db/NLNK-M1`, and `/db/TDMF` omit fields their contracts mark **required**.
+The remaining fixture-side lead is on a case nobody has watched pass:
+`/db/ACTL` sends `CLATS` on Gen even though the contract tags it Civil-only.
+The former GRDP/MVCT/NLNK-M1/TDMF findings were closed from the vendored
+manual: one fixture was incomplete and three contracts had failed to encode
+the manual's explicit branch conditions.
 
 The confirmed side reads the other way round. The product accepted that exact
 payload, so the contract is what is behind: today that is `/db/SDIS` omitting
@@ -71,46 +73,9 @@ CONTRACTS = ROOT / "contracts" / "endpoints"
 #: one takes a permitted source -- the manual, /info, or a recorded live
 #: observation. A fixture is never a source for a contract, which is why these
 #: are held here rather than merged.
-KNOWN: Dict[str, List[str]] = {'/db/ACTL': ['gen: sends CLATS, tagged civil-only'],
- '/db/GRDP': ['civil: omits required DAMPING_MODE_1_DEFAULT',
-              'civil: omits required DAMPING_MODE_2_DEFAULT',
-              'civil: omits required DIRECT_CALC_MODE_DEFAULT',
-              'civil: omits required ELEM_GROUP_PRIORITY',
-              'civil: omits required ELEM_VALUE_PRIORITY',
-              'civil: omits required FREQ_MODE_1_DEFAULT',
-              'civil: omits required FREQ_MODE_2_DEFAULT',
-              'civil: omits required FREQ_PERIOD_MODE_DEFAULT',
-              'civil: omits required GROUP_DAMPING_ITEMS',
-              'civil: omits required PERIOD_MODE_1_DEFAULT',
-              'civil: omits required PERIOD_MODE_2_DEFAULT',
-              'civil: omits required STRAIN_GROUP_PRIORITY',
-              'civil: omits required STRAIN_VALUE_PRIORITY',
-              'civil: omits required bExistElement',
-              'gen: omits required DAMPING_MODE_1_DEFAULT',
-              'gen: omits required DAMPING_MODE_2_DEFAULT',
-              'gen: omits required DIRECT_CALC_MODE_DEFAULT',
-              'gen: omits required ELEM_GROUP_PRIORITY',
-              'gen: omits required ELEM_VALUE_PRIORITY',
-              'gen: omits required FREQ_MODE_1_DEFAULT',
-              'gen: omits required FREQ_MODE_2_DEFAULT',
-              'gen: omits required FREQ_PERIOD_MODE_DEFAULT',
-              'gen: omits required GROUP_DAMPING_ITEMS',
-              'gen: omits required PERIOD_MODE_1_DEFAULT',
-              'gen: omits required PERIOD_MODE_2_DEFAULT',
-              'gen: omits required STRAIN_GROUP_PRIORITY',
-              'gen: omits required STRAIN_VALUE_PRIORITY',
-              'gen: omits required bExistElement'],
- '/db/MVCT': ['civil: omits required DIST', 'gen: omits required DIST'],
- '/db/NLNK-M1': ['civil: omits required ANGLE_VALUES',
-                 'civil: omits required BETA_ANGLE',
-                 'civil: omits required INPUT_METHOD',
-                 'civil: omits required POINT_VALUES',
-                 'civil: omits required REF_SYSTEM',
-                 'civil: omits required VECTOR_VALUES'],
- '/db/TDMF': ['civil: omits required CTYPE',
-              'civil: omits required RELAXATION',
-              'gen: omits required CTYPE',
-              'gen: omits required RELAXATION']}
+KNOWN: Dict[str, List[str]] = {
+    '/db/ACTL': ['gen: sends CLATS, tagged civil-only'],
+}
 
 KNOWN_CONTRACT_GAPS: Dict[str, List[str]] = {
     '/db/SDIS': ['gen: omits required LRB', 'gen: omits required NRB'],

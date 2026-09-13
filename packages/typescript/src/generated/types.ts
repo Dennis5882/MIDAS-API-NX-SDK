@@ -400,10 +400,10 @@ export namespace DbAnalysisControlTypes {
     POINT: string;
     /** Influence Generating Points (Number/Line Element: 0 / Distance: 1) */
     iIGP?: number;
-    /** Number/Line Element (when iIGP=0) */
-    iIGPN: number;
-    /** Distance between Points (when iIGP=1) */
-    DIST: number;
+    /** Number/Line Element (when iIGP=0) Required when iIGP = 0. */
+    iIGPN?: number;
+    /** Distance between Points (when iIGP=1) Required when iIGP = 1. */
+    DIST?: number;
     /** Plate Options (Center: "CENTER" / Center+Nodal: "NODAL") */
     PLATE: string;
     /** Plate – Stress */
@@ -420,26 +420,26 @@ export namespace DbAnalysisControlTypes {
     bREAC?: boolean;
     /** Reactions Option (All: false / Structure Group: true) */
     bRG?: boolean;
-    /** Reactions Group Name (when bRG true) */
-    RGN: string;
+    /** Reactions Group Name (when bRG true) Required when bRG = true. */
+    RGN?: string;
     /** Filter – Displacements */
     bDISP?: boolean;
     /** Displacements Option (All: false / Structure Group: true) */
     bDG?: boolean;
-    /** Displacements Group Name (when bDG true) */
-    DGN: string;
+    /** Displacements Group Name (when bDG true) Required when bDG = true. */
+    DGN?: string;
     /** Filter – Forces/Moments */
     bFM?: boolean;
     /** Forces/Moments Option (All: false / Structure Group: true) */
     bFG?: boolean;
-    /** Forces/Moments Group Name (when bFG true) */
-    FGN: string;
+    /** Forces/Moments Group Name (when bFG true) Required when bFG = true. */
+    FGN?: string;
     /** Filter – Elastic/General Link */
     bL?: boolean;
     /** Link Option (All: false / Boundary Group: true) */
     bLG?: boolean;
-    /** Link Group Name (when bLG true) */
-    LGN: string;
+    /** Link Group Name (when bLG true) Required when bLG = true. */
+    LGN?: string;
     /** Mat Type */
     MATTYPE?: number;
     /** Bridge Type */
@@ -1750,22 +1750,22 @@ export namespace DbBoundaryTypes {
     NODE2: number;
     /** Reference Coordinate System · 0=Element, 1=Global */
     REF_SYSTEM: number;
-    /** Beta Angle */
-    BETA_ANGLE: number;
-    /** Input Method · 0=Angle, 1=3 Points, 2=Vector */
-    INPUT_METHOD: number;
-    /** Angle Values [about X, about y', about z''] */
-    ANGLE_VALUES: Array<{
+    /** Beta Angle Required when REF_SYSTEM = 0. */
+    BETA_ANGLE?: number;
+    /** Input Method · 0=Angle, 1=3 Points, 2=Vector Required when REF_SYSTEM = 1. */
+    INPUT_METHOD?: number;
+    /** Angle Values [about X, about y', about z''] Required when REF_SYSTEM = 1 and INPUT_METHOD = 0. */
+    ANGLE_VALUES?: Array<{
       /** Value [x, y, z] */
       VALUE?: Array<number>;
     }>;
-    /** Point Values [P0[3], P1[3], P2[3]] */
-    POINT_VALUES: Array<{
+    /** Point Values [P0[3], P1[3], P2[3]] Required when REF_SYSTEM = 1 and INPUT_METHOD = 1. */
+    POINT_VALUES?: Array<{
       /** Value [x, y, z] */
       VALUE?: Array<number>;
     }>;
-    /** Vector Values [V1[3], V2[3]] */
-    VECTOR_VALUES: Array<{
+    /** Vector Values [V1[3], V2[3]] Required when REF_SYSTEM = 1 and INPUT_METHOD = 2. */
+    VECTOR_VALUES?: Array<{
       /** Value [x, y, z] */
       VALUE?: Array<number>;
     }>;
@@ -6737,10 +6737,10 @@ export namespace DbPropertiesMaterialTypes {
       /** Value */
       VALUE: number;
     }>;
-    /** Creep Type • Specific Creep: "SC" • Creep Function: "CF" • Creep Coefficient: "CC" */
-    CTYPE: string;
-    /** Relaxation Time • Hour: 0 • Day: 1 */
-    RELAXATION: number;
+    /** Creep Type • Specific Creep: "SC" • Creep Function: "CF" • Creep Coefficient: "CC" Required when FTYPE = "CREEP". */
+    CTYPE?: string;
+    /** Relaxation Time • Hour: 0 • Day: 1 Required when FTYPE = "RELAX". */
+    RELAXATION?: number;
     /** Elast */
     ELAST?: number;
   }

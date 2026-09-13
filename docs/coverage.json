@@ -1493,14 +1493,15 @@
       "status": "implemented",
       "module": "midas_nx.db.properties.*",
       "live_verified": {
-        "date": "2026-08-27",
+        "date": "2026-09-14",
         "products": [
-          "gen"
+          "gen",
+          "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip attempted 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras3: POST with the manual's own (at-the-time incomplete) canonical example answered \"Wrong Field\" on both products. Root-caused 2026-08-27: the manual's Specifications table (and this SDK's GroupDampingPayload) was missing the entire Element Mass & Stiffness Proportional / Rayleigh-damping field set (bExistElement + 17 more fields, GROUP_DAMPING_ITEMS[], two priority fields); the 2026-08-16 canonical example predates that discovery and never sent them. Retested manually (not via live_crud_check.py) on Gen NX with the full field set from the re-verified manual -- POST/GET/DELETE round trip via midas_nx.db.properties.damping.GroupDamping and a throwaway /db/MATL fixture (id 9999) succeeded and GET read the stored values back; both records deleted after. Civil NX was not reachable this session -- level bumped for Gen only pending a Civil retest with the complete field set.",
+        "method": "scripts/live_crud_check.py and packages/typescript/scripts/live-crud.mjs completed create/read/update/read/delete/read on Gen and Civil with the complete vendored-manual payload. The server stores STRAIN_GROUP_ITEMS.DAMPING_RATIO and the nested group coefficients as 0 on this disposable model, so the round trip probes FREQ_MODE_1_DEFAULT instead; updating it from the manual's 0.1 to its separately documented 0.5 succeeded.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 09/02/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 09/02/2026"
         },
         "level": "write",
         "outcome": "success"
@@ -4690,18 +4691,18 @@
       "status": "implemented",
       "module": "midas_nx.db.analysis_control",
       "live_verified": {
-        "date": "2026-08-16",
+        "date": "2026-09-14",
         "products": [
-          "civil",
-          "gen"
+          "gen",
+          "civil"
         ],
-        "method": "2026-08-16: write-round-trip attempted (batch 8) -- fails on both products. The manual's full worked example answers \"Unknown Error\" on both Civil NX and Gen NX; a stripped-down minimal payload answers \"Wrong Field\" on Civil instead. Field names match /info's own live schema on both. May need the full AASHTO LRFD moving-load fixture chain (code -> lane -> vehicle -> case, see the \"moving\" tier) built first rather than being a standalone control table -- untested. Left at level: read.",
+        "method": "scripts/live_crud_check.py and packages/typescript/scripts/live-crud.mjs completed create/read/update/read/delete/read on Gen and Civil. The manual payload had previously returned Unknown Error on an empty document; an isolated prerequisite probe established that selecting the manual's AASHTO LRFD moving-load code is sufficient. No lane, vehicle, or moving-load case is required.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026",
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 09/02/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 09/02/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {

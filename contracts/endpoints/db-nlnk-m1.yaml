@@ -126,6 +126,10 @@ fields:
       Beta Angle
     type: number
     requirement: required
+    condition: REF_SYSTEM=0
+    appliesWhen:
+      - path: REF_SYSTEM
+        equals: 0
     documentedDefault: 0
     documentedOptional: false
     safeToOmit: unverified
@@ -135,6 +139,10 @@ fields:
       Input Method · 0=Angle, 1=3 Points, 2=Vector
     type: integer
     requirement: required
+    condition: REF_SYSTEM=1
+    appliesWhen:
+      - path: REF_SYSTEM
+        equals: 1
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified
@@ -146,6 +154,12 @@ fields:
     items:
       type: object
     requirement: required
+    condition: INPUT_METHOD=0
+    appliesWhen:
+      - path: REF_SYSTEM
+        equals: 1
+      - path: INPUT_METHOD
+        equals: 0
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified
@@ -175,6 +189,12 @@ fields:
     items:
       type: object
     requirement: required
+    condition: INPUT_METHOD=1
+    appliesWhen:
+      - path: REF_SYSTEM
+        equals: 1
+      - path: INPUT_METHOD
+        equals: 1
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified
@@ -198,6 +218,12 @@ fields:
     items:
       type: object
     requirement: required
+    condition: INPUT_METHOD=2
+    appliesWhen:
+      - path: REF_SYSTEM
+        equals: 1
+      - path: INPUT_METHOD
+        equals: 2
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified

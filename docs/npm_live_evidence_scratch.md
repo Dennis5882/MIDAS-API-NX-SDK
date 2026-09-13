@@ -79,6 +79,8 @@ file separately records which completed operations also passed through npm.
 | `/db/MATD` | 2026-09-12 | Gen, Civil |
 | `/db/IEHC` | 2026-09-12 | Gen, Civil |
 | `/db/POLC-M1` | 2026-09-12 | Civil |
+| `/db/GRDP` | 2026-09-14 | Gen, Civil |
+| `/db/MVCT` | 2026-09-14 | Gen, Civil |
 
 ## Completed result-table operations
 
@@ -93,7 +95,7 @@ file separately records which completed operations also passed through npm.
 
 - Read-only first-session checks (`/db/STYP`, `/info/db/NODE`) were successful
   transport checks, but were not described as completed npm endpoint cases.
-- Explicit rejections or unresolved cases (`/db/MVCT`, `/db/SDIS` LRB,
+- Explicit rejections or unresolved cases (`/db/SDIS` LRB,
   `/db/WVLD`, `/db/NLLP`, Gen `/db/DSTL`, and `/db/BCCT`) are not evidence of
   a completed endpoint operation.
 - The 2026-09-06 country/code-specific moving-load attempts are not completed
@@ -110,5 +112,5 @@ file separately records which completed operations also passed through npm.
   the fifteen affected endpoints were re-run on both products on 2026-09-05.
   They are counted above; see the live notes for the run.
 
-**Count:** 67 distinct `/db` endpoints and 4 distinct result-table operations;
-71 distinct npm public-API operations overall.
+**Count:** 69 distinct `/db` endpoints and 4 distinct result-table operations;
+73 distinct npm public-API operations overall.

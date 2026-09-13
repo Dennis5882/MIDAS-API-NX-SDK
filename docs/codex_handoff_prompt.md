@@ -1,11 +1,12 @@
 # Codex task prompt — mechanical work only
 
-Updated 2026-09-12 after the seven-endpoint live batch; its changes are still
-uncommitted. **2.8.0 is published** on both registries — that
-release carried the `UNUMT`/`DIST` optionality. Nothing in either packaged
-surface has changed since: the last round touched contracts, fixtures, the
-extractor and docs, and **the generated npm types did not move**. So **no
-release is warranted right now**; when one is, the number is the author's call.
+Updated 2026-09-14 after the seven-endpoint live batch and the GRDP/MVCT
+follow-up. The former is committed at `f2d27eb`.
+**2.8.0 is published** on both registries — that
+release carried the `UNUMT`/`DIST` optionality. The follow-up adds contract
+branch conditions and therefore changes generated npm member optionality and
+JSDoc for MVCT, NLNK-M1, and TDMF. It has not been released. Do not infer a
+release or version bump from that fact; the author must request one explicitly.
 
 **What the previous round actually did**, because the numbers below have all
 moved: 21 `safeToOmit` claims grounded in recorded live calls with a guard in
@@ -41,7 +42,7 @@ Run these first and confirm you see the same numbers. **If any differ, say so
 before starting** — it means something moved under you.
 
 ```bash
-python -m pytest -q                       # 1051 passed, 1 FAILED - EXPECTED
+python -m pytest -q                       # 1059 passed, 1 FAILED - EXPECTED
 ruff check src tests scripts && mypy      # clean
 python scripts/validate_contracts.py      # OK; 381 endpoints, 5061 fields,
                                           # 140 proven safe, 8 unsafe,
@@ -55,17 +56,17 @@ python scripts/info_baseline.py --divergence --check          # OK
 python scripts/report_dropped_manual_rows.py \
   --manual-api-repo "E:\AI Study\MIDAS-API" --check           # OK
 python scripts/live_crud_check.py --check-cases        # silent; exit 0
-python scripts/check_fixture_contract.py --check       # 41 fixture leads over 5
-                                          # endpoints, 3 contract gaps over 2
+python scripts/check_fixture_contract.py --check       # 1 fixture lead over 1
+                                          # endpoint, 3 contract gaps over 2
 python scripts/report_unmerged_tables.py --check       # report is current
 cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 77 tests
 ```
 
-Coverage as `ROADMAP.md` reports it: **399/399 implemented, 198 write / 201
+Coverage as `ROADMAP.md` reports it: **399/399 implemented, 199 write / 200
 read**.
-`schema/live-cases.json` is **version 5**: 209 cases over 187 endpoints, 174
-confirmed, 9 base-model steps, 63 named seeds. npm live evidence: **67 `/db`
+`schema/live-cases.json` is **version 5**: 209 cases over 187 endpoints, 176
+confirmed, 9 base-model steps, 63 named seeds. npm live evidence: **69 `/db`
 endpoints**. `extraction.unmergedTables`: **72 tables, 482 names, 15
 contracts**. Drafts: 3, the IEHG trio, refused for a reason that will not go
 away — that is the finished state, not a backlog.
@@ -243,23 +244,23 @@ notes. Four manual moving-load cases joined on 2026-09-06 and carry their exact
 current errors in that file.
 
 `/db/ACTL`, `/db/CGLP`, `/db/DOEL`, `/db/EPSE`, `/db/EPST`, `/db/FBLA`,
-`/db/HPCE`, `/db/MADO`, `/db/MVCT`, `/db/MVLDch`, `/db/MVLDeu`,
+`/db/HPCE`, `/db/MADO`, `/db/MVLDch`, `/db/MVLDeu`,
 `/db/MVLDid`, `/db/MVLDpl`, `/db/NLLP`, `/db/NLNK`, `/db/NLNK-M1`, `/db/RPSC`,
 `/db/SBDO`, `/db/SINF`, `/db/STCT`, `/db/TDMF`, `/db/WVLD`
 
-Start where the offline evidence already points.
-`python scripts/check_fixture_contract.py` names **41 concrete leads across 5
-endpoints**. It now understands root `appliesWhen` and counts variant fields as
-recorded names; the larger old count was partly checker blindness, not missing
-contract fields:
+The offline evidence pass is complete. `python scripts/check_fixture_contract.py`
+now names **1 concrete lead on 1 endpoint**, down from 41 across 5. It
+understands root `appliesWhen` and counts variant fields as recorded names:
 
 | endpoint | what the checker says |
 | --- | --- |
-| `/db/GRDP` | omits 14 `required` fields, on both products |
-| `/db/NLNK-M1` | the same four plus `BETA_ANGLE`, `REF_SYSTEM` |
-| `/db/TDMF` | omits `CTYPE`, `RELAXATION` |
-| `/db/MVCT` | omits `DIST` |
 | `/db/ACTL` | sends `CLATS` on Gen, tagged Civil-only |
+
+GRDP now carries the complete Request Body and passes both SDKs on Gen and
+Civil. MVCT, NLNK-M1 and TDMF now encode the manual's explicit branch gates,
+so their unrelated branch members are no longer false required-field findings.
+MVCT passes both SDKs on both products once the manual's AASHTO LRFD code is
+selected; TDMF still fails live and NLNK-M1 is still blocked by the NLLP seed.
 
 Fill a missing `required` field from the **contract's own** description, enum or
 documented default, or from the manual's Request Example. If neither states a

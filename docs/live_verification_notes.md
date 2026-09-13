@@ -9340,3 +9340,40 @@ was requested. The harness now permits that narrow `document-reset` cleanup
 mode only for the final selected case with final reset enabled; unit tests cover
 both the allowed and rejected orderings. The rerun passed all seven distinct
 endpoints and left both products empty.
+
+## 2026-09-14 - GRDP completed; three B-2 failures narrowed offline
+
+The same continuously running Gen NX 2026 v2.1 and Civil NX 2026 v2.2 Build
+09/02/2026 sessions were confirmed empty, checkpointed under `C:/temp`, and
+restored to empty scratch documents after every Python and npm run.
+
+The fixture/contract comparison fell from 41 findings over five endpoints to
+one finding on `/db/ACTL`. `/db/GRDP` now sends every member of the vendored
+manual's complete Request Body. `/db/MVCT`, `/db/TDMF`, and `/db/NLNK-M1` now
+carry the branch conditions that their manual rows state explicitly (`iIGP`,
+`FTYPE`, and `REF_SYSTEM`/`INPUT_METHOD`, respectively), rather than treating
+all mutually exclusive branch members as simultaneously required.
+
+`/db/GRDP` completed create/read/update/read/delete/read through both Python
+and the built npm package on both products. The first complete-payload run
+showed why the older probe was misleading: the POST echo retained
+`STRAIN_GROUP_ITEMS.DAMPING_RATIO=0.05`, but immediate GET stored that value and
+the nested group coefficients as `0` on the disposable model. The case now
+probes `FREQ_MODE_1_DEFAULT`, which does persist. An attempted update from 0.1
+to 0.2 was correctly rejected because it equalled `FREQ_MODE_2_DEFAULT`; using
+the manual's separately stated 0.5 completed the round trip.
+
+`/db/MVCT` initially repeated the old `Unknown Error` on both products. An
+isolated prerequisite probe then showed that selecting the manual's `AASHTO
+LRFD` moving-load code was sufficient; no lane, vehicle, or moving-load case
+was needed. The normal Python harness and built npm public API subsequently
+completed create/read/update/read/delete/read on Gen and Civil, checkpointing
+under `C:/temp` and restoring both products to empty scratch documents.
+
+The other two did not earn write evidence. `/db/TDMF` still returns `Wrong
+Field` on both products even with the chapter's CREEP/CTYPE Request Body;
+`/info`'s extra `ELAST` has no documented value or request semantics, so none
+was invented. Civil `/db/NLNK-M1` remains blocked before its
+own call because the manual NLLP seed still returns `Unknown Error`. These are
+now live/product prerequisites or documentation gaps, not offline
+fixture-versus-contract mismatches.

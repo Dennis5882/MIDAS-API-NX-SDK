@@ -52,6 +52,34 @@ def _normalization_values(contract: dict) -> dict:
     return values
 
 
+@pytest.mark.parametrize(
+    "slug,field_key,expected",
+    [
+        ("db-mvct", "iIGPN", [{"path": "iIGP", "equals": 0}]),
+        ("db-mvct", "DIST", [{"path": "iIGP", "equals": 1}]),
+        ("db-tdmf", "CTYPE", [{"path": "FTYPE", "equals": "CREEP"}]),
+        ("db-tdmf", "RELAXATION", [{"path": "FTYPE", "equals": "RELAX"}]),
+        ("db-nlnk-m1", "BETA_ANGLE", [{"path": "REF_SYSTEM", "equals": 0}]),
+        ("db-nlnk-m1", "INPUT_METHOD", [{"path": "REF_SYSTEM", "equals": 1}]),
+        ("db-nlnk-m1", "ANGLE_VALUES", [
+            {"path": "REF_SYSTEM", "equals": 1},
+            {"path": "INPUT_METHOD", "equals": 0},
+        ]),
+    ],
+    ids=[
+        "mvct-number-mode", "mvct-distance-mode", "tdmf-creep-only",
+        "tdmf-relax-only", "nlnk-element-system", "nlnk-global-system",
+        "nlnk-global-angle-method",
+    ],
+)
+def test_manual_branch_labels_are_executable_contract_conditions(
+    slug: str, field_key: str, expected: list[dict],
+) -> None:
+    contract = _load(ENDPOINT_DIR / f"{slug}.yaml")
+    field = next(item for item in contract["fields"] if item["key"] == field_key)
+    assert field["appliesWhen"] == expected
+
+
 def test_validator_passes():
     """The whole contract suite validates, including SDK parity.
 

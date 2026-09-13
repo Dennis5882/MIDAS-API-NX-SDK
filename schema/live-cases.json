@@ -6825,12 +6825,16 @@
       "createPayload": {
         "PROP_NAME": "NLLP_SEED",
         "NODE1": 23,
-        "NODE2": 24
+        "NODE2": 24,
+        "REF_SYSTEM": 0,
+        "BETA_ANGLE": 0
       },
       "updatePayload": {
         "PROP_NAME": "NLLP_SEED_2",
         "NODE1": 23,
-        "NODE2": 24
+        "NODE2": 24,
+        "REF_SYSTEM": 0,
+        "BETA_ANGLE": 15
       },
       "expected": {
         "created": "NLLP_SEED",
@@ -7815,40 +7819,104 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
-        "bExistStrain": true,
+        "STIFF_COEF_DEFAULT": 0.0848826377636192,
+        "MASS_COEF_DEFAULT": 0.04188790133333333,
         "OPT_CALC_WHEN_USED": true,
         "OPT_MASS_PROP_DEFAULT": true,
         "OPT_STIFF_PROP_DEFAULT": true,
-        "STIFF_COEF_DEFAULT": 0.0849,
-        "MASS_COEF_DEFAULT": 0.0419,
+        "DIRECT_CALC_MODE_DEFAULT": 1,
+        "FREQ_PERIOD_MODE_DEFAULT": 0,
+        "FREQ_MODE_1_DEFAULT": 0.1,
+        "FREQ_MODE_2_DEFAULT": 0.2,
+        "PERIOD_MODE_1_DEFAULT": 0,
+        "PERIOD_MODE_2_DEFAULT": 0,
+        "DAMPING_MODE_1_DEFAULT": 0.06,
+        "DAMPING_MODE_2_DEFAULT": 0.07,
+        "bExistElement": true,
+        "bExistStrain": true,
+        "GROUP_DAMPING_ITEMS": [
+          {
+            "GROUP_TYPE": "MATERIAL",
+            "GROUP_NAME": "1",
+            "STIFF_COEF": 0.005787452574792216,
+            "OPT_STIFF_PROP": true,
+            "MASS_COEF": 0.06854383854545451,
+            "OPT_MASS_PROP": true,
+            "DIRECT_CALC_MODE": 1,
+            "FREQ_PERIOD_MODE": 0,
+            "FREQ_MODE_1": 0.5,
+            "FREQ_MODE_2": 0.6,
+            "PERIOD_MODE_1": 0,
+            "PERIOD_MODE_2": 0,
+            "DAMPING_RATIO_MODE": 0,
+            "DAMPING_RATIO_MODE_1": 0.02,
+            "DAMPING_RATIO_MODE_2": 0.02
+          }
+        ],
         "STRAIN_GROUP_ITEMS": [
           {
             "GROUP_TYPE": "MATERIAL",
             "GROUP_NAME": "1",
-            "DAMPING_RATIO": 0.05
+            "DAMPING_RATIO": 0.02
           }
-        ]
+        ],
+        "ELEM_GROUP_PRIORITY": 0,
+        "ELEM_VALUE_PRIORITY": 0,
+        "STRAIN_GROUP_PRIORITY": 0,
+        "STRAIN_VALUE_PRIORITY": 0
       },
       "updatePayload": {
-        "bExistStrain": true,
+        "STIFF_COEF_DEFAULT": 0.0848826377636192,
+        "MASS_COEF_DEFAULT": 0.04188790133333333,
         "OPT_CALC_WHEN_USED": true,
         "OPT_MASS_PROP_DEFAULT": true,
         "OPT_STIFF_PROP_DEFAULT": true,
-        "STIFF_COEF_DEFAULT": 0.0849,
-        "MASS_COEF_DEFAULT": 0.0419,
+        "DIRECT_CALC_MODE_DEFAULT": 1,
+        "FREQ_PERIOD_MODE_DEFAULT": 0,
+        "FREQ_MODE_1_DEFAULT": 0.5,
+        "FREQ_MODE_2_DEFAULT": 0.2,
+        "PERIOD_MODE_1_DEFAULT": 0,
+        "PERIOD_MODE_2_DEFAULT": 0,
+        "DAMPING_MODE_1_DEFAULT": 0.06,
+        "DAMPING_MODE_2_DEFAULT": 0.07,
+        "bExistElement": true,
+        "bExistStrain": true,
+        "GROUP_DAMPING_ITEMS": [
+          {
+            "GROUP_TYPE": "MATERIAL",
+            "GROUP_NAME": "1",
+            "STIFF_COEF": 0.005787452574792216,
+            "OPT_STIFF_PROP": true,
+            "MASS_COEF": 0.06854383854545451,
+            "OPT_MASS_PROP": true,
+            "DIRECT_CALC_MODE": 1,
+            "FREQ_PERIOD_MODE": 0,
+            "FREQ_MODE_1": 0.5,
+            "FREQ_MODE_2": 0.6,
+            "PERIOD_MODE_1": 0,
+            "PERIOD_MODE_2": 0,
+            "DAMPING_RATIO_MODE": 0,
+            "DAMPING_RATIO_MODE_1": 0.02,
+            "DAMPING_RATIO_MODE_2": 0.02
+          }
+        ],
         "STRAIN_GROUP_ITEMS": [
           {
             "GROUP_TYPE": "MATERIAL",
             "GROUP_NAME": "1",
-            "DAMPING_RATIO": 0.03
+            "DAMPING_RATIO": 0.02
           }
-        ]
+        ],
+        "ELEM_GROUP_PRIORITY": 0,
+        "ELEM_VALUE_PRIORITY": 0,
+        "STRAIN_GROUP_PRIORITY": 0,
+        "STRAIN_VALUE_PRIORITY": 0
       },
       "expected": {
-        "created": 0.05,
-        "updated": 0.03
+        "created": 0.1,
+        "updated": 0.5
       },
       "needs": [],
       "setup": [],
@@ -7905,50 +7973,52 @@
       ],
       "confirmed": false,
       "createPayload": {
-        "NAME": "Shrinkage_User",
-        "FTYPE": "SHRINK",
+        "NAME": "CreepFunc_1",
+        "FTYPE": "CREEP",
+        "CTYPE": "CC",
         "SCALE": 1.0,
         "DESC": "",
         "vDAY": [
           {
             "DAY": 28,
-            "VALUE": 0.0001
+            "VALUE": 0.5
           },
           {
             "DAY": 90,
-            "VALUE": 0.0002
+            "VALUE": 1.0
           },
           {
             "DAY": 365,
-            "VALUE": 0.0003
+            "VALUE": 1.5
           },
           {
             "DAY": 3650,
-            "VALUE": 0.0004
+            "VALUE": 2.0
           }
         ]
       },
       "updatePayload": {
-        "NAME": "Shrinkage_User",
-        "FTYPE": "SHRINK",
+        "NAME": "CreepFunc_1",
+        "FTYPE": "CREEP",
+        "CTYPE": "CC",
         "SCALE": 1.2,
         "DESC": "",
         "vDAY": [
           {
             "DAY": 28,
-            "VALUE": 0.0001
+            "VALUE": 0.5
           },
           {
             "DAY": 90,
-            "VALUE": 0.0002
+            "VALUE": 1.0
           },
           {
             "DAY": 365,
-            "VALUE": 0.0003
+            "VALUE": 1.5
           },
           {
             "DAY": 3650,
-            "VALUE": 0.0004
+            "VALUE": 2.0
           }
         ]
       },
@@ -11026,7 +11096,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "METHOD": "EXACT",
         "POINT": "INF",
@@ -11079,8 +11149,14 @@
         "created": 3,
         "updated": 5
       },
-      "needs": [],
-      "setup": [],
+      "needs": [
+        "lane_code_AASHTO LRFD"
+      ],
+      "setup": [
+        {
+          "seed": "lane_code_AASHTO LRFD"
+        }
+      ],
       "blockedSeeds": [],
       "crashes": null
     },

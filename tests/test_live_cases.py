@@ -138,6 +138,32 @@ def test_extras15_fixture_keeps_manual_dependencies_and_product_fields() -> None
     assert polc_m1["updatePayload"]["LOADPATTERNTYPE"] == "ACC"
 
 
+def test_unconfirmed_fixture_repairs_follow_the_vendored_manual_examples() -> None:
+    cases = json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
+    by_endpoint = {case["endpoint"]: case for case in cases}
+
+    grdp = by_endpoint["/db/GRDP"]["createPayload"]
+    assert grdp["DIRECT_CALC_MODE_DEFAULT"] == 1
+    assert grdp["DAMPING_MODE_1_DEFAULT"] == 0.06
+    assert grdp["GROUP_DAMPING_ITEMS"][0]["FREQ_MODE_2"] == 0.6
+    assert grdp["STRAIN_GROUP_ITEMS"][0]["DAMPING_RATIO"] == 0.02
+    assert grdp["STRAIN_GROUP_PRIORITY"] == 0
+    assert by_endpoint["/db/GRDP"]["updatePayload"]["FREQ_MODE_1_DEFAULT"] == 0.5
+
+    tdmf = by_endpoint["/db/TDMF"]["createPayload"]
+    assert tdmf["FTYPE"] == "CREEP"
+    assert tdmf["CTYPE"] == "CC"
+    assert "RELAXATION" not in tdmf
+
+    nlnk_m1 = by_endpoint["/db/NLNK-M1"]["createPayload"]
+    assert nlnk_m1["REF_SYSTEM"] == 0
+    assert nlnk_m1["BETA_ANGLE"] == 0
+    assert "INPUT_METHOD" not in nlnk_m1
+
+    mvct = by_endpoint["/db/MVCT"]
+    assert mvct["setup"] == [{"seed": "lane_code_AASHTO LRFD"}]
+
+
 def test_live_case_fixture_carries_skew_node_seed() -> None:
     fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
     skew = next(case for case in fixture["cases"] if case["endpoint"] == "/db/SKEW")

@@ -119,6 +119,10 @@ fields:
       Number/Line Element (when iIGP=0)
     type: integer
     requirement: required
+    condition: when iIGP=0
+    appliesWhen:
+      - path: iIGP
+        equals: 0
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified
@@ -128,6 +132,10 @@ fields:
       Distance between Points (when iIGP=1)
     type: number
     requirement: required
+    condition: when iIGP=1
+    appliesWhen:
+      - path: iIGP
+        equals: 1
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified
@@ -209,6 +217,10 @@ fields:
       Reactions Group Name (when bRG true)
     type: string
     requirement: required
+    condition: when bRG=true
+    appliesWhen:
+      - path: bRG
+        equals: true
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified
@@ -236,6 +248,10 @@ fields:
       Displacements Group Name (when bDG true)
     type: string
     requirement: required
+    condition: when bDG=true
+    appliesWhen:
+      - path: bDG
+        equals: true
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified
@@ -263,6 +279,10 @@ fields:
       Forces/Moments Group Name (when bFG true)
     type: string
     requirement: required
+    condition: when bFG=true
+    appliesWhen:
+      - path: bFG
+        equals: true
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified
@@ -290,6 +310,10 @@ fields:
       Link Group Name (when bLG true)
     type: string
     requirement: required
+    condition: when bLG=true
+    appliesWhen:
+      - path: bLG
+        equals: true
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified
