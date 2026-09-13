@@ -277,6 +277,7 @@ from midas_nx.db.project import (
     Unit,
 )
 from midas_nx.db.properties.damping import GroupDamping
+from midas_nx.db.properties.hinge import InelasticHingeControl
 from midas_nx.db.properties.material import (
     ChangeProperty,
     Material,
@@ -302,6 +303,7 @@ from midas_nx.db.properties.thickness import Thickness
 from midas_nx.db.pushover import (
     IgnoreElementsForPushoverInitialLoad,
     PushoverLoadCase,
+    PushoverLoadCaseHyperS,
 )
 from midas_nx.db.static_loads import (
     BeamLoad,
@@ -3695,6 +3697,54 @@ def _polc_acceleration_payload(*, steps: int, product: str) -> Dict[str, Any]:
     return payload
 
 
+def _iehc_payload(product: str) -> Dict[str, Any]:
+    """Return the manual request, excluding its explicitly Gen-only rows."""
+    payload: Dict[str, Any] = {
+        "BEAM_LOC": 1,
+        "BeamDivNumNy": 15,
+        "BeamDivNumNz": 20,
+        "WallConsOut": False,
+        "WallDivNumZ": 8,
+        "WallDivNumY": 1,
+        "dR": 0.4,
+        # The table says Integer, but the same manual request says "AUTO" and
+        # recorded Gen /info independently types this one member as string.
+        "WAreaSize": "AUTO",
+        "OPT_ConsiderRebarArea1D": False,
+        "OPT_ConsiderRebarAreaWall": False,
+        "FAreaSizeCore": 1,
+        "FAreaSizeCover": 1,
+        "WAreaSizeCover": 1,
+        "BeamDivNumNyCover": 20,
+        "BeamDivNumNzCover": 15,
+        "WallDivNumZCover": 8,
+        "WallDivNumYCover": 1,
+    }
+    if product == "civil":
+        gen_only = {
+            "WallConsOut", "WallDivNumZ", "WallDivNumY", "dR", "WAreaSize",
+            "OPT_ConsiderRebarAreaWall", "WAreaSizeCover", "WallDivNumZCover",
+            "WallDivNumYCover",
+        }
+        payload = {key: value for key, value in payload.items() if key not in gen_only}
+    return payload
+
+
+def _polc_hypers_acceleration_payload() -> Dict[str, Any]:
+    """Build the dependency-free ACC/LOAD branch stated by the M1 contract."""
+    return {
+        "LCNAME": "PUSH_LOAD_X",
+        "DESC": "Pushover load control case in X direction",
+        "INCRE_STEP": 20,
+        "NLTYPE": "PDELTA",
+        "bUSEINITIAL": False,
+        "INCRE_METHOD": "LOAD",
+        "CTRL_OPT": {"STEPCTRLOPTION": "EQUAL", "STIFF_RATIO": 80},
+        "LOADPATTERNTYPE": "ACC",
+        "LOADPATTERN": [{"DIR": "DX", "SF": 1}],
+    }
+
+
 def _extras15_cases() -> List[Case]:
     """Batch 15: tractable pushover and prestress assignments.
 
@@ -3713,7 +3763,7 @@ def _extras15_cases() -> List[Case]:
             False,
             True,
             item_id=1,
-            confirmed=False,
+            confirmed=True,
         ),
         Case(
             ExternalLoadCaseForPretension,
@@ -3724,7 +3774,7 @@ def _extras15_cases() -> List[Case]:
             ["PS15_SEED", "PS16_SEED"],
             item_id=1,
             needs=("prestress_load_cases",),
-            confirmed=False,
+            confirmed=True,
         ),
         Case(
             PrestressBeamLoad,
@@ -3757,7 +3807,7 @@ def _extras15_cases() -> List[Case]:
             1500,
             item_id=1,
             needs=("prestress_load_cases",),
-            confirmed=False,
+            confirmed=True,
         ),
         # Uniform acceleration needs neither a prior analysis result nor an
         # extra static-load reference. Split products because the contract's
@@ -3772,35 +3822,61 @@ def _extras15_cases() -> List[Case]:
                 12,
                 item_id=1,
                 products=(product,),
-                confirmed=False,
+                confirmed=True,
             )
             for product in ("gen", "civil")
         ],
         # MATD is GET/PUT-only and id 1 is the base model's concrete material.
-        # Its create payload is intentionally unused by the harness; the PUT
-        # body below is the vendored manual's complete Request Body record.
+        # The manual's EN04(RC)/ClassB example is refused by both products as
+        # an unknown grade. A 2026-09-12 GET of the throwaway C24 material on
+        # each product returned KS01(RC)/C24 with blank rebar code and grades;
+        # replay that observed combination using the manual's PUT-only shape.
         Case(
             MaterialModifyConcrete,
             {},
             {
                 "TYPE": "CONC",
-                "NAME": "C16/20",
+                "NAME": "C24",
                 "DATA1": {
-                    "CODENAME": "EN(RC)",
-                    "CODEMATLNAME": "C16/20",
-                    "DESIGN": {"C_FC": 16000, "C_FCI": 11200},
+                    "CODENAME": "KS01(RC)",
+                    "CODEMATLNAME": "C24",
                 },
-                "REBAR_CODENAME": "EN04(RC)",
-                "MAINREBAR_REBARNAME": "ClassB",
-                "SUBREBAR_REBARNAME": "ClassC",
+                "REBAR_CODENAME": "",
+                "MAINREBAR_REBARNAME": "",
+                "SUBREBAR_REBARNAME": "",
                 "MAINREBAR_B_FY": 500000,
                 "SUBREBAR_B_FY": 600000,
             },
             lambda payload: payload.get("NAME"),
             None,
-            "C16/20",
+            "C24",
             item_id=1,
-            confirmed=False,
+            confirmed=True,
+        ),
+        *[
+            Case(
+                InelasticHingeControl,
+                _iehc_payload(product),
+                _iehc_payload(product),
+                lambda payload: payload.get("BEAM_LOC"),
+                1,
+                1,
+                item_id=1,
+                products=(product,),
+                confirmed=True,
+            )
+            for product in ("gen", "civil")
+        ],
+        Case(
+            PushoverLoadCaseHyperS,
+            _polc_hypers_acceleration_payload(),
+            _polc_hypers_acceleration_payload(),
+            lambda payload: payload.get("INCRE_STEP"),
+            20,
+            20,
+            item_id=1,
+            products=("civil",),
+            confirmed=True,
         ),
     ]
 

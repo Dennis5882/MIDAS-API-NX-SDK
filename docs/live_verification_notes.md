@@ -9293,3 +9293,50 @@ here that fetched a single locale has the same blind spot. "I re-fetched it and
 you are wrong" was reported in good faith with the raw body in hand; the step
 missing from it was asking why a careful person would be reading something
 else.
+
+## 2026-09-12 - seven pending write cases completed in both SDKs
+
+Gen NX 2026 v2.1 and Civil NX 2026 v2.2, both Build 09/02/2026
+(author-confirmed), were connected with their own keys and confirmed empty on
+`/db/NODE` and `/db/ELEM` before the batch. Each harness checkpointed under
+`C:/temp`, built its disposable dependencies, and restored an empty scratch
+document after the run.
+
+Python and the built npm package independently completed the emitted cases for
+`/db/IEPI`, `/db/EXLD`, `/db/PRST`, `/db/POLC`, `/db/MATD`, and `/db/IEHC` on
+both products. Civil additionally completed `/db/POLC-M1`; that endpoint is
+Civil-only. The ordinary cases completed create/read/update/read/delete/read.
+`/db/MATD` declares only GET and PUT, so it completed read/PUT/read and relied
+on the harness's final whole-document reset for cleanup. `/db/POLC-M1` included
+POST because the earlier live observation proves that the route accepts it,
+despite the chapter's normalized method list.
+
+The fixtures came from the contracts and the Request Bodies at vendored manual
+commit `7920759`; neither SDK was used as a source for the other. `/db/IEHC`
+uses separate Gen and Civil cases so the Gen-only wall members never leak into
+the Civil payload. `/db/POLC-M1` uses the dependency-free `ACC` branch already
+represented by its contract.
+
+### `/db/MATD`: the documented material lookup is not sufficient on this build
+
+Two manual-derived attempts were rejected identically on Gen and Civil:
+
+- `CODENAME="EN04(RC)"`, `CODEMATLNAME="ClassB"` returned `Rebar grade lookup
+  failed`.
+- Omitting the strength values returned `MAINREBAR_B_FY must be > 0`.
+
+A GET of the disposable model's material 1 returned concrete `C24` with
+`CODENAME="KS01(RC)"`, `CODEMATLNAME="C24"`, and blank rebar-code/name fields.
+Using that observed lookup identity together with the manual Request Body's
+positive `MAINREBAR_B_FY=500000` and `SUBREBAR_B_FY=600000` passed on both
+products and both SDKs. This is recorded as product evidence, not generalized
+into a contract claim: the manual's implication that these strengths are
+ignored does not match the live requirement, and its `EN04(RC)` / `ClassB`
+example is not usable on these builds.
+
+The first npm run also exposed a harness safety gap: it refused every endpoint
+without DELETE, even when the selected case was last and a final document reset
+was requested. The harness now permits that narrow `document-reset` cleanup
+mode only for the final selected case with final reset enabled; unit tests cover
+both the allowed and rejected orderings. The rerun passed all seven distinct
+endpoints and left both products empty.

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  classifyResult, containsExpectedValue, exitCodeFor, supportedCaseWrites,
+  caseCleanupMode, classifyResult, containsExpectedValue, exitCodeFor, supportedCaseWrites,
   verifyRenumberedSeed,
 } from "../scripts/live-harness-support.mjs";
 
@@ -64,6 +64,28 @@ describe("live write-method selection", () => {
     expect(supportedCaseWrites(
       ["DELETE", "GET", "POST", "PUT"], ["DELETE", "GET", "POST", "PUT"],
     )).toEqual({ supportsPost: true, supportsPut: true });
+  });
+});
+
+describe("live case cleanup selection", () => {
+  it("uses per-id DELETE whenever both fixture and resource support it", () => {
+    expect(caseCleanupMode(
+      ["DELETE", "GET", "PUT"], ["DELETE", "GET", "PUT"],
+      { finalCase: false, resetDocument: false },
+    )).toBe("per-id");
+  });
+
+  it("allows a no-DELETE case only as the final case before a document reset", () => {
+    const methods = ["GET", "PUT"];
+    expect(caseCleanupMode(
+      methods, methods, { finalCase: true, resetDocument: true },
+    )).toBe("document-reset");
+    expect(caseCleanupMode(
+      methods, methods, { finalCase: false, resetDocument: true },
+    )).toBe("unsafe");
+    expect(caseCleanupMode(
+      methods, methods, { finalCase: true, resetDocument: false },
+    )).toBe("unsafe");
   });
 });
 

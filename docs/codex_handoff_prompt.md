@@ -1,7 +1,7 @@
 # Codex task prompt — mechanical work only
 
-Updated 2026-09-12 at `64c4b56`, after the previous round's sixteen commits
-were reviewed and pushed. **2.8.0 is published** on both registries — that
+Updated 2026-09-12 after the seven-endpoint live batch; its changes are still
+uncommitted. **2.8.0 is published** on both registries — that
 release carried the `UNUMT`/`DIST` optionality. Nothing in either packaged
 surface has changed since: the last round touched contracts, fixtures, the
 extractor and docs, and **the generated npm types did not move**. So **no
@@ -10,8 +10,8 @@ release is warranted right now**; when one is, the number is the author's call.
 **What the previous round actually did**, because the numbers below have all
 moved: 21 `safeToOmit` claims grounded in recorded live calls with a guard in
 the extractor so the derivation can no longer outrun its evidence (Task C, now
-closed); 21 unmerged tables merged, 93 → 72 (Task E); five case-less endpoints
-given honest unconfirmed cases (Task A). The `/db/NMAS` trap in Task C was
+closed); 21 unmerged tables merged, 93 → 72 (Task E); seven case-less endpoints
+now live-confirmed through both SDKs (Task A/B-1). The `/db/NMAS` trap in Task C was
 spotted and refused, which is the outcome that task was written to test.
 
 **The division, set by the author.** Judgment-heavy work — schema design,
@@ -22,13 +22,11 @@ to need a judgment call is one to **stop and report**, not to decide.
 
 **Read "The one thing that is red, and is not yours" before anything else.**
 
-Then, in this order, because the offline queue is now empty and the live one is
-not:
+Then, in this order:
 
-1. **Task B-1** — run the five cases added last round but never run. Cheapest
-   write coverage left, and the only work here with no prior failure to explain.
-2. **Task B-2** — the 22 that have failed, starting from the offline leads.
-3. **Task A** — build cases for the 25 buildable endpoints with none.
+1. **Task B-2** — the 22 that have failed, starting from the offline leads.
+2. **Task A** — build cases for the 23 potentially buildable endpoints with
+   none. `/db/MVLDbs` is additionally blocked on a contract-shape decision.
 
 Task C is closed and Task E's mechanical set is exhausted; both sections stay
 because they say what re-opens them. **If no product session is available,
@@ -61,13 +59,13 @@ python scripts/check_fixture_contract.py --check       # 41 fixture leads over 5
                                           # endpoints, 3 contract gaps over 2
 python scripts/report_unmerged_tables.py --check       # report is current
 cd packages/typescript && npm run generate && npm run typecheck && npm test
-                                          # no drift; 75 tests
+                                          # no drift; 77 tests
 ```
 
-Coverage as `ROADMAP.md` reports it: **399/399 implemented, 191 write / 208
-read** — unchanged, because the last round added cases nobody has run.
-`schema/live-cases.json` is **version 5**: 206 cases over 185 endpoints, 165
-confirmed, 9 base-model steps, 63 named seeds. npm live evidence: **60 `/db`
+Coverage as `ROADMAP.md` reports it: **399/399 implemented, 198 write / 201
+read**.
+`schema/live-cases.json` is **version 5**: 209 cases over 187 endpoints, 174
+confirmed, 9 base-model steps, 63 named seeds. npm live evidence: **67 `/db`
 endpoints**. `extraction.unmergedTables`: **72 tables, 482 names, 15
 contracts**. Drafts: 3, the IEHG trio, refused for a reason that will not go
 away — that is the finished state, not a backlog.
@@ -151,29 +149,30 @@ written against, and you will "find" disagreements that are just this drift.
 
 ---
 
-## Task A — the 28 `/db` endpoints with no live case at all
+## Task A — the 26 `/db` endpoints with no live case at all
 
 **Live. Destructive: `/doc/NEW`.** The largest single block of remaining work,
 and the only one that moves `ROADMAP.md`'s write count.
 
-55 `/db` endpoints are still short of write level. 27 have a case (Task B).
-The other **28 have no case at all**:
+48 `/db` endpoints are still short of write level. 22 have a case (Task B).
+The other **26 have no case at all**:
 
 | chapter | count | endpoints |
 | --- | ---: | --- |
-| 04 Properties | 9 | `EPMT`, `EPMT-M1`, `FIBR`, `FIMP`, `IEHC`, `IEHG`, `IEHG-BEAM-M1`, `IMFM`, `IMFM-M1` |
+| 04 Properties | 8 | `EPMT`, `EPMT-M1`, `FIBR`, `FIMP`, `IEHG`, `IEHG-BEAM-M1`, `IMFM`, `IMFM-M1` |
 | 07 Temperature/Prestress | 5 | `PTNS`, `TDCS`, `TDNA`, `TDNT`, `TDPL` |
-| 14 Pushover | 4 | `PHGE`, `POGD`, `POGD-M1`, `POLC-M1` |
+| 14 Pushover | 3 | `PHGE`, `POGD`, `POGD-M1` |
 | 24 Design | 4 | `RCHK`, `REBB`, `REBR`, `REBW` |
 | — no permitted source | 3 | `IEHG-GL-M1`, `IEHG-PSS-M1`, `IEHG-TRUSS-M1` |
 | 08 Moving Loads | 1 | `MVLDbs` |
 | 05 Boundary | 1 | `DRLS` |
 | 10 Construction Stage | 1 | `CSCS` |
 
-Five came off this list in the last round — `/db/IEPI`, `/db/EXLD`, `/db/PRST`,
-`/db/POLC`, `/db/MATD` — and **none of them is finished**. They have cases
-nobody has run, which is why `ROADMAP.md`'s write count did not move. Running
-them is the first item of Task B.
+Seven endpoints came off this list and reached write level on 2026-09-12:
+`/db/IEPI`, `/db/EXLD`, `/db/PRST`, `/db/POLC`, `/db/MATD`, `/db/IEHC`, and
+Civil-only `/db/POLC-M1`. Python and npm both passed the emitted cases; the
+details, including `/db/MATD`'s live-only material constraints, are in the live
+notes.
 
 `/db/TDNA` is on this list and `db-tdna.yaml` is also named in the red section:
 the sync documents a `bPJ` under `SHAPE='CURVE'` that you may not add. A case
@@ -233,19 +232,10 @@ its own field *names*, and `REBB`/`REBW` are on this list.
 
 ---
 
-## Task B — the 27 that have a case and no passing run
+## Task B — the 22 that have a case and no passing run
 
-**Live. Start with the five, they are the cheapest write coverage left.**
-
-**B-1: five nobody has run at all.** `/db/IEPI`, `/db/EXLD`, `/db/PRST`,
-`/db/POLC` (split gen/civil), `/db/MATD`. Added 2026-09-12 in tier `extras15`,
-built from the vendored manual's own request bodies, and clean against
-`check_fixture_contract.py`. They have never touched a product. Two depend on
-the `prestress_load_cases` seed, `/db/MATD` PUTs the base model's material 1,
-and `/db/POLC`'s Gen-only stopping conditions are already split out — so the
-whole batch is one selection in one session. **This is the only item here with
-no prior failure to explain**, which makes it the highest yield per run and
-the honest first thing to do.
+**Live. B-1 is complete:** the five pending cases plus newly built `/db/IEHC`
+and `/db/POLC-M1` passed Python and npm on 2026-09-12.
 
 **B-2: 22 that have failed.** The original 18 were re-run on build 09/02/2026
 on 2026-09-05 and still fail; the table of what each answers is in the live
@@ -319,6 +309,10 @@ many candidates it names; do not let the next round rediscover a stale number.
 The 36 still-`unverified` rows in `docs/safe_to_omit_survey.md` each name the
 branch or product that would settle them, so a run that exercises one is a
 direct answer rather than a new investigation.
+
+Rechecked after the seven-endpoint 2026-09-12 batch: none of those endpoints
+appears in the survey's 36 retained candidate rows, so the measured result
+remains 21 promoted and 36 unverified; no omission claim changed.
 
 ---
 

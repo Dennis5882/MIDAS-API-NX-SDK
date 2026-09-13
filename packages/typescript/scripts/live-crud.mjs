@@ -28,7 +28,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import {
-  classifyResult, containsExpectedValue, exitCodeFor, supportedCaseWrites,
+  caseCleanupMode, classifyResult, containsExpectedValue, exitCodeFor, supportedCaseWrites,
   verifyRenumberedSeed,
 } from "./live-harness-support.mjs";
 
@@ -246,10 +246,15 @@ async function buildBaseModel(client) {
   console.log(`BUILT base model (${steps.length} steps)`);
 }
 
-async function runCase(liveCase, client) {
+async function runCase(liveCase, client, cleanupContext) {
   const resource = resourceFor(liveCase.endpoint);
-  if (!liveCase.methods.includes("DELETE") || !resource.metadata.methods.includes("DELETE")) {
-    throw new Error(`${liveCase.endpoint}: this harness refuses a no-DELETE case so the scratch document stays empty.`);
+  const cleanupMode = caseCleanupMode(
+    liveCase.methods, resource.metadata.methods, cleanupContext,
+  );
+  if (cleanupMode === "unsafe") {
+    throw new Error(
+      `${liveCase.endpoint}: a no-DELETE case must run last and be followed by a document reset.`,
+    );
   }
   const setup = [];
   const targetCreatedIds = new Set();
@@ -318,8 +323,10 @@ async function runCase(liveCase, client) {
       assertPayloadDefaults(resource, updated, liveCase.endpoint, "PUT");
     }
 
-    await deleteAndVerify(resource, liveCase.id, client, liveCase.endpoint);
-    targetCreatedIds.delete(liveCase.id);
+    if (cleanupMode === "per-id") {
+      await deleteAndVerify(resource, liveCase.id, client, liveCase.endpoint);
+      targetCreatedIds.delete(liveCase.id);
+    }
     result = { endpoint: liveCase.endpoint, ok: true, confirmed: liveCase.confirmed };
   } catch (error) {
     result = {
@@ -328,7 +335,7 @@ async function runCase(liveCase, client) {
     };
   } finally {
     const cleanupErrors = [];
-    for (const id of targetCreatedIds) {
+    for (const id of cleanupMode === "per-id" ? targetCreatedIds : []) {
       try {
         await deleteAndVerify(resource, id, client, liveCase.endpoint);
       } catch (error) {
@@ -466,7 +473,7 @@ async function main() {
   await buildBaseModel(client);
 
   const results = [];
-  for (const liveCase of cases) {
+  for (const [caseIndex, liveCase] of cases.entries()) {
     if (!liveCase.products.includes(args.product)) {
       console.log(`SKIP ${liveCase.endpoint} does not support ${args.product}.`);
       continue;
@@ -488,7 +495,10 @@ async function main() {
       console.log(`${classifyResult(result)} ${result.endpoint} ${result.error}`);
       continue;
     }
-    const result = await runCase(liveCase, client);
+    const result = await runCase(liveCase, client, {
+      finalCase: caseIndex === cases.length - 1 && !args.tableType,
+      resetDocument: args.saveBefore,
+    });
     results.push(result);
     console.log(`${classifyResult(result)} ${result.endpoint}${result.error ? ` ${result.error}` : ""}`);
   }

@@ -59,6 +59,14 @@ export function supportedCaseWrites(caseMethods, resourceMethods) {
   };
 }
 
+/** Select the only cleanup path that leaves the live scratch document empty. */
+export function caseCleanupMode(caseMethods, resourceMethods, { finalCase, resetDocument }) {
+  const supportsDelete = caseMethods.includes("DELETE") && resourceMethods.includes("DELETE");
+  if (supportsDelete) return "per-id";
+  if (finalCase && resetDocument) return "document-reset";
+  return "unsafe";
+}
+
 /**
  * Classify one case result the way scripts/live_crud_check.py classifies its
  * own rows, and for the same reason.

@@ -13238,7 +13238,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "B_IGNORE": false
       },
@@ -13269,7 +13269,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "LCNAME_ITEM": [
           "PS15_SEED"
@@ -13316,7 +13316,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "ITEMS": [
           {
@@ -13374,7 +13374,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "LCNAME": "PUSH_ACC_X",
         "DESC": "",
@@ -13456,7 +13456,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "LCNAME": "PUSH_ACC_X",
         "DESC": "",
@@ -13527,28 +13527,192 @@
         "GET",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {},
       "updatePayload": {
         "TYPE": "CONC",
-        "NAME": "C16/20",
+        "NAME": "C24",
         "DATA1": {
-          "CODENAME": "EN(RC)",
-          "CODEMATLNAME": "C16/20",
-          "DESIGN": {
-            "C_FC": 16000,
-            "C_FCI": 11200
-          }
+          "CODENAME": "KS01(RC)",
+          "CODEMATLNAME": "C24"
         },
-        "REBAR_CODENAME": "EN04(RC)",
-        "MAINREBAR_REBARNAME": "ClassB",
-        "SUBREBAR_REBARNAME": "ClassC",
+        "REBAR_CODENAME": "",
+        "MAINREBAR_REBARNAME": "",
+        "SUBREBAR_REBARNAME": "",
         "MAINREBAR_B_FY": 500000,
         "SUBREBAR_B_FY": 600000
       },
       "expected": {
         "created": null,
-        "updated": "C16/20"
+        "updated": "C24"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras15",
+      "endpoint": "/db/IEHC",
+      "name": "Inelastic Hinge Control Data",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "BEAM_LOC": 1,
+        "BeamDivNumNy": 15,
+        "BeamDivNumNz": 20,
+        "WallConsOut": false,
+        "WallDivNumZ": 8,
+        "WallDivNumY": 1,
+        "dR": 0.4,
+        "WAreaSize": "AUTO",
+        "OPT_ConsiderRebarArea1D": false,
+        "OPT_ConsiderRebarAreaWall": false,
+        "FAreaSizeCore": 1,
+        "FAreaSizeCover": 1,
+        "WAreaSizeCover": 1,
+        "BeamDivNumNyCover": 20,
+        "BeamDivNumNzCover": 15,
+        "WallDivNumZCover": 8,
+        "WallDivNumYCover": 1
+      },
+      "updatePayload": {
+        "BEAM_LOC": 1,
+        "BeamDivNumNy": 15,
+        "BeamDivNumNz": 20,
+        "WallConsOut": false,
+        "WallDivNumZ": 8,
+        "WallDivNumY": 1,
+        "dR": 0.4,
+        "WAreaSize": "AUTO",
+        "OPT_ConsiderRebarArea1D": false,
+        "OPT_ConsiderRebarAreaWall": false,
+        "FAreaSizeCore": 1,
+        "FAreaSizeCover": 1,
+        "WAreaSizeCover": 1,
+        "BeamDivNumNyCover": 20,
+        "BeamDivNumNzCover": 15,
+        "WallDivNumZCover": 8,
+        "WallDivNumYCover": 1
+      },
+      "expected": {
+        "created": 1,
+        "updated": 1
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras15",
+      "endpoint": "/db/IEHC",
+      "name": "Inelastic Hinge Control Data",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "BEAM_LOC": 1,
+        "BeamDivNumNy": 15,
+        "BeamDivNumNz": 20,
+        "OPT_ConsiderRebarArea1D": false,
+        "FAreaSizeCore": 1,
+        "FAreaSizeCover": 1,
+        "BeamDivNumNyCover": 20,
+        "BeamDivNumNzCover": 15
+      },
+      "updatePayload": {
+        "BEAM_LOC": 1,
+        "BeamDivNumNy": 15,
+        "BeamDivNumNz": 20,
+        "OPT_ConsiderRebarArea1D": false,
+        "FAreaSizeCore": 1,
+        "FAreaSizeCover": 1,
+        "BeamDivNumNyCover": 20,
+        "BeamDivNumNzCover": 15
+      },
+      "expected": {
+        "created": 1,
+        "updated": 1
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras15",
+      "endpoint": "/db/POLC-M1",
+      "name": "Pushover Load Case (Hyper-S)",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "LCNAME": "PUSH_LOAD_X",
+        "DESC": "Pushover load control case in X direction",
+        "INCRE_STEP": 20,
+        "NLTYPE": "PDELTA",
+        "bUSEINITIAL": false,
+        "INCRE_METHOD": "LOAD",
+        "CTRL_OPT": {
+          "STEPCTRLOPTION": "EQUAL",
+          "STIFF_RATIO": 80
+        },
+        "LOADPATTERNTYPE": "ACC",
+        "LOADPATTERN": [
+          {
+            "DIR": "DX",
+            "SF": 1
+          }
+        ]
+      },
+      "updatePayload": {
+        "LCNAME": "PUSH_LOAD_X",
+        "DESC": "Pushover load control case in X direction",
+        "INCRE_STEP": 20,
+        "NLTYPE": "PDELTA",
+        "bUSEINITIAL": false,
+        "INCRE_METHOD": "LOAD",
+        "CTRL_OPT": {
+          "STEPCTRLOPTION": "EQUAL",
+          "STIFF_RATIO": 80
+        },
+        "LOADPATTERNTYPE": "ACC",
+        "LOADPATTERN": [
+          {
+            "DIR": "DX",
+            "SF": 1
+          }
+        ]
+      },
+      "expected": {
+        "created": 20,
+        "updated": 20
       },
       "needs": [],
       "setup": [],

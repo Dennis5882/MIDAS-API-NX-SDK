@@ -3,7 +3,8 @@
 Read-only extraction from `docs/live_verification_notes.md` on 2026-09-01.
 This is an inventory, not a coverage or schema change. An entry appears only
 when the notes explicitly say the built npm package completed the operation.
-`docs/coverage.json` remains Python-only evidence.
+`docs/coverage.json` remains the authoritative endpoint ledger; this scratch
+file separately records which completed operations also passed through npm.
 
 ## Completed DB endpoints
 
@@ -71,6 +72,13 @@ when the notes explicitly say the built npm package completed the operation.
 | `/db/MVCTtr` | 2026-09-06 | Gen, Civil |
 | `/db/THGC-M1` | 2026-09-06 | Civil |
 | `/db/THOO-M1` | 2026-09-06 | Civil |
+| `/db/IEPI` | 2026-09-12 | Gen, Civil |
+| `/db/EXLD` | 2026-09-12 | Gen, Civil |
+| `/db/PRST` | 2026-09-12 | Gen, Civil |
+| `/db/POLC` | 2026-09-12 | Gen, Civil |
+| `/db/MATD` | 2026-09-12 | Gen, Civil |
+| `/db/IEHC` | 2026-09-12 | Gen, Civil |
+| `/db/POLC-M1` | 2026-09-12 | Civil |
 
 ## Completed result-table operations
 
@@ -102,5 +110,5 @@ when the notes explicitly say the built npm package completed the operation.
   the fifteen affected endpoints were re-run on both products on 2026-09-05.
   They are counted above; see the live notes for the run.
 
-**Count:** 60 distinct `/db` endpoints and 4 distinct result-table operations;
-64 distinct npm public-API operations overall.
+**Count:** 67 distinct `/db` endpoints and 4 distinct result-table operations;
+71 distinct npm public-API operations overall.

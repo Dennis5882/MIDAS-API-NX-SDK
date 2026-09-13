@@ -100,8 +100,9 @@ def test_extras15_fixture_keeps_manual_dependencies_and_product_fields() -> None
 
     assert {case["endpoint"] for case in cases} == {
         "/db/IEPI", "/db/EXLD", "/db/PRST", "/db/POLC", "/db/MATD",
+        "/db/IEHC", "/db/POLC-M1",
     }
-    assert all(case["confirmed"] is False for case in cases)
+    assert all(case["confirmed"] is True for case in cases)
 
     seed = fixture["seeds"]["prestress_load_cases"]
     assert seed["endpoint"] == "/db/STLD"
@@ -120,6 +121,21 @@ def test_extras15_fixture_keeps_manual_dependencies_and_product_fields() -> None
     }
     assert gen_only <= set(polc["gen"]["createPayload"])
     assert gen_only.isdisjoint(polc["civil"]["createPayload"])
+
+    iehc = {case["products"][0]: case for case in cases if case["endpoint"] == "/db/IEHC"}
+    wall_fields = {
+        "WallConsOut", "WallDivNumZ", "WallDivNumY", "dR", "WAreaSize",
+        "OPT_ConsiderRebarAreaWall", "WAreaSizeCover", "WallDivNumZCover",
+        "WallDivNumYCover",
+    }
+    assert wall_fields <= set(iehc["gen"]["createPayload"])
+    assert wall_fields.isdisjoint(iehc["civil"]["createPayload"])
+
+    polc_m1 = next(case for case in cases if case["endpoint"] == "/db/POLC-M1")
+    assert polc_m1["products"] == ["civil"]
+    assert polc_m1["methods"] == ["DELETE", "GET", "POST", "PUT"]
+    assert polc_m1["createPayload"] == polc_m1["updatePayload"]
+    assert polc_m1["updatePayload"]["LOADPATTERNTYPE"] == "ACC"
 
 
 def test_live_case_fixture_carries_skew_node_seed() -> None:
@@ -518,7 +534,7 @@ def test_the_npm_harness_reads_the_base_model_from_the_fixture() -> None:
     assert "buildBaseModel(client)" in source, "and must call it before running any case"
 
     built = source.index("await buildBaseModel(client);")
-    first_case = source.index("for (const liveCase of cases)")
+    first_case = source.index("for (const [caseIndex, liveCase] of cases.entries())")
     assert built < first_case, "the base model must be built before the first case runs"
 
 
