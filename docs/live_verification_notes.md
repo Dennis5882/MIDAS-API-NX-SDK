@@ -9377,3 +9377,18 @@ was invented. Civil `/db/NLNK-M1` remains blocked before its
 own call because the manual NLLP seed still returns `Unknown Error`. These are
 now live/product prerequisites or documentation gaps, not offline
 fixture-versus-contract mismatches.
+
+## 2026-09-14 - EPMT is write-confirmed on Gen, rejected on Civil
+
+The fixed manual's `/db/EPMT` Von-Mises Request Body was added as a new Task A
+case. The update uses the second material name printed by that same section;
+no payload value was inferred. Python and the built npm public API each
+completed create/read/update/read/delete/read on Gen NX 2026 v2.1 Build
+09/02/2026.
+
+Civil NX 2026 v2.2 Build 09/02/2026 returned `Wrong Field` for the identical
+POST through both SDKs. Fresh `GET /info/db/EPMT` responses from Gen and Civil
+declared the same field shape, including the `VM` branch members, so `/info`
+does not supply a product-specific payload correction. The Civil case remains
+unconfirmed and its earlier read-only evidence remains intact. Every run was
+checkpointed under `C:/temp` and restored to an empty scratch document.

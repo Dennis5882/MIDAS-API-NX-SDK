@@ -13794,6 +13794,94 @@
       "setup": [],
       "blockedSeeds": [],
       "crashes": null
+    },
+    {
+      "tier": "extras16",
+      "endpoint": "/db/EPMT",
+      "name": "Plastic Material",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "NAME": "Steel_VonMises",
+        "MODEL_TYPE": "VM",
+        "VMISES": {
+          "INIT_YIELD_STRESS": 235000,
+          "OPT_HARDENING": 0,
+          "HARDENING_TYPE": "ISO",
+          "HARDENING_COEF": 21000
+        }
+      },
+      "updatePayload": {
+        "NAME": "Steel_VM",
+        "MODEL_TYPE": "VM",
+        "VMISES": {
+          "INIT_YIELD_STRESS": 235000,
+          "OPT_HARDENING": 0,
+          "HARDENING_TYPE": "ISO",
+          "HARDENING_COEF": 21000
+        }
+      },
+      "expected": {
+        "created": "Steel_VonMises",
+        "updated": "Steel_VM"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras16",
+      "endpoint": "/db/EPMT",
+      "name": "Plastic Material",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "NAME": "Steel_VonMises",
+        "MODEL_TYPE": "VM",
+        "VMISES": {
+          "INIT_YIELD_STRESS": 235000,
+          "OPT_HARDENING": 0,
+          "HARDENING_TYPE": "ISO",
+          "HARDENING_COEF": 21000
+        }
+      },
+      "updatePayload": {
+        "NAME": "Steel_VM",
+        "MODEL_TYPE": "VM",
+        "VMISES": {
+          "INIT_YIELD_STRESS": 235000,
+          "OPT_HARDENING": 0,
+          "HARDENING_TYPE": "ISO",
+          "HARDENING_COEF": 21000
+        }
+      },
+      "expected": {
+        "created": "Steel_VonMises",
+        "updated": "Steel_VM"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
     }
   ]
 }

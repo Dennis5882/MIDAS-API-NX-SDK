@@ -1,7 +1,8 @@
 # Codex task prompt — mechanical work only
 
-Updated 2026-09-14 after the seven-endpoint live batch and the GRDP/MVCT
-follow-up. The former is committed at `f2d27eb`.
+Updated 2026-09-14 after the seven-endpoint live batch, the GRDP/MVCT
+follow-up, and the first Task A properties case. The first two units are
+committed through `86085f1`.
 **2.8.0 is published** on both registries — that
 release carried the `UNUMT`/`DIST` optionality. The follow-up adds contract
 branch conditions and therefore changes generated npm member optionality and
@@ -42,7 +43,7 @@ Run these first and confirm you see the same numbers. **If any differ, say so
 before starting** — it means something moved under you.
 
 ```bash
-python -m pytest -q                       # 1059 passed, 1 FAILED - EXPECTED
+python -m pytest -q                       # 1060 passed, 1 FAILED - EXPECTED
 ruff check src tests scripts && mypy      # clean
 python scripts/validate_contracts.py      # OK; 381 endpoints, 5061 fields,
                                           # 140 proven safe, 8 unsafe,
@@ -63,10 +64,10 @@ cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 77 tests
 ```
 
-Coverage as `ROADMAP.md` reports it: **399/399 implemented, 199 write / 200
+Coverage as `ROADMAP.md` reports it: **399/399 implemented, 200 write / 199
 read**.
-`schema/live-cases.json` is **version 5**: 209 cases over 187 endpoints, 176
-confirmed, 9 base-model steps, 63 named seeds. npm live evidence: **69 `/db`
+`schema/live-cases.json` is **version 5**: 211 cases over 188 endpoints, 177
+confirmed, 9 base-model steps, 63 named seeds. npm live evidence: **70 `/db`
 endpoints**. `extraction.unmergedTables`: **72 tables, 482 names, 15
 contracts**. Drafts: 3, the IEHG trio, refused for a reason that will not go
 away — that is the finished state, not a backlog.
@@ -155,12 +156,12 @@ written against, and you will "find" disagreements that are just this drift.
 **Live. Destructive: `/doc/NEW`.** The largest single block of remaining work,
 and the only one that moves `ROADMAP.md`'s write count.
 
-48 `/db` endpoints are still short of write level. 22 have a case (Task B).
-The other **26 have no case at all**:
+47 `/db` endpoints are still short of write level. 22 have a case (Task B).
+The other **25 have no case at all**:
 
 | chapter | count | endpoints |
 | --- | ---: | --- |
-| 04 Properties | 8 | `EPMT`, `EPMT-M1`, `FIBR`, `FIMP`, `IEHG`, `IEHG-BEAM-M1`, `IMFM`, `IMFM-M1` |
+| 04 Properties | 7 | `EPMT-M1`, `FIBR`, `FIMP`, `IEHG`, `IEHG-BEAM-M1`, `IMFM`, `IMFM-M1` |
 | 07 Temperature/Prestress | 5 | `PTNS`, `TDCS`, `TDNA`, `TDNT`, `TDPL` |
 | 14 Pushover | 3 | `PHGE`, `POGD`, `POGD-M1` |
 | 24 Design | 4 | `RCHK`, `REBB`, `REBR`, `REBW` |
@@ -174,6 +175,11 @@ Seven endpoints came off this list and reached write level on 2026-09-12:
 Civil-only `/db/POLC-M1`. Python and npm both passed the emitted cases; the
 details, including `/db/MATD`'s live-only material constraints, are in the live
 notes.
+
+`/db/EPMT` followed on 2026-09-14. The exact manual Von-Mises request completed
+through both SDKs on Gen. Civil exposes the same `/info` schema but returns
+`Wrong Field` for that request through both SDKs, so its separate case remains
+unconfirmed.
 
 `/db/TDNA` is on this list and `db-tdna.yaml` is also named in the red section:
 the sync documents a `bPJ` under `SHAPE='CURVE'` that you may not add. A case

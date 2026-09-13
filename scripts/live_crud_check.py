@@ -282,6 +282,7 @@ from midas_nx.db.properties.material import (
     ChangeProperty,
     Material,
     MaterialModifyConcrete,
+    PlasticMaterial,
     TimeDependentMaterialCreepShrinkage,
     TimeDependentMaterialFunction,
     TimeDependentMaterialLink,
@@ -3913,6 +3914,37 @@ def _extras15_cases() -> List[Case]:
     ]
 
 
+def _plastic_material_payload(name: str) -> Dict[str, Any]:
+    """Return the manual's `/db/EPMT` Von-Mises Request Body record."""
+    return {
+        "NAME": name,
+        "MODEL_TYPE": "VM",
+        "VMISES": {
+            "INIT_YIELD_STRESS": 235000,
+            "OPT_HARDENING": 0,
+            "HARDENING_TYPE": "ISO",
+            "HARDENING_COEF": 21000,
+        },
+    }
+
+
+def _extras16_cases() -> List[Case]:
+    """Task A properties whose complete values are stated by the manual."""
+    args = (
+        PlasticMaterial,
+        _plastic_material_payload("Steel_VonMises"),
+        _plastic_material_payload("Steel_VM"),
+        lambda p: p.get("NAME"), "Steel_VonMises", "Steel_VM",
+    )
+    # The identical manual payload passes Gen but Civil refuses it with
+    # "Wrong Field" even though both products expose the same /info schema.
+    # Keep separate cases so Gen's evidence does not bless Civil's behaviour.
+    return [
+        Case(*args, item_id=1, products=("gen",), confirmed=True),
+        Case(*args, item_id=1, products=("civil",)),
+    ]
+
+
 # 2026-09-05, both public SDKs on disposable base models; see live notes.
 # These are payload/code-specific observations, not endpoint product gates.
 _LANE_LIVE_CONFIRMED = {
@@ -4255,6 +4287,7 @@ TIERS: List[Tier] = [
     Tier("extras13", "batch 13: tractable non-rebar subset of db.design (7 confirmed both products; DSTL Civil-only success/Gen failure; RCHK/REBB/REBC/REBW/REBR deferred)", _no_seeds, _extras13_cases),
     Tier("extras14", "batch 14: the 12 Civil-only-by-design endpoints (5 db.moving_loads, 7 db.analysis_control Hyper-S/-M1), all confirmed", _extras14_seeds, _extras14_cases),
     Tier("extras15", "batch 15: tractable pushover and prestress assignments", _extras15_seeds, _extras15_cases),
+    Tier("extras16", "batch 16: Task A properties with complete manual request values", _no_seeds, _extras16_cases),
 ]
 
 

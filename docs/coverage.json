@@ -1012,18 +1012,18 @@
       "status": "implemented",
       "module": "midas_nx.db.properties.*",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-09-14",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too.",
+        "method": "scripts/live_crud_check.py and packages/typescript/scripts/live-crud.mjs completed create/read/update/read/delete/read on Gen using the manual's Von-Mises Request Body. Civil exposed the same /info schema but both SDKs received Wrong Field for the identical POST; its earlier read-only evidence remains valid.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 09/02/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 09/02/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {

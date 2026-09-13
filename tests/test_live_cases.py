@@ -164,6 +164,26 @@ def test_unconfirmed_fixture_repairs_follow_the_vendored_manual_examples() -> No
     assert mvct["setup"] == [{"seed": "lane_code_AASHTO LRFD"}]
 
 
+def test_extras16_epmt_fixture_is_the_manual_von_mises_example() -> None:
+    cases = json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
+    epmt_cases = [case for case in cases if case["endpoint"] == "/db/EPMT"]
+    assert [case["products"] for case in epmt_cases] == [["gen"], ["civil"]]
+    assert [case["confirmed"] for case in epmt_cases] == [True, False]
+    epmt = epmt_cases[0]
+
+    assert epmt["createPayload"] == {
+        "NAME": "Steel_VonMises",
+        "MODEL_TYPE": "VM",
+        "VMISES": {
+            "INIT_YIELD_STRESS": 235000,
+            "OPT_HARDENING": 0,
+            "HARDENING_TYPE": "ISO",
+            "HARDENING_COEF": 21000,
+        },
+    }
+    assert epmt["updatePayload"]["NAME"] == "Steel_VM"
+
+
 def test_live_case_fixture_carries_skew_node_seed() -> None:
     fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
     skew = next(case for case in fixture["cases"] if case["endpoint"] == "/db/SKEW")

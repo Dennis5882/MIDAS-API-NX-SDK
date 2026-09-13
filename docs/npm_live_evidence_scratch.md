@@ -81,6 +81,7 @@ file separately records which completed operations also passed through npm.
 | `/db/POLC-M1` | 2026-09-12 | Civil |
 | `/db/GRDP` | 2026-09-14 | Gen, Civil |
 | `/db/MVCT` | 2026-09-14 | Gen, Civil |
+| `/db/EPMT` | 2026-09-14 | Gen |
 
 ## Completed result-table operations
 
@@ -112,5 +113,5 @@ file separately records which completed operations also passed through npm.
   the fifteen affected endpoints were re-run on both products on 2026-09-05.
   They are counted above; see the live notes for the run.
 
-**Count:** 69 distinct `/db` endpoints and 4 distinct result-table operations;
-73 distinct npm public-API operations overall.
+**Count:** 70 distinct `/db` endpoints and 4 distinct result-table operations;
+74 distinct npm public-API operations overall.
