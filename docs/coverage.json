@@ -1443,15 +1443,15 @@
       "status": "implemented",
       "module": "midas_nx.db.properties.*",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-09-14",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too.",
+        "method": "Read-only GET remains confirmed on both products. On 2026-09-14, scripts/live_crud_check.py and packages/typescript/scripts/live-crud.mjs each sent the fixed manual's complete Kent & Park Request Body on Gen and Civil; all four POSTs were refused because the printed ECU=0.003 does not satisfy the product's stated Epsilon_cu > 0.8 / Z + Epsilon_co constraint. The manual supplies no compliant replacement, so the case remains unconfirmed and coverage remains read-only.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 09/02/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 09/02/2026"
         },
         "level": "read",
         "outcome": "success_empty"

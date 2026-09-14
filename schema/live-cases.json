@@ -13882,6 +13882,67 @@
       "setup": [],
       "blockedSeeds": [],
       "crashes": null
+    },
+    {
+      "tier": "extras16",
+      "endpoint": "/db/FIMP",
+      "name": "Inelastic Material Properties",
+      "id": 3,
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "NAME": "Conc_Kent&Park",
+        "MATL_TYPE": "CONC",
+        "HYS_MODEL": "KPM",
+        "CONC": {
+          "KENPAR": {
+            "FC": 30000,
+            "PARTIAL_FACT": 1.0,
+            "K": 1.0,
+            "EC0": 0.002,
+            "EC1_METHOD": 1,
+            "EC1": 0.0035,
+            "Z": 100,
+            "ECU": 0.003,
+            "STRENGTH_AFTER": 0
+          }
+        }
+      },
+      "updatePayload": {
+        "NAME": "Concrete_KP",
+        "MATL_TYPE": "CONC",
+        "HYS_MODEL": "KPM",
+        "CONC": {
+          "KENPAR": {
+            "FC": 24000,
+            "PARTIAL_FACT": 1.0,
+            "K": 1.0,
+            "EC0": 0.002,
+            "EC1_METHOD": 1,
+            "EC1": 0.0035,
+            "Z": 100,
+            "ECU": 0.003,
+            "STRENGTH_AFTER": 0
+          }
+        }
+      },
+      "expected": {
+        "created": 30000,
+        "updated": 24000
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
     }
   ]
 }

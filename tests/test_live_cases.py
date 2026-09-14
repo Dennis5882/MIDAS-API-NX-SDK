@@ -184,6 +184,31 @@ def test_extras16_epmt_fixture_is_the_manual_von_mises_example() -> None:
     assert epmt["updatePayload"]["NAME"] == "Steel_VM"
 
 
+def test_extras16_fimp_fixture_is_the_manual_kent_park_example() -> None:
+    cases = json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
+    fimp = next(case for case in cases if case["endpoint"] == "/db/FIMP")
+
+    assert fimp["id"] == 3
+    assert fimp["createPayload"] == {
+        "NAME": "Conc_Kent&Park",
+        "MATL_TYPE": "CONC",
+        "HYS_MODEL": "KPM",
+        "CONC": {"KENPAR": {
+            "FC": 30000,
+            "PARTIAL_FACT": 1.0,
+            "K": 1.0,
+            "EC0": 0.002,
+            "EC1_METHOD": 1,
+            "EC1": 0.0035,
+            "Z": 100,
+            "ECU": 0.003,
+            "STRENGTH_AFTER": 0,
+        }},
+    }
+    assert fimp["updatePayload"]["NAME"] == "Concrete_KP"
+    assert fimp["updatePayload"]["CONC"]["KENPAR"]["FC"] == 24000
+
+
 def test_live_case_fixture_carries_skew_node_seed() -> None:
     fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
     skew = next(case for case in fixture["cases"] if case["endpoint"] == "/db/SKEW")

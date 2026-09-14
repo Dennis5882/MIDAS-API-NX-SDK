@@ -96,7 +96,7 @@ file separately records which completed operations also passed through npm.
 
 - Read-only first-session checks (`/db/STYP`, `/info/db/NODE`) were successful
   transport checks, but were not described as completed npm endpoint cases.
-- Explicit rejections or unresolved cases (`/db/SDIS` LRB,
+- Explicit rejections or unresolved cases (`/db/FIMP`, `/db/SDIS` LRB,
   `/db/WVLD`, `/db/NLLP`, Gen `/db/DSTL`, and `/db/BCCT`) are not evidence of
   a completed endpoint operation.
 - The 2026-09-06 country/code-specific moving-load attempts are not completed

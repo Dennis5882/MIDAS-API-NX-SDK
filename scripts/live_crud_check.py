@@ -280,6 +280,7 @@ from midas_nx.db.properties.damping import GroupDamping
 from midas_nx.db.properties.hinge import InelasticHingeControl
 from midas_nx.db.properties.material import (
     ChangeProperty,
+    InelasticMaterialProperty,
     Material,
     MaterialModifyConcrete,
     PlasticMaterial,
@@ -3928,6 +3929,28 @@ def _plastic_material_payload(name: str) -> Dict[str, Any]:
     }
 
 
+def _inelastic_kent_park_payload(name: str, strength: float) -> Dict[str, Any]:
+    """Return section 28's complete `/db/FIMP` Kent & Park example."""
+    return {
+        "NAME": name,
+        "MATL_TYPE": "CONC",
+        "HYS_MODEL": "KPM",
+        "CONC": {
+            "KENPAR": {
+                "FC": strength,
+                "PARTIAL_FACT": 1.0,
+                "K": 1.0,
+                "EC0": 0.002,
+                "EC1_METHOD": 1,
+                "EC1": 0.0035,
+                "Z": 100,
+                "ECU": 0.003,
+                "STRENGTH_AFTER": 0,
+            },
+        },
+    }
+
+
 def _extras16_cases() -> List[Case]:
     """Task A properties whose complete values are stated by the manual."""
     args = (
@@ -3942,6 +3965,13 @@ def _extras16_cases() -> List[Case]:
     return [
         Case(*args, item_id=1, products=("gen",), confirmed=True),
         Case(*args, item_id=1, products=("civil",)),
+        Case(
+            InelasticMaterialProperty,
+            _inelastic_kent_park_payload("Conc_Kent&Park", 30000),
+            _inelastic_kent_park_payload("Concrete_KP", 24000),
+            lambda p: p.get("CONC", {}).get("KENPAR", {}).get("FC"),
+            30000, 24000, item_id=3,
+        ),
     ]
 
 

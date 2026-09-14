@@ -1,7 +1,7 @@
 # Codex task prompt — mechanical work only
 
 Updated 2026-09-14 after the seven-endpoint live batch, the GRDP/MVCT
-follow-up, and the first Task A properties case. The first two units are
+follow-up, and the first Task A properties cases. The first two units are
 committed through `86085f1`.
 **2.8.0 is published** on both registries — that
 release carried the `UNUMT`/`DIST` optionality. The follow-up adds contract
@@ -43,7 +43,7 @@ Run these first and confirm you see the same numbers. **If any differ, say so
 before starting** — it means something moved under you.
 
 ```bash
-python -m pytest -q                       # 1060 passed, 1 FAILED - EXPECTED
+python -m pytest -q                       # 1061 passed, 1 FAILED - EXPECTED
 ruff check src tests scripts && mypy      # clean
 python scripts/validate_contracts.py      # OK; 381 endpoints, 5061 fields,
                                           # 140 proven safe, 8 unsafe,
@@ -66,7 +66,7 @@ cd packages/typescript && npm run generate && npm run typecheck && npm test
 
 Coverage as `ROADMAP.md` reports it: **399/399 implemented, 200 write / 199
 read**.
-`schema/live-cases.json` is **version 5**: 211 cases over 188 endpoints, 177
+`schema/live-cases.json` is **version 5**: 212 cases over 189 endpoints, 177
 confirmed, 9 base-model steps, 63 named seeds. npm live evidence: **70 `/db`
 endpoints**. `extraction.unmergedTables`: **72 tables, 482 names, 15
 contracts**. Drafts: 3, the IEHG trio, refused for a reason that will not go
@@ -156,12 +156,12 @@ written against, and you will "find" disagreements that are just this drift.
 **Live. Destructive: `/doc/NEW`.** The largest single block of remaining work,
 and the only one that moves `ROADMAP.md`'s write count.
 
-47 `/db` endpoints are still short of write level. 22 have a case (Task B).
-The other **25 have no case at all**:
+47 `/db` endpoints are still short of write level. 23 have a case (Task B).
+The other **24 have no case at all**:
 
 | chapter | count | endpoints |
 | --- | ---: | --- |
-| 04 Properties | 7 | `EPMT-M1`, `FIBR`, `FIMP`, `IEHG`, `IEHG-BEAM-M1`, `IMFM`, `IMFM-M1` |
+| 04 Properties | 6 | `EPMT-M1`, `FIBR`, `IEHG`, `IEHG-BEAM-M1`, `IMFM`, `IMFM-M1` |
 | 07 Temperature/Prestress | 5 | `PTNS`, `TDCS`, `TDNA`, `TDNT`, `TDPL` |
 | 14 Pushover | 3 | `PHGE`, `POGD`, `POGD-M1` |
 | 24 Design | 4 | `RCHK`, `REBB`, `REBR`, `REBW` |
@@ -179,6 +179,12 @@ notes.
 `/db/EPMT` followed on 2026-09-14. The exact manual Von-Mises request completed
 through both SDKs on Gen. Civil exposes the same `/info` schema but returns
 `Wrong Field` for that request through both SDKs, so its separate case remains
+unconfirmed.
+
+`/db/FIMP` now also has a case copied from the manual's complete Kent & Park
+example. Both SDKs on both products reject its printed `ECU=0.003`: the
+product requires `Epsilon_cu > 0.8 / Z + Epsilon_co`. The chapter supplies no
+compliant alternative, so the value was not invented and the case remains
 unconfirmed.
 
 `/db/TDNA` is on this list and `db-tdna.yaml` is also named in the red section:
@@ -239,18 +245,18 @@ its own field *names*, and `REBB`/`REBW` are on this list.
 
 ---
 
-## Task B — the 22 that have a case and no passing run
+## Task B — the 23 that have a case and no passing run
 
 **Live. B-1 is complete:** the five pending cases plus newly built `/db/IEHC`
 and `/db/POLC-M1` passed Python and npm on 2026-09-12.
 
-**B-2: 22 that have failed.** The original 18 were re-run on build 09/02/2026
+**B-2: 23 that have failed.** The original 18 were re-run on build 09/02/2026
 on 2026-09-05 and still fail; the table of what each answers is in the live
 notes. Four manual moving-load cases joined on 2026-09-06 and carry their exact
 current errors in that file.
 
 `/db/ACTL`, `/db/CGLP`, `/db/DOEL`, `/db/EPSE`, `/db/EPST`, `/db/FBLA`,
-`/db/HPCE`, `/db/MADO`, `/db/MVLDch`, `/db/MVLDeu`,
+`/db/FIMP`, `/db/HPCE`, `/db/MADO`, `/db/MVLDch`, `/db/MVLDeu`,
 `/db/MVLDid`, `/db/MVLDpl`, `/db/NLLP`, `/db/NLNK`, `/db/NLNK-M1`, `/db/RPSC`,
 `/db/SBDO`, `/db/SINF`, `/db/STCT`, `/db/TDMF`, `/db/WVLD`
 

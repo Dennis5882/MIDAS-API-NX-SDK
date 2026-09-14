@@ -9392,3 +9392,19 @@ declared the same field shape, including the `VM` branch members, so `/info`
 does not supply a product-specific payload correction. The Civil case remains
 unconfirmed and its earlier read-only evidence remains intact. Every run was
 checkpointed under `C:/temp` and restored to an empty scratch document.
+
+## 2026-09-14 - FIMP's printed Kent & Park request is internally invalid
+
+The fixed manual's complete `/db/FIMP` Request Body was added without changing
+its values. Python and the built npm public API sent it to Gen NX 2026 v2.1
+and Civil NX 2026 v2.2 Build 09/02/2026. All four POSTs returned the same
+specific product error:
+
+`Epsilon_cu > 0.8 / Z + Epsilon_co`
+
+The request prints `ECU=0.003`, `Z=100`, and `EC0=0.002`, so it does not meet
+that stated relationship. The chapter's second example repeats the same three
+values and supplies no compliant alternative. No replacement was invented;
+the case remains unconfirmed and `/db/FIMP` remains read-only in the coverage
+ledger. Every run was checkpointed under `C:/temp` and restored to an empty
+scratch document.
