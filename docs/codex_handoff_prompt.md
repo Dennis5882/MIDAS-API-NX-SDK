@@ -30,16 +30,31 @@ to need a judgment call is one to **stop and report**, not to decide.
 
 **Read "The one thing that is red, and is not yours" before anything else.**
 
-Then, in this order:
+Then, in this order. **The first item is new and it is larger than everything
+under it.**
 
-1. **Task B-2** — the 22 that have failed, starting from the offline leads.
-2. **Task A** — build cases for the 23 potentially buildable endpoints with
-   none. `/db/MVLDbs` is additionally blocked on a contract-shape decision.
+**With a product session:**
+
+1. **Task F** — replay the 95 already-confirmed fixtures the npm harness has
+   never run. Python has confirmed cases on 166 endpoints; npm evidence covers
+   70. Nothing needs building and nothing needs deciding.
+2. **Task G** — three confirmed cases that cannot fail, and so prove less than
+   their `confirmed=True` claims.
+3. **Task B-2** — the 22 that have failed. Only one offline lead is left.
+
+**Without one, and only then:**
+
+4. **Task A** — build fixtures for the 21 buildable endpoints with no case.
+   Start with batch 17: `/db/PHGE`, `/db/POGD`, `/db/POGD-M1`.
+
+An earlier version of this file said the offline queue was empty and told you
+to report that rather than invent work. That was wrong about Task A: building a
+fixture is offline, and 21 endpoints are waiting. What is still true is the
+priority — **a session is the scarce thing.** Do not spend one writing fixtures
+when 95 endpoints are waiting to be replayed through the other SDK.
 
 Task C is closed and Task E's mechanical set is exhausted; both sections stay
-because they say what re-opens them. **If no product session is available,
-report that rather than inventing offline work** — the last round finished the
-offline queue, and the honest answer is that this round needs a product.
+because they say what re-opens them.
 
 ---
 
@@ -157,13 +172,120 @@ written against, and you will "find" disagreements that are just this drift.
 
 ---
 
+## Task F — 95 confirmed fixtures the npm harness has never replayed
+
+**Live. Destructive: `/doc/NEW`. The largest remaining block of work, and the
+one with the least judgement in it.**
+
+Measured 2026-09-15:
+
+| | |
+| --- | ---: |
+| endpoints with a `confirmed` Python case | 166 |
+| endpoints recorded as replayed through npm | 70 |
+| the gap, runnable as it stands | **95** |
+| the gap, blocked by a seed npm cannot replay | 3 |
+
+Nothing here needs building and nothing needs deciding. The fixture exists, it
+already passed in Python, and `packages/typescript/scripts/live-crud.mjs`
+replays the **same emitted fixture** through the built npm package.
+
+**This is not bookkeeping.** It is the only way anything checks that the two
+SDKs send the same request. Two harness defects in the last two rounds were
+invisible to Python and surfaced the first time npm ran: `containsExpectedValue`
+compared objects by reference, so a nested expected value could never match and
+the assertion passed nothing; and `runCase` refused every endpoint without
+DELETE. Neither was a typo — both were found by running, not by reading.
+
+**A second thing falls out of it for free.** 171 of the 200 write-level
+endpoints were last verified on a build older than the current 09/02/2026 —
+46 on 08/14, 34 on 07/28, 27 on 08/26, and 29 on 09/02. Run the Python harness
+on the same selection in the same session and the re-verification comes with
+the replay. Do not spend a separate session on it.
+
+The gap by tier, which is also how to batch it — the harness selects by
+`--tier` or `--endpoints`:
+
+| tier | n | endpoints |
+| --- | ---: | --- |
+| `extras14` | 12 | `ACTL-M1`, `BCGA-M1`, `BCGD-M1`, `CJFG`, `CRGR`, `DYFG`, `DYLA`, `DYNF`, `EIGV-M1`, `HHCT-M1`, `NLCT-M1`, `STCT-M1` |
+| `extras1` | 10 | `CLDR`, `CO_F`, `CO_M`, `CO_S`, `CO_T`, `PRLS`, `PZEF`, `SPAN`, `STYP`, `STYP-M1` |
+| `extras2` | 10 | `BTMP`, `EFCT`, `GTMP`, `IELC`, `INMF`, `LDSQ`, `PLCB`, `SMLC`, `SMPT`, `STMP` |
+| `boundary` | 8 | `ELNK`, `FRLS`, `GSPR`, `MCON`, `NSPR`, `OFFS`, `RIGD`, `SSPS` |
+| `static` | 8 | `ETMP`, `FBLD`, `LTOM`, `NBOF`, `NTMP`, `PRES`, `PSLT`, `SDSP` |
+| `extras3` | 6 | `EDMP`, `EWSF`, `PSSF`, `STRPSSM`, `VBEM`, `VSEC` |
+| `extras5` | 6 | `SPFC`, `THGA`, `THIS`, `THMS`, `THNL`, `THSL` |
+| `extras8` | 5 | `BCCT`, `BUCK`, `HHCT`, `NLCT`, `PDEL` |
+| `extras12` | 4 | `CAMB`, `GCMB`, `GSBG`, `ULFC` |
+| `extras7` | 4 | `FMLD`, `PNLA`, `POSL`, `POSP` |
+| `moving` | 4 | `LLAN`, `MVHC`, `MVHL`, `MVLD` |
+| `stage` | 4 | `CMCS`, `CRPC`, `STAG`, `TMLD` |
+| `extras10` | 3 | `HAHS`, `HSTG`, `STBK` |
+| `extras4` | 3 | `LCOM-SRC`, `LCOM-STEEL`, `LCOM-STLCOMP` |
+| `lanes_optimization` | 3 | `LLANop`, `SLAN`, `SLANop` |
+| `core` | 2 | `BNGR`, `GRUP` |
+| `props` · `moving_impact` · `lanes_bs` | 3 | `TMAT`, `IMPF`, `SLAN` |
+
+**Three are blocked and are not defects.** `/db/PJCF` needs `pjcf_unlock`,
+`/db/HECB` needs `stage11_seed` and `solid11_seed`, `/db/HSPT` needs
+`stage11_seed` — seeds that read state back and therefore cannot be replayed
+from an emitted payload. Python runs them fine. Leave them; do not "fix" a seed
+by making it branch on a read.
+
+How to run one batch:
+
+1. Confirm both documents are empty with each product's own key, and ask the
+   author before the first product call of the session.
+2. `npm run live:crud -- -- --product gen --endpoints /db/A,/db/B,...` and the
+   same for `civil`, at most 8 endpoints per selection.
+3. Run `python scripts/live_crud_check.py --endpoints ...` on the same
+   selection, in the same session. That is what re-verifies the older build.
+4. Record the npm result in `docs/npm_live_evidence_scratch.md` — one row per
+   endpoint with the date and the products it passed on — and update its Count
+   line.
+5. In `docs/coverage.json`, **append** to the entry's `method`; do not
+   overwrite what is there. `Re-verified 2026-09-nn on build 09/02/2026 through
+   both SDKs` is the shape. The existing date and history stay: an entry that
+   loses its first measurement to a re-run has lost information.
+6. A failure here is a **regression** — a case that passed before and does not
+   now. Report it, do not re-classify it, and do not flip `confirmed`.
+
+---
+
+## Task G — three confirmed cases that cannot fail
+
+**Offline to prepare, live to re-confirm. Small, and it is about the honesty
+of evidence rather than the amount of it.**
+
+A case proves a write happened by reading a value back and comparing it. These
+three compare a value that was already there:
+
+| case | what it asserts | why that proves nothing |
+| --- | --- | --- |
+| `/db/MATD` | `NAME == "C24"` after the PUT | the base model's material 1 is already named `C24`; the PUT would pass unchanged |
+| `/db/IEHC` (gen and civil) | a value the create already set | create and update payloads are **byte-identical** |
+| `/db/POLC-M1` | `INCRE_STEP == 20` | create and update payloads are **byte-identical** |
+
+Make the update payload differ from the create in one field the endpoint
+actually stores, and assert that field. `/db/MATD` already sends
+`MAINREBAR_B_FY = 500000` against a seeded material whose rebar fields are
+blank, so that one is a natural probe.
+
+**Then set `confirmed=False` and re-run.** A changed payload is not the payload
+that passed; leaving `confirmed=True` on it would be exactly the "flip the flag
+to keep the light green" move this repository forbids. They are three
+endpoints — fold them into whichever Task F batch you are running.
+
+---
+
+
 ## Task A — the 26 `/db` endpoints with no live case at all
 
 **Live. Destructive: `/doc/NEW`.** The largest single block of remaining work,
 and the only one that moves `ROADMAP.md`'s write count.
 
-47 `/db` endpoints are still short of write level. 23 have a case (Task B).
-The other **24 have no case at all**:
+46 `/db` endpoints are still short of write level. 22 have a case that has
+never passed (Task B). The other **24 have no case at all**:
 
 | chapter | count | endpoints |
 | --- | ---: | --- |
@@ -251,12 +373,12 @@ its own field *names*, and `REBB`/`REBW` are on this list.
 
 ---
 
-## Task B — the 23 that have a case and no passing run
+## Task B — the 22 that have a case and no passing run
 
 **Live. B-1 is complete:** the five pending cases plus newly built `/db/IEHC`
 and `/db/POLC-M1` passed Python and npm on 2026-09-12.
 
-**B-2: 23 that have failed.** The original 18 were re-run on build 09/02/2026
+**B-2: 22 that have failed.** The original 18 were re-run on build 09/02/2026
 on 2026-09-05 and still fail; the table of what each answers is in the live
 notes. Four manual moving-load cases joined on 2026-09-06 and carry their exact
 current errors in that file.
@@ -265,6 +387,11 @@ current errors in that file.
 `/db/FIMP`, `/db/HPCE`, `/db/MADO`, `/db/MVLDch`, `/db/MVLDeu`,
 `/db/MVLDid`, `/db/MVLDpl`, `/db/NLLP`, `/db/NLNK`, `/db/NLNK-M1`, `/db/RPSC`,
 `/db/SBDO`, `/db/SINF`, `/db/STCT`, `/db/TDMF`, `/db/WVLD`
+
+**Two more unconfirmed cases sit on endpoints that already have write
+evidence**, so they are not in the 22 and are easy to lose: `/db/EPMT`'s Civil
+case, which answers `Wrong Field` for the request Gen accepts, and `/db/DSTL`'s.
+Both are live work; neither changes a coverage count if it passes.
 
 The offline evidence pass is complete. `python scripts/check_fixture_contract.py`
 now names **1 concrete lead on 1 endpoint**, down from 41 across 5. It
