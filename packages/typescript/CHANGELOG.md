@@ -6,6 +6,37 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.8.2 - 2026-09-16
+
+> Additive. No exported name is removed or renamed and no member narrows - 741
+> exported payload types before, 742 after.
+
+### Added - `steelDesignCodeSelection`, for `DESIGN/STEEL/DSTL`
+
+- Selects the project's steel design code (today the manual lists one value,
+  `"KDS 41 30 : 2022"`). GET, PUT and DELETE. The steel counterpart of
+  `rcDesignCodeSelection`.
+- **Not `steelDesignCode`**, which is `/db/DSTL`: same name, different URI and
+  schema. Nothing about that resource changed.
+- Not yet called against a product, and therefore generated from the reviewed
+  Python class rather than a contract until it has been.
+
+### Added - members the manual now documents
+
+- `MaterialModifyConcretePayload` gains `bSERVCHECK`, `dSHORTTERM` and
+  `dLONGTERM`. The official JSON Schema and live `/info` on both products
+  declare them; requiredness is unstated because the article's table and
+  example say nothing about them.
+- `TendonProfilePayload`'s `CURVE` shape gains `bPJ`, which its `ELEMENT` and
+  `STRAIGHT` shapes already had.
+
+### Clarified - `constructionStage` (`OPT_CS`) has three states
+
+- `true` switches the view to Construction Stage, `false` switches it to PostCS
+  (the final stage), and leaving it undefined keeps the current view. The
+  package already left it out unless set, so no request changes; the option's
+  documentation now says so.
+
 ## 2.8.1 - 2026-09-15
 
 > **Breaking for TypeScript callers: 16 members that were optional are now
