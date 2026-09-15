@@ -118,7 +118,7 @@ jobs:
           set -euxo pipefail
           npm init -y >/dev/null
           npm install --ignore-scripts ../package-artifact/midas-nx-*.tgz
-          node -e "const m = require('midas-nx'); if (m.resourceCount !== 304) process.exit(1)"
+          node -e "const m = require('midas-nx'); if (m.resourceCount !== 305) process.exit(1)"
           node --input-type=module -e "const m = await import('midas-nx'); if (m.tableCount !== 87) process.exit(1)"
           # The /db/NMAS crash workaround must survive packing, not just exist in
           # the source tree. Checked against the real artifact for that reason.
