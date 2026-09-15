@@ -1,13 +1,19 @@
 # Codex task prompt — mechanical work only
 
-Updated 2026-09-14 after the seven-endpoint live batch, the GRDP/MVCT
-follow-up, and the first Task A properties cases. The first two units are
-committed through `86085f1`.
-**2.8.0 is published** on both registries — that
-release carried the `UNUMT`/`DIST` optionality. The follow-up adds contract
-branch conditions and therefore changes generated npm member optionality and
-JSDoc for MVCT, NLNK-M1, and TDMF. It has not been released. Do not infer a
-release or version bump from that fact; the author must request one explicitly.
+Updated 2026-09-15, after the live rounds were reviewed and **2.8.1 was
+published** to both registries. Everything described below is committed and
+pushed; the tree is clean.
+
+2.8.1 shipped what those rounds changed in the packaged surfaces: the `MVCT`,
+`NLNK-M1` and `TDMF` branch conditions reached npm as member optionality and
+JSDoc, and three payload types that moved onto their contracts narrowed 16
+members from optional to required — a breaking change carried deliberately in
+a patch number, stated at the top of both the changelog and the release. Full
+notes in `docs/release_notes_v2.8.1.md`.
+
+**Nothing in either packaged surface has changed since that release**, so no
+release is warranted right now. Do not infer one from a contract edit either:
+the author picks the number and must ask for the release explicitly.
 
 **What the previous round actually did**, because the numbers below have all
 moved: 21 `safeToOmit` claims grounded in recorded live calls with a guard in

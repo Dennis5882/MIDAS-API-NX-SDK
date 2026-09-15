@@ -7,9 +7,18 @@ are, and what order the remaining work goes in.
 `CLAUDE.md` and `contracts/README.md` are authoritative. Where this file and
 either of those disagree, they win and this file is stale.
 
-**Current measurement: "Measurement — 2026-09-02" below.** The two earlier
-tables (2026-08-28 at `c2a4599`, 2026-08-29) are kept as history and are
-stale. Regenerate rather than trust any of them:
+**The migration this brief was written to finish is over.** As of 2026-09-15
+there are **381 promoted endpoint contracts + 87 result tables, 5,061 fields**,
+and **3 drafts** — the Civil Hyper-S trio `/db/IEHG-GL-M1`, `/db/IEHG-PSS-M1`
+and `/db/IEHG-TRUSS-M1`, which have no permitted source at all: no manual
+schema, and `/info` 404s for them. That is a finished state, not a backlog.
+What remains is live write evidence and the unmerged tables, tracked in
+`PLAN.md` §2 and `docs/codex_handoff_prompt.md`, not here.
+
+**Every measurement section below is history, including the one that used to be
+labelled current.** They are kept because each records how a number was
+obtained, and the ordering arguments still hold. Regenerate rather than trust
+any of them:
 
 ```bash
 python scripts/validate_contracts.py

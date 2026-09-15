@@ -165,7 +165,7 @@ def scan() -> Tuple[Dict[str, List[str]], Dict[str, List[str]], int]:
     exact payload, so the disagreement is evidence about the **contract**: a
     name it records nowhere is a field it is missing, and a `required` field
     the call omitted is a requirement the product does not enforce -- which is
-    exactly what `safeToOmit` wants and only 119 of 4,916 fields have.
+    exactly what `safeToOmit` wants and only 140 of 5,061 fields have.
 
     Neither list is actionable by itself. A contract is fixed from a permitted
     source, never from a fixture.

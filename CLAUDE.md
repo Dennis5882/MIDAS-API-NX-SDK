@@ -65,7 +65,9 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   TypedDict is the subject the check measures, never a source. `sdkOnly` waives
   a name the server does not take.
   A contract that declares part of its field list missing does **not** get
-  skipped — twenty do, and skipping them was worth another 214 unchecked names.
+  skipped — fifteen do as of 2026-09-15, down from twenty as those tables were
+  merged, and skipping them was worth another 214 unchecked names when the
+  waiver was written.
   Each `extraction.unmergedTables` entry records `fieldNames`, so the waiver is
   per-name: a name that table accounts for is a declared gap, a name in neither
   the contract nor any of those lists is a defect. `fields` had always given the
@@ -324,8 +326,8 @@ Two things that have already caused rework:
   a design contract can never carry `provenance: info_schema`. The three `/db/*` exceptions
   are the Civil Hyper-S trio `/db/IEHG-GL-M1`, `/db/IEHG-PSS-M1` and `/db/IEHG-TRUSS-M1`.
 - **`scripts/live_crud_check.py` write coverage is tracked in the script itself.** Cases carry
-  `confirmed=True` only once someone has watched them pass live (134 of 166 cases as of
-  2026-09-01; the first 43 landed 2026-07-29 on Civil NX, after `/db/NMAS`'s crash was
+  `confirmed=True` only once someone has watched them pass live (177 of 212 cases as of
+  2026-09-15; the first 43 landed 2026-07-29 on Civil NX, after `/db/NMAS`'s crash was
   root-caused and worked around — see above); a failure of
   a confirmed case is a **regression** and exits 1, while a failure of an
   unconfirmed one exits 3 and means "triage the fixture first". Don't flip `confirmed` to silence

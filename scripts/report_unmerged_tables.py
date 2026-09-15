@@ -1,10 +1,12 @@
-"""Measure the field names 19 contracts waive against the /info baseline.
+"""Measure the field names 15 contracts waive against the /info baseline.
 
-Nineteen contracts declare part of their field list missing through
+Fifteen contracts declare part of their field list missing through
 ``extraction.unmergedTables``, and each entry records the ``fieldNames`` that
 table holds, so the field-parity waiver is per name rather than per count.
-That is 602 names the SDKs may ship without any contract accounting for them
-individually, and from outside they are one undifferentiated pile.
+That is 482 names the SDKs may ship without any contract accounting for them
+individually, and from outside they are one undifferentiated pile.  It was 602
+across nineteen contracts before twenty-one of those tables were merged; re-run
+this rather than quoting either number.
 
 This splits the pile.  A table whose names ``schema/info-baseline.json`` also
 declares has a **second source** and is a candidate to merge; a table whose
