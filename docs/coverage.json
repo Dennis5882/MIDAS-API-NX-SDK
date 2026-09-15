@@ -331,7 +331,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026): PUT->GET succeeded on both products once MASS was set to 1 or 2 -- MASS=0 answers \"Wrong Field\" live, even though the manual's own Specifications table lists no valid-value constraint beyond \"Optional\".",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026): PUT->GET succeeded on both products once MASS was set to 1 or 2 -- MASS=0 answers \"Wrong Field\" live, even though the manual's own Specifications table lists no valid-value constraint beyond \"Optional\". Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -357,7 +357,7 @@
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
         },
-        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation) Write round trip confirmed 2026-08-16 (Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete succeeded. The same schema was captured verbatim on 2026-09-02 and committed to schema/hyper-s-info.json (GET /info/db/STYP-M1); the capture session's Civil NX build string was not recorded, so the nx_versions above still cite the session that set this level.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET); GET /info/db/... schema also reconfirmed via a direct probe the same session, matching the 2026-07-29 schema exactly (second independent confirmation) Write round trip confirmed 2026-08-16 (Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete succeeded. The same schema was captured verbatim on 2026-09-02 and committed to schema/hyper-s-info.json (GET /info/db/STYP-M1); the capture session's Civil NX build string was not recorded, so the nx_versions above still cite the session that set this level. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "level": "write",
         "outcome": "success"
       }
@@ -503,7 +503,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -528,7 +528,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -553,7 +553,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -578,7 +578,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -601,7 +601,7 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET); manual documents gen+civil but 404s under Gen in three independent sessions (2026-07-22, 2026-07-26, 2026-07-29) Write round trip confirmed 2026-08-16 (Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete succeeded.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET); manual documents gen+civil but 404s under Gen in three independent sessions (2026-07-22, 2026-07-26, 2026-07-29) Write round trip confirmed 2026-08-16 (Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete succeeded. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported"
@@ -967,7 +967,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras3: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras3: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -1187,7 +1187,7 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET); manual documents gen+civil but 404s under Gen in three independent sessions (2026-07-22, 2026-07-26, 2026-07-29). A write round trip attempted 2026-08-16 with the manual's stale PY/PZ point keys answered \"Wrong Field\". Re-tested 2026-09-04 via scripts/live_crud_check.py --tier extras3 after live /info evidence corrected each point to {Y, Z}: the contract-derived case completed POST, GET, PUT, GET, per-id DELETE, and deletion verification on an empty Civil NX scratch model.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET); manual documents gen+civil but 404s under Gen in three independent sessions (2026-07-22, 2026-07-26, 2026-07-29). A write round trip attempted 2026-08-16 with the manual's stale PY/PZ point keys answered \"Wrong Field\". Re-tested 2026-09-04 via scripts/live_crud_check.py --tier extras3 after live /info evidence corrected each point to {Y, Z}: the contract-derived case completed POST, GET, PUT, GET, per-id DELETE, and deletion verification on an empty Civil NX scratch model. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 09/02/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported"
@@ -1212,7 +1212,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras3: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras3: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -1237,7 +1237,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras3: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras3: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -1262,7 +1262,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras3: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras3: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -1285,7 +1285,7 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET); manual documents gen+civil but 404s under Gen in three independent sessions (2026-07-22, 2026-07-26, 2026-07-29) Write round trip confirmed 2026-08-16 (Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras3: create->GET->update->GET->delete succeeded.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET); manual documents gen+civil but 404s under Gen in three independent sessions (2026-07-22, 2026-07-26, 2026-07-29) Write round trip confirmed 2026-08-16 (Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras3: create->GET->update->GET->delete succeeded. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported"
@@ -1598,7 +1598,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-verified 2026-08-27: the previous COMP/TENS/MULTI shape (DIR 1-4, DV, a fictional SK field) answered \"[Error] Point Spring value has(have) been incorrectly entered.\" live on Gen NX. The corrected shape (STIFF single number for COMP/TENS, FUNCTION for MULTI, DIR 0-6 including Vector, DV only meaningful for DIR=6) round-trips cleanly -- confirmed DIR=6+DV, DIR=0 with no DV, and LINEAR's previously-undocumented Cr damping array all separately. PointSpringItem rewritten.",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-verified 2026-08-27: the previous COMP/TENS/MULTI shape (DIR 1-4, DV, a fictional SK field) answered \"[Error] Point Spring value has(have) been incorrectly entered.\" live on Gen NX. The corrected shape (STIFF single number for COMP/TENS, FUNCTION for MULTI, DIR 0-6 including Vector, DV only meaningful for DIR=6) round-trips cleanly -- confirmed DIR=6+DV, DIR=0 with no DV, and LINEAR's previously-undocumented Cr damping array all separately. PointSpringItem rewritten. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/20/2026"
         },
@@ -1646,7 +1646,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
@@ -1671,7 +1671,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
@@ -1696,7 +1696,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
@@ -1721,7 +1721,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
@@ -1843,7 +1843,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
@@ -1868,7 +1868,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
@@ -1893,7 +1893,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -2062,7 +2062,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
@@ -2087,7 +2087,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -2112,7 +2112,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -2697,7 +2697,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -2722,7 +2722,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: create->GET->update->GET->delete succeeded on BOTH products, contradicting the manual's own \"MIDAS Civil NX 전용 기능\" prose note for this endpoint -- same documented-vs-actual-routing mismatch pattern as the ch08/ch17 moving-load family.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: create->GET->update->GET->delete succeeded on BOTH products, contradicting the manual's own \"MIDAS Civil NX 전용 기능\" prose note for this endpoint -- same documented-vs-actual-routing mismatch pattern as the ch08/ch17 moving-load family. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -2747,7 +2747,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -3410,7 +3410,7 @@
         "products": [
           "civil"
         ],
-        "method": "GROUPS references a real /db/GRUP structure group name (the manual's own examples use made-up names). Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
+        "method": "GROUPS references a real /db/GRUP structure group name (the manual's own examples use made-up names). Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
@@ -3432,7 +3432,7 @@
         "products": [
           "civil"
         ],
-        "method": "GROUPS references a real /db/GRUP structure group name. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
+        "method": "GROUPS references a real /db/GRUP structure group name. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
@@ -3554,7 +3554,7 @@
         "products": [
           "civil"
         ],
-        "method": "Live-confirmed 2026-08-25: requires /db/MVCD.CODE to be one of KSCE-LSD15/AASHTO LRFD/PENDOT first (\"[Error] Additional Dynamic Load Allowance can be applied when Moving Load Code is entered as ...\" otherwise). ITEMS references a real structure group name. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
+        "method": "Live-confirmed 2026-08-25: requires /db/MVCD.CODE to be one of KSCE-LSD15/AASHTO LRFD/PENDOT first (\"[Error] Additional Dynamic Load Allowance can be applied when Moving Load Code is entered as ...\" otherwise). ITEMS references a real structure group name. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
@@ -4284,7 +4284,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -4309,7 +4309,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -4332,7 +4332,7 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET); manual documents gen+civil but 404s under Gen in three independent sessions (2026-07-22, 2026-07-26, 2026-07-29) Write round trip confirmed 2026-08-16 (Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: create->GET->update->GET->delete succeeded.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET); manual documents gen+civil but 404s under Gen in three independent sessions (2026-07-22, 2026-07-26, 2026-07-29) Write round trip confirmed 2026-08-16 (Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: create->GET->update->GET->delete succeeded. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported"
@@ -4357,7 +4357,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -4405,7 +4405,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -4455,7 +4455,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -4480,7 +4480,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: create->GET->update->GET->delete all succeeded on both products.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras2: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -4528,7 +4528,7 @@
         "products": [
           "civil"
         ],
-        "method": "Simple PUT, no prerequisites. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
+        "method": "Simple PUT, no prerequisites. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
@@ -4625,7 +4625,7 @@
         "products": [
           "civil"
         ],
-        "method": "FREQ_RANGE sent explicitly with OPT_USE=false even though documented optional, to avoid the same undocumented-required-field gap the non-Hyper-S /db/EIGV has on Civil (see that endpoint's own coverage entry). Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
+        "method": "FREQ_RANGE sent explicitly with OPT_USE=false even though documented optional, to avoid the same undocumented-required-field gap the non-Hyper-S /db/EIGV has on Civil (see that endpoint's own coverage entry). Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
@@ -4672,7 +4672,7 @@
         "products": [
           "civil"
         ],
-        "method": "Simple PUT with FINAL_STAGE=true (no construction-stage reference needed for the default branch). Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
+        "method": "Simple PUT with FINAL_STAGE=true (no construction-stage reference needed for the default branch). Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
@@ -4867,7 +4867,7 @@
         "products": [
           "civil"
         ],
-        "method": "Live-confirmed 2026-08-25: LC_SCOPE wants the literal scope keyword \"ALL\" (matching the manual's own worked example), not a real load case name -- a load case name answers \"Wrong Field\". CONV_CRITERIA needs at least one sub-object with OPT_USE=true and a VALUE; all-false also answers \"Wrong Field\". Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
+        "method": "Live-confirmed 2026-08-25: LC_SCOPE wants the literal scope keyword \"ALL\" (matching the manual's own worked example), not a real load case name -- a load case name answers \"Wrong Field\". CONV_CRITERIA needs at least one sub-object with OPT_USE=true and a VALUE; all-false also answers \"Wrong Field\". Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
@@ -4913,7 +4913,7 @@
         "products": [
           "civil"
         ],
-        "method": "Simple PUT with bLAST_FINAL=true, ANAL_TYPE={iINC_NLA:0, iNLA_TYPE:0} (no construction-stage reference needed for the default branch) -- notably does NOT reproduce the non-Hyper-S /db/STCT's iITER/TOL silent-drop bug, but this payload doesn't exercise those fields either. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-tested 2026-08-27 on Civil NX for the four fields added 2026-08-25 (iBSC/FRAME_OUTPUT/bSAVE_OCS/NONL_CONTROL) and ANAL_TYPE.iINC_NLA/bIEMF: a plain POST/GET round trip confirmed all four top-level fields real (server auto-assigned iBSC=1, matching the documented default, plus full FRAME_OUTPUT/NONL_CONTROL shapes) and TIME_DEP_CONTROL.CREEP_SHRINKAGE.TYPE=\"SHRINKAGE\" round-tripped explicitly. iINC_NLA=3/bIEMF are schema-confirmed via GET /info/db/STCT-M1 only -- PUT on this endpoint rejected even a known-good ANAL_TYPE value pair with \"Wrong Field\", so a write of a non-default ANAL_TYPE value could not be achieved either way this session. iINC_NLA=3/bIEMF fully live-confirmed 2026-08-27 on Civil NX via direct POST-time creation (not PUT, which this object rejects even for known-good value changes on an existing record): {iINC_NLA:3,iNLA_TYPE:1} and separately {iINC_NLA:1,iNLA_TYPE:0,bIEMF:true} both round-tripped exactly through GET.",
+        "method": "Simple PUT with bLAST_FINAL=true, ANAL_TYPE={iINC_NLA:0, iNLA_TYPE:0} (no construction-stage reference needed for the default branch) -- notably does NOT reproduce the non-Hyper-S /db/STCT's iITER/TOL silent-drop bug, but this payload doesn't exercise those fields either. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-tested 2026-08-27 on Civil NX for the four fields added 2026-08-25 (iBSC/FRAME_OUTPUT/bSAVE_OCS/NONL_CONTROL) and ANAL_TYPE.iINC_NLA/bIEMF: a plain POST/GET round trip confirmed all four top-level fields real (server auto-assigned iBSC=1, matching the documented default, plus full FRAME_OUTPUT/NONL_CONTROL shapes) and TIME_DEP_CONTROL.CREEP_SHRINKAGE.TYPE=\"SHRINKAGE\" round-tripped explicitly. iINC_NLA=3/bIEMF are schema-confirmed via GET /info/db/STCT-M1 only -- PUT on this endpoint rejected even a known-good ANAL_TYPE value pair with \"Wrong Field\", so a write of a non-default ANAL_TYPE value could not be achieved either way this session. iINC_NLA=3/bIEMF fully live-confirmed 2026-08-27 on Civil NX via direct POST-time creation (not PUT, which this object rejects even for known-good value changes on an existing record): {iINC_NLA:3,iNLA_TYPE:1} and separately {iINC_NLA:1,iNLA_TYPE:0,bIEMF:true} both round-tripped exactly through GET. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
@@ -4960,7 +4960,7 @@
         "products": [
           "civil"
         ],
-        "method": "GROUP_LIST references a real /db/BNGR boundary group name. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
+        "method": "GROUP_LIST references a real /db/BNGR boundary group name. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },

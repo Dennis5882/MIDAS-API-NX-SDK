@@ -28,7 +28,8 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import {
-  caseCleanupMode, classifyResult, containsExpectedValue, exitCodeFor, supportedCaseWrites,
+  caseCleanupMode, classifyResult, containsExpectedValue, exitCodeFor, setupCleanupMode,
+  supportedCaseWrites,
   verifyRenumberedSeed,
 } from "./live-harness-support.mjs";
 
@@ -267,7 +268,10 @@ async function runCase(liveCase, client, cleanupContext) {
     for (const prerequisite of liveCase.setup) {
       for (const source of setupRecords(prerequisite, liveCase.endpoint)) {
         const sourceResource = resourceFor(source.endpoint);
-        if (!sourceResource.metadata.methods.includes("DELETE")) {
+        const sourceCleanupMode = setupCleanupMode(
+          sourceResource.metadata.methods, cleanupContext,
+        );
+        if (sourceCleanupMode === "unsafe") {
           throw new Error(`${liveCase.endpoint}: setup ${source.endpoint} cannot be individually cleaned up.`);
         }
         const before = await sourceResource.items(client);
@@ -284,7 +288,10 @@ async function runCase(liveCase, client, cleanupContext) {
         await sourceResource.create(source.records, client);
         const after = await sourceResource.items(client);
         const createdIds = newlyCreatedIds(before, after);
-        setup.push({ resource: sourceResource, ids: createdIds, endpoint: source.endpoint });
+        setup.push({
+          resource: sourceResource, ids: createdIds, endpoint: source.endpoint,
+          cleanupMode: sourceCleanupMode,
+        });
         if (source.allowRenumbering) {
           verifyRenumberedSeed(source, after, createdIds);
         } else {
@@ -343,6 +350,7 @@ async function runCase(liveCase, client, cleanupContext) {
       }
     }
     for (const prerequisite of setup.reverse()) {
+      if (prerequisite.cleanupMode === "document-reset") continue;
       for (const id of prerequisite.ids) {
         try {
           await deleteAndVerify(prerequisite.resource, id, client, prerequisite.endpoint);

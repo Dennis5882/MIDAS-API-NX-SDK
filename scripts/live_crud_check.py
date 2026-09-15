@@ -2455,7 +2455,7 @@ def _extras6_cases() -> List[Case]:
 def _extras7_seeds() -> List[SeedStep]:
     """batch 7: the standalone/frame-attachable remainder of db.static_loads.
 
-    pnld_seed and fbld_seed are separate records from their siblings'
+    pnld_seed and fbld7_seed are separate records from their siblings'
     own CRUD cases (which delete themselves at the end of their round
     trip) purely so PNLA/FBLA have something stable to reference while
     those siblings run -- same pattern as extras5's spfc/thfc seeds.
@@ -2468,7 +2468,7 @@ def _extras7_seeds() -> List[SeedStep]:
     element id) both have something real to attach to without this tier
     building any geometry of its own.
 
-    pnld_seed/fbld_seed both land at id 1, not the requested 90 -- same
+    pnld_seed/fbld7_seed both land at id 1, not the requested 90 -- same
     STLD/FBLD-family renumbering as extras1/extras5's seeds (confirmed
     live 2026-08-16), so the id-90 request is cosmetic; downstream cases
     reference id 1. posp_seed's ITEMS need to span from GROUND_LEVEL down
@@ -2496,7 +2496,7 @@ def _extras7_seeds() -> List[SeedStep]:
                                "X": [0, 4, 4, 0], "Y": [0, 0, -4, -4],
                                "LOAD": [-5.0, -5.0, -5.0, -5.0]}}},
             client=c)),
-        SeedStep("fbld_seed", lambda c: FloorLoadType.create(
+        SeedStep("fbld7_seed", lambda c: FloorLoadType.create(
             {90: {"NAME": "FBLD_SEED", "DESC": "",
                   "ITEM": [{"LCNAME": "DL", "FLOOR_LOAD": 4.0,
                             "OPT_SUB_BEAM_WEIGHT": True}]}},
@@ -2579,7 +2579,7 @@ def _extras7_cases() -> List[Case]:
             {"FLOOR_LOAD_TYPE_NAME": "FBLD_SEED", "FLOOR_DIST_TYPE": 1,
              "DIR": "GZ", "NODES": [5, 6, 7, 8], "LOAD_ANGLE": 15},
             lambda p: p.get("LOAD_ANGLE"), 0, 15,
-            item_id=1, needs=("fbld_seed",),
+            item_id=1, needs=("fbld7_seed",),
         ),
         # Keyed by element id -- element 1 is a base-model beam.
         Case(
@@ -3663,7 +3663,8 @@ def _extras14_cases() -> List[Case]:
             {"BC_ASSIGN": [{"ANAL_TYPE": "ST", "LCNAME": "DL14_SEED", "BGCNAME": "BCGD14_SEED"}],
              "BC_SELECT": ["SP", "LC", "EL"]},
             lambda p: sorted(p.get("BC_SELECT", [])), ["LC", "SP"], ["EL", "LC", "SP"],
-            item_id=1, needs=("dl14_seed", "bcgd_m1_seed"), products=civil, confirmed=True,
+            item_id=1, needs=("bngr14_seed", "dl14_seed", "bcgd_m1_seed"),
+            products=civil, confirmed=True,
         ),
     ]
 
@@ -4454,7 +4455,8 @@ def _mark(row: Dict[str, Any]) -> str:
 #: listed: renumbering is a live observation, never something to assume for a
 #: seed nobody has watched.
 RENUMBERING_SEEDS = frozenset({
-    "prestress_load_cases", "spfc_seed", "thfc_seed", "thfc_force_seed", "this_seed",
+    "dl14_seed", "prestress_load_cases", "smpt_seed", "spfc_seed", "thfc_seed",
+    "thfc_force_seed", "this_seed",
 })
 
 
@@ -4509,14 +4511,37 @@ def _exportable_tier_seeds() -> Tuple[Dict[str, Dict[str, Any]], Dict[str, str]]
         for step in tier.seeds():
             calls, reason = record(step)
             if calls is None:
-                unsupported[step.name] = reason
+                if step.name in seeds:
+                    raise ValueError(
+                        f"tier seed {step.name!r} is both replayable and unsupported; "
+                        "global fixture names cannot represent both"
+                    )
+                previous_reason = unsupported.get(step.name)
+                if previous_reason is not None and previous_reason != reason:
+                    raise ValueError(
+                        f"duplicate unsupported tier seed {step.name!r} has different "
+                        "failure reasons"
+                    )
+                unsupported.setdefault(step.name, reason)
                 continue
             if step.name in RENUMBERING_SEEDS:
                 for call in calls:
                     call["allowRenumbering"] = True
             # One POST keeps the flat shape BASE_MODEL_SEEDS also uses; more
             # than one is a "steps" list the npm side replays in order.
-            seeds[step.name] = calls[0] if len(calls) == 1 else {"steps": calls}
+            exported = calls[0] if len(calls) == 1 else {"steps": calls}
+            if step.name in unsupported:
+                raise ValueError(
+                    f"tier seed {step.name!r} is both unsupported and replayable; "
+                    "global fixture names cannot represent both"
+                )
+            previous = seeds.get(step.name)
+            if previous is not None and previous != exported:
+                raise ValueError(
+                    f"duplicate tier seed name {step.name!r} carries different "
+                    "payloads; global fixture names must identify one payload"
+                )
+            seeds.setdefault(step.name, exported)
     return seeds, unsupported
 
 

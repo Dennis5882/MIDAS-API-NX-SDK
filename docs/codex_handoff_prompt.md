@@ -35,9 +35,10 @@ under it.**
 
 **With a product session:**
 
-1. **Task F** — replay the 95 already-confirmed fixtures the npm harness has
+1. **Task F** — replay the 52 already-confirmed fixtures the npm harness has
    never run. Python has confirmed cases on 166 endpoints; npm evidence covers
-   70. Nothing needs building and nothing needs deciding.
+   113. Most need only replay; fixture-only blockers must remain distinct from
+   product regressions.
 2. **Task G** — three confirmed cases that cannot fail, and so prove less than
    their `confirmed=True` claims.
 3. **Task B-2** — the 22 that have failed. Only one offline lead is left.
@@ -51,7 +52,7 @@ An earlier version of this file said the offline queue was empty and told you
 to report that rather than invent work. That was wrong about Task A: building a
 fixture is offline, and 21 endpoints are waiting. What is still true is the
 priority — **a session is the scarce thing.** Do not spend one writing fixtures
-when 95 endpoints are waiting to be replayed through the other SDK.
+when 52 endpoints are waiting to be replayed through the other SDK.
 
 Task C is closed and Task E's mechanical set is exhausted; both sections stay
 because they say what re-opens them.
@@ -82,13 +83,13 @@ python scripts/check_fixture_contract.py --check       # 1 fixture lead over 1
                                           # endpoint, 3 contract gaps over 2
 python scripts/report_unmerged_tables.py --check       # report is current
 cd packages/typescript && npm run generate && npm run typecheck && npm test
-                                          # no drift; 77 tests
+                                          # no drift; 78 tests
 ```
 
 Coverage as `ROADMAP.md` reports it: **399/399 implemented, 200 write / 199
 read**.
 `schema/live-cases.json` is **version 5**: 212 cases over 189 endpoints, 177
-confirmed, 9 base-model steps, 63 named seeds. npm live evidence: **70 `/db`
+confirmed, 9 base-model steps, 64 named seeds. npm live evidence: **113 `/db`
 endpoints**. `extraction.unmergedTables`: **72 tables, 482 names, 15
 contracts**. Drafts: 3, the IEHG trio, refused for a reason that will not go
 away — that is the finished state, not a backlog.
@@ -172,7 +173,7 @@ written against, and you will "find" disagreements that are just this drift.
 
 ---
 
-## Task F — 95 confirmed fixtures the npm harness has never replayed
+## Task F — 52 confirmed fixtures the npm harness has never replayed
 
 **Live. Destructive: `/doc/NEW`. The largest remaining block of work, and the
 one with the least judgement in it.**
@@ -182,8 +183,8 @@ Measured 2026-09-15:
 | | |
 | --- | ---: |
 | endpoints with a `confirmed` Python case | 166 |
-| endpoints recorded as replayed through npm | 70 |
-| the gap, runnable as it stands | **95** |
+| endpoints recorded as replayed through npm | 113 |
+| the gap, runnable as it stands | **52** |
 | the gap, blocked by a seed npm cannot replay | 3 |
 
 Nothing here needs building and nothing needs deciding. The fixture exists, it
@@ -208,12 +209,8 @@ The gap by tier, which is also how to batch it — the harness selects by
 
 | tier | n | endpoints |
 | --- | ---: | --- |
-| `extras14` | 12 | `ACTL-M1`, `BCGA-M1`, `BCGD-M1`, `CJFG`, `CRGR`, `DYFG`, `DYLA`, `DYNF`, `EIGV-M1`, `HHCT-M1`, `NLCT-M1`, `STCT-M1` |
-| `extras1` | 10 | `CLDR`, `CO_F`, `CO_M`, `CO_S`, `CO_T`, `PRLS`, `PZEF`, `SPAN`, `STYP`, `STYP-M1` |
-| `extras2` | 10 | `BTMP`, `EFCT`, `GTMP`, `IELC`, `INMF`, `LDSQ`, `PLCB`, `SMLC`, `SMPT`, `STMP` |
-| `boundary` | 8 | `ELNK`, `FRLS`, `GSPR`, `MCON`, `NSPR`, `OFFS`, `RIGD`, `SSPS` |
+| `extras14` | 3 | `BCGA-M1`, `DYFG`, `DYNF` |
 | `static` | 8 | `ETMP`, `FBLD`, `LTOM`, `NBOF`, `NTMP`, `PRES`, `PSLT`, `SDSP` |
-| `extras3` | 6 | `EDMP`, `EWSF`, `PSSF`, `STRPSSM`, `VBEM`, `VSEC` |
 | `extras5` | 6 | `SPFC`, `THGA`, `THIS`, `THMS`, `THNL`, `THSL` |
 | `extras8` | 5 | `BCCT`, `BUCK`, `HHCT`, `NLCT`, `PDEL` |
 | `extras12` | 4 | `CAMB`, `GCMB`, `GSBG`, `ULFC` |

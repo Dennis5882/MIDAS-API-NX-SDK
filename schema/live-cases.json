@@ -643,14 +643,14 @@
     "fbld_seed": {
       "endpoint": "/db/FBLD",
       "records": {
-        "90": {
-          "NAME": "FBLD_SEED",
+        "1": {
+          "NAME": "FL_SEED",
           "DESC": "",
           "ITEM": [
             {
-              "LCNAME": "DL",
-              "FLOOR_LOAD": 4.0,
-              "OPT_SUB_BEAM_WEIGHT": true
+              "LCNAME": "LC_SCRATCH",
+              "FLOOR_LOAD": -5.0,
+              "OPT_SUB_BEAM_WEIGHT": false
             }
           ]
         }
@@ -700,7 +700,8 @@
             2
           ]
         }
-      }
+      },
+      "allowRenumbering": true
     },
     "vsec_seed": {
       "endpoint": "/db/VSEC",
@@ -900,6 +901,22 @@
               -5.0
             ]
           }
+        }
+      }
+    },
+    "fbld7_seed": {
+      "endpoint": "/db/FBLD",
+      "records": {
+        "90": {
+          "NAME": "FBLD_SEED",
+          "DESC": "",
+          "ITEM": [
+            {
+              "LCNAME": "DL",
+              "FLOOR_LOAD": 4.0,
+              "OPT_SUB_BEAM_WEIGHT": true
+            }
+          ]
         }
       }
     },
@@ -1175,7 +1192,8 @@
           "TYPE": "D",
           "DESC": ""
         }
-      }
+      },
+      "allowRenumbering": true
     },
     "mvcd_ksce_seed": {
       "endpoint": "/db/MVCD",
@@ -10295,11 +10313,11 @@
         "updated": 15
       },
       "needs": [
-        "fbld_seed"
+        "fbld7_seed"
       ],
       "setup": [
         {
-          "seed": "fbld_seed"
+          "seed": "fbld7_seed"
         }
       ],
       "blockedSeeds": [],
@@ -13285,10 +13303,14 @@
         ]
       },
       "needs": [
+        "bngr14_seed",
         "dl14_seed",
         "bcgd_m1_seed"
       ],
       "setup": [
+        {
+          "seed": "bngr14_seed"
+        },
         {
           "seed": "dl14_seed"
         },

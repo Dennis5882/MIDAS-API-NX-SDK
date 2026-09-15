@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
-  caseCleanupMode, classifyResult, containsExpectedValue, exitCodeFor, supportedCaseWrites,
+  caseCleanupMode, classifyResult, containsExpectedValue, exitCodeFor, setupCleanupMode,
+  supportedCaseWrites,
   verifyRenumberedSeed,
 } from "../scripts/live-harness-support.mjs";
 
@@ -85,6 +86,19 @@ describe("live case cleanup selection", () => {
     )).toBe("unsafe");
     expect(caseCleanupMode(
       methods, methods, { finalCase: true, resetDocument: false },
+    )).toBe("unsafe");
+  });
+
+  it("allows a no-DELETE setup only when the final document reset owns cleanup", () => {
+    const methods = ["GET", "POST", "PUT"];
+    expect(setupCleanupMode(
+      methods, { finalCase: true, resetDocument: true },
+    )).toBe("document-reset");
+    expect(setupCleanupMode(
+      methods, { finalCase: false, resetDocument: true },
+    )).toBe("unsafe");
+    expect(setupCleanupMode(
+      methods, { finalCase: true, resetDocument: false },
     )).toBe("unsafe");
   });
 });

@@ -82,6 +82,49 @@ file separately records which completed operations also passed through npm.
 | `/db/GRDP` | 2026-09-14 | Gen, Civil |
 | `/db/MVCT` | 2026-09-14 | Gen, Civil |
 | `/db/EPMT` | 2026-09-14 | Gen |
+| `/db/ACTL-M1` | 2026-09-15 | Civil |
+| `/db/BCGD-M1` | 2026-09-15 | Civil |
+| `/db/CJFG` | 2026-09-15 | Civil |
+| `/db/CRGR` | 2026-09-15 | Civil |
+| `/db/DYLA` | 2026-09-15 | Civil |
+| `/db/EIGV-M1` | 2026-09-15 | Civil |
+| `/db/HHCT-M1` | 2026-09-15 | Civil |
+| `/db/NLCT-M1` | 2026-09-15 | Civil |
+| `/db/STCT-M1` | 2026-09-15 | Civil |
+| `/db/CLDR` | 2026-09-16 | Gen, Civil |
+| `/db/CO_F` | 2026-09-16 | Gen, Civil |
+| `/db/CO_M` | 2026-09-16 | Gen, Civil |
+| `/db/CO_S` | 2026-09-16 | Gen, Civil |
+| `/db/CO_T` | 2026-09-16 | Gen, Civil |
+| `/db/PRLS` | 2026-09-16 | Gen, Civil |
+| `/db/PZEF` | 2026-09-16 | Gen, Civil |
+| `/db/SPAN` | 2026-09-16 | Civil |
+| `/db/STYP` | 2026-09-16 | Gen, Civil |
+| `/db/STYP-M1` | 2026-09-16 | Civil |
+| `/db/BTMP` | 2026-09-16 | Gen, Civil |
+| `/db/EFCT` | 2026-09-16 | Gen, Civil |
+| `/db/GTMP` | 2026-09-16 | Gen, Civil |
+| `/db/IELC` | 2026-09-16 | Gen, Civil |
+| `/db/INMF` | 2026-09-16 | Gen, Civil |
+| `/db/LDSQ` | 2026-09-16 | Gen, Civil |
+| `/db/PLCB` | 2026-09-16 | Civil |
+| `/db/SMLC` | 2026-09-16 | Gen, Civil |
+| `/db/SMPT` | 2026-09-16 | Gen, Civil |
+| `/db/STMP` | 2026-09-16 | Gen, Civil |
+| `/db/EDMP` | 2026-09-16 | Gen, Civil |
+| `/db/EWSF` | 2026-09-16 | Civil |
+| `/db/PSSF` | 2026-09-16 | Gen, Civil |
+| `/db/STRPSSM` | 2026-09-16 | Civil |
+| `/db/VBEM` | 2026-09-16 | Gen, Civil |
+| `/db/VSEC` | 2026-09-16 | Gen, Civil |
+| `/db/ELNK` | 2026-09-16 | Gen, Civil |
+| `/db/FRLS` | 2026-09-16 | Gen, Civil |
+| `/db/GSPR` | 2026-09-16 | Gen, Civil |
+| `/db/MCON` | 2026-09-16 | Gen, Civil |
+| `/db/NSPR` | 2026-09-16 | Gen, Civil |
+| `/db/OFFS` | 2026-09-16 | Gen, Civil |
+| `/db/RIGD` | 2026-09-16 | Gen, Civil |
+| `/db/SSPS` | 2026-09-16 | Gen, Civil |
 
 ## Completed result-table operations
 
@@ -113,5 +156,5 @@ file separately records which completed operations also passed through npm.
   the fifteen affected endpoints were re-run on both products on 2026-09-05.
   They are counted above; see the live notes for the run.
 
-**Count:** 70 distinct `/db` endpoints and 4 distinct result-table operations;
-74 distinct npm public-API operations overall.
+**Count:** 113 distinct `/db` endpoints and 4 distinct result-table operations;
+117 distinct npm public-API operations overall.

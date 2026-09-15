@@ -9408,3 +9408,70 @@ values and supplies no compliant alternative. No replacement was invented;
 the case remains unconfirmed and `/db/FIMP` remains read-only in the coverage
 ledger. Every run was checkpointed under `C:/temp` and restored to an empty
 scratch document.
+
+## 2026-09-15 - Task F npm replay, extras14 first pass
+
+The existing confirmed fixtures for `/db/ACTL-M1`, `/db/BCGD-M1`, `/db/CJFG`,
+`/db/CRGR`, `/db/DYLA`, `/db/EIGV-M1`, `/db/HHCT-M1`, `/db/NLCT-M1`, and
+`/db/STCT-M1` completed through the built npm package on Civil NX 2026 v2.2
+Build 09/02/2026. The same selections were re-run through Python on the same
+session. All models were checkpointed under `C:/temp` and reset to empty.
+
+The first npm pass exposed two fixture-replay defects rather than endpoint
+regressions. A setup resource without DELETE was rejected even for the final
+case before a guaranteed document reset; the harness now permits exactly that
+cleanup mode and a unit test guards the boundary. `dl14_seed` is also marked as
+the live-observed renumbering seed it is. `/db/BCGA-M1` subsequently reached
+its endpoint, but its Python probe sorts server-reordered `BC_SELECT` while the
+language-neutral fixture cannot yet express that comparator. `/db/DYFG` and
+`/db/DYNF` require the intentionally interleaved `/db/MVCD` switch to EUROCODE;
+an endpoint-only selection omits that switch. These three remain out of npm
+evidence until their comparison/order semantics are represented explicitly.
+
+## 2026-09-16 - Task F npm replay, extras1 complete
+
+All ten `extras1` endpoints completed through the built npm package and were
+then re-run through Python in the same product sessions on Build 09/02/2026.
+`/db/CLDR`, `/db/CO_F`, `/db/CO_M`, `/db/CO_S`, `/db/CO_T`, `/db/PRLS`,
+`/db/PZEF`, and `/db/STYP` passed on Gen and Civil. `/db/SPAN` and
+`/db/STYP-M1` are Civil-only and passed there. Every run was checkpointed
+under `C:/temp` and restored to an empty document.
+
+The first npm `/db/CO_F` attempt was BLOCKED before the target call because
+the emitted fixture's global seed map silently let the `extras7` seed named
+`fbld_seed` replace the different `extras1` seed with the same name. Python
+selects seeds inside each tier and was unaffected. The `extras7` seed is now
+named `fbld7_seed`, preserving both measured payloads independently; the npm
+rerun then passed on both products. This was fixture identity loss, not a
+product or SDK regression.
+
+## 2026-09-16 - Task F npm replay, extras2 complete
+
+All ten `extras2` endpoints completed through npm and Python on Build
+09/02/2026. `/db/BTMP`, `/db/EFCT`, `/db/GTMP`, `/db/IELC`, `/db/INMF`,
+`/db/LDSQ`, `/db/SMLC`, `/db/SMPT`, and `/db/STMP` passed on Gen and Civil;
+Civil-only `/db/PLCB` passed on Civil. Each run was checkpointed under
+`C:/temp` and restored to an empty document.
+
+The first npm pass reached neither `/db/SMLC` nor the `/db/SMPT` target because
+their shared `smpt_seed` asks for id 90 and the product stores it at the next
+free id. This renumbering was already documented by the Python fixture from
+the 2026-08-16 live run, but the emitted fixture had not preserved that fact.
+Marking `smpt_seed` as renumbering made the npm replay verify the stored seed
+by its name; both targets then passed on both products.
+
+## 2026-09-16 - Task F npm replay, extras3 complete
+
+All six `extras3` endpoints completed through npm and Python on Build
+09/02/2026. `/db/EDMP`, `/db/PSSF`, `/db/VBEM`, and `/db/VSEC` passed on Gen
+and Civil; Civil-only `/db/EWSF` and `/db/STRPSSM` passed on Civil. Every run
+was checkpointed under `C:/temp` and restored to an empty document. No fixture,
+SDK, or product disagreement surfaced in this tier.
+
+## 2026-09-16 - Task F npm replay, boundary complete
+
+All eight `boundary` endpoints (`/db/ELNK`, `/db/FRLS`, `/db/GSPR`,
+`/db/MCON`, `/db/NSPR`, `/db/OFFS`, `/db/RIGD`, and `/db/SSPS`) completed
+through npm and Python on both Gen and Civil, Build 09/02/2026. Every run was
+checkpointed under `C:/temp` and restored to an empty document. No fixture,
+SDK, or product disagreement surfaced in this tier.

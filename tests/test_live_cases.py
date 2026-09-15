@@ -715,6 +715,14 @@ def test_a_hand_curated_base_seed_wins_a_name_collision() -> None:
         assert len(seeds) == len(set(seeds)), f"{case['endpoint']} seeds a record twice"
 
 
+def test_distinct_floor_load_seed_payloads_have_distinct_names() -> None:
+    """The extras7 payload must not replace CO_F's different fixture seed."""
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+
+    assert set(fixture["seeds"]["fbld_seed"]["records"]) == {"1"}
+    assert set(fixture["seeds"]["fbld7_seed"]["records"]) == {"90"}
+
+
 def _live_crud_module():
     import importlib.util
 

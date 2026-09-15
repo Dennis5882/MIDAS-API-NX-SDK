@@ -67,6 +67,13 @@ export function caseCleanupMode(caseMethods, resourceMethods, { finalCase, reset
   return "unsafe";
 }
 
+/** Select cleanup for a setup resource without weakening scratch-model safety. */
+export function setupCleanupMode(resourceMethods, { finalCase, resetDocument }) {
+  if (resourceMethods.includes("DELETE")) return "per-id";
+  if (finalCase && resetDocument) return "document-reset";
+  return "unsafe";
+}
+
 /**
  * Classify one case result the way scripts/live_crud_check.py classifies its
  * own rows, and for the same reason.
