@@ -86,6 +86,10 @@ build itself** and is no longer resting on an unrecorded one.
 | MD-50 | 2026-09-05 | `/db/MVCTch` `FREQ`, `BRIDGE1.BTYPE`, `BRIDGE2.BTYPE`, 9 fields | section 10 documents all of them - `FREQ`'s 25 keys across a two-Key-column table, and each `BTYPE` in the bold sentence that introduces its field table, enum included | this repo read neither. Every key in the `FREQ` table's *second* Key column was dropped whole (`SBEM_L`/`E`/`IC`/`MC`, `iARCH_TYPE`, `CABL_A`/`CABL_L`) while the first column extracted correctly, packed cells included - so it is a table shape the parser reads half of, not MD-48's packed cell. `BTYPE` is the selector deciding which of its table's fields apply, so neither object was usable without it | **this SDK** extractor | fixed here; parser deliberately unfixed (one such table in the whole manual) and guarded by a CI count |
 | MD-51 | 2026-09-06 | `/ope/MEMB` `SELECTION_TYPE` | the official Specifications table's row 2 gives the key as `"SELETION_TYPE"`, missing a C | both of the same article's own Input JSON examples send `"SELECTION_TYPE"`, and that is what the server accepts. Found while re-verifying the neighbouring `ELEM_LIST` claim against the raw article (`49514964272665`, `updated_at` 2026-07-30); our vendored copy had normalised the spelling, so nothing here had ever surfaced it | **MIDASIT article** (table only) | open upstream; already correct here and in the vendored manual |
 | MD-52 | 2026-09-06 | `/ope/MEMB` request example, `ko` vs `en-us` | the **same article id** `49514964272665`, with the **same `updated_at`**, serves a different Input JSON example per locale: `ko` sends `"AELEM": [1, 2]`, `en-us` sends `"ELEM_LIST": [640, 692]`. Both locales' Specifications tables say `ELEM_LIST` | live on both products, `ELEM_LIST` assigns the member and `AELEM` is not read at all - byte-identical to sending no element list - so the `ko` example is the wrong one. `AELEM` is the response key, and separately the request key of the neighbouring `/db/MEMB` | **MIDASIT article** (`ko` locale) | open upstream; the vendored manual carries the correct `ELEM_LIST` |
+| MD-53 | 2026-09-12 | `/db/MATD` rebar grade example | section 9's Request Body names the grades `REBAR_CODENAME="EN04(RC)"`, `MAINREBAR_REBARNAME="ClassB"`, `SUBREBAR_REBARNAME="ClassC"` and prints the yield strengths beside them as if the named grades supplied them | both products answer `Rebar grade lookup failed` for that pair through both SDKs. Dropping the strengths instead answers `MAINREBAR_B_FY must be > 0`, so they are required input rather than a consequence of the grade. A PUT carrying the model's own `KS01(RC)`/`C24` identity with positive strengths completes on both | **MIDASIT article** example | open |
+| MD-54 | 2026-09-14 | `/db/FIMP` Kent & Park example | section 28's complete Request Body prints `ECU=0.003`, `Z=100` and `EC0=0.002`, and the chapter's second example repeats the same three values | all four POSTs - two SDKs times two products - are refused with `Epsilon_cu > 0.8 / Z + Epsilon_co`. The printed values do not satisfy the product's own stated relationship, and the chapter offers no compliant alternative anywhere | **MIDASIT article** example | open |
+| MD-55 | 2026-09-14 | `/db/TDMF` Creep example | section 5 prints a Creep Request Body (`FTYPE="CREEP"` with `CTYPE`) as a worked example | both products answer `Wrong Field` for it. `/info/db/TDMF` additionally declares an `ELAST` the chapter never mentions, with no documented values or request semantics, so no substitute is derivable from a permitted source | **MIDASIT article** example | open |
+| MD-56 | 2026-09-14 | `/db/EPMT` on Civil NX | section 10 documents one payload with no product qualifier | Gen completes the Von-Mises Request Body end to end through both SDKs; Civil answers `Wrong Field` for the identical POST, although `GET /info/db/EPMT` declares the same field shape on both products | **MIDASIT** (article or product) | open |
 
 ## Detail
 
@@ -1862,3 +1866,38 @@ manual sync that introduces a second such table fails the build and someone
 reads the section instead of finding out months later from an `/info` sweep.
 If that count ever grows, the parser change stops being code for one table
 and becomes worth writing.
+
+### MD-53 through MD-56 - four worked examples, measured on 09/02/2026
+
+All four were found the same way: a Task A or Task B case replayed the
+chapter's own Request Body, unchanged, against Gen NX 2026 v2.1 and Civil NX
+2026 v2.2, both build 09/02/2026, through **both** SDKs. Nothing here is a
+fixture written from memory, and no replacement value was invented for any of
+them - where the manual's example does not work, the case stays unconfirmed
+and the endpoint keeps the coverage level it had earned.
+
+**MD-53 is the one that says something about the API, not just the article.**
+`/db/MATD`'s example names a rebar grade and prints the yield strengths beside
+it, which reads as "these follow from the grade". They do not: omitting them
+answers `MAINREBAR_B_FY must be > 0`, so they are required input, and the named
+`EN04(RC)`/`ClassB` pair is not resolvable on these builds at all. What
+completed was the model's own `KS01(RC)`/`C24` identity plus the example's own
+positive strengths. That is recorded as product evidence and deliberately not
+generalized into a contract claim - one model's material lookup is not a
+schema.
+
+**MD-54 is internally checkable without a product at all.** The section prints
+`ECU=0.003`, `Z=100`, `EC0=0.002`; the product refuses the POST with
+`Epsilon_cu > 0.8 / Z + Epsilon_co`, and `0.8/100 + 0.002 = 0.010` is greater
+than `0.003`. The example contradicts a rule the product states in its own
+error text, and the chapter's second example repeats the same three numbers.
+An article's worked example is the strongest source this repository has short
+of a live call - this is the case where it was wrong on its face.
+
+**MD-55 and MD-56 are held rather than worked around.** `/db/TDMF` has an
+`ELAST` in `/info` that the chapter never mentions; a value for it would have
+to be invented, so it was not. `/db/EPMT` is the sharper one: `/info` declares
+the same field shape on both products and only Civil refuses, which means
+`/info` cannot supply the correction either. Both stay open, and both
+endpoints keep exactly the evidence they earned - `/db/EPMT` is a Gen-only
+write in `docs/coverage.json`, with the Civil case present and unconfirmed.

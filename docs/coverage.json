@@ -1017,7 +1017,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_crud_check.py and packages/typescript/scripts/live-crud.mjs completed create/read/update/read/delete/read on Gen using the manual's Von-Mises Request Body. Civil exposed the same /info schema but both SDKs received Wrong Field for the identical POST; its earlier read-only evidence remains valid.",
+        "method": "Write is Gen-only. scripts/live_crud_check.py and packages/typescript/scripts/live-crud.mjs completed create/read/update/read/delete/read on Gen using the manual's Von-Mises Request Body. Civil received Wrong Field for the identical POST through both SDKs, even though GET /info/db/EPMT declares the same field shape on both products; Civil is still listed here because its read evidence stands, the same way /db/HHCT and /db/NLCT record a Gen-only write. The fixture splits the two: the Gen case is confirmed, the Civil case is not. Registered as MD-56.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 09/02/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 09/02/2026"
