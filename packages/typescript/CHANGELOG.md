@@ -6,6 +6,60 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.8.1 - 2026-09-15
+
+> **Breaking for TypeScript callers: 16 members that were optional are now
+> required.** No exported name is added, removed or renamed — 741 payload
+> types before and after — and nothing about the wire format or runtime
+> behaviour changed. Three payload types stopped being derived from a Python
+> TypedDict and started being derived from their contract, and a contract
+> states which members the manual marks Required.
+
+### Breaking - three payload types now state the requiredness the manual does
+
+- `TimeHistoryLoadCaseHyperSPayload` requires `NAME`, `ANAL_CASE`, `ENDTIME`,
+  `TIME_INC`, `OUTPUT_STEP`, `DAMPING`, `INIT_METHOD`, `KEEP_LOAD`, `CUM_DVA`,
+  `SUBSEQ` and `USE_INIT_LOAD`.
+- `NonlinearAnalysisControlHyperSPayload` requires `NONLINEAR_TYPE`,
+  `ITER_METHOD`, `CONV_CRITERIA` and `LOAD_STEPS`.
+- `AdditionalImpactFactorPayload` requires `ITEMS`.
+
+- The generator emits a Python-fallback type as entirely optional, because a
+  TypedDict says nothing about requiredness that a generator can read. These
+  three had therefore been claiming **less** than the manual says: a
+  `TimeHistoryLoadCaseHyperSPayload` with no `NAME` type-checked clean and then
+  failed at the server. Code already sending what the endpoint needs still
+  compiles.
+
+- `TimeHistoryLoadCaseHyperSPayload` is now a `type` alias rather than an
+  `interface`, in common with the other contract-generated payload types.
+  Declaration merging against it no longer works; nothing else changes.
+
+### Fixed - three more payloads stop requiring what cannot coexist
+
+- `MovingLoadAnalysisControlPayload` makes `iIGPN`, `DIST`, `RGN`, `DGN`,
+  `FGN` and `LGN` optional: `iIGP` selects one of the first two, and each group
+  name applies only when its own `bRG`/`bDG`/`bFG`/`bLG` is true.
+- `GeneralLinkHyperSPayload` makes `BETA_ANGLE`, `INPUT_METHOD`,
+  `ANGLE_VALUES`, `POINT_VALUES` and `VECTOR_VALUES` optional: `REF_SYSTEM`
+  picks the element or global system, then `INPUT_METHOD` picks Angle, 3 Points
+  or Vector.
+- `TimeDependentMaterialFunctionPayload` makes `CTYPE` and `RELAXATION`
+  optional: `FTYPE` selects Creep or Relaxation, and the manual numbers both
+  rows `6` while qualifying them "(Creep only)" and "(Relax only)".
+
+- Each condition is now `appliesWhen` in the contract and the generated JSDoc
+  says it - `Required when REF_SYSTEM = 1 and INPUT_METHOD = 0`. Same defect
+  class as 2.8.0's, found in three more places.
+
+### Added - members the merged manual tables declare
+
+- `PointSpringPayload`, `NonlinearAnalysisControlHyperSPayload`,
+  `TimeHistoryLoadCaseHyperSPayload` and `AdditionalImpactFactorPayload` gain
+  53 members between them, nearly all nested inside objects those types already
+  had. They come from 21 manual tables the contracts had recorded as a declared
+  gap rather than as fields.
+
 ## 2.8.0 - 2026-09-06
 
 > Three payload types stop requiring two fields that cannot both be supplied.
