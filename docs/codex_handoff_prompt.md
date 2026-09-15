@@ -1,15 +1,14 @@
 # Codex task prompt — mechanical work only
 
-Updated 2026-09-15, after the live rounds were reviewed and **2.8.1 was
-published** to both registries. Everything described below is committed and
-pushed; the tree is clean.
+Updated 2026-09-16, after **2.8.2 was published** to both registries. The tree
+is clean and CI is fully green, the contract-to-manual check included.
 
-2.8.1 shipped what those rounds changed in the packaged surfaces: the `MVCT`,
-`NLNK-M1` and `TDMF` branch conditions reached npm as member optionality and
-JSDoc, and three payload types that moved onto their contracts narrowed 16
-members from optional to required — a breaking change carried deliberately in
-a patch number, stated at the top of both the changelog and the release. Full
-notes in `docs/release_notes_v2.8.1.md`.
+2.8.2 shipped the manual sync's packaged changes, all additive: the new
+`DESIGN/STEEL/DSTL` endpoint, three `/db/MATD` members, `bPJ` on the curved
+tendon profile, and a three-state `OPT_CS` description. Full notes in
+`docs/release_notes_v2.8.2.md`. npm went out before PyPI, which proved the new
+`actions/setup-node` v7 on the Trusted Publishing path; that ordering was a
+one-off and the usual order is fine again.
 
 **Nothing in either packaged surface has changed since that release**, so no
 release is warranted right now. Do not infer one from a contract edit either:
