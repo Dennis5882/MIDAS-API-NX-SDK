@@ -281,7 +281,7 @@ mirroring the `db/*.py` payload-typing style but at the whole-body level.
 | **Phase 5a — design setup + steel code** | 24, 25 | **40/40** | ✅ done |
 | **Phase 5b — RC design code** | 26 | **70/70** | ✅ done |
 | **Phase 5c — SRC design code** | 27 | **27/27** | ✅ done |
-| **Total** | | **399/399 (100%)** | 390/398 published through v0.11.2, the last 8 landed 2026-07-29; `+1` on 2026-08-07 — `DESIGN/RC/DRC` (RC design code selection), a chapter-26 endpoint newly documented in the manual repo's 2026-08-06 sync (MAPI-1365) |
+| **Total** | | **400/400 (100%)** | 390/398 published through v0.11.2, the last 8 landed 2026-07-29; `+1` on 2026-08-07 — `DESIGN/RC/DRC` (RC design code selection), a chapter-26 endpoint newly documented in the manual repo's 2026-08-06 sync (MAPI-1365); `+1` on 2026-09-16 — `DESIGN/STEEL/DSTL`, its chapter-25 steel counterpart, documented in the 2026-09-06 sync. Not the same endpoint as `/db/DSTL`, which shares the name |
 
 > The last 8 rows (STYP-M1, MATL-M1, IMFM-M1, EPMT-M1, IEHG-{BEAM,TRUSS,GL,
 > PSS}-M1) had no JSON Schema in the manual repo to transcribe from — this
@@ -298,7 +298,7 @@ they're the ones worth re-checking before planning a release):
 
 | Axis | Artifact | State |
 |---|---|---|
-| Tests | 1061 Python tests + 77 Vitest tests, mocked/local only | ✅ green, with one contract-to-manual test failing on purpose: the sibling manual repo has an unreflected 2026-09-06 sync the author is still verifying |
+| Tests | 1067 Python tests + 78 Vitest tests, mocked/local only | ✅ green, all of it. The contract-to-manual test that had failed on purpose since 2026-09-06 passes again: the manual repo's syncs through `a6947a7` (2026-09-15) were reflected 2026-09-16 |
 | CI | `.github/workflows/ci.yml` — Python checks on 3.12/3.13 plus npm generation/typecheck/tests/package smoke on Node.js 18/22, push+PR | ✅ running |
 | Static typing | mypy over `src/midas_nx`, config in `pyproject.toml`, own CI job | ✅ clean across all 41 modules |
 | Packaging verification | `package` CI job + `scripts/wheel_smoke_test.py` — builds the wheel, installs it into a clean venv, asserts `py.typed` shipped, `__version__` matches the distribution, and the `delete_all()` guard is armed | ✅ running |
@@ -315,7 +315,7 @@ they're the ones worth re-checking before planning a release):
 | Response handling | 200-with-`error` body, non-JSON body, empty-table shapes, failed-analysis message | ✅ hardened in v0.12.0/v0.14.0 |
 | Write verification | `scripts/live_crud_check.py` and `packages/typescript/scripts/live-crud.mjs`, both replaying `schema/live-cases.json` v5 — create/read/update/delete round trips, **158 of 188 cases confirmed** | ✅ `/db/STRPSSM` joined the confirmed set on Civil NX 2026 v2.2 after replacing the stale manual `PY`/`PZ` point keys with live `/info`'s `Y`/`Z`. `/db/NMAS` used to crash **both** products, root-caused 2026-07-29 (omitted `rmX`/`rmY`/`rmZ`) and worked around in `NodalMass.create()`/`.update()` |
 | Version metadata | `__init__.py` `__version__` (hatchling `dynamic`) + `tests/test_version.py` + a tag↔`__version__` check in `publish.yml` | ✅ single source, enforced at release |
-| Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 399/399 recorded, split by `level`: **200 write / 199 read / 0 unverified** as of 2026-09-15. Write level means a call changed model data or wrote a host file; read includes route/schema checks and POST-shaped reads. The build baseline is Gen NX 2026 v2.1 and Civil NX 2026 v2.2, both **Build 09/02/2026**, author-confirmed 2026-09-06. Five entries dated 2026-09-06 had recorded 08/26 and 08/27 and were corrected: **the API reports no build anywhere**, so every such string is a human reading the About dialog and one that was not read is not a measurement. |
+| Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 399/400 recorded, split by `level`: **200 write / 199 read / 1 unverified** as of 2026-09-16 — the unverified one is `DESIGN/STEEL/DSTL`, added from the manual that day and not yet called against a product. Write level means a call changed model data or wrote a host file; read includes route/schema checks and POST-shaped reads. The build baseline is Gen NX 2026 v2.1 and Civil NX 2026 v2.2, both **Build 09/02/2026**, author-confirmed 2026-09-06. Five entries dated 2026-09-06 had recorded 08/26 and 08/27 and were corrected: **the API reports no build anywhere**, so every such string is a human reading the About dialog and one that was not read is not a measurement. |
 | Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md`, `docs/ai-coding/`, `docs/index.md`, `docs/safety.md` risk levels, `docs/recipes/`, `docs/ko/python-basics.md` | ✅ first example read-only + AI-assistant path (v2.1.2); recipe pilot + ko minimal-Python primer + real-session-verified MAPI key step (2026-08-04); ⚠️ still text-only, no screenshots |
 | Practitioner layer | Excel round-trip, `recipes`/`easy`, opt-in validation | ❌ not started |
 

@@ -544,11 +544,11 @@ fields:
                 provenance: manual
 
 extraction:
-  source: 15_OPE.md line 3587
+  source: 15_OPE.md line 3608
   table: Parameters
   missingColumns:
     - heading: Parameters
-      line: 3797
+      line: 3818
       columns: [Default]
   # Additional parameter tables in this section were NOT merged. They are
   # usually conditional variants selected by a type/code field. Decide
@@ -559,5 +559,5 @@ extraction:
     - heading: Parameters
       resolution: "The supplementary table follows an AIK-SRC2K prose label, but its table heading names no wire condition; left unmerged."
       fields: 3
-      line: 3797
+      line: 3818
       fieldNames: ["OPTION", "DGNCODE", "RS_SCALE_FACTOR", "LOAD_CASE", "FACTOR"]

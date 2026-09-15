@@ -1,6 +1,6 @@
 {
   "vendored_from": "Dennis5882/MIDAS-API docs/manual/INDEX.md",
-  "vendored_at_commit": "7920759854a50e41e5b9e090b93f925179ea3f98",
+  "vendored_at_commit": "a6947a7fc76dc91a110fc9b2ca683bc576ad259a",
   "source_note": "Static snapshot; re-run scripts/vendor_coverage.py to refresh. POST result-table types and the three Design Code chapters (25-27) are not itemized by URL in INDEX.md and are represented as single aggregate rows rather than one row per table/check.",
   "endpoints": [
     {
@@ -6659,6 +6659,17 @@
         "level": "read",
         "outcome": "success_empty"
       }
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/DSTL",
+      "name": "Design Code",
+      "chapter_file": "25_Design_Steel_KDS41302022.md",
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.design.steel_kds"
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/DCO",

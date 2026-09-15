@@ -94,6 +94,13 @@ def get_table(
     inconsistency, not a call-site-specific requirement to enforce here.
     opt_cs/stage_step: analysis-result tables only (ch19-21) — enable and
     select construction-stage steps, e.g. ["CS1:001(first)", "CS1:002(last)"].
+    ``opt_cs`` has three states, and leaving it out is not the same as
+    ``False``: per the manual (2026-09-15 sync, quoting the official Reaction
+    article), ``True`` switches the view to Construction Stage and returns CS
+    results, ``False`` switches it to PostCS (the final stage) and returns Post
+    results, and omitting it keeps the current view mode. The default ``None``
+    omits it. The manual's own Default column still says ``false``, which that
+    description contradicts, and the behaviour has not been checked live.
     parts: design-force tables (ch23) only — member end/location or top/bot
     part selection, e.g. ["PartI", "PartJ"]. Not Wall Force (ch20) — MIDASIT
     confirmed 2026-07-30 that table type never supported

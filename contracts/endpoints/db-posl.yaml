@@ -349,5 +349,5 @@ knownDefects:
   - ref: db-delete-body-empties-table
 
 extraction:
-  source: 06_DB_Static_Loads.md line 1679
+  source: 06_DB_Static_Loads.md line 1683
   table: 파라미터

@@ -28,13 +28,16 @@ Claude's. Bounded, verifiable, repeatable work is yours. Every task below has a
 measured starting number you can check your run against. A task that turns out
 to need a judgment call is one to **stop and report**, not to decide.
 
-**Read "The one thing that is red, and is not yours" before anything else.**
+**Read "The manual sync is reflected" before anything else** — it replaced a
+prohibition that had stood since 2026-09-06, and several instructions further
+down used to depend on it.
 
-Then, in this order. **The first item is new and it is larger than everything
-under it.**
+Then, in this order.
 
 **With a product session:**
 
+0. **Task H** — one GET on each product for `DESIGN/STEEL/DSTL`. Read-only, a
+   minute, and it unblocks that endpoint's contract.
 1. **Task F** — replay the 52 already-confirmed fixtures the npm harness has
    never run. Python has confirmed cases on 166 endpoints; npm evidence covers
    113. Most need only replay; fixture-only blockers must remain distinct from
@@ -65,15 +68,15 @@ Run these first and confirm you see the same numbers. **If any differ, say so
 before starting** — it means something moved under you.
 
 ```bash
-python -m pytest -q                       # 1061 passed, 1 FAILED - EXPECTED
+python -m pytest -q                       # 1067 passed, 0 failed
 ruff check src tests scripts && mypy      # clean
-python scripts/validate_contracts.py      # OK; 381 endpoints, 5061 fields,
+python scripts/validate_contracts.py      # OK; 381 endpoints, 5064 fields,
                                           # 140 proven safe, 8 unsafe,
                                           # 0 unresolved manual contradictions
 python scripts/check_manual_drift.py --manual-api-repo "E:\AI Study\MIDAS-API"
-                                          # has_diff: TRUE, 10 chapters - EXPECTED
+                                          # has_diff: false
 MSYS_NO_PATHCONV=1 python scripts/extract_contracts.py \
-  --manual-api-repo "E:\AI Study\MIDAS-API" --check    # 15 disagreements - EXPECTED
+  --manual-api-repo "E:\AI Study\MIDAS-API" --check    # OK - no drift
 python scripts/info_baseline.py --against-contracts --check   # OK
 python scripts/info_baseline.py --divergence --check          # OK
 python scripts/report_dropped_manual_rows.py \
@@ -86,8 +89,8 @@ cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 78 tests
 ```
 
-Coverage as `ROADMAP.md` reports it: **399/399 implemented, 200 write / 199
-read**.
+Coverage as `ROADMAP.md` reports it: **400/400 implemented, 200 write / 199
+read / 1 not live-verified** — `DESIGN/STEEL/DSTL`, see Task H.
 `schema/live-cases.json` is **version 5**: 212 cases over 189 endpoints, 177
 confirmed, 9 base-model steps, 64 named seeds. npm live evidence: **113 `/db`
 endpoints**. `extraction.unmergedTables`: **72 tables, 482 names, 15
@@ -99,79 +102,67 @@ away — that is the finished state, not a backlog.
 
 ---
 
-## The one thing that is red, and is not yours
+## The manual sync is reflected — nothing is red
 
-**Do not reflect the 2026-09-06 manual sync. The author has said so directly.**
+**Resolved 2026-09-16.** The sibling manual repo's five commits past the old
+`vendored_at_commit` `7920759` — the 2026-09-06 bulk sync, its two `/ope/MEMB`
+self-corrections, the locale check, and the 2026-09-15 sync at `a6947a7` — were
+reviewed chapter by chapter and reflected, at the author's instruction.
+`vendored_at_commit` is now `a6947a7`, `check_manual_drift.py` reports
+`has_diff: false`, the extraction check reports no drift, and the
+contract-to-manual pytest case that failed on purpose for ten days passes.
 
-One pytest case fails —
-`test_shipped_contracts_still_match_the_manual_if_it_is_present` — and
-`check_manual_drift.py` reports `has_diff: true` over ten chapters. Both are
-detecting the same thing: this repository records `vendored_at_commit`
-`7920759`, and the sibling manual repo at `E:\AI Study\MIDAS-API` has moved
-four commits past it:
+What reflecting it actually took, so the next sync is not a surprise:
 
-| commit | what it is |
+| change in the manual | what it did here |
 | --- | --- |
-| `205d5f0` | `docs: 정기 점검 (2026-09-06)` — the bulk sync |
-| `ff88259` | `/ope/MEMB` 요청 키 AELEM 재정정, SSEIS 원문 오염 로케일별 명시 |
-| `0270fad` | `/ope/MEMB` 요청 키 **ELEM_LIST로 복귀** (한/영 로케일 분기 확인) |
-| `f868e41` | `check_diff`에 로케일 판정 추가 |
+| `/db/MATD` gained `bSERVCHECK`, `dSHORTTERM`, `dLONGTERM` | added as `requirement: unstated`. The manual's JSON Schema and live `/info` on both products both declare them; the manual's table and example do not, so nothing about when they apply is recorded |
+| `/db/TDNA`'s `CURVE` block gained `bPJ` | added to that variant; `ELEMENT` and `STRAIGHT` already had it |
+| `DESIGN/STEEL/DSTL` documented as a new endpoint | added to both SDKs — see Task H. **Not `/db/DSTL`**, which shares the name |
+| `OPT_CS` documented as three states | omitting it keeps the current view, `false` switches to the final stage. Both SDKs already omitted it by default; the contract no longer records `false` as its default |
+| 108 manual line anchors across 59 contracts moved | re-anchored mechanically from a line-by-line mapping of the two manual versions, with zero anchors whose original line had itself changed |
+| every other hunk | `⚠️` callout text only — typos MIDASIT has since fixed upstream, and locale notes. No contract or SDK change |
 
-**All four are pushed; the manual repo's `origin/main` is `f868e41` and its
-working tree is clean.** An earlier version of this section said they were
-unpushed local commits — that is no longer true, and it changes nothing about
-what you may do. CI clones that origin, which is why the red is now the same
-red locally and in Actions. The extraction check reports **15 disagreements**;
-the two `/ope/MEMB` ones came off when `0270fad` reverted to the key this
-repository had already measured. Do not consume or edit those commits from
-here.
+**The anchor lesson is the one to keep.** The extraction check flagged 11
+moved `unmergedTables` anchors. The real number was **108**: `variants[].source.line`,
+`missingColumns`, `structuralTables` and `extraction.source` all cite the
+same lines and the check reads none of them. A manual sync that inserts one
+paragraph near the top of a chapter moves every anchor below it, and fixing
+only the ones a checker names leaves the rest silently pointing at the wrong
+row. Map the whole file.
 
-**Those commits are still not ready to be reflected.** The author is checking
-them. `CLAUDE.md` records the pattern: a bulk `정기 점검` sync is
-often followed within a day by self-audit `fix(manual):` commits correcting its
-own transcription, and this repository has already been burned by treating one
-as final.
+**Two things from the old prohibition still hold as habits:**
 
-So this red check is **a correct detection of a real state**, not a defect to
-clear. Concretely, do not:
-
-- edit any contract to match the new manual text,
-- touch `vendored_at_commit`,
-- re-anchor the ten `extraction.unmergedTables` entries in `db-this.yaml` whose
-  titles and line numbers the sync moved,
-- add the four fields the sync documents (`db-matd.yaml`'s `bSERVCHECK`,
-  `dSHORTTERM`, `dLONGTERM`; `db-tdna.yaml`'s `bPJ` under `SHAPE='CURVE'`),
-- or `git -C "E:\AI Study\MIDAS-API" checkout`/`reset` anything to make the
-  check pass. **The manual repo is not yours to change.**
-
-That list said twelve entries last round and says ten now. `db-this-m1.yaml`'s
-and `db-splc.yaml`'s came off legitimately: both tables were **merged**, not
-re-anchored, and both sections are byte-identical at `7920759` and at the
-manual's current `f868e41`, so the text they were transcribed from is the
-vendored text either way. That is the only way an entry may leave this list —
-**prove the section did not move, in your report, before you touch one.**
-
-If you find yourself with a green `extract_contracts --check`, you have done
-something on this list — say so and revert it. A drop in the count is not the
-same thing: it has to come with the two sentences above.
-
-The work is real and will come back as its own task once the author has
-verified the sync. It is written down here so nobody rediscovers it as a
-surprise, not so that it gets done now.
-
-**One consequence for the tasks below.** Every manual line number cited in a
-contract — `extraction.unmergedTables` anchors especially — is against
-`7920759`, not against what is in the manual working tree right now. When a
-task tells you to read a manual section, read it at the vendored commit:
-
-```bash
-git -C "E:\AI Study\MIDAS-API" show 7920759:docs/manual/12_DB_Analysis_Control.md
-```
-
-Reading the working tree instead will show you rows the contracts were never
-written against, and you will "find" disagreements that are just this drift.
+- a bulk `정기 점검` sync is often followed within a day by self-audit
+  `fix(manual):` commits — re-run the drift checker, do not assume one sync is
+  final;
+- when a task says to read a manual section, read it at `vendored_at_commit`
+  (now `a6947a7`), not whatever the working tree holds.
 
 ---
+
+## Task H — one endpoint the manual added and nobody has called
+
+**Live, read-only. Safe against an open model — the only task here that is.**
+
+`DESIGN/STEEL/DSTL` (chapter 25 §0, the steel counterpart of `DESIGN/RC/DRC`)
+was added to both SDKs on 2026-09-16 from the manual alone. It has **no
+contract**: `promote_contract.py` refuses a draft with no live record in
+`docs/coverage.json`, which is correct, and the npm resource is generated from
+the Python class until then.
+
+1. `GET /DESIGN/STEEL/DSTL` on Gen and on Civil — `live_readonly_sweep.py` or
+   `npm run live:readonly`, whichever SDK you are checking. GET only.
+2. Record it in `docs/coverage.json` with `level: "read"` and the build.
+3. `python scripts/extract_contracts.py --emit /DESIGN/STEEL/DSTL`, then
+   `python scripts/promote_contract.py design-steel-dstl`, then
+   `validate_contracts.py` and `npm run generate`. The generated npm resource
+   should move from the Python fallback to the contract with no name change.
+
+`/info` is not served for `/DESIGN/*`, so do not try it; a design contract never
+carries `provenance: info_schema`. A `PUT` round trip would earn `write`, but
+it changes the active steel design code of whatever model is open — that one
+needs an empty scratch document like every other write.
 
 ## Task F — 52 confirmed fixtures the npm harness has never replayed
 
@@ -312,11 +303,9 @@ product requires `Epsilon_cu > 0.8 / Z + Epsilon_co`. The chapter supplies no
 compliant alternative, so the value was not invented and the case remains
 unconfirmed.
 
-`/db/TDNA` is on this list and `db-tdna.yaml` is also named in the red section:
-the sync documents a `bPJ` under `SHAPE='CURVE'` that you may not add. A case
-for `/db/TDNA` must be built from the section at `7920759`, which has no such
-field. If the fixture you derive needs it, stop — that is the sync asking to be
-reflected through a side door.
+`/db/TDNA`'s `CURVE` variant now declares `bPJ`, reflected from the manual on
+2026-09-16 — every one of the manual's four CURVE examples sends it, so a
+fixture built from them may too.
 
 `/db/MVLDbs` still has no case: its contract marks mutually exclusive
 `LCDATA_*` objects required together, and representing its two-value ALL_MODE
@@ -483,9 +472,8 @@ that says when they apply. 38 of 81 findings were the checker.
 
 **Offline. Do not start here.** The mechanical set is exhausted, and the next
 section says so with the evidence. Read it before deciding otherwise. Read any
-manual section at the vendored commit `7920759`, not in the working tree — ten
-of these entries anchor at titles and line numbers the unreflected 2026-09-06
-sync has already moved.
+manual section at the vendored commit `a6947a7`, which is also the working
+tree now that the sync is reflected.
 
 `docs/unmerged_tables_against_info.md` splits the 72 tables (482 field names)
 that 15 contracts declare missing:
@@ -611,11 +599,8 @@ Completed after the first Task E batch. `/db/MVCTbs`, `/db/MVCTid` and
 Python TypedDict comments. The annotations did not change; the contracts remain
 the source for branch-conditional requiredness.
 
-## Five decisions that are open and are not yours
+## Four decisions that are open and are not yours
 
-- **Whether the 2026-09-06 manual sync is correct.** The author is checking it
-  and has said outright that it still has errors. Until that finishes, nothing
-  in this repository moves toward it — see the red-and-not-yours section.
 - **`/db/SPLC`'s `NDP` requiredness.** Merging the 비소산 요소 설계 table gave
   the contract a Gen-only `NDP` marked `required` with no condition, and the
   confirmed Gen case — which passed before the field existed — omits it, so

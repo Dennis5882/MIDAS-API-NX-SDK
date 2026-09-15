@@ -286,7 +286,7 @@ variants:
         equals: 0
     source:
       table: PERIOD_METHOD = 0
-      line: 1940
+      line: 1944
     fields:
       - key: PERIOD_ANALYSIS_X
         description: >-
@@ -329,7 +329,7 @@ variants:
         equals: 1
     source:
       table: PERIOD_METHOD = 1
-      line: 1945
+      line: 1949
     fields:
       - key: PERIOD_APPR_X
         description: >-
@@ -426,7 +426,7 @@ variants:
         equals: USER TYPE
     source:
       table: "ADDITIONAL — `SEIS_CODE = \"USER TYPE\"` 변형 (2026-08-07 공식 반영)"
-      line: 2026
+      line: 2030
     fields:
       - key: SEIS_CODE
         description: >-
@@ -619,5 +619,5 @@ knownDefects:
   - ref: db-delete-body-empties-table
 
 extraction:
-  source: 06_DB_Static_Loads.md line 1920
+  source: 06_DB_Static_Loads.md line 1924
   table: 파라미터

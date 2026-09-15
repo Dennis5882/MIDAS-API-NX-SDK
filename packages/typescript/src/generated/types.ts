@@ -6679,6 +6679,12 @@ export namespace DbPropertiesMaterialTypes {
     MAINREBAR_B_FY?: number;
     /** Sub Rebar (fy) */
     SUBREBAR_B_FY?: number;
+    /** (추정) 사용성 검토 여부 ⚠️표·예제에 근거 없음 (스키마 설명 ServiceabilityCheck) */
+    bSERVCHECK?: boolean;
+    /** (추정) 단기 계수 ⚠️표·예제에 근거 없음 (스키마 설명 ShortTerm) */
+    dSHORTTERM?: number;
+    /** (추정) 장기 계수 ⚠️표·예제에 근거 없음 (스키마 설명 LongTerm) */
+    dLONGTERM?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface InelasticFiberMaterialLinkPayload {
@@ -9860,6 +9866,8 @@ export namespace DbTemperaturePrestressTypes {
       DIR?: string;
       /** x Axis Rotation Angle */
       XAR_ANGLE?: number;
+      /** Projection */
+      bPJ?: boolean;
       /** Grad. Rot. Angle Type · "X" · "Y" */
       GR_AXIS?: string;
       /** Grad. Rot. Angle */
@@ -11972,6 +11980,9 @@ export namespace DesignSrcAiksrc2kTypes {
 }
 
 export namespace DesignSteelKdsTypes {
+  export interface SteelDesignCodeSelectionPayload {
+    DGNCODE?: string;
+  }
   /** Generated from contracts/endpoints/. */
   export interface SteelDesignCodeOptionPayload {
     /** 설계 코드 (KDS 41 30 : 2022 고정) */

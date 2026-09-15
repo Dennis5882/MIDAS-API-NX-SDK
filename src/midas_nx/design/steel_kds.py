@@ -29,6 +29,35 @@ from ..post.base import NodeElemsSelector, TableStyles, TableUnit
 _BASE = "/DESIGN/STEEL/KDS-41-30-2022"
 
 
+# --- 0. DESIGN/STEEL/DSTL — Steel Design Code Selection ---------------------
+# Added to the manual 2026-09-06 — the chapter-level "which steel design code
+# is active" selector, numbered "## 0." because it sits outside the
+# KDS-41-30-2022/<CODE> numbering the other 27 endpoints share. It is the
+# steel counterpart of rc_kds.setup.RcDesignCodeSelection.
+
+
+class SteelDesignCodeSelectionPayload(TypedDict, total=False):
+    """docs/manual/25_Design_Steel_KDS41302022.md #0 — DSTL 파라미터 table.
+
+    Unlike this chapter's other 27 endpoints, the URI carries no
+    KDS-41-30-2022 prefix (``/DESIGN/STEEL/DSTL``). The manual's GET response
+    is keyed ``"DSTL"``, where the RC counterpart's is ``"DCON"``;
+    ``DbResource.items()`` unwraps by shape, so neither needs special-casing.
+
+    Not the same endpoint as ``/db/DSTL`` (``db.design.SteelDesignCode``),
+    which shares the name but has a different URI and schema — the manual
+    says so explicitly.
+    """
+
+    DGNCODE: str  # Design Code, enum currently has one value "KDS 41 30 : 2022", required
+
+
+class SteelDesignCodeSelection(DbResource):
+    ENDPOINT = "/DESIGN/STEEL/DSTL"
+    NAME = "Design Code"
+    METHODS = GET_PUT_DELETE_METHODS
+
+
 # === Group 1: 설계 코드·일반 설정 (config-singleton / member-CRUD) ===
 
 # --- 1. DESIGN/STEEL/KDS-41-30-2022/DCO — Design Code Option ----------------

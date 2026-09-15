@@ -4,7 +4,7 @@
     "pythonPackage": "midas-nx",
     "coverageLedger": "docs/coverage.json"
   },
-  "resourceCount": 304,
+  "resourceCount": 305,
   "resources": [
     {
       "className": "AssignBoundaryCombinationHyperS",
@@ -9006,6 +9006,35 @@
       ],
       "payloadTypeName": "SteelDesignCodeOptionPayload",
       "payloadType": "Types.DesignSteelKdsTypes.SteelDesignCodeOptionPayload"
+    },
+    {
+      "className": "SteelDesignCodeSelection",
+      "exportName": "steelDesignCodeSelection",
+      "endpoint": "/DESIGN/STEEL/DSTL",
+      "name": "Design Code",
+      "products": [
+        "civil",
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "pythonModule": "midas_nx.design.steel_kds",
+      "modulePath": [
+        "design",
+        "steelKds"
+      ],
+      "manual": [
+        {
+          "name": "Design Code",
+          "chapterFile": "25_Design_Steel_KDS41302022.md",
+          "status": "implemented"
+        }
+      ],
+      "payloadTypeName": "SteelDesignCodeSelectionPayload",
+      "payloadType": "Types.DesignSteelKdsTypes.SteelDesignCodeSelectionPayload"
     },
     {
       "className": "StrengthReductionFactors",

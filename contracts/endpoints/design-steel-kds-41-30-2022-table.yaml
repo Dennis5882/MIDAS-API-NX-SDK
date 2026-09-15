@@ -129,5 +129,5 @@ fields:
     provenance: manual
 
 extraction:
-  source: 25_Design_Steel_KDS41302022.md line 5966
+  source: 25_Design_Steel_KDS41302022.md line 6088
   table: 파라미터

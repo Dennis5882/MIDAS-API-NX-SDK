@@ -171,5 +171,5 @@ knownDefects:
   - ref: db-delete-body-empties-table
 
 extraction:
-  source: 07_DB_Temperature_Prestress.md line 1230
+  source: 07_DB_Temperature_Prestress.md line 1237
   table: 파라미터

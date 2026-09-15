@@ -338,7 +338,7 @@ extraction:
                    "ALONG"]
   structuralTables:
     - heading: 비소산 요소 설계 파라미터
-      line: 692
+      line: 696
       paths: [<root>]
       note: >-
         The manual marks this table GEN NX only, and GET /info/db/SPLC places

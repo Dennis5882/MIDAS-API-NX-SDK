@@ -209,7 +209,34 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+  - key: bSERVCHECK
+    description: >-
+      (추정) 사용성 검토 여부 ⚠️표·예제에 근거 없음 (스키마 설명 ServiceabilityCheck)
+    type: boolean
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: manual
+  - key: dSHORTTERM
+    description: >-
+      (추정) 단기 계수 ⚠️표·예제에 근거 없음 (스키마 설명 ShortTerm)
+    type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: manual
+  - key: dLONGTERM
+    description: >-
+      (추정) 장기 계수 ⚠️표·예제에 근거 없음 (스키마 설명 LongTerm)
+    type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: manual
 
 extraction:
-  source: 04_DB_Properties.md line 2481
+  source: 04_DB_Properties.md line 2489
   table: Specifications

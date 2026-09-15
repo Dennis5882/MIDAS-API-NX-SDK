@@ -250,10 +250,16 @@ fields:
     provenance: manual
 
   - key: OPT_CS
-    description: Enable construction-stage steps.
+    description: >-
+      Construction-stage view selector with three states. true switches to
+      Construction Stage (first stage) and returns CS results; false switches to
+      PostCS (final stage) and returns Post results; omitted keeps the current
+      view mode. The manual's Default column still reads false, which its own
+      behaviour description contradicts, so no default is recorded here - an
+      SDK that filled in false would change the caller's view as a side effect.
     type: boolean
     requirement: optional
-    documentedDefault: false
+    documentedDefault: null
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual

@@ -357,6 +357,7 @@ export const resources = {
       seismicLoadResistingSystemByMember: defineDbResource<Types.DesignSteelKdsTypes.SeismicLoadResistingSystemByMemberPayload>({"className":"SeismicLoadResistingSystemByMember","endpoint":"/DESIGN/STEEL/KDS-41-30-2022/SLRS","name":"Seismic Load Resisting System by Member","products":["civil","gen"],"methods":["DELETE","GET","POST","PUT"],"manualChapter":"25_Design_Steel_KDS41302022.md"}),
       serviceabilityParameters: defineDbResource<Types.DesignSteelKdsTypes.ServiceabilityParametersPayload>({"className":"ServiceabilityParameters","endpoint":"/DESIGN/STEEL/KDS-41-30-2022/SERV","name":"Serviceability Parameters","products":["civil","gen"],"methods":["DELETE","GET","POST","PUT"],"manualChapter":"25_Design_Steel_KDS41302022.md"}),
       steelDesignCodeOption: defineDbResource<Types.DesignSteelKdsTypes.SteelDesignCodeOptionPayload>({"className":"SteelDesignCodeOption","endpoint":"/DESIGN/STEEL/KDS-41-30-2022/DCO","name":"Design Code Option","products":["civil","gen"],"methods":["DELETE","GET","PUT"],"manualChapter":"25_Design_Steel_KDS41302022.md"}),
+      steelDesignCodeSelection: defineDbResource<Types.DesignSteelKdsTypes.SteelDesignCodeSelectionPayload>({"className":"SteelDesignCodeSelection","endpoint":"/DESIGN/STEEL/DSTL","name":"Design Code","products":["civil","gen"],"methods":["DELETE","GET","PUT"],"manualChapter":"25_Design_Steel_KDS41302022.md"}),
       strengthReductionFactors: defineDbResource<Types.DesignSteelKdsTypes.StrengthReductionFactorsPayload>({"className":"StrengthReductionFactors","endpoint":"/DESIGN/STEEL/KDS-41-30-2022/SRDF","name":"Strength Reduction Factors","products":["civil","gen"],"methods":["DELETE","GET","PUT"],"manualChapter":"25_Design_Steel_KDS41302022.md"}),
       unbracedLength: defineDbResource<Types.DesignSteelKdsTypes.UnbracedLengthPayload>({"className":"UnbracedLength","endpoint":"/DESIGN/STEEL/KDS-41-30-2022/LENG","name":"Unbraced Length","products":["civil","gen"],"methods":["DELETE","GET","POST","PUT"],"manualChapter":"25_Design_Steel_KDS41302022.md"}),
       undergroundLoadCombinationType: defineDbResource<Types.DesignSteelKdsTypes.UndergroundLoadCombinationTypePayload>({"className":"UndergroundLoadCombinationType","endpoint":"/DESIGN/STEEL/KDS-41-30-2022/ULCT","name":"Underground Load Combination Type","products":["gen"],"methods":["DELETE","GET","POST","PUT"],"manualChapter":"25_Design_Steel_KDS41302022.md"}),
@@ -364,4 +365,4 @@ export const resources = {
   },
 } as const;
 
-export const resourceCount = 304 as const;
+export const resourceCount = 305 as const;

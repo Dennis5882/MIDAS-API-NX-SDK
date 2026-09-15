@@ -151,7 +151,7 @@ variants:
         equals: 0
     source:
       table: INPUT_METHOD = 0 (Simplified)
-      line: 1748
+      line: 1752
     fields:
       - key: WIND_SPEED
         description: >-
@@ -186,7 +186,7 @@ variants:
         equals: 1
     source:
       table: INPUT_METHOD = 1 (General)
-      line: 1752
+      line: 1756
     fields:
       - key: EXP_CATEGORY
         description: >-
@@ -499,7 +499,7 @@ variants:
         equals: 2
     source:
       table: INPUT_METHOD = 2 (General + Vortex Shedding)
-      line: 1784
+      line: 1788
     fields:
       - key: ROOF_HEIGHT
         description: >-
@@ -662,7 +662,7 @@ variants:
         equals: USER TYPE
     source:
       table: "ADDITIONAL — `WIND_CODE = \"USER TYPE\"` 변형 (2026-08-07 공식 반영)"
-      line: 1862
+      line: 1866
     fields:
       - key: WIND_CODE
         description: >-
@@ -839,5 +839,5 @@ knownDefects:
   - ref: db-delete-body-empties-table
 
 extraction:
-  source: 06_DB_Static_Loads.md line 1740
+  source: 06_DB_Static_Loads.md line 1744
   table: 파라미터

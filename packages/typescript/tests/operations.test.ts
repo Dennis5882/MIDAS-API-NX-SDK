@@ -25,7 +25,7 @@ function mockClient(body: object = { message: "ok" }) {
 
 describe("generated API surface", () => {
   it("keeps the reviewed Python surface represented", () => {
-    expect(resourceCount).toBe(304);
+    expect(resourceCount).toBe(305);
     expect(operationCount).toBe(70);
     expect(tableCount).toBe(87);
     expect(operations.ope.divideElements.metadata.endpoint).toBe("/ope/DIVIDEELEM");

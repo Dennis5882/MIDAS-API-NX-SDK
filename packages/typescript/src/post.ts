@@ -28,6 +28,13 @@ export interface TableOptions extends OperationOptions {
   styles?: TableStyles;
   components?: string[];
   loadCaseNames?: string[];
+  /**
+   * `OPT_CS`, which has three states - leaving it out is not the same as
+   * `false`. Per the manual, `true` switches the view to Construction Stage and
+   * returns CS results, `false` switches it to PostCS (the final stage) and
+   * returns Post results, and omitting it keeps the current view mode. Leave it
+   * undefined to keep the view. Not yet checked against a live product.
+   */
   constructionStage?: boolean;
   stageSteps?: string[];
   parts?: string[];

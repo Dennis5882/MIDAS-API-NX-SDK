@@ -24,6 +24,7 @@ from midas_nx.design.steel_kds import (
     SeismicLoadResistingSystemByMember,
     ServiceabilityParameters,
     SteelDesignCodeOption,
+    SteelDesignCodeSelection,
     StrengthReductionFactors,
     UnbracedLength,
     UndergroundLoadCombinationType,
@@ -35,6 +36,47 @@ from midas_nx.design.steel_kds import (
 )
 
 BASE = "https://x.test:443/gen/DESIGN/STEEL/KDS-41-30-2022"
+
+
+# --- 0. DSTL (Steel Design Code Selection) --------------------------------
+# Added to the manual 2026-09-06; unlike everything else in this file, its URI
+# does not carry the KDS-41-30-2022 prefix.
+
+
+@responses.activate
+def test_steel_design_code_selection_update_sends_documented_assign_shape(gen_client):
+    responses.add(responses.PUT, "https://x.test:443/gen/DESIGN/STEEL/DSTL", json={}, status=200)
+    SteelDesignCodeSelection.update({1: {"DGNCODE": "KDS 41 30 : 2022"}}, client=gen_client)
+    sent = responses.calls[0].request
+    assert sent.url == "https://x.test:443/gen/DESIGN/STEEL/DSTL"
+    assert json.loads(sent.body) == {"Assign": {"1": {"DGNCODE": "KDS 41 30 : 2022"}}}
+
+
+@responses.activate
+def test_steel_design_code_selection_get_unwraps_the_dstl_key(gen_client):
+    # The manual's GET example is keyed "DSTL" - unlike the RC counterpart's
+    # "DCON". DbResource.items() unwraps by shape, so both work unchanged.
+    responses.add(
+        responses.GET,
+        "https://x.test:443/gen/DESIGN/STEEL/DSTL",
+        json={"DSTL": {"1": {"DGNCODE": "KDS 41 30 : 2022"}}},
+        status=200,
+    )
+    assert SteelDesignCodeSelection.items(client=gen_client) == {1: {"DGNCODE": "KDS 41 30 : 2022"}}
+
+
+@responses.activate
+def test_steel_design_code_selection_create_raises_before_any_http_call(gen_client):
+    with pytest.raises(UnsupportedMethodError):
+        SteelDesignCodeSelection.create({1: {"DGNCODE": "KDS 41 30 : 2022"}}, client=gen_client)
+    assert len(responses.calls) == 0
+
+
+def test_steel_design_code_selection_is_not_the_db_dstl_resource():
+    from midas_nx.db.design import SteelDesignCode
+
+    assert SteelDesignCodeSelection.ENDPOINT == "/DESIGN/STEEL/DSTL"
+    assert SteelDesignCode.ENDPOINT == "/db/DSTL"
 
 
 # === Group 1: 설계 코드·일반 설정 ===

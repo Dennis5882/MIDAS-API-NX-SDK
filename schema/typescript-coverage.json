@@ -1,7 +1,7 @@
 {
   "source": "docs/coverage.json",
-  "coverageRowCount": 399,
-  "coveredRowCount": 399,
+  "coverageRowCount": 400,
+  "coveredRowCount": 400,
   "rows": [
     {
       "endpoint": "/doc/NEW",
@@ -1377,6 +1377,11 @@
       "endpoint": "/post/TABLE (Analysis Story Table types)",
       "canonicalEndpoint": "/post/TABLE",
       "surface": "table"
+    },
+    {
+      "endpoint": "/DESIGN/STEEL/DSTL",
+      "canonicalEndpoint": "/DESIGN/STEEL/DSTL",
+      "surface": "resource"
     },
     {
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/DCO",

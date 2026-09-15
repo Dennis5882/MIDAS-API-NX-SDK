@@ -160,7 +160,7 @@ variants:
         equals: 1
     source:
       table: FLOOR_DIST_TYPE = 1
-      line: 1246
+      line: 1250
     fields:
       - key: LOAD_ANGLE
         description: >-
@@ -176,7 +176,7 @@ variants:
         equals: 2
     source:
       table: FLOOR_DIST_TYPE = 2
-      line: 1248
+      line: 1252
     fields:
       - key: OPT_ALLOW_POLYGON_TYPE_UNIT_AREA
         description: >-
@@ -194,7 +194,7 @@ variants:
           - 2
     source:
       table: FLOOR_DIST_TYPE = 1 or 2
-      line: 1250
+      line: 1254
     fields:
       - key: OPT_EXCLUDE_INNER_ELEM_AREA
         description: >-
@@ -260,5 +260,5 @@ knownDefects:
   - ref: db-delete-body-empties-table
 
 extraction:
-  source: 06_DB_Static_Loads.md line 1237
+  source: 06_DB_Static_Loads.md line 1241
   table: 파라미터
