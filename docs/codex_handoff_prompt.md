@@ -1,7 +1,18 @@
 # Codex task prompt — mechanical work only
 
-Updated 2026-09-16, after **2.8.2 was published** to both registries. The tree
-is clean and CI is fully green, the contract-to-manual check included.
+Updated 2026-09-16 (later), after **both products were patched to Build
+09/15/2026** and the published 2.8.2 was verified against them. The tree is
+clean and CI is fully green, the contract-to-manual check included.
+
+**What the patch day established, because three tasks below depend on it.** The
+published 2.8.2 answers on 268/268 GET-capable Gen resources and 283/283 on
+Civil, identically through PyPI and npm. `DESIGN/STEEL/DSTL` answered on both
+products, which closed the ledger's last unverified endpoint and unblocked its
+contract — and left it as the one endpoint nothing has ever sent a payload to
+(Task I). `/info` moved by exactly one property in the whole patch, on both
+products (Task J). Every historical crash path was re-run and all but `OCHECK`
+came back clean, so **crash re-testing is not on this list** — see its section
+for why calling `OCHECK` again is off limits.
 
 2.8.2 shipped the manual sync's packaged changes, all additive: the new
 `DESIGN/STEEL/DSTL` endpoint, three `/db/MATD` members, `bPJ` on the curved
@@ -35,26 +46,34 @@ Then, in this order.
 
 **With a product session:**
 
-0. **Task H** — **the live half is done** (2026-09-16, both products on Build
-   09/15/2026). What is left is the contract, which is offline work.
-1. **Task F** — replay the 52 already-confirmed fixtures the npm harness has
-   never run. Python has confirmed cases on 166 endpoints; npm evidence covers
-   113. Most need only replay; fixture-only blockers must remain distinct from
-   product regressions.
-2. **Task G** — three confirmed cases that cannot fail, and so prove less than
+0. **Task I** — one PUT round trip on `DESIGN/STEEL/DSTL`. It is the newest
+   endpoint, it has read evidence on both products as of 2026-09-16, and
+   **nothing has ever sent it a payload**. Smallest live task on this list and
+   the only one that turns a read into a write.
+1. **Task J** — a read-only probe of `/db/SECT`'s new `USE_HAMBLY_EQ` on a model
+   that has sections. Evidence-gathering only; the decision it feeds is the
+   author's and is listed under the open decisions.
+2. **Task F** — replay the already-confirmed fixtures the npm harness has never
+   run. **Its gap number is currently unmeasurable — read that section before
+   quoting one.** Most need only replay; fixture-only blockers must remain
+   distinct from product regressions.
+3. **Task G** — three confirmed cases that cannot fail, and so prove less than
    their `confirmed=True` claims.
-3. **Task B-2** — the 22 that have failed. Only one offline lead is left.
+4. **Task B-2** — the 22 that have failed. Only one offline lead is left.
 
 **Without one, and only then:**
 
-4. **Task A** — build fixtures for the 21 buildable endpoints with no case.
+5. **Task H step 3** — promote `DESIGN/STEEL/DSTL`'s contract. The live record
+   it was waiting for exists now, so this is offline.
+6. **Task F-0** — make npm replay coverage derivable from the tree. See Task F.
+7. **Task A** — build fixtures for the 21 buildable endpoints with no case.
    Start with batch 17: `/db/PHGE`, `/db/POGD`, `/db/POGD-M1`.
 
 An earlier version of this file said the offline queue was empty and told you
 to report that rather than invent work. That was wrong about Task A: building a
 fixture is offline, and 21 endpoints are waiting. What is still true is the
 priority — **a session is the scarce thing.** Do not spend one writing fixtures
-when 52 endpoints are waiting to be replayed through the other SDK.
+while endpoints are waiting to be replayed through the other SDK.
 
 Task C is closed and Task E's mechanical set is exhausted; both sections stay
 because they say what re-opens them.
@@ -79,7 +98,9 @@ MSYS_NO_PATHCONV=1 python scripts/extract_contracts.py \
 python scripts/info_baseline.py --against-contracts --check   # OK
 python scripts/info_baseline.py --divergence --check          # OK
 python scripts/report_dropped_manual_rows.py \
-  --manual-api-repo "E:\AI Study\MIDAS-API" --check           # OK
+  --manual-api-repo "E:\AI Study\MIDAS-API" --check           # exit 0; it always prints
+                                          # MD-50 /db/MVCTch rows - the
+                                          # recorded baseline, not a failure
 python scripts/live_crud_check.py --check-cases        # silent; exit 0
 python scripts/check_fixture_contract.py --check       # 1 fixture lead over 1
                                           # endpoint, 3 contract gaps over 2
@@ -88,12 +109,26 @@ cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 78 tests
 ```
 
-Coverage as `ROADMAP.md` reports it: **400/400 implemented, 200 write / 199
+Coverage as `ROADMAP.md` reports it: **400/400 implemented, 200 write / 200
 read**, nothing unverified — `DESIGN/STEEL/DSTL` answered on both products on
 2026-09-16; see Task H for what is left of it.
 `schema/live-cases.json` is **version 5**: 212 cases over 189 endpoints, 177
-confirmed, 9 base-model steps, 64 named seeds. npm live evidence: **113 `/db`
-endpoints**. `extraction.unmergedTables`: **72 tables, 482 names, 15
+confirmed, 9 base-model steps, 64 named seeds.
+
+**Both products are on Build 09/15/2026** (Gen NX 2026 v2.1, Civil NX 2026
+v2.2), each read from its own About dialog on 2026-09-16 — the first time the
+two have carried the same build date. The published 2.8.2 was swept read-only
+against both that day: 268/268 GET-capable resources answer on Gen, 283/283 on
+Civil, identically through PyPI and npm. `/info` moved by exactly one property
+in the patch, on both products; that is Task J.
+
+**npm live evidence has no number you can trust.** This file used to say 113
+`/db` endpoints. It is recorded *in prose in* `docs/live_verification_notes.md`
+and nowhere a command can read: `docs/coverage.json` mentions npm in exactly
+**4** entries, and reconstructing from every notes section whose heading
+mentions npm recovers **56** endpoints, against 166 with a confirmed Python
+case. Neither 4 nor 56 is the answer, and 113 cannot be checked. **Do not quote
+a gap number until Task F-0 makes one derivable.** `extraction.unmergedTables`: **72 tables, 482 names, 15
 contracts**. Drafts: 3, the IEHG trio, refused for a reason that will not go
 away — that is the finished state, not a backlog.
 
@@ -165,25 +200,121 @@ one. **What is left is step 3, and it is offline: you can do it now.**
    should move from the Python fallback to the contract with no name change.
 
 `/info` is not served for `/DESIGN/*`, so do not try it; a design contract never
-carries `provenance: info_schema`. A `PUT` round trip would earn `write`, but
-it changes the active steel design code of whatever model is open — that one
-needs an empty scratch document like every other write.
+carries `provenance: info_schema`. The `PUT` round trip that would earn `write`
+is **Task I**, split out because it needs a product session and an empty scratch
+document while this step needs neither — do not do it twice.
 
-## Task F — 52 confirmed fixtures the npm harness has never replayed
+## Task I — the one endpoint nothing has ever sent a payload to
+
+**Live. Needs an empty scratch document: it changes the model's steel design
+code.** The smallest live task here, and the highest value per minute.
+
+`DESIGN/STEEL/DSTL` answered `{"message": ""}` on Gen and Civil on 2026-09-16,
+which is why it is no longer the ledger's one unverified endpoint. That is a
+**read**. Its whole payload is one field — `DGNCODE`, whose enum the manual
+gives exactly one value, `"KDS 41 30 : 2022"` — and no call has ever sent it.
+Everything this repository knows about its request shape comes from a manual
+chapter, and manual chapters have been wrong about field names before
+(`/db/REBW`, `/db/REBC`).
+
+1. On an empty document, `GET /DESIGN/STEEL/DSTL` and keep the response in
+   front of you — it is the current design code, and the value you must put
+   back.
+2. `PUT` the documented `DGNCODE`, `GET` again to confirm it took, then `PUT`
+   the original value back. Change → verify → revert, the `/db/REBW` pattern.
+3. Record it in `docs/coverage.json` at `level: "write"` with the build, and
+   add the endpoint to `scripts/live_crud_check.py` **only if** it fits that
+   harness's create/read/update/delete shape — it is GET/PUT/DELETE with no
+   POST, so it may not, and forcing it in is worse than leaving it out.
+
+**Do not run `DELETE` on it** unless you have established what deleting a
+design-code selection means on a model that has one. There is no documented
+answer and the blast radius is the whole design chapter.
+
+If the documented enum value is refused, that is a finding, not a failure:
+record what the server said and stop. Do not permute spellings — this project
+has a rule about that, and `/db/TDMT` is why.
+
+## Task J — `/db/SECT`'s new `USE_HAMBLY_EQ`, read-only
+
+**Live, GET only. Safe against an open model. Evidence-gathering only — the
+decision it feeds is the author's.**
+
+Build 09/15/2026 added `SECT_BEFORE.USE_HAMBLY_EQ` and
+`SECT_AFTER.USE_HAMBLY_EQ` (boolean, described as *"Use Hambly Eq. for Ixx"*) to
+`/info/db/SECT` on both products. `Hambly` appears nowhere in the manual
+repository. `/info` declaring a property is the weak direction of that
+comparison, so what is missing is whether the product actually carries the field
+in a real record.
+
+1. On a model that **has sections** — not a blank document — `GET /db/SECT`.
+2. Report three things only: whether `USE_HAMBLY_EQ` appears in the returned
+   records, what value it carries, and whether it appears on both
+   `SECT_BEFORE` and `SECT_AFTER`.
+3. Stop there.
+
+**Do not commit the response body.** It is the author's model contents, not
+schema — this is a standing rule in this repository, and a section table is
+exactly the kind of thing that leaks a real project's design.
+
+**Do not** add the property to `contracts/endpoints/db-sect.yaml`, and **do
+not** re-capture `schema/info-baseline.json`. Both are listed under the open
+decisions, deliberately, and re-baselining would turn CI red anyway because
+`--against-contracts --check` fails when the uncontracted set grows.
+
+## The crash paths were all re-tested on 2026-09-16 — do not re-run OCHECK
+
+Every path with a recorded product-crash history was re-run on Build
+09/15/2026, on both products, least-destructive first. Eleven historically
+crashing read-shaped calls, four write round trips and the raw `/db/NMAS`
+reproduction all came back clean on both. **There is no crash re-test left to
+do, and this is not a task.** The full table is in
+`docs/live_verification_notes.md` under 2026-09-16 (later).
+
+`/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK` crashed Gen NX, as it was expected to.
+`MAPI-2429` is now reproduced across four builds on both products and MIDASIT
+has closed it as an unofficial, paused-development API with no fix timeline.
+**Do not call it.** There is nothing left to learn from another reproduction,
+and each one costs a product restart and a held licence.
+
+Two gaps that re-testing did *not* close, in case a future session is tempted
+to claim them: the `/post/TABLE` and RC-TABLE design-force families have only
+ever been re-tested against documents with no nodes, so the populated, analysed
+and designed path remains untested; and the raw NMAS call not reproducing is
+now several consecutive clean results, but the SDK normalizer stays — a defect
+that stops reproducing is not one whose fix has been stated.
+
+## Task F — the confirmed fixtures the npm harness has never replayed
 
 **Live. Destructive: `/doc/NEW`. The largest remaining block of work, and the
 one with the least judgement in it.**
 
-Measured 2026-09-15:
+**Task F-0 comes first, and it is offline.** The gap this section used to
+state — 52, from 166 confirmed minus 113 replayed — **cannot be re-derived from
+the tree**. npm replay is recorded in prose in `docs/live_verification_notes.md`;
+`docs/coverage.json` carries it in 4 entries, and parsing every notes section
+whose heading mentions npm recovers 56 endpoints. So the true gap is somewhere
+between 110 and roughly 53 and nothing in the repository says which.
+
+This matters more than the bookkeeping sounds. A wrong gap number does not just
+misreport progress — it sends a live session at endpoints that were already
+replayed, and a session is the scarce thing.
+
+Make it derivable before running anything: record npm replay where a command can
+read it. The 4 `docs/coverage.json` entries that already say *"npm replayed the
+same emitted fixture"* in their `method` are the existing shape; follow it
+rather than inventing a field, and backfill from the notes sections, which name
+their endpoints explicitly. Then state the gap with the command that produced
+it.
 
 | | |
 | --- | ---: |
-| endpoints with a `confirmed` Python case | 166 |
-| endpoints recorded as replayed through npm | 113 |
-| the gap, runnable as it stands | **52** |
-| the gap, blocked by a seed npm cannot replay | 3 |
+| endpoints with a `confirmed` Python case | 166 (derivable, from `schema/live-cases.json`) |
+| endpoints recorded as replayed through npm | **not derivable** |
+| the gap | **not derivable** |
+| confirmed cases flagged `blockedSeeds` | 3 |
 
-Nothing here needs building and nothing needs deciding. The fixture exists, it
+Nothing in the replay itself needs building and nothing needs deciding. The fixture exists, it
 already passed in Python, and `packages/typescript/scripts/live-crud.mjs`
 replays the **same emitted fixture** through the built npm package.
 
@@ -632,7 +763,8 @@ the source for branch-conditional requiredness.
   own an id a seed can take is a fixture-design call.
 - **`/db/ACTL`.** Gen refuses every payload including a `required`-only one;
   Civil accepts and will not persist `TOL`. A vendor-report item, not an SDK one.
-- **`/db/SECT`'s `USE_HAMBLY_EQ`, and with it the `/info` baseline.** Build
+- **`/db/SECT`'s `USE_HAMBLY_EQ`, and with it the `/info` baseline.** Task J
+  gathers evidence for this one and stops; the decision itself stays here. Build
   09/15/2026 added `SECT_BEFORE.USE_HAMBLY_EQ` and `SECT_AFTER.USE_HAMBLY_EQ`
   (boolean) on **both** products — the only schema change in the whole patch,
   measured 2026-09-16 against the 2026-09-03 baseline. `Hambly` appears nowhere
