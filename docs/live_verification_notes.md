@@ -9540,6 +9540,31 @@ not occur in `docs/manual/*.md` at all - and therefore in no contract and
 neither SDK. That is a documentation lag one day after a patch, not a defect,
 so it is deliberately **not** filed in `docs/manual_defects_register.md`.
 
+Four things say "the article has not been revised yet" rather than "this is an
+internal or beta flag", and they are worth writing down because whoever decides
+what to do with the property should not have to guess again:
+
+1. **It carries a description.** `/info` gives it as
+   `{"description": " Use Hambly Eq. for Ixx", "type": "boolean"}`. Ixx is the
+   torsional constant. The placeholders this API really does carry - `/db/DRLS`'s
+   `DUMMY`, which `infoOnly` exists for - have no description at all.
+2. **Its position is the tell.** Within `SECT_BEFORE`/`SECT_AFTER`'s 57
+   properties it sits at `... USE_SHEAR_DEFORM, USE_WARPING_EFFECT,
+   USE_HAMBLY_EQ, SHAPE ...`, and the first two are rows **(11) Consider Shear
+   Deformation** and **(12) Consider Warping Effect** of the chapter's 공통
+   Specifications table - both Boolean, both default `false`, both Optional. The
+   table stops at (12). This is the third checkbox of that same group sitting in
+   row (13)'s empty seat, not a flag hidden somewhere unrelated.
+3. **Both products declare it identically.** A beta would more plausibly reach
+   one product first; this reached Gen and Civil in the same patch.
+4. **The timing needs no explanation.** The manual repo's 2026-09-15 정기 점검
+   sync (`a6947a7`) and the products' Build 09/15/2026 are the same day, so the
+   article simply had not been revised when the build shipped.
+
+None of that is proof, and nothing has sent the property to the server. It
+argues for *holding*, which is what a beta flag would argue for too - the two
+hypotheses differ in what the next sync will show, not in what to do now.
+
 **`schema/info-baseline.json` was deliberately left at its 2026-09-03 capture.**
 Both products have now been captured on the new build and the pair would make a
 valid replacement, but re-baselining is not a bookkeeping step here: CI runs
@@ -9565,3 +9590,92 @@ product)` lines - 210 of them sweeping Gen, 189 sweeping Civil - that mean only
 "this capture had no such-and-such in it". They are noise, not a finding.
 Reading that output requires filtering the other product out by hand. The
 per-product capture is not avoidable: the MAPI keys are per product.
+
+## 2026-09-16 (later) - every historical crash path re-run on Gen NX Build 09/15/2026: one crashed
+
+The author asked for the crash paths to be re-tested on the new build, then
+chose the full scope including the deliberately destructive ones, on a document
+they confirmed disposable. Work went least-destructive first, and every risky
+call was followed by a real `GET /db/NODE` - `verify_connection()` alone was
+never used as proof of liveness, because it answers `connected` through the
+relay while the product is gone.
+
+| Historical crash path | Ticket | Result on Build 09/15/2026 |
+| --- | --- | --- |
+| `/post/TABLE`, all eight Design Forces `TABLE_TYPE`s | - | all `{"message": ""}` in <0.5s; alive after each |
+| `/DESIGN/RC/KDS-41-20-2022/TABLE`, Column/Brace/Beam | MAPI-2431 | all `{}`; alive after each |
+| `PUT /db/THNL` | MAPI-2468 | full create/read/update/read/delete/read round trip **PASS** |
+| `/ope/EDMP` | MAPI-2425 | clean `Unknown Error`; alive |
+| `/ope/USLC` | MAPI-2426 | `command complete`; alive |
+| `/db/NMAS` through the SDK (normalizer on) | MAPI-2378 | full round trip **PASS** |
+| raw `POST /db/NMAS` with `rmX`/`rmY`/`rmZ` omitted | MAPI-2378 | **did not reproduce** - 201 in 0.38s, GET stored all three as `0`; alive |
+| `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK` | MAPI-2429 | 🛑 **crashed** |
+
+Nothing was hand-written. The four `/db/*` round trips ran through
+`scripts/live_crud_check.py`'s own confirmed cases; `/ope/EDMP` and `/ope/USLC`
+used the 2026-07-30 crash-reproduction shapes on the repository's
+`BASE_MODEL_STEPS` seed plus extras4's own `/db/LCOM-CONC` record; the raw NMAS
+call ran through `docs/vendor_repro_nmas.py`, which is the vendor-facing
+reproduction and bypasses the SDK entirely.
+
+**OCHECK crashed, and that is the expected result rather than a new finding.**
+Same conservative argument as every prior repro, on the repository's seed rather
+than a hand-built dummy this time: the call hung 24.06s and returned 404
+`Client Disconnected`, the follow-up `GET /db/NODE` answered 404 `client does
+not exist`, and `verify_connection()` flipped to `disconnected`. It is worth
+being precise about what is new here, because it is easy to overstate: **Gen was
+already confirmed crashing on the `/TEMP/` path on 2026-08-07.** What 2026-09-16
+adds is the current build, and the first Gen reproduction in over a month -
+`MAPI-2429` is now reproduced across four builds and both products, still
+matching MIDASIT's own "not a defect, no fix timeline" closure. No Jira action
+follows; the ticket is already closed on exactly this finding.
+
+The ordering is what makes the rest of the table mean something: the product had
+just answered eleven historically-crashing calls and four full write round trips
+without a stumble, so it was demonstrably healthy right up to the OCHECK call.
+
+**Two things this does not establish.** The `/post/TABLE` and RC-TABLE families
+were exercised against a document with no nodes, which is the same blank-model
+shape as every clean re-test since 2026-08-11 - a populated, analysed and
+designed model has still never been re-tested against them. And the raw NMAS
+call not reproducing is now its third consecutive clean result, but the
+normalizer stays in both SDKs: a server defect that stops reproducing is not the
+same as one whose fix has been stated, and the cost of keeping the mitigation is
+three fields nobody has to think about.
+
+### Civil NX, same build, same paths - all clean, OCHECK deliberately skipped
+
+The author extended the re-test to Civil NX (v2.2, Build 09/15/2026, document
+confirmed disposable) and excluded `OCHECK`: it had just been reproduced on Gen,
+it is already confirmed on Civil across three builds, and crashing a second
+product proves nothing the ticket does not already say.
+
+| Historical crash path | Result on Civil, Build 09/15/2026 |
+| --- | --- |
+| `/post/TABLE`, all eight Design Forces `TABLE_TYPE`s | all returned the established `there was an error creating utbl (ex PostMode ...)` no-result error; alive after each |
+| `/DESIGN/RC/KDS-41-20-2022/TABLE`, Column/Brace/Beam | same no-result error; alive after each |
+| `PUT /db/THNL` | full round trip **PASS** |
+| `/ope/EDMP` | clean `Unknown Error`; alive |
+| `/ope/USLC` | `command complete`; alive |
+| `/db/NMAS` through the SDK | full round trip **PASS** |
+| raw `POST /db/NMAS` with the three rotational fields omitted | **did not reproduce**, twice in the same session - 201 in ~0.4s; alive |
+
+Every modified document was checkpointed under `C:/temp` with the product's own
+`.mcbz` extension and then reset with `/doc/NEW`; both products were left on
+empty documents.
+
+### A defect in the vendor-facing reproduction script, found by running it
+
+`docs/vendor_repro_nmas.py` built every URL as `{host}/{product}{endpoint}`,
+including its own `/mapikey/verify` health check. **That endpoint is served from
+the host root with no product segment** - `client.py`'s `verify_connection()`
+strips the segment for exactly this reason - so the script's opening "연결 확인"
+line and its post-call relay probe had both been answering
+`404 Not Found, Please check your request url.` on both products.
+
+Its verdict was never wrong: the pass/fail decision reads the `/db/*` calls, not
+this one. But this is the file MIDASIT is pointed at to reproduce A-1, and it
+opened with a 404. Fixed by giving `call()` a `root=True` option for that one
+endpoint; re-run on Civil, the check now answers 200 with the normal
+`connected` body. Nothing else in the script changed, and it ships in neither
+package.

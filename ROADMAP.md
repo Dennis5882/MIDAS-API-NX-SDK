@@ -66,7 +66,6 @@ Each row is one `(date, Gen build, Civil build)` combination the ledger cites, *
 | 2026-08-17 | MIDAS Gen NX 2026 (v2.1), build 08/06/2026 | MIDAS Civil NX 2026 (v2.2), build 06/18/2026 |
 | 2026-08-17 | MIDAS Gen NX 2026 (v2.1), build 08/14/2026 | MIDAS Civil NX 2026 (v2.2), build 08/14/2026 |
 | 2026-08-17 | MIDAS Gen NX 2026 (v2.1), build 08/26/2026 | MIDAS Civil NX 2026 (v2.2), build 08/26/2026 |
-| 2026-08-24 | MIDAS Gen NX 2026 (v2.1), build 08/11/2026 | MIDAS Civil NX 2026 (v2.2), build 08/24/2026 |
 | 2026-08-25 | ? | MIDAS Civil NX 2026 (v2.2), build 08/24/2026 |
 | 2026-08-25 | MIDAS Gen NX 2026 (v2.1), build 08/20/2026 | MIDAS Civil NX 2026 (v2.2), build 07/29/2026 |
 | 2026-08-25 | MIDAS Gen NX 2026 (v2.1), build 08/20/2026 | MIDAS Civil NX 2026 (v2.2), build 08/06/2026 |
@@ -87,6 +86,7 @@ Each row is one `(date, Gen build, Civil build)` combination the ledger cites, *
 | 2026-09-12 | ? | MIDAS Civil NX 2026 (v2.2), build 09/02/2026 |
 | 2026-09-12 | MIDAS Gen NX 2026 (v2.1), build 09/02/2026 | MIDAS Civil NX 2026 (v2.2), build 09/02/2026 |
 | 2026-09-14 | MIDAS Gen NX 2026 (v2.1), build 09/02/2026 | MIDAS Civil NX 2026 (v2.2), build 09/02/2026 |
+| 2026-09-16 | MIDAS Gen NX 2026 (v2.1), build 09/15/2026 | MIDAS Civil NX 2026 (v2.2), build 08/24/2026 |
 | 2026-09-16 | MIDAS Gen NX 2026 (v2.1), build 09/15/2026 | MIDAS Civil NX 2026 (v2.2), build 09/15/2026 |
 
 > Static snapshot; re-run scripts/vendor_coverage.py to refresh. POST result-table types and the three Design Code chapters (25-27) are not itemized by URL in INDEX.md and are represented as single aggregate rows rather than one row per table/check.

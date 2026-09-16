@@ -637,7 +637,12 @@ the source for branch-conditional requiredness.
   (boolean) on **both** products — the only schema change in the whole patch,
   measured 2026-09-16 against the 2026-09-03 baseline. `Hambly` appears nowhere
   in the manual repository, so the only permitted source that knows about it is
-  `/info`. Two things are entangled and neither is yours to settle: whether
+  `/info`. The evidence leans toward an unrevised article rather than a hidden
+  flag - it has a description, and it sits in the seat after the chapter's rows
+  (11) and (12), the other two checkboxes of its group - which is recorded in
+  `docs/live_verification_notes.md` under 2026-09-16. **The check at the next
+  manual sync is concrete: does `04_DB_Properties.md`'s 공통 Specifications
+  table grow a row (13)?** Two things are entangled and neither is yours to settle: whether
   `contracts/endpoints/db-sect.yaml` records it now from `/info` or waits for
   the next MIDASIT sync, and whether `schema/info-baseline.json` is re-captured
   on the new builds — which cannot happen first, because CI's

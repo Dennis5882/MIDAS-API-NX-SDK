@@ -50,7 +50,8 @@ def main() -> int:
     parser.add_argument("key", nargs="?", default=None)
     parser.add_argument("--product", choices=["civil", "gen"], default="civil")
     args = parser.parse_args()
-    base = f"https://moa-engineers.midasit.com:443/{args.product}"
+    host = "https://moa-engineers.midasit.com:443"
+    base = f"{host}/{args.product}"
 
     key = args.key or os.getenv("MIDAS_MAPI_KEY", "")
     if not key:
@@ -60,12 +61,18 @@ def main() -> int:
     headers = {"Content-Type": "application/json", "MAPI-Key": key}
     start = time.time()
 
-    def call(label, method, endpoint, body=None):
-        """요청 1건을 보내고 소요시간과 결과를 출력한다. 타임아웃이면 False."""
+    def call(label, method, endpoint, body=None, *, root=False):
+        """요청 1건을 보내고 소요시간과 결과를 출력한다. 타임아웃이면 False.
+
+        root=True 는 제품 세그먼트(/gen, /civil)를 붙이지 않습니다.
+        /mapikey/verify 만 호스트 루트에서 서비스되며, 제품 세그먼트를 붙이면
+        404 를 반환합니다 (2026-09-16 양 제품에서 확인).
+        """
         t = time.time()
         try:
             response = requests.request(
-                method, base + endpoint, headers=headers, json=body, timeout=TIMEOUT
+                method, (host if root else base) + endpoint,
+                headers=headers, json=body, timeout=TIMEOUT
             )
         except requests.exceptions.ReadTimeout:
             print(f"[{time.time() - start:5.1f}s] TIMEOUT  {label:38} "
@@ -77,7 +84,7 @@ def main() -> int:
         return True
 
     print(f"대상: {base}")
-    if not call("연결 확인", "GET", "/mapikey/verify"):
+    if not call("연결 확인", "GET", "/mapikey/verify", root=True):
         return 2
 
     print("\n--- 준비: 절점 생성 (9001 이상만 사용) ---")
@@ -99,7 +106,7 @@ def main() -> int:
                  {"Assign": {"9001": {"mX": 1.0, "mY": 1.0, "mZ": 1.0}}})
 
     print("\n--- 호출 이후 상태 ---")
-    call("GET /mapikey/verify (릴레이가 응답)", "GET", "/mapikey/verify")
+    call("GET /mapikey/verify (릴레이가 응답)", "GET", "/mapikey/verify", root=True)
     app_alive = call("GET /db/NODE (제품이 응답)", "GET", "/db/NODE")
 
     print()
