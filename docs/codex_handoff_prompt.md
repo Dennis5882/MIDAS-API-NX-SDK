@@ -35,8 +35,8 @@ Then, in this order.
 
 **With a product session:**
 
-0. **Task H** — one GET on each product for `DESIGN/STEEL/DSTL`. Read-only, a
-   minute, and it unblocks that endpoint's contract.
+0. **Task H** — **the live half is done** (2026-09-16, both products on Build
+   09/15/2026). What is left is the contract, which is offline work.
 1. **Task F** — replay the 52 already-confirmed fixtures the npm harness has
    never run. Python has confirmed cases on 166 endpoints; npm evidence covers
    113. Most need only replay; fixture-only blockers must remain distinct from
@@ -89,7 +89,8 @@ cd packages/typescript && npm run generate && npm run typecheck && npm test
 ```
 
 Coverage as `ROADMAP.md` reports it: **400/400 implemented, 200 write / 199
-read / 1 not live-verified** — `DESIGN/STEEL/DSTL`, see Task H.
+read**, nothing unverified — `DESIGN/STEEL/DSTL` answered on both products on
+2026-09-16; see Task H for what is left of it.
 `schema/live-cases.json` is **version 5**: 212 cases over 189 endpoints, 177
 confirmed, 9 base-model steps, 64 named seeds. npm live evidence: **113 `/db`
 endpoints**. `extraction.unmergedTables`: **72 tables, 482 names, 15
@@ -117,7 +118,7 @@ What reflecting it actually took, so the next sync is not a surprise:
 | --- | --- |
 | `/db/MATD` gained `bSERVCHECK`, `dSHORTTERM`, `dLONGTERM` | added as `requirement: unstated`. The manual's JSON Schema and live `/info` on both products both declare them; the manual's table and example do not, so nothing about when they apply is recorded |
 | `/db/TDNA`'s `CURVE` block gained `bPJ` | added to that variant; `ELEMENT` and `STRAIGHT` already had it |
-| `DESIGN/STEEL/DSTL` documented as a new endpoint | added to both SDKs — see Task H. **Not `/db/DSTL`**, which shares the name |
+| `DESIGN/STEEL/DSTL` documented as a new endpoint | added to both SDKs, and read-verified on both products 2026-09-16 — see Task H. **Not `/db/DSTL`**, which shares the name |
 | `OPT_CS` documented as three states | omitting it keeps the current view, `false` switches to the final stage. Both SDKs already omitted it by default; the contract no longer records `false` as its default |
 | 108 manual line anchors across 59 contracts moved | re-anchored mechanically from a line-by-line mapping of the two manual versions, with zero anchors whose original line had itself changed |
 | every other hunk | `⚠️` callout text only — typos MIDASIT has since fixed upstream, and locale notes. No contract or SDK change |
@@ -145,14 +146,19 @@ row. Map the whole file.
 **Live, read-only. Safe against an open model — the only task here that is.**
 
 `DESIGN/STEEL/DSTL` (chapter 25 §0, the steel counterpart of `DESIGN/RC/DRC`)
-was added to both SDKs on 2026-09-16 from the manual alone. It has **no
-contract**: `promote_contract.py` refuses a draft with no live record in
-`docs/coverage.json`, which is correct, and the npm resource is generated from
-the Python class until then.
+was added to both SDKs on 2026-09-16 from the manual alone. It still has **no
+contract**, but the reason it could not have one is gone.
 
-1. `GET /DESIGN/STEEL/DSTL` on Gen and on Civil — `live_readonly_sweep.py` or
-   `npm run live:readonly`, whichever SDK you are checking. GET only.
-2. Record it in `docs/coverage.json` with `level: "read"` and the build.
+**Steps 1 and 2 are done, on both products.** On 2026-09-16 the endpoint
+answered `{"message": ""}` on MIDAS Gen NX 2026 v2.1 and MIDAS Civil NX 2026
+v2.2, both Build 09/15/2026, through the published 2.8.2 of *both* packages —
+so its declared `products: [gen, civil]` is confirmed rather than assumed — and
+`docs/coverage.json` carries it as `level: "read"`. `promote_contract.py`, which
+refuses a draft with no live record and is right to, will no longer refuse this
+one. **What is left is step 3, and it is offline: you can do it now.**
+
+1. ~~`GET` on Gen and Civil~~ done.
+2. ~~Record it in `docs/coverage.json`~~ done.
 3. `python scripts/extract_contracts.py --emit /DESIGN/STEEL/DSTL`, then
    `python scripts/promote_contract.py design-steel-dstl`, then
    `validate_contracts.py` and `npm run generate`. The generated npm resource
@@ -598,7 +604,7 @@ Completed after the first Task E batch. `/db/MVCTbs`, `/db/MVCTid` and
 Python TypedDict comments. The annotations did not change; the contracts remain
 the source for branch-conditional requiredness.
 
-## Four decisions that are open and are not yours
+## Five decisions that are open and are not yours
 
 - **`/db/SPLC`'s `NDP` requiredness.** Merging the 비소산 요소 설계 table gave
   the contract a Gen-only `NDP` marked `required` with no condition, and the
@@ -626,6 +632,20 @@ the source for branch-conditional requiredness.
   own an id a seed can take is a fixture-design call.
 - **`/db/ACTL`.** Gen refuses every payload including a `required`-only one;
   Civil accepts and will not persist `TOL`. A vendor-report item, not an SDK one.
+- **`/db/SECT`'s `USE_HAMBLY_EQ`, and with it the `/info` baseline.** Build
+  09/15/2026 added `SECT_BEFORE.USE_HAMBLY_EQ` and `SECT_AFTER.USE_HAMBLY_EQ`
+  (boolean) on **both** products — the only schema change in the whole patch,
+  measured 2026-09-16 against the 2026-09-03 baseline. `Hambly` appears nowhere
+  in the manual repository, so the only permitted source that knows about it is
+  `/info`. Two things are entangled and neither is yours to settle: whether
+  `contracts/endpoints/db-sect.yaml` records it now from `/info` or waits for
+  the next MIDASIT sync, and whether `schema/info-baseline.json` is re-captured
+  on the new builds — which cannot happen first, because CI's
+  `--against-contracts --check` fails when the uncontracted set grows. Both
+  products were captured on 2026-09-16, but into a session scratch directory
+  that does not survive the session, so a re-baseline means sweeping both
+  products live again. **Do not re-capture the baseline as a side effect
+  of anything else.**
 
 ---
 

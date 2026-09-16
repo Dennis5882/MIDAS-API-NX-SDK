@@ -5,7 +5,18 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-09-16 — **2.8.2 published** to PyPI and npm, additive on both:
+> Last updated: 2026-09-16 (later) — **the published 2.8.2 was swept against both
+> products on Build 09/15/2026**, each surface installed from its registry:
+> 268/268 GET-capable resources answer on Gen and 283/283 on Civil, through PyPI
+> and npm alike. That run took `DESIGN/STEEL/DSTL` from the ledger's one
+> unverified endpoint to read level on **both** products, so live coverage is now
+> **400/400 (200 write / 200 read)**. `/info` moved by exactly one property in the
+> patch, identically on both — `/db/SECT` gained `USE_HAMBLY_EQ` on
+> `SECT_BEFORE`/`SECT_AFTER`, which the manual documents nowhere yet;
+> `schema/info-baseline.json` is deliberately still the 2026-09-03 capture until
+> that property has somewhere to live.
+>
+> Earlier the same day — **2.8.2 published** to PyPI and npm, additive on both:
 > `DESIGN/STEEL/DSTL` (the steel design-code selector, not `/db/DSTL`), three
 > `/db/MATD` members, `bPJ` on the curved tendon profile, and a corrected
 > three-state `OPT_CS` description. The manual repo is reflected through
@@ -323,7 +334,7 @@ they're the ones worth re-checking before planning a release):
 | Response handling | 200-with-`error` body, non-JSON body, empty-table shapes, failed-analysis message | ✅ hardened in v0.12.0/v0.14.0 |
 | Write verification | `scripts/live_crud_check.py` and `packages/typescript/scripts/live-crud.mjs`, both replaying `schema/live-cases.json` v5 — create/read/update/delete round trips, **158 of 188 cases confirmed** | ✅ `/db/STRPSSM` joined the confirmed set on Civil NX 2026 v2.2 after replacing the stale manual `PY`/`PZ` point keys with live `/info`'s `Y`/`Z`. `/db/NMAS` used to crash **both** products, root-caused 2026-07-29 (omitted `rmX`/`rmY`/`rmZ`) and worked around in `NodalMass.create()`/`.update()` |
 | Version metadata | `__init__.py` `__version__` (hatchling `dynamic`) + `tests/test_version.py` + a tag↔`__version__` check in `publish.yml` | ✅ single source, enforced at release |
-| Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 399/400 recorded, split by `level`: **200 write / 199 read / 1 unverified** as of 2026-09-16 — the unverified one is `DESIGN/STEEL/DSTL`, added from the manual that day and not yet called against a product. Write level means a call changed model data or wrote a host file; read includes route/schema checks and POST-shaped reads. The build baseline is Gen NX 2026 v2.1 and Civil NX 2026 v2.2, both **Build 09/02/2026**, author-confirmed 2026-09-06. Five entries dated 2026-09-06 had recorded 08/26 and 08/27 and were corrected: **the API reports no build anywhere**, so every such string is a human reading the About dialog and one that was not read is not a measurement. |
+| Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 400/400 recorded, split by `level`: **200 write / 200 read** as of 2026-09-16 — `DESIGN/STEEL/DSTL` was the last unverified one and answered on Gen and Civil alike through both published SDKs that day, at read level; no live call has sent it a payload. Write level means a call changed model data or wrote a host file; read includes route/schema checks and POST-shaped reads. The build baseline is Gen NX 2026 v2.1 and Civil NX 2026 v2.2, both **Build 09/15/2026**, each read from its own About dialog and author-confirmed 2026-09-16. Five entries dated 2026-09-06 had recorded 08/26 and 08/27 and were corrected: **the API reports no build anywhere**, so every such string is a human reading the About dialog and one that was not read is not a measurement. |
 | Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md`, `docs/ai-coding/`, `docs/index.md`, `docs/safety.md` risk levels, `docs/recipes/`, `docs/ko/python-basics.md` | ✅ first example read-only + AI-assistant path (v2.1.2); recipe pilot + ko minimal-Python primer + real-session-verified MAPI key step (2026-08-04); ⚠️ still text-only, no screenshots |
 | Practitioner layer | Excel round-trip, `recipes`/`easy`, opt-in validation | ❌ not started |
 

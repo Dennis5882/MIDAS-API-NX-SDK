@@ -13,8 +13,12 @@ the bottom before acting on anything here.
 Date: 2026-07-15. One MIDASIT account, one Gen NX process, one Civil NX
 process, both freshly reset via `/doc/new` before testing.
 
-**Current live-session baseline (2026-09-06, author-confirmed):** MIDAS Gen NX
-2026 v2.1, Build 09/02/2026; MIDAS Civil NX 2026 v2.2, Build 09/02/2026.
+**Current live-session baseline (2026-09-16, author-confirmed):** MIDAS Gen NX
+2026 v2.1, **Build 09/15/2026**; MIDAS Civil NX 2026 v2.2, **Build 09/15/2026**.
+Both were read from their own About dialogs on 2026-09-16. The two products
+carry the same build date for the first time in this file's history - they have
+been patched separately all year - so do not infer one from the other next time
+either; read both.
 Record this baseline with every new live finding; it supersedes an endpoint's
 older build metadata only when that endpoint was actually exercised in this
 session.
@@ -9475,3 +9479,89 @@ All eight `boundary` endpoints (`/db/ELNK`, `/db/FRLS`, `/db/GSPR`,
 through npm and Python on both Gen and Civil, Build 09/02/2026. Every run was
 checkpointed under `C:/temp` and restored to an empty document. No fixture,
 SDK, or product disagreement surfaced in this tier.
+
+## 2026-09-16 - Build 09/15/2026 on both products, and the published 2.8.2 checked from both registries
+
+Gen NX and Civil NX both moved to **Build 09/15/2026** (MIDAS Gen NX 2026 v2.1,
+MIDAS Civil NX 2026 v2.2), each read from its own About dialog. This is the
+first time in this file's history that the two products carry the same build
+date; they have been patched on separate schedules all year, so this is a
+coincidence to check rather than a rule to rely on. Everything below was run
+GET only, against the documents the author had open - no `/doc/NEW`, no write
+of any kind.
+
+**What was tested is the published package, not this working tree.** Both
+surfaces were installed fresh from their registries into a scratch directory
+(`pip install midas-nx==2.8.2`, `npm i midas-nx@2.8.2`) and the read-only
+sweeps were pointed at those installs, so a result here is what a user who
+installs 2.8.2 today gets. PyPI published 2026-09-15T17:13Z, npm
+2026-09-15T17:08Z.
+
+| product | surface | swept | answered | failed |
+| --- | --- | --- | --- | --- |
+| Gen | PyPI `midas-nx` 2.8.2 | 268 GET-capable resources | 268 | 0 |
+| Gen | npm `midas-nx` 2.8.2 | 268 of 305 declared serve GET | 268 | 0 |
+| Civil | PyPI `midas-nx` 2.8.2 | 283 GET-capable resources | 283 | 0 |
+| Civil | npm `midas-nx` 2.8.2 | 283 of 305 declared serve GET | 283 | 0 |
+
+The two SDKs agree exactly on both products, as they did on 2026-09-03 at 267
+and 282; the extra one on each side is `DESIGN/STEEL/DSTL`, added in 2.8.2. npm
+additionally reported 6 endpoints carrying data on Gen and 7 on Civil, which is
+a property of the open documents, not of the build.
+
+### `DESIGN/STEEL/DSTL` answered on both products - the ledger's last unverified endpoint
+
+It returned `{"message": ""}`, the documented zero-row shape, on Gen and on
+Civil, through both published SDKs. Its declared `products: [gen, civil]` is
+therefore confirmed rather than assumed, and `docs/coverage.json` now records
+it at `level: "read"`, taking live coverage to **400/400 (200 write / 200
+read)**. What this does *not* do is send it a payload: the endpoint selects a
+project's steel design code, and nothing has yet put a value into it.
+
+### The patch changed one schema, identically on both products: `/db/SECT` gains `USE_HAMBLY_EQ`
+
+`scripts/info_baseline.py --capture` per product, then `--diff` against
+`schema/info-baseline.json` (captured 2026-09-03 on Build 09/02/2026), reports
+exactly one difference on each side and it is the same one - 189 pairs compared
+on Gen, 210 on Civil:
+
+```
+CHANGED  /db/SECT (gen)              CHANGED  /db/SECT (civil)
+  + SECT_AFTER.USE_HAMBLY_EQ (bool)    + SECT_AFTER.USE_HAMBLY_EQ (bool)
+  + SECT_BEFORE.USE_HAMBLY_EQ (bool)   + SECT_BEFORE.USE_HAMBLY_EQ (bool)
+```
+
+Nothing else changed, gained or disappeared, on either product. Because both
+products declare it, this is not one of the ten schema divergences and needs no
+per-product tag.
+
+The new property appears **nowhere in the manual repository** - `Hambly` does
+not occur in `docs/manual/*.md` at all - and therefore in no contract and
+neither SDK. That is a documentation lag one day after a patch, not a defect,
+so it is deliberately **not** filed in `docs/manual_defects_register.md`.
+
+**`schema/info-baseline.json` was deliberately left at its 2026-09-03 capture.**
+Both products have now been captured on the new build and the pair would make a
+valid replacement, but re-baselining is not a bookkeeping step here: CI runs
+`info_baseline.py --against-contracts --check`, which fails when the set of
+declared-but-uncontracted properties grows, and `USE_HAMBLY_EQ` is exactly such
+a property. Committing a new baseline therefore means first deciding what
+`contracts/endpoints/db-sect.yaml` says about it - `/info` is a permitted
+source for a `/db/*` contract, so `requirement: unstated` is available - or
+waiting for the next MIDASIT manual sync to document it. That decision is the
+author's; until it is made, the 2026-09-03 baseline is still the right thing to
+diff against, and this section is the record of the one property that differs.
+
+Two things these runs do not prove, both worth restating because a clean sweep
+invites the opposite reading: they prove 268 and 283 routes exist, answer and
+parse on the new builds, and they prove nothing whatsoever about request
+shapes, because the server never saw a payload.
+
+### A wrinkle in the diff tool, not in the product
+
+`--diff --product <p>` filters the *fresh* capture by product but not the
+baseline, so a single-product capture reads as a wall of `GONE ... (other
+product)` lines - 210 of them sweeping Gen, 189 sweeping Civil - that mean only
+"this capture had no such-and-such in it". They are noise, not a finding.
+Reading that output requires filtering the other product out by hand. The
+per-product capture is not avoidable: the MAPI keys are per product.
