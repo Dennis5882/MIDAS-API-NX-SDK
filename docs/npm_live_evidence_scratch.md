@@ -1,10 +1,17 @@
 # npm live-evidence inventory (scratch)
 
-Read-only extraction from `docs/live_verification_notes.md` on 2026-09-01.
-This is an inventory, not a coverage or schema change. An entry appears only
-when the notes explicitly say the built npm package completed the operation.
-`docs/coverage.json` remains the authoritative endpoint ledger; this scratch
-file separately records which completed operations also passed through npm.
+Started as a read-only extraction from `docs/live_verification_notes.md` on
+2026-09-01, and has been appended to session by session since. An entry appears
+only when a session record says the built npm package completed the operation.
+`docs/coverage.json` remains the authoritative endpoint ledger; this file is the
+session record behind the npm part of it.
+
+**It is enforced.** `scripts/report_npm_replay_coverage.py --check` fails when
+`docs/coverage.json` claims an npm replay this file records no session for.
+That check exists because a ledger entry is a claim and this file is the
+evidence: on 2026-09-16 four entries were written citing a notes section that
+did not mention them, and nothing could see it. So append here in the same
+commit that writes the claim - a run this file does not carry does not count.
 
 ## Completed DB endpoints
 
@@ -156,5 +163,102 @@ file separately records which completed operations also passed through npm.
   the fifteen affected endpoints were re-run on both products on 2026-09-05.
   They are counted above; see the live notes for the run.
 
-**Count:** 113 distinct `/db` endpoints and 4 distinct result-table operations;
-117 distinct npm public-API operations overall.
+### Current-build static batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/ETMP` | 2026-09-16 | Gen, Civil |
+| `/db/FBLD` | 2026-09-16 | Gen, Civil |
+| `/db/LTOM` | 2026-09-16 | Gen, Civil |
+| `/db/NBOF` | 2026-09-16 | Gen, Civil |
+| `/db/NTMP` | 2026-09-16 | Gen, Civil |
+| `/db/PRES` | 2026-09-16 | Gen, Civil |
+| `/db/PSLT` | 2026-09-16 | Gen, Civil |
+| `/db/SDSP` | 2026-09-16 | Gen, Civil |
+
+### Current-build dynamic-load batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/SPFC` | 2026-09-16 | Gen, Civil |
+| `/db/THGA` | 2026-09-16 | Gen, Civil |
+| `/db/THIS` | 2026-09-16 | Gen, Civil |
+| `/db/THMS` | 2026-09-16 | Gen, Civil |
+| `/db/THNL` | 2026-09-16 | Gen, Civil |
+| `/db/THSL` | 2026-09-16 | Gen, Civil |
+
+### Current-build analysis-control batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/BCCT` | 2026-09-16 | Gen, Civil |
+| `/db/BUCK` | 2026-09-16 | Gen, Civil |
+| `/db/PDEL` | 2026-09-16 | Gen, Civil |
+
+### Current-build bridge batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/CAMB` | 2026-09-16 | Civil |
+| `/db/GCMB` | 2026-09-16 | Civil |
+| `/db/GSBG` | 2026-09-16 | Civil |
+| `/db/ULFC` | 2026-09-16 | Gen, Civil |
+
+### Current-build static-load batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/FMLD` | 2026-09-16 | Gen, Civil |
+| `/db/PNLA` | 2026-09-16 | Gen, Civil |
+| `/db/POSL` | 2026-09-16 | Gen, Civil |
+| `/db/POSP` | 2026-09-16 | Gen |
+
+### Current-build moving-load batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/LLAN` | 2026-09-16 | Gen, Civil |
+| `/db/MVHC` | 2026-09-16 | Gen, Civil |
+| `/db/MVLD` | 2026-09-16 | Gen, Civil |
+
+### Current-build construction-stage batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/STAG` | 2026-09-16 | Gen, Civil |
+| `/db/TMLD` | 2026-09-16 | Gen, Civil |
+| `/db/CRPC` | 2026-09-16 | Gen, Civil |
+| `/db/CMCS` | 2026-09-16 | Civil |
+
+### Current-build heat-of-hydration subset
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/HAHS` | 2026-09-16 | Gen, Civil |
+| `/db/STBK` | 2026-09-16 | Gen, Civil |
+| `/db/HSTG` | 2026-09-16 | Gen, Civil |
+
+### Current-build load-combination batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/LCOM-SRC` | 2026-09-16 | Gen, Civil |
+| `/db/LCOM-STEEL` | 2026-09-16 | Gen, Civil |
+| `/db/LCOM-STLCOMP` | 2026-09-16 | Gen, Civil |
+
+### Current-build lane-optimization batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/LLANop` | 2026-09-16 | Civil |
+| `/db/SLAN` | 2026-09-16 | Gen, Civil |
+| `/db/SLANop` | 2026-09-16 | Civil |
+
+### Current-build core group batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/BNGR` | 2026-09-16 | Gen, Civil |
+
+**Count:** 155 distinct `/db` endpoints and 4 distinct result-table operations;
+159 distinct npm public-API operations overall.

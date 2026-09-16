@@ -4455,8 +4455,8 @@ def _mark(row: Dict[str, Any]) -> str:
 #: listed: renumbering is a live observation, never something to assume for a
 #: seed nobody has watched.
 RENUMBERING_SEEDS = frozenset({
-    "dl14_seed", "prestress_load_cases", "smpt_seed", "spfc_seed", "thfc_seed",
-    "thfc_force_seed", "this_seed",
+    "dl14_seed", "pnld_seed", "prestress_load_cases", "smpt_seed", "spfc_seed",
+    "thfc_seed", "thfc_force_seed", "this_seed",
 })
 
 

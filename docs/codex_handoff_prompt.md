@@ -104,6 +104,8 @@ python scripts/report_dropped_manual_rows.py \
 python scripts/live_crud_check.py --check-cases        # silent; exit 0
 python scripts/check_fixture_contract.py --check       # 1 fixture lead over 1
                                           # endpoint, 3 contract gaps over 2
+python scripts/report_npm_replay_coverage.py --check   # 166 confirmed; 155 npm
+                                          # replays (154 confirmed); gap 12
 python scripts/report_unmerged_tables.py --check       # report is current
 cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 78 tests
@@ -122,13 +124,13 @@ against both that day: 268/268 GET-capable resources answer on Gen, 283/283 on
 Civil, identically through PyPI and npm. `/info` moved by exactly one property
 in the patch, on both products; that is Task J.
 
-**npm live evidence has no number you can trust.** This file used to say 113
-`/db` endpoints. It is recorded *in prose in* `docs/live_verification_notes.md`
-and nowhere a command can read: `docs/coverage.json` mentions npm in exactly
-**4** entries, and reconstructing from every notes section whose heading
-mentions npm recovers **56** endpoints, against 166 with a confirmed Python
-case. Neither 4 nor 56 is the answer, and 113 cannot be checked. **Do not quote
-a gap number until Task F-0 makes one derivable.** `extraction.unmergedTables`: **72 tables, 482 names, 15
+**npm live evidence is derivable.** Task F-0 backfilled the 113 explicit npm
+replays from the notes inventory into `docs/coverage.json` and
+`scripts/report_npm_replay_coverage.py --check` now measures them. One
+historical replay (`/db/DSTL`) has an unconfirmed fixture, so the Task F scope
+is **154 of 166 confirmed endpoints**, with a gap of **12** after the current
+Build 09/15/2026 batches, including lane optimization and the BNGR core case.
+`extraction.unmergedTables`: **72 tables, 482 names, 15
 contracts**. Drafts: 3, the IEHG trio, refused for a reason that will not go
 away — that is the finished state, not a backlog.
 
@@ -289,29 +291,17 @@ that stops reproducing is not one whose fix has been stated.
 **Live. Destructive: `/doc/NEW`. The largest remaining block of work, and the
 one with the least judgement in it.**
 
-**Task F-0 comes first, and it is offline.** The gap this section used to
-state — 52, from 166 confirmed minus 113 replayed — **cannot be re-derived from
-the tree**. npm replay is recorded in prose in `docs/live_verification_notes.md`;
-`docs/coverage.json` carries it in 4 entries, and parsing every notes section
-whose heading mentions npm recovers 56 endpoints. So the true gap is somewhere
-between 110 and roughly 53 and nothing in the repository says which.
-
-This matters more than the bookkeeping sounds. A wrong gap number does not just
-misreport progress — it sends a live session at endpoints that were already
-replayed, and a session is the scarce thing.
-
-Make it derivable before running anything: record npm replay where a command can
-read it. The 4 `docs/coverage.json` entries that already say *"npm replayed the
-same emitted fixture"* in their `method` are the existing shape; follow it
-rather than inventing a field, and backfill from the notes sections, which name
-their endpoints explicitly. Then state the gap with the command that produced
-it.
+**Task F-0 is complete.** npm replay is now recorded in the authoritative
+ledger with the existing *"npm replayed the same emitted fixture"* method
+phrase, and `python scripts/report_npm_replay_coverage.py --check` derives the
+scope below. A wrong gap number wastes the scarce product session, so run that
+command rather than hand-counting before each later batch.
 
 | | |
 | --- | ---: |
 | endpoints with a `confirmed` Python case | 166 (derivable, from `schema/live-cases.json`) |
-| endpoints recorded as replayed through npm | **not derivable** |
-| the gap | **not derivable** |
+| endpoints recorded as replayed through npm | 155 total; **154 confirmed** |
+| the gap | **12** |
 | confirmed cases flagged `blockedSeeds` | 3 |
 
 Nothing in the replay itself needs building and nothing needs deciding. The fixture exists, it
@@ -337,17 +327,9 @@ The gap by tier, which is also how to batch it — the harness selects by
 | tier | n | endpoints |
 | --- | ---: | --- |
 | `extras14` | 3 | `BCGA-M1`, `DYFG`, `DYNF` |
-| `static` | 8 | `ETMP`, `FBLD`, `LTOM`, `NBOF`, `NTMP`, `PRES`, `PSLT`, `SDSP` |
-| `extras5` | 6 | `SPFC`, `THGA`, `THIS`, `THMS`, `THNL`, `THSL` |
-| `extras8` | 5 | `BCCT`, `BUCK`, `HHCT`, `NLCT`, `PDEL` |
-| `extras12` | 4 | `CAMB`, `GCMB`, `GSBG`, `ULFC` |
-| `extras7` | 4 | `FMLD`, `PNLA`, `POSL`, `POSP` |
-| `moving` | 4 | `LLAN`, `MVHC`, `MVHL`, `MVLD` |
-| `stage` | 4 | `CMCS`, `CRPC`, `STAG`, `TMLD` |
-| `extras10` | 3 | `HAHS`, `HSTG`, `STBK` |
-| `extras4` | 3 | `LCOM-SRC`, `LCOM-STEEL`, `LCOM-STLCOMP` |
-| `lanes_optimization` | 3 | `LLANop`, `SLAN`, `SLANop` |
-| `core` | 2 | `BNGR`, `GRUP` |
+| `extras8` (remaining) | 2 | `HHCT`, `NLCT` (Civil fixture failures) |
+| `moving` (remaining) | 1 | `MVHL` (target-ID renumbering unsupported by npm harness) |
+| `core` | 1 | `GRUP` |
 | `props` · `moving_impact` · `lanes_bs` | 3 | `TMAT`, `IMPF`, `SLAN` |
 
 **Three are blocked and are not defects.** `/db/PJCF` needs `pjcf_unlock`,

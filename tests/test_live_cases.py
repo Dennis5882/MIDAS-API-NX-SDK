@@ -333,7 +333,8 @@ def test_live_case_fixture_carries_complete_manual_splc_and_thms_shapes() -> Non
 
 
 def test_live_case_fixture_marks_reconfirmed_plane_load_type() -> None:
-    cases = json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    cases = fixture["cases"]
     pnld = next(case for case in cases if case["endpoint"] == "/db/PNLD")
 
     assert pnld["confirmed"] is True
@@ -343,6 +344,9 @@ def test_live_case_fixture_marks_reconfirmed_plane_load_type() -> None:
     # Python runner has always built it. The npm harness gets it too now.
     assert pnld["needs"] == ["pnld_seed"]
     assert pnld["setup"] == [{"seed": "pnld_seed"}]
+    # Live confirms the product ignores requested key 90 and assigns key 1;
+    # npm must verify the preserved NAME rather than treating that as failure.
+    assert fixture["seeds"]["pnld_seed"]["allowRenumbering"] is True
 
 
 def test_live_case_fixture_uses_complete_manual_seismic_damper_examples() -> None:

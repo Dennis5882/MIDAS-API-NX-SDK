@@ -9679,3 +9679,134 @@ opened with a 404. Fixed by giving `call()` a `root=True` option for that one
 endpoint; re-run on Civil, the check now answers 200 with the normal
 `connected` body. Nothing else in the script changed, and it ships in neither
 package.
+
+### 2026-09-16 — Task I boundary: `DESIGN/STEEL/DSTL`
+
+On a disposable empty document, `GET /DESIGN/STEEL/DSTL` answered `200` with
+`{"message": ""}` on both Gen NX 2026 v2.1 and Civil NX 2026 v2.2, Build
+09/15/2026. The manual's documented design-code selection was absent from that
+response, so there was no observed original value to restore. No `PUT` and no
+`DELETE` were sent: a write followed by a guessed revert would not be a safe
+round trip. This remains a read-level confirmation and a documented live block,
+not a rejection of the manual payload.
+
+### 2026-09-16 — npm/Python replay: static fixture batch
+
+On fresh disposable documents checkpointed below `C:/temp`, the npm package and
+the Python SDK each replayed the same emitted confirmed fixtures for
+`/db/ETMP`, `/db/FBLD`, `/db/LTOM`, `/db/NBOF`, `/db/NTMP`, `/db/PRES`,
+`/db/PSLT`, and `/db/SDSP`. Every endpoint completed its full
+create → get → update → get → delete round trip on both Gen NX 2026 v2.1 and
+Civil NX 2026 v2.2, Build 09/15/2026. Each harness reset the document with
+`/doc/NEW`; final `GET /db/NODE` and `GET /db/ELEM` checks were empty on both
+products.
+
+### 2026-09-16 — npm/Python replay: dynamic-load batch
+
+On fresh disposable documents checkpointed below `C:/temp`, both SDKs completed
+the same emitted fixture round trips for `/db/SPFC`, `/db/THGA`, `/db/THIS`,
+`/db/THMS`, `/db/THNL`, and `/db/THSL` on Gen NX 2026 v2.1 and Civil NX 2026
+v2.2, Build 09/15/2026. Every npm run and every Python run completed
+create → get → update → get → delete for all six resources. Both products were
+reset through `/doc/NEW` after the batch.
+
+### 2026-09-16 — Civil-only `extras14` replay result
+
+`/db/BCGA-M1`, `/db/DYFG`, and `/db/DYNF` are Civil-only cases, so Gen was not
+called. The npm harness safely blocked `BCGA-M1` because its emitted setup
+names `/db/BNGR` as individually non-cleanable; Python completed that existing
+case. Both SDKs received the same current-server rejections for the other two:
+`DYFG` requires the moving-load code to be Eurocode and `DYNF` is applicable
+only to Moving Code EUROCODE. This is not counted as npm replay completion.
+The Python harness independently reports both as current regressions; no SDK
+behaviour claim is made because the two clients exposed the same server result.
+The Civil document was reset to empty after each attempt.
+
+### 2026-09-16 — npm/Python replay: analysis-control subset
+
+`/db/BUCK` and `/db/PDEL` completed their emitted fixture round trips through
+both packages on Gen NX and Civil NX, Build 09/15/2026. `/db/BCCT` also passed
+on both products once it was intentionally run as a one-case npm batch: its
+`/db/BNGR` prerequisite has no DELETE operation, so the final `/doc/NEW` reset
+owned its cleanup. Python completed the same three endpoints on both products.
+
+`/db/HHCT` and `/db/NLCT` passed on Gen through both SDKs but failed on Civil
+through both SDKs. HHCT's POST succeeds but the expected value does not read
+back; NLCT returns that `LINE_SEARCH_OPTION` is required when
+`OPT_ENABLE_LINE_SEARCH` is true. Neither is counted as an npm replay success;
+the identical outcomes are retained as product/fixture evidence rather than
+claimed as an SDK divergence. Every run was checkpointed under `C:/temp` and
+finished with a fresh document.
+
+### 2026-09-16 — npm/Python replay: bridge batch
+
+`/db/ULFC` completed its emitted fixture on both SDKs and both products.
+Civil-only `/db/CAMB`, `/db/GCMB`, and `/db/GSBG` likewise passed through npm
+and Python. Each bridge group case ran as a one-case npm batch because its
+`/db/GRUP` setup cannot be individually deleted; the terminal `/doc/NEW`
+reset therefore owned cleanup. Checkpoints remained under `C:/temp`, and each
+product returned to an empty document.
+
+### 2026-09-16 — npm/Python replay: static-load subset
+
+`/db/FMLD`, `/db/PNLA`, and `/db/POSL` passed their shared fixtures through
+both SDKs on Gen NX and Civil NX; Gen-only `/db/POSP` passed through both SDKs
+on Gen. The first npm PNLA pass exposed a fixture omission rather than an API
+failure: `/db/PNLD` is known to renumber requested key 90 to key 1. Adding its
+already documented `allowRenumbering` marker to the emitted fixture made the
+subsequent npm Gen and Civil replays pass. All runs used the disposable
+checkpoint/reset protocol under `C:/temp`.
+
+### 2026-09-16 — npm/Python replay: moving-load subset
+
+`/db/LLAN`, `/db/MVHC`, and `/db/MVLD` completed their emitted AASHTO LRFD
+fixtures through npm and Python on both products, Build 09/15/2026. `/db/MVHL`
+also completed through Python on both products, but npm POSTs are stored under a
+server-renumbered target ID rather than fixture ID 2. The npm harness can
+verify known **seed** renumbering by stable name but has no equivalent target
+case representation, so MVHL remains outside the npm-success count pending a
+separate, tested harness design. Each product was checkpointed under `C:/temp`
+and reset to an empty document.
+
+### 2026-09-16 — npm/Python replay: construction-stage batch
+
+`/db/STAG`, `/db/TMLD`, and `/db/CRPC` completed their emitted fixtures through
+npm and Python on Gen NX and Civil NX; Civil-only `/db/CMCS` completed through
+both SDKs on Civil. npm ran each as an isolated case because the shared group
+setup includes resources without per-ID DELETE; the terminal `/doc/NEW` reset
+owns that cleanup. Every call used the `C:/temp` checkpoint protocol and left
+an empty document.
+
+### 2026-09-16 — npm/Python replay: heat-of-hydration subset
+
+`/db/HAHS` and `/db/STBK` completed their fixtures through npm and Python on
+both products, Build 09/15/2026. HAHS used its confirmed disposable eight-node
+solid model; both runs checkpointed below `C:/temp` and ended with `/doc/NEW`.
+
+`/db/HSTG` then completed through npm and Python on both products as a separate
+one-case group-seed batch under the same checkpoint/reset protocol.
+
+### 2026-09-16 — npm/Python replay: load-combination batch
+
+`/db/LCOM-SRC`, `/db/LCOM-STEEL`, and `/db/LCOM-STLCOMP` each completed the
+same emitted fixture through npm and Python on Gen NX and Civil NX, Build
+09/15/2026. All product documents were checkpointed under `C:/temp` and reset
+to empty after the batch.
+
+### 2026-09-16 — npm/Python replay: lane-optimization batch
+
+Civil ran `/db/LLANop`, `/db/SLAN`, and `/db/SLANop` together through the npm
+harness; all three completed their emitted create → get → update → get → delete
+round trips. Gen then ran `/db/SLAN` as a one-case npm batch and passed. Python
+replayed the same three selections on Civil and the same SLAN selection on Gen;
+all passed. The runs used Build 09/15/2026, checkpointed under `C:/temp`, and
+restored empty scratch documents with `/doc/NEW`.
+
+### 2026-09-16 — npm/Python replay: boundary-group core case
+
+`/db/BNGR` ran as a one-case batch on Gen and independently on Civil because
+the resource has no per-ID DELETE operation. npm completed create → get →
+update → get on both products, after which the harness checkpointed the
+throwaway model and used `/doc/NEW` for cleanup. Python replayed the same
+one-case selection on each product and passed. Both products were Build
+09/15/2026 and were left on empty documents.

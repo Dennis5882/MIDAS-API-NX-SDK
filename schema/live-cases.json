@@ -902,7 +902,8 @@
             ]
           }
         }
-      }
+      },
+      "allowRenumbering": true
     },
     "fbld7_seed": {
       "endpoint": "/db/FBLD",
