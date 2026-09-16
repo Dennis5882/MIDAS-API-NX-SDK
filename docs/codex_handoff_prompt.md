@@ -48,15 +48,18 @@ Then, in this order.
 
 0. **Task I** — one PUT round trip on `DESIGN/STEEL/DSTL`. It is the newest
    endpoint, it has read evidence on both products as of 2026-09-16, and
-   **nothing has ever sent it a payload**. Smallest live task on this list and
-   the only one that turns a read into a write.
+   **nothing has ever sent it a payload**. Attempted 2026-09-16 and correctly
+   stopped: the GET was empty, so there was no original value to revert to.
+   **Read Task I again before the next attempt** — that finding is the task now,
+   and it is not "run the PUT anyway".
 1. **Task J** — a read-only probe of `/db/SECT`'s new `USE_HAMBLY_EQ` on a model
    that has sections. Evidence-gathering only; the decision it feeds is the
    author's and is listed under the open decisions.
-2. **Task F** — replay the already-confirmed fixtures the npm harness has never
-   run. **Its gap number is currently unmeasurable — read that section before
-   quoting one.** Most need only replay; fixture-only blockers must remain
-   distinct from product regressions.
+2. **Task F** — **all but one of it is done.** The gap is 12 and exactly **one**
+   of those, `/db/GRUP`, is a plain replay; two more sit behind a seed each, and
+   the remaining nine are harness design, a product refusal, or a measurement
+   artefact. Do not book a session for "the remaining 12" — read the table in
+   that section first. This is no longer the largest block of work.
 3. **Task G** — three confirmed cases that cannot fail, and so prove less than
    their `confirmed=True` claims.
 4. **Task B-2** — the 22 that have failed. Only one offline lead is left.
@@ -65,7 +68,9 @@ Then, in this order.
 
 5. **Task H step 3** — promote `DESIGN/STEEL/DSTL`'s contract. The live record
    it was waiting for exists now, so this is offline.
-6. **Task F-0** — make npm replay coverage derivable from the tree. See Task F.
+6. **Task F-0 is complete.** What replaced it is harness design for the seeds
+   npm cannot replay and for `/db/MVHL`'s renumbered target — offline, and the
+   only thing that would move Task F's remaining nine.
 7. **Task A** — build fixtures for the 21 buildable endpoints with no case.
    Start with batch 17: `/db/PHGE`, `/db/POGD`, `/db/POGD-M1`.
 
@@ -302,11 +307,48 @@ command rather than hand-counting before each later batch.
 | endpoints with a `confirmed` Python case | 166 (derivable, from `schema/live-cases.json`) |
 | endpoints recorded as replayed through npm | 155 total; **154 confirmed** |
 | the gap | **12** |
-| confirmed cases flagged `blockedSeeds` | 3 |
+| of the gap, a plain replay a session can run | **1** |
 
-Nothing in the replay itself needs building and nothing needs deciding. The fixture exists, it
-already passed in Python, and `packages/typescript/scripts/live-crud.mjs`
-replays the **same emitted fixture** through the built npm package.
+**The remaining 12 are not 12 replays.** The block of work this task was written
+for is finished; what is left is a list of reasons, and they are different
+reasons. Read the table before booking a session — eleven of the twelve will not
+move because a harness pointed at them again.
+
+| endpoint | tier | why it is still in the gap |
+| --- | --- | --- |
+| `/db/GRUP` | core | **nothing. This is the one plain replay left.** |
+| `/db/TMAT` | props | untried; needs the `tdmt_seed`/`tdme_seed` pair |
+| `/db/IMPF` | moving_impact | untried; Civil-only, needs the `KOREA` lane code Gen refuses |
+| `/db/PJCF` | extras1 | `pjcf_unlock` is a seed npm cannot replay from an emitted payload |
+| `/db/HECB` | extras11 | same, `stage11_seed` + `solid11_seed` |
+| `/db/HSPT` | extras11 | same, `stage11_seed` |
+| `/db/BCGA-M1` | extras14 | npm blocked it on 2026-09-16: its setup names `/db/BNGR` as non-cleanable |
+| `/db/DYFG` | extras14 | the server refused both SDKs on 2026-09-16 — moving-load code must be Eurocode |
+| `/db/DYNF` | extras14 | same refusal, same day |
+| `/db/MVHL` | moving | Python passes; npm cannot verify a server-renumbered **target** id, only a renumbered seed |
+| `/db/HHCT` | extras8 | see below — arguably already done |
+| `/db/NLCT` | extras8 | see below — arguably already done |
+
+**`/db/HHCT` and `/db/NLCT` are a measurement artefact, not work.** Each has
+*two* cases: a Gen one that is `confirmed`, and a Civil one that is not. npm
+completed the Gen case on 2026-09-16 — the confirmed one, the one this metric
+counts — and the Civil case failed, as an unconfirmed case failing means
+"triage the fixture", not a regression. The gap counts **endpoints**, so one
+product's result cannot be recorded without implying the other's. Do not book a
+session for these two; either leave them or change what the ledger can express,
+and the second is a design decision, not yours.
+
+That leaves **`/db/GRUP` as the only endpoint a live session buys outright**,
+with `/db/TMAT` and `/db/IMPF` behind a seed each. Three of the four remaining
+categories — unreplayable seeds, a refused product code, an unrepresentable
+renumbered target — are **harness and fixture design**, which is offline work
+and partly judgement. Running the harness at them again produces the same
+answer it produced on 2026-09-16.
+
+For the one that is a plain replay: nothing needs building and nothing needs
+deciding. The fixture exists, it already passed in Python, and
+`packages/typescript/scripts/live-crud.mjs` replays the **same emitted fixture**
+through the built npm package.
 
 **This is not bookkeeping.** It is the only way anything checks that the two
 SDKs send the same request. Two harness defects in the last two rounds were
