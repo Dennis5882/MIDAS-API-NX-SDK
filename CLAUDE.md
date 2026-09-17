@@ -91,7 +91,7 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   endpoint/name/products/methods/manual-chapter surface from its contract; uncontracted resources
   still use the reviewed Python fallback. Since 2026-09-02 a contract's optional `surface` block
   also owns the **published npm names** — `className`, `exportName`, `modulePath`,
-  `payloadTypeName` — for the 280 resources that have one, and the generator raises if a name
+  `payloadTypeName` — for the 302 resources that have one, and the generator raises if a name
   disagrees with the contract, so moving a Python module can no longer rename an npm export in
   silence. This replaces the older "class and module names remain compatibility anchors until
   every resource is contracted" rule, which described a finish line the design could not reach:
@@ -131,7 +131,7 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   contract; only `/info` proves the contract followed the product. It sweeps **both
   directions** — properties `/info` declares that no contract records, and names a
   contract publishes that `/info` declares nowhere. The second list is short (4 hits
-  across 381 contracts) and is where a wrong *name* shows up rather than a missing
+  across 384 contracts) and is where a wrong *name* shows up rather than a missing
   one, which a one-directional sweep cannot see: MD-37 and MD-38 were both found
   that way. **Read the second list weakly.** `/info` listing a property is not the
   same as the server accepting only those — `/db/STBK`'s `LCNAME` is in neither
@@ -380,6 +380,14 @@ Two things that have already caused rework:
   still there for any future case that needs it). Full reproduction history in
   `docs/live_verification_notes.md`; the vendor report's A-1 now leads with the root cause and
   the workaround, not just "it crashes."
+- **Open a document before the first `/doc/NEW`.** On 2026-09-17 Gen NX had no project open
+  (`GET /db/NODE` answered `The project is not opened`), and a `/doc/NEW` sent then did not
+  answer and left the session blocked until the product was brought back up. Every harness
+  assumes a document is already open; if that GET says otherwise, ask for one.
+- **An `--endpoints` selection can drop a case another case depends on**, and
+  `scripts/live_crud_check.py` does not warn. extras14's `/db/DYFG` and `/db/DYNF` need that
+  tier's `/db/MVCD` case to switch the moving-load code to EUROCODE first; selected without it
+  they are refused, which read as a regression on 2026-09-16 and was not one.
 - **`/doc/NEW` has crashed Gen NX** when the open document was a large real model (2026-07-26,
   v2.1 build 06/23/2026) — the "Failed to disconnect the work session" license dialog, which
   always kills the app and holds the license until the process is restarted properly. Harmless

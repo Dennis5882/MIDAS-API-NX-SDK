@@ -2,7 +2,8 @@
 
 ## Scope
 
-This policy covers the `midas-nx` Python package and this repository only.
+This policy covers the `midas-nx` packages on PyPI and npm, and this repository
+only.
 
 `midas-nx` is an employee-led open-source project. It is **not an officially
 released or supported MIDAS IT product**, and this policy does not speak for
@@ -18,7 +19,7 @@ product vulnerability.
 
 | Version | Supported |
 | --- | --- |
-| Latest release on PyPI | ✅ |
+| Latest release on PyPI and npm (they share one version number) | ✅ |
 | Anything older | ❌ — upgrade first, then report if it still reproduces |
 
 Only the latest release is patched. This is a single-maintainer project; there

@@ -7,8 +7,8 @@ are, and what order the remaining work goes in.
 `CLAUDE.md` and `contracts/README.md` are authoritative. Where this file and
 either of those disagree, they win and this file is stale.
 
-**The migration this brief was written to finish is over.** As of 2026-09-15
-there are **381 promoted endpoint contracts + 87 result tables, 5,061 fields**,
+**The migration this brief was written to finish is over.** As of 2026-09-17
+there are **384 promoted endpoint contracts + 87 result tables, 5,078 fields**,
 and **3 drafts** — the Civil Hyper-S trio `/db/IEHG-GL-M1`, `/db/IEHG-PSS-M1`
 and `/db/IEHG-TRUSS-M1`, which have no permitted source at all: no manual
 schema, and `/info` 404s for them. That is a finished state, not a backlog.

@@ -17,9 +17,7 @@ was contracted (Task H) and took a PUT on Gen while Civil refused it (Task I).
 `/post/PM` and `/post/STEELCODECHECK` were contracted, so all 70 npm operations
 are now named by a contract. And npm generation no longer imports `midas_nx`.
 
-What the 2026-09-16 patch day established:
-
-**What the patch day established, because three tasks below depend on it.** The
+**What the 2026-09-16 patch day established.** The
 published 2.8.2 answers on 268/268 GET-capable Gen resources and 283/283 on
 Civil, identically through PyPI and npm. `DESIGN/STEEL/DSTL` answered on both
 products, which closed the ledger's last unverified endpoint and unblocked its
@@ -29,16 +27,12 @@ products (Task J). Every historical crash path was re-run and all but `OCHECK`
 came back clean, so **crash re-testing is not on this list** — see its section
 for why calling `OCHECK` again is off limits.
 
-2.8.2 shipped the manual sync's packaged changes, all additive: the new
-`DESIGN/STEEL/DSTL` endpoint, three `/db/MATD` members, `bPJ` on the curved
-tendon profile, and a three-state `OPT_CS` description. Full notes in
-`docs/release_notes_v2.8.2.md`. npm went out before PyPI, which proved the new
-`actions/setup-node` v7 on the Trusted Publishing path; that ordering was a
-one-off and the usual order is fine again.
-
-**Nothing in either packaged surface has changed since that release**, so no
-release is warranted right now. Do not infer one from a contract edit either:
-the author picks the number and must ask for the release explicitly.
+**2.8.3 is published (2026-09-17), on both registries.** Python is unchanged
+from 2.8.2; npm narrows one member, `SteelDesignCodeSelectionPayload.DGNCODE`,
+to the required literal the manual lists. Full notes in
+`docs/release_notes_v2.8.3.md`. **Nothing in either packaged surface has changed
+since**, so no release is warranted. Do not infer one from a contract edit
+either: the author picks the number and must ask for the release explicitly.
 
 **What the previous round actually did**, because the numbers below have all
 moved: 21 `safeToOmit` claims grounded in recorded live calls with a guard in
@@ -369,11 +363,13 @@ compared objects by reference, so a nested expected value could never match and
 the assertion passed nothing; and `runCase` refused every endpoint without
 DELETE. Neither was a typo — both were found by running, not by reading.
 
-**A second thing falls out of it for free.** 171 of the 200 write-level
-endpoints were last verified on a build older than the current 09/02/2026 —
-46 on 08/14, 34 on 07/28, 27 on 08/26, and 29 on 09/02. Run the Python harness
-on the same selection in the same session and the re-verification comes with
-the replay. Do not spend a separate session on it.
+**A second thing falls out of it for free.** Run the Python harness on the
+same selection in the same session and the re-verification on the current build
+comes with the replay. Do not spend a separate session on it. A
+re-verification is appended to `method` and does not update `nx_versions`: 199
+of the 201 write entries name a build older than 09/15/2026 there, although the
+2026-09-16 and 09-17 batches re-ran many of them on it. Read `method` before
+calling an entry stale.
 
 The gap by tier, which is also how to batch it — the harness selects by
 `--tier` or `--endpoints`:
