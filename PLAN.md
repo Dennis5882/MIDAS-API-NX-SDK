@@ -668,7 +668,8 @@ and README traffic, not just code readiness.
 > **Recipe/engineering-task layer inputs (reviewed 2026-08-04):**
 > `docs/planning/onboarding_plan_active.md` §11 (a per-recipe doc standard —
 > risk level, product, verification status, full runnable code) and
-> `docs/planning/documentation_maintenance_architecture_plan.md` §6-7 (an
+> `docs/planning/documentation_maintenance_architecture_plan.md` §6-7 (removed
+> 2026-09-17; in git history at `fa1332b`) (an
 > engineering-task index generated as navigation over `coverage.json`, not
 > copied API text) both propose shapes for this layer for whenever B1 starts.
 > The architecture plan's larger ask — a `coverage.json` schema v2 with
@@ -772,7 +773,8 @@ exactly why that's the honest framing rather than a stronger guarantee.
   populated data back) is a concrete argument for extending this checker —
   or some equivalent live-data spot-check — into those chapters before 1.0.
 - **Doc-site backlog triage (2026-08-04)**, cross-checking
-  `docs/planning/documentation_maintenance_architecture_plan.md` §6.1's
+  `docs/planning/documentation_maintenance_architecture_plan.md` (removed
+  2026-09-17; in git history at `fa1332b`) §6.1's
   three-tier nav proposal against what's actually on the MkDocs site:
   - **Done this pass**: tier 3 (developer Reference) had two whole chapter
     families — `post/*` (ch18-23 result extraction) and `design/*` (ch24-27

@@ -2541,7 +2541,7 @@ The caveat below asked for independent reproduction — different account,
 different session — before touching `PRODUCTS` for the 20 endpoints found
 404ing on the Civil v2.2 (07/28/2026) sweep. That arrived the same day: a
 separately run validation sweep (`docs/Codex Report/midas_nx_0.14.0_civil_*`
-and `..._gen_*`), executed from a different machine/session against the
+and `..._gen_*`, removed 2026-09-17; git history at `fa1332b`), executed from a different machine/session against the
 same day's freshly patched Civil and Gen builds, landed on **the exact same
 20 Civil endpoints** (`db_and_design_404_endpoints` in its JSON summary) and
 **the exact same 7 Gen endpoints** (`CMCS`, `EWSF`, `PLCB`, `RCHK`, `SPAN`,
@@ -6821,7 +6821,7 @@ re-verification went wrong:
      2026-07-30 `ASSIGN_TYPE=AUTO`/`SELECTION_TYPE=ALL` probe and is still
      `level: read`. There is no case for it in `live_crud_check.py` either,
      so it cannot be re-run mechanically. Answering the rest takes a new
-     live session. Reply drafted in `docs/ope_memb_elem_list_response.md`.
+     live session. Reply drafted in `docs/ope_memb_elem_list_response.md` (git history, `fa1332b`).
 
 No SDK or docs changes needed — all 4 already match the SDK's current
 code; this pass only strengthens the evidence trail before any of them
@@ -9273,7 +9273,8 @@ Product build strings are not recorded: the API exposes no endpoint that
 reports them, so that one field of the sibling repo's request cannot be
 answered from a script.
 
-Full reply in `docs/ope_memb_elem_list_response.md`.
+Full reply in `docs/ope_memb_elem_list_response.md` (removed 2026-09-17; git
+history at `fa1332b`).
 
 **Follow-up the same day: the documentation half was a locale difference, and
 this repository got it wrong.** The sibling repo quoted the article's request

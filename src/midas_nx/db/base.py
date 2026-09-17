@@ -84,7 +84,8 @@ HYPER_S_ONLY = frozenset({"civil"})
 #: NX. Confirmed by two independent sessions on 2026-07-29, same day, against
 #: freshly patched builds: this SDK's own ``live_readonly_sweep.py`` against
 #: Civil NX 2026 v2.2 (07/28/2026), and an independently-run validation sweep
-#: (`docs/Codex Report/`) against the same day's Civil and Gen patches from a
+#: (report removed from ``docs/`` 2026-09-17; git history at ``fa1332b``)
+#: against the same day's Civil and Gen patches from a
 #: different machine/session — both landed on the identical 11 ``/db/*``
 #: endpoints (``STOR``, ``SWIND``, ``SSEIS``, ``POSP``, ``EPST``, ``DRLS``,
 #: ``SDHY``, ``SDIS``, ``REBB``, ``REBR``, ``REBW``) plus the same 9

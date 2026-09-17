@@ -1240,7 +1240,8 @@ class StructuralTableRequirements:
 
 
 # The paths below are transcriptions of the parameter headings and surrounding
-# prose in docs/manual, recorded in docs/variant_table_survey.md §B.  This is a
+# prose in docs/manual, recorded in docs/variant_table_survey.md §B (removed
+# 2026-09-17; git history at fa1332b).  This is a
 # closed allow-list, not a heuristic: any other extra table remains unmerged.
 _STRUCTURAL_TABLE_SPLITS: dict[str, tuple[StructuralTableMerge, ...]] = {
     "/db/ACTL-M1": (

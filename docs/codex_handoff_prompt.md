@@ -577,8 +577,9 @@ it fine. By design, not a gap.
 
 ## Task C — completed: re-derived `safeToOmit` from recorded evidence
 
-Completed 2026-09-12; the per-endpoint classification and rationale are in
-`docs/safe_to_omit_survey.md`.
+Completed 2026-09-12. The per-endpoint classification and rationale were in
+`docs/safe_to_omit_survey.md`, removed 2026-09-17 once the task was closed; it
+is in git history at `fa1332b`.
 
 The measured starting count was no longer 60: `/db/NMAS`'s three crashing
 omissions had already been fixed at `safeToOmit: false`, leaving 57 candidates
@@ -597,10 +598,10 @@ review rather than an automatic `true`.
 **What re-opens it, and this is the part to carry forward.** The derivation
 runs at draft time and nothing revisits it — that is exactly how 60 fields
 drifted out of date behind a green CI. Every Task B run that flips a case to
-`confirmed=True` adds evidence this survey has not seen. So **re-run the survey
+`confirmed=True` adds evidence this survey has not seen. So **re-derive omission safety
 at the end of any session that confirms a case**, and say in your report how
 many candidates it names; do not let the next round rediscover a stale number.
-The 36 still-`unverified` rows in `docs/safe_to_omit_survey.md` each name the
+The survey's 36 still-`unverified` rows (git history, `fa1332b`) each name the
 branch or product that would settle them, so a run that exercises one is a
 direct answer rather than a new investigation.
 

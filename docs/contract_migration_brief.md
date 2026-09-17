@@ -297,7 +297,8 @@ with a date, and re-run `--report` before quoting one.
    author decision.** `contracts/schema/endpoint-contract.schema.json` has no way
    to express "these fields apply when `TYPE=X`" beyond a single scalar `equals`;
    `/db/FBLA`'s documented `FLOOR_DIST_TYPE = 1 or 2` cannot be transcribed at
-   all (see `contract_migration_open_questions.md`). Do not invent a
+   all (see `contract_migration_open_questions.md`, removed 2026-09-17; git
+   history at `fa1332b`). Do not invent a
    representation unilaterally; bring a proposal to the author first.
 
    Re-measured by `extract_contracts.py --report` on 2026-08-30: 253
@@ -325,13 +326,13 @@ with a date, and re-run `--report` before quoting one.
    spent: the count is now **0**, closed by teaching `_section_methods()` all six
    forms the chapters use. What that function still gets wrong is reading verbs
    out of text that is not a declaration — see the `/db/POLC-M1` entry in
-   `contract_migration_open_questions.md`.
+   `contract_migration_open_questions.md` (git history, `fa1332b`).
 
    ~~The one real manual gap is `/db/STYP-M1`.~~ Closed 2026-08-30: the manual
    repo wrote the section (`5c92efe`). `npm resource manual-section coverage`
    is now **0 without a parsed section**. What still blocks that contract is
    the extractor's child numbering, not the manual — see
-   `contract_migration_open_questions.md`.
+   `contract_migration_open_questions.md` (git history, `fa1332b`).
 5. **Stage 3 completion — npm stops deriving from Python.** Newly separated
    out on 2026-09-02, because it was being counted as part of "contract more
    resources" and it is not. The wire facts are 268 of 304 contracted; the
@@ -416,7 +417,8 @@ Reading either form is extractor work. Do not ask the manual repo for them.
    resource.** Two extractor edits, measured to change exactly one section and
    zero promoted contracts, plus two enum-from-condition defects and one
    boolean-rendered-as-string. Full measurement and the reason a one-line regex
-   change measures as a no-op: `contract_migration_open_questions.md`.
+   change measures as a no-op: `contract_migration_open_questions.md` (git
+   history, `fa1332b`).
 2. **Widen the generator's shadow gate past `/db/*`**
    (`scripts/generate_typescript_sdk.py:395`, `:530`). The Korean-label
    question that justified the narrow filter is settled; 63 `/DESIGN/*`
@@ -664,7 +666,7 @@ this commit should be re-emitted before it is reviewed.
 4. **Three endpoints added to `_STRUCTURAL_TABLE_SPLITS`**: `/db/STCT-M1`
    (4 of its 6 tables), `/db/THGC-M1` (2 of 3). The tables left out of the
    registry are documented in the comment beside each entry and in
-   `docs/variant_table_survey.md` §B.
+   `docs/variant_table_survey.md` §B (git history, `fa1332b`).
 
 ### Traps, in the order they will be hit
 

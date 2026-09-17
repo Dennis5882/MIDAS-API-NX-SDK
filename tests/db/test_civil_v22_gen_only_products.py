@@ -2,7 +2,8 @@
 
 Two independent sessions against the same day's freshly patched builds — this
 SDK's own `scripts/live_readonly_sweep.py --product civil` and a separately
-run validation sweep (`docs/Codex Report/`) from a different machine/session
+run validation sweep (report removed from `docs/` 2026-09-17; git history at
+`fa1332b`) from a different machine/session
 — landed on the identical 20 endpoints: route-level 404 (including
 `/info/db/...` schema introspection) under Civil NX, answering under Gen NX.
 A same-day live re-check against both open sessions reproduced all 20 again
