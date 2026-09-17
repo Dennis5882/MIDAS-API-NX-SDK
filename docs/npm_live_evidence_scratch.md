@@ -260,5 +260,34 @@ commit that writes the claim - a run this file does not carry does not count.
 | --- | --- | --- |
 | `/db/BNGR` | 2026-09-16 | Gen, Civil |
 
+### Current-build Gen-only analysis-control cases
+
+Both endpoints carry two cases: a confirmed Gen one and an unconfirmed Civil
+one. npm completed the confirmed Gen case; the Civil case failed on both SDKs
+the same day, which for an unconfirmed case means triage the fixture. Only the
+Gen run is recorded here, because only the Gen run happened.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/HHCT` | 2026-09-16 | Gen |
+| `/db/NLCT` | 2026-09-16 | Gen |
+
+### 2026-09-17 — closing the product asymmetry
+
+`/db/GRUP` was the last plain replay in the gap. The other five had a Civil row
+from 2026-09-06 while their confirmed cases declare Gen too, so npm evidence was
+one product short of Python's on each. Gen closes them.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/GRUP` | 2026-09-17 | Gen, Civil |
+| `/db/LLANtr` | 2026-09-17 | Gen |
+| `/db/MLSP` | 2026-09-17 | Gen |
+| `/db/MLSR` | 2026-09-17 | Gen |
+| `/db/MVHLtr` | 2026-09-17 | Gen |
+| `/db/MVLDtr` | 2026-09-17 | Gen |
+| `/db/TMAT` | 2026-09-17 | Gen, Civil |
+| `/db/IMPF` | 2026-09-17 | Civil |
+
 **Count:** 155 distinct `/db` endpoints and 4 distinct result-table operations;
 159 distinct npm public-API operations overall.

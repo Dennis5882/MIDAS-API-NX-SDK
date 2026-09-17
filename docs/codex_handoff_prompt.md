@@ -109,8 +109,10 @@ python scripts/report_dropped_manual_rows.py \
 python scripts/live_crud_check.py --check-cases        # silent; exit 0
 python scripts/check_fixture_contract.py --check       # 1 fixture lead over 1
                                           # endpoint, 3 contract gaps over 2
-python scripts/report_npm_replay_coverage.py --check   # 166 confirmed; 155 npm
-                                          # replays (154 confirmed); gap 12
+python scripts/report_npm_replay_coverage.py --check   # 166 confirmed; 158 npm
+                                          # replays (157 confirmed); gap 7. By
+                                          # confirmed case: 170 complete, 0
+                                          # partial, 7 none, of 177
 python scripts/report_unmerged_tables.py --check       # report is current
 cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 78 tests
@@ -304,46 +306,43 @@ command rather than hand-counting before each later batch.
 
 | | |
 | --- | ---: |
-| endpoints with a `confirmed` Python case | 166 (derivable, from `schema/live-cases.json`) |
-| endpoints recorded as replayed through npm | 155 total; **154 confirmed** |
-| the gap | **12** |
-| of the gap, a plain replay a session can run | **1** |
+| confirmed Python cases | 177 over 166 endpoints |
+| npm ran every product the case declares | **170** |
+| npm ran only some | **0** |
+| npm ran none | **7** |
 
-**The remaining 12 are not 12 replays.** The block of work this task was written
-for is finished; what is left is a list of reasons, and they are different
-reasons. Read the table before booking a session — eleven of the twelve will not
-move because a harness pointed at them again.
+**The unit is the confirmed case, not the endpoint.** It was the endpoint until
+2026-09-17, and that hid two opposite errors at once: five cases counted as done
+while npm had run one product of two, and two counted as undone while npm had
+already replayed the confirmed case. `/db/HHCT` is why - a confirmed Gen case
+and an unconfirmed Civil one, so "has npm replayed `/db/HHCT`" has no answer.
+Run the command; do not hand-count, and do not reason in endpoints.
 
-| endpoint | tier | why it is still in the gap |
+**Nothing left in Task F is a replay.** The eight that were - `/db/GRUP`, the
+five lane and moving cases that were Civil-only, `/db/TMAT` and `/db/IMPF` -
+were run through both SDKs on 2026-09-17 and passed. What remains is seven
+endpoints and four different reasons, none of which a session fixes:
+
+| endpoint | why it is still open | kind |
 | --- | --- | --- |
-| `/db/GRUP` | core | **nothing. This is the one plain replay left.** |
-| `/db/TMAT` | props | untried; needs the `tdmt_seed`/`tdme_seed` pair |
-| `/db/IMPF` | moving_impact | untried; Civil-only, needs the `KOREA` lane code Gen refuses |
-| `/db/PJCF` | extras1 | `pjcf_unlock` is a seed npm cannot replay from an emitted payload |
-| `/db/HECB` | extras11 | same, `stage11_seed` + `solid11_seed` |
-| `/db/HSPT` | extras11 | same, `stage11_seed` |
-| `/db/BCGA-M1` | extras14 | npm blocked it on 2026-09-16: its setup names `/db/BNGR` as non-cleanable |
-| `/db/DYFG` | extras14 | the server refused both SDKs on 2026-09-16 — moving-load code must be Eurocode |
-| `/db/DYNF` | extras14 | same refusal, same day |
-| `/db/MVHL` | moving | Python passes; npm cannot verify a server-renumbered **target** id, only a renumbered seed |
-| `/db/HHCT` | extras8 | see below — arguably already done |
-| `/db/NLCT` | extras8 | see below — arguably already done |
+| `/db/PJCF` | `pjcf_unlock` reads state back and branches, so it cannot be emitted as a payload | harness design |
+| `/db/HECB` | same, `stage11_seed` + `solid11_seed` | harness design |
+| `/db/HSPT` | same, `stage11_seed` | harness design |
+| `/db/MVHL` | the server renumbers the **target** id; npm verifies a renumbered *seed* by name and has no equivalent for a target | harness design |
+| `/db/BCGA-M1` | setup names `/db/BNGR`, which has no per-id DELETE, so npm blocks rather than leave the model dirty | harness design |
+| `/db/DYFG` | server refused **both** SDKs on 2026-09-16 - moving-load code must be Eurocode, the case seeds KSCE | **possible regression** |
+| `/db/DYNF` | same refusal, same day | **possible regression** |
 
-**`/db/HHCT` and `/db/NLCT` are a measurement artefact, not work.** Each has
-*two* cases: a Gen one that is `confirmed`, and a Civil one that is not. npm
-completed the Gen case on 2026-09-16 — the confirmed one, the one this metric
-counts — and the Civil case failed, as an unconfirmed case failing means
-"triage the fixture", not a regression. The gap counts **endpoints**, so one
-product's result cannot be recorded without implying the other's. Do not book a
-session for these two; either leave them or change what the ledger can express,
-and the second is a design decision, not yours.
+**Start with `/db/DYFG` and `/db/DYNF`, and not because of npm.** They are
+`confirmed` cases that Python failed too, and a confirmed case failing is this
+repository's definition of a regression. Whether the seed drifted or the product
+changed is not established. Re-running the harness will not answer it: read the
+case, the seed and the manual's moving-load code table first, and report what
+you find rather than changing `confirmed`.
 
-That leaves **`/db/GRUP` as the only endpoint a live session buys outright**,
-with `/db/TMAT` and `/db/IMPF` behind a seed each. Three of the four remaining
-categories — unreplayable seeds, a refused product code, an unrepresentable
-renumbered target — are **harness and fixture design**, which is offline work
-and partly judgement. Running the harness at them again produces the same
-answer it produced on 2026-09-16.
+The other five are offline harness work, and two of them - the unreplayable
+seeds and the renumbered target - are the design decisions listed at the end of
+this file. Do not invent a seed representation on your own.
 
 For the one that is a plain replay: nothing needs building and nothing needs
 deciding. The fixture exists, it already passed in Python, and

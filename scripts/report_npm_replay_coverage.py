@@ -20,8 +20,9 @@ DEFAULT_CASES = ROOT / "schema" / "live-cases.json"
 DEFAULT_COVERAGE = ROOT / "docs" / "coverage.json"
 DEFAULT_INVENTORY = ROOT / "docs" / "npm_live_evidence_scratch.md"
 REPLAY_MARKER = "npm replayed the same emitted fixture"
-#: First cell of an inventory row: | `/db/NODE` | 2026-08-31 | Gen, Civil |
-INVENTORY_ROW = re.compile(r"^\|\s*`([^`]+)`\s*\|")
+#: An inventory row: | `/db/NODE` | 2026-08-31 | Gen, Civil |
+INVENTORY_ROW = re.compile(r"^\|\s*`([^`]+)`\s*\|([^|]*)\|([^|]*)\|")
+PRODUCT = re.compile(r"gen|civil", re.IGNORECASE)
 
 
 def confirmed_case_endpoints(cases_path: Path) -> set[str]:
@@ -47,6 +48,23 @@ def npm_replayed_endpoints(coverage_path: Path) -> set[str]:
     return replayed
 
 
+def inventoried_products(inventory_path: Path) -> dict[str, set[str]]:
+    """Return {endpoint: products} from the npm evidence inventory.
+
+    An endpoint can appear in several rows - different batches, different
+    products, different days - so products are unioned across them.
+    """
+    found: dict[str, set[str]] = {}
+    for line in inventory_path.read_text(encoding="utf-8").splitlines():
+        match = INVENTORY_ROW.match(line)
+        if match is None:
+            continue
+        found.setdefault(match.group(1), set()).update(
+            product.lower() for product in PRODUCT.findall(match.group(3))
+        )
+    return found
+
+
 def inventoried_endpoints(inventory_path: Path) -> set[str]:
     """Return every endpoint the npm evidence inventory records a run for.
 
@@ -54,12 +72,55 @@ def inventoried_endpoints(inventory_path: Path) -> set[str]:
     A claim the inventory does not carry is one nobody wrote a session down
     for, whether it was never run or only never recorded.
     """
-    rows = inventory_path.read_text(encoding="utf-8").splitlines()
-    return {
-        match.group(1)
-        for match in (INVENTORY_ROW.match(line) for line in rows)
-        if match is not None
-    }
+    return set(inventoried_products(inventory_path))
+
+
+def case_coverage(
+    cases_path: Path, inventory_path: Path
+) -> tuple[int, dict[str, set[str]], list[str], dict[str, set[str]]]:
+    """Return npm coverage measured in confirmed **cases**, not endpoints.
+
+    An endpoint is not the unit the fixture works in: `/db/HHCT` carries a
+    confirmed Gen case and an unconfirmed Civil one, so "has npm replayed
+    /db/HHCT" has no answer. The case does have one, and the inventory records
+    the products each run covered, so the two can be compared directly.
+
+    Returns the number of cases npm covered on every product they declare, the
+    ones it covered on only some (endpoint -> the products still missing), the
+    ones with no run recorded at all, and any endpoint whose inventory row
+    claims a product its confirmed case does not declare.
+    """
+    fixture = json.loads(cases_path.read_text(encoding="utf-8"))
+    recorded = inventoried_products(inventory_path)
+    #: Every product any case for the endpoint declares, confirmed or not. A
+    #: run against an unconfirmed case is still a real run, so comparing an
+    #: inventory row against the confirmed case alone reports false labels -
+    #: /db/HHCT's Civil case is unconfirmed and npm ran it.
+    any_case: dict[str, set[str]] = {}
+    for case in fixture["cases"]:
+        any_case.setdefault(case["endpoint"], set()).update(
+            product.lower() for product in case["products"]
+        )
+    complete = 0
+    partial: dict[str, set[str]] = {}
+    missing: list[str] = []
+    mislabelled: dict[str, set[str]] = {}
+    for case in fixture["cases"]:
+        if case.get("confirmed") is not True:
+            continue
+        endpoint = case["endpoint"]
+        declared = {product.lower() for product in case["products"]}
+        covered = recorded.get(endpoint, set())
+        if not covered:
+            missing.append(endpoint)
+            continue
+        if declared - covered:
+            partial[endpoint] = declared - covered
+        else:
+            complete += 1
+        if covered - any_case.get(endpoint, set()):
+            mislabelled[endpoint] = covered - any_case[endpoint]
+    return complete, partial, sorted(missing), mislabelled
 
 
 def report(
@@ -107,6 +168,22 @@ def main(argv: list[str] | None = None) -> int:
     print(f"confirmed Python fixture endpoints: {confirmed}")
     print(f"npm replayed fixture endpoints: {total_replayed} ({replayed} confirmed)")
     print(f"remaining npm replay gap: {remaining}")
+
+    complete, partial, missing, mislabelled = case_coverage(args.cases, args.inventory)
+    total_cases = complete + len(partial) + len(missing)
+    print()
+    print(f"by confirmed case, which is the unit the fixture works in "
+          f"({total_cases} cases over {confirmed} endpoints):")
+    print(f"  npm ran every declared product: {complete}")
+    print(f"  npm ran only some             : {len(partial)}")
+    print(f"  npm ran none                  : {len(missing)}")
+    for endpoint, products in sorted(partial.items()):
+        print(f"    {endpoint} still needs {', '.join(sorted(products))}")
+    if mislabelled:
+        print("  inventory records a product the confirmed case does not declare:")
+        for endpoint, products in sorted(mislabelled.items()):
+            print(f"    {endpoint}: {', '.join(sorted(products))}")
+
     failed = False
     if unknown:
         print("npm replay markers without a shared fixture:")

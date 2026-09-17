@@ -378,7 +378,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) npm replayed the same emitted fixture on Gen, Civil on 2026-09-17 (Build 09/15/2026), with the Python harness re-run on the same selection in the same session; evidence recorded in docs/live_verification_notes.md.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
@@ -992,7 +992,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip)",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) npm replayed the same emitted fixture on Gen, Civil on 2026-09-17 (Build 09/15/2026), with the Python harness re-run on the same selection in the same session; evidence recorded in docs/live_verification_notes.md.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026"
@@ -3068,7 +3068,7 @@
           "civil",
           "gen"
         ],
-        "method": "scripts/live_crud_check.py: the manual's own ch08 JSON example replayed on a seeded disposable model; POST/read/PUT/read/per-id DELETE/read completed. See the 2026-09-06 moving-load entry in docs/live_verification_notes.md for which codes each product accepts and which cases stay unconfirmed. npm replayed the same emitted fixture on Civil on 2026-09-06; evidence extracted from docs/live_verification_notes.md.",
+        "method": "scripts/live_crud_check.py: the manual's own ch08 JSON example replayed on a seeded disposable model; POST/read/PUT/read/per-id DELETE/read completed. See the 2026-09-06 moving-load entry in docs/live_verification_notes.md for which codes each product accepts and which cases stay unconfirmed. npm replayed the same emitted fixture on Civil on 2026-09-06; evidence extracted from docs/live_verification_notes.md. Gen followed on 2026-09-17 (Build 09/15/2026) through both SDKs, completing the products the confirmed case declares.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 09/02/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 09/02/2026"
@@ -3212,7 +3212,7 @@
           "civil",
           "gen"
         ],
-        "method": "scripts/live_crud_check.py: the manual's own ch08 JSON example replayed on a seeded disposable model; POST/read/PUT/read/per-id DELETE/read completed. See the 2026-09-06 moving-load entry in docs/live_verification_notes.md for which codes each product accepts and which cases stay unconfirmed. npm replayed the same emitted fixture on Civil on 2026-09-06; evidence extracted from docs/live_verification_notes.md.",
+        "method": "scripts/live_crud_check.py: the manual's own ch08 JSON example replayed on a seeded disposable model; POST/read/PUT/read/per-id DELETE/read completed. See the 2026-09-06 moving-load entry in docs/live_verification_notes.md for which codes each product accepts and which cases stay unconfirmed. npm replayed the same emitted fixture on Civil on 2026-09-06; evidence extracted from docs/live_verification_notes.md. Gen followed on 2026-09-17 (Build 09/15/2026) through both SDKs, completing the products the confirmed case declares.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 09/02/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 09/02/2026"
@@ -3387,7 +3387,7 @@
           "civil",
           "gen"
         ],
-        "method": "scripts/live_crud_check.py: the manual's own ch08 JSON example replayed on a seeded disposable model; POST/read/PUT/read/per-id DELETE/read completed. See the 2026-09-06 moving-load entry in docs/live_verification_notes.md for which codes each product accepts and which cases stay unconfirmed. npm replayed the same emitted fixture on Civil on 2026-09-06; evidence extracted from docs/live_verification_notes.md.",
+        "method": "scripts/live_crud_check.py: the manual's own ch08 JSON example replayed on a seeded disposable model; POST/read/PUT/read/per-id DELETE/read completed. See the 2026-09-06 moving-load entry in docs/live_verification_notes.md for which codes each product accepts and which cases stay unconfirmed. npm replayed the same emitted fixture on Civil on 2026-09-06; evidence extracted from docs/live_verification_notes.md. Gen followed on 2026-09-17 (Build 09/15/2026) through both SDKs, completing the products the confirmed case declares.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 09/02/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 09/02/2026"
@@ -3506,7 +3506,7 @@
           "civil",
           "gen"
         ],
-        "method": "scripts/live_crud_check.py: the manual's own ch08 JSON example replayed on a seeded disposable model; POST/read/PUT/read/per-id DELETE/read completed. See the 2026-09-06 moving-load entry in docs/live_verification_notes.md for which codes each product accepts and which cases stay unconfirmed. npm replayed the same emitted fixture on Civil on 2026-09-06; evidence extracted from docs/live_verification_notes.md.",
+        "method": "scripts/live_crud_check.py: the manual's own ch08 JSON example replayed on a seeded disposable model; POST/read/PUT/read/per-id DELETE/read completed. See the 2026-09-06 moving-load entry in docs/live_verification_notes.md for which codes each product accepts and which cases stay unconfirmed. npm replayed the same emitted fixture on Civil on 2026-09-06; evidence extracted from docs/live_verification_notes.md. Gen followed on 2026-09-17 (Build 09/15/2026) through both SDKs, completing the products the confirmed case declares.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 09/02/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 09/02/2026"
@@ -3531,7 +3531,7 @@
           "civil",
           "gen"
         ],
-        "method": "scripts/live_crud_check.py: the manual's own ch08 JSON example replayed on a seeded disposable model; POST/read/PUT/read/per-id DELETE/read completed. See the 2026-09-06 moving-load entry in docs/live_verification_notes.md for which codes each product accepts and which cases stay unconfirmed. npm replayed the same emitted fixture on Civil on 2026-09-06; evidence extracted from docs/live_verification_notes.md.",
+        "method": "scripts/live_crud_check.py: the manual's own ch08 JSON example replayed on a seeded disposable model; POST/read/PUT/read/per-id DELETE/read completed. See the 2026-09-06 moving-load entry in docs/live_verification_notes.md for which codes each product accepts and which cases stay unconfirmed. npm replayed the same emitted fixture on Civil on 2026-09-06; evidence extracted from docs/live_verification_notes.md. Gen followed on 2026-09-17 (Build 09/15/2026) through both SDKs, completing the products the confirmed case declares.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 09/02/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 09/02/2026"
@@ -3577,7 +3577,7 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_crud_check.py: the manual's own ch08 JSON example replayed on a seeded disposable model; POST/read/PUT/read/per-id DELETE/read completed. See the 2026-09-06 moving-load entry in docs/live_verification_notes.md for which codes each product accepts and which cases stay unconfirmed.",
+        "method": "scripts/live_crud_check.py: the manual's own ch08 JSON example replayed on a seeded disposable model; POST/read/PUT/read/per-id DELETE/read completed. See the 2026-09-06 moving-load entry in docs/live_verification_notes.md for which codes each product accepts and which cases stay unconfirmed. npm replayed the same emitted fixture on Civil on 2026-09-17 (Build 09/15/2026), with the Python harness re-run on the same selection in the same session; evidence recorded in docs/live_verification_notes.md.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 09/02/2026"
         },
@@ -4649,7 +4649,7 @@
           "gen",
           "civil"
         ],
-        "method": "2026-08-16: write-round-trip confirmed live on Gen NX (batch 8); Civil NX fails -- POST succeeds but THETA reads back as 0 instead of the value sent, reproduced twice including after a fresh POST. Reproduced on Civil NX 2026 v2.2 build 08/26/2026 with the same fixture. Product-asymmetric; level reflects the Gen NX result.",
+        "method": "2026-08-16: write-round-trip confirmed live on Gen NX (batch 8); Civil NX fails -- POST succeeds but THETA reads back as 0 instead of the value sent, reproduced twice including after a fresh POST. Reproduced on Civil NX 2026 v2.2 build 08/26/2026 with the same fixture. Product-asymmetric; level reflects the Gen NX result. npm replayed the same emitted fixture on Gen on 2026-09-16 (Build 09/15/2026); the endpoint's separate Civil case is unconfirmed and failed through both SDKs the same day, so no Civil npm evidence is claimed.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
@@ -4844,7 +4844,7 @@
           "gen",
           "civil"
         ],
-        "method": "2026-08-16: write-round-trip confirmed live on Gen NX (batch 8); Civil NX fails with \"LINE_SEARCH_OPTION is required when OPT_ENABLE_LINE_SEARCH is true\" -- neither field is documented or in /info's schema, and several guessed values didn't clear it. Product-asymmetric; level reflects the Gen NX result.",
+        "method": "2026-08-16: write-round-trip confirmed live on Gen NX (batch 8); Civil NX fails with \"LINE_SEARCH_OPTION is required when OPT_ENABLE_LINE_SEARCH is true\" -- neither field is documented or in /info's schema, and several guessed values didn't clear it. Product-asymmetric; level reflects the Gen NX result. npm replayed the same emitted fixture on Gen on 2026-09-16 (Build 09/15/2026); the endpoint's separate Civil case is unconfirmed and failed through both SDKs the same day, so no Civil npm evidence is claimed.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"

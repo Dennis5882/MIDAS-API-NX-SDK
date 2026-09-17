@@ -102,8 +102,8 @@ def test_report_flags_a_replay_claim_the_inventory_records_no_session_for(
     inventory = tmp_path / "inventory.md"
     cases.write_text(
         json.dumps({"cases": [
-            {"endpoint": "/db/RECORDED", "confirmed": True},
-            {"endpoint": "/db/CLAIMED", "confirmed": True},
+            {"endpoint": "/db/RECORDED", "products": ["gen"], "confirmed": True},
+            {"endpoint": "/db/CLAIMED", "products": ["gen"], "confirmed": True},
         ]}),
         encoding="utf-8",
     )
@@ -141,7 +141,9 @@ def test_report_leaves_the_inventory_out_when_it_is_not_given(tmp_path: Path) ->
     cases = tmp_path / "cases.json"
     coverage = tmp_path / "coverage.json"
     cases.write_text(
-        json.dumps({"cases": [{"endpoint": "/db/CLAIMED", "confirmed": True}]}),
+        json.dumps({"cases": [
+            {"endpoint": "/db/CLAIMED", "products": ["gen"], "confirmed": True},
+        ]}),
         encoding="utf-8",
     )
     coverage.write_text(
@@ -153,3 +155,64 @@ def test_report_leaves_the_inventory_out_when_it_is_not_given(tmp_path: Path) ->
     )
 
     assert module.report(cases, coverage) == (1, 1, 0, set(), set())
+
+def _inventory(tmp_path: Path, *rows: str) -> Path:
+    path = tmp_path / "inventory.md"
+    header = ["| Endpoint | Date | Products |",
+              "| --- | --- | --- |"]
+    path.write_text(chr(10).join([*header, *rows]) + chr(10), encoding="utf-8")
+    return path
+
+
+def test_case_coverage_counts_a_case_complete_only_on_every_declared_product(
+    tmp_path: Path,
+) -> None:
+    """
+An endpoint is the wrong unit and this is why: a case declaring two
+    products is not covered by a run against one of them.
+    """
+    module = _module()
+    cases = tmp_path / "cases.json"
+    cases.write_text(
+        json.dumps({"cases": [
+            {"endpoint": "/db/BOTH", "products": ["gen", "civil"], "confirmed": True},
+            {"endpoint": "/db/ONE", "products": ["gen"], "confirmed": True},
+        ]}),
+        encoding="utf-8",
+    )
+    inventory = _inventory(
+        tmp_path,
+        "| `/db/BOTH` | 2026-09-16 | Civil |",
+        "| `/db/ONE` | 2026-09-16 | Gen |",
+    )
+
+    complete, partial, missing, mislabelled = module.case_coverage(cases, inventory)
+
+    assert complete == 1
+    assert partial == {"/db/BOTH": {"gen"}}
+    assert missing == []
+    assert mislabelled == {}
+
+
+def test_case_coverage_does_not_mislabel_a_run_against_an_unconfirmed_case(
+    tmp_path: Path,
+) -> None:
+    """
+/db/HHCT's shape: a confirmed Gen case and an unconfirmed Civil one.
+    npm running the Civil one is a real run, not a wrong product label.
+    """
+    module = _module()
+    cases = tmp_path / "cases.json"
+    cases.write_text(
+        json.dumps({"cases": [
+            {"endpoint": "/db/SPLIT", "products": ["gen"], "confirmed": True},
+            {"endpoint": "/db/SPLIT", "products": ["civil"], "confirmed": False},
+        ]}),
+        encoding="utf-8",
+    )
+    inventory = _inventory(
+        tmp_path, "| `/db/SPLIT` | 2026-09-16 | Gen, Civil |")
+
+    complete, partial, missing, mislabelled = module.case_coverage(cases, inventory)
+
+    assert (complete, partial, missing, mislabelled) == (1, {}, [], {})

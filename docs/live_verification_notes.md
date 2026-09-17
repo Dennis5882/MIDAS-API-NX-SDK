@@ -9810,3 +9810,80 @@ update → get on both products, after which the harness checkpointed the
 throwaway model and used `/doc/NEW` for cleanup. Python replayed the same
 one-case selection on each product and passed. Both products were Build
 09/15/2026 and were left on empty documents.
+
+## 2026-09-17 - closing the npm/Python evidence asymmetry, and what is left of it
+
+Both products were open on Build 09/15/2026 with empty documents, confirmed by
+a read of `/db/NODE` and `/db/ELEM` on each before anything ran. Every batch
+below went through the built npm package first and the Python harness second on
+the same selection in the same session, checkpointed under `C:/temp`, and ended
+with `/doc/NEW`.
+
+| endpoint | npm | Python | what it closed |
+| --- | --- | --- | --- |
+| `/db/GRUP` | Gen, Civil | Gen, Civil | the last plain replay in the gap |
+| `/db/LLANtr` | Gen | Gen | Civil-only since 2026-09-06 |
+| `/db/MLSP` | Gen | Gen | same |
+| `/db/MLSR` | Gen | Gen | same |
+| `/db/MVHLtr` | Gen | Gen | same |
+| `/db/MVLDtr` | Gen | Gen | same |
+| `/db/TMAT` | Gen, Civil | Gen, Civil | never attempted through npm |
+| `/db/IMPF` | Civil | Civil | same; Civil-only, needs the `KOREA` lane code |
+
+All eight passed create → get → update → get → delete on every product listed.
+The five lane and moving cases ran as one npm batch on Gen, so the `/db/MVCD`
+selector seed that used to take a whole tier down with `Key Already Exist`
+handled five tiers in one selection without incident.
+
+### The asymmetry was partly a measurement artefact
+
+`scripts/report_npm_replay_coverage.py` counted **endpoints**, and an endpoint
+is not the unit the fixture works in. It now counts **confirmed cases** and
+compares each case's declared products against the products the evidence
+inventory records, which changed what the number means:
+
+```
+by confirmed case (177 cases over 166 endpoints)
+  npm ran every declared product: 170
+  npm ran only some             : 0
+  npm ran none                  : 7
+```
+
+Two things only that unit can see. **Five cases were counted as done while npm
+had run one product of two** - the five lane and moving rows above, Civil-only
+since 2026-09-06 while Python had both. They are the asymmetry this session was
+asked to close, and endpoint-level counting had hidden them behind a tick.
+
+And **`/db/HHCT` and `/db/NLCT` were counted as undone while npm had already
+replayed them.** Each carries a confirmed Gen case and an unconfirmed Civil one;
+npm completed the Gen case on 2026-09-16 and the Civil case failed, which for an
+unconfirmed case means triage the fixture rather than a regression. Endpoint
+counting cannot record one product's result without implying the other's, so the
+run went unrecorded. Their Gen evidence is now in the ledger and the inventory,
+and nothing is claimed about Civil.
+
+A first draft of the per-product comparison also reported eleven endpoints whose
+inventory row named a product their confirmed case does not declare. All eleven
+were the `/db/HHCT` shape - npm running an **unconfirmed** case of the same
+endpoint, which is a real run and not a wrong label - and they disappeared when
+the comparison was widened to every case for the endpoint. That rule is pinned
+by a test.
+
+### The seven that are left, and why none is a replay
+
+| endpoint | why |
+| --- | --- |
+| `/db/PJCF` | `pjcf_unlock` reads state back and branches, so it cannot be emitted as a payload |
+| `/db/HECB` | same, `stage11_seed` + `solid11_seed` |
+| `/db/HSPT` | same, `stage11_seed` |
+| `/db/MVHL` | the server renumbers the **target** id; npm can verify a renumbered seed by name and has no equivalent for a target |
+| `/db/BCGA-M1` | its setup names `/db/BNGR`, which has no per-id DELETE, so npm blocks the case rather than leave the model dirty |
+| `/db/DYFG` | the server refused both SDKs on 2026-09-16: the moving-load code must be Eurocode, and the case seeds KSCE |
+| `/db/DYNF` | same refusal, same day |
+
+Four of the seven are **harness and fixture design**, which is offline work.
+`/db/DYFG` and `/db/DYNF` are the two worth looking at first and not because of
+npm: they are `confirmed` cases that Python also failed, and a confirmed case
+failing is this repository's definition of a regression. Whether the seed
+drifted or the product changed is not yet established, and re-running the
+harness will not answer it.
