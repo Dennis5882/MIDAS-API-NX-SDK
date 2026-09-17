@@ -30,6 +30,9 @@ verification:
 
 operations:
   - method: POST
+    surface:
+      exportName: generateBridgeGirderDiagram
+      modulePath: [ope]
     risk: write
     request:
       wrapper: assign

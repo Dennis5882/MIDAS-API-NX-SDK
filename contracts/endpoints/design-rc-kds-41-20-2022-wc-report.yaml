@@ -32,6 +32,10 @@ verification:
 
 operations:
   - method: POST
+    surface:
+      exportName: exportWallCheckReport
+      modulePath: [design, rcKds, checks]
+      argumentTypeName: RcWallCheckReportArgument
     risk: write
     request:
       wrapper: assign

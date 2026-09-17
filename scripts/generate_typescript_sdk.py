@@ -1301,11 +1301,54 @@ def _constant_evaluator(tree: ast.Module):
     return evaluate
 
 
+def _contract_operation_surfaces() -> dict[tuple[str, str], dict[str, Any]]:
+    """Return {(endpoint, method): surface} for every contracted operation.
+
+    The top-level `surface` block answers "what do the packages call this
+    resource"; a function endpoint publishes one export per method instead, so
+    the same question is asked of each operation. /ope/STORY_PARAM is the case
+    that forces it: one endpoint, a GET export and a POST export, different
+    names and different arguments.
+    """
+    contract_dir = ROOT / "contracts" / "endpoints"
+    if not contract_dir.is_dir():
+        return {}
+    import yaml  # noqa: PLC0415
+
+    surfaces: dict[tuple[str, str], dict[str, Any]] = {}
+    for path in sorted(contract_dir.glob("*.yaml")):
+        contract = yaml.safe_load(path.read_text(encoding="utf-8"))
+        if not isinstance(contract, dict):
+            continue
+        endpoint = contract.get("endpoint")
+        for operation in contract.get("operations") or []:
+            surface = operation.get("surface")
+            if endpoint and isinstance(surface, dict):
+                surfaces[(endpoint, operation.get("method", ""))] = surface
+    return surfaces
+
+
+def _operation_surface_argument(surface: dict[str, Any]) -> str:
+    """Render a contracted operation's argument type the way the AST renders it.
+
+    The namespace is derived from `modulePath` rather than stored, because the
+    two cannot disagree: the generator builds both from the same module parts.
+    """
+    names = surface.get("argumentTypeName")
+    if not names:
+        return "JsonObject"
+    if isinstance(names, str):
+        names = [names]
+    namespace = "".join(part[:1].upper() + part[1:] for part in surface["modulePath"])
+    return " | ".join(f"Types.{namespace}Types.{name}" for name in names)
+
+
 def _operation_specs(
     modules: dict[str, ast.Module],
     type_keys: set[tuple[str, str]],
     products_by_endpoint: dict[str, list[str]],
 ) -> list[dict[str, Any]]:
+    contract_surfaces = _contract_operation_surfaces()
     operations: list[dict[str, Any]] = []
     for module, tree in sorted(modules.items()):
         if module == "midas_nx.doc" or module.endswith(".post.base"):
@@ -1359,20 +1402,40 @@ def _operation_specs(
                         r"(?<![.A-Za-z0-9_])(\w+Types)\.", r"Types.\1.", rendered
                     )
                     argument_type = rendered
-            operations.append(
-                {
-                    "exportName": _camel(node.name),
-                    "endpoint": endpoint,
-                    "method": method,
-                    "products": products,
-                    "pythonFunction": node.name,
-                    "pythonModule": module,
-                    "modulePath": _module_parts(module),
-                    "argumentType": argument_type,
-                    "noArgument": method == "POST" and argument is None,
-                    "documentation": ast.get_docstring(node) or "",
+            spec = {
+                "exportName": _camel(node.name),
+                "endpoint": endpoint,
+                "method": method,
+                "products": products,
+                "pythonFunction": node.name,
+                "pythonModule": module,
+                "modulePath": _module_parts(module),
+                "argumentType": argument_type,
+                "noArgument": method == "POST" and argument is None,
+                "documentation": ast.get_docstring(node) or "",
+            }
+            surface = contract_surfaces.get((endpoint, method))
+            if surface is not None:
+                contracted = {
+                    "exportName": surface["exportName"],
+                    "modulePath": list(surface["modulePath"]),
+                    "argumentType": _operation_surface_argument(surface),
+                    "noArgument": not surface.get("takesArgument", True),
                 }
-            )
+                disagreements = [
+                    f"{key}: contract says {value!r}, {module}.{node.name} says {spec[key]!r}"
+                    for key, value in contracted.items()
+                    if spec[key] != value
+                ]
+                if disagreements:
+                    raise RuntimeError(
+                        f"Contracted operation surface for {endpoint} {method} "
+                        f"disagrees with the Python function it is generated "
+                        f"beside: " + "; ".join(disagreements)
+                    )
+                spec.update(contracted)
+                spec["contractedSurface"] = True
+            operations.append(spec)
     return operations
 
 
@@ -1789,7 +1852,10 @@ def main() -> None:
         f"Generated {len(resources)} TypeScript DB resources "
         f"({_RESOURCE_SOURCE_COUNTS['contract']} identified by a contract, "
         f"{_RESOURCE_SOURCE_COUNTS['python']} still by a Python class), "
-        f"{len(operations)} operations, {len(tables)} table wrappers, "
+        f"{len(operations)} operations "
+        f"({sum(1 for item in operations if item.get('contractedSurface'))} "
+        f"named by a contract, the rest still by a Python function), "
+        f"{len(tables)} table wrappers, "
         f"and {payload_type_count} payload types "
         f"({contract_type_count} of them from contracts, the rest still from Python)"
     )

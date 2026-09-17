@@ -32,6 +32,10 @@ verification:
 
 operations:
   - method: POST
+    surface:
+      exportName: performHaunchedBeamDesign
+      modulePath: [design, rcKds, designForces]
+      argumentTypeName: RcHaunchedBeamDesignPerformArgument
     risk: write
     request:
       wrapper: assign

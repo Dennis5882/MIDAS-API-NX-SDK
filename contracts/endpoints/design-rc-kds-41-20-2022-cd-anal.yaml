@@ -32,6 +32,10 @@ verification:
 
 operations:
   - method: POST
+    surface:
+      exportName: performColumnDesign
+      modulePath: [design, rcKds, designForces]
+      argumentTypeName: RcMemberDesignPerformArgument
     risk: write
     request:
       wrapper: assign

@@ -328,6 +328,48 @@
           },
           "notes": {
             "type": "string"
+          },
+          "surface": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "What the published SDKs call this one operation. The top-level `surface` records a /db/* resource's npm identity, where one export carries every method; a function endpoint is the other shape - one export per method, so its names belong to the operation rather than the endpoint. /ope/STORY_PARAM is why: it publishes a GET export and a POST export with different names and different arguments. Seeded from the committed generator output on 2026-09-17, so adding it renamed nothing. Optional: an operation with no contracted surface stays on the reviewed Python fallback.",
+            "properties": {
+              "exportName": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The npm export, e.g. `getSelection`. A published API anchor: changing it is a breaking change on the npm registry."
+              },
+              "modulePath": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "description": "Where the export is nested under `operations`, e.g. [design, rcKds, checks]. The generated payload-type namespace is derived from it, so it is not free-form."
+              },
+              "argumentTypeName": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "array",
+                    "minItems": 2,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                ],
+                "description": "The argument's generated TypeScript type name, unqualified - the namespace comes from modulePath. A list means a union, which two /ope load-combination operations publish. Omit it when the operation takes an argument the SDKs do not type, which renders as JsonObject."
+              },
+              "takesArgument": {
+                "type": "boolean",
+                "description": "False for a POST that sends no body at all, which generates a different npm operation kind from one whose body is untyped. Defaults to true; only the `false` case is worth writing down."
+              }
+            }
           }
         },
         "allOf": [

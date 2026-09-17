@@ -32,6 +32,10 @@ verification:
 
 operations:
   - method: POST
+    surface:
+      exportName: createLineBeamLoad
+      modulePath: [ope]
+      argumentTypeName: LineBeamLoadArgument
     risk: write
     request:
       wrapper: assign

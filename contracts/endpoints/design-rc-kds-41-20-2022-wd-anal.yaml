@@ -32,6 +32,10 @@ verification:
 
 operations:
   - method: POST
+    surface:
+      exportName: performWallDesign
+      modulePath: [design, rcKds, designForces]
+      argumentTypeName: RcWallDesignPerformArgument
     risk: write
     request:
       wrapper: assign

@@ -30,6 +30,10 @@ verification:
 
 operations:
   - method: POST
+    surface:
+      exportName: generateLoadCombinationSrc
+      modulePath: [ope]
+      argumentTypeName: [LoadCombinationSrcKdsArgument, LoadCombinationAikSrc2kArgument]
     risk: write
     request:
       wrapper: assign

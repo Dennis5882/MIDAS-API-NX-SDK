@@ -32,6 +32,10 @@ verification:
 
 operations:
   - method: POST
+    surface:
+      exportName: performSteelCodeCheck
+      modulePath: [design, steelKds]
+      argumentTypeName: PerformSteelCodeCheckArgument
     risk: write
     request:
       wrapper: assign

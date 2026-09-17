@@ -109,21 +109,67 @@ Three things to know:
   across that change. These are public API anchors on both registries; changing
   one is a breaking change, and now it is a breaking change you have to make on
   purpose.
-- **It is optional, and its absence means the Python fallback.** 273 of the 304
-  npm resources have one; the 31 without a contract keep taking their names from
-  Python, exactly as they already do for `name` and `products`. `payloadTypeName`
-  is separately optional: `/db/DRLS` is typed `JsonObject` and has no payload
-  type of its own, so having no name there is a fact, not a gap.
+- **It is optional, and its absence means the Python fallback.** 301 of the 305
+  npm resources have one; the 4 without a contracted surface keep taking their
+  names from Python, exactly as they already do for `name` and `products`.
+  Three of those four are the IEHG trio, which has no permitted source at all
+  and so can never be contracted; the fourth is `/DESIGN/STEEL/DSTL`, waiting on
+  promotion. `payloadTypeName` is separately optional: `/db/DRLS` is typed
+  `JsonObject` and has no payload type of its own, so having no name there is a
+  fact, not a gap.
 - **The generator refuses a disagreement**, as it does for every other contract
   fact. `className`/`exportName`/`modulePath` are checked as resources load;
   `payloadTypeName` is checked after generation picks it, because a legacy
   TypedDict shared by endpoints with different contracts gets renamed on the way
   through.
 
+### A function endpoint's surface lives on the operation
+
+A `/db/*` resource publishes **one** npm export carrying every method, so its
+names belong to the endpoint. A function endpoint - `/doc/*`, `/ope/*`,
+`/view/*`, the design-code calls - publishes **one export per method**, so its
+names belong to the operation:
+
+```yaml
+operations:
+  - method: GET
+    surface:
+      exportName: getStoryParameters
+      modulePath: [ope]
+  - method: POST
+    surface:
+      exportName: setStoryParameters
+      modulePath: [ope]
+      argumentTypeName: StoryParameterArgument
+```
+
+`/ope/STORY_PARAM` above is the case that forces the shape: one endpoint, two
+exports, different names and different arguments. A single top-level `surface`
+could not have said it.
+
+Two fields beyond the resource block's, and both earn their place. `argumentTypeName`
+is unqualified because the namespace is derived from `modulePath` - the
+generator builds both from the same module parts, so storing the namespace
+would only create something that could disagree. It takes a list where an
+operation publishes a union, which two `/ope` load-combination calls do. And
+`takesArgument: false` marks a POST that sends no body at all, which generates a
+different npm operation kind from one whose body is merely untyped; that
+distinction is invisible in the type name, so it needs a field of its own.
+
+Added 2026-09-17 and seeded from the generator's own committed output, so it
+renamed nothing: 68 of the 70 operations are now named by their contract, the
+generated TypeScript is byte-identical, and the generator raises on any
+disagreement between the contract and the Python function it is generated
+beside. The two operations still on the fallback are `/post/PM` and
+`/post/STEELCODECHECK`, which have no contract at all.
+
 What this does **not** yet do is let a contract create anything. The generator
-still iterates `DbResource` subclasses, so a contract for an endpoint Python
-does not declare is skipped, and `npm run generate` needs `import midas_nx` to
-work at all. Inverting that is the next step.
+still iterates `DbResource` subclasses and still reads every Python module's
+AST for operations, tables and most payload shapes, so a contract for an
+endpoint Python does not declare is skipped, and `npm run generate` needs the
+Python source tree - not merely an importable install - to work at all.
+Inverting that is the remaining step, and it is the tables and payload shapes
+that are left.
 
 ## Unknown message shapes
 

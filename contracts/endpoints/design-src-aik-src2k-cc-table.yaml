@@ -32,6 +32,10 @@ verification:
 
 operations:
   - method: POST
+    surface:
+      exportName: getSrcColumnCheckTable
+      modulePath: [design, srcAiksrc2k]
+      argumentTypeName: SrcMemberCheckTableArgument
     risk: write
     request:
       wrapper: assign

@@ -32,6 +32,10 @@ verification:
 
 operations:
   - method: POST
+    surface:
+      exportName: getBraceCheckTable
+      modulePath: [design, rcKds, checks]
+      argumentTypeName: RcMemberCheckTableArgument
     risk: write
     request:
       wrapper: assign

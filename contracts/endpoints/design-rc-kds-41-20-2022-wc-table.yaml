@@ -32,6 +32,10 @@ verification:
 
 operations:
   - method: POST
+    surface:
+      exportName: getWallCheckTable
+      modulePath: [design, rcKds, checks]
+      argumentTypeName: RcWallCheckTableArgument
     risk: write
     request:
       wrapper: assign

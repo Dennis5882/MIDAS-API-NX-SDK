@@ -32,6 +32,10 @@ verification:
 
 operations:
   - method: POST
+    surface:
+      exportName: divideElements
+      modulePath: [ope]
+      argumentTypeName: DivideElementsArgument
     risk: write
     request:
       wrapper: assign

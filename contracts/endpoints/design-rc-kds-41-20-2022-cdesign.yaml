@@ -32,6 +32,10 @@ verification:
 
 operations:
   - method: POST
+    surface:
+      exportName: exportComprehensiveDesignResultImage
+      modulePath: [design, rcKds, checks]
+      argumentTypeName: ComprehensiveDesignResultArgument
     risk: write
     request:
       wrapper: assign

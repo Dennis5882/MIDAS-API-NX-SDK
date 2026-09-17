@@ -44,6 +44,10 @@ verification:
 
 operations:
   - method: POST
+    surface:
+      exportName: performSrcOptimalDesign
+      modulePath: [design, srcAiksrc2k]
+      argumentTypeName: SrcOptimalDesignArgument
     risk: product_crash_risk
     mitigation: warn_only
     summary: Run SRC optimal design over the listed sections.

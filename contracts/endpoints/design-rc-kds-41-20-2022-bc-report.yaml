@@ -32,6 +32,10 @@ verification:
 
 operations:
   - method: POST
+    surface:
+      exportName: exportBeamCheckReport
+      modulePath: [design, rcKds, checks]
+      argumentTypeName: RcMemberCheckReportArgument
     risk: write
     request:
       wrapper: assign

@@ -30,6 +30,9 @@ verification:
 
 operations:
   - method: GET
+    surface:
+      exportName: getStoryCheckParameter
+      modulePath: [ope]
     risk: read_only
     request:
       wrapper: none
@@ -37,6 +40,10 @@ operations:
       wrapper: table
       keyStability: stable
   - method: POST
+    surface:
+      exportName: setStoryCheckParameter
+      modulePath: [ope]
+      argumentTypeName: StoryCheckParameterArgument
     risk: write
     request:
       wrapper: assign

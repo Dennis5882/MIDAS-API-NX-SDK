@@ -32,6 +32,10 @@ verification:
 
 operations:
   - method: POST
+    surface:
+      exportName: performBeamCheck
+      modulePath: [design, rcKds, checks]
+      argumentTypeName: PerformRcMemberCheckArgument
     risk: write
     request:
       wrapper: assign

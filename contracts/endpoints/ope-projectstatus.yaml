@@ -32,6 +32,9 @@ verification:
 
 operations:
   - method: GET
+    surface:
+      exportName: getProjectStatus
+      modulePath: [ope]
     risk: read_only
     request:
       wrapper: none
