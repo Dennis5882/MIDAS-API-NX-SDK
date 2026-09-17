@@ -11980,8 +11980,10 @@ export namespace DesignSrcAiksrc2kTypes {
 }
 
 export namespace DesignSteelKdsTypes {
+  /** Generated from contracts/endpoints/. */
   export interface SteelDesignCodeSelectionPayload {
-    DGNCODE?: string;
+    /** 강재 설계 코드 · 현재 "KDS 41 30 : 2022" 1개 값만 지원 */
+    DGNCODE: "KDS 41 30 : 2022";
   }
   /** Generated from contracts/endpoints/. */
   export interface SteelDesignCodeOptionPayload {

@@ -6,6 +6,19 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Changed - `SteelDesignCodeSelectionPayload` narrows
+
+> **Breaking for this one type.** Code that omitted `DGNCODE`, or passed any
+> string other than the manual's single value, no longer typechecks. Nothing
+> changes at runtime.
+
+`DESIGN/STEEL/DSTL` now has a contract, so its payload type is generated from
+that rather than from the Python fallback. `DGNCODE` becomes required and is
+typed as the literal `"KDS 41 30 : 2022"`, the only value the manual lists -
+the same shape `RcDesignCodeSelectionPayload` has had since its own contract.
+The fallback had emitted every member as an optional `string`, which claimed
+less than the manual says.
+
 ## 2.8.2 - 2026-09-16
 
 > Additive. No exported name is removed or renamed and no member narrows - 741

@@ -1,6 +1,7 @@
 """Shadow-run guards for the contract-first npm resource generator."""
 from __future__ import annotations
 
+import subprocess
 import sys
 from pathlib import Path
 
@@ -12,7 +13,7 @@ import generate_typescript_sdk as generator  # noqa: E402
 
 def test_contracted_resource_surfaces_match_the_legacy_sdk_anchor():
     """A Stage 3 switch is allowed only when it preserves generated output."""
-    resources = {resource["endpoint"]: resource for resource in generator._load_resources()}
+    resources = {resource["endpoint"]: resource for resource in generator._load_resources(generator._source_modules())}
     contracts = generator._contract_resource_surfaces(set(resources))
 
     assert contracts
@@ -59,7 +60,7 @@ def test_resource_shadow_checks_documented_display_names_but_normalizes_dash_typ
 
 def test_bodf_payload_comes_from_its_manual_contract():
     """The first static-load contract must not silently fall back to Python types."""
-    resources = generator._load_resources()
+    resources = generator._load_resources(generator._source_modules())
     modules = generator._source_modules()
     resource_keys = {(resource["pythonModule"], resource["className"]) for resource in resources}
     type_keys = generator._collect_type_classes(modules, resource_keys)
@@ -367,7 +368,7 @@ def test_contract_applies_when_renders_as_member_jsdoc():
 
 def test_conflicting_legacy_payload_aliases_receive_distinct_contract_types():
     """One reused Python TypedDict must not overwrite another endpoint contract."""
-    resources = generator._load_resources()
+    resources = generator._load_resources(generator._source_modules())
     modules = generator._source_modules()
     resource_keys = {(resource["pythonModule"], resource["className"]) for resource in resources}
     type_keys = generator._collect_type_classes(modules, resource_keys)
@@ -507,4 +508,80 @@ def test_a_field_required_only_in_one_branch_is_not_required_of_every_payload():
     # `in` is the form the schema has for a field two branch tables document.
     assert "DEN?: number;" in rendered
     assert "Required when P_TYPE is 2 or 3." in rendered
+
+
+def test_npm_generation_never_imports_midas_nx():
+    """The generator reads the Python source tree; it must not import it.
+
+    Until 2026-09-17 `npm run generate` imported `midas_nx` to enumerate
+    `DbResource` subclasses, so a broken or missing Python install broke the npm
+    build. This runs the resource loader in a fresh interpreter where any
+    `midas_nx` import raises, so reintroducing one fails here rather than on a
+    machine that happens not to have the package installed.
+    """
+    script = """
+import sys
+class Block:
+    def find_spec(self, name, path=None, target=None):
+        if name == "midas_nx" or name.startswith("midas_nx."):
+            raise ImportError("npm generation imported " + name)
+        return None
+sys.meta_path.insert(0, Block())
+sys.path.insert(0, sys.argv[1])
+import generate_typescript_sdk as generator
+resources = generator._load_resources(generator._source_modules())
+print(len(resources))
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", script, str(ROOT / "scripts")],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert int(result.stdout.strip()) > 0
+
+
+def test_static_resource_reader_matches_the_imported_classes():
+    """The source reader must state exactly what Python would.
+
+    `_static_resource_classes` follows a deliberately small subset of Python -
+    literals, f-strings, frozensets of strings, module constants, relative
+    imports, single inheritance. If the package starts stating a class fact
+    some other way, the reader raises; this test covers the quieter failure,
+    where it resolves to a different answer than the interpreter does.
+    """
+    import importlib
+    import pkgutil
+
+    import midas_nx
+    from midas_nx.db.base import DbResource
+
+    for module in pkgutil.walk_packages(midas_nx.__path__, midas_nx.__name__ + "."):
+        importlib.import_module(module.name)
+
+    def subclasses(base: type) -> list[type]:
+        found: list[type] = []
+        for child in base.__subclasses__():
+            found.append(child)
+            found.extend(subclasses(child))
+        return found
+
+    imported = {
+        cls.ENDPOINT: {
+            "className": cls.__name__,
+            "endpoint": cls.ENDPOINT,
+            "name": cls.NAME or cls.__name__,
+            "products": sorted(cls.PRODUCTS),
+            "methods": sorted(cls.METHODS),
+            "pythonModule": cls.__module__,
+        }
+        for cls in subclasses(DbResource)
+    }
+    static = generator._static_resource_classes(generator._source_modules())
+
+    assert set(static) == set(imported)
+    for endpoint, facts in imported.items():
+        for key, expected in facts.items():
+            assert static[endpoint][key] == expected, (endpoint, key)
 

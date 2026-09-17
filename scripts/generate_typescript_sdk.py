@@ -12,11 +12,8 @@ tree changes, making an official-manual/Python update visible to both SDKs.
 from __future__ import annotations
 
 import ast
-import importlib
 import json
-import pkgutil
 import re
-import sys
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
@@ -58,14 +55,6 @@ _TABLE_OPTION_NAMES = {
     "additional": "additional",
     "set_calculation_method": "calculationMethod",
 }
-
-
-def _all_subclasses(base: type) -> list[type]:
-    found: list[type] = []
-    for child in base.__subclasses__():
-        found.append(child)
-        found.extend(_all_subclasses(child))
-    return found
 
 
 def _camel(value: str) -> str:
@@ -1096,39 +1085,169 @@ def _resource_identity(
 _RESOURCE_SOURCE_COUNTS: dict[str, int] = {}
 
 
-def _python_resource_classes() -> dict[str, dict[str, Any]]:
-    """Every `DbResource` subclass the Python package declares, by endpoint.
+class _Unresolved(Exception):
+    """A class fact the source does not state in a form this reader follows."""
 
-    This is the *fallback* source now, not the primary one.  An endpoint whose
-    contract carries a `surface` block gets its npm identity from the contract;
-    this supplies the rest, plus the one fact no contract records - which Python
-    module a class lives in, which the payload-type lookup still needs while 497
-    of the 750 payload types come from Python TypedDicts rather than contracts.
+
+def _static_resource_classes(modules: dict[str, ast.Module]) -> dict[str, dict[str, Any]]:
+    """Every `DbResource` subclass, by endpoint, read from source - not imported.
+
+    The same facts the generator used to get by importing `midas_nx` (until
+    2026-09-17), read from the syntax tree the generator already parses for
+    payload types and operations. It follows exactly what the package uses to
+    state them and nothing more: string literals and f-strings, `frozenset`
+    literals of strings, module-level constants, relative imports, and single
+    inheritance up to `DbResource`'s own defaults. Anything else raises and
+    names the class, because a fact this reader guessed would be a fact the npm
+    package published without anyone having written it.
     """
+    imports = {module: _import_map(module, tree) for module, tree in modules.items()}
+    classes: dict[tuple[str, str], ast.ClassDef] = {}
+    for module, tree in modules.items():
+        for node in tree.body:
+            if isinstance(node, ast.ClassDef):
+                classes[(module, node.name)] = node
 
-    sys.path.insert(0, str(PYTHON_SRC))
-    import midas_nx  # noqa: PLC0415
-    from midas_nx.db.base import DbResource  # noqa: PLC0415
+    def assigned(tree: ast.Module, name: str) -> ast.expr | None:
+        for node in tree.body:
+            if isinstance(node, ast.Assign):
+                if any(isinstance(target, ast.Name) and target.id == name for target in node.targets):
+                    return node.value
+            elif isinstance(node, ast.AnnAssign) and node.value is not None:
+                if isinstance(node.target, ast.Name) and node.target.id == name:
+                    return node.value
+        return None
 
-    for module in pkgutil.walk_packages(midas_nx.__path__, midas_nx.__name__ + "."):
-        importlib.import_module(module.name)
+    def locate(module: str, name: str, kind: str) -> tuple[str, str]:
+        """Follow imports to the module that defines `name`."""
+        start = (module, name)
+        seen: set[tuple[str, str]] = set()
+        while (module, name) not in seen:
+            seen.add((module, name))
+            if kind == "class" and (module, name) in classes:
+                return module, name
+            if kind == "constant" and assigned(modules[module], name) is not None:
+                return module, name
+            origin = imports.get(module, {}).get(name)
+            if origin is None or origin[0] not in modules:
+                break
+            module, name = origin
+        raise _Unresolved(f"{kind} {start[1]!r} as seen from {start[0]}")
 
-    classes: dict[str, dict[str, Any]] = {}
-    for cls in _all_subclasses(DbResource):
-        classes[cls.ENDPOINT] = {
-            "className": cls.__name__,
-            "exportName": _camel(cls.__name__),
-            "endpoint": cls.ENDPOINT,
-            "name": cls.NAME or cls.__name__,
-            "products": sorted(cls.PRODUCTS),
-            "methods": sorted(cls.METHODS),
-            "pythonModule": cls.__module__,
-            "modulePath": _module_parts(cls.__module__),
+    def value(module: str, node: ast.expr) -> Any:
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            return node.value
+        if isinstance(node, ast.Name):
+            owner, name = locate(module, node.id, "constant")
+            expr = assigned(modules[owner], name)
+            assert expr is not None
+            return value(owner, expr)
+        if isinstance(node, (ast.Set, ast.Tuple, ast.List)):
+            items = [value(module, element) for element in node.elts]
+            if not all(isinstance(item, str) for item in items):
+                raise _Unresolved(f"a collection of non-strings in {module}")
+            return frozenset(items)
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id in {"frozenset", "set", "tuple"}
+            and len(node.args) == 1
+            and not node.keywords
+        ):
+            return value(module, node.args[0])
+        if isinstance(node, ast.JoinedStr):
+            parts: list[str] = []
+            for part in node.values:
+                if isinstance(part, ast.Constant) and isinstance(part.value, str):
+                    parts.append(part.value)
+                elif isinstance(part, ast.FormattedValue) and part.format_spec is None:
+                    resolved = value(module, part.value)
+                    if not isinstance(resolved, str):
+                        raise _Unresolved(f"a non-string f-string part in {module}")
+                    parts.append(resolved)
+                else:
+                    raise _Unresolved(f"an f-string part this reader does not follow in {module}")
+            return "".join(parts)
+        if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+            left, right = value(module, node.left), value(module, node.right)
+            if isinstance(left, str) and isinstance(right, str):
+                return left + right
+        raise _Unresolved(f"{ast.unparse(node)!r} in {module}")
+
+    def bases(key: tuple[str, str]) -> list[tuple[str, str]]:
+        module, class_name = key
+        found: list[tuple[str, str]] = []
+        for base in classes[key].bases:
+            if isinstance(base, ast.Name):
+                try:
+                    found.append(locate(module, base.id, "class"))
+                except _Unresolved:
+                    continue  # a base outside the package, e.g. `object`
+        return found
+
+    def attribute(key: tuple[str, str], name: str) -> Any:
+        module, class_name = key
+        for node in classes[key].body:
+            target: ast.expr | None = None
+            if isinstance(node, ast.Assign) and len(node.targets) == 1:
+                target = node.targets[0]
+            elif isinstance(node, ast.AnnAssign) and node.value is not None:
+                target = node.target
+            if isinstance(target, ast.Name) and target.id == name:
+                assert node.value is not None
+                return value(module, node.value)
+        parents = bases(key)
+        if len(parents) > 1:
+            raise _Unresolved(f"{name} on {class_name}, which has several bases")
+        if not parents:
+            raise KeyError(name)
+        return attribute(parents[0], name)
+
+    root = ("midas_nx.db.base", "DbResource")
+    if root not in classes:
+        raise _Unresolved("DbResource itself")
+    children: dict[tuple[str, str], list[tuple[str, str]]] = defaultdict(list)
+    for key in classes:
+        for parent in bases(key):
+            children[parent].append(key)
+
+    found: dict[str, dict[str, Any]] = {}
+    pending = list(children[root])
+    visited: set[tuple[str, str]] = set()
+    while pending:
+        key = pending.pop()
+        if key in visited:
+            continue
+        visited.add(key)
+        pending.extend(children[key])
+        module, class_name = key
+        try:
+            endpoint = attribute(key, "ENDPOINT")
+        except KeyError:
+            continue  # an intermediate base that states no endpoint of its own
+        try:
+            name = attribute(key, "NAME")
+        except KeyError:
+            name = ""
+        facts = {
+            "className": class_name,
+            "exportName": _camel(class_name),
+            "endpoint": endpoint,
+            "name": name or class_name,
+            "products": sorted(attribute(key, "PRODUCTS")),
+            "methods": sorted(attribute(key, "METHODS")),
+            "pythonModule": module,
+            "modulePath": _module_parts(module),
         }
-    return classes
+        if endpoint in found:
+            raise _Unresolved(
+                f"{endpoint} is declared by both {found[endpoint]['className']} and {class_name}"
+            )
+        found[endpoint] = facts
+    return found
 
 
-def _load_resources() -> list[dict[str, Any]]:
+def _load_resources(modules: dict[str, ast.Module]) -> list[dict[str, Any]]:
     """Build the npm resource list, contracts first and Python second.
 
     This used to iterate `DbResource` subclasses and let a contract correct the
@@ -1137,13 +1256,14 @@ def _load_resources() -> list[dict[str, Any]]:
     a `surface` block and takes the endpoint's whole npm identity from there,
     falling back to the Python class only for endpoints no contract covers.
 
-    Python has not stopped mattering: `pythonModule` has no home in a contract
-    and the payload-type lookup needs it, so `import midas_nx` is still
-    load-bearing.  What changed is the direction - the contract is the source
-    and Python fills its gaps, rather than the reverse.
+    Python has not stopped mattering, but it is no longer imported: the class
+    facts come from `_static_resource_classes`, which reads the same source tree
+    the payload-type and operation readers already parse. `pythonModule` still
+    has no home in a contract and the payload-type lookup is keyed by it, so the
+    source tree is load-bearing - an importable, working `midas_nx` is not.
     """
 
-    python_classes = _python_resource_classes()
+    python_classes = _static_resource_classes(modules)
 
     coverage = json.loads((ROOT / "docs" / "coverage.json").read_text(encoding="utf-8"))
     coverage_by_endpoint: dict[str, list[dict[str, Any]]] = defaultdict(list)
@@ -1717,8 +1837,8 @@ def _contract_payload_types(
 
 
 def main() -> None:
-    resources = _load_resources()
     modules = _source_modules()
+    resources = _load_resources(modules)
     resource_keys = {(item["pythonModule"], item["className"]) for item in resources}
     type_keys = _collect_type_classes(modules, resource_keys)
     coverage = json.loads((ROOT / "docs" / "coverage.json").read_text(encoding="utf-8"))

@@ -811,3 +811,19 @@ records:
       rather than at nothing.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-read-sweep-2026-09-16
+    endpoints: []
+    date: "2026-09-16"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 09/15/2026
+    level: read
+    outcome: success_empty
+    method: >-
+      scripts/live_readonly_sweep.py (read-only GET), run against the published PyPI 2.8.2 and repeated through the published npm 2.8.2
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md

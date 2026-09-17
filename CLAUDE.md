@@ -98,10 +98,16 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   there was nowhere in a contract to put a name. Run it through `npm run generate`; do not
   hand-edit `packages/typescript/src/generated/*`.
   The generator asks the contract first and the Python class second (one function,
-  `_resource_identity`), but `import midas_nx` remains
-  load-bearing — deleting `src/midas_nx/` breaks `npm run generate` and therefore `npm publish`,
-  though a built `dist/` keeps working. What still needs Python: `pythonModule`, which no
-  contract records, and the 485 of 750 payload types that come from Python TypedDicts.
+  `_resource_identity`). **Since 2026-09-17 it does not import `midas_nx`**: class facts are
+  read from the source tree by `_static_resource_classes`, the same syntax trees the payload-type
+  and operation readers already parse, and `tests/test_generate_typescript_sdk.py` fails if an
+  import comes back. A missing or broken Python install no longer stops `npm publish`. The
+  **source tree** is still load-bearing — deleting `src/midas_nx/` breaks `npm run generate`,
+  though a built `dist/` keeps working — because `pythonModule`, which no contract records, keys
+  the payload-type lookup, 478 of 765 payload types still come from Python TypedDicts, and the
+  87 table wrappers are read from Python source. Only 3 of 305 resources still take their
+  identity from a Python class: the IEHG trio, which has no permitted source and so can never be
+  contracted.
 - `scripts/contract_from_info.py` — the one path into a contract that does not start at the
   manual. Seven Hyper-S `-M1` sections state a URL, their methods and nothing else, so live
   `/info` is their only permitted source; this fills a draft's `fields` from

@@ -182,6 +182,18 @@ APIs are already published under those names. Sketch, for the author:
    place for the wrapper's summary text that JSDoc currently takes from a
    Python docstring.
 
+> **Corrected 2026-09-17.** The next sentence was wrong about what the import
+> depended on. `import midas_nx` was used by exactly one function, to enumerate
+> `DbResource` subclasses; operations, tables and payload shapes were already
+> read from the source tree with `ast`, not imported. So the import was
+> deletable on its own, and it has been: `_static_resource_classes` reads the
+> same class facts from source, was checked fact-for-fact against the import
+> on all 305 resources before the import was removed, and the generator now
+> runs with `midas_nx` unimportable. Steps 2-3 are what would make the
+> **source tree** deletable, which is a different and much larger claim.
+> Operation names reached contracts the same day; tables and payload shapes
+> have not.
+
 Step 1 gave the names a home; **steps 2–3 are what make `import midas_nx`
 deletable**. Measured 2026-09-02 by deleting `src/midas_nx/` in a worktree:
 `npm run build`, `typecheck` and `test` all pass from the committed

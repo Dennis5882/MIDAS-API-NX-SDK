@@ -167,7 +167,8 @@ What this does **not** yet do is let a contract create anything. The generator
 still iterates `DbResource` subclasses and still reads every Python module's
 AST for operations, tables and most payload shapes, so a contract for an
 endpoint Python does not declare is skipped, and `npm run generate` needs the
-Python source tree - not merely an importable install - to work at all.
+Python source tree to work at all. It no longer needs an importable install:
+since 2026-09-17 the class facts are read from source, not imported.
 Inverting that is the remaining step, and it is the tables and payload shapes
 that are left.
 
