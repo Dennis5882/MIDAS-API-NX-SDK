@@ -1,94 +1,62 @@
 # Codex task prompt — mechanical work only
 
-Updated 2026-09-17 (later). Both products are on **Build 09/15/2026**, the
-published 2.8.2 was verified against them on 2026-09-16, and since then the
-npm seed gap, Task H, Task I and Task J have all been run - by Claude, not in a
-Codex round. What that changed is summarised directly below; the sections
-further down keep their history.
+Updated 2026-09-17, after the **2.8.3** release. Rewritten from scratch: the
+previous version had grown to describe more closed tasks than open ones. What
+the closed tasks found is summarised under "Closed — do not reopen"; their full
+text is in git history (`0fff09d` and earlier).
 
-**2026-09-17 in one paragraph.** The live fixture is version 6: a seed step may
-be a per-id DELETE, one listed seed's guard read is answered empty, and a case
-may declare an order-free comparison. That let npm replay `/db/PJCF`,
-`/db/HECB`, `/db/HSPT`, `/db/MVHL` and `/db/BCGA-M1`, which passed through
-both SDKs, and `/db/DYFG`/`/db/DYNF` turned out to be a selection artefact
-rather than a regression, so **the npm gap is 0**. `DESIGN/STEEL/DSTL`
-was contracted (Task H) and took a PUT on Gen while Civil refused it (Task I).
-`USE_HAMBLY_EQ` is absent from a DB/User solid section's record (Task J).
-`/post/PM` and `/post/STEELCODECHECK` were contracted, so all 70 npm operations
-are now named by a contract. And npm generation no longer imports `midas_nx`.
+## Where things stand
 
-**What the 2026-09-16 patch day established.** The
-published 2.8.2 answers on 268/268 GET-capable Gen resources and 283/283 on
-Civil, identically through PyPI and npm. `DESIGN/STEEL/DSTL` answered on both
-products, which closed the ledger's last unverified endpoint and unblocked its
-contract — and left it as the one endpoint nothing has ever sent a payload to
-(Task I). `/info` moved by exactly one property in the whole patch, on both
-products (Task J). Every historical crash path was re-run and all but `OCHECK`
-came back clean, so **crash re-testing is not on this list** — see its section
-for why calling `OCHECK` again is off limits.
+- **Both products are on Build 09/15/2026** (Gen NX 2026 v2.1, Civil NX 2026
+  v2.2), read from their About dialogs on 2026-09-16.
+- **2.8.3 is published on PyPI and npm.** Nothing in either packaged surface has
+  changed since. **No release is warranted**, and a contract edit does not make
+  one: the author picks the number and asks for the release explicitly.
+- **Coverage: 400/400 implemented, 201 write / 199 read.** Of the 225 `/db`
+  endpoints, 46 are short of write level.
+- **The npm package has replayed all 177 confirmed live cases** on every product
+  each case declares. The npm/Python evidence gap is closed; keep it closed.
+- **Contracts: 384 endpoints + 87 result tables**, 5,078 fields. Every npm
+  resource and operation that can be named by a contract is. The three drafts
+  left, the IEHG trio, have no permitted source; that is final.
 
-**2.8.3 is published (2026-09-17), on both registries.** Python is unchanged
-from 2.8.2; npm narrows one member, `SteelDesignCodeSelectionPayload.DGNCODE`,
-to the required literal the manual lists. Full notes in
-`docs/release_notes_v2.8.3.md`. **Nothing in either packaged surface has changed
-since**, so no release is warranted. Do not infer one from a contract edit
-either: the author picks the number and must ask for the release explicitly.
+## The division, set by the author
 
-**What the previous round actually did**, because the numbers below have all
-moved: 21 `safeToOmit` claims grounded in recorded live calls with a guard in
-the extractor so the derivation can no longer outrun its evidence (Task C, now
-closed); 21 unmerged tables merged, 93 → 72 (Task E); seven case-less endpoints
-now live-confirmed through both SDKs (Task A/B-1). The `/db/NMAS` trap in Task C was
-spotted and refused, which is the outcome that task was written to test.
+Judgment-heavy work is Claude's: schema design, what a contradictory manual
+means, what stays unmerged, how a seed or case is represented. Bounded,
+verifiable, repeatable work is yours. Every task below has a starting number
+you can check your run against. **A task that turns out to need a judgment call
+is one to stop and report, not to decide.**
 
-**The division, set by the author.** Judgment-heavy work — schema design,
-deciding what a contradictory manual means, deciding what stays unmerged — is
-Claude's. Bounded, verifiable, repeatable work is yours. Every task below has a
-measured starting number you can check your run against. A task that turns out
-to need a judgment call is one to **stop and report**, not to decide.
+## Order of work
 
-**Read "The manual sync is reflected" before anything else** — it replaced a
-prohibition that had stood since 2026-09-06, and several instructions further
-down used to depend on it.
+**With a product session** (a session is the scarce thing — use it for these
+first):
 
-Then, in this order.
+1. **Task G** — three confirmed cases whose assertion cannot fail. Small; fold
+   it into the first batch.
+2. **Task K** — re-run confirmed cases on Build 09/15/2026 through both SDKs.
+3. **Task B** — the 22 endpoints whose case has never passed.
 
-**With a product session:**
-
-1. **Task G** — three confirmed cases that cannot fail, and so prove less than
-   their `confirmed=True` claims.
-2. **Task B-2** — the 22 that have failed. Only one offline lead is left.
-
-Tasks F, H, I and J are done; their sections say what they found and what is
-not yours to follow up.
-
-**Without one, and only then:**
+**Without one:**
 
 4. **Task A** — build fixtures for the 21 buildable endpoints with no case.
    Start with batch 17: `/db/PHGE`, `/db/POGD`, `/db/POGD-M1`.
 
-An earlier version of this file said the offline queue was empty and told you
-to report that rather than invent work. That was wrong about Task A: building a
-fixture is offline, and 21 endpoints are waiting. What is still true is the
-priority — **a session is the scarce thing.** Do not spend one writing fixtures
-while endpoints are waiting to be replayed through the other SDK.
-
-Task C is closed and Task E's mechanical set is exhausted; both sections stay
-because they say what re-opens them.
+Task E is offline and **not** yours to start; its section says why.
 
 ---
 
 ## Measured starting state
 
-Run these first and confirm you see the same numbers. **If any differ, say so
-before starting** — it means something moved under you.
+Run these first. **If a number differs, say so before starting** — something
+moved under you, and the command wins over this file.
 
 ```bash
-python -m pytest -q                       # 1081 passed, 0 failed
+python -m pytest -q                       # 1081 passed
 ruff check src tests scripts && mypy      # clean
 python scripts/validate_contracts.py      # OK; 384 endpoints, 5078 fields,
-                                          # 140 proven safe, 8 unsafe,
-                                          # 0 unresolved manual contradictions
+                                          # 140 proven safe, 8 unsafe
 python scripts/check_manual_drift.py --manual-api-repo "E:\AI Study\MIDAS-API"
                                           # has_diff: false
 MSYS_NO_PATHCONV=1 python scripts/extract_contracts.py \
@@ -96,786 +64,295 @@ MSYS_NO_PATHCONV=1 python scripts/extract_contracts.py \
 python scripts/info_baseline.py --against-contracts --check   # OK
 python scripts/info_baseline.py --divergence --check          # OK
 python scripts/report_dropped_manual_rows.py \
-  --manual-api-repo "E:\AI Study\MIDAS-API" --check           # exit 0; it always prints
-                                          # MD-50 /db/MVCTch rows - the
-                                          # recorded baseline, not a failure
+  --manual-api-repo "E:\AI Study\MIDAS-API" --check    # exit 0 (always prints
+                                          # the MD-50 /db/MVCTch baseline)
 python scripts/live_crud_check.py --check-cases        # silent; exit 0
 python scripts/check_fixture_contract.py --check       # 1 fixture lead over 1
                                           # endpoint, 3 contract gaps over 2
-python scripts/report_npm_replay_coverage.py --check   # 166 confirmed; 167 npm
-                                          # replays (166 confirmed); gap 0. By
-                                          # confirmed case: 177 complete, 0
-                                          # partial, 0 none, of 177
+python scripts/report_npm_replay_coverage.py --check   # gap 0; by confirmed
+                                          # case 177 complete, 0 partial, 0 none
 python scripts/report_unmerged_tables.py --check       # report is current
 cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 83 tests
 ```
 
-Coverage as `ROADMAP.md` reports it: **400/400 implemented, 201 write / 199
-read**, nothing unverified — `DESIGN/STEEL/DSTL` moved to write on Gen on
-2026-09-17 (Task I).
 `schema/live-cases.json` is **version 6**: 212 cases over 189 endpoints, 177
 confirmed, 9 base-model steps, 68 named seeds, none unsupported.
-
-**Both products are on Build 09/15/2026** (Gen NX 2026 v2.1, Civil NX 2026
-v2.2), each read from its own About dialog on 2026-09-16 — the first time the
-two have carried the same build date. The published 2.8.2 was swept read-only
-against both that day: 268/268 GET-capable resources answer on Gen, 283/283 on
-Civil, identically through PyPI and npm. `/info` moved by exactly one property
-in the patch, on both products; that is Task J.
-
-**npm live evidence is derivable.** Task F-0 backfilled the 113 explicit npm
-replays from the notes inventory into `docs/coverage.json` and
-`scripts/report_npm_replay_coverage.py --check` now measures them. One
-historical replay (`/db/DSTL`) has an unconfirmed fixture, so the Task F scope
-is **166 of 166 confirmed endpoints**: the gap closed on 2026-09-17.
-`extraction.unmergedTables`: **72 tables, 482 names, 15
-contracts**. Drafts: 3, the IEHG trio, refused for a reason that will not go
-away — that is the finished state, not a backlog.
-
-> If a number here disagrees with a command's output, **the command wins** —
-> say so in your report.
-
----
-
-## The manual sync is reflected — nothing is red
-
-**Resolved 2026-09-16.** The sibling manual repo's five commits past the old
-`vendored_at_commit` `7920759` — the 2026-09-06 bulk sync, its two `/ope/MEMB`
-self-corrections, the locale check, and the 2026-09-15 sync at `a6947a7` — were
-reviewed chapter by chapter and reflected, at the author's instruction.
-`vendored_at_commit` is now `a6947a7`, `check_manual_drift.py` reports
-`has_diff: false`, the extraction check reports no drift, and the
-contract-to-manual pytest case that failed on purpose for ten days passes.
-
-What reflecting it actually took, so the next sync is not a surprise:
-
-| change in the manual | what it did here |
-| --- | --- |
-| `/db/MATD` gained `bSERVCHECK`, `dSHORTTERM`, `dLONGTERM` | added as `requirement: unstated`. The manual's JSON Schema and live `/info` on both products both declare them; the manual's table and example do not, so nothing about when they apply is recorded |
-| `/db/TDNA`'s `CURVE` block gained `bPJ` | added to that variant; `ELEMENT` and `STRAIGHT` already had it |
-| `DESIGN/STEEL/DSTL` documented as a new endpoint | added to both SDKs, and read-verified on both products 2026-09-16 — see Task H. **Not `/db/DSTL`**, which shares the name |
-| `OPT_CS` documented as three states | omitting it keeps the current view, `false` switches to the final stage. Both SDKs already omitted it by default; the contract no longer records `false` as its default |
-| 108 manual line anchors across 59 contracts moved | re-anchored mechanically from a line-by-line mapping of the two manual versions, with zero anchors whose original line had itself changed |
-| every other hunk | `⚠️` callout text only — typos MIDASIT has since fixed upstream, and locale notes. No contract or SDK change |
-
-**The anchor lesson is the one to keep.** The extraction check flagged 11
-moved `unmergedTables` anchors. The real number was **108**: `variants[].source.line`,
-`missingColumns`, `structuralTables` and `extraction.source` all cite the
-same lines and the check reads none of them. A manual sync that inserts one
-paragraph near the top of a chapter moves every anchor below it, and fixing
-only the ones a checker names leaves the rest silently pointing at the wrong
-row. Map the whole file.
-
-**Two things from the old prohibition still hold as habits:**
-
-- a bulk `정기 점검` sync is often followed within a day by self-audit
-  `fix(manual):` commits — re-run the drift checker, do not assume one sync is
-  final;
-- when a task says to read a manual section, read it at `vendored_at_commit`
-  (now `a6947a7`), not whatever the working tree holds.
-
----
-
-## Task H — one endpoint the manual added and nobody has called
-
-**Done 2026-09-17.** Step 3 was run: `contracts/endpoints/design-steel-dstl.yaml`
-exists, and it narrowed `SteelDesignCodeSelectionPayload.DGNCODE` to its one
-documented value (recorded under the npm changelog's `Unreleased`). The text
-below is the task as it was written.
-
-**Live, read-only. Safe against an open model — the only task here that is.**
-
-`DESIGN/STEEL/DSTL` (chapter 25 §0, the steel counterpart of `DESIGN/RC/DRC`)
-was added to both SDKs on 2026-09-16 from the manual alone. It still has **no
-contract**, but the reason it could not have one is gone.
-
-**Steps 1 and 2 are done, on both products.** On 2026-09-16 the endpoint
-answered `{"message": ""}` on MIDAS Gen NX 2026 v2.1 and MIDAS Civil NX 2026
-v2.2, both Build 09/15/2026, through the published 2.8.2 of *both* packages —
-so its declared `products: [gen, civil]` is confirmed rather than assumed — and
-`docs/coverage.json` carries it as `level: "read"`. `promote_contract.py`, which
-refuses a draft with no live record and is right to, will no longer refuse this
-one. **What is left is step 3, and it is offline: you can do it now.**
-
-1. ~~`GET` on Gen and Civil~~ done.
-2. ~~Record it in `docs/coverage.json`~~ done.
-3. `python scripts/extract_contracts.py --emit /DESIGN/STEEL/DSTL`, then
-   `python scripts/promote_contract.py design-steel-dstl`, then
-   `validate_contracts.py` and `npm run generate`. The generated npm resource
-   should move from the Python fallback to the contract with no name change.
-
-`/info` is not served for `/DESIGN/*`, so do not try it; a design contract never
-carries `provenance: info_schema`. The `PUT` round trip that would earn `write`
-is **Task I**, split out because it needs a product session and an empty scratch
-document while this step needs neither — do not do it twice.
-
-## Task I — the one endpoint nothing has ever sent a payload to
-
-**Done 2026-09-17, and it split by product.** Gen NX accepted the documented
-PUT and returned the record; Civil NX refused the same body with
-`[Error] Errors detected in Steel Design Control Data.(Item:)`. There was no
-original value, so the scratch document was the revert - saved and replaced
-with `/doc/NEW` - and no DELETE was sent. Recorded in
-`docs/live_verification_notes.md` and in the contract's PUT `notes`. **What
-Civil needs first is open and is not a Codex task**: the enum has one value, so
-there is nothing to vary, and guessing at preconditions is how a fixture turns
-into a confident wrong finding. Do not re-run it. The text below is the task as
-it was written.
-
-**Live. Needs an empty scratch document: it changes the model's steel design
-code.** The smallest live task here, and the highest value per minute.
-
-`DESIGN/STEEL/DSTL` answered `{"message": ""}` on Gen and Civil on 2026-09-16,
-which is why it is no longer the ledger's one unverified endpoint. That is a
-**read**. Its whole payload is one field — `DGNCODE`, whose enum the manual
-gives exactly one value, `"KDS 41 30 : 2022"` — and no call has ever sent it.
-Everything this repository knows about its request shape comes from a manual
-chapter, and manual chapters have been wrong about field names before
-(`/db/REBW`, `/db/REBC`).
-
-1. On an empty document, `GET /DESIGN/STEEL/DSTL` and keep the response in
-   front of you — it is the current design code, and the value you must put
-   back.
-2. `PUT` the documented `DGNCODE`, `GET` again to confirm it took, then `PUT`
-   the original value back. Change → verify → revert, the `/db/REBW` pattern.
-3. Record it in `docs/coverage.json` at `level: "write"` with the build, and
-   add the endpoint to `scripts/live_crud_check.py` **only if** it fits that
-   harness's create/read/update/delete shape — it is GET/PUT/DELETE with no
-   POST, so it may not, and forcing it in is worse than leaving it out.
-
-**Do not run `DELETE` on it** unless you have established what deleting a
-design-code selection means on a model that has one. There is no documented
-answer and the blast radius is the whole design chapter.
-
-If the documented enum value is refused, that is a finding, not a failure:
-record what the server said and stop. Do not permute spellings — this project
-has a rule about that, and `/db/TDMT` is why.
-
-## Task J — `/db/SECT`'s new `USE_HAMBLY_EQ`, read-only
-
-**Done 2026-09-17, on one section type.** A DB/User solid section's record has
-no `SECT_AFTER` block and no `USE_HAMBLY_EQ` in `SECT_BEFORE`, on both
-products. A composite section - the type that carries `SECT_AFTER` - was not
-probed, because no confirmed fixture builds one. Do not write one to finish
-this. The text below is the task as it was written.
-
-**Live, GET only. Safe against an open model. Evidence-gathering only — the
-decision it feeds is the author's.**
-
-Build 09/15/2026 added `SECT_BEFORE.USE_HAMBLY_EQ` and
-`SECT_AFTER.USE_HAMBLY_EQ` (boolean, described as *"Use Hambly Eq. for Ixx"*) to
-`/info/db/SECT` on both products. `Hambly` appears nowhere in the manual
-repository. `/info` declaring a property is the weak direction of that
-comparison, so what is missing is whether the product actually carries the field
-in a real record.
-
-1. On a model that **has sections** — not a blank document — `GET /db/SECT`.
-2. Report three things only: whether `USE_HAMBLY_EQ` appears in the returned
-   records, what value it carries, and whether it appears on both
-   `SECT_BEFORE` and `SECT_AFTER`.
-3. Stop there.
-
-**Do not commit the response body.** It is the author's model contents, not
-schema — this is a standing rule in this repository, and a section table is
-exactly the kind of thing that leaks a real project's design.
-
-**Do not** add the property to `contracts/endpoints/db-sect.yaml`, and **do
-not** re-capture `schema/info-baseline.json`. Both are listed under the open
-decisions, deliberately, and re-baselining would turn CI red anyway because
-`--against-contracts --check` fails when the uncontracted set grows.
-
-## The crash paths were all re-tested on 2026-09-16 — do not re-run OCHECK
-
-Every path with a recorded product-crash history was re-run on Build
-09/15/2026, on both products, least-destructive first. Eleven historically
-crashing read-shaped calls, four write round trips and the raw `/db/NMAS`
-reproduction all came back clean on both. **There is no crash re-test left to
-do, and this is not a task.** The full table is in
-`docs/live_verification_notes.md` under 2026-09-16 (later).
-
-`/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK` crashed Gen NX, as it was expected to.
-`MAPI-2429` is now reproduced across four builds on both products and MIDASIT
-has closed it as an unofficial, paused-development API with no fix timeline.
-**Do not call it.** There is nothing left to learn from another reproduction,
-and each one costs a product restart and a held licence.
-
-Two gaps that re-testing did *not* close, in case a future session is tempted
-to claim them: the `/post/TABLE` and RC-TABLE design-force families have only
-ever been re-tested against documents with no nodes, so the populated, analysed
-and designed path remains untested; and the raw NMAS call not reproducing is
-now several consecutive clean results, but the SDK normalizer stays — a defect
-that stops reproducing is not one whose fix has been stated.
-
-## Task F — the confirmed fixtures the npm harness has never replayed
-
-**Live. Destructive: `/doc/NEW`. The largest remaining block of work, and the
-one with the least judgement in it.**
-
-**Task F-0 is complete.** npm replay is now recorded in the authoritative
-ledger with the existing *"npm replayed the same emitted fixture"* method
-phrase, and `python scripts/report_npm_replay_coverage.py --check` derives the
-scope below. A wrong gap number wastes the scarce product session, so run that
-command rather than hand-counting before each later batch.
-
-| | |
-| --- | ---: |
-| confirmed Python cases | 177 over 166 endpoints |
-| npm ran every product the case declares | **175** |
-| npm ran only some | **0** |
-| npm ran none | **2** |
-
-**The unit is the confirmed case, not the endpoint.** It was the endpoint until
-2026-09-17, and that hid two opposite errors at once: five cases counted as done
-while npm had run one product of two, and two counted as undone while npm had
-already replayed the confirmed case. `/db/HHCT` is why - a confirmed Gen case
-and an unconfirmed Civil one, so "has npm replayed `/db/HHCT`" has no answer.
-Run the command; do not hand-count, and do not reason in endpoints.
-
-**Nothing left in Task F is a replay.** The eight plain replays passed through
-both SDKs earlier on 2026-09-17, and the five that were harness design passed
-later that day once fixture version 6 could express them (see
-`docs/live_verification_notes.md`, "the npm seed gap closed").
-
-**Task F is complete: npm has replayed all 177 confirmed cases on every product
-they declare.** `/db/DYFG` and `/db/DYNF`, the last two, were not a regression.
-The 2026-09-16 run selected them without extras14's `/db/MVCD` case, which is
-what switches the moving-load code to EUROCODE; with it selected they pass, and
-npm now seeds that code itself. **When you select endpoints from `extras14`,
-select `/db/MVCD` with `/db/DYFG` or `/db/DYNF`** - the Python harness does not
-warn when a selection drops a case another depends on.
-
-The seed representation is settled for now: `{"endpoint", "records"}` POSTs,
-`{"endpoint", "delete"}` per-id DELETEs, `FRESH_DOCUMENT_SEEDS` for a guard
-read, and `setup_replaces` where a case's npm setup reaches a state Python
-reaches through another case. Anything else a seed needs is a design question
-to report, not to invent.
-
-For the one that is a plain replay: nothing needs building and nothing needs
-deciding. The fixture exists, it already passed in Python, and
-`packages/typescript/scripts/live-crud.mjs` replays the **same emitted fixture**
-through the built npm package.
-
-**This is not bookkeeping.** It is the only way anything checks that the two
-SDKs send the same request. Two harness defects in the last two rounds were
-invisible to Python and surfaced the first time npm ran: `containsExpectedValue`
-compared objects by reference, so a nested expected value could never match and
-the assertion passed nothing; and `runCase` refused every endpoint without
-DELETE. Neither was a typo — both were found by running, not by reading.
-
-**A second thing falls out of it for free.** Run the Python harness on the
-same selection in the same session and the re-verification on the current build
-comes with the replay. Do not spend a separate session on it. A
-re-verification is appended to `method` and does not update `nx_versions`: 199
-of the 201 write entries name a build older than 09/15/2026 there, although the
-2026-09-16 and 09-17 batches re-ran many of them on it. Read `method` before
-calling an entry stale.
-
-The gap by tier, which is also how to batch it — the harness selects by
-`--tier` or `--endpoints`:
-
-| tier | n | endpoints |
-| --- | ---: | --- |
-| - | 0 | nothing left |
-
-A case whose setup touches a table with no per-id DELETE (`/db/GRUP`,
-`/db/BNGR`) may only run as the **last** endpoint of an npm invocation, because
-the document reset is its cleanup; give each such case its own invocation.
-
-How to run one batch:
-
-1. Confirm both documents are empty with each product's own key, and ask the
-   author before the first product call of the session.
-2. `npm run live:crud -- -- --product gen --endpoints /db/A,/db/B,...` and the
-   same for `civil`, at most 8 endpoints per selection.
-3. Run `python scripts/live_crud_check.py --endpoints ...` on the same
-   selection, in the same session. That is what re-verifies the older build.
-4. Record the npm result in `docs/npm_live_evidence_scratch.md` — one row per
-   endpoint with the date and the products it passed on — and update its Count
-   line.
-5. In `docs/coverage.json`, **append** to the entry's `method`; do not
-   overwrite what is there. `Re-verified 2026-09-nn on build 09/02/2026 through
-   both SDKs` is the shape. The existing date and history stay: an entry that
-   loses its first measurement to a re-run has lost information.
-6. A failure here is a **regression** — a case that passed before and does not
-   now. Report it, do not re-classify it, and do not flip `confirmed`.
 
 ---
 
 ## Task G — three confirmed cases that cannot fail
 
-**Offline to prepare, live to re-confirm. Small, and it is about the honesty
-of evidence rather than the amount of it.**
-
-A case proves a write happened by reading a value back and comparing it. These
-three compare a value that was already there:
+**Offline to prepare, live to re-confirm.** A case proves a write by reading a
+value back. These three read back a value that was already there, re-checked
+against the fixture on 2026-09-17:
 
 | case | what it asserts | why that proves nothing |
 | --- | --- | --- |
-| `/db/MATD` | `NAME == "C24"` after the PUT | the base model's material 1 is already named `C24`; the PUT would pass unchanged |
-| `/db/IEHC` (gen and civil) | a value the create already set | create and update payloads are **byte-identical** |
-| `/db/POLC-M1` | `INCRE_STEP == 20` | create and update payloads are **byte-identical** |
+| `/db/MATD` (gen, civil) | `NAME == "C24"` after the PUT | the base model's material 1 is already named `C24` |
+| `/db/IEHC` (gen and civil cases) | `1` after create and after update | create and update payloads are **identical** |
+| `/db/POLC-M1` (civil) | `INCRE_STEP == 20` | create and update payloads are **identical** |
 
-Make the update payload differ from the create in one field the endpoint
-actually stores, and assert that field. `/db/MATD` already sends
-`MAINREBAR_B_FY = 500000` against a seeded material whose rebar fields are
-blank, so that one is a natural probe.
+1. Make the update payload differ from the create in **one field the endpoint
+   stores**, taking the new value from the contract (its enum, documented
+   default or description) or the manual's example — never invented. `/db/MATD`
+   already sends `MAINREBAR_B_FY = 500000` against a material whose rebar
+   fields are blank, so that one is a natural probe.
+2. Assert that field.
+3. **Set `confirmed=False`**, `--emit-cases`, and re-run through both SDKs. A
+   changed payload is not the payload that passed.
+4. Only a pass restores `confirmed=True`. If no documented value exists to
+   change to, stop and report that endpoint.
 
-**Then set `confirmed=False` and re-run.** A changed payload is not the payload
-that passed; leaving `confirmed=True` on it would be exactly the "flip the flag
-to keep the light green" move this repository forbids. They are three
-endpoints — fold them into whichever Task F batch you are running.
+## Task K — re-verify confirmed cases on the current build
 
----
+**Live. Destructive: `/doc/NEW`. The largest block, and the least judgement.**
 
+Every confirmed case has passed through both SDKs, but many last ran on an older
+build. A confirmed case failing on Build 09/15/2026 is a **regression**, and
+that is exactly what this task exists to catch before a user does.
 
-## Task A — the 26 `/db` endpoints with no live case at all
+Measure the scope before each session; do not hand-count:
 
-**Live. Destructive: `/doc/NEW`.** The largest single block of remaining work,
-and the only one that moves `ROADMAP.md`'s write count.
+```bash
+PYTHONIOENCODING=utf-8 python - <<'PY'
+import json
+cases = json.load(open("schema/live-cases.json", encoding="utf-8"))["cases"]
+ledger = {}
+def walk(node):
+    if isinstance(node, dict):
+        if isinstance(node.get("endpoint"), str) and "live_verified" in node:
+            ledger[node["endpoint"]] = json.dumps(node["live_verified"])
+        for value in node.values(): walk(value)
+    elif isinstance(node, list):
+        for value in node: walk(value)
+walk(json.load(open("docs/coverage.json", encoding="utf-8")))
+todo = sorted({c["endpoint"] for c in cases
+               if c["confirmed"] and "09/15/2026" not in ledger.get(c["endpoint"], "")})
+print(len(todo)); print(" ".join(todo))
+PY
+```
 
-46 `/db` endpoints are still short of write level. 22 have a case that has
-never passed (Task B). The other **24 have no case at all**:
+On 2026-09-17 it printed **107** of the 166 confirmed-case endpoints. It is a
+text search of the ledger entry, so an entry that mentions the build for another
+reason drops out of the list; that errs toward doing less, never toward a false
+claim.
 
-| chapter | count | endpoints |
-| --- | ---: | --- |
-| 04 Properties | 6 | `EPMT-M1`, `FIBR`, `IEHG`, `IEHG-BEAM-M1`, `IMFM`, `IMFM-M1` |
-| 07 Temperature/Prestress | 5 | `PTNS`, `TDCS`, `TDNA`, `TDNT`, `TDPL` |
-| 14 Pushover | 3 | `PHGE`, `POGD`, `POGD-M1` |
-| 24 Design | 4 | `RCHK`, `REBB`, `REBR`, `REBW` |
-| — no permitted source | 3 | `IEHG-GL-M1`, `IEHG-PSS-M1`, `IEHG-TRUSS-M1` |
-| 08 Moving Loads | 1 | `MVLDbs` |
-| 05 Boundary | 1 | `DRLS` |
-| 10 Construction Stage | 1 | `CSCS` |
-
-Seven endpoints came off this list and reached write level on 2026-09-12:
-`/db/IEPI`, `/db/EXLD`, `/db/PRST`, `/db/POLC`, `/db/MATD`, `/db/IEHC`, and
-Civil-only `/db/POLC-M1`. Python and npm both passed the emitted cases; the
-details, including `/db/MATD`'s live-only material constraints, are in the live
-notes.
-
-`/db/EPMT` followed on 2026-09-14. The exact manual Von-Mises request completed
-through both SDKs on Gen. Civil exposes the same `/info` schema but returns
-`Wrong Field` for that request through both SDKs, so its separate case remains
-unconfirmed.
-
-`/db/FIMP` now also has a case copied from the manual's complete Kent & Park
-example. Both SDKs on both products reject its printed `ECU=0.003`: the
-product requires `Epsilon_cu > 0.8 / Z + Epsilon_co`. The chapter supplies no
-compliant alternative, so the value was not invented and the case remains
-unconfirmed.
-
-`/db/TDNA`'s `CURVE` variant now declares `bPJ`, reflected from the manual on
-2026-09-16 — every one of the manual's four CURVE examples sends it, so a
-fixture built from them may too.
-
-`/db/MVLDbs` still has no case: its contract marks mutually exclusive
-`LCDATA_*` objects required together, and representing its two-value ALL_MODE
-condition needs a contract-shape decision. Do not waive the fixture gate or run
-it until that decision is made.
-**Which moving-load code a product offers decides what can be written at all** —
-`POST /db/MVCD` answers "Unavailable moving load code" on Gen NX for `CHINA`,
-`INDIA` and `KOREA`. Split the cases per product rather than writing one
-payload that fails on one of them.
-
-Per endpoint:
-
-1. Read the manual chapter and any entry for it in
-   `docs/live_verification_notes.md` **first**.
-2. Build the fixture **from the contract**, or from the manual's own Request
-   Example. **Never hand-write a payload.**
-3. Add the case to the right tier in `scripts/live_crud_check.py` with
-   `confirmed=False`, then `--emit-cases`.
-4. **A seed that owns a fixed id is a shared resource whether or not it was
-   written as one.** Two collisions were found two days apart — `/db/SPLC` and
-   `/db/MVCD` — and both looked like endpoint failures. Before adding a seed
-   that POSTs a fixed id, check whether another tier already owns it.
-5. **A seed must be replayable from an emitted payload.** A seed that reads
-   state back and branches cannot be exported, and silently takes every case
-   that needs it away from the npm harness. Where a seed must tolerate an
-   existing record, POST and fall back to PUT — do not read and branch. The
-   emitter will catch you, but after the fact.
-6. **Before running live**, `python scripts/check_fixture_contract.py`. If your
-   new case appears there, the payload disagrees with the contract and the live
-   run will tell you nothing you could not have learned offline.
-7. `python scripts/live_crud_check.py --endpoints ... --product gen` and the
-   same for `civil`, in batches of at most 8, from a document the author has
-   confirmed is empty.
-8. Classify honestly. Passed → `confirmed=True`, `level: "write"` in
-   `docs/coverage.json`, rerun `gen_roadmap.py`. Failed → leave it unconfirmed
-   and record the verbatim error. **Never flip `confirmed` to silence a
-   failure**, and never report an unconfirmed failure as an SDK defect: across
-   every run so far they resolved to a fixture, a wrong documented value, or a
-   product bug.
-9. Record the npm side on the same selection in
-   `docs/npm_live_evidence_scratch.md`. That is a by-product of this task, not
-   a separate errand.
-
-The three `IEHG-{GL,PSS,TRUSS}-M1` have **no permitted source at all** — no
-manual schema and `/info` 404s. Do not invent a fixture for them.
-
-Chapter 04 and chapter 24 are both worth checking against
-`docs/live_verification_notes.md` before writing anything: `/db/REBW` and
-`/db/REBC` are the two confirmed cases where a manual section is wrong about
-its own field *names*, and `REBB`/`REBW` are on this list.
-
----
+Batch by tier (`--tier`), at most 8 endpoints per selection, and run each batch
+through **both** harnesses on **both** products in the same session — the
+procedure is under "Running a live batch". Record each re-run by **appending**
+to the entry's `method`: `Re-verified 2026-09-nn on Build 09/15/2026 through both
+SDKs (Gen, Civil).` Do not touch `nx_versions` or `date`; they record the first
+write, and an entry that loses that has lost information.
 
 ## Task B — the 22 that have a case and no passing run
 
-**Live. B-1 is complete:** the five pending cases plus newly built `/db/IEHC`
-and `/db/POLC-M1` passed Python and npm on 2026-09-12.
-
-**B-2: 22 that have failed.** The original 18 were re-run on build 09/02/2026
-on 2026-09-05 and still fail; the table of what each answers is in the live
-notes. Four manual moving-load cases joined on 2026-09-06 and carry their exact
-current errors in that file.
+**Live.** These endpoints are below write level although a case exists:
 
 `/db/ACTL`, `/db/CGLP`, `/db/DOEL`, `/db/EPSE`, `/db/EPST`, `/db/FBLA`,
-`/db/FIMP`, `/db/HPCE`, `/db/MADO`, `/db/MVLDch`, `/db/MVLDeu`,
-`/db/MVLDid`, `/db/MVLDpl`, `/db/NLLP`, `/db/NLNK`, `/db/NLNK-M1`, `/db/RPSC`,
-`/db/SBDO`, `/db/SINF`, `/db/STCT`, `/db/TDMF`, `/db/WVLD`
+`/db/FIMP`, `/db/HPCE`, `/db/MADO`, `/db/MVLDch`, `/db/MVLDeu`, `/db/MVLDid`,
+`/db/MVLDpl`, `/db/NLLP`, `/db/NLNK`, `/db/NLNK-M1`, `/db/RPSC`, `/db/SBDO`,
+`/db/SINF`, `/db/STCT`, `/db/TDMF`, `/db/WVLD`
 
-**Two more unconfirmed cases sit on endpoints that already have write
-evidence**, so they are not in the 22 and are easy to lose: `/db/EPMT`'s Civil
-case, which answers `Wrong Field` for the request Gen accepts, and `/db/DSTL`'s.
-Both are live work; neither changes a coverage count if it passes.
+Each one's last error is recorded verbatim in `docs/live_verification_notes.md`;
+**read it before a run**, because re-running an unchanged fixture against an
+unchanged build answers nothing.
 
-The offline evidence pass is complete. `python scripts/check_fixture_contract.py`
-now names **1 concrete lead on 1 endpoint**, down from 41 across 5. It
-understands root `appliesWhen` and counts variant fields as recorded names:
+- **Not yours:** `/db/ACTL` is settled product behaviour (Gen refuses every
+  payload, including one with only its required fields; Civil accepts and does
+  not persist `TOL`). `/db/FIMP`'s printed `ECU=0.003` violates the product's
+  `Epsilon_cu > 0.8 / Z + Epsilon_co`, and no compliant value is documented.
+  `/db/STCT` silently drops `iITER`/`TOL` on both products.
+- **`/db/NLLP` blocks `/db/NLNK`, `/db/NLNK-M1` and `/db/CGLP`.** `nllp_seed`
+  answered `Unknown Error` on both products again on 2026-09-17. Fix the seed
+  first or those three stay blocked.
+- `python scripts/check_fixture_contract.py` names **1 lead**: `/db/ACTL` sends
+  `CLATS` on Gen while the contract tags it Civil-only. It is covered above.
+- Fill a missing required field from the **contract's** description, enum or
+  default, or from the manual's Request Example. If neither states a value,
+  **stop and report it**; inventing one is hand-writing a payload.
 
-| endpoint | what the checker says |
+**Eleven unconfirmed cases sit on endpoints that already have write level**, so
+they move no count. All are recorded, and none is a task unless the cause below
+changes:
+
+| case | product | recorded cause |
+| --- | --- | --- |
+| `/db/LLANch`, `/db/SLANch`, `/db/LLANid`, `/db/IMPF` | gen | Gen answers `Unavailable moving load code` for the code these lanes need |
+| `/db/LLANop`, `/db/SLANop` | gen | refused under `BS`, the code chapter 08 gives Gen for this family |
+| `/db/LCOM-SEISMIC` | civil | the documented `ANAL="RS"` combination answers `The Load Combination Type is not supported.` with a real `/db/SPLC` |
+| `/db/HHCT` | civil | POST accepted, expected value not read back |
+| `/db/NLCT` | civil | `LINE_SEARCH_OPTION` required when `OPT_ENABLE_LINE_SEARCH` is true |
+| `/db/DSTL` | gen, civil | passes on Civil; Gen answers `Errors detected in Steel Design Control Data.` |
+| `/db/EPMT` | civil | `Wrong Field` for the request Gen accepts |
+
+`/db/NLCT`'s Civil message names the missing field. If the contract documents a
+value for `LINE_SEARCH_OPTION`, that one is a fixture fix you may make, under the
+rules above.
+
+## Task A — the 24 `/db` endpoints with no case
+
+**Offline to build, live to run.** 21 are buildable:
+
+| chapter | endpoints |
 | --- | --- |
-| `/db/ACTL` | sends `CLATS` on Gen, tagged Civil-only |
+| 04 Properties | `EPMT-M1`, `FIBR`, `IEHG`, `IEHG-BEAM-M1`, `IMFM`, `IMFM-M1` |
+| 07 Temperature/Prestress | `PTNS`, `TDCS`, `TDNA`, `TDNT`, `TDPL` |
+| 14 Pushover | `PHGE`, `POGD`, `POGD-M1` |
+| 24 Design | `RCHK`, `REBB`, `REBR`, `REBW` |
+| 08 Moving Loads | `MVLDbs` — **blocked**, see below |
+| 05 Boundary | `DRLS` |
+| 10 Construction Stage | `CSCS` |
 
-GRDP now carries the complete Request Body and passes both SDKs on Gen and
-Civil. MVCT, NLNK-M1 and TDMF now encode the manual's explicit branch gates,
-so their unrelated branch members are no longer false required-field findings.
-MVCT passes both SDKs on both products once the manual's AASHTO LRFD code is
-selected; TDMF still fails live and NLNK-M1 is still blocked by the NLLP seed.
+The other three, `IEHG-GL-M1`, `IEHG-PSS-M1` and `IEHG-TRUSS-M1`, have no manual
+schema and `/info` 404s for them. **Do not build a fixture for them.**
 
-Fill a missing `required` field from the **contract's own** description, enum or
-documented default, or from the manual's Request Example. If neither states a
-value, **stop and report that** — inventing one is hand-writing a payload.
+`/db/MVLDbs` stays blocked: its contract marks mutually exclusive `LCDATA_*`
+objects required together, and its two-value `ALL_MODE` condition needs a
+contract-shape decision first.
 
-**Two of the 18 are already settled and are not yours:**
+Per endpoint:
 
-- **`/db/ACTL` is product behaviour on both sides.** Three payloads derived from
-  committed sources, including one carrying only its two `required` fields, all
-  answer `Wrong Field` on Gen; Civil accepts every one and then refuses to
-  persist a changed `TOL`. Do not spend a session on it.
-- **`/db/FBLA`'s `LOAD_ANGLE` is a real fixture defect and not the cause.**
-  Sending the contract's seven keys without it answers the same `Unknown Error`
-  on both products.
+1. Read the manual chapter and any entry in `docs/live_verification_notes.md`
+   first. Chapters 04 and 24 matter most: `/db/REBW` and `/db/REBC` are the
+   confirmed cases where a manual section is wrong about its own field names.
+2. Build the fixture **from the contract** or the manual's Request Example.
+3. Add the case to the right tier in `scripts/live_crud_check.py` with
+   `confirmed=False`, list its `needs` **in build order**, then `--emit-cases`.
+4. **A seed that owns a fixed id is shared whether or not it was written as
+   one.** Check no other tier's seed POSTs the same id; `/db/SPLC` and
+   `/db/MVCD` both collided that way.
+5. **A seed must be expressible in the fixture**: Assign POSTs and per-id
+   DELETEs. A seed that reads state back and branches cannot be exported; the
+   emitter reports it under `unsupportedSeeds`, which is 0 today and should stay
+   0. Do not add to `FRESH_DOCUMENT_SEEDS` or use `setup_replaces` without
+   asking — both are representation decisions.
+6. `python scripts/check_fixture_contract.py` before running live. If your new
+   case appears there, fix that first.
+7. Run it through both harnesses on both products (below). Passed on a product →
+   `confirmed=True` for that product, `level: "write"` in `docs/coverage.json`,
+   `python scripts/gen_roadmap.py`. Failed → leave it unconfirmed and record the
+   verbatim error in the live notes.
 
-`/db/STCT` cannot run from the npm harness at all: it needs `stage11_seed`,
-which reads state back and cannot be replayed from an emitted POST. Python runs
-it fine. By design, not a gap.
+`/db/TDNA`'s `CURVE` variant declares `bPJ`, and every manual CURVE example sends
+it, so a fixture built from those examples may too.
 
----
+## Task E — merge the unmerged tables: not yours to start
 
-## Task C — completed: re-derived `safeToOmit` from recorded evidence
-
-Completed 2026-09-12. The per-endpoint classification and rationale were in
-`docs/safe_to_omit_survey.md`, removed 2026-09-17 once the task was closed; it
-is in git history at `fa1332b`.
-
-The measured starting count was no longer 60: `/db/NMAS`'s three crashing
-omissions had already been fixed at `safeToOmit: false`, leaving 57 candidates
-across 16 endpoints. Of those, 21 same-level, same-product, applicable-branch
-omissions are now `true`; 36 remain honestly `unverified` because the case ran
-a different conditional branch/product, omitted response metadata, or was
-being compared with an `Assign` wrapper rather than a record member.
-
-`live_omission_evidence()` now retains payload values and products, and draft
-rendering refuses to infer omission safety unless every `appliesWhen` predicate
-and product tag matches the case that actually ran. Parametrized tests cover
-the matching branch, different branch, and different product forms. This does
-not try to infer which `/info` fields are response-only; those still require
-review rather than an automatic `true`.
-
-**What re-opens it, and this is the part to carry forward.** The derivation
-runs at draft time and nothing revisits it — that is exactly how 60 fields
-drifted out of date behind a green CI. Every Task B run that flips a case to
-`confirmed=True` adds evidence this survey has not seen. So **re-derive omission safety
-at the end of any session that confirms a case**, and say in your report how
-many candidates it names; do not let the next round rediscover a stale number.
-The survey's 36 still-`unverified` rows (git history, `fa1332b`) each name the
-branch or product that would settle them, so a run that exercises one is a
-direct answer rather than a new investigation.
-
-Rechecked after the seven-endpoint 2026-09-12 batch: none of those endpoints
-appears in the survey's 36 retained candidate rows, so the measured result
-remains 21 promoted and 36 unverified; no omission claim changed.
+`docs/unmerged_tables_against_info.md` splits **72 tables (482 names) across 15
+contracts**. Eleven batches already merged every table that could be merged
+mechanically, and an audit found none left among the 32 one-object tables:
+their manual does not state a complete wire discriminator, or the extractor
+cannot reproduce the documented nesting, or both products reject the branch.
+The 25 scattered tables need a judgement about which `/info` object is meant.
+Do not rescan any of it as a queue.
 
 ---
 
-## Task D — closed, and it was never a task
+## Running a live batch
 
-The 21 names were already declared in their own contracts' `variants`. The
-checker read only the root `fields` array and called them unrecorded. It now
-counts variant keys as recorded names, without guessing that a variant field is
-required at the record root. The confirmed side contains `/db/SDIS`'s `LRB`
-and `NRB`, plus `/db/SPLC`'s newly declared `NDP`. They remain explicit
-contract-gap leads rather than being converted into conditional omission
-claims without a documented branch condition.
+1. **Ask the author before the first product call of a session.** Then confirm
+   each document is open and empty with **that product's own key**:
+   `GET /db/NODE` and `GET /db/ELEM` return no records.
+2. npm: from `packages/typescript`, `npm run live:crud -- -- --product gen
+   --endpoints /db/A,/db/B` (PowerShell takes two `--`, Bash one), with
+   `MIDAS_MAPI_KEY` set to that product's key and `--save-dir C:/temp`.
+3. Python, same selection, same session: `python scripts/live_crud_check.py
+   --product gen --endpoints /db/A,/db/B --save-as C:/temp/<name>.mgbx`
+   (`.mcbz` on Civil).
+4. Repeat both for `civil`.
+5. Record the npm result in `docs/npm_live_evidence_scratch.md` (one row per
+   endpoint: date, products, and the Count line), and **append** to the entry's
+   `method` in `docs/coverage.json`. `report_npm_replay_coverage.py --check`
+   fails if the ledger claims an npm replay the inventory does not carry.
+6. A confirmed case failing is a **regression**: report it verbatim, do not
+   change the fixture to make it pass, and do not flip `confirmed`. A `BLOCK`
+   (exit 3) means a seed failed and says nothing about the endpoint.
 
-**Do not treat this as a task that got done quickly.** It was a list of 21
-defects that did not exist, written up from a checker's first run and handed
-over as work. A checker that compares two artefacts is a third claim about the
-shape, and its first output is a hypothesis: confirm a sample by hand against
-the artefacts before reporting a count as a fact. The same run also mis-read
-`/db/NLNK`'s four and `/db/HSFC`'s two, which already carried the `appliesWhen`
-that says when they apply. 38 of 81 findings were the checker.
+Selection traps, each of which has cost a session:
 
----
-
-## Task E — merge the unmerged extraction tables: your part is done
-
-**Offline. Do not start here.** The mechanical set is exhausted, and the next
-section says so with the evidence. Read it before deciding otherwise. Read any
-manual section at the vendored commit `a6947a7`, which is also the working
-tree now that the sync is reflected.
-
-`docs/unmerged_tables_against_info.md` splits the 72 tables (482 field names)
-that 15 contracts declare missing:
-
-| what the measurement found | tables |
-| --- | ---: |
-| whole table declared, **one `/info` object holds it** | 32 |
-| whole table declared, several objects | 3 |
-| whole table declared, no common parent | 25 |
-| partly declared | 1 |
-| outside `/info`'s reach (`/view`, `/ope`) | 11 |
-
-**Eleven batches merged 21 tables and 120 names, 93 → 72, and then an audit
-found nothing mechanical left among the 32.** The batch history below is kept
-because it names what each merge preserved — conditions, gates, nesting — and
-that is the standard the next merge has to meet, whoever does it. The first
-three-table batch merged
-`/db/THIS-M1`'s `BOUNDARY_NL_ANAL`, `/db/STCT`'s Linear & Independent Stage,
-and `/db/ELEM`'s Beam/Truss/Plane Strain/Axisymmetric table. A second batch
-removed three stale `/db/TDME` unmerged markers whose tables were already
-represented by explicit variants; a third batch cleared the two remaining
-stale Russian and Gilbert/KDS markers. The two Japan tables remain deliberately
-unmerged because both products reject those iGen-only branches. A fourth batch
-merged `/db/STCT`'s Cable-Pretension/Initial Force and Initial
-Displacement/Camber tables at record root, preserving their four explicit
-field-level conditions. A fifth batch merged STCT's Nonlinear Analysis and Time Dependent Effect
-tables, retaining the headings' `iINC_NLA in [1, 2]` and `iNLA_TYPE=1`
-conditions and splitting five reviewed compact rows. A sixth batch merged
-NSPR's LINEAR, COMP/TENS and MULTI tables into
-`ITEMS`, including the additional `DIR=6` gate on `DV`. A seventh batch merged
-NSPR's independent `FormType=1` surface-function
-table into the same item shape, completing that contract and moving its npm
-payload generation from the Python fallback to the contract. An eighth batch
-merged both IMPF item tables using their three documented
-`FACT_TYPE` values, with the additional `ELEMTYPE in [BEAM, PLATE]` condition
-on `PARTS`; npm now generates IMPF from the contract too. The ninth batch
-merged `/db/SPLC`'s GEN-only nondissipative-design
-table at record root. Its `GEN NX only` suffix is a product qualifier, not a
-payload branch; the three damping/accidental-eccentricity tables remain because
-their complete wire conditions or nesting are not yet established. A tenth
-batch merged `/db/NLCT-M1`'s `ADVANCED` table. The heading explicitly makes
-the members optional and the `OPT_USE_DEFAULT` row explicitly overrides that
-one member to Required. An eleventh batch merged its `LOAD_STEPS` table while
-preserving the distinction between conditionally Required fields and fields
-that merely apply under a selector. It also transcribed the two `REF_NODE`
-children stated inline, completing NLCT-M1 and moving npm payload generation
-from the Python fallback to the contract. For each
-remaining table, `/info` has a single object holding every
-name in the table, so the shape is not in question — the work is transcribing
-the manual's rows into the contract at that path, then rerunning
-`validate_contracts.py`, `info_baseline.py --against-contracts --check` and
-`npm run generate`. Batches of at most 3 tables, one commit each, and stop at
-the first table whose manual row says something the `/info` object does not.
-
-An audit after the eleventh batch found **no further mechanical merge among
-those 32**. Do not rescan them as if they were an unreviewed queue:
-
-- `/db/MVHL` 2: the contract is hand-resolved, but the extractor cannot yet
-  reproduce the documented nesting; its markers are intentional.
-- `/db/SPFC` 2, `/db/THIS` 10, `/db/MVLD` 3 and `/db/SPLC` 1: the manual does
-  not state a complete wire discriminator for the table.
-- `/db/ELEM` 7: the headings state `STYPE` but not the complete `TYPE`/`STYPE`
-  discriminator pair.
-- `/db/EPMT` 2: the supplementary rows omit Value Type.
-- `/db/SDIS` 2: two identically titled `NRB 객체` tables map to different
-  parents, which needs a judgment rather than a title-based merge.
-- `/db/CSCS` 1: the manual itself says the nine members' meanings are inferred
-  and unconfirmed.
-- `/db/TDME` 2: both products reject the remaining iGen-only Japan branches.
-
-The report also has one partly-declared ELEM table, 25 scattered tables and 11
-outside `/info`; those were never in the mechanical one-object set.
-
-The 25 scattered ones are **not** yours. `/info` declares every name but under
-no common parent, so what the table means is a judgement. Each report row names
-the object covering the most of it — `VEH_PL` covers 13 of 14, `VEH_CN` 28 of
-30 — and that near-miss is where a decision has to be made rather than a
-transcription.
+- **A case whose setup touches a table with no per-id DELETE** — `/db/GRUP`,
+  `/db/BNGR` — may only be the **last** endpoint of an npm invocation, because
+  the document reset is its cleanup. Give each such case its own invocation.
+- **An `--endpoints` selection can drop a case another case depends on**, and
+  the Python harness does not warn. In `extras14`, `/db/DYFG` and `/db/DYNF`
+  need that tier's `/db/MVCD` case to switch the code to EUROCODE; select
+  `/db/MVCD` with them. They read as a regression on 2026-09-16 and were not one.
+- **Selecting `moving` and `extras14` together** makes `mvcd_ksce_seed` answer
+  `Key Already Exist`, because `moving` already created `/db/MVCD` id 1.
 
 ---
 
-## What the previous rounds settled
+## Closed — do not reopen
 
-- **The `/info` standing check** and the **product-divergence guard** are both
-  in CI as per-endpoint ceilings, and both were verified to fail on real input
-  rather than only in unit tests.
-- **Two `TABLE_TYPE` probes overturned a shipped value.** Both products refuse
-  `REACTIONSURFACESPRING` and accept `REACTIONLSURFACESPRING`. The general
-  finding is now a rule: **a wire value is not a majority opinion**, and a
-  `describes: table_type` defect may be marked resolved only on a live check.
-- **The two harnesses now begin each case in the same state.** Sharing the base
-  model closed only the common prefix; the rest was per-tier seeds. Fixture
-  version 5 exports the 34 of 37 the npm harness can replay and names the other
-  three with the reason.
-- **Both harnesses read a result the same way.** A failure before the endpoint
-  under test is touched is `BLOCK` and exit 3, not `REGRESS` and exit 1.
-- **Fixtures are now checked against contracts.** Contracts had been compared
-  against both SDKs, against `/info` and against the manual; nothing compared
-  them against the fixtures, which decide what a live run actually sends.
-- **The 602 waived names were measured.** 533 of the 534 that `/info` can speak
-  to are declared, so "does a second source exist" was the wrong question and
-  "does it agree on shape" is the right one.
-- **Chapter 08's lane and moving-load family is live-verified on both
-  products** — 13 endpoints, write coverage 173 → 185, npm evidence 47 → 55.
-- **35 internal tracker ids were removed from `src/midas_nx` docstrings**; they
-  had been reaching every PyPI install and seven places in the npm package.
-- **`safeToOmit` can no longer outrun its evidence.** The derivation used to
-  compare key sets and nothing else, which is how `/db/LLAN` manufactured ten
-  claims from a nesting mismatch. It now requires the confirmed case to have
-  satisfied every `appliesWhen` predicate and to have run on a product the
-  field applies to, with tests for the matching branch, a different branch and
-  a different product.
-- **A merged table keeps its conditions.** Across eleven batches the merges
-  preserved heading-level gates (`iINC_NLA in [1, 2]`, `iNLA_TYPE=1`), field-
-  level ones (`DIR=6` on `DV`, `ELEMTYPE in [BEAM, PLATE]` on `PARTS`), and
-  `/info`-settled nesting — and `/db/NSPR`, `/db/IMPF` and `/db/NLCT-M1` moved
-  their npm payload generation off the Python fallback as a consequence.
+| what | outcome | where |
+| --- | --- | --- |
+| npm replay of every confirmed case (was Task F) | 177 of 177, 2026-09-17; fixture v6 added per-id DELETE seed steps, `FRESH_DOCUMENT_SEEDS`, `expected.unordered` and `setup_replaces` | live notes, 2026-09-17 (later) |
+| `DESIGN/STEEL/DSTL` contract and PUT (was Tasks H, I) | contracted; Gen accepts the documented PUT, Civil refuses it with `Errors detected in Steel Design Control Data.` **Do not re-run it**: the enum has one value, so there is nothing to vary | live notes; contract PUT `notes` |
+| `USE_HAMBLY_EQ` read probe (was Task J) | absent from a DB/User solid section's record on both products; composite sections unprobed, and no confirmed fixture builds one | live notes, 2026-09-17 (later) |
+| crash re-tests on Build 09/15/2026 | all historical crash paths clean except `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK`. **Never call OCHECK**: it crashes Gen, MIDASIT has closed it as unsupported, and each call costs a restart and a held licence | live notes, 2026-09-16 (later) |
+| manual sync to `a6947a7` | reflected; 108 anchors re-mapped across 59 contracts. At the next sync, map every anchor in a changed chapter, not only the ones the drift check names | `docs/release_notes_v2.8.2.md`; this file at `0fff09d` |
+| `safeToOmit` re-derivation (was Task C) | 21 claims grounded, 36 left `unverified`. Re-derive at the end of any session that confirms a case, and report the count | git history `fa1332b` |
+| the 21 "unrecorded variant names" (was Task D) | the checker's own defect, not 21 defects. A new checker's first count is a hypothesis | — |
 
-## One small follow-up — completed
+## Decisions that are open and are not yours
 
-Completed after the first Task E batch. `/db/MVCTbs`, `/db/MVCTid` and
-`/db/MVCTtr` now name the governing `iIGP` / `INFL_GEN_POINT` value in the
-Python TypedDict comments. The annotations did not change; the contracts remain
-the source for branch-conditional requiredness.
+- **`/db/SPLC`'s `NDP` requiredness** — the manual nests it under the Optional
+  `bNDP` switch without stating a wire rule. Do not add an `appliesWhen` or a
+  `safeToOmit` for it.
+- **`/db/SPLC`'s cross-tier id collision** — extras4's `lcom_seismic_splc` seed
+  and extras5's Civil case both own id 1, and the family renumbers, so a
+  different id does not fix it. It reports `BLOCK`, honestly.
+- **`/db/THIS-M1`'s 20 `/info` properties with no manual row** — the ceiling in
+  `info_baseline.py` holds the number. Do not raise it.
+- **`/db/SECT`'s `USE_HAMBLY_EQ` and the `/info` baseline** — added by Build
+  09/15/2026 on both products, documented nowhere. Do not add it to the contract
+  and **do not re-capture `schema/info-baseline.json`**; CI fails when the
+  uncontracted set grows. At the next manual sync, check whether
+  `04_DB_Properties.md`'s 공통 Specifications table grows a row (13).
+- **What Civil NX needs before `DESIGN/STEEL/DSTL` accepts a PUT**, and why Gen
+  refuses `/db/DSTL`'s POST with the same message.
+- **`/db/MVLDbs`'s contract shape** (Task A).
 
-## Five decisions that are open and are not yours
+## Live-session rules
 
-- **`/db/SPLC`'s `NDP` requiredness.** Merging the 비소산 요소 설계 table gave
-  the contract a Gen-only `NDP` marked `required` with no condition, and the
-  confirmed Gen case — which passed before the field existed — omits it, so
-  `check_fixture_contract.py` now carries it as a live-confirmed contract gap.
-  The manual numbers it `(1)` beneath the Optional `bNDP` switch, which reads
-  as a branch but is never stated as a wire rule. Leaving it as a baseline
-  entry was right. **Do not resolve it either way**: an `appliesWhen` nobody
-  documented and a `safeToOmit: true` for a field that did not exist when the
-  call ran are both claims the sources do not support. This is MD-16's shape —
-  requiredness stated without the branch that governs it — and it is the
-  author's call.
-- **`/db/THIS-M1`'s 20 unrecorded `/info` properties.** Closing that contract's
-  last unmerged table made the standing `/info` comparison visible for the
-  first time, and 20 properties have no row in the vendored manual. The ceiling
-  in `info_baseline.py` records the number without claiming they are request
-  fields, which is the right holding position. Deciding what they are needs the
-  weak-reading rule: `/info` declaring a property is not the server accepting
-  only those. Do not raise that ceiling to absorb anything new.
-- **`/db/SPLC`'s cross-tier id collision.** extras4's Civil-only
-  `lcom_seismic_splc` seed creates `/db/SPLC` id 1 and extras5's Civil case owns
-  the same id, so the pair answers `Key Already Exist` for a shape both products
-  accept alone. A different id does not fix it — this load-case family renumbers
-  to the next free slot. It reports `BLOCK` today, honestly. Whether a case may
-  own an id a seed can take is a fixture-design call.
-- **`/db/ACTL`.** Gen refuses every payload including a `required`-only one;
-  Civil accepts and will not persist `TOL`. A vendor-report item, not an SDK one.
-- **`/db/SECT`'s `USE_HAMBLY_EQ`, and with it the `/info` baseline.** Task J
-  gathers evidence for this one and stops; the decision itself stays here. Build
-  09/15/2026 added `SECT_BEFORE.USE_HAMBLY_EQ` and `SECT_AFTER.USE_HAMBLY_EQ`
-  (boolean) on **both** products — the only schema change in the whole patch,
-  measured 2026-09-16 against the 2026-09-03 baseline. `Hambly` appears nowhere
-  in the manual repository, so the only permitted source that knows about it is
-  `/info`. The evidence leans toward an unrevised article rather than a hidden
-  flag - it has a description, and it sits in the seat after the chapter's rows
-  (11) and (12), the other two checkboxes of its group - which is recorded in
-  `docs/live_verification_notes.md` under 2026-09-16. **The check at the next
-  manual sync is concrete: does `04_DB_Properties.md`'s 공통 Specifications
-  table grow a row (13)?** Two things are entangled and neither is yours to settle: whether
-  `contracts/endpoints/db-sect.yaml` records it now from `/info` or waits for
-  the next MIDASIT sync, and whether `schema/info-baseline.json` is re-captured
-  on the new builds — which cannot happen first, because CI's
-  `--against-contracts --check` fails when the uncontracted set grows. Both
-  products were captured on 2026-09-16, but into a session scratch directory
-  that does not survive the session, so a re-baseline means sweeping both
-  products live again. **Do not re-capture the baseline as a side effect
-  of anything else.** Task J's 2026-09-17 probe found the property absent from
-  a DB/User solid section's record on both products; composite sections are
-  unprobed.
-
----
-
-## Live-session rules — read before any product call
-
-- **Ask the author before the first product call of a session.** For anything
-  that writes, confirm both documents are empty with `GET /db/NODE` and
-  `GET /db/ELEM`.
-- **If that GET says `The project is not opened`, stop and ask for a document.**
-  On 2026-09-17 a `/doc/NEW` sent to Gen NX with no project open blocked the
-  session until the author brought the product back up.
-- **`.env` holds two keys, `MIDAS_MAPI_KEY_GEN` and `MIDAS_MAPI_KEY_CIVIL`.**
-  There is no plain `MIDAS_MAPI_KEY`, and `grep '^MIDAS_MAPI_KEY'` matches both
-  and concatenates them. A mismatched key still answers `connected` and still
-  returns 0 records, so an emptiness check run with one key for both products
-  proves nothing. Check each product with its own key.
-- **`--save-dir` is required and never inferred.** `verify_connection()["user"]`
-  is the MAPI account's email, not the NX host's Windows profile. `C:/temp`
-  exists on both machines; the author created it and handles it himself.
+- **If `GET /db/NODE` says `The project is not opened`, stop and ask for a
+  document.** A `/doc/NEW` sent to Gen NX with no project open blocked the
+  session on 2026-09-17 until the product was brought back up.
+- **`.env` holds `MIDAS_MAPI_KEY_GEN` and `MIDAS_MAPI_KEY_CIVIL`**, no plain
+  `MIDAS_MAPI_KEY`. A mismatched key still answers `connected` and returns 0
+  records, so check each product with its own key.
 - **`verify_connection()` cannot prove a session is alive.** It answers
-  `connected` through the relay while a modal dialog holds the product. Use a
-  real `GET /db/NODE`.
-- **A GET can still pop a modal dialog** if the open document lives under
-  `Program Files` or another path a standard account cannot write to.
+  `connected` while a modal dialog holds the product; use a real `GET /db/NODE`.
+- **Paths belong to the NX machine.** `--save-dir` is required and never inferred
+  from `verify_connection()["user"]`, which is an email. `C:/temp` exists; the
+  author manages it.
+- **A GET can pop a modal dialog** if the open document lives under
+  `Program Files`.
 - **Three harnesses call `/doc/NEW` and discard unsaved work**:
-  `scripts/live_smoke.py`, `scripts/live_crud_check.py`, and
+  `scripts/live_smoke.py`, `scripts/live_crud_check.py`,
   `packages/typescript/scripts/live-crud.mjs`.
-- **`POST /doc/NEW` needs `{"Argument": {}}`.** With no request body it is
-  HTTP 500 (`Cannot read properties of null (reading 'Argument')`) and the
-  document is **not** reset. Assert the reset - GET `/db/NODE`, `/db/ELEM`
-  and whatever table the run touches, expecting `{"message": ""}` - rather
-  than assuming it. A probe run on 2026-09-06 had to be thrown away and
-  repeated because it ignored that 500 and every later probe ran on an
-  accumulated model.
-- **Never hand-write a live payload.** Use `schema/live-cases.json` or a
-  contract; a fixture written from memory produces confident wrong findings.
-- **npm argument passing differs by shell.** Bash takes one `--`
-  (`npm run live:crud -- --product gen`), PowerShell takes two
-  (`npm run live:crud -- -- --product gen`).
+- **Assert a reset, do not assume it.** `/doc/NEW` without `{"Argument": {}}` is
+  HTTP 500 and resets nothing.
+- **Never hand-write a live payload.** Use the fixture or a contract.
 
 ## Repository rules that keep catching people
 
-- **`contracts/` is the source of truth and neither SDK may be a source for
-  it.** Permitted sources: the manual repo, `docs/live_verification_notes.md`,
-  and live `/info`. A fixture is not one either.
-- **`documentedOptional` is a claim about the docs; `safeToOmit` is a claim
-  about the product.** Separate booleans, and they must stay that way.
-- **`/info` is neither a superset nor a subset of what the server accepts.** It
-  declares `/db/POSL`'s `CODE`, which Civil refuses live, and omits
-  `/db/STBK`'s `LCNAME`, which a confirmed round trip sends. Where `/info` and a
-  live round trip disagree, the round trip wins.
+- **`contracts/` is the source of truth; neither SDK and no fixture is a source
+  for it.** Permitted sources: the manual repo, `docs/live_verification_notes.md`
+  and live `/info`.
+- **`documentedOptional` is about the docs; `safeToOmit` is about the product.**
+- **`/info` is neither a superset nor a subset of what the server accepts.**
+  Where `/info` and a live round trip disagree, the round trip wins.
+- **A wire value is not a majority opinion.** Three documents agreeing can be
+  three transcriptions of one typo; only a live check settles one.
 - **Never put `MAPI-xxxx` or MIDASIT's internal tracker in anything that
-  ships** — and that includes a release note. 35 were removed from
-  `src/midas_nx` docstrings on 2026-09-05, and one survived into
-  `docs/release_notes_v2.7.9.md` and had to be scrubbed before the release went
-  out. `docs/` working files are where that mapping lives.
-- **An official article has a locale, and the locales differ.** Help-centre
-  article 49514964272665 carries the same id and the same `updated_at` in `ko`
-  and `en-us` and a **different request example in each** — that is MD-52, and
-  it is how a documentation dispute ran for a round with both sides reading
-  real text. When you quote the official source, name the locale you read; a
-  citation without one is not checkable. `f868e41` in the manual repo adds a
-  locale judgement to its own sync checker for the same reason.
+  ships**, release notes included.
+- **An official article has a locale, and locales differ.** Name the locale you
+  quote.
 - **A 200 does not mean success**, and error bodies also arrive under 201.
 - **`DELETE {endpoint}` with an ID-keyed body empties the whole table.**
 - **Never commit a GET response body** — it is the author's model contents.
+- **`contracts/` mixes CRLF and LF files.** Edit them as bytes; a deletion count
+  on an insert-only change means you corrupted line endings.
 - Windows consoles are cp949: keep user-facing exception text ASCII.
