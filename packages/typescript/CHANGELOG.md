@@ -6,6 +6,12 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.8.3 - 2026-09-17
+
+> **Breaking for one type, in a patch number.** No exported name is added,
+> removed or renamed - 765 exported type names before and after - but one
+> member narrows. Nothing changes at runtime.
+
 ### Changed - `SteelDesignCodeSelectionPayload` narrows
 
 > **Breaking for this one type.** Code that omitted `DGNCODE`, or passed any
