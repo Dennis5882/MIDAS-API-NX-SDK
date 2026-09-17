@@ -9887,3 +9887,111 @@ npm: they are `confirmed` cases that Python also failed, and a confirmed case
 failing is this repository's definition of a regression. Whether the seed
 drifted or the product changed is not yet established, and re-running the
 harness will not answer it.
+
+## 2026-09-17 (later) — the npm seed gap closed, and Task I and Task J run
+
+Both products assumed on Build 09/15/2026, as read from their About dialogs on
+2026-09-16; not re-read this time. Every write ran on
+a scratch document, checkpointed under `C:/temp` first and reset with
+`/doc/NEW` afterwards.
+
+### A `/doc/NEW` with no project open blocked Gen NX
+
+The first call of the session was a Python `/doc/NEW` against Gen NX with **no
+project open** (`GET /db/NODE` had answered `The project is not opened`). It
+did not answer within 60 s. Afterwards `/mapikey/verify` still said
+`connected` while `GET /db/NODE` timed out - the blocked-session signature.
+Civil was not called. The author then brought both products back up with an
+empty document open, and everything below ran on those. What the product
+showed is not recorded, so this is a symptom, not a cause: **open a document
+before the first `/doc/NEW`, rather than relying on `/doc/NEW` to create one.**
+
+### npm replayed the five confirmed cases it could not express
+
+Fixture version 6 closes what was recorded as harness design:
+
+- A seed step may be a per-id DELETE (`{"endpoint": ..., "delete": [ids]}`),
+  which is what `DbResource.delete` sends. That exports `pjcf_unlock` and
+  `solid11_seed`.
+- `stage11_seed` reads `/db/STAG` only so a full Python run does not create
+  stage 1 twice. It is listed in `FRESH_DOCUMENT_SEEDS`, and its create branch
+  is exported; the npm harness's collision check refuses loudly if stage 1 ever
+  exists. Any other seed that reads stays unexportable.
+- `expected.unordered` tells npm to compare a list as a multiset, which
+  `/db/BCGA-M1`'s probe already did by sorting.
+- `/db/MVHL` needed no harness change. Its case targets id 2, the table
+  renumbers to the next free id, and the case never declared the `vehicle`
+  seed that holds id 1. Python always ran that seed with the tier; npm seeds
+  only what a case declares, so its POST landed at id 1.
+- The emitted setup follows `needs`, and HECB's listed the stage before the
+  groups the stage names. `/db/STCT` also lacked `hecb_seed`.
+
+| Endpoint | npm Gen | npm Civil | Python Gen | Python Civil |
+| --- | --- | --- | --- | --- |
+| `/db/PJCF` | PASS | PASS | PASS | PASS |
+| `/db/MVHL` | PASS | PASS | PASS | PASS |
+| `/db/HECB` | PASS | PASS | PASS | PASS |
+| `/db/HSPT` | PASS | PASS | PASS | PASS |
+| `/db/BCGA-M1` | - | PASS | - | PASS |
+
+HECB, HSPT and BCGA-M1 each ran as their own npm invocation, because their
+setup touches `/db/GRUP` or `/db/BNGR`, which have no per-id DELETE and so may
+only be cleaned up by the final document reset. The Python runs printed three
+seed failures that no selected case needed: `nllp_seed` and `glink_seed`
+answered `Unknown Error` on both products, as recorded before, and on Civil
+`mvcd_ksce_seed` answered `Key Already Exist` because the `moving` tier had
+created `/db/MVCD` id 1 earlier in the same run. That one looked like the lead
+for `/db/DYFG` and `/db/DYNF` and was not; see the next section.
+
+### `/db/DYFG` and `/db/DYNF` were never a regression
+
+They need the moving-load code to be EUROCODE, and extras14 gets there with a
+*case*, not a seed: `mvcd_ksce_seed` creates `/db/MVCD` as KSCE-LSD15 for
+`/db/DYLA`, then the tier's own `/db/MVCD` case PUTs EUROCODE, and only then do
+DYFG and DYNF run. The 2026-09-16 runs selected `--endpoints /db/DYFG,/db/DYNF`,
+which filters that switch case out, so the code stayed KSCE-LSD15 and both
+SDKs were refused - correctly. Selecting the switch with them
+(`--tier extras14 --endpoints /db/DYLA,/db/MVCD,/db/DYFG,/db/DYNF`) passed all
+four on Civil NX, Build 09/15/2026.
+
+npm cannot interleave a case between two others' setups, so the fixture now
+declares what those two actually need: a `mvcd_eurocode` seed, the switch
+case's own confirmed update payload, which the two cases name in `setup` while
+`setup_replaces` keeps `mvcd_ksce_seed` from being prepended in front of it.
+Python still gates them on `mvcd_ksce_seed`. npm then passed both on Civil.
+`report_npm_replay_coverage.py` reports all 177 confirmed cases replayed by npm
+on every product they declare.
+
+The rule this adds: **an endpoint selection can drop a case another case depends
+on, and the Python harness does not warn.** In extras14 that case is `/db/MVCD`.
+
+### Task I: `DESIGN/STEEL/DSTL` takes a write on Gen, and Civil refuses it
+
+On a fresh document `GET` answered `{"message": ""}` on both products.
+`PUT {"Assign": {"1": {"DGNCODE": "KDS 41 30 : 2022"}}}` then:
+
+- **Gen NX** accepted it, answered `{"DSTL": {"1": {"DGNCODE": "KDS 41 30 :
+  2022"}}}`, and a following `GET` returned the same record.
+- **Civil NX** answered `[Error] Errors detected in Steel Design Control
+  Data.(Item:)` and a following `GET` was still `{"message": ""}`.
+
+The manual's request shape is therefore right, on Gen. There was no original
+value to put back, so the revert was the document itself: the scratch model
+was saved under `C:/temp` and replaced with `/doc/NEW`, after which `GET`
+answered `{"message": ""}` again. No DELETE was sent. The enum has one
+documented value, so nothing was varied on Civil; the wording matches the
+refusal `/db/DSTL` gave for most code names in batch 13 (2026-08-17), but what
+Civil needs is not established. `docs/coverage.json` records the endpoint
+at `level: "write"` for Gen alone, as the ledger does for every write verified
+on one product; the Civil read of 2026-09-16 is still in its `method`.
+
+### Task J: `USE_HAMBLY_EQ` is absent from a DB/User solid section's record
+
+The scratch model's one section was the base model's emitted `DBUSER` solid
+rectangle. `GET /db/SECT` returned no `SECT_AFTER` block at all and a
+`SECT_BEFORE` without `USE_HAMBLY_EQ`, on both products. That is one section
+type, created without the field, so it says only that the product does not add
+the property to a record of that type. A section type that carries
+`SECT_AFTER` - a composite section - is where the property would be expected,
+and no confirmed fixture builds one; the probe stopped rather than write one
+from memory.

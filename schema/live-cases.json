@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "seeds": {
     "lane_code_CHINA": {
       "endpoint": "/db/MVCD",
@@ -640,6 +640,12 @@
         }
       }
     },
+    "pjcf_unlock": {
+      "endpoint": "/db/PJCF",
+      "delete": [
+        "1"
+      ]
+    },
     "fbld_seed": {
       "endpoint": "/db/FBLD",
       "records": {
@@ -1114,6 +1120,81 @@
         }
       ]
     },
+    "solid11_seed": {
+      "steps": [
+        {
+          "endpoint": "/db/NODE",
+          "records": {
+            "40": {
+              "X": 11.0,
+              "Y": 0.0,
+              "Z": 0.0
+            },
+            "41": {
+              "X": 12.0,
+              "Y": 0.0,
+              "Z": 0.0
+            },
+            "42": {
+              "X": 12.0,
+              "Y": 1.0,
+              "Z": 0.0
+            },
+            "43": {
+              "X": 11.0,
+              "Y": 1.0,
+              "Z": 0.0
+            },
+            "44": {
+              "X": 11.0,
+              "Y": 0.0,
+              "Z": 1.0
+            },
+            "45": {
+              "X": 12.0,
+              "Y": 0.0,
+              "Z": 1.0
+            },
+            "46": {
+              "X": 12.0,
+              "Y": 1.0,
+              "Z": 1.0
+            },
+            "47": {
+              "X": 11.0,
+              "Y": 1.0,
+              "Z": 1.0
+            }
+          }
+        },
+        {
+          "endpoint": "/db/ELEM",
+          "delete": [
+            "1"
+          ]
+        },
+        {
+          "endpoint": "/db/ELEM",
+          "records": {
+            "1": {
+              "TYPE": "SOLID",
+              "MATL": 1,
+              "SECT": 0,
+              "NODE": [
+                40,
+                41,
+                42,
+                43,
+                44,
+                45,
+                46,
+                47
+              ]
+            }
+          }
+        }
+      ]
+    },
     "hecb_seed": {
       "steps": [
         {
@@ -1157,6 +1238,32 @@
           }
         }
       ]
+    },
+    "stage11_seed": {
+      "endpoint": "/db/STAG",
+      "records": {
+        "1": {
+          "NAME": "CS_SEED",
+          "DURATION": 5,
+          "bSV_RSLT": true,
+          "bSV_STEP": false,
+          "bLOAD_STEP": false,
+          "ADD_STEP": [],
+          "ACT_ELEM": [
+            {
+              "GRUP_NAME": "SG11_SEED",
+              "AGE": 0
+            }
+          ],
+          "ACT_BNGR": [
+            {
+              "BNGR_NAME": "BG11_SEED",
+              "POS": "DEFORMED"
+            }
+          ],
+          "ACT_LOAD": []
+        }
+      }
     },
     "bridge_group": {
       "endpoint": "/db/GRUP",
@@ -1230,6 +1337,14 @@
         }
       },
       "allowRenumbering": true
+    },
+    "mvcd_eurocode": {
+      "endpoint": "/db/MVCD",
+      "records": {
+        "1": {
+          "CODE": "EUROCODE"
+        }
+      }
     },
     "skew_node": {
       "endpoint": "/db/NODE",
@@ -1447,11 +1562,7 @@
       }
     }
   },
-  "unsupportedSeeds": {
-    "pjcf_unlock": "ValueError: DELETE /db/PJCF/1 is not an Assign POST",
-    "solid11_seed": "ValueError: DELETE /db/ELEM/1 is not an Assign POST",
-    "stage11_seed": "ValueError: GET /db/STAG is not an Assign POST"
-  },
+  "unsupportedSeeds": {},
   "baseModel": [
     {
       "endpoint": "/db/UNIT",
@@ -6207,11 +6318,15 @@
         "updated": 20
       },
       "needs": [
-        "mvcd"
+        "mvcd",
+        "vehicle"
       ],
       "setup": [
         {
           "seed": "mvcd"
+        },
+        {
+          "seed": "vehicle"
         }
       ],
       "blockedSeeds": [],
@@ -6392,10 +6507,12 @@
       "needs": [
         "pjcf_unlock"
       ],
-      "setup": [],
-      "blockedSeeds": [
-        "pjcf_unlock"
+      "setup": [
+        {
+          "seed": "pjcf_unlock"
+        }
       ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -12112,12 +12229,18 @@
         "updated": 50
       },
       "needs": [
+        "hecb_seed",
         "stage11_seed"
       ],
-      "setup": [],
-      "blockedSeeds": [
-        "stage11_seed"
+      "setup": [
+        {
+          "seed": "hecb_seed"
+        },
+        {
+          "seed": "stage11_seed"
+        }
       ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -12163,19 +12286,22 @@
         "updated": 2
       },
       "needs": [
-        "stage11_seed",
+        "solid11_seed",
         "hecb_seed",
-        "solid11_seed"
+        "stage11_seed"
       ],
       "setup": [
         {
+          "seed": "solid11_seed"
+        },
+        {
           "seed": "hecb_seed"
+        },
+        {
+          "seed": "stage11_seed"
         }
       ],
-      "blockedSeeds": [
-        "stage11_seed",
-        "solid11_seed"
-      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -12217,17 +12343,18 @@
         "updated": 20.0
       },
       "needs": [
-        "stage11_seed",
-        "hecb_seed"
+        "hecb_seed",
+        "stage11_seed"
       ],
       "setup": [
         {
           "seed": "hecb_seed"
+        },
+        {
+          "seed": "stage11_seed"
         }
       ],
-      "blockedSeeds": [
-        "stage11_seed"
-      ],
+      "blockedSeeds": [],
       "crashes": null
     },
     {
@@ -12974,7 +13101,7 @@
       ],
       "setup": [
         {
-          "seed": "mvcd_ksce_seed"
+          "seed": "mvcd_eurocode"
         }
       ],
       "blockedSeeds": [],
@@ -13012,7 +13139,7 @@
       ],
       "setup": [
         {
-          "seed": "mvcd_ksce_seed"
+          "seed": "mvcd_eurocode"
         }
       ],
       "blockedSeeds": [],
@@ -13301,7 +13428,8 @@
           "EL",
           "LC",
           "SP"
-        ]
+        ],
+        "unordered": true
       },
       "needs": [
         "bngr14_seed",

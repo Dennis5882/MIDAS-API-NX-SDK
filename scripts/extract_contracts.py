@@ -4229,8 +4229,60 @@ def _schema_only_roots(
     return tuple(dict.fromkeys(root for root in declared if root not in named))
 
 
-def parse_chapter(path: Path) -> list[Section]:
+_TITLE_ONLY_SECTION = re.compile(r"^##\s+(\d+)\.\s+(\S.*?)\s*$")
+_INPUT_URI = re.compile(r"^\{base url\}(/[A-Za-z0-9/_.\-]+)\s*$")
+SHARED_TABLE_ROUTE = "/post/TABLE"
+
+
+def _own_route_lines(lines: list[str]) -> tuple[list[str], dict[int, str]]:
+    """A table-family chapter, reduced to the sections with a route of their own.
+
+    Chapters 18-23 title a section by what it returns ("## 1. P-M Interaction
+    Diagram") and state its route only in an `### Input URI` block. Almost all
+    of those routes are the shared `/post/TABLE`, which is a table contract,
+    not an endpoint one - but chapter 23 opens with two that are not,
+    `/post/PM` and `/post/STEELCODECHECK`, and skipping the whole chapter left
+    them with no draft and so no contract.
+
+    Returns the chapter with every other line blanked, so line numbers stay
+    true for `extraction.source`, and each kept heading rewritten into the
+    `## N. `/route` — Title` form `parse_chapter` reads. The original heading
+    text is returned beside it, keyed by line, because that is what a contract
+    must cite.
+    """
+    starts = [index for index, line in enumerate(lines) if line.startswith("## ")]
+    kept = [""] * len(lines)
+    headings: dict[int, str] = {}
+    for position, start in enumerate(starts):
+        end = starts[position + 1] if position + 1 < len(starts) else len(lines)
+        match = _TITLE_ONLY_SECTION.match(lines[start])
+        if match is None:
+            continue
+        body = lines[start + 1 : end]
+        route = None
+        for index, line in enumerate(body):
+            if line.startswith("### Input URI"):
+                for candidate in body[index + 1 :]:
+                    uri = _INPUT_URI.match(candidate.strip())
+                    if uri:
+                        route = uri.group(1)
+                        break
+                    if candidate.startswith("###"):
+                        break
+                break
+        if route is None or route == SHARED_TABLE_ROUTE:
+            continue
+        kept[start] = f"## {match.group(1)}. `{route}` — {match.group(2)}"
+        kept[start + 1 : end] = body
+        headings[start] = lines[start].lstrip("#").strip()
+    return kept, headings
+
+
+def parse_chapter(path: Path, *, own_routes_only: bool = False) -> list[Section]:
     lines = path.read_text(encoding="utf-8").splitlines()
+    original_headings: dict[int, str] = {}
+    if own_routes_only:
+        lines, original_headings = _own_route_lines(lines)
     toc_metadata = _toc_metadata(lines)
     starts: list[tuple[int, re.Match[str]]] = []
     for index, line in enumerate(lines):
@@ -4268,7 +4320,7 @@ def parse_chapter(path: Path) -> list[Section]:
             number=match.group(1),
             endpoint=endpoint,
             title=title,
-            heading=lines[index].lstrip("#").strip(),
+            heading=original_headings.get(index, lines[index].lstrip("#").strip()),
             lines=body,
         )
         text = "\n".join(body)
@@ -4466,9 +4518,11 @@ def load_manual(manual_repo: Path) -> tuple[list[Section], dict[str, int]]:
         if path.name == "INDEX.md":
             continue
         if path.name in TABLE_FAMILY_CHAPTERS:
+            own = parse_chapter(path, own_routes_only=True)
+            sections.extend(own)
             table_family[path.name] = sum(
                 1 for line in path.read_text(encoding="utf-8").splitlines() if re.match(r"^##\s+\d+\.", line)
-            )
+            ) - len(own)
             continue
         sections.extend(parse_chapter(path))
     return merge_shared_endpoint_sections(sections), table_family
@@ -4885,8 +4939,12 @@ def _render_fields(
     return lines
 
 
+# `/post/PM`'s JSON Schema spells the key `"argument"` while the same section's
+# request example and prose say `"Argument"`; the key's case is not what this
+# reads, the declared type is. Measured 2026-09-17: accepting either case
+# changes this function's answer for that one section and no other.
 _ARGUMENT_SCHEMA = re.compile(
-    r'"Argument"\s*:\s*\{\s*"type"\s*:\s*"(?P<type>[a-z]+)"(?P<rest>.*?)\n\s*\}',
+    r'"[Aa]rgument"\s*:\s*\{\s*"type"\s*:\s*"(?P<type>[a-z]+)"(?P<rest>.*?)\n\s*\}',
     re.DOTALL,
 )
 
@@ -5363,8 +5421,9 @@ def run_report(sections: list[Section], table_family: dict[str, int]) -> int:
             f"{len(table_contracts)} contracted result tables."
         )
         print(
-            "  Chapter 23 also contains /post/PM and /post/STEELCODECHECK; "
-            "they are separate routes, not TABLE_TYPE result tables."
+            "  Sections in those chapters with a route of their own (chapter 23's "
+            "/post/PM and /post/STEELCODECHECK) are read as endpoint sections and "
+            "are not counted here."
         )
 
     promoted = {path.stem for path in ENDPOINT_DIR.glob("*.yaml")} if ENDPOINT_DIR.is_dir() else set()
@@ -5599,7 +5658,7 @@ def run_check(sections: list[Section]) -> int:
         if contract["source"]["manual"]["status"] != "documented":
             continue
         chapter = contract["source"]["manual"].get("chapterFile")
-        if chapter in TABLE_FAMILY_CHAPTERS:
+        if chapter in TABLE_FAMILY_CHAPTERS and contract["endpoint"] == SHARED_TABLE_ROUTE:
             # /post/TABLE is documented in those chapters' shared "공통 사항"
             # sections, not in a numbered endpoint section, and this extractor
             # does not model that chapter family. Reporting it as missing would

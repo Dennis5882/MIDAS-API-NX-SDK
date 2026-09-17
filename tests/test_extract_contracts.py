@@ -550,7 +550,60 @@ def test_report_measures_table_contract_coverage(section: ex.Section, capsys: py
     assert ex.run_report([section], {"18_POST_PreProcess.md": 10}) == 0
     output = capsys.readouterr().out
     assert "table-contract coverage:" in output
-    assert "/post/PM and /post/STEELCODECHECK" in output
+    assert "/post/PM and /post/STEELCODECHECK) are read as endpoint sections" in output
+
+
+def test_a_table_family_chapter_yields_only_its_own_route_sections(tmp_path: Path):
+    chapter = tmp_path / "23_POST_Design.md"
+    chapter.write_text(
+        "\n".join([
+            "# Design",
+            "",
+            "## 공통 사항 (Design Forces 테이블, #3~#10)",
+            "",
+            "### Input URI",
+            "",
+            "```",
+            "{base url}/post/TABLE",
+            "```",
+            "",
+            "## 1. Steel Code Check",
+            "",
+            "### Input URI",
+            "",
+            "```",
+            "{base url}/post/STEELCODECHECK",
+            "```",
+            "",
+            "### Active Methods",
+            "",
+            "`POST`",
+            "",
+            "## 2. Beam Design Forces",
+            "",
+            "### Input URI",
+            "",
+            "```",
+            "{base url}/post/TABLE",
+            "```",
+            "",
+            "### Active Methods",
+            "",
+            "`POST`",
+        ]) + "\n",
+        encoding="utf-8",
+    )
+
+    sections = ex.parse_chapter(chapter, own_routes_only=True)
+
+    assert [section.endpoint for section in sections] == ["/post/STEELCODECHECK"]
+    only = sections[0]
+    assert only.methods == ["POST"]
+    # The contract cites the manual's own heading, not the rewritten one.
+    assert only.heading == "1. Steel Code Check"
+    assert only.title == "Steel Code Check"
+    # Nothing from the shared-table section after it leaks into the body.
+    assert not any("Beam Design Forces" in line for line in only.lines)
 
 
 def test_report_separates_resources_with_no_parsed_manual_section(

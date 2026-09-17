@@ -34,6 +34,8 @@ verification:
       ref: db-read-sweep-2026-09-16
     - product: gen
       ref: db-read-sweep-2026-09-16
+    - product: gen
+      ref: design-write-2026-09-17
 
 operations:
   - method: DELETE
@@ -61,6 +63,12 @@ operations:
     response:
       wrapper: table
       keyStability: stable
+    notes: >-
+      2026-09-17, Build 09/15/2026, on a fresh document: Gen NX accepted the
+      manual's body and echoed the stored record. Civil NX refused the same
+      body with "[Error] Errors detected in Steel Design Control Data.(Item:)"
+      and stored nothing. What Civil needs first is not established; the
+      value was not varied, because this enum has one documented member.
 
 fields:
   - key: Assign

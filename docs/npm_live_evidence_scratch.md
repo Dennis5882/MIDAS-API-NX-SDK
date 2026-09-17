@@ -289,5 +289,26 @@ one product short of Python's on each. Gen closes them.
 | `/db/TMAT` | 2026-09-17 | Gen, Civil |
 | `/db/IMPF` | 2026-09-17 | Civil |
 
-**Count:** 155 distinct `/db` endpoints and 4 distinct result-table operations;
-159 distinct npm public-API operations overall.
+### 2026-09-17 — seeds the fixture could not express
+
+Fixture version 6 exports per-id DELETE seed steps and the create branch of
+`stage11_seed`, and declares `/db/BCGA-M1`'s order-free comparison. Each run
+below was its own harness invocation where a setup table has no DELETE.
+`/db/MVHL` needed no harness change: its case had never declared the
+`vehicle` seed its id depends on.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/PJCF` | 2026-09-17 | Gen, Civil |
+| `/db/HECB` | 2026-09-17 | Gen, Civil |
+| `/db/HSPT` | 2026-09-17 | Gen, Civil |
+| `/db/MVHL` | 2026-09-17 | Gen, Civil |
+| `/db/BCGA-M1` | 2026-09-17 | Civil |
+| `/db/DYFG` | 2026-09-17 | Civil |
+| `/db/DYNF` | 2026-09-17 | Civil |
+
+`/db/DYFG` and `/db/DYNF` seed the EUROCODE `/db/MVCD` record Python reaches
+through extras14's switch case (`mvcd_eurocode`, `setup_replaces`).
+
+**Count:** 162 distinct `/db` endpoints and 4 distinct result-table operations;
+166 distinct npm public-API operations overall.

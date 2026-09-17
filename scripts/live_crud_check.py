@@ -347,7 +347,7 @@ OK, REGRESSION, UNVERIFIED, BLOCKED = "ok", "regression", "unverified", "blocked
 #: Quarantined: known to hang or kill the product, so not run by default.
 SKIPPED = "skipped"
 LIVE_CASES_PATH = Path(__file__).resolve().parents[1] / "schema" / "live-cases.json"
-LIVE_CASES_VERSION = 5
+LIVE_CASES_VERSION = 6
 
 # Shared by the Python base model and the emitted npm live fixture.  Keep
 # prerequisite records here rather than reproducing them in JavaScript. STLD
@@ -355,6 +355,16 @@ LIVE_CASES_VERSION = 5
 # attaches to an already-existing node, so neither case can run on a truly
 # blank document.
 BASE_MODEL_SEEDS: Dict[str, Dict[str, Any]] = {
+    # /db/DYFG and /db/DYNF need the moving-load code to be EUROCODE. Python
+    # gets there by seeding KSCE-LSD15 for /db/DYLA and switching the same
+    # record with extras14's own /db/MVCD case, which a per-case harness
+    # cannot interleave. The record is that case's confirmed update payload.
+    "mvcd_eurocode": {
+        "endpoint": MovingLoadCode.ENDPOINT,
+        "records": {
+            "1": {"CODE": "EUROCODE"},
+        },
+    },
     "skew_node": {
         "endpoint": Node.ENDPOINT,
         "records": {
@@ -519,6 +529,8 @@ class Case:
         needs: Sequence[str] = (),
         crashes: Optional[str] = None,
         setup: Sequence[Dict[str, Any]] = (),
+        unordered: bool = False,
+        setup_replaces: Sequence[str] = (),
     ) -> None:
         self.resource = resource
         self.create_payload = create_payload
@@ -544,6 +556,16 @@ class Case:
         #: The Python runner already has its own base-model and tier seed
         #: functions, but JavaScript must not retype those payloads.
         self.setup = tuple(setup)
+        #: The server returns a list in its own order, so ``probe`` sorts it
+        #: and the expected values are sorted too.  npm has no probe -- it
+        #: searches the response for the expected value -- so this flag is
+        #: what tells it to compare lists as multisets instead of in order.
+        self.unordered = unordered
+        #: Needs that this case's own ``setup`` satisfies differently for a
+        #: harness that seeds each case alone, so they are neither prepended
+        #: to the emitted setup nor reported blocked. Python still runs and
+        #: gates on them as ``needs``.
+        self.setup_replaces = tuple(setup_replaces)
 
 
 class SeedStep:
@@ -1379,7 +1401,13 @@ def _moving_cases() -> List[Case]:
              "STANDARD_CODE": "AASHTO-LRFD",
              "VEH_DEFAULT": {"DYN_LOAD_ALLOWANCE": 20, "CENT_F": False}},
             lambda p: p["VEH_DEFAULT"].get("DYN_LOAD_ALLOWANCE"), 33, 20,
-            item_id=2, products=both_products, confirmed=True, needs=("mvcd",),
+            # /db/MVHL renumbers to the next free id, so id 2 is only id 2
+            # while the ``vehicle`` seed holds id 1. The tier always ran that
+            # seed, so Python never noticed the need was undeclared; the npm
+            # harness seeds only what a case declares, and its POST landed
+            # at id 1 (2026-09-16).
+            item_id=2, products=both_products, confirmed=True,
+            needs=("mvcd", "vehicle"),
         ),
         # VEHICLE_LD_NAMES takes the vehicle's VEHICLE_LOAD_NAME, not the
         # type name the manual's worked example shows — confirmed live
@@ -3245,7 +3273,8 @@ def _extras11_cases() -> List[Case]:
              "bCONV": True, "bTRUSS": True, "bBEAM": True,
              "bCHANGE_CABLE": True, "bCAMBER": True},
             lambda p: p.get("iITER"), 30, 50,
-            item_id=1, needs=("stage11_seed",),
+            # The stage activates hecb_seed's groups by name.
+            item_id=1, needs=("hecb_seed", "stage11_seed"),
         ),
         # batch 11c: HECB/HSPT are keyed by construction-stage number as the
         # manual says. item_id=1 is this tier's real ``CS_SEED``.
@@ -3266,7 +3295,9 @@ def _extras11_cases() -> List[Case]:
             {"ITEMS": [{"ID": 1, "GROUP_NAME": "BG11_SEED", "FACE_NO": 2,
                         "CCFC_NAME": "CC11_SEED", "ETFC_NAME": "AT11_SEED"}]},
             lambda p: p["ITEMS"][0].get("FACE_NO"), 1, 2,
-            item_id=1, needs=("stage11_seed", "hecb_seed", "solid11_seed"),
+            # Listed in build order: the emitted npm setup follows ``needs``,
+            # and the stage activates the group that names the solid.
+            item_id=1, needs=("solid11_seed", "hecb_seed", "stage11_seed"),
             confirmed=True,
         ),
         Case(
@@ -3274,7 +3305,7 @@ def _extras11_cases() -> List[Case]:
             {"ITEMS": [{"ID": 1, "GROUP_NAME": "BG11_SEED", "TEMPER": 15.0}]},
             {"ITEMS": [{"ID": 1, "GROUP_NAME": "BG11_SEED", "TEMPER": 20.0}]},
             lambda p: p["ITEMS"][0].get("TEMPER"), 15.0, 20.0,
-            item_id=1, needs=("stage11_seed", "hecb_seed"), confirmed=True,
+            item_id=1, needs=("hecb_seed", "stage11_seed"), confirmed=True,
         ),
     ]
 
@@ -3585,6 +3616,8 @@ def _extras14_cases() -> List[Case]:
              "OPT_REDUCE_EFF": False, "HEIGHT_COVER": 0, "DYN_FACTOR": 1.5},
             lambda p: p.get("DYN_FACTOR"), 1.2, 1.5,
             item_id=1, needs=("mvcd_ksce_seed",), products=civil, confirmed=True,
+            # Python reaches EUROCODE through the /db/MVCD case above.
+            setup=({"seed": "mvcd_eurocode"},), setup_replaces=("mvcd_ksce_seed",),
         ),
         # Keyed by a real element id (core's element 1), not a serial number.
         Case(
@@ -3593,6 +3626,8 @@ def _extras14_cases() -> List[Case]:
             {"INPUT_TYPE": 1, "DYN_FACTOR": 1.5},
             lambda p: p.get("DYN_FACTOR"), 1.2, 1.5,
             item_id=1, needs=("mvcd_ksce_seed",), products=civil, confirmed=True,
+            # Python reaches EUROCODE through the /db/MVCD case above.
+            setup=({"seed": "mvcd_eurocode"},), setup_replaces=("mvcd_ksce_seed",),
         ),
         Case(
             MainControlDataHyperS,
@@ -3664,7 +3699,7 @@ def _extras14_cases() -> List[Case]:
              "BC_SELECT": ["SP", "LC", "EL"]},
             lambda p: sorted(p.get("BC_SELECT", [])), ["LC", "SP"], ["EL", "LC", "SP"],
             item_id=1, needs=("bngr14_seed", "dl14_seed", "bcgd_m1_seed"),
-            products=civil, confirmed=True,
+            products=civil, confirmed=True, unordered=True,
         ),
     ]
 
@@ -4459,6 +4494,17 @@ RENUMBERING_SEEDS = frozenset({
     "thfc_seed", "thfc_force_seed", "this_seed",
 })
 
+#: Seeds whose one read only guards against a record an *earlier Python tier*
+#: already created, so a full run does not POST a duplicate.  The npm harness
+#: starts every run from the emitted base model, where that record never
+#: exists, so the create branch is the one it needs -- and if it ever does
+#: exist, the harness's setup-collision check refuses loudly rather than
+#: overwriting it.  The recorder answers such a seed's GET with an empty table
+#: and exports what follows.  Nothing else is listed: a seed that branches on
+#: what the *product* put in a fresh document is a different thing, and
+#: exporting one branch of it would be a guess.
+FRESH_DOCUMENT_SEEDS = frozenset({"stage11_seed"})
+
 
 def _exportable_tier_seeds() -> Tuple[Dict[str, Dict[str, Any]], Dict[str, str]]:
     """Export every tier seed the shared fixture can express, and name the rest.
@@ -4466,10 +4512,12 @@ def _exportable_tier_seeds() -> Tuple[Dict[str, Dict[str, Any]], Dict[str, str]]
     Capture each step's own calls; never reconstruct its payload.  The boundary
     is mechanical rather than a list of tiers someone happened to look at: a
     seed the npm harness can replay is a **sequence of ``{"Assign": ...}``
-    POSTs**, because that is what ``setupRecords`` in live-crud.mjs sends and
-    ``runCase`` already replays several prerequisites in order.  A seed that
-    reads state back or deletes something cannot be replayed that way, and
-    saying "one POST" instead would be the same arbitrary limit one tier wider.
+    POSTs and per-id ``DELETE {endpoint}/{id}`` calls**, because those are the
+    two step shapes ``setupRecords`` in live-crud.mjs sends, in order.  A
+    delete step is what ``DbResource.delete`` issues, one id per URL; it is
+    exported as ``{"endpoint": ..., "delete": [ids]}``.  A seed that reads
+    state back cannot be replayed from an emitted payload, unless it is one of
+    the ``FRESH_DOCUMENT_SEEDS`` whose read only exists for a full Python run.
 
     Returns the exportable seeds and, separately, a reason for each seed that
     cannot be expressed.  An unexportable seed must stay **visible**.  Dropping
@@ -4478,13 +4526,26 @@ def _exportable_tier_seeds() -> Tuple[Dict[str, Dict[str, Any]], Dict[str, str]]
     the one thing this harness exists not to do.
     """
     class Recorder(MidasClient):
-        def __init__(self, product: str) -> None:
+        def __init__(self, product: str, *, fresh_document: bool) -> None:
             super().__init__(mapi_key="offline-fixture", product=product)
             self.calls: List[Dict[str, Any]] = []
+            self.fresh_document = fresh_document
 
         def request(self, method, command, body=None, **kwargs):  # type: ignore[override]
+            if method == "GET" and self.fresh_document and body is None:
+                return {}
+            if method == "DELETE" and body is None:
+                endpoint, _, key = command.rpartition("/")
+                if not endpoint.startswith("/db/") or not key.isdigit():
+                    raise ValueError(f"{method} {command} is not a per-id DELETE")
+                previous = self.calls[-1] if self.calls else None
+                if previous and previous.get("endpoint") == endpoint and "delete" in previous:
+                    previous["delete"].append(key)
+                else:
+                    self.calls.append({"endpoint": endpoint, "delete": [key]})
+                return {}
             if method != "POST" or not isinstance(body, dict) or set(body) != {"Assign"}:
-                raise ValueError(f"{method} {command} is not an Assign POST")
+                raise ValueError(f"{method} {command} is not an Assign POST or a per-id DELETE")
             self.calls.append({"endpoint": command, "records": body["Assign"]})
             return {}
 
@@ -4494,7 +4555,7 @@ def _exportable_tier_seeds() -> Tuple[Dict[str, Dict[str, Any]], Dict[str, str]]
         # problem.
         reason = "declares no product"
         for product in sorted(step.products):
-            recorder = Recorder(product)
+            recorder = Recorder(product, fresh_document=step.name in FRESH_DOCUMENT_SEEDS)
             try:
                 step.run(recorder)
             except Exception as exc:  # noqa: BLE001 - the message is the payload
@@ -4526,7 +4587,8 @@ def _exportable_tier_seeds() -> Tuple[Dict[str, Dict[str, Any]], Dict[str, str]]
                 continue
             if step.name in RENUMBERING_SEEDS:
                 for call in calls:
-                    call["allowRenumbering"] = True
+                    if "records" in call:
+                        call["allowRenumbering"] = True
             # One POST keeps the flat shape BASE_MODEL_SEEDS also uses; more
             # than one is a "steps" list the npm side replays in order.
             exported = calls[0] if len(calls) == 1 else {"steps": calls}
@@ -4546,9 +4608,10 @@ def _exportable_tier_seeds() -> Tuple[Dict[str, Dict[str, Any]], Dict[str, str]]
 
 
 def _declared_seeds(case: Case) -> Set[str]:
-    """Seed names a case already names in its own ``setup``."""
+    """Seed names a case already names in its own ``setup``, or replaces there."""
     return {step["seed"] for step in case.setup
-            if isinstance(step, dict) and isinstance(step.get("seed"), str)}
+            if isinstance(step, dict) and isinstance(step.get("seed"), str)
+            } | set(case.setup_replaces)
 
 
 def _live_cases_fixture() -> Dict[str, Any]:
@@ -4582,6 +4645,9 @@ def _live_cases_fixture() -> Dict[str, Any]:
                 "expected": {
                     "created": case.expect_created,
                     "updated": case.expect_updated,
+                    # Only written when set, so the other cases' entries stay
+                    # byte-identical.
+                    **({"unordered": True} if case.unordered else {}),
                 },
                 "needs": list(case.needs),
                 # A case that already spells out a seed keeps its own ordering;

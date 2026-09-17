@@ -25,30 +25,84 @@ export function verifyRenumberedSeed(source, after, createdIds) {
   }
 }
 
-function sameStructuredValue(value, expected) {
+function sameStructuredValue(value, expected, unordered) {
   if (Object.is(value, expected)) return true;
   if (typeof value !== "object" || value === null
     || typeof expected !== "object" || expected === null) return false;
 
   if (Array.isArray(expected)) {
-    return Array.isArray(value) && value.length === expected.length
-      && value.every((child, index) => sameStructuredValue(child, expected[index]));
+    if (!Array.isArray(value) || value.length !== expected.length) return false;
+    if (!unordered) {
+      return value.every((child, index) => sameStructuredValue(child, expected[index], false));
+    }
+    // A multiset match: each expected element claims a distinct live one.
+    const remaining = [...value];
+    return expected.every((child) => {
+      const index = remaining.findIndex((candidate) =>
+        sameStructuredValue(candidate, child, true));
+      if (index < 0) return false;
+      remaining.splice(index, 1);
+      return true;
+    });
   }
   if (!Array.isArray(value)) {
     const valueKeys = Object.keys(value);
     const expectedKeys = Object.keys(expected);
     return valueKeys.length === expectedKeys.length
       && expectedKeys.every((key) => Object.hasOwn(value, key)
-        && sameStructuredValue(value[key], expected[key]));
+        && sameStructuredValue(value[key], expected[key], unordered));
   }
   return false;
 }
 
-/** True when a fixture value occurs anywhere in a live response tree. */
-export function containsExpectedValue(value, expected) {
-  if (sameStructuredValue(value, expected)) return true;
+/**
+ * True when a fixture value occurs anywhere in a live response tree.
+ *
+ * `unordered` comes from the fixture's `expected.unordered`, set where the
+ * server returns a list in its own order (Python's probe sorts it there).
+ * It relaxes list order only; lengths and elements must still match.
+ */
+export function containsExpectedValue(value, expected, { unordered = false } = {}) {
+  if (sameStructuredValue(value, expected, unordered)) return true;
   if (typeof value !== "object" || value === null) return false;
-  return Object.values(value).some((child) => containsExpectedValue(child, expected));
+  return Object.values(value).some(
+    (child) => containsExpectedValue(child, expected, { unordered }),
+  );
+}
+
+/**
+ * Normalise one emitted seed into the steps setup replays, in order.
+ *
+ * A step either POSTs `records` or deletes the listed ids one URL at a time
+ * (`delete`), which is what Python's `DbResource.delete` sends. Anything else
+ * is a fixture this harness does not understand, and guessing would run a
+ * case half-seeded.
+ */
+export function seedSteps(seed, name) {
+  const steps = seed && Array.isArray(seed.steps) ? seed.steps : [seed];
+  return steps.map((step) => {
+    if (!step || typeof step.endpoint !== "string") {
+      throw new Error(`fixture seed ${name} is invalid.`);
+    }
+    if (Array.isArray(step.delete)) {
+      const ids = step.delete.map(Number);
+      if (!ids.length || ids.some((id) => !Number.isInteger(id)) || "records" in step) {
+        throw new Error(`fixture seed ${name} has an invalid delete step.`);
+      }
+      return { endpoint: step.endpoint, deleteIds: ids };
+    }
+    if (typeof step.records !== "object" || step.records === null) {
+      throw new Error(`fixture seed ${name} is invalid.`);
+    }
+    return {
+      endpoint: step.endpoint,
+      records: step.records,
+      // Only an emitted fixture can opt into replacing a record supplied by
+      // /doc/NEW. Ordinary setup collisions remain a hard safety failure.
+      replaceExisting: step.replaceExisting === true,
+      allowRenumbering: step.allowRenumbering === true,
+    };
+  });
 }
 
 /** Select only write methods supported by both the emitted case and resource. */

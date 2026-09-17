@@ -83,7 +83,7 @@ def test_live_case_fixture_carries_static_load_case_seed() -> None:
     fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
     stld = next(case for case in fixture["cases"] if case["endpoint"] == "/db/STLD")
 
-    assert fixture["version"] == 5
+    assert fixture["version"] == 6
     assert fixture["seeds"]["static_load_cases"] == {
         "endpoint": "/db/STLD",
         "records": {
@@ -645,20 +645,111 @@ def test_every_declared_need_resolves_to_a_seed_or_a_stated_reason() -> None:
 def test_a_seed_is_excluded_only_because_it_cannot_be_replayed() -> None:
     """The boundary is the harness's own vocabulary, not a hand-picked list.
 
-    live-crud.mjs replays a prerequisite as a sequence of Assign POSTs, so a
-    seed that reads state back or deletes a record cannot be expressed and
-    every other seed can. An exclusion for any other reason is someone's
-    convenience, and the count is here to make that visible.
+    live-crud.mjs replays a prerequisite as Assign POSTs and per-id DELETEs,
+    in order, so every seed the tiers declare today can be expressed. Until
+    2026-09-17 a DELETE was outside that vocabulary and three seeds -- and the
+    three confirmed cases behind them -- could not reach npm at all.
     """
     fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
-    unsupported = fixture["unsupportedSeeds"]
 
-    assert set(unsupported) == {"pjcf_unlock", "solid11_seed", "stage11_seed"}
-    for name, reason in unsupported.items():
-        assert "is not an Assign POST" in reason, f"{name}: {reason}"
+    assert fixture["unsupportedSeeds"] == {}
 
     multi_step = {name for name, seed in fixture["seeds"].items() if "steps" in seed}
     assert multi_step, "a seed built from several POSTs must still be exported"
+
+    # What Python's DbResource.delete sends, one id per URL.
+    assert fixture["seeds"]["pjcf_unlock"] == {"endpoint": "/db/PJCF", "delete": ["1"]}
+    solid = fixture["seeds"]["solid11_seed"]["steps"]
+    assert [step["endpoint"] for step in solid] == ["/db/NODE", "/db/ELEM", "/db/ELEM"]
+    assert solid[1] == {"endpoint": "/db/ELEM", "delete": ["1"]}
+    assert solid[2]["records"]["1"]["TYPE"] == "SOLID"
+
+
+def test_only_a_listed_seed_may_have_its_read_answered_empty() -> None:
+    """A read is exported only where it guards a Python-only duplicate.
+
+    stage11_seed reads /db/STAG so a full Python run does not create stage 1
+    twice; npm starts from the base model, where it never exists. Any other
+    seed that reads must stay unsupported, with the reason -- answering its
+    read with an empty table would export whichever branch that happens to
+    pick, which is a guess.
+    """
+    live = _live_crud_module()
+    assert live.FRESH_DOCUMENT_SEEDS == frozenset({"stage11_seed"})
+
+    def reads_then_writes(client):
+        if not live.Node.get(client=client):
+            live.Node.create({1: {"X": 0, "Y": 0, "Z": 0}}, client=client)
+
+    tier = live.Tier(
+        "reader", "a seed that branches on a read",
+        lambda: [live.SeedStep("reader_seed", reads_then_writes)], list,
+    )
+    original = live.TIERS
+    live.TIERS = [tier]
+    try:
+        seeds, unsupported = live._exportable_tier_seeds()
+    finally:
+        live.TIERS = original
+
+    assert seeds == {}
+    assert "GET /db/NODE" in unsupported["reader_seed"]
+
+
+def test_seeds_are_emitted_in_the_order_a_case_needs_them() -> None:
+    """The emitted setup follows ``needs``, so the order is the build order.
+
+    Python runs every tier seed in the tier's own order and never read
+    ``needs`` for ordering, so HECB's needs sat stage-first while the stage
+    names groups a later seed creates. npm replays exactly the list.
+    """
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    setups = {
+        case["endpoint"]: [step.get("seed") for step in case["setup"]]
+        for case in fixture["cases"]
+        if case["endpoint"] in {"/db/HECB", "/db/HSPT", "/db/STCT", "/db/MVHL"}
+    }
+    assert setups["/db/HECB"] == ["solid11_seed", "hecb_seed", "stage11_seed"]
+    assert setups["/db/HSPT"] == ["hecb_seed", "stage11_seed"]
+    assert setups["/db/STCT"] == ["hecb_seed", "stage11_seed"]
+    # /db/MVHL renumbers: the case's id 2 needs the vehicle seed at id 1.
+    assert setups["/db/MVHL"] == ["mvcd", "vehicle"]
+
+
+def test_a_replaced_need_is_neither_prepended_nor_blocked() -> None:
+    """DYFG/DYNF need EUROCODE; Python gets it from another case, npm from a seed.
+
+    Their `needs` still name mvcd_ksce_seed, because that is what Python gates
+    on. Prepending it to npm's setup would POST /db/MVCD twice and fail on the
+    collision before the endpoint under test is touched.
+    """
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    for case in fixture["cases"]:
+        if case["endpoint"] in {"/db/DYFG", "/db/DYNF"}:
+            assert case["needs"] == ["mvcd_ksce_seed"]
+            assert case["setup"] == [{"seed": "mvcd_eurocode"}]
+            assert case["blockedSeeds"] == []
+    assert fixture["seeds"]["mvcd_eurocode"] == {
+        "endpoint": "/db/MVCD", "records": {"1": {"CODE": "EUROCODE"}},
+    }
+    # The value is the switch case's own confirmed update payload.
+    switch = next(
+        case for case in fixture["cases"]
+        if case["endpoint"] == "/db/MVCD" and case["tier"] == "extras14"
+    )
+    assert switch["confirmed"] is True
+    assert switch["updatePayload"] == {"CODE": "EUROCODE"}
+
+
+def test_an_unordered_comparison_is_declared_not_inferred() -> None:
+    """npm cannot see a probe that sorts; the fixture has to say so."""
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    unordered = sorted(
+        case["endpoint"] for case in fixture["cases"] if case["expected"].get("unordered")
+    )
+    assert unordered == ["/db/BCGA-M1"]
+    for case in fixture["cases"]:
+        assert case["expected"].get("unordered", True) is True, case["endpoint"]
 
 
 def test_the_npm_harness_blocks_a_case_it_cannot_seed() -> None:

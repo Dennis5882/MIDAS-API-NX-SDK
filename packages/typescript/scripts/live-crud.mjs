@@ -28,9 +28,8 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import {
-  caseCleanupMode, classifyResult, containsExpectedValue, exitCodeFor, setupCleanupMode,
-  supportedCaseWrites,
-  verifyRenumberedSeed,
+  caseCleanupMode, classifyResult, containsExpectedValue, exitCodeFor, seedSteps,
+  setupCleanupMode, supportedCaseWrites, verifyRenumberedSeed,
 } from "./live-harness-support.mjs";
 
 import { doc, MidasClient, post, resources } from "../dist/index.js";
@@ -41,7 +40,7 @@ const fixture = JSON.parse(readFileSync(fixturePath, "utf8"));
 // Pinned so a stale checkout fails loudly instead of silently building an
 // older model. tests/test_live_cases.py fails if this drifts from
 // LIVE_CASES_VERSION in scripts/live_crud_check.py.
-const EXPECTED_FIXTURE_VERSION = 5;
+const EXPECTED_FIXTURE_VERSION = 6;
 
 function usage(message) {
   if (message) console.error(message);
@@ -136,26 +135,19 @@ function resourceFor(endpoint) {
   return resource;
 }
 
-/** One prerequisite becomes one or more POSTs, replayed in the emitted order. */
+/**
+ * One prerequisite becomes one or more POST or per-id DELETE steps, replayed
+ * in the emitted order.
+ */
 function setupRecords(prerequisite, targetEndpoint) {
   if (typeof prerequisite.seed === "string") {
-    const seed = fixture.seeds?.[prerequisite.seed];
-    // A seed that builds its records with several POSTs is emitted as a
-    // "steps" list; a single-POST seed keeps the flat shape the base model
-    // also uses. Both replay identically from here.
-    const steps = seed && Array.isArray(seed.steps) ? seed.steps : [seed];
-    if (!seed || steps.some((step) => !step || typeof step.endpoint !== "string"
-      || typeof step.records !== "object" || step.records === null)) {
-      throw new Error(`${targetEndpoint}: fixture seed ${prerequisite.seed} is invalid.`);
+    // A seed built from several calls is emitted as a "steps" list; a
+    // one-call seed keeps the flat shape the base model also uses.
+    try {
+      return seedSteps(fixture.seeds?.[prerequisite.seed], prerequisite.seed);
+    } catch (error) {
+      throw new Error(`${targetEndpoint}: ${errorText(error)}`);
     }
-    return steps.map((step) => ({
-      endpoint: step.endpoint,
-      records: step.records,
-      // Only an emitted fixture can opt into replacing a record supplied by
-      // /doc/NEW. Ordinary setup collisions remain a hard safety failure.
-      replaceExisting: step.replaceExisting === true,
-      allowRenumbering: step.allowRenumbering === true,
-    }));
   }
   if (typeof prerequisite.endpoint !== "string" || !Number.isInteger(prerequisite.id)) {
     throw new Error(`${targetEndpoint}: fixture setup must name a seed or an endpoint/id source case.`);
@@ -185,9 +177,9 @@ function newlyCreatedIds(before, after) {
     .filter((id) => !Object.hasOwn(before, id));
 }
 
-function requireExpectedValue(value, expected, endpoint, step) {
+function requireExpectedValue(value, expected, endpoint, step, unordered) {
   if (expected === null || expected === undefined) return;
-  if (!containsExpectedValue(value, expected)) {
+  if (!containsExpectedValue(value, expected, { unordered })) {
   throw new Error(`${endpoint}: expected live value ${JSON.stringify(expected)} after ${step}.`);
   }
 }
@@ -268,6 +260,17 @@ async function runCase(liveCase, client, cleanupContext) {
     for (const prerequisite of liveCase.setup) {
       for (const source of setupRecords(prerequisite, liveCase.endpoint)) {
         const sourceResource = resourceFor(source.endpoint);
+        if (source.deleteIds) {
+          // A seed that clears a record the fresh document supplies. Nothing
+          // to clean up afterwards: the document reset restores it.
+          if (!sourceResource.metadata.methods.includes("DELETE")) {
+            throw new Error(`${liveCase.endpoint}: setup ${source.endpoint} has no DELETE to replay.`);
+          }
+          for (const id of source.deleteIds) {
+            await deleteAndVerify(sourceResource, id, client, source.endpoint);
+          }
+          continue;
+        }
         const sourceCleanupMode = setupCleanupMode(
           sourceResource.metadata.methods, cleanupContext,
         );
@@ -316,7 +319,10 @@ async function runCase(liveCase, client, cleanupContext) {
       const afterCreate = await resource.items(client);
       for (const id of newlyCreatedIds(before, afterCreate)) targetCreatedIds.add(id);
       const created = requireStored(afterCreate, liveCase.id, liveCase.endpoint, "POST");
-      requireExpectedValue(created, liveCase.expected.created, liveCase.endpoint, "POST");
+      requireExpectedValue(
+        created, liveCase.expected.created, liveCase.endpoint, "POST",
+        liveCase.expected.unordered === true,
+      );
       assertPayloadDefaults(resource, created, liveCase.endpoint, "POST");
     }
 
@@ -326,7 +332,10 @@ async function runCase(liveCase, client, cleanupContext) {
       const afterUpdate = await resource.items(client);
       for (const id of newlyCreatedIds(beforeUpdate, afterUpdate)) targetCreatedIds.add(id);
       const updated = requireStored(afterUpdate, liveCase.id, liveCase.endpoint, "PUT");
-      requireExpectedValue(updated, liveCase.expected.updated, liveCase.endpoint, "PUT");
+      requireExpectedValue(
+        updated, liveCase.expected.updated, liveCase.endpoint, "PUT",
+        liveCase.expected.unordered === true,
+      );
       assertPayloadDefaults(resource, updated, liveCase.endpoint, "PUT");
     }
 

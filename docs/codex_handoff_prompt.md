@@ -1,8 +1,23 @@
 # Codex task prompt — mechanical work only
 
-Updated 2026-09-16 (later), after **both products were patched to Build
-09/15/2026** and the published 2.8.2 was verified against them. The tree is
-clean and CI is fully green, the contract-to-manual check included.
+Updated 2026-09-17 (later). Both products are on **Build 09/15/2026**, the
+published 2.8.2 was verified against them on 2026-09-16, and since then the
+npm seed gap, Task H, Task I and Task J have all been run - by Claude, not in a
+Codex round. What that changed is summarised directly below; the sections
+further down keep their history.
+
+**2026-09-17 in one paragraph.** The live fixture is version 6: a seed step may
+be a per-id DELETE, one listed seed's guard read is answered empty, and a case
+may declare an order-free comparison. That let npm replay `/db/PJCF`,
+`/db/HECB`, `/db/HSPT`, `/db/MVHL` and `/db/BCGA-M1`, which passed through
+both SDKs, and `/db/DYFG`/`/db/DYNF` turned out to be a selection artefact
+rather than a regression, so **the npm gap is 0**. `DESIGN/STEEL/DSTL`
+was contracted (Task H) and took a PUT on Gen while Civil refused it (Task I).
+`USE_HAMBLY_EQ` is absent from a DB/User solid section's record (Task J).
+`/post/PM` and `/post/STEELCODECHECK` were contracted, so all 70 npm operations
+are now named by a contract. And npm generation no longer imports `midas_nx`.
+
+What the 2026-09-16 patch day established:
 
 **What the patch day established, because three tasks below depend on it.** The
 published 2.8.2 answers on 268/268 GET-capable Gen resources and 283/283 on
@@ -46,32 +61,16 @@ Then, in this order.
 
 **With a product session:**
 
-0. **Task I** — one PUT round trip on `DESIGN/STEEL/DSTL`. It is the newest
-   endpoint, it has read evidence on both products as of 2026-09-16, and
-   **nothing has ever sent it a payload**. Attempted 2026-09-16 and correctly
-   stopped: the GET was empty, so there was no original value to revert to.
-   **Read Task I again before the next attempt** — that finding is the task now,
-   and it is not "run the PUT anyway".
-1. **Task J** — a read-only probe of `/db/SECT`'s new `USE_HAMBLY_EQ` on a model
-   that has sections. Evidence-gathering only; the decision it feeds is the
-   author's and is listed under the open decisions.
-2. **Task F** — **all but one of it is done.** The gap is 12 and exactly **one**
-   of those, `/db/GRUP`, is a plain replay; two more sit behind a seed each, and
-   the remaining nine are harness design, a product refusal, or a measurement
-   artefact. Do not book a session for "the remaining 12" — read the table in
-   that section first. This is no longer the largest block of work.
-3. **Task G** — three confirmed cases that cannot fail, and so prove less than
+1. **Task G** — three confirmed cases that cannot fail, and so prove less than
    their `confirmed=True` claims.
-4. **Task B-2** — the 22 that have failed. Only one offline lead is left.
+2. **Task B-2** — the 22 that have failed. Only one offline lead is left.
+
+Tasks F, H, I and J are done; their sections say what they found and what is
+not yours to follow up.
 
 **Without one, and only then:**
 
-5. **Task H step 3** — promote `DESIGN/STEEL/DSTL`'s contract. The live record
-   it was waiting for exists now, so this is offline.
-6. **Task F-0 is complete.** What replaced it is harness design for the seeds
-   npm cannot replay and for `/db/MVHL`'s renumbered target — offline, and the
-   only thing that would move Task F's remaining nine.
-7. **Task A** — build fixtures for the 21 buildable endpoints with no case.
+4. **Task A** — build fixtures for the 21 buildable endpoints with no case.
    Start with batch 17: `/db/PHGE`, `/db/POGD`, `/db/POGD-M1`.
 
 An earlier version of this file said the offline queue was empty and told you
@@ -91,9 +90,9 @@ Run these first and confirm you see the same numbers. **If any differ, say so
 before starting** — it means something moved under you.
 
 ```bash
-python -m pytest -q                       # 1067 passed, 0 failed
+python -m pytest -q                       # 1081 passed, 0 failed
 ruff check src tests scripts && mypy      # clean
-python scripts/validate_contracts.py      # OK; 381 endpoints, 5064 fields,
+python scripts/validate_contracts.py      # OK; 384 endpoints, 5078 fields,
                                           # 140 proven safe, 8 unsafe,
                                           # 0 unresolved manual contradictions
 python scripts/check_manual_drift.py --manual-api-repo "E:\AI Study\MIDAS-API"
@@ -109,20 +108,20 @@ python scripts/report_dropped_manual_rows.py \
 python scripts/live_crud_check.py --check-cases        # silent; exit 0
 python scripts/check_fixture_contract.py --check       # 1 fixture lead over 1
                                           # endpoint, 3 contract gaps over 2
-python scripts/report_npm_replay_coverage.py --check   # 166 confirmed; 158 npm
-                                          # replays (157 confirmed); gap 7. By
-                                          # confirmed case: 170 complete, 0
-                                          # partial, 7 none, of 177
+python scripts/report_npm_replay_coverage.py --check   # 166 confirmed; 167 npm
+                                          # replays (166 confirmed); gap 0. By
+                                          # confirmed case: 177 complete, 0
+                                          # partial, 0 none, of 177
 python scripts/report_unmerged_tables.py --check       # report is current
 cd packages/typescript && npm run generate && npm run typecheck && npm test
-                                          # no drift; 78 tests
+                                          # no drift; 83 tests
 ```
 
-Coverage as `ROADMAP.md` reports it: **400/400 implemented, 200 write / 200
-read**, nothing unverified — `DESIGN/STEEL/DSTL` answered on both products on
-2026-09-16; see Task H for what is left of it.
-`schema/live-cases.json` is **version 5**: 212 cases over 189 endpoints, 177
-confirmed, 9 base-model steps, 64 named seeds.
+Coverage as `ROADMAP.md` reports it: **400/400 implemented, 201 write / 199
+read**, nothing unverified — `DESIGN/STEEL/DSTL` moved to write on Gen on
+2026-09-17 (Task I).
+`schema/live-cases.json` is **version 6**: 212 cases over 189 endpoints, 177
+confirmed, 9 base-model steps, 68 named seeds, none unsupported.
 
 **Both products are on Build 09/15/2026** (Gen NX 2026 v2.1, Civil NX 2026
 v2.2), each read from its own About dialog on 2026-09-16 — the first time the
@@ -135,8 +134,7 @@ in the patch, on both products; that is Task J.
 replays from the notes inventory into `docs/coverage.json` and
 `scripts/report_npm_replay_coverage.py --check` now measures them. One
 historical replay (`/db/DSTL`) has an unconfirmed fixture, so the Task F scope
-is **154 of 166 confirmed endpoints**, with a gap of **12** after the current
-Build 09/15/2026 batches, including lane optimization and the BNGR core case.
+is **166 of 166 confirmed endpoints**: the gap closed on 2026-09-17.
 `extraction.unmergedTables`: **72 tables, 482 names, 15
 contracts**. Drafts: 3, the IEHG trio, refused for a reason that will not go
 away — that is the finished state, not a backlog.
@@ -187,6 +185,11 @@ row. Map the whole file.
 
 ## Task H — one endpoint the manual added and nobody has called
 
+**Done 2026-09-17.** Step 3 was run: `contracts/endpoints/design-steel-dstl.yaml`
+exists, and it narrowed `SteelDesignCodeSelectionPayload.DGNCODE` to its one
+documented value (recorded under the npm changelog's `Unreleased`). The text
+below is the task as it was written.
+
 **Live, read-only. Safe against an open model — the only task here that is.**
 
 `DESIGN/STEEL/DSTL` (chapter 25 §0, the steel counterpart of `DESIGN/RC/DRC`)
@@ -214,6 +217,17 @@ is **Task I**, split out because it needs a product session and an empty scratch
 document while this step needs neither — do not do it twice.
 
 ## Task I — the one endpoint nothing has ever sent a payload to
+
+**Done 2026-09-17, and it split by product.** Gen NX accepted the documented
+PUT and returned the record; Civil NX refused the same body with
+`[Error] Errors detected in Steel Design Control Data.(Item:)`. There was no
+original value, so the scratch document was the revert - saved and replaced
+with `/doc/NEW` - and no DELETE was sent. Recorded in
+`docs/live_verification_notes.md` and in the contract's PUT `notes`. **What
+Civil needs first is open and is not a Codex task**: the enum has one value, so
+there is nothing to vary, and guessing at preconditions is how a fixture turns
+into a confident wrong finding. Do not re-run it. The text below is the task as
+it was written.
 
 **Live. Needs an empty scratch document: it changes the model's steel design
 code.** The smallest live task here, and the highest value per minute.
@@ -245,6 +259,12 @@ record what the server said and stop. Do not permute spellings — this project
 has a rule about that, and `/db/TDMT` is why.
 
 ## Task J — `/db/SECT`'s new `USE_HAMBLY_EQ`, read-only
+
+**Done 2026-09-17, on one section type.** A DB/User solid section's record has
+no `SECT_AFTER` block and no `USE_HAMBLY_EQ` in `SECT_BEFORE`, on both
+products. A composite section - the type that carries `SECT_AFTER` - was not
+probed, because no confirmed fixture builds one. Do not write one to finish
+this. The text below is the task as it was written.
 
 **Live, GET only. Safe against an open model. Evidence-gathering only — the
 decision it feeds is the author's.**
@@ -307,9 +327,9 @@ command rather than hand-counting before each later batch.
 | | |
 | --- | ---: |
 | confirmed Python cases | 177 over 166 endpoints |
-| npm ran every product the case declares | **170** |
+| npm ran every product the case declares | **175** |
 | npm ran only some | **0** |
-| npm ran none | **7** |
+| npm ran none | **2** |
 
 **The unit is the confirmed case, not the endpoint.** It was the endpoint until
 2026-09-17, and that hid two opposite errors at once: five cases counted as done
@@ -318,31 +338,24 @@ already replayed the confirmed case. `/db/HHCT` is why - a confirmed Gen case
 and an unconfirmed Civil one, so "has npm replayed `/db/HHCT`" has no answer.
 Run the command; do not hand-count, and do not reason in endpoints.
 
-**Nothing left in Task F is a replay.** The eight that were - `/db/GRUP`, the
-five lane and moving cases that were Civil-only, `/db/TMAT` and `/db/IMPF` -
-were run through both SDKs on 2026-09-17 and passed. What remains is seven
-endpoints and four different reasons, none of which a session fixes:
+**Nothing left in Task F is a replay.** The eight plain replays passed through
+both SDKs earlier on 2026-09-17, and the five that were harness design passed
+later that day once fixture version 6 could express them (see
+`docs/live_verification_notes.md`, "the npm seed gap closed").
 
-| endpoint | why it is still open | kind |
-| --- | --- | --- |
-| `/db/PJCF` | `pjcf_unlock` reads state back and branches, so it cannot be emitted as a payload | harness design |
-| `/db/HECB` | same, `stage11_seed` + `solid11_seed` | harness design |
-| `/db/HSPT` | same, `stage11_seed` | harness design |
-| `/db/MVHL` | the server renumbers the **target** id; npm verifies a renumbered *seed* by name and has no equivalent for a target | harness design |
-| `/db/BCGA-M1` | setup names `/db/BNGR`, which has no per-id DELETE, so npm blocks rather than leave the model dirty | harness design |
-| `/db/DYFG` | server refused **both** SDKs on 2026-09-16 - moving-load code must be Eurocode, the case seeds KSCE | **possible regression** |
-| `/db/DYNF` | same refusal, same day | **possible regression** |
+**Task F is complete: npm has replayed all 177 confirmed cases on every product
+they declare.** `/db/DYFG` and `/db/DYNF`, the last two, were not a regression.
+The 2026-09-16 run selected them without extras14's `/db/MVCD` case, which is
+what switches the moving-load code to EUROCODE; with it selected they pass, and
+npm now seeds that code itself. **When you select endpoints from `extras14`,
+select `/db/MVCD` with `/db/DYFG` or `/db/DYNF`** - the Python harness does not
+warn when a selection drops a case another depends on.
 
-**Start with `/db/DYFG` and `/db/DYNF`, and not because of npm.** They are
-`confirmed` cases that Python failed too, and a confirmed case failing is this
-repository's definition of a regression. Whether the seed drifted or the product
-changed is not established. Re-running the harness will not answer it: read the
-case, the seed and the manual's moving-load code table first, and report what
-you find rather than changing `confirmed`.
-
-The other five are offline harness work, and two of them - the unreplayable
-seeds and the renumbered target - are the design decisions listed at the end of
-this file. Do not invent a seed representation on your own.
+The seed representation is settled for now: `{"endpoint", "records"}` POSTs,
+`{"endpoint", "delete"}` per-id DELETEs, `FRESH_DOCUMENT_SEEDS` for a guard
+read, and `setup_replaces` where a case's npm setup reaches a state Python
+reaches through another case. Anything else a seed needs is a design question
+to report, not to invent.
 
 For the one that is a plain replay: nothing needs building and nothing needs
 deciding. The fixture exists, it already passed in Python, and
@@ -367,17 +380,11 @@ The gap by tier, which is also how to batch it — the harness selects by
 
 | tier | n | endpoints |
 | --- | ---: | --- |
-| `extras14` | 3 | `BCGA-M1`, `DYFG`, `DYNF` |
-| `extras8` (remaining) | 2 | `HHCT`, `NLCT` (Civil fixture failures) |
-| `moving` (remaining) | 1 | `MVHL` (target-ID renumbering unsupported by npm harness) |
-| `core` | 1 | `GRUP` |
-| `props` · `moving_impact` · `lanes_bs` | 3 | `TMAT`, `IMPF`, `SLAN` |
+| - | 0 | nothing left |
 
-**Three are blocked and are not defects.** `/db/PJCF` needs `pjcf_unlock`,
-`/db/HECB` needs `stage11_seed` and `solid11_seed`, `/db/HSPT` needs
-`stage11_seed` — seeds that read state back and therefore cannot be replayed
-from an emitted payload. Python runs them fine. Leave them; do not "fix" a seed
-by making it branch on a read.
+A case whose setup touches a table with no per-id DELETE (`/db/GRUP`,
+`/db/BNGR`) may only run as the **last** endpoint of an npm invocation, because
+the document reset is its cleanup; give each such case its own invocation.
 
 How to run one batch:
 
@@ -805,7 +812,9 @@ the source for branch-conditional requiredness.
   products were captured on 2026-09-16, but into a session scratch directory
   that does not survive the session, so a re-baseline means sweeping both
   products live again. **Do not re-capture the baseline as a side effect
-  of anything else.**
+  of anything else.** Task J's 2026-09-17 probe found the property absent from
+  a DB/User solid section's record on both products; composite sections are
+  unprobed.
 
 ---
 
@@ -814,6 +823,9 @@ the source for branch-conditional requiredness.
 - **Ask the author before the first product call of a session.** For anything
   that writes, confirm both documents are empty with `GET /db/NODE` and
   `GET /db/ELEM`.
+- **If that GET says `The project is not opened`, stop and ask for a document.**
+  On 2026-09-17 a `/doc/NEW` sent to Gen NX with no project open blocked the
+  session until the author brought the product back up.
 - **`.env` holds two keys, `MIDAS_MAPI_KEY_GEN` and `MIDAS_MAPI_KEY_CIVIL`.**
   There is no plain `MIDAS_MAPI_KEY`, and `grep '^MIDAS_MAPI_KEY'` matches both
   and concatenates them. A mismatched key still answers `connected` and still

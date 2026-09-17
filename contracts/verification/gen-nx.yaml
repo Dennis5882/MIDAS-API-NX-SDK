@@ -172,6 +172,22 @@ records:
     evidence:
       - docs/live_verification_notes.md
 
+  - id: db-read-sweep-2026-08-13
+    endpoints: []
+    date: "2026-08-13"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 08/12/2026
+    level: read
+    outcome: success
+    method: >-
+      POST-shaped reads of /post/PM and /post/STEELCODECHECK against a small analyzed two-story concrete column with no RC design code configured: /post/PM answered the clean precondition error 'Please Check RC Design Code' and /post/STEELCODECHECK answered {"message": ""}, the same responses Civil NX gave on 2026-07-31; session healthy throughout
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md
+
   - id: db-write-sweep-2026-08-16
     endpoints: []
     date: "2026-08-16"
@@ -820,6 +836,22 @@ records:
     outcome: success_empty
     method: >-
       scripts/live_readonly_sweep.py (read-only GET), run against the published PyPI 2.8.2 and repeated through the published npm 2.8.2
+    finding: >-
+      A shared record for every endpoint checked in this pass. Endpoint-specific
+      findings stay in docs/live_verification_notes.md; this entry exists so a
+      contract's verification claim points at a dated, build-specific source
+      rather than at nothing.
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: design-write-2026-09-17
+    endpoints: []
+    date: "2026-09-17"
+    nxVersion: MIDAS Gen NX 2026 (v2.1), build 09/15/2026
+    level: write
+    outcome: success
+    method: >-
+      PUT /DESIGN/STEEL/DSTL with the manual's one DGNCODE value on a scratch document, read back, then /doc/NEW as the revert
     finding: >-
       A shared record for every endpoint checked in this pass. Endpoint-specific
       findings stay in docs/live_verification_notes.md; this entry exists so a

@@ -281,7 +281,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products. Reconfirmed the same full round trip on both products 2026-08-31, build 08/26/2026.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products. Reconfirmed the same full round trip on both products 2026-08-31, build 08/26/2026. npm replayed the same emitted fixture on Gen and Civil on 2026-09-17, Build 09/15/2026, once the fixture could express this case's seeds; the Python harness re-ran the same selection in the same session and passed.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
@@ -3187,7 +3187,7 @@
           "civil",
           "gen"
         ],
-        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too. Full write-round-trip confirmed live on Gen NX too, 2026-08-17 (batch 11b) -- the identical AASHTO LRFD fixture passes clean on both products; the 2026-08-10 note above was GET-only for Gen, this closes that to a real write proof. VEHICLE_LOAD_NUM measured 2026-09-03 on Civil NX: it is the branch discriminator (1 standard, 2 user-defined), not a documented value wrong live - that reading is retracted. Both branches store intact when sent properly. VEHICLE_TYPE_NAME is not validated at all. See docs/live_verification_notes.md and MD-16.",
+        "method": "scripts/live_crud_check.py (full CRUD round trip) Re-swept 2026-08-10 via scripts/live_readonly_sweep.py --product gen (full DbResource GET breadth pass) -- answered ok, route+shape confirmed on Gen NX too. Full write-round-trip confirmed live on Gen NX too, 2026-08-17 (batch 11b) -- the identical AASHTO LRFD fixture passes clean on both products; the 2026-08-10 note above was GET-only for Gen, this closes that to a real write proof. VEHICLE_LOAD_NUM measured 2026-09-03 on Civil NX: it is the branch discriminator (1 standard, 2 user-defined), not a documented value wrong live - that reading is retracted. Both branches store intact when sent properly. VEHICLE_TYPE_NAME is not validated at all. See docs/live_verification_notes.md and MD-16. npm replayed the same emitted fixture on Gen and Civil on 2026-09-17, Build 09/15/2026, once the fixture could express this case's seeds; the Python harness re-ran the same selection in the same session and passed.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 06/18/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/06/2026"
@@ -3599,7 +3599,7 @@
         "products": [
           "civil"
         ],
-        "method": "Live-confirmed 2026-08-25: requires /db/MVCD.CODE=EUROCODE first. Also -- despite the manual marking LENGTH/MAINTAIN_TYPE/HEIGHT_COVER/DYN_FACTOR as conditionally required per INPUT_TYPE/OPT_REDUCE_EFF, the live server answers \"Wrong Field\" on POST/PUT unless all six fields are sent together every time, even ones that don't apply to the chosen mode. The sibling /db/DYNF does not share this quirk -- its documented conditional requiredness works as written. See RailwayDynamicFactorPayload's docstring in src/midas_nx/db/moving_loads.py. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
+        "method": "Live-confirmed 2026-08-25: requires /db/MVCD.CODE=EUROCODE first. Also -- despite the manual marking LENGTH/MAINTAIN_TYPE/HEIGHT_COVER/DYN_FACTOR as conditionally required per INPUT_TYPE/OPT_REDUCE_EFF, the live server answers \"Wrong Field\" on POST/PUT unless all six fields are sent together every time, even ones that don't apply to the chosen mode. The sibling /db/DYNF does not share this quirk -- its documented conditional requiredness works as written. See RailwayDynamicFactorPayload's docstring in src/midas_nx/db/moving_loads.py. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-17 on Civil NX Build 09/15/2026: the 2026-09-16 refusal (moving-load code must be Eurocode) came from selecting this endpoint without extras14's /db/MVCD switch case; with that case selected Python passed, and npm replayed the same emitted fixture on Civil on 2026-09-17 with a declared EUROCODE /db/MVCD seed.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
@@ -3621,7 +3621,7 @@
         "products": [
           "civil"
         ],
-        "method": "Live-confirmed 2026-08-25: requires /db/MVCD.CODE=EUROCODE first, and is keyed by a real element id (not a serial number, per the manual's own note) -- documented conditional field requiredness works as written here, unlike its sibling /db/DYFG. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
+        "method": "Live-confirmed 2026-08-25: requires /db/MVCD.CODE=EUROCODE first, and is keyed by a real element id (not a serial number, per the manual's own note) -- documented conditional field requiredness works as written here, unlike its sibling /db/DYFG. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-17 on Civil NX Build 09/15/2026: the 2026-09-16 refusal (moving-load code must be Eurocode) came from selecting this endpoint without extras14's /db/MVCD switch case; with that case selected Python passed, and npm replayed the same emitted fixture on Civil on 2026-09-17 with a declared EUROCODE /db/MVCD seed.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
@@ -4134,7 +4134,7 @@
           "gen",
           "civil"
         ],
-        "method": "2026-09-01: full write round trip confirmed on both products using scripts/live_crud_check.py --tier extras11. The dummy model follows the manual's eight-node SOLID form, activates it through a real structure group and construction stage, and keeps ITEMS[].ID=1 as the manual's serial number. POST->GET->PUT->GET->DELETE(id)->GET persisted FACE_NO 1->2.",
+        "method": "2026-09-01: full write round trip confirmed on both products using scripts/live_crud_check.py --tier extras11. The dummy model follows the manual's eight-node SOLID form, activates it through a real structure group and construction stage, and keeps ITEMS[].ID=1 as the manual's serial number. POST->GET->PUT->GET->DELETE(id)->GET persisted FACE_NO 1->2. npm replayed the same emitted fixture on Gen and Civil on 2026-09-17, Build 09/15/2026, once the fixture could express this case's seeds; the Python harness re-ran the same selection in the same session and passed.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
@@ -4159,7 +4159,7 @@
           "gen",
           "civil"
         ],
-        "method": "2026-08-17: write-round-trip confirmed live (batch 11c), both products. Reconfirmed 2026-09-01 through scripts/live_crud_check.py --tier extras11 with a real construction stage and boundary group: POST->GET->PUT->GET->DELETE(id)->GET persisted TEMPER 15->20. Keyed by construction stage number, not element/node id, per the manual's own note; the manual's worked example uses a made-up GROUP_NAME (\"BG_BASE\") -- used a real /db/BNGR group from the start instead.",
+        "method": "2026-08-17: write-round-trip confirmed live (batch 11c), both products. Reconfirmed 2026-09-01 through scripts/live_crud_check.py --tier extras11 with a real construction stage and boundary group: POST->GET->PUT->GET->DELETE(id)->GET persisted TEMPER 15->20. Keyed by construction stage number, not element/node id, per the manual's own note; the manual's worked example uses a made-up GROUP_NAME (\"BG_BASE\") -- used a real /db/BNGR group from the start instead. npm replayed the same emitted fixture on Gen and Civil on 2026-09-17, Build 09/15/2026, once the fixture could express this case's seeds; the Python harness re-ran the same selection in the same session and passed.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/26/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/26/2026"
@@ -4982,7 +4982,7 @@
         "products": [
           "civil"
         ],
-        "method": "Live-confirmed 2026-08-25, a major manual defect: the manual's own BC_SELECT enum table (\"SECF\"/\"ESSF\"/\"EWSF\"/\"PSSF\"/\"WSSF\"/\"CONS\"/\"NSPR\"/\"GSPR\"/\"SSPS\"/\"ELNK\"/\"RIGD\"/\"NLNK\"/\"CGLP\"/\"FRLS\"/\"OFFS\"/\"PRLS\"/\"MCON\") is entirely wrong -- every value in it answers \"Wrong Field\" live. GET /info/db/BCGA-M1 gives the real enum (SSSF/ES/EW/PS/SP/PSS/GSS/SSS/EL/RL/GL/CGL/BER/BEO/PER/LC), a completely different abbreviation scheme, not a spelling fix of the manual's values. Also: BC_SELECT comes back in a server-chosen order, not the order sent. See AssignBoundaryCombinationHyperSPayload's docstring in src/midas_nx/db/analysis_control.py. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all.",
+        "method": "Live-confirmed 2026-08-25, a major manual defect: the manual's own BC_SELECT enum table (\"SECF\"/\"ESSF\"/\"EWSF\"/\"PSSF\"/\"WSSF\"/\"CONS\"/\"NSPR\"/\"GSPR\"/\"SSPS\"/\"ELNK\"/\"RIGD\"/\"NLNK\"/\"CGLP\"/\"FRLS\"/\"OFFS\"/\"PRLS\"/\"MCON\") is entirely wrong -- every value in it answers \"Wrong Field\" live. GET /info/db/BCGA-M1 gives the real enum (SSSF/ES/EW/PS/SP/PSS/GSS/SSS/EL/RL/GL/CGL/BER/BEO/PER/LC), a completely different abbreviation scheme, not a spelling fix of the manual's values. Also: BC_SELECT comes back in a server-chosen order, not the order sent. See AssignBoundaryCombinationHyperSPayload's docstring in src/midas_nx/db/analysis_control.py. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. npm replayed the same emitted fixture on Civil on 2026-09-17, Build 09/15/2026, once the fixture could express this case's seeds; the Python harness re-ran the same selection in the same session and passed.",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
@@ -6355,6 +6355,7 @@
       "live_verified": {
         "date": "2026-07-31",
         "products": [
+          "gen",
           "civil"
         ],
         "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-checked 2026-07-31 after a real /doc/ANAL run completed on this model: error changed from 'Please Check Analysis' to 'Please Check RC Design Code' -- confirms the analysis prerequisite is now satisfied and the route progresses to the next real precondition (this model has no RC design code configured, matching its structure type). First tested on Gen NX 2026-08-13 (v2.1, build 08/12/2026), against a small analyzed 2-story concrete column with no RC design code configured: same clean 'Please Check RC Design Code' error, session healthy -- confirms the route/precondition behavior matches Civil.",
@@ -6378,6 +6379,7 @@
       "live_verified": {
         "date": "2026-07-31",
         "products": [
+          "gen",
           "civil"
         ],
         "method": "manual GET-shaped POST probe on Civil NX against a real production model (a few hundred nodes/elements) that has no analysis run and no design/rebar data yet -- confirmed the route + argument shape are correct and error handling is clean (no hang, no crash): answered with an informative 'Please perform analysis'/'there was an error creating utbl' error rather than real design-result rows. Not a full data-path confirmation -- retest once the model has real analysis + design results to see actual populated tables. Re-checked 2026-07-31 after a real /doc/ANAL run: no longer errors at all, now answers the 'empty' shape ({'message': ''}) -- route accepts the request cleanly once analysis exists; no steel code check has been run yet so there's no data to report, consistent with other 'empty means nothing to show, not failure' findings elsewhere in this SDK. First tested on Gen NX 2026-08-13 (v2.1, build 08/12/2026) against an analyzed 2-story concrete column: same clean 'empty' response, session healthy.",
@@ -6671,18 +6673,17 @@
       "status": "implemented",
       "module": "midas_nx.design.steel_kds",
       "live_verified": {
-        "date": "2026-09-16",
+        "date": "2026-09-17",
         "products": [
-          "gen",
-          "civil"
+          "gen"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET), run against the published PyPI 2.8.2 and repeated through the published npm 2.8.2",
+        "method": "scripts/live_readonly_sweep.py (read-only GET), run against the published PyPI 2.8.2 and repeated through the published npm 2.8.2. Write 2026-09-17, Build 09/15/2026, on a scratch document: GET answered {\"message\": \"\"}; PUT {\"Assign\": {\"1\": {\"DGNCODE\": \"KDS 41 30 : 2022\"}}} was accepted on Gen NX and echoed the record, and a following GET returned it; the document was then discarded with /doc/NEW, which is the revert, and a GET after the reset answered {\"message\": \"\"} again. No DELETE was sent. Civil NX refused the same PUT with \"[Error] Errors detected in Steel Design Control Data.(Item:)\" and stored nothing, so Civil's evidence is the read above; the value was not varied.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 09/15/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 09/15/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {

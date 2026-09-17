@@ -461,6 +461,9 @@ Stated here because each was believed and repeated:
   (`src/midas_nx/post/design.py`, `generated/operations.ts`) and marked
   `implemented` in `docs/coverage.json`. They are uncontracted, which is a
   different and much smaller thing than missing.
+  **Both contracted 2026-09-17** (`post-pm.yaml`, `post-steelcodecheck.yaml`),
+  which also found `docs/coverage.json` recording their 2026-08-13 Gen check in
+  prose while listing Civil alone under `live_verified.products`.
 - The `N-(M)` numbering fix touches one section, not 71 rows of reshaping.
 - `/db/STYP-M1` is no longer a manual gap.
 - The Korean-label decision is settled: English.

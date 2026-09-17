@@ -152,16 +152,20 @@ is unqualified because the namespace is derived from `modulePath` - the
 generator builds both from the same module parts, so storing the namespace
 would only create something that could disagree. It takes a list where an
 operation publishes a union, which two `/ope` load-combination calls do. And
-`takesArgument: false` marks a POST that sends no body at all, which generates a
-different npm operation kind from one whose body is merely untyped; that
+`takesArgument: false` marks a POST whose caller passes nothing - the SDK sends
+the empty `{"Argument": {}}` the contract's `request` records - which generates a
+different npm operation kind from one whose argument is merely untyped; that
 distinction is invisible in the type name, so it needs a field of its own.
 
 Added 2026-09-17 and seeded from the generator's own committed output, so it
-renamed nothing: 68 of the 70 operations are now named by their contract, the
-generated TypeScript is byte-identical, and the generator raises on any
+renamed nothing: 68 of the 70 operations were named by their contract, the
+generated TypeScript was byte-identical, and the generator raises on any
 disagreement between the contract and the Python function it is generated
-beside. The two operations still on the fallback are `/post/PM` and
-`/post/STEELCODECHECK`, which have no contract at all.
+beside. The other two, `/post/PM` and `/post/STEELCODECHECK`, got contracts the
+same day, so all 70 are now named by one. They had none because chapter 23 is a
+`/post/TABLE` chapter and the extractor skipped it whole; it now reads a section
+in those chapters whose `Input URI` is a route of its own, and still skips the
+shared-table ones.
 
 What this does **not** yet do is let a contract create anything. The generator
 still iterates `DbResource` subclasses and still reads every Python module's
