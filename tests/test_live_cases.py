@@ -79,7 +79,7 @@ def test_live_case_fixture_carries_confirmed_nmas_setup() -> None:
     assert nmas["setup"] == [{"endpoint": "/db/NODE", "id": 3}]
 
 
-def test_live_case_fixture_carries_static_load_case_seed() -> None:
+def test_live_case_fixture_does_not_reseed_base_static_load_cases() -> None:
     fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
     stld = next(case for case in fixture["cases"] if case["endpoint"] == "/db/STLD")
 
@@ -91,7 +91,7 @@ def test_live_case_fixture_carries_static_load_case_seed() -> None:
             "2": {"NAME": "LC_SCRATCH", "TYPE": "L", "DESC": "crud fixture"},
         },
     }
-    assert stld["setup"] == [{"seed": "static_load_cases"}]
+    assert stld["setup"] == []
 
 
 def test_extras15_fixture_keeps_manual_dependencies_and_product_fields() -> None:
@@ -130,11 +130,18 @@ def test_extras15_fixture_keeps_manual_dependencies_and_product_fields() -> None
     }
     assert wall_fields <= set(iehc["gen"]["createPayload"])
     assert wall_fields.isdisjoint(iehc["civil"]["createPayload"])
+    assert {case["createPayload"]["BEAM_LOC"] for case in iehc.values()} == {1}
+    assert {case["updatePayload"]["BEAM_LOC"] for case in iehc.values()} == {2}
+
+    matd = next(case for case in cases if case["endpoint"] == "/db/MATD")
+    assert matd["expected"] == {"created": None, "updated": 500000}
+    assert matd["updatePayload"]["MAINREBAR_B_FY"] == 500000
 
     polc_m1 = next(case for case in cases if case["endpoint"] == "/db/POLC-M1")
     assert polc_m1["products"] == ["civil"]
     assert polc_m1["methods"] == ["DELETE", "GET", "POST", "PUT"]
-    assert polc_m1["createPayload"] == polc_m1["updatePayload"]
+    assert polc_m1["createPayload"]["NLTYPE"] == "PDELTA"
+    assert polc_m1["updatePayload"]["NLTYPE"] == "NONE"
     assert polc_m1["updatePayload"]["LOADPATTERNTYPE"] == "ACC"
 
 
@@ -209,15 +216,12 @@ def test_extras16_fimp_fixture_is_the_manual_kent_park_example() -> None:
     assert fimp["updatePayload"]["CONC"]["KENPAR"]["FC"] == 24000
 
 
-def test_live_case_fixture_carries_skew_node_seed() -> None:
+def test_live_case_fixture_does_not_reseed_base_skew_node() -> None:
     fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
     skew = next(case for case in fixture["cases"] if case["endpoint"] == "/db/SKEW")
 
-    assert fixture["seeds"]["skew_node"] == {
-        "endpoint": "/db/NODE",
-        "records": {"2": {"X": 0, "Y": 0, "Z": 3.2}},
-    }
-    assert skew["setup"] == [{"seed": "skew_node"}]
+    assert "skew_node" not in fixture["seeds"]
+    assert skew["setup"] == []
 
 
 def test_live_case_fixture_carries_design_element_setup() -> None:
@@ -237,8 +241,10 @@ def test_live_case_fixture_carries_design_element_setup() -> None:
         ]
     assert fixture["seeds"]["ltsr_beam"] == {
         "endpoint": "/db/ELEM",
+        "replaceExisting": True,
         "records": {"2": {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [2, 3]}},
     }
+    assert fixture["seeds"]["ltsr_nodes"]["replaceExisting"] is True
 
 
 def test_live_case_fixture_carries_design_member_setup() -> None:
@@ -255,8 +261,10 @@ def test_live_case_fixture_carries_design_member_setup() -> None:
     ]
     assert fixture["seeds"]["member_beam"] == {
         "endpoint": "/db/ELEM",
+        "replaceExisting": True,
         "records": {"3": {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [3, 4]}},
     }
+    assert fixture["seeds"]["member_node"]["replaceExisting"] is True
 
 
 def test_live_case_fixture_carries_wall_mark_plate_setup() -> None:
@@ -271,6 +279,7 @@ def test_live_case_fixture_carries_wall_mark_plate_setup() -> None:
     ]
     assert fixture["seeds"]["wmak_plate"] == {
         "endpoint": "/db/ELEM",
+        "replaceExisting": True,
         "records": {
             "4": {
                 "TYPE": "PLATE", "MATL": 1, "SECT": 1,
@@ -278,6 +287,7 @@ def test_live_case_fixture_carries_wall_mark_plate_setup() -> None:
             },
         },
     }
+    assert fixture["seeds"]["wmak_nodes"]["replaceExisting"] is True
 
 
 def test_live_case_fixture_carries_manual_sdis_sld_shape() -> None:
@@ -467,7 +477,7 @@ def test_live_case_fixture_splits_product_asymmetric_seismic_combination() -> No
         }]),
     ]
     assert seismic[1]["needs"] == ["lcom_seismic_splc"]
-    assert seismic[0]["setup"] == [{"seed": "static_load_cases"}]
+    assert seismic[0]["setup"] == []
     assert seismic[1]["setup"] == [
         {"seed": "lcom_seismic_spfc"},
         {"seed": "lcom_seismic_splc"},

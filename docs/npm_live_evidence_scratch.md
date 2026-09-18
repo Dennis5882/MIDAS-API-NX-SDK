@@ -312,3 +312,226 @@ through extras14's switch case (`mvcd_eurocode`, `setup_replaces`).
 
 **Count:** 162 distinct `/db` endpoints and 4 distinct result-table operations;
 166 distinct npm public-API operations overall.
+
+### 2026-09-18 - Task G meaningful update assertions
+
+The built npm package replayed the corrected cases on Build 09/15/2026. Each
+run began with empty `NODE` and `ELEM` tables, checkpointed under `C:/temp`,
+and restored an empty scratch document afterwards. These are new payload
+variants for endpoints already present in this inventory, not new endpoint
+coverage.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/MATD` | 2026-09-18 | Gen, Civil |
+| `/db/IEHC` | 2026-09-18 | Gen, Civil |
+| `/db/POLC-M1` | 2026-09-18 | Civil |
+
+**Count:** 3 corrected cases replayed; 162 distinct `/db` endpoints and 4
+distinct result-table operations remain covered overall.
+
+### 2026-09-18 - Task K core batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/LDGR` | 2026-09-18 | Gen, Civil |
+| `/db/NODE` | 2026-09-18 | Gen, Civil |
+| `/db/SKEW` | 2026-09-18 | Gen, Civil |
+| `/db/STLD` | 2026-09-18 | Gen, Civil |
+| `/db/CNLD` | 2026-09-18 | Gen, Civil |
+| `/db/BMLD` | 2026-09-18 | Gen, Civil |
+| `/db/CONS` | 2026-09-18 | Gen, Civil |
+| `/db/MVCD` | 2026-09-18 | Gen, Civil |
+
+**Count:** 8 current-build replays; 162 distinct `/db` endpoints and 4 distinct
+result-table operations remain covered overall.
+
+### 2026-09-18 - Task K properties batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/THIK` | 2026-09-18 | Gen, Civil |
+| `/db/ESSF` | 2026-09-18 | Gen, Civil |
+| `/db/SECF` | 2026-09-18 | Gen, Civil |
+| `/db/TSGR` | 2026-09-18 | Gen, Civil |
+| `/db/TDMT` | 2026-09-18 | Gen, Civil |
+| `/db/TDME` | 2026-09-18 | Gen, Civil |
+
+**Count:** 6 current-build replays; 162 distinct `/db` endpoints and 4 distinct
+result-table operations remain covered overall.
+
+### 2026-09-18 - Task K boundary batches
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/NSPR` | 2026-09-18 | Gen, Civil |
+| `/db/GSTP` | 2026-09-18 | Gen, Civil |
+| `/db/GSPR` | 2026-09-18 | Gen, Civil |
+| `/db/ELNK` | 2026-09-18 | Gen, Civil |
+| `/db/RIGD` | 2026-09-18 | Gen, Civil |
+| `/db/MCON` | 2026-09-18 | Gen, Civil |
+| `/db/FRLS` | 2026-09-18 | Gen, Civil |
+| `/db/OFFS` | 2026-09-18 | Gen, Civil |
+| `/db/SSPS` | 2026-09-18 | Gen, Civil |
+
+**Count:** 9 current-build replays; 162 distinct `/db` endpoints and 4 distinct
+result-table operations remain covered overall.
+
+### 2026-09-18 - Task K properties extras3 batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/GRDP` | 2026-09-18 | Gen, Civil |
+| `/db/EDMP` | 2026-09-18 | Gen, Civil |
+| `/db/STRPSSM` | 2026-09-18 | Civil |
+| `/db/PSSF` | 2026-09-18 | Gen, Civil |
+| `/db/VSEC` | 2026-09-18 | Gen, Civil |
+| `/db/VBEM` | 2026-09-18 | Gen, Civil |
+| `/db/EWSF` | 2026-09-18 | Civil |
+
+**Count:** 7 current-build replays; 162 distinct `/db` endpoints and 4 distinct
+result-table operations remain covered overall.
+
+### 2026-09-18 - Task K dynamic Hyper-S controls batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/THGC-M1` | 2026-09-18 | Civil |
+| `/db/THOO-M1` | 2026-09-18 | Civil |
+
+**Count:** 2 current-build replays; 162 distinct `/db` endpoints and 4 distinct
+result-table operations remain covered overall.
+
+### 2026-09-18 - Task K extras6 seismic-device batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/SDVI` | 2026-09-18 | Gen, Civil |
+| `/db/SDVE` | 2026-09-18 | Gen, Civil |
+| `/db/SDST` | 2026-09-18 | Gen, Civil |
+| `/db/SDHY` | 2026-09-18 | Gen |
+| `/db/SDIS` | 2026-09-18 | Gen |
+
+**Count:** 5 current-build replays; 162 distinct `/db` endpoints and 4 distinct
+result-table operations remain covered overall.
+
+### 2026-09-18 - Task K extras8 analysis-control batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/EIGV` | 2026-09-18 | Gen, Civil |
+| `/db/MVCT` | 2026-09-18 | Gen, Civil |
+| `/db/SMCT` | 2026-09-18 | Gen, Civil |
+
+**Count:** 3 current-build replays; 162 distinct `/db` endpoints and 4 distinct
+result-table operations remain covered overall.
+
+### 2026-09-18 - Task K extras7 nodal-load batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/PNLD` | 2026-09-18 | Gen, Civil |
+
+**Count:** 1 current-build replay; 162 distinct `/db` endpoints and 4 distinct
+result-table operations remain covered overall.
+
+### 2026-09-18 - Task K extras16 material batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/EPMT` | 2026-09-18 | Gen |
+
+**Count:** 1 current-build replay; 162 distinct `/db` endpoints and 4 distinct
+result-table operations remain covered overall.
+
+### 2026-09-18 - Task K extras5 dynamic-load batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/SPLC` | 2026-09-18 | Gen, Civil |
+| `/db/THGC` | 2026-09-18 | Gen, Civil |
+| `/db/THFC` | 2026-09-18 | Gen, Civil |
+
+**Count:** 3 current-build replays; 162 distinct `/db` endpoints and 4 distinct
+result-table operations remain covered overall.
+
+### 2026-09-18 - Task K China and India lane batches
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/LLANch` | 2026-09-18 | Civil |
+| `/db/SLANch` | 2026-09-18 | Civil |
+| `/db/LLANid` | 2026-09-18 | Civil |
+
+**Count:** 3 current-build replays; 162 distinct `/db` endpoints and 4 distinct
+result-table operations remain covered overall.
+
+### 2026-09-18 - Task K extras4 load-combination batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/LCOM-GEN` | 2026-09-18 | Gen, Civil |
+| `/db/LCOM-CONC` | 2026-09-18 | Gen, Civil |
+| `/db/LCOM-SEISMIC` | 2026-09-18 | Gen |
+| `/db/CUTL` | 2026-09-18 | Gen, Civil |
+| `/db/CLWP` | 2026-09-18 | Gen, Civil |
+
+**Count:** 5 current-build replays; 162 distinct `/db` endpoints and 4 distinct
+result-table operations remain covered overall.
+
+### 2026-09-18 - Task K extras10 hydration batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/ETFC` | 2026-09-18 | Gen, Civil |
+| `/db/CCFC` | 2026-09-18 | Gen, Civil |
+| `/db/HSFC` | 2026-09-18 | Gen, Civil |
+
+**Count:** 3 current-build replays; 162 distinct `/db` endpoints and 4 distinct
+result-table operations remain covered overall.
+
+### 2026-09-18 - Task K extras15 assignment batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/IEPI` | 2026-09-18 | Gen, Civil |
+| `/db/EXLD` | 2026-09-18 | Gen, Civil |
+| `/db/PRST` | 2026-09-18 | Gen, Civil |
+| `/db/POLC` | 2026-09-18 | Gen, Civil |
+
+**Count:** 4 current-build replays; 162 distinct `/db` endpoints and 4 distinct
+result-table operations remain covered overall.
+
+### 2026-09-18 - Task K extras2 batches
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/SMPT` | 2026-09-18 | Gen, Civil |
+| `/db/SMLC` | 2026-09-18 | Gen, Civil |
+| `/db/PLCB` | 2026-09-18 | Civil |
+| `/db/LDSQ` | 2026-09-18 | Gen, Civil |
+| `/db/IELC` | 2026-09-18 | Gen, Civil |
+| `/db/IFGS` | 2026-09-18 | Gen, Civil |
+| `/db/EFCT` | 2026-09-18 | Gen, Civil |
+| `/db/INMF` | 2026-09-18 | Gen, Civil |
+| `/db/GTMP` | 2026-09-18 | Gen, Civil |
+| `/db/STMP` | 2026-09-18 | Gen, Civil |
+| `/db/BTMP` | 2026-09-18 | Gen, Civil |
+
+**Count:** 11 current-build replays; 162 distinct `/db` endpoints and 4
+distinct result-table operations remain covered overall.
+
+### 2026-09-18 - Task K extras13 design batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/DCON` | 2026-09-18 | Gen, Civil |
+| `/db/LENG` | 2026-09-18 | Gen, Civil |
+| `/db/MEMB` | 2026-09-18 | Gen, Civil |
+| `/db/DCTL` | 2026-09-18 | Gen, Civil |
+| `/db/LTSR` | 2026-09-18 | Gen, Civil |
+| `/db/MBTP` | 2026-09-18 | Gen, Civil |
+| `/db/WMAK` | 2026-09-18 | Gen, Civil |
+
+**Count:** 7 current-build replays; 162 distinct `/db` endpoints and 4 distinct
+result-table operations remain covered overall.

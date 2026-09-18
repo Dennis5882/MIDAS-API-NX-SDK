@@ -9996,3 +9996,165 @@ the property to a record of that type. A section type that carries
 `SECT_AFTER` - a composite section - is where the property would be expected,
 and no confirmed fixture builds one; the probe stopped rather than write one
 from memory.
+
+## 2026-09-18 - Task G assertions made meaningful and re-confirmed
+
+Both products were open on Build 09/15/2026. Their own MAPI keys returned empty
+`/db/NODE` and `/db/ELEM` tables before the first mutation. The built npm
+package ran first and the Python harness ran second, using the same emitted
+fixture. Every run checkpointed under `C:/temp`, created a disposable base
+model, and restored an empty scratch document afterwards.
+
+| Endpoint | Products | Assertion that passed in both SDKs |
+| --- | --- | --- |
+| `/db/MATD` | Gen, Civil | `MAINREBAR_B_FY` was absent on the base material and read back as `500000` after PUT |
+| `/db/IEHC` | Gen, Civil | `BEAM_LOC` read back as `1` after POST and `2` after PUT |
+| `/db/POLC-M1` | Civil | `NLTYPE` read back as `PDELTA` after POST and `NONE` after PUT |
+
+The prior checks could pass without proving their update: MATD asserted the
+pre-existing material name, while IEHC and POLC-M1 sent identical create and
+update payloads. These corrected payloads were marked unconfirmed before the
+run and restored to confirmed only after all product/SDK combinations above
+passed.
+
+Re-deriving the standing `safeToOmit` survey changes no candidate: MATD has no
+create call, while IEHC and POLC-M1 are not among its 57 candidate fields. The
+result remains 21 grounded claims and 36 honestly `unverified` candidates.
+
+### Task K: current-build core batch
+
+The first eight-endpoint Task K batch replayed `/db/LDGR`, `/db/NODE`,
+`/db/SKEW`, `/db/STLD`, `/db/CNLD`, `/db/BMLD`, `/db/CONS`, and `/db/MVCD`
+through npm and Python on both Gen and Civil. All 32 endpoint/SDK/product
+combinations completed the emitted create/read/update/read/delete sequence on
+Build 09/15/2026.
+
+The first npm attempt exposed a fixture-only block: the shared base model
+already contains node 2 and static load cases 1 and 2, while the SKEW and STLD
+cases redundantly replayed the same named seeds. npm correctly refused the two
+collisions. Removing those redundant case-level setup declarations made the
+fixture agree with the base model; both cases then passed through both SDKs on
+both products. Every attempt checkpointed under `C:/temp` and restored an empty
+scratch document.
+
+### Task K: current-build properties batch
+
+`/db/THIK`, `/db/ESSF`, `/db/SECF`, `/db/TSGR`, `/db/TDMT`, and `/db/TDME`
+then replayed cleanly through npm and Python on both Gen and Civil, Build
+09/15/2026. All 24 endpoint/SDK/product combinations passed, with checkpoints
+under `C:/temp` and an empty scratch document restored after every run.
+
+### Task K: current-build boundary batches
+
+The boundary tier was split at the eight-endpoint limit. `/db/NSPR`,
+`/db/GSTP`, `/db/GSPR`, `/db/ELNK`, `/db/RIGD`, `/db/MCON`, `/db/FRLS`, and
+`/db/OFFS` passed first; `/db/SSPS` passed separately. npm and Python both
+completed every case on Gen and Civil, Build 09/15/2026: 36
+endpoint/SDK/product combinations in total. Each run checkpointed under
+`C:/temp` and restored an empty scratch document.
+
+### Task K: current-build properties extras3 batch
+
+Gen replayed `/db/GRDP`, `/db/EDMP`, `/db/PSSF`, `/db/VSEC`, and `/db/VBEM`;
+Civil replayed those five plus its declared `/db/STRPSSM` and `/db/EWSF`
+cases. Both npm and Python passed every selection on Build 09/15/2026, for 24
+endpoint/SDK/product combinations. The unsupported Gen cases were excluded
+before product calls rather than misreported as failures. Every live run used
+`C:/temp` checkpoints and restored an empty document.
+
+### Task K: current-build extras2 batches
+
+The eleven remaining extras2 cases were split into selections of eight and
+three. Gen ran every case except the Civil-only `/db/PLCB`; Civil ran all
+eleven. `/db/SMPT`, `/db/SMLC`, `/db/PLCB`, `/db/LDSQ`, `/db/IELC`,
+`/db/IFGS`, `/db/EFCT`, `/db/INMF`, `/db/GTMP`, `/db/STMP`, and `/db/BTMP`
+all passed through npm and Python on every declared product, Build 09/15/2026.
+The 42 endpoint/SDK/product combinations used `C:/temp` checkpoints and ended
+on empty scratch documents.
+
+### Task K: current-build extras13 design batch
+
+`/db/DCON`, `/db/LENG`, `/db/MEMB`, `/db/DCTL`, `/db/LTSR`, `/db/MBTP`, and
+`/db/WMAK` passed through npm and Python on Gen and Civil, Build 09/15/2026.
+The first npm attempt blocked five cases because their explicit design-model
+setup overlapped the shared base model. The fixture now marks those known
+material, section, node, element, and plate replacements explicitly instead
+of weakening collision checks. The corrected fixture then passed all 28
+endpoint/SDK/product combinations. Each attempt restored an empty document.
+
+### Task K: current-build extras4 load-combination batch
+
+`/db/LCOM-GEN`, `/db/LCOM-CONC`, `/db/CUTL`, and `/db/CLWP` passed through
+both SDKs on Gen and Civil; the confirmed Gen `/db/LCOM-SEISMIC` case passed
+through both SDKs on Gen. Its old case-level static-load seed was removed
+because both harnesses already build the same `DL` record in the shared base
+model. All 18 endpoint/SDK/product combinations passed on Build 09/15/2026,
+with `C:/temp` checkpoints and empty documents restored afterwards.
+
+### Task K: current-build extras10 hydration batch
+
+`/db/ETFC`, `/db/CCFC`, and `/db/HSFC` passed through npm and Python on Gen
+and Civil, Build 09/15/2026. All 12 endpoint/SDK/product combinations passed;
+each run checkpointed under `C:/temp` and restored an empty document.
+
+### Task K: current-build extras15 assignment batch
+
+`/db/IEPI`, `/db/EXLD`, `/db/PRST`, and `/db/POLC` passed through npm and
+Python on Gen and Civil, Build 09/15/2026. All 16 endpoint/SDK/product
+combinations passed; each run checkpointed under `C:/temp` and restored an
+empty document.
+
+### Task K: current-build dynamic Hyper-S controls batch
+
+The Civil-only `/db/THGC-M1` and `/db/THOO-M1` cases passed through npm and
+Python on Civil NX 2026 v2.2, Build 09/15/2026. Both SDKs completed each
+PUT/read/update/read/per-id DELETE sequence, for four endpoint/SDK/product
+combinations. Both runs checkpointed under `C:/temp` and restored an empty
+scratch document.
+
+### Task K: current-build extras6 seismic-device batch
+
+`/db/SDVI`, `/db/SDVE`, and `/db/SDST` passed through npm and Python on Gen
+and Civil; the Gen-only `/db/SDHY` and `/db/SDIS` cases passed through both
+SDKs on Gen. All 16 endpoint/SDK/product combinations passed on Build
+09/15/2026. Every run checkpointed under `C:/temp` and restored an empty
+scratch document.
+
+### Task K: current-build extras8 analysis-control batch
+
+`/db/EIGV`, `/db/MVCT`, and `/db/SMCT` passed through npm and Python on Gen
+and Civil NX, Build 09/15/2026. All 12 endpoint/SDK/product combinations
+passed; each run checkpointed under `C:/temp` and restored an empty scratch
+document.
+
+### Task K: current-build extras7 nodal-load batch
+
+`/db/PNLD` passed through npm and Python on Gen and Civil NX, Build
+09/15/2026. All four endpoint/SDK/product combinations passed, checkpointed
+under `C:/temp`, and restored empty scratch documents. The Civil Python tier
+also printed unrelated best-effort seed warnings for `posp_seed` and
+`posl_seed`; neither is a `PNLD` prerequisite, and the selected `PNLD` case
+still completed its full create/read/update/read/delete/read round trip.
+
+### Task K: current-build extras16 material batch
+
+The confirmed Gen-only `/db/EPMT` case passed through npm and Python on Gen NX
+2026 v2.1, Build 09/15/2026. Both SDKs completed the full
+create/read/update/read/delete/read round trip, checkpointed under `C:/temp`,
+and restored an empty scratch document.
+
+### Task K: current-build extras5 dynamic-load batch
+
+`/db/SPLC`, `/db/THGC`, and `/db/THFC` passed through npm and Python on Gen
+and Civil NX, Build 09/15/2026. All 12 endpoint/SDK/product combinations
+completed full round trips. Keeping this selection inside `extras5` avoided
+the documented cross-tier SPLC seed collision; all runs checkpointed under
+`C:/temp` and restored empty scratch documents.
+
+### Task K: current-build China and India lane batches
+
+The Civil-only `/db/LLANch`, `/db/SLANch`, and `/db/LLANid` confirmed cases
+passed through npm and Python on Civil NX 2026 v2.2, Build 09/15/2026. The
+China and India code selections were kept in separate tier runs. All six
+endpoint/SDK/product combinations passed, with `C:/temp` checkpoints and empty
+scratch documents restored afterwards.

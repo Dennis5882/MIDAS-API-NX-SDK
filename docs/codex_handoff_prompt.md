@@ -1,6 +1,6 @@
 # Codex task prompt — mechanical work only
 
-Updated 2026-09-17, after the **2.8.3** release. Rewritten from scratch: the
+Updated 2026-09-18, after the **2.8.3** release. Rewritten from scratch: the
 previous version had grown to describe more closed tasks than open ones. What
 the closed tasks found is summarised under "Closed — do not reopen"; their full
 text is in git history (`0fff09d` and earlier).
@@ -33,14 +33,12 @@ is one to stop and report, not to decide.**
 **With a product session** (a session is the scarce thing — use it for these
 first):
 
-1. **Task G** — three confirmed cases whose assertion cannot fail. Small; fold
-   it into the first batch.
-2. **Task K** — re-run confirmed cases on Build 09/15/2026 through both SDKs.
-3. **Task B** — the 22 endpoints whose case has never passed.
+1. **Task K** — re-run confirmed cases on Build 09/15/2026 through both SDKs.
+2. **Task B** — the 22 endpoints whose case has never passed.
 
 **Without one:**
 
-4. **Task A** — build fixtures for the 21 buildable endpoints with no case.
+3. **Task A** — build fixtures for the 21 buildable endpoints with no case.
    Start with batch 17: `/db/PHGE`, `/db/POGD`, `/db/POGD-M1`.
 
 Task E is offline and **not** yours to start; its section says why.
@@ -77,32 +75,11 @@ cd packages/typescript && npm run generate && npm run typecheck && npm test
 ```
 
 `schema/live-cases.json` is **version 6**: 212 cases over 189 endpoints, 177
-confirmed, 9 base-model steps, 68 named seeds, none unsupported.
+confirmed, 9 base-model steps, 67 named seeds, none unsupported. It dropped one
+seed on 2026-09-18: `skew_node` re-created a node the shared base model already
+builds, which npm refused as a setup collision.
 
 ---
-
-## Task G — three confirmed cases that cannot fail
-
-**Offline to prepare, live to re-confirm.** A case proves a write by reading a
-value back. These three read back a value that was already there, re-checked
-against the fixture on 2026-09-17:
-
-| case | what it asserts | why that proves nothing |
-| --- | --- | --- |
-| `/db/MATD` (gen, civil) | `NAME == "C24"` after the PUT | the base model's material 1 is already named `C24` |
-| `/db/IEHC` (gen and civil cases) | `1` after create and after update | create and update payloads are **identical** |
-| `/db/POLC-M1` (civil) | `INCRE_STEP == 20` | create and update payloads are **identical** |
-
-1. Make the update payload differ from the create in **one field the endpoint
-   stores**, taking the new value from the contract (its enum, documented
-   default or description) or the manual's example — never invented. `/db/MATD`
-   already sends `MAINREBAR_B_FY = 500000` against a material whose rebar
-   fields are blank, so that one is a natural probe.
-2. Assert that field.
-3. **Set `confirmed=False`**, `--emit-cases`, and re-run through both SDKs. A
-   changed payload is not the payload that passed.
-4. Only a pass restores `confirmed=True`. If no documented value exists to
-   change to, stop and report that endpoint.
 
 ## Task K — re-verify confirmed cases on the current build
 
@@ -137,6 +114,67 @@ On 2026-09-17 it printed **107** of the 166 confirmed-case endpoints. It is a
 text search of the ledger entry, so an entry that mentions the build for another
 reason drops out of the list; that errs toward doing less, never toward a false
 claim.
+
+On 2026-09-18 the same command prints **26**. Task G accounts for three of the
+81 endpoints removed from the original 107; the other 78 were replayed that day
+in sixteen batches — `core`, `props`, `boundary` (split in two), `extras2`
+(split in two), `extras3`, `extras4`, `extras5`, `extras6`, `extras7`,
+`extras8`, `extras10`, `extras13`, `extras15`, `extras16`, the Hyper-S dynamic
+controls, and the China and India lanes. Each was recorded in the live notes
+and the npm evidence scratch under its own heading. **These 26 are what is
+left:**
+
+`/db/ACTL-M1`, `/db/BCGD-M1`, `/db/CJFG`, `/db/CLDR`, `/db/CO_F`, `/db/CO_M`,
+`/db/CO_S`, `/db/CO_T`, `/db/CRGR`, `/db/DYLA`, `/db/EIGV-M1`, `/db/HHCT-M1`,
+`/db/MLFC`, `/db/MVCTbs`, `/db/MVCTid`, `/db/MVCTtr`, `/db/NLCT-M1`,
+`/db/NMAS`, `/db/NPLN`, `/db/PRLS`, `/db/PZEF`, `/db/SPAN`, `/db/STCT-M1`,
+`/db/STYP`, `/db/STYP-M1`, `/db/TDGR`
+
+Re-measure anyway rather than working from that list: it is a snapshot, and the
+command is the definition.
+
+**Record all three places, or the next session re-runs the batch.** The
+2026-09-18 session recorded `/db/SLANch` in the live notes and the npm evidence
+scratch, then stopped before the ledger append, which left a passing endpoint
+in the to-do list until it was noticed the next day. The ledger entry is the
+one the measurement reads.
+
+**Append, and change nothing else.** That same session moved `/db/PRST`'s
+`date` from 2026-09-12 to 2026-09-18 while leaving `nx_versions` on build
+09/02/2026. `ROADMAP.md` builds its session table from that pair, so the next
+`gen_roadmap.py` run published a 2026-09-18 session on a build nothing ran on
+that day. Both were corrected the same day. Diff the ledger against `HEAD`
+before committing a batch — every change should be a `method` suffix and
+nothing else:
+
+```bash
+git show HEAD:docs/coverage.json > /tmp/cov-head.json   # any scratch path
+PYTHONIOENCODING=utf-8 python - <<'PY'
+import json, os
+def index(doc):
+    out = {}
+    def walk(node):
+        if isinstance(node, dict):
+            if isinstance(node.get("endpoint"), str) and "live_verified" in node:
+                out[node["endpoint"]] = node["live_verified"]
+            for v in node.values(): walk(v)
+        elif isinstance(node, list):
+            for v in node: walk(v)
+    walk(doc); return out
+head = index(json.load(open("/tmp/cov-head.json", encoding="utf-8")))
+now = index(json.load(open("docs/coverage.json", encoding="utf-8")))
+print("non-method changes:", [(e, k) for e in now
+      for k in set(head.get(e, {})) | set(now[e])
+      if k != "method" and head.get(e, {}).get(k) != now[e].get(k)])
+print("non-append method edits:", [e for e in now
+      if head.get(e, {}).get("method") not in (None, )
+      and not now[e]["method"].startswith(head[e]["method"])])
+PY
+```
+
+Then run `python scripts/gen_roadmap.py` and commit `ROADMAP.md` with the
+batch; it is generated, and leaving it behind is how the ledger and the roadmap
+drift apart.
 
 Batch by tier (`--tier`), at most 8 endpoints per selection, and run each batch
 through **both** harnesses on **both** products in the same session — the
@@ -287,6 +325,7 @@ Selection traps, each of which has cost a session:
 
 | what | outcome | where |
 | --- | --- | --- |
+| meaningful update assertions (was Task G) | MATD now proves `MAINREBAR_B_FY: 500000`; IEHC proves `BEAM_LOC: 1 -> 2`; POLC-M1 proves `NLTYPE: PDELTA -> NONE`. Both SDKs passed every declared product on 2026-09-18, Build 09/15/2026 | live notes, 2026-09-18 |
 | npm replay of every confirmed case (was Task F) | 177 of 177, 2026-09-17; fixture v6 added per-id DELETE seed steps, `FRESH_DOCUMENT_SEEDS`, `expected.unordered` and `setup_replaces` | live notes, 2026-09-17 (later) |
 | `DESIGN/STEEL/DSTL` contract and PUT (was Tasks H, I) | contracted; Gen accepts the documented PUT, Civil refuses it with `Errors detected in Steel Design Control Data.` **Do not re-run it**: the enum has one value, so there is nothing to vary | live notes; contract PUT `notes` |
 | `USE_HAMBLY_EQ` read probe (was Task J) | absent from a DB/User solid section's record on both products; composite sections unprobed, and no confirmed fixture builds one | live notes, 2026-09-17 (later) |

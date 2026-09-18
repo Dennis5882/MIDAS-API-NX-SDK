@@ -365,12 +365,6 @@ BASE_MODEL_SEEDS: Dict[str, Dict[str, Any]] = {
             "1": {"CODE": "EUROCODE"},
         },
     },
-    "skew_node": {
-        "endpoint": Node.ENDPOINT,
-        "records": {
-            "2": {"X": 0, "Y": 0, "Z": HEIGHT},
-        },
-    },
     "static_load_cases": {
         "endpoint": StaticLoadCase.ENDPOINT,
         "records": {
@@ -444,6 +438,10 @@ BASE_MODEL_SEEDS: Dict[str, Dict[str, Any]] = {
     },
     "ltsr_nodes": {
         "endpoint": Node.ENDPOINT,
+        # These ids are part of the shared disposable base model. Rebuild the
+        # design fixture explicitly instead of treating that known overlap as
+        # an unsafe setup collision.
+        "replaceExisting": True,
         "records": {
             "2": {"X": 0, "Y": 0, "Z": HEIGHT},
             "3": {"X": BAY, "Y": 0, "Z": HEIGHT},
@@ -451,18 +449,21 @@ BASE_MODEL_SEEDS: Dict[str, Dict[str, Any]] = {
     },
     "ltsr_beam": {
         "endpoint": Element.ENDPOINT,
+        "replaceExisting": True,
         "records": {
             "2": {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [2, 3]},
         },
     },
     "member_node": {
         "endpoint": Node.ENDPOINT,
+        "replaceExisting": True,
         "records": {
             "4": {"X": 2 * BAY, "Y": 0, "Z": HEIGHT},
         },
     },
     "member_beam": {
         "endpoint": Element.ENDPOINT,
+        "replaceExisting": True,
         "records": {
             "3": {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [3, 4]},
         },
@@ -483,6 +484,7 @@ BASE_MODEL_SEEDS: Dict[str, Dict[str, Any]] = {
     },
     "wmak_nodes": {
         "endpoint": Node.ENDPOINT,
+        "replaceExisting": True,
         "records": {
             "1": {"X": 0, "Y": 0, "Z": 0},
             "2": {"X": BAY, "Y": 0, "Z": 0},
@@ -492,6 +494,7 @@ BASE_MODEL_SEEDS: Dict[str, Dict[str, Any]] = {
     },
     "wmak_plate": {
         "endpoint": Element.ENDPOINT,
+        "replaceExisting": True,
         "records": {
             "4": {
                 "TYPE": "PLATE", "MATL": 1, "SECT": 1,
@@ -779,7 +782,6 @@ def _core_cases() -> List[Case]:
             {"iMETHOD": 1, "ANGLE_X": 0, "ANGLE_Y": 0, "ANGLE_Z": 45},
             lambda p: p.get("ANGLE_Z"), 30, 45,
             item_id=2, confirmed=True,
-            setup=({"seed": "skew_node"},),
         ),
         # /db/STLD renumbers: the server assigns NO sequentially rather than
         # honouring the "Assign" key, so this has to be the next free slot
@@ -790,7 +792,6 @@ def _core_cases() -> List[Case]:
             {"NAME": "CRUDCASE", "TYPE": "L", "DESC": "crud updated"},
             lambda p: p.get("DESC"), "crud", "crud updated",
             item_id=3, confirmed=True,
-            setup=({"seed": "static_load_cases"},),
         ),
         # Loads reference LC_SCRATCH, which the seed creates and nothing deletes.
         Case(
@@ -2078,10 +2079,8 @@ def _extras4_cases() -> List[Case]:
         # on 2026-09-01; Civil has a different server-side type restriction.
         lcom_case(
             LoadCombinationSeismic, "ACTIVE", products=("gen",), confirmed=True,
-            # Python's base scratch model always creates DL. The npm harness
-            # intentionally starts from an empty document, so declare that
-            # manual-backed prerequisite explicitly for package consumers.
-            setup=({"seed": "static_load_cases"},),
+            # Both harnesses build the shared scratch model, including DL,
+            # before cases run. Re-seeding it would be a setup collision.
         ),
         # The manual's LCOM-SEISMIC examples name response-spectrum entries
         # with ANAL="RS". SPLC_LCOM_SEED is a real /db/SPLC record created
@@ -3767,10 +3766,10 @@ def _polc_acceleration_payload(*, steps: int, product: str) -> Dict[str, Any]:
     return payload
 
 
-def _iehc_payload(product: str) -> Dict[str, Any]:
+def _iehc_payload(product: str, *, beam_loc: int = 1) -> Dict[str, Any]:
     """Return the manual request, excluding its explicitly Gen-only rows."""
     payload: Dict[str, Any] = {
-        "BEAM_LOC": 1,
+        "BEAM_LOC": beam_loc,
         "BeamDivNumNy": 15,
         "BeamDivNumNz": 20,
         "WallConsOut": False,
@@ -3800,13 +3799,13 @@ def _iehc_payload(product: str) -> Dict[str, Any]:
     return payload
 
 
-def _polc_hypers_acceleration_payload() -> Dict[str, Any]:
+def _polc_hypers_acceleration_payload(*, nltype: str = "PDELTA") -> Dict[str, Any]:
     """Build the dependency-free ACC/LOAD branch stated by the M1 contract."""
     return {
         "LCNAME": "PUSH_LOAD_X",
         "DESC": "Pushover load control case in X direction",
         "INCRE_STEP": 20,
-        "NLTYPE": "PDELTA",
+        "NLTYPE": nltype,
         "bUSEINITIAL": False,
         "INCRE_METHOD": "LOAD",
         "CTRL_OPT": {"STEPCTRLOPTION": "EQUAL", "STIFF_RATIO": 80},
@@ -3917,9 +3916,9 @@ def _extras15_cases() -> List[Case]:
                 "MAINREBAR_B_FY": 500000,
                 "SUBREBAR_B_FY": 600000,
             },
-            lambda payload: payload.get("NAME"),
+            lambda payload: payload.get("MAINREBAR_B_FY"),
             None,
-            "C24",
+            500000,
             item_id=1,
             confirmed=True,
         ),
@@ -3927,10 +3926,10 @@ def _extras15_cases() -> List[Case]:
             Case(
                 InelasticHingeControl,
                 _iehc_payload(product),
-                _iehc_payload(product),
+                _iehc_payload(product, beam_loc=2),
                 lambda payload: payload.get("BEAM_LOC"),
                 1,
-                1,
+                2,
                 item_id=1,
                 products=(product,),
                 confirmed=True,
@@ -3940,10 +3939,10 @@ def _extras15_cases() -> List[Case]:
         Case(
             PushoverLoadCaseHyperS,
             _polc_hypers_acceleration_payload(),
-            _polc_hypers_acceleration_payload(),
-            lambda payload: payload.get("INCRE_STEP"),
-            20,
-            20,
+            _polc_hypers_acceleration_payload(nltype="NONE"),
+            lambda payload: payload.get("NLTYPE"),
+            "PDELTA",
+            "NONE",
             item_id=1,
             products=("civil",),
             confirmed=True,

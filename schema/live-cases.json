@@ -1346,16 +1346,6 @@
         }
       }
     },
-    "skew_node": {
-      "endpoint": "/db/NODE",
-      "records": {
-        "2": {
-          "X": 0,
-          "Y": 0,
-          "Z": 3.2
-        }
-      }
-    },
     "static_load_cases": {
       "endpoint": "/db/STLD",
       "records": {
@@ -1453,6 +1443,7 @@
     },
     "ltsr_nodes": {
       "endpoint": "/db/NODE",
+      "replaceExisting": true,
       "records": {
         "2": {
           "X": 0,
@@ -1468,6 +1459,7 @@
     },
     "ltsr_beam": {
       "endpoint": "/db/ELEM",
+      "replaceExisting": true,
       "records": {
         "2": {
           "TYPE": "BEAM",
@@ -1482,6 +1474,7 @@
     },
     "member_node": {
       "endpoint": "/db/NODE",
+      "replaceExisting": true,
       "records": {
         "4": {
           "X": 8.0,
@@ -1492,6 +1485,7 @@
     },
     "member_beam": {
       "endpoint": "/db/ELEM",
+      "replaceExisting": true,
       "records": {
         "3": {
           "TYPE": "BEAM",
@@ -1520,6 +1514,7 @@
     },
     "wmak_nodes": {
       "endpoint": "/db/NODE",
+      "replaceExisting": true,
       "records": {
         "1": {
           "X": 0,
@@ -1545,6 +1540,7 @@
     },
     "wmak_plate": {
       "endpoint": "/db/ELEM",
+      "replaceExisting": true,
       "records": {
         "4": {
           "TYPE": "PLATE",
@@ -4340,11 +4336,7 @@
         "updated": 45
       },
       "needs": [],
-      "setup": [
-        {
-          "seed": "skew_node"
-        }
-      ],
+      "setup": [],
       "blockedSeeds": [],
       "crashes": null
     },
@@ -4379,11 +4371,7 @@
         "updated": "crud updated"
       },
       "needs": [],
-      "setup": [
-        {
-          "seed": "static_load_cases"
-        }
-      ],
+      "setup": [],
       "blockedSeeds": [],
       "crashes": null
     },
@@ -8814,11 +8802,7 @@
         "updated": 1.2
       },
       "needs": [],
-      "setup": [
-        {
-          "seed": "static_load_cases"
-        }
-      ],
+      "setup": [],
       "blockedSeeds": [],
       "crashes": null
     },
@@ -13771,7 +13755,7 @@
       },
       "expected": {
         "created": null,
-        "updated": "C24"
+        "updated": 500000
       },
       "needs": [],
       "setup": [],
@@ -13813,7 +13797,7 @@
         "WallDivNumYCover": 1
       },
       "updatePayload": {
-        "BEAM_LOC": 1,
+        "BEAM_LOC": 2,
         "BeamDivNumNy": 15,
         "BeamDivNumNz": 20,
         "WallConsOut": false,
@@ -13833,7 +13817,7 @@
       },
       "expected": {
         "created": 1,
-        "updated": 1
+        "updated": 2
       },
       "needs": [],
       "setup": [],
@@ -13866,7 +13850,7 @@
         "BeamDivNumNzCover": 15
       },
       "updatePayload": {
-        "BEAM_LOC": 1,
+        "BEAM_LOC": 2,
         "BeamDivNumNy": 15,
         "BeamDivNumNz": 20,
         "OPT_ConsiderRebarArea1D": false,
@@ -13877,7 +13861,7 @@
       },
       "expected": {
         "created": 1,
-        "updated": 1
+        "updated": 2
       },
       "needs": [],
       "setup": [],
@@ -13922,7 +13906,7 @@
         "LCNAME": "PUSH_LOAD_X",
         "DESC": "Pushover load control case in X direction",
         "INCRE_STEP": 20,
-        "NLTYPE": "PDELTA",
+        "NLTYPE": "NONE",
         "bUSEINITIAL": false,
         "INCRE_METHOD": "LOAD",
         "CTRL_OPT": {
@@ -13938,8 +13922,8 @@
         ]
       },
       "expected": {
-        "created": 20,
-        "updated": 20
+        "created": "PDELTA",
+        "updated": "NONE"
       },
       "needs": [],
       "setup": [],
