@@ -592,7 +592,7 @@ variants:
         equals: 1
     source:
       table: "M&S Proportional 감쇠 세부 필드 (DAMPING_METHOD=1)"
-      line: 1770
+      line: 1775
     fields:
       - key: COEF_INPUT
         description: >-
@@ -609,7 +609,7 @@ variants:
         equals: 0
     source:
       table: COEF_INPUT=0
-      line: 1773
+      line: 1778
     fields:
       - key: USE_MASS
         description: >-
@@ -652,7 +652,7 @@ variants:
         equals: 1
     source:
       table: COEF_INPUT=1
-      line: 1778
+      line: 1783
     fields:
       - key: COEF_CALC
         description: >-
@@ -788,7 +788,7 @@ manualDefects:
       at line 1774 read against its own 설명 column. Registered as MD-23.
 
 extraction:
-  source: 09_DB_Dynamic_Loads.md line 1718
+  source: 09_DB_Dynamic_Loads.md line 1723
   table: 공통 파라미터
   # Additional parameter tables in this section were NOT merged. They are
   # usually conditional variants selected by a type/code field. Decide
@@ -797,7 +797,7 @@ extraction:
   # schema.
   structuralTables:
     - heading: 비선형 경계요소 해석 (BOUNDARY_NL_ANAL)
-      line: 1810
+      line: 1815
       paths: [NONL_CTRL_PARAM.ITER_CTRL.BOUNDARY_NL_ANAL]
       note: >-
         The manual heading names the object and its table types METHOD and TOL.
@@ -814,7 +814,7 @@ extraction:
         object. Merged into the parent the heading names, with the condition
         kept on the parent.
     - heading: INC_METHOD=0
-      line: 1790
+      line: 1795
       paths: [INC_CTRL.SF]
       note: >-
         A sub-row of the INC_CTRL table, gating one field inside the object

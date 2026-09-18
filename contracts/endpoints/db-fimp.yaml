@@ -2171,7 +2171,7 @@ knownDefects:
   - ref: db-delete-body-empties-table
 
 extraction:
-  source: 04_DB_Properties.md line 2062
+  source: 04_DB_Properties.md line 2089
   table: Specifications
   note: >-
     The Specifications table gives three fields and stops, by the chapter's own

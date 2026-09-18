@@ -193,5 +193,5 @@ knownDefects:
   - ref: db-delete-body-empties-table
 
 extraction:
-  source: 09_DB_Dynamic_Loads.md line 2239
+  source: 09_DB_Dynamic_Loads.md line 2244
   table: 10-2. 파라미터

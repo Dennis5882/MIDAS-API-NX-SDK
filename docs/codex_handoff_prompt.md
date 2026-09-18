@@ -58,9 +58,9 @@ ruff check src tests scripts && mypy      # clean
 python scripts/validate_contracts.py      # OK; 384 endpoints, 5078 fields,
                                           # 140 proven safe, 8 unsafe
 python scripts/check_manual_drift.py --manual-api-repo "E:\AI Study\MIDAS-API"
-                                          # has_diff: TRUE - see below
+                                          # has_diff: false
 MSYS_NO_PATHCONV=1 python scripts/extract_contracts.py \
-  --manual-api-repo "E:\AI Study\MIDAS-API" --check    # FAILS - see below
+  --manual-api-repo "E:\AI Study\MIDAS-API" --check    # OK - no drift
 python scripts/info_baseline.py --against-contracts --check   # OK
 python scripts/info_baseline.py --divergence --check          # OK
 python scripts/report_dropped_manual_rows.py \
@@ -76,14 +76,12 @@ cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 83 tests
 ```
 
-**Two of those are red as of 2026-09-18, and neither is yours to fix.** The
-manual repo moved two commits past this SDK's `vendored_at_commit`
-(`a6947a7` -> `e64a682`), touching chapters 04, 06, 07 and 09.
-`extract_contracts.py --check` fails on `db-this.yaml` alone: chapter 09 gained
-five lines, so the ten table line numbers its `unmergedTables` records have all
-shifted. Reflecting a manual sync is a judgement call about what the new text
-means, so **stop if you see these and say so** — do not renumber the tables and
-do not bump `vendored_at_commit`. Everything else in the block above is green.
+**A manual sync is not yours to reflect.** Two of these went red on 2026-09-18
+when the manual repo moved to `e64a682`, and both are green again now:
+`vendored_at_commit` is current and 17 contracts had their manual line
+references re-pointed. If they go red again, **stop and say so** — deciding
+what a chapter's new text means is a judgement call, and a line number that no
+longer resolves can mean a table moved or that it changed.
 
 `schema/live-cases.json` is **version 6**: 215 cases over 192 endpoints, 177
 confirmed, 9 base-model steps, 67 named seeds, none unsupported. It dropped one
