@@ -10187,3 +10187,38 @@ cleanup. Every run checkpointed under `C:/temp` and restored an empty scratch
 document. Python's extras1 diagnostic still reports the independently known
 `nllp_seed`/`glink_seed` failures, but each selected case completed its own
 round trip.
+
+### MIDAS-API manual-error probes requested 2026-09-18
+
+Targeted probes from
+`MIDAS-API/docs/error_reports/live_verification_requests_20260918.md` ran on
+Gen NX 2026 v2.1 and Civil NX 2026 v2.2, Build 09/15/2026. Each probe saved
+the disposable document under `C:/temp`, rebuilt its documented preconditions,
+and used a GET after the write rather than treating a 2xx status as success.
+
+- `/ope/MEMB`: the documented `SELECTION_TYPE` and table typo
+  `SELETION_TYPE` both selected and persisted elements 2 and 3 on Gen and
+  Civil. The typo behaves as an accepted alias on this build.
+- `/db/SSEIS`: Gen accepted `KDS(41-17-00: 2019)` and normalized it to
+  `KDS(41-17-00:2019)`. The two example typos `IINHERENT_TORSION` and
+  `NHERENT_TORSION` returned HTTP 201 but disappeared from the response; GET
+  kept the real `INHERENT_TORSION` field at `false` instead of the requested
+  `true`.
+- `/db/TDNA`: both products accepted and persisted the official 2D and 3D
+  Round/Element examples' numeric `RADIUS` values. Both products returned an
+  HTTP 201 body containing `Wrong Field` for `PROFY.RADIUS=false` and for
+  `PROF.RADIUS=[0,20]`; GET then returned `Not Found Key`. The two conflicting
+  specification rows must be Number, not Boolean or Array.
+- `/db/MATD`: Gen persisted `bSERVCHECK=true`, `dSHORTTERM=1.25`, and
+  `dLONGTERM=1.5`, both separately and together. Civil echoed each field in
+  its HTTP 200 PUT response but omitted all three from the following GET, so
+  they are accepted-but-ignored on Civil in this build.
+- `/db/SPLC`: on Gen, POST persisted
+  `aACCECC_ECCEN_LIST[0].ALONG=2.5`. A following PUT echoed the requested
+  value `3.5`, but GET retained `2.5`; updating ALONG is silently ignored on
+  this build even though creation works.
+
+The Jira-ready Korean response is in the manual repository at
+`docs/error_reports/live_verification_feedback_20260918.md`. Raw response
+captures remain only in `C:/temp/manual-feedback-*.json`; model response
+bodies are deliberately not committed here.
