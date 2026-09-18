@@ -218,6 +218,12 @@ fields:
     documentedOptional: null
     safeToOmit: unverified
     provenance: manual
+    provenanceNote: >-
+      Live on Build 09/15/2026: Gen stored the value and returned it on the
+      following GET. Civil echoed it in the PUT response and then omitted it
+      from that GET, so Civil accepts this member without storing it. Both
+      products' GET /info declare it, which is why it keeps the endpoint's
+      products rather than being narrowed to Gen.
   - key: dSHORTTERM
     description: >-
       (추정) 단기 계수 ⚠️표·예제에 근거 없음 (스키마 설명 ShortTerm)
@@ -227,6 +233,12 @@ fields:
     documentedOptional: null
     safeToOmit: unverified
     provenance: manual
+    provenanceNote: >-
+      Live on Build 09/15/2026: Gen stored the value and returned it on the
+      following GET. Civil echoed it in the PUT response and then omitted it
+      from that GET, so Civil accepts this member without storing it. Both
+      products' GET /info declare it, which is why it keeps the endpoint's
+      products rather than being narrowed to Gen.
   - key: dLONGTERM
     description: >-
       (추정) 장기 계수 ⚠️표·예제에 근거 없음 (스키마 설명 LongTerm)
@@ -236,6 +248,12 @@ fields:
     documentedOptional: null
     safeToOmit: unverified
     provenance: manual
+    provenanceNote: >-
+      Live on Build 09/15/2026: Gen stored the value and returned it on the
+      following GET. Civil echoed it in the PUT response and then omitted it
+      from that GET, so Civil accepts this member without storing it. Both
+      products' GET /info declare it, which is why it keeps the endpoint's
+      products rather than being narrowed to Gen.
 
 extraction:
   source: 04_DB_Properties.md line 2489

@@ -83,6 +83,13 @@ operations:
     response:
       wrapper: table
       keyStability: stable
+    notes: >-
+      `aACCECC_ECCEN_LIST[].ALONG` is created but not updated. Live on Gen,
+      Build 09/15/2026: a POST stored 2.5, a following PUT echoed 3.5, and the
+      GET after it still returned 2.5. The accidental-eccentricity table is
+      unmerged, so the contract publishes no member to carry this; it is
+      recorded here because a PUT that reports success and changes nothing is
+      not something a caller can see.
 
 fields:
   - key: NAME
