@@ -10222,3 +10222,26 @@ The Jira-ready Korean response is in the manual repository at
 `docs/error_reports/live_verification_feedback_20260918.md`. Raw response
 captures remain only in `C:/temp/manual-feedback-*.json`; model response
 bodies are deliberately not committed here.
+
+### Task K: current-build final extras1 batch
+
+`/db/PZEF` passed through npm and Python on Gen NX and Civil NX, while the
+Civil-only `/db/SPAN` case passed through both SDKs on Civil NX, Build
+09/15/2026. The npm runner required the no-DELETE `/db/PZEF` case to run last;
+after correcting that ordering, all six endpoint/SDK/product combinations
+completed their full case. Python's extras1 diagnostic printed the already
+known, unrelated `nllp_seed` and `glink_seed` warnings, but both selected
+cases passed. Each run checkpointed under `C:/temp` and restored an empty
+scratch document.
+
+### Task K: current-build final extras14 batches
+
+The Civil-only `/db/CRGR`, `/db/CJFG`, `/db/DYLA`, `/db/ACTL-M1`,
+`/db/EIGV-M1`, `/db/HHCT-M1`, `/db/NLCT-M1`, `/db/STCT-M1`, and
+`/db/BCGD-M1` confirmed cases passed through npm and Python on Civil NX 2026
+v2.2, Build 09/15/2026. npm ran `/db/CRGR`, `/db/CJFG`, and `/db/DYLA`
+individually because their `/db/GRUP` setup has no per-ID cleanup and therefore
+must be last; the earlier runner guard was a batch-order block, not an endpoint
+failure. All 18 successful endpoint/SDK combinations completed their full
+round trips, checkpointed under `C:/temp`, and restored empty scratch
+documents.

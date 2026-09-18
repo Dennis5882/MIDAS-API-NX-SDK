@@ -392,6 +392,33 @@ result-table operations remain covered overall.
 **Count:** 7 current-build replays; 162 distinct `/db` endpoints and 4 distinct
 result-table operations remain covered overall.
 
+### 2026-09-18 - Task K final extras1 batch
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/SPAN` | 2026-09-18 | Civil |
+| `/db/PZEF` | 2026-09-18 | Gen, Civil |
+
+**Count:** 2 current-build replays; 162 distinct `/db` endpoints and 4 distinct
+result-table operations remain covered overall.
+
+### 2026-09-18 - Task K final extras14 batches
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/CRGR` | 2026-09-18 | Civil |
+| `/db/CJFG` | 2026-09-18 | Civil |
+| `/db/DYLA` | 2026-09-18 | Civil |
+| `/db/ACTL-M1` | 2026-09-18 | Civil |
+| `/db/EIGV-M1` | 2026-09-18 | Civil |
+| `/db/HHCT-M1` | 2026-09-18 | Civil |
+| `/db/NLCT-M1` | 2026-09-18 | Civil |
+| `/db/STCT-M1` | 2026-09-18 | Civil |
+| `/db/BCGD-M1` | 2026-09-18 | Civil |
+
+**Count:** 9 current-build replays; 162 distinct `/db` endpoints and 4 distinct
+result-table operations remain covered overall.
+
 ### 2026-09-18 - Task K dynamic Hyper-S controls batch
 
 | Endpoint | Date | Products |

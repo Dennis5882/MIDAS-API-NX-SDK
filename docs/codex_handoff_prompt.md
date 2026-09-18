@@ -33,13 +33,15 @@ is one to stop and report, not to decide.**
 **With a product session** (a session is the scarce thing — use it for these
 first):
 
-1. **Task K** — re-run confirmed cases on Build 09/15/2026 through both SDKs.
-2. **Task B** — the 22 endpoints whose case has never passed.
+1. **Task B** — the 22 endpoints whose case has never passed.
 
 **Without one:**
 
-3. **Task A** — build fixtures for the 21 buildable endpoints with no case.
-   Start with batch 17: `/db/PHGE`, `/db/POGD`, `/db/POGD-M1`.
+2. **Task A** — run batch 17 — `/db/PHGE`, `/db/POGD`, `/db/POGD-M1` are built
+   and unconfirmed — then build fixtures for the rest.
+
+**Task K is closed**: every confirmed case ran on Build 09/15/2026 on
+2026-09-18. Its section stays because the next build reopens it.
 
 Task E is offline and **not** yours to start; its section says why.
 
@@ -51,14 +53,14 @@ Run these first. **If a number differs, say so before starting** — something
 moved under you, and the command wins over this file.
 
 ```bash
-python -m pytest -q                       # 1081 passed
+python -m pytest -q                       # 1083 passed
 ruff check src tests scripts && mypy      # clean
 python scripts/validate_contracts.py      # OK; 384 endpoints, 5078 fields,
                                           # 140 proven safe, 8 unsafe
 python scripts/check_manual_drift.py --manual-api-repo "E:\AI Study\MIDAS-API"
-                                          # has_diff: false
+                                          # has_diff: TRUE - see below
 MSYS_NO_PATHCONV=1 python scripts/extract_contracts.py \
-  --manual-api-repo "E:\AI Study\MIDAS-API" --check    # OK - no drift
+  --manual-api-repo "E:\AI Study\MIDAS-API" --check    # FAILS - see below
 python scripts/info_baseline.py --against-contracts --check   # OK
 python scripts/info_baseline.py --divergence --check          # OK
 python scripts/report_dropped_manual_rows.py \
@@ -74,6 +76,15 @@ cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 83 tests
 ```
 
+**Two of those are red as of 2026-09-18, and neither is yours to fix.** The
+manual repo moved two commits past this SDK's `vendored_at_commit`
+(`a6947a7` -> `e64a682`), touching chapters 04, 06, 07 and 09.
+`extract_contracts.py --check` fails on `db-this.yaml` alone: chapter 09 gained
+five lines, so the ten table line numbers its `unmergedTables` records have all
+shifted. Reflecting a manual sync is a judgement call about what the new text
+means, so **stop if you see these and say so** — do not renumber the tables and
+do not bump `vendored_at_commit`. Everything else in the block above is green.
+
 `schema/live-cases.json` is **version 6**: 215 cases over 192 endpoints, 177
 confirmed, 9 base-model steps, 67 named seeds, none unsupported. It dropped one
 seed on 2026-09-18: `skew_node` re-created a node the shared base model already
@@ -81,9 +92,10 @@ builds, which npm refused as a setup collision.
 
 ---
 
-## Task K — re-verify confirmed cases on the current build
+## Task K — re-verify confirmed cases on the current build (closed)
 
-**Live. Destructive: `/doc/NEW`. The largest block, and the least judgement.**
+**Live. Destructive: `/doc/NEW`. Closed on 2026-09-18; reopens on the next
+build.**
 
 Every confirmed case has passed through both SDKs, but many last ran on an older
 build. A confirmed case failing on Build 09/15/2026 is a **regression**, and
@@ -115,28 +127,30 @@ text search of the ledger entry, so an entry that mentions the build for another
 reason drops out of the list; that errs toward doing less, never toward a false
 claim.
 
-On 2026-09-18 the same command prints **12**. Task G accounts for three of the
-84 endpoints removed from the original 107; the other 81 were replayed that day
-in the recorded batches — `core`, `props`, `boundary` (split in two), `extras2`
-(split in two), `extras3`, `extras4`, `extras5`, `extras6`, `extras7`,
-`extras8`, `extras10`, `extras13`, `extras15`, `extras16`, the Hyper-S dynamic
-controls, the China and India lanes, and the moving-control variants. The
-current session then replayed `/db/NMAS` and the extras1 completion batch.
-Each was recorded in the live notes and the npm evidence scratch under its own
-heading. **These 12 are what is left:**
+**On 2026-09-18 it reached 0, and this task is closed until the next build.**
+All 107 were replayed that day through both SDKs on every product each case
+declares. Task G accounts for three of them; the other 104 went through the
+tier batches, each recorded in the live notes and the npm evidence scratch
+under its own heading.
 
-`/db/ACTL-M1`, `/db/BCGD-M1`, `/db/CJFG`, `/db/CO_F`, `/db/CRGR`,
-`/db/DYLA`, `/db/EIGV-M1`, `/db/HHCT-M1`, `/db/NLCT-M1`, `/db/PZEF`,
-`/db/SPAN`, `/db/STCT-M1`
+The command stays here because **a new build reopens the task**. When one
+ships, change the build string and it names the new scope. Nothing else in this
+section changes.
 
-Re-measure anyway rather than working from that list: it is a snapshot, and the
-command is the definition.
+**Record all three places, or the next session re-runs the batch.** This is the
+one mistake this task has actually made, twice, and the second time was worse
+than the first. On 2026-09-17 a session recorded `/db/SLANch` in the live notes
+and the npm evidence scratch and stopped before the ledger append, leaving one
+passing endpoint in the to-do list. On 2026-09-18 the session that finished the
+task did the same thing to all **eleven** of its last endpoints, left both
+evidence files uncommitted, and reported the task complete — while its own copy
+of this file still said twelve were left. The measurement reads the ledger and
+nothing else, so evidence that never reaches `docs/coverage.json` does not
+exist as far as any count is concerned.
 
-**Record all three places, or the next session re-runs the batch.** The
-2026-09-18 session recorded `/db/SLANch` in the live notes and the npm evidence
-scratch, then stopped before the ledger append, which left a passing endpoint
-in the to-do list until it was noticed the next day. The ledger entry is the
-one the measurement reads.
+**Before saying a batch is done**, re-run the scope command. If it has not
+dropped by the number of endpoints you just ran, the ledger is what is missing —
+go back and append, then commit the evidence files with it.
 
 **Append, and change nothing else.** That same session moved `/db/PRST`'s
 `date` from 2026-09-12 to 2026-09-18 while leaving `nx_versions` on build
@@ -330,6 +344,7 @@ Selection traps, each of which has cost a session:
 
 | what | outcome | where |
 | --- | --- | --- |
+| re-verification on Build 09/15/2026 (Task K) | all 107 confirmed-case endpoints replayed through both SDKs on every declared product, 2026-09-18; the scope command prints 0. The section stays because the next build reopens it | live notes, 2026-09-18 |
 | meaningful update assertions (was Task G) | MATD now proves `MAINREBAR_B_FY: 500000`; IEHC proves `BEAM_LOC: 1 -> 2`; POLC-M1 proves `NLTYPE: PDELTA -> NONE`. Both SDKs passed every declared product on 2026-09-18, Build 09/15/2026 | live notes, 2026-09-18 |
 | npm replay of every confirmed case (was Task F) | 177 of 177, 2026-09-17; fixture v6 added per-id DELETE seed steps, `FRESH_DOCUMENT_SEEDS`, `expected.unordered` and `setup_replaces` | live notes, 2026-09-17 (later) |
 | `DESIGN/STEEL/DSTL` contract and PUT (was Tasks H, I) | contracted; Gen accepts the documented PUT, Civil refuses it with `Errors detected in Steel Design Control Data.` **Do not re-run it**: the enum has one value, so there is nothing to vary | live notes; contract PUT `notes` |

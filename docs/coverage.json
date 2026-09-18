@@ -601,7 +601,7 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET); manual documents gen+civil but 404s under Gen in three independent sessions (2026-07-22, 2026-07-26, 2026-07-29) Write round trip confirmed 2026-08-16 (Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete succeeded. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Civil on 2026-09-16; evidence extracted from docs/live_verification_notes.md.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET); manual documents gen+civil but 404s under Gen in three independent sessions (2026-07-22, 2026-07-26, 2026-07-29) Write round trip confirmed 2026-08-16 (Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete succeeded. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Civil on 2026-09-16; evidence extracted from docs/live_verification_notes.md. Re-verified 2026-09-18 on Build 09/15/2026 through both SDKs (Civil).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 07/28/2026 — confirms 404, not supported"
@@ -2087,7 +2087,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Gen, Civil on 2026-09-16; evidence extracted from docs/live_verification_notes.md.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Gen, Civil on 2026-09-16; evidence extracted from docs/live_verification_notes.md. Re-verified 2026-09-18 on Build 09/15/2026 through both SDKs (Gen, Civil).",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
@@ -3410,7 +3410,7 @@
         "products": [
           "civil"
         ],
-        "method": "GROUPS references a real /db/GRUP structure group name (the manual's own examples use made-up names). Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Civil on 2026-09-15; evidence extracted from docs/live_verification_notes.md.",
+        "method": "GROUPS references a real /db/GRUP structure group name (the manual's own examples use made-up names). Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Civil on 2026-09-15; evidence extracted from docs/live_verification_notes.md. Re-verified 2026-09-18 on Build 09/15/2026 through both SDKs (Civil).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
@@ -3432,7 +3432,7 @@
         "products": [
           "civil"
         ],
-        "method": "GROUPS references a real /db/GRUP structure group name. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Civil on 2026-09-15; evidence extracted from docs/live_verification_notes.md.",
+        "method": "GROUPS references a real /db/GRUP structure group name. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Civil on 2026-09-15; evidence extracted from docs/live_verification_notes.md. Re-verified 2026-09-18 on Build 09/15/2026 through both SDKs (Civil).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
@@ -3554,7 +3554,7 @@
         "products": [
           "civil"
         ],
-        "method": "Live-confirmed 2026-08-25: requires /db/MVCD.CODE to be one of KSCE-LSD15/AASHTO LRFD/PENDOT first (\"[Error] Additional Dynamic Load Allowance can be applied when Moving Load Code is entered as ...\" otherwise). ITEMS references a real structure group name. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Civil on 2026-09-15; evidence extracted from docs/live_verification_notes.md.",
+        "method": "Live-confirmed 2026-08-25: requires /db/MVCD.CODE to be one of KSCE-LSD15/AASHTO LRFD/PENDOT first (\"[Error] Additional Dynamic Load Allowance can be applied when Moving Load Code is entered as ...\" otherwise). ITEMS references a real structure group name. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Civil on 2026-09-15; evidence extracted from docs/live_verification_notes.md. Re-verified 2026-09-18 on Build 09/15/2026 through both SDKs (Civil).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
@@ -4528,7 +4528,7 @@
         "products": [
           "civil"
         ],
-        "method": "Simple PUT, no prerequisites. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Civil on 2026-09-15; evidence extracted from docs/live_verification_notes.md.",
+        "method": "Simple PUT, no prerequisites. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Civil on 2026-09-15; evidence extracted from docs/live_verification_notes.md. Re-verified 2026-09-18 on Build 09/15/2026 through both SDKs (Civil).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
@@ -4625,7 +4625,7 @@
         "products": [
           "civil"
         ],
-        "method": "FREQ_RANGE sent explicitly with OPT_USE=false even though documented optional, to avoid the same undocumented-required-field gap the non-Hyper-S /db/EIGV has on Civil (see that endpoint's own coverage entry). Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Civil on 2026-09-15; evidence extracted from docs/live_verification_notes.md.",
+        "method": "FREQ_RANGE sent explicitly with OPT_USE=false even though documented optional, to avoid the same undocumented-required-field gap the non-Hyper-S /db/EIGV has on Civil (see that endpoint's own coverage entry). Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Civil on 2026-09-15; evidence extracted from docs/live_verification_notes.md. Re-verified 2026-09-18 on Build 09/15/2026 through both SDKs (Civil).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
@@ -4672,7 +4672,7 @@
         "products": [
           "civil"
         ],
-        "method": "Simple PUT with FINAL_STAGE=true (no construction-stage reference needed for the default branch). Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Civil on 2026-09-15; evidence extracted from docs/live_verification_notes.md.",
+        "method": "Simple PUT with FINAL_STAGE=true (no construction-stage reference needed for the default branch). Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Civil on 2026-09-15; evidence extracted from docs/live_verification_notes.md. Re-verified 2026-09-18 on Build 09/15/2026 through both SDKs (Civil).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
@@ -4745,7 +4745,7 @@
         "products": [
           "civil"
         ],
-        "method": "scripts/live_crud_check.py replayed the vendored manual Request Body through create/read/update/read/delete on Civil NX; npm replayed the same emitted fixture Re-verified 2026-09-18 on Build 09/15/2026 through both SDKs (Civil).",
+        "method": "scripts/live_crud_check.py replayed the vendored manual Request Body through create/read/update/read/delete on Civil NX; npm replayed the same emitted fixture. Re-verified 2026-09-18 on Build 09/15/2026 through both SDKs (Civil).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 09/02/2026"
         },
@@ -4769,7 +4769,7 @@
           "civil",
           "gen"
         ],
-        "method": "scripts/live_crud_check.py replayed the vendored manual Request Body through create/read/update/read/delete on Gen NX and Civil NX; npm replayed the same emitted fixture Re-verified 2026-09-18 on Build 09/15/2026 through both SDKs (Gen, Civil).",
+        "method": "scripts/live_crud_check.py replayed the vendored manual Request Body through create/read/update/read/delete on Gen NX and Civil NX; npm replayed the same emitted fixture. Re-verified 2026-09-18 on Build 09/15/2026 through both SDKs (Gen, Civil).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 09/02/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 09/02/2026"
@@ -4794,7 +4794,7 @@
           "civil",
           "gen"
         ],
-        "method": "scripts/live_crud_check.py replayed the vendored manual Request Body through create/read/update/read/delete on Gen NX and Civil NX; npm replayed the same emitted fixture Re-verified 2026-09-18 on Build 09/15/2026 through both SDKs (Gen, Civil).",
+        "method": "scripts/live_crud_check.py replayed the vendored manual Request Body through create/read/update/read/delete on Gen NX and Civil NX; npm replayed the same emitted fixture. Re-verified 2026-09-18 on Build 09/15/2026 through both SDKs (Gen, Civil).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 09/02/2026",
           "gen": "MIDAS Gen NX 2026 (v2.1), build 09/02/2026"
@@ -4867,7 +4867,7 @@
         "products": [
           "civil"
         ],
-        "method": "Live-confirmed 2026-08-25: LC_SCOPE wants the literal scope keyword \"ALL\" (matching the manual's own worked example), not a real load case name -- a load case name answers \"Wrong Field\". CONV_CRITERIA needs at least one sub-object with OPT_USE=true and a VALUE; all-false also answers \"Wrong Field\". Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Civil on 2026-09-15; evidence extracted from docs/live_verification_notes.md.",
+        "method": "Live-confirmed 2026-08-25: LC_SCOPE wants the literal scope keyword \"ALL\" (matching the manual's own worked example), not a real load case name -- a load case name answers \"Wrong Field\". CONV_CRITERIA needs at least one sub-object with OPT_USE=true and a VALUE; all-false also answers \"Wrong Field\". Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Civil on 2026-09-15; evidence extracted from docs/live_verification_notes.md. Re-verified 2026-09-18 on Build 09/15/2026 through both SDKs (Civil).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
@@ -4913,7 +4913,7 @@
         "products": [
           "civil"
         ],
-        "method": "Simple PUT with bLAST_FINAL=true, ANAL_TYPE={iINC_NLA:0, iNLA_TYPE:0} (no construction-stage reference needed for the default branch) -- notably does NOT reproduce the non-Hyper-S /db/STCT's iITER/TOL silent-drop bug, but this payload doesn't exercise those fields either. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-tested 2026-08-27 on Civil NX for the four fields added 2026-08-25 (iBSC/FRAME_OUTPUT/bSAVE_OCS/NONL_CONTROL) and ANAL_TYPE.iINC_NLA/bIEMF: a plain POST/GET round trip confirmed all four top-level fields real (server auto-assigned iBSC=1, matching the documented default, plus full FRAME_OUTPUT/NONL_CONTROL shapes) and TIME_DEP_CONTROL.CREEP_SHRINKAGE.TYPE=\"SHRINKAGE\" round-tripped explicitly. iINC_NLA=3/bIEMF are schema-confirmed via GET /info/db/STCT-M1 only -- PUT on this endpoint rejected even a known-good ANAL_TYPE value pair with \"Wrong Field\", so a write of a non-default ANAL_TYPE value could not be achieved either way this session. iINC_NLA=3/bIEMF fully live-confirmed 2026-08-27 on Civil NX via direct POST-time creation (not PUT, which this object rejects even for known-good value changes on an existing record): {iINC_NLA:3,iNLA_TYPE:1} and separately {iINC_NLA:1,iNLA_TYPE:0,bIEMF:true} both round-tripped exactly through GET. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Civil on 2026-09-15; evidence extracted from docs/live_verification_notes.md.",
+        "method": "Simple PUT with bLAST_FINAL=true, ANAL_TYPE={iINC_NLA:0, iNLA_TYPE:0} (no construction-stage reference needed for the default branch) -- notably does NOT reproduce the non-Hyper-S /db/STCT's iITER/TOL silent-drop bug, but this payload doesn't exercise those fields either. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-tested 2026-08-27 on Civil NX for the four fields added 2026-08-25 (iBSC/FRAME_OUTPUT/bSAVE_OCS/NONL_CONTROL) and ANAL_TYPE.iINC_NLA/bIEMF: a plain POST/GET round trip confirmed all four top-level fields real (server auto-assigned iBSC=1, matching the documented default, plus full FRAME_OUTPUT/NONL_CONTROL shapes) and TIME_DEP_CONTROL.CREEP_SHRINKAGE.TYPE=\"SHRINKAGE\" round-tripped explicitly. iINC_NLA=3/bIEMF are schema-confirmed via GET /info/db/STCT-M1 only -- PUT on this endpoint rejected even a known-good ANAL_TYPE value pair with \"Wrong Field\", so a write of a non-default ANAL_TYPE value could not be achieved either way this session. iINC_NLA=3/bIEMF fully live-confirmed 2026-08-27 on Civil NX via direct POST-time creation (not PUT, which this object rejects even for known-good value changes on an existing record): {iINC_NLA:3,iNLA_TYPE:1} and separately {iINC_NLA:1,iNLA_TYPE:0,bIEMF:true} both round-tripped exactly through GET. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Civil on 2026-09-15; evidence extracted from docs/live_verification_notes.md. Re-verified 2026-09-18 on Build 09/15/2026 through both SDKs (Civil).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
@@ -4960,7 +4960,7 @@
         "products": [
           "civil"
         ],
-        "method": "GROUP_LIST references a real /db/BNGR boundary group name. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Civil on 2026-09-15; evidence extracted from docs/live_verification_notes.md.",
+        "method": "GROUP_LIST references a real /db/BNGR boundary group name. Write-round-trip confirmed live on Civil NX v2.2, build 08/24/2026, via scripts/live_crud_check.py --tier core,extras14 (create->read->update->read->delete->read). Hyper-S is a Civil-only solver so this was never reachable on Gen NX at all. Re-verified 2026-09-15 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Civil on 2026-09-15; evidence extracted from docs/live_verification_notes.md. Re-verified 2026-09-18 on Build 09/15/2026 through both SDKs (Civil).",
         "nx_versions": {
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/24/2026"
         },
