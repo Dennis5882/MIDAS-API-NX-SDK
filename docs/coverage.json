@@ -2112,7 +2112,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Gen, Civil on 2026-09-16; evidence extracted from docs/live_verification_notes.md.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-08-16 (Gen NX v2.1 / Civil NX v2.2, build 08/14/2026) via scripts/live_crud_check.py --tier extras1: create->GET->update->GET->delete all succeeded on both products. Re-verified 2026-09-16 on build 09/02/2026 through both SDKs. npm replayed the same emitted fixture on Gen, Civil on 2026-09-16; evidence extracted from docs/live_verification_notes.md. Re-verified 2026-09-18 on Build 09/15/2026 through both SDKs (Gen, Civil).",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 08/14/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 08/14/2026"
