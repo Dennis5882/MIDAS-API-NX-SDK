@@ -435,6 +435,24 @@ result-table operations remain covered overall.
 **Count:** 1 current-build replay; 162 distinct `/db` endpoints and 4 distinct
 result-table operations remain covered overall.
 
+### 2026-09-18 - Task K extras1 completion batches
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/TDGR` | 2026-09-18 | Gen, Civil |
+| `/db/NPLN` | 2026-09-18 | Gen, Civil |
+| `/db/PRLS` | 2026-09-18 | Gen, Civil |
+| `/db/MLFC` | 2026-09-18 | Gen, Civil |
+| `/db/CO_M` | 2026-09-18 | Gen, Civil |
+| `/db/CO_S` | 2026-09-18 | Gen, Civil |
+| `/db/CO_T` | 2026-09-18 | Gen, Civil |
+| `/db/STYP` | 2026-09-18 | Gen, Civil |
+| `/db/STYP-M1` | 2026-09-18 | Civil |
+| `/db/CLDR` | 2026-09-18 | Gen, Civil |
+
+**Count:** 10 current-build replays; 162 distinct `/db` endpoints and 4 distinct
+result-table operations remain covered overall.
+
 ### 2026-09-18 - Task K extras16 material batch
 
 | Endpoint | Date | Products |
@@ -464,6 +482,26 @@ result-table operations remain covered overall.
 | `/db/LLANid` | 2026-09-18 | Civil |
 
 **Count:** 3 current-build replays; 162 distinct `/db` endpoints and 4 distinct
+result-table operations remain covered overall.
+
+### 2026-09-18 - Task K moving-control batches
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/MVCTbs` | 2026-09-18 | Gen, Civil |
+| `/db/MVCTid` | 2026-09-18 | Civil |
+| `/db/MVCTtr` | 2026-09-18 | Gen, Civil |
+
+**Count:** 3 current-build replays; 162 distinct `/db` endpoints and 4 distinct
+result-table operations remain covered overall.
+
+### 2026-09-18 - Task K nodal-mass replay
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/NMAS` | 2026-09-18 | Gen, Civil |
+
+**Count:** 1 current-build replay; 162 distinct `/db` endpoints and 4 distinct
 result-table operations remain covered overall.
 
 ### 2026-09-18 - Task K extras4 load-combination batch

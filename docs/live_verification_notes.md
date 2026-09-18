@@ -10158,3 +10158,32 @@ passed through npm and Python on Civil NX 2026 v2.2, Build 09/15/2026. The
 China and India code selections were kept in separate tier runs. All six
 endpoint/SDK/product combinations passed, with `C:/temp` checkpoints and empty
 scratch documents restored afterwards.
+
+### Task K: current-build moving-control batches
+
+`/db/MVCTbs` and `/db/MVCTtr` passed through npm and Python on Gen and Civil;
+the Civil-only `/db/MVCTid` case also passed through both SDKs on Civil NX,
+Build 09/15/2026. Each case selected its own moving-load code (`BS`, `INDIA`,
+or `TRANS`) in a separate setup/cleanup sequence. All 10
+endpoint/SDK/product combinations completed full round trips, checkpointed
+under `C:/temp`, and restored empty scratch documents.
+
+### Task K: current-build `/db/NMAS` replay
+
+`/db/NMAS` passed create/read/update/read/delete/read through npm and Python on
+Gen NX and Civil NX, Build 09/15/2026. The case uses NODE 3 from the shared
+base model; its obsolete duplicate setup was removed because npm correctly
+refuses overwriting a base-model record. Both products checkpointed under
+`C:/temp` and restored an empty scratch document after the run.
+
+### Task K: current-build extras1 completion batches
+
+`/db/TDGR`, `/db/NPLN`, `/db/PRLS`, `/db/MLFC`, `/db/CO_M`, `/db/CO_S`,
+`/db/CO_T`, `/db/STYP`, and `/db/CLDR` passed through npm and Python on Gen NX
+and Civil NX, Build 09/15/2026. Civil-only `/db/STYP-M1` passed through both
+SDKs on Civil NX. The four PUT-only color/type cases ran as isolated npm invocations so
+the document reset, rather than a nonexistent DELETE operation, was their
+cleanup. Every run checkpointed under `C:/temp` and restored an empty scratch
+document. Python's extras1 diagnostic still reports the independently known
+`nllp_seed`/`glink_seed` failures, but each selected case completed its own
+round trip.

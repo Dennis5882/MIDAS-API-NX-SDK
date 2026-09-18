@@ -5946,12 +5946,7 @@
         "updated": 2.0
       },
       "needs": [],
-      "setup": [
-        {
-          "endpoint": "/db/NODE",
-          "id": 3
-        }
-      ],
+      "setup": [],
       "blockedSeeds": [],
       "crashes": null
     },
@@ -14073,6 +14068,169 @@
       "expected": {
         "created": 30000,
         "updated": 24000
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras17",
+      "endpoint": "/db/PHGE",
+      "name": "Assign Pushover Hinge Properties",
+      "id": 1,
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "ID": 1,
+        "TYPE": "BEAM",
+        "HINGE_TYPE": "Myz_15",
+        "FIBER_KEY": 0
+      },
+      "updatePayload": {
+        "ID": 2,
+        "TYPE": "BEAM",
+        "HINGE_TYPE": "Myz_15",
+        "FIBER_KEY": 0
+      },
+      "expected": {
+        "created": 1,
+        "updated": 2
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras17",
+      "endpoint": "/db/POGD",
+      "name": "Pushover Analysis Control Data",
+      "id": 1,
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "GEOMNONLINEAR_TYPE": "NONE",
+        "INITLOADMETHOD": "PERFORM_ANAL",
+        "INITLOAD": [],
+        "bCONSIGNOREELEM": true,
+        "NONL_OPT": {
+          "bPERMITFAIL": true,
+          "SUBSTEP": 10,
+          "MAXITER": 10,
+          "bDISPLNORM": true,
+          "bFORCENORM": false,
+          "bENERGYNORM": false,
+          "DISPLNORM": 0.001,
+          "FORCENORM": 0.001,
+          "ENERGYNORM": 0.001,
+          "bSHEARYIELDSTOP": false,
+          "BSHEARYIELDSTOPBEAM": true,
+          "bAXIALYIELDSTOP": false,
+          "bAXIALYIELDSTOPBEAM": true,
+          "bAXIALYIELDSTOPTRUSS": false,
+          "bSUPPORTDZDIRSTOP": false,
+          "bSUPPORTSTOPUPLIFTING": false,
+          "bSUPPORTSTOPCOLLAPSE": false
+        },
+        "NODECONNECTIVITY": "PINNED",
+        "bSHOWGRAPHAFTER": true,
+        "bSHOWGRAPGHDURING": false
+      },
+      "updatePayload": {
+        "GEOMNONLINEAR_TYPE": "NONE",
+        "INITLOADMETHOD": "PERFORM_ANAL",
+        "INITLOAD": [],
+        "bCONSIGNOREELEM": true,
+        "NONL_OPT": {
+          "bPERMITFAIL": true,
+          "SUBSTEP": 10,
+          "MAXITER": 11,
+          "bDISPLNORM": true,
+          "bFORCENORM": false,
+          "bENERGYNORM": false,
+          "DISPLNORM": 0.001,
+          "FORCENORM": 0.001,
+          "ENERGYNORM": 0.001,
+          "bSHEARYIELDSTOP": false,
+          "BSHEARYIELDSTOPBEAM": true,
+          "bAXIALYIELDSTOP": false,
+          "bAXIALYIELDSTOPBEAM": true,
+          "bAXIALYIELDSTOPTRUSS": false,
+          "bSUPPORTDZDIRSTOP": false,
+          "bSUPPORTSTOPUPLIFTING": false,
+          "bSUPPORTSTOPCOLLAPSE": false
+        },
+        "NODECONNECTIVITY": "PINNED",
+        "bSHOWGRAPHAFTER": true,
+        "bSHOWGRAPGHDURING": false
+      },
+      "expected": {
+        "created": 10,
+        "updated": 11
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras17",
+      "endpoint": "/db/POGD-M1",
+      "name": "Pushover Global Control (Hyper-S)",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {},
+      "updatePayload": {
+        "GEO_NONL_TYPE": 0,
+        "INIT_LOAD_TYPE": 0,
+        "ITER_CTRL": {
+          "MAX_ITER": 31,
+          "NORM_CTRL": {
+            "DISP": {
+              "OPT_USE": true,
+              "VALUE": 0.001
+            },
+            "FORCE": {
+              "OPT_USE": false
+            },
+            "ENERGY": {
+              "OPT_USE": false
+            }
+          },
+          "STIFF_UPD_SCHEME": 0,
+          "ITER_BEF_UPDATE": 5
+        }
+      },
+      "expected": {
+        "created": null,
+        "updated": 31
       },
       "needs": [],
       "setup": [],

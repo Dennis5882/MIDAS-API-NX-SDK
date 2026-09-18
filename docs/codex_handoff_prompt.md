@@ -74,7 +74,7 @@ cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 83 tests
 ```
 
-`schema/live-cases.json` is **version 6**: 212 cases over 189 endpoints, 177
+`schema/live-cases.json` is **version 6**: 215 cases over 192 endpoints, 177
 confirmed, 9 base-model steps, 67 named seeds, none unsupported. It dropped one
 seed on 2026-09-18: `skew_node` re-created a node the shared base model already
 builds, which npm refused as a setup collision.
@@ -115,20 +115,19 @@ text search of the ledger entry, so an entry that mentions the build for another
 reason drops out of the list; that errs toward doing less, never toward a false
 claim.
 
-On 2026-09-18 the same command prints **26**. Task G accounts for three of the
-81 endpoints removed from the original 107; the other 78 were replayed that day
-in sixteen batches — `core`, `props`, `boundary` (split in two), `extras2`
+On 2026-09-18 the same command prints **12**. Task G accounts for three of the
+84 endpoints removed from the original 107; the other 81 were replayed that day
+in the recorded batches — `core`, `props`, `boundary` (split in two), `extras2`
 (split in two), `extras3`, `extras4`, `extras5`, `extras6`, `extras7`,
 `extras8`, `extras10`, `extras13`, `extras15`, `extras16`, the Hyper-S dynamic
-controls, and the China and India lanes. Each was recorded in the live notes
-and the npm evidence scratch under its own heading. **These 26 are what is
-left:**
+controls, the China and India lanes, and the moving-control variants. The
+current session then replayed `/db/NMAS` and the extras1 completion batch.
+Each was recorded in the live notes and the npm evidence scratch under its own
+heading. **These 12 are what is left:**
 
-`/db/ACTL-M1`, `/db/BCGD-M1`, `/db/CJFG`, `/db/CLDR`, `/db/CO_F`, `/db/CO_M`,
-`/db/CO_S`, `/db/CO_T`, `/db/CRGR`, `/db/DYLA`, `/db/EIGV-M1`, `/db/HHCT-M1`,
-`/db/MLFC`, `/db/MVCTbs`, `/db/MVCTid`, `/db/MVCTtr`, `/db/NLCT-M1`,
-`/db/NMAS`, `/db/NPLN`, `/db/PRLS`, `/db/PZEF`, `/db/SPAN`, `/db/STCT-M1`,
-`/db/STYP`, `/db/STYP-M1`, `/db/TDGR`
+`/db/ACTL-M1`, `/db/BCGD-M1`, `/db/CJFG`, `/db/CO_F`, `/db/CRGR`,
+`/db/DYLA`, `/db/EIGV-M1`, `/db/HHCT-M1`, `/db/NLCT-M1`, `/db/PZEF`,
+`/db/SPAN`, `/db/STCT-M1`
 
 Re-measure anyway rather than working from that list: it is a snapshot, and the
 command is the definition.
@@ -228,15 +227,15 @@ changes:
 value for `LINE_SEARCH_OPTION`, that one is a fixture fix you may make, under the
 rules above.
 
-## Task A — the 24 `/db` endpoints with no case
+## Task A — the 21 `/db` endpoints with no case
 
-**Offline to build, live to run.** 21 are buildable:
+**Offline to build, live to run.** 18 are buildable:
 
 | chapter | endpoints |
 | --- | --- |
 | 04 Properties | `EPMT-M1`, `FIBR`, `IEHG`, `IEHG-BEAM-M1`, `IMFM`, `IMFM-M1` |
 | 07 Temperature/Prestress | `PTNS`, `TDCS`, `TDNA`, `TDNT`, `TDPL` |
-| 14 Pushover | `PHGE`, `POGD`, `POGD-M1` |
+| 14 Pushover | `PHGE`, `POGD`, `POGD-M1` — unconfirmed `extras17` fixtures added 2026-09-18; await a live session |
 | 24 Design | `RCHK`, `REBB`, `REBR`, `REBW` |
 | 08 Moving Loads | `MVLDbs` — **blocked**, see below |
 | 05 Boundary | `DRLS` |
@@ -244,6 +243,12 @@ rules above.
 
 The other three, `IEHG-GL-M1`, `IEHG-PSS-M1` and `IEHG-TRUSS-M1`, have no manual
 schema and `/info` 404s for them. **Do not build a fixture for them.**
+
+`extras17` uses only contract/manual values: the PHGE request examples' element
+1-to-2 assignment, POGD's common nonlinear-control fields (excluding the
+product-specific `PHOP_OPT` members), and POGD-M1's documented no-initial-load
+PUT branch. All three cases remain `confirmed: false` until both public SDKs
+pass on every declared product.
 
 `/db/MVLDbs` stays blocked: its contract marks mutually exclusive `LCDATA_*`
 objects required together, and its two-value `ALL_MODE` condition needs a

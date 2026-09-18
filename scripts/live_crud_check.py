@@ -303,7 +303,10 @@ from midas_nx.db.properties.section import (
 )
 from midas_nx.db.properties.thickness import Thickness
 from midas_nx.db.pushover import (
+    AssignPushoverHingeProperties,
     IgnoreElementsForPushoverInitialLoad,
+    PushoverAnalysisControlData,
+    PushoverAnalysisControlDataHyperS,
     PushoverLoadCase,
     PushoverLoadCaseHyperS,
 )
@@ -1225,8 +1228,10 @@ def _static_cases() -> List[Case]:
             {"mX": 1.0, "mY": 1.0, "mZ": 1.0},
             {"mX": 1.0, "mY": 1.0, "mZ": 2.0},
             lambda p: p.get("mZ"), 1.0, 2.0,
+            # Node 3 is part of BASE_MODEL_STEPS.  Do not duplicate it as a
+            # case setup: the npm harness rightly refuses setup POSTs that
+            # would overwrite a shared base-model record.
             item_id=3, confirmed=True,
-            setup=({"endpoint": "/db/NODE", "id": 3},),
         ),
     ]
 
@@ -4010,6 +4015,90 @@ def _extras16_cases() -> List[Case]:
     ]
 
 
+def _extras17_cases() -> List[Case]:
+    """Task A pushover cases using ch14's documented wire values only.
+
+    PHGE's two manual examples attach the same named hinge to elements 1 and
+    2, which the shared base model supplies.  POGD's complete request example
+    contains product-specific PHOP_OPT members, so this fixture intentionally
+    keeps only the documented common required control fields.  POGD-M1 is
+    PUT-only and the ch14 schema requires its GEO_NONL_TYPE, INIT_LOAD_TYPE,
+    and ITER_CTRL group; choose the documented no-initial-load branch rather
+    than fabricate load-case prerequisites.
+    """
+    phge_created = {
+        "ID": 1,
+        "TYPE": "BEAM",
+        "HINGE_TYPE": "Myz_15",
+        "FIBER_KEY": 0,
+    }
+    phge_updated = {**phge_created, "ID": 2}
+
+    pogd_created = {
+        "GEOMNONLINEAR_TYPE": "NONE",
+        "INITLOADMETHOD": "PERFORM_ANAL",
+        "INITLOAD": [],
+        "bCONSIGNOREELEM": True,
+        "NONL_OPT": {
+            "bPERMITFAIL": True,
+            "SUBSTEP": 10,
+            "MAXITER": 10,
+            "bDISPLNORM": True,
+            "bFORCENORM": False,
+            "bENERGYNORM": False,
+            "DISPLNORM": 0.001,
+            "FORCENORM": 0.001,
+            "ENERGYNORM": 0.001,
+            "bSHEARYIELDSTOP": False,
+            "BSHEARYIELDSTOPBEAM": True,
+            "bAXIALYIELDSTOP": False,
+            "bAXIALYIELDSTOPBEAM": True,
+            "bAXIALYIELDSTOPTRUSS": False,
+            "bSUPPORTDZDIRSTOP": False,
+            "bSUPPORTSTOPUPLIFTING": False,
+            "bSUPPORTSTOPCOLLAPSE": False,
+        },
+        "NODECONNECTIVITY": "PINNED",
+        "bSHOWGRAPHAFTER": True,
+        "bSHOWGRAPGHDURING": False,
+    }
+    pogd_updated = copy.deepcopy(pogd_created)
+    pogd_updated["NONL_OPT"]["MAXITER"] = 11
+
+    pogd_m1_created = {
+        "GEO_NONL_TYPE": 0,
+        "INIT_LOAD_TYPE": 0,
+        "ITER_CTRL": {
+            "MAX_ITER": 30,
+            "NORM_CTRL": {
+                "DISP": {"OPT_USE": True, "VALUE": 0.001},
+                "FORCE": {"OPT_USE": False},
+                "ENERGY": {"OPT_USE": False},
+            },
+            "STIFF_UPD_SCHEME": 0,
+            "ITER_BEF_UPDATE": 5,
+        },
+    }
+    pogd_m1_updated = copy.deepcopy(pogd_m1_created)
+    pogd_m1_updated["ITER_CTRL"]["MAX_ITER"] = 31
+
+    return [
+        Case(
+            AssignPushoverHingeProperties, phge_created, phge_updated,
+            lambda p: p["ID"], 1, 2,
+        ),
+        Case(
+            PushoverAnalysisControlData, pogd_created, pogd_updated,
+            lambda p: p["NONL_OPT"]["MAXITER"], 10, 11,
+        ),
+        Case(
+            PushoverAnalysisControlDataHyperS, {}, pogd_m1_updated,
+            lambda p: p["ITER_CTRL"]["MAX_ITER"], None, 31,
+            products=("civil",),
+        ),
+    ]
+
+
 # 2026-09-05, both public SDKs on disposable base models; see live notes.
 # These are payload/code-specific observations, not endpoint product gates.
 _LANE_LIVE_CONFIRMED = {
@@ -4353,6 +4442,7 @@ TIERS: List[Tier] = [
     Tier("extras14", "batch 14: the 12 Civil-only-by-design endpoints (5 db.moving_loads, 7 db.analysis_control Hyper-S/-M1), all confirmed", _extras14_seeds, _extras14_cases),
     Tier("extras15", "batch 15: tractable pushover and prestress assignments", _extras15_seeds, _extras15_cases),
     Tier("extras16", "batch 16: Task A properties with complete manual request values", _no_seeds, _extras16_cases),
+    Tier("extras17", "batch 17: Task A pushover controls and hinge assignment", _no_seeds, _extras17_cases),
 ]
 
 

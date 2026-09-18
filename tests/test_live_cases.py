@@ -70,13 +70,16 @@ def test_live_case_fixture_matches_python_source() -> None:
     assert result.returncode == 0, result.stderr
 
 
-def test_live_case_fixture_carries_confirmed_nmas_setup() -> None:
-    cases = json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
+def test_live_case_fixture_uses_shared_base_node_for_confirmed_nmas() -> None:
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    cases = fixture["cases"]
     nmas = next(case for case in cases if case["endpoint"] == "/db/NMAS")
+    node_step = next(step for step in fixture["baseModel"] if step["endpoint"] == "/db/NODE")
 
     assert nmas["confirmed"] is True
     assert nmas["createPayload"] == {"mX": 1.0, "mY": 1.0, "mZ": 1.0}
-    assert nmas["setup"] == [{"endpoint": "/db/NODE", "id": 3}]
+    assert "3" in node_step["records"]
+    assert nmas["setup"] == []
 
 
 def test_live_case_fixture_does_not_reseed_base_static_load_cases() -> None:
@@ -214,6 +217,32 @@ def test_extras16_fimp_fixture_is_the_manual_kent_park_example() -> None:
     }
     assert fimp["updatePayload"]["NAME"] == "Concrete_KP"
     assert fimp["updatePayload"]["CONC"]["KENPAR"]["FC"] == 24000
+
+
+def test_extras17_pushover_fixtures_use_documented_common_branches() -> None:
+    cases = json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
+    extras17 = [case for case in cases if case["tier"] == "extras17"]
+    assert {case["endpoint"] for case in extras17} == {
+        "/db/PHGE", "/db/POGD", "/db/POGD-M1",
+    }
+    assert all(case["confirmed"] is False for case in extras17)
+
+    phge = next(case for case in extras17 if case["endpoint"] == "/db/PHGE")
+    assert phge["createPayload"] == {
+        "ID": 1, "TYPE": "BEAM", "HINGE_TYPE": "Myz_15", "FIBER_KEY": 0,
+    }
+    assert phge["updatePayload"]["ID"] == 2
+
+    pogd = next(case for case in extras17 if case["endpoint"] == "/db/POGD")
+    assert pogd["createPayload"]["NONL_OPT"]["MAXITER"] == 10
+    assert pogd["updatePayload"]["NONL_OPT"]["MAXITER"] == 11
+    assert "PHOP_OPT" not in pogd["createPayload"]
+
+    pogd_m1 = next(case for case in extras17 if case["endpoint"] == "/db/POGD-M1")
+    assert pogd_m1["products"] == ["civil"]
+    assert pogd_m1["methods"] == ["DELETE", "GET", "PUT"]
+    assert pogd_m1["createPayload"] == {}
+    assert pogd_m1["updatePayload"]["ITER_CTRL"]["MAX_ITER"] == 31
 
 
 def test_live_case_fixture_does_not_reseed_base_skew_node() -> None:
