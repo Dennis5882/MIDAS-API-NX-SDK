@@ -339,6 +339,9 @@ from midas_nx.db.temperature_prestress import (
     PrestressBeamLoad,
     SystemTemperature,
     TemperatureGradient,
+    TendonPrestress,
+    TendonProfile,
+    TendonProperty,
 )
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -4099,6 +4102,161 @@ def _extras17_cases() -> List[Case]:
     ]
 
 
+def _tdnt_payload(name: str, *, ase: float) -> Dict[str, Any]:
+    """The ch07 section 6 request example: KSCE LSD15, internal post-tension.
+
+    The contract marks FT, FPK and TDMFNAME required with no condition, but
+    the manual's own relaxation-code table scopes each to a different RM
+    group, and its worked example - RM 6, KSCE LSD15 - sends none of the
+    three. Send the example as written rather than invent a value for a field
+    this code does not use.
+    """
+    return {
+        "NAME": name,
+        "TYPE": "INTERNAL",
+        "MATL": 1,
+        "AREA": 0.00504,
+        "D_AREA": 0.1,
+        "RM": 6,
+        "RV": 2,
+        "US": 1860000,
+        "YS": 1570000,
+        "LT": "POST",
+        "ASB": 0.006,
+        "ASE": ase,
+        "bBONDED": True,
+        "FF": 0.3,
+        "WF": 0.0066,
+    }
+
+
+def _tdna_payload(name: str, *, xar_angle: float) -> Dict[str, Any]:
+    """The ch07 section 7 2D spline example, on the base model's own beams.
+
+    The example places the tendon on elements 101-105, which no fixture model
+    has; the shared base model's three beams carry it instead - the same
+    remapping the ch08 lane fixtures already do onto its plate corners. bPJ
+    is sent because the CURVE variant declares it and every manual CURVE
+    example includes it. This is the SPLINE branch, so no RADIUS: that field
+    belongs to ROUND, where a 2026-09-18 live check confirmed it is a Number
+    rather than the Boolean or Array two of the manual's own rows claim.
+    """
+    return {
+        "NAME": name,
+        "TDN_PROP": 1,
+        "ELEM": [1, 2, 3],
+        "BELENG": 0,
+        "ELENG": 0,
+        "CURVE": "SPLINE",
+        "INPUT": "2D",
+        "TDN_GRUP": 1,
+        "LENG_OPT": "AUTO2",
+        "bTP": False,
+        "SHAPE": "ELEMENT",
+        "INS_PT": "END-I",
+        "INS_ELEM": 1,
+        "AXIS_IJ": "I-J",
+        "XAR_ANGLE": xar_angle,
+        "bPJ": True,
+        "OFF_YZ": [0, 0],
+        "PROFY": [
+            {"PT": [0, -0.5], "bFIX": True, "R": 0},
+            {"PT": [15, -0.3], "bFIX": False, "R": 0},
+            {"PT": [30, -0.5], "bFIX": True, "R": 0},
+        ],
+        "PROFZ": [
+            {"PT": [0, -0.6], "bFIX": True, "R": 0, "bBOTZ": False},
+            {"PT": [15, -0.3], "bFIX": False, "R": 0, "bBOTZ": False},
+            {"PT": [30, -0.6], "bFIX": True, "R": 0, "bBOTZ": False},
+        ],
+    }
+
+
+def _tdpl_payload(*, end: float) -> Dict[str, Any]:
+    """The ch07 section 9 request example, against this tier's own records.
+
+    The example's "PS" load case and "T1_Profile_2D" tendon are names it
+    assumes exist; point them at the seeds instead of creating a second set.
+    """
+    return {
+        "ITEMS": [
+            {
+                "ID": 1,
+                "LCNAME": "PS18_SEED",
+                "GROUP_NAME": "",
+                "TENDON_NAME": "TDNA_SEED",
+                "TYPE": "FORCE",
+                "ORDER": "BOTH",
+                "BEGIN": 1360000,
+                "END": end,
+                "GROUTING": 1,
+            }
+        ]
+    }
+
+
+def _extras18_seeds() -> List[SeedStep]:
+    """The chain ch07 documents: load case -> property -> profile.
+
+    Its own prestress load case rather than extras15's: /db/STLD renumbers,
+    and two tiers owning one id is exactly what made /db/SPLC and /db/MVCD
+    collide across tiers.
+    """
+    return [
+        SeedStep(
+            "tdpl_prestress_case",
+            lambda client: StaticLoadCase.create(
+                {17: {"NAME": "PS18_SEED", "TYPE": "PS", "DESC": "tendon fixture"}},
+                client=client,
+            ),
+        ),
+        SeedStep(
+            "tdnt_seed",
+            lambda client: TendonProperty.create(
+                {1: _tdnt_payload("TDNT_SEED", ase=0.006)}, client=client,
+            ),
+        ),
+        SeedStep(
+            "tdna_seed",
+            lambda client: TendonProfile.create(
+                {1: _tdna_payload("TDNA_SEED", xar_angle=0)}, client=client,
+            ),
+        ),
+    ]
+
+
+def _extras18_cases() -> List[Case]:
+    """Task A: ch07's tendon chain, each case beside the record the next needs.
+
+    Every case takes an id the seeds do not own, so a case deleting itself
+    cannot take a later case's prerequisite with it.
+    """
+    return [
+        Case(
+            TendonProperty,
+            _tdnt_payload("T1_Post_KSCE", ase=0.006),
+            _tdnt_payload("T1_Post_KSCE", ase=0.012),
+            lambda p: p.get("ASE"), 0.006, 0.012,
+            item_id=2,
+        ),
+        Case(
+            TendonProfile,
+            _tdna_payload("T1_Profile_2D", xar_angle=0),
+            _tdna_payload("T1_Profile_2D", xar_angle=15),
+            lambda p: p.get("XAR_ANGLE"), 0, 15,
+            item_id=2, needs=("tdnt_seed",),
+        ),
+        Case(
+            TendonPrestress,
+            _tdpl_payload(end=1360000),
+            _tdpl_payload(end=1200000),
+            lambda p: p["ITEMS"][0]["END"], 1360000, 1200000,
+            item_id=1,
+            needs=("tdpl_prestress_case", "tdnt_seed", "tdna_seed"),
+        ),
+    ]
+
+
 # 2026-09-05, both public SDKs on disposable base models; see live notes.
 # These are payload/code-specific observations, not endpoint product gates.
 _LANE_LIVE_CONFIRMED = {
@@ -4443,6 +4601,7 @@ TIERS: List[Tier] = [
     Tier("extras15", "batch 15: tractable pushover and prestress assignments", _extras15_seeds, _extras15_cases),
     Tier("extras16", "batch 16: Task A properties with complete manual request values", _no_seeds, _extras16_cases),
     Tier("extras17", "batch 17: Task A pushover controls and hinge assignment", _no_seeds, _extras17_cases),
+    Tier("extras18", "batch 18: Task A ch07 tendon chain (TDNT -> TDNA -> TDPL)", _extras18_seeds, _extras18_cases),
 ]
 
 
@@ -4580,7 +4739,7 @@ def _mark(row: Dict[str, Any]) -> str:
 #: seed nobody has watched.
 RENUMBERING_SEEDS = frozenset({
     "dl14_seed", "pnld_seed", "prestress_load_cases", "smpt_seed", "spfc_seed",
-    "thfc_seed", "thfc_force_seed", "this_seed",
+    "tdpl_prestress_case", "thfc_seed", "thfc_force_seed", "this_seed",
 })
 
 #: Seeds whose one read only guards against a record an *earlier Python tier*

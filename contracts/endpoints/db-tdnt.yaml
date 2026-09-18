@@ -265,6 +265,9 @@ fields:
       Relaxation Factor ξ (TB05/TB10092/Q-CR/AS/JTJ/JTG 코드)
     type: number
     requirement: required
+    appliesWhen:
+      - path: RM
+        in: [2, 3, 10, 11, 12, 13]
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified
@@ -292,6 +295,9 @@ fields:
       Characteristic Strength fpk (TB05/TB10092/Q-CR/JTJ/JTG 코드)
     type: number
     requirement: required
+    appliesWhen:
+      - path: RM
+        in: [2, 3, 10, 12, 13]
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified
@@ -301,6 +307,9 @@ fields:
       Relaxation Function Name (User Defined)
     type: string
     requirement: required
+    appliesWhen:
+      - path: RM
+        equals: 100
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified

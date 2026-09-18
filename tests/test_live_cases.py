@@ -245,6 +245,50 @@ def test_extras17_pushover_fixtures_use_documented_common_branches() -> None:
     assert pogd_m1["updatePayload"]["ITER_CTRL"]["MAX_ITER"] == 31
 
 
+def test_extras18_tendon_chain_seeds_each_step_it_depends_on() -> None:
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    extras18 = [case for case in fixture["cases"] if case["tier"] == "extras18"]
+    assert {case["endpoint"] for case in extras18} == {
+        "/db/TDNT", "/db/TDNA", "/db/TDPL",
+    }
+    assert all(case["confirmed"] is False for case in extras18)
+
+    # Each case takes an id its own seed does not own, so a case deleting
+    # itself cannot take a later case's prerequisite with it.
+    ids = {case["endpoint"]: case["id"] for case in extras18}
+    assert ids == {"/db/TDNT": 2, "/db/TDNA": 2, "/db/TDPL": 1}
+    assert list(fixture["seeds"]["tdnt_seed"]["records"]) == ["1"]
+    assert list(fixture["seeds"]["tdna_seed"]["records"]) == ["1"]
+
+    # /db/STLD renumbers, so the load-case seed has to say so or the npm
+    # harness reads the server's own id as a mismatch.
+    assert fixture["seeds"]["tdpl_prestress_case"]["allowRenumbering"] is True
+    assert fixture["seeds"]["tdpl_prestress_case"]["endpoint"] == "/db/STLD"
+
+    tdnt = next(case for case in extras18 if case["endpoint"] == "/db/TDNT")
+    assert tdnt["needs"] == []
+    # The manual's own KSCE LSD15 example omits FT, FPK and TDMFNAME, which
+    # its relaxation-code table scopes to other RM values.
+    assert tdnt["createPayload"]["RM"] == 6
+    assert {"FT", "FPK", "TDMFNAME"}.isdisjoint(tdnt["createPayload"])
+    assert tdnt["expected"] == {"created": 0.006, "updated": 0.012}
+
+    tdna = next(case for case in extras18 if case["endpoint"] == "/db/TDNA")
+    assert tdna["needs"] == ["tdnt_seed"]
+    # Remapped from the example's elements 101-105 onto the base model's beams.
+    assert tdna["createPayload"]["ELEM"] == [1, 2, 3]
+    assert tdna["createPayload"]["INS_ELEM"] == 1
+    assert tdna["createPayload"]["CURVE"] == "SPLINE"
+    assert "RADIUS" not in json.dumps(tdna["createPayload"])
+
+    tdpl = next(case for case in extras18 if case["endpoint"] == "/db/TDPL")
+    assert tdpl["needs"] == ["tdpl_prestress_case", "tdnt_seed", "tdna_seed"]
+    item = tdpl["createPayload"]["ITEMS"][0]
+    assert item["LCNAME"] == "PS18_SEED"
+    assert item["TENDON_NAME"] == "TDNA_SEED"
+    assert tdpl["updatePayload"]["ITEMS"][0]["END"] == 1200000
+
+
 def test_live_case_fixture_does_not_reseed_base_skew_node() -> None:
     fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
     skew = next(case for case in fixture["cases"] if case["endpoint"] == "/db/SKEW")

@@ -1338,6 +1338,125 @@
       },
       "allowRenumbering": true
     },
+    "tdpl_prestress_case": {
+      "endpoint": "/db/STLD",
+      "records": {
+        "17": {
+          "NAME": "PS18_SEED",
+          "TYPE": "PS",
+          "DESC": "tendon fixture"
+        }
+      },
+      "allowRenumbering": true
+    },
+    "tdnt_seed": {
+      "endpoint": "/db/TDNT",
+      "records": {
+        "1": {
+          "NAME": "TDNT_SEED",
+          "TYPE": "INTERNAL",
+          "MATL": 1,
+          "AREA": 0.00504,
+          "D_AREA": 0.1,
+          "RM": 6,
+          "RV": 2,
+          "US": 1860000,
+          "YS": 1570000,
+          "LT": "POST",
+          "ASB": 0.006,
+          "ASE": 0.006,
+          "bBONDED": true,
+          "FF": 0.3,
+          "WF": 0.0066
+        }
+      }
+    },
+    "tdna_seed": {
+      "endpoint": "/db/TDNA",
+      "records": {
+        "1": {
+          "NAME": "TDNA_SEED",
+          "TDN_PROP": 1,
+          "ELEM": [
+            1,
+            2,
+            3
+          ],
+          "BELENG": 0,
+          "ELENG": 0,
+          "CURVE": "SPLINE",
+          "INPUT": "2D",
+          "TDN_GRUP": 1,
+          "LENG_OPT": "AUTO2",
+          "bTP": false,
+          "SHAPE": "ELEMENT",
+          "INS_PT": "END-I",
+          "INS_ELEM": 1,
+          "AXIS_IJ": "I-J",
+          "XAR_ANGLE": 0,
+          "bPJ": true,
+          "OFF_YZ": [
+            0,
+            0
+          ],
+          "PROFY": [
+            {
+              "PT": [
+                0,
+                -0.5
+              ],
+              "bFIX": true,
+              "R": 0
+            },
+            {
+              "PT": [
+                15,
+                -0.3
+              ],
+              "bFIX": false,
+              "R": 0
+            },
+            {
+              "PT": [
+                30,
+                -0.5
+              ],
+              "bFIX": true,
+              "R": 0
+            }
+          ],
+          "PROFZ": [
+            {
+              "PT": [
+                0,
+                -0.6
+              ],
+              "bFIX": true,
+              "R": 0,
+              "bBOTZ": false
+            },
+            {
+              "PT": [
+                15,
+                -0.3
+              ],
+              "bFIX": false,
+              "R": 0,
+              "bBOTZ": false
+            },
+            {
+              "PT": [
+                30,
+                -0.6
+              ],
+              "bFIX": true,
+              "R": 0,
+              "bBOTZ": false
+            }
+          ]
+        }
+      }
+    },
     "mvcd_eurocode": {
       "endpoint": "/db/MVCD",
       "records": {
@@ -14234,6 +14353,327 @@
       },
       "needs": [],
       "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras18",
+      "endpoint": "/db/TDNT",
+      "name": "Tendon Property",
+      "id": 2,
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "NAME": "T1_Post_KSCE",
+        "TYPE": "INTERNAL",
+        "MATL": 1,
+        "AREA": 0.00504,
+        "D_AREA": 0.1,
+        "RM": 6,
+        "RV": 2,
+        "US": 1860000,
+        "YS": 1570000,
+        "LT": "POST",
+        "ASB": 0.006,
+        "ASE": 0.006,
+        "bBONDED": true,
+        "FF": 0.3,
+        "WF": 0.0066
+      },
+      "updatePayload": {
+        "NAME": "T1_Post_KSCE",
+        "TYPE": "INTERNAL",
+        "MATL": 1,
+        "AREA": 0.00504,
+        "D_AREA": 0.1,
+        "RM": 6,
+        "RV": 2,
+        "US": 1860000,
+        "YS": 1570000,
+        "LT": "POST",
+        "ASB": 0.006,
+        "ASE": 0.012,
+        "bBONDED": true,
+        "FF": 0.3,
+        "WF": 0.0066
+      },
+      "expected": {
+        "created": 0.006,
+        "updated": 0.012
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras18",
+      "endpoint": "/db/TDNA",
+      "name": "Tendon Profile",
+      "id": 2,
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "NAME": "T1_Profile_2D",
+        "TDN_PROP": 1,
+        "ELEM": [
+          1,
+          2,
+          3
+        ],
+        "BELENG": 0,
+        "ELENG": 0,
+        "CURVE": "SPLINE",
+        "INPUT": "2D",
+        "TDN_GRUP": 1,
+        "LENG_OPT": "AUTO2",
+        "bTP": false,
+        "SHAPE": "ELEMENT",
+        "INS_PT": "END-I",
+        "INS_ELEM": 1,
+        "AXIS_IJ": "I-J",
+        "XAR_ANGLE": 0,
+        "bPJ": true,
+        "OFF_YZ": [
+          0,
+          0
+        ],
+        "PROFY": [
+          {
+            "PT": [
+              0,
+              -0.5
+            ],
+            "bFIX": true,
+            "R": 0
+          },
+          {
+            "PT": [
+              15,
+              -0.3
+            ],
+            "bFIX": false,
+            "R": 0
+          },
+          {
+            "PT": [
+              30,
+              -0.5
+            ],
+            "bFIX": true,
+            "R": 0
+          }
+        ],
+        "PROFZ": [
+          {
+            "PT": [
+              0,
+              -0.6
+            ],
+            "bFIX": true,
+            "R": 0,
+            "bBOTZ": false
+          },
+          {
+            "PT": [
+              15,
+              -0.3
+            ],
+            "bFIX": false,
+            "R": 0,
+            "bBOTZ": false
+          },
+          {
+            "PT": [
+              30,
+              -0.6
+            ],
+            "bFIX": true,
+            "R": 0,
+            "bBOTZ": false
+          }
+        ]
+      },
+      "updatePayload": {
+        "NAME": "T1_Profile_2D",
+        "TDN_PROP": 1,
+        "ELEM": [
+          1,
+          2,
+          3
+        ],
+        "BELENG": 0,
+        "ELENG": 0,
+        "CURVE": "SPLINE",
+        "INPUT": "2D",
+        "TDN_GRUP": 1,
+        "LENG_OPT": "AUTO2",
+        "bTP": false,
+        "SHAPE": "ELEMENT",
+        "INS_PT": "END-I",
+        "INS_ELEM": 1,
+        "AXIS_IJ": "I-J",
+        "XAR_ANGLE": 15,
+        "bPJ": true,
+        "OFF_YZ": [
+          0,
+          0
+        ],
+        "PROFY": [
+          {
+            "PT": [
+              0,
+              -0.5
+            ],
+            "bFIX": true,
+            "R": 0
+          },
+          {
+            "PT": [
+              15,
+              -0.3
+            ],
+            "bFIX": false,
+            "R": 0
+          },
+          {
+            "PT": [
+              30,
+              -0.5
+            ],
+            "bFIX": true,
+            "R": 0
+          }
+        ],
+        "PROFZ": [
+          {
+            "PT": [
+              0,
+              -0.6
+            ],
+            "bFIX": true,
+            "R": 0,
+            "bBOTZ": false
+          },
+          {
+            "PT": [
+              15,
+              -0.3
+            ],
+            "bFIX": false,
+            "R": 0,
+            "bBOTZ": false
+          },
+          {
+            "PT": [
+              30,
+              -0.6
+            ],
+            "bFIX": true,
+            "R": 0,
+            "bBOTZ": false
+          }
+        ]
+      },
+      "expected": {
+        "created": 0,
+        "updated": 15
+      },
+      "needs": [
+        "tdnt_seed"
+      ],
+      "setup": [
+        {
+          "seed": "tdnt_seed"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras18",
+      "endpoint": "/db/TDPL",
+      "name": "Tendon Prestress",
+      "id": 1,
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "ITEMS": [
+          {
+            "ID": 1,
+            "LCNAME": "PS18_SEED",
+            "GROUP_NAME": "",
+            "TENDON_NAME": "TDNA_SEED",
+            "TYPE": "FORCE",
+            "ORDER": "BOTH",
+            "BEGIN": 1360000,
+            "END": 1360000,
+            "GROUTING": 1
+          }
+        ]
+      },
+      "updatePayload": {
+        "ITEMS": [
+          {
+            "ID": 1,
+            "LCNAME": "PS18_SEED",
+            "GROUP_NAME": "",
+            "TENDON_NAME": "TDNA_SEED",
+            "TYPE": "FORCE",
+            "ORDER": "BOTH",
+            "BEGIN": 1360000,
+            "END": 1200000,
+            "GROUTING": 1
+          }
+        ]
+      },
+      "expected": {
+        "created": 1360000,
+        "updated": 1200000
+      },
+      "needs": [
+        "tdpl_prestress_case",
+        "tdnt_seed",
+        "tdna_seed"
+      ],
+      "setup": [
+        {
+          "seed": "tdpl_prestress_case"
+        },
+        {
+          "seed": "tdnt_seed"
+        },
+        {
+          "seed": "tdna_seed"
+        }
+      ],
       "blockedSeeds": [],
       "crashes": null
     }

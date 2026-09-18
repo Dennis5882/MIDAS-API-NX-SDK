@@ -9774,16 +9774,16 @@ export namespace DbTemperaturePrestressTypes {
     W_ANGLE?: number;
     /** Relaxation Coefficient Class (CEB-FIP 2010 전용) */
     TDMFK?: number;
-    /** Relaxation Factor ξ (TB05/TB10092/Q-CR/AS/JTJ/JTG 코드) */
-    FT: number;
+    /** Relaxation Factor ξ (TB05/TB10092/Q-CR/AS/JTJ/JTG 코드) Required when RM is 2 or 3 or 10 or 11 or 12 or 13. */
+    FT?: number;
     /** Low Relaxation (TB05/TB10092/Q-CR 코드) */
     LR?: boolean;
     /** Overstress Reduction Factor 적용 (TB05/TB10092/Q-CR/JTG 코드) */
     bOSRF?: boolean;
-    /** Characteristic Strength fpk (TB05/TB10092/Q-CR/JTJ/JTG 코드) */
-    FPK: number;
-    /** Relaxation Function Name (User Defined) */
-    TDMFNAME: string;
+    /** Characteristic Strength fpk (TB05/TB10092/Q-CR/JTJ/JTG 코드) Required when RM is 2 or 3 or 10 or 12 or 13. */
+    FPK?: number;
+    /** Relaxation Function Name (User Defined) Required when RM = 100. */
+    TDMFNAME?: string;
     /** Relaxation coefficient - Check Box */
     bRELAX?: boolean;
   }
