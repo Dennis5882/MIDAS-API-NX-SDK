@@ -225,7 +225,16 @@ def test_extras17_pushover_fixtures_use_documented_common_branches() -> None:
     assert {case["endpoint"] for case in extras17} == {
         "/db/PHGE", "/db/POGD", "/db/POGD-M1",
     }
-    assert all(case["confirmed"] is False for case in extras17)
+    # 2026-09-19, both SDKs: POGD passed on Civil and answered "Wrong Field"
+    # on Gen, so it is one case per product; POGD-M1 passed; PHGE did not.
+    confirmed = {(case["endpoint"], tuple(case["products"])): case["confirmed"]
+                 for case in extras17}
+    assert confirmed == {
+        ("/db/PHGE", ("gen", "civil")): False,
+        ("/db/POGD", ("gen",)): False,
+        ("/db/POGD", ("civil",)): True,
+        ("/db/POGD-M1", ("civil",)): True,
+    }
 
     phge = next(case for case in extras17 if case["endpoint"] == "/db/PHGE")
     assert phge["createPayload"] == {
@@ -233,7 +242,8 @@ def test_extras17_pushover_fixtures_use_documented_common_branches() -> None:
     }
     assert phge["updatePayload"]["ID"] == 2
 
-    pogd = next(case for case in extras17 if case["endpoint"] == "/db/POGD")
+    pogd = next(case for case in extras17 if case["endpoint"] == "/db/POGD"
+                and case["products"] == ["civil"])
     assert pogd["createPayload"]["NONL_OPT"]["MAXITER"] == 10
     assert pogd["updatePayload"]["NONL_OPT"]["MAXITER"] == 11
     assert "PHOP_OPT" not in pogd["createPayload"]
@@ -251,7 +261,11 @@ def test_extras18_tendon_chain_seeds_each_step_it_depends_on() -> None:
     assert {case["endpoint"] for case in extras18} == {
         "/db/TDNT", "/db/TDNA", "/db/TDPL",
     }
-    assert all(case["confirmed"] is False for case in extras18)
+    # 2026-09-19, both SDKs, both products: TDNT passed; TDNA answered an
+    # unregistered IS_DB_TDNA_NOTENSIONCALC error, which blocks TDPL.
+    assert {case["endpoint"]: case["confirmed"] for case in extras18} == {
+        "/db/TDNT": True, "/db/TDNA": False, "/db/TDPL": False,
+    }
 
     # Each case takes an id its own seed does not own, so a case deleting
     # itself cannot take a later case's prerequisite with it.
@@ -259,6 +273,11 @@ def test_extras18_tendon_chain_seeds_each_step_it_depends_on() -> None:
     assert ids == {"/db/TDNT": 2, "/db/TDNA": 2, "/db/TDPL": 1}
     assert list(fixture["seeds"]["tdnt_seed"]["records"]) == ["1"]
     assert list(fixture["seeds"]["tdna_seed"]["records"]) == ["1"]
+    # TDNA's TDN_GRUP 1 must exist: the product answers "Tendon Group 1
+    # does not exist." without it. The seed is extras1's confirmed TDGR shape.
+    assert fixture["seeds"]["tdgr_seed"] == {
+        "endpoint": "/db/TDGR", "records": {"1": {"NAME": "TDGR_SEED"}},
+    }
 
     # /db/STLD renumbers, so the load-case seed has to say so or the npm
     # harness reads the server's own id as a mismatch.
@@ -274,7 +293,7 @@ def test_extras18_tendon_chain_seeds_each_step_it_depends_on() -> None:
     assert tdnt["expected"] == {"created": 0.006, "updated": 0.012}
 
     tdna = next(case for case in extras18 if case["endpoint"] == "/db/TDNA")
-    assert tdna["needs"] == ["tdnt_seed"]
+    assert tdna["needs"] == ["tdnt_seed", "tdgr_seed"]
     # Remapped from the example's elements 101-105 onto the base model's beams.
     assert tdna["createPayload"]["ELEM"] == [1, 2, 3]
     assert tdna["createPayload"]["INS_ELEM"] == 1
@@ -282,7 +301,9 @@ def test_extras18_tendon_chain_seeds_each_step_it_depends_on() -> None:
     assert "RADIUS" not in json.dumps(tdna["createPayload"])
 
     tdpl = next(case for case in extras18 if case["endpoint"] == "/db/TDPL")
-    assert tdpl["needs"] == ["tdpl_prestress_case", "tdnt_seed", "tdna_seed"]
+    assert tdpl["needs"] == [
+        "tdpl_prestress_case", "tdnt_seed", "tdgr_seed", "tdna_seed",
+    ]
     item = tdpl["createPayload"]["ITEMS"][0]
     assert item["LCNAME"] == "PS18_SEED"
     assert item["TENDON_NAME"] == "TDNA_SEED"

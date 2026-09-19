@@ -2792,18 +2792,18 @@
       "status": "implemented",
       "module": "midas_nx.db.temperature_prestress",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-09-19",
         "products": [
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write 2026-09-19, Build 09/15/2026: batch 18's case - the ch07 section 6 KSCE LSD15 example as written, which sends no FT, FPK or TDMFNAME - completed create/read/update/read/per-id DELETE/read through both SDKs on Gen NX and Civil NX on a disposable base model; npm replayed the same emitted fixture on Gen, Civil on 2026-09-19.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 09/15/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 09/15/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -5294,18 +5294,17 @@
       "status": "implemented",
       "module": "midas_nx.db.pushover",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-09-19",
         "products": [
-          "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write 2026-09-19, Build 09/15/2026: batch 17's case - ch14's documented common control fields - completed create/read/update/read/per-id DELETE/read through both SDKs on Civil NX on a disposable base model; npm replayed the same emitted fixture on Civil on 2026-09-19. Gen NX answered \"Wrong Field\" to the identical payload through both SDKs, so Gen's evidence is the read above.",
         "nx_versions": {
-          "gen": "MIDAS Gen NX 2026 (v2.1), build 06/23/2026",
-          "civil": "MIDAS Civil NX 2026 (v2.2), build 08/06/2026"
+          "gen": "MIDAS Gen NX 2026 (v2.1), build 09/15/2026",
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 09/15/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {
@@ -5318,16 +5317,16 @@
       "status": "implemented",
       "module": "midas_nx.db.pushover",
       "live_verified": {
-        "date": "2026-07-26",
+        "date": "2026-09-19",
         "products": [
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET)",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Write 2026-09-19, Build 09/15/2026: batch 17's PUT-only case - the documented no-initial-load branch - completed PUT/read/update/read/per-id DELETE/read through both SDKs on Civil NX on a disposable base model; npm replayed the same emitted fixture on Civil on 2026-09-19.",
         "nx_versions": {
-          "civil": "MIDAS Civil NX 2026 (v2.1), build 06/05/2026"
+          "civil": "MIDAS Civil NX 2026 (v2.2), build 09/15/2026"
         },
-        "level": "read",
-        "outcome": "success_empty"
+        "level": "write",
+        "outcome": "success"
       }
     },
     {

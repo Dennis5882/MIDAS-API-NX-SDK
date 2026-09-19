@@ -1371,6 +1371,14 @@
         }
       }
     },
+    "tdgr_seed": {
+      "endpoint": "/db/TDGR",
+      "records": {
+        "1": {
+          "NAME": "TDGR_SEED"
+        }
+      }
+    },
     "tdna_seed": {
       "endpoint": "/db/TDNA",
       "records": {
@@ -14236,8 +14244,7 @@
       "name": "Pushover Analysis Control Data",
       "id": 1,
       "products": [
-        "gen",
-        "civil"
+        "gen"
       ],
       "methods": [
         "DELETE",
@@ -14246,6 +14253,86 @@
         "PUT"
       ],
       "confirmed": false,
+      "createPayload": {
+        "GEOMNONLINEAR_TYPE": "NONE",
+        "INITLOADMETHOD": "PERFORM_ANAL",
+        "INITLOAD": [],
+        "bCONSIGNOREELEM": true,
+        "NONL_OPT": {
+          "bPERMITFAIL": true,
+          "SUBSTEP": 10,
+          "MAXITER": 10,
+          "bDISPLNORM": true,
+          "bFORCENORM": false,
+          "bENERGYNORM": false,
+          "DISPLNORM": 0.001,
+          "FORCENORM": 0.001,
+          "ENERGYNORM": 0.001,
+          "bSHEARYIELDSTOP": false,
+          "BSHEARYIELDSTOPBEAM": true,
+          "bAXIALYIELDSTOP": false,
+          "bAXIALYIELDSTOPBEAM": true,
+          "bAXIALYIELDSTOPTRUSS": false,
+          "bSUPPORTDZDIRSTOP": false,
+          "bSUPPORTSTOPUPLIFTING": false,
+          "bSUPPORTSTOPCOLLAPSE": false
+        },
+        "NODECONNECTIVITY": "PINNED",
+        "bSHOWGRAPHAFTER": true,
+        "bSHOWGRAPGHDURING": false
+      },
+      "updatePayload": {
+        "GEOMNONLINEAR_TYPE": "NONE",
+        "INITLOADMETHOD": "PERFORM_ANAL",
+        "INITLOAD": [],
+        "bCONSIGNOREELEM": true,
+        "NONL_OPT": {
+          "bPERMITFAIL": true,
+          "SUBSTEP": 10,
+          "MAXITER": 11,
+          "bDISPLNORM": true,
+          "bFORCENORM": false,
+          "bENERGYNORM": false,
+          "DISPLNORM": 0.001,
+          "FORCENORM": 0.001,
+          "ENERGYNORM": 0.001,
+          "bSHEARYIELDSTOP": false,
+          "BSHEARYIELDSTOPBEAM": true,
+          "bAXIALYIELDSTOP": false,
+          "bAXIALYIELDSTOPBEAM": true,
+          "bAXIALYIELDSTOPTRUSS": false,
+          "bSUPPORTDZDIRSTOP": false,
+          "bSUPPORTSTOPUPLIFTING": false,
+          "bSUPPORTSTOPCOLLAPSE": false
+        },
+        "NODECONNECTIVITY": "PINNED",
+        "bSHOWGRAPHAFTER": true,
+        "bSHOWGRAPGHDURING": false
+      },
+      "expected": {
+        "created": 10,
+        "updated": 11
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras17",
+      "endpoint": "/db/POGD",
+      "name": "Pushover Analysis Control Data",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
       "createPayload": {
         "GEOMNONLINEAR_TYPE": "NONE",
         "INITLOADMETHOD": "PERFORM_ANAL",
@@ -14324,7 +14411,7 @@
         "GET",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {},
       "updatePayload": {
         "GEO_NONL_TYPE": 0,
@@ -14371,7 +14458,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "NAME": "T1_Post_KSCE",
         "TYPE": "INTERNAL",
@@ -14598,11 +14685,15 @@
         "updated": 15
       },
       "needs": [
-        "tdnt_seed"
+        "tdnt_seed",
+        "tdgr_seed"
       ],
       "setup": [
         {
           "seed": "tdnt_seed"
+        },
+        {
+          "seed": "tdgr_seed"
         }
       ],
       "blockedSeeds": [],
@@ -14661,6 +14752,7 @@
       "needs": [
         "tdpl_prestress_case",
         "tdnt_seed",
+        "tdgr_seed",
         "tdna_seed"
       ],
       "setup": [
@@ -14669,6 +14761,9 @@
         },
         {
           "seed": "tdnt_seed"
+        },
+        {
+          "seed": "tdgr_seed"
         },
         {
           "seed": "tdna_seed"

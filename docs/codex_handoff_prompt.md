@@ -12,9 +12,9 @@ text is in git history (`0fff09d` and earlier).
 - **2.8.3 is published on PyPI and npm.** Nothing in either packaged surface has
   changed since. **No release is warranted**, and a contract edit does not make
   one: the author picks the number and asks for the release explicitly.
-- **Coverage: 400/400 implemented, 201 write / 199 read.** Of the 225 `/db`
-  endpoints, 46 are short of write level.
-- **The npm package has replayed all 177 confirmed live cases** on every product
+- **Coverage: 400/400 implemented, 204 write / 196 read.** Of the 225 `/db`
+  endpoints, 43 are short of write level.
+- **The npm package has replayed all 180 confirmed live cases** on every product
   each case declares. The npm/Python evidence gap is closed; keep it closed.
 - **Contracts: 384 endpoints + 87 result tables**, 5,078 fields. Every npm
   resource and operation that can be named by a contract is. The three drafts
@@ -37,8 +37,9 @@ first):
 
 **Without one:**
 
-2. **Task A** — run batch 17 — `/db/PHGE`, `/db/POGD`, `/db/POGD-M1` are built
-   and unconfirmed — then build fixtures for the rest.
+2. **Task A** — build fixtures for the 14 buildable endpoints still without a
+   case. Batches 17 and 18 ran live on 2026-09-19; their open cases are listed
+   in the Task A section.
 
 **Task K is closed**: every confirmed case ran on Build 09/15/2026 on
 2026-09-18. Its section stays because the next build reopens it.
@@ -53,7 +54,7 @@ Run these first. **If a number differs, say so before starting** — something
 moved under you, and the command wins over this file.
 
 ```bash
-python -m pytest -q                       # 1083 passed
+python -m pytest -q                       # 1084 passed
 ruff check src tests scripts && mypy      # clean
 python scripts/validate_contracts.py      # OK; 384 endpoints, 5078 fields,
                                           # 140 proven safe, 8 unsafe
@@ -70,7 +71,7 @@ python scripts/live_crud_check.py --check-cases        # silent; exit 0
 python scripts/check_fixture_contract.py --check       # 1 fixture lead over 1
                                           # endpoint, 3 contract gaps over 2
 python scripts/report_npm_replay_coverage.py --check   # gap 0; by confirmed
-                                          # case 177 complete, 0 partial, 0 none
+                                          # case 180 complete, 0 partial, 0 none
 python scripts/report_unmerged_tables.py --check       # report is current
 cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 83 tests
@@ -83,8 +84,8 @@ references re-pointed. If they go red again, **stop and say so** — deciding
 what a chapter's new text means is a judgement call, and a line number that no
 longer resolves can mean a table moved or that it changed.
 
-`schema/live-cases.json` is **version 6**: 215 cases over 192 endpoints, 177
-confirmed, 9 base-model steps, 67 named seeds, none unsupported. It dropped one
+`schema/live-cases.json` is **version 6**: 219 cases over 195 endpoints, 180
+confirmed, 9 base-model steps, 71 named seeds, none unsupported. It dropped one
 seed on 2026-09-18: `skew_node` re-created a node the shared base model already
 builds, which npm refused as a setup collision.
 
@@ -239,15 +240,14 @@ changes:
 value for `LINE_SEARCH_OPTION`, that one is a fixture fix you may make, under the
 rules above.
 
-## Task A — the 21 `/db` endpoints with no case
+## Task A — the 18 `/db` endpoints with no case
 
-**Offline to build, live to run.** 18 are buildable:
+**Offline to build, live to run.** 14 are buildable:
 
 | chapter | endpoints |
 | --- | --- |
 | 04 Properties | `EPMT-M1`, `FIBR`, `IEHG`, `IEHG-BEAM-M1`, `IMFM`, `IMFM-M1` |
-| 07 Temperature/Prestress | `PTNS`, `TDCS`, `TDNA`, `TDNT`, `TDPL` |
-| 14 Pushover | `PHGE`, `POGD`, `POGD-M1` — unconfirmed `extras17` fixtures added 2026-09-18; await a live session |
+| 07 Temperature/Prestress | `PTNS`, `TDCS` (needs a construction stage and `extras18`'s TDNA seed) |
 | 24 Design | `RCHK`, `REBB`, `REBR`, `REBW` |
 | 08 Moving Loads | `MVLDbs` — **blocked**, see below |
 | 05 Boundary | `DRLS` |
@@ -256,11 +256,17 @@ rules above.
 The other three, `IEHG-GL-M1`, `IEHG-PSS-M1` and `IEHG-TRUSS-M1`, have no manual
 schema and `/info` 404s for them. **Do not build a fixture for them.**
 
-`extras17` uses only contract/manual values: the PHGE request examples' element
-1-to-2 assignment, POGD's common nonlinear-control fields (excluding the
-product-specific `PHOP_OPT` members), and POGD-M1's documented no-initial-load
-PUT branch. All three cases remain `confirmed: false` until both public SDKs
-pass on every declared product.
+**Batches 17 and 18 ran live on 2026-09-19** (both SDKs, both products; live
+notes of that date). `/db/TDNT` (both products), `/db/POGD` (Civil) and
+`/db/POGD-M1` passed and are write-level. Still open, and not a fixture to
+re-run unchanged:
+
+| case | products | last answer |
+| --- | --- | --- |
+| `/db/POGD` | gen | `Wrong Field` to the payload Civil accepts — vary an enum value first |
+| `/db/PHGE` | gen, civil | `Unknown Error` |
+| `/db/TDNA` | gen, civil | `[Error] Errors detected in Tendon Profile Data.(Item:IS_DB_TDNA_NOTENSIONCALC : Not Registered String)` — a model precondition, **not yours**: do not permute fields |
+| `/db/TDPL` | gen, civil | blocked by the TDNA seed |
 
 `/db/MVLDbs` stays blocked: its contract marks mutually exclusive `LCDATA_*`
 objects required together, and its two-value `ALL_MODE` condition needs a

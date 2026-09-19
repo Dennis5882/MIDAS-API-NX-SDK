@@ -10245,3 +10245,57 @@ must be last; the earlier runner guard was a batch-order block, not an endpoint
 failure. All 18 successful endpoint/SDK combinations completed their full
 round trips, checkpointed under `C:/temp`, and restored empty scratch
 documents.
+
+## 2026-09-19 — Task A batches 17 and 18, first live run
+
+Both products on Build 09/15/2026 (Gen NX 2026 v2.1, Civil NX 2026 v2.2). The
+first read-only check found **no project open on either product** —
+`GET /db/NODE` answered `The project is not opened` with each product's own key
+while `/mapikey/verify` still said `connected` — so nothing was run until the
+author opened a New Project in both. The re-check then read 0 `NODE` and 0
+`ELEM` records on each, and was repeated before every run. The built npm
+package ran first and the Python harness second, on Gen then Civil, same
+session, same emitted fixture. Every run checkpointed under `C:/temp` and
+restored an empty scratch document.
+
+**npm and Python agreed on every endpoint and product:**
+
+| Endpoint | Gen | Civil |
+| --- | --- | --- |
+| `/db/TDNT` | pass | pass |
+| `/db/POGD` | `Wrong Field` | pass |
+| `/db/POGD-M1` | — (Civil only) | pass |
+| `/db/PHGE` | `Unknown Error` | `Unknown Error` |
+| `/db/TDNA` | see below | see below |
+| `/db/TDPL` | blocked by the TDNA seed | blocked by the TDNA seed |
+
+`/db/TDNT`, `/db/POGD` (Civil) and `/db/POGD-M1` are write-level from this run;
+the ledger is 204 write.
+
+- **`/db/TDNT`** passed with the ch07 section 6 KSCE LSD15 example as written.
+  That example sends none of `FT`, `FPK` or `TDMFNAME`, which the chapter's
+  Specifications table marks Required without a condition. The pass is live
+  evidence for the `appliesWhen` on `RM` those three fields now carry: the
+  product does not require them under RM 6.
+- **`/db/POGD`** is product-asymmetric: the identical payload passes on Civil
+  and answers `Wrong Field` on Gen, through both SDKs. It is now one case per
+  product, the pattern `/db/EPMT` already uses. `Wrong Field` usually names a
+  bad *value* rather than a bad field name, so the enums in ch14's common
+  control fields are where to look first.
+- **`/db/PHGE`** answered `Unknown Error` on both products, with ch14's own
+  two-element hinge-assignment example on the base model's elements 1 and 2.
+- **`/db/TDNA`** failed in two stages, and the first one was a fixture defect.
+  The ch07 section 7 example sends `TDN_GRUP: 1` and assumes tendon group 1
+  exists; without it both SDKs got `[Error] Tendon Group 1 does not exist.` —
+  a domain error, so the shape was accepted and the target was missing. A
+  `/db/TDGR` seed built from extras1's confirmed case fixed that, and the
+  retry answered, on both products and through both SDKs:
+
+  `[Error] Errors detected in Tendon Profile Data.(Item:IS_DB_TDNA_NOTENSIONCALC : Not Registered String)`
+
+  The item named is an internal resource-string id the product could not look
+  up (`Not Registered String`), so the message itself is broken as well as the
+  request refused. "No tension calc" reads as a model-state precondition — the
+  base model's beams carry a DB/User solid section, not a PSC one — but that
+  is a reading, not a finding. It was **not** chased by permuting fields; the
+  case stays unconfirmed, and `/db/TDPL` stays blocked behind it.

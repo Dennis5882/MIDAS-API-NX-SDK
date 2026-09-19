@@ -4085,19 +4085,24 @@ def _extras17_cases() -> List[Case]:
     pogd_m1_updated = copy.deepcopy(pogd_m1_created)
     pogd_m1_updated["ITER_CTRL"]["MAX_ITER"] = 31
 
+    # 2026-09-19, Build 09/15/2026, both SDKs: POGD passed on Civil and Gen
+    # answered "Wrong Field" to the identical payload. Keep one case per
+    # product so Civil's evidence does not bless Gen's behaviour.
+    pogd_args = (
+        PushoverAnalysisControlData, pogd_created, pogd_updated,
+        lambda p: p["NONL_OPT"]["MAXITER"], 10, 11,
+    )
     return [
         Case(
             AssignPushoverHingeProperties, phge_created, phge_updated,
             lambda p: p["ID"], 1, 2,
         ),
-        Case(
-            PushoverAnalysisControlData, pogd_created, pogd_updated,
-            lambda p: p["NONL_OPT"]["MAXITER"], 10, 11,
-        ),
+        Case(*pogd_args, products=("gen",)),
+        Case(*pogd_args, products=("civil",), confirmed=True),
         Case(
             PushoverAnalysisControlDataHyperS, {}, pogd_m1_updated,
             lambda p: p["ITER_CTRL"]["MAX_ITER"], None, 31,
-            products=("civil",),
+            products=("civil",), confirmed=True,
         ),
     ]
 
@@ -4216,6 +4221,17 @@ def _extras18_seeds() -> List[SeedStep]:
                 {1: _tdnt_payload("TDNT_SEED", ase=0.006)}, client=client,
             ),
         ),
+        # The TDNA example's TDN_GRUP 1 names a tendon group it assumes
+        # exists; on 2026-09-19 Gen answered "[Error] Tendon Group 1 does not
+        # exist." through npm - the shape accepted, the target missing. The
+        # payload is extras1's confirmed /db/TDGR case, which takes id 1 and
+        # deletes it before this tier runs.
+        SeedStep(
+            "tdgr_seed",
+            lambda client: TendonGroup.create(
+                {1: {"NAME": "TDGR_SEED"}}, client=client,
+            ),
+        ),
         SeedStep(
             "tdna_seed",
             lambda client: TendonProfile.create(
@@ -4232,19 +4248,27 @@ def _extras18_cases() -> List[Case]:
     cannot take a later case's prerequisite with it.
     """
     return [
+        # Passed through both SDKs on Gen and Civil, Build 09/15/2026,
+        # 2026-09-19 - the manual's example as written, with no FT/FPK/TDMFNAME.
         Case(
             TendonProperty,
             _tdnt_payload("T1_Post_KSCE", ase=0.006),
             _tdnt_payload("T1_Post_KSCE", ase=0.012),
             lambda p: p.get("ASE"), 0.006, 0.012,
-            item_id=2,
+            item_id=2, confirmed=True,
         ),
+        # 2026-09-19, both SDKs, both products: with the tendon group seeded,
+        # the product answers "[Error] Errors detected in Tendon Profile
+        # Data.(Item:IS_DB_TDNA_NOTENSIONCALC : Not Registered String)" - the
+        # shape is accepted, and the message is an unregistered resource-string
+        # id rather than text. Unconfirmed until what "no tension calc" needs
+        # of the model is established; do not permute fields to find out.
         Case(
             TendonProfile,
             _tdna_payload("T1_Profile_2D", xar_angle=0),
             _tdna_payload("T1_Profile_2D", xar_angle=15),
             lambda p: p.get("XAR_ANGLE"), 0, 15,
-            item_id=2, needs=("tdnt_seed",),
+            item_id=2, needs=("tdnt_seed", "tdgr_seed"),
         ),
         Case(
             TendonPrestress,
@@ -4252,7 +4276,7 @@ def _extras18_cases() -> List[Case]:
             _tdpl_payload(end=1200000),
             lambda p: p["ITEMS"][0]["END"], 1360000, 1200000,
             item_id=1,
-            needs=("tdpl_prestress_case", "tdnt_seed", "tdna_seed"),
+            needs=("tdpl_prestress_case", "tdnt_seed", "tdgr_seed", "tdna_seed"),
         ),
     ]
 

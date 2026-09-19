@@ -600,3 +600,23 @@ distinct result-table operations remain covered overall.
 
 **Count:** 7 current-build replays; 162 distinct `/db` endpoints and 4 distinct
 result-table operations remain covered overall.
+
+### 2026-09-19 - Task A batches 17 and 18
+
+The first live run of either batch. The built npm package ran first and the
+Python harness second, on Gen then Civil, Build 09/15/2026, each starting from
+an empty document checked with that product's own key. These are **new
+endpoints** for this inventory, not re-runs.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/TDNT` | 2026-09-19 | Gen, Civil |
+| `/db/POGD` | 2026-09-19 | Civil |
+| `/db/POGD-M1` | 2026-09-19 | Civil |
+
+`/db/POGD` answered `Wrong Field` on Gen through both SDKs and is recorded for
+Civil only. `/db/PHGE` and `/db/TDNA` failed on both products and `/db/TDPL`
+was blocked by the TDNA seed; none of those are counted here.
+
+**Count:** 3 new endpoints; 165 distinct `/db` endpoints and 4 distinct
+result-table operations; 169 distinct npm public-API operations overall.
