@@ -620,3 +620,17 @@ was blocked by the TDNA seed; none of those are counted here.
 
 **Count:** 3 new endpoints; 165 distinct `/db` endpoints and 4 distinct
 result-table operations; 169 distinct npm public-API operations overall.
+
+### 2026-09-19 - Task B moving-load country cases
+
+The built npm package ran first and the Python harness second, on Civil NX,
+Build 09/15/2026, after each case's vehicle was seeded. New endpoints for this
+inventory.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/MVLDch` | 2026-09-19 | Civil |
+| `/db/MVLDid` | 2026-09-19 | Civil |
+
+**Count:** 2 new endpoints; 167 distinct `/db` endpoints and 4 distinct
+result-table operations; 171 distinct npm public-API operations overall.

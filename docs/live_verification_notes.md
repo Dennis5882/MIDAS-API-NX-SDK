@@ -10361,3 +10361,50 @@ answers `Unknown Error` exactly as Python does.
   requested, and they drop the write. `/db/MADO` (id 92, beside its seeds'
   90 and 91) and `/db/DOEL` (id 4) do not rule renumbering out on this
   evidence alone; extras9 records MADO dropping writes on both products.
+
+### Task B, same session: `/db/MVLDch` and `/db/MVLDid` pass once they have a vehicle
+
+Both leads from the run above were offline questions first, and both had the
+same answer. A ch08 country load case's sub-load names a vehicle — despite the
+key, `VEHICLE_CLASS` with `VEHICLE_TYPE: "VL"` names a `/db/MVHL` record, not
+a `/db/MVHC` class — and neither case's `needs` built one.
+
+- **India is paired by the manual itself.** Section 14's General Load Python
+  example names `IN(IRC6)_ClassA`, which is section 10's India example (MVLD
+  code 7, `STANDARD_CODE: "IRC:6-2000"`, standard Class A). The fixture had
+  used section 14's Request Body instead, whose railway vehicle
+  `IN(IRC)_(25t1)_BroadGauge-1676mm` no section documents creating. The case
+  now names Class A and a seed creates it.
+- **China is not paired.** Both of section 13's examples name the standard
+  class `CH(CJJ11)_C-CD(A/B)`, which no section documents creating, and the
+  only China vehicle section 10 documents is the user-defined `CN_UD_Lane1`
+  (MVLD code 3, `VEH_CN` Truck/Lane, no `STANDARD_CODE`). The case names that
+  one: a model reference remapped, as element and lane references already
+  are, not a value invented.
+
+With the vehicles seeded, **both passed a full round trip on Civil NX through
+both SDKs** — create, read, update, read, per-id DELETE, read. The India
+result also answers the lead the run above recorded: `Number of Sub-Load
+Cases` was the missing vehicle too, not a count rule — `NUM_LOADED_LANES` was
+left at the example's 2, beside one sub-load item. A sub-load whose vehicle
+does not exist is evidently discarded, and the case is then refused for
+having none.
+
+Two more things this run established:
+
+- **The country cases' update now proves a PUT.** It had equalled the create,
+  so it could not fail (the Task G class). It changes `DESC` alone — the probe
+  `/db/STLD`'s confirmed case uses — and both cases read back `crud updated`.
+  `/db/MVLDeu` and `/db/MVLDpl` share the helper and get the same update; both
+  still fail before it, as recorded above.
+- **`/db/MVHL` accepted and stored both country shapes**, since npm verifies
+  every seed record by id: a user-defined China vehicle with `VEH_CN` and no
+  `STANDARD_CODE`, and a standard India vehicle with `STANDARD_CODE` and no
+  `VEH_*` object. That matches what the SDK's own class docstring recorded
+  from a real Eurocode model on 2026-07-30 — country vehicles carry their
+  `VEH_*` object instead of `VEH_DEFAULT`, and not necessarily a
+  `STANDARD_CODE` — and it is the first time either of these two shapes has
+  been written. `/db/MVHL` was already write-level, so no count changes.
+
+`/db/MVLDch` and `/db/MVLDid` are write-level on Civil, and the ledger is 206
+write. Gen has neither code, so Gen's evidence for both stays the read.

@@ -310,6 +310,35 @@ def test_extras18_tendon_chain_seeds_each_step_it_depends_on() -> None:
     assert tdpl["updatePayload"]["ITEMS"][0]["END"] == 1200000
 
 
+def test_moving_country_cases_build_the_vehicle_they_name_and_prove_the_put() -> None:
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    by_endpoint = {case["endpoint"]: case for case in fixture["cases"]}
+
+    # Each sub-load names a vehicle; before 2026-09-19 no case built one, and
+    # MVLDch/MVLDid failed on it. India's name is the one ch08's own General
+    # Load Python example pairs with its section 10 Class A vehicle.
+    for endpoint, code, key, name in (
+        ("/db/MVLDch", "CHINA", "VEHICLE_CLASS", "CN_UD_Lane1"),
+        ("/db/MVLDid", "INDIA", "VEHICLE_CLASS_1", "IN(IRC6)_ClassA"),
+    ):
+        case = by_endpoint[endpoint]
+        seed = f"moving_case_vehicle_{code}"
+        assert case["needs"][-1] == seed
+        assert fixture["seeds"][seed]["endpoint"] == "/db/MVHL"
+        assert fixture["seeds"][seed]["records"]["1"]["VEHICLE_LOAD_NAME"] == name
+        assert {item[key] for item in case["createPayload"]["SUB_LOAD_ITEMS"]} == {name}
+        assert case["products"] == ["civil"] and case["confirmed"] is True
+
+    # A country case whose update equalled its create could not fail; the
+    # PUT now changes DESC alone, as /db/STLD's confirmed case does.
+    for endpoint in ("/db/MVLDch", "/db/MVLDid", "/db/MVLDeu", "/db/MVLDpl"):
+        case = by_endpoint[endpoint]
+        assert case["expected"] == {"created": "", "updated": "crud updated"}
+        diff = {k for k in case["createPayload"]
+                if case["createPayload"][k] != case["updatePayload"][k]}
+        assert diff == {"DESC"}, (endpoint, diff)
+
+
 def test_fbld_seeds_are_marked_as_renumbering() -> None:
     # /db/FBLD renumbers to the next free id (live, 2026-08-16). Unmarked,
     # fbld7_seed's id 90 reads as missing to the npm harness, which then

@@ -4425,12 +4425,74 @@ def _moving_case_lane_seed(
     return SeedStep(name, seed)
 
 
+#: The vehicle each country case's sub-load names, from ch08 section 10's own
+#: examples. On 2026-09-19 MVLDch answered "Non-existent Vehicle has been
+#: defined in Sub-Load Case" and MVLDid "Number of Sub-Load Cases": neither
+#: case's needs built a vehicle at all.
+#:
+#: India is paired by the manual itself - section 14's General Load Python
+#: example names ``IN(IRC6)_ClassA``, which is section 10's India Class A
+#: example - so the case takes that example's name in place of the Request
+#: Body's railway vehicle, which no section documents creating.  China has
+#: no such pairing: sections 13's examples both name the standard class
+#: ``CH(CJJ11)_C-CD(A/B)``, which no section documents creating, and the only
+#: China vehicle section 10 documents is the user-defined ``CN_UD_Lane1``.
+#: The case names that one - a model reference remapped, as the element and
+#: lane references already are, not a value invented.
+_MOVING_CASE_VEHICLES: Dict[str, Tuple[str, Dict[str, Any]]] = {
+    "CHINA": ("VEHICLE_CLASS", {
+        "MVLD_CODE": 3,
+        "VEHICLE_LOAD_NAME": "CN_UD_Lane1",
+        "VEHICLE_LOAD_NUM": 2,
+        "USER_LOAD_TYPE": "Truck/Lane",
+        "VEH_CN": {"TRUCK_TYPE": 0, "P_": 130, "QM": 10.5, "QQ": 7},
+    }),
+    "INDIA": ("VEHICLE_CLASS_1", {
+        "MVLD_CODE": 7,
+        "VEHICLE_LOAD_NAME": "IN(IRC6)_ClassA",
+        "VEHICLE_LOAD_NUM": 1,
+        "VEHICLE_TYPE_NAME": "ClassA",
+        "STANDARD_CODE": "IRC:6-2000",
+    }),
+}
+
+
+#: 2026-09-19, Build 09/15/2026, both public SDKs: full round trips on Civil
+#: once each case's vehicle was seeded - MVLDid's "Number of Sub-Load Cases"
+#: had been the missing vehicle too, and NUM_LOADED_LANES was left alone.
+_MOVING_CASE_CONFIRMED = {"CHINA": {"civil"}, "INDIA": {"civil"}}
+
+
+def _moving_case_vehicle_seed(code: str, products=None) -> SeedStep:
+    _, vehicle = _MOVING_CASE_VEHICLES[code]
+    return SeedStep(
+        f"moving_case_vehicle_{code}",
+        lambda c, v=vehicle: Vehicles.create({1: copy.deepcopy(v)}, client=c),
+        products,
+    )
+
+
 def _moving_country_case(resource, code: str, products=None) -> List[Case]:
+    """One ch08 country load case, on the lanes and vehicle it names.
+
+    The update changes DESC alone - the same probe /db/STLD's confirmed case
+    uses - because a case whose update equals its create proves nothing
+    about a PUT; that was Task G.
+    """
     payload = _moving_case_manual_body(resource.ENDPOINT)
+    needs: Tuple[str, ...] = (f"lane_code_{code}", f"moving_case_lanes_{code}")
+    if code in _MOVING_CASE_VEHICLES:
+        key, vehicle = _MOVING_CASE_VEHICLES[code]
+        for item in payload.get("SUB_LOAD_ITEMS", []):
+            item[key] = vehicle["VEHICLE_LOAD_NAME"]
+        needs += (f"moving_case_vehicle_{code}",)
+    updated = copy.deepcopy(payload)
+    updated["DESC"] = "crud updated"
     return [Case(
-        resource, copy.deepcopy(payload), copy.deepcopy(payload),
-        lambda p: p["LCNAME"], payload["LCNAME"], payload["LCNAME"],
-        products=(product,), needs=(f"lane_code_{code}", f"moving_case_lanes_{code}"),
+        resource, copy.deepcopy(payload), updated,
+        lambda p: p.get("DESC"), payload["DESC"], "crud updated",
+        products=(product,), needs=needs,
+        confirmed=product in _MOVING_CASE_CONFIRMED.get(code, set()),
     ) for product in products or ("gen", "civil")]
 
 
@@ -4585,11 +4647,13 @@ TIERS: List[Tier] = [
          lambda: _moving_control_cases(MovingLoadAnalysisControlTransverse, "TRANS")),
     Tier("moving_case_china", "manual China moving-load case",
          lambda: _moving_case_lane_seeds(
-             "CHINA", TrafficLineLanesChina, ("LL_01", "LL_02"), ("civil",)),
+             "CHINA", TrafficLineLanesChina, ("LL_01", "LL_02"), ("civil",))
+         + [_moving_case_vehicle_seed("CHINA", ("civil",))],
          lambda: _moving_country_case(MovingLoadCaseChina, "CHINA", ("civil",))),
     Tier("moving_case_india", "manual India moving-load case",
          lambda: _moving_case_lane_seeds(
-             "INDIA", TrafficLineLanesIndia, ("LL_01", "LL_02"), ("civil",)),
+             "INDIA", TrafficLineLanesIndia, ("LL_01", "LL_02"), ("civil",))
+         + [_moving_case_vehicle_seed("INDIA", ("civil",))],
          lambda: _moving_country_case(MovingLoadCaseIndia, "INDIA", ("civil",))),
     Tier("moving_case_eurocode", "manual Eurocode moving-load case",
          lambda: _moving_case_lane_seeds(
