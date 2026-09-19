@@ -33,7 +33,9 @@ is one to stop and report, not to decide.**
 **With a product session** (a session is the scarce thing — use it for these
 first):
 
-1. **Task B** — the 22 endpoints whose case has never passed.
+1. **Task B** — the 22 endpoints whose case has never passed. The 15 runnable
+   ones were re-run on 2026-09-19 and none moved, so a session here starts
+   from a fixture change; the section names the three leads.
 
 **Without one:**
 
@@ -207,6 +209,24 @@ write, and an entry that loses that has lost information.
 Each one's last error is recorded verbatim in `docs/live_verification_notes.md`;
 **read it before a run**, because re-running an unchanged fixture against an
 unchanged build answers nothing.
+
+**All 15 runnable ones were re-run on Build 09/15/2026 on 2026-09-19, and none
+moved** — every answer matched the earlier build word for word, through both
+SDKs (live notes, "2026-09-19 (later)"). So as long as the build is 09/15,
+**running any of them again with an unchanged fixture is not work.** A Task B
+run now starts with a fixture change backed by a permitted source, and the
+only ones with a lead are:
+
+| endpoint | lead |
+| --- | --- |
+| `/db/MVLDch` | `Non-existent Vehicle has been defined in Sub-Load Case` — its `needs` build no vehicle, and no confirmed case builds a China one. A seed needs a ch08 China vehicle example; **stop if ch08 has none** |
+| `/db/MVLDid` | `Number of Sub-Load Cases` — a count rule, the class `/db/SPAN`'s item-count-vs-list-length rule belongs to; check the ch08 example's own count against its list |
+| `/db/EPSE`, `/db/EPST`, `/db/RPSC`, `/db/TDMF`, `/db/WVLD` | `Wrong Field` usually names a bad **value**; vary a documented enum value before any field name |
+
+The rest have no lead: `/db/HPCE` (`Wrong Key`), `/db/FBLA` and `/db/MVLDeu`
+(`Unknown Error`), and the ones that accept a POST and drop it — `/db/MADO`,
+`/db/SBDO`, `/db/DOEL`, `/db/SINF`, `/db/MVLDpl`. Those are product findings
+until something new is known, and not yours.
 
 - **Not yours:** `/db/ACTL` is settled product behaviour (Gen refuses every
   payload, including one with only its required fields; Civil accepts and does

@@ -4762,8 +4762,9 @@ def _mark(row: Dict[str, Any]) -> str:
 #: listed: renumbering is a live observation, never something to assume for a
 #: seed nobody has watched.
 RENUMBERING_SEEDS = frozenset({
-    "dl14_seed", "pnld_seed", "prestress_load_cases", "smpt_seed", "spfc_seed",
-    "tdpl_prestress_case", "thfc_seed", "thfc_force_seed", "this_seed",
+    "dl14_seed", "fbld7_seed", "pnld_seed", "prestress_load_cases", "smpt_seed",
+    "spfc_seed", "tdpl_prestress_case", "thfc_seed", "thfc_force_seed",
+    "this_seed",
 })
 
 #: Seeds whose one read only guards against a record an *earlier Python tier*

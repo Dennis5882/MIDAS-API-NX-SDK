@@ -925,7 +925,8 @@
             }
           ]
         }
-      }
+      },
+      "allowRenumbering": true
     },
     "posp_seed": {
       "endpoint": "/db/POSP",

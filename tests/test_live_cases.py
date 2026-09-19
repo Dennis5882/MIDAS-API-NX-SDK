@@ -310,6 +310,21 @@ def test_extras18_tendon_chain_seeds_each_step_it_depends_on() -> None:
     assert tdpl["updatePayload"]["ITEMS"][0]["END"] == 1200000
 
 
+def test_fbld_seeds_are_marked_as_renumbering() -> None:
+    # /db/FBLD renumbers to the next free id (live, 2026-08-16). Unmarked,
+    # fbld7_seed's id 90 reads as missing to the npm harness, which then
+    # blocks /db/FBLA instead of testing it - while Python, which does not
+    # verify seed ids, reaches FBLA. The two SDKs tested different things
+    # until 2026-09-19.
+    # extras1's fbld_seed asks for id 1 in an empty table, which is the next
+    # free id, so it needs no flag and a confirmed case proves it; this is
+    # about a seed that asks for an id the product will not give it.
+    seeds = json.loads(FIXTURE.read_text(encoding="utf-8"))["seeds"]
+    assert seeds["fbld7_seed"]["endpoint"] == "/db/FBLD"
+    assert list(seeds["fbld7_seed"]["records"]) == ["90"]
+    assert seeds["fbld7_seed"]["allowRenumbering"] is True
+
+
 def test_live_case_fixture_does_not_reseed_base_skew_node() -> None:
     fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
     skew = next(case for case in fixture["cases"] if case["endpoint"] == "/db/SKEW")

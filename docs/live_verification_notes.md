@@ -10299,3 +10299,65 @@ the ledger is 204 write.
   base model's beams carry a DB/User solid section, not a PSC one — but that
   is a reading, not a finding. It was **not** chased by permuting fields; the
   case stays unconfirmed, and `/db/TDPL` stays blocked behind it.
+
+## 2026-09-19 (later) — Task B on Build 09/15/2026: nothing moved
+
+Same session as batches 17 and 18, both products still on Build 09/15/2026,
+the read-only 0-record check repeated before every run. Of Task B's 22
+endpoints, the 15 that were neither settled product behaviour (`/db/ACTL`,
+`/db/FIMP`, `/db/STCT`) nor blocked behind `nllp_seed` (`/db/NLLP`,
+`/db/NLNK`, `/db/NLNK-M1`, `/db/CGLP`) were run, because **none of the 15 had
+been run on this build** — the last recorded attempts are 2026-09-04 to
+2026-09-14. npm then Python, Gen then Civil. The four `lane_code_*` seeds all
+POST `/db/MVCD` id 1, so each moving-load code had an invocation of its own.
+
+**Every endpoint answered what it answered on the earlier build, word for
+word, and npm and Python agreed on every one:**
+
+| Endpoint | Gen | Civil |
+| --- | --- | --- |
+| `/db/EPSE`, `/db/EPST` | `Wrong Field` | — (Gen only) |
+| `/db/RPSC`, `/db/TDMF` | `Wrong Field` | `Wrong Field` |
+| `/db/WVLD` | — (Civil only) | `Wrong Field` |
+| `/db/HPCE` | `Wrong Key` | `Wrong Key` |
+| `/db/FBLA` | `Unknown Error` | `Unknown Error` |
+| `/db/MVLDeu` | `Unknown Error` | `Unknown Error` |
+| `/db/MADO`, `/db/SBDO`, `/db/DOEL` | POST accepted, record absent on read-back | same |
+| `/db/SINF` | POST accepted, id 1 absent on read-back | same |
+| `/db/MVLDpl` | — (Civil only) | POST accepted, id 1 absent on read-back |
+| `/db/MVLDch` | — (Civil only) | `[Error] Moving Load Case Data (Name:MV_Case1) contains errors.(Item:Non-existent Vehicle has been defined in Sub-Load Case.)` |
+| `/db/MVLDid` | — (Civil only) | `[Error] Moving Load Case Data (Name:MV_India_1) contains errors.(Item:Number of Sub-Load Cases)` |
+
+That is a result, not an absence of one: a new build changed none of these,
+so none of them is build-transient. **Do not re-run any of the 15 against this
+build with an unchanged fixture** — it has now been asked.
+
+### `fbld7_seed` was missing from `RENUMBERING_SEEDS`, so npm never tested `/db/FBLA`
+
+npm's first pass reported `/db/FBLA` as `BLOCK — /db/FBLD: id 90 missing after
+setup POST` on both products, while Python reached FBLA and got `Unknown
+Error`. The two SDKs were not disagreeing about the product; they were testing
+different things. `/db/FBLD` renumbers to the next free id (confirmed live
+2026-08-16), and extras7's own seed docstring says so — "pnld_seed/fbld7_seed
+both land at id 1, not the requested 90" — but only `pnld_seed` had been
+registered. npm, which verifies every seed record by id, stopped at the seed;
+Python, which does not, carried on to FBLA, whose payload names the load type
+rather than its id. `fbld7_seed` is now registered, and npm reaches FBLA and
+answers `Unknown Error` exactly as Python does.
+
+### Leads, not findings
+
+- **`/db/MVLDch` needs a vehicle.** Its sub-load case names the China class
+  `CH(CJJ11)_C-CD(A/B)`, and its `needs` build the lane code and the lanes but
+  no vehicle; the message says as much. No confirmed case builds a China
+  vehicle — the fixture's vehicle cases are AASHTO `/db/MVHL` and
+  `/db/MVHLtr` — so a seed needs a China vehicle payload from ch08, not one
+  written here.
+- **`/db/MVLDid`**'s `Number of Sub-Load Cases` is a domain message about a
+  count, the same class as `/db/SPAN`'s item-count-vs-list-length rule.
+- Of the five "accepted, then absent" endpoints, three ask for id 1 in an
+  **empty** table (`/db/SBDO`, `/db/SINF`, `/db/MVLDpl`), so renumbering
+  cannot explain them the way it explained FBLD: the next free id is the one
+  requested, and they drop the write. `/db/MADO` (id 92, beside its seeds'
+  90 and 91) and `/db/DOEL` (id 4) do not rule renumbering out on this
+  evidence alone; extras9 records MADO dropping writes on both products.
