@@ -12,9 +12,9 @@ text is in git history (`0fff09d` and earlier).
 - **2.8.3 is published on PyPI and npm.** Nothing in either packaged surface has
   changed since. **No release is warranted**, and a contract edit does not make
   one: the author picks the number and asks for the release explicitly.
-- **Coverage: 400/400 implemented, 204 write / 196 read.** Of the 225 `/db`
-  endpoints, 43 are short of write level.
-- **The npm package has replayed all 180 confirmed live cases** on every product
+- **Coverage: 400/400 implemented, 206 write / 194 read.** Of the 225 `/db`
+  endpoints, 41 are short of write level.
+- **The npm package has replayed all 182 confirmed live cases** on every product
   each case declares. The npm/Python evidence gap is closed; keep it closed.
 - **Contracts: 384 endpoints + 87 result tables**, 5,078 fields. Every npm
   resource and operation that can be named by a contract is. The three drafts
@@ -33,9 +33,9 @@ is one to stop and report, not to decide.**
 **With a product session** (a session is the scarce thing — use it for these
 first):
 
-1. **Task B** — the 22 endpoints whose case has never passed. The 15 runnable
-   ones were re-run on 2026-09-19 and none moved, so a session here starts
-   from a fixture change; the section names the three leads.
+1. **Task B** — 20 endpoints whose case has never passed. Every runnable one
+   ran on Build 09/15/2026 on 2026-09-19; two passed, and the rest have no
+   lead Codex can act on. Nothing here is a session's work until one appears.
 
 **Without one:**
 
@@ -73,7 +73,7 @@ python scripts/live_crud_check.py --check-cases        # silent; exit 0
 python scripts/check_fixture_contract.py --check       # 1 fixture lead over 1
                                           # endpoint, 3 contract gaps over 2
 python scripts/report_npm_replay_coverage.py --check   # gap 0; by confirmed
-                                          # case 180 complete, 0 partial, 0 none
+                                          # case 182 complete, 0 partial, 0 none
 python scripts/report_unmerged_tables.py --check       # report is current
 cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 83 tests
@@ -197,14 +197,14 @@ to the entry's `method`: `Re-verified 2026-09-nn on Build 09/15/2026 through bot
 SDKs (Gen, Civil).` Do not touch `nx_versions` or `date`; they record the first
 write, and an entry that loses that has lost information.
 
-## Task B — the 22 that have a case and no passing run
+## Task B — the 20 that have a case and no passing run
 
 **Live.** These endpoints are below write level although a case exists:
 
 `/db/ACTL`, `/db/CGLP`, `/db/DOEL`, `/db/EPSE`, `/db/EPST`, `/db/FBLA`,
-`/db/FIMP`, `/db/HPCE`, `/db/MADO`, `/db/MVLDch`, `/db/MVLDeu`, `/db/MVLDid`,
-`/db/MVLDpl`, `/db/NLLP`, `/db/NLNK`, `/db/NLNK-M1`, `/db/RPSC`, `/db/SBDO`,
-`/db/SINF`, `/db/STCT`, `/db/TDMF`, `/db/WVLD`
+`/db/FIMP`, `/db/HPCE`, `/db/MADO`, `/db/MVLDeu`, `/db/MVLDpl`, `/db/NLLP`,
+`/db/NLNK`, `/db/NLNK-M1`, `/db/RPSC`, `/db/SBDO`, `/db/SINF`, `/db/STCT`,
+`/db/TDMF`, `/db/WVLD`
 
 Each one's last error is recorded verbatim in `docs/live_verification_notes.md`;
 **read it before a run**, because re-running an unchanged fixture against an
@@ -219,11 +219,16 @@ only ones with a lead are:
 
 | endpoint | lead |
 | --- | --- |
-| `/db/MVLDch` | `Non-existent Vehicle has been defined in Sub-Load Case` — its `needs` build no vehicle, and no confirmed case builds a China one. A seed needs a ch08 China vehicle example; **stop if ch08 has none** |
-| `/db/MVLDid` | `Number of Sub-Load Cases` — a count rule, the class `/db/SPAN`'s item-count-vs-list-length rule belongs to; check the ch08 example's own count against its list |
-| `/db/EPSE`, `/db/EPST`, `/db/RPSC`, `/db/TDMF`, `/db/WVLD` | `Wrong Field` usually names a bad **value**; vary a documented enum value before any field name |
+| `/db/RPSC` | `GET /info` lists `MBARS[].MBAR_ITEMS[].PART`, which the fixture never sends; the contract and ch04 record it with **no value anywhere**, so it needs a source before it can be sent — **not yours** |
 
-The rest have no lead: `/db/HPCE` (`Wrong Key`), `/db/FBLA` and `/db/MVLDeu`
+**Closed on 2026-09-19:** `/db/MVLDch` and `/db/MVLDid` passed on Civil once
+their vehicle was seeded (see "Closed"). `Wrong Field` is **not** a bad
+value on the others: `/db/EPST` has had every documented value set varied,
+`/db/EPSE` shares those fields, `/db/WVLD` refuses even a bare `NAME`, and
+`/db/TDMF` sends no field with a value set.
+
+The rest have no lead: `/db/EPSE`, `/db/EPST`, `/db/TDMF`, `/db/WVLD`
+(`Wrong Field`), `/db/HPCE` (`Wrong Key`), `/db/FBLA` and `/db/MVLDeu`
 (`Unknown Error`), and the ones that accept a POST and drop it — `/db/MADO`,
 `/db/SBDO`, `/db/DOEL`, `/db/SINF`, `/db/MVLDpl`. Those are product findings
 until something new is known, and not yours.
@@ -368,6 +373,7 @@ Selection traps, each of which has cost a session:
 
 | what | outcome | where |
 | --- | --- | --- |
+| moving-load country cases (Task B) | `/db/MVLDch` and `/db/MVLDid` pass on Civil once each case's sub-load vehicle is seeded from ch08 section 10; MVLDid's `Number of Sub-Load Cases` was the missing vehicle, not a count rule. 2026-09-19 | live notes, 2026-09-19 (later) |
 | re-verification on Build 09/15/2026 (Task K) | all 107 confirmed-case endpoints replayed through both SDKs on every declared product, 2026-09-18; the scope command prints 0. The section stays because the next build reopens it | live notes, 2026-09-18 |
 | meaningful update assertions (was Task G) | MATD now proves `MAINREBAR_B_FY: 500000`; IEHC proves `BEAM_LOC: 1 -> 2`; POLC-M1 proves `NLTYPE: PDELTA -> NONE`. Both SDKs passed every declared product on 2026-09-18, Build 09/15/2026 | live notes, 2026-09-18 |
 | npm replay of every confirmed case (was Task F) | 177 of 177, 2026-09-17; fixture v6 added per-id DELETE seed steps, `FRESH_DOCUMENT_SEEDS`, `expected.unordered` and `setup_replaces` | live notes, 2026-09-17 (later) |

@@ -10408,3 +10408,33 @@ Two more things this run established:
 
 `/db/MVLDch` and `/db/MVLDid` are write-level on Civil, and the ledger is 206
 write. Gen has neither code, so Gen's evidence for both stays the read.
+
+### Task B, same session: the five `Wrong Field` cases are not bad values
+
+The standing advice is that `Wrong Field` usually names a bad *value*, so vary
+a documented enum value before any field name. None of the five contracts
+declares an `enum` on a field these payloads send; the value sets live in
+field descriptions. Measured against those, and against the history:
+
+- **`/db/EPST` — every documented value set is now exhausted.** 2026-08-16
+  had varied `SEL_TYPE` and `EP_TYPE`; this session varied the remaining two,
+  one at a time, through the Python harness on Gen with a temporary edit that
+  was reverted afterwards: `ELEM_TYPE: "PLANAR"` on the base model's plate
+  element 4, and `DIR: "NORMAL"`. Both answered `Wrong Field`. EPST's failure
+  is not a value its descriptions offer. `/db/EPSE` shares every one of those
+  fields and fails identically; it was not probed separately.
+- **`/db/WVLD` — value-independent.** A bare `{"NAME": ...}` answered `Wrong
+  Field` on 2026-08-16, so no value in the payload is the cause; varying
+  `THEORY`, `CHAR_TYPE` or `VERT_COORD` cannot answer anything.
+- **`/db/RPSC`** — the manual's own example with its documented values fails.
+  Comparing the payload with `GET /info/db/RPSC` turned up one member the
+  fixture never sends, `MBARS[].MBAR_ITEMS[].PART`. The contract and ch04
+  both record it, as an Integer with no default, no requiredness and no value
+  in any example, so sending it means inventing one. Stopped there.
+- **`/db/TDMF`** — no field it sends states a value set; the CREEP/`CTYPE`
+  body was the chapter's own, and was tried on 2026-09-14.
+
+One false lead, recorded so the next session does not follow it: every one of
+the 399 `/info` schemas in `schema/info-baseline.json` roots its record at
+`Argument`, `/db/NODE` included, so RPSC's `Argument` root says nothing about
+its request wrapper.
