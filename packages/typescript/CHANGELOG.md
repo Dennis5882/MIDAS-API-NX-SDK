@@ -6,6 +6,38 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.8.4 - 2026-09-20
+
+> **Not breaking.** No exported name is added, removed or renamed - 765
+> exported type names before and after - and three members of one type widen
+> from required to optional. Code that compiled against 2.8.3 still compiles.
+> Nothing changes at runtime.
+
+### Changed - `TendonPropertyPayload` states when three members are required
+
+`/db/TDNT` requires `FT`, `FPK` and `TDMFNAME` per relaxation model, not
+always. `RM` selects the model, and the manual states each dependency in prose:
+`FT` applies to six of the `RM` values, `FPK` to five, and `TDMFNAME` only to
+the user-defined model `RM = 100`. The type said all three were always
+required, which the SDK's own live payload - the manual's KSCE LSD15 example,
+which sets none of them - did not satisfy.
+
+The contract now records each dependency as an `appliesWhen` condition, so the
+member is optional and its condition appears in the JSDoc:
+
+```diff
+-  /** Relaxation Factor xi (TB05/TB10092/Q-CR/AS/JTJ/JTG) */
+-  FT: number;
++  /** Relaxation Factor xi ... Required when RM is 2 or 3 or 10 or 11 or 12 or 13. */
++  FT?: number;
+-  FPK: number;
++  /** ... Required when RM is 2 or 3 or 10 or 12 or 13. */
++  FPK?: number;
+-  TDMFNAME: string;
++  /** ... Required when RM = 100. */
++  TDMFNAME?: string;
+```
+
 ## 2.8.3 - 2026-09-17
 
 > **Breaking for one type, in a patch number.** No exported name is added,
