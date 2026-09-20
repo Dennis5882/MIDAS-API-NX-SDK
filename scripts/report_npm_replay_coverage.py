@@ -13,11 +13,16 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from verification_ledger import load_records  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CASES = ROOT / "schema" / "live-cases.json"
-DEFAULT_COVERAGE = ROOT / "docs" / "coverage.json"
+DEFAULT_LEDGER = ROOT / "contracts" / "verification" / "ledger.yaml"
 DEFAULT_INVENTORY = ROOT / "docs" / "npm_live_evidence_scratch.md"
 REPLAY_MARKER = "npm replayed the same emitted fixture"
 #: An inventory row: | `/db/NODE` | 2026-08-31 | Gen, Civil |
@@ -35,16 +40,16 @@ def confirmed_case_endpoints(cases_path: Path) -> set[str]:
     }
 
 
-def npm_replayed_endpoints(coverage_path: Path) -> set[str]:
-    """Return endpoints whose ledger evidence explicitly records npm replay."""
-    coverage = json.loads(coverage_path.read_text(encoding="utf-8"))
+def npm_replayed_endpoints(ledger_path: Path | None = None) -> set[str]:
+    """Return endpoints whose ledger evidence explicitly records npm replay.
+
+    Reads contracts/verification/ledger.yaml, which took over live evidence
+    from docs/coverage.json on 2026-09-21.
+    """
     replayed: set[str] = set()
-    for row in coverage["endpoints"]:
-        verified = row.get("live_verified")
-        if not isinstance(verified, dict):
-            continue
-        if REPLAY_MARKER in verified.get("method", ""):
-            replayed.add(row["endpoint"])
+    for record in load_records(ledger_path):
+        if REPLAY_MARKER in (record.get("method") or ""):
+            replayed.update(record.get("endpoints") or [])
     return replayed
 
 
@@ -124,7 +129,7 @@ def case_coverage(
 
 
 def report(
-    cases_path: Path, coverage_path: Path, inventory_path: Path | None = None
+    cases_path: Path, ledger_path: Path, inventory_path: Path | None = None
 ) -> tuple[int, int, int, set[str], set[str]]:
     """Return confirmed, confirmed-replayed, remaining, unknown and unbacked."""
     fixture = json.loads(cases_path.read_text(encoding="utf-8"))
@@ -134,7 +139,7 @@ def report(
         for case in fixture["cases"]
         if case.get("confirmed") is True
     }
-    replayed = npm_replayed_endpoints(coverage_path)
+    replayed = npm_replayed_endpoints(ledger_path)
     unknown = replayed - case_endpoints
     unbacked: set[str] = set()
     if inventory_path is not None:
@@ -151,7 +156,7 @@ def report(
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cases", type=Path, default=DEFAULT_CASES)
-    parser.add_argument("--coverage", type=Path, default=DEFAULT_COVERAGE)
+    parser.add_argument("--ledger", type=Path, default=DEFAULT_LEDGER)
     parser.add_argument("--inventory", type=Path, default=DEFAULT_INVENTORY)
     parser.add_argument(
         "--check",
@@ -162,9 +167,9 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     confirmed, replayed, remaining, unknown, unbacked = report(
-        args.cases, args.coverage, args.inventory
+        args.cases, args.ledger, args.inventory
     )
-    total_replayed = len(npm_replayed_endpoints(args.coverage))
+    total_replayed = len(npm_replayed_endpoints(args.ledger))
     print(f"confirmed Python fixture endpoints: {confirmed}")
     print(f"npm replayed fixture endpoints: {total_replayed} ({replayed} confirmed)")
     print(f"remaining npm replay gap: {remaining}")

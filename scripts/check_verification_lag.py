@@ -29,10 +29,13 @@ import sys
 import yaml
 
 sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+
+from verification_ledger import load_records, resolve  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CONTRACTS = ROOT / "contracts" / "endpoints"
-COVERAGE = ROOT / "docs" / "coverage.json"
+LEDGER = ROOT / "contracts" / "verification" / "ledger.yaml"
 
 #: Measured 2026-09-20 over 384 promoted contracts: 47 under `/db` plus
 #: `/ope/MEMB`, which a `db-*` glob had missed. A ceiling: see the module
@@ -41,13 +44,8 @@ LAGGING_AT_MOST = 48
 
 
 def _ledger_levels() -> dict[str, str]:
-    coverage = json.loads(COVERAGE.read_text(encoding="utf-8"))
-    levels: dict[str, str] = {}
-    for entry in coverage["endpoints"]:
-        live = entry.get("live_verified") or {}
-        if live.get("level"):
-            levels[entry["endpoint"]] = live["level"]
-    return levels
+    resolved = resolve(load_records(LEDGER))
+    return {endpoint: claim.level for endpoint, claim in resolved.items()}
 
 
 def lagging_contracts() -> list[tuple[str, pathlib.Path]]:

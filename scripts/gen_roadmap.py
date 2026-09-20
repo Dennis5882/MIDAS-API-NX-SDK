@@ -1,20 +1,37 @@
-"""Render ROADMAP.md from docs/coverage.json.
+"""Render ROADMAP.md from the endpoint inventory and the live-evidence ledger.
 
-Run after editing docs/coverage.json (e.g. after marking a newly-implemented
-endpoint's status), or after re-running scripts/vendor_coverage.py.
+Two files, because they answer different questions: docs/coverage.json says
+what this SDK implements (status, module, chapter), and
+contracts/verification/ledger.yaml says what a live session proved about it.
+Until 2026-09-21 the second lived inside the first as a `live_verified` block
+and also, separately, in the contract verification records - two ledgers that
+drifted apart and disagreed about what `level` meant.
+
+Run after editing either one.
 """
 from __future__ import annotations
 
 import json
+import sys
 from collections import OrderedDict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from verification_ledger import claims, load_records  # noqa: E402
 
 
 def main() -> None:
     data = json.loads((ROOT / "docs" / "coverage.json").read_text(encoding="utf-8"))
     endpoints = data["endpoints"]
+
+    # The ledger is keyed by endpoint; an entry without a claim has no live
+    # evidence at all, which is a state the counts below already handle.
+    ledger = claims()
+    evidence = {
+        e["endpoint"]: ledger.get(e["endpoint"]) for e in endpoints
+    }
 
     by_chapter: "OrderedDict[str, list[dict]]" = OrderedDict()
     for e in sorted(endpoints, key=lambda e: e["chapter_file"]):
@@ -22,7 +39,7 @@ def main() -> None:
 
     total = len(endpoints)
     implemented = sum(1 for e in endpoints if e["status"] == "implemented")
-    live_verified = sum(1 for e in endpoints if e.get("live_verified"))
+    live_verified = sum(1 for e in endpoints if evidence[e["endpoint"]])
 
     # Read vs write, because one number for both overstates what is known:
     # a GET that answers proves the route exists and the response parses; only
@@ -30,34 +47,38 @@ def main() -> None:
     # accepts. "write" here means data (or a file on the NX host) was actually
     # mutated -- a POST that was refused before doing anything counts as read.
     write_verified = sum(
-        1 for e in endpoints if (e.get("live_verified") or {}).get("level") == "write"
+        1 for e in endpoints
+        if evidence[e["endpoint"]] and evidence[e["endpoint"]].level == "write"
     )
     read_verified = sum(
-        1 for e in endpoints if (e.get("live_verified") or {}).get("level") == "read"
+        1 for e in endpoints
+        if evidence[e["endpoint"]] and evidence[e["endpoint"]].level == "read"
     )
     unleveled = live_verified - write_verified - read_verified
 
-    # Per-product, counted off the same live_verified entries.
+    # Per-product, counted off the same resolved claims.
     by_product = {
         p: sum(
             1
             for e in endpoints
-            if p in (e.get("live_verified") or {}).get("products", [])
+            if evidence[e["endpoint"]] and p in evidence[e["endpoint"]].products
         )
         for p in ("gen", "civil")
     }
 
     # D4 version matrix: every distinct (date, Gen build, Civil build) combo
-    # a live_verified entry cites — naturally grows into a real matrix as
-    # more scripts/live_smoke.py runs get recorded over time.
+    # the ledger cites. Read from the records rather than the resolved claims,
+    # because a session an endpoint no longer cites as its establishing one
+    # still happened - three /DESIGN/*/TABLE rows share a URL and were swept
+    # on different builds, and resolving to one claim would drop a row here.
     sessions = sorted({
         (
-            e["live_verified"]["date"],
-            e["live_verified"].get("nx_versions", {}).get("gen", "?"),
-            e["live_verified"].get("nx_versions", {}).get("civil", "?"),
+            str(record["date"]),
+            (record.get("nxVersions") or {}).get("gen", "?"),
+            (record.get("nxVersions") or {}).get("civil", "?"),
         )
-        for e in endpoints
-        if e.get("live_verified") and e["live_verified"].get("nx_versions")
+        for record in load_records()
+        if record.get("nxVersions")
     })
 
     lines = [
@@ -88,9 +109,9 @@ def main() -> None:
         "invisible to reads. A row counted as read is not a weaker claim about "
         "the same thing; it is a claim about a different thing.",
         "",
-        "Live-verification evidence lives in each endpoint's `live_verified` "
-        "entry in `docs/coverage.json` (product, build, date, and what was "
-        "actually done), with the narrative in "
+        "Live-verification evidence lives in "
+        "`contracts/verification/ledger.yaml` (product, build, date, and what "
+        "was actually done), with the narrative in "
         "`docs/live_verification_notes.md`. Write coverage comes from "
         "`scripts/live_crud_check.py`; read coverage mostly from "
         "`scripts/live_readonly_sweep.py`.",
@@ -101,7 +122,7 @@ def main() -> None:
         lines += [
             f"> ⚠️ {unleveled} live-verified endpoint(s) have no `level` recorded "
             "and are counted in neither the read nor the write row. Set "
-            '`live_verified.level` to `"read"` or `"write"` for those.',
+            '`level` to `"read"` or `"write"` on those ledger records.',
             "",
         ]
 
@@ -142,9 +163,10 @@ def main() -> None:
         lines.append("|---|---|---|---|---|---|")
         for r in rows:
             checkbox = "[x]" if r["status"] == "implemented" else "[ ]"
-            lv = r.get("live_verified") or {}
+            claim = evidence[r["endpoint"]]
             # W beats R: a write round trip subsumes reading the record back.
-            live = {"write": "W", "read": "R"}.get(lv.get("level"), "✅" if lv else "")
+            live = {"write": "W", "read": "R"}.get(
+                claim.level if claim else None, "✅" if claim else "")
             products = "/".join(r["products"])
             lines.append(f"| {checkbox} | {live} | `{r['endpoint']}` | {r['name']} | {products} | `{r['module']}` |")
         lines.append("")

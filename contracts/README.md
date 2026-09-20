@@ -491,5 +491,8 @@ model yet, so the extractor reports them rather than flattening them into
 endpoint contracts.
 
 Still to come: that two-layer model; reversal of the remaining Python-to-npm
-generation; and folding `docs/coverage.json` into `contracts/verification/` so
-there is one ledger rather than two.
+generation. **Folding `docs/coverage.json` into `contracts/verification/`
+landed 2026-09-21**: live evidence is now `contracts/verification/ledger.yaml`,
+resolved by `scripts/verification_ledger.py`, and `docs/coverage.json` keeps
+only the implementation inventory. The per-product files here still carry the
+session findings a contract cites for provenance.

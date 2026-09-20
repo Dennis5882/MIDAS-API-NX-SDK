@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import importlib.util
-import json
 from pathlib import Path
+
+import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -47,15 +48,16 @@ def test_only_a_write_level_endpoint_citing_no_write_record_counts(tmp_path, mon
     _write_contract(contracts, "db-b.yaml", "/db/B", "db-write-sweep-2026-07-29")
     _write_contract(contracts, "db-c.yaml", "/db/C", "db-read-sweep-2026-07-26")
 
-    coverage = tmp_path / "coverage.json"
-    coverage.write_text(json.dumps({"endpoints": [
-        {"endpoint": "/db/A", "live_verified": {"level": "write"}},
-        {"endpoint": "/db/B", "live_verified": {"level": "write"}},
-        {"endpoint": "/db/C", "live_verified": {"level": "read"}},
-    ]}), encoding="utf-8")
+    ledger = tmp_path / "ledger.yaml"
+    ledger.write_text(yaml.safe_dump({"schemaVersion": 1, "records": [
+        {"id": "w", "endpoints": ["/db/A", "/db/B"], "date": "2026-01-01",
+         "level": "write", "products": ["gen"]},
+        {"id": "r", "endpoints": ["/db/C"], "date": "2026-01-01",
+         "level": "read", "products": ["gen"]},
+    ]}, sort_keys=False), encoding="utf-8")
 
     monkeypatch.setattr(checker, "CONTRACTS", contracts)
-    monkeypatch.setattr(checker, "COVERAGE", coverage)
+    monkeypatch.setattr(checker, "LEDGER", ledger)
 
     assert [endpoint for endpoint, _ in checker.lagging_contracts()] == ["/db/A"]
 

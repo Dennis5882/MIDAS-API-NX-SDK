@@ -18,15 +18,16 @@ Run with the dev environment active (``pip install -e ".[dev]"``), e.g.:
     python scripts/live_readonly_sweep.py --product gen --out sweep.json
     python scripts/live_readonly_sweep.py --product gen --resource /db/MATL
 
-To write the results back into docs/coverage.json's ``live_verified`` field
-(PLAN.md's A1), add --record-coverage and cite the build you ran against::
+To append the results to contracts/verification/ledger.yaml (PLAN.md's A1),
+add --record-coverage and cite the build you ran against::
 
     python scripts/live_readonly_sweep.py --product gen --record-coverage \
         --nx-version "MIDAS Gen NX 2026 (v2.1), build 06/23/2026"
 
-then re-run scripts/gen_roadmap.py. Existing ``live_verified`` entries are
-never overwritten: a live_smoke.py entry records a full write -> analyze ->
-read round trip, which is stronger evidence than this script's GET.
+then re-run scripts/gen_roadmap.py. An endpoint the ledger already claims is
+skipped rather than re-recorded: an existing claim came from a full write ->
+analyze -> read round trip or an earlier sweep, and a GET repeating it is not
+new evidence. Nothing already in the ledger is edited.
 
 Exit code 0 -> every endpoint answered.
 Exit code 1 -> at least one endpoint failed (see the report).
@@ -50,6 +51,11 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 COVERAGE = ROOT / "docs" / "coverage.json"
+LEDGER = ROOT / "contracts" / "verification" / "ledger.yaml"
+sys.path.insert(0, str(ROOT / "scripts"))
+
+import yaml  # noqa: E402
+from verification_ledger import claims  # noqa: E402
 
 
 def _import_all_submodules() -> None:
@@ -102,41 +108,47 @@ def _describe(response: Any) -> Dict[str, Any]:
 
 
 def _record_coverage(results: List[Dict[str, Any]], product: str, nx_version: str) -> None:
-    """Write this sweep's successes into docs/coverage.json's live_verified.
+    """Append this sweep to contracts/verification/ledger.yaml.
 
-    Only endpoints that answered are recorded, and only where no live_verified
-    entry exists yet - an existing entry came from live_smoke.py's full
-    round trip and is stronger evidence than a GET.
+    Only endpoints that answered are recorded, and only those the ledger has
+    no claim for yet - an existing claim came from a full round trip or an
+    earlier sweep, and neither is improved by a GET repeating it. The record
+    is appended and nothing already written is edited: a record is what one
+    session saw, which a later session cannot change.
     """
-    with open(COVERAGE, encoding="utf-8") as fh:
-        coverage = json.load(fh)
+    known = set(claims())
+    verified = sorted(
+        r["endpoint"] for r in results
+        if r["outcome"] == "ok" and r["endpoint"] not in known
+    )
+    kept = sum(1 for r in results if r["outcome"] == "ok" and r["endpoint"] in known)
+    if not verified:
+        print(f"ledger: nothing new; {kept} endpoint(s) already claimed")
+        return
 
-    verified = {r["endpoint"] for r in results if r["outcome"] == "ok"}
-    entry = {
-        "date": datetime.now(timezone.utc).date().isoformat(),
+    date = datetime.now(timezone.utc).date().isoformat()
+    record = {
+        "id": f"ledger-read-{date}-sweep-{product}",
+        "endpoints": verified,
+        "date": date,
+        "level": "read",
         "products": [product],
+        "nxVersions": {product: nx_version},
+        "outcome": "success",
         "method": "scripts/live_readonly_sweep.py (read-only GET)",
-        "nx_versions": {product: nx_version},
     }
-
-    added = kept = unmatched = 0
-    for row in coverage["endpoints"]:
-        if row["endpoint"] not in verified:
-            continue
-        if row.get("live_verified"):
-            kept += 1
-            continue
-        row["live_verified"] = dict(entry)
-        added += 1
-    unmatched = len(verified) - added - kept
-
-    with open(COVERAGE, "w", encoding="utf-8") as fh:
-        json.dump(coverage, fh, indent=2, ensure_ascii=False)
-        fh.write("\n")
-
-    total = sum(1 for row in coverage["endpoints"] if row.get("live_verified"))
-    print(f"coverage.json: +{added} newly live_verified, {kept} already recorded, "
-          f"{unmatched} with no matching row -> {total} total")
+    text = LEDGER.read_text(encoding="utf-8")
+    if f"id: {record['id']}\n" in text:
+        raise SystemExit(f"{LEDGER.name} already carries a record id {record['id']}.")
+    LEDGER.write_text(
+        text.rstrip("\n") + "\n" + yaml.safe_dump(
+            [record], allow_unicode=True, sort_keys=False, width=88,
+            default_flow_style=False,
+        ),
+        encoding="utf-8",
+    )
+    print(f"ledger: +1 record covering {len(verified)} endpoint(s); "
+          f"{kept} already claimed")
     print("Re-run scripts/gen_roadmap.py to refresh ROADMAP.md.")
 
 
@@ -153,7 +165,7 @@ def main() -> int:
     parser.add_argument(
         "--record-coverage",
         action="store_true",
-        help="write successes into docs/coverage.json's live_verified field",
+        help="append successes to contracts/verification/ledger.yaml",
     )
     parser.add_argument(
         "--nx-version",

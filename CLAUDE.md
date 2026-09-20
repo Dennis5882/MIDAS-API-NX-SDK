@@ -153,15 +153,23 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   round trip disagree, the round trip wins.
 - `schema/typescript-resources.json` / `schema/typescript-coverage.json` — committed generator outputs.
   CI fails if either these schemas or `packages/typescript/src/generated/*` drift after regeneration.
-- `docs/coverage.json` — the endpoint ledger. `ROADMAP.md` is **generated from it** — never hand-edit
-  `ROADMAP.md`. Each `live_verified` entry carries a **`level`** of `"read"` or `"write"`, and
-  `ROADMAP.md` counts the two separately: `"write"` means a live call actually mutated model data or
-  wrote a file on the NX host, `"read"` covers everything else *including POST-shaped reads*
-  (`/post/TABLE`, `*-REPORT` calls that returned "Please perform analysis" without producing
-  output). The HTTP verb doesn't decide it. Reads and writes prove different things — a GET proves
-  the route exists and parses, only a round trip proves the request shape is one the server accepts,
-  and every field-name/enum/default defect found so far was invisible to reads. Setting `level` on a
-  new entry is not optional; `gen_roadmap.py` emits a warning banner for any entry missing it.
+- `docs/coverage.json` — the **implementation inventory**: what exists, which module wraps it,
+  which manual chapter documents it. It stopped carrying live evidence on 2026-09-21.
+- `contracts/verification/ledger.yaml` — the **live-evidence ledger**, and the only place an
+  endpoint's verification claim is stated. One record per session; `endpoints` lists what that
+  session covered. `scripts/verification_ledger.py` resolves records into one claim per endpoint
+  and is what every count reads. `ROADMAP.md` is **generated from both files** — never hand-edit
+  `ROADMAP.md`. A record's **`level`** is `"read"` or `"write"` and means what the session
+  *achieved*: `"write"` if a live call actually mutated model data or wrote a file on the NX host,
+  `"read"` for everything else that answered — *including POST-shaped reads* (`/post/TABLE`,
+  `*-REPORT` calls that returned "Please perform analysis" without producing output) and including
+  a write the product refused before it changed anything. The HTTP verb doesn't decide it. Reads
+  and writes prove different things — a GET proves the route exists and parses, only a round trip
+  proves the request shape is one the server accepts, and every field-name/enum/default defect
+  found so far was invisible to reads. **Re-verifying adds a record; it never edits one**, which is
+  what the old append-only `method` string in `coverage.json` got wrong twice. Until the migration
+  the same fact lived in two files — 48 contracts cited a read sweep for an endpoint the ledger had
+  at write level, and the two disagreed about what `level` even meant.
 - `docs/live_verification_notes.md` — findings from real Gen/Civil NX sessions that are *not* in the
   manual. Deliberately kept out of the typed contracts; read it before trusting any `PRODUCTS` change.
 - `PLAN.md` — the hand-maintained big-picture roadmap (`ROADMAP.md` is the generated per-endpoint

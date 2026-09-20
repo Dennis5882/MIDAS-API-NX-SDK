@@ -54,6 +54,8 @@ python scripts/check_fixture_contract.py --check       # 1 fixture lead over 1
 python scripts/report_npm_replay_coverage.py --check   # 183 cases over 172
                                           # endpoints; every product: 183
 python scripts/check_verification_lag.py --check       # 48, ceiling 48
+python scripts/verification_ledger.py                  # 397 endpoints:
+                                          # 190 read, 207 write
 python scripts/report_unmerged_tables.py --check       # exit 0
 cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 87 tests
@@ -77,27 +79,27 @@ newer. Do not hand-count.
 
 ```bash
 PYTHONIOENCODING=utf-8 python - <<'PY'
-import json
-cases = json.load(open("schema/live-cases.json", encoding="utf-8"))["cases"]
-ledger = {}
-def walk(node):
-    if isinstance(node, dict):
-        if isinstance(node.get("endpoint"), str) and "live_verified" in node:
-            ledger[node["endpoint"]] = json.dumps(node["live_verified"])
-        for value in node.values(): walk(value)
-    elif isinstance(node, list):
-        for value in node: walk(value)
-walk(json.load(open("docs/coverage.json", encoding="utf-8")))
+import json, sys
+sys.path.insert(0, "scripts")
+from verification_ledger import load_records
+
 BUILD = "09/15/2026"   # replace with the NEW build's string
+cases = json.load(open("schema/live-cases.json", encoding="utf-8"))["cases"]
+seen = set()
+for record in load_records():
+    nx = json.dumps(record.get("nxVersions") or {})
+    if BUILD in nx or BUILD in (record.get("method") or ""):
+        seen.update(record.get("endpoints") or [])
 todo = sorted({c["endpoint"] for c in cases
-               if c["confirmed"] and BUILD not in ledger.get(c["endpoint"], "")})
+               if c["confirmed"] and c["endpoint"] not in seen})
 print(len(todo)); print(" ".join(todo))
 PY
 ```
 
-It is a text search of the ledger entry, so an entry mentioning the build for
-another reason drops out; that errs toward doing less, never toward a false
-claim. With `BUILD = "09/15/2026"` it prints 0 today.
+It asks which confirmed-case endpoints have no ledger record citing that
+build. A record mentioning the build for another reason drops out of the
+list; that errs toward doing less, never toward a false claim. With
+`BUILD = "09/15/2026"` it prints 0 today.
 
 Batch by tier (`--tier`), at most 8 endpoints per selection, through **both**
 harnesses on **both** products in the same session. **Before calling a batch
@@ -169,60 +171,53 @@ ledger, and the second session reported its task complete.
 
 1. **The fixture** — `confirmed=True` per product that passed, then
    `--emit-cases`.
-2. **The ledger**, `docs/coverage.json` — see below.
+2. **The ledger**, `contracts/verification/ledger.yaml` — see below.
 3. **The evidence files** — `docs/live_verification_notes.md` (what ran, on
    which build, verbatim errors) and `docs/npm_live_evidence_scratch.md` (one
    row per npm success: date, products, Count line).
-   `report_npm_replay_coverage.py --check` fails if a ledger `method` says
-   `npm replayed the same emitted fixture` and the scratch file has no row.
+   `report_npm_replay_coverage.py --check` fails if a ledger record's `method`
+   says `npm replayed the same emitted fixture` and the scratch file has no
+   row.
 
 Then `python scripts/gen_roadmap.py` and commit `ROADMAP.md` with the batch.
 
-**The ledger has two kinds of change, and only two.**
+**A run adds a record. It never edits one.**
 
-- **A re-verification appends** to `method` and changes nothing else:
-  `Re-verified 2026-09-nn on Build mm/dd/yyyy through both SDKs (Gen, Civil).`
-  `date` and `nx_versions` record the first write; on 2026-09-18 a session
-  moved `/db/PRST`'s `date` without its `nx_versions`, and `ROADMAP.md`
-  published a session on a build nothing ran on.
-- **A read → write promotion** sets `date`, `nx_versions`, `level: "write"`,
-  `outcome` and `products` **from the write**, where `products` lists only the
-  products the write passed on. The older read evidence stays at the start of
-  `method`. `/db/DSTL` is the precedent. Do not write phrases like "stays
-  read-level" into a write entry: `test_no_ledger_entry_contradicts_its_own_level`
-  rejects them. Say "Gen's evidence is the read above" instead.
-
-`docs/coverage.json` mixes CRLF and LF lines. Edit it as bytes (find the entry
-by its endpoint string and match braces), not with a whole-file rewrite.
-Before committing, diff it against `HEAD`; every change should be one of the
-two kinds above:
-
-```bash
-git show HEAD:docs/coverage.json > cov-head.json   # any scratch path
-PYTHONIOENCODING=utf-8 python - <<'PY'
-import json
-def index(doc):
-    out = {}
-    def walk(node):
-        if isinstance(node, dict):
-            if isinstance(node.get("endpoint"), str) and "live_verified" in node:
-                out[node["endpoint"]] = node["live_verified"]
-            for v in node.values(): walk(v)
-        elif isinstance(node, list):
-            for v in node: walk(v)
-    walk(doc); return out
-head = index(json.load(open("cov-head.json", encoding="utf-8")))
-now = index(json.load(open("docs/coverage.json", encoding="utf-8")))
-for e in now:
-    changed = sorted(k for k in set(head.get(e, {})) | set(now[e])
-                     if head.get(e, {}).get(k) != now[e].get(k))
-    if not changed: continue
-    promoted = head.get(e, {}).get("level") == "read" and now[e]["level"] == "write"
-    appended = now[e]["method"].startswith(head.get(e, {}).get("method", ""))
-    kind = "promotion" if promoted else ("append" if changed == ["method"] and appended else "CHECK THIS")
-    print(f"{kind:10} {e}: {changed}")
-PY
+```yaml
+  - id: ledger-write-2026-09-21
+    endpoints: ["/db/PTNS"]
+    date: "2026-09-21"
+    level: write            # what the session ACHIEVED, not what it tried
+    products: [gen, civil]  # only the products it achieved that on
+    nxVersions:
+      gen: MIDAS Gen NX 2026 (v2.1), build 09/15/2026
+      civil: MIDAS Civil NX 2026 (v2.2), build 09/15/2026
+    outcome: success
+    method: >-
+      What was actually done, including whether npm replayed the same
+      emitted fixture.
 ```
+
+`scripts/verification_ledger.py` resolves the records into one claim per
+endpoint: **write if any record achieved a write**, and the earliest record at
+that level supplies the date and build, because that is the session that
+established the claim. So a re-verification is a new record and the original
+claim keeps its date -- which is what the old append-only `method` string kept
+getting wrong. A read that follows a write does not demote anything, and a
+promotion from read to write is just a write record.
+
+Two things the ledger will not do for you:
+
+- **`level` is what a session achieved.** A write the product refused before
+  it changed anything is `read`. Recording a refused write as `write` is how
+  the old contract records came to claim `/db/NLLP` and `/db/TDMF` at write
+  level while their own `finding` said the write was refused.
+- **Nothing is deleted or rewritten.** A record is what one session saw, and a
+  later session cannot change that. If a record is wrong about what happened,
+  correct it in place with a dated note, the way the live notes do.
+
+Run `python scripts/verification_ledger.py` to see the resolved totals, and
+`python scripts/gen_roadmap.py` to publish them.
 
 ## What is left, and why
 
@@ -293,14 +288,16 @@ judgement about which `/info` object is meant. It is not a queue to rescan.
 
 ## Open decisions
 
-- **Contract `verification` records lag the ledger.** 48 contracts cite a read
-  sweep for an endpoint `docs/coverage.json` records at write level (TDNT,
-  POGD, MVLDch, MVLDid and PTNS among them; 47 under `/db` plus `/ope/MEMB`).
-  Folding the ledger into `contracts/verification/` is planned in
-  `contracts/README.md`, and until that lands a `verification` block is not
-  hand-edited to match: it records what the contract was promoted from, and
-  editing it would forge provenance. `scripts/check_verification_lag.py`
-  holds the count as a ceiling so it can fall but not grow.
+- **Contract `verification` refs lag the ledger.** 48 contracts cite a read
+  sweep for an endpoint the ledger holds at write level (TDNT, POGD, MVLDch,
+  MVLDid and PTNS among them; 47 under `/db` plus `/ope/MEMB`). The fold
+  landed on 2026-09-21 and fixed the *source* of the disagreement -- there is
+  one ledger now, `contracts/verification/ledger.yaml` -- but a contract's
+  `verification.records[].ref` still points at the session it was promoted
+  from, and that is not hand-edited: it records provenance, and editing it to
+  match a later claim would forge one. `scripts/check_verification_lag.py`
+  holds the count as a ceiling so it can fall but not grow. Re-promoting a
+  contract is what moves it.
 - **`/db/SPLC`'s `NDP` requiredness** — nested under the Optional `bNDP` switch
   with no wire rule, so neither an `appliesWhen` nor a `safeToOmit` is
   grounded.
@@ -352,9 +349,10 @@ judgement about which `/info` object is meant. It is not a queue to rescan.
 Beyond what `CLAUDE.md` already states:
 
 - **`appliesWhen`'s `in` needs at least two values**; use `equals` for one.
-- **`contracts/` and `docs/coverage.json` mix CRLF and LF.** Edit them as
-  bytes; a deletion count on an insert-only change means corrupted line
-  endings.
+- **`contracts/` mixes CRLF and LF.** Edit those files as bytes; a deletion
+  count on an insert-only change means corrupted line endings. The ledger and
+  `docs/coverage.json` are machine-written, so append a record or re-run the
+  generator rather than hand-editing either.
 - **Never commit a GET response body** — it is the author's model contents.
 - **Never put `MAPI-xxxx` or MIDASIT's internal tracker in anything that
   ships**, release notes included. The manual repo names one; it does not come

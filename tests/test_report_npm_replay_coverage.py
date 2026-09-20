@@ -6,6 +6,8 @@ import importlib.util
 import json
 from pathlib import Path
 
+import yaml
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -20,10 +22,19 @@ def _module():
     return module
 
 
+def _ledger(tmp_path: Path, *records: dict) -> Path:
+    """Write a ledger fixture. Live evidence moved here on 2026-09-21."""
+    path = tmp_path / "ledger.yaml"
+    path.write_text(
+        yaml.safe_dump({"schemaVersion": 1, "records": list(records)}, sort_keys=False),
+        encoding="utf-8",
+    )
+    return path
+
+
 def test_report_counts_only_confirmed_fixture_endpoints(tmp_path: Path) -> None:
     module = _module()
     cases = tmp_path / "cases.json"
-    coverage = tmp_path / "coverage.json"
     cases.write_text(
         json.dumps({"cases": [
             {"endpoint": "/db/CONFIRMED", "confirmed": True},
@@ -31,43 +42,30 @@ def test_report_counts_only_confirmed_fixture_endpoints(tmp_path: Path) -> None:
         ]}),
         encoding="utf-8",
     )
-    coverage.write_text(
-        json.dumps({"endpoints": [
-            {
-                "endpoint": "/db/CONFIRMED",
-                "live_verified": {"method": module.REPLAY_MARKER},
-            },
-            {
-                "endpoint": "/db/UNCONFIRMED",
-                "live_verified": {"method": "Python only"},
-            },
-        ]}),
-        encoding="utf-8",
+    ledger = _ledger(
+        tmp_path,
+        {"id": "r1", "endpoints": ["/db/CONFIRMED"], "method": module.REPLAY_MARKER},
+        {"id": "r2", "endpoints": ["/db/UNCONFIRMED"], "method": "Python only"},
     )
 
-    assert module.report(cases, coverage) == (1, 1, 0, set(), set())
+    assert module.report(cases, ledger) == (1, 1, 0, set(), set())
 
 
 def test_report_rejects_replay_marker_without_confirmed_fixture(tmp_path: Path) -> None:
     module = _module()
     cases = tmp_path / "cases.json"
-    coverage = tmp_path / "coverage.json"
     cases.write_text(json.dumps({"cases": []}), encoding="utf-8")
-    coverage.write_text(
-        json.dumps({"endpoints": [{
-            "endpoint": "/db/NO-CASE",
-            "live_verified": {"method": module.REPLAY_MARKER},
-        }]}),
-        encoding="utf-8",
+    ledger = _ledger(
+        tmp_path,
+        {"id": "r1", "endpoints": ["/db/NO-CASE"], "method": module.REPLAY_MARKER},
     )
 
-    assert module.report(cases, coverage) == (0, 0, 0, {"/db/NO-CASE"}, set())
+    assert module.report(cases, ledger) == (0, 0, 0, {"/db/NO-CASE"}, set())
 
 
 def test_report_excludes_an_unconfirmed_case_from_the_gap_denominator(tmp_path: Path) -> None:
     module = _module()
     cases = tmp_path / "cases.json"
-    coverage = tmp_path / "coverage.json"
     cases.write_text(
         json.dumps({"cases": [
             {"endpoint": "/db/CONFIRMED", "confirmed": True},
@@ -75,15 +73,12 @@ def test_report_excludes_an_unconfirmed_case_from_the_gap_denominator(tmp_path: 
         ]}),
         encoding="utf-8",
     )
-    coverage.write_text(
-        json.dumps({"endpoints": [{
-            "endpoint": "/db/UNCONFIRMED",
-            "live_verified": {"method": module.REPLAY_MARKER},
-        }]}),
-        encoding="utf-8",
+    ledger = _ledger(
+        tmp_path,
+        {"id": "r1", "endpoints": ["/db/UNCONFIRMED"], "method": module.REPLAY_MARKER},
     )
 
-    assert module.report(cases, coverage) == (1, 0, 1, set(), set())
+    assert module.report(cases, ledger) == (1, 0, 1, set(), set())
 
 
 def test_report_flags_a_replay_claim_the_inventory_records_no_session_for(
@@ -98,7 +93,6 @@ def test_report_flags_a_replay_claim_the_inventory_records_no_session_for(
     """
     module = _module()
     cases = tmp_path / "cases.json"
-    coverage = tmp_path / "coverage.json"
     inventory = tmp_path / "inventory.md"
     cases.write_text(
         json.dumps({"cases": [
@@ -107,14 +101,10 @@ def test_report_flags_a_replay_claim_the_inventory_records_no_session_for(
         ]}),
         encoding="utf-8",
     )
-    coverage.write_text(
-        json.dumps({"endpoints": [
-            {"endpoint": "/db/RECORDED",
-             "live_verified": {"method": module.REPLAY_MARKER}},
-            {"endpoint": "/db/CLAIMED",
-             "live_verified": {"method": module.REPLAY_MARKER}},
-        ]}),
-        encoding="utf-8",
+    ledger = _ledger(
+        tmp_path,
+        {"id": "r1", "endpoints": ["/db/RECORDED", "/db/CLAIMED"],
+         "method": module.REPLAY_MARKER},
     )
     inventory.write_text(
         """
@@ -125,11 +115,11 @@ def test_report_flags_a_replay_claim_the_inventory_records_no_session_for(
         encoding="utf-8",
     )
 
-    assert module.report(cases, coverage, inventory) == (
+    assert module.report(cases, ledger, inventory) == (
         2, 2, 0, set(), {"/db/CLAIMED"},
     )
     assert module.main([
-        "--cases", str(cases), "--coverage", str(coverage),
+        "--cases", str(cases), "--ledger", str(ledger),
         "--inventory", str(inventory), "--check",
     ]) == 1
 
@@ -139,22 +129,18 @@ def test_report_leaves_the_inventory_out_when_it_is_not_given(tmp_path: Path) ->
     check stays usable on its own."""
     module = _module()
     cases = tmp_path / "cases.json"
-    coverage = tmp_path / "coverage.json"
     cases.write_text(
         json.dumps({"cases": [
             {"endpoint": "/db/CLAIMED", "products": ["gen"], "confirmed": True},
         ]}),
         encoding="utf-8",
     )
-    coverage.write_text(
-        json.dumps({"endpoints": [{
-            "endpoint": "/db/CLAIMED",
-            "live_verified": {"method": module.REPLAY_MARKER},
-        }]}),
-        encoding="utf-8",
+    ledger = _ledger(
+        tmp_path,
+        {"id": "r1", "endpoints": ["/db/CLAIMED"], "method": module.REPLAY_MARKER},
     )
 
-    assert module.report(cases, coverage) == (1, 1, 0, set(), set())
+    assert module.report(cases, ledger) == (1, 1, 0, set(), set())
 
 def _inventory(tmp_path: Path, *rows: str) -> Path:
     path = tmp_path / "inventory.md"

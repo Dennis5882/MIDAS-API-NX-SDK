@@ -56,6 +56,10 @@ from function_endpoints import (
 )
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from verification_ledger import claim_for  # noqa: E402
+
 DRAFTS = ROOT / "contracts" / "drafts"
 ENDPOINTS = ROOT / "contracts" / "endpoints"
 VERIFICATION = ROOT / "contracts" / "verification"
@@ -210,6 +214,17 @@ _HEADER = """# {endpoint}
 # safeToOmit is answered `true` only where a confirmed live payload actually
 # omitted the field.
 """
+
+
+def _live_evidence(endpoint: str) -> dict | None:
+    """The ledger's claim for an endpoint, in the shape this script publishes.
+
+    Live evidence moved to contracts/verification/ledger.yaml on 2026-09-21;
+    docs/coverage.json keeps the implementation inventory. The shape is
+    unchanged so the verification blocks this writes are unchanged.
+    """
+    claim = claim_for(endpoint)
+    return claim.as_live_verified() if claim else None
 
 
 def _coverage() -> dict[str, dict]:
@@ -489,9 +504,14 @@ def promote(
         print(f"  {slug}: refused - no payload fields could be parsed")
         return None
     entry = coverage.get(endpoint)
-    if entry is None or not entry.get("live_verified"):
-        print(f"  {slug}: refused - no live-verification record in docs/coverage.json")
+    if entry is None:
+        print(f"  {slug}: refused - no entry in docs/coverage.json")
         return None
+    live_evidence = _live_evidence(endpoint)
+    if live_evidence is None:
+        print(f"  {slug}: refused - no record in contracts/verification/ledger.yaml")
+        return None
+    entry = {**entry, "live_verified": live_evidence}
 
     methods = _draft_methods(text)
     non_db_resource = False
@@ -699,7 +719,8 @@ def main(argv: list[str]) -> int:
         if endpoint_match is None:  # promote() already verified this draft.
             raise RuntimeError(f"{slug}: draft endpoint disappeared during promotion")
         endpoint = endpoint_match.group(1)
-        needed[record] = coverage[endpoint]
+        live_evidence = _live_evidence(endpoint)
+        needed[record] = {**coverage[endpoint], "live_verified": live_evidence}
 
     ensure_records(needed, args.dry_run)
     print(f"\n{promoted} promoted, {len(slugs) - promoted} refused{' (dry run)' if args.dry_run else ''}")
