@@ -6,6 +6,12 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.9.0 - 2026-09-20
+
+No change to this package. The shared version number moves because the Python
+package now supports Python 3.11 again and is tested through 3.14; npm
+republishes the same tarball content under the aligned number.
+
 ## 2.8.4 - 2026-09-20
 
 > **Not breaking.** No exported name is added, removed or renamed - 765
