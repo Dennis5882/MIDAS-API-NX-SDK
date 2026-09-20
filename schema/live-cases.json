@@ -1495,6 +1495,31 @@
         }
       }
     },
+    "ptns_truss": {
+      "endpoint": "/db/ELEM",
+      "records": {
+        "5": {
+          "TYPE": "TRUSS",
+          "MATL": 1,
+          "SECT": 1,
+          "NODE": [
+            21,
+            22
+          ],
+          "ANGLE": 0
+        }
+      }
+    },
+    "ptns_external_load_case": {
+      "endpoint": "/db/EXLD",
+      "records": {
+        "1": {
+          "LCNAME_ITEM": [
+            "PS15_SEED"
+          ]
+        }
+      }
+    },
     "mvcd_eurocode": {
       "endpoint": "/db/MVCD",
       "records": {
@@ -14805,6 +14830,65 @@
         },
         {
           "seed": "tdna_seed"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras19",
+      "endpoint": "/db/PTNS",
+      "name": "Pretension Loads",
+      "id": 5,
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "ITEMS": [
+          {
+            "ID": 1,
+            "LCNAME": "PS15_SEED",
+            "GROUP_NAME": "",
+            "TENSION": 130
+          }
+        ]
+      },
+      "updatePayload": {
+        "ITEMS": [
+          {
+            "ID": 1,
+            "LCNAME": "PS15_SEED",
+            "GROUP_NAME": "",
+            "TENSION": 260
+          }
+        ]
+      },
+      "expected": {
+        "created": 130,
+        "updated": 260
+      },
+      "needs": [
+        "ptns_truss",
+        "prestress_load_cases",
+        "ptns_external_load_case"
+      ],
+      "setup": [
+        {
+          "seed": "ptns_truss"
+        },
+        {
+          "seed": "prestress_load_cases"
+        },
+        {
+          "seed": "ptns_external_load_case"
         }
       ],
       "blockedSeeds": [],

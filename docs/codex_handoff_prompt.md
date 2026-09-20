@@ -3,9 +3,9 @@
 Updated 2026-09-20. Rewritten from scratch after the 2026-09-19 live sessions
 emptied most of the old queue. The previous version (`6e8dcab` and earlier)
 listed 14 Task A endpoints as buildable; checked against their contracts, 13
-of them are blocked or need a judgement, so **the Codex queue is now one
-endpoint long**. That is the honest size of it. Do not grow it by relabelling
-something below as mechanical.
+of them are blocked or need a judgement, and the remaining `/db/PTNS` case
+passed on 2026-09-20. **The Codex queue is now empty.** Do not grow it by
+relabelling something below as mechanical.
 
 ## Where things stand
 
@@ -16,12 +16,12 @@ something below as mechanical.
   One npm-surface change is waiting for the next release notes: `/db/TDNT`'s
   `FT`, `FPK` and `TDMFNAME` became optional, each with its `appliesWhen`
   condition in JSDoc (`c76bff0`).
-- **Coverage: 400/400 implemented, 206 write / 194 read.** Of the 225 `/db`
-  endpoints, 184 are write-level and 41 are not.
-- **Fixture (`schema/live-cases.json`, version 6):** 219 cases over 195
-  endpoints; 182 confirmed over 171 endpoints; 9 base-model steps; 73 named
+- **Coverage: 400/400 implemented, 207 write / 193 read.** Of the 225 `/db`
+  endpoints, 185 are write-level and 40 are not.
+- **Fixture (`schema/live-cases.json`, version 6):** 220 cases over 196
+  endpoints; 183 confirmed over 172 endpoints; 9 base-model steps; 75 named
   seeds; 0 unsupported.
-- **npm has replayed all 182 confirmed cases** on every product each declares.
+- **npm has replayed all 183 confirmed cases** on every product each declares.
   Keep that gap at 0: every new confirmed case goes through both harnesses.
 - **Contracts: 384 endpoints + 87 result tables.** The three drafts left, the
   IEHG trio, have no permitted source; that is final.
@@ -39,7 +39,7 @@ than finding some.
 
 | task | kind | state |
 | --- | --- | --- |
-| **P** — build and run a `/db/PTNS` case | offline build, then live | **open** |
+| **P** — build and run a `/db/PTNS` case | offline build, then live | **complete 2026-09-20** |
 | **K** — re-verify confirmed cases on a new build | live, destructive | dormant; reopens when a build newer than 09/15/2026 ships |
 
 Everything else is inventoried under "Not yours", with the reason for each
@@ -53,7 +53,7 @@ Run these first. **If a number differs, say so before starting** — something
 moved under you, and the command wins over this file.
 
 ```bash
-python -m pytest -q                       # 1086 passed
+python -m pytest -q                       # 1087 passed
 ruff check src tests scripts && mypy      # clean
 python scripts/validate_contracts.py      # OK - contracts valid
 python scripts/check_manual_drift.py --manual-api-repo "E:\AI Study\MIDAS-API"
@@ -67,8 +67,8 @@ python scripts/report_dropped_manual_rows.py \
 python scripts/live_crud_check.py --check-cases        # silent; exit 0
 python scripts/check_fixture_contract.py --check       # 1 fixture lead over 1
                                           # endpoint, 3 contract gaps over 2
-python scripts/report_npm_replay_coverage.py --check   # 182 cases over 171
-                                          # endpoints; every product: 182
+python scripts/report_npm_replay_coverage.py --check   # 183 cases over 172
+                                          # endpoints; every product: 183
 python scripts/report_unmerged_tables.py --check       # exit 0
 cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 83 tests
@@ -83,8 +83,14 @@ that no longer resolves can mean a table moved or that it changed.
 
 ## Task P — `/db/PTNS` (Pretension Loads, ch07 section 11)
 
-**Offline to build, live to run.** The last `/db` endpoint without a case whose
-every prerequisite a confirmed fixture or a manual example already supplies.
+**Complete.** This was the last `/db` endpoint without a case whose every
+prerequisite a confirmed fixture or a manual example already supplied.
+
+**2026-09-20 result:** the `extras19` fixture, its three-step prerequisite
+chain and its structural regression test passed every offline gate. The built
+npm package and Python SDK then completed create/read/update/read/delete/read
+on Gen and Civil, Build 09/15/2026; `TENSION` changed from 130 to 260 and read
+back correctly. The fixture is confirmed and the ledger is write-level.
 
 What the case needs, in build order, and where each piece comes from:
 
@@ -339,20 +345,21 @@ judgement about which `/info` object is meant. Do not rescan it as a queue.
 
 | what | outcome | where |
 | --- | --- | --- |
-| Task A reclassified | 13 of the 14 "buildable" endpoints are blocked or need a judgement (inventory above); PTNS is the one left. 2026-09-20 | this file |
+| Task P `/db/PTNS` | the manual TRUSS + STLD + EXLD chain passed through npm and Python on Gen and Civil; write-level. 2026-09-20 | live notes, 2026-09-20 |
+| Task A reclassified | 13 of the 14 "buildable" endpoints are blocked or need a judgement (inventory above); PTNS was the one mechanical remainder and is now closed. 2026-09-20 | this file |
 | the five `Wrong Field` Task B cases | not bad values: EPST's documented values exhausted, WVLD fails on a bare `NAME`, RPSC's `PART` has no source, TDMF has nothing to vary. `/info` rooting RPSC at `Argument` is not a wrapper signal — all 399 do. 2026-09-19 | live notes, 2026-09-19 (later) |
 | moving-load country cases | `/db/MVLDch`, `/db/MVLDid` pass on Civil once each case's vehicle is seeded from ch08; MVLDid's `Number of Sub-Load Cases` was the missing vehicle. 2026-09-19 | live notes, 2026-09-19 (later) |
 | batches 17 and 18 | `/db/TDNT` (both), `/db/POGD` (Civil), `/db/POGD-M1` reached write. 2026-09-19 | live notes, 2026-09-19 |
 | re-verification on Build 09/15/2026 (Task K) | all 107 confirmed-case endpoints replayed through both SDKs, 2026-09-18 | live notes, 2026-09-18 |
 | meaningful update assertions | MATD, IEHC, POLC-M1 prove a changed value. 2026-09-18 | live notes, 2026-09-18 |
-| npm replay of every confirmed case | complete since 2026-09-17; 182 of 182 now | live notes, 2026-09-17 (later) |
+| npm replay of every confirmed case | complete since 2026-09-17; 183 of 183 now | live notes, 2026-09-17 (later) |
 | `DESIGN/STEEL/DSTL` PUT | Gen accepts; Civil refuses. **Do not re-run**: one enum value, nothing to vary | contract PUT `notes` |
 | crash re-tests on Build 09/15/2026 | clean except `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK`. **Never call OCHECK**: it crashes Gen and each call costs a restart and a held licence | live notes, 2026-09-16 (later) |
 | manual sync to `e64a682` | reflected; 17 contracts' line references re-pointed | git history |
 
 ## Decisions that are open and are not yours
 
-- **Contract `verification` records lag the ledger.** 46 contracts cite a read
+- **Contract `verification` records lag the ledger.** 47 contracts cite a read
   sweep for an endpoint `docs/coverage.json` records at write level (TDNT,
   POGD, MVLDch and MVLDid among them). No check compares the two; folding the
   ledger into `contracts/verification/` is planned in `contracts/README.md`.

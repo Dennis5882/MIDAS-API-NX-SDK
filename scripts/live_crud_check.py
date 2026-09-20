@@ -337,6 +337,7 @@ from midas_nx.db.temperature_prestress import (
     ExternalLoadCaseForPretension,
     NodalTemperature,
     PrestressBeamLoad,
+    PretensionLoad,
     SystemTemperature,
     TemperatureGradient,
     TendonPrestress,
@@ -4281,6 +4282,61 @@ def _extras18_cases() -> List[Case]:
     ]
 
 
+def _extras19_seeds() -> List[SeedStep]:
+    """Build the ch07 prerequisites for the manual's PTNS example.
+
+    PTNS is keyed by a truss/cable element.  The shared base model has only
+    beams and a plate, so element 5 reuses its otherwise-free node pair 21-22
+    with the official ch03 TRUSS shape.  The load case and its EXLD
+    registration come from ch07 sections 11-12.
+    """
+    return [
+        SeedStep(
+            "ptns_truss",
+            lambda client: Element.create(
+                {5: {
+                    "TYPE": "TRUSS", "MATL": 1, "SECT": 1,
+                    "NODE": [21, 22], "ANGLE": 0,
+                }},
+                client=client,
+            ),
+        ),
+        *_extras15_seeds(),
+        SeedStep(
+            "ptns_external_load_case",
+            lambda client: ExternalLoadCaseForPretension.create(
+                {1: {"LCNAME_ITEM": ["PS15_SEED"]}}, client=client,
+            ),
+        ),
+    ]
+
+
+def _extras19_cases() -> List[Case]:
+    """Task P: the manual's pretension load on a seeded truss element."""
+    return [
+        Case(
+            PretensionLoad,
+            {"ITEMS": [{
+                "ID": 1, "LCNAME": "PS15_SEED", "GROUP_NAME": "",
+                "TENSION": 130,
+            }]},
+            {"ITEMS": [{
+                "ID": 1, "LCNAME": "PS15_SEED", "GROUP_NAME": "",
+                "TENSION": 260,
+            }]},
+            lambda payload: payload["ITEMS"][0].get("TENSION"),
+            130,
+            260,
+            item_id=5,
+            needs=(
+                "ptns_truss", "prestress_load_cases",
+                "ptns_external_load_case",
+            ),
+            confirmed=True,
+        ),
+    ]
+
+
 # 2026-09-05, both public SDKs on disposable base models; see live notes.
 # These are payload/code-specific observations, not endpoint product gates.
 _LANE_LIVE_CONFIRMED = {
@@ -4690,6 +4746,7 @@ TIERS: List[Tier] = [
     Tier("extras16", "batch 16: Task A properties with complete manual request values", _no_seeds, _extras16_cases),
     Tier("extras17", "batch 17: Task A pushover controls and hinge assignment", _no_seeds, _extras17_cases),
     Tier("extras18", "batch 18: Task A ch07 tendon chain (TDNT -> TDNA -> TDPL)", _extras18_seeds, _extras18_cases),
+    Tier("extras19", "Task P: ch07 pretension load on a truss element", _extras19_seeds, _extras19_cases),
 ]
 
 

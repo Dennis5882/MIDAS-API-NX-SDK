@@ -10438,3 +10438,14 @@ One false lead, recorded so the next session does not follow it: every one of
 the 399 `/info` schemas in `schema/info-baseline.json` roots its record at
 `Argument`, `/db/NODE` included, so RPSC's `Argument` root says nothing about
 its request wrapper.
+
+### 2026-09-20 — Task P `/db/PTNS`
+
+The final mechanically buildable `/db` case passed through the built npm
+package and Python SDK on Gen NX 2026 v2.1 and Civil NX 2026 v2.2, Build
+09/15/2026. Each product started from an empty document verified with its own
+key. The fixture used the manual's TRUSS shape on element 5 and base-model
+nodes 21-22, created the existing `PS15_SEED` prestress load case, registered
+it through `/db/EXLD`, then completed PTNS create/read/update/read/delete/read.
+The update changed `TENSION` from 130 to 260 and both SDKs read back the change.
+Every run checkpointed under `C:/temp` and restored an empty scratch document.

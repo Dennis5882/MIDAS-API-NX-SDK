@@ -310,6 +310,45 @@ def test_extras18_tendon_chain_seeds_each_step_it_depends_on() -> None:
     assert tdpl["updatePayload"]["ITEMS"][0]["END"] == 1200000
 
 
+def test_extras19_ptns_seeds_the_manual_prerequisite_chain() -> None:
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    extras19 = [case for case in fixture["cases"] if case["tier"] == "extras19"]
+    assert len(extras19) == 1
+
+    ptns = extras19[0]
+    assert ptns["endpoint"] == "/db/PTNS"
+    assert ptns["id"] == 5
+    assert ptns["products"] == ["gen", "civil"]
+    # 2026-09-20, Build 09/15/2026: npm and Python passed on Gen and Civil.
+    assert ptns["confirmed"] is True
+    assert ptns["needs"] == [
+        "ptns_truss", "prestress_load_cases", "ptns_external_load_case",
+    ]
+
+    truss = fixture["seeds"]["ptns_truss"]
+    assert truss == {
+        "endpoint": "/db/ELEM",
+        "records": {
+            "5": {
+                "TYPE": "TRUSS", "MATL": 1, "SECT": 1,
+                "NODE": [21, 22], "ANGLE": 0,
+            },
+        },
+    }
+    assert fixture["seeds"]["prestress_load_cases"]["allowRenumbering"] is True
+    assert fixture["seeds"]["ptns_external_load_case"] == {
+        "endpoint": "/db/EXLD",
+        "records": {"1": {"LCNAME_ITEM": ["PS15_SEED"]}},
+    }
+
+    item = ptns["createPayload"]["ITEMS"][0]
+    assert item == {
+        "ID": 1, "LCNAME": "PS15_SEED", "GROUP_NAME": "", "TENSION": 130,
+    }
+    assert ptns["updatePayload"]["ITEMS"][0]["TENSION"] == 260
+    assert ptns["expected"] == {"created": 130, "updated": 260}
+
+
 def test_moving_country_cases_build_the_vehicle_they_name_and_prove_the_put() -> None:
     fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
     by_endpoint = {case["endpoint"]: case for case in fixture["cases"]}

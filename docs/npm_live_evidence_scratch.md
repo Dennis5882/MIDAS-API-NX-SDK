@@ -634,3 +634,16 @@ inventory.
 
 **Count:** 2 new endpoints; 167 distinct `/db` endpoints and 4 distinct
 result-table operations; 171 distinct npm public-API operations overall.
+
+### 2026-09-20 - Task P pretension load
+
+The built npm package ran first on each empty product document. The manual's
+TRUSS, prestress-load-case and EXLD prerequisites seeded `/db/PTNS`, whose
+create/read/update/read/delete/read round trip passed on both products.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/PTNS` | 2026-09-20 | Gen, Civil |
+
+**Count:** 1 new endpoint; 168 distinct `/db` endpoints and 4 distinct
+result-table operations; 172 distinct npm public-API operations overall.
