@@ -195,15 +195,18 @@ the endpoint-metadata source for npm generation — which is how the npm package
 `/db/NMAS`'s crash workaround without it: the generator carries metadata and docstrings, and that
 workaround was behaviour inside a method. `contracts/` now holds endpoint shape and safety rules as
 facts about the API, sourced from the manual repo, live verification records and `/info`
-introspection — never from either SDK. Both surfaces still share `docs/coverage.json` and the
-live-verification safety evidence; folding that ledger into `contracts/verification/` is pending.
+introspection — never from either SDK. Both surfaces still share `docs/coverage.json`, which since
+2026-09-21 is the implementation inventory and nothing else: the live evidence it used to carry
+per endpoint moved into `contracts/verification/ledger.yaml`, one record per session, resolved
+into per-endpoint claims by `scripts/verification_ledger.py`. That fold is done.
 
 ```text
 contracts/                        language-neutral source of truth (see contracts/README.md)
 ├── schema/                       JSON Schema for an endpoint contract
-├── endpoints/                    one YAML per endpoint — 358 endpoint contracts so far
+├── endpoints/                    one YAML per endpoint — 384 endpoint contracts so far
 ├── safety/                       cross-endpoint client rules + known product defects
-└── verification/                 dated, build-specific live findings, split per product
+└── verification/                 ledger.yaml — the live-evidence ledger, one record per
+                                  session; {gen,civil}-nx.yaml — dated findings contracts cite
 src/midas_nx/                     Python package (PyPI: midas-nx)
 packages/typescript/              JavaScript/TypeScript package (npm: midas-nx)
 ├── src/generated/                generated resources, operations, tables, payload types
@@ -368,7 +371,7 @@ they're the ones worth re-checking before planning a release):
 | Schema drift (live) | `scripts/check_drift.py` (`/info/db/...` vs TypedDict) | ✅ local dev tool |
 | Scaffolding | `scripts/gen_endpoint.py` | ✅ in the documented add-an-endpoint loop |
 | Response handling | 200-with-`error` body, non-JSON body, empty-table shapes, failed-analysis message | ✅ hardened in v0.12.0/v0.14.0 |
-| Write verification | `scripts/live_crud_check.py` and `packages/typescript/scripts/live-crud.mjs`, both replaying `schema/live-cases.json` v6 — create/read/update/delete round trips, **177 of 212 cases confirmed, and npm has replayed all 177** on every product each declares (2026-09-17). v6 added per-id DELETE seed steps, so no seed is unexportable any more | ✅ `/db/STRPSSM` joined the confirmed set on Civil NX 2026 v2.2 after replacing the stale manual `PY`/`PZ` point keys with live `/info`'s `Y`/`Z`. `/db/NMAS` used to crash **both** products, root-caused 2026-07-29 (omitted `rmX`/`rmY`/`rmZ`) and worked around in `NodalMass.create()`/`.update()` |
+| Write verification | `scripts/live_crud_check.py` and `packages/typescript/scripts/live-crud.mjs`, both replaying `schema/live-cases.json` v6 — create/read/update/delete round trips, **183 of 220 cases confirmed, and npm has replayed all 183** on every product each declares (2026-09-18). v6 added per-id DELETE seed steps, so no seed is unexportable any more | ✅ `/db/STRPSSM` joined the confirmed set on Civil NX 2026 v2.2 after replacing the stale manual `PY`/`PZ` point keys with live `/info`'s `Y`/`Z`. `/db/NMAS` used to crash **both** products, root-caused 2026-07-29 (omitted `rmX`/`rmY`/`rmZ`) and worked around in `NodalMass.create()`/`.update()` |
 | Version metadata | `__init__.py` `__version__` (hatchling `dynamic`) + `tests/test_version.py` + a tag↔`__version__` check in `publish.yml` | ✅ single source, enforced at release |
 | Live verification | `scripts/live_smoke.py` (write round trip), `scripts/live_readonly_sweep.py` (GET breadth) | ✅ 400/400 recorded in `contracts/verification/ledger.yaml`, split by `level`: **208 write / 192 read** as of 2026-09-21 — `DESIGN/STEEL/DSTL` answered at read level on both products on 2026-09-16, then took the documented PUT on Gen NX on 2026-09-17 while Civil NX refused it, so its entry is write on Gen. Write level means a call changed model data or wrote a host file; read includes route/schema checks and POST-shaped reads. The build baseline is Gen NX 2026 v2.1 and Civil NX 2026 v2.2, both **Build 09/15/2026**, each read from its own About dialog and author-confirmed 2026-09-16. Five entries dated 2026-09-06 had recorded 08/26 and 08/27 and were corrected: **the API reports no build anywhere**, so every such string is a human reading the About dialog and one that was not read is not a measurement. |
 | Onboarding docs | `docs/{ko,en,zh-tw}/quickstart.md`, `docs/ai-coding/`, `docs/index.md`, `docs/safety.md` risk levels, `docs/recipes/`, `docs/ko/python-basics.md` | ✅ first example read-only + AI-assistant path (v2.1.2); recipe pilot + ko minimal-Python primer + real-session-verified MAPI key step (2026-08-04); ⚠️ still text-only, no screenshots |

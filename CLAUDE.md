@@ -178,6 +178,15 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   §2's status table or §4's milestone table claims, update them in the same commit, along with the
   "Last updated" line. Verify against the tree before restating status — most of the 2026-07-26
   corrections were things the plan asserted were missing while the file sat in the repo.
+  Since 2026-09-21 the *numbers* no longer rely on that discipline:
+  `scripts/check_state_numbers.py --check` re-derives every count §2 and the live playbook's
+  "Where things stand" state — live coverage, fixture size, contract and field totals — from
+  the artefact that owns it and fails in CI on a disagreement, including a claim that has been
+  deleted rather than updated. It deliberately does **not** read PLAN.md's dated header block or
+  §4: those are records of what was true at a release, and a milestone row saying
+  `201 write / 199 read` is correct precisely because nobody rewrote it. That split is what the
+  check found on its first run — §2 said `177 of 212 cases confirmed` while the header four
+  sections above it and the fixture itself both said 183 of 220.
 
 ## Adding an endpoint
 
