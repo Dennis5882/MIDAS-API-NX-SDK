@@ -361,10 +361,21 @@ Two things that have already caused rework:
   unconfirmed one exits 3 and means "triage the fixture first". Don't flip `confirmed` to silence
   a failure, and don't report an unconfirmed failure as an SDK defect — across three runs every
   failure resolved to a fixture, a wrong documented value, or a product bug, and the one real SDK
-  defect was a wrong docstring. Five documented values turned out to be wrong live — `/db/SECF`'s
-  key, `/db/PRES`'s default `DIRECTION`, the `"KDS2016"` time-dependent-material code name,
-  and `/db/TDMT`'s whole code-name enum (it wants `"European"`, not any CEB-FIP spelling) — so
-  treat the manual's worked examples as a starting guess. `/db/PRES`'s case was measured in
+  defect was a wrong docstring. **Exactly one documented value has survived re-checking**, and
+  this bullet claimed five until 2026-09-21. On 2026-07-27 every documentation claim was
+  re-checked against the **official Zendesk articles** rather than the vendored copy, and three
+  of the ones named here were retracted that day: `/db/TDMT` documents an exact 28-value
+  `UNDERSCORED_UPPERCASE` enum, and the CEB-FIP spellings recorded as rejected were `/db/TDME`'s
+  display strings fed to the wrong field — the two endpoints spell the same code differently,
+  which `live_crud_check.py`'s `TimeDependentMaterialSeed` docstring tabulates; `"KDS2016"`
+  appears in neither official article and came from a bad transcription; and `/db/SECF`'s
+  "keyed by element id" was **this SDK's own docstring**, not MIDASIT's. The live findings
+  behind them stand; the accusations do not. **Never cite the vendored manual as "the
+  documentation" in anything sent outside** — fetch the article and quote it. What survives is
+  `/db/PRES`'s `DIRECTION`, narrowed: the Specifications row marks it *Optional, default
+  `"NORMAL"`* while the same article's own footnote matrix shows `NORMAL` unavailable for
+  `"PLATE"` + `"FACE"`. So treat the manual's worked examples as a starting guess — and treat a
+  documentation defect as unproven until the official article has been read. `/db/PRES`'s case was measured in
   full on 2026-09-03 and is worse than a wrong default: omitting the field is *how* the bad
   default gets applied, so both halves of the row fail together. Both SDKs now require
   `DIRECTION` explicitly rather than substitute anything — there is no value an SDK could pick,
