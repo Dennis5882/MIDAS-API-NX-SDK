@@ -13,7 +13,7 @@ and **3 drafts** — the Civil Hyper-S trio `/db/IEHG-GL-M1`, `/db/IEHG-PSS-M1`
 and `/db/IEHG-TRUSS-M1`, which have no permitted source at all: no manual
 schema, and `/info` 404s for them. That is a finished state, not a backlog.
 What remains is live write evidence and the unmerged tables, tracked in
-`PLAN.md` §2 and `docs/codex_handoff_prompt.md`, not here.
+`PLAN.md` §2 and `docs/live_verification_playbook.md`, not here.
 
 **Every measurement section below is history, including the one that used to be
 labelled current.** They are kept because each records how a number was

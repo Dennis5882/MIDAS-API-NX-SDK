@@ -1,21 +1,25 @@
-# Codex task prompt — mechanical work only
+# Live verification playbook
 
-Updated 2026-09-20. Rewritten from scratch after the 2026-09-19 live sessions
-emptied most of the old queue. The previous version (`6e8dcab` and earlier)
-listed 14 Task A endpoints as buildable; checked against their contracts, 13
-of them are blocked or need a judgement, and the remaining `/db/PTNS` case
-passed on 2026-09-20. **The Codex queue is now empty.** Do not grow it by
-relabelling something below as mechanical.
+How a live write-verification session is run on this repo, what is left to
+verify, and why each remaining endpoint sits where it does.
 
-## Where things stand
+This replaces `docs/codex_handoff_prompt.md`, deleted 2026-09-20 when the
+author stopped handing mechanical batches to Codex. Everything here was
+written for that file and is kept because it is about the work, not about who
+does it; its task assignments and division-of-labour framing are gone. Earlier
+versions are in git history (`a9da9a0` and before).
+
+`docs/live_verification_notes.md` remains the evidence record — what ran, on
+which build, with verbatim errors. This file is the procedure and the
+scoreboard.
+
+## Where things stand (measured 2026-09-20)
 
 - **Both products are on Build 09/15/2026** (Gen NX 2026 v2.1, Civil NX 2026
   v2.2).
-- **2.8.3 is published on PyPI and npm.** No release is warranted and none is
-  yours to start: the author picks the number and asks for it explicitly.
-  One npm-surface change is waiting for the next release notes: `/db/TDNT`'s
-  `FT`, `FPK` and `TDMFNAME` became optional, each with its `appliesWhen`
-  condition in JSDoc (`c76bff0`).
+- **2.8.3 is published on PyPI and npm.** One npm-surface change is waiting for
+  the next release notes: `/db/TDNT`'s `FT`, `FPK` and `TDMFNAME` became
+  optional, each with its `appliesWhen` condition in JSDoc (`c76bff0`).
 - **Coverage: 400/400 implemented, 207 write / 193 read.** Of the 225 `/db`
   endpoints, 185 are write-level and 40 are not.
 - **Fixture (`schema/live-cases.json`, version 6):** 220 cases over 196
@@ -26,31 +30,10 @@ relabelling something below as mechanical.
 - **Contracts: 384 endpoints + 87 result tables.** The three drafts left, the
   IEHG trio, have no permitted source; that is final.
 
-## The division, set by the author
+## Gates
 
-Judgement-heavy work is Claude's: schema design, what a contradictory manual
-means, how a seed or case is represented, what a live failure says about the
-product. Bounded, verifiable, repeatable work is yours. **A task that turns
-out to need a judgement is one to stop and report, not to decide.** If Task P
-is done and no new build has shipped, there is no Codex work — say so rather
-than finding some.
-
-## Your queue
-
-| task | kind | state |
-| --- | --- | --- |
-| **P** — build and run a `/db/PTNS` case | offline build, then live | **complete 2026-09-20** |
-| **K** — re-verify confirmed cases on a new build | live, destructive | dormant; reopens when a build newer than 09/15/2026 ships |
-
-Everything else is inventoried under "Not yours", with the reason for each
-endpoint, so you can check a claim of "nothing left" against it.
-
----
-
-## Measured starting state
-
-Run these first. **If a number differs, say so before starting** — something
-moved under you, and the command wins over this file.
+Run these before starting and before committing. If a number differs,
+something moved — the command wins over this file.
 
 ```bash
 python -m pytest -q                       # 1087 passed
@@ -74,69 +57,21 @@ cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 83 tests
 ```
 
-**A manual sync is not yours to reflect.** The manual repo is vendored at
-`e64a682`. If the drift or extraction check goes red, **stop and say so** —
-deciding what a chapter's new text means is a judgement, and a line reference
-that no longer resolves can mean a table moved or that it changed.
+The manual repo is vendored at `e64a682`. If the drift or extraction check goes
+red, a sync landed upstream: deciding what a chapter's new text means is real
+work, and a line reference that no longer resolves can mean a table moved or
+that it changed.
 
----
+## The recurring task: re-verify on a new build
 
-## Task P — `/db/PTNS` (Pretension Loads, ch07 section 11)
+**Live. Destructive: `/doc/NEW`.** Every confirmed case was replayed on Build
+09/15/2026 on 2026-09-18, so this is dormant until a newer build ships. A
+confirmed case failing on a new build is a **regression**, which is what this
+exists to catch before a user does.
 
-**Complete.** This was the last `/db` endpoint without a case whose every
-prerequisite a confirmed fixture or a manual example already supplied.
-
-**2026-09-20 result:** the `extras19` fixture, its three-step prerequisite
-chain and its structural regression test passed every offline gate. The built
-npm package and Python SDK then completed create/read/update/read/delete/read
-on Gen and Civil, Build 09/15/2026; `TENSION` changed from 130 to 260 and read
-back correctly. The fixture is confirmed and the ledger is write-level.
-
-What the case needs, in build order, and where each piece comes from:
-
-1. **A truss element.** PTNS applies to truss/cable elements (ch07 §11's first
-   line); the base model's elements 1–3 are all `BEAM`. Seed one element with
-   ch03's `TRUSS` example (`03_DB_Node_Element.md`, the `#### TRUSS` block:
-   `TYPE "TRUSS"`, `MATL 1`, `SECT 1`, `ANGLE 0`). Change only the key and the
-   `NODE` pair, to nodes the base model already builds. Before choosing the
-   element id, check that no other tier's seed POSTs it; `/db/SPLC` and
-   `/db/MVCD` both collided that way.
-2. **A load case**: the existing `prestress_load_cases` seed (`PS15_SEED`,
-   `PS16_SEED`). It is already in `RENUMBERING_SEEDS`. Do not add another STLD
-   seed.
-3. **The load case registered as External Type in `/db/EXLD`.** ch07 §11's
-   example says so (`하중 케이스 PrS1은 EXLD에서 External Type으로 별도 지정 필요`).
-   Seed it with the create payload of extras15's confirmed `/db/EXLD` case:
-   id 1, `{"LCNAME_ITEM": ["PS15_SEED"]}`. **That case also owns id 1**, so the
-   PTNS case goes in a **new tier** (`extras19`), not in extras15.
-4. **The PTNS case**, keyed on the truss element id, built from ch07 §11's
-   request body with `LCNAME` set to `PS15_SEED` and `GROUP_NAME` `""` (the
-   Python example's value). Make the update change `TENSION` (130 → 260) and
-   assert it. An update identical to the create proves nothing; two cases were
-   rebuilt on 2026-09-19 for that reason.
-
-Then:
-
-- `confirmed=False`, `needs` in build order, `products` from the contract
-  (`[civil, gen]`), `--emit-cases`, and a test in `tests/test_live_cases.py`
-  that the tier seeds each step it depends on (the extras18 test is the
-  pattern).
-- `python scripts/check_fixture_contract.py --check` before running live.
-- Run it through both harnesses on both products ("Running a live batch").
-  Passed on a product → `confirmed=True` for that product and a ledger
-  promotion ("Recording a run"). Failed → leave it unconfirmed and record the
-  verbatim error in the live notes.
-- **If a step fails for a reason the fixture cannot fix** — the truss seed is
-  refused, EXLD refuses the seed, PTNS answers something that needs a value no
-  source states — **stop and report it.** Do not permute fields; that is
-  hand-writing a payload.
-
-## Task K — re-verify confirmed cases on a new build (dormant)
-
-**Live. Destructive: `/doc/NEW`.** Closed for Build 09/15/2026 on 2026-09-18.
-When a newer build ships, this command names the scope — change the build
-string to the **old** build and it lists every confirmed-case endpoint not yet
-re-run on anything newer. Do not hand-count.
+When a build ships, this command names the scope — set `BUILD` to the **old**
+build and it lists every confirmed-case endpoint not yet re-run on anything
+newer. Do not hand-count.
 
 ```bash
 PYTHONIOENCODING=utf-8 python - <<'PY'
@@ -158,25 +93,21 @@ print(len(todo)); print(" ".join(todo))
 PY
 ```
 
-It is a text search of the ledger entry, so an entry that mentions the build
-for another reason drops out; that errs toward doing less, never toward a false
+It is a text search of the ledger entry, so an entry mentioning the build for
+another reason drops out; that errs toward doing less, never toward a false
 claim. With `BUILD = "09/15/2026"` it prints 0 today.
 
 Batch by tier (`--tier`), at most 8 endpoints per selection, through **both**
-harnesses on **both** products in the same session. A confirmed case failing is
-a **regression**: report it verbatim, do not change the fixture, do not flip
-`confirmed`. **Before saying a batch is done, re-run the scope command**; if it
-did not drop by the number you ran, the ledger append is what is missing.
-
----
+harnesses on **both** products in the same session. **Before calling a batch
+done, re-run the scope command**; if it did not drop by the number just run,
+the ledger append is what is missing.
 
 ## Running a live batch
 
-1. **Ask the author before the first product call of a session.** Then confirm
-   each document is open and empty with **that product's own key**:
-   `GET /db/NODE` and `GET /db/ELEM` return no records. If `GET /db/NODE` says
-   `The project is not opened`, stop and ask for a document — do not send
-   `/doc/NEW`.
+1. **Ask before the first product call of a session.** Then confirm each
+   document is open and empty with **that product's own key**: `GET /db/NODE`
+   and `GET /db/ELEM` return no records. If `GET /db/NODE` says
+   `The project is not opened`, ask for a document — do not send `/doc/NEW`.
 2. In Git Bash, `export MSYS_NO_PATHCONV=1` first, or `/db/PTNS` arrives as
    `C:/Program Files/Git/db/PTNS` and the harness exits 2 before any product
    call.
@@ -190,6 +121,8 @@ did not drop by the number you ran, the ledger append is what is missing.
    never hand-edit the fixture.
 5. Repeat both for `civil`.
 6. A `BLOCK` (exit 3) means a seed failed and says nothing about the endpoint.
+   A confirmed case failing is a regression: report it verbatim, do not change
+   the fixture to make it pass, and do not flip `confirmed`.
 
 Selection traps, each of which has cost a session:
 
@@ -214,10 +147,9 @@ Selection traps, each of which has cost a session:
 ## Recording a run — three places, every time
 
 A run that reaches only some of these did not happen as far as any count is
-concerned. This is the one mistake this work has actually made, twice: on
-2026-09-17 one endpoint and on 2026-09-18 eleven were recorded in the evidence
-files and never reached the ledger, and the second session reported its task
-complete.
+concerned. This mistake has been made twice: on 2026-09-17 one endpoint and on
+2026-09-18 eleven were recorded in the evidence files and never reached the
+ledger, and the second session reported its task complete.
 
 1. **The fixture** — `confirmed=True` per product that passed, then
    `--emit-cases`.
@@ -250,7 +182,7 @@ Before committing, diff it against `HEAD`; every change should be one of the
 two kinds above:
 
 ```bash
-git show HEAD:docs/coverage.json > /tmp/cov-head.json   # any scratch path
+git show HEAD:docs/coverage.json > cov-head.json   # any scratch path
 PYTHONIOENCODING=utf-8 python - <<'PY'
 import json
 def index(doc):
@@ -263,7 +195,7 @@ def index(doc):
         elif isinstance(node, list):
             for v in node: walk(v)
     walk(doc); return out
-head = index(json.load(open("/tmp/cov-head.json", encoding="utf-8")))
+head = index(json.load(open("cov-head.json", encoding="utf-8")))
 now = index(json.load(open("docs/coverage.json", encoding="utf-8")))
 for e in now:
     changed = sorted(k for k in set(head.get(e, {})) | set(now[e])
@@ -276,15 +208,13 @@ for e in now:
 PY
 ```
 
----
+## What is left, and why
 
-## Not yours — the whole inventory
-
-Each `/db` endpoint below write level is here, with the reason. **Read its
-entry in `docs/live_verification_notes.md` before touching it**: re-running an
+Each `/db` endpoint below write level is here with its reason. **Read its entry
+in `docs/live_verification_notes.md` before touching it**: re-running an
 unchanged fixture on an unchanged build answers nothing, and on 2026-09-19 all
-15 runnable Task B cases were re-run and every answer matched the earlier build
-word for word.
+15 runnable cases in the first table were re-run and every answer matched the
+earlier build word for word.
 
 ### 23 endpoints with a case that has never passed
 
@@ -302,12 +232,12 @@ word for word.
 | `/db/FIMP` | printed `ECU=0.003` violates the product's `Epsilon_cu > 0.8 / Z + Epsilon_co` | no compliant value documented |
 | `/db/NLLP` | `nllp_seed` answers `Unknown Error` on both | — |
 | `/db/NLNK`, `/db/NLNK-M1`, `/db/CGLP` | blocked by `nllp_seed` | NLLP |
-| `/db/TDNA` | `Errors detected in Tendon Profile Data.(Item:IS_DB_TDNA_NOTENSIONCALC : Not Registered String)` | a model precondition; do not permute fields |
+| `/db/TDNA` | `Errors detected in Tendon Profile Data.(Item:IS_DB_TDNA_NOTENSIONCALC : Not Registered String)` | a model precondition; permuting fields is not the answer |
 | `/db/TDPL` | blocked by the TDNA seed | TDNA |
 
 ### 17 endpoints with no case
 
-| endpoint | why it is not buildable mechanically |
+| endpoint | what stands in the way |
 | --- | --- |
 | `/db/IMFM`, `/db/IMFM-M1` | every name field is a **FIMP** property name (`Fiber Model Property Name`); blocked by `/db/FIMP` |
 | `/db/FIBR` | a fiber division needs FIMP materials; blocked by `/db/FIMP` |
@@ -316,14 +246,14 @@ word for word.
 | `/db/EPMT-M1` | contract is `/info`-only: no value stated anywhere, so any payload would be hand-written |
 | `/db/CSCS` | needs a `COMPOSITE` section; the manual's only sample omits its dimensions and Gen refuses it (live notes, 2026-09-01) |
 | `/db/TDCS` | needs CSCS and the TDNA seed; both blocked |
-| `/db/DRLS` | Gen-only; `/info` carries a `DUMMY` placeholder the contract waives — representation decision |
-| `/db/RCHK`, `/db/REBB`, `/db/REBR`, `/db/REBW` | ch24 design rebar; REBW's manual section is known wrong about its own field names, and each needs a designed RC member — judgement |
+| `/db/DRLS` | Gen-only; `/info` carries a `DUMMY` placeholder the contract waives — needs a representation decision |
+| `/db/RCHK`, `/db/REBB`, `/db/REBR`, `/db/REBW` | ch24 design rebar; REBW's manual section is known wrong about its own field names, and each needs a designed RC member |
 | `/db/MVLDbs` | contract marks mutually exclusive `LCDATA_*` objects required together, and `ALL_MODE`'s two-value condition needs a shape decision |
 | `/db/IEHG-GL-M1`, `/db/IEHG-PSS-M1`, `/db/IEHG-TRUSS-M1` | no manual schema and `/info` 404s — **never** build a fixture |
 
 ### Unconfirmed cases on endpoints already at write level
 
-They move no count. None is a task unless its cause changes.
+They move no count. None is actionable unless its cause changes.
 
 | case | product | recorded cause |
 | --- | --- | --- |
@@ -339,53 +269,39 @@ They move no count. None is a task unless its cause changes.
 `check_fixture_contract.py`'s one lead, `/db/ACTL` sending `CLATS` on Gen, is
 covered above.
 
-### Task E — merge the unmerged tables
+### The unmerged tables
 
 `docs/unmerged_tables_against_info.md` splits 72 tables (482 names) across 15
 contracts. Every mechanically mergeable table is merged; what is left needs a
-judgement about which `/info` object is meant. Do not rescan it as a queue.
+judgement about which `/info` object is meant. It is not a queue to rescan.
 
----
-
-## Closed — do not reopen
-
-| what | outcome | where |
-| --- | --- | --- |
-| Task P `/db/PTNS` | the manual TRUSS + STLD + EXLD chain passed through npm and Python on Gen and Civil; write-level. 2026-09-20 | live notes, 2026-09-20 |
-| Task A reclassified | 13 of the 14 "buildable" endpoints are blocked or need a judgement (inventory above); PTNS was the one mechanical remainder and is now closed. 2026-09-20 | this file |
-| the five `Wrong Field` Task B cases | not bad values: EPST's documented values exhausted, WVLD fails on a bare `NAME`, RPSC's `PART` has no source, TDMF has nothing to vary. `/info` rooting RPSC at `Argument` is not a wrapper signal — all 399 do. 2026-09-19 | live notes, 2026-09-19 (later) |
-| moving-load country cases | `/db/MVLDch`, `/db/MVLDid` pass on Civil once each case's vehicle is seeded from ch08; MVLDid's `Number of Sub-Load Cases` was the missing vehicle. 2026-09-19 | live notes, 2026-09-19 (later) |
-| batches 17 and 18 | `/db/TDNT` (both), `/db/POGD` (Civil), `/db/POGD-M1` reached write. 2026-09-19 | live notes, 2026-09-19 |
-| re-verification on Build 09/15/2026 (Task K) | all 107 confirmed-case endpoints replayed through both SDKs, 2026-09-18 | live notes, 2026-09-18 |
-| meaningful update assertions | MATD, IEHC, POLC-M1 prove a changed value. 2026-09-18 | live notes, 2026-09-18 |
-| npm replay of every confirmed case | complete since 2026-09-17; 183 of 183 now | live notes, 2026-09-17 (later) |
-| `DESIGN/STEEL/DSTL` PUT | Gen accepts; Civil refuses. **Do not re-run**: one enum value, nothing to vary | contract PUT `notes` |
-| crash re-tests on Build 09/15/2026 | clean except `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK`. **Never call OCHECK**: it crashes Gen and each call costs a restart and a held licence | live notes, 2026-09-16 (later) |
-| manual sync to `e64a682` | reflected; 17 contracts' line references re-pointed | git history |
-
-## Decisions that are open and are not yours
+## Open decisions
 
 - **Contract `verification` records lag the ledger.** 47 contracts cite a read
   sweep for an endpoint `docs/coverage.json` records at write level (TDNT,
   POGD, MVLDch and MVLDid among them). No check compares the two; folding the
   ledger into `contracts/verification/` is planned in `contracts/README.md`.
-  Do not hand-edit `verification` blocks to match.
-- **`/db/SPLC`'s `NDP` requiredness** — nested under the Optional `bNDP`
-  switch with no wire rule. No `appliesWhen`, no `safeToOmit`.
+  Hand-editing `verification` blocks to match would paper over that.
+- **`/db/SPLC`'s `NDP` requiredness** — nested under the Optional `bNDP` switch
+  with no wire rule, so neither an `appliesWhen` nor a `safeToOmit` is
+  grounded.
 - **`/db/SPLC`'s cross-tier id collision** — extras4's `lcom_seismic_splc` and
-  extras5's Civil case both own id 1, and the family renumbers. It reports
-  `BLOCK`, honestly.
+  extras5's Civil case both own id 1, and the family renumbers, so a different
+  id does not fix it. It reports `BLOCK`, honestly.
 - **`/db/SPLC`'s `aACCECC_ECCEN_LIST[].ALONG`** is created but never updated
   (recorded in the contract's PUT `notes`).
-- **`/db/THIS-M1`'s 20 `/info` properties with no manual row** — do not raise
-  the ceiling in `info_baseline.py`.
-- **`/db/SECT`'s `USE_HAMBLY_EQ`** — added by Build 09/15/2026, documented
-  nowhere. Do not contract it and **do not re-capture
-  `schema/info-baseline.json`**.
-- **`/db/MVLDbs`'s contract shape**, and everything in the "no case" table
-  marked judgement.
+- **`/db/THIS-M1`'s 20 `/info` properties with no manual row** — the ceiling in
+  `info_baseline.py` holds the number.
+- **`/db/SECT`'s `USE_HAMBLY_EQ`** — added by Build 09/15/2026 on both
+  products, documented nowhere. Not contracted, and
+  `schema/info-baseline.json` must not be re-captured: CI fails when the
+  uncontracted set grows. At the next manual sync, check whether
+  `04_DB_Properties.md`'s 공통 Specifications table grows a row.
+- **`/db/MVLDbs`'s contract shape**, and the ch24 rebar family above.
 
 ## Live-session rules
+
+`CLAUDE.md` carries the full set; these are the ones a live session trips over.
 
 - **`.env` holds `MIDAS_MAPI_KEY_GEN` and `MIDAS_MAPI_KEY_CIVIL`**, no plain
   `MIDAS_MAPI_KEY`. Never print either. A mismatched key still answers
@@ -403,24 +319,23 @@ judgement about which `/info` object is meant. Do not rescan it as a queue.
   author has not confirmed empty.
 - **Assert a reset, do not assume it.** `/doc/NEW` without `{"Argument": {}}` is
   HTTP 500 and resets nothing.
+- **Never call `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK`**: it crashes Gen, MIDASIT
+  has closed it as unsupported, and each call costs a restart and a held
+  licence.
 - **Never hand-write a live payload.** Use the fixture, a contract or a manual
   example.
 
-## Repository rules that keep catching people
+## Repository rules this work keeps running into
 
-- **`contracts/` is the source of truth; neither SDK and no fixture is a source
-  for it.** Permitted sources: the manual repo, `docs/live_verification_notes.md`
-  and live `/info`.
-- **`documentedOptional` is about the docs; `safeToOmit` is about the product.**
-- **`/info` is neither a superset nor a subset of what the server accepts.**
-  Where `/info` and a live round trip disagree, the round trip wins.
+Beyond what `CLAUDE.md` already states:
+
 - **`appliesWhen`'s `in` needs at least two values**; use `equals` for one.
-- **Never put `MAPI-xxxx` or MIDASIT's internal tracker in anything that
-  ships**, release notes included. The manual repo now names one; do not copy
-  it here.
-- **A 200 does not mean success**, and error bodies also arrive under 201.
-- **`DELETE {endpoint}` with an ID-keyed body empties the whole table.**
-- **Never commit a GET response body** — it is the author's model contents.
 - **`contracts/` and `docs/coverage.json` mix CRLF and LF.** Edit them as
-  bytes; a deletion count on an insert-only change means corrupted line endings.
-- Windows consoles are cp949: keep user-facing exception text ASCII.
+  bytes; a deletion count on an insert-only change means corrupted line
+  endings.
+- **Never commit a GET response body** — it is the author's model contents.
+- **Never put `MAPI-xxxx` or MIDASIT's internal tracker in anything that
+  ships**, release notes included. The manual repo names one; it does not come
+  across.
+- **A wire value is not a majority opinion.** Three documents agreeing can be
+  three transcriptions of one typo; only a live check settles one.
