@@ -56,7 +56,7 @@ python scripts/report_npm_replay_coverage.py --check   # 183 cases over 172
 python scripts/check_verification_lag.py --check       # 48, ceiling 48
 python scripts/report_unmerged_tables.py --check       # exit 0
 cd packages/typescript && npm run generate && npm run typecheck && npm test
-                                          # no drift; 83 tests
+                                          # no drift; 87 tests
 ```
 
 The manual repo is vendored at `e64a682`. If the drift or extraction check goes
@@ -139,6 +139,20 @@ Selection traps, each of which has cost a session:
 - **A seed on a table that renumbers** (STLD, FBLD, …) must be listed in
   `RENUMBERING_SEEDS`, or npm refuses its setup as a collision. `SeedStep` has
   no flag for it; the set is the only place.
+- **A seed that replaces a base-model record is cleaned up by restoring it**,
+  not by deleting it. extras13's five design cases are the only ones that do
+  this: they overwrite material 1, section 1, nodes 1-4, element 2-3 and
+  thickness 1. Until 2026-09-20 the npm harness left the fixture's versions in
+  place for the rest of the invocation, because it detects what a step created
+  by diffing against a snapshot taken before the step's own delete. If a new
+  seed needs `replaceExisting`, check that the base model can supply the
+  record back — `replacedBaseModelRecord` refuses a PUT step, which the
+  document supplies rather than the fixture.
+- **A failing read-back probe is a failure of that case, not of the run.** A
+  probe subscripts the record it is handed (`p["ITEMS"][0]["END"]`), so a
+  record the product returns in another shape used to raise `KeyError` past
+  the report, the end-of-run checkpoint and the document restore. Both are
+  caught now; a `FAIL` naming a probe means the shape, not the SDK.
 - **A tier's seeds are not per-case.** The Python runner executes every seed of
   a selected tier before that tier's cases, so a tier that splices another
   tier's seed list POSTs those records twice whenever both are selected — a
@@ -318,10 +332,13 @@ judgement about which `/info` object is meant. It is not a queue to rescan.
   `C:/temp` exists; the author manages it — do not clean it.
 - **A GET can pop a modal dialog** if the open document lives under
   `Program Files`.
-- **Three harnesses call `/doc/NEW` and discard unsaved work**:
+- **Four harnesses call `/doc/NEW` and discard unsaved work**:
   `scripts/live_smoke.py`, `scripts/live_crud_check.py`,
-  `packages/typescript/scripts/live-crud.mjs`. Never against a document the
-  author has not confirmed empty.
+  `packages/typescript/scripts/live-crud.mjs` and
+  `scripts/live_manual_feedback.py`, which calls it once per probe rather than
+  once per run. Never against a document the author has not confirmed empty.
+  Each one takes the checkpoint directory from the caller (`--save-as`,
+  `--save-dir`) and none guesses one.
 - **Assert a reset, do not assume it.** `/doc/NEW` without `{"Argument": {}}` is
   HTTP 500 and resets nothing.
 - **Never call `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK`**: it crashes Gen, MIDASIT

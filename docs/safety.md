@@ -148,17 +148,26 @@ Verify the model afterwards by comparing record counts to what you had before.
 
 ## Scripts that write
 
-Only one of the live scripts in this repo is safe to point at a model you care
-about:
+Two of the live scripts in this repo are safe to point at a model you care
+about. The other five are not:
 
 | Script | Safe against an open model? |
 | --- | --- |
 | `scripts/live_readonly_sweep.py` | ✅ GET only |
+| `packages/typescript/scripts/live-readonly.mjs` | ✅ GET only, the npm equivalent |
 | `scripts/live_smoke.py` | ❌ calls `/doc/NEW` — **discards unsaved work** |
-| `scripts/live_crud_check.py` | ❌ creates, updates and deletes real records |
+| `scripts/live_crud_check.py` | ❌ calls `/doc/NEW`, then creates, updates and deletes real records |
+| `packages/typescript/scripts/live-crud.mjs` | ❌ the same, from the npm package |
+| `scripts/live_manual_feedback.py` | ❌ calls `/doc/NEW` once per probe while investigating a documentation defect |
+| `packages/typescript/scripts/live-analysis.mjs` | ❌ no `/doc/NEW`, but it adds a column to **your** open model and runs a solve, then deletes what it added |
 
 `/doc/NEW` has itself crashed Gen NX when the open document was a large real
 model. Get the document to an empty state first, and confirm it.
+
+Every one of the five writes a checkpoint to a directory **on the machine
+running NX**, which you name (`--save-as`, `--save-dir`). None of them guesses
+one: a path that does not exist on that machine raises a dialog there and
+blocks the session, while the HTTP call still answers like a success.
 
 ## Connectivity troubleshooting
 

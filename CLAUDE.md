@@ -317,11 +317,16 @@ Two things that have already caused rework:
   gate in that package shows up as a 404 there and nowhere else. They proved equal on
   2026-09-03 (282 Civil resources, 267 Gen). A clean sweep proves routes exist and parse and
   nothing about request shapes — every field-name, enum and default defect found so far was
-  invisible to a GET. Three harnesses call `/doc/NEW` and **discard unsaved work**:
-  `scripts/live_smoke.py`, `scripts/live_crud_check.py`, and — since 2026-09-01 —
-  `packages/typescript/scripts/live-crud.mjs`. Never run one against someone's open document
-  without asking first. The npm one saves a checkpoint before the `/doc/NEW` unless
-  `--no-save-before` is passed; that flag removes the safety net, not the destructive call.
+  invisible to a GET. **Four** harnesses call `/doc/NEW` and **discard unsaved work**:
+  `scripts/live_smoke.py`, `scripts/live_crud_check.py`, since 2026-09-01
+  `packages/typescript/scripts/live-crud.mjs`, and since 2026-09-19
+  `scripts/live_manual_feedback.py`, which calls it once per probe rather than once per
+  run. Never run one against someone's open document without asking first. The npm one
+  saves a checkpoint before the `/doc/NEW` unless `--no-save-before` is passed; that flag
+  removes the safety net, not the destructive call. Every one of them writes its
+  checkpoints to a directory **on the NX machine** that the caller names — `--save-as`,
+  `--save-dir`; none of them guesses one, because a path that does not exist there raises a
+  blocking dialog while the HTTP call still answers like a success.
 - **`/info/{endpoint}` introspection is served for `/db/*` only.** Swept from both SDKs
   2026-09-01: it answered for 399 of 402 `/db/*` resource-product pairs and for **none of the
   147 `/DESIGN/*` pairs**, even though those design endpoints answer a plain GET
@@ -332,8 +337,8 @@ Two things that have already caused rework:
   a design contract can never carry `provenance: info_schema`. The three `/db/*` exceptions
   are the Civil Hyper-S trio `/db/IEHG-GL-M1`, `/db/IEHG-PSS-M1` and `/db/IEHG-TRUSS-M1`.
 - **`scripts/live_crud_check.py` write coverage is tracked in the script itself.** Cases carry
-  `confirmed=True` only once someone has watched them pass live (177 of 212 cases as of
-  2026-09-15; the first 43 landed 2026-07-29 on Civil NX, after `/db/NMAS`'s crash was
+  `confirmed=True` only once someone has watched them pass live (183 of 220 cases as of
+  2026-09-20; the first 43 landed 2026-07-29 on Civil NX, after `/db/NMAS`'s crash was
   root-caused and worked around — see above); a failure of
   a confirmed case is a **regression** and exits 1, while a failure of an
   unconfirmed one exits 3 and means "triage the fixture first". Don't flip `confirmed` to silence

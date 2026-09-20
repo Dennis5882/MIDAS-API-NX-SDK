@@ -353,7 +353,7 @@ they're the ones worth re-checking before planning a release):
 
 | Axis | Artifact | State |
 |---|---|---|
-| Tests | 1090 Python tests + 83 Vitest tests, mocked/local only | ✅ green, all of it. The contract-to-manual test that had failed on purpose since 2026-09-06 passes again: the manual repo's syncs through `a6947a7` (2026-09-15) were reflected 2026-09-16 |
+| Tests | 1090 Python tests + 87 Vitest tests, mocked/local only | ✅ green, all of it. The contract-to-manual test that had failed on purpose since 2026-09-06 passes again: the manual repo's syncs through `a6947a7` (2026-09-15) were reflected 2026-09-16 |
 | CI | `.github/workflows/ci.yml` — Python checks on 3.11/3.12/3.13/3.14 plus npm generation/typecheck/tests/package smoke on Node.js 18/22, push+PR | ✅ running |
 | Static typing | mypy over `src/midas_nx`, config in `pyproject.toml`, own CI job | ✅ clean across all 41 modules |
 | Packaging verification | `package` CI job + `scripts/wheel_smoke_test.py` — builds the wheel, installs it into a clean venv, asserts `py.typed` shipped, `__version__` matches the distribution, and the `delete_all()` guard is armed | ✅ running |

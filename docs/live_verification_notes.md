@@ -8525,7 +8525,13 @@ empty before the patch went on.
 The npm sweep was written for the session at first, because
 `packages/typescript/scripts/` carried only `live-crud.mjs` and
 `live-analysis.mjs`, both of which call `/doc/NEW` and discard unsaved work -
-so the npm package had no safe harness at all. It has one now:
+so the npm package had no safe harness at all. [Corrected 2026-09-20: only
+`live-crud.mjs` calls `/doc/NEW`. `live-analysis.mjs` never has - `git log -S`
+finds no `newProject` in it, ever. It is still unsafe against a model you care
+about, because it adds a column to the open document and runs a solve before
+deleting what it added, but it does not discard the document. The conclusion
+this paragraph draws - that the npm package needed a GET-only harness - is
+unaffected.] It has one now:
 `packages/typescript/scripts/live-readonly.mjs`, `npm run live:readonly`,
 committed the same day and re-run against both products to the same counts.
 
