@@ -168,8 +168,8 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   proves the request shape is one the server accepts, and every field-name/enum/default defect
   found so far was invisible to reads. **Re-verifying adds a record; it never edits one**, which is
   what the old append-only `method` string in `coverage.json` got wrong twice. Until the migration
-  the same fact lived in two files — 48 contracts cited a read sweep for an endpoint the ledger had
-  at write level, and the two disagreed about what `level` even meant.
+  the same fact lived in two files — 40 contracts cite only a read session for an endpoint the
+  ledger holds at write level, and the two disagreed about what `level` even meant.
 - `docs/live_verification_notes.md` — findings from real Gen/Civil NX sessions that are *not* in the
   manual. Deliberately kept out of the typed contracts; read it before trusting any `PRODUCTS` change.
 - `PLAN.md` — the hand-maintained big-picture roadmap (`ROADMAP.md` is the generated per-endpoint

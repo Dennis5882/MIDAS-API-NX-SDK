@@ -4317,3 +4317,21 @@ records:
     Re-verified 2026-09-20 on Build 09/15/2026 through both SDKs (Gen, Civil) after the fixture
     was rebuilt on its own node pair, load case (PS19_SEED) and EXLD registration instead
     of sharing extras15''s; /db/EXLD, /db/PRST and /db/PTNS also passed together in one selection.'
+- id: ledger-write-2026-07-29-rebw
+  endpoints:
+  - /db/REBW
+  date: '2026-07-29'
+  level: write
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.1), build 07/28/2026
+  outcome: success
+  method: 'PUT round trip against a real production Gen NX model (a KDS building, 4044 nodes,
+    4686 elements, 102 populated wall-rebar rows): wall 101''s record was backed up, VER_BAR.DIST
+    changed from 0.2 to 0.99, the change confirmed on a fresh read, then reverted. Recorded
+    in full as db-rebw-live-shape-2026-07-29 in contracts/verification/gen-nx.yaml, which
+    db-rebw.yaml already cites. Added to the ledger 2026-09-21: the migration carried coverage.json''s
+    claim across unchanged, and that claim said read -- a later read-sweep narrative had overwritten
+    the write evidence in the single prose field the old ledger gave an endpoint. Nothing
+    new was run for this; the session it records is 2026-07-29.'

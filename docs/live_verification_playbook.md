@@ -21,8 +21,8 @@ scoreboard.
   `/db/TDNT` relaxation — `FT`, `FPK` and `TDMFNAME` optional, each with its
   `appliesWhen` condition in JSDoc. Nothing in either packaged surface has
   changed since.
-- **Coverage: 400/400 implemented, 207 write / 193 read.** Of the 225 `/db`
-  endpoints, 185 are write-level and 40 are not.
+- **Coverage: 400/400 implemented, 208 write / 192 read.** Of the 225 `/db`
+  endpoints, 186 are write-level and 39 are not.
 - **Fixture (`schema/live-cases.json`, version 6):** 220 cases over 196
   endpoints; 183 confirmed over 172 endpoints; 9 base-model steps; 77 named
   seeds; 0 unsupported.
@@ -53,9 +53,9 @@ python scripts/check_fixture_contract.py --check       # 1 fixture lead over 1
                                           # endpoint, 3 contract gaps over 2
 python scripts/report_npm_replay_coverage.py --check   # 183 cases over 172
                                           # endpoints; every product: 183
-python scripts/check_verification_lag.py --check       # 48, ceiling 48
+python scripts/check_verification_lag.py --check       # 40, ceiling 40
 python scripts/verification_ledger.py                  # 397 endpoints:
-                                          # 190 read, 207 write
+                                          # 189 read, 208 write
 python scripts/report_unmerged_tables.py --check       # exit 0
 cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 87 tests
@@ -288,9 +288,11 @@ judgement about which `/info` object is meant. It is not a queue to rescan.
 
 ## Open decisions
 
-- **Contract `verification` refs lag the ledger.** 48 contracts cite a read
-  sweep for an endpoint the ledger holds at write level (TDNT, POGD, MVLDch,
-  MVLDid and PTNS among them; 47 under `/db` plus `/ope/MEMB`). The fold
+- **Contract `verification` refs lag the ledger.** 40 contracts cite only a
+  read session for an endpoint the ledger holds at write level (TDNT, POGD,
+  MVLDch, MVLDid and PTNS among them). It read 48 until the checker stopped
+  matching the word "write" in the block and started resolving the ref: eight
+  contracts cite a write session whose id does not spell it. The fold
   landed on 2026-09-21 and fixed the *source* of the disagreement -- there is
   one ledger now, `contracts/verification/ledger.yaml` -- but a contract's
   `verification.records[].ref` still points at the session it was promoted

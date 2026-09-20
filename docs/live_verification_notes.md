@@ -10499,3 +10499,28 @@ The Python harness's read-back probe subscripts the record it is handed
 product returns in another shape raised `KeyError` out of the tier loop: no
 report, no end-of-run checkpoint, and the product left holding the fixture's
 model. An unreadable record is now a failure of that case and nothing else.
+
+### 2026-09-21 - /db/REBW was already write level, and the ledger had lost it
+
+Nothing new was run. Consolidating the ledger put the two records for
+`/db/REBW` side by side, and they disagreed: `db-rebw-live-shape-2026-07-29`
+in contracts/verification/gen-nx.yaml describes a PUT round trip against a
+real production Gen NX model - wall 101's record backed up, `VER_BAR.DIST`
+changed from 0.2 to 0.99, the change confirmed on a fresh read, then reverted -
+while docs/coverage.json had the endpoint at read level.
+
+The ledger's own definition settles it: write means a live call actually
+mutated model data, and that PUT did. What happened is a property of the old
+shape rather than of the evidence. An endpoint had one prose `method` field,
+and on 2026-08-27 a read-sweep narrative about `/info/db/REBW` field names was
+written into it, overwriting the write evidence that had been there since
+2026-07-29. The session record kept it; the per-endpoint field could not.
+
+`/db/REBW` is now write level on Gen, dated 2026-07-29 on build 07/28/2026,
+which is the session that earned it. Published coverage moves from 207 write /
+193 read to 208 / 192, and ROADMAP's version matrix gains the 2026-07-29 Gen
+row that endpoint had been the only citer of.
+
+This is also why the new ledger appends rather than edits: a record is what one
+session saw, and a later session writing over it loses evidence nobody notices
+is gone.
