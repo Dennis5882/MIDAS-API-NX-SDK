@@ -19,7 +19,7 @@ version first, and treat anything you're not sure about as unverified:
 
     python -c "import midas_nx; print(midas_nx.__version__)"
 
-Requires Python 3.12+.
+Requires Python 3.11+.
 
 ## Client
 

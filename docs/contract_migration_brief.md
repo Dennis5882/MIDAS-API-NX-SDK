@@ -357,7 +357,7 @@ cd packages/typescript && npm run generate && npm run typecheck && npm test
 git status --short           # generation drift must be empty
 ```
 
-CI runs all of this on 3.12/3.13 and Node 18/22 and fails on generated-file
+CI runs all of this on 3.11-3.14 and Node 18/22 and fails on generated-file
 drift. It has been red on `main` while a release was tagged before — check that
 it is green rather than assuming.
 

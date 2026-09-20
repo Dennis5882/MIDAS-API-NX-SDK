@@ -23,7 +23,7 @@ npm run build
 ```
 
 Before a commit, run the checks for every affected surface. CI (`.github/workflows/ci.yml`) always
-runs the Python checks on 3.12/3.13 and the npm generation, typecheck, tests, package build, declaration
+runs the Python checks on 3.11/3.12/3.13/3.14 and the npm generation, typecheck, tests, package build, declaration
 safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these tests needs a live server.
 
 ## Sibling repos on this machine

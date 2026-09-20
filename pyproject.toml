@@ -11,7 +11,7 @@ dynamic = ["version"]
 description = "Unified Python SDK for the MIDAS NX Open API (Civil NX + Gen NX) - employee-led open source, not an official MIDAS IT product"
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 authors = [{ name = "Dennis5882" }]
 keywords = [
   "midas", "midas-nx", "midas-gen", "midas-civil", "civil-nx", "gen-nx",
@@ -23,8 +23,10 @@ classifiers = [
   "Development Status :: 5 - Production/Stable",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Operating System :: OS Independent",
   "Intended Audience :: Science/Research",
   "Intended Audience :: Developers",
@@ -74,7 +76,7 @@ packages = ["src/midas_nx"]
 testpaths = ["tests"]
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.11"
 files = ["src/midas_nx"]
 ignore_missing_imports = true
 # Deliberately not --strict. The payload TypedDicts are documentation of a

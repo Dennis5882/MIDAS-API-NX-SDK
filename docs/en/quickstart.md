@@ -24,13 +24,12 @@ follow it start to finish in one sitting.
 
 ## Step 1: Install Python
 
-`midas-nx` requires **Python 3.12 or 3.13** — those are the versions this
-SDK is tested against.
+`midas-nx` requires **Python 3.11 or newer** — 3.11, 3.12, 3.13 and 3.14 are
+all tested in CI.
 
-1. Go to https://www.python.org/downloads/. The button there usually offers
-   the latest release; if that's already labeled 3.12 or 3.13 you're fine,
-   but if it offers something newer, use that page's "All releases" link to
-   get 3.12 or 3.13 specifically instead.
+1. Go to https://www.python.org/downloads/ and take the button's latest
+   release. If you already have 3.11 or newer, you do not need to install
+   anything.
 2. Run the installer. **Make sure to check the "Add python.exe to PATH"
    checkbox at the bottom of the first screen** before clicking "Install
    Now." Skipping this means your command prompt won't recognize `python`
@@ -42,9 +41,9 @@ SDK is tested against.
    python --version
    ```
 
-   You should see `Python 3.12.x` or `Python 3.13.x`. If you already had an
-   older Python installed (e.g. `Python 3.10.x`), install 3.12 or 3.13 as
-   above — `pip install` will refuse `midas-nx` on anything older in the
+   You should see `Python 3.11.x` or newer. If you already had an older
+   Python installed (e.g. `Python 3.10.x`), install a current one as above —
+   `pip install` will refuse `midas-nx` on anything below 3.11 in the
    next step. If you get `'python' is not recognized as an internal or
    external command`, you missed the PATH checkbox in step 2 — reinstall
    Python and check it this time.

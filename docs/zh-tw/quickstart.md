@@ -19,11 +19,10 @@
 
 ## 第 1 步：安裝 Python
 
-`midas-nx` 需要 **Python 3.12 或 3.13** —— 這是本 SDK 實際驗證過的版本。
+`midas-nx` 需要 **Python 3.11 以上** —— 3.11、3.12、3.13、3.14 皆在 CI 中驗證。
 
-1. 前往 https://www.python.org/downloads/ 。該頁面通常會提供最新版本；
-   若已經標示 3.12 或 3.13 可直接下載，若是更新的版本，請改用該頁面的
-   「All releases」連結，另外下載 3.12 或 3.13。
+1. 前往 https://www.python.org/downloads/ ，直接下載頁面提供的最新版本即可。
+   若您已安裝 3.11 以上的版本，則不需另行安裝。
 2. 執行安裝檔。**安裝畫面最下方的「Add python.exe to PATH」核取方塊務必勾選**，
    再點「Install Now」。若漏勾這個選項，之後命令提示字元會無法辨識 `python`
    指令。
@@ -33,9 +32,9 @@
    python --version
    ```
 
-   應該會顯示 `Python 3.12.x` 或 `Python 3.13.x`。若您原本裝的是更舊的版本
-   （例如 `Python 3.10.x`），請依上述方式安裝 3.12 或 3.13 —— 下一步的
-   `pip install` 會拒絕在更舊版本上安裝 `midas-nx`。若出現
+   應該會顯示 `Python 3.11.x` 以上。若您原本裝的是更舊的版本
+   （例如 `Python 3.10.x`），請依上述方式安裝新版 —— 下一步的
+   `pip install` 會拒絕在 3.11 以下的版本上安裝 `midas-nx`。若出現
    `'python' 不是內部或外部命令` 之類的錯誤，代表第 2 步漏勾了 PATH 選項，
    請重新安裝一次 Python 並勾選該選項。
 

@@ -125,9 +125,14 @@ exported from `midas_nx` plus the documented resource classes and endpoint
 functions — not private helpers (`_`-prefixed), and not the exact wording of
 an exception message.
 
-**Python:** 3.12+ (dropped 3.9–3.11 in v2.1.0 — 3.9 was already past its own
-EOL). Every version in the classifier list is tested in CI. Dropping one is a
-minor bump at least, announced in the release notes.
+**Python:** 3.11+. v2.1.0 dropped 3.9–3.11 together, because 3.9 was past its
+own EOL and three dependency floors were stuck behind it; 3.10 and 3.11 went
+with it although nothing in the code needed 3.12. 3.11 came back in 2.9.0 after
+the whole suite was run on it. 3.10 stayed out: it reaches EOL in October 2026,
+and `requests`, `pytest` and `mypy` all floor at 3.10 today, so the next
+dependency bump would force it out again. Every version in the classifier list
+is tested in CI. Dropping one is a minor bump at least, announced in the
+release notes.
 
 **MIDAS NX:** there is no single "supported version" — the same endpoint can
 behave differently across products and builds. What a release claims is what
