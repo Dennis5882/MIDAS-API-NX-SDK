@@ -125,7 +125,8 @@ def _user_sseis_payload(field: str) -> dict[str, Any]:
     return {"Assign": {1: record}}
 
 
-def sseis_torsion_typos(client: MidasClient, checkpoint: str) -> dict:
+def sseis_torsion_typos(client: MidasClient, checkpoint: str,
+                        extension: str) -> dict:
     """Request 20260918 B-1: normal and two documented typo spellings."""
     results: dict[str, Any] = {}
     for index, field in enumerate(("INHERENT_TORSION", "IINHERENT_TORSION",
@@ -138,7 +139,11 @@ def sseis_torsion_typos(client: MidasClient, checkpoint: str) -> dict:
             "get": _raw(client, "GET", "/db/SSEIS/1"),
         }
         if index < 2:
-            doc.save_as(f"{checkpoint}-{index}.mgbx", client=client)
+            # The extension is the product's own: /doc/SAVEAS rejects the
+            # other product's spelling, and a guard save that never lands
+            # leaves the next /doc/NEW to raise a save-changes dialog, which
+            # blocks the whole API session until a human dismisses it.
+            doc.save_as(f"{checkpoint}-{index}.{extension}", client=client)
     return results
 
 
@@ -365,11 +370,20 @@ def main() -> int:
     parser.add_argument("--case", choices=("a1", "a2", "a3", "b1", "b2"),
                         default="a1")
     parser.add_argument("--out", required=True)
+    parser.add_argument(
+        "--save-dir", required=True,
+        help=("directory ON THE NX MACHINE for this run's checkpoints, e.g. "
+              "C:/temp. Every path here resolves on the host running NX, not "
+              "on this one, and a directory that does not exist there raises a "
+              "blocking dialog while the HTTP call still answers like a "
+              "success -- so it is required rather than guessed."),
+    )
     args = parser.parse_args()
     client = MidasClient(product=args.product, timeout=60)
     extension = "mcbz" if args.product == "civil" else "mgbx"
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    checkpoint = f"C:/temp/manual-feedback-{args.case}-{args.product}-{stamp}"
+    save_dir = args.save_dir.replace("\\", "/").rstrip("/")
+    checkpoint = f"{save_dir}/manual-feedback-{args.case}-{args.product}-{stamp}"
     doc.save_as(f"{checkpoint}-before.{extension}", client=client)
     if args.case == "a1":
         result = memb_selection_typo(client, f"{checkpoint}-baseline.{extension}")
@@ -378,7 +392,7 @@ def main() -> int:
     elif args.case == "a3":
         result = tdna_radius_types(client, checkpoint, extension)
     elif args.case == "b1":
-        result = sseis_torsion_typos(client, checkpoint)
+        result = sseis_torsion_typos(client, checkpoint, extension)
     else:
         result = missing_specification_fields(
             client, checkpoint, extension, args.product,

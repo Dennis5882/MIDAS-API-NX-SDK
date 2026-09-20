@@ -4803,7 +4803,20 @@ def _run_case(case: Case, client: MidasClient) -> Dict[str, Any]:
         got = res.items(client=client).get(case.item_id)
         if got is None:
             raise MidasAPIError(f"{res.ENDPOINT}: id {case.item_id} missing after {label}")
-        actual = case.probe(got)
+        try:
+            actual = case.probe(got)
+        except (KeyError, IndexError, TypeError, AttributeError) as exc:
+            # A probe subscripts the read-back record -- p["ITEMS"][0]["END"]
+            # -- so a record the product returns in another shape raises here,
+            # not a MidasAPIError. Uncaught, that escapes the tier loop and
+            # takes the report, the end-of-run checkpoint and the restore of an
+            # empty scratch document with it: the run is lost and the product
+            # is left holding the fixture's model. An unreadable record is a
+            # failure of this case and nothing more.
+            raise MidasAPIError(
+                f"{res.ENDPOINT}: {label} probe could not read the record "
+                f"({type(exc).__name__}: {exc})"
+            ) from exc
         if actual != expected:
             raise MidasAPIError(
                 f"{res.ENDPOINT}: {label} {expected!r}, read back {actual!r}"

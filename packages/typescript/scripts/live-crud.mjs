@@ -28,8 +28,9 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import {
-  caseCleanupMode, classifyResult, containsExpectedValue, exitCodeFor, seedSteps,
-  setupCleanupMode, supportedCaseWrites, verifyRenumberedSeed,
+  caseCleanupMode, classifyResult, containsExpectedValue, exitCodeFor,
+  replacedBaseModelRecord, seedSteps, setupCleanupMode, supportedCaseWrites,
+  verifyRenumberedSeed,
 } from "./live-harness-support.mjs";
 
 import { doc, MidasClient, post, resources } from "../dist/index.js";
@@ -294,6 +295,10 @@ async function runCase(liveCase, client, cleanupContext) {
         setup.push({
           resource: sourceResource, ids: createdIds, endpoint: source.endpoint,
           cleanupMode: sourceCleanupMode,
+          // A collision this step was allowed to overwrite. It is absent from
+          // createdIds because the id existed in `before`, so cleanup has to
+          // be told about it explicitly.
+          replacedIds: collisions,
         });
         if (source.allowRenumbering) {
           verifyRenumberedSeed(source, after, createdIds);
@@ -365,6 +370,28 @@ async function runCase(liveCase, client, cleanupContext) {
           await deleteAndVerify(prerequisite.resource, id, client, prerequisite.endpoint);
         } catch (error) {
           cleanupErrors.push(`${prerequisite.endpoint}/${id}: ${errorText(error)}`);
+        }
+      }
+      for (const id of prerequisite.replacedIds ?? []) {
+        const original = replacedBaseModelRecord(
+          fixture.baseModel, prerequisite.endpoint, id,
+        );
+        try {
+          await deleteAndVerify(prerequisite.resource, id, client, prerequisite.endpoint);
+          if (original) {
+            await prerequisite.resource.create({ [id]: original }, client);
+            requireStored(
+              await prerequisite.resource.items(client), id,
+              prerequisite.endpoint, "base model restore",
+            );
+          }
+        } catch (error) {
+          // Left unrestored, the next case in this invocation runs against a
+          // base model that is no longer the one the fixture describes, and
+          // reports a defect the SDK does not have. Fail loudly instead.
+          cleanupErrors.push(
+            `${prerequisite.endpoint}/${id} (base model restore): ${errorText(error)}`,
+          );
         }
       }
     }

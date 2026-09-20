@@ -153,3 +153,29 @@ export function exitCodeFor(results) {
   if (!failed.length) return 0;
   return failed.some((result) => result.confirmed && !result.blocked) ? 1 : 3;
 }
+
+/**
+ * The base-model record a `replaceExisting` setup step overwrote, or null.
+ *
+ * Such a step deletes a record the shared base model owns - material 1,
+ * section 1, nodes 1-4, element 2-3, thickness 1 - and creates its own under
+ * that id. The harness detects what a step created by diffing against a
+ * snapshot taken *before* the delete, so a replaced id never looks new and
+ * cleanup used to leave it in place: the fixture's steel S450 stayed at
+ * material 1, and every later case in the same invocation ran against a base
+ * model nobody had rebuilt. Cleanup asks here what to put back.
+ *
+ * A PUT step is not restorable this way - it changed a record the document
+ * supplies rather than one the fixture created - so it is reported as
+ * unrestorable rather than replayed as a create.
+ */
+export function replacedBaseModelRecord(baseModel, endpoint, id) {
+  for (const step of baseModel ?? []) {
+    if (step.endpoint !== endpoint) continue;
+    const record = step.records?.[id];
+    if (!record) continue;
+    if (step.method === "PUT") return null;
+    return record;
+  }
+  return null;
+}

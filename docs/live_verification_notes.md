@@ -10470,3 +10470,26 @@ both SDKs: PTNS passed on Gen and Civil, and `/db/EXLD`, `/db/PRST` and
 old arrangement would have broken. `/db/EXLD` id 1 is still shared with
 extras15's own case, which deletes it before extras19's seed re-creates it -
 TIERS is ordered, so that sequence is fixed.
+
+### 2026-09-20 (later) - review fixes, re-run on Build 09/15/2026
+
+A code review of the untagged batch found four defects in the harnesses. Two
+were only reachable live, so extras13's five design cases - the only ones whose
+setup replaces a shared base-model record - were re-run on Gen and Civil
+through both SDKs. All five passed on both products with no cleanup errors.
+
+The npm harness detects what a setup step created by diffing against a
+snapshot taken before the step, so an id a `replaceExisting` seed overwrote
+never looked new and cleanup left it in place. The fixture's steel S450 stayed
+at material 1, its H300x150 at section 1, and nodes 1-4, element 2-3 and
+thickness 1 likewise, for every later case in the same invocation. Nothing has
+misreported because of it - the batches this is run in are small and the
+design tier sits late - but a confirmed case running against a base model
+nobody rebuilt is how a healthy SDK prints REGRESS. Cleanup now restores the
+base-model record.
+
+The Python harness's read-back probe subscripts the record it is handed
+(`p["ITEMS"][0]["END"]`), and only `MidasAPIError` was caught, so a record the
+product returns in another shape raised `KeyError` out of the tier loop: no
+report, no end-of-run checkpoint, and the product left holding the fixture's
+model. An unreadable record is now a failure of that case and nothing else.

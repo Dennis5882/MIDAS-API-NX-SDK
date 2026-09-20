@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
-  caseCleanupMode, classifyResult, containsExpectedValue, exitCodeFor, seedSteps,
-  setupCleanupMode, supportedCaseWrites, verifyRenumberedSeed,
+  caseCleanupMode, classifyResult, containsExpectedValue, exitCodeFor,
+  replacedBaseModelRecord, seedSteps, setupCleanupMode, supportedCaseWrites,
+  verifyRenumberedSeed,
 } from "../scripts/live-harness-support.mjs";
 
 describe("renumbered live seed verification", () => {
@@ -176,5 +177,35 @@ describe("emitted seed steps", () => {
     expect(() => seedSteps(
       { endpoint: "/db/PJCF", delete: ["1"], records: {} }, "both",
     )).toThrow("invalid delete step");
+  });
+});
+
+describe("restoring a base-model record a setup step replaced", () => {
+  const baseModel = [
+    { endpoint: "/db/UNIT", method: "PUT", records: { 1: { DIST: "M" } } },
+    { endpoint: "/db/MATL", method: "POST", records: { 1: { NAME: "C24" } } },
+    { endpoint: "/db/NODE", method: "POST", records: { 1: { X: 0 }, 2: { X: 4 } } },
+  ];
+
+  it("returns what the base model owns, so cleanup can put it back", () => {
+    expect(replacedBaseModelRecord(baseModel, "/db/MATL", 1)).toEqual({ NAME: "C24" });
+    expect(replacedBaseModelRecord(baseModel, "/db/NODE", 2)).toEqual({ X: 4 });
+  });
+
+  it("returns null for an id the base model does not own", () => {
+    expect(replacedBaseModelRecord(baseModel, "/db/MATL", 2)).toBeNull();
+    expect(replacedBaseModelRecord(baseModel, "/db/SECT", 1)).toBeNull();
+  });
+
+  it("does not offer to re-create a PUT step", () => {
+    // /db/UNIT is a record the document supplies and the base model edits.
+    // Replaying it as a create would be a different call than the one that
+    // set it, so cleanup reports it rather than guessing.
+    expect(replacedBaseModelRecord(baseModel, "/db/UNIT", 1)).toBeNull();
+  });
+
+  it("tolerates a fixture with no base model", () => {
+    expect(replacedBaseModelRecord(undefined, "/db/MATL", 1)).toBeNull();
+    expect(replacedBaseModelRecord([], "/db/MATL", 1)).toBeNull();
   });
 });

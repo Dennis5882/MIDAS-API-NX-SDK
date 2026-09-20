@@ -4,8 +4,8 @@
 fact. The ledger entry moves the day a write round trip passes; the contract's
 `verification.records` keep citing whatever sweep was current when the contract
 was promoted. Nothing compared them until this script, and on 2026-09-20 that
-was 47 contracts -- every one of them claiming a read sweep for an endpoint the
-ledger records at write level.
+was 48 contracts -- 47 under `/db` plus `/ope/MEMB` -- every one of them
+claiming a read sweep for an endpoint the ledger records at write level.
 
 **This is a ceiling, not a to-do list.** Folding `docs/coverage.json` into
 `contracts/verification/` is the planned fix (`contracts/README.md`); hand-
@@ -34,7 +34,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 CONTRACTS = ROOT / "contracts" / "endpoints"
 COVERAGE = ROOT / "docs" / "coverage.json"
 
-#: Measured 2026-09-20 over 384 promoted contracts: 47 under `/db` and
+#: Measured 2026-09-20 over 384 promoted contracts: 47 under `/db` plus
 #: `/ope/MEMB`, which a `db-*` glob had missed. A ceiling: see the module
 #: docstring for why it is allowed to fall and not to rise.
 LAGGING_AT_MOST = 48
