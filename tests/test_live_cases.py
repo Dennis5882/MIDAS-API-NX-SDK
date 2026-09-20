@@ -1063,3 +1063,47 @@ def test_a_case_whose_id_a_seed_already_owns_is_blocked_not_regressed() -> None:
     assert row["classification"] == live.BLOCKED
     assert row["ok"] is False
     assert "already exists" in row["steps"]["create"]["error"]
+
+
+def test_nothing_attaches_an_element_to_the_reserved_node_pair() -> None:
+    """Nodes 21-22 carry links, never elements.
+
+    The base model builds that pair unattached so /db/ELNK, /db/RIGD and
+    /db/MCON can each own it in turn without colliding with a real element --
+    they already collide with each other, and rely on each deleting itself
+    before the next runs. extras19's truss seed borrowed the pair on
+    2026-09-20 and was rebuilt on its own nodes the same day; this fails
+    offline if a fixture reaches for them again.
+    """
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    reserved = {21, 22}
+
+    def element_records(source: dict) -> list[tuple[str, dict]]:
+        found = []
+        if source.get("endpoint") == "/db/ELEM":
+            found += [(key, record) for key, record in (source.get("records") or {}).items()]
+        for step in source.get("steps") or []:
+            found += element_records(step)
+        return found
+
+    offenders = []
+    for name, seed in fixture["seeds"].items():
+        for key, record in element_records(seed):
+            if reserved.intersection(record.get("NODE") or []):
+                offenders.append(f"seed {name} element {key}")
+    for step in fixture["baseModel"]:
+        for key, record in element_records(step):
+            if reserved.intersection(record.get("NODE") or []):
+                offenders.append(f"base model element {key}")
+    for case in fixture["cases"]:
+        if case["endpoint"] != "/db/ELEM":
+            continue
+        for payload_key in ("createPayload", "updatePayload"):
+            nodes = (case.get(payload_key) or {}).get("NODE") or []
+            if reserved.intersection(nodes):
+                offenders.append(f"case {case['endpoint']} {payload_key}")
+
+    assert offenders == [], (
+        "nodes 21-22 are reserved for the link and constraint cases: "
+        + ", ".join(offenders)
+    )
