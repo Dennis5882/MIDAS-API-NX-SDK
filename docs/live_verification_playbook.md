@@ -17,9 +17,10 @@ scoreboard.
 
 - **Both products are on Build 09/15/2026** (Gen NX 2026 v2.1, Civil NX 2026
   v2.2).
-- **2.8.3 is published on PyPI and npm.** One npm-surface change is waiting for
-  the next release notes: `/db/TDNT`'s `FT`, `FPK` and `TDMFNAME` became
-  optional, each with its `appliesWhen` condition in JSDoc (`c76bff0`).
+- **2.8.4 is published on PyPI and npm** (2026-09-20). It shipped the
+  `/db/TDNT` relaxation — `FT`, `FPK` and `TDMFNAME` optional, each with its
+  `appliesWhen` condition in JSDoc. Nothing in either packaged surface has
+  changed since.
 - **Coverage: 400/400 implemented, 207 write / 193 read.** Of the 225 `/db`
   endpoints, 185 are write-level and 40 are not.
 - **Fixture (`schema/live-cases.json`, version 6):** 220 cases over 196
@@ -36,7 +37,7 @@ Run these before starting and before committing. If a number differs,
 something moved — the command wins over this file.
 
 ```bash
-python -m pytest -q                       # 1087 passed
+python -m pytest -q                       # 1090 passed
 ruff check src tests scripts && mypy      # clean
 python scripts/validate_contracts.py      # OK - contracts valid
 python scripts/check_manual_drift.py --manual-api-repo "E:\AI Study\MIDAS-API"
@@ -52,6 +53,7 @@ python scripts/check_fixture_contract.py --check       # 1 fixture lead over 1
                                           # endpoint, 3 contract gaps over 2
 python scripts/report_npm_replay_coverage.py --check   # 183 cases over 172
                                           # endpoints; every product: 183
+python scripts/check_verification_lag.py --check       # 48, ceiling 48
 python scripts/report_unmerged_tables.py --check       # exit 0
 cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 83 tests
@@ -277,11 +279,14 @@ judgement about which `/info` object is meant. It is not a queue to rescan.
 
 ## Open decisions
 
-- **Contract `verification` records lag the ledger.** 47 contracts cite a read
+- **Contract `verification` records lag the ledger.** 48 contracts cite a read
   sweep for an endpoint `docs/coverage.json` records at write level (TDNT,
-  POGD, MVLDch and MVLDid among them). No check compares the two; folding the
-  ledger into `contracts/verification/` is planned in `contracts/README.md`.
-  Hand-editing `verification` blocks to match would paper over that.
+  POGD, MVLDch, MVLDid and PTNS among them; 47 under `/db` plus `/ope/MEMB`).
+  Folding the ledger into `contracts/verification/` is planned in
+  `contracts/README.md`, and until that lands a `verification` block is not
+  hand-edited to match: it records what the contract was promoted from, and
+  editing it would forge provenance. `scripts/check_verification_lag.py`
+  holds the count as a ceiling so it can fall but not grow.
 - **`/db/SPLC`'s `NDP` requiredness** — nested under the Optional `bNDP` switch
   with no wire rule, so neither an `appliesWhen` nor a `safeToOmit` is
   grounded.

@@ -49,6 +49,8 @@ jobs:
         run: python scripts/live_crud_check.py --check-cases
       - name: Fail if a live fixture and its contract disagree in a new way
         run: python scripts/check_fixture_contract.py --check
+      - name: Fail if more contracts fall behind the live ledger
+        run: python scripts/check_verification_lag.py --check
       - name: Fail if the unmerged-table report is out of date
         run: python scripts/report_unmerged_tables.py --check
 
