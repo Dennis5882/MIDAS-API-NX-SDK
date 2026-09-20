@@ -2922,7 +2922,7 @@
           "gen",
           "civil"
         ],
-        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-09-20 on Build 09/15/2026 through both SDKs (Gen, Civil): the manual's TRUSS element, prestress load case and EXLD registration seeded PTNS create/read/update/read/delete/read successfully. npm replayed the same emitted fixture on Gen, Civil on 2026-09-20; evidence extracted from docs/live_verification_notes.md.",
+        "method": "scripts/live_readonly_sweep.py (read-only GET) Re-swept 2026-08-07 via scripts/live_readonly_sweep.py --product civil (full DbResource GET breadth pass, same patch build) -- answered ok, route+shape confirmed on Civil NX too. Write round trip confirmed 2026-09-20 on Build 09/15/2026 through both SDKs (Gen, Civil): the manual's TRUSS element, prestress load case and EXLD registration seeded PTNS create/read/update/read/delete/read successfully. npm replayed the same emitted fixture on Gen, Civil on 2026-09-20; evidence extracted from docs/live_verification_notes.md. Re-verified 2026-09-20 on Build 09/15/2026 through both SDKs (Gen, Civil) after the fixture was rebuilt on its own node pair, load case (PS19_SEED) and EXLD registration instead of sharing extras15's; /db/EXLD, /db/PRST and /db/PTNS also passed together in one selection.",
         "nx_versions": {
           "gen": "MIDAS Gen NX 2026 (v2.1), build 09/15/2026",
           "civil": "MIDAS Civil NX 2026 (v2.2), build 09/15/2026"

@@ -1495,6 +1495,21 @@
         }
       }
     },
+    "ptns_nodes": {
+      "endpoint": "/db/NODE",
+      "records": {
+        "51": {
+          "X": -4.0,
+          "Y": 0,
+          "Z": 0
+        },
+        "52": {
+          "X": -4.0,
+          "Y": 0,
+          "Z": 3.2
+        }
+      }
+    },
     "ptns_truss": {
       "endpoint": "/db/ELEM",
       "records": {
@@ -1503,19 +1518,30 @@
           "MATL": 1,
           "SECT": 1,
           "NODE": [
-            21,
-            22
+            51,
+            52
           ],
           "ANGLE": 0
         }
       }
+    },
+    "ptns_load_case": {
+      "endpoint": "/db/STLD",
+      "records": {
+        "19": {
+          "NAME": "PS19_SEED",
+          "TYPE": "PS",
+          "DESC": "pretension fixture"
+        }
+      },
+      "allowRenumbering": true
     },
     "ptns_external_load_case": {
       "endpoint": "/db/EXLD",
       "records": {
         "1": {
           "LCNAME_ITEM": [
-            "PS15_SEED"
+            "PS19_SEED"
           ]
         }
       }
@@ -14855,7 +14881,7 @@
         "ITEMS": [
           {
             "ID": 1,
-            "LCNAME": "PS15_SEED",
+            "LCNAME": "PS19_SEED",
             "GROUP_NAME": "",
             "TENSION": 130
           }
@@ -14865,7 +14891,7 @@
         "ITEMS": [
           {
             "ID": 1,
-            "LCNAME": "PS15_SEED",
+            "LCNAME": "PS19_SEED",
             "GROUP_NAME": "",
             "TENSION": 260
           }
@@ -14876,16 +14902,20 @@
         "updated": 260
       },
       "needs": [
+        "ptns_nodes",
         "ptns_truss",
-        "prestress_load_cases",
+        "ptns_load_case",
         "ptns_external_load_case"
       ],
       "setup": [
         {
+          "seed": "ptns_nodes"
+        },
+        {
           "seed": "ptns_truss"
         },
         {
-          "seed": "prestress_load_cases"
+          "seed": "ptns_load_case"
         },
         {
           "seed": "ptns_external_load_case"

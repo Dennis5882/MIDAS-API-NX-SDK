@@ -647,3 +647,8 @@ create/read/update/read/delete/read round trip passed on both products.
 
 **Count:** 1 new endpoint; 168 distinct `/db` endpoints and 4 distinct
 result-table operations; 172 distinct npm public-API operations overall.
+
+Re-run 2026-09-20 after the fixture was rebuilt on its own nodes 51-52 and
+`PS19_SEED` load case: npm passed `/db/PTNS` again on Gen and Civil, and
+passed `/db/EXLD`, `/db/PRST` and `/db/PTNS` in one Gen selection. No new
+endpoint, so the count above is unchanged.

@@ -19,7 +19,7 @@ relabelling something below as mechanical.
 - **Coverage: 400/400 implemented, 207 write / 193 read.** Of the 225 `/db`
   endpoints, 185 are write-level and 40 are not.
 - **Fixture (`schema/live-cases.json`, version 6):** 220 cases over 196
-  endpoints; 183 confirmed over 172 endpoints; 9 base-model steps; 75 named
+  endpoints; 183 confirmed over 172 endpoints; 9 base-model steps; 77 named
   seeds; 0 unsupported.
 - **npm has replayed all 183 confirmed cases** on every product each declares.
   Keep that gap at 0: every new confirmed case goes through both harnesses.
@@ -204,6 +204,12 @@ Selection traps, each of which has cost a session:
 - **A seed on a table that renumbers** (STLD, FBLD, …) must be listed in
   `RENUMBERING_SEEDS`, or npm refuses its setup as a collision. `SeedStep` has
   no flag for it; the set is the only place.
+- **A tier's seeds are not per-case.** The Python runner executes every seed of
+  a selected tier before that tier's cases, so a tier that splices another
+  tier's seed list POSTs those records twice whenever both are selected — a
+  full re-verification does exactly that. Give a new tier its own seeds, even
+  when an existing one looks identical; extras19 was built the other way on
+  2026-09-20 and rebuilt the same day (live notes).
 
 ## Recording a run — three places, every time
 

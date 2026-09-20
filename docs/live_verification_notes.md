@@ -10449,3 +10449,24 @@ nodes 21-22, created the existing `PS15_SEED` prestress load case, registered
 it through `/db/EXLD`, then completed PTNS create/read/update/read/delete/read.
 The update changed `TENSION` from 130 to 260 and both SDKs read back the change.
 Every run checkpointed under `C:/temp` and restored an empty scratch document.
+
+### 2026-09-20 (later) - Task P's fixture stops sharing extras15's seeds
+
+The PTNS case above borrowed extras15's `prestress_load_cases` seed by
+splicing that tier's seed list into extras19's, and put its truss on the base
+model's node pair 21-22. Both were wrong for the same reason: a tier's seeds
+are not per-case. The runner executes every seed of a selected tier before
+that tier's cases, so a selection holding extras15 and extras19 - which is
+what a full re-verification is - POSTed the same /db/STLD records twice, and
+/db/STLD renumbers, so the second POST would have left two load cases
+answering to the name the fixture looks up. Nodes 21-22 are the pair the base
+model keeps unattached so ELNK, RIGD and MCON cannot collide with a real
+element; the truss attached one to them.
+
+The fixture now builds its own nodes 51-52, its own `PS19_SEED` load case and
+registers that name through `/db/EXLD`. Re-run on Build 09/15/2026 through
+both SDKs: PTNS passed on Gen and Civil, and `/db/EXLD`, `/db/PRST` and
+`/db/PTNS` passed together in one Gen selection, which is the combination the
+old arrangement would have broken. `/db/EXLD` id 1 is still shared with
+extras15's own case, which deletes it before extras19's seed re-creates it -
+TIERS is ordered, so that sequence is fixed.

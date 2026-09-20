@@ -322,28 +322,38 @@ def test_extras19_ptns_seeds_the_manual_prerequisite_chain() -> None:
     # 2026-09-20, Build 09/15/2026: npm and Python passed on Gen and Civil.
     assert ptns["confirmed"] is True
     assert ptns["needs"] == [
-        "ptns_truss", "prestress_load_cases", "ptns_external_load_case",
+        "ptns_nodes", "ptns_truss", "ptns_load_case",
+        "ptns_external_load_case",
     ]
 
+    # Every prerequisite is this tier's own. A seed shared with another tier
+    # is POSTed twice whenever both are selected, because the runner runs a
+    # selected tier's whole seed list, and nodes 21-22 must stay unattached
+    # for ELNK/RIGD/MCON.
+    assert fixture["seeds"]["ptns_nodes"]["endpoint"] == "/db/NODE"
+    assert set(fixture["seeds"]["ptns_nodes"]["records"]) == {"51", "52"}
     truss = fixture["seeds"]["ptns_truss"]
     assert truss == {
         "endpoint": "/db/ELEM",
         "records": {
             "5": {
                 "TYPE": "TRUSS", "MATL": 1, "SECT": 1,
-                "NODE": [21, 22], "ANGLE": 0,
+                "NODE": [51, 52], "ANGLE": 0,
             },
         },
     }
-    assert fixture["seeds"]["prestress_load_cases"]["allowRenumbering"] is True
+    load_case = fixture["seeds"]["ptns_load_case"]
+    assert load_case["endpoint"] == "/db/STLD"
+    assert load_case["records"]["19"]["NAME"] == "PS19_SEED"
+    assert load_case["allowRenumbering"] is True
     assert fixture["seeds"]["ptns_external_load_case"] == {
         "endpoint": "/db/EXLD",
-        "records": {"1": {"LCNAME_ITEM": ["PS15_SEED"]}},
+        "records": {"1": {"LCNAME_ITEM": ["PS19_SEED"]}},
     }
 
     item = ptns["createPayload"]["ITEMS"][0]
     assert item == {
-        "ID": 1, "LCNAME": "PS15_SEED", "GROUP_NAME": "", "TENSION": 130,
+        "ID": 1, "LCNAME": "PS19_SEED", "GROUP_NAME": "", "TENSION": 130,
     }
     assert ptns["updatePayload"]["ITEMS"][0]["TENSION"] == 260
     assert ptns["expected"] == {"created": 130, "updated": 260}

@@ -4285,27 +4285,57 @@ def _extras18_cases() -> List[Case]:
 def _extras19_seeds() -> List[SeedStep]:
     """Build the ch07 prerequisites for the manual's PTNS example.
 
-    PTNS is keyed by a truss/cable element.  The shared base model has only
-    beams and a plate, so element 5 reuses its otherwise-free node pair 21-22
-    with the official ch03 TRUSS shape.  The load case and its EXLD
-    registration come from ch07 sections 11-12.
+    PTNS is keyed by a truss/cable element and the shared base model has only
+    beams and a plate, so element 5 gets the official ch03 TRUSS shape on its
+    own node pair.  The load case and its EXLD registration come from ch07
+    sections 11-12.
+
+    Every step here is this tier's own.  The tier runner executes *all* of a
+    selected tier's seeds before its cases, not just the ones a case declares,
+    so splicing another tier's seed list - as this tier did until 2026-09-20 -
+    POSTs that seed twice whenever both tiers are selected, which is what a
+    full re-verification does.  /db/STLD renumbers, so the second POST of
+    extras15's records would have left two load cases answering to the same
+    name the fixture looks up.  Nodes 21-22 are likewise off limits: the base
+    model keeps that pair unattached so ELNK, RIGD and MCON cannot collide
+    with a real element.
     """
     return [
+        SeedStep(
+            "ptns_nodes",
+            lambda client: Node.create(
+                {
+                    51: {"X": -BAY, "Y": 0, "Z": 0},
+                    52: {"X": -BAY, "Y": 0, "Z": HEIGHT},
+                },
+                client=client,
+            ),
+        ),
         SeedStep(
             "ptns_truss",
             lambda client: Element.create(
                 {5: {
                     "TYPE": "TRUSS", "MATL": 1, "SECT": 1,
-                    "NODE": [21, 22], "ANGLE": 0,
+                    "NODE": [51, 52], "ANGLE": 0,
                 }},
                 client=client,
             ),
         ),
-        *_extras15_seeds(),
+        SeedStep(
+            "ptns_load_case",
+            lambda client: StaticLoadCase.create(
+                {19: {"NAME": "PS19_SEED", "TYPE": "PS",
+                      "DESC": "pretension fixture"}},
+                client=client,
+            ),
+        ),
+        # extras15's own /db/EXLD case owns id 1 too, and deletes it as the
+        # last step of its round trip. extras15 runs first because TIERS is
+        # ordered, so this seed re-creates a record that is already gone.
         SeedStep(
             "ptns_external_load_case",
             lambda client: ExternalLoadCaseForPretension.create(
-                {1: {"LCNAME_ITEM": ["PS15_SEED"]}}, client=client,
+                {1: {"LCNAME_ITEM": ["PS19_SEED"]}}, client=client,
             ),
         ),
     ]
@@ -4317,11 +4347,11 @@ def _extras19_cases() -> List[Case]:
         Case(
             PretensionLoad,
             {"ITEMS": [{
-                "ID": 1, "LCNAME": "PS15_SEED", "GROUP_NAME": "",
+                "ID": 1, "LCNAME": "PS19_SEED", "GROUP_NAME": "",
                 "TENSION": 130,
             }]},
             {"ITEMS": [{
-                "ID": 1, "LCNAME": "PS15_SEED", "GROUP_NAME": "",
+                "ID": 1, "LCNAME": "PS19_SEED", "GROUP_NAME": "",
                 "TENSION": 260,
             }]},
             lambda payload: payload["ITEMS"][0].get("TENSION"),
@@ -4329,7 +4359,7 @@ def _extras19_cases() -> List[Case]:
             260,
             item_id=5,
             needs=(
-                "ptns_truss", "prestress_load_cases",
+                "ptns_nodes", "ptns_truss", "ptns_load_case",
                 "ptns_external_load_case",
             ),
             confirmed=True,
@@ -4883,9 +4913,9 @@ def _mark(row: Dict[str, Any]) -> str:
 #: listed: renumbering is a live observation, never something to assume for a
 #: seed nobody has watched.
 RENUMBERING_SEEDS = frozenset({
-    "dl14_seed", "fbld7_seed", "pnld_seed", "prestress_load_cases", "smpt_seed",
-    "spfc_seed", "tdpl_prestress_case", "thfc_seed", "thfc_force_seed",
-    "this_seed",
+    "dl14_seed", "fbld7_seed", "pnld_seed", "prestress_load_cases",
+    "ptns_load_case", "smpt_seed", "spfc_seed", "tdpl_prestress_case",
+    "thfc_seed", "thfc_force_seed", "this_seed",
 })
 
 #: Seeds whose one read only guards against a record an *earlier Python tier*
