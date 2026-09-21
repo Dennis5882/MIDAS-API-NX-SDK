@@ -1,11 +1,14 @@
 """Where each generated npm payload type's shape comes from, counted.
 
 `npm run generate` no longer imports `midas_nx`, but it still reads the Python
-**source tree**: `scripts/generate_typescript_sdk.py` parses it for TypedDicts
-and keys the payload-type lookup by `pythonModule`, a fact no contract records.
-Deleting `src/midas_nx/` breaks generation. Closing that is a standing goal,
-and until now the only measurement of it was a hand count in CLAUDE.md -- the
-same kind of number `check_state_numbers.py` exists to stop trusting.
+**source tree** for every type no contract builds. Since 2026-09-22 that is the
+only thing it reads it for: which types exist and in which namespace is decided
+by the contracts for the types they own, and deleting a TypedDict a contract has
+taken over changes nothing in `types.ts`. What is left is the types counted
+here. Deleting `src/midas_nx/` would still break generation until it reaches
+zero. Until this script, the only measurement of it was a hand count in
+CLAUDE.md -- the same kind of number `check_state_numbers.py` exists to stop
+trusting.
 
 This counts it from the generated file. `_render_types` marks every interface
 it builds from a contract with a one-line JSDoc, so the split is readable
@@ -28,7 +31,7 @@ without re-running the generator:
 
 One caveat on how the buckets are attributed: a payload name is matched
 against the contracts by name alone, while the generator keys its lookup by
-`(pythonModule, name)` -- `types.ts` is a stack of namespaces and 765
+`(namespace, name)` -- `types.ts` is a stack of namespaces and 765
 declarations carry 742 distinct names. That is only a risk for the two
 contract-aware buckets, and today it is not one: `python:contract-ignored` is
 empty and `python:unmerged` is exactly the 13 waived contracts.
@@ -48,6 +51,12 @@ and its nested types were built from the operation contract as well. What the
         contracts shape differently
     25  design modules, same classes of reason
     25  /post table result types, which no contract describes
+
+`--check` also holds the number of exported types. The generator used to
+refuse a `surface.nestedTypes` name the Python tree did not already publish, so
+recording a name could never add an export. That refusal read the Python tree,
+and went with the rest of it; this count is its replacement. Changing it is
+changing the package surface, which the npm changelog has to say.
 
     python scripts/report_npm_type_provenance.py           # the breakdown
     python scripts/report_npm_type_provenance.py --check   # fail if it grows
@@ -73,6 +82,11 @@ CONTRACTS = ROOT / "contracts" / "endpoints"
 #: contracts take over more of the emitted shape, and a rise means a type that
 #: used to come from a contract is being read out of the Python tree again.
 PYTHON_SOURCED_AT_MOST = 162
+
+#: Every exported type in `types.ts`. Not a ceiling: adding or removing an
+#: export is a change to the published surface, so it has to be made here on
+#: purpose, together with the changelog entry that says so.
+EXPORTED_TYPES = 765
 
 CONTRACT_MARKER = "/** Generated from contracts/endpoints/. */"
 _EXPORT = re.compile(r"^export (?:interface|type) (\w+)")
@@ -140,6 +154,14 @@ def main() -> int:
     total = sum(counts.values())
 
     if args.check:
+        if total != EXPORTED_TYPES:
+            print(
+                f"types.ts exports {total} types, {EXPORTED_TYPES} expected. Adding or "
+                "removing an export changes the npm package surface: update "
+                "EXPORTED_TYPES and say so in packages/typescript/CHANGELOG.md.",
+                file=sys.stderr,
+            )
+            return 1
         if python_sourced > PYTHON_SOURCED_AT_MOST:
             print(
                 f"npm payload types read out of the Python source tree grew from "
@@ -159,7 +181,7 @@ def main() -> int:
             return 1
         print(
             f"OK - {python_sourced} of {total} generated types come from the Python "
-            f"source tree, ceiling {PYTHON_SOURCED_AT_MOST}."
+            f"source tree, ceiling {PYTHON_SOURCED_AT_MOST}; {total} exported, as recorded."
         )
         return 0
 

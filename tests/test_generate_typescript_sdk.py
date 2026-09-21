@@ -58,23 +58,30 @@ def test_resource_shadow_checks_documented_display_names_but_normalizes_dash_typ
     ]
 
 
+def _bound_payloads():
+    modules = generator._source_modules()
+    resources = generator._load_resources(modules)
+    resource_keys = {
+        (resource["pythonModule"], resource["className"])
+        for resource in resources
+        if "pythonModule" in resource
+    }
+    type_keys = generator._collect_type_classes(modules, resource_keys)
+    contract_fields = generator._contract_payload_fields()
+    contract_types = generator._bind_payload_types(resources, contract_fields, type_keys)
+    return modules, resources, type_keys, contract_fields, contract_types
+
+
 def test_bodf_payload_comes_from_its_manual_contract():
     """The first static-load contract must not silently fall back to Python types."""
-    resources = generator._load_resources(generator._source_modules())
-    modules = generator._source_modules()
-    resource_keys = {(resource["pythonModule"], resource["className"]) for resource in resources}
-    type_keys = generator._collect_type_classes(modules, resource_keys)
-    generator._attach_payload_types(resources, type_keys)
-
-    contract_types, supplemental = generator._contract_payload_types(
-        resources, generator._contract_payload_fields(), type_keys
-    )
+    _, resources, _, _, contract_types = _bound_payloads()
     bodf = next(resource for resource in resources if resource["endpoint"] == "/db/BODF")
 
     assert bodf["payloadTypeName"] == "SelfWeightPayload"
+    assert bodf["payloadType"] == "Types.DbStaticLoadsTypes.SelfWeightPayload"
     fields = {
         field["key"]: field
-        for field in contract_types[(bodf["pythonModule"], "SelfWeightPayload")]["fields"]
+        for field in contract_types[("DbStaticLoadsTypes", "SelfWeightPayload")]["fields"]
     }
     assert fields["LCNAME"]["requirement"] == "required"
     assert fields["GROUP_NAME"]["documentedDefault"] == ""
@@ -91,7 +98,6 @@ def test_bodf_payload_comes_from_its_manual_contract():
         "safeToOmit": "unverified",
         "provenance": "manual",
     }
-    assert "SelfWeightPayload" not in supplemental.get(bodf["pythonModule"], {})
 
 
 def test_contract_variants_render_as_a_discriminated_union():
@@ -367,28 +373,108 @@ def test_contract_applies_when_renders_as_member_jsdoc():
 
 
 def test_conflicting_legacy_payload_aliases_receive_distinct_contract_types():
-    """One reused Python TypedDict must not overwrite another endpoint contract."""
-    resources = generator._load_resources(generator._source_modules())
-    modules = generator._source_modules()
-    resource_keys = {(resource["pythonModule"], resource["className"]) for resource in resources}
-    type_keys = generator._collect_type_classes(modules, resource_keys)
-    generator._attach_payload_types(resources, type_keys)
-    contract_fields = generator._contract_payload_fields()
+    """One reused Python TypedDict must not overwrite another endpoint contract.
 
-    contract_types, supplemental = generator._contract_payload_types(
-        resources, contract_fields, type_keys
-    )
+    /db/DYFG and /db/DYNF once shared a Python TypedDict. Each contract records
+    its own published name, so each gets its own type - including DYNF's, which
+    has no Python class at all.
+    """
+    modules, resources, type_keys, contract_fields, contract_types = _bound_payloads()
     by_endpoint = {resource["endpoint"]: resource for resource in resources}
     dynf = by_endpoint["/db/DYNF"]
 
     assert by_endpoint["/db/DYFG"]["payloadTypeName"] == "RailwayDynamicFactorPayload"
     assert dynf["payloadTypeName"] == "RailwayDynamicFactorByElementPayload"
-    assert contract_types[(dynf["pythonModule"], "RailwayDynamicFactorPayload")] == contract_fields["/db/DYFG"]
-    assert supplemental[dynf["pythonModule"]]["RailwayDynamicFactorByElementPayload"] == contract_fields["/db/DYNF"]
+    namespace = generator._path_namespace(dynf["modulePath"])
+    assert contract_types[(namespace, "RailwayDynamicFactorPayload")] == contract_fields["/db/DYFG"]
+    assert contract_types[(namespace, "RailwayDynamicFactorByElementPayload")] == contract_fields["/db/DYNF"]
 
-    rendered = generator._render_types(modules, type_keys, contract_types, supplemental)
+    rendered = generator._render_types(modules, type_keys, contract_types)
     assert "export interface RailwayDynamicFactorPayload" in rendered
     assert "export interface RailwayDynamicFactorByElementPayload" in rendered
+
+
+def test_two_endpoints_naming_one_payload_must_agree_on_its_shape(monkeypatch):
+    """One published name cannot follow two field lists."""
+    import pytest
+
+    resources = [
+        {"endpoint": "/db/AAA", "className": "Aaa", "modulePath": ["db", "test"]},
+        {"endpoint": "/db/BBB", "className": "Bbb", "modulePath": ["db", "test"]},
+    ]
+    monkeypatch.setattr(
+        generator,
+        "_contract_surface_blocks",
+        lambda: {"/db/AAA": {"payloadTypeName": "Shared"}, "/db/BBB": {"payloadTypeName": "Shared"}},
+    )
+    same = {"fields": [{"key": "A"}], "variants": []}
+    bound = generator._bind_payload_types(
+        resources, {"/db/AAA": same, "/db/BBB": dict(same)}, set()
+    )
+    assert list(bound) == [("DbTestTypes", "Shared")]
+
+    with pytest.raises(ValueError, match="DbTestTypes.Shared"):
+        generator._bind_payload_types(
+            resources,
+            {"/db/AAA": same, "/db/BBB": {"fields": [{"key": "B"}], "variants": []}},
+            set(),
+        )
+
+
+def test_a_contract_built_type_needs_no_python_class():
+    """Delete every TypedDict a contract has taken over; types.ts must not move.
+
+    Until 2026-09-22 the Python tree decided which types were written and where:
+    `types.ts` walked the Python modules, and a contract only replaced the body
+    of a class it found there. A contract-owned type whose class was deleted
+    would have disappeared from npm, and a moved module would have moved it.
+    Twelve of them are also referred to by types still built from Python, and
+    those references have to survive the deletion too.
+    """
+    import ast
+
+    modules, _, type_keys, _, contract_types = _bound_payloads()
+    contract_types = {
+        **contract_types,
+        **generator._contract_nested_types(),
+        **generator._contract_argument_types(),
+    }
+    before = generator._render_types(modules, type_keys, contract_types)
+    owned = {
+        (module, name)
+        for module, name in type_keys
+        if (generator._namespace(module), name) in contract_types
+    }
+    assert len(owned) > 500
+    stripped = {
+        module: ast.Module(
+            body=[
+                node
+                for node in tree.body
+                if not (isinstance(node, ast.ClassDef) and (module, node.name) in owned)
+            ],
+            type_ignores=[],
+        )
+        for module, tree in modules.items()
+    }
+    after = generator._render_types(
+        stripped, generator._collect_type_classes(stripped, set()), contract_types
+    )
+    assert after == before
+
+
+def test_types_are_written_in_name_order():
+    """An order a contract can reproduce, unlike Python's class order."""
+    import re
+
+    text = (ROOT / "packages" / "typescript" / "src" / "generated" / "types.ts").read_text(
+        encoding="utf-8"
+    )
+    namespaces = re.findall(r"^export namespace (\w+) \{", text, re.MULTILINE)
+    assert namespaces == sorted(namespaces)
+    for block in text.split("\nexport namespace ")[1:]:
+        names = re.findall(r"^  export (?:interface|type) (\w+)", block, re.MULTILINE)
+        assert names == sorted(names), block.split(" ", 1)[0]
 
 
 def test_a_contract_with_unmerged_tables_does_not_become_a_payload_type():
@@ -722,23 +808,12 @@ variants:
         raise AssertionError("a branch-decided shape must not be published as one type")
 
 
-def test_a_nested_type_the_package_does_not_publish_is_refused():
-    """Recording a name is not a way to add an export."""
-    try:
-        generator._bind_nested_types(
-            {("DbTestTypes", "NotPublished"): {"fields": [], "variants": []}}, set()
-        )
-    except ValueError as exc:
-        assert "DbTestTypes.NotPublished" in str(exc)
-    else:
-        raise AssertionError("an unknown nested type name must be refused")
-
-
 def _python_operation_specs():
     modules = generator._source_modules()
     resources = generator._load_resources(modules)
     type_keys = generator._collect_type_classes(
-        modules, {(item["pythonModule"], item["className"]) for item in resources}
+        modules,
+        {(item["pythonModule"], item["className"]) for item in resources if "pythonModule" in item},
     )
     coverage = __import__("json").loads(
         (ROOT / "docs" / "coverage.json").read_text(encoding="utf-8")

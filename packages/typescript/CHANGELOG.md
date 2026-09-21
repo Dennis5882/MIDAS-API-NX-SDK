@@ -6,6 +6,14 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Changed - declaration order in the generated types
+
+`types.ts` (and so `dist/index.d.ts`) now lists each namespace's types in
+name order. Every declaration is textually identical to 2.9.1's - 765 before
+and after - and nothing else in the package changes. The old order was the
+order of classes in the Python source, which is what the generator no longer
+reads to place a type a contract owns.
+
 ## 2.9.1 - 2026-09-22
 
 > **Breaking at the type level; nothing changes at runtime.** No exported name

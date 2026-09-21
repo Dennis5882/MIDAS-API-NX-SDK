@@ -158,8 +158,15 @@ It refuses three things rather than guess:
   not have different members;
 - a path whose shape a variant **above** it redeclares, as each `SECTTYPE`
   branch of `/db/SECT` redeclares `SECT_BEFORE` - there is no single subtree;
-- a name the package does not already publish. Recording one is not a way to
-  add an export.
+- (until 2026-09-22) a name the package did not already publish. That check
+  read the Python tree, and went when placement moved to the contracts; the
+  exported type count pinned in `scripts/report_npm_type_provenance.py` is its
+  replacement, so recording a name still cannot add an export unnoticed.
+
+The namespace an entry states is where the type is written. Since 2026-09-22
+nothing about a contract-built type's placement comes from Python: a payload
+root goes in the namespace its `modulePath` names, and deleting the TypedDict a
+contract has taken over leaves `types.ts` unchanged.
 
 A contract carrying `unmergedTables` may not declare any: its payload is not
 generated from the contract, so there is no subtree to build from.

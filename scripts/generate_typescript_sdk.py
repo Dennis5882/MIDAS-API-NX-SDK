@@ -105,6 +105,17 @@ def _namespace(module: str) -> str:
     return "".join(part[:1].upper() + _camel(part)[1:] for part in parts) + "Types"
 
 
+def _path_namespace(module_path: list[str]) -> str:
+    """The `types.ts` namespace for an npm module path, e.g. ``DbBoundaryTypes``.
+
+    A contract states `modulePath` (`[db, boundary]`) and never a Python module,
+    so this is how a contract-built type finds its namespace. For every module
+    that has both it agrees with `_namespace`, which is why moving to it renamed
+    nothing.
+    """
+    return "".join(part[:1].upper() + part[1:] for part in module_path) + "Types"
+
+
 def _source_modules() -> dict[str, ast.Module]:
     modules: dict[str, ast.Module] = {}
     for path in sorted(PYTHON_SRC.joinpath("midas_nx").rglob("*.py")):
@@ -743,64 +754,116 @@ def _contract_payload_fields() -> dict[str, dict[str, Any]]:
     return found
 
 
+def _python_type_declaration(
+    module: str,
+    node: ast.ClassDef,
+    *,
+    tree: ast.Module,
+    type_keys: set[tuple[str, str]],
+) -> list[str]:
+    """Render one TypedDict the contracts have not taken over."""
+    module_types = {name for owner, name in type_keys if owner == module}
+    imports = _import_map(module, tree)
+    total = not any(
+        keyword.arg == "total" and isinstance(keyword.value, ast.Constant) and keyword.value.value is False
+        for keyword in node.keywords
+    )
+    bases: list[str] = []
+    for base in node.bases:
+        if isinstance(base, ast.Name) and base.id != "TypedDict":
+            rendered = _type_expression(base, module=module, local_types=module_types, imports=imports, all_types=type_keys)
+            if rendered != "unknown":
+                bases.append(rendered)
+    extends = f" extends {', '.join(bases)}" if bases else ""
+    lines = [f"  export interface {node.name}{extends} {{"]
+    for field in node.body:
+        if not isinstance(field, ast.AnnAssign) or not isinstance(field.target, ast.Name):
+            continue
+        annotation, explicit_required = _unwrap_required(field.annotation)
+        required = total if explicit_required is None else explicit_required
+        rendered = _type_expression(
+            annotation,
+            module=module,
+            local_types=module_types,
+            imports=imports,
+            all_types=type_keys,
+        )
+        optional = "" if required else "?"
+        lines.append(f"    {field.target.id}{optional}: {rendered};")
+    lines.append("  }")
+    return lines
+
+
+def _type_layout(
+    modules: dict[str, ast.Module],
+    type_keys: set[tuple[str, str]],
+    contract_types: dict[tuple[str, str], dict[str, Any]],
+) -> dict[str, dict[str, tuple[Any, ...]]]:
+    """Every published type, as ``{namespace: {name: source}}``.
+
+    The contract-built types are keyed by the namespace and name their
+    contracts state. A Python TypedDict fills a slot only if no contract has
+    claimed it. So which types exist, and where, no longer depends on the
+    Python tree for anything a contract owns: deleting a TypedDict a contract
+    has taken over changes nothing in `types.ts`.
+
+    A Python type that refers to another one does so by the Python module that
+    class lives in (`_type_expression`). That still resolves, because a
+    contract claims the same ``(namespace, name)`` its class occupied.
+    """
+    layout: dict[str, dict[str, tuple[Any, ...]]] = defaultdict(dict)
+    for (namespace, name), contract in contract_types.items():
+        layout[namespace][name] = ("contract", contract)
+    for module, tree in modules.items():
+        for node in tree.body:
+            if not isinstance(node, ast.ClassDef) or (module, node.name) not in type_keys:
+                continue
+            slot = layout[_namespace(module)]
+            if node.name in slot:
+                continue
+            slot[node.name] = ("python", module, node, tree)
+    return layout
+
+
 def _render_types(
     modules: dict[str, ast.Module],
     type_keys: set[tuple[str, str]],
     contract_types: dict[tuple[str, str], dict[str, Any]] | None = None,
-    supplemental_contract_types: dict[str, dict[str, dict[str, Any]]] | None = None,
 ) -> str:
+    """Render `types.ts`: namespaces in name order, types in name order.
+
+    Declaration order carries no meaning in TypeScript, and the order used to
+    be the order classes appear in the Python source - the one thing a contract
+    could never reproduce. Sorting by name is an order both sources can give.
+    """
     contract_types = contract_types or {}
-    supplemental_contract_types = supplemental_contract_types or {}
+    layout = _type_layout(modules, type_keys, contract_types)
+    # What a remaining Python type may refer to: the TypedDicts still in the
+    # tree, and every slot a contract fills. Twelve contract-built types are
+    # referred to from Python-built ones (`OpeTypes.OrthoEffect`, ...), and the
+    # reference must not depend on the class the contract replaced still
+    # existing.
+    namespaces = {_namespace(module): module for module in modules}
+    known = type_keys | {
+        (namespaces[namespace], name)
+        for namespace, name in contract_types
+        if namespace in namespaces
+    }
     chunks = [
         "// Generated by scripts/generate_typescript_sdk.py. Do not edit by hand.",
         'import type { JsonObject } from "../types";',
         "",
     ]
-    for module, tree in sorted(modules.items()):
-        module_types = {name for owner, name in type_keys if owner == module}
-        if not module_types:
-            continue
-        imports = _import_map(module, tree)
-        chunks.append(f"export namespace {_namespace(module)} {{")
-        for node in tree.body:
-            if not isinstance(node, ast.ClassDef) or (module, node.name) not in type_keys:
-                continue
-            contract = contract_types.get((module, node.name))
-            if contract is not None:
-                # Sourced from the contract, not from this Python class. The
-                # class only supplies the name and where it sits, so the two
-                # SDKs keep the type names they already publish.
-                chunks.extend(_contract_payload_type(node.name, contract))
-                continue
-            total = not any(
-                keyword.arg == "total" and isinstance(keyword.value, ast.Constant) and keyword.value.value is False
-                for keyword in node.keywords
-            )
-            bases: list[str] = []
-            for base in node.bases:
-                if isinstance(base, ast.Name) and base.id != "TypedDict":
-                    rendered = _type_expression(base, module=module, local_types=module_types, imports=imports, all_types=type_keys)
-                    if rendered != "unknown":
-                        bases.append(rendered)
-            extends = f" extends {', '.join(bases)}" if bases else ""
-            chunks.append(f"  export interface {node.name}{extends} {{")
-            for field in node.body:
-                if not isinstance(field, ast.AnnAssign) or not isinstance(field.target, ast.Name):
-                    continue
-                annotation, explicit_required = _unwrap_required(field.annotation)
-                required = total if explicit_required is None else explicit_required
-                rendered = _type_expression(
-                    annotation,
-                    module=module,
-                    local_types=module_types,
-                    imports=imports,
-                    all_types=type_keys,
+    for namespace in sorted(layout):
+        chunks.append(f"export namespace {namespace} {{")
+        for name, source in sorted(layout[namespace].items()):
+            if source[0] == "contract":
+                chunks.extend(_contract_payload_type(name, source[1]))
+            else:
+                _, module, node, tree = source
+                chunks.extend(
+                    _python_type_declaration(module, node, tree=tree, type_keys=known)
                 )
-                optional = "" if required else "?"
-                chunks.append(f"    {field.target.id}{optional}: {rendered};")
-            chunks.append("  }")
-        for name, contract in sorted(supplemental_contract_types.get(module, {}).items()):
-            chunks.extend(_contract_payload_type(name, contract))
         chunks.append("}")
         chunks.append("")
     return "\n".join(chunks)
@@ -919,7 +982,9 @@ def _contract_reject_rules() -> dict[str, dict[str, list[str]]]:
     return rules
 
 
-def _contract_resource_surfaces(resource_endpoints: set[str]) -> dict[str, dict[str, Any]]:
+def _contract_resource_surfaces(
+    resource_endpoints: set[str] | None = None,
+) -> dict[str, dict[str, Any]]:
     """Read the contract-owned surface of each contracted resource.
 
     Class and module names remain compatibility anchors while the public npm
@@ -947,7 +1012,7 @@ def _contract_resource_surfaces(resource_endpoints: set[str]) -> dict[str, dict[
         endpoint = contract.get("endpoint", "")
         if (
             not _is_contract_shadow_resource(endpoint)
-            or endpoint not in resource_endpoints
+            or (resource_endpoints is not None and endpoint not in resource_endpoints)
             or not contract.get("fields")
         ):
             continue
@@ -1004,33 +1069,6 @@ def _contract_resource_mismatches(resource: dict[str, Any], surface: dict[str, A
         for key in actual
         if not same_value(key)
     ]
-
-
-def _check_contract_payload_type_names(resources: list[dict[str, Any]]) -> None:
-    """Fail if a contracted payload type name no longer matches the contract.
-
-    Unlike the resource facts, this one cannot be checked while resources are
-    loaded: `_attach_payload_types` chooses the name and
-    `_contract_payload_types` may still rename it, when one legacy TypedDict
-    served several endpoints whose contracts disagree. So it is checked here,
-    against the name that will actually be published.
-    """
-
-    surfaces = _contract_surface_blocks()
-    mismatches = [
-        f"{resource['endpoint']}: payload type is "
-        f"{resource.get('payloadTypeName')!r}, contract says "
-        f"{surfaces[resource['endpoint']]['payloadTypeName']!r}"
-        for resource in resources
-        if "payloadTypeName" in surfaces.get(resource["endpoint"], {})
-        and resource.get("payloadTypeName")
-        != surfaces[resource["endpoint"]]["payloadTypeName"]
-    ]
-    if mismatches:
-        raise ValueError(
-            "contract surface differs from the generated payload types: "
-            + "; ".join(mismatches)
-        )
 
 
 def _contract_surface_blocks() -> dict[str, dict[str, Any]]:
@@ -1264,9 +1302,12 @@ def _load_resources(modules: dict[str, ast.Module]) -> list[dict[str, Any]]:
 
     Python has not stopped mattering, but it is no longer imported: the class
     facts come from `_static_resource_classes`, which reads the same source tree
-    the payload-type and operation readers already parse. `pythonModule` still
-    has no home in a contract and the payload-type lookup is keyed by it, so the
-    source tree is load-bearing - an importable, working `midas_nx` is not.
+    the payload-type and operation readers already parse.
+
+    The list itself is the union of both. It used to be the Python classes with
+    contracts laid over them, so a contracted endpoint whose class was deleted
+    would have vanished from npm. `pythonModule` is kept in the manifest where
+    a class exists, as a record, and nothing is placed by it any more.
     """
 
     python_classes = _static_resource_classes(modules)
@@ -1278,11 +1319,17 @@ def _load_resources(modules: dict[str, ast.Module]) -> list[dict[str, Any]]:
 
     payload_defaults = _contract_payload_defaults()
     reject_rules = _contract_reject_rules()
-    surfaces = _contract_resource_surfaces(set(python_classes))
+    surfaces = _contract_resource_surfaces()
+    # A contract carries a resource on its own only when its surface names it;
+    # the rest of its surface still needs the Python class to say what it is.
+    endpoints = set(python_classes) | {
+        endpoint for endpoint, surface in surfaces.items() if "className" in surface
+    }
 
     resources: list[dict[str, Any]] = []
     from_contract = 0
-    for endpoint, fallback in sorted(python_classes.items()):
+    for endpoint in sorted(endpoints):
+        fallback = python_classes.get(endpoint)
         manual = [
             {
                 "name": match.get("name"),
@@ -1293,14 +1340,15 @@ def _load_resources(modules: dict[str, ast.Module]) -> list[dict[str, Any]]:
         ]
         surface = surfaces.get(endpoint)
         if surface is not None:
-            # The chapter comparison reads the ledger entry, so it has to
-            # see one: the fallback dict is class facts only.
-            mismatches = _contract_resource_mismatches({**fallback, "manual": manual}, surface)
-            if mismatches:
-                raise ValueError(
-                    f"{endpoint}: contract resource shadow differs from the SDK: "
-                    + "; ".join(mismatches)
-                )
+            if fallback is not None:
+                # The chapter comparison reads the ledger entry, so it has to
+                # see one: the fallback dict is class facts only.
+                mismatches = _contract_resource_mismatches({**fallback, "manual": manual}, surface)
+                if mismatches:
+                    raise ValueError(
+                        f"{endpoint}: contract resource shadow differs from the SDK: "
+                        + "; ".join(mismatches)
+                    )
             from_contract += 1
 
         identity = _resource_identity(surface, fallback)
@@ -1311,9 +1359,9 @@ def _load_resources(modules: dict[str, ast.Module]) -> list[dict[str, Any]]:
             "name": identity["name"],
             "products": identity["products"],
             "methods": identity["methods"],
-            # No contract records this. It is the Python module a class lives
-            # in, and the AST payload-type lookup is still keyed by it.
-            "pythonModule": fallback["pythonModule"],
+            # A record of where the Python class lives, for a resource that has
+            # one. No npm output is placed by it: see `_path_namespace`.
+            **({"pythonModule": fallback["pythonModule"]} if fallback else {}),
             "modulePath": identity["modulePath"],
             # Present only for endpoints with a contract rule; see
             # _contract_payload_defaults().
@@ -1333,7 +1381,7 @@ def _load_resources(modules: dict[str, ast.Module]) -> list[dict[str, Any]]:
 
     _RESOURCE_SOURCE_COUNTS["contract"] = from_contract
     _RESOURCE_SOURCE_COUNTS["python"] = len(resources) - from_contract
-    return sorted(resources, key=lambda item: (item["pythonModule"], item["className"], item["endpoint"]))
+    return sorted(resources, key=lambda item: (item["modulePath"], item["className"], item["endpoint"]))
 
 
 def _render_tree(resources: list[dict[str, Any]]) -> str:
@@ -1846,74 +1894,79 @@ _SHARED_PAYLOADS: dict[tuple[str, str], str] = {
 }
 
 
-def _attach_payload_types(
-    resources: list[dict[str, Any]], type_keys: set[tuple[str, str]]
+def _attach_python_payload_type(
+    resource: dict[str, Any], type_keys: set[tuple[str, str]]
 ) -> None:
-    for resource in resources:
-        module = resource["pythonModule"]
-        candidate = resource["className"] + "Payload"
-        if (module, candidate) not in type_keys:
-            candidate = _SHARED_PAYLOADS.get((module, resource["className"]), "")
-        if candidate and (module, candidate) in type_keys:
-            resource["payloadTypeName"] = candidate
-            resource["payloadType"] = f"Types.{_namespace(module)}.{candidate}"
-        else:
-            resource["payloadType"] = "JsonObject"
+    """Name a payload the old way, for a resource whose contract names none.
+
+    Three resources (the IEHG trio, which cannot be contracted) and one
+    contract with no `payloadTypeName` still come here.
+    """
+    module = resource.get("pythonModule")
+    if module is None:
+        resource["payloadType"] = "JsonObject"
+        return
+    candidate = resource["className"] + "Payload"
+    if (module, candidate) not in type_keys:
+        candidate = _SHARED_PAYLOADS.get((module, resource["className"]), "")
+    if candidate and (module, candidate) in type_keys:
+        resource["payloadTypeName"] = candidate
+        resource["payloadType"] = f"Types.{_namespace(module)}.{candidate}"
+    else:
+        resource["payloadType"] = "JsonObject"
 
 
-def _contract_payload_types(
+def _bind_payload_types(
     resources: list[dict[str, Any]],
     contracts: dict[str, dict[str, Any]],
     type_keys: set[tuple[str, str]],
-) -> tuple[dict[tuple[str, str], dict[str, Any]], dict[str, dict[str, dict[str, Any]]]]:
-    """Bind every contracted resource to its own contract-shaped npm payload.
+) -> dict[tuple[str, str], dict[str, Any]]:
+    """Name every resource's npm payload, and return the contract-built ones.
 
-    The legacy Python compatibility layer occasionally reuses one TypedDict for
-    different endpoints.  After contracts become the TypeScript source, a map
-    keyed only by that old name silently lets the last endpoint overwrite the
-    first one's contract.  Keep one name only when all shapes match exactly;
-    otherwise emit an endpoint-class-specific supplementary type.
+    Returns ``{(namespace, name): contract}``. The name is the contract's
+    `surface.payloadTypeName` and the namespace follows its `modulePath`, so a
+    contracted payload is placed without asking where a Python TypedDict lives.
+
+    This replaced a pass that found the name through the Python class and then
+    renamed it (`...ByElementPayload`) when one legacy TypedDict served several
+    endpoints whose contracts differ. Every contract records its final name
+    now, so two endpoints naming one type must simply agree on its shape; if
+    they do not, one published type cannot follow both and generation stops.
+
+    A contract that declares `unmergedTables` still names its payload, but the
+    body stays on Python, so a Python class has to exist in that slot.
     """
 
-    grouped: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
-    for resource in resources:
-        if resource.get("payloadTypeName") and resource["endpoint"] in contracts:
-            grouped[(resource["pythonModule"], resource["payloadTypeName"])].append(resource)
-
+    surfaces = _contract_surface_blocks()
+    python_slots = {(_namespace(module), name) for module, name in type_keys}
     bound: dict[tuple[str, str], dict[str, Any]] = {}
-    supplemental: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
-    for (module, legacy_name), group in grouped.items():
-        fingerprints = {
-            json.dumps(contracts[resource["endpoint"]], ensure_ascii=False, sort_keys=True)
-            for resource in group
-        }
-        if len(fingerprints) == 1:
-            bound[(module, legacy_name)] = contracts[group[0]["endpoint"]]
+    origin: dict[tuple[str, str], str] = {}
+    for resource in resources:
+        endpoint = resource["endpoint"]
+        name = surfaces.get(endpoint, {}).get("payloadTypeName")
+        if name is None:
+            _attach_python_payload_type(resource, type_keys)
             continue
-
-        occupied = {name for known_module, name in type_keys if known_module == module}
-        occupied.update(name for known_module, name in bound if known_module == module)
-        occupied.update(supplemental[module])
-        for resource in group:
-            candidate = resource["className"] + "Payload"
-            if candidate == legacy_name:
-                # The endpoint that owns the original class keeps the published
-                # name; its contract replaces the legacy definition in place.
-                bound[(module, candidate)] = contracts[resource["endpoint"]]
-                continue
-            if candidate in occupied:
-                candidate = resource["className"] + "ContractPayload"
-            suffix = 2
-            base = candidate
-            while candidate in occupied:
-                candidate = f"{base}{suffix}"
-                suffix += 1
-            occupied.add(candidate)
-            supplemental[module][candidate] = contracts[resource["endpoint"]]
-            resource["payloadTypeName"] = candidate
-            resource["payloadType"] = f"Types.{_namespace(module)}.{candidate}"
-
-    return bound, dict(supplemental)
+        namespace = _path_namespace(resource["modulePath"])
+        resource["payloadTypeName"] = name
+        resource["payloadType"] = f"Types.{namespace}.{name}"
+        key = (namespace, name)
+        contract = contracts.get(endpoint)
+        if contract is None:
+            if key not in python_slots:
+                raise ValueError(
+                    f"{endpoint}: payload {namespace}.{name} is not built from the "
+                    "contract (unmergedTables) and no Python TypedDict fills that slot"
+                )
+            continue
+        if key in bound and bound[key] != contract:
+            raise ValueError(
+                f"{namespace}.{name} is the payload of {origin[key]} and {endpoint}, "
+                "whose contracts give it different shapes"
+            )
+        bound[key] = contract
+        origin.setdefault(key, endpoint)
+    return bound
 
 
 _STRUCTURAL_KEYS = (
@@ -2127,7 +2180,7 @@ def _contract_argument_types() -> dict[tuple[str, str], dict[str, Any]]:
                 continue
             fields, variants = _strip_assign_envelope(contract, "Argument")
             pseudo = {"fields": fields, "variants": variants}
-            namespace = "".join(part[:1].upper() + part[1:] for part in surface["modulePath"]) + "Types"
+            namespace = _path_namespace(surface["modulePath"])
             key = (namespace, name)
             if key in found:
                 if _nested_fingerprint(found[key]) != _nested_fingerprint(pseudo):
@@ -2153,57 +2206,36 @@ def _contract_argument_types() -> dict[tuple[str, str], dict[str, Any]]:
     return {key: value for key, value in found.items() if key[1] not in diverged}
 
 
-def _bind_nested_types(
-    nested: dict[tuple[str, str], dict[str, Any]],
-    type_keys: set[tuple[str, str]],
-) -> dict[tuple[str, str], dict[str, Any]]:
-    """Key each declared nested type by the published slot it replaces.
-
-    The slot is still found through the Python tree, the same arrangement the
-    payload roots have: the contract owns the shape and the name, the source
-    tree decides where in `types.ts` it is written. A declaration naming a type
-    that is not published there is refused rather than added, because adding an
-    export is a change to the package surface this step does not make.
-    """
-
-    slots = {(_namespace(module), name): (module, name) for module, name in type_keys}
-    bound: dict[tuple[str, str], dict[str, Any]] = {}
-    missing = []
-    for key, pseudo in nested.items():
-        slot = slots.get(key)
-        if slot is None:
-            missing.append(f"{key[0]}.{key[1]}")
-            continue
-        bound[slot] = pseudo
-    if missing:
-        raise ValueError(
-            "surface.nestedTypes names types the package does not publish: "
-            + ", ".join(sorted(missing))
-        )
-    return bound
-
 
 def main() -> None:
     modules = _source_modules()
     resources = _load_resources(modules)
-    resource_keys = {(item["pythonModule"], item["className"]) for item in resources}
+    resource_keys = {
+        (item["pythonModule"], item["className"]) for item in resources if "pythonModule" in item
+    }
     type_keys = _collect_type_classes(modules, resource_keys)
     coverage = json.loads((ROOT / "docs" / "coverage.json").read_text(encoding="utf-8"))
     operations = _contract_operation_specs()
     tables = _contract_table_specs()
-    _attach_payload_types(resources, type_keys)
-    contract_fields = _contract_payload_fields()
-    contract_types, supplemental_contract_types = _contract_payload_types(
-        resources, contract_fields, type_keys
-    )
-    _check_contract_payload_type_names(resources)
-    nested_types = _bind_nested_types(_contract_nested_types(), type_keys)
-    argument_types = _bind_nested_types(_contract_argument_types(), type_keys)
-    for label, extra in (("a nested type", nested_types), ("an operation argument", argument_types)):
+    contract_types = _bind_payload_types(resources, _contract_payload_fields(), type_keys)
+    for label, extra in (
+        ("a nested type", _contract_nested_types()),
+        ("an operation argument", _contract_argument_types()),
+    ):
         clash = sorted(set(extra) & set(contract_types))
         if clash:
             raise ValueError(f"declared both as a payload and as {label}: {clash}")
         contract_types = {**contract_types, **extra}
+    layout = _type_layout(modules, type_keys, contract_types)
+    unplaced = sorted(
+        resource["payloadType"]
+        for resource in resources
+        if resource["payloadType"] != "JsonObject"
+        and resource["payloadTypeName"]
+        not in layout.get(resource["payloadType"].split(".")[1], {})
+    )
+    if unplaced:
+        raise ValueError(f"resource payload types that no declaration provides: {unplaced}")
     SCHEMA_DIR.mkdir(parents=True, exist_ok=True)
     TYPESCRIPT_SRC.joinpath("generated").mkdir(parents=True, exist_ok=True)
 
@@ -2278,7 +2310,7 @@ def main() -> None:
     )
     (TYPESCRIPT_SRC / "generated" / "resources.ts").write_text(generated, encoding="utf-8")
     (TYPESCRIPT_SRC / "generated" / "types.ts").write_text(
-        _render_types(modules, type_keys, contract_types, supplemental_contract_types), encoding="utf-8"
+        _render_types(modules, type_keys, contract_types), encoding="utf-8"
     )
     generated_operations = "\n".join(
         [
@@ -2312,12 +2344,8 @@ def main() -> None:
     (TYPESCRIPT_SRC / "generated" / "tables.ts").write_text(
         generated_tables, encoding="utf-8"
     )
-    contract_type_count = len(contract_types) + sum(
-        len(types) for types in supplemental_contract_types.values()
-    )
-    payload_type_count = len(type_keys) + sum(
-        len(types) for types in supplemental_contract_types.values()
-    )
+    contract_type_count = len(contract_types)
+    payload_type_count = sum(len(names) for names in layout.values())
     print(
         f"Generated {len(resources)} TypeScript DB resources "
         f"({_RESOURCE_SOURCE_COUNTS['contract']} identified by a contract, "

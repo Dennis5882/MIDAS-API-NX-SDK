@@ -75,3 +75,15 @@ def test_the_waived_bucket_is_exactly_the_unmerged_table_contracts() -> None:
     report = _module()
     _named, waived = report._contract_payload_names()
     assert set(report.classify()["python:unmerged"]) <= waived
+
+
+def test_the_exported_type_count_is_recorded() -> None:
+    """Adding an export is a deliberate act, not a side effect of a contract.
+
+    The generator used to refuse a `surface.nestedTypes` name the Python tree
+    did not publish. That refusal read the Python tree and went with it when
+    placement moved to the contracts; this count replaces it.
+    """
+    report = _module()
+    found = report.classify()
+    assert sum(len(names) for names in found.values()) == report.EXPORTED_TYPES

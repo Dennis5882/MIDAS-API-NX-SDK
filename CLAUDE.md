@@ -103,9 +103,15 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   and operation readers already parse, and `tests/test_generate_typescript_sdk.py` fails if an
   import comes back. A missing or broken Python install no longer stops `npm publish`. The
   **source tree** is still load-bearing — deleting `src/midas_nx/` breaks `npm run generate`,
-  though a built `dist/` keeps working — because `pythonModule`, which no contract records, keys
-  the payload-type lookup and decides where in `types.ts` each type is written, and 162 of 765
-  generated npm types still come from Python TypedDicts. Only 3 of 305 resources still take their
+  though a built `dist/` keeps working — because 162 of 765 generated npm types still come from
+  Python TypedDicts. **Since 2026-09-22 that is the only reason**: which types exist and in which
+  namespace is decided by the contracts for every type they own (payload roots by
+  `surface.payloadTypeName` + `modulePath`, nested and argument types by their recorded
+  namespace), the resource list is contracts ∪ Python classes rather than Python classes with
+  contracts laid over them, and `types.ts` is written in name order because the old order was
+  Python's class order, which no contract can state. A test deletes every TypedDict a contract
+  owns (597) and requires `types.ts` unchanged. `pythonModule` stays in
+  `schema/typescript-resources.json` as a record only. Only 3 of 305 resources still take their
   identity from a Python class: the IEHG trio, which has no permitted source and so can never be
   contracted. **`scripts/report_npm_type_provenance.py` measures that 162 rather than counting it
   by hand** (`--check` holds it as a ceiling in CI). **Since 2026-09-22 the 70 operations and 87
@@ -131,8 +137,10 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   Moving 228 of them made 415 members required across 156 types and added 37, and removed none;
   that is a public-type change the npm changelog has to state. Three refusals are built in: a
   name several contracts declare with different shapes (prose aside), a path whose shape a
-  variant *above* it redeclares (`/db/SECT`'s `SECT_BEFORE`), and a name the package does not
-  already publish — recording one is never a way to add an export. Deriving the element types
+  variant *above* it redeclares (`/db/SECT`'s `SECT_BEFORE`), and — until 2026-09-22 — a name
+  the package did not already publish. That third one read the Python tree and went with it;
+  `report_npm_type_provenance.py --check` now pins the exported type count (`EXPORTED_TYPES`)
+  instead, so an export is still never added as a side effect. Deriving the element types
   also caught an extractor defect the name-only `check_field_parity` cannot see: **a `(1)`-numbered
   nested row whose key already appeared higher in the table was dropped**, because
   `extract_contracts.py` gave such rows no parent scope. Fixed there, and the 27 members it had lost

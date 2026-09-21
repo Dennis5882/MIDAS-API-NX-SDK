@@ -3,175 +3,88 @@ import type { JsonObject } from "../types";
 
 export namespace DbAnalysisControlTypes {
   /** Generated from contracts/endpoints/. */
-  export interface ErectionLoadItem {
-    /** Erection Load Case Name */
-    LTYPECC?: string;
-    /** Load Type for C.S (`"D"`, `"W"`, …) */
-    EREC?: string;
-    /** Load Case Name List */
-    vLCNAME?: Array<string>;
+  export interface AssignBoundaryCombinationHyperSPayload {
+    /** Assign Boundary Combination to Analyses & Load Cases */
+    BC_ASSIGN: Array<{
+      /** Analysis Type */
+      ANAL_TYPE: "ST" | "MV" | "SM" | "EIGV" | "RS" | "LTH" | "NLTH" | "PO";
+      /** Load Case Name (ANAL_TYPE ∈ {ST, NLTH, PO}일 때 필수) */
+      LCNAME?: string;
+      /** Boundary Group Combination Name (빈 문자열 = 변경 없음) */
+      BGCNAME?: string;
+    }>;
+    /** Apply to Boundary Change */
+    BC_SELECT: Array<string>;
   }
   /** Generated from contracts/endpoints/. */
-  export interface MainControlDataPayload {
-    /** Auto Rotational DOF Constraint for Truss / Plane Stress / Solid Elements */
-    ARDC?: boolean;
-    /** Auto Normal Rotation Constraint for Plate Elements */
-    ANRC?: boolean;
-    /** Consider Section Stiffness Scale Factor for Stress Calculation */
-    CSECF?: boolean;
-    /** Transfer Reactions of Slave Node to the Master Node */
-    TRS?: boolean;
-    /** Calculate Equivalent Beam Stresses (Von-Mises and Max-Shear) */
-    BMSTRESS?: boolean;
-    /** Consider Reinforcement for Section Stiffness Calculation */
-    CRBAR?: boolean;
-    /** Change Local Axis of Tapered Section for Force / Stress Calculation Civil NX only. */
-    CLATS?: boolean;
-    /** Number of Iterations / Load Case */
-    ITER: number;
-    /** Convergence Tolerance */
-    TOL: number;
-    /** Auto Constraint for Wall Elements Connectivity Gen NX only. */
-    ACWC?: boolean;
+  export interface AutoTimeStepHyperS {
+    /** 사용 여부 */
+    OPT_USE?: boolean;
+    /** 10일까지의 분할 수 */
+    iT10?: number;
+    /** 100일까지의 분할 수 */
+    iT100?: number;
+    /** 1,000일까지의 분할 수 */
+    iT1K?: number;
+    /** 5,000일까지의 분할 수 */
+    iT5K?: number;
+    /** 10,000일까지의 분할 수 */
+    iT10K?: number;
   }
   /** Generated from contracts/endpoints/. */
-  export interface TensionCompressionTrussConvergence {
-    /** Displacement Convergence (변위 U) */
-    DISPL?: {
-      /** 해당 기준 사용 여부 */
-      OPT_USE?: boolean;
-      /** 허용오차 (OPT_USE = true일 때 필수) */
-      VALUE?: number;
-    };
-    /** Load Convergence (하중 P) */
-    LOAD?: {
-      /** 해당 기준 사용 여부 */
-      OPT_USE?: boolean;
-      /** 허용오차 (OPT_USE = true일 때 필수) */
-      VALUE?: number;
-    };
-    /** Work Convergence (일 W) */
-    WORK?: {
-      /** 해당 기준 사용 여부 */
-      OPT_USE?: boolean;
-      /** 허용오차 (OPT_USE = true일 때 필수) */
-      VALUE?: number;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface TensionCompressionTrussElement {
-    /** Number of Increments */
-    NUMINC?: number;
-    /** Intermediate Output Request ("EVERY" / "LAST") */
-    INTOUT?: "EVERY" | "LAST";
-    /** Convergence Criteria */
-    CONVERGENCE?: {
-      /** Displacement Convergence (변위 U) */
-      DISPL?: {
-        /** 해당 기준 사용 여부 */
-        OPT_USE?: boolean;
-        /** 허용오차 (OPT_USE = true일 때 필수) */
-        VALUE?: number;
-      };
-      /** Load Convergence (하중 P) */
-      LOAD?: {
-        /** 해당 기준 사용 여부 */
-        OPT_USE?: boolean;
-        /** 허용오차 (OPT_USE = true일 때 필수) */
-        VALUE?: number;
-      };
-      /** Work Convergence (일 W) */
-      WORK?: {
-        /** 해당 기준 사용 여부 */
-        OPT_USE?: boolean;
-        /** 허용오차 (OPT_USE = true일 때 필수) */
-        VALUE?: number;
-      };
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MainControlDataHyperSPayload {
-    /** Auto Rotational DOF Constraint */
-    ARCD?: boolean;
-    /** Auto Normal Rotation Constraint */
-    ANRC?: boolean;
-    /** Consider Section Stiffness Scale Factor */
-    CSECF?: boolean;
-    /** Consider Reinforcement for Section Stiffness */
-    CRBAR?: boolean;
-    /** Transfer Reactions to Master Node */
-    TRS?: boolean;
-    /** Change Local Axis of Tapered Section */
-    CLATS?: boolean;
-    /** Calculate Equivalent Beam Stresses */
-    BMSTRESS?: boolean;
-    /** Classical Formula for Solid Element */
-    CLFORM?: boolean;
-    /** Beam Section Property Changes ("CONSTANT" / "CHANGE") */
-    BSCHG?: "CONSTANT" | "CHANGE";
-    /** Consider Initial Tension for Cable Element */
-    CABINIT?: boolean;
-    /** Tension/Compression Truss Element */
-    TCELEM?: {
-      /** Number of Increments */
-      NUMINC?: number;
-      /** Intermediate Output Request ("EVERY" / "LAST") */
-      INTOUT?: "EVERY" | "LAST";
-      /** Convergence Criteria */
-      CONVERGENCE?: {
-        /** Displacement Convergence (변위 U) */
-        DISPL?: {
-          /** 해당 기준 사용 여부 */
-          OPT_USE?: boolean;
-          /** 허용오차 (OPT_USE = true일 때 필수) */
-          VALUE?: number;
-        };
-        /** Load Convergence (하중 P) */
-        LOAD?: {
-          /** 해당 기준 사용 여부 */
-          OPT_USE?: boolean;
-          /** 허용오차 (OPT_USE = true일 때 필수) */
-          VALUE?: number;
-        };
-        /** Work Convergence (일 W) */
-        WORK?: {
-          /** 해당 기준 사용 여부 */
-          OPT_USE?: boolean;
-          /** 허용오차 (OPT_USE = true일 때 필수) */
-          VALUE?: number;
-        };
-      };
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PDeltaLoadCaseItem {
-    /** Load Case Name */
-    LCNAME: string;
-    /** Scale Factor */
-    FACTOR: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PDeltaAnalysisControlPayload {
-    /** Number of Iterations */
-    ITER: number;
-    /** Convergence Tolerance */
-    TOL?: number;
-    /** Load Cases */
-    PDEL_CASES: Array<{
-      /** Load Case Name */
+  export interface BoundaryChangeAssignmentPayload {
+    /** Support */
+    bSPT?: boolean;
+    /** Point Spring Support */
+    bSPR?: boolean;
+    /** General Spring Support */
+    bGSPR?: boolean;
+    /** Change General Link Property */
+    bCGLINK?: boolean;
+    /** Section Stiffness Scale Factor */
+    bSSSF?: boolean;
+    /** Plate Stiffness Scale Factor */
+    bPSSF?: boolean;
+    /** Beam End Release */
+    bRLS?: boolean;
+    /** Wall Stiffness Scale Factor Gen NX only. */
+    bWSSF?: boolean;
+    /** Element Stiffness Scale Factor Gen NX only. */
+    bESSF?: boolean;
+    /** Constrain DOF associated with specified displacements / settlements by boundary group combinations */
+    bCDOF?: boolean;
+    /** Boundary List */
+    vBOUNDARY: Array<{
+      /** Boundary Group Combination Name */
+      BGCNAME: string;
+      /** Boundary Group List */
+      vBG: Array<string>;
+    }>;
+    /** Load Cases & Analysis List */
+    vLOADANAL?: Array<{
+      /** Load Cases & Analysis Type */
+      TYPE: string;
+      /** Boundary Group Combination Name */
+      BGCNAME: string;
+      /** Static Load Case */
       LCNAME: string;
-      /** Scale Factor */
-      FACTOR: number;
     }>;
   }
   /** Generated from contracts/endpoints/. */
-  export interface BucklingLoadCaseItem {
-    /** Load Case Name */
-    LCNAME: string;
-    /** Scale Factor */
-    FACTOR?: number;
-    /** Load Type (Variable: 0 / Constant: 1) */
-    LOAD_TYPE?: number;
+  export interface BoundaryCombinationAssignItem {
+    /** Analysis Type */
+    ANAL_TYPE: "ST" | "MV" | "SM" | "EIGV" | "RS" | "LTH" | "NLTH" | "PO";
+    /** Load Case Name (ANAL_TYPE ∈ {ST, NLTH, PO}일 때 필수) */
+    LCNAME?: string;
+    /** Boundary Group Combination Name (빈 문자열 = 변경 없음) */
+    BGCNAME?: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface BoundaryGroupCombinationItem {
+    /** Boundary Group Combination Name */
+    BGCNAME: string;
+    /** Boundary Group List */
+    vBG: Array<string>;
   }
   /** Generated from contracts/endpoints/. */
   export interface BucklingAnalysisControlPayload {
@@ -197,12 +110,468 @@ export namespace DbAnalysisControlTypes {
       LOAD_TYPE?: number;
     }>;
   }
-  export interface EigenvalueRitzLoadCaseItem {
-    KIND?: string;
-    GROUND?: string;
-    CASE?: string;
-    iNOG?: number;
+  /** Generated from contracts/endpoints/. */
+  export interface BucklingLoadCaseItem {
+    /** Load Case Name */
+    LCNAME: string;
+    /** Scale Factor */
+    FACTOR?: number;
+    /** Load Type (Variable: 0 / Constant: 1) */
+    LOAD_TYPE?: number;
   }
+  /** Generated from contracts/endpoints/. */
+  export interface CableControlHyperS {
+    /** Cable-Pretension Force Type (`"INTERNAL"`/`"EXTERNAL"`) */
+    CPFC?: string;
+    /** External Force Replace */
+    bEXT_REPL?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ConstructionStageAnalysisControlDataHyperSPayload {
+    /** Final Stage Option (Last: true / Other: false) */
+    bLAST_FINAL?: boolean;
+    /** Final Stage Name */
+    FINAL_STAGE?: string;
+    /** Analysis Type 설정 */
+    ANAL_TYPE: {
+      /** 해석 타입 (Linear: 0 / Geometric Nonlinear: 1 / Material Nonlinear: 2 / Geometric+Material Nonlinear: 3) */
+      iINC_NLA?: number;
+      /** 단계 옵션 (Independent: 0 / Accumulative: 1) — `iINC_NLA`=2 또는 3이면 `iNLA_TYPE`=1만 허용 */
+      iNLA_TYPE?: number;
+      /** Include Equilibrium Element Nodal Forces (`iINC_NLA`=1 & `iNLA_TYPE`=0일 때만) */
+      bIEMF?: boolean;
+      /** Include P-Delta Effect (`iINC_NLA`=0일 때만) */
+      bINC_PDL?: boolean;
+      /** Include Time Dependent Effect (`iNLA_TYPE`=1 & `iINC_NLA`∈{0,1}일 때만) */
+      bINC_TDE?: boolean;
+    };
+    /** Restart C.S. Analysis 설정 */
+    RESTART_CS_ANAL?: {
+      /** Restart 해석 사용 여부 */
+      OPT_USE?: boolean;
+      /** Restart 대상 시공단계 목록 */
+      RESTART_STAGE?: Array<string>;
+    };
+    /** Erection Load 목록 */
+    ERECTION_LOAD?: Array<{
+      /** Erection Load Case Name */
+      LTYPECC?: string;
+      /** Load Type for C.S (`"D"`, `"W"`, …) */
+      EREC?: string;
+      /** Load Case Name List */
+      vLCNAME?: Array<string>;
+    }>;
+    /** Self-weight Dead Load for Erection 사용 */
+    bSDLE?: boolean;
+    /** Self-weight Dead Load for Erection 목록 */
+    vSDLE?: Array<string>;
+    /** Time Dependent Control */
+    TIME_DEP_CONTROL?: {
+      /** 크리프·건조수축 설정 */
+      CREEP_SHRINKAGE?: {
+        /** 사용 여부 */
+        OPT_USE?: boolean;
+        /** (`"CREEP"`/`"SHRINKAGE"`/`"BOTH"`) */
+        TYPE?: string;
+        /** Only User's Creep Coefficient */
+        bOUCC?: boolean;
+        /** 내부 스텝 설정 */
+        INTERNAL_STEP?: {
+          /** 사용 여부 */
+          OPT_USE?: boolean;
+          /** 내부 스텝 수 */
+          iITS?: number;
+        };
+        /** 자동 시간 스텝 설정 */
+        AUTO_TIME_STEP?: {
+          /** 사용 여부 */
+          OPT_USE?: boolean;
+          /** 10일까지의 분할 수 */
+          iT10?: number;
+          /** 100일까지의 분할 수 */
+          iT100?: number;
+          /** 1,000일까지의 분할 수 */
+          iT1K?: number;
+          /** 5,000일까지의 분할 수 */
+          iT5K?: number;
+          /** 10,000일까지의 분할 수 */
+          iT10K?: number;
+        };
+        /** Tendon Tension Loss Effect */
+        bTTLE_CS?: boolean;
+        /** Re-bar Confinement Effect */
+        bRCE?: boolean;
+      };
+      /** Variation of Comp. Strength */
+      bVAR?: boolean;
+      /** Apply Time Dep. Elastic Modulus to Post C.S */
+      bAPPLY_ELA?: boolean;
+      /** Tendon Tension Loss (Elastic Shortening) */
+      bTTLE_ES?: boolean;
+      /** Tendon Tension Loss (Elastic Shortening) Type */
+      iTTLE_ES?: number;
+    };
+    /** Cable Control */
+    CABLE_CONTROL?: {
+      /** Cable-Pretension Force Type (`"INTERNAL"`/`"EXTERNAL"`) */
+      CPFC?: string;
+      /** External Force Replace */
+      bEXT_REPL?: boolean;
+    };
+    /** Initial Force Control */
+    INITIAL_CONTROL?: {
+      /** Convert Final Stage Forces to Initial Forces */
+      bCONV?: boolean;
+      /** Truss */
+      bTRUSS?: boolean;
+      /** Beam */
+      bBEAM?: boolean;
+      /** Change Cable to Equivalent Truss */
+      bCHANGE_CABLE?: boolean;
+      /** Apply Initial Member Force to C.S */
+      bAPPLY_IMF?: boolean;
+    };
+    /** Initial Displacement Control */
+    INITIAL_DISP?: {
+      /** Initial Tangent Displacement Control */
+      ITD_CONTROL?: {
+        /** 사용 여부 */
+        OPT_USE?: boolean;
+        /** 적용 대상 구분 */
+        ITD?: string;
+        /** 대상 그룹명 */
+        GROUP?: string;
+        /** Lack of Fit Force 사용 여부 */
+        LFFC_OPT_USE?: boolean;
+        /** Lack of Fit 그룹명 */
+        LFFGR?: string;
+      };
+      /** Apply Camber Displacement */
+      bCAMBER?: boolean;
+    };
+    /** Stress Decrease Control */
+    STRESS_DECREASE?: {
+      /** Stress Decrease 사용 */
+      OPT_USE?: boolean;
+      /** Stress Decrease 옵션 */
+      iSDOPT?: number;
+      /** Stress Decrease 상수 */
+      SDCONST?: number;
+    };
+    /** Beam Section Property Option (Constant: 0 / Change with Tendon: 1) */
+    iBSC?: number;
+    /** Frame Output 설정 */
+    FRAME_OUTPUT?: {
+      /** Request Example only - no Parameters row describes this key */
+      bCALC_CFF?: boolean;
+      /** Request Example only - no Parameters row describes this key */
+      bCALC_CSP?: boolean;
+      /** Request Example only - no Parameters row describes this key */
+      bSELFCONS?: boolean;
+    };
+    /** Save Output of Current Stage (Beam/Truss) */
+    bSAVE_OCS?: boolean;
+    /** Nonlinear Analysis Control (`iINC_NLA` ≠ 0일 때) */
+    NONL_CONTROL?: {
+      /** 증분 스텝 수 */
+      iLSTEP?: number;
+      /** 중간 출력 요청 */
+      INTOUT?: "EVERY" | "LAST";
+      /** 고급 설정 */
+      ADVANCED?: {
+        /** 기본 설정 사용 */
+        USE_DEF_SETTINGS: boolean;
+        /** 강성 업데이트 방식 (0=Custom, 1=Full Newton-Raphson, 2=Initial Stiffness) */
+        STIFF_UPD_SCHEME?: number;
+        /** 강성 업데이트 전 반복 횟수 */
+        ITER_BEF_UPDATE?: number;
+        /** 수렴 실패 시 종료 */
+        TERMINATE_ON_FAIL_CONV?: boolean;
+        /** 증분당 최대 반복 횟수 */
+        MAX_ITER_INCREMENT?: number;
+        /** 최대 이분법 수준 */
+        MAX_BISECT_LEVEL?: number;
+        /** 스마트 이분법 */
+        SMART_BISECT?: boolean;
+        /** 발산 임계값 */
+        DIVERG_THRESH?: number;
+        /** 선형 탐색 사용 */
+        ENABLE_LINE_SEARCH?: boolean;
+        /** 선형 탐색 설정 */
+        LINE_SEARCH?: {
+          /** 사용 여부 */
+          OPT_USE: boolean;
+          /** 선형 탐색 방식 */
+          LINE_SEARCH_TYPE?: "AUTO" | "USER";
+          /** 최대 선형 탐색 반복 횟수 */
+          MAX_LN_SRCH_ITER?: number;
+          /** 선형 탐색 허용오차 */
+          LN_SEARCH_TOL?: number;
+        };
+      };
+      /** 변위 수렴기준 */
+      DISP?: {
+        /** 사용 여부 */
+        OPT_USE: boolean;
+        /** 수렴 허용값 */
+        VALUE?: number;
+      };
+      /** 하중 수렴기준 */
+      LOAD?: {
+        /** 사용 여부 */
+        OPT_USE: boolean;
+        /** 수렴 허용값 */
+        VALUE?: number;
+      };
+      /** 일 수렴기준 */
+      WORK?: {
+        /** 사용 여부 */
+        OPT_USE: boolean;
+        /** 수렴 허용값 */
+        VALUE?: number;
+      };
+    };
+  }
+  export interface ConstructionStageAnalysisControlDataPayload {
+    bLAST_FINAL?: boolean;
+    FINAL_STAGE?: string;
+    iINC_NLA?: number;
+    iNLA_TYPE?: number;
+    vEREC?: Array<ErectionLoadItem>;
+    bSDLE?: boolean;
+    vSDLE?: Array<string>;
+    CPFC?: string;
+    bEXT_REPL?: boolean;
+    bCONV?: boolean;
+    bTRUSS?: boolean;
+    bBEAM?: boolean;
+    bCHANGE_CABLE?: boolean;
+    bAPPLY_IMF?: boolean;
+    bITD?: boolean;
+    ITD?: string;
+    GROUP?: string;
+    bLFFC?: boolean;
+    LFFGR?: string;
+    bCAMBER?: boolean;
+    bCALC_CFF?: boolean;
+    bCALC_CSP?: boolean;
+    bSELFCONS?: boolean;
+    bSAVE_OCS?: boolean;
+    bSD?: boolean;
+    iSDOPT?: number;
+    SDCONST?: number;
+    iBSC?: number;
+    bINC_PDL?: boolean;
+    iITER?: number;
+    TOL?: number;
+    iLSTEP?: number;
+    iMAXITER?: number;
+    CF?: boolean;
+    BSSTEP?: number;
+    ADSTEP?: number;
+    bENEG?: boolean;
+    EV?: number;
+    bDISP?: boolean;
+    DV?: number;
+    bFORC?: boolean;
+    FV?: number;
+    bIEMF?: boolean;
+    bINC_TDE?: boolean;
+    bCNS?: boolean;
+    TYPE?: string;
+    iITER_CR?: number;
+    TOL_CR?: number;
+    bOUCC?: boolean;
+    bITS?: boolean;
+    iITS?: number;
+    bATS?: boolean;
+    iT10?: number;
+    iT100?: number;
+    iT1K?: number;
+    iT5K?: number;
+    iT10K?: number;
+    bTTLE_CS?: boolean;
+    bRCE?: boolean;
+    bVAR?: boolean;
+    bTTLE_ES?: boolean;
+    iTTLE_ES?: number;
+    bAPPLY_ELA?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ConstructionStageAnalysisTypeHyperS {
+    /** 해석 타입 (Linear: 0 / Geometric Nonlinear: 1 / Material Nonlinear: 2 / Geometric+Material Nonlinear: 3) */
+    iINC_NLA?: number;
+    /** 단계 옵션 (Independent: 0 / Accumulative: 1) — `iINC_NLA`=2 또는 3이면 `iNLA_TYPE`=1만 허용 */
+    iNLA_TYPE?: number;
+    /** Include Equilibrium Element Nodal Forces (`iINC_NLA`=1 & `iNLA_TYPE`=0일 때만) */
+    bIEMF?: boolean;
+    /** Include P-Delta Effect (`iINC_NLA`=0일 때만) */
+    bINC_PDL?: boolean;
+    /** Include Time Dependent Effect (`iNLA_TYPE`=1 & `iINC_NLA`∈{0,1}일 때만) */
+    bINC_TDE?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ConstructionStageRestartHyperS {
+    /** Restart 해석 사용 여부 */
+    OPT_USE?: boolean;
+    /** Restart 대상 시공단계 목록 */
+    RESTART_STAGE?: Array<string>;
+  }
+  export interface ConvergenceCriterionCheck {
+    OPT_CHECK?: boolean;
+    VALUE?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ConvergenceCriterionHyperSStct {
+    /** 사용 여부 */
+    OPT_USE: boolean;
+    /** 수렴 허용값 */
+    VALUE?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface CreepShrinkageControlHyperS {
+    /** 사용 여부 */
+    OPT_USE?: boolean;
+    /** (`"CREEP"`/`"SHRINKAGE"`/`"BOTH"`) */
+    TYPE?: string;
+    /** Only User's Creep Coefficient */
+    bOUCC?: boolean;
+    /** 내부 스텝 설정 */
+    INTERNAL_STEP?: {
+      /** 사용 여부 */
+      OPT_USE?: boolean;
+      /** 내부 스텝 수 */
+      iITS?: number;
+    };
+    /** 자동 시간 스텝 설정 */
+    AUTO_TIME_STEP?: {
+      /** 사용 여부 */
+      OPT_USE?: boolean;
+      /** 10일까지의 분할 수 */
+      iT10?: number;
+      /** 100일까지의 분할 수 */
+      iT100?: number;
+      /** 1,000일까지의 분할 수 */
+      iT1K?: number;
+      /** 5,000일까지의 분할 수 */
+      iT5K?: number;
+      /** 10,000일까지의 분할 수 */
+      iT10K?: number;
+    };
+    /** Tendon Tension Loss Effect */
+    bTTLE_CS?: boolean;
+    /** Re-bar Confinement Effect */
+    bRCE?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface CreepShrinkageEffectiveModulusData {
+    /** phi 1 */
+    PHI1: number;
+    /** day 1 */
+    DAY1: number;
+    /** phi 2 */
+    PHI2: number;
+    /** day 2 */
+    DAY2: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface CreepShrinkageGeneralData {
+    /** Number of Iterations */
+    ITER?: number;
+    /** Tolerance */
+    TOL?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface CreepShrinkageItem {
+    /** Type (Creep: "CREEP" / Shrinkage: "SHRINK" / Both: "BOTH") */
+    TYPE?: string;
+    /** Creep Calculation Method (General: 0 / Effective Modulus: 1) */
+    CREEP_CALC_METHOD?: number;
+    /** General Data (when method 0) */
+    M_GENERAL?: {
+      /** Number of Iterations */
+      ITER?: number;
+      /** Tolerance */
+      TOL?: number;
+    };
+    /** Effective Modulus Data (when method 1) */
+    M_EFF_MOD: {
+      /** Phi1 */
+      PHI1: number;
+      /** Day1 */
+      DAY1: number;
+      /** Phi2 */
+      PHI2: number;
+      /** Day2 */
+      DAY2: number;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface CreepShrinkageItemHyperS {
+    /** Type ("CREEP"/"SHRINKAGE"/"BOTH") */
+    TYPE?: "CREEP" | "SHRINKAGE" | "BOTH";
+    /** Creep Calculation Method (General: 0 / Effective Modulus: 1) */
+    CREEP_CALC_METHOD?: number;
+    /** Effective Modulus Params (when method 1) */
+    M_EFF_MOD: {
+      /** phi 1 */
+      PHI1: number;
+      /** day 1 */
+      DAY1: number;
+      /** phi 2 */
+      PHI2: number;
+      /** day 2 */
+      DAY2: number;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface DefineBoundaryCombinationHyperSPayload {
+    /** Boundary Combination Name (1~20자, 모델 내 유일) */
+    BCG_NAME: string;
+    /** Boundary Group List (선택한 경계 그룹 이름 배열, 중복 자동 제거) */
+    GROUP_LIST: Array<string>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export type EigenvalueAnalysisControlHyperSPayload = {
+    /** Eigen Vectors (Lanczos: "LANCZOS" / Ritz Vectors: "RITZ") */
+    ANAL_TYPE: "LANCZOS" | "RITZ";
+  } & (
+    {
+      ANAL_TYPE: "LANCZOS";
+      /** Number of Frequencies (1~1000) */
+      FREQ_NO: number;
+      /** Frequency range of interest */
+      FREQ_RANGE?: {
+        /** Use Option */
+        OPT_USE: boolean;
+        /** Search From (when OPT_USE true) */
+        FREQ_MIN: number;
+        /** To (when OPT_USE true) */
+        FREQ_MAX: number;
+      };
+      /** Sturm Sequence Check */
+      STURM_SEQ?: boolean;
+    } |
+    {
+      ANAL_TYPE: "RITZ";
+      /** Include GL-link Force Vectors */
+      GLINK_VECTOR?: {
+        /** Use Option */
+        OPT_USE: boolean;
+        /** Number of Generations (when OPT_USE true) */
+        GLINK_NUMBER: number;
+      };
+      /** Ritz Load Cases */
+      RITZ_LOAD: Array<{
+        /** Type (Ground Acc.: "GROUND" / Load: "LOAD") */
+        TYPE: "GROUND" | "LOAD";
+        /** Load Name ("ACCX"/"ACCY"/"ACCZ" 또는 하중케이스명) */
+        LOAD_NAME: string;
+        /** Number of Generations */
+        NUM_OF_GEN: number;
+      }>;
+    }
+  );
   /** Generated from contracts/endpoints/. */
   export type EigenvalueAnalysisControlPayload = {
     /** Type of Analysis (Subspace Iteration: "EIGEN" / Lanczos: "LANCZOS" / Ritz Vectors: "RITZ") */
@@ -273,176 +642,34 @@ export namespace DbAnalysisControlTypes {
     OPT_USE?: boolean;
     GLINK_NUMBER?: number;
   }
+  export interface EigenvalueRitzLoadCaseItem {
+    KIND?: string;
+    GROUND?: string;
+    CASE?: string;
+    iNOG?: number;
+  }
   export interface EigenvalueRitzLoadItemHyperS {
     TYPE?: string;
     LOAD_NAME?: string;
     NUM_OF_GEN?: number;
   }
   /** Generated from contracts/endpoints/. */
-  export type EigenvalueAnalysisControlHyperSPayload = {
-    /** Eigen Vectors (Lanczos: "LANCZOS" / Ritz Vectors: "RITZ") */
-    ANAL_TYPE: "LANCZOS" | "RITZ";
-  } & (
-    {
-      ANAL_TYPE: "LANCZOS";
-      /** Number of Frequencies (1~1000) */
-      FREQ_NO: number;
-      /** Frequency range of interest */
-      FREQ_RANGE?: {
-        /** Use Option */
-        OPT_USE: boolean;
-        /** Search From (when OPT_USE true) */
-        FREQ_MIN: number;
-        /** To (when OPT_USE true) */
-        FREQ_MAX: number;
-      };
-      /** Sturm Sequence Check */
-      STURM_SEQ?: boolean;
-    } |
-    {
-      ANAL_TYPE: "RITZ";
-      /** Include GL-link Force Vectors */
-      GLINK_VECTOR?: {
-        /** Use Option */
-        OPT_USE: boolean;
-        /** Number of Generations (when OPT_USE true) */
-        GLINK_NUMBER: number;
-      };
-      /** Ritz Load Cases */
-      RITZ_LOAD: Array<{
-        /** Type (Ground Acc.: "GROUND" / Load: "LOAD") */
-        TYPE: "GROUND" | "LOAD";
-        /** Load Name ("ACCX"/"ACCY"/"ACCZ" 또는 하중케이스명) */
-        LOAD_NAME: string;
-        /** Number of Generations */
-        NUM_OF_GEN: number;
-      }>;
-    }
-  );
-  /** Generated from contracts/endpoints/. */
-  export interface CreepShrinkageGeneralData {
-    /** Number of Iterations */
-    ITER?: number;
-    /** Tolerance */
-    TOL?: number;
+  export interface ErectionLoadItem {
+    /** Erection Load Case Name */
+    LTYPECC?: string;
+    /** Load Type for C.S (`"D"`, `"W"`, …) */
+    EREC?: string;
+    /** Load Case Name List */
+    vLCNAME?: Array<string>;
   }
   /** Generated from contracts/endpoints/. */
-  export interface CreepShrinkageEffectiveModulusData {
-    /** phi 1 */
-    PHI1: number;
-    /** day 1 */
-    DAY1: number;
-    /** phi 2 */
-    PHI2: number;
-    /** day 2 */
-    DAY2: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface CreepShrinkageItem {
-    /** Type (Creep: "CREEP" / Shrinkage: "SHRINK" / Both: "BOTH") */
-    TYPE?: string;
-    /** Creep Calculation Method (General: 0 / Effective Modulus: 1) */
-    CREEP_CALC_METHOD?: number;
-    /** General Data (when method 0) */
-    M_GENERAL?: {
-      /** Number of Iterations */
-      ITER?: number;
-      /** Tolerance */
-      TOL?: number;
-    };
-    /** Effective Modulus Data (when method 1) */
-    M_EFF_MOD: {
-      /** Phi1 */
-      PHI1: number;
-      /** Day1 */
-      DAY1: number;
-      /** Phi2 */
-      PHI2: number;
-      /** Day2 */
-      DAY2: number;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface CreepShrinkageItemHyperS {
-    /** Type ("CREEP"/"SHRINKAGE"/"BOTH") */
-    TYPE?: "CREEP" | "SHRINKAGE" | "BOTH";
-    /** Creep Calculation Method (General: 0 / Effective Modulus: 1) */
-    CREEP_CALC_METHOD?: number;
-    /** Effective Modulus Params (when method 1) */
-    M_EFF_MOD: {
-      /** phi 1 */
-      PHI1: number;
-      /** day 1 */
-      DAY1: number;
-      /** phi 2 */
-      PHI2: number;
-      /** day 2 */
-      DAY2: number;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface HeatOfHydrationAnalysisControlPayload {
-    /** Final Stage (Last Stage: true / Other Stage: false) */
-    FINAL_STAGE?: boolean;
-    /** Construction Stage for Hydration (when FINAL_STAGE false) */
-    STAGE_NAME: string;
-    /** Integration Factor */
-    THETA?: number;
-    /** Initial Temperature */
-    INIT_TEMP?: number;
-    /** Element Stress Evaluation ("CENTER" / "GAUSS" / "NODAL") */
-    EVAL?: string;
-    /** Creep & Shrinkage Option */
-    OPT_IS_CREEP_SHRINKAGE?: boolean;
-    /** Creep & Shrinkage 설정 객체 */
-    ITEM?: {
-      /** Type (Creep: "CREEP" / Shrinkage: "SHRINK" / Both: "BOTH") */
-      TYPE?: string;
-      /** Creep Calculation Method (General: 0 / Effective Modulus: 1) */
-      CREEP_CALC_METHOD?: number;
-      /** General Data (when method 0) */
-      M_GENERAL?: {
-        /** Number of Iterations */
-        ITER?: number;
-        /** Tolerance */
-        TOL?: number;
-      };
-      /** Effective Modulus Data (when method 1) */
-      M_EFF_MOD: {
-        /** Phi1 */
-        PHI1: number;
-        /** Day1 */
-        DAY1: number;
-        /** Phi2 */
-        PHI2: number;
-        /** Day2 */
-        DAY2: number;
-      };
-    };
-    /** Use Equivalent Age by Time & Temperature */
-    OPT_USE_EQUI_AGE?: boolean;
-    /** Include Self-weight Load */
-    OPT_INCL_SELF_WEIGHT?: boolean;
-    /** Self-weight Factor */
-    SELF_WEIGHT_FACTOR?: number;
-  }
-  export interface ConvergenceCriterionCheck {
-    OPT_CHECK?: boolean;
-    VALUE?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface HeatOfHydrationConvergenceHyperS {
-    /** Displacement(U) */
-    DISP?: JsonObject;
-    /** Load(P) */
-    LOAD?: JsonObject;
-    /** Work(W) */
-    WORK?: {
-      /** Use Option */
-      OPT_CHECK: boolean;
-      /** Tolerance (when OPT_CHECK true) */
-      VALUE: number;
-    };
+  export interface FrameOutputHyperS {
+    /** Request Example only - no Parameters row describes this key */
+    bCALC_CFF?: boolean;
+    /** Request Example only - no Parameters row describes this key */
+    bCALC_CSP?: boolean;
+    /** Request Example only - no Parameters row describes this key */
+    bSELFCONS?: boolean;
   }
   /** Generated from contracts/endpoints/. */
   export interface HeatOfHydrationAnalysisControlHyperSPayload {
@@ -498,69 +725,257 @@ export namespace DbAnalysisControlTypes {
     };
   }
   /** Generated from contracts/endpoints/. */
-  export interface MovingLoadAnalysisControlPayload {
-    /** Analysis Method (Exact: "EXACT" / Pivot: "PIVOT" / Quick: "QUICK") */
-    METHOD?: string;
-    /** Load Point Selection (Influence Line Dependent: "INF" / All Points: "ALL") */
-    POINT: string;
-    /** Influence Generating Points (Number/Line Element: 0 / Distance: 1) */
+  export interface HeatOfHydrationAnalysisControlPayload {
+    /** Final Stage (Last Stage: true / Other Stage: false) */
+    FINAL_STAGE?: boolean;
+    /** Construction Stage for Hydration (when FINAL_STAGE false) */
+    STAGE_NAME: string;
+    /** Integration Factor */
+    THETA?: number;
+    /** Initial Temperature */
+    INIT_TEMP?: number;
+    /** Element Stress Evaluation ("CENTER" / "GAUSS" / "NODAL") */
+    EVAL?: string;
+    /** Creep & Shrinkage Option */
+    OPT_IS_CREEP_SHRINKAGE?: boolean;
+    /** Creep & Shrinkage 설정 객체 */
+    ITEM?: {
+      /** Type (Creep: "CREEP" / Shrinkage: "SHRINK" / Both: "BOTH") */
+      TYPE?: string;
+      /** Creep Calculation Method (General: 0 / Effective Modulus: 1) */
+      CREEP_CALC_METHOD?: number;
+      /** General Data (when method 0) */
+      M_GENERAL?: {
+        /** Number of Iterations */
+        ITER?: number;
+        /** Tolerance */
+        TOL?: number;
+      };
+      /** Effective Modulus Data (when method 1) */
+      M_EFF_MOD: {
+        /** Phi1 */
+        PHI1: number;
+        /** Day1 */
+        DAY1: number;
+        /** Phi2 */
+        PHI2: number;
+        /** Day2 */
+        DAY2: number;
+      };
+    };
+    /** Use Equivalent Age by Time & Temperature */
+    OPT_USE_EQUI_AGE?: boolean;
+    /** Include Self-weight Load */
+    OPT_INCL_SELF_WEIGHT?: boolean;
+    /** Self-weight Factor */
+    SELF_WEIGHT_FACTOR?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface HeatOfHydrationConvergenceHyperS {
+    /** Displacement(U) */
+    DISP?: JsonObject;
+    /** Load(P) */
+    LOAD?: JsonObject;
+    /** Work(W) */
+    WORK?: {
+      /** Use Option */
+      OPT_CHECK: boolean;
+      /** Tolerance (when OPT_CHECK true) */
+      VALUE: number;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface InitialDisplacementHyperS {
+    /** Initial Tangent Displacement Control */
+    ITD_CONTROL?: {
+      /** 사용 여부 */
+      OPT_USE?: boolean;
+      /** 적용 대상 구분 */
+      ITD?: string;
+      /** 대상 그룹명 */
+      GROUP?: string;
+      /** Lack of Fit Force 사용 여부 */
+      LFFC_OPT_USE?: boolean;
+      /** Lack of Fit 그룹명 */
+      LFFGR?: string;
+    };
+    /** Apply Camber Displacement */
+    bCAMBER?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface InitialForceControlHyperS {
+    /** Convert Final Stage Forces to Initial Forces */
+    bCONV?: boolean;
+    /** Truss */
+    bTRUSS?: boolean;
+    /** Beam */
+    bBEAM?: boolean;
+    /** Change Cable to Equivalent Truss */
+    bCHANGE_CABLE?: boolean;
+    /** Apply Initial Member Force to C.S */
+    bAPPLY_IMF?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface InitialTangentDisplacementControlHyperS {
+    /** 사용 여부 */
+    OPT_USE?: boolean;
+    /** 적용 대상 구분 */
+    ITD?: string;
+    /** 대상 그룹명 */
+    GROUP?: string;
+    /** Lack of Fit Force 사용 여부 */
+    LFFC_OPT_USE?: boolean;
+    /** Lack of Fit 그룹명 */
+    LFFGR?: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface InternalTimeStepHyperS {
+    /** 사용 여부 */
+    OPT_USE?: boolean;
+    /** 내부 스텝 수 */
+    iITS?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LineSearchHyperSStct {
+    /** 사용 여부 */
+    OPT_USE: boolean;
+    /** 선형 탐색 방식 */
+    LINE_SEARCH_TYPE?: "AUTO" | "USER";
+    /** 최대 선형 탐색 반복 횟수 */
+    MAX_LN_SRCH_ITER?: number;
+    /** 선형 탐색 허용오차 */
+    LN_SEARCH_TOL?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LoadCaseAnalysisAssignmentItem {
+    /** Load Cases & Analysis Type */
+    TYPE: string;
+    /** Boundary Group Combination Name */
+    BGCNAME: string;
+    /** Static Load Case */
+    LCNAME: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MainControlDataHyperSPayload {
+    /** Auto Rotational DOF Constraint */
+    ARCD?: boolean;
+    /** Auto Normal Rotation Constraint */
+    ANRC?: boolean;
+    /** Consider Section Stiffness Scale Factor */
+    CSECF?: boolean;
+    /** Consider Reinforcement for Section Stiffness */
+    CRBAR?: boolean;
+    /** Transfer Reactions to Master Node */
+    TRS?: boolean;
+    /** Change Local Axis of Tapered Section */
+    CLATS?: boolean;
+    /** Calculate Equivalent Beam Stresses */
+    BMSTRESS?: boolean;
+    /** Classical Formula for Solid Element */
+    CLFORM?: boolean;
+    /** Beam Section Property Changes ("CONSTANT" / "CHANGE") */
+    BSCHG?: "CONSTANT" | "CHANGE";
+    /** Consider Initial Tension for Cable Element */
+    CABINIT?: boolean;
+    /** Tension/Compression Truss Element */
+    TCELEM?: {
+      /** Number of Increments */
+      NUMINC?: number;
+      /** Intermediate Output Request ("EVERY" / "LAST") */
+      INTOUT?: "EVERY" | "LAST";
+      /** Convergence Criteria */
+      CONVERGENCE?: {
+        /** Displacement Convergence (변위 U) */
+        DISPL?: {
+          /** 해당 기준 사용 여부 */
+          OPT_USE?: boolean;
+          /** 허용오차 (OPT_USE = true일 때 필수) */
+          VALUE?: number;
+        };
+        /** Load Convergence (하중 P) */
+        LOAD?: {
+          /** 해당 기준 사용 여부 */
+          OPT_USE?: boolean;
+          /** 허용오차 (OPT_USE = true일 때 필수) */
+          VALUE?: number;
+        };
+        /** Work Convergence (일 W) */
+        WORK?: {
+          /** 해당 기준 사용 여부 */
+          OPT_USE?: boolean;
+          /** 허용오차 (OPT_USE = true일 때 필수) */
+          VALUE?: number;
+        };
+      };
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MainControlDataPayload {
+    /** Auto Rotational DOF Constraint for Truss / Plane Stress / Solid Elements */
+    ARDC?: boolean;
+    /** Auto Normal Rotation Constraint for Plate Elements */
+    ANRC?: boolean;
+    /** Consider Section Stiffness Scale Factor for Stress Calculation */
+    CSECF?: boolean;
+    /** Transfer Reactions of Slave Node to the Master Node */
+    TRS?: boolean;
+    /** Calculate Equivalent Beam Stresses (Von-Mises and Max-Shear) */
+    BMSTRESS?: boolean;
+    /** Consider Reinforcement for Section Stiffness Calculation */
+    CRBAR?: boolean;
+    /** Change Local Axis of Tapered Section for Force / Stress Calculation Civil NX only. */
+    CLATS?: boolean;
+    /** Number of Iterations / Load Case */
+    ITER: number;
+    /** Convergence Tolerance */
+    TOL: number;
+    /** Auto Constraint for Wall Elements Connectivity Gen NX only. */
+    ACWC?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MovingLoadAnalysisControlBSPayload {
+    /** Influence Generating Points (0/1) */
     iIGP?: number;
     /** Number/Line Element (when iIGP=0) Required when iIGP = 0. */
-    iIGPN?: number;
+    UNUMT?: number;
     /** Distance between Points (when iIGP=1) Required when iIGP = 1. */
     DIST?: number;
-    /** Plate Options (Center: "CENTER" / Center+Nodal: "NODAL") */
+    /** Plate Options ("CENTER" / "NODAL") */
     PLATE: string;
     /** Plate – Stress */
     bSTRCALC?: boolean;
     /** Plate – Concurrent Force */
     bCONCURRENT?: boolean;
-    /** Frame Options (Normal: "NORMAL" / Normal+Concurrent: "AXIAL") */
+    /** Frame Options ("NORMAL" / "AXIAL") */
     FRAME: string;
     /** Frame – Combined Stress */
     bCSTRCALC?: boolean;
-    /** Link – Concurrent Force of Elastic/General Links */
-    bCONCLINK?: boolean;
     /** Filter – Reactions */
     bREAC?: boolean;
-    /** Reactions Option (All: false / Structure Group: true) */
-    bRG?: boolean;
-    /** Reactions Group Name (when bRG true) Required when bRG = true. */
-    RGN?: string;
+    /** Reactions Option (All/Group) */
+    bRGP?: boolean;
+    /** Reactions Group Name */
+    RGP: string;
     /** Filter – Displacements */
     bDISP?: boolean;
-    /** Displacements Option (All: false / Structure Group: true) */
-    bDG?: boolean;
-    /** Displacements Group Name (when bDG true) Required when bDG = true. */
-    DGN?: string;
+    /** Displacements Option (All/Group) */
+    bDGP?: boolean;
+    /** Displacements Group Name */
+    DGP: string;
     /** Filter – Forces/Moments */
     bFM?: boolean;
-    /** Forces/Moments Option (All: false / Structure Group: true) */
-    bFG?: boolean;
-    /** Forces/Moments Group Name (when bFG true) Required when bFG = true. */
-    FGN?: string;
-    /** Filter – Elastic/General Link */
+    /** Forces/Moments Option (All/Group) */
+    bFGP?: boolean;
+    /** Forces/Moments Group Name */
+    FGP: string;
+    /** Filter – Elastic/General Links */
     bL?: boolean;
-    /** Link Option (All: false / Boundary Group: true) */
+    /** Links Option (All/Group) */
     bLG?: boolean;
-    /** Link Group Name (when bLG true) Required when bLG = true. */
-    LGN?: string;
-    /** Mat Type */
-    MATTYPE?: number;
-    /** Bridge Type */
-    BRIDGETYPE?: number;
-    /** Mat Type AK */
-    AKMATTYPE?: number;
-    /** Bridge Type AK */
-    AKBRIDGETYPE?: number;
-    /** Minimum Factor (최소계수) */
-    MINFACTS2?: number;
-    /** Max Successive Vehicle (최대 연속 차량) */
-    MAXV?: number;
-    /** Increment Vehicle (차량 증분) */
-    INCV?: number;
-    /** Max Spacing Train (열차 최대 간격) */
-    MAXSPACE?: number;
+    /** Links Group Name */
+    LGP: string;
+    /** N for HA Lane Factor (BD/37/01) or ALL Model 2 (CS 454) — N < 6: 0 / N ≥ 6: 1 */
+    NUMLANE?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface MovingLoadAnalysisControlChinaPayload {
@@ -850,49 +1265,69 @@ export namespace DbAnalysisControlTypes {
     VHMAX: number;
   }
   /** Generated from contracts/endpoints/. */
-  export interface MovingLoadAnalysisControlBSPayload {
-    /** Influence Generating Points (0/1) */
+  export interface MovingLoadAnalysisControlPayload {
+    /** Analysis Method (Exact: "EXACT" / Pivot: "PIVOT" / Quick: "QUICK") */
+    METHOD?: string;
+    /** Load Point Selection (Influence Line Dependent: "INF" / All Points: "ALL") */
+    POINT: string;
+    /** Influence Generating Points (Number/Line Element: 0 / Distance: 1) */
     iIGP?: number;
     /** Number/Line Element (when iIGP=0) Required when iIGP = 0. */
-    UNUMT?: number;
+    iIGPN?: number;
     /** Distance between Points (when iIGP=1) Required when iIGP = 1. */
     DIST?: number;
-    /** Plate Options ("CENTER" / "NODAL") */
+    /** Plate Options (Center: "CENTER" / Center+Nodal: "NODAL") */
     PLATE: string;
     /** Plate – Stress */
     bSTRCALC?: boolean;
     /** Plate – Concurrent Force */
     bCONCURRENT?: boolean;
-    /** Frame Options ("NORMAL" / "AXIAL") */
+    /** Frame Options (Normal: "NORMAL" / Normal+Concurrent: "AXIAL") */
     FRAME: string;
     /** Frame – Combined Stress */
     bCSTRCALC?: boolean;
+    /** Link – Concurrent Force of Elastic/General Links */
+    bCONCLINK?: boolean;
     /** Filter – Reactions */
     bREAC?: boolean;
-    /** Reactions Option (All/Group) */
-    bRGP?: boolean;
-    /** Reactions Group Name */
-    RGP: string;
+    /** Reactions Option (All: false / Structure Group: true) */
+    bRG?: boolean;
+    /** Reactions Group Name (when bRG true) Required when bRG = true. */
+    RGN?: string;
     /** Filter – Displacements */
     bDISP?: boolean;
-    /** Displacements Option (All/Group) */
-    bDGP?: boolean;
-    /** Displacements Group Name */
-    DGP: string;
+    /** Displacements Option (All: false / Structure Group: true) */
+    bDG?: boolean;
+    /** Displacements Group Name (when bDG true) Required when bDG = true. */
+    DGN?: string;
     /** Filter – Forces/Moments */
     bFM?: boolean;
-    /** Forces/Moments Option (All/Group) */
-    bFGP?: boolean;
-    /** Forces/Moments Group Name */
-    FGP: string;
-    /** Filter – Elastic/General Links */
+    /** Forces/Moments Option (All: false / Structure Group: true) */
+    bFG?: boolean;
+    /** Forces/Moments Group Name (when bFG true) Required when bFG = true. */
+    FGN?: string;
+    /** Filter – Elastic/General Link */
     bL?: boolean;
-    /** Links Option (All/Group) */
+    /** Link Option (All: false / Boundary Group: true) */
     bLG?: boolean;
-    /** Links Group Name */
-    LGP: string;
-    /** N for HA Lane Factor (BD/37/01) or ALL Model 2 (CS 454) — N < 6: 0 / N ≥ 6: 1 */
-    NUMLANE?: number;
+    /** Link Group Name (when bLG true) Required when bLG = true. */
+    LGN?: string;
+    /** Mat Type */
+    MATTYPE?: number;
+    /** Bridge Type */
+    BRIDGETYPE?: number;
+    /** Mat Type AK */
+    AKMATTYPE?: number;
+    /** Bridge Type AK */
+    AKBRIDGETYPE?: number;
+    /** Minimum Factor (최소계수) */
+    MINFACTS2?: number;
+    /** Max Successive Vehicle (최대 연속 차량) */
+    MAXV?: number;
+    /** Increment Vehicle (차량 증분) */
+    INCV?: number;
+    /** Max Spacing Train (열차 최대 간격) */
+    MAXSPACE?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface MovingLoadAnalysisControlTransversePayload {
@@ -916,36 +1351,36 @@ export namespace DbAnalysisControlTypes {
     OPT_FORCE?: boolean;
   }
   /** Generated from contracts/endpoints/. */
-  export interface SettlementAnalysisControlDataPayload {
-    /** Plate Concurrent Force (Active: true / Inactive: false) */
-    CONCURRENT_CALC?: boolean;
-    /** Elastic / General Links Concurrent Force (Active: true / Inactive: false) */
-    CONCURRENT_LINK?: boolean;
-  }
-  export interface NonlinearNewtonItem {
-    ITERATION_METHOD?: string;
-    LCNAME?: string;
-    NUMBER_STEPS?: number;
-    MAX_ITERATIONS?: number;
-    LOAD_FACTORS?: Array<number>;
-  }
-  export interface NonlinearArcLengthItem {
-    ITERATION_METHOD?: string;
-    LCNAME?: string;
-    INITIAL_FORCE_RATIO_ARC_LEN?: number;
-    NUMBER_STEPS?: number;
-    MAX_ITERATIONS?: number;
-    MAXIMUM_DISPLACEMENT?: number;
-  }
-  export interface NonlinearDisplacementControlItem {
-    ITERATION_METHOD?: string;
-    LCNAME?: string;
-    NUMBER_STEPS?: number;
-    MAX_ITERATIONS?: number;
-    MASTER_NODE?: number;
-    DIRECTION?: number;
-    MAXIMUM_DISPLACEMENT?: number;
-    LOAD_FACTORS?: Array<number>;
+  export interface NonlinearAdvancedHyperSStct {
+    /** 기본 설정 사용 */
+    USE_DEF_SETTINGS: boolean;
+    /** 강성 업데이트 방식 (0=Custom, 1=Full Newton-Raphson, 2=Initial Stiffness) */
+    STIFF_UPD_SCHEME?: number;
+    /** 강성 업데이트 전 반복 횟수 */
+    ITER_BEF_UPDATE?: number;
+    /** 수렴 실패 시 종료 */
+    TERMINATE_ON_FAIL_CONV?: boolean;
+    /** 증분당 최대 반복 횟수 */
+    MAX_ITER_INCREMENT?: number;
+    /** 최대 이분법 수준 */
+    MAX_BISECT_LEVEL?: number;
+    /** 스마트 이분법 */
+    SMART_BISECT?: boolean;
+    /** 발산 임계값 */
+    DIVERG_THRESH?: number;
+    /** 선형 탐색 사용 */
+    ENABLE_LINE_SEARCH?: boolean;
+    /** 선형 탐색 설정 */
+    LINE_SEARCH?: {
+      /** 사용 여부 */
+      OPT_USE: boolean;
+      /** 선형 탐색 방식 */
+      LINE_SEARCH_TYPE?: "AUTO" | "USER";
+      /** 최대 선형 탐색 반복 횟수 */
+      MAX_LN_SRCH_ITER?: number;
+      /** 선형 탐색 허용오차 */
+      LN_SEARCH_TOL?: number;
+    };
   }
   /** Generated from contracts/endpoints/. */
   export type NonlinearAnalysisControlDataPayload = {
@@ -1057,60 +1492,6 @@ export namespace DbAnalysisControlTypes {
     }
   );
   /** Generated from contracts/endpoints/. */
-  export interface NonlinearLoadStepsHyperS {
-    /** 스텝 모드 (Required). ITER_METHOD="ARC"일 때는 UI상 "AUTO"로 고정 */
-    STEP_MODE: "AUTO" | "MANUAL";
-    /** 스텝 수 (STEP_MODE="AUTO"일 때 필수) Applies when LOAD_STEPS.STEP_MODE = "AUTO". */
-    NUMBER_STEPS?: number;
-    /** 중간 출력 (STEP_MODE="AUTO"일 때 필수) Applies when LOAD_STEPS.STEP_MODE = "AUTO". */
-    OUTPUT?: "EVERY" | "LAST";
-    /** 사용자 정의 스텝 목록 (STEP_MODE="MANUAL"일 때) Applies when LOAD_STEPS.STEP_MODE = "MANUAL". */
-    MANUAL_STEPS?: Array<number>;
-    /** (ITER_METHOD="ARC") 최소 호장 조정 비율 Applies when ITER_METHOD = "ARC". */
-    MIN_ARC_RATIO?: number;
-    /** (ITER_METHOD="ARC") 최대 호장 조정 비율 Applies when ITER_METHOD = "ARC". */
-    MAX_ARC_RATIO?: number;
-    /** (ITER_METHOD="ARC") 최대 호장 증분 수 Applies when ITER_METHOD = "ARC". */
-    MAX_ARC_INCREMENTS?: number;
-    /** (ITER_METHOD="DISP") 주 절점 ID Applies when ITER_METHOD = "DISP". */
-    MASTER_NODE?: number;
-    /** (ITER_METHOD="DISP") 최대 변위 — 서버가 0을 채우면 검증 실패하므로 명시적 값 필수 Applies when ITER_METHOD = "DISP". */
-    MAX_DISP?: number;
-    /** (ITER_METHOD="DISP") 방향 Applies when ITER_METHOD = "DISP". */
-    DIRECTION?: "DX" | "DY" | "DZ";
-    /** (ITER_METHOD="DISP") 기준(상대) 절점 — 하위 OPT_USE(Boolean, Required)/NODE(Integer, OPT_USE=false시 기본 0) Applies when ITER_METHOD = "DISP". */
-    REF_NODE?: {
-      /** 기준(상대) 절점 사용 여부 */
-      OPT_USE: boolean;
-      /** 기준(상대) 절점 ID */
-      NODE?: number;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface NonlinearConvergenceCriteriaHyperS {
-    /** 변위 수렴 기준 */
-    DISP?: {
-      /** 해당 기준 사용 여부 */
-      OPT_USE: boolean;
-      /** 허용오차 (0 초과 1 이하) Applies when CONV_CRITERIA.DISP.OPT_USE = true. */
-      VALUE?: number;
-    };
-    /** 하중 수렴 기준 */
-    LOAD?: {
-      /** 해당 기준 사용 여부 */
-      OPT_USE: boolean;
-      /** 허용오차 (0 초과 1 이하) Applies when CONV_CRITERIA.LOAD.OPT_USE = true. */
-      VALUE?: number;
-    };
-    /** 일 수렴 기준 */
-    WORK?: {
-      /** 해당 기준 사용 여부 */
-      OPT_USE: boolean;
-      /** 허용오차 (0 초과 1 이하) Applies when CONV_CRITERIA.WORK.OPT_USE = true. */
-      VALUE?: number;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
   export interface NonlinearAnalysisControlHyperSPayload {
     /** Load Case Scope (전체: "ALL" / 선택: "SELECT", 기본 "ALL") */
     LC_SCOPE?: "ALL" | "SELECT";
@@ -1202,312 +1583,13 @@ export namespace DbAnalysisControlTypes {
       LINE_SEARCH_TOL?: number;
     };
   }
-  export interface ConstructionStageAnalysisControlDataPayload {
-    bLAST_FINAL?: boolean;
-    FINAL_STAGE?: string;
-    iINC_NLA?: number;
-    iNLA_TYPE?: number;
-    vEREC?: Array<ErectionLoadItem>;
-    bSDLE?: boolean;
-    vSDLE?: Array<string>;
-    CPFC?: string;
-    bEXT_REPL?: boolean;
-    bCONV?: boolean;
-    bTRUSS?: boolean;
-    bBEAM?: boolean;
-    bCHANGE_CABLE?: boolean;
-    bAPPLY_IMF?: boolean;
-    bITD?: boolean;
-    ITD?: string;
-    GROUP?: string;
-    bLFFC?: boolean;
-    LFFGR?: string;
-    bCAMBER?: boolean;
-    bCALC_CFF?: boolean;
-    bCALC_CSP?: boolean;
-    bSELFCONS?: boolean;
-    bSAVE_OCS?: boolean;
-    bSD?: boolean;
-    iSDOPT?: number;
-    SDCONST?: number;
-    iBSC?: number;
-    bINC_PDL?: boolean;
-    iITER?: number;
-    TOL?: number;
-    iLSTEP?: number;
-    iMAXITER?: number;
-    CF?: boolean;
-    BSSTEP?: number;
-    ADSTEP?: number;
-    bENEG?: boolean;
-    EV?: number;
-    bDISP?: boolean;
-    DV?: number;
-    bFORC?: boolean;
-    FV?: number;
-    bIEMF?: boolean;
-    bINC_TDE?: boolean;
-    bCNS?: boolean;
-    TYPE?: string;
-    iITER_CR?: number;
-    TOL_CR?: number;
-    bOUCC?: boolean;
-    bITS?: boolean;
-    iITS?: number;
-    bATS?: boolean;
-    iT10?: number;
-    iT100?: number;
-    iT1K?: number;
-    iT5K?: number;
-    iT10K?: number;
-    bTTLE_CS?: boolean;
-    bRCE?: boolean;
-    bVAR?: boolean;
-    bTTLE_ES?: boolean;
-    iTTLE_ES?: number;
-    bAPPLY_ELA?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ConstructionStageAnalysisTypeHyperS {
-    /** 해석 타입 (Linear: 0 / Geometric Nonlinear: 1 / Material Nonlinear: 2 / Geometric+Material Nonlinear: 3) */
-    iINC_NLA?: number;
-    /** 단계 옵션 (Independent: 0 / Accumulative: 1) — `iINC_NLA`=2 또는 3이면 `iNLA_TYPE`=1만 허용 */
-    iNLA_TYPE?: number;
-    /** Include Equilibrium Element Nodal Forces (`iINC_NLA`=1 & `iNLA_TYPE`=0일 때만) */
-    bIEMF?: boolean;
-    /** Include P-Delta Effect (`iINC_NLA`=0일 때만) */
-    bINC_PDL?: boolean;
-    /** Include Time Dependent Effect (`iNLA_TYPE`=1 & `iINC_NLA`∈{0,1}일 때만) */
-    bINC_TDE?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ConstructionStageRestartHyperS {
-    /** Restart 해석 사용 여부 */
-    OPT_USE?: boolean;
-    /** Restart 대상 시공단계 목록 */
-    RESTART_STAGE?: Array<string>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface InternalTimeStepHyperS {
-    /** 사용 여부 */
-    OPT_USE?: boolean;
-    /** 내부 스텝 수 */
-    iITS?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface AutoTimeStepHyperS {
-    /** 사용 여부 */
-    OPT_USE?: boolean;
-    /** 10일까지의 분할 수 */
-    iT10?: number;
-    /** 100일까지의 분할 수 */
-    iT100?: number;
-    /** 1,000일까지의 분할 수 */
-    iT1K?: number;
-    /** 5,000일까지의 분할 수 */
-    iT5K?: number;
-    /** 10,000일까지의 분할 수 */
-    iT10K?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface CreepShrinkageControlHyperS {
-    /** 사용 여부 */
-    OPT_USE?: boolean;
-    /** (`"CREEP"`/`"SHRINKAGE"`/`"BOTH"`) */
-    TYPE?: string;
-    /** Only User's Creep Coefficient */
-    bOUCC?: boolean;
-    /** 내부 스텝 설정 */
-    INTERNAL_STEP?: {
-      /** 사용 여부 */
-      OPT_USE?: boolean;
-      /** 내부 스텝 수 */
-      iITS?: number;
-    };
-    /** 자동 시간 스텝 설정 */
-    AUTO_TIME_STEP?: {
-      /** 사용 여부 */
-      OPT_USE?: boolean;
-      /** 10일까지의 분할 수 */
-      iT10?: number;
-      /** 100일까지의 분할 수 */
-      iT100?: number;
-      /** 1,000일까지의 분할 수 */
-      iT1K?: number;
-      /** 5,000일까지의 분할 수 */
-      iT5K?: number;
-      /** 10,000일까지의 분할 수 */
-      iT10K?: number;
-    };
-    /** Tendon Tension Loss Effect */
-    bTTLE_CS?: boolean;
-    /** Re-bar Confinement Effect */
-    bRCE?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface TimeDependentControlHyperS {
-    /** 크리프·건조수축 설정 */
-    CREEP_SHRINKAGE?: {
-      /** 사용 여부 */
-      OPT_USE?: boolean;
-      /** (`"CREEP"`/`"SHRINKAGE"`/`"BOTH"`) */
-      TYPE?: string;
-      /** Only User's Creep Coefficient */
-      bOUCC?: boolean;
-      /** 내부 스텝 설정 */
-      INTERNAL_STEP?: {
-        /** 사용 여부 */
-        OPT_USE?: boolean;
-        /** 내부 스텝 수 */
-        iITS?: number;
-      };
-      /** 자동 시간 스텝 설정 */
-      AUTO_TIME_STEP?: {
-        /** 사용 여부 */
-        OPT_USE?: boolean;
-        /** 10일까지의 분할 수 */
-        iT10?: number;
-        /** 100일까지의 분할 수 */
-        iT100?: number;
-        /** 1,000일까지의 분할 수 */
-        iT1K?: number;
-        /** 5,000일까지의 분할 수 */
-        iT5K?: number;
-        /** 10,000일까지의 분할 수 */
-        iT10K?: number;
-      };
-      /** Tendon Tension Loss Effect */
-      bTTLE_CS?: boolean;
-      /** Re-bar Confinement Effect */
-      bRCE?: boolean;
-    };
-    /** Variation of Comp. Strength */
-    bVAR?: boolean;
-    /** Apply Time Dep. Elastic Modulus to Post C.S */
-    bAPPLY_ELA?: boolean;
-    /** Tendon Tension Loss (Elastic Shortening) */
-    bTTLE_ES?: boolean;
-    /** Tendon Tension Loss (Elastic Shortening) Type */
-    iTTLE_ES?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface CableControlHyperS {
-    /** Cable-Pretension Force Type (`"INTERNAL"`/`"EXTERNAL"`) */
-    CPFC?: string;
-    /** External Force Replace */
-    bEXT_REPL?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface InitialForceControlHyperS {
-    /** Convert Final Stage Forces to Initial Forces */
-    bCONV?: boolean;
-    /** Truss */
-    bTRUSS?: boolean;
-    /** Beam */
-    bBEAM?: boolean;
-    /** Change Cable to Equivalent Truss */
-    bCHANGE_CABLE?: boolean;
-    /** Apply Initial Member Force to C.S */
-    bAPPLY_IMF?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface InitialTangentDisplacementControlHyperS {
-    /** 사용 여부 */
-    OPT_USE?: boolean;
-    /** 적용 대상 구분 */
-    ITD?: string;
-    /** 대상 그룹명 */
-    GROUP?: string;
-    /** Lack of Fit Force 사용 여부 */
-    LFFC_OPT_USE?: boolean;
-    /** Lack of Fit 그룹명 */
-    LFFGR?: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface InitialDisplacementHyperS {
-    /** Initial Tangent Displacement Control */
-    ITD_CONTROL?: {
-      /** 사용 여부 */
-      OPT_USE?: boolean;
-      /** 적용 대상 구분 */
-      ITD?: string;
-      /** 대상 그룹명 */
-      GROUP?: string;
-      /** Lack of Fit Force 사용 여부 */
-      LFFC_OPT_USE?: boolean;
-      /** Lack of Fit 그룹명 */
-      LFFGR?: string;
-    };
-    /** Apply Camber Displacement */
-    bCAMBER?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface StressDecreaseHyperS {
-    /** Stress Decrease 사용 */
-    OPT_USE?: boolean;
-    /** Stress Decrease 옵션 */
-    iSDOPT?: number;
-    /** Stress Decrease 상수 */
-    SDCONST?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface FrameOutputHyperS {
-    /** Request Example only - no Parameters row describes this key */
-    bCALC_CFF?: boolean;
-    /** Request Example only - no Parameters row describes this key */
-    bCALC_CSP?: boolean;
-    /** Request Example only - no Parameters row describes this key */
-    bSELFCONS?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface LineSearchHyperSStct {
-    /** 사용 여부 */
-    OPT_USE: boolean;
-    /** 선형 탐색 방식 */
-    LINE_SEARCH_TYPE?: "AUTO" | "USER";
-    /** 최대 선형 탐색 반복 횟수 */
-    MAX_LN_SRCH_ITER?: number;
-    /** 선형 탐색 허용오차 */
-    LN_SEARCH_TOL?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface NonlinearAdvancedHyperSStct {
-    /** 기본 설정 사용 */
-    USE_DEF_SETTINGS: boolean;
-    /** 강성 업데이트 방식 (0=Custom, 1=Full Newton-Raphson, 2=Initial Stiffness) */
-    STIFF_UPD_SCHEME?: number;
-    /** 강성 업데이트 전 반복 횟수 */
-    ITER_BEF_UPDATE?: number;
-    /** 수렴 실패 시 종료 */
-    TERMINATE_ON_FAIL_CONV?: boolean;
-    /** 증분당 최대 반복 횟수 */
-    MAX_ITER_INCREMENT?: number;
-    /** 최대 이분법 수준 */
-    MAX_BISECT_LEVEL?: number;
-    /** 스마트 이분법 */
-    SMART_BISECT?: boolean;
-    /** 발산 임계값 */
-    DIVERG_THRESH?: number;
-    /** 선형 탐색 사용 */
-    ENABLE_LINE_SEARCH?: boolean;
-    /** 선형 탐색 설정 */
-    LINE_SEARCH?: {
-      /** 사용 여부 */
-      OPT_USE: boolean;
-      /** 선형 탐색 방식 */
-      LINE_SEARCH_TYPE?: "AUTO" | "USER";
-      /** 최대 선형 탐색 반복 횟수 */
-      MAX_LN_SRCH_ITER?: number;
-      /** 선형 탐색 허용오차 */
-      LN_SEARCH_TOL?: number;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ConvergenceCriterionHyperSStct {
-    /** 사용 여부 */
-    OPT_USE: boolean;
-    /** 수렴 허용값 */
-    VALUE?: number;
+  export interface NonlinearArcLengthItem {
+    ITERATION_METHOD?: string;
+    LCNAME?: string;
+    INITIAL_FORCE_RATIO_ARC_LEN?: number;
+    NUMBER_STEPS?: number;
+    MAX_ITERATIONS?: number;
+    MAXIMUM_DISPLACEMENT?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface NonlinearControlHyperSStct {
@@ -1570,302 +1652,229 @@ export namespace DbAnalysisControlTypes {
     };
   }
   /** Generated from contracts/endpoints/. */
-  export interface ConstructionStageAnalysisControlDataHyperSPayload {
-    /** Final Stage Option (Last: true / Other: false) */
-    bLAST_FINAL?: boolean;
-    /** Final Stage Name */
-    FINAL_STAGE?: string;
-    /** Analysis Type 설정 */
-    ANAL_TYPE: {
-      /** 해석 타입 (Linear: 0 / Geometric Nonlinear: 1 / Material Nonlinear: 2 / Geometric+Material Nonlinear: 3) */
-      iINC_NLA?: number;
-      /** 단계 옵션 (Independent: 0 / Accumulative: 1) — `iINC_NLA`=2 또는 3이면 `iNLA_TYPE`=1만 허용 */
-      iNLA_TYPE?: number;
-      /** Include Equilibrium Element Nodal Forces (`iINC_NLA`=1 & `iNLA_TYPE`=0일 때만) */
-      bIEMF?: boolean;
-      /** Include P-Delta Effect (`iINC_NLA`=0일 때만) */
-      bINC_PDL?: boolean;
-      /** Include Time Dependent Effect (`iNLA_TYPE`=1 & `iINC_NLA`∈{0,1}일 때만) */
-      bINC_TDE?: boolean;
+  export interface NonlinearConvergenceCriteriaHyperS {
+    /** 변위 수렴 기준 */
+    DISP?: {
+      /** 해당 기준 사용 여부 */
+      OPT_USE: boolean;
+      /** 허용오차 (0 초과 1 이하) Applies when CONV_CRITERIA.DISP.OPT_USE = true. */
+      VALUE?: number;
     };
-    /** Restart C.S. Analysis 설정 */
-    RESTART_CS_ANAL?: {
-      /** Restart 해석 사용 여부 */
-      OPT_USE?: boolean;
-      /** Restart 대상 시공단계 목록 */
-      RESTART_STAGE?: Array<string>;
+    /** 하중 수렴 기준 */
+    LOAD?: {
+      /** 해당 기준 사용 여부 */
+      OPT_USE: boolean;
+      /** 허용오차 (0 초과 1 이하) Applies when CONV_CRITERIA.LOAD.OPT_USE = true. */
+      VALUE?: number;
     };
-    /** Erection Load 목록 */
-    ERECTION_LOAD?: Array<{
-      /** Erection Load Case Name */
-      LTYPECC?: string;
-      /** Load Type for C.S (`"D"`, `"W"`, …) */
-      EREC?: string;
-      /** Load Case Name List */
-      vLCNAME?: Array<string>;
-    }>;
-    /** Self-weight Dead Load for Erection 사용 */
-    bSDLE?: boolean;
-    /** Self-weight Dead Load for Erection 목록 */
-    vSDLE?: Array<string>;
-    /** Time Dependent Control */
-    TIME_DEP_CONTROL?: {
-      /** 크리프·건조수축 설정 */
-      CREEP_SHRINKAGE?: {
-        /** 사용 여부 */
-        OPT_USE?: boolean;
-        /** (`"CREEP"`/`"SHRINKAGE"`/`"BOTH"`) */
-        TYPE?: string;
-        /** Only User's Creep Coefficient */
-        bOUCC?: boolean;
-        /** 내부 스텝 설정 */
-        INTERNAL_STEP?: {
-          /** 사용 여부 */
-          OPT_USE?: boolean;
-          /** 내부 스텝 수 */
-          iITS?: number;
-        };
-        /** 자동 시간 스텝 설정 */
-        AUTO_TIME_STEP?: {
-          /** 사용 여부 */
-          OPT_USE?: boolean;
-          /** 10일까지의 분할 수 */
-          iT10?: number;
-          /** 100일까지의 분할 수 */
-          iT100?: number;
-          /** 1,000일까지의 분할 수 */
-          iT1K?: number;
-          /** 5,000일까지의 분할 수 */
-          iT5K?: number;
-          /** 10,000일까지의 분할 수 */
-          iT10K?: number;
-        };
-        /** Tendon Tension Loss Effect */
-        bTTLE_CS?: boolean;
-        /** Re-bar Confinement Effect */
-        bRCE?: boolean;
-      };
-      /** Variation of Comp. Strength */
-      bVAR?: boolean;
-      /** Apply Time Dep. Elastic Modulus to Post C.S */
-      bAPPLY_ELA?: boolean;
-      /** Tendon Tension Loss (Elastic Shortening) */
-      bTTLE_ES?: boolean;
-      /** Tendon Tension Loss (Elastic Shortening) Type */
-      iTTLE_ES?: number;
-    };
-    /** Cable Control */
-    CABLE_CONTROL?: {
-      /** Cable-Pretension Force Type (`"INTERNAL"`/`"EXTERNAL"`) */
-      CPFC?: string;
-      /** External Force Replace */
-      bEXT_REPL?: boolean;
-    };
-    /** Initial Force Control */
-    INITIAL_CONTROL?: {
-      /** Convert Final Stage Forces to Initial Forces */
-      bCONV?: boolean;
-      /** Truss */
-      bTRUSS?: boolean;
-      /** Beam */
-      bBEAM?: boolean;
-      /** Change Cable to Equivalent Truss */
-      bCHANGE_CABLE?: boolean;
-      /** Apply Initial Member Force to C.S */
-      bAPPLY_IMF?: boolean;
-    };
-    /** Initial Displacement Control */
-    INITIAL_DISP?: {
-      /** Initial Tangent Displacement Control */
-      ITD_CONTROL?: {
-        /** 사용 여부 */
-        OPT_USE?: boolean;
-        /** 적용 대상 구분 */
-        ITD?: string;
-        /** 대상 그룹명 */
-        GROUP?: string;
-        /** Lack of Fit Force 사용 여부 */
-        LFFC_OPT_USE?: boolean;
-        /** Lack of Fit 그룹명 */
-        LFFGR?: string;
-      };
-      /** Apply Camber Displacement */
-      bCAMBER?: boolean;
-    };
-    /** Stress Decrease Control */
-    STRESS_DECREASE?: {
-      /** Stress Decrease 사용 */
-      OPT_USE?: boolean;
-      /** Stress Decrease 옵션 */
-      iSDOPT?: number;
-      /** Stress Decrease 상수 */
-      SDCONST?: number;
-    };
-    /** Beam Section Property Option (Constant: 0 / Change with Tendon: 1) */
-    iBSC?: number;
-    /** Frame Output 설정 */
-    FRAME_OUTPUT?: {
-      /** Request Example only - no Parameters row describes this key */
-      bCALC_CFF?: boolean;
-      /** Request Example only - no Parameters row describes this key */
-      bCALC_CSP?: boolean;
-      /** Request Example only - no Parameters row describes this key */
-      bSELFCONS?: boolean;
-    };
-    /** Save Output of Current Stage (Beam/Truss) */
-    bSAVE_OCS?: boolean;
-    /** Nonlinear Analysis Control (`iINC_NLA` ≠ 0일 때) */
-    NONL_CONTROL?: {
-      /** 증분 스텝 수 */
-      iLSTEP?: number;
-      /** 중간 출력 요청 */
-      INTOUT?: "EVERY" | "LAST";
-      /** 고급 설정 */
-      ADVANCED?: {
-        /** 기본 설정 사용 */
-        USE_DEF_SETTINGS: boolean;
-        /** 강성 업데이트 방식 (0=Custom, 1=Full Newton-Raphson, 2=Initial Stiffness) */
-        STIFF_UPD_SCHEME?: number;
-        /** 강성 업데이트 전 반복 횟수 */
-        ITER_BEF_UPDATE?: number;
-        /** 수렴 실패 시 종료 */
-        TERMINATE_ON_FAIL_CONV?: boolean;
-        /** 증분당 최대 반복 횟수 */
-        MAX_ITER_INCREMENT?: number;
-        /** 최대 이분법 수준 */
-        MAX_BISECT_LEVEL?: number;
-        /** 스마트 이분법 */
-        SMART_BISECT?: boolean;
-        /** 발산 임계값 */
-        DIVERG_THRESH?: number;
-        /** 선형 탐색 사용 */
-        ENABLE_LINE_SEARCH?: boolean;
-        /** 선형 탐색 설정 */
-        LINE_SEARCH?: {
-          /** 사용 여부 */
-          OPT_USE: boolean;
-          /** 선형 탐색 방식 */
-          LINE_SEARCH_TYPE?: "AUTO" | "USER";
-          /** 최대 선형 탐색 반복 횟수 */
-          MAX_LN_SRCH_ITER?: number;
-          /** 선형 탐색 허용오차 */
-          LN_SEARCH_TOL?: number;
-        };
-      };
-      /** 변위 수렴기준 */
-      DISP?: {
-        /** 사용 여부 */
-        OPT_USE: boolean;
-        /** 수렴 허용값 */
-        VALUE?: number;
-      };
-      /** 하중 수렴기준 */
-      LOAD?: {
-        /** 사용 여부 */
-        OPT_USE: boolean;
-        /** 수렴 허용값 */
-        VALUE?: number;
-      };
-      /** 일 수렴기준 */
-      WORK?: {
-        /** 사용 여부 */
-        OPT_USE: boolean;
-        /** 수렴 허용값 */
-        VALUE?: number;
-      };
+    /** 일 수렴 기준 */
+    WORK?: {
+      /** 해당 기준 사용 여부 */
+      OPT_USE: boolean;
+      /** 허용오차 (0 초과 1 이하) Applies when CONV_CRITERIA.WORK.OPT_USE = true. */
+      VALUE?: number;
     };
   }
-  /** Generated from contracts/endpoints/. */
-  export interface BoundaryGroupCombinationItem {
-    /** Boundary Group Combination Name */
-    BGCNAME: string;
-    /** Boundary Group List */
-    vBG: Array<string>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface LoadCaseAnalysisAssignmentItem {
-    /** Load Cases & Analysis Type */
-    TYPE: string;
-    /** Boundary Group Combination Name */
-    BGCNAME: string;
-    /** Static Load Case */
-    LCNAME: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface BoundaryChangeAssignmentPayload {
-    /** Support */
-    bSPT?: boolean;
-    /** Point Spring Support */
-    bSPR?: boolean;
-    /** General Spring Support */
-    bGSPR?: boolean;
-    /** Change General Link Property */
-    bCGLINK?: boolean;
-    /** Section Stiffness Scale Factor */
-    bSSSF?: boolean;
-    /** Plate Stiffness Scale Factor */
-    bPSSF?: boolean;
-    /** Beam End Release */
-    bRLS?: boolean;
-    /** Wall Stiffness Scale Factor Gen NX only. */
-    bWSSF?: boolean;
-    /** Element Stiffness Scale Factor Gen NX only. */
-    bESSF?: boolean;
-    /** Constrain DOF associated with specified displacements / settlements by boundary group combinations */
-    bCDOF?: boolean;
-    /** Boundary List */
-    vBOUNDARY: Array<{
-      /** Boundary Group Combination Name */
-      BGCNAME: string;
-      /** Boundary Group List */
-      vBG: Array<string>;
-    }>;
-    /** Load Cases & Analysis List */
-    vLOADANAL?: Array<{
-      /** Load Cases & Analysis Type */
-      TYPE: string;
-      /** Boundary Group Combination Name */
-      BGCNAME: string;
-      /** Static Load Case */
-      LCNAME: string;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface DefineBoundaryCombinationHyperSPayload {
-    /** Boundary Combination Name (1~20자, 모델 내 유일) */
-    BCG_NAME: string;
-    /** Boundary Group List (선택한 경계 그룹 이름 배열, 중복 자동 제거) */
-    GROUP_LIST: Array<string>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface BoundaryCombinationAssignItem {
-    /** Analysis Type */
-    ANAL_TYPE: "ST" | "MV" | "SM" | "EIGV" | "RS" | "LTH" | "NLTH" | "PO";
-    /** Load Case Name (ANAL_TYPE ∈ {ST, NLTH, PO}일 때 필수) */
+  export interface NonlinearDisplacementControlItem {
+    ITERATION_METHOD?: string;
     LCNAME?: string;
-    /** Boundary Group Combination Name (빈 문자열 = 변경 없음) */
-    BGCNAME?: string;
+    NUMBER_STEPS?: number;
+    MAX_ITERATIONS?: number;
+    MASTER_NODE?: number;
+    DIRECTION?: number;
+    MAXIMUM_DISPLACEMENT?: number;
+    LOAD_FACTORS?: Array<number>;
   }
   /** Generated from contracts/endpoints/. */
-  export interface AssignBoundaryCombinationHyperSPayload {
-    /** Assign Boundary Combination to Analyses & Load Cases */
-    BC_ASSIGN: Array<{
-      /** Analysis Type */
-      ANAL_TYPE: "ST" | "MV" | "SM" | "EIGV" | "RS" | "LTH" | "NLTH" | "PO";
-      /** Load Case Name (ANAL_TYPE ∈ {ST, NLTH, PO}일 때 필수) */
-      LCNAME?: string;
-      /** Boundary Group Combination Name (빈 문자열 = 변경 없음) */
-      BGCNAME?: string;
+  export interface NonlinearLoadStepsHyperS {
+    /** 스텝 모드 (Required). ITER_METHOD="ARC"일 때는 UI상 "AUTO"로 고정 */
+    STEP_MODE: "AUTO" | "MANUAL";
+    /** 스텝 수 (STEP_MODE="AUTO"일 때 필수) Applies when LOAD_STEPS.STEP_MODE = "AUTO". */
+    NUMBER_STEPS?: number;
+    /** 중간 출력 (STEP_MODE="AUTO"일 때 필수) Applies when LOAD_STEPS.STEP_MODE = "AUTO". */
+    OUTPUT?: "EVERY" | "LAST";
+    /** 사용자 정의 스텝 목록 (STEP_MODE="MANUAL"일 때) Applies when LOAD_STEPS.STEP_MODE = "MANUAL". */
+    MANUAL_STEPS?: Array<number>;
+    /** (ITER_METHOD="ARC") 최소 호장 조정 비율 Applies when ITER_METHOD = "ARC". */
+    MIN_ARC_RATIO?: number;
+    /** (ITER_METHOD="ARC") 최대 호장 조정 비율 Applies when ITER_METHOD = "ARC". */
+    MAX_ARC_RATIO?: number;
+    /** (ITER_METHOD="ARC") 최대 호장 증분 수 Applies when ITER_METHOD = "ARC". */
+    MAX_ARC_INCREMENTS?: number;
+    /** (ITER_METHOD="DISP") 주 절점 ID Applies when ITER_METHOD = "DISP". */
+    MASTER_NODE?: number;
+    /** (ITER_METHOD="DISP") 최대 변위 — 서버가 0을 채우면 검증 실패하므로 명시적 값 필수 Applies when ITER_METHOD = "DISP". */
+    MAX_DISP?: number;
+    /** (ITER_METHOD="DISP") 방향 Applies when ITER_METHOD = "DISP". */
+    DIRECTION?: "DX" | "DY" | "DZ";
+    /** (ITER_METHOD="DISP") 기준(상대) 절점 — 하위 OPT_USE(Boolean, Required)/NODE(Integer, OPT_USE=false시 기본 0) Applies when ITER_METHOD = "DISP". */
+    REF_NODE?: {
+      /** 기준(상대) 절점 사용 여부 */
+      OPT_USE: boolean;
+      /** 기준(상대) 절점 ID */
+      NODE?: number;
+    };
+  }
+  export interface NonlinearNewtonItem {
+    ITERATION_METHOD?: string;
+    LCNAME?: string;
+    NUMBER_STEPS?: number;
+    MAX_ITERATIONS?: number;
+    LOAD_FACTORS?: Array<number>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PDeltaAnalysisControlPayload {
+    /** Number of Iterations */
+    ITER: number;
+    /** Convergence Tolerance */
+    TOL?: number;
+    /** Load Cases */
+    PDEL_CASES: Array<{
+      /** Load Case Name */
+      LCNAME: string;
+      /** Scale Factor */
+      FACTOR: number;
     }>;
-    /** Apply to Boundary Change */
-    BC_SELECT: Array<string>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PDeltaLoadCaseItem {
+    /** Load Case Name */
+    LCNAME: string;
+    /** Scale Factor */
+    FACTOR: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SettlementAnalysisControlDataPayload {
+    /** Plate Concurrent Force (Active: true / Inactive: false) */
+    CONCURRENT_CALC?: boolean;
+    /** Elastic / General Links Concurrent Force (Active: true / Inactive: false) */
+    CONCURRENT_LINK?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface StressDecreaseHyperS {
+    /** Stress Decrease 사용 */
+    OPT_USE?: boolean;
+    /** Stress Decrease 옵션 */
+    iSDOPT?: number;
+    /** Stress Decrease 상수 */
+    SDCONST?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TensionCompressionTrussConvergence {
+    /** Displacement Convergence (변위 U) */
+    DISPL?: {
+      /** 해당 기준 사용 여부 */
+      OPT_USE?: boolean;
+      /** 허용오차 (OPT_USE = true일 때 필수) */
+      VALUE?: number;
+    };
+    /** Load Convergence (하중 P) */
+    LOAD?: {
+      /** 해당 기준 사용 여부 */
+      OPT_USE?: boolean;
+      /** 허용오차 (OPT_USE = true일 때 필수) */
+      VALUE?: number;
+    };
+    /** Work Convergence (일 W) */
+    WORK?: {
+      /** 해당 기준 사용 여부 */
+      OPT_USE?: boolean;
+      /** 허용오차 (OPT_USE = true일 때 필수) */
+      VALUE?: number;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TensionCompressionTrussElement {
+    /** Number of Increments */
+    NUMINC?: number;
+    /** Intermediate Output Request ("EVERY" / "LAST") */
+    INTOUT?: "EVERY" | "LAST";
+    /** Convergence Criteria */
+    CONVERGENCE?: {
+      /** Displacement Convergence (변위 U) */
+      DISPL?: {
+        /** 해당 기준 사용 여부 */
+        OPT_USE?: boolean;
+        /** 허용오차 (OPT_USE = true일 때 필수) */
+        VALUE?: number;
+      };
+      /** Load Convergence (하중 P) */
+      LOAD?: {
+        /** 해당 기준 사용 여부 */
+        OPT_USE?: boolean;
+        /** 허용오차 (OPT_USE = true일 때 필수) */
+        VALUE?: number;
+      };
+      /** Work Convergence (일 W) */
+      WORK?: {
+        /** 해당 기준 사용 여부 */
+        OPT_USE?: boolean;
+        /** 허용오차 (OPT_USE = true일 때 필수) */
+        VALUE?: number;
+      };
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TimeDependentControlHyperS {
+    /** 크리프·건조수축 설정 */
+    CREEP_SHRINKAGE?: {
+      /** 사용 여부 */
+      OPT_USE?: boolean;
+      /** (`"CREEP"`/`"SHRINKAGE"`/`"BOTH"`) */
+      TYPE?: string;
+      /** Only User's Creep Coefficient */
+      bOUCC?: boolean;
+      /** 내부 스텝 설정 */
+      INTERNAL_STEP?: {
+        /** 사용 여부 */
+        OPT_USE?: boolean;
+        /** 내부 스텝 수 */
+        iITS?: number;
+      };
+      /** 자동 시간 스텝 설정 */
+      AUTO_TIME_STEP?: {
+        /** 사용 여부 */
+        OPT_USE?: boolean;
+        /** 10일까지의 분할 수 */
+        iT10?: number;
+        /** 100일까지의 분할 수 */
+        iT100?: number;
+        /** 1,000일까지의 분할 수 */
+        iT1K?: number;
+        /** 5,000일까지의 분할 수 */
+        iT5K?: number;
+        /** 10,000일까지의 분할 수 */
+        iT10K?: number;
+      };
+      /** Tendon Tension Loss Effect */
+      bTTLE_CS?: boolean;
+      /** Re-bar Confinement Effect */
+      bRCE?: boolean;
+    };
+    /** Variation of Comp. Strength */
+    bVAR?: boolean;
+    /** Apply Time Dep. Elastic Modulus to Post C.S */
+    bAPPLY_ELA?: boolean;
+    /** Tendon Tension Loss (Elastic Shortening) */
+    bTTLE_ES?: boolean;
+    /** Tendon Tension Loss (Elastic Shortening) Type */
+    iTTLE_ES?: number;
   }
 }
 
 export namespace DbBaseTypes {
+  export interface InitialLoadCaseItem {
+    LC_NAME?: string;
+    LC_TYPE?: string;
+    SF?: number;
+  }
   export interface ItemGroupFields {
     ID?: number;
     GROUP_NAME?: string;
+  }
+  export interface OptUseToleranceValue {
+    OPT_USE?: boolean;
+    VALUE?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface TimeValuePoint {
@@ -1874,18 +1883,100 @@ export namespace DbBaseTypes {
     /** - 대류 계수 */
     VALUE: number;
   }
-  export interface OptUseToleranceValue {
-    OPT_USE?: boolean;
-    VALUE?: number;
-  }
-  export interface InitialLoadCaseItem {
-    LC_NAME?: string;
-    LC_TYPE?: string;
-    SF?: number;
-  }
 }
 
 export namespace DbBoundaryTypes {
+  /** Generated from contracts/endpoints/. */
+  export interface BeamEndOffsetItem {
+    /** Serial Number */
+    ID?: number;
+    /** Load Group Name */
+    GROUP_NAME?: string;
+    /** Reference CS · "GLOBAL" / "ELEMENT" */
+    TYPE: string;
+    /** i-단 X방향 오프셋 (GCS) */
+    RGDXi?: number;
+    /** i-단 Y방향 오프셋 (GCS) */
+    RGDYi?: number;
+    /** i-단 Z방향 오프셋 (GCS) */
+    RGDZi?: number;
+    /** j-단 X방향 오프셋 (GCS) */
+    RGDXj?: number;
+    /** j-단 Y방향 오프셋 (GCS) */
+    RGDYj?: number;
+    /** j-단 Z방향 오프셋 (GCS) */
+    RGDZj?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface BeamEndOffsetPayload {
+    /** Beam End Offsets (배열로 삽입) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Reference CS · "GLOBAL" / "ELEMENT" */
+      TYPE: string;
+      /** i-단 X방향 오프셋 (GCS) */
+      RGDXi?: number;
+      /** i-단 Y방향 오프셋 (GCS) */
+      RGDYi?: number;
+      /** i-단 Z방향 오프셋 (GCS) */
+      RGDZi?: number;
+      /** j-단 X방향 오프셋 (GCS) */
+      RGDXj?: number;
+      /** j-단 Y방향 오프셋 (GCS) */
+      RGDYj?: number;
+      /** j-단 Z방향 오프셋 (GCS) */
+      RGDZj?: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface BeamEndReleaseItem {
+    /** Serial Number */
+    ID?: number;
+    /** Load Group Name */
+    GROUP_NAME?: string;
+    /** Input Method · false=Relative, true=Value */
+    bVALUE?: boolean;
+    /** Release i-Node [Fx,Fy,Fz,Mx,My,Mz,Mb] */
+    FLAG_I: string;
+    /** Partial Fixity for i-Node [Fx,Fy,Fz,Mx,My,Mz,Mb] */
+    VALUE_I?: [number, number, number, number, number, number, number];
+    /** Release j-Node [Fx,Fy,Fz,Mx,My,Mz,Mb] */
+    FLAG_J: string;
+    /** Partial Fixity for j-Node [Fx,Fy,Fz,Mx,My,Mz,Mb] */
+    VALUE_J?: [number, number, number, number, number, number, number];
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface BeamEndReleasePayload {
+    /** Beam End Release (배열로 삽입) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Input Method · false=Relative, true=Value */
+      bVALUE?: boolean;
+      /** Release i-Node [Fx,Fy,Fz,Mx,My,Mz,Mb] */
+      FLAG_I: string;
+      /** Partial Fixity for i-Node [Fx,Fy,Fz,Mx,My,Mz,Mb] */
+      VALUE_I?: [number, number, number, number, number, number, number];
+      /** Release j-Node [Fx,Fy,Fz,Mx,My,Mz,Mb] */
+      FLAG_J: string;
+      /** Partial Fixity for j-Node [Fx,Fy,Fz,Mx,My,Mz,Mb] */
+      VALUE_J?: [number, number, number, number, number, number, number];
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ChangeGeneralLinkPropertyPayload {
+    /** General Link ID Number */
+    GLINK_KEY: number;
+    /** Change Property Name (NLLP에서 정의된 이름) */
+    CHANGE_PROPERTY_NAME: string;
+    /** Boundary Group Name */
+    GROUP_NAME?: string;
+  }
   /** Generated from contracts/endpoints/. */
   export interface ConstraintItem {
     /** Serial number. */
@@ -1894,6 +1985,11 @@ export namespace DbBoundaryTypes {
     GROUP_NAME?: string;
     /** Constraint state for DX, DY, DZ, RX, RY, RZ and RW. */
     CONSTRAINT: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ConstraintLabelDirectionPayload {
+    /** Constraint Label Direction */
+    DIR: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface ConstraintPayload {
@@ -1905,6 +2001,344 @@ export namespace DbBoundaryTypes {
       GROUP_NAME?: string;
       /** Constraint state for DX, DY, DZ, RX, RY, RZ and RW. */
       CONSTRAINT: string;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ElasticLinkPayload {
+    /** Node Numbers [i-node, j-node] */
+    NODE: [number, number];
+    /** Boundary Group Name */
+    BNGR_NAME?: string;
+    /** Beta Angle (°) */
+    ANGLE?: number;
+    /** Link Type */
+    LINK: string;
+    /** SDx SDy SDz SRx SRy SRz Applies when LINK is "GEN" or "TENS" or "COMP". */
+    SDR?: [number, number, number, number, number, number];
+    /** R_SDx R_SDy R_SDz R_SRx R_SRy R_SRz Applies when LINK = "GEN". */
+    R_S?: [boolean, boolean, boolean, boolean, boolean, boolean];
+    /** SHEAR Applies when LINK is "GEN" or "MULTILINEAR" or "RAILINTERACT". */
+    bSHEAR?: boolean;
+    /** DRy DRz Applies when LINK = "GEN". */
+    DR?: [number, number];
+    /** Direction Applies when LINK is "MULTILINEAR" or "RAILINTERACT". */
+    DIR?: number;
+    /** Function Applies when LINK = "MULTILINEAR". */
+    MLFC?: number;
+    /** Rail Track Interaction Function Applies when LINK = "RAILINTERACT". */
+    RLFC?: number;
+    /** DistRatioEndI Applies when LINK is "MULTILINEAR" or "RAILINTERACT". */
+    DRENDI?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ForceDeformationFunctionItem {
+    /** X-Axis (Displacement m / Radian) */
+    X: number;
+    /** Y-Axis (Force kN / Moment kN·m) */
+    Y: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ForceDeformationFunctionPayload {
+    /** Function Name */
+    NAME: string;
+    /** Type · "FORCE" (힘-변위) / "MOMENT" (모멘트-회전각) */
+    TYPE?: string;
+    /** Symmetric · true=대칭, false=비대칭 */
+    SYMM?: boolean;
+    /** Function ID */
+    FUNC_ID?: number;
+    /** Function Data (X=변위/회전, Y=힘/모멘트) */
+    ITEMS: Array<{
+      /** X-Axis (Displacement m / Radian) */
+      X: number;
+      /** Y-Axis (Force kN / Moment kN·m) */
+      Y: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface GeneralLinkHyperSPayload {
+    /** General Link Property Name */
+    PROP_NAME: string;
+    /** Node 1 ID */
+    NODE1: number;
+    /** Node 2 ID */
+    NODE2: number;
+    /** Reference Coordinate System · 0=Element, 1=Global */
+    REF_SYSTEM: number;
+    /** Beta Angle Required when REF_SYSTEM = 0. */
+    BETA_ANGLE?: number;
+    /** Input Method · 0=Angle, 1=3 Points, 2=Vector Required when REF_SYSTEM = 1. */
+    INPUT_METHOD?: number;
+    /** Angle Values [about X, about y', about z''] Required when REF_SYSTEM = 1 and INPUT_METHOD = 0. */
+    ANGLE_VALUES?: Array<{
+      /** Value [x, y, z] */
+      VALUE?: Array<number>;
+    }>;
+    /** Point Values [P0[3], P1[3], P2[3]] Required when REF_SYSTEM = 1 and INPUT_METHOD = 1. */
+    POINT_VALUES?: Array<{
+      /** Value [x, y, z] */
+      VALUE?: Array<number>;
+    }>;
+    /** Vector Values [V1[3], V2[3]] Required when REF_SYSTEM = 1 and INPUT_METHOD = 2. */
+    VECTOR_VALUES?: Array<{
+      /** Value [x, y, z] */
+      VALUE?: Array<number>;
+    }>;
+    /** Boundary Group Name */
+    GROUP_NAME?: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface GeneralLinkPayload {
+    /** Node 1 ID */
+    NODE1: number;
+    /** Node 2 ID */
+    NODE2: number;
+    /** Boundary Group Name */
+    GROUP_NAME?: string;
+    /** General Link Property Name */
+    PROP_NAME: string;
+    /** Inelastic Hinge Property Name */
+    IEHP_NAME?: string;
+    /** Reference Coordinate System · 0=Element, 1=Global */
+    REF_SYSTEM: number;
+    /** Beta Angle (°) Applies when REF_SYSTEM = 0. */
+    BETA_ANGLE?: number;
+    /** Input Method · 0=Angle Required when REF_SYSTEM = 1 and INPUT_METHOD = 0. */
+    INPUT_METHOD?: number;
+    /** Angle Values [about X, about y', about z''] Required when REF_SYSTEM = 1 and INPUT_METHOD = 0. */
+    ANGLE_VALUES?: Array<{
+      /** Value [x, y, z] */
+      VALUE?: Array<number>;
+    }>;
+    /** Point Values [P0[3], P1[3], P2[3]] Required when REF_SYSTEM = 1 and INPUT_METHOD = 1. */
+    POINT_VALUES?: [{
+      /** Value [x, y, z] */
+      VALUE?: Array<number>;
+    }, {
+      /** Value [x, y, z] */
+      VALUE?: Array<number>;
+    }, {
+      /** Value [x, y, z] */
+      VALUE?: Array<number>;
+    }];
+    /** Vector Points [V1[3], V2[3]] Required when REF_SYSTEM = 1 and INPUT_METHOD = 2. */
+    VECTOR_VALUES?: [{
+      /** Value [x, y, z] */
+      VALUE?: Array<number>;
+    }, {
+      /** Value [x, y, z] */
+      VALUE?: Array<number>;
+    }];
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface GeneralLinkPropertyPayload {
+    /** General Link Property Name */
+    PROPERTY_NAME: string;
+    /** Description */
+    DESC?: string;
+    /** Application Type */
+    APPLICATION_TYPE: string;
+    /** Property/Devices Type */
+    APPLICATION_TYPE_D: string;
+    /** Self-Weight (Total) */
+    TOTAL_WEIGHT?: number;
+    /** Lumped Weight Ratio */
+    L_WEIGHT_RATIO?: number;
+    /** Use Mass Option */
+    OPT_USE_MASS?: boolean;
+    /** Mass (Total) */
+    TOTAL_MASS?: number;
+    /** Lumped Mass Ratio */
+    L_MASS_RATIO?: number;
+    /** Shear Spring Location Option */
+    OPT_SHEAR_SPR_LOC?: boolean;
+    /** Distance Ratio from End I (Dy) */
+    DIST_RATIO_DY?: number;
+    /** Distance Ratio from End I (Dz) */
+    DIST_RATIO_DZ?: number;
+    /** Coupled Input Method */
+    COUPLED_INPUT_METHOD?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface GeneralSpringSupportItem {
+    /** Serial Number */
+    ID?: number;
+    /** Boundary Group Name */
+    GROUP_NAME?: string;
+    /** Defined General Spring Name (GSTP에서 정의한 이름) */
+    TYPE_NAME: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface GeneralSpringSupportPayload {
+    /** General Spring (배열로 삽입) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Boundary Group Name */
+      GROUP_NAME?: string;
+      /** Defined General Spring Name (GSTP에서 정의한 이름) */
+      TYPE_NAME: string;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface GeneralSpringTypePayload {
+    /** General spring name. */
+    NAME: string;
+    /** Stiffness-matrix option. */
+    OPT_STIFFNESS?: boolean;
+    /** 21-value stiffness matrix. */
+    SPRING?: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
+    /** Mass-matrix option. */
+    OPT_MASS?: boolean;
+    /** 21-value mass matrix. */
+    MASS?: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
+    /** Damping-matrix option. */
+    OPT_DAMPING?: boolean;
+    /** 21-value damping matrix. */
+    DAMPING?: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
+  }
+  /** Generated from contracts/endpoints/. */
+  export type LinearConstraintItem = {
+    /** Serial Number */
+    ID?: number;
+    /** Load Group Name */
+    GROUP_NAME?: string;
+    /** DOF of Constraint Node (6자리: DX∼RZ) */
+    SLAVE_TYPE: string;
+    /** Constraint Type · "EX"=Explicit, "WD"=Weighted Displacement */
+    TYPE: string;
+    /** Independent Nodes */
+    SLAVES: Array<{
+      /** Node ID */
+      NODE_KEY: number;
+      /** Coefficient */
+      COEFF: number;
+      /** Degree of Freedom · DX:0/DY:1/DZ:2/RX:3/RY:4/RZ:5 */
+      DOF: number;
+      /** Weight */
+      WEIGHT: number;
+    }>;
+  } & (
+    {
+      TYPE: "EX";
+      /** Node ID */
+      NODE_KEY: number;
+      /** Coefficient */
+      COEFF: number;
+      /** Degree of Freedom · DX:0/DY:1/DZ:2/RX:3/RY:4/RZ:5 */
+      DOF: number;
+    } |
+    {
+      TYPE: "WD";
+      /** Node ID */
+      NODE_KEY: number;
+      /** Weight */
+      WEIGHT: number;
+    } |
+    {
+      NODE_KEY?: never;
+      COEFF?: never;
+      DOF?: never;
+      WEIGHT?: never;
+    }
+  );
+  /** Generated from contracts/endpoints/. */
+  export type LinearConstraintPayload = {
+    /** Linear Constraints (배열로 삽입) */
+    ITEMS: Array<({
+      /** Serial Number */
+      ID?: number;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** DOF of Constraint Node (6자리: DX∼RZ) */
+      SLAVE_TYPE: string;
+      /** Constraint Type · "EX"=Explicit, "WD"=Weighted Displacement */
+      TYPE: string;
+      /** Independent Nodes */
+      SLAVES: Array<{
+        /** Node ID */
+        NODE_KEY: number;
+        /** Coefficient */
+        COEFF: number;
+        /** Degree of Freedom · DX:0/DY:1/DZ:2/RX:3/RY:4/RZ:5 */
+        DOF: number;
+        /** Weight */
+        WEIGHT: number;
+      }>;
+    } & (
+      {
+        TYPE: "EX";
+        /** Node ID */
+        NODE_KEY: number;
+        /** Coefficient */
+        COEFF: number;
+        /** Degree of Freedom · DX:0/DY:1/DZ:2/RX:3/RY:4/RZ:5 */
+        DOF: number;
+      } |
+      {
+        TYPE: "WD";
+        /** Node ID */
+        NODE_KEY: number;
+        /** Weight */
+        WEIGHT: number;
+      } |
+      {
+        NODE_KEY?: never;
+        COEFF?: never;
+        DOF?: never;
+        WEIGHT?: never;
+      }
+    ))>;
+  };
+  export interface LinearConstraintSlaveExplicit {
+    NODE_KEY?: number;
+    COEFF?: number;
+    DOF?: number;
+  }
+  export interface LinearConstraintSlaveWeighted {
+    NODE_KEY?: number;
+    WEIGHT?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PanelZoneEffectPayload {
+    /** Auto Calculate Panel Zone Offset Distances */
+    OPT_OFFSET: boolean;
+    /** Offset Factor */
+    OFFS_FACTOR: number;
+    /** Output Position */
+    OUTPUT_POSITION: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PlateEndReleaseItem {
+    /** Serial Number */
+    ID?: number;
+    /** Load Group Name */
+    GROUP_NAME?: string;
+    /** Position N1 [Fx,Fy,Fz,Mx,My] · 1=해제 */
+    N1: [number, number, number, number, number];
+    /** Position N2 [Fx,Fy,Fz,Mx,My] */
+    N2: [number, number, number, number, number];
+    /** Position N3 [Fx,Fy,Fz,Mx,My] */
+    N3: [number, number, number, number, number];
+    /** Position N4 [Fx,Fy,Fz,Mx,My] */
+    N4: [number, number, number, number, number];
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PlateEndReleasePayload {
+    /** Plate End Release (배열로 삽입) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Position N1 [Fx,Fy,Fz,Mx,My] · 1=해제 */
+      N1: [number, number, number, number, number];
+      /** Position N2 [Fx,Fy,Fz,Mx,My] */
+      N2: [number, number, number, number, number];
+      /** Position N3 [Fx,Fy,Fz,Mx,My] */
+      N3: [number, number, number, number, number];
+      /** Position N4 [Fx,Fy,Fz,Mx,My] */
+      N4: [number, number, number, number, number];
     }>;
   }
   /** Generated from contracts/endpoints/. */
@@ -1973,108 +2407,6 @@ export namespace DbBoundaryTypes {
     }>;
   }
   /** Generated from contracts/endpoints/. */
-  export interface GeneralSpringTypePayload {
-    /** General spring name. */
-    NAME: string;
-    /** Stiffness-matrix option. */
-    OPT_STIFFNESS?: boolean;
-    /** 21-value stiffness matrix. */
-    SPRING?: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
-    /** Mass-matrix option. */
-    OPT_MASS?: boolean;
-    /** 21-value mass matrix. */
-    MASS?: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
-    /** Damping-matrix option. */
-    OPT_DAMPING?: boolean;
-    /** 21-value damping matrix. */
-    DAMPING?: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface GeneralSpringSupportItem {
-    /** Serial Number */
-    ID?: number;
-    /** Boundary Group Name */
-    GROUP_NAME?: string;
-    /** Defined General Spring Name (GSTP에서 정의한 이름) */
-    TYPE_NAME: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface GeneralSpringSupportPayload {
-    /** General Spring (배열로 삽입) */
-    ITEMS: Array<{
-      /** Serial Number */
-      ID?: number;
-      /** Boundary Group Name */
-      GROUP_NAME?: string;
-      /** Defined General Spring Name (GSTP에서 정의한 이름) */
-      TYPE_NAME: string;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SurfaceSpringItem {
-    /** Serial Number */
-    ID?: number;
-    /** Boundary Group Name */
-    GROUP_NAME?: string;
-    /** Element Type · "FRAME" / "PLANAR(FACE)" / "PLANAR(EDGE)" / "SOLID" */
-    ELEM_TYPE: string;
-    /** Edge/Face 선택 · FRAME: Local x=2, y=0, z=1 · PLANAR/SOLID: Edge#1∼4=0∼3 */
-    EDGE_FACE?: number;
-    /** Spring Type · 0=Linear, 1=Comp.-Only, 2=Tens.-Only */
-    SPRING_TYPE?: number;
-    /** Modulus of Subgrade Reaction Ks */
-    MODULUS: number;
-    /** Width(FRAME 전용) */
-    WIDTH?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SurfaceSpringPayload {
-    /** Surface Spring (배열로 삽입) */
-    ITEMS: Array<{
-      /** Serial Number */
-      ID?: number;
-      /** Boundary Group Name */
-      GROUP_NAME?: string;
-      /** Element Type · "FRAME" / "PLANAR(FACE)" / "PLANAR(EDGE)" / "SOLID" */
-      ELEM_TYPE: string;
-      /** Edge/Face 선택 · FRAME: Local x=2, y=0, z=1 · PLANAR/SOLID: Edge#1∼4=0∼3 */
-      EDGE_FACE?: number;
-      /** Spring Type · 0=Linear, 1=Comp.-Only, 2=Tens.-Only */
-      SPRING_TYPE?: number;
-      /** Modulus of Subgrade Reaction Ks */
-      MODULUS: number;
-      /** Width(FRAME 전용) */
-      WIDTH?: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ElasticLinkPayload {
-    /** Node Numbers [i-node, j-node] */
-    NODE: [number, number];
-    /** Boundary Group Name */
-    BNGR_NAME?: string;
-    /** Beta Angle (°) */
-    ANGLE?: number;
-    /** Link Type */
-    LINK: string;
-    /** SDx SDy SDz SRx SRy SRz Applies when LINK is "GEN" or "TENS" or "COMP". */
-    SDR?: [number, number, number, number, number, number];
-    /** R_SDx R_SDy R_SDz R_SRx R_SRy R_SRz Applies when LINK = "GEN". */
-    R_S?: [boolean, boolean, boolean, boolean, boolean, boolean];
-    /** SHEAR Applies when LINK is "GEN" or "MULTILINEAR" or "RAILINTERACT". */
-    bSHEAR?: boolean;
-    /** DRy DRz Applies when LINK = "GEN". */
-    DR?: [number, number];
-    /** Direction Applies when LINK is "MULTILINEAR" or "RAILINTERACT". */
-    DIR?: number;
-    /** Function Applies when LINK = "MULTILINEAR". */
-    MLFC?: number;
-    /** Rail Track Interaction Function Applies when LINK = "RAILINTERACT". */
-    RLFC?: number;
-    /** DistRatioEndI Applies when LINK is "MULTILINEAR" or "RAILINTERACT". */
-    DRENDI?: number;
-  }
-  /** Generated from contracts/endpoints/. */
   export interface RigidLinkItem {
     /** Serial Number (마스터 절점 ID) */
     ID?: number;
@@ -2100,259 +2432,6 @@ export namespace DbBoundaryTypes {
     }>;
   }
   /** Generated from contracts/endpoints/. */
-  export interface GeneralLinkPropertyPayload {
-    /** General Link Property Name */
-    PROPERTY_NAME: string;
-    /** Description */
-    DESC?: string;
-    /** Application Type */
-    APPLICATION_TYPE: string;
-    /** Property/Devices Type */
-    APPLICATION_TYPE_D: string;
-    /** Self-Weight (Total) */
-    TOTAL_WEIGHT?: number;
-    /** Lumped Weight Ratio */
-    L_WEIGHT_RATIO?: number;
-    /** Use Mass Option */
-    OPT_USE_MASS?: boolean;
-    /** Mass (Total) */
-    TOTAL_MASS?: number;
-    /** Lumped Mass Ratio */
-    L_MASS_RATIO?: number;
-    /** Shear Spring Location Option */
-    OPT_SHEAR_SPR_LOC?: boolean;
-    /** Distance Ratio from End I (Dy) */
-    DIST_RATIO_DY?: number;
-    /** Distance Ratio from End I (Dz) */
-    DIST_RATIO_DZ?: number;
-    /** Coupled Input Method */
-    COUPLED_INPUT_METHOD?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface GeneralLinkPayload {
-    /** Node 1 ID */
-    NODE1: number;
-    /** Node 2 ID */
-    NODE2: number;
-    /** Boundary Group Name */
-    GROUP_NAME?: string;
-    /** General Link Property Name */
-    PROP_NAME: string;
-    /** Inelastic Hinge Property Name */
-    IEHP_NAME?: string;
-    /** Reference Coordinate System · 0=Element, 1=Global */
-    REF_SYSTEM: number;
-    /** Beta Angle (°) Applies when REF_SYSTEM = 0. */
-    BETA_ANGLE?: number;
-    /** Input Method · 0=Angle Required when REF_SYSTEM = 1 and INPUT_METHOD = 0. */
-    INPUT_METHOD?: number;
-    /** Angle Values [about X, about y', about z''] Required when REF_SYSTEM = 1 and INPUT_METHOD = 0. */
-    ANGLE_VALUES?: Array<{
-      /** Value [x, y, z] */
-      VALUE?: Array<number>;
-    }>;
-    /** Point Values [P0[3], P1[3], P2[3]] Required when REF_SYSTEM = 1 and INPUT_METHOD = 1. */
-    POINT_VALUES?: [{
-      /** Value [x, y, z] */
-      VALUE?: Array<number>;
-    }, {
-      /** Value [x, y, z] */
-      VALUE?: Array<number>;
-    }, {
-      /** Value [x, y, z] */
-      VALUE?: Array<number>;
-    }];
-    /** Vector Points [V1[3], V2[3]] Required when REF_SYSTEM = 1 and INPUT_METHOD = 2. */
-    VECTOR_VALUES?: [{
-      /** Value [x, y, z] */
-      VALUE?: Array<number>;
-    }, {
-      /** Value [x, y, z] */
-      VALUE?: Array<number>;
-    }];
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface GeneralLinkHyperSPayload {
-    /** General Link Property Name */
-    PROP_NAME: string;
-    /** Node 1 ID */
-    NODE1: number;
-    /** Node 2 ID */
-    NODE2: number;
-    /** Reference Coordinate System · 0=Element, 1=Global */
-    REF_SYSTEM: number;
-    /** Beta Angle Required when REF_SYSTEM = 0. */
-    BETA_ANGLE?: number;
-    /** Input Method · 0=Angle, 1=3 Points, 2=Vector Required when REF_SYSTEM = 1. */
-    INPUT_METHOD?: number;
-    /** Angle Values [about X, about y', about z''] Required when REF_SYSTEM = 1 and INPUT_METHOD = 0. */
-    ANGLE_VALUES?: Array<{
-      /** Value [x, y, z] */
-      VALUE?: Array<number>;
-    }>;
-    /** Point Values [P0[3], P1[3], P2[3]] Required when REF_SYSTEM = 1 and INPUT_METHOD = 1. */
-    POINT_VALUES?: Array<{
-      /** Value [x, y, z] */
-      VALUE?: Array<number>;
-    }>;
-    /** Vector Values [V1[3], V2[3]] Required when REF_SYSTEM = 1 and INPUT_METHOD = 2. */
-    VECTOR_VALUES?: Array<{
-      /** Value [x, y, z] */
-      VALUE?: Array<number>;
-    }>;
-    /** Boundary Group Name */
-    GROUP_NAME?: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ChangeGeneralLinkPropertyPayload {
-    /** General Link ID Number */
-    GLINK_KEY: number;
-    /** Change Property Name (NLLP에서 정의된 이름) */
-    CHANGE_PROPERTY_NAME: string;
-    /** Boundary Group Name */
-    GROUP_NAME?: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface BeamEndReleaseItem {
-    /** Serial Number */
-    ID?: number;
-    /** Load Group Name */
-    GROUP_NAME?: string;
-    /** Input Method · false=Relative, true=Value */
-    bVALUE?: boolean;
-    /** Release i-Node [Fx,Fy,Fz,Mx,My,Mz,Mb] */
-    FLAG_I: string;
-    /** Partial Fixity for i-Node [Fx,Fy,Fz,Mx,My,Mz,Mb] */
-    VALUE_I?: [number, number, number, number, number, number, number];
-    /** Release j-Node [Fx,Fy,Fz,Mx,My,Mz,Mb] */
-    FLAG_J: string;
-    /** Partial Fixity for j-Node [Fx,Fy,Fz,Mx,My,Mz,Mb] */
-    VALUE_J?: [number, number, number, number, number, number, number];
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface BeamEndReleasePayload {
-    /** Beam End Release (배열로 삽입) */
-    ITEMS: Array<{
-      /** Serial Number */
-      ID?: number;
-      /** Load Group Name */
-      GROUP_NAME?: string;
-      /** Input Method · false=Relative, true=Value */
-      bVALUE?: boolean;
-      /** Release i-Node [Fx,Fy,Fz,Mx,My,Mz,Mb] */
-      FLAG_I: string;
-      /** Partial Fixity for i-Node [Fx,Fy,Fz,Mx,My,Mz,Mb] */
-      VALUE_I?: [number, number, number, number, number, number, number];
-      /** Release j-Node [Fx,Fy,Fz,Mx,My,Mz,Mb] */
-      FLAG_J: string;
-      /** Partial Fixity for j-Node [Fx,Fy,Fz,Mx,My,Mz,Mb] */
-      VALUE_J?: [number, number, number, number, number, number, number];
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface BeamEndOffsetItem {
-    /** Serial Number */
-    ID?: number;
-    /** Load Group Name */
-    GROUP_NAME?: string;
-    /** Reference CS · "GLOBAL" / "ELEMENT" */
-    TYPE: string;
-    /** i-단 X방향 오프셋 (GCS) */
-    RGDXi?: number;
-    /** i-단 Y방향 오프셋 (GCS) */
-    RGDYi?: number;
-    /** i-단 Z방향 오프셋 (GCS) */
-    RGDZi?: number;
-    /** j-단 X방향 오프셋 (GCS) */
-    RGDXj?: number;
-    /** j-단 Y방향 오프셋 (GCS) */
-    RGDYj?: number;
-    /** j-단 Z방향 오프셋 (GCS) */
-    RGDZj?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface BeamEndOffsetPayload {
-    /** Beam End Offsets (배열로 삽입) */
-    ITEMS: Array<{
-      /** Serial Number */
-      ID?: number;
-      /** Load Group Name */
-      GROUP_NAME?: string;
-      /** Reference CS · "GLOBAL" / "ELEMENT" */
-      TYPE: string;
-      /** i-단 X방향 오프셋 (GCS) */
-      RGDXi?: number;
-      /** i-단 Y방향 오프셋 (GCS) */
-      RGDYi?: number;
-      /** i-단 Z방향 오프셋 (GCS) */
-      RGDZi?: number;
-      /** j-단 X방향 오프셋 (GCS) */
-      RGDXj?: number;
-      /** j-단 Y방향 오프셋 (GCS) */
-      RGDYj?: number;
-      /** j-단 Z방향 오프셋 (GCS) */
-      RGDZj?: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PlateEndReleaseItem {
-    /** Serial Number */
-    ID?: number;
-    /** Load Group Name */
-    GROUP_NAME?: string;
-    /** Position N1 [Fx,Fy,Fz,Mx,My] · 1=해제 */
-    N1: [number, number, number, number, number];
-    /** Position N2 [Fx,Fy,Fz,Mx,My] */
-    N2: [number, number, number, number, number];
-    /** Position N3 [Fx,Fy,Fz,Mx,My] */
-    N3: [number, number, number, number, number];
-    /** Position N4 [Fx,Fy,Fz,Mx,My] */
-    N4: [number, number, number, number, number];
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PlateEndReleasePayload {
-    /** Plate End Release (배열로 삽입) */
-    ITEMS: Array<{
-      /** Serial Number */
-      ID?: number;
-      /** Load Group Name */
-      GROUP_NAME?: string;
-      /** Position N1 [Fx,Fy,Fz,Mx,My] · 1=해제 */
-      N1: [number, number, number, number, number];
-      /** Position N2 [Fx,Fy,Fz,Mx,My] */
-      N2: [number, number, number, number, number];
-      /** Position N3 [Fx,Fy,Fz,Mx,My] */
-      N3: [number, number, number, number, number];
-      /** Position N4 [Fx,Fy,Fz,Mx,My] */
-      N4: [number, number, number, number, number];
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ForceDeformationFunctionItem {
-    /** X-Axis (Displacement m / Radian) */
-    X: number;
-    /** Y-Axis (Force kN / Moment kN·m) */
-    Y: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ForceDeformationFunctionPayload {
-    /** Function Name */
-    NAME: string;
-    /** Type · "FORCE" (힘-변위) / "MOMENT" (모멘트-회전각) */
-    TYPE?: string;
-    /** Symmetric · true=대칭, false=비대칭 */
-    SYMM?: boolean;
-    /** Function ID */
-    FUNC_ID?: number;
-    /** Function Data (X=변위/회전, Y=힘/모멘트) */
-    ITEMS: Array<{
-      /** X-Axis (Displacement m / Radian) */
-      X: number;
-      /** Y-Axis (Force kN / Moment kN·m) */
-      Y: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
   export interface SeismicDeviceCommon {
     /** Name */
     NAME: string;
@@ -2366,6 +2445,216 @@ export namespace DbBoundaryTypes {
     PRODUCT_NAME: string;
     /** Type Number */
     TYPE_NUMBER: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SeismicDeviceHystereticIsolatorPayload {
+    /** Common Data */
+    COMMON: {
+      /** Name */
+      NAME: string;
+      /** Description */
+      DESC?: string;
+      /** Input Method · 0=사용자 입력, 1=참조 DB */
+      INPUT_METHOD: number;
+      /** Company */
+      COMPANY: string;
+      /** Product Name */
+      PRODUCT_NAME: string;
+      /** Type Number */
+      TYPE_NUMBER: string;
+    };
+    /** Hysteresis Model · "DegradingBiLinear" 등 */
+    SDHY_HYS_MODEL: string;
+    /** Number of Shear Springs (MSS 전단 스프링 수) */
+    MSS: number;
+    /** K0 Initial Stiffness */
+    K0: number;
+    /** P1 Yield Strength */
+    P1: number;
+    /** P2 Yield Strength */
+    P2: number;
+    /** Alpha1 Stiffness Factor */
+    ALPHA1: number;
+    /** Alpha2 Stiffness Factor */
+    ALPHA2: number;
+    /** Beta(Exponent in Unloading Stiffness Calculation) */
+    BETA: number;
+    /** Phi */
+    Phi: number;
+    /** Lambda */
+    LAMBDA: number;
+  }
+  export interface SeismicDeviceIsolatorLRB {
+    SDIS_HYS_MODEL?: string;
+    KE?: number;
+    AR?: number;
+    TR?: number;
+    K0?: number;
+    K2?: number;
+    QD?: number;
+    DX?: SeismicDeviceIsolatorVerticalDX;
+  }
+  export interface SeismicDeviceIsolatorNRB {
+    AR?: number;
+    TR?: number;
+    KH?: number;
+    DX?: SeismicDeviceIsolatorVerticalDX;
+  }
+  export interface SeismicDeviceIsolatorPayload {
+    COMMON?: SeismicDeviceCommon;
+    SDIS_DEV_TYPE?: string;
+    MSS?: number;
+    TAU_K?: number;
+    TAU_Q?: number;
+    KV?: number;
+    LRB?: SeismicDeviceIsolatorLRB;
+    NRB?: SeismicDeviceIsolatorNRB;
+    SB?: SeismicDeviceIsolatorSB;
+  }
+  export interface SeismicDeviceIsolatorSB {
+    AS?: number;
+    K0?: number;
+    QD?: number;
+    Pi_VALUE?: number;
+    MU0?: number;
+  }
+  export interface SeismicDeviceIsolatorVerticalDX {
+    OPT_CONS_NONL?: boolean;
+    BETA?: number;
+    ALPHA?: number;
+    SIGMA_V?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SeismicDeviceSteelDamperBL2 {
+    /** Exponent in Unloading Stiffness Calculation (β) */
+    BETA: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SeismicDeviceSteelDamperIK2 {
+    /** Isotropic Factor (γ) */
+    GAMMA: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SeismicDeviceSteelDamperLY2 {
+    /** Stiffness Factor (α2) */
+    ALPHA2: number;
+    /** Strength Factor (θ) */
+    THETA: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SeismicDeviceSteelDamperLY3 {
+    /** Stiffness Factor (α2) */
+    ALPHA2: number;
+    /** Strength Factor (θ) */
+    THETA: number;
+    /** Stiffness Ratio (γ) */
+    GAMMA: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SeismicDeviceSteelDamperPayload {
+    /** Common Data */
+    COMMON: {
+      /** Name */
+      NAME: string;
+      /** Description */
+      DESC?: string;
+      /** Input Method · 0=사용자 입력, 1=참조 DB */
+      INPUT_METHOD: number;
+      /** Company */
+      COMPANY: string;
+      /** Product Name */
+      PRODUCT_NAME: string;
+      /** Type Number */
+      TYPE_NUMBER: string;
+    };
+    /** Direction */
+    DIR: string;
+    /** Hysteresis Model · Degrading Bilinear: "BL2" / Low Yielding Steel(LY2): "LY2" / Low Yielding Steel(LY3): "LY3" / Isotropic-Kinematic(IK2): "IK2" */
+    SDST_HYS_MODEL: string;
+    /** Initial Stiffness (K0) */
+    K0: number;
+    /** Yield Strength (P1) */
+    P1: number;
+    /** Stiffness Factor (α1) */
+    ALPHA1: number;
+    /** Mounting Parts Stiffness (Kb) */
+    KB: number;
+    /** Degrading Bilinear 하위 데이터 Applies when SDST_HYS_MODEL = "BL2". */
+    BL2?: {
+      /** Exponent in Unloading Stiffness Calculation (β) */
+      BETA: number;
+    };
+    /** Low Yielding Steel (LY2) 하위 데이터 Applies when SDST_HYS_MODEL = "LY2". */
+    LY2?: {
+      /** Stiffness Factor (α2) */
+      ALPHA2: number;
+      /** Strength Factor (θ) */
+      THETA: number;
+    };
+    /** Low Yielding Steel (LY3) 하위 데이터 Applies when SDST_HYS_MODEL = "LY3". */
+    LY3?: {
+      /** Stiffness Factor (α2) */
+      ALPHA2: number;
+      /** Strength Factor (θ) */
+      THETA: number;
+      /** Stiffness Ratio (γ) */
+      GAMMA: number;
+    };
+    /** Isotropic-Kinematic (IK2) 하위 데이터 Applies when SDST_HYS_MODEL = "IK2". */
+    IK2?: {
+      /** Isotropic Factor (γ) */
+      GAMMA: number;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SeismicDeviceViscoelasticDamperPayload {
+    /** Common Data (SDVI와 동일 구조) */
+    COMMON: {
+      /** Name */
+      NAME: string;
+      /** Description */
+      DESC?: string;
+      /** Input Method · 0=사용자 입력, 1=참조 DB */
+      INPUT_METHOD: number;
+      /** Company */
+      COMPANY: string;
+      /** Product Name */
+      PRODUCT_NAME: string;
+      /** Type Number */
+      TYPE_NUMBER: string;
+    };
+    /** Material Type · "GR100" / "GR300" / "SR05" / "GR400" / "CST" / "TRC" */
+    MATERIAL_TYPE: string;
+    /** Shear Area */
+    SHEAR_AREA: number;
+    /** Thickness */
+    THICKNESS: number;
+    /** Multiplier */
+    MULTIPL: number;
+    /** Direction("Dx"/"Dy"/"Dz" 등) */
+    DIR: string;
+    /** Frequency */
+    FREQ: number;
+    /** Stiffness Factor */
+    STIFF_FACTOR: number;
+    /** Damping Factor */
+    DAMP_FACTOR: number;
+    /** Reference Temperature */
+    REF_T: number;
+    /** Limit Deformation */
+    LIMIT_DEF: number;
+    /** Effective Stiffness */
+    EFF_STIFF: number;
+    /** Equivalent Damping */
+    EQUI_DAMP: number;
+    /** Use Mount Stiffness */
+    OPT_MOUNT_STIFF: boolean;
+    /** Mount Stiffness */
+    MOUNT_STIFF: number;
+    /** Use Kinetic Friction */
+    OPT_KINETIC_FRIC: boolean;
+    /** Kinetic Friction */
+    KINETIC_FRIC: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface SeismicDeviceViscousDamperItem {
@@ -2575,330 +2864,41 @@ export namespace DbBoundaryTypes {
     }];
   }
   /** Generated from contracts/endpoints/. */
-  export interface SeismicDeviceViscoelasticDamperPayload {
-    /** Common Data (SDVI와 동일 구조) */
-    COMMON: {
-      /** Name */
-      NAME: string;
-      /** Description */
-      DESC?: string;
-      /** Input Method · 0=사용자 입력, 1=참조 DB */
-      INPUT_METHOD: number;
-      /** Company */
-      COMPANY: string;
-      /** Product Name */
-      PRODUCT_NAME: string;
-      /** Type Number */
-      TYPE_NUMBER: string;
-    };
-    /** Material Type · "GR100" / "GR300" / "SR05" / "GR400" / "CST" / "TRC" */
-    MATERIAL_TYPE: string;
-    /** Shear Area */
-    SHEAR_AREA: number;
-    /** Thickness */
-    THICKNESS: number;
-    /** Multiplier */
-    MULTIPL: number;
-    /** Direction("Dx"/"Dy"/"Dz" 등) */
-    DIR: string;
-    /** Frequency */
-    FREQ: number;
-    /** Stiffness Factor */
-    STIFF_FACTOR: number;
-    /** Damping Factor */
-    DAMP_FACTOR: number;
-    /** Reference Temperature */
-    REF_T: number;
-    /** Limit Deformation */
-    LIMIT_DEF: number;
-    /** Effective Stiffness */
-    EFF_STIFF: number;
-    /** Equivalent Damping */
-    EQUI_DAMP: number;
-    /** Use Mount Stiffness */
-    OPT_MOUNT_STIFF: boolean;
-    /** Mount Stiffness */
-    MOUNT_STIFF: number;
-    /** Use Kinetic Friction */
-    OPT_KINETIC_FRIC: boolean;
-    /** Kinetic Friction */
-    KINETIC_FRIC: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SeismicDeviceSteelDamperBL2 {
-    /** Exponent in Unloading Stiffness Calculation (β) */
-    BETA: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SeismicDeviceSteelDamperLY2 {
-    /** Stiffness Factor (α2) */
-    ALPHA2: number;
-    /** Strength Factor (θ) */
-    THETA: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SeismicDeviceSteelDamperLY3 {
-    /** Stiffness Factor (α2) */
-    ALPHA2: number;
-    /** Strength Factor (θ) */
-    THETA: number;
-    /** Stiffness Ratio (γ) */
-    GAMMA: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SeismicDeviceSteelDamperIK2 {
-    /** Isotropic Factor (γ) */
-    GAMMA: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SeismicDeviceSteelDamperPayload {
-    /** Common Data */
-    COMMON: {
-      /** Name */
-      NAME: string;
-      /** Description */
-      DESC?: string;
-      /** Input Method · 0=사용자 입력, 1=참조 DB */
-      INPUT_METHOD: number;
-      /** Company */
-      COMPANY: string;
-      /** Product Name */
-      PRODUCT_NAME: string;
-      /** Type Number */
-      TYPE_NUMBER: string;
-    };
-    /** Direction */
-    DIR: string;
-    /** Hysteresis Model · Degrading Bilinear: "BL2" / Low Yielding Steel(LY2): "LY2" / Low Yielding Steel(LY3): "LY3" / Isotropic-Kinematic(IK2): "IK2" */
-    SDST_HYS_MODEL: string;
-    /** Initial Stiffness (K0) */
-    K0: number;
-    /** Yield Strength (P1) */
-    P1: number;
-    /** Stiffness Factor (α1) */
-    ALPHA1: number;
-    /** Mounting Parts Stiffness (Kb) */
-    KB: number;
-    /** Degrading Bilinear 하위 데이터 Applies when SDST_HYS_MODEL = "BL2". */
-    BL2?: {
-      /** Exponent in Unloading Stiffness Calculation (β) */
-      BETA: number;
-    };
-    /** Low Yielding Steel (LY2) 하위 데이터 Applies when SDST_HYS_MODEL = "LY2". */
-    LY2?: {
-      /** Stiffness Factor (α2) */
-      ALPHA2: number;
-      /** Strength Factor (θ) */
-      THETA: number;
-    };
-    /** Low Yielding Steel (LY3) 하위 데이터 Applies when SDST_HYS_MODEL = "LY3". */
-    LY3?: {
-      /** Stiffness Factor (α2) */
-      ALPHA2: number;
-      /** Strength Factor (θ) */
-      THETA: number;
-      /** Stiffness Ratio (γ) */
-      GAMMA: number;
-    };
-    /** Isotropic-Kinematic (IK2) 하위 데이터 Applies when SDST_HYS_MODEL = "IK2". */
-    IK2?: {
-      /** Isotropic Factor (γ) */
-      GAMMA: number;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SeismicDeviceHystereticIsolatorPayload {
-    /** Common Data */
-    COMMON: {
-      /** Name */
-      NAME: string;
-      /** Description */
-      DESC?: string;
-      /** Input Method · 0=사용자 입력, 1=참조 DB */
-      INPUT_METHOD: number;
-      /** Company */
-      COMPANY: string;
-      /** Product Name */
-      PRODUCT_NAME: string;
-      /** Type Number */
-      TYPE_NUMBER: string;
-    };
-    /** Hysteresis Model · "DegradingBiLinear" 등 */
-    SDHY_HYS_MODEL: string;
-    /** Number of Shear Springs (MSS 전단 스프링 수) */
-    MSS: number;
-    /** K0 Initial Stiffness */
-    K0: number;
-    /** P1 Yield Strength */
-    P1: number;
-    /** P2 Yield Strength */
-    P2: number;
-    /** Alpha1 Stiffness Factor */
-    ALPHA1: number;
-    /** Alpha2 Stiffness Factor */
-    ALPHA2: number;
-    /** Beta(Exponent in Unloading Stiffness Calculation) */
-    BETA: number;
-    /** Phi */
-    Phi: number;
-    /** Lambda */
-    LAMBDA: number;
-  }
-  export interface SeismicDeviceIsolatorVerticalDX {
-    OPT_CONS_NONL?: boolean;
-    BETA?: number;
-    ALPHA?: number;
-    SIGMA_V?: number;
-  }
-  export interface SeismicDeviceIsolatorLRB {
-    SDIS_HYS_MODEL?: string;
-    KE?: number;
-    AR?: number;
-    TR?: number;
-    K0?: number;
-    K2?: number;
-    QD?: number;
-    DX?: SeismicDeviceIsolatorVerticalDX;
-  }
-  export interface SeismicDeviceIsolatorNRB {
-    AR?: number;
-    TR?: number;
-    KH?: number;
-    DX?: SeismicDeviceIsolatorVerticalDX;
-  }
-  export interface SeismicDeviceIsolatorSB {
-    AS?: number;
-    K0?: number;
-    QD?: number;
-    Pi_VALUE?: number;
-    MU0?: number;
-  }
-  export interface SeismicDeviceIsolatorPayload {
-    COMMON?: SeismicDeviceCommon;
-    SDIS_DEV_TYPE?: string;
-    MSS?: number;
-    TAU_K?: number;
-    TAU_Q?: number;
-    KV?: number;
-    LRB?: SeismicDeviceIsolatorLRB;
-    NRB?: SeismicDeviceIsolatorNRB;
-    SB?: SeismicDeviceIsolatorSB;
-  }
-  export interface LinearConstraintSlaveExplicit {
-    NODE_KEY?: number;
-    COEFF?: number;
-    DOF?: number;
-  }
-  export interface LinearConstraintSlaveWeighted {
-    NODE_KEY?: number;
-    WEIGHT?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export type LinearConstraintItem = {
+  export interface SurfaceSpringItem {
     /** Serial Number */
     ID?: number;
-    /** Load Group Name */
+    /** Boundary Group Name */
     GROUP_NAME?: string;
-    /** DOF of Constraint Node (6자리: DX∼RZ) */
-    SLAVE_TYPE: string;
-    /** Constraint Type · "EX"=Explicit, "WD"=Weighted Displacement */
-    TYPE: string;
-    /** Independent Nodes */
-    SLAVES: Array<{
-      /** Node ID */
-      NODE_KEY: number;
-      /** Coefficient */
-      COEFF: number;
-      /** Degree of Freedom · DX:0/DY:1/DZ:2/RX:3/RY:4/RZ:5 */
-      DOF: number;
-      /** Weight */
-      WEIGHT: number;
-    }>;
-  } & (
-    {
-      TYPE: "EX";
-      /** Node ID */
-      NODE_KEY: number;
-      /** Coefficient */
-      COEFF: number;
-      /** Degree of Freedom · DX:0/DY:1/DZ:2/RX:3/RY:4/RZ:5 */
-      DOF: number;
-    } |
-    {
-      TYPE: "WD";
-      /** Node ID */
-      NODE_KEY: number;
-      /** Weight */
-      WEIGHT: number;
-    } |
-    {
-      NODE_KEY?: never;
-      COEFF?: never;
-      DOF?: never;
-      WEIGHT?: never;
-    }
-  );
-  /** Generated from contracts/endpoints/. */
-  export type LinearConstraintPayload = {
-    /** Linear Constraints (배열로 삽입) */
-    ITEMS: Array<({
-      /** Serial Number */
-      ID?: number;
-      /** Load Group Name */
-      GROUP_NAME?: string;
-      /** DOF of Constraint Node (6자리: DX∼RZ) */
-      SLAVE_TYPE: string;
-      /** Constraint Type · "EX"=Explicit, "WD"=Weighted Displacement */
-      TYPE: string;
-      /** Independent Nodes */
-      SLAVES: Array<{
-        /** Node ID */
-        NODE_KEY: number;
-        /** Coefficient */
-        COEFF: number;
-        /** Degree of Freedom · DX:0/DY:1/DZ:2/RX:3/RY:4/RZ:5 */
-        DOF: number;
-        /** Weight */
-        WEIGHT: number;
-      }>;
-    } & (
-      {
-        TYPE: "EX";
-        /** Node ID */
-        NODE_KEY: number;
-        /** Coefficient */
-        COEFF: number;
-        /** Degree of Freedom · DX:0/DY:1/DZ:2/RX:3/RY:4/RZ:5 */
-        DOF: number;
-      } |
-      {
-        TYPE: "WD";
-        /** Node ID */
-        NODE_KEY: number;
-        /** Weight */
-        WEIGHT: number;
-      } |
-      {
-        NODE_KEY?: never;
-        COEFF?: never;
-        DOF?: never;
-        WEIGHT?: never;
-      }
-    ))>;
-  };
-  /** Generated from contracts/endpoints/. */
-  export interface PanelZoneEffectPayload {
-    /** Auto Calculate Panel Zone Offset Distances */
-    OPT_OFFSET: boolean;
-    /** Offset Factor */
-    OFFS_FACTOR: number;
-    /** Output Position */
-    OUTPUT_POSITION: number;
+    /** Element Type · "FRAME" / "PLANAR(FACE)" / "PLANAR(EDGE)" / "SOLID" */
+    ELEM_TYPE: string;
+    /** Edge/Face 선택 · FRAME: Local x=2, y=0, z=1 · PLANAR/SOLID: Edge#1∼4=0∼3 */
+    EDGE_FACE?: number;
+    /** Spring Type · 0=Linear, 1=Comp.-Only, 2=Tens.-Only */
+    SPRING_TYPE?: number;
+    /** Modulus of Subgrade Reaction Ks */
+    MODULUS: number;
+    /** Width(FRAME 전용) */
+    WIDTH?: number;
   }
   /** Generated from contracts/endpoints/. */
-  export interface ConstraintLabelDirectionPayload {
-    /** Constraint Label Direction */
-    DIR: number;
+  export interface SurfaceSpringPayload {
+    /** Surface Spring (배열로 삽입) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Boundary Group Name */
+      GROUP_NAME?: string;
+      /** Element Type · "FRAME" / "PLANAR(FACE)" / "PLANAR(EDGE)" / "SOLID" */
+      ELEM_TYPE: string;
+      /** Edge/Face 선택 · FRAME: Local x=2, y=0, z=1 · PLANAR/SOLID: Edge#1∼4=0∼3 */
+      EDGE_FACE?: number;
+      /** Spring Type · 0=Linear, 1=Comp.-Only, 2=Tens.-Only */
+      SPRING_TYPE?: number;
+      /** Modulus of Subgrade Reaction Ks */
+      MODULUS: number;
+      /** Width(FRAME 전용) */
+      WIDTH?: number;
+    }>;
   }
 }
 
@@ -2927,6 +2927,15 @@ export namespace DbBridgeTypes {
     SCALEFACTOR?: number;
   }
   /** Generated from contracts/endpoints/. */
+  export interface FcmCamberControlPayload {
+    /** 교량 거더 요소 그룹 */
+    BODY_GROUP_NAME: string;
+    /** 지점 노드 그룹 */
+    SUPP_GROUP_NAME: string;
+    /** 키 세그먼트 요소 그룹 */
+    KEYSEG_GROUP_NAME: string;
+  }
+  /** Generated from contracts/endpoints/. */
   export interface GeneralCamberBaseItem {
     /** 구조 그룹 이름 */
     GRUP_NAME: string;
@@ -2944,15 +2953,6 @@ export namespace DbBridgeTypes {
       /** 방향 · "+DX" / "-DX" / "+DY" / "-DY" */
       DIRECTION: string;
     }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface FcmCamberControlPayload {
-    /** 교량 거더 요소 그룹 */
-    BODY_GROUP_NAME: string;
-    /** 지점 노드 그룹 */
-    SUPP_GROUP_NAME: string;
-    /** 키 세그먼트 요소 그룹 */
-    KEYSEG_GROUP_NAME: string;
   }
   /** Generated from contracts/endpoints/. */
   export interface UnknownLoadFactorConstraintPayload {
@@ -2986,9 +2986,12 @@ export namespace DbBridgeTypes {
 }
 
 export namespace DbConstructionStageTypes {
-  export interface LoadGroupDayItem {
-    LOAD_NAME?: string;
-    DAY?: string;
+  /** Generated from contracts/endpoints/. */
+  export interface ActivateBoundaryGroupItem {
+    /** 활성화할 경계 그룹명 */
+    BNGR_NAME: string;
+    /** 지점/스프링 위치 ("DEFORMED" / "ORIGINAL") */
+    POS: string;
   }
   /** Generated from contracts/endpoints/. */
   export interface ActivateElementItem {
@@ -2998,18 +3001,97 @@ export namespace DbConstructionStageTypes {
     AGE?: number;
   }
   /** Generated from contracts/endpoints/. */
-  export interface DeactivateElementItem {
-    /** 비활성화할 구조 그룹명 */
-    GRUP_NAME: string;
-    /** 요소력 재분배 (%) */
-    REDIST?: number;
+  export interface AmbientTemperatureFunctionPayload {
+    /** 함수명 */
+    NAME: string;
+    /** 함수 타입 ("CONST" / "SINE" / "USER") */
+    TYPE: string;
+    /** 온도 Applies when TYPE = "CONST". */
+    TEMP?: number;
+    /** 최대 온도 (T) Applies when TYPE = "SINE". */
+    MAX_TEMP?: number;
+    /** 평균 온도 (To) Applies when TYPE = "SINE". */
+    MEAN_TEMP?: number;
+    /** 지연 시간 (to) Applies when TYPE = "SINE". */
+    DELAY_TIME?: number;
+    /** 스케일 계수 Required when TYPE = "USER". */
+    SCALE_FACTOR?: number;
+    /** 함수 데이터 목록 Required when TYPE = "USER". */
+    ITEM?: Array<{
+      /** - 시간 */
+      TIME: number;
+      /** - 온도 */
+      VALUE: number;
+    }>;
   }
   /** Generated from contracts/endpoints/. */
-  export interface ActivateBoundaryGroupItem {
-    /** 활성화할 경계 그룹명 */
-    BNGR_NAME: string;
-    /** 지점/스프링 위치 ("DEFORMED" / "ORIGINAL") */
-    POS: string;
+  export interface AssignHeatSourcePayload {
+    /** 열원 함수명 */
+    FUNC_NAME: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface CamberConstructionStagePayload {
+    /** 변형 캠버 */
+    DEFORM: number;
+    /** 사용자 정의 캠버 */
+    USER: number;
+  }
+  export interface CompositeSectionConstructionStagePayload {
+    SEC?: number;
+    ASTAGE?: string;
+    TYPE?: string;
+    bTAP?: boolean;
+    vPARTINFO?: Array<CompositeSectionPartInfo>;
+    OPT_UPDATE_ALL_H?: boolean;
+  }
+  export interface CompositeSectionPartInfo {
+    PART?: number;
+    MTYPE?: string;
+    MAT?: string;
+    CSTAGE?: string;
+    AGE?: number;
+    PARTINFO_H?: unknown;
+    PARTINFO_VS?: number;
+    PARTINFO_M?: number;
+    AREA?: number;
+    ASY?: number;
+    ASZ?: number;
+    IXX?: number;
+    IYY?: number;
+    IZZ?: number;
+    WAREA?: number;
+    IW?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ConstructionStageForHydrationPayload {
+    /** 수화열 단계명 */
+    NAME: string;
+    /** 초기 온도 사용 여부 */
+    bINITAL_TEMP?: boolean;
+    /** 초기 온도 */
+    INITIAL_TEMP?: number;
+    /** 추가 스텝 목록 */
+    ADD_STEP: Array<number>;
+    /** 활성화 구조 그룹 목록 */
+    ACT_ELEM: Array<string>;
+    /** 활성화 경계 그룹 목록 */
+    ACT_BNGR: Array<string>;
+    /** 비활성화 경계 그룹 목록 */
+    DACT_BNGR: Array<string>;
+    /** 활성화 하중 그룹 목록 */
+    ACT_LOAD?: Array<{
+      /** 하중 케이스명 */
+      LOAD_NAME?: string;
+      /** 활성화 일 */
+      DAY?: string;
+    }>;
+    /** 비활성화 하중 그룹 목록 */
+    DACT_LOAD?: Array<{
+      /** 하중 케이스명 */
+      LOAD_NAME?: string;
+      /** 비활성화 일 */
+      DAY?: string;
+    }>;
   }
   /** Generated from contracts/endpoints/. */
   export interface ConstructionStagePayload {
@@ -3062,122 +3144,6 @@ export namespace DbConstructionStageTypes {
     /** Construction Stage NO. */
     NO?: number;
   }
-  export interface CompositeSectionPartInfo {
-    PART?: number;
-    MTYPE?: string;
-    MAT?: string;
-    CSTAGE?: string;
-    AGE?: number;
-    PARTINFO_H?: unknown;
-    PARTINFO_VS?: number;
-    PARTINFO_M?: number;
-    AREA?: number;
-    ASY?: number;
-    ASZ?: number;
-    IXX?: number;
-    IYY?: number;
-    IZZ?: number;
-    WAREA?: number;
-    IW?: number;
-  }
-  export interface CompositeSectionConstructionStagePayload {
-    SEC?: number;
-    ASTAGE?: string;
-    TYPE?: string;
-    bTAP?: boolean;
-    vPARTINFO?: Array<CompositeSectionPartInfo>;
-    OPT_UPDATE_ALL_H?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface TimeLoadItem {
-    /** 일련번호 */
-    ID?: number;
-    /** 하중 그룹명 */
-    GROUP_NAME?: string;
-    /** 시간 하중 (일) */
-    DAY: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface TimeLoadConstructionStagePayload {
-    /** 시공단계 시간 하중 목록 */
-    ITEMS: Array<{
-      /** 일련번호 */
-      ID?: number;
-      /** 하중 그룹명 */
-      GROUP_NAME?: string;
-      /** 시간 하중 (일) */
-      DAY: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SetBackLoadPayload {
-    /** 절점 1 */
-    NODE1: number;
-    /** 절점 2 */
-    NODE2: number;
-    /** X 방향 변위 */
-    DX?: number;
-    /** Y 방향 변위 */
-    DY?: number;
-    /** Z 방향 변위 */
-    DZ?: number;
-    /** 하중 케이스명 */
-    LCNAME: string;
-    /** 하중 그룹명 */
-    GROUP_NAME?: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface CamberConstructionStagePayload {
-    /** 변형 캠버 */
-    DEFORM: number;
-    /** 사용자 정의 캠버 */
-    USER: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface CreepCoefficientItem {
-    /** 일련번호 */
-    ID?: number;
-    /** 하중 그룹명 */
-    GROUP_NAME?: string;
-    /** 크리프 계수 */
-    CREEP: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface CreepCoefficientConstructionStagePayload {
-    /** 크리프 계수 목록 */
-    ITEMS: Array<{
-      /** 일련번호 */
-      ID?: number;
-      /** 하중 그룹명 */
-      GROUP_NAME?: string;
-      /** 크리프 계수 */
-      CREEP: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface AmbientTemperatureFunctionPayload {
-    /** 함수명 */
-    NAME: string;
-    /** 함수 타입 ("CONST" / "SINE" / "USER") */
-    TYPE: string;
-    /** 온도 Applies when TYPE = "CONST". */
-    TEMP?: number;
-    /** 최대 온도 (T) Applies when TYPE = "SINE". */
-    MAX_TEMP?: number;
-    /** 평균 온도 (To) Applies when TYPE = "SINE". */
-    MEAN_TEMP?: number;
-    /** 지연 시간 (to) Applies when TYPE = "SINE". */
-    DELAY_TIME?: number;
-    /** 스케일 계수 Required when TYPE = "USER". */
-    SCALE_FACTOR?: number;
-    /** 함수 데이터 목록 Required when TYPE = "USER". */
-    ITEM?: Array<{
-      /** - 시간 */
-      TIME: number;
-      /** - 온도 */
-      VALUE: number;
-    }>;
-  }
   /** Generated from contracts/endpoints/. */
   export interface ConvectionCoefficientFunctionPayload {
     /** 함수명 */
@@ -3195,6 +3161,34 @@ export namespace DbConstructionStageTypes {
       /** - 대류 계수 */
       VALUE: number;
     }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface CreepCoefficientConstructionStagePayload {
+    /** 크리프 계수 목록 */
+    ITEMS: Array<{
+      /** 일련번호 */
+      ID?: number;
+      /** 하중 그룹명 */
+      GROUP_NAME?: string;
+      /** 크리프 계수 */
+      CREEP: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface CreepCoefficientItem {
+    /** 일련번호 */
+    ID?: number;
+    /** 하중 그룹명 */
+    GROUP_NAME?: string;
+    /** 크리프 계수 */
+    CREEP: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface DeactivateElementItem {
+    /** 비활성화할 구조 그룹명 */
+    GRUP_NAME: string;
+    /** 요소력 재분배 (%) */
+    REDIST?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface ElementConvectionBoundaryItem {
@@ -3223,27 +3217,6 @@ export namespace DbConstructionStageTypes {
       CCFC_NAME: string;
       /** 외기 온도 함수명 */
       ETFC_NAME: string;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PrescribedTemperatureItem {
-    /** 일련번호 */
-    ID?: number;
-    /** 경계 그룹명 */
-    GROUP_NAME?: string;
-    /** 온도 */
-    TEMPER: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PrescribedTemperaturePayload {
-    /** 지정 온도 목록 */
-    ITEMS: Array<{
-      /** 일련번호 */
-      ID?: number;
-      /** 경계 그룹명 */
-      GROUP_NAME?: string;
-      /** 온도 */
-      TEMPER: number;
     }>;
   }
   /** Generated from contracts/endpoints/. */
@@ -3278,10 +3251,9 @@ export namespace DbConstructionStageTypes {
       VALUE: number;
     }>;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface AssignHeatSourcePayload {
-    /** 열원 함수명 */
-    FUNC_NAME: string;
+  export interface LoadGroupDayItem {
+    LOAD_NAME?: string;
+    DAY?: string;
   }
   /** Generated from contracts/endpoints/. */
   export interface PipeCoolingPayload {
@@ -3311,138 +3283,67 @@ export namespace DbConstructionStageTypes {
     END_STAGE?: string;
   }
   /** Generated from contracts/endpoints/. */
-  export interface ConstructionStageForHydrationPayload {
-    /** 수화열 단계명 */
-    NAME: string;
-    /** 초기 온도 사용 여부 */
-    bINITAL_TEMP?: boolean;
-    /** 초기 온도 */
-    INITIAL_TEMP?: number;
-    /** 추가 스텝 목록 */
-    ADD_STEP: Array<number>;
-    /** 활성화 구조 그룹 목록 */
-    ACT_ELEM: Array<string>;
-    /** 활성화 경계 그룹 목록 */
-    ACT_BNGR: Array<string>;
-    /** 비활성화 경계 그룹 목록 */
-    DACT_BNGR: Array<string>;
-    /** 활성화 하중 그룹 목록 */
-    ACT_LOAD?: Array<{
-      /** 하중 케이스명 */
-      LOAD_NAME?: string;
-      /** 활성화 일 */
-      DAY?: string;
+  export interface PrescribedTemperatureItem {
+    /** 일련번호 */
+    ID?: number;
+    /** 경계 그룹명 */
+    GROUP_NAME?: string;
+    /** 온도 */
+    TEMPER: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PrescribedTemperaturePayload {
+    /** 지정 온도 목록 */
+    ITEMS: Array<{
+      /** 일련번호 */
+      ID?: number;
+      /** 경계 그룹명 */
+      GROUP_NAME?: string;
+      /** 온도 */
+      TEMPER: number;
     }>;
-    /** 비활성화 하중 그룹 목록 */
-    DACT_LOAD?: Array<{
-      /** 하중 케이스명 */
-      LOAD_NAME?: string;
-      /** 비활성화 일 */
-      DAY?: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SetBackLoadPayload {
+    /** 절점 1 */
+    NODE1: number;
+    /** 절점 2 */
+    NODE2: number;
+    /** X 방향 변위 */
+    DX?: number;
+    /** Y 방향 변위 */
+    DY?: number;
+    /** Z 방향 변위 */
+    DZ?: number;
+    /** 하중 케이스명 */
+    LCNAME: string;
+    /** 하중 그룹명 */
+    GROUP_NAME?: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TimeLoadConstructionStagePayload {
+    /** 시공단계 시간 하중 목록 */
+    ITEMS: Array<{
+      /** 일련번호 */
+      ID?: number;
+      /** 하중 그룹명 */
+      GROUP_NAME?: string;
+      /** 시간 하중 (일) */
+      DAY: number;
     }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TimeLoadItem {
+    /** 일련번호 */
+    ID?: number;
+    /** 하중 그룹명 */
+    GROUP_NAME?: string;
+    /** 시간 하중 (일) */
+    DAY: number;
   }
 }
 
 export namespace DbDesignTypes {
-  /** Generated from contracts/endpoints/. */
-  export interface HoopShearBarSpec {
-    /** Name */
-    NAME?: string;
-    /** Leg y */
-    LEG_Y?: number;
-    /** Leg z */
-    LEG_Z?: number;
-    /** Dist */
-    DIST?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface RebarNameDist {
-    /** Name */
-    NAME?: string;
-    /** Space */
-    DIST?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface RcDesignCodePayload {
-    /** RC 설계 코드 이름 (아래 표의 문자열 중 하나) */
-    DGNCODE: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SteelDesignCodePayload {
-    /** 강재 설계 코드 이름 (아래 표의 문자열 중 하나) */
-    DGNCODE: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface BeamMainRebarLayerEntry {
-    /** 레이어 번호 */
-    LAYER: number;
-    /** 표면~철근중심 피복 거리 */
-    dD: number;
-    /** 철근 개수 */
-    BAR_NUM: number;
-    /** 철근 규격 1 */
-    BAR_NAME1: string;
-    /** 철근 규격 2 */
-    BAR_NAME2?: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface BeamMainRebarSectorItem {
-    /** 구간 · I단: "I" / J단: "J" / 중앙: "M" */
-    SECTOR: string;
-    /** 상단 레이어 정보 */
-    POS_TOP_LAYERS: Array<{
-      /** 레이어 번호 */
-      LAYER: number;
-      /** 표면~철근중심 피복 거리 */
-      dD: number;
-      /** 철근 개수 */
-      BAR_NUM: number;
-      /** 철근 규격 1 */
-      BAR_NAME1: string;
-      /** 철근 규격 2 */
-      BAR_NAME2?: string;
-    }>;
-    /** 하단 레이어 정보 */
-    POS_BOT_LAYERS: Array<{
-      /** 레이어 번호 */
-      LAYER: number;
-      /** 표면~철근중심 피복 거리 */
-      dD: number;
-      /** 철근 개수 */
-      BAR_NUM: number;
-      /** 철근 규격 1 */
-      BAR_NAME1: string;
-      /** 철근 규격 2 */
-      BAR_NAME2?: string;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface BeamSubRebarSectorItem {
-    /** 구간 · I단: "I" / J단: "J" / 중앙: "M" */
-    SECTOR: string;
-    /** 철근 개수 */
-    dSUB_BARNUM: number;
-    /** 철근 규격 */
-    SUB_BARNAME: string;
-    /** 철근 간격 */
-    dSUB_BARDIST: number;
-    /** 부재와의 각도 */
-    dSUB_BARANGLE: number;
-    /** 비틀림 철근 사용 여부 */
-    bTORSIONAL_BAR?: boolean;
-    /** 비틀림 철근 규격 */
-    sTRTORBARNA?: string;
-    /** 비틀림 철근 간격 */
-    dTORBAR_SPACING?: number;
-    /** 다발철근(Bundled) 사용 여부 */
-    bBUNDLEDBAR?: boolean;
-    /** 다발철근 개수 */
-    dBUNDLEDBARNUM?: number;
-    /** 종방향 철근 규격 */
-    LONGIBARNA?: string;
-    /** 종방향 철근 개수 */
-    dLONGIBARNUM?: number;
-  }
   /** Generated from contracts/endpoints/. */
   export interface BeamCheckRebar {
     /** 종방향 철근 (구간 [I, J, M] 별 객체 배열) */
@@ -3507,9 +3408,18 @@ export namespace DbDesignTypes {
     OPTION_IMJSAME?: boolean;
   }
   /** Generated from contracts/endpoints/. */
-  export interface ColumnRebarPositionEntry {
-    /** 표면 위치 · 원형: "P1" / 사각형: "P1", "P2" */
-    POSITION: string;
+  export interface BeamMainBarLayerEntry {
+    /** Name */
+    NAME: string;
+    /** Number */
+    NUM: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface BeamMainRebarLayerEntry {
+    /** 레이어 번호 */
+    LAYER: number;
+    /** 표면~철근중심 피복 거리 */
+    dD: number;
     /** 철근 개수 */
     BAR_NUM: number;
     /** 철근 규격 1 */
@@ -3518,15 +3428,15 @@ export namespace DbDesignTypes {
     BAR_NAME2?: string;
   }
   /** Generated from contracts/endpoints/. */
-  export interface ColumnRebarLayerEntry {
-    /** 레이어 인덱스 (1~5) */
-    INDEX: number;
-    /** 표면~철근중심 피복 거리 */
-    dDc: number;
-    /** 철근 레이어(위치별) */
-    vPOSITION: Array<{
-      /** 표면 위치 · 원형: "P1" / 사각형: "P1", "P2" */
-      POSITION: string;
+  export interface BeamMainRebarSectorItem {
+    /** 구간 · I단: "I" / J단: "J" / 중앙: "M" */
+    SECTOR: string;
+    /** 상단 레이어 정보 */
+    POS_TOP_LAYERS: Array<{
+      /** 레이어 번호 */
+      LAYER: number;
+      /** 표면~철근중심 피복 거리 */
+      dD: number;
       /** 철근 개수 */
       BAR_NUM: number;
       /** 철근 규격 1 */
@@ -3534,340 +3444,19 @@ export namespace DbDesignTypes {
       /** 철근 규격 2 */
       BAR_NAME2?: string;
     }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ColumnSubBarSpec {
-    /** 철근 규격 */
-    SUBBAR_NAME: string;
-    /** 철근 간격 */
-    SUBBAR_DIST: number;
-    /** 철근 개수 */
-    SUBBAR_NUM: number;
-    /** Y방향 철근 규격 */
-    SUBBAR_NAME_Y: string;
-    /** Z방향 철근 규격 */
-    SUBBAR_NAME_Z: string;
-    /** Y방향 철근 개수 */
-    SUBBAR_NUM_Y: number;
-    /** Z방향 철근 개수 */
-    SUBBAR_NUM_Z: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ColumnCheckRebar {
-    /** 종방향 철근 레이어 배열 */
-    vLAYER: Array<{
-      /** 레이어 인덱스 (1~5) */
-      INDEX: number;
+    /** 하단 레이어 정보 */
+    POS_BOT_LAYERS: Array<{
+      /** 레이어 번호 */
+      LAYER: number;
       /** 표면~철근중심 피복 거리 */
-      dDc: number;
-      /** 철근 레이어(위치별) */
-      vPOSITION: Array<{
-        /** 표면 위치 · 원형: "P1" / 사각형: "P1", "P2" */
-        POSITION: string;
-        /** 철근 개수 */
-        BAR_NUM: number;
-        /** 철근 규격 1 */
-        BAR_NAME1: string;
-        /** 철근 규격 2 */
-        BAR_NAME2?: string;
-      }>;
-    }>;
-    /** 횡방향 철근 */
-    SUB_BAR: {
-      /** 철근 규격 */
-      SUBBAR_NAME: string;
-      /** 철근 간격 */
-      SUBBAR_DIST: number;
+      dD: number;
       /** 철근 개수 */
-      SUBBAR_NUM: number;
-      /** Y방향 철근 규격 */
-      SUBBAR_NAME_Y: string;
-      /** Z방향 철근 규격 */
-      SUBBAR_NAME_Z: string;
-      /** Y방향 철근 개수 */
-      SUBBAR_NUM_Y: number;
-      /** Z방향 철근 개수 */
-      SUBBAR_NUM_Z: number;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export type RebarCheckInputPayload = {
-    /** 부재 타입 · 보: "BEAM" / 기둥: "COLUMN" */
-    MEMBTYPE: string;
-    /** 균열 검토(노출 환경) · Class 1: 0 / Class 2: 1 */
-    ENVTYPE: number;
-    BEAM?: {
-      /** 종방향 철근 (구간 [I, J, M] 별 객체 배열) */
-      vMAIN: Array<{
-        /** 구간 · I단: "I" / J단: "J" / 중앙: "M" */
-        SECTOR: string;
-        /** 상단 레이어 정보 */
-        POS_TOP_LAYERS: Array<{
-          /** 레이어 번호 */
-          LAYER: number;
-          /** 표면~철근중심 피복 거리 */
-          dD: number;
-          /** 철근 개수 */
-          BAR_NUM: number;
-          /** 철근 규격 1 */
-          BAR_NAME1: string;
-          /** 철근 규격 2 */
-          BAR_NAME2?: string;
-        }>;
-        /** 하단 레이어 정보 */
-        POS_BOT_LAYERS: Array<{
-          /** 레이어 번호 */
-          LAYER: number;
-          /** 표면~철근중심 피복 거리 */
-          dD: number;
-          /** 철근 개수 */
-          BAR_NUM: number;
-          /** 철근 규격 1 */
-          BAR_NAME1: string;
-          /** 철근 규격 2 */
-          BAR_NAME2?: string;
-        }>;
-      }>;
-      /** 횡방향(전단/비틀림) 철근 (구간 [I, J, M] 별) */
-      vSUB_BAR: Array<{
-        /** 구간 · I단: "I" / J단: "J" / 중앙: "M" */
-        SECTOR: string;
-        /** 철근 개수 */
-        dSUB_BARNUM: number;
-        /** 철근 규격 */
-        SUB_BARNAME: string;
-        /** 철근 간격 */
-        dSUB_BARDIST: number;
-        /** 부재와의 각도 */
-        dSUB_BARANGLE: number;
-        /** 비틀림 철근 사용 여부 */
-        bTORSIONAL_BAR?: boolean;
-        /** 비틀림 철근 규격 */
-        sTRTORBARNA?: string;
-        /** 비틀림 철근 간격 */
-        dTORBAR_SPACING?: number;
-        /** 다발철근(Bundled) 사용 여부 */
-        bBUNDLEDBAR?: boolean;
-        /** 다발철근 개수 */
-        dBUNDLEDBARNUM?: number;
-        /** 종방향 철근 규격 */
-        LONGIBARNA?: string;
-        /** 종방향 철근 개수 */
-        dLONGIBARNUM?: number;
-      }>;
-      /** IMJ Same Option (it needs only I) */
-      OPTION_IMJSAME?: boolean;
-    };
-    COLM?: {
-      /** 종방향 철근 레이어 배열 */
-      vLAYER: Array<{
-        /** 레이어 인덱스 (1~5) */
-        INDEX: number;
-        /** 표면~철근중심 피복 거리 */
-        dDc: number;
-        /** 철근 레이어(위치별) */
-        vPOSITION: Array<{
-          /** 표면 위치 · 원형: "P1" / 사각형: "P1", "P2" */
-          POSITION: string;
-          /** 철근 개수 */
-          BAR_NUM: number;
-          /** 철근 규격 1 */
-          BAR_NAME1: string;
-          /** 철근 규격 2 */
-          BAR_NAME2?: string;
-        }>;
-      }>;
-      /** 횡방향 철근 */
-      SUB_BAR: {
-        /** 철근 규격 */
-        SUBBAR_NAME: string;
-        /** 철근 간격 */
-        SUBBAR_DIST: number;
-        /** 철근 개수 */
-        SUBBAR_NUM: number;
-        /** Y방향 철근 규격 */
-        SUBBAR_NAME_Y: string;
-        /** Z방향 철근 규격 */
-        SUBBAR_NAME_Z: string;
-        /** Y방향 철근 개수 */
-        SUBBAR_NUM_Y: number;
-        /** Z방향 철근 개수 */
-        SUBBAR_NUM_Z: number;
-      };
-    };
-  } & (
-    {
-      MEMBTYPE: "BEAM";
-      /** 종방향 철근 (구간 [I, J, M] 별 객체 배열) */
-      vMAIN: Array<{
-        /** 구간 · I단: "I" / J단: "J" / 중앙: "M" */
-        SECTOR: string;
-        /** 상단 레이어 정보 */
-        POS_TOP_LAYERS: Array<JsonObject>;
-        /** 하단 레이어 정보 */
-        POS_BOT_LAYERS: Array<JsonObject>;
-      }>;
-      /** 횡방향(전단/비틀림) 철근 (구간 [I, J, M] 별) */
-      vSUB_BAR: Array<{
-        /** 철근 개수 */
-        dSUB_BARNUM: number;
-        /** 철근 규격 */
-        SUB_BARNAME: string;
-        /** 철근 간격 */
-        dSUB_BARDIST: number;
-        /** 부재와의 각도 */
-        dSUB_BARANGLE: number;
-        /** 비틀림 철근 사용 여부 */
-        bTORSIONAL_BAR?: boolean;
-        /** 비틀림 철근 규격 */
-        sTRTORBARNA?: string;
-        /** 비틀림 철근 간격 */
-        dTORBAR_SPACING?: number;
-        /** 다발철근(Bundled) 사용 여부 */
-        bBUNDLEDBAR?: boolean;
-        /** 다발철근 개수 */
-        dBUNDLEDBARNUM?: number;
-        /** 종방향 철근 규격 */
-        LONGIBARNA?: string;
-        /** 종방향 철근 개수 */
-        dLONGIBARNUM?: number;
-      }>;
-    } |
-    {
-      MEMBTYPE: "COLUMN";
-      /** 종방향 철근 레이어 배열 */
-      vLAYER: Array<{
-        /** 레이어 인덱스 (1~5) */
-        INDEX: number;
-        /** 표면~철근중심 피복 거리 */
-        dDc: number;
-        /** 철근 레이어(위치별) */
-        vPOSITION: Array<JsonObject>;
-      }>;
-      /** 횡방향 철근 */
-      SUB_BAR: {
-        /** 철근 규격 */
-        SUBBAR_NAME: string;
-        /** 철근 간격 */
-        SUBBAR_DIST: number;
-        /** 철근 개수 */
-        SUBBAR_NUM: number;
-        /** Y방향 철근 규격 */
-        SUBBAR_NAME_Y: string;
-        /** Z방향 철근 규격 */
-        SUBBAR_NAME_Z: string;
-        /** Y방향 철근 개수 */
-        SUBBAR_NUM_Y: number;
-        /** Z방향 철근 개수 */
-        SUBBAR_NUM_Z: number;
-      };
-    } |
-    {
-      vMAIN?: never;
-      vSUB_BAR?: never;
-      vLAYER?: never;
-      SUB_BAR?: never;
-    }
-  );
-  /** Generated from contracts/endpoints/. */
-  export interface UnbracedLengthPayload {
-    /** 비지지 길이 Ly (강축) */
-    LY?: number;
-    /** 비지지 길이 Lz (약축) */
-    LZ?: number;
-    /** 횡방향 비지지 길이 Lb */
-    LB?: number;
-    /** 횡방향 비지지 길이 미고려 */
-    bNOTUSE?: boolean;
-    /** 코드에 의한 자동 계산 */
-    bAUTOCALC?: boolean;
-    /** 비틀림 비지지 길이 Lt */
-    LT?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface DesignMemberAssignmentPayload {
-    /** 설계 부재로 묶을 요소 번호 목록 */
-    AELEM: Array<number>;
-    /** 국부좌표 방향 반전 */
-    bREVERSE?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface FrameDefinitionPayload {
-    /** 프레임 X방향 · 비횡구속·Sway: "Unbraced Sway" / 횡구속·Non-sway: "Braced Non-sway" */
-    FRAMEX?: string;
-    /** 프레임 Y방향 · "Unbraced Sway" / "Braced Non-sway" */
-    FRAMEY?: string;
-    /** 유효좌굴길이계수 자동 계산 */
-    bAUTOKF?: boolean;
-    /** 설계 타입 · 3-D: "3D" / X-Z 평면: "XZ" / Y-Z 평면: "YZ" / X-Y 평면: "XY" */
-    DT?: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface LimitingSlendernessRatioPayload {
-    /** 세장비 검토 생략 */
-    bNOTCHECK?: boolean;
-    /** 압축 한계 세장비 */
-    COMP: number;
-    /** 인장 한계 세장비 */
-    TENS: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ModifyMemberTypePayload {
-    /** 부재 타입 · 기둥: "COLUMN" / 보: "BEAM" / 가새: "BRACE" */
-    TYPE: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ModifyWallMarkPayload {
-    /** 벽체 마크 이름 */
-    MARKNAME: string;
-    /** 벽체 ID 목록 */
-    WID_LIST: Array<number>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface BeamMainBarLayerEntry {
-    /** Name */
-    NAME: string;
-    /** Number */
-    NUM: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface BeamShearBarSpec {
-    /** Name */
-    NAME: string;
-    /** Leg */
-    LEG: number;
-    /** Dist */
-    DIST: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface BeamRebarSector {
-    /** Main Bar List : Top (size = 1 or 2) */
-    vMAIN_BAR_TOP: Array<{
-      /** Name */
-      NAME: string;
-      /** Number */
-      NUM: number;
+      BAR_NUM: number;
+      /** 철근 규격 1 */
+      BAR_NAME1: string;
+      /** 철근 규격 2 */
+      BAR_NAME2?: string;
     }>;
-    /** Main Bar List : Bottom (size = 1 or 2) */
-    vMAIN_BAR_BOT: Array<{
-      /** Name */
-      NAME: string;
-      /** Number */
-      NUM: number;
-    }>;
-    /** Shear Bar */
-    SHEAR_BAR: {
-      /** Name */
-      NAME: string;
-      /** Leg */
-      LEG: number;
-      /** Dist */
-      DIST: number;
-    };
-    /** Skin Bar Name */
-    SKIN_BAR_NAME?: string;
-    /** Skin Bar Number */
-    SKIN_BAR_NUM?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface BeamRebarItem {
@@ -4083,6 +3672,204 @@ export namespace DbDesignTypes {
     }>;
   }
   /** Generated from contracts/endpoints/. */
+  export interface BeamRebarSector {
+    /** Main Bar List : Top (size = 1 or 2) */
+    vMAIN_BAR_TOP: Array<{
+      /** Name */
+      NAME: string;
+      /** Number */
+      NUM: number;
+    }>;
+    /** Main Bar List : Bottom (size = 1 or 2) */
+    vMAIN_BAR_BOT: Array<{
+      /** Name */
+      NAME: string;
+      /** Number */
+      NUM: number;
+    }>;
+    /** Shear Bar */
+    SHEAR_BAR: {
+      /** Name */
+      NAME: string;
+      /** Leg */
+      LEG: number;
+      /** Dist */
+      DIST: number;
+    };
+    /** Skin Bar Name */
+    SKIN_BAR_NAME?: string;
+    /** Skin Bar Number */
+    SKIN_BAR_NUM?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface BeamShearBarSpec {
+    /** Name */
+    NAME: string;
+    /** Leg */
+    LEG: number;
+    /** Dist */
+    DIST: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface BeamSubRebarSectorItem {
+    /** 구간 · I단: "I" / J단: "J" / 중앙: "M" */
+    SECTOR: string;
+    /** 철근 개수 */
+    dSUB_BARNUM: number;
+    /** 철근 규격 */
+    SUB_BARNAME: string;
+    /** 철근 간격 */
+    dSUB_BARDIST: number;
+    /** 부재와의 각도 */
+    dSUB_BARANGLE: number;
+    /** 비틀림 철근 사용 여부 */
+    bTORSIONAL_BAR?: boolean;
+    /** 비틀림 철근 규격 */
+    sTRTORBARNA?: string;
+    /** 비틀림 철근 간격 */
+    dTORBAR_SPACING?: number;
+    /** 다발철근(Bundled) 사용 여부 */
+    bBUNDLEDBAR?: boolean;
+    /** 다발철근 개수 */
+    dBUNDLEDBARNUM?: number;
+    /** 종방향 철근 규격 */
+    LONGIBARNA?: string;
+    /** 종방향 철근 개수 */
+    dLONGIBARNUM?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface BraceMainBarItem {
+    /** Main Name */
+    NAME?: string;
+    /** Number */
+    NUM?: number;
+    /** Row */
+    ROW?: number;
+    /** Concrete Face ~ Center of Rebar */
+    D0?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface BraceRebarItem {
+    /** ID (read only) */
+    ID?: number;
+    /** Main Bar List */
+    vMAIN_BAR?: Array<{
+      /** Main Name */
+      NAME?: string;
+      /** Number */
+      NUM?: number;
+      /** Row */
+      ROW?: number;
+      /** Concrete Face ~ Center of Rebar */
+      D0?: number;
+    }>;
+    /** Shear Bar-End */
+    SHEAR_BAR_END: {
+      /** Name */
+      NAME?: string;
+      /** Leg y */
+      LEG_Y?: number;
+      /** Leg z */
+      LEG_Z?: number;
+      /** Dist */
+      DIST?: number;
+    };
+    /** Shear Bar-Center */
+    SHEAR_BAR_CEN: {
+      /** Name */
+      NAME?: string;
+      /** Leg y */
+      LEG_Y?: number;
+      /** Leg z */
+      LEG_Z?: number;
+      /** Dist */
+      DIST?: number;
+    };
+    /** Hoop Type (1=Tied, 2=Spiral) */
+    HOOP_TYPE?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface BraceRebarPayload {
+    /** Concrete Brace Rebar Items */
+    ITEMS: Array<{
+      /** ID (read only) */
+      ID?: number;
+      /** Main Bar List */
+      vMAIN_BAR?: Array<{
+        /** Main Name */
+        NAME?: string;
+        /** Number */
+        NUM?: number;
+        /** Row */
+        ROW?: number;
+        /** Concrete Face ~ Center of Rebar */
+        D0?: number;
+      }>;
+      /** Shear Bar-End */
+      SHEAR_BAR_END: {
+        /** Name */
+        NAME?: string;
+        /** Leg y */
+        LEG_Y?: number;
+        /** Leg z */
+        LEG_Z?: number;
+        /** Dist */
+        DIST?: number;
+      };
+      /** Shear Bar-Center */
+      SHEAR_BAR_CEN: {
+        /** Name */
+        NAME?: string;
+        /** Leg y */
+        LEG_Y?: number;
+        /** Leg z */
+        LEG_Z?: number;
+        /** Dist */
+        DIST?: number;
+      };
+      /** Hoop Type (1=Tied, 2=Spiral) */
+      HOOP_TYPE?: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ColumnCheckRebar {
+    /** 종방향 철근 레이어 배열 */
+    vLAYER: Array<{
+      /** 레이어 인덱스 (1~5) */
+      INDEX: number;
+      /** 표면~철근중심 피복 거리 */
+      dDc: number;
+      /** 철근 레이어(위치별) */
+      vPOSITION: Array<{
+        /** 표면 위치 · 원형: "P1" / 사각형: "P1", "P2" */
+        POSITION: string;
+        /** 철근 개수 */
+        BAR_NUM: number;
+        /** 철근 규격 1 */
+        BAR_NAME1: string;
+        /** 철근 규격 2 */
+        BAR_NAME2?: string;
+      }>;
+    }>;
+    /** 횡방향 철근 */
+    SUB_BAR: {
+      /** 철근 규격 */
+      SUBBAR_NAME: string;
+      /** 철근 간격 */
+      SUBBAR_DIST: number;
+      /** 철근 개수 */
+      SUBBAR_NUM: number;
+      /** Y방향 철근 규격 */
+      SUBBAR_NAME_Y: string;
+      /** Z방향 철근 규격 */
+      SUBBAR_NAME_Z: string;
+      /** Y방향 철근 개수 */
+      SUBBAR_NUM_Y: number;
+      /** Z방향 철근 개수 */
+      SUBBAR_NUM_Z: number;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
   export interface ColumnMainBarItem {
     /** Main Name */
     NAME?: string;
@@ -4148,6 +3935,24 @@ export namespace DbDesignTypes {
     HOOK_TYPE?: number;
   }
   /** Generated from contracts/endpoints/. */
+  export interface ColumnRebarLayerEntry {
+    /** 레이어 인덱스 (1~5) */
+    INDEX: number;
+    /** 표면~철근중심 피복 거리 */
+    dDc: number;
+    /** 철근 레이어(위치별) */
+    vPOSITION: Array<{
+      /** 표면 위치 · 원형: "P1" / 사각형: "P1", "P2" */
+      POSITION: string;
+      /** 철근 개수 */
+      BAR_NUM: number;
+      /** 철근 규격 1 */
+      BAR_NAME1: string;
+      /** 철근 규격 2 */
+      BAR_NAME2?: string;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
   export interface ColumnRebarPayload {
     /** Concrete Column Rebar Items */
     ITEMS: Array<{
@@ -4199,6 +4004,295 @@ export namespace DbDesignTypes {
       /** Hook Type (0: 90+(135 or 180) / 1: Both(135 or 180)) */
       HOOK_TYPE?: number;
     }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ColumnRebarPositionEntry {
+    /** 표면 위치 · 원형: "P1" / 사각형: "P1", "P2" */
+    POSITION: string;
+    /** 철근 개수 */
+    BAR_NUM: number;
+    /** 철근 규격 1 */
+    BAR_NAME1: string;
+    /** 철근 규격 2 */
+    BAR_NAME2?: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ColumnSubBarSpec {
+    /** 철근 규격 */
+    SUBBAR_NAME: string;
+    /** 철근 간격 */
+    SUBBAR_DIST: number;
+    /** 철근 개수 */
+    SUBBAR_NUM: number;
+    /** Y방향 철근 규격 */
+    SUBBAR_NAME_Y: string;
+    /** Z방향 철근 규격 */
+    SUBBAR_NAME_Z: string;
+    /** Y방향 철근 개수 */
+    SUBBAR_NUM_Y: number;
+    /** Z방향 철근 개수 */
+    SUBBAR_NUM_Z: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface DesignMemberAssignmentPayload {
+    /** 설계 부재로 묶을 요소 번호 목록 */
+    AELEM: Array<number>;
+    /** 국부좌표 방향 반전 */
+    bREVERSE?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface FrameDefinitionPayload {
+    /** 프레임 X방향 · 비횡구속·Sway: "Unbraced Sway" / 횡구속·Non-sway: "Braced Non-sway" */
+    FRAMEX?: string;
+    /** 프레임 Y방향 · "Unbraced Sway" / "Braced Non-sway" */
+    FRAMEY?: string;
+    /** 유효좌굴길이계수 자동 계산 */
+    bAUTOKF?: boolean;
+    /** 설계 타입 · 3-D: "3D" / X-Z 평면: "XZ" / Y-Z 평면: "YZ" / X-Y 평면: "XY" */
+    DT?: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface HoopShearBarSpec {
+    /** Name */
+    NAME?: string;
+    /** Leg y */
+    LEG_Y?: number;
+    /** Leg z */
+    LEG_Z?: number;
+    /** Dist */
+    DIST?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LimitingSlendernessRatioPayload {
+    /** 세장비 검토 생략 */
+    bNOTCHECK?: boolean;
+    /** 압축 한계 세장비 */
+    COMP: number;
+    /** 인장 한계 세장비 */
+    TENS: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ModifyMemberTypePayload {
+    /** 부재 타입 · 기둥: "COLUMN" / 보: "BEAM" / 가새: "BRACE" */
+    TYPE: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ModifyWallMarkPayload {
+    /** 벽체 마크 이름 */
+    MARKNAME: string;
+    /** 벽체 ID 목록 */
+    WID_LIST: Array<number>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RcDesignCodePayload {
+    /** RC 설계 코드 이름 (아래 표의 문자열 중 하나) */
+    DGNCODE: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export type RebarCheckInputPayload = {
+    /** 부재 타입 · 보: "BEAM" / 기둥: "COLUMN" */
+    MEMBTYPE: string;
+    /** 균열 검토(노출 환경) · Class 1: 0 / Class 2: 1 */
+    ENVTYPE: number;
+    BEAM?: {
+      /** 종방향 철근 (구간 [I, J, M] 별 객체 배열) */
+      vMAIN: Array<{
+        /** 구간 · I단: "I" / J단: "J" / 중앙: "M" */
+        SECTOR: string;
+        /** 상단 레이어 정보 */
+        POS_TOP_LAYERS: Array<{
+          /** 레이어 번호 */
+          LAYER: number;
+          /** 표면~철근중심 피복 거리 */
+          dD: number;
+          /** 철근 개수 */
+          BAR_NUM: number;
+          /** 철근 규격 1 */
+          BAR_NAME1: string;
+          /** 철근 규격 2 */
+          BAR_NAME2?: string;
+        }>;
+        /** 하단 레이어 정보 */
+        POS_BOT_LAYERS: Array<{
+          /** 레이어 번호 */
+          LAYER: number;
+          /** 표면~철근중심 피복 거리 */
+          dD: number;
+          /** 철근 개수 */
+          BAR_NUM: number;
+          /** 철근 규격 1 */
+          BAR_NAME1: string;
+          /** 철근 규격 2 */
+          BAR_NAME2?: string;
+        }>;
+      }>;
+      /** 횡방향(전단/비틀림) 철근 (구간 [I, J, M] 별) */
+      vSUB_BAR: Array<{
+        /** 구간 · I단: "I" / J단: "J" / 중앙: "M" */
+        SECTOR: string;
+        /** 철근 개수 */
+        dSUB_BARNUM: number;
+        /** 철근 규격 */
+        SUB_BARNAME: string;
+        /** 철근 간격 */
+        dSUB_BARDIST: number;
+        /** 부재와의 각도 */
+        dSUB_BARANGLE: number;
+        /** 비틀림 철근 사용 여부 */
+        bTORSIONAL_BAR?: boolean;
+        /** 비틀림 철근 규격 */
+        sTRTORBARNA?: string;
+        /** 비틀림 철근 간격 */
+        dTORBAR_SPACING?: number;
+        /** 다발철근(Bundled) 사용 여부 */
+        bBUNDLEDBAR?: boolean;
+        /** 다발철근 개수 */
+        dBUNDLEDBARNUM?: number;
+        /** 종방향 철근 규격 */
+        LONGIBARNA?: string;
+        /** 종방향 철근 개수 */
+        dLONGIBARNUM?: number;
+      }>;
+      /** IMJ Same Option (it needs only I) */
+      OPTION_IMJSAME?: boolean;
+    };
+    COLM?: {
+      /** 종방향 철근 레이어 배열 */
+      vLAYER: Array<{
+        /** 레이어 인덱스 (1~5) */
+        INDEX: number;
+        /** 표면~철근중심 피복 거리 */
+        dDc: number;
+        /** 철근 레이어(위치별) */
+        vPOSITION: Array<{
+          /** 표면 위치 · 원형: "P1" / 사각형: "P1", "P2" */
+          POSITION: string;
+          /** 철근 개수 */
+          BAR_NUM: number;
+          /** 철근 규격 1 */
+          BAR_NAME1: string;
+          /** 철근 규격 2 */
+          BAR_NAME2?: string;
+        }>;
+      }>;
+      /** 횡방향 철근 */
+      SUB_BAR: {
+        /** 철근 규격 */
+        SUBBAR_NAME: string;
+        /** 철근 간격 */
+        SUBBAR_DIST: number;
+        /** 철근 개수 */
+        SUBBAR_NUM: number;
+        /** Y방향 철근 규격 */
+        SUBBAR_NAME_Y: string;
+        /** Z방향 철근 규격 */
+        SUBBAR_NAME_Z: string;
+        /** Y방향 철근 개수 */
+        SUBBAR_NUM_Y: number;
+        /** Z방향 철근 개수 */
+        SUBBAR_NUM_Z: number;
+      };
+    };
+  } & (
+    {
+      MEMBTYPE: "BEAM";
+      /** 종방향 철근 (구간 [I, J, M] 별 객체 배열) */
+      vMAIN: Array<{
+        /** 구간 · I단: "I" / J단: "J" / 중앙: "M" */
+        SECTOR: string;
+        /** 상단 레이어 정보 */
+        POS_TOP_LAYERS: Array<JsonObject>;
+        /** 하단 레이어 정보 */
+        POS_BOT_LAYERS: Array<JsonObject>;
+      }>;
+      /** 횡방향(전단/비틀림) 철근 (구간 [I, J, M] 별) */
+      vSUB_BAR: Array<{
+        /** 철근 개수 */
+        dSUB_BARNUM: number;
+        /** 철근 규격 */
+        SUB_BARNAME: string;
+        /** 철근 간격 */
+        dSUB_BARDIST: number;
+        /** 부재와의 각도 */
+        dSUB_BARANGLE: number;
+        /** 비틀림 철근 사용 여부 */
+        bTORSIONAL_BAR?: boolean;
+        /** 비틀림 철근 규격 */
+        sTRTORBARNA?: string;
+        /** 비틀림 철근 간격 */
+        dTORBAR_SPACING?: number;
+        /** 다발철근(Bundled) 사용 여부 */
+        bBUNDLEDBAR?: boolean;
+        /** 다발철근 개수 */
+        dBUNDLEDBARNUM?: number;
+        /** 종방향 철근 규격 */
+        LONGIBARNA?: string;
+        /** 종방향 철근 개수 */
+        dLONGIBARNUM?: number;
+      }>;
+    } |
+    {
+      MEMBTYPE: "COLUMN";
+      /** 종방향 철근 레이어 배열 */
+      vLAYER: Array<{
+        /** 레이어 인덱스 (1~5) */
+        INDEX: number;
+        /** 표면~철근중심 피복 거리 */
+        dDc: number;
+        /** 철근 레이어(위치별) */
+        vPOSITION: Array<JsonObject>;
+      }>;
+      /** 횡방향 철근 */
+      SUB_BAR: {
+        /** 철근 규격 */
+        SUBBAR_NAME: string;
+        /** 철근 간격 */
+        SUBBAR_DIST: number;
+        /** 철근 개수 */
+        SUBBAR_NUM: number;
+        /** Y방향 철근 규격 */
+        SUBBAR_NAME_Y: string;
+        /** Z방향 철근 규격 */
+        SUBBAR_NAME_Z: string;
+        /** Y방향 철근 개수 */
+        SUBBAR_NUM_Y: number;
+        /** Z방향 철근 개수 */
+        SUBBAR_NUM_Z: number;
+      };
+    } |
+    {
+      vMAIN?: never;
+      vSUB_BAR?: never;
+      vLAYER?: never;
+      SUB_BAR?: never;
+    }
+  );
+  /** Generated from contracts/endpoints/. */
+  export interface RebarNameDist {
+    /** Name */
+    NAME?: string;
+    /** Space */
+    DIST?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SteelDesignCodePayload {
+    /** 강재 설계 코드 이름 (아래 표의 문자열 중 하나) */
+    DGNCODE: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface UnbracedLengthPayload {
+    /** 비지지 길이 Ly (강축) */
+    LY?: number;
+    /** 비지지 길이 Lz (약축) */
+    LZ?: number;
+    /** 횡방향 비지지 길이 Lb */
+    LB?: number;
+    /** 횡방향 비지지 길이 미고려 */
+    bNOTUSE?: boolean;
+    /** 코드에 의한 자동 계산 */
+    bAUTOCALC?: boolean;
+    /** 비틀림 비지지 길이 Lt */
+    LT?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface WallRebarItem {
@@ -4297,210 +4391,82 @@ export namespace DbDesignTypes {
       vSTORY_NAME?: Array<string>;
     }>;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface BraceMainBarItem {
-    /** Main Name */
-    NAME?: string;
-    /** Number */
-    NUM?: number;
-    /** Row */
-    ROW?: number;
-    /** Concrete Face ~ Center of Rebar */
-    D0?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface BraceRebarItem {
-    /** ID (read only) */
-    ID?: number;
-    /** Main Bar List */
-    vMAIN_BAR?: Array<{
-      /** Main Name */
-      NAME?: string;
-      /** Number */
-      NUM?: number;
-      /** Row */
-      ROW?: number;
-      /** Concrete Face ~ Center of Rebar */
-      D0?: number;
-    }>;
-    /** Shear Bar-End */
-    SHEAR_BAR_END: {
-      /** Name */
-      NAME?: string;
-      /** Leg y */
-      LEG_Y?: number;
-      /** Leg z */
-      LEG_Z?: number;
-      /** Dist */
-      DIST?: number;
-    };
-    /** Shear Bar-Center */
-    SHEAR_BAR_CEN: {
-      /** Name */
-      NAME?: string;
-      /** Leg y */
-      LEG_Y?: number;
-      /** Leg z */
-      LEG_Z?: number;
-      /** Dist */
-      DIST?: number;
-    };
-    /** Hoop Type (1=Tied, 2=Spiral) */
-    HOOP_TYPE?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface BraceRebarPayload {
-    /** Concrete Brace Rebar Items */
-    ITEMS: Array<{
-      /** ID (read only) */
-      ID?: number;
-      /** Main Bar List */
-      vMAIN_BAR?: Array<{
-        /** Main Name */
-        NAME?: string;
-        /** Number */
-        NUM?: number;
-        /** Row */
-        ROW?: number;
-        /** Concrete Face ~ Center of Rebar */
-        D0?: number;
-      }>;
-      /** Shear Bar-End */
-      SHEAR_BAR_END: {
-        /** Name */
-        NAME?: string;
-        /** Leg y */
-        LEG_Y?: number;
-        /** Leg z */
-        LEG_Z?: number;
-        /** Dist */
-        DIST?: number;
-      };
-      /** Shear Bar-Center */
-      SHEAR_BAR_CEN: {
-        /** Name */
-        NAME?: string;
-        /** Leg y */
-        LEG_Y?: number;
-        /** Leg z */
-        LEG_Z?: number;
-        /** Dist */
-        DIST?: number;
-      };
-      /** Hoop Type (1=Tied, 2=Spiral) */
-      HOOP_TYPE?: number;
-    }>;
-  }
 }
 
 export namespace DbDynamicLoadsTypes {
-  export interface ResponseSpectrumFunctionValue {
-    PERIOD?: number;
-    VALUE?: number;
-  }
-  export interface ResponseSpectrumFunctionPayload {
-    NAME?: string;
-    iTYPE?: number;
-    iMETHOD?: number;
-    SCALE?: number;
-    GRAV?: number;
-    DRATIO?: number;
-    DESC?: string;
-    aFUNC?: Array<ResponseSpectrumFunctionValue>;
-    CALC_OPT?: boolean;
-  }
-  export interface ResponseSpectrumUseMode {
-    bUSE?: boolean;
-    MSFACTOR?: number;
-  }
-  export interface ResponseSpectrumLoadCasePayload {
-    NAME?: string;
-    DESC?: string;
-    DIR?: string;
-    ANGLE?: number;
-    SCALE?: number;
-    PMFT?: number;
-    aFUNCNAME?: Array<string>;
-    INTERP?: string;
-    COMTYPE?: string;
-    bADDSIGN?: boolean;
-    iSIGNTYPE?: number;
-    bMODE?: boolean;
-    aUSEMODE?: Array<ResponseSpectrumUseMode>;
-    bDAMP?: boolean;
-    bCDAMP?: boolean;
-    iMDTYPE?: number;
-  }
   /** Generated from contracts/endpoints/. */
-  export interface TimeHistoryInitialLoadItem {
-    /** 정적 하중 케이스명 */
-    SLC: string;
+  export interface DynamicNodalLoadItem {
+    /** 일련번호 */
+    ID?: number;
+    /** 시간이력 하중 케이스명 */
+    THLCNAME: string;
+    /** 시간이력 함수명 (Force/Moment 타입만 사용 가능) */
+    FUNC_NAME: string;
+    /** 방향 ("X" / "Y" / "Z") */
+    DIR: string;
+    /** 도달 시간 */
+    ARRIVAL_TIME: number;
     /** 스케일 계수 */
-    SF: number;
-    /** 하중 케이스 타입 (1=Static, 18=Construction) */
-    LCT: number;
+    SCALE_FACTOR: number;
   }
   /** Generated from contracts/endpoints/. */
-  export interface TimeHistoryGlobalControlPayload {
-    /** 기하 비선형 타입 (0=None, 1=Large Disp, 2=P-Delta) */
-    GNT: number;
-    /** 초기 하중 유형 (0=비선형 정적 해석, 1=정적/시공단계 결과 가져오기) */
-    ILT: number;
-    /** 초기 하중 목록 */
-    aILL?: Array<{
-      /** 정적 하중 케이스명 */
-      SLC: string;
+  export interface DynamicNodalLoadPayload {
+    /** 동적 절점 하중 목록 */
+    ITEMS: Array<{
+      /** 일련번호 */
+      ID?: number;
+      /** 시간이력 하중 케이스명 */
+      THLCNAME: string;
+      /** 시간이력 함수명 (Force/Moment 타입만 사용 가능) */
+      FUNC_NAME: string;
+      /** 방향 ("X" / "Y" / "Z") */
+      DIR: string;
+      /** 도달 시간 */
+      ARRIVAL_TIME: number;
       /** 스케일 계수 */
-      SF: number;
-      /** 하중 케이스 타입 (1=Static, 18=Construction) */
-      LCT: number;
+      SCALE_FACTOR: number;
     }>;
-    /** NL 초기 하중 무시 요소 옵션 */
-    IEPI?: boolean;
-    /** 증분 스텝 수 */
-    NSTEP?: number;
-    /** 결과 출력 방법 (false=최종 스텝만, true=스텝 증분) */
-    bROT?: boolean;
-    /** 출력 스텝 증분 수 */
-    SNIO?: number;
-    /** 수렴 실패 허용 */
-    bPCF: boolean;
-    /** 최대 부분 스텝 수 */
-    MAXNS: number;
-    /** 최대 반복 횟수 */
-    MAXIT: number;
-    /** 변위 노름 사용 */
-    bDN?: boolean;
-    /** 하중 노름 사용 */
-    bFN?: boolean;
-    /** 에너지 노름 사용 */
-    bEN?: boolean;
-    /** 변위 노름 값 */
-    DN?: number;
-    /** 하중 노름 값 */
-    FN?: number;
-    /** 에너지 노름 값 */
-    EN?: number;
-    /** 선형 탐색 방법 사용 */
-    bULSM?: boolean;
-    /** 선형 탐색 시작 반복 수 */
-    ULSM?: number;
-    /** 시간이력 에너지 결과 출력 */
-    ENERGYRESULT?: boolean;
-    /** 점성 감쇠기 / 오일 감쇠기 결과 */
-    SDVI?: boolean;
-    /** 점탄성 감쇠기 결과 */
-    SDVE?: boolean;
-    /** 강재 감쇠기 결과 */
-    SDST?: boolean;
-    /** 이력 절연 장치 결과 */
-    SDHY?: boolean;
-    /** 절연 장치 결과 */
-    SDIS?: boolean;
-    /** 모델 항복 상태 */
-    bMSSSTATUS?: boolean;
-    /** Convert the stiffness scale factors of plate-based walls with inelastic hinges to CRB walls Gen NX only. */
-    bCONV_WALL_STIFF?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface GroundAccelerationPayload {
+    /** 시간이력 하중 케이스명 */
+    NAME: string;
+    /** 수평 지반 가속도 각도 */
+    ANGLE?: number;
+    /** X방향 함수명 */
+    FUNCX: string;
+    /** X방향 스케일 계수 */
+    SCALEX: number;
+    /** X방향 도달 시간 */
+    ATIMEX?: number;
+    /** Y방향 함수명 */
+    FUNCY: string;
+    /** Y방향 스케일 계수 */
+    SCALEY: number;
+    /** Y방향 도달 시간 */
+    ATIMEY?: number;
+    /** Z방향 함수명 */
+    FUNCZ: string;
+    /** Z방향 스케일 계수 */
+    SCALEZ: number;
+    /** Z방향 도달 시간 */
+    ATIMEZ?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface HyperSAnalysisCase {
+    /** 해석 타입 (0=Linear, 1=Nonlinear) */
+    ANAL_TYPE: number;
+    /** 해석 방법 (0=Modal, 1=Direct Integration, 2=Static) */
+    ANAL_METHOD: number;
+    /** 시간이력 타입 (0=Transient, 1=Periodic) — Nonlinear+Direct Integration/Static은 Periodic 거부 */
+    TH_TYPE?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface HyperSHingeOption {
+    /** Point Spring Support (0=비선형 특성 적용, 1=선형으로 간주) */
+    PSPRING_SUP?: number;
+    /** Elastic Link (0=비선형 특성 적용, 1=선형으로 간주) */
+    EL?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface HyperSIncrementStep {
@@ -4510,50 +4476,6 @@ export namespace DbDynamicLoadsTypes {
     OUT_TYPE?: number;
     /** 스텝 증분 수 */
     STEP_INC?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface HyperSNormCriterion {
-    /** 사용 여부 */
-    OPT_USE: boolean;
-    /** 수렴 허용값 */
-    VALUE: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface HyperSNormControl {
-    /** 변위 노름 */
-    DISP?: {
-      /** 사용 여부 */
-      OPT_USE: boolean;
-      /** 수렴 허용값 */
-      VALUE: number;
-    };
-    /** 하중 노름 */
-    FORCE?: {
-      /** 사용 여부 */
-      OPT_USE: boolean;
-      /** 수렴 허용값 */
-      VALUE: number;
-    };
-    /** 에너지 노름 */
-    ENERGY?: {
-      /** 사용 여부 */
-      OPT_USE: boolean;
-      /** 수렴 허용값 */
-      VALUE: number;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface HyperSLineSearch {
-    /** 선형 탐색 사용 여부 */
-    OPT_USE: boolean;
-    /** 선형 탐색 옵션 (0=자동, 1=사용자 정의) */
-    LINE_SEARCH_OPT: number;
-    /** 선형 탐색 시작 반복 번호 */
-    START_ITER_NO: number;
-    /** 최대 선형 탐색 반복 횟수 */
-    MAX_LINE_SEARCH_ITER: number;
-    /** 선형 탐색 허용오차 */
-    LINE_SEARCH_TOL: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface HyperSIterationParameters {
@@ -4610,11 +4532,213 @@ export namespace DbDynamicLoadsTypes {
     };
   }
   /** Generated from contracts/endpoints/. */
-  export interface HyperSHingeOption {
-    /** Point Spring Support (0=비선형 특성 적용, 1=선형으로 간주) */
-    PSPRING_SUP?: number;
-    /** Elastic Link (0=비선형 특성 적용, 1=선형으로 간주) */
-    EL?: number;
+  export interface HyperSLineSearch {
+    /** 선형 탐색 사용 여부 */
+    OPT_USE: boolean;
+    /** 선형 탐색 옵션 (0=자동, 1=사용자 정의) */
+    LINE_SEARCH_OPT: number;
+    /** 선형 탐색 시작 반복 번호 */
+    START_ITER_NO: number;
+    /** 최대 선형 탐색 반복 횟수 */
+    MAX_LINE_SEARCH_ITER: number;
+    /** 선형 탐색 허용오차 */
+    LINE_SEARCH_TOL: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface HyperSNormControl {
+    /** 변위 노름 */
+    DISP?: {
+      /** 사용 여부 */
+      OPT_USE: boolean;
+      /** 수렴 허용값 */
+      VALUE: number;
+    };
+    /** 하중 노름 */
+    FORCE?: {
+      /** 사용 여부 */
+      OPT_USE: boolean;
+      /** 수렴 허용값 */
+      VALUE: number;
+    };
+    /** 에너지 노름 */
+    ENERGY?: {
+      /** 사용 여부 */
+      OPT_USE: boolean;
+      /** 수렴 허용값 */
+      VALUE: number;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface HyperSNormCriterion {
+    /** 사용 여부 */
+    OPT_USE: boolean;
+    /** 수렴 허용값 */
+    VALUE: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface HyperSOutputOption {
+    /** 비탄성 힌지 스텝별 출력 옵션 (0=전체 요소, 1=선택 요소, 2=미출력) */
+    HINGE_OUT: number;
+    /** 공통 설정 여부 (true=FIBER_OUT이 HINGE_OUT과 동일) */
+    COMMON_OPT: boolean;
+    /** 섬유 단면 스텝별 출력 옵션 (0=전체 요소, 1=선택 요소, 2=미출력) */
+    FIBER_OUT?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface HyperSResultSelection {
+    /** 에너지 결과 출력 */
+    ENERGY_RESULT?: boolean;
+    /** 점성 감쇠기 / 오일 감쇠기 결과 */
+    SDVI?: boolean;
+    /** 점탄성 감쇠기 결과 */
+    SDVE?: boolean;
+    /** 강재 감쇠기 결과 */
+    SDST?: boolean;
+    /** 이력 절연 장치 결과 */
+    SDHY?: boolean;
+    /** 절연 장치 결과 */
+    SDIS?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface HyperSSubsequentLoad {
+    /** 후속 하중 사용 */
+    OPT_USE?: boolean;
+    /** 후속 하중 타입 (0=하중케이스, 1=초기요소력, 2=기하강성초기력) */
+    SUBSEQ_LOAD: number;
+    /** 하중 케이스 타입 ("ST" / "CS" / "TH") */
+    LCTYPE: "ST" | "CS" | "TH";
+    /** 하중 케이스명 */
+    CASE: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MultipleSupportExcitationItem {
+    /** 일련번호 */
+    ID?: number;
+    /** 시간이력 하중 케이스명 */
+    LCNAME: string;
+    /** 수평 지반 가속도 각도 */
+    ANGLE?: number;
+    /** X방향 함수명 (NormAccel/Acceleration 타입만) */
+    FUNCX: string;
+    /** X방향 스케일 계수 */
+    SCALEX: number;
+    /** X방향 도달 시간 */
+    ATIMEX?: number;
+    /** Y방향 함수명 */
+    FUNCY?: string;
+    /** Y방향 스케일 계수 */
+    SCALEY?: number;
+    /** Y방향 도달 시간 */
+    ATIMEY?: number;
+    /** Z방향 함수명 */
+    FUNCZ?: string;
+    /** Z방향 스케일 계수 */
+    SCALEZ?: number;
+    /** Z방향 도달 시간 */
+    ATIMEZ?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MultipleSupportExcitationPayload {
+    /** 다중 지점 가진 목록 */
+    ITEMS: Array<{
+      /** 일련번호 */
+      ID?: number;
+      /** 시간이력 하중 케이스명 */
+      LCNAME: string;
+      /** 수평 지반 가속도 각도 */
+      ANGLE?: number;
+      /** X방향 함수명 (NormAccel/Acceleration 타입만) */
+      FUNCX: string;
+      /** X방향 스케일 계수 */
+      SCALEX: number;
+      /** X방향 도달 시간 */
+      ATIMEX?: number;
+      /** Y방향 함수명 */
+      FUNCY?: string;
+      /** Y방향 스케일 계수 */
+      SCALEY?: number;
+      /** Y방향 도달 시간 */
+      ATIMEY?: number;
+      /** Z방향 함수명 */
+      FUNCZ?: string;
+      /** Z방향 스케일 계수 */
+      SCALEZ?: number;
+      /** Z방향 도달 시간 */
+      ATIMEZ?: number;
+    }>;
+  }
+  export interface ResponseSpectrumFunctionPayload {
+    NAME?: string;
+    iTYPE?: number;
+    iMETHOD?: number;
+    SCALE?: number;
+    GRAV?: number;
+    DRATIO?: number;
+    DESC?: string;
+    aFUNC?: Array<ResponseSpectrumFunctionValue>;
+    CALC_OPT?: boolean;
+  }
+  export interface ResponseSpectrumFunctionValue {
+    PERIOD?: number;
+    VALUE?: number;
+  }
+  export interface ResponseSpectrumLoadCasePayload {
+    NAME?: string;
+    DESC?: string;
+    DIR?: string;
+    ANGLE?: number;
+    SCALE?: number;
+    PMFT?: number;
+    aFUNCNAME?: Array<string>;
+    INTERP?: string;
+    COMTYPE?: string;
+    bADDSIGN?: boolean;
+    iSIGNTYPE?: number;
+    bMODE?: boolean;
+    aUSEMODE?: Array<ResponseSpectrumUseMode>;
+    bDAMP?: boolean;
+    bCDAMP?: boolean;
+    iMDTYPE?: number;
+  }
+  export interface ResponseSpectrumUseMode {
+    bUSE?: boolean;
+    MSFACTOR?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TimeHistoryFunctionPayload {
+    /** 함수명 */
+    NAME: string;
+    /** 설명 */
+    DESC?: string;
+    /** 데이터 타입 (1=정규화가속도, 2=가속도, 3=힘, 4=모멘트, 5=Normal) */
+    iTYPE: number;
+    /** 중력 가속도 */
+    GRAV: number;
+    /** 함수 타입 (1=Time Function, 2=Sinusoidal) */
+    FUNCTYPE: number;
+    /** 스케일 방법 (0=Scale Factor, 1=Max Value) Required when FUNCTYPE = 1. */
+    iMETHOD?: number;
+    /** 스케일 계수 (iMETHOD=0 시) Required when FUNCTYPE = 1. */
+    SCALE?: number;
+    /** 최대 값 (iMETHOD=1 시) Applies when FUNCTYPE = 1. */
+    MAXVALUE?: number;
+    /** 시간-값 데이터 목록 Required when FUNCTYPE = 1. */
+    aFUNCDATA?: Array<{
+      /** 시간 */
+      TIME: number;
+      /** 값 */
+      VALUE: number;
+    }>;
+    /** 상수 A Required when FUNCTYPE = 2. */
+    CONS_A?: number;
+    /** 상수 C Required when FUNCTYPE = 2. */
+    CONS_C?: number;
+    /** 주파수 Required when FUNCTYPE = 2. */
+    FREQUENCY?: number;
+    /** 감쇠 계수 Required when FUNCTYPE = 2. */
+    DAMP_FACTOR?: number;
+    /** 위상각 Required when FUNCTYPE = 2. */
+    PHASE_ANGLE?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface TimeHistoryGlobalControlHyperSPayload {
@@ -4707,18 +4831,52 @@ export namespace DbDynamicLoadsTypes {
     };
   }
   /** Generated from contracts/endpoints/. */
-  export interface HyperSOutputOption {
-    /** 비탄성 힌지 스텝별 출력 옵션 (0=전체 요소, 1=선택 요소, 2=미출력) */
-    HINGE_OUT: number;
-    /** 공통 설정 여부 (true=FIBER_OUT이 HINGE_OUT과 동일) */
-    COMMON_OPT: boolean;
-    /** 섬유 단면 스텝별 출력 옵션 (0=전체 요소, 1=선택 요소, 2=미출력) */
-    FIBER_OUT?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface HyperSResultSelection {
-    /** 에너지 결과 출력 */
-    ENERGY_RESULT?: boolean;
+  export interface TimeHistoryGlobalControlPayload {
+    /** 기하 비선형 타입 (0=None, 1=Large Disp, 2=P-Delta) */
+    GNT: number;
+    /** 초기 하중 유형 (0=비선형 정적 해석, 1=정적/시공단계 결과 가져오기) */
+    ILT: number;
+    /** 초기 하중 목록 */
+    aILL?: Array<{
+      /** 정적 하중 케이스명 */
+      SLC: string;
+      /** 스케일 계수 */
+      SF: number;
+      /** 하중 케이스 타입 (1=Static, 18=Construction) */
+      LCT: number;
+    }>;
+    /** NL 초기 하중 무시 요소 옵션 */
+    IEPI?: boolean;
+    /** 증분 스텝 수 */
+    NSTEP?: number;
+    /** 결과 출력 방법 (false=최종 스텝만, true=스텝 증분) */
+    bROT?: boolean;
+    /** 출력 스텝 증분 수 */
+    SNIO?: number;
+    /** 수렴 실패 허용 */
+    bPCF: boolean;
+    /** 최대 부분 스텝 수 */
+    MAXNS: number;
+    /** 최대 반복 횟수 */
+    MAXIT: number;
+    /** 변위 노름 사용 */
+    bDN?: boolean;
+    /** 하중 노름 사용 */
+    bFN?: boolean;
+    /** 에너지 노름 사용 */
+    bEN?: boolean;
+    /** 변위 노름 값 */
+    DN?: number;
+    /** 하중 노름 값 */
+    FN?: number;
+    /** 에너지 노름 값 */
+    EN?: number;
+    /** 선형 탐색 방법 사용 */
+    bULSM?: boolean;
+    /** 선형 탐색 시작 반복 수 */
+    ULSM?: number;
+    /** 시간이력 에너지 결과 출력 */
+    ENERGYRESULT?: boolean;
     /** 점성 감쇠기 / 오일 감쇠기 결과 */
     SDVI?: boolean;
     /** 점탄성 감쇠기 결과 */
@@ -4729,33 +4887,19 @@ export namespace DbDynamicLoadsTypes {
     SDHY?: boolean;
     /** 절연 장치 결과 */
     SDIS?: boolean;
+    /** 모델 항복 상태 */
+    bMSSSTATUS?: boolean;
+    /** Convert the stiffness scale factors of plate-based walls with inelastic hinges to CRB walls Gen NX only. */
+    bCONV_WALL_STIFF?: boolean;
   }
   /** Generated from contracts/endpoints/. */
-  export interface TimeHistoryOutputOptionHyperSPayload {
-    /** 비선형 해석 결과 출력 옵션 */
-    OUT_OPT: {
-      /** 비탄성 힌지 스텝별 출력 옵션 (0=전체 요소, 1=선택 요소, 2=미출력) */
-      HINGE_OUT: number;
-      /** 공통 설정 여부 (true=FIBER_OUT이 HINGE_OUT과 동일) */
-      COMMON_OPT: boolean;
-      /** 섬유 단면 스텝별 출력 옵션 (0=전체 요소, 1=선택 요소, 2=미출력) */
-      FIBER_OUT?: number;
-    };
-    /** 시간이력 결과 옵션 */
-    RESULT_SELECTION: {
-      /** 에너지 결과 출력 */
-      ENERGY_RESULT?: boolean;
-      /** 점성 감쇠기 / 오일 감쇠기 결과 */
-      SDVI?: boolean;
-      /** 점탄성 감쇠기 결과 */
-      SDVE?: boolean;
-      /** 강재 감쇠기 결과 */
-      SDST?: boolean;
-      /** 이력 절연 장치 결과 */
-      SDHY?: boolean;
-      /** 절연 장치 결과 */
-      SDIS?: boolean;
-    };
+  export interface TimeHistoryInitialLoadItem {
+    /** 정적 하중 케이스명 */
+    SLC: string;
+    /** 스케일 계수 */
+    SF: number;
+    /** 하중 케이스 타입 (1=Static, 18=Construction) */
+    LCT: number;
   }
   export interface TimeHistoryLoadCaseCommon {
     NAME?: string;
@@ -4768,29 +4912,6 @@ export namespace DbDynamicLoadsTypes {
     iOUT?: number;
     INITMETHOD?: string;
     iMDTYPE?: number;
-  }
-  export interface TimeHistoryLoadCasePayload {
-    COMMON?: TimeHistoryLoadCaseCommon;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface HyperSAnalysisCase {
-    /** 해석 타입 (0=Linear, 1=Nonlinear) */
-    ANAL_TYPE: number;
-    /** 해석 방법 (0=Modal, 1=Direct Integration, 2=Static) */
-    ANAL_METHOD: number;
-    /** 시간이력 타입 (0=Transient, 1=Periodic) — Nonlinear+Direct Integration/Static은 Periodic 거부 */
-    TH_TYPE?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface HyperSSubsequentLoad {
-    /** 후속 하중 사용 */
-    OPT_USE?: boolean;
-    /** 후속 하중 타입 (0=하중케이스, 1=초기요소력, 2=기하강성초기력) */
-    SUBSEQ_LOAD: number;
-    /** 하중 케이스 타입 ("ST" / "CS" / "TH") */
-    LCTYPE: "ST" | "CS" | "TH";
-    /** 하중 케이스명 */
-    CASE: string;
   }
   /** Generated from contracts/endpoints/. */
   export type TimeHistoryLoadCaseHyperSPayload = {
@@ -4946,99 +5067,35 @@ export namespace DbDynamicLoadsTypes {
       DR2?: never;
     }
   );
-  /** Generated from contracts/endpoints/. */
-  export interface TimeHistoryFunctionPayload {
-    /** 함수명 */
-    NAME: string;
-    /** 설명 */
-    DESC?: string;
-    /** 데이터 타입 (1=정규화가속도, 2=가속도, 3=힘, 4=모멘트, 5=Normal) */
-    iTYPE: number;
-    /** 중력 가속도 */
-    GRAV: number;
-    /** 함수 타입 (1=Time Function, 2=Sinusoidal) */
-    FUNCTYPE: number;
-    /** 스케일 방법 (0=Scale Factor, 1=Max Value) Required when FUNCTYPE = 1. */
-    iMETHOD?: number;
-    /** 스케일 계수 (iMETHOD=0 시) Required when FUNCTYPE = 1. */
-    SCALE?: number;
-    /** 최대 값 (iMETHOD=1 시) Applies when FUNCTYPE = 1. */
-    MAXVALUE?: number;
-    /** 시간-값 데이터 목록 Required when FUNCTYPE = 1. */
-    aFUNCDATA?: Array<{
-      /** 시간 */
-      TIME: number;
-      /** 값 */
-      VALUE: number;
-    }>;
-    /** 상수 A Required when FUNCTYPE = 2. */
-    CONS_A?: number;
-    /** 상수 C Required when FUNCTYPE = 2. */
-    CONS_C?: number;
-    /** 주파수 Required when FUNCTYPE = 2. */
-    FREQUENCY?: number;
-    /** 감쇠 계수 Required when FUNCTYPE = 2. */
-    DAMP_FACTOR?: number;
-    /** 위상각 Required when FUNCTYPE = 2. */
-    PHASE_ANGLE?: number;
+  export interface TimeHistoryLoadCasePayload {
+    COMMON?: TimeHistoryLoadCaseCommon;
   }
   /** Generated from contracts/endpoints/. */
-  export interface GroundAccelerationPayload {
-    /** 시간이력 하중 케이스명 */
-    NAME: string;
-    /** 수평 지반 가속도 각도 */
-    ANGLE?: number;
-    /** X방향 함수명 */
-    FUNCX: string;
-    /** X방향 스케일 계수 */
-    SCALEX: number;
-    /** X방향 도달 시간 */
-    ATIMEX?: number;
-    /** Y방향 함수명 */
-    FUNCY: string;
-    /** Y방향 스케일 계수 */
-    SCALEY: number;
-    /** Y방향 도달 시간 */
-    ATIMEY?: number;
-    /** Z방향 함수명 */
-    FUNCZ: string;
-    /** Z방향 스케일 계수 */
-    SCALEZ: number;
-    /** Z방향 도달 시간 */
-    ATIMEZ?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface DynamicNodalLoadItem {
-    /** 일련번호 */
-    ID?: number;
-    /** 시간이력 하중 케이스명 */
-    THLCNAME: string;
-    /** 시간이력 함수명 (Force/Moment 타입만 사용 가능) */
-    FUNC_NAME: string;
-    /** 방향 ("X" / "Y" / "Z") */
-    DIR: string;
-    /** 도달 시간 */
-    ARRIVAL_TIME: number;
-    /** 스케일 계수 */
-    SCALE_FACTOR: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface DynamicNodalLoadPayload {
-    /** 동적 절점 하중 목록 */
-    ITEMS: Array<{
-      /** 일련번호 */
-      ID?: number;
-      /** 시간이력 하중 케이스명 */
-      THLCNAME: string;
-      /** 시간이력 함수명 (Force/Moment 타입만 사용 가능) */
-      FUNC_NAME: string;
-      /** 방향 ("X" / "Y" / "Z") */
-      DIR: string;
-      /** 도달 시간 */
-      ARRIVAL_TIME: number;
-      /** 스케일 계수 */
-      SCALE_FACTOR: number;
-    }>;
+  export interface TimeHistoryOutputOptionHyperSPayload {
+    /** 비선형 해석 결과 출력 옵션 */
+    OUT_OPT: {
+      /** 비탄성 힌지 스텝별 출력 옵션 (0=전체 요소, 1=선택 요소, 2=미출력) */
+      HINGE_OUT: number;
+      /** 공통 설정 여부 (true=FIBER_OUT이 HINGE_OUT과 동일) */
+      COMMON_OPT: boolean;
+      /** 섬유 단면 스텝별 출력 옵션 (0=전체 요소, 1=선택 요소, 2=미출력) */
+      FIBER_OUT?: number;
+    };
+    /** 시간이력 결과 옵션 */
+    RESULT_SELECTION: {
+      /** 에너지 결과 출력 */
+      ENERGY_RESULT?: boolean;
+      /** 점성 감쇠기 / 오일 감쇠기 결과 */
+      SDVI?: boolean;
+      /** 점탄성 감쇠기 결과 */
+      SDVE?: boolean;
+      /** 강재 감쇠기 결과 */
+      SDST?: boolean;
+      /** 이력 절연 장치 결과 */
+      SDHY?: boolean;
+      /** 절연 장치 결과 */
+      SDIS?: boolean;
+    };
   }
   /** Generated from contracts/endpoints/. */
   export interface TimeVaryingStaticLoadPayload {
@@ -5053,120 +5110,9 @@ export namespace DbDynamicLoadsTypes {
     /** 스케일 계수 */
     SCALE: number;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface MultipleSupportExcitationItem {
-    /** 일련번호 */
-    ID?: number;
-    /** 시간이력 하중 케이스명 */
-    LCNAME: string;
-    /** 수평 지반 가속도 각도 */
-    ANGLE?: number;
-    /** X방향 함수명 (NormAccel/Acceleration 타입만) */
-    FUNCX: string;
-    /** X방향 스케일 계수 */
-    SCALEX: number;
-    /** X방향 도달 시간 */
-    ATIMEX?: number;
-    /** Y방향 함수명 */
-    FUNCY?: string;
-    /** Y방향 스케일 계수 */
-    SCALEY?: number;
-    /** Y방향 도달 시간 */
-    ATIMEY?: number;
-    /** Z방향 함수명 */
-    FUNCZ?: string;
-    /** Z방향 스케일 계수 */
-    SCALEZ?: number;
-    /** Z방향 도달 시간 */
-    ATIMEZ?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MultipleSupportExcitationPayload {
-    /** 다중 지점 가진 목록 */
-    ITEMS: Array<{
-      /** 일련번호 */
-      ID?: number;
-      /** 시간이력 하중 케이스명 */
-      LCNAME: string;
-      /** 수평 지반 가속도 각도 */
-      ANGLE?: number;
-      /** X방향 함수명 (NormAccel/Acceleration 타입만) */
-      FUNCX: string;
-      /** X방향 스케일 계수 */
-      SCALEX: number;
-      /** X방향 도달 시간 */
-      ATIMEX?: number;
-      /** Y방향 함수명 */
-      FUNCY?: string;
-      /** Y방향 스케일 계수 */
-      SCALEY?: number;
-      /** Y방향 도달 시간 */
-      ATIMEY?: number;
-      /** Z방향 함수명 */
-      FUNCZ?: string;
-      /** Z방향 스케일 계수 */
-      SCALEZ?: number;
-      /** Z방향 도달 시간 */
-      ATIMEZ?: number;
-    }>;
-  }
 }
 
 export namespace DbLoadCombinationsTypes {
-  /** Generated from contracts/endpoints/. */
-  export interface LoadCombinationItem {
-    /** 해석 타입 */
-    ANAL: string;
-    /** 하중케이스명 */
-    LCNAME: string;
-    /** 계수 */
-    FACTOR: number;
-  }
-  export interface LoadCombinationPayload {
-    NO?: number;
-    NAME?: string;
-    ACTIVE?: string;
-    iTYPE?: number;
-    DESC?: string;
-    bCB?: boolean;
-    vCOMB?: Array<LoadCombinationItem>;
-    bES?: boolean;
-    iSERV_TYPE?: number;
-    nLCOMTYPE?: number;
-    nSEISTYPE?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface LoadCombinationConcretePayload {
-    /** 조합 번호 (읽기 전용) */
-    NO?: number;
-    /** 조합 이름 */
-    NAME: string;
-    /** 활성 타입 · "INACTIVE" / "STRENGTH" / "SERVICE" */
-    ACTIVE?: string;
-    /** 콘크리트 설계 전용 옵션 (E) */
-    bES?: boolean;
-    /** 합산 방식 · 0=Add / 1=Envelope / 2=ABS / 3=SRSS */
-    iTYPE?: number;
-    /** 설명 */
-    DESC?: string;
-    /** 결과 타입 (읽기 전용) · false=General / true=Min/Max/All */
-    bCB?: boolean;
-    /** EC Serv Type */
-    iSERV_TYPE?: number;
-    /** EC Lcom Type */
-    nLCOMTYPE?: number;
-    /** EC Seis Type */
-    nSEISTYPE?: number;
-    /** 조합 항목 배열 */
-    vCOMB: Array<{
-      /** 해석 타입 */
-      ANAL: string;
-      /** 하중케이스명 */
-      LCNAME: string;
-      /** 계수 */
-      FACTOR: number;
-    }>;
-  }
   /** Generated from contracts/endpoints/. */
   export interface CuttingLinePayload {
     /** 절단선 이름 */
@@ -5195,37 +5141,6 @@ export namespace DbLoadCombinationsTypes {
     TYPE?: number;
   }
   /** Generated from contracts/endpoints/. */
-  export interface PlateCuttingLineDiagramPayload {
-    /** 절단선 이름 */
-    NAME: string;
-    /** 방향 · "NORMAL" = 법선 / "DIR" = 면 내 / "PLANE" = 평면 */
-    DIR: string;
-    /** 점 1 – X 좌표 */
-    PT1X: number;
-    /** 점 1 – Y 좌표 */
-    PT1Y: number;
-    /** 점 1 – Z 좌표 */
-    PT1Z: number;
-    /** 점 2 – X 좌표 */
-    PT2X: number;
-    /** 점 2 – Y 좌표 */
-    PT2Y: number;
-    /** 점 2 – Z 좌표 */
-    PT2Z: number;
-    /** 점 3 – X 좌표 */
-    PT3X: number;
-    /** 점 3 – Y 좌표 */
-    PT3Y: number;
-    /** 점 3 – Z 좌표 */
-    PT3Z: number;
-    /** 선 색상 – 빨강(R) 값 (0–255) */
-    R?: number;
-    /** 선 색상 – 초록(G) 값 (0–255) */
-    G?: number;
-    /** 선 색상 – 파랑(B) 값 (0–255) */
-    B?: number;
-  }
-  /** Generated from contracts/endpoints/. */
   export interface LoadCombinationCompositeSteelGirderPayload {
     /** 조합 번호 (읽기 전용) */
     NO?: number;
@@ -5241,6 +5156,38 @@ export namespace DbLoadCombinationsTypes {
     bCB?: boolean;
     /** E (Concrete design only) */
     bES?: boolean;
+    /** EC Serv Type */
+    iSERV_TYPE?: number;
+    /** EC Lcom Type */
+    nLCOMTYPE?: number;
+    /** EC Seis Type */
+    nSEISTYPE?: number;
+    /** 조합 항목 배열 */
+    vCOMB: Array<{
+      /** 해석 타입 */
+      ANAL: string;
+      /** 하중케이스명 */
+      LCNAME: string;
+      /** 계수 */
+      FACTOR: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LoadCombinationConcretePayload {
+    /** 조합 번호 (읽기 전용) */
+    NO?: number;
+    /** 조합 이름 */
+    NAME: string;
+    /** 활성 타입 · "INACTIVE" / "STRENGTH" / "SERVICE" */
+    ACTIVE?: string;
+    /** 콘크리트 설계 전용 옵션 (E) */
+    bES?: boolean;
+    /** 합산 방식 · 0=Add / 1=Envelope / 2=ABS / 3=SRSS */
+    iTYPE?: number;
+    /** 설명 */
+    DESC?: string;
+    /** 결과 타입 (읽기 전용) · false=General / true=Min/Max/All */
+    bCB?: boolean;
     /** EC Serv Type */
     iSERV_TYPE?: number;
     /** EC Lcom Type */
@@ -5288,6 +5235,28 @@ export namespace DbLoadCombinationsTypes {
       /** 계수 */
       FACTOR: number;
     }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LoadCombinationItem {
+    /** 해석 타입 */
+    ANAL: string;
+    /** 하중케이스명 */
+    LCNAME: string;
+    /** 계수 */
+    FACTOR: number;
+  }
+  export interface LoadCombinationPayload {
+    NO?: number;
+    NAME?: string;
+    ACTIVE?: string;
+    iTYPE?: number;
+    DESC?: string;
+    bCB?: boolean;
+    vCOMB?: Array<LoadCombinationItem>;
+    bES?: boolean;
+    iSERV_TYPE?: number;
+    nLCOMTYPE?: number;
+    nSEISTYPE?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface LoadCombinationSRCPayload {
@@ -5385,9 +5354,100 @@ export namespace DbLoadCombinationsTypes {
       FACTOR: number;
     }>;
   }
+  /** Generated from contracts/endpoints/. */
+  export interface PlateCuttingLineDiagramPayload {
+    /** 절단선 이름 */
+    NAME: string;
+    /** 방향 · "NORMAL" = 법선 / "DIR" = 면 내 / "PLANE" = 평면 */
+    DIR: string;
+    /** 점 1 – X 좌표 */
+    PT1X: number;
+    /** 점 1 – Y 좌표 */
+    PT1Y: number;
+    /** 점 1 – Z 좌표 */
+    PT1Z: number;
+    /** 점 2 – X 좌표 */
+    PT2X: number;
+    /** 점 2 – Y 좌표 */
+    PT2Y: number;
+    /** 점 2 – Z 좌표 */
+    PT2Z: number;
+    /** 점 3 – X 좌표 */
+    PT3X: number;
+    /** 점 3 – Y 좌표 */
+    PT3Y: number;
+    /** 점 3 – Z 좌표 */
+    PT3Z: number;
+    /** 선 색상 – 빨강(R) 값 (0–255) */
+    R?: number;
+    /** 선 색상 – 초록(G) 값 (0–255) */
+    G?: number;
+    /** 선 색상 – 파랑(B) 값 (0–255) */
+    B?: number;
+  }
 }
 
 export namespace DbMiscLoadsTypes {
+  /** Generated from contracts/endpoints/. */
+  export interface IgnoreElementForLoadCasePayload {
+    /** Element ID */
+    ELEMENT: number;
+    /** Load Case Name */
+    LCNAME: string;
+    /** Ignore Option */
+    OPT_IGNORE: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface InitialElementForcePayload {
+    /** Element Type */
+    ELEM_TYPE: string;
+    /** Element ID */
+    ELEM_KEY: number;
+    /** Element Forces */
+    ELEMENT_FORCES: Array<number>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface InitialForceCombinationItem {
+    /** Load Case Name */
+    LCNAME: string;
+    /** Scale Factor */
+    FACTOR: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface InitialForceControlDataPayload {
+    /** Use Add Initial Force to Element Force */
+    bADDLC?: boolean;
+    /** Load Case Name */
+    LCNAME: string;
+    /** Use Initial Force Combination */
+    bUSECOMB?: boolean;
+    /** Initial Force Combination Cases */
+    COMB_LIST: Array<{
+      /** Load Case Name */
+      LCNAME: string;
+      /** Scale Factor */
+      FACTOR: number;
+    }>;
+    /** Check to Reflect Initial Axial Forces into Geometric Stiffness */
+    bCHECK_GEOM_STIFF?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface InitialForceGeometricStiffnessPayload {
+    /** Direction ("GX" / "GY" / "GZ" / "AXIAL") */
+    DIR: string;
+    /** Initial Force */
+    INIT_FORCE: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LoadSequenceNonlinearPayload {
+    /** Load Case Names (순서 배열) */
+    LCNAME_ITEM: Array<string>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PreCompositeSectionPayload {
+    /** Static Load Case Names */
+    LCNAME_ITEM: Array<string>;
+  }
   /** Generated from contracts/endpoints/. */
   export interface SettlementGroupPayload {
     /** Settlement Group Name */
@@ -5413,16 +5473,6 @@ export namespace DbMiscLoadsTypes {
     MAX: number;
     /** Selected Settlement Group Names */
     ST_GROUPS: Array<string>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PreCompositeSectionPayload {
-    /** Static Load Case Names */
-    LCNAME_ITEM: Array<string>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface LoadSequenceNonlinearPayload {
-    /** Load Case Names (순서 배열) */
-    LCNAME_ITEM: Array<string>;
   }
   /** Generated from contracts/endpoints/. */
   export interface WaveLoadGrowthItem {
@@ -5636,63 +5686,87 @@ export namespace DbMiscLoadsTypes {
     /** Number of Positions */
     POS?: number;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface IgnoreElementForLoadCasePayload {
-    /** Element ID */
-    ELEMENT: number;
-    /** Load Case Name */
-    LCNAME: string;
-    /** Ignore Option */
-    OPT_IGNORE: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface InitialForceGeometricStiffnessPayload {
-    /** Direction ("GX" / "GY" / "GZ" / "AXIAL") */
-    DIR: string;
-    /** Initial Force */
-    INIT_FORCE: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface InitialForceCombinationItem {
-    /** Load Case Name */
-    LCNAME: string;
-    /** Scale Factor */
-    FACTOR: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface InitialForceControlDataPayload {
-    /** Use Add Initial Force to Element Force */
-    bADDLC?: boolean;
-    /** Load Case Name */
-    LCNAME: string;
-    /** Use Initial Force Combination */
-    bUSECOMB?: boolean;
-    /** Initial Force Combination Cases */
-    COMB_LIST: Array<{
-      /** Load Case Name */
-      LCNAME: string;
-      /** Scale Factor */
-      FACTOR: number;
-    }>;
-    /** Check to Reflect Initial Axial Forces into Geometric Stiffness */
-    bCHECK_GEOM_STIFF?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface InitialElementForcePayload {
-    /** Element Type */
-    ELEM_TYPE: string;
-    /** Element ID */
-    ELEM_KEY: number;
-    /** Element Forces */
-    ELEMENT_FORCES: Array<number>;
-  }
 }
 
 export namespace DbMovingLoadsTypes {
   /** Generated from contracts/endpoints/. */
-  export interface MovingLoadCodePayload {
-    /** Moving Load Code */
-    CODE: string;
+  export interface AdditionalImpactFactorItem {
+    /** Serial Number Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER" or "EFF_SPAN_LEN_AUTO". */
+    ID?: number;
+    /** Lane Type ("LINE" / "SURFACE"); the EFF_SPAN_LEN_AUTO table states "LINE" Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER" or "EFF_SPAN_LEN_AUTO". */
+    LANE_TYPE?: string;
+    /** Lane Name Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER" or "EFF_SPAN_LEN_AUTO". */
+    LANE_NAME?: string;
+    /** Factor Type ("IMPACT_FACT" / "EFF_SPAN_LEN_USER" / "EFF_SPAN_LEN_AUTO") Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER" or "EFF_SPAN_LEN_AUTO". */
+    FACT_TYPE?: string;
+    /** Factor Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER". */
+    FACTOR?: number;
+    /** Element Type ("BEAM" / "TRUSS" / "PLATE") Required when ITEMS.FACT_TYPE = "EFF_SPAN_LEN_AUTO". */
+    ELEMTYPE?: string;
+    /** Parts (Beam: [i, 1/4, 1/2, 3/4, j] / Plate: [cent, i, j, k, l]) Applies when ITEMS.FACT_TYPE = "EFF_SPAN_LEN_AUTO" and ITEMS.ELEMTYPE is "BEAM" or "PLATE". */
+    PARTS?: Array<boolean>;
+    /** Components (Beam: [My_max, My_min, Mz_max, Mz_min, Fx_max, Fx_min] / Truss: [Max, Min] / Plate: [Mxx_max, Mxx_min, Myy_max, Myy_min, Fxx_max, Fxx_min, Fyy_max, Fyy_min]) Required when ITEMS.FACT_TYPE = "EFF_SPAN_LEN_AUTO". */
+    COMPONENTS?: Array<boolean>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface AdditionalImpactFactorPayload {
+    /** Additional Impact Factor Items */
+    ITEMS: Array<{
+      /** Serial Number Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER" or "EFF_SPAN_LEN_AUTO". */
+      ID?: number;
+      /** Lane Type ("LINE" / "SURFACE"); the EFF_SPAN_LEN_AUTO table states "LINE" Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER" or "EFF_SPAN_LEN_AUTO". */
+      LANE_TYPE?: string;
+      /** Lane Name Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER" or "EFF_SPAN_LEN_AUTO". */
+      LANE_NAME?: string;
+      /** Factor Type ("IMPACT_FACT" / "EFF_SPAN_LEN_USER" / "EFF_SPAN_LEN_AUTO") Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER" or "EFF_SPAN_LEN_AUTO". */
+      FACT_TYPE?: string;
+      /** Factor Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER". */
+      FACTOR?: number;
+      /** Element Type ("BEAM" / "TRUSS" / "PLATE") Required when ITEMS.FACT_TYPE = "EFF_SPAN_LEN_AUTO". */
+      ELEMTYPE?: string;
+      /** Parts (Beam: [i, 1/4, 1/2, 3/4, j] / Plate: [cent, i, j, k, l]) Applies when ITEMS.FACT_TYPE = "EFF_SPAN_LEN_AUTO" and ITEMS.ELEMTYPE is "BEAM" or "PLATE". */
+      PARTS?: Array<boolean>;
+      /** Components (Beam: [My_max, My_min, Mz_max, Mz_min, Fx_max, Fx_min] / Truss: [Max, Min] / Plate: [Mxx_max, Mxx_min, Myy_max, Myy_min, Fxx_max, Fxx_min, Fyy_max, Fyy_min]) Required when ITEMS.FACT_TYPE = "EFF_SPAN_LEN_AUTO". */
+      COMPONENTS?: Array<boolean>;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface DynamicLoadAllowancePayload {
+    /** Impact Factor (%) */
+    FACTOR: number;
+    /** Selected Structure Group List */
+    ITEMS: Array<string>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LaneSupportNegativeMomentPayload {
+    /** Input Type ("AutoInput" / "UserInput") */
+    TYPE: string;
+    /** Structure Group Name (AutoInput 전용) */
+    GROUP_NAME?: string;
+    /** Element ID */
+    ELEMENT_NO?: number;
+    /** Element Type ("BEAM" / "PLATE") */
+    ELEMENT_TYPE?: string;
+    /** Position ("Both" / "End-I" / "End-J", BEAM 전용) */
+    POSITION?: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LaneSupportReactionPayload {
+    /** Fixed Value: 0 (Key는 Node ID) */
+    NODE: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LineLaneChinaItem {
+    /** Element No. */
+    ELEM: number;
+    /** Eccentricity */
+    ECC?: number;
+    /** Span Length */
+    SPAN?: number;
+    /** Span Start */
+    SPAN_START?: boolean;
+    /** Scale Factor */
+    SCALE_FACTOR?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface LineLaneCommon {
@@ -5718,6 +5792,19 @@ export namespace DbMovingLoadsTypes {
     MOVING: string;
   }
   /** Generated from contracts/endpoints/. */
+  export interface LineLaneIndiaItem {
+    /** Element No. */
+    ELEM: number;
+    /** Eccentricity */
+    ECC?: number;
+    /** Option (0=IF/CDA, 1=Span Length) */
+    IMPACT_SPAN?: number;
+    /** Scale Factor (when IMPACT_SPAN=0) */
+    IMPACT_FACTOR?: number;
+    /** Span Length (when IMPACT_SPAN=1) */
+    SPAN?: number;
+  }
+  /** Generated from contracts/endpoints/. */
   export interface LineLaneItem {
     /** Element No. */
     ELEM: number;
@@ -5733,635 +5820,11 @@ export namespace DbMovingLoadsTypes {
     ECCEN_VERT_LOAD?: number;
   }
   /** Generated from contracts/endpoints/. */
-  export interface TrafficLineLanePayload {
-    /** Common lane properties */
-    COMMON: {
-      /** Name of Line Lane */
-      LL_NAME: string;
-      /** Lane Width */
-      WIDTH: number;
-      /** Wheel Spacing */
-      WHEEL_SPACE?: number;
-      /** Transverse Lane Optimization */
-      OPT_AUTO_LANE?: boolean;
-      /** Allow Width for Optimization */
-      ALLOW_WIDTH?: number;
-      /** Load Distribution ("LANE" / "CROSS") */
-      LOAD_DIST: string;
-      /** Name of Structure Group */
-      GROUP_NAME?: string;
-      /** Skew Start */
-      SKEW_START?: number;
-      /** Skew End */
-      SKEW_END?: number;
-      /** Moving Direction ("FORWARD" / "BACKWARD" / "BOTH") */
-      MOVING: string;
-    };
-    /** Lane Items */
-    LANE_ITEMS: Array<{
-      /** Element No. */
-      ELEM: number;
-      /** Eccentricity */
-      ECC?: number;
-      /** Impact Factor */
-      FACT?: number;
-      /** Span Start */
-      SPAN_START?: boolean;
-      /** Centrifugal Force Factor */
-      CENT_F?: number;
-      /** Eccentricity Considering Cant (vertical load) */
-      ECCEN_VERT_LOAD?: number;
-    }>;
-    /** Used only when importing */
-    SPECIAL_LANE_ITEMS?: Array<{
-      /** CE */
-      CENT_F?: number;
-      /** Eccentricity */
-      ECC?: number;
-      /** Eccen. Vert. Loads */
-      ECCEN_VERT_LOAD?: number;
-      /** Key Elements */
-      ELEMS?: Array<number>;
-      /** Factor */
-      FACT?: number;
-      /** Span Start */
-      SPAN_START?: boolean;
-      /** Span Start No */
-      SPAN_START_NO_LIST?: Array<number>;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface LineLaneChinaItem {
-    /** Element No. */
-    ELEM: number;
-    /** Eccentricity */
-    ECC?: number;
-    /** Span Length */
-    SPAN?: number;
-    /** Span Start */
-    SPAN_START?: boolean;
-    /** Scale Factor */
-    SCALE_FACTOR?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface TrafficLineLanesChinaPayload {
-    /** Common lane properties */
-    COMMON: {
-      /** Name of Line Lane */
-      LL_NAME: string;
-      /** Lane Width */
-      WIDTH: number;
-      /** Wheel Spacing */
-      WHEEL_SPACE?: number;
-      /** Transverse Lane Optimization */
-      OPT_AUTO_LANE?: boolean;
-      /** Allow Width for Optimization */
-      ALLOW_WIDTH?: number;
-      /** Load Distribution ("LANE" / "CROSS") */
-      LOAD_DIST: string;
-      /** Name of Structure Group */
-      GROUP_NAME?: string;
-      /** Skew Start */
-      SKEW_START?: number;
-      /** Skew End */
-      SKEW_END?: number;
-      /** Moving Direction ("FORWARD" / "BACKWARD" / "BOTH") */
-      MOVING: string;
-    };
-    /** Lane Items */
-    LANE_ITEMS: Array<{
-      /** Element No. */
-      ELEM: number;
-      /** Eccentricity */
-      ECC?: number;
-      /** Span Length */
-      SPAN?: number;
-      /** Span Start */
-      SPAN_START?: boolean;
-      /** Scale Factor */
-      SCALE_FACTOR?: number;
-    }>;
-    /** Used only when importing */
-    SPECIAL_LANE_ITEMS?: Array<{
-      /** Eccentricity */
-      ECC?: number;
-      /** Key Elements */
-      ELEMS?: Array<number>;
-      /** Scale Factor */
-      SCALE_FACTOR?: number;
-      /** Span */
-      SPAN?: number;
-      /** Span Start */
-      SPAN_START?: boolean;
-      /** Span Start No */
-      SPAN_START_NO_LIST?: Array<number>;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface LineLaneIndiaItem {
-    /** Element No. */
-    ELEM: number;
-    /** Eccentricity */
-    ECC?: number;
-    /** Option (0=IF/CDA, 1=Span Length) */
-    IMPACT_SPAN?: number;
-    /** Scale Factor (when IMPACT_SPAN=0) */
-    IMPACT_FACTOR?: number;
-    /** Span Length (when IMPACT_SPAN=1) */
-    SPAN?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface TrafficLineLanesIndiaPayload {
-    /** Common lane properties */
-    COMMON: {
-      /** Name of Line Lane */
-      LL_NAME: string;
-      /** Lane Width */
-      WIDTH: number;
-      /** Wheel Spacing */
-      WHEEL_SPACE?: number;
-      /** Transverse Lane Optimization */
-      OPT_AUTO_LANE?: boolean;
-      /** Allow Width for Optimization */
-      ALLOW_WIDTH?: number;
-      /** Load Distribution ("LANE" / "CROSS") */
-      LOAD_DIST: string;
-      /** Name of Structure Group */
-      GROUP_NAME?: string;
-      /** Skew Start */
-      SKEW_START?: number;
-      /** Skew End */
-      SKEW_END?: number;
-      /** Moving Direction ("FORWARD" / "BACKWARD" / "BOTH") */
-      MOVING: string;
-    };
-    /** Lane Items */
-    LANE_ITEMS: Array<{
-      /** Element No. */
-      ELEM: number;
-      /** Eccentricity */
-      ECC?: number;
-      /** Option (0=IF/CDA, 1=Span Length) */
-      IMPACT_SPAN?: number;
-      /** Scale Factor (when IMPACT_SPAN=0) */
-      IMPACT_FACTOR?: number;
-      /** Span Length (when IMPACT_SPAN=1) */
-      SPAN?: number;
-    }>;
-    /** Used only when importing */
-    SPECIAL_LANE_ITEMS?: Array<{
-      /** Eccentricity */
-      ECC?: number;
-      /** Key Elements */
-      ELEMS?: Array<number>;
-      /** Impact Factor */
-      IMPACT_FACTOR?: number;
-      /** Impact Span */
-      IMPACT_SPAN?: number;
-      /** Span */
-      SPAN?: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
   export interface LineLaneTransverseItem {
     /** Element ID */
     ELEM: number;
     /** Factor */
     FACTOR: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SpecialLineLaneTransverseItem {
-    /** Key Elements */
-    ELEMS?: Array<number>;
-    /** Factor */
-    FACTOR?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface TrafficLineLanesTransversePayload {
-    /** Name of Line Lane */
-    LL_NAME: string;
-    /** Lane Items */
-    LANE_ITEMS: Array<{
-      /** Element ID */
-      ELEM: number;
-      /** Factor */
-      FACTOR: number;
-    }>;
-    /** Used only when importing */
-    SPECIAL_LANE_ITEMS?: Array<{
-      /** Key Elements */
-      ELEMS?: Array<number>;
-      /** Factor */
-      FACTOR?: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface TrafficLineLanesOptimizationPayload {
-    /** Name of Line Lane */
-    LL_NAME: string;
-    /** Load Distribution ("LANE" / "CROSS") */
-    LOAD_DIST: string;
-    /** Structure Group Name */
-    GROUP_NAME?: string;
-    /** Skew Start */
-    SKEW_START?: number;
-    /** Skew End */
-    SKEW_END?: number;
-    /** Moving Direction */
-    MOVING: string;
-    /** Optimization Width */
-    OPTIM_WIDTH: number;
-    /** Lane Width */
-    LANE_WIDTH: number;
-    /** Offset Type (0=Fixed, 1=Division) */
-    OFFSET_TYPE: number;
-    /** Number of Division */
-    DIVIDE_NUM?: number;
-    /** Analysis Lane Offset */
-    ANAL_LANE_OFFSET?: number;
-    /** Wheel Spacing */
-    WHEEL_SPACE?: number;
-    /** Margin */
-    MARGIN?: number;
-    /** Lane Items (ELEM, ECC, 코드별 추가 필드) */
-    LANE_ITEMS: Array<{
-      /** Element No. */
-      ELEM: number;
-      /** Eccentricity */
-      ECC?: number;
-      /** Impact Factor */
-      FACT?: number;
-      /** Span Start */
-      SPAN_START?: boolean;
-      /** Centrifugal Force Factor */
-      CENT_F?: number;
-      /** Eccentricity Considering Cant (vertical load) */
-      ECCEN_VERT_LOAD?: number;
-    }>;
-    /** Use Straddling Lane Type */
-    OPT_STRADD?: boolean;
-    /** Used only when importing */
-    SPECIAL_LANE_ITEMS?: Array<{
-      /** CE */
-      CENT_F?: number;
-      /** Eccentricity */
-      ECC?: number;
-      /** Key Elements */
-      ELEMS?: Array<number>;
-      /** Factor */
-      FACT?: number;
-      /** Scale Factor */
-      SCALE_FACTOR?: number;
-      /** Span */
-      SPAN?: number;
-      /** Span Start */
-      SPAN_START?: boolean;
-      /** Span Start No */
-      SPAN_START_NO_LIST?: Array<number>;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SurfaceLaneItem {
-    /** Node Key */
-    NODE: number;
-    /** Offset Distance to Lane Center */
-    OFFSET: number;
-    /** Impact Factor */
-    IMPACT_FACTOR?: number;
-    /** Is Span Start */
-    bSPAN_START?: boolean;
-    /** Centrifugal Force (Only Use AASHTO LRFD) */
-    CENTRI_FORCE?: number;
-    /** Impact Span Type (Only Use India Code) */
-    IMPACT_SPAN_TYPE?: string;
-    /** IF/CDA (Only Use India Code) */
-    IMPACT_FACTOR_INDIA?: number;
-    /** Span Length (Only Use India Code) */
-    SPAN_LENGTH?: number;
-    /** Eccentricity of Vertical Loads (Only Use EuroCode) */
-    ECCEN_VERT_LOAD?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface TrafficSurfaceLanePayload {
-    /** Name of Surface Lane */
-    NAME: string;
-    /** Lane Width */
-    WIDTH: number;
-    /** Wheel Spacing */
-    WHEEL_SPACE?: number;
-    /** Skew Start */
-    SKEW_START?: number;
-    /** Skew End */
-    SKEW_END?: number;
-    /** Transverse Lane Optimization */
-    bOPTIMIZE?: boolean;
-    /** Allow Width for Optimization */
-    ALLOW_WIDTH?: number;
-    /** Moving Direction ("FORWARD" / "BACKWARD" / "BOTH") */
-    MV_DIR: string;
-    /** Sequence Number (Unique) */
-    SEQ?: number;
-    /** Lane Items */
-    LANE_ITEMS: Array<{
-      /** Node Key */
-      NODE: number;
-      /** Offset Distance to Lane Center */
-      OFFSET: number;
-      /** Impact Factor */
-      IMPACT_FACTOR?: number;
-      /** Is Span Start */
-      bSPAN_START?: boolean;
-      /** Centrifugal Force (Only Use AASHTO LRFD) */
-      CENTRI_FORCE?: number;
-      /** Impact Span Type (Only Use India Code) */
-      IMPACT_SPAN_TYPE?: string;
-      /** IF/CDA (Only Use India Code) */
-      IMPACT_FACTOR_INDIA?: number;
-      /** Span Length (Only Use India Code) */
-      SPAN_LENGTH?: number;
-      /** Eccentricity of Vertical Loads (Only Use EuroCode) */
-      ECCEN_VERT_LOAD?: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SurfaceLaneChinaItem {
-    /** Node No. */
-    NODE: number;
-    /** Offset Distance to Lane Center */
-    OFFSET?: number;
-    /** Span Length */
-    SPAN_LENGTH?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface TrafficSurfaceLanesChinaPayload {
-    /** Name of Surface Lane */
-    NAME?: string;
-    /** Lane Width */
-    WIDTH?: number;
-    /** Wheel Spacing */
-    WHEEL_SPACE?: number;
-    /** Skew Start */
-    SKEW_START?: number;
-    /** Skew End */
-    SKEW_END?: number;
-    /** Transverse Lane Optimization */
-    bOPTIMIZE?: boolean;
-    /** Allow Width for Optimization */
-    ALLOW_WIDTH?: number;
-    /** Moving Direction ("FORWARD" / "BACKWARD" / "BOTH") */
-    MV_DIR?: string;
-    /** Sequence Number (Must be Unique) */
-    SEQ?: number;
-    /** Lane Items */
-    LANE_ITEMS?: Array<{
-      /** Node No. */
-      NODE: number;
-      /** Offset Distance to Lane Center */
-      OFFSET?: number;
-      /** Span Length */
-      SPAN_LENGTH?: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SurfaceLaneOptimizationItem {
-    /** Node Key */
-    NODE_KEY: number;
-    /** Offset */
-    OFFSET?: number;
-    /** Impact Factor / Centrifugal Force */
-    FACTOR?: number;
-    /** Impact Factor / Centrifugal Force */
-    CENT_F?: number;
-    /** Span Start */
-    SPAN_START?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SurfaceLaneOptimizationChinaItem {
-    /** Node Key */
-    NODE_KEY?: number;
-    /** Offset */
-    OFFSET?: number;
-    /** Span Length */
-    SPAN_LENGTH?: number;
-    /** Span Start Boolean */
-    SPAN_START?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface TrafficSurfaceLanesOptimizationPayload {
-    /** Lane Name */
-    LANE_NAME: string;
-    /** Skew Start */
-    SKEW_START?: number;
-    /** Skew End */
-    SKEW_END?: number;
-    /** Moving Direction */
-    MOVING: string;
-    /** Optimization Width */
-    OPTIMIZE_WIDTH: number;
-    /** Lane Width */
-    LANE_WIDTH: number;
-    /** Wheel Spacing */
-    WHEEL_SPACE?: number;
-    /** Margin */
-    MARGIN?: number;
-    /** Offset Type (0=Fixed, 1=Division) */
-    OFFSET_TYPE: number;
-    /** Number of Division */
-    DIVIDE_NUM?: number;
-    /** Analysis Lane Offset */
-    ANALYSIS_LANE_OFFSET?: number;
-    /** Items */
-    ITEMS: Array<{
-      /** Node Key */
-      NODE_KEY: number;
-      /** Offset */
-      OFFSET?: number;
-      /** Impact Factor / Centrifugal Force */
-      FACTOR?: number;
-      /** Impact Factor / Centrifugal Force */
-      CENT_F?: number;
-      /** Span Start */
-      SPAN_START?: boolean;
-    }>;
-    /** BS Straddling Lane Boolean */
-    OPT_STRADD?: boolean;
-    /** China lane items */
-    CHINA_ITEMS?: Array<{
-      /** Node Key */
-      NODE_KEY?: number;
-      /** Offset */
-      OFFSET?: number;
-      /** Span Length */
-      SPAN_LENGTH?: number;
-      /** Span Start Boolean */
-      SPAN_START?: boolean;
-    }>;
-  }
-  export interface VehicleDefaultParams {
-    UNIFORM_LOAD?: number;
-    DYN_LOAD_ALLOWANCE?: number;
-    W1?: number;
-    W2?: number;
-    D1?: number;
-    D2?: number;
-    PL?: number;
-    PLM?: number;
-    PLV?: number;
-    CENT_F?: boolean;
-  }
-  export interface VehicleLoadItem {
-    POINT_LOAD?: number;
-    POINT_DIST?: number;
-  }
-  export interface VehicleKsceLsd15PointItem {
-    POINT_LOAD?: number;
-    POINT_DIST?: number;
-    POINT_DIST2?: number;
-  }
-  export interface VehicleKsceLsd15Params {
-    LOAD_TYPE?: number;
-    LOADED_LENGTH?: number;
-    W1?: number;
-    W2?: number;
-    D1?: number;
-    D2?: number;
-    EXP?: number;
-    DYN_LOAD_ALLOWANCE?: number;
-    LENGTH_LANE?: number;
-    LENGTH_LANE_USER?: number;
-    CONVERT_DIST_LOAD?: boolean;
-    UNIFORM_LOAD_NUM?: number;
-    UNIFORM_LOAD_DIST?: number;
-    UNIFORM_LOAD_W?: number;
-    UNIFORM_LOAD_LOAD_LENGTH_L?: number;
-    POINT_ITEMS?: Array<VehicleKsceLsd15PointItem>;
-  }
-  export interface VehicleEurocodeParams {
-    SUB_TYPE?: number;
-    SEL_VEHICLE?: string;
-    AMP?: number;
-    AMP2?: number;
-    AMP_VALUES?: Array<number>;
-    TANDEM_ADJUST_VALUES?: Array<number>;
-    TANDEM_LOADS?: Array<number>;
-    UDL_ADJUST_VALUES?: Array<number>;
-    UDL_LOADS?: Array<number>;
-    USE_DYNAMIC_FACTOR2_0?: boolean;
-    USE_DYNAMIC_FACTOR2_1?: boolean;
-    USE_POINT_LOAD3_0?: boolean;
-    USE_POINT_LOAD3_1?: boolean;
-    VAR_SPACING?: boolean;
-    MAX_SPACING?: number;
-    MIN_SPACING?: number;
-    WHEEL_SPACING?: number;
-    LM3_LOADCASE1?: boolean;
-    LM3_LOADCASE2?: boolean;
-    ADJUSTMENT?: number;
-    ADJUSTMENT2?: number;
-    AXLE_NUM?: number;
-    FOOTWAY?: number;
-    INTERVAL?: number;
-    DYNAMIC_FACTOR?: boolean;
-    USER_INPUT?: boolean;
-    DSPACE?: number;
-    W1?: number;
-    DD1?: number;
-    D1?: number;
-    W2?: number;
-    DD2?: number;
-    D2?: number;
-    PRESSURE_LOAD?: number;
-    V_LOAD_FACTOR?: number;
-    LONGI_DIST?: boolean;
-    DIST_RAIL_SUPPORT?: number;
-    ECCEN_VERT_LOAD?: boolean;
-    ECCEN_VERT_LOAD_VALUE?: number;
-    HSLMA_NUM?: number;
-    HSLMA_LENGTH?: number;
-    HSLMA_SPACING?: number;
-    HSLMA_FORCE?: number;
-    HSLMB_NUM?: number;
-    HSLMB_FORCE?: number;
-    HSLMB_DIST?: number;
-    PHI_DYN_EFF1?: number;
-    PHI_DYN_EFF2?: number;
-  }
-  export interface VehiclePayload {
-    MVLD_CODE?: number;
-    VEHICLE_LOAD_NAME?: string;
-    VEHICLE_LOAD_NUM?: number;
-    VEHICLE_TYPE_NAME?: string;
-    STANDARD_CODE?: string;
-    USER_LOAD_TYPE?: string;
-    VEH_DEFAULT?: VehicleDefaultParams;
-    VEH_EUROCODE?: VehicleEurocodeParams;
-    VEH_KSCE_LSD15?: VehicleKsceLsd15Params;
-    LOAD_ITEMS?: Array<VehicleLoadItem>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface VehicleTransversePayload {
-    /** Vehicular Load Name */
-    NAME: string;
-    /** Wheel Load (P) */
-    P: number;
-    /** Distribution Width */
-    W: number;
-    /** Longitudinal Width */
-    LW: number;
-    /** Max. Number of Lanes (n) */
-    NUM: number;
-    /** Distance between Wheels (Dw) */
-    DW: number;
-    /** Min. Distance between Vehicle (Dv) */
-    DV: number;
-    /** Edge Distance of Wheel Loads (De) */
-    DE?: number;
-    /** Median Strip Option */
-    OPT_MEDIAN_STRIP?: boolean;
-    /** Location (Ml) */
-    ML?: number;
-    /** Width (Mw) */
-    MW?: number;
-    /** Max. Number of Left Lanes (n1) */
-    LEFT_LANES?: number;
-  }
-  export interface MovingLoadCaseSubLoadDataItem {
-    VEHICLE_TYPE?: string;
-    VEHICLE_NAME?: string;
-    SCALE_FACTOR?: number;
-    MIN_LOADED_LANE?: number;
-    MAX_LOADED_LANE?: number;
-    LANE_NAMES?: Array<string>;
-  }
-  export interface MovingLoadCaseDefault {
-    LANE_FACTOR_TYPE?: number;
-    SCALE_FACTORS?: Array<number>;
-    COMB_OPTION?: string;
-    SUB_LOAD_DATAS?: Array<MovingLoadCaseSubLoadDataItem>;
-    _2_LANE_FACTOR_1?: number;
-    _2_LANE_FACTOR_2?: number;
-    _3_LANE_FACTOR_1?: number;
-    _3_LANE_FACTOR_2?: number;
-    _3_LANE_FACTOR_3?: number;
-    _3_LANE_FACTOR_4?: number;
-  }
-  export interface MovingLoadCasePermitLoad {
-    VEHICLE_LOAD_NAME?: string;
-    REF_LANE?: string;
-    SCALE_FACTOR?: number;
-  }
-  export interface MovingLoadCaseOptimizeItem {
-    VEHICLE_TYPE?: string;
-    VEHICLE_NAME?: string;
-    SCALE_FACTOR?: number;
-  }
-  export interface MovingLoadCaseAutoOptimize {
-    LANE_NAME?: string;
-    SCALE_FACTORS?: Array<number>;
-    MIN_VEHL_DIST?: number;
-    MIN_NUM_VEHICLE?: number;
-    MAX_NUM_VEHICLE?: number;
-    OPTIMIZE_ITEMS?: Array<MovingLoadCaseOptimizeItem>;
   }
   export interface MovingLoadCaseAustraliaHeavyLoadLanes {
     NA_LLAN_NAMES?: Array<string>;
@@ -6376,218 +5839,13 @@ export namespace DbMovingLoadsTypes {
     MAX_LOADED_LANE?: number;
     LINE_ITEMS?: MovingLoadCaseAustraliaHeavyLoadLanes;
   }
-  export interface MovingLoadCasePayload {
-    LCNAME?: string;
-    DESC?: string;
-    TYPE?: number;
-    DEFAULT?: MovingLoadCaseDefault;
-    PERMIT_LOAD?: MovingLoadCasePermitLoad;
-    AUTO_OPTIMIZE?: MovingLoadCaseAutoOptimize;
-    ASL?: MovingLoadCaseAustraliaHeavyLoadPlatform;
-  }
-  export interface MovingLoadCaseChinaSubLoadItem {
-    VEHICLE_CLASS?: string;
-    VEHICLE_TYPE?: string;
-    SCALE_FACTOR?: number;
-    MIN_NUM_LOADED_LANES?: number;
-    MAX_NUM_LOADED_LANES?: number;
-    SELECTED_LANES?: Array<string>;
-  }
-  export interface MovingLoadCaseChinaOptimizeItem {
-    VEHICLE_TYPE?: string;
-    VEHICLE_NAME?: string;
-    SCALE_FACTOR?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export type MovingLoadCaseChinaPayload = {
-    /** Load case name. */
-    LCNAME: string;
-    /** Description. */
-    DESC?: string;
-    /** Moving-load optimization. */
-    OPT_AUTO_OPTIMIZE?: boolean;
-    /** Bridge type. */
-    BRIDGE_TYPE: number;
-    /** Scale factors for an old urban bridge. */
-    SCALE_FACTOR_O: [number, number, number, number, number, number, number, number];
-    /** Scale factors for a highway or new urban bridge. */
-    SCALE_FACTOR_N: [number, number, number, number, number, number, number, number];
-    /** Scale factors for JTG B01-2014. */
-    SCALE_FACTOR_JTG: [number, number, number, number, number, number, number, number];
-    /** Combination option. */
-    LOADING_EFFECT: number;
-  } & (
-    {
-      OPT_AUTO_OPTIMIZE: false;
-      /** Sub-load cases. */
-      SUB_LOAD_ITEMS: Array<{
-        /** Vehicle type. */
-        VEHICLE_TYPE: "VL" | "VC";
-        /** Vehicle class name. */
-        VEHICLE_CLASS: string;
-        /** Scale factor. */
-        SCALE_FACTOR: number;
-        /** Minimum number of loaded lanes. */
-        MIN_NUM_LOADED_LANES: number;
-        /** Maximum number of loaded lanes. */
-        MAX_NUM_LOADED_LANES: number;
-        /** Selected lanes. */
-        SELECTED_LANES: Array<string>;
-      }>;
-    } |
-    {
-      OPT_AUTO_OPTIMIZE: true;
-      /** Minimum vehicle distance. */
-      MIN_VEHICLE_DIST: number;
-      /** Loaded lane name. */
-      LOADED_LANE_NAME: string;
-      /** Minimum number of vehicles. */
-      MIN_NUM_VEHICLE: number;
-      /** Maximum number of vehicles. */
-      MAX_NUM_VEHICLE: number;
-      /** Assigned vehicles. */
-      AUTO_OPTIMIZE_ITEMS: Array<{
-        /** Vehicle type. */
-        VEHICLE_TYPE: "VL" | "VC";
-        /** Vehicle class name. */
-        VEHICLE_NAME: string;
-        /** Scale factor. */
-        SCALE_FACTOR: number;
-      }>;
-    }
-  );
-  /** Generated from contracts/endpoints/. */
-  export interface MovingLoadCaseIndiaSubLoadItem {
-    /** Min. Number of Loaded Lanes */
-    MIN_NUM_LOADED_LANES: number;
-    /** Max. Number of Loaded Lanes */
-    MAX_NUM_LOADED_LANES: number;
-    /** Vehicle */
-    VEHICLE_CLASS_1: string;
-    /** Selected Lanes */
-    SELECTED_LANES: Array<string>;
-    /** Scale Factor Required when OPT_AUTO_LL = true. */
-    SCALE_FACTOR?: number;
-    /** Vehicle Class II Required when OPT_AUTO_LL = true. */
-    VEHICLE_CLASS_2?: string;
-    /** Vehicle Footway Required when OPT_AUTO_LL = true. */
-    FOOTWAY?: string;
-    /** Carriageway Width Applies when OPT_AUTO_LL = true. */
-    CARRIAGE_WAY_WIDTH?: number;
-    /** Carriageway Loading Applies when OPT_AUTO_LL = true. */
-    CARRIAGE_WAY_LOADING?: number;
-    /** Selected Lanes for Footway Required when OPT_AUTO_LL = true. */
-    SELECTED_FOOTWAY_LANES?: Array<string>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MovingLoadCaseIndiaPayload {
-    /** Load Case Name */
-    LCNAME: string;
-    /** Description */
-    DESC?: string;
-    /** Multiple Presence Factor [1-2, 3, 4, ≥5] */
-    SCALE_FACTOR: [number, number, number, number];
-    /** Auto Live Load Combinations */
-    OPT_AUTO_LL?: boolean;
-    /** Load Cases for Permit Vehicle */
-    OPT_LC_FOR_PERMIT_LOAD?: boolean;
-    /** Number of Loaded Lanes */
-    NUM_LOADED_LANES: number;
-    /** Sub-Load Cases */
-    SUB_LOAD_ITEMS: Array<{
-      /** Min. Number of Loaded Lanes */
-      MIN_NUM_LOADED_LANES: number;
-      /** Max. Number of Loaded Lanes */
-      MAX_NUM_LOADED_LANES: number;
-      /** Vehicle */
-      VEHICLE_CLASS_1: string;
-      /** Selected Lanes */
-      SELECTED_LANES: Array<string>;
-      /** Scale Factor Required when OPT_AUTO_LL = true. */
-      SCALE_FACTOR?: number;
-      /** Vehicle Class II Required when OPT_AUTO_LL = true. */
-      VEHICLE_CLASS_2?: string;
-      /** Vehicle Footway Required when OPT_AUTO_LL = true. */
-      FOOTWAY?: string;
-      /** Carriageway Width Applies when OPT_AUTO_LL = true. */
-      CARRIAGE_WAY_WIDTH?: number;
-      /** Carriageway Loading Applies when OPT_AUTO_LL = true. */
-      CARRIAGE_WAY_LOADING?: number;
-      /** Selected Lanes for Footway Required when OPT_AUTO_LL = true. */
-      SELECTED_FOOTWAY_LANES?: Array<string>;
-    }>;
-    /** Permit Vehicle ID Required when OPT_LC_FOR_PERMIT_LOAD = true. */
-    PERMIT_VEHICLE?: number;
-    /** Reference Lane ID Required when OPT_LC_FOR_PERMIT_LOAD = true. */
-    REF_LANE?: number;
-    /** Eccentricity Required when OPT_LC_FOR_PERMIT_LOAD = true. */
-    ECCEN?: number;
-    /** Scale Factor Required when OPT_LC_FOR_PERMIT_LOAD = true. */
-    PERMIT_SCALE_FACTOR?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MovingLoadCaseBsStraddleLaneItem {
-    /** HB Straddling Two Lanes - lane 1 */
-    STARDD_LANE_1: string;
-    /** HB Straddling Two Lanes - lane 2 */
-    STARDD_LANE_2: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MovingLoadCaseBsSubLoadDataItem {
-    /** Scale Factor */
-    SCALEFACTOR: number;
-    /** Number of Loaded Lanes */
-    NUMLOADEDLANE: number;
-    /** Vehicle Name */
-    VEHICLE_NAME: string;
-    /** Selected Lanes */
-    SELECTEDLANES: Array<string>;
-    /** HB Straddling Two Lanes (STARDD_LANE_1/STARDD_LANE_2) */
-    STRAD_LANE: Array<{
-      /** HB Straddling Two Lanes - lane 1 */
-      STARDD_LANE_1: string;
-      /** HB Straddling Two Lanes - lane 2 */
-      STARDD_LANE_2: string;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MovingLoadCaseBsStandardData {
-    /** Loading Effect ("INDEPEND") */
-    LOADINGEFFECT: string;
-    /** Sub-Load Cases */
-    SUBLOADDATA: Array<{
-      /** Scale Factor */
-      SCALEFACTOR: number;
-      /** Number of Loaded Lanes */
-      NUMLOADEDLANE: number;
-      /** Vehicle Name */
-      VEHICLE_NAME: string;
-      /** Selected Lanes */
-      SELECTEDLANES: Array<string>;
-      /** HB Straddling Two Lanes (STARDD_LANE_1/STARDD_LANE_2) */
-      STRAD_LANE: Array<{
-        /** HB Straddling Two Lanes - lane 1 */
-        STARDD_LANE_1: string;
-        /** HB Straddling Two Lanes - lane 2 */
-        STARDD_LANE_2: string;
-      }>;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MovingLoadCaseBsSpecialData {
-    /** Standard vehicle name */
-    VEHICLE_NAME: string;
-    /** Special vehicle name (the manual's own key spelling) */
-    SPECIAL_VIHICLE_NAME: string;
-    /** Selected Lanes */
-    SELECTEDLANES: Array<string>;
-    /** HB Straddling Two Lanes pairs */
-    STRAD_LANE: Array<{
-      /** HB Straddling Two Lanes - lane 1 */
-      STARDD_LANE_1: string;
-      /** HB Straddling Two Lanes - lane 2 */
-      STARDD_LANE_2: string;
-    }>;
+  export interface MovingLoadCaseAutoOptimize {
+    LANE_NAME?: string;
+    SCALE_FACTORS?: Array<number>;
+    MIN_VEHL_DIST?: number;
+    MIN_NUM_VEHICLE?: number;
+    MAX_NUM_VEHICLE?: number;
+    OPTIMIZE_ITEMS?: Array<MovingLoadCaseOptimizeItem>;
   }
   /** Generated from contracts/endpoints/. */
   export interface MovingLoadCaseBsAllModeData {
@@ -6608,63 +5866,6 @@ export namespace DbMovingLoadsTypes {
     REMAINING_LANE?: Array<string>;
   }
   /** Generated from contracts/endpoints/. */
-  export interface MovingLoadCaseBsOptiBase {
-    /** Minimum vehicle distance */
-    MINVEHLDIST: number;
-    /** Assign Lane */
-    ASSIGN_LANE: string;
-    /** Number of Loaded Lanes */
-    NUMLOADEDLANES: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MovingLoadCaseBsOptiVehicleBaseItem {
-    /** Vehicle Type ("VL" vehicle load / "VC" vehicle class) */
-    VEHICLE_TYPE: string;
-    /** Vehicle Name */
-    VEHICLE_NAME: string;
-    /** Scale Factor */
-    SCALE_FACTOR: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MovingLoadCaseBsStandardOptiData {
-    /** Loading Effect */
-    LOADINGEFFECT: string;
-    /** Optimization base settings */
-    OPTI_BASE: {
-      /** Minimum vehicle distance */
-      MINVEHLDIST: number;
-      /** Assign Lane */
-      ASSIGN_LANE: string;
-      /** Number of Loaded Lanes */
-      NUMLOADEDLANES: number;
-    };
-    /** Optimization vehicle list */
-    OPTI_VEHICLE_BASE: Array<{
-      /** Vehicle Type ("VL" vehicle load / "VC" vehicle class) */
-      VEHICLE_TYPE: string;
-      /** Vehicle Name */
-      VEHICLE_NAME: string;
-      /** Scale Factor */
-      SCALE_FACTOR: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MovingLoadCaseBsSpecialOptiData {
-    /** Standard vehicle name */
-    VEHICLE_NAME: string;
-    /** Special vehicle name (the manual's own key spelling) */
-    SPECIAL_VIHICLE_NAME: string;
-    /** Optimization base settings */
-    OPTI_BASE: {
-      /** Minimum vehicle distance */
-      MINVEHLDIST: number;
-      /** Assign Lane */
-      ASSIGN_LANE: string;
-      /** Number of Loaded Lanes */
-      NUMLOADEDLANES: number;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
   export interface MovingLoadCaseBsAllModeOptiData {
     /** Standard vehicle name */
     VEHICLE_NAME: string;
@@ -6681,6 +5882,24 @@ export namespace DbMovingLoadsTypes {
     };
     /** Remaining lanes */
     REMAINING_LANE?: Array<string>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MovingLoadCaseBsOptiBase {
+    /** Minimum vehicle distance */
+    MINVEHLDIST: number;
+    /** Assign Lane */
+    ASSIGN_LANE: string;
+    /** Number of Loaded Lanes */
+    NUMLOADEDLANES: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MovingLoadCaseBsOptiVehicleBaseItem {
+    /** Vehicle Type ("VL" vehicle load / "VC" vehicle class) */
+    VEHICLE_TYPE: string;
+    /** Vehicle Name */
+    VEHICLE_NAME: string;
+    /** Scale Factor */
+    SCALE_FACTOR: number;
   }
   /** Generated from contracts/endpoints/. */
   export type MovingLoadCaseBsPayload = {
@@ -6837,26 +6056,190 @@ export namespace DbMovingLoadsTypes {
     }
   );
   /** Generated from contracts/endpoints/. */
-  export interface MovingLoadCaseEurocodeStraddlingLaneItem {
-    /** Start Lane */
-    NAME1?: string;
-    /** End Lane */
-    NAME2?: string;
+  export interface MovingLoadCaseBsSpecialData {
+    /** Standard vehicle name */
+    VEHICLE_NAME: string;
+    /** Special vehicle name (the manual's own key spelling) */
+    SPECIAL_VIHICLE_NAME: string;
+    /** Selected Lanes */
+    SELECTEDLANES: Array<string>;
+    /** HB Straddling Two Lanes pairs */
+    STRAD_LANE: Array<{
+      /** HB Straddling Two Lanes - lane 1 */
+      STARDD_LANE_1: string;
+      /** HB Straddling Two Lanes - lane 2 */
+      STARDD_LANE_2: string;
+    }>;
   }
   /** Generated from contracts/endpoints/. */
-  export interface MovingLoadCaseEurocodeSubLoadItem {
-    /** Vehicle Load Type */
-    TYPE?: number;
-    /** Name */
-    NAME?: string;
+  export interface MovingLoadCaseBsSpecialOptiData {
+    /** Standard vehicle name */
+    VEHICLE_NAME: string;
+    /** Special vehicle name (the manual's own key spelling) */
+    SPECIAL_VIHICLE_NAME: string;
+    /** Optimization base settings */
+    OPTI_BASE: {
+      /** Minimum vehicle distance */
+      MINVEHLDIST: number;
+      /** Assign Lane */
+      ASSIGN_LANE: string;
+      /** Number of Loaded Lanes */
+      NUMLOADEDLANES: number;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MovingLoadCaseBsStandardData {
+    /** Loading Effect ("INDEPEND") */
+    LOADINGEFFECT: string;
+    /** Sub-Load Cases */
+    SUBLOADDATA: Array<{
+      /** Scale Factor */
+      SCALEFACTOR: number;
+      /** Number of Loaded Lanes */
+      NUMLOADEDLANE: number;
+      /** Vehicle Name */
+      VEHICLE_NAME: string;
+      /** Selected Lanes */
+      SELECTEDLANES: Array<string>;
+      /** HB Straddling Two Lanes (STARDD_LANE_1/STARDD_LANE_2) */
+      STRAD_LANE: Array<{
+        /** HB Straddling Two Lanes - lane 1 */
+        STARDD_LANE_1: string;
+        /** HB Straddling Two Lanes - lane 2 */
+        STARDD_LANE_2: string;
+      }>;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MovingLoadCaseBsStandardOptiData {
+    /** Loading Effect */
+    LOADINGEFFECT: string;
+    /** Optimization base settings */
+    OPTI_BASE: {
+      /** Minimum vehicle distance */
+      MINVEHLDIST: number;
+      /** Assign Lane */
+      ASSIGN_LANE: string;
+      /** Number of Loaded Lanes */
+      NUMLOADEDLANES: number;
+    };
+    /** Optimization vehicle list */
+    OPTI_VEHICLE_BASE: Array<{
+      /** Vehicle Type ("VL" vehicle load / "VC" vehicle class) */
+      VEHICLE_TYPE: string;
+      /** Vehicle Name */
+      VEHICLE_NAME: string;
+      /** Scale Factor */
+      SCALE_FACTOR: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MovingLoadCaseBsStraddleLaneItem {
+    /** HB Straddling Two Lanes - lane 1 */
+    STARDD_LANE_1: string;
+    /** HB Straddling Two Lanes - lane 2 */
+    STARDD_LANE_2: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MovingLoadCaseBsSubLoadDataItem {
     /** Scale Factor */
-    SCALE_FACTOR?: number;
-    /** Min. Loaded Lanes */
-    MIN_LOAD_LANE_TYPE?: number;
-    /** Max. Loaded Lanes */
-    MAX_LOAD_LANE_TYPE?: number;
+    SCALEFACTOR: number;
+    /** Number of Loaded Lanes */
+    NUMLOADEDLANE: number;
+    /** Vehicle Name */
+    VEHICLE_NAME: string;
     /** Selected Lanes */
-    SLN_LIST?: Array<string>;
+    SELECTEDLANES: Array<string>;
+    /** HB Straddling Two Lanes (STARDD_LANE_1/STARDD_LANE_2) */
+    STRAD_LANE: Array<{
+      /** HB Straddling Two Lanes - lane 1 */
+      STARDD_LANE_1: string;
+      /** HB Straddling Two Lanes - lane 2 */
+      STARDD_LANE_2: string;
+    }>;
+  }
+  export interface MovingLoadCaseChinaOptimizeItem {
+    VEHICLE_TYPE?: string;
+    VEHICLE_NAME?: string;
+    SCALE_FACTOR?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export type MovingLoadCaseChinaPayload = {
+    /** Load case name. */
+    LCNAME: string;
+    /** Description. */
+    DESC?: string;
+    /** Moving-load optimization. */
+    OPT_AUTO_OPTIMIZE?: boolean;
+    /** Bridge type. */
+    BRIDGE_TYPE: number;
+    /** Scale factors for an old urban bridge. */
+    SCALE_FACTOR_O: [number, number, number, number, number, number, number, number];
+    /** Scale factors for a highway or new urban bridge. */
+    SCALE_FACTOR_N: [number, number, number, number, number, number, number, number];
+    /** Scale factors for JTG B01-2014. */
+    SCALE_FACTOR_JTG: [number, number, number, number, number, number, number, number];
+    /** Combination option. */
+    LOADING_EFFECT: number;
+  } & (
+    {
+      OPT_AUTO_OPTIMIZE: false;
+      /** Sub-load cases. */
+      SUB_LOAD_ITEMS: Array<{
+        /** Vehicle type. */
+        VEHICLE_TYPE: "VL" | "VC";
+        /** Vehicle class name. */
+        VEHICLE_CLASS: string;
+        /** Scale factor. */
+        SCALE_FACTOR: number;
+        /** Minimum number of loaded lanes. */
+        MIN_NUM_LOADED_LANES: number;
+        /** Maximum number of loaded lanes. */
+        MAX_NUM_LOADED_LANES: number;
+        /** Selected lanes. */
+        SELECTED_LANES: Array<string>;
+      }>;
+    } |
+    {
+      OPT_AUTO_OPTIMIZE: true;
+      /** Minimum vehicle distance. */
+      MIN_VEHICLE_DIST: number;
+      /** Loaded lane name. */
+      LOADED_LANE_NAME: string;
+      /** Minimum number of vehicles. */
+      MIN_NUM_VEHICLE: number;
+      /** Maximum number of vehicles. */
+      MAX_NUM_VEHICLE: number;
+      /** Assigned vehicles. */
+      AUTO_OPTIMIZE_ITEMS: Array<{
+        /** Vehicle type. */
+        VEHICLE_TYPE: "VL" | "VC";
+        /** Vehicle class name. */
+        VEHICLE_NAME: string;
+        /** Scale factor. */
+        SCALE_FACTOR: number;
+      }>;
+    }
+  );
+  export interface MovingLoadCaseChinaSubLoadItem {
+    VEHICLE_CLASS?: string;
+    VEHICLE_TYPE?: string;
+    SCALE_FACTOR?: number;
+    MIN_NUM_LOADED_LANES?: number;
+    MAX_NUM_LOADED_LANES?: number;
+    SELECTED_LANES?: Array<string>;
+  }
+  export interface MovingLoadCaseDefault {
+    LANE_FACTOR_TYPE?: number;
+    SCALE_FACTORS?: Array<number>;
+    COMB_OPTION?: string;
+    SUB_LOAD_DATAS?: Array<MovingLoadCaseSubLoadDataItem>;
+    _2_LANE_FACTOR_1?: number;
+    _2_LANE_FACTOR_2?: number;
+    _3_LANE_FACTOR_1?: number;
+    _3_LANE_FACTOR_2?: number;
+    _3_LANE_FACTOR_3?: number;
+    _3_LANE_FACTOR_4?: number;
   }
   export interface MovingLoadCaseEurocodeOptimizeItem {
     TYPE?: number;
@@ -6936,21 +6319,114 @@ export namespace DbMovingLoadsTypes {
     /** Sub-Load Cases for Optimization — (1) Type "TYPE", (2) Name "NAME", (3) Scale Factor "SCALE_FACTOR" */
     OPTIMIZE_LIST?: Array<JsonObject>;
   }
-  export interface MovingLoadCasePolandSubLoadDataItem {
-    VEHICLE_NAME?: string;
+  /** Generated from contracts/endpoints/. */
+  export interface MovingLoadCaseEurocodeStraddlingLaneItem {
+    /** Start Lane */
+    NAME1?: string;
+    /** End Lane */
+    NAME2?: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MovingLoadCaseEurocodeSubLoadItem {
+    /** Vehicle Load Type */
+    TYPE?: number;
+    /** Name */
+    NAME?: string;
+    /** Scale Factor */
     SCALE_FACTOR?: number;
-    MIN_LOADED_LANE?: number;
-    MAX_LOADED_LANE?: number;
-    LANE_NAMES?: Array<string>;
+    /** Min. Loaded Lanes */
+    MIN_LOAD_LANE_TYPE?: number;
+    /** Max. Loaded Lanes */
+    MAX_LOAD_LANE_TYPE?: number;
+    /** Selected Lanes */
+    SLN_LIST?: Array<string>;
   }
-  export interface MovingLoadCasePolandDefault {
-    COMB_OPTION?: string;
-    SUB_LOAD_DATAS?: Array<MovingLoadCasePolandSubLoadDataItem>;
-    VEHICLE_LOAD_NAME?: string;
+  /** Generated from contracts/endpoints/. */
+  export interface MovingLoadCaseIndiaPayload {
+    /** Load Case Name */
+    LCNAME: string;
+    /** Description */
+    DESC?: string;
+    /** Multiple Presence Factor [1-2, 3, 4, ≥5] */
+    SCALE_FACTOR: [number, number, number, number];
+    /** Auto Live Load Combinations */
+    OPT_AUTO_LL?: boolean;
+    /** Load Cases for Permit Vehicle */
+    OPT_LC_FOR_PERMIT_LOAD?: boolean;
+    /** Number of Loaded Lanes */
+    NUM_LOADED_LANES: number;
+    /** Sub-Load Cases */
+    SUB_LOAD_ITEMS: Array<{
+      /** Min. Number of Loaded Lanes */
+      MIN_NUM_LOADED_LANES: number;
+      /** Max. Number of Loaded Lanes */
+      MAX_NUM_LOADED_LANES: number;
+      /** Vehicle */
+      VEHICLE_CLASS_1: string;
+      /** Selected Lanes */
+      SELECTED_LANES: Array<string>;
+      /** Scale Factor Required when OPT_AUTO_LL = true. */
+      SCALE_FACTOR?: number;
+      /** Vehicle Class II Required when OPT_AUTO_LL = true. */
+      VEHICLE_CLASS_2?: string;
+      /** Vehicle Footway Required when OPT_AUTO_LL = true. */
+      FOOTWAY?: string;
+      /** Carriageway Width Applies when OPT_AUTO_LL = true. */
+      CARRIAGE_WAY_WIDTH?: number;
+      /** Carriageway Loading Applies when OPT_AUTO_LL = true. */
+      CARRIAGE_WAY_LOADING?: number;
+      /** Selected Lanes for Footway Required when OPT_AUTO_LL = true. */
+      SELECTED_FOOTWAY_LANES?: Array<string>;
+    }>;
+    /** Permit Vehicle ID Required when OPT_LC_FOR_PERMIT_LOAD = true. */
+    PERMIT_VEHICLE?: number;
+    /** Reference Lane ID Required when OPT_LC_FOR_PERMIT_LOAD = true. */
+    REF_LANE?: number;
+    /** Eccentricity Required when OPT_LC_FOR_PERMIT_LOAD = true. */
+    ECCEN?: number;
+    /** Scale Factor Required when OPT_LC_FOR_PERMIT_LOAD = true. */
+    PERMIT_SCALE_FACTOR?: number;
   }
-  export interface MovingLoadCasePolandOptimizeItem {
+  /** Generated from contracts/endpoints/. */
+  export interface MovingLoadCaseIndiaSubLoadItem {
+    /** Min. Number of Loaded Lanes */
+    MIN_NUM_LOADED_LANES: number;
+    /** Max. Number of Loaded Lanes */
+    MAX_NUM_LOADED_LANES: number;
+    /** Vehicle */
+    VEHICLE_CLASS_1: string;
+    /** Selected Lanes */
+    SELECTED_LANES: Array<string>;
+    /** Scale Factor Required when OPT_AUTO_LL = true. */
+    SCALE_FACTOR?: number;
+    /** Vehicle Class II Required when OPT_AUTO_LL = true. */
+    VEHICLE_CLASS_2?: string;
+    /** Vehicle Footway Required when OPT_AUTO_LL = true. */
+    FOOTWAY?: string;
+    /** Carriageway Width Applies when OPT_AUTO_LL = true. */
+    CARRIAGE_WAY_WIDTH?: number;
+    /** Carriageway Loading Applies when OPT_AUTO_LL = true. */
+    CARRIAGE_WAY_LOADING?: number;
+    /** Selected Lanes for Footway Required when OPT_AUTO_LL = true. */
+    SELECTED_FOOTWAY_LANES?: Array<string>;
+  }
+  export interface MovingLoadCaseOptimizeItem {
     VEHICLE_TYPE?: string;
     VEHICLE_NAME?: string;
+    SCALE_FACTOR?: number;
+  }
+  export interface MovingLoadCasePayload {
+    LCNAME?: string;
+    DESC?: string;
+    TYPE?: number;
+    DEFAULT?: MovingLoadCaseDefault;
+    PERMIT_LOAD?: MovingLoadCasePermitLoad;
+    AUTO_OPTIMIZE?: MovingLoadCaseAutoOptimize;
+    ASL?: MovingLoadCaseAustraliaHeavyLoadPlatform;
+  }
+  export interface MovingLoadCasePermitLoad {
+    VEHICLE_LOAD_NAME?: string;
+    REF_LANE?: string;
     SCALE_FACTOR?: number;
   }
   export interface MovingLoadCasePolandAutoOptimize {
@@ -6963,10 +6439,14 @@ export namespace DbMovingLoadsTypes {
     VEHICLE_LOAD_NAME?: string;
     NUM_LOADED_LANES?: number;
   }
-  export interface MovingLoadCasePolandPermitLoad {
+  export interface MovingLoadCasePolandDefault {
+    COMB_OPTION?: string;
+    SUB_LOAD_DATAS?: Array<MovingLoadCasePolandSubLoadDataItem>;
     VEHICLE_LOAD_NAME?: string;
-    REF_LANE?: string;
-    ECC?: number;
+  }
+  export interface MovingLoadCasePolandOptimizeItem {
+    VEHICLE_TYPE?: string;
+    VEHICLE_NAME?: string;
     SCALE_FACTOR?: number;
   }
   export interface MovingLoadCasePolandPayload {
@@ -6978,6 +6458,27 @@ export namespace DbMovingLoadsTypes {
     DEFAULT?: MovingLoadCasePolandDefault;
     AUTO_OPTIMIZE?: MovingLoadCasePolandAutoOptimize;
     PERMIT_LOAD?: MovingLoadCasePolandPermitLoad;
+  }
+  export interface MovingLoadCasePolandPermitLoad {
+    VEHICLE_LOAD_NAME?: string;
+    REF_LANE?: string;
+    ECC?: number;
+    SCALE_FACTOR?: number;
+  }
+  export interface MovingLoadCasePolandSubLoadDataItem {
+    VEHICLE_NAME?: string;
+    SCALE_FACTOR?: number;
+    MIN_LOADED_LANE?: number;
+    MAX_LOADED_LANE?: number;
+    LANE_NAMES?: Array<string>;
+  }
+  export interface MovingLoadCaseSubLoadDataItem {
+    VEHICLE_TYPE?: string;
+    VEHICLE_NAME?: string;
+    SCALE_FACTOR?: number;
+    MIN_LOADED_LANE?: number;
+    MAX_LOADED_LANE?: number;
+    LANE_NAMES?: Array<string>;
   }
   /** Generated from contracts/endpoints/. */
   export interface MovingLoadCaseTransversePayload {
@@ -6997,16 +6498,9 @@ export namespace DbMovingLoadsTypes {
     ITEMS: Array<number>;
   }
   /** Generated from contracts/endpoints/. */
-  export interface StructureGroupNamesPayload {
-    /** Structure Group Names */
-    GROUPS: Array<string>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface VehicleClassPayload {
-    /** Vehicle Class Name */
-    VEHICLE_CLS_NAME: string;
-    /** Selected Vehicle List */
-    VEHICLE_LD_NAMES: Array<string>;
+  export interface MovingLoadCodePayload {
+    /** Moving Load Code */
+    CODE: string;
   }
   /** Generated from contracts/endpoints/. */
   export interface PlateElementForInfluenceSurfacePayload {
@@ -7014,70 +6508,19 @@ export namespace DbMovingLoadsTypes {
     ELEM_LISTS: Array<number>;
   }
   /** Generated from contracts/endpoints/. */
-  export interface LaneSupportNegativeMomentPayload {
-    /** Input Type ("AutoInput" / "UserInput") */
-    TYPE: string;
-    /** Structure Group Name (AutoInput 전용) */
-    GROUP_NAME?: string;
-    /** Element ID */
-    ELEMENT_NO?: number;
-    /** Element Type ("BEAM" / "PLATE") */
-    ELEMENT_TYPE?: string;
-    /** Position ("Both" / "End-I" / "End-J", BEAM 전용) */
-    POSITION?: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface LaneSupportReactionPayload {
-    /** Fixed Value: 0 (Key는 Node ID) */
-    NODE: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface DynamicLoadAllowancePayload {
-    /** Impact Factor (%) */
-    FACTOR: number;
-    /** Selected Structure Group List */
-    ITEMS: Array<string>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface AdditionalImpactFactorItem {
-    /** Serial Number Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER" or "EFF_SPAN_LEN_AUTO". */
-    ID?: number;
-    /** Lane Type ("LINE" / "SURFACE"); the EFF_SPAN_LEN_AUTO table states "LINE" Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER" or "EFF_SPAN_LEN_AUTO". */
-    LANE_TYPE?: string;
-    /** Lane Name Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER" or "EFF_SPAN_LEN_AUTO". */
-    LANE_NAME?: string;
-    /** Factor Type ("IMPACT_FACT" / "EFF_SPAN_LEN_USER" / "EFF_SPAN_LEN_AUTO") Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER" or "EFF_SPAN_LEN_AUTO". */
-    FACT_TYPE?: string;
-    /** Factor Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER". */
-    FACTOR?: number;
-    /** Element Type ("BEAM" / "TRUSS" / "PLATE") Required when ITEMS.FACT_TYPE = "EFF_SPAN_LEN_AUTO". */
-    ELEMTYPE?: string;
-    /** Parts (Beam: [i, 1/4, 1/2, 3/4, j] / Plate: [cent, i, j, k, l]) Applies when ITEMS.FACT_TYPE = "EFF_SPAN_LEN_AUTO" and ITEMS.ELEMTYPE is "BEAM" or "PLATE". */
-    PARTS?: Array<boolean>;
-    /** Components (Beam: [My_max, My_min, Mz_max, Mz_min, Fx_max, Fx_min] / Truss: [Max, Min] / Plate: [Mxx_max, Mxx_min, Myy_max, Myy_min, Fxx_max, Fxx_min, Fyy_max, Fyy_min]) Required when ITEMS.FACT_TYPE = "EFF_SPAN_LEN_AUTO". */
-    COMPONENTS?: Array<boolean>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface AdditionalImpactFactorPayload {
-    /** Additional Impact Factor Items */
-    ITEMS: Array<{
-      /** Serial Number Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER" or "EFF_SPAN_LEN_AUTO". */
-      ID?: number;
-      /** Lane Type ("LINE" / "SURFACE"); the EFF_SPAN_LEN_AUTO table states "LINE" Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER" or "EFF_SPAN_LEN_AUTO". */
-      LANE_TYPE?: string;
-      /** Lane Name Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER" or "EFF_SPAN_LEN_AUTO". */
-      LANE_NAME?: string;
-      /** Factor Type ("IMPACT_FACT" / "EFF_SPAN_LEN_USER" / "EFF_SPAN_LEN_AUTO") Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER" or "EFF_SPAN_LEN_AUTO". */
-      FACT_TYPE?: string;
-      /** Factor Required when ITEMS.FACT_TYPE is "IMPACT_FACT" or "EFF_SPAN_LEN_USER". */
-      FACTOR?: number;
-      /** Element Type ("BEAM" / "TRUSS" / "PLATE") Required when ITEMS.FACT_TYPE = "EFF_SPAN_LEN_AUTO". */
-      ELEMTYPE?: string;
-      /** Parts (Beam: [i, 1/4, 1/2, 3/4, j] / Plate: [cent, i, j, k, l]) Applies when ITEMS.FACT_TYPE = "EFF_SPAN_LEN_AUTO" and ITEMS.ELEMTYPE is "BEAM" or "PLATE". */
-      PARTS?: Array<boolean>;
-      /** Components (Beam: [My_max, My_min, Mz_max, Mz_min, Fx_max, Fx_min] / Truss: [Max, Min] / Plate: [Mxx_max, Mxx_min, Myy_max, Myy_min, Fxx_max, Fxx_min, Fyy_max, Fyy_min]) Required when ITEMS.FACT_TYPE = "EFF_SPAN_LEN_AUTO". */
-      COMPONENTS?: Array<boolean>;
-    }>;
+  export interface RailwayDynamicFactorByElementPayload {
+    /** Input Type (0=Auto, 1=User) */
+    INPUT_TYPE: number;
+    /** Determinant Length (Lφ) */
+    LENGTH?: number;
+    /** Quality of Track Maintenance (0=Carefully, 1=Standard) */
+    MAINTAIN_TYPE?: number;
+    /** Consider Reduced Dynamic Effect */
+    OPT_REDUCE_EFF?: boolean;
+    /** Height of Cover (h) */
+    HEIGHT_COVER?: number;
+    /** Dynamic Factor (φ) */
+    DYN_FACTOR?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface RailwayDynamicFactorPayload {
@@ -7095,31 +6538,588 @@ export namespace DbMovingLoadsTypes {
     DYN_FACTOR?: number;
   }
   /** Generated from contracts/endpoints/. */
-  export interface RailwayDynamicFactorByElementPayload {
-    /** Input Type (0=Auto, 1=User) */
-    INPUT_TYPE: number;
-    /** Determinant Length (Lφ) */
-    LENGTH?: number;
-    /** Quality of Track Maintenance (0=Carefully, 1=Standard) */
-    MAINTAIN_TYPE?: number;
-    /** Consider Reduced Dynamic Effect */
-    OPT_REDUCE_EFF?: boolean;
-    /** Height of Cover (h) */
-    HEIGHT_COVER?: number;
-    /** Dynamic Factor (φ) */
-    DYN_FACTOR?: number;
+  export interface SpecialLineLaneTransverseItem {
+    /** Key Elements */
+    ELEMS?: Array<number>;
+    /** Factor */
+    FACTOR?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface StructureGroupNamesPayload {
+    /** Structure Group Names */
+    GROUPS: Array<string>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SurfaceLaneChinaItem {
+    /** Node No. */
+    NODE: number;
+    /** Offset Distance to Lane Center */
+    OFFSET?: number;
+    /** Span Length */
+    SPAN_LENGTH?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SurfaceLaneItem {
+    /** Node Key */
+    NODE: number;
+    /** Offset Distance to Lane Center */
+    OFFSET: number;
+    /** Impact Factor */
+    IMPACT_FACTOR?: number;
+    /** Is Span Start */
+    bSPAN_START?: boolean;
+    /** Centrifugal Force (Only Use AASHTO LRFD) */
+    CENTRI_FORCE?: number;
+    /** Impact Span Type (Only Use India Code) */
+    IMPACT_SPAN_TYPE?: string;
+    /** IF/CDA (Only Use India Code) */
+    IMPACT_FACTOR_INDIA?: number;
+    /** Span Length (Only Use India Code) */
+    SPAN_LENGTH?: number;
+    /** Eccentricity of Vertical Loads (Only Use EuroCode) */
+    ECCEN_VERT_LOAD?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SurfaceLaneOptimizationChinaItem {
+    /** Node Key */
+    NODE_KEY?: number;
+    /** Offset */
+    OFFSET?: number;
+    /** Span Length */
+    SPAN_LENGTH?: number;
+    /** Span Start Boolean */
+    SPAN_START?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SurfaceLaneOptimizationItem {
+    /** Node Key */
+    NODE_KEY: number;
+    /** Offset */
+    OFFSET?: number;
+    /** Impact Factor / Centrifugal Force */
+    FACTOR?: number;
+    /** Impact Factor / Centrifugal Force */
+    CENT_F?: number;
+    /** Span Start */
+    SPAN_START?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TrafficLineLanePayload {
+    /** Common lane properties */
+    COMMON: {
+      /** Name of Line Lane */
+      LL_NAME: string;
+      /** Lane Width */
+      WIDTH: number;
+      /** Wheel Spacing */
+      WHEEL_SPACE?: number;
+      /** Transverse Lane Optimization */
+      OPT_AUTO_LANE?: boolean;
+      /** Allow Width for Optimization */
+      ALLOW_WIDTH?: number;
+      /** Load Distribution ("LANE" / "CROSS") */
+      LOAD_DIST: string;
+      /** Name of Structure Group */
+      GROUP_NAME?: string;
+      /** Skew Start */
+      SKEW_START?: number;
+      /** Skew End */
+      SKEW_END?: number;
+      /** Moving Direction ("FORWARD" / "BACKWARD" / "BOTH") */
+      MOVING: string;
+    };
+    /** Lane Items */
+    LANE_ITEMS: Array<{
+      /** Element No. */
+      ELEM: number;
+      /** Eccentricity */
+      ECC?: number;
+      /** Impact Factor */
+      FACT?: number;
+      /** Span Start */
+      SPAN_START?: boolean;
+      /** Centrifugal Force Factor */
+      CENT_F?: number;
+      /** Eccentricity Considering Cant (vertical load) */
+      ECCEN_VERT_LOAD?: number;
+    }>;
+    /** Used only when importing */
+    SPECIAL_LANE_ITEMS?: Array<{
+      /** CE */
+      CENT_F?: number;
+      /** Eccentricity */
+      ECC?: number;
+      /** Eccen. Vert. Loads */
+      ECCEN_VERT_LOAD?: number;
+      /** Key Elements */
+      ELEMS?: Array<number>;
+      /** Factor */
+      FACT?: number;
+      /** Span Start */
+      SPAN_START?: boolean;
+      /** Span Start No */
+      SPAN_START_NO_LIST?: Array<number>;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TrafficLineLanesChinaPayload {
+    /** Common lane properties */
+    COMMON: {
+      /** Name of Line Lane */
+      LL_NAME: string;
+      /** Lane Width */
+      WIDTH: number;
+      /** Wheel Spacing */
+      WHEEL_SPACE?: number;
+      /** Transverse Lane Optimization */
+      OPT_AUTO_LANE?: boolean;
+      /** Allow Width for Optimization */
+      ALLOW_WIDTH?: number;
+      /** Load Distribution ("LANE" / "CROSS") */
+      LOAD_DIST: string;
+      /** Name of Structure Group */
+      GROUP_NAME?: string;
+      /** Skew Start */
+      SKEW_START?: number;
+      /** Skew End */
+      SKEW_END?: number;
+      /** Moving Direction ("FORWARD" / "BACKWARD" / "BOTH") */
+      MOVING: string;
+    };
+    /** Lane Items */
+    LANE_ITEMS: Array<{
+      /** Element No. */
+      ELEM: number;
+      /** Eccentricity */
+      ECC?: number;
+      /** Span Length */
+      SPAN?: number;
+      /** Span Start */
+      SPAN_START?: boolean;
+      /** Scale Factor */
+      SCALE_FACTOR?: number;
+    }>;
+    /** Used only when importing */
+    SPECIAL_LANE_ITEMS?: Array<{
+      /** Eccentricity */
+      ECC?: number;
+      /** Key Elements */
+      ELEMS?: Array<number>;
+      /** Scale Factor */
+      SCALE_FACTOR?: number;
+      /** Span */
+      SPAN?: number;
+      /** Span Start */
+      SPAN_START?: boolean;
+      /** Span Start No */
+      SPAN_START_NO_LIST?: Array<number>;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TrafficLineLanesIndiaPayload {
+    /** Common lane properties */
+    COMMON: {
+      /** Name of Line Lane */
+      LL_NAME: string;
+      /** Lane Width */
+      WIDTH: number;
+      /** Wheel Spacing */
+      WHEEL_SPACE?: number;
+      /** Transverse Lane Optimization */
+      OPT_AUTO_LANE?: boolean;
+      /** Allow Width for Optimization */
+      ALLOW_WIDTH?: number;
+      /** Load Distribution ("LANE" / "CROSS") */
+      LOAD_DIST: string;
+      /** Name of Structure Group */
+      GROUP_NAME?: string;
+      /** Skew Start */
+      SKEW_START?: number;
+      /** Skew End */
+      SKEW_END?: number;
+      /** Moving Direction ("FORWARD" / "BACKWARD" / "BOTH") */
+      MOVING: string;
+    };
+    /** Lane Items */
+    LANE_ITEMS: Array<{
+      /** Element No. */
+      ELEM: number;
+      /** Eccentricity */
+      ECC?: number;
+      /** Option (0=IF/CDA, 1=Span Length) */
+      IMPACT_SPAN?: number;
+      /** Scale Factor (when IMPACT_SPAN=0) */
+      IMPACT_FACTOR?: number;
+      /** Span Length (when IMPACT_SPAN=1) */
+      SPAN?: number;
+    }>;
+    /** Used only when importing */
+    SPECIAL_LANE_ITEMS?: Array<{
+      /** Eccentricity */
+      ECC?: number;
+      /** Key Elements */
+      ELEMS?: Array<number>;
+      /** Impact Factor */
+      IMPACT_FACTOR?: number;
+      /** Impact Span */
+      IMPACT_SPAN?: number;
+      /** Span */
+      SPAN?: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TrafficLineLanesOptimizationPayload {
+    /** Name of Line Lane */
+    LL_NAME: string;
+    /** Load Distribution ("LANE" / "CROSS") */
+    LOAD_DIST: string;
+    /** Structure Group Name */
+    GROUP_NAME?: string;
+    /** Skew Start */
+    SKEW_START?: number;
+    /** Skew End */
+    SKEW_END?: number;
+    /** Moving Direction */
+    MOVING: string;
+    /** Optimization Width */
+    OPTIM_WIDTH: number;
+    /** Lane Width */
+    LANE_WIDTH: number;
+    /** Offset Type (0=Fixed, 1=Division) */
+    OFFSET_TYPE: number;
+    /** Number of Division */
+    DIVIDE_NUM?: number;
+    /** Analysis Lane Offset */
+    ANAL_LANE_OFFSET?: number;
+    /** Wheel Spacing */
+    WHEEL_SPACE?: number;
+    /** Margin */
+    MARGIN?: number;
+    /** Lane Items (ELEM, ECC, 코드별 추가 필드) */
+    LANE_ITEMS: Array<{
+      /** Element No. */
+      ELEM: number;
+      /** Eccentricity */
+      ECC?: number;
+      /** Impact Factor */
+      FACT?: number;
+      /** Span Start */
+      SPAN_START?: boolean;
+      /** Centrifugal Force Factor */
+      CENT_F?: number;
+      /** Eccentricity Considering Cant (vertical load) */
+      ECCEN_VERT_LOAD?: number;
+    }>;
+    /** Use Straddling Lane Type */
+    OPT_STRADD?: boolean;
+    /** Used only when importing */
+    SPECIAL_LANE_ITEMS?: Array<{
+      /** CE */
+      CENT_F?: number;
+      /** Eccentricity */
+      ECC?: number;
+      /** Key Elements */
+      ELEMS?: Array<number>;
+      /** Factor */
+      FACT?: number;
+      /** Scale Factor */
+      SCALE_FACTOR?: number;
+      /** Span */
+      SPAN?: number;
+      /** Span Start */
+      SPAN_START?: boolean;
+      /** Span Start No */
+      SPAN_START_NO_LIST?: Array<number>;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TrafficLineLanesTransversePayload {
+    /** Name of Line Lane */
+    LL_NAME: string;
+    /** Lane Items */
+    LANE_ITEMS: Array<{
+      /** Element ID */
+      ELEM: number;
+      /** Factor */
+      FACTOR: number;
+    }>;
+    /** Used only when importing */
+    SPECIAL_LANE_ITEMS?: Array<{
+      /** Key Elements */
+      ELEMS?: Array<number>;
+      /** Factor */
+      FACTOR?: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TrafficSurfaceLanePayload {
+    /** Name of Surface Lane */
+    NAME: string;
+    /** Lane Width */
+    WIDTH: number;
+    /** Wheel Spacing */
+    WHEEL_SPACE?: number;
+    /** Skew Start */
+    SKEW_START?: number;
+    /** Skew End */
+    SKEW_END?: number;
+    /** Transverse Lane Optimization */
+    bOPTIMIZE?: boolean;
+    /** Allow Width for Optimization */
+    ALLOW_WIDTH?: number;
+    /** Moving Direction ("FORWARD" / "BACKWARD" / "BOTH") */
+    MV_DIR: string;
+    /** Sequence Number (Unique) */
+    SEQ?: number;
+    /** Lane Items */
+    LANE_ITEMS: Array<{
+      /** Node Key */
+      NODE: number;
+      /** Offset Distance to Lane Center */
+      OFFSET: number;
+      /** Impact Factor */
+      IMPACT_FACTOR?: number;
+      /** Is Span Start */
+      bSPAN_START?: boolean;
+      /** Centrifugal Force (Only Use AASHTO LRFD) */
+      CENTRI_FORCE?: number;
+      /** Impact Span Type (Only Use India Code) */
+      IMPACT_SPAN_TYPE?: string;
+      /** IF/CDA (Only Use India Code) */
+      IMPACT_FACTOR_INDIA?: number;
+      /** Span Length (Only Use India Code) */
+      SPAN_LENGTH?: number;
+      /** Eccentricity of Vertical Loads (Only Use EuroCode) */
+      ECCEN_VERT_LOAD?: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TrafficSurfaceLanesChinaPayload {
+    /** Name of Surface Lane */
+    NAME?: string;
+    /** Lane Width */
+    WIDTH?: number;
+    /** Wheel Spacing */
+    WHEEL_SPACE?: number;
+    /** Skew Start */
+    SKEW_START?: number;
+    /** Skew End */
+    SKEW_END?: number;
+    /** Transverse Lane Optimization */
+    bOPTIMIZE?: boolean;
+    /** Allow Width for Optimization */
+    ALLOW_WIDTH?: number;
+    /** Moving Direction ("FORWARD" / "BACKWARD" / "BOTH") */
+    MV_DIR?: string;
+    /** Sequence Number (Must be Unique) */
+    SEQ?: number;
+    /** Lane Items */
+    LANE_ITEMS?: Array<{
+      /** Node No. */
+      NODE: number;
+      /** Offset Distance to Lane Center */
+      OFFSET?: number;
+      /** Span Length */
+      SPAN_LENGTH?: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TrafficSurfaceLanesOptimizationPayload {
+    /** Lane Name */
+    LANE_NAME: string;
+    /** Skew Start */
+    SKEW_START?: number;
+    /** Skew End */
+    SKEW_END?: number;
+    /** Moving Direction */
+    MOVING: string;
+    /** Optimization Width */
+    OPTIMIZE_WIDTH: number;
+    /** Lane Width */
+    LANE_WIDTH: number;
+    /** Wheel Spacing */
+    WHEEL_SPACE?: number;
+    /** Margin */
+    MARGIN?: number;
+    /** Offset Type (0=Fixed, 1=Division) */
+    OFFSET_TYPE: number;
+    /** Number of Division */
+    DIVIDE_NUM?: number;
+    /** Analysis Lane Offset */
+    ANALYSIS_LANE_OFFSET?: number;
+    /** Items */
+    ITEMS: Array<{
+      /** Node Key */
+      NODE_KEY: number;
+      /** Offset */
+      OFFSET?: number;
+      /** Impact Factor / Centrifugal Force */
+      FACTOR?: number;
+      /** Impact Factor / Centrifugal Force */
+      CENT_F?: number;
+      /** Span Start */
+      SPAN_START?: boolean;
+    }>;
+    /** BS Straddling Lane Boolean */
+    OPT_STRADD?: boolean;
+    /** China lane items */
+    CHINA_ITEMS?: Array<{
+      /** Node Key */
+      NODE_KEY?: number;
+      /** Offset */
+      OFFSET?: number;
+      /** Span Length */
+      SPAN_LENGTH?: number;
+      /** Span Start Boolean */
+      SPAN_START?: boolean;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface VehicleClassPayload {
+    /** Vehicle Class Name */
+    VEHICLE_CLS_NAME: string;
+    /** Selected Vehicle List */
+    VEHICLE_LD_NAMES: Array<string>;
+  }
+  export interface VehicleDefaultParams {
+    UNIFORM_LOAD?: number;
+    DYN_LOAD_ALLOWANCE?: number;
+    W1?: number;
+    W2?: number;
+    D1?: number;
+    D2?: number;
+    PL?: number;
+    PLM?: number;
+    PLV?: number;
+    CENT_F?: boolean;
+  }
+  export interface VehicleEurocodeParams {
+    SUB_TYPE?: number;
+    SEL_VEHICLE?: string;
+    AMP?: number;
+    AMP2?: number;
+    AMP_VALUES?: Array<number>;
+    TANDEM_ADJUST_VALUES?: Array<number>;
+    TANDEM_LOADS?: Array<number>;
+    UDL_ADJUST_VALUES?: Array<number>;
+    UDL_LOADS?: Array<number>;
+    USE_DYNAMIC_FACTOR2_0?: boolean;
+    USE_DYNAMIC_FACTOR2_1?: boolean;
+    USE_POINT_LOAD3_0?: boolean;
+    USE_POINT_LOAD3_1?: boolean;
+    VAR_SPACING?: boolean;
+    MAX_SPACING?: number;
+    MIN_SPACING?: number;
+    WHEEL_SPACING?: number;
+    LM3_LOADCASE1?: boolean;
+    LM3_LOADCASE2?: boolean;
+    ADJUSTMENT?: number;
+    ADJUSTMENT2?: number;
+    AXLE_NUM?: number;
+    FOOTWAY?: number;
+    INTERVAL?: number;
+    DYNAMIC_FACTOR?: boolean;
+    USER_INPUT?: boolean;
+    DSPACE?: number;
+    W1?: number;
+    DD1?: number;
+    D1?: number;
+    W2?: number;
+    DD2?: number;
+    D2?: number;
+    PRESSURE_LOAD?: number;
+    V_LOAD_FACTOR?: number;
+    LONGI_DIST?: boolean;
+    DIST_RAIL_SUPPORT?: number;
+    ECCEN_VERT_LOAD?: boolean;
+    ECCEN_VERT_LOAD_VALUE?: number;
+    HSLMA_NUM?: number;
+    HSLMA_LENGTH?: number;
+    HSLMA_SPACING?: number;
+    HSLMA_FORCE?: number;
+    HSLMB_NUM?: number;
+    HSLMB_FORCE?: number;
+    HSLMB_DIST?: number;
+    PHI_DYN_EFF1?: number;
+    PHI_DYN_EFF2?: number;
+  }
+  export interface VehicleKsceLsd15Params {
+    LOAD_TYPE?: number;
+    LOADED_LENGTH?: number;
+    W1?: number;
+    W2?: number;
+    D1?: number;
+    D2?: number;
+    EXP?: number;
+    DYN_LOAD_ALLOWANCE?: number;
+    LENGTH_LANE?: number;
+    LENGTH_LANE_USER?: number;
+    CONVERT_DIST_LOAD?: boolean;
+    UNIFORM_LOAD_NUM?: number;
+    UNIFORM_LOAD_DIST?: number;
+    UNIFORM_LOAD_W?: number;
+    UNIFORM_LOAD_LOAD_LENGTH_L?: number;
+    POINT_ITEMS?: Array<VehicleKsceLsd15PointItem>;
+  }
+  export interface VehicleKsceLsd15PointItem {
+    POINT_LOAD?: number;
+    POINT_DIST?: number;
+    POINT_DIST2?: number;
+  }
+  export interface VehicleLoadItem {
+    POINT_LOAD?: number;
+    POINT_DIST?: number;
+  }
+  export interface VehiclePayload {
+    MVLD_CODE?: number;
+    VEHICLE_LOAD_NAME?: string;
+    VEHICLE_LOAD_NUM?: number;
+    VEHICLE_TYPE_NAME?: string;
+    STANDARD_CODE?: string;
+    USER_LOAD_TYPE?: string;
+    VEH_DEFAULT?: VehicleDefaultParams;
+    VEH_EUROCODE?: VehicleEurocodeParams;
+    VEH_KSCE_LSD15?: VehicleKsceLsd15Params;
+    LOAD_ITEMS?: Array<VehicleLoadItem>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface VehicleTransversePayload {
+    /** Vehicular Load Name */
+    NAME: string;
+    /** Wheel Load (P) */
+    P: number;
+    /** Distribution Width */
+    W: number;
+    /** Longitudinal Width */
+    LW: number;
+    /** Max. Number of Lanes (n) */
+    NUM: number;
+    /** Distance between Wheels (Dw) */
+    DW: number;
+    /** Min. Distance between Vehicle (Dv) */
+    DV: number;
+    /** Edge Distance of Wheel Loads (De) */
+    DE?: number;
+    /** Median Strip Option */
+    OPT_MEDIAN_STRIP?: boolean;
+    /** Location (Ml) */
+    ML?: number;
+    /** Width (Mw) */
+    MW?: number;
+    /** Max. Number of Left Lanes (n1) */
+    LEFT_LANES?: number;
   }
 }
 
 export namespace DbNodeElementTypes {
   /** Generated from contracts/endpoints/. */
-  export interface NodePayload {
-    /** Coordinates - x (global coordinate system) */
-    X?: number;
-    /** Coordinates - y (global coordinate system) */
-    Y?: number;
-    /** Coordinates - z (global coordinate system) */
-    Z?: number;
+  export interface DomainElementPayload {
+    /** Domain Type • Main-Domain: 0 • Sub-Domain: 1 */
+    TYPE: number;
+    /** Key Domain */
+    KEY_DOMAIN: number;
+    /** Main Domain Name */
+    MAIN_DOMAIN_NAME: string;
   }
   export interface ElementPayload {
     TYPE?: string;
@@ -7128,6 +7128,28 @@ export namespace DbNodeElementTypes {
     NODE?: Array<number>;
     ANGLE?: number;
     STYPE?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MainDomainPayload {
+    /** Domain Name */
+    NAME: string;
+    /** Element Type • Plane Stress: 3 • Plate: 4 • Plane Strain: 6 • Axisymmetric: 7 */
+    TYPE: number;
+    /** Material ID */
+    MATL: number;
+    /** Element Property */
+    PROP: number;
+    /** Sub Type */
+    SUB_TYPE: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface NodePayload {
+    /** Coordinates - x (global coordinate system) */
+    X?: number;
+    /** Coordinates - y (global coordinate system) */
+    Y?: number;
+    /** Coordinates - z (global coordinate system) */
+    Z?: number;
   }
   /** Generated from contracts/endpoints/. */
   export type SkewPayload = {
@@ -7234,19 +7256,6 @@ export namespace DbNodeElementTypes {
     }
   );
   /** Generated from contracts/endpoints/. */
-  export interface MainDomainPayload {
-    /** Domain Name */
-    NAME: string;
-    /** Element Type • Plane Stress: 3 • Plate: 4 • Plane Strain: 6 • Axisymmetric: 7 */
-    TYPE: number;
-    /** Material ID */
-    MATL: number;
-    /** Element Property */
-    PROP: number;
-    /** Sub Type */
-    SUB_TYPE: number;
-  }
-  /** Generated from contracts/endpoints/. */
   export interface SubDomainPayload {
     /** Sub Domain Name */
     SUB_DOMAIN_NAME: string;
@@ -7293,51 +7302,47 @@ export namespace DbNodeElementTypes {
     /** Thickness Gen NX only. */
     THICKNESS: number;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface DomainElementPayload {
-    /** Domain Type • Main-Domain: 0 • Sub-Domain: 1 */
-    TYPE: number;
-    /** Key Domain */
-    KEY_DOMAIN: number;
-    /** Main Domain Name */
-    MAIN_DOMAIN_NAME: string;
-  }
 }
 
 export namespace DbProjectTypes {
   /** Generated from contracts/endpoints/. */
-  export interface UnitPayload {
-    /** Force (Mass) · "N" / "KN" / "KGF" / "TONF" / "LBF" / "KIPS" */
-    FORCE?: string;
-    /** Length · "M" / "CM" / "MM" / "FT" / "IN" */
-    DIST?: string;
-    /** Heat · "CAL" / "KCAL" / "J" / "KJ" / "BTU" */
-    HEAT?: string;
-    /** Temperature · "C" (Celsius) / "F" (Fahrenheit) */
-    TEMPER?: string;
+  export interface BoundaryGroupPayload {
+    /** Boundary Group Name */
+    NAME: string;
+    /** Auto-generated boundary groups for CR/SH in Composite Section · 0=Creep / 1=Shrinkage */
+    AUTOTYPE?: number;
   }
   /** Generated from contracts/endpoints/. */
-  export interface StructureTypePayload {
-    /** Structure Type · 0=3-D / 1=X-Z Plane / 2=Y-Z Plane / 3=X-Y Plane / 4=Constraint RZ */
-    STYP?: number;
-    /** Mass Type · 1=Lumped Mass / 2=Consistent Mass */
-    MASS?: number;
-    /** Consider Off-diagonal Masses */
-    bMASSOFFSET?: boolean;
-    /** Convert Self-Weight to Mass */
-    bSELFWEIGHT?: boolean;
-    /** Structure Mass Type (자중→질량 변환 시) · 1=Convert to X,Y,Z / 2=Convert to X,Y / 3=Convert to Z */
-    SMASS?: number;
-    /** Gravity Acceleration (m/s */
-    GRAV?: number;
-    /** Initial Temperature */
-    TEMP?: number;
-    /** Align Top of Beam Section */
-    bALIGNBEAM?: boolean;
-    /** Align Top of Slab (Plate) */
-    bALIGNSLAB?: boolean;
-    /** Considering Rotational Rigid */
-    bROTRIGID?: boolean;
+  export interface FloorLoadColorPayload {
+    /** Floor Load Type Name */
+    NAME: string;
+    /** Wire Frame Red (0–255) */
+    WF_R?: number;
+    /** Wire Frame Green (0–255) */
+    WF_G?: number;
+    /** Wire Frame Blue (0–255) */
+    WF_B?: number;
+    /** Hidden Fill Red (0–255) */
+    HF_R?: number;
+    /** Hidden Fill Green (0–255) */
+    HF_G?: number;
+    /** Hidden Fill Blue (0–255) */
+    HF_B?: number;
+    /** Hidden Edge Red (0–255) */
+    HE_R?: number;
+    /** Hidden Edge Green (0–255) */
+    HE_G?: number;
+    /** Hidden Edge Blue (0–255) */
+    HE_B?: number;
+    /** Blending */
+    OPT_BLEND?: boolean;
+    /** Blending Factor (0.0–1.0) */
+    BLEND_FACTOR?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LoadGroupPayload {
+    /** Load Group Name */
+    NAME: string;
   }
   /** Generated from contracts/endpoints/. */
   export interface MassControlHyperS {
@@ -7351,28 +7356,49 @@ export namespace DbProjectTypes {
     MASS_AXIS?: "XYZ" | "XY" | "Z";
   }
   /** Generated from contracts/endpoints/. */
-  export interface StructureTypeHyperSPayload {
-    /** Structure Type · 3-D: 3D / X-Z Plane: XZ / Y-Z Plane: YZ / X-Y Plane: XY / Constraint RZ: RZ */
-    STYPE?: "3D" | "XZ" | "YZ" | "XY" | "RZ";
-    /** Mass Control Parameter */
-    MASS_CONTROL: {
-      /** Mass Type · Lumped Mass: LUMPED / Consistent Mass: CONSISTENT */
-      MASS_TYPE: "LUMPED" | "CONSISTENT";
-      /** Mass Position (MASS_TYPE="LUMPED"일 때) · Centroid: CENTROID / Offset: OFFSET Applies when MASS_CONTROL.MASS_TYPE = "LUMPED". */
-      MASS_POS?: "CENTROID" | "OFFSET";
-      /** Convert Self-weight into Masses */
-      SELFWEIGHT: boolean;
-      /** Mass Axis (SELFWEIGHT=true일 때) · X,Y,Z: XYZ / X,Y: XY / Z: Z (MASS_TYPE="CONSISTENT"면 XYZ만 허용) Applies when MASS_CONTROL.SELFWEIGHT = true. */
-      MASS_AXIS?: "XYZ" | "XY" | "Z";
-    };
-    /** Gravity Acceleration */
-    GRAV?: number;
-    /** Initial Temperature */
-    TEMP?: number;
-    /** Align Top of Beam Section with Center Line (X-Y Plane) for Display */
-    ALIGNBEAM?: boolean;
-    /** Align Top of Slab(Plate) Section with Center Line (X-Y Plane) for Display */
-    ALIGNSLAB?: boolean;
+  export interface MaterialColorPayload {
+    /** Wire Frame Red (0–255) */
+    W_R?: number;
+    /** Wire Frame Green (0–255) */
+    W_G?: number;
+    /** Wire Frame Blue (0–255) */
+    W_B?: number;
+    /** Hidden Fill Red (0–255) */
+    HF_R?: number;
+    /** Hidden Fill Green (0–255) */
+    HF_G?: number;
+    /** Hidden Fill Blue (0–255) */
+    HF_B?: number;
+    /** Hidden Edge Red (0–255) */
+    HE_R?: number;
+    /** Hidden Edge Green (0–255) */
+    HE_G?: number;
+    /** Hidden Edge Blue (0–255) */
+    HE_B?: number;
+    /** Opacity Boolean */
+    bBLEMD?: boolean;
+    /** Opacity Value (0.0–1.0) */
+    FACT?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface NamedPlanePayload {
+    /** Plane Name */
+    NAME: string;
+    /** Plane Type · 1=3 Points / 2=X-Y Plane / 3=X-Z Plane / 4=Y-Z Plane */
+    TYPE: number;
+    /** Tolerance */
+    TOL?: number;
+    POINT?: Array<{
+      /** Point Data (TYPE=1 시) · 1st/2nd/3rd 점 좌표 [X, Y, Z] */
+      ITEM?: Array<number>;
+    }>;
+    /** Coordinate (TYPE=2,3,4 시) · Z/Y/X 위치 */
+    COORD?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface NamedPlanePointItem {
+    /** Point Data (TYPE=1 시) · 1st/2nd/3rd 점 좌표 [X, Y, Z] */
+    ITEM?: Array<number>;
   }
   /** Generated from contracts/endpoints/. */
   export interface ProjectInfoPayload {
@@ -7428,92 +7454,6 @@ export namespace DbProjectTypes {
     MODIFIED?: string;
   }
   /** Generated from contracts/endpoints/. */
-  export interface StructureGroupPayload {
-    /** Structure Group Name */
-    NAME: string;
-    /** Plane Type */
-    P_TYPE?: number;
-    /** Node List */
-    N_LIST?: Array<number>;
-    /** Element List */
-    E_LIST?: Array<number>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface BoundaryGroupPayload {
-    /** Boundary Group Name */
-    NAME: string;
-    /** Auto-generated boundary groups for CR/SH in Composite Section · 0=Creep / 1=Shrinkage */
-    AUTOTYPE?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface LoadGroupPayload {
-    /** Load Group Name */
-    NAME: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface TendonGroupPayload {
-    /** Tendon Group Name */
-    NAME: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface NamedPlanePointItem {
-    /** Point Data (TYPE=1 시) · 1st/2nd/3rd 점 좌표 [X, Y, Z] */
-    ITEM?: Array<number>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface NamedPlanePayload {
-    /** Plane Name */
-    NAME: string;
-    /** Plane Type · 1=3 Points / 2=X-Y Plane / 3=X-Z Plane / 4=Y-Z Plane */
-    TYPE: number;
-    /** Tolerance */
-    TOL?: number;
-    POINT?: Array<{
-      /** Point Data (TYPE=1 시) · 1st/2nd/3rd 점 좌표 [X, Y, Z] */
-      ITEM?: Array<number>;
-    }>;
-    /** Coordinate (TYPE=2,3,4 시) · Z/Y/X 위치 */
-    COORD?: number;
-  }
-  export interface _ColorPayload {
-    W_R?: number;
-    W_G?: number;
-    W_B?: number;
-    HF_R?: number;
-    HF_G?: number;
-    HF_B?: number;
-    HE_R?: number;
-    HE_G?: number;
-    HE_B?: number;
-    bBLEMD?: boolean;
-    FACT?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MaterialColorPayload {
-    /** Wire Frame Red (0–255) */
-    W_R?: number;
-    /** Wire Frame Green (0–255) */
-    W_G?: number;
-    /** Wire Frame Blue (0–255) */
-    W_B?: number;
-    /** Hidden Fill Red (0–255) */
-    HF_R?: number;
-    /** Hidden Fill Green (0–255) */
-    HF_G?: number;
-    /** Hidden Fill Blue (0–255) */
-    HF_B?: number;
-    /** Hidden Edge Red (0–255) */
-    HE_R?: number;
-    /** Hidden Edge Green (0–255) */
-    HE_G?: number;
-    /** Hidden Edge Blue (0–255) */
-    HE_B?: number;
-    /** Opacity Boolean */
-    bBLEMD?: boolean;
-    /** Opacity Value (0.0–1.0) */
-    FACT?: number;
-  }
-  /** Generated from contracts/endpoints/. */
   export interface SectionColorPayload {
     /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
     W_R?: number;
@@ -7537,58 +7477,6 @@ export namespace DbProjectTypes {
     bBLEMD?: boolean;
     /** Opacity Value (0.0–1.0) */
     FACT?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ThicknessColorPayload {
-    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
-    W_R?: number;
-    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
-    W_G?: number;
-    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
-    W_B?: number;
-    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
-    HF_R?: number;
-    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
-    HF_G?: number;
-    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
-    HF_B?: number;
-    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
-    HE_R?: number;
-    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
-    HE_G?: number;
-    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
-    HE_B?: number;
-    /** Opacity Boolean */
-    bBLEMD?: boolean;
-    /** Opacity Value (0.0–1.0) */
-    FACT?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface FloorLoadColorPayload {
-    /** Floor Load Type Name */
-    NAME: string;
-    /** Wire Frame Red (0–255) */
-    WF_R?: number;
-    /** Wire Frame Green (0–255) */
-    WF_G?: number;
-    /** Wire Frame Blue (0–255) */
-    WF_B?: number;
-    /** Hidden Fill Red (0–255) */
-    HF_R?: number;
-    /** Hidden Fill Green (0–255) */
-    HF_G?: number;
-    /** Hidden Fill Blue (0–255) */
-    HF_B?: number;
-    /** Hidden Edge Red (0–255) */
-    HE_R?: number;
-    /** Hidden Edge Green (0–255) */
-    HE_G?: number;
-    /** Hidden Edge Blue (0–255) */
-    HE_B?: number;
-    /** Blending */
-    OPT_BLEND?: boolean;
-    /** Blending Factor (0.0–1.0) */
-    BLEND_FACTOR?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface SpanBaseItem {
@@ -7667,6 +7555,118 @@ export namespace DbProjectTypes {
       Z?: number;
     }>;
   }
+  /** Generated from contracts/endpoints/. */
+  export interface StructureGroupPayload {
+    /** Structure Group Name */
+    NAME: string;
+    /** Plane Type */
+    P_TYPE?: number;
+    /** Node List */
+    N_LIST?: Array<number>;
+    /** Element List */
+    E_LIST?: Array<number>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface StructureTypeHyperSPayload {
+    /** Structure Type · 3-D: 3D / X-Z Plane: XZ / Y-Z Plane: YZ / X-Y Plane: XY / Constraint RZ: RZ */
+    STYPE?: "3D" | "XZ" | "YZ" | "XY" | "RZ";
+    /** Mass Control Parameter */
+    MASS_CONTROL: {
+      /** Mass Type · Lumped Mass: LUMPED / Consistent Mass: CONSISTENT */
+      MASS_TYPE: "LUMPED" | "CONSISTENT";
+      /** Mass Position (MASS_TYPE="LUMPED"일 때) · Centroid: CENTROID / Offset: OFFSET Applies when MASS_CONTROL.MASS_TYPE = "LUMPED". */
+      MASS_POS?: "CENTROID" | "OFFSET";
+      /** Convert Self-weight into Masses */
+      SELFWEIGHT: boolean;
+      /** Mass Axis (SELFWEIGHT=true일 때) · X,Y,Z: XYZ / X,Y: XY / Z: Z (MASS_TYPE="CONSISTENT"면 XYZ만 허용) Applies when MASS_CONTROL.SELFWEIGHT = true. */
+      MASS_AXIS?: "XYZ" | "XY" | "Z";
+    };
+    /** Gravity Acceleration */
+    GRAV?: number;
+    /** Initial Temperature */
+    TEMP?: number;
+    /** Align Top of Beam Section with Center Line (X-Y Plane) for Display */
+    ALIGNBEAM?: boolean;
+    /** Align Top of Slab(Plate) Section with Center Line (X-Y Plane) for Display */
+    ALIGNSLAB?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface StructureTypePayload {
+    /** Structure Type · 0=3-D / 1=X-Z Plane / 2=Y-Z Plane / 3=X-Y Plane / 4=Constraint RZ */
+    STYP?: number;
+    /** Mass Type · 1=Lumped Mass / 2=Consistent Mass */
+    MASS?: number;
+    /** Consider Off-diagonal Masses */
+    bMASSOFFSET?: boolean;
+    /** Convert Self-Weight to Mass */
+    bSELFWEIGHT?: boolean;
+    /** Structure Mass Type (자중→질량 변환 시) · 1=Convert to X,Y,Z / 2=Convert to X,Y / 3=Convert to Z */
+    SMASS?: number;
+    /** Gravity Acceleration (m/s */
+    GRAV?: number;
+    /** Initial Temperature */
+    TEMP?: number;
+    /** Align Top of Beam Section */
+    bALIGNBEAM?: boolean;
+    /** Align Top of Slab (Plate) */
+    bALIGNSLAB?: boolean;
+    /** Considering Rotational Rigid */
+    bROTRIGID?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TendonGroupPayload {
+    /** Tendon Group Name */
+    NAME: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ThicknessColorPayload {
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    W_R?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    W_G?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    W_B?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    HF_R?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    HF_G?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    HF_B?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    HE_R?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    HE_G?: number;
+    /** Wire Frame / Hidden Fill / Hidden Edge RGB (0–255) */
+    HE_B?: number;
+    /** Opacity Boolean */
+    bBLEMD?: boolean;
+    /** Opacity Value (0.0–1.0) */
+    FACT?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface UnitPayload {
+    /** Force (Mass) · "N" / "KN" / "KGF" / "TONF" / "LBF" / "KIPS" */
+    FORCE?: string;
+    /** Length · "M" / "CM" / "MM" / "FT" / "IN" */
+    DIST?: string;
+    /** Heat · "CAL" / "KCAL" / "J" / "KJ" / "BTU" */
+    HEAT?: string;
+    /** Temperature · "C" (Celsius) / "F" (Fahrenheit) */
+    TEMPER?: string;
+  }
+  export interface _ColorPayload {
+    W_R?: number;
+    W_G?: number;
+    W_B?: number;
+    HF_R?: number;
+    HF_G?: number;
+    HF_B?: number;
+    HE_R?: number;
+    HE_G?: number;
+    HE_B?: number;
+    bBLEMD?: boolean;
+    FACT?: number;
+  }
 }
 
 export namespace DbPropertiesDampingTypes {
@@ -7678,39 +7678,6 @@ export namespace DbPropertiesDampingTypes {
     GROUP_NAME: string;
     /** Damping Ratio */
     DAMPING_RATIO: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface GroupDampingRayleighItem {
-    /** Damping Ratio Type · Material: "MATERIAL" / Structure Group: "STRUCTURE" / Boundary: "BOUNDARY" */
-    GROUP_TYPE: string;
-    /** Damping Ratio Name(재료는 ID, 구조군/경계군은 이름) */
-    GROUP_NAME: string;
-    /** Stiffness Proportional 값 */
-    STIFF_COEF: number;
-    /** Stiffness Proportional 옵션 */
-    OPT_STIFF_PROP?: boolean;
-    /** Mass Proportional 값 */
-    MASS_COEF: number;
-    /** Mass Proportional 옵션 */
-    OPT_MASS_PROP?: boolean;
-    /** 직접 입력/모드 기반 산정 · Direct: 0 / Calculate from Modal Damping: 1 */
-    DIRECT_CALC_MODE: number;
-    /** 계수 산정 기준 · Frequency: 0 / Period: 1 */
-    FREQ_PERIOD_MODE: number;
-    /** Frequency Mode 1 */
-    FREQ_MODE_1: number;
-    /** Frequency Mode 2 */
-    FREQ_MODE_2: number;
-    /** Period Mode 1 */
-    PERIOD_MODE_1: number;
-    /** Period Mode 2 */
-    PERIOD_MODE_2: number;
-    /** Using Material Data / Direct Define Mode Index */
-    DAMPING_RATIO_MODE?: number;
-    /** Damping Ratio Mode 1 */
-    DAMPING_RATIO_MODE_1: number;
-    /** Damping Ratio Mode 2 */
-    DAMPING_RATIO_MODE_2: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface GroupDampingPayload {
@@ -7795,6 +7762,39 @@ export namespace DbPropertiesDampingTypes {
     /** Priority between Structure Groups(요소 쪽) */
     ELEM_VALUE_PRIORITY: number;
   }
+  /** Generated from contracts/endpoints/. */
+  export interface GroupDampingRayleighItem {
+    /** Damping Ratio Type · Material: "MATERIAL" / Structure Group: "STRUCTURE" / Boundary: "BOUNDARY" */
+    GROUP_TYPE: string;
+    /** Damping Ratio Name(재료는 ID, 구조군/경계군은 이름) */
+    GROUP_NAME: string;
+    /** Stiffness Proportional 값 */
+    STIFF_COEF: number;
+    /** Stiffness Proportional 옵션 */
+    OPT_STIFF_PROP?: boolean;
+    /** Mass Proportional 값 */
+    MASS_COEF: number;
+    /** Mass Proportional 옵션 */
+    OPT_MASS_PROP?: boolean;
+    /** 직접 입력/모드 기반 산정 · Direct: 0 / Calculate from Modal Damping: 1 */
+    DIRECT_CALC_MODE: number;
+    /** 계수 산정 기준 · Frequency: 0 / Period: 1 */
+    FREQ_PERIOD_MODE: number;
+    /** Frequency Mode 1 */
+    FREQ_MODE_1: number;
+    /** Frequency Mode 2 */
+    FREQ_MODE_2: number;
+    /** Period Mode 1 */
+    PERIOD_MODE_1: number;
+    /** Period Mode 2 */
+    PERIOD_MODE_2: number;
+    /** Using Material Data / Direct Define Mode Index */
+    DAMPING_RATIO_MODE?: number;
+    /** Damping Ratio Mode 1 */
+    DAMPING_RATIO_MODE_1: number;
+    /** Damping Ratio Mode 2 */
+    DAMPING_RATIO_MODE_2: number;
+  }
 }
 
 export namespace DbPropertiesHingeTypes {
@@ -7836,318 +7836,26 @@ export namespace DbPropertiesHingeTypes {
     dR: number;
   }
   /** Generated from contracts/endpoints/. */
+  export interface InelasticHingePropertyHyperSPayload {
+    /** Inelastic Hinge Property Name */
+    INEL_PROP_NAME?: string;
+  }
+  /** Generated from contracts/endpoints/. */
   export interface InelasticHingePropertyPayload {
     /** Name of Inelastic Hinge Property */
     PROP_NAME: string;
     /** Name of Fiber Division */
     FIBER_NAME: string;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface InelasticHingePropertyHyperSPayload {
-    /** Inelastic Hinge Property Name */
-    INEL_PROP_NAME?: string;
-  }
 }
 
 export namespace DbPropertiesMaterialTypes {
   /** Generated from contracts/endpoints/. */
-  export interface MaterialParam {
-    /** Material Parameter Type • Standard: 1 • Isotropic: 2 • Orthotropic: 3 */
-    P_TYPE: number;
-    /** Standard Name Required when PARAM.P_TYPE = 1. */
-    STANDARD?: string;
-    /** Code Name Applies when PARAM.P_TYPE = 1. */
-    CODE?: string;
-    /** DB Name Required when PARAM.P_TYPE = 1. */
-    DB?: string;
-    /** Use Young's Modulus (User Option) Applies when PARAM.P_TYPE = 1. */
-    bELAST?: boolean;
-    /** Modulus of Elasticity Required when PARAM.P_TYPE = 2. */
-    ELAST?: number;
-    /** Poisson's Ratio Required when PARAM.P_TYPE = 2. */
-    POISN?: number;
-    /** Thermal Coefficient Required when PARAM.P_TYPE = 2. */
-    THERMAL?: number;
-    /** Weight Density Required when PARAM.P_TYPE is 2 or 3. */
-    DEN?: number;
-    /** Mass Density Required when PARAM.P_TYPE is 2 or 3. */
-    MASS?: number;
-    /** Modulus of Elasticity (3 values) Required when PARAM.P_TYPE = 3. */
-    ELAST_M?: Array<number>;
-    /** Poisson's Ratio (3 values) Required when PARAM.P_TYPE = 3. */
-    POISN_M?: Array<number>;
-    /** Thermal Coefficient (3 values) Required when PARAM.P_TYPE = 3. */
-    THERMAL_M?: Array<number>;
-    /** Shear Modulus (3 values) Required when PARAM.P_TYPE = 3. */
-    SHEAR_M?: Array<number>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MaterialPayload {
-    /** Material Type • Concrete: "CONC" • Steel: "STEEL" • SRC: "SRC" • Aluminum: "ALUMINUM" • User Defined: "USER" */
+  export interface ChangePropertyPayload {
+    /** Change Property Method • Notional Size: "NSM" • Volume/Surface Ratio: "VSR" */
     TYPE: string;
-    /** Material Name */
-    NAME: string;
-    /** Specific Heat */
-    HE_SPEC?: number;
-    /** Heat Conduction */
-    HE_COND?: number;
-    /** Plastic Material No. */
-    PLMT?: number;
-    /** Plastic Material Name */
-    P_NAME?: string;
-    /** Use Mass Density */
-    bMASS_DENS?: boolean;
-    /** Damping Ratio */
-    DAMP_RAT?: number;
-    /** Material Parameter */
-    PARAM: Array<{
-      /** Material Parameter Type • Standard: 1 • Isotropic: 2 • Orthotropic: 3 */
-      P_TYPE: number;
-      /** Standard Name Required when PARAM.P_TYPE = 1. */
-      STANDARD?: string;
-      /** Code Name Applies when PARAM.P_TYPE = 1. */
-      CODE?: string;
-      /** DB Name Required when PARAM.P_TYPE = 1. */
-      DB?: string;
-      /** Use Young's Modulus (User Option) Applies when PARAM.P_TYPE = 1. */
-      bELAST?: boolean;
-      /** Modulus of Elasticity Required when PARAM.P_TYPE = 2. */
-      ELAST?: number;
-      /** Poisson's Ratio Required when PARAM.P_TYPE = 2. */
-      POISN?: number;
-      /** Thermal Coefficient Required when PARAM.P_TYPE = 2. */
-      THERMAL?: number;
-      /** Weight Density Required when PARAM.P_TYPE is 2 or 3. */
-      DEN?: number;
-      /** Mass Density Required when PARAM.P_TYPE is 2 or 3. */
-      MASS?: number;
-      /** Modulus of Elasticity (3 values) Required when PARAM.P_TYPE = 3. */
-      ELAST_M?: Array<number>;
-      /** Poisson's Ratio (3 values) Required when PARAM.P_TYPE = 3. */
-      POISN_M?: Array<number>;
-      /** Thermal Coefficient (3 values) Required when PARAM.P_TYPE = 3. */
-      THERMAL_M?: Array<number>;
-      /** Shear Modulus (3 values) Required when PARAM.P_TYPE = 3. */
-      SHEAR_M?: Array<number>;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MaterialHyperSUserDefined {
-    /** User Elasticity */
-    bELAST?: number;
-    /** Poisson's ratio */
-    POISN?: number;
-    /** Coefficients of linear thermal */
-    THERMAL?: number;
-    /** Weight Density */
-    DEN?: number;
-    /** Modulii of elasticity [X,Y,Z] */
-    ELAST_M?: Array<number>;
-    /** Coefficients of linear thermal [X,Y,Z] */
-    THERMAL_M?: Array<number>;
-    /** Shear modulii [xy,xz,yz] */
-    SHEAR_M?: Array<number>;
-    /** Poisson's ratio [xy,xz,yz] */
-    POISN_M?: Array<number>;
-    /** Use Mass Density */
-    bMASS_DENS?: boolean;
-    /** Mass Density */
-    MASS?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MaterialHyperSThermalTransfer {
-    /** Specific Heat */
-    HE_SPEC?: number;
-    /** Heat Conduction */
-    HE_COND?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MaterialHyperSParam {
-    /** Type of Material (Standard:0, Isotropic:1, Orthotropic:2) */
-    P_TYPE?: number;
-    /** Standard */
-    STANDARD?: string;
-    /** Code */
-    CODE?: string;
-    /** DB Name */
-    DB?: string;
-    /** User Defined Properties */
-    USER_DEFINED?: {
-      /** User Elasticity */
-      bELAST?: number;
-      /** Poisson's ratio */
-      POISN?: number;
-      /** Coefficients of linear thermal */
-      THERMAL?: number;
-      /** Weight Density */
-      DEN?: number;
-      /** Modulii of elasticity [X,Y,Z] */
-      ELAST_M?: Array<number>;
-      /** Coefficients of linear thermal [X,Y,Z] */
-      THERMAL_M?: Array<number>;
-      /** Shear modulii [xy,xz,yz] */
-      SHEAR_M?: Array<number>;
-      /** Poisson's ratio [xy,xz,yz] */
-      POISN_M?: Array<number>;
-      /** Use Mass Density */
-      bMASS_DENS?: boolean;
-      /** Mass Density */
-      MASS?: number;
-    };
-    /** Plastic Material Name */
-    PLASTIC_MATL_NAME?: string;
-    /** Thermal Transfer */
-    THERMAL_TRANS?: {
-      /** Specific Heat */
-      HE_SPEC?: number;
-      /** Heat Conduction */
-      HE_COND?: number;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MaterialHyperSPayload {
-    /** Material Name */
-    MATL_NAME?: string;
-    /** Material Type */
-    MATL_TYPE?: string;
-    /** Damping Ratio */
-    DAMP_RAT?: number;
-    /** Material Parameters */
-    PARAM?: Array<{
-      /** Type of Material (Standard:0, Isotropic:1, Orthotropic:2) */
-      P_TYPE?: number;
-      /** Standard */
-      STANDARD?: string;
-      /** Code */
-      CODE?: string;
-      /** DB Name */
-      DB?: string;
-      /** User Defined Properties */
-      USER_DEFINED?: {
-        /** User Elasticity */
-        bELAST?: number;
-        /** Poisson's ratio */
-        POISN?: number;
-        /** Coefficients of linear thermal */
-        THERMAL?: number;
-        /** Weight Density */
-        DEN?: number;
-        /** Modulii of elasticity [X,Y,Z] */
-        ELAST_M?: Array<number>;
-        /** Coefficients of linear thermal [X,Y,Z] */
-        THERMAL_M?: Array<number>;
-        /** Shear modulii [xy,xz,yz] */
-        SHEAR_M?: Array<number>;
-        /** Poisson's ratio [xy,xz,yz] */
-        POISN_M?: Array<number>;
-        /** Use Mass Density */
-        bMASS_DENS?: boolean;
-        /** Mass Density */
-        MASS?: number;
-      };
-      /** Plastic Material Name */
-      PLASTIC_MATL_NAME?: string;
-      /** Thermal Transfer */
-      THERMAL_TRANS?: {
-        /** Specific Heat */
-        HE_SPEC?: number;
-        /** Heat Conduction */
-        HE_COND?: number;
-      };
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MaterialModifyConcreteDesign {
-    /** Strength */
-    C_FC?: number;
-    /** (추정) Lambda 적용 여부 ⚠️표·예제에 근거 없음 */
-    bLAMBDA?: boolean;
-    /** (추정) Lambda 값 ⚠️표·예제에 근거 없음 */
-    dLAMBDA?: number;
-    /** Strength (Initial) */
-    C_FCI?: number;
-    /** (추정) Transfer 적용 여부 ⚠️표·예제에 근거 없음 */
-    bTRANSFER?: boolean;
-    /** (추정) Transfer 시 fci 값 ⚠️표·예제에 근거 없음 */
-    dTRANSFERFCI?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MaterialModifyConcreteData1 {
-    /** Material Code Name */
-    CODENAME: string;
-    /** Material Grade */
-    CODEMATLNAME: string;
-    /** Material Design Values */
-    DESIGN: {
-      /** Strength */
-      C_FC?: number;
-      /** (추정) Lambda 적용 여부 ⚠️표·예제에 근거 없음 */
-      bLAMBDA?: boolean;
-      /** (추정) Lambda 값 ⚠️표·예제에 근거 없음 */
-      dLAMBDA?: number;
-      /** Strength (Initial) */
-      C_FCI?: number;
-      /** (추정) Transfer 적용 여부 ⚠️표·예제에 근거 없음 */
-      bTRANSFER?: boolean;
-      /** (추정) Transfer 시 fci 값 ⚠️표·예제에 근거 없음 */
-      dTRANSFERFCI?: number;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MaterialModifyConcretePayload {
-    /** Material Type (Concrete: "CONC") */
-    TYPE: string;
-    /** Material Name */
-    NAME: string;
-    /** Concrete Material Information */
-    DATA1: {
-      /** Material Code Name */
-      CODENAME: string;
-      /** Material Grade */
-      CODEMATLNAME: string;
-      /** Material Design Values */
-      DESIGN: {
-        /** Strength */
-        C_FC?: number;
-        /** (추정) Lambda 적용 여부 ⚠️표·예제에 근거 없음 */
-        bLAMBDA?: boolean;
-        /** (추정) Lambda 값 ⚠️표·예제에 근거 없음 */
-        dLAMBDA?: number;
-        /** Strength (Initial) */
-        C_FCI?: number;
-        /** (추정) Transfer 적용 여부 ⚠️표·예제에 근거 없음 */
-        bTRANSFER?: boolean;
-        /** (추정) Transfer 시 fci 값 ⚠️표·예제에 근거 없음 */
-        dTRANSFERFCI?: number;
-      };
-    };
-    /** Rebar Code Name */
-    REBAR_CODENAME: string;
-    /** Main Rebar Name */
-    MAINREBAR_REBARNAME: string;
-    /** Sub Rebar Name */
-    SUBREBAR_REBARNAME?: string;
-    /** Main Rebar (fy) */
-    MAINREBAR_B_FY?: number;
-    /** Sub Rebar (fy) */
-    SUBREBAR_B_FY?: number;
-    /** (추정) 사용성 검토 여부 ⚠️표·예제에 근거 없음 (스키마 설명 ServiceabilityCheck) */
-    bSERVCHECK?: boolean;
-    /** (추정) 단기 계수 ⚠️표·예제에 근거 없음 (스키마 설명 ShortTerm) */
-    dSHORTTERM?: number;
-    /** (추정) 장기 계수 ⚠️표·예제에 근거 없음 (스키마 설명 LongTerm) */
-    dLONGTERM?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface InelasticFiberMaterialLinkPayload {
-    /** Inelastic Material of Concrete */
-    CONC_NAME?: string;
-    /** Confined Concrete for Columns */
-    CONFINED_CONC_NAME?: string;
-    /** Inelastic Material of Rebar */
-    REBAR_NAME?: string;
-    /** Inelastic Material of Steel */
-    STEEL_NAME?: string;
+    /** Change Property Value (h for NSM, v/s for VSR) */
+    H_VS: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface InelasticFiberMaterialLinkHyperSConcrete {
@@ -8157,11 +7865,6 @@ export namespace DbPropertiesMaterialTypes {
     CONF_CONC_NAME?: string;
     /** Inelastic Material of Rebar */
     REBAR_NAME?: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface InelasticFiberMaterialLinkHyperSSteel {
-    /** Inelastic Material of Steel */
-    STEEL_NAME?: string;
   }
   /** Generated from contracts/endpoints/. */
   export interface InelasticFiberMaterialLinkHyperSPayload {
@@ -8181,404 +7884,20 @@ export namespace DbPropertiesMaterialTypes {
     };
   }
   /** Generated from contracts/endpoints/. */
-  export interface TimeDependentMaterialFunctionValue {
-    /** Time */
-    DAY: number;
-    /** Value */
-    VALUE: number;
+  export interface InelasticFiberMaterialLinkHyperSSteel {
+    /** Inelastic Material of Steel */
+    STEEL_NAME?: string;
   }
   /** Generated from contracts/endpoints/. */
-  export interface TimeDependentMaterialFunctionPayload {
-    /** Material Function Name */
-    NAME: string;
-    /** Material Function Type • Creep: "CREEP" • Shrinkage Strain: "SHRINK" • Relaxation: "RELAX" */
-    FTYPE: string;
-    /** Scale Factor */
-    SCALE: number;
-    /** Description */
-    DESC?: string;
-    /** Function Data (Array of {DAY, VALUE}) */
-    vDAY: Array<{
-      /** Time */
-      DAY: number;
-      /** Value */
-      VALUE: number;
-    }>;
-    /** Creep Type • Specific Creep: "SC" • Creep Function: "CF" • Creep Coefficient: "CC" Required when FTYPE = "CREEP". */
-    CTYPE?: string;
-    /** Relaxation Time • Hour: 0 • Day: 1 Required when FTYPE = "RELAX". */
-    RELAXATION?: number;
-    /** Elast */
-    ELAST?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface TimeDependentMaterialCreepShrinkagePayload {
-    /** Time Dependent Material Name */
-    NAME: string;
-    /** Code Name */
-    CODE: string;
-    /** Compression Strength */
-    STR: number;
-    /** Relative Humidity (CEB-FIP 2010/1990: 40~99%; 1978: 40~100%) */
-    HU: number;
-    /** Notional Size of Member */
-    MSIZE: number;
-    /** Type of Cement */
-    CTYPE?: string;
-    /** Concrete Age */
-    AGE: number;
-    /** Type of Aggregate • 0: Basalt/dense limestone • 1: Quartzite • 2: Limestone • 3: Sandstone */
-    TYPEOFAFFR?: number;
-    /** Volume/Surface Ratio */
-    VOL: number;
-    /** Curing Method • Moist: "MOIST" • Steam: "STEAM" */
-    CMETHOD?: string;
-    /** Type of Code */
-    TCODE?: number;
-    /** SilicaFume */
-    bSILICA?: boolean;
-  }
-  export interface TimeDependentMaterialStrengthPayload {
-    NAME?: string;
-    TYPE?: string;
-    CODENAME?: string;
-    STRENGTH?: number;
-    A?: number;
-    B?: number;
-    iCTYPE?: number;
-    nAGGRE?: number;
-    DENSITY?: number;
-    CMETH?: number;
-    CTYPE?: number;
-    MAXS?: number;
-    PZ?: number;
-    TENS_STRN_FACTOR?: number;
-    bUSE?: boolean;
-    D?: number;
-    iECTYPE?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ChangePropertyPayload {
-    /** Change Property Method • Notional Size: "NSM" • Volume/Surface Ratio: "VSR" */
-    TYPE: string;
-    /** Change Property Value (h for NSM, v/s for VSR) */
-    H_VS: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface TimeDependentMaterialLinkPayload {
-    /** Creep/Shrinkage Name */
-    TDMT_NAME: string;
-    /** Comp. Strength Name */
-    TDME_NAME: string;
-  }
-  export interface PlasticMaterialPayload {
-    NAME?: string;
-    MODEL_TYPE?: string;
-    TRESCA?: unknown;
-    VMISES?: unknown;
-    MOHRCL?: unknown;
-    DRUCKER?: unknown;
-    MASONRY?: unknown;
-    CONCDMG?: unknown;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PlasticMaterialHyperSHardeningModel {
-    /** Initial Uniaxial Yield Stress */
-    INIT_YIELD_STRESS?: number;
-    /** Hardening */
-    OPT_HARDENING?: boolean;
-    /** Hardening Type (Isotropic:0, Kinematic:1, Mixed:2) */
-    HARDENING_TYPE?: number;
-    /** Hardening Coefficient */
-    HARDENING_COEF?: number;
-    /** Back Stress Coefficient */
-    BACK_STRESS_COEF?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PlasticMaterialHyperSCoulombModel {
-    /** Initial Cohesion */
-    INIT_COHESION?: number;
-    /** Initial Friction Angle (deg) */
-    INIT_FRIC_ANGLE?: number;
-    /** Hardening */
-    OPT_HARDENING?: boolean;
-    /** Hardening Type (Isotropic:0) */
-    HARDENING_TYPE?: number;
-    /** Hardening Coefficient */
-    HARDENING_COEF?: number;
-    /** Back Stress Coefficient */
-    BACK_STRESS_COEF?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PlasticMaterialHyperSMasonryLayer {
-    /** Young's Modulus */
-    YOUNG_S_MODULUS?: number;
-    /** Poisson's Ratio */
-    POSSIONS_S_RATIO?: number;
-    /** Tension Strength */
-    TENSION_STRENGTH?: number;
-    /** Stiffness Reduction Factor */
-    STIFF_REDUCTION?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PlasticMaterialHyperSMasonryGeometry {
-    /** Brick Length */
-    BRICK_LENGTH?: number;
-    /** Brick Height */
-    BRICK_HEIGHT?: number;
-    /** Thickness of Bed */
-    THICKNESS_BED?: number;
-    /** Thickness of Head */
-    THICKNESS_HEAD?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PlasticMaterialHyperSMasonryCoord {
-    /** Coordinate Type (Global:0, ElementLocal:1, GlobalZAngle:2) */
-    COORD_TYPE?: number;
-    /** Angle from Global X (deg) */
-    COORD_ANGLE?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PlasticMaterialHyperSMasonry {
-    /** Brick Material Properties */
-    BM?: {
-      /** Young's Modulus */
-      YOUNG_S_MODULUS?: number;
-      /** Poisson's Ratio */
-      POSSIONS_S_RATIO?: number;
-      /** Tension Strength */
-      TENSION_STRENGTH?: number;
-      /** Stiffness Reduction Factor */
-      STIFF_REDUCTION?: number;
-    };
-    /** Bed Joint Properties */
-    BED_JOINT?: {
-      /** Young's Modulus */
-      YOUNG_S_MODULUS?: number;
-      /** Poisson's Ratio */
-      POSSIONS_S_RATIO?: number;
-      /** Tension Strength */
-      TENSION_STRENGTH?: number;
-      /** Stiffness Reduction Factor */
-      STIFF_REDUCTION?: number;
-    };
-    /** Head Joint Properties */
-    HEAD_JOINT?: {
-      /** Young's Modulus */
-      YOUNG_S_MODULUS?: number;
-      /** Poisson's Ratio */
-      POSSIONS_S_RATIO?: number;
-      /** Tension Strength */
-      TENSION_STRENGTH?: number;
-      /** Stiffness Reduction Factor */
-      STIFF_REDUCTION?: number;
-    };
-    /** Geometry of Masonry Panel */
-    GEOM?: {
-      /** Brick Length */
-      BRICK_LENGTH?: number;
-      /** Brick Height */
-      BRICK_HEIGHT?: number;
-      /** Thickness of Bed */
-      THICKNESS_BED?: number;
-      /** Thickness of Head */
-      THICKNESS_HEAD?: number;
-    };
-    /** Material Coordinate System */
-    MAT_COORD?: {
-      /** Coordinate Type (Global:0, ElementLocal:1, GlobalZAngle:2) */
-      COORD_TYPE?: number;
-      /** Angle from Global X (deg) */
-      COORD_ANGLE?: number;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PlasticMaterialHyperSConcreteDamageItem {
-    /** Inelastic Strain */
-    INELASTIC_STRAIN?: number;
-    /** Yield Stress */
-    YIELD_STRESS?: number;
-    /** Damage */
-    DAMAGE?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PlasticMaterialHyperSConcreteDamage {
-    /** Dilation Angle (deg) */
-    DILIATION_ANGLE?: number;
-    /** Eccentricity */
-    ECCEN?: number;
-    /** fbo/fco */
-    FBO_FCO?: number;
-    /** K */
-    K?: number;
-    /** Viscosity Parameter */
-    VISCOSITY_PARAM?: number;
-    /** Compressive Behavior */
-    COMP_ITEMS?: Array<{
-      /** Inelastic Strain */
-      INELASTIC_STRAIN?: number;
-      /** Yield Stress */
-      YIELD_STRESS?: number;
-      /** Damage */
-      DAMAGE?: number;
-    }>;
-    /** Tensile Behavior */
-    TENSILE_ITEMS?: Array<{
-      /** Inelastic Strain */
-      INELASTIC_STRAIN?: number;
-      /** Yield Stress */
-      YIELD_STRESS?: number;
-      /** Damage */
-      DAMAGE?: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PlasticMaterialHyperSPayload {
-    /** Name */
-    NAME?: string;
-    /** Model Type (Tresca:0, VonMises:1, MohrCoulomb:2, DruckerPrager:3, Masonry:4, ConcreteDamage:5) */
-    MODEL_TYPE?: number;
-    /** Tresca Model */
-    TRESCA?: {
-      /** Initial Uniaxial Yield Stress */
-      INIT_YIELD_STRESS?: number;
-      /** Hardening */
-      OPT_HARDENING?: boolean;
-      /** Hardening Type (Isotropic:0, Kinematic:1, Mixed:2) */
-      HARDENING_TYPE?: number;
-      /** Hardening Coefficient */
-      HARDENING_COEF?: number;
-      /** Back Stress Coefficient */
-      BACK_STRESS_COEF?: number;
-    };
-    /** Von Mises Model */
-    VMISES?: {
-      /** Initial Uniaxial Yield Stress */
-      INIT_YIELD_STRESS?: number;
-      /** Hardening */
-      OPT_HARDENING?: boolean;
-      /** Hardening Type (Isotropic:0, Kinematic:1, Mixed:2) */
-      HARDENING_TYPE?: number;
-      /** Hardening Coefficient */
-      HARDENING_COEF?: number;
-      /** Back Stress Coefficient */
-      BACK_STRESS_COEF?: number;
-    };
-    /** Mohr-Coulomb Model */
-    MOHRCL?: {
-      /** Initial Cohesion */
-      INIT_COHESION?: number;
-      /** Initial Friction Angle (deg) */
-      INIT_FRIC_ANGLE?: number;
-      /** Hardening */
-      OPT_HARDENING?: boolean;
-      /** Hardening Type (Isotropic:0) */
-      HARDENING_TYPE?: number;
-      /** Hardening Coefficient */
-      HARDENING_COEF?: number;
-      /** Back Stress Coefficient */
-      BACK_STRESS_COEF?: number;
-    };
-    /** Drucker-Prager Model */
-    DRUCKER?: {
-      /** Initial Cohesion */
-      INIT_COHESION?: number;
-      /** Initial Friction Angle (deg) */
-      INIT_FRIC_ANGLE?: number;
-      /** Hardening */
-      OPT_HARDENING?: boolean;
-      /** Hardening Type (Isotropic:0) */
-      HARDENING_TYPE?: number;
-      /** Hardening Coefficient */
-      HARDENING_COEF?: number;
-      /** Back Stress Coefficient */
-      BACK_STRESS_COEF?: number;
-    };
-    /** Masonry Model */
-    MASONRY?: {
-      /** Brick Material Properties */
-      BM?: {
-        /** Young's Modulus */
-        YOUNG_S_MODULUS?: number;
-        /** Poisson's Ratio */
-        POSSIONS_S_RATIO?: number;
-        /** Tension Strength */
-        TENSION_STRENGTH?: number;
-        /** Stiffness Reduction Factor */
-        STIFF_REDUCTION?: number;
-      };
-      /** Bed Joint Properties */
-      BED_JOINT?: {
-        /** Young's Modulus */
-        YOUNG_S_MODULUS?: number;
-        /** Poisson's Ratio */
-        POSSIONS_S_RATIO?: number;
-        /** Tension Strength */
-        TENSION_STRENGTH?: number;
-        /** Stiffness Reduction Factor */
-        STIFF_REDUCTION?: number;
-      };
-      /** Head Joint Properties */
-      HEAD_JOINT?: {
-        /** Young's Modulus */
-        YOUNG_S_MODULUS?: number;
-        /** Poisson's Ratio */
-        POSSIONS_S_RATIO?: number;
-        /** Tension Strength */
-        TENSION_STRENGTH?: number;
-        /** Stiffness Reduction Factor */
-        STIFF_REDUCTION?: number;
-      };
-      /** Geometry of Masonry Panel */
-      GEOM?: {
-        /** Brick Length */
-        BRICK_LENGTH?: number;
-        /** Brick Height */
-        BRICK_HEIGHT?: number;
-        /** Thickness of Bed */
-        THICKNESS_BED?: number;
-        /** Thickness of Head */
-        THICKNESS_HEAD?: number;
-      };
-      /** Material Coordinate System */
-      MAT_COORD?: {
-        /** Coordinate Type (Global:0, ElementLocal:1, GlobalZAngle:2) */
-        COORD_TYPE?: number;
-        /** Angle from Global X (deg) */
-        COORD_ANGLE?: number;
-      };
-    };
-    /** Concrete-Damage Model */
-    CONCDMG?: {
-      /** Dilation Angle (deg) */
-      DILIATION_ANGLE?: number;
-      /** Eccentricity */
-      ECCEN?: number;
-      /** fbo/fco */
-      FBO_FCO?: number;
-      /** K */
-      K?: number;
-      /** Viscosity Parameter */
-      VISCOSITY_PARAM?: number;
-      /** Compressive Behavior */
-      COMP_ITEMS?: Array<{
-        /** Inelastic Strain */
-        INELASTIC_STRAIN?: number;
-        /** Yield Stress */
-        YIELD_STRESS?: number;
-        /** Damage */
-        DAMAGE?: number;
-      }>;
-      /** Tensile Behavior */
-      TENSILE_ITEMS?: Array<{
-        /** Inelastic Strain */
-        INELASTIC_STRAIN?: number;
-        /** Yield Stress */
-        YIELD_STRESS?: number;
-        /** Damage */
-        DAMAGE?: number;
-      }>;
-    };
+  export interface InelasticFiberMaterialLinkPayload {
+    /** Inelastic Material of Concrete */
+    CONC_NAME?: string;
+    /** Confined Concrete for Columns */
+    CONFINED_CONC_NAME?: string;
+    /** Inelastic Material of Rebar */
+    REBAR_NAME?: string;
+    /** Inelastic Material of Steel */
+    STEEL_NAME?: string;
   }
   export interface InelasticMaterialKentParkParam {
     FC?: number;
@@ -9046,9 +8365,907 @@ export namespace DbPropertiesMaterialTypes {
       };
     };
   }
+  /** Generated from contracts/endpoints/. */
+  export interface MaterialHyperSParam {
+    /** Type of Material (Standard:0, Isotropic:1, Orthotropic:2) */
+    P_TYPE?: number;
+    /** Standard */
+    STANDARD?: string;
+    /** Code */
+    CODE?: string;
+    /** DB Name */
+    DB?: string;
+    /** User Defined Properties */
+    USER_DEFINED?: {
+      /** User Elasticity */
+      bELAST?: number;
+      /** Poisson's ratio */
+      POISN?: number;
+      /** Coefficients of linear thermal */
+      THERMAL?: number;
+      /** Weight Density */
+      DEN?: number;
+      /** Modulii of elasticity [X,Y,Z] */
+      ELAST_M?: Array<number>;
+      /** Coefficients of linear thermal [X,Y,Z] */
+      THERMAL_M?: Array<number>;
+      /** Shear modulii [xy,xz,yz] */
+      SHEAR_M?: Array<number>;
+      /** Poisson's ratio [xy,xz,yz] */
+      POISN_M?: Array<number>;
+      /** Use Mass Density */
+      bMASS_DENS?: boolean;
+      /** Mass Density */
+      MASS?: number;
+    };
+    /** Plastic Material Name */
+    PLASTIC_MATL_NAME?: string;
+    /** Thermal Transfer */
+    THERMAL_TRANS?: {
+      /** Specific Heat */
+      HE_SPEC?: number;
+      /** Heat Conduction */
+      HE_COND?: number;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MaterialHyperSPayload {
+    /** Material Name */
+    MATL_NAME?: string;
+    /** Material Type */
+    MATL_TYPE?: string;
+    /** Damping Ratio */
+    DAMP_RAT?: number;
+    /** Material Parameters */
+    PARAM?: Array<{
+      /** Type of Material (Standard:0, Isotropic:1, Orthotropic:2) */
+      P_TYPE?: number;
+      /** Standard */
+      STANDARD?: string;
+      /** Code */
+      CODE?: string;
+      /** DB Name */
+      DB?: string;
+      /** User Defined Properties */
+      USER_DEFINED?: {
+        /** User Elasticity */
+        bELAST?: number;
+        /** Poisson's ratio */
+        POISN?: number;
+        /** Coefficients of linear thermal */
+        THERMAL?: number;
+        /** Weight Density */
+        DEN?: number;
+        /** Modulii of elasticity [X,Y,Z] */
+        ELAST_M?: Array<number>;
+        /** Coefficients of linear thermal [X,Y,Z] */
+        THERMAL_M?: Array<number>;
+        /** Shear modulii [xy,xz,yz] */
+        SHEAR_M?: Array<number>;
+        /** Poisson's ratio [xy,xz,yz] */
+        POISN_M?: Array<number>;
+        /** Use Mass Density */
+        bMASS_DENS?: boolean;
+        /** Mass Density */
+        MASS?: number;
+      };
+      /** Plastic Material Name */
+      PLASTIC_MATL_NAME?: string;
+      /** Thermal Transfer */
+      THERMAL_TRANS?: {
+        /** Specific Heat */
+        HE_SPEC?: number;
+        /** Heat Conduction */
+        HE_COND?: number;
+      };
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MaterialHyperSThermalTransfer {
+    /** Specific Heat */
+    HE_SPEC?: number;
+    /** Heat Conduction */
+    HE_COND?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MaterialHyperSUserDefined {
+    /** User Elasticity */
+    bELAST?: number;
+    /** Poisson's ratio */
+    POISN?: number;
+    /** Coefficients of linear thermal */
+    THERMAL?: number;
+    /** Weight Density */
+    DEN?: number;
+    /** Modulii of elasticity [X,Y,Z] */
+    ELAST_M?: Array<number>;
+    /** Coefficients of linear thermal [X,Y,Z] */
+    THERMAL_M?: Array<number>;
+    /** Shear modulii [xy,xz,yz] */
+    SHEAR_M?: Array<number>;
+    /** Poisson's ratio [xy,xz,yz] */
+    POISN_M?: Array<number>;
+    /** Use Mass Density */
+    bMASS_DENS?: boolean;
+    /** Mass Density */
+    MASS?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MaterialModifyConcreteData1 {
+    /** Material Code Name */
+    CODENAME: string;
+    /** Material Grade */
+    CODEMATLNAME: string;
+    /** Material Design Values */
+    DESIGN: {
+      /** Strength */
+      C_FC?: number;
+      /** (추정) Lambda 적용 여부 ⚠️표·예제에 근거 없음 */
+      bLAMBDA?: boolean;
+      /** (추정) Lambda 값 ⚠️표·예제에 근거 없음 */
+      dLAMBDA?: number;
+      /** Strength (Initial) */
+      C_FCI?: number;
+      /** (추정) Transfer 적용 여부 ⚠️표·예제에 근거 없음 */
+      bTRANSFER?: boolean;
+      /** (추정) Transfer 시 fci 값 ⚠️표·예제에 근거 없음 */
+      dTRANSFERFCI?: number;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MaterialModifyConcreteDesign {
+    /** Strength */
+    C_FC?: number;
+    /** (추정) Lambda 적용 여부 ⚠️표·예제에 근거 없음 */
+    bLAMBDA?: boolean;
+    /** (추정) Lambda 값 ⚠️표·예제에 근거 없음 */
+    dLAMBDA?: number;
+    /** Strength (Initial) */
+    C_FCI?: number;
+    /** (추정) Transfer 적용 여부 ⚠️표·예제에 근거 없음 */
+    bTRANSFER?: boolean;
+    /** (추정) Transfer 시 fci 값 ⚠️표·예제에 근거 없음 */
+    dTRANSFERFCI?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MaterialModifyConcretePayload {
+    /** Material Type (Concrete: "CONC") */
+    TYPE: string;
+    /** Material Name */
+    NAME: string;
+    /** Concrete Material Information */
+    DATA1: {
+      /** Material Code Name */
+      CODENAME: string;
+      /** Material Grade */
+      CODEMATLNAME: string;
+      /** Material Design Values */
+      DESIGN: {
+        /** Strength */
+        C_FC?: number;
+        /** (추정) Lambda 적용 여부 ⚠️표·예제에 근거 없음 */
+        bLAMBDA?: boolean;
+        /** (추정) Lambda 값 ⚠️표·예제에 근거 없음 */
+        dLAMBDA?: number;
+        /** Strength (Initial) */
+        C_FCI?: number;
+        /** (추정) Transfer 적용 여부 ⚠️표·예제에 근거 없음 */
+        bTRANSFER?: boolean;
+        /** (추정) Transfer 시 fci 값 ⚠️표·예제에 근거 없음 */
+        dTRANSFERFCI?: number;
+      };
+    };
+    /** Rebar Code Name */
+    REBAR_CODENAME: string;
+    /** Main Rebar Name */
+    MAINREBAR_REBARNAME: string;
+    /** Sub Rebar Name */
+    SUBREBAR_REBARNAME?: string;
+    /** Main Rebar (fy) */
+    MAINREBAR_B_FY?: number;
+    /** Sub Rebar (fy) */
+    SUBREBAR_B_FY?: number;
+    /** (추정) 사용성 검토 여부 ⚠️표·예제에 근거 없음 (스키마 설명 ServiceabilityCheck) */
+    bSERVCHECK?: boolean;
+    /** (추정) 단기 계수 ⚠️표·예제에 근거 없음 (스키마 설명 ShortTerm) */
+    dSHORTTERM?: number;
+    /** (추정) 장기 계수 ⚠️표·예제에 근거 없음 (스키마 설명 LongTerm) */
+    dLONGTERM?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MaterialParam {
+    /** Material Parameter Type • Standard: 1 • Isotropic: 2 • Orthotropic: 3 */
+    P_TYPE: number;
+    /** Standard Name Required when PARAM.P_TYPE = 1. */
+    STANDARD?: string;
+    /** Code Name Applies when PARAM.P_TYPE = 1. */
+    CODE?: string;
+    /** DB Name Required when PARAM.P_TYPE = 1. */
+    DB?: string;
+    /** Use Young's Modulus (User Option) Applies when PARAM.P_TYPE = 1. */
+    bELAST?: boolean;
+    /** Modulus of Elasticity Required when PARAM.P_TYPE = 2. */
+    ELAST?: number;
+    /** Poisson's Ratio Required when PARAM.P_TYPE = 2. */
+    POISN?: number;
+    /** Thermal Coefficient Required when PARAM.P_TYPE = 2. */
+    THERMAL?: number;
+    /** Weight Density Required when PARAM.P_TYPE is 2 or 3. */
+    DEN?: number;
+    /** Mass Density Required when PARAM.P_TYPE is 2 or 3. */
+    MASS?: number;
+    /** Modulus of Elasticity (3 values) Required when PARAM.P_TYPE = 3. */
+    ELAST_M?: Array<number>;
+    /** Poisson's Ratio (3 values) Required when PARAM.P_TYPE = 3. */
+    POISN_M?: Array<number>;
+    /** Thermal Coefficient (3 values) Required when PARAM.P_TYPE = 3. */
+    THERMAL_M?: Array<number>;
+    /** Shear Modulus (3 values) Required when PARAM.P_TYPE = 3. */
+    SHEAR_M?: Array<number>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MaterialPayload {
+    /** Material Type • Concrete: "CONC" • Steel: "STEEL" • SRC: "SRC" • Aluminum: "ALUMINUM" • User Defined: "USER" */
+    TYPE: string;
+    /** Material Name */
+    NAME: string;
+    /** Specific Heat */
+    HE_SPEC?: number;
+    /** Heat Conduction */
+    HE_COND?: number;
+    /** Plastic Material No. */
+    PLMT?: number;
+    /** Plastic Material Name */
+    P_NAME?: string;
+    /** Use Mass Density */
+    bMASS_DENS?: boolean;
+    /** Damping Ratio */
+    DAMP_RAT?: number;
+    /** Material Parameter */
+    PARAM: Array<{
+      /** Material Parameter Type • Standard: 1 • Isotropic: 2 • Orthotropic: 3 */
+      P_TYPE: number;
+      /** Standard Name Required when PARAM.P_TYPE = 1. */
+      STANDARD?: string;
+      /** Code Name Applies when PARAM.P_TYPE = 1. */
+      CODE?: string;
+      /** DB Name Required when PARAM.P_TYPE = 1. */
+      DB?: string;
+      /** Use Young's Modulus (User Option) Applies when PARAM.P_TYPE = 1. */
+      bELAST?: boolean;
+      /** Modulus of Elasticity Required when PARAM.P_TYPE = 2. */
+      ELAST?: number;
+      /** Poisson's Ratio Required when PARAM.P_TYPE = 2. */
+      POISN?: number;
+      /** Thermal Coefficient Required when PARAM.P_TYPE = 2. */
+      THERMAL?: number;
+      /** Weight Density Required when PARAM.P_TYPE is 2 or 3. */
+      DEN?: number;
+      /** Mass Density Required when PARAM.P_TYPE is 2 or 3. */
+      MASS?: number;
+      /** Modulus of Elasticity (3 values) Required when PARAM.P_TYPE = 3. */
+      ELAST_M?: Array<number>;
+      /** Poisson's Ratio (3 values) Required when PARAM.P_TYPE = 3. */
+      POISN_M?: Array<number>;
+      /** Thermal Coefficient (3 values) Required when PARAM.P_TYPE = 3. */
+      THERMAL_M?: Array<number>;
+      /** Shear Modulus (3 values) Required when PARAM.P_TYPE = 3. */
+      SHEAR_M?: Array<number>;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PlasticMaterialHyperSConcreteDamage {
+    /** Dilation Angle (deg) */
+    DILIATION_ANGLE?: number;
+    /** Eccentricity */
+    ECCEN?: number;
+    /** fbo/fco */
+    FBO_FCO?: number;
+    /** K */
+    K?: number;
+    /** Viscosity Parameter */
+    VISCOSITY_PARAM?: number;
+    /** Compressive Behavior */
+    COMP_ITEMS?: Array<{
+      /** Inelastic Strain */
+      INELASTIC_STRAIN?: number;
+      /** Yield Stress */
+      YIELD_STRESS?: number;
+      /** Damage */
+      DAMAGE?: number;
+    }>;
+    /** Tensile Behavior */
+    TENSILE_ITEMS?: Array<{
+      /** Inelastic Strain */
+      INELASTIC_STRAIN?: number;
+      /** Yield Stress */
+      YIELD_STRESS?: number;
+      /** Damage */
+      DAMAGE?: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PlasticMaterialHyperSConcreteDamageItem {
+    /** Inelastic Strain */
+    INELASTIC_STRAIN?: number;
+    /** Yield Stress */
+    YIELD_STRESS?: number;
+    /** Damage */
+    DAMAGE?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PlasticMaterialHyperSCoulombModel {
+    /** Initial Cohesion */
+    INIT_COHESION?: number;
+    /** Initial Friction Angle (deg) */
+    INIT_FRIC_ANGLE?: number;
+    /** Hardening */
+    OPT_HARDENING?: boolean;
+    /** Hardening Type (Isotropic:0) */
+    HARDENING_TYPE?: number;
+    /** Hardening Coefficient */
+    HARDENING_COEF?: number;
+    /** Back Stress Coefficient */
+    BACK_STRESS_COEF?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PlasticMaterialHyperSHardeningModel {
+    /** Initial Uniaxial Yield Stress */
+    INIT_YIELD_STRESS?: number;
+    /** Hardening */
+    OPT_HARDENING?: boolean;
+    /** Hardening Type (Isotropic:0, Kinematic:1, Mixed:2) */
+    HARDENING_TYPE?: number;
+    /** Hardening Coefficient */
+    HARDENING_COEF?: number;
+    /** Back Stress Coefficient */
+    BACK_STRESS_COEF?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PlasticMaterialHyperSMasonry {
+    /** Brick Material Properties */
+    BM?: {
+      /** Young's Modulus */
+      YOUNG_S_MODULUS?: number;
+      /** Poisson's Ratio */
+      POSSIONS_S_RATIO?: number;
+      /** Tension Strength */
+      TENSION_STRENGTH?: number;
+      /** Stiffness Reduction Factor */
+      STIFF_REDUCTION?: number;
+    };
+    /** Bed Joint Properties */
+    BED_JOINT?: {
+      /** Young's Modulus */
+      YOUNG_S_MODULUS?: number;
+      /** Poisson's Ratio */
+      POSSIONS_S_RATIO?: number;
+      /** Tension Strength */
+      TENSION_STRENGTH?: number;
+      /** Stiffness Reduction Factor */
+      STIFF_REDUCTION?: number;
+    };
+    /** Head Joint Properties */
+    HEAD_JOINT?: {
+      /** Young's Modulus */
+      YOUNG_S_MODULUS?: number;
+      /** Poisson's Ratio */
+      POSSIONS_S_RATIO?: number;
+      /** Tension Strength */
+      TENSION_STRENGTH?: number;
+      /** Stiffness Reduction Factor */
+      STIFF_REDUCTION?: number;
+    };
+    /** Geometry of Masonry Panel */
+    GEOM?: {
+      /** Brick Length */
+      BRICK_LENGTH?: number;
+      /** Brick Height */
+      BRICK_HEIGHT?: number;
+      /** Thickness of Bed */
+      THICKNESS_BED?: number;
+      /** Thickness of Head */
+      THICKNESS_HEAD?: number;
+    };
+    /** Material Coordinate System */
+    MAT_COORD?: {
+      /** Coordinate Type (Global:0, ElementLocal:1, GlobalZAngle:2) */
+      COORD_TYPE?: number;
+      /** Angle from Global X (deg) */
+      COORD_ANGLE?: number;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PlasticMaterialHyperSMasonryCoord {
+    /** Coordinate Type (Global:0, ElementLocal:1, GlobalZAngle:2) */
+    COORD_TYPE?: number;
+    /** Angle from Global X (deg) */
+    COORD_ANGLE?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PlasticMaterialHyperSMasonryGeometry {
+    /** Brick Length */
+    BRICK_LENGTH?: number;
+    /** Brick Height */
+    BRICK_HEIGHT?: number;
+    /** Thickness of Bed */
+    THICKNESS_BED?: number;
+    /** Thickness of Head */
+    THICKNESS_HEAD?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PlasticMaterialHyperSMasonryLayer {
+    /** Young's Modulus */
+    YOUNG_S_MODULUS?: number;
+    /** Poisson's Ratio */
+    POSSIONS_S_RATIO?: number;
+    /** Tension Strength */
+    TENSION_STRENGTH?: number;
+    /** Stiffness Reduction Factor */
+    STIFF_REDUCTION?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PlasticMaterialHyperSPayload {
+    /** Name */
+    NAME?: string;
+    /** Model Type (Tresca:0, VonMises:1, MohrCoulomb:2, DruckerPrager:3, Masonry:4, ConcreteDamage:5) */
+    MODEL_TYPE?: number;
+    /** Tresca Model */
+    TRESCA?: {
+      /** Initial Uniaxial Yield Stress */
+      INIT_YIELD_STRESS?: number;
+      /** Hardening */
+      OPT_HARDENING?: boolean;
+      /** Hardening Type (Isotropic:0, Kinematic:1, Mixed:2) */
+      HARDENING_TYPE?: number;
+      /** Hardening Coefficient */
+      HARDENING_COEF?: number;
+      /** Back Stress Coefficient */
+      BACK_STRESS_COEF?: number;
+    };
+    /** Von Mises Model */
+    VMISES?: {
+      /** Initial Uniaxial Yield Stress */
+      INIT_YIELD_STRESS?: number;
+      /** Hardening */
+      OPT_HARDENING?: boolean;
+      /** Hardening Type (Isotropic:0, Kinematic:1, Mixed:2) */
+      HARDENING_TYPE?: number;
+      /** Hardening Coefficient */
+      HARDENING_COEF?: number;
+      /** Back Stress Coefficient */
+      BACK_STRESS_COEF?: number;
+    };
+    /** Mohr-Coulomb Model */
+    MOHRCL?: {
+      /** Initial Cohesion */
+      INIT_COHESION?: number;
+      /** Initial Friction Angle (deg) */
+      INIT_FRIC_ANGLE?: number;
+      /** Hardening */
+      OPT_HARDENING?: boolean;
+      /** Hardening Type (Isotropic:0) */
+      HARDENING_TYPE?: number;
+      /** Hardening Coefficient */
+      HARDENING_COEF?: number;
+      /** Back Stress Coefficient */
+      BACK_STRESS_COEF?: number;
+    };
+    /** Drucker-Prager Model */
+    DRUCKER?: {
+      /** Initial Cohesion */
+      INIT_COHESION?: number;
+      /** Initial Friction Angle (deg) */
+      INIT_FRIC_ANGLE?: number;
+      /** Hardening */
+      OPT_HARDENING?: boolean;
+      /** Hardening Type (Isotropic:0) */
+      HARDENING_TYPE?: number;
+      /** Hardening Coefficient */
+      HARDENING_COEF?: number;
+      /** Back Stress Coefficient */
+      BACK_STRESS_COEF?: number;
+    };
+    /** Masonry Model */
+    MASONRY?: {
+      /** Brick Material Properties */
+      BM?: {
+        /** Young's Modulus */
+        YOUNG_S_MODULUS?: number;
+        /** Poisson's Ratio */
+        POSSIONS_S_RATIO?: number;
+        /** Tension Strength */
+        TENSION_STRENGTH?: number;
+        /** Stiffness Reduction Factor */
+        STIFF_REDUCTION?: number;
+      };
+      /** Bed Joint Properties */
+      BED_JOINT?: {
+        /** Young's Modulus */
+        YOUNG_S_MODULUS?: number;
+        /** Poisson's Ratio */
+        POSSIONS_S_RATIO?: number;
+        /** Tension Strength */
+        TENSION_STRENGTH?: number;
+        /** Stiffness Reduction Factor */
+        STIFF_REDUCTION?: number;
+      };
+      /** Head Joint Properties */
+      HEAD_JOINT?: {
+        /** Young's Modulus */
+        YOUNG_S_MODULUS?: number;
+        /** Poisson's Ratio */
+        POSSIONS_S_RATIO?: number;
+        /** Tension Strength */
+        TENSION_STRENGTH?: number;
+        /** Stiffness Reduction Factor */
+        STIFF_REDUCTION?: number;
+      };
+      /** Geometry of Masonry Panel */
+      GEOM?: {
+        /** Brick Length */
+        BRICK_LENGTH?: number;
+        /** Brick Height */
+        BRICK_HEIGHT?: number;
+        /** Thickness of Bed */
+        THICKNESS_BED?: number;
+        /** Thickness of Head */
+        THICKNESS_HEAD?: number;
+      };
+      /** Material Coordinate System */
+      MAT_COORD?: {
+        /** Coordinate Type (Global:0, ElementLocal:1, GlobalZAngle:2) */
+        COORD_TYPE?: number;
+        /** Angle from Global X (deg) */
+        COORD_ANGLE?: number;
+      };
+    };
+    /** Concrete-Damage Model */
+    CONCDMG?: {
+      /** Dilation Angle (deg) */
+      DILIATION_ANGLE?: number;
+      /** Eccentricity */
+      ECCEN?: number;
+      /** fbo/fco */
+      FBO_FCO?: number;
+      /** K */
+      K?: number;
+      /** Viscosity Parameter */
+      VISCOSITY_PARAM?: number;
+      /** Compressive Behavior */
+      COMP_ITEMS?: Array<{
+        /** Inelastic Strain */
+        INELASTIC_STRAIN?: number;
+        /** Yield Stress */
+        YIELD_STRESS?: number;
+        /** Damage */
+        DAMAGE?: number;
+      }>;
+      /** Tensile Behavior */
+      TENSILE_ITEMS?: Array<{
+        /** Inelastic Strain */
+        INELASTIC_STRAIN?: number;
+        /** Yield Stress */
+        YIELD_STRESS?: number;
+        /** Damage */
+        DAMAGE?: number;
+      }>;
+    };
+  }
+  export interface PlasticMaterialPayload {
+    NAME?: string;
+    MODEL_TYPE?: string;
+    TRESCA?: unknown;
+    VMISES?: unknown;
+    MOHRCL?: unknown;
+    DRUCKER?: unknown;
+    MASONRY?: unknown;
+    CONCDMG?: unknown;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TimeDependentMaterialCreepShrinkagePayload {
+    /** Time Dependent Material Name */
+    NAME: string;
+    /** Code Name */
+    CODE: string;
+    /** Compression Strength */
+    STR: number;
+    /** Relative Humidity (CEB-FIP 2010/1990: 40~99%; 1978: 40~100%) */
+    HU: number;
+    /** Notional Size of Member */
+    MSIZE: number;
+    /** Type of Cement */
+    CTYPE?: string;
+    /** Concrete Age */
+    AGE: number;
+    /** Type of Aggregate • 0: Basalt/dense limestone • 1: Quartzite • 2: Limestone • 3: Sandstone */
+    TYPEOFAFFR?: number;
+    /** Volume/Surface Ratio */
+    VOL: number;
+    /** Curing Method • Moist: "MOIST" • Steam: "STEAM" */
+    CMETHOD?: string;
+    /** Type of Code */
+    TCODE?: number;
+    /** SilicaFume */
+    bSILICA?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TimeDependentMaterialFunctionPayload {
+    /** Material Function Name */
+    NAME: string;
+    /** Material Function Type • Creep: "CREEP" • Shrinkage Strain: "SHRINK" • Relaxation: "RELAX" */
+    FTYPE: string;
+    /** Scale Factor */
+    SCALE: number;
+    /** Description */
+    DESC?: string;
+    /** Function Data (Array of {DAY, VALUE}) */
+    vDAY: Array<{
+      /** Time */
+      DAY: number;
+      /** Value */
+      VALUE: number;
+    }>;
+    /** Creep Type • Specific Creep: "SC" • Creep Function: "CF" • Creep Coefficient: "CC" Required when FTYPE = "CREEP". */
+    CTYPE?: string;
+    /** Relaxation Time • Hour: 0 • Day: 1 Required when FTYPE = "RELAX". */
+    RELAXATION?: number;
+    /** Elast */
+    ELAST?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TimeDependentMaterialFunctionValue {
+    /** Time */
+    DAY: number;
+    /** Value */
+    VALUE: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TimeDependentMaterialLinkPayload {
+    /** Creep/Shrinkage Name */
+    TDMT_NAME: string;
+    /** Comp. Strength Name */
+    TDME_NAME: string;
+  }
+  export interface TimeDependentMaterialStrengthPayload {
+    NAME?: string;
+    TYPE?: string;
+    CODENAME?: string;
+    STRENGTH?: number;
+    A?: number;
+    B?: number;
+    iCTYPE?: number;
+    nAGGRE?: number;
+    DENSITY?: number;
+    CMETH?: number;
+    CTYPE?: number;
+    MAXS?: number;
+    PZ?: number;
+    TENS_STRN_FACTOR?: number;
+    bUSE?: boolean;
+    D?: number;
+    iECTYPE?: number;
+  }
 }
 
 export namespace DbPropertiesSectionTypes {
+  /** Generated from contracts/endpoints/. */
+  export interface EffectiveWidthScaleFactorItem {
+    /** Serial Number */
+    ID?: number;
+    /** Boundary Group Name */
+    GROUP_NAME?: string;
+    /** ly Scale Factor for Sbz (I-End) */
+    LYSCALE: number;
+    /** z_top Scale Factor (I-End) */
+    ZTSCALE: number;
+    /** z_bot Scale Factor (I-End) */
+    ZBSCALE: number;
+    /** J-End Option */
+    bJ: boolean;
+    /** ly Scale Factor (J-End) */
+    LYSCALE_J?: number;
+    /** z_top Scale Factor (J-End) */
+    ZTSCALE_J?: number;
+    /** z_bot Scale Factor (J-End) */
+    ZBSCALE_J?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface EffectiveWidthScaleFactorPayload {
+    /** Items (Array of Objects) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Boundary Group Name */
+      GROUP_NAME?: string;
+      /** ly Scale Factor for Sbz (I-End) */
+      LYSCALE: number;
+      /** z_top Scale Factor (I-End) */
+      ZTSCALE: number;
+      /** z_bot Scale Factor (I-End) */
+      ZBSCALE: number;
+      /** J-End Option */
+      bJ: boolean;
+      /** ly Scale Factor (J-End) */
+      LYSCALE_J?: number;
+      /** z_top Scale Factor (J-End) */
+      ZTSCALE_J?: number;
+      /** z_bot Scale Factor (J-End) */
+      ZBSCALE_J?: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ElementStiffnessScaleFactorItem {
+    /** Serial Number */
+    ID?: number;
+    /** Area (Cross-sectional area) */
+    AREA_SF?: number;
+    /** Asy (Shear area, local y) */
+    ASY_SF?: number;
+    /** Asz (Shear area, local z) */
+    ASZ_SF?: number;
+    /** Ixx (Torsional resistance) */
+    IXX_SF?: number;
+    /** Iyy (Moment of Inertia, y-axis) */
+    IYY_SF?: number;
+    /** Izz (Moment of Inertia, z-axis) */
+    IZZ_SF?: number;
+    /** Weight */
+    WGT_SF?: number;
+    /** Boundary Group Name */
+    GROUP_NAME?: string;
+    /** Part(합성단면 전용) · Before: "Before" / After: "After" / All: "All" */
+    iPart?: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ElementStiffnessScaleFactorPayload {
+    /** Items (Array of Objects) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Area (Cross-sectional area) */
+      AREA_SF?: number;
+      /** Asy (Shear area, local y) */
+      ASY_SF?: number;
+      /** Asz (Shear area, local z) */
+      ASZ_SF?: number;
+      /** Ixx (Torsional resistance) */
+      IXX_SF?: number;
+      /** Iyy (Moment of Inertia, y-axis) */
+      IYY_SF?: number;
+      /** Izz (Moment of Inertia, z-axis) */
+      IZZ_SF?: number;
+      /** Weight */
+      WGT_SF?: number;
+      /** Boundary Group Name */
+      GROUP_NAME?: string;
+      /** Part(합성단면 전용) · Before: "Before" / After: "After" / All: "All" */
+      iPart?: string;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface FiberDivisionBaseItem {
+    /** Fiber Base Key */
+    FIBR_BASE_KEY: number;
+    /** Rebar Name */
+    REBAR_NAME: string;
+    /** Area */
+    AREA: number;
+    /** Center Y */
+    CENTER_Y: number;
+    /** Center Z */
+    CENTER_Z: number;
+    /** Fiber Material ID(FIMP_NAME/FIMP_COLOR 배열의 몇 번째 재료인지) */
+    FIBER_MATL_ID: number;
+    /** Area Consider Rebar */
+    AREA_CONSIDER_REBAR: number;
+    /** Is Rebar */
+    OPT_IS_REBAR: boolean;
+    /** Fiber 외곽 다각형 Point Y 목록 */
+    POINT_Y: Array<number>;
+    /** Fiber 외곽 다각형 Point Z 목록 */
+    POINT_Z: Array<number>;
+  }
+  export interface FiberDivisionColor {
+    R?: number;
+    G?: number;
+    B?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface FiberDivisionPayload {
+    /** Fiber Division Name */
+    NAME: string;
+    /** Assigned Section ID */
+    SECT_KEY: number;
+    /** Assign Type */
+    ASSIGN_TYPE: number;
+    /** Inelastic Material Properties Name (6 elements) */
+    FIMP_NAME: [string, string, string, string, string, string];
+    /** Inelastic Material Properties Color (6 elements) */
+    FIMP_COLOR?: [JsonObject, JsonObject, JsonObject, JsonObject, JsonObject, JsonObject];
+    /** Color components */
+    R?: number;
+    /** Color components */
+    G?: number;
+    /** Color components */
+    B?: number;
+    /** Fiber Division Base Data */
+    FIBR_BASE: Array<{
+      /** Fiber Base Key */
+      FIBR_BASE_KEY: number;
+      /** Rebar Name */
+      REBAR_NAME: string;
+      /** Area */
+      AREA: number;
+      /** Center Y */
+      CENTER_Y: number;
+      /** Center Z */
+      CENTER_Z: number;
+      /** Fiber Material ID(FIMP_NAME/FIMP_COLOR 배열의 몇 번째 재료인지) */
+      FIBER_MATL_ID: number;
+      /** Area Consider Rebar */
+      AREA_CONSIDER_REBAR: number;
+      /** Is Rebar */
+      OPT_IS_REBAR: boolean;
+      /** Fiber 외곽 다각형 Point Y 목록 */
+      POINT_Y: Array<number>;
+      /** Fiber 외곽 다각형 Point Z 목록 */
+      POINT_Z: Array<number>;
+    }>;
+    /** Monitored Fiber 사용 여부 */
+    OPT_MONITORED_FIBER: boolean;
+    /** Monitored Fiber(FIBR_BASE 각 항목에 대응하는 0/1 플래그 배열) */
+    MONITORED_FIBER: Array<number>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PlateStiffnessScaleFactorItem {
+    /** Serial Number */
+    ID?: number;
+    /** Boundary Group Name */
+    GROUP_NAME?: string;
+    /** Axial Fxx Scale Factor */
+    AXIAL_X?: number;
+    /** Axial Fyy Scale Factor */
+    AXIAL_Y?: number;
+    /** Shear Fxy Scale Factor */
+    SHEAR?: number;
+    /** Bending Mxx Scale Factor */
+    OUT_BENDING_X?: number;
+    /** Bending Myy Scale Factor */
+    OUT_BENDING_Y?: number;
+    /** Bending Mxy Scale Factor */
+    OUT_TORSION?: number;
+    /** Shear Vxx Scale Factor */
+    OUT_SHEAR_X?: number;
+    /** Shear Vyy Scale Factor */
+    OUT_SHEAR_Y?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PlateStiffnessScaleFactorPayload {
+    /** Items (Array of Objects) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Boundary Group Name */
+      GROUP_NAME?: string;
+      /** Axial Fxx Scale Factor */
+      AXIAL_X?: number;
+      /** Axial Fyy Scale Factor */
+      AXIAL_Y?: number;
+      /** Shear Fxy Scale Factor */
+      SHEAR?: number;
+      /** Bending Mxx Scale Factor */
+      OUT_BENDING_X?: number;
+      /** Bending Myy Scale Factor */
+      OUT_BENDING_Y?: number;
+      /** Bending Mxy Scale Factor */
+      OUT_TORSION?: number;
+      /** Shear Vxx Scale Factor */
+      OUT_SHEAR_X?: number;
+      /** Shear Vyy Scale Factor */
+      OUT_SHEAR_Y?: number;
+    }>;
+  }
   export interface SectBefore {
     SHAPE?: string;
     OFFSET_PT?: string;
@@ -9181,27 +9398,168 @@ export namespace DbPropertiesSectionTypes {
     }
   );
   /** Generated from contracts/endpoints/. */
-  export interface TaperedGroupPayload {
-    /** Tapered Group Name */
+  export interface SectionReinforcementGroup {
+    /** Longitudinal Reinforcement Data (Array, Index 0=i-section / 1=j-section) */
+    MBAR_ITEMS: Array<{
+      /** Section Position · "I" / "J" */
+      IJ: string;
+      /** Bar Name */
+      NAME: string;
+      /** Reference Y · Centroid: 0 / Left: 1 */
+      REF_Y: number;
+      /** Distance from Reference (Y-dir) */
+      Y?: number;
+      /** Reference Z · Top: 0 / Bottom: 1 */
+      REF_Z: number;
+      /** Distance from Reference (Z-dir) */
+      Z?: number;
+      /** Number of Rebar */
+      NUM: number;
+      /** Spacing between Rebars */
+      SPACING?: number;
+      /** Part */
+      PART?: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SectionReinforcementLongitudinalItem {
+    /** Section Position · "I" / "J" */
+    IJ: string;
+    /** Bar Name */
     NAME: string;
-    /** Element No. list */
-    ELEMLIST: Array<number>;
-    /** Z-axis Section Shape Variation · Linear: "LINEAR" / Polynomial: "POLY" */
-    ZVAR: string;
-    /** Y-axis Section Shape Variation · Linear: "LINEAR" / Polynomial: "POLY" */
-    YVAR: string;
-    /** Z axis Exponent */
-    ZEXP: number;
-    /** Z axis Symmetric Plane from i or j */
-    ZFROM?: string;
-    /** Z axis Symmetric Plane Distance (m) */
-    ZDIST?: number;
-    /** Y axis Exponent */
-    YEXP: number;
-    /** Y axis Symmetric Plane from i or j */
-    YFROM?: string;
-    /** Y axis Symmetric Plane Distance (m) */
-    YDIST?: number;
+    /** Reference Y · Centroid: 0 / Left: 1 */
+    REF_Y: number;
+    /** Distance from Reference (Y-dir) */
+    Y?: number;
+    /** Reference Z · Top: 0 / Bottom: 1 */
+    REF_Z: number;
+    /** Distance from Reference (Z-dir) */
+    Z?: number;
+    /** Number of Rebar */
+    NUM: number;
+    /** Spacing between Rebars */
+    SPACING?: number;
+    /** Part */
+    PART?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SectionReinforcementPayload {
+    /** Same Rebar Data at i and j-end (Longitudinal) */
+    OPT_MBAR_J: boolean;
+    /** Same Shear Rebar Data at i and j-end */
+    OPT_SBAR_J: boolean;
+    /** Cracked Section */
+    OPT_CRACKED: boolean;
+    /** Shear Reinforcement Data (Array, Index 0=i-section / 1=j-section) */
+    SBAR_ITEMS: Array<{
+      /** Diagonal Reinforcement (DR) */
+      OPT_DR?: boolean;
+      /** [DR] Pitch */
+      DR_PITCH?: number;
+      /** [DR] Angle */
+      DR_THETA?: number;
+      /** [DR] Area */
+      DR_AW?: number;
+      /** Steel Bar for Web (SBW) */
+      OPT_SBW?: boolean;
+      /** [SBW] Pitch */
+      SBW_PITCH?: number;
+      /** [SBW] Angle */
+      SBW_ANGLE?: number;
+      /** [SBW] Area */
+      SBW_AP?: number;
+      /** [SBW] Pre-force */
+      SBW_PS?: number;
+      /** [SBW] Shear Reduction Factor */
+      SBW_FACTOR?: number;
+      /** Torsional Reinforcement (TR) */
+      OPT_TR?: boolean;
+      /** [TR] Pitch */
+      TR_PITCH?: number;
+      /** [TR] Area (Web) */
+      TR_AWT?: number;
+      /** [TR] Area (Longitudinal) */
+      TR_ALT?: number;
+      /** Stirrup Exist */
+      OPT_SR?: boolean;
+      /** [SR] Pitch */
+      SR_PITCH?: number;
+      /** [SR] Area */
+      SR_AW?: number;
+      /** Enclosing Stirrup */
+      OPT_LBAR_FLG?: boolean;
+      /** (Enclosed 단면적 산정용) Cover Thickness */
+      LBAR_THICK?: number;
+      /** Include Flange/Cantilever · Off: 0 / On: 1 */
+      LBAR_INC_FC?: number;
+    }>;
+    /** Longitudinal Reinforcement Properties */
+    MBARS: Array<{
+      /** Longitudinal Reinforcement Data (Array, Index 0=i-section / 1=j-section) */
+      MBAR_ITEMS: Array<{
+        /** Section Position · "I" / "J" */
+        IJ: string;
+        /** Bar Name */
+        NAME: string;
+        /** Reference Y · Centroid: 0 / Left: 1 */
+        REF_Y: number;
+        /** Distance from Reference (Y-dir) */
+        Y?: number;
+        /** Reference Z · Top: 0 / Bottom: 1 */
+        REF_Z: number;
+        /** Distance from Reference (Z-dir) */
+        Z?: number;
+        /** Number of Rebar */
+        NUM: number;
+        /** Spacing between Rebars */
+        SPACING?: number;
+        /** Part */
+        PART?: number;
+      }>;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SectionReinforcementShearItem {
+    /** Diagonal Reinforcement (DR) */
+    OPT_DR?: boolean;
+    /** [DR] Pitch */
+    DR_PITCH?: number;
+    /** [DR] Angle */
+    DR_THETA?: number;
+    /** [DR] Area */
+    DR_AW?: number;
+    /** Steel Bar for Web (SBW) */
+    OPT_SBW?: boolean;
+    /** [SBW] Pitch */
+    SBW_PITCH?: number;
+    /** [SBW] Angle */
+    SBW_ANGLE?: number;
+    /** [SBW] Area */
+    SBW_AP?: number;
+    /** [SBW] Pre-force */
+    SBW_PS?: number;
+    /** [SBW] Shear Reduction Factor */
+    SBW_FACTOR?: number;
+    /** Torsional Reinforcement (TR) */
+    OPT_TR?: boolean;
+    /** [TR] Pitch */
+    TR_PITCH?: number;
+    /** [TR] Area (Web) */
+    TR_AWT?: number;
+    /** [TR] Area (Longitudinal) */
+    TR_ALT?: number;
+    /** Stirrup Exist */
+    OPT_SR?: boolean;
+    /** [SR] Pitch */
+    SR_PITCH?: number;
+    /** [SR] Area */
+    SR_AW?: number;
+    /** Enclosing Stirrup */
+    OPT_LBAR_FLG?: boolean;
+    /** (Enclosed 단면적 산정용) Cover Thickness */
+    LBAR_THICK?: number;
+    /** Include Flange/Cantilever · Off: 0 / On: 1 */
+    LBAR_INC_FC?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface SectionStiffnessItem {
@@ -9293,177 +9651,6 @@ export namespace DbPropertiesSectionTypes {
     }>;
   }
   /** Generated from contracts/endpoints/. */
-  export interface SectionReinforcementShearItem {
-    /** Diagonal Reinforcement (DR) */
-    OPT_DR?: boolean;
-    /** [DR] Pitch */
-    DR_PITCH?: number;
-    /** [DR] Angle */
-    DR_THETA?: number;
-    /** [DR] Area */
-    DR_AW?: number;
-    /** Steel Bar for Web (SBW) */
-    OPT_SBW?: boolean;
-    /** [SBW] Pitch */
-    SBW_PITCH?: number;
-    /** [SBW] Angle */
-    SBW_ANGLE?: number;
-    /** [SBW] Area */
-    SBW_AP?: number;
-    /** [SBW] Pre-force */
-    SBW_PS?: number;
-    /** [SBW] Shear Reduction Factor */
-    SBW_FACTOR?: number;
-    /** Torsional Reinforcement (TR) */
-    OPT_TR?: boolean;
-    /** [TR] Pitch */
-    TR_PITCH?: number;
-    /** [TR] Area (Web) */
-    TR_AWT?: number;
-    /** [TR] Area (Longitudinal) */
-    TR_ALT?: number;
-    /** Stirrup Exist */
-    OPT_SR?: boolean;
-    /** [SR] Pitch */
-    SR_PITCH?: number;
-    /** [SR] Area */
-    SR_AW?: number;
-    /** Enclosing Stirrup */
-    OPT_LBAR_FLG?: boolean;
-    /** (Enclosed 단면적 산정용) Cover Thickness */
-    LBAR_THICK?: number;
-    /** Include Flange/Cantilever · Off: 0 / On: 1 */
-    LBAR_INC_FC?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SectionReinforcementLongitudinalItem {
-    /** Section Position · "I" / "J" */
-    IJ: string;
-    /** Bar Name */
-    NAME: string;
-    /** Reference Y · Centroid: 0 / Left: 1 */
-    REF_Y: number;
-    /** Distance from Reference (Y-dir) */
-    Y?: number;
-    /** Reference Z · Top: 0 / Bottom: 1 */
-    REF_Z: number;
-    /** Distance from Reference (Z-dir) */
-    Z?: number;
-    /** Number of Rebar */
-    NUM: number;
-    /** Spacing between Rebars */
-    SPACING?: number;
-    /** Part */
-    PART?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SectionReinforcementGroup {
-    /** Longitudinal Reinforcement Data (Array, Index 0=i-section / 1=j-section) */
-    MBAR_ITEMS: Array<{
-      /** Section Position · "I" / "J" */
-      IJ: string;
-      /** Bar Name */
-      NAME: string;
-      /** Reference Y · Centroid: 0 / Left: 1 */
-      REF_Y: number;
-      /** Distance from Reference (Y-dir) */
-      Y?: number;
-      /** Reference Z · Top: 0 / Bottom: 1 */
-      REF_Z: number;
-      /** Distance from Reference (Z-dir) */
-      Z?: number;
-      /** Number of Rebar */
-      NUM: number;
-      /** Spacing between Rebars */
-      SPACING?: number;
-      /** Part */
-      PART?: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SectionReinforcementPayload {
-    /** Same Rebar Data at i and j-end (Longitudinal) */
-    OPT_MBAR_J: boolean;
-    /** Same Shear Rebar Data at i and j-end */
-    OPT_SBAR_J: boolean;
-    /** Cracked Section */
-    OPT_CRACKED: boolean;
-    /** Shear Reinforcement Data (Array, Index 0=i-section / 1=j-section) */
-    SBAR_ITEMS: Array<{
-      /** Diagonal Reinforcement (DR) */
-      OPT_DR?: boolean;
-      /** [DR] Pitch */
-      DR_PITCH?: number;
-      /** [DR] Angle */
-      DR_THETA?: number;
-      /** [DR] Area */
-      DR_AW?: number;
-      /** Steel Bar for Web (SBW) */
-      OPT_SBW?: boolean;
-      /** [SBW] Pitch */
-      SBW_PITCH?: number;
-      /** [SBW] Angle */
-      SBW_ANGLE?: number;
-      /** [SBW] Area */
-      SBW_AP?: number;
-      /** [SBW] Pre-force */
-      SBW_PS?: number;
-      /** [SBW] Shear Reduction Factor */
-      SBW_FACTOR?: number;
-      /** Torsional Reinforcement (TR) */
-      OPT_TR?: boolean;
-      /** [TR] Pitch */
-      TR_PITCH?: number;
-      /** [TR] Area (Web) */
-      TR_AWT?: number;
-      /** [TR] Area (Longitudinal) */
-      TR_ALT?: number;
-      /** Stirrup Exist */
-      OPT_SR?: boolean;
-      /** [SR] Pitch */
-      SR_PITCH?: number;
-      /** [SR] Area */
-      SR_AW?: number;
-      /** Enclosing Stirrup */
-      OPT_LBAR_FLG?: boolean;
-      /** (Enclosed 단면적 산정용) Cover Thickness */
-      LBAR_THICK?: number;
-      /** Include Flange/Cantilever · Off: 0 / On: 1 */
-      LBAR_INC_FC?: number;
-    }>;
-    /** Longitudinal Reinforcement Properties */
-    MBARS: Array<{
-      /** Longitudinal Reinforcement Data (Array, Index 0=i-section / 1=j-section) */
-      MBAR_ITEMS: Array<{
-        /** Section Position · "I" / "J" */
-        IJ: string;
-        /** Bar Name */
-        NAME: string;
-        /** Reference Y · Centroid: 0 / Left: 1 */
-        REF_Y: number;
-        /** Distance from Reference (Y-dir) */
-        Y?: number;
-        /** Reference Z · Top: 0 / Bottom: 1 */
-        REF_Z: number;
-        /** Distance from Reference (Z-dir) */
-        Z?: number;
-        /** Number of Rebar */
-        NUM: number;
-        /** Spacing between Rebars */
-        SPACING?: number;
-        /** Part */
-        PART?: number;
-      }>;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface StressPoint {
-    /** Point Y */
-    Y: number;
-    /** Point Z */
-    Z: number;
-  }
-  /** Generated from contracts/endpoints/. */
   export interface SectionStressPointsPayload {
     /** Same Stress Points at i and j-end */
     OPT_SAME_J?: boolean;
@@ -9487,53 +9674,34 @@ export namespace DbPropertiesSectionTypes {
     }>;
   }
   /** Generated from contracts/endpoints/. */
-  export interface PlateStiffnessScaleFactorItem {
-    /** Serial Number */
-    ID?: number;
-    /** Boundary Group Name */
-    GROUP_NAME?: string;
-    /** Axial Fxx Scale Factor */
-    AXIAL_X?: number;
-    /** Axial Fyy Scale Factor */
-    AXIAL_Y?: number;
-    /** Shear Fxy Scale Factor */
-    SHEAR?: number;
-    /** Bending Mxx Scale Factor */
-    OUT_BENDING_X?: number;
-    /** Bending Myy Scale Factor */
-    OUT_BENDING_Y?: number;
-    /** Bending Mxy Scale Factor */
-    OUT_TORSION?: number;
-    /** Shear Vxx Scale Factor */
-    OUT_SHEAR_X?: number;
-    /** Shear Vyy Scale Factor */
-    OUT_SHEAR_Y?: number;
+  export interface StressPoint {
+    /** Point Y */
+    Y: number;
+    /** Point Z */
+    Z: number;
   }
   /** Generated from contracts/endpoints/. */
-  export interface PlateStiffnessScaleFactorPayload {
-    /** Items (Array of Objects) */
-    ITEMS: Array<{
-      /** Serial Number */
-      ID?: number;
-      /** Boundary Group Name */
-      GROUP_NAME?: string;
-      /** Axial Fxx Scale Factor */
-      AXIAL_X?: number;
-      /** Axial Fyy Scale Factor */
-      AXIAL_Y?: number;
-      /** Shear Fxy Scale Factor */
-      SHEAR?: number;
-      /** Bending Mxx Scale Factor */
-      OUT_BENDING_X?: number;
-      /** Bending Myy Scale Factor */
-      OUT_BENDING_Y?: number;
-      /** Bending Mxy Scale Factor */
-      OUT_TORSION?: number;
-      /** Shear Vxx Scale Factor */
-      OUT_SHEAR_X?: number;
-      /** Shear Vyy Scale Factor */
-      OUT_SHEAR_Y?: number;
-    }>;
+  export interface TaperedGroupPayload {
+    /** Tapered Group Name */
+    NAME: string;
+    /** Element No. list */
+    ELEMLIST: Array<number>;
+    /** Z-axis Section Shape Variation · Linear: "LINEAR" / Polynomial: "POLY" */
+    ZVAR: string;
+    /** Y-axis Section Shape Variation · Linear: "LINEAR" / Polynomial: "POLY" */
+    YVAR: string;
+    /** Z axis Exponent */
+    ZEXP: number;
+    /** Z axis Symmetric Plane from i or j */
+    ZFROM?: string;
+    /** Z axis Symmetric Plane Distance (m) */
+    ZDIST?: number;
+    /** Y axis Exponent */
+    YEXP: number;
+    /** Y axis Symmetric Plane from i or j */
+    YFROM?: string;
+    /** Y axis Symmetric Plane Distance (m) */
+    YDIST?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface VirtualBeamPayload {
@@ -9565,174 +9733,6 @@ export namespace DbPropertiesSectionTypes {
     /** Element List */
     ELEM_LIST: number;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface EffectiveWidthScaleFactorItem {
-    /** Serial Number */
-    ID?: number;
-    /** Boundary Group Name */
-    GROUP_NAME?: string;
-    /** ly Scale Factor for Sbz (I-End) */
-    LYSCALE: number;
-    /** z_top Scale Factor (I-End) */
-    ZTSCALE: number;
-    /** z_bot Scale Factor (I-End) */
-    ZBSCALE: number;
-    /** J-End Option */
-    bJ: boolean;
-    /** ly Scale Factor (J-End) */
-    LYSCALE_J?: number;
-    /** z_top Scale Factor (J-End) */
-    ZTSCALE_J?: number;
-    /** z_bot Scale Factor (J-End) */
-    ZBSCALE_J?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface EffectiveWidthScaleFactorPayload {
-    /** Items (Array of Objects) */
-    ITEMS: Array<{
-      /** Serial Number */
-      ID?: number;
-      /** Boundary Group Name */
-      GROUP_NAME?: string;
-      /** ly Scale Factor for Sbz (I-End) */
-      LYSCALE: number;
-      /** z_top Scale Factor (I-End) */
-      ZTSCALE: number;
-      /** z_bot Scale Factor (I-End) */
-      ZBSCALE: number;
-      /** J-End Option */
-      bJ: boolean;
-      /** ly Scale Factor (J-End) */
-      LYSCALE_J?: number;
-      /** z_top Scale Factor (J-End) */
-      ZTSCALE_J?: number;
-      /** z_bot Scale Factor (J-End) */
-      ZBSCALE_J?: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ElementStiffnessScaleFactorItem {
-    /** Serial Number */
-    ID?: number;
-    /** Area (Cross-sectional area) */
-    AREA_SF?: number;
-    /** Asy (Shear area, local y) */
-    ASY_SF?: number;
-    /** Asz (Shear area, local z) */
-    ASZ_SF?: number;
-    /** Ixx (Torsional resistance) */
-    IXX_SF?: number;
-    /** Iyy (Moment of Inertia, y-axis) */
-    IYY_SF?: number;
-    /** Izz (Moment of Inertia, z-axis) */
-    IZZ_SF?: number;
-    /** Weight */
-    WGT_SF?: number;
-    /** Boundary Group Name */
-    GROUP_NAME?: string;
-    /** Part(합성단면 전용) · Before: "Before" / After: "After" / All: "All" */
-    iPart?: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ElementStiffnessScaleFactorPayload {
-    /** Items (Array of Objects) */
-    ITEMS: Array<{
-      /** Serial Number */
-      ID?: number;
-      /** Area (Cross-sectional area) */
-      AREA_SF?: number;
-      /** Asy (Shear area, local y) */
-      ASY_SF?: number;
-      /** Asz (Shear area, local z) */
-      ASZ_SF?: number;
-      /** Ixx (Torsional resistance) */
-      IXX_SF?: number;
-      /** Iyy (Moment of Inertia, y-axis) */
-      IYY_SF?: number;
-      /** Izz (Moment of Inertia, z-axis) */
-      IZZ_SF?: number;
-      /** Weight */
-      WGT_SF?: number;
-      /** Boundary Group Name */
-      GROUP_NAME?: string;
-      /** Part(합성단면 전용) · Before: "Before" / After: "After" / All: "All" */
-      iPart?: string;
-    }>;
-  }
-  export interface FiberDivisionColor {
-    R?: number;
-    G?: number;
-    B?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface FiberDivisionBaseItem {
-    /** Fiber Base Key */
-    FIBR_BASE_KEY: number;
-    /** Rebar Name */
-    REBAR_NAME: string;
-    /** Area */
-    AREA: number;
-    /** Center Y */
-    CENTER_Y: number;
-    /** Center Z */
-    CENTER_Z: number;
-    /** Fiber Material ID(FIMP_NAME/FIMP_COLOR 배열의 몇 번째 재료인지) */
-    FIBER_MATL_ID: number;
-    /** Area Consider Rebar */
-    AREA_CONSIDER_REBAR: number;
-    /** Is Rebar */
-    OPT_IS_REBAR: boolean;
-    /** Fiber 외곽 다각형 Point Y 목록 */
-    POINT_Y: Array<number>;
-    /** Fiber 외곽 다각형 Point Z 목록 */
-    POINT_Z: Array<number>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface FiberDivisionPayload {
-    /** Fiber Division Name */
-    NAME: string;
-    /** Assigned Section ID */
-    SECT_KEY: number;
-    /** Assign Type */
-    ASSIGN_TYPE: number;
-    /** Inelastic Material Properties Name (6 elements) */
-    FIMP_NAME: [string, string, string, string, string, string];
-    /** Inelastic Material Properties Color (6 elements) */
-    FIMP_COLOR?: [JsonObject, JsonObject, JsonObject, JsonObject, JsonObject, JsonObject];
-    /** Color components */
-    R?: number;
-    /** Color components */
-    G?: number;
-    /** Color components */
-    B?: number;
-    /** Fiber Division Base Data */
-    FIBR_BASE: Array<{
-      /** Fiber Base Key */
-      FIBR_BASE_KEY: number;
-      /** Rebar Name */
-      REBAR_NAME: string;
-      /** Area */
-      AREA: number;
-      /** Center Y */
-      CENTER_Y: number;
-      /** Center Z */
-      CENTER_Z: number;
-      /** Fiber Material ID(FIMP_NAME/FIMP_COLOR 배열의 몇 번째 재료인지) */
-      FIBER_MATL_ID: number;
-      /** Area Consider Rebar */
-      AREA_CONSIDER_REBAR: number;
-      /** Is Rebar */
-      OPT_IS_REBAR: boolean;
-      /** Fiber 외곽 다각형 Point Y 목록 */
-      POINT_Y: Array<number>;
-      /** Fiber 외곽 다각형 Point Z 목록 */
-      POINT_Z: Array<number>;
-    }>;
-    /** Monitored Fiber 사용 여부 */
-    OPT_MONITORED_FIBER: boolean;
-    /** Monitored Fiber(FIBR_BASE 각 항목에 대응하는 0/1 플래그 배열) */
-    MONITORED_FIBER: Array<number>;
-  }
 }
 
 export namespace DbPropertiesThicknessTypes {
@@ -9748,6 +9748,141 @@ export namespace DbPropertiesThicknessTypes {
 }
 
 export namespace DbPushoverTypes {
+  /** Generated from contracts/endpoints/. */
+  export interface AnalysisStopHyperS {
+    /** 전단 성분 항복(Shear Component Yield) */
+    SHEAR_YIELD?: {
+      /** 사용 여부 */
+      OPT_USE: boolean;
+      /** Beam/Column */
+      BEAM_COLUMN?: boolean;
+      /** Wall */
+      WALL?: boolean;
+    };
+    /** 축방향 성분 붕괴/좌굴(Axial Component Collapse) */
+    AXIAL_YIELD?: {
+      /** 사용 여부 */
+      OPT_USE: boolean;
+      /** Beam/Column */
+      BEAM_COLUMN?: boolean;
+      /** Wall */
+      WALL?: boolean;
+      /** Truss */
+      TRUSS?: boolean;
+    };
+    /** 지점 들뜸/붕괴 : Dz 방향(Support Uplifting/Collapse) */
+    SUPPORT_DZ_DIR?: {
+      /** 사용 여부 */
+      OPT_USE: boolean;
+      /** Uplifting */
+      UPLIFTING?: boolean;
+      /** Collapse */
+      COLLAPSE?: boolean;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface AssignPushoverHingePropertiesPayload {
+    /** 요소 ID */
+    ID: number;
+    /** 요소 타입 · Beam/Column: "BEAM" / Wall(⚠️ Gen NX 전용): "WALL" / Truss: "TRUSS" / General Link: "G-LINK" */
+    TYPE: string;
+    /** 푸시오버 힌지 타입 (예: "Myz_15") */
+    HINGE_TYPE: string;
+    /** 파이버 키 */
+    FIBER_KEY: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface AxialYieldStopHyperS {
+    /** 사용 여부 */
+    OPT_USE: boolean;
+    /** Beam/Column */
+    BEAM_COLUMN?: boolean;
+    /** Wall */
+    WALL?: boolean;
+    /** Truss */
+    TRUSS?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface BilinearStiffnessReductionHyperS {
+    /** α1 (+) */
+    TENS_A1: number;
+    /** α1 (-) */
+    COMP_A1: number;
+    /** 대칭 여부(SYMMETRIC) */
+    SYMMETRIC: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface IgnoreElementsForPushoverInitialLoadPayload {
+    /** 비선형 해석 초기하중용 요소 무시 여부 */
+    B_IGNORE?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface IterationControlHyperS {
+    /** 수렴 실패 허용(Permit Convergence Failure) */
+    PERMIT_FAIL?: boolean;
+    /** 최대 반복횟수(Maximum Iteration), ≥1 */
+    MAX_ITER: number;
+    /** 수렴 기준(Convergence Criteria) */
+    NORM_CTRL: {
+      /** 변위 노름(Displacement norm) */
+      DISP: {
+        /** 사용 여부 */
+        OPT_USE: boolean;
+        /** 허용오차 값 (>0). DISP.OPT_USE=true일 때 필수, false이면 제공 불가 Applies when ITER_CTRL.NORM_CTRL.DISP.OPT_USE = true. */
+        VALUE?: number;
+      };
+      /** 하중 노름(Force norm) */
+      FORCE: {
+        /** 사용 여부 */
+        OPT_USE: boolean;
+        /** 허용오차 값 (>0). FORCE.OPT_USE=true일 때 필수, false이면 제공 불가 Applies when ITER_CTRL.NORM_CTRL.FORCE.OPT_USE = true. */
+        VALUE?: number;
+      };
+      /** 에너지 노름(Energy norm) */
+      ENERGY: {
+        /** 사용 여부 */
+        OPT_USE: boolean;
+        /** 허용오차 값 (>0). ENERGY.OPT_USE=true일 때 필수, false이면 제공 불가 Applies when ITER_CTRL.NORM_CTRL.ENERGY.OPT_USE = true. */
+        VALUE?: number;
+      };
+    };
+    /** 강성 갱신 방식 (Custom: 0 / Full Newton-Raphson: 1 / Initial Stiffness: 2) */
+    STIFF_UPD_SCHEME: number;
+    /** 강성 갱신 전 반복횟수. STIFF_UPD_SCHEME=0일 때 필수, 1·2이면 제공 불가 Applies when ITER_CTRL.STIFF_UPD_SCHEME = 0. */
+    ITER_BEF_UPDATE?: number;
+    /** 최대 이분(Bisection) 레벨 */
+    MAX_BISECT_LEVEL?: number;
+    /** Smart Bisection 사용 */
+    SMART_BISECT?: boolean;
+    /** 발산 임계값(Divergence Threshold) */
+    DIVERGENCE_THRESHOLD?: number;
+    /** Line Search 사용 */
+    LINE_SEARCH?: {
+      /** 사용 여부. false이면 세부 필드 모두 제공 불가, true이면 LINE_SEARCH_OPT 필수 */
+      OPT_USE: boolean;
+      /** Line Search 옵션 (Auto: AUTO / User: USER). AUTO이면 세부값 제공 불가, USER이면 세부값 모두 필수 */
+      LINE_SEARCH_OPT?: "AUTO" | "USER";
+      /** Line Search 시작 반복 횟수 (USER일 때 필수) */
+      START_ITER_NO?: number;
+      /** 반복당 최대 Line Search 횟수 (USER일 때 필수) */
+      MAX_LINE_SEARCH_ITER?: number;
+      /** Line Search 허용오차 (USER일 때 필수) */
+      LINE_SEARCH_TOL?: number;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LineSearchHyperS {
+    /** 사용 여부. false이면 세부 필드 모두 제공 불가, true이면 LINE_SEARCH_OPT 필수 */
+    OPT_USE: boolean;
+    /** Line Search 옵션 (Auto: AUTO / User: USER). AUTO이면 세부값 제공 불가, USER이면 세부값 모두 필수 */
+    LINE_SEARCH_OPT?: "AUTO" | "USER";
+    /** Line Search 시작 반복 횟수 (USER일 때 필수) */
+    START_ITER_NO?: number;
+    /** 반복당 최대 Line Search 횟수 (USER일 때 필수) */
+    MAX_LINE_SEARCH_ITER?: number;
+    /** Line Search 허용오차 (USER일 때 필수) */
+    LINE_SEARCH_TOL?: number;
+  }
   /** Generated from contracts/endpoints/. */
   export interface NonlinearAnalysisOptionPOGD {
     /** 수렴 실패 허용 */
@@ -9790,91 +9925,184 @@ export namespace DbPushoverTypes {
     bSUPPORTSTOPCOLLAPSE?: boolean;
   }
   /** Generated from contracts/endpoints/. */
-  export interface PushoverHingeDataOptionPOGD {
-    /** 철근량 고려 Gen NX only. */
-    bCONSREBARAREA1D?: boolean;
-    /** 코어 영역 크기 타입 · Auto: "AUTO" / Equal: "EQUAL" Gen NX only. */
-    BEAM_CORE_SIZE?: string;
-    /** 코어 분할 수 (y/z) Gen NX only. */
-    BEAM_CORE_DIV_Y?: number;
-    /** 코어 분할 수 (y/z) Gen NX only. */
-    BEAM_CORE_DIV_Z?: number;
-    /** 커버 영역 크기 타입 Gen NX only. */
-    BEAM_COVER_SIZE?: string;
-    /** 커버 분할 수 (y/z) Gen NX only. */
-    BEAM_COVER_DIV_Y?: number;
-    /** 커버 분할 수 (y/z) Gen NX only. */
-    BEAM_COVER_DIV_Z?: number;
-    /** 철근량 고려 Gen NX only. */
-    bCONSREBARAREAWALL?: boolean;
-    /** 판 타입 면외 비선형성 고려 Gen NX only. */
-    bWALLCONSOUT?: boolean;
-    /** 코어/커버 크기 타입 Gen NX only. */
-    WALL_CORE_SIZE?: string;
-    /** 코어/커버 크기 타입 Gen NX only. */
-    WALL_COVER_SIZE?: string;
-    /** 코어 분할 수 (z/y) Gen NX only. */
-    WALL_CORE_DIV_Z?: number;
-    /** 코어 분할 수 (z/y) Gen NX only. */
-    WALL_CORE_DIV_Y?: number;
-    /** 커버 분할 수 (z/y) Gen NX only. */
-    WALL_COVER_DIV_Z?: number;
-    /** 커버 분할 수 (z/y) Gen NX only. */
-    WALL_COVER_DIV_Y?: number;
-    /** 스프링 전단 계수 Gen NX only. */
-    SHEAR_R?: number;
-    /** 모멘트-회전 보/기둥 힌지속성을 부재단위로만 배정 */
-    bASSIGNBYMEMBER?: boolean;
-    /** 대칭 여부 */
-    bTRI_SYM?: boolean;
-    /** 인장 α1/α2 */
-    TRI_TENS_A1?: number;
-    /** 인장 α1/α2 */
-    TRI_TENS_A2?: number;
-    /** 압축 α1/α2 */
-    TRI_COMP_A1?: number;
-    /** 압축 α1/α2 */
-    TRI_COMP_A2?: number;
-    /** 대칭 여부 */
-    bBI_SYM?: boolean;
-    /** 인장/압축 α1 */
-    BI_TENS_A1?: number;
-    /** 인장/압축 α1 */
-    BI_COMP_A1?: number;
-    /** 점 스프링 지지 적용 타입 — "APPLY" / "ASSUME" */
-    PSPR_APPLY_TYPE?: "APPLY" | "ASSUME";
-    /** 탄성링크 적용 타입 — "APPLY" / "ASSUME" */
-    ELNK_APPLY_TYPE?: "APPLY" | "ASSUME";
-    /** 참조 코드/매뉴얼 사용 Gen NX only. */
-    bUSEAUTOCALCREFERENCE?: boolean;
-    /** RC 참조 설계기준 — "KISTEC2019" / "KISTEC2013" / "MOE2019" / "MOE2018" / "AIK-G-001-2021" Gen NX only. */
-    RCDGNCODE?: "KISTEC2019" | "KISTEC2013" | "MOE2019" | "MOE2018" | "AIK-G-001-2021";
-    /** 보/분포힌지 기준 위치 — I단: "I" / J단: "J" / 중앙: "M" */
-    LOC_BEAM?: "I" | "J" | "M";
-    /** 기둥 기준 위치 */
-    LOC_COLUMN?: string;
-    /** 벽체 축척계수 */
-    SF_WALL?: number;
-    /** 취성 축척계수 사용/값 */
-    bSF_BRITTLE?: boolean;
-    /** 취성 축척계수 사용/값 */
-    SF_BRITTLE?: number;
-    /** 지진 축척계수 사용/값 */
-    bSF_EARTHQUAKE?: boolean;
-    /** 지진 축척계수 사용/값 */
-    SF_EARTHQUAKE?: number;
-    /** 원형철근 축척계수 사용/값 */
-    bSF_SMOOTH_BAR?: boolean;
-    /** 원형철근 축척계수 사용/값 */
-    SF_SMOOTH_BAR?: number;
-    /** 2차 내진요소 그룹명 */
-    SND_SEIS_GRUP?: string;
-    /** 신뢰도 계수 */
-    CONFIDENCE?: number;
-    /** 좌굴 고려 항복면 계산 */
-    bBUCKLING?: boolean;
-    /** 축력 고려 Mc 계산(AIJ) */
-    bCALCAXIALFORCE?: boolean;
+  export interface NonlinearTypeHyperSPOGD {
+    /** 점 스프링 지점 적용 방식 (Apply Nonlinear: 0 / Linear: 1) */
+    PSPRING_SUP: number;
+    /** 탄성링크 적용 방식 (Apply Nonlinear: 0 / Linear: 1) */
+    EL: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface NormControlHyperS {
+    /** 변위 노름(Displacement norm) */
+    DISP: {
+      /** 사용 여부 */
+      OPT_USE: boolean;
+      /** 허용오차 값 (>0). DISP.OPT_USE=true일 때 필수, false이면 제공 불가 Applies when ITER_CTRL.NORM_CTRL.DISP.OPT_USE = true. */
+      VALUE?: number;
+    };
+    /** 하중 노름(Force norm) */
+    FORCE: {
+      /** 사용 여부 */
+      OPT_USE: boolean;
+      /** 허용오차 값 (>0). FORCE.OPT_USE=true일 때 필수, false이면 제공 불가 Applies when ITER_CTRL.NORM_CTRL.FORCE.OPT_USE = true. */
+      VALUE?: number;
+    };
+    /** 에너지 노름(Energy norm) */
+    ENERGY: {
+      /** 사용 여부 */
+      OPT_USE: boolean;
+      /** 허용오차 값 (>0). ENERGY.OPT_USE=true일 때 필수, false이면 제공 불가 Applies when ITER_CTRL.NORM_CTRL.ENERGY.OPT_USE = true. */
+      VALUE?: number;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PushoverAnalysisControlDataHyperSPayload {
+    /** 기하비선형 유형 (None: 0 / Large Displacements: 1 / P-Delta: 2). GEO_NONL_TYPE이 1 또는 2이면 INIT_LOAD_TYPE은 반드시 0이어야 함 */
+    GEO_NONL_TYPE: number;
+    /** 초기하중 유형 (비선형 정적해석 수행: 0 / 정적·시공단계 해석 결과 가져오기: 1) */
+    INIT_LOAD_TYPE: number;
+    /** 초기하중 하중케이스 목록 (INIT_LOAD_TYPE=1일 때 IGNORE_ELEM 지정 불가) */
+    INIT_LOAD_LIST?: Array<{
+      /** 하중케이스 이름 (길이 ≥1) */
+      LC_NAME?: string;
+      /** 하중케이스 타입 (Static: STATIC / Stage: STAGE) */
+      LC_TYPE?: "STATIC" | "STAGE";
+      /** 배율(Scale Factor), 0 불가 */
+      SF?: number;
+    }>;
+    /** 초기하중 산정 시 요소 무시 옵션 (Ignore Elements for Initial Load). INIT_LOAD_TYPE=1이면 제공 불가 */
+    IGNORE_ELEM?: boolean;
+    /** 해석 중단(Analysis Stop) 조건 그룹 */
+    ANALYSIS_STOP?: {
+      /** 전단 성분 항복(Shear Component Yield) */
+      SHEAR_YIELD?: {
+        /** 사용 여부 */
+        OPT_USE: boolean;
+        /** Beam/Column */
+        BEAM_COLUMN?: boolean;
+        /** Wall */
+        WALL?: boolean;
+      };
+      /** 축방향 성분 붕괴/좌굴(Axial Component Collapse) */
+      AXIAL_YIELD?: {
+        /** 사용 여부 */
+        OPT_USE: boolean;
+        /** Beam/Column */
+        BEAM_COLUMN?: boolean;
+        /** Wall */
+        WALL?: boolean;
+        /** Truss */
+        TRUSS?: boolean;
+      };
+      /** 지점 들뜸/붕괴 : Dz 방향(Support Uplifting/Collapse) */
+      SUPPORT_DZ_DIR?: {
+        /** 사용 여부 */
+        OPT_USE: boolean;
+        /** Uplifting */
+        UPLIFTING?: boolean;
+        /** Collapse */
+        COLLAPSE?: boolean;
+      };
+    };
+    /** 반복 제어(Iteration Controls) */
+    ITER_CTRL: {
+      /** 수렴 실패 허용(Permit Convergence Failure) */
+      PERMIT_FAIL?: boolean;
+      /** 최대 반복횟수(Maximum Iteration), ≥1 */
+      MAX_ITER: number;
+      /** 수렴 기준(Convergence Criteria) */
+      NORM_CTRL: {
+        /** 변위 노름(Displacement norm) */
+        DISP: {
+          /** 사용 여부 */
+          OPT_USE: boolean;
+          /** 허용오차 값 (>0). DISP.OPT_USE=true일 때 필수, false이면 제공 불가 Applies when ITER_CTRL.NORM_CTRL.DISP.OPT_USE = true. */
+          VALUE?: number;
+        };
+        /** 하중 노름(Force norm) */
+        FORCE: {
+          /** 사용 여부 */
+          OPT_USE: boolean;
+          /** 허용오차 값 (>0). FORCE.OPT_USE=true일 때 필수, false이면 제공 불가 Applies when ITER_CTRL.NORM_CTRL.FORCE.OPT_USE = true. */
+          VALUE?: number;
+        };
+        /** 에너지 노름(Energy norm) */
+        ENERGY: {
+          /** 사용 여부 */
+          OPT_USE: boolean;
+          /** 허용오차 값 (>0). ENERGY.OPT_USE=true일 때 필수, false이면 제공 불가 Applies when ITER_CTRL.NORM_CTRL.ENERGY.OPT_USE = true. */
+          VALUE?: number;
+        };
+      };
+      /** 강성 갱신 방식 (Custom: 0 / Full Newton-Raphson: 1 / Initial Stiffness: 2) */
+      STIFF_UPD_SCHEME: number;
+      /** 강성 갱신 전 반복횟수. STIFF_UPD_SCHEME=0일 때 필수, 1·2이면 제공 불가 Applies when ITER_CTRL.STIFF_UPD_SCHEME = 0. */
+      ITER_BEF_UPDATE?: number;
+      /** 최대 이분(Bisection) 레벨 */
+      MAX_BISECT_LEVEL?: number;
+      /** Smart Bisection 사용 */
+      SMART_BISECT?: boolean;
+      /** 발산 임계값(Divergence Threshold) */
+      DIVERGENCE_THRESHOLD?: number;
+      /** Line Search 사용 */
+      LINE_SEARCH?: {
+        /** 사용 여부. false이면 세부 필드 모두 제공 불가, true이면 LINE_SEARCH_OPT 필수 */
+        OPT_USE: boolean;
+        /** Line Search 옵션 (Auto: AUTO / User: USER). AUTO이면 세부값 제공 불가, USER이면 세부값 모두 필수 */
+        LINE_SEARCH_OPT?: "AUTO" | "USER";
+        /** Line Search 시작 반복 횟수 (USER일 때 필수) */
+        START_ITER_NO?: number;
+        /** 반복당 최대 Line Search 횟수 (USER일 때 필수) */
+        MAX_LINE_SEARCH_ITER?: number;
+        /** Line Search 허용오차 (USER일 때 필수) */
+        LINE_SEARCH_TOL?: number;
+      };
+    };
+    /** Pushover 힌지 데이터 옵션 */
+    PO_HINGE_OPT?: {
+      /** 부재에만 힌지 속성 지정 */
+      ASSIGN_BY_MEMBER: boolean;
+      /** Skeleton Curve 기본 강성 저감비 (Trilinear) */
+      TRILINEAR: {
+        /** α1 (+) */
+        TENS_A1: number;
+        /** α2 (+) */
+        TENS_A2: number;
+        /** α1 (-) */
+        COMP_A1: number;
+        /** α2 (-) */
+        COMP_A2: number;
+        /** 대칭 여부(SYMMETRIC) */
+        SYMMETRIC: boolean;
+      };
+      /** 힌지 속성 기본 강성 저감비 (Bilinear) */
+      BILINEAR: {
+        /** α1 (+) */
+        TENS_A1: number;
+        /** α1 (-) */
+        COMP_A1: number;
+        /** 대칭 여부(SYMMETRIC) */
+        SYMMETRIC: boolean;
+      };
+      /** 점 스프링 지점 & 탄성링크 비선형 유형 */
+      NONL_TYPE: {
+        /** 점 스프링 지점 적용 방식 (Apply Nonlinear: 0 / Linear: 1) */
+        PSPRING_SUP: number;
+        /** 탄성링크 적용 방식 (Apply Nonlinear: 0 / Linear: 1) */
+        EL: number;
+      };
+      /** 분포힌지 기준 위치 (I-End: 0 / Mid-span: 1 / J-End: 2) */
+      LOC_BEAM: number;
+      /** 좌굴 고려 Beam 항복면 계산 */
+      CALC_YIELDS: boolean;
+    };
+    /** Pushover 기타(Misc) 옵션 */
+    MISC?: {
+      /** 해석 후 Pushover 곡선 결과 표시 */
+      SHOW_GRAPH_AFTER: boolean;
+      /** 해석 중 Pushover 곡선 표시 */
+      SHOW_GRAPH_DURING: boolean;
+    };
   }
   /** Generated from contracts/endpoints/. */
   export interface PushoverAnalysisControlDataPayload {
@@ -10029,185 +10257,110 @@ export namespace DbPushoverTypes {
     bSHOWGRAPGHDURING: boolean;
   }
   /** Generated from contracts/endpoints/. */
-  export interface ShearYieldStopHyperS {
-    /** 사용 여부 */
-    OPT_USE: boolean;
-    /** Beam/Column */
-    BEAM_COLUMN?: boolean;
-    /** Wall */
-    WALL?: boolean;
+  export interface PushoverControlOptionHyperS {
+    /** 자동 증분 제어 (Auto-Stepping: AUTO / Equal Step: EQUAL / Incremental Control Function: INC_FUNC) */
+    STEPCTRLOPTION: "AUTO" | "EQUAL" | "INC_FUNC";
+    /** 증분 함수 이름 (STEPCTRLOPTION="INC_FUNC"일 때 필수, 그 외 제공 불가) */
+    INCFUNC_NAME?: string;
+    /** 현재 강성비(Cs), [0, 100] 범위 */
+    STIFF_RATIO: number;
+    /** 변위 제어 옵션 (Global: GLOBAL / Master Node: NODE) */
+    DISPCTRLOPTION: "GLOBAL" | "NODE";
+    /** 최대 병진 변위(GLOBAL일 때 필수, 값 > 0) */
+    GLOBAL_MAX_DISP?: number;
+    /** 절점 번호(NODE일 때 필수, ExistNode 통과 필요) */
+    MASTERNODE?: number;
+    /** 방향 (DX: DX / DY: DY / DZ: DZ) (NODE일 때 필수) */
+    MASTERDIRECTION?: "DX" | "DY" | "DZ";
+    /** 최대 변위(NODE일 때 필수, 값 != 0.0) */
+    MASTERMAXDISP?: number;
   }
   /** Generated from contracts/endpoints/. */
-  export interface AxialYieldStopHyperS {
-    /** 사용 여부 */
-    OPT_USE: boolean;
-    /** Beam/Column */
-    BEAM_COLUMN?: boolean;
-    /** Wall */
-    WALL?: boolean;
-    /** Truss */
-    TRUSS?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SupportDzDirStopHyperS {
-    /** 사용 여부 */
-    OPT_USE: boolean;
-    /** Uplifting */
-    UPLIFTING?: boolean;
-    /** Collapse */
-    COLLAPSE?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface AnalysisStopHyperS {
-    /** 전단 성분 항복(Shear Component Yield) */
-    SHEAR_YIELD?: {
-      /** 사용 여부 */
-      OPT_USE: boolean;
-      /** Beam/Column */
-      BEAM_COLUMN?: boolean;
-      /** Wall */
-      WALL?: boolean;
-    };
-    /** 축방향 성분 붕괴/좌굴(Axial Component Collapse) */
-    AXIAL_YIELD?: {
-      /** 사용 여부 */
-      OPT_USE: boolean;
-      /** Beam/Column */
-      BEAM_COLUMN?: boolean;
-      /** Wall */
-      WALL?: boolean;
-      /** Truss */
-      TRUSS?: boolean;
-    };
-    /** 지점 들뜸/붕괴 : Dz 방향(Support Uplifting/Collapse) */
-    SUPPORT_DZ_DIR?: {
-      /** 사용 여부 */
-      OPT_USE: boolean;
-      /** Uplifting */
-      UPLIFTING?: boolean;
-      /** Collapse */
-      COLLAPSE?: boolean;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface NormControlHyperS {
-    /** 변위 노름(Displacement norm) */
-    DISP: {
-      /** 사용 여부 */
-      OPT_USE: boolean;
-      /** 허용오차 값 (>0). DISP.OPT_USE=true일 때 필수, false이면 제공 불가 Applies when ITER_CTRL.NORM_CTRL.DISP.OPT_USE = true. */
-      VALUE?: number;
-    };
-    /** 하중 노름(Force norm) */
-    FORCE: {
-      /** 사용 여부 */
-      OPT_USE: boolean;
-      /** 허용오차 값 (>0). FORCE.OPT_USE=true일 때 필수, false이면 제공 불가 Applies when ITER_CTRL.NORM_CTRL.FORCE.OPT_USE = true. */
-      VALUE?: number;
-    };
-    /** 에너지 노름(Energy norm) */
-    ENERGY: {
-      /** 사용 여부 */
-      OPT_USE: boolean;
-      /** 허용오차 값 (>0). ENERGY.OPT_USE=true일 때 필수, false이면 제공 불가 Applies when ITER_CTRL.NORM_CTRL.ENERGY.OPT_USE = true. */
-      VALUE?: number;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface LineSearchHyperS {
-    /** 사용 여부. false이면 세부 필드 모두 제공 불가, true이면 LINE_SEARCH_OPT 필수 */
-    OPT_USE: boolean;
-    /** Line Search 옵션 (Auto: AUTO / User: USER). AUTO이면 세부값 제공 불가, USER이면 세부값 모두 필수 */
-    LINE_SEARCH_OPT?: "AUTO" | "USER";
-    /** Line Search 시작 반복 횟수 (USER일 때 필수) */
-    START_ITER_NO?: number;
-    /** 반복당 최대 Line Search 횟수 (USER일 때 필수) */
-    MAX_LINE_SEARCH_ITER?: number;
-    /** Line Search 허용오차 (USER일 때 필수) */
-    LINE_SEARCH_TOL?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface IterationControlHyperS {
-    /** 수렴 실패 허용(Permit Convergence Failure) */
-    PERMIT_FAIL?: boolean;
-    /** 최대 반복횟수(Maximum Iteration), ≥1 */
-    MAX_ITER: number;
-    /** 수렴 기준(Convergence Criteria) */
-    NORM_CTRL: {
-      /** 변위 노름(Displacement norm) */
-      DISP: {
-        /** 사용 여부 */
-        OPT_USE: boolean;
-        /** 허용오차 값 (>0). DISP.OPT_USE=true일 때 필수, false이면 제공 불가 Applies when ITER_CTRL.NORM_CTRL.DISP.OPT_USE = true. */
-        VALUE?: number;
-      };
-      /** 하중 노름(Force norm) */
-      FORCE: {
-        /** 사용 여부 */
-        OPT_USE: boolean;
-        /** 허용오차 값 (>0). FORCE.OPT_USE=true일 때 필수, false이면 제공 불가 Applies when ITER_CTRL.NORM_CTRL.FORCE.OPT_USE = true. */
-        VALUE?: number;
-      };
-      /** 에너지 노름(Energy norm) */
-      ENERGY: {
-        /** 사용 여부 */
-        OPT_USE: boolean;
-        /** 허용오차 값 (>0). ENERGY.OPT_USE=true일 때 필수, false이면 제공 불가 Applies when ITER_CTRL.NORM_CTRL.ENERGY.OPT_USE = true. */
-        VALUE?: number;
-      };
-    };
-    /** 강성 갱신 방식 (Custom: 0 / Full Newton-Raphson: 1 / Initial Stiffness: 2) */
-    STIFF_UPD_SCHEME: number;
-    /** 강성 갱신 전 반복횟수. STIFF_UPD_SCHEME=0일 때 필수, 1·2이면 제공 불가 Applies when ITER_CTRL.STIFF_UPD_SCHEME = 0. */
-    ITER_BEF_UPDATE?: number;
-    /** 최대 이분(Bisection) 레벨 */
-    MAX_BISECT_LEVEL?: number;
-    /** Smart Bisection 사용 */
-    SMART_BISECT?: boolean;
-    /** 발산 임계값(Divergence Threshold) */
-    DIVERGENCE_THRESHOLD?: number;
-    /** Line Search 사용 */
-    LINE_SEARCH?: {
-      /** 사용 여부. false이면 세부 필드 모두 제공 불가, true이면 LINE_SEARCH_OPT 필수 */
-      OPT_USE: boolean;
-      /** Line Search 옵션 (Auto: AUTO / User: USER). AUTO이면 세부값 제공 불가, USER이면 세부값 모두 필수 */
-      LINE_SEARCH_OPT?: "AUTO" | "USER";
-      /** Line Search 시작 반복 횟수 (USER일 때 필수) */
-      START_ITER_NO?: number;
-      /** 반복당 최대 Line Search 횟수 (USER일 때 필수) */
-      MAX_LINE_SEARCH_ITER?: number;
-      /** Line Search 허용오차 (USER일 때 필수) */
-      LINE_SEARCH_TOL?: number;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface NonlinearTypeHyperSPOGD {
-    /** 점 스프링 지점 적용 방식 (Apply Nonlinear: 0 / Linear: 1) */
-    PSPRING_SUP: number;
-    /** 탄성링크 적용 방식 (Apply Nonlinear: 0 / Linear: 1) */
-    EL: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface TrilinearStiffnessReductionHyperS {
-    /** α1 (+) */
-    TENS_A1: number;
-    /** α2 (+) */
-    TENS_A2: number;
-    /** α1 (-) */
-    COMP_A1: number;
-    /** α2 (-) */
-    COMP_A2: number;
-    /** 대칭 여부(SYMMETRIC) */
-    SYMMETRIC: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface BilinearStiffnessReductionHyperS {
-    /** α1 (+) */
-    TENS_A1: number;
-    /** α1 (-) */
-    COMP_A1: number;
-    /** 대칭 여부(SYMMETRIC) */
-    SYMMETRIC: boolean;
+  export interface PushoverHingeDataOptionPOGD {
+    /** 철근량 고려 Gen NX only. */
+    bCONSREBARAREA1D?: boolean;
+    /** 코어 영역 크기 타입 · Auto: "AUTO" / Equal: "EQUAL" Gen NX only. */
+    BEAM_CORE_SIZE?: string;
+    /** 코어 분할 수 (y/z) Gen NX only. */
+    BEAM_CORE_DIV_Y?: number;
+    /** 코어 분할 수 (y/z) Gen NX only. */
+    BEAM_CORE_DIV_Z?: number;
+    /** 커버 영역 크기 타입 Gen NX only. */
+    BEAM_COVER_SIZE?: string;
+    /** 커버 분할 수 (y/z) Gen NX only. */
+    BEAM_COVER_DIV_Y?: number;
+    /** 커버 분할 수 (y/z) Gen NX only. */
+    BEAM_COVER_DIV_Z?: number;
+    /** 철근량 고려 Gen NX only. */
+    bCONSREBARAREAWALL?: boolean;
+    /** 판 타입 면외 비선형성 고려 Gen NX only. */
+    bWALLCONSOUT?: boolean;
+    /** 코어/커버 크기 타입 Gen NX only. */
+    WALL_CORE_SIZE?: string;
+    /** 코어/커버 크기 타입 Gen NX only. */
+    WALL_COVER_SIZE?: string;
+    /** 코어 분할 수 (z/y) Gen NX only. */
+    WALL_CORE_DIV_Z?: number;
+    /** 코어 분할 수 (z/y) Gen NX only. */
+    WALL_CORE_DIV_Y?: number;
+    /** 커버 분할 수 (z/y) Gen NX only. */
+    WALL_COVER_DIV_Z?: number;
+    /** 커버 분할 수 (z/y) Gen NX only. */
+    WALL_COVER_DIV_Y?: number;
+    /** 스프링 전단 계수 Gen NX only. */
+    SHEAR_R?: number;
+    /** 모멘트-회전 보/기둥 힌지속성을 부재단위로만 배정 */
+    bASSIGNBYMEMBER?: boolean;
+    /** 대칭 여부 */
+    bTRI_SYM?: boolean;
+    /** 인장 α1/α2 */
+    TRI_TENS_A1?: number;
+    /** 인장 α1/α2 */
+    TRI_TENS_A2?: number;
+    /** 압축 α1/α2 */
+    TRI_COMP_A1?: number;
+    /** 압축 α1/α2 */
+    TRI_COMP_A2?: number;
+    /** 대칭 여부 */
+    bBI_SYM?: boolean;
+    /** 인장/압축 α1 */
+    BI_TENS_A1?: number;
+    /** 인장/압축 α1 */
+    BI_COMP_A1?: number;
+    /** 점 스프링 지지 적용 타입 — "APPLY" / "ASSUME" */
+    PSPR_APPLY_TYPE?: "APPLY" | "ASSUME";
+    /** 탄성링크 적용 타입 — "APPLY" / "ASSUME" */
+    ELNK_APPLY_TYPE?: "APPLY" | "ASSUME";
+    /** 참조 코드/매뉴얼 사용 Gen NX only. */
+    bUSEAUTOCALCREFERENCE?: boolean;
+    /** RC 참조 설계기준 — "KISTEC2019" / "KISTEC2013" / "MOE2019" / "MOE2018" / "AIK-G-001-2021" Gen NX only. */
+    RCDGNCODE?: "KISTEC2019" | "KISTEC2013" | "MOE2019" | "MOE2018" | "AIK-G-001-2021";
+    /** 보/분포힌지 기준 위치 — I단: "I" / J단: "J" / 중앙: "M" */
+    LOC_BEAM?: "I" | "J" | "M";
+    /** 기둥 기준 위치 */
+    LOC_COLUMN?: string;
+    /** 벽체 축척계수 */
+    SF_WALL?: number;
+    /** 취성 축척계수 사용/값 */
+    bSF_BRITTLE?: boolean;
+    /** 취성 축척계수 사용/값 */
+    SF_BRITTLE?: number;
+    /** 지진 축척계수 사용/값 */
+    bSF_EARTHQUAKE?: boolean;
+    /** 지진 축척계수 사용/값 */
+    SF_EARTHQUAKE?: number;
+    /** 원형철근 축척계수 사용/값 */
+    bSF_SMOOTH_BAR?: boolean;
+    /** 원형철근 축척계수 사용/값 */
+    SF_SMOOTH_BAR?: number;
+    /** 2차 내진요소 그룹명 */
+    SND_SEIS_GRUP?: string;
+    /** 신뢰도 계수 */
+    CONFIDENCE?: number;
+    /** 좌굴 고려 항복면 계산 */
+    bBUCKLING?: boolean;
+    /** 축력 고려 Mc 계산(AIJ) */
+    bCALCAXIALFORCE?: boolean;
   }
   /** Generated from contracts/endpoints/. */
   export interface PushoverHingeOptionHyperS {
@@ -10248,187 +10401,53 @@ export namespace DbPushoverTypes {
     CALC_YIELDS: boolean;
   }
   /** Generated from contracts/endpoints/. */
-  export interface PushoverMiscOptionHyperS {
-    /** 해석 후 Pushover 곡선 결과 표시 */
-    SHOW_GRAPH_AFTER: boolean;
-    /** 해석 중 Pushover 곡선 표시 */
-    SHOW_GRAPH_DURING: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PushoverAnalysisControlDataHyperSPayload {
-    /** 기하비선형 유형 (None: 0 / Large Displacements: 1 / P-Delta: 2). GEO_NONL_TYPE이 1 또는 2이면 INIT_LOAD_TYPE은 반드시 0이어야 함 */
-    GEO_NONL_TYPE: number;
-    /** 초기하중 유형 (비선형 정적해석 수행: 0 / 정적·시공단계 해석 결과 가져오기: 1) */
-    INIT_LOAD_TYPE: number;
-    /** 초기하중 하중케이스 목록 (INIT_LOAD_TYPE=1일 때 IGNORE_ELEM 지정 불가) */
-    INIT_LOAD_LIST?: Array<{
-      /** 하중케이스 이름 (길이 ≥1) */
-      LC_NAME?: string;
-      /** 하중케이스 타입 (Static: STATIC / Stage: STAGE) */
-      LC_TYPE?: "STATIC" | "STAGE";
-      /** 배율(Scale Factor), 0 불가 */
-      SF?: number;
+  export interface PushoverLoadCaseHyperSPayload {
+    /** 이름 (길이 1~20, 중복 불가) */
+    LCNAME: string;
+    /** 설명 (길이 ≤80) */
+    DESC?: string;
+    /** 증분 스텝 수(nstep), 값 > 0 (UI 기본 20) */
+    INCRE_STEP: number;
+    /** 기하비선형 유형 (None: NONE / P-Delta: PDELTA / Large Displacements: LARGE) */
+    NLTYPE: "NONE" | "PDELTA" | "LARGE";
+    /** 초기하중 사용 여부. true이면 bREACOUTPUT 필수, false이면 제공 불가 */
+    bUSEINITIAL: boolean;
+    /** 초기하중에 의한 누적 반력/층전단력 (bUSEINITIAL=true일 때 필수) */
+    bREACOUTPUT?: boolean;
+    /** 증분 방법 (Load Control: LOAD / Displacement Control: DISP) */
+    INCRE_METHOD: "LOAD" | "DISP";
+    /** 제어 옵션 컨테이너 */
+    CTRL_OPT: {
+      /** 자동 증분 제어 (Auto-Stepping: AUTO / Equal Step: EQUAL / Incremental Control Function: INC_FUNC) */
+      STEPCTRLOPTION: "AUTO" | "EQUAL" | "INC_FUNC";
+      /** 증분 함수 이름 (STEPCTRLOPTION="INC_FUNC"일 때 필수, 그 외 제공 불가) */
+      INCFUNC_NAME?: string;
+      /** 현재 강성비(Cs), [0, 100] 범위 */
+      STIFF_RATIO: number;
+      /** 변위 제어 옵션 (Global: GLOBAL / Master Node: NODE) */
+      DISPCTRLOPTION: "GLOBAL" | "NODE";
+      /** 최대 병진 변위(GLOBAL일 때 필수, 값 > 0) */
+      GLOBAL_MAX_DISP?: number;
+      /** 절점 번호(NODE일 때 필수, ExistNode 통과 필요) */
+      MASTERNODE?: number;
+      /** 방향 (DX: DX / DY: DY / DZ: DZ) (NODE일 때 필수) */
+      MASTERDIRECTION?: "DX" | "DY" | "DZ";
+      /** 최대 변위(NODE일 때 필수, 값 != 0.0) */
+      MASTERMAXDISP?: number;
+    };
+    /** 하중 패턴 유형 (정적 하중케이스: LOAD / 균일 가속도: ACC / 모드형상: MODE / 정규화 모드형상: NOR_MODE) */
+    LOADPATTERNTYPE: "LOAD" | "ACC" | "MODE" | "NOR_MODE";
+    /** 하중 패턴 배열 (크기 ≥ 1; ACC/MODE/NOR_MODE는 원소 1개로 제한) */
+    LOADPATTERN: Array<{
+      /** 하중케이스 이름 (ExistStld 통과 필요, Static Load Case 이름) */
+      LCNAME: string;
+      /** 배율(Scale Factor), 값 != 0.0 (UI 기본 1.0) */
+      SF: number;
+      /** 방향 (DX: DX / DY: DY / DZ: DZ) */
+      DIR: "DX" | "DY" | "DZ";
+      /** 모드 번호, 값 > 0 */
+      MODE: number;
     }>;
-    /** 초기하중 산정 시 요소 무시 옵션 (Ignore Elements for Initial Load). INIT_LOAD_TYPE=1이면 제공 불가 */
-    IGNORE_ELEM?: boolean;
-    /** 해석 중단(Analysis Stop) 조건 그룹 */
-    ANALYSIS_STOP?: {
-      /** 전단 성분 항복(Shear Component Yield) */
-      SHEAR_YIELD?: {
-        /** 사용 여부 */
-        OPT_USE: boolean;
-        /** Beam/Column */
-        BEAM_COLUMN?: boolean;
-        /** Wall */
-        WALL?: boolean;
-      };
-      /** 축방향 성분 붕괴/좌굴(Axial Component Collapse) */
-      AXIAL_YIELD?: {
-        /** 사용 여부 */
-        OPT_USE: boolean;
-        /** Beam/Column */
-        BEAM_COLUMN?: boolean;
-        /** Wall */
-        WALL?: boolean;
-        /** Truss */
-        TRUSS?: boolean;
-      };
-      /** 지점 들뜸/붕괴 : Dz 방향(Support Uplifting/Collapse) */
-      SUPPORT_DZ_DIR?: {
-        /** 사용 여부 */
-        OPT_USE: boolean;
-        /** Uplifting */
-        UPLIFTING?: boolean;
-        /** Collapse */
-        COLLAPSE?: boolean;
-      };
-    };
-    /** 반복 제어(Iteration Controls) */
-    ITER_CTRL: {
-      /** 수렴 실패 허용(Permit Convergence Failure) */
-      PERMIT_FAIL?: boolean;
-      /** 최대 반복횟수(Maximum Iteration), ≥1 */
-      MAX_ITER: number;
-      /** 수렴 기준(Convergence Criteria) */
-      NORM_CTRL: {
-        /** 변위 노름(Displacement norm) */
-        DISP: {
-          /** 사용 여부 */
-          OPT_USE: boolean;
-          /** 허용오차 값 (>0). DISP.OPT_USE=true일 때 필수, false이면 제공 불가 Applies when ITER_CTRL.NORM_CTRL.DISP.OPT_USE = true. */
-          VALUE?: number;
-        };
-        /** 하중 노름(Force norm) */
-        FORCE: {
-          /** 사용 여부 */
-          OPT_USE: boolean;
-          /** 허용오차 값 (>0). FORCE.OPT_USE=true일 때 필수, false이면 제공 불가 Applies when ITER_CTRL.NORM_CTRL.FORCE.OPT_USE = true. */
-          VALUE?: number;
-        };
-        /** 에너지 노름(Energy norm) */
-        ENERGY: {
-          /** 사용 여부 */
-          OPT_USE: boolean;
-          /** 허용오차 값 (>0). ENERGY.OPT_USE=true일 때 필수, false이면 제공 불가 Applies when ITER_CTRL.NORM_CTRL.ENERGY.OPT_USE = true. */
-          VALUE?: number;
-        };
-      };
-      /** 강성 갱신 방식 (Custom: 0 / Full Newton-Raphson: 1 / Initial Stiffness: 2) */
-      STIFF_UPD_SCHEME: number;
-      /** 강성 갱신 전 반복횟수. STIFF_UPD_SCHEME=0일 때 필수, 1·2이면 제공 불가 Applies when ITER_CTRL.STIFF_UPD_SCHEME = 0. */
-      ITER_BEF_UPDATE?: number;
-      /** 최대 이분(Bisection) 레벨 */
-      MAX_BISECT_LEVEL?: number;
-      /** Smart Bisection 사용 */
-      SMART_BISECT?: boolean;
-      /** 발산 임계값(Divergence Threshold) */
-      DIVERGENCE_THRESHOLD?: number;
-      /** Line Search 사용 */
-      LINE_SEARCH?: {
-        /** 사용 여부. false이면 세부 필드 모두 제공 불가, true이면 LINE_SEARCH_OPT 필수 */
-        OPT_USE: boolean;
-        /** Line Search 옵션 (Auto: AUTO / User: USER). AUTO이면 세부값 제공 불가, USER이면 세부값 모두 필수 */
-        LINE_SEARCH_OPT?: "AUTO" | "USER";
-        /** Line Search 시작 반복 횟수 (USER일 때 필수) */
-        START_ITER_NO?: number;
-        /** 반복당 최대 Line Search 횟수 (USER일 때 필수) */
-        MAX_LINE_SEARCH_ITER?: number;
-        /** Line Search 허용오차 (USER일 때 필수) */
-        LINE_SEARCH_TOL?: number;
-      };
-    };
-    /** Pushover 힌지 데이터 옵션 */
-    PO_HINGE_OPT?: {
-      /** 부재에만 힌지 속성 지정 */
-      ASSIGN_BY_MEMBER: boolean;
-      /** Skeleton Curve 기본 강성 저감비 (Trilinear) */
-      TRILINEAR: {
-        /** α1 (+) */
-        TENS_A1: number;
-        /** α2 (+) */
-        TENS_A2: number;
-        /** α1 (-) */
-        COMP_A1: number;
-        /** α2 (-) */
-        COMP_A2: number;
-        /** 대칭 여부(SYMMETRIC) */
-        SYMMETRIC: boolean;
-      };
-      /** 힌지 속성 기본 강성 저감비 (Bilinear) */
-      BILINEAR: {
-        /** α1 (+) */
-        TENS_A1: number;
-        /** α1 (-) */
-        COMP_A1: number;
-        /** 대칭 여부(SYMMETRIC) */
-        SYMMETRIC: boolean;
-      };
-      /** 점 스프링 지점 & 탄성링크 비선형 유형 */
-      NONL_TYPE: {
-        /** 점 스프링 지점 적용 방식 (Apply Nonlinear: 0 / Linear: 1) */
-        PSPRING_SUP: number;
-        /** 탄성링크 적용 방식 (Apply Nonlinear: 0 / Linear: 1) */
-        EL: number;
-      };
-      /** 분포힌지 기준 위치 (I-End: 0 / Mid-span: 1 / J-End: 2) */
-      LOC_BEAM: number;
-      /** 좌굴 고려 Beam 항복면 계산 */
-      CALC_YIELDS: boolean;
-    };
-    /** Pushover 기타(Misc) 옵션 */
-    MISC?: {
-      /** 해석 후 Pushover 곡선 결과 표시 */
-      SHOW_GRAPH_AFTER: boolean;
-      /** 해석 중 Pushover 곡선 표시 */
-      SHOW_GRAPH_DURING: boolean;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface IgnoreElementsForPushoverInitialLoadPayload {
-    /** 비선형 해석 초기하중용 요소 무시 여부 */
-    B_IGNORE?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface AssignPushoverHingePropertiesPayload {
-    /** 요소 ID */
-    ID: number;
-    /** 요소 타입 · Beam/Column: "BEAM" / Wall(⚠️ Gen NX 전용): "WALL" / Truss: "TRUSS" / General Link: "G-LINK" */
-    TYPE: string;
-    /** 푸시오버 힌지 타입 (예: "Myz_15") */
-    HINGE_TYPE: string;
-    /** 파이버 키 */
-    FIBER_KEY: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PushoverLoadPatternItem {
-    /** 하중케이스명 Applies when LOADPATTERNTYPE = "LOAD". */
-    LCNAME?: string;
-    /** 방향 ("DX"/"DY"/"DZ") Applies when LOADPATTERNTYPE = "ACC". */
-    DIR?: string;
-    /** 모드 번호 Applies when LOADPATTERNTYPE is "MODE" or "NOR_MODE". */
-    MODE?: number;
-    /** 축척계수 */
-    SF: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface PushoverLoadCasePayload {
@@ -10487,23 +10506,15 @@ export namespace DbPushoverTypes {
     }>;
   }
   /** Generated from contracts/endpoints/. */
-  export interface PushoverControlOptionHyperS {
-    /** 자동 증분 제어 (Auto-Stepping: AUTO / Equal Step: EQUAL / Incremental Control Function: INC_FUNC) */
-    STEPCTRLOPTION: "AUTO" | "EQUAL" | "INC_FUNC";
-    /** 증분 함수 이름 (STEPCTRLOPTION="INC_FUNC"일 때 필수, 그 외 제공 불가) */
-    INCFUNC_NAME?: string;
-    /** 현재 강성비(Cs), [0, 100] 범위 */
-    STIFF_RATIO: number;
-    /** 변위 제어 옵션 (Global: GLOBAL / Master Node: NODE) */
-    DISPCTRLOPTION: "GLOBAL" | "NODE";
-    /** 최대 병진 변위(GLOBAL일 때 필수, 값 > 0) */
-    GLOBAL_MAX_DISP?: number;
-    /** 절점 번호(NODE일 때 필수, ExistNode 통과 필요) */
-    MASTERNODE?: number;
-    /** 방향 (DX: DX / DY: DY / DZ: DZ) (NODE일 때 필수) */
-    MASTERDIRECTION?: "DX" | "DY" | "DZ";
-    /** 최대 변위(NODE일 때 필수, 값 != 0.0) */
-    MASTERMAXDISP?: number;
+  export interface PushoverLoadPatternItem {
+    /** 하중케이스명 Applies when LOADPATTERNTYPE = "LOAD". */
+    LCNAME?: string;
+    /** 방향 ("DX"/"DY"/"DZ") Applies when LOADPATTERNTYPE = "ACC". */
+    DIR?: string;
+    /** 모드 번호 Applies when LOADPATTERNTYPE is "MODE" or "NOR_MODE". */
+    MODE?: number;
+    /** 축척계수 */
+    SF: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface PushoverLoadPatternItemHyperS {
@@ -10517,122 +10528,46 @@ export namespace DbPushoverTypes {
     MODE: number;
   }
   /** Generated from contracts/endpoints/. */
-  export interface PushoverLoadCaseHyperSPayload {
-    /** 이름 (길이 1~20, 중복 불가) */
-    LCNAME: string;
-    /** 설명 (길이 ≤80) */
-    DESC?: string;
-    /** 증분 스텝 수(nstep), 값 > 0 (UI 기본 20) */
-    INCRE_STEP: number;
-    /** 기하비선형 유형 (None: NONE / P-Delta: PDELTA / Large Displacements: LARGE) */
-    NLTYPE: "NONE" | "PDELTA" | "LARGE";
-    /** 초기하중 사용 여부. true이면 bREACOUTPUT 필수, false이면 제공 불가 */
-    bUSEINITIAL: boolean;
-    /** 초기하중에 의한 누적 반력/층전단력 (bUSEINITIAL=true일 때 필수) */
-    bREACOUTPUT?: boolean;
-    /** 증분 방법 (Load Control: LOAD / Displacement Control: DISP) */
-    INCRE_METHOD: "LOAD" | "DISP";
-    /** 제어 옵션 컨테이너 */
-    CTRL_OPT: {
-      /** 자동 증분 제어 (Auto-Stepping: AUTO / Equal Step: EQUAL / Incremental Control Function: INC_FUNC) */
-      STEPCTRLOPTION: "AUTO" | "EQUAL" | "INC_FUNC";
-      /** 증분 함수 이름 (STEPCTRLOPTION="INC_FUNC"일 때 필수, 그 외 제공 불가) */
-      INCFUNC_NAME?: string;
-      /** 현재 강성비(Cs), [0, 100] 범위 */
-      STIFF_RATIO: number;
-      /** 변위 제어 옵션 (Global: GLOBAL / Master Node: NODE) */
-      DISPCTRLOPTION: "GLOBAL" | "NODE";
-      /** 최대 병진 변위(GLOBAL일 때 필수, 값 > 0) */
-      GLOBAL_MAX_DISP?: number;
-      /** 절점 번호(NODE일 때 필수, ExistNode 통과 필요) */
-      MASTERNODE?: number;
-      /** 방향 (DX: DX / DY: DY / DZ: DZ) (NODE일 때 필수) */
-      MASTERDIRECTION?: "DX" | "DY" | "DZ";
-      /** 최대 변위(NODE일 때 필수, 값 != 0.0) */
-      MASTERMAXDISP?: number;
-    };
-    /** 하중 패턴 유형 (정적 하중케이스: LOAD / 균일 가속도: ACC / 모드형상: MODE / 정규화 모드형상: NOR_MODE) */
-    LOADPATTERNTYPE: "LOAD" | "ACC" | "MODE" | "NOR_MODE";
-    /** 하중 패턴 배열 (크기 ≥ 1; ACC/MODE/NOR_MODE는 원소 1개로 제한) */
-    LOADPATTERN: Array<{
-      /** 하중케이스 이름 (ExistStld 통과 필요, Static Load Case 이름) */
-      LCNAME: string;
-      /** 배율(Scale Factor), 값 != 0.0 (UI 기본 1.0) */
-      SF: number;
-      /** 방향 (DX: DX / DY: DY / DZ: DZ) */
-      DIR: "DX" | "DY" | "DZ";
-      /** 모드 번호, 값 > 0 */
-      MODE: number;
-    }>;
+  export interface PushoverMiscOptionHyperS {
+    /** 해석 후 Pushover 곡선 결과 표시 */
+    SHOW_GRAPH_AFTER: boolean;
+    /** 해석 중 Pushover 곡선 표시 */
+    SHOW_GRAPH_DURING: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ShearYieldStopHyperS {
+    /** 사용 여부 */
+    OPT_USE: boolean;
+    /** Beam/Column */
+    BEAM_COLUMN?: boolean;
+    /** Wall */
+    WALL?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SupportDzDirStopHyperS {
+    /** 사용 여부 */
+    OPT_USE: boolean;
+    /** Uplifting */
+    UPLIFTING?: boolean;
+    /** Collapse */
+    COLLAPSE?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TrilinearStiffnessReductionHyperS {
+    /** α1 (+) */
+    TENS_A1: number;
+    /** α2 (+) */
+    TENS_A2: number;
+    /** α1 (-) */
+    COMP_A1: number;
+    /** α2 (-) */
+    COMP_A2: number;
+    /** 대칭 여부(SYMMETRIC) */
+    SYMMETRIC: boolean;
   }
 }
 
 export namespace DbStaticLoadsTypes {
-  /** Generated from contracts/endpoints/. */
-  export interface StaticLoadCasePayload {
-    /** Ordering Index in GUI */
-    NO?: number;
-    /** Load Case Name */
-    NAME: string;
-    /** Load Type */
-    TYPE: string;
-    /** Description */
-    DESC?: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SelfWeightPayload {
-    /** Load Case Name */
-    LCNAME: string;
-    /** Load Group Name */
-    GROUP_NAME?: string;
-    /** Self-Weight Factor [X, Y, Z] */
-    FV: [number, number, number];
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface NodalLoadItem {
-    /** Serial Number */
-    ID?: number;
-    /** Load Case Name */
-    LCNAME: string;
-    /** Load Group Name */
-    GROUP_NAME?: string;
-    /** Nodal Load – FX */
-    FX?: number;
-    /** Nodal Load – FY */
-    FY?: number;
-    /** Nodal Load – FZ */
-    FZ?: number;
-    /** Nodal Load – MX */
-    MX?: number;
-    /** Nodal Load – MY */
-    MY?: number;
-    /** Nodal Load – MZ */
-    MZ?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface NodalLoadPayload {
-    /** Nodal Load items */
-    ITEMS: Array<{
-      /** Serial Number */
-      ID?: number;
-      /** Load Case Name */
-      LCNAME: string;
-      /** Load Group Name */
-      GROUP_NAME?: string;
-      /** Nodal Load – FX */
-      FX?: number;
-      /** Nodal Load – FY */
-      FY?: number;
-      /** Nodal Load – FZ */
-      FZ?: number;
-      /** Nodal Load – MX */
-      MX?: number;
-      /** Nodal Load – MY */
-      MY?: number;
-      /** Nodal Load – MZ */
-      MZ?: number;
-    }>;
-  }
   /** Generated from contracts/endpoints/. */
   export interface BeamLoadItem {
     /** Serial Number */
@@ -10731,6 +10666,345 @@ export namespace DbStaticLoadsTypes {
     }>;
   }
   /** Generated from contracts/endpoints/. */
+  export interface FinishingMaterialLoadItem {
+    /** Serial Number */
+    ID?: number;
+    /** Load Case Name */
+    LCNAME: string;
+    /** Load Group Name */
+    GROUP_NAME?: string;
+    /** Covering Type ("ENVELOP" / "FILL" / "SURROUND") */
+    COVERING_TYPE?: string;
+    /** Covering Range [+x, -y, -x, +y] ("FULL" / "HALF") */
+    COVERING_RANGE: [string, string, string, string];
+    /** Covering Thickness (d) */
+    THICKNESS?: number;
+    /** Filling Property (Density) */
+    DENSITY?: number;
+    /** Direction ("GX" / "GY" / "GZ") */
+    DIR?: string;
+    /** Scale Factor */
+    SCALE_FACTOR: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface FinishingMaterialLoadPayload {
+    /** Finishing Material Load items */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Case Name */
+      LCNAME: string;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Covering Type ("ENVELOP" / "FILL" / "SURROUND") */
+      COVERING_TYPE?: string;
+      /** Covering Range [+x, -y, -x, +y] ("FULL" / "HALF") */
+      COVERING_RANGE: [string, string, string, string];
+      /** Covering Thickness (d) */
+      THICKNESS?: number;
+      /** Filling Property (Density) */
+      DENSITY?: number;
+      /** Direction ("GX" / "GY" / "GZ") */
+      DIR?: string;
+      /** Scale Factor */
+      SCALE_FACTOR: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export type FloorLoadPayload = {
+    /** Floor Load Type Name */
+    FLOOR_LOAD_TYPE_NAME: string;
+    /** Distribution Type (1=One Way / 2=Two Way / 3=Polygon-Centroid / 4=Polygon-Length) */
+    FLOOR_DIST_TYPE: number;
+    /** Load Direction ("LX" / "LY" / "LZ" / "GX" / "GY" / "GZ") */
+    DIR?: string;
+    /** Projection */
+    OPT_PROJECTION?: boolean;
+    /** Description */
+    DESC?: string;
+    /** Load Group Name */
+    GROUP_NAME?: string;
+    /** Nodes defining Loading Area */
+    NODES: Array<number>;
+  } & (
+    {
+      FLOOR_DIST_TYPE: 1;
+      /** Load Angle (A1) */
+      LOAD_ANGLE?: number;
+      /** Exclude Inner Element of Area */
+      OPT_EXCLUDE_INNER_ELEM_AREA?: boolean;
+      /** No. of Sub Beams */
+      SUB_BEAM_NUM?: number;
+      /** Sub-Beam Angle (A2) */
+      SUB_BEAM_ANGLE?: number;
+      /** Unit Self Weight */
+      UNIT_SELF_WEIGHT?: number;
+    } |
+    {
+      FLOOR_DIST_TYPE: 2;
+      /** Allow Polygon Type Unit Area */
+      OPT_ALLOW_POLYGON_TYPE_UNIT_AREA?: boolean;
+      /** Exclude Inner Element of Area */
+      OPT_EXCLUDE_INNER_ELEM_AREA?: boolean;
+      /** No. of Sub Beams */
+      SUB_BEAM_NUM?: number;
+      /** Sub-Beam Angle (A2) */
+      SUB_BEAM_ANGLE?: number;
+      /** Unit Self Weight */
+      UNIT_SELF_WEIGHT?: number;
+    } |
+    {
+      LOAD_ANGLE?: never;
+      OPT_EXCLUDE_INNER_ELEM_AREA?: never;
+      SUB_BEAM_NUM?: never;
+      SUB_BEAM_ANGLE?: never;
+      UNIT_SELF_WEIGHT?: never;
+      OPT_ALLOW_POLYGON_TYPE_UNIT_AREA?: never;
+    }
+  );
+  /** Generated from contracts/endpoints/. */
+  export interface FloorLoadTypeItem {
+    /** Load Case Name */
+    LCNAME: string;
+    /** Floor Load (kN/m or equivalent) */
+    FLOOR_LOAD: number;
+    /** Consider Sub Beam Weight */
+    OPT_SUB_BEAM_WEIGHT?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface FloorLoadTypePayload {
+    /** Floor Load Type Name */
+    NAME: string;
+    /** Description */
+    DESC?: string;
+    /** Floor Load items */
+    ITEM: Array<{
+      /** Load Case Name */
+      LCNAME: string;
+      /** Floor Load (kN/m or equivalent) */
+      FLOOR_LOAD: number;
+      /** Consider Sub Beam Weight */
+      OPT_SUB_BEAM_WEIGHT?: boolean;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LoadsToMassCase {
+    /** Load Case Name */
+    LCNAME: string;
+    /** Scale Factor */
+    FACTOR: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LoadsToMassPayload {
+    /** Mass Direction ("X" / "Y" / "Z" / "XY" / "YZ" / "XZ" / "XYZ") */
+    DIR: string;
+    /** Nodal Load */
+    bNODAL?: boolean;
+    /** Beam Load */
+    bBEAM?: boolean;
+    /** Floor Load */
+    bFLOOR?: boolean;
+    /** Pressure (Hydrostatic) */
+    bPRES?: boolean;
+    /** Gravity Acceleration */
+    GRAV?: number;
+    /** Load Case List */
+    vLC: Array<{
+      /** Load Case Name */
+      LCNAME: string;
+      /** Scale Factor */
+      FACTOR: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export type NodalBodyForcePayload = {
+    /** Load Case Name */
+    LCNAME: string;
+    /** Nodal Mass */
+    OPT_NODAL_MASS?: boolean;
+    /** Load to Mass */
+    OPT_LOAD_TO_MASS?: boolean;
+    /** Structure Mass */
+    OPT_STRUCT_MASS?: boolean;
+    /** X-dir. Force Factor */
+    X: number;
+    /** Y-dir. Force Factor */
+    Y?: number;
+    /** Z-dir. Force Factor */
+    Z?: number;
+    /** Structure Group Option */
+    OPT_USE_GROUP?: boolean;
+  } & (
+    {
+      OPT_USE_GROUP: true;
+      /** Structure Group Name */
+      GROUP_NAME?: string;
+    } |
+    {
+      OPT_USE_GROUP: false;
+      /** Node No. List */
+      KEY_NODE_ITEMS?: Array<number>;
+    }
+  );
+  /** Generated from contracts/endpoints/. */
+  export interface NodalLoadItem {
+    /** Serial Number */
+    ID?: number;
+    /** Load Case Name */
+    LCNAME: string;
+    /** Load Group Name */
+    GROUP_NAME?: string;
+    /** Nodal Load – FX */
+    FX?: number;
+    /** Nodal Load – FY */
+    FY?: number;
+    /** Nodal Load – FZ */
+    FZ?: number;
+    /** Nodal Load – MX */
+    MX?: number;
+    /** Nodal Load – MY */
+    MY?: number;
+    /** Nodal Load – MZ */
+    MZ?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface NodalLoadPayload {
+    /** Nodal Load items */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Case Name */
+      LCNAME: string;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Nodal Load – FX */
+      FX?: number;
+      /** Nodal Load – FY */
+      FY?: number;
+      /** Nodal Load – FZ */
+      FZ?: number;
+      /** Nodal Load – MX */
+      MX?: number;
+      /** Nodal Load – MY */
+      MY?: number;
+      /** Nodal Load – MZ */
+      MZ?: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface NodalMassPayload {
+    /** Translational Mass - GCS X */
+    mX: number;
+    /** Translational Mass - GCS Y */
+    mY?: number;
+    /** Translational Mass - GCS Z */
+    mZ?: number;
+    /** Rotational Mass Moment of Inertia - X-axis */
+    rmX?: number;
+    /** Rotational Mass Moment of Inertia - Y-axis */
+    rmY?: number;
+    /** Rotational Mass Moment of Inertia - Z-axis */
+    rmZ?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PlaneLoadPayload {
+    /** Load Case Name */
+    LCNAME: string;
+    /** Load Group Name */
+    LOAD_GROUP: string;
+    /** Defined Plane Load Key */
+    PNLD_KEY: number;
+    /** Element Type ("PLATE" / "SOLID") */
+    ELEM_TYPE: string;
+    /** First Point / Origin [x, y, z] */
+    POINT_ORIGIN: [number, number, number];
+    /** Second Point / on x-Axis [x, y, z] */
+    AXIS_X: [number, number, number];
+    /** Third Point / on x-y Plane [x, y, z] */
+    AXIS_Y: [number, number, number];
+    /** Tolerance */
+    TOL: number;
+    /** Element Selection ("ON_PLANE" / "IN_GROUP") */
+    SELECT_TYPE: string;
+    /** Load Direction ("NORMAL_PLANE" / "NORMAL_ELEM" / "GLOBAL_X" / "GLOBAL_Y" / "GLOBAL_Z") */
+    LOAD_DIR: string;
+    /** Projection Type ("NO" / "LOAD_DIR" / "LOAD_PLANE") */
+    PROJECT_TYPE: string;
+    /** Description */
+    DESC?: string;
+    /** Node Defining Loading Area Applies when ELEM_TYPE = "PLATE". */
+    bDEFINE_NODE?: boolean;
+    /** Loading Boundary Connecting Node Applies when ELEM_TYPE = "PLATE". */
+    CONNECT_NODE?: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
+    /** Element Group Name Applies when SELECT_TYPE = "IN_GROUP". */
+    ELEM_GROUP?: string;
+    /** Solid Face No. (1~6) Applies when ELEM_TYPE = "SOLID". */
+    FACE_NO?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export type PlaneLoadTypePayload = {
+    /** Load Type Name */
+    NAME: string;
+    /** Description */
+    DESC?: string;
+    /** Load Type ("POINT" / "LINE" / "AREA") */
+    LTYPE: string;
+    /** Copy in X-Direction */
+    COPY_X: Array<number>;
+    /** Copy in Y-Direction */
+    COPY_Y: Array<number>;
+    /** Sequence Number (Unique) */
+    SEQ?: number;
+  } & (
+    {
+      LTYPE: "POINT";
+      /** Point Loads */
+      POINTLOAD: Array<{
+        /** Point X */
+        X?: number;
+        /** Point Y */
+        Y?: number;
+        /** Force */
+        F?: number;
+      }>;
+    } |
+    {
+      LTYPE: "LINE";
+      /** Line Loads */
+      LINELOAD: {
+        /** Uniform (true) / Trapezoidal (false) */
+        bUNIFORM?: boolean;
+        /** Coordinates of X1, X2 */
+        X?: [number, number];
+        /** Coordinates of Y1, Y2 */
+        Y?: [number, number];
+        /** Force (Uniform: [F1] / Trap: [F1, F2]) */
+        F?: [number, number];
+      };
+    } |
+    {
+      LTYPE: "AREA";
+      /** Area Loads */
+      AREALOAD: {
+        /** Uniform (true) / Trapezoidal (false) */
+        bUNIFORM?: boolean;
+        /** 3 Points (true) / 4 Points (false) */
+        b3PNT?: boolean;
+        /** Coordinates X1~X4 */
+        X?: [number, number, number, number];
+        /** Coordinates Y1~Y4 */
+        Y?: [number, number, number, number];
+        /** Load (Uniform: [F1] / Trap: [F1,F2,F3,F4]) */
+        LOAD?: [number, number, number, number];
+      };
+    } |
+    {
+      POINTLOAD?: never;
+      LINELOAD?: never;
+      AREALOAD?: never;
+    }
+  );
+  /** Generated from contracts/endpoints/. */
   export type PressureLoadItem = {
     /** Serial Number */
     ID?: number;
@@ -10805,113 +11079,6 @@ export namespace DbStaticLoadsTypes {
       }
     ))>;
   };
-  export interface SpecifiedDisplacementValue {
-    OPT_FLAG?: boolean;
-    DISPLACEMENT?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SpecifiedDisplacementItem {
-    /** Serial Number */
-    ID?: number;
-    /** Load Case Name */
-    LCNAME: string;
-    /** Load Group Name */
-    GROUP_NAME?: string;
-    /** Displacements (Local) [Dx, Dy, Dz, Rx, Ry, Rz] */
-    VALUES?: [JsonObject, JsonObject, JsonObject, JsonObject, JsonObject, JsonObject];
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SpecifiedDisplacementPayload {
-    /** Specified Displacement items */
-    ITEMS: Array<{
-      /** Serial Number */
-      ID?: number;
-      /** Load Case Name */
-      LCNAME: string;
-      /** Load Group Name */
-      GROUP_NAME?: string;
-      /** Displacements (Local) [Dx, Dy, Dz, Rx, Ry, Rz] */
-      VALUES?: [JsonObject, JsonObject, JsonObject, JsonObject, JsonObject, JsonObject];
-    }>;
-    /** Usage Flag */
-    OPT_FLAG?: boolean;
-    /** Displacement Value */
-    DISPLACEMENT?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface NodalMassPayload {
-    /** Translational Mass - GCS X */
-    mX: number;
-    /** Translational Mass - GCS Y */
-    mY?: number;
-    /** Translational Mass - GCS Z */
-    mZ?: number;
-    /** Rotational Mass Moment of Inertia - X-axis */
-    rmX?: number;
-    /** Rotational Mass Moment of Inertia - Y-axis */
-    rmY?: number;
-    /** Rotational Mass Moment of Inertia - Z-axis */
-    rmZ?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface LoadsToMassCase {
-    /** Load Case Name */
-    LCNAME: string;
-    /** Scale Factor */
-    FACTOR: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface LoadsToMassPayload {
-    /** Mass Direction ("X" / "Y" / "Z" / "XY" / "YZ" / "XZ" / "XYZ") */
-    DIR: string;
-    /** Nodal Load */
-    bNODAL?: boolean;
-    /** Beam Load */
-    bBEAM?: boolean;
-    /** Floor Load */
-    bFLOOR?: boolean;
-    /** Pressure (Hydrostatic) */
-    bPRES?: boolean;
-    /** Gravity Acceleration */
-    GRAV?: number;
-    /** Load Case List */
-    vLC: Array<{
-      /** Load Case Name */
-      LCNAME: string;
-      /** Scale Factor */
-      FACTOR: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export type NodalBodyForcePayload = {
-    /** Load Case Name */
-    LCNAME: string;
-    /** Nodal Mass */
-    OPT_NODAL_MASS?: boolean;
-    /** Load to Mass */
-    OPT_LOAD_TO_MASS?: boolean;
-    /** Structure Mass */
-    OPT_STRUCT_MASS?: boolean;
-    /** X-dir. Force Factor */
-    X: number;
-    /** Y-dir. Force Factor */
-    Y?: number;
-    /** Z-dir. Force Factor */
-    Z?: number;
-    /** Structure Group Option */
-    OPT_USE_GROUP?: boolean;
-  } & (
-    {
-      OPT_USE_GROUP: true;
-      /** Structure Group Name */
-      GROUP_NAME?: string;
-    } |
-    {
-      OPT_USE_GROUP: false;
-      /** Node No. List */
-      KEY_NODE_ITEMS?: Array<number>;
-    }
-  );
   /** Generated from contracts/endpoints/. */
   export interface PressureLoadTypeItem {
     /** Load Case Name */
@@ -10950,333 +11117,6 @@ export namespace DbStaticLoadsTypes {
       /** Load P4 */
       LOAD_P4?: number;
     }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export type PlaneLoadTypePayload = {
-    /** Load Type Name */
-    NAME: string;
-    /** Description */
-    DESC?: string;
-    /** Load Type ("POINT" / "LINE" / "AREA") */
-    LTYPE: string;
-    /** Copy in X-Direction */
-    COPY_X: Array<number>;
-    /** Copy in Y-Direction */
-    COPY_Y: Array<number>;
-    /** Sequence Number (Unique) */
-    SEQ?: number;
-  } & (
-    {
-      LTYPE: "POINT";
-      /** Point Loads */
-      POINTLOAD: Array<{
-        /** Point X */
-        X?: number;
-        /** Point Y */
-        Y?: number;
-        /** Force */
-        F?: number;
-      }>;
-    } |
-    {
-      LTYPE: "LINE";
-      /** Line Loads */
-      LINELOAD: {
-        /** Uniform (true) / Trapezoidal (false) */
-        bUNIFORM?: boolean;
-        /** Coordinates of X1, X2 */
-        X?: [number, number];
-        /** Coordinates of Y1, Y2 */
-        Y?: [number, number];
-        /** Force (Uniform: [F1] / Trap: [F1, F2]) */
-        F?: [number, number];
-      };
-    } |
-    {
-      LTYPE: "AREA";
-      /** Area Loads */
-      AREALOAD: {
-        /** Uniform (true) / Trapezoidal (false) */
-        bUNIFORM?: boolean;
-        /** 3 Points (true) / 4 Points (false) */
-        b3PNT?: boolean;
-        /** Coordinates X1~X4 */
-        X?: [number, number, number, number];
-        /** Coordinates Y1~Y4 */
-        Y?: [number, number, number, number];
-        /** Load (Uniform: [F1] / Trap: [F1,F2,F3,F4]) */
-        LOAD?: [number, number, number, number];
-      };
-    } |
-    {
-      POINTLOAD?: never;
-      LINELOAD?: never;
-      AREALOAD?: never;
-    }
-  );
-  /** Generated from contracts/endpoints/. */
-  export interface PlaneLoadPayload {
-    /** Load Case Name */
-    LCNAME: string;
-    /** Load Group Name */
-    LOAD_GROUP: string;
-    /** Defined Plane Load Key */
-    PNLD_KEY: number;
-    /** Element Type ("PLATE" / "SOLID") */
-    ELEM_TYPE: string;
-    /** First Point / Origin [x, y, z] */
-    POINT_ORIGIN: [number, number, number];
-    /** Second Point / on x-Axis [x, y, z] */
-    AXIS_X: [number, number, number];
-    /** Third Point / on x-y Plane [x, y, z] */
-    AXIS_Y: [number, number, number];
-    /** Tolerance */
-    TOL: number;
-    /** Element Selection ("ON_PLANE" / "IN_GROUP") */
-    SELECT_TYPE: string;
-    /** Load Direction ("NORMAL_PLANE" / "NORMAL_ELEM" / "GLOBAL_X" / "GLOBAL_Y" / "GLOBAL_Z") */
-    LOAD_DIR: string;
-    /** Projection Type ("NO" / "LOAD_DIR" / "LOAD_PLANE") */
-    PROJECT_TYPE: string;
-    /** Description */
-    DESC?: string;
-    /** Node Defining Loading Area Applies when ELEM_TYPE = "PLATE". */
-    bDEFINE_NODE?: boolean;
-    /** Loading Boundary Connecting Node Applies when ELEM_TYPE = "PLATE". */
-    CONNECT_NODE?: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
-    /** Element Group Name Applies when SELECT_TYPE = "IN_GROUP". */
-    ELEM_GROUP?: string;
-    /** Solid Face No. (1~6) Applies when ELEM_TYPE = "SOLID". */
-    FACE_NO?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface FloorLoadTypeItem {
-    /** Load Case Name */
-    LCNAME: string;
-    /** Floor Load (kN/m or equivalent) */
-    FLOOR_LOAD: number;
-    /** Consider Sub Beam Weight */
-    OPT_SUB_BEAM_WEIGHT?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface FloorLoadTypePayload {
-    /** Floor Load Type Name */
-    NAME: string;
-    /** Description */
-    DESC?: string;
-    /** Floor Load items */
-    ITEM: Array<{
-      /** Load Case Name */
-      LCNAME: string;
-      /** Floor Load (kN/m or equivalent) */
-      FLOOR_LOAD: number;
-      /** Consider Sub Beam Weight */
-      OPT_SUB_BEAM_WEIGHT?: boolean;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export type FloorLoadPayload = {
-    /** Floor Load Type Name */
-    FLOOR_LOAD_TYPE_NAME: string;
-    /** Distribution Type (1=One Way / 2=Two Way / 3=Polygon-Centroid / 4=Polygon-Length) */
-    FLOOR_DIST_TYPE: number;
-    /** Load Direction ("LX" / "LY" / "LZ" / "GX" / "GY" / "GZ") */
-    DIR?: string;
-    /** Projection */
-    OPT_PROJECTION?: boolean;
-    /** Description */
-    DESC?: string;
-    /** Load Group Name */
-    GROUP_NAME?: string;
-    /** Nodes defining Loading Area */
-    NODES: Array<number>;
-  } & (
-    {
-      FLOOR_DIST_TYPE: 1;
-      /** Load Angle (A1) */
-      LOAD_ANGLE?: number;
-      /** Exclude Inner Element of Area */
-      OPT_EXCLUDE_INNER_ELEM_AREA?: boolean;
-      /** No. of Sub Beams */
-      SUB_BEAM_NUM?: number;
-      /** Sub-Beam Angle (A2) */
-      SUB_BEAM_ANGLE?: number;
-      /** Unit Self Weight */
-      UNIT_SELF_WEIGHT?: number;
-    } |
-    {
-      FLOOR_DIST_TYPE: 2;
-      /** Allow Polygon Type Unit Area */
-      OPT_ALLOW_POLYGON_TYPE_UNIT_AREA?: boolean;
-      /** Exclude Inner Element of Area */
-      OPT_EXCLUDE_INNER_ELEM_AREA?: boolean;
-      /** No. of Sub Beams */
-      SUB_BEAM_NUM?: number;
-      /** Sub-Beam Angle (A2) */
-      SUB_BEAM_ANGLE?: number;
-      /** Unit Self Weight */
-      UNIT_SELF_WEIGHT?: number;
-    } |
-    {
-      LOAD_ANGLE?: never;
-      OPT_EXCLUDE_INNER_ELEM_AREA?: never;
-      SUB_BEAM_NUM?: never;
-      SUB_BEAM_ANGLE?: never;
-      UNIT_SELF_WEIGHT?: never;
-      OPT_ALLOW_POLYGON_TYPE_UNIT_AREA?: never;
-    }
-  );
-  /** Generated from contracts/endpoints/. */
-  export interface FinishingMaterialLoadItem {
-    /** Serial Number */
-    ID?: number;
-    /** Load Case Name */
-    LCNAME: string;
-    /** Load Group Name */
-    GROUP_NAME?: string;
-    /** Covering Type ("ENVELOP" / "FILL" / "SURROUND") */
-    COVERING_TYPE?: string;
-    /** Covering Range [+x, -y, -x, +y] ("FULL" / "HALF") */
-    COVERING_RANGE: [string, string, string, string];
-    /** Covering Thickness (d) */
-    THICKNESS?: number;
-    /** Filling Property (Density) */
-    DENSITY?: number;
-    /** Direction ("GX" / "GY" / "GZ") */
-    DIR?: string;
-    /** Scale Factor */
-    SCALE_FACTOR: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface FinishingMaterialLoadPayload {
-    /** Finishing Material Load items */
-    ITEMS: Array<{
-      /** Serial Number */
-      ID?: number;
-      /** Load Case Name */
-      LCNAME: string;
-      /** Load Group Name */
-      GROUP_NAME?: string;
-      /** Covering Type ("ENVELOP" / "FILL" / "SURROUND") */
-      COVERING_TYPE?: string;
-      /** Covering Range [+x, -y, -x, +y] ("FULL" / "HALF") */
-      COVERING_RANGE: [string, string, string, string];
-      /** Covering Thickness (d) */
-      THICKNESS?: number;
-      /** Filling Property (Density) */
-      DENSITY?: number;
-      /** Direction ("GX" / "GY" / "GZ") */
-      DIR?: string;
-      /** Scale Factor */
-      SCALE_FACTOR: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SoilPropertyItem {
-    /** Soil Layer Thickness */
-    HEIGHT: number;
-    /** Internal Friction Angle or N Value */
-    ANGLE_OR_N: number;
-    /** Unit Volume Weight of Soil */
-    DENSITY: number;
-    /** Shear Wave Velocity */
-    VS: number;
-    /** Coeff. of Horizontal Ground Reaction */
-    KH: number;
-    /** Relative Displacement */
-    DISP: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SoilPropertyPayload {
-    /** Soil Properties Name */
-    NAME: string;
-    /** Description */
-    DESC?: string;
-    /** Use N Value (true=N값 / false=내부마찰각) */
-    OPT_USE_N?: number;
-    /** Level of Ground Surface */
-    GROUND_LEVEL: number;
-    /** Level of Bedrock */
-    BEDROCK_LEVEL: number;
-    /** Level of Footing Bottom */
-    FOOTING_LEVEL: number;
-    /** Soil Characteristic items */
-    ITEMS: Array<{
-      /** Soil Layer Thickness */
-      HEIGHT: number;
-      /** Internal Friction Angle or N Value */
-      ANGLE_OR_N: number;
-      /** Unit Volume Weight of Soil */
-      DENSITY: number;
-      /** Shear Wave Velocity */
-      VS: number;
-      /** Coeff. of Horizontal Ground Reaction */
-      KH: number;
-      /** Relative Displacement */
-      DISP: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface StaticEarthPressureProfileItem {
-    /** Level of pressure profile point */
-    LEVEL: number;
-    /** Soil pressure at level */
-    SOIL_PRES: number;
-    /** Additional pressure at level */
-    ADD_PRES: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface StaticEarthPressurePayload {
-    /** Load Case Name */
-    LOADCASE: string;
-    /** Load Direction ("XY" / "NORMAL") */
-    DIR?: string;
-    /** Static Earth Pressure Angle */
-    ANGLE: number;
-    /** Inner Point */
-    IN_PT?: Array<number>;
-    /** Scale Factor */
-    SF: number;
-    /** EP Type ("AT_REST" / "ACTIVE") */
-    EP_TYPE: string;
-    /** Surcharge Load */
-    SURCHARGE_LOAD: number;
-    /** Water Level */
-    WATER_LEVEL: number;
-    /** Soil Properties Name */
-    SOIL_PROP: string;
-    /** Selection Type ("GRUP" / "ELEMENT") */
-    SEL_TYPE: string;
-    /** Element Type ("FRAME" / "PLANAR") */
-    ELEM_TYPE: string;
-    /** Node List */
-    NODE_LIST?: Array<number>;
-    /** Element List */
-    ELEM_LIST?: Array<number>;
-    /** Loading Area Group Name */
-    LOADING_AREA_GROUP?: number;
-    /** Pressure Profile items */
-    PRES_PROFILE_ITEMS?: Array<{
-      /** Level of pressure profile point */
-      LEVEL: number;
-      /** Soil pressure at level */
-      SOIL_PRES: number;
-      /** Additional pressure at level */
-      ADD_PRES: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SeismicEarthPressureProfileItem {
-    /** Level */
-    LEVEL: number;
-    /** Horizontal Coefficient KH */
-    KH: number;
-    /** Relative Displacement */
-    REL_DISP: number;
-    /** Seismic Pressure */
-    SEIS_PRES: number;
-    /** Additional Pressure */
-    ADD_PRES?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface SeismicEarthPressurePayload {
@@ -11329,6 +11169,19 @@ export namespace DbStaticLoadsTypes {
     WIDTH?: number;
   }
   /** Generated from contracts/endpoints/. */
+  export interface SeismicEarthPressureProfileItem {
+    /** Level */
+    LEVEL: number;
+    /** Horizontal Coefficient KH */
+    KH: number;
+    /** Relative Displacement */
+    REL_DISP: number;
+    /** Seismic Pressure */
+    SEIS_PRES: number;
+    /** Additional Pressure */
+    ADD_PRES?: number;
+  }
+  /** Generated from contracts/endpoints/. */
   export interface SeismicLoadParamPayload {
     /** Load Case Name */
     NAME: string;
@@ -11365,6 +11218,270 @@ export namespace DbStaticLoadsTypes {
     /** Kae Gen NX only. */
     Kae?: number;
   }
+  /** Generated from contracts/endpoints/. */
+  export interface SelfWeightPayload {
+    /** Load Case Name */
+    LCNAME: string;
+    /** Load Group Name */
+    GROUP_NAME?: string;
+    /** Self-Weight Factor [X, Y, Z] */
+    FV: [number, number, number];
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SoilPropertyItem {
+    /** Soil Layer Thickness */
+    HEIGHT: number;
+    /** Internal Friction Angle or N Value */
+    ANGLE_OR_N: number;
+    /** Unit Volume Weight of Soil */
+    DENSITY: number;
+    /** Shear Wave Velocity */
+    VS: number;
+    /** Coeff. of Horizontal Ground Reaction */
+    KH: number;
+    /** Relative Displacement */
+    DISP: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SoilPropertyPayload {
+    /** Soil Properties Name */
+    NAME: string;
+    /** Description */
+    DESC?: string;
+    /** Use N Value (true=N값 / false=내부마찰각) */
+    OPT_USE_N?: number;
+    /** Level of Ground Surface */
+    GROUND_LEVEL: number;
+    /** Level of Bedrock */
+    BEDROCK_LEVEL: number;
+    /** Level of Footing Bottom */
+    FOOTING_LEVEL: number;
+    /** Soil Characteristic items */
+    ITEMS: Array<{
+      /** Soil Layer Thickness */
+      HEIGHT: number;
+      /** Internal Friction Angle or N Value */
+      ANGLE_OR_N: number;
+      /** Unit Volume Weight of Soil */
+      DENSITY: number;
+      /** Shear Wave Velocity */
+      VS: number;
+      /** Coeff. of Horizontal Ground Reaction */
+      KH: number;
+      /** Relative Displacement */
+      DISP: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SpecifiedDisplacementItem {
+    /** Serial Number */
+    ID?: number;
+    /** Load Case Name */
+    LCNAME: string;
+    /** Load Group Name */
+    GROUP_NAME?: string;
+    /** Displacements (Local) [Dx, Dy, Dz, Rx, Ry, Rz] */
+    VALUES?: [JsonObject, JsonObject, JsonObject, JsonObject, JsonObject, JsonObject];
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SpecifiedDisplacementPayload {
+    /** Specified Displacement items */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Case Name */
+      LCNAME: string;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Displacements (Local) [Dx, Dy, Dz, Rx, Ry, Rz] */
+      VALUES?: [JsonObject, JsonObject, JsonObject, JsonObject, JsonObject, JsonObject];
+    }>;
+    /** Usage Flag */
+    OPT_FLAG?: boolean;
+    /** Displacement Value */
+    DISPLACEMENT?: number;
+  }
+  export interface SpecifiedDisplacementValue {
+    OPT_FLAG?: boolean;
+    DISPLACEMENT?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface StaticEarthPressurePayload {
+    /** Load Case Name */
+    LOADCASE: string;
+    /** Load Direction ("XY" / "NORMAL") */
+    DIR?: string;
+    /** Static Earth Pressure Angle */
+    ANGLE: number;
+    /** Inner Point */
+    IN_PT?: Array<number>;
+    /** Scale Factor */
+    SF: number;
+    /** EP Type ("AT_REST" / "ACTIVE") */
+    EP_TYPE: string;
+    /** Surcharge Load */
+    SURCHARGE_LOAD: number;
+    /** Water Level */
+    WATER_LEVEL: number;
+    /** Soil Properties Name */
+    SOIL_PROP: string;
+    /** Selection Type ("GRUP" / "ELEMENT") */
+    SEL_TYPE: string;
+    /** Element Type ("FRAME" / "PLANAR") */
+    ELEM_TYPE: string;
+    /** Node List */
+    NODE_LIST?: Array<number>;
+    /** Element List */
+    ELEM_LIST?: Array<number>;
+    /** Loading Area Group Name */
+    LOADING_AREA_GROUP?: number;
+    /** Pressure Profile items */
+    PRES_PROFILE_ITEMS?: Array<{
+      /** Level of pressure profile point */
+      LEVEL: number;
+      /** Soil pressure at level */
+      SOIL_PRES: number;
+      /** Additional pressure at level */
+      ADD_PRES: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface StaticEarthPressureProfileItem {
+    /** Level of pressure profile point */
+    LEVEL: number;
+    /** Soil pressure at level */
+    SOIL_PRES: number;
+    /** Additional pressure at level */
+    ADD_PRES: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface StaticLoadCasePayload {
+    /** Ordering Index in GUI */
+    NO?: number;
+    /** Load Case Name */
+    NAME: string;
+    /** Load Type */
+    TYPE: string;
+    /** Description */
+    DESC?: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export type StaticSeismicLoadPayload = {
+    /** Seismic Load Code ("KDS(41-17-00:2019)") */
+    SEIS_CODE: "KDS(41-17-00:2019)";
+    /** Description */
+    DESC?: string;
+    /** Scale Factor X */
+    SCALE_FACTOR_X: number;
+    /** Scale Factor Y */
+    SCALE_FACTOR_Y: number;
+    /** Accidental Eccentricity X (0=Positive / 1=Negative / 2=None) */
+    ACCIDENT_ECCEN_X?: number;
+    /** Accidental Eccentricity Y (0=Positive / 1=Negative / 2=None) */
+    ACCIDENT_ECCEN_Y?: number;
+    /** Consider Accidental Torsion */
+    ACCIDENT_TORSION?: boolean;
+    /** KDS(41-17-00:2019) Parameters */
+    PARAMETERS: {
+      /** Seismic Zone (0=Zone1 / 1=Zone2) */
+      SEIS_ZONE: number;
+      /** Effective Peak Acceleration */
+      EPA: number;
+      /** Site Class (0=S1 / 1=S2 / 2=S3 / 3=S4 / 4=S5 / 5=S6) */
+      SITE_CLASS: number;
+      /** Short-period Site Coefficient FA */
+      FA?: number;
+      /** Long-period Site Coefficient FV */
+      FV?: number;
+      /** Design Spectral Acceleration at Short Period SDS */
+      SDS?: number;
+      /** Design Spectral Acceleration at 1-sec SD1 */
+      SD1?: number;
+      /** Seismic Use Group (0=Special / 1=I / 2=II) */
+      SEIS_USE_GROUP: number;
+      /** Importance Factor */
+      IMPORTANCE_FACTOR: number;
+      /** Period Method (0=Analytical / 1=Approximate) */
+      PERIOD_METHOD: number;
+    } & (
+      {
+        PERIOD_METHOD: 0;
+        /** Analytical Period X */
+        PERIOD_ANALYSIS_X: number;
+        /** Analytical Period Y */
+        PERIOD_ANALYSIS_Y: number;
+        /** Approximate Period X */
+        PERIOD_APPR_X: number;
+        /** Approximate Period Y */
+        PERIOD_APPR_Y: number;
+      } |
+      {
+        PERIOD_METHOD: 1;
+        /** Approximate Period X */
+        PERIOD_APPR_X: number;
+        /** Approximate Period Y */
+        PERIOD_APPR_Y: number;
+        /** Response Modification Factor X */
+        RESPONSE_MOD_FACTOR_X: number;
+        /** Response Modification Factor Y */
+        RESPONSE_MOD_FACTOR_Y: number;
+        /** Additional Story-level Seismic Load */
+        ADDITIONAL_LOAD?: {
+          /** Story Name */
+          STORY_NAME: string;
+          /** Additional Seismic Load X */
+          ALONG_X: number;
+          /** Additional Seismic Load Y */
+          ALONG_Y: number;
+          /** Additional Torsional Seismic Load RZ */
+          TORSIONAL_RZ: number;
+        };
+      }
+    );
+  } & (
+    {
+      SEIS_CODE: "USER TYPE";
+      /** Description */
+      DESC?: string;
+      /** Scale Factor X */
+      SCALE_FACTOR_X: number;
+      /** Scale Factor Y */
+      SCALE_FACTOR_Y: number;
+      /** Accidental Eccentricity X (0=Positive / 1=Negative / 2=None) */
+      ACCIDENT_ECCEN_X?: number;
+      /** Accidental Eccentricity Y (0=Positive / 1=Negative / 2=None) */
+      ACCIDENT_ECCEN_Y?: number;
+      /** Consider Accidental Torsion */
+      ACCIDENT_TORSION?: boolean;
+      /** Consider Inherent Torsion */
+      INHERENT_TORSION?: boolean;
+      /** User-defined Story-level Seismic Force */
+      SEISMIC_FORCE: Array<{
+        /** Story Name */
+        STORY_NAME: string;
+        /** Seismic Force X */
+        FORCE_X: number;
+        /** Seismic Force Y */
+        FORCE_Y: number;
+      }>;
+      /** Additional Story-level Seismic Load */
+      ADDITIONAL_LOAD?: {
+        /** Story Name */
+        STORY_NAME: string;
+        /** Additional Seismic Load X */
+        ALONG_X: number;
+        /** Additional Seismic Load Y */
+        ALONG_Y: number;
+        /** Additional Torsional Seismic Load RZ */
+        TORSIONAL_RZ: number;
+      };
+    } |
+    {
+      INHERENT_TORSION?: never;
+      SEISMIC_FORCE?: never;
+      ADDITIONAL_LOAD?: never;
+    }
+  );
   /** Generated from contracts/endpoints/. */
   export type StaticWindLoadPayload = {
     /** Wind Load Code ("KDS(41-12: 2022)") */
@@ -11528,200 +11645,9 @@ export namespace DbStaticLoadsTypes {
       ADDITIONAL_LOAD?: never;
     }
   );
-  /** Generated from contracts/endpoints/. */
-  export type StaticSeismicLoadPayload = {
-    /** Seismic Load Code ("KDS(41-17-00:2019)") */
-    SEIS_CODE: "KDS(41-17-00:2019)";
-    /** Description */
-    DESC?: string;
-    /** Scale Factor X */
-    SCALE_FACTOR_X: number;
-    /** Scale Factor Y */
-    SCALE_FACTOR_Y: number;
-    /** Accidental Eccentricity X (0=Positive / 1=Negative / 2=None) */
-    ACCIDENT_ECCEN_X?: number;
-    /** Accidental Eccentricity Y (0=Positive / 1=Negative / 2=None) */
-    ACCIDENT_ECCEN_Y?: number;
-    /** Consider Accidental Torsion */
-    ACCIDENT_TORSION?: boolean;
-    /** KDS(41-17-00:2019) Parameters */
-    PARAMETERS: {
-      /** Seismic Zone (0=Zone1 / 1=Zone2) */
-      SEIS_ZONE: number;
-      /** Effective Peak Acceleration */
-      EPA: number;
-      /** Site Class (0=S1 / 1=S2 / 2=S3 / 3=S4 / 4=S5 / 5=S6) */
-      SITE_CLASS: number;
-      /** Short-period Site Coefficient FA */
-      FA?: number;
-      /** Long-period Site Coefficient FV */
-      FV?: number;
-      /** Design Spectral Acceleration at Short Period SDS */
-      SDS?: number;
-      /** Design Spectral Acceleration at 1-sec SD1 */
-      SD1?: number;
-      /** Seismic Use Group (0=Special / 1=I / 2=II) */
-      SEIS_USE_GROUP: number;
-      /** Importance Factor */
-      IMPORTANCE_FACTOR: number;
-      /** Period Method (0=Analytical / 1=Approximate) */
-      PERIOD_METHOD: number;
-    } & (
-      {
-        PERIOD_METHOD: 0;
-        /** Analytical Period X */
-        PERIOD_ANALYSIS_X: number;
-        /** Analytical Period Y */
-        PERIOD_ANALYSIS_Y: number;
-        /** Approximate Period X */
-        PERIOD_APPR_X: number;
-        /** Approximate Period Y */
-        PERIOD_APPR_Y: number;
-      } |
-      {
-        PERIOD_METHOD: 1;
-        /** Approximate Period X */
-        PERIOD_APPR_X: number;
-        /** Approximate Period Y */
-        PERIOD_APPR_Y: number;
-        /** Response Modification Factor X */
-        RESPONSE_MOD_FACTOR_X: number;
-        /** Response Modification Factor Y */
-        RESPONSE_MOD_FACTOR_Y: number;
-        /** Additional Story-level Seismic Load */
-        ADDITIONAL_LOAD?: {
-          /** Story Name */
-          STORY_NAME: string;
-          /** Additional Seismic Load X */
-          ALONG_X: number;
-          /** Additional Seismic Load Y */
-          ALONG_Y: number;
-          /** Additional Torsional Seismic Load RZ */
-          TORSIONAL_RZ: number;
-        };
-      }
-    );
-  } & (
-    {
-      SEIS_CODE: "USER TYPE";
-      /** Description */
-      DESC?: string;
-      /** Scale Factor X */
-      SCALE_FACTOR_X: number;
-      /** Scale Factor Y */
-      SCALE_FACTOR_Y: number;
-      /** Accidental Eccentricity X (0=Positive / 1=Negative / 2=None) */
-      ACCIDENT_ECCEN_X?: number;
-      /** Accidental Eccentricity Y (0=Positive / 1=Negative / 2=None) */
-      ACCIDENT_ECCEN_Y?: number;
-      /** Consider Accidental Torsion */
-      ACCIDENT_TORSION?: boolean;
-      /** Consider Inherent Torsion */
-      INHERENT_TORSION?: boolean;
-      /** User-defined Story-level Seismic Force */
-      SEISMIC_FORCE: Array<{
-        /** Story Name */
-        STORY_NAME: string;
-        /** Seismic Force X */
-        FORCE_X: number;
-        /** Seismic Force Y */
-        FORCE_Y: number;
-      }>;
-      /** Additional Story-level Seismic Load */
-      ADDITIONAL_LOAD?: {
-        /** Story Name */
-        STORY_NAME: string;
-        /** Additional Seismic Load X */
-        ALONG_X: number;
-        /** Additional Seismic Load Y */
-        ALONG_Y: number;
-        /** Additional Torsional Seismic Load RZ */
-        TORSIONAL_RZ: number;
-      };
-    } |
-    {
-      INHERENT_TORSION?: never;
-      SEISMIC_FORCE?: never;
-      ADDITIONAL_LOAD?: never;
-    }
-  );
 }
 
 export namespace DbTemperaturePrestressTypes {
-  /** Generated from contracts/endpoints/. */
-  export interface ElementTemperatureItem {
-    /** Serial Number */
-    ID?: number;
-    /** Load Case Name */
-    LCNAME: string;
-    /** Load Group Name */
-    GROUP_NAME?: string;
-    /** Temperature */
-    TEMP: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ElementTemperaturePayload {
-    /** Element Temperature (배열 오브젝트로 입력) */
-    ITEMS: Array<{
-      /** Serial Number */
-      ID?: number;
-      /** Load Case Name */
-      LCNAME: string;
-      /** Load Group Name */
-      GROUP_NAME?: string;
-      /** Temperature */
-      TEMP: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface TemperatureGradientItem {
-    /** Serial Number */
-    ID?: number;
-    /** Load Case Name */
-    LCNAME: string;
-    /** Load Group Name */
-    GROUP_NAME?: string;
-    /** Element Type · Beam: 1 · Plate: 2 */
-    TYPE: number;
-    /** T2z − T1z */
-    TZ: number;
-    /** Use Section Hz */
-    USE_HZ?: boolean;
-    /** Hz value (USE_HZ = false 일 때 사용) */
-    HZ?: number;
-    /** T2y − T1y (Beam 타입 전용) */
-    TY?: number;
-    /** Use Section Hy (Beam 타입 전용) */
-    USE_HY?: boolean;
-    /** Hy value (USE_HY = false 일 때 사용, Beam 전용) */
-    HY?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface TemperatureGradientPayload {
-    /** Temperature Gradient (배열 오브젝트로 입력) */
-    ITEMS: Array<{
-      /** Serial Number */
-      ID?: number;
-      /** Load Case Name */
-      LCNAME: string;
-      /** Load Group Name */
-      GROUP_NAME?: string;
-      /** Element Type · Beam: 1 · Plate: 2 */
-      TYPE: number;
-      /** T2z − T1z */
-      TZ: number;
-      /** Use Section Hz */
-      USE_HZ?: boolean;
-      /** Hz value (USE_HZ = false 일 때 사용) */
-      HZ?: number;
-      /** T2y − T1y (Beam 타입 전용) */
-      TY?: number;
-      /** Use Section Hy (Beam 타입 전용) */
-      USE_HY?: boolean;
-      /** Hy value (USE_HY = false 일 때 사용, Beam 전용) */
-      HY?: number;
-    }>;
-  }
   /** Generated from contracts/endpoints/. */
   export interface BeamSectionTemperatureItem {
     /** Serial Number */
@@ -11814,13 +11740,34 @@ export namespace DbTemperaturePrestressTypes {
     }>;
   }
   /** Generated from contracts/endpoints/. */
-  export interface SystemTemperaturePayload {
+  export interface ElementTemperatureItem {
+    /** Serial Number */
+    ID?: number;
     /** Load Case Name */
     LCNAME: string;
     /** Load Group Name */
     GROUP_NAME?: string;
-    /** System Temperature */
-    TEMPER?: number;
+    /** Temperature */
+    TEMP: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ElementTemperaturePayload {
+    /** Element Temperature (배열 오브젝트로 입력) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Case Name */
+      LCNAME: string;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Temperature */
+      TEMP: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ExternalLoadCaseForPretensionPayload {
+    /** Load Case Name (프리텐션 하중이 있는 케이스만 입력) */
+    LCNAME_ITEM: Array<string>;
   }
   /** Generated from contracts/endpoints/. */
   export interface NodalTemperatureItem {
@@ -11848,57 +11795,182 @@ export namespace DbTemperaturePrestressTypes {
     }>;
   }
   /** Generated from contracts/endpoints/. */
-  export interface TendonPropertyPayload {
-    /** Tendon Name */
-    NAME: string;
-    /** Tendon Type · Internal: "INTERNAL" · External: "EXTERNAL" */
+  export interface PrestressBeamLoadItem {
+    /** Serial Number */
+    ID?: number;
+    /** Load Case Name */
+    LCNAME: string;
+    /** Load Group Name */
+    GROUP_NAME?: string;
+    /** Direction · Local y: 0 · Local z: 1 */
+    DIR?: number;
+    /** Tension */
+    TENSION: number;
+    /** Distance – I (Di) */
+    DISTANCE_I?: number;
+    /** Distance – M (Dm) */
+    DISTANCE_M?: number;
+    /** Distance – J (Dj) */
+    DISTANCE_J?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PrestressBeamLoadPayload {
+    /** Prestress Beam Loads (배열 오브젝트로 입력) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Case Name */
+      LCNAME: string;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Direction · Local y: 0 · Local z: 1 */
+      DIR?: number;
+      /** Tension */
+      TENSION: number;
+      /** Distance – I (Di) */
+      DISTANCE_I?: number;
+      /** Distance – M (Dm) */
+      DISTANCE_M?: number;
+      /** Distance – J (Dj) */
+      DISTANCE_J?: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PretensionLoadItem {
+    /** Serial Number */
+    ID?: number;
+    /** Load Case Name */
+    LCNAME: string;
+    /** Load Group Name */
+    GROUP_NAME?: string;
+    /** Pretension Load */
+    TENSION: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PretensionLoadPayload {
+    /** Pretension Loads (배열 오브젝트로 입력) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Case Name */
+      LCNAME: string;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Pretension Load */
+      TENSION: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SystemTemperaturePayload {
+    /** Load Case Name */
+    LCNAME: string;
+    /** Load Group Name */
+    GROUP_NAME?: string;
+    /** System Temperature */
+    TEMPER?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TemperatureGradientItem {
+    /** Serial Number */
+    ID?: number;
+    /** Load Case Name */
+    LCNAME: string;
+    /** Load Group Name */
+    GROUP_NAME?: string;
+    /** Element Type · Beam: 1 · Plate: 2 */
+    TYPE: number;
+    /** T2z − T1z */
+    TZ: number;
+    /** Use Section Hz */
+    USE_HZ?: boolean;
+    /** Hz value (USE_HZ = false 일 때 사용) */
+    HZ?: number;
+    /** T2y − T1y (Beam 타입 전용) */
+    TY?: number;
+    /** Use Section Hy (Beam 타입 전용) */
+    USE_HY?: boolean;
+    /** Hy value (USE_HY = false 일 때 사용, Beam 전용) */
+    HY?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TemperatureGradientPayload {
+    /** Temperature Gradient (배열 오브젝트로 입력) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Case Name */
+      LCNAME: string;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Element Type · Beam: 1 · Plate: 2 */
+      TYPE: number;
+      /** T2z − T1z */
+      TZ: number;
+      /** Use Section Hz */
+      USE_HZ?: boolean;
+      /** Hz value (USE_HZ = false 일 때 사용) */
+      HZ?: number;
+      /** T2y − T1y (Beam 타입 전용) */
+      TY?: number;
+      /** Use Section Hy (Beam 타입 전용) */
+      USE_HY?: boolean;
+      /** Hy value (USE_HY = false 일 때 사용, Beam 전용) */
+      HY?: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TendonLocationCompositeSectionPayload {
+    /** Tendon Profile No. */
+    TDNA: number;
+    /** Composite Section for Construction Stage No. */
+    CSCS: number;
+    /** Part Number */
+    PART_NUM: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TendonPrestressItem {
+    /** Serial Number */
+    ID?: number;
+    /** Load Case Name */
+    LCNAME: string;
+    /** Load Group Name */
+    GROUP_NAME?: string;
+    /** Tendon Profile Name */
+    TENDON_NAME: string;
+    /** Prestress Load Type · Stress: "STRESS" · Force: "FORCE" */
     TYPE?: string;
-    /** Tensioning Type · Post-Tension: "POST" · Pre-Tension: "PRE" · External: 미사용 */
-    LT?: string;
-    /** Tendon Material No. */
-    MATL: number;
-    /** Total Tendon Area */
-    AREA: number;
-    /** Diameter · Post: Duct 직경 · Pre: Strand 직경 · External: 미사용 */
-    D_AREA: number;
-    /** Anchorage Slip - Begin (Post/External 전용) */
-    ASB?: number;
-    /** Anchorage Slip - End (Post/External 전용) */
-    ASE?: number;
-    /** Bond Type (Post 전용) */
-    bBONDED?: boolean;
-    /** External Cable Moment Magnifier (External 전용) */
-    ALPHA?: number;
-    /** Relaxation Coefficient – Code */
-    RM: number;
-    /** Relaxation Coefficient – Factor */
-    RV: number;
-    /** Ultimate Strength */
-    US?: number;
-    /** Yield Strength */
-    YS?: number;
-    /** Curvature Friction Factor (Post/External 전용) */
-    FF?: number;
-    /** Wobble Friction Factor (Post 전용, Magura/IRC/KSCE/IRC112 코드) */
-    WF?: number;
-    /** Wobble Type (CEB-FIP/European 코드) · Fraction Factor: 0 · Unintentional Angular: 1 */
-    W_TYPE?: number;
-    /** Unintentional Angular Disp. (W_TYPE=1) */
-    W_ANGLE?: number;
-    /** Relaxation Coefficient Class (CEB-FIP 2010 전용) */
-    TDMFK?: number;
-    /** Relaxation Factor ξ (TB05/TB10092/Q-CR/AS/JTJ/JTG 코드) Required when RM is 2 or 3 or 10 or 11 or 12 or 13. */
-    FT?: number;
-    /** Low Relaxation (TB05/TB10092/Q-CR 코드) */
-    LR?: boolean;
-    /** Overstress Reduction Factor 적용 (TB05/TB10092/Q-CR/JTG 코드) */
-    bOSRF?: boolean;
-    /** Characteristic Strength fpk (TB05/TB10092/Q-CR/JTJ/JTG 코드) Required when RM is 2 or 3 or 10 or 12 or 13. */
-    FPK?: number;
-    /** Relaxation Function Name (User Defined) Required when RM = 100. */
-    TDMFNAME?: string;
-    /** Relaxation coefficient - Check Box */
-    bRELAX?: boolean;
+    /** Jacking Step · Begin: "BEGIN" · End: "END" · Both: "BOTH" */
+    ORDER?: string;
+    /** Jacking Force / Stress at Begin */
+    BEGIN: number;
+    /** Jacking Force / Stress at End */
+    END: number;
+    /** Grouting Stage */
+    GROUTING?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TendonPrestressPayload {
+    /** Tendon Prestress (배열 오브젝트로 입력) */
+    ITEMS: Array<{
+      /** Serial Number */
+      ID?: number;
+      /** Load Case Name */
+      LCNAME: string;
+      /** Load Group Name */
+      GROUP_NAME?: string;
+      /** Tendon Profile Name */
+      TENDON_NAME: string;
+      /** Prestress Load Type · Stress: "STRESS" · Force: "FORCE" */
+      TYPE?: string;
+      /** Jacking Step · Begin: "BEGIN" · End: "END" · Both: "BOTH" */
+      ORDER?: string;
+      /** Jacking Force / Stress at Begin */
+      BEGIN: number;
+      /** Jacking Force / Stress at End */
+      END: number;
+      /** Grouting Stage */
+      GROUTING?: number;
+    }>;
   }
   /** Generated from contracts/endpoints/. */
   export type TendonProfilePayload = {
@@ -12093,330 +12165,61 @@ export namespace DbTemperaturePrestressTypes {
     }
   );
   /** Generated from contracts/endpoints/. */
-  export interface TendonLocationCompositeSectionPayload {
-    /** Tendon Profile No. */
-    TDNA: number;
-    /** Composite Section for Construction Stage No. */
-    CSCS: number;
-    /** Part Number */
-    PART_NUM: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface TendonPrestressItem {
-    /** Serial Number */
-    ID?: number;
-    /** Load Case Name */
-    LCNAME: string;
-    /** Load Group Name */
-    GROUP_NAME?: string;
-    /** Tendon Profile Name */
-    TENDON_NAME: string;
-    /** Prestress Load Type · Stress: "STRESS" · Force: "FORCE" */
+  export interface TendonPropertyPayload {
+    /** Tendon Name */
+    NAME: string;
+    /** Tendon Type · Internal: "INTERNAL" · External: "EXTERNAL" */
     TYPE?: string;
-    /** Jacking Step · Begin: "BEGIN" · End: "END" · Both: "BOTH" */
-    ORDER?: string;
-    /** Jacking Force / Stress at Begin */
-    BEGIN: number;
-    /** Jacking Force / Stress at End */
-    END: number;
-    /** Grouting Stage */
-    GROUTING?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface TendonPrestressPayload {
-    /** Tendon Prestress (배열 오브젝트로 입력) */
-    ITEMS: Array<{
-      /** Serial Number */
-      ID?: number;
-      /** Load Case Name */
-      LCNAME: string;
-      /** Load Group Name */
-      GROUP_NAME?: string;
-      /** Tendon Profile Name */
-      TENDON_NAME: string;
-      /** Prestress Load Type · Stress: "STRESS" · Force: "FORCE" */
-      TYPE?: string;
-      /** Jacking Step · Begin: "BEGIN" · End: "END" · Both: "BOTH" */
-      ORDER?: string;
-      /** Jacking Force / Stress at Begin */
-      BEGIN: number;
-      /** Jacking Force / Stress at End */
-      END: number;
-      /** Grouting Stage */
-      GROUTING?: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PrestressBeamLoadItem {
-    /** Serial Number */
-    ID?: number;
-    /** Load Case Name */
-    LCNAME: string;
-    /** Load Group Name */
-    GROUP_NAME?: string;
-    /** Direction · Local y: 0 · Local z: 1 */
-    DIR?: number;
-    /** Tension */
-    TENSION: number;
-    /** Distance – I (Di) */
-    DISTANCE_I?: number;
-    /** Distance – M (Dm) */
-    DISTANCE_M?: number;
-    /** Distance – J (Dj) */
-    DISTANCE_J?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PrestressBeamLoadPayload {
-    /** Prestress Beam Loads (배열 오브젝트로 입력) */
-    ITEMS: Array<{
-      /** Serial Number */
-      ID?: number;
-      /** Load Case Name */
-      LCNAME: string;
-      /** Load Group Name */
-      GROUP_NAME?: string;
-      /** Direction · Local y: 0 · Local z: 1 */
-      DIR?: number;
-      /** Tension */
-      TENSION: number;
-      /** Distance – I (Di) */
-      DISTANCE_I?: number;
-      /** Distance – M (Dm) */
-      DISTANCE_M?: number;
-      /** Distance – J (Dj) */
-      DISTANCE_J?: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PretensionLoadItem {
-    /** Serial Number */
-    ID?: number;
-    /** Load Case Name */
-    LCNAME: string;
-    /** Load Group Name */
-    GROUP_NAME?: string;
-    /** Pretension Load */
-    TENSION: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PretensionLoadPayload {
-    /** Pretension Loads (배열 오브젝트로 입력) */
-    ITEMS: Array<{
-      /** Serial Number */
-      ID?: number;
-      /** Load Case Name */
-      LCNAME: string;
-      /** Load Group Name */
-      GROUP_NAME?: string;
-      /** Pretension Load */
-      TENSION: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ExternalLoadCaseForPretensionPayload {
-    /** Load Case Name (프리텐션 하중이 있는 케이스만 입력) */
-    LCNAME_ITEM: Array<string>;
+    /** Tensioning Type · Post-Tension: "POST" · Pre-Tension: "PRE" · External: 미사용 */
+    LT?: string;
+    /** Tendon Material No. */
+    MATL: number;
+    /** Total Tendon Area */
+    AREA: number;
+    /** Diameter · Post: Duct 직경 · Pre: Strand 직경 · External: 미사용 */
+    D_AREA: number;
+    /** Anchorage Slip - Begin (Post/External 전용) */
+    ASB?: number;
+    /** Anchorage Slip - End (Post/External 전용) */
+    ASE?: number;
+    /** Bond Type (Post 전용) */
+    bBONDED?: boolean;
+    /** External Cable Moment Magnifier (External 전용) */
+    ALPHA?: number;
+    /** Relaxation Coefficient – Code */
+    RM: number;
+    /** Relaxation Coefficient – Factor */
+    RV: number;
+    /** Ultimate Strength */
+    US?: number;
+    /** Yield Strength */
+    YS?: number;
+    /** Curvature Friction Factor (Post/External 전용) */
+    FF?: number;
+    /** Wobble Friction Factor (Post 전용, Magura/IRC/KSCE/IRC112 코드) */
+    WF?: number;
+    /** Wobble Type (CEB-FIP/European 코드) · Fraction Factor: 0 · Unintentional Angular: 1 */
+    W_TYPE?: number;
+    /** Unintentional Angular Disp. (W_TYPE=1) */
+    W_ANGLE?: number;
+    /** Relaxation Coefficient Class (CEB-FIP 2010 전용) */
+    TDMFK?: number;
+    /** Relaxation Factor ξ (TB05/TB10092/Q-CR/AS/JTJ/JTG 코드) Required when RM is 2 or 3 or 10 or 11 or 12 or 13. */
+    FT?: number;
+    /** Low Relaxation (TB05/TB10092/Q-CR 코드) */
+    LR?: boolean;
+    /** Overstress Reduction Factor 적용 (TB05/TB10092/Q-CR/JTG 코드) */
+    bOSRF?: boolean;
+    /** Characteristic Strength fpk (TB05/TB10092/Q-CR/JTJ/JTG 코드) Required when RM is 2 or 3 or 10 or 12 or 13. */
+    FPK?: number;
+    /** Relaxation Function Name (User Defined) Required when RM = 100. */
+    TDMFNAME?: string;
+    /** Relaxation coefficient - Check Box */
+    bRELAX?: boolean;
   }
 }
 
 export namespace DesignRcKdsChecksTypes {
-  /** Generated from contracts/endpoints/. */
-  export interface PerformRcMemberCheckArgument {
-    /** 수행 대상 타입 ("ALL"=전체, "ELEMS"=요소별, "SECTIONS"=단면별) */
-    PERFORM_TYPE?: "ALL" | "ELEMS" | "SECTIONS";
-    /** 요소 입력 (ELEMS / SECTIONS 중 하나) */
-    ELEMS?: {
-      /** 개별 ID */
-      KEYS?: Array<number>;
-      /** ID 범위 (예 "1to160") */
-      TO?: string;
-      /** 구조 그룹 이름 */
-      STRUCTURE_GROUP_NAME?: string;
-    };
-    /** 단면 번호 (ELEMS / SECTIONS 중 하나) */
-    SECTIONS?: Array<number>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface RcMemberCheckTableArgument {
-    /** 정렬 기준 (0=Section, 1=Member) */
-    PRI_SORT?: number;
-    /** 결과 필터 (0=All, 1=OK, 2=NG) */
-    RESULT?: number;
-    /** 응답 테이블 제목 */
-    TABLE_NAME?: string;
-    /** 결과 테이블 타입 ("MEMB" 또는 "PROP") */
-    TABLE_TYPE: "MEMB" | "PROP";
-    /** 대상 요소 (ELEMS / SECTIONS 중 하나) */
-    ELEMS?: {
-      /** 개별 ID / ID 범위 / 구조그룹 */
-      KEYS?: Array<number>;
-      /** 개별 ID / ID 범위 / 구조그룹 */
-      TO?: string;
-      /** 개별 ID / ID 범위 / 구조그룹 */
-      STRUCTURE_GROUP_NAME?: string;
-    };
-    /** 대상 요소 (ELEMS / SECTIONS 중 하나) */
-    SECTIONS?: Array<number>;
-    /** 결과 저장 경로 */
-    EXPORT_PATH?: string;
-    /** 단위 설정 (FORCE,DIST,HEAT,TEMP) */
-    UNIT?: JsonObject;
-    /** 숫자 형식 (FORMAT,PLACE) */
-    STYLES?: JsonObject;
-    /** 출력 컬럼 목록 */
-    COMPONENTS?: Array<string>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface RcMemberCheckReportArgument {
-    /** 리포트 대상 타입 ("MEMB" / "PROP") */
-    REPORT_TYPE: "MEMB" | "PROP";
-    /** 요소(MEMB) 출력 모드 ("Graphic"/"Detail"/"Summary") Applies when REPORT_TYPE = "MEMB". */
-    CURRENT_MODE_MEMB?: "Graphic" | "Detail" | "Summary";
-    /** 단면(PROP) 출력 모드 ("Graphic"/"Summary") Applies when REPORT_TYPE = "PROP". */
-    CURRENT_MODE_PROP?: "Graphic" | "Summary";
-    /** 대상 요소 (ELEMS / SECTIONS 중 하나) */
-    ELEMS?: {
-      /** 개별 ID / ID 범위 / 구조그룹 */
-      KEYS?: Array<number>;
-      /** 개별 ID / ID 범위 / 구조그룹 */
-      TO?: string;
-      /** 개별 ID / ID 범위 / 구조그룹 */
-      STRUCTURE_GROUP_NAME?: string;
-    };
-    /** 대상 요소 (ELEMS / SECTIONS 중 하나) */
-    SECTIONS?: Array<number>;
-    /** Detail 출력 위치 (END_I,MID,END_J) */
-    DETAIL_POSITIONS?: JsonObject;
-    /** 리포트 저장 디렉터리 경로 */
-    EXPORT_PATH: string;
-    /** 출력 파일 기본 이름 */
-    OUTPUT_NAME: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PerformRcWallCheckArgument {
-    /** 벽/층 선택 목록 (생략 시 전체) */
-    SELECTIONS?: Array<{
-      /** 벽 ID 지정 */
-      WALL_IDS?: {
-        /** 개별 벽 ID */
-        KEYS?: Array<number>;
-        /** 벽 ID 범위 (예 "1to20") */
-        TO?: string;
-      };
-      /** 층 이름 목록 */
-      STORY?: Array<string>;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface RcWallCheckTableArgument {
-    /** 출력 단위 ("WID+STORY" / "WID") */
-    TABLE_TYPE: "WID+STORY" | "WID";
-    /** 벽/층 선택 목록 (생략 시 전체) */
-    SELECTIONS?: Array<{
-      /** 벽 ID (KEYS 또는 TO) */
-      WALL_IDS?: JsonObject;
-      /** 층 이름 목록 */
-      STORY?: Array<string>;
-    }>;
-    /** WID+STORY 정렬 (0=Story, 1=WID) */
-    PRI_SORT?: number;
-    /** WID 정렬 (0=WallMark, 1=WID) */
-    PRI_SORT_WID?: number;
-    /** 결과 필터 (0=All, 1=OK, 2=NG) */
-    RESULT?: number;
-    /** 응답 테이블 제목 */
-    TABLE_NAME?: string;
-    /** 결과 저장 경로 */
-    EXPORT_PATH?: string;
-    /** 단위 설정 */
-    UNIT?: JsonObject;
-    /** 숫자 형식 */
-    STYLES?: JsonObject;
-    /** 출력 컬럼 목록 */
-    COMPONENTS?: Array<string>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface RcWallCheckReportArgument {
-    /** 출력 단위 ("WID+STORY" / "WID") */
-    REPORT_TYPE: "WID+STORY" | "WID";
-    /** WID+STORY 모드 (Graphic/Detail/Summary/PMCurve) Applies when REPORT_TYPE = "WID+STORY". */
-    CURRENT_MODE_WID_STORY?: "Graphic" | "Detail" | "Summary" | "PMCurve";
-    /** WID 모드 (Graphic/Summary/PMCurve, Detail 미지원) Applies when REPORT_TYPE = "WID". */
-    CURRENT_MODE_WID?: "Graphic" | "Summary" | "PMCurve";
-    /** 벽/층 선택 목록 (생략 시 전체) */
-    SELECTIONS?: Array<{
-      /** 벽 ID (KEYS 또는 TO) */
-      WALL_IDS?: JsonObject;
-      /** 층 이름 목록 */
-      STORY?: Array<string>;
-    }>;
-    /** 리포트 저장 디렉터리 경로 */
-    EXPORT_PATH: string;
-    /** 출력 파일 기본 이름 */
-    OUTPUT_NAME: string;
-  }
-  export interface RcDesignResultRgbColor {
-    R?: number;
-    G?: number;
-    B?: number;
-  }
-  export interface RcDesignResultLoadCaseComb {
-    TYPE?: string;
-    NAME?: string;
-  }
-  export interface RcDesignResultTypeOfDisplay {
-    CONTOUR?: Record<string, unknown>;
-    LEGEND?: Record<string, unknown>;
-    VALUES?: Record<string, unknown>;
-  }
-  export interface RcDesignResultDisplayMembers {
-    BEAM?: boolean;
-    COLUMN?: boolean;
-    BRACE?: boolean;
-    WALL?: boolean;
-  }
-  export interface RcDesignResultOutputComponent {
-    RATIO_AXIAL_STRESS?: boolean;
-    MAIN_REBAR?: boolean;
-    SHEAR_REINFORCEMENT?: boolean;
-  }
-  export interface RcDesignResultColumnSectionSize {
-    SCALE_FACTOR?: number;
-  }
-  export interface RcDesignResultValueOption {
-    DECIMAL_PLACES?: number;
-    EXPONENTIAL?: boolean;
-  }
-  export interface RcDesignResultOutputSectLocation {
-    OPT_I?: boolean;
-    OPT_CENTER_MID?: boolean;
-    OPT_J?: boolean;
-    OPT_MAX?: boolean;
-    OPT_ALL?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface RcDesignResultGraphic {
-    /** 하중케이스/조합 (TYPE="CBC", NAME) */
-    LOAD_CASE_COMB: JsonObject;
-    /** 강도비 성분 (Axial/Shear-y/Shear-z/Bend-y/Bend-z/Combined) */
-    COMPONENTS?: "Axial" | "Shear-y" | "Shear-z" | "Bend-y" | "Bend-z" | "Combined";
-    /** 표시 옵션 (CONTOUR/LEGEND/VALUES) */
-    TYPE_OF_DISPLAY?: JsonObject;
-    /** 배근 표시 여부 */
-    REINFORCEMENT?: boolean;
-    /** 배근 표시 타입 (REBAR/AREA/RATIO) */
-    REINFORCEMENT_TYPE?: "REBAR" | "AREA" | "RATIO";
-    /** 표시 부재 종류 (BEAM/COLUMN/BRACE/WALL) */
-    DISPLAY_MEMBERS?: JsonObject;
-    /** 출력 성분 (RATIO_AXIAL_STRESS/MAIN_REBAR/SHEAR_REINFORCEMENT) */
-    OUTPUT_COMPONENT?: JsonObject;
-    /** 기둥 단면 크기 표시 (SCALE_FACTOR 0.1–100) */
-    COLUMN_SECTION_SIZE?: JsonObject;
-    /** 값 표시 형식 (DECIMAL_PLACES/EXPONENTIAL) */
-    VALUE_OPTION?: JsonObject;
-    /** 출력 단면 위치 (OPT_I/OPT_CENTER_MID/OPT_J/OPT_MAX/OPT_ALL) */
-    OUTPUT_SECT_LOCATION?: JsonObject;
-  }
   /** Generated from contracts/endpoints/. */
   export interface ComprehensiveDesignResultArgument {
     /** 이미지 저장 경로+파일명 */
@@ -12469,6 +12272,37 @@ export namespace DesignRcKdsChecksTypes {
       OUTPUT_SECT_LOCATION?: JsonObject;
     };
   }
+  /** Generated from contracts/endpoints/. */
+  export interface PerformRcMemberCheckArgument {
+    /** 수행 대상 타입 ("ALL"=전체, "ELEMS"=요소별, "SECTIONS"=단면별) */
+    PERFORM_TYPE?: "ALL" | "ELEMS" | "SECTIONS";
+    /** 요소 입력 (ELEMS / SECTIONS 중 하나) */
+    ELEMS?: {
+      /** 개별 ID */
+      KEYS?: Array<number>;
+      /** ID 범위 (예 "1to160") */
+      TO?: string;
+      /** 구조 그룹 이름 */
+      STRUCTURE_GROUP_NAME?: string;
+    };
+    /** 단면 번호 (ELEMS / SECTIONS 중 하나) */
+    SECTIONS?: Array<number>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PerformRcWallCheckArgument {
+    /** 벽/층 선택 목록 (생략 시 전체) */
+    SELECTIONS?: Array<{
+      /** 벽 ID 지정 */
+      WALL_IDS?: {
+        /** 개별 벽 ID */
+        KEYS?: Array<number>;
+        /** 벽 ID 범위 (예 "1to20") */
+        TO?: string;
+      };
+      /** 층 이름 목록 */
+      STORY?: Array<string>;
+    }>;
+  }
   export interface RcDesignForcesArgument {
     TABLE_NAME?: string;
     TABLE_TYPE?: string;
@@ -12479,9 +12313,251 @@ export namespace DesignRcKdsChecksTypes {
     NODE_ELEMS?: PostBaseTypes.NodeElemsSelector;
     PARTS?: Array<string>;
   }
+  export interface RcDesignResultColumnSectionSize {
+    SCALE_FACTOR?: number;
+  }
+  export interface RcDesignResultDisplayMembers {
+    BEAM?: boolean;
+    COLUMN?: boolean;
+    BRACE?: boolean;
+    WALL?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RcDesignResultGraphic {
+    /** 하중케이스/조합 (TYPE="CBC", NAME) */
+    LOAD_CASE_COMB: JsonObject;
+    /** 강도비 성분 (Axial/Shear-y/Shear-z/Bend-y/Bend-z/Combined) */
+    COMPONENTS?: "Axial" | "Shear-y" | "Shear-z" | "Bend-y" | "Bend-z" | "Combined";
+    /** 표시 옵션 (CONTOUR/LEGEND/VALUES) */
+    TYPE_OF_DISPLAY?: JsonObject;
+    /** 배근 표시 여부 */
+    REINFORCEMENT?: boolean;
+    /** 배근 표시 타입 (REBAR/AREA/RATIO) */
+    REINFORCEMENT_TYPE?: "REBAR" | "AREA" | "RATIO";
+    /** 표시 부재 종류 (BEAM/COLUMN/BRACE/WALL) */
+    DISPLAY_MEMBERS?: JsonObject;
+    /** 출력 성분 (RATIO_AXIAL_STRESS/MAIN_REBAR/SHEAR_REINFORCEMENT) */
+    OUTPUT_COMPONENT?: JsonObject;
+    /** 기둥 단면 크기 표시 (SCALE_FACTOR 0.1–100) */
+    COLUMN_SECTION_SIZE?: JsonObject;
+    /** 값 표시 형식 (DECIMAL_PLACES/EXPONENTIAL) */
+    VALUE_OPTION?: JsonObject;
+    /** 출력 단면 위치 (OPT_I/OPT_CENTER_MID/OPT_J/OPT_MAX/OPT_ALL) */
+    OUTPUT_SECT_LOCATION?: JsonObject;
+  }
+  export interface RcDesignResultLoadCaseComb {
+    TYPE?: string;
+    NAME?: string;
+  }
+  export interface RcDesignResultOutputComponent {
+    RATIO_AXIAL_STRESS?: boolean;
+    MAIN_REBAR?: boolean;
+    SHEAR_REINFORCEMENT?: boolean;
+  }
+  export interface RcDesignResultOutputSectLocation {
+    OPT_I?: boolean;
+    OPT_CENTER_MID?: boolean;
+    OPT_J?: boolean;
+    OPT_MAX?: boolean;
+    OPT_ALL?: boolean;
+  }
+  export interface RcDesignResultRgbColor {
+    R?: number;
+    G?: number;
+    B?: number;
+  }
+  export interface RcDesignResultTypeOfDisplay {
+    CONTOUR?: Record<string, unknown>;
+    LEGEND?: Record<string, unknown>;
+    VALUES?: Record<string, unknown>;
+  }
+  export interface RcDesignResultValueOption {
+    DECIMAL_PLACES?: number;
+    EXPONENTIAL?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RcMemberCheckReportArgument {
+    /** 리포트 대상 타입 ("MEMB" / "PROP") */
+    REPORT_TYPE: "MEMB" | "PROP";
+    /** 요소(MEMB) 출력 모드 ("Graphic"/"Detail"/"Summary") Applies when REPORT_TYPE = "MEMB". */
+    CURRENT_MODE_MEMB?: "Graphic" | "Detail" | "Summary";
+    /** 단면(PROP) 출력 모드 ("Graphic"/"Summary") Applies when REPORT_TYPE = "PROP". */
+    CURRENT_MODE_PROP?: "Graphic" | "Summary";
+    /** 대상 요소 (ELEMS / SECTIONS 중 하나) */
+    ELEMS?: {
+      /** 개별 ID / ID 범위 / 구조그룹 */
+      KEYS?: Array<number>;
+      /** 개별 ID / ID 범위 / 구조그룹 */
+      TO?: string;
+      /** 개별 ID / ID 범위 / 구조그룹 */
+      STRUCTURE_GROUP_NAME?: string;
+    };
+    /** 대상 요소 (ELEMS / SECTIONS 중 하나) */
+    SECTIONS?: Array<number>;
+    /** Detail 출력 위치 (END_I,MID,END_J) */
+    DETAIL_POSITIONS?: JsonObject;
+    /** 리포트 저장 디렉터리 경로 */
+    EXPORT_PATH: string;
+    /** 출력 파일 기본 이름 */
+    OUTPUT_NAME: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RcMemberCheckTableArgument {
+    /** 정렬 기준 (0=Section, 1=Member) */
+    PRI_SORT?: number;
+    /** 결과 필터 (0=All, 1=OK, 2=NG) */
+    RESULT?: number;
+    /** 응답 테이블 제목 */
+    TABLE_NAME?: string;
+    /** 결과 테이블 타입 ("MEMB" 또는 "PROP") */
+    TABLE_TYPE: "MEMB" | "PROP";
+    /** 대상 요소 (ELEMS / SECTIONS 중 하나) */
+    ELEMS?: {
+      /** 개별 ID / ID 범위 / 구조그룹 */
+      KEYS?: Array<number>;
+      /** 개별 ID / ID 범위 / 구조그룹 */
+      TO?: string;
+      /** 개별 ID / ID 범위 / 구조그룹 */
+      STRUCTURE_GROUP_NAME?: string;
+    };
+    /** 대상 요소 (ELEMS / SECTIONS 중 하나) */
+    SECTIONS?: Array<number>;
+    /** 결과 저장 경로 */
+    EXPORT_PATH?: string;
+    /** 단위 설정 (FORCE,DIST,HEAT,TEMP) */
+    UNIT?: JsonObject;
+    /** 숫자 형식 (FORMAT,PLACE) */
+    STYLES?: JsonObject;
+    /** 출력 컬럼 목록 */
+    COMPONENTS?: Array<string>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RcWallCheckReportArgument {
+    /** 출력 단위 ("WID+STORY" / "WID") */
+    REPORT_TYPE: "WID+STORY" | "WID";
+    /** WID+STORY 모드 (Graphic/Detail/Summary/PMCurve) Applies when REPORT_TYPE = "WID+STORY". */
+    CURRENT_MODE_WID_STORY?: "Graphic" | "Detail" | "Summary" | "PMCurve";
+    /** WID 모드 (Graphic/Summary/PMCurve, Detail 미지원) Applies when REPORT_TYPE = "WID". */
+    CURRENT_MODE_WID?: "Graphic" | "Summary" | "PMCurve";
+    /** 벽/층 선택 목록 (생략 시 전체) */
+    SELECTIONS?: Array<{
+      /** 벽 ID (KEYS 또는 TO) */
+      WALL_IDS?: JsonObject;
+      /** 층 이름 목록 */
+      STORY?: Array<string>;
+    }>;
+    /** 리포트 저장 디렉터리 경로 */
+    EXPORT_PATH: string;
+    /** 출력 파일 기본 이름 */
+    OUTPUT_NAME: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RcWallCheckTableArgument {
+    /** 출력 단위 ("WID+STORY" / "WID") */
+    TABLE_TYPE: "WID+STORY" | "WID";
+    /** 벽/층 선택 목록 (생략 시 전체) */
+    SELECTIONS?: Array<{
+      /** 벽 ID (KEYS 또는 TO) */
+      WALL_IDS?: JsonObject;
+      /** 층 이름 목록 */
+      STORY?: Array<string>;
+    }>;
+    /** WID+STORY 정렬 (0=Story, 1=WID) */
+    PRI_SORT?: number;
+    /** WID 정렬 (0=WallMark, 1=WID) */
+    PRI_SORT_WID?: number;
+    /** 결과 필터 (0=All, 1=OK, 2=NG) */
+    RESULT?: number;
+    /** 응답 테이블 제목 */
+    TABLE_NAME?: string;
+    /** 결과 저장 경로 */
+    EXPORT_PATH?: string;
+    /** 단위 설정 */
+    UNIT?: JsonObject;
+    /** 숫자 형식 */
+    STYLES?: JsonObject;
+    /** 출력 컬럼 목록 */
+    COMPONENTS?: Array<string>;
+  }
 }
 
 export namespace DesignRcKdsDesignForcesTypes {
+  /** Generated from contracts/endpoints/. */
+  export interface RcBeamDesignReportArgument {
+    /** 리포트 타입 ("MEMB"=부재별, "PROP"=단면별) */
+    REPORT_TYPE: "MEMB" | "PROP";
+    /** 출력 모드 (부재별) — "Graphic"/"Detail"/"Summary" */
+    CURRENT_MODE_MEMB?: "Graphic" | "Detail" | "Summary";
+    /** 출력 모드 (단면별) — "Graphic"/"Summary" */
+    CURRENT_MODE_PROP?: "Graphic" | "Summary";
+    /** 요소 지정 (ELEMS/SECTIONS 중 하나) */
+    ELEMS?: JsonObject;
+    /** 단면 번호 목록 */
+    SECTIONS?: Array<number>;
+    /** Detail 출력 위치 (END_I/MID/END_J) — Detail 모드일 때 */
+    DETAIL_POSITIONS?: JsonObject;
+    /** 저장 디렉터리 경로 (예 C:\\MIDAS\\Report\\) */
+    EXPORT_PATH: string;
+    /** 출력 파일 기본 이름 (다중 요소 시 인덱스·요소번호 접두어 부가) */
+    OUTPUT_NAME: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RcColumnBraceDesignReportArgument {
+    /** 리포트 타입 ("MEMB"/"PROP") */
+    REPORT_TYPE: "MEMB" | "PROP";
+    /** 출력 모드 (부재별) — "Graphic"/"Detail"/"Summary"/"PMCurve" */
+    CURRENT_MODE_MEMB?: "Graphic" | "Detail" | "Summary" | "PMCurve";
+    /** 출력 모드 (단면별) — "Graphic"/"Summary" */
+    CURRENT_MODE_PROP?: "Graphic" | "Summary";
+    /** 요소 지정 (ELEMS/SECTIONS 중 하나) */
+    ELEMS?: JsonObject;
+    /** 단면 번호 목록 */
+    SECTIONS?: Array<number>;
+    /** 저장 디렉터리 경로 */
+    EXPORT_PATH: string;
+    /** 출력 파일 기본 이름 */
+    OUTPUT_NAME: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RcHaunchedBeamDesignPerformArgument {
+    /** 헌치보 요소 지정 — KEYS/TO/STRUCTURE_GROUP_NAME 중 하나 */
+    ELEMS?: {
+      /** 요소 ID 각각 지정 */
+      KEYS?: Array<number>;
+      /** 요소 ID 범위 (예 "1to160") */
+      TO?: string;
+      /** 구조 그룹명 */
+      STRUCTURE_GROUP_NAME?: string;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RcHaunchedBeamDesignReportArgument {
+    /** 출력 모드 ("Graphic"=JPG 이미지) */
+    CURRENT_MODE: "Graphic";
+    /** 헌치보 요소 지정 — KEYS/TO/STRUCTURE_GROUP_NAME 중 하나 */
+    ELEMS?: JsonObject;
+    /** 저장 디렉터리 경로 */
+    EXPORT_PATH: string;
+    /** 출력 파일 기본 이름 */
+    OUTPUT_NAME: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RcHaunchedBeamDesignTableArgument {
+    /** 헌치보 요소 지정 — KEYS/TO/STRUCTURE_GROUP_NAME 중 하나 */
+    ELEMS?: JsonObject;
+    /** 결과 필터 (0=All, 1=OK, 2=NG) */
+    RESULT?: number;
+    /** 표 제목 · 저장 경로 · 단위 · 포맷 · 표시 열 */
+    TABLE_NAME?: string;
+    /** 표 제목 · 저장 경로 · 단위 · 포맷 · 표시 열 */
+    EXPORT_PATH?: string;
+    /** 표 제목 · 저장 경로 · 단위 · 포맷 · 표시 열 */
+    UNIT?: JsonObject;
+    /** 표 제목 · 저장 경로 · 단위 · 포맷 · 표시 열 */
+    STYLES?: JsonObject;
+    /** 표 제목 · 저장 경로 · 단위 · 포맷 · 표시 열 */
+    COMPONENTS?: Array<string>;
+  }
   /** Generated from contracts/endpoints/. */
   export interface RcMemberDesignPerformArgument {
     /** 수행 대상 ("ALL"=전체, "ELEMS"=요소번호, "SECTIONS"=단면번호) */
@@ -12521,54 +12597,10 @@ export namespace DesignRcKdsDesignForcesTypes {
     /** 표시 열 목록 (아래 HEAD 참조) */
     COMPONENTS?: Array<string>;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface RcColumnBraceDesignReportArgument {
-    /** 리포트 타입 ("MEMB"/"PROP") */
-    REPORT_TYPE: "MEMB" | "PROP";
-    /** 출력 모드 (부재별) — "Graphic"/"Detail"/"Summary"/"PMCurve" */
-    CURRENT_MODE_MEMB?: "Graphic" | "Detail" | "Summary" | "PMCurve";
-    /** 출력 모드 (단면별) — "Graphic"/"Summary" */
-    CURRENT_MODE_PROP?: "Graphic" | "Summary";
-    /** 요소 지정 (ELEMS/SECTIONS 중 하나) */
-    ELEMS?: JsonObject;
-    /** 단면 번호 목록 */
-    SECTIONS?: Array<number>;
-    /** 저장 디렉터리 경로 */
-    EXPORT_PATH: string;
-    /** 출력 파일 기본 이름 */
-    OUTPUT_NAME: string;
-  }
   export interface RcReportDetailPositions {
     END_I?: boolean;
     MID?: boolean;
     END_J?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface RcBeamDesignReportArgument {
-    /** 리포트 타입 ("MEMB"=부재별, "PROP"=단면별) */
-    REPORT_TYPE: "MEMB" | "PROP";
-    /** 출력 모드 (부재별) — "Graphic"/"Detail"/"Summary" */
-    CURRENT_MODE_MEMB?: "Graphic" | "Detail" | "Summary";
-    /** 출력 모드 (단면별) — "Graphic"/"Summary" */
-    CURRENT_MODE_PROP?: "Graphic" | "Summary";
-    /** 요소 지정 (ELEMS/SECTIONS 중 하나) */
-    ELEMS?: JsonObject;
-    /** 단면 번호 목록 */
-    SECTIONS?: Array<number>;
-    /** Detail 출력 위치 (END_I/MID/END_J) — Detail 모드일 때 */
-    DETAIL_POSITIONS?: JsonObject;
-    /** 저장 디렉터리 경로 (예 C:\\MIDAS\\Report\\) */
-    EXPORT_PATH: string;
-    /** 출력 파일 기본 이름 (다중 요소 시 인덱스·요소번호 접두어 부가) */
-    OUTPUT_NAME: string;
-  }
-  export interface RcWallIdsSelector {
-    KEYS?: Array<number>;
-    TO?: string;
-  }
-  export interface RcWallDesignSelection {
-    WALL_IDS?: RcWallIdsSelector;
-    STORY?: Array<string>;
   }
   /** Generated from contracts/endpoints/. */
   export interface RcWallDesignPerformArgument {
@@ -12579,6 +12611,25 @@ export namespace DesignRcKdsDesignForcesTypes {
       /** 대상 층 이름 목록 (예 ["B1F", "1F"], 생략 시 전체 층) */
       STORY?: Array<string>;
     }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RcWallDesignReportArgument {
+    /** 리포트 타입 ("WID+STORY"/"WID") */
+    REPORT_TYPE: "WID+STORY" | "WID";
+    /** 출력 모드 (벽체+층, Detail 지원) — "Graphic"/"Detail"/"Summary"/"PMCurve" */
+    CURRENT_MODE_WID_STORY?: "Graphic" | "Detail" | "Summary" | "PMCurve";
+    /** 출력 모드 (벽체, Detail 미지원) — "Graphic"/"Summary"/"PMCurve" */
+    CURRENT_MODE_WID?: "Graphic" | "Summary" | "PMCurve";
+    /** 벽체 ID · 층 조합 목록 (WALL_IDS+STORY, 생략 시 전체) */
+    SELECTIONS?: Array<JsonObject>;
+    /** 저장 디렉터리 경로 */
+    EXPORT_PATH: string;
+    /** 출력 파일 기본 이름 */
+    OUTPUT_NAME: string;
+  }
+  export interface RcWallDesignSelection {
+    WALL_IDS?: RcWallIdsSelector;
+    STORY?: Array<string>;
   }
   /** Generated from contracts/endpoints/. */
   export interface RcWallDesignTableArgument {
@@ -12603,113 +12654,17 @@ export namespace DesignRcKdsDesignForcesTypes {
     /** 표 제목 · 단위 · 포맷 · 표시 열 */
     COMPONENTS?: Array<string>;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface RcWallDesignReportArgument {
-    /** 리포트 타입 ("WID+STORY"/"WID") */
-    REPORT_TYPE: "WID+STORY" | "WID";
-    /** 출력 모드 (벽체+층, Detail 지원) — "Graphic"/"Detail"/"Summary"/"PMCurve" */
-    CURRENT_MODE_WID_STORY?: "Graphic" | "Detail" | "Summary" | "PMCurve";
-    /** 출력 모드 (벽체, Detail 미지원) — "Graphic"/"Summary"/"PMCurve" */
-    CURRENT_MODE_WID?: "Graphic" | "Summary" | "PMCurve";
-    /** 벽체 ID · 층 조합 목록 (WALL_IDS+STORY, 생략 시 전체) */
-    SELECTIONS?: Array<JsonObject>;
-    /** 저장 디렉터리 경로 */
-    EXPORT_PATH: string;
-    /** 출력 파일 기본 이름 */
-    OUTPUT_NAME: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface RcHaunchedBeamDesignPerformArgument {
-    /** 헌치보 요소 지정 — KEYS/TO/STRUCTURE_GROUP_NAME 중 하나 */
-    ELEMS?: {
-      /** 요소 ID 각각 지정 */
-      KEYS?: Array<number>;
-      /** 요소 ID 범위 (예 "1to160") */
-      TO?: string;
-      /** 구조 그룹명 */
-      STRUCTURE_GROUP_NAME?: string;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface RcHaunchedBeamDesignTableArgument {
-    /** 헌치보 요소 지정 — KEYS/TO/STRUCTURE_GROUP_NAME 중 하나 */
-    ELEMS?: JsonObject;
-    /** 결과 필터 (0=All, 1=OK, 2=NG) */
-    RESULT?: number;
-    /** 표 제목 · 저장 경로 · 단위 · 포맷 · 표시 열 */
-    TABLE_NAME?: string;
-    /** 표 제목 · 저장 경로 · 단위 · 포맷 · 표시 열 */
-    EXPORT_PATH?: string;
-    /** 표 제목 · 저장 경로 · 단위 · 포맷 · 표시 열 */
-    UNIT?: JsonObject;
-    /** 표 제목 · 저장 경로 · 단위 · 포맷 · 표시 열 */
-    STYLES?: JsonObject;
-    /** 표 제목 · 저장 경로 · 단위 · 포맷 · 표시 열 */
-    COMPONENTS?: Array<string>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface RcHaunchedBeamDesignReportArgument {
-    /** 출력 모드 ("Graphic"=JPG 이미지) */
-    CURRENT_MODE: "Graphic";
-    /** 헌치보 요소 지정 — KEYS/TO/STRUCTURE_GROUP_NAME 중 하나 */
-    ELEMS?: JsonObject;
-    /** 저장 디렉터리 경로 */
-    EXPORT_PATH: string;
-    /** 출력 파일 기본 이름 */
-    OUTPUT_NAME: string;
+  export interface RcWallIdsSelector {
+    KEYS?: Array<number>;
+    TO?: string;
   }
 }
 
 export namespace DesignRcKdsRebarTypes {
   /** Generated from contracts/endpoints/. */
-  export interface HoopShearBarSpec {
-    /** 후프 철근 규격 · 19종 (D4 ~ D57) */
-    NAME: string;
-    /** 다리 수 (local Y) */
-    LEG_Y: number;
-    /** 다리 수 (local Z) */
-    LEG_Z: number;
-    /** 철근 간격 @ */
-    DIST: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface RebarNameDist {
-    /** 경계요소 수평 철근 규격 (전체 19종: D4 ~ D57) */
-    NAME: string;
-    /** 경계요소 수평 철근 간격 */
-    DIST: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MomentRedistributionFactorPayload {
-    /** 모멘트 재분배 계수 (>0, ≤1) */
-    FACTOR?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface TorsionReductionFactorPayload {
-    /** 비틀림 감소계수 (>0, ≤1) */
-    FACTOR: number;
-  }
-  /** Generated from contracts/endpoints/. */
   export interface BeamMomentCalculationMethodPayload {
     /** 모멘트 산정 방법 (EACH=각 경간, EQUI=등가 골조) */
     CALC_METHOD: "EACH" | "EQUI";
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface DesignForcesForAssignedBeamPayload {
-    /** 설계력 타입 (Subdivided Forces / Member Forces) */
-    FORCE_TYPE: "Subdivided Forces" | "Member Forces";
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface PMCurveCalculationMethodPayload {
-    /** 산정 방법 (P=축력 고정, M/P=M·P비 고정) */
-    CALC_METHOD: "P" | "M/P";
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ModifyWallMarkDataPayload {
-    /** 벽체 마크 이름 (최소 1자) */
-    MARKNAME: string;
-    /** 대상 벽체 ID 목록 (최소 1개) */
-    WID_LIST: Array<number>;
   }
   /** Generated from contracts/endpoints/. */
   export interface BoundaryElementMethodByWallIdPayload {
@@ -12722,43 +12677,6 @@ export namespace DesignRcKdsRebarTypes {
     /** 층 이름 (BBOT_STOR=true일 때) */
     STOR_NAME?: string;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface RebarExposureConditionPayload {
-    /** 노출 조건 (Dry=건조, Etc=기타) */
-    EXPOSURE: "Dry" | "Etc";
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface LimitMaxRebarRatioPayload {
-    /** 전단벽 설계 최대 철근비 Rhow */
-    RHOW: number;
-    /** 기둥 설계 최대 철근비 Rhoc */
-    RHOC: number;
-    /** 가새 설계 최대 철근비 Rhor */
-    RHOR: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface RebarDesignCriteriaByBeamMemberPayload {
-    /** 주철근 규격 · 19종 (D4 ~ D57) */
-    MAIN_REBAR: string;
-    /** 스터럽(전단철근) 규격 · 19종 (D4 ~ D57) */
-    STIRRUPS: string;
-    /** 스터럽 다리 수 · 2 ~ 20 */
-    STIRRUP_ARRANGEMENT: number;
-    /** 측면철근 규격 · 19종 (D4 ~ D57) */
-    SIDE_BAR: string;
-    /** 상단 피복 거리 dT */
-    DT?: number;
-    /** 하단 피복 거리 dB */
-    DB?: number;
-    /** 복철근 설계 사용 */
-    DOUBLY_REBAR?: boolean;
-    /** 복철근 k 계수 */
-    DOUBLY_K?: number;
-    /** 철근 간격 제한 고려 */
-    SPACING_LIMIT?: boolean;
-    /** 이음 옵션 (None | 50% | 100%) */
-    SPLICED_BARS?: "None" | "50%" | "100%";
-  }
   export interface ColumnBraceRebarDesignCriteriaItem {
     MAIN_REBAR?: string;
     TIES_SPIRALS?: string;
@@ -12767,85 +12685,6 @@ export namespace DesignRcKdsRebarTypes {
     DO?: number;
     SPACING_LIMIT?: boolean;
     SPLICED_BARS?: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface RebarDesignCriteriaByColumnMemberPayload {
-    /** 주철근 규격 · 19종 (D4 ~ D57) */
-    MAIN_REBAR: string;
-    /** 띠철근/나선철근 규격 · 19종 (D4 ~ D57) */
-    TIES_SPIRALS: string;
-    /** 띠철근 다리 수 (local Y) · 2 ~ 20 */
-    ARRANGEMENT_Y: number;
-    /** 띠철근 다리 수 (local Z) · 2 ~ 20 */
-    ARRANGEMENT_Z: number;
-    /** 주철근 중심까지 피복 거리 do */
-    DO?: number;
-    /** 철근 간격 제한 고려 */
-    SPACING_LIMIT?: boolean;
-    /** 이음 옵션 (None | 50% | 100%) */
-    SPLICED_BARS?: "None" | "50%" | "100%";
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface RebarDesignCriteriaByBraceMemberPayload {
-    /** 주철근 규격 · 19종 (D4 ~ D57) */
-    MAIN_REBAR: string;
-    /** 띠철근/나선철근 규격 · 19종 (D4 ~ D57) */
-    TIES_SPIRALS: string;
-    /** 띠철근 다리 수 (local Y) · 2 ~ 20 */
-    ARRANGEMENT_Y: number;
-    /** 띠철근 다리 수 (local Z) · 2 ~ 20 */
-    ARRANGEMENT_Z: number;
-    /** 주철근 중심까지 피복 거리 do */
-    DO?: number;
-    /** 철근 간격 제한 고려 */
-    SPACING_LIMIT?: boolean;
-    /** 이음 옵션 (None | 50% | 100%) */
-    SPLICED_BARS?: "None" | "50%" | "100%";
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface RebarDesignCriteriaByWallMemberItem {
-    /** 층 이름 (최소 1자) */
-    STORY: string;
-    /** 수직 철근 규격 · 19종 (D4 ~ D57) */
-    VERTICAL_REBAR: string;
-    /** 수평 철근 규격 · 19종 (D4 ~ D57) */
-    HORIZONTAL_REBAR: string;
-    /** 단부 철근 규격 · 19종 (D4 ~ D57) */
-    END_REBAR: string;
-    /** 경계요소 수평 철근 규격 · 19종 (D4 ~ D57) */
-    BE_HORZ_REBAR: string;
-    /** 경계요소 수평 철근 간격 */
-    BE_HORZ_SPACE: number;
-    /** 경계요소 수직 철근 간격 */
-    BE_VERT_SPACE: number;
-    /** 단부 피복 거리 de (m) */
-    DE?: number;
-    /** 벽면 피복 거리 dw (m) */
-    DW?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface RebarDesignCriteriaByWallMemberPayload {
-    /** 해당 벽체 ID의 층별 지정 목록 (min 1) */
-    ITEMS: Array<{
-      /** 층 이름 (최소 1자) */
-      STORY: string;
-      /** 수직 철근 규격 · 19종 (D4 ~ D57) */
-      VERTICAL_REBAR: string;
-      /** 수평 철근 규격 · 19종 (D4 ~ D57) */
-      HORIZONTAL_REBAR: string;
-      /** 단부 철근 규격 · 19종 (D4 ~ D57) */
-      END_REBAR: string;
-      /** 경계요소 수평 철근 규격 · 19종 (D4 ~ D57) */
-      BE_HORZ_REBAR: string;
-      /** 경계요소 수평 철근 간격 */
-      BE_HORZ_SPACE: number;
-      /** 경계요소 수직 철근 간격 */
-      BE_VERT_SPACE: number;
-      /** 단부 피복 거리 de (m) */
-      DE?: number;
-      /** 벽면 피복 거리 dw (m) */
-      DW?: number;
-    }>;
   }
   /** Generated from contracts/endpoints/. */
   export interface DcreBeamCriteria {
@@ -12886,30 +12725,6 @@ export namespace DesignRcKdsRebarTypes {
     SPACING_LIMIT?: boolean;
     /** 이음 옵션 */
     SPLICED_BARS?: "None" | "50%" | "100%";
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface DcreWallMaterialByDiameterEntry {
-    /** 철근 직경 · 19종 (D4 ~ D57) */
-    REBAR_DIAMETER?: string;
-    /** 재질 등급 · None,SD300,SD400,SD500,SD600,SD700,SD400S,SD500S,SD600S */
-    MATERIAL?: "None" | "SD300" | "SD400" | "SD500" | "SD600" | "SD700" | "SD400S" | "SD500S" | "SD600S";
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface DcreWallMaterialByDiameterInput {
-    /** 수직/단부 철근 재질 매핑 배열 */
-    VERTICAL_END_REBAR?: Array<{
-      /** 철근 직경 · 19종 (D4 ~ D57) */
-      REBAR_DIAMETER?: string;
-      /** 재질 등급 · None,SD300,SD400,SD500,SD600,SD700,SD400S,SD500S,SD600S */
-      MATERIAL?: "None" | "SD300" | "SD400" | "SD500" | "SD600" | "SD700" | "SD400S" | "SD500S" | "SD600S";
-    }>;
-    /** 수평 철근 재질 매핑 배열 */
-    HORIZONTAL_REBAR?: Array<{
-      /** 철근 직경 · 19종 (D4 ~ D57) */
-      REBAR_DIAMETER?: string;
-      /** 재질 등급 · None,SD300,SD400,SD500,SD600,SD700,SD400S,SD500S,SD600S */
-      MATERIAL?: "None" | "SD300" | "SD400" | "SD500" | "SD600" | "SD700" | "SD400S" | "SD500S" | "SD600S";
-    }>;
   }
   /** Generated from contracts/endpoints/. */
   export interface DcreWallAdditionalData {
@@ -12984,124 +12799,33 @@ export namespace DesignRcKdsRebarTypes {
     };
   }
   /** Generated from contracts/endpoints/. */
-  export interface RebarDesignCriteriaPayload {
-    /** 보 철근 기준 */
-    BEAM?: {
-      /** 주철근 규격 배열 (최대 5종) · 항목은 19종 (D4 ~ D57) */
-      MAIN_REBAR?: Array<string>;
-      /** 스터럽 규격 · 19종 */
-      STIRRUPS?: string;
-      /** 스터럽 다리 수 · 2 ~ 20 */
-      STIRRUP_ARRANGEMENT?: number;
-      /** 측면철근 규격 · 19종 */
-      SIDE_BAR?: string;
-      /** 상단 피복 */
-      DT?: number;
-      /** 하단 피복 */
-      DB?: number;
-      /** 복철근 설계 */
-      DOUBLY_REBAR?: boolean;
-      /** 복철근 k 계수 */
-      DOUBLY_K?: number;
-      /** 간격 제한 고려 */
-      SPACING_LIMIT?: boolean;
-      /** 이음 옵션 (None | 50% | 100%) */
-      SPLICED_BARS?: "None" | "50%" | "100%";
-    };
-    /** 기둥 철근 기준 */
-    COLUMN?: {
-      /** 주철근 규격 배열 (최대 5종) */
-      MAIN_REBAR?: Array<string>;
-      /** 띠철근/나선철근 규격 · 19종 */
-      TIES_SPIRALS?: string;
-      /** 다리 수 (Y) (전체 19종: 2 ~ 20) */
-      ARRANGEMENT_Y?: number;
-      /** 다리 수 (Z) (전체 19종: 2 ~ 20) */
-      ARRANGEMENT_Z?: number;
-      /** 주철근 중심 피복 do */
-      DO?: number;
-      /** 간격 제한 고려 */
-      SPACING_LIMIT?: boolean;
-      /** 이음 옵션 */
-      SPLICED_BARS?: "None" | "50%" | "100%";
-    };
-    /** 가새 철근 기준 */
-    BRACE?: {
-      /** 주철근 규격 배열 (최대 5종) */
-      MAIN_REBAR?: Array<string>;
-      /** 띠철근/나선철근 규격 · 19종 */
-      TIES_SPIRALS?: string;
-      /** 다리 수 (Y) (전체 19종: 2 ~ 20) */
-      ARRANGEMENT_Y?: number;
-      /** 다리 수 (Z) (전체 19종: 2 ~ 20) */
-      ARRANGEMENT_Z?: number;
-      /** 주철근 중심 피복 do */
-      DO?: number;
-      /** 간격 제한 고려 */
-      SPACING_LIMIT?: boolean;
-      /** 이음 옵션 */
-      SPLICED_BARS?: "None" | "50%" | "100%";
-    };
-    /** 벽체 철근 기준 */
-    WALL?: {
-      /** 수직 철근 규격 배열 (다중 선택) · 19종 */
-      VERTICAL_REBAR?: Array<string>;
-      /** 수평 철근 규격 (전체 19종: D4 ~ D57) */
-      HORIZONTAL_REBAR?: string;
-      /** 단부 철근 규격 (전체 19종: D4 ~ D57) */
-      END_REBAR?: string;
-      /** 경계요소 수평 철근 규격 (전체 19종: D4 ~ D57) */
-      BE_HORZ_REBAR?: string;
-      /** 경계요소 수평 간격 */
-      BE_HORZ_SPACE?: number;
-      /** 경계요소 수직 간격 */
-      BE_VERT_SPACE?: number;
-      /** 단부 첫 수직철근까지 거리 */
-      DE?: number;
-      /** 벽면까지 피복 거리 */
-      DW?: number;
-      /** 직경별 재질 사용 */
-      MATERIAL_BY_DIAMETER?: boolean;
-      /** 직경별 재질 입력 (사용 시) */
-      MATERIAL_BY_DIAMETER_INPUT?: {
-        /** 수직/단부 철근 재질 매핑 배열 */
-        VERTICAL_END_REBAR?: Array<{
-          /** 철근 직경 · 19종 (D4 ~ D57) */
-          REBAR_DIAMETER?: string;
-          /** 재질 등급 · None,SD300,SD400,SD500,SD600,SD700,SD400S,SD500S,SD600S */
-          MATERIAL?: "None" | "SD300" | "SD400" | "SD500" | "SD600" | "SD700" | "SD400S" | "SD500S" | "SD600S";
-        }>;
-        /** 수평 철근 재질 매핑 배열 */
-        HORIZONTAL_REBAR?: Array<{
-          /** 철근 직경 · 19종 (D4 ~ D57) */
-          REBAR_DIAMETER?: string;
-          /** 재질 등급 · None,SD300,SD400,SD500,SD600,SD700,SD400S,SD500S,SD600S */
-          MATERIAL?: "None" | "SD300" | "SD400" | "SD500" | "SD600" | "SD700" | "SD400S" | "SD500S" | "SD600S";
-        }>;
-      };
-      /** 벽체 추가 데이터 */
-      ADDITIONAL_WALL_DATA?: {
-        /** 면외 휨 설계 */
-        OUT_OF_PLANE_BENDING?: boolean;
-        /** 수직 철근 간격 설정 (UNIT: mm/in, LIST_FOR_DESIGN: 간격 값 배열) */
-        VERTICAL_REBAR_SPACING?: JsonObject;
-        /** 수평 철근 간격(from) */
-        HORIZONTAL_REBAR_SPACING_FROM?: number;
-        /** 단부 철근 설계 방법 (1=Method-1 … 4=Method-4) */
-        END_REBAR_METHOD?: number;
-        /** 단부 철근 4개 배근 간격 */
-        DIST1?: number;
-        /** 단부 철근 6개 배근 간격 */
-        DIST2?: number;
-        /** 단부 철근 8개 이상 배근 간격 */
-        DIST3?: number;
-      };
-    };
+  export interface DcreWallMaterialByDiameterEntry {
+    /** 철근 직경 · 19종 (D4 ~ D57) */
+    REBAR_DIAMETER?: string;
+    /** 재질 등급 · None,SD300,SD400,SD500,SD600,SD700,SD400S,SD500S,SD600S */
+    MATERIAL?: "None" | "SD300" | "SD400" | "SD500" | "SD600" | "SD700" | "SD400S" | "SD500S" | "SD600S";
   }
   /** Generated from contracts/endpoints/. */
-  export interface EqualizeJointBeamRebarSelectedMember {
-    /** 절점을 사이에 두는 정확히 2개의 요소 번호 */
-    ELEM_LIST: [number, number];
+  export interface DcreWallMaterialByDiameterInput {
+    /** 수직/단부 철근 재질 매핑 배열 */
+    VERTICAL_END_REBAR?: Array<{
+      /** 철근 직경 · 19종 (D4 ~ D57) */
+      REBAR_DIAMETER?: string;
+      /** 재질 등급 · None,SD300,SD400,SD500,SD600,SD700,SD400S,SD500S,SD600S */
+      MATERIAL?: "None" | "SD300" | "SD400" | "SD500" | "SD600" | "SD700" | "SD400S" | "SD500S" | "SD600S";
+    }>;
+    /** 수평 철근 재질 매핑 배열 */
+    HORIZONTAL_REBAR?: Array<{
+      /** 철근 직경 · 19종 (D4 ~ D57) */
+      REBAR_DIAMETER?: string;
+      /** 재질 등급 · None,SD300,SD400,SD500,SD600,SD700,SD400S,SD500S,SD600S */
+      MATERIAL?: "None" | "SD300" | "SD400" | "SD500" | "SD600" | "SD700" | "SD400S" | "SD500S" | "SD600S";
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface DesignForcesForAssignedBeamPayload {
+    /** 설계력 타입 (Subdivided Forces / Member Forces) */
+    FORCE_TYPE: "Subdivided Forces" | "Member Forces";
   }
   /** Generated from contracts/endpoints/. */
   export interface EqualizeJointBeamRebarPayload {
@@ -13114,182 +12838,30 @@ export namespace DesignRcKdsRebarTypes {
     };
   }
   /** Generated from contracts/endpoints/. */
-  export interface RcBeamMainBarLayerEntry {
-    /** 레이어 내 철근 규격 · 19종 (D4 ~ D57) */
-    NAME: string;
-    /** 레이어 내 철근 개수 */
-    NUM: number;
+  export interface EqualizeJointBeamRebarSelectedMember {
+    /** 절점을 사이에 두는 정확히 2개의 요소 번호 */
+    ELEM_LIST: [number, number];
   }
   /** Generated from contracts/endpoints/. */
-  export interface RcBeamShearBarSpec {
-    /** 스터럽 규격 */
+  export interface HoopShearBarSpec {
+    /** 후프 철근 규격 · 19종 (D4 ~ D57) */
     NAME: string;
-    /** 다리 수 */
-    LEG: number;
+    /** 다리 수 (local Y) */
+    LEG_Y: number;
+    /** 다리 수 (local Z) */
+    LEG_Z: number;
     /** 철근 간격 @ */
     DIST: number;
   }
   /** Generated from contracts/endpoints/. */
-  export interface RcBeamRebarSector {
-    /** 상단 주철근 (레이어별) */
-    vMAIN_BAR_TOP: Array<{
-      /** 레이어 내 철근 규격 · 19종 (D4 ~ D57) */
-      NAME: string;
-      /** 레이어 내 철근 개수 */
-      NUM: number;
-    }>;
-    /** 하단 주철근 (레이어별) */
-    vMAIN_BAR_BOT: Array<{
-      /** 레이어 내 철근 규격 · 19종 (D4 ~ D57) */
-      NAME: string;
-      /** 레이어 내 철근 개수 */
-      NUM: number;
-    }>;
-    /** 스터럽(전단철근) */
-    SHEAR_BAR: {
-      /** 스터럽 규격 */
-      NAME: string;
-      /** 다리 수 */
-      LEG: number;
-      /** 철근 간격 @ */
-      DIST: number;
-    };
-    /** 표피철근 규격 */
-    SKIN_BAR_NAME?: string;
-    /** 표피철근 개수 */
-    SKIN_BAR_NUM?: number;
+  export interface LimitMaxRebarRatioPayload {
+    /** 전단벽 설계 최대 철근비 Rhow */
+    RHOW: number;
+    /** 기둥 설계 최대 철근비 Rhoc */
+    RHOC: number;
+    /** 가새 설계 최대 철근비 Rhor */
+    RHOR: number;
   }
-  /** Generated from contracts/endpoints/. */
-  export type RcBeamRebarItem = {
-    /** 서브 단면 생성 여부 */
-    CREATE_SUB_SECTION?: boolean;
-    /** 서브 단면 ID (읽기 전용) */
-    ID?: number;
-    /** 요소 번호 입력 (CREATE_SUB_SECTION=true 일 때 필수) Applies when ITEMS.CREATE_SUB_SECTION = true. */
-    ELEMS?: {
-      /** 요소 ID 배열 */
-      KEYS?: Array<number>;
-      /** ID 범위 (예: "1to160") */
-      TO?: string;
-      /** 구조 그룹 이름 */
-      STRUCTURE_GROUP_NAME?: string;
-    };
-    /** I단 구간 철근 */
-    BAR_SECTOR_I: {
-      /** 상단 주철근 (레이어별) */
-      vMAIN_BAR_TOP: Array<{
-        /** 레이어 내 철근 규격 · 19종 (D4 ~ D57) */
-        NAME: string;
-        /** 레이어 내 철근 개수 */
-        NUM: number;
-      }>;
-      /** 하단 주철근 (레이어별) */
-      vMAIN_BAR_BOT: Array<{
-        /** 레이어 내 철근 규격 · 19종 (D4 ~ D57) */
-        NAME: string;
-        /** 레이어 내 철근 개수 */
-        NUM: number;
-      }>;
-      /** 스터럽(전단철근) */
-      SHEAR_BAR: {
-        /** 스터럽 규격 */
-        NAME: string;
-        /** 다리 수 */
-        LEG: number;
-        /** 철근 간격 @ */
-        DIST: number;
-      };
-      /** 표피철근 규격 */
-      SKIN_BAR_NAME?: string;
-      /** 표피철근 개수 */
-      SKIN_BAR_NUM?: number;
-    };
-    /** 중앙(M) 구간 철근 */
-    BAR_SECTOR_M: {
-      /** 상단 주철근 (레이어별) */
-      vMAIN_BAR_TOP: Array<{
-        /** 레이어 내 철근 규격 · 19종 (D4 ~ D57) */
-        NAME: string;
-        /** 레이어 내 철근 개수 */
-        NUM: number;
-      }>;
-      /** 하단 주철근 (레이어별) */
-      vMAIN_BAR_BOT: Array<{
-        /** 레이어 내 철근 규격 · 19종 (D4 ~ D57) */
-        NAME: string;
-        /** 레이어 내 철근 개수 */
-        NUM: number;
-      }>;
-      /** 스터럽(전단철근) */
-      SHEAR_BAR: {
-        /** 스터럽 규격 */
-        NAME: string;
-        /** 다리 수 */
-        LEG: number;
-        /** 철근 간격 @ */
-        DIST: number;
-      };
-      /** 표피철근 규격 */
-      SKIN_BAR_NAME?: string;
-      /** 표피철근 개수 */
-      SKIN_BAR_NUM?: number;
-    };
-    /** J단 구간 철근 */
-    BAR_SECTOR_J: {
-      /** 상단 주철근 (레이어별) */
-      vMAIN_BAR_TOP: Array<{
-        /** 레이어 내 철근 규격 · 19종 (D4 ~ D57) */
-        NAME: string;
-        /** 레이어 내 철근 개수 */
-        NUM: number;
-      }>;
-      /** 하단 주철근 (레이어별) */
-      vMAIN_BAR_BOT: Array<{
-        /** 레이어 내 철근 규격 · 19종 (D4 ~ D57) */
-        NAME: string;
-        /** 레이어 내 철근 개수 */
-        NUM: number;
-      }>;
-      /** 스터럽(전단철근) */
-      SHEAR_BAR: {
-        /** 스터럽 규격 */
-        NAME: string;
-        /** 다리 수 */
-        LEG: number;
-        /** 철근 간격 @ */
-        DIST: number;
-      };
-      /** 표피철근 규격 */
-      SKIN_BAR_NAME?: string;
-      /** 표피철근 개수 */
-      SKIN_BAR_NUM?: number;
-    };
-    /** 상단 피복 거리 dT */
-    MAIN_BAR_DC_TOP: number;
-    /** 하단 피복 거리 dB */
-    MAIN_BAR_DC_BOT: number;
-    /** 상·하단 철근 규격 동일 적용 */
-    bSAME_SIZE_TOP_BOT?: boolean;
-    /** I·M·J 구간 철근 규격 동일 적용 */
-    bSAME_SIZE_IMJ?: boolean;
-    /** 레이어 간 철근 규격 동일 적용 */
-    bSAME_SIZE_LAYER?: boolean;
-  } & (
-    {
-      CREATE_SUB_SECTION: true;
-      /** 요소 ID 배열 */
-      KEYS?: Array<number>;
-      /** ID 범위 (예: "1to160") */
-      TO?: string;
-      /** 구조 그룹 이름 */
-      STRUCTURE_GROUP_NAME?: string;
-    } |
-    {
-      KEYS?: never;
-      TO?: never;
-      STRUCTURE_GROUP_NAME?: never;
-    }
-  );
   /** Generated from contracts/endpoints/. */
   export type ModifyBeamRebarDataPayload = {
     /** 콘크리트 보 철근 항목 (min 1) */
@@ -13425,75 +12997,74 @@ export namespace DesignRcKdsRebarTypes {
     ))>;
   };
   /** Generated from contracts/endpoints/. */
-  export interface RcColumnMainBarSpec {
-    /** 주철근 규격 · 19종 (D4 ~ D57) */
-    NAME: string;
-    /** 철근 총 개수 */
-    NUM: number;
-    /** 열(row) 수 */
-    ROW: number;
-    /** 코너 철근 사용 */
-    USE_CORNER: boolean;
-    /** 코너 철근 규격 (USE_CORNER=true 일 때) · 19종 Applies when ITEMS.MAIN_BAR.USE_CORNER = true. */
-    NAME_CORNER?: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface RcColumnRebarItem {
-    /** 서브 단면 생성 여부 */
-    CREATE_SUB_SECTION?: boolean;
-    /** 서브 단면 ID (읽기 전용) */
-    ID?: number;
-    /** 요소 번호 입력 (CREATE_SUB_SECTION=true 일 때 필수) Applies when ITEMS.CREATE_SUB_SECTION = true. */
-    ELEMS?: {
-      /** 요소 ID 배열 */
-      KEYS?: Array<number>;
-      /** ID 범위 (예: "1to160") */
-      TO?: string;
-      /** 구조 그룹 이름 */
-      STRUCTURE_GROUP_NAME?: string;
-    };
-    /** 주철근 */
-    MAIN_BAR: {
-      /** 주철근 규격 · 19종 (D4 ~ D57) */
-      NAME: string;
-      /** 철근 총 개수 */
-      NUM: number;
-      /** 열(row) 수 */
-      ROW: number;
-      /** 코너 철근 사용 */
-      USE_CORNER: boolean;
-      /** 코너 철근 규격 (USE_CORNER=true 일 때) · 19종 Applies when ITEMS.MAIN_BAR.USE_CORNER = true. */
-      NAME_CORNER?: string;
-    };
-    /** 단부 전단철근 */
-    SHEAR_BAR_END: {
-      /** 후프 철근 규격 · 19종 (D4 ~ D57) */
-      NAME: string;
-      /** 다리 수 (local Y) */
-      LEG_Y: number;
-      /** 다리 수 (local Z) */
-      LEG_Z: number;
-      /** 철근 간격 @ */
-      DIST: number;
-    };
-    /** 중앙부 전단철근 */
-    SHEAR_BAR_CEN: {
-      /** 후프 철근 규격 · 19종 (D4 ~ D57) */
-      NAME: string;
-      /** 다리 수 (local Y) */
-      LEG_Y: number;
-      /** 다리 수 (local Z) */
-      LEG_Z: number;
-      /** 철근 간격 @ */
-      DIST: number;
-    };
-    /** 콘크리트면~철근중심 거리 (do) */
-    DO: number;
-    /** 후프 철근 타입 (Ties | Spirals) */
-    HOOP_TYPE?: "Ties" | "Spirals";
-    /** 후크 타입 (0: 90+(135 or 180) | 1: Both(135 or 180)) */
-    HOOK_TYPE?: number;
-  }
+  export type ModifyBraceRebarDataPayload = {
+    /** 콘크리트 가새 철근 항목 (min 1) */
+    ITEMS: Array<({
+      /** 서브 단면 생성 여부 */
+      CREATE_SUB_SECTION?: boolean;
+      /** 서브 단면 ID (읽기 전용) */
+      ID?: number;
+      /** 요소 번호 입력 (CREATE_SUB_SECTION=true 일 때 필수) Applies when ITEMS.CREATE_SUB_SECTION = true. */
+      ELEMS?: {
+        /** 요소 ID 배열 */
+        KEYS?: Array<number>;
+        /** ID 범위 (예: "1to160") */
+        TO?: string;
+        /** 구조 그룹 이름 */
+        STRUCTURE_GROUP_NAME?: string;
+      };
+      /** 주철근 */
+      MAIN_BAR: {
+        /** 주철근 규격 · 19종 (D4 ~ D57) */
+        NAME: string;
+        /** 철근 총 개수 (min 4) */
+        NUM: number;
+        /** 열(row) 수 */
+        ROW: number;
+      };
+      /** 단부 전단철근 */
+      SHEAR_BAR_END: {
+        /** 후프 철근 규격 · 19종 (D4 ~ D57) */
+        NAME: string;
+        /** 다리 수 (local Y) */
+        LEG_Y: number;
+        /** 다리 수 (local Z) */
+        LEG_Z: number;
+        /** 철근 간격 @ */
+        DIST: number;
+      };
+      /** 중앙부 전단철근 */
+      SHEAR_BAR_CEN: {
+        /** 후프 철근 규격 · 19종 (D4 ~ D57) */
+        NAME: string;
+        /** 다리 수 (local Y) */
+        LEG_Y: number;
+        /** 다리 수 (local Z) */
+        LEG_Z: number;
+        /** 철근 간격 @ */
+        DIST: number;
+      };
+      /** 콘크리트면~철근중심 거리 (do) */
+      DO: number;
+      /** 후프 철근 타입 (Ties | Spirals) */
+      HOOP_TYPE?: "Ties" | "Spirals";
+    } & (
+      {
+        CREATE_SUB_SECTION: true;
+        /** 요소 ID 배열 */
+        KEYS?: Array<number>;
+        /** ID 범위 (예: "1to160") */
+        TO?: string;
+        /** 구조 그룹 이름 */
+        STRUCTURE_GROUP_NAME?: string;
+      } |
+      {
+        KEYS?: never;
+        TO?: never;
+        STRUCTURE_GROUP_NAME?: never;
+      }
+    ))>;
+  };
   /** Generated from contracts/endpoints/. */
   export interface ModifyColumnRebarDataPayload {
     /** 콘크리트 기둥 철근 항목 (min 1) */
@@ -13555,86 +13126,11 @@ export namespace DesignRcKdsRebarTypes {
     }>;
   }
   /** Generated from contracts/endpoints/. */
-  export interface RcWallStoryRange {
-    /** 시작 층 */
-    FROM: string;
-    /** 종료 층 */
-    TO: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface RcWallEndRebarSpec {
-    /** 단부(수직) 철근 규격 (전체 19종: D4 ~ D57) */
-    NAME: string;
-    /** 단부 철근 개수 */
-    NUM: number;
-    /** 단부 철근 간격 */
-    DIST: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface RcWallConcreteFaceToCenterOfRebar {
-    /** 콘크리트면~수직 철근중심 (dw) */
-    DW: number;
-    /** 콘크리트면~경계요소 철근중심 (de) */
-    DE: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface RcWallRebarItem {
-    /** 서브 벽체 ID 생성 */
-    CREATE_SUB_WALL_ID?: boolean;
-    /** 서브 벽체 ID (읽기 전용, 생성 시 필수) */
-    SUB_WALL_ID?: number;
-    /** 층 범위 (FROM/TO, 생성 시 필수) */
-    STORY?: {
-      /** 시작 층 */
-      FROM: string;
-      /** 종료 층 */
-      TO: string;
-    };
-    /** 수직 철근 (NAME·DIST) */
-    VERTICAL_REBAR: {
-      /** 수직 철근 규격 (전체 19종: D4 ~ D57) */
-      NAME: string;
-      /** 수직 철근 간격 */
-      DIST: number;
-    };
-    /** 수평 철근 (NAME·DIST) */
-    HORIZONTAL_REBAR: {
-      /** 수평 철근 규격 (전체 19종: D4 ~ D57) */
-      NAME: string;
-      /** 수평 철근 간격 */
-      DIST: number;
-    };
-    /** 단부 철근 입력 사용 */
-    USE_END_REBAR?: boolean;
-    /** 단부 철근 (NAME·NUM·DIST, 사용 시 필수) */
-    END_REBAR?: {
-      /** 단부(수직) 철근 규격 (전체 19종: D4 ~ D57) */
-      NAME: string;
-      /** 단부 철근 개수 */
-      NUM: number;
-      /** 단부 철근 간격 */
-      DIST: number;
-    };
-    /** 경계요소 수평 철근 (NAME·DIST) */
-    BE_HORIZONTAL_REBAR?: {
-      /** 경계요소 수평 철근 규격 (전체 19종: D4 ~ D57) */
-      NAME: string;
-      /** 경계요소 수평 철근 간격 */
-      DIST: number;
-    };
-    /** 경계요소 길이 */
-    BOUNDARY_ELEMENT_LENGTH?: number;
-    /** 콘크리트면~철근중심 거리 (DW·DE) */
-    CONCRETE_FACE_TO_CENTER_OF_REBAR: {
-      /** 콘크리트면~수직 철근중심 (dw) */
-      DW: number;
-      /** 콘크리트면~경계요소 철근중심 (de) */
-      DE: number;
-    };
-    /** 모델 두께 사용 */
-    USE_MODEL_THICKNESS?: boolean;
-    /** 벽체 두께 (USE_MODEL_THICKNESS=false 일 때 필수) */
-    THICKNESS?: number;
+  export interface ModifyWallMarkDataPayload {
+    /** 벽체 마크 이름 (최소 1자) */
+    MARKNAME: string;
+    /** 대상 벽체 ID 목록 (최소 1개) */
+    WID_LIST: Array<number>;
   }
   /** Generated from contracts/endpoints/. */
   export interface ModifyWallRebarDataPayload {
@@ -13697,6 +13193,193 @@ export namespace DesignRcKdsRebarTypes {
       /** 벽체 두께 (USE_MODEL_THICKNESS=false 일 때 필수) */
       THICKNESS?: number;
     }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface MomentRedistributionFactorPayload {
+    /** 모멘트 재분배 계수 (>0, ≤1) */
+    FACTOR?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface PMCurveCalculationMethodPayload {
+    /** 산정 방법 (P=축력 고정, M/P=M·P비 고정) */
+    CALC_METHOD: "P" | "M/P";
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RcBeamMainBarLayerEntry {
+    /** 레이어 내 철근 규격 · 19종 (D4 ~ D57) */
+    NAME: string;
+    /** 레이어 내 철근 개수 */
+    NUM: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export type RcBeamRebarItem = {
+    /** 서브 단면 생성 여부 */
+    CREATE_SUB_SECTION?: boolean;
+    /** 서브 단면 ID (읽기 전용) */
+    ID?: number;
+    /** 요소 번호 입력 (CREATE_SUB_SECTION=true 일 때 필수) Applies when ITEMS.CREATE_SUB_SECTION = true. */
+    ELEMS?: {
+      /** 요소 ID 배열 */
+      KEYS?: Array<number>;
+      /** ID 범위 (예: "1to160") */
+      TO?: string;
+      /** 구조 그룹 이름 */
+      STRUCTURE_GROUP_NAME?: string;
+    };
+    /** I단 구간 철근 */
+    BAR_SECTOR_I: {
+      /** 상단 주철근 (레이어별) */
+      vMAIN_BAR_TOP: Array<{
+        /** 레이어 내 철근 규격 · 19종 (D4 ~ D57) */
+        NAME: string;
+        /** 레이어 내 철근 개수 */
+        NUM: number;
+      }>;
+      /** 하단 주철근 (레이어별) */
+      vMAIN_BAR_BOT: Array<{
+        /** 레이어 내 철근 규격 · 19종 (D4 ~ D57) */
+        NAME: string;
+        /** 레이어 내 철근 개수 */
+        NUM: number;
+      }>;
+      /** 스터럽(전단철근) */
+      SHEAR_BAR: {
+        /** 스터럽 규격 */
+        NAME: string;
+        /** 다리 수 */
+        LEG: number;
+        /** 철근 간격 @ */
+        DIST: number;
+      };
+      /** 표피철근 규격 */
+      SKIN_BAR_NAME?: string;
+      /** 표피철근 개수 */
+      SKIN_BAR_NUM?: number;
+    };
+    /** 중앙(M) 구간 철근 */
+    BAR_SECTOR_M: {
+      /** 상단 주철근 (레이어별) */
+      vMAIN_BAR_TOP: Array<{
+        /** 레이어 내 철근 규격 · 19종 (D4 ~ D57) */
+        NAME: string;
+        /** 레이어 내 철근 개수 */
+        NUM: number;
+      }>;
+      /** 하단 주철근 (레이어별) */
+      vMAIN_BAR_BOT: Array<{
+        /** 레이어 내 철근 규격 · 19종 (D4 ~ D57) */
+        NAME: string;
+        /** 레이어 내 철근 개수 */
+        NUM: number;
+      }>;
+      /** 스터럽(전단철근) */
+      SHEAR_BAR: {
+        /** 스터럽 규격 */
+        NAME: string;
+        /** 다리 수 */
+        LEG: number;
+        /** 철근 간격 @ */
+        DIST: number;
+      };
+      /** 표피철근 규격 */
+      SKIN_BAR_NAME?: string;
+      /** 표피철근 개수 */
+      SKIN_BAR_NUM?: number;
+    };
+    /** J단 구간 철근 */
+    BAR_SECTOR_J: {
+      /** 상단 주철근 (레이어별) */
+      vMAIN_BAR_TOP: Array<{
+        /** 레이어 내 철근 규격 · 19종 (D4 ~ D57) */
+        NAME: string;
+        /** 레이어 내 철근 개수 */
+        NUM: number;
+      }>;
+      /** 하단 주철근 (레이어별) */
+      vMAIN_BAR_BOT: Array<{
+        /** 레이어 내 철근 규격 · 19종 (D4 ~ D57) */
+        NAME: string;
+        /** 레이어 내 철근 개수 */
+        NUM: number;
+      }>;
+      /** 스터럽(전단철근) */
+      SHEAR_BAR: {
+        /** 스터럽 규격 */
+        NAME: string;
+        /** 다리 수 */
+        LEG: number;
+        /** 철근 간격 @ */
+        DIST: number;
+      };
+      /** 표피철근 규격 */
+      SKIN_BAR_NAME?: string;
+      /** 표피철근 개수 */
+      SKIN_BAR_NUM?: number;
+    };
+    /** 상단 피복 거리 dT */
+    MAIN_BAR_DC_TOP: number;
+    /** 하단 피복 거리 dB */
+    MAIN_BAR_DC_BOT: number;
+    /** 상·하단 철근 규격 동일 적용 */
+    bSAME_SIZE_TOP_BOT?: boolean;
+    /** I·M·J 구간 철근 규격 동일 적용 */
+    bSAME_SIZE_IMJ?: boolean;
+    /** 레이어 간 철근 규격 동일 적용 */
+    bSAME_SIZE_LAYER?: boolean;
+  } & (
+    {
+      CREATE_SUB_SECTION: true;
+      /** 요소 ID 배열 */
+      KEYS?: Array<number>;
+      /** ID 범위 (예: "1to160") */
+      TO?: string;
+      /** 구조 그룹 이름 */
+      STRUCTURE_GROUP_NAME?: string;
+    } |
+    {
+      KEYS?: never;
+      TO?: never;
+      STRUCTURE_GROUP_NAME?: never;
+    }
+  );
+  /** Generated from contracts/endpoints/. */
+  export interface RcBeamRebarSector {
+    /** 상단 주철근 (레이어별) */
+    vMAIN_BAR_TOP: Array<{
+      /** 레이어 내 철근 규격 · 19종 (D4 ~ D57) */
+      NAME: string;
+      /** 레이어 내 철근 개수 */
+      NUM: number;
+    }>;
+    /** 하단 주철근 (레이어별) */
+    vMAIN_BAR_BOT: Array<{
+      /** 레이어 내 철근 규격 · 19종 (D4 ~ D57) */
+      NAME: string;
+      /** 레이어 내 철근 개수 */
+      NUM: number;
+    }>;
+    /** 스터럽(전단철근) */
+    SHEAR_BAR: {
+      /** 스터럽 규격 */
+      NAME: string;
+      /** 다리 수 */
+      LEG: number;
+      /** 철근 간격 @ */
+      DIST: number;
+    };
+    /** 표피철근 규격 */
+    SKIN_BAR_NAME?: string;
+    /** 표피철근 개수 */
+    SKIN_BAR_NUM?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RcBeamShearBarSpec {
+    /** 스터럽 규격 */
+    NAME: string;
+    /** 다리 수 */
+    LEG: number;
+    /** 철근 간격 @ */
+    DIST: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface RcBraceMainBarSpec {
@@ -13774,148 +13457,400 @@ export namespace DesignRcKdsRebarTypes {
     }
   );
   /** Generated from contracts/endpoints/. */
-  export type ModifyBraceRebarDataPayload = {
-    /** 콘크리트 가새 철근 항목 (min 1) */
-    ITEMS: Array<({
-      /** 서브 단면 생성 여부 */
-      CREATE_SUB_SECTION?: boolean;
-      /** 서브 단면 ID (읽기 전용) */
-      ID?: number;
-      /** 요소 번호 입력 (CREATE_SUB_SECTION=true 일 때 필수) Applies when ITEMS.CREATE_SUB_SECTION = true. */
-      ELEMS?: {
-        /** 요소 ID 배열 */
-        KEYS?: Array<number>;
-        /** ID 범위 (예: "1to160") */
-        TO?: string;
-        /** 구조 그룹 이름 */
-        STRUCTURE_GROUP_NAME?: string;
+  export interface RcColumnMainBarSpec {
+    /** 주철근 규격 · 19종 (D4 ~ D57) */
+    NAME: string;
+    /** 철근 총 개수 */
+    NUM: number;
+    /** 열(row) 수 */
+    ROW: number;
+    /** 코너 철근 사용 */
+    USE_CORNER: boolean;
+    /** 코너 철근 규격 (USE_CORNER=true 일 때) · 19종 Applies when ITEMS.MAIN_BAR.USE_CORNER = true. */
+    NAME_CORNER?: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RcColumnRebarItem {
+    /** 서브 단면 생성 여부 */
+    CREATE_SUB_SECTION?: boolean;
+    /** 서브 단면 ID (읽기 전용) */
+    ID?: number;
+    /** 요소 번호 입력 (CREATE_SUB_SECTION=true 일 때 필수) Applies when ITEMS.CREATE_SUB_SECTION = true. */
+    ELEMS?: {
+      /** 요소 ID 배열 */
+      KEYS?: Array<number>;
+      /** ID 범위 (예: "1to160") */
+      TO?: string;
+      /** 구조 그룹 이름 */
+      STRUCTURE_GROUP_NAME?: string;
+    };
+    /** 주철근 */
+    MAIN_BAR: {
+      /** 주철근 규격 · 19종 (D4 ~ D57) */
+      NAME: string;
+      /** 철근 총 개수 */
+      NUM: number;
+      /** 열(row) 수 */
+      ROW: number;
+      /** 코너 철근 사용 */
+      USE_CORNER: boolean;
+      /** 코너 철근 규격 (USE_CORNER=true 일 때) · 19종 Applies when ITEMS.MAIN_BAR.USE_CORNER = true. */
+      NAME_CORNER?: string;
+    };
+    /** 단부 전단철근 */
+    SHEAR_BAR_END: {
+      /** 후프 철근 규격 · 19종 (D4 ~ D57) */
+      NAME: string;
+      /** 다리 수 (local Y) */
+      LEG_Y: number;
+      /** 다리 수 (local Z) */
+      LEG_Z: number;
+      /** 철근 간격 @ */
+      DIST: number;
+    };
+    /** 중앙부 전단철근 */
+    SHEAR_BAR_CEN: {
+      /** 후프 철근 규격 · 19종 (D4 ~ D57) */
+      NAME: string;
+      /** 다리 수 (local Y) */
+      LEG_Y: number;
+      /** 다리 수 (local Z) */
+      LEG_Z: number;
+      /** 철근 간격 @ */
+      DIST: number;
+    };
+    /** 콘크리트면~철근중심 거리 (do) */
+    DO: number;
+    /** 후프 철근 타입 (Ties | Spirals) */
+    HOOP_TYPE?: "Ties" | "Spirals";
+    /** 후크 타입 (0: 90+(135 or 180) | 1: Both(135 or 180)) */
+    HOOK_TYPE?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RcWallConcreteFaceToCenterOfRebar {
+    /** 콘크리트면~수직 철근중심 (dw) */
+    DW: number;
+    /** 콘크리트면~경계요소 철근중심 (de) */
+    DE: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RcWallEndRebarSpec {
+    /** 단부(수직) 철근 규격 (전체 19종: D4 ~ D57) */
+    NAME: string;
+    /** 단부 철근 개수 */
+    NUM: number;
+    /** 단부 철근 간격 */
+    DIST: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RcWallRebarItem {
+    /** 서브 벽체 ID 생성 */
+    CREATE_SUB_WALL_ID?: boolean;
+    /** 서브 벽체 ID (읽기 전용, 생성 시 필수) */
+    SUB_WALL_ID?: number;
+    /** 층 범위 (FROM/TO, 생성 시 필수) */
+    STORY?: {
+      /** 시작 층 */
+      FROM: string;
+      /** 종료 층 */
+      TO: string;
+    };
+    /** 수직 철근 (NAME·DIST) */
+    VERTICAL_REBAR: {
+      /** 수직 철근 규격 (전체 19종: D4 ~ D57) */
+      NAME: string;
+      /** 수직 철근 간격 */
+      DIST: number;
+    };
+    /** 수평 철근 (NAME·DIST) */
+    HORIZONTAL_REBAR: {
+      /** 수평 철근 규격 (전체 19종: D4 ~ D57) */
+      NAME: string;
+      /** 수평 철근 간격 */
+      DIST: number;
+    };
+    /** 단부 철근 입력 사용 */
+    USE_END_REBAR?: boolean;
+    /** 단부 철근 (NAME·NUM·DIST, 사용 시 필수) */
+    END_REBAR?: {
+      /** 단부(수직) 철근 규격 (전체 19종: D4 ~ D57) */
+      NAME: string;
+      /** 단부 철근 개수 */
+      NUM: number;
+      /** 단부 철근 간격 */
+      DIST: number;
+    };
+    /** 경계요소 수평 철근 (NAME·DIST) */
+    BE_HORIZONTAL_REBAR?: {
+      /** 경계요소 수평 철근 규격 (전체 19종: D4 ~ D57) */
+      NAME: string;
+      /** 경계요소 수평 철근 간격 */
+      DIST: number;
+    };
+    /** 경계요소 길이 */
+    BOUNDARY_ELEMENT_LENGTH?: number;
+    /** 콘크리트면~철근중심 거리 (DW·DE) */
+    CONCRETE_FACE_TO_CENTER_OF_REBAR: {
+      /** 콘크리트면~수직 철근중심 (dw) */
+      DW: number;
+      /** 콘크리트면~경계요소 철근중심 (de) */
+      DE: number;
+    };
+    /** 모델 두께 사용 */
+    USE_MODEL_THICKNESS?: boolean;
+    /** 벽체 두께 (USE_MODEL_THICKNESS=false 일 때 필수) */
+    THICKNESS?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RcWallStoryRange {
+    /** 시작 층 */
+    FROM: string;
+    /** 종료 층 */
+    TO: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RebarDesignCriteriaByBeamMemberPayload {
+    /** 주철근 규격 · 19종 (D4 ~ D57) */
+    MAIN_REBAR: string;
+    /** 스터럽(전단철근) 규격 · 19종 (D4 ~ D57) */
+    STIRRUPS: string;
+    /** 스터럽 다리 수 · 2 ~ 20 */
+    STIRRUP_ARRANGEMENT: number;
+    /** 측면철근 규격 · 19종 (D4 ~ D57) */
+    SIDE_BAR: string;
+    /** 상단 피복 거리 dT */
+    DT?: number;
+    /** 하단 피복 거리 dB */
+    DB?: number;
+    /** 복철근 설계 사용 */
+    DOUBLY_REBAR?: boolean;
+    /** 복철근 k 계수 */
+    DOUBLY_K?: number;
+    /** 철근 간격 제한 고려 */
+    SPACING_LIMIT?: boolean;
+    /** 이음 옵션 (None | 50% | 100%) */
+    SPLICED_BARS?: "None" | "50%" | "100%";
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RebarDesignCriteriaByBraceMemberPayload {
+    /** 주철근 규격 · 19종 (D4 ~ D57) */
+    MAIN_REBAR: string;
+    /** 띠철근/나선철근 규격 · 19종 (D4 ~ D57) */
+    TIES_SPIRALS: string;
+    /** 띠철근 다리 수 (local Y) · 2 ~ 20 */
+    ARRANGEMENT_Y: number;
+    /** 띠철근 다리 수 (local Z) · 2 ~ 20 */
+    ARRANGEMENT_Z: number;
+    /** 주철근 중심까지 피복 거리 do */
+    DO?: number;
+    /** 철근 간격 제한 고려 */
+    SPACING_LIMIT?: boolean;
+    /** 이음 옵션 (None | 50% | 100%) */
+    SPLICED_BARS?: "None" | "50%" | "100%";
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RebarDesignCriteriaByColumnMemberPayload {
+    /** 주철근 규격 · 19종 (D4 ~ D57) */
+    MAIN_REBAR: string;
+    /** 띠철근/나선철근 규격 · 19종 (D4 ~ D57) */
+    TIES_SPIRALS: string;
+    /** 띠철근 다리 수 (local Y) · 2 ~ 20 */
+    ARRANGEMENT_Y: number;
+    /** 띠철근 다리 수 (local Z) · 2 ~ 20 */
+    ARRANGEMENT_Z: number;
+    /** 주철근 중심까지 피복 거리 do */
+    DO?: number;
+    /** 철근 간격 제한 고려 */
+    SPACING_LIMIT?: boolean;
+    /** 이음 옵션 (None | 50% | 100%) */
+    SPLICED_BARS?: "None" | "50%" | "100%";
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RebarDesignCriteriaByWallMemberItem {
+    /** 층 이름 (최소 1자) */
+    STORY: string;
+    /** 수직 철근 규격 · 19종 (D4 ~ D57) */
+    VERTICAL_REBAR: string;
+    /** 수평 철근 규격 · 19종 (D4 ~ D57) */
+    HORIZONTAL_REBAR: string;
+    /** 단부 철근 규격 · 19종 (D4 ~ D57) */
+    END_REBAR: string;
+    /** 경계요소 수평 철근 규격 · 19종 (D4 ~ D57) */
+    BE_HORZ_REBAR: string;
+    /** 경계요소 수평 철근 간격 */
+    BE_HORZ_SPACE: number;
+    /** 경계요소 수직 철근 간격 */
+    BE_VERT_SPACE: number;
+    /** 단부 피복 거리 de (m) */
+    DE?: number;
+    /** 벽면 피복 거리 dw (m) */
+    DW?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RebarDesignCriteriaByWallMemberPayload {
+    /** 해당 벽체 ID의 층별 지정 목록 (min 1) */
+    ITEMS: Array<{
+      /** 층 이름 (최소 1자) */
+      STORY: string;
+      /** 수직 철근 규격 · 19종 (D4 ~ D57) */
+      VERTICAL_REBAR: string;
+      /** 수평 철근 규격 · 19종 (D4 ~ D57) */
+      HORIZONTAL_REBAR: string;
+      /** 단부 철근 규격 · 19종 (D4 ~ D57) */
+      END_REBAR: string;
+      /** 경계요소 수평 철근 규격 · 19종 (D4 ~ D57) */
+      BE_HORZ_REBAR: string;
+      /** 경계요소 수평 철근 간격 */
+      BE_HORZ_SPACE: number;
+      /** 경계요소 수직 철근 간격 */
+      BE_VERT_SPACE: number;
+      /** 단부 피복 거리 de (m) */
+      DE?: number;
+      /** 벽면 피복 거리 dw (m) */
+      DW?: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RebarDesignCriteriaPayload {
+    /** 보 철근 기준 */
+    BEAM?: {
+      /** 주철근 규격 배열 (최대 5종) · 항목은 19종 (D4 ~ D57) */
+      MAIN_REBAR?: Array<string>;
+      /** 스터럽 규격 · 19종 */
+      STIRRUPS?: string;
+      /** 스터럽 다리 수 · 2 ~ 20 */
+      STIRRUP_ARRANGEMENT?: number;
+      /** 측면철근 규격 · 19종 */
+      SIDE_BAR?: string;
+      /** 상단 피복 */
+      DT?: number;
+      /** 하단 피복 */
+      DB?: number;
+      /** 복철근 설계 */
+      DOUBLY_REBAR?: boolean;
+      /** 복철근 k 계수 */
+      DOUBLY_K?: number;
+      /** 간격 제한 고려 */
+      SPACING_LIMIT?: boolean;
+      /** 이음 옵션 (None | 50% | 100%) */
+      SPLICED_BARS?: "None" | "50%" | "100%";
+    };
+    /** 기둥 철근 기준 */
+    COLUMN?: {
+      /** 주철근 규격 배열 (최대 5종) */
+      MAIN_REBAR?: Array<string>;
+      /** 띠철근/나선철근 규격 · 19종 */
+      TIES_SPIRALS?: string;
+      /** 다리 수 (Y) (전체 19종: 2 ~ 20) */
+      ARRANGEMENT_Y?: number;
+      /** 다리 수 (Z) (전체 19종: 2 ~ 20) */
+      ARRANGEMENT_Z?: number;
+      /** 주철근 중심 피복 do */
+      DO?: number;
+      /** 간격 제한 고려 */
+      SPACING_LIMIT?: boolean;
+      /** 이음 옵션 */
+      SPLICED_BARS?: "None" | "50%" | "100%";
+    };
+    /** 가새 철근 기준 */
+    BRACE?: {
+      /** 주철근 규격 배열 (최대 5종) */
+      MAIN_REBAR?: Array<string>;
+      /** 띠철근/나선철근 규격 · 19종 */
+      TIES_SPIRALS?: string;
+      /** 다리 수 (Y) (전체 19종: 2 ~ 20) */
+      ARRANGEMENT_Y?: number;
+      /** 다리 수 (Z) (전체 19종: 2 ~ 20) */
+      ARRANGEMENT_Z?: number;
+      /** 주철근 중심 피복 do */
+      DO?: number;
+      /** 간격 제한 고려 */
+      SPACING_LIMIT?: boolean;
+      /** 이음 옵션 */
+      SPLICED_BARS?: "None" | "50%" | "100%";
+    };
+    /** 벽체 철근 기준 */
+    WALL?: {
+      /** 수직 철근 규격 배열 (다중 선택) · 19종 */
+      VERTICAL_REBAR?: Array<string>;
+      /** 수평 철근 규격 (전체 19종: D4 ~ D57) */
+      HORIZONTAL_REBAR?: string;
+      /** 단부 철근 규격 (전체 19종: D4 ~ D57) */
+      END_REBAR?: string;
+      /** 경계요소 수평 철근 규격 (전체 19종: D4 ~ D57) */
+      BE_HORZ_REBAR?: string;
+      /** 경계요소 수평 간격 */
+      BE_HORZ_SPACE?: number;
+      /** 경계요소 수직 간격 */
+      BE_VERT_SPACE?: number;
+      /** 단부 첫 수직철근까지 거리 */
+      DE?: number;
+      /** 벽면까지 피복 거리 */
+      DW?: number;
+      /** 직경별 재질 사용 */
+      MATERIAL_BY_DIAMETER?: boolean;
+      /** 직경별 재질 입력 (사용 시) */
+      MATERIAL_BY_DIAMETER_INPUT?: {
+        /** 수직/단부 철근 재질 매핑 배열 */
+        VERTICAL_END_REBAR?: Array<{
+          /** 철근 직경 · 19종 (D4 ~ D57) */
+          REBAR_DIAMETER?: string;
+          /** 재질 등급 · None,SD300,SD400,SD500,SD600,SD700,SD400S,SD500S,SD600S */
+          MATERIAL?: "None" | "SD300" | "SD400" | "SD500" | "SD600" | "SD700" | "SD400S" | "SD500S" | "SD600S";
+        }>;
+        /** 수평 철근 재질 매핑 배열 */
+        HORIZONTAL_REBAR?: Array<{
+          /** 철근 직경 · 19종 (D4 ~ D57) */
+          REBAR_DIAMETER?: string;
+          /** 재질 등급 · None,SD300,SD400,SD500,SD600,SD700,SD400S,SD500S,SD600S */
+          MATERIAL?: "None" | "SD300" | "SD400" | "SD500" | "SD600" | "SD700" | "SD400S" | "SD500S" | "SD600S";
+        }>;
       };
-      /** 주철근 */
-      MAIN_BAR: {
-        /** 주철근 규격 · 19종 (D4 ~ D57) */
-        NAME: string;
-        /** 철근 총 개수 (min 4) */
-        NUM: number;
-        /** 열(row) 수 */
-        ROW: number;
+      /** 벽체 추가 데이터 */
+      ADDITIONAL_WALL_DATA?: {
+        /** 면외 휨 설계 */
+        OUT_OF_PLANE_BENDING?: boolean;
+        /** 수직 철근 간격 설정 (UNIT: mm/in, LIST_FOR_DESIGN: 간격 값 배열) */
+        VERTICAL_REBAR_SPACING?: JsonObject;
+        /** 수평 철근 간격(from) */
+        HORIZONTAL_REBAR_SPACING_FROM?: number;
+        /** 단부 철근 설계 방법 (1=Method-1 … 4=Method-4) */
+        END_REBAR_METHOD?: number;
+        /** 단부 철근 4개 배근 간격 */
+        DIST1?: number;
+        /** 단부 철근 6개 배근 간격 */
+        DIST2?: number;
+        /** 단부 철근 8개 이상 배근 간격 */
+        DIST3?: number;
       };
-      /** 단부 전단철근 */
-      SHEAR_BAR_END: {
-        /** 후프 철근 규격 · 19종 (D4 ~ D57) */
-        NAME: string;
-        /** 다리 수 (local Y) */
-        LEG_Y: number;
-        /** 다리 수 (local Z) */
-        LEG_Z: number;
-        /** 철근 간격 @ */
-        DIST: number;
-      };
-      /** 중앙부 전단철근 */
-      SHEAR_BAR_CEN: {
-        /** 후프 철근 규격 · 19종 (D4 ~ D57) */
-        NAME: string;
-        /** 다리 수 (local Y) */
-        LEG_Y: number;
-        /** 다리 수 (local Z) */
-        LEG_Z: number;
-        /** 철근 간격 @ */
-        DIST: number;
-      };
-      /** 콘크리트면~철근중심 거리 (do) */
-      DO: number;
-      /** 후프 철근 타입 (Ties | Spirals) */
-      HOOP_TYPE?: "Ties" | "Spirals";
-    } & (
-      {
-        CREATE_SUB_SECTION: true;
-        /** 요소 ID 배열 */
-        KEYS?: Array<number>;
-        /** ID 범위 (예: "1to160") */
-        TO?: string;
-        /** 구조 그룹 이름 */
-        STRUCTURE_GROUP_NAME?: string;
-      } |
-      {
-        KEYS?: never;
-        TO?: never;
-        STRUCTURE_GROUP_NAME?: never;
-      }
-    ))>;
-  };
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RebarExposureConditionPayload {
+    /** 노출 조건 (Dry=건조, Etc=기타) */
+    EXPOSURE: "Dry" | "Etc";
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RebarNameDist {
+    /** 경계요소 수평 철근 규격 (전체 19종: D4 ~ D57) */
+    NAME: string;
+    /** 경계요소 수평 철근 간격 */
+    DIST: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TorsionReductionFactorPayload {
+    /** 비틀림 감소계수 (>0, ≤1) */
+    FACTOR: number;
+  }
 }
 
 export namespace DesignRcKdsSetupTypes {
-  /** Generated from contracts/endpoints/. */
-  export interface RcDesignCodeSelectionPayload {
-    /** RC 설계 코드 · 현재 "KDS 41 20 : 2022" 1개 값만 지원 */
-    DGNCODE: "KDS 41 20 : 2022";
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ConcreteDesignCodeOptionShearWall {
-    /** 특수 철근콘크리트 구조벽 */
-    SPEC_RC_WALL?: boolean;
-    /** 경계요소법 (Displacement=변위기반, Stress=응력기반) */
-    BDRY_ELEM_MTHD?: "Displacement" | "Stress";
-    /** 변위 증폭계수 Cd (1.25/1.5/2/2.5/3/3.25/4/4.5/5/5.5/6/6.5) */
-    DEFL_AMP_FACT?: number;
-    /** 중요도 계수 Ie (1 / 1.2 / 1.5) */
-    IMP_FACT?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ConcreteDesignCodeOptionShearDes {
-    /** 산정법 (MAX(Ve1,Ve2) / MIN(Ve1,Ve2) / Ve1 / Ve2) */
-    MTHD?: "MAX" | "MIN" | "Ve1" | "Ve2";
-    /** R·Vc ≥ max(Ve1,Ve2)/2 의 R (≥0, FRAME_TYPE=Special) */
-    R?: number;
-    /** a1: Ve1 = Vg + a1·Σ(Mn)/L */
-    A1?: number;
-    /** a2: Ve2 = Vg + a2·Veq */
-    A2?: number;
-  }
   /** Generated from contracts/endpoints/. */
   export interface ConcreteDesignCodeOptionJoint {
     /** 내진설계 제외 부재타입 (SUBBEAM=소보, CANTIL=캔틸레버, UGBEAMCOL=지하보/기둥) */
     EXCL_MEM_TYPES?: Array<string>;
     /** 검토 위치 (Top / Bottom) */
     CHK_POS?: "Top" | "Bottom";
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ConcreteDesignCodeOptionSeismic {
-    /** 프레임 타입 (Special=특수, Intermediate=중간, Ordinary=보통 모멘트골조) */
-    FRAME_TYPE?: "Special" | "Intermediate" | "Ordinary";
-    /** 최상층 강기둥-약보 고려 */
-    STRONG_COL_WEAK_LAST?: boolean;
-    /** 전단벽 설정 (FRAME_TYPE=Special/Intermediate일 때) */
-    SHEAR_WALL?: {
-      /** 특수 철근콘크리트 구조벽 */
-      SPEC_RC_WALL?: boolean;
-      /** 경계요소법 (Displacement=변위기반, Stress=응력기반) */
-      BDRY_ELEM_MTHD?: "Displacement" | "Stress";
-      /** 변위 증폭계수 Cd (1.25/1.5/2/2.5/3/3.25/4/4.5/5/5.5/6/6.5) */
-      DEFL_AMP_FACT?: number;
-      /** 중요도 계수 Ie (1 / 1.2 / 1.5) */
-      IMP_FACT?: number;
-    };
-    /** 설계용 전단력 설정 */
-    SHEAR_DES?: {
-      /** 산정법 (MAX(Ve1,Ve2) / MIN(Ve1,Ve2) / Ve1 / Ve2) */
-      MTHD?: "MAX" | "MIN" | "Ve1" | "Ve2";
-      /** R·Vc ≥ max(Ve1,Ve2)/2 의 R (≥0, FRAME_TYPE=Special) */
-      R?: number;
-      /** a1: Ve1 = Vg + a1·Σ(Mn)/L */
-      A1?: number;
-      /** a2: Ve2 = Vg + a2·Veq */
-      A2?: number;
-    };
-    /** 보-기둥 접합부 설계 */
-    BEAM_COL_JNT_DES?: boolean;
-    /** 보-기둥 접합부 설정 */
-    JOINT?: {
-      /** 내진설계 제외 부재타입 (SUBBEAM=소보, CANTIL=캔틸레버, UGBEAMCOL=지하보/기둥) */
-      EXCL_MEM_TYPES?: Array<string>;
-      /** 검토 위치 (Top / Bottom) */
-      CHK_POS?: "Top" | "Bottom";
-    };
   }
   /** Generated from contracts/endpoints/. */
   export interface ConcreteDesignCodeOptionPayload {
@@ -13983,6 +13918,66 @@ export namespace DesignRcKdsSetupTypes {
     };
   }
   /** Generated from contracts/endpoints/. */
+  export interface ConcreteDesignCodeOptionSeismic {
+    /** 프레임 타입 (Special=특수, Intermediate=중간, Ordinary=보통 모멘트골조) */
+    FRAME_TYPE?: "Special" | "Intermediate" | "Ordinary";
+    /** 최상층 강기둥-약보 고려 */
+    STRONG_COL_WEAK_LAST?: boolean;
+    /** 전단벽 설정 (FRAME_TYPE=Special/Intermediate일 때) */
+    SHEAR_WALL?: {
+      /** 특수 철근콘크리트 구조벽 */
+      SPEC_RC_WALL?: boolean;
+      /** 경계요소법 (Displacement=변위기반, Stress=응력기반) */
+      BDRY_ELEM_MTHD?: "Displacement" | "Stress";
+      /** 변위 증폭계수 Cd (1.25/1.5/2/2.5/3/3.25/4/4.5/5/5.5/6/6.5) */
+      DEFL_AMP_FACT?: number;
+      /** 중요도 계수 Ie (1 / 1.2 / 1.5) */
+      IMP_FACT?: number;
+    };
+    /** 설계용 전단력 설정 */
+    SHEAR_DES?: {
+      /** 산정법 (MAX(Ve1,Ve2) / MIN(Ve1,Ve2) / Ve1 / Ve2) */
+      MTHD?: "MAX" | "MIN" | "Ve1" | "Ve2";
+      /** R·Vc ≥ max(Ve1,Ve2)/2 의 R (≥0, FRAME_TYPE=Special) */
+      R?: number;
+      /** a1: Ve1 = Vg + a1·Σ(Mn)/L */
+      A1?: number;
+      /** a2: Ve2 = Vg + a2·Veq */
+      A2?: number;
+    };
+    /** 보-기둥 접합부 설계 */
+    BEAM_COL_JNT_DES?: boolean;
+    /** 보-기둥 접합부 설정 */
+    JOINT?: {
+      /** 내진설계 제외 부재타입 (SUBBEAM=소보, CANTIL=캔틸레버, UGBEAMCOL=지하보/기둥) */
+      EXCL_MEM_TYPES?: Array<string>;
+      /** 검토 위치 (Top / Bottom) */
+      CHK_POS?: "Top" | "Bottom";
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ConcreteDesignCodeOptionShearDes {
+    /** 산정법 (MAX(Ve1,Ve2) / MIN(Ve1,Ve2) / Ve1 / Ve2) */
+    MTHD?: "MAX" | "MIN" | "Ve1" | "Ve2";
+    /** R·Vc ≥ max(Ve1,Ve2)/2 의 R (≥0, FRAME_TYPE=Special) */
+    R?: number;
+    /** a1: Ve1 = Vg + a1·Σ(Mn)/L */
+    A1?: number;
+    /** a2: Ve2 = Vg + a2·Veq */
+    A2?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ConcreteDesignCodeOptionShearWall {
+    /** 특수 철근콘크리트 구조벽 */
+    SPEC_RC_WALL?: boolean;
+    /** 경계요소법 (Displacement=변위기반, Stress=응력기반) */
+    BDRY_ELEM_MTHD?: "Displacement" | "Stress";
+    /** 변위 증폭계수 Cd (1.25/1.5/2/2.5/3/3.25/4/4.5/5/5.5/6/6.5) */
+    DEFL_AMP_FACT?: number;
+    /** 중요도 계수 Ie (1 / 1.2 / 1.5) */
+    IMP_FACT?: number;
+  }
+  /** Generated from contracts/endpoints/. */
   export interface DefinitionOfFramePayload {
     /** X방향 프레임 (Unbraced Sway=비횡지지/횡변위, Braced Non-sway=횡지지/무횡변위) */
     FRAMEX?: "Sway" | "Non-sway";
@@ -13992,6 +13987,67 @@ export namespace DesignRcKdsSetupTypes {
     bAUTOKF?: boolean;
     /** 설계 타입 (3D / XZ / YZ / XY 평면) */
     DT?: "3D" | "XZ" | "YZ" | "XY";
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface EffectiveLengthFactorPayload {
+    /** Ky */
+    Ky?: number;
+    /** Kz */
+    Kz?: number;
+    /** Kt */
+    Kt?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface EquivalentMomentCorrectionFactorPayload {
+    /** 자동 계산 */
+    OPT_AUTO?: boolean;
+    /** CMy */
+    CMY?: number;
+    /** CMz */
+    CMZ?: number;
+  }
+  export interface HaunchPartSelector {
+    INPUT_METHOD?: string;
+    KEYS?: Array<number>;
+    TO?: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface HaunchedBeamAssignmentPayload {
+    /** 헌치 이름 */
+    NAME: string;
+    /** Part A 요소 입력 (방식 1개만 사용) */
+    PART_A: {
+      /** 입력 방식 (KEYS=개별 ID, TO=ID 범위) */
+      INPUT_METHOD: "KEYS" | "TO";
+      /** 개별 요소 ID (INPUT_METHOD=KEYS, 최소 1개) Applies when PART_A.INPUT_METHOD = "KEYS". */
+      KEYS?: Array<number>;
+      /** ID 범위 (예 "101 to 105") (INPUT_METHOD=TO) Applies when PART_A.INPUT_METHOD = "TO". */
+      TO?: string;
+    };
+    /** Part B 요소 입력 (구조는 Part A와 동일) */
+    PART_B: {
+      /** 입력 방식 (KEYS=개별 ID, TO=ID 범위) */
+      INPUT_METHOD: "KEYS" | "TO";
+      /** 개별 요소 ID (INPUT_METHOD=KEYS, 최소 1개) Applies when PART_B.INPUT_METHOD = "KEYS". */
+      KEYS?: Array<number>;
+      /** ID 범위 (예 "101 to 105") (INPUT_METHOD=TO) Applies when PART_B.INPUT_METHOD = "TO". */
+      TO?: string;
+    };
+    /** Part C 요소 입력 (구조는 Part A와 동일) */
+    PART_C: {
+      /** 입력 방식 (KEYS=개별 ID, TO=ID 범위) */
+      INPUT_METHOD: "KEYS" | "TO";
+      /** 개별 요소 ID (INPUT_METHOD=KEYS, 최소 1개) Applies when PART_C.INPUT_METHOD = "KEYS". */
+      KEYS?: Array<number>;
+      /** ID 범위 (예 "101 to 105") (INPUT_METHOD=TO) Applies when PART_C.INPUT_METHOD = "TO". */
+      TO?: string;
+    };
+    /** 설계 위치 타입 (0=Part 1/2, 1=User) */
+    POS_TYPE: number;
+    /** 사용자 정의 L1 거리 (POS_TYPE=1일 때) */
+    L1?: number;
+    /** 사용자 정의 L2 거리 (POS_TYPE=1일 때) */
+    L2?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface LiveLoadReductionDataItem {
@@ -14058,57 +14114,6 @@ export namespace DesignRcKdsSetupTypes {
     }>;
   }
   /** Generated from contracts/endpoints/. */
-  export interface StrengthReductionFactorsPayload {
-    /** 인장지배 φt */
-    PHI_T?: number;
-    /** 나선철근 부재 φc1 */
-    PHI_C1?: number;
-    /** 기타 철근 부재 φc2 */
-    PHI_C2?: number;
-    /** 전단·비틀림 φv */
-    PHI_V?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SeismicLoadCombinationTypePayload {
-    /** 부재 타입 (Special Seismic Loads / Vertical Seismic Forces) */
-    TYPE: "Special Seismic Loads" | "Vertical Seismic Forces";
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface UndergroundLoadCombinationTypePayload {
-    /** 지하 하중 여부 (true=지하하중용, false=비지하하중용) */
-    bUNDERLOADTYPE?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ScaleUpFactorForEarthquakePayload {
-    /** 하중케이스 축력 스케일 계수 */
-    LC_AXIAL?: number;
-    /** 하중케이스 모멘트 스케일 계수 */
-    LC_MOMENT?: number;
-    /** 하중케이스 전단 스케일 계수 */
-    LC_SHEAR?: number;
-    /** 하중조합 축력 스케일 계수 */
-    LCOM_AXIAL?: number;
-    /** 하중조합 모멘트 스케일 계수 */
-    LCOM_MOMENT?: number;
-    /** 하중조합 전단 스케일 계수 */
-    LCOM_SHEAR?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SeismicDesignTypePayload {
-    /** 내진 설계 타입 (Seismic / Non-Seismic / Non-Seismic-Force-Resisting) */
-    NTYPE: "Seismic" | "Non-Seismic" | "Non-Seismic-Force-Resisting";
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SeismicColumnTypePayload {
-    /** 층 타입 (PILOTI / SOFT_STORY) */
-    TYPE: "PILOTI" | "SOFT_STORY";
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ModifyMemberTypePayload {
-    /** 부재 타입 (COLUMN=기둥, BEAM=보, BRACE=가새) */
-    TYPE: "COLUMN" | "BEAM" | "BRACE";
-  }
-  /** Generated from contracts/endpoints/. */
   export interface MemberAssignmentPayload {
     /** 요소 리스트 */
     AELEM: Array<number>;
@@ -14131,25 +14136,6 @@ export namespace DesignRcKdsSetupTypes {
     NAME?: string;
     /** 설계 압축강도 fck (kN/mm — CODE=None 입력/Standard 자동 Applies when CONCRETE.CODE = "None". */
     FC?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ModifyConcreteMaterialRebar {
-    /** 코드 (None=사용자정의, Standard=표준) */
-    CODE: "None" | "Standard";
-    /** 표준코드 (KS19(RC)) — CODE=Standard Applies when REBAR.CODE = "Standard". */
-    STANDARD_CODE?: "KS19(RC)";
-    /** 주철근 등급 (SD300/SD400/SD500/SD600/SD700/SD400S/SD500S/SD600S) — Standard Applies when REBAR.CODE = "Standard". */
-    MAIN_REBAR_GRADE?: "SD300" | "SD400" | "SD500" | "SD600" | "SD700" | "SD400S" | "SD500S" | "SD600S";
-    /** 보조철근 등급 (SD300~SD600S) — Standard Applies when REBAR.CODE = "Standard". */
-    SUB_REBAR_GRADE?: "SD300" | "SD400" | "SD500" | "SD600" | "SD700" | "SD400S" | "SD500S" | "SD600S";
-    /** 주철근 재료명 — CODE=None Applies when REBAR.CODE = "None". */
-    MAIN_REBAR_NAME?: string;
-    /** 보조철근 재료명 — CODE=None Applies when REBAR.CODE = "None". */
-    SUB_REBAR_NAME?: string;
-    /** 주철근 항복강도 Fy (kN/mm — None 입력/Standard 자동 Applies when REBAR.CODE = "None". */
-    FY?: number;
-    /** 보조철근 항복강도 Fys (kN/mm — None 입력/Standard 자동 Applies when REBAR.CODE = "None". */
-    FYS?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface ModifyConcreteMaterialPayload {
@@ -14191,46 +14177,23 @@ export namespace DesignRcKdsSetupTypes {
     };
   }
   /** Generated from contracts/endpoints/. */
-  export interface UnbracedLengthPayload {
-    /** 비지지 길이 Ly */
-    LY?: number;
-    /** 비지지 길이 Lz */
-    LZ?: number;
-    /** 횡좌굴 비지지 길이 Lb */
-    LB?: number;
-    /** 횡좌굴 비지지 길이 미고려 */
-    bNOTUSE?: boolean;
-    /** 비틀림 비지지 길이 Lt */
-    LT?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface EffectiveLengthFactorPayload {
-    /** Ky */
-    Ky?: number;
-    /** Kz */
-    Kz?: number;
-    /** Kt */
-    Kt?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface EquivalentMomentCorrectionFactorPayload {
-    /** 자동 계산 */
-    OPT_AUTO?: boolean;
-    /** CMy */
-    CMY?: number;
-    /** CMz */
-    CMZ?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MomentMagnifierPayload {
-    /** B1y - δby (Y축 1차 모멘트 확대) */
-    B1Y_DELTA_BY?: number;
-    /** B1z - δbz (Z축 1차 모멘트 확대) */
-    B1Z_DELTA_BZ?: number;
-    /** B2y - δsy (Y축 2차 모멘트 확대) */
-    B2Y_DELTA_SY?: number;
-    /** B2z - δsz (Z축 2차 모멘트 확대) */
-    B2Z_DELTA_SZ?: number;
+  export interface ModifyConcreteMaterialRebar {
+    /** 코드 (None=사용자정의, Standard=표준) */
+    CODE: "None" | "Standard";
+    /** 표준코드 (KS19(RC)) — CODE=Standard Applies when REBAR.CODE = "Standard". */
+    STANDARD_CODE?: "KS19(RC)";
+    /** 주철근 등급 (SD300/SD400/SD500/SD600/SD700/SD400S/SD500S/SD600S) — Standard Applies when REBAR.CODE = "Standard". */
+    MAIN_REBAR_GRADE?: "SD300" | "SD400" | "SD500" | "SD600" | "SD700" | "SD400S" | "SD500S" | "SD600S";
+    /** 보조철근 등급 (SD300~SD600S) — Standard Applies when REBAR.CODE = "Standard". */
+    SUB_REBAR_GRADE?: "SD300" | "SD400" | "SD500" | "SD600" | "SD700" | "SD400S" | "SD500S" | "SD600S";
+    /** 주철근 재료명 — CODE=None Applies when REBAR.CODE = "None". */
+    MAIN_REBAR_NAME?: string;
+    /** 보조철근 재료명 — CODE=None Applies when REBAR.CODE = "None". */
+    SUB_REBAR_NAME?: string;
+    /** 주철근 항복강도 Fy (kN/mm — None 입력/Standard 자동 Applies when REBAR.CODE = "None". */
+    FY?: number;
+    /** 보조철근 항복강도 Fys (kN/mm — None 입력/Standard 자동 Applies when REBAR.CODE = "None". */
+    FYS?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface ModifyLiveLoadReductionComponents {
@@ -14255,676 +14218,89 @@ export namespace DesignRcKdsSetupTypes {
       SHEAR?: boolean;
     };
   }
-  export interface HaunchPartSelector {
-    INPUT_METHOD?: string;
-    KEYS?: Array<number>;
-    TO?: string;
+  /** Generated from contracts/endpoints/. */
+  export interface ModifyMemberTypePayload {
+    /** 부재 타입 (COLUMN=기둥, BEAM=보, BRACE=가새) */
+    TYPE: "COLUMN" | "BEAM" | "BRACE";
   }
   /** Generated from contracts/endpoints/. */
-  export interface HaunchedBeamAssignmentPayload {
-    /** 헌치 이름 */
-    NAME: string;
-    /** Part A 요소 입력 (방식 1개만 사용) */
-    PART_A: {
-      /** 입력 방식 (KEYS=개별 ID, TO=ID 범위) */
-      INPUT_METHOD: "KEYS" | "TO";
-      /** 개별 요소 ID (INPUT_METHOD=KEYS, 최소 1개) Applies when PART_A.INPUT_METHOD = "KEYS". */
-      KEYS?: Array<number>;
-      /** ID 범위 (예 "101 to 105") (INPUT_METHOD=TO) Applies when PART_A.INPUT_METHOD = "TO". */
-      TO?: string;
-    };
-    /** Part B 요소 입력 (구조는 Part A와 동일) */
-    PART_B: {
-      /** 입력 방식 (KEYS=개별 ID, TO=ID 범위) */
-      INPUT_METHOD: "KEYS" | "TO";
-      /** 개별 요소 ID (INPUT_METHOD=KEYS, 최소 1개) Applies when PART_B.INPUT_METHOD = "KEYS". */
-      KEYS?: Array<number>;
-      /** ID 범위 (예 "101 to 105") (INPUT_METHOD=TO) Applies when PART_B.INPUT_METHOD = "TO". */
-      TO?: string;
-    };
-    /** Part C 요소 입력 (구조는 Part A와 동일) */
-    PART_C: {
-      /** 입력 방식 (KEYS=개별 ID, TO=ID 범위) */
-      INPUT_METHOD: "KEYS" | "TO";
-      /** 개별 요소 ID (INPUT_METHOD=KEYS, 최소 1개) Applies when PART_C.INPUT_METHOD = "KEYS". */
-      KEYS?: Array<number>;
-      /** ID 범위 (예 "101 to 105") (INPUT_METHOD=TO) Applies when PART_C.INPUT_METHOD = "TO". */
-      TO?: string;
-    };
-    /** 설계 위치 타입 (0=Part 1/2, 1=User) */
-    POS_TYPE: number;
-    /** 사용자 정의 L1 거리 (POS_TYPE=1일 때) */
-    L1?: number;
-    /** 사용자 정의 L2 거리 (POS_TYPE=1일 때) */
-    L2?: number;
-  }
-}
-
-export namespace DesignSrcAiksrc2kTypes {
-  /** Generated from contracts/endpoints/. */
-  export interface SrcDesignCodePayload {
-    /** 설계 코드 — 가능값: AIK-SRC2K */
-    DGNCODE: "AIK-SRC2K";
+  export interface MomentMagnifierPayload {
+    /** B1y - δby (Y축 1차 모멘트 확대) */
+    B1Y_DELTA_BY?: number;
+    /** B1z - δbz (Z축 1차 모멘트 확대) */
+    B1Z_DELTA_BZ?: number;
+    /** B2y - δsy (Y축 2차 모멘트 확대) */
+    B2Y_DELTA_SY?: number;
+    /** B2z - δsz (Z축 2차 모멘트 확대) */
+    B2Z_DELTA_SZ?: number;
   }
   /** Generated from contracts/endpoints/. */
-  export interface SrcDesignCodeOptionPayload {
-    /** 설계 코드. — AIK-SRC2K=AIK-SRC2K */
-    DGNCODE: string;
-    /** 내진설계 적용 여부. */
-    SEISMIC: boolean;
+  export interface RcDesignCodeSelectionPayload {
+    /** RC 설계 코드 · 현재 "KDS 41 20 : 2022" 1개 값만 지원 */
+    DGNCODE: "KDS 41 20 : 2022";
   }
   /** Generated from contracts/endpoints/. */
-  export interface SrcDefinitionOfFramePayload {
-    /** X방향 프레임 — Unbraced Sway=비횡지지 | Sway; Braced Non-sway=횡지지 | Non-sway */
-    FRAMEX?: string;
-    /** Y방향 프레임 — Unbraced Sway=비횡지지 | Sway; Braced Non-sway=횡지지 | Non-sway */
-    FRAMEY?: string;
-    /** 유효좌굴길이계수 자동계산 */
-    bAUTOKF?: boolean;
-    /** 설계 타입 — 3D=3-D; XZ=X-Z 평면; YZ=Y-Z 평면; XY=X-Y 평면 */
-    DT?: string;
+  export interface ScaleUpFactorForEarthquakePayload {
+    /** 하중케이스 축력 스케일 계수 */
+    LC_AXIAL?: number;
+    /** 하중케이스 모멘트 스케일 계수 */
+    LC_MOMENT?: number;
+    /** 하중케이스 전단 스케일 계수 */
+    LC_SHEAR?: number;
+    /** 하중조합 축력 스케일 계수 */
+    LCOM_AXIAL?: number;
+    /** 하중조합 모멘트 스케일 계수 */
+    LCOM_MOMENT?: number;
+    /** 하중조합 전단 스케일 계수 */
+    LCOM_SHEAR?: number;
   }
   /** Generated from contracts/endpoints/. */
-  export interface SrcLiveLoadReductionDataItem {
-    /** 층 이름 */
-    STORY: string;
-    /** X 최소 좌표 */
-    XMIN?: number;
-    /** X 최대 좌표 */
-    XMAX?: number;
-    /** Y 최소 좌표 */
-    YMIN?: number;
-    /** Y 최대 좌표 */
-    YMAX?: number;
-    /** 구간 최대값 (General Design Code 전용) — 가능값 11개: 1 ~ 0.5 */
-    RANGE_MAX?: number;
-    /** 구간 최소값 (General Design Code 전용) — 가능값 11개: 1 ~ 0.5 */
-    RANGE_MIN?: number;
+  export interface SeismicColumnTypePayload {
+    /** 층 타입 (PILOTI / SOFT_STORY) */
+    TYPE: "PILOTI" | "SOFT_STORY";
   }
   /** Generated from contracts/endpoints/. */
-  export interface SrcLiveLoadReductionFactorPayload {
-    /** — 0=일반 설계 기준; 1=중국 표준 기준 */
-    CALC_RULE?: number;
-    /** 적용 성분 선택 */
-    APPLIED_COMP?: Array<string>;
-    /** 활하중 케이스 이름 (사용자 정의 목록) */
-    LIVE_LOAD_CASES?: Array<string>;
-    /** 활하중 저감계수 테이블 데이터 */
-    REDUCTION_DATA: Array<{
-      /** 층 이름 */
-      STORY: string;
-      /** X 최소 좌표 */
-      XMIN?: number;
-      /** X 최대 좌표 */
-      XMAX?: number;
-      /** Y 최소 좌표 */
-      YMIN?: number;
-      /** Y 최대 좌표 */
-      YMAX?: number;
-      /** 구간 최대값 (General Design Code 전용) — 가능값 11개: 1 ~ 0.5 */
-      RANGE_MAX?: number;
-      /** 구간 최소값 (General Design Code 전용) — 가능값 11개: 1 ~ 0.5 */
-      RANGE_MIN?: number;
-    }>;
+  export interface SeismicDesignTypePayload {
+    /** 내진 설계 타입 (Seismic / Non-Seismic / Non-Seismic-Force-Resisting) */
+    NTYPE: "Seismic" | "Non-Seismic" | "Non-Seismic-Force-Resisting";
   }
   /** Generated from contracts/endpoints/. */
-  export interface SrcLoadContributionBaseItem {
-    /** 계수 */
-    FACTOR: number;
-    /** 하중케이스 이름 */
-    LOAD_CASE_NAME: string;
+  export interface SeismicLoadCombinationTypePayload {
+    /** 부재 타입 (Special Seismic Loads / Vertical Seismic Forces) */
+    TYPE: "Special Seismic Loads" | "Vertical Seismic Forces";
   }
   /** Generated from contracts/endpoints/. */
-  export interface SrcLoadContributionForNonlinearLoadCasePayload {
-    /** 하중기여 이름 */
-    NAME: string;
-    /** 설명 */
-    DESC?: string;
-    /** 하중기여 항목 */
-    BASE_ITEM: Array<{
-      /** 계수 */
-      FACTOR: number;
-      /** 하중케이스 이름 */
-      LOAD_CASE_NAME: string;
-    }>;
+  export interface StrengthReductionFactorsPayload {
+    /** 인장지배 φt */
+    PHI_T?: number;
+    /** 나선철근 부재 φc1 */
+    PHI_C1?: number;
+    /** 기타 철근 부재 φc2 */
+    PHI_C2?: number;
+    /** 전단·비틀림 φv */
+    PHI_V?: number;
   }
   /** Generated from contracts/endpoints/. */
-  export interface SrcUnbracedLengthPayload {
+  export interface UnbracedLengthPayload {
     /** 비지지 길이 Ly */
     LY?: number;
     /** 비지지 길이 Lz */
     LZ?: number;
-    /** 횡방향 비지지 길이 */
+    /** 횡좌굴 비지지 길이 Lb */
     LB?: number;
-    /** 횡방향 비지지 길이 고려 안 함 */
+    /** 횡좌굴 비지지 길이 미고려 */
     bNOTUSE?: boolean;
-    /** 비틀림 비지지 길이 */
+    /** 비틀림 비지지 길이 Lt */
     LT?: number;
   }
   /** Generated from contracts/endpoints/. */
-  export interface SrcEffectiveLengthFactorPayload {
-    /** Ky */
-    Ky?: number;
-    /** Kz */
-    Kz?: number;
-    /** Kt */
-    Kt?: number;
+  export interface UndergroundLoadCombinationTypePayload {
+    /** 지하 하중 여부 (true=지하하중용, false=비지하하중용) */
+    bUNDERLOADTYPE?: boolean;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcLimitingSlendernessRatioPayload {
-    /** 세장비 검토 안 함 */
-    bNOTCHECK?: boolean;
-    /** 압축재 세장비 제한값 */
-    COMP: number;
-    /** 인장재 세장비 제한값 */
-    TENS: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcEquivalentMomentCorrectionFactorPayload {
-    /** 자동 계산 */
-    OPT_AUTO?: boolean;
-    /** CMy */
-    CMY?: number;
-    /** CMz */
-    CMZ?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcMomentMagnifierPayload {
-    /** B1y - Δby (1차 모멘트 Y) */
-    B1Y_DELTA_BY?: number;
-    /** B1z - Δbz (1차 모멘트 Z) */
-    B1Z_DELTA_BZ?: number;
-    /** B2y - Δsy (2차 모멘트 Y) */
-    B2Y_DELTA_SY?: number;
-    /** B2z - Δsz (2차 모멘트 Z) */
-    B2Z_DELTA_SZ?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcLiveLoadReductionComponents {
-    /** 축력 */
-    AXIAL?: boolean;
-    /** 모멘트 */
-    MOMENT?: boolean;
-    /** 전단력 */
-    SHEAR?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcModifyLiveLoadReductionFactorPayload {
-    /** 저감계수 */
-    FACTOR?: number;
-    /** 적용 성분 */
-    COMPONENTS?: {
-      /** 축력 */
-      AXIAL?: boolean;
-      /** 모멘트 */
-      MOMENT?: boolean;
-      /** 전단력 */
-      SHEAR?: boolean;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcScaleUpFactorForEarthquakePayload {
-    /** 하중케이스 - 축력 증폭계수 */
-    LC_AXIAL?: number;
-    /** 하중케이스 - 모멘트 증폭계수 */
-    LC_MOMENT?: number;
-    /** 하중케이스 - 전단 증폭계수 */
-    LC_SHEAR?: number;
-    /** 하중조합 - 축력 증폭계수 */
-    LCOM_AXIAL?: number;
-    /** 하중조합 - 모멘트 증폭계수 */
-    LCOM_MOMENT?: number;
-    /** 하중조합 - 전단 증폭계수 */
-    LCOM_SHEAR?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcModifyMemberTypePayload {
-    /** 부재 타입 — COLUMN=기둥; BEAM=보; BRACE=가새 */
-    TYPE: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcSeismicLoadCombinationTypePayload {
-    /** 부재 타입 배정 — Special Seismic Loads=특별 지진하중; Vertical Seismic Forces=수직 지진력 */
-    TYPE: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcMemberCheckPerformArgument {
-    /** 설계 계산 대상 타입 선택. ELEMS: 요소번호별, SECTIONS: 단면번호별, ALL: 전체 요소. — ALL=전체 요소; ELEMS=요소번호별; SECTIONS=단면번호별 */
-    PERFORM_TYPE?: string;
-    /** 요소 번호 입력. */
-    ELEMS?: {
-      /** 개별 ID 지정 */
-      KEYS?: Array<number>;
-      /** ID 범위 지정 (예: '1to160') */
-      TO?: string;
-      /** 구조 그룹 이름 지정 */
-      STRUCTURE_GROUP_NAME?: string;
-    };
-    /** 단면 번호 입력. */
-    SECTIONS?: Array<number>;
-  }
-  export interface SrcMemberCheckTableArgument {
-    TABLE_TYPE?: string;
-    ELEMS?: PostBaseTypes.NodeElemsSelector;
-    SECTIONS?: Array<number>;
-    PRI_SORT?: number;
-    RESULT?: number;
-    TABLE_NAME?: string;
-    EXPORT_PATH?: string;
-    UNIT?: PostBaseTypes.TableUnit;
-    STYLES?: PostBaseTypes.TableStyles;
-    COMPONENTS?: Array<string>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcReportDetailPositions {
-    /** I단 위치 포함 */
-    END_I?: boolean;
-    /** 중앙 위치 포함 */
-    MID?: boolean;
-    /** J단 위치 포함 */
-    END_J?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcBeamCheckReportArgument {
-    /** 보고서 표 타입 — 가능값: MEMB, PROP */
-    REPORT_TYPE: "MEMB" | "PROP";
-    /** 요소 기준 보고서의 출력 모드 — Graphic=그래픽 (JPG 이미지); Detail=상세 (DOC 문서); Summary=요약 (TXT 텍스트) */
-    CURRENT_MODE_MEMB?: string;
-    /** 특성 기준 보고서의 출력 모드 — Graphic=그래픽 (JPG 이미지); Summary=요약 (TXT 텍스트) */
-    CURRENT_MODE_PROP?: string;
-    /** 요소 번호 입력. */
-    ELEMS?: {
-      /** 개별 ID 지정 */
-      KEYS?: Array<number>;
-      /** ID 범위 지정 (예: '1to160') */
-      TO?: string;
-      /** 구조 그룹 이름 지정 */
-      STRUCTURE_GROUP_NAME?: string;
-    };
-    /** 보고서에 포함할 단면 번호 목록. */
-    SECTIONS?: Array<number>;
-    /** 상세 보고서 출력 위치 */
-    DETAIL_POSITIONS?: {
-      /** I단 위치 포함 */
-      END_I?: boolean;
-      /** 중앙 위치 포함 */
-      MID?: boolean;
-      /** J단 위치 포함 */
-      END_J?: boolean;
-    };
-    /** 보고서 파일을 저장할 디렉토리 경로 */
-    EXPORT_PATH: string;
-    /** 출력 파일 기본 이름. 요소가 여러 개인 경우 파일명 앞에 순번과 요소번호가 붙습니다(예: 001_E859_filename.jpg, 002_E1_filename.jpg). */
-    OUTPUT_NAME: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcColumnCheckReportArgument {
-    /** 보고서 표 타입 — 가능값: MEMB, PROP */
-    REPORT_TYPE: "MEMB" | "PROP";
-    /** 요소 기준 보고서의 출력 모드 — Graphic=그래픽 (JPG 이미지); Detail=상세 (DOC 문서); Summary=요약 (TXT 텍스트) */
-    CURRENT_MODE_MEMB?: string;
-    /** 특성 기준 보고서의 출력 모드 — Graphic=그래픽 (JPG 이미지); Summary=요약 (TXT 텍스트) */
-    CURRENT_MODE_PROP?: string;
-    /** 요소 번호 입력. */
-    ELEMS?: {
-      /** 개별 ID 지정 */
-      KEYS?: Array<number>;
-      /** ID 범위 지정 (예: '1to160') */
-      TO?: string;
-      /** 구조 그룹 이름 지정 */
-      STRUCTURE_GROUP_NAME?: string;
-    };
-    /** 보고서에 포함할 단면 번호 목록. */
-    SECTIONS?: Array<number>;
-    /** 보고서 파일을 저장할 디렉토리 경로 */
-    EXPORT_PATH: string;
-    /** 출력 파일 기본 이름. 요소가 여러 개인 경우 파일명 앞에 순번과 요소번호가 붙습니다(예: 001_E100_filename.jpg, 002_E865_filename.jpg). */
-    OUTPUT_NAME: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcOptimalDesignSectionCriteria {
-    /** 단면 번호(입력). */
-    SECT_NO: number;
-    /** 설계 기준 - 단면 DB — BUILT=BUILT (용접 단면); KS21=KS21 (한국산업표준 압연 단면); USER=USER (사용자 정의 단면) */
-    SECT_DB: string;
-    /** 설계 기준 - 허용치 */
-    ALLOW?: number;
-    /** 설계 기준 - D1 */
-    D1?: number;
-    /** 설계 기준 - D2 */
-    D2?: number;
-    /** 설계 기준 - D3 */
-    D3?: number;
-    /** 설계 기준 - D4 */
-    D4?: number;
-    /** 설계 기준 - D5 */
-    D5?: number;
-    /** 설계 기준 - D6 */
-    D6?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcOptimalDesignAnalysisOption {
-    /** 재해석 반복 횟수(최대 10). 재해석 없이 단면 선정만 할 경우 0으로 설정. */
-    ANAL_TIME?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcOptimalDesignColumnDesign {
-    /** 기둥 설계용 적용 부재력·모멘트 방법 — 0=축력 및 모멘트; 1=축력만 */
-    APPLIED_FORCES?: number;
-    /** 조립기둥 이음 접합 방법 — 0=Internal Const (내측 고정, 외측으로 확장); 1=External Const (외측 고정, 내측 조정) */
-    JOINT_METHOD?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcOptimalDesignUserSection {
-    /** 단면 번호 */
-    NO: number;
-    /** 단면 형상 (L, C, H, T, B, P, SR, SB, 2L, 2C) */
-    SHAPE: string;
-    D1?: number;
-    D2?: number;
-    D3?: number;
-    D4?: number;
-    D5?: number;
-    D6?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcOptimalDesignOutput {
-    /** 최대 비율 그래프 출력 */
-    GRAPH_MAX_RATIO?: boolean;
-    /** 평균 비율 그래프 출력 */
-    GRAPH_AVG_RATIO?: boolean;
-    /** 중량 그래프 출력 */
-    GRAPH_WEIGHT?: boolean;
-    /** 중량 합계 그래프 출력 */
-    GRAPH_WEIGHT_SUM?: boolean;
-    /** 중량 비율 그래프 출력 */
-    GRAPH_WEIGHT_RATIO?: boolean;
-    /** 결과를 텍스트 보고서로 화면 및 파일에 출력 */
-    TEXT_REPORT?: boolean;
-    /** 선택된 최적 단면을 모델에 적용 */
-    MODEL_UPDATE?: boolean;
-    /** 보고서 출력을 저장할 파일 경로 */
-    EXPORT_PATH: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcOptimalDesignArgument {
-    /** 단면 목록 및 설계 기준(SRC). 각 항목은 하나의 단면번호와 그 설계 기준에 대응합니다(POST 입력 전용). */
-    SECT_LIST: Array<{
-      /** 단면 번호(입력). */
-      SECT_NO: number;
-      /** 설계 기준 - 단면 DB — BUILT=BUILT (용접 단면); KS21=KS21 (한국산업표준 압연 단면); USER=USER (사용자 정의 단면) */
-      SECT_DB: string;
-      /** 설계 기준 - 허용치 */
-      ALLOW?: number;
-      /** 설계 기준 - D1 */
-      D1?: number;
-      /** 설계 기준 - D2 */
-      D2?: number;
-      /** 설계 기준 - D3 */
-      D3?: number;
-      /** 설계 기준 - D4 */
-      D4?: number;
-      /** 설계 기준 - D5 */
-      D5?: number;
-      /** 설계 기준 - D6 */
-      D6?: number;
-    }>;
-    /** 해석 옵션 - 재해석 반복 횟수 */
-    ANALYSIS_OPT?: {
-      /** 재해석 반복 횟수(최대 10). 재해석 없이 단면 선정만 할 경우 0으로 설정. */
-      ANAL_TIME?: number;
-    };
-    /** BUILT 단면의 플레이트 두께 목록 (최대 50개) */
-    PLATE_THICKNESS?: Array<number>;
-    /** 기둥 부재 최적설계를 위한 기둥 설계 설정 */
-    COLUMN_DESIGN?: {
-      /** 기둥 설계용 적용 부재력·모멘트 방법 — 0=축력 및 모멘트; 1=축력만 */
-      APPLIED_FORCES?: number;
-      /** 조립기둥 이음 접합 방법 — 0=Internal Const (내측 고정, 외측으로 확장); 1=External Const (외측 고정, 내측 조정) */
-      JOINT_METHOD?: number;
-    };
-    /** 사용자 정의 단면 데이터베이스. 각 행은 No, 형상, 치수 D1~D6으로 단면을 정의함. */
-    USER_DEFINED_SECT?: Array<{
-      /** 단면 번호 */
-      NO: number;
-      /** 단면 형상 (L, C, H, T, B, P, SR, SB, 2L, 2C) */
-      SHAPE: string;
-      D1?: number;
-      D2?: number;
-      D3?: number;
-      D4?: number;
-      D5?: number;
-      D6?: number;
-    }>;
-    /** 최적설계 결과 출력 옵션 (동시에 여러 개 선택 가능) */
-    OUTPUT: {
-      /** 최대 비율 그래프 출력 */
-      GRAPH_MAX_RATIO?: boolean;
-      /** 평균 비율 그래프 출력 */
-      GRAPH_AVG_RATIO?: boolean;
-      /** 중량 그래프 출력 */
-      GRAPH_WEIGHT?: boolean;
-      /** 중량 합계 그래프 출력 */
-      GRAPH_WEIGHT_SUM?: boolean;
-      /** 중량 비율 그래프 출력 */
-      GRAPH_WEIGHT_RATIO?: boolean;
-      /** 결과를 텍스트 보고서로 화면 및 파일에 출력 */
-      TEXT_REPORT?: boolean;
-      /** 선택된 최적 단면을 모델에 적용 */
-      MODEL_UPDATE?: boolean;
-      /** 보고서 출력을 저장할 파일 경로 */
-      EXPORT_PATH: string;
-    };
-  }
-  export interface SrcDesignForcesArgument {
-    TABLE_NAME?: string;
-    TABLE_TYPE?: string;
-    EXPORT_PATH?: string;
-    UNIT?: PostBaseTypes.TableUnit;
-    STYLES?: PostBaseTypes.TableStyles;
-    COMPONENTS?: Array<string>;
-    NODE_ELEMS?: PostBaseTypes.NodeElemsSelector;
-    PARTS?: Array<string>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcMaterialSteel {
-    /** 강재 재질 코드 타입. — None=없음; Standard=표준 */
-    CODE: string;
-    /** CODE가 Standard일 때의 강재 표준 코드. 현재 KS22(S)만 지원됨. — KS22(S)=KS22(S) */
-    STANDARD_CODE?: string;
-    /** CODE가 Standard일 때의 강재 등급. — SS235=SS235; SS275=SS275; SS315=SS315; SS410=SS410; SS450=SS450; SS550=SS550; SM275=SM275; SM355=SM355; SM420=SM420; SM460=SM460; SM275TMC=SM275TMC; SM355TMC=SM355TMC …(전체 68개) */
-    GRADE?: string;
-    /** CODE가 None일 때의 사용자 정의 강재 이름. */
-    NAME?: string;
-    /** 탄성계수. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
-    ES?: number;
-    /** 인장강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
-    FU?: number;
-    /** CODE=None일 때의 항복강도. */
-    FY?: number;
-    /** 항복강도 Fy1. CODE가 Standard일 때 자동 입력. */
-    FY1?: number;
-    /** 항복강도 Fy2. CODE가 Standard일 때 자동 입력. */
-    FY2?: number;
-    /** 항복강도 Fy3. CODE가 Standard일 때 자동 입력. */
-    FY3?: number;
-    /** 항복강도 Fy4. CODE가 Standard일 때 자동 입력. */
-    FY4?: number;
-    /** 항복강도 Fy5. CODE가 Standard일 때 자동 입력. */
-    FY5?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcMaterialConcrete {
-    /** 콘크리트 재질 코드 타입. — None=없음; Standard=표준 */
-    CODE: string;
-    /** CODE가 Standard일 때의 콘크리트 표준 코드. 현재 KS19(RC)만 지원됨. — KS19(RC)=KS19(RC) */
-    STANDARD_CODE?: string;
-    /** CODE가 None일 때의 사용자 정의 콘크리트 재질 이름. */
-    NAME?: string;
-    /** CODE가 Standard일 때의 콘크리트 등급. — C15=C15; C18=C18; C21=C21; C24=C24; C27=C27; C30=C30; C35=C35; C40=C40; C45=C45; C49=C49; C50=C50; C55=C55 …(전체 20개) */
-    GRADE?: string;
-    /** 설계기준압축강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
-    FC?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcMaterialReinforcement {
-    /** 철근 코드 타입. — None=없음; Standard=표준 */
-    CODE: string;
-    /** CODE가 Standard일 때의 철근 표준 코드. 현재 KS19(RC)만 지원됨. — KS19(RC)=KS19(RC) */
-    STANDARD_CODE?: string;
-    /** CODE가 None일 때의 사용자 정의 주철근 이름. */
-    MAIN_REBAR_NAME?: string;
-    /** CODE가 Standard일 때의 주철근 등급. — SD300=SD300; SD400=SD400; SD500=SD500; SD600=SD600; SD700=SD700; SD400S=SD400S; SD500S=SD500S; SD600S=SD600S */
-    MAIN_REBAR_GRADE?: string;
-    /** 주철근 항복강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
-    FYR?: number;
-    /** CODE가 None일 때의 사용자 정의 보조철근 이름. */
-    SUB_REBAR_NAME?: string;
-    /** CODE가 Standard일 때의 보조철근 등급. — SD300=SD300; SD400=SD400; SD500=SD500; SD600=SD600; SD700=SD700; SD400S=SD400S; SD500S=SD500S; SD600S=SD600S */
-    SUB_REBAR_GRADE?: string;
-    /** 보조철근 항복강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
-    FYS?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcModifyMaterialPayload {
-    /** 강재 재질 선택. */
-    STEEL: {
-      /** 강재 재질 코드 타입. — None=없음; Standard=표준 */
-      CODE: string;
-      /** CODE가 Standard일 때의 강재 표준 코드. 현재 KS22(S)만 지원됨. — KS22(S)=KS22(S) */
-      STANDARD_CODE?: string;
-      /** CODE가 Standard일 때의 강재 등급. — SS235=SS235; SS275=SS275; SS315=SS315; SS410=SS410; SS450=SS450; SS550=SS550; SM275=SM275; SM355=SM355; SM420=SM420; SM460=SM460; SM275TMC=SM275TMC; SM355TMC=SM355TMC …(전체 68개) */
-      GRADE?: string;
-      /** CODE가 None일 때의 사용자 정의 강재 이름. */
-      NAME?: string;
-      /** 탄성계수. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
-      ES?: number;
-      /** 인장강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
-      FU?: number;
-      /** CODE=None일 때의 항복강도. */
-      FY?: number;
-      /** 항복강도 Fy1. CODE가 Standard일 때 자동 입력. */
-      FY1?: number;
-      /** 항복강도 Fy2. CODE가 Standard일 때 자동 입력. */
-      FY2?: number;
-      /** 항복강도 Fy3. CODE가 Standard일 때 자동 입력. */
-      FY3?: number;
-      /** 항복강도 Fy4. CODE가 Standard일 때 자동 입력. */
-      FY4?: number;
-      /** 항복강도 Fy5. CODE가 Standard일 때 자동 입력. */
-      FY5?: number;
-    };
-    /** 콘크리트 재질 선택. */
-    CONCRETE: {
-      /** 콘크리트 재질 코드 타입. — None=없음; Standard=표준 */
-      CODE: string;
-      /** CODE가 Standard일 때의 콘크리트 표준 코드. 현재 KS19(RC)만 지원됨. — KS19(RC)=KS19(RC) */
-      STANDARD_CODE?: string;
-      /** CODE가 None일 때의 사용자 정의 콘크리트 재질 이름. */
-      NAME?: string;
-      /** CODE가 Standard일 때의 콘크리트 등급. — C15=C15; C18=C18; C21=C21; C24=C24; C27=C27; C30=C30; C35=C35; C40=C40; C45=C45; C49=C49; C50=C50; C55=C55 …(전체 20개) */
-      GRADE?: string;
-      /** 설계기준압축강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
-      FC?: number;
-    };
-    /** 철근 재질 선택. */
-    REINFORCEMENT: {
-      /** 철근 코드 타입. — None=없음; Standard=표준 */
-      CODE: string;
-      /** CODE가 Standard일 때의 철근 표준 코드. 현재 KS19(RC)만 지원됨. — KS19(RC)=KS19(RC) */
-      STANDARD_CODE?: string;
-      /** CODE가 None일 때의 사용자 정의 주철근 이름. */
-      MAIN_REBAR_NAME?: string;
-      /** CODE가 Standard일 때의 주철근 등급. — SD300=SD300; SD400=SD400; SD500=SD500; SD600=SD600; SD700=SD700; SD400S=SD400S; SD500S=SD500S; SD600S=SD600S */
-      MAIN_REBAR_GRADE?: string;
-      /** 주철근 항복강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
-      FYR?: number;
-      /** CODE가 None일 때의 사용자 정의 보조철근 이름. */
-      SUB_REBAR_NAME?: string;
-      /** CODE가 Standard일 때의 보조철근 등급. — SD300=SD300; SD400=SD400; SD500=SD500; SD600=SD600; SD700=SD700; SD400S=SD400S; SD500S=SD500S; SD600S=SD600S */
-      SUB_REBAR_GRADE?: string;
-      /** 보조철근 항복강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
-      FYS?: number;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcColumnSectionMainBar {
-    /** 자동 계산된 철근 간격. */
-    USE_REBAR_SPACE?: boolean;
-    /** 주철근 간격. USE_REBAR_SPACE가 false일 때 사용. */
-    REBAR_SPACE?: number;
-    /** 주철근 총 개수. 4의 배수여야 함. */
-    NUM: number;
-    /** 주철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
-    NAME: string;
-    /** 사각형 단면의 철근 열 수. 2의 배수여야 함. */
-    ROW: number;
-    /** 콘크리트 피복 / 중심간 거리 d0. */
-    DO: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcColumnSectionShearBar {
-    /** 후프/타이 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
-    NAME: string;
-    /** 후프/타이 철근 간격. USE_REBAR_SPACE가 false일 때 사용. */
-    DIST: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcColumnSectionDataPayload {
-    /** 주철근 데이터. */
-    MAIN_BAR: {
-      /** 자동 계산된 철근 간격. */
-      USE_REBAR_SPACE?: boolean;
-      /** 주철근 간격. USE_REBAR_SPACE가 false일 때 사용. */
-      REBAR_SPACE?: number;
-      /** 주철근 총 개수. 4의 배수여야 함. */
-      NUM: number;
-      /** 주철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
-      NAME: string;
-      /** 사각형 단면의 철근 열 수. 2의 배수여야 함. */
-      ROW: number;
-      /** 콘크리트 피복 / 중심간 거리 d0. */
-      DO: number;
-    };
-    /** 후프/타이 철근 데이터. */
-    SHEAR_BAR: {
-      /** 후프/타이 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
-      NAME: string;
-      /** 후프/타이 철근 간격. USE_REBAR_SPACE가 false일 때 사용. */
-      DIST: number;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcMemberAssignmentPayload {
-    /** 요소 목록 */
-    AELEM: Array<number>;
-    /** 부재축 방향 반전 */
-    bREVERSE?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcBeamRebarLayer {
-    /** 하부 철근 1단의 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
-    NAME: string;
-    /** 하부 철근 1단의 철근 개수. */
-    NUM: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SrcBeamRebarFace {
-    /** 하부 철근 1단. */
-    LAYER1: {
-      /** 하부 철근 1단의 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
-      NAME: string;
-      /** 하부 철근 1단의 철근 개수. */
-      NUM: number;
-    };
-    /** 하부 철근 2단. */
-    LAYER2?: {
-      /** 하부 철근 2단의 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
-      NAME: string;
-      /** 하부 철근 2단의 철근 개수. */
-      NUM: number;
-    };
-  }
+}
+
+export namespace DesignSrcAiksrc2kTypes {
   /** Generated from contracts/endpoints/. */
   export interface SrcBeamBarSector {
     /** 상부 철근 배치. */
@@ -14965,6 +14341,63 @@ export namespace DesignSrcAiksrc2kTypes {
     STIRRUP_SPACE: number;
     /** I단면 스터럽 세트 수. */
     STIRRUP_NUM?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcBeamCheckReportArgument {
+    /** 보고서 표 타입 — 가능값: MEMB, PROP */
+    REPORT_TYPE: "MEMB" | "PROP";
+    /** 요소 기준 보고서의 출력 모드 — Graphic=그래픽 (JPG 이미지); Detail=상세 (DOC 문서); Summary=요약 (TXT 텍스트) */
+    CURRENT_MODE_MEMB?: string;
+    /** 특성 기준 보고서의 출력 모드 — Graphic=그래픽 (JPG 이미지); Summary=요약 (TXT 텍스트) */
+    CURRENT_MODE_PROP?: string;
+    /** 요소 번호 입력. */
+    ELEMS?: {
+      /** 개별 ID 지정 */
+      KEYS?: Array<number>;
+      /** ID 범위 지정 (예: '1to160') */
+      TO?: string;
+      /** 구조 그룹 이름 지정 */
+      STRUCTURE_GROUP_NAME?: string;
+    };
+    /** 보고서에 포함할 단면 번호 목록. */
+    SECTIONS?: Array<number>;
+    /** 상세 보고서 출력 위치 */
+    DETAIL_POSITIONS?: {
+      /** I단 위치 포함 */
+      END_I?: boolean;
+      /** 중앙 위치 포함 */
+      MID?: boolean;
+      /** J단 위치 포함 */
+      END_J?: boolean;
+    };
+    /** 보고서 파일을 저장할 디렉토리 경로 */
+    EXPORT_PATH: string;
+    /** 출력 파일 기본 이름. 요소가 여러 개인 경우 파일명 앞에 순번과 요소번호가 붙습니다(예: 001_E859_filename.jpg, 002_E1_filename.jpg). */
+    OUTPUT_NAME: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcBeamRebarFace {
+    /** 하부 철근 1단. */
+    LAYER1: {
+      /** 하부 철근 1단의 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+      NAME: string;
+      /** 하부 철근 1단의 철근 개수. */
+      NUM: number;
+    };
+    /** 하부 철근 2단. */
+    LAYER2?: {
+      /** 하부 철근 2단의 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+      NAME: string;
+      /** 하부 철근 2단의 철근 개수. */
+      NUM: number;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcBeamRebarLayer {
+    /** 하부 철근 1단의 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+    NAME: string;
+    /** 하부 철근 1단의 철근 개수. */
+    NUM: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface SrcBeamSectionDataPayload {
@@ -15098,32 +14531,587 @@ export namespace DesignSrcAiksrc2kTypes {
     /** 스터럽 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
     SHEAR_BAR: string;
   }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcColumnCheckReportArgument {
+    /** 보고서 표 타입 — 가능값: MEMB, PROP */
+    REPORT_TYPE: "MEMB" | "PROP";
+    /** 요소 기준 보고서의 출력 모드 — Graphic=그래픽 (JPG 이미지); Detail=상세 (DOC 문서); Summary=요약 (TXT 텍스트) */
+    CURRENT_MODE_MEMB?: string;
+    /** 특성 기준 보고서의 출력 모드 — Graphic=그래픽 (JPG 이미지); Summary=요약 (TXT 텍스트) */
+    CURRENT_MODE_PROP?: string;
+    /** 요소 번호 입력. */
+    ELEMS?: {
+      /** 개별 ID 지정 */
+      KEYS?: Array<number>;
+      /** ID 범위 지정 (예: '1to160') */
+      TO?: string;
+      /** 구조 그룹 이름 지정 */
+      STRUCTURE_GROUP_NAME?: string;
+    };
+    /** 보고서에 포함할 단면 번호 목록. */
+    SECTIONS?: Array<number>;
+    /** 보고서 파일을 저장할 디렉토리 경로 */
+    EXPORT_PATH: string;
+    /** 출력 파일 기본 이름. 요소가 여러 개인 경우 파일명 앞에 순번과 요소번호가 붙습니다(예: 001_E100_filename.jpg, 002_E865_filename.jpg). */
+    OUTPUT_NAME: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcColumnSectionDataPayload {
+    /** 주철근 데이터. */
+    MAIN_BAR: {
+      /** 자동 계산된 철근 간격. */
+      USE_REBAR_SPACE?: boolean;
+      /** 주철근 간격. USE_REBAR_SPACE가 false일 때 사용. */
+      REBAR_SPACE?: number;
+      /** 주철근 총 개수. 4의 배수여야 함. */
+      NUM: number;
+      /** 주철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+      NAME: string;
+      /** 사각형 단면의 철근 열 수. 2의 배수여야 함. */
+      ROW: number;
+      /** 콘크리트 피복 / 중심간 거리 d0. */
+      DO: number;
+    };
+    /** 후프/타이 철근 데이터. */
+    SHEAR_BAR: {
+      /** 후프/타이 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+      NAME: string;
+      /** 후프/타이 철근 간격. USE_REBAR_SPACE가 false일 때 사용. */
+      DIST: number;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcColumnSectionMainBar {
+    /** 자동 계산된 철근 간격. */
+    USE_REBAR_SPACE?: boolean;
+    /** 주철근 간격. USE_REBAR_SPACE가 false일 때 사용. */
+    REBAR_SPACE?: number;
+    /** 주철근 총 개수. 4의 배수여야 함. */
+    NUM: number;
+    /** 주철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+    NAME: string;
+    /** 사각형 단면의 철근 열 수. 2의 배수여야 함. */
+    ROW: number;
+    /** 콘크리트 피복 / 중심간 거리 d0. */
+    DO: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcColumnSectionShearBar {
+    /** 후프/타이 철근 규격. — D4=D4; D5=D5; D6=D6; D7=D7; D8=D8; D10=D10; D13=D13; D16=D16; D19=D19; D22=D22; D25=D25; D29=D29 …(전체 19개) */
+    NAME: string;
+    /** 후프/타이 철근 간격. USE_REBAR_SPACE가 false일 때 사용. */
+    DIST: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcDefinitionOfFramePayload {
+    /** X방향 프레임 — Unbraced Sway=비횡지지 | Sway; Braced Non-sway=횡지지 | Non-sway */
+    FRAMEX?: string;
+    /** Y방향 프레임 — Unbraced Sway=비횡지지 | Sway; Braced Non-sway=횡지지 | Non-sway */
+    FRAMEY?: string;
+    /** 유효좌굴길이계수 자동계산 */
+    bAUTOKF?: boolean;
+    /** 설계 타입 — 3D=3-D; XZ=X-Z 평면; YZ=Y-Z 평면; XY=X-Y 평면 */
+    DT?: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcDesignCodeOptionPayload {
+    /** 설계 코드. — AIK-SRC2K=AIK-SRC2K */
+    DGNCODE: string;
+    /** 내진설계 적용 여부. */
+    SEISMIC: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcDesignCodePayload {
+    /** 설계 코드 — 가능값: AIK-SRC2K */
+    DGNCODE: "AIK-SRC2K";
+  }
+  export interface SrcDesignForcesArgument {
+    TABLE_NAME?: string;
+    TABLE_TYPE?: string;
+    EXPORT_PATH?: string;
+    UNIT?: PostBaseTypes.TableUnit;
+    STYLES?: PostBaseTypes.TableStyles;
+    COMPONENTS?: Array<string>;
+    NODE_ELEMS?: PostBaseTypes.NodeElemsSelector;
+    PARTS?: Array<string>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcEffectiveLengthFactorPayload {
+    /** Ky */
+    Ky?: number;
+    /** Kz */
+    Kz?: number;
+    /** Kt */
+    Kt?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcEquivalentMomentCorrectionFactorPayload {
+    /** 자동 계산 */
+    OPT_AUTO?: boolean;
+    /** CMy */
+    CMY?: number;
+    /** CMz */
+    CMZ?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcLimitingSlendernessRatioPayload {
+    /** 세장비 검토 안 함 */
+    bNOTCHECK?: boolean;
+    /** 압축재 세장비 제한값 */
+    COMP: number;
+    /** 인장재 세장비 제한값 */
+    TENS: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcLiveLoadReductionComponents {
+    /** 축력 */
+    AXIAL?: boolean;
+    /** 모멘트 */
+    MOMENT?: boolean;
+    /** 전단력 */
+    SHEAR?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcLiveLoadReductionDataItem {
+    /** 층 이름 */
+    STORY: string;
+    /** X 최소 좌표 */
+    XMIN?: number;
+    /** X 최대 좌표 */
+    XMAX?: number;
+    /** Y 최소 좌표 */
+    YMIN?: number;
+    /** Y 최대 좌표 */
+    YMAX?: number;
+    /** 구간 최대값 (General Design Code 전용) — 가능값 11개: 1 ~ 0.5 */
+    RANGE_MAX?: number;
+    /** 구간 최소값 (General Design Code 전용) — 가능값 11개: 1 ~ 0.5 */
+    RANGE_MIN?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcLiveLoadReductionFactorPayload {
+    /** — 0=일반 설계 기준; 1=중국 표준 기준 */
+    CALC_RULE?: number;
+    /** 적용 성분 선택 */
+    APPLIED_COMP?: Array<string>;
+    /** 활하중 케이스 이름 (사용자 정의 목록) */
+    LIVE_LOAD_CASES?: Array<string>;
+    /** 활하중 저감계수 테이블 데이터 */
+    REDUCTION_DATA: Array<{
+      /** 층 이름 */
+      STORY: string;
+      /** X 최소 좌표 */
+      XMIN?: number;
+      /** X 최대 좌표 */
+      XMAX?: number;
+      /** Y 최소 좌표 */
+      YMIN?: number;
+      /** Y 최대 좌표 */
+      YMAX?: number;
+      /** 구간 최대값 (General Design Code 전용) — 가능값 11개: 1 ~ 0.5 */
+      RANGE_MAX?: number;
+      /** 구간 최소값 (General Design Code 전용) — 가능값 11개: 1 ~ 0.5 */
+      RANGE_MIN?: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcLoadContributionBaseItem {
+    /** 계수 */
+    FACTOR: number;
+    /** 하중케이스 이름 */
+    LOAD_CASE_NAME: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcLoadContributionForNonlinearLoadCasePayload {
+    /** 하중기여 이름 */
+    NAME: string;
+    /** 설명 */
+    DESC?: string;
+    /** 하중기여 항목 */
+    BASE_ITEM: Array<{
+      /** 계수 */
+      FACTOR: number;
+      /** 하중케이스 이름 */
+      LOAD_CASE_NAME: string;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcMaterialConcrete {
+    /** 콘크리트 재질 코드 타입. — None=없음; Standard=표준 */
+    CODE: string;
+    /** CODE가 Standard일 때의 콘크리트 표준 코드. 현재 KS19(RC)만 지원됨. — KS19(RC)=KS19(RC) */
+    STANDARD_CODE?: string;
+    /** CODE가 None일 때의 사용자 정의 콘크리트 재질 이름. */
+    NAME?: string;
+    /** CODE가 Standard일 때의 콘크리트 등급. — C15=C15; C18=C18; C21=C21; C24=C24; C27=C27; C30=C30; C35=C35; C40=C40; C45=C45; C49=C49; C50=C50; C55=C55 …(전체 20개) */
+    GRADE?: string;
+    /** 설계기준압축강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
+    FC?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcMaterialReinforcement {
+    /** 철근 코드 타입. — None=없음; Standard=표준 */
+    CODE: string;
+    /** CODE가 Standard일 때의 철근 표준 코드. 현재 KS19(RC)만 지원됨. — KS19(RC)=KS19(RC) */
+    STANDARD_CODE?: string;
+    /** CODE가 None일 때의 사용자 정의 주철근 이름. */
+    MAIN_REBAR_NAME?: string;
+    /** CODE가 Standard일 때의 주철근 등급. — SD300=SD300; SD400=SD400; SD500=SD500; SD600=SD600; SD700=SD700; SD400S=SD400S; SD500S=SD500S; SD600S=SD600S */
+    MAIN_REBAR_GRADE?: string;
+    /** 주철근 항복강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
+    FYR?: number;
+    /** CODE가 None일 때의 사용자 정의 보조철근 이름. */
+    SUB_REBAR_NAME?: string;
+    /** CODE가 Standard일 때의 보조철근 등급. — SD300=SD300; SD400=SD400; SD500=SD500; SD600=SD600; SD700=SD700; SD400S=SD400S; SD500S=SD500S; SD600S=SD600S */
+    SUB_REBAR_GRADE?: string;
+    /** 보조철근 항복강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
+    FYS?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcMaterialSteel {
+    /** 강재 재질 코드 타입. — None=없음; Standard=표준 */
+    CODE: string;
+    /** CODE가 Standard일 때의 강재 표준 코드. 현재 KS22(S)만 지원됨. — KS22(S)=KS22(S) */
+    STANDARD_CODE?: string;
+    /** CODE가 Standard일 때의 강재 등급. — SS235=SS235; SS275=SS275; SS315=SS315; SS410=SS410; SS450=SS450; SS550=SS550; SM275=SM275; SM355=SM355; SM420=SM420; SM460=SM460; SM275TMC=SM275TMC; SM355TMC=SM355TMC …(전체 68개) */
+    GRADE?: string;
+    /** CODE가 None일 때의 사용자 정의 강재 이름. */
+    NAME?: string;
+    /** 탄성계수. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
+    ES?: number;
+    /** 인장강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
+    FU?: number;
+    /** CODE=None일 때의 항복강도. */
+    FY?: number;
+    /** 항복강도 Fy1. CODE가 Standard일 때 자동 입력. */
+    FY1?: number;
+    /** 항복강도 Fy2. CODE가 Standard일 때 자동 입력. */
+    FY2?: number;
+    /** 항복강도 Fy3. CODE가 Standard일 때 자동 입력. */
+    FY3?: number;
+    /** 항복강도 Fy4. CODE가 Standard일 때 자동 입력. */
+    FY4?: number;
+    /** 항복강도 Fy5. CODE가 Standard일 때 자동 입력. */
+    FY5?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcMemberAssignmentPayload {
+    /** 요소 목록 */
+    AELEM: Array<number>;
+    /** 부재축 방향 반전 */
+    bREVERSE?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcMemberCheckPerformArgument {
+    /** 설계 계산 대상 타입 선택. ELEMS: 요소번호별, SECTIONS: 단면번호별, ALL: 전체 요소. — ALL=전체 요소; ELEMS=요소번호별; SECTIONS=단면번호별 */
+    PERFORM_TYPE?: string;
+    /** 요소 번호 입력. */
+    ELEMS?: {
+      /** 개별 ID 지정 */
+      KEYS?: Array<number>;
+      /** ID 범위 지정 (예: '1to160') */
+      TO?: string;
+      /** 구조 그룹 이름 지정 */
+      STRUCTURE_GROUP_NAME?: string;
+    };
+    /** 단면 번호 입력. */
+    SECTIONS?: Array<number>;
+  }
+  export interface SrcMemberCheckTableArgument {
+    TABLE_TYPE?: string;
+    ELEMS?: PostBaseTypes.NodeElemsSelector;
+    SECTIONS?: Array<number>;
+    PRI_SORT?: number;
+    RESULT?: number;
+    TABLE_NAME?: string;
+    EXPORT_PATH?: string;
+    UNIT?: PostBaseTypes.TableUnit;
+    STYLES?: PostBaseTypes.TableStyles;
+    COMPONENTS?: Array<string>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcModifyLiveLoadReductionFactorPayload {
+    /** 저감계수 */
+    FACTOR?: number;
+    /** 적용 성분 */
+    COMPONENTS?: {
+      /** 축력 */
+      AXIAL?: boolean;
+      /** 모멘트 */
+      MOMENT?: boolean;
+      /** 전단력 */
+      SHEAR?: boolean;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcModifyMaterialPayload {
+    /** 강재 재질 선택. */
+    STEEL: {
+      /** 강재 재질 코드 타입. — None=없음; Standard=표준 */
+      CODE: string;
+      /** CODE가 Standard일 때의 강재 표준 코드. 현재 KS22(S)만 지원됨. — KS22(S)=KS22(S) */
+      STANDARD_CODE?: string;
+      /** CODE가 Standard일 때의 강재 등급. — SS235=SS235; SS275=SS275; SS315=SS315; SS410=SS410; SS450=SS450; SS550=SS550; SM275=SM275; SM355=SM355; SM420=SM420; SM460=SM460; SM275TMC=SM275TMC; SM355TMC=SM355TMC …(전체 68개) */
+      GRADE?: string;
+      /** CODE가 None일 때의 사용자 정의 강재 이름. */
+      NAME?: string;
+      /** 탄성계수. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
+      ES?: number;
+      /** 인장강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
+      FU?: number;
+      /** CODE=None일 때의 항복강도. */
+      FY?: number;
+      /** 항복강도 Fy1. CODE가 Standard일 때 자동 입력. */
+      FY1?: number;
+      /** 항복강도 Fy2. CODE가 Standard일 때 자동 입력. */
+      FY2?: number;
+      /** 항복강도 Fy3. CODE가 Standard일 때 자동 입력. */
+      FY3?: number;
+      /** 항복강도 Fy4. CODE가 Standard일 때 자동 입력. */
+      FY4?: number;
+      /** 항복강도 Fy5. CODE가 Standard일 때 자동 입력. */
+      FY5?: number;
+    };
+    /** 콘크리트 재질 선택. */
+    CONCRETE: {
+      /** 콘크리트 재질 코드 타입. — None=없음; Standard=표준 */
+      CODE: string;
+      /** CODE가 Standard일 때의 콘크리트 표준 코드. 현재 KS19(RC)만 지원됨. — KS19(RC)=KS19(RC) */
+      STANDARD_CODE?: string;
+      /** CODE가 None일 때의 사용자 정의 콘크리트 재질 이름. */
+      NAME?: string;
+      /** CODE가 Standard일 때의 콘크리트 등급. — C15=C15; C18=C18; C21=C21; C24=C24; C27=C27; C30=C30; C35=C35; C40=C40; C45=C45; C49=C49; C50=C50; C55=C55 …(전체 20개) */
+      GRADE?: string;
+      /** 설계기준압축강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
+      FC?: number;
+    };
+    /** 철근 재질 선택. */
+    REINFORCEMENT: {
+      /** 철근 코드 타입. — None=없음; Standard=표준 */
+      CODE: string;
+      /** CODE가 Standard일 때의 철근 표준 코드. 현재 KS19(RC)만 지원됨. — KS19(RC)=KS19(RC) */
+      STANDARD_CODE?: string;
+      /** CODE가 None일 때의 사용자 정의 주철근 이름. */
+      MAIN_REBAR_NAME?: string;
+      /** CODE가 Standard일 때의 주철근 등급. — SD300=SD300; SD400=SD400; SD500=SD500; SD600=SD600; SD700=SD700; SD400S=SD400S; SD500S=SD500S; SD600S=SD600S */
+      MAIN_REBAR_GRADE?: string;
+      /** 주철근 항복강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
+      FYR?: number;
+      /** CODE가 None일 때의 사용자 정의 보조철근 이름. */
+      SUB_REBAR_NAME?: string;
+      /** CODE가 Standard일 때의 보조철근 등급. — SD300=SD300; SD400=SD400; SD500=SD500; SD600=SD600; SD700=SD700; SD400S=SD400S; SD500S=SD500S; SD600S=SD600S */
+      SUB_REBAR_GRADE?: string;
+      /** 보조철근 항복강도. CODE가 None일 때 사용자 입력. CODE가 Standard일 때 자동 입력. */
+      FYS?: number;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcModifyMemberTypePayload {
+    /** 부재 타입 — COLUMN=기둥; BEAM=보; BRACE=가새 */
+    TYPE: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcMomentMagnifierPayload {
+    /** B1y - Δby (1차 모멘트 Y) */
+    B1Y_DELTA_BY?: number;
+    /** B1z - Δbz (1차 모멘트 Z) */
+    B1Z_DELTA_BZ?: number;
+    /** B2y - Δsy (2차 모멘트 Y) */
+    B2Y_DELTA_SY?: number;
+    /** B2z - Δsz (2차 모멘트 Z) */
+    B2Z_DELTA_SZ?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcOptimalDesignAnalysisOption {
+    /** 재해석 반복 횟수(최대 10). 재해석 없이 단면 선정만 할 경우 0으로 설정. */
+    ANAL_TIME?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcOptimalDesignArgument {
+    /** 단면 목록 및 설계 기준(SRC). 각 항목은 하나의 단면번호와 그 설계 기준에 대응합니다(POST 입력 전용). */
+    SECT_LIST: Array<{
+      /** 단면 번호(입력). */
+      SECT_NO: number;
+      /** 설계 기준 - 단면 DB — BUILT=BUILT (용접 단면); KS21=KS21 (한국산업표준 압연 단면); USER=USER (사용자 정의 단면) */
+      SECT_DB: string;
+      /** 설계 기준 - 허용치 */
+      ALLOW?: number;
+      /** 설계 기준 - D1 */
+      D1?: number;
+      /** 설계 기준 - D2 */
+      D2?: number;
+      /** 설계 기준 - D3 */
+      D3?: number;
+      /** 설계 기준 - D4 */
+      D4?: number;
+      /** 설계 기준 - D5 */
+      D5?: number;
+      /** 설계 기준 - D6 */
+      D6?: number;
+    }>;
+    /** 해석 옵션 - 재해석 반복 횟수 */
+    ANALYSIS_OPT?: {
+      /** 재해석 반복 횟수(최대 10). 재해석 없이 단면 선정만 할 경우 0으로 설정. */
+      ANAL_TIME?: number;
+    };
+    /** BUILT 단면의 플레이트 두께 목록 (최대 50개) */
+    PLATE_THICKNESS?: Array<number>;
+    /** 기둥 부재 최적설계를 위한 기둥 설계 설정 */
+    COLUMN_DESIGN?: {
+      /** 기둥 설계용 적용 부재력·모멘트 방법 — 0=축력 및 모멘트; 1=축력만 */
+      APPLIED_FORCES?: number;
+      /** 조립기둥 이음 접합 방법 — 0=Internal Const (내측 고정, 외측으로 확장); 1=External Const (외측 고정, 내측 조정) */
+      JOINT_METHOD?: number;
+    };
+    /** 사용자 정의 단면 데이터베이스. 각 행은 No, 형상, 치수 D1~D6으로 단면을 정의함. */
+    USER_DEFINED_SECT?: Array<{
+      /** 단면 번호 */
+      NO: number;
+      /** 단면 형상 (L, C, H, T, B, P, SR, SB, 2L, 2C) */
+      SHAPE: string;
+      D1?: number;
+      D2?: number;
+      D3?: number;
+      D4?: number;
+      D5?: number;
+      D6?: number;
+    }>;
+    /** 최적설계 결과 출력 옵션 (동시에 여러 개 선택 가능) */
+    OUTPUT: {
+      /** 최대 비율 그래프 출력 */
+      GRAPH_MAX_RATIO?: boolean;
+      /** 평균 비율 그래프 출력 */
+      GRAPH_AVG_RATIO?: boolean;
+      /** 중량 그래프 출력 */
+      GRAPH_WEIGHT?: boolean;
+      /** 중량 합계 그래프 출력 */
+      GRAPH_WEIGHT_SUM?: boolean;
+      /** 중량 비율 그래프 출력 */
+      GRAPH_WEIGHT_RATIO?: boolean;
+      /** 결과를 텍스트 보고서로 화면 및 파일에 출력 */
+      TEXT_REPORT?: boolean;
+      /** 선택된 최적 단면을 모델에 적용 */
+      MODEL_UPDATE?: boolean;
+      /** 보고서 출력을 저장할 파일 경로 */
+      EXPORT_PATH: string;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcOptimalDesignColumnDesign {
+    /** 기둥 설계용 적용 부재력·모멘트 방법 — 0=축력 및 모멘트; 1=축력만 */
+    APPLIED_FORCES?: number;
+    /** 조립기둥 이음 접합 방법 — 0=Internal Const (내측 고정, 외측으로 확장); 1=External Const (외측 고정, 내측 조정) */
+    JOINT_METHOD?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcOptimalDesignOutput {
+    /** 최대 비율 그래프 출력 */
+    GRAPH_MAX_RATIO?: boolean;
+    /** 평균 비율 그래프 출력 */
+    GRAPH_AVG_RATIO?: boolean;
+    /** 중량 그래프 출력 */
+    GRAPH_WEIGHT?: boolean;
+    /** 중량 합계 그래프 출력 */
+    GRAPH_WEIGHT_SUM?: boolean;
+    /** 중량 비율 그래프 출력 */
+    GRAPH_WEIGHT_RATIO?: boolean;
+    /** 결과를 텍스트 보고서로 화면 및 파일에 출력 */
+    TEXT_REPORT?: boolean;
+    /** 선택된 최적 단면을 모델에 적용 */
+    MODEL_UPDATE?: boolean;
+    /** 보고서 출력을 저장할 파일 경로 */
+    EXPORT_PATH: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcOptimalDesignSectionCriteria {
+    /** 단면 번호(입력). */
+    SECT_NO: number;
+    /** 설계 기준 - 단면 DB — BUILT=BUILT (용접 단면); KS21=KS21 (한국산업표준 압연 단면); USER=USER (사용자 정의 단면) */
+    SECT_DB: string;
+    /** 설계 기준 - 허용치 */
+    ALLOW?: number;
+    /** 설계 기준 - D1 */
+    D1?: number;
+    /** 설계 기준 - D2 */
+    D2?: number;
+    /** 설계 기준 - D3 */
+    D3?: number;
+    /** 설계 기준 - D4 */
+    D4?: number;
+    /** 설계 기준 - D5 */
+    D5?: number;
+    /** 설계 기준 - D6 */
+    D6?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcOptimalDesignUserSection {
+    /** 단면 번호 */
+    NO: number;
+    /** 단면 형상 (L, C, H, T, B, P, SR, SB, 2L, 2C) */
+    SHAPE: string;
+    D1?: number;
+    D2?: number;
+    D3?: number;
+    D4?: number;
+    D5?: number;
+    D6?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcReportDetailPositions {
+    /** I단 위치 포함 */
+    END_I?: boolean;
+    /** 중앙 위치 포함 */
+    MID?: boolean;
+    /** J단 위치 포함 */
+    END_J?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcScaleUpFactorForEarthquakePayload {
+    /** 하중케이스 - 축력 증폭계수 */
+    LC_AXIAL?: number;
+    /** 하중케이스 - 모멘트 증폭계수 */
+    LC_MOMENT?: number;
+    /** 하중케이스 - 전단 증폭계수 */
+    LC_SHEAR?: number;
+    /** 하중조합 - 축력 증폭계수 */
+    LCOM_AXIAL?: number;
+    /** 하중조합 - 모멘트 증폭계수 */
+    LCOM_MOMENT?: number;
+    /** 하중조합 - 전단 증폭계수 */
+    LCOM_SHEAR?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcSeismicLoadCombinationTypePayload {
+    /** 부재 타입 배정 — Special Seismic Loads=특별 지진하중; Vertical Seismic Forces=수직 지진력 */
+    TYPE: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SrcUnbracedLengthPayload {
+    /** 비지지 길이 Ly */
+    LY?: number;
+    /** 비지지 길이 Lz */
+    LZ?: number;
+    /** 횡방향 비지지 길이 */
+    LB?: number;
+    /** 횡방향 비지지 길이 고려 안 함 */
+    bNOTUSE?: boolean;
+    /** 비틀림 비지지 길이 */
+    LT?: number;
+  }
 }
 
 export namespace DesignSteelKdsTypes {
   /** Generated from contracts/endpoints/. */
-  export interface SteelDesignCodeSelectionPayload {
-    /** 강재 설계 코드 · 현재 "KDS 41 30 : 2022" 1개 값만 지원 */
-    DGNCODE: "KDS 41 30 : 2022";
+  export interface BendingCoefficientPayload {
+    /** 프로그램 자동계산 */
+    AUTO_CAL?: boolean;
+    /** 휨계수 Cb 값 (AUTO_CAL=false일 때) */
+    VALUE?: number;
   }
   /** Generated from contracts/endpoints/. */
-  export interface SteelDesignCodeOptionPayload {
-    /** 설계 코드 (KDS 41 30 : 2022 고정) */
-    DGNCODE: "KDS 41 30 : 2022";
-    /** 모든 보/거더 횡지지 가정 */
-    LAT_BRACE?: boolean;
-    /** 보/기둥 처짐 검토 */
-    DEFL_CHK?: boolean;
-    /** 내진설계 특별규정 적용 */
-    SEISMIC?: boolean;
-    /** 원형단면 조합비 방법 (0=SRSS, 1=Linear Sum) */
-    COMB_RATIO?: number;
-    /** 내진 저항시스템 (SEISMIC=true일 때) — Special/Intermediate/Ordinary Moment Frames, Special/Ordinary Concentrically Braced Frames, Eccentrically Braced Frames, Buckling-Restrained Braced Frames, Special Plate Shear Walls */
-    SEIS_SYS?: "Special Moment Frames" | "Intermediate Moment Frames" | "Ordinary Moment Frames" | "Special Concentrically Braced Frames" | "Ordinary Concentrically Braced Frames" | "Eccentrically Braced Frames" | "Buckling-Restrained Braced Frames" | "Special Plate Shear Walls";
-    /** 최상층 강기둥-약보 고려 */
-    COL_WEAK?: boolean;
-    /** 지하부재에 지하 하중조합 타입 사용 */
-    UNDGR_LD?: boolean;
+  export interface CombinedRatioCalculationMethodPayload {
+    /** 조합강도 방법 ("SRSS", "Linear Sum") */
+    METHOD: "SRSS" | "Linear Sum";
   }
   /** Generated from contracts/endpoints/. */
   export interface DefinitionOfFramePayload {
@@ -15135,6 +15123,85 @@ export namespace DesignSteelKdsTypes {
     bAUTOKF?: boolean;
     /** 설계 타입 ("3D"=3-D, "XZ"=X-Z평면, "YZ"=Y-Z평면, "XY"=X-Y평면) */
     DT?: "3D" | "XZ" | "YZ" | "XY";
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface EffectiveLengthFactorPayload {
+    /** 유효좌굴길이계수 Ky */
+    Ky?: number;
+    /** 유효좌굴길이계수 Kz */
+    Kz?: number;
+    /** 유효좌굴길이계수 Kt */
+    Kt?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface EquivalentMomentCorrectionFactorPayload {
+    /** 자동계산 */
+    OPT_AUTO?: boolean;
+    /** CMy */
+    CMY?: number;
+    /** CMz */
+    CMZ?: number;
+  }
+  export interface HaunchPartSelector {
+    INPUT_METHOD?: string;
+    KEYS?: Array<number>;
+    TO?: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface HaunchedBeamAssignmentPayload {
+    /** 헌치 이름 */
+    NAME: string;
+    /** Part A 요소 입력 (방법 1개만 사용) */
+    PART_A: {
+      /** 입력 방법 ("KEYS"=개별 ID, "TO"=범위) */
+      INPUT_METHOD: "KEYS" | "TO";
+      /** 개별 요소 ID (INPUT_METHOD=KEYS, minItems 1) Applies when PART_A.INPUT_METHOD = "KEYS". */
+      KEYS?: Array<number>;
+      /** ID 범위 문자열 (INPUT_METHOD=TO, 예 "101 to 105") Applies when PART_A.INPUT_METHOD = "TO". */
+      TO?: string;
+    };
+    /** Part B 요소 입력 (구조는 PART_A와 동일) */
+    PART_B: {
+      /** 입력 방법 ("KEYS"=개별 ID, "TO"=범위) */
+      INPUT_METHOD: "KEYS" | "TO";
+      /** 개별 요소 ID (INPUT_METHOD=KEYS, minItems 1) Applies when PART_B.INPUT_METHOD = "KEYS". */
+      KEYS?: Array<number>;
+      /** ID 범위 문자열 (INPUT_METHOD=TO, 예 "101 to 105") Applies when PART_B.INPUT_METHOD = "TO". */
+      TO?: string;
+    };
+    /** Part C 요소 입력 (구조는 PART_A와 동일) */
+    PART_C: {
+      /** 입력 방법 ("KEYS"=개별 ID, "TO"=범위) */
+      INPUT_METHOD: "KEYS" | "TO";
+      /** 개별 요소 ID (INPUT_METHOD=KEYS, minItems 1) Applies when PART_C.INPUT_METHOD = "KEYS". */
+      KEYS?: Array<number>;
+      /** ID 범위 문자열 (INPUT_METHOD=TO, 예 "101 to 105") Applies when PART_C.INPUT_METHOD = "TO". */
+      TO?: string;
+    };
+    /** 설계 위치 타입 (0=Part 1/2, 1=User) */
+    POS_TYPE: number;
+    /** 사용자 정의 L1 거리 (POS_TYPE=1) */
+    L1?: number;
+    /** 사용자 정의 L2 거리 (POS_TYPE=1) */
+    L2?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LimitingSlendernessRatioPayload {
+    /** 세장비 검토 안함 */
+    bNOTCHECK?: boolean;
+    /** 압축 세장비 제한 */
+    COMP: number;
+    /** 인장 세장비 제한 */
+    TENS: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LiveLoadReductionComponents {
+    /** 축력 */
+    AXIAL?: boolean;
+    /** 모멘트 */
+    MOMENT?: boolean;
+    /** 전단력 */
+    SHEAR?: boolean;
   }
   /** Generated from contracts/endpoints/. */
   export interface LiveLoadReductionDataItem {
@@ -15201,176 +15268,11 @@ export namespace DesignSteelKdsTypes {
     }>;
   }
   /** Generated from contracts/endpoints/. */
-  export interface StrengthReductionFactorsPayload {
-    /** 총단면 항복 (φ_t1) */
-    PHI_T1?: number;
-    /** 순단면 파단 (φ_t2) — 0.75 고정 read-only */
-    PHI_T2?: number;
-    /** 압축부재 (φ_c) */
-    PHI_C?: number;
-    /** 휨부재 (φ_b) */
-    PHI_B?: number;
-    /** 전단 (φ_v) */
-    PHI_V?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ServiceabilityParametersPayload {
-    /** 처짐 제어값 (span/n) */
-    DEFLECT_CONTROL?: number;
-    /** 처짐 증폭계수 */
-    DAF?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SeismicLoadCombinationTypePayload {
-    /** 부재 타입 ("Special Seismic Loads", "Vertical Seismic Forces") */
-    TYPE: "Special Seismic Loads" | "Vertical Seismic Forces";
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface UndergroundLoadCombinationTypePayload {
-    /** 지하 하중 타입 (true=지하 하중용, false=비지하 하중용) */
-    bUNDERLOADTYPE?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ScaleUpFactorForEarthquakePayload {
-    /** 하중케이스 - 축력 증폭계수 */
-    LC_AXIAL?: number;
-    /** 하중케이스 - 모멘트 증폭계수 */
-    LC_MOMENT?: number;
-    /** 하중케이스 - 전단 증폭계수 */
-    LC_SHEAR?: number;
-    /** 하중조합 - 축력 증폭계수 */
-    LCOM_AXIAL?: number;
-    /** 하중조합 - 모멘트 증폭계수 */
-    LCOM_MOMENT?: number;
-    /** 하중조합 - 전단 증폭계수 */
-    LCOM_SHEAR?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface CombinedRatioCalculationMethodPayload {
-    /** 조합강도 방법 ("SRSS", "Linear Sum") */
-    METHOD: "SRSS" | "Linear Sum";
-  }
-  export interface HaunchPartSelector {
-    INPUT_METHOD?: string;
-    KEYS?: Array<number>;
-    TO?: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface HaunchedBeamAssignmentPayload {
-    /** 헌치 이름 */
-    NAME: string;
-    /** Part A 요소 입력 (방법 1개만 사용) */
-    PART_A: {
-      /** 입력 방법 ("KEYS"=개별 ID, "TO"=범위) */
-      INPUT_METHOD: "KEYS" | "TO";
-      /** 개별 요소 ID (INPUT_METHOD=KEYS, minItems 1) Applies when PART_A.INPUT_METHOD = "KEYS". */
-      KEYS?: Array<number>;
-      /** ID 범위 문자열 (INPUT_METHOD=TO, 예 "101 to 105") Applies when PART_A.INPUT_METHOD = "TO". */
-      TO?: string;
-    };
-    /** Part B 요소 입력 (구조는 PART_A와 동일) */
-    PART_B: {
-      /** 입력 방법 ("KEYS"=개별 ID, "TO"=범위) */
-      INPUT_METHOD: "KEYS" | "TO";
-      /** 개별 요소 ID (INPUT_METHOD=KEYS, minItems 1) Applies when PART_B.INPUT_METHOD = "KEYS". */
-      KEYS?: Array<number>;
-      /** ID 범위 문자열 (INPUT_METHOD=TO, 예 "101 to 105") Applies when PART_B.INPUT_METHOD = "TO". */
-      TO?: string;
-    };
-    /** Part C 요소 입력 (구조는 PART_A와 동일) */
-    PART_C: {
-      /** 입력 방법 ("KEYS"=개별 ID, "TO"=범위) */
-      INPUT_METHOD: "KEYS" | "TO";
-      /** 개별 요소 ID (INPUT_METHOD=KEYS, minItems 1) Applies when PART_C.INPUT_METHOD = "KEYS". */
-      KEYS?: Array<number>;
-      /** ID 범위 문자열 (INPUT_METHOD=TO, 예 "101 to 105") Applies when PART_C.INPUT_METHOD = "TO". */
-      TO?: string;
-    };
-    /** 설계 위치 타입 (0=Part 1/2, 1=User) */
-    POS_TYPE: number;
-    /** 사용자 정의 L1 거리 (POS_TYPE=1) */
-    L1?: number;
-    /** 사용자 정의 L2 거리 (POS_TYPE=1) */
-    L2?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface UnbracedLengthPayload {
-    /** 비지지 길이 Ly */
-    LY?: number;
-    /** 비지지 길이 Lz */
-    LZ?: number;
-    /** 횡비지지 길이 Lb */
-    LB?: number;
-    /** 횡비지지 길이 미고려 */
-    bNOTUSE?: boolean;
-    /** 비틀림 비지지 길이 Lt */
-    LT?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface EffectiveLengthFactorPayload {
-    /** 유효좌굴길이계수 Ky */
-    Ky?: number;
-    /** 유효좌굴길이계수 Kz */
-    Kz?: number;
-    /** 유효좌굴길이계수 Kt */
-    Kt?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface LimitingSlendernessRatioPayload {
-    /** 세장비 검토 안함 */
-    bNOTCHECK?: boolean;
-    /** 압축 세장비 제한 */
-    COMP: number;
-    /** 인장 세장비 제한 */
-    TENS: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface EquivalentMomentCorrectionFactorPayload {
-    /** 자동계산 */
-    OPT_AUTO?: boolean;
-    /** CMy */
-    CMY?: number;
-    /** CMz */
-    CMZ?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface MomentMagnifierPayload {
-    /** B1y - Δby (1차 모멘트 Y) */
-    B1Y_DELTA_BY?: number;
-    /** B1z - Δbz (1차 모멘트 Z) */
-    B1Z_DELTA_BZ?: number;
-    /** B2y - Δsy (2차 모멘트 Y) */
-    B2Y_DELTA_SY?: number;
-    /** B2z - Δsz (2차 모멘트 Z) */
-    B2Z_DELTA_SZ?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface BendingCoefficientPayload {
-    /** 프로그램 자동계산 */
-    AUTO_CAL?: boolean;
-    /** 휨계수 Cb 값 (AUTO_CAL=false일 때) */
-    VALUE?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface ModifyMemberTypePayload {
-    /** 부재 타입 ("COLUMN", "BEAM", "BRACE") */
-    TYPE: "COLUMN" | "BEAM" | "BRACE";
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SeismicLoadResistingSystemByMemberPayload {
-    /** 내진 저항시스템 골조 타입 ("Special Concentrically Braced Frames", "Ordinary Concentrically Braced Frames", "Eccentrically Braced Frames", "Buckling Restrained Braced Frames", "Special Plate Shear Walls") */
-    FRAME_TYPE: "Special Concentrically Braced Frames" | "Ordinary Concentrically Braced Frames" | "Eccentrically Braced Frames" | "Buckling Restrained Braced Frames" | "Special Plate Shear Walls";
-    /** 가새 세장비 검토 / 링크 검토 (Buckling Restrained·Special Plate Shear Walls는 미지원 → false 강제) */
-    CHECK_OPTION?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface LiveLoadReductionComponents {
-    /** 축력 */
-    AXIAL?: boolean;
-    /** 모멘트 */
-    MOMENT?: boolean;
-    /** 전단력 */
-    SHEAR?: boolean;
+  export interface MemberAssignmentPayload {
+    /** 요소 리스트 */
+    AELEM: Array<number>;
+    /** 로컬 방향 반전 */
+    bREVERSE?: boolean;
   }
   /** Generated from contracts/endpoints/. */
   export interface ModifyLiveLoadReductionFactorPayload {
@@ -15387,11 +15289,9 @@ export namespace DesignSteelKdsTypes {
     };
   }
   /** Generated from contracts/endpoints/. */
-  export interface MemberAssignmentPayload {
-    /** 요소 리스트 */
-    AELEM: Array<number>;
-    /** 로컬 방향 반전 */
-    bREVERSE?: boolean;
+  export interface ModifyMemberTypePayload {
+    /** 부재 타입 ("COLUMN", "BEAM", "BRACE") */
+    TYPE: "COLUMN" | "BEAM" | "BRACE";
   }
   /** Generated from contracts/endpoints/. */
   export interface ModifySteelMaterialPayload {
@@ -15423,6 +15323,17 @@ export namespace DesignSteelKdsTypes {
     FY5?: number;
   }
   /** Generated from contracts/endpoints/. */
+  export interface MomentMagnifierPayload {
+    /** B1y - Δby (1차 모멘트 Y) */
+    B1Y_DELTA_BY?: number;
+    /** B1z - Δbz (1차 모멘트 Z) */
+    B1Z_DELTA_BZ?: number;
+    /** B2y - Δsy (2차 모멘트 Y) */
+    B2Y_DELTA_SY?: number;
+    /** B2z - Δsz (2차 모멘트 Z) */
+    B2Z_DELTA_SZ?: number;
+  }
+  /** Generated from contracts/endpoints/. */
   export interface PerformSteelCodeCheckArgument {
     /** 수행 대상 타입 ("ALL"=전체 요소, "ELEMS"=요소별, "SECTIONS"=단면별) */
     PERFORM_TYPE?: "ALL" | "ELEMS" | "SECTIONS";
@@ -15437,6 +15348,55 @@ export namespace DesignSteelKdsTypes {
     };
     /** 단면 번호 (ELEMS/SECTIONS 중 하나) */
     SECTIONS?: Array<number>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ScaleUpFactorForEarthquakePayload {
+    /** 하중케이스 - 축력 증폭계수 */
+    LC_AXIAL?: number;
+    /** 하중케이스 - 모멘트 증폭계수 */
+    LC_MOMENT?: number;
+    /** 하중케이스 - 전단 증폭계수 */
+    LC_SHEAR?: number;
+    /** 하중조합 - 축력 증폭계수 */
+    LCOM_AXIAL?: number;
+    /** 하중조합 - 모멘트 증폭계수 */
+    LCOM_MOMENT?: number;
+    /** 하중조합 - 전단 증폭계수 */
+    LCOM_SHEAR?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SeismicLoadCombinationTypePayload {
+    /** 부재 타입 ("Special Seismic Loads", "Vertical Seismic Forces") */
+    TYPE: "Special Seismic Loads" | "Vertical Seismic Forces";
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SeismicLoadResistingSystemByMemberPayload {
+    /** 내진 저항시스템 골조 타입 ("Special Concentrically Braced Frames", "Ordinary Concentrically Braced Frames", "Eccentrically Braced Frames", "Buckling Restrained Braced Frames", "Special Plate Shear Walls") */
+    FRAME_TYPE: "Special Concentrically Braced Frames" | "Ordinary Concentrically Braced Frames" | "Eccentrically Braced Frames" | "Buckling Restrained Braced Frames" | "Special Plate Shear Walls";
+    /** 가새 세장비 검토 / 링크 검토 (Buckling Restrained·Special Plate Shear Walls는 미지원 → false 강제) */
+    CHECK_OPTION?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface ServiceabilityParametersPayload {
+    /** 처짐 제어값 (span/n) */
+    DEFLECT_CONTROL?: number;
+    /** 처짐 증폭계수 */
+    DAF?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SteelCodeCheckReportArgument {
+    /** 보고서 표 타입 ("MEMB", "PROP") */
+    REPORT_TYPE: "MEMB" | "PROP";
+    /** 출력 모드 ("Graphic"=JPG, "Detail"=DOC, "Summary"=TXT) */
+    CURRENT_MODE: "Graphic" | "Detail" | "Summary";
+    /** 요소 입력 (ELEMS/SECTIONS 중 하나) — KEYS/TO/STRUCTURE_GROUP_NAME */
+    ELEMS?: JsonObject;
+    /** 단면 번호 (ELEMS/SECTIONS 중 하나) */
+    SECTIONS?: Array<number>;
+    /** 저장 디렉터리 경로 (예 C:\\MIDAS\\Report\\) */
+    EXPORT_PATH: string;
+    /** 출력 파일 기본 이름 (다중 요소 시 인덱스·요소번호 접두어 부가) */
+    OUTPUT_NAME: string;
   }
   /** Generated from contracts/endpoints/. */
   export interface SteelCodeCheckTableArgument {
@@ -15478,19 +15438,28 @@ export namespace DesignSteelKdsTypes {
     COMPONENTS?: Array<string>;
   }
   /** Generated from contracts/endpoints/. */
-  export interface SteelCodeCheckReportArgument {
-    /** 보고서 표 타입 ("MEMB", "PROP") */
-    REPORT_TYPE: "MEMB" | "PROP";
-    /** 출력 모드 ("Graphic"=JPG, "Detail"=DOC, "Summary"=TXT) */
-    CURRENT_MODE: "Graphic" | "Detail" | "Summary";
-    /** 요소 입력 (ELEMS/SECTIONS 중 하나) — KEYS/TO/STRUCTURE_GROUP_NAME */
-    ELEMS?: JsonObject;
-    /** 단면 번호 (ELEMS/SECTIONS 중 하나) */
-    SECTIONS?: Array<number>;
-    /** 저장 디렉터리 경로 (예 C:\\MIDAS\\Report\\) */
-    EXPORT_PATH: string;
-    /** 출력 파일 기본 이름 (다중 요소 시 인덱스·요소번호 접두어 부가) */
-    OUTPUT_NAME: string;
+  export interface SteelDesignCodeOptionPayload {
+    /** 설계 코드 (KDS 41 30 : 2022 고정) */
+    DGNCODE: "KDS 41 30 : 2022";
+    /** 모든 보/거더 횡지지 가정 */
+    LAT_BRACE?: boolean;
+    /** 보/기둥 처짐 검토 */
+    DEFL_CHK?: boolean;
+    /** 내진설계 특별규정 적용 */
+    SEISMIC?: boolean;
+    /** 원형단면 조합비 방법 (0=SRSS, 1=Linear Sum) */
+    COMB_RATIO?: number;
+    /** 내진 저항시스템 (SEISMIC=true일 때) — Special/Intermediate/Ordinary Moment Frames, Special/Ordinary Concentrically Braced Frames, Eccentrically Braced Frames, Buckling-Restrained Braced Frames, Special Plate Shear Walls */
+    SEIS_SYS?: "Special Moment Frames" | "Intermediate Moment Frames" | "Ordinary Moment Frames" | "Special Concentrically Braced Frames" | "Ordinary Concentrically Braced Frames" | "Eccentrically Braced Frames" | "Buckling-Restrained Braced Frames" | "Special Plate Shear Walls";
+    /** 최상층 강기둥-약보 고려 */
+    COL_WEAK?: boolean;
+    /** 지하부재에 지하 하중조합 타입 사용 */
+    UNDGR_LD?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SteelDesignCodeSelectionPayload {
+    /** 강재 설계 코드 · 현재 "KDS 41 30 : 2022" 1개 값만 지원 */
+    DGNCODE: "KDS 41 30 : 2022";
   }
   /** Generated from contracts/endpoints/. */
   export interface SteelDesignResultAngle {
@@ -15498,102 +15467,6 @@ export namespace DesignSteelKdsTypes {
     HORIZONTAL?: number;
     /** 수직 회전각 */
     VERTICAL?: number;
-  }
-  export interface SteelDesignResultRgbColor {
-    R?: number;
-    G?: number;
-    B?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SteelDesignResultLoadCaseComb {
-    /** 하중 타입 ("CBS"=Steel Design Load Combination) */
-    TYPE: "CBS";
-    /** 하중 이름 */
-    NAME: string;
-  }
-  export interface SteelDesignResultComponents {
-    COMP?: string;
-  }
-  export interface SteelDesignResultContourOptions {
-    GRADIENT_FILL?: boolean;
-    CONTOUR_FILL?: boolean;
-  }
-  export interface SteelDesignResultContour {
-    OPT_CHECK?: boolean;
-    NUM_OF_COLOR?: number;
-    COLOR_TYPE?: string;
-    OPTIONS?: SteelDesignResultContourOptions;
-  }
-  export interface SteelDesignResultMinMaxOnly {
-    MAXMIN?: string;
-    LIMIT_SCALE?: number;
-  }
-  export interface SteelDesignResultValues {
-    OPT_CHECK?: boolean;
-    DECIMAL_PT?: number;
-    VALUE_EXP?: boolean;
-    MINMAX_ONLY?: SteelDesignResultMinMaxOnly;
-    SET_ORIENT?: number;
-  }
-  export interface SteelDesignResultLegend {
-    OPT_CHECK?: boolean;
-    POSITION?: string;
-    VALUE_EXP?: boolean;
-    DECIMAL_PT?: number;
-  }
-  export interface SteelDesignResultDisplayMembers {
-    BEAM?: boolean;
-    COLUMN?: boolean;
-    BRACE?: boolean;
-  }
-  export interface SteelDesignResultColumnSectionSize {
-    SCALE_FACTOR?: number;
-  }
-  export interface SteelDesignResultValueOption {
-    DECIMAL_PLACES?: number;
-    EXPONENTIAL?: boolean;
-  }
-  export interface SteelDesignResultCodeCheckingRatio {
-    CHECK?: boolean;
-    DISPLAY_MEMBERS?: SteelDesignResultDisplayMembers;
-    COLUMN_SECTION_SIZE?: SteelDesignResultColumnSectionSize;
-    VALUE_OPTION?: SteelDesignResultValueOption;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SteelDesignResultTypeOfDisplay {
-    /** Contour (OPT_CHECK, NUM_OF_COLOR 2~20, COLOR_TYPE vrgb/rgb/rbg/gray scaled, OPTIONS.GRADIENT_FILL·CONTOUR_FILL) */
-    CONTOUR?: JsonObject;
-    /** Values (OPT_CHECK, DECIMAL_PT, VALUE_EXP, MINMAX_ONLY.MAXMIN, SET_ORIENT) */
-    VALUES?: JsonObject;
-    /** Legend (OPT_CHECK, POSITION right/left/top/bottom, VALUE_EXP, DECIMAL_PT) */
-    LEGEND?: JsonObject;
-    /** Code Checking Ratio (COMP=Combined일 때; CHECK, DISPLAY_MEMBERS.BEAM·COLUMN·BRACE, COLUMN_SECTION_SIZE.SCALE_FACTOR, VALUE_OPTION) */
-    CODE_CHECKING_RATIO?: JsonObject;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SteelDesignResultGraphic {
-    /** 현재 모드 ("INFLL_DESIGN_STEEL"=Steel Design) */
-    CURRENT_MODE: "INFLL_DESIGN_STEEL";
-    /** 하중케이스/조합 */
-    LOAD_CASE_COMB: {
-      /** 하중 타입 ("CBS"=Steel Design Load Combination) */
-      TYPE: "CBS";
-      /** 하중 이름 */
-      NAME: string;
-    };
-    /** 표시 성분 (COMP: Axial/Shear-y/Shear-z/Bend-y/Bend-z/Combined) */
-    COMPONENTS?: JsonObject;
-    /** 표시 타입 (CONTOUR / VALUES / LEGEND / CODE_CHECKING_RATIO) */
-    TYPE_OF_DISPLAY?: {
-      /** Contour (OPT_CHECK, NUM_OF_COLOR 2~20, COLOR_TYPE vrgb/rgb/rbg/gray scaled, OPTIONS.GRADIENT_FILL·CONTOUR_FILL) */
-      CONTOUR?: JsonObject;
-      /** Values (OPT_CHECK, DECIMAL_PT, VALUE_EXP, MINMAX_ONLY.MAXMIN, SET_ORIENT) */
-      VALUES?: JsonObject;
-      /** Legend (OPT_CHECK, POSITION right/left/top/bottom, VALUE_EXP, DECIMAL_PT) */
-      LEGEND?: JsonObject;
-      /** Code Checking Ratio (COMP=Combined일 때; CHECK, DISPLAY_MEMBERS.BEAM·COLUMN·BRACE, COLUMN_SECTION_SIZE.SCALE_FACTOR, VALUE_OPTION) */
-      CODE_CHECKING_RATIO?: JsonObject;
-    };
   }
   /** Generated from contracts/endpoints/. */
   export interface SteelDesignResultArgument {
@@ -15652,6 +15525,102 @@ export namespace DesignSteelKdsTypes {
       };
     };
   }
+  export interface SteelDesignResultCodeCheckingRatio {
+    CHECK?: boolean;
+    DISPLAY_MEMBERS?: SteelDesignResultDisplayMembers;
+    COLUMN_SECTION_SIZE?: SteelDesignResultColumnSectionSize;
+    VALUE_OPTION?: SteelDesignResultValueOption;
+  }
+  export interface SteelDesignResultColumnSectionSize {
+    SCALE_FACTOR?: number;
+  }
+  export interface SteelDesignResultComponents {
+    COMP?: string;
+  }
+  export interface SteelDesignResultContour {
+    OPT_CHECK?: boolean;
+    NUM_OF_COLOR?: number;
+    COLOR_TYPE?: string;
+    OPTIONS?: SteelDesignResultContourOptions;
+  }
+  export interface SteelDesignResultContourOptions {
+    GRADIENT_FILL?: boolean;
+    CONTOUR_FILL?: boolean;
+  }
+  export interface SteelDesignResultDisplayMembers {
+    BEAM?: boolean;
+    COLUMN?: boolean;
+    BRACE?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SteelDesignResultGraphic {
+    /** 현재 모드 ("INFLL_DESIGN_STEEL"=Steel Design) */
+    CURRENT_MODE: "INFLL_DESIGN_STEEL";
+    /** 하중케이스/조합 */
+    LOAD_CASE_COMB: {
+      /** 하중 타입 ("CBS"=Steel Design Load Combination) */
+      TYPE: "CBS";
+      /** 하중 이름 */
+      NAME: string;
+    };
+    /** 표시 성분 (COMP: Axial/Shear-y/Shear-z/Bend-y/Bend-z/Combined) */
+    COMPONENTS?: JsonObject;
+    /** 표시 타입 (CONTOUR / VALUES / LEGEND / CODE_CHECKING_RATIO) */
+    TYPE_OF_DISPLAY?: {
+      /** Contour (OPT_CHECK, NUM_OF_COLOR 2~20, COLOR_TYPE vrgb/rgb/rbg/gray scaled, OPTIONS.GRADIENT_FILL·CONTOUR_FILL) */
+      CONTOUR?: JsonObject;
+      /** Values (OPT_CHECK, DECIMAL_PT, VALUE_EXP, MINMAX_ONLY.MAXMIN, SET_ORIENT) */
+      VALUES?: JsonObject;
+      /** Legend (OPT_CHECK, POSITION right/left/top/bottom, VALUE_EXP, DECIMAL_PT) */
+      LEGEND?: JsonObject;
+      /** Code Checking Ratio (COMP=Combined일 때; CHECK, DISPLAY_MEMBERS.BEAM·COLUMN·BRACE, COLUMN_SECTION_SIZE.SCALE_FACTOR, VALUE_OPTION) */
+      CODE_CHECKING_RATIO?: JsonObject;
+    };
+  }
+  export interface SteelDesignResultLegend {
+    OPT_CHECK?: boolean;
+    POSITION?: string;
+    VALUE_EXP?: boolean;
+    DECIMAL_PT?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SteelDesignResultLoadCaseComb {
+    /** 하중 타입 ("CBS"=Steel Design Load Combination) */
+    TYPE: "CBS";
+    /** 하중 이름 */
+    NAME: string;
+  }
+  export interface SteelDesignResultMinMaxOnly {
+    MAXMIN?: string;
+    LIMIT_SCALE?: number;
+  }
+  export interface SteelDesignResultRgbColor {
+    R?: number;
+    G?: number;
+    B?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SteelDesignResultTypeOfDisplay {
+    /** Contour (OPT_CHECK, NUM_OF_COLOR 2~20, COLOR_TYPE vrgb/rgb/rbg/gray scaled, OPTIONS.GRADIENT_FILL·CONTOUR_FILL) */
+    CONTOUR?: JsonObject;
+    /** Values (OPT_CHECK, DECIMAL_PT, VALUE_EXP, MINMAX_ONLY.MAXMIN, SET_ORIENT) */
+    VALUES?: JsonObject;
+    /** Legend (OPT_CHECK, POSITION right/left/top/bottom, VALUE_EXP, DECIMAL_PT) */
+    LEGEND?: JsonObject;
+    /** Code Checking Ratio (COMP=Combined일 때; CHECK, DISPLAY_MEMBERS.BEAM·COLUMN·BRACE, COLUMN_SECTION_SIZE.SCALE_FACTOR, VALUE_OPTION) */
+    CODE_CHECKING_RATIO?: JsonObject;
+  }
+  export interface SteelDesignResultValueOption {
+    DECIMAL_PLACES?: number;
+    EXPONENTIAL?: boolean;
+  }
+  export interface SteelDesignResultValues {
+    OPT_CHECK?: boolean;
+    DECIMAL_PT?: number;
+    VALUE_EXP?: boolean;
+    MINMAX_ONLY?: SteelDesignResultMinMaxOnly;
+    SET_ORIENT?: number;
+  }
   /** Generated from contracts/endpoints/. */
   export interface SteelMemberDesignForcesArgument {
     /** 응답 표 제목 */
@@ -15671,363 +15640,70 @@ export namespace DesignSteelKdsTypes {
     /** 요소 파트 (PartI,Part1/4,Part2/4,Part3/4,PartJ) */
     PARTS?: Array<string>;
   }
+  /** Generated from contracts/endpoints/. */
+  export interface StrengthReductionFactorsPayload {
+    /** 총단면 항복 (φ_t1) */
+    PHI_T1?: number;
+    /** 순단면 파단 (φ_t2) — 0.75 고정 read-only */
+    PHI_T2?: number;
+    /** 압축부재 (φ_c) */
+    PHI_C?: number;
+    /** 휨부재 (φ_b) */
+    PHI_B?: number;
+    /** 전단 (φ_v) */
+    PHI_V?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface UnbracedLengthPayload {
+    /** 비지지 길이 Ly */
+    LY?: number;
+    /** 비지지 길이 Lz */
+    LZ?: number;
+    /** 횡비지지 길이 Lb */
+    LB?: number;
+    /** 횡비지지 길이 미고려 */
+    bNOTUSE?: boolean;
+    /** 비틀림 비지지 길이 Lt */
+    LT?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface UndergroundLoadCombinationTypePayload {
+    /** 지하 하중 타입 (true=지하 하중용, false=비지하 하중용) */
+    bUNDERLOADTYPE?: boolean;
+  }
 }
 
 export namespace OpeTypes {
-  export interface NumberOption {
-    NUMBER_OPTION?: string;
-    USER_NUM?: number;
-  }
-  export interface DivideStartNumber {
-    NODE_NUMBER?: NumberOption;
-    ELEM_NUMBER?: NumberOption;
-  }
-  export interface DivideEqualOption {
-    NUM_X?: number;
-    NUM_Y?: number;
-    NUM_Z?: number;
-  }
-  export interface DivideUnequalOption {
-    DIST_X?: string;
-    DIST_Y?: string;
-    DIST_Z?: string;
-  }
-  export interface DivideParametricOption {
-    RATIO_X?: string;
-    RATIO_Y?: string;
-    RATIO_Z?: string;
-  }
-  export interface DivideParallelOption {
-    NUM_OF_DIVISIONS?: number;
-    MAIN_POST_ELEM?: Array<number>;
-  }
-  export interface DivideByNodeOption {
-    ELEM_NUM?: number;
-    NODE_NUM?: number;
-  }
-  export interface DivideOption {
-    EQUAL_OPTION?: DivideEqualOption;
-    UNEQUAL_OPTION?: DivideUnequalOption;
-    PARAMETRIC_OPTION?: DivideParametricOption;
-    PARALLEL_OPTION?: DivideParallelOption;
-    BY_NODE_OPTION?: DivideByNodeOption;
-  }
-  export interface MergeDuplicateNodesOption {
-    OPT_CHECK?: boolean;
-    TOLERANCE?: number;
-  }
-  export interface DivideSettings {
-    ELEM_TYPE?: string;
-    DIV_METHOD?: string;
-    OPTION?: DivideOption;
-    SUBDIVIDE_ELEM?: boolean;
-    MERGE_DUPLICATE_NODES?: MergeDuplicateNodesOption;
-  }
-  export interface DivideElementsArgument {
-    TARGETS?: Array<number>;
-    START_NUMBER?: DivideStartNumber;
-    DIVIDE?: DivideSettings;
-  }
   /** Generated from contracts/endpoints/. */
-  export interface LoadCombinationRef {
-    /** 하중조합 타입 · 일반: "GEN" / 강재: "STEEL" / 콘크리트: "CONC" / SRC: "SRC" / 강합성거더: "STLCOMP" / 내진: "SEISMIC" */
-    TYPE: string;
-    /** 하중조합 이름 */
-    NAME: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface UsingLoadTypes {
-    /** 자중 */
-    SELF_WEIGHT?: boolean;
-    /** 절점체적력 */
-    NODAL_BODY_FROCE?: boolean;
-    /** 절점하중 */
-    NODAL_LOAD?: boolean;
-    /** 지정변위 */
-    SPECIFIED_DISPLACEMENT?: boolean;
-    /** 보하중 */
-    BEAM_LOAD?: boolean;
-    /** 바닥하중 */
-    FLOOR_LOAD?: boolean;
-    /** 마감재하중 */
-    FINISHING_MATERIAL_LOAD?: boolean;
-    /** 압력하중 */
-    PRESSURE_LOAD?: boolean;
-    /** 평면하중 */
-    PLANE_LOAD?: boolean;
-    /** 시스템 온도 */
-    SYSTEM_TEMPERATURE?: boolean;
-    /** 절점 온도 */
-    NODAL_TEMPERATURE?: boolean;
-    /** 요소 온도 */
-    ELEMENT_TEMPERATURE?: boolean;
-    /** 온도구배 */
-    TEMPERATURE_GRADIENT?: boolean;
-    /** 보단면 온도 */
-    BEAM_SECTION_TEMPERATURE?: boolean;
-    /** 프리스트레스 하중 */
-    PRESTRESS_LOAD?: boolean;
-    /** 프리텐션 하중 */
-    PRETENSION_LOAD?: boolean;
-    /** 텐던 프리스트레스 하중 */
-    TENDON_PRESTRESS_LOAD?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface UsingLoadCombinationsArgument {
-    /** 하중케이스/설계조합 이름 접두어 */
-    PREFIX?: string;
-    /** 설계조합 생성 위치 · 강재: "STEEL" / 콘크리트: "CONC" / SRC: "SRC" */
-    POSITION: string;
-    /** 선택된 조합 목록 */
-    LCOM_LIST: Array<{
-      /** 하중조합 타입 · 일반: "GEN" / 강재: "STEEL" / 콘크리트: "CONC" / SRC: "SRC" / 강합성거더: "STLCOMP" / 내진: "SEISMIC" */
-      TYPE: string;
-      /** 하중조합 이름 */
-      NAME: string;
-    }>;
-    /** 선택 하중 종류 */
-    LOADS?: {
-      /** 자중 */
-      SELF_WEIGHT?: boolean;
-      /** 절점체적력 */
-      NODAL_BODY_FROCE?: boolean;
-      /** 절점하중 */
-      NODAL_LOAD?: boolean;
-      /** 지정변위 */
-      SPECIFIED_DISPLACEMENT?: boolean;
-      /** 보하중 */
-      BEAM_LOAD?: boolean;
-      /** 바닥하중 */
-      FLOOR_LOAD?: boolean;
-      /** 마감재하중 */
-      FINISHING_MATERIAL_LOAD?: boolean;
-      /** 압력하중 */
-      PRESSURE_LOAD?: boolean;
-      /** 평면하중 */
-      PLANE_LOAD?: boolean;
-      /** 시스템 온도 */
-      SYSTEM_TEMPERATURE?: boolean;
-      /** 절점 온도 */
-      NODAL_TEMPERATURE?: boolean;
-      /** 요소 온도 */
-      ELEMENT_TEMPERATURE?: boolean;
-      /** 온도구배 */
-      TEMPERATURE_GRADIENT?: boolean;
-      /** 보단면 온도 */
-      BEAM_SECTION_TEMPERATURE?: boolean;
-      /** 프리스트레스 하중 */
-      PRESTRESS_LOAD?: boolean;
-      /** 프리텐션 하중 */
-      PRETENSION_LOAD?: boolean;
-      /** 텐던 프리스트레스 하중 */
-      TENDON_PRESTRESS_LOAD?: boolean;
+  export interface AdditionalLoad {
+    /** 특별지진하중 옵션 */
+    SPECIAL_LOAD?: {
+      /** 특별지진하중 사용 여부 */
+      OPT_USE: boolean;
+      /** 수직하중계수 – OPT_USE가 true일 때 필수 */
+      VERTICAL_LOAD_FACTOR?: number;
+      /** Sds – OPT_USE가 true일 때 필수 */
+      SDS?: number;
+      /** 초과강도계수 목록 – OPT_USE가 true일 때 필수 */
+      OVER_STRENGTH_FACTOR?: Array<{
+        /** 하중 케이스명 */
+        LOAD_CASE: string;
+        /** 축계수 */
+        FACTOR: number;
+      }>;
+    };
+    /** 수직지진력 옵션 */
+    VERTICAL_LOAD?: {
+      /** 수직지진력 고려 여부 */
+      OPT_USE: boolean;
+      /** 수직력 계수 – OPT_USE가 true일 때 필수 */
+      FORCE_FACTOR?: number;
     };
   }
-  /** Generated from contracts/endpoints/. */
-  export interface LineLoadTarget {
-    /** 적용 방법 · 하중선 위: 0 / 선택 요소: 1 */
-    METHOD: number;
-    /** 적용 대상 요소 목록 */
-    ELEM: Array<number>;
-    /** 하중선 정의 노드 (2개) */
-    NODE: [number, number];
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface LineLoadEccentricity {
-    /** 활성화 */
-    USE?: boolean;
-    /** 타입 · 도심: 0 / 옵셋: 1 */
-    TYPE?: number;
-    /** 방향 · 국부y: "LY" / 국부z: "LZ" / 전체X: "GX" / 전체Y: "GY" / 전체Z: "GZ" */
-    DIR?: string;
-    /** I단 편심량 */
-    I_END?: number;
-    /** J단 편심량(USE_J_END=true일 때) */
-    J_END?: number;
-    /** J단 편심 활성화 */
-    USE_J_END?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface LineLoadAdditionalHeight {
-    /** 활성화 */
-    USE?: boolean;
-    /** I단 값 */
-    I_END?: number;
-    /** J단 값(USE_J_END=true일 때) */
-    J_END?: number;
-    /** J단 활성화 */
-    USE_J_END?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface LineLoadValue {
-    /** 방향 · 국부x/y/z("LX"/"LY"/"LZ"), 전체X/Y/Z("GX"/"GY"/"GZ"); UNIPRESSURE/TRAPRESSURE는 ADD_H 설정에 따라 LY/LZ만 가능 */
-    DIR: string;
-    /** 투영 여부 (METHOD=0→기본 false, METHOD=1→기본 true) */
-    USE_PROJECTION?: boolean;
-    /** 거리 타입(모든 타입 공통, CURVED 포함) · 상대: 0 / 절대: 1 */
-    TYPE: number;
-    /** 거리 배열 [x1,x2,x3,x4] (CURVED 제외) Required when TYPE is "CONLOAD" or "CONMOMENT" or "UNILOAD" or "UNIMOMENT" or "TRALOAD" or "TRAMOMENT" or "UNIPRESSURE" or "TRAPRESSURE". */
-    D?: [number, number, number, number];
-    /** 크기 배열 [P1,P2,P3,P4] (CURVED 제외) Required when TYPE is "CONLOAD" or "CONMOMENT" or "UNILOAD" or "UNIMOMENT" or "TRALOAD" or "TRAMOMENT" or "UNIPRESSURE" or "TRAPRESSURE". */
-    P?: [number, number, number, number];
-    /** 곡선식 계수 a (CURVED 전용) Required when TYPE = "CURVED". */
-    A?: number;
-    /** 곡선식 계수 b (CURVED 전용) Required when TYPE = "CURVED". */
-    B?: number;
-    /** 곡선식 계수 c (CURVED 전용) Required when TYPE = "CURVED". */
-    C?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface LineLoadCopy {
-    /** 활성화 */
-    USE?: boolean;
-    /** 복사 축 · "X"/"Y"/"Z" */
-    AXIS?: string;
-    /** 복사 거리 (예: "10@3.0") */
-    DIST?: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface LineBeamLoadArgument {
-    /** 하중케이스 이름 */
-    LCNAME: string;
-    /** 하중 그룹 이름 */
-    GROUP_NAME?: string;
-    /** 하중 타입 · 집중하중: "CONLOAD" / 집중모멘트: "CONMOMENT" / 등분포하중: "UNILOAD" / 등분포모멘트: "UNIMOMENT" / 사다리꼴하중: "TRALOAD" / 사다리꼴모멘트: "TRAMOMENT" / 등분포압력: "UNIPRESSURE" / 사다리꼴압력: "TRAPRESSURE" / 곡선하중: "CURVED" */
-    TYPE: string;
-    /** 하중 적용 대상 정보 */
-    TARGET: {
-      /** 적용 방법 · 하중선 위: 0 / 선택 요소: 1 */
-      METHOD: number;
-      /** 적용 대상 요소 목록 */
-      ELEM: Array<number>;
-      /** 하중선 정의 노드 (2개) */
-      NODE: [number, number];
-    };
-    /** 편심 옵션(TYPE이 CONLOAD/UNILOAD/TRALOAD/CURVED일 때만 사용 가능) */
-    ECCEN?: {
-      /** 활성화 */
-      USE?: boolean;
-      /** 타입 · 도심: 0 / 옵셋: 1 */
-      TYPE?: number;
-      /** 방향 · 국부y: "LY" / 국부z: "LZ" / 전체X: "GX" / 전체Y: "GY" / 전체Z: "GZ" */
-      DIR?: string;
-      /** I단 편심량 */
-      I_END?: number;
-      /** J단 편심량(USE_J_END=true일 때) */
-      J_END?: number;
-      /** J단 편심 활성화 */
-      USE_J_END?: boolean;
-    };
-    /** 상단 추가높이 옵션(TYPE이 UNIPRESSURE/TRAPRESSURE일 때만 사용 가능) */
-    ADD_H?: {
-      /** 활성화 */
-      USE?: boolean;
-      /** I단 값 */
-      I_END?: number;
-      /** J단 값(USE_J_END=true일 때) */
-      J_END?: number;
-      /** J단 활성화 */
-      USE_J_END?: boolean;
-    };
-    /** 하중 값 */
-    LOAD: {
-      /** 방향 · 국부x/y/z("LX"/"LY"/"LZ"), 전체X/Y/Z("GX"/"GY"/"GZ"); UNIPRESSURE/TRAPRESSURE는 ADD_H 설정에 따라 LY/LZ만 가능 */
-      DIR: string;
-      /** 투영 여부 (METHOD=0→기본 false, METHOD=1→기본 true) */
-      USE_PROJECTION?: boolean;
-      /** 거리 타입(모든 타입 공통, CURVED 포함) · 상대: 0 / 절대: 1 */
-      TYPE: number;
-      /** 거리 배열 [x1,x2,x3,x4] (CURVED 제외) Required when TYPE is "CONLOAD" or "CONMOMENT" or "UNILOAD" or "UNIMOMENT" or "TRALOAD" or "TRAMOMENT" or "UNIPRESSURE" or "TRAPRESSURE". */
-      D?: [number, number, number, number];
-      /** 크기 배열 [P1,P2,P3,P4] (CURVED 제외) Required when TYPE is "CONLOAD" or "CONMOMENT" or "UNILOAD" or "UNIMOMENT" or "TRALOAD" or "TRAMOMENT" or "UNIPRESSURE" or "TRAPRESSURE". */
-      P?: [number, number, number, number];
-      /** 곡선식 계수 a (CURVED 전용) Required when TYPE = "CURVED". */
-      A?: number;
-      /** 곡선식 계수 b (CURVED 전용) Required when TYPE = "CURVED". */
-      B?: number;
-      /** 곡선식 계수 c (CURVED 전용) Required when TYPE = "CURVED". */
-      C?: number;
-    };
-    /** 복사 옵션 */
-    COPY?: {
-      /** 활성화 */
-      USE?: boolean;
-      /** 복사 축 · "X"/"Y"/"Z" */
-      AXIS?: string;
-      /** 복사 거리 (예: "10@3.0") */
-      DIST?: string;
-    };
-  }
-  export interface InteriorInclusionOption {
-    OPT_CHECK?: boolean;
-    OPTION?: string;
-    VALUE?: Array<number>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface AutoMesher {
-    /** 자동 메시 방법 · 노드: "Nodes" / 선요소: "LineElements" / 평면요소: "PlanarElements" */
-    METHOD?: string;
-    /** 메시 대상 요소/노드 목록 */
-    TARGETS: Array<number>;
-    /** 메시 형태 · 사각형: "Quadrilateral" / 사각+삼각: "Quadandtriangle" / 삼각형: "Triangle" */
-    TYPE?: string;
-    /** 내부 도메인 메시 생성 여부 */
-    MESH_INNER_DOMAIN?: boolean;
-    /** 영역 내 노드 고려 옵션 */
-    INCLUDE_INTERIOR_NODES?: {
-      /** 활성화 */
-      OPT_CHECK?: boolean;
-      /** 감지 방식 · "Auto"/"User" */
-      OPTION?: string;
-      /** 포함 노드 번호(User일 때) */
-      VALUE?: Array<number>;
-    };
-    /** 영역 내 선요소 고려 옵션 (구조는 1-5와 동일) */
-    INCLUDE_INTERIOR_LINES?: {
-      /** 활성화 */
-      OPT_CHECK?: boolean;
-      /** 감지 방식 · "Auto"/"User" */
-      OPTION?: string;
-      /** 포함 선요소 번호(User일 때) Applies when MESHER.INCLUDE_INTERIOR_LINES.OPTION = "User". */
-      VALUE?: Array<number>;
-    };
-    /** 메시 경계 연결 여부 */
-    INCLUDE_BOUNDARY_CONNECTIVITY?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface AutoMeshSize {
-    /** 길이 기준 (DIV와 동시 사용 불가) */
-    LENGTH?: number;
-    /** 분할수 기준 (LENGTH와 동시 사용 불가) */
-    DIV?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface AutoMeshElementSubType {
-    /** 판 두께 타입(ELEMENT_TYPE="Plate"일 때) · "Thick"/"Thin" */
-    TYPE?: string;
-    /** Drilling DOF 사용(Plate/PlaneStress일 때) */
-    WITH_DRILLING_DOF?: boolean;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface AutoMeshProperty {
-    /** 요소 타입 · "Plate"/"PlaneStress"/"PlaneStrain"/"Axisymmetric" */
-    ELEMENT_TYPE?: string;
-    /** 요소 세부 타입 */
-    ELEMENT_SUB_TYPE?: {
-      /** 판 두께 타입(ELEMENT_TYPE="Plate"일 때) · "Thick"/"Thin" */
-      TYPE?: string;
-      /** Drilling DOF 사용(Plate/PlaneStress일 때) */
-      WITH_DRILLING_DOF?: boolean;
-    };
-    /** 재료 번호 */
-    MATERIAL: number;
-    /** 두께 번호(Plate/PlaneStress일 때) */
-    THICKNESS?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface AutoMeshDomainName {
-    /** 이름 */
-    NAME: string;
+  export interface AllowableStressLine {
+    OPT_USE?: boolean;
+    COMP?: number;
+    TENS?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface AutoMeshAdditionalOption {
@@ -16106,77 +15782,70 @@ export namespace OpeTypes {
     };
   }
   /** Generated from contracts/endpoints/. */
-  export interface TargetKeys {
-    /** 번호 배열 (예: [101, 102, 103]) */
-    KEYS: Array<number>;
+  export interface AutoMeshDomainName {
+    /** 이름 */
+    NAME: string;
   }
   /** Generated from contracts/endpoints/. */
-  export interface SurfaceSpringElement {
-    /** 타입 · 프레임: "FRAME" / 평면: "PLANAR" / 솔리드(면): "SOLID_FACE" / 솔리드(절점): "SOLID_NODE" */
-    TYPE: string;
-    /** 폭 (FRAME 전용) */
-    WIDTH?: number;
-    /** 면 번호 1~6 (SOLID_FACE 전용) */
-    FACE?: number;
+  export interface AutoMeshElementSubType {
+    /** 판 두께 타입(ELEMENT_TYPE="Plate"일 때) · "Thick"/"Thin" */
+    TYPE?: string;
+    /** Drilling DOF 사용(Plate/PlaneStress일 때) */
+    WITH_DRILLING_DOF?: boolean;
   }
   /** Generated from contracts/endpoints/. */
-  export interface SurfaceSpringBoundary {
-    /** 경계 타입 · 선형: "LINEAR" / 압축전담: "COMP" / 인장전담: "TENS" / 다선형: "MULTI" */
-    TYPE: string;
-    /** 강성 [Kx,Ky,Kz] (CONVERT_TO="POINT_SPRING"의 LINEAR/MULTI) */
-    STIFF?: [number, number, number];
-    /** 감쇠 고려 여부 (CONVERT_TO="POINT_SPRING"의 LINEAR/MULTI) */
-    bDAMP?: boolean;
-    /** 감쇠상수 [Cx,Cy,Cz] (CONVERT_TO="POINT_SPRING"의 LINEAR/MULTI) */
-    DAMP?: [number, number, number];
-    /** 경계 방향(COMP/TENS/점스프링 외 모든 경우) · Normal(+): 0 / Normal(-): 1 / UCS-x(+): 2 / UCS-x(-): 3 / UCS-y(+): 4 / UCS-y(-): 5 / UCS-z(+): 6 / UCS-z(-): 7 */
-    DIR?: number;
-    /** 지반반력계수 (COMP/TENS/탄성링크 전체) */
-    SUBGRADE?: number;
-    /** 한계강도 (MULTI/탄성링크 MULTI) */
-    PHU?: number;
-    /** 탄성링크 길이 (CONVERT_TO="ELASTIC_LINK" 전체 타입) */
+  export interface AutoMeshProperty {
+    /** 요소 타입 · "Plate"/"PlaneStress"/"PlaneStrain"/"Axisymmetric" */
+    ELEMENT_TYPE?: string;
+    /** 요소 세부 타입 */
+    ELEMENT_SUB_TYPE?: {
+      /** 판 두께 타입(ELEMENT_TYPE="Plate"일 때) · "Thick"/"Thin" */
+      TYPE?: string;
+      /** Drilling DOF 사용(Plate/PlaneStress일 때) */
+      WITH_DRILLING_DOF?: boolean;
+    };
+    /** 재료 번호 */
+    MATERIAL: number;
+    /** 두께 번호(Plate/PlaneStress일 때) */
+    THICKNESS?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface AutoMeshSize {
+    /** 길이 기준 (DIV와 동시 사용 불가) */
     LENGTH?: number;
+    /** 분할수 기준 (LENGTH와 동시 사용 불가) */
+    DIV?: number;
   }
   /** Generated from contracts/endpoints/. */
-  export interface SurfaceSpringArgument {
-    /** 변환 방식 · 점스프링: "POINT_SPRING" / 탄성링크: "ELASTIC_LINK" */
-    CONVERT_TO: string;
-    /** 경계 그룹 이름 */
-    GROUP_NAME?: string;
-    /** 대상 노드/요소 번호 목록 */
-    NODE_ELEMS: {
-      /** 번호 배열 */
-      KEYS: Array<number>;
+  export interface AutoMesher {
+    /** 자동 메시 방법 · 노드: "Nodes" / 선요소: "LineElements" / 평면요소: "PlanarElements" */
+    METHOD?: string;
+    /** 메시 대상 요소/노드 목록 */
+    TARGETS: Array<number>;
+    /** 메시 형태 · 사각형: "Quadrilateral" / 사각+삼각: "Quadandtriangle" / 삼각형: "Triangle" */
+    TYPE?: string;
+    /** 내부 도메인 메시 생성 여부 */
+    MESH_INNER_DOMAIN?: boolean;
+    /** 영역 내 노드 고려 옵션 */
+    INCLUDE_INTERIOR_NODES?: {
+      /** 활성화 */
+      OPT_CHECK?: boolean;
+      /** 감지 방식 · "Auto"/"User" */
+      OPTION?: string;
+      /** 포함 노드 번호(User일 때) */
+      VALUE?: Array<number>;
     };
-    /** 요소 타입 정보 */
-    ELEMENT: {
-      /** 타입 · 프레임: "FRAME" / 평면: "PLANAR" / 솔리드(면): "SOLID_FACE" / 솔리드(절점): "SOLID_NODE" */
-      TYPE: string;
-      /** 폭 (FRAME 전용) */
-      WIDTH?: number;
-      /** 면 번호 1~6 (SOLID_FACE 전용) */
-      FACE?: number;
+    /** 영역 내 선요소 고려 옵션 (구조는 1-5와 동일) */
+    INCLUDE_INTERIOR_LINES?: {
+      /** 활성화 */
+      OPT_CHECK?: boolean;
+      /** 감지 방식 · "Auto"/"User" */
+      OPTION?: string;
+      /** 포함 선요소 번호(User일 때) Applies when MESHER.INCLUDE_INTERIOR_LINES.OPTION = "User". */
+      VALUE?: Array<number>;
     };
-    /** 경계 정보 */
-    BOUNDARY: {
-      /** 경계 타입 · 선형: "LINEAR" / 압축전담: "COMP" / 인장전담: "TENS" / 다선형: "MULTI" */
-      TYPE: string;
-      /** 강성 [Kx,Ky,Kz] (CONVERT_TO="POINT_SPRING"의 LINEAR/MULTI) */
-      STIFF?: [number, number, number];
-      /** 감쇠 고려 여부 (CONVERT_TO="POINT_SPRING"의 LINEAR/MULTI) */
-      bDAMP?: boolean;
-      /** 감쇠상수 [Cx,Cy,Cz] (CONVERT_TO="POINT_SPRING"의 LINEAR/MULTI) */
-      DAMP?: [number, number, number];
-      /** 경계 방향(COMP/TENS/점스프링 외 모든 경우) · Normal(+): 0 / Normal(-): 1 / UCS-x(+): 2 / UCS-x(-): 3 / UCS-y(+): 4 / UCS-y(-): 5 / UCS-z(+): 6 / UCS-z(-): 7 */
-      DIR?: number;
-      /** 지반반력계수 (COMP/TENS/탄성링크 전체) */
-      SUBGRADE?: number;
-      /** 한계강도 (MULTI/탄성링크 MULTI) */
-      PHU?: number;
-      /** 탄성링크 길이 (CONVERT_TO="ELASTIC_LINK" 전체 타입) */
-      LENGTH?: number;
-    };
+    /** 메시 경계 연결 여부 */
+    INCLUDE_BOUNDARY_CONNECTIVITY?: boolean;
   }
   /** Generated from contracts/endpoints/. */
   export interface ChangePropertyArgument {
@@ -16196,92 +15865,51 @@ export namespace OpeTypes {
     /** 변경값 · 명목크기: h / 체적표면비: v/s */
     H_VS: number;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface SeismicAccidentalEccentricity {
-    /** 지진 우발편심 포함 여부 */
-    INC_SEIS_ECC: boolean;
-    /** 지진 우발편심 값(%) */
-    SEIS_ECC_VALUE: number;
+  export interface DivideByNodeOption {
+    ELEM_NUM?: number;
+    NODE_NUM?: number;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface WindAccidentalEccentricity {
-    /** 풍하중 편심 포함 여부 */
-    INC_WIND_ECC: boolean;
-    /** 풍하중 편심 값(%) */
-    WIND_ECC_VALUE: number;
+  export interface DivideElementsArgument {
+    TARGETS?: Array<number>;
+    START_NUMBER?: DivideStartNumber;
+    DIVIDE?: DivideSettings;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface StoryCalculationArgument {
-    /** 지진 우발편심 */
-    SEIS_ECC: {
-      /** 지진 우발편심 포함 여부 */
-      INC_SEIS_ECC: boolean;
-      /** 지진 우발편심 값(%) */
-      SEIS_ECC_VALUE: number;
-    };
-    /** 풍하중 편심 */
-    WIND_ECC: {
-      /** 풍하중 편심 포함 여부 */
-      INC_WIND_ECC: boolean;
-      /** 풍하중 편심 값(%) */
-      WIND_ECC_VALUE: number;
-    };
+  export interface DivideEqualOption {
+    NUM_X?: number;
+    NUM_Y?: number;
+    NUM_Z?: number;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface StoryCheckParameterArgument {
-    /** 국가 기준코드 설정 · "NTC2012" / "NTC2008" / "KBC2009" / "NSR-10" / "NTC2018" / "NTC2020" / "IS1893(2016)" / "IS16700(2023)" */
-    COUNTRY_CODE: string;
+  export interface DivideOption {
+    EQUAL_OPTION?: DivideEqualOption;
+    UNEQUAL_OPTION?: DivideUnequalOption;
+    PARAMETRIC_OPTION?: DivideParametricOption;
+    PARALLEL_OPTION?: DivideParallelOption;
+    BY_NODE_OPTION?: DivideByNodeOption;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface StoryIrregularityCheckParameterArgument {
-    /** 국가 기준코드 · "NTC2018" / "NTC2012" / "NTC2008" / "KBC2009" / "NSR-10" / "NTCS2020" / "NTCS2023" / "NSCP2015" / "IS1893(2016)" / "IS16700(2023)" */
-    COUNTRY_CODE: string;
-    /** 층간변위 산정방법 · 질량중심 변위: "Drift at the Center of Mass" / 최외곽점 최대변위: "Max. Drift of Outer Extreme Points" / 전체 수직요소 최대변위: "Max. Drift of All Vertical Elements" */
-    STORY_DRIFT_METHOD: string;
-    /** 층강성 산정방법 · "1 / Story Drift Ratio" / "Story Shear / Story Drift" */
-    STORY_STIFFNESS_METHOD: string;
-    /** 지진거동계수(COUNTRY_CODE가 "NTCS2023" 또는 "NTCS2020"일 때만 필요) · "4" / "3 or below" */
-    SEISMIC_BEHAVIOR_FACTOR?: string;
+  export interface DivideParallelOption {
+    NUM_OF_DIVISIONS?: number;
+    MAIN_POST_ELEM?: Array<number>;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface StoryPropertiesArgument {
-    /** 힘 단위 · "N"/"KN"/"KGF"/"TONF"/"LBF"/"KIPS" */
-    FORCE_UNIT?: string;
-    /** 길이 단위 · "M"/"CM"/"MM"/"FT"/"IN" */
-    LENGTH_UNIT?: string;
-    /** 응답 숫자 형식 · "Fixed"/"Scientific" */
-    FORMAT?: string;
-    /** 응답 숫자 소수 자릿수(0~15) */
-    PLACE?: string;
+  export interface DivideParametricOption {
+    RATIO_X?: string;
+    RATIO_Y?: string;
+    RATIO_Z?: string;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface MemberAssignmentArgument {
-    /** 배정 타입 · 수동: "MANUAL" / 자동: "AUTO" */
-    ASSIGN_TYPE: string;
-    /** 선택 타입 · 전체: "ALL"(ASSIGN_TYPE="AUTO"일 때만 가능) / 선택: "SELECTION" */
-    SELECTION_TYPE: string;
-    /** 대상 요소 목록 (SELECTION_TYPE="ALL"이면 무시됨) Applies when SELECTION_TYPE = "SELECTION". */
-    ELEM_LIST?: Array<number>;
-    /** 단일요소 부재 허용 여부 */
-    ALLOW_SINGLE: boolean;
+  export interface DivideSettings {
+    ELEM_TYPE?: string;
+    DIV_METHOD?: string;
+    OPTION?: DivideOption;
+    SUBDIVIDE_ELEM?: boolean;
+    MERGE_DUPLICATE_NODES?: MergeDuplicateNodesOption;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface TopographicEffect {
-    /** 사용 여부 */
-    OPT_USE: boolean;
-    /** 지형계수 Kzt (OPT_USE=true일 때 필수) Applies when FLEXIBLE_PARAM.TOPOGRAPHIC_EFFECT.OPT_USE = true. */
-    KZT?: number;
+  export interface DivideStartNumber {
+    NODE_NUMBER?: NumberOption;
+    ELEM_NUMBER?: NumberOption;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface RigidGustFactorParam {
-    /** 지표면 노출유형 */
-    EXP_CATEGORY: string;
-    /** 지붕높이 */
-    ROOF_HEIGHT: number;
-    /** 평면 폭(X방향) */
-    BREADTH_X: number;
-    /** 평면 폭(Y방향) */
-    BREADTH_Y: number;
+  export interface DivideUnequalOption {
+    DIST_X?: string;
+    DIST_Y?: string;
+    DIST_Z?: string;
   }
   /** Generated from contracts/endpoints/. */
   export interface FlexibleGustFactorParam {
@@ -16381,183 +16009,152 @@ export namespace OpeTypes {
       VIBRATION: number;
     };
   }
+  export interface InteriorInclusionOption {
+    OPT_CHECK?: boolean;
+    OPTION?: string;
+    VALUE?: Array<number>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LineBeamLoadArgument {
+    /** 하중케이스 이름 */
+    LCNAME: string;
+    /** 하중 그룹 이름 */
+    GROUP_NAME?: string;
+    /** 하중 타입 · 집중하중: "CONLOAD" / 집중모멘트: "CONMOMENT" / 등분포하중: "UNILOAD" / 등분포모멘트: "UNIMOMENT" / 사다리꼴하중: "TRALOAD" / 사다리꼴모멘트: "TRAMOMENT" / 등분포압력: "UNIPRESSURE" / 사다리꼴압력: "TRAPRESSURE" / 곡선하중: "CURVED" */
+    TYPE: string;
+    /** 하중 적용 대상 정보 */
+    TARGET: {
+      /** 적용 방법 · 하중선 위: 0 / 선택 요소: 1 */
+      METHOD: number;
+      /** 적용 대상 요소 목록 */
+      ELEM: Array<number>;
+      /** 하중선 정의 노드 (2개) */
+      NODE: [number, number];
+    };
+    /** 편심 옵션(TYPE이 CONLOAD/UNILOAD/TRALOAD/CURVED일 때만 사용 가능) */
+    ECCEN?: {
+      /** 활성화 */
+      USE?: boolean;
+      /** 타입 · 도심: 0 / 옵셋: 1 */
+      TYPE?: number;
+      /** 방향 · 국부y: "LY" / 국부z: "LZ" / 전체X: "GX" / 전체Y: "GY" / 전체Z: "GZ" */
+      DIR?: string;
+      /** I단 편심량 */
+      I_END?: number;
+      /** J단 편심량(USE_J_END=true일 때) */
+      J_END?: number;
+      /** J단 편심 활성화 */
+      USE_J_END?: boolean;
+    };
+    /** 상단 추가높이 옵션(TYPE이 UNIPRESSURE/TRAPRESSURE일 때만 사용 가능) */
+    ADD_H?: {
+      /** 활성화 */
+      USE?: boolean;
+      /** I단 값 */
+      I_END?: number;
+      /** J단 값(USE_J_END=true일 때) */
+      J_END?: number;
+      /** J단 활성화 */
+      USE_J_END?: boolean;
+    };
+    /** 하중 값 */
+    LOAD: {
+      /** 방향 · 국부x/y/z("LX"/"LY"/"LZ"), 전체X/Y/Z("GX"/"GY"/"GZ"); UNIPRESSURE/TRAPRESSURE는 ADD_H 설정에 따라 LY/LZ만 가능 */
+      DIR: string;
+      /** 투영 여부 (METHOD=0→기본 false, METHOD=1→기본 true) */
+      USE_PROJECTION?: boolean;
+      /** 거리 타입(모든 타입 공통, CURVED 포함) · 상대: 0 / 절대: 1 */
+      TYPE: number;
+      /** 거리 배열 [x1,x2,x3,x4] (CURVED 제외) Required when TYPE is "CONLOAD" or "CONMOMENT" or "UNILOAD" or "UNIMOMENT" or "TRALOAD" or "TRAMOMENT" or "UNIPRESSURE" or "TRAPRESSURE". */
+      D?: [number, number, number, number];
+      /** 크기 배열 [P1,P2,P3,P4] (CURVED 제외) Required when TYPE is "CONLOAD" or "CONMOMENT" or "UNILOAD" or "UNIMOMENT" or "TRALOAD" or "TRAMOMENT" or "UNIPRESSURE" or "TRAPRESSURE". */
+      P?: [number, number, number, number];
+      /** 곡선식 계수 a (CURVED 전용) Required when TYPE = "CURVED". */
+      A?: number;
+      /** 곡선식 계수 b (CURVED 전용) Required when TYPE = "CURVED". */
+      B?: number;
+      /** 곡선식 계수 c (CURVED 전용) Required when TYPE = "CURVED". */
+      C?: number;
+    };
+    /** 복사 옵션 */
+    COPY?: {
+      /** 활성화 */
+      USE?: boolean;
+      /** 복사 축 · "X"/"Y"/"Z" */
+      AXIS?: string;
+      /** 복사 거리 (예: "10@3.0") */
+      DIST?: string;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LineLoadAdditionalHeight {
+    /** 활성화 */
+    USE?: boolean;
+    /** I단 값 */
+    I_END?: number;
+    /** J단 값(USE_J_END=true일 때) */
+    J_END?: number;
+    /** J단 활성화 */
+    USE_J_END?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LineLoadCopy {
+    /** 활성화 */
+    USE?: boolean;
+    /** 복사 축 · "X"/"Y"/"Z" */
+    AXIS?: string;
+    /** 복사 거리 (예: "10@3.0") */
+    DIST?: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LineLoadEccentricity {
+    /** 활성화 */
+    USE?: boolean;
+    /** 타입 · 도심: 0 / 옵셋: 1 */
+    TYPE?: number;
+    /** 방향 · 국부y: "LY" / 국부z: "LZ" / 전체X: "GX" / 전체Y: "GY" / 전체Z: "GZ" */
+    DIR?: string;
+    /** I단 편심량 */
+    I_END?: number;
+    /** J단 편심량(USE_J_END=true일 때) */
+    J_END?: number;
+    /** J단 편심 활성화 */
+    USE_J_END?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LineLoadTarget {
+    /** 적용 방법 · 하중선 위: 0 / 선택 요소: 1 */
+    METHOD: number;
+    /** 적용 대상 요소 목록 */
+    ELEM: Array<number>;
+    /** 하중선 정의 노드 (2개) */
+    NODE: [number, number];
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LineLoadValue {
+    /** 방향 · 국부x/y/z("LX"/"LY"/"LZ"), 전체X/Y/Z("GX"/"GY"/"GZ"); UNIPRESSURE/TRAPRESSURE는 ADD_H 설정에 따라 LY/LZ만 가능 */
+    DIR: string;
+    /** 투영 여부 (METHOD=0→기본 false, METHOD=1→기본 true) */
+    USE_PROJECTION?: boolean;
+    /** 거리 타입(모든 타입 공통, CURVED 포함) · 상대: 0 / 절대: 1 */
+    TYPE: number;
+    /** 거리 배열 [x1,x2,x3,x4] (CURVED 제외) Required when TYPE is "CONLOAD" or "CONMOMENT" or "UNILOAD" or "UNIMOMENT" or "TRALOAD" or "TRAMOMENT" or "UNIPRESSURE" or "TRAPRESSURE". */
+    D?: [number, number, number, number];
+    /** 크기 배열 [P1,P2,P3,P4] (CURVED 제외) Required when TYPE is "CONLOAD" or "CONMOMENT" or "UNILOAD" or "UNIMOMENT" or "TRALOAD" or "TRAMOMENT" or "UNIPRESSURE" or "TRAPRESSURE". */
+    P?: [number, number, number, number];
+    /** 곡선식 계수 a (CURVED 전용) Required when TYPE = "CURVED". */
+    A?: number;
+    /** 곡선식 계수 b (CURVED 전용) Required when TYPE = "CURVED". */
+    B?: number;
+    /** 곡선식 계수 c (CURVED 전용) Required when TYPE = "CURVED". */
+    C?: number;
+  }
   /** Generated from contracts/endpoints/. */
   export interface LoadCombScaleFactorItem {
     /** 하중 케이스명 */
     LOAD_CASE: string;
     /** 축계수 */
     FACTOR: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface WindLoadCase {
-    /** 순풍(Along) 방향 하중 케이스 */
-    ALONG?: string;
-    /** 횡풍(Across) 방향 하중 케이스 */
-    ACROSS?: string;
-    /** 비틀림(Torsion) 하중 케이스 */
-    TORSION?: string;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface WindLoadCombParameter {
-    /** 풍하중 그룹 */
-    BUILDING_TYPE: "MIDDLE" | "HIGH";
-    /** 풍하중 방향(Wind Direction)별 케이스 */
-    WIND_LOAD_CASE: {
-      /** 순풍(Along) 방향 하중 케이스 */
-      ALONG?: string;
-      /** 횡풍(Across) 방향 하중 케이스 */
-      ACROSS?: string;
-      /** 비틀림(Torsion) 하중 케이스 */
-      TORSION?: string;
-    };
-    /** 거스트 계수 */
-    GUST_FACTOR?: number;
-    /** Kappa 계수 */
-    KAPPA_FACTOR?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface WindLoadComb {
-    /** 풍하중 조합 세트 목록 */
-    PARAMETERS?: Array<{
-      /** 풍하중 그룹 */
-      BUILDING_TYPE: "MIDDLE" | "HIGH";
-      /** 풍하중 방향(Wind Direction)별 케이스 */
-      WIND_LOAD_CASE: {
-        /** 순풍(Along) 방향 하중 케이스 */
-        ALONG?: string;
-        /** 횡풍(Across) 방향 하중 케이스 */
-        ACROSS?: string;
-        /** 비틀림(Torsion) 하중 케이스 */
-        TORSION?: string;
-      };
-      /** 거스트 계수 */
-      GUST_FACTOR?: number;
-      /** Kappa 계수 */
-      KAPPA_FACTOR?: number;
-    }>;
-    /** 비틀림 풍하중 방향 */
-    TORSION_DIR?: "BOTH" | "POSITIVE" | "NEGATIVE";
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface OrthoEffect {
-    /** 직교효과 고려 여부 */
-    OPT_USE: boolean;
-    /** 직교효과 방식 – ORTHO_EFFECT.OPT_USE가 true일 때 필수 */
-    TYPE?: "100_30" | "SRSS";
-    /** 직교 하중케이스 쌍 (길이 2 고정) – ORTHO_EFFECT.OPT_USE가 true일 때 필수 */
-    LOAD_GROUP?: [string, string];
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface SpecialSeismicLoad {
-    /** 특별지진하중 사용 여부 */
-    OPT_USE: boolean;
-    /** 수직하중계수 – OPT_USE가 true일 때 필수 */
-    VERTICAL_LOAD_FACTOR?: number;
-    /** Sds – OPT_USE가 true일 때 필수 */
-    SDS?: number;
-    /** 초과강도계수 목록 – OPT_USE가 true일 때 필수 */
-    OVER_STRENGTH_FACTOR?: Array<{
-      /** 하중 케이스명 */
-      LOAD_CASE: string;
-      /** 축계수 */
-      FACTOR: number;
-    }>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface VerticalSeismicLoad {
-    /** 수직지진력 고려 여부 */
-    OPT_USE: boolean;
-    /** 수직력 계수 – OPT_USE가 true일 때 필수 */
-    FORCE_FACTOR?: number;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface AdditionalLoad {
-    /** 특별지진하중 옵션 */
-    SPECIAL_LOAD?: {
-      /** 특별지진하중 사용 여부 */
-      OPT_USE: boolean;
-      /** 수직하중계수 – OPT_USE가 true일 때 필수 */
-      VERTICAL_LOAD_FACTOR?: number;
-      /** Sds – OPT_USE가 true일 때 필수 */
-      SDS?: number;
-      /** 초과강도계수 목록 – OPT_USE가 true일 때 필수 */
-      OVER_STRENGTH_FACTOR?: Array<{
-        /** 하중 케이스명 */
-        LOAD_CASE: string;
-        /** 축계수 */
-        FACTOR: number;
-      }>;
-    };
-    /** 수직지진력 옵션 */
-    VERTICAL_LOAD?: {
-      /** 수직지진력 고려 여부 */
-      OPT_USE: boolean;
-      /** 수직력 계수 – OPT_USE가 true일 때 필수 */
-      FORCE_FACTOR?: number;
-    };
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface UndergroundLoadCaseItem {
-    /** 하중 케이스명 */
-    LOAD_CASE: string;
-    /** 지진 하중케이스 방향 */
-    DIRECTION: "POSITIVE" | "NEGATIVE";
-    /** 지진 성분 토압 하중케이스명 */
-    LOAD_CASE_SEISMIC: Array<string>;
-    /** 정적 성분 토압 하중케이스명 */
-    LOAD_CASE_STATIC: Array<string>;
-  }
-  /** Generated from contracts/endpoints/. */
-  export interface UndergroundLoad {
-    /** 지하구조물 하중 사용 여부 */
-    OPT_USE?: boolean;
-    /** 지하구조물 하중 축계수 목록 – OPT_USE가 true일 때 필수 */
-    SCALE_FACTOR?: Array<{
-      /** 하중 케이스명 */
-      LOAD_CASE: string;
-      /** 축계수 */
-      FACTOR: number;
-    }>;
-    /** 지진 하중케이스 목록 – OPT_USE가 true일 때 필수 */
-    LOAD_CASE_LIST?: Array<{
-      /** 하중 케이스명 */
-      LOAD_CASE: string;
-      /** 지진 하중케이스 방향 */
-      DIRECTION: "POSITIVE" | "NEGATIVE";
-      /** 지진 성분 토압 하중케이스명 */
-      LOAD_CASE_SEISMIC: Array<string>;
-      /** 정적 성분 토압 하중케이스명 */
-      LOAD_CASE_STATIC: Array<string>;
-    }>;
-    /** 지하구조물 특별하중 사용 옵션 */
-    SPECIAL_LOAD?: {
-      /** 지하구조물 특별하중 사용 여부 */
-      OPT_USE: boolean;
-      /** 수직하중계수 – OPT_USE가 true일 때 필수 */
-      VERTICAL_LOAD_FACTOR?: number;
-      /** Sds – OPT_USE가 true일 때 필수 */
-      SDS?: number;
-      /** 지하구조물 특별하중 초과강도계수 목록(설명: Over-strength factors) – OPT_USE가 true일 때 필수 */
-      OVER_STRENGTH_FACTOR?: Array<{
-        /** 하중 케이스명 */
-        LOAD_CASE: string;
-        /** 축계수 */
-        FACTOR: number;
-      }>;
-    };
-  }
-  export interface LoadCombinationGeneralKdsArgument {
-    OPTION?: string;
-    CODE_SELECTION?: string;
-    DGNCODE?: string;
-    ADD_ENVELOPE?: boolean;
-    RS_SCALE_FACTOR?: Array<LoadCombScaleFactorItem>;
-    WIND_LOAD_COMB?: WindLoadComb;
-    ORTHO_EFFECT?: OrthoEffect;
-    ADDITIONAL_LOAD?: AdditionalLoad;
-    UNDERGROUND_LOAD?: UndergroundLoad;
-    CS_ANALYSIS?: boolean;
-    PRESTRESS_LOSS?: boolean;
   }
   export interface LoadCombinationAikSrc2kArgument {
     OPTION?: string;
@@ -16679,14 +16276,27 @@ export namespace OpeTypes {
     /** 프리스트레스 손실 반영 여부 */
     PRESTRESS_LOSS?: boolean;
   }
-  export interface _LoadCombinationSteelSrcKdsArgument {
+  export interface LoadCombinationGeneralKdsArgument {
     OPTION?: string;
+    CODE_SELECTION?: string;
     DGNCODE?: string;
+    ADD_ENVELOPE?: boolean;
     RS_SCALE_FACTOR?: Array<LoadCombScaleFactorItem>;
     WIND_LOAD_COMB?: WindLoadComb;
     ORTHO_EFFECT?: OrthoEffect;
     ADDITIONAL_LOAD?: AdditionalLoad;
     UNDERGROUND_LOAD?: UndergroundLoad;
+    CS_ANALYSIS?: boolean;
+    PRESTRESS_LOSS?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LoadCombinationRef {
+    /** 하중조합 타입 · 일반: "GEN" / 강재: "STEEL" / 콘크리트: "CONC" / SRC: "SRC" / 강합성거더: "STLCOMP" / 내진: "SEISMIC" */
+    TYPE: string;
+    /** 하중조합 이름 */
+    NAME: string;
+  }
+  export interface LoadCombinationSrcKdsArgument extends _LoadCombinationSteelSrcKdsArgument {
   }
   /** Generated from contracts/endpoints/. */
   export interface LoadCombinationSteelArgument {
@@ -16799,12 +16409,402 @@ export namespace OpeTypes {
       };
     };
   }
-  export interface LoadCombinationSrcKdsArgument extends _LoadCombinationSteelSrcKdsArgument {
+  /** Generated from contracts/endpoints/. */
+  export interface MemberAssignmentArgument {
+    /** 배정 타입 · 수동: "MANUAL" / 자동: "AUTO" */
+    ASSIGN_TYPE: string;
+    /** 선택 타입 · 전체: "ALL"(ASSIGN_TYPE="AUTO"일 때만 가능) / 선택: "SELECTION" */
+    SELECTION_TYPE: string;
+    /** 대상 요소 목록 (SELECTION_TYPE="ALL"이면 무시됨) Applies when SELECTION_TYPE = "SELECTION". */
+    ELEM_LIST?: Array<number>;
+    /** 단일요소 부재 허용 여부 */
+    ALLOW_SINGLE: boolean;
   }
-  export interface AllowableStressLine {
+  export interface MergeDuplicateNodesOption {
+    OPT_CHECK?: boolean;
+    TOLERANCE?: number;
+  }
+  export interface NumberOption {
+    NUMBER_OPTION?: string;
+    USER_NUM?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface OrthoEffect {
+    /** 직교효과 고려 여부 */
+    OPT_USE: boolean;
+    /** 직교효과 방식 – ORTHO_EFFECT.OPT_USE가 true일 때 필수 */
+    TYPE?: "100_30" | "SRSS";
+    /** 직교 하중케이스 쌍 (길이 2 고정) – ORTHO_EFFECT.OPT_USE가 true일 때 필수 */
+    LOAD_GROUP?: [string, string];
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RigidGustFactorParam {
+    /** 지표면 노출유형 */
+    EXP_CATEGORY: string;
+    /** 지붕높이 */
+    ROOF_HEIGHT: number;
+    /** 평면 폭(X방향) */
+    BREADTH_X: number;
+    /** 평면 폭(Y방향) */
+    BREADTH_Y: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SeismicAccidentalEccentricity {
+    /** 지진 우발편심 포함 여부 */
+    INC_SEIS_ECC: boolean;
+    /** 지진 우발편심 값(%) */
+    SEIS_ECC_VALUE: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SpecialSeismicLoad {
+    /** 특별지진하중 사용 여부 */
+    OPT_USE: boolean;
+    /** 수직하중계수 – OPT_USE가 true일 때 필수 */
+    VERTICAL_LOAD_FACTOR?: number;
+    /** Sds – OPT_USE가 true일 때 필수 */
+    SDS?: number;
+    /** 초과강도계수 목록 – OPT_USE가 true일 때 필수 */
+    OVER_STRENGTH_FACTOR?: Array<{
+      /** 하중 케이스명 */
+      LOAD_CASE: string;
+      /** 축계수 */
+      FACTOR: number;
+    }>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface StoryCalculationArgument {
+    /** 지진 우발편심 */
+    SEIS_ECC: {
+      /** 지진 우발편심 포함 여부 */
+      INC_SEIS_ECC: boolean;
+      /** 지진 우발편심 값(%) */
+      SEIS_ECC_VALUE: number;
+    };
+    /** 풍하중 편심 */
+    WIND_ECC: {
+      /** 풍하중 편심 포함 여부 */
+      INC_WIND_ECC: boolean;
+      /** 풍하중 편심 값(%) */
+      WIND_ECC_VALUE: number;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface StoryCheckParameterArgument {
+    /** 국가 기준코드 설정 · "NTC2012" / "NTC2008" / "KBC2009" / "NSR-10" / "NTC2018" / "NTC2020" / "IS1893(2016)" / "IS16700(2023)" */
+    COUNTRY_CODE: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface StoryIrregularityCheckParameterArgument {
+    /** 국가 기준코드 · "NTC2018" / "NTC2012" / "NTC2008" / "KBC2009" / "NSR-10" / "NTCS2020" / "NTCS2023" / "NSCP2015" / "IS1893(2016)" / "IS16700(2023)" */
+    COUNTRY_CODE: string;
+    /** 층간변위 산정방법 · 질량중심 변위: "Drift at the Center of Mass" / 최외곽점 최대변위: "Max. Drift of Outer Extreme Points" / 전체 수직요소 최대변위: "Max. Drift of All Vertical Elements" */
+    STORY_DRIFT_METHOD: string;
+    /** 층강성 산정방법 · "1 / Story Drift Ratio" / "Story Shear / Story Drift" */
+    STORY_STIFFNESS_METHOD: string;
+    /** 지진거동계수(COUNTRY_CODE가 "NTCS2023" 또는 "NTCS2020"일 때만 필요) · "4" / "3 or below" */
+    SEISMIC_BEHAVIOR_FACTOR?: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface StoryPropertiesArgument {
+    /** 힘 단위 · "N"/"KN"/"KGF"/"TONF"/"LBF"/"KIPS" */
+    FORCE_UNIT?: string;
+    /** 길이 단위 · "M"/"CM"/"MM"/"FT"/"IN" */
+    LENGTH_UNIT?: string;
+    /** 응답 숫자 형식 · "Fixed"/"Scientific" */
+    FORMAT?: string;
+    /** 응답 숫자 소수 자릿수(0~15) */
+    PLACE?: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SurfaceSpringArgument {
+    /** 변환 방식 · 점스프링: "POINT_SPRING" / 탄성링크: "ELASTIC_LINK" */
+    CONVERT_TO: string;
+    /** 경계 그룹 이름 */
+    GROUP_NAME?: string;
+    /** 대상 노드/요소 번호 목록 */
+    NODE_ELEMS: {
+      /** 번호 배열 */
+      KEYS: Array<number>;
+    };
+    /** 요소 타입 정보 */
+    ELEMENT: {
+      /** 타입 · 프레임: "FRAME" / 평면: "PLANAR" / 솔리드(면): "SOLID_FACE" / 솔리드(절점): "SOLID_NODE" */
+      TYPE: string;
+      /** 폭 (FRAME 전용) */
+      WIDTH?: number;
+      /** 면 번호 1~6 (SOLID_FACE 전용) */
+      FACE?: number;
+    };
+    /** 경계 정보 */
+    BOUNDARY: {
+      /** 경계 타입 · 선형: "LINEAR" / 압축전담: "COMP" / 인장전담: "TENS" / 다선형: "MULTI" */
+      TYPE: string;
+      /** 강성 [Kx,Ky,Kz] (CONVERT_TO="POINT_SPRING"의 LINEAR/MULTI) */
+      STIFF?: [number, number, number];
+      /** 감쇠 고려 여부 (CONVERT_TO="POINT_SPRING"의 LINEAR/MULTI) */
+      bDAMP?: boolean;
+      /** 감쇠상수 [Cx,Cy,Cz] (CONVERT_TO="POINT_SPRING"의 LINEAR/MULTI) */
+      DAMP?: [number, number, number];
+      /** 경계 방향(COMP/TENS/점스프링 외 모든 경우) · Normal(+): 0 / Normal(-): 1 / UCS-x(+): 2 / UCS-x(-): 3 / UCS-y(+): 4 / UCS-y(-): 5 / UCS-z(+): 6 / UCS-z(-): 7 */
+      DIR?: number;
+      /** 지반반력계수 (COMP/TENS/탄성링크 전체) */
+      SUBGRADE?: number;
+      /** 한계강도 (MULTI/탄성링크 MULTI) */
+      PHU?: number;
+      /** 탄성링크 길이 (CONVERT_TO="ELASTIC_LINK" 전체 타입) */
+      LENGTH?: number;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SurfaceSpringBoundary {
+    /** 경계 타입 · 선형: "LINEAR" / 압축전담: "COMP" / 인장전담: "TENS" / 다선형: "MULTI" */
+    TYPE: string;
+    /** 강성 [Kx,Ky,Kz] (CONVERT_TO="POINT_SPRING"의 LINEAR/MULTI) */
+    STIFF?: [number, number, number];
+    /** 감쇠 고려 여부 (CONVERT_TO="POINT_SPRING"의 LINEAR/MULTI) */
+    bDAMP?: boolean;
+    /** 감쇠상수 [Cx,Cy,Cz] (CONVERT_TO="POINT_SPRING"의 LINEAR/MULTI) */
+    DAMP?: [number, number, number];
+    /** 경계 방향(COMP/TENS/점스프링 외 모든 경우) · Normal(+): 0 / Normal(-): 1 / UCS-x(+): 2 / UCS-x(-): 3 / UCS-y(+): 4 / UCS-y(-): 5 / UCS-z(+): 6 / UCS-z(-): 7 */
+    DIR?: number;
+    /** 지반반력계수 (COMP/TENS/탄성링크 전체) */
+    SUBGRADE?: number;
+    /** 한계강도 (MULTI/탄성링크 MULTI) */
+    PHU?: number;
+    /** 탄성링크 길이 (CONVERT_TO="ELASTIC_LINK" 전체 타입) */
+    LENGTH?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface SurfaceSpringElement {
+    /** 타입 · 프레임: "FRAME" / 평면: "PLANAR" / 솔리드(면): "SOLID_FACE" / 솔리드(절점): "SOLID_NODE" */
+    TYPE: string;
+    /** 폭 (FRAME 전용) */
+    WIDTH?: number;
+    /** 면 번호 1~6 (SOLID_FACE 전용) */
+    FACE?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TargetKeys {
+    /** 번호 배열 (예: [101, 102, 103]) */
+    KEYS: Array<number>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface TopographicEffect {
+    /** 사용 여부 */
+    OPT_USE: boolean;
+    /** 지형계수 Kzt (OPT_USE=true일 때 필수) Applies when FLEXIBLE_PARAM.TOPOGRAPHIC_EFFECT.OPT_USE = true. */
+    KZT?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface UndergroundLoad {
+    /** 지하구조물 하중 사용 여부 */
     OPT_USE?: boolean;
-    COMP?: number;
-    TENS?: number;
+    /** 지하구조물 하중 축계수 목록 – OPT_USE가 true일 때 필수 */
+    SCALE_FACTOR?: Array<{
+      /** 하중 케이스명 */
+      LOAD_CASE: string;
+      /** 축계수 */
+      FACTOR: number;
+    }>;
+    /** 지진 하중케이스 목록 – OPT_USE가 true일 때 필수 */
+    LOAD_CASE_LIST?: Array<{
+      /** 하중 케이스명 */
+      LOAD_CASE: string;
+      /** 지진 하중케이스 방향 */
+      DIRECTION: "POSITIVE" | "NEGATIVE";
+      /** 지진 성분 토압 하중케이스명 */
+      LOAD_CASE_SEISMIC: Array<string>;
+      /** 정적 성분 토압 하중케이스명 */
+      LOAD_CASE_STATIC: Array<string>;
+    }>;
+    /** 지하구조물 특별하중 사용 옵션 */
+    SPECIAL_LOAD?: {
+      /** 지하구조물 특별하중 사용 여부 */
+      OPT_USE: boolean;
+      /** 수직하중계수 – OPT_USE가 true일 때 필수 */
+      VERTICAL_LOAD_FACTOR?: number;
+      /** Sds – OPT_USE가 true일 때 필수 */
+      SDS?: number;
+      /** 지하구조물 특별하중 초과강도계수 목록(설명: Over-strength factors) – OPT_USE가 true일 때 필수 */
+      OVER_STRENGTH_FACTOR?: Array<{
+        /** 하중 케이스명 */
+        LOAD_CASE: string;
+        /** 축계수 */
+        FACTOR: number;
+      }>;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface UndergroundLoadCaseItem {
+    /** 하중 케이스명 */
+    LOAD_CASE: string;
+    /** 지진 하중케이스 방향 */
+    DIRECTION: "POSITIVE" | "NEGATIVE";
+    /** 지진 성분 토압 하중케이스명 */
+    LOAD_CASE_SEISMIC: Array<string>;
+    /** 정적 성분 토압 하중케이스명 */
+    LOAD_CASE_STATIC: Array<string>;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface UsingLoadCombinationsArgument {
+    /** 하중케이스/설계조합 이름 접두어 */
+    PREFIX?: string;
+    /** 설계조합 생성 위치 · 강재: "STEEL" / 콘크리트: "CONC" / SRC: "SRC" */
+    POSITION: string;
+    /** 선택된 조합 목록 */
+    LCOM_LIST: Array<{
+      /** 하중조합 타입 · 일반: "GEN" / 강재: "STEEL" / 콘크리트: "CONC" / SRC: "SRC" / 강합성거더: "STLCOMP" / 내진: "SEISMIC" */
+      TYPE: string;
+      /** 하중조합 이름 */
+      NAME: string;
+    }>;
+    /** 선택 하중 종류 */
+    LOADS?: {
+      /** 자중 */
+      SELF_WEIGHT?: boolean;
+      /** 절점체적력 */
+      NODAL_BODY_FROCE?: boolean;
+      /** 절점하중 */
+      NODAL_LOAD?: boolean;
+      /** 지정변위 */
+      SPECIFIED_DISPLACEMENT?: boolean;
+      /** 보하중 */
+      BEAM_LOAD?: boolean;
+      /** 바닥하중 */
+      FLOOR_LOAD?: boolean;
+      /** 마감재하중 */
+      FINISHING_MATERIAL_LOAD?: boolean;
+      /** 압력하중 */
+      PRESSURE_LOAD?: boolean;
+      /** 평면하중 */
+      PLANE_LOAD?: boolean;
+      /** 시스템 온도 */
+      SYSTEM_TEMPERATURE?: boolean;
+      /** 절점 온도 */
+      NODAL_TEMPERATURE?: boolean;
+      /** 요소 온도 */
+      ELEMENT_TEMPERATURE?: boolean;
+      /** 온도구배 */
+      TEMPERATURE_GRADIENT?: boolean;
+      /** 보단면 온도 */
+      BEAM_SECTION_TEMPERATURE?: boolean;
+      /** 프리스트레스 하중 */
+      PRESTRESS_LOAD?: boolean;
+      /** 프리텐션 하중 */
+      PRETENSION_LOAD?: boolean;
+      /** 텐던 프리스트레스 하중 */
+      TENDON_PRESTRESS_LOAD?: boolean;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface UsingLoadTypes {
+    /** 자중 */
+    SELF_WEIGHT?: boolean;
+    /** 절점체적력 */
+    NODAL_BODY_FROCE?: boolean;
+    /** 절점하중 */
+    NODAL_LOAD?: boolean;
+    /** 지정변위 */
+    SPECIFIED_DISPLACEMENT?: boolean;
+    /** 보하중 */
+    BEAM_LOAD?: boolean;
+    /** 바닥하중 */
+    FLOOR_LOAD?: boolean;
+    /** 마감재하중 */
+    FINISHING_MATERIAL_LOAD?: boolean;
+    /** 압력하중 */
+    PRESSURE_LOAD?: boolean;
+    /** 평면하중 */
+    PLANE_LOAD?: boolean;
+    /** 시스템 온도 */
+    SYSTEM_TEMPERATURE?: boolean;
+    /** 절점 온도 */
+    NODAL_TEMPERATURE?: boolean;
+    /** 요소 온도 */
+    ELEMENT_TEMPERATURE?: boolean;
+    /** 온도구배 */
+    TEMPERATURE_GRADIENT?: boolean;
+    /** 보단면 온도 */
+    BEAM_SECTION_TEMPERATURE?: boolean;
+    /** 프리스트레스 하중 */
+    PRESTRESS_LOAD?: boolean;
+    /** 프리텐션 하중 */
+    PRETENSION_LOAD?: boolean;
+    /** 텐던 프리스트레스 하중 */
+    TENDON_PRESTRESS_LOAD?: boolean;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface VerticalSeismicLoad {
+    /** 수직지진력 고려 여부 */
+    OPT_USE: boolean;
+    /** 수직력 계수 – OPT_USE가 true일 때 필수 */
+    FORCE_FACTOR?: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface WindAccidentalEccentricity {
+    /** 풍하중 편심 포함 여부 */
+    INC_WIND_ECC: boolean;
+    /** 풍하중 편심 값(%) */
+    WIND_ECC_VALUE: number;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface WindLoadCase {
+    /** 순풍(Along) 방향 하중 케이스 */
+    ALONG?: string;
+    /** 횡풍(Across) 방향 하중 케이스 */
+    ACROSS?: string;
+    /** 비틀림(Torsion) 하중 케이스 */
+    TORSION?: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface WindLoadComb {
+    /** 풍하중 조합 세트 목록 */
+    PARAMETERS?: Array<{
+      /** 풍하중 그룹 */
+      BUILDING_TYPE: "MIDDLE" | "HIGH";
+      /** 풍하중 방향(Wind Direction)별 케이스 */
+      WIND_LOAD_CASE: {
+        /** 순풍(Along) 방향 하중 케이스 */
+        ALONG?: string;
+        /** 횡풍(Across) 방향 하중 케이스 */
+        ACROSS?: string;
+        /** 비틀림(Torsion) 하중 케이스 */
+        TORSION?: string;
+      };
+      /** 거스트 계수 */
+      GUST_FACTOR?: number;
+      /** Kappa 계수 */
+      KAPPA_FACTOR?: number;
+    }>;
+    /** 비틀림 풍하중 방향 */
+    TORSION_DIR?: "BOTH" | "POSITIVE" | "NEGATIVE";
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface WindLoadCombParameter {
+    /** 풍하중 그룹 */
+    BUILDING_TYPE: "MIDDLE" | "HIGH";
+    /** 풍하중 방향(Wind Direction)별 케이스 */
+    WIND_LOAD_CASE: {
+      /** 순풍(Along) 방향 하중 케이스 */
+      ALONG?: string;
+      /** 횡풍(Across) 방향 하중 케이스 */
+      ACROSS?: string;
+      /** 비틀림(Torsion) 하중 케이스 */
+      TORSION?: string;
+    };
+    /** 거스트 계수 */
+    GUST_FACTOR?: number;
+    /** Kappa 계수 */
+    KAPPA_FACTOR?: number;
+  }
+  export interface _LoadCombinationSteelSrcKdsArgument {
+    OPTION?: string;
+    DGNCODE?: string;
+    RS_SCALE_FACTOR?: Array<LoadCombScaleFactorItem>;
+    WIND_LOAD_COMB?: WindLoadComb;
+    ORTHO_EFFECT?: OrthoEffect;
+    ADDITIONAL_LOAD?: AdditionalLoad;
+    UNDERGROUND_LOAD?: UndergroundLoad;
   }
 }
 
@@ -16818,42 +16818,78 @@ export namespace PostBaseTypes {
     /** 구조 그룹 이름 */
     STRUCTURE_GROUP_NAME?: string;
   }
+  export interface NodeFlag {
+    CENTER?: boolean;
+    NODES?: boolean;
+  }
+  export interface TableStyles {
+    FORMAT?: string;
+    PLACE?: number;
+  }
   export interface TableUnit {
     FORCE?: string;
     DIST?: string;
     HEAT?: string;
     TEMP?: string;
   }
-  export interface TableStyles {
-    FORMAT?: string;
-    PLACE?: number;
-  }
-  export interface NodeFlag {
-    CENTER?: boolean;
-    NODES?: boolean;
-  }
 }
 
 export namespace PostResult1Types {
+  export interface ConcurrentJointForceAdditional {
+    SET_REACTION_PARAMS?: ConcurrentJointForceReactionParams;
+  }
   export interface ConcurrentJointForceReactionParams {
     NODE_KEY?: number;
     COMPONENT?: string;
   }
-  export interface ConcurrentJointForceAdditional {
-    SET_REACTION_PARAMS?: ConcurrentJointForceReactionParams;
-  }
 }
 
 export namespace PostStoryTypes {
-  export interface StoryDriftLcomEntry {
-    NAME?: string;
-    FACTOR?: number;
+  export interface CapacityIrregularityAdditional {
+    SET_ANGLE?: StorySetAngle;
+  }
+  export interface IrregularEndsAdditional {
+    SELECT_IRREGULAR_ENDS?: SelectIrregularEnds;
+  }
+  export interface OverturningMomentAdditional {
+    SET_ANGLE?: StorySetAngle;
+    SET_OVERTURNING_MOMENT_PARAMS?: OverturningMomentParams;
+  }
+  export interface OverturningMomentParams {
+    SF_FOR_RS?: number;
+    DEFINE_RF?: string;
+  }
+  export interface SelectIrregularEnds {
+    USER_DEFINE?: boolean;
+    SELECT_NODES?: Array<number>;
+  }
+  export interface StiffnessCalculationMethod {
+    STORY_DRIFT_METHOD?: string;
+    STORY_STIFFNESS_METHOD?: string;
+  }
+  export interface StiffnessIrregularityAdditional {
+    SET_CALCULATION_METHOD?: StiffnessCalculationMethod;
+  }
+  export interface StoryDriftAdditional {
+    SET_STORY_DRIFT_PARAMS?: StoryDriftParams;
+    SET_STORY_DRIFT_CALCULATION_METHOD?: StoryDriftCalculationMethod;
   }
   export interface StoryDriftBeta {
     FIX_USER_CHECK?: string;
     NAME_FROM?: string;
     NAME_TO?: string;
     VALUE?: number;
+  }
+  export interface StoryDriftCalculationMethod {
+    DRIFT_AT_THE_CENTER_OF_MASS?: boolean;
+    AVERAGE_DRIFT_OF_VERTICAL_ELEMENTS?: boolean;
+    DRIFT_OF_A_VERTICAL_LINE_ON_SELECTED_NODE?: unknown;
+    AVERAGE_DRIFT_OF_VERTICAL_LINES_ON_SELECTED_NODES?: unknown;
+    SHEAR_WEIGHTED_AVERAGE_DRIFT_OF_VERTICAL_ELEMENTS?: boolean;
+  }
+  export interface StoryDriftLcomEntry {
+    NAME?: string;
+    FACTOR?: number;
   }
   export interface StoryDriftParams {
     RESPONSE_MOD_FACTOR_CHECK?: boolean;
@@ -16865,43 +16901,17 @@ export namespace PostStoryTypes {
     LCOMS?: Array<StoryDriftLcomEntry>;
     BETA?: StoryDriftBeta;
   }
-  export interface StoryDriftCalculationMethod {
-    DRIFT_AT_THE_CENTER_OF_MASS?: boolean;
-    AVERAGE_DRIFT_OF_VERTICAL_ELEMENTS?: boolean;
-    DRIFT_OF_A_VERTICAL_LINE_ON_SELECTED_NODE?: unknown;
-    AVERAGE_DRIFT_OF_VERTICAL_LINES_ON_SELECTED_NODES?: unknown;
-    SHEAR_WEIGHTED_AVERAGE_DRIFT_OF_VERTICAL_ELEMENTS?: boolean;
-  }
-  export interface StoryDriftAdditional {
-    SET_STORY_DRIFT_PARAMS?: StoryDriftParams;
-    SET_STORY_DRIFT_CALCULATION_METHOD?: StoryDriftCalculationMethod;
-  }
   export interface StorySetAngle {
     ANGLE?: number;
   }
   export interface StoryShearForceRatioAdditional {
     SET_ANGLE?: StorySetAngle;
   }
-  export interface OverturningMomentParams {
-    SF_FOR_RS?: number;
-    DEFINE_RF?: string;
-  }
-  export interface OverturningMomentAdditional {
-    SET_ANGLE?: StorySetAngle;
-    SET_OVERTURNING_MOMENT_PARAMS?: OverturningMomentParams;
-  }
   export interface StoryStabilityBeta {
     FIX_USER_CHECK?: string;
     NAME_FROM?: string;
     NAME_TO?: string;
     VALUE?: number;
-  }
-  export interface StoryStabilityCoefficientParams {
-    DEFLECTION_AMPL_FACTOR_VALUE?: number;
-    IMPORTANCE_FACTOR_VALUE?: number;
-    SCALE_FACTOR_VALUE?: number;
-    LCOMS?: Array<StoryDriftLcomEntry>;
-    BETA?: StoryStabilityBeta;
   }
   export interface StoryStabilityCalculationMethod {
     STORY_DRIFT_METHOD?: string;
@@ -16910,22 +16920,12 @@ export namespace PostStoryTypes {
     SET_STABILITY_COEFFICIENT_PARAMS?: StoryStabilityCoefficientParams;
     SET_CALCULATION_METHOD?: StoryStabilityCalculationMethod;
   }
-  export interface SelectIrregularEnds {
-    USER_DEFINE?: boolean;
-    SELECT_NODES?: Array<number>;
-  }
-  export interface IrregularEndsAdditional {
-    SELECT_IRREGULAR_ENDS?: SelectIrregularEnds;
-  }
-  export interface StiffnessCalculationMethod {
-    STORY_DRIFT_METHOD?: string;
-    STORY_STIFFNESS_METHOD?: string;
-  }
-  export interface StiffnessIrregularityAdditional {
-    SET_CALCULATION_METHOD?: StiffnessCalculationMethod;
-  }
-  export interface CapacityIrregularityAdditional {
-    SET_ANGLE?: StorySetAngle;
+  export interface StoryStabilityCoefficientParams {
+    DEFLECTION_AMPL_FACTOR_VALUE?: number;
+    IMPORTANCE_FACTOR_VALUE?: number;
+    SCALE_FACTOR_VALUE?: number;
+    LCOMS?: Array<StoryDriftLcomEntry>;
+    BETA?: StoryStabilityBeta;
   }
   export interface UltimateStoryShearForceAdditional {
     SET_ANGLE?: StorySetAngle;
@@ -16937,13 +16937,70 @@ export namespace PostStoryTypes {
 
 export namespace ViewTypes {
   /** Generated from contracts/endpoints/. */
-  export interface RgbColor {
-    /** Red */
-    R?: number;
-    /** Green */
-    G?: number;
-    /** Blue */
-    B?: number;
+  export interface ActiveArgument {
+    /** 활성화 모드 · 전체 활성화: "All" */
+    ACTIVE_MODE: string;
+    /** 노드 번호 목록 Applies when ACTIVE_MODE = "Active". */
+    N_LIST?: Array<number>;
+    /** 요소 번호 목록 Applies when ACTIVE_MODE = "Active". */
+    E_LIST?: Array<number>;
+    /** 아이덴티티 타입 · 구조그룹: "Group" / 명명평면: "NamedPlane" / 하중그룹: "LoadGroup" / 경계그룹: "BoundaryGroup" / 층: "STORY" Applies when ACTIVE_MODE = "Identity". */
+    IDENTITY_TYPE?: string;
+    /** 아이덴티티 이름 목록(IDENTITY_TYPE="STORY"일 때는 층 이름 목록) Applies when ACTIVE_MODE = "Identity". */
+    IDENTITY_LIST?: Array<string>;
+    /** 층 활성화 방식(IDENTITY_TYPE="STORY"일 때만) · 해당 층만: "FLOOR" / 위쪽 포함: "ABOVE" / 아래쪽 포함: "BELOW" / 양쪽 포함: "BOTH" Applies when IDENTITY_TYPE = "STORY". */
+    STORY_ACTIVE?: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface AngleArgument {
+    /** 수평 시점 각도 */
+    HORIZONTAL?: number;
+    /** 수직 시점 각도 */
+    VERTICAL?: number;
+  }
+  export interface AppliedLoadsDisplay {
+    OPT_CHECK?: boolean;
+    SCALE_FACTOR?: number;
+    OPT_LOAD_VALUES?: boolean;
+    VALUE_TYPE?: string;
+    VALUE_DECIMAL_PT?: number;
+  }
+  export interface AverageNodalOption {
+    TYPE?: string;
+  }
+  export interface BoundaryDisplay {
+    SUPPORT?: boolean;
+    SUPPORT_BY_DIRECTION?: boolean;
+    POINT_SPRING_SUPPORT?: boolean;
+    POINT_SPRING_SUPPORT_COMP_TENS?: boolean;
+    POINT_SPRING_SUPPORT_MULTI_LINEAR?: boolean;
+    POINT_SPRING_SUPPORT_BY_DIRECTION?: boolean;
+    POINT_SPRING_SUPPORT_BY_DIRECTION_COMP_TENS?: boolean;
+    POINT_SPRING_SUPPORT_BY_DIRECTION_MULTI_LINEAR?: boolean;
+    SURFACE_SPRING_SUPPORT_TYPE?: boolean;
+    SURFACE_SPRING_SUPPORT_LINEAR?: boolean;
+    SURFACE_SPRING_SUPPORT_COMP_TENS?: boolean;
+    GENERAL_SPRING_SUPPORT?: boolean;
+    ELASTIC_LINK?: boolean;
+    ELASTIC_LINK_LOCAL_AXIS?: boolean;
+    ELASTIC_LINK_TYPE?: boolean;
+    ELASTIC_LINK_NUMBER?: boolean;
+    GENERAL_LINK?: boolean;
+    GENERAL_LINK_NUMBER?: boolean;
+    GENERAL_LINK_LOCAL_AXIS?: boolean;
+    GENERAL_LINK_TYPE?: boolean;
+    CHANGE_GENERAL_LINK_PROPERTIES?: boolean;
+    BEAM_END_RELEASE_SYMBOL?: boolean;
+    BEAM_END_RELEASE_DIGIT?: boolean;
+    BEAM_END_OFFSET_SYMBOL?: boolean;
+    BEAM_END_OFFSET_DIGIT?: boolean;
+    PLATE_END_RELEASE_SYMBOL?: boolean;
+    PLATE_END_RELEASE_DIGIT?: boolean;
+    RIGID_LINK?: boolean;
+    LINEAR_CONSTRAINTS?: boolean;
+    REACTION_POSITION?: boolean;
+    STORY_DIAPHRAGM?: boolean;
+    DIAPHRAGM_DISCONNECT?: boolean;
   }
   /** Generated from contracts/endpoints/. */
   export interface CaptureArgument {
@@ -16992,183 +17049,42 @@ export namespace ViewTypes {
     /** 결과 표시 (view/RESULTGRAPHIC 매뉴얼 참조) */
     RESULT_GRAPHIC?: JsonObject;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface PrecaptureOption {
-    /** 그림 타입 ID 번호 */
-    ID: number;
+  export interface ContourDisplay {
+    OPT_CHECK?: boolean;
+    NUM_OF_COLOR?: number;
+    COLOR_TYPE?: string;
+    OPTIONS?: ContourOptions;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface PrecaptureArgument {
-    /** 이미지 파일 저장 경로 및 파일명 */
-    EXPORT_PATH: string;
-    /** 미리보기 그림 타입 · 단면 섬유분할: "FIBR" */
-    VIEW_TYPE: string;
-    /** 캡처 옵션 */
-    OPTION: {
-      /** 그림 타입 ID 번호 */
-      ID: number;
-    };
+  export interface ContourOptions {
+    CONTOUR_FILL?: boolean;
+    GRADIENT_FILL?: boolean;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface AngleArgument {
-    /** 수평 시점 각도 */
-    HORIZONTAL?: number;
-    /** 수직 시점 각도 */
-    VERTICAL?: number;
+  export interface CuttingDiagramDisplay {
+    OPT_CHECK?: boolean;
+    CUTTING_MODE?: string;
+    CUTTING_NAME?: Array<string>;
+    NORMAL_TO_PLANE?: boolean;
+    SCALE_FACTOR?: number;
+    REVERSE?: boolean;
+    VALUE_OUTPUT?: boolean;
+    MINMAX_ONLY?: boolean;
   }
-  /** Generated from contracts/endpoints/. */
-  export interface ActiveArgument {
-    /** 활성화 모드 · 전체 활성화: "All" */
-    ACTIVE_MODE: string;
-    /** 노드 번호 목록 Applies when ACTIVE_MODE = "Active". */
-    N_LIST?: Array<number>;
-    /** 요소 번호 목록 Applies when ACTIVE_MODE = "Active". */
-    E_LIST?: Array<number>;
-    /** 아이덴티티 타입 · 구조그룹: "Group" / 명명평면: "NamedPlane" / 하중그룹: "LoadGroup" / 경계그룹: "BoundaryGroup" / 층: "STORY" Applies when ACTIVE_MODE = "Identity". */
-    IDENTITY_TYPE?: string;
-    /** 아이덴티티 이름 목록(IDENTITY_TYPE="STORY"일 때는 층 이름 목록) Applies when ACTIVE_MODE = "Identity". */
-    IDENTITY_LIST?: Array<string>;
-    /** 층 활성화 방식(IDENTITY_TYPE="STORY"일 때만) · 해당 층만: "FLOOR" / 위쪽 포함: "ABOVE" / 아래쪽 포함: "BELOW" / 양쪽 포함: "BOTH" Applies when IDENTITY_TYPE = "STORY". */
-    STORY_ACTIVE?: string;
+  export interface CuttingPlaneDisplay {
+    OPT_CHECK?: boolean;
+    PLANE_NAME?: Array<string>;
+    FREE_EDGE?: boolean;
   }
-  export interface NodeDisplay {
-    NODE?: boolean;
-    NODE_NUMBER?: boolean;
-    NODE_LOCAL_AXIS?: boolean;
-    STORY_NAME?: boolean;
+  export interface DeformDisplay {
+    OPT_CHECK?: boolean;
+    SCALE_FACTOR?: number;
+    REAL_DEFORM?: boolean;
+    REL_DISP?: boolean;
+    REAL_DISP?: boolean;
   }
-  export interface ElementDisplay {
-    ELEM_NUMBER?: boolean;
-    ELEM_NUMBER_WITH_BORDER?: boolean;
-    ELEM_TYPE_NUMBER?: boolean;
-    ELEM_TYPE_NAME?: boolean;
-    WALL_ID?: boolean;
-    GAP?: boolean;
-    HOOK?: boolean;
-    CABLE?: boolean;
-    LOCAL_AXIS?: boolean;
-    LOCAL_AXIS_LABEL?: boolean;
-    LOCAL_DIRECTION?: boolean;
-    SUB_DOMAIN_REBAR_DIRECTION?: boolean;
-  }
-  export interface PropertyDisplay {
-    MATERIAL_NUMBER?: boolean;
-    MATERIAL_NAME?: boolean;
-    PROPERTY_NUMBER?: boolean;
-    PROPERTY_NAME?: boolean;
-    SECTION_SHAPE?: boolean;
-    TAPERED_SECTION_GROUP?: boolean;
-    TIME_DEPENDENT_MATERIAL_LINK?: boolean;
-    INELASTIC_HINGE_NAME?: boolean;
-    INELASTIC_HINGE_SYMBOL?: boolean;
-    REINFORCEMENT_OF_SECTIONS?: boolean;
-    VIRTUAL_SECTION_LOCAL_AXIS?: boolean;
-  }
-  export interface BoundaryDisplay {
-    SUPPORT?: boolean;
-    SUPPORT_BY_DIRECTION?: boolean;
-    POINT_SPRING_SUPPORT?: boolean;
-    POINT_SPRING_SUPPORT_COMP_TENS?: boolean;
-    POINT_SPRING_SUPPORT_MULTI_LINEAR?: boolean;
-    POINT_SPRING_SUPPORT_BY_DIRECTION?: boolean;
-    POINT_SPRING_SUPPORT_BY_DIRECTION_COMP_TENS?: boolean;
-    POINT_SPRING_SUPPORT_BY_DIRECTION_MULTI_LINEAR?: boolean;
-    SURFACE_SPRING_SUPPORT_TYPE?: boolean;
-    SURFACE_SPRING_SUPPORT_LINEAR?: boolean;
-    SURFACE_SPRING_SUPPORT_COMP_TENS?: boolean;
-    GENERAL_SPRING_SUPPORT?: boolean;
-    ELASTIC_LINK?: boolean;
-    ELASTIC_LINK_LOCAL_AXIS?: boolean;
-    ELASTIC_LINK_TYPE?: boolean;
-    ELASTIC_LINK_NUMBER?: boolean;
-    GENERAL_LINK?: boolean;
-    GENERAL_LINK_NUMBER?: boolean;
-    GENERAL_LINK_LOCAL_AXIS?: boolean;
-    GENERAL_LINK_TYPE?: boolean;
-    CHANGE_GENERAL_LINK_PROPERTIES?: boolean;
-    BEAM_END_RELEASE_SYMBOL?: boolean;
-    BEAM_END_RELEASE_DIGIT?: boolean;
-    BEAM_END_OFFSET_SYMBOL?: boolean;
-    BEAM_END_OFFSET_DIGIT?: boolean;
-    PLATE_END_RELEASE_SYMBOL?: boolean;
-    PLATE_END_RELEASE_DIGIT?: boolean;
-    RIGID_LINK?: boolean;
-    LINEAR_CONSTRAINTS?: boolean;
-    REACTION_POSITION?: boolean;
-    STORY_DIAPHRAGM?: boolean;
-    DIAPHRAGM_DISCONNECT?: boolean;
-  }
-  export interface LoadCaseSelection {
-    TYPE?: string;
-    NAME?: string;
-  }
-  export interface LoadValueFormat {
-    FORMAT?: string;
-    PLACE?: number;
-  }
-  export interface LoadDisplay {
-    CASE_SELECTION?: LoadCaseSelection;
-    GROUP_SELECTION?: Array<string>;
-    LOAD_VALUE?: LoadValueFormat;
-    NODAL_BODY_FORCE?: boolean;
-    NODAL_LOAD?: boolean;
-    SPECIFIED_DISPLACEMENT?: boolean;
-    BEAM_LOAD?: boolean;
-    PRESTRESS_LOAD?: boolean;
-    PRETENSION_LOAD?: boolean;
-    FLOOR_LOAD?: boolean;
-    FLOOR_LOAD_NAME?: boolean;
-    FLOOR_LOAD_AREA?: boolean;
-    LOADING_AREA_PLANE?: boolean;
-    FINISHING_MATERIAL_LOAD?: boolean;
-    PRESSURE_LOAD?: boolean;
-    AREA_PRESSURE_LOADS?: boolean;
-    PLANE_LOAD?: boolean;
-    PLANE_LOAD_NAME?: boolean;
-    NODAL_TEMPERATURE?: boolean;
-    ELEMENT_TEMPERATURE?: boolean;
-    TEMPERATURE_GRADIENT?: boolean;
-    BEAM_SECTION_TEMPERATURE?: boolean;
-    TENDON_PRESTRESS?: boolean;
-    WIND_LOAD?: boolean;
-    AREA_WIND_PRESSURE?: boolean;
-    AREA_WIND_PRESSURE_NAME?: boolean;
-    BEAM_WIND_PRESSURE?: boolean;
-    NODAL_WIND_PRESSURE?: boolean;
-    FUNCTION_WIND_PRESSURE?: boolean;
-    FUNCTION_WIND_PRESSURE_NAME?: boolean;
-    SEISMIC_EARTH_PRESSURE?: boolean;
-    STATIC_EARTH_PRESSURE?: boolean;
-    SEISMIC_LOAD?: boolean;
-    DYNAMIC_NODAL_LOAD?: boolean;
-    MULTIPLE_SUPPORT_EXCITATION?: boolean;
-    MULTIPLE_SUPPORT_EXCITATION_FUNCTION_NAME?: boolean;
-    DIR_X?: boolean;
-    DIR_Y?: boolean;
-    DIR_Z?: boolean;
-  }
-  export interface MiscDisplay {
-    NODAL_MASS?: boolean;
-    LOAD_TO_MASS?: boolean;
-    TENDON_PROFILE_NAMES?: boolean;
-    TENDON_PROFILE_POINT?: boolean;
-    INITIAL_FORCES_FOR_GEOMETRIC_STIFFNESS?: boolean;
-    SETTLEMENT_GROUP?: boolean;
-    SETTLEMENT_GROUP_VALUE?: boolean;
-    HEAT_OF_HYDRATION_VALUE?: boolean;
-    HEAT_OF_HYDRATION_FUNC_NAME?: boolean;
-    HEAT_OF_HYDRATION_ELEMENT_CONVECTION_BOUNDARY?: boolean;
-    HEAT_OF_HYDRATION_PRESCRIBED_TEMPERATURE?: boolean;
-    HEAT_OF_HYDRATION_HEAT_SOURCE?: boolean;
-    HEAT_OF_HYDRATION_PIPE_COOLING_ELEMENT?: boolean;
-    GRID_MODEL_LOAD_LINE?: boolean;
-  }
-  export interface ViewDisplay {
-    UCS_AXIS?: boolean;
-    VIEWPORT_GIZMO?: boolean;
-    VIEW_POINT?: boolean;
-    DESCRIPTION?: string;
-    LABEL_ORIENTATION?: number;
+  export interface DispOptDisplay {
+    OPT_CHECK?: boolean;
+    ELEMENT_CENTER?: boolean;
+    VALUE_MAX?: boolean;
   }
   /** Generated from contracts/endpoints/. */
   export interface DisplayArgument {
@@ -17440,26 +17356,35 @@ export namespace ViewTypes {
       LABEL_ORIENTATION?: number;
     };
   }
-  export interface ContourOptions {
-    CONTOUR_FILL?: boolean;
-    GRADIENT_FILL?: boolean;
+  export interface DisplayOptionsSelection {
+    FIDELITY?: string;
+    FILL?: string;
+    SCALE?: number;
   }
-  export interface ContourDisplay {
+  export interface ElementDisplay {
+    ELEM_NUMBER?: boolean;
+    ELEM_NUMBER_WITH_BORDER?: boolean;
+    ELEM_TYPE_NUMBER?: boolean;
+    ELEM_TYPE_NAME?: boolean;
+    WALL_ID?: boolean;
+    GAP?: boolean;
+    HOOK?: boolean;
+    CABLE?: boolean;
+    LOCAL_AXIS?: boolean;
+    LOCAL_AXIS_LABEL?: boolean;
+    LOCAL_DIRECTION?: boolean;
+    SUB_DOMAIN_REBAR_DIRECTION?: boolean;
+  }
+  export interface IsoSurfaceDisplay {
     OPT_CHECK?: boolean;
-    NUM_OF_COLOR?: number;
-    COLOR_TYPE?: string;
-    OPTIONS?: ContourOptions;
+    DRAW_POLYLINE?: boolean;
+    TRANSPARENCY?: number;
+    FREE_EDGE?: boolean;
+    VALUE_MODE?: IsoSurfaceValueMode;
   }
-  export interface MinMaxOnly {
-    MAXMIN?: string;
-    LIMIT_SCALE?: number;
-  }
-  export interface ValuesDisplay {
-    OPT_CHECK?: boolean;
-    VALUE_EXP?: boolean;
-    DECIMAL_PT?: number;
-    SET_ORIENT?: number;
-    MINMAX_ONLY?: MinMaxOnly;
+  export interface IsoSurfaceValueMode {
+    VALUE_TYPE?: string;
+    VALUE?: Array<number>;
   }
   export interface LegendDisplay {
     OPT_CHECK?: boolean;
@@ -17467,17 +17392,67 @@ export namespace ViewTypes {
     VALUE_EXP?: boolean;
     DECIMAL_PT?: number;
   }
-  export interface DeformDisplay {
-    OPT_CHECK?: boolean;
-    SCALE_FACTOR?: number;
-    REAL_DEFORM?: boolean;
-    REL_DISP?: boolean;
-    REAL_DISP?: boolean;
+  export interface LoadCaseCombSelection {
+    TYPE?: string;
+    NAME?: string;
+    STEP_INDEX?: number;
   }
-  export interface DispOptDisplay {
-    OPT_CHECK?: boolean;
-    ELEMENT_CENTER?: boolean;
-    VALUE_MAX?: boolean;
+  export interface LoadCaseSelection {
+    TYPE?: string;
+    NAME?: string;
+  }
+  export interface LoadDisplay {
+    CASE_SELECTION?: LoadCaseSelection;
+    GROUP_SELECTION?: Array<string>;
+    LOAD_VALUE?: LoadValueFormat;
+    NODAL_BODY_FORCE?: boolean;
+    NODAL_LOAD?: boolean;
+    SPECIFIED_DISPLACEMENT?: boolean;
+    BEAM_LOAD?: boolean;
+    PRESTRESS_LOAD?: boolean;
+    PRETENSION_LOAD?: boolean;
+    FLOOR_LOAD?: boolean;
+    FLOOR_LOAD_NAME?: boolean;
+    FLOOR_LOAD_AREA?: boolean;
+    LOADING_AREA_PLANE?: boolean;
+    FINISHING_MATERIAL_LOAD?: boolean;
+    PRESSURE_LOAD?: boolean;
+    AREA_PRESSURE_LOADS?: boolean;
+    PLANE_LOAD?: boolean;
+    PLANE_LOAD_NAME?: boolean;
+    NODAL_TEMPERATURE?: boolean;
+    ELEMENT_TEMPERATURE?: boolean;
+    TEMPERATURE_GRADIENT?: boolean;
+    BEAM_SECTION_TEMPERATURE?: boolean;
+    TENDON_PRESTRESS?: boolean;
+    WIND_LOAD?: boolean;
+    AREA_WIND_PRESSURE?: boolean;
+    AREA_WIND_PRESSURE_NAME?: boolean;
+    BEAM_WIND_PRESSURE?: boolean;
+    NODAL_WIND_PRESSURE?: boolean;
+    FUNCTION_WIND_PRESSURE?: boolean;
+    FUNCTION_WIND_PRESSURE_NAME?: boolean;
+    SEISMIC_EARTH_PRESSURE?: boolean;
+    STATIC_EARTH_PRESSURE?: boolean;
+    SEISMIC_LOAD?: boolean;
+    DYNAMIC_NODAL_LOAD?: boolean;
+    MULTIPLE_SUPPORT_EXCITATION?: boolean;
+    MULTIPLE_SUPPORT_EXCITATION_FUNCTION_NAME?: boolean;
+    DIR_X?: boolean;
+    DIR_Y?: boolean;
+    DIR_Z?: boolean;
+  }
+  export interface LoadValueFormat {
+    FORMAT?: string;
+    PLACE?: number;
+  }
+  export interface LocalUcsOption {
+    TYPE?: string;
+    UCS_NAME?: string;
+  }
+  export interface MinMaxOnly {
+    MAXMIN?: string;
+    LIMIT_SCALE?: number;
   }
   export interface MirrorBy {
     DIRECTION?: string;
@@ -17488,38 +17463,85 @@ export namespace ViewTypes {
     MIRROR_BY_1?: MirrorBy;
     MIRROR_BY_2?: MirrorBy;
   }
-  export interface CuttingDiagramDisplay {
-    OPT_CHECK?: boolean;
-    CUTTING_MODE?: string;
-    CUTTING_NAME?: Array<string>;
-    NORMAL_TO_PLANE?: boolean;
-    SCALE_FACTOR?: number;
-    REVERSE?: boolean;
-    VALUE_OUTPUT?: boolean;
-    MINMAX_ONLY?: boolean;
+  export interface MiscDisplay {
+    NODAL_MASS?: boolean;
+    LOAD_TO_MASS?: boolean;
+    TENDON_PROFILE_NAMES?: boolean;
+    TENDON_PROFILE_POINT?: boolean;
+    INITIAL_FORCES_FOR_GEOMETRIC_STIFFNESS?: boolean;
+    SETTLEMENT_GROUP?: boolean;
+    SETTLEMENT_GROUP_VALUE?: boolean;
+    HEAT_OF_HYDRATION_VALUE?: boolean;
+    HEAT_OF_HYDRATION_FUNC_NAME?: boolean;
+    HEAT_OF_HYDRATION_ELEMENT_CONVECTION_BOUNDARY?: boolean;
+    HEAT_OF_HYDRATION_PRESCRIBED_TEMPERATURE?: boolean;
+    HEAT_OF_HYDRATION_HEAT_SOURCE?: boolean;
+    HEAT_OF_HYDRATION_PIPE_COOLING_ELEMENT?: boolean;
+    GRID_MODEL_LOAD_LINE?: boolean;
   }
-  export interface CuttingPlaneDisplay {
-    OPT_CHECK?: boolean;
-    PLANE_NAME?: Array<string>;
-    FREE_EDGE?: boolean;
+  export interface NodeDisplay {
+    NODE?: boolean;
+    NODE_NUMBER?: boolean;
+    NODE_LOCAL_AXIS?: boolean;
+    STORY_NAME?: boolean;
   }
-  export interface AppliedLoadsDisplay {
-    OPT_CHECK?: boolean;
-    SCALE_FACTOR?: number;
-    OPT_LOAD_VALUES?: boolean;
-    VALUE_TYPE?: string;
-    VALUE_DECIMAL_PT?: number;
+  export interface OutputSectLocation {
+    OPT_I?: boolean;
+    OPT_CENTER_MID?: boolean;
+    OPT_J?: boolean;
   }
-  export interface IsoSurfaceValueMode {
-    VALUE_TYPE?: string;
-    VALUE?: Array<number>;
+  /** Generated from contracts/endpoints/. */
+  export interface PrecaptureArgument {
+    /** 이미지 파일 저장 경로 및 파일명 */
+    EXPORT_PATH: string;
+    /** 미리보기 그림 타입 · 단면 섬유분할: "FIBR" */
+    VIEW_TYPE: string;
+    /** 캡처 옵션 */
+    OPTION: {
+      /** 그림 타입 ID 번호 */
+      ID: number;
+    };
   }
-  export interface IsoSurfaceDisplay {
-    OPT_CHECK?: boolean;
-    DRAW_POLYLINE?: boolean;
-    TRANSPARENCY?: number;
-    FREE_EDGE?: boolean;
-    VALUE_MODE?: IsoSurfaceValueMode;
+  /** Generated from contracts/endpoints/. */
+  export interface PrecaptureOption {
+    /** 그림 타입 ID 번호 */
+    ID: number;
+  }
+  export interface PropertyDisplay {
+    MATERIAL_NUMBER?: boolean;
+    MATERIAL_NAME?: boolean;
+    PROPERTY_NUMBER?: boolean;
+    PROPERTY_NAME?: boolean;
+    SECTION_SHAPE?: boolean;
+    TAPERED_SECTION_GROUP?: boolean;
+    TIME_DEPENDENT_MATERIAL_LINK?: boolean;
+    INELASTIC_HINGE_NAME?: boolean;
+    INELASTIC_HINGE_SYMBOL?: boolean;
+    REINFORCEMENT_OF_SECTIONS?: boolean;
+    VIRTUAL_SECTION_LOCAL_AXIS?: boolean;
+  }
+  export interface ResultGraphicArgument {
+    CURRENT_MODE?: string;
+    LOAD_CASE_COMB?: LoadCaseCombSelection;
+    COMPONENTS?: Record<string, unknown>;
+    DISPLAY_OPTIONS?: DisplayOptionsSelection;
+    OPTIONS?: ResultOptionsSelection;
+    OUTPUT_SECT_LOCATION?: OutputSectLocation;
+    TYPE_OF_DISPLAY?: TypeOfDisplayArgument;
+  }
+  export interface ResultOptionsSelection {
+    LOCAL_UCS?: LocalUcsOption;
+    AVERAGE_NODAL?: AverageNodalOption;
+    SURFACE?: string;
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface RgbColor {
+    /** Red */
+    R?: number;
+    /** Green */
+    G?: number;
+    /** Blue */
+    B?: number;
   }
   export interface TypeOfDisplayArgument {
     CONTOUR?: ContourDisplay;
@@ -17545,40 +17567,18 @@ export namespace ViewTypes {
     OPT_CUBIC_INTERPOLATION?: boolean;
     CUBIC_INTERPOLATION_FACTOR?: number;
   }
-  export interface LoadCaseCombSelection {
-    TYPE?: string;
-    NAME?: string;
-    STEP_INDEX?: number;
+  export interface ValuesDisplay {
+    OPT_CHECK?: boolean;
+    VALUE_EXP?: boolean;
+    DECIMAL_PT?: number;
+    SET_ORIENT?: number;
+    MINMAX_ONLY?: MinMaxOnly;
   }
-  export interface OutputSectLocation {
-    OPT_I?: boolean;
-    OPT_CENTER_MID?: boolean;
-    OPT_J?: boolean;
-  }
-  export interface DisplayOptionsSelection {
-    FIDELITY?: string;
-    FILL?: string;
-    SCALE?: number;
-  }
-  export interface LocalUcsOption {
-    TYPE?: string;
-    UCS_NAME?: string;
-  }
-  export interface AverageNodalOption {
-    TYPE?: string;
-  }
-  export interface ResultOptionsSelection {
-    LOCAL_UCS?: LocalUcsOption;
-    AVERAGE_NODAL?: AverageNodalOption;
-    SURFACE?: string;
-  }
-  export interface ResultGraphicArgument {
-    CURRENT_MODE?: string;
-    LOAD_CASE_COMB?: LoadCaseCombSelection;
-    COMPONENTS?: Record<string, unknown>;
-    DISPLAY_OPTIONS?: DisplayOptionsSelection;
-    OPTIONS?: ResultOptionsSelection;
-    OUTPUT_SECT_LOCATION?: OutputSectLocation;
-    TYPE_OF_DISPLAY?: TypeOfDisplayArgument;
+  export interface ViewDisplay {
+    UCS_AXIS?: boolean;
+    VIEWPORT_GIZMO?: boolean;
+    VIEW_POINT?: boolean;
+    DESCRIPTION?: string;
+    LABEL_ORIENTATION?: number;
   }
 }

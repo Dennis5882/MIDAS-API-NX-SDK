@@ -194,6 +194,13 @@ APIs are already published under those names. Sketch, for the author:
 > Operation names reached contracts the same day; tables and payload shapes
 > have not.
 
+> **Status 2026-09-22.** Placement left Python too. `types.ts` is built from
+> the union of contract-declared `(namespace, name)` slots and the TypedDicts no
+> contract claims, written in name order, and the resource list is contracts ∪
+> Python classes. Deleting all 597 TypedDicts the contracts own leaves the output
+> unchanged (a test holds this). What still needs the source tree is the 162
+> types no contract builds, and nothing else.
+
 Step 1 gave the names a home; **steps 2–3 are what make `import midas_nx`
 deletable**. Measured 2026-09-02 by deleting `src/midas_nx/` in a worktree:
 `npm run build`, `typecheck` and `test` all pass from the committed
