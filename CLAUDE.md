@@ -128,7 +128,7 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   there. Before that the generator emitted a payload root from the contract with its nested
   objects inlined, and published the named interfaces for those same objects from Python —
   `total=False`, so e.g. `BeamEndOffsetItem.TYPE` was optional beside a root that required it.
-  Moving 228 of them made 411 members required across 156 types and added 84, and removed none;
+  Moving 228 of them made 415 members required across 156 types and added 37, and removed none;
   that is a public-type change the npm changelog has to state. Three refusals are built in: a
   name several contracts declare with different shapes (prose aside), a path whose shape a
   variant *above* it redeclares (`/db/SECT`'s `SECT_BEFORE`), and a name the package does not
