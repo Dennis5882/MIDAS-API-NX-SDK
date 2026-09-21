@@ -33,7 +33,10 @@ import {
   verifyRenumberedSeed,
 } from "./live-harness-support.mjs";
 
-import { doc, MidasClient, post, resources } from "../dist/index.js";
+// Loaded in main(), after the arguments are checked, so a refused command
+// line is refused without a build: tests/live-crud-cli.test.mjs runs before
+// `npm run build` in CI and in prepack, where dist/ does not exist yet.
+let doc, MidasClient, post, resources;
 
 const fixturePath = fileURLToPath(new URL("../../../schema/live-cases.json", import.meta.url));
 const fixture = JSON.parse(readFileSync(fixturePath, "utf8"));
@@ -496,6 +499,7 @@ async function runPopulatedTable(tableType, client) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
+  ({ doc, MidasClient, post, resources } = await import("../dist/index.js"));
   const selected = args.endpoints
     .split(/[\s,]+/)
     // npm 12 on Windows can retain cmd.exe's caret quoting around a path.
