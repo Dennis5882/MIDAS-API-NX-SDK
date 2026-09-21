@@ -186,6 +186,14 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   the property instead, and the ceiling stays as drift detection for endpoints that turn write next.
 - `docs/live_verification_notes.md` — findings from real Gen/Civil NX sessions that are *not* in the
   manual. Deliberately kept out of the typed contracts; read it before trusting any `PRODUCTS` change.
+- `docs/vendor_report_ko.md` — the issue report for MIDASIT, **unsent**; `scripts/make_vendor_docx.py`
+  renders it. `docs/vendor_report_triage.md` is the working file behind it: which live findings are in
+  it, which are held back and *why*, and the re-verification debt on the older items. Read the triage
+  before adding anything, because two of the three standing holds are traps — a documentation claim
+  measured against the vendored manual rather than MIDASIT's own article is what killed four of seven
+  B-items in July, and `/TEMP/.../OCHECK` is closed by MIDASIT as not-a-defect, so re-raising it is the
+  author's call. `docs/manual_defects_register.md` is the same idea for findings about the
+  **documentation** rather than the product. All three collect; none of them acts.
 - `PLAN.md` — the hand-maintained big-picture roadmap (`ROADMAP.md` is the generated per-endpoint
   counterpart). It is **editable, and goes stale fast**: it spent v0.11.0–v0.11.2 listing shipped
   work as pending, because releases updated the code but not the plan. When a release changes what

@@ -61,7 +61,8 @@ markdown_extensions:
 exclude_docs: |
   coverage.json
   vendor_report_ko.md
-  vendor_report_ko.docx
+  vendor_report_*.docx
+  vendor_report_triage.md
   vendor_repro_nmas.py
   release_notes_*.md
   planning/

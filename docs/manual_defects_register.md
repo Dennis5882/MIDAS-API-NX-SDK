@@ -5,7 +5,10 @@ official article it transcribes) disagrees with what the product actually does.
 
 **This file collects; it does not act.** Nothing here has been applied to the
 manual repository, sent to MIDASIT, or filed in Jira. Those are the author's
-calls. Do not edit the manual repo from this repository, and do not open a Jira
+calls. `docs/vendor_report_triage.md` is the counterpart for findings about the
+**product** rather than the documentation, and records which of them are in the
+vendor report and which are held back; several findings are both, and then each
+file carries its own half. Do not edit the manual repo from this repository, and do not open a Jira
 issue about any of these without an explicit go-ahead.
 
 **How to add an entry.** When live evidence contradicts the manual, append a row
