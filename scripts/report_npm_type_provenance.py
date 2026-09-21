@@ -36,11 +36,13 @@ declarations carry 742 distinct names. That is only a risk for the two
 contract-aware buckets, and today it is not one: `python:contract-ignored` is
 empty and `python:unmerged` is exactly the 13 waived contracts.
 
-Measured 2026-09-21 and 2026-09-22 across two generator changes: 478
+Measured 2026-09-21 and 2026-09-22 across three generator changes: 478
 Python-sourced types, then 250 once contracts could own a payload's **nested**
 types (`surface.nestedTypes`), then 162 once an operation's **argument** type
-and its nested types were built from the operation contract as well. What the
-147 left in `python:nested` are, roughly:
+and its nested types were built from the operation contract as well, then 138
+once a table contract could describe its own request objects
+(`requestFields.additional`, with `surface.nestedTypes`). What the 123 left in
+`python:nested` are, roughly:
 
     51  operation arguments and their children still on Python: a union
         argument (the /ope load-combination pair), a contract with
@@ -50,7 +52,14 @@ and its nested types were built from the operation contract as well. What the
         contract declares without members, shared bases, and names two
         contracts shape differently
     25  design modules, same classes of reason
-    25  /post table result types, which no contract describes
+     1  /post: `PostStoryTypes.StorySetAngle`, the SET_ANGLE object four
+        story tables share while the manual makes ANGLE required in two and
+        optional in two, so no one declaration fits all four. Each table's
+        own ADDITIONAL type inlines its version.
+
+(Until 2026-09-22 this list called the /post types "table result types".
+They were never results: all 25 were request objects - ADDITIONAL, UNIT,
+STYLES, NODE_FLAG.)
 
 `--check` also holds the number of exported types. The generator used to
 refuse a `surface.nestedTypes` name the Python tree did not already publish, so
@@ -78,17 +87,22 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 TYPES = ROOT / "packages" / "typescript" / "src" / "generated" / "types.ts"
 CONTRACTS = ROOT / "contracts" / "endpoints"
 
-#: Measured 2026-09-21 over 765 generated types, after nestedTypes. A ceiling: it falls as
+#: Measured 2026-09-22 over 765 generated types, after table request fields. A ceiling: it falls as
 #: contracts take over more of the emitted shape, and a rise means a type that
 #: used to come from a contract is being read out of the Python tree again.
-PYTHON_SOURCED_AT_MOST = 162
+PYTHON_SOURCED_AT_MOST = 138
 
 #: Every exported type in `types.ts`. Not a ceiling: adding or removing an
 #: export is a change to the published surface, so it has to be made here on
 #: purpose, together with the changelog entry that says so.
 EXPORTED_TYPES = 765
 
-CONTRACT_MARKER = "/** Generated from contracts/endpoints/. */"
+#: A table contract builds the request-option types of one result table
+#: (`requestFields.additional`), and marks them with where they came from.
+CONTRACT_MARKERS = (
+    "/** Generated from contracts/endpoints/. */",
+    "/** Generated from contracts/tables/. */",
+)
 _EXPORT = re.compile(r"^export (?:interface|type) (\w+)")
 
 
@@ -136,7 +150,7 @@ def classify() -> dict[str, list[str]]:
             else:
                 bucket = "python:uncontracted"
             found[bucket].append(name)
-        previous_line_marked = stripped == CONTRACT_MARKER
+        previous_line_marked = stripped in CONTRACT_MARKERS
     return found
 
 

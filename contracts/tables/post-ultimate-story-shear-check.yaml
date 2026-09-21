@@ -22,4 +22,23 @@ surface:
     additional: SET_ANGLE — Optional, default ANGLE=0 (unlike #14 Capacity
     Irregularity Check's Required SET_ANGLE). 2026-07-30 official addition;
     previously undocumented.
+  nestedTypes:
+    - {path: ADDITIONAL, name: UltimateStoryShearForceAdditional, namespace: PostStoryTypes}
 tableTypes: [{value: ULTIMATE_STORY_SHEAR_FORCE_CHECK, provenance: manual}]
+requestFields:
+  # 21_POST_StoryTables.md #16, "`ADDITIONAL` - 전단력 산정 각도 설정", rows 1 to 1-1-1.
+  # Same fields as #14, but optional here.
+  additional:
+    - key: ADDITIONAL
+      description: 세부 설정 객체
+      type: object
+      requirement: optional
+      provenance: manual
+      properties:
+        - key: SET_ANGLE
+          description: 각도 설정
+          type: object
+          requirement: optional
+          provenance: manual
+          properties:
+            - {key: ANGLE, description: "산정 각도(°)", type: number, requirement: optional, provenance: manual}

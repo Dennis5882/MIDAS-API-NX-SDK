@@ -907,3 +907,33 @@ def test_an_operation_can_declare_the_nested_types_of_its_argument():
     # CURVED-only and CURVED-excluded rows carry their condition with them.
     assert by_key["A"]["appliesWhen"] == [{"path": "TYPE", "equals": "CURVED"}]
     assert "CURVED" not in by_key["D"]["appliesWhen"][0]["in"]
+
+def test_a_table_contract_builds_the_request_types_of_its_table():
+    """A story table's ADDITIONAL object comes from its table contract.
+
+    These were the last /post types read out of Python: the table contracts
+    recorded ADDITIONAL as `type: object` and nothing below it. The manual's
+    Required rows now reach the type - SELECT_IRREGULAR_ENDS and USER_DEFINE -
+    and a row it scopes with "USER_DEFINE: true일 때만" stays optional with the
+    condition in JSDoc.
+    """
+    nested = generator._contract_nested_types()
+    ends = nested[("PostStoryTypes", "SelectIrregularEnds")]
+    assert ends["source"] == "contracts/tables/"
+    rendered = chr(10).join(generator._contract_payload_type("SelectIrregularEnds", ends))
+    assert "/** Generated from contracts/tables/. */" in rendered
+    assert "USER_DEFINE: boolean;" in rendered
+    assert "SELECT_NODES?: Array<number>;" in rendered
+    assert "Required when ADDITIONAL.SELECT_IRREGULAR_ENDS.USER_DEFINE = true." in rendered
+    # Declared by the plate, plane, axisymmetric and solid tables alike.
+    assert ("PostBaseTypes", "NodeFlag") in nested
+
+
+def test_an_operation_surface_without_an_export_only_names_types():
+    """/post/TABLE's POST owns UNIT and STYLES but publishes no generated export."""
+    assert generator._names_an_export({"exportName": "getTable"})
+    assert not generator._names_an_export({"nestedTypes": []})
+    assert not generator._names_an_export(None)
+    endpoints = {operation["endpoint"] for operation in generator._contract_operation_specs()}
+    assert "/post/TABLE" not in endpoints
+    assert ("PostBaseTypes", "TableUnit") in generator._contract_nested_types()

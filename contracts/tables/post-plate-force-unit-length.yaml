@@ -20,6 +20,8 @@ surface:
 
     table_type: one of TABLE_TYPE_PLATE_FORCE_UNIT_LENGTH_LOCAL (default),
     _GLOBAL, _LOCAL_BY_MAX, _GLOBAL_BY_MAX, or _WOOD_ARMER (design moment).
+  nestedTypes:
+    - {path: NODE_FLAG, name: NodeFlag, namespace: PostBaseTypes}
 tableTypes:
   - value: PLATEFORCEUL
     description: Local plate force per unit length
@@ -41,3 +43,15 @@ tableTypes:
     description: Plate force in wall axis
     head: [Index, Elem, Load, Node, Ma, Mb, Mab, W-AMomentTopDir.1, Ma, Mb, Mab, W-AMomentTopDir.2, Ma, Mb, Mab, W-AMomentBotDir.1, Ma, Mb, Mab, W-AMomentBotDir.2]
     provenance: manual
+requestFields:
+  # 20_POST_AnalysisResult_2.md, common section: NODE_FLAG applies to sections
+  # 3, 4, 5, 6, 7, 10, 11, 14, 15, 18, 19, 22, 23, 24 and 25, this one among them.
+  additional:
+    - key: NODE_FLAG
+      description: 요소 중심(Cent)/절점(Node)별 출력 여부
+      type: object
+      requirement: optional
+      provenance: manual
+      properties:
+        - {key: CENTER, description: 요소 중심(Cent) 출력 여부, type: boolean, requirement: optional, documentedDefault: false, provenance: manual}
+        - {key: NODES, description: 절점(Node)별 출력 여부, type: boolean, requirement: optional, documentedDefault: false, provenance: manual}

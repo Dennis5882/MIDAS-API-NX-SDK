@@ -6,6 +6,37 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+> **Breaking at the type level for 19 members of `/post` request types;
+> nothing changes at runtime.** No export is added, removed or renamed.
+
+### Changed - the `/post` request types come from the table contracts
+
+The types for a result table's request objects - each story table's
+`ADDITIONAL`, `NODE_FLAG`, `UNIT` and `STYLES` - were generated from the
+Python package's TypedDicts, where every member is optional and every value a
+plain `string`. 24 of them are now generated from the table contracts, which
+record these objects from the manual:
+
+- **8 members become required** across 7 types, where the manual marks them
+  Required: `SET_ANGLE` on `StoryShearForceRatioAdditional` and
+  `CapacityIrregularityAdditional`, `SELECT_IRREGULAR_ENDS` on
+  `IrregularEndsAdditional` and `USER_DEFINE` on `SelectIrregularEnds`,
+  `SET_CALCULATION_METHOD` on `StiffnessIrregularityAdditional`, and
+  `SET_REACTION_PARAMS` with its `NODE_KEY` and `COMPONENT` on the Concurrent
+  Joint Force types. `SELECT_NODES`, required only when `USER_DEFINE` is
+  `true`, stays optional and says so in its JSDoc.
+- **9 members narrow from `string` to the values the manual lists**:
+  `TableStyles.FORMAT`, `OverturningMomentParams.DEFINE_RF`, `FIX_USER_CHECK`
+  on both Beta types, `STORY_DRIFT_METHOD` on four types and
+  `StiffnessCalculationMethod.STORY_STIFFNESS_METHOD`.
+- **2 members gain a shape**, which narrows them too: `StoryDriftCalculationMethod`'s
+  `DRIFT_OF_A_VERTICAL_LINE_ON_SELECTED_NODE` and
+  `AVERAGE_DRIFT_OF_VERTICAL_LINES_ON_SELECTED_NODES` were `unknown` and are
+  now `{ X_DIR?, Y_DIR?, COMBINED? }`, a node id and a node-id array
+  respectively.
+- `PostStoryTypes.StorySetAngle` is unchanged: four tables share it and the
+  manual makes `ANGLE` required in two of them and optional in the others.
+
 ### Changed - declaration order in the generated types
 
 `types.ts` (and so `dist/index.d.ts`) now lists each namespace's types in

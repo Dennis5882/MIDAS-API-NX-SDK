@@ -808,6 +808,27 @@ def check_tables(
                     f"the variant exists",
                 )
 
+        # A table's own request fields are held to the endpoint contracts' rule:
+        # a condition names a field that exists, and a nested type is recorded
+        # at a path that exists.
+        additional = (table.get("requestFields") or {}).get("additional") or []
+        declared_paths = _field_paths(additional)
+        for field in _iter_fields(additional):
+            for condition in field.get("appliesWhen", []):
+                if condition["path"] not in declared_paths:
+                    failures.add(
+                        path.name,
+                        f"request field {field['key']!r} appliesWhen references undeclared "
+                        f"path {condition['path']!r}",
+                    )
+        for entry in (table.get("surface") or {}).get("nestedTypes", []):
+            if entry["path"] not in declared_paths:
+                failures.add(
+                    path.name,
+                    f"surface.nestedTypes names {entry['name']} at {entry['path']!r}, "
+                    f"which requestFields.additional does not declare",
+                )
+
         # An unresolved manual contradiction must stay visible rather than being
         # quietly settled in favour of whichever spelling someone typed first.
         for defect in table.get("manualDefects", []):

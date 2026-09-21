@@ -40,6 +40,12 @@ operations:
   - method: POST
     risk: read_only
     summary: Request one table.
+    surface:
+      # No exportName: npm's post.getTable is written by hand, not generated.
+      # This records only the request objects the package publishes as types.
+      nestedTypes:
+        - {path: UNIT, name: TableUnit, namespace: PostBaseTypes}
+        - {path: STYLES, name: TableStyles, namespace: PostBaseTypes}
     request:
       wrapper: argument
       itemSchema: fields

@@ -99,7 +99,22 @@
         "tableType": { "type": "string", "minLength": 1, "description": "The TABLE_TYPE the wrapper sends by default. For a `directional` wrapper it is the prefix the direction is appended to, e.g. `MASS_SUMMARY_`." },
         "factory": { "enum": ["fixed", "variable", "directional"], "description": "fixed: one TABLE_TYPE. variable: a default the caller may replace with another of `tableTypes`. directional: a prefix plus a direction the caller supplies." },
         "optionNames": { "type": "array", "uniqueItems": true, "items": { "enum": ["additional", "calculationMethod", "components", "constructionStage", "exportPath", "loadCaseNames", "modes", "nodeElements", "parts", "stageSteps", "storyNames", "styles", "tableName", "unit"] }, "description": "The `TableOptions` members this wrapper accepts." },
-        "documentation": { "type": "string", "description": "The JSDoc npm publishes on the wrapper. Seeded from the Python docstring the generator rendered before; owned here from 2026-09-22." }
+        "documentation": { "type": "string", "description": "The JSDoc npm publishes on the wrapper. Seeded from the Python docstring the generator rendered before; owned here from 2026-09-22." },
+        "nestedTypes": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Names the package already publishes for objects inside `requestFields.additional`, e.g. `ADDITIONAL` -> `PostStoryTypes.StoryDriftAdditional`. The generator builds each from this contract's field tree, as `surface.nestedTypes` does for an endpoint contract. A name several contracts declare must have the same shape in each once descriptions are set aside, or generation fails.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "name", "namespace"],
+            "properties": {
+              "path": { "type": "string", "minLength": 1, "description": "Dotted path inside `requestFields.additional`, e.g. `ADDITIONAL.SET_STORY_DRIFT_PARAMS`. For an array field the type is its element." },
+              "name": { "type": "string", "minLength": 1, "description": "Published npm type name." },
+              "namespace": { "type": "string", "minLength": 1, "description": "Published npm namespace the name sits in, e.g. `PostStoryTypes`." }
+            }
+          }
+        }
       }
     },
     "tableTypes": {
@@ -162,19 +177,7 @@
         "additional": {
           "type": "array",
           "description": "Fields only this table accepts, normally carried under ADDITIONAL.",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["key", "requirement", "provenance"],
-            "properties": {
-              "key": { "type": "string" },
-              "description": { "type": "string" },
-              "type": { "enum": ["string", "number", "integer", "boolean", "array", "object"] },
-              "requirement": { "enum": ["required", "optional", "conditional", "read_only"] },
-              "condition": { "type": "string" },
-              "provenance": { "enum": ["manual", "live_verified", "live_corrected", "info_schema"] }
-            }
-          }
+          "items": { "$ref": "#/$defs/requestField" }
         }
       }
     },
@@ -236,5 +239,49 @@
       "if": { "properties": { "risk": { "enum": ["destructive", "product_crash_risk"] } }, "required": ["risk"] },
       "then": { "required": ["mitigation"] }
     }
-  ]
+  ],
+  "$defs": {
+    "requestField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "requirement", "provenance"],
+      "description": "One request field a single table accepts. Nested objects carry `properties`; an array of objects carries `type: array`, `items: {type: object}` and `properties` for the element, as endpoint contracts do.",
+      "properties": {
+        "key": { "type": "string", "pattern": "^[A-Za-z0-9_]+$", "description": "One literal wire-property name. A manual row naming two keys (`LCOMS[].NAME` / `LCOMS[].FACTOR`) is two fields." },
+        "description": { "type": "string" },
+        "type": { "enum": ["string", "number", "integer", "boolean", "array", "object"] },
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": { "type": { "enum": ["string", "number", "integer", "boolean", "object"] } },
+          "description": "Element type when `type` is array."
+        },
+        "properties": { "type": "array", "items": { "$ref": "#/$defs/requestField" }, "description": "Nested fields of an object, or of an array's object elements." },
+        "requirement": { "enum": ["required", "optional", "conditional", "read_only"] },
+        "condition": { "type": "string", "description": "The manual's condition wording, verbatim or close to it." },
+        "appliesWhen": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Structured translation of `condition`, as in endpoint contracts: each entry names a field path inside `requestFields.additional`, entries combine with AND.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path"],
+            "oneOf": [{ "required": ["equals"] }, { "required": ["in"] }],
+            "properties": {
+              "path": { "type": "string", "pattern": "^[A-Za-z0-9_]+(?:\\.[A-Za-z0-9_]+)*$" },
+              "equals": { "type": ["string", "number", "boolean"] },
+              "in": { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "type": ["string", "number", "boolean"] } }
+            }
+          }
+        },
+        "enum": { "type": "array", "minItems": 1, "items": { "type": ["string", "number", "boolean"] }, "description": "Values the manual lists for this field, and only where it lists them as the whole set." },
+        "documentedDefault": { "description": "The manual's Default column, where it states a literal." },
+        "documentedDefaultNote": { "type": "string", "description": "The Default column where it is not a literal, e.g. `System`." },
+        "provenance": { "enum": ["manual", "live_verified", "live_corrected", "info_schema"] },
+        "provenanceNote": { "type": "string" }
+      }
+    }
+  }
 }

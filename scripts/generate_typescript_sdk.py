@@ -437,7 +437,7 @@ def _contract_payload_type(name: str, contract: dict[str, Any]) -> list[str]:
 
     fields = contract["fields"]
     variants = contract.get("variants", [])
-    lines = ["  /** Generated from contracts/endpoints/. */"]
+    lines = [f"  /** Generated from {contract.get('source', 'contracts/endpoints/')}. */"]
     if not variants:
         lines.append(f"  export interface {name} {{")
         lines.append(_contract_interface_body(fields, "    "))
@@ -1475,6 +1475,16 @@ def _constant_evaluator(tree: ast.Module):
     return evaluate
 
 
+def _names_an_export(surface: Any) -> bool:
+    """Whether an operation `surface` publishes a generated npm operation.
+
+    One without `exportName` only names types. /post/TABLE's POST is the case:
+    its npm export, `post.getTable`, is written by hand, but the objects in its
+    request - `UNIT`, `STYLES` - are published types the contract should own.
+    """
+    return isinstance(surface, dict) and "exportName" in surface
+
+
 def _contract_operation_surfaces() -> dict[tuple[str, str], dict[str, Any]]:
     """Return {(endpoint, method): surface} for every contracted operation.
 
@@ -1497,7 +1507,7 @@ def _contract_operation_surfaces() -> dict[tuple[str, str], dict[str, Any]]:
         endpoint = contract.get("endpoint")
         for operation in contract.get("operations") or []:
             surface = operation.get("surface")
-            if endpoint and isinstance(surface, dict):
+            if endpoint and _names_an_export(surface):
                 surfaces[(endpoint, operation.get("method", ""))] = surface
     return surfaces
 
@@ -1636,7 +1646,7 @@ def _contract_operation_specs() -> list[dict[str, Any]]:
             continue
         for operation in contract.get("operations") or []:
             surface = operation.get("surface")
-            if not isinstance(surface, dict):
+            if not _names_an_export(surface):
                 continue
             method = operation.get("method", "")
             operations.append(
@@ -2063,6 +2073,17 @@ def _contract_nested_types() -> dict[tuple[str, str], dict[str, Any]]:
                 )
             fields, variants = _strip_assign_envelope(contract, "Argument")
             jobs.append((path, declared, fields, variants))
+    # A result table's own request fields - the ADDITIONAL objects the story
+    # tables take, NODE_FLAG on the plate and solid tables - live in its table
+    # contract under `requestFields.additional`, not in the shared /post/TABLE
+    # contract, because each is honoured by some tables only.
+    table_dir = ROOT / "contracts" / "tables"
+    for path in sorted(table_dir.glob("*.yaml")) if table_dir.is_dir() else []:
+        table = yaml.safe_load(path.read_text(encoding="utf-8"))
+        declared = ((table or {}).get("surface") or {}).get("nestedTypes") or []
+        if declared:
+            fields = (table.get("requestFields") or {}).get("additional") or []
+            jobs.append((path, declared, fields, []))
     for path, declared, fields, variants in jobs:
         for entry in declared:
             where = entry["path"].removeprefix("Assign.")
@@ -2099,6 +2120,8 @@ def _contract_nested_types() -> dict[tuple[str, str], dict[str, Any]]:
                         ],
                     })
             pseudo = {"fields": body, "variants": below}
+            if path.parent.name == "tables":
+                pseudo["source"] = "contracts/tables/"
             key = (entry["namespace"], entry["name"])
             if key in found:
                 if _nested_fingerprint(found[key]) != _nested_fingerprint(pseudo):

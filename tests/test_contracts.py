@@ -536,16 +536,27 @@ def test_every_declared_nested_type_is_published_and_built_from_a_contract():
         match = re.match(r"^  export (?:interface|type) (\w+)", line)
         if match:
             published[(namespace, match.group(1))] = marked
-        marked = line.strip() == "/** Generated from contracts/endpoints/. */"
+        marked = line.strip() in (
+            "/** Generated from contracts/endpoints/. */",
+            "/** Generated from contracts/tables/. */",
+        )
+
+    declarations = []
+    for slug, contract in _contracts().items():
+        surfaces = [contract.get("surface") or {}]
+        surfaces += [operation.get("surface") or {} for operation in contract.get("operations") or []]
+        declarations += [(slug, entry) for surface in surfaces for entry in surface.get("nestedTypes") or []]
+    for slug, table in _tables().items():
+        declarations += [(slug, entry) for entry in (table.get("surface") or {}).get("nestedTypes") or []]
+    assert declarations
 
     problems = []
-    for slug, contract in _contracts().items():
-        for entry in (contract.get("surface") or {}).get("nestedTypes") or []:
-            key = (entry["namespace"], entry["name"])
-            if key not in published:
-                problems.append(f"{slug}: {key[0]}.{key[1]} is not published")
-            elif not published[key]:
-                problems.append(f"{slug}: {key[0]}.{key[1]} is not built from a contract")
+    for slug, entry in declarations:
+        key = (entry["namespace"], entry["name"])
+        if key not in published:
+            problems.append(f"{slug}: {key[0]}.{key[1]} is not published")
+        elif not published[key]:
+            problems.append(f"{slug}: {key[0]}.{key[1]} is not built from a contract")
     assert not problems, "; ".join(problems)
 
 
@@ -697,3 +708,22 @@ def test_every_unmerged_table_records_the_names_it_holds():
                 continue
             assert len(names) == len(set(names)), f"{path.name}: duplicate names"
     assert not missing, "unmergedTables entries with no fieldNames: " + ", ".join(missing)
+
+
+def test_a_table_request_field_tree_is_held_to_the_schema():
+    """`requestFields.additional` nests now, and the schema must still bite.
+
+    Until 2026-09-22 an entry was one flat row, so the story tables' ADDITIONAL
+    objects were recorded as `type: object` and nothing more, and their npm
+    types came from Python. A nested entry is checked like any other.
+    """
+    from jsonschema import Draft202012Validator
+
+    schema = json.loads((CONTRACTS / "schema" / "table-contract.schema.json").read_text(encoding="utf-8"))
+    table = _tables()["post-story-shear-force-ratio"]
+    assert list(Draft202012Validator(schema).iter_errors(table)) == []
+
+    broken = json.loads(json.dumps(table))
+    broken["requestFields"]["additional"][1]["properties"][0]["properties"][0]["requirement"] = "sometimes"
+    errors = list(Draft202012Validator(schema).iter_errors(broken))
+    assert errors and "sometimes" in errors[0].message

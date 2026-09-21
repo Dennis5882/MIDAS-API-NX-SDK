@@ -275,6 +275,23 @@ for the same reason: `exportName`, `modulePath`, the default `tableType` (a
 prefix for a `directional` wrapper), `factory`, `optionNames` and
 `documentation`, seeded from what the generator used to find in Python.
 
+A table's **own request fields** - the ones only some tables honour - go in
+`requestFields.additional`, and since 2026-09-22 an entry may nest
+(`properties`, `items`, `enum`, `appliesWhen`, like an endpoint field). The
+story tables' `ADDITIONAL` objects and the plate/solid tables' `NODE_FLAG` are
+written there from the manual, and `surface.nestedTypes` on the table names
+the npm types built from them (`ADDITIONAL` -> `PostStoryTypes.StoryDriftAdditional`).
+A row naming two keys - `LCOMS[].NAME` / `LCOMS[].FACTOR` - is two fields. The
+shared request objects, `UNIT` and `STYLES`, belong to `/post/TABLE` itself:
+its POST operation carries a `surface` with `nestedTypes` and **no
+`exportName`**, which is how an operation says it names types but publishes no
+generated export (npm's `post.getTable` is written by hand).
+
+One shared name did not move. `PostStoryTypes.StorySetAngle` is the `SET_ANGLE`
+object of four story tables, and the manual makes its `ANGLE` required in two
+and optional in two; one published type cannot follow both, so it stays on
+Python and each table's own `ADDITIONAL` type inlines the version it documents.
+
 ### `in`: one table, several documented values
 
 A condition takes either `equals` (one literal) or `in` (two or more), never

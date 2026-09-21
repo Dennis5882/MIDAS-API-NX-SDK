@@ -71,6 +71,9 @@ surface:
     gate. Route/shape is confirmed correct on both products; building
     real moving-load (Vehicle/Lane/MV load case) test data to confirm
     this table works when that data exists remains untested.
+  nestedTypes:
+    - {path: ADDITIONAL, name: ConcurrentJointForceAdditional, namespace: PostResult1Types}
+    - {path: ADDITIONAL.SET_REACTION_PARAMS, name: ConcurrentJointForceReactionParams, namespace: PostResult1Types}
 tableTypes:
   - value: CONCURRENT_JOINT_FORCE
     description: Concurrent joint force
@@ -88,3 +91,13 @@ requestFields:
       type: object
       requirement: required
       provenance: manual
+      # 19_POST_AnalysisResult_1.md #13, rows 2-1 to 2-1-2.
+      properties:
+        - key: SET_REACTION_PARAMS
+          description: 반력 절점 기준 설정
+          type: object
+          requirement: required
+          provenance: manual
+          properties:
+            - {key: NODE_KEY, description: 반력 절점 ID, type: integer, requirement: required, provenance: manual}
+            - {key: COMPONENT, description: '반력 성분 사용 여부 6자리(0/1), 순서 Fx·Fy·Fz·Mx·My·Mz', type: string, requirement: required, provenance: manual}

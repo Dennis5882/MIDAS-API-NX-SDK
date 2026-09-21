@@ -16818,120 +16818,360 @@ export namespace PostBaseTypes {
     /** 구조 그룹 이름 */
     STRUCTURE_GROUP_NAME?: string;
   }
+  /** Generated from contracts/tables/. */
   export interface NodeFlag {
+    /** 요소 중심(Cent) 출력 여부 */
     CENTER?: boolean;
+    /** 절점(Node)별 출력 여부 */
     NODES?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TableStyles {
-    FORMAT?: string;
+    /** Number format */
+    FORMAT?: "Default" | "Fixed" | "Scientific" | "General";
+    /** Decimal places, 0 to 15 */
     PLACE?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TableUnit {
+    /** Force unit */
     FORCE?: string;
+    /** Length unit */
     DIST?: string;
+    /** Heat unit */
     HEAT?: string;
+    /** Temperature unit */
     TEMP?: string;
   }
 }
 
 export namespace PostResult1Types {
+  /** Generated from contracts/tables/. */
   export interface ConcurrentJointForceAdditional {
-    SET_REACTION_PARAMS?: ConcurrentJointForceReactionParams;
+    /** 반력 절점 기준 설정 */
+    SET_REACTION_PARAMS: {
+      /** 반력 절점 ID */
+      NODE_KEY: number;
+      /** 반력 성분 사용 여부 6자리(0/1), 순서 Fx·Fy·Fz·Mx·My·Mz */
+      COMPONENT: string;
+    };
   }
+  /** Generated from contracts/tables/. */
   export interface ConcurrentJointForceReactionParams {
-    NODE_KEY?: number;
-    COMPONENT?: string;
+    /** 반력 절점 ID */
+    NODE_KEY: number;
+    /** 반력 성분 사용 여부 6자리(0/1), 순서 Fx·Fy·Fz·Mx·My·Mz */
+    COMPONENT: string;
   }
 }
 
 export namespace PostStoryTypes {
+  /** Generated from contracts/tables/. */
   export interface CapacityIrregularityAdditional {
-    SET_ANGLE?: StorySetAngle;
+    /** 각도 설정 */
+    SET_ANGLE: {
+      /** Angle1 입력 각도(°) - Angle2 = Angle1 + 90° */
+      ANGLE: number;
+    };
   }
+  /** Generated from contracts/tables/. */
   export interface IrregularEndsAdditional {
-    SELECT_IRREGULAR_ENDS?: SelectIrregularEnds;
+    /** 극단부 절점 선택 */
+    SELECT_IRREGULAR_ENDS: {
+      /** 절점 선택 방식: false=자동 계산 / true=사용자 지정 */
+      USER_DEFINE: boolean;
+      /** 극단부 절점 번호 2개 지정 Required when ADDITIONAL.SELECT_IRREGULAR_ENDS.USER_DEFINE = true. */
+      SELECT_NODES?: Array<number>;
+    };
   }
+  /** Generated from contracts/tables/. */
   export interface OverturningMomentAdditional {
-    SET_ANGLE?: StorySetAngle;
-    SET_OVERTURNING_MOMENT_PARAMS?: OverturningMomentParams;
+    /** 각도 설정 */
+    SET_ANGLE?: {
+      /** Angle1 입력값 (Angle2 = Angle1 + 90°) */
+      ANGLE?: number;
+    };
+    /** 전도모멘트 산정 파라미터 */
+    SET_OVERTURNING_MOMENT_PARAMS?: {
+      /** 응답스펙트럼 스케일 계수 */
+      SF_FOR_RS?: number;
+      /** 감소계수(Reduction Factor) 산정 방식: "FIXED"(1.0 고정) / "AUTO"(자동 산정) */
+      DEFINE_RF?: "FIXED" | "AUTO";
+    };
   }
+  /** Generated from contracts/tables/. */
   export interface OverturningMomentParams {
+    /** 응답스펙트럼 스케일 계수 */
     SF_FOR_RS?: number;
-    DEFINE_RF?: string;
+    /** 감소계수(Reduction Factor) 산정 방식: "FIXED"(1.0 고정) / "AUTO"(자동 산정) */
+    DEFINE_RF?: "FIXED" | "AUTO";
   }
+  /** Generated from contracts/tables/. */
   export interface SelectIrregularEnds {
-    USER_DEFINE?: boolean;
+    /** 절점 선택 방식: false=자동 계산 / true=사용자 지정 */
+    USER_DEFINE: boolean;
+    /** 극단부 절점 번호 2개 지정 Required when ADDITIONAL.SELECT_IRREGULAR_ENDS.USER_DEFINE = true. */
     SELECT_NODES?: Array<number>;
   }
+  /** Generated from contracts/tables/. */
   export interface StiffnessCalculationMethod {
-    STORY_DRIFT_METHOD?: string;
-    STORY_STIFFNESS_METHOD?: string;
+    /** 층간변위 산정방식 */
+    STORY_DRIFT_METHOD?: "Drift at the Center of Mass" | "Max. Drift of Outer Extreme Points" | "Max. Drift of All Vertical Elements";
+    /** 층강성 산정방식 */
+    STORY_STIFFNESS_METHOD?: "1 / Story Drift Ratio" | "Story Shear / Story Drift";
   }
+  /** Generated from contracts/tables/. */
   export interface StiffnessIrregularityAdditional {
-    SET_CALCULATION_METHOD?: StiffnessCalculationMethod;
+    /** 산정방식 설정 */
+    SET_CALCULATION_METHOD: {
+      /** 층간변위 산정방식 */
+      STORY_DRIFT_METHOD?: "Drift at the Center of Mass" | "Max. Drift of Outer Extreme Points" | "Max. Drift of All Vertical Elements";
+      /** 층강성 산정방식 */
+      STORY_STIFFNESS_METHOD?: "1 / Story Drift Ratio" | "Story Shear / Story Drift";
+    };
   }
+  /** Generated from contracts/tables/. */
   export interface StoryDriftAdditional {
-    SET_STORY_DRIFT_PARAMS?: StoryDriftParams;
-    SET_STORY_DRIFT_CALCULATION_METHOD?: StoryDriftCalculationMethod;
+    /** 층간변위비 판정 파라미터 */
+    SET_STORY_DRIFT_PARAMS?: {
+      /** 판정 방식: true=Method 1(응답수정계수), false=Method 2(변위증폭계수) */
+      RESPONSE_MOD_FACTOR_CHECK?: boolean;
+      /** (Method 1) 응답수정계수 값 Applies when ADDITIONAL.SET_STORY_DRIFT_PARAMS.RESPONSE_MOD_FACTOR_CHECK = true. */
+      RESPONSE_MOD_FACTOR_VALUE?: number;
+      /** (Method 2) 변위증폭계수(Cd) Applies when ADDITIONAL.SET_STORY_DRIFT_PARAMS.RESPONSE_MOD_FACTOR_CHECK = false. */
+      DEFLECTION_AMPL_FACTOR_VALUE?: number;
+      /** (Method 2) 중요도계수 */
+      IMPORTANCE_FACTOR_VALUE?: number;
+      /** 스케일 계수 */
+      SCALE_FACTOR_VALUE?: number;
+      /** 허용 층간변위비 */
+      ALLOWABLE_RATIO?: number;
+      /** P-Delta 검토용 수직하중 조합 목록 */
+      LCOMS?: Array<{
+        /** 하중케이스명 */
+        NAME?: string;
+        /** 계수 */
+        FACTOR?: number;
+      }>;
+      /** Beta 값 설정 */
+      BETA?: {
+        /** 방식: "FIXED"(1.0 고정) / "USER"(층별 직접 입력) */
+        FIX_USER_CHECK?: "FIXED" | "USER";
+        /** 적용 시작 층 Applies when ADDITIONAL.SET_STORY_DRIFT_PARAMS.BETA.FIX_USER_CHECK = "USER". */
+        NAME_FROM?: string;
+        /** 적용 종료 층 Applies when ADDITIONAL.SET_STORY_DRIFT_PARAMS.BETA.FIX_USER_CHECK = "USER". */
+        NAME_TO?: string;
+        /** 사용자 지정 Beta 값 Applies when ADDITIONAL.SET_STORY_DRIFT_PARAMS.BETA.FIX_USER_CHECK = "USER". */
+        VALUE?: number;
+      };
+    };
+    /** (STORY_DRIFT_COMB 전용) 추가 산출 방식 선택 */
+    SET_STORY_DRIFT_CALCULATION_METHOD?: {
+      /** 질량중심 변위 */
+      DRIFT_AT_THE_CENTER_OF_MASS?: boolean;
+      /** 수직요소 평균변위 */
+      AVERAGE_DRIFT_OF_VERTICAL_ELEMENTS?: boolean;
+      /** 선택 절점 기준 수직선 변위 */
+      DRIFT_OF_A_VERTICAL_LINE_ON_SELECTED_NODE?: {
+        /** 선택 절점 번호 */
+        X_DIR?: number;
+        /** 선택 절점 번호 */
+        Y_DIR?: number;
+        /** 선택 절점 번호 */
+        COMBINED?: number;
+      };
+      /** 선택 절점(복수) 기준 수직선 평균변위 */
+      AVERAGE_DRIFT_OF_VERTICAL_LINES_ON_SELECTED_NODES?: {
+        /** 선택 절점 번호 배열 */
+        X_DIR?: Array<number>;
+        /** 선택 절점 번호 배열 */
+        Y_DIR?: Array<number>;
+        /** 선택 절점 번호 배열 */
+        COMBINED?: Array<number>;
+      };
+      /** 전단력 가중 평균변위 */
+      SHEAR_WEIGHTED_AVERAGE_DRIFT_OF_VERTICAL_ELEMENTS?: boolean;
+    };
   }
+  /** Generated from contracts/tables/. */
   export interface StoryDriftBeta {
-    FIX_USER_CHECK?: string;
+    /** 방식: "FIXED"(1.0 고정) / "USER"(층별 직접 입력) */
+    FIX_USER_CHECK?: "FIXED" | "USER";
+    /** 적용 시작 층 Applies when ADDITIONAL.SET_STORY_DRIFT_PARAMS.BETA.FIX_USER_CHECK = "USER". */
     NAME_FROM?: string;
+    /** 적용 종료 층 Applies when ADDITIONAL.SET_STORY_DRIFT_PARAMS.BETA.FIX_USER_CHECK = "USER". */
     NAME_TO?: string;
+    /** 사용자 지정 Beta 값 Applies when ADDITIONAL.SET_STORY_DRIFT_PARAMS.BETA.FIX_USER_CHECK = "USER". */
     VALUE?: number;
   }
+  /** Generated from contracts/tables/. */
   export interface StoryDriftCalculationMethod {
+    /** 질량중심 변위 */
     DRIFT_AT_THE_CENTER_OF_MASS?: boolean;
+    /** 수직요소 평균변위 */
     AVERAGE_DRIFT_OF_VERTICAL_ELEMENTS?: boolean;
-    DRIFT_OF_A_VERTICAL_LINE_ON_SELECTED_NODE?: unknown;
-    AVERAGE_DRIFT_OF_VERTICAL_LINES_ON_SELECTED_NODES?: unknown;
+    /** 선택 절점 기준 수직선 변위 */
+    DRIFT_OF_A_VERTICAL_LINE_ON_SELECTED_NODE?: {
+      /** 선택 절점 번호 */
+      X_DIR?: number;
+      /** 선택 절점 번호 */
+      Y_DIR?: number;
+      /** 선택 절점 번호 */
+      COMBINED?: number;
+    };
+    /** 선택 절점(복수) 기준 수직선 평균변위 */
+    AVERAGE_DRIFT_OF_VERTICAL_LINES_ON_SELECTED_NODES?: {
+      /** 선택 절점 번호 배열 */
+      X_DIR?: Array<number>;
+      /** 선택 절점 번호 배열 */
+      Y_DIR?: Array<number>;
+      /** 선택 절점 번호 배열 */
+      COMBINED?: Array<number>;
+    };
+    /** 전단력 가중 평균변위 */
     SHEAR_WEIGHTED_AVERAGE_DRIFT_OF_VERTICAL_ELEMENTS?: boolean;
   }
+  /** Generated from contracts/tables/. */
   export interface StoryDriftLcomEntry {
+    /** 하중케이스명 */
     NAME?: string;
+    /** 계수 */
     FACTOR?: number;
   }
+  /** Generated from contracts/tables/. */
   export interface StoryDriftParams {
+    /** 판정 방식: true=Method 1(응답수정계수), false=Method 2(변위증폭계수) */
     RESPONSE_MOD_FACTOR_CHECK?: boolean;
+    /** (Method 1) 응답수정계수 값 Applies when ADDITIONAL.SET_STORY_DRIFT_PARAMS.RESPONSE_MOD_FACTOR_CHECK = true. */
     RESPONSE_MOD_FACTOR_VALUE?: number;
+    /** (Method 2) 변위증폭계수(Cd) Applies when ADDITIONAL.SET_STORY_DRIFT_PARAMS.RESPONSE_MOD_FACTOR_CHECK = false. */
     DEFLECTION_AMPL_FACTOR_VALUE?: number;
+    /** (Method 2) 중요도계수 */
     IMPORTANCE_FACTOR_VALUE?: number;
+    /** 스케일 계수 */
     SCALE_FACTOR_VALUE?: number;
+    /** 허용 층간변위비 */
     ALLOWABLE_RATIO?: number;
-    LCOMS?: Array<StoryDriftLcomEntry>;
-    BETA?: StoryDriftBeta;
+    /** P-Delta 검토용 수직하중 조합 목록 */
+    LCOMS?: Array<{
+      /** 하중케이스명 */
+      NAME?: string;
+      /** 계수 */
+      FACTOR?: number;
+    }>;
+    /** Beta 값 설정 */
+    BETA?: {
+      /** 방식: "FIXED"(1.0 고정) / "USER"(층별 직접 입력) */
+      FIX_USER_CHECK?: "FIXED" | "USER";
+      /** 적용 시작 층 Applies when ADDITIONAL.SET_STORY_DRIFT_PARAMS.BETA.FIX_USER_CHECK = "USER". */
+      NAME_FROM?: string;
+      /** 적용 종료 층 Applies when ADDITIONAL.SET_STORY_DRIFT_PARAMS.BETA.FIX_USER_CHECK = "USER". */
+      NAME_TO?: string;
+      /** 사용자 지정 Beta 값 Applies when ADDITIONAL.SET_STORY_DRIFT_PARAMS.BETA.FIX_USER_CHECK = "USER". */
+      VALUE?: number;
+    };
   }
   export interface StorySetAngle {
     ANGLE?: number;
   }
+  /** Generated from contracts/tables/. */
   export interface StoryShearForceRatioAdditional {
-    SET_ANGLE?: StorySetAngle;
+    /** 각도 설정 */
+    SET_ANGLE: {
+      /** Angle1 입력값 (Angle2 = Angle1 + 90°) */
+      ANGLE: number;
+    };
   }
+  /** Generated from contracts/tables/. */
   export interface StoryStabilityBeta {
-    FIX_USER_CHECK?: string;
+    /** 방식: "FIXED"(1.0 고정) / "USER"(층별 직접 입력) */
+    FIX_USER_CHECK?: "FIXED" | "USER";
+    /** 적용 시작 층 Applies when ADDITIONAL.SET_STABILITY_COEFFICIENT_PARAMS.BETA.FIX_USER_CHECK = "USER". */
     NAME_FROM?: string;
+    /** 적용 종료 층 Applies when ADDITIONAL.SET_STABILITY_COEFFICIENT_PARAMS.BETA.FIX_USER_CHECK = "USER". */
     NAME_TO?: string;
+    /** 사용자 지정 Beta 값 Applies when ADDITIONAL.SET_STABILITY_COEFFICIENT_PARAMS.BETA.FIX_USER_CHECK = "USER". */
     VALUE?: number;
   }
+  /** Generated from contracts/tables/. */
   export interface StoryStabilityCalculationMethod {
-    STORY_DRIFT_METHOD?: string;
+    /** 층간변위 산정 방식 */
+    STORY_DRIFT_METHOD?: "Drift at the Center of Mass" | "Max. Drift of Outer Extreme Points" | "Max. Drift of All Vertical Elements";
   }
+  /** Generated from contracts/tables/. */
   export interface StoryStabilityCoefficientAdditional {
-    SET_STABILITY_COEFFICIENT_PARAMS?: StoryStabilityCoefficientParams;
-    SET_CALCULATION_METHOD?: StoryStabilityCalculationMethod;
+    /** 안정계수 산정 파라미터 */
+    SET_STABILITY_COEFFICIENT_PARAMS?: {
+      /** 변위증폭계수(Cd) */
+      DEFLECTION_AMPL_FACTOR_VALUE?: number;
+      /** 중요도계수 */
+      IMPORTANCE_FACTOR_VALUE?: number;
+      /** 스케일 계수 */
+      SCALE_FACTOR_VALUE?: number;
+      /** P-Delta 검토용 수직하중 조합 목록 */
+      LCOMS?: Array<{
+        /** 하중케이스명 */
+        NAME?: string;
+        /** 계수 */
+        FACTOR?: number;
+      }>;
+      /** Beta 값 설정 */
+      BETA?: {
+        /** 방식: "FIXED"(1.0 고정) / "USER"(층별 직접 입력) */
+        FIX_USER_CHECK?: "FIXED" | "USER";
+        /** 적용 시작 층 Applies when ADDITIONAL.SET_STABILITY_COEFFICIENT_PARAMS.BETA.FIX_USER_CHECK = "USER". */
+        NAME_FROM?: string;
+        /** 적용 종료 층 Applies when ADDITIONAL.SET_STABILITY_COEFFICIENT_PARAMS.BETA.FIX_USER_CHECK = "USER". */
+        NAME_TO?: string;
+        /** 사용자 지정 Beta 값 Applies when ADDITIONAL.SET_STABILITY_COEFFICIENT_PARAMS.BETA.FIX_USER_CHECK = "USER". */
+        VALUE?: number;
+      };
+    };
+    /** 층간변위 산정 방식 선택 */
+    SET_CALCULATION_METHOD?: {
+      /** 층간변위 산정 방식 */
+      STORY_DRIFT_METHOD?: "Drift at the Center of Mass" | "Max. Drift of Outer Extreme Points" | "Max. Drift of All Vertical Elements";
+    };
   }
+  /** Generated from contracts/tables/. */
   export interface StoryStabilityCoefficientParams {
+    /** 변위증폭계수(Cd) */
     DEFLECTION_AMPL_FACTOR_VALUE?: number;
+    /** 중요도계수 */
     IMPORTANCE_FACTOR_VALUE?: number;
+    /** 스케일 계수 */
     SCALE_FACTOR_VALUE?: number;
-    LCOMS?: Array<StoryDriftLcomEntry>;
-    BETA?: StoryStabilityBeta;
+    /** P-Delta 검토용 수직하중 조합 목록 */
+    LCOMS?: Array<{
+      /** 하중케이스명 */
+      NAME?: string;
+      /** 계수 */
+      FACTOR?: number;
+    }>;
+    /** Beta 값 설정 */
+    BETA?: {
+      /** 방식: "FIXED"(1.0 고정) / "USER"(층별 직접 입력) */
+      FIX_USER_CHECK?: "FIXED" | "USER";
+      /** 적용 시작 층 Applies when ADDITIONAL.SET_STABILITY_COEFFICIENT_PARAMS.BETA.FIX_USER_CHECK = "USER". */
+      NAME_FROM?: string;
+      /** 적용 종료 층 Applies when ADDITIONAL.SET_STABILITY_COEFFICIENT_PARAMS.BETA.FIX_USER_CHECK = "USER". */
+      NAME_TO?: string;
+      /** 사용자 지정 Beta 값 Applies when ADDITIONAL.SET_STABILITY_COEFFICIENT_PARAMS.BETA.FIX_USER_CHECK = "USER". */
+      VALUE?: number;
+    };
   }
+  /** Generated from contracts/tables/. */
   export interface UltimateStoryShearForceAdditional {
-    SET_ANGLE?: StorySetAngle;
+    /** 각도 설정 */
+    SET_ANGLE?: {
+      /** 산정 각도(°) */
+      ANGLE?: number;
+    };
   }
+  /** Generated from contracts/tables/. */
   export interface WeightIrregularityCalculationMethod {
-    STORY_DRIFT_METHOD?: string;
+    /** 층간변위 산정방식 */
+    STORY_DRIFT_METHOD?: "Drift at the Center of Mass" | "Max. Drift of Outer Extreme Points" | "Max. Drift of All Vertical Elements";
   }
 }
 
