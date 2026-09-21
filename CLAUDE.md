@@ -358,15 +358,18 @@ Two things that have already caused rework:
   run. Never run one against someone's open document without asking first. The npm one
   saves a checkpoint before the `/doc/NEW` unless `--no-save-before` is passed; that flag
   removes the safety net, not the destructive call. Every one of them writes its
-  checkpoints to a directory **on the NX machine** that the caller names — `--save-as`,
-  `--save-dir`; none of them guesses one, because a path that does not exist there raises a
-  blocking dialog while the HTTP call still answers like a success. The npm harness checks the
-  shape of `--save-dir` while parsing arguments as of 2026-09-21, not at the checkpoint call
-  that sits after `verifyConnection()`, so a malformed path no longer costs a connection before
-  it is reported. **The four are not consistent about requiring one**: `live_manual_feedback.py`
-  and `live-crud.mjs` refuse to start without it, `live_crud_check.py`'s `--save-as` is optional,
-  and `live_smoke.py` has no such flag at all. That is a workflow decision, not an oversight to
-  quietly fix — ask before changing it.
+  checkpoints to a directory **on the NX machine** that the caller names with `--save-dir`;
+  none of them guesses one, because a path that does not exist there raises a blocking dialog
+  while the HTTP call still answers like a success. **Since 2026-09-21 all four ask the same
+  way and refuse to start when nothing is named** — `scripts/harness_save_path.py` holds the
+  rule, the reasons and the two stated departures, and `tests/test_harness_save_path.py` checks
+  each harness applies it. `--save-dir` takes a directory and the file name is derived from the
+  product, so the NX extension pair (Gen `.mgbx`, Civil `.mcbz`, against the pre-NX `.mgb`/
+  `.mcb` that `/doc/STAGAS` wants) cannot be got wrong; `--no-save-before` waives the checkpoint
+  and **not** the `/doc/NEW`. The shape is checked while arguments are parsed, not at the save,
+  so a relative path costs nothing — not even a connection. The departures: `live_crud_check.py`
+  also accepts `--save-as` for an exact path, and `live_manual_feedback.py` has no waiver,
+  because its per-probe saves are the evidence the run produces rather than a safety net.
 - **`/info/{endpoint}` introspection is served for `/db/*` only.** Swept from both SDKs
   2026-09-01: it answered for 399 of 402 `/db/*` resource-product pairs and for **none of the
   147 `/DESIGN/*` pairs**, even though those design endpoints answer a plain GET

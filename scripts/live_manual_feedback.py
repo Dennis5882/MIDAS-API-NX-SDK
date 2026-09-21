@@ -10,10 +10,10 @@ from __future__ import annotations
 import argparse
 import copy
 import json
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import harness_save_path
 from live_crud_check import _seed_model
 
 from midas_nx import doc
@@ -370,20 +370,16 @@ def main() -> int:
     parser.add_argument("--case", choices=("a1", "a2", "a3", "b1", "b2"),
                         default="a1")
     parser.add_argument("--out", required=True)
-    parser.add_argument(
-        "--save-dir", required=True,
-        help=("directory ON THE NX MACHINE for this run's checkpoints, e.g. "
-              "C:/temp. Every path here resolves on the host running NX, not "
-              "on this one, and a directory that does not exist there raises a "
-              "blocking dialog while the HTTP call still answers like a "
-              "success -- so it is required rather than guessed."),
-    )
+    harness_save_path.add_arguments(parser, waivable=False)
     args = parser.parse_args()
+    harness_save_path.require(parser, args)
     client = MidasClient(product=args.product, timeout=60)
-    extension = "mcbz" if args.product == "civil" else "mgbx"
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    save_dir = args.save_dir.replace("\\", "/").rstrip("/")
-    checkpoint = f"{save_dir}/manual-feedback-{args.case}-{args.product}-{stamp}"
+    extension = harness_save_path.PRODUCT_EXTENSION[args.product]
+    # The stem rather than a finished path: this harness writes a checkpoint
+    # per probe, each with its own suffix, and those files are the evidence.
+    checkpoint = harness_save_path.checkpoint_prefix(
+        args.save_dir, f"manual-feedback-{args.case}", args.product,
+    )
     doc.save_as(f"{checkpoint}-before.{extension}", client=client)
     if args.case == "a1":
         result = memb_selection_typo(client, f"{checkpoint}-baseline.{extension}")

@@ -31,8 +31,13 @@ Requires a running MIDAS Gen NX or Civil NX instance with the Open API
 connected (see src/midas_nx/README.md Quick Start).
 
 Usage:
-    python scripts/live_smoke.py --product gen
-    python scripts/live_smoke.py --product civil --out /tmp/smoke_civil.json
+    python scripts/live_smoke.py --product gen --save-dir C:/temp
+    python scripts/live_smoke.py --product civil --save-dir C:/temp         --out /tmp/smoke_civil.json
+
+--save-dir is a directory ON THE NX MACHINE and is required, because this
+script calls /doc/NEW; --no-save-before waives the checkpoint but not the
+/doc/NEW. See scripts/harness_save_path.py for why all four destructive
+harnesses ask the same way.
 
 Exit code 0 -> every step succeeded and the reaction matches the expected
                 self-weight hand-calc within tolerance.
@@ -47,15 +52,19 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from midas_nx import doc
-from midas_nx.client import MidasAPIError, MidasClient
-from midas_nx.db.boundary import Constraint
-from midas_nx.db.node_element import Element, Node
-from midas_nx.db.project import Unit
-from midas_nx.db.properties.material import Material
-from midas_nx.db.properties.section import Section
-from midas_nx.db.static_loads import SelfWeight, StaticLoadCase
-from midas_nx.post.result_1 import (
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import harness_save_path  # noqa: E402
+
+from midas_nx import doc  # noqa: E402
+from midas_nx.client import MidasAPIError, MidasClient  # noqa: E402
+from midas_nx.db.boundary import Constraint  # noqa: E402
+from midas_nx.db.node_element import Element, Node  # noqa: E402
+from midas_nx.db.project import Unit  # noqa: E402
+from midas_nx.db.properties.material import Material  # noqa: E402
+from midas_nx.db.properties.section import Section  # noqa: E402
+from midas_nx.db.static_loads import SelfWeight, StaticLoadCase  # noqa: E402
+from midas_nx.post.result_1 import (  # noqa: E402
     get_beam_force_table,
     get_displacement_table,
     get_reaction_table,
@@ -165,7 +174,9 @@ def main() -> None:
     parser.add_argument("--mapi-key", help="defaults to MIDAS_MAPI_KEY env var")
     parser.add_argument("--base-url", help="defaults to MIDAS_BASE_URL env var")
     parser.add_argument("--out", help="path to write the report JSON (optional)")
+    harness_save_path.add_arguments(parser)
     args = parser.parse_args()
+    harness_save_path.require(parser, args)
 
     client = MidasClient(mapi_key=args.mapi_key, base_url=args.base_url, product=args.product)
     try:
@@ -176,6 +187,17 @@ def main() -> None:
     if health.get("status") != "connected":
         print(f"Server reachable but not connected: {health}", file=sys.stderr)
         sys.exit(2)
+
+    # Before the /doc/NEW in run(), not after: the point of the checkpoint is
+    # to give the operator the open document back if that call turns out to
+    # have discarded something, and to keep a save-changes dialog from
+    # blocking the session mid-run.
+    if not args.no_save_before:
+        checkpoint = harness_save_path.checkpoint(
+            args.save_dir, "midas-nx-smoke", args.product,
+        )
+        print(f"Saving the open document to {checkpoint} first...")
+        doc.save_as(checkpoint, client=client)
 
     report = run(client)
 

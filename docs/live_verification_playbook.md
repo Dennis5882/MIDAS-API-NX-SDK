@@ -39,7 +39,7 @@ for the section above: it re-derives what "Where things stand" claims and fails
 if the file and the repository disagree.
 
 ```bash
-python -m pytest -q                       # 1107 passed
+python -m pytest -q                       # 1126 passed
 ruff check src tests scripts && mypy      # clean
 python scripts/validate_contracts.py      # OK - contracts valid
 python scripts/check_manual_drift.py --manual-api-repo "E:\AI Study\MIDAS-API"
@@ -123,8 +123,10 @@ the ledger append is what is missing.
    --endpoints /db/A,/db/B --save-dir C:/temp` (PowerShell takes two `--`, Bash
    one), with `MIDAS_MAPI_KEY` set to that product's key.
 4. Python, same selection, same session: `python scripts/live_crud_check.py
-   --product gen --endpoints /db/A,/db/B --save-as C:/temp/<name>.mgbx
-   --out <report>.json` (`.mcbz` on Civil). The Python harness refuses to run
+   --product gen --endpoints /db/A,/db/B --save-dir C:/temp
+   --out <report>.json`. `--save-dir` derives the file name, so the extension
+   cannot be got wrong; `--save-as C:/temp/<name>.mgbx` still takes an exact
+   path if you want one (`.mcbz` on Civil). The Python harness refuses to run
    (exit 2) when `schema/live-cases.json` has drifted from the script; re-emit,
    never hand-edit the fixture.
 5. Repeat both for `civil`.
@@ -339,8 +341,11 @@ judgement about which `/info` object is meant. It is not a queue to rescan.
   `connected` and returns 0 records, so check each product with its own key.
 - **`verify_connection()` cannot prove a session is alive.** It answers
   `connected` while a modal dialog holds the product; use a real `GET /db/NODE`.
-- **Paths belong to the NX machine.** `--save-dir`/`--save-as` are required and
-  never inferred from `verify_connection()["user"]`, which is an email.
+- **Paths belong to the NX machine.** `--save-dir` is required and never
+  inferred from `verify_connection()["user"]`, which is an email. All four
+  destructive harnesses ask the same way and refuse to start without an answer
+  (`scripts/harness_save_path.py`); the shape is checked while arguments are
+  parsed, so a relative path costs nothing, not even a connection.
   `C:/temp` exists; the author manages it — do not clean it.
 - **A GET can pop a modal dialog** if the open document lives under
   `Program Files`.
@@ -349,8 +354,10 @@ judgement about which `/info` object is meant. It is not a queue to rescan.
   `packages/typescript/scripts/live-crud.mjs` and
   `scripts/live_manual_feedback.py`, which calls it once per probe rather than
   once per run. Never against a document the author has not confirmed empty.
-  Each one takes the checkpoint directory from the caller (`--save-as`,
-  `--save-dir`) and none guesses one.
+  Each takes the checkpoint directory from the caller and none guesses one.
+  `--no-save-before` waives the checkpoint, not the `/doc/NEW`, and
+  `live_manual_feedback.py` does not offer it: its per-probe saves are the
+  run's evidence.
 - **Assert a reset, do not assume it.** `/doc/NEW` without `{"Argument": {}}` is
   HTTP 500 and resets nothing.
 - **Never call `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK`**: it crashes Gen, MIDASIT

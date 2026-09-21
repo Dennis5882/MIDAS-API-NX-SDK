@@ -81,18 +81,24 @@ dialog, and that dialog blocks the entire API session until a human clicks it -
 the next call fails for reasons unrelated to itself. Have a human present, or
 start from a saved document.
 
-⚠️ --save-as exists to clear that dialog by saving first, but /doc/SAVEAS is
-not safe to automate blind: given a path NX dislikes it raises a modal
+⚠️ The checkpoint exists to clear that dialog by saving first, but /doc/SAVEAS
+is not safe to automate blind: given a path NX dislikes it raises a modal
 "invalid path" error dialog, blocks the session until someone clicks it, and
 then returns {"message": "... command complete"} anyway - the same string a
 real save returns, with no file on disk. Verified 2026-07-26 on Civil NX.
 Check the file exists yourself afterwards; do not trust the response.
 
+--save-dir names a directory ON THE NX MACHINE and the checkpoint name is
+derived from the product, so the NX extension cannot be got wrong; --save-as
+takes an exact path instead, extension included; --no-save-before waives the
+checkpoint but not the /doc/NEW. One of the three is required, the same rule
+all four destructive harnesses follow - see scripts/harness_save_path.py.
+
 Run with the dev environment active (``pip install -e ".[dev]"``), e.g.:
-    python scripts/live_crud_check.py --product civil
-    python scripts/live_crud_check.py --product civil --tier core,boundary
+    python scripts/live_crud_check.py --product civil --save-dir C:/temp
+    python scripts/live_crud_check.py --product civil --save-dir C:/temp         --tier core,boundary
     python scripts/live_crud_check.py --product civil --save-as C:/tmp/scratch.mcbz
-    python scripts/live_crud_check.py --product civil --out crud.json
+    python scripts/live_crud_check.py --product civil --save-dir C:/temp --out crud.json
 
 Exit code 0 -> every case that ran completed a full round trip.
 Exit code 1 -> a previously-confirmed case regressed (SDK defect suspect).
@@ -344,6 +350,10 @@ from midas_nx.db.temperature_prestress import (
     TendonProfile,
     TendonProperty,
 )
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import harness_save_path  # noqa: E402
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -5193,9 +5203,11 @@ def main() -> int:
     )
     parser.add_argument(
         "--save-as",
-        help="save the currently open document here before /doc/NEW, so a "
-        "save-changes dialog can't block the session",
+        help="an exact checkpoint path on the NX machine, extension included, "
+        "used instead of deriving one under --save-dir. Naming either one "
+        "satisfies the save requirement",
     )
+    harness_save_path.add_arguments(parser)
     parser.add_argument(
         "--include-crashers",
         action="store_true",
@@ -5234,7 +5246,6 @@ def main() -> int:
         return 2
     if not args.product:
         parser.error("--product is required unless --emit-cases or --check-cases is used")
-
     tiers = TIERS
     if args.tier:
         wanted = [n.strip() for n in args.tier.split(",") if n.strip()]
@@ -5268,6 +5279,17 @@ def main() -> int:
                 )
                 return 2
 
+    # After the selection is validated and before the client exists. Late
+    # enough that a typo in --tier or --endpoints is still reported as a typo
+    # rather than as a missing save directory, and early enough that neither
+    # refusal costs a connection. --emit-cases and --check-cases returned long
+    # ago: they never reach a product, so they never call /doc/NEW.
+    harness_save_path.require(parser, args, exact_path=args.save_as)
+    checkpoint = args.save_as or (
+        None if args.no_save_before
+        else harness_save_path.checkpoint(args.save_dir, "midas-nx-crud", args.product)
+    )
+
     client = MidasClient(
         mapi_key=args.mapi_key, base_url=args.base_url,
         product=args.product, timeout=args.timeout,
@@ -5281,9 +5303,9 @@ def main() -> int:
         print(f"Server reachable but not connected: {health}", file=sys.stderr)
         return 2
 
-    if args.save_as:
-        print(f"Saving the open document to {args.save_as} first...")
-        doc.save_as(args.save_as, client=client)
+    if checkpoint:
+        print(f"Saving the open document to {checkpoint} first...")
+        doc.save_as(checkpoint, client=client)
 
     print("Creating a throwaway document and seeding a minimal model...")
     doc.new_project(client=client)
@@ -5385,8 +5407,8 @@ def main() -> int:
     # distinct C:/temp checkpoint before making a new document; otherwise the
     # next /doc/NEW can display NX's modal "save changes?" prompt even though
     # the caller saved the document that was open before this run.
-    if args.save_as:
-        final_checkpoint = _final_checkpoint_path(args.save_as)
+    if checkpoint:
+        final_checkpoint = _final_checkpoint_path(checkpoint)
         try:
             print(f"Saving the throwaway model to {final_checkpoint} before cleanup...")
             doc.save_as(final_checkpoint, client=client)

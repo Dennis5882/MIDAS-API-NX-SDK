@@ -165,9 +165,19 @@ about. The other five are not:
 model. Get the document to an empty state first, and confirm it.
 
 Every one of the five writes a checkpoint to a directory **on the machine
-running NX**, which you name (`--save-as`, `--save-dir`). None of them guesses
-one: a path that does not exist on that machine raises a dialog there and
-blocks the session, while the HTTP call still answers like a success.
+running NX**, which you name with `--save-dir`. None of them guesses one: a
+path that does not exist on that machine raises a dialog there and blocks the
+session, while the HTTP call still answers like a success.
+
+Since 2026-09-21 the four that call `/doc/NEW` ask in exactly the same way, and
+**refuse to start** when you name nothing — the rule and the reasons are in
+`scripts/harness_save_path.py`. `--save-dir` takes a directory and the file
+name is derived from the product, so the NX extension (Gen `.mgbx`, Civil
+`.mcbz`) cannot be got wrong. `--no-save-before` waives the checkpoint and
+**not** the `/doc/NEW`. Two stated departures: `scripts/live_crud_check.py`
+also accepts `--save-as` for an exact path, and `scripts/live_manual_feedback.py`
+has no waiver at all, because its per-probe saves are the evidence the run
+produces rather than a safety net.
 
 ## Connectivity troubleshooting
 
