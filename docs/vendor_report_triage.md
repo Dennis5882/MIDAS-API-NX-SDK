@@ -39,8 +39,8 @@ is easier to trust on what it kept.
 
 | id | what | last measured |
 | --- | --- | --- |
-| A-2 | `DELETE {endpoint}` with an ID-keyed `"Assign"` empties the whole table | Civil v2.2 build 06/18/2026 |
-| A-3 | 10 endpoints where a write is accepted, echoed back and not stored | **2026-09-21**, except `/db/STCT` on Civil, `/db/MATD` and `/db/SSEIS` |
+| A-2 | `DELETE {endpoint}` with an ID-keyed `"Assign"` empties the whole table | **2026-09-21**, both products, on a dummy model |
+| A-3 | 10 endpoints where a write is accepted, echoed back and not stored | **2026-09-21**, except `/db/STCT` on Civil |
 | A-4 | error bodies under HTTP 200 / 201 | **2026-09-21**, seventeen observations in one batch |
 | A-5 | `/mapikey/verify` answers `connected` after the product is gone | 2026-07 |
 | A-6 | `"Wrong Field"` means a bad value, not a bad field name | **2026-09-21** |
@@ -52,24 +52,18 @@ is easier to trust on what it kept.
 
 ### Re-verification debt
 
-Mostly cleared on 2026-09-21, when the author had both products open and chose
-the fixture-replay scope. What is still outstanding, and why:
+Cleared on 2026-09-21 in two passes: the fixture replay, then a dummy model
+built for the items a replay cannot reach. Three are left, and each needs
+something a scratch model cannot supply:
 
-- **A-2** — its reproduction empties a table. It needs a document confirmed
-  disposable, the same bar as any `/doc/NEW` harness, and the author declined
-  it for that session.
 - **A-5** — needs the product to be killed and then polled.
 - **A-7** — needs a document opened from under `Program Files` and, if it
   reproduces, a human to dismiss a modal on the NX machine.
-- **`/db/STCT` on Civil** — the case reports `BLOCKED` rather than a result:
-  Civil pre-populates the stage-control record, so the POST answers `Key
-  Already Exist`. Reaching the drop there takes a PUT the fixture does not
-  carry. The Gen half reproduced (`wrote 30, read back None`).
-- **`/db/MATD`, `/db/SSEIS`** — measured through
-  `scripts/live_manual_feedback.py`'s probes rather than the CRUD fixture, and
-  not re-run.
-- **`/db/SPLC`** — the round trip passes; the `ALONG`-ignored-on-update half
-  was not probed separately.
+- **`/db/STCT` on Civil** — needs a model with **construction stages**. On a
+  bare seeded model `GET /db/STCT` answers `{"message": ""}` on both products,
+  so the PUT has no record to update. The Gen half reproduced
+  (`wrote 30, read back None`); the table is also POST/DELETE-locked once
+  staging is in use, which is a separate documented business rule.
 
 **No build string was read on 2026-09-21.** The API reports none. A fresh
 GET-only `/info` sweep of both products matched the Build 09/15/2026 surface
@@ -82,6 +76,12 @@ is the standing proof that behaviour moves while `/info` does not.
 - **`/db/SECF` got sharper.** The report recorded a 200 with no error. The
   product actually **echoes the whole record back** while `GET` answers
   `{"message": ""}` — the same signature as `/db/CONS` and `/db/MATD`.
+- **`/db/STCT`'s Civil block was misattributed, twice within a day.** The
+  batch recorded it as Civil pre-populating the record; the harness's own
+  message said `a seed in this selection owns it`, and a direct measurement
+  showed neither product pre-populates it. Recorded because the correction
+  matters more than the finding: both of the day's wrong readings came from
+  taking a harness result without reading what the harness said about it.
 - **`/db/STBK` got weaker.** A-9's "declared nowhere, accepted anyway"
   direction rested partly on it. The call is accepted without error on both
   products, but the record read back does not carry `LCNAME`, so what is

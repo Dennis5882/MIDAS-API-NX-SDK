@@ -10606,10 +10606,71 @@ measuring the endpoint.
 ### Not measured today
 
 A-2 and A-7 by the author's choice, above. A-5 needs the product to be killed.
-`/db/STCT` on **Civil** reported `BLOCKED` rather than a result: Civil
-pre-populates the stage-control record, so the case's POST answers
-`Key Already Exist` - which is the Civil wrinkle the report already describes,
-and reaching the drop there needs a PUT the fixture does not carry. `/db/MATD`
-and `/db/SSEIS` came from `scripts/live_manual_feedback.py`'s probes rather
-than the CRUD fixture and were not re-run. `/db/SPLC`'s round trip passes; the
-`ALONG`-ignored-on-update half was not probed separately.
+`/db/STCT` on **Civil** reported `BLOCKED` rather than a result - see the
+correction in the next section, because the reason recorded here first was
+wrong. `/db/MATD` and `/db/SSEIS` came from
+`scripts/live_manual_feedback.py`'s probes rather than the CRUD fixture and
+were not re-run in the batch above. `/db/SPLC`'s round trip passes; the
+`ALONG`-ignored-on-update half is not what that case measures.
+
+## 2026-09-21 (later) - the rest of the report, on a dummy model built for it
+
+The author asked for the remaining items to be measured with a dummy model
+rather than left as debt. `scripts/live_crud_check.py`'s `_seed_model` builds
+it - 10 nodes, 4 elements, 2 static load cases - and every run checkpointed
+under `C:/temp` and ended on an empty document. Both products were confirmed
+empty before and after.
+
+### A-2 reproduces, and the contrast now sits in one session
+
+Measured on both products, on a model built to be destroyed:
+
+| call | before | after |
+| --- | --- | --- |
+| `DELETE /db/NODE/6` (per-id, undocumented) | NODE 10, ELEM 4 | NODE 9, ELEM 3 |
+| `DELETE /db/STLD` + `{"Assign": {"1": {}}}` | STLD 2 | **STLD 0** |
+| `DELETE /db/NODE` + `{"Assign": {"3": {}}}` | NODE 9, ELEM 3 | **NODE 0, ELEM 0** |
+
+The per-id form does exactly what it should, including taking the one element
+that depended on node 6. The documented body-with-ids form ignores the id and
+empties the table, and on `/db/NODE` it takes every element with it - one call,
+whole model. Identical on Gen and Civil.
+
+That is the strongest form of this finding recorded so far, because the correct
+behaviour and the destructive one are two calls apart in the same session on
+the same model, rather than compared across sessions.
+
+### A-3's remaining three, through their own probes
+
+`scripts/live_manual_feedback.py --case b1` and `--case b2`, which is where
+these were measured on 2026-09-18:
+
+- **`/db/MATD`** - Gen stores `bSERVCHECK`, `dSHORTTERM` and `dLONGTERM`
+  individually and together; Civil's record carries **none of the three** in
+  any of the five variants, baseline included, while the PUT answers 200.
+- **`/db/SPLC`** - POST stores `ALONG: 2.5`; the PUT to `3.5` answers 200 and
+  **echoes 3.5**; the following GET still reads `2.5`. Gen.
+- **`/db/SSEIS`** - the real `INHERENT_TORSION` round-trips to `true`. Both
+  article typos, `IINHERENT_TORSION` and `NHERENT_TORSION`, vanish from the 201
+  response body and leave the real field `false`.
+
+### Correction: `/db/STCT`'s Civil block is a fixture seed, not the product
+
+The batch earlier today recorded Civil's `/db/STCT` case as `BLOCKED` because
+"Civil pre-populates the stage-control record". **That attribution was wrong**,
+and the harness's own message said so: `id 1 already exists before this case
+ran; a seed in this selection owns it`. A seed in `extras11` creates it.
+
+Measured directly on a freshly seeded model, `GET /db/STCT` answers
+`{"message": ""}` on **both** products - neither pre-populates it - and the PUT
+is refused because there is no record to update. The 2026-08 observation of a
+pre-existing record on Civil was on a model with construction staging in use,
+which is also where that table becomes POST/DELETE-locked.
+
+So the Civil half of `/db/STCT` still has not been measured, and now the
+precondition is known: it needs a model with construction stages, not a bare
+seed. The Gen half stands on today's `wrote 30, read back None`.
+
+This is the second wrong attribution in one day, after `/db/MVHL`'s missing
+seed. Both came from the same habit - reading a harness result without reading
+what the harness said about it.
