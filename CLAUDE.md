@@ -156,8 +156,11 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   is a claim about both products that is sometimes false; tag it (MD-46).
   **`/info` is neither a superset nor a subset of what the server accepts.** It
   declares `/db/POSL`'s `CODE` on Civil NX, which refuses it live even as an empty
-  string, and omits `/db/STBK`'s `LCNAME`, which a confirmed round trip sends
-  successfully. It is a schema document with its own errors — like the manual, just
+  string — re-measured 2026-09-21, still `Wrong Field` with it and accepted without
+  it. The other direction, `/db/STBK`'s `LCNAME`, is **weaker than this bullet used
+  to claim**: the call is accepted without error on both products, but the record
+  read back afterwards does not carry the field, so what is established is that the
+  server tolerates it, not that it stores it. `/db/POSL` carries this argument. It is a schema document with its own errors — like the manual, just
   produced closer to the code and right far more often. Where `/info` and a live
   round trip disagree, the round trip wins.
 - `schema/typescript-resources.json` / `schema/typescript-coverage.json` — committed generator outputs.

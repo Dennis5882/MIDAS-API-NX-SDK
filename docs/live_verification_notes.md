@@ -10524,3 +10524,92 @@ row that endpoint had been the only citer of.
 This is also why the new ledger appends rather than edits: a record is what one
 session saw, and a later session writing over it loses evidence nobody notices
 is gone.
+
+## 2026-09-21 - the vendor report re-measured on both products, and two of its claims sharpened
+
+The author had both products open and asked for the report's items to be
+checked as of today. Scope chosen by the author: the fixture replay, **not**
+A-2 (its reproduction empties a table) and **not** A-7 (it needs a document
+opened from `Program Files` and, if it reproduces, a human to dismiss a modal).
+Both documents were empty before anything ran (`GET /db/NODE` and `/db/ELEM`
+answered 0 records under each product's own key), every destructive run
+checkpointed under `C:/temp`, and both products were left on empty documents.
+
+**No build string was read this session.** The API reports none, so every one
+in this file is a human reading the About dialog; the `/info` comparison below
+says the *surface* matches Build 09/15/2026's and nothing stronger than that.
+
+**The API surface has not moved.** A fresh GET-only `/info` capture of both
+products diffed against `schema/info-baseline.json` shows exactly one change,
+`/db/SECT` gaining `SECT_AFTER.USE_HAMBLY_EQ` and `SECT_BEFORE.USE_HAMBLY_EQ`
+on both - which is the already-recorded Build 09/15/2026 delta against a
+baseline captured 2026-09-03. Nothing else. That is not proof the build is
+unchanged and it was not treated as one: `/db/NMAS` is the standing proof that
+behaviour can change while `/info` does not, which is why the writes were run
+anyway.
+
+### Reproduced, unchanged
+
+| item | endpoint | what happened today |
+| --- | --- | --- |
+| A-3 | `/db/CONS` | sent an 8-character `CONSTRAINT`, stored 7, both products |
+| A-3 | `/db/MVHL` | `VEHICLE_TYPE_NAME: "NOT-A-VEHICLE"` stored verbatim, both |
+| A-3 | `/db/SECF` | key naming no section: POST ok, table empty, both |
+| A-3 | `/db/STCT` | Gen: `wrote 30, read back None` - `iITER` dropped |
+| A-3 | `/db/SBDO`, `/db/SINF` | `id 1 missing after wrote`, both |
+| A-3 | `/db/MVLDpl` | `id 1 missing after wrote`, Civil |
+| - | `/db/MADO`, `/db/DOEL` | `id 92` / `id 4` missing, both - populated tables, so still not separable from a renumber |
+| A-4 | seventeen calls | every refusal in the A-10 batch arrived as **HTTP 201 with an error body** |
+| A-6 | `/db/TDMT` | an unrecognised `CODE` answers `Wrong Field` |
+| A-8 | `/DESIGN/*`, IEHG trio | 404 on both products; `/db/*` answers |
+| A-9 | `/db/POSL` | Civil `/info` declares `CODE` in 8 properties; sending `CODE: ""` answers `Wrong Field`; the same payload without it is accepted |
+| A-10 | all nine + `/db/RPSC` | each answered its exact recorded message on both products |
+
+A-10 in full, from the harness rather than by hand: `Wrong Field` for
+`/db/TDMF`, `/db/RPSC`, `/db/EPST`, `/db/EPSE` and `/db/WVLD`; `Wrong Key` for
+`/db/HPCE`; `Unknown Error` for `/db/FBLA`, `/db/PHGE`, `/db/MVLDeu` and
+`/db/NLLP`. `/db/WVLD` is the Civil case and `/db/EPST`/`/db/EPSE` the Gen
+ones, so "both products" means each on the product that declares it.
+
+### Two claims that got sharper, one that got weaker
+
+**`/db/SECF` is an echo, not just a silent success.** The report recorded a 200
+with no error. What the product actually returns is the **whole record echoed
+back** - `{"SECF": {"4": {"ITEMS": [{"ID": 1, "AREA_SF": 1.2, ...}]}}}` - while
+`GET /db/SECF` answers `{"message": ""}`. That is the same signature as
+`/db/CONS` and `/db/MATD`, not a weaker cousin of them, and the report's
+wording is now that.
+
+**`/db/STBK`'s `LCNAME` is weaker evidence than it was being used as.** The
+claim that `/info` is not a superset of what the server accepts rested partly
+on `LCNAME` being absent from `/info` while a confirmed round trip sends it.
+The call does succeed on both products. But the record read back afterwards is
+`{"NODE1": 1, "NODE2": 2, "DX": 0, "DY": 0.005, "DZ": 0, "GROUP_NAME": ""}` -
+**no `LCNAME`**. So what is established is that the field is *tolerated*, not
+that it is stored, and whether it had any effect is unmeasured. `/db/POSL` is
+doing all the work in that direction and it is doing it well; `/db/STBK` is now
+stated as the weaker observation it is, in the report and in CLAUDE.md.
+
+### A first probe that answered nothing, and why it is recorded
+
+`/db/MVHL`'s first run reported the bogus vehicle name as *not* stored, which
+would have contradicted the report. It was wrong: the probe called
+`_seed_model` only, and `/db/MVHL`'s case declares `needs: [mvcd, vehicle]` -
+without the `/db/MVCD` selector carrying `CODE: "AASHTO LRFD"`, the POST is a
+no-op for an unrelated reason. Re-run with the seed taken from the fixture, the
+name stores verbatim on both products.
+
+This is the fifth time a missing tier seed has read as a product finding. The
+rule it keeps proving: a probe that skips the fixture's own `needs` is not
+measuring the endpoint.
+
+### Not measured today
+
+A-2 and A-7 by the author's choice, above. A-5 needs the product to be killed.
+`/db/STCT` on **Civil** reported `BLOCKED` rather than a result: Civil
+pre-populates the stage-control record, so the case's POST answers
+`Key Already Exist` - which is the Civil wrinkle the report already describes,
+and reaching the drop there needs a PUT the fixture does not carry. `/db/MATD`
+and `/db/SSEIS` came from `scripts/live_manual_feedback.py`'s probes rather
+than the CRUD fixture and were not re-run. `/db/SPLC`'s round trip passes; the
+`ALONG`-ignored-on-update half was not probed separately.

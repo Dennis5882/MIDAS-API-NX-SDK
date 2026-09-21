@@ -40,25 +40,54 @@ is easier to trust on what it kept.
 | id | what | last measured |
 | --- | --- | --- |
 | A-2 | `DELETE {endpoint}` with an ID-keyed `"Assign"` empties the whole table | Civil v2.2 build 06/18/2026 |
-| A-3 | 10 endpoints where a write is accepted, echoed back and not stored | 3 on build 09/15/2026; the original 3 on 06/18/2026 |
-| A-4 | error bodies under HTTP 200 / 201 | re-observed 2026-09-18 on build 09/15/2026 |
+| A-3 | 10 endpoints where a write is accepted, echoed back and not stored | **2026-09-21**, except `/db/STCT` on Civil, `/db/MATD` and `/db/SSEIS` |
+| A-4 | error bodies under HTTP 200 / 201 | **2026-09-21**, seventeen observations in one batch |
 | A-5 | `/mapikey/verify` answers `connected` after the product is gone | 2026-07 |
-| A-6 | `"Wrong Field"` means a bad value, not a bad field name | rule still holds, 2026-09-19 |
+| A-6 | `"Wrong Field"` means a bad value, not a bad field name | **2026-09-21** |
 | A-7 | writes under `Program Files` fail with access denied, including on a GET | 2026-07-29 |
-| A-8 | `/info` is not served for `/DESIGN/*` or the Hyper-S `IEHG` trio | 2026-09-01, captured 09-03 |
-| A-9 | `/info` disagrees with the server in both directions | 2026-09-03 baseline |
-| A-10 | 9 endpoints + `/db/RPSC` whose write path has never passed — **an ask, not a defect claim** | 2026-09-19 |
+| A-8 | `/info` is not served for `/DESIGN/*` or the Hyper-S `IEHG` trio | **2026-09-21** |
+| A-9 | `/info` disagrees with the server in both directions | **2026-09-21**; see the correction below |
+| A-10 | 9 endpoints + `/db/RPSC` whose write path has never passed — **an ask, not a defect claim** | **2026-09-21**, each on the product that declares it |
 | B-1…B-5 | documentation items, each checked against the official article | 2026-07-27 / 2026-08-27 |
 
 ### Re-verification debt
 
-A-2, A-3's original three (`/db/CONS`, `/db/MVHL`, `/db/SECF`) and A-7 were
-last reproduced on **Civil v2.2 build 06/18/2026 or earlier**. The report's
-version table now says so rather than implying they are current-build findings.
+Mostly cleared on 2026-09-21, when the author had both products open and chose
+the fixture-replay scope. What is still outstanding, and why:
 
-Re-running them on Build 09/15/2026 is the obvious next step and needs the
-author's go-ahead, because **A-2's reproduction empties a table**: it needs a
-document confirmed disposable, the same bar as any `/doc/NEW` harness.
+- **A-2** — its reproduction empties a table. It needs a document confirmed
+  disposable, the same bar as any `/doc/NEW` harness, and the author declined
+  it for that session.
+- **A-5** — needs the product to be killed and then polled.
+- **A-7** — needs a document opened from under `Program Files` and, if it
+  reproduces, a human to dismiss a modal on the NX machine.
+- **`/db/STCT` on Civil** — the case reports `BLOCKED` rather than a result:
+  Civil pre-populates the stage-control record, so the POST answers `Key
+  Already Exist`. Reaching the drop there takes a PUT the fixture does not
+  carry. The Gen half reproduced (`wrote 30, read back None`).
+- **`/db/MATD`, `/db/SSEIS`** — measured through
+  `scripts/live_manual_feedback.py`'s probes rather than the CRUD fixture, and
+  not re-run.
+- **`/db/SPLC`** — the round trip passes; the `ALONG`-ignored-on-update half
+  was not probed separately.
+
+**No build string was read on 2026-09-21.** The API reports none. A fresh
+GET-only `/info` sweep of both products matched the Build 09/15/2026 surface
+exactly (one already-recorded `/db/SECT` delta against the 2026-09-03
+baseline), which says the surface is unchanged and nothing more — `/db/NMAS`
+is the standing proof that behaviour moves while `/info` does not.
+
+### Corrected by the 2026-09-21 re-measurement
+
+- **`/db/SECF` got sharper.** The report recorded a 200 with no error. The
+  product actually **echoes the whole record back** while `GET` answers
+  `{"message": ""}` — the same signature as `/db/CONS` and `/db/MATD`.
+- **`/db/STBK` got weaker.** A-9's "declared nowhere, accepted anyway"
+  direction rested partly on it. The call is accepted without error on both
+  products, but the record read back does not carry `LCNAME`, so what is
+  established is that the server *tolerates* the field, not that it stores it.
+  `/db/POSL` carries that direction; `/db/STBK` is now stated as the weaker
+  observation it is, here, in the report and in CLAUDE.md.
 
 ## Removed
 
