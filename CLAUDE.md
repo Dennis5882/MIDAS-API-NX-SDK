@@ -107,7 +107,16 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   the payload-type lookup, 478 of 765 payload types still come from Python TypedDicts, and the
   87 table wrappers are read from Python source. Only 3 of 305 resources still take their
   identity from a Python class: the IEHG trio, which has no permitted source and so can never be
-  contracted.
+  contracted. **`scripts/report_npm_type_provenance.py` measures that 478 rather than counting it
+  by hand** (`--check` holds it as a ceiling in CI), and the breakdown changes what the remaining
+  work is: **463 of the 478 are nested objects**, not endpoints nobody contracted. The generator
+  emits a contract's payload *root* and leaves everything under it to Python, and no contract has
+  a home for a nested type's published npm name — deriving one would rename shipped exports,
+  which is the silent rename `surface` exists to prevent. Of the 15 that are top-level, 13 are
+  the `extraction.unmergedTables` contracts, skipped on purpose because narrowing a published
+  type onto an admittedly partial field list would delete documented fields; the last two
+  (`LoadCombinationPayload`, `_ColorPayload`) no contract names. So this is one missing generator
+  capability plus a naming decision, not 478 separate gaps.
 - `scripts/contract_from_info.py` — the one path into a contract that does not start at the
   manual. Seven Hyper-S `-M1` sections state a URL, their methods and nothing else, so live
   `/info` is their only permitted source; this fills a draft's `fields` from

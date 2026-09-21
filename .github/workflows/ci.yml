@@ -55,6 +55,8 @@ jobs:
         run: python scripts/report_unmerged_tables.py --check
       - name: Fail if a document states a number the repository disagrees with
         run: python scripts/check_state_numbers.py --check
+      - name: Fail if npm generation reads more types out of the Python tree
+        run: python scripts/report_npm_type_provenance.py --check
 
   typescript:
     runs-on: ubuntu-latest
