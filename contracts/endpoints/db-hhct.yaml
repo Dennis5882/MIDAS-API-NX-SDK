@@ -15,6 +15,10 @@ surface:
   exportName: heatOfHydrationAnalysisControl
   modulePath: [db, analysisControl]
   payloadTypeName: HeatOfHydrationAnalysisControlPayload
+  nestedTypes:
+    - {path: ITEM, name: CreepShrinkageItem, namespace: DbAnalysisControlTypes}
+    - {path: ITEM.M_EFF_MOD, name: CreepShrinkageEffectiveModulusData, namespace: DbAnalysisControlTypes}
+    - {path: ITEM.M_GENERAL, name: CreepShrinkageGeneralData, namespace: DbAnalysisControlTypes}
 
 products: [civil, gen]
 

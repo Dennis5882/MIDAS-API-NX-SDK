@@ -104,19 +104,30 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   import comes back. A missing or broken Python install no longer stops `npm publish`. The
   **source tree** is still load-bearing — deleting `src/midas_nx/` breaks `npm run generate`,
   though a built `dist/` keeps working — because `pythonModule`, which no contract records, keys
-  the payload-type lookup, 478 of 765 generated npm types still come from Python TypedDicts, and
+  the payload-type lookup, 250 of 765 generated npm types still come from Python TypedDicts, and
   the 87 table wrappers are read from Python source. Only 3 of 305 resources still take their
   identity from a Python class: the IEHG trio, which has no permitted source and so can never be
-  contracted. **`scripts/report_npm_type_provenance.py` measures that 478 rather than counting it
-  by hand** (`--check` holds it as a ceiling in CI), and the breakdown changes what the remaining
-  work is: **463 of them are nested objects**, not endpoints nobody contracted. The generator
-  emits a contract's payload *root* and leaves everything under it to Python, and no contract has
-  a home for a nested type's published npm name — deriving one would rename shipped exports,
-  which is the silent rename `surface` exists to prevent. Of the 15 that are top-level, 13 are
-  the `unmergedTables` contracts, skipped on purpose because narrowing a published type onto an
-  admittedly partial field list would delete documented fields, and 2 no contract names
-  (`LoadCombinationPayload`, `_ColorPayload`). So this is one missing generator
-  capability plus a naming decision, not 478 separate gaps.
+  contracted. **`scripts/report_npm_type_provenance.py` measures that 250 rather than counting it
+  by hand** (`--check` holds it as a ceiling in CI). **Since 2026-09-21 a contract can own its
+  nested types too**: `surface.nestedTypes` records, per field path, the name and namespace a
+  nested object is *already published under* (the namespace is part of the public name), and the
+  generator builds that type from the contract subtree, including any variant union attached
+  there. Before that the generator emitted a payload root from the contract with its nested
+  objects inlined, and published the named interfaces for those same objects from Python —
+  `total=False`, so e.g. `BeamEndOffsetItem.TYPE` was optional beside a root that required it.
+  Moving 228 of them made 411 members required across 156 types and added 84, and removed none;
+  that is a public-type change the npm changelog has to state. Three refusals are built in: a
+  name several contracts declare with different shapes (prose aside), a path whose shape a
+  variant *above* it redeclares (`/db/SECT`'s `SECT_BEFORE`), and a name the package does not
+  already publish — recording one is never a way to add an export. Deriving the element types
+  also caught an extractor defect the name-only `check_field_parity` cannot see: **a `(1)`-numbered
+  nested row whose key already appeared higher in the table was dropped**, because
+  `extract_contracts.py` gave such rows no parent scope. Fixed there, and the 27 members it had lost
+  across eight contracts were restored verbatim from the fixed extractor's own drafts — `/db/EFCT`'s
+  `COMB_LIST[].LCNAME` and `/db/STAG`'s `DACT_ELEM[].GRUP_NAME` among them, both of which `/info`
+  declares on both products. What remains Python-sourced is broken down in the
+  script's docstring; most of it sits under no contract-generated root at all — operation
+  arguments and the 13 `unmergedTables` roots' children.
 - `scripts/contract_from_info.py` — the one path into a contract that does not start at the
   manual. Seven Hyper-S `-M1` sections state a URL, their methods and nothing else, so live
   `/info` is their only permitted source; this fills a draft's `fields` from

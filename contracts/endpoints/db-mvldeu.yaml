@@ -15,6 +15,9 @@ surface:
   exportName: movingLoadCaseEurocode
   modulePath: [db, movingLoads]
   payloadTypeName: MovingLoadCaseEurocodePayload
+  nestedTypes:
+    - {path: STL_LIST, name: MovingLoadCaseEurocodeStraddlingLaneItem, namespace: DbMovingLoadsTypes}
+    - {path: SUB_LOAD_LIST, name: MovingLoadCaseEurocodeSubLoadItem, namespace: DbMovingLoadsTypes}
 
 products: [civil, gen]
 

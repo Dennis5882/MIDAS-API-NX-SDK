@@ -138,11 +138,7 @@ PATTERNS = (
         re.compile(r"(\d+) of (\d+) generated npm types"),
         ("npm_types_from_python", "npm_types"),
     ),
-    Pattern(re.compile(r"(\d+) of them are nested objects"), ("npm_types_nested",)),
-    Pattern(
-        re.compile(r"(\d+) are the `unmergedTables` contracts"), ("npm_types_unmerged",)
-    ),
-    Pattern(re.compile(r"and (\d+) no contract names"), ("npm_types_uncontracted",)),
+    Pattern(re.compile(r"the (\d+) `unmergedTables` roots"), ("npm_types_unmerged",)),
 )
 
 
@@ -210,9 +206,7 @@ def measure() -> dict[str, int]:
         "npm_types_from_python": sum(
             len(names) for bucket, names in provenance.items() if bucket != "contract"
         ),
-        "npm_types_nested": len(provenance["python:nested"]),
         "npm_types_unmerged": len(provenance["python:unmerged"]),
-        "npm_types_uncontracted": len(provenance["python:uncontracted"]),
         "lagging_contracts": len(lagging),
     }
 

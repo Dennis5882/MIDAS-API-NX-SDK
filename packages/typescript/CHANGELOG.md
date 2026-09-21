@@ -6,6 +6,68 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+> **Breaking at the type level; nothing changes at runtime.** No exported name
+> is added, removed or renamed - 765 exported type names before and after - and
+> no member is removed. But 411 members across 156 exported types go from
+> optional to required, so code that builds one of those objects without a
+> member the contract requires stops compiling. The generated JavaScript is
+> unchanged.
+
+### Changed - 228 nested types now come from the contracts
+
+Every payload built from a contract already inlined its nested objects in the
+contract's shape. The **named** interfaces for those same objects - the element
+of an `ITEMS` array, a `COMMON` block - were still generated from the Python
+package's TypedDicts, which declare every member optional. So one object was
+published twice with two shapes: `DbBoundaryTypes.BeamEndOffsetItem.TYPE` was
+optional while `BeamEndOffsetPayload.ITEMS[].TYPE` beside it was required.
+
+Contracts now record the names these types are already published under, and
+228 of them are generated from the contract instead:
+
+- **411 members become required** across 156 types, matching the payload that
+  contains them. Any value that satisfied the containing payload type already
+  satisfied these.
+- **84 members are added** across 32 types, where the contract documents a
+  field the Python TypedDict did not.
+- **29 types no longer `extends` a shared base** such as
+  `DbBaseTypes.ItemGroupFields`; the same members are declared inline, so the
+  shape is unchanged for a caller.
+- **4 become `type` aliases instead of `interface`s**, because the contract
+  branches inside them: `DbBoundaryTypes.LinearConstraintItem`,
+  `DbStaticLoadsTypes.PressureLoadItem`, `DesignRcKdsRebarTypes.RcBeamRebarItem`
+  and `DesignRcKdsRebarTypes.RcBraceRebarItem`. `PressureLoadItem` now requires
+  `FORCES` for `FACE_EDGE_TYPE` `"FACE"`/`"PRES"` and `EDGE_LOADS` for
+  `"EDGE"`, as `PressureLoadPayload` already did. A type alias of a union cannot
+  be `extends`-ed or `implements`-ed.
+
+### Fixed - eight payloads regain nested members the manual documents
+
+The tool that drafts contracts from the manual dropped a nested row numbered
+`(1)`, `(2)` whenever a field of the same name appeared earlier in the same
+table - a root `LCNAME` two rows above hid `COMB_LIST[].LCNAME`. 27 documented
+members were missing from eight contracts, and so from these payload types:
+
+- `InitialForceControlDataPayload` (`/db/EFCT`): `COMB_LIST[].LCNAME`, required.
+- `ConstructionStagePayload` (`/db/STAG`): `DACT_ELEM[].GRUP_NAME`, required.
+- `ConstructionStageForHydrationPayload` (`/db/HSTG`): `DACT_LOAD[].LOAD_NAME`
+  and `DAY`, both optional.
+- `NonlinearAnalysisControlDataPayload` (`/db/NLCT`): eleven members of
+  `NEWTON_ITEMS`, `ARCLEN_ITEMS` and `DISPCT_ITEMS`, nine of them required in
+  their iteration-method branch.
+- `TendonProfilePayload` (`/db/TDNA`): nine `PROFZ` members of the 2D spline
+  and round branches, `PT` required in each.
+- `StaticSeismicLoadPayload` (`/db/SSEIS`, required) and `StaticWindLoadPayload`
+  (`/db/SWIND`, optional): `ADDITIONAL_LOAD[].STORY_NAME` in the user-type
+  branch.
+- `BeamSectionTemperaturePayload` (`/db/BTMP`): `ITEMS[].vSECTTMP[].REF`,
+  optional.
+
+The two checked against the product's `/info` schema (`/db/EFCT`, `/db/STAG`)
+declare these members on Civil NX and Gen NX. The live payloads this project
+has confirmed against the product are unaffected: none of them conflicts with a
+restored member.
+
 ## 2.9.0 - 2026-09-20
 
 No change to this package. The shared version number moves because the Python

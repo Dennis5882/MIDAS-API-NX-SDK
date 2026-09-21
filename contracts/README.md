@@ -123,6 +123,47 @@ Three things to know:
   TypedDict shared by endpoints with different contracts gets renamed on the way
   through.
 
+### Nested types: `surface.nestedTypes`
+
+A payload root has had a contract-owned name since 2026-09-02, but the objects
+inside it did not. The generator built the root from the contract, inlining
+every nested object, and then published the **named** interface for each of
+those objects a second time from the Python TypedDict - with Python's field
+list and Python's `total=False`. One object, two public shapes:
+`DbBoundaryTypes.BeamEndOffsetItem.TYPE` was optional beside a `/db/OFFS` root
+whose `ITEMS` element required it.
+
+```yaml
+surface:
+  className: BeamEndOffset
+  exportName: beamEndOffset
+  modulePath: [db, boundary]
+  payloadTypeName: BeamEndOffsetPayload
+  nestedTypes:
+    - {path: ITEMS, name: BeamEndOffsetItem, namespace: DbBoundaryTypes}
+```
+
+`path` is the field inside `fields` (an array's entry names its element type);
+`name` and `namespace` are what the package **already publishes** - the
+namespace is part of the public name, because every namespace is re-exported
+at the package root. The generator then builds that type from the contract
+subtree, variant unions attached there included. Seeded on 2026-09-21 from the
+committed output, so recording an entry renames nothing; it does change the
+type's *shape* to the contract's, which is the point.
+
+It refuses three things rather than guess:
+
+- a name several contracts declare with different shapes once descriptions are
+  set aside - `BAR_SECTOR_I` and `BAR_SECTOR_J` may say which end they are, but
+  not have different members;
+- a path whose shape a variant **above** it redeclares, as each `SECTTYPE`
+  branch of `/db/SECT` redeclares `SECT_BEFORE` - there is no single subtree;
+- a name the package does not already publish. Recording one is not a way to
+  add an export.
+
+A contract carrying `unmergedTables` may not declare any: its payload is not
+generated from the contract, so there is no subtree to build from.
+
 ### A function endpoint's surface lives on the operation
 
 A `/db/*` resource publishes **one** npm export carrying every method, so its

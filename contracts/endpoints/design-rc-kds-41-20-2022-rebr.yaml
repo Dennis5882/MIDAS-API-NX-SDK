@@ -15,6 +15,12 @@ surface:
   exportName: modifyBraceRebarData
   modulePath: [design, rcKds, rebar]
   payloadTypeName: ModifyBraceRebarDataPayload
+  nestedTypes:
+    - {path: Assign.ITEMS, name: RcBraceRebarItem, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.ITEMS.ELEMS, name: NodeElemsSelector, namespace: PostBaseTypes}
+    - {path: Assign.ITEMS.MAIN_BAR, name: RcBraceMainBarSpec, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.ITEMS.SHEAR_BAR_CEN, name: HoopShearBarSpec, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.ITEMS.SHEAR_BAR_END, name: HoopShearBarSpec, namespace: DesignRcKdsRebarTypes}
 
 products: [gen]
 

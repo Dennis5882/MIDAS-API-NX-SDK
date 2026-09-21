@@ -15,6 +15,8 @@ surface:
   exportName: sectionStiffness
   modulePath: [db, properties, section]
   payloadTypeName: SectionStiffnessPayload
+  nestedTypes:
+    - {path: ITEMS, name: SectionStiffnessItem, namespace: DbPropertiesSectionTypes}
 
 products: [civil, gen]
 

@@ -1780,6 +1780,39 @@ def test_a_table_without_tree_markers_keeps_its_numbered_duplicate_scope(tmp_pat
     assert [child.key for child in parent.properties] == ["CHILD"]
 
 
+def test_a_parenthesised_child_repeating_an_earlier_top_level_key_is_kept(tmp_path: Path):
+    """A `(1)` row's scope is the plain-numbered row above it, not the table.
+
+    `_number_parent` reads dotted and dashed numbers only, so a `(1)` row used
+    to share one scope with the top level: a nested key that repeated any
+    earlier field's name was taken for a duplicate and dropped without a
+    trace. /db/EFCT is the shape - a root `LCNAME` two rows above hid
+    `COMB_LIST[].LCNAME` - and 27 documented members across eight contracts
+    were lost that way until 2026-09-21.
+    """
+
+    path = tmp_path / "99_DB_ParenChild.md"
+    path.write_text(
+        """## 1. `/db/PAREN-CHILD` -- a nested key repeating a root key
+
+| No. | Description | Key | Value Type | Default | Required |
+|---|---|---|---|---|---|
+| 1 | Load Case Name | `"LCNAME"` | String | - | Required |
+| 2 | Cases | `"COMB_LIST"` | Array [Object] | - | Required |
+| (1) | Load Case Name | `"LCNAME"` | String | - | Required |
+| (2) | Scale Factor | `"FACTOR"` | Number | - | Required |
+| 3 | Other cases | `"OTHER_LIST"` | Array [Object] | - | Optional |
+| (1) | Load Case Name | `"LCNAME"` | String | - | Required |
+""",
+        encoding="utf-8",
+    )
+
+    fields = ex.parse_chapter(path)[0].tables[0].fields
+    by_key = {field.key: field for field in fields}
+    assert [child.key for child in by_key["COMB_LIST"].properties] == ["LCNAME", "FACTOR"]
+    assert [child.key for child in by_key["OTHER_LIST"].properties] == ["LCNAME"]
+
+
 def test_a_repeated_heading_selector_is_not_a_discriminator(tmp_path: Path):
     """One value cannot select two field sets, so neither table merges.
 

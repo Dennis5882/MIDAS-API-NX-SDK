@@ -14,6 +14,8 @@ surface:
   exportName: pushoverLoadCase
   modulePath: [db, pushover]
   payloadTypeName: PushoverLoadCasePayload
+  nestedTypes:
+    - {path: LOADPATTERN, name: PushoverLoadPatternItem, namespace: DbPushoverTypes}
 
 products: [civil, gen]
 

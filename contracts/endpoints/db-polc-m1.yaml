@@ -15,6 +15,9 @@ surface:
   exportName: pushoverLoadCaseHyperS
   modulePath: [db, pushover]
   payloadTypeName: PushoverLoadCaseHyperSPayload
+  nestedTypes:
+    - {path: CTRL_OPT, name: PushoverControlOptionHyperS, namespace: DbPushoverTypes}
+    - {path: LOADPATTERN, name: PushoverLoadPatternItemHyperS, namespace: DbPushoverTypes}
 
 products: [civil]
 

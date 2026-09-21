@@ -15,6 +15,8 @@ surface:
   exportName: namedPlane
   modulePath: [db, project]
   payloadTypeName: NamedPlanePayload
+  nestedTypes:
+    - {path: POINT, name: NamedPlanePointItem, namespace: DbProjectTypes}
 
 products: [civil, gen]
 

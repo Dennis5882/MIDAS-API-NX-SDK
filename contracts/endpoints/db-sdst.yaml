@@ -15,6 +15,12 @@ surface:
   exportName: seismicDeviceSteelDamper
   modulePath: [db, boundary]
   payloadTypeName: SeismicDeviceSteelDamperPayload
+  nestedTypes:
+    - {path: BL2, name: SeismicDeviceSteelDamperBL2, namespace: DbBoundaryTypes}
+    - {path: COMMON, name: SeismicDeviceCommon, namespace: DbBoundaryTypes}
+    - {path: IK2, name: SeismicDeviceSteelDamperIK2, namespace: DbBoundaryTypes}
+    - {path: LY2, name: SeismicDeviceSteelDamperLY2, namespace: DbBoundaryTypes}
+    - {path: LY3, name: SeismicDeviceSteelDamperLY3, namespace: DbBoundaryTypes}
 
 products: [civil, gen]
 

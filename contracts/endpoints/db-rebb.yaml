@@ -20,6 +20,20 @@ surface:
   exportName: beamRebar
   modulePath: [db, design]
   payloadTypeName: BeamRebarPayload
+  nestedTypes:
+    - {path: ITEMS, name: BeamRebarItem, namespace: DbDesignTypes}
+    - {path: ITEMS.BAR_SECTOR_I, name: BeamRebarSector, namespace: DbDesignTypes}
+    - {path: ITEMS.BAR_SECTOR_I.SHEAR_BAR, name: BeamShearBarSpec, namespace: DbDesignTypes}
+    - {path: ITEMS.BAR_SECTOR_I.vMAIN_BAR_BOT, name: BeamMainBarLayerEntry, namespace: DbDesignTypes}
+    - {path: ITEMS.BAR_SECTOR_I.vMAIN_BAR_TOP, name: BeamMainBarLayerEntry, namespace: DbDesignTypes}
+    - {path: ITEMS.BAR_SECTOR_J, name: BeamRebarSector, namespace: DbDesignTypes}
+    - {path: ITEMS.BAR_SECTOR_J.SHEAR_BAR, name: BeamShearBarSpec, namespace: DbDesignTypes}
+    - {path: ITEMS.BAR_SECTOR_J.vMAIN_BAR_BOT, name: BeamMainBarLayerEntry, namespace: DbDesignTypes}
+    - {path: ITEMS.BAR_SECTOR_J.vMAIN_BAR_TOP, name: BeamMainBarLayerEntry, namespace: DbDesignTypes}
+    - {path: ITEMS.BAR_SECTOR_M, name: BeamRebarSector, namespace: DbDesignTypes}
+    - {path: ITEMS.BAR_SECTOR_M.SHEAR_BAR, name: BeamShearBarSpec, namespace: DbDesignTypes}
+    - {path: ITEMS.BAR_SECTOR_M.vMAIN_BAR_BOT, name: BeamMainBarLayerEntry, namespace: DbDesignTypes}
+    - {path: ITEMS.BAR_SECTOR_M.vMAIN_BAR_TOP, name: BeamMainBarLayerEntry, namespace: DbDesignTypes}
 
 products: [gen]
 productsEvidence: >-

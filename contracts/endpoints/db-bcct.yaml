@@ -15,6 +15,9 @@ surface:
   exportName: boundaryChangeAssignment
   modulePath: [db, analysisControl]
   payloadTypeName: BoundaryChangeAssignmentPayload
+  nestedTypes:
+    - {path: vBOUNDARY, name: BoundaryGroupCombinationItem, namespace: DbAnalysisControlTypes}
+    - {path: vLOADANAL, name: LoadCaseAnalysisAssignmentItem, namespace: DbAnalysisControlTypes}
 
 products: [civil, gen]
 

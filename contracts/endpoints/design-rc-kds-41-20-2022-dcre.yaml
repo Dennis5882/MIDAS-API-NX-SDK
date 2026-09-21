@@ -15,6 +15,15 @@ surface:
   exportName: rebarDesignCriteria
   modulePath: [design, rcKds, rebar]
   payloadTypeName: RebarDesignCriteriaPayload
+  nestedTypes:
+    - {path: Assign.BEAM, name: DcreBeamCriteria, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.BRACE, name: DcreColumnBraceCriteria, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.COLUMN, name: DcreColumnBraceCriteria, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.WALL, name: DcreWallCriteria, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.WALL.ADDITIONAL_WALL_DATA, name: DcreWallAdditionalData, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.WALL.MATERIAL_BY_DIAMETER_INPUT, name: DcreWallMaterialByDiameterInput, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.WALL.MATERIAL_BY_DIAMETER_INPUT.HORIZONTAL_REBAR, name: DcreWallMaterialByDiameterEntry, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.WALL.MATERIAL_BY_DIAMETER_INPUT.VERTICAL_END_REBAR, name: DcreWallMaterialByDiameterEntry, namespace: DesignRcKdsRebarTypes}
 
 products: [civil, gen]
 

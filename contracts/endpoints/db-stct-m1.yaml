@@ -18,6 +18,26 @@ surface:
   exportName: constructionStageAnalysisControlDataHyperS
   modulePath: [db, analysisControl]
   payloadTypeName: ConstructionStageAnalysisControlDataHyperSPayload
+  nestedTypes:
+    - {path: ANAL_TYPE, name: ConstructionStageAnalysisTypeHyperS, namespace: DbAnalysisControlTypes}
+    - {path: CABLE_CONTROL, name: CableControlHyperS, namespace: DbAnalysisControlTypes}
+    - {path: ERECTION_LOAD, name: ErectionLoadItem, namespace: DbAnalysisControlTypes}
+    - {path: FRAME_OUTPUT, name: FrameOutputHyperS, namespace: DbAnalysisControlTypes}
+    - {path: INITIAL_CONTROL, name: InitialForceControlHyperS, namespace: DbAnalysisControlTypes}
+    - {path: INITIAL_DISP, name: InitialDisplacementHyperS, namespace: DbAnalysisControlTypes}
+    - {path: INITIAL_DISP.ITD_CONTROL, name: InitialTangentDisplacementControlHyperS, namespace: DbAnalysisControlTypes}
+    - {path: NONL_CONTROL, name: NonlinearControlHyperSStct, namespace: DbAnalysisControlTypes}
+    - {path: NONL_CONTROL.ADVANCED, name: NonlinearAdvancedHyperSStct, namespace: DbAnalysisControlTypes}
+    - {path: NONL_CONTROL.ADVANCED.LINE_SEARCH, name: LineSearchHyperSStct, namespace: DbAnalysisControlTypes}
+    - {path: NONL_CONTROL.DISP, name: ConvergenceCriterionHyperSStct, namespace: DbAnalysisControlTypes}
+    - {path: NONL_CONTROL.LOAD, name: ConvergenceCriterionHyperSStct, namespace: DbAnalysisControlTypes}
+    - {path: NONL_CONTROL.WORK, name: ConvergenceCriterionHyperSStct, namespace: DbAnalysisControlTypes}
+    - {path: RESTART_CS_ANAL, name: ConstructionStageRestartHyperS, namespace: DbAnalysisControlTypes}
+    - {path: STRESS_DECREASE, name: StressDecreaseHyperS, namespace: DbAnalysisControlTypes}
+    - {path: TIME_DEP_CONTROL, name: TimeDependentControlHyperS, namespace: DbAnalysisControlTypes}
+    - {path: TIME_DEP_CONTROL.CREEP_SHRINKAGE, name: CreepShrinkageControlHyperS, namespace: DbAnalysisControlTypes}
+    - {path: TIME_DEP_CONTROL.CREEP_SHRINKAGE.AUTO_TIME_STEP, name: AutoTimeStepHyperS, namespace: DbAnalysisControlTypes}
+    - {path: TIME_DEP_CONTROL.CREEP_SHRINKAGE.INTERNAL_STEP, name: InternalTimeStepHyperS, namespace: DbAnalysisControlTypes}
 
 products: [civil]
 productsEvidence: >-

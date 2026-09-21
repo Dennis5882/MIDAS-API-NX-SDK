@@ -15,6 +15,9 @@ surface:
   exportName: inelasticFiberMaterialLinkHyperS
   modulePath: [db, properties, material]
   payloadTypeName: InelasticFiberMaterialLinkHyperSPayload
+  nestedTypes:
+    - {path: CONCRETE, name: InelasticFiberMaterialLinkHyperSConcrete, namespace: DbPropertiesMaterialTypes}
+    - {path: STEEL, name: InelasticFiberMaterialLinkHyperSSteel, namespace: DbPropertiesMaterialTypes}
 
 products: [civil]
 

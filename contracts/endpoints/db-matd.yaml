@@ -15,6 +15,9 @@ surface:
   exportName: materialModifyConcrete
   modulePath: [db, properties, material]
   payloadTypeName: MaterialModifyConcretePayload
+  nestedTypes:
+    - {path: DATA1, name: MaterialModifyConcreteData1, namespace: DbPropertiesMaterialTypes}
+    - {path: DATA1.DESIGN, name: MaterialModifyConcreteDesign, namespace: DbPropertiesMaterialTypes}
 
 products: [civil, gen]
 

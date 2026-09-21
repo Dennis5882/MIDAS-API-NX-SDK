@@ -15,6 +15,9 @@ surface:
   exportName: pushoverAnalysisControlData
   modulePath: [db, pushover]
   payloadTypeName: PushoverAnalysisControlDataPayload
+  nestedTypes:
+    - {path: NONL_OPT, name: NonlinearAnalysisOptionPOGD, namespace: DbPushoverTypes}
+    - {path: PHOP_OPT, name: PushoverHingeDataOptionPOGD, namespace: DbPushoverTypes}
 
 products: [civil, gen]
 

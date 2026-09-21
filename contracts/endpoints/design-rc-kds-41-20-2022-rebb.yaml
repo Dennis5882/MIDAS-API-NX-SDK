@@ -15,6 +15,21 @@ surface:
   exportName: modifyBeamRebarData
   modulePath: [design, rcKds, rebar]
   payloadTypeName: ModifyBeamRebarDataPayload
+  nestedTypes:
+    - {path: Assign.ITEMS, name: RcBeamRebarItem, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.ITEMS.BAR_SECTOR_I, name: RcBeamRebarSector, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.ITEMS.BAR_SECTOR_I.SHEAR_BAR, name: RcBeamShearBarSpec, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.ITEMS.BAR_SECTOR_I.vMAIN_BAR_BOT, name: RcBeamMainBarLayerEntry, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.ITEMS.BAR_SECTOR_I.vMAIN_BAR_TOP, name: RcBeamMainBarLayerEntry, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.ITEMS.BAR_SECTOR_J, name: RcBeamRebarSector, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.ITEMS.BAR_SECTOR_J.SHEAR_BAR, name: RcBeamShearBarSpec, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.ITEMS.BAR_SECTOR_J.vMAIN_BAR_BOT, name: RcBeamMainBarLayerEntry, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.ITEMS.BAR_SECTOR_J.vMAIN_BAR_TOP, name: RcBeamMainBarLayerEntry, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.ITEMS.BAR_SECTOR_M, name: RcBeamRebarSector, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.ITEMS.BAR_SECTOR_M.SHEAR_BAR, name: RcBeamShearBarSpec, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.ITEMS.BAR_SECTOR_M.vMAIN_BAR_BOT, name: RcBeamMainBarLayerEntry, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.ITEMS.BAR_SECTOR_M.vMAIN_BAR_TOP, name: RcBeamMainBarLayerEntry, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.ITEMS.ELEMS, name: NodeElemsSelector, namespace: PostBaseTypes}
 
 products: [gen]
 

@@ -15,6 +15,10 @@ surface:
   exportName: heatOfHydrationAnalysisControlHyperS
   modulePath: [db, analysisControl]
   payloadTypeName: HeatOfHydrationAnalysisControlHyperSPayload
+  nestedTypes:
+    - {path: CONVERGENCE, name: HeatOfHydrationConvergenceHyperS, namespace: DbAnalysisControlTypes}
+    - {path: ITEM, name: CreepShrinkageItemHyperS, namespace: DbAnalysisControlTypes}
+    - {path: ITEM.M_EFF_MOD, name: CreepShrinkageEffectiveModulusData, namespace: DbAnalysisControlTypes}
 
 products: [civil]
 

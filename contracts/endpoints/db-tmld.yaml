@@ -15,6 +15,8 @@ surface:
   exportName: timeLoadConstructionStage
   modulePath: [db, constructionStage]
   payloadTypeName: TimeLoadConstructionStagePayload
+  nestedTypes:
+    - {path: ITEMS, name: TimeLoadItem, namespace: DbConstructionStageTypes}
 
 products: [civil, gen]
 

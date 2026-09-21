@@ -15,6 +15,8 @@ surface:
   exportName: srcLoadContributionForNonlinearLoadCase
   modulePath: [design, srcAiksrc2k]
   payloadTypeName: SrcLoadContributionForNonlinearLoadCasePayload
+  nestedTypes:
+    - {path: BASE_ITEM, name: SrcLoadContributionBaseItem, namespace: DesignSrcAiksrc2kTypes}
 
 products: [civil, gen]
 

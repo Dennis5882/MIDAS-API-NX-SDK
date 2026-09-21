@@ -15,6 +15,8 @@ surface:
   exportName: temperatureGradient
   modulePath: [db, temperaturePrestress]
   payloadTypeName: TemperatureGradientPayload
+  nestedTypes:
+    - {path: ITEMS, name: TemperatureGradientItem, namespace: DbTemperaturePrestressTypes}
 
 products: [civil, gen]
 

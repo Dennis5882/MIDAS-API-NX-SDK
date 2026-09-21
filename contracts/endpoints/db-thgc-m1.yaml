@@ -17,6 +17,15 @@ surface:
   exportName: timeHistoryGlobalControlHyperS
   modulePath: [db, dynamicLoads]
   payloadTypeName: TimeHistoryGlobalControlHyperSPayload
+  nestedTypes:
+    - {path: HINGE_OPT, name: HyperSHingeOption, namespace: DbDynamicLoadsTypes}
+    - {path: INCREMENT_STEP, name: HyperSIncrementStep, namespace: DbDynamicLoadsTypes}
+    - {path: ITER_PARAM, name: HyperSIterationParameters, namespace: DbDynamicLoadsTypes}
+    - {path: ITER_PARAM.LINE_SEARCH, name: HyperSLineSearch, namespace: DbDynamicLoadsTypes}
+    - {path: ITER_PARAM.NORM_CTRL, name: HyperSNormControl, namespace: DbDynamicLoadsTypes}
+    - {path: ITER_PARAM.NORM_CTRL.DISP, name: HyperSNormCriterion, namespace: DbDynamicLoadsTypes}
+    - {path: ITER_PARAM.NORM_CTRL.ENERGY, name: HyperSNormCriterion, namespace: DbDynamicLoadsTypes}
+    - {path: ITER_PARAM.NORM_CTRL.FORCE, name: HyperSNormCriterion, namespace: DbDynamicLoadsTypes}
 
 products: [civil]
 productsEvidence: >-

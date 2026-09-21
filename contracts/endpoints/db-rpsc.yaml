@@ -15,6 +15,10 @@ surface:
   exportName: sectionReinforcement
   modulePath: [db, properties, section]
   payloadTypeName: SectionReinforcementPayload
+  nestedTypes:
+    - {path: MBARS, name: SectionReinforcementGroup, namespace: DbPropertiesSectionTypes}
+    - {path: MBARS.MBAR_ITEMS, name: SectionReinforcementLongitudinalItem, namespace: DbPropertiesSectionTypes}
+    - {path: SBAR_ITEMS, name: SectionReinforcementShearItem, namespace: DbPropertiesSectionTypes}
 
 products: [civil, gen]
 

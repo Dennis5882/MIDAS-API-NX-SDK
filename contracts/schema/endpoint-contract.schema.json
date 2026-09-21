@@ -67,6 +67,37 @@
           "type": "string",
           "minLength": 1,
           "description": "Generated payload type name, e.g. `NodePayload`. Absent where the resource has no payload type of its own - `/db/DRLS` is typed `JsonObject`, and having no name is a fact rather than a gap."
+        },
+        "nestedTypes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "name",
+              "namespace"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Dotted field path inside this contract's `fields`, e.g. `ITEMS` or `BAR_SECTOR_I.TOP`. For an array field the type is its element."
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Published npm type name, e.g. `BeamEndOffsetItem`."
+              },
+              "namespace": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Published npm namespace the name sits in, e.g. `DbBoundaryTypes`. Part of the public name: the package re-exports every namespace at its root."
+              }
+            }
+          },
+          "description": "Names the package already publishes for objects nested inside this payload. Until 2026-09-21 each such object was published twice - inline in the contract-generated root, and again as a named interface read out of the Python TypedDicts with Python's field list and requiredness. Recording the published name here lets the generator build the named type from this contract instead. Seeded from the committed output, so adding an entry renames nothing. A type declared by several contracts must have the same shape in each once descriptions are set aside, or generation fails."
         }
       }
     },

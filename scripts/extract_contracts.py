@@ -3860,6 +3860,14 @@ def _parse_tables(lines: list[str], offset: int, endpoint: str = "") -> list[Par
         target_fields = fields
         target_seen = seen
         target_scope = scope
+        # The plain-numbered row a `(n)` child row sits under. `_number_parent`
+        # only understands dotted and dashed numbers, so a `(1)` row used to
+        # have no parent at all and shared the table-wide scope with the top
+        # level: a nested key that repeated any earlier field's name was taken
+        # for a duplicate and dropped. That is how /db/EFCT lost
+        # `COMB_LIST[].LCNAME` (a root `LCNAME` sits two rows above) and
+        # /db/STAG lost `DACT_ELEM[].GRUP_NAME` (`ACT_ELEM` has one first).
+        numbered_parent = ""
         row = index + 2
         while row < len(lines) and lines[row].startswith("|"):
             cells = _split_row(lines[row])
@@ -3928,10 +3936,16 @@ def _parse_tables(lines: list[str], offset: int, endpoint: str = "") -> list[Par
                 # was held out of the source of truth for it. The running tree
                 # path is the scope those rows do have.
                 tree_scope = _tree_scope(cells[0] if cells else "", target_scope)
+                number = _clean(cells[0]) if cells else ""
+                if re.fullmatch(r"\d+", number):
+                    numbered_parent = number
+                parent = (
+                    numbered_parent
+                    if re.fullmatch(r"\(\d+\)", number)
+                    else _number_parent(number)
+                )
                 entry_identity = (
-                    tree_scope
-                    if tree_scope is not None
-                    else (_number_parent(cells[0] if cells else ""), entry_key)
+                    tree_scope if tree_scope is not None else (parent, entry_key)
                 )
                 if entry_identity in target_seen:
                     continue

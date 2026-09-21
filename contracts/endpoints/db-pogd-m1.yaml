@@ -15,6 +15,19 @@ surface:
   exportName: pushoverAnalysisControlDataHyperS
   modulePath: [db, pushover]
   payloadTypeName: PushoverAnalysisControlDataHyperSPayload
+  nestedTypes:
+    - {path: ANALYSIS_STOP, name: AnalysisStopHyperS, namespace: DbPushoverTypes}
+    - {path: ANALYSIS_STOP.AXIAL_YIELD, name: AxialYieldStopHyperS, namespace: DbPushoverTypes}
+    - {path: ANALYSIS_STOP.SHEAR_YIELD, name: ShearYieldStopHyperS, namespace: DbPushoverTypes}
+    - {path: ANALYSIS_STOP.SUPPORT_DZ_DIR, name: SupportDzDirStopHyperS, namespace: DbPushoverTypes}
+    - {path: ITER_CTRL, name: IterationControlHyperS, namespace: DbPushoverTypes}
+    - {path: ITER_CTRL.LINE_SEARCH, name: LineSearchHyperS, namespace: DbPushoverTypes}
+    - {path: ITER_CTRL.NORM_CTRL, name: NormControlHyperS, namespace: DbPushoverTypes}
+    - {path: MISC, name: PushoverMiscOptionHyperS, namespace: DbPushoverTypes}
+    - {path: PO_HINGE_OPT, name: PushoverHingeOptionHyperS, namespace: DbPushoverTypes}
+    - {path: PO_HINGE_OPT.BILINEAR, name: BilinearStiffnessReductionHyperS, namespace: DbPushoverTypes}
+    - {path: PO_HINGE_OPT.NONL_TYPE, name: NonlinearTypeHyperSPOGD, namespace: DbPushoverTypes}
+    - {path: PO_HINGE_OPT.TRILINEAR, name: TrilinearStiffnessReductionHyperS, namespace: DbPushoverTypes}
 
 products: [civil]
 

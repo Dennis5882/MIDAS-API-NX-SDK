@@ -15,6 +15,14 @@ surface:
   exportName: modifyWallRebarData
   modulePath: [design, rcKds, rebar]
   payloadTypeName: ModifyWallRebarDataPayload
+  nestedTypes:
+    - {path: ITEMS, name: RcWallRebarItem, namespace: DesignRcKdsRebarTypes}
+    - {path: ITEMS.BE_HORIZONTAL_REBAR, name: RebarNameDist, namespace: DesignRcKdsRebarTypes}
+    - {path: ITEMS.CONCRETE_FACE_TO_CENTER_OF_REBAR, name: RcWallConcreteFaceToCenterOfRebar, namespace: DesignRcKdsRebarTypes}
+    - {path: ITEMS.END_REBAR, name: RcWallEndRebarSpec, namespace: DesignRcKdsRebarTypes}
+    - {path: ITEMS.HORIZONTAL_REBAR, name: RebarNameDist, namespace: DesignRcKdsRebarTypes}
+    - {path: ITEMS.STORY, name: RcWallStoryRange, namespace: DesignRcKdsRebarTypes}
+    - {path: ITEMS.VERTICAL_REBAR, name: RebarNameDist, namespace: DesignRcKdsRebarTypes}
 
 products: [gen]
 

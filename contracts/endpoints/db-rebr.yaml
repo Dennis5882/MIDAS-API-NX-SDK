@@ -22,6 +22,11 @@ surface:
   exportName: braceRebar
   modulePath: [db, design]
   payloadTypeName: BraceRebarPayload
+  nestedTypes:
+    - {path: ITEMS, name: BraceRebarItem, namespace: DbDesignTypes}
+    - {path: ITEMS.SHEAR_BAR_CEN, name: HoopShearBarSpec, namespace: DbDesignTypes}
+    - {path: ITEMS.SHEAR_BAR_END, name: HoopShearBarSpec, namespace: DbDesignTypes}
+    - {path: ITEMS.vMAIN_BAR, name: BraceMainBarItem, namespace: DbDesignTypes}
 
 products: [gen]
 

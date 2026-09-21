@@ -15,6 +15,20 @@ surface:
   exportName: plasticMaterialHyperS
   modulePath: [db, properties, material]
   payloadTypeName: PlasticMaterialHyperSPayload
+  nestedTypes:
+    - {path: CONCDMG, name: PlasticMaterialHyperSConcreteDamage, namespace: DbPropertiesMaterialTypes}
+    - {path: CONCDMG.COMP_ITEMS, name: PlasticMaterialHyperSConcreteDamageItem, namespace: DbPropertiesMaterialTypes}
+    - {path: CONCDMG.TENSILE_ITEMS, name: PlasticMaterialHyperSConcreteDamageItem, namespace: DbPropertiesMaterialTypes}
+    - {path: DRUCKER, name: PlasticMaterialHyperSCoulombModel, namespace: DbPropertiesMaterialTypes}
+    - {path: MASONRY, name: PlasticMaterialHyperSMasonry, namespace: DbPropertiesMaterialTypes}
+    - {path: MASONRY.BED_JOINT, name: PlasticMaterialHyperSMasonryLayer, namespace: DbPropertiesMaterialTypes}
+    - {path: MASONRY.BM, name: PlasticMaterialHyperSMasonryLayer, namespace: DbPropertiesMaterialTypes}
+    - {path: MASONRY.GEOM, name: PlasticMaterialHyperSMasonryGeometry, namespace: DbPropertiesMaterialTypes}
+    - {path: MASONRY.HEAD_JOINT, name: PlasticMaterialHyperSMasonryLayer, namespace: DbPropertiesMaterialTypes}
+    - {path: MASONRY.MAT_COORD, name: PlasticMaterialHyperSMasonryCoord, namespace: DbPropertiesMaterialTypes}
+    - {path: MOHRCL, name: PlasticMaterialHyperSCoulombModel, namespace: DbPropertiesMaterialTypes}
+    - {path: TRESCA, name: PlasticMaterialHyperSHardeningModel, namespace: DbPropertiesMaterialTypes}
+    - {path: VMISES, name: PlasticMaterialHyperSHardeningModel, namespace: DbPropertiesMaterialTypes}
 
 products: [civil]
 

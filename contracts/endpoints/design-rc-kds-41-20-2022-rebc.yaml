@@ -15,6 +15,12 @@ surface:
   exportName: modifyColumnRebarData
   modulePath: [design, rcKds, rebar]
   payloadTypeName: ModifyColumnRebarDataPayload
+  nestedTypes:
+    - {path: Assign.ITEMS, name: RcColumnRebarItem, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.ITEMS.ELEMS, name: NodeElemsSelector, namespace: PostBaseTypes}
+    - {path: Assign.ITEMS.MAIN_BAR, name: RcColumnMainBarSpec, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.ITEMS.SHEAR_BAR_CEN, name: HoopShearBarSpec, namespace: DesignRcKdsRebarTypes}
+    - {path: Assign.ITEMS.SHEAR_BAR_END, name: HoopShearBarSpec, namespace: DesignRcKdsRebarTypes}
 
 products: [gen]
 

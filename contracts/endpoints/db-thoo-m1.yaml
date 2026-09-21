@@ -15,6 +15,9 @@ surface:
   exportName: timeHistoryOutputOptionHyperS
   modulePath: [db, dynamicLoads]
   payloadTypeName: TimeHistoryOutputOptionHyperSPayload
+  nestedTypes:
+    - {path: OUT_OPT, name: HyperSOutputOption, namespace: DbDynamicLoadsTypes}
+    - {path: RESULT_SELECTION, name: HyperSResultSelection, namespace: DbDynamicLoadsTypes}
 
 products: [civil]
 

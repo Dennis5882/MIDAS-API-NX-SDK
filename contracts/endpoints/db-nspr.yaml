@@ -15,6 +15,8 @@ surface:
   exportName: pointSpring
   modulePath: [db, boundary]
   payloadTypeName: PointSpringPayload
+  nestedTypes:
+    - {path: ITEMS, name: PointSpringItem, namespace: DbBoundaryTypes}
 
 products: [civil, gen]
 

@@ -15,6 +15,9 @@ surface:
   exportName: timeHistoryLoadCaseHyperS
   modulePath: [db, dynamicLoads]
   payloadTypeName: TimeHistoryLoadCaseHyperSPayload
+  nestedTypes:
+    - {path: ANAL_CASE, name: HyperSAnalysisCase, namespace: DbDynamicLoadsTypes}
+    - {path: SUBSEQ, name: HyperSSubsequentLoad, namespace: DbDynamicLoadsTypes}
 
 products: [civil]
 

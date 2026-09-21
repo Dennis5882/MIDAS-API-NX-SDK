@@ -15,6 +15,9 @@ surface:
   exportName: modifyConcreteMaterial
   modulePath: [design, rcKds, setup]
   payloadTypeName: ModifyConcreteMaterialPayload
+  nestedTypes:
+    - {path: CONCRETE, name: ModifyConcreteMaterialConcrete, namespace: DesignRcKdsSetupTypes}
+    - {path: REBAR, name: ModifyConcreteMaterialRebar, namespace: DesignRcKdsSetupTypes}
 
 products: [gen]
 

@@ -17,6 +17,28 @@ surface:
   exportName: srcBeamSectionData
   modulePath: [design, srcAiksrc2k]
   payloadTypeName: SrcBeamSectionDataPayload
+  nestedTypes:
+    - {path: BAR_SECTOR_I, name: SrcBeamBarSector, namespace: DesignSrcAiksrc2kTypes}
+    - {path: BAR_SECTOR_I.BOT, name: SrcBeamRebarFace, namespace: DesignSrcAiksrc2kTypes}
+    - {path: BAR_SECTOR_I.BOT.LAYER1, name: SrcBeamRebarLayer, namespace: DesignSrcAiksrc2kTypes}
+    - {path: BAR_SECTOR_I.BOT.LAYER2, name: SrcBeamRebarLayer, namespace: DesignSrcAiksrc2kTypes}
+    - {path: BAR_SECTOR_I.TOP, name: SrcBeamRebarFace, namespace: DesignSrcAiksrc2kTypes}
+    - {path: BAR_SECTOR_I.TOP.LAYER1, name: SrcBeamRebarLayer, namespace: DesignSrcAiksrc2kTypes}
+    - {path: BAR_SECTOR_I.TOP.LAYER2, name: SrcBeamRebarLayer, namespace: DesignSrcAiksrc2kTypes}
+    - {path: BAR_SECTOR_J, name: SrcBeamBarSector, namespace: DesignSrcAiksrc2kTypes}
+    - {path: BAR_SECTOR_J.BOT, name: SrcBeamRebarFace, namespace: DesignSrcAiksrc2kTypes}
+    - {path: BAR_SECTOR_J.BOT.LAYER1, name: SrcBeamRebarLayer, namespace: DesignSrcAiksrc2kTypes}
+    - {path: BAR_SECTOR_J.BOT.LAYER2, name: SrcBeamRebarLayer, namespace: DesignSrcAiksrc2kTypes}
+    - {path: BAR_SECTOR_J.TOP, name: SrcBeamRebarFace, namespace: DesignSrcAiksrc2kTypes}
+    - {path: BAR_SECTOR_J.TOP.LAYER1, name: SrcBeamRebarLayer, namespace: DesignSrcAiksrc2kTypes}
+    - {path: BAR_SECTOR_J.TOP.LAYER2, name: SrcBeamRebarLayer, namespace: DesignSrcAiksrc2kTypes}
+    - {path: BAR_SECTOR_M, name: SrcBeamBarSector, namespace: DesignSrcAiksrc2kTypes}
+    - {path: BAR_SECTOR_M.BOT, name: SrcBeamRebarFace, namespace: DesignSrcAiksrc2kTypes}
+    - {path: BAR_SECTOR_M.BOT.LAYER1, name: SrcBeamRebarLayer, namespace: DesignSrcAiksrc2kTypes}
+    - {path: BAR_SECTOR_M.BOT.LAYER2, name: SrcBeamRebarLayer, namespace: DesignSrcAiksrc2kTypes}
+    - {path: BAR_SECTOR_M.TOP, name: SrcBeamRebarFace, namespace: DesignSrcAiksrc2kTypes}
+    - {path: BAR_SECTOR_M.TOP.LAYER1, name: SrcBeamRebarLayer, namespace: DesignSrcAiksrc2kTypes}
+    - {path: BAR_SECTOR_M.TOP.LAYER2, name: SrcBeamRebarLayer, namespace: DesignSrcAiksrc2kTypes}
 
 products: [civil, gen]
 

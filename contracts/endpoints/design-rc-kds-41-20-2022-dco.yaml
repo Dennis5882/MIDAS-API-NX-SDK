@@ -15,6 +15,11 @@ surface:
   exportName: concreteDesignCodeOption
   modulePath: [design, rcKds, setup]
   payloadTypeName: ConcreteDesignCodeOptionPayload
+  nestedTypes:
+    - {path: SEISMIC, name: ConcreteDesignCodeOptionSeismic, namespace: DesignRcKdsSetupTypes}
+    - {path: SEISMIC.JOINT, name: ConcreteDesignCodeOptionJoint, namespace: DesignRcKdsSetupTypes}
+    - {path: SEISMIC.SHEAR_DES, name: ConcreteDesignCodeOptionShearDes, namespace: DesignRcKdsSetupTypes}
+    - {path: SEISMIC.SHEAR_WALL, name: ConcreteDesignCodeOptionShearWall, namespace: DesignRcKdsSetupTypes}
 
 products: [civil, gen]
 

@@ -15,6 +15,9 @@ surface:
   exportName: mainControlDataHyperS
   modulePath: [db, analysisControl]
   payloadTypeName: MainControlDataHyperSPayload
+  nestedTypes:
+    - {path: TCELEM, name: TensionCompressionTrussElement, namespace: DbAnalysisControlTypes}
+    - {path: TCELEM.CONVERGENCE, name: TensionCompressionTrussConvergence, namespace: DbAnalysisControlTypes}
 
 products: [civil]
 

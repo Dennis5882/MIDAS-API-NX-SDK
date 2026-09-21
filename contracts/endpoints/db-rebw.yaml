@@ -21,6 +21,12 @@ surface:
   exportName: wallRebar
   modulePath: [db, design]
   payloadTypeName: WallRebarPayload
+  nestedTypes:
+    - {path: ITEMS, name: WallRebarItem, namespace: DbDesignTypes}
+    - {path: ITEMS.BE_HOR_BAR, name: RebarNameDist, namespace: DbDesignTypes}
+    - {path: ITEMS.END_BAR, name: RebarNameDist, namespace: DbDesignTypes}
+    - {path: ITEMS.HOR_BAR, name: RebarNameDist, namespace: DbDesignTypes}
+    - {path: ITEMS.VER_BAR, name: RebarNameDist, namespace: DbDesignTypes}
 
 products: [gen]
 productsEvidence: >-

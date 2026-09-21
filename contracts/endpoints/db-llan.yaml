@@ -15,6 +15,9 @@ surface:
   exportName: trafficLineLanes
   modulePath: [db, movingLoads]
   payloadTypeName: TrafficLineLanePayload
+  nestedTypes:
+    - {path: COMMON, name: LineLaneCommon, namespace: DbMovingLoadsTypes}
+    - {path: LANE_ITEMS, name: LineLaneItem, namespace: DbMovingLoadsTypes}
 
 products: [civil, gen]
 

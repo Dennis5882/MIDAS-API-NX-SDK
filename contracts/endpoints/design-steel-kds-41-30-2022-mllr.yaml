@@ -15,6 +15,8 @@ surface:
   exportName: modifyLiveLoadReductionFactor
   modulePath: [design, steelKds]
   payloadTypeName: ModifyLiveLoadReductionFactorPayload
+  nestedTypes:
+    - {path: COMPONENTS, name: LiveLoadReductionComponents, namespace: DesignSteelKdsTypes}
 
 products: [civil, gen]
 

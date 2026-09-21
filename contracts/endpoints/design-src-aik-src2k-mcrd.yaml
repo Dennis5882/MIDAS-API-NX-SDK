@@ -15,6 +15,9 @@ surface:
   exportName: srcColumnSectionData
   modulePath: [design, srcAiksrc2k]
   payloadTypeName: SrcColumnSectionDataPayload
+  nestedTypes:
+    - {path: MAIN_BAR, name: SrcColumnSectionMainBar, namespace: DesignSrcAiksrc2kTypes}
+    - {path: SHEAR_BAR, name: SrcColumnSectionShearBar, namespace: DesignSrcAiksrc2kTypes}
 
 products: [civil, gen]
 

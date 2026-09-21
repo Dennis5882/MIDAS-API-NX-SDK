@@ -535,6 +535,43 @@ variants:
         safeToOmit: unverified
         provenance: manual
         properties:
+          - key: PT
+            description: >-
+              Coordinates [x, y]
+            type: array
+            items:
+              type: number
+            minItems: 2
+            maxItems: 2
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'PROFZ' by numbering it '(1)', not
+            # by naming a path
+          - key: bFIX
+            description: >-
+              Fix Option
+            type: boolean
+            requirement: optional
+            documentedDefault: false
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'PROFZ' by numbering it '(2)', not
+            # by naming a path
+          - key: R
+            description: >-
+              Radius (degree)
+            type: number
+            requirement: optional
+            documentedDefault: 0
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'PROFZ' by numbering it '(3)', not
+            # by naming a path
           - key: bBOTZ
             description: >-
               BOT Option (ELEMENT 타입 전용)
@@ -649,6 +686,43 @@ variants:
         safeToOmit: unverified
         provenance: manual
         properties:
+          - key: PT
+            description: >-
+              Coordinates [x, y]
+            type: array
+            items:
+              type: number
+            minItems: 2
+            maxItems: 2
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'PROFZ' by numbering it '(1)', not
+            # by naming a path
+          - key: RADIUS
+            description: >-
+              Radius (length)
+            type: number
+            requirement: optional
+            documentedDefault: 0
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'PROFZ' by numbering it '(2)', not
+            # by naming a path
+          - key: OPT
+            description: >-
+              Add Option · None: "NONE" · Left: "LEFT" · Right: "RIGHT"
+            type: string
+            requirement: optional
+            documentedDefault: NONE
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'PROFZ' by numbering it '(3)', not
+            # by naming a path
           - key: bBOTZ
             description: >-
               BOT Option (ELEMENT 타입 전용)
@@ -660,6 +734,39 @@ variants:
             provenance: manual
             # RESOLVED: the manual nests this under 'PROFZ' by numbering it '(4)', not by
             # naming a path
+          - key: ANGLE
+            description: >-
+              Angle (OPT="LEFT"/"RIGHT" 일 때)
+            type: number
+            requirement: optional
+            documentedDefault: 0
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'PROFZ' by numbering it '(5)', not
+            # by naming a path
+          - key: HEIGHT
+            description: >-
+              Height (OPT="LEFT"/"RIGHT" 일 때)
+            type: number
+            requirement: optional
+            documentedDefault: 0
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'PROFZ' by numbering it '(6)', not
+            # by naming a path
+          - key: RADIUS2
+            description: >-
+              Radius – length (OPT="LEFT"/"RIGHT" 일 때)
+            type: number
+            requirement: optional
+            documentedDefault: 0
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'PROFZ' by numbering it '(7)', not
+            # by naming a path
   - when:
       - path: INPUT
         equals: 3D

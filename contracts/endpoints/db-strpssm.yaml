@@ -15,6 +15,9 @@ surface:
   exportName: sectionStressPoints
   modulePath: [db, properties, section]
   payloadTypeName: SectionStressPointsPayload
+  nestedTypes:
+    - {path: POINT1, name: StressPoint, namespace: DbPropertiesSectionTypes}
+    - {path: POINT2, name: StressPoint, namespace: DbPropertiesSectionTypes}
 
 products: [civil]
 

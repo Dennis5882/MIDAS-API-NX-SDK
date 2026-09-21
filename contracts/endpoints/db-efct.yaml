@@ -15,6 +15,8 @@ surface:
   exportName: initialForceControlData
   modulePath: [db, miscLoads]
   payloadTypeName: InitialForceControlDataPayload
+  nestedTypes:
+    - {path: COMB_LIST, name: InitialForceCombinationItem, namespace: DbMiscLoadsTypes}
 
 products: [civil, gen]
 
@@ -126,6 +128,19 @@ fields:
     safeToOmit: unverified
     provenance: manual
     properties:
+      - key: LCNAME
+        description: >-
+          Load Case Name
+        type: string
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        # Restored 2026-09-21. The extractor dropped this row because a field
+        # of the same key sits earlier in the table; the manual numbers it
+        # '(1)' under this array and /info declares it in the element on both
+        # products.
       - key: FACTOR
         description: >-
           Scale Factor

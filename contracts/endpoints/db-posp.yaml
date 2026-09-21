@@ -15,6 +15,8 @@ surface:
   exportName: soilProperty
   modulePath: [db, staticLoads]
   payloadTypeName: SoilPropertyPayload
+  nestedTypes:
+    - {path: ITEMS, name: SoilPropertyItem, namespace: DbStaticLoadsTypes}
 
 products: [gen]
 

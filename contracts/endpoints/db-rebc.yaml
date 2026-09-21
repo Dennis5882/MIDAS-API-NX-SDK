@@ -23,6 +23,11 @@ surface:
   exportName: columnRebar
   modulePath: [db, design]
   payloadTypeName: ColumnRebarPayload
+  nestedTypes:
+    - {path: ITEMS, name: ColumnRebarItem, namespace: DbDesignTypes}
+    - {path: ITEMS.SHEAR_BAR_CEN, name: HoopShearBarSpec, namespace: DbDesignTypes}
+    - {path: ITEMS.SHEAR_BAR_END, name: HoopShearBarSpec, namespace: DbDesignTypes}
+    - {path: ITEMS.vMAIN_BAR, name: ColumnMainBarItem, namespace: DbDesignTypes}
 
 products: [gen]
 productsEvidence: >-

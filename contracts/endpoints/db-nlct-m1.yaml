@@ -15,6 +15,9 @@ surface:
   exportName: nonlinearAnalysisControlHyperS
   modulePath: [db, analysisControl]
   payloadTypeName: NonlinearAnalysisControlHyperSPayload
+  nestedTypes:
+    - {path: CONV_CRITERIA, name: NonlinearConvergenceCriteriaHyperS, namespace: DbAnalysisControlTypes}
+    - {path: LOAD_STEPS, name: NonlinearLoadStepsHyperS, namespace: DbAnalysisControlTypes}
 
 products: [civil]
 

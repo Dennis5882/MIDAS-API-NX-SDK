@@ -15,6 +15,16 @@ surface:
   exportName: rebarCheckInput
   modulePath: [db, design]
   payloadTypeName: RebarCheckInputPayload
+  nestedTypes:
+    - {path: BEAM, name: BeamCheckRebar, namespace: DbDesignTypes}
+    - {path: BEAM.vMAIN, name: BeamMainRebarSectorItem, namespace: DbDesignTypes}
+    - {path: BEAM.vMAIN.POS_BOT_LAYERS, name: BeamMainRebarLayerEntry, namespace: DbDesignTypes}
+    - {path: BEAM.vMAIN.POS_TOP_LAYERS, name: BeamMainRebarLayerEntry, namespace: DbDesignTypes}
+    - {path: BEAM.vSUB_BAR, name: BeamSubRebarSectorItem, namespace: DbDesignTypes}
+    - {path: COLM, name: ColumnCheckRebar, namespace: DbDesignTypes}
+    - {path: COLM.SUB_BAR, name: ColumnSubBarSpec, namespace: DbDesignTypes}
+    - {path: COLM.vLAYER, name: ColumnRebarLayerEntry, namespace: DbDesignTypes}
+    - {path: COLM.vLAYER.vPOSITION, name: ColumnRebarPositionEntry, namespace: DbDesignTypes}
 
 products: [civil]
 

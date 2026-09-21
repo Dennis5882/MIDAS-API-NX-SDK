@@ -15,6 +15,9 @@ surface:
   exportName: groupDamping
   modulePath: [db, properties, damping]
   payloadTypeName: GroupDampingPayload
+  nestedTypes:
+    - {path: GROUP_DAMPING_ITEMS, name: GroupDampingRayleighItem, namespace: DbPropertiesDampingTypes}
+    - {path: STRAIN_GROUP_ITEMS, name: GroupDampingItem, namespace: DbPropertiesDampingTypes}
 
 products: [civil, gen]
 

@@ -585,3 +585,150 @@ def test_static_resource_reader_matches_the_imported_classes():
         for key, expected in facts.items():
             assert static[endpoint][key] == expected, (endpoint, key)
 
+
+
+def _write_contracts(root: Path, contracts: dict[str, str]) -> None:
+    directory = root / "contracts" / "endpoints"
+    directory.mkdir(parents=True)
+    for name, text in contracts.items():
+        (directory / name).write_text(text, encoding="utf-8")
+
+
+_ITEMS_CONTRACT = """\
+endpoint: {endpoint}
+surface:
+  nestedTypes:
+    - {{path: ITEMS, name: SharedItem, namespace: DbTestTypes}}
+fields:
+  - key: ITEMS
+    type: array
+    requirement: required
+    properties:
+      - key: NAME
+        type: string
+        requirement: required
+{extra}
+"""
+
+
+def test_a_nested_type_is_built_from_the_contract_subtree_it_names():
+    """The named element type comes from the contract, requiredness included.
+
+    Until 2026-09-21 `DbBoundaryTypes.BeamEndOffsetItem` was read out of the
+    Python TypedDict, `total=False`, so `TYPE` was optional there while the
+    contract - and the inline `ITEMS` element of the payload root beside it -
+    required it. The same object was published twice with two shapes.
+    """
+    nested = generator._contract_nested_types()
+    item = nested[("DbBoundaryTypes", "BeamEndOffsetItem")]
+    by_key = {field["key"]: field for field in item["fields"]}
+    assert by_key["TYPE"]["requirement"] == "required"
+
+
+def test_a_nested_type_carries_the_union_that_attaches_to_it():
+    """/db/PRES branches inside its ITEMS element, so the element type does too."""
+    nested = generator._contract_nested_types()
+    rendered = "\n".join(
+        generator._contract_payload_type(
+            "PressureLoadItem", nested[("DbStaticLoadsTypes", "PressureLoadItem")]
+        )
+    )
+    assert "export type PressureLoadItem" in rendered
+    assert "FORCES: Array<number>;" in rendered
+    assert "EDGE_LOADS: [number, number, number];" in rendered
+
+
+def test_a_nested_row_sharing_a_key_with_an_earlier_field_is_kept():
+    """/db/EFCT's COMB_LIST element holds LCNAME although the root has one too.
+
+    The extractor dropped the nested row because the key had been seen above
+    it. Deriving the element type from the contract is what exposed that: the
+    type would otherwise have lost a member /info and the manual both declare.
+    """
+    nested = generator._contract_nested_types()
+    item = nested[("DbMiscLoadsTypes", "InitialForceCombinationItem")]
+    assert {field["key"] for field in item["fields"]} == {"LCNAME", "FACTOR"}
+
+
+def test_two_contracts_disagreeing_on_a_shared_nested_type_are_refused(tmp_path, monkeypatch):
+    extra = """\
+      - key: COUNT
+        type: integer
+        requirement: optional"""
+    _write_contracts(tmp_path, {
+        "db-aaa.yaml": _ITEMS_CONTRACT.format(endpoint="/db/AAA", extra=""),
+        "db-bbb.yaml": _ITEMS_CONTRACT.format(endpoint="/db/BBB", extra=extra),
+    })
+    monkeypatch.setattr(generator, "ROOT", tmp_path)
+    try:
+        generator._contract_nested_types()
+    except ValueError as exc:
+        assert "DbTestTypes.SharedItem" in str(exc)
+    else:
+        raise AssertionError("a shared name with two shapes must not publish either")
+
+
+def test_descriptions_alone_do_not_make_a_shared_nested_type_diverge(tmp_path, monkeypatch):
+    """BAR_SECTOR_I and BAR_SECTOR_J describe different ends of one shape."""
+    first = _ITEMS_CONTRACT.format(endpoint="/db/AAA", extra="")
+    second = _ITEMS_CONTRACT.format(endpoint="/db/BBB", extra="").replace(
+        "        type: string\n", "        description: another end\n        type: string\n"
+    )
+    _write_contracts(tmp_path, {"db-aaa.yaml": first, "db-bbb.yaml": second})
+    monkeypatch.setattr(generator, "ROOT", tmp_path)
+    assert list(generator._contract_nested_types()) == [("DbTestTypes", "SharedItem")]
+
+
+def test_a_nested_type_whose_shape_a_branch_above_decides_is_refused(tmp_path, monkeypatch):
+    """/db/SECT re-declares SECT_BEFORE in each SECTTYPE branch.
+
+    There is no single subtree at that path, so no one type can stand for it.
+    """
+    contract = """\
+endpoint: /db/AAA
+surface:
+  nestedTypes:
+    - {path: BEFORE, name: Before, namespace: DbTestTypes}
+fields:
+  - key: KIND
+    type: string
+    requirement: required
+    enum: [A, B]
+  - key: BEFORE
+    type: object
+    requirement: required
+    properties:
+      - key: SHAPE
+        type: string
+        requirement: required
+variants:
+  - when: [{path: KIND, equals: A}]
+    fields:
+      - key: BEFORE
+        type: object
+        requirement: required
+        properties:
+          - key: ONLY_A
+            type: number
+            requirement: required
+"""
+    _write_contracts(tmp_path, {"db-aaa.yaml": contract})
+    monkeypatch.setattr(generator, "ROOT", tmp_path)
+    try:
+        generator._contract_nested_types()
+    except ValueError as exc:
+        assert "redeclares" in str(exc)
+    else:
+        raise AssertionError("a branch-decided shape must not be published as one type")
+
+
+def test_a_nested_type_the_package_does_not_publish_is_refused():
+    """Recording a name is not a way to add an export."""
+    try:
+        generator._bind_nested_types(
+            {("DbTestTypes", "NotPublished"): {"fields": [], "variants": []}}, set()
+        )
+    except ValueError as exc:
+        assert "DbTestTypes.NotPublished" in str(exc)
+    else:
+        raise AssertionError("an unknown nested type name must be refused")

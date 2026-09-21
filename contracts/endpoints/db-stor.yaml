@@ -14,6 +14,8 @@ surface:
   exportName: story
   modulePath: [db, project]
   payloadTypeName: StoryPayload
+  nestedTypes:
+    - {path: STORY_AREA_ITEMS, name: StoryAreaItem, namespace: DbProjectTypes}
 
 products: [gen]
 

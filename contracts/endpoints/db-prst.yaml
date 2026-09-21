@@ -15,6 +15,8 @@ surface:
   exportName: prestressBeamLoad
   modulePath: [db, temperaturePrestress]
   payloadTypeName: PrestressBeamLoadPayload
+  nestedTypes:
+    - {path: ITEMS, name: PrestressBeamLoadItem, namespace: DbTemperaturePrestressTypes}
 
 products: [civil, gen]
 

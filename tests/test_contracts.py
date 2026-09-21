@@ -501,12 +501,52 @@ def test_a_contracted_surface_matches_the_published_npm_names():
             "package does not expose"
         )
         for key, value in surface.items():
+            if key == "nestedTypes":
+                # Names of types, not facts about the resource; the test below
+                # checks them against the generated types instead.
+                continue
             if resource.get(key) != value:
                 mismatches.append(
                     f"{contract['endpoint']} {key}: contract {value!r}, npm "
                     f"{resource.get(key)!r}"
                 )
     assert not mismatches, "contract surface differs from the published npm names: " + "; ".join(mismatches)
+
+
+def test_every_declared_nested_type_is_published_and_built_from_a_contract():
+    """`surface.nestedTypes` names types npm already exports, and owns their shape.
+
+    The namespace is part of the public name - the package re-exports every
+    namespace at its root - so a name in the wrong namespace is a different
+    type. Each declared one must also carry the generator's contract marker:
+    a declaration that the generator quietly built from Python instead would
+    look recorded while changing nothing.
+    """
+
+    types = (ROOT / "packages" / "typescript" / "src" / "generated" / "types.ts").read_text(
+        encoding="utf-8"
+    )
+    published: dict[tuple[str, str], bool] = {}
+    namespace = None
+    marked = False
+    for line in types.splitlines():
+        match = re.match(r"^export namespace (\w+) \{", line)
+        if match:
+            namespace = match.group(1)
+        match = re.match(r"^  export (?:interface|type) (\w+)", line)
+        if match:
+            published[(namespace, match.group(1))] = marked
+        marked = line.strip() == "/** Generated from contracts/endpoints/. */"
+
+    problems = []
+    for slug, contract in _contracts().items():
+        for entry in (contract.get("surface") or {}).get("nestedTypes") or []:
+            key = (entry["namespace"], entry["name"])
+            if key not in published:
+                problems.append(f"{slug}: {key[0]}.{key[1]} is not published")
+            elif not published[key]:
+                problems.append(f"{slug}: {key[0]}.{key[1]} is not built from a contract")
+    assert not problems, "; ".join(problems)
 
 
 def test_every_npm_resource_with_a_contract_has_taken_its_names_over():

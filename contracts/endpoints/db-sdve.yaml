@@ -15,6 +15,8 @@ surface:
   exportName: seismicDeviceViscoelasticDamper
   modulePath: [db, boundary]
   payloadTypeName: SeismicDeviceViscoelasticDamperPayload
+  nestedTypes:
+    - {path: COMMON, name: SeismicDeviceCommon, namespace: DbBoundaryTypes}
 
 products: [civil, gen]
 

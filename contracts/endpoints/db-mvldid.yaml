@@ -15,6 +15,8 @@ surface:
   exportName: movingLoadCaseIndia
   modulePath: [db, movingLoads]
   payloadTypeName: MovingLoadCaseIndiaPayload
+  nestedTypes:
+    - {path: SUB_LOAD_ITEMS, name: MovingLoadCaseIndiaSubLoadItem, namespace: DbMovingLoadsTypes}
 
 products: [civil, gen]
 

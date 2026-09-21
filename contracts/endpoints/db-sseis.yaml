@@ -558,6 +558,17 @@ variants:
         safeToOmit: unverified
         provenance: manual
         properties:
+          - key: STORY_NAME
+            description: >-
+              Story Name
+            type: string
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
+            # '(1)', not by naming a path
           - key: ALONG_X
             description: >-
               Additional Seismic Load X

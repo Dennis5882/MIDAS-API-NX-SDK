@@ -778,6 +778,17 @@ variants:
         safeToOmit: unverified
         provenance: manual
         properties:
+          - key: STORY_NAME
+            description: >-
+              Story Name
+            type: string
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'ADDITIONAL_LOAD' by numbering it
+            # '(1)', not by naming a path
           - key: ALONG_X
             description: >-
               Along-wind Load X

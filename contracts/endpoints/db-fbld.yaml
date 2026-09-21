@@ -15,6 +15,8 @@ surface:
   exportName: floorLoadType
   modulePath: [db, staticLoads]
   payloadTypeName: FloorLoadTypePayload
+  nestedTypes:
+    - {path: ITEM, name: FloorLoadTypeItem, namespace: DbStaticLoadsTypes}
 
 products: [civil, gen]
 

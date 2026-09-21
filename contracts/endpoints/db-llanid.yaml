@@ -15,6 +15,9 @@ surface:
   exportName: trafficLineLanesIndia
   modulePath: [db, movingLoads]
   payloadTypeName: TrafficLineLanesIndiaPayload
+  nestedTypes:
+    - {path: COMMON, name: LineLaneCommon, namespace: DbMovingLoadsTypes}
+    - {path: LANE_ITEMS, name: LineLaneIndiaItem, namespace: DbMovingLoadsTypes}
 
 products: [civil, gen]
 

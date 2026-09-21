@@ -15,6 +15,8 @@ surface:
   exportName: bucklingAnalysisControl
   modulePath: [db, analysisControl]
   payloadTypeName: BucklingAnalysisControlPayload
+  nestedTypes:
+    - {path: ITEMS, name: BucklingLoadCaseItem, namespace: DbAnalysisControlTypes}
 
 products: [civil, gen]
 

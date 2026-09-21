@@ -15,6 +15,9 @@ surface:
   exportName: trafficSurfaceLanesOptimization
   modulePath: [db, movingLoads]
   payloadTypeName: TrafficSurfaceLanesOptimizationPayload
+  nestedTypes:
+    - {path: CHINA_ITEMS, name: SurfaceLaneOptimizationChinaItem, namespace: DbMovingLoadsTypes}
+    - {path: ITEMS, name: SurfaceLaneOptimizationItem, namespace: DbMovingLoadsTypes}
 
 products: [civil, gen]
 

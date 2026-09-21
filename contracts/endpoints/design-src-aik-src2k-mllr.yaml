@@ -15,6 +15,8 @@ surface:
   exportName: srcModifyLiveLoadReductionFactor
   modulePath: [design, srcAiksrc2k]
   payloadTypeName: SrcModifyLiveLoadReductionFactorPayload
+  nestedTypes:
+    - {path: COMPONENTS, name: SrcLiveLoadReductionComponents, namespace: DesignSrcAiksrc2kTypes}
 
 products: [civil, gen]
 

@@ -16,6 +16,8 @@ surface:
   exportName: pressureLoad
   modulePath: [db, staticLoads]
   payloadTypeName: PressureLoadPayload
+  nestedTypes:
+    - {path: ITEMS, name: PressureLoadItem, namespace: DbStaticLoadsTypes}
 
 products: [civil, gen]
 

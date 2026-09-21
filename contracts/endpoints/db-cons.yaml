@@ -12,6 +12,8 @@ surface:
   exportName: constraint
   modulePath: [db, boundary]
   payloadTypeName: ConstraintPayload
+  nestedTypes:
+    - {path: ITEMS, name: ConstraintItem, namespace: DbBoundaryTypes}
 summary: >-
   Assigns seven-degree-of-freedom support constraints to nodes. Each
   CONSTRAINT string represents DX, DY, DZ, RX, RY, RZ and RW in that order.

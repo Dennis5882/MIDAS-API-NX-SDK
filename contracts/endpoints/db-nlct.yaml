@@ -221,6 +221,28 @@ variants:
             provenance: manual
             # RESOLVED: the manual nests this under 'NEWTON_ITEMS' by numbering it '(2)',
             # not by naming a path
+          - key: NUMBER_STEPS
+            description: >-
+              Number of Load Steps
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'NEWTON_ITEMS' by numbering it
+            # '(3)', not by naming a path
+          - key: MAX_ITERATIONS
+            description: >-
+              Max Iterations/Load Step
+            type: integer
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'NEWTON_ITEMS' by numbering it
+            # '(4)', not by naming a path
           - key: LOAD_FACTORS
             description: >-
               Load Factor (Index: Step)
@@ -311,6 +333,50 @@ variants:
             provenance: manual
             # RESOLVED: the manual nests this under 'ARCLEN_ITEMS' by numbering it '(2)',
             # not by naming a path
+          - key: INITIAL_FORCE_RATIO_ARC_LEN
+            description: >-
+              Initial Force Ratio for Unit Arc-Length
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'ARCLEN_ITEMS' by numbering it
+            # '(3)', not by naming a path
+          - key: NUMBER_STEPS
+            description: >-
+              Number of Steps
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'ARCLEN_ITEMS' by numbering it
+            # '(4)', not by naming a path
+          - key: MAX_ITERATIONS
+            description: >-
+              Max Iterations/Increment Step
+            type: integer
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'ARCLEN_ITEMS' by numbering it
+            # '(5)', not by naming a path
+          - key: MAXIMUM_DISPLACEMENT
+            description: >-
+              Maximum Displacement
+            type: number
+            requirement: optional
+            documentedDefault: 0
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'ARCLEN_ITEMS' by numbering it
+            # '(6)', not by naming a path
   - when:
       - path: ITERATION_METHOD
         equals: DISP
@@ -397,6 +463,61 @@ variants:
             provenance: manual
             # RESOLVED: the manual nests this under 'DISPCT_ITEMS' by numbering it '(2)',
             # not by naming a path
+          - key: NUMBER_STEPS
+            description: >-
+              Number of Steps
+            type: integer
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'DISPCT_ITEMS' by numbering it
+            # '(3)', not by naming a path
+          - key: MAX_ITERATIONS
+            description: >-
+              Max Iterations/Load Step
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'DISPCT_ITEMS' by numbering it
+            # '(4)', not by naming a path
+          - key: MASTER_NODE
+            description: >-
+              Master Node ID
+            type: integer
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'DISPCT_ITEMS' by numbering it
+            # '(5)', not by naming a path
+          - key: DIRECTION
+            description: >-
+              Direction (Dx: 0 / Dy: 1 / Dz: 2)
+            type: integer
+            requirement: optional
+            documentedDefault: 0
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'DISPCT_ITEMS' by numbering it
+            # '(6)', not by naming a path
+          - key: MAXIMUM_DISPLACEMENT
+            description: >-
+              Maximum Displacement
+            type: number
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # RESOLVED: the manual nests this under 'DISPCT_ITEMS' by numbering it
+            # '(7)', not by naming a path
           - key: LOAD_FACTORS
             description: >-
               Master Node Displacement (Index: Step)

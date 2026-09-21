@@ -15,6 +15,10 @@ surface:
   exportName: materialHyperS
   modulePath: [db, properties, material]
   payloadTypeName: MaterialHyperSPayload
+  nestedTypes:
+    - {path: PARAM, name: MaterialHyperSParam, namespace: DbPropertiesMaterialTypes}
+    - {path: PARAM.THERMAL_TRANS, name: MaterialHyperSThermalTransfer, namespace: DbPropertiesMaterialTypes}
+    - {path: PARAM.USER_DEFINED, name: MaterialHyperSUserDefined, namespace: DbPropertiesMaterialTypes}
 
 products: [civil]
 

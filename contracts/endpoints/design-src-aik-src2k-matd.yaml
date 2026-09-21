@@ -15,6 +15,10 @@ surface:
   exportName: srcModifyMaterial
   modulePath: [design, srcAiksrc2k]
   payloadTypeName: SrcModifyMaterialPayload
+  nestedTypes:
+    - {path: CONCRETE, name: SrcMaterialConcrete, namespace: DesignSrcAiksrc2kTypes}
+    - {path: REINFORCEMENT, name: SrcMaterialReinforcement, namespace: DesignSrcAiksrc2kTypes}
+    - {path: STEEL, name: SrcMaterialSteel, namespace: DesignSrcAiksrc2kTypes}
 
 products: [gen]
 

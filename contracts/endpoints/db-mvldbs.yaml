@@ -15,6 +15,21 @@ surface:
   exportName: movingLoadCaseBs
   modulePath: [db, movingLoads]
   payloadTypeName: MovingLoadCaseBsPayload
+  nestedTypes:
+    - {path: LCDATA_ALLMODE, name: MovingLoadCaseBsAllModeData, namespace: DbMovingLoadsTypes}
+    - {path: LCDATA_ALLMODE.STRAD_LANE, name: MovingLoadCaseBsStraddleLaneItem, namespace: DbMovingLoadsTypes}
+    - {path: LCDATA_ALLMODE_OPTI, name: MovingLoadCaseBsAllModeOptiData, namespace: DbMovingLoadsTypes}
+    - {path: LCDATA_ALLMODE_OPTI.OPTI_BASE, name: MovingLoadCaseBsOptiBase, namespace: DbMovingLoadsTypes}
+    - {path: LCDATA_SPECIAL, name: MovingLoadCaseBsSpecialData, namespace: DbMovingLoadsTypes}
+    - {path: LCDATA_SPECIAL.STRAD_LANE, name: MovingLoadCaseBsStraddleLaneItem, namespace: DbMovingLoadsTypes}
+    - {path: LCDATA_SPECIAL_OPTI, name: MovingLoadCaseBsSpecialOptiData, namespace: DbMovingLoadsTypes}
+    - {path: LCDATA_SPECIAL_OPTI.OPTI_BASE, name: MovingLoadCaseBsOptiBase, namespace: DbMovingLoadsTypes}
+    - {path: LCDATA_STANDARD, name: MovingLoadCaseBsStandardData, namespace: DbMovingLoadsTypes}
+    - {path: LCDATA_STANDARD.SUBLOADDATA, name: MovingLoadCaseBsSubLoadDataItem, namespace: DbMovingLoadsTypes}
+    - {path: LCDATA_STANDARD.SUBLOADDATA.STRAD_LANE, name: MovingLoadCaseBsStraddleLaneItem, namespace: DbMovingLoadsTypes}
+    - {path: LCDATA_STANDARD_OPTI, name: MovingLoadCaseBsStandardOptiData, namespace: DbMovingLoadsTypes}
+    - {path: LCDATA_STANDARD_OPTI.OPTI_BASE, name: MovingLoadCaseBsOptiBase, namespace: DbMovingLoadsTypes}
+    - {path: LCDATA_STANDARD_OPTI.OPTI_VEHICLE_BASE, name: MovingLoadCaseBsOptiVehicleBaseItem, namespace: DbMovingLoadsTypes}
 
 products: [civil, gen]
 

@@ -1836,6 +1836,164 @@ def _contract_payload_types(
     return bound, dict(supplemental)
 
 
+_STRUCTURAL_KEYS = (
+    "key", "type", "requirement", "enum", "items", "minItems", "maxItems",
+    "appliesWhen", "products",
+)
+
+
+def _structure(fields: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """A field tree with the prose removed: what a TypeScript caller is held to.
+
+    Two declarations of one published nested type are compared on this, not on
+    the rendered text, because descriptions legitimately differ by use - a
+    ``BAR_SECTOR_I`` and a ``BAR_SECTOR_J`` say which end they are.
+    """
+    return [
+        {key: field.get(key) for key in _STRUCTURAL_KEYS}
+        | {"properties": _structure(field.get("properties") or [])}
+        for field in fields
+    ]
+
+
+def _nested_fingerprint(pseudo: dict[str, Any]) -> str:
+    """What two declarations of one nested type must agree on."""
+    return json.dumps(
+        {
+            "fields": _structure(pseudo["fields"]),
+            "variants": [
+                {"when": variant["when"], "fields": _structure(variant["fields"])}
+                for variant in pseudo["variants"]
+            ],
+        },
+        sort_keys=True,
+    )
+
+
+def _contract_nested_types() -> dict[tuple[str, str], dict[str, Any]]:
+    """Return {(namespace, name): pseudo-contract} for each declared nested type.
+
+    A payload's root has had a contract-owned name since 2026-09-02
+    (`surface.payloadTypeName`), but the objects *inside* it did not: the root
+    was emitted from the contract with every nested object inlined, while the
+    named interfaces for those same objects - `DbBoundaryTypes.BeamEndOffsetItem`
+    for `/db/OFFS`'s `ITEMS` element - kept being read out of the Python
+    TypedDicts, with Python's field list and Python's `total=False`
+    requiredness. The same object was published twice with two shapes.
+
+    `surface.nestedTypes` records, per contract field path, the name and
+    namespace a type is **already published under** (seeded from the committed
+    output, so recording one renames nothing). This builds each one's body
+    from the contract subtree at that path - the element type, for an array -
+    together with any variant union that attaches there or below.
+
+    A type several contracts declare must come out the same from each of them
+    once prose is set aside; one that does not is a real disagreement between
+    contracts, and picking one would publish a guess, so it raises.
+    """
+
+    contract_dir = ROOT / "contracts" / "endpoints"
+    if not contract_dir.is_dir():
+        return {}
+    import yaml  # noqa: PLC0415
+
+    records = _contract_payload_fields()
+    found: dict[tuple[str, str], dict[str, Any]] = {}
+    origin: dict[tuple[str, str], str] = {}
+    for path in sorted(contract_dir.glob("*.yaml")):
+        contract = yaml.safe_load(path.read_text(encoding="utf-8"))
+        if not isinstance(contract, dict):
+            continue
+        declared = (contract.get("surface") or {}).get("nestedTypes") or []
+        if not declared:
+            continue
+        endpoint = contract.get("endpoint", "")
+        record = records.get(endpoint)
+        if record is None:
+            raise ValueError(
+                f"{path.name}: declares surface.nestedTypes but its payload is not "
+                "generated from the contract (unmergedTables, or not a resource), "
+                "so there is no contract subtree to build them from"
+            )
+        fields, variants = record["fields"], record["variants"]
+        for entry in declared:
+            where = entry["path"].removeprefix("Assign.")
+            body = _attach_base(fields, where)
+            if not body:
+                raise ValueError(
+                    f"{path.name}: surface.nestedTypes names {entry['name']} at "
+                    f"{entry['path']!r}, where the contract declares no object"
+                )
+            prefix = where + "."
+            below = []
+            for variant in variants:
+                attach = _variant_attach_key(fields, variant)
+                above = attach or ""
+                if above != where and (not above or where.startswith(above + ".")):
+                    # A branch attached *above* this path that redeclares the
+                    # field on the way to it decides the object's shape per
+                    # branch: /db/SECT's SECT_BEFORE is re-declared by each
+                    # SECTTYPE variant. There is then no single subtree to
+                    # publish under one name.
+                    step = where[len(above) + 1:] if above else where
+                    if any(f.get("key") == step.split(".")[0] for f in variant["fields"]):
+                        raise ValueError(
+                            f"{path.name}: surface.nestedTypes names {entry['name']} at "
+                            f"{entry['path']!r}, but a variant above it redeclares that "
+                            "field, so its shape is not one subtree"
+                        )
+                if attach == where or (attach or "").startswith(prefix):
+                    below.append({
+                        **variant,
+                        "when": [
+                            {**condition, "path": condition["path"].removeprefix(prefix)}
+                            for condition in variant["when"]
+                        ],
+                    })
+            pseudo = {"fields": body, "variants": below}
+            key = (entry["namespace"], entry["name"])
+            if key in found:
+                if _nested_fingerprint(found[key]) != _nested_fingerprint(pseudo):
+                    raise ValueError(
+                        f"{key[0]}.{key[1]} is declared by {origin[key]} and "
+                        f"{path.name} with different shapes"
+                    )
+                continue
+            found[key] = pseudo
+            origin[key] = path.name
+    return found
+
+
+def _bind_nested_types(
+    nested: dict[tuple[str, str], dict[str, Any]],
+    type_keys: set[tuple[str, str]],
+) -> dict[tuple[str, str], dict[str, Any]]:
+    """Key each declared nested type by the published slot it replaces.
+
+    The slot is still found through the Python tree, the same arrangement the
+    payload roots have: the contract owns the shape and the name, the source
+    tree decides where in `types.ts` it is written. A declaration naming a type
+    that is not published there is refused rather than added, because adding an
+    export is a change to the package surface this step does not make.
+    """
+
+    slots = {(_namespace(module), name): (module, name) for module, name in type_keys}
+    bound: dict[tuple[str, str], dict[str, Any]] = {}
+    missing = []
+    for key, pseudo in nested.items():
+        slot = slots.get(key)
+        if slot is None:
+            missing.append(f"{key[0]}.{key[1]}")
+            continue
+        bound[slot] = pseudo
+    if missing:
+        raise ValueError(
+            "surface.nestedTypes names types the package does not publish: "
+            + ", ".join(sorted(missing))
+        )
+    return bound
+
+
 def main() -> None:
     modules = _source_modules()
     resources = _load_resources(modules)
@@ -1854,6 +2012,11 @@ def main() -> None:
         resources, contract_fields, type_keys
     )
     _check_contract_payload_type_names(resources)
+    nested_types = _bind_nested_types(_contract_nested_types(), type_keys)
+    clash = sorted(set(nested_types) & set(contract_types))
+    if clash:
+        raise ValueError(f"declared both as a payload and as a nested type: {clash}")
+    contract_types = {**contract_types, **nested_types}
     SCHEMA_DIR.mkdir(parents=True, exist_ok=True)
     TYPESCRIPT_SRC.joinpath("generated").mkdir(parents=True, exist_ok=True)
 

@@ -14,6 +14,8 @@ surface:
   exportName: beamEndOffset
   modulePath: [db, boundary]
   payloadTypeName: BeamEndOffsetPayload
+  nestedTypes:
+    - {path: ITEMS, name: BeamEndOffsetItem, namespace: DbBoundaryTypes}
 
 products: [gen, civil]
 

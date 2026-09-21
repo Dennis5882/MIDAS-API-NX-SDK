@@ -12,10 +12,9 @@ it builds from a contract with a one-line JSDoc, so the split is readable
 without re-running the generator:
 
     contract        the contract supplied the field list
-    python:nested   an object *inside* a payload. The generator emits only the
-                    top-level interface from a contract; nested interfaces keep
-                    Python's names and field lists, and no contract has a home
-                    for a nested type's published name. This is the bulk of it.
+    python:nested   a named object *inside* a payload or an argument that no
+                    contract's `surface.nestedTypes` claims, so its field list
+                    is still Python's. What those are is broken down below.
     python:unmerged the contract declares `extraction.unmergedTables`, so
                     `_contract_payload_fields` skips it on purpose: narrowing a
                     published type onto an admittedly partial field list would
@@ -34,12 +33,21 @@ declarations carry 742 distinct names. That is only a risk for the two
 contract-aware buckets, and today it is not one: `python:contract-ignored` is
 empty and `python:unmerged` is exactly the 13 waived contracts.
 
-Measured 2026-09-21: 287 contract, 463 python:nested, 13 python:unmerged,
-2 python:uncontracted. So the dependency is **one missing generator
-capability** -- emitting a contract's nested objects as interfaces -- and not
-478 separate gaps. Doing that needs somewhere to record each nested type's
-*published* name: deriving one would rename shipped npm exports, which is the
-exact silent rename `surface` was added to prevent.
+Measured 2026-09-21 before and after the generator learned to build a
+contract's **nested** objects (`surface.nestedTypes`): 478 Python-sourced
+types, then 250. The 228 that moved were nested interfaces the package already
+published under names Python chose, for objects the contract-generated root
+already inlined - the same object twice, in two shapes. What the 235 left in
+`python:nested` are is not one thing:
+
+    214   under no contract-generated root at all: /doc, /ope and /view
+          operation arguments (operation contracts are parity-only), the
+          children of the 13 unmergedTables roots, and table result types
+    14    the contract declares the field but not its members
+    4     one published name, two contract shapes (e.g. HaunchPartSelector
+          for PART_A/B/C) - a contract question, not a generator one
+    2     base interfaces reached through `extends`
+    1     /db/SECT's SECT_BEFORE, whose shape each SECTTYPE branch redeclares
 
     python scripts/report_npm_type_provenance.py           # the breakdown
     python scripts/report_npm_type_provenance.py --check   # fail if it grows
@@ -61,10 +69,10 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 TYPES = ROOT / "packages" / "typescript" / "src" / "generated" / "types.ts"
 CONTRACTS = ROOT / "contracts" / "endpoints"
 
-#: Measured 2026-09-21 over 765 generated types. A ceiling: it falls as
+#: Measured 2026-09-21 over 765 generated types, after nestedTypes. A ceiling: it falls as
 #: contracts take over more of the emitted shape, and a rise means a type that
 #: used to come from a contract is being read out of the Python tree again.
-PYTHON_SOURCED_AT_MOST = 478
+PYTHON_SOURCED_AT_MOST = 250
 
 CONTRACT_MARKER = "/** Generated from contracts/endpoints/. */"
 _EXPORT = re.compile(r"^export (?:interface|type) (\w+)")
