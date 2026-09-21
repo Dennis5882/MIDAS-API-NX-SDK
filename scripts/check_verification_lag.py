@@ -12,6 +12,17 @@ Re-promoting the contract is what moves a ref. The count may shrink and must
 not grow: a newly write-level endpoint whose contract still cites only a read
 is the drift this catches.
 
+**All 40 were audited on 2026-09-21 and none is a contract defect.** A stale
+citation would matter if the later write had revealed something the contract
+does not record, and `check_fixture_contract.py` measures that directly: on a
+`confirmed` case the product accepted that exact payload, so a disagreement is
+evidence about the contract. 39 of the 40 have a confirmed fixture case
+(`/ope/MEMB` is the exception, write-confirmed through the 2026-09-18 manual
+probes instead), and not one of the 40 appears among that scan's three
+confirmed-side findings. So the number is citation bookkeeping today, and
+`tests/test_check_verification_lag.py` holds it that way -- if a lagging
+endpoint ever turns up in that scan, it has stopped being bookkeeping.
+
     python scripts/check_verification_lag.py            # list them
     python scripts/check_verification_lag.py --check    # fail if the count grew
 """

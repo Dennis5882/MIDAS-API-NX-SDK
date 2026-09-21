@@ -66,3 +66,32 @@ def test_the_repository_stays_at_or_below_its_recorded_ceiling() -> None:
     """The count may fall -- that is the point -- but never rise silently."""
     checker = _checker_module()
     assert len(checker.lagging_contracts()) <= checker.LAGGING_AT_MOST
+
+
+def test_a_lagging_citation_never_hides_a_contract_that_is_actually_wrong() -> None:
+    """The 40 are a citation artefact, and this is what keeps that true.
+
+    A ref names the session a contract was promoted from, so a contract whose
+    endpoint later took a write still cites the read sweep -- truthfully.
+    What would make that worth acting on is the write having revealed
+    something the contract does not record, and `check_fixture_contract.scan()`
+    measures exactly that: on a `confirmed` case the product accepted that
+    payload, so a disagreement is evidence about the contract.
+
+    Audited 2026-09-21: 39 of the 40 have a confirmed fixture case and none of
+    the 40 appears on that side of the scan. If one ever does, the lag stops
+    being bookkeeping for that endpoint and the contract needs re-promoting
+    from a permitted source.
+    """
+    checker = _checker_module()
+    spec = importlib.util.spec_from_file_location(
+        "check_fixture_contract_under_test",
+        ROOT / "scripts" / "check_fixture_contract.py",
+    )
+    fixture_check = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(fixture_check)
+
+    _unconfirmed, confirmed, _checked = fixture_check.scan()
+    lagging = {endpoint for endpoint, _ in checker.lagging_contracts()}
+    assert lagging.isdisjoint(confirmed), sorted(lagging & set(confirmed))

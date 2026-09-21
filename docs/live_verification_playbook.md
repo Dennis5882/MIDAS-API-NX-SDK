@@ -303,7 +303,16 @@ judgement about which `/info` object is meant. It is not a queue to rescan.
   from, and that is not hand-edited: it records provenance, and editing it to
   match a later claim would forge one. `scripts/check_verification_lag.py`
   holds the count as a ceiling so it can fall but not grow. Re-promoting a
-  contract is what moves it.
+  contract is what moves it. **Audited 2026-09-21: not one of the 40 is a
+  contract defect, so this is closed as a decision.** A stale citation would
+  matter if the later write had revealed something the contract does not
+  record; `check_fixture_contract.py` measures that on every `confirmed` case,
+  and none of the 40 is among its three confirmed-side findings (39 have a
+  confirmed case; `/ope/MEMB` is write-confirmed through the 2026-09-18 manual
+  probes instead). `tests/test_check_verification_lag.py` keeps the two sets
+  disjoint, so if one ever crosses over it stops being bookkeeping and that
+  contract wants re-promoting from a permitted source. Do not churn the 40 to
+  drive the number down.
 - **`/db/SPLC`'s `NDP` requiredness** — nested under the Optional `bNDP` switch
   with no wire rule, so neither an `appliesWhen` nor a `safeToOmit` is
   grounded.

@@ -169,7 +169,12 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   found so far was invisible to reads. **Re-verifying adds a record; it never edits one**, which is
   what the old append-only `method` string in `coverage.json` got wrong twice. Until the migration
   the same fact lived in two files — 40 contracts cite only a read session for an endpoint the
-  ledger holds at write level, and the two disagreed about what `level` even meant.
+  ledger holds at write level, and the two disagreed about what `level` even meant. Those 40 were
+  audited on 2026-09-21 and **none is a contract defect**: a ref names the session a contract was
+  promoted from, and what would make a stale one worth acting on is the later write having revealed
+  something the contract misses. `check_fixture_contract.py` measures that, and not one of the 40
+  appears among its confirmed-side findings. Don't re-promote them to move the number; a test holds
+  the property instead, and the ceiling stays as drift detection for endpoints that turn write next.
 - `docs/live_verification_notes.md` — findings from real Gen/Civil NX sessions that are *not* in the
   manual. Deliberately kept out of the typed contracts; read it before trusting any `PRODUCTS` change.
 - `PLAN.md` — the hand-maintained big-picture roadmap (`ROADMAP.md` is the generated per-endpoint
