@@ -6,13 +6,21 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.9.1 - 2026-09-22
+
 > **Breaking at the type level; nothing changes at runtime.** No exported name
 > is added, removed or renamed - 765 exported type names before and after - and
-> no member is removed. But members go from optional to required - 411 across
-> 156 payload-side types and 134 across 59 operation-argument types - so code
-> that builds one of those objects without a member the contract requires
-> stops compiling. The generated JavaScript, the operations and the table
-> wrappers are otherwise unchanged.
+> no member is removed. But **551 members go from optional to required across
+> 216 types** - 415 across 156 payload-side types and 136 across 60
+> operation-argument types - so code that builds one of those objects without a
+> member the contract requires stops compiling. The generated JavaScript, the
+> operations and the table wrappers are otherwise unchanged. The shared
+> version number is a patch bump by the author's choice; read it as breaking
+> for these types.
+>
+> Counted against `js-v2.9.0`'s declarations: a member is a named type's own
+> property, inherited ones included, so a member that moved from a base
+> interface into the type itself is neither added nor removed.
 
 ### Changed - 228 nested types now come from the contracts
 
@@ -26,11 +34,14 @@ optional while `BeamEndOffsetPayload.ITEMS[].TYPE` beside it was required.
 Contracts now record the names these types are already published under, and
 228 of them are generated from the contract instead:
 
-- **411 members become required** across 156 types, matching the payload that
+- **415 members become required** across 156 types, matching the payload that
   contains them. Any value that satisfied the containing payload type already
   satisfied these.
-- **84 members are added** across 32 types, where the contract documents a
-  field the Python TypedDict did not.
+- **37 members are added** across 10 types, where the contract documents a
+  field the Python TypedDict did not - `BeamLoadItem`'s eccentricity and
+  additional-load members, `LinearConstraintItem`'s, and `KEYS`/`TO`/
+  `STRUCTURE_GROUP_NAME` on `RcBeamRebarItem` and `RcBraceRebarItem` among
+  them.
 - **29 types no longer `extends` a shared base** such as
   `DbBaseTypes.ItemGroupFields`; the same members are declared inline, so the
   shape is unchanged for a caller.
@@ -50,7 +61,7 @@ TypedDicts, where every member is optional. 44 of them, and the 44 named
 objects nested in them, are now generated from the same operation contracts
 the SDK's other checks already read:
 
-- **134 members become required** across 59 types, each checked against its
+- **136 members become required** across 60 types, each checked against its
   manual row: the report calls' `REPORT_TYPE`/`EXPORT_PATH`/`OUTPUT_NAME`, the
   table calls' `TABLE_TYPE`, `/ope/AUTOMESH`'s four settings objects, and so on.
 - **Members the manual requires only in one branch stay optional**, with the
@@ -59,9 +70,12 @@ the SDK's other checks already read:
   `{ ACTIVE_MODE: "All" }` still type-checks; `/view/CAPTURE`'s `FIGURE_NAME`,
   whose presence is what selects a Smart Report capture; and `/ope/LINEBMLD`'s
   load `D`/`P` (every `TYPE` but `CURVED`) and `A`/`B`/`C` (`CURVED` only).
-- **9 members are added**, to `RcWallDesignTableArgument` and
-  `LoadCombinationSteelArgument`, where the manual documents a field the
+- **2 members are added**, `PRI_SORT_WID` and `EXPORT_PATH` on
+  `RcWallDesignTableArgument`, where the manual documents a field the
   TypedDict lacked.
+- **`LoadCombinationSteelArgument` no longer `extends`
+  `_LoadCombinationSteelSrcKdsArgument`**; it declares the same members itself,
+  and `OPTION` and `DGNCODE` become required as the manual states.
 - **Unchanged, on purpose:** `DivideElementsArgument` (`/ope/DIVIDEELEM`),
   whose manual marks every axis of an unequal or parametric division Required
   without saying which axes a frame uses, so publishing it would refuse a valid
