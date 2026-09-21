@@ -104,18 +104,18 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   import comes back. A missing or broken Python install no longer stops `npm publish`. The
   **source tree** is still load-bearing — deleting `src/midas_nx/` breaks `npm run generate`,
   though a built `dist/` keeps working — because `pythonModule`, which no contract records, keys
-  the payload-type lookup, 478 of 765 payload types still come from Python TypedDicts, and the
-  87 table wrappers are read from Python source. Only 3 of 305 resources still take their
+  the payload-type lookup, 478 of 765 generated npm types still come from Python TypedDicts, and
+  the 87 table wrappers are read from Python source. Only 3 of 305 resources still take their
   identity from a Python class: the IEHG trio, which has no permitted source and so can never be
   contracted. **`scripts/report_npm_type_provenance.py` measures that 478 rather than counting it
   by hand** (`--check` holds it as a ceiling in CI), and the breakdown changes what the remaining
-  work is: **463 of the 478 are nested objects**, not endpoints nobody contracted. The generator
+  work is: **463 of them are nested objects**, not endpoints nobody contracted. The generator
   emits a contract's payload *root* and leaves everything under it to Python, and no contract has
   a home for a nested type's published npm name — deriving one would rename shipped exports,
   which is the silent rename `surface` exists to prevent. Of the 15 that are top-level, 13 are
-  the `extraction.unmergedTables` contracts, skipped on purpose because narrowing a published
-  type onto an admittedly partial field list would delete documented fields; the last two
-  (`LoadCombinationPayload`, `_ColorPayload`) no contract names. So this is one missing generator
+  the `unmergedTables` contracts, skipped on purpose because narrowing a published type onto an
+  admittedly partial field list would delete documented fields, and 2 no contract names
+  (`LoadCombinationPayload`, `_ColorPayload`). So this is one missing generator
   capability plus a naming decision, not 478 separate gaps.
 - `scripts/contract_from_info.py` — the one path into a contract that does not start at the
   manual. Seven Hyper-S `-M1` sections state a URL, their methods and nothing else, so live
@@ -193,14 +193,17 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   "Last updated" line. Verify against the tree before restating status — most of the 2026-07-26
   corrections were things the plan asserted were missing while the file sat in the repo.
   Since 2026-09-21 the *numbers* no longer rely on that discipline:
-  `scripts/check_state_numbers.py --check` re-derives every count §2 and the live playbook's
-  "Where things stand" state — live coverage, fixture size, contract and field totals — from
-  the artefact that owns it and fails in CI on a disagreement, including a claim that has been
-  deleted rather than updated. It deliberately does **not** read PLAN.md's dated header block or
-  §4: those are records of what was true at a release, and a milestone row saying
-  `201 write / 199 read` is correct precisely because nobody rewrote it. That split is what the
-  check found on its first run — §2 said `177 of 212 cases confirmed` while the header four
-  sections above it and the fixture itself both said 183 of 220.
+  `scripts/check_state_numbers.py --check` re-derives every count stated by §2, by the live
+  playbook's "Where things stand" and by its gates block — live coverage, fixture size, contract
+  and field totals, and how much of the npm type surface still comes from Python — from the
+  artefact that owns each, and fails in CI on a disagreement, including a claim that has been
+  deleted rather than updated. **This file is a scanned region too**, so a count here is held to
+  the same standard. It deliberately does *not* read PLAN.md's dated header block or §4: those
+  record what was true at a release, and a milestone row is correct precisely because nobody
+  rewrote it. That split is what the check found on its first run — §2's fixture counts were
+  stale against the fixture, and against the header four sections above them.
+  A consequence worth knowing when editing any of these files: the checker cannot tell a claim
+  from an illustration, so don't spell out a superseded figure in a scanned region — describe it.
 
 ## Adding an endpoint
 

@@ -50,6 +50,8 @@ from collections import Counter
 sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 
+import check_verification_lag  # noqa: E402
+import report_npm_type_provenance  # noqa: E402
 import validate_contracts  # noqa: E402
 from verification_ledger import claims  # noqa: E402
 
@@ -58,6 +60,7 @@ COVERAGE = ROOT / "docs" / "coverage.json"
 LIVE_CASES = ROOT / "schema" / "live-cases.json"
 PLAN = ROOT / "PLAN.md"
 PLAYBOOK = ROOT / "docs" / "live_verification_playbook.md"
+GUIDE = ROOT / "CLAUDE.md"
 
 
 @dataclasses.dataclass(frozen=True)
@@ -67,12 +70,18 @@ class Region:
     path: pathlib.Path
     heading: re.Pattern[str]
     label: str
+    #: A region normally runs to the next `## ` heading. A whole-file region
+    #: sets this False and runs to the end.
+    stops_at_next_heading: bool = True
 
 
 REGIONS = (
     Region(PLAN, re.compile(r"^## 2\. "), "PLAN.md §2"),
     Region(PLAYBOOK, re.compile(r"^## Where things stand"), "playbook: where things stand"),
     Region(PLAYBOOK, re.compile(r"^## Gates"), "playbook: gates"),
+    # The instruction file, whole. It has no dated-changelog section, so
+    # unlike PLAN.md there is nothing in it that is supposed to stay behind.
+    Region(GUIDE, re.compile(r"^# CLAUDE\.md"), "CLAUDE.md", stops_at_next_heading=False),
 )
 
 
@@ -92,6 +101,10 @@ PATTERNS = (
         ("db", "db_write", "db_read"),
     ),
     Pattern(re.compile(r"(\d+) of (\d+) cases confirmed"), ("confirmed_cases", "cases")),
+    Pattern(re.compile(r"(\d+) of (\d+) cases as of"), ("confirmed_cases", "cases")),
+    Pattern(
+        re.compile(r"(\d+) contracts cite only a read session"), ("lagging_contracts",)
+    ),
     Pattern(re.compile(r"(\d+) cases over (\d+) endpoints"), ("cases", "case_endpoints")),
     Pattern(
         re.compile(r"(\d+) confirmed over (\d+) endpoints"),
@@ -121,6 +134,15 @@ PATTERNS = (
         re.compile(r"(\d+) endpoints: # (\d+) read, (\d+) write"),
         ("ledger_claims", "ledger_read", "ledger_write"),
     ),
+    Pattern(
+        re.compile(r"(\d+) of (\d+) generated npm types"),
+        ("npm_types_from_python", "npm_types"),
+    ),
+    Pattern(re.compile(r"(\d+) of them are nested objects"), ("npm_types_nested",)),
+    Pattern(
+        re.compile(r"(\d+) are the `unmergedTables` contracts"), ("npm_types_unmerged",)
+    ),
+    Pattern(re.compile(r"and (\d+) no contract names"), ("npm_types_uncontracted",)),
 )
 
 
@@ -153,6 +175,12 @@ def measure() -> dict[str, int]:
     # verification_ledger.py prints: 397, three short of the inventory.
     claim_levels = Counter(claim.level for claim in resolved.values())
 
+    # How much of the generated npm surface still reads the Python source
+    # tree. Its own script holds the ceiling; this only stops a document
+    # restating the split from drifting away from it.
+    provenance = report_npm_type_provenance.classify()
+    lagging = check_verification_lag.lagging_contracts()
+
     return {
         "inventory": len(inventory),
         "ledger_claims": len(resolved),
@@ -178,6 +206,14 @@ def measure() -> dict[str, int]:
         "omission_unverified": sum(
             count for value, count in omission.items() if value not in (True, False)
         ),
+        "npm_types": sum(len(names) for names in provenance.values()),
+        "npm_types_from_python": sum(
+            len(names) for bucket, names in provenance.items() if bucket != "contract"
+        ),
+        "npm_types_nested": len(provenance["python:nested"]),
+        "npm_types_unmerged": len(provenance["python:unmerged"]),
+        "npm_types_uncontracted": len(provenance["python:uncontracted"]),
+        "lagging_contracts": len(lagging),
     }
 
 
@@ -190,10 +226,12 @@ def region_text(region: Region) -> str:
     """
     lines = region.path.read_text(encoding="utf-8").splitlines()
     start = next(i for i, line in enumerate(lines) if region.heading.match(line))
-    end = next(
-        (i for i in range(start + 1, len(lines)) if lines[i].startswith("## ")),
-        len(lines),
-    )
+    end = len(lines)
+    if region.stops_at_next_heading:
+        end = next(
+            (i for i in range(start + 1, len(lines)) if lines[i].startswith("## ")),
+            len(lines),
+        )
     return re.sub(r"\s+", " ", "\n".join(lines[start:end]))
 
 
