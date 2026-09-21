@@ -5,7 +5,23 @@ For the itemized per-endpoint checklist see the auto-generated
 [ROADMAP.md](./ROADMAP.md); this document is the hand-maintained "big picture"
 that ROADMAP.md doesn't capture.
 
-> Last updated: 2026-09-20 (later) — **2.9.0 released** (`js-v2.9.0`,
+> Last updated: 2026-09-21 — **no release; nothing packaged changed.** The
+> numbers this file states are measured now: `scripts/check_state_numbers.py
+> --check` re-derives every count in §2, in the live playbook's state and
+> gates blocks and in CLAUDE.md from the artefact that owns it, and fails CI on
+> a disagreement or on a claim deleted rather than updated. Its first run found
+> §2's fixture counts stale against the fixture itself, and §1 still calling
+> the ledger fold pending a day after it landed. Also: the 40 contracts citing
+> a read session for a write-level endpoint were audited and none is a contract
+> defect, so that decision is closed rather than queued;
+> `scripts/report_npm_type_provenance.py` turns "npm generation still reads the
+> Python source tree" into a CI ceiling and shows the remainder is almost
+> entirely nested objects, one generator capability rather than hundreds of
+> gaps; the vendor report is at v1.4, still unsent; and the two live-harness
+> guards that keep a failed probe or a guessed save path from costing a whole
+> run are now tested.
+>
+> Earlier — 2026-09-20 (later), **2.9.0 released** (`js-v2.9.0`,
 > `py-v2.9.0`): `requires-python` moves from `>=3.12` back to `>=3.11`, and the
 > classifiers and CI matrix now span **3.11 through 3.14**. No code changed in
 > either package. The floor was never a property of the code — `vermin` puts
