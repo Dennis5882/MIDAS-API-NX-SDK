@@ -285,8 +285,12 @@ Two things that have already caused rework:
   through MIDASIT's relay, so the product is often on another PC. `EXPORT_PATH`, `/doc/SAVEAS`,
   `/doc/OPEN`, report and image paths all resolve there. A path that doesn't exist on that machine
   raises a modal dialog *there* and blocks the session, while the HTTP call still answers
-  `{"message": "... command complete"}` — identical to success. Verify a write with `/doc/OPEN`,
-  never `os.path.exists()`. This cost an afternoon of chasing a "broken" `/doc/SAVEAS` that was
+  `{"message": "... command complete"}` — identical to success. **A denied path behaves
+  differently and the two must not be collapsed**: on 2026-09-21 `/doc/SAVEAS` into
+  `C:\Program Files\` on Gen NX raised `"...액세스가 거부되었습니다"` and the call **never
+  answered at all**, hanging until a human dismissed the dialog. So the failure shapes are: a
+  path NX dislikes answers like success, a path it cannot write to hangs the call. Verify a
+  write with `/doc/OPEN`, never `os.path.exists()`. This cost an afternoon of chasing a "broken" `/doc/SAVEAS` that was
   working fine. **Do not derive the path from `verify_connection()["user"]`** — this rule used to
   say to, and 2026-08-31 disproved it: that field is the MAPI account's email
   (`sjj0507@midasit.com`), not the NX host's Windows profile, so a path built from it does not
@@ -352,7 +356,13 @@ Two things that have already caused rework:
   `Downloads` and repeating the identical call produced no dialog. This generalizes the
   crash-recovery-only `_restore.mcb`-under-`Program Files` case (vendor report A-7) into a broader
   pattern: some read-shaped commands write an auxiliary/cache file next to the document even to
-  answer a GET. `scripts/live_readonly_sweep.py`'s "GET only, safe" claim still holds for *data*
+  answer a GET. **Narrowed 2026-09-21: the trigger is the write failing, not the path.** With a
+  document open from `C:\Program Files\` on Civil NX — where `/doc/SAVEAS` to that directory had
+  just succeeded — the same `GET /db/CAMB` answered `{"message": ""}` and popped nothing. Gen NX,
+  on the identical call and path, was denied and blocked. Whether that difference is elevation or
+  Windows' UAC virtualization redirecting Civil's write to `%LOCALAPPDATA%\VirtualStore\` is
+  unresolved; if it is the latter, Civil is the *worse* case, because the save and a following
+  `/doc/OPEN` both report success for a file that is not where it was asked to go. `scripts/live_readonly_sweep.py`'s "GET only, safe" claim still holds for *data*
   safety, but keep working documents off `Program Files`-style paths before running it.
 - **Verifying against a live session: the two read-only sweeps are the safe ones.** Python's
   `scripts/live_readonly_sweep.py` and — since 2026-09-03 — npm's

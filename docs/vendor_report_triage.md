@@ -42,9 +42,9 @@ is easier to trust on what it kept.
 | A-2 | `DELETE {endpoint}` with an ID-keyed `"Assign"` empties the whole table | **2026-09-21**, both products, on a dummy model |
 | A-3 | 10 endpoints where a write is accepted, echoed back and not stored | **2026-09-21**, except `/db/STCT` on Civil |
 | A-4 | error bodies under HTTP 200 / 201 | **2026-09-21**, seventeen observations in one batch |
-| A-5 | `/mapikey/verify` answers `connected` after the product is gone | 2026-07 |
+| A-5 | `/mapikey/verify` answers `connected` after the product is gone | **2026-09-21**, incidentally — it answered `connected` twice while Gen was held by a modal |
 | A-6 | `"Wrong Field"` means a bad value, not a bad field name | **2026-09-21** |
-| A-7 | writes under `Program Files` fail with access denied, including on a GET | 2026-07-29 |
+| A-7 | a write to a path the account cannot write to blocks the session | **2026-09-21** on Gen; **did not reproduce on Civil**, see below |
 | A-8 | `/info` is not served for `/DESIGN/*` or the Hyper-S `IEHG` trio | **2026-09-21** |
 | A-9 | `/info` disagrees with the server in both directions | **2026-09-21**; see the correction below |
 | A-10 | 9 endpoints + `/db/RPSC` whose write path has never passed — **an ask, not a defect claim** | **2026-09-21**, each on the product that declares it |
@@ -56,9 +56,18 @@ Cleared on 2026-09-21 in two passes: the fixture replay, then a dummy model
 built for the items a replay cannot reach. Three are left, and each needs
 something a scratch model cannot supply:
 
-- **A-5** — needs the product to be killed and then polled.
-- **A-7** — needs a document opened from under `Program Files` and, if it
-  reproduces, a human to dismiss a modal on the NX machine.
+- **A-5's original form** — the *crash* window still needs the product killed
+  and then polled. The modal-block form was measured on 2026-09-21.
+- **A-7's cause** — reproduced on Gen with the exact recorded dialog text, and
+  **not** reproduced on Civil, where the same `/doc/SAVEAS` into
+  `C:\Program Files\` succeeded and `/doc/OPEN` then found the file. So the
+  trigger is the write failing rather than the path, and why it succeeds on one
+  product and not the other is open: elevation, or UAC virtualization silently
+  redirecting Civil's write to `%LOCALAPPDATA%\VirtualStore\`. The check is
+  whether the file is in the VirtualStore on the NX host; it was asked of the
+  author and is unanswered. **If it is virtualization, Civil is the worse
+  case** — success reported, `/doc/OPEN` agreeing, file not where it was asked
+  to go.
 - **`/db/STCT` on Civil** — needs a model with **construction stages**. On a
   bare seeded model `GET /db/STCT` answers `{"message": ""}` on both products,
   so the PUT has no record to update. The Gen half reproduced
@@ -72,6 +81,12 @@ baseline), which says the surface is unchanged and nothing more — `/db/NMAS`
 is the standing proof that behaviour moves while `/info` does not.
 
 ### Corrected by the 2026-09-21 re-measurement
+
+- **`/doc/SAVEAS`'s two failure shapes were one claim and are now two.** A path
+  NX merely dislikes answers `{"message": "... command complete"}` for a save
+  that never happened (2026-07-26). A path it cannot write to **does not answer
+  at all** — the call hangs until the dialog is dismissed (2026-09-21). Both
+  are in CLAUDE.md now; collapsing them loses the diagnosis.
 
 - **`/db/SECF` got sharper.** The report recorded a 200 with no error. The
   product actually **echoes the whole record back** while `GET` answers

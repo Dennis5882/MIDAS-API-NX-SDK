@@ -10674,3 +10674,68 @@ seed. The Gen half stands on today's `wrote 30, read back None`.
 This is the second wrong attribution in one day, after `/db/MVHL`'s missing
 seed. Both came from the same habit - reading a harness result without reading
 what the harness said about it.
+
+## 2026-09-21 (later still) - A-7 reproduced on Gen, and *not* on Civil, from one call
+
+The author asked for A-7 to be measured directly: build a dummy model and save
+it under `Program Files`. Both products were tried, at their request, on a
+dummy `_seed_model` model with a real checkpoint written to `C:/temp` first.
+
+Same relay, same call, same path shape, opposite results.
+
+| | `POST /doc/SAVEAS` -> `C:/Program Files/a7-probe-<product>-<stamp>.<ext>` |
+| --- | --- |
+| Civil NX | `{"message": "MIDAS CIVIL NX command complete"}`; `/doc/OPEN` on that path then **succeeded**, so something is readable there |
+| Gen NX | **the HTTP call never answered** (read timeout at 60s), and the session was blocked |
+
+The Gen dialog, photographed by the author:
+
+> `C:/Program Files/a7-probe-gen-20260921T072357Z.mgbx 액세스가 거부되었습니다.`
+
+That is A-7's exact signature, on the exact path, and it blocked every `/db/*`
+call until the author dismissed it. Gen was responsive again immediately after.
+
+### Two things this session establishes on its own
+
+**`verify_connection()` answered `connected` throughout the block.** Every
+`/db/NODE` call timed out while `/mapikey/verify` answered `connected` in well
+under a second, twice, minutes apart. That is A-5's mechanism, observed
+incidentally and more cleanly than the original crash-window measurement: the
+relay serves the health check, so it cannot see a product held by a modal.
+
+**`/doc/SAVEAS` did not answer "command complete" here.** The standing rule in
+CLAUDE.md is that a save which never happened still answers like a success. For
+*this* failure mode it did not answer at all - the call hung until the dialog
+was dismissed, and the client gave up first. Both behaviours are now recorded:
+a path NX merely dislikes answers like success (2026-07-26), an access-denied
+write hangs the call (today). Do not collapse them into one claim.
+
+### What A-7 is actually about, and the open question
+
+With the Program Files document still open on Civil, `GET /db/CAMB` answered
+`{"message": ""}` and the session was **not** blocked - so the 2026-07-29
+"a plain GET pops the dialog" case did not reproduce either, on the product
+where the write had succeeded.
+
+Read together, the trigger is not the path. **It is a write to that path
+failing.** Where the write goes through, nothing pops, GET included.
+
+Why the write goes through on Civil and not on Gen is unresolved, and there are
+two candidates, only one of which is good news:
+
+1. Civil is running elevated on that machine and Gen is not.
+2. **UAC virtualization.** A process without an elevation manifest has its
+   `Program Files` writes silently redirected to
+   `%LOCALAPPDATA%\VirtualStore\Program Files\`, and reads are redirected back
+   - which would explain `/doc/OPEN` succeeding just as well, while nothing
+   was ever written to `Program Files` at all.
+
+If it is (2), Civil is the worse case, not the better one: the save reports
+success, `/doc/OPEN` confirms it, and the file is somewhere the user never
+asked for. The check is whether
+`%LOCALAPPDATA%\VirtualStore\Program Files\a7-probe-civil-20260921T072251Z.mcbz`
+exists on the NX machine; that was asked of the author and is not yet answered.
+
+**Left behind:** `a7-probe-civil-20260921T072251Z.mcbz` exists at one of those
+two locations on the NX host. This repository cannot delete a file on that
+machine, so it is the author's to remove.
