@@ -36,6 +36,10 @@ operations:
       exportName: exportSteelCodeCheckReport
       modulePath: [design, steelKds]
       argumentTypeName: SteelCodeCheckReportArgument
+      documentation: |-
+        docs/manual/25_Design_Steel_KDS41302022.md #25 — CODE-REPORT — Steel
+        Code Check Report. Response: ``{"SUCCESS": bool, "FILE_PATH": str,
+        "MESSAGE": str}``.
     risk: write
     request:
       wrapper: assign

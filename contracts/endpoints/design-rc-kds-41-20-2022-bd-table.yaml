@@ -36,6 +36,11 @@ operations:
       exportName: getBeamDesignTable
       modulePath: [design, rcKds, designForces]
       argumentTypeName: RcMemberDesignTableArgument
+      documentation: |-
+        docs/manual/26_Design_RC_KDS41202022.md #40 — BD-TABLE — RC Beam
+        Design Table. Response: ``{table_name_or_"RC Beam Design Result":
+        {"FORCE": ..., "DIST": ..., "HEAD": [...25 columns...], "DATA":
+        [[...], ...]}}``.
     risk: write
     request:
       wrapper: assign

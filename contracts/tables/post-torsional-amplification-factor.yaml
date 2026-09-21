@@ -7,4 +7,16 @@ source:
   manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 21_POST_StoryTables.md, section: "12. Torsional Amplification Factor"}
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getTorsionalAmplificationFactorTable
+  modulePath: [story]
+  tableType: TORSIONAL_AMPLIFICATION_FACTOR_X
+  factory: variable
+  optionNames: [additional, components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/21_POST_StoryTables.md #12 — Torsional Amplification Factor.
+
+    table_type: TABLE_TYPE_TORSIONAL_AMPLIFICATION_FACTOR_X or _Y.
+    additional: SELECT_IRREGULAR_ENDS — Required; extreme-point node
+    selection (auto-calculated unless USER_DEFINE=true).
 tableTypes: [{value: TORSIONAL_AMPLIFICATION_FACTOR_X, provenance: manual}, {value: TORSIONAL_AMPLIFICATION_FACTOR_Y, provenance: manual}]

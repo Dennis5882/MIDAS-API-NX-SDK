@@ -36,6 +36,39 @@ operations:
       exportName: performBeamCheck
       modulePath: [design, rcKds, checks]
       argumentTypeName: PerformRcMemberCheckArgument
+      documentation: |-
+        docs/manual/26_Design_RC_KDS41202022.md #54 — BC-ANAL — RC Beam Check
+        Perform. Runs code-checking on RC beam members that already have rebar
+        assigned. Response: ``{"message": "success"}``.
+
+        ✅ **Re-verified 2026-07-25: ran clean 4/4 — on the same build that hung.**
+        An independent production tool (the QuickRebar NX web app) now ships
+        this call behind a user-triggered "recheck" button and ran it — plus
+        ``perform_column_check`` including ``PERFORM_TYPE: "ALL"`` — cleanly
+        4/4 with the app staying connected; ``PERFORM_TYPE: "ALL"`` re-checks a
+        whole model in roughly 2 seconds. This lifts the blanket "never call
+        this" rule — but see the caveat below before treating it as fixed.
+
+        ⚠️ CONFIRMED to hang on **Gen NX 2026 (v2.1), build 06/23/2026**,
+        reproduced on two independent real models once the full precondition
+        chain (member type + rebar + a KDS-recognized load combination +
+        confirmed-queryable analysis results) was satisfied. One attempt
+        silently locked just that element's check endpoints; another crashed the
+        app outright with a **"Failed to disconnect the work session"**
+        license-error dialog (unrecoverable — the program always dies once it
+        appears).
+
+        ⚠️ **The clean re-verification ran on that exact same build** — this was
+        not fixed by a vendor patch, so the real trigger is still unidentified
+        (model state, call sequence, and client/transport are all untested
+        candidates). Every test on both sides also used the **KDS 41 20:2022**
+        code specifically. Treat the defensive pattern as the actual mitigation,
+        not as hygiene: use a short timeout (the production tool uses 25s) and —
+        because a timed-out check may still have committed its results — read
+        ``get_beam_check_table`` regardless of whether this call returned. If
+        you only need results the user already computed in Gen NX's own GUI,
+        reading ``get_beam_check_table`` alone needs no perform call at all and
+        carries none of this risk. See docs/live_verification_notes.md.
     risk: write
     request:
       wrapper: assign

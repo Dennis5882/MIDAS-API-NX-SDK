@@ -7,4 +7,12 @@ products: [gen, civil]
 source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "19. Axisymmetric Stress (Global)"}}
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getAxisymmetricStressGlobalTable
+  modulePath: [result1]
+  tableType: AXISYMMETRICSG
+  factory: fixed
+  optionNames: [components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/20_POST_AnalysisResult_2.md #19 — Axisymmetric Stress (Global).
 tableTypes: [{value: AXISYMMETRICSG, description: Global axisymmetric stress, head: [Index, Elem, Load, Node, Sig-XX, Sig-YY, Sig-ZZ, Sig-XZ, Sig-P1, Sig-P2, Sig-P3, Max-Shear, Sig-EFF, Sig-OCT], provenance: manual}]

@@ -13,6 +13,14 @@ source:
     section: "4. Truss Stress"
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getTrussStressTable
+  modulePath: [result1]
+  tableType: TRUSSSTRESS
+  factory: fixed
+  optionNames: [components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/19_POST_AnalysisResult_1.md #4 — Truss Stress.
 tableTypes:
   - value: TRUSSSTRESS
     description: Truss stress

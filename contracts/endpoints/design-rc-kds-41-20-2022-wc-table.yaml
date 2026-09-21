@@ -36,6 +36,14 @@ operations:
       exportName: getWallCheckTable
       modulePath: [design, rcKds, checks]
       argumentTypeName: RcWallCheckTableArgument
+      documentation: |-
+        docs/manual/26_Design_RC_KDS41202022.md #64 — WC-TABLE — RC Wall
+        Check Table. Unlike the beam/column/brace check tables, the response is
+        NOT a HEAD/DATA table: it echoes ``TABLE_NAME``/``TABLE_TYPE``/``UNIT``/
+        ``STYLES``/``COMPONENTS`` at the top level plus a ``"DATA"`` array whose
+        entries are objects keyed by each requested COMPONENTS name (one object
+        per wall-mark/story row), e.g. ``{"TABLE_NAME": ..., "COMPONENTS": [...],
+        "DATA": [{"WID": 1, "Story": "3F", ...}, ...]}``.
     risk: write
     request:
       wrapper: assign

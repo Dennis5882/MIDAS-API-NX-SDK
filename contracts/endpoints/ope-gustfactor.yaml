@@ -36,6 +36,12 @@ operations:
       exportName: calculateGustFactor
       modulePath: [ope]
       argumentTypeName: GustFactorArgument
+      documentation: |-
+        docs/manual/15_OPE.md #14 — /ope/GUSTFACTOR — Gust Factor Calculator.
+      nestedTypes:
+        - {path: FLEXIBLE_PARAM, name: FlexibleGustFactorParam, namespace: OpeTypes}
+        - {path: FLEXIBLE_PARAM.TOPOGRAPHIC_EFFECT, name: TopographicEffect, namespace: OpeTypes}
+        - {path: RIGID_PARAM, name: RigidGustFactorParam, namespace: OpeTypes}
     risk: write
     request:
       wrapper: assign

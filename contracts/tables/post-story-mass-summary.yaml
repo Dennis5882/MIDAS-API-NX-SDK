@@ -14,6 +14,17 @@ source:
 verification:
   status: manual_only
 risk: read_only
+surface:
+  exportName: getStoryMassSummaryTable
+  modulePath: [preProcess]
+  tableType: STORY_MASS
+  factory: variable
+  optionNames: [components, styles, tableName, unit]
+  documentation: |-
+    docs/manual/18_POST_PreProcess.md #8 — Story Mass Summary Table.
+
+    table_type: TABLE_TYPE_STORY_MASS (direction-summed) or
+    TABLE_TYPE_STORY_MASS_X/_Y/_Z (per-direction).
 tableTypes:
   - value: STORY_MASS
     description: Combined directional story mass

@@ -36,6 +36,11 @@ operations:
       exportName: useLoadCombinations
       modulePath: [ope]
       argumentTypeName: UsingLoadCombinationsArgument
+      documentation: |-
+        docs/manual/15_OPE.md #4 — /ope/USLC — Using Load Combinations.
+      nestedTypes:
+        - {path: LCOM_LIST, name: LoadCombinationRef, namespace: OpeTypes}
+        - {path: LOADS, name: UsingLoadTypes, namespace: OpeTypes}
     risk: write
     request:
       wrapper: assign

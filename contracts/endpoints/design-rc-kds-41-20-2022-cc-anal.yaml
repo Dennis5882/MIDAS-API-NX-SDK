@@ -36,6 +36,44 @@ operations:
       exportName: performColumnCheck
       modulePath: [design, rcKds, checks]
       argumentTypeName: PerformRcMemberCheckArgument
+      documentation: |-
+        docs/manual/26_Design_RC_KDS41202022.md #57 — CC-ANAL — RC Column
+        Check Perform. Runs P-M interaction/shear code-checking on RC column
+        members that already have rebar assigned. Response: ``{"message":
+        "success"}``.
+
+        ✅ **Re-verified 2026-07-25: ran clean 4/4 — on the same build that hung.**
+        An independent production tool (the QuickRebar NX web app) ran this
+        call — including ``PERFORM_TYPE: "ALL"`` — plus ``perform_beam_check``
+        cleanly 4/4 with the app staying connected. This lifts the blanket
+        "never call this" rule — but see the caveat below before treating it as
+        fixed.
+
+        ⚠️ CONFIRMED to stall on **Gen NX 2026 (v2.1), build 06/23/2026**: the
+        desktop app's progress dialog got stuck at "Converting Design Results... 0%",
+        5 times out of 5 whenever the target had real rebar data, a recognized
+        design load combination, and confirmed analysis results — on natively
+        KDS-configured production models, not just synthetic setups, and
+        independent of admin/elevated privileges. On one occasion the app's own
+        message log showed the check had actually finished while the dialog
+        stayed frozen at 0%, suggesting a stuck completion-signal bug rather
+        than the check itself deadlocking. Consequences varied: a forced process
+        kill 3 of 5 times, clean recovery via "Stop Execution" the other 2.
+        Every call that didn't hit the precondition combination instead returned
+        a clean, correctly-shaped ``{"error": ...}`` response, so the request
+        shape itself was never the problem.
+
+        ⚠️ **The clean re-verification ran on that exact same build** — this was
+        not fixed by a vendor patch, so the real trigger is still unidentified
+        (model state, call sequence, and client/transport are all untested
+        candidates). Every test on both sides also used the **KDS 41 20:2022**
+        code specifically. Treat the defensive pattern as the actual mitigation:
+        use a short timeout, and read ``get_column_check_table`` regardless of
+        whether this call returned — a timed-out check very likely still
+        committed its results, which is exactly what the original reproductions
+        showed (full OK/NG, P-M ratios, and assigned rebar came back immediately
+        after a "hung" call, with no retry needed). See
+        docs/live_verification_notes.md for the full history.
     risk: write
     request:
       wrapper: assign

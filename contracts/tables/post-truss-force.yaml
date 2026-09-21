@@ -13,6 +13,14 @@ source:
     section: "3. Truss Force"
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getTrussForceTable
+  modulePath: [result1]
+  tableType: TRUSSFORCE
+  factory: fixed
+  optionNames: [components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/19_POST_AnalysisResult_1.md #3 — Truss Force.
 tableTypes:
   - value: TRUSSFORCE
     description: Truss force

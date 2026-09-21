@@ -35,6 +35,18 @@ verification:
 
 risk: read_only
 
+surface:
+  exportName: getReactionTable
+  modulePath: [result1]
+  tableType: REACTIONG
+  factory: variable
+  optionNames: [components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/19_POST_AnalysisResult_1.md #1 — Reaction.
+
+    table_type: TABLE_TYPE_REACTION_GLOBAL (default), _LOCAL, or
+    _LOCAL_SURFACE_SPRING. opt_cs/stage_step are not supported for the Local
+    Surface Spring variant per the manual.
 tableTypes:
   - value: REACTIONG
     description: Global coordinate system

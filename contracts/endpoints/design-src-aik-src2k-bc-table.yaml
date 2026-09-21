@@ -36,6 +36,13 @@ operations:
       exportName: getSrcBeamCheckTable
       modulePath: [design, srcAiksrc2k]
       argumentTypeName: SrcMemberCheckTableArgument
+      documentation: |-
+        docs/manual/27_Design_SRC_AIKSRC2K.md #16 — BC-TABLE — SRC Beam Check
+        Table. COMPONENTS accepts: "MEMB"/"SECT"/"Span"/"Section"/"Bc"/"Hc"/
+        "Material"/"Fy"/"fc"/"Fyr"/"Fys"/"POS"/"CHK"/"AsTop"/"AsBot"/"N_M"/
+        "LCB_N"/"N_Mrs"/"Rat_N"/"P_M"/"LCB_P"/"P_Mrs"/"Rat_P"/"V"/"LCB_V"/"Vrs"/
+        "Rat_V" (27 total). Response: ``{table_name_or_"Result Table": {"FORCE":
+        ..., "DIST": ..., "HEAD": [...27 columns...], "DATA": [[...], ...]}}``.
     risk: write
     request:
       wrapper: assign

@@ -11,5 +11,18 @@ source:
     section: "8. Overturning Moment"
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getOverturningMomentTable
+  modulePath: [story]
+  tableType: OVERTURNING_MOMENT
+  factory: fixed
+  optionNames: [additional, components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/21_POST_StoryTables.md #8 — Overturning Moment.
+
+    Per-story overturning moment split by vertical-member type
+    (Frame/Wall), for two angles (Angle1/Angle2).
+    additional: angle (default 0) and response-spectrum scale/reduction-factor
+    settings — both optional, see OverturningMomentAdditional.
 tableTypes:
   - {value: OVERTURNING_MOMENT, provenance: manual}

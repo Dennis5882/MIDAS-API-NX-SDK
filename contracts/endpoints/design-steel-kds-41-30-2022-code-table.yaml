@@ -36,6 +36,10 @@ operations:
       exportName: getSteelCodeCheckTable
       modulePath: [design, steelKds]
       argumentTypeName: SteelCodeCheckTableArgument
+      documentation: |-
+        docs/manual/25_Design_Steel_KDS41302022.md #24 — CODE-TABLE — Steel Code
+        Check Table. Response: ``{table_name_or_"Result Table": {"FORCE": ...,
+        "DIST": ..., "HEAD": [...], "DATA": [[...], ...]}}``.
     risk: write
     request:
       wrapper: assign

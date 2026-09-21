@@ -36,6 +36,12 @@ operations:
       exportName: exportSrcBeamCheckReport
       modulePath: [design, srcAiksrc2k]
       argumentTypeName: SrcBeamCheckReportArgument
+      documentation: |-
+        docs/manual/27_Design_SRC_AIKSRC2K.md #17 — BC-REPORT — SRC Beam
+        Check Report. Response: ``{"SUCCESS": bool, "FILE_PATH": str, "MESSAGE":
+        str}``.
+      nestedTypes:
+        - {path: DETAIL_POSITIONS, name: SrcReportDetailPositions, namespace: DesignSrcAiksrc2kTypes}
     risk: write
     request:
       wrapper: assign

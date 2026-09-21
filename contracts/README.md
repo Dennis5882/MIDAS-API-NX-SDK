@@ -240,6 +240,34 @@ model it without inference.
 field's `appliesWhen` uses, so one construct covers a nested discriminator
 (`STR.SPEC_CODE`), a two-level selector, and the multi-value case below.
 
+Since 2026-09-22 an operation `surface` is also **the list**: the generator
+reads the 70 npm operations from the contracts instead of finding Python
+functions that call `_post`/`_get`, and each surface carries two more keys:
+
+- `documentation` - the JSDoc npm publishes on the export. Seeded from the
+  Python docstring the generator used to render, so no published text changed;
+  from then on it is npm's text, owned here, and the docstring is Python's.
+- `nestedTypes` - as at the top level, for objects inside the **argument**.
+  Paths are inside `fields` with the `"Argument"` wrapper row removed, which is
+  how the argument type itself is now built: `argumentTypeName` names a type
+  the generator builds from this contract's fields. An argument named by
+  several contracts must come out the same from each, and a contract with
+  `unmergedTables`, a union argument, or an entry in the generator's
+  `_ARGUMENT_TYPES_LEFT_ON_PYTHON` (each with its reason) stays on Python.
+
+Building argument types was the first time a function contract's
+*requiredness* reached a published type, so it was read against the manual
+row by row before shipping. Two rows needed a condition the manual states and
+the contract had lost - `/view/ACTIVE` sorts its rows under a mode column, and
+`/ope/LINEBMLD`'s load coefficients are `CURVED`-only or `CURVED`-excluded. A
+`requirement: required` with `appliesWhen` is how "required in this branch"
+is written; the generated type makes it optional and says when it is needed.
+
+Table contracts (`contracts/tables/*.yaml`) gained a `surface` the same day,
+for the same reason: `exportName`, `modulePath`, the default `tableType` (a
+prefix for a `directional` wrapper), `factory`, `optionNames` and
+`documentation`, seeded from what the generator used to find in Python.
+
 ### `in`: one table, several documented values
 
 A condition takes either `equals` (one literal) or `in` (two or more), never

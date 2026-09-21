@@ -36,6 +36,12 @@ operations:
       exportName: convertSurfaceSpring
       modulePath: [ope]
       argumentTypeName: SurfaceSpringArgument
+      documentation: |-
+        docs/manual/15_OPE.md #7 — /ope/SSPS — Surface Spring.
+      nestedTypes:
+        - {path: BOUNDARY, name: SurfaceSpringBoundary, namespace: OpeTypes}
+        - {path: ELEMENT, name: SurfaceSpringElement, namespace: OpeTypes}
+        - {path: NODE_ELEMS, name: TargetKeys, namespace: OpeTypes}
     risk: write
     request:
       wrapper: assign

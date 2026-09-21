@@ -14,6 +14,14 @@ source:
 verification:
   status: manual_only
 risk: read_only
+surface:
+  exportName: getMaterialTable
+  modulePath: [preProcess]
+  tableType: MATERIAL
+  factory: fixed
+  optionNames: [tableName]
+  documentation: |-
+    docs/manual/18_POST_PreProcess.md #5 — Material Table.
 tableTypes:
   - value: MATERIAL
     description: Material properties

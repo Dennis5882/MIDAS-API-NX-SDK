@@ -34,6 +34,26 @@ operations:
       exportName: generateLoadCombinationSteel
       modulePath: [ope]
       argumentTypeName: LoadCombinationSteelArgument
+      documentation: |-
+        docs/manual/15_OPE.md #17 — /ope/LCOM-STEEL — Load Combination (Steel) – KDS 41 30:2022.
+
+        ⚠️ Live-tested 2026-07-30: same Civil-404/Gen-ok split as
+        generate_load_combination_concrete — see that function's docstring.
+      nestedTypes:
+        - {path: ADDITIONAL_LOAD, name: AdditionalLoad, namespace: OpeTypes}
+        - {path: ADDITIONAL_LOAD.SPECIAL_LOAD, name: SpecialSeismicLoad, namespace: OpeTypes}
+        - {path: ADDITIONAL_LOAD.SPECIAL_LOAD.OVER_STRENGTH_FACTOR, name: LoadCombScaleFactorItem, namespace: OpeTypes}
+        - {path: ADDITIONAL_LOAD.VERTICAL_LOAD, name: VerticalSeismicLoad, namespace: OpeTypes}
+        - {path: ORTHO_EFFECT, name: OrthoEffect, namespace: OpeTypes}
+        - {path: RS_SCALE_FACTOR, name: LoadCombScaleFactorItem, namespace: OpeTypes}
+        - {path: UNDERGROUND_LOAD, name: UndergroundLoad, namespace: OpeTypes}
+        - {path: UNDERGROUND_LOAD.LOAD_CASE_LIST, name: UndergroundLoadCaseItem, namespace: OpeTypes}
+        - {path: UNDERGROUND_LOAD.SCALE_FACTOR, name: LoadCombScaleFactorItem, namespace: OpeTypes}
+        - {path: UNDERGROUND_LOAD.SPECIAL_LOAD, name: SpecialSeismicLoad, namespace: OpeTypes}
+        - {path: UNDERGROUND_LOAD.SPECIAL_LOAD.OVER_STRENGTH_FACTOR, name: LoadCombScaleFactorItem, namespace: OpeTypes}
+        - {path: WIND_LOAD_COMB, name: WindLoadComb, namespace: OpeTypes}
+        - {path: WIND_LOAD_COMB.PARAMETERS, name: WindLoadCombParameter, namespace: OpeTypes}
+        - {path: WIND_LOAD_COMB.PARAMETERS.WIND_LOAD_CASE, name: WindLoadCase, namespace: OpeTypes}
     risk: write
     request:
       wrapper: assign

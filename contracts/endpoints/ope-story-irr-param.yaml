@@ -33,6 +33,14 @@ operations:
     surface:
       exportName: getStoryIrregularityCheckParameter
       modulePath: [ope]
+      documentation: |-
+        docs/manual/15_OPE.md #11 — /ope/STORY_IRR_PARAM — Story Irregularity Check Parameter (GET).
+
+        Live-confirmed Gen NX only (404 on Civil, twice independently, 2026-07-29)
+        — see db/base.py's GEN_ONLY docstring. Not enforced here: unlike
+        db/*/design/* resources, plain doc/ope/view functions have no PRODUCTS
+        gate in this SDK, so a Civil call reaches the server and 404s there
+        rather than raising client-side.
     risk: read_only
     request:
       wrapper: none
@@ -44,6 +52,8 @@ operations:
       exportName: setStoryIrregularityCheckParameter
       modulePath: [ope]
       argumentTypeName: StoryIrregularityCheckParameterArgument
+      documentation: |-
+        docs/manual/15_OPE.md #11 — /ope/STORY_IRR_PARAM — Story Irregularity Check Parameter (POST).
     risk: write
     request:
       wrapper: assign

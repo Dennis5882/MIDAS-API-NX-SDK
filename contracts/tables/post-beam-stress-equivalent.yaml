@@ -13,6 +13,14 @@ source:
     section: "11. Beam Stress (Equivalent)"
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getBeamStressDetailTable
+  modulePath: [result1]
+  tableType: BEAMSTRESSDETAIL
+  factory: fixed
+  optionNames: [components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/19_POST_AnalysisResult_1.md #11 — Beam Stress (Equivalent).
 tableTypes:
   - value: BEAMSTRESSDETAIL
     description: Detailed equivalent beam stress

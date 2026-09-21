@@ -36,6 +36,10 @@ operations:
       exportName: precapture
       modulePath: [view]
       argumentTypeName: PrecaptureArgument
+      documentation: |-
+        docs/manual/16_VIEW.md #3 — /view/PRECAPTURE — Dialog Capture.
+      nestedTypes:
+        - {path: OPTION, name: PrecaptureOption, namespace: ViewTypes}
     risk: write
     request:
       wrapper: assign

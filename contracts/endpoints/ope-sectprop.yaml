@@ -35,6 +35,10 @@ operations:
     surface:
       exportName: getSectionProperties
       modulePath: [ope]
+      documentation: |-
+        docs/manual/15_OPE.md #3 — /ope/SECTPROP — Section Properties Calculation Results.
+
+        GET-only, no request body; response is keyed by section ID.
     risk: read_only
     request:
       wrapper: none

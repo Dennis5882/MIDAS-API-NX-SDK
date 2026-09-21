@@ -7,4 +7,12 @@ products: [gen, civil]
 source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "14. Plane Strain Stress (Local)"}}
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getPlaneStrainStressLocalTable
+  modulePath: [result1]
+  tableType: PLANESTRAINSL
+  factory: fixed
+  optionNames: [components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/20_POST_AnalysisResult_2.md #14 — Plane Strain Stress (Local).
 tableTypes: [{value: PLANESTRAINSL, description: Local plane-strain stress, head: [Index, Elem, Load, Node, Sig-xx, Sig-yy, Sig-zz, Sig-xy, Sig-P1, Sig-P2, Sig-P3, Max-Shear, Sig-EFF, Sig-OCT], provenance: manual}]

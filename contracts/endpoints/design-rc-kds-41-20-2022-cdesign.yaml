@@ -36,6 +36,11 @@ operations:
       exportName: exportComprehensiveDesignResultImage
       modulePath: [design, rcKds, checks]
       argumentTypeName: ComprehensiveDesignResultArgument
+      documentation: |-
+        docs/manual/26_Design_RC_KDS41202022.md #66 — CDESIGN — RC Concrete
+        Comprehensive Design Result. Response: ``{"message": "success"}``.
+      nestedTypes:
+        - {path: RESULT_GRAPHIC, name: RcDesignResultGraphic, namespace: DesignRcKdsChecksTypes}
     risk: write
     request:
       wrapper: assign

@@ -9,6 +9,18 @@ source:
   manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "7. Plate Strain (Global)"}
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getPlateStrainGlobalTable
+  modulePath: [result1]
+  tableType: PLATESTRAINPG
+  factory: variable
+  optionNames: [components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/20_POST_AnalysisResult_2.md #7 — Plate Strain (Global).
+
+    table_type: TABLE_TYPE_PLATE_STRAIN_GLOBAL_PLASTIC (default) or _TOTAL.
+    Nonlinear/construction-stage results — pass opt_cs=True and stage_step,
+    e.g. stage_step=["nl_001"].
 tableTypes:
   - value: PLATESTRAINPG
     description: Global plastic plate strain

@@ -11,6 +11,20 @@ source:
     section: "1. Story Drift"
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getStoryDriftTable
+  modulePath: [story]
+  tableType: STORY_DRIFT_COMB
+  factory: variable
+  optionNames: [additional, components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/21_POST_StoryTables.md #1 — Story Drift.
+
+    table_type: TABLE_TYPE_STORY_DRIFT_X/_Y (single-direction) or
+    TABLE_TYPE_STORY_DRIFT_COMB (combined, adds shear-weighted/selected-node
+    detail columns).
+    additional: drift-ratio judgment method/parameters, plus (COMB only) which
+    drift-basis columns to include — see StoryDriftAdditional.
 tableTypes:
   - {value: STORY_DRIFT_X, provenance: manual}
   - {value: STORY_DRIFT_Y, provenance: manual}

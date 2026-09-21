@@ -399,6 +399,41 @@
               "takesArgument": {
                 "type": "boolean",
                 "description": "False for a POST that sends no body at all, which generates a different npm operation kind from one whose body is untyped. Defaults to true; only the `false` case is worth writing down."
+              },
+              "documentation": {
+                "type": "string",
+                "description": "The JSDoc npm publishes on this export. Seeded on 2026-09-21 from the text the generator already rendered, which was the Python function's docstring, so the published text did not change; from then on the npm text is owned here and the Python docstring is the Python package's own. It is package prose, not a product fact, which is why it lives in `surface`."
+              },
+              "nestedTypes": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "path",
+                    "name",
+                    "namespace"
+                  ],
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "Dotted field path inside this contract's `fields`, e.g. `ITEMS` or `BAR_SECTOR_I.TOP`. For an array field the type is its element."
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "Published npm type name, e.g. `BeamEndOffsetItem`."
+                    },
+                    "namespace": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "Published npm namespace the name sits in, e.g. `DbBoundaryTypes`. Part of the public name: the package re-exports every namespace at its root."
+                    }
+                  }
+                },
+                "description": "The same record as the top-level `surface.nestedTypes`, for an operation's argument: `path` is inside this contract's `fields` with the `\"Argument\"` wrapper row removed, the way the argument type itself is built."
               }
             }
           }

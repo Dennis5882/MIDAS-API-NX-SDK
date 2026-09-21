@@ -7,4 +7,12 @@ products: [gen, civil]
 source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "22. Solid Stress (Local)"}}
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getSolidStressLocalTable
+  modulePath: [result1]
+  tableType: SOLIDSL
+  factory: fixed
+  optionNames: [components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/20_POST_AnalysisResult_2.md #22 — Solid Stress (Local).
 tableTypes: [{value: SOLIDSL, description: Local solid stress, head: [Index, Elem, Load, Node, Sig-xx, Sig-yy, Sig-zz, Sig-xy, Sig-yz, Sig-xz, Sig-P1, Sig-P2, Sig-P3, Max-Shear, Sig-EFF, Sig-OCT, Sig-P1/ux, Sig-P1/uy, Sig-P1/uz, Sig-P2/ux, Sig-P2/uy, Sig-P2/uz, Sig-P3/ux, Sig-P3/uy, Sig-P3/uz], provenance: manual}]

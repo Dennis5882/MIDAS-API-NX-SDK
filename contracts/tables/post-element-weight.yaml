@@ -23,6 +23,17 @@ verification:
 
 risk: read_only
 
+surface:
+  exportName: getElementWeightTable
+  modulePath: [preProcess]
+  tableType: ELEMENTWEIGHT
+  factory: fixed
+  optionNames: [nodeElements, tableName]
+  documentation: |-
+    docs/manual/18_POST_PreProcess.md #1 — Element Weight Table.
+
+    node_elems: target scope (exactly one of KEYS/TO/STRUCTURE_GROUP_NAME);
+    omit for all elements.
 tableTypes:
   - value: ELEMENTWEIGHT
     description: Element Weight Table

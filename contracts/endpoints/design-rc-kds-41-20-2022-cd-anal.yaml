@@ -36,6 +36,9 @@ operations:
       exportName: performColumnDesign
       modulePath: [design, rcKds, designForces]
       argumentTypeName: RcMemberDesignPerformArgument
+      documentation: |-
+        docs/manual/26_Design_RC_KDS41202022.md #42 — CD-ANAL — RC Column
+        Design Perform. Response: ``{"message": "success"}``.
     risk: write
     request:
       wrapper: assign
@@ -74,6 +77,39 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+    properties:
+      - key: KEYS
+        description: >-
+          요소 ID 각각 지정
+        type: array
+        items:
+          type: integer
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        # From this section's JSON Schema (line 7697), which declares KEYS,
+        # TO and STRUCTURE_GROUP_NAME under ELEMS; its Parameters table lists
+        # ELEMS without the child rows /BD-ANAL's table has.
+      - key: TO
+        description: >-
+          요소 ID 범위 (예 "1to160")
+        type: string
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: STRUCTURE_GROUP_NAME
+        description: >-
+          구조 그룹명
+        type: string
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
   - key: SECTIONS
     description: >-
       단면 번호 목록
@@ -88,5 +124,11 @@ fields:
     provenance: manual
 
 extraction:
+  prose:
+    - line: 7697
+      quote: >-
+        "KEYS": { "type": "array", "items": { "type": "integer" } },
+        "TO": { "type": "string" }, "STRUCTURE_GROUP_NAME": { "type": "string" }
+      paths: [ELEMS.KEYS, ELEMS.TO, ELEMS.STRUCTURE_GROUP_NAME]
   source: 26_Design_RC_KDS41202022.md line 7710
   table: 파라미터

@@ -13,6 +13,17 @@ source:
     section: "5. Cable Force"
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getCableForceTable
+  modulePath: [result1]
+  tableType: CABLEFORCE
+  factory: fixed
+  optionNames: [components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/19_POST_AnalysisResult_1.md #5 — Cable Force.
+
+    Typically queried with opt_cs=True and stage_step for a construction-stage
+    step, e.g. stage_step=["nl_001"].
 tableTypes:
   - value: CABLEFORCE
     description: Cable force

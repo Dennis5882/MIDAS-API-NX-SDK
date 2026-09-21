@@ -7,6 +7,18 @@ products: [gen, civil]
 source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "25. Solid Strain (Global)"}}
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getSolidStrainGlobalTable
+  modulePath: [result1]
+  tableType: SOLID_GLOB_PLAST_STRAIN
+  factory: variable
+  optionNames: [components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/20_POST_AnalysisResult_2.md #25 — Solid Strain (Global).
+
+    table_type: TABLE_TYPE_SOLID_STRAIN_GLOBAL_PLASTIC (default) or _TOTAL.
+    Nonlinear/construction-stage results — pass opt_cs=True and stage_step,
+    e.g. stage_step=["nl_001"].
 tableTypes:
   - value: SOLID_GLOB_PLAST_STRAIN
     description: Global plastic solid strain

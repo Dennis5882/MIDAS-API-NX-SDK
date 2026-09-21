@@ -8,6 +8,18 @@ products: [gen, civil]
 source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "28. Vibration Mode Shape"}}
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getVibrationModeShapeTable
+  modulePath: [result1]
+  tableType: EIGENVALUEMODE
+  factory: variable
+  optionNames: [components, nodeElements, styles, tableName, unit]
+  documentation: |-
+    docs/manual/20_POST_AnalysisResult_2.md #28 — Vibration Mode Shape.
+
+    table_type: TABLE_TYPE_EIGENVALUE_MODE (default) or
+    TABLE_TYPE_PARTICIPATION_VECTOR_MODE. Mode shapes are not load-case scoped,
+    so LOAD_CASE_NAMES/OPT_CS/STAGE_STEP are not exposed here.
 tableTypes:
   - value: EIGENVALUEMODE
     description: Eigenvalue vibration mode shape

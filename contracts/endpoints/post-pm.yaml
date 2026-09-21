@@ -36,6 +36,13 @@ operations:
       exportName: getPmInteractionDiagram
       modulePath: [post, design]
       takesArgument: false
+      documentation: |-
+        docs/manual/23_POST_Design.md #1 — /post/PM — P-M Interaction Diagram.
+
+        Takes no arguments; returns the current model's full P-M interaction
+        (axial force-moment) curve dataset for RC/SRC columns and members. The
+        manual doesn't publish a fixed response HEAD/DATA shape for this one —
+        the response keys depend on the active design code configuration.
     risk: read_only
     request:
       wrapper: argument

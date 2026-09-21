@@ -14,6 +14,14 @@ source:
 verification:
   status: manual_only
 risk: read_only
+surface:
+  exportName: getNodalBodyForceTable
+  modulePath: [preProcess]
+  tableType: NODALBODYFORCE
+  factory: fixed
+  optionNames: [tableName]
+  documentation: |-
+    docs/manual/18_POST_PreProcess.md #2 — Nodal Body Force Table.
 tableTypes:
   - value: NODALBODYFORCE
     description: Nodal body force

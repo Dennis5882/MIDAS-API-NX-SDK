@@ -9,6 +9,17 @@ source:
   manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "3. Plate Force (Unit Length)"}
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getPlateForceUnitLengthTable
+  modulePath: [result1]
+  tableType: PLATEFORCEUL
+  factory: variable
+  optionNames: [components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/20_POST_AnalysisResult_2.md #3 — Plate Force (Unit Length).
+
+    table_type: one of TABLE_TYPE_PLATE_FORCE_UNIT_LENGTH_LOCAL (default),
+    _GLOBAL, _LOCAL_BY_MAX, _GLOBAL_BY_MAX, or _WOOD_ARMER (design moment).
 tableTypes:
   - value: PLATEFORCEUL
     description: Local plate force per unit length

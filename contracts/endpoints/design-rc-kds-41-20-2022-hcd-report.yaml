@@ -36,6 +36,10 @@ operations:
       exportName: exportHaunchedBeamDesignReport
       modulePath: [design, rcKds, designForces]
       argumentTypeName: RcHaunchedBeamDesignReportArgument
+      documentation: |-
+        docs/manual/26_Design_RC_KDS41202022.md #53 — HCD-REPORT — RC
+        Haunched Beam Design Report. Response: ``{"SUCCESS": bool, "FILE_PATH":
+        str, "MESSAGE": str}``.
     risk: write
     request:
       wrapper: assign

@@ -36,6 +36,14 @@ operations:
       exportName: getSrcColumnCheckTable
       modulePath: [design, srcAiksrc2k]
       argumentTypeName: SrcMemberCheckTableArgument
+      documentation: |-
+        docs/manual/27_Design_SRC_AIKSRC2K.md #19 — CC-TABLE — SRC Column
+        Check Table. COMPONENTS accepts (SSRC79-style; SEL not included):
+        "CHK"/"MEMB"/"SECT"/"COM"/"SHR"/"Type"/"Rebar"/"Section"/"Material"/
+        "Fys"/"Fyr"/"fc"/"Bc"/"Hc"/"LCB"/"Len"/"Ly"/"Lz"/"Ky"/"Kz"/"Cmy"/"Cmz"/
+        "Pa"/"My"/"Mz"/"fa"/"fby"/"fbz"/"Fa"/"FBy"/"FBz" (31 total). Response:
+        ``{table_name_or_"Result Table": {"FORCE": ..., "DIST": ..., "HEAD":
+        [...31 columns...], "DATA": [[...], ...]}}``.
     risk: write
     request:
       wrapper: assign

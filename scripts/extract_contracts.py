@@ -185,6 +185,8 @@ _DESC_COLUMNS = {"description", "설명"}
 _TYPE_COLUMNS = {"value type", "타입", "value 타입", "type"}
 _DEFAULT_COLUMNS = {"default", "기본값", "기본값/enum"}
 _REQUIRED_COLUMNS = {"required", "필수"}
+#: A column that sorts a table's rows into modes or groups. See `_parse_tables`.
+_GROUP_COLUMNS = {"모드", "그룹", "mode", "group"}
 _ENUM_VALUE_COLUMNS = {"value", "값"}
 
 _EMPTY_CELLS = {"", "-", "—", "–", "n/a", "N/A"}
@@ -3850,6 +3852,14 @@ def _parse_tables(lines: list[str], offset: int, endpoint: str = "") -> list[Par
         type_column = next((i for i, h in enumerate(header) if h in _TYPE_COLUMNS), None)
         default_column = next((i for i, h in enumerate(header) if h in _DEFAULT_COLUMNS), None)
         required_column = next((i for i, h in enumerate(header) if h in _REQUIRED_COLUMNS), None)
+        # Two /view tables put their rows under a mode or group column, and a
+        # row's "Required" holds only within its own group: /view/ACTIVE's
+        # N_LIST is required in "Active" mode and absent from "All", and
+        # /view/CAPTURE's FIGURE_NAME belongs to "Smart Report" only. Read
+        # flat, every such row looked required in every mode - which would
+        # refuse `{"ACTIVE_MODE": "All"}`.
+        group_column = next((i for i, h in enumerate(header) if h in _GROUP_COLUMNS), None)
+        key_groups: dict[str, set[str]] = {}
 
         fields: list[ParsedField] = []
         seen: set[tuple[str, str]] = set()
@@ -3947,6 +3957,10 @@ def _parse_tables(lines: list[str], offset: int, endpoint: str = "") -> list[Par
                 entry_identity = (
                     tree_scope if tree_scope is not None else (parent, entry_key)
                 )
+                # A child row (`12-1`) leaves the group cell blank and belongs
+                # to its parent's group; only a named group counts.
+                if group_column is not None and _clean(cells[group_column]):
+                    key_groups.setdefault(entry_key, set()).add(_clean(cells[group_column]))
                 if entry_identity in target_seen:
                     continue
                 target_seen.add(entry_identity)
@@ -4059,6 +4073,14 @@ def _parse_tables(lines: list[str], offset: int, endpoint: str = "") -> list[Par
                     )
                 )
 
+        if group_column is not None:
+            every_group = set().union(*key_groups.values()) if key_groups else set()
+            label = header[group_column]
+            for parsed in fields:
+                groups = key_groups.get(parsed.key, every_group)
+                if parsed.requirement == "required" and groups != every_group:
+                    parsed.requirement = "conditional"
+                    parsed.condition = f"{label}: " + " or ".join(sorted(groups))
         if fields:
             tables.append(
                 ParsedTable(

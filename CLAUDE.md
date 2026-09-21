@@ -104,11 +104,24 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   import comes back. A missing or broken Python install no longer stops `npm publish`. The
   **source tree** is still load-bearing — deleting `src/midas_nx/` breaks `npm run generate`,
   though a built `dist/` keeps working — because `pythonModule`, which no contract records, keys
-  the payload-type lookup, 250 of 765 generated npm types still come from Python TypedDicts, and
-  the 87 table wrappers are read from Python source. Only 3 of 305 resources still take their
+  the payload-type lookup and decides where in `types.ts` each type is written, and 162 of 765
+  generated npm types still come from Python TypedDicts. Only 3 of 305 resources still take their
   identity from a Python class: the IEHG trio, which has no permitted source and so can never be
-  contracted. **`scripts/report_npm_type_provenance.py` measures that 250 rather than counting it
-  by hand** (`--check` holds it as a ceiling in CI). **Since 2026-09-21 a contract can own its
+  contracted. **`scripts/report_npm_type_provenance.py` measures that 162 rather than counting it
+  by hand** (`--check` holds it as a ceiling in CI). **Since 2026-09-22 the 70 operations and 87
+  table wrappers are listed by the contracts, not found in Python**: an operation `surface` and a
+  table contract's `surface` state the export, its place, its argument or TABLE_TYPE, and the JSDoc
+  (`documentation`, seeded from the docstring the generator used to render, so no published text
+  changed; from then on npm's text is owned there and Python's docstring is Python's). The old
+  Python walks survive only as the other half of parity tests. Operation **argument types** are
+  built from the operation contract's fields too, `"Argument"` wrapper row removed. That was the
+  first time a function contract's requiredness reached a published type, and it showed:
+  `/view/ACTIVE`'s `N_LIST` was required in every mode because the manual's table sorts rows under
+  a *mode* column the extractor did not read (it does now, `_GROUP_COLUMNS`), and `/ope/LINEBMLD`
+  required both the `CURVED` coefficients and the non-`CURVED` arrays. Both are fixed from the
+  manual's own words. Where the manual gives no condition to cite, the argument stays on Python
+  with its reason in `_ARGUMENT_TYPES_LEFT_ON_PYTHON` rather than publishing a type that refuses a
+  call the product accepts. **Since 2026-09-21 a contract can own its
   nested types too**: `surface.nestedTypes` records, per field path, the name and namespace a
   nested object is *already published under* (the namespace is part of the public name), and the
   generator builds that type from the contract subtree, including any variant union attached

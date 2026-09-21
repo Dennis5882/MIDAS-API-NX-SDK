@@ -36,6 +36,11 @@ operations:
       exportName: getHaunchedBeamDesignTable
       modulePath: [design, rcKds, designForces]
       argumentTypeName: RcHaunchedBeamDesignTableArgument
+      documentation: |-
+        docs/manual/26_Design_RC_KDS41202022.md #52 — HCD-TABLE — RC Haunched
+        Beam Design Table. Multiple rows per element (one per haunch
+        section/POS). Response: ``{table_name_or_"Result Table": {"FORCE": ...,
+        "DIST": ..., "HEAD": [...20 columns...], "DATA": [[...], ...]}}``.
     risk: write
     request:
       wrapper: assign

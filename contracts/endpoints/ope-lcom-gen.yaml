@@ -34,6 +34,45 @@ operations:
       exportName: generateLoadCombinationGeneral
       modulePath: [ope]
       argumentTypeName: [LoadCombinationGeneralKdsArgument, LoadCombinationAikSrc2kArgument]
+      documentation: |-
+        docs/manual/15_OPE.md #15 — /ope/LCOM-GEN — Load Combination (General) – KDS:2022 / AIK-SRC2K.
+
+        DGNCODE selects the schema: KDS:2022 (LoadCombinationGeneralKdsArgument,
+        CODE_SELECTION-flattened) vs AIK-SRC2K (LoadCombinationAikSrc2kArgument).
+        The Union only helps callers running a type checker — TypedDicts aren't
+        validated at runtime (matches this SDK's other payload types), so build
+        ONLY the fields documented for the DGNCODE you set; mixing fields from
+        both schemas (e.g. AIK-SRC2K's DGNCODE with KDS:2022 fields like
+        CODE_SELECTION/ADD_ENVELOPE/CS_ANALYSIS) is sent to the API as-is and
+        will surface as a server-side error, not a client-side one.
+
+        ⚠️ Live-tested 2026-07-30 on Gen NX: a KDS:2022/CONCRETE payload built
+        from every field this TypedDict documents as required for that body
+        (RS_SCALE_FACTOR, ORTHO_EFFECT, ADDITIONAL_LOAD with both nested
+        OPT_USE flags false, CS_ANALYSIS, PRESTRESS_LOSS) answered "Wrong
+        Field". Not root-caused — the sibling endpoint LCOM-CONC succeeded
+        with a minimal payload covering the same design body, so this wasn't
+        pursued further; treat as unconfirmed.
+
+        ⚠️ Live-tested 2026-07-31 on Civil NX: even the minimal AIK-SRC2K
+        schema (``{OPTION, DGNCODE: "AIK-SRC2K", RS_SCALE_FACTOR: []}``) 404'd
+        outright — a different failure mode than Gen's "Wrong Field" (which at
+        least reaches routing/validation). Confirmed via ``GET
+        /info/ope/LCOM-GEN`` also 404ing on Civil (route genuinely not
+        registered, not just an execution failure) — same for
+        ``/info/ope/LCOM-CONC``. This closes the question left open for
+        LCOM-CONC/STEEL/SRC's Civil-404 finding: **the whole `/ope/LCOM-*`
+        family is Gen-only**, confirmed at the routing level, not just
+        inferred from execution failures.
+
+        ⚠️ Live-tested 2026-08-01 on Gen NX: the minimal AIK-SRC2K schema
+        (``{OPTION, DGNCODE: "AIK-SRC2K", RS_SCALE_FACTOR: []}``) also answers
+        "Wrong Field" on Gen — same result as the KDS:2022/CONCRETE payload
+        tested above on 2026-07-30, so it's not specific to one schema
+        variant. Unlike Civil (which 404s at the routing level, see above),
+        this one reaches the server and is rejected there, confirming the
+        route itself is live on Gen for both schema shapes; still no root
+        cause identified.
     risk: write
     request:
       wrapper: assign

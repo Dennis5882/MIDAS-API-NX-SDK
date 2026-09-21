@@ -34,6 +34,14 @@ operations:
       exportName: getStoryProperties
       modulePath: [ope]
       argumentTypeName: StoryPropertiesArgument
+      documentation: |-
+        docs/manual/15_OPE.md #12 — /ope/STORYPROP — Story Properties.
+
+        POST-only but functions as a query (unit/format-controlled report of
+        per-story weight, elevation, loaded height/width). See
+        StoryPropertiesArgument's docstring: the URL was ``/ope/STORPROP``
+        (missing a Y) until 2026-08-27 -- that was the actual defect behind
+        every historical 404, not a dead route.
     risk: write
     request:
       wrapper: assign

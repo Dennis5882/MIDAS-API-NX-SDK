@@ -48,6 +48,71 @@ operations:
       exportName: performSrcOptimalDesign
       modulePath: [design, srcAiksrc2k]
       argumentTypeName: SrcOptimalDesignArgument
+      documentation: |-
+        docs/manual/27_Design_SRC_AIKSRC2K.md #21 — OCHECK — SRC Optimal
+        Design. Response: ``{"ODSR_RUN_RESPONSE": {"FORCE": ..., "DIST": ...,
+        "HEAD": ["No", "Name", "SteelSize", "Astl", "COM", "Axial", "Ben-y",
+        "Ben-z", "Shear"], "DATA": [[...], ...]}}``.
+
+        🛑 UNOFFICIAL, PAUSED-DEVELOPMENT API — MIDASIT confirmed on
+        2026-08-06 that this endpoint was mid-development and shelved,
+        with no resume date, and moved its own path from
+        ``/DESIGN/SRC/AIK-SRC2K/OCHECK`` to ``/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK``
+        specifically to mark it unofficial. **The path move is not a fix**:
+        confirmed live 2026-08-07 that the new ``/TEMP/`` path still reproduces
+        the exact same crash as the old one, on the same request shape that
+        crashed Civil NX below. Calling this is expected to crash the running
+        NX session; only use it if you've accepted that risk.
+
+        ⚠️ Confirmed a genuine crash on Civil NX (2026-07-31, real production
+        bridge model with zero SRC-eligible sections/materials): the call
+        itself timed out, then a same-session `GET /db/NODE` also timed out —
+        a native dialog cascade had taken the whole session down, requiring a
+        full Civil NX restart to recover (no data loss). Reported to MIDASIT.
+        See docs/live_verification_notes.md's 2026-07-31 "New crash found"
+        section for the full dialog sequence.
+
+        ⚠️ Gen NX, 2026-08-01: tried against a session whose open document had
+        **zero sections at all** (not the "sections exist but none are
+        SRC-eligible" shape that crashed Civil) — a fabricated `SECT_NO` got a
+        clean `"Section 1 does not exist."` JSON error, no dialog, session
+        stayed alive. This is NOT equivalent to the Civil repro conditions and
+        does not clear Gen of the same risk; the crash trigger needs an actual
+        non-SRC-eligible section to reference, which this Gen session's model
+        didn't have.
+
+        ⚠️ Gen NX, 2026-08-07: re-tested on the new ``/TEMP/`` path against a
+        session whose open document has real, non-SRC-eligible sections
+        (matching the Civil repro conditions this time) — crashed the same
+        way (timeout, then session unresponsive, full restart needed).
+
+        Gen NX and Civil NX, 2026-08-11 (v2.1/v2.2, build 08/11/2026): both
+        re-tested against a document with **zero sections** (same shape as
+        the 2026-08-01 Gen non-repro above, not the real non-SRC-eligible-
+        section shape that actually triggers the crash) — both got the same
+        clean ``"Section 1 does not exist."`` error, session stayed healthy
+        both times. Reconfirms the precondition finding rather than adding
+        new evidence either way; the crash risk on real models with real
+        sections stands as documented above.
+
+        ⚠️ Civil NX, 2026-08-13 (v2.2, build 08/12/2026): re-tested with the
+        actual trigger shape restored — a dummy model built specifically for
+        this test (C24 concrete material, 600×600 ``DBUSER`` section: real,
+        existing, and non-SRC-eligible) — and it crashed again, identical
+        signature (client-side timeout, then a same-session ``GET /db/NODE``
+        returning ``404 client does not exist``, "Failed to disconnect the
+        work session" dialog confirmed on screen). Recovered cleanly via the
+        dialog's own instructions, no data of value lost (the dummy model was
+        disposable). Confirms the crash is not build-dependent — this is not
+        a "sometimes" defect like ``NMAS`` briefly was; it reproduces
+        reliably given the right precondition, consistent with MIDASIT's
+        "not a defect, no fix timeline" stance.
+      nestedTypes:
+        - {path: ANALYSIS_OPT, name: SrcOptimalDesignAnalysisOption, namespace: DesignSrcAiksrc2kTypes}
+        - {path: COLUMN_DESIGN, name: SrcOptimalDesignColumnDesign, namespace: DesignSrcAiksrc2kTypes}
+        - {path: OUTPUT, name: SrcOptimalDesignOutput, namespace: DesignSrcAiksrc2kTypes}
+        - {path: SECT_LIST, name: SrcOptimalDesignSectionCriteria, namespace: DesignSrcAiksrc2kTypes}
+        - {path: USER_DEFINED_SECT, name: SrcOptimalDesignUserSection, namespace: DesignSrcAiksrc2kTypes}
     risk: product_crash_risk
     mitigation: warn_only
     summary: Run SRC optimal design over the listed sections.

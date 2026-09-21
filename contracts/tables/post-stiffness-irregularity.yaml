@@ -7,4 +7,16 @@ source:
   manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 21_POST_StoryTables.md, section: "13. Stiffness Irregularity Check (Soft Story)"}
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getStiffnessIrregularityTable
+  modulePath: [story]
+  tableType: STIFFNESS_IRREGULARITY_X
+  factory: variable
+  optionNames: [additional, components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/21_POST_StoryTables.md #13 — Stiffness Irregularity Check (Soft Story).
+
+    table_type: TABLE_TYPE_STIFFNESS_IRREGULARITY_X or _Y.
+    additional: SET_CALCULATION_METHOD — Required; story-drift and
+    story-stiffness calculation basis, see StiffnessCalculationMethod.
 tableTypes: [{value: STIFFNESS_IRREGULARITY_X, provenance: manual}, {value: STIFFNESS_IRREGULARITY_Y, provenance: manual}]

@@ -7,4 +7,17 @@ source:
   manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 21_POST_StoryTables.md, section: "17. Weight Irregularity Check"}
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getWeightIrregularityTable
+  modulePath: [story]
+  tableType: WEIGHT_IRREGULARITY_X
+  factory: variable
+  optionNames: [calculationMethod, components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/21_POST_StoryTables.md #17 — Weight Irregularity Check.
+
+    table_type: TABLE_TYPE_WEIGHT_IRREGULARITY_X or _Y.
+    set_calculation_method: story-drift calculation basis — optional. Unlike
+    every other story table's per-table setting, this one is NOT wrapped in
+    "ADDITIONAL"; it sits directly under "Argument" per the manual.
 tableTypes: [{value: WEIGHT_IRREGULARITY_X, provenance: manual}, {value: WEIGHT_IRREGULARITY_Y, provenance: manual}]

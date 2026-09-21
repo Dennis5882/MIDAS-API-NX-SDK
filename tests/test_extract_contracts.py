@@ -1813,6 +1813,35 @@ def test_a_parenthesised_child_repeating_an_earlier_top_level_key_is_kept(tmp_pa
     assert [child.key for child in by_key["OTHER_LIST"].properties] == ["LCNAME"]
 
 
+def test_a_row_required_only_in_its_own_mode_is_conditional(tmp_path: Path):
+    """A mode or group column scopes each row's "Required" to that group.
+
+    /view/ACTIVE's N_LIST is required in "Active" mode and absent from "All";
+    read flat it was required everywhere. A key every group lists stays
+    required, and a child row's blank group cell belongs to its parent.
+    """
+
+    path = tmp_path / "99_VIEW_Modes.md"
+    path.write_text(
+        """## 1. `/view/MODES` -- rows sorted by mode
+
+| No. | 모드 | 설명 | Key | Value 타입 | 필수 |
+|---|---|---|---|---|---|
+| 1 | All | Mode | `"MODE"` | String | **Required** |
+| 1 | Active | Mode | `"MODE"` | String | **Required** |
+| 2 | Active | Nodes | `"N_LIST"` | Array [Integer] | **Required** |
+| 3 | Active | Colour | `"COLOR"` | Object | **Required** |
+| 3-1 | | Red | `COLOR.R` | Integer | **Required** |
+""",
+        encoding="utf-8",
+    )
+
+    fields = {field.key: field for field in ex.parse_chapter(path)[0].tables[0].fields}
+    assert fields["MODE"].requirement == "required"
+    assert fields["N_LIST"].requirement == "conditional"
+    assert fields["N_LIST"].condition == "모드: Active"
+
+
 def test_a_repeated_heading_selector_is_not_a_discriminator(tmp_path: Path):
     """One value cannot select two field sets, so neither table merges.
 

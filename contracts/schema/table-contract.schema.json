@@ -88,6 +88,20 @@
     "mitigation": {
       "enum": ["none", "normalized", "confirmation_required", "opt_in_required", "warn_only"]
     },
+    "surface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exportName", "modulePath", "tableType", "factory", "optionNames"],
+      "description": "The npm table wrapper for this result table. Until 2026-09-22 the wrappers were found by walking the Python `post` modules for functions that call `get_table`; this records what that walk produced, seeded from it so the published wrappers did not change, and the generator now reads it instead.",
+      "properties": {
+        "exportName": { "type": "string", "minLength": 1, "description": "The npm export under `tables`, e.g. `getBeamForceTable`. A published API anchor." },
+        "modulePath": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "description": "Where the export is nested under `tables`, e.g. [result1]." },
+        "tableType": { "type": "string", "minLength": 1, "description": "The TABLE_TYPE the wrapper sends by default. For a `directional` wrapper it is the prefix the direction is appended to, e.g. `MASS_SUMMARY_`." },
+        "factory": { "enum": ["fixed", "variable", "directional"], "description": "fixed: one TABLE_TYPE. variable: a default the caller may replace with another of `tableTypes`. directional: a prefix plus a direction the caller supplies." },
+        "optionNames": { "type": "array", "uniqueItems": true, "items": { "enum": ["additional", "calculationMethod", "components", "constructionStage", "exportPath", "loadCaseNames", "modes", "nodeElements", "parts", "stageSteps", "storyNames", "styles", "tableName", "unit"] }, "description": "The `TableOptions` members this wrapper accepts." },
+        "documentation": { "type": "string", "description": "The JSDoc npm publishes on the wrapper. Seeded from the Python docstring the generator rendered before; owned here from 2026-09-22." }
+      }
+    },
     "tableTypes": {
       "type": "array",
       "minItems": 1,

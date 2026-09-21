@@ -36,6 +36,11 @@ operations:
       exportName: getColumnDesignTable
       modulePath: [design, rcKds, designForces]
       argumentTypeName: RcMemberDesignTableArgument
+      documentation: |-
+        docs/manual/26_Design_RC_KDS41202022.md #43 — CD-TABLE — RC Column
+        Design Table. Includes P-M interaction and shear check results. Response:
+        ``{table_name_or_"Result Table": {"FORCE": ..., "DIST": ..., "HEAD":
+        [...32 columns...], "DATA": [[...], ...]}}``.
     risk: write
     request:
       wrapper: assign

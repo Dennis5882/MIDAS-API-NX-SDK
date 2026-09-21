@@ -36,6 +36,12 @@ operations:
       exportName: getBeamCheckTable
       modulePath: [design, rcKds, checks]
       argumentTypeName: RcMemberCheckTableArgument
+      documentation: |-
+        docs/manual/26_Design_RC_KDS41202022.md #55 — BC-TABLE — RC Beam Check
+        Table. Response: ``{table_name_or_"RC Beam Checking Result": {"FORCE":
+        ..., "DIST": ..., "HEAD": [...], "DATA": [[...], ...]}}``. HEAD includes
+        strength checks (Neg/Pos moment, shear) and rebar-detail checks (main
+        rebar, stirrup).
     risk: write
     request:
       wrapper: assign

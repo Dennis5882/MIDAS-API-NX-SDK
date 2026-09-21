@@ -7,6 +7,14 @@ products: [gen, civil]
 source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "32. Tendon Arrangement"}}
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getTendonArrangementTable
+  modulePath: [result1]
+  tableType: TNDN_ARRANGEMENT
+  factory: fixed
+  optionNames: [components, nodeElements, styles, tableName, unit]
+  documentation: |-
+    docs/manual/20_POST_AnalysisResult_2.md #32 — Tendon Arrangement.
 tableTypes:
   - {value: TNDN_ARRANGEMENT, description: Tendon arrangement, head: [Index, Elem, Part, TendonNumber, Yp, Zp, AverageSin罐, AverageCos罐, AverageStress, AverageForce], provenance: manual}
 requestFields:

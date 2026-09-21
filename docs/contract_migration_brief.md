@@ -339,7 +339,12 @@ with a date, and re-run `--report` before quoting one.
    npm package's names and module layout are 0 of 304, and no contract
    property can hold them. See "Measurement — 2026-09-02" for the field-by-
    field gap and the three-step sketch. **Needs the author's decision on
-   which names contracts may own before any code moves.**
+   which names contracts may own before any code moves.** *(2026-09-22: the
+   pattern the author approved - record in `surface` what the package already
+   publishes, so nothing is renamed - now covers nested payload types,
+   operations, table wrappers and operation argument types. What is left and
+   why is in `scripts/report_npm_type_provenance.py`'s docstring; the source
+   tree still decides where each type sits in `types.ts`.)*
 6. **Stage 4 — Python derives from the contracts.** Deliberately last and
    deliberately unspecified. `src/midas_nx/` is hand-written and its public API
    is on PyPI; changing how it is produced needs the author's call, not an

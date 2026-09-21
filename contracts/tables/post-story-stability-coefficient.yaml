@@ -11,6 +11,18 @@ source:
     section: "10. Story Stability Coefficient"
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getStoryStabilityCoefficientTable
+  modulePath: [story]
+  tableType: STORY_STABILITY_COEFFICIENT_X
+  factory: variable
+  optionNames: [additional, components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/21_POST_StoryTables.md #10 — Story Stability Coefficient.
+
+    table_type: TABLE_TYPE_STORY_STABILITY_COEFFICIENT_X or _Y.
+    additional: stability-coefficient (θ) parameters and story-drift
+    calculation basis — both optional, see StoryStabilityCoefficientAdditional.
 tableTypes:
   - {value: STORY_STABILITY_COEFFICIENT_X, provenance: manual}
   - {value: STORY_STABILITY_COEFFICIENT_Y, provenance: manual}

@@ -650,7 +650,9 @@ def _is_contract_shadow_resource(endpoint: str) -> bool:
     return endpoint.startswith(("/db/", "/DESIGN/"))
 
 
-def _strip_assign_envelope(contract: dict[str, Any]) -> tuple[list[dict], list[dict]]:
+def _strip_assign_envelope(
+    contract: dict[str, Any], envelope_key: str = "Assign"
+) -> tuple[list[dict], list[dict]]:
     """Return the record a caller passes, with the request envelope removed.
 
     The manual's Parameters tables open with a row for ``"Assign"``, the
@@ -679,7 +681,10 @@ def _strip_assign_envelope(contract: dict[str, Any]) -> tuple[list[dict], list[d
 
     fields = contract.get("fields") or []
     variants = contract.get("variants") or []
-    envelope = next((field for field in fields if field["key"] == "Assign"), None)
+    # A plain-function endpoint wraps its body in `"Argument"` the same way,
+    # and its npm operation adds that wrapper itself; see
+    # `_contract_argument_types`.
+    envelope = next((field for field in fields if field["key"] == envelope_key), None)
     if envelope is None:
         return fields, variants
     siblings = [field for field in fields if field is not envelope]
@@ -691,7 +696,8 @@ def _strip_assign_envelope(contract: dict[str, Any]) -> tuple[list[dict], list[d
     record = inner or siblings
 
     def rerooted(path: str) -> str:
-        return path[len("Assign.") :] if path.startswith("Assign.") else path
+        prefix = envelope_key + "."
+        return path[len(prefix) :] if path.startswith(prefix) else path
 
     def reroot(node: Any) -> Any:
         if isinstance(node, dict):
@@ -709,9 +715,9 @@ def _strip_assign_envelope(contract: dict[str, Any]) -> tuple[list[dict], list[d
 def _contract_payload_fields() -> dict[str, dict[str, Any]]:
     """Payload fields for the contract-derived resource shadow path.
 
-    Plain-function contracts are still parity-only in this migration stage.
-    Letting them alter the generated npm types would begin the Stage 3 generator
-    switch before its byte-identical shadow check has been completed.
+    Resource payloads only. A plain-function contract's argument is built by
+    `_contract_argument_types`, which removes the `"Argument"` wrapper instead
+    of `"Assign"` and keeps its own list of arguments left on Python.
     """
     contract_dir = ROOT / "contracts" / "endpoints"
     if not contract_dir.is_dir():
@@ -1559,6 +1565,48 @@ def _operation_specs(
     return operations
 
 
+def _contract_operation_specs() -> list[dict[str, Any]]:
+    """Every npm operation, read from the contracts alone.
+
+    Until 2026-09-21 the operations were *found* by walking the Python
+    modules for functions that call `_post`/`_get`, and a contract could only
+    rename what that walk turned up; products came from `docs/coverage.json`
+    and the JSDoc from the Python docstring. Every one of the 70 now has an
+    operation `surface` stating its export name, place, argument type and
+    documentation, so the contract is the list. `_operation_specs` survives
+    as the Python half of a parity test, not as an input.
+    """
+    contract_dir = ROOT / "contracts" / "endpoints"
+    if not contract_dir.is_dir():
+        return []
+    import yaml  # noqa: PLC0415
+
+    operations: list[dict[str, Any]] = []
+    for path in sorted(contract_dir.glob("*.yaml")):
+        contract = yaml.safe_load(path.read_text(encoding="utf-8"))
+        if not isinstance(contract, dict):
+            continue
+        for operation in contract.get("operations") or []:
+            surface = operation.get("surface")
+            if not isinstance(surface, dict):
+                continue
+            method = operation.get("method", "")
+            operations.append(
+                {
+                    "exportName": surface["exportName"],
+                    "endpoint": contract["endpoint"],
+                    "method": method,
+                    "products": sorted(contract["products"]),
+                    "modulePath": list(surface["modulePath"]),
+                    "argumentType": _operation_surface_argument(surface),
+                    "noArgument": method == "POST" and not surface.get("takesArgument", True),
+                    "documentation": surface.get("documentation", ""),
+                    "contractedSurface": True,
+                }
+            )
+    return operations
+
+
 def _render_operations(operations: list[dict[str, Any]]) -> str:
     tree: dict[str, Any] = {}
     for operation in operations:
@@ -1652,6 +1700,38 @@ def _table_specs(modules: dict[str, ast.Module]) -> list[dict[str, Any]]:
                         }
                     )
                 break
+    return tables
+
+
+def _contract_table_specs() -> list[dict[str, Any]]:
+    """Every npm table wrapper, read from `contracts/tables/*.yaml` alone.
+
+    The same move `_contract_operation_specs` makes: the wrappers used to be
+    discovered by walking the Python `post` modules, and each table contract
+    now states its wrapper's name, place, default TABLE_TYPE, kind and options
+    in `surface`. `_table_specs` is kept as the Python half of a parity test.
+    """
+    contract_dir = ROOT / "contracts" / "tables"
+    if not contract_dir.is_dir():
+        return []
+    import yaml  # noqa: PLC0415
+
+    tables: list[dict[str, Any]] = []
+    for path in sorted(contract_dir.glob("*.yaml")):
+        contract = yaml.safe_load(path.read_text(encoding="utf-8"))
+        surface = (contract or {}).get("surface")
+        if not isinstance(surface, dict):
+            continue
+        tables.append(
+            {
+                "exportName": surface["exportName"],
+                "tableType": surface["tableType"],
+                "factory": surface["factory"],
+                "modulePath": list(surface["modulePath"]),
+                "optionNames": sorted(surface["optionNames"]),
+                "documentation": surface.get("documentation", ""),
+            }
+        )
     return tables
 
 
@@ -1900,22 +1980,37 @@ def _contract_nested_types() -> dict[tuple[str, str], dict[str, Any]]:
     records = _contract_payload_fields()
     found: dict[tuple[str, str], dict[str, Any]] = {}
     origin: dict[tuple[str, str], str] = {}
+    jobs: list[tuple[Any, list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]] = []
     for path in sorted(contract_dir.glob("*.yaml")):
         contract = yaml.safe_load(path.read_text(encoding="utf-8"))
         if not isinstance(contract, dict):
             continue
+        unmerged = (contract.get("extraction") or {}).get("unmergedTables")
         declared = (contract.get("surface") or {}).get("nestedTypes") or []
-        if not declared:
-            continue
-        endpoint = contract.get("endpoint", "")
-        record = records.get(endpoint)
-        if record is None:
-            raise ValueError(
-                f"{path.name}: declares surface.nestedTypes but its payload is not "
-                "generated from the contract (unmergedTables, or not a resource), "
-                "so there is no contract subtree to build them from"
-            )
-        fields, variants = record["fields"], record["variants"]
+        if declared:
+            record = records.get(contract.get("endpoint", ""))
+            if record is None:
+                raise ValueError(
+                    f"{path.name}: declares surface.nestedTypes but its payload is not "
+                    "generated from the contract (unmergedTables, or not a resource), "
+                    "so there is no contract subtree to build them from"
+                )
+            jobs.append((path, declared, record["fields"], record["variants"]))
+        # An operation's argument is built from the same field list with the
+        # "Argument" wrapper removed (`_contract_argument_types`), so its
+        # nested objects are declared on the operation that owns the argument.
+        for operation in contract.get("operations") or []:
+            declared = (operation.get("surface") or {}).get("nestedTypes") or []
+            if not declared:
+                continue
+            if unmerged or not contract.get("fields"):
+                raise ValueError(
+                    f"{path.name}: {operation.get('method')} declares nestedTypes but "
+                    "its argument is not generated from the contract"
+                )
+            fields, variants = _strip_assign_envelope(contract, "Argument")
+            jobs.append((path, declared, fields, variants))
+    for path, declared, fields, variants in jobs:
         for entry in declared:
             where = entry["path"].removeprefix("Assign.")
             body = _attach_base(fields, where)
@@ -1964,6 +2059,100 @@ def _contract_nested_types() -> dict[tuple[str, str], dict[str, Any]]:
     return found
 
 
+#: Operation argument types that stay on their Python TypedDict, each for a
+#: recorded reason. Two kinds:
+#:
+#: ``divergent`` - a name several contracts share, whose contracts disagree.
+#:   One published type cannot follow two field lists, and splitting it would
+#:   add exports. `_contract_argument_types` fails if one stops disagreeing
+#:   (the entry is stale) or if a disagreement appears that is not listed.
+#: ``requiredness`` - the contract transcribes the manual faithfully, and the
+#:   manual's "Required" is not what a caller must send. Publishing it would
+#:   refuse calls the product accepts. Fixing one takes a permitted source for
+#:   the real condition, not a guess.
+_ARGUMENT_TYPES_LEFT_ON_PYTHON: dict[str, tuple[str, str]] = {
+    "SrcMemberCheckTableArgument": (
+        "divergent",
+        "the manual itself differs: /DESIGN/SRC/AIK-SRC2K/CC-TABLE's JSON Schema "
+        "gives SECTIONS minItems 1 and BC-TABLE's does not, and each contract "
+        "transcribes its own section",
+    ),
+    "DivideElementsArgument": (
+        "requiredness",
+        "/ope/DIVIDEELEM marks DIST_X/Y/Z and RATIO_X/Y/Z Required with no "
+        "condition, while the Equal row beside them states which axes each "
+        "element type uses (Frame=X only). The same rule surely applies, but no "
+        "row says so, and as written a Frame division would have to send Y and Z",
+    ),
+}
+
+
+def _contract_argument_types() -> dict[tuple[str, str], dict[str, Any]]:
+    """Return {(namespace, name): pseudo-contract} for each operation argument type.
+
+    The generator had built every `/db/*` payload from its contract since the
+    migration began, but an operation's argument - `/ope`, `/view` and the
+    design-code `*-ANAL`/`*-TABLE`/`*-REPORT` calls - still came from the
+    Python TypedDict, although the contract carried the same field list. The
+    operation `surface` already names the type (`argumentTypeName`); this
+    builds it from the contract's fields with the `"Argument"` wrapper row
+    removed, because the npm operation adds that wrapper itself.
+
+    Left on Python, on purpose: a contract declaring `unmergedTables`, for the
+    reason payloads skip them, and an operation whose argument is a **union**
+    of two names, where nothing says which part of the field list is which.
+    A name several contracts share (the RC check trio) must come out the same
+    from each, prose aside, or generation fails.
+    """
+    contract_dir = ROOT / "contracts" / "endpoints"
+    if not contract_dir.is_dir():
+        return {}
+    import yaml  # noqa: PLC0415
+
+    found: dict[tuple[str, str], dict[str, Any]] = {}
+    origin: dict[tuple[str, str], str] = {}
+    diverged: set[str] = set()
+    for path in sorted(contract_dir.glob("*.yaml")):
+        contract = yaml.safe_load(path.read_text(encoding="utf-8"))
+        if not isinstance(contract, dict) or not contract.get("fields"):
+            continue
+        if (contract.get("extraction") or {}).get("unmergedTables"):
+            continue
+        for operation in contract.get("operations") or []:
+            surface = operation.get("surface") or {}
+            name = surface.get("argumentTypeName")
+            if not isinstance(name, str):
+                continue
+            if _ARGUMENT_TYPES_LEFT_ON_PYTHON.get(name, ("",))[0] == "requiredness":
+                continue
+            fields, variants = _strip_assign_envelope(contract, "Argument")
+            pseudo = {"fields": fields, "variants": variants}
+            namespace = "".join(part[:1].upper() + part[1:] for part in surface["modulePath"]) + "Types"
+            key = (namespace, name)
+            if key in found:
+                if _nested_fingerprint(found[key]) != _nested_fingerprint(pseudo):
+                    if name not in _ARGUMENT_TYPES_LEFT_ON_PYTHON:
+                        raise ValueError(
+                            f"{namespace}.{name} is the argument of {origin[key]} and "
+                            f"{path.name}, whose contracts give it different shapes"
+                        )
+                    diverged.add(name)
+                continue
+            found[key] = pseudo
+            origin[key] = path.name
+    stale = sorted(
+        name
+        for name, (kind, _) in _ARGUMENT_TYPES_LEFT_ON_PYTHON.items()
+        if kind == "divergent" and name not in diverged
+    )
+    if stale:
+        raise ValueError(
+            "listed in _ARGUMENT_TYPES_LEFT_ON_PYTHON but no longer diverging, so "
+            f"they can come from the contract: {stale}"
+        )
+    return {key: value for key, value in found.items() if key[1] not in diverged}
+
+
 def _bind_nested_types(
     nested: dict[tuple[str, str], dict[str, Any]],
     type_keys: set[tuple[str, str]],
@@ -2000,12 +2189,8 @@ def main() -> None:
     resource_keys = {(item["pythonModule"], item["className"]) for item in resources}
     type_keys = _collect_type_classes(modules, resource_keys)
     coverage = json.loads((ROOT / "docs" / "coverage.json").read_text(encoding="utf-8"))
-    products_by_endpoint = {
-        entry["endpoint"]: sorted(entry["products"])
-        for entry in coverage["endpoints"]
-    }
-    operations = _operation_specs(modules, type_keys, products_by_endpoint)
-    tables = _table_specs(modules)
+    operations = _contract_operation_specs()
+    tables = _contract_table_specs()
     _attach_payload_types(resources, type_keys)
     contract_fields = _contract_payload_fields()
     contract_types, supplemental_contract_types = _contract_payload_types(
@@ -2013,10 +2198,12 @@ def main() -> None:
     )
     _check_contract_payload_type_names(resources)
     nested_types = _bind_nested_types(_contract_nested_types(), type_keys)
-    clash = sorted(set(nested_types) & set(contract_types))
-    if clash:
-        raise ValueError(f"declared both as a payload and as a nested type: {clash}")
-    contract_types = {**contract_types, **nested_types}
+    argument_types = _bind_nested_types(_contract_argument_types(), type_keys)
+    for label, extra in (("a nested type", nested_types), ("an operation argument", argument_types)):
+        clash = sorted(set(extra) & set(contract_types))
+        if clash:
+            raise ValueError(f"declared both as a payload and as {label}: {clash}")
+        contract_types = {**contract_types, **extra}
     SCHEMA_DIR.mkdir(parents=True, exist_ok=True)
     TYPESCRIPT_SRC.joinpath("generated").mkdir(parents=True, exist_ok=True)
 
@@ -2135,10 +2322,8 @@ def main() -> None:
         f"Generated {len(resources)} TypeScript DB resources "
         f"({_RESOURCE_SOURCE_COUNTS['contract']} identified by a contract, "
         f"{_RESOURCE_SOURCE_COUNTS['python']} still by a Python class), "
-        f"{len(operations)} operations "
-        f"({sum(1 for item in operations if item.get('contractedSurface'))} "
-        f"named by a contract, the rest still by a Python function), "
-        f"{len(tables)} table wrappers, "
+        f"{len(operations)} operations and {len(tables)} table wrappers "
+        f"(both read from contracts), "
         f"and {payload_type_count} payload types "
         f"({contract_type_count} of them from contracts, the rest still from Python)"
     )

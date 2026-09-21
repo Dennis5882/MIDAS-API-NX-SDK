@@ -36,6 +36,15 @@ operations:
       exportName: getBraceCheckTable
       modulePath: [design, rcKds, checks]
       argumentTypeName: RcMemberCheckTableArgument
+      documentation: |-
+        docs/manual/26_Design_RC_KDS41202022.md #61 — BRC-TABLE — RC Brace
+        Check Table. Response: ``{table_name_or_"Result Table": {"FORCE": ...,
+        "DIST": ..., "HEAD": [...], "DATA": [[...], ...]}}`` — note the manual's
+        own worked example omits TABLE_NAME and shows the response keyed
+        "Result Table" (not "RC Brace Checking Result", despite that being
+        TABLE_NAME's documented default); structure otherwise mirrors the
+        column check table but with a single (non end/mid-split) shear/hoop
+        location.
     risk: write
     request:
       wrapper: assign

@@ -36,6 +36,11 @@ operations:
       exportName: getBraceDesignTable
       modulePath: [design, rcKds, designForces]
       argumentTypeName: RcMemberDesignTableArgument
+      documentation: |-
+        docs/manual/26_Design_RC_KDS41202022.md #46 — BRD-TABLE — RC Brace
+        Design Table. Includes P-M interaction and shear check results. Response:
+        ``{table_name_or_"Result Table": {"FORCE": ..., "DIST": ..., "HEAD":
+        [...28 columns...], "DATA": [[...], ...]}}``.
     risk: write
     request:
       wrapper: assign

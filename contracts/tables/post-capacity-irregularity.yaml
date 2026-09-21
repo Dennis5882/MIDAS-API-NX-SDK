@@ -7,4 +7,16 @@ source:
   manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 21_POST_StoryTables.md, section: "14. Capacity Irregularity Check (Weak Story)"}
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getCapacityIrregularityTable
+  modulePath: [story]
+  tableType: CAPACITY_IRREGULARITY
+  factory: fixed
+  optionNames: [additional, components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/21_POST_StoryTables.md #14 — Capacity Irregularity Check (Weak Story).
+
+    Per-story shear strength vs. upper-story shear strength, for two angles
+    (Angle1/Angle2).
+    additional: SET_ANGLE — Required; sets Angle1 (Angle2 = Angle1 + 90°).
 tableTypes: [{value: CAPACITY_IRREGULARITY, provenance: manual}]

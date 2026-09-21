@@ -29,6 +29,16 @@ verification:
 
 risk: read_only
 
+surface:
+  exportName: getDisplacementTable
+  modulePath: [result1]
+  tableType: DISPLACEMENTG
+  factory: variable
+  optionNames: [components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/19_POST_AnalysisResult_1.md #2 — Displacements.
+
+    table_type: TABLE_TYPE_DISPLACEMENT_GLOBAL (default) or _LOCAL.
 tableTypes:
   - value: DISPLACEMENTG
     description: Global coordinate system

@@ -36,6 +36,9 @@ operations:
       exportName: performHaunchedBeamDesign
       modulePath: [design, rcKds, designForces]
       argumentTypeName: RcHaunchedBeamDesignPerformArgument
+      documentation: |-
+        docs/manual/26_Design_RC_KDS41202022.md #51 — HCD-ANAL — RC Haunched
+        Beam Design Perform. Response: ``{"message": "success"}``.
     risk: write
     request:
       wrapper: assign

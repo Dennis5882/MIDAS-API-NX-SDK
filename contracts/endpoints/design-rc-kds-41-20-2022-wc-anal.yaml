@@ -36,6 +36,24 @@ operations:
       exportName: performWallCheck
       modulePath: [design, rcKds, checks]
       argumentTypeName: PerformRcWallCheckArgument
+      documentation: |-
+        docs/manual/26_Design_RC_KDS41202022.md #63 — WC-ANAL — RC Wall Check
+        Perform. Response: ``{"message": "success"}``.
+
+        ⚠️ Live-tested and CONFIRMED to NOT reproduce the sibling
+        ``perform_column_check`` (CC-ANAL) stall: on a real, wall-heavy
+        production model (KDS 41 20:2022 native, real pre-existing wall-check
+        data), both a single-wall/story call and a full all-walls call
+        (``SELECTIONS`` omitted) returned ``{"message": "success"}`` cleanly
+        in under 6 seconds — no stuck "Converting Design Results" dialog. This
+        is useful negative evidence that CC-ANAL's stall isn't a blanket
+        property of every "perform check" function in this file. Independently
+        corroborated 2026-07-25: a production tool (the QuickRebar NX web app)
+        ships this call alongside CC-ANAL for live wall verdicts, and neither
+        hung. Note the stall was never about the targeting scheme —
+        ``perform_wall_design`` (WD-ANAL, design_forces.py) is also
+        WID+STORY-targeted and *did* hang on the same build. See
+        docs/live_verification_notes.md for the full writeup.
     risk: write
     request:
       wrapper: assign

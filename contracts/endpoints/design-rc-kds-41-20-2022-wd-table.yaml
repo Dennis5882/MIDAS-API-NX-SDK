@@ -36,6 +36,26 @@ operations:
       exportName: getWallDesignTable
       modulePath: [design, rcKds, designForces]
       argumentTypeName: RcWallDesignTableArgument
+      documentation: |-
+        docs/manual/26_Design_RC_KDS41202022.md #49 — WD-TABLE — RC Wall
+        Design Table. Unlike the other member types' tables, the response is
+        documented as NOT a HEAD/DATA array pair — it's ``{"status": ...,
+        "message": ..., "data": {"COMPONENTS": [...column names...], "ROWS":
+        [{col: val, ...}, ...], "TOTAL_COUNT": int, ...}}``.
+
+        ⚠️ Live-tested: the actual response observed live did NOT match the
+        manual's documented shape above — it came back as the same
+        ``{"Result Table": {"FORCE": ..., "DIST": ..., "HEAD": [...], "DATA":
+        [[...], ...]}}`` HEAD/DATA shape used by every other member-check
+        table in this file (``CC-TABLE``/``BC-TABLE``/``WC-TABLE``). Treat the
+        docstring's documented shape as unconfirmed and prefer handling
+        whichever shape actually comes back. See
+        docs/live_verification_notes.md.
+
+        ⚠️ Live-tested workaround: if ``perform_wall_design`` (WD-ANAL) times
+        out, call this afterward before assuming the design failed — it
+        returned full real results immediately after a "hung" WD-ANAL call in
+        testing.
     risk: write
     request:
       wrapper: assign

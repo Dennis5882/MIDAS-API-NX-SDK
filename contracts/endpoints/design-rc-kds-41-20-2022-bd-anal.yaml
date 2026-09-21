@@ -36,6 +36,11 @@ operations:
       exportName: performBeamDesign
       modulePath: [design, rcKds, designForces]
       argumentTypeName: RcMemberDesignPerformArgument
+      documentation: |-
+        docs/manual/26_Design_RC_KDS41202022.md #39 — BD-ANAL — RC Beam Design
+        Perform. Executes the RC beam design calculation; results are stored on
+        the model and later retrieved via BD-TABLE/BD-REPORT. Response:
+        ``{"message": "success"}``.
     risk: write
     request:
       wrapper: assign

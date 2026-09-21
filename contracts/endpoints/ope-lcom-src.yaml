@@ -34,6 +34,19 @@ operations:
       exportName: generateLoadCombinationSrc
       modulePath: [ope]
       argumentTypeName: [LoadCombinationSrcKdsArgument, LoadCombinationAikSrc2kArgument]
+      documentation: |-
+        docs/manual/15_OPE.md #18 — /ope/LCOM-SRC — Load Combination (SRC) – KDS 41 SRC:2022 / AIK-SRC2K.
+
+        ⚠️ Live-tested 2026-07-30: same Civil-404/Gen-ok split as
+        generate_load_combination_concrete — see that function's docstring.
+
+        DGNCODE selects the schema: KDS 41 SRC:2022 (LoadCombinationSrcKdsArgument)
+        vs AIK-SRC2K (LoadCombinationAikSrc2kArgument, RS_SCALE_FACTOR optional here).
+        The Union only helps callers running a type checker — TypedDicts aren't
+        validated at runtime (matches this SDK's other payload types), so build
+        ONLY the fields documented for the DGNCODE you set; a hybrid dict mixing
+        both schemas is sent to the API as-is and will surface as a server-side
+        error, not a client-side one.
     risk: write
     request:
       wrapper: assign

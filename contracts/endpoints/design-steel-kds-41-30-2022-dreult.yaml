@@ -36,6 +36,15 @@ operations:
       exportName: exportSteelDesignResultImage
       modulePath: [design, steelKds]
       argumentTypeName: SteelDesignResultArgument
+      documentation: |-
+        docs/manual/25_Design_Steel_KDS41302022.md #26 — DREULT — Steel Design
+        Result. Captures/saves the steel design result view as a JPG image.
+        Response: ``{"message": "MIDAS GEN NX command complete"}``.
+      nestedTypes:
+        - {path: ANGLE, name: SteelDesignResultAngle, namespace: DesignSteelKdsTypes}
+        - {path: RESULT_GRAPHIC, name: SteelDesignResultGraphic, namespace: DesignSteelKdsTypes}
+        - {path: RESULT_GRAPHIC.LOAD_CASE_COMB, name: SteelDesignResultLoadCaseComb, namespace: DesignSteelKdsTypes}
+        - {path: RESULT_GRAPHIC.TYPE_OF_DISPLAY, name: SteelDesignResultTypeOfDisplay, namespace: DesignSteelKdsTypes}
     risk: write
     request:
       wrapper: assign

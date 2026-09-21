@@ -732,3 +732,103 @@ def test_a_nested_type_the_package_does_not_publish_is_refused():
         assert "DbTestTypes.NotPublished" in str(exc)
     else:
         raise AssertionError("an unknown nested type name must be refused")
+
+
+def _python_operation_specs():
+    modules = generator._source_modules()
+    resources = generator._load_resources(modules)
+    type_keys = generator._collect_type_classes(
+        modules, {(item["pythonModule"], item["className"]) for item in resources}
+    )
+    coverage = __import__("json").loads(
+        (ROOT / "docs" / "coverage.json").read_text(encoding="utf-8")
+    )
+    products = {entry["endpoint"]: sorted(entry["products"]) for entry in coverage["endpoints"]}
+    return generator._operation_specs(modules, type_keys, products)
+
+
+def test_the_operation_list_comes_from_contracts_and_matches_the_python_functions():
+    """npm's operations are read from contracts; Python is now only compared.
+
+    The two lists must still name the same operations with the same wire and
+    naming facts. Documentation is left out on purpose: since 2026-09-21 the
+    npm JSDoc is owned by the contract and the Python docstring by Python.
+    """
+    facts = ("exportName", "endpoint", "method", "products", "modulePath",
+             "argumentType", "noArgument")
+
+    def keyed(specs):
+        return {
+            (spec["endpoint"], spec["method"]): {fact: spec[fact] for fact in facts}
+            for spec in specs
+        }
+
+    from_contracts = keyed(generator._contract_operation_specs())
+    from_python = keyed(_python_operation_specs())
+    assert from_contracts == from_python
+
+
+def test_the_table_wrappers_come_from_contracts_and_match_the_python_functions():
+    """Same arrangement as the operations: contracts are read, Python compared."""
+    facts = ("exportName", "tableType", "factory", "modulePath", "optionNames")
+
+    def keyed(specs):
+        return {spec["exportName"]: {fact: spec[fact] for fact in facts} for spec in specs}
+
+    from_contracts = keyed(generator._contract_table_specs())
+    from_python = keyed(generator._table_specs(generator._source_modules()))
+    assert len(from_contracts) == 87
+    assert from_contracts == from_python
+
+
+def test_an_operation_argument_is_built_from_its_contract_without_the_wrapper():
+    """`argumentTypeName` names a type the operation contract now supplies.
+
+    The `"Argument"` row is the request envelope; the npm operation adds it, so
+    a type demanding it would make every call send it twice.
+    """
+    arguments = generator._contract_argument_types()
+    report = arguments[("DesignRcKdsChecksTypes", "RcMemberCheckReportArgument")]
+    keys = {field["key"]: field for field in report["fields"]}
+    assert "Argument" not in keys
+    assert keys["REPORT_TYPE"]["requirement"] == "required"
+
+
+def test_a_row_required_in_one_mode_is_not_required_of_every_argument():
+    """/view/ACTIVE: `{"ACTIVE_MODE": "All"}` must still type-check."""
+    active = generator._contract_argument_types()[("ViewTypes", "ActiveArgument")]
+    rendered = "\n".join(generator._contract_payload_type("ActiveArgument", active))
+    assert "ACTIVE_MODE: string;" in rendered
+    assert "N_LIST?: Array<number>;" in rendered
+    assert "IDENTITY_LIST?: Array<string>;" in rendered
+
+
+def test_arguments_held_back_for_a_reason_stay_on_python():
+    arguments = {name for _, name in generator._contract_argument_types()}
+    for name, (kind, reason) in generator._ARGUMENT_TYPES_LEFT_ON_PYTHON.items():
+        assert kind in {"divergent", "requiredness"}
+        assert reason
+        assert name not in arguments, f"{name} is listed as left on Python but was built"
+
+
+def test_a_listed_divergence_that_no_longer_diverges_is_reported_stale(monkeypatch):
+    monkeypatch.setitem(
+        generator._ARGUMENT_TYPES_LEFT_ON_PYTHON,
+        "RcMemberCheckReportArgument",
+        ("divergent", "pretend the report trio disagreed"),
+    )
+    try:
+        generator._contract_argument_types()
+    except ValueError as exc:
+        assert "RcMemberCheckReportArgument" in str(exc)
+    else:
+        raise AssertionError("a stale divergence entry must be reported")
+
+
+def test_an_operation_can_declare_the_nested_types_of_its_argument():
+    nested = generator._contract_nested_types()
+    item = nested[("OpeTypes", "LineLoadValue")]
+    by_key = {field["key"]: field for field in item["fields"]}
+    # CURVED-only and CURVED-excluded rows carry their condition with them.
+    assert by_key["A"]["appliesWhen"] == [{"path": "TYPE", "equals": "CURVED"}]
+    assert "CURVED" not in by_key["D"]["appliesWhen"][0]["in"]

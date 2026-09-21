@@ -13,6 +13,17 @@ source:
     section: "12. Beam Stress (PSC)"
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getBeamStressPscTable
+  modulePath: [result1]
+  tableType: BEAMSTRESSPSC
+  factory: variable
+  optionNames: [components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/19_POST_AnalysisResult_1.md #12 — Beam Stress (PSC).
+
+    table_type: TABLE_TYPE_BEAM_STRESS_PSC (default) or
+    TABLE_TYPE_BEAM_STRESS_7DOF_PSC (includes warping/7th-DOF components).
 tableTypes:
   - value: BEAMSTRESSPSC
     description: PSC beam stress

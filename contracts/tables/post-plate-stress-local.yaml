@@ -9,6 +9,14 @@ source:
   manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "4. Plate Stress (Local)"}
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getPlateStressLocalTable
+  modulePath: [result1]
+  tableType: PLATESTRESSL
+  factory: fixed
+  optionNames: [components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/20_POST_AnalysisResult_2.md #4 — Plate Stress (Local).
 tableTypes:
   - value: PLATESTRESSL
     description: Local plate stress

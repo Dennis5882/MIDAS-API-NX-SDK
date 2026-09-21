@@ -33,21 +33,21 @@ declarations carry 742 distinct names. That is only a risk for the two
 contract-aware buckets, and today it is not one: `python:contract-ignored` is
 empty and `python:unmerged` is exactly the 13 waived contracts.
 
-Measured 2026-09-21 before and after the generator learned to build a
-contract's **nested** objects (`surface.nestedTypes`): 478 Python-sourced
-types, then 250. The 228 that moved were nested interfaces the package already
-published under names Python chose, for objects the contract-generated root
-already inlined - the same object twice, in two shapes. What the 235 left in
-`python:nested` are is not one thing:
+Measured 2026-09-21 and 2026-09-22 across two generator changes: 478
+Python-sourced types, then 250 once contracts could own a payload's **nested**
+types (`surface.nestedTypes`), then 162 once an operation's **argument** type
+and its nested types were built from the operation contract as well. What the
+147 left in `python:nested` are, roughly:
 
-    214   under no contract-generated root at all: /doc, /ope and /view
-          operation arguments (operation contracts are parity-only), the
-          children of the 13 unmergedTables roots, and table result types
-    14    the contract declares the field but not its members
-    4     one published name, two contract shapes (e.g. HaunchPartSelector
-          for PART_A/B/C) - a contract question, not a generator one
-    2     base interfaces reached through `extends`
-    1     /db/SECT's SECT_BEFORE, whose shape each SECTTYPE branch redeclares
+    51  operation arguments and their children still on Python: a union
+        argument (the /ope load-combination pair), a contract with
+        unmergedTables (/view/RESULTGRAPHIC), and the two held in
+        `_ARGUMENT_TYPES_LEFT_ON_PYTHON` with their reasons
+    46  /db modules - the 13 unmergedTables roots' children, objects a
+        contract declares without members, shared bases, and names two
+        contracts shape differently
+    25  design modules, same classes of reason
+    25  /post table result types, which no contract describes
 
     python scripts/report_npm_type_provenance.py           # the breakdown
     python scripts/report_npm_type_provenance.py --check   # fail if it grows
@@ -72,7 +72,7 @@ CONTRACTS = ROOT / "contracts" / "endpoints"
 #: Measured 2026-09-21 over 765 generated types, after nestedTypes. A ceiling: it falls as
 #: contracts take over more of the emitted shape, and a rise means a type that
 #: used to come from a contract is being read out of the Python tree again.
-PYTHON_SOURCED_AT_MOST = 250
+PYTHON_SOURCED_AT_MOST = 162
 
 CONTRACT_MARKER = "/** Generated from contracts/endpoints/. */"
 _EXPORT = re.compile(r"^export (?:interface|type) (\w+)")

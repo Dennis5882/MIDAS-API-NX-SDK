@@ -35,6 +35,10 @@ operations:
     surface:
       exportName: getProjectStatus
       modulePath: [ope]
+      documentation: |-
+        docs/manual/15_OPE.md #1 — /ope/PROJECTSTATUS — Project Status.
+
+        GET-only, no request body; returns live counts of model/load data.
     risk: read_only
     request:
       wrapper: none

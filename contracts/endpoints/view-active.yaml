@@ -36,6 +36,8 @@ operations:
       exportName: setActive
       modulePath: [view]
       argumentTypeName: ActiveArgument
+      documentation: |-
+        docs/manual/16_VIEW.md #5 — /view/ACTIVE — Active.
     risk: write
     request:
       wrapper: assign
@@ -60,7 +62,14 @@ fields:
     type: array
     items:
       type: integer
-    requirement: required
+    requirement: conditional
+    condition: "모드: Active"
+    appliesWhen:
+      - path: ACTIVE_MODE
+        equals: Active
+    # The manual's table has a mode column: this row is Required under
+    # ACTIVE_MODE "Active" only. Read flat, it was required in every mode,
+    # which would refuse {"ACTIVE_MODE": "All"}.
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified
@@ -71,7 +80,11 @@ fields:
     type: array
     items:
       type: integer
-    requirement: required
+    requirement: conditional
+    condition: "모드: Active"
+    appliesWhen:
+      - path: ACTIVE_MODE
+        equals: Active
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified
@@ -81,7 +94,14 @@ fields:
       아이덴티티 타입 · 구조그룹: "Group" / 명명평면: "NamedPlane" / 하중그룹: "LoadGroup" / 경계그룹:
       "BoundaryGroup" / 층: "STORY"
     type: string
-    requirement: required
+    requirement: conditional
+    condition: "모드: Identity"
+    appliesWhen:
+      - path: ACTIVE_MODE
+        equals: Identity
+    # The manual's table has a mode column: this row is Required under
+    # ACTIVE_MODE "Identity" only. Read flat, it was required in every mode,
+    # which would refuse {"ACTIVE_MODE": "All"}.
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified
@@ -92,7 +112,11 @@ fields:
     type: array
     items:
       type: string
-    requirement: required
+    requirement: conditional
+    condition: "모드: Identity"
+    appliesWhen:
+      - path: ACTIVE_MODE
+        equals: Identity
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified

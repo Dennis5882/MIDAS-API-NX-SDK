@@ -36,6 +36,8 @@ operations:
       exportName: assignMembers
       modulePath: [ope]
       argumentTypeName: MemberAssignmentArgument
+      documentation: |-
+        docs/manual/15_OPE.md #13 — /ope/MEMB — Member Assignment.
     risk: write
     request:
       wrapper: assign

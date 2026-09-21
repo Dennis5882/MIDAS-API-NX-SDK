@@ -36,6 +36,8 @@ operations:
       exportName: setAngle
       modulePath: [view]
       argumentTypeName: AngleArgument
+      documentation: |-
+        docs/manual/16_VIEW.md #4 — /view/ANGLE — Viewpoint.
     risk: write
     request:
       wrapper: assign

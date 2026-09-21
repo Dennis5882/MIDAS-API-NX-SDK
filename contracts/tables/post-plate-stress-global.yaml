@@ -9,6 +9,14 @@ source:
   manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "5. Plate Stress (Global)"}
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getPlateStressGlobalTable
+  modulePath: [result1]
+  tableType: PLATESTRESSG
+  factory: fixed
+  optionNames: [components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/20_POST_AnalysisResult_2.md #5 — Plate Stress (Global).
 tableTypes:
   - value: PLATESTRESSG
     description: Global plate stress

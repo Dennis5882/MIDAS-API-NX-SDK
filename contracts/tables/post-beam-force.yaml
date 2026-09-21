@@ -13,6 +13,17 @@ source:
     section: "8. Beam Force"
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getBeamForceTable
+  modulePath: [result1]
+  tableType: BEAMFORCE
+  factory: variable
+  optionNames: [components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/19_POST_AnalysisResult_1.md #8 — Beam Force.
+
+    table_type: TABLE_TYPE_BEAM_FORCE (default, per-Part) or
+    TABLE_TYPE_BEAM_FORCE_BY_MAX (max-value basis).
 tableTypes:
   - value: BEAMFORCE
     description: Beam force by member part

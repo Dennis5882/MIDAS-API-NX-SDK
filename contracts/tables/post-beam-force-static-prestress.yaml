@@ -34,6 +34,14 @@ verification:
 
 risk: read_only
 
+surface:
+  exportName: getBeamForceStaticPrestressTable
+  modulePath: [result1]
+  tableType: BEAMFORCESTP
+  factory: fixed
+  optionNames: [components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/19_POST_AnalysisResult_1.md #9 — Beam Force (Static Prestress).
 tableTypes:
   - value: BEAMFORCESTP
     description: Beam member force under static prestress

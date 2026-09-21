@@ -36,6 +36,10 @@ operations:
       exportName: exportSrcColumnCheckReport
       modulePath: [design, srcAiksrc2k]
       argumentTypeName: SrcColumnCheckReportArgument
+      documentation: |-
+        docs/manual/27_Design_SRC_AIKSRC2K.md #20 — CC-REPORT — SRC Column
+        Check Report. Response: ``{"SUCCESS": bool, "FILE_PATH": str, "MESSAGE":
+        str}``.
     risk: write
     request:
       wrapper: assign

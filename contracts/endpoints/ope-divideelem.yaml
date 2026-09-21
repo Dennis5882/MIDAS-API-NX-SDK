@@ -36,6 +36,8 @@ operations:
       exportName: divideElements
       modulePath: [ope]
       argumentTypeName: DivideElementsArgument
+      documentation: |-
+        docs/manual/15_OPE.md #2 — /ope/DIVIDEELEM — Divide Elements.
     risk: write
     request:
       wrapper: assign
@@ -180,6 +182,10 @@ fields:
                   Equal: X/Y/Z 방향 분할수 (Frame=X만, Planar=X,Y, Wall=X,Z, Solid=X,Y,Z)
                 type: integer
                 requirement: required
+                appliesWhen:
+                  - path: DIVIDE.ELEM_TYPE
+                    in: [Planar, Solid]
+                # The manual's row: 'Frame=X만, Planar=X,Y, Wall=X,Z, Solid=X,Y,Z'.
                 documentedDefault: null
                 documentedOptional: false
                 safeToOmit: unverified
@@ -189,6 +195,9 @@ fields:
                   Equal: X/Y/Z 방향 분할수 (Frame=X만, Planar=X,Y, Wall=X,Z, Solid=X,Y,Z)
                 type: integer
                 requirement: required
+                appliesWhen:
+                  - path: DIVIDE.ELEM_TYPE
+                    in: [Wall, Solid]
                 documentedDefault: null
                 documentedOptional: false
                 safeToOmit: unverified

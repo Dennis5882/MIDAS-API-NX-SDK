@@ -36,6 +36,14 @@ operations:
       exportName: createLineBeamLoad
       modulePath: [ope]
       argumentTypeName: LineBeamLoadArgument
+      documentation: |-
+        docs/manual/15_OPE.md #5 — /ope/LINEBMLD — Line Beam Load.
+      nestedTypes:
+        - {path: ADD_H, name: LineLoadAdditionalHeight, namespace: OpeTypes}
+        - {path: COPY, name: LineLoadCopy, namespace: OpeTypes}
+        - {path: ECCEN, name: LineLoadEccentricity, namespace: OpeTypes}
+        - {path: LOAD, name: LineLoadValue, namespace: OpeTypes}
+        - {path: TARGET, name: LineLoadTarget, namespace: OpeTypes}
     risk: write
     request:
       wrapper: assign
@@ -275,6 +283,11 @@ fields:
         minItems: 4
         maxItems: 4
         requirement: required
+        appliesWhen:
+          - path: TYPE
+            in: [CONLOAD, CONMOMENT, UNILOAD, UNIMOMENT, TRALOAD, TRAMOMENT, UNIPRESSURE, TRAPRESSURE]
+        # The manual's row says Required and '(CURVED 제외)': required for every
+        # TYPE except CURVED, which uses A/B/C instead.
         documentedDefault: null
         documentedOptional: false
         safeToOmit: unverified
@@ -288,6 +301,9 @@ fields:
         minItems: 4
         maxItems: 4
         requirement: required
+        appliesWhen:
+          - path: TYPE
+            in: [CONLOAD, CONMOMENT, UNILOAD, UNIMOMENT, TRALOAD, TRAMOMENT, UNIPRESSURE, TRAPRESSURE]
         documentedDefault: null
         documentedOptional: false
         safeToOmit: unverified
@@ -297,6 +313,10 @@ fields:
           곡선식 계수 a (CURVED 전용)
         type: number
         requirement: required
+        appliesWhen:
+          - path: TYPE
+            equals: CURVED
+        # The manual's row says Required and '(CURVED 전용)': CURVED only.
         documentedDefault: null
         documentedOptional: false
         safeToOmit: unverified
@@ -306,6 +326,9 @@ fields:
           곡선식 계수 b (CURVED 전용)
         type: number
         requirement: required
+        appliesWhen:
+          - path: TYPE
+            equals: CURVED
         documentedDefault: null
         documentedOptional: false
         safeToOmit: unverified
@@ -315,6 +338,9 @@ fields:
           곡선식 계수 c (CURVED 전용)
         type: number
         requirement: required
+        appliesWhen:
+          - path: TYPE
+            equals: CURVED
         documentedDefault: null
         documentedOptional: false
         safeToOmit: unverified

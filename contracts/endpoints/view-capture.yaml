@@ -36,6 +36,11 @@ operations:
       exportName: capture
       modulePath: [view]
       argumentTypeName: CaptureArgument
+      documentation: |-
+        docs/manual/16_VIEW.md #2 — /view/CAPTURE — Capture.
+      nestedTypes:
+        - {path: BGCOLOR_BOTTOM, name: RgbColor, namespace: ViewTypes}
+        - {path: BGCOLOR_TOP, name: RgbColor, namespace: ViewTypes}
     risk: write
     request:
       wrapper: assign
@@ -58,7 +63,10 @@ fields:
     description: >-
       Smart Report 이미지 이름
     type: string
-    requirement: required
+    requirement: conditional
+    condition: "Smart Report mode. No field selects the mode: sending FIGURE_NAME is what makes the call a Smart Report capture, and a User Setting capture omits it."
+    # The manual's table has a group column: Required under "Smart Report",
+    # absent from "User Setting".
     documentedDefault: null
     documentedOptional: false
     safeToOmit: unverified

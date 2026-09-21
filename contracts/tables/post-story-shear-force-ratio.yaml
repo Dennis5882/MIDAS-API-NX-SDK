@@ -11,5 +11,20 @@ source:
     section: "6. Story Shear Force Ratio"
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getStoryShearForceRatioTable
+  modulePath: [story]
+  tableType: STORY_SHEAR_FORCE_RATIO
+  factory: fixed
+  optionNames: [additional, components, constructionStage, loadCaseNames, nodeElements, stageSteps, storyNames, styles, tableName, unit]
+  documentation: |-
+    docs/manual/21_POST_StoryTables.md #6 — Story Shear Force Ratio.
+
+    Per-story shear force and share ratio by vertical-member type
+    (Frame/Wall), for two angles (Angle1/Angle2). The response also includes
+    a top-level "SUB_TABLES" array (linear/numerical shear-force-by-type
+    sums) not modeled here — access it directly off the raw response dict.
+    story_names: restrict to specific stories (default: all).
+    additional: SET_ANGLE — Required; sets Angle1 (Angle2 = Angle1 + 90°).
 tableTypes:
   - {value: STORY_SHEAR_FORCE_RATIO, provenance: manual}

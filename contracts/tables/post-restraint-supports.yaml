@@ -14,6 +14,14 @@ source:
 verification:
   status: manual_only
 risk: read_only
+surface:
+  exportName: getSupportsTable
+  modulePath: [preProcess]
+  tableType: SUPPORTS
+  factory: fixed
+  optionNames: [tableName]
+  documentation: |-
+    docs/manual/18_POST_PreProcess.md #7 — Restraint Supports Table.
 tableTypes:
   - value: SUPPORTS
     description: Restraint supports

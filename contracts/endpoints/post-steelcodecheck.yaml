@@ -36,6 +36,12 @@ operations:
       exportName: getSteelCodeCheck
       modulePath: [post, design]
       takesArgument: false
+      documentation: |-
+        docs/manual/23_POST_Design.md #2 — /post/STEELCODECHECK — Steel Code Check.
+
+        Takes no arguments; returns ``{"vSECT": [...], "vELEM": [...]}`` — each
+        entry has SECT/ELEM id, RAT (combined strength ratio), SLN (slenderness
+        ratio), DEF (deflection), DEFA (allowable deflection).
     risk: read_only
     request:
       wrapper: argument

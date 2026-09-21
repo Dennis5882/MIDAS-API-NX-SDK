@@ -8,6 +8,17 @@ products: [gen, civil]
 source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "26. Elastic Link"}}
 verification: {status: manual_only}
 risk: read_only
+surface:
+  exportName: getElasticLinkTable
+  modulePath: [result1]
+  tableType: ELASTICLINK
+  factory: variable
+  optionNames: [components, constructionStage, loadCaseNames, nodeElements, stageSteps, styles, tableName, unit]
+  documentation: |-
+    docs/manual/20_POST_AnalysisResult_2.md #26 — Elastic Link.
+
+    table_type: TABLE_TYPE_ELASTIC_LINK (default) or TABLE_TYPE_ELASTIC_LINK_BY_MAX
+    (max-value basis).
 tableTypes:
   - value: ELASTICLINK
     description: Elastic-link force

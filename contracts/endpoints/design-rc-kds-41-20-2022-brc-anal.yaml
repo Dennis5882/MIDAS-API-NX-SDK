@@ -36,6 +36,19 @@ operations:
       exportName: performBraceCheck
       modulePath: [design, rcKds, checks]
       argumentTypeName: PerformRcMemberCheckArgument
+      documentation: |-
+        docs/manual/26_Design_RC_KDS41202022.md #60 — BRC-ANAL — RC Brace
+        Check Perform. Runs P-M interaction/shear code-checking on RC brace
+        members that already have rebar assigned. Response: ``{"message":
+        "success"}``.
+
+        ⚠️ Never independently tested. Its siblings ``perform_column_check``
+        (CC-ANAL) and ``perform_beam_check`` (BC-ANAL) were confirmed to hang
+        Gen NX 2026 (v2.1), build 06/23/2026, then ran clean on that same build
+        on 2026-07-25 — i.e. the trigger is unidentified rather than fixed; see
+        docs/live_verification_notes.md. Assume the same history applies here:
+        use a short timeout, and read ``get_brace_check_table`` regardless of
+        whether this call returns.
     risk: write
     request:
       wrapper: assign

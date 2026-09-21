@@ -36,6 +36,10 @@ operations:
       exportName: changeProperty
       modulePath: [ope]
       argumentTypeName: ChangePropertyArgument
+      documentation: |-
+        docs/manual/15_OPE.md #8 — /ope/EDMP — Change Property.
+      nestedTypes:
+        - {path: NODE_ELEMS, name: TargetKeys, namespace: OpeTypes}
     risk: write
     request:
       wrapper: assign

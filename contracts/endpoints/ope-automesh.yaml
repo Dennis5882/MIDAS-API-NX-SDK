@@ -36,6 +36,15 @@ operations:
       exportName: autoMesh
       modulePath: [ope]
       argumentTypeName: AutoMeshArgument
+      documentation: |-
+        docs/manual/15_OPE.md #6 — /ope/AUTOMESH — Auto-Mesh Planar Area.
+      nestedTypes:
+        - {path: ADDITIONAL_OPTION, name: AutoMeshAdditionalOption, namespace: OpeTypes}
+        - {path: DOMAIN_NAME, name: AutoMeshDomainName, namespace: OpeTypes}
+        - {path: MESHER, name: AutoMesher, namespace: OpeTypes}
+        - {path: MESH_SIZE, name: AutoMeshSize, namespace: OpeTypes}
+        - {path: PROPERTY, name: AutoMeshProperty, namespace: OpeTypes}
+        - {path: PROPERTY.ELEMENT_SUB_TYPE, name: AutoMeshElementSubType, namespace: OpeTypes}
     risk: write
     request:
       wrapper: assign

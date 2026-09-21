@@ -36,6 +36,8 @@ operations:
       exportName: setDisplay
       modulePath: [view]
       argumentTypeName: DisplayArgument
+      documentation: |-
+        docs/manual/16_VIEW.md #6 — /view/DISPLAY — Display.
     risk: write
     request:
       wrapper: assign

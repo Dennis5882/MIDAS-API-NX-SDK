@@ -34,6 +34,37 @@ operations:
       exportName: generateLoadCombinationConcrete
       modulePath: [ope]
       argumentTypeName: LoadCombinationConcreteArgument
+      documentation: |-
+        docs/manual/15_OPE.md #16 — /ope/LCOM-CONC — Load Combination (Concrete) – KDS 41 20:2022.
+
+        ⚠️ Live-tested 2026-07-30: a minimal payload ({OPTION, DGNCODE} only)
+        succeeded on Gen NX but 404'd on Civil NX, on the same synthetic frame
+        model shape (single reproduction so far, not yet independently
+        reconfirmed) — possibly Gen-only despite the manual not saying so. Not
+        enforced here: plain ope.py functions have no PRODUCTS gate in this
+        SDK, so a Civil call reaches the server and 404s there rather than
+        raising client-side.
+
+        ⚠️ Confirmed 2026-07-31: ``GET /info/ope/LCOM-CONC`` (and
+        ``/info/ope/LCOM-GEN``) also 404 on Civil NX — the whole `/ope/LCOM-*`
+        family's routes aren't registered on Civil at all, not just failing at
+        execution. This upgrades the "possibly Gen-only" guess above to a
+        routing-level confirmation.
+      nestedTypes:
+        - {path: ADDITIONAL_LOAD, name: AdditionalLoad, namespace: OpeTypes}
+        - {path: ADDITIONAL_LOAD.SPECIAL_LOAD, name: SpecialSeismicLoad, namespace: OpeTypes}
+        - {path: ADDITIONAL_LOAD.SPECIAL_LOAD.OVER_STRENGTH_FACTOR, name: LoadCombScaleFactorItem, namespace: OpeTypes}
+        - {path: ADDITIONAL_LOAD.VERTICAL_LOAD, name: VerticalSeismicLoad, namespace: OpeTypes}
+        - {path: ORTHO_EFFECT, name: OrthoEffect, namespace: OpeTypes}
+        - {path: RS_SCALE_FACTOR, name: LoadCombScaleFactorItem, namespace: OpeTypes}
+        - {path: UNDERGROUND_LOAD, name: UndergroundLoad, namespace: OpeTypes}
+        - {path: UNDERGROUND_LOAD.LOAD_CASE_LIST, name: UndergroundLoadCaseItem, namespace: OpeTypes}
+        - {path: UNDERGROUND_LOAD.SCALE_FACTOR, name: LoadCombScaleFactorItem, namespace: OpeTypes}
+        - {path: UNDERGROUND_LOAD.SPECIAL_LOAD, name: SpecialSeismicLoad, namespace: OpeTypes}
+        - {path: UNDERGROUND_LOAD.SPECIAL_LOAD.OVER_STRENGTH_FACTOR, name: LoadCombScaleFactorItem, namespace: OpeTypes}
+        - {path: WIND_LOAD_COMB, name: WindLoadComb, namespace: OpeTypes}
+        - {path: WIND_LOAD_COMB.PARAMETERS, name: WindLoadCombParameter, namespace: OpeTypes}
+        - {path: WIND_LOAD_COMB.PARAMETERS.WIND_LOAD_CASE, name: WindLoadCase, namespace: OpeTypes}
     risk: write
     request:
       wrapper: assign

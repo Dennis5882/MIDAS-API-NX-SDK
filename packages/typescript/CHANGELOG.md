@@ -8,10 +8,11 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 > **Breaking at the type level; nothing changes at runtime.** No exported name
 > is added, removed or renamed - 765 exported type names before and after - and
-> no member is removed. But 411 members across 156 exported types go from
-> optional to required, so code that builds one of those objects without a
-> member the contract requires stops compiling. The generated JavaScript is
-> unchanged.
+> no member is removed. But members go from optional to required - 411 across
+> 156 payload-side types and 134 across 59 operation-argument types - so code
+> that builds one of those objects without a member the contract requires
+> stops compiling. The generated JavaScript, the operations and the table
+> wrappers are otherwise unchanged.
 
 ### Changed - 228 nested types now come from the contracts
 
@@ -40,6 +41,32 @@ Contracts now record the names these types are already published under, and
   `FORCES` for `FACE_EDGE_TYPE` `"FACE"`/`"PRES"` and `EDGE_LOADS` for
   `"EDGE"`, as `PressureLoadPayload` already did. A type alias of a union cannot
   be `extends`-ed or `implements`-ed.
+
+### Changed - operation argument types now come from the contracts
+
+The argument types of `operations.*` - `/ope`, `/view` and the design-code
+`*-ANAL`/`*-TABLE`/`*-REPORT` calls - were generated from the Python package's
+TypedDicts, where every member is optional. 44 of them, and the 44 named
+objects nested in them, are now generated from the same operation contracts
+the SDK's other checks already read:
+
+- **134 members become required** across 59 types, each checked against its
+  manual row: the report calls' `REPORT_TYPE`/`EXPORT_PATH`/`OUTPUT_NAME`, the
+  table calls' `TABLE_TYPE`, `/ope/AUTOMESH`'s four settings objects, and so on.
+- **Members the manual requires only in one branch stay optional**, with the
+  condition in their JSDoc: `/view/ACTIVE`'s `N_LIST`/`E_LIST` (mode
+  `"Active"`) and `IDENTITY_TYPE`/`IDENTITY_LIST` (mode `"Identity"`), so
+  `{ ACTIVE_MODE: "All" }` still type-checks; `/view/CAPTURE`'s `FIGURE_NAME`,
+  whose presence is what selects a Smart Report capture; and `/ope/LINEBMLD`'s
+  load `D`/`P` (every `TYPE` but `CURVED`) and `A`/`B`/`C` (`CURVED` only).
+- **9 members are added**, to `RcWallDesignTableArgument` and
+  `LoadCombinationSteelArgument`, where the manual documents a field the
+  TypedDict lacked.
+- **Unchanged, on purpose:** `DivideElementsArgument` (`/ope/DIVIDEELEM`),
+  whose manual marks every axis of an unequal or parametric division Required
+  without saying which axes a frame uses, so publishing it would refuse a valid
+  frame division; `SrcMemberCheckTableArgument`, whose two manual sections
+  disagree; the load-combination union arguments; and `ResultGraphicArgument`.
 
 ### Fixed - eight payloads regain nested members the manual documents
 
