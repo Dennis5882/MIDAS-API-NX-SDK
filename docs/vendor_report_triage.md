@@ -53,21 +53,11 @@ is easier to trust on what it kept.
 ### Re-verification debt
 
 Cleared on 2026-09-21 in two passes: the fixture replay, then a dummy model
-built for the items a replay cannot reach. Three are left, and each needs
+built for the items a replay cannot reach. Two are left, and each needs
 something a scratch model cannot supply:
 
 - **A-5's original form** — the *crash* window still needs the product killed
   and then polled. The modal-block form was measured on 2026-09-21.
-- **A-7's cause** — reproduced on Gen with the exact recorded dialog text, and
-  **not** reproduced on Civil, where the same `/doc/SAVEAS` into
-  `C:\Program Files\` succeeded and `/doc/OPEN` then found the file. So the
-  trigger is the write failing rather than the path, and why it succeeds on one
-  product and not the other is open: elevation, or UAC virtualization silently
-  redirecting Civil's write to `%LOCALAPPDATA%\VirtualStore\`. The check is
-  whether the file is in the VirtualStore on the NX host; it was asked of the
-  author and is unanswered. **If it is virtualization, Civil is the worse
-  case** — success reported, `/doc/OPEN` agreeing, file not where it was asked
-  to go.
 - **`/db/STCT` on Civil** — needs a model with **construction stages**. On a
   bare seeded model `GET /db/STCT` answers `{"message": ""}` on both products,
   so the PUT has no record to update. The Gen half reproduced
@@ -82,11 +72,24 @@ is the standing proof that behaviour moves while `/info` does not.
 
 ### Corrected by the 2026-09-21 re-measurement
 
-- **`/doc/SAVEAS`'s two failure shapes were one claim and are now two.** A path
-  NX merely dislikes answers `{"message": "... command complete"}` for a save
-  that never happened (2026-07-26). A path it cannot write to **does not answer
-  at all** — the call hangs until the dialog is dismissed (2026-09-21). Both
-  are in CLAUDE.md now; collapsing them loses the diagnosis.
+- **A-7 was misread the same day it was measured, and is now settled.** The
+  first Civil probe called `/doc/OPEN` on the Program Files path, caught no
+  exception, and printed "the file exists" without printing the answer, which
+  was `path is wrong (the file can't open)`. On that reading the report briefly
+  said Civil's save *succeeded* and floated elevation or UAC virtualization as
+  the reason. The author then found the file in neither `Program Files` nor the
+  VirtualStore, and Windows refused a GUI Save As to that folder outright. So
+  neither product wrote anything; they differ only in how they say so. Civil
+  answers `command complete`, byte-identical to a real save, while the very
+  next `/doc/OPEN` reports the file missing; Gen raises a modal and never
+  answers. Same lesson as `/db/STCT` below: print the response, not a
+  conclusion about it.
+- **`/doc/SAVEAS`'s two failure shapes are per-product, not per-path.** A
+  save that never happened answers `{"message": "... command complete"}`
+  (2026-07-26, and Civil on 2026-09-21 for a folder it cannot write to). Gen,
+  given that same folder, **does not answer at all** - the call hangs until the
+  dialog is dismissed. This entry first drew the line by path; the Civil half
+  of A-7 above is what moved it.
 
 - **`/db/SECF` got sharper.** The report recorded a 200 with no error. The
   product actually **echoes the whole record back** while `GET` answers

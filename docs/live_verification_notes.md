@@ -10685,7 +10685,7 @@ Same relay, same call, same path shape, opposite results.
 
 | | `POST /doc/SAVEAS` -> `C:/Program Files/a7-probe-<product>-<stamp>.<ext>` |
 | --- | --- |
-| Civil NX | `{"message": "MIDAS CIVIL NX command complete"}`; `/doc/OPEN` on that path then **succeeded**, so something is readable there |
+| Civil NX | `{"message": "MIDAS CIVIL NX command complete"}`, session responsive. ~~`/doc/OPEN` then succeeded~~ -- **wrong, see the correction below**: the probe read the absence of an exception, not the answer |
 | Gen NX | **the HTTP call never answered** (read timeout at 60s), and the session was blocked |
 
 The Gen dialog, photographed by the author:
@@ -10706,36 +10706,87 @@ relay serves the health check, so it cannot see a product held by a modal.
 **`/doc/SAVEAS` did not answer "command complete" here.** The standing rule in
 CLAUDE.md is that a save which never happened still answers like a success. For
 *this* failure mode it did not answer at all - the call hung until the dialog
-was dismissed, and the client gave up first. Both behaviours are now recorded:
-a path NX merely dislikes answers like success (2026-07-26), an access-denied
-write hangs the call (today). Do not collapse them into one claim.
+was dismissed, and the client gave up first. Both behaviours are real, but
+the split drawn here - "a path NX dislikes answers like success, an
+access-denied write hangs" - is **wrong**: Civil answered the identical
+access-denied write with `command complete`. The split is by product. See the
+last section of this date.
 
-### What A-7 is actually about, and the open question
+### The `GET /db/CAMB` re-check was not one
 
-With the Program Files document still open on Civil, `GET /db/CAMB` answered
-`{"message": ""}` and the session was **not** blocked - so the 2026-07-29
-"a plain GET pops the dialog" case did not reproduce either, on the product
-where the write had succeeded.
+`GET /db/CAMB` on Civil then answered `{"message": ""}` without blocking, and
+this was read as the 2026-07-29 "a plain GET pops the dialog" case failing to
+reproduce. It was not a test of that case: it assumed a document opened from
+`Program Files`, and the `/doc/OPEN` meant to provide one had failed (see the
+next section). The 2026-07-29 observation, made with the product's own tutorial
+file genuinely located under `Program Files`, remains the only measurement.
 
-Read together, the trigger is not the path. **It is a write to that path
-failing.** Where the write goes through, nothing pops, GET included.
+## 2026-09-21 (last) - A-7 settled, and the probe that got it wrong
 
-Why the write goes through on Civil and not on Gen is unresolved, and there are
-two candidates, only one of which is good news:
+The author checked the NX host: the Civil file was in **neither**
+`C:\Program Files\` nor `%LOCALAPPDATA%\VirtualStore\`. Then they tried a Save
+As from the Civil NX GUI to that folder and Windows itself refused it -
+`"이 위치에 저장할 권한이 없습니다. 권한은 관리자에게 문의하십시오."`, offering
+the Documents folder instead. So the account cannot write there through any
+path, and **no file was ever created by either product**.
 
-1. Civil is running elevated on that machine and Gen is not.
-2. **UAC virtualization.** A process without an elevation manifest has its
-   `Program Files` writes silently redirected to
-   `%LOCALAPPDATA%\VirtualStore\Program Files\`, and reads are redirected back
-   - which would explain `/doc/OPEN` succeeding just as well, while nothing
-   was ever written to `Program Files` at all.
+Both hypotheses above are dead. It is not elevation and it is not UAC
+virtualization. Civil simply reported a success for a write that did not
+happen, which is the failure shape CLAUDE.md has recorded since 2026-07-26 -
+the one this session's Gen result was used to argue it was *not*.
 
-If it is (2), Civil is the worse case, not the better one: the save reports
-success, `/doc/OPEN` confirms it, and the file is somewhere the user never
-asked for. The check is whether
-`%LOCALAPPDATA%\VirtualStore\Program Files\a7-probe-civil-20260921T072251Z.mcbz`
-exists on the NX machine; that was asked of the author and is not yet answered.
+### The probe was the defect, not the API
 
-**Left behind:** `a7-probe-civil-20260921T072251Z.mcbz` exists at one of those
-two locations on the NX host. This repository cannot delete a file on that
-machine, so it is the author's to remove.
+`/doc/OPEN` knows perfectly well. Measured on both products, on an **empty**
+document (0 nodes, checked immediately before, so a node count can distinguish
+"it opened" from "it did nothing"), against a file that certainly does not
+exist:
+
+```text
+[civil] OPEN C:/Program Files/a7-missing-....mcbz -> {"message": "MIDAS CIVIL NX path is wrong (the file can't open)"}  nodes after: 0
+[civil] OPEN C:/temp/a7-missing-....mcbz          -> {"message": "MIDAS CIVIL NX path is wrong (the file can't open)"}  nodes after: 0
+[gen]   OPEN C:/Program Files/a7-missing-....mgbx -> {"message": "MIDAS GEN NX path is wrong (the file can't open)"}    nodes after: 0
+[gen]   OPEN C:/temp/a7-missing-....mgbx          -> {"message": "MIDAS GEN NX path is wrong (the file can't open)"}    nodes after: 0
+```
+
+Same message in a writable directory and an unwritable one, so it is about the
+missing file and not about the permission.
+
+The earlier probe called `/doc/OPEN`, caught no exception, and **printed its
+own sentence** - `"/doc/OPEN on the Program Files path SUCCEEDED - the file
+exists"` - without ever printing the answer body. The product had answered
+`path is wrong (the file can't open)`. HTTP 200, no `error` key, so
+`MidasResultError` does not fire and nothing raises. A probe that prints a
+conclusion instead of the response can only report what it already assumed.
+
+### The full chain, every answer read
+
+Civil, one session, document empty beforehand, seeded to 10 nodes:
+
+```text
+SAVEAS C:/temp/a7-chain-civil-<stamp>.mcbz          -> {"message": "MIDAS CIVIL NX command complete"}
+SAVEAS C:/Program Files/a7-chain-civil-<stamp>.mcbz -> {"message": "MIDAS CIVIL NX command complete"}   <- byte-identical
+OPEN   C:/Program Files/a7-chain-civil-<stamp>.mcbz -> {"message": "MIDAS CIVIL NX path is wrong (the file can't open)"}
+OPEN   C:/temp/a7-chain-civil-<stamp>.mcbz          -> {"message": "MIDAS CIVIL NX command complete"}   nodes: 10
+```
+
+The session stayed alive after each call. So on Civil the information that the
+write failed exists in the product and is absent from the `SAVEAS` response;
+the very next call reports it.
+
+### What this changes
+
+- **`/doc/SAVEAS` has two failure shapes and they are per-product, not
+  per-path.** Identical call, identical path: Civil answers `command complete`
+  and writes nothing, Gen raises a modal and never answers. The 2026-07-26
+  "answers like success" and the 2026-09-21 "hangs the call" observations are
+  both real and are not two kinds of path.
+- **"Verify a write with `/doc/OPEN`" still holds, and needs one more clause:
+  read the message.** `/doc/OPEN` reports a missing file honestly, but as a 200
+  body with no `error` key, so absence of an exception proves nothing.
+- **Nothing was left behind on the NX host by the Program Files attempts.** The
+  earlier note claiming a stray `a7-probe-civil-*.mcbz` is withdrawn. The files
+  under `C:/temp` are real and are the author's to clear.
+
+Both products were left connected, responsive, and with the dummy model open on
+Civil (saved at `C:/temp`); Gen's document was left empty.
