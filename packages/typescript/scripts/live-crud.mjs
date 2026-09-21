@@ -92,12 +92,22 @@ function parseArgs(argv) {
   if (args.saveBefore && !args.saveDir) {
     usage("Set --save-dir (or MIDAS_NX_SAVE_DIR) to a known writable directory on the NX machine; the signed-in API user is not a safe path source.");
   }
+  // Checked here and not only in checkpointPath: that call sits after
+  // verifyConnection, so a malformed path used to cost a connection before
+  // saying so. Nothing about the shape needs a product to judge it.
+  if (args.saveBefore && !isAbsoluteHostDirectory(args.saveDir)) {
+    usage(`--save-dir must be an absolute Windows directory on the NX machine, got ${JSON.stringify(args.saveDir)}.`);
+  }
   return args;
+}
+
+function isAbsoluteHostDirectory(saveDir) {
+  return /^[A-Za-z]:\/[^\0]*$/.test(saveDir.replaceAll("\\", "/").replace(/\/+$/, ""));
 }
 
 function checkpointPath(product, saveDir) {
   const directory = saveDir.replaceAll("\\", "/").replace(/\/+$/, "");
-  if (!/^[A-Za-z]:\/[^\0]*$/.test(directory)) {
+  if (!isAbsoluteHostDirectory(saveDir)) {
     throw new Error(`--save-dir must be an absolute Windows directory on the NX machine, got ${JSON.stringify(saveDir)}.`);
   }
   // Product-native NX extension: Gen NX .mgbx, Civil NX .mcbz

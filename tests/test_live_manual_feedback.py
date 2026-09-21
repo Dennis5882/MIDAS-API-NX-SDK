@@ -42,3 +42,25 @@ assert feedback._splc_along_payload(2.5)["aACCECC_ECCEN_LIST"] == [
         capture_output=True, text=True, check=False,
     )
     assert result.returncode == 0, result.stderr
+
+
+def test_the_probe_runner_refuses_to_start_without_a_save_directory() -> None:
+    """A guessed path raises a blocking dialog on the NX host, so it is required.
+
+    This harness calls `/doc/NEW` once per probe. Every checkpoint lands on the
+    machine running NX, not the one running the script, and a path that does
+    not exist there raises a modal dialog *there* while the HTTP call still
+    answers like a success -- blocking the whole session until a human
+    dismisses it. Deriving one from `verify_connection()["user"]` was tried and
+    disproved on 2026-08-31: that field is the MAPI account's email, not the
+    host's Windows profile. So the caller names the directory, and argparse
+    refuses the run before a single call goes out.
+    """
+    result = subprocess.run(
+        [sys.executable, "scripts/live_manual_feedback.py",
+         "--product", "gen", "--out", "unused.json"],
+        cwd=ROOT, capture_output=True, text=True, check=False,
+    )
+    assert result.returncode != 0
+    assert "--save-dir" in result.stderr
+    assert not (ROOT / "unused.json").exists()

@@ -357,7 +357,13 @@ Two things that have already caused rework:
   removes the safety net, not the destructive call. Every one of them writes its
   checkpoints to a directory **on the NX machine** that the caller names — `--save-as`,
   `--save-dir`; none of them guesses one, because a path that does not exist there raises a
-  blocking dialog while the HTTP call still answers like a success.
+  blocking dialog while the HTTP call still answers like a success. The npm harness checks the
+  shape of `--save-dir` while parsing arguments as of 2026-09-21, not at the checkpoint call
+  that sits after `verifyConnection()`, so a malformed path no longer costs a connection before
+  it is reported. **The four are not consistent about requiring one**: `live_manual_feedback.py`
+  and `live-crud.mjs` refuse to start without it, `live_crud_check.py`'s `--save-as` is optional,
+  and `live_smoke.py` has no such flag at all. That is a workflow decision, not an oversight to
+  quietly fix — ask before changing it.
 - **`/info/{endpoint}` introspection is served for `/db/*` only.** Swept from both SDKs
   2026-09-01: it answered for 399 of 402 `/db/*` resource-product pairs and for **none of the
   147 `/DESIGN/*` pairs**, even though those design endpoints answer a plain GET

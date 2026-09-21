@@ -39,7 +39,7 @@ for the section above: it re-derives what "Where things stand" claims and fails
 if the file and the repository disagree.
 
 ```bash
-python -m pytest -q                       # 1099 passed
+python -m pytest -q                       # 1107 passed
 ruff check src tests scripts && mypy      # clean
 python scripts/validate_contracts.py      # OK - contracts valid
 python scripts/check_manual_drift.py --manual-api-repo "E:\AI Study\MIDAS-API"
@@ -59,10 +59,10 @@ python scripts/check_verification_lag.py --check       # 40, ceiling 40
 python scripts/verification_ledger.py                  # 397 endpoints:
                                           # 189 read, 208 write
 python scripts/report_unmerged_tables.py --check       # exit 0
-python scripts/check_state_numbers.py --check          # OK - 31 stated
-                                          # number(s) agree
+python scripts/check_state_numbers.py --check          # OK; it checks this
+                                          # block's own numbers too
 cd packages/typescript && npm run generate && npm run typecheck && npm test
-                                          # no drift; 87 tests
+                                          # no drift; 90 tests
 ```
 
 The manual repo is vendored at `e64a682`. If the drift or extraction check goes

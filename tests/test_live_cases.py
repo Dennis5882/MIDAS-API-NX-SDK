@@ -1107,3 +1107,53 @@ def test_nothing_attaches_an_element_to_the_reserved_node_pair() -> None:
         "nodes 21-22 are reserved for the link and constraint cases: "
         + ", ".join(offenders)
     )
+
+
+def test_an_unreadable_record_fails_its_case_and_does_not_lose_the_run() -> None:
+    """A probe that cannot subscript the record raises MidasAPIError.
+
+    `live_crud_check.apply_probe` exists because a probe reaches into the
+    read-back record -- `p["ITEMS"][0]["END"]` -- so a product returning
+    another shape raises KeyError, not MidasAPIError. The tier loop catches
+    MidasAPIError and records a failed case; a KeyError escapes it and takes
+    the report, the end-of-run checkpoint and the restore of an empty scratch
+    document with it, leaving the product holding the fixture's model. One
+    endpoint answering oddly must cost one case, not the run.
+    """
+    module = _live_crud_module()
+
+    class _Case:
+        @staticmethod
+        def probe(record):
+            return record["ITEMS"][0]["END"]
+
+    with pytest.raises(module.MidasAPIError) as caught:
+        module.apply_probe(_Case(), {"ITEMS": []}, "/db/X", "wrote")
+    assert "probe could not read the record" in str(caught.value)
+    assert "IndexError" in str(caught.value)
+
+    with pytest.raises(module.MidasAPIError):
+        module.apply_probe(_Case(), {}, "/db/X", "wrote")
+    with pytest.raises(module.MidasAPIError):
+        module.apply_probe(_Case(), None, "/db/X", "updated to")
+
+
+def test_a_readable_record_passes_the_probe_value_through_unchanged() -> None:
+    """The guard must not swallow a value or a genuine MidasAPIError."""
+    module = _live_crud_module()
+
+    class _Good:
+        @staticmethod
+        def probe(record):
+            return record["ITEMS"][0]["END"]
+
+    assert module.apply_probe(_Good(), {"ITEMS": [{"END": 3}]}, "/db/X", "wrote") == 3
+
+    class _Raises:
+        @staticmethod
+        def probe(record):
+            raise module.MidasAPIError("the product refused the read")
+
+    with pytest.raises(module.MidasAPIError) as caught:
+        module.apply_probe(_Raises(), {}, "/db/X", "wrote")
+    assert str(caught.value) == "the product refused the read"

@@ -17,13 +17,18 @@ against every statement of that number in the documents' current-state regions.
 a changelog and §4 is release history; the milestone row reading `201 write /
 199 read` states what was true at 2.8.3, and rewriting it would falsify it. So
 the scanned regions are only the two that are present-tense by construction:
-PLAN.md's §2 "Current status" and the playbook's "Where things stand". The
-playbook's "Gates" section is left out on purpose -- it prints commands beside
-their expected output and says outright that the command wins over the file.
+PLAN.md's §2 "Current status", the playbook's "Where things stand", and the
+playbook's "Gates" block, which prints each command beside the output it
+should produce. Gates says the command wins over the file, and it does -- but
+that is a reason to keep the file right, not a licence for it to drift: a
+stale expected output there reads as a failing gate at the start of a live
+session.
 
 Test counts are out of scope: they come from running the suite, and a checker
 that shells out to `pytest --collect-only` would be comparing collected tests
-against a number that means passed ones.
+against a number that means passed ones. So Gates' `# 1099 passed` and
+`# 90 tests` stay hand-maintained, and are the only numbers in that block
+that are.
 
 A pattern matching nothing is a failure too. Deleting the sentence is not a way
 to make this pass.
@@ -67,6 +72,7 @@ class Region:
 REGIONS = (
     Region(PLAN, re.compile(r"^## 2\. "), "PLAN.md §2"),
     Region(PLAYBOOK, re.compile(r"^## Where things stand"), "playbook: where things stand"),
+    Region(PLAYBOOK, re.compile(r"^## Gates"), "playbook: gates"),
 )
 
 
@@ -102,6 +108,19 @@ PATTERNS = (
     Pattern(re.compile(r"(\d+) proven safe"), ("omission_safe",)),
     Pattern(re.compile(r"(\d+) proven unsafe"), ("omission_unsafe",)),
     Pattern(re.compile(r"([\d,]+) honestly unverified"), ("omission_unverified",)),
+    # The Gates block comments its expected output, so a `#` lands mid-sentence
+    # once the region's whitespace is collapsed. That is what keeps these from
+    # colliding with the prose patterns above -- "183 cases over 172 #
+    # endpoints" is the confirmed count, "220 cases over 196 endpoints" is all
+    # of them.
+    Pattern(
+        re.compile(r"(\d+) cases over (\d+) # endpoints; every product: (\d+)"),
+        ("confirmed_cases", "confirmed_endpoints", "confirmed_cases"),
+    ),
+    Pattern(
+        re.compile(r"(\d+) endpoints: # (\d+) read, (\d+) write"),
+        ("ledger_claims", "ledger_read", "ledger_write"),
+    ),
 )
 
 
@@ -130,8 +149,15 @@ def measure() -> dict[str, int]:
     ]
     omission = Counter(field.get("safeToOmit") for field in fields)
 
+    # Over the ledger's own claims this time, which is what
+    # verification_ledger.py prints: 397, three short of the inventory.
+    claim_levels = Counter(claim.level for claim in resolved.values())
+
     return {
         "inventory": len(inventory),
+        "ledger_claims": len(resolved),
+        "ledger_read": claim_levels["read"],
+        "ledger_write": claim_levels["write"],
         "write": levels["write"],
         "read": levels["read"],
         "db": sum(db_levels.values()),
