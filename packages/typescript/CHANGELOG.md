@@ -7,11 +7,24 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 ## Unreleased
 
 > **Breaking at the type level; nothing changes at runtime.** No export is
-> added, removed or renamed. 19 members of `/post` request types and 97 of
-> other named types narrow, 87 of them to required, and `/db/MCON`'s
+> added, removed or renamed. 19 members of `/post` request types and 105 of
+> other named types narrow, 89 of them to required, and `/db/MCON`'s
 > `LinearConstraintItem` is corrected to the shape the manual gives it, which
 > removes four members it should never have had. `/db/TDME` loses four
 > members that only a code this API refuses could use.
+
+### Changed - `/db/EPMT` is generated from its contract
+
+`PlasticMaterialPayload` typed its six model objects `unknown`, because the
+contract had left the tables describing them unmerged: none has a Value Type
+column. They are merged now, with the manual's requiredness, defaults, value
+sets and conditions and `/info`'s types, which both products declare alike.
+`NAME` and `MODEL_TYPE` become required; `TRESCA`, `VMISES`, `MOHRCL`,
+`DRUCKER`, `MASONRY` and `CONCDMG` stay optional, each required only for its
+own `MODEL_TYPE`, and gain their members - `HARDENING_COEF` required when
+`OPT_HARDENING` is `0` and `BACK_STRESS_COEF` when `HARDENING_TYPE` is
+`"MIX"` (both left optional in the type, the condition in JSDoc), Masonry's
+`BM`/`BED_JOINT`/`HEAD_JOINT`/`GEOM` all required.
 
 ### Changed - `/db/THIK` is generated from its contract
 

@@ -9500,15 +9500,150 @@ export namespace DbPropertiesMaterialTypes {
       }>;
     };
   }
+  /** Generated from contracts/endpoints/. */
   export interface PlasticMaterialPayload {
-    NAME?: string;
-    MODEL_TYPE?: string;
-    TRESCA?: unknown;
-    VMISES?: unknown;
-    MOHRCL?: unknown;
-    DRUCKER?: unknown;
-    MASONRY?: unknown;
-    CONCDMG?: unknown;
+    /** Plastic Material Name */
+    NAME: string;
+    /** Model Type · "TR"(Tresca) / "VM"(Von-Mises) / "MC"(Mohr-Coulomb) / "DP"(Drucker-Prager) / "MA"(Masonry) / "DM"(Concrete Damage) */
+    MODEL_TYPE: string;
+    /** Tresca plasticity parameters. Required when MODEL_TYPE = "TR". */
+    TRESCA?: {
+      /** Initial Uniaxial Yield Stress */
+      INIT_YIELD_STRESS: number;
+      /** Hardening Option · Activated: `0` / Inactivated: `1` */
+      OPT_HARDENING?: number;
+      /** (`OPT_HARDENING`=0일 때만) `"ISO"` / `"KIN"` / `"MIX"` Applies when TRESCA.OPT_HARDENING = 0. */
+      HARDENING_TYPE?: "ISO" | "KIN" | "MIX";
+      /** (`OPT_HARDENING`=0일 때) Hardening Coefficient Required when TRESCA.OPT_HARDENING = 0. */
+      HARDENING_COEF?: number;
+      /** (`HARDENING_TYPE`=`"MIX"`일 때) Back Stress Coefficient Required when TRESCA.HARDENING_TYPE = "MIX". */
+      BACK_STRESS_COEF?: number;
+    };
+    /** Von Mises plasticity parameters. Required when MODEL_TYPE = "VM". */
+    VMISES?: {
+      /** Initial Uniaxial Yield Stress */
+      INIT_YIELD_STRESS: number;
+      /** Hardening Option · Activated: `0` / Inactivated: `1` */
+      OPT_HARDENING?: number;
+      /** (`OPT_HARDENING`=0일 때만) `"ISO"` / `"KIN"` / `"MIX"` Applies when VMISES.OPT_HARDENING = 0. */
+      HARDENING_TYPE?: "ISO" | "KIN" | "MIX";
+      /** (`OPT_HARDENING`=0일 때) Hardening Coefficient Required when VMISES.OPT_HARDENING = 0. */
+      HARDENING_COEF?: number;
+      /** (`HARDENING_TYPE`=`"MIX"`일 때) Back Stress Coefficient Required when VMISES.HARDENING_TYPE = "MIX". */
+      BACK_STRESS_COEF?: number;
+    };
+    /** Mohr-Coulomb plasticity parameters. Required when MODEL_TYPE = "MC". */
+    MOHRCL?: {
+      /** Initial Cohesion */
+      INIT_COHESION: number;
+      /** Initial Friction Angle (deg) */
+      INIT_FRIC_ANGLE: number;
+      /** Hardening Option · Activated: `0` / Inactivated: `1` */
+      OPT_HARDENING?: number;
+      /** (`OPT_HARDENING`=0일 때만) `"ISO"` / `"KIN"` / `"MIX"` Applies when MOHRCL.OPT_HARDENING = 0. */
+      HARDENING_TYPE?: "ISO" | "KIN" | "MIX";
+      /** (`OPT_HARDENING`=0일 때) Hardening Coefficient Required when MOHRCL.OPT_HARDENING = 0. */
+      HARDENING_COEF?: number;
+      /** (`HARDENING_TYPE`=`"MIX"`일 때) Back Stress Coefficient Required when MOHRCL.HARDENING_TYPE = "MIX". */
+      BACK_STRESS_COEF?: number;
+    };
+    /** Drucker-Prager plasticity parameters. Required when MODEL_TYPE = "DP". */
+    DRUCKER?: {
+      /** Initial Cohesion */
+      INIT_COHESION: number;
+      /** Initial Friction Angle (deg) */
+      INIT_FRIC_ANGLE: number;
+      /** Hardening Option · Activated: `0` / Inactivated: `1` */
+      OPT_HARDENING?: number;
+      /** (`OPT_HARDENING`=0일 때만) `"ISO"` / `"KIN"` / `"MIX"` Applies when DRUCKER.OPT_HARDENING = 0. */
+      HARDENING_TYPE?: "ISO" | "KIN" | "MIX";
+      /** (`OPT_HARDENING`=0일 때) Hardening Coefficient Required when DRUCKER.OPT_HARDENING = 0. */
+      HARDENING_COEF?: number;
+      /** (`HARDENING_TYPE`=`"MIX"`일 때) Back Stress Coefficient Required when DRUCKER.HARDENING_TYPE = "MIX". */
+      BACK_STRESS_COEF?: number;
+    };
+    /** Masonry plasticity parameters. Required when MODEL_TYPE = "MA". */
+    MASONRY?: {
+      /** Brick material properties */
+      BM: {
+        /** Young's Modulus */
+        YOUNG_S_MODULUS: number;
+        /** Poisson's Ratio */
+        POSSIONS_S_RATIO: number;
+        /** Tensile Strength */
+        TENSION_STRENGTH: number;
+        /** Stiffness Reduction Factor */
+        SOFTENING_PARAMETER: number;
+      };
+      /** Bed Joint material properties */
+      BED_JOINT: {
+        /** Young's Modulus */
+        YOUNG_S_MODULUS: number;
+        /** Poisson's Ratio */
+        POSSIONS_S_RATIO: number;
+        /** Tensile Strength */
+        TENSION_STRENGTH: number;
+        /** Stiffness Reduction Factor */
+        HARDENING_PARAM: number;
+      };
+      /** Head Joint material properties */
+      HEAD_JOINT: {
+        /** Young's Modulus */
+        YOUNG_S_MODULUS: number;
+        /** Poisson's Ratio */
+        POSSIONS_S_RATIO: number;
+        /** Tensile Strength */
+        TENSION_STRENGTH: number;
+        /** Stiffness Reduction Factor */
+        HARDENING_PARAM: number;
+      };
+      /** 형상 정보 object */
+      GEOM: {
+        /** Brick Length */
+        BRICK_LENGTH: number;
+        /** Brick Height */
+        BRICK_HEIGHT: number;
+        /** Thickness of Bed */
+        THICKNESS_BED: number;
+        /** Thickness of Head */
+        THICKNESS_HEAD: number;
+        /** Material Coordinate System(수직/수평) · Global-Y/Global-X: `0` / Local-y/Local-z: `-1` / Global-Z/Angle: `-4` */
+        COORD_TYPE: number;
+        /** (`COORD_TYPE`=`-4`일 때) Global X축 기준 각도 Required when MASONRY.GEOM.COORD_TYPE = -4. */
+        COORD_ANGLE?: number;
+      };
+    };
+    /** Concrete Damage plasticity parameters. Required when MODEL_TYPE = "DM". */
+    CONCDMG?: {
+      /** Dilation Angle */
+      DILIATION_ANGLE: number;
+      /** Eccentricity */
+      ECCEN: number;
+      /** fbo/fco */
+      FBO_FCO: number;
+      /** K */
+      K: number;
+      /** Viscosity Parameter */
+      VISCOSITY_PARAM: number;
+      /** Compressive Behavior — Array of `{INELASTIC_STRAIN, YIELD_STRESS, DAMAGE}` */
+      COMP_ITEMS: Array<{
+        /** Inelastic Strain */
+        INELASTIC_STRAIN?: number;
+        /** Yield Stress */
+        YIELD_STRESS?: number;
+        /** Damage */
+        DAMAGE?: number;
+      }>;
+      /** Tensile Behavior — Array of `{INELASTIC_STRAIN, YIELD_STRESS, DAMAGE}` */
+      TENSILE_ITEMS: Array<{
+        /** Inelastic Strain */
+        INELASTIC_STRAIN?: number;
+        /** Yield Stress */
+        YIELD_STRESS?: number;
+        /** Damage */
+        DAMAGE?: number;
+      }>;
+    };
   }
   /** Generated from contracts/endpoints/. */
   export interface TimeDependentMaterialCreepShrinkagePayload {

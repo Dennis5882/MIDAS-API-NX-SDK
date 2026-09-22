@@ -94,6 +94,11 @@ EXPECTED_AGAINST_CONTRACTS: _AgainstContractsExpectation = {
         # /info also carries the others' objects (VALUE, WALL, the YZ section).
         # Recorded as the observed gap, not added as fields no table describes.
         "/db/THIK": 13,
+        # /db/EPMT is compared once its model tables are merged. /info declares
+        # a seventh model object, MICROPL (MU, PARAM_C, PARAM_K), on both
+        # products; the section's MODEL_TYPE row names six models and no table
+        # describes this one, so it is recorded here rather than transcribed.
+        "/db/EPMT": 4,
     },
     "contractOnlyNamesAtMost": {
         "/db/POGD-M1": 2,

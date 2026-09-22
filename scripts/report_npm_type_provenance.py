@@ -49,9 +49,10 @@ filled from each manual section's own JSON Schema, table rows or /info, then
 85 and 83 once /db/SDIS's device tables and /db/CSCS's part table were
 merged, then 82 once /db/TDME's two iGen-only tables could be marked
 `excluded`, then 81 once /db/THIK's first table was read as the Value
-branch it is headed as. What the 70 left in `python:nested` are:
+branch it is headed as, then 80 once /db/EPMT's model tables were merged
+into the six model objects. What the 70 left in `python:nested` are:
 
-    20  children of the 9 unmergedTables roots (moving-load cases and
+    20  children of the 8 unmergedTables roots (moving-load cases and
         vehicles, response spectra, time history, ...)
     22  /view/CAPTURE's RESULT_GRAPHIC tree, under a contract with
         unmergedTables
@@ -106,7 +107,7 @@ CONTRACTS = ROOT / "contracts" / "endpoints"
 #: Measured 2026-09-22 over 765 generated types, after branch-owned nested types. A ceiling: it falls as
 #: contracts take over more of the emitted shape, and a rise means a type that
 #: used to come from a contract is being read out of the Python tree again.
-PYTHON_SOURCED_AT_MOST = 81
+PYTHON_SOURCED_AT_MOST = 80
 
 #: Every exported type in `types.ts`. Not a ceiling: adding or removing an
 #: export is a change to the published surface, so it has to be made here on

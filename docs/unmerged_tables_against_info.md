@@ -37,27 +37,26 @@ not the same finding as a source that is absent.
 | [`/view/RESULTGRAPHIC`](#viewresultgraphic) | 10 | 63 | -- | n/a |
 | [`/db/THIS`](#dbthis) | 10 | 41 | 41 | 100% |
 | [`/db/ELEM`](#dbelem) | 8 | 30 | 29 | 96% |
-| [`/db/EPMT`](#dbepmt) | 5 | 29 | 29 | 100% |
 | [`/db/MVLDpl`](#dbmvldpl) | 4 | 27 | 27 | 100% |
 | [`/db/SPLC`](#dbsplc) | 3 | 23 | 23 | 100% |
 | [`/db/MVLD`](#dbmvld) | 4 | 21 | 21 | 100% |
 | [`/db/TDME`](#dbtdme) | 2 | 7 | 7 | 100% |
 | [`/db/STCT`](#dbstct) | 1 | 6 | 6 | 100% |
 | [`/ope/LCOM-SRC`](#opelcomsrc) | 1 | 5 | -- | n/a |
-| **total** | **67** | **441** | **372** | **84%** |
+| **total** | **62** | **412** | **343** | **83%** |
 
-Of the **373** names on endpoints `/info` answers for, **372** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
+Of the **344** names on endpoints `/info` answers for, **343** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
 
 ### What each table has, as a count
 
 | what the measurement found | tables |
 | --- | ---: |
-| whole table, one object | 29 |
-| whole table, several objects | 3 |
-| whole table, scattered | 23 |
+| whole table, one object | 27 |
+| whole table, several objects | 1 |
+| whole table, scattered | 22 |
 | partly declared | 1 |
 | out of reach | 11 |
-| **all** | **67** |
+| **all** | **62** |
 
 *one object* means `/info` has a single object holding every name in that table; *scattered* means it declares them all but under no common parent, so the table's shape is not something the baseline confirms. Neither is a recommendation -- a table with two sources still needs its manual section read before anything moves.
 
@@ -195,24 +194,6 @@ Baseline answers on `civil`, `gen`. 29 of 30 names declared across 8 tables.
 - **Wall** not declared: `W_CON`
 - **Plate** declared: `ANGLE` at `ANGLE`, `STYPE` at `STYPE`
 - **Plane Stress** declared: `ANGLE` at `ANGLE`, `STYPE` at `STYPE`
-
-## `/db/EPMT`
-
-Baseline answers on `civil`, `gen`. 29 of 29 names declared across 5 tables.
-
-| table | names | declared | not declared | nesting |
-| --- | ---: | ---: | ---: | --- |
-| Tresca / Von-Mises 공통 파라미터 (`"TRESCA"` or `"VMISES"` object) | 5 | 5 | 0 | 2 objects hold all 5 |
-| Mohr-Coulomb / Drucker-Prager 공통 파라미터 (`"MOHRCL"` or `"DRUCKER"` object) | 6 | 6 | 0 | 2 objects hold all 6 |
-| Masonry 파라미터 (`"MASONRY"` object) | 5 | 5 | 0 | scattered; `MASONRY.BED_JOINT` covers 4 of 5 |
-| Masonry 파라미터 (`"MASONRY"` object) | 6 | 6 | 0 | one object: `MASONRY.GEOM` |
-| Concrete Damage 파라미터 (`"CONCDMG"` object) | 7 | 7 | 0 | one object: `CONCDMG` |
-
-- **Tresca / Von-Mises 공통 파라미터 (`"TRESCA"` or `"VMISES"` object)** declared: `INIT_YIELD_STRESS` at `TRESCA.INIT_YIELD_STRESS`, `OPT_HARDENING` at `TRESCA.OPT_HARDENING`, `HARDENING_TYPE` at `TRESCA.HARDENING_TYPE`, `HARDENING_COEF` at `TRESCA.HARDENING_COEF`, `BACK_STRESS_COEF` at `TRESCA.BACK_STRESS_COEF`
-- **Mohr-Coulomb / Drucker-Prager 공통 파라미터 (`"MOHRCL"` or `"DRUCKER"` object)** declared: `INIT_COHESION` at `DRUCKER.INIT_COHESION`, `INIT_FRIC_ANGLE` at `DRUCKER.INIT_FRIC_ANGLE`, `OPT_HARDENING` at `DRUCKER.OPT_HARDENING`, `HARDENING_TYPE` at `DRUCKER.HARDENING_TYPE`, `HARDENING_COEF` at `DRUCKER.HARDENING_COEF`, `BACK_STRESS_COEF` at `DRUCKER.BACK_STRESS_COEF`
-- **Masonry 파라미터 (`"MASONRY"` object)** declared: `YOUNG_S_MODULUS` at `MASONRY.BED_JOINT.YOUNG_S_MODULUS`, `POSSIONS_S_RATIO` at `MASONRY.BED_JOINT.POSSIONS_S_RATIO`, `TENSION_STRENGTH` at `MASONRY.BED_JOINT.TENSION_STRENGTH`, `SOFTENING_PARAMETER` at `MASONRY.BM.SOFTENING_PARAMETER`, `HARDENING_PARAM` at `MASONRY.BED_JOINT.HARDENING_PARAM`
-- **Masonry 파라미터 (`"MASONRY"` object)** declared: `BRICK_LENGTH` at `MASONRY.GEOM.BRICK_LENGTH`, `BRICK_HEIGHT` at `MASONRY.GEOM.BRICK_HEIGHT`, `THICKNESS_BED` at `MASONRY.GEOM.THICKNESS_BED`, `THICKNESS_HEAD` at `MASONRY.GEOM.THICKNESS_HEAD`, `COORD_TYPE` at `MASONRY.GEOM.COORD_TYPE`, `COORD_ANGLE` at `MASONRY.GEOM.COORD_ANGLE`
-- **Concrete Damage 파라미터 (`"CONCDMG"` object)** declared: `DILIATION_ANGLE` at `CONCDMG.DILIATION_ANGLE`, `ECCEN` at `CONCDMG.ECCEN`, `FBO_FCO` at `CONCDMG.FBO_FCO`, `K` at `CONCDMG.K`, `VISCOSITY_PARAM` at `CONCDMG.VISCOSITY_PARAM`, `COMP_ITEMS` at `CONCDMG.COMP_ITEMS`, `TENSILE_ITEMS` at `CONCDMG.TENSILE_ITEMS`
 
 ## `/db/MVLDpl`
 
