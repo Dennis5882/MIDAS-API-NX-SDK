@@ -17,6 +17,7 @@ surface:
   payloadTypeName: FiberDivisionPayload
   nestedTypes:
     - {path: FIBR_BASE, name: FiberDivisionBaseItem, namespace: DbPropertiesSectionTypes}
+    - {path: FIMP_COLOR, name: FiberDivisionColor, namespace: DbPropertiesSectionTypes}
 
 products: [civil, gen]
 
@@ -143,33 +144,40 @@ fields:
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
-  - key: R
-    description: >-
-      Color components
-    type: integer
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: G
-    description: >-
-      Color components
-    type: integer
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
-  - key: B
-    description: >-
-      Color components
-    type: integer
-    requirement: optional
-    documentedDefault: 0
-    documentedOptional: true
-    safeToOmit: unverified
-    provenance: manual
+    # RESOLVED: row (1) of the table is numbered under FIMP_COLOR and its Key
+    # cell names three keys at once (MD-48); the section's own Request
+    # Example nests them in each element, `"FIMP_COLOR": [{"R": 255, "G": 0,
+    # "B": 0}, ...]`, and GET /info declares them there on both products. The
+    # parser read them as record-root fields, which is where this contract
+    # published them until 2026-09-22.
+    properties:
+      - key: R
+        description: >-
+          Color components
+        type: integer
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: G
+        description: >-
+          Color components
+        type: integer
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: B
+        description: >-
+          Color components
+        type: integer
+        requirement: optional
+        documentedDefault: 0
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
   - key: FIBR_BASE
     description: >-
       Fiber Division Base Data

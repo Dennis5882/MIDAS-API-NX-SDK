@@ -11,7 +11,17 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 > other named types narrow, 192 of them to required, and `/db/MCON`'s
 > `LinearConstraintItem` is corrected to the shape the manual gives it, which
 > removes four members it should never have had. `/db/TDME` loses four
-> members that only a code this API refuses could use.
+> members that only a code this API refuses could use, and `/db/FIBR`'s
+> payload loses the `R`, `G` and `B` it declared at the wrong level.
+
+### Fixed - `/db/FIBR`'s colour members
+
+`FiberDivisionPayload` published `R`, `G` and `B` at the record root and
+typed `FIMP_COLOR` as six `JsonObject`s. The manual's row, its Request Example
+and `/info` on both products all put the three inside each `FIMP_COLOR`
+element, which is where they are now; **the three root members are removed**
+- the server does not read colours there. `FiberDivisionColor` is the element
+type.
 
 ### Changed - `/ope` and design arguments that were held on Python
 

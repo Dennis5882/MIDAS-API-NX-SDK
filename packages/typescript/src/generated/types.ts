@@ -11286,9 +11286,13 @@ export namespace DbPropertiesSectionTypes {
     /** Fiber 외곽 다각형 Point Z 목록 */
     POINT_Z: Array<number>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface FiberDivisionColor {
+    /** Color components */
     R?: number;
+    /** Color components */
     G?: number;
+    /** Color components */
     B?: number;
   }
   /** Generated from contracts/endpoints/. */
@@ -11302,13 +11306,49 @@ export namespace DbPropertiesSectionTypes {
     /** Inelastic Material Properties Name (6 elements) */
     FIMP_NAME: [string, string, string, string, string, string];
     /** Inelastic Material Properties Color (6 elements) */
-    FIMP_COLOR?: [JsonObject, JsonObject, JsonObject, JsonObject, JsonObject, JsonObject];
-    /** Color components */
-    R?: number;
-    /** Color components */
-    G?: number;
-    /** Color components */
-    B?: number;
+    FIMP_COLOR?: [{
+      /** Color components */
+      R?: number;
+      /** Color components */
+      G?: number;
+      /** Color components */
+      B?: number;
+    }, {
+      /** Color components */
+      R?: number;
+      /** Color components */
+      G?: number;
+      /** Color components */
+      B?: number;
+    }, {
+      /** Color components */
+      R?: number;
+      /** Color components */
+      G?: number;
+      /** Color components */
+      B?: number;
+    }, {
+      /** Color components */
+      R?: number;
+      /** Color components */
+      G?: number;
+      /** Color components */
+      B?: number;
+    }, {
+      /** Color components */
+      R?: number;
+      /** Color components */
+      G?: number;
+      /** Color components */
+      B?: number;
+    }, {
+      /** Color components */
+      R?: number;
+      /** Color components */
+      G?: number;
+      /** Color components */
+      B?: number;
+    }];
     /** Fiber Division Base Data */
     FIBR_BASE: Array<{
       /** Fiber Base Key */

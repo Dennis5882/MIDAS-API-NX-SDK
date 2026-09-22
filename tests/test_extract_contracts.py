@@ -4691,3 +4691,11 @@ def test_a_repeated_parent_row_brings_its_members_into_the_existing_field():
     clash = ex.ParsedField("CONTOUR", "Contour", "object", None, "optional", None)
     clash.properties = [ex.ParsedField("OPT_CHECK", "Show", "string", None, "optional", None)]
     assert not ex._append_fields(destination, [clash]), "a member declared two ways stays blocked"
+
+
+def test_a_labelled_child_number_still_nests_its_row():
+    """/db/FIBR numbers its colour row `(1) R/G/B` under FIMP_COLOR."""
+    assert ex._NUMBER_CHILD.match("(1)")
+    assert ex._NUMBER_CHILD.match("(1) R/G/B")
+    assert not ex._NUMBER_CHILD.match("1")
+    assert not ex._NUMBER_CHILD.match("(1)a")

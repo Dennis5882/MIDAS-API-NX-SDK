@@ -66,8 +66,9 @@ keys, and its argument's 22 types came from the contract, then 16 once the
 arguments held on Python were not: /ope/DIVIDEELEM's after a live measurement
 of which axes each element type needs, the load-combination unions' KDS parts
 through `argumentParts`, and SrcMemberCheckTableArgument once only a rendered
-array bound counted as a shape difference. What the 14 left in
-`python:nested` are:
+array bound counted as a shape difference, then 15 once /db/FIBR's colour
+row was nested in FIMP_COLOR where it belongs and FiberDivisionColor named
+there. What the 13 left in `python:nested` are:
 
      2  /ope load combinations: LoadCombinationAikSrc2kArgument, which
         LCOM-GEN and LCOM-SRC share while the manual requires RS_SCALE_FACTOR
@@ -76,12 +77,13 @@ array bound counted as a shape difference. What the 14 left in
      3  design: the two *DesignForcesArgument union parts and
         ColumnBraceRebarDesignCriteriaItem, a Python base class with no wire
         object of its own
-     7  /db names whose contracts disagree - InitialLoadCaseItem (POGD-M1
+     6  /db names whose contracts disagree - InitialLoadCaseItem (POGD-M1
         conditional, the others required), OptUseToleranceValue (ACTL-M1
         unstated), LoadGroupDayItem (STAG requires LOAD_NAME, HSTG does not);
         SectBefore, whose shape each SECTTYPE branch redeclares;
-        FiberDivisionColor and InelasticMaterialKentParkParam, waiting on
-        /db/FIMP's official article; and ItemGroupFields, a Python base class
+        InelasticMaterialKentParkParam, whose EC1 and Z the manual marks both
+        Required though EC1_METHOD picks one, and whose example the product
+        refuses (MD-54); and ItemGroupFields, a Python base class
      1  OpeTypes.AllowableStressLine, which nothing references
      1  /post: `PostStoryTypes.StorySetAngle`, the SET_ANGLE object four
         story tables share while the manual makes ANGLE required in two and
@@ -121,7 +123,7 @@ CONTRACTS = ROOT / "contracts" / "endpoints"
 #: Measured 2026-09-22 over 765 generated types, after branch-owned nested types. A ceiling: it falls as
 #: contracts take over more of the emitted shape, and a rise means a type that
 #: used to come from a contract is being read out of the Python tree again.
-PYTHON_SOURCED_AT_MOST = 16
+PYTHON_SOURCED_AT_MOST = 15
 
 #: Every exported type in `types.ts`. Not a ceiling: adding or removing an
 #: export is a change to the published surface, so it has to be made here on

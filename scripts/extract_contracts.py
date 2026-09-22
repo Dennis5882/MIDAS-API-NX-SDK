@@ -201,7 +201,10 @@ _DESC_TREE = re.compile(r"^[└├│─\s]+")
 # /db/RIGD's ITEMS array into four sibling keys no payload actually has - a
 # wrong contract that reached contracts/endpoints/ before type generation
 # from the same contract exposed it.
-_NUMBER_CHILD = re.compile(r"^\((?:\d+|[ivxlcdm]+)\)$", re.IGNORECASE)
+#: A child number may carry a label after it: /db/FIBR numbers its colour row
+#: `(1) R/G/B` under FIMP_COLOR, and reading that as a top-level row published
+#: R, G and B beside FIMP_COLOR instead of inside its elements.
+_NUMBER_CHILD = re.compile(r"^\((?:\d+|[ivxlcdm]+)\)(?:\s+\S.*)?$", re.IGNORECASE)
 
 #: A third level the chapters mark without parentheses: a bare letter (`a`,
 #: `b`, `c`) or a bare roman numeral (`i`, `ii`, `iii`). `/db/HHCT` numbers
