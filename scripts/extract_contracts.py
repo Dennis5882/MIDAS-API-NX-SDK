@@ -5761,6 +5761,9 @@ def _under_structural_destination(
     """
     if key in destinations:
         return True
+    # `<root>` is how a structuralTables entry says its rows go at record root.
+    if "<root>" in destinations and all(part in section_names for part in key.split(".")):
+        return True
     for destination in destinations:
         if key.startswith(f"{destination}."):
             remainder = key[len(destination) + 1:]

@@ -109,6 +109,9 @@ EXPECTED_AGAINST_CONTRACTS: _AgainstContractsExpectation = {
         # UBC, the other Chinese, Taiwanese and "Other Countries" codes) only
         # by name; /info carries their STR/OPT/VAL members and a VA2 object.
         "/db/SPFC": 72,
+        # /db/THIS is compared once its mode tables are merged. COMMON.aGILC is in
+        # /info on both products and in no table or example of the section.
+        "/db/THIS": 1,
     },
     "contractOnlyNamesAtMost": {
         "/db/POGD-M1": 2,

@@ -5686,17 +5686,46 @@ export namespace DbDynamicLoadsTypes {
     /** 하중 케이스 타입 (1=Static, 18=Construction) */
     LCT: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TimeHistoryLoadCaseCommon {
-    NAME?: string;
+    /** 하중 케이스명 */
+    NAME: string;
+    /** 설명 */
     DESC?: string;
-    iATYPE?: number;
-    iAMETHOD?: number;
+    /** 해석 타입 (1=Linear, 2=Nonlinear) */
+    iATYPE: number;
+    /** 해석 방법 (1=Modal, 2=Direct Integration, 3=Static) */
+    iAMETHOD: number;
+    /** 시간이력 타입 (1=Transient, 2=Periodic) Required when iAMETHOD is 1 or 2. */
     iTHTYPE?: number;
-    ENDTIME?: number;
+    /** 종료 시간 */
+    ENDTIME: number;
+    /** 시간 증분 Required when iAMETHOD is 1 or 2. */
     INC?: number;
-    iOUT?: number;
-    INITMETHOD?: string;
+    /** 증분 스텝 Applies when iATYPE = 2 and iAMETHOD = 3. */
+    iISTEP?: number;
+    /** 출력 스텝 증분 수 */
+    iOUT: number;
+    /** 기하 비선형 (Nonlinear Direct Integration / Static의 COMMON 추가 파라미터) Applies when iATYPE = 2 and iAMETHOD is 2 or 3. */
+    iGEOM?: number;
+    /** 하중 적용 방법 (`"ORDER"`) */
+    INITMETHOD: string;
+    /** 감쇠 방법 (1=Modal, 2=M&S, 3=StrainEnergy; Nonlinear Direct Integration은 4=Element Mass & Stiffness Proportional도) Required when iAMETHOD is 1 or 2. */
     iMDTYPE?: number;
+    /** 후속 하중 옵션 사용 여부 Applies when INITMETHOD = "ORDER". */
+    bSUBSEQ?: boolean;
+    /** 후속 하중 타입 (0=하중케이스, 1=초기요소력) Applies when INITMETHOD = "ORDER". */
+    SUBSEQ?: number;
+    /** 하중 케이스 타입 (`"ST"` / `"CS"` / `"TH"`) Applies when INITMETHOD = "ORDER". */
+    LCTYPE?: string;
+    /** 하중 케이스명 Applies when INITMETHOD = "ORDER". */
+    CASE?: string;
+    /** 초기 하중 사용 여부 (0=사용, 1=미사용) Applies when INITMETHOD = "INIT". */
+    INITLOAD?: number;
+    /** D/V/A 결과 누적 Applies when INITMETHOD = "INIT". */
+    bDVA?: boolean;
+    /** 최종 스텝 하중 유지 Applies when INITMETHOD = "INIT". */
+    bKEEP?: boolean;
   }
   /** Generated from contracts/endpoints/. */
   export type TimeHistoryLoadCaseHyperSPayload = {
@@ -5852,8 +5881,130 @@ export namespace DbDynamicLoadsTypes {
       DR2?: never;
     }
   );
+  /** Generated from contracts/endpoints/. */
   export interface TimeHistoryLoadCasePayload {
-    COMMON?: TimeHistoryLoadCaseCommon;
+    /** 공통 설정 오브젝트 */
+    COMMON: {
+      /** 하중 케이스명 */
+      NAME: string;
+      /** 설명 */
+      DESC?: string;
+      /** 해석 타입 (1=Linear, 2=Nonlinear) */
+      iATYPE: number;
+      /** 해석 방법 (1=Modal, 2=Direct Integration, 3=Static) */
+      iAMETHOD: number;
+      /** 시간이력 타입 (1=Transient, 2=Periodic) Required when COMMON.iAMETHOD is 1 or 2. */
+      iTHTYPE?: number;
+      /** 종료 시간 */
+      ENDTIME: number;
+      /** 시간 증분 Required when COMMON.iAMETHOD is 1 or 2. */
+      INC?: number;
+      /** 증분 스텝 Applies when COMMON.iATYPE = 2 and COMMON.iAMETHOD = 3. */
+      iISTEP?: number;
+      /** 출력 스텝 증분 수 */
+      iOUT: number;
+      /** 기하 비선형 (Nonlinear Direct Integration / Static의 COMMON 추가 파라미터) Applies when COMMON.iATYPE = 2 and COMMON.iAMETHOD is 2 or 3. */
+      iGEOM?: number;
+      /** 하중 적용 방법 (`"ORDER"`) */
+      INITMETHOD: string;
+      /** 감쇠 방법 (1=Modal, 2=M&S, 3=StrainEnergy; Nonlinear Direct Integration은 4=Element Mass & Stiffness Proportional도) Required when COMMON.iAMETHOD is 1 or 2. */
+      iMDTYPE?: number;
+      /** 후속 하중 옵션 사용 여부 Applies when COMMON.INITMETHOD = "ORDER". */
+      bSUBSEQ?: boolean;
+      /** 후속 하중 타입 (0=하중케이스, 1=초기요소력) Applies when COMMON.INITMETHOD = "ORDER". */
+      SUBSEQ?: number;
+      /** 하중 케이스 타입 (`"ST"` / `"CS"` / `"TH"`) Applies when COMMON.INITMETHOD = "ORDER". */
+      LCTYPE?: string;
+      /** 하중 케이스명 Applies when COMMON.INITMETHOD = "ORDER". */
+      CASE?: string;
+      /** 초기 하중 사용 여부 (0=사용, 1=미사용) Applies when COMMON.INITMETHOD = "INIT". */
+      INITLOAD?: number;
+      /** D/V/A 결과 누적 Applies when COMMON.INITMETHOD = "INIT". */
+      bDVA?: boolean;
+      /** 최종 스텝 하중 유지 Applies when COMMON.INITMETHOD = "INIT". */
+      bKEEP?: boolean;
+    };
+    /** Newmark 방법 타입 (1=Constant Accel, 2=Linear Accel, 3=User Input) Required when COMMON.iAMETHOD = 2. */
+    iNMM?: number;
+    /** Gamma 값 (User Input 시) Applies when COMMON.iAMETHOD = 2. */
+    GAMMA?: number;
+    /** Beta 값 (User Input 시) Applies when COMMON.iAMETHOD = 2. */
+    BETA?: number;
+    /** 반복 수행 여부 Applies when COMMON.iATYPE = 2 and COMMON.iAMETHOD is 2 or 3. */
+    bITER?: boolean;
+    /** 감쇠 매트릭스 업데이트 여부 (Modal·Strain Energy: 미사용 / M&S·Element M&S: 사용) Applies when COMMON.iATYPE = 2 and COMMON.iAMETHOD = 2. */
+    DMUPDATE?: boolean;
+    /** 최소 스텝 크기 Required when COMMON.iATYPE = 2 and COMMON.iAMETHOD is 1 or 2. */
+    MINSSS?: number;
+    /** 누적 하중 증분 이력 출력 Applies when COMMON.iATYPE = 2 and COMMON.iAMETHOD = 3. */
+    bCUMULATE?: boolean;
+    /** 증분 방법 (0=하중 제어, 1=변위 제어) Applies when COMMON.iATYPE = 2 and COMMON.iAMETHOD = 3. */
+    iINCCTRL?: number;
+    /** Scale Factor Required when COMMON.iATYPE = 2 and COMMON.iAMETHOD = 3 and iINCCTRL = 0. */
+    SCALE?: number;
+    /** Displacement Control Option (0=Global Control, 1=Master Node Control) Required when COMMON.iATYPE = 2 and COMMON.iAMETHOD = 3 and iINCCTRL = 1. */
+    iCTRL?: number;
+    /** Displacement (Global: 최대 병진 변위 / Master Node: 최대 변위) Required when COMMON.iATYPE = 2 and COMMON.iAMETHOD = 3 and iINCCTRL = 1. */
+    TINC?: number;
+    /** Master Node No. (iCTRL=1일 때) Required when COMMON.iATYPE = 2 and COMMON.iAMETHOD = 3 and iINCCTRL = 1 and iCTRL = 1. */
+    MNODE?: number;
+    /** Master Direction (1=DX, 2=DY, 3=DZ, iCTRL=1일 때) Required when COMMON.iATYPE = 2 and COMMON.iAMETHOD = 3 and iINCCTRL = 1 and iCTRL = 1. */
+    MDIR?: number;
+    /** 수렴 실패 허용 Applies when COMMON.iATYPE = 2 and COMMON.iAMETHOD is 2 or 3. */
+    bCONV?: boolean;
+    /** 최대 부분 스텝 수 Required when COMMON.iATYPE = 2 and COMMON.iAMETHOD = 3. */
+    iMSTEP?: number;
+    /** 에너지 노름 사용 Applies when COMMON.iATYPE = 2 and COMMON.iAMETHOD is 2 or 3. */
+    bEN?: boolean;
+    /** 에너지 노름 값(bEN=true 시) Applies when COMMON.iATYPE = 2 and COMMON.iAMETHOD is 2 or 3 and bEN = true. */
+    EN?: number;
+    /** 최대 반복 횟수 Required when COMMON.iATYPE = 2. */
+    iMAXITER?: number;
+    /** 변위 노름 사용 Applies when COMMON.iATYPE = 2. */
+    bDN?: boolean;
+    /** 변위 노름 값(bDN=true 시) Applies when COMMON.iATYPE = 2 and bDN = true. */
+    DN?: number;
+    /** 하중 노름 사용 Applies when COMMON.iATYPE = 2. */
+    bFN?: boolean;
+    /** 하중 노름 값(bFN=true 시) Applies when COMMON.iATYPE = 2 and bFN = true. */
+    FN?: number;
+    /** 선형 탐색 방법 사용 Applies when COMMON.iATYPE = 2. */
+    bULSM?: boolean;
+    /** 선형 탐색 시작 반복 수(bULSM=true 시) Applies when COMMON.iATYPE = 2 and bULSM = true. */
+    ULSM?: number;
+    /** Runge-Kutta 방법 (0=Fehlberg, 1=Cash-Karp) Applies when COMMON.iATYPE = 2. */
+    iRKM?: number;
+    /** 허용 오차 Applies when COMMON.iATYPE = 2. */
+    dTOL?: number;
+    /** 전체 모드 감쇠비 Applies when COMMON.iMDTYPE = 1. */
+    DALL?: number;
+    /** 모드별 감쇠비 오버라이드 목록 Applies when COMMON.iMDTYPE = 1. */
+    aDAMP?: Array<{
+      /** 모드 번호 */
+      iMODE?: number;
+      /** 감쇠비 */
+      DAMPING?: number;
+    }>;
+    /** 계수 산정 방식 (1=직접 지정, 2=모달 감쇠로부터 계산) Required when COMMON.iMDTYPE = 2. */
+    iCOEF?: number;
+    /** 질량 비례 사용 여부 Required when COMMON.iMDTYPE = 2 and iCOEF = 1. */
+    bMASSP?: boolean;
+    /** 질량 비례 계수(bMASSP=true 시) Required when COMMON.iMDTYPE = 2 and iCOEF = 1 and bMASSP = true. */
+    MASSC?: number;
+    /** 강성 비례 사용 여부 Required when COMMON.iMDTYPE = 2 and iCOEF = 1. */
+    bSTIFFP?: boolean;
+    /** 강성 비례 계수(bSTIFFP=true 시) Required when COMMON.iMDTYPE = 2 and iCOEF = 1 and bSTIFFP = true. */
+    STIFFC?: number;
+    /** 계산 방법 (1=주파수, 2=주기) Required when COMMON.iMDTYPE = 2 and iCOEF = 2. */
+    iCALC?: number;
+    /** 모드1 주파수/주기 Required when COMMON.iMDTYPE = 2 and iCOEF = 2. */
+    FP1?: number;
+    /** 모드1 감쇠비 Required when COMMON.iMDTYPE = 2 and iCOEF = 2. */
+    DR1?: number;
+    /** 모드2 주파수/주기 Required when COMMON.iMDTYPE = 2 and iCOEF = 2. */
+    FP2?: number;
+    /** 모드2 감쇠비 Required when COMMON.iMDTYPE = 2 and iCOEF = 2. */
+    DR2?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface TimeHistoryOutputOptionHyperSPayload {

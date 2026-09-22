@@ -633,10 +633,69 @@ def spfc_euro_placement(client: MidasClient, checkpoint: str, extension: str) ->
     return results
 
 
+def _this_examples() -> dict[str, dict[str, Any]]:
+    """09_DB_Dynamic_Loads.md section 6's four Request Bodies, as printed."""
+    return {
+        "linear_modal": {
+            "COMMON": {"NAME": "TH_Linear_Modal", "DESC": "선형 모달 시간이력", "iATYPE": 1,
+                       "iAMETHOD": 1, "iTHTYPE": 1, "ENDTIME": 30.0, "INC": 0.01, "iOUT": 1,
+                       "INITMETHOD": "INIT", "INITLOAD": 0, "bDVA": False, "bKEEP": False,
+                       "iMDTYPE": 1},
+            "DALL": 0.05,
+        },
+        "nonlinear_direct": {
+            "COMMON": {"NAME": "TH_NL_Direct", "DESC": "비선형 직접적분 시간이력", "iATYPE": 2,
+                       "iAMETHOD": 2, "iTHTYPE": 1, "ENDTIME": 20.0, "INC": 0.005, "iOUT": 2,
+                       "iGEOM": 0, "INITMETHOD": "INIT", "INITLOAD": 0, "bDVA": False,
+                       "bKEEP": False, "iMDTYPE": 2},
+            "iNMM": 1, "bITER": True, "DMUPDATE": False,
+        },
+        "nonlinear_static_load": {
+            "COMMON": {"NAME": "TH_NL_Static", "DESC": "비선형 정적 시간이력", "iATYPE": 2,
+                       "iAMETHOD": 3, "ENDTIME": 10.0, "iISTEP": 100, "iOUT": 1, "iGEOM": 0,
+                       "INITMETHOD": "INIT"},
+            "bCUMULATE": True, "iINCCTRL": 0, "SCALE": 1, "bITER": True, "bCONV": True,
+            "iMSTEP": 10, "iMAXITER": 10, "bDN": True, "DN": 0.001, "bFN": True, "FN": 0.001,
+            "bEN": True, "EN": 0.001, "iRKM": 0, "dTOL": 1e-08, "bULSM": True, "ULSM": 5,
+        },
+        "nonlinear_static_disp": {
+            "COMMON": {"NAME": "TH_NL_Static_Disp", "DESC": "", "iATYPE": 2, "iAMETHOD": 3,
+                       "iISTEP": 1, "iOUT": 1, "iGEOM": 0, "INITLOAD": 0,
+                       "INITMETHOD": "ORDER", "bSUBSEQ": True, "SUBSEQ": 1},
+            "bCUMULATE": False, "iINCCTRL": 1, "iCTRL": 1, "TINC": 0.02, "MNODE": 1, "MDIR": 2,
+            "bITER": True, "bCONV": True, "iMSTEP": 10, "iMAXITER": 10, "bDN": True,
+            "DN": 0.001, "iRKM": 0, "dTOL": 1e-08, "bULSM": False, "ULSM": 5,
+        },
+    }
+
+
+def this_examples(client: MidasClient, checkpoint: str, extension: str) -> dict[str, Any]:
+    """Where /db/THIS stores each analysis mode's members, and what it needs.
+
+    COMMON marks iTHTYPE Required, and both Nonlinear + Static bodies omit it.
+    Each printed body is sent into one document and the table read back by
+    NAME, because this endpoint renumbers a POSTed record.
+    """
+    doc.new_project(client=client)
+    _seed_model(client)
+    results: dict[str, Any] = {}
+    for index, (label, record) in enumerate(_this_examples().items(), start=1):
+        results[label] = {"sent": record,
+                          "post": _raw(client, "POST", "/db/THIS", {"Assign": {index: record}})}
+    table = _raw(client, "GET", "/db/THIS")
+    body = table["body"].get("THIS") if isinstance(table["body"], dict) else None
+    for entry in results.values():
+        name = entry["sent"]["COMMON"]["NAME"]
+        entry["stored"] = next((item for item in (body or {}).values()
+                                if item.get("COMMON", {}).get("NAME") == name), None)
+    doc.save_as(f"{checkpoint}-this.{extension}", client=client)
+    return results
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--product", choices=("gen", "civil"), required=True)
-    parser.add_argument("--case", choices=("a1", "a2", "a3", "b1", "b2", "c1", "c2", "c3", "c4"),
+    parser.add_argument("--case", choices=("a1", "a2", "a3", "b1", "b2", "c1", "c2", "c3", "c4", "c5"),
                         default="a1")
     parser.add_argument("--out", required=True)
     harness_save_path.add_arguments(parser, waivable=False)
@@ -666,6 +725,8 @@ def main() -> int:
         result = spfc_code_examples(client, checkpoint, extension)
     elif args.case == "c4":
         result = spfc_euro_placement(client, checkpoint, extension)
+    elif args.case == "c5":
+        result = this_examples(client, checkpoint, extension)
     else:
         result = missing_specification_fields(
             client, checkpoint, extension, args.product,

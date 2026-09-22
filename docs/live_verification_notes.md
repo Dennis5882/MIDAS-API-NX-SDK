@@ -10907,3 +10907,23 @@ for `VAL.ag` (the `/info` spelling), `OPT` removed, and both. All four answer
 request was found, and none was guessed. MD-60.
 
 Both documents were left empty.
+
+## 2026-09-22 (last) - `/db/THIS`'s four printed Request Bodies
+
+`scripts/live_manual_feedback.py --case c5`: section 6's four bodies, as
+printed, into one fresh seeded document per product, read back by name (the
+endpoint renumbers). Empty documents confirmed first, both left empty after.
+
+| body | Gen NX | Civil NX |
+| --- | --- | --- |
+| Linear + Modal + Transient | stored as sent, plus `bSUBSEQ: false`, `iGEOM: 0` | same |
+| Nonlinear + Direct Integration | `Unknown Error` | `Wrong Field` |
+| Nonlinear + Static, Load Control | `Wrong Field` | accepted; stored without `ENDTIME`, with `bCUMULATE: false` for the sent `true`, `iMSTEP: 16` for `10`, and `iTHTYPE: 1` added |
+| Nonlinear + Static, Displacement Control | `Wrong Field` | accepted; `iMSTEP: 16` for `10`, `ULSM` dropped, `iTHTYPE: 1` added |
+
+The seed model has no nonlinear properties, and a nonlinear time history on
+it may simply be unanalysable; these results say the printed nonlinear bodies
+do not run on a bare model, not which row is wrong, so no contract row is
+corrected from them. What they do show: Civil NX takes a Static record without
+`iTHTYPE` (COMMON marks it Required) and rewrites several values it was sent.
+Both belong to a session with a nonlinear model before they are claimed.

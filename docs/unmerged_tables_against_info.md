@@ -34,23 +34,22 @@ not the same finding as a source that is absent.
 | --- | ---: | ---: | ---: | ---: |
 | [`/db/MVHL`](#dbmvhl) | 8 | 115 | 115 | 100% |
 | [`/view/RESULTGRAPHIC`](#viewresultgraphic) | 10 | 63 | -- | n/a |
-| [`/db/THIS`](#dbthis) | 10 | 41 | 41 | 100% |
 | [`/db/MVLD`](#dbmvld) | 4 | 21 | 21 | 100% |
 | [`/db/TDME`](#dbtdme) | 2 | 7 | 7 | 100% |
 | [`/ope/LCOM-SRC`](#opelcomsrc) | 1 | 5 | -- | n/a |
-| **total** | **35** | **252** | **184** | **73%** |
+| **total** | **25** | **211** | **143** | **67%** |
 
-Of the **184** names on endpoints `/info` answers for, **184** are declared (100%) and **0** are not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
+Of the **143** names on endpoints `/info` answers for, **143** are declared (100%) and **0** are not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
 
 ### What each table has, as a count
 
 | what the measurement found | tables |
 | --- | ---: |
-| whole table, one object | 17 |
+| whole table, one object | 7 |
 | whole table, several objects | 1 |
 | whole table, scattered | 6 |
 | out of reach | 11 |
-| **all** | **35** |
+| **all** | **25** |
 
 *one object* means `/info` has a single object holding every name in that table; *scattered* means it declares them all but under no common parent, so the table's shape is not something the baseline confirms. Neither is a recommendation -- a table with two sources still needs its manual section read before anything moves.
 
@@ -105,34 +104,6 @@ Baseline answers on `civil`, `gen`. 115 of 115 names declared across 8 tables.
 - **9) Cutting Plane Detail Dialog — `TYPE_OF_DISPLAY.CUTTING_PLANE`** not declared: `CUTTING_PLANE`, `OPT_CHECK`, `PLANE_NAME`, `FREE_EDGE`
 - **10) Applied Loads (Moving Load Tracer Detail) — `TYPE_OF_DISPLAY.APPLIED_LOADS`** not declared: `APPLIED_LOADS`, `OPT_CHECK`, `SCALE_FACTOR`, `OPT_LOAD_VALUES`, `VALUE_TYPE`, `VALUE_DECIMAL_PT`
 - **11) IsoSurface Detail Dialog — `TYPE_OF_DISPLAY.ISO_SURFACE`** not declared: `ISO_SURFACE`, `OPT_CHECK`, `DRAW_POLYLINE`, `TRANSPARENCY`, `FREE_EDGE`, `VALUE_MODE`, `VALUE_TYPE`, `VALUE`
-
-## `/db/THIS`
-
-Baseline answers on `civil`, `gen`. 41 of 41 names declared across 10 tables.
-
-| table | names | declared | not declared | nesting |
-| --- | ---: | ---: | ---: | --- |
-| 6-3. Linear + Modal (Transient / Periodic) | 5 | 5 | 0 | one object: `COMMON` |
-| ORDER 방법 사용 시 순차 하중 파라미터 | 4 | 4 | 0 | one object: `COMMON` |
-| INIT 방법 사용 시 파라미터 | 3 | 3 | 0 | one object: `COMMON` |
-| 6-4. Linear + Direct Integration (Transient) | 3 | 3 | 0 | one object: `(root)` |
-| 6-5. Nonlinear + Modal (Transient) | 1 | 1 | 0 | one object: `(root)` |
-| 6-6. Nonlinear + Direct Integration (Transient) | 5 | 5 | 0 | one object: `(root)` |
-| 6-6. Nonlinear + Direct Integration (Transient) | 4 | 4 | 0 | one object: `(root)` |
-| 6-7. Nonlinear + Static | 3 | 3 | 0 | one object: `(root)` |
-| 증분 방법(iINCCTRL) 세부 파라미터 | 4 | 4 | 0 | one object: `(root)` |
-| 6-8. 반복 제어 파라미터 (Nonlinear 공통) | 9 | 9 | 0 | one object: `(root)` |
-
-- **6-3. Linear + Modal (Transient / Periodic)** declared: `ENDTIME` at `COMMON.ENDTIME`, `INC` at `COMMON.INC`, `iOUT` at `COMMON.iOUT`, `INITMETHOD` at `COMMON.INITMETHOD`, `iMDTYPE` at `COMMON.iMDTYPE`
-- **ORDER 방법 사용 시 순차 하중 파라미터** declared: `bSUBSEQ` at `COMMON.bSUBSEQ`, `SUBSEQ` at `COMMON.SUBSEQ`, `LCTYPE` at `COMMON.LCTYPE`, `CASE` at `COMMON.CASE`
-- **INIT 방법 사용 시 파라미터** declared: `INITLOAD` at `COMMON.INITLOAD`, `bDVA` at `COMMON.bDVA`, `bKEEP` at `COMMON.bKEEP`
-- **6-4. Linear + Direct Integration (Transient)** declared: `iNMM` at `iNMM`, `GAMMA` at `GAMMA`, `BETA` at `BETA`
-- **6-5. Nonlinear + Modal (Transient)** declared: `MINSSS` at `MINSSS`
-- **6-6. Nonlinear + Direct Integration (Transient)** declared: `iNMM` at `iNMM`, `GAMMA` at `GAMMA`, `BETA` at `BETA`, `bITER` at `bITER`, `DMUPDATE` at `DMUPDATE`
-- **6-6. Nonlinear + Direct Integration (Transient)** declared: `bCONV` at `bCONV`, `MINSSS` at `MINSSS`, `bEN` at `bEN`, `EN` at `EN`
-- **6-7. Nonlinear + Static** declared: `bCUMULATE` at `bCUMULATE`, `bITER` at `bITER`, `iINCCTRL` at `iINCCTRL`
-- **증분 방법(iINCCTRL) 세부 파라미터** declared: `bCONV` at `bCONV`, `iMSTEP` at `iMSTEP`, `bEN` at `bEN`, `EN` at `EN`
-- **6-8. 반복 제어 파라미터 (Nonlinear 공통)** declared: `iMAXITER` at `iMAXITER`, `bDN` at `bDN`, `DN` at `DN`, `bFN` at `bFN`, `FN` at `FN`, `bULSM` at `bULSM`, `ULSM` at `ULSM`, `iRKM` at `iRKM`, `dTOL` at `dTOL`
 
 ## `/db/MVLD`
 

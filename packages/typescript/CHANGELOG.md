@@ -7,11 +7,24 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 ## Unreleased
 
 > **Breaking at the type level; nothing changes at runtime.** No export is
-> added, removed or renamed. 19 members of `/post` request types and 141 of
-> other named types narrow, 122 of them to required, and `/db/MCON`'s
+> added, removed or renamed. 19 members of `/post` request types and 148 of
+> other named types narrow, 129 of them to required, and `/db/MCON`'s
 > `LinearConstraintItem` is corrected to the shape the manual gives it, which
 > removes four members it should never have had. `/db/TDME` loses four
 > members that only a code this API refuses could use.
+
+### Changed - `/db/THIS` is generated from its contract
+
+`TimeHistoryLoadCasePayload` held only `COMMON`, and `TimeHistoryLoadCaseCommon`
+ten optional members. **47 members are added** across the two: `COMMON`
+gains the per-mode rows (`iGEOM`, `iISTEP`, the ORDER and INIT load
+options), and the record root gains the Newmark, iteration-control,
+increment-control and damping members. Each carries the
+`COMMON.iATYPE`/`COMMON.iAMETHOD` mode, and any inner switch, it applies to
+in JSDoc. `COMMON` becomes required, as do its `NAME`, `iATYPE`,
+`iAMETHOD`, `ENDTIME`, `iOUT` and `INITMETHOD`. `iTHTYPE` is required only for
+Modal and Direct Integration: the section's own Static examples omit it, and
+Civil NX accepts them (measured 2026-09-22).
 
 ### Changed - `/db/SPFC` is generated from its contract
 

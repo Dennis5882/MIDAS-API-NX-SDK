@@ -4583,6 +4583,11 @@ def test_a_structural_destination_accepts_names_from_the_sections_other_tables()
     assert _under_structural_destination("DEFAULT.SUB_LOAD_DATAS.LANE_NAMES", destinations, {}, names)
     assert not _under_structural_destination("DEFAULT.INVENTED", destinations, {}, names)
     assert not _under_structural_destination("AUTO_OPTIMIZE.COMB_OPTION", destinations, {}, names)
+    assert _under_structural_destination("COMB_OPTION", {"<root>"}, {}, names)
+    assert not _under_structural_destination("INVENTED", {"<root>"}, {}, names)
+    assert _under_structural_destination("SUB_LOAD_DATAS.LANE_NAMES", {"<root>"}, {}, names)
+    assert not _under_structural_destination("SUB_LOAD_DATAS.INVENTED", {"<root>"}, {}, names)
+    assert not _under_structural_destination("COMB_OPTION", {"DEFAULT"}, {}, names)
 
 
 def test_a_key_cell_naming_its_object_is_read_as_the_key():
