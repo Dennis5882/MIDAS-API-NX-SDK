@@ -13,8 +13,9 @@ manual: one fixture was incomplete and three contracts had failed to encode
 the manual's explicit branch conditions.
 
 The confirmed side reads the other way round. The product accepted that exact
-payload, so the contract is what is behind: today that is `/db/SDIS` omitting
-two fields still declared required and `/db/SPLC` omitting `NDP`. A
+payload, so the contract is what is behind: today that is `/db/SPLC` omitting
+`NDP`. (`/db/SDIS` was the other until 2026-09-22, when its LRB/NRB/SB objects
+gained the `SDIS_DEV_TYPE` condition their rows state.) A
 `safeToOmit: true` field is already the record of an accepted call that left
 it out, so it is not counted again.
 
@@ -78,7 +79,6 @@ KNOWN: Dict[str, List[str]] = {
 }
 
 KNOWN_CONTRACT_GAPS: Dict[str, List[str]] = {
-    '/db/SDIS': ['gen: omits required LRB', 'gen: omits required NRB'],
     '/db/SPLC': ['gen: omits required NDP'],
 }
 

@@ -4596,6 +4596,20 @@ def test_a_branch_that_redeclares_its_destination_accounts_for_the_rows():
     assert _branch_destination_fields(contract) == {}
 
 
+def test_a_dashed_parenthesised_number_is_a_second_level_row():
+    """/db/SDIS numbers LRB's DX `(8)` and its members `(8)-i` to `(8)-iv`.
+
+    Read as unnumbered, the four landed beside DX inside LRB rather than in it,
+    which the merged SDIS contract would have reported as drift.
+    """
+    from extract_contracts import _NUMBER_PAREN_DASH_SUBITEM
+
+    for number in ("(8)-i", "(8)-iv", "(12)-b"):
+        assert _NUMBER_PAREN_DASH_SUBITEM.match(number), number
+    for number in ("(8)", "8-1", "(8)a", "i"):
+        assert not _NUMBER_PAREN_DASH_SUBITEM.match(number), number
+
+
 def test_a_packed_key_cell_becomes_the_names_it_holds():
     """A Key cell can name several properties, and the parser returns one key.
 

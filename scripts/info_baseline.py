@@ -95,6 +95,10 @@ EXPECTED_AGAINST_CONTRACTS: _AgainstContractsExpectation = {
         "/db/LLANop": 1,
         "/db/SMLC": 1,
         "/db/STBK": 1,
+        # OPT_UPDATE_ALL_H: the chapter itself says it is in the section's JSON
+        # Schema and in neither its table nor its example. /info does not declare it
+        # either. Counted once /db/CSCS stopped being skipped for unmergedTables.
+        "/db/CSCS": 1,
     },
 }
 

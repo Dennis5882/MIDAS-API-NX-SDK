@@ -2538,44 +2538,165 @@ export namespace DbBoundaryTypes {
     /** Lambda */
     LAMBDA: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SeismicDeviceIsolatorLRB {
-    SDIS_HYS_MODEL?: string;
-    KE?: number;
-    AR?: number;
-    TR?: number;
-    K0?: number;
-    K2?: number;
-    QD?: number;
-    DX?: SeismicDeviceIsolatorVerticalDX;
+    /** Hysteresis Model */
+    SDIS_HYS_MODEL: string;
+    /** Initial Stiffness Ke */
+    KE: number;
+    /** Rubber Cross Section Area AR */
+    AR: number;
+    /** Total Thickness of Rubber TR */
+    TR: number;
+    /** Initial Stiffness K0(KE와 별개 필드) */
+    K0: number;
+    /** 2nd Stiffness K2 */
+    K2: number;
+    /** Characteristic Strength QD */
+    QD: number;
+    /** Vertical Direction Properties */
+    DX?: {
+      /** Use Consider Vertical Direction Nonlinearity */
+      OPT_CONS_NONL?: boolean;
+      /** Tensile Stiffness Reduction Factor β */
+      BETA?: number;
+      /** Tensile Stiffness Reduction Ratio α */
+      ALPHA?: number;
+      /** Tensile Limit Strength */
+      SIGMA_V?: number;
+    };
   }
+  /** Generated from contracts/endpoints/. */
   export interface SeismicDeviceIsolatorNRB {
-    AR?: number;
-    TR?: number;
-    KH?: number;
-    DX?: SeismicDeviceIsolatorVerticalDX;
+    /** Rubber Cross Section Area AR */
+    AR: number;
+    /** Total Thickness of Rubber TR */
+    TR: number;
+    /** Horizontal Stiffness KH */
+    KH: number;
+    /** Vertical Direction Properties(DX, LRB와 동일 구조) */
+    DX?: {
+      /** Use Consider Vertical Direction Nonlinearity */
+      OPT_CONS_NONL?: boolean;
+      /** Tensile Stiffness Reduction Factor β */
+      BETA?: number;
+      /** Tensile Stiffness Reduction Ratio α */
+      ALPHA?: number;
+      /** Tensile Limit Strength */
+      SIGMA_V?: number;
+    };
   }
+  /** Generated from contracts/endpoints/. */
   export interface SeismicDeviceIsolatorPayload {
-    COMMON?: SeismicDeviceCommon;
-    SDIS_DEV_TYPE?: string;
-    MSS?: number;
-    TAU_K?: number;
-    TAU_Q?: number;
-    KV?: number;
-    LRB?: SeismicDeviceIsolatorLRB;
-    NRB?: SeismicDeviceIsolatorNRB;
-    SB?: SeismicDeviceIsolatorSB;
+    /** Common Data */
+    COMMON: {
+      /** Name */
+      NAME: string;
+      /** Description */
+      DESC?: string;
+      /** Input Method · 0=사용자 입력, 1=참조 DB */
+      INPUT_METHOD: number;
+      /** Company */
+      COMPANY: string;
+      /** Product Name */
+      PRODUCT_NAME: string;
+      /** Type Number */
+      TYPE_NUMBER: string;
+    };
+    /** Device Type · "LRB" / "NRB" / "SLD"(데이터는 "SB" 객체에 담김) */
+    SDIS_DEV_TYPE: string;
+    /** Number of Shear Springs */
+    MSS: number;
+    /** Adjustment Parameter τk */
+    TAU_K: number;
+    /** Adjustment Parameter τq */
+    TAU_Q: number;
+    /** Vertical Stiffness Kv */
+    KV: number;
+    /** LRB Data (SDIS_DEV_TYPE="LRB"일 때) Required when SDIS_DEV_TYPE = "LRB". */
+    LRB?: {
+      /** Hysteresis Model */
+      SDIS_HYS_MODEL: string;
+      /** Initial Stiffness Ke */
+      KE: number;
+      /** Rubber Cross Section Area AR */
+      AR: number;
+      /** Total Thickness of Rubber TR */
+      TR: number;
+      /** Initial Stiffness K0(KE와 별개 필드) */
+      K0: number;
+      /** 2nd Stiffness K2 */
+      K2: number;
+      /** Characteristic Strength QD */
+      QD: number;
+      /** Vertical Direction Properties */
+      DX?: {
+        /** Use Consider Vertical Direction Nonlinearity */
+        OPT_CONS_NONL?: boolean;
+        /** Tensile Stiffness Reduction Factor β */
+        BETA?: number;
+        /** Tensile Stiffness Reduction Ratio α */
+        ALPHA?: number;
+        /** Tensile Limit Strength */
+        SIGMA_V?: number;
+      };
+    };
+    /** NRB Data (SDIS_DEV_TYPE="NRB"일 때) Required when SDIS_DEV_TYPE = "NRB". */
+    NRB?: {
+      /** Rubber Cross Section Area AR */
+      AR: number;
+      /** Total Thickness of Rubber TR */
+      TR: number;
+      /** Horizontal Stiffness KH */
+      KH: number;
+      /** Vertical Direction Properties(DX, LRB와 동일 구조) */
+      DX?: {
+        /** Use Consider Vertical Direction Nonlinearity */
+        OPT_CONS_NONL?: boolean;
+        /** Tensile Stiffness Reduction Factor β */
+        BETA?: number;
+        /** Tensile Stiffness Reduction Ratio α */
+        ALPHA?: number;
+        /** Tensile Limit Strength */
+        SIGMA_V?: number;
+      };
+    };
+    /** SB Data (SDIS_DEV_TYPE="SLD"일 때) Required when SDIS_DEV_TYPE = "SLD". */
+    SB?: {
+      /** Area of Sliding Head AS */
+      AS: number;
+      /** Initial Stiffness K0 */
+      K0: number;
+      /** Index Qd */
+      QD: number;
+      /** Pi */
+      Pi_VALUE: number;
+      /** Frictional Factor μ0 */
+      MU0: number;
+    };
   }
+  /** Generated from contracts/endpoints/. */
   export interface SeismicDeviceIsolatorSB {
-    AS?: number;
-    K0?: number;
-    QD?: number;
-    Pi_VALUE?: number;
-    MU0?: number;
+    /** Area of Sliding Head AS */
+    AS: number;
+    /** Initial Stiffness K0 */
+    K0: number;
+    /** Index Qd */
+    QD: number;
+    /** Pi */
+    Pi_VALUE: number;
+    /** Frictional Factor μ0 */
+    MU0: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SeismicDeviceIsolatorVerticalDX {
+    /** Use Consider Vertical Direction Nonlinearity */
     OPT_CONS_NONL?: boolean;
+    /** Tensile Stiffness Reduction Factor β */
     BETA?: number;
+    /** Tensile Stiffness Reduction Ratio α */
     ALPHA?: number;
+    /** Tensile Limit Strength */
     SIGMA_V?: number;
   }
   /** Generated from contracts/endpoints/. */
@@ -3090,31 +3211,382 @@ export namespace DbConstructionStageTypes {
     /** 사용자 정의 캠버 */
     USER: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface CompositeSectionConstructionStagePayload {
-    SEC?: number;
-    ASTAGE?: string;
-    TYPE?: string;
+    /** 단면 ID */
+    SEC: number;
+    /** 활성 시공단계명 */
+    ASTAGE: string;
+    /** 합성 타입 ("GENERAL" / "USER") */
+    TYPE: string;
+    /** 테이퍼 타입 여부 */
     bTAP?: boolean;
-    vPARTINFO?: Array<CompositeSectionPartInfo>;
+    /** 파트 정보 목록 */
+    vPARTINFO: Array<{
+      /** 합성 단면 파트 번호 */
+      PART: number;
+      /** 재료 타입 ("ELEM" / "MATL") */
+      MTYPE: string;
+      /** 재료 ID (MATL 타입: 재료 번호 문자열, ELEM 타입: 빈 문자열) */
+      MAT?: string;
+      /** 합성 단계 (활성 단계: 빈 문자열, 목표 단계: 시공단계명) */
+      CSTAGE?: string;
+      /** 재료 나이 (일) */
+      AGE?: number;
+      /** 부재의 공칭 치수 (h) */
+      PARTINFO_H?: number;
+      /** 체적-표면적 비 (v/s) */
+      PARTINFO_VS?: number;
+      /** 노출 표면의 모듈 (M) */
+      PARTINFO_M?: number;
+      /** 단면적 강성 스케일 계수 */
+      AREA?: number;
+      /** 유효 전단 면적 (y축) 강성 스케일 계수 */
+      ASY?: number;
+      /** 유효 전단 면적 (z축) 강성 스케일 계수 */
+      ASZ?: number;
+      /** 비틀림 저항 강성 스케일 계수 */
+      IXX?: number;
+      /** 관성 모멘트 (y축) 강성 스케일 계수 */
+      IYY?: number;
+      /** 관성 모멘트 (z축) 강성 스케일 계수 */
+      IZZ?: number;
+      /** 자중 강성 스케일 계수 */
+      WAREA?: number;
+      /** 워핑 상수 강성 스케일 계수 */
+      IW?: number;
+      /** Y축 중립축까지 거리 */
+      CY?: number;
+      /** Z축 중립축까지 거리 */
+      CZ?: number;
+      /** Y축 중립축까지 거리 – I단 (테이퍼) */
+      CYI?: number;
+      /** Z축 중립축까지 거리 – I단 (테이퍼) */
+      CZI?: number;
+      /** Y축 중립축까지 거리 – J단 (테이퍼) */
+      CYJ?: number;
+      /** Z축 중립축까지 거리 – J단 (테이퍼) */
+      CZJ?: number;
+      /** 사용자 정의 강성 (일반) */
+      STIFF_USER?: {
+        /** Partial stiffness */
+        AREA?: number;
+        /** Partial stiffness */
+        ASY?: number;
+        /** Partial stiffness */
+        ASZ?: number;
+        /** Partial stiffness */
+        IXX?: number;
+        /** Partial stiffness */
+        IYY?: number;
+        /** Partial stiffness */
+        IZZ?: number;
+        /** Partial stiffness */
+        CYP?: number;
+        /** Partial stiffness */
+        CYM?: number;
+        /** Partial stiffness */
+        CZP?: number;
+        /** Partial stiffness */
+        CZM?: number;
+        /** Partial stiffness */
+        QYB?: number;
+        /** Partial stiffness */
+        QZB?: number;
+        /** Partial stiffness */
+        X1?: number;
+        /** Partial stiffness */
+        X2?: number;
+        /** Partial stiffness */
+        X3?: number;
+        /** Partial stiffness */
+        X4?: number;
+        /** Partial stiffness */
+        Y1?: number;
+        /** Partial stiffness */
+        Y2?: number;
+        /** Partial stiffness */
+        Y3?: number;
+        /** Partial stiffness */
+        Y4?: number;
+        /** Partial stiffness */
+        IW?: number;
+      };
+      /** 사용자 정의 강성 – I단 (테이퍼) */
+      STIFF_USER_TAPERED_I?: {
+        /** Partial stiffness */
+        AREA?: number;
+        /** Partial stiffness */
+        ASY?: number;
+        /** Partial stiffness */
+        ASZ?: number;
+        /** Partial stiffness */
+        IXX?: number;
+        /** Partial stiffness */
+        IYY?: number;
+        /** Partial stiffness */
+        IZZ?: number;
+        /** Partial stiffness */
+        CYP?: number;
+        /** Partial stiffness */
+        CYM?: number;
+        /** Partial stiffness */
+        CZP?: number;
+        /** Partial stiffness */
+        CZM?: number;
+        /** Partial stiffness */
+        QYB?: number;
+        /** Partial stiffness */
+        QZB?: number;
+        /** Partial stiffness */
+        X1?: number;
+        /** Partial stiffness */
+        X2?: number;
+        /** Partial stiffness */
+        X3?: number;
+        /** Partial stiffness */
+        X4?: number;
+        /** Partial stiffness */
+        Y1?: number;
+        /** Partial stiffness */
+        Y2?: number;
+        /** Partial stiffness */
+        Y3?: number;
+        /** Partial stiffness */
+        Y4?: number;
+        /** Partial stiffness */
+        IW?: number;
+      };
+      /** 사용자 정의 강성 – J단 (테이퍼) */
+      STIFF_USER_TAPERED_J?: {
+        /** Partial stiffness */
+        AREA?: number;
+        /** Partial stiffness */
+        ASY?: number;
+        /** Partial stiffness */
+        ASZ?: number;
+        /** Partial stiffness */
+        IXX?: number;
+        /** Partial stiffness */
+        IYY?: number;
+        /** Partial stiffness */
+        IZZ?: number;
+        /** Partial stiffness */
+        CYP?: number;
+        /** Partial stiffness */
+        CYM?: number;
+        /** Partial stiffness */
+        CZP?: number;
+        /** Partial stiffness */
+        CZM?: number;
+        /** Partial stiffness */
+        QYB?: number;
+        /** Partial stiffness */
+        QZB?: number;
+        /** Partial stiffness */
+        X1?: number;
+        /** Partial stiffness */
+        X2?: number;
+        /** Partial stiffness */
+        X3?: number;
+        /** Partial stiffness */
+        X4?: number;
+        /** Partial stiffness */
+        Y1?: number;
+        /** Partial stiffness */
+        Y2?: number;
+        /** Partial stiffness */
+        Y3?: number;
+        /** Partial stiffness */
+        Y4?: number;
+        /** Partial stiffness */
+        IW?: number;
+      };
+    }>;
+    /** 공칭 치수(h) 자동 계산 옵션 */
     OPT_UPDATE_ALL_H?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface CompositeSectionPartInfo {
-    PART?: number;
-    MTYPE?: string;
+    /** 합성 단면 파트 번호 */
+    PART: number;
+    /** 재료 타입 ("ELEM" / "MATL") */
+    MTYPE: string;
+    /** 재료 ID (MATL 타입: 재료 번호 문자열, ELEM 타입: 빈 문자열) */
     MAT?: string;
+    /** 합성 단계 (활성 단계: 빈 문자열, 목표 단계: 시공단계명) */
     CSTAGE?: string;
+    /** 재료 나이 (일) */
     AGE?: number;
-    PARTINFO_H?: unknown;
+    /** 부재의 공칭 치수 (h) */
+    PARTINFO_H?: number;
+    /** 체적-표면적 비 (v/s) */
     PARTINFO_VS?: number;
+    /** 노출 표면의 모듈 (M) */
     PARTINFO_M?: number;
+    /** 단면적 강성 스케일 계수 */
     AREA?: number;
+    /** 유효 전단 면적 (y축) 강성 스케일 계수 */
     ASY?: number;
+    /** 유효 전단 면적 (z축) 강성 스케일 계수 */
     ASZ?: number;
+    /** 비틀림 저항 강성 스케일 계수 */
     IXX?: number;
+    /** 관성 모멘트 (y축) 강성 스케일 계수 */
     IYY?: number;
+    /** 관성 모멘트 (z축) 강성 스케일 계수 */
     IZZ?: number;
+    /** 자중 강성 스케일 계수 */
     WAREA?: number;
+    /** 워핑 상수 강성 스케일 계수 */
     IW?: number;
+    /** Y축 중립축까지 거리 */
+    CY?: number;
+    /** Z축 중립축까지 거리 */
+    CZ?: number;
+    /** Y축 중립축까지 거리 – I단 (테이퍼) */
+    CYI?: number;
+    /** Z축 중립축까지 거리 – I단 (테이퍼) */
+    CZI?: number;
+    /** Y축 중립축까지 거리 – J단 (테이퍼) */
+    CYJ?: number;
+    /** Z축 중립축까지 거리 – J단 (테이퍼) */
+    CZJ?: number;
+    /** 사용자 정의 강성 (일반) */
+    STIFF_USER?: {
+      /** Partial stiffness */
+      AREA?: number;
+      /** Partial stiffness */
+      ASY?: number;
+      /** Partial stiffness */
+      ASZ?: number;
+      /** Partial stiffness */
+      IXX?: number;
+      /** Partial stiffness */
+      IYY?: number;
+      /** Partial stiffness */
+      IZZ?: number;
+      /** Partial stiffness */
+      CYP?: number;
+      /** Partial stiffness */
+      CYM?: number;
+      /** Partial stiffness */
+      CZP?: number;
+      /** Partial stiffness */
+      CZM?: number;
+      /** Partial stiffness */
+      QYB?: number;
+      /** Partial stiffness */
+      QZB?: number;
+      /** Partial stiffness */
+      X1?: number;
+      /** Partial stiffness */
+      X2?: number;
+      /** Partial stiffness */
+      X3?: number;
+      /** Partial stiffness */
+      X4?: number;
+      /** Partial stiffness */
+      Y1?: number;
+      /** Partial stiffness */
+      Y2?: number;
+      /** Partial stiffness */
+      Y3?: number;
+      /** Partial stiffness */
+      Y4?: number;
+      /** Partial stiffness */
+      IW?: number;
+    };
+    /** 사용자 정의 강성 – I단 (테이퍼) */
+    STIFF_USER_TAPERED_I?: {
+      /** Partial stiffness */
+      AREA?: number;
+      /** Partial stiffness */
+      ASY?: number;
+      /** Partial stiffness */
+      ASZ?: number;
+      /** Partial stiffness */
+      IXX?: number;
+      /** Partial stiffness */
+      IYY?: number;
+      /** Partial stiffness */
+      IZZ?: number;
+      /** Partial stiffness */
+      CYP?: number;
+      /** Partial stiffness */
+      CYM?: number;
+      /** Partial stiffness */
+      CZP?: number;
+      /** Partial stiffness */
+      CZM?: number;
+      /** Partial stiffness */
+      QYB?: number;
+      /** Partial stiffness */
+      QZB?: number;
+      /** Partial stiffness */
+      X1?: number;
+      /** Partial stiffness */
+      X2?: number;
+      /** Partial stiffness */
+      X3?: number;
+      /** Partial stiffness */
+      X4?: number;
+      /** Partial stiffness */
+      Y1?: number;
+      /** Partial stiffness */
+      Y2?: number;
+      /** Partial stiffness */
+      Y3?: number;
+      /** Partial stiffness */
+      Y4?: number;
+      /** Partial stiffness */
+      IW?: number;
+    };
+    /** 사용자 정의 강성 – J단 (테이퍼) */
+    STIFF_USER_TAPERED_J?: {
+      /** Partial stiffness */
+      AREA?: number;
+      /** Partial stiffness */
+      ASY?: number;
+      /** Partial stiffness */
+      ASZ?: number;
+      /** Partial stiffness */
+      IXX?: number;
+      /** Partial stiffness */
+      IYY?: number;
+      /** Partial stiffness */
+      IZZ?: number;
+      /** Partial stiffness */
+      CYP?: number;
+      /** Partial stiffness */
+      CYM?: number;
+      /** Partial stiffness */
+      CZP?: number;
+      /** Partial stiffness */
+      CZM?: number;
+      /** Partial stiffness */
+      QYB?: number;
+      /** Partial stiffness */
+      QZB?: number;
+      /** Partial stiffness */
+      X1?: number;
+      /** Partial stiffness */
+      X2?: number;
+      /** Partial stiffness */
+      X3?: number;
+      /** Partial stiffness */
+      X4?: number;
+      /** Partial stiffness */
+      Y1?: number;
+      /** Partial stiffness */
+      Y2?: number;
+      /** Partial stiffness */
+      Y3?: number;
+      /** Partial stiffness */
+      Y4?: number;
+      /** Partial stiffness */
+      IW?: number;
+    };
   }
   /** Generated from contracts/endpoints/. */
   export interface ConstructionStageForHydrationPayload {

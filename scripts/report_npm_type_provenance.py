@@ -44,11 +44,12 @@ once a table contract could describe its own request objects
 (`requestFields.additional`), then 90 once a nested type could live inside a
 single branch (or name the branch it is), conditions inside it were stated
 from its own root, and the contracts' objects declared without members were
-filled from each manual section's own JSON Schema, table rows or /info. What
-the 75 left in `python:nested` are:
+filled from each manual section's own JSON Schema, table rows or /info, then
+85 and 83 once /db/SDIS's device tables and /db/CSCS's part table were
+merged. What the 70 left in `python:nested` are:
 
-    25  children of the 13 unmergedTables roots (moving-load cases and
-        vehicles, seismic isolators, response spectra, time history, ...)
+    20  children of the 11 unmergedTables roots (moving-load cases and
+        vehicles, response spectra, time history, ...)
     22  /view/CAPTURE's RESULT_GRAPHIC tree, under a contract with
         unmergedTables
     11  /ope/DIVIDEELEM's argument and its children, held in
@@ -102,7 +103,7 @@ CONTRACTS = ROOT / "contracts" / "endpoints"
 #: Measured 2026-09-22 over 765 generated types, after branch-owned nested types. A ceiling: it falls as
 #: contracts take over more of the emitted shape, and a rise means a type that
 #: used to come from a contract is being read out of the Python tree again.
-PYTHON_SOURCED_AT_MOST = 90
+PYTHON_SOURCED_AT_MOST = 83
 
 #: Every exported type in `types.ts`. Not a ceiling: adding or removing an
 #: export is a change to the published surface, so it has to be made here on

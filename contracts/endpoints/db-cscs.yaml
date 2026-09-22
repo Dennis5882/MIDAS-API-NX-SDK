@@ -15,6 +15,8 @@ surface:
   exportName: compositeSectionConstructionStage
   modulePath: [db, constructionStage]
   payloadTypeName: CompositeSectionConstructionStagePayload
+  nestedTypes:
+    - {path: vPARTINFO, name: CompositeSectionPartInfo, namespace: DbConstructionStageTypes}
 
 products: [civil, gen]
 
@@ -312,6 +314,666 @@ fields:
         provenance: manual
         # RESOLVED: the manual nests this under 'vPARTINFO' by numbering it '(16)',
         # not by naming a path
+      - key: CY
+        description: >-
+          Y축 중립축까지 거리
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: manual
+      - key: CZ
+        description: >-
+          Z축 중립축까지 거리
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: manual
+      - key: CYI
+        description: >-
+          Y축 중립축까지 거리 – I단 (테이퍼)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: manual
+      - key: CZI
+        description: >-
+          Z축 중립축까지 거리 – I단 (테이퍼)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: manual
+      - key: CYJ
+        description: >-
+          Y축 중립축까지 거리 – J단 (테이퍼)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: manual
+      - key: CZJ
+        description: >-
+          Z축 중립축까지 거리 – J단 (테이퍼)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: manual
+      - key: STIFF_USER
+        description: >-
+          사용자 정의 강성 (일반)
+        type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: AREA
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: ASY
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: ASZ
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: IXX
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: IYY
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: IZZ
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: CYP
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: CYM
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: CZP
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: CZM
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: QYB
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: QZB
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: X1
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: X2
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: X3
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: X4
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: Y1
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: Y2
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: Y3
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: Y4
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: IW
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+        # The chapter states these members in a sentence, not a table: all Number,
+        # described only as "Partial stiffness". /info declares the same 21 on both products.
+      - key: STIFF_USER_TAPERED_I
+        description: >-
+          사용자 정의 강성 – I단 (테이퍼)
+        type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: AREA
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: ASY
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: ASZ
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: IXX
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: IYY
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: IZZ
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: CYP
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: CYM
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: CZP
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: CZM
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: QYB
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: QZB
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: X1
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: X2
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: X3
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: X4
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: Y1
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: Y2
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: Y3
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: Y4
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: IW
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+        # The chapter states these members in a sentence, not a table: all Number,
+        # described only as "Partial stiffness". /info declares the same 21 on both products.
+      - key: STIFF_USER_TAPERED_J
+        description: >-
+          사용자 정의 강성 – J단 (테이퍼)
+        type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: manual
+        # The second table has no Required column. The chapter's own note calls these
+        # members' roles an inference (result values for CY..CZJ, TYPE="USER" input for
+        # the STIFF_USER objects), so nothing here claims when they are sent.
+        properties:
+          - key: AREA
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: ASY
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: ASZ
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: IXX
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: IYY
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: IZZ
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: CYP
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: CYM
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: CZP
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: CZM
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: QYB
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: QZB
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: X1
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: X2
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: X3
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: X4
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: Y1
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: Y2
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: Y3
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: Y4
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+          - key: IW
+            description: >-
+              Partial stiffness
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: manual
+        # The chapter states these members in a sentence, not a table: all Number,
+        # described only as "Partial stiffness". /info declares the same 21 on both products.
   - key: OPT_UPDATE_ALL_H
     description: >-
       공칭 치수(h) 자동 계산 옵션
@@ -349,21 +1011,26 @@ knownDefects:
   - ref: db-delete-body-empties-table
 
 extraction:
+  prose:
+    - line: 287
+      quote: >-
+        STIFF_USER/STIFF_USER_TAPERED_I/STIFF_USER_TAPERED_J 3종은 모두 동일한 하위 구조 (AREA/ASY/ASZ/IXX/IYY/IZZ/CYP/CYM/CZP/CZM/QYB/QZB/X1~X4/Y1~Y4/IW, 전부 Number, ...)를 가진다.
+      paths: [vPARTINFO.STIFF_USER_TAPERED_J.AREA, vPARTINFO.STIFF_USER_TAPERED_J.ASY, vPARTINFO.STIFF_USER_TAPERED_J.ASZ, vPARTINFO.STIFF_USER_TAPERED_J.IXX, vPARTINFO.STIFF_USER_TAPERED_J.IYY, vPARTINFO.STIFF_USER_TAPERED_J.IZZ, vPARTINFO.STIFF_USER_TAPERED_J.CYP, vPARTINFO.STIFF_USER_TAPERED_J.CYM, vPARTINFO.STIFF_USER_TAPERED_J.CZP, vPARTINFO.STIFF_USER_TAPERED_J.CZM, vPARTINFO.STIFF_USER_TAPERED_J.QYB, vPARTINFO.STIFF_USER_TAPERED_J.QZB, vPARTINFO.STIFF_USER_TAPERED_J.X1, vPARTINFO.STIFF_USER_TAPERED_J.X2, vPARTINFO.STIFF_USER_TAPERED_J.X3, vPARTINFO.STIFF_USER_TAPERED_J.X4, vPARTINFO.STIFF_USER_TAPERED_J.Y1, vPARTINFO.STIFF_USER_TAPERED_J.Y2, vPARTINFO.STIFF_USER_TAPERED_J.Y3, vPARTINFO.STIFF_USER_TAPERED_J.Y4, vPARTINFO.STIFF_USER_TAPERED_J.IW]
+    - line: 287
+      quote: >-
+        STIFF_USER/STIFF_USER_TAPERED_I/STIFF_USER_TAPERED_J 3종은 모두 동일한 하위 구조 (AREA/ASY/ASZ/IXX/IYY/IZZ/CYP/CYM/CZP/CZM/QYB/QZB/X1~X4/Y1~Y4/IW, 전부 Number, ...)를 가진다.
+      paths: [vPARTINFO.STIFF_USER_TAPERED_I.AREA, vPARTINFO.STIFF_USER_TAPERED_I.ASY, vPARTINFO.STIFF_USER_TAPERED_I.ASZ, vPARTINFO.STIFF_USER_TAPERED_I.IXX, vPARTINFO.STIFF_USER_TAPERED_I.IYY, vPARTINFO.STIFF_USER_TAPERED_I.IZZ, vPARTINFO.STIFF_USER_TAPERED_I.CYP, vPARTINFO.STIFF_USER_TAPERED_I.CYM, vPARTINFO.STIFF_USER_TAPERED_I.CZP, vPARTINFO.STIFF_USER_TAPERED_I.CZM, vPARTINFO.STIFF_USER_TAPERED_I.QYB, vPARTINFO.STIFF_USER_TAPERED_I.QZB, vPARTINFO.STIFF_USER_TAPERED_I.X1, vPARTINFO.STIFF_USER_TAPERED_I.X2, vPARTINFO.STIFF_USER_TAPERED_I.X3, vPARTINFO.STIFF_USER_TAPERED_I.X4, vPARTINFO.STIFF_USER_TAPERED_I.Y1, vPARTINFO.STIFF_USER_TAPERED_I.Y2, vPARTINFO.STIFF_USER_TAPERED_I.Y3, vPARTINFO.STIFF_USER_TAPERED_I.Y4, vPARTINFO.STIFF_USER_TAPERED_I.IW]
+    - line: 287
+      quote: >-
+        STIFF_USER/STIFF_USER_TAPERED_I/STIFF_USER_TAPERED_J 3종은 모두 동일한 하위 구조 (AREA/ASY/ASZ/IXX/IYY/IZZ/CYP/CYM/CZP/CZM/QYB/QZB/X1~X4/Y1~Y4/IW, 전부 Number, ...)를 가진다.
+      paths: [vPARTINFO.STIFF_USER.AREA, vPARTINFO.STIFF_USER.ASY, vPARTINFO.STIFF_USER.ASZ, vPARTINFO.STIFF_USER.IXX, vPARTINFO.STIFF_USER.IYY, vPARTINFO.STIFF_USER.IZZ, vPARTINFO.STIFF_USER.CYP, vPARTINFO.STIFF_USER.CYM, vPARTINFO.STIFF_USER.CZP, vPARTINFO.STIFF_USER.CZM, vPARTINFO.STIFF_USER.QYB, vPARTINFO.STIFF_USER.QZB, vPARTINFO.STIFF_USER.X1, vPARTINFO.STIFF_USER.X2, vPARTINFO.STIFF_USER.X3, vPARTINFO.STIFF_USER.X4, vPARTINFO.STIFF_USER.Y1, vPARTINFO.STIFF_USER.Y2, vPARTINFO.STIFF_USER.Y3, vPARTINFO.STIFF_USER.Y4, vPARTINFO.STIFF_USER.IW]
   source: 10_DB_Construction_Stage.md line 237
   table: 2-2. 파라미터
   missingColumns:
     - heading: 2-2. 파라미터
       line: 274
       columns: [Default]
-  # Additional parameter tables in this section were NOT merged. They are
-  # usually conditional variants selected by a type/code field. Decide
-  # whether they belong in this contract's fields, as nested `properties`,
-  # or as a separate contract - do not assume the first table is the whole
-  # schema.
-  unmergedTables:
+  structuralTables:
     - heading: 2-2. 파라미터
-      resolution: "The supplementary table describes fields outside the documented request example without an explicit wire condition; left unmerged."
-      fields: 9
       line: 274
-      fieldNames: ["CY", "CZ", "CYI", "CZI", "CYJ", "CZJ", "STIFF_USER",
-                   "STIFF_USER_TAPERED_I", "STIFF_USER_TAPERED_J"]
+      paths: [vPARTINFO]

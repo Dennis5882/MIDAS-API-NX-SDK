@@ -41,26 +41,24 @@ not the same finding as a source that is absent.
 | [`/db/MVLDpl`](#dbmvldpl) | 4 | 27 | 27 | 100% |
 | [`/db/SPLC`](#dbsplc) | 3 | 23 | 23 | 100% |
 | [`/db/MVLD`](#dbmvld) | 4 | 21 | 21 | 100% |
-| [`/db/SDIS`](#dbsdis) | 3 | 21 | 21 | 100% |
 | [`/db/THIK`](#dbthik) | 1 | 11 | 11 | 100% |
-| [`/db/CSCS`](#dbcscs) | 1 | 9 | 9 | 100% |
 | [`/db/TDME`](#dbtdme) | 2 | 7 | 7 | 100% |
 | [`/db/STCT`](#dbstct) | 1 | 6 | 6 | 100% |
 | [`/ope/LCOM-SRC`](#opelcomsrc) | 1 | 5 | -- | n/a |
-| **total** | **72** | **482** | **413** | **85%** |
+| **total** | **68** | **452** | **383** | **84%** |
 
-Of the **414** names on endpoints `/info` answers for, **413** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
+Of the **384** names on endpoints `/info` answers for, **383** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
 
 ### What each table has, as a count
 
 | what the measurement found | tables |
 | --- | ---: |
-| whole table, one object | 32 |
+| whole table, one object | 29 |
 | whole table, several objects | 3 |
-| whole table, scattered | 25 |
+| whole table, scattered | 24 |
 | partly declared | 1 |
 | out of reach | 11 |
-| **all** | **72** |
+| **all** | **68** |
 
 *one object* means `/info` has a single object holding every name in that table; *scattered* means it declares them all but under no common parent, so the table's shape is not something the baseline confirms. Neither is a recommendation -- a table with two sources still needs its manual section read before anything moves.
 
@@ -263,20 +261,6 @@ Baseline answers on `civil`, `gen`. 21 of 21 names declared across 4 tables.
 - **Parameters – DEFAULT (Australia – 추가 필드)** declared: `LOAD_MODEL` at `DEFAULT.LOAD_MODEL`, `LOAD_COMB_TYPE` at `DEFAULT.LOAD_COMB_TYPE`, `FATIGUE` at `DEFAULT.FATIGUE`
 - **Parameters – DEFAULT (Russia – 추가 필드)** declared: `LOAD_COMB_TYPE` at `DEFAULT.LOAD_COMB_TYPE`
 
-## `/db/SDIS`
-
-Baseline answers on `gen`. 21 of 21 names declared across 3 tables.
-
-| table | names | declared | not declared | nesting |
-| --- | ---: | ---: | ---: | --- |
-| LRB 객체 | 12 | 12 | 0 | scattered; `LRB` covers 8 of 12 |
-| NRB 객체 | 4 | 4 | 0 | one object: `NRB` |
-| NRB 객체 | 5 | 5 | 0 | one object: `SB` |
-
-- **LRB 객체** declared: `SDIS_HYS_MODEL` at `LRB.SDIS_HYS_MODEL`, `KE` at `LRB.KE`, `AR` at `LRB.AR`, `TR` at `LRB.TR`, `K0` at `LRB.K0`, `K2` at `LRB.K2`, `QD` at `LRB.QD`, `DX` at `LRB.DX`, `OPT_CONS_NONL` at `LRB.DX.OPT_CONS_NONL`, `BETA` at `LRB.DX.BETA`, `ALPHA` at `LRB.DX.ALPHA`, `SIGMA_V` at `LRB.DX.SIGMA_V`
-- **NRB 객체** declared: `AR` at `NRB.AR`, `TR` at `NRB.TR`, `KH` at `NRB.KH`, `DX` at `NRB.DX`
-- **NRB 객체** declared: `AS` at `SB.AS`, `K0` at `SB.K0`, `QD` at `SB.QD`, `Pi_VALUE` at `SB.Pi_VALUE`, `MU0` at `SB.MU0`
-
 ## `/db/THIK`
 
 Baseline answers on `civil`, `gen`. 11 of 11 names declared across 1 tables.
@@ -286,16 +270,6 @@ Baseline answers on `civil`, `gen`. 11 of 11 names declared across 1 tables.
 | Specifications — Stiffened DB (`"STYPE": "DB"`) | 11 | 11 | 0 | scattered; `(root)` covers 5 of 11 |
 
 - **Specifications — Stiffened DB (`"STYPE": "DB"`)** declared: `TYPE` at `TYPE`, `STYPE` at `STYPE`, `RIB_POS` at `RIB_POS`, `SECTION` at `SECTION`, `THIKNESS` at `SECTION.THIKNESS`, `DBNAME` at `SECTION.DBNAME`, `XZ` at `SECTION.XZ`, `bRIB` at `SECTION.XZ.bRIB`, `SHAPE` at `SECTION.XZ.SHAPE`, `NAME` at `NAME`, `DIST` at `SECTION.XZ.DIST`
-
-## `/db/CSCS`
-
-Baseline answers on `civil`, `gen`. 9 of 9 names declared across 1 tables.
-
-| table | names | declared | not declared | nesting |
-| --- | ---: | ---: | ---: | --- |
-| 2-2. 파라미터 | 9 | 9 | 0 | one object: `vPARTINFO` |
-
-- **2-2. 파라미터** declared: `CY` at `vPARTINFO.CY`, `CZ` at `vPARTINFO.CZ`, `CYI` at `vPARTINFO.CYI`, `CZI` at `vPARTINFO.CZI`, `CYJ` at `vPARTINFO.CYJ`, `CZJ` at `vPARTINFO.CZJ`, `STIFF_USER` at `vPARTINFO.STIFF_USER`, `STIFF_USER_TAPERED_I` at `vPARTINFO.STIFF_USER_TAPERED_I`, `STIFF_USER_TAPERED_J` at `vPARTINFO.STIFF_USER_TAPERED_J`
 
 ## `/db/TDME`
 

@@ -242,6 +242,11 @@ def _is_number_subitem(number: str) -> bool:
 #: parented on `ROW`, an Integer. The section's own JSON Schema shows the
 #: shape those rows describe.
 _NUMBER_PAREN_SUBITEM = re.compile(r"^\((?:\d+|[ivxlcdm]+)\)[a-z]$", re.IGNORECASE)
+#: The same two-level path with a dash between the segments: /db/SDIS numbers
+#: LRB's `DX` row `(8)` and its four members `(8)-i` to `(8)-iv`, and the
+#: description of each says "`DX` 하위" as well. Read flat, the four landed
+#: beside `DX` inside LRB instead of in it.
+_NUMBER_PAREN_DASH_SUBITEM = re.compile(r"^\((?:\d+)\)-(?:[ivx]+|[a-z])$", re.IGNORECASE)
 
 _NUMBER_PATH = re.compile(r"^\d+(?:(?:[-.]\d+)|(?:[-.]\(\d+\)))+$")
 _NUMBER_PATH_SEGMENT = re.compile(r"[-.](?:\d+|\(\d+\))")
@@ -1015,7 +1020,7 @@ def _nest(flat: list[ParsedField]) -> list[ParsedField]:
         is_subitem = False
         if _NUMBER_CHILD.match(entry.number):
             depth = 1
-        elif _NUMBER_PAREN_SUBITEM.match(entry.number):
+        elif _NUMBER_PAREN_SUBITEM.match(entry.number) or _NUMBER_PAREN_DASH_SUBITEM.match(entry.number):
             depth = 2
         elif _NUMBER_PATH.match(entry.number):
             depth = len(_NUMBER_PATH_SEGMENT.findall(entry.number))
@@ -1289,6 +1294,20 @@ _STRUCTURAL_TABLE_SPLITS: dict[str, tuple[StructuralTableMerge, ...]] = {
     # It is resolved by hand in the contract against the section's JSON Schema.
     "/db/REBR": (
         StructuralTableMerge(1, (("Assign", "ITEMS", "SHEAR_BAR_END"), ("Assign", "ITEMS", "SHEAR_BAR_CEN"))),
+    ),
+    # The main table's rows 7-9 name the three device objects - "LRB Data
+    # (SDIS_DEV_TYPE="LRB"일 때)" and so on - and each following table is headed
+    # with the object it describes. The third heading reads "`SB` 객체" with a
+    # parenthesis the parser drops, so it arrives titled like the second.
+    # The prose above the second table says so outright: "`vPARTINFO`의 각
+    # 파트에는 이 외에도 ... 아래 필드들이 있다". The table has no Required
+    # column, so its rows stay unstated; the chapter itself calls their roles
+    # an inference.
+    "/db/CSCS": (StructuralTableMerge(1, (("vPARTINFO",),)),),
+    "/db/SDIS": (
+        StructuralTableMerge(1, (("LRB",),)),
+        StructuralTableMerge(2, (("NRB",),)),
+        StructuralTableMerge(3, (("SB",),)),
     ),
     "/db/SBDO": (
         StructuralTableMerge(1, ((),), ("civil",)),

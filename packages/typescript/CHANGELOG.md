@@ -7,10 +7,33 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 ## Unreleased
 
 > **Breaking at the type level; nothing changes at runtime.** No export is
-> added, removed or renamed. 19 members of `/post` request types and 56 of
-> other named types narrow, 46 of them to required, and `/db/MCON`'s
+> added, removed or renamed. 19 members of `/post` request types and 83 of
+> other named types narrow, 73 of them to required, and `/db/MCON`'s
 > `LinearConstraintItem` is corrected to the shape the manual gives it, which
 > removes four members it should never have had.
+
+### Changed - `/db/CSCS` is generated from its contract
+
+`CompositeSectionConstructionStagePayload` and `CompositeSectionPartInfo` were
+Python TypedDicts because the contract had left the section's second table
+unmerged. The chapter says where those rows go - each `vPARTINFO` entry - and
+they are merged there. The table has no Required column, so its nine members
+(`CY`...`CZJ`, and the three `STIFF_USER` objects with the 21 members the
+chapter lists for each) are optional. The payload's own
+required rows now reach the type: `SEC`, `ASTAGE`, `TYPE`, `vPARTINFO`, and
+each part's `PART` and `MTYPE`.
+
+### Changed - `/db/SDIS` is generated from its contract
+
+`SeismicDeviceIsolatorPayload` and its four object types were Python
+TypedDicts, because the contract had left the LRB, NRB and SB tables
+unmerged. They are merged now, as the manual's main table places them, and
+each object is **required only for its own `SDIS_DEV_TYPE`** (`"LRB"`,
+`"NRB"`, `"SLD"`), which is what the rows say; the contract had required all
+three at once. 21 members become required across 4 types - the record's
+`COMMON`, `SDIS_DEV_TYPE`, `MSS`, `TAU_K`, `TAU_Q`, `KV` and each object's
+own required rows - and `LRB`, `NRB`, `SB` stay optional with their condition
+in JSDoc.
 
 ### Changed - 48 more named types come from the contracts
 
