@@ -478,22 +478,21 @@ def test_types_are_written_in_name_order():
 
 
 def test_a_contract_with_unmerged_tables_does_not_become_a_payload_type():
-    """/db/MVHL is contracted, and its payload still comes from the fallback.
+    """/db/MVLD is contracted, and its payload still comes from the fallback.
 
-    Its China and Poland vehicle tables say their STANDARD_CODE values are in
-    the official article's own footnote table rather than naming them, so they
-    stay unmerged and the contract records the gap instead of claiming a
-    complete field list. Generating a published payload type from that list
-    would narrow the payload onto fields the manual documents elsewhere, and
-    break callers who set them.
+    Its DEFAULT tables label national field groups without naming a wire value
+    that selects them, so they stay unmerged and the contract records the gap
+    instead of claiming a complete field list. Generating a published payload
+    type from that list would narrow the payload onto fields the manual
+    documents elsewhere, and break callers who set them.
 
-    /db/THIK, /db/SPLC, /db/SPFC and /db/THIS were this test's example until
-    2026-09-22, each until its supplementary tables were merged.
+    /db/THIK, /db/SPLC, /db/SPFC, /db/THIS and /db/MVHL were this test's
+    example until 2026-09-22, each until its supplementary tables were merged.
     """
     fields = generator._contract_payload_fields()
 
-    assert "/db/MVHL" not in fields
-    for merged in ("/db/THIK", "/db/SPLC", "/db/SPFC", "/db/THIS"):
+    assert "/db/MVLD" not in fields
+    for merged in ("/db/THIK", "/db/SPLC", "/db/SPFC", "/db/THIS", "/db/MVHL"):
         assert merged in fields, merged
     assert "/db/BODF" in fields, "an unqualified contract must still supply its payload"
 

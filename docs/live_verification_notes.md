@@ -10927,3 +10927,41 @@ do not run on a bare model, not which row is wrong, so no contract row is
 corrected from them. What they do show: Civil NX takes a Static record without
 `iTHTYPE` (COMMON marks it Required) and rewrites several values it was sent.
 Both belong to a session with a nonlinear model before they are claimed.
+
+## 2026-09-22 (after) - `/db/MVHL`: MVLD_CODE picks the country object
+
+`scripts/live_manual_feedback.py --case c6` and `--case c7`, Civil NX, both
+documents confirmed empty first and left empty after. Each country got its
+own document with its `/db/MVCD` `CODE` from section 1's value table
+selected, then section 10's printed body, read back by `VEHICLE_LOAD_NAME`
+(the endpoint renumbers).
+
+| body | `MVLD_CODE` | `STANDARD_CODE` sent | result |
+| --- | --- | --- | --- |
+| KSCE-LSD15 standard | 13 | `"KSCE-LSD15"` | stored as sent |
+| KSCE-LSD15 user-defined Truck/Lane | 13 | none | stored as sent, `VEH_KSCE_LSD15` included |
+| Canada | 8 | `"CANADA"` | stored; `VEH_CA` read back with `CENT_F` added |
+| Australia | 14 | `"ROAD TRAFFIC"` | stored; `VEH_AU` read back with four more members |
+| Australia, heading value | 14 | `"AUSTRALIA"` | `Wrong Field` |
+| China user-defined Truck/Lane | 3 | none | stored as sent, `VEH_CN` included |
+| China, under the Australia code | 3 | none | `{"message": ""}`, nothing stored |
+| South Africa | 16 | `"NA"` | `Wrong Field` |
+| South Africa without `STANDARD_CODE` (c7) | 16 | none | stored, but without `VEH_ZA` |
+| Poland | 15 | `"PN-85/S-10030 - RoadBridge"` | `{"message": ""}`, nothing stored |
+| Poland, `MVLD_CODE` 1 to 20 (c7) | 1-20 | same | `{"message": ""}` each, nothing stored |
+
+What this settles: the `VEH_*` object follows the record's `MVLD_CODE`, not
+the `STANDARD_CODE` each table's heading names. Two user-defined bodies send
+no `STANDARD_CODE` and were stored with their objects; Australia's heading
+value is refused where its body's `"ROAD TRAFFIC"`, the name of that table's
+first group, is stored. So `STANDARD_CODE` picks a standard within a
+country, and the chapter's footnote list of country names is not its value
+set. A record whose `MVLD_CODE` is not the model's own code answers exactly
+like a success and stores nothing - the same shape as the empty
+`VEH_DEFAULT` case.
+
+What it does not settle: why Poland's body stores nothing under any code,
+and what `STANDARD_CODE` South Africa's `VEH_ZA` needs. Neither was chased by
+varying values the manual does not give. `/db/MVHL`'s contract gates its six
+country objects on the `MVLD_CODE` each printed body sends, with Poland's 15
+marked unconfirmed (MD-61).

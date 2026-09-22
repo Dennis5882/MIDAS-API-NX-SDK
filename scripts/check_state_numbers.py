@@ -138,7 +138,7 @@ PATTERNS = (
         re.compile(r"(\d+) of (\d+) generated npm types"),
         ("npm_types_from_python", "npm_types"),
     ),
-    Pattern(re.compile(r"the (\d+) `unmergedTables` roots"), ("npm_types_unmerged",)),
+    Pattern(re.compile(r"the (\d+) `unmergedTables` roots?"), ("npm_types_unmerged",)),
 )
 
 

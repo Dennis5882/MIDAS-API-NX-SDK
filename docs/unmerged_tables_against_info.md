@@ -32,50 +32,24 @@ not the same finding as a source that is absent.
 
 | endpoint | tables | names | declared by `/info` | share |
 | --- | ---: | ---: | ---: | ---: |
-| [`/db/MVHL`](#dbmvhl) | 8 | 115 | 115 | 100% |
 | [`/view/RESULTGRAPHIC`](#viewresultgraphic) | 10 | 63 | -- | n/a |
 | [`/db/MVLD`](#dbmvld) | 4 | 21 | 21 | 100% |
 | [`/db/TDME`](#dbtdme) | 2 | 7 | 7 | 100% |
 | [`/ope/LCOM-SRC`](#opelcomsrc) | 1 | 5 | -- | n/a |
-| **total** | **25** | **211** | **143** | **67%** |
+| **total** | **17** | **96** | **28** | **29%** |
 
-Of the **143** names on endpoints `/info` answers for, **143** are declared (100%) and **0** are not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
+Of the **28** names on endpoints `/info` answers for, **28** are declared (100%) and **0** are not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
 
 ### What each table has, as a count
 
 | what the measurement found | tables |
 | --- | ---: |
-| whole table, one object | 7 |
-| whole table, several objects | 1 |
-| whole table, scattered | 6 |
+| whole table, one object | 5 |
+| whole table, scattered | 1 |
 | out of reach | 11 |
-| **all** | **25** |
+| **all** | **17** |
 
 *one object* means `/info` has a single object holding every name in that table; *scattered* means it declares them all but under no common parent, so the table's shape is not something the baseline confirms. Neither is a recommendation -- a table with two sources still needs its manual section read before anything moves.
-
-## `/db/MVHL`
-
-Baseline answers on `civil`, `gen`. 115 of 115 names declared across 8 tables.
-
-| table | names | declared | not declared | nesting |
-| --- | ---: | ---: | ---: | --- |
-| Parameters – VEH_DEFAULT (공통 필드) | 10 | 10 | 0 | one object: `VEH_DEFAULT` |
-| Parameters – LOAD_ITEMS (사용자 정의 차량) | 2 | 2 | 0 | 15 objects hold all 2 |
-| Parameters – VEH_KSCE_LSD15 (`STANDARD_CODE: "KSCE-LSD15"` 전용) | 19 | 19 | 0 | scattered; `VEH_KSCE_LSD15` covers 16 of 19 |
-| VEH_CA (Canada, STANDARD_CODE: "CANADA") | 11 | 11 | 0 | scattered; `VEH_CA.DYNA` covers 4 of 11 |
-| VEH_AU (Australia, STANDARD_CODE: "AUSTRALIA") | 12 | 12 | 0 | scattered; `VEH_AU` covers 11 of 12 |
-| VEH_ZA (South Africa, STANDARD_CODE: "NA"/"NB"/"NC") | 17 | 17 | 0 | one object: `VEH_ZA` |
-| VEH_CN (China, STANDARD_CODE는 JTG/JTJ/CJJ/TB 등 원문 표 참고) | 30 | 30 | 0 | scattered; `VEH_CN` covers 28 of 30 |
-| VEH_PL (Poland, STANDARD_CODE는 원문 표 참고) | 14 | 14 | 0 | scattered; `VEH_PL` covers 13 of 14 |
-
-- **Parameters – VEH_DEFAULT (공통 필드)** declared: `UNIFORM_LOAD` at `VEH_DEFAULT.UNIFORM_LOAD`, `DYN_LOAD_ALLOWANCE` at `VEH_DEFAULT.DYN_LOAD_ALLOWANCE`, `W1` at `VEH_DEFAULT.W1`, `W2` at `VEH_DEFAULT.W2`, `D1` at `VEH_DEFAULT.D1`, `D2` at `VEH_DEFAULT.D2`, `PL` at `VEH_DEFAULT.PL`, `PLM` at `VEH_DEFAULT.PLM`, `PLV` at `VEH_DEFAULT.PLV`, `CENT_F` at `VEH_DEFAULT.CENT_F`
-- **Parameters – LOAD_ITEMS (사용자 정의 차량)** declared: `POINT_LOAD` at `LOAD_ITEMS.POINT_LOAD`, `POINT_DIST` at `LOAD_ITEMS.POINT_DIST`
-- **Parameters – VEH_KSCE_LSD15 (`STANDARD_CODE: "KSCE-LSD15"` 전용)** declared: `LOAD_TYPE` at `VEH_KSCE_LSD15.LOAD_TYPE`, `LOADED_LENGTH` at `VEH_KSCE_LSD15.LOADED_LENGTH`, `W1` at `VEH_KSCE_LSD15.W1`, `W2` at `VEH_KSCE_LSD15.W2`, `D1` at `VEH_KSCE_LSD15.D1`, `D2` at `VEH_KSCE_LSD15.D2`, `EXP` at `VEH_KSCE_LSD15.EXP`, `DYN_LOAD_ALLOWANCE` at `VEH_KSCE_LSD15.DYN_LOAD_ALLOWANCE`, `LENGTH_LANE` at `VEH_KSCE_LSD15.LENGTH_LANE`, `LENGTH_LANE_USER` at `VEH_KSCE_LSD15.LENGTH_LANE_USER`, `CONVERT_DIST_LOAD` at `VEH_KSCE_LSD15.CONVERT_DIST_LOAD`, `UNIFORM_LOAD_NUM` at `VEH_KSCE_LSD15.UNIFORM_LOAD_NUM`, `UNIFORM_LOAD_DIST` at `VEH_KSCE_LSD15.UNIFORM_LOAD_DIST`, `UNIFORM_LOAD_W` at `VEH_KSCE_LSD15.UNIFORM_LOAD_W`, `UNIFORM_LOAD_LOAD_LENGTH_L` at `VEH_KSCE_LSD15.UNIFORM_LOAD_LOAD_LENGTH_L`, `POINT_ITEMS` at `VEH_KSCE_LSD15.POINT_ITEMS`, `POINT_LOAD` at `LOAD_ITEMS.POINT_LOAD`, `POINT_DIST` at `LOAD_ITEMS.POINT_DIST`, `POINT_DIST2` at `LOAD_ITEMS.POINT_DIST2`
-- **VEH_CA (Canada, STANDARD_CODE: "CANADA")** declared: `DYNA_FACTOR` at `VEH_CA.DYNA.DYNA_FACTOR`, `DYNA` at `VEH_CA.DYNA`, `DYNA_FACT_1_AXLE` at `VEH_CA.DYNA.DYNA_FACT_1_AXLE`, `DYNA_FACT_2_AXLE` at `VEH_CA.DYNA.DYNA_FACT_2_AXLE`, `DYNA_FACT_3_AXLE` at `VEH_CA.DYNA.DYNA_FACT_3_AXLE`, `UNIFORM_LOAD` at `VEH_AU.UNIFORM_LOAD`, `LOAD_ITEMS` at `LOAD_ITEMS`, `PERMIT_LOAD` at `VEH_AU.PERMIT_LOAD`, `IMPACT_FACTOR` at `VEH_AU.PERMIT_LOAD.IMPACT_FACTOR`, `AXLE_TYPES` at `VEH_AU.PERMIT_LOAD.AXLE_TYPES`, `PERMIT_LOADS` at `VEH_AU.PERMIT_LOAD.PERMIT_LOADS`
-- **VEH_AU (Australia, STANDARD_CODE: "AUSTRALIA")** declared: `DYN_LOAD_ALLOWANCE` at `VEH_AU.DYN_LOAD_ALLOWANCE`, `FATIGUE` at `VEH_AU.FATIGUE`, `DYN_LOAD_ALLOWANCE2` at `VEH_AU.DYN_LOAD_ALLOWANCE2`, `INCRE_LENGTH` at `VEH_AU.INCRE_LENGTH`, `W2` at `VEH_AU.W2`, `VAR_SPACING` at `VEH_AU.VAR_SPACING`, `UNIFORM_LOAD` at `VEH_AU.UNIFORM_LOAD`, `LOAD_ITEMS` at `LOAD_ITEMS`, `W1` at `VEH_AU.W1`, `D1` at `VEH_AU.D1`, `GROUP_NUM` at `VEH_AU.GROUP_NUM`, `PERMIT_LOAD` at `VEH_AU.PERMIT_LOAD`
-- **VEH_ZA (South Africa, STANDARD_CODE: "NA"/"NB"/"NC")** declared: `INCRE_LENGTH` at `VEH_ZA.INCRE_LENGTH`, `INCRE_LENGTH_VALUE` at `VEH_ZA.INCRE_LENGTH_VALUE`, `UNIT_NUM` at `VEH_ZA.UNIT_NUM`, `OPPOSITE` at `VEH_ZA.OPPOSITE`, `W1` at `VEH_ZA.W1`, `W2` at `VEH_ZA.W2`, `W3` at `VEH_ZA.W3`, `LOADED_LENGTH` at `VEH_ZA.LOADED_LENGTH`, `PA` at `VEH_ZA.PA`, `PB` at `VEH_ZA.PB`, `D1` at `VEH_ZA.D1`, `D2` at `VEH_ZA.D2`, `DELTA` at `VEH_ZA.DELTA`, `PRESSURE_LOAD` at `VEH_ZA.PRESSURE_LOAD`, `NUM_LOAD_ARRAY` at `VEH_ZA.NUM_LOAD_ARRAY`, `POINT_DIST_ARRAY` at `VEH_ZA.POINT_DIST_ARRAY`, `PERMIT_LOAD` at `VEH_ZA.PERMIT_LOAD`
-- **VEH_CN (China, STANDARD_CODE는 JTG/JTJ/CJJ/TB 등 원문 표 참고)** declared: `IMPACT_COEF` at `VEH_CN.IMPACT_COEF`, `CROWD_WIDTH` at `VEH_CN.CROWD_WIDTH`, `DD` at `VEH_CN.DD`, `TRUCK_TYPE` at `VEH_CN.TRUCK_TYPE`, `P_` at `VEH_CN.P_`, `QM` at `VEH_CN.QM`, `QQ` at `VEH_CN.QQ`, `PA` at `VEH_CN.PA`, `D1` at `VEH_CN.D1`, `PB` at `VEH_CN.PB`, `D2` at `VEH_CN.D2`, `W_TRAILER` at `VEH_CN.W_TRAILER`, `D_TRAILER` at `VEH_CN.D_TRAILER`, `LOAD_ITEMS` at `LOAD_ITEMS`, `TRAIN_TYPE` at `VEH_CN.TRAIN_TYPE`, `W1` at `VEH_CN.W1`, `W2` at `VEH_CN.W2`, `FD` at `VEH_CN.FD`, `BD` at `VEH_CN.BD`, `P_SUBWAY` at `VEH_CN.P_SUBWAY`, `D_SUBWAY` at `VEH_CN.D_SUBWAY`, `CARRIAGE_DIST` at `VEH_CN.CARRIAGE_DIST`, `NUM_CARRIAGE` at `VEH_CN.NUM_CARRIAGE`, `P_OPPOSITE` at `VEH_CN.P_OPPOSITE`, `LOAD_ITEMS2` at `LOAD_ITEMS2`, `VEHICLE_LOAD_USER_NUM` at `VEH_CN.VEHICLE_LOAD_USER_NUM`, `W_CROWD` at `VEH_CN.W_CROWD`, `W_PRES_1` at `VEH_CN.W_PRES_1`, `W_PRES_2` at `VEH_CN.W_PRES_2`, `DB` at `VEH_CN.DB`
-- **VEH_PL (Poland, STANDARD_CODE는 원문 표 참고)** declared: `SEL_VEHICLE` at `VEH_PL.SEL_VEHICLE`, `SUB_TYPE` at `VEH_PL.SUB_TYPE`, `PRESSURE_LOAD` at `VEH_PL.PRESSURE_LOAD`, `DSPACE` at `VEH_PL.DSPACE`, `DYNAMIC_AMP_FACTOR` at `VEH_PL.DYNAMIC_AMP_FACTOR`, `USER_INPUT` at `VEH_PL.USER_INPUT`, `AMP` at `VEH_PL.AMP`, `LOAD_ITEMS` at `LOAD_ITEMS`, `NOSE_TAIL_DIST` at `VEH_PL.NOSE_TAIL_DIST`, `NUM_VEHICLE` at `VEH_PL.NUM_VEHICLE`, `TOTAL_LOAD` at `VEH_PL.TOTAL_LOAD`, `TRACKED_LENGTH` at `VEH_PL.TRACKED_LENGTH`, `WHEEL_SPACING` at `VEH_PL.WHEEL_SPACING`, `PERMIT_LOAD` at `VEH_PL.PERMIT_LOAD`
 
 ## `/view/RESULTGRAPHIC`
 

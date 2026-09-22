@@ -8056,107 +8056,688 @@ export namespace DbMovingLoadsTypes {
     /** Selected Vehicle List */
     VEHICLE_LD_NAMES: Array<string>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface VehicleDefaultParams {
+    /** Uniform Load */
     UNIFORM_LOAD?: number;
+    /** Dynamic Load Allowance (%) */
     DYN_LOAD_ALLOWANCE?: number;
+    /** Width 1 (W1) */
     W1?: number;
+    /** Width 2 (W2) */
     W2?: number;
+    /** Distance 1 (D1) */
     D1?: number;
+    /** Distance 2 (D2) */
     D2?: number;
+    /** Point Load (PL) */
     PL?: number;
+    /** PLM */
     PLM?: number;
+    /** PLV */
     PLV?: number;
+    /** Add Centrifugal Force */
     CENT_F?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface VehicleEurocodeParams {
+    /** SUB_TYPE */
     SUB_TYPE?: number;
+    /** Select Vehicle */
     SEL_VEHICLE?: string;
+    /** Amplification */
     AMP?: number;
+    /** Amplification2 */
     AMP2?: number;
+    /** Amplification Value Array */
     AMP_VALUES?: Array<number>;
+    /** Tandem System Adjustment Factor Array */
     TANDEM_ADJUST_VALUES?: Array<number>;
+    /** Tandem System Axle Loads Array */
     TANDEM_LOADS?: Array<number>;
+    /** UDL System Adjustment Factor Array */
     UDL_ADJUST_VALUES?: Array<number>;
+    /** UDL System Uniformly Dist. Loads Array */
     UDL_LOADS?: Array<number>;
+    /** Use Dynamic Amplication Factor 2_0 */
     USE_DYNAMIC_FACTOR2_0?: boolean;
+    /** Use Dynamic Amplication Factor 2_1 */
     USE_DYNAMIC_FACTOR2_1?: boolean;
+    /** Use Point Load 3_0 */
     USE_POINT_LOAD3_0?: boolean;
+    /** Use Point Load 3_1 */
     USE_POINT_LOAD3_1?: boolean;
+    /** Use Variable Axle Spacing */
     VAR_SPACING?: boolean;
+    /** Max. Spacing */
     MAX_SPACING?: number;
+    /** Min. Spacing */
     MIN_SPACING?: number;
+    /** Wheel Spacing for Static Load */
     WHEEL_SPACING?: number;
+    /** LM3 Load Case1 Boolean */
     LM3_LOADCASE1?: boolean;
+    /** LM3 Load Case2 Boolean */
     LM3_LOADCASE2?: boolean;
+    /** Adjustment Factor */
     ADJUSTMENT?: number;
+    /** Adjustment2 Factor */
     ADJUSTMENT2?: number;
+    /** Axle No. */
     AXLE_NUM?: number;
+    /** Footway */
     FOOTWAY?: number;
+    /** Two Vehicle Interval */
     INTERVAL?: number;
+    /** Dynamic Amplification Factor */
     DYNAMIC_FACTOR?: boolean;
+    /** User Input */
     USER_INPUT?: boolean;
+    /** Space */
     DSPACE?: number;
+    /** W1 */
     W1?: number;
+    /** DD1 */
     DD1?: number;
+    /** D1 */
     D1?: number;
+    /** W2 */
     W2?: number;
+    /** DD2 */
     DD2?: number;
+    /** D2 */
     D2?: number;
+    /** Pressure Load */
     PRESSURE_LOAD?: number;
+    /** Eccentricity of Lateral Displacement of Vertival Loads Factor */
     V_LOAD_FACTOR?: number;
+    /** Consider Longitudinal Distrtibution of Point Loads */
     LONGI_DIST?: boolean;
+    /** Distance between Rail Support Points */
     DIST_RAIL_SUPPORT?: number;
+    /** Eccentricity of Lateral Displacement of Vertical Loads */
     ECCEN_VERT_LOAD?: boolean;
+    /** Eccentricity of Lateral Displacement of Vertical Loads Value */
     ECCEN_VERT_LOAD_VALUE?: number;
+    /** HSLMA Number */
     HSLMA_NUM?: number;
+    /** HSLMA Length */
     HSLMA_LENGTH?: number;
+    /** HSLMA Spacing */
     HSLMA_SPACING?: number;
+    /** HSLMA Force */
     HSLMA_FORCE?: number;
+    /** HSLMB Number */
     HSLMB_NUM?: number;
+    /** HSLMB Force */
     HSLMB_FORCE?: number;
+    /** HSLMB Distance */
     HSLMB_DIST?: number;
+    /** PhiDynEff 1 */
     PHI_DYN_EFF1?: number;
+    /** PhiDynEff 2 */
     PHI_DYN_EFF2?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface VehicleKsceLsd15Params {
+    /** Load Type — 0=75% of Design Load / 1=25% of Design Load */
     LOAD_TYPE?: number;
+    /** Lane Loaded Length (User Defined Truck/Lane 전용) Applies when VEHICLE_LOAD_NUM = 2. */
     LOADED_LENGTH?: number;
+    /** Distribution Load Not Exceeding Loaded Length */
     W1?: number;
+    /** Distribution Load Exceeding Loaded Length */
     W2?: number;
+    /** Spacing dD1 (User Defined Train 전용) Applies when VEHICLE_LOAD_NUM = 2. */
     D1?: number;
+    /** Spacing dD2 (User Defined Train 전용) Applies when VEHICLE_LOAD_NUM = 2. */
     D2?: number;
+    /** Exponent to Calculate Distribution Load of W2 */
     EXP?: number;
+    /** Dynamic Load Allowance (%) */
     DYN_LOAD_ALLOWANCE?: number;
-    LENGTH_LANE?: number;
+    /** Length of Lane Load · 0=1st Model / 1=2nd Model */
+    LENGTH_LANE: number;
+    /** Length of Lane Load(User) — LENGTH_LANE: 0일 때 */
     LENGTH_LANE_USER?: number;
+    /** Convert Point Load to Distributed Load */
     CONVERT_DIST_LOAD?: boolean;
+    /** Number of Uniform Load (Lane 전용) · N개면 N-1 */
     UNIFORM_LOAD_NUM?: number;
+    /** Uniform Load Distance (Lane 전용) */
     UNIFORM_LOAD_DIST?: number;
+    /** Uniform Load (Lane 전용) Applies when VEHICLE_LOAD_NUM = 2. */
     UNIFORM_LOAD_W?: number;
+    /** Uniform Load Length (Lane 전용) Applies when VEHICLE_LOAD_NUM = 2. */
     UNIFORM_LOAD_LOAD_LENGTH_L?: number;
-    POINT_ITEMS?: Array<VehicleKsceLsd15PointItem>;
+    /** 축하중 배열 */
+    POINT_ITEMS: Array<{
+      /** 하중(Load) */
+      POINT_LOAD: number;
+      /** 간격(Spacing) */
+      POINT_DIST: number;
+      /** 등분포 환산 길이 — CONVERT_DIST_LOAD: true일 때 */
+      POINT_DIST2?: number;
+    }>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface VehicleKsceLsd15PointItem {
-    POINT_LOAD?: number;
-    POINT_DIST?: number;
+    /** 하중(Load) */
+    POINT_LOAD: number;
+    /** 간격(Spacing) */
+    POINT_DIST: number;
+    /** 등분포 환산 길이 — CONVERT_DIST_LOAD: true일 때 */
     POINT_DIST2?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface VehicleLoadItem {
-    POINT_LOAD?: number;
-    POINT_DIST?: number;
+    /** Point Load */
+    POINT_LOAD: number;
+    /** Point Distance */
+    POINT_DIST: number;
   }
-  export interface VehiclePayload {
-    MVLD_CODE?: number;
-    VEHICLE_LOAD_NAME?: string;
-    VEHICLE_LOAD_NUM?: number;
+  /** Generated from contracts/endpoints/. */
+  export type VehiclePayload = {
+    /** Moving Load Code (Integer) */
+    MVLD_CODE: number;
+    /** Vehicular Load Name (user-assigned) */
+    VEHICLE_LOAD_NAME: string;
+    /** Vehicular Load Number. This is the branch selector, not a count: 1 selects a standard DB vehicle and 2 a user-defined one, and the variants below say which fields each needs. */
+    VEHICLE_LOAD_NUM: number;
+    /** Vehicular Type Name (predefined vehicle name) Required when VEHICLE_LOAD_NUM = 1. */
     VEHICLE_TYPE_NAME?: string;
+    /** Standard Code - the standard within the record's MVLD_CODE country, such as Australia's "ROAD TRAFFIC". It does not select the VEH_* object; see the variants below. Required when VEHICLE_LOAD_NUM = 1. */
     STANDARD_CODE?: string;
+    /** User Load Type (when user-defined) Applies when VEHICLE_LOAD_NUM = 2. */
     USER_LOAD_TYPE?: string;
-    VEH_DEFAULT?: VehicleDefaultParams;
-    VEH_EUROCODE?: VehicleEurocodeParams;
-    VEH_KSCE_LSD15?: VehicleKsceLsd15Params;
-    LOAD_ITEMS?: Array<VehicleLoadItem>;
-  }
+    /** Default Parameters. Used by AASHTO Standard/LRFD, PENNDOT, Korea (KS-RB) and Taiwan only; every other country carries its own object instead - see the variants below. Applies when MVLD_CODE is 1 or 2 or 6. */
+    VEH_DEFAULT?: {
+      /** Uniform Load */
+      UNIFORM_LOAD?: number;
+      /** Dynamic Load Allowance (%) */
+      DYN_LOAD_ALLOWANCE?: number;
+      /** Width 1 (W1) */
+      W1?: number;
+      /** Width 2 (W2) */
+      W2?: number;
+      /** Distance 1 (D1) */
+      D1?: number;
+      /** Distance 2 (D2) */
+      D2?: number;
+      /** Point Load (PL) */
+      PL?: number;
+      /** PLM */
+      PLM?: number;
+      /** PLV */
+      PLV?: number;
+      /** Add Centrifugal Force */
+      CENT_F?: boolean;
+    };
+    /** User-defined axle-load items Applies when VEHICLE_LOAD_NUM = 2. */
+    LOAD_ITEMS?: Array<{
+      /** Point Load */
+      POINT_LOAD: number;
+      /** Point Distance */
+      POINT_DIST: number;
+    }>;
+    /** 추가 축하중 배열(China Type2 Heavy Vehicle용) · POINT_LOAD/POINT_DIST Applies when VEHICLE_LOAD_NUM = 2. */
+    LOAD_ITEMS2?: Array<{
+      /** Point Load */
+      POINT_LOAD?: number;
+      /** Point Distance */
+      POINT_DIST?: number;
+    }>;
+    /** EUROCODE Moving Load Code */
+    VEH_EUROCODE?: {
+      /** SUB_TYPE */
+      SUB_TYPE?: number;
+      /** Select Vehicle */
+      SEL_VEHICLE?: string;
+      /** Amplification */
+      AMP?: number;
+      /** Amplification2 */
+      AMP2?: number;
+      /** Amplification Value Array */
+      AMP_VALUES?: Array<number>;
+      /** Tandem System Adjustment Factor Array */
+      TANDEM_ADJUST_VALUES?: Array<number>;
+      /** Tandem System Axle Loads Array */
+      TANDEM_LOADS?: Array<number>;
+      /** UDL System Adjustment Factor Array */
+      UDL_ADJUST_VALUES?: Array<number>;
+      /** UDL System Uniformly Dist. Loads Array */
+      UDL_LOADS?: Array<number>;
+      /** Use Dynamic Amplication Factor 2_0 */
+      USE_DYNAMIC_FACTOR2_0?: boolean;
+      /** Use Dynamic Amplication Factor 2_1 */
+      USE_DYNAMIC_FACTOR2_1?: boolean;
+      /** Use Point Load 3_0 */
+      USE_POINT_LOAD3_0?: boolean;
+      /** Use Point Load 3_1 */
+      USE_POINT_LOAD3_1?: boolean;
+      /** Use Variable Axle Spacing */
+      VAR_SPACING?: boolean;
+      /** Max. Spacing */
+      MAX_SPACING?: number;
+      /** Min. Spacing */
+      MIN_SPACING?: number;
+      /** Wheel Spacing for Static Load */
+      WHEEL_SPACING?: number;
+      /** LM3 Load Case1 Boolean */
+      LM3_LOADCASE1?: boolean;
+      /** LM3 Load Case2 Boolean */
+      LM3_LOADCASE2?: boolean;
+      /** Adjustment Factor */
+      ADJUSTMENT?: number;
+      /** Adjustment2 Factor */
+      ADJUSTMENT2?: number;
+      /** Axle No. */
+      AXLE_NUM?: number;
+      /** Footway */
+      FOOTWAY?: number;
+      /** Two Vehicle Interval */
+      INTERVAL?: number;
+      /** Dynamic Amplification Factor */
+      DYNAMIC_FACTOR?: boolean;
+      /** User Input */
+      USER_INPUT?: boolean;
+      /** Space */
+      DSPACE?: number;
+      /** W1 */
+      W1?: number;
+      /** DD1 */
+      DD1?: number;
+      /** D1 */
+      D1?: number;
+      /** W2 */
+      W2?: number;
+      /** DD2 */
+      DD2?: number;
+      /** D2 */
+      D2?: number;
+      /** Pressure Load */
+      PRESSURE_LOAD?: number;
+      /** Eccentricity of Lateral Displacement of Vertival Loads Factor */
+      V_LOAD_FACTOR?: number;
+      /** Consider Longitudinal Distrtibution of Point Loads */
+      LONGI_DIST?: boolean;
+      /** Distance between Rail Support Points */
+      DIST_RAIL_SUPPORT?: number;
+      /** Eccentricity of Lateral Displacement of Vertical Loads */
+      ECCEN_VERT_LOAD?: boolean;
+      /** Eccentricity of Lateral Displacement of Vertical Loads Value */
+      ECCEN_VERT_LOAD_VALUE?: number;
+      /** HSLMA Number */
+      HSLMA_NUM?: number;
+      /** HSLMA Length */
+      HSLMA_LENGTH?: number;
+      /** HSLMA Spacing */
+      HSLMA_SPACING?: number;
+      /** HSLMA Force */
+      HSLMA_FORCE?: number;
+      /** HSLMB Number */
+      HSLMB_NUM?: number;
+      /** HSLMB Force */
+      HSLMB_FORCE?: number;
+      /** HSLMB Distance */
+      HSLMB_DIST?: number;
+      /** PhiDynEff 1 */
+      PHI_DYN_EFF1?: number;
+      /** PhiDynEff 2 */
+      PHI_DYN_EFF2?: number;
+    };
+  } & (
+    {
+      MVLD_CODE: 13;
+      /** Carried instead of VEH_DEFAULT when MVLD_CODE is 13; its members are the rows of the chapter's VEH_KSCE_LSD15 table. */
+      VEH_KSCE_LSD15: {
+        /** Load Type — 0=75% of Design Load / 1=25% of Design Load */
+        LOAD_TYPE?: number;
+        /** Lane Loaded Length (User Defined Truck/Lane 전용) Applies when VEHICLE_LOAD_NUM = 2. */
+        LOADED_LENGTH?: number;
+        /** Distribution Load Not Exceeding Loaded Length */
+        W1?: number;
+        /** Distribution Load Exceeding Loaded Length */
+        W2?: number;
+        /** Spacing dD1 (User Defined Train 전용) Applies when VEHICLE_LOAD_NUM = 2. */
+        D1?: number;
+        /** Spacing dD2 (User Defined Train 전용) Applies when VEHICLE_LOAD_NUM = 2. */
+        D2?: number;
+        /** Exponent to Calculate Distribution Load of W2 */
+        EXP?: number;
+        /** Dynamic Load Allowance (%) */
+        DYN_LOAD_ALLOWANCE?: number;
+        /** Length of Lane Load · 0=1st Model / 1=2nd Model */
+        LENGTH_LANE: number;
+        /** Length of Lane Load(User) — LENGTH_LANE: 0일 때 */
+        LENGTH_LANE_USER?: number;
+        /** Convert Point Load to Distributed Load */
+        CONVERT_DIST_LOAD?: boolean;
+        /** Number of Uniform Load (Lane 전용) · N개면 N-1 */
+        UNIFORM_LOAD_NUM?: number;
+        /** Uniform Load Distance (Lane 전용) */
+        UNIFORM_LOAD_DIST?: number;
+        /** Uniform Load (Lane 전용) Applies when VEHICLE_LOAD_NUM = 2. */
+        UNIFORM_LOAD_W?: number;
+        /** Uniform Load Length (Lane 전용) Applies when VEHICLE_LOAD_NUM = 2. */
+        UNIFORM_LOAD_LOAD_LENGTH_L?: number;
+        /** 축하중 배열 */
+        POINT_ITEMS: Array<{
+          /** 하중(Load) */
+          POINT_LOAD: number;
+          /** 간격(Spacing) */
+          POINT_DIST: number;
+          /** 등분포 환산 길이 — CONVERT_DIST_LOAD: true일 때 */
+          POINT_DIST2?: number;
+        }>;
+      };
+    } |
+    {
+      MVLD_CODE: 8;
+      /** Carried instead of VEH_DEFAULT when MVLD_CODE is 8; its members are the rows of the chapter's VEH_CA table. */
+      VEH_CA: {
+        /** Dynamic Load Allowance settings. Applies when VEHICLE_LOAD_NUM = 1. */
+        DYNA?: {
+          /** Dynamic Load Allowance Option · Auto: 0 · User: 1 */
+          DYNA_FACTOR?: number;
+          /** Dynamic Load Factor - one axle only */
+          DYNA_FACT_1_AXLE?: number;
+          /** Dynamic Load Factor - two axles, or axles 1, 2 and 3 */
+          DYNA_FACT_2_AXLE?: number;
+          /** Dynamic Load Factor - three or more axles, excluding the 1-2-3 combination */
+          DYNA_FACT_3_AXLE?: number;
+        };
+        /** Dynamic Load Allowance. Not in the Specifications table; the section's own Python example sends it. */
+        DYN_LOAD_ALLOWANCE?: number;
+        /** Uniform Distribution Load (User Defined Vehicle - Truck/Lane) Applies when VEHICLE_LOAD_NUM = 2. */
+        UNIFORM_LOAD?: number;
+        /** Permit Load (VEH_CA와 같은 구조) Applies when VEHICLE_LOAD_NUM = 2. */
+        PERMIT_LOAD?: {
+          /** Impact Factor */
+          IMPACT_FACTOR?: number;
+          /** Axle Types 배열 */
+          AXLE_TYPES: Array<{
+            /** Axle Type */
+            AXLE_TYPE?: string;
+            /** Evenly Distance Load */
+            EVENLY_DIST_LOAD?: boolean;
+            /** Symmetric Vehicle */
+            SYMMETRIC_VEHICLE?: boolean;
+            /** Point Loads */
+            POINT_ITEMS?: Array<{
+              /** Point Load */
+              POINT_LOAD?: number;
+              /** Point Distance */
+              POINT_DIST?: number;
+            }>;
+          }>;
+          /** Permit Load 배열 */
+          PERMIT_LOADS: Array<{
+            /** Axle Type */
+            AXLE_TYPE?: string;
+            /** Spacing */
+            SPACING?: number;
+            /** j == nVsIdx */
+            EQUAL_J_NVSIDX?: boolean;
+          }>;
+        };
+      };
+    } |
+    {
+      MVLD_CODE: 14;
+      /** Carried instead of VEH_DEFAULT when MVLD_CODE is 14; its members are the rows of the chapter's VEH_AU table. */
+      VEH_AU: {
+        /** Dynamic Load Allowance Applies when VEHICLE_LOAD_NUM = 1. */
+        DYN_LOAD_ALLOWANCE?: number;
+        /** Fatigue Option ("M1600 without UDL" 전용) */
+        FATIGUE?: boolean;
+        /** Dynamic Load Allowance — All Other Effects Applies when VEHICLE_LOAD_NUM = 1. */
+        DYN_LOAD_ALLOWANCE2?: number;
+        /** Increment of Distance Applies when VEHICLE_LOAD_NUM = 1. */
+        INCRE_LENGTH?: number;
+        /** Uniform Distribution Load("L44 Lane Load", 재하길이 150m 초과 시) Applies when VEHICLE_LOAD_NUM = 1. */
+        W2?: number;
+        /** Variable Spacing(D6~D7) Option Applies when VEHICLE_LOAD_NUM = 2. */
+        VAR_SPACING?: boolean;
+        /** Uniform Distribution Load(FATIGUE=true 시) Applies when VEHICLE_LOAD_NUM = 2. */
+        UNIFORM_LOAD?: number;
+        /** Uniform Distribution Load Applies when VEHICLE_LOAD_NUM = 2. */
+        W1?: number;
+        /** Loaded Length Applies when VEHICLE_LOAD_NUM = 2. */
+        D1?: number;
+        /** Group Number Applies when VEHICLE_LOAD_NUM = 2. */
+        GROUP_NUM?: number;
+        /** Permit Load (VEH_CA와 같은 구조) Applies when VEHICLE_LOAD_NUM = 2. */
+        PERMIT_LOAD?: {
+          /** Impact Factor */
+          IMPACT_FACTOR?: number;
+          /** Axle Types 배열 */
+          AXLE_TYPES: Array<{
+            /** Axle Type */
+            AXLE_TYPE?: string;
+            /** Evenly Distance Load */
+            EVENLY_DIST_LOAD?: boolean;
+            /** Symmetric Vehicle */
+            SYMMETRIC_VEHICLE?: boolean;
+            /** Point Loads */
+            POINT_ITEMS?: Array<{
+              /** Point Load */
+              POINT_LOAD?: number;
+              /** Point Distance */
+              POINT_DIST?: number;
+            }>;
+          }>;
+          /** Permit Load 배열 */
+          PERMIT_LOADS: Array<{
+            /** Axle Type */
+            AXLE_TYPE?: string;
+            /** Spacing */
+            SPACING?: number;
+            /** j == nVsIdx */
+            EQUAL_J_NVSIDX?: boolean;
+          }>;
+        };
+      };
+    } |
+    {
+      MVLD_CODE: 16;
+      /** Carried instead of VEH_DEFAULT when MVLD_CODE is 16; its members are the rows of the chapter's VEH_ZA table. */
+      VEH_ZA: {
+        /** Unit Length for Loaded Length Increment Option */
+        INCRE_LENGTH?: boolean;
+        /** Increment Length */
+        INCRE_LENGTH_VALUE?: number;
+        /** Number of Unit (36 또는 24) */
+        UNIT_NUM?: number;
+        /** Consider Load Area Giving Opposite Contribution */
+        OPPOSITE?: boolean;
+        /** Uniform Distribution Load(재하길이 이하) Applies when VEHICLE_LOAD_NUM = 2. */
+        W1?: number;
+        /** Uniform Distribution Load(재하길이 초과) Applies when VEHICLE_LOAD_NUM = 2. */
+        W2?: number;
+        /** Uniform Distribution Load(재하길이 초과, 추가) Applies when VEHICLE_LOAD_NUM = 2. */
+        W3?: number;
+        /** Loaded Length Applies when VEHICLE_LOAD_NUM = 2. */
+        LOADED_LENGTH?: number;
+        /** Axle Load(Pa) Applies when VEHICLE_LOAD_NUM = 2. */
+        PA?: number;
+        /** Axle Load(Pb) Applies when VEHICLE_LOAD_NUM = 2. */
+        PB?: number;
+        /** Distance between Axle Load(End) Applies when VEHICLE_LOAD_NUM = 2. */
+        D1?: number;
+        /** Distance between Axle Load(Middle) Applies when VEHICLE_LOAD_NUM = 2. */
+        D2?: number;
+        /** Factor to Calculate D3~D6 Applies when VEHICLE_LOAD_NUM = 2. */
+        DELTA?: number;
+        /** Uniform Distribution Load Applies when VEHICLE_LOAD_NUM = 2. */
+        PRESSURE_LOAD?: number;
+        /** Number of Load [a,b,c] Applies when VEHICLE_LOAD_NUM = 2. */
+        NUM_LOAD_ARRAY?: Array<number>;
+        /** Different Discrete Lengths Applies when VEHICLE_LOAD_NUM = 2. */
+        POINT_DIST_ARRAY?: Array<JsonObject>;
+        /** Permit Load (VEH_CA와 같은 구조) Applies when VEHICLE_LOAD_NUM = 2. */
+        PERMIT_LOAD?: {
+          /** Impact Factor */
+          IMPACT_FACTOR?: number;
+          /** Axle Types 배열 */
+          AXLE_TYPES: Array<{
+            /** Axle Type */
+            AXLE_TYPE?: string;
+            /** Evenly Distance Load */
+            EVENLY_DIST_LOAD?: boolean;
+            /** Symmetric Vehicle */
+            SYMMETRIC_VEHICLE?: boolean;
+            /** Point Loads */
+            POINT_ITEMS?: Array<{
+              /** Point Load */
+              POINT_LOAD?: number;
+              /** Point Distance */
+              POINT_DIST?: number;
+            }>;
+          }>;
+          /** Permit Load 배열 */
+          PERMIT_LOADS: Array<{
+            /** Axle Type */
+            AXLE_TYPE?: string;
+            /** Spacing */
+            SPACING?: number;
+            /** j == nVsIdx */
+            EQUAL_J_NVSIDX?: boolean;
+          }>;
+        };
+      };
+    } |
+    {
+      MVLD_CODE: 3;
+      /** Carried instead of VEH_DEFAULT when MVLD_CODE is 3; its members are the rows of the chapter's VEH_CN table. */
+      VEH_CN: {
+        /** Impact Factor (z); Subway 전용 행에서는 Impact Factor Reduction Coefficient */
+        IMPACT_COEF?: number;
+        /** Width Applies when VEHICLE_LOAD_NUM = 1. */
+        CROWD_WIDTH?: number;
+        /** Distance Between Center of Vehicles Applies when VEHICLE_LOAD_NUM = 1. */
+        DD?: number;
+        /** Truck/Lane Type · Crawler:1 · Lane1:0 · GC:2 · Lane2:5 Applies when VEHICLE_LOAD_NUM = 2. */
+        TRUCK_TYPE?: number;
+        /** Axle Load(P), Lane1 전용 Applies when VEHICLE_LOAD_NUM = 2. */
+        P_?: number;
+        /** Distribution Load 1(Qm), Lane1 전용 Applies when VEHICLE_LOAD_NUM = 2. */
+        QM?: number;
+        /** Distribution Load 2(Qq)/Uniform Load(qk), Lane1·2 Applies when VEHICLE_LOAD_NUM = 2. */
+        QQ?: number;
+        /** Axle Load(Pk) L≤, Lane2 전용 Applies when VEHICLE_LOAD_NUM = 2. */
+        PA?: number;
+        /** Axle Load(Pk) L≥, Lane2 전용 Applies when VEHICLE_LOAD_NUM = 2. */
+        PB?: number;
+        /** Loaded Length(L≤) (Lane2 전용); Spacing dD1 (Train Type1·3 전용); Loaded Length (Crowd Type2) Applies when VEHICLE_LOAD_NUM = 2. */
+        D1?: number;
+        /** Loaded Length(L≥) (Lane2 전용); Spacing dD2 (Train Type1·3 전용); Loaded Length (Crowd Type2) Applies when VEHICLE_LOAD_NUM = 2. */
+        D2?: number;
+        /** Uniform Distribution Load(dW1), Crawler 전용 Applies when VEHICLE_LOAD_NUM = 2. */
+        W_TRAILER?: number;
+        /** Loaded Length(dD1), Crawler 전용 Applies when VEHICLE_LOAD_NUM = 2. */
+        D_TRAILER?: number;
+        /** Train/Exceptional Type · Type1:1 · Type2:2 · Type3:3 · Subway:4 Applies when VEHICLE_LOAD_NUM = 2. */
+        TRAIN_TYPE?: number;
+        /** Distribution Load dW1, Type1·3 전용 Applies when VEHICLE_LOAD_NUM = 2. */
+        W1?: number;
+        /** Distribution Load dW2, Type1·3 전용 Applies when VEHICLE_LOAD_NUM = 2. */
+        W2?: number;
+        /** Distance to Front of Heavy Vehicle, Type2 전용 Applies when VEHICLE_LOAD_NUM = 2. */
+        FD?: number;
+        /** Distance to Rear of Heavy Vehicle, Type2 전용 Applies when VEHICLE_LOAD_NUM = 2. */
+        BD?: number;
+        /** Axle Load[P1~P4], Subway 전용 Applies when VEHICLE_LOAD_NUM = 2. */
+        P_SUBWAY?: Array<number>;
+        /** Axle Distance[D1~D3], Subway 전용 Applies when VEHICLE_LOAD_NUM = 2. */
+        D_SUBWAY?: Array<number>;
+        /** Distance between Carriages(dD), Subway 전용 Applies when VEHICLE_LOAD_NUM = 2. */
+        CARRIAGE_DIST?: number;
+        /** Number of Carriage(1~15), Subway 전용 Applies when VEHICLE_LOAD_NUM = 2. */
+        NUM_CARRIAGE?: number;
+        /** Axle load for Negative Influence Line(Po), Subway 전용 Applies when VEHICLE_LOAD_NUM = 2. */
+        P_OPPOSITE?: number;
+        /** Crowd Load Type1 Applies when VEHICLE_LOAD_NUM = 2. */
+        VEHICLE_LOAD_USER_NUM?: number;
+        /** Uniform Distribution Load(Type1) Applies when VEHICLE_LOAD_NUM = 2. */
+        W_CROWD?: number;
+        /** Distribution Load dW(Type2) Applies when VEHICLE_LOAD_NUM = 2. */
+        W_PRES_1?: number;
+        /** Distribution Load dW(Type2) Applies when VEHICLE_LOAD_NUM = 2. */
+        W_PRES_2?: number;
+        /** Width(Type2) Applies when VEHICLE_LOAD_NUM = 2. */
+        DB?: number;
+      };
+    } |
+    {
+      MVLD_CODE: 15;
+      /** Carried instead of VEH_DEFAULT when MVLD_CODE is 15; its members are the rows of the chapter's VEH_PL table. */
+      VEH_PL: {
+        /** Select Vehicle (표준) · Vehicle S:0 · K:1 · 2S:2 · Walkway:3; Military Load Class에서는 표준 차량 선택 Required when VEHICLE_LOAD_NUM = 1. */
+        SEL_VEHICLE?: string;
+        /** Load Type (User) · Truck/Lane에서는 Vehicle S:0 · K:1 · 2S:2 · Walkway:3; Military Load Class에서는 Tracked:0 · Wheeled:1 Required when VEHICLE_LOAD_NUM = 2. */
+        SUB_TYPE?: number;
+        /** Uniform Distribution Pressure Load(K·S 차량용); 표준 차량에서는 Read Only, User 기본값 0 */
+        PRESSURE_LOAD?: number;
+        /** Horizontal Distance(2S 차량 전용); 표준 차량에서는 Read Only, User 기본값 0 */
+        DSPACE?: number;
+        /** Dynamic Amplification Factor Option */
+        DYNAMIC_AMP_FACTOR?: boolean;
+        /** Factor Type · Auto:false · User Input:true */
+        USER_INPUT?: boolean;
+        /** Factor Value */
+        AMP?: number;
+        /** Nose to Tail Distance */
+        NOSE_TAIL_DIST?: number;
+        /** Number of Vehicle */
+        NUM_VEHICLE?: number;
+        /** Total Load(P), Tracked Vehicle 전용 */
+        TOTAL_LOAD?: number;
+        /** Tracked Length(D), Tracked Vehicle 전용 */
+        TRACKED_LENGTH?: number;
+        /** Wheel Spacing */
+        WHEEL_SPACING?: number;
+        /** Permit Load (VEH_CA와 같은 구조) Applies when VEHICLE_LOAD_NUM = 2. */
+        PERMIT_LOAD?: {
+          /** Impact Factor */
+          IMPACT_FACTOR?: number;
+          /** Axle Types 배열 */
+          AXLE_TYPES: Array<{
+            /** Axle Type */
+            AXLE_TYPE?: string;
+            /** Evenly Distance Load */
+            EVENLY_DIST_LOAD?: boolean;
+            /** Symmetric Vehicle */
+            SYMMETRIC_VEHICLE?: boolean;
+            /** Point Loads */
+            POINT_ITEMS?: Array<{
+              /** Point Load */
+              POINT_LOAD?: number;
+              /** Point Distance */
+              POINT_DIST?: number;
+            }>;
+          }>;
+          /** Permit Load 배열 */
+          PERMIT_LOADS: Array<{
+            /** Axle Type */
+            AXLE_TYPE?: string;
+            /** Spacing */
+            SPACING?: number;
+            /** j == nVsIdx */
+            EQUAL_J_NVSIDX?: boolean;
+          }>;
+        };
+      };
+    } |
+    {
+      VEH_KSCE_LSD15?: never;
+      VEH_CA?: never;
+      VEH_AU?: never;
+      VEH_ZA?: never;
+      VEH_CN?: never;
+      VEH_PL?: never;
+    }
+  );
   /** Generated from contracts/endpoints/. */
   export interface VehicleTransversePayload {
     /** Vehicular Load Name */

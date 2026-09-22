@@ -692,10 +692,154 @@ def this_examples(client: MidasClient, checkpoint: str, extension: str) -> dict[
     return results
 
 
+def _mvhl_country_examples() -> dict[str, tuple[str, dict[str, Any]]]:
+    """08_DB_Moving_Loads.md section 10's country Request Bodies, as printed.
+
+    Each is paired with the /db/MVCD CODE its country takes in section 1's
+    CODE value table. Section 10's headings name a STANDARD_CODE per VEH_*
+    object, but the Australia body sends ``"ROAD TRAFFIC"`` where its heading
+    says ``"AUSTRALIA"``, and the KSCE-LSD15 and China user-defined bodies
+    send no STANDARD_CODE at all, while every body sends an MVLD_CODE.
+    """
+    return {
+        "ksce_standard": ("KSCE-LSD15", {
+            "MVLD_CODE": 13, "VEHICLE_LOAD_NAME": "ST_KL-510TRK", "VEHICLE_LOAD_NUM": 1,
+            "VEHICLE_TYPE_NAME": "KL-510TRK", "STANDARD_CODE": "KSCE-LSD15",
+            "VEH_KSCE_LSD15": {
+                "LOAD_TYPE": 0, "DYN_LOAD_ALLOWANCE": 25, "LENGTH_LANE": 0,
+                "LENGTH_LANE_USER": 0, "CONVERT_DIST_LOAD": False,
+                "POINT_ITEMS": [{"POINT_LOAD": 48, "POINT_DIST": 3.6},
+                                {"POINT_LOAD": 135, "POINT_DIST": 1.2},
+                                {"POINT_LOAD": 135, "POINT_DIST": 7.2},
+                                {"POINT_LOAD": 192, "POINT_DIST": 0}],
+            },
+        }),
+        "ksce_user": ("KSCE-LSD15", {
+            "MVLD_CODE": 13, "VEHICLE_LOAD_NAME": "UD_Truck/Lane1", "VEHICLE_LOAD_NUM": 2,
+            "USER_LOAD_TYPE": "Truck/Lane",
+            "VEH_KSCE_LSD15": {
+                "LOADED_LENGTH": 60, "W1": 12.7, "W2": 12.7, "EXP": 0.1,
+                "DYN_LOAD_ALLOWANCE": 25, "LENGTH_LANE": 0, "LENGTH_LANE_USER": 1.5,
+                "CONVERT_DIST_LOAD": True,
+                "POINT_ITEMS": [{"POINT_LOAD": 100, "POINT_DIST": 0.2, "POINT_DIST2": 0.45}],
+            },
+        }),
+        "canada": ("CANADA", {
+            "MVLD_CODE": 8, "VEHICLE_LOAD_NAME": "CA(Auto)_CL-625Truck", "VEHICLE_LOAD_NUM": 1,
+            "VEHICLE_TYPE_NAME": "CL-625Truck", "STANDARD_CODE": "CANADA",
+            "VEH_CA": {"DYN_LOAD_ALLOWANCE": 0, "DYNA": {"DYNA_FACTOR": 0}},
+        }),
+        "australia": ("AUSTRALIA", {
+            "MVLD_CODE": 14, "VEHICLE_LOAD_NAME": "AU(Road)_M1600", "VEHICLE_LOAD_NUM": 1,
+            "VEHICLE_TYPE_NAME": "M1600", "STANDARD_CODE": "ROAD TRAFFIC",
+            "VEH_AU": {"DYN_LOAD_ALLOWANCE": 0.3},
+        }),
+        "south_africa": ("SOUTH AFRICA", {
+            "MVLD_CODE": 16, "VEHICLE_LOAD_NAME": "ZA(TMH7)_NA", "VEHICLE_LOAD_NUM": 1,
+            "VEHICLE_TYPE_NAME": "TMH7", "STANDARD_CODE": "NA",
+            "VEH_ZA": {"INCRE_LENGTH": False},
+        }),
+        "china": ("CHINA", {
+            "MVLD_CODE": 3, "VEHICLE_LOAD_NAME": "CN_UD_Lane1", "VEHICLE_LOAD_NUM": 2,
+            "USER_LOAD_TYPE": "Truck/Lane",
+            "VEH_CN": {"TRUCK_TYPE": 0, "P_": 130, "QM": 10.5, "QQ": 7},
+        }),
+        "poland": ("POLAND", {
+            "MVLD_CODE": 15, "VEHICLE_LOAD_NAME": "PL_VehicleK", "VEHICLE_LOAD_NUM": 1,
+            "VEHICLE_TYPE_NAME": "Vehicle K", "STANDARD_CODE": "PN-85/S-10030 - RoadBridge",
+            "VEH_PL": {"SEL_VEHICLE": "Vehicle K", "DYNAMIC_AMP_FACTOR": False},
+        }),
+    }
+
+
+def mvhl_country_objects(client: MidasClient, checkpoint: str, extension: str) -> dict[str, Any]:
+    """Which field selects a /db/MVHL record's VEH_* object.
+
+    One document per country: select its /db/MVCD CODE, send the printed body,
+    then two bodies that each change one field - the Australia body with its
+    heading's ``"AUSTRALIA"`` for ``"ROAD TRAFFIC"``, and the China body under
+    the Australia code, which asks whether MVLD_CODE or the model's code is
+    what is checked. Each table is read back by VEHICLE_LOAD_NAME, because
+    this endpoint renumbers a POSTed record.
+    """
+    examples = _mvhl_country_examples()
+    heading_code = dict(examples["australia"][1], STANDARD_CODE="AUSTRALIA",
+                        VEHICLE_LOAD_NAME="AU(Road)_M1600_heading")
+    china_elsewhere = dict(examples["china"][1], VEHICLE_LOAD_NAME="CN_UD_Lane1_under_AU")
+    documents: dict[str, list[tuple[str, dict[str, Any]]]] = {}
+    for label, (code, record) in examples.items():
+        documents.setdefault(code, []).append((label, record))
+    documents["AUSTRALIA"] += [("australia_heading_code", heading_code),
+                               ("china_under_australia", china_elsewhere)]
+    results: dict[str, Any] = {}
+    for code, records in documents.items():
+        doc.new_project(client=client)
+        results[code] = entry = {
+            "mvcd": _raw(client, "POST", "/db/MVCD", {"Assign": {1: {"CODE": code}}}),
+            "records": {},
+        }
+        for index, (label, record) in enumerate(records, start=1):
+            entry["records"][label] = {
+                "sent": record,
+                "post": _raw(client, "POST", "/db/MVHL", {"Assign": {index: record}}),
+            }
+        table = _raw(client, "GET", "/db/MVHL")
+        body = table["body"].get("MVHL") if isinstance(table["body"], dict) else None
+        for item in entry["records"].values():
+            item["stored"] = next((stored for stored in (body or {}).values()
+                                   if stored.get("VEHICLE_LOAD_NAME")
+                                   == item["sent"]["VEHICLE_LOAD_NAME"]), None)
+        doc.save_as(f"{checkpoint}-{code.replace(' ', '_').lower()}.{extension}", client=client)
+    return results
+
+
+def mvhl_code_pairing(client: MidasClient, checkpoint: str, extension: str) -> dict[str, Any]:
+    """The two c6 bodies that stored nothing, one field at a time.
+
+    Poland's printed body answered ``""`` and stored nothing, the same answer
+    c6's China body gave under the Australia code, which reads as an
+    MVLD_CODE the model's /db/MVCD code does not own. So the Poland body is
+    sent once per MVLD_CODE from 1 to 20, each under its own name. South
+    Africa's answered ``Wrong Field``, which c6 got for a STANDARD_CODE value
+    the server does not recognise, so that body is sent without STANDARD_CODE
+    - a field it stores without, measured 2026-09-03.
+    """
+    examples = _mvhl_country_examples()
+    plans = {
+        "POLAND": [(f"poland_mvld_{code}", dict(examples["poland"][1], MVLD_CODE=code,
+                                                 VEHICLE_LOAD_NAME=f"PL_VehicleK_{code}"))
+                   for code in range(1, 21)],
+        "SOUTH AFRICA": [("south_africa_without_standard_code",
+                          {k: v for k, v in examples["south_africa"][1].items()
+                           if k != "STANDARD_CODE"})],
+    }
+    results: dict[str, Any] = {}
+    for code, records in plans.items():
+        doc.new_project(client=client)
+        results[code] = entry = {
+            "mvcd": _raw(client, "POST", "/db/MVCD", {"Assign": {1: {"CODE": code}}}),
+            "records": {},
+        }
+        for index, (label, record) in enumerate(records, start=1):
+            entry["records"][label] = {
+                "sent": record,
+                "post": _raw(client, "POST", "/db/MVHL", {"Assign": {index: record}}),
+            }
+        table = _raw(client, "GET", "/db/MVHL")
+        body = table["body"].get("MVHL") if isinstance(table["body"], dict) else None
+        for item in entry["records"].values():
+            item["stored"] = next((stored for stored in (body or {}).values()
+                                   if stored.get("VEHICLE_LOAD_NAME")
+                                   == item["sent"]["VEHICLE_LOAD_NAME"]), None)
+        doc.save_as(f"{checkpoint}-{code.replace(' ', '_').lower()}.{extension}", client=client)
+    return results
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--product", choices=("gen", "civil"), required=True)
-    parser.add_argument("--case", choices=("a1", "a2", "a3", "b1", "b2", "c1", "c2", "c3", "c4", "c5"),
+    parser.add_argument("--case", choices=("a1", "a2", "a3", "b1", "b2", "c1", "c2", "c3", "c4", "c5",
+                                            "c6", "c7"),
                         default="a1")
     parser.add_argument("--out", required=True)
     harness_save_path.add_arguments(parser, waivable=False)
@@ -727,6 +871,10 @@ def main() -> int:
         result = spfc_euro_placement(client, checkpoint, extension)
     elif args.case == "c5":
         result = this_examples(client, checkpoint, extension)
+    elif args.case == "c6":
+        result = mvhl_country_objects(client, checkpoint, extension)
+    elif args.case == "c7":
+        result = mvhl_code_pairing(client, checkpoint, extension)
     else:
         result = missing_specification_fields(
             client, checkpoint, extension, args.product,

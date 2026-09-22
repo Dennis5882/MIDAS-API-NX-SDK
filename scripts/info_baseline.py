@@ -112,6 +112,11 @@ EXPECTED_AGAINST_CONTRACTS: _AgainstContractsExpectation = {
         # /db/THIS is compared once its mode tables are merged. COMMON.aGILC is in
         # /info on both products and in no table or example of the section.
         "/db/THIS": 1,
+        # /db/MVHL is compared once its country tables are merged. The chapter
+        # tables five countries' objects and names VEH_BS, VEH_EUROCODE, VEH_RU
+        # and VEH_IN without a table; /info carries VEH_BS, VEH_FR and VEH_IN
+        # and further VEH_DEFAULT and VEH_EUROCODE members that no row states.
+        "/db/MVHL": 71,
     },
     "contractOnlyNamesAtMost": {
         "/db/POGD-M1": 2,

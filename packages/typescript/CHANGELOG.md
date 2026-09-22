@@ -7,11 +7,33 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 ## Unreleased
 
 > **Breaking at the type level; nothing changes at runtime.** No export is
-> added, removed or renamed. 19 members of `/post` request types and 148 of
-> other named types narrow, 129 of them to required, and `/db/MCON`'s
+> added, removed or renamed. 19 members of `/post` request types and 158 of
+> other named types narrow, 139 of them to required, and `/db/MCON`'s
 > `LinearConstraintItem` is corrected to the shape the manual gives it, which
 > removes four members it should never have had. `/db/TDME` loses four
 > members that only a code this API refuses could use.
+
+### Changed - `/db/MVHL` is a union over `MVLD_CODE`
+
+`VehiclePayload` was a Python interface with everything optional and only
+`VEH_DEFAULT`, `VEH_EUROCODE` and `VEH_KSCE_LSD15`. It is now a **type alias**: the
+common members, where `MVLD_CODE`, `VEHICLE_LOAD_NAME` and
+`VEHICLE_LOAD_NUM` are **required**, intersected with one branch per country
+table - `VEH_KSCE_LSD15` (`MVLD_CODE: 13`), and the **added** `VEH_CA` (8),
+`VEH_AU` (14), `VEH_ZA` (16), `VEH_CN` (3) and `VEH_PL` (15) - and a last
+member for every other code, which forbids all six. `LOAD_ITEMS2` is added
+at the root. `VEH_DEFAULT` stays optional, documented for codes 1, 2 and 6.
+`VehicleKsceLsd15Params` requires `LENGTH_LANE` and `POINT_ITEMS`, and
+`VehicleKsceLsd15PointItem` and `VehicleLoadItem` require `POINT_LOAD` and
+`POINT_DIST`.
+
+The branch key is `MVLD_CODE`, not the `STANDARD_CODE` the section's headings
+name. Measured on Civil NX 2026-09-22: every printed country body stored
+with its own `MVLD_CODE`, the two user-defined ones with no `STANDARD_CODE`
+at all, while Australia's heading value `"AUSTRALIA"` and South Africa's
+`"NA"` are refused. Rows the tables group under standard or user-defined
+vehicles carry that `VEHICLE_LOAD_NUM` in JSDoc. The Poland body stored
+nothing, so the code 15 is the section's and not yet confirmed.
 
 ### Changed - `/db/THIS` is generated from its contract
 
