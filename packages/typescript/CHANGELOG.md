@@ -6,13 +6,17 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
-> **Breaking at the type level; nothing changes at runtime.** **14 type
-> exports are removed** (listed below); none is added or renamed. 19 members of `/post` request types and 217 of
-> other named types narrow, 193 of them to required, and `/db/MCON`'s
-> `LinearConstraintItem` is corrected to the shape the manual gives it, which
-> removes four members it should never have had. `/db/TDME` loses four
-> members that only a code this API refuses could use, and `/db/FIBR`'s
-> payload loses the `R`, `G` and `B` it declared at the wrong level.
+## 2.9.2 - 2026-09-22
+
+> **Breaking at the type level; nothing changes at runtime.** Measured against
+> `js-v2.9.1`'s declarations: **14 type exports are removed** (listed below)
+> and none is added or renamed (765 → 751); **202 members become required
+> across 74 types**; 105 members are added across 11 types; and 11 members are
+> removed across 3 types - `/db/MCON`'s `LinearConstraintItem` loses four it
+> should never have had, `/db/TDME` four that only a code this API refuses
+> could use, and `/db/FIBR`'s payload the `R`, `G` and `B` it declared at the
+> wrong level. Four payloads become type aliases over a union. A member is a
+> named type's own property, inherited ones included.
 
 ### Removed - 14 type exports nothing in the package used
 
