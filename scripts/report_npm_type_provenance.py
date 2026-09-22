@@ -69,9 +69,11 @@ through `argumentParts`, and SrcMemberCheckTableArgument once only a rendered
 array bound counted as a shape difference, then 15 once /db/FIBR's colour
 row was nested in FIMP_COLOR where it belongs and FiberDivisionColor named
 there, then 14 once /ope/LCOM-SRC's contract, where the shared AIK-SRC2K
-table lives, owned LoadCombinationAikSrc2kArgument. What the 12 left in
-`python:nested` are - every one of them a name the generated SDK itself
-never references:
+table lives, owned LoadCombinationAikSrc2kArgument, then 0 when the 12
+nested and 2 uncontracted names left - every one an export the generated SDK
+itself never referenced - were withdrawn from npm at the author's request.
+`_PYTHON_TYPES_WITHDRAWN` in the generator lists them with their reasons;
+the Python classes remain the Python package's own. What they were:
 
      1  /ope: _LoadCombinationSteelSrcKdsArgument, a Python base class
         nothing references now
@@ -121,15 +123,15 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 TYPES = ROOT / "packages" / "typescript" / "src" / "generated" / "types.ts"
 CONTRACTS = ROOT / "contracts" / "endpoints"
 
-#: Measured 2026-09-22 over 765 generated types, after branch-owned nested types. A ceiling: it falls as
+#: Measured 2026-09-22 over 751 generated types, after branch-owned nested types. A ceiling: it falls as
 #: contracts take over more of the emitted shape, and a rise means a type that
 #: used to come from a contract is being read out of the Python tree again.
-PYTHON_SOURCED_AT_MOST = 14
+PYTHON_SOURCED_AT_MOST = 0
 
 #: Every exported type in `types.ts`. Not a ceiling: adding or removing an
 #: export is a change to the published surface, so it has to be made here on
 #: purpose, together with the changelog entry that says so.
-EXPORTED_TYPES = 765
+EXPORTED_TYPES = 751
 
 #: A table contract builds the request-option types of one result table
 #: (`requestFields.additional`), and marks them with where they came from.

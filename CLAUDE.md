@@ -103,8 +103,10 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   and operation readers already parse, and `tests/test_generate_typescript_sdk.py` fails if an
   import comes back. A missing or broken Python install no longer stops `npm publish`. The
   **source tree** is still load-bearing — deleting `src/midas_nx/` breaks `npm run generate`,
-  though a built `dist/` keeps working — because 14 of 765 generated npm types still come from
-  Python TypedDicts. **Since 2026-09-22 that is the only reason**: which types exist and in which
+  though a built `dist/` keeps working — because the IEHG trio still takes its resource identity
+  from Python classes. Its types no longer do: 0 of 751 generated npm types come from Python
+  TypedDicts since 2026-09-22, when the last 14 - exported names nothing in the generated SDK
+  referenced - were withdrawn at the author's request (`_PYTHON_TYPES_WITHDRAWN`). **Since 2026-09-22 the types are decided by contracts alone**: which types exist and in which
   namespace is decided by the contracts for every type they own (payload roots by
   `surface.payloadTypeName` + `modulePath`, nested and argument types by their recorded
   namespace), the resource list is contracts ∪ Python classes rather than Python classes with

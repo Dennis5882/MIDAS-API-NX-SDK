@@ -1995,19 +1995,6 @@ export namespace DbAnalysisControlTypes {
 }
 
 export namespace DbBaseTypes {
-  export interface InitialLoadCaseItem {
-    LC_NAME?: string;
-    LC_TYPE?: string;
-    SF?: number;
-  }
-  export interface ItemGroupFields {
-    ID?: number;
-    GROUP_NAME?: string;
-  }
-  export interface OptUseToleranceValue {
-    OPT_USE?: boolean;
-    VALUE?: number;
-  }
   /** Generated from contracts/endpoints/. */
   export interface TimeValuePoint {
     /** - 시간 */
@@ -3847,10 +3834,6 @@ export namespace DbConstructionStageTypes {
       /** - 값 (온도 또는 열원) */
       VALUE: number;
     }>;
-  }
-  export interface LoadGroupDayItem {
-    LOAD_NAME?: string;
-    DAY?: string;
   }
   /** Generated from contracts/endpoints/. */
   export interface PipeCoolingPayload {
@@ -6180,19 +6163,6 @@ export namespace DbLoadCombinationsTypes {
     LCNAME: string;
     /** 계수 */
     FACTOR: number;
-  }
-  export interface LoadCombinationPayload {
-    NO?: number;
-    NAME?: string;
-    ACTIVE?: string;
-    iTYPE?: number;
-    DESC?: string;
-    bCB?: boolean;
-    vCOMB?: Array<LoadCombinationItem>;
-    bES?: boolean;
-    iSERV_TYPE?: number;
-    nLCOMTYPE?: number;
-    nSEISTYPE?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface LoadCombinationSRCPayload {
@@ -9573,19 +9543,6 @@ export namespace DbProjectTypes {
     /** Temperature · "C" (Celsius) / "F" (Fahrenheit) */
     TEMPER?: string;
   }
-  export interface _ColorPayload {
-    W_R?: number;
-    W_G?: number;
-    W_B?: number;
-    HF_R?: number;
-    HF_G?: number;
-    HF_B?: number;
-    HE_R?: number;
-    HE_G?: number;
-    HE_B?: number;
-    bBLEMD?: boolean;
-    FACT?: number;
-  }
 }
 
 export namespace DbPropertiesDampingTypes {
@@ -9817,17 +9774,6 @@ export namespace DbPropertiesMaterialTypes {
     REBAR_NAME?: string;
     /** Inelastic Material of Steel */
     STEEL_NAME?: string;
-  }
-  export interface InelasticMaterialKentParkParam {
-    FC?: number;
-    PARTIAL_FACT?: number;
-    K?: number;
-    EC0?: number;
-    EC1_METHOD?: number;
-    EC1?: number;
-    Z?: number;
-    ECU?: number;
-    STRENGTH_AFTER?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface InelasticMaterialPropertyPayload {
@@ -11425,20 +11371,6 @@ export namespace DbPropertiesSectionTypes {
       /** Shear Vyy Scale Factor */
       OUT_SHEAR_Y?: number;
     }>;
-  }
-  export interface SectBefore {
-    SHAPE?: string;
-    OFFSET_PT?: string;
-    OFFSET_CENTER?: number;
-    HORZ_OFFSET_OPT?: number;
-    USERDEF_OFFSET_YI?: number;
-    VERT_OFFSET_OPT?: number;
-    USERDEF_OFFSET_ZI?: number;
-    USER_OFFSET_REF?: number;
-    USE_SHEAR_DEFORM?: boolean;
-    USE_WARPING_EFFECT?: boolean;
-    DATATYPE?: number;
-    SECT_I?: unknown;
   }
   /** Generated from contracts/endpoints/. */
   export type SectionPayload = {
@@ -14591,16 +14523,6 @@ export namespace DesignRcKdsChecksTypes {
       STORY?: Array<string>;
     }>;
   }
-  export interface RcDesignForcesArgument {
-    TABLE_NAME?: string;
-    TABLE_TYPE?: string;
-    EXPORT_PATH?: string;
-    UNIT?: PostBaseTypes.TableUnit;
-    STYLES?: PostBaseTypes.TableStyles;
-    COMPONENTS?: Array<string>;
-    NODE_ELEMS?: PostBaseTypes.NodeElemsSelector;
-    PARTS?: Array<string>;
-  }
   /** Generated from contracts/endpoints/. */
   export interface RcDesignResultColumnSectionSize {
     SCALE_FACTOR?: number;
@@ -15054,15 +14976,6 @@ export namespace DesignRcKdsRebarTypes {
     NMETHOD_TYPE?: "Displacement Based Method" | "Stress Based Method";
     /** 층 이름 (BBOT_STOR=true일 때) */
     STOR_NAME?: string;
-  }
-  export interface ColumnBraceRebarDesignCriteriaItem {
-    MAIN_REBAR?: string;
-    TIES_SPIRALS?: string;
-    ARRANGEMENT_Y?: number;
-    ARRANGEMENT_Z?: number;
-    DO?: number;
-    SPACING_LIMIT?: boolean;
-    SPLICED_BARS?: string;
   }
   /** Generated from contracts/endpoints/. */
   export interface DcreBeamCriteria {
@@ -17007,16 +16920,6 @@ export namespace DesignSrcAiksrc2kTypes {
     /** 설계 코드 — 가능값: AIK-SRC2K */
     DGNCODE: "AIK-SRC2K";
   }
-  export interface SrcDesignForcesArgument {
-    TABLE_NAME?: string;
-    TABLE_TYPE?: string;
-    EXPORT_PATH?: string;
-    UNIT?: PostBaseTypes.TableUnit;
-    STYLES?: PostBaseTypes.TableStyles;
-    COMPONENTS?: Array<string>;
-    NODE_ELEMS?: PostBaseTypes.NodeElemsSelector;
-    PARTS?: Array<string>;
-  }
   /** Generated from contracts/endpoints/. */
   export interface SrcEffectiveLengthFactorPayload {
     /** Ky */
@@ -18386,11 +18289,6 @@ export namespace OpeTypes {
       /** 수직력 계수 – OPT_USE가 true일 때 필수 */
       FORCE_FACTOR?: number;
     };
-  }
-  export interface AllowableStressLine {
-    OPT_USE?: boolean;
-    COMP?: number;
-    TENS?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface AutoMeshAdditionalOption {
@@ -19897,15 +19795,6 @@ export namespace OpeTypes {
     /** Kappa 계수 */
     KAPPA_FACTOR?: number;
   }
-  export interface _LoadCombinationSteelSrcKdsArgument {
-    OPTION?: string;
-    DGNCODE?: string;
-    RS_SCALE_FACTOR?: Array<LoadCombScaleFactorItem>;
-    WIND_LOAD_COMB?: WindLoadComb;
-    ORTHO_EFFECT?: OrthoEffect;
-    ADDITIONAL_LOAD?: AdditionalLoad;
-    UNDERGROUND_LOAD?: UndergroundLoad;
-  }
 }
 
 export namespace PostBaseTypes {
@@ -20170,9 +20059,6 @@ export namespace PostStoryTypes {
       /** 사용자 지정 Beta 값 Applies when BETA.FIX_USER_CHECK = "USER". */
       VALUE?: number;
     };
-  }
-  export interface StorySetAngle {
-    ANGLE?: number;
   }
   /** Generated from contracts/tables/. */
   export interface StoryShearForceRatioAdditional {

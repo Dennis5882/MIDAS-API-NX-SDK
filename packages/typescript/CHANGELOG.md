@@ -6,13 +6,34 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
-> **Breaking at the type level; nothing changes at runtime.** No export is
-> added, removed or renamed. 19 members of `/post` request types and 217 of
+> **Breaking at the type level; nothing changes at runtime.** **14 type
+> exports are removed** (listed below); none is added or renamed. 19 members of `/post` request types and 217 of
 > other named types narrow, 193 of them to required, and `/db/MCON`'s
 > `LinearConstraintItem` is corrected to the shape the manual gives it, which
 > removes four members it should never have had. `/db/TDME` loses four
 > members that only a code this API refuses could use, and `/db/FIBR`'s
 > payload loses the `R`, `G` and `B` it declared at the wrong level.
+
+### Removed - 14 type exports nothing in the package used
+
+These names were exported but referenced by no operation, resource or other
+type in the package: wherever the object is actually sent, the payload or
+argument carrying it is generated from its contract and declares the shape
+inline. Several did not match what the API takes. If you imported one,
+use the member type of the payload that carries it instead, for example
+`DbPropertiesSectionTypes.SectionPayload["SECT_BEFORE"]`.
+
+- `DbBaseTypes`: `ItemGroupFields`, `InitialLoadCaseItem`, `OptUseToleranceValue`
+- `DbConstructionStageTypes`: `LoadGroupDayItem`
+- `DbLoadCombinationsTypes`: `LoadCombinationPayload`
+- `DbProjectTypes`: `_ColorPayload`
+- `DbPropertiesMaterialTypes`: `InelasticMaterialKentParkParam`
+- `DbPropertiesSectionTypes`: `SectBefore`
+- `DesignRcKdsRebarTypes`: `ColumnBraceRebarDesignCriteriaItem`
+- `DesignRcKdsChecksTypes`: `RcDesignForcesArgument`
+- `DesignSrcAiksrc2kTypes`: `SrcDesignForcesArgument`
+- `OpeTypes`: `AllowableStressLine`, `_LoadCombinationSteelSrcKdsArgument`
+- `PostStoryTypes`: `StorySetAngle`
 
 ### Fixed - `/db/FIBR`'s colour members
 

@@ -1069,3 +1069,16 @@ def test_an_unequal_array_bound_does_not_make_two_shapes_differ():
 
     assert generator._structure([open_bound]) == generator._structure([no_bound])
     assert generator._structure([tuple_bound]) != generator._structure([no_bound])
+
+
+def test_withdrawn_python_types_are_neither_published_nor_lost_from_python():
+    """The 14 withdrawn names leave npm only; the Python classes stay."""
+    types_ts = (ROOT / "packages" / "typescript" / "src" / "generated" / "types.ts").read_text(
+        encoding="utf-8"
+    )
+    python_src = "".join(
+        path.read_text(encoding="utf-8") for path in (ROOT / "src" / "midas_nx").rglob("*.py")
+    )
+    for name in generator._PYTHON_TYPES_WITHDRAWN:
+        assert f"interface {name} " not in types_ts and f"type {name} " not in types_ts, name
+        assert f"class {name}(" in python_src, name

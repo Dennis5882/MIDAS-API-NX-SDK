@@ -807,6 +807,30 @@ def _python_type_declaration(
     return lines
 
 
+#: Python TypedDicts npm stopped publishing on 2026-09-22, at the author's
+#: request. Each was an exported name nothing in the generated SDK referenced:
+#: wherever the object is sent, the payload or argument that carries it is
+#: built from its contract and declares the shape inline. What kept them was
+#: the rule that an export is never dropped as a side effect - this is the
+#: deliberate drop. The Python classes stay; they are the Python package's.
+_PYTHON_TYPES_WITHDRAWN: dict[str, str] = {
+    "ItemGroupFields": "a Python base class; each item type declares its members",
+    "ColumnBraceRebarDesignCriteriaItem": "a Python base class with no wire object",
+    "_LoadCombinationSteelSrcKdsArgument": "a Python base class; LCOM-STEEL and LCOM-SRC declare theirs",
+    "LoadCombinationPayload": "a shared Python shape; each /db/LCOM-* payload is its own",
+    "_ColorPayload": "a shared Python shape; each /db/CO_* payload is its own",
+    "InitialLoadCaseItem": "the contracts that carry it disagree on its requiredness",
+    "OptUseToleranceValue": "the contracts that carry it disagree on its requiredness",
+    "LoadGroupDayItem": "/db/STAG requires LOAD_NAME and /db/HSTG does not",
+    "SectBefore": "each /db/SECT SECTTYPE branch declares its own SECT_BEFORE",
+    "StorySetAngle": "two story tables require ANGLE and two do not",
+    "InelasticMaterialKentParkParam": "/db/FIMP's payload declares KENPAR inline",
+    "AllowableStressLine": "referenced by nothing, in Python either",
+    "RcDesignForcesArgument": "no operation takes it",
+    "SrcDesignForcesArgument": "no operation takes it",
+}
+
+
 def _type_layout(
     modules: dict[str, ast.Module],
     type_keys: set[tuple[str, str]],
@@ -827,6 +851,7 @@ def _type_layout(
     layout: dict[str, dict[str, tuple[Any, ...]]] = defaultdict(dict)
     for (namespace, name), contract in contract_types.items():
         layout[namespace][name] = ("contract", contract)
+    withdrawn_seen: set[str] = set()
     for module, tree in modules.items():
         for node in tree.body:
             if not isinstance(node, ast.ClassDef) or (module, node.name) not in type_keys:
@@ -834,7 +859,16 @@ def _type_layout(
             slot = layout[_namespace(module)]
             if node.name in slot:
                 continue
+            if node.name in _PYTHON_TYPES_WITHDRAWN:
+                withdrawn_seen.add(node.name)
+                continue
             slot[node.name] = ("python", module, node, tree)
+    stale = sorted(set(_PYTHON_TYPES_WITHDRAWN) - withdrawn_seen)
+    if stale:
+        raise ValueError(
+            "listed in _PYTHON_TYPES_WITHDRAWN but no Python type of that name is left "
+            f"unclaimed, so the entry is stale: {stale}"
+        )
     return layout
 
 
