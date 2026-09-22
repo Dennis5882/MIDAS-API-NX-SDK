@@ -7,11 +7,36 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 ## Unreleased
 
 > **Breaking at the type level; nothing changes at runtime.** No export is
-> added, removed or renamed. 19 members of `/post` request types and 105 of
-> other named types narrow, 89 of them to required, and `/db/MCON`'s
+> added, removed or renamed. 19 members of `/post` request types and 111 of
+> other named types narrow, 94 of them to required, and `/db/MCON`'s
 > `LinearConstraintItem` is corrected to the shape the manual gives it, which
 > removes four members it should never have had. `/db/TDME` loses four
 > members that only a code this API refuses could use.
+
+### Changed - `/db/STCT` is generated from its contract
+
+`ConstructionStageAnalysisControlDataPayload` came from Python because the
+contract had left the erection-load table unmerged. It is merged at record
+root, where `/info` places it on both products. `FINAL_STAGE` becomes
+required, and `vEREC`'s elements now require their `LTYPECC`, `EREC` and
+`vLCNAME`, as the table's numbered rows do: the payload spells that element
+inline rather than as `ErectionLoadItem`, which `/db/STCT-M1`'s section
+documents with all three optional. `vSDLE` stays optional although its row
+says Required: both products accept a record without it (Gen NX a POST,
+Civil NX a PUT), and the JP-edition feature it belongs to is not measured.
+
+### Changed - `/db/SPLC` is generated from its contract
+
+`ResponseSpectrumLoadCasePayload` listed the main table only; the contract had
+left the two damping tables and the two GEN NX-only tables unmerged. All four
+are merged now, and **20 members are added**: `DALL` and `aDAMPING` (Modal,
+`iMDTYPE: 1`) and `iCOEF`, `bMASSP`, `bSTIFFP`, `MASSC`, `STIFFC`, `iCALC`,
+`FP1`, `FP2`, `DR1`, `DR2` (Mass & Stiffness, `iMDTYPE: 2`), each with its
+`bDAMP`/`iMDTYPE`/`iCOEF` condition in JSDoc, and the Gen NX-only `bACCECC`
+block and `bNDP`/`NDP`. `NAME`, `SCALE`, `PMFT` and `aFUNCNAME` become
+required. The manual marks the eccentricity rows and `NDP` Required with no
+condition; they are **optional** here, because Gen NX accepts a record with
+the switch on and every one of them left out (measured 2026-09-22).
 
 ### Changed - `/db/EPMT` is generated from its contract
 

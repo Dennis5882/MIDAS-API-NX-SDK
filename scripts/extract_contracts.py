@@ -1318,7 +1318,11 @@ _STRUCTURAL_TABLE_SPLITS: dict[str, tuple[StructuralTableMerge, ...]] = {
     # rows and GET /info/db/STCT places every member at record root, so merge
     # the tables there without inventing a branch. Tables 5 and 6 remain out:
     # their conditional/multi-key notation needs separate parser work.
+    # Table 1 is the erection-load block: vEREC and its numbered item rows,
+    # then bSDLE/vSDLE. /info declares all three at record root on both
+    # products; "JP 버전 전용" names a product edition, not a payload branch.
     "/db/STCT": (
+        StructuralTableMerge(1, ((),)),
         StructuralTableMerge(2, ((),)),
         StructuralTableMerge(3, ((),)),
         StructuralTableMerge(4, ((),)),
@@ -1327,7 +1331,13 @@ _STRUCTURAL_TABLE_SPLITS: dict[str, tuple[StructuralTableMerge, ...]] = {
     # members at record root. It is a product qualification, not a payload
     # discriminator, so retain that scope on the fields without inventing a
     # branch between bNDP and NDP.
-    "/db/SPLC": (StructuralTableMerge(4, ((),), ("gen",)),),
+    # Table 3 is the accidental-eccentricity block and table 4 the
+    # non-dissipative one; both are headed GEN NX only and /info places every
+    # member at record root.
+    "/db/SPLC": (
+        StructuralTableMerge(3, ((),), ("gen",)),
+        StructuralTableMerge(4, ((),), ("gen",)),
+    ),
     # Both headings name their destination object. LOAD_STEPS keeps the
     # difference between descriptions that explicitly say "required" and
     # descriptions that only say a field is used under a selector; ADVANCED's
@@ -1790,6 +1800,19 @@ _REVIEWED_ADDITIONAL_FIELD_CONDITIONS: dict[
             "Beam/Plate만 — ⚠️ Truss 예제에는 PARTS 필드 자체가 없음, 2026-08-25 확인",
             ("ELEMTYPE", ("BEAM", "PLATE")),
         ),
+    },
+    # /db/SPLC's Mass & Stiffness table states its own gates in a 비고 column
+    # the parser does not read ("iCOEF=2 시"), and in the Description for the
+    # two direct coefficients ("(iCOEF=1)"). iCOEF's own "Required" is in the
+    # same column and is carried by the contract.
+    "/db/SPLC": {
+        ("MASSC",): ("iCOEF=1", ("iCOEF", (1,))),
+        ("STIFFC",): ("iCOEF=1", ("iCOEF", (1,))),
+        ("iCALC",): ("iCOEF=2 시", ("iCOEF", (2,))),
+        ("FP1",): ("iCOEF=2 시", ("iCOEF", (2,))),
+        ("FP2",): ("iCOEF=2 시", ("iCOEF", (2,))),
+        ("DR1",): ("iCOEF=2 시", ("iCOEF", (2,))),
+        ("DR2",): ("iCOEF=2 시", ("iCOEF", (2,))),
     },
     # /db/THIK's first table is not the whole record: it is headed
     # "Specifications — Value (`"TYPE": "VALUE"`)", and the Stiffened DB
@@ -2491,6 +2514,17 @@ def _conditional_fields(section: "Section", fields: list[ParsedField]) -> tuple[
             1: ((("P_TYPE", 1),), None),
             2: ((("P_TYPE", 2),), None),
             3: ((("P_TYPE", 3),), None),
+        },
+        # Row 16 names iMDTYPE's values - 1=Modal, 2=Mass&Stiff - under
+        # bDAMP=true, the two tables are headed with those names, and the
+        # section's Modal and Mass & Stiffness Request Bodies send exactly
+        # those pairs.
+        "/db/SPLC": {
+            1: ((("bDAMP", True), ("iMDTYPE", 1)), "Modal 감쇠 추가 파라미터 (bDAMP=true, iMDTYPE=1)"),
+            2: (
+                (("bDAMP", True), ("iMDTYPE", 2)),
+                "Mass & Stiffness Proportional 감쇠 추가 파라미터 (bDAMP=true, iMDTYPE=2)",
+            ),
         },
         "/db/THIK": {
             1: (

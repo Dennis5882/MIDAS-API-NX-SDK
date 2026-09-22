@@ -38,25 +38,23 @@ not the same finding as a source that is absent.
 | [`/db/THIS`](#dbthis) | 10 | 41 | 41 | 100% |
 | [`/db/ELEM`](#dbelem) | 8 | 30 | 29 | 96% |
 | [`/db/MVLDpl`](#dbmvldpl) | 4 | 27 | 27 | 100% |
-| [`/db/SPLC`](#dbsplc) | 3 | 23 | 23 | 100% |
 | [`/db/MVLD`](#dbmvld) | 4 | 21 | 21 | 100% |
 | [`/db/TDME`](#dbtdme) | 2 | 7 | 7 | 100% |
-| [`/db/STCT`](#dbstct) | 1 | 6 | 6 | 100% |
 | [`/ope/LCOM-SRC`](#opelcomsrc) | 1 | 5 | -- | n/a |
-| **total** | **62** | **412** | **343** | **83%** |
+| **total** | **58** | **383** | **314** | **81%** |
 
-Of the **344** names on endpoints `/info` answers for, **343** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
+Of the **315** names on endpoints `/info` answers for, **314** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
 
 ### What each table has, as a count
 
 | what the measurement found | tables |
 | --- | ---: |
-| whole table, one object | 27 |
+| whole table, one object | 26 |
 | whole table, several objects | 1 |
-| whole table, scattered | 22 |
+| whole table, scattered | 19 |
 | partly declared | 1 |
 | out of reach | 11 |
-| **all** | **62** |
+| **all** | **58** |
 
 *one object* means `/info` has a single object holding every name in that table; *scattered* means it declares them all but under no common parent, so the table's shape is not something the baseline confirms. Neither is a recommendation -- a table with two sources still needs its manual section read before anything moves.
 
@@ -211,20 +209,6 @@ Baseline answers on `civil`, `gen`. 27 of 27 names declared across 4 tables.
 - **Vehicle S/2S(LOAD_MODEL=1)** declared: `AUTO_OPTIMIZE` at `AUTO_OPTIMIZE`, `MIN_VEHL_DIST` at `AUTO_OPTIMIZE.MIN_VEHL_DIST`, `LANE_NAME` at `AUTO_OPTIMIZE.LANE_NAME`, `MIN_NUM_VEHICLE` at `AUTO_OPTIMIZE.MIN_NUM_VEHICLE`, `MAX_NUM_VEHICLE` at `AUTO_OPTIMIZE.MAX_NUM_VEHICLE`, `COMB_OPTION` at `AUTO_OPTIMIZE.COMB_OPTION`, `OPTIMIZE_ITEMS` at `AUTO_OPTIMIZE.OPTIMIZE_ITEMS`, `VEHICLE_TYPE` at `AUTO_OPTIMIZE.OPTIMIZE_ITEMS.VEHICLE_TYPE`, `VEHICLE_NAME` at `AUTO_OPTIMIZE.OPTIMIZE_ITEMS.VEHICLE_NAME`, `SCALE_FACTOR` at `AUTO_OPTIMIZE.OPTIMIZE_ITEMS.SCALE_FACTOR`
 - **Vehicle K/Military(LOAD_MODEL=2/3)** declared: `AUTO_OPTIMIZE` at `AUTO_OPTIMIZE`, `VEHICLE_LOAD_NAME` at `AUTO_OPTIMIZE.VEHICLE_LOAD_NAME`, `MIN_VEHL_DIST` at `AUTO_OPTIMIZE.MIN_VEHL_DIST`, `LANE_NAME` at `AUTO_OPTIMIZE.LANE_NAME`, `NUM_LOADED_LANES` at `AUTO_OPTIMIZE.NUM_LOADED_LANES`
 
-## `/db/SPLC`
-
-Baseline answers on `civil`, `gen`. 23 of 23 names declared across 3 tables.
-
-| table | names | declared | not declared | nesting |
-| --- | ---: | ---: | ---: | --- |
-| Modal 감쇠 추가 파라미터 | 4 | 4 | 0 | scattered; `(root)` covers 2 of 4 |
-| Mass & Stiffness Proportional 감쇠 추가 파라미터 | 10 | 10 | 0 | one object: `(root)` |
-| 우발 편심(Accidental Eccentricity) 파라미터 | 9 | 9 | 0 | scattered; `(root)` covers 6 of 9 |
-
-- **Modal 감쇠 추가 파라미터** declared: `DALL` at `DALL`, `aDAMPING` at `aDAMPING`, `iMODE` at `aDAMPING.iMODE`, `DAMPING` at `aDAMPING.DAMPING`
-- **Mass & Stiffness Proportional 감쇠 추가 파라미터** declared: `iCOEF` at `iCOEF`, `bMASSP` at `bMASSP`, `bSTIFFP` at `bSTIFFP`, `MASSC` at `MASSC`, `STIFFC` at `STIFFC`, `iCALC` at `iCALC`, `FP1` at `FP1`, `FP2` at `FP2`, `DR1` at `DR1`, `DR2` at `DR2`
-- **우발 편심(Accidental Eccentricity) 파라미터** declared: `bACCECC` at `bACCECC`, `bACCECC_AUTO` at `bACCECC_AUTO`, `ACCECC_PERCENT` at `ACCECC_PERCENT`, `bACCECC_CONSIDER_GL` at `bACCECC_CONSIDER_GL`, `bACCECC_MINIMUM_TORSION` at `bACCECC_MINIMUM_TORSION`, `aACCECC_ECCEN_LIST` at `aACCECC_ECCEN_LIST`, `STORY` at `aACCECC_ECCEN_LIST.STORY`, `CROSS` at `aACCECC_ECCEN_LIST.CROSS`, `ALONG` at `aACCECC_ECCEN_LIST.ALONG`
-
 ## `/db/MVLD`
 
 Baseline answers on `civil`, `gen`. 21 of 21 names declared across 4 tables.
@@ -252,16 +236,6 @@ Baseline answers on `civil`, `gen`. 7 of 7 names declared across 2 tables.
 
 - **`Japan (Hydration)` 전용 추가 필드** declared: `TENS_STRN_FACTOR` at `TENS_STRN_FACTOR`, `bUSE` at `bUSE`, `A` at `A`, `B` at `B`, `D` at `D`, `iCTYPE` at `iCTYPE`
 - **`Japan (Elastic)` 전용 추가 필드** declared: `iECTYPE` at `iECTYPE`
-
-## `/db/STCT`
-
-Baseline answers on `civil`, `gen`. 6 of 6 names declared across 1 tables.
-
-| table | names | declared | not declared | nesting |
-| --- | ---: | ---: | ---: | --- |
-| Parameters — Erection Load (C.S. 출력용 사하중 구분) | 6 | 6 | 0 | scattered; `(root)` covers 3 of 6 |
-
-- **Parameters — Erection Load (C.S. 출력용 사하중 구분)** declared: `vEREC` at `vEREC`, `LTYPECC` at `vEREC.LTYPECC`, `EREC` at `vEREC.EREC`, `vLCNAME` at `vEREC.vLCNAME`, `bSDLE` at `bSDLE`, `vSDLE` at `vSDLE`
 
 ## `/ope/LCOM-SRC`
 

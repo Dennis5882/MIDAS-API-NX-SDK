@@ -332,69 +332,140 @@ export namespace DbAnalysisControlTypes {
       };
     };
   }
+  /** Generated from contracts/endpoints/. */
   export interface ConstructionStageAnalysisControlDataPayload {
+    /** Final Stage Option (Last: true / Other: false) */
     bLAST_FINAL?: boolean;
-    FINAL_STAGE?: string;
+    /** Construction Stage Name (when bLAST_FINAL false) */
+    FINAL_STAGE: string;
+    /** Analysis Type (Linear: 0 / Nonlinear : 1 / Material Nonlinear : 2) */
     iINC_NLA?: number;
+    /** Stage Option (Independent: 0 / Accumulative: 1) */
     iNLA_TYPE?: number;
-    vEREC?: Array<ErectionLoadItem>;
+    /** Erection Load for Construction Stage */
+    vEREC?: Array<{
+      /** Erection Load Case Name */
+      LTYPECC: string;
+      /** Load Type for C.S */
+      EREC: string;
+      /** Load Case Name List */
+      vLCNAME: Array<string>;
+    }>;
+    /** Secondary Dead Load Effect for Grid Model (MIDAS Civil NX JP 버전 전용) */
     bSDLE?: boolean;
+    /** Load Case Name List (Grid Analysis Load, JP 버전 전용) */
     vSDLE?: Array<string>;
+    /** Cable-Pretension Force Type (Internal: "INTERNAL" / External: "EXTERNAL") */
     CPFC?: string;
+    /** External Force Type (대체 여부) */
     bEXT_REPL?: boolean;
+    /** Convert Final Stage Member Forces to Initial Forces for Post C.S */
     bCONV?: boolean;
+    /** Truss (when bCONV true) Applies when bCONV = true. */
     bTRUSS?: boolean;
+    /** Beam (when bCONV true) Applies when bCONV = true. */
     bBEAM?: boolean;
+    /** Change Cable Element to Equivalent Truss for Post C.S. */
     bCHANGE_CABLE?: boolean;
+    /** Apply Initial Member Force to C.S */
     bAPPLY_IMF?: boolean;
+    /** Initial Tangent Displacement 사용 */
     bITD?: boolean;
+    /** Initial Tangent Displacement Type (All: "ALL" / Structure Group: "GROUP") */
     ITD?: string;
+    /** Structure Group Name (ITD="GROUP"일 때) Applies when ITD = "GROUP". */
     GROUP?: string;
+    /** Lack-of-Fit Force Control 사용 */
     bLFFC?: boolean;
+    /** Lack-of-Fit Group Name (bLFFC=true일 때) Applies when bLFFC = true. */
     LFFGR?: string;
+    /** Apply Camber Displacement to C.S. */
     bCAMBER?: boolean;
+    /** Calculate Concurrent Forces of Frame */
     bCALC_CFF?: boolean;
+    /** Calculate Output of Each Part of Composite Section */
     bCALC_CSP?: boolean;
+    /** Self-constrained Forces & Stresses */
     bSELFCONS?: boolean;
+    /** Save Output of Construction Stage */
     bSAVE_OCS?: boolean;
+    /** Stress Decrease 사용 / 옵션 / 상수 */
     bSD?: boolean;
+    /** Stress Decrease 사용 / 옵션 / 상수 */
     iSDOPT?: number;
+    /** Stress Decrease 사용 / 옵션 / 상수 */
     SDCONST?: number;
+    /** Beam Section Property Option (Constant: 0 / Change with Tendon: 1) */
     iBSC?: number;
+    /** Include P-Delta Effect */
     bINC_PDL?: boolean;
+    /** Number of Iterations */
     iITER?: number;
+    /** Convergence Tolerance */
     TOL?: number;
+    /** Number of Load Steps Applies when iINC_NLA is 1 or 2. */
     iLSTEP?: number;
+    /** Maximum Number of Iterations Applies when iINC_NLA is 1 or 2. */
     iMAXITER?: number;
+    /** Convergence Failure 사용 Applies when iINC_NLA is 1 or 2. */
     CF?: boolean;
+    /** Max Bi-Section Level for a Load Step Applies when iINC_NLA is 1 or 2. */
     BSSTEP?: number;
+    /** Max Allowable Diverged Steps Applies when iINC_NLA is 1 or 2. */
     ADSTEP?: number;
+    /** Energy Norm 사용 / 값 Applies when iINC_NLA is 1 or 2. */
     bENEG?: boolean;
+    /** Energy Norm 사용 / 값 Applies when iINC_NLA is 1 or 2. */
     EV?: number;
+    /** Displacement Norm 사용 / 값 Applies when iINC_NLA is 1 or 2. */
     bDISP?: boolean;
+    /** Displacement Norm 사용 / 값 Applies when iINC_NLA is 1 or 2. */
     DV?: number;
+    /** Force Norm 사용 / 값 Applies when iINC_NLA is 1 or 2. */
     bFORC?: boolean;
+    /** Force Norm 사용 / 값 Applies when iINC_NLA is 1 or 2. */
     FV?: number;
+    /** Include Equilibrium Element Nodal Forces Applies when iINC_NLA is 1 or 2. */
     bIEMF?: boolean;
+    /** Include Time Dependent Effect Applies when iNLA_TYPE = 1. */
     bINC_TDE?: boolean;
+    /** Creep & Shrinkage 사용 Applies when iNLA_TYPE = 1. */
     bCNS?: boolean;
+    /** Creep & Shrinkage Type ("CREEP"/"SHRINK"/"BOTH") Applies when iNLA_TYPE = 1. */
     TYPE?: string;
+    /** Number of Creep Iterations Applies when iNLA_TYPE = 1. */
     iITER_CR?: number;
+    /** Creep Tolerance Applies when iNLA_TYPE = 1. */
     TOL_CR?: number;
+    /** Only User's Creep Coefficient Applies when iNLA_TYPE = 1. */
     bOUCC?: boolean;
+    /** Internal Time Step for Creep 사용 Applies when iNLA_TYPE = 1. */
     bITS?: boolean;
+    /** Internal Time Step for Creep 값 Required when iNLA_TYPE = 1. */
     iITS?: number;
+    /** Auto Time Step Generation for Large Time Gap Applies when iNLA_TYPE = 1. */
     bATS?: boolean;
+    /** Time Gap Steps (T>10 / >100 / >1000 / >5000 / >10000) Applies when iNLA_TYPE = 1. */
     iT10?: number;
+    /** Time Gap Steps (T>10 / >100 / >1000 / >5000 / >10000) Applies when iNLA_TYPE = 1. */
     iT100?: number;
+    /** Time Gap Steps (T>10 / >100 / >1000 / >5000 / >10000) Applies when iNLA_TYPE = 1. */
     iT1K?: number;
+    /** Time Gap Steps (T>10 / >100 / >1000 / >5000 / >10000) Applies when iNLA_TYPE = 1. */
     iT5K?: number;
+    /** Time Gap Steps (T>10 / >100 / >1000 / >5000 / >10000) Applies when iNLA_TYPE = 1. */
     iT10K?: number;
+    /** Tendon Tension Loss Effect (Creep&Shrinkage) Applies when iNLA_TYPE = 1. */
     bTTLE_CS?: boolean;
+    /** Consider Re-bar Confinement Effect Applies when iNLA_TYPE = 1. */
     bRCE?: boolean;
+    /** Variation of Comp. Strength Applies when iNLA_TYPE = 1. */
     bVAR?: boolean;
+    /** Tendon Tension Loss Effect (Elastic Shortening) 사용 / 타입 Applies when iNLA_TYPE = 1. */
     bTTLE_ES?: boolean;
+    /** Tendon Tension Loss Effect (Elastic Shortening) 사용 / 타입 Applies when iNLA_TYPE = 1. */
     iTTLE_ES?: number;
+    /** Apply Time Dependent Elastic Modulus to Post C.S Applies when iNLA_TYPE = 1. */
     bAPPLY_ELA?: boolean;
   }
   /** Generated from contracts/endpoints/. */
@@ -5208,26 +5279,103 @@ export namespace DbDynamicLoadsTypes {
     PERIOD?: number;
     VALUE?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ResponseSpectrumLoadCasePayload {
-    NAME?: string;
+    /** 하중 케이스명 */
+    NAME: string;
+    /** 설명 */
     DESC?: string;
+    /** 방향 ("XY" 또는 "Z") */
     DIR?: string;
+    /** 가진 각도 */
     ANGLE?: number;
-    SCALE?: number;
-    PMFT?: number;
-    aFUNCNAME?: Array<string>;
+    /** 스케일 계수 */
+    SCALE: number;
+    /** 주기 수정 계수 */
+    PMFT: number;
+    /** 스펙트럼 함수명 목록 */
+    aFUNCNAME: Array<string>;
+    /** 스펙트럼 데이터 보간 방법 ("LINEAR" / "LOG") */
     INTERP?: string;
+    /** 모드 조합 방법 ("SRSS" / "CQC" / "ABS" / "Linear") */
     COMTYPE?: string;
+    /** 결과에 부호 추가 */
     bADDSIGN?: boolean;
+    /** 부호 추가 방법 (0=주모드방향, 1=절대최대값방향) */
     iSIGNTYPE?: number;
+    /** 모드 형상 선택 */
     bMODE?: boolean;
-    aUSEMODE?: Array<ResponseSpectrumUseMode>;
+    /** 사용 모드 목록 */
+    aUSEMODE?: Array<{
+      /** 모드 사용 여부 */
+      bUSE?: boolean;
+      /** 모드 형상 계수 */
+      MSFACTOR?: number;
+    }>;
+    /** 감쇠 방법 적용 여부 */
     bDAMP?: boolean;
+    /** 감쇠비 보정 여부 */
     bCDAMP?: boolean;
+    /** 감쇠 방법 (1=Modal, 2=Mass&Stiff, 3=StrainEnergy) */
     iMDTYPE?: number;
+    /** 우발 편심 적용 Gen NX only. */
+    bACCECC?: boolean;
+    /** 편심 데이터 (true=자동, false=사용자 정의) Gen NX only. */
+    bACCECC_AUTO?: boolean;
+    /** 편심 비율 Gen NX only. */
+    ACCECC_PERCENT?: number;
+    /** GL 이하 편심 고려 여부 Gen NX only. */
+    bACCECC_CONSIDER_GL?: boolean;
+    /** 최소 우발 비틀림 모멘트 제한 Gen NX only. */
+    bACCECC_MINIMUM_TORSION?: boolean;
+    /** 편심 목록 Gen NX only. */
+    aACCECC_ECCEN_LIST?: Array<{
+      /** 층 이름 Gen NX only. */
+      STORY: string;
+      /** Cross 방향 위치 Gen NX only. */
+      CROSS: number;
+      /** Along 방향 위치 Gen NX only. */
+      ALONG: number;
+    }>;
+    /** 비소산 요소 설계 Gen NX only. */
+    bNDP?: boolean;
+    /** 비소산 계수 Gen NX only. */
+    NDP?: number;
+    /** 전체 모드 감쇠비 Applies when bDAMP = true and iMDTYPE = 1. */
+    DALL?: number;
+    /** 모드별 감쇠비 목록 Applies when bDAMP = true and iMDTYPE = 1. */
+    aDAMPING?: Array<{
+      /** - 모드 번호 */
+      iMODE?: number;
+      /** - 감쇠비 */
+      DAMPING?: number;
+    }>;
+    /** 감쇠 유형 (1=직접 지정, 2=모달 감쇠로부터 계산) Applies when bDAMP = true and iMDTYPE = 2. */
+    iCOEF?: number;
+    /** 질량 비례 여부 Applies when bDAMP = true and iMDTYPE = 2. */
+    bMASSP?: boolean;
+    /** 강성 비례 여부 Applies when bDAMP = true and iMDTYPE = 2. */
+    bSTIFFP?: boolean;
+    /** 질량 비례 계수 (iCOEF=1) Applies when bDAMP = true and iMDTYPE = 2 and iCOEF = 1. */
+    MASSC?: number;
+    /** 강성 비례 계수 (iCOEF=1) Applies when bDAMP = true and iMDTYPE = 2 and iCOEF = 1. */
+    STIFFC?: number;
+    /** 계산 방법 (1=주파수, 2=주기) Applies when bDAMP = true and iMDTYPE = 2 and iCOEF = 2. */
+    iCALC?: number;
+    /** 모드1 주파수/주기 Applies when bDAMP = true and iMDTYPE = 2 and iCOEF = 2. */
+    FP1?: number;
+    /** 모드2 주파수/주기 Applies when bDAMP = true and iMDTYPE = 2 and iCOEF = 2. */
+    FP2?: number;
+    /** 모드1 감쇠비 Applies when bDAMP = true and iMDTYPE = 2 and iCOEF = 2. */
+    DR1?: number;
+    /** 모드2 감쇠비 Applies when bDAMP = true and iMDTYPE = 2 and iCOEF = 2. */
+    DR2?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ResponseSpectrumUseMode {
+    /** 모드 사용 여부 */
     bUSE?: boolean;
+    /** 모드 형상 계수 */
     MSFACTOR?: number;
   }
   /** Generated from contracts/endpoints/. */

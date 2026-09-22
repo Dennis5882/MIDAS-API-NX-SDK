@@ -10790,3 +10790,40 @@ the very next call reports it.
 
 Both products were left connected, responsive, and with the dummy model open on
 Civil (saved at `C:/temp`); Gen's document was left empty.
+
+## 2026-09-22 - `/db/SPLC`'s supplementary rows, one at a time
+
+`scripts/live_manual_feedback.py --case c1`, both products, each document
+confirmed empty by GET with that product's own key first, each probe on a fresh
+document seeded by `_seed_model` plus the `SPFC_B2` spectrum function, and a
+checkpoint under `C:/temp` before the first `/doc/NEW` and after each probe. The
+build was not re-read this session; the last one recorded is 09/15/2026 on both.
+Every probe starts from section 2's no-damping Request Body with `aFUNCNAME`
+pointed at `SPFC_B2`, and changes what its label says.
+
+| probe | product | POST | read back |
+| --- | --- | --- | --- |
+| the example as printed | both | 201 | as sent; Gen adds `bACCECC: false`, `bAUTO`; Civil adds `CQCRATIO`, `iANGLETYPE` |
+| `bACCECC: true`, rows 25-29 omitted | Gen | 201 | `bACCECC: true`, with `bACCECC_AUTO: false`, `bACCECC_CONSIDER_GL` and `bACCECC_MINIMUM_TORSION` supplied |
+| `bNDP: true`, `NDP` omitted | Gen | 201 | neither `bNDP` nor `NDP` |
+| `bNDP: true`, `NDP: 1.0` | Gen | 201 | neither `bNDP` nor `NDP` |
+| Modal damping example (`iMDTYPE: 1`) | both | 201 | `DALL`, `aDAMPING` as sent |
+| Mass & Stiffness, direct (`iMDTYPE: 2`, `iCOEF: 1`) | both | 201 | `MASSC`, `STIFFC` as sent |
+| Mass & Stiffness, from modal damping (`iCOEF: 2`) | both | 201 | `iCALC`, `FP1`, `FP2`, `DR1`, `DR2` as sent |
+
+What it settles:
+
+- **Rows 25-29 are not required**, even with the switch on. The table marks
+  them Required directly under row 24's `bACCECC` and states no condition, and
+  a confirmed round trip already omitted them with `bACCECC` at its default;
+  the other half is now measured as well. MD-57.
+- **`NDP` is not required either**, and what the server does with `bNDP` and
+  `NDP` is open: both are accepted and neither is read back, on this document.
+  That may depend on a design setting the scratch model does not have; nothing
+  here says which.
+- **The damping tables' gates are the manual's own**, and the three examples
+  that state them round-trip unchanged on both products.
+
+The contract now carries all four supplementary tables, and `ResponseSpectrumLoadCasePayload`
+is generated from it. Both documents were left empty. Response bodies stay in
+the run's JSON outside the repository.

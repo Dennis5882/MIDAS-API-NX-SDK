@@ -364,10 +364,89 @@ def missing_specification_fields(client: MidasClient, checkpoint: str,
     return results
 
 
+def _splc_example(**extra: Any) -> dict[str, Any]:
+    """09_DB_Dynamic_Loads.md section 2's no-damping Request Body.
+
+    ``aFUNCNAME`` names this harness's ``SPFC_B2`` in place of the example's
+    ``RS_func``; everything else is the example's, plus ``extra``.
+    """
+    record: dict[str, Any] = {
+        "NAME": "LC_RS_XY", "DIR": "XY", "ANGLE": 0, "SCALE": 1, "PMFT": 1,
+        "bDAMP": False, "INTERP": "LOG", "COMTYPE": "CQC", "bADDSIGN": True,
+        "iSIGNTYPE": 0, "bMODE": True, "aFUNCNAME": ["SPFC_B2"],
+        "aUSEMODE": [
+            {"bUSE": True, "MSFACTOR": 1},
+            {"bUSE": True, "MSFACTOR": 1},
+            {"bUSE": True, "MSFACTOR": 1},
+        ],
+    }
+    record.update(extra)
+    return record
+
+
+def _splc_damping_examples() -> list[tuple[str, dict[str, Any]]]:
+    """The same section's three damping Request Bodies, ``aFUNCNAME`` swapped."""
+    modal = _splc_example(
+        NAME="LC_RS_Modal_Damp", bDAMP=True,
+        aUSEMODE=[{"bUSE": True, "MSFACTOR": 1}, {"bUSE": True, "MSFACTOR": 1}],
+        bCDAMP=True, iMDTYPE=1, DALL=0.05,
+        aDAMPING=[{"iMODE": 1, "DAMPING": 0.06}, {"iMODE": 2, "DAMPING": 0.07}],
+    )
+    direct = _splc_example(
+        NAME="LC_RS_M_S_Direct", bDAMP=True,
+        aUSEMODE=[{"bUSE": True, "MSFACTOR": 1}], bCDAMP=False, iMDTYPE=2,
+        iCOEF=1, bMASSP=True, MASSC=1.1, bSTIFFP=True, STIFFC=1.2,
+    )
+    calc = _splc_example(
+        NAME="LC_RS_M_S_Calc", DIR="Z", bDAMP=True,
+        aUSEMODE=[{"bUSE": True, "MSFACTOR": 1}], bCDAMP=False, iMDTYPE=2,
+        iCOEF=2, bMASSP=True, bSTIFFP=True, iCALC=1, FP1=0.6, FP2=0.7,
+        DR1=0.05, DR2=0.06,
+    )
+    return [("modalDamping", modal), ("massStiffDirect", direct),
+            ("massStiffCalc", calc)]
+
+
+def splc_gates(client: MidasClient, checkpoint: str, extension: str,
+               product: str) -> dict[str, Any]:
+    """Which of /db/SPLC's supplementary rows a request has to carry.
+
+    The accidental-eccentricity table marks rows 25-29 Required and the
+    non-dissipative table marks NDP Required, each directly under the Boolean
+    that switches the feature on, and neither says "when that Boolean is
+    true". A confirmed round trip already omits all of them with the Boolean
+    left at its default; this measures the other half - the Boolean on and
+    its rows left out - and one field at a time. Both tables are GEN NX only.
+    The damping examples are measured on both products: their tables state
+    the iMDTYPE/iCOEF selection, and nothing had sent them yet.
+    """
+    probes: list[tuple[str, dict[str, Any]]] = [("base", _splc_example())]
+    if product == "gen":
+        probes += [
+            ("bACCECC_without_rows", _splc_example(bACCECC=True)),
+            ("bNDP_without_NDP", _splc_example(bNDP=True)),
+            ("bNDP_with_NDP", _splc_example(bNDP=True, NDP=1.0)),
+        ]
+    probes += _splc_damping_examples()
+    results: dict[str, Any] = {}
+    for label, record in probes:
+        doc.new_project(client=client)
+        _seed_model(client)
+        setup = _raw(client, "POST", "/db/SPFC", {"Assign": {1: _spfc_b2_payload()}})
+        results[label] = {
+            "sent": record,
+            "setup": setup,
+            "post": _raw(client, "POST", "/db/SPLC", {"Assign": {1: record}}),
+            "get": _raw(client, "GET", "/db/SPLC/1"),
+        }
+        doc.save_as(f"{checkpoint}-{label}.{extension}", client=client)
+    return results
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--product", choices=("gen", "civil"), required=True)
-    parser.add_argument("--case", choices=("a1", "a2", "a3", "b1", "b2"),
+    parser.add_argument("--case", choices=("a1", "a2", "a3", "b1", "b2", "c1"),
                         default="a1")
     parser.add_argument("--out", required=True)
     harness_save_path.add_arguments(parser, waivable=False)
@@ -389,6 +468,8 @@ def main() -> int:
         result = tdna_radius_types(client, checkpoint, extension)
     elif args.case == "b1":
         result = sseis_torsion_typos(client, checkpoint, extension)
+    elif args.case == "c1":
+        result = splc_gates(client, checkpoint, extension, args.product)
     else:
         result = missing_specification_fields(
             client, checkpoint, extension, args.product,

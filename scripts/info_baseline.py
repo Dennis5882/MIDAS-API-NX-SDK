@@ -99,6 +99,11 @@ EXPECTED_AGAINST_CONTRACTS: _AgainstContractsExpectation = {
         # products; the section's MODEL_TYPE row names six models and no table
         # describes this one, so it is recorded here rather than transcribed.
         "/db/EPMT": 4,
+        # /db/SPLC is compared once its damping and GEN NX-only tables are
+        # merged. CQCRATIO and iANGLETYPE (Civil NX) and bAUTO and iAUTOTYPE
+        # (Gen NX) are in no table; a GET after a POST without them returns
+        # the first three with server-supplied values.
+        "/db/SPLC": 4,
     },
     "contractOnlyNamesAtMost": {
         "/db/POGD-M1": 2,
@@ -115,11 +120,14 @@ EXPECTED_AGAINST_CONTRACTS: _AgainstContractsExpectation = {
 # Product-specific field tags are complete today.  Unlike the standing sweep
 # above, `untagged` therefore has no tolerated baseline: one such field is one
 # false cross-product claim.  Missing contract fields remain a per-endpoint
-# ceiling because /db/SPLC deliberately records an incomplete field list.
+# ceiling because /db/SPLC's contract leaves out four product-only /info
+# properties no manual table describes (CQCRATIO and iANGLETYPE on Civil NX,
+# bAUTO and iAUTOTYPE on Gen NX); it was 15 while its GEN NX-only tables
+# were still unmerged.
 EXPECTED_DIVERGENCE: _DivergenceExpectation = {
     "endpointsAnsweringBothAtLeast": 177,
     "divergentSchemasAtMost": 10,
-    "absentFieldsAtMost": {"/db/SPLC": 15},
+    "absentFieldsAtMost": {"/db/SPLC": 4},
 }
 
 
