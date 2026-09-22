@@ -7,11 +7,28 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 ## Unreleased
 
 > **Breaking at the type level; nothing changes at runtime.** No export is
-> added, removed or renamed. 19 members of `/post` request types and 111 of
-> other named types narrow, 94 of them to required, and `/db/MCON`'s
+> added, removed or renamed. 19 members of `/post` request types and 116 of
+> other named types narrow, 99 of them to required, and `/db/MCON`'s
 > `LinearConstraintItem` is corrected to the shape the manual gives it, which
 > removes four members it should never have had. `/db/TDME` loses four
 > members that only a code this API refuses could use.
+
+### Changed - `/db/ELEM` is a union over `TYPE` and `STYPE`
+
+`ElementPayload` was a six-member Python interface with everything optional.
+It is now a **type alias**: the common members, where `MATL`, `SECT` and
+`NODE` are **required**, intersected with one branch per table the manual
+gives - Tension-only Truss/Hook/Cable (`TYPE: "TENSTR"` with `STYPE` 1-3),
+Compression-only Truss/Gap (`"COMPTR"`, 1-2), `"WALL"`, `"PLATE"` and
+`"PLSTRS"` - and a last member for every other type that forbids the
+branch-only keys. 10 members are added: `TENS`, `T_LIMIT`, `T_bLMT`,
+`NON_LEN`, `CABLE`, `WALL`, `W_CON`, `W_TYPE`, and the schema-only `C_RAT`
+and `LCAXIS`. Using a branch's members now takes its literal `TYPE`, and
+its `STYPE` where the branch names one; a record built with `TYPE: string`
+has to be narrowed first. `STYPE` stays optional for PLATE and PLSTRS, and
+`CABLE`/`NON_LEN` for Cable, although the tables mark them Required: both
+products accept records without them (measured 2026-09-22). The Wall members
+are tagged Gen NX only - Civil NX refuses the element type.
 
 ### Changed - `/db/STCT` is generated from its contract
 

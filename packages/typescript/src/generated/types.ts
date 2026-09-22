@@ -7817,14 +7817,97 @@ export namespace DbNodeElementTypes {
     /** Main Domain Name */
     MAIN_DOMAIN_NAME: string;
   }
-  export interface ElementPayload {
+  /** Generated from contracts/endpoints/. */
+  export type ElementPayload = {
+    /** Element Type */
     TYPE?: string;
-    MATL?: number;
-    SECT?: number;
-    NODE?: Array<number>;
+    /** Material No. */
+    MATL: number;
+    /** Section / Thickness No. */
+    SECT: number;
+    /** Node No. */
+    NODE: Array<number>;
+    /** Beta Angle */
     ANGLE?: number;
-    STYPE?: number;
-  }
+    /** Cable length ratio. */
+    C_RAT?: number;
+    /** Local axis. */
+    LCAXIS?: number;
+  } & (
+    {
+      TYPE: "TENSTR";
+      STYPE: 1;
+      /** Allowable Compression (Negative Value Only) */
+      TENS?: number;
+      /** Tension Limit Value (Positive Value Only) */
+      T_LIMIT?: number;
+      /** Tension Limit */
+      T_bLMT?: boolean;
+    } |
+    {
+      TYPE: "TENSTR";
+      STYPE: 2;
+      /** Hook Length */
+      NON_LEN?: number;
+    } |
+    {
+      TYPE: "TENSTR";
+      STYPE: 3;
+      /** Cable Type • Pretension: 1 • Horizontal: 2 • Lu: 3 */
+      CABLE?: number;
+      /** Pretension / Horizontal */
+      TENS?: number;
+      /** Lu (Range: 0.5~1.5) */
+      NON_LEN?: number;
+    } |
+    {
+      TYPE: "COMPTR";
+      STYPE: 1;
+      /** Allowable Tension (Positive Value Only) */
+      TENS?: number;
+      /** Compression Limit */
+      T_bLMT?: boolean;
+      /** Compression Limit Value (Negative Value Only) */
+      T_LIMIT?: number;
+    } |
+    {
+      TYPE: "COMPTR";
+      STYPE: 2;
+      /** Gap */
+      NON_LEN?: number;
+    } |
+    {
+      TYPE: "WALL";
+      /** Element Subtype • Membrane: 1 • Plate: 2 Gen NX only. */
+      STYPE: number;
+      /** Wall ID Gen NX only. */
+      WALL: number;
+      /** Orientation • Beta Angle: 0 • Ref Point: 1 • Ref Vector: 2 Gen NX only. */
+      W_CON?: number;
+      /** Wall Type • Plate base: 0 • CRB-Pin: 1 • CRB-Fixed: 2 Gen NX only. */
+      W_TYPE?: number;
+    } |
+    {
+      TYPE: "PLATE";
+      /** Element Subtype • Thick: 1 • Thin: 2 • Thick+Drilling DOF: 3 • Thin+Drilling DOF: 4 */
+      STYPE?: number;
+    } |
+    {
+      TYPE: "PLSTRS";
+      /** Element Subtype • Drilling DOF Inactive: 1 • Drilling DOF Active: 2 */
+      STYPE?: number;
+    } |
+    {
+      TENS?: never;
+      T_LIMIT?: never;
+      T_bLMT?: never;
+      NON_LEN?: never;
+      CABLE?: never;
+      WALL?: never;
+      W_CON?: never;
+      W_TYPE?: never;
+    }
+  );
   /** Generated from contracts/endpoints/. */
   export interface MainDomainPayload {
     /** Domain Name */

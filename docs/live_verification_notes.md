@@ -10827,3 +10827,45 @@ What it settles:
 The contract now carries all four supplementary tables, and `ResponseSpectrumLoadCasePayload`
 is generated from it. Both documents were left empty. Response bodies stay in
 the run's JSON outside the repository.
+
+## 2026-09-22 (later) - `/db/ELEM`'s per-type rows, one at a time
+
+`scripts/live_manual_feedback.py --case c2`, same conditions as the SPLC run
+above: empty documents confirmed first, one fresh seeded document per probe,
+checkpoints under `C:/temp`. Each probe is one of section 2's Request Bodies on
+the seed's nodes, as printed or with one row the per-type table marks Required
+left out. Plane Stress has no printed example, so it is the PLATE one with
+`TYPE: "PLSTRS"`. A wall has to stand vertically; the first run put it on the
+seed's flat plate corners and Gen answered `The geometry of the element no. 10
+is incorrect`, so the WALL probes were re-run on Gen on the seed's frame nodes
+plus one node below node 3.
+
+| probe | Gen NX | Civil NX |
+| --- | --- | --- |
+| TENSTR Cable, as printed (no `NON_LEN`) | accepted | accepted |
+| TENSTR Cable without `STYPE` | `Errors detected in the Element input data` | same |
+| TENSTR Cable without `CABLE` | accepted; reads back `CABLE: 3`, `NON_LEN: 3.2`, no `TENS` | same |
+| COMPTR Truss, as printed | accepted | accepted |
+| COMPTR Truss without `STYPE` | refused, as above | same |
+| PLATE without `STYPE` | accepted; reads back `STYPE: 1` | same |
+| PLSTRS with and without `STYPE` | accepted; `STYPE: 1` when omitted | same |
+| WALL, as printed | accepted; `W_CON` not in the response or the GET | `The element type no. 5 for the element no. 10 is not supported` |
+| WALL without `STYPE` | refused, as above | not supported |
+| WALL without `WALL` | `The wall ID no. 0 ... exceeded the possible range ... no. 1 to no. 9999` | not supported |
+| WALL without `W_CON` | accepted, identical record | not supported |
+
+What it settles, all of it MD-59:
+
+- **`STYPE` selects the branch and is required where a table's element has
+  more than one subtype** - TENSTR, COMPTR, WALL - and **defaults to 1** for
+  PLATE and PLSTRS, where the tables also mark it Required.
+- **Cable's `CABLE` and `NON_LEN` are not required.** The section's own Cable
+  example omits `NON_LEN`; omitting `CABLE` gets Lu with a server-chosen
+  length.
+- **WALL is a Gen NX element.** Civil refuses the type outright, the chapter's
+  own example included, and says nothing about it.
+- **`W_CON` is accepted and never returned**, sent or not, and `/info` declares
+  it on neither product.
+
+`ElementPayload` is now generated from the contract as a union over
+`(TYPE, STYPE)`. Both documents were left empty.

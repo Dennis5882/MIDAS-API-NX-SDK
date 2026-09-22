@@ -36,25 +36,23 @@ not the same finding as a source that is absent.
 | [`/db/SPFC`](#dbspfc) | 11 | 74 | 74 | 100% |
 | [`/view/RESULTGRAPHIC`](#viewresultgraphic) | 10 | 63 | -- | n/a |
 | [`/db/THIS`](#dbthis) | 10 | 41 | 41 | 100% |
-| [`/db/ELEM`](#dbelem) | 8 | 30 | 29 | 96% |
 | [`/db/MVLDpl`](#dbmvldpl) | 4 | 27 | 27 | 100% |
 | [`/db/MVLD`](#dbmvld) | 4 | 21 | 21 | 100% |
 | [`/db/TDME`](#dbtdme) | 2 | 7 | 7 | 100% |
 | [`/ope/LCOM-SRC`](#opelcomsrc) | 1 | 5 | -- | n/a |
-| **total** | **58** | **383** | **314** | **81%** |
+| **total** | **50** | **353** | **285** | **80%** |
 
-Of the **315** names on endpoints `/info` answers for, **314** are declared (99%) and **1** is not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
+Of the **285** names on endpoints `/info` answers for, **285** are declared (100%) and **0** are not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
 
 ### What each table has, as a count
 
 | what the measurement found | tables |
 | --- | ---: |
-| whole table, one object | 26 |
+| whole table, one object | 19 |
 | whole table, several objects | 1 |
 | whole table, scattered | 19 |
-| partly declared | 1 |
 | out of reach | 11 |
-| **all** | **58** |
+| **all** | **50** |
 
 *one object* means `/info` has a single object holding every name in that table; *scattered* means it declares them all but under no common parent, so the table's shape is not something the baseline confirms. Neither is a recommendation -- a table with two sources still needs its manual section read before anything moves.
 
@@ -167,31 +165,6 @@ Baseline answers on `civil`, `gen`. 41 of 41 names declared across 10 tables.
 - **6-7. Nonlinear + Static** declared: `bCUMULATE` at `bCUMULATE`, `bITER` at `bITER`, `iINCCTRL` at `iINCCTRL`
 - **증분 방법(iINCCTRL) 세부 파라미터** declared: `bCONV` at `bCONV`, `iMSTEP` at `iMSTEP`, `bEN` at `bEN`, `EN` at `EN`
 - **6-8. 반복 제어 파라미터 (Nonlinear 공통)** declared: `iMAXITER` at `iMAXITER`, `bDN` at `bDN`, `DN` at `DN`, `bFN` at `bFN`, `FN` at `FN`, `bULSM` at `bULSM`, `ULSM` at `ULSM`, `iRKM` at `iRKM`, `dTOL` at `dTOL`
-
-## `/db/ELEM`
-
-Baseline answers on `civil`, `gen`. 29 of 30 names declared across 8 tables.
-
-| table | names | declared | not declared | nesting |
-| --- | ---: | ---: | ---: | --- |
-| Tension only — Truss (STYPE: 1) | 5 | 5 | 0 | one object: `(root)` |
-| Tension only — Hook (STYPE: 2) | 3 | 3 | 0 | one object: `(root)` |
-| Tension only — Cable (STYPE: 3) | 5 | 5 | 0 | one object: `(root)` |
-| Compression only — Truss (STYPE: 1) | 5 | 5 | 0 | one object: `(root)` |
-| Compression only — Gap (STYPE: 2) | 3 | 3 | 0 | one object: `(root)` |
-| Wall | 5 | 4 | 1 | one object: `(root)` |
-| Plate | 2 | 2 | 0 | one object: `(root)` |
-| Plane Stress | 2 | 2 | 0 | one object: `(root)` |
-
-- **Tension only — Truss (STYPE: 1)** declared: `ANGLE` at `ANGLE`, `STYPE` at `STYPE`, `TENS` at `TENS`, `T_LIMIT` at `T_LIMIT`, `T_bLMT` at `T_bLMT`
-- **Tension only — Hook (STYPE: 2)** declared: `ANGLE` at `ANGLE`, `STYPE` at `STYPE`, `NON_LEN` at `NON_LEN`
-- **Tension only — Cable (STYPE: 3)** declared: `ANGLE` at `ANGLE`, `STYPE` at `STYPE`, `CABLE` at `CABLE`, `TENS` at `TENS`, `NON_LEN` at `NON_LEN`
-- **Compression only — Truss (STYPE: 1)** declared: `ANGLE` at `ANGLE`, `STYPE` at `STYPE`, `TENS` at `TENS`, `T_bLMT` at `T_bLMT`, `T_LIMIT` at `T_LIMIT`
-- **Compression only — Gap (STYPE: 2)** declared: `ANGLE` at `ANGLE`, `STYPE` at `STYPE`, `NON_LEN` at `NON_LEN`
-- **Wall** declared: `ANGLE` at `ANGLE`, `STYPE` at `STYPE`, `WALL` at `WALL`, `W_TYPE` at `W_TYPE`
-- **Wall** not declared: `W_CON`
-- **Plate** declared: `ANGLE` at `ANGLE`, `STYPE` at `STYPE`
-- **Plane Stress** declared: `ANGLE` at `ANGLE`, `STYPE` at `STYPE`
 
 ## `/db/MVLDpl`
 

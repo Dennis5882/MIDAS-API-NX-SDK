@@ -114,6 +114,10 @@ EXPECTED_AGAINST_CONTRACTS: _AgainstContractsExpectation = {
         # Schema and in neither its table nor its example. /info does not declare it
         # either. Counted once /db/CSCS stopped being skipped for unmergedTables.
         "/db/CSCS": 1,
+        # W_CON: the Wall table documents it and the Wall Request Body sends it;
+        # /info declares it on neither product, and Gen NX accepts a wall without
+        # it and never returns it even when sent (2026-09-22). Kept as documented.
+        "/db/ELEM": 1,
     },
 }
 

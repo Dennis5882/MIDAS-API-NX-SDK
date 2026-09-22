@@ -443,10 +443,73 @@ def splc_gates(client: MidasClient, checkpoint: str, extension: str,
     return results
 
 
+_WALL_NODE = {30: {"X": 4.0, "Y": 0, "Z": 0}}
+
+
+def _elem_examples() -> dict[str, dict[str, Any]]:
+    """03_DB_Node_Element.md section 2's Request Bodies, on the seed's nodes.
+
+    Line elements use the seed's free pair 21-22 and area elements the plate
+    corners 5-8; ``SECT`` 1 is the seed's section and thickness. A wall has to
+    stand vertically, which the plate corners do not, so WALL uses the seed's
+    frame nodes 1-3 and node 30 added below node 3 (``_WALL_NODE``). Nothing
+    else differs from the printed examples.
+    """
+    return {
+        "TENSTR_cable": {"TYPE": "TENSTR", "MATL": 1, "SECT": 1, "NODE": [21, 22],
+                         "ANGLE": 0, "STYPE": 3, "TENS": 0.5, "CABLE": 1},
+        "COMPTR_truss": {"TYPE": "COMPTR", "MATL": 1, "SECT": 1, "NODE": [21, 22],
+                         "ANGLE": 0, "STYPE": 1, "TENS": 27, "T_LIMIT": -15,
+                         "T_bLMT": True},
+        "PLATE": {"TYPE": "PLATE", "MATL": 1, "SECT": 1, "NODE": [5, 6, 7, 8],
+                  "ANGLE": 0, "STYPE": 1},
+        "WALL": {"TYPE": "WALL", "MATL": 1, "SECT": 1, "NODE": [1, 30, 3, 2],
+                 "STYPE": 1, "WALL": 1, "W_CON": 0, "W_TYPE": 0},
+    }
+
+
+def elem_subtype_rows(client: MidasClient, checkpoint: str, extension: str) -> dict[str, Any]:
+    """Which of /db/ELEM's per-type rows marked Required a request must carry.
+
+    Each supplementary table marks STYPE Required, and the Cable and Wall
+    tables mark more; the Cable Request Body itself omits the Required
+    NON_LEN, and the harness seed has always posted a PLATE without STYPE.
+    Each probe sends one printed example with at most one of those rows
+    removed; ``PLSTRS`` is the PLATE example with TYPE changed, because the
+    section prints no Plane Stress example.
+    """
+    examples = _elem_examples()
+    probes: list[tuple[str, dict[str, Any]]] = []
+    for label, record in examples.items():
+        probes.append((f"{label}_as_printed", record))
+        required = {"TENSTR_cable": ("STYPE", "CABLE"), "COMPTR_truss": ("STYPE",),
+                    "PLATE": ("STYPE",), "WALL": ("STYPE", "WALL", "W_CON")}[label]
+        for key in required:
+            probes.append((f"{label}_without_{key}",
+                           {k: v for k, v in record.items() if k != key}))
+    plane = dict(examples["PLATE"], TYPE="PLSTRS")
+    probes.append(("PLSTRS_with_STYPE", plane))
+    probes.append(("PLSTRS_without_STYPE", {k: v for k, v in plane.items() if k != "STYPE"}))
+    results: dict[str, Any] = {}
+    for label, record in probes:
+        doc.new_project(client=client)
+        _seed_model(client)
+        setup = (_raw(client, "POST", "/db/NODE", {"Assign": _WALL_NODE})
+                 if record["TYPE"] == "WALL" else None)
+        results[label] = {
+            "sent": record,
+            "setup": setup,
+            "post": _raw(client, "POST", "/db/ELEM", {"Assign": {10: record}}),
+            "get": _raw(client, "GET", "/db/ELEM/10"),
+        }
+        doc.save_as(f"{checkpoint}-{label}.{extension}", client=client)
+    return results
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--product", choices=("gen", "civil"), required=True)
-    parser.add_argument("--case", choices=("a1", "a2", "a3", "b1", "b2", "c1"),
+    parser.add_argument("--case", choices=("a1", "a2", "a3", "b1", "b2", "c1", "c2"),
                         default="a1")
     parser.add_argument("--out", required=True)
     harness_save_path.add_arguments(parser, waivable=False)
@@ -470,6 +533,8 @@ def main() -> int:
         result = sseis_torsion_typos(client, checkpoint, extension)
     elif args.case == "c1":
         result = splc_gates(client, checkpoint, extension, args.product)
+    elif args.case == "c2":
+        result = elem_subtype_rows(client, checkpoint, extension)
     else:
         result = missing_specification_fields(
             client, checkpoint, extension, args.product,
