@@ -32,50 +32,21 @@ not the same finding as a source that is absent.
 
 | endpoint | tables | names | declared by `/info` | share |
 | --- | ---: | ---: | ---: | ---: |
-| [`/view/RESULTGRAPHIC`](#viewresultgraphic) | 10 | 63 | -- | n/a |
 | [`/db/TDME`](#dbtdme) | 2 | 7 | 7 | 100% |
 | [`/ope/LCOM-SRC`](#opelcomsrc) | 1 | 5 | -- | n/a |
-| **total** | **13** | **75** | **7** | **9%** |
+| **total** | **3** | **12** | **7** | **58%** |
 
-Of the **7** names on endpoints `/info` answers for, **7** are declared (100%) and **0** are not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
+Of the **7** names on endpoints `/info` answers for, **7** are declared (100%) and **0** are not. The remaining **5** names sit on 1 tables of two endpoints `/info` does not serve at all.
 
 ### What each table has, as a count
 
 | what the measurement found | tables |
 | --- | ---: |
 | whole table, one object | 2 |
-| out of reach | 11 |
-| **all** | **13** |
+| out of reach | 1 |
+| **all** | **3** |
 
 *one object* means `/info` has a single object holding every name in that table; *scattered* means it declares them all but under no common parent, so the table's shape is not something the baseline confirms. Neither is a recommendation -- a table with two sources still needs its manual section read before anything moves.
-
-## `/view/RESULTGRAPHIC`
-
-**Outside `/info`'s reach.** Introspection is served for `/db/*` only -- swept from both SDKs 2026-09-01, and a 404 here is an API fact rather than a missing capture. These names have one source because no second one exists, not because nobody looked.
-
-| table | names | declared | not declared | nesting |
-| --- | ---: | ---: | ---: | --- |
-| 2) Contour Details — `TYPE_OF_DISPLAY.CONTOUR` | 7 | 0 | 7 | -- |
-| 3) Values Output Details — `TYPE_OF_DISPLAY.VALUES` | 8 | 0 | 8 | -- |
-| 4) Legend Details — `TYPE_OF_DISPLAY.LEGEND` | 5 | 0 | 5 | -- |
-| 5) Deformation Details — `TYPE_OF_DISPLAY.DEFORM` | 6 | 0 | 6 | -- |
-| 6) Display Option Details — `TYPE_OF_DISPLAY.DISP_OPT` | 4 | 0 | 4 | -- |
-| 7) Symmetric Model Mirror Detail — `TYPE_OF_DISPLAY.MIRRORED` | 6 | 0 | 6 | -- |
-| 8) Cutting Diagram — `TYPE_OF_DISPLAY.CUTTING_DIAGRAM` | 9 | 0 | 9 | -- |
-| 9) Cutting Plane Detail Dialog — `TYPE_OF_DISPLAY.CUTTING_PLANE` | 4 | 0 | 4 | -- |
-| 10) Applied Loads (Moving Load Tracer Detail) — `TYPE_OF_DISPLAY.APPLIED_LOADS` | 6 | 0 | 6 | -- |
-| 11) IsoSurface Detail Dialog — `TYPE_OF_DISPLAY.ISO_SURFACE` | 8 | 0 | 8 | -- |
-
-- **2) Contour Details — `TYPE_OF_DISPLAY.CONTOUR`** not declared: `CONTOUR`, `OPT_CHECK`, `NUM_OF_COLOR`, `COLOR_TYPE`, `OPTIONS`, `CONTOUR_FILL`, `GRADIENT_FILL`
-- **3) Values Output Details — `TYPE_OF_DISPLAY.VALUES`** not declared: `VALUES`, `OPT_CHECK`, `VALUE_EXP`, `DECIMAL_PT`, `SET_ORIENT`, `MINMAX_ONLY`, `MAXMIN`, `LIMIT_SCALE`
-- **4) Legend Details — `TYPE_OF_DISPLAY.LEGEND`** not declared: `LEGEND`, `OPT_CHECK`, `POSITION`, `VALUE_EXP`, `DECIMAL_PT`
-- **5) Deformation Details — `TYPE_OF_DISPLAY.DEFORM`** not declared: `DEFORM`, `OPT_CHECK`, `SCALE_FACTOR`, `REAL_DEFORM`, `REL_DISP`, `REAL_DISP`
-- **6) Display Option Details — `TYPE_OF_DISPLAY.DISP_OPT`** not declared: `DISP_OPT`, `OPT_CHECK`, `ELEMENT_CENTER`, `VALUE_MAX`
-- **7) Symmetric Model Mirror Detail — `TYPE_OF_DISPLAY.MIRRORED`** not declared: `MIRRORED`, `OPT_CHECK`, `MIRROR_BY_1`, `DIRECTION`, `OFFSET`, `MIRROR_BY_2`
-- **8) Cutting Diagram — `TYPE_OF_DISPLAY.CUTTING_DIAGRAM`** not declared: `CUTTING_DIAGRAM`, `OPT_CHECK`, `CUTTING_MODE`, `CUTTING_NAME`, `NORMAL_TO_PLANE`, `SCALE_FACTOR`, `REVERSE`, `VALUE_OUTPUT`, `MINMAX_ONLY`
-- **9) Cutting Plane Detail Dialog — `TYPE_OF_DISPLAY.CUTTING_PLANE`** not declared: `CUTTING_PLANE`, `OPT_CHECK`, `PLANE_NAME`, `FREE_EDGE`
-- **10) Applied Loads (Moving Load Tracer Detail) — `TYPE_OF_DISPLAY.APPLIED_LOADS`** not declared: `APPLIED_LOADS`, `OPT_CHECK`, `SCALE_FACTOR`, `OPT_LOAD_VALUES`, `VALUE_TYPE`, `VALUE_DECIMAL_PT`
-- **11) IsoSurface Detail Dialog — `TYPE_OF_DISPLAY.ISO_SURFACE`** not declared: `ISO_SURFACE`, `OPT_CHECK`, `DRAW_POLYLINE`, `TRANSPARENCY`, `FREE_EDGE`, `VALUE_MODE`, `VALUE_TYPE`, `VALUE`
 
 ## `/db/TDME`
 

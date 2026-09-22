@@ -19817,14 +19817,22 @@ export namespace ViewTypes {
     /** 수직 시점 각도 */
     VERTICAL?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface AppliedLoadsDisplay {
+    /** 표시 유형 제어 (표시: true / 숨김: false) */
     OPT_CHECK?: boolean;
+    /** 하중 스케일 계수 */
     SCALE_FACTOR?: number;
+    /** 하중값 표시 (활성: true / 비활성: false) */
     OPT_LOAD_VALUES?: boolean;
+    /** 값 출력 타입 (OPT_LOAD_VALUES이 true일 때 — 지수: "Exponential", 고정: "Fixed") */
     VALUE_TYPE?: string;
+    /** 값 출력 소수점 자리 (OPT_LOAD_VALUES이 true일 때, 0 이상) */
     VALUE_DECIMAL_PT?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface AverageNodalOption {
+    /** 유형 (예: "Avg.Nodal") */
     TYPE?: string;
   }
   /** Generated from contracts/endpoints/. */
@@ -19941,41 +19949,77 @@ export namespace ViewTypes {
     /** 결과 표시 (view/RESULTGRAPHIC 매뉴얼 참조) */
     RESULT_GRAPHIC?: JsonObject;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ContourDisplay {
+    /** 표시 유형 제어 (표시: true / 숨김: false) */
     OPT_CHECK?: boolean;
+    /** 컨투어 색상 개수 (6 / 12 / 18 / 24) */
     NUM_OF_COLOR?: number;
+    /** 색상 타입 (V→R→G→B: "vrgb", R→G→B: "rgb", R→B→G: "rbg", Gray Scaled: "gray scaled") */
     COLOR_TYPE?: string;
-    OPTIONS?: ContourOptions;
+    /** 컨투어 표현 옵션 */
+    OPTIONS?: {
+      /** 채움 방식 (Contour Fill: true / 선만 그림: false) */
+      CONTOUR_FILL?: boolean;
+      /** 그라디언트 채움 (CONTOUR_FILL이 true일 때) */
+      GRADIENT_FILL?: boolean;
+    };
   }
+  /** Generated from contracts/endpoints/. */
   export interface ContourOptions {
+    /** 채움 방식 (Contour Fill: true / 선만 그림: false) */
     CONTOUR_FILL?: boolean;
+    /** 그라디언트 채움 (CONTOUR_FILL이 true일 때) */
     GRADIENT_FILL?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface CuttingDiagramDisplay {
+    /** 표시 유형 제어 (표시: true / 숨김: false) */
     OPT_CHECK?: boolean;
+    /** 절단 모드 (Cutting Line: "line", Cutting Plane: "plane") */
     CUTTING_MODE?: string;
-    CUTTING_NAME?: Array<string>;
+    /** 절단선/절단면 선택 (정의된 Cutting Line 이름 ᶜᵁᵀᴸ, 또는 Current UCS 평면 "XY"/"XZ"/"YZ", 또는 명명 평면 고유키 db/NPLN) */
+    CUTTING_NAME: Array<string>;
+    /** 판 요소 그래프 방향 옵션 (법선방향: true / 면내방향: false) */
     NORMAL_TO_PLANE?: boolean;
+    /** 다이어그램 출력 비율 스케일 계수 */
     SCALE_FACTOR?: number;
+    /** 다이어그램 역방향 표현 (Reverse: true / Normal: false) */
     REVERSE?: boolean;
+    /** 수치로 출력 (활성: true / 비활성: false) */
     VALUE_OUTPUT?: boolean;
+    /** 최대/최솟값만 표시 (VALUE_OUTPUT이 true일 때) */
     MINMAX_ONLY?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface CuttingPlaneDisplay {
+    /** 표시 유형 제어 (표시: true / 숨김: false) */
     OPT_CHECK?: boolean;
-    PLANE_NAME?: Array<string>;
+    /** 절단 평면 선택 (Current UCS x-y: "XY", x-z: "XZ", y-z: "YZ", 또는 명명 평면 고유키 db/NPLN) */
+    PLANE_NAME: Array<string>;
+    /** 외곽선 그리기 옵션 (Free Edge: true / Free Face: false) */
     FREE_EDGE?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface DeformDisplay {
+    /** 표시 유형 제어 (표시: true / 숨김: false) */
     OPT_CHECK?: boolean;
+    /** 변형 스케일 계수(변위 확대/축소) */
     SCALE_FACTOR?: number;
+    /** 변형 유형 (Real Deform.: true / Nodal Deform: false) */
     REAL_DEFORM?: boolean;
+    /** 상대 변형(Relative Deformation) */
     REL_DISP?: boolean;
+    /** 실제 구조 변형 (스케일 없이 표시: true / 자동 스케일: false) */
     REAL_DISP?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface DispOptDisplay {
+    /** 표시 유형 제어 (표시: true / 숨김: false) */
     OPT_CHECK?: boolean;
+    /** 요소 중심에 컨투어 배치 (표시: true / 숨김: false) */
     ELEMENT_CENTER?: boolean;
+    /** 최댓값/요소 중심값 표시 선택 (최댓값: true / 요소 중심값: false) */
     VALUE_MAX?: boolean;
   }
   /** Generated from contracts/endpoints/. */
@@ -20248,9 +20292,13 @@ export namespace ViewTypes {
       LABEL_ORIENTATION?: number;
     };
   }
+  /** Generated from contracts/endpoints/. */
   export interface DisplayOptionsSelection {
+    /** Fidelity (예: "Exact") */
     FIDELITY?: string;
+    /** Fill (예: "line") */
     FILL?: string;
+    /** Scale */
     SCALE?: number;
   }
   /** Generated from contracts/endpoints/. */
@@ -20280,26 +20328,49 @@ export namespace ViewTypes {
     /** 서브도메인 철근 방향 */
     SUB_DOMAIN_REBAR_DIRECTION?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface IsoSurfaceDisplay {
+    /** 표시 유형 제어 (표시: true / 숨김: false) */
     OPT_CHECK?: boolean;
+    /** 폴리곤 외곽선 그리기 (활성: true / 비활성: false) */
     DRAW_POLYLINE?: boolean;
+    /** 투명도(화면 전용, 최대 255 / 최소 0) */
     TRANSPARENCY?: number;
+    /** 솔리드 요소 외곽선 강조 (Free Face: true / Free Edge: false) */
     FREE_EDGE?: boolean;
-    VALUE_MODE?: IsoSurfaceValueMode;
+    /** 응력 표시 값 선택 */
+    VALUE_MODE?: {
+      /** 등가면 값 타입 (Relative: "relative", Values: "values") */
+      VALUE_TYPE?: string;
+      /** 등가면 값 (Relative Type: 최대 1 / 최소 0) */
+      VALUE: Array<number>;
+    };
   }
+  /** Generated from contracts/endpoints/. */
   export interface IsoSurfaceValueMode {
+    /** 등가면 값 타입 (Relative: "relative", Values: "values") */
     VALUE_TYPE?: string;
-    VALUE?: Array<number>;
+    /** 등가면 값 (Relative Type: 최대 1 / 최소 0) */
+    VALUE: Array<number>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface LegendDisplay {
+    /** 표시 유형 제어 (표시: true / 숨김: false) */
     OPT_CHECK?: boolean;
+    /** 범례 위치 (오른쪽: "right", 왼쪽: "left") */
     POSITION?: string;
+    /** 지수/고정 표기 선택 (지수: true / 고정: false) */
     VALUE_EXP?: boolean;
+    /** 소수점 자리수 (VALUE_EXP이 false일 때) */
     DECIMAL_PT?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface LoadCaseCombSelection {
+    /** 하중 케이스/조합 유형 (예: "ST") */
     TYPE?: string;
+    /** 하중 케이스/조합 이름 */
     NAME?: string;
+    /** 스텝 번호 */
     STEP_INDEX?: number;
   }
   /** Generated from contracts/endpoints/. */
@@ -20407,22 +20478,45 @@ export namespace ViewTypes {
     /** 소수점 자리수 */
     PLACE: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface LocalUcsOption {
+    /** 유형 (예: "UCS") */
     TYPE?: string;
+    /** UCS 이름 (예: "CurrentUCS") */
     UCS_NAME?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MinMaxOnly {
+    /** MinMax 유형 (Min.&Max.: "Min & Max", Abs Max.: "Abs Max", Max: "Max", Min: "Min") */
     MAXMIN?: string;
+    /** 한계 스케일(Limit Scale, 0~100) */
     LIMIT_SCALE?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MirrorBy {
-    DIRECTION?: string;
-    OFFSET?: number;
+    /** 미러 방향(Half) (XY-Plane at Z: "XY", YZ-Plane at X: "YZ", XZ-Plane at Y: "XZ") */
+    DIRECTION: string;
+    /** 미러 오프셋 거리(Half) */
+    OFFSET: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MirroredDisplay {
+    /** 표시 유형 제어 (표시: true / 숨김: false) */
     OPT_CHECK?: boolean;
-    MIRROR_BY_1?: MirrorBy;
-    MIRROR_BY_2?: MirrorBy;
+    /** 절반 모델 미러(Half) */
+    MIRROR_BY_1: {
+      /** 미러 방향(Half) (XY-Plane at Z: "XY", YZ-Plane at X: "YZ", XZ-Plane at Y: "XZ") */
+      DIRECTION: string;
+      /** 미러 오프셋 거리(Half) */
+      OFFSET: number;
+    };
+    /** 1/4 모델 미러(Quarter) */
+    MIRROR_BY_2?: {
+      /** 미러 방향(Quarter) ("XY" / "YZ" / "XZ") */
+      DIRECTION: string;
+      /** 미러 오프셋 거리(Quarter) */
+      OFFSET: number;
+    };
   }
   /** Generated from contracts/endpoints/. */
   export interface MiscDisplay {
@@ -20466,9 +20560,13 @@ export namespace ViewTypes {
     /** 층 이름(Story Name) ᴳ */
     STORY_NAME?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface OutputSectLocation {
+    /** I 단 */
     OPT_I?: boolean;
+    /** 중앙 */
     OPT_CENTER_MID?: boolean;
+    /** J 단 */
     OPT_J?: boolean;
   }
   /** Generated from contracts/endpoints/. */
@@ -20513,18 +20611,244 @@ export namespace ViewTypes {
     /** 가상 단면 국부축 */
     VIRTUAL_SECTION_LOCAL_AXIS?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ResultGraphicArgument {
+    /** 결과 모드 (예: "beamdiagrams", "reactionforces/moments", "Plane-Stress/PlateStresses") */
     CURRENT_MODE?: string;
-    LOAD_CASE_COMB?: LoadCaseCombSelection;
-    COMPONENTS?: Record<string, unknown>;
-    DISPLAY_OPTIONS?: DisplayOptionsSelection;
-    OPTIONS?: ResultOptionsSelection;
-    OUTPUT_SECT_LOCATION?: OutputSectLocation;
-    TYPE_OF_DISPLAY?: TypeOfDisplayArgument;
+    /** 하중 케이스/조합 */
+    LOAD_CASE_COMB?: {
+      /** 하중 케이스/조합 유형 (예: "ST") */
+      TYPE?: string;
+      /** 하중 케이스/조합 이름 */
+      NAME?: string;
+      /** 스텝 번호 */
+      STEP_INDEX?: number;
+    };
+    /** 성분 - 결과 모드마다 사용 가능한 키가 다릅니다 (예: PART/COMP, COMP/OPT_LOCAL_CHECK) */
+    COMPONENTS?: JsonObject;
+    /** 표시 옵션 */
+    DISPLAY_OPTIONS?: {
+      /** Fidelity (예: "Exact") */
+      FIDELITY?: string;
+      /** Fill (예: "line") */
+      FILL?: string;
+      /** Scale */
+      SCALE?: number;
+    };
+    /** 결과 옵션 */
+    OPTIONS?: {
+      /** Local/UCS */
+      LOCAL_UCS?: {
+        /** 유형 (예: "UCS") */
+        TYPE?: string;
+        /** UCS 이름 (예: "CurrentUCS") */
+        UCS_NAME?: string;
+      };
+      /** Average Nodal */
+      AVERAGE_NODAL?: {
+        /** 유형 (예: "Avg.Nodal") */
+        TYPE?: string;
+      };
+      /** 면 (예: "Top") */
+      SURFACE?: string;
+    };
+    /** 출력 단면 위치 */
+    OUTPUT_SECT_LOCATION?: {
+      /** I 단 */
+      OPT_I?: boolean;
+      /** 중앙 */
+      OPT_CENTER_MID?: boolean;
+      /** J 단 */
+      OPT_J?: boolean;
+    };
+    /** 표시 유형(Type of Display) */
+    TYPE_OF_DISPLAY?: {
+      /** 컨투어 상세(Contour Details) */
+      CONTOUR?: {
+        /** 표시 유형 제어 (표시: true / 숨김: false) */
+        OPT_CHECK?: boolean;
+        /** 컨투어 색상 개수 (6 / 12 / 18 / 24) */
+        NUM_OF_COLOR?: number;
+        /** 색상 타입 (V→R→G→B: "vrgb", R→G→B: "rgb", R→B→G: "rbg", Gray Scaled: "gray scaled") */
+        COLOR_TYPE?: string;
+        /** 컨투어 표현 옵션 */
+        OPTIONS?: {
+          /** 채움 방식 (Contour Fill: true / 선만 그림: false) */
+          CONTOUR_FILL?: boolean;
+          /** 그라디언트 채움 (CONTOUR_FILL이 true일 때) */
+          GRADIENT_FILL?: boolean;
+        };
+      };
+      /** 수치 출력 상세(Values Output Details) */
+      VALUES?: {
+        /** 표시 유형 제어 (표시: true / 숨김: false) */
+        OPT_CHECK?: boolean;
+        /** 지수/고정 표기 선택 (지수: true / 고정: false) */
+        VALUE_EXP?: boolean;
+        /** 소수점 자리수 */
+        DECIMAL_PT?: number;
+        /** 수치 방향(0~180, 15 단위 증가) */
+        SET_ORIENT?: number;
+        /** "MinMax Only" 활성화 */
+        MINMAX_ONLY?: {
+          /** MinMax 유형 (Min.&Max.: "Min & Max", Abs Max.: "Abs Max", Max: "Max", Min: "Min") */
+          MAXMIN?: string;
+          /** 한계 스케일(Limit Scale, 0~100) */
+          LIMIT_SCALE?: number;
+        };
+      };
+      /** 범례 상세(Legend Details) */
+      LEGEND?: {
+        /** 표시 유형 제어 (표시: true / 숨김: false) */
+        OPT_CHECK?: boolean;
+        /** 범례 위치 (오른쪽: "right", 왼쪽: "left") */
+        POSITION?: string;
+        /** 지수/고정 표기 선택 (지수: true / 고정: false) */
+        VALUE_EXP?: boolean;
+        /** 소수점 자리수 (VALUE_EXP이 false일 때) */
+        DECIMAL_PT?: number;
+      };
+      /** 변형 상세(Deformation Details) */
+      DEFORM?: {
+        /** 표시 유형 제어 (표시: true / 숨김: false) */
+        OPT_CHECK?: boolean;
+        /** 변형 스케일 계수(변위 확대/축소) */
+        SCALE_FACTOR?: number;
+        /** 변형 유형 (Real Deform.: true / Nodal Deform: false) */
+        REAL_DEFORM?: boolean;
+        /** 상대 변형(Relative Deformation) */
+        REL_DISP?: boolean;
+        /** 실제 구조 변형 (스케일 없이 표시: true / 자동 스케일: false) */
+        REAL_DISP?: boolean;
+      };
+      /** 표시 옵션 상세(Display Option Details) */
+      DISP_OPT?: {
+        /** 표시 유형 제어 (표시: true / 숨김: false) */
+        OPT_CHECK?: boolean;
+        /** 요소 중심에 컨투어 배치 (표시: true / 숨김: false) */
+        ELEMENT_CENTER?: boolean;
+        /** 최댓값/요소 중심값 표시 선택 (최댓값: true / 요소 중심값: false) */
+        VALUE_MAX?: boolean;
+      };
+      /** 대칭 모델 미러 상세(Symmetric Model Mirror) */
+      MIRRORED?: {
+        /** 표시 유형 제어 (표시: true / 숨김: false) */
+        OPT_CHECK?: boolean;
+        /** 절반 모델 미러(Half) */
+        MIRROR_BY_1: {
+          /** 미러 방향(Half) (XY-Plane at Z: "XY", YZ-Plane at X: "YZ", XZ-Plane at Y: "XZ") */
+          DIRECTION: string;
+          /** 미러 오프셋 거리(Half) */
+          OFFSET: number;
+        };
+        /** 1/4 모델 미러(Quarter) */
+        MIRROR_BY_2?: {
+          /** 미러 방향(Quarter) ("XY" / "YZ" / "XZ") */
+          DIRECTION: string;
+          /** 미러 오프셋 거리(Quarter) */
+          OFFSET: number;
+        };
+      };
+      /** 절단 다이어그램(Cutting Diagram) */
+      CUTTING_DIAGRAM?: {
+        /** 표시 유형 제어 (표시: true / 숨김: false) */
+        OPT_CHECK?: boolean;
+        /** 절단 모드 (Cutting Line: "line", Cutting Plane: "plane") */
+        CUTTING_MODE?: string;
+        /** 절단선/절단면 선택 (정의된 Cutting Line 이름 ᶜᵁᵀᴸ, 또는 Current UCS 평면 "XY"/"XZ"/"YZ", 또는 명명 평면 고유키 db/NPLN) */
+        CUTTING_NAME: Array<string>;
+        /** 판 요소 그래프 방향 옵션 (법선방향: true / 면내방향: false) */
+        NORMAL_TO_PLANE?: boolean;
+        /** 다이어그램 출력 비율 스케일 계수 */
+        SCALE_FACTOR?: number;
+        /** 다이어그램 역방향 표현 (Reverse: true / Normal: false) */
+        REVERSE?: boolean;
+        /** 수치로 출력 (활성: true / 비활성: false) */
+        VALUE_OUTPUT?: boolean;
+        /** 최대/최솟값만 표시 (VALUE_OUTPUT이 true일 때) */
+        MINMAX_ONLY?: boolean;
+      };
+      /** 절단 평면 상세(Cutting Plane Detail) */
+      CUTTING_PLANE?: {
+        /** 표시 유형 제어 (표시: true / 숨김: false) */
+        OPT_CHECK?: boolean;
+        /** 절단 평면 선택 (Current UCS x-y: "XY", x-z: "XZ", y-z: "YZ", 또는 명명 평면 고유키 db/NPLN) */
+        PLANE_NAME: Array<string>;
+        /** 외곽선 그리기 옵션 (Free Edge: true / Free Face: false) */
+        FREE_EDGE?: boolean;
+      };
+      /** 재하 하중(Applied Loads, 이동하중 추적) */
+      APPLIED_LOADS?: {
+        /** 표시 유형 제어 (표시: true / 숨김: false) */
+        OPT_CHECK?: boolean;
+        /** 하중 스케일 계수 */
+        SCALE_FACTOR?: number;
+        /** 하중값 표시 (활성: true / 비활성: false) */
+        OPT_LOAD_VALUES?: boolean;
+        /** 값 출력 타입 (OPT_LOAD_VALUES이 true일 때 — 지수: "Exponential", 고정: "Fixed") */
+        VALUE_TYPE?: string;
+        /** 값 출력 소수점 자리 (OPT_LOAD_VALUES이 true일 때, 0 이상) */
+        VALUE_DECIMAL_PT?: number;
+      };
+      /** 등가면 상세(IsoSurface Detail) */
+      ISO_SURFACE?: {
+        /** 표시 유형 제어 (표시: true / 숨김: false) */
+        OPT_CHECK?: boolean;
+        /** 폴리곤 외곽선 그리기 (활성: true / 비활성: false) */
+        DRAW_POLYLINE?: boolean;
+        /** 투명도(화면 전용, 최대 255 / 최소 0) */
+        TRANSPARENCY?: number;
+        /** 솔리드 요소 외곽선 강조 (Free Face: true / Free Edge: false) */
+        FREE_EDGE?: boolean;
+        /** 응력 표시 값 선택 */
+        VALUE_MODE?: {
+          /** 등가면 값 타입 (Relative: "relative", Values: "values") */
+          VALUE_TYPE?: string;
+          /** 등가면 값 (Relative Type: 최대 1 / 최소 0) */
+          VALUE: Array<number>;
+        };
+      };
+      /** 미변형 형상 표시(Display Undeformed Shape) */
+      UNDEFORMED?: JsonObject;
+      /** 화살표 스케일 계수(Arrow Scale Factor) */
+      ARROW_SCALE_FACTOR?: number;
+      /** 현재 스텝 변위 */
+      OPT_CUR_STEP_DISPLACEMENT?: boolean;
+      /** 단계/스텝 실제 변위 */
+      OPT_STAGE_STEP_REAL_DISPLACEMENT?: boolean;
+      /** 캠버 변위 포함 */
+      OPT_INCLUDING_CAMBER_DISPLACEMENT?: boolean;
+      /** 현재 스텝 힘(Current Step Force) */
+      OPT_CUR_STEP_FORCE?: boolean;
+      /** 항복점(Yield Point) */
+      YIELD_POINT?: JsonObject;
+      /** 충격계수 포함(Include Impact Factor) */
+      OPT_INCLUDE_IMPACT_FACTOR?: boolean;
+      /** 모드 형상(Mode Shape) */
+      MODE_SHAPE?: JsonObject;
+      /** 스케일 계수(Scale Factor) */
+      SCALE_FACTOR?: number;
+      /** 3차 보간(Cubic Interpolation) */
+      OPT_CUBIC_INTERPOLATION?: boolean;
+      /** 3차 보간 계수(Cubic Interpolation Factor) */
+      CUBIC_INTERPOLATION_FACTOR?: number;
+    };
   }
+  /** Generated from contracts/endpoints/. */
   export interface ResultOptionsSelection {
-    LOCAL_UCS?: LocalUcsOption;
-    AVERAGE_NODAL?: AverageNodalOption;
+    /** Local/UCS */
+    LOCAL_UCS?: {
+      /** 유형 (예: "UCS") */
+      TYPE?: string;
+      /** UCS 이름 (예: "CurrentUCS") */
+      UCS_NAME?: string;
+    };
+    /** Average Nodal */
+    AVERAGE_NODAL?: {
+      /** 유형 (예: "Avg.Nodal") */
+      TYPE?: string;
+    };
+    /** 면 (예: "Top") */
     SURFACE?: string;
   }
   /** Generated from contracts/endpoints/. */
@@ -20536,36 +20860,195 @@ export namespace ViewTypes {
     /** Blue */
     B?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface TypeOfDisplayArgument {
-    CONTOUR?: ContourDisplay;
-    VALUES?: ValuesDisplay;
-    LEGEND?: LegendDisplay;
-    DEFORM?: DeformDisplay;
-    DISP_OPT?: DispOptDisplay;
-    MIRRORED?: MirroredDisplay;
-    CUTTING_DIAGRAM?: CuttingDiagramDisplay;
-    CUTTING_PLANE?: CuttingPlaneDisplay;
-    APPLIED_LOADS?: AppliedLoadsDisplay;
-    ISO_SURFACE?: IsoSurfaceDisplay;
-    UNDEFORMED?: Record<string, unknown>;
+    /** 컨투어 상세(Contour Details) */
+    CONTOUR?: {
+      /** 표시 유형 제어 (표시: true / 숨김: false) */
+      OPT_CHECK?: boolean;
+      /** 컨투어 색상 개수 (6 / 12 / 18 / 24) */
+      NUM_OF_COLOR?: number;
+      /** 색상 타입 (V→R→G→B: "vrgb", R→G→B: "rgb", R→B→G: "rbg", Gray Scaled: "gray scaled") */
+      COLOR_TYPE?: string;
+      /** 컨투어 표현 옵션 */
+      OPTIONS?: {
+        /** 채움 방식 (Contour Fill: true / 선만 그림: false) */
+        CONTOUR_FILL?: boolean;
+        /** 그라디언트 채움 (CONTOUR_FILL이 true일 때) */
+        GRADIENT_FILL?: boolean;
+      };
+    };
+    /** 수치 출력 상세(Values Output Details) */
+    VALUES?: {
+      /** 표시 유형 제어 (표시: true / 숨김: false) */
+      OPT_CHECK?: boolean;
+      /** 지수/고정 표기 선택 (지수: true / 고정: false) */
+      VALUE_EXP?: boolean;
+      /** 소수점 자리수 */
+      DECIMAL_PT?: number;
+      /** 수치 방향(0~180, 15 단위 증가) */
+      SET_ORIENT?: number;
+      /** "MinMax Only" 활성화 */
+      MINMAX_ONLY?: {
+        /** MinMax 유형 (Min.&Max.: "Min & Max", Abs Max.: "Abs Max", Max: "Max", Min: "Min") */
+        MAXMIN?: string;
+        /** 한계 스케일(Limit Scale, 0~100) */
+        LIMIT_SCALE?: number;
+      };
+    };
+    /** 범례 상세(Legend Details) */
+    LEGEND?: {
+      /** 표시 유형 제어 (표시: true / 숨김: false) */
+      OPT_CHECK?: boolean;
+      /** 범례 위치 (오른쪽: "right", 왼쪽: "left") */
+      POSITION?: string;
+      /** 지수/고정 표기 선택 (지수: true / 고정: false) */
+      VALUE_EXP?: boolean;
+      /** 소수점 자리수 (VALUE_EXP이 false일 때) */
+      DECIMAL_PT?: number;
+    };
+    /** 변형 상세(Deformation Details) */
+    DEFORM?: {
+      /** 표시 유형 제어 (표시: true / 숨김: false) */
+      OPT_CHECK?: boolean;
+      /** 변형 스케일 계수(변위 확대/축소) */
+      SCALE_FACTOR?: number;
+      /** 변형 유형 (Real Deform.: true / Nodal Deform: false) */
+      REAL_DEFORM?: boolean;
+      /** 상대 변형(Relative Deformation) */
+      REL_DISP?: boolean;
+      /** 실제 구조 변형 (스케일 없이 표시: true / 자동 스케일: false) */
+      REAL_DISP?: boolean;
+    };
+    /** 표시 옵션 상세(Display Option Details) */
+    DISP_OPT?: {
+      /** 표시 유형 제어 (표시: true / 숨김: false) */
+      OPT_CHECK?: boolean;
+      /** 요소 중심에 컨투어 배치 (표시: true / 숨김: false) */
+      ELEMENT_CENTER?: boolean;
+      /** 최댓값/요소 중심값 표시 선택 (최댓값: true / 요소 중심값: false) */
+      VALUE_MAX?: boolean;
+    };
+    /** 대칭 모델 미러 상세(Symmetric Model Mirror) */
+    MIRRORED?: {
+      /** 표시 유형 제어 (표시: true / 숨김: false) */
+      OPT_CHECK?: boolean;
+      /** 절반 모델 미러(Half) */
+      MIRROR_BY_1: {
+        /** 미러 방향(Half) (XY-Plane at Z: "XY", YZ-Plane at X: "YZ", XZ-Plane at Y: "XZ") */
+        DIRECTION: string;
+        /** 미러 오프셋 거리(Half) */
+        OFFSET: number;
+      };
+      /** 1/4 모델 미러(Quarter) */
+      MIRROR_BY_2?: {
+        /** 미러 방향(Quarter) ("XY" / "YZ" / "XZ") */
+        DIRECTION: string;
+        /** 미러 오프셋 거리(Quarter) */
+        OFFSET: number;
+      };
+    };
+    /** 절단 다이어그램(Cutting Diagram) */
+    CUTTING_DIAGRAM?: {
+      /** 표시 유형 제어 (표시: true / 숨김: false) */
+      OPT_CHECK?: boolean;
+      /** 절단 모드 (Cutting Line: "line", Cutting Plane: "plane") */
+      CUTTING_MODE?: string;
+      /** 절단선/절단면 선택 (정의된 Cutting Line 이름 ᶜᵁᵀᴸ, 또는 Current UCS 평면 "XY"/"XZ"/"YZ", 또는 명명 평면 고유키 db/NPLN) */
+      CUTTING_NAME: Array<string>;
+      /** 판 요소 그래프 방향 옵션 (법선방향: true / 면내방향: false) */
+      NORMAL_TO_PLANE?: boolean;
+      /** 다이어그램 출력 비율 스케일 계수 */
+      SCALE_FACTOR?: number;
+      /** 다이어그램 역방향 표현 (Reverse: true / Normal: false) */
+      REVERSE?: boolean;
+      /** 수치로 출력 (활성: true / 비활성: false) */
+      VALUE_OUTPUT?: boolean;
+      /** 최대/최솟값만 표시 (VALUE_OUTPUT이 true일 때) */
+      MINMAX_ONLY?: boolean;
+    };
+    /** 절단 평면 상세(Cutting Plane Detail) */
+    CUTTING_PLANE?: {
+      /** 표시 유형 제어 (표시: true / 숨김: false) */
+      OPT_CHECK?: boolean;
+      /** 절단 평면 선택 (Current UCS x-y: "XY", x-z: "XZ", y-z: "YZ", 또는 명명 평면 고유키 db/NPLN) */
+      PLANE_NAME: Array<string>;
+      /** 외곽선 그리기 옵션 (Free Edge: true / Free Face: false) */
+      FREE_EDGE?: boolean;
+    };
+    /** 재하 하중(Applied Loads, 이동하중 추적) */
+    APPLIED_LOADS?: {
+      /** 표시 유형 제어 (표시: true / 숨김: false) */
+      OPT_CHECK?: boolean;
+      /** 하중 스케일 계수 */
+      SCALE_FACTOR?: number;
+      /** 하중값 표시 (활성: true / 비활성: false) */
+      OPT_LOAD_VALUES?: boolean;
+      /** 값 출력 타입 (OPT_LOAD_VALUES이 true일 때 — 지수: "Exponential", 고정: "Fixed") */
+      VALUE_TYPE?: string;
+      /** 값 출력 소수점 자리 (OPT_LOAD_VALUES이 true일 때, 0 이상) */
+      VALUE_DECIMAL_PT?: number;
+    };
+    /** 등가면 상세(IsoSurface Detail) */
+    ISO_SURFACE?: {
+      /** 표시 유형 제어 (표시: true / 숨김: false) */
+      OPT_CHECK?: boolean;
+      /** 폴리곤 외곽선 그리기 (활성: true / 비활성: false) */
+      DRAW_POLYLINE?: boolean;
+      /** 투명도(화면 전용, 최대 255 / 최소 0) */
+      TRANSPARENCY?: number;
+      /** 솔리드 요소 외곽선 강조 (Free Face: true / Free Edge: false) */
+      FREE_EDGE?: boolean;
+      /** 응력 표시 값 선택 */
+      VALUE_MODE?: {
+        /** 등가면 값 타입 (Relative: "relative", Values: "values") */
+        VALUE_TYPE?: string;
+        /** 등가면 값 (Relative Type: 최대 1 / 최소 0) */
+        VALUE: Array<number>;
+      };
+    };
+    /** 미변형 형상 표시(Display Undeformed Shape) */
+    UNDEFORMED?: JsonObject;
+    /** 화살표 스케일 계수(Arrow Scale Factor) */
     ARROW_SCALE_FACTOR?: number;
+    /** 현재 스텝 변위 */
     OPT_CUR_STEP_DISPLACEMENT?: boolean;
+    /** 단계/스텝 실제 변위 */
     OPT_STAGE_STEP_REAL_DISPLACEMENT?: boolean;
+    /** 캠버 변위 포함 */
     OPT_INCLUDING_CAMBER_DISPLACEMENT?: boolean;
+    /** 현재 스텝 힘(Current Step Force) */
     OPT_CUR_STEP_FORCE?: boolean;
-    YIELD_POINT?: Record<string, unknown>;
+    /** 항복점(Yield Point) */
+    YIELD_POINT?: JsonObject;
+    /** 충격계수 포함(Include Impact Factor) */
     OPT_INCLUDE_IMPACT_FACTOR?: boolean;
-    MODE_SHAPE?: Record<string, unknown>;
+    /** 모드 형상(Mode Shape) */
+    MODE_SHAPE?: JsonObject;
+    /** 스케일 계수(Scale Factor) */
     SCALE_FACTOR?: number;
+    /** 3차 보간(Cubic Interpolation) */
     OPT_CUBIC_INTERPOLATION?: boolean;
+    /** 3차 보간 계수(Cubic Interpolation Factor) */
     CUBIC_INTERPOLATION_FACTOR?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ValuesDisplay {
+    /** 표시 유형 제어 (표시: true / 숨김: false) */
     OPT_CHECK?: boolean;
+    /** 지수/고정 표기 선택 (지수: true / 고정: false) */
     VALUE_EXP?: boolean;
+    /** 소수점 자리수 */
     DECIMAL_PT?: number;
+    /** 수치 방향(0~180, 15 단위 증가) */
     SET_ORIENT?: number;
-    MINMAX_ONLY?: MinMaxOnly;
+    /** "MinMax Only" 활성화 */
+    MINMAX_ONLY?: {
+      /** MinMax 유형 (Min.&Max.: "Min & Max", Abs Max.: "Abs Max", Max: "Max", Min: "Min") */
+      MAXMIN?: string;
+      /** 한계 스케일(Limit Scale, 0~100) */
+      LIMIT_SCALE?: number;
+    };
   }
   /** Generated from contracts/endpoints/. */
   export interface ViewDisplay {

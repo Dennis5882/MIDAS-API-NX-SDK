@@ -59,11 +59,12 @@ types, then 68 once /db/SPFC's design-code tables were merged into STR, OPT
 and VAL, then 66 once /db/THIS's mode tables were, with its COMMON, then
 60 once /db/MVHL's country tables were, gated on MVLD_CODE after a live
 measurement, with its five nested types, then 52 once /db/MVLD's national
-DEFAULT tables were and its seven, which left no unmergedTables root. What
-the 50 left in `python:nested` are:
+DEFAULT tables were and its seven, which left no unmergedTables root, then
+30 once /view/RESULTGRAPHIC's ten TYPE_OF_DISPLAY tables were merged as the
+structural tables their headings say they are, with the section's top-level
+keys, and its argument's 22 types came from the contract. What the 28 left
+in `python:nested` are:
 
-    22  /view/CAPTURE's RESULT_GRAPHIC tree, under a contract with
-        unmergedTables
     11  /ope/DIVIDEELEM's argument and its children, held in
         `_ARGUMENT_TYPES_LEFT_ON_PYTHON` with its reason
      4  the /ope load-combination union arguments and their shared base
@@ -115,7 +116,7 @@ CONTRACTS = ROOT / "contracts" / "endpoints"
 #: Measured 2026-09-22 over 765 generated types, after branch-owned nested types. A ceiling: it falls as
 #: contracts take over more of the emitted shape, and a rise means a type that
 #: used to come from a contract is being read out of the Python tree again.
-PYTHON_SOURCED_AT_MOST = 52
+PYTHON_SOURCED_AT_MOST = 30
 
 #: Every exported type in `types.ts`. Not a ceiling: adding or removing an
 #: export is a change to the published surface, so it has to be made here on

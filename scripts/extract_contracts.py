@@ -1338,6 +1338,13 @@ _STRUCTURAL_TABLE_SPLITS: dict[str, tuple[StructuralTableMerge, ...]] = {
         StructuralTableMerge(3, ((),), ("gen",)),
         StructuralTableMerge(4, ((),), ("gen",)),
     ),
+    # Each detail table is headed with its own destination -
+    # `TYPE_OF_DISPLAY.CONTOUR` and so on - and repeats the parent row table 1
+    # already lists under TYPE_OF_DISPLAY. The objects are independently
+    # optional, so no discriminator is involved.
+    "/view/RESULTGRAPHIC": tuple(
+        StructuralTableMerge(index, (("TYPE_OF_DISPLAY",),)) for index in range(1, 11)
+    ),
     # Both headings name their destination object. LOAD_STEPS keeps the
     # difference between descriptions that explicitly say "required" and
     # descriptions that only say a field is used under a selector; ADVANCED's
@@ -2180,6 +2187,12 @@ def _append_fields(destination: list[ParsedField], additions: list[ParsedField])
         ):
             return False
         _widen_repeated_condition(prior, addition)
+        # A supplementary table headed with its own destination repeats the
+        # parent row an earlier table already listed, then gives its members
+        # (/view/RESULTGRAPHIC's `TYPE_OF_DISPLAY.CONTOUR` and nine more).
+        # The repeat is the same field; its members are what the table adds.
+        if addition.properties and not _append_fields(prior.properties, addition.properties):
+            return False
     return True
 
 

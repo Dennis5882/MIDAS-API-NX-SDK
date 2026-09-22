@@ -7,11 +7,22 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 ## Unreleased
 
 > **Breaking at the type level; nothing changes at runtime.** No export is
-> added, removed or renamed. 19 members of `/post` request types and 189 of
-> other named types narrow, 170 of them to required, and `/db/MCON`'s
+> added, removed or renamed. 19 members of `/post` request types and 199 of
+> other named types narrow, 176 of them to required, and `/db/MCON`'s
 > `LinearConstraintItem` is corrected to the shape the manual gives it, which
 > removes four members it should never have had. `/db/TDME` loses four
 > members that only a code this API refuses could use.
+
+### Changed - `setResultGraphic`'s argument is generated from its contract
+
+`ResultGraphicArgument` and its 21 nested types came from Python. The
+section's ten `TYPE_OF_DISPLAY` detail tables are merged now, which makes
+**6 members required across 5 types**, as the manual marks them:
+`CuttingDiagramDisplay.CUTTING_NAME`, `CuttingPlaneDisplay.PLANE_NAME`,
+`MirroredDisplay.MIRROR_BY_1`, `MirrorBy`'s `DIRECTION` and `OFFSET`, and
+`IsoSurfaceValueMode.VALUE`. `COMPONENTS` and `TYPE_OF_DISPLAY`'s
+`UNDEFORMED`, `YIELD_POINT` and `MODE_SHAPE` narrow from
+`Record<string, unknown>` to `JsonObject`. Every member keeps its name.
 
 ### Changed - `/db/MVLD` is generated from its contract
 

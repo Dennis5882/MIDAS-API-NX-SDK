@@ -4669,3 +4669,25 @@ def test_a_packed_key_cell_becomes_the_names_it_holds():
     # separator to fall back on, so the cell survives intact and stays visible
     # as the oddity it is rather than being guessed at.
     assert _unpack_key_cell('A1" ~ "B4') == ['A1" ~ "B4']
+
+
+def test_a_repeated_parent_row_brings_its_members_into_the_existing_field():
+    """/view/RESULTGRAPHIC's detail tables repeat the parent row table 1 lists.
+
+    `TYPE_OF_DISPLAY.CONTOUR`'s table opens with the `CONTOUR` row table 1
+    already placed under TYPE_OF_DISPLAY, then gives its members. Until
+    2026-09-22 the repeat was recognised as the same field and its members
+    were dropped with it, so the merge reported success and published ten
+    empty objects.
+    """
+    listed = ex.ParsedField("CONTOUR", "Contour", "object", None, "optional", None)
+    repeat = ex.ParsedField("CONTOUR", "Contour", "object", None, "optional", None)
+    repeat.properties = [ex.ParsedField("OPT_CHECK", "Show", "boolean", None, "optional", False)]
+    destination = [listed]
+
+    assert ex._append_fields(destination, [repeat])
+    assert [member.key for member in destination[0].properties] == ["OPT_CHECK"]
+
+    clash = ex.ParsedField("CONTOUR", "Contour", "object", None, "optional", None)
+    clash.properties = [ex.ParsedField("OPT_CHECK", "Show", "string", None, "optional", None)]
+    assert not ex._append_fields(destination, [clash]), "a member declared two ways stays blocked"
