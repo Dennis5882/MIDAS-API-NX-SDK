@@ -6762,26 +6762,62 @@ export namespace DbMovingLoadsTypes {
     /** Factor */
     FACTOR: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadCaseAustraliaHeavyLoadLanes {
-    NA_LLAN_NAMES?: Array<string>;
-    STRAD_LLAN1_NAMES?: Array<string>;
-    STRAD_LLAN2_NAMES?: Array<string>;
+    /** Selected Lanes */
+    NA_LLAN_NAMES: Array<string>;
+    /** Heavy Load Lanes Start */
+    STRAD_LLAN1_NAMES: Array<string>;
+    /** Heavy Load Lanes End */
+    STRAD_LLAN2_NAMES: Array<string>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadCaseAustraliaHeavyLoadPlatform {
-    MULTIPLE_FACTOR?: number;
-    VEHICLE_LOAD_NAME?: string;
-    VEHICLE_LOAD_NAME2?: string;
-    MIN_LOADED_LANE?: number;
-    MAX_LOADED_LANE?: number;
-    LINE_ITEMS?: MovingLoadCaseAustraliaHeavyLoadLanes;
+    /** Unobstructed Lane Scale Factor */
+    MULTIPLE_FACTOR: number;
+    /** Load Case Data — Heavy Load 차량 이름 */
+    VEHICLE_LOAD_NAME: string;
+    /** Load Case Data — M1600/S1600 차량 이름 */
+    VEHICLE_LOAD_NAME2: string;
+    /** Min. Number of Loaded Lanes */
+    MIN_LOADED_LANE: number;
+    /** Max. Number of Loaded Lanes */
+    MAX_LOADED_LANE: number;
+    /** Defined Lane */
+    LINE_ITEMS: {
+      /** Selected Lanes */
+      NA_LLAN_NAMES: Array<string>;
+      /** Heavy Load Lanes Start */
+      STRAD_LLAN1_NAMES: Array<string>;
+      /** Heavy Load Lanes End */
+      STRAD_LLAN2_NAMES: Array<string>;
+    };
   }
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadCaseAutoOptimize {
-    LANE_NAME?: string;
-    SCALE_FACTORS?: Array<number>;
-    MIN_VEHL_DIST?: number;
-    MIN_NUM_VEHICLE?: number;
-    MAX_NUM_VEHICLE?: number;
-    OPTIMIZE_ITEMS?: Array<MovingLoadCaseOptimizeItem>;
+    /** Lane Name */
+    LANE_NAME: string;
+    /** 차선 수별 스케일 계수 */
+    SCALE_FACTORS: Array<number>;
+    /** Minimum Vehicle Distance */
+    MIN_VEHL_DIST: number;
+    /** Min. Number of Vehicles */
+    MIN_NUM_VEHICLE: number;
+    /** Max. Number of Vehicles */
+    MAX_NUM_VEHICLE: number;
+    /** 최적화 대상 차량 목록 */
+    OPTIMIZE_ITEMS: Array<{
+      /** Vehicle Type ("VL" / "VC") */
+      VEHICLE_TYPE: string;
+      /** Vehicle Name */
+      VEHICLE_NAME: string;
+      /** Scale Factor */
+      SCALE_FACTOR: number;
+    }>;
+    /** Select Load Model (Australia 전용, 값은 DEFAULT의 LOAD_MODEL과 동일) */
+    LOAD_MODEL?: number;
+    /** Fatigue Option (Australia 전용) */
+    FATIGUE?: boolean;
   }
   /** Generated from contracts/endpoints/. */
   export interface MovingLoadCaseBsAllModeData {
@@ -7176,17 +7212,47 @@ export namespace DbMovingLoadsTypes {
     /** Selected lanes. */
     SELECTED_LANES: Array<string>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadCaseDefault {
-    LANE_FACTOR_TYPE?: number;
+    /** 차선 수별 스케일 계수 (Russia 제외) */
     SCALE_FACTORS?: Array<number>;
-    COMB_OPTION?: string;
-    SUB_LOAD_DATAS?: Array<MovingLoadCaseSubLoadDataItem>;
+    /** 조합 옵션 */
+    COMB_OPTION: string;
+    /** Lane Factor 종류 (1=Multiple Presence Factor; Korea: 0=Multi-Lane KS Rail, 1=MPF; Russia 제외) */
+    LANE_FACTOR_TYPE?: number;
+    /** Sub Load Case 목록 */
+    SUB_LOAD_DATAS: Array<{
+      /** Vehicle Type ("VL" / "VC") */
+      VEHICLE_TYPE: string;
+      /** Vehicle Name */
+      VEHICLE_NAME: string;
+      /** Scale Factor */
+      SCALE_FACTOR: number;
+      /** Min. Number of Loaded Lanes */
+      MIN_LOADED_LANE: number;
+      /** Max. Number of Loaded Lanes */
+      MAX_LOADED_LANE: number;
+      /** Lane Names */
+      LANE_NAMES: Array<string>;
+    }>;
+    /** 2-Lane Factor L1 (Korea only) */
     _2_LANE_FACTOR_1?: number;
+    /** 2-Lane Factor L2 (Korea only) */
     _2_LANE_FACTOR_2?: number;
+    /** 3+ Lane Factor L1 (Korea only) */
     _3_LANE_FACTOR_1?: number;
+    /** 3+ Lane Factor L2 (Korea only) */
     _3_LANE_FACTOR_2?: number;
+    /** 3+ Lane Factor L3 (Korea only) */
     _3_LANE_FACTOR_3?: number;
+    /** 3+ Lane Factor L4 (Korea only) */
     _3_LANE_FACTOR_4?: number;
+    /** Select Load Model (Australia only) · General:0 · Fatigue:1 · Heavy Load Platform:2 · Rail Traffic Load:3 */
+    LOAD_MODEL?: number;
+    /** Load Factor Type (Australia: Ultimate 0 · Serviceability 1) / Load Combination Type (Russia: Limit State Group I 0 · Group I - Fatigue 1 · Group II 2) */
+    LOAD_COMB_TYPE?: number;
+    /** Fatigue Option (Australia, LOAD_MODEL=1 Load Model Fatigue only) Required when LOAD_MODEL = 1. */
+    FATIGUE?: boolean;
   }
   /** Generated from contracts/endpoints/. */
   export interface MovingLoadCaseEurocodeOptimizeItem {
@@ -7368,24 +7434,131 @@ export namespace DbMovingLoadsTypes {
     /** Selected Lanes for Footway Required when OPT_AUTO_LL = true. */
     SELECTED_FOOTWAY_LANES?: Array<string>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadCaseOptimizeItem {
-    VEHICLE_TYPE?: string;
-    VEHICLE_NAME?: string;
-    SCALE_FACTOR?: number;
+    /** Vehicle Type ("VL" / "VC") */
+    VEHICLE_TYPE: string;
+    /** Vehicle Name */
+    VEHICLE_NAME: string;
+    /** Scale Factor */
+    SCALE_FACTOR: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadCasePayload {
-    LCNAME?: string;
+    /** Load Case Name */
+    LCNAME: string;
+    /** Description */
     DESC?: string;
-    TYPE?: number;
-    DEFAULT?: MovingLoadCaseDefault;
-    PERMIT_LOAD?: MovingLoadCasePermitLoad;
-    AUTO_OPTIMIZE?: MovingLoadCaseAutoOptimize;
-    ASL?: MovingLoadCaseAustraliaHeavyLoadPlatform;
+    /** Load Type (0=General, 1=Permit, 2=Optimization) */
+    TYPE: number;
+    /** General Load 데이터 Applies when TYPE = 0. */
+    DEFAULT?: {
+      /** 차선 수별 스케일 계수 (Russia 제외) */
+      SCALE_FACTORS?: Array<number>;
+      /** 조합 옵션 */
+      COMB_OPTION: string;
+      /** Lane Factor 종류 (1=Multiple Presence Factor; Korea: 0=Multi-Lane KS Rail, 1=MPF; Russia 제외) */
+      LANE_FACTOR_TYPE?: number;
+      /** Sub Load Case 목록 */
+      SUB_LOAD_DATAS: Array<{
+        /** Vehicle Type ("VL" / "VC") */
+        VEHICLE_TYPE: string;
+        /** Vehicle Name */
+        VEHICLE_NAME: string;
+        /** Scale Factor */
+        SCALE_FACTOR: number;
+        /** Min. Number of Loaded Lanes */
+        MIN_LOADED_LANE: number;
+        /** Max. Number of Loaded Lanes */
+        MAX_LOADED_LANE: number;
+        /** Lane Names */
+        LANE_NAMES: Array<string>;
+      }>;
+      /** 2-Lane Factor L1 (Korea only) */
+      _2_LANE_FACTOR_1?: number;
+      /** 2-Lane Factor L2 (Korea only) */
+      _2_LANE_FACTOR_2?: number;
+      /** 3+ Lane Factor L1 (Korea only) */
+      _3_LANE_FACTOR_1?: number;
+      /** 3+ Lane Factor L2 (Korea only) */
+      _3_LANE_FACTOR_2?: number;
+      /** 3+ Lane Factor L3 (Korea only) */
+      _3_LANE_FACTOR_3?: number;
+      /** 3+ Lane Factor L4 (Korea only) */
+      _3_LANE_FACTOR_4?: number;
+      /** Select Load Model (Australia only) · General:0 · Fatigue:1 · Heavy Load Platform:2 · Rail Traffic Load:3 */
+      LOAD_MODEL?: number;
+      /** Load Factor Type (Australia: Ultimate 0 · Serviceability 1) / Load Combination Type (Russia: Limit State Group I 0 · Group I - Fatigue 1 · Group II 2) */
+      LOAD_COMB_TYPE?: number;
+      /** Fatigue Option (Australia, LOAD_MODEL=1 Load Model Fatigue only) Required when DEFAULT.LOAD_MODEL = 1. */
+      FATIGUE?: boolean;
+    };
+    /** Permit Vehicle 데이터 Applies when TYPE = 1. */
+    PERMIT_LOAD?: {
+      /** Vehicle Load Name */
+      VEHICLE_LOAD_NAME: string;
+      /** Reference Lane */
+      REF_LANE: string;
+      /** Scale Factor */
+      SCALE_FACTOR: number;
+    };
+    /** Moving Load Optimization 데이터 Applies when TYPE = 2. */
+    AUTO_OPTIMIZE?: {
+      /** Lane Name */
+      LANE_NAME: string;
+      /** 차선 수별 스케일 계수 */
+      SCALE_FACTORS: Array<number>;
+      /** Minimum Vehicle Distance */
+      MIN_VEHL_DIST: number;
+      /** Min. Number of Vehicles */
+      MIN_NUM_VEHICLE: number;
+      /** Max. Number of Vehicles */
+      MAX_NUM_VEHICLE: number;
+      /** 최적화 대상 차량 목록 */
+      OPTIMIZE_ITEMS: Array<{
+        /** Vehicle Type ("VL" / "VC") */
+        VEHICLE_TYPE: string;
+        /** Vehicle Name */
+        VEHICLE_NAME: string;
+        /** Scale Factor */
+        SCALE_FACTOR: number;
+      }>;
+      /** Select Load Model (Australia 전용, 값은 DEFAULT의 LOAD_MODEL과 동일) */
+      LOAD_MODEL?: number;
+      /** Fatigue Option (Australia 전용) */
+      FATIGUE?: boolean;
+    };
+    /** Australia Heavy Load Platform 병용 데이터 */
+    ASL?: {
+      /** Unobstructed Lane Scale Factor */
+      MULTIPLE_FACTOR: number;
+      /** Load Case Data — Heavy Load 차량 이름 */
+      VEHICLE_LOAD_NAME: string;
+      /** Load Case Data — M1600/S1600 차량 이름 */
+      VEHICLE_LOAD_NAME2: string;
+      /** Min. Number of Loaded Lanes */
+      MIN_LOADED_LANE: number;
+      /** Max. Number of Loaded Lanes */
+      MAX_LOADED_LANE: number;
+      /** Defined Lane */
+      LINE_ITEMS: {
+        /** Selected Lanes */
+        NA_LLAN_NAMES: Array<string>;
+        /** Heavy Load Lanes Start */
+        STRAD_LLAN1_NAMES: Array<string>;
+        /** Heavy Load Lanes End */
+        STRAD_LLAN2_NAMES: Array<string>;
+      };
+    };
   }
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadCasePermitLoad {
-    VEHICLE_LOAD_NAME?: string;
-    REF_LANE?: string;
-    SCALE_FACTOR?: number;
+    /** Vehicle Load Name */
+    VEHICLE_LOAD_NAME: string;
+    /** Reference Lane */
+    REF_LANE: string;
+    /** Scale Factor */
+    SCALE_FACTOR: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface MovingLoadCasePolandAutoOptimize {
@@ -7547,13 +7720,20 @@ export namespace DbMovingLoadsTypes {
     /** Selected Lanes */
     LANE_NAMES: Array<string>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadCaseSubLoadDataItem {
-    VEHICLE_TYPE?: string;
-    VEHICLE_NAME?: string;
-    SCALE_FACTOR?: number;
-    MIN_LOADED_LANE?: number;
-    MAX_LOADED_LANE?: number;
-    LANE_NAMES?: Array<string>;
+    /** Vehicle Type ("VL" / "VC") */
+    VEHICLE_TYPE: string;
+    /** Vehicle Name */
+    VEHICLE_NAME: string;
+    /** Scale Factor */
+    SCALE_FACTOR: number;
+    /** Min. Number of Loaded Lanes */
+    MIN_LOADED_LANE: number;
+    /** Max. Number of Loaded Lanes */
+    MAX_LOADED_LANE: number;
+    /** Lane Names */
+    LANE_NAMES: Array<string>;
   }
   /** Generated from contracts/endpoints/. */
   export interface MovingLoadCaseTransversePayload {

@@ -33,21 +33,19 @@ not the same finding as a source that is absent.
 | endpoint | tables | names | declared by `/info` | share |
 | --- | ---: | ---: | ---: | ---: |
 | [`/view/RESULTGRAPHIC`](#viewresultgraphic) | 10 | 63 | -- | n/a |
-| [`/db/MVLD`](#dbmvld) | 4 | 21 | 21 | 100% |
 | [`/db/TDME`](#dbtdme) | 2 | 7 | 7 | 100% |
 | [`/ope/LCOM-SRC`](#opelcomsrc) | 1 | 5 | -- | n/a |
-| **total** | **17** | **96** | **28** | **29%** |
+| **total** | **13** | **75** | **7** | **9%** |
 
-Of the **28** names on endpoints `/info` answers for, **28** are declared (100%) and **0** are not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
+Of the **7** names on endpoints `/info` answers for, **7** are declared (100%) and **0** are not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
 
 ### What each table has, as a count
 
 | what the measurement found | tables |
 | --- | ---: |
-| whole table, one object | 5 |
-| whole table, scattered | 1 |
+| whole table, one object | 2 |
 | out of reach | 11 |
-| **all** | **17** |
+| **all** | **13** |
 
 *one object* means `/info` has a single object holding every name in that table; *scattered* means it declares them all but under no common parent, so the table's shape is not something the baseline confirms. Neither is a recommendation -- a table with two sources still needs its manual section read before anything moves.
 
@@ -78,22 +76,6 @@ Of the **28** names on endpoints `/info` answers for, **28** are declared (100%)
 - **9) Cutting Plane Detail Dialog — `TYPE_OF_DISPLAY.CUTTING_PLANE`** not declared: `CUTTING_PLANE`, `OPT_CHECK`, `PLANE_NAME`, `FREE_EDGE`
 - **10) Applied Loads (Moving Load Tracer Detail) — `TYPE_OF_DISPLAY.APPLIED_LOADS`** not declared: `APPLIED_LOADS`, `OPT_CHECK`, `SCALE_FACTOR`, `OPT_LOAD_VALUES`, `VALUE_TYPE`, `VALUE_DECIMAL_PT`
 - **11) IsoSurface Detail Dialog — `TYPE_OF_DISPLAY.ISO_SURFACE`** not declared: `ISO_SURFACE`, `OPT_CHECK`, `DRAW_POLYLINE`, `TRANSPARENCY`, `FREE_EDGE`, `VALUE_MODE`, `VALUE_TYPE`, `VALUE`
-
-## `/db/MVLD`
-
-Baseline answers on `civil`, `gen`. 21 of 21 names declared across 4 tables.
-
-| table | names | declared | not declared | nesting |
-| --- | ---: | ---: | ---: | --- |
-| Parameters – DEFAULT (General Load, KSCE-LSD15 / AASHTO STD / LRFD / PENNDOT / Taiwan / Canada) | 10 | 10 | 0 | scattered; `DEFAULT.SUB_LOAD_DATAS` covers 6 of 10 |
-| Parameters – DEFAULT (Korea – 추가 필드) | 7 | 7 | 0 | one object: `DEFAULT` |
-| Parameters – DEFAULT (Australia – 추가 필드) | 3 | 3 | 0 | one object: `DEFAULT` |
-| Parameters – DEFAULT (Russia – 추가 필드) | 1 | 1 | 0 | one object: `DEFAULT` |
-
-- **Parameters – DEFAULT (General Load, KSCE-LSD15 / AASHTO STD / LRFD / PENNDOT / Taiwan / Canada)** declared: `LANE_FACTOR_TYPE` at `DEFAULT.LANE_FACTOR_TYPE`, `SCALE_FACTORS` at `AUTO_OPTIMIZE.SCALE_FACTORS`, `COMB_OPTION` at `DEFAULT.COMB_OPTION`, `SUB_LOAD_DATAS` at `DEFAULT.SUB_LOAD_DATAS`, `VEHICLE_TYPE` at `DEFAULT.SUB_LOAD_DATAS.VEHICLE_TYPE`, `VEHICLE_NAME` at `DEFAULT.SUB_LOAD_DATAS.VEHICLE_NAME`, `SCALE_FACTOR` at `DEFAULT.SUB_LOAD_DATAS.SCALE_FACTOR`, `MIN_LOADED_LANE` at `DEFAULT.SUB_LOAD_DATAS.MIN_LOADED_LANE`, `MAX_LOADED_LANE` at `DEFAULT.SUB_LOAD_DATAS.MAX_LOADED_LANE`, `LANE_NAMES` at `DEFAULT.SUB_LOAD_DATAS.LANE_NAMES`
-- **Parameters – DEFAULT (Korea – 추가 필드)** declared: `LANE_FACTOR_TYPE` at `DEFAULT.LANE_FACTOR_TYPE`, `_2_LANE_FACTOR_1` at `DEFAULT._2_LANE_FACTOR_1`, `_2_LANE_FACTOR_2` at `DEFAULT._2_LANE_FACTOR_2`, `_3_LANE_FACTOR_1` at `DEFAULT._3_LANE_FACTOR_1`, `_3_LANE_FACTOR_2` at `DEFAULT._3_LANE_FACTOR_2`, `_3_LANE_FACTOR_3` at `DEFAULT._3_LANE_FACTOR_3`, `_3_LANE_FACTOR_4` at `DEFAULT._3_LANE_FACTOR_4`
-- **Parameters – DEFAULT (Australia – 추가 필드)** declared: `LOAD_MODEL` at `DEFAULT.LOAD_MODEL`, `LOAD_COMB_TYPE` at `DEFAULT.LOAD_COMB_TYPE`, `FATIGUE` at `DEFAULT.FATIGUE`
-- **Parameters – DEFAULT (Russia – 추가 필드)** declared: `LOAD_COMB_TYPE` at `DEFAULT.LOAD_COMB_TYPE`
 
 ## `/db/TDME`
 

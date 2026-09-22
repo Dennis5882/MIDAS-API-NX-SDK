@@ -477,24 +477,50 @@ def test_types_are_written_in_name_order():
         assert names == sorted(names), block.split(" ", 1)[0]
 
 
-def test_a_contract_with_unmerged_tables_does_not_become_a_payload_type():
-    """/db/MVLD is contracted, and its payload still comes from the fallback.
+def test_a_contract_with_unmerged_tables_does_not_become_a_payload_type(tmp_path, monkeypatch):
+    """A contract that admits an unmerged table keeps its payload on the fallback.
 
-    Its DEFAULT tables label national field groups without naming a wire value
-    that selects them, so they stay unmerged and the contract records the gap
-    instead of claiming a complete field list. Generating a published payload
-    type from that list would narrow the payload onto fields the manual
-    documents elsewhere, and break callers who set them.
+    Its field list is still worth having in the source of truth, but
+    generating a published payload type from it would narrow the payload onto
+    fields the manual documents elsewhere, and break callers who set them. An
+    entry marked `excluded` is a table review decided is not part of this API,
+    and does not hold a contract back.
 
-    /db/THIK, /db/SPLC, /db/SPFC, /db/THIS and /db/MVHL were this test's
-    example until 2026-09-22, each until its supplementary tables were merged.
+    Real contracts were this test's example until 2026-09-22 - /db/THIK,
+    /db/SPLC, /db/SPFC, /db/THIS, /db/MVHL and last /db/MVLD, each until its
+    supplementary tables were merged. No /db contract admits an unmerged table
+    now, so the rule is held on contracts written for it.
     """
+    body = """\
+endpoint: {endpoint}
+fields:
+  - key: NAME
+    type: string
+    requirement: required
+extraction:
+  unmergedTables:
+    - heading: A table
+      excluded: {excluded}
+"""
+    _write_contracts(tmp_path, {
+        "db-held.yaml": body.format(endpoint="/db/HELD", excluded="false"),
+        "db-excluded.yaml": body.format(endpoint="/db/EXCL", excluded="true"),
+        "db-plain.yaml": "endpoint: /db/PLAIN\nfields:\n  - key: NAME\n    type: string\n",
+    })
+    monkeypatch.setattr(generator, "ROOT", tmp_path)
     fields = generator._contract_payload_fields()
 
-    assert "/db/MVLD" not in fields
-    for merged in ("/db/THIK", "/db/SPLC", "/db/SPFC", "/db/THIS", "/db/MVHL"):
+    assert "/db/HELD" not in fields
+    assert "/db/EXCL" in fields, "an excluded table must not hold the contract back"
+    assert "/db/PLAIN" in fields, "an unqualified contract must still supply its payload"
+
+
+def test_no_real_db_contract_admits_an_unmerged_table():
+    """Every /db payload contract's field list is complete, as of 2026-09-22."""
+    fields = generator._contract_payload_fields()
+
+    for merged in ("/db/THIK", "/db/SPLC", "/db/SPFC", "/db/THIS", "/db/MVHL", "/db/MVLD"):
         assert merged in fields, merged
-    assert "/db/BODF" in fields, "an unqualified contract must still supply its payload"
 
 
 def test_a_contract_surface_outranks_the_python_class():

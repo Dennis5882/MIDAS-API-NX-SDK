@@ -7,11 +7,26 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 ## Unreleased
 
 > **Breaking at the type level; nothing changes at runtime.** No export is
-> added, removed or renamed. 19 members of `/post` request types and 158 of
-> other named types narrow, 139 of them to required, and `/db/MCON`'s
+> added, removed or renamed. 19 members of `/post` request types and 189 of
+> other named types narrow, 170 of them to required, and `/db/MCON`'s
 > `LinearConstraintItem` is corrected to the shape the manual gives it, which
 > removes four members it should never have had. `/db/TDME` loses four
 > members that only a code this API refuses could use.
+
+### Changed - `/db/MVLD` is generated from its contract
+
+`MovingLoadCasePayload` and its seven object types came from Python, all
+optional. **31 members become required across the eight**: `LCNAME` and
+`TYPE`, `DEFAULT`'s `COMB_OPTION` and `SUB_LOAD_DATAS`, and every row of
+`SUB_LOAD_DATAS`, `PERMIT_LOAD`, `AUTO_OPTIMIZE`, `OPTIMIZE_ITEMS`, `ASL`
+and `ASL.LINE_ITEMS`. `DEFAULT`, `PERMIT_LOAD` and `AUTO_OPTIMIZE` stay
+optional, each documented for its `TYPE`. **Added**: `LOAD_MODEL`,
+`LOAD_COMB_TYPE` and `FATIGUE` in `MovingLoadCaseDefault`, and `LOAD_MODEL`
+and `FATIGUE` in `MovingLoadCaseAutoOptimize` (Australia, and Russia for
+`LOAD_COMB_TYPE`). The Korea, Australia and Russia rows are chosen by the
+model's `/db/MVCD` code, which no field of the record states, so they stay
+optional with their country in JSDoc - as do `SCALE_FACTORS` and
+`LANE_FACTOR_TYPE`, which Russia does not carry.
 
 ### Changed - `/db/MVHL` is a union over `MVLD_CODE`
 

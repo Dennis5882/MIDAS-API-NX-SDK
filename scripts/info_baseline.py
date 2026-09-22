@@ -117,6 +117,11 @@ EXPECTED_AGAINST_CONTRACTS: _AgainstContractsExpectation = {
         # and VEH_IN without a table; /info carries VEH_BS, VEH_FR and VEH_IN
         # and further VEH_DEFAULT and VEH_EUROCODE members that no row states.
         "/db/MVHL": 71,
+        # /db/MVLD is compared once its national DEFAULT tables are merged.
+        # AUTO_OPTIMIZE.NUM_LOADED_LANES is in /info on both products and in no
+        # row or example of this section; other country sections of the chapter
+        # use the name, and it is not borrowed from them.
+        "/db/MVLD": 1,
     },
     "contractOnlyNamesAtMost": {
         "/db/POGD-M1": 2,

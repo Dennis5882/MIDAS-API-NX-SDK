@@ -15,6 +15,14 @@ surface:
   exportName: movingLoadCase
   modulePath: [db, movingLoads]
   payloadTypeName: MovingLoadCasePayload
+  nestedTypes:
+    - {path: DEFAULT, name: MovingLoadCaseDefault, namespace: DbMovingLoadsTypes}
+    - {path: DEFAULT.SUB_LOAD_DATAS, name: MovingLoadCaseSubLoadDataItem, namespace: DbMovingLoadsTypes}
+    - {path: PERMIT_LOAD, name: MovingLoadCasePermitLoad, namespace: DbMovingLoadsTypes}
+    - {path: AUTO_OPTIMIZE, name: MovingLoadCaseAutoOptimize, namespace: DbMovingLoadsTypes}
+    - {path: AUTO_OPTIMIZE.OPTIMIZE_ITEMS, name: MovingLoadCaseOptimizeItem, namespace: DbMovingLoadsTypes}
+    - {path: ASL, name: MovingLoadCaseAustraliaHeavyLoadPlatform, namespace: DbMovingLoadsTypes}
+    - {path: ASL.LINE_ITEMS, name: MovingLoadCaseAustraliaHeavyLoadLanes, namespace: DbMovingLoadsTypes}
 
 products: [civil, gen]
 
@@ -135,17 +143,20 @@ fields:
     # of the three objects the examples put them beside; this contract
     # published LCNAME/DESC/TYPE and nothing to carry the load case until
     # 2026-09-04. GET /info/db/MVLD declares DEFAULT, PERMIT_LOAD,
-    # AUTO_OPTIMIZE and ASL. Each object's own members are the field lists
-    # this contract declares incomplete under extraction.unmergedTables;
-    # what is recorded here is what the section's Request Examples send.
+    # AUTO_OPTIMIZE and ASL. Each object's members are what the section's
+    # Request Examples send, with the rows of the tables headed after it -
+    # the national DEFAULT tables, PERMIT_LOAD, AUTO_OPTIMIZE and ASL - merged
+    # into the object each one names (extraction.structuralTables).
     properties:
       - key: SCALE_FACTORS
         description: >-
-          차선 수별 스케일 계수
+          차선 수별 스케일 계수 (Russia 제외)
         type: array
         items:
           type: number
-        requirement: required
+        requirement: conditional
+        condition: >-
+          Russia 제외 - Russia는 LANE_FACTOR_TYPE/SCALE_FACTORS가 없는 대신 LOAD_COMB_TYPE이 추가됩니다
         documentedDefault: null
         documentedOptional: false
         safeToOmit: unverified
@@ -161,9 +172,12 @@ fields:
         provenance: manual
       - key: LANE_FACTOR_TYPE
         description: >-
-          Lane Factor 종류
+          Lane Factor 종류 (1=Multiple Presence Factor; Korea: 0=Multi-Lane KS Rail,
+          1=MPF; Russia 제외)
         type: integer
-        requirement: required
+        requirement: conditional
+        condition: >-
+          Russia 제외 - Russia는 LANE_FACTOR_TYPE/SCALE_FACTORS가 없는 대신 LOAD_COMB_TYPE이 추가됩니다
         documentedDefault: null
         documentedOptional: false
         safeToOmit: unverified
@@ -236,6 +250,117 @@ fields:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
+      - key: _2_LANE_FACTOR_1
+        description: >-
+          2-Lane Factor L1 (Korea only)
+        type: number
+        requirement: conditional
+        condition: >-
+          Korea (모델의 /db/MVCD CODE "KOREA"); Required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: _2_LANE_FACTOR_2
+        description: >-
+          2-Lane Factor L2 (Korea only)
+        type: number
+        requirement: conditional
+        condition: >-
+          Korea (모델의 /db/MVCD CODE "KOREA"); Required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: _3_LANE_FACTOR_1
+        description: >-
+          3+ Lane Factor L1 (Korea only)
+        type: number
+        requirement: conditional
+        condition: >-
+          Korea (모델의 /db/MVCD CODE "KOREA"); Required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: _3_LANE_FACTOR_2
+        description: >-
+          3+ Lane Factor L2 (Korea only)
+        type: number
+        requirement: conditional
+        condition: >-
+          Korea (모델의 /db/MVCD CODE "KOREA"); Required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: _3_LANE_FACTOR_3
+        description: >-
+          3+ Lane Factor L3 (Korea only)
+        type: number
+        requirement: conditional
+        condition: >-
+          Korea (모델의 /db/MVCD CODE "KOREA"); Required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: _3_LANE_FACTOR_4
+        description: >-
+          3+ Lane Factor L4 (Korea only)
+        type: number
+        requirement: conditional
+        condition: >-
+          Korea (모델의 /db/MVCD CODE "KOREA"); Required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: LOAD_MODEL
+        description: >-
+          Select Load Model (Australia only) · General:0 · Fatigue:1 · Heavy Load
+          Platform:2 · Rail Traffic Load:3
+        type: integer
+        enum: [0, 1, 2, 3]
+        requirement: conditional
+        condition: >-
+          Australia (모델의 /db/MVCD CODE "AUSTRALIA"); Required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: LOAD_COMB_TYPE
+        description: >-
+          Load Factor Type (Australia: Ultimate 0 · Serviceability 1) / Load Combination
+          Type (Russia: Limit State Group I 0 · Group I - Fatigue 1 · Group II 2)
+        type: integer
+        enum: [0, 1, 2]
+        requirement: conditional
+        condition: >-
+          Australia · Russia (모델의 /db/MVCD CODE); Required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+      - key: FATIGUE
+        description: >-
+          Fatigue Option (Australia, LOAD_MODEL=1 Load Model Fatigue only)
+        type: boolean
+        requirement: required
+        condition: >-
+          LOAD_MODEL=1 Load Model Fatigue 전용
+        appliesWhen:
+          - path: DEFAULT.LOAD_MODEL
+            equals: 1
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+    # The Korea, Australia and Russia tables add these to DEFAULT. What selects
+    # them is the model's /db/MVCD code, which no field of this record states,
+    # so each carries its country as `condition` and in its description, and no
+    # appliesWhen: GET /info declares every one of them inside DEFAULT on both
+    # products, and none of the section's Request Examples uses one.
   - key: PERMIT_LOAD
     description: >-
       Permit Vehicle 데이터
@@ -377,6 +502,24 @@ fields:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
+      - key: LOAD_MODEL
+        description: >-
+          Select Load Model (Australia 전용, 값은 DEFAULT의 LOAD_MODEL과 동일)
+        type: integer
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: FATIGUE
+        description: >-
+          Fatigue Option (Australia 전용)
+        type: boolean
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
   - key: ASL
     description: >-
       Australia Heavy Load Platform 병용 데이터
@@ -391,8 +534,8 @@ fields:
     # line 1452 says Heavy Load Platform (`LOAD_MODEL=2`) uses a separate
     # `ASL` object "DEFAULT 대신/함께", and the bold table label at line 1463
     # repeats the gate. No `appliesWhen` accompanies the condition: the
-    # gate is DEFAULT.LOAD_MODEL, which lives in a table this contract
-    # declares unmerged, so there is no field path here to name.
+    # gate is DEFAULT.LOAD_MODEL, and "대신" (instead of) says a record may
+    # carry ASL with no DEFAULT at all, so that path is not always there.
     properties:
       - key: MULTIPLE_FACTOR
         description: >-
@@ -431,50 +574,6 @@ fields:
         safeToOmit: unverified
         provenance: manual
 
-variants:
-  - when:
-      - path: LOAD_MODEL
-        equals: 2
-    source:
-      table: ASL (Australia Heavy Load Platform 병용, LOAD_MODEL=2)
-      line: 1464
-    fields:
-      - key: MULTIPLE_FACTOR
-        description: >-
-          Unobstructed Lane Scale Factor(예: 0.5)
-        type: number
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: VEHICLE_LOAD_NAME
-        description: >-
-          Load Case Data — Heavy Load 차량 이름
-        type: string
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: VEHICLE_LOAD_NAME2
-        description: >-
-          Load Case Data — M1600/S1600 차량 이름
-        type: string
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: MIN_LOADED_LANE
-        description: >-
-          Min. Number of Loaded Lanes
-        type: integer
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
       - key: MAX_LOADED_LANE
         description: >-
           Max. Number of Loaded Lanes
@@ -527,125 +626,6 @@ variants:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-  - when:
-      - path: TYPE
-        equals: 1
-    source:
-      table: Parameters – PERMIT_LOAD (TYPE=1)
-      line: 1489
-    fields:
-      - key: VEHICLE_LOAD_NAME
-        description: >-
-          Vehicle Load Name
-        type: string
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: REF_LANE
-        description: >-
-          Reference Lane
-        type: string
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: SCALE_FACTOR
-        description: >-
-          Scale Factor
-        type: number
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-  - when:
-      - path: TYPE
-        equals: 2
-    source:
-      table: Parameters – AUTO_OPTIMIZE (TYPE=2)
-      line: 1500
-    fields:
-      - key: SCALE_FACTORS
-        description: >-
-          Multiple Presence Factor
-        type: array
-        items:
-          type: number
-        minItems: 6
-        maxItems: 6
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: MIN_VEHL_DIST
-        description: >-
-          Min. Vehicle Distance
-        type: number
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: LANE_NAME
-        description: >-
-          Loaded Lane Name
-        type: string
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: MIN_NUM_VEHICLE
-        description: >-
-          Min. Number of Vehicle
-        type: integer
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: MAX_NUM_VEHICLE
-        description: >-
-          Max. Number of Vehicle
-        type: integer
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: LOAD_MODEL
-        description: >-
-          Select Load Model (Australia 전용, 값은 DEFAULT의 LOAD_MODEL과 동일)
-        type: integer
-        requirement: optional
-        documentedDefault: null
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: FATIGUE
-        description: >-
-          Fatigue Option (Australia 전용)
-        type: boolean
-        requirement: optional
-        documentedDefault: null
-        documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
-      - key: OPTIMIZE_ITEMS
-        description: >-
-          Optimize Items · VEHICLE_TYPE("VL"/"VC")/VEHICLE_NAME/SCALE_FACTOR
-        type: array
-        items:
-          type: object
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
 
 sdkRules:
   - id: db-mvld-delete-per-id
@@ -700,32 +680,59 @@ extraction:
   # whether they belong in this contract's fields, as nested `properties`,
   # or as a separate contract - do not assume the first table is the whole
   # schema.
-  unmergedTables:
-    - heading: Parameters – DEFAULT (General Load, KSCE-LSD15 / AASHTO STD / LRFD / PENNDOT / Taiwan / Canada)
-      resolution: "the manual labels these national/default field groups but gives no wire selector value; left unmerged"
-      fields: 4
+  structuralTables:
+    - heading: "Parameters – DEFAULT (General Load, KSCE-LSD15 / AASHTO STD / LRFD / PENNDOT / Taiwan / Canada)"
       line: 1423
-      fieldNames: ["LANE_FACTOR_TYPE", "SCALE_FACTORS", "COMB_OPTION", "SUB_LOAD_DATAS",
-                   "VEHICLE_TYPE", "VEHICLE_NAME", "SCALE_FACTOR", "MIN_LOADED_LANE",
-                   "MAX_LOADED_LANE", "LANE_NAMES"]
-    - heading: Parameters – DEFAULT (Korea – 추가 필드)
-      resolution: "the manual labels these national/default field groups but gives no wire selector value; left unmerged"
-      fields: 5
+      paths: [DEFAULT]
+      note: >-
+        The General Load group's DEFAULT members; Korea and Australia add to them
+        and Russia drops LANE_FACTOR_TYPE and SCALE_FACTORS (the 2026-08-25
+        callouts).
+    - heading: "Parameters – DEFAULT (Korea – 추가 필드)"
       line: 1438
-      fieldNames: ["LANE_FACTOR_TYPE", "_2_LANE_FACTOR_1", "_2_LANE_FACTOR_2",
-                   "_3_LANE_FACTOR_1", "_3_LANE_FACTOR_2", "_3_LANE_FACTOR_3",
-                   "_3_LANE_FACTOR_4"]
-    - heading: Parameters – DEFAULT (Australia – 추가 필드)
-      resolution: "the manual labels these national/default field groups but gives no wire selector value; left unmerged"
-      fields: 3
+      paths: [DEFAULT]
+      note: >-
+        The rows are DEFAULT's members for the codes the heading names. The model's
+        /db/MVCD code selects them and no field of the record does, so each carries
+        its country as `condition` and no appliesWhen.
+    - heading: "Parameters – DEFAULT (Australia – 추가 필드)"
       line: 1456
-      fieldNames: ["LOAD_MODEL", "LOAD_COMB_TYPE", "FATIGUE"]
-    - heading: Parameters – DEFAULT (Russia – 추가 필드)
-      resolution: "the manual labels these national/default field groups but gives no wire selector value; left unmerged"
-      fields: 1
+      paths: [DEFAULT]
+      note: >-
+        The rows are DEFAULT's members for the codes the heading names. The model's
+        /db/MVCD code selects them and no field of the record does, so each carries
+        its country as `condition` and no appliesWhen.
+    - heading: "ASL (Australia Heavy Load Platform 병용, LOAD_MODEL=2)"
+      line: 1464
+      paths: [ASL]
+      note: >-
+        The heading names the object and the rows are its members. LOAD_MODEL=2 is
+        DEFAULT.LOAD_MODEL, kept as ASL's condition.
+    - heading: "Parameters – DEFAULT (Russia – 추가 필드)"
       line: 1481
-      fieldNames: ["LOAD_COMB_TYPE"]
+      paths: [DEFAULT]
+      note: >-
+        The rows are DEFAULT's members for the codes the heading names. The model's
+        /db/MVCD code selects them and no field of the record does, so each carries
+        its country as `condition` and no appliesWhen.
+    - heading: "Parameters – PERMIT_LOAD (TYPE=1)"
+      line: 1489
+      paths: [PERMIT_LOAD]
+      note: >-
+        The heading names the object and its TYPE gate; the rows are its members.
+    - heading: "Parameters – AUTO_OPTIMIZE (TYPE=2)"
+      line: 1500
+      paths: [AUTO_OPTIMIZE]
+      note: >-
+        The heading names the object and its TYPE gate; the rows are its members,
+        LOAD_MODEL and FATIGUE Australia-only.
   prose:
+    - line: 1444
+      quote: >-
+        | 4~7 | 3+ Lane Factors (L1~L4) | `"_3_LANE_FACTOR_1"` ~
+        `"_3_LANE_FACTOR_4"` | Number | Required |
+      paths: [DEFAULT._3_LANE_FACTOR_1, DEFAULT._3_LANE_FACTOR_2,
+              DEFAULT._3_LANE_FACTOR_3, DEFAULT._3_LANE_FACTOR_4]
     - line: 1346
       quote: >-
         "TYPE": 0, "DEFAULT": { "SCALE_FACTORS": [...], "COMB_OPTION":
