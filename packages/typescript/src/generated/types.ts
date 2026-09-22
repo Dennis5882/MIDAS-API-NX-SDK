@@ -19026,10 +19026,19 @@ export namespace OpeTypes {
     /** 축계수 */
     FACTOR: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface LoadCombinationAikSrc2kArgument {
-    OPTION?: string;
-    DGNCODE?: string;
-    RS_SCALE_FACTOR?: Array<LoadCombScaleFactorItem>;
+    /** OPTION – 기존 조합에 추가할지 전체 대체할지 */
+    OPTION: "ADD" | "REPLACE";
+    /** SRC 설계기준 코드 값 */
+    DGNCODE: "AIK-SRC2K";
+    /** 응답스펙트럼 하중조합 목록 (AIK-SRC2K 스키마에서 `/ope/LCOM-GEN`은 Required, `/ope/LCOM-SRC`는 Optional) */
+    RS_SCALE_FACTOR?: Array<{
+      /** 하중 케이스명 (정적: NAME(ST), 응답스펙트럼: NAME(RS)) */
+      LOAD_CASE: string;
+      /** 축계수 */
+      FACTOR: number;
+    }>;
   }
   /** Generated from contracts/endpoints/. */
   export interface LoadCombinationConcreteArgument {
@@ -19278,7 +19287,7 @@ export namespace OpeTypes {
     OPTION: "ADD" | "REPLACE";
     /** SRC 설계기준 코드 값 */
     DGNCODE: "KDS 41 SRC : 2022";
-    /** 응답스펙트럼 하중조합 목록 */
+    /** 응답스펙트럼 하중조합 목록 (AIK-SRC2K 스키마에서 `/ope/LCOM-GEN`은 Required, `/ope/LCOM-SRC`는 Optional) */
     RS_SCALE_FACTOR?: Array<{
       /** 하중 케이스명 (정적: NAME(ST), 응답스펙트럼: NAME(RS)) */
       LOAD_CASE: string;

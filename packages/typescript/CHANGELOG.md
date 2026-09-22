@@ -7,8 +7,8 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 ## Unreleased
 
 > **Breaking at the type level; nothing changes at runtime.** No export is
-> added, removed or renamed. 19 members of `/post` request types and 215 of
-> other named types narrow, 192 of them to required, and `/db/MCON`'s
+> added, removed or renamed. 19 members of `/post` request types and 217 of
+> other named types narrow, 193 of them to required, and `/db/MCON`'s
 > `LinearConstraintItem` is corrected to the shape the manual gives it, which
 > removes four members it should never have had. `/db/TDME` loses four
 > members that only a code this API refuses could use, and `/db/FIBR`'s
@@ -39,8 +39,10 @@ type.
   no longer extends `_LoadCombinationSteelSrcKdsArgument`; it declares the
   same seven members itself, with `OPTION` required as `"ADD" | "REPLACE"`
   and `DGNCODE` as `"KDS 41 SRC : 2022"`. The AIK-SRC2K part both operations
-  share is unchanged: the manual requires its `RS_SCALE_FACTOR` on one route
-  and not the other.
+  share, `LoadCombinationAikSrc2kArgument`, requires `OPTION` and narrows
+  `DGNCODE` to `"AIK-SRC2K"`; `RS_SCALE_FACTOR` stays optional, as the
+  manual's shared table gives it for LCOM-SRC, with JSDoc saying LCOM-GEN
+  requires it.
 - `SrcMemberCheckTableArgument` requires `TABLE_TYPE`.
 
 ### Changed - `setResultGraphic`'s argument is generated from its contract

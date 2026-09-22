@@ -68,12 +68,13 @@ of which axes each element type needs, the load-combination unions' KDS parts
 through `argumentParts`, and SrcMemberCheckTableArgument once only a rendered
 array bound counted as a shape difference, then 15 once /db/FIBR's colour
 row was nested in FIMP_COLOR where it belongs and FiberDivisionColor named
-there. What the 13 left in `python:nested` are:
+there, then 14 once /ope/LCOM-SRC's contract, where the shared AIK-SRC2K
+table lives, owned LoadCombinationAikSrc2kArgument. What the 12 left in
+`python:nested` are - every one of them a name the generated SDK itself
+never references:
 
-     2  /ope load combinations: LoadCombinationAikSrc2kArgument, which
-        LCOM-GEN and LCOM-SRC share while the manual requires RS_SCALE_FACTOR
-        on one and not the other, and _LoadCombinationSteelSrcKdsArgument, a
-        Python base class nothing references now
+     1  /ope: _LoadCombinationSteelSrcKdsArgument, a Python base class
+        nothing references now
      3  design: the two *DesignForcesArgument union parts and
         ColumnBraceRebarDesignCriteriaItem, a Python base class with no wire
         object of its own
@@ -123,7 +124,7 @@ CONTRACTS = ROOT / "contracts" / "endpoints"
 #: Measured 2026-09-22 over 765 generated types, after branch-owned nested types. A ceiling: it falls as
 #: contracts take over more of the emitted shape, and a rise means a type that
 #: used to come from a contract is being read out of the Python tree again.
-PYTHON_SOURCED_AT_MOST = 15
+PYTHON_SOURCED_AT_MOST = 14
 
 #: Every exported type in `types.ts`. Not a ceiling: adding or removing an
 #: export is a change to the published surface, so it has to be made here on

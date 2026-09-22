@@ -36,9 +36,12 @@ operations:
       argumentTypeName: [LoadCombinationSrcKdsArgument, LoadCombinationAikSrc2kArgument]
       argumentParts:
         - {name: LoadCombinationSrcKdsArgument, when: {path: DGNCODE, equals: "KDS 41 SRC : 2022"}}
-      # LoadCombinationAikSrc2kArgument is not listed: /ope/LCOM-GEN publishes the
-      # same name, and the section's 2026-08-26 callout makes RS_SCALE_FACTOR
-      # required there and optional here. It stays the one shape both accept.
+        - {name: LoadCombinationAikSrc2kArgument, when: {path: DGNCODE, equals: AIK-SRC2K}}
+      # LoadCombinationAikSrc2kArgument is also /ope/LCOM-GEN's AIK part. The
+      # manual tables that schema once for both routes and its row 3 says
+      # RS_SCALE_FACTOR is Required on LCOM-GEN and Optional here, so this
+      # contract - where it is optional - owns the shared name: the one shape
+      # every valid call on either route satisfies. LCOM-GEN does not list it.
       documentation: |-
         docs/manual/15_OPE.md #18 — /ope/LCOM-SRC — Load Combination (SRC) – KDS 41 SRC:2022 / AIK-SRC2K.
 
@@ -88,7 +91,8 @@ fields:
     provenance: manual
   - key: RS_SCALE_FACTOR
     description: >-
-      응답스펙트럼 하중조합 목록
+      응답스펙트럼 하중조합 목록 (AIK-SRC2K 스키마에서 `/ope/LCOM-GEN`은 Required,
+      `/ope/LCOM-SRC`는 Optional)
     type: array
     items:
       type: object
