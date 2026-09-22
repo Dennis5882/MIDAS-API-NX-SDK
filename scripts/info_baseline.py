@@ -104,6 +104,11 @@ EXPECTED_AGAINST_CONTRACTS: _AgainstContractsExpectation = {
         # (Gen NX) are in no table; a GET after a POST without them returns
         # the first three with server-supplied values.
         "/db/SPLC": 4,
+        # /db/SPFC is compared once its design-code tables are merged. The
+        # section tables ten of its SPEC_CODE values and lists the rest (IBC,
+        # UBC, the other Chinese, Taiwanese and "Other Countries" codes) only
+        # by name; /info carries their STR/OPT/VAL members and a VA2 object.
+        "/db/SPFC": 72,
     },
     "contractOnlyNamesAtMost": {
         "/db/POGD-M1": 2,

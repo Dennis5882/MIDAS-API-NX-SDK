@@ -5729,6 +5729,9 @@ def _branch_destination_fields(contract: dict) -> dict[str, dict]:
     return found
 
 
+_KEY_WITH_OBJECT = re.compile(r"\([A-Z][A-Z0-9_]*\)$")
+
+
 def _under_structural_destination(
     key: str,
     destinations: set[str],
@@ -5867,8 +5870,13 @@ def run_check(sections: list[Section]) -> int:
             for path in entry.get("paths", [])
         }
         branch_fields = _branch_destination_fields(contract)
+        # A Key cell can name its object beside the key - `SFI`(STR),
+        # `PERIOD`(VAL) in /db/SPFC's later code tables - which the parser
+        # keeps as part of the name. The name is the part before it.
         section_names = frozenset(
-            field.key for table in section.tables for field in _walk(table.fields)
+            _KEY_WITH_OBJECT.sub("", field.key)
+            for table in section.tables
+            for field in _walk(table.fields)
         )
 
         # The section heading, which carries its number. Inserting one endpoint

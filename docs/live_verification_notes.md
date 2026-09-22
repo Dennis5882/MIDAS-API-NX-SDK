@@ -10869,3 +10869,41 @@ What it settles, all of it MD-59:
 
 `ElementPayload` is now generated from the contract as a union over
 `(TYPE, STYPE)`. Both documents were left empty.
+
+## 2026-09-22 (later still) - `/db/SPFC`'s design codes, and a save dialog `CALC_OPT` leaves behind
+
+### The run that blocked both products
+
+`scripts/live_manual_feedback.py --case c3` first sent each of section 1's
+design-code Request Bodies with `CALC_OPT: true` added where the body lacks it
+(MD-15: without it or an `aFUNC` the server refuses a design spectrum), one
+fresh document per example. On **both** products the first example
+(KDS(41-17-00:2019)) was accepted and saved to `C:/temp`, and the `/doc/NEW`
+before the second **never answered**; every later call timed out. The author
+confirmed a save-changes dialog on both hosts and restarted both products.
+
+So a `CALC_OPT: true` record leaves the document modified again *after* a
+`/doc/SAVEAS` - the server-built curve evidently lands later - and the next
+`/doc/NEW` raises the save dialog, which blocks the whole API session. None of
+the SPLC or ELEM probes earlier the same day, which save and `/doc/NEW` in the
+same pattern, did this. **A harness must not `/doc/NEW` after a `CALC_OPT:
+true` write without saving again first, or at all.**
+
+### What the examples store
+
+Re-run without `CALC_OPT`: each example carries the section's User Type
+`aFUNC` curve instead, all eight in one document, and the table is read back
+(this endpoint renumbers a POSTed record). Both products, identical results:
+
+| example | result |
+| --- | --- |
+| KDS(41-17-00:2019), IBC2012, CH2010, JPN2000, TAIWAN(2022), IS1893(2016), NBC95 | accepted; `STR`, `OPT` and `VAL` stored where the tables put them. The server pads `aSRA` to four entries, and adds `aMSRACC` and `TL` to IBC2012's `VAL` |
+| EURO2004, as printed | `Unknown Error` |
+
+`--case c4` then varied the EURO2004 body on Gen one change at a time: `VAL.AG`
+for `VAL.ag` (the `/info` spelling), `OPT` removed, and both. All four answer
+`Unknown Error`. `/info` declares `SPECTYPE`, `GROUTYPE` and `NATIONALANNEX` in
+`STR`, as strings, where the table puts them in `OPT`; no working EURO2004
+request was found, and none was guessed. MD-60.
+
+Both documents were left empty.

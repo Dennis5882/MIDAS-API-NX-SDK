@@ -33,25 +33,24 @@ not the same finding as a source that is absent.
 | endpoint | tables | names | declared by `/info` | share |
 | --- | ---: | ---: | ---: | ---: |
 | [`/db/MVHL`](#dbmvhl) | 8 | 115 | 115 | 100% |
-| [`/db/SPFC`](#dbspfc) | 11 | 74 | 74 | 100% |
 | [`/view/RESULTGRAPHIC`](#viewresultgraphic) | 10 | 63 | -- | n/a |
 | [`/db/THIS`](#dbthis) | 10 | 41 | 41 | 100% |
 | [`/db/MVLD`](#dbmvld) | 4 | 21 | 21 | 100% |
 | [`/db/TDME`](#dbtdme) | 2 | 7 | 7 | 100% |
 | [`/ope/LCOM-SRC`](#opelcomsrc) | 1 | 5 | -- | n/a |
-| **total** | **46** | **326** | **258** | **79%** |
+| **total** | **35** | **252** | **184** | **73%** |
 
-Of the **258** names on endpoints `/info` answers for, **258** are declared (100%) and **0** are not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
+Of the **184** names on endpoints `/info` answers for, **184** are declared (100%) and **0** are not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
 
 ### What each table has, as a count
 
 | what the measurement found | tables |
 | --- | ---: |
-| whole table, one object | 19 |
+| whole table, one object | 17 |
 | whole table, several objects | 1 |
-| whole table, scattered | 15 |
+| whole table, scattered | 6 |
 | out of reach | 11 |
-| **all** | **46** |
+| **all** | **35** |
 
 *one object* means `/info` has a single object holding every name in that table; *scattered* means it declares them all but under no common parent, so the table's shape is not something the baseline confirms. Neither is a recommendation -- a table with two sources still needs its manual section read before anything moves.
 
@@ -78,36 +77,6 @@ Baseline answers on `civil`, `gen`. 115 of 115 names declared across 8 tables.
 - **VEH_ZA (South Africa, STANDARD_CODE: "NA"/"NB"/"NC")** declared: `INCRE_LENGTH` at `VEH_ZA.INCRE_LENGTH`, `INCRE_LENGTH_VALUE` at `VEH_ZA.INCRE_LENGTH_VALUE`, `UNIT_NUM` at `VEH_ZA.UNIT_NUM`, `OPPOSITE` at `VEH_ZA.OPPOSITE`, `W1` at `VEH_ZA.W1`, `W2` at `VEH_ZA.W2`, `W3` at `VEH_ZA.W3`, `LOADED_LENGTH` at `VEH_ZA.LOADED_LENGTH`, `PA` at `VEH_ZA.PA`, `PB` at `VEH_ZA.PB`, `D1` at `VEH_ZA.D1`, `D2` at `VEH_ZA.D2`, `DELTA` at `VEH_ZA.DELTA`, `PRESSURE_LOAD` at `VEH_ZA.PRESSURE_LOAD`, `NUM_LOAD_ARRAY` at `VEH_ZA.NUM_LOAD_ARRAY`, `POINT_DIST_ARRAY` at `VEH_ZA.POINT_DIST_ARRAY`, `PERMIT_LOAD` at `VEH_ZA.PERMIT_LOAD`
 - **VEH_CN (China, STANDARD_CODE는 JTG/JTJ/CJJ/TB 등 원문 표 참고)** declared: `IMPACT_COEF` at `VEH_CN.IMPACT_COEF`, `CROWD_WIDTH` at `VEH_CN.CROWD_WIDTH`, `DD` at `VEH_CN.DD`, `TRUCK_TYPE` at `VEH_CN.TRUCK_TYPE`, `P_` at `VEH_CN.P_`, `QM` at `VEH_CN.QM`, `QQ` at `VEH_CN.QQ`, `PA` at `VEH_CN.PA`, `D1` at `VEH_CN.D1`, `PB` at `VEH_CN.PB`, `D2` at `VEH_CN.D2`, `W_TRAILER` at `VEH_CN.W_TRAILER`, `D_TRAILER` at `VEH_CN.D_TRAILER`, `LOAD_ITEMS` at `LOAD_ITEMS`, `TRAIN_TYPE` at `VEH_CN.TRAIN_TYPE`, `W1` at `VEH_CN.W1`, `W2` at `VEH_CN.W2`, `FD` at `VEH_CN.FD`, `BD` at `VEH_CN.BD`, `P_SUBWAY` at `VEH_CN.P_SUBWAY`, `D_SUBWAY` at `VEH_CN.D_SUBWAY`, `CARRIAGE_DIST` at `VEH_CN.CARRIAGE_DIST`, `NUM_CARRIAGE` at `VEH_CN.NUM_CARRIAGE`, `P_OPPOSITE` at `VEH_CN.P_OPPOSITE`, `LOAD_ITEMS2` at `LOAD_ITEMS2`, `VEHICLE_LOAD_USER_NUM` at `VEH_CN.VEHICLE_LOAD_USER_NUM`, `W_CROWD` at `VEH_CN.W_CROWD`, `W_PRES_1` at `VEH_CN.W_PRES_1`, `W_PRES_2` at `VEH_CN.W_PRES_2`, `DB` at `VEH_CN.DB`
 - **VEH_PL (Poland, STANDARD_CODE는 원문 표 참고)** declared: `SEL_VEHICLE` at `VEH_PL.SEL_VEHICLE`, `SUB_TYPE` at `VEH_PL.SUB_TYPE`, `PRESSURE_LOAD` at `VEH_PL.PRESSURE_LOAD`, `DSPACE` at `VEH_PL.DSPACE`, `DYNAMIC_AMP_FACTOR` at `VEH_PL.DYNAMIC_AMP_FACTOR`, `USER_INPUT` at `VEH_PL.USER_INPUT`, `AMP` at `VEH_PL.AMP`, `LOAD_ITEMS` at `LOAD_ITEMS`, `NOSE_TAIL_DIST` at `VEH_PL.NOSE_TAIL_DIST`, `NUM_VEHICLE` at `VEH_PL.NUM_VEHICLE`, `TOTAL_LOAD` at `VEH_PL.TOTAL_LOAD`, `TRACKED_LENGTH` at `VEH_PL.TRACKED_LENGTH`, `WHEEL_SPACING` at `VEH_PL.WHEEL_SPACING`, `PERMIT_LOAD` at `VEH_PL.PERMIT_LOAD`
-
-## `/db/SPFC`
-
-Baseline answers on `civil`, `gen`. 74 of 74 names declared across 11 tables.
-
-| table | names | declared | not declared | nesting |
-| --- | ---: | ---: | ---: | --- |
-| 1-2-A. User Type | 3 | 3 | 0 | scattered; `aFUNC` covers 2 of 3 |
-| KDS(41-17-00:2019) 추가 파라미터 | 13 | 13 | 0 | scattered; `VAL` covers 6 of 13 |
-| KDS(17-10-00:2018) 추가 파라미터 | 5 | 5 | 0 | scattered; `VAL` covers 3 of 5 |
-| KS_BRG (한국 교량) 추가 파라미터 | 5 | 5 | 0 | one object: `VAL` |
-| EURO2004 주요 추가 파라미터 | 3 | 3 | 0 | one object: `STR` |
-| GB50011-2010 추가 파라미터 | 9 | 9 | 0 | scattered; `OPT` covers 4 of 9 |
-| JPN2000(Arch.2000) 추가 파라미터 | 4 | 4 | 0 | scattered; `OPT` covers 2 of 4 |
-| JPN2000(Arch.2000) 추가 파라미터 | 5 | 5 | 0 | scattered; `OPT` covers 3 of 5 |
-| Taiwan(2022) 추가 파라미터 | 15 | 15 | 0 | scattered; `VAL` covers 10 of 15 |
-| 공통 추가 파라미터 (3개 코드 공통) | 8 | 8 | 0 | scattered; `VAL` covers 6 of 8 |
-| Canada NBC95 추가 파라미터 | 4 | 4 | 0 | scattered; `OPT` covers 2 of 4 |
-
-- **1-2-A. User Type** declared: `aFUNC` at `aFUNC`, `PERIOD` at `aFUNC.PERIOD`, `VALUE` at `aFUNC.VALUE`
-- **KDS(41-17-00:2019) 추가 파라미터** declared: `STR` at `STR`, `SPEC_CODE` at `STR.SPEC_CODE`, `OPT` at `OPT`, `SC_` at `OPT.SC_`, `iSEISZONE` at `OPT.iSEISZONE`, `VAL` at `VAL`, `aSRA` at `VAL.aSRA`, `aSCP` at `VAL.aSCP`, `PERIOD` at `VAL.PERIOD`, `IE` at `VAL.IE`, `R_` at `VAL.R_`, `ZONEFACTOR` at `VAL.ZONEFACTOR`, `CALC_OPT` at `CALC_OPT`
-- **KDS(17-10-00:2018) 추가 파라미터** declared: `SC_` at `OPT.SC_`, `iSEISZONE` at `OPT.iSEISZONE`, `aSCP` at `VAL.aSCP`, `PERIOD` at `VAL.PERIOD`, `IE` at `VAL.IE`
-- **KS_BRG (한국 교량) 추가 파라미터** declared: `EPA` at `VAL.EPA`, `PERIOD` at `VAL.PERIOD`, `SPTYPE` at `VAL.SPTYPE`, `IE` at `VAL.IE`, `R_` at `VAL.R_`
-- **EURO2004 주요 추가 파라미터** declared: `SPECTYPE` at `STR.SPECTYPE`, `GROUTYPE` at `STR.GROUTYPE`, `NATIONALANNEX` at `STR.NATIONALANNEX`
-- **GB50011-2010 추가 파라미터** declared: `SFI` at `OPT.SFI`, `SC_` at `OPT.SC_`, `EQ_` at `STR.EQ_`, `NSC` at `OPT.NSC`, `nLForce` at `OPT.nLForce`, `aTG` at `VAL.aTG`, `DP` at `VAL.DP`, `MaxEQ` at `VAL.MaxEQ`, `PERIOD` at `VAL.PERIOD`
-- **JPN2000(Arch.2000) 추가 파라미터** declared: `iSEISZONEFACTOR` at `OPT.iSEISZONEFACTOR`, `SOILCLASS` at `OPT.SOILCLASS`, `PERIOD` at `VAL.PERIOD`, `CO` at `VAL.CO`
-- **JPN2000(Arch.2000) 추가 파라미터** declared: `SOILCLASS` at `OPT.SOILCLASS`, `iSEISZONE` at `OPT.iSEISZONE`, `iEQMETHOD` at `OPT.iEQMETHOD`, `PERIOD` at `VAL.PERIOD`, `CZ` at `VAL.CZ`
-- **Taiwan(2022) 추가 파라미터** declared: `SOILCLASS` at `OPT.SOILCLASS`, `iSEISZONE` at `OPT.iSEISZONE`, `iSPECTYPE` at `OPT.iSPECTYPE`, `iSPECUSE` at `OPT.iSPECUSE`, `iSUBZONE` at `OPT.iSUBZONE`, `aSRA` at `VAL.aSRA`, `aSRA_T` at `VAL.aSRA_T`, `aNSF` at `VAL.aNSF`, `aSMF` at `VAL.aSMF`, `DP` at `VAL.DP`, `PERIOD` at `VAL.PERIOD`, `IF` at `VAL.IF`, `SMFACTOR` at `VAL.SMFACTOR`, `RMFACTOR` at `VAL.RMFACTOR`, `FUNDAMENTAL_PERIOD` at `VAL.FUNDAMENTAL_PERIOD`
-- **공통 추가 파라미터 (3개 코드 공통)** declared: `SOILCLASS` at `OPT.SOILCLASS`, `iSEISZONE` at `OPT.iSEISZONE`, `DP` at `VAL.DP`, `PERIOD` at `VAL.PERIOD`, `IE` at `VAL.IE`, `R_` at `VAL.R_`, `DPFAC` at `VAL.DPFAC`, `USERDEFSEISZONE` at `VAL.USERDEFSEISZONE`
-- **Canada NBC95 추가 파라미터** declared: `ZA` at `OPT.ZA`, `ZV` at `OPT.ZV`, `PERIOD` at `VAL.PERIOD`, `V` at `VAL.V`
 
 ## `/view/RESULTGRAPHIC`
 

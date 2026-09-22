@@ -5264,20 +5264,131 @@ export namespace DbDynamicLoadsTypes {
       ATIMEZ?: number;
     }>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ResponseSpectrumFunctionPayload {
-    NAME?: string;
-    iTYPE?: number;
+    /** RS 함수명 */
+    NAME: string;
+    /** 스펙트럼 데이터 타입 (1=정규화가속도, 2=가속도, 3=속도, 4=변위) */
+    iTYPE: number;
+    /** 스케일 방법 (0=Scale Factor, 1=Max Value) */
     iMETHOD?: number;
-    SCALE?: number;
-    GRAV?: number;
+    /** 스케일 값 */
+    SCALE: number;
+    /** 중력 가속도 (정규화 가속도 타입에만 해당) */
+    GRAV: number;
+    /** 감쇠비 */
     DRATIO?: number;
+    /** 설명 */
     DESC?: string;
-    aFUNC?: Array<ResponseSpectrumFunctionValue>;
+    /** 코드 데이터 (STR 오브젝트) */
+    STR?: {
+      /** 설계 스펙트럼 코드 */
+      SPEC_CODE: string;
+      /** 설계 지진 등급(Seismic Fortification Intensity) Applies when STR.SPEC_CODE = "CH2010". */
+      SFI?: string;
+      /** 지반 종류(I0/I1/II/III/IV) Applies when STR.SPEC_CODE = "CH2010". */
+      SC_?: string;
+      /** 지진 영향(Frequent/Middle/Scarce) Required when STR.SPEC_CODE = "CH2010". */
+      EQ_?: string;
+      /** 스펙트럼 타입 (1=Elastic, 2=Design) Applies when STR.SPEC_CODE = "EURO2004". */
+      SPECTYPE?: string;
+      /** 지반 타입 (0=A, 1=B, 2=C, 3=D, 4=E) Applies when STR.SPEC_CODE = "EURO2004". */
+      GROUTYPE?: string;
+      /** 국가 부속서 코드 Applies when STR.SPEC_CODE = "EURO2004". */
+      NATIONALANNEX?: string;
+    };
+    /** 옵션 데이터 (OPT 오브젝트) */
+    OPT?: {
+      /** 지반 분류 (0=S1, 1=S2, 2=S3, 3=S4, 4=S5, 5=S6) Applies when STR.SPEC_CODE is "KDS(17-10-00:2018)" or "KDS(41-17-00:2019)". */
+      SC_?: number;
+      /** 지진 구역 Applies when STR.SPEC_CODE is "IRC:SP:114-2018" or "IS1893(2016)" or "IS2002" or "JP_BRG2002" or "JP_BRG2012" or "JP_BRG2017" or "KDS(17-10-00:2018)" or "KDS(41-17-00:2019)" or "TAIWAN(2022)". */
+      iSEISZONE?: number;
+      /** 근원 유형(0/1/2) Applies when STR.SPEC_CODE = "CH2010". */
+      NSC?: number;
+      /** 공칭 횡력(0=전단력차, 1=관성력) Applies when STR.SPEC_CODE = "CH2010". */
+      nLForce?: number;
+      /** 지진 지역 계수(Z) 0=1.0/1=0.9/2=0.8/3=0.7 Applies when STR.SPEC_CODE = "JPN2000". */
+      iSEISZONEFACTOR?: number;
+      /** 지반 종류 Applies when STR.SPEC_CODE is "IRC:SP:114-2018" or "IS1893(2016)" or "IS2002" or "JPN2000" or "JP_BRG2002" or "JP_BRG2012" or "JP_BRG2017" or "TAIWAN(2022)". */
+      SOILCLASS?: number;
+      /** 지진 입력 방법(Level1/Level2 Type I/Level2 Type II) Applies when STR.SPEC_CODE is "JP_BRG2002" or "JP_BRG2012" or "JP_BRG2017". */
+      iEQMETHOD?: number;
+      /** 스펙트럼 방향(0=수평/1=수직) Applies when STR.SPEC_CODE = "TAIWAN(2022)". */
+      iSPECTYPE?: number;
+      /** 스펙트럼 용도(0=Design/1=Small-Medium/2=Maximum) Applies when STR.SPEC_CODE = "TAIWAN(2022)". */
+      iSPECUSE?: number;
+      /** 세부 구역(Taipei Basin I~IV/User Input, 구역이 Taipei Basin일 때) Applies when STR.SPEC_CODE = "TAIWAN(2022)". */
+      iSUBZONE?: number;
+      /** 가속도 구역(Za, 0~6) Applies when STR.SPEC_CODE = "NBC95". */
+      ZA?: number;
+      /** 속도 구역(Zv, 0~6) Applies when STR.SPEC_CODE = "NBC95". */
+      ZV?: number;
+    };
+    /** 계수 데이터 (VAL 오브젝트) */
+    VAL?: {
+      /** 스펙트럼 응답 가속도 [Sds, Sd1] (Taiwan(2022): [Sds,Sd1,Sms,Sm1], General/Near Fault 구역) Applies when STR.SPEC_CODE is "KDS(41-17-00:2019)" or "TAIWAN(2022)". */
+      aSRA?: Array<number>;
+      /** 지반 증폭 계수 [Fa, Fv] Required when STR.SPEC_CODE is "KDS(17-10-00:2018)" or "KDS(41-17-00:2019)". */
+      aSCP?: Array<number>;
+      /** 지진 구역 계수 (Ar): Area I=0.11, Area II=0.07 Required when STR.SPEC_CODE = "KS_BRG". */
+      EPA?: number;
+      /** 지반 프로파일 타입 (S1=1.0, S2=1.2, S3=1.5, S4=2.0) Required when STR.SPEC_CODE = "KS_BRG". */
+      SPTYPE?: number;
+      /** 설계 특성 주기 [Tg, Tg1, Tg2] (GB50011-2010은 Tg만 사용) Required when STR.SPEC_CODE = "CH2010". */
+      aTG?: Array<number>;
+      /** 최대 지진영향계수 Required when STR.SPEC_CODE = "CH2010". */
+      MaxEQ?: number;
+      /** 밑면 전단력 계수(Co) Required when STR.SPEC_CODE = "JPN2000". */
+      CO?: number;
+      /** 수정 계수(Cz) — MIDAS가 다른 값으로 자동 계산해 입력값이 무시됨 Required when STR.SPEC_CODE is "JP_BRG2002" or "JP_BRG2012" or "JP_BRG2017". */
+      CZ?: number;
+      /** 대만분지 스펙트럼 가속도 [Sds_t,Sd1_t,Sms_t,Sm1_t] (Taipei Basin 구역) Applies when STR.SPEC_CODE = "TAIWAN(2022)". */
+      aSRA_T?: Array<number>;
+      /** 근단층 지진 영향 [Nda,Ndv,Nma,Nmv] (Near Fault 구역) Applies when STR.SPEC_CODE = "TAIWAN(2022)". */
+      aNSF?: Array<number>;
+      /** 지반 증폭 계수 [Fda,Fdv,Fma,Fmv] (General/Near Fault 구역) Applies when STR.SPEC_CODE = "TAIWAN(2022)". */
+      aSMF?: Array<number>;
+      /** 감쇠비 Required when STR.SPEC_CODE is "CH2010" or "IRC:SP:114-2018" or "IS1893(2016)" or "IS2002" or "TAIWAN(2022)". */
+      DP?: number;
+      /** 최대 주기 Required when STR.SPEC_CODE is "CH2010" or "IRC:SP:114-2018" or "IS1893(2016)" or "IS2002" or "JPN2000" or "JP_BRG2002" or "JP_BRG2012" or "JP_BRG2017" or "KDS(17-10-00:2018)" or "KDS(41-17-00:2019)" or "KS_BRG" or "NBC95" or "TAIWAN(2022)". */
+      PERIOD?: number;
+      /** 중요도 계수 Required when STR.SPEC_CODE is "IRC:SP:114-2018" or "IS1893(2016)" or "IS2002" or "KDS(17-10-00:2018)" or "KDS(41-17-00:2019)" or "KS_BRG". */
+      IE?: number;
+      /** 반응 수정 계수 (R) Required when STR.SPEC_CODE is "IRC:SP:114-2018" or "IS1893(2016)" or "IS2002" or "KDS(41-17-00:2019)" or "KS_BRG". */
+      R_?: number;
+      /** EPA (구역 계수) Required when STR.SPEC_CODE = "KDS(41-17-00:2019)". */
+      ZONEFACTOR?: number;
+      /** 중요도 계수(I) Required when STR.SPEC_CODE = "TAIWAN(2022)". */
+      IF?: number;
+      /** 지진 증폭 계수(ay) Required when STR.SPEC_CODE = "TAIWAN(2022)". */
+      SMFACTOR?: number;
+      /** 반응 수정 계수(R) Required when STR.SPEC_CODE = "TAIWAN(2022)". */
+      RMFACTOR?: number;
+      /** 기본 주기(T1) Required when STR.SPEC_CODE = "TAIWAN(2022)". */
+      FUNDAMENTAL_PERIOD?: number;
+      /** 감쇠 배율 계수(값 1 고정) Required when STR.SPEC_CODE is "IRC:SP:114-2018" or "IS1893(2016)" or "IS2002". */
+      DPFAC?: number;
+      /** 사용자 정의 지진구역 값 (IRC:SP:114-2018, iSEISZONE=4일 때만) Required when STR.SPEC_CODE = "IRC:SP:114-2018" and OPT.iSEISZONE = 4. */
+      USERDEFSEISZONE?: number;
+      /** 구역 속도비(v) Required when STR.SPEC_CODE = "NBC95". */
+      V?: number;
+    };
+    /** 계산 옵션 */
     CALC_OPT?: boolean;
+    /** 함수 데이터 배열 */
+    aFUNC?: Array<{
+      /** 주기 (sec) */
+      PERIOD: number;
+      /** 값 (데이터 타입에 따라 다름) */
+      VALUE: number;
+    }>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface ResponseSpectrumFunctionValue {
-    PERIOD?: number;
-    VALUE?: number;
+    /** 주기 (sec) */
+    PERIOD: number;
+    /** 값 (데이터 타입에 따라 다름) */
+    VALUE: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface ResponseSpectrumLoadCasePayload {

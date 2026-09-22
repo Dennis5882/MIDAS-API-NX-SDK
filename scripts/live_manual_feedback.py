@@ -506,10 +506,137 @@ def elem_subtype_rows(client: MidasClient, checkpoint: str, extension: str) -> d
     return results
 
 
+def _spfc_code_examples() -> dict[str, dict[str, Any]]:
+    """09_DB_Dynamic_Loads.md section 1's design-code Request Bodies, as printed.
+
+    The KDS, IBC and EURO bodies print no ``CALC_OPT``, and without it or an
+    ``aFUNC`` the server refuses a design spectrum (MD-15), so ``CALC_OPT:
+    True`` - the documented way to have the server build the curve - is the
+    one field added to those three.
+    """
+    common = {"iTYPE": 1, "iMETHOD": 0, "SCALE": 1, "GRAV": 9.806, "DRATIO": 0.05}
+    return {
+        "KDS2019": dict(common, NAME="KDS_2019_func",
+                        STR={"SPEC_CODE": "KDS(41-17-00:2019)"},
+                        OPT={"SC_": 2, "iSEISZONE": 0},
+                        VAL={"aSRA": [0.22, 0.154], "aSCP": [1.0, 1.5], "PERIOD": 4.0,
+                             "IE": 1.2, "R_": 5.0, "ZONEFACTOR": 0.22},
+                        CALC_OPT=True),
+        "IBC2012": dict(common, NAME="IBC2012_func", STR={"SPEC_CODE": "IBC2012"},
+                        OPT={"SC_": 2},
+                        VAL={"aSRA": [0.5, 0.2], "aSCP": [1.0, 1.5], "PERIOD": 4.0,
+                             "IE": 1.0, "R_": 5.0},
+                        CALC_OPT=True),
+        "EURO2004": dict(common, NAME="EURO2004_func", STR={"SPEC_CODE": "EURO2004"},
+                         OPT={"SPECTYPE": 1, "GROUTYPE": 1, "NATIONALANNEX": "EN"},
+                         VAL={"ag": 0.25, "PERIOD": 4.0, "IE": 1.0},
+                         CALC_OPT=True),
+        "CH2010": dict(common, NAME="China(GB50011-10)",
+                       STR={"SPEC_CODE": "CH2010", "SFI": "0.10g", "SC_": "II", "EQ_": "MIDDLE"},
+                       OPT={"NSC": 1, "nLForce": 0},
+                       VAL={"aTG": [0.4, 0, 0], "DP": 0.05, "MaxEQ": 0.23, "PERIOD": 6},
+                       CALC_OPT=True),
+        "JPN2000": dict(common, NAME="JP2000", STR={"SPEC_CODE": "JPN2000"},
+                        OPT={"iSEISZONEFACTOR": 2, "SOILCLASS": 1},
+                        VAL={"PERIOD": 6, "CO": 0.2}, CALC_OPT=True),
+        "TAIWAN2022": dict(common, NAME="Taiwan(2022)", STR={"SPEC_CODE": "TAIWAN(2022)"},
+                           OPT={"SOILCLASS": 0, "iSEISZONE": 1, "iSPECTYPE": 0, "iSPECUSE": 1,
+                                "iSUBZONE": 0},
+                           VAL={"aSRA": [0.5, 0.3, 0.7, 0.4], "aSRA_T": [0.6, 0.8, 1.6, 1.6],
+                                "aNSF": [0.8, 0.45, 1, 0.6], "aSMF": [1, 1, 1, 1],
+                                "DP": 5, "PERIOD": 6, "IF": 1, "SMFACTOR": 1, "RMFACTOR": 1.6,
+                                "FUNDAMENTAL_PERIOD": 0.09},
+                           CALC_OPT=True),
+        "IS1893_2016": dict(common, NAME="IS1893(2016)", STR={"SPEC_CODE": "IS1893(2016)"},
+                            OPT={"SOILCLASS": 0, "iSEISZONE": 0},
+                            VAL={"DP": 5, "PERIOD": 6, "IE": 1, "R_": 3, "DPFAC": 1},
+                            CALC_OPT=True),
+        "NBC95": dict(common, NAME="NBC1995", STR={"SPEC_CODE": "NBC95"},
+                      OPT={"ZA": 2, "ZV": 3}, VAL={"PERIOD": 6, "V": 0.15}, CALC_OPT=True),
+    }
+
+
+_SPFC_USER_CURVE = [
+    {"PERIOD": 0, "VALUE": 0.11}, {"PERIOD": 0.06, "VALUE": 0.308},
+    {"PERIOD": 0.12, "VALUE": 0.308}, {"PERIOD": 0.3, "VALUE": 0.308},
+    {"PERIOD": 0.36, "VALUE": 0.2567}, {"PERIOD": 0.6, "VALUE": 0.154},
+    {"PERIOD": 1.2, "VALUE": 0.077},
+]
+
+
+def spfc_code_examples(client: MidasClient, checkpoint: str, extension: str) -> dict[str, Any]:
+    """Where /db/SPFC stores each design code's STR/OPT/VAL members.
+
+    The section's EURO2004 table and example put SPECTYPE, GROUTYPE and
+    NATIONALANNEX in OPT and send ``VAL.ag``; GET /info declares the three in
+    STR, as strings, and spells ``VAL.AG``. Each printed example is sent and
+    the stored record read back - the whole table, because this endpoint
+    renumbers a POSTed record - with ``aFUNC`` left out of the evidence.
+
+    The first run of this probe sent ``CALC_OPT: true`` and blocked both
+    products at the ``/doc/NEW`` after the first example (2026-09-22), most
+    likely on a save-changes dialog. So no example sends ``CALC_OPT`` here:
+    each carries the section's User Type ``aFUNC`` curve instead - the other
+    way the section makes a spectrum valid - and all eight go into one
+    document, so no ``/doc/NEW`` follows a code spectrum.
+    """
+    doc.new_project(client=client)
+    _seed_model(client)
+    results: dict[str, Any] = {}
+    for index, (label, example) in enumerate(_spfc_code_examples().items(), start=1):
+        record = {k: v for k, v in example.items() if k != "CALC_OPT"}
+        record["aFUNC"] = _SPFC_USER_CURVE
+        results[label] = {"sent": record,
+                          "post": _raw(client, "POST", "/db/SPFC", {"Assign": {index: record}})}
+    table = _raw(client, "GET", "/db/SPFC")
+    body = table["body"].get("SPFC") if isinstance(table["body"], dict) else None
+    for label, entry in results.items():
+        name = entry["sent"]["NAME"]
+        entry["stored"] = next(({k: v for k, v in item.items() if k != "aFUNC"}
+                                for item in (body or {}).values() if item.get("NAME") == name), None)
+    doc.save_as(f"{checkpoint}-examples.{extension}", client=client)
+    return results
+
+
+def spfc_euro_placement(client: MidasClient, checkpoint: str, extension: str) -> dict[str, Any]:
+    """The EURO2004 Request Body, refused as printed, one change at a time.
+
+    Printed, it answers ``Unknown Error`` on both products (case c3). The
+    section puts SPECTYPE/GROUTYPE/NATIONALANNEX in OPT and sends ``VAL.ag``;
+    GET /info spells ``VAL.AG`` and declares the three in STR. Each variant
+    changes one of those; all go into one document with the User Type curve,
+    as in c3, and no ``CALC_OPT``.
+    """
+    printed = {k: v for k, v in _spfc_code_examples()["EURO2004"].items() if k != "CALC_OPT"}
+    printed["aFUNC"] = _SPFC_USER_CURVE
+    upper = dict(printed, VAL={"AG": 0.25, "PERIOD": 4.0, "IE": 1.0})
+    variants = {
+        "printed": printed,
+        "VAL_AG": upper,
+        "without_OPT": {k: v for k, v in printed.items() if k != "OPT"},
+        "without_OPT_VAL_AG": {k: v for k, v in upper.items() if k != "OPT"},
+    }
+    doc.new_project(client=client)
+    _seed_model(client)
+    results: dict[str, Any] = {}
+    for index, (label, record) in enumerate(variants.items(), start=1):
+        record = dict(record, NAME=f"EURO2004_{label}")
+        results[label] = {"sent": record,
+                          "post": _raw(client, "POST", "/db/SPFC", {"Assign": {index: record}})}
+    table = _raw(client, "GET", "/db/SPFC")
+    body = table["body"].get("SPFC") if isinstance(table["body"], dict) else None
+    for entry in results.values():
+        entry["stored"] = next(({k: v for k, v in item.items() if k != "aFUNC"}
+                                for item in (body or {}).values()
+                                if item.get("NAME") == entry["sent"]["NAME"]), None)
+    doc.save_as(f"{checkpoint}-euro.{extension}", client=client)
+    return results
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--product", choices=("gen", "civil"), required=True)
-    parser.add_argument("--case", choices=("a1", "a2", "a3", "b1", "b2", "c1", "c2"),
+    parser.add_argument("--case", choices=("a1", "a2", "a3", "b1", "b2", "c1", "c2", "c3", "c4"),
                         default="a1")
     parser.add_argument("--out", required=True)
     harness_save_path.add_arguments(parser, waivable=False)
@@ -535,6 +662,10 @@ def main() -> int:
         result = splc_gates(client, checkpoint, extension, args.product)
     elif args.case == "c2":
         result = elem_subtype_rows(client, checkpoint, extension)
+    elif args.case == "c3":
+        result = spfc_code_examples(client, checkpoint, extension)
+    elif args.case == "c4":
+        result = spfc_euro_placement(client, checkpoint, extension)
     else:
         result = missing_specification_fields(
             client, checkpoint, extension, args.product,

@@ -7,11 +7,22 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 ## Unreleased
 
 > **Breaking at the type level; nothing changes at runtime.** No export is
-> added, removed or renamed. 19 members of `/post` request types and 135 of
-> other named types narrow, 116 of them to required, and `/db/MCON`'s
+> added, removed or renamed. 19 members of `/post` request types and 141 of
+> other named types narrow, 122 of them to required, and `/db/MCON`'s
 > `LinearConstraintItem` is corrected to the shape the manual gives it, which
 > removes four members it should never have had. `/db/TDME` loses four
 > members that only a code this API refuses could use.
+
+### Changed - `/db/SPFC` is generated from its contract
+
+`ResponseSpectrumFunctionPayload` had no design-code members at all. **`STR`,
+`OPT` and `VAL` are added**, each with the members the section's code tables
+give, every member carrying the `STR.SPEC_CODE` values it applies to in
+JSDoc (`VAL.PERIOD`, for one, is required under every tabled code). `NAME`,
+`iTYPE`, `SCALE` and `GRAV` become required, as do `aFUNC`'s `PERIOD` and
+`VALUE`. The EURO2004 members are declared in `STR` as strings, where `/info`
+puts them; the section's own EURO2004 example is refused on both products
+(measured 2026-09-22), so no shape for that code is claimed.
 
 ### Changed - `/db/MVLDpl` is generated from its contract
 

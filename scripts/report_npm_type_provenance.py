@@ -55,9 +55,10 @@ tables were, two of them after a live measurement, and its aUSEMODE element
 with them, then 77 once /db/STCT's erection-load table was,
 then 76 once /db/ELEM's per-type tables became (TYPE, STYPE) variants,
 then 70 once /db/MVLDpl's LOAD_MODEL groups were, with its five nested
-types. What the 64 left in `python:nested` are:
+types, then 68 once /db/SPFC's design-code tables were merged into STR, OPT
+and VAL. What the 63 left in `python:nested` are:
 
-    14  children of the 4 unmergedTables roots (moving-load cases and
+    13  children of the 3 unmergedTables roots (moving-load cases and
         vehicles, response spectra, time history, ...)
     22  /view/CAPTURE's RESULT_GRAPHIC tree, under a contract with
         unmergedTables
@@ -112,7 +113,7 @@ CONTRACTS = ROOT / "contracts" / "endpoints"
 #: Measured 2026-09-22 over 765 generated types, after branch-owned nested types. A ceiling: it falls as
 #: contracts take over more of the emitted shape, and a rise means a type that
 #: used to come from a contract is being read out of the Python tree again.
-PYTHON_SOURCED_AT_MOST = 70
+PYTHON_SOURCED_AT_MOST = 68
 
 #: Every exported type in `types.ts`. Not a ceiling: adding or removing an
 #: export is a change to the published surface, so it has to be made here on

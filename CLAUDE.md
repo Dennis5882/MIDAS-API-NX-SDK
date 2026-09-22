@@ -103,7 +103,7 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   and operation readers already parse, and `tests/test_generate_typescript_sdk.py` fails if an
   import comes back. A missing or broken Python install no longer stops `npm publish`. The
   **source tree** is still load-bearing — deleting `src/midas_nx/` breaks `npm run generate`,
-  though a built `dist/` keeps working — because 70 of 765 generated npm types still come from
+  though a built `dist/` keeps working — because 68 of 765 generated npm types still come from
   Python TypedDicts. **Since 2026-09-22 that is the only reason**: which types exist and in which
   namespace is decided by the contracts for every type they own (payload roots by
   `surface.payloadTypeName` + `modulePath`, nested and argument types by their recorded
@@ -161,7 +161,7 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   `COMB_LIST[].LCNAME` and `/db/STAG`'s `DACT_ELEM[].GRUP_NAME` among them, both of which `/info`
   declares on both products. What remains Python-sourced is broken down in the
   script's docstring; most of it sits under no contract-generated root at all — operation
-  arguments and the 4 `unmergedTables` roots' children.
+  arguments and the 3 `unmergedTables` roots' children.
 - `scripts/contract_from_info.py` — the one path into a contract that does not start at the
   manual. Seven Hyper-S `-M1` sections state a URL, their methods and nothing else, so live
   `/info` is their only permitted source; this fills a draft's `fields` from
@@ -510,6 +510,13 @@ Two things that have already caused rework:
   (`GET /db/NODE` answered `The project is not opened`), and a `/doc/NEW` sent then did not
   answer and left the session blocked until the product was brought back up. Every harness
   assumes a document is already open; if that GET says otherwise, ask for one.
+- **A `/db/SPFC` write with `CALC_OPT: true` leaves the document modified after a save.**
+  On 2026-09-22 a probe saved right after one, and the next `/doc/NEW` raised a save-changes
+  dialog on both products and never answered, blocking both sessions until the author
+  restarted them. The server-built curve evidently lands after `/doc/SAVEAS` returns. Probes
+  now give a design spectrum an explicit `aFUNC` instead; if one must send `CALC_OPT: true`,
+  do not `/doc/NEW` after it without a human watching. Details in
+  `docs/live_verification_notes.md`.
 - **An `--endpoints` selection can drop a case another case depends on**, and
   `scripts/live_crud_check.py` does not warn. extras14's `/db/DYFG` and `/db/DYNF` need that
   tier's `/db/MVCD` case to switch the moving-load code to EUROCODE first; selected without it

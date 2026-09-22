@@ -478,24 +478,23 @@ def test_types_are_written_in_name_order():
 
 
 def test_a_contract_with_unmerged_tables_does_not_become_a_payload_type():
-    """/db/SPFC is contracted, and its payload still comes from the fallback.
+    """/db/THIS is contracted, and its payload still comes from the fallback.
 
-    Its eleven design-code tables name standards, but their headings do not
-    state the wire selector value each table belongs to, so they stay unmerged
+    Its analysis-mode tables are selected by a combination of iATYPE, iAMETHOD
+    and iTHTYPE that the headings do not state in full, so they stay unmerged
     and the contract records the gap instead of claiming a complete field list.
     Generating a published payload type from that list would narrow the payload
     onto fields the manual documents elsewhere, and break callers who set them.
 
-    /db/THIK and then /db/SPLC were this test's example until 2026-09-22: THIK's
-    second table was merged as the Stiffened DB branch its heading names, and
-    SPLC's four once a live measurement settled the two whose rows the manual
-    marks Required without a condition.
+    /db/THIK, /db/SPLC and /db/SPFC were this test's example until 2026-09-22,
+    each until its supplementary tables were merged.
     """
     fields = generator._contract_payload_fields()
 
-    assert "/db/SPFC" not in fields
+    assert "/db/THIS" not in fields
     assert "/db/THIK" in fields
     assert "/db/SPLC" in fields
+    assert "/db/SPFC" in fields
     assert "/db/BODF" in fields, "an unqualified contract must still supply its payload"
 
 

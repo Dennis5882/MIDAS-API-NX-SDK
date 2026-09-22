@@ -4585,6 +4585,16 @@ def test_a_structural_destination_accepts_names_from_the_sections_other_tables()
     assert not _under_structural_destination("AUTO_OPTIMIZE.COMB_OPTION", destinations, {}, names)
 
 
+def test_a_key_cell_naming_its_object_is_read_as_the_key():
+    """/db/SPFC writes `SFI`(STR) and `PERIOD`(VAL); the name is SFI, PERIOD."""
+    from extract_contracts import _KEY_WITH_OBJECT
+
+    assert _KEY_WITH_OBJECT.sub("", "SFI(STR)") == "SFI"
+    assert _KEY_WITH_OBJECT.sub("", "FUNDAMENTAL_PERIOD(VAL)") == "FUNDAMENTAL_PERIOD"
+    assert _KEY_WITH_OBJECT.sub("", "R_") == "R_"
+    assert _KEY_WITH_OBJECT.sub("", "Pi(x)") == "Pi(x)"
+
+
 def test_a_branch_that_redeclares_its_destination_accounts_for_the_rows():
     """/db/MCON: two `TYPE=... 일 때 SLAVES[]` tables, kept as variants.
 
