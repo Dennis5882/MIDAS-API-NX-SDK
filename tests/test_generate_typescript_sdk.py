@@ -478,17 +478,21 @@ def test_types_are_written_in_name_order():
 
 
 def test_a_contract_with_unmerged_tables_does_not_become_a_payload_type():
-    """/db/THIK is contracted, and its payload still comes from the fallback.
+    """/db/SPLC is contracted, and its payload still comes from the fallback.
 
-    Its manual section has one variant table nobody could merge, so the
-    contract records the gap instead of claiming a complete field list.
-    Generating a published payload type from that list would narrow
-    ThicknessPayload onto fields the manual documents elsewhere, and break
-    callers who set them.
+    Its accidental-eccentricity table marks five rows Required without saying
+    they apply only when bACCECC is on, so it stays unmerged and the contract
+    records the gap instead of claiming a complete field list. Generating a
+    published payload type from that list would narrow the payload onto fields
+    the manual documents elsewhere, and break callers who set them.
+
+    /db/THIK was this test's example until 2026-09-22, when its second table
+    was merged as the Stiffened DB branch its heading names.
     """
     fields = generator._contract_payload_fields()
 
-    assert "/db/THIK" not in fields
+    assert "/db/SPLC" not in fields
+    assert "/db/THIK" in fields
     assert "/db/BODF" in fields, "an unqualified contract must still supply its payload"
 
 

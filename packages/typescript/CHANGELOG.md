@@ -7,11 +7,23 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 ## Unreleased
 
 > **Breaking at the type level; nothing changes at runtime.** No export is
-> added, removed or renamed. 19 members of `/post` request types and 83 of
-> other named types narrow, 73 of them to required, and `/db/MCON`'s
+> added, removed or renamed. 19 members of `/post` request types and 97 of
+> other named types narrow, 87 of them to required, and `/db/MCON`'s
 > `LinearConstraintItem` is corrected to the shape the manual gives it, which
 > removes four members it should never have had. `/db/TDME` loses four
 > members that only a code this API refuses could use.
+
+### Changed - `/db/THIK` is generated from its contract
+
+`ThicknessPayload` was a Python TypedDict listing only the Value thickness.
+The manual's first table is headed `TYPE: "VALUE"` and its second
+`STYPE: "DB"`, and both are now read that way: `bINOUT`, `T_IN`, `T_OUT`,
+`OFFSET` and `O_VALUE` apply when `TYPE` is `"VALUE"` (`T_OUT` also needs
+`bINOUT: true`), and the Stiffened DB members `STYPE`, `RIB_POS` and
+`SECTION` are **added**, required when `TYPE` is `"STIFFENED"` (and `STYPE`
+is `"DB"`). `NAME` and `TYPE` become required. Everything else stays optional
+with its condition in JSDoc - a draft that read the first table as the whole
+record would have required `T_IN` and `T_OUT` of every stiffened plate.
 
 ### Changed - `/db/TDME` is generated from its contract
 

@@ -10350,14 +10350,44 @@ export namespace DbPropertiesSectionTypes {
 }
 
 export namespace DbPropertiesThicknessTypes {
+  /** Generated from contracts/endpoints/. */
   export interface ThicknessPayload {
-    NAME?: string;
-    TYPE?: string;
+    /** Thickness Name */
+    NAME: string;
+    /** Thickness Type • Value: "VALUE" • Stiffened: "STIFFENED" */
+    TYPE: string;
+    /** Plane • false: In-plane & Out-of-plane (same) • true: Different I/O values Applies when TYPE = "VALUE". */
     bINOUT?: boolean;
+    /** In-plane Thickness Required when TYPE = "VALUE". */
     T_IN?: number;
+    /** Out-of-plane Thickness (when "bINOUT" is true) Required when TYPE = "VALUE" and bINOUT = true. */
     T_OUT?: number;
+    /** Plate Offset Option • None: 0 • Thickness Ratio: 1 • Value: 2 Applies when TYPE = "VALUE". */
     OFFSET?: number;
+    /** Local z Direction Offset Value Applies when TYPE = "VALUE". */
     O_VALUE?: number;
+    /** Stiffened Thickness Sub-Type • Value: "VALUE" • User: "USER" • DB: "DB" Required when TYPE = "STIFFENED". */
+    STYPE?: string;
+    /** Rib Position • "LOWER" • "UPPER" Required when TYPE = "STIFFENED" and STYPE = "DB". */
+    RIB_POS?: string;
+    /** Defined Stiffener Required when TYPE = "STIFFENED" and STYPE = "DB". */
+    SECTION?: {
+      /** Thickness */
+      THIKNESS: number;
+      /** DB Name */
+      DBNAME: string;
+      /** XZ Section */
+      XZ: {
+        /** Use Rib Attached */
+        bRIB?: boolean;
+        /** Shape */
+        SHAPE: string;
+        /** Section Name */
+        NAME: string;
+        /** Rib Spacing Distance */
+        DIST: number;
+      };
+    };
   }
 }
 

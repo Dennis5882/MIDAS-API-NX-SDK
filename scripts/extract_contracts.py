@@ -1791,6 +1791,21 @@ _REVIEWED_ADDITIONAL_FIELD_CONDITIONS: dict[
             ("ELEMTYPE", ("BEAM", "PLATE")),
         ),
     },
+    # /db/THIK's first table is not the whole record: it is headed
+    # "Specifications — Value (`"TYPE": "VALUE"`)", and the Stiffened DB
+    # example sends none of its rows. Read as the base, it required T_IN and
+    # T_OUT of every stiffened plate. T_OUT's own row adds "(when "bINOUT" is
+    # true)".
+    "/db/THIK": {
+        ("bINOUT",): ('TYPE="VALUE"', ("TYPE", ("VALUE",))),
+        ("T_IN",): ('TYPE="VALUE"', ("TYPE", ("VALUE",))),
+        ("T_OUT",): [
+            ('TYPE="VALUE"', ("TYPE", ("VALUE",))),
+            ('when "bINOUT" is true', ("bINOUT", (True,))),
+        ],
+        ("OFFSET",): ('TYPE="VALUE"', ("TYPE", ("VALUE",))),
+        ("O_VALUE",): ('TYPE="VALUE"', ("TYPE", ("VALUE",))),
+    },
 }
 
 
@@ -1819,16 +1834,15 @@ def _apply_reviewed_field_conditions(endpoint: str, fields: list[ParsedField]) -
 def _apply_reviewed_additional_field_conditions(endpoint: str, fields: list[ParsedField]) -> None:
     """Append a second manual gate to fields already gated by their table."""
 
-    for path, (condition, structured) in _REVIEWED_ADDITIONAL_FIELD_CONDITIONS.get(
-        endpoint, {}
-    ).items():
+    for path, gates in _REVIEWED_ADDITIONAL_FIELD_CONDITIONS.get(endpoint, {}).items():
         field = _field_at_path(fields, path)
         if field is None:
             continue
-        if condition not in (field.condition or ""):
-            field.condition = f"{field.condition}; {condition}" if field.condition else condition
-        if structured not in field.applies_when:
-            field.applies_when.append(structured)
+        for condition, structured in gates if isinstance(gates, list) else [gates]:
+            if condition not in (field.condition or ""):
+                field.condition = f"{field.condition}; {condition}" if field.condition else condition
+            if structured not in field.applies_when:
+                field.applies_when.append(structured)
 
 
 _STRUCTURAL_CONTAINERS: dict[str, tuple[str, ...]] = {
@@ -2478,6 +2492,12 @@ def _conditional_fields(section: "Section", fields: list[ParsedField]) -> tuple[
             2: ((("P_TYPE", 2),), None),
             3: ((("P_TYPE", 3),), None),
         },
+        "/db/THIK": {
+            1: (
+                (("TYPE", "STIFFENED"), ("STYPE", "DB")),
+                'Stiffened DB (TYPE="STIFFENED", STYPE="DB")',
+            ),
+        },
         "/db/THFC": {
             1: ((("FUNCTYPE", 1),), "Time Function (FUNCTYPE=1) 추가 파라미터"),
             2: ((("FUNCTYPE", 2),), "Sinusoidal (FUNCTYPE=2) 추가 파라미터"),
@@ -2557,6 +2577,8 @@ def _conditional_fields(section: "Section", fields: list[ParsedField]) -> tuple[
     shared_selector_conditions: dict[tuple[str, int, str], tuple[tuple[Condition, ...], str]] = {
         ("/db/HSFC", 2, "OPT_USE_CONC_DATA"): ((("TYPE", "FUNC"),), 'Code 타입 (TYPE="FUNC")'),
         ("/db/HSFC", 3, "OPT_USE_CONC_DATA"): ((("TYPE", "FUNC"),), 'Code 타입 (TYPE="FUNC")'),
+        # STYPE is the Stiffened sub-type selector itself; its own gate is TYPE.
+        ("/db/THIK", 1, "STYPE"): ((("TYPE", "STIFFENED"),), 'TYPE="STIFFENED"'),
     }
     # The India moving-load manual repeats SUB_LOAD_ITEMS for the Auto Live
     # Load case and adds item members below it.  The named Array parent already

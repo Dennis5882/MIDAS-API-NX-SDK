@@ -89,6 +89,11 @@ EXPECTED_AGAINST_CONTRACTS: _AgainstContractsExpectation = {
         # have no matching row in the vendored manual; the ceiling records the
         # observed gap without guessing that they are request fields.
         "/db/THIS-M1": 20,
+        # /db/THIK is compared once its Stiffened DB table is merged. The manual
+        # documents the Value type and one of the four Stiffened sub-types (DB);
+        # /info also carries the others' objects (VALUE, WALL, the YZ section).
+        # Recorded as the observed gap, not added as fields no table describes.
+        "/db/THIK": 13,
     },
     "contractOnlyNamesAtMost": {
         "/db/POGD-M1": 2,
