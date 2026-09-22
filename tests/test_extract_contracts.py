@@ -4567,6 +4567,35 @@ def test_a_declared_structural_destination_is_not_drift():
     assert not _under_structural_destination("LANE_ITEMS.ELEM", destinations, manual)
 
 
+def test_a_branch_that_redeclares_its_destination_accounts_for_the_rows():
+    """/db/MCON: two `TYPE=... 일 때 SLAVES[]` tables, kept as variants.
+
+    Merged into the parent, the two tables made SLAVES[] demand all four keys
+    of both. Kept as variants that redeclare SLAVES, each branch carries its
+    own - and the check must then find the rows there, but only where a
+    reviewed `note` says that placement was chosen.
+    """
+    from extract_contracts import _branch_destination_fields
+
+    slaves = lambda *keys: {  # noqa: E731
+        "key": "SLAVES", "type": "array", "properties": [{"key": k, "type": "number"} for k in keys],
+    }
+    contract = {
+        "variants": [
+            {"when": [{"path": "TYPE", "equals": "EX"}], "fields": [slaves("NODE_KEY", "COEFF")]},
+            {"when": [{"path": "TYPE", "equals": "WD"}], "fields": [slaves("NODE_KEY", "WEIGHT")]},
+        ],
+        "extraction": {"structuralTables": [
+            {"heading": "EX SLAVES[]", "line": 1, "paths": ["ITEMS.SLAVES"], "note": "kept as a branch"},
+        ]},
+    }
+    found = _branch_destination_fields(contract)
+    assert {"ITEMS.SLAVES", "ITEMS.SLAVES.NODE_KEY", "ITEMS.SLAVES.COEFF", "ITEMS.SLAVES.WEIGHT"} <= set(found)
+
+    del contract["extraction"]["structuralTables"][0]["note"]
+    assert _branch_destination_fields(contract) == {}
+
+
 def test_a_packed_key_cell_becomes_the_names_it_holds():
     """A Key cell can name several properties, and the parser returns one key.
 

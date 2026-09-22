@@ -6,8 +6,54 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
-> **Breaking at the type level for 19 members of `/post` request types;
-> nothing changes at runtime.** No export is added, removed or renamed.
+> **Breaking at the type level; nothing changes at runtime.** No export is
+> added, removed or renamed. 19 members of `/post` request types and 56 of
+> other named types narrow, 46 of them to required, and `/db/MCON`'s
+> `LinearConstraintItem` is corrected to the shape the manual gives it, which
+> removes four members it should never have had.
+
+### Changed - 48 more named types come from the contracts
+
+Named types for objects that sit inside one branch of a payload
+(`/db/NLCT`'s `NEWTON_ITEMS`, `/db/EIGV`'s `vRITZ`, the Chinese moving-load
+case's sub-load and optimisation items), objects a contract had declared
+without members (the RC and steel design-result graphics, the RC wall calls'
+`SELECTIONS`, the RC report calls' `DETAIL_POSITIONS`, `/db/SDSP`'s
+`VALUES`, the Eurocode moving-load case's `OPTIMIZE_LIST`,
+`/db/HHCT-M1`'s `CONVERGENCE.DISP` and `LOAD`), and nine `/view/DISPLAY`
+options are now generated from the contracts. The members each gains come from
+the manual - where its Parameters table names an object without child rows,
+from the same section's JSON Schema - or, for three `OPTIMIZE_LIST` types the
+manual leaves unstated, from the product's own `/info` schema.
+
+- **46 members become required** across 17 types, each the requiredness the
+  containing payload or argument already published inline.
+- **10 members narrow from `string` to the values the manual lists**, such as
+  `HaunchPartSelector.INPUT_METHOD` (`"KEYS" | "TO"`, in both the RC and steel
+  namespaces) and the steel design-result graphic's `COLOR_TYPE`, `POSITION`
+  and `MAXMIN`.
+- The same objects inside the payload and argument types, which were
+  `JsonObject` wherever a contract declared them without members, now carry
+  those members.
+- `ConvergenceCriterionCheck.VALUE` and the corresponding
+  `HeatOfHydrationAnalysisControlHyperSPayload` members become optional, with
+  "Required when OPT_CHECK = true" in their JSDoc, as the manual's row says;
+  `/ope/AUTOMESH`'s `INCLUDE_INTERIOR_NODES.VALUE` gains the "OPTION = User"
+  condition its sibling already had.
+- Conditions in the JSDoc of a named nested type are stated from that type's
+  own root (`Required when TYPE = "LINEAR"`, not `ITEMS.TYPE`).
+
+### Fixed - `/db/MCON`'s linear constraint could not be typed correctly
+
+The manual gives `SLAVES[]` two shapes: `{NODE_KEY, COEFF, DOF}` when `TYPE` is
+`"EX"` and `{NODE_KEY, WEIGHT}` when it is `"WD"`. The contract had merged both
+tables into one `SLAVES` element requiring all four keys, which neither type
+accepts, and its branches placed the same keys beside `TYPE` instead of inside
+`SLAVES`. `LinearConstraintItem` (and `LinearConstraintPayload`) now require
+the right members inside `SLAVES` for each `TYPE`, and no longer list
+`NODE_KEY`, `COEFF`, `DOF` or `WEIGHT` on the item itself, where the server
+does not read them. `LinearConstraintSlaveExplicit` and
+`LinearConstraintSlaveWeighted` describe the two element shapes.
 
 ### Changed - the `/post` request types come from the table contracts
 

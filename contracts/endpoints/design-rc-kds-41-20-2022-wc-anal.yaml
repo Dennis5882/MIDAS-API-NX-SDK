@@ -54,6 +54,9 @@ operations:
         ``perform_wall_design`` (WD-ANAL, design_forces.py) is also
         WID+STORY-targeted and *did* hang on the same build. See
         docs/live_verification_notes.md for the full writeup.
+      nestedTypes:
+        - {path: SELECTIONS, name: RcWallDesignSelection, namespace: DesignRcKdsDesignForcesTypes}
+        - {path: SELECTIONS.WALL_IDS, name: RcWallIdsSelector, namespace: DesignRcKdsDesignForcesTypes}
     risk: write
     request:
       wrapper: assign

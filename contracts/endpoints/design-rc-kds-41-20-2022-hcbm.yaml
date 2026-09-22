@@ -15,6 +15,10 @@ surface:
   exportName: haunchedBeamAssignment
   modulePath: [design, rcKds, setup]
   payloadTypeName: HaunchedBeamAssignmentPayload
+  nestedTypes:
+    - {path: PART_A, name: HaunchPartSelector, namespace: DesignRcKdsSetupTypes}
+    - {path: PART_B, name: HaunchPartSelector, namespace: DesignRcKdsSetupTypes}
+    - {path: PART_C, name: HaunchPartSelector, namespace: DesignRcKdsSetupTypes}
 
 products: [civil, gen]
 

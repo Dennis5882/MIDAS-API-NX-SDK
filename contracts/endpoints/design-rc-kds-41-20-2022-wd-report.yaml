@@ -40,6 +40,9 @@ operations:
         docs/manual/26_Design_RC_KDS41202022.md #50 — WD-REPORT — RC Wall
         Design Report. Response: ``{"SUCCESS": bool, "FILE_PATH": str,
         "MESSAGE": str}``.
+      nestedTypes:
+        - {path: SELECTIONS, name: RcWallDesignSelection, namespace: DesignRcKdsDesignForcesTypes}
+        - {path: SELECTIONS.WALL_IDS, name: RcWallIdsSelector, namespace: DesignRcKdsDesignForcesTypes}
     risk: write
     request:
       wrapper: assign
@@ -101,6 +104,52 @@ fields:
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
+    properties:
+      - key: WALL_IDS
+        description: >-
+          벽체 ID 지정
+        type: object
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: KEYS
+            description: >-
+              벽 ID 각각
+            type: array
+            items:
+              type: integer
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # From this section's JSON Schema (line 8810), which declares KEYS and TO
+            # under WALL_IDS; the Parameters table names them only in its description.
+          - key: TO
+            description: >-
+              벽 ID 범위 (예 "10to20")
+            type: string
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+      - key: STORY
+        description: >-
+          층 이름 목록
+        type: array
+        items:
+          type: string
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      # WALL_IDS and STORY are from this section's JSON Schema (line 8810);
+      # the Parameters table lists SELECTIONS without its child rows.
   - key: EXPORT_PATH
     description: >-
       저장 디렉터리 경로
@@ -121,5 +170,11 @@ fields:
     provenance: manual
 
 extraction:
+  prose:
+    - line: 8810
+      quote: >-
+        "KEYS": { "type": "array", "items": { "type": "integer" } },
+        "TO": { "type": "string" }
+      paths: [SELECTIONS.WALL_IDS, SELECTIONS.WALL_IDS.KEYS, SELECTIONS.WALL_IDS.TO, SELECTIONS.STORY]
   source: 26_Design_RC_KDS41202022.md line 8827
   table: 파라미터

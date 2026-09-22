@@ -38,6 +38,16 @@ operations:
       argumentTypeName: DisplayArgument
       documentation: |-
         docs/manual/16_VIEW.md #6 — /view/DISPLAY — Display.
+      nestedTypes:
+        - {path: BOUNDARY, name: BoundaryDisplay, namespace: ViewTypes}
+        - {path: ELEMENT, name: ElementDisplay, namespace: ViewTypes}
+        - {path: LOAD, name: LoadDisplay, namespace: ViewTypes}
+        - {path: LOAD.CASE_SELECTION, name: LoadCaseSelection, namespace: ViewTypes}
+        - {path: LOAD.LOAD_VALUE, name: LoadValueFormat, namespace: ViewTypes}
+        - {path: MISC, name: MiscDisplay, namespace: ViewTypes}
+        - {path: NODE, name: NodeDisplay, namespace: ViewTypes}
+        - {path: PROPERTY, name: PropertyDisplay, namespace: ViewTypes}
+        - {path: VIEW, name: ViewDisplay, namespace: ViewTypes}
     risk: write
     request:
       wrapper: assign

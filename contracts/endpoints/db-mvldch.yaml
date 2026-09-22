@@ -12,6 +12,9 @@ surface:
   exportName: movingLoadCaseChina
   modulePath: [db, movingLoads]
   payloadTypeName: MovingLoadCaseChinaPayload
+  nestedTypes:
+    - {path: SUB_LOAD_ITEMS, name: MovingLoadCaseChinaSubLoadItem, namespace: DbMovingLoadsTypes}
+    - {path: AUTO_OPTIMIZE_ITEMS, name: MovingLoadCaseChinaOptimizeItem, namespace: DbMovingLoadsTypes}
 summary: >-
   Defines China moving-load cases. The request has distinct general-load and
   moving-load-optimization payload branches selected by OPT_AUTO_OPTIMIZE.

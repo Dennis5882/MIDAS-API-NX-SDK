@@ -15,6 +15,10 @@ surface:
   exportName: nonlinearAnalysisControlData
   modulePath: [db, analysisControl]
   payloadTypeName: NonlinearAnalysisControlDataPayload
+  nestedTypes:
+    - {path: NEWTON_ITEMS, name: NonlinearNewtonItem, namespace: DbAnalysisControlTypes}
+    - {path: ARCLEN_ITEMS, name: NonlinearArcLengthItem, namespace: DbAnalysisControlTypes}
+    - {path: DISPCT_ITEMS, name: NonlinearDisplacementControlItem, namespace: DbAnalysisControlTypes}
 
 products: [civil, gen]
 

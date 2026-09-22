@@ -45,6 +45,8 @@ operations:
         - {path: MESH_SIZE, name: AutoMeshSize, namespace: OpeTypes}
         - {path: PROPERTY, name: AutoMeshProperty, namespace: OpeTypes}
         - {path: PROPERTY.ELEMENT_SUB_TYPE, name: AutoMeshElementSubType, namespace: OpeTypes}
+        - {path: MESHER.INCLUDE_INTERIOR_NODES, name: InteriorInclusionOption, namespace: OpeTypes}
+        - {path: MESHER.INCLUDE_INTERIOR_LINES, name: InteriorInclusionOption, namespace: OpeTypes}
     risk: write
     request:
       wrapper: assign
@@ -138,6 +140,9 @@ fields:
               type: integer
             requirement: conditional
             condition: User일 때
+            appliesWhen:
+              - path: MESHER.INCLUDE_INTERIOR_NODES.OPTION
+                equals: User
             documentedDefault: null
             documentedOptional: false
             safeToOmit: unverified

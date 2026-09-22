@@ -17,6 +17,7 @@ surface:
   payloadTypeName: SpecifiedDisplacementPayload
   nestedTypes:
     - {path: ITEMS, name: SpecifiedDisplacementItem, namespace: DbStaticLoadsTypes}
+    - {path: ITEMS.VALUES, name: SpecifiedDisplacementValue, namespace: DbStaticLoadsTypes}
 
 products: [civil, gen]
 
@@ -149,6 +150,27 @@ fields:
         provenance: manual
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(4)', not by
         # naming a path
+        properties:
+          - key: OPT_FLAG
+            description: >-
+              Usage Flag
+            type: boolean
+            requirement: optional
+            documentedDefault: false
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+          - key: DISPLACEMENT
+            description: >-
+              Displacement Value
+            type: number
+            requirement: optional
+            documentedDefault: 0
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+        # Rows 'i.' and 'ii.' of the manual's table, which the extractor does not read as
+        # children of '(4)'. /info declares the same two members on both products.
   - key: OPT_FLAG
     description: >-
       Usage Flag
@@ -205,5 +227,10 @@ knownDefects:
   - ref: db-delete-body-empties-table
 
 extraction:
+  prose:
+    - line: 470
+      quote: >-
+        Rows "i. Usage Flag OPT_FLAG Boolean false Optional" and "ii. Displacement Value DISPLACEMENT Real 0 Optional"
+      paths: [ITEMS.VALUES.OPT_FLAG, ITEMS.VALUES.DISPLACEMENT]
   source: 06_DB_Static_Loads.md line 460
   table: 파라미터

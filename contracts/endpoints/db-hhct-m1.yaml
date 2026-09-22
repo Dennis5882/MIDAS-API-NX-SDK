@@ -19,6 +19,9 @@ surface:
     - {path: CONVERGENCE, name: HeatOfHydrationConvergenceHyperS, namespace: DbAnalysisControlTypes}
     - {path: ITEM, name: CreepShrinkageItemHyperS, namespace: DbAnalysisControlTypes}
     - {path: ITEM.M_EFF_MOD, name: CreepShrinkageEffectiveModulusData, namespace: DbAnalysisControlTypes}
+    - {path: CONVERGENCE.DISP, name: ConvergenceCriterionCheck, namespace: DbAnalysisControlTypes}
+    - {path: CONVERGENCE.LOAD, name: ConvergenceCriterionCheck, namespace: DbAnalysisControlTypes}
+    - {path: CONVERGENCE.WORK, name: ConvergenceCriterionCheck, namespace: DbAnalysisControlTypes}
 
 products: [civil]
 
@@ -319,6 +322,33 @@ fields:
         provenance: manual
         # RESOLVED: the manual nests this under 'CONVERGENCE' by numbering it
         # '(1)', not by naming a path
+        properties:
+          - key: OPT_CHECK
+            description: >-
+              Use Option
+            type: boolean
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # the manual's rows 'a' and 'b' follow '(3)' once, and apply to
+            # all three criteria: the section's request example gives DISP the same
+            # {OPT_CHECK, VALUE}, and /info declares both members under DISP.
+          - key: VALUE
+            description: >-
+              Tolerance (when OPT_CHECK true)
+            type: number
+            requirement: required
+            appliesWhen:
+              - path: CONVERGENCE.DISP.OPT_CHECK
+                equals: true
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # required only when this criterion is checked, as the row's
+            # own wording says.
       - key: LOAD
         description: >-
           Load(P)
@@ -330,6 +360,33 @@ fields:
         provenance: manual
         # RESOLVED: the manual nests this under 'CONVERGENCE' by numbering it
         # '(2)', not by naming a path
+        properties:
+          - key: OPT_CHECK
+            description: >-
+              Use Option
+            type: boolean
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # the manual's rows 'a' and 'b' follow '(3)' once, and apply to
+            # all three criteria: the section's request example gives LOAD the same
+            # {OPT_CHECK, VALUE}, and /info declares both members under LOAD.
+          - key: VALUE
+            description: >-
+              Tolerance (when OPT_CHECK true)
+            type: number
+            requirement: required
+            appliesWhen:
+              - path: CONVERGENCE.LOAD.OPT_CHECK
+                equals: true
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
+            # required only when this criterion is checked, as the row's
+            # own wording says.
       - key: WORK
         description: >-
           Work(W)
@@ -358,6 +415,9 @@ fields:
               Tolerance (when OPT_CHECK true)
             type: number
             requirement: required
+            appliesWhen:
+              - path: CONVERGENCE.WORK.OPT_CHECK
+                equals: true
             documentedDefault: null
             documentedOptional: false
             safeToOmit: unverified
@@ -392,5 +452,11 @@ knownDefects:
   - ref: db-delete-body-empties-table
 
 extraction:
+  prose:
+    - line: 890
+      quote: >-
+        "DISP": { "OPT_CHECK": true, "VALUE": 0.001 }, "LOAD": { "OPT_CHECK": true,
+        "VALUE": 0.001 }, "WORK": { "OPT_CHECK": true, "VALUE": 0.001 }
+      paths: [CONVERGENCE.DISP.OPT_CHECK, CONVERGENCE.DISP.VALUE, CONVERGENCE.LOAD.OPT_CHECK, CONVERGENCE.LOAD.VALUE]
   source: 12_DB_Analysis_Control.md line 842
   table: Parameters

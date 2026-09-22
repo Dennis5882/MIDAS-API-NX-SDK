@@ -40,6 +40,8 @@ operations:
         docs/manual/26_Design_RC_KDS41202022.md #59 — CC-REPORT — RC Column
         Check Report. Response: ``{"SUCCESS": bool, "FILE_PATH": str, "MESSAGE":
         str}``.
+      nestedTypes:
+        - {path: DETAIL_POSITIONS, name: RcReportDetailPositions, namespace: DesignRcKdsDesignForcesTypes}
     risk: write
     request:
       wrapper: assign
@@ -157,6 +159,30 @@ fields:
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
+    properties:
+      - key: END_I
+        type: boolean
+        requirement: optional
+        documentedDefault: true
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: MID
+        type: boolean
+        requirement: optional
+        documentedDefault: false
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+      - key: END_J
+        type: boolean
+        requirement: optional
+        documentedDefault: false
+        documentedOptional: true
+        safeToOmit: unverified
+        provenance: manual
+    # Members from this section's JSON Schema (line 10751); the
+    # Parameters table names the object without child rows.
   - key: EXPORT_PATH
     description: >-
       리포트 저장 디렉터리 경로
@@ -177,5 +203,10 @@ fields:
     provenance: manual
 
 extraction:
+  prose:
+    - line: 10751
+      quote: >-
+        "DETAIL_POSITIONS": { ... (JSON Schema)
+      paths: [DETAIL_POSITIONS.END_I, DETAIL_POSITIONS.MID, DETAIL_POSITIONS.END_J]
   source: 26_Design_RC_KDS41202022.md line 10781
   table: 파라미터

@@ -36,22 +36,34 @@ declarations carry 742 distinct names. That is only a risk for the two
 contract-aware buckets, and today it is not one: `python:contract-ignored` is
 empty and `python:unmerged` is exactly the 13 waived contracts.
 
-Measured 2026-09-21 and 2026-09-22 across three generator changes: 478
+Measured 2026-09-21 and 2026-09-22 across four generator changes: 478
 Python-sourced types, then 250 once contracts could own a payload's **nested**
 types (`surface.nestedTypes`), then 162 once an operation's **argument** type
 and its nested types were built from the operation contract as well, then 138
 once a table contract could describe its own request objects
-(`requestFields.additional`, with `surface.nestedTypes`). What the 123 left in
-`python:nested` are, roughly:
+(`requestFields.additional`), then 90 once a nested type could live inside a
+single branch (or name the branch it is), conditions inside it were stated
+from its own root, and the contracts' objects declared without members were
+filled from each manual section's own JSON Schema, table rows or /info. What
+the 75 left in `python:nested` are:
 
-    51  operation arguments and their children still on Python: a union
-        argument (the /ope load-combination pair), a contract with
-        unmergedTables (/view/RESULTGRAPHIC), and the two held in
-        `_ARGUMENT_TYPES_LEFT_ON_PYTHON` with their reasons
-    46  /db modules - the 13 unmergedTables roots' children, objects a
-        contract declares without members, shared bases, and names two
-        contracts shape differently
-    25  design modules, same classes of reason
+    25  children of the 13 unmergedTables roots (moving-load cases and
+        vehicles, seismic isolators, response spectra, time history, ...)
+    22  /view/CAPTURE's RESULT_GRAPHIC tree, under a contract with
+        unmergedTables
+    11  /ope/DIVIDEELEM's argument and its children, held in
+        `_ARGUMENT_TYPES_LEFT_ON_PYTHON` with its reason
+     4  the /ope load-combination union arguments and their shared base
+     4  design: the two *DesignForcesArgument union parts, the held
+        SrcMemberCheckTableArgument, and ColumnBraceRebarDesignCriteriaItem,
+        a Python base class with no wire object of its own
+     7  /db names whose contracts disagree - InitialLoadCaseItem (POGD-M1
+        conditional, the others required), OptUseToleranceValue (ACTL-M1
+        unstated), LoadGroupDayItem (STAG requires LOAD_NAME, HSTG does not);
+        SectBefore, whose shape each SECTTYPE branch redeclares;
+        FiberDivisionColor and InelasticMaterialKentParkParam, waiting on
+        /db/FIMP's official article; and ItemGroupFields, a Python base class
+     1  OpeTypes.AllowableStressLine, which nothing references
      1  /post: `PostStoryTypes.StorySetAngle`, the SET_ANGLE object four
         story tables share while the manual makes ANGLE required in two and
         optional in two, so no one declaration fits all four. Each table's
@@ -87,10 +99,10 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 TYPES = ROOT / "packages" / "typescript" / "src" / "generated" / "types.ts"
 CONTRACTS = ROOT / "contracts" / "endpoints"
 
-#: Measured 2026-09-22 over 765 generated types, after table request fields. A ceiling: it falls as
+#: Measured 2026-09-22 over 765 generated types, after branch-owned nested types. A ceiling: it falls as
 #: contracts take over more of the emitted shape, and a rise means a type that
 #: used to come from a contract is being read out of the Python tree again.
-PYTHON_SOURCED_AT_MOST = 138
+PYTHON_SOURCED_AT_MOST = 90
 
 #: Every exported type in `types.ts`. Not a ceiling: adding or removing an
 #: export is a change to the published surface, so it has to be made here on

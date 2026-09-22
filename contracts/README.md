@@ -163,6 +163,31 @@ It refuses three things rather than guess:
   exported type count pinned in `scripts/report_npm_type_provenance.py` is its
   replacement, so recording a name still cannot add an export unnoticed.
 
+Three things added on 2026-09-22 widened what can be declared without
+loosening any of those:
+
+- **An object only a branch declares** is found in that branch. `/db/NLCT`'s
+  `NEWTON_ITEMS` exists only when `ITERATION_METHOD` is `"NEWTON"`, so it is a
+  field of a variant, not of the base; several branches declaring the same path
+  must agree on its shape, and a path the base declares too is still a
+  redeclaration and refused.
+- **`branch`** on an entry names which variant's version of a path it is, for
+  the case where branches genuinely differ and each version has its own
+  published name: `/db/MCON`'s `ITEMS.SLAVES` is `LinearConstraintSlaveExplicit`
+  under `TYPE: EX` and `LinearConstraintSlaveWeighted` under `TYPE: WD`. It must
+  equal one variant's `when` exactly.
+- **Conditions inside a nested type are stated from its own root.**
+  `HaunchPartSelector` is `PART_A`, `PART_B` and `PART_C` of `/DESIGN/.../HCBM`
+  alike, and `PART_A.INPUT_METHOD` is wrong for two of them; the generator
+  rewrites an `appliesWhen` path that starts inside the object before comparing
+  or rendering. Member order does not count as a difference either.
+
+Where a manual section's Parameters table names an object without its child
+rows - `/DESIGN/.../CDESIGN`'s `RESULT_GRAPHIC.DISPLAY_MEMBERS`, the RC wall
+calls' `SELECTIONS` - the members come from the same section's JSON Schema, with
+the line cited under `extraction.prose`; that is what lets `extract --check`
+tell a reviewed fill from drift.
+
 The namespace an entry states is where the type is written. Since 2026-09-22
 nothing about a contract-built type's placement comes from Python: a payload
 root goes in the namespace its `modulePath` names, and deleting the TypedDict a

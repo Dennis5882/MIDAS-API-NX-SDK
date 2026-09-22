@@ -59,6 +59,9 @@ operations:
         ``CHK: "OK"``) immediately after this call timed out, so read it back
         regardless rather than retrying this function. See
         docs/live_verification_notes.md.
+      nestedTypes:
+        - {path: SELECTIONS, name: RcWallDesignSelection, namespace: DesignRcKdsDesignForcesTypes}
+        - {path: SELECTIONS.WALL_IDS, name: RcWallIdsSelector, namespace: DesignRcKdsDesignForcesTypes}
     risk: write
     request:
       wrapper: assign
@@ -98,6 +101,29 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
+        properties:
+          - key: KEYS
+            description: >-
+              벽 ID 각각
+            type: array
+            items:
+              type: integer
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # From this section's JSON Schema (line 8464), which declares KEYS and TO
+            # under WALL_IDS; the Parameters table names them only in its description.
+          - key: TO
+            description: >-
+              벽 ID 범위 (예 "10to20")
+            type: string
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
       - key: STORY
         description: >-
           대상 층 이름 목록 (예 ["B1F", "1F"], 생략 시 전체 층)
@@ -111,5 +137,11 @@ fields:
         provenance: manual
 
 extraction:
+  prose:
+    - line: 8464
+      quote: >-
+        "KEYS": { "type": "array", "items": { "type": "integer" } },
+        "TO": { "type": "string" }
+      paths: [SELECTIONS.WALL_IDS.KEYS, SELECTIONS.WALL_IDS.TO]
   source: 26_Design_RC_KDS41202022.md line 8479
   table: 파라미터

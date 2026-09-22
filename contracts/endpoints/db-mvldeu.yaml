@@ -18,6 +18,7 @@ surface:
   nestedTypes:
     - {path: STL_LIST, name: MovingLoadCaseEurocodeStraddlingLaneItem, namespace: DbMovingLoadsTypes}
     - {path: SUB_LOAD_LIST, name: MovingLoadCaseEurocodeSubLoadItem, namespace: DbMovingLoadsTypes}
+    - {path: OPTIMIZE_LIST, name: MovingLoadCaseEurocodeOptimizeItem, namespace: DbMovingLoadsTypes}
 
 products: [civil, gen]
 
@@ -461,6 +462,37 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+    properties:
+      - key: TYPE
+        description: >-
+          Type
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: NAME
+        description: >-
+          Name
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SCALE_FACTOR
+        description: >-
+          Scale Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+    # The row names the three keys in its own description and states no type or
+    # requiredness per key, and the section has no request example that sends them;
+    # the types are /info's, which declares these members on both products.
 
 sdkRules:
   - id: db-mvldeu-delete-per-id
@@ -520,5 +552,10 @@ manualDefects:
       Registered as MD-25.
 
 extraction:
+  prose:
+    - line: 2096
+      quote: >-
+        Sub-Load Cases for Optimization - (1) Type "TYPE", (2) Name "NAME", (3) Scale Factor "SCALE_FACTOR"
+      paths: [OPTIMIZE_LIST.TYPE, OPTIMIZE_LIST.NAME, OPTIMIZE_LIST.SCALE_FACTOR]
   source: 08_DB_Moving_Loads.md line 2073
   table: Parameters

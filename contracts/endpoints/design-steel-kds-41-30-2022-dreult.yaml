@@ -45,6 +45,17 @@ operations:
         - {path: RESULT_GRAPHIC, name: SteelDesignResultGraphic, namespace: DesignSteelKdsTypes}
         - {path: RESULT_GRAPHIC.LOAD_CASE_COMB, name: SteelDesignResultLoadCaseComb, namespace: DesignSteelKdsTypes}
         - {path: RESULT_GRAPHIC.TYPE_OF_DISPLAY, name: SteelDesignResultTypeOfDisplay, namespace: DesignSteelKdsTypes}
+        - {path: BGCOLOR_TOP, name: SteelDesignResultRgbColor, namespace: DesignSteelKdsTypes}
+        - {path: RESULT_GRAPHIC.COMPONENTS, name: SteelDesignResultComponents, namespace: DesignSteelKdsTypes}
+        - {path: RESULT_GRAPHIC.TYPE_OF_DISPLAY.CONTOUR, name: SteelDesignResultContour, namespace: DesignSteelKdsTypes}
+        - {path: RESULT_GRAPHIC.TYPE_OF_DISPLAY.CONTOUR.OPTIONS, name: SteelDesignResultContourOptions, namespace: DesignSteelKdsTypes}
+        - {path: RESULT_GRAPHIC.TYPE_OF_DISPLAY.VALUES, name: SteelDesignResultValues, namespace: DesignSteelKdsTypes}
+        - {path: RESULT_GRAPHIC.TYPE_OF_DISPLAY.VALUES.MINMAX_ONLY, name: SteelDesignResultMinMaxOnly, namespace: DesignSteelKdsTypes}
+        - {path: RESULT_GRAPHIC.TYPE_OF_DISPLAY.LEGEND, name: SteelDesignResultLegend, namespace: DesignSteelKdsTypes}
+        - {path: RESULT_GRAPHIC.TYPE_OF_DISPLAY.CODE_CHECKING_RATIO, name: SteelDesignResultCodeCheckingRatio, namespace: DesignSteelKdsTypes}
+        - {path: RESULT_GRAPHIC.TYPE_OF_DISPLAY.CODE_CHECKING_RATIO.DISPLAY_MEMBERS, name: SteelDesignResultDisplayMembers, namespace: DesignSteelKdsTypes}
+        - {path: RESULT_GRAPHIC.TYPE_OF_DISPLAY.CODE_CHECKING_RATIO.COLUMN_SECTION_SIZE, name: SteelDesignResultColumnSectionSize, namespace: DesignSteelKdsTypes}
+        - {path: RESULT_GRAPHIC.TYPE_OF_DISPLAY.CODE_CHECKING_RATIO.VALUE_OPTION, name: SteelDesignResultValueOption, namespace: DesignSteelKdsTypes}
     risk: write
     request:
       wrapper: assign
@@ -196,6 +207,42 @@ fields:
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
+    properties:
+      - key: R
+        description: >-
+          Red component.
+        type: integer
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        minimum: 0
+        maximum: 255
+        provenance: manual
+      - key: G
+        description: >-
+          Green component.
+        type: integer
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        minimum: 0
+        maximum: 255
+        provenance: manual
+      - key: B
+        description: >-
+          Blue component.
+        type: integer
+        requirement: optional
+        documentedDefault: null
+        documentedOptional: true
+        safeToOmit: unverified
+        minimum: 0
+        maximum: 255
+        provenance: manual
+    # Members from this section's JSON Schema (line 5334); the
+    # Parameters table names the object without child rows.
   - key: RESULT_GRAPHIC
     description: >-
       결과 그래픽 설정
@@ -254,6 +301,19 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
+        properties:
+          - key: COMP
+            description: >-
+              Design component to display.
+            type: string
+            enum: ["Axial", "Shear-y", "Shear-z", "Bend-y", "Bend-z", "Combined"]
+            requirement: optional
+            documentedDefault: "Combined"
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+        # Members from this section's JSON Schema (line 5403); the
+        # Parameters table names the object without child rows.
       - key: TYPE_OF_DISPLAY
         description: >-
           표시 타입 (CONTOUR / VALUES / LEGEND / CODE_CHECKING_RATIO)
@@ -274,6 +334,67 @@ fields:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
+            properties:
+              - key: OPT_CHECK
+                description: >-
+                  Enable contour display.
+                type: boolean
+                requirement: optional
+                documentedDefault: false
+                documentedOptional: true
+                safeToOmit: unverified
+                provenance: manual
+              - key: NUM_OF_COLOR
+                description: >-
+                  Number of contour colors.
+                type: integer
+                requirement: optional
+                documentedDefault: 12
+                documentedOptional: true
+                safeToOmit: unverified
+                minimum: 2
+                maximum: 20
+                provenance: manual
+              - key: COLOR_TYPE
+                description: >-
+                  Contour color type.
+                type: string
+                enum: ["vrgb", "rgb", "rbg", "gray scaled"]
+                requirement: optional
+                documentedDefault: "vrgb"
+                documentedOptional: true
+                safeToOmit: unverified
+                provenance: manual
+              - key: OPTIONS
+                description: >-
+                  Contour options.
+                type: object
+                requirement: optional
+                documentedDefault: null
+                documentedOptional: true
+                safeToOmit: unverified
+                provenance: manual
+                properties:
+                  - key: GRADIENT_FILL
+                    description: >-
+                      Use gradient fill.
+                    type: boolean
+                    requirement: optional
+                    documentedDefault: false
+                    documentedOptional: true
+                    safeToOmit: unverified
+                    provenance: manual
+                  - key: CONTOUR_FILL
+                    description: >-
+                      Use contour fill.
+                    type: boolean
+                    requirement: optional
+                    documentedDefault: true
+                    documentedOptional: true
+                    safeToOmit: unverified
+                    provenance: manual
+            # Members from this section's JSON Schema (line 5448); the
+            # Parameters table names the object without child rows.
           - key: VALUES
             description: >-
               Values (OPT_CHECK, DECIMAL_PT, VALUE_EXP, MINMAX_ONLY.MAXMIN, SET_ORIENT)
@@ -283,6 +404,76 @@ fields:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
+            properties:
+              - key: OPT_CHECK
+                description: >-
+                  Enable value display.
+                type: boolean
+                requirement: optional
+                documentedDefault: false
+                documentedOptional: true
+                safeToOmit: unverified
+                provenance: manual
+              - key: DECIMAL_PT
+                description: >-
+                  Decimal places.
+                type: integer
+                requirement: optional
+                documentedDefault: 0
+                documentedOptional: true
+                safeToOmit: unverified
+                minimum: 0
+                maximum: 15
+                provenance: manual
+              - key: VALUE_EXP
+                description: >-
+                  Use exponential notation.
+                type: boolean
+                requirement: optional
+                documentedDefault: false
+                documentedOptional: true
+                safeToOmit: unverified
+                provenance: manual
+              - key: MINMAX_ONLY
+                description: >-
+                  Min/max display settings.
+                type: object
+                requirement: optional
+                documentedDefault: null
+                documentedOptional: true
+                safeToOmit: unverified
+                provenance: manual
+                properties:
+                  - key: MAXMIN
+                    description: >-
+                      Min/max display mode.
+                    type: string
+                    enum: ["Min & Max", "Abs Max", "max", "min"]
+                    requirement: optional
+                    documentedDefault: "Min & Max"
+                    documentedOptional: true
+                    safeToOmit: unverified
+                    provenance: manual
+                  - key: LIMIT_SCALE
+                    description: >-
+                      Scale limit.
+                    type: integer
+                    requirement: optional
+                    documentedDefault: 0
+                    documentedOptional: true
+                    safeToOmit: unverified
+                    provenance: manual
+              - key: SET_ORIENT
+                description: >-
+                  Value text orientation.
+                type: integer
+                requirement: optional
+                documentedDefault: 0
+                documentedOptional: true
+                safeToOmit: unverified
+                provenance: manual
+            # Members from this section's JSON Schema (line 5509); the
+            # Parameters table names the object without child rows.
           - key: LEGEND
             description: >-
               Legend (OPT_CHECK, POSITION right/left/top/bottom, VALUE_EXP, DECIMAL_PT)
@@ -292,6 +483,48 @@ fields:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
+            properties:
+              - key: OPT_CHECK
+                description: >-
+                  Enable legend display.
+                type: boolean
+                requirement: optional
+                documentedDefault: false
+                documentedOptional: true
+                safeToOmit: unverified
+                provenance: manual
+              - key: POSITION
+                description: >-
+                  Legend position.
+                type: string
+                enum: ["right", "left", "top", "bottom"]
+                requirement: optional
+                documentedDefault: "left"
+                documentedOptional: true
+                safeToOmit: unverified
+                provenance: manual
+              - key: VALUE_EXP
+                description: >-
+                  Use exponential notation for legend values.
+                type: boolean
+                requirement: optional
+                documentedDefault: true
+                documentedOptional: true
+                safeToOmit: unverified
+                provenance: manual
+              - key: DECIMAL_PT
+                description: >-
+                  Decimal places for legend values.
+                type: integer
+                requirement: optional
+                documentedDefault: 0
+                documentedOptional: true
+                safeToOmit: unverified
+                minimum: 0
+                maximum: 15
+                provenance: manual
+            # Members from this section's JSON Schema (line 5575); the
+            # Parameters table names the object without child rows.
           - key: CODE_CHECKING_RATIO
             description: >-
               Code Checking Ratio (COMP=Combined일 때; CHECK,
@@ -303,7 +536,132 @@ fields:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
+            properties:
+              - key: CHECK
+                description: >-
+                  Enable code checking ratio display.
+                type: boolean
+                requirement: optional
+                documentedDefault: true
+                documentedOptional: true
+                safeToOmit: unverified
+                provenance: manual
+              - key: DISPLAY_MEMBERS
+                description: >-
+                  Steel member types to display.
+                type: object
+                requirement: optional
+                documentedDefault: null
+                documentedOptional: true
+                safeToOmit: unverified
+                provenance: manual
+                properties:
+                  - key: BEAM
+                    description: >-
+                      Display beam members.
+                    type: boolean
+                    requirement: optional
+                    documentedDefault: true
+                    documentedOptional: true
+                    safeToOmit: unverified
+                    provenance: manual
+                  - key: COLUMN
+                    description: >-
+                      Display column members.
+                    type: boolean
+                    requirement: optional
+                    documentedDefault: true
+                    documentedOptional: true
+                    safeToOmit: unverified
+                    provenance: manual
+                  - key: BRACE
+                    description: >-
+                      Display brace members.
+                    type: boolean
+                    requirement: optional
+                    documentedDefault: true
+                    documentedOptional: true
+                    safeToOmit: unverified
+                    provenance: manual
+              - key: COLUMN_SECTION_SIZE
+                description: >-
+                  Column section size display settings.
+                type: object
+                requirement: optional
+                documentedDefault: null
+                documentedOptional: true
+                safeToOmit: unverified
+                provenance: manual
+                properties:
+                  - key: SCALE_FACTOR
+                    description: >-
+                      Scale factor for column section visualization.
+                    type: number
+                    requirement: optional
+                    documentedDefault: 1
+                    documentedOptional: true
+                    safeToOmit: unverified
+                    minimum: 0.1
+                    maximum: 100
+                    provenance: manual
+              - key: VALUE_OPTION
+                description: >-
+                  Value display format settings.
+                type: object
+                requirement: optional
+                documentedDefault: null
+                documentedOptional: true
+                safeToOmit: unverified
+                provenance: manual
+                properties:
+                  - key: DECIMAL_PLACES
+                    description: >-
+                      Number of decimal places.
+                    type: integer
+                    requirement: optional
+                    documentedDefault: 2
+                    documentedOptional: true
+                    safeToOmit: unverified
+                    minimum: 0
+                    maximum: 15
+                    provenance: manual
+                  - key: EXPONENTIAL
+                    description: >-
+                      Use exponential notation.
+                    type: boolean
+                    requirement: optional
+                    documentedDefault: false
+                    documentedOptional: true
+                    safeToOmit: unverified
+                    provenance: manual
+            # Members from this section's JSON Schema (line 5623); the
+            # Parameters table names the object without child rows.
 
 extraction:
+  prose:
+    - line: 5623
+      quote: >-
+        "CODE_CHECKING_RATIO": { ... (JSON Schema)
+      paths: [RESULT_GRAPHIC.TYPE_OF_DISPLAY.CODE_CHECKING_RATIO.CHECK, RESULT_GRAPHIC.TYPE_OF_DISPLAY.CODE_CHECKING_RATIO.DISPLAY_MEMBERS, RESULT_GRAPHIC.TYPE_OF_DISPLAY.CODE_CHECKING_RATIO.DISPLAY_MEMBERS.BEAM, RESULT_GRAPHIC.TYPE_OF_DISPLAY.CODE_CHECKING_RATIO.DISPLAY_MEMBERS.COLUMN, RESULT_GRAPHIC.TYPE_OF_DISPLAY.CODE_CHECKING_RATIO.DISPLAY_MEMBERS.BRACE, RESULT_GRAPHIC.TYPE_OF_DISPLAY.CODE_CHECKING_RATIO.COLUMN_SECTION_SIZE, RESULT_GRAPHIC.TYPE_OF_DISPLAY.CODE_CHECKING_RATIO.COLUMN_SECTION_SIZE.SCALE_FACTOR, RESULT_GRAPHIC.TYPE_OF_DISPLAY.CODE_CHECKING_RATIO.VALUE_OPTION, RESULT_GRAPHIC.TYPE_OF_DISPLAY.CODE_CHECKING_RATIO.VALUE_OPTION.DECIMAL_PLACES, RESULT_GRAPHIC.TYPE_OF_DISPLAY.CODE_CHECKING_RATIO.VALUE_OPTION.EXPONENTIAL]
+    - line: 5575
+      quote: >-
+        "LEGEND": { ... (JSON Schema)
+      paths: [RESULT_GRAPHIC.TYPE_OF_DISPLAY.LEGEND.OPT_CHECK, RESULT_GRAPHIC.TYPE_OF_DISPLAY.LEGEND.POSITION, RESULT_GRAPHIC.TYPE_OF_DISPLAY.LEGEND.VALUE_EXP, RESULT_GRAPHIC.TYPE_OF_DISPLAY.LEGEND.DECIMAL_PT]
+    - line: 5509
+      quote: >-
+        "VALUES": { ... (JSON Schema)
+      paths: [RESULT_GRAPHIC.TYPE_OF_DISPLAY.VALUES.OPT_CHECK, RESULT_GRAPHIC.TYPE_OF_DISPLAY.VALUES.DECIMAL_PT, RESULT_GRAPHIC.TYPE_OF_DISPLAY.VALUES.VALUE_EXP, RESULT_GRAPHIC.TYPE_OF_DISPLAY.VALUES.MINMAX_ONLY, RESULT_GRAPHIC.TYPE_OF_DISPLAY.VALUES.MINMAX_ONLY.MAXMIN, RESULT_GRAPHIC.TYPE_OF_DISPLAY.VALUES.MINMAX_ONLY.LIMIT_SCALE, RESULT_GRAPHIC.TYPE_OF_DISPLAY.VALUES.SET_ORIENT]
+    - line: 5448
+      quote: >-
+        "CONTOUR": { ... (JSON Schema)
+      paths: [RESULT_GRAPHIC.TYPE_OF_DISPLAY.CONTOUR.OPT_CHECK, RESULT_GRAPHIC.TYPE_OF_DISPLAY.CONTOUR.NUM_OF_COLOR, RESULT_GRAPHIC.TYPE_OF_DISPLAY.CONTOUR.COLOR_TYPE, RESULT_GRAPHIC.TYPE_OF_DISPLAY.CONTOUR.OPTIONS, RESULT_GRAPHIC.TYPE_OF_DISPLAY.CONTOUR.OPTIONS.GRADIENT_FILL, RESULT_GRAPHIC.TYPE_OF_DISPLAY.CONTOUR.OPTIONS.CONTOUR_FILL]
+    - line: 5403
+      quote: >-
+        "COMPONENTS": { ... (JSON Schema)
+      paths: [RESULT_GRAPHIC.COMPONENTS.COMP]
+    - line: 5334
+      quote: >-
+        "BGCOLOR_TOP": { ... (JSON Schema)
+      paths: [BGCOLOR_TOP.R, BGCOLOR_TOP.G, BGCOLOR_TOP.B]
   source: 25_Design_Steel_KDS41302022.md line 5705
   table: 파라미터

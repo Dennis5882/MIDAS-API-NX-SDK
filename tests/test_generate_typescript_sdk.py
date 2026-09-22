@@ -924,7 +924,8 @@ def test_a_table_contract_builds_the_request_types_of_its_table():
     assert "/** Generated from contracts/tables/. */" in rendered
     assert "USER_DEFINE: boolean;" in rendered
     assert "SELECT_NODES?: Array<number>;" in rendered
-    assert "Required when ADDITIONAL.SELECT_IRREGULAR_ENDS.USER_DEFINE = true." in rendered
+    # Stated from the type's own root, not the table request's.
+    assert "Required when USER_DEFINE = true." in rendered
     # Declared by the plate, plane, axisymmetric and solid tables alike.
     assert ("PostBaseTypes", "NodeFlag") in nested
 
@@ -937,3 +938,65 @@ def test_an_operation_surface_without_an_export_only_names_types():
     endpoints = {operation["endpoint"] for operation in generator._contract_operation_specs()}
     assert "/post/TABLE" not in endpoints
     assert ("PostBaseTypes", "TableUnit") in generator._contract_nested_types()
+
+def test_a_nested_type_states_its_conditions_from_its_own_root():
+    """`PART_A.INPUT_METHOD` is wrong inside a type PART_B and PART_C share.
+
+    HaunchPartSelector is PART_A, PART_B and PART_C of /DESIGN/.../HCBM alike.
+    With the condition kept at the contract's root the three looked like three
+    shapes and could not be one published type, and the JSDoc named a path the
+    reader of `HaunchPartSelector` has no reason to know.
+    """
+    fields = [{"key": "TO", "requirement": "conditional",
+               "appliesWhen": [{"path": "PART_A.INPUT_METHOD", "equals": "TO"}]}]
+    assert generator._relative_conditions(fields, "PART_A.")[0]["appliesWhen"] == [
+        {"path": "INPUT_METHOD", "equals": "TO"}
+    ]
+    # A condition on a field outside the object keeps its full path.
+    outside = [{"key": "X", "appliesWhen": [{"path": "TYPE", "equals": 1}]}]
+    assert generator._relative_conditions(outside, "PART_A.") == outside
+
+
+def test_member_order_does_not_make_two_shapes():
+    """/db/POGD lists INITLOAD's SF last, /db/THGC-M1 second: one object."""
+    a = [{"key": "LC_NAME", "type": "string"}, {"key": "SF", "type": "number"}]
+    assert generator._structure(a) == generator._structure(list(reversed(a)))
+
+
+def test_an_object_only_one_branch_declares_is_still_one_type():
+    """/db/NLCT's NEWTON_ITEMS exists only when ITERATION_METHOD is NEWTON."""
+    variants = [
+        {"when": [{"path": "MODE", "equals": "A"}],
+         "fields": [{"key": "A_ITEMS", "type": "array", "properties": [{"key": "X", "type": "number"}]}]},
+        {"when": [{"path": "MODE", "equals": "B"}],
+         "fields": [{"key": "B_ITEMS", "type": "array", "properties": [{"key": "Y", "type": "number"}]}]},
+    ]
+    fields = [{"key": "MODE", "type": "string"}]
+    entry = {"name": "AItem", "path": "A_ITEMS"}
+    assert generator._branch_owned_subtree("t", entry, fields, variants, "A_ITEMS") == [
+        {"key": "X", "type": "number"}
+    ]
+
+
+def test_branches_that_disagree_on_an_object_need_a_branch_named():
+    """Two shapes under one path: refused unless the entry names its branch.
+
+    /db/MCON's SLAVES[] is {NODE_KEY, COEFF, DOF} under TYPE "EX" and
+    {NODE_KEY, WEIGHT} under "WD". Python publishes one name for each, and
+    `branch` is how an entry says which one it is.
+    """
+    import pytest
+
+    variants = [
+        {"when": [{"path": "TYPE", "equals": "EX"}],
+         "fields": [{"key": "SLAVES", "type": "array", "properties": [{"key": "COEFF", "type": "number"}]}]},
+        {"when": [{"path": "TYPE", "equals": "WD"}],
+         "fields": [{"key": "SLAVES", "type": "array", "properties": [{"key": "WEIGHT", "type": "number"}]}]},
+    ]
+    fields = [{"key": "TYPE", "type": "string"}]
+    with pytest.raises(ValueError, match="different shapes"):
+        generator._branch_owned_subtree("t", {"name": "S", "path": "SLAVES"}, fields, variants, "SLAVES")
+    weighted = {"name": "W", "path": "SLAVES", "branch": [{"path": "TYPE", "equals": "WD"}]}
+    assert generator._branch_owned_subtree("t", weighted, fields, variants, "SLAVES") == [
+        {"key": "WEIGHT", "type": "number"}
+    ]

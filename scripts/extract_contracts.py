@@ -5628,6 +5628,32 @@ def _unmerged_field_names(table: "ParsedTable") -> list[str]:
     return out
 
 
+def _branch_destination_fields(contract: dict) -> dict[str, dict]:
+    """Fields a reviewed branch places under a structural table's destination.
+
+    A heading like `TYPE="EX"(Explicit)일 때 SLAVES[]` states a condition and a
+    destination at once. Merging it into the parent is one placement; the other
+    is a variant that redeclares the destination with the table's rows, and it
+    is the right one when two such tables give the destination different
+    members - merged, /db/MCON's SLAVES[] demanded all four keys of both, which
+    neither TYPE accepts. The members then live in the variants, under the
+    destination's parent, and the manual's flattened copy of them would read as
+    missing from the base. A `note` on the structuralTables entry is what says
+    this placement was chosen rather than forgotten, so only noted entries count.
+    """
+    found: dict[str, dict] = {}
+    for entry in (contract.get("extraction") or {}).get("structuralTables", []):
+        if not entry.get("note"):
+            continue
+        for destination in entry.get("paths", []):
+            parent = destination.rsplit(".", 1)[0] + "." if "." in destination else ""
+            for variant in contract.get("variants", []):
+                for sub, value in _flatten_contract(variant.get("fields", []), parent).items():
+                    if sub == destination or sub.startswith(destination + "."):
+                        found.setdefault(sub, value)
+    return found
+
+
 def _under_structural_destination(
     key: str, destinations: set[str], manual_fields: dict[str, dict]
 ) -> bool:
@@ -5755,6 +5781,7 @@ def run_check(sections: list[Section]) -> int:
             for entry in (contract.get("extraction") or {}).get("structuralTables", [])
             for path in entry.get("paths", [])
         }
+        branch_fields = _branch_destination_fields(contract)
 
         # The section heading, which carries its number. Inserting one endpoint
         # renumbers every section below it - /db/STYP-M1 landing at 02's #4 on
@@ -5822,6 +5849,8 @@ def run_check(sections: list[Section]) -> int:
                     ),
                     None,
                 )
+            if declared is None:
+                declared = branch_fields.get(key)
             if declared is None:
                 # A `field_name` defect relaxes this the same way it relaxes
                 # the mirror check below. It has to work in both directions:

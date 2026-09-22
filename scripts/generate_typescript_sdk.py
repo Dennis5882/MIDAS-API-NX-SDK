@@ -1992,11 +1992,47 @@ def _structure(fields: list[dict[str, Any]]) -> list[dict[str, Any]]:
     the rendered text, because descriptions legitimately differ by use - a
     ``BAR_SECTOR_I`` and a ``BAR_SECTOR_J`` say which end they are.
     """
-    return [
-        {key: field.get(key) for key in _STRUCTURAL_KEYS}
-        | {"properties": _structure(field.get("properties") or [])}
-        for field in fields
-    ]
+    # Member order is not part of a TypeScript type: /db/POGD lists INITLOAD's
+    # SF last and /db/THGC-M1 lists it second, and that is the same object.
+    return sorted(
+        (
+            {key: field.get(key) for key in _STRUCTURAL_KEYS}
+            | {"properties": _structure(field.get("properties") or [])}
+            for field in fields
+        ),
+        key=lambda field: str(field.get("key")),
+    )
+
+
+def _relative_conditions(fields: list[dict[str, Any]], prefix: str) -> list[dict[str, Any]]:
+    """Re-root `appliesWhen` paths inside a nested type at that type.
+
+    A contract states a condition from its own root - `PART_A.INPUT_METHOD`.
+    Published as `HaunchPartSelector`, which `PART_A`, `PART_B` and `PART_C`
+    all are, that path is wrong for two of the three and made the three look
+    like different shapes. A condition on a field outside the subtree keeps
+    its full path; it genuinely points elsewhere.
+    """
+
+    def rewrite(node: Any) -> Any:
+        if isinstance(node, list):
+            return [rewrite(item) for item in node]
+        if not isinstance(node, dict):
+            return node
+        out = {}
+        for key, value in node.items():
+            if key == "appliesWhen" and isinstance(value, list):
+                out[key] = [
+                    {**entry, "path": entry["path"].removeprefix(prefix)}
+                    if isinstance(entry, dict) and entry.get("path", "").startswith(prefix)
+                    else entry
+                    for entry in value
+                ]
+            else:
+                out[key] = rewrite(value)
+        return out
+
+    return rewrite(fields)
 
 
 def _nested_fingerprint(pseudo: dict[str, Any]) -> str:
@@ -2011,6 +2047,53 @@ def _nested_fingerprint(pseudo: dict[str, Any]) -> str:
         },
         sort_keys=True,
     )
+
+
+def _branch_owned_subtree(
+    source: str,
+    entry: dict[str, Any],
+    fields: list[dict[str, Any]],
+    variants: list[dict[str, Any]],
+    where: str,
+) -> list[dict[str, Any]]:
+    """The members of an object that only some branches declare.
+
+    `/db/NLCT`'s `NEWTON_ITEMS` exists only when `ITERATION_METHOD` is
+    `"NEWTON"`, so it is a field of that variant, not of the payload's base -
+    and a lookup in the base finds nothing. The object's shape is still one
+    thing, stated once, so it can be published under one name.
+
+    It cannot be when two branches declare the field differently; that is the
+    `/db/SECT` `SECT_BEFORE` case, and it raises. Nor when the base declares
+    the field too and a branch redeclares it, which the caller already refuses.
+    """
+    branch = entry.get("branch")
+    found = []
+    for variant in variants:
+        if branch is not None and variant["when"] != branch:
+            continue
+        attach = _variant_attach_key(fields, variant)
+        if attach is None:
+            relative = where
+        elif where.startswith(attach + "."):
+            relative = where[len(attach) + 1:]
+        else:
+            continue
+        base_level = _attach_base(fields, attach) if attach else fields
+        if branch is None and any(field["key"] == relative.split(".")[0] for field in base_level):
+            # Declared in the base as well: a redeclaration, not a branch-only
+            # object - unless the entry names which branch's version it is.
+            return []
+        members = _attach_base(variant["fields"], relative)
+        if members:
+            found.append(members)
+    shapes = {json.dumps(_structure(members), sort_keys=True) for members in found}
+    if len(shapes) > 1:
+        raise ValueError(
+            f"{source}: surface.nestedTypes names {entry['name']} at {entry['path']!r}, "
+            "which several branches declare with different shapes"
+        )
+    return found[0] if found else []
 
 
 def _contract_nested_types() -> dict[tuple[str, str], dict[str, Any]]:
@@ -2087,7 +2170,16 @@ def _contract_nested_types() -> dict[tuple[str, str], dict[str, Any]]:
     for path, declared, fields, variants in jobs:
         for entry in declared:
             where = entry["path"].removeprefix("Assign.")
-            body = _attach_base(fields, where)
+            body = [] if entry.get("branch") else _attach_base(fields, where)
+            branch_owned = False
+            if entry.get("branch") and not any(v["when"] == entry["branch"] for v in variants):
+                raise ValueError(
+                    f"{path.name}: surface.nestedTypes names {entry['name']} for branch "
+                    f"{entry['branch']}, which no variant's `when` matches"
+                )
+            if not body:
+                body = _branch_owned_subtree(path.name, entry, fields, variants, where)
+                branch_owned = bool(body)
             if not body:
                 raise ValueError(
                     f"{path.name}: surface.nestedTypes names {entry['name']} at "
@@ -2098,6 +2190,10 @@ def _contract_nested_types() -> dict[tuple[str, str], dict[str, Any]]:
             for variant in variants:
                 attach = _variant_attach_key(fields, variant)
                 above = attach or ""
+                if branch_owned:
+                    # The object exists only inside branches, and those
+                    # branches were already required to agree on it.
+                    continue
                 if above != where and (not above or where.startswith(above + ".")):
                     # A branch attached *above* this path that redeclares the
                     # field on the way to it decides the object's shape per
@@ -2119,7 +2215,7 @@ def _contract_nested_types() -> dict[tuple[str, str], dict[str, Any]]:
                             for condition in variant["when"]
                         ],
                     })
-            pseudo = {"fields": body, "variants": below}
+            pseudo = {"fields": _relative_conditions(body, prefix), "variants": below}
             if path.parent.name == "tables":
                 pseudo["source"] = "contracts/tables/"
             key = (entry["namespace"], entry["name"])

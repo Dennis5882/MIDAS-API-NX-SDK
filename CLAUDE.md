@@ -103,7 +103,7 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   and operation readers already parse, and `tests/test_generate_typescript_sdk.py` fails if an
   import comes back. A missing or broken Python install no longer stops `npm publish`. The
   **source tree** is still load-bearing — deleting `src/midas_nx/` breaks `npm run generate`,
-  though a built `dist/` keeps working — because 138 of 765 generated npm types still come from
+  though a built `dist/` keeps working — because 90 of 765 generated npm types still come from
   Python TypedDicts. **Since 2026-09-22 that is the only reason**: which types exist and in which
   namespace is decided by the contracts for every type they own (payload roots by
   `surface.payloadTypeName` + `modulePath`, nested and argument types by their recorded
@@ -144,7 +144,14 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   variant *above* it redeclares (`/db/SECT`'s `SECT_BEFORE`), and — until 2026-09-22 — a name
   the package did not already publish. That third one read the Python tree and went with it;
   `report_npm_type_provenance.py --check` now pins the exported type count (`EXPORTED_TYPES`)
-  instead, so an export is still never added as a side effect. Deriving the element types
+  instead, so an export is still never added as a side effect. Also since 2026-09-22, an
+  object only one branch declares can be named (`/db/NLCT`'s `NEWTON_ITEMS`), an entry's
+  `branch` says which variant's version of a path it is (`/db/MCON`'s two `SLAVES` shapes),
+  and conditions inside a nested type are read from its own root. Filling the contracts'
+  member-less objects from each section's own JSON Schema found `/db/MCON` publishing a
+  `LinearConstraintItem` no request could satisfy - both `TYPE` tables' members merged into one
+  required `SLAVES` element, and the branch keys placed beside `TYPE` - now one `SLAVES` shape
+  per branch. Deriving the element types
   also caught an extractor defect the name-only `check_field_parity` cannot see: **a `(1)`-numbered
   nested row whose key already appeared higher in the table was dropped**, because
   `extract_contracts.py` gave such rows no parent scope. Fixed there, and the 27 members it had lost

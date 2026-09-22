@@ -40,6 +40,9 @@ operations:
         docs/manual/26_Design_RC_KDS41202022.md #65 — WC-REPORT — RC Wall
         Check Report. Response: ``{"SUCCESS": bool, "FILE_PATH": str, "MESSAGE":
         str}``.
+      nestedTypes:
+        - {path: SELECTIONS, name: RcWallDesignSelection, namespace: DesignRcKdsDesignForcesTypes}
+        - {path: SELECTIONS.WALL_IDS, name: RcWallIdsSelector, namespace: DesignRcKdsDesignForcesTypes}
     risk: write
     request:
       wrapper: assign
@@ -119,6 +122,30 @@ fields:
         provenance: manual
         # RESOLVED: the manual nests this under 'SELECTIONS' by numbering it '5.1',
         # not by naming a path
+        properties:
+          - key: KEYS
+            description: >-
+              벽 ID 각각
+            type: array
+            items:
+              type: integer
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # From this section's JSON Schema (line 12323), which declares KEYS and TO
+            # under WALL_IDS with a oneOf: exactly one of the two. The Parameters table
+            # names them only in WALL_IDS's description.
+          - key: TO
+            description: >-
+              벽 ID 범위 (예 "10to20")
+            type: string
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
       - key: STORY
         description: >-
           층 이름 목록
@@ -152,5 +179,11 @@ fields:
     provenance: manual
 
 extraction:
+  prose:
+    - line: 12323
+      quote: >-
+        "KEYS": { "type": "array", "items": { "type": "integer" } },
+        "TO": { "type": "string" }
+      paths: [SELECTIONS.WALL_IDS.KEYS, SELECTIONS.WALL_IDS.TO]
   source: 26_Design_RC_KDS41202022.md line 12378
   table: 파라미터

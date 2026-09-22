@@ -44,6 +44,9 @@ operations:
         entries are objects keyed by each requested COMPONENTS name (one object
         per wall-mark/story row), e.g. ``{"TABLE_NAME": ..., "COMPONENTS": [...],
         "DATA": [{"WID": 1, "Story": "3F", ...}, ...]}``.
+      nestedTypes:
+        - {path: SELECTIONS, name: RcWallDesignSelection, namespace: DesignRcKdsDesignForcesTypes}
+        - {path: SELECTIONS.WALL_IDS, name: RcWallIdsSelector, namespace: DesignRcKdsDesignForcesTypes}
     risk: write
     request:
       wrapper: assign
@@ -95,6 +98,30 @@ fields:
         provenance: manual
         # RESOLVED: the manual nests this under 'SELECTIONS' by numbering it '3.1',
         # not by naming a path
+        properties:
+          - key: KEYS
+            description: >-
+              벽 ID 각각
+            type: array
+            items:
+              type: integer
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
+            # From this section's JSON Schema (line 11836), which declares KEYS and TO
+            # under WALL_IDS with a oneOf: exactly one of the two. The Parameters table
+            # names them only in WALL_IDS's description.
+          - key: TO
+            description: >-
+              벽 ID 범위 (예 "10to20")
+            type: string
+            requirement: optional
+            documentedDefault: null
+            documentedOptional: true
+            safeToOmit: unverified
+            provenance: manual
       - key: STORY
         description: >-
           층 이름 목록
@@ -186,5 +213,11 @@ fields:
     provenance: manual
 
 extraction:
+  prose:
+    - line: 11836
+      quote: >-
+        "KEYS": { "type": "array", "items": { "type": "integer" } },
+        "TO": { "type": "string" }
+      paths: [SELECTIONS.WALL_IDS.KEYS, SELECTIONS.WALL_IDS.TO]
   source: 26_Design_RC_KDS41202022.md line 11980
   table: 파라미터

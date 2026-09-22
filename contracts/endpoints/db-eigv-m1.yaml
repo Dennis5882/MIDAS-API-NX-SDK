@@ -15,6 +15,10 @@ surface:
   exportName: eigenvalueAnalysisControlHyperS
   modulePath: [db, analysisControl]
   payloadTypeName: EigenvalueAnalysisControlHyperSPayload
+  nestedTypes:
+    - {path: FREQ_RANGE, name: EigenvalueFrequencyRangeHyperS, namespace: DbAnalysisControlTypes}
+    - {path: GLINK_VECTOR, name: EigenvalueGlinkVectorHyperS, namespace: DbAnalysisControlTypes}
+    - {path: RITZ_LOAD, name: EigenvalueRitzLoadItemHyperS, namespace: DbAnalysisControlTypes}
 
 products: [civil]
 

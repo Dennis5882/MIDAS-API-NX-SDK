@@ -17,6 +17,8 @@ surface:
   payloadTypeName: LinearConstraintPayload
   nestedTypes:
     - {path: ITEMS, name: LinearConstraintItem, namespace: DbBoundaryTypes}
+    - {path: ITEMS.SLAVES, name: LinearConstraintSlaveExplicit, namespace: DbBoundaryTypes, branch: [{path: TYPE, equals: EX}]}
+    - {path: ITEMS.SLAVES, name: LinearConstraintSlaveWeighted, namespace: DbBoundaryTypes, branch: [{path: TYPE, equals: WD}]}
 
 products: [civil, gen]
 
@@ -160,6 +162,32 @@ fields:
         provenance: manual
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(5)', not by
         # naming a path
+        # the main table gives SLAVES no child rows. Its members are the
+        # two TYPE-specific tables below, and they differ - "EX" takes
+        # NODE_KEY/COEFF/DOF, "WD" NODE_KEY/WEIGHT - so each variant declares
+        # SLAVES with its own members. Until 2026-09-22 all four were merged into
+        # this base row as required, which no request can satisfy, and the
+        # variants put the same keys beside TYPE instead of inside SLAVES[].
+
+variants:
+  - when:
+      - path: TYPE
+        equals: EX
+    source:
+      table: "TYPE=\"EX\"(Explicit)일 때 SLAVES[]"
+      line: 1860
+    fields:
+      - key: SLAVES
+        description: >-
+          Independent Nodes
+        type: array
+        items:
+          type: object
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
         properties:
           - key: NODE_KEY
             description: >-
@@ -188,6 +216,34 @@ fields:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
+  - when:
+      - path: TYPE
+        equals: WD
+    source:
+      table: "TYPE=\"WD\"(Weighted Displacement)일 때 SLAVES[]"
+      line: 1868
+    fields:
+      - key: SLAVES
+        description: >-
+          Independent Nodes
+        type: array
+        items:
+          type: object
+        requirement: required
+        documentedDefault: null
+        documentedOptional: false
+        safeToOmit: unverified
+        provenance: manual
+        properties:
+          - key: NODE_KEY
+            description: >-
+              Node ID
+            type: integer
+            requirement: required
+            documentedDefault: null
+            documentedOptional: false
+            safeToOmit: unverified
+            provenance: manual
           - key: WEIGHT
             description: >-
               Weight
@@ -197,67 +253,6 @@ fields:
             documentedOptional: false
             safeToOmit: unverified
             provenance: manual
-
-variants:
-  - when:
-      - path: TYPE
-        equals: EX
-    source:
-      table: "TYPE=\"EX\"(Explicit)일 때 SLAVES[]"
-      line: 1860
-    fields:
-      - key: NODE_KEY
-        description: >-
-          Node ID
-        type: integer
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: COEFF
-        description: >-
-          Coefficient
-        type: number
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: DOF
-        description: >-
-          Degree of Freedom · DX:0/DY:1/DZ:2/RX:3/RY:4/RZ:5
-        type: integer
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-  - when:
-      - path: TYPE
-        equals: WD
-    source:
-      table: "TYPE=\"WD\"(Weighted Displacement)일 때 SLAVES[]"
-      line: 1868
-    fields:
-      - key: NODE_KEY
-        description: >-
-          Node ID
-        type: integer
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
-      - key: WEIGHT
-        description: >-
-          Weight
-        type: number
-        requirement: required
-        documentedDefault: null
-        documentedOptional: false
-        safeToOmit: unverified
-        provenance: manual
 
 sdkRules:
   - id: db-mcon-delete-per-id
@@ -300,7 +295,17 @@ extraction:
       line: 1860
       paths:
         - ITEMS.SLAVES
+      note: >-
+        The heading states a condition (TYPE) and a destination (SLAVES[]) at once.
+        Merged into the parent row, both tables' members became one SLAVES element
+        requiring all four keys, which neither TYPE accepts; kept as variants of
+        ITEMS.TYPE that each redeclare SLAVES, every branch carries only its own.
     - heading: "TYPE=\"WD\"(Weighted Displacement)일 때 SLAVES[]"
       line: 1868
       paths:
         - ITEMS.SLAVES
+      note: >-
+        The heading states a condition (TYPE) and a destination (SLAVES[]) at once.
+        Merged into the parent row, both tables' members became one SLAVES element
+        requiring all four keys, which neither TYPE accepts; kept as variants of
+        ITEMS.TYPE that each redeclare SLAVES, every branch carries only its own.
