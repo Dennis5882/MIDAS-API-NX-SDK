@@ -78,9 +78,7 @@ KNOWN: Dict[str, List[str]] = {
     '/db/ACTL': ['gen: sends CLATS, tagged civil-only'],
 }
 
-KNOWN_CONTRACT_GAPS: Dict[str, List[str]] = {
-    '/db/SPLC': ['gen: omits required NDP'],
-}
+KNOWN_CONTRACT_GAPS: Dict[str, List[str]] = {}
 
 BOTH = ("civil", "gen")
 
