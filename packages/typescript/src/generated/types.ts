@@ -9575,25 +9575,91 @@ export namespace DbPropertiesMaterialTypes {
     /** Comp. Strength Name */
     TDME_NAME: string;
   }
-  export interface TimeDependentMaterialStrengthPayload {
-    NAME?: string;
-    TYPE?: string;
-    CODENAME?: string;
+  /** Generated from contracts/endpoints/. */
+  export type TimeDependentMaterialStrengthPayload = {
+    /** Material Name */
+    NAME: string;
+    /** Material Type · Code: "CODE" / User: "USER" */
+    TYPE: "CODE" | "USER";
+    /** Code Name. Which extra fields the record needs depends on this value; see the variants below. Required when TYPE = "CODE". */
+    CODENAME?: "ACI" | "CEB-FIP(2010)" | "CEB-FIP(1990)" | "Ohzagi" | "European" | "INDIA(IRC:18-2000)" | "CEB-FIP(1978)" | "AS 5100.5-2017" | "AS 5100.5-2016" | "AS/RTA 5100.5-2011" | "AS 3600-2009" | "INDIA(IRC:112-2011)" | "INDIA(IRC:112-2020)" | "Russian" | "GILBERT AND RANZI" | "KDS-2016" | "KCI-USD12" | "Korean Standard";
+    /** Compression Strength Required when TYPE = "CODE". */
     STRENGTH?: number;
-    A?: number;
-    B?: number;
-    iCTYPE?: number;
-    nAGGRE?: number;
-    DENSITY?: number;
-    CMETH?: number;
-    CTYPE?: number;
-    MAXS?: number;
-    PZ?: number;
-    TENS_STRN_FACTOR?: number;
-    bUSE?: boolean;
-    D?: number;
-    iECTYPE?: number;
-  }
+  } & (
+    {
+      TYPE: "USER";
+      /** Scale Factor */
+      SCALE: number;
+      /** Function Data (Array of {TIME, COMP, TENS, ELAST}) */
+      aDATA: Array<{
+        /** Time (day) */
+        TIME: number;
+        /** Compression Strength */
+        COMP: number;
+        /** Tensile Strength */
+        TENS: number;
+        /** Elastic Modulus */
+        ELAST: number;
+      }>;
+    } |
+    {
+      TYPE: "CODE";
+      CODENAME: "ACI" | "Korean Standard";
+      /** Factor, a */
+      A: number;
+      /** Factor, b */
+      B: number;
+    } |
+    {
+      TYPE: "CODE";
+      CODENAME: "CEB-FIP(1990)" | "Ohzagi" | "European" | "INDIA(IRC:112-2011)" | "KCI-USD12";
+      /** Cement Type */
+      iCTYPE: number;
+    } |
+    {
+      TYPE: "CODE";
+      CODENAME: "CEB-FIP(2010)" | "INDIA(IRC:112-2020)";
+      /** Cement Type */
+      iCTYPE: number;
+      /** Aggregate Type · Basalt/dense limestone: 0 / Quartzite: 1 / Limestone: 2 / Sandstone: 3 */
+      nAGGRE: number;
+    } |
+    {
+      TYPE: "CODE";
+      CODENAME: "Russian";
+      /** Cement Type */
+      iCTYPE: number;
+      /** Curing Method · Natural Cure: 0 / Steam Cure: 1 */
+      CMETH: number;
+      /** Concrete Type · Heavy Concrete: 0 / Fine-Grained Concrete: 1 */
+      CTYPE: number;
+      /** Maximum Aggregate Size */
+      MAXS: number;
+      /** Specific Content of the Cement Paste */
+      PZ: number;
+    } |
+    {
+      TYPE: "CODE";
+      CODENAME: "GILBERT AND RANZI" | "KDS-2016";
+      /** Cement Type */
+      iCTYPE: number;
+      /** Weight Density */
+      DENSITY: number;
+    } |
+    {
+      SCALE?: never;
+      aDATA?: never;
+      A?: never;
+      B?: never;
+      iCTYPE?: never;
+      nAGGRE?: never;
+      CMETH?: never;
+      CTYPE?: never;
+      MAXS?: never;
+      PZ?: never;
+      DENSITY?: never;
+    }
+  );
 }
 
 export namespace DbPropertiesSectionTypes {

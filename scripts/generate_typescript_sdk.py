@@ -723,6 +723,19 @@ def _strip_assign_envelope(
     return reroot(record), reroot(variants)
 
 
+def _admits_incomplete_fields(contract: dict[str, Any]) -> bool:
+    """Whether a contract says its field list is missing tables it should have.
+
+    An `unmergedTables` entry marked `excluded` is not such a table: review, with
+    evidence, decided it is not part of this API's request at all - /db/TDME's
+    two Japan code tables belong to iGen, and every spelling of those codes
+    answers Wrong Field on both NX products. A field list missing only those is
+    complete for this API, so it can be the published payload type.
+    """
+    entries = (contract.get("extraction") or {}).get("unmergedTables") or []
+    return any(not entry.get("excluded") for entry in entries)
+
+
 def _contract_payload_fields() -> dict[str, dict[str, Any]]:
     """Payload fields for the contract-derived resource shadow path.
 
@@ -743,7 +756,7 @@ def _contract_payload_fields() -> dict[str, dict[str, Any]]:
         # still worth having in the source of truth, but narrowing a published
         # payload type onto an admittedly partial list would break callers who
         # set a field the manual documents in the table nobody could merge.
-        unmerged = (contract.get("extraction") or {}).get("unmergedTables")
+        unmerged = _admits_incomplete_fields(contract)
         if (
             _is_contract_shadow_resource(contract.get("endpoint", ""))
             and contract.get("fields")
@@ -2131,7 +2144,7 @@ def _contract_nested_types() -> dict[tuple[str, str], dict[str, Any]]:
         contract = yaml.safe_load(path.read_text(encoding="utf-8"))
         if not isinstance(contract, dict):
             continue
-        unmerged = (contract.get("extraction") or {}).get("unmergedTables")
+        unmerged = _admits_incomplete_fields(contract)
         declared = (contract.get("surface") or {}).get("nestedTypes") or []
         if declared:
             record = records.get(contract.get("endpoint", ""))
@@ -2288,7 +2301,7 @@ def _contract_argument_types() -> dict[tuple[str, str], dict[str, Any]]:
         contract = yaml.safe_load(path.read_text(encoding="utf-8"))
         if not isinstance(contract, dict) or not contract.get("fields"):
             continue
-        if (contract.get("extraction") or {}).get("unmergedTables"):
+        if _admits_incomplete_fields(contract):
             continue
         for operation in contract.get("operations") or []:
             surface = operation.get("surface") or {}

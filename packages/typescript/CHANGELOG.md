@@ -10,7 +10,19 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 > added, removed or renamed. 19 members of `/post` request types and 83 of
 > other named types narrow, 73 of them to required, and `/db/MCON`'s
 > `LinearConstraintItem` is corrected to the shape the manual gives it, which
-> removes four members it should never have had.
+> removes four members it should never have had. `/db/TDME` loses four
+> members that only a code this API refuses could use.
+
+### Changed - `/db/TDME` is generated from its contract
+
+`TimeDependentMaterialStrengthPayload` becomes the contract's discriminated
+union over `TYPE` and `CODENAME`: 12 members are required in the branch
+they belong to. **It loses `TENS_STRN_FACTOR`, `bUSE`, `D` and `iECTYPE`**,
+which exist only for the manual's two Japan code tables. Those codes belong
+to iGen, a different MIDAS product; every spelling of them answers
+`Wrong Field` on Gen NX and Civil NX (measured 2026-09-03, both products), so
+no request that uses these four members can succeed. The contract had already
+excluded the two tables; the npm type now follows it.
 
 ### Changed - `/db/CSCS` is generated from its contract
 

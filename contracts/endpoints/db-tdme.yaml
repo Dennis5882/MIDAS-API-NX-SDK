@@ -544,6 +544,7 @@ extraction:
         here would say this API serves a value it does not.
       fields: 6
       line: 650
+      excluded: true
       fieldNames: ["TENS_STRN_FACTOR", "bUSE", "A", "B", "D", "iCTYPE"]
     - heading: "`Japan (Elastic)` 전용 추가 필드"
       resolution: >-
@@ -554,4 +555,5 @@ extraction:
         here would say this API serves a value it does not.
       fields: 1
       line: 661
+      excluded: true
       fieldNames: ["iECTYPE"]

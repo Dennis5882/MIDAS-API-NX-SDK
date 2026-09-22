@@ -1000,3 +1000,12 @@ def test_branches_that_disagree_on_an_object_need_a_branch_named():
     assert generator._branch_owned_subtree("t", weighted, fields, variants, "SLAVES") == [
         {"key": "WEIGHT", "type": "number"}
     ]
+
+def test_a_table_excluded_with_evidence_does_not_hold_a_payload_back():
+    """/db/TDME's iGen tables are out of this API, not missing from the contract."""
+    unmerged = {"extraction": {"unmergedTables": [{"heading": "a", "line": 1, "resolution": "r"}]}}
+    excluded = {"extraction": {"unmergedTables": [{"heading": "a", "line": 1, "resolution": "r", "excluded": True}]}}
+    assert generator._admits_incomplete_fields(unmerged)
+    assert not generator._admits_incomplete_fields(excluded)
+    assert not generator._admits_incomplete_fields({})
+    assert "/db/TDME" in generator._contract_payload_fields()

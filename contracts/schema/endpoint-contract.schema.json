@@ -634,6 +634,10 @@
               "resolution": {
                 "type": "string",
                 "description": "What review decided about this table: merged into fields, modelled as nested properties, split into its own contract, or deliberately out of scope because the manual names no wire discriminator. Required on a promoted contract: an unexplained gap is indistinguishable from an overlooked one."
+              },
+              "excluded": {
+                "type": "boolean",
+                "description": "True where review decided, with evidence recorded in `resolution`, that this table is not part of this API's request at all - /db/TDME's two Japan code tables belong to iGen and their codes answer Wrong Field on both NX products. The contract's field list is then complete for this API and becomes the published payload type; an entry without this flag still means the list is incomplete."
               }
             }
           }

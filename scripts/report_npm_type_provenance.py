@@ -34,7 +34,8 @@ against the contracts by name alone, while the generator keys its lookup by
 `(namespace, name)` -- `types.ts` is a stack of namespaces and 765
 declarations carry 742 distinct names. That is only a risk for the two
 contract-aware buckets, and today it is not one: `python:contract-ignored` is
-empty and `python:unmerged` is exactly the 13 waived contracts.
+empty and `python:unmerged` is exactly the waived contracts (an entry marked
+`excluded` does not waive: see generate_typescript_sdk._admits_incomplete_fields).
 
 Measured 2026-09-21 and 2026-09-22 across four generator changes: 478
 Python-sourced types, then 250 once contracts could own a payload's **nested**
@@ -46,9 +47,10 @@ single branch (or name the branch it is), conditions inside it were stated
 from its own root, and the contracts' objects declared without members were
 filled from each manual section's own JSON Schema, table rows or /info, then
 85 and 83 once /db/SDIS's device tables and /db/CSCS's part table were
-merged. What the 70 left in `python:nested` are:
+merged, then 82 once /db/TDME's two iGen-only tables could be marked
+`excluded`. What the 70 left in `python:nested` are:
 
-    20  children of the 11 unmergedTables roots (moving-load cases and
+    20  children of the 10 unmergedTables roots (moving-load cases and
         vehicles, response spectra, time history, ...)
     22  /view/CAPTURE's RESULT_GRAPHIC tree, under a contract with
         unmergedTables
@@ -103,7 +105,7 @@ CONTRACTS = ROOT / "contracts" / "endpoints"
 #: Measured 2026-09-22 over 765 generated types, after branch-owned nested types. A ceiling: it falls as
 #: contracts take over more of the emitted shape, and a rise means a type that
 #: used to come from a contract is being read out of the Python tree again.
-PYTHON_SOURCED_AT_MOST = 83
+PYTHON_SOURCED_AT_MOST = 82
 
 #: Every exported type in `types.ts`. Not a ceiling: adding or removing an
 #: export is a change to the published surface, so it has to be made here on
@@ -129,7 +131,10 @@ def _contract_payload_names() -> tuple[set[str], set[str]]:
         if not isinstance(name, str):
             continue
         named.add(name)
-        if (contract.get("extraction") or {}).get("unmergedTables"):
+        if any(
+            not entry.get("excluded")
+            for entry in (contract.get("extraction") or {}).get("unmergedTables") or []
+        ):
             waived.add(name)
     return named, waived
 

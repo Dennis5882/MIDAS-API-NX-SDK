@@ -103,7 +103,7 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   and operation readers already parse, and `tests/test_generate_typescript_sdk.py` fails if an
   import comes back. A missing or broken Python install no longer stops `npm publish`. The
   **source tree** is still load-bearing — deleting `src/midas_nx/` breaks `npm run generate`,
-  though a built `dist/` keeps working — because 83 of 765 generated npm types still come from
+  though a built `dist/` keeps working — because 82 of 765 generated npm types still come from
   Python TypedDicts. **Since 2026-09-22 that is the only reason**: which types exist and in which
   namespace is decided by the contracts for every type they own (payload roots by
   `surface.payloadTypeName` + `modulePath`, nested and argument types by their recorded
@@ -115,7 +115,9 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   same day: a table contract's `requestFields.additional` nests now and its `surface.nestedTypes`
   names the story tables' `ADDITIONAL` types and `NODE_FLAG`; `UNIT`/`STYLES` hang off an
   operation `surface` with no `exportName` on `/post/TABLE`, which names types without
-  publishing a generated export. Only 3 of 305 resources still take their
+  publishing a generated export. An `unmergedTables` entry marked `excluded: true` is a table
+  review decided, with evidence, is not part of this API (`/db/TDME`'s two iGen code tables), and
+  does not stop the contract's field list becoming the payload type. Only 3 of 305 resources still take their
   identity from a Python class: the IEHG trio, which has no permitted source and so can never be
   contracted. **`scripts/report_npm_type_provenance.py` measures that 162 rather than counting it
   by hand** (`--check` holds it as a ceiling in CI). **Since 2026-09-22 the 70 operations and 87
@@ -159,7 +161,7 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   `COMB_LIST[].LCNAME` and `/db/STAG`'s `DACT_ELEM[].GRUP_NAME` among them, both of which `/info`
   declares on both products. What remains Python-sourced is broken down in the
   script's docstring; most of it sits under no contract-generated root at all — operation
-  arguments and the 11 `unmergedTables` roots' children.
+  arguments and the 10 `unmergedTables` roots' children.
 - `scripts/contract_from_info.py` — the one path into a contract that does not start at the
   manual. Seven Hyper-S `-M1` sections state a URL, their methods and nothing else, so live
   `/info` is their only permitted source; this fills a draft's `fields` from
