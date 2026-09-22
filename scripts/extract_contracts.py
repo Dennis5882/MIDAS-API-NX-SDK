@@ -6017,7 +6017,16 @@ def run_check(sections: list[Section]) -> int:
                     if manual.type == "array"
                     else declared.get("enum", [])
                 )
-                if declared_enum != manual.enum:
+                # A value set can be split across a section's tables: /ope/LCOM-SRC
+                # tables its KDS body with DGNCODE "KDS 41 SRC : 2022" and, at the
+                # section's end, its AIK-SRC2K body with DGNCODE "AIK-SRC2K" - both
+                # the same wire field. What the tables state together is the set.
+                section_enum = list(manual.enum)
+                for table in section.tables:
+                    for other in _walk(table.fields):
+                        if other.key == key.split(".")[-1] and other.enum:
+                            section_enum += [v for v in other.enum if v not in section_enum]
+                if declared_enum != manual.enum and declared_enum != section_enum:
                     problems.append(
                         f"{path.name}: {key} enum={declared_enum!r}, manual says {manual.enum!r}"
                     )

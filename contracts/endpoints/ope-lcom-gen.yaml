@@ -34,6 +34,12 @@ operations:
       exportName: generateLoadCombinationGeneral
       modulePath: [ope]
       argumentTypeName: [LoadCombinationGeneralKdsArgument, LoadCombinationAikSrc2kArgument]
+      argumentParts:
+        - {name: LoadCombinationGeneralKdsArgument}
+      # The section describes only the KDS:2022 body (its opening says so), so
+      # the whole field list is that part. LoadCombinationAikSrc2kArgument is
+      # shared with /ope/LCOM-SRC, which makes RS_SCALE_FACTOR optional where
+      # this route requires it, and stays the one shape both accept.
       documentation: |-
         docs/manual/15_OPE.md #15 — /ope/LCOM-GEN — Load Combination (General) – KDS:2022 / AIK-SRC2K.
 

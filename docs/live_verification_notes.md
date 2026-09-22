@@ -10965,3 +10965,25 @@ and what `STANDARD_CODE` South Africa's `VEH_ZA` needs. Neither was chased by
 varying values the manual does not give. `/db/MVHL`'s contract gates its six
 country objects on the `MVLD_CODE` each printed body sends, with Poland's 15
 marked unconfirmed (MD-61).
+
+## 2026-09-22 (after) - `/ope/DIVIDEELEM`: the Equal row's axes hold for every method
+
+`scripts/live_manual_feedback.py --case c8`, Civil NX and Gen NX, each body in
+its own seeded document (element 1 a 3.2 m beam, element 4 a 4 m square
+plate), `/db/ELEM` counted before and after. Empty documents confirmed first
+with each product's own key, left empty after.
+
+| body | both products |
+| --- | --- |
+| Frame Equal, printed (`NUM_X: 10`) | 4 -> 13 elements |
+| Frame Unequal, `DIST_X: "2@1.0"` only | 4 -> 6 |
+| Frame ParametricUnequal, `RATIO_X: "3@0.3"` only | 4 -> 7 |
+| Planar ParametricUnequal, `RATIO_X` and `RATIO_Y` | 4 -> 23 |
+| Planar ParametricUnequal, `RATIO_X` only | `Unknown Error`, nothing divided |
+| Planar Unequal, printed (`2@2.5`, `2@3.0` on a 4 m plate) | `... second query is wrong` |
+
+The Unequal and ParametricUnequal rows mark X, Y and Z Required with no
+condition; the Equal row beside them says which axes each element type uses,
+and that rule is what the product applies. The printed Planar Unequal body
+failed on its distances, which overrun this plate, not on its shape. Wall and
+Solid were not measured and follow the Equal row. MD-62.

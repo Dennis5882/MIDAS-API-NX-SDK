@@ -1040,3 +1040,32 @@ def test_a_table_excluded_with_evidence_does_not_hold_a_payload_back():
     assert not generator._admits_incomplete_fields(excluded)
     assert not generator._admits_incomplete_fields({})
     assert "/db/TDME" in generator._contract_payload_fields()
+
+
+def test_a_union_argument_part_keeps_only_what_its_discriminator_admits():
+    """/ope/LCOM-SRC's KDS part is the field list under DGNCODE's KDS value."""
+    fields = [
+        {"key": "OPTION", "type": "string", "requirement": "required"},
+        {"key": "DGNCODE", "type": "string", "requirement": "required",
+         "enum": ["KDS", "AIK"]},
+        {"key": "KDS_ONLY", "type": "object", "requirement": "optional",
+         "appliesWhen": [{"path": "DGNCODE", "equals": "KDS"}]},
+        {"key": "AIK_ONLY", "type": "object", "requirement": "optional",
+         "appliesWhen": [{"path": "DGNCODE", "in": ["AIK"]}]},
+    ]
+    part = generator._argument_part(fields, {"path": "DGNCODE", "equals": "KDS"})
+
+    assert [field["key"] for field in part] == ["OPTION", "DGNCODE", "KDS_ONLY"]
+    assert part[1]["enum"] == ["KDS"]
+    assert "appliesWhen" not in part[2], "a satisfied condition is not repeated in JSDoc"
+    assert generator._argument_part(fields, None) is fields
+
+
+def test_an_unequal_array_bound_does_not_make_two_shapes_differ():
+    """Only an exact bound renders (as a tuple), so only it is compared."""
+    open_bound = {"key": "SECTIONS", "type": "array", "minItems": 1}
+    no_bound = {"key": "SECTIONS", "type": "array"}
+    tuple_bound = {"key": "SECTIONS", "type": "array", "minItems": 2, "maxItems": 2}
+
+    assert generator._structure([open_bound]) == generator._structure([no_bound])
+    assert generator._structure([tuple_bound]) != generator._structure([no_bound])

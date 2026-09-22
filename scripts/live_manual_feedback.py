@@ -835,11 +835,57 @@ def mvhl_code_pairing(client: MidasClient, checkpoint: str, extension: str) -> d
     return results
 
 
+def _divideelem_bodies() -> dict[str, dict[str, Any]]:
+    """15_OPE.md section 2's bodies, and one axis set at a time around them.
+
+    The Equal row says which axes each element type divides along (Frame=X,
+    Planar=X,Y, Wall=X,Z, Solid=X,Y,Z); the Unequal and ParametricUnequal rows
+    mark all three axes Required with no condition, while the section's own
+    Planar Unequal body sends X and Y only. The seed model's element 1 is a
+    3.2 m beam and element 4 a 4 m square plate, so the Frame Unequal body
+    uses "2@1.0" where the printed Planar one's "2@2.5" would not fit.
+    """
+    def body(targets, elem_type, method, option):
+        return {"TARGETS": targets, "DIVIDE": {"ELEM_TYPE": elem_type, "DIV_METHOD": method,
+                                               "OPTION": option}}
+    return {
+        "frame_equal_printed": body([1], "Frame", "Equal", {"EQUAL_OPTION": {"NUM_X": 10}}),
+        "frame_unequal_x": body([1], "Frame", "Unequal", {"UNEQUAL_OPTION": {"DIST_X": "2@1.0"}}),
+        "frame_parametric_x": body([1], "Frame", "ParametricUnequal",
+                                   {"PARAMETRIC_OPTION": {"RATIO_X": "3@0.3"}}),
+        "planar_parametric_xy": body([4], "Planar", "ParametricUnequal",
+                                     {"PARAMETRIC_OPTION": {"RATIO_X": "3@0.3", "RATIO_Y": "4@0.2"}}),
+        "planar_parametric_x": body([4], "Planar", "ParametricUnequal",
+                                    {"PARAMETRIC_OPTION": {"RATIO_X": "3@0.3"}}),
+        "planar_unequal_printed": body([4], "Planar", "Unequal",
+                                       {"UNEQUAL_OPTION": {"DIST_X": "2@2.5", "DIST_Y": "2@3.0"}}),
+    }
+
+
+def divideelem_axes(client: MidasClient, checkpoint: str, extension: str) -> dict[str, Any]:
+    """Which axes /ope/DIVIDEELEM needs per element type, one document each.
+
+    The element table is read before and after, because a division that did
+    nothing and one that worked can answer alike.
+    """
+    results: dict[str, Any] = {}
+    for label, argument in _divideelem_bodies().items():
+        doc.new_project(client=client)
+        _seed_model(client)
+        before = _raw(client, "GET", "/db/ELEM")["body"].get("ELEM") or {}
+        answer = _raw(client, "POST", "/ope/DIVIDEELEM", {"Argument": argument})
+        after = _raw(client, "GET", "/db/ELEM")["body"].get("ELEM") or {}
+        results[label] = {"sent": argument, "post": answer,
+                          "elementsBefore": len(before), "elementsAfter": len(after)}
+    doc.save_as(f"{checkpoint}-divide.{extension}", client=client)
+    return results
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--product", choices=("gen", "civil"), required=True)
     parser.add_argument("--case", choices=("a1", "a2", "a3", "b1", "b2", "c1", "c2", "c3", "c4", "c5",
-                                            "c6", "c7"),
+                                            "c6", "c7", "c8"),
                         default="a1")
     parser.add_argument("--out", required=True)
     harness_save_path.add_arguments(parser, waivable=False)
@@ -875,6 +921,8 @@ def main() -> int:
         result = mvhl_country_objects(client, checkpoint, extension)
     elif args.case == "c7":
         result = mvhl_code_pairing(client, checkpoint, extension)
+    elif args.case == "c8":
+        result = divideelem_axes(client, checkpoint, extension)
     else:
         result = missing_specification_fields(
             client, checkpoint, extension, args.product,

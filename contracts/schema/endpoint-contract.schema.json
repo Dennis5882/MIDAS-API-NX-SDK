@@ -404,6 +404,28 @@
                 ],
                 "description": "The argument's generated TypeScript type name, unqualified - the namespace comes from modulePath. A list means a union, which two /ope load-combination operations publish. Omit it when the operation takes an argument the SDKs do not type, which renders as JsonObject."
               },
+              "argumentParts": {
+                "type": "array",
+                "minItems": 1,
+                "description": "For a union `argumentTypeName`: which parts this contract's field list builds, each named with the discriminator value that selects it. A part with `when` keeps the fields whose own `DGNCODE`-style condition admits that value, drops the rest, and narrows the discriminator to it; a part without `when` is the whole field list. A part left out stays on its Python TypedDict - /ope/LCOM-GEN and /ope/LCOM-SRC share LoadCombinationAikSrc2kArgument while the manual makes RS_SCALE_FACTOR required for one and optional for the other, so neither contract can own it.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["name"],
+                  "properties": {
+                    "name": {"type": "string", "minLength": 1},
+                    "when": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["path", "equals"],
+                      "properties": {
+                        "path": {"type": "string", "minLength": 1},
+                        "equals": {"type": ["string", "integer", "number", "boolean"]}
+                      }
+                    }
+                  }
+                }
+              },
               "takesArgument": {
                 "type": "boolean",
                 "description": "False for a POST that sends no body at all, which generates a different npm operation kind from one whose body is untyped. Defaults to true; only the `false` case is worth writing down."

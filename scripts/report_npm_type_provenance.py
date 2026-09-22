@@ -62,15 +62,20 @@ measurement, with its five nested types, then 52 once /db/MVLD's national
 DEFAULT tables were and its seven, which left no unmergedTables root, then
 30 once /view/RESULTGRAPHIC's ten TYPE_OF_DISPLAY tables were merged as the
 structural tables their headings say they are, with the section's top-level
-keys, and its argument's 22 types came from the contract. What the 28 left
-in `python:nested` are:
+keys, and its argument's 22 types came from the contract, then 16 once the
+arguments held on Python were not: /ope/DIVIDEELEM's after a live measurement
+of which axes each element type needs, the load-combination unions' KDS parts
+through `argumentParts`, and SrcMemberCheckTableArgument once only a rendered
+array bound counted as a shape difference. What the 14 left in
+`python:nested` are:
 
-    11  /ope/DIVIDEELEM's argument and its children, held in
-        `_ARGUMENT_TYPES_LEFT_ON_PYTHON` with its reason
-     4  the /ope load-combination union arguments and their shared base
-     4  design: the two *DesignForcesArgument union parts, the held
-        SrcMemberCheckTableArgument, and ColumnBraceRebarDesignCriteriaItem,
-        a Python base class with no wire object of its own
+     2  /ope load combinations: LoadCombinationAikSrc2kArgument, which
+        LCOM-GEN and LCOM-SRC share while the manual requires RS_SCALE_FACTOR
+        on one and not the other, and _LoadCombinationSteelSrcKdsArgument, a
+        Python base class nothing references now
+     3  design: the two *DesignForcesArgument union parts and
+        ColumnBraceRebarDesignCriteriaItem, a Python base class with no wire
+        object of its own
      7  /db names whose contracts disagree - InitialLoadCaseItem (POGD-M1
         conditional, the others required), OptUseToleranceValue (ACTL-M1
         unstated), LoadGroupDayItem (STAG requires LOAD_NAME, HSTG does not);
@@ -116,7 +121,7 @@ CONTRACTS = ROOT / "contracts" / "endpoints"
 #: Measured 2026-09-22 over 765 generated types, after branch-owned nested types. A ceiling: it falls as
 #: contracts take over more of the emitted shape, and a rise means a type that
 #: used to come from a contract is being read out of the Python tree again.
-PYTHON_SOURCED_AT_MOST = 30
+PYTHON_SOURCED_AT_MOST = 16
 
 #: Every exported type in `types.ts`. Not a ceiling: adding or removing an
 #: export is a change to the published surface, so it has to be made here on

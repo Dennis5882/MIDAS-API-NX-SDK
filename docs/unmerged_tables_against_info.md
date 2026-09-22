@@ -33,18 +33,16 @@ not the same finding as a source that is absent.
 | endpoint | tables | names | declared by `/info` | share |
 | --- | ---: | ---: | ---: | ---: |
 | [`/db/TDME`](#dbtdme) | 2 | 7 | 7 | 100% |
-| [`/ope/LCOM-SRC`](#opelcomsrc) | 1 | 5 | -- | n/a |
-| **total** | **3** | **12** | **7** | **58%** |
+| **total** | **2** | **7** | **7** | **100%** |
 
-Of the **7** names on endpoints `/info` answers for, **7** are declared (100%) and **0** are not. The remaining **5** names sit on 1 tables of two endpoints `/info` does not serve at all.
+Of the **7** names on endpoints `/info` answers for, **7** are declared (100%) and **0** are not. The remaining **0** names sit on 0 tables of two endpoints `/info` does not serve at all.
 
 ### What each table has, as a count
 
 | what the measurement found | tables |
 | --- | ---: |
 | whole table, one object | 2 |
-| out of reach | 1 |
-| **all** | **3** |
+| **all** | **2** |
 
 *one object* means `/info` has a single object holding every name in that table; *scattered* means it declares them all but under no common parent, so the table's shape is not something the baseline confirms. Neither is a recommendation -- a table with two sources still needs its manual section read before anything moves.
 
@@ -59,14 +57,4 @@ Baseline answers on `civil`, `gen`. 7 of 7 names declared across 2 tables.
 
 - **`Japan (Hydration)` 전용 추가 필드** declared: `TENS_STRN_FACTOR` at `TENS_STRN_FACTOR`, `bUSE` at `bUSE`, `A` at `A`, `B` at `B`, `D` at `D`, `iCTYPE` at `iCTYPE`
 - **`Japan (Elastic)` 전용 추가 필드** declared: `iECTYPE` at `iECTYPE`
-
-## `/ope/LCOM-SRC`
-
-**Outside `/info`'s reach.** Introspection is served for `/db/*` only -- swept from both SDKs 2026-09-01, and a 404 here is an API fact rather than a missing capture. These names have one source because no second one exists, not because nobody looked.
-
-| table | names | declared | not declared | nesting |
-| --- | ---: | ---: | ---: | --- |
-| Parameters | 5 | 0 | 5 | -- |
-
-- **Parameters** not declared: `OPTION`, `DGNCODE`, `RS_SCALE_FACTOR`, `LOAD_CASE`, `FACTOR`
 

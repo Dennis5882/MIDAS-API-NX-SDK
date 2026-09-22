@@ -34,6 +34,11 @@ operations:
       exportName: generateLoadCombinationSrc
       modulePath: [ope]
       argumentTypeName: [LoadCombinationSrcKdsArgument, LoadCombinationAikSrc2kArgument]
+      argumentParts:
+        - {name: LoadCombinationSrcKdsArgument, when: {path: DGNCODE, equals: "KDS 41 SRC : 2022"}}
+      # LoadCombinationAikSrc2kArgument is not listed: /ope/LCOM-GEN publishes the
+      # same name, and the section's 2026-08-26 callout makes RS_SCALE_FACTOR
+      # required there and optional here. It stays the one shape both accept.
       documentation: |-
         docs/manual/15_OPE.md #18 — /ope/LCOM-SRC — Load Combination (SRC) – KDS 41 SRC:2022 / AIK-SRC2K.
 
@@ -75,7 +80,10 @@ fields:
     documentedDefault: null
     documentedDefaultNote: "KDS 41 SRC : 2022"
     documentedOptional: false
-    enum: ["KDS 41 SRC : 2022"]
+    enum: ["KDS 41 SRC : 2022", AIK-SRC2K]
+    # The section opens by saying the same route takes a simpler schema when
+    # DGNCODE is "AIK-SRC2K" (OPTION, DGNCODE, RS_SCALE_FACTOR), tabled at the
+    # section's end; the other objects apply to the KDS 41 SRC:2022 body only.
     safeToOmit: unverified
     provenance: manual
   - key: RS_SCALE_FACTOR
@@ -113,6 +121,9 @@ fields:
       풍하중 조합 세트
     type: object
     requirement: optional
+    appliesWhen:
+      - path: DGNCODE
+        equals: "KDS 41 SRC : 2022"
     documentedDefault: null
     documentedOptional: true
     safeToOmit: unverified
@@ -217,6 +228,9 @@ fields:
       직교효과 고려 옵션
     type: object
     requirement: optional
+    appliesWhen:
+      - path: DGNCODE
+        equals: "KDS 41 SRC : 2022"
     documentedDefault: null
     documentedOptional: true
     safeToOmit: unverified
@@ -263,6 +277,9 @@ fields:
       추가 하중 옵션 컨테이너
     type: object
     requirement: optional
+    appliesWhen:
+      - path: DGNCODE
+        equals: "KDS 41 SRC : 2022"
     documentedDefault: null
     documentedOptional: true
     safeToOmit: unverified
@@ -382,6 +399,9 @@ fields:
       지하구조물 하중 옵션
     type: object
     requirement: optional
+    appliesWhen:
+      - path: DGNCODE
+        equals: "KDS 41 SRC : 2022"
     documentedDefault: null
     documentedOptional: true
     safeToOmit: unverified
@@ -572,9 +592,11 @@ extraction:
   # whether they belong in this contract's fields, as nested `properties`,
   # or as a separate contract - do not assume the first table is the whole
   # schema.
-  unmergedTables:
+  structuralTables:
     - heading: Parameters
-      resolution: "The supplementary table follows an AIK-SRC2K prose label, but its table heading names no wire condition; left unmerged."
-      fields: 3
       line: 3818
-      fieldNames: ["OPTION", "DGNCODE", "RS_SCALE_FACTOR", "LOAD_CASE", "FACTOR"]
+      paths: [OPTION, DGNCODE, RS_SCALE_FACTOR]
+      note: >-
+        The AIK-SRC2K schema the section's opening names by its DGNCODE value.
+        Its three rows are fields the KDS body has too; DGNCODE's enum carries
+        "AIK-SRC2K", and the KDS-only objects apply under the KDS value.

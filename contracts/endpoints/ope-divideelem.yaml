@@ -38,6 +38,18 @@ operations:
       argumentTypeName: DivideElementsArgument
       documentation: |-
         docs/manual/15_OPE.md #2 — /ope/DIVIDEELEM — Divide Elements.
+      nestedTypes:
+        - {path: START_NUMBER, name: DivideStartNumber, namespace: OpeTypes}
+        - {path: START_NUMBER.NODE_NUMBER, name: NumberOption, namespace: OpeTypes}
+        - {path: START_NUMBER.ELEM_NUMBER, name: NumberOption, namespace: OpeTypes}
+        - {path: DIVIDE, name: DivideSettings, namespace: OpeTypes}
+        - {path: DIVIDE.OPTION, name: DivideOption, namespace: OpeTypes}
+        - {path: DIVIDE.OPTION.EQUAL_OPTION, name: DivideEqualOption, namespace: OpeTypes}
+        - {path: DIVIDE.OPTION.UNEQUAL_OPTION, name: DivideUnequalOption, namespace: OpeTypes}
+        - {path: DIVIDE.OPTION.PARAMETRIC_OPTION, name: DivideParametricOption, namespace: OpeTypes}
+        - {path: DIVIDE.OPTION.PARALLEL_OPTION, name: DivideParallelOption, namespace: OpeTypes}
+        - {path: DIVIDE.OPTION.BY_NODE_OPTION, name: DivideByNodeOption, namespace: OpeTypes}
+        - {path: DIVIDE.MERGE_DUPLICATE_NODES, name: MergeDuplicateNodesOption, namespace: OpeTypes}
     risk: write
     request:
       wrapper: assign
@@ -224,19 +236,25 @@ fields:
                   Unequal: X/Y/Z 방향 비등분할 거리 문자열 (예: "3@2.0")
                 type: string
                 requirement: required
+                appliesWhen:
+                  - path: DIVIDE.ELEM_TYPE
+                    in: [Planar, Solid]
                 documentedDefault: null
                 documentedOptional: false
                 safeToOmit: unverified
-                provenance: manual
+                provenance: live_corrected
               - key: DIST_Z
                 description: >-
                   Unequal: X/Y/Z 방향 비등분할 거리 문자열 (예: "3@2.0")
                 type: string
                 requirement: required
+                appliesWhen:
+                  - path: DIVIDE.ELEM_TYPE
+                    in: [Wall, Solid]
                 documentedDefault: null
                 documentedOptional: false
                 safeToOmit: unverified
-                provenance: manual
+                provenance: live_corrected
           - key: PARAMETRIC_OPTION
             type: object
             requirement: optional
@@ -259,19 +277,25 @@ fields:
                   ParametricUnequal: X/Y/Z 방향 비율 문자열 (예: "3@0.3")
                 type: string
                 requirement: required
+                appliesWhen:
+                  - path: DIVIDE.ELEM_TYPE
+                    in: [Planar, Solid]
                 documentedDefault: null
                 documentedOptional: false
                 safeToOmit: unverified
-                provenance: manual
+                provenance: live_corrected
               - key: RATIO_Z
                 description: >-
                   ParametricUnequal: X/Y/Z 방향 비율 문자열 (예: "3@0.3")
                 type: string
                 requirement: required
+                appliesWhen:
+                  - path: DIVIDE.ELEM_TYPE
+                    in: [Wall, Solid]
                 documentedDefault: null
                 documentedOptional: false
                 safeToOmit: unverified
-                provenance: manual
+                provenance: live_corrected
           - key: PARALLEL_OPTION
             type: object
             requirement: optional
@@ -363,6 +387,26 @@ fields:
             documentedOptional: true
             safeToOmit: unverified
             provenance: manual
+
+manualDefects:
+  - describes: requiredness
+    manualSays: >-
+      The Unequal and ParametricUnequal rows mark `DIST_X/Y/Z` and
+      `RATIO_X/Y/Z` Required with no condition. The Equal row beside them
+      states which axes each element type divides along (Frame=X만,
+      Planar=X,Y, Wall=X,Z, Solid=X,Y,Z), and the section's own Planar
+      Unequal Request Body sends X and Y only.
+    actual: >-
+      The Equal row's axes hold for the other two methods. A Frame element
+      divides with `DIST_X` alone and with `RATIO_X` alone; a Planar element
+      divides with `RATIO_X` and `RATIO_Y` and answers `Unknown Error` with
+      `RATIO_X` alone. Identical on both products. Wall and Solid were not
+      measured and follow the Equal row.
+    evidence: >-
+      docs/live_verification_notes.md, "/ope/DIVIDEELEM: the Equal row's axes
+      hold for every method" (2026-09-22): scripts/live_manual_feedback.py case
+      c8 on Civil NX and Gen NX, each body in its own seeded document, the
+      element table read before and after. Registered as MD-62.
 
 extraction:
   source: 15_OPE.md line 246

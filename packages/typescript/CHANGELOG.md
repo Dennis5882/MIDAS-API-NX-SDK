@@ -7,11 +7,31 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 ## Unreleased
 
 > **Breaking at the type level; nothing changes at runtime.** No export is
-> added, removed or renamed. 19 members of `/post` request types and 199 of
-> other named types narrow, 176 of them to required, and `/db/MCON`'s
+> added, removed or renamed. 19 members of `/post` request types and 215 of
+> other named types narrow, 192 of them to required, and `/db/MCON`'s
 > `LinearConstraintItem` is corrected to the shape the manual gives it, which
 > removes four members it should never have had. `/db/TDME` loses four
 > members that only a code this API refuses could use.
+
+### Changed - `/ope` and design arguments that were held on Python
+
+- `divideElements`: `DivideElementsArgument` and its ten nested types come
+  from the contract. `DIVIDE`, its `ELEM_TYPE`, `DIV_METHOD` and `OPTION`, and
+  each option's X-axis member (`NUM_X`, `DIST_X`, `RATIO_X`) plus
+  `PARALLEL_OPTION` and `BY_NODE_OPTION`'s members become **required**. The Y
+  and Z members stay optional and say in JSDoc which `ELEM_TYPE` needs them
+  (Y: Planar, Solid; Z: Wall, Solid) - measured on both products 2026-09-22,
+  where a Frame divides with X alone and a Planar element refuses X alone.
+- `generateLoadCombinationGeneral`'s KDS part,
+  `LoadCombinationGeneralKdsArgument`, requires `OPTION`
+  (`"ADD" | "REPLACE"`) and `CODE_SELECTION`.
+- `generateLoadCombinationSrc`'s KDS part, `LoadCombinationSrcKdsArgument`,
+  no longer extends `_LoadCombinationSteelSrcKdsArgument`; it declares the
+  same seven members itself, with `OPTION` required as `"ADD" | "REPLACE"`
+  and `DGNCODE` as `"KDS 41 SRC : 2022"`. The AIK-SRC2K part both operations
+  share is unchanged: the manual requires its `RS_SCALE_FACTOR` on one route
+  and not the other.
+- `SrcMemberCheckTableArgument` requires `TABLE_TYPE`.
 
 ### Changed - `setResultGraphic`'s argument is generated from its contract
 

@@ -17159,16 +17159,48 @@ export namespace DesignSrcAiksrc2kTypes {
     /** 단면 번호 입력. */
     SECTIONS?: Array<number>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface SrcMemberCheckTableArgument {
-    TABLE_TYPE?: string;
-    ELEMS?: PostBaseTypes.NodeElemsSelector;
+    /** 결과표 타입 — 가능값: MEMB, PROP */
+    TABLE_TYPE: string;
+    /** 요소 번호 입력. */
+    ELEMS?: {
+      /** 개별 요소 ID 지정 */
+      KEYS?: Array<number>;
+      /** 요소 ID 범위 지정 (예: "1to160") */
+      TO?: string;
+      /** 구조 그룹 이름 지정 */
+      STRUCTURE_GROUP_NAME?: string;
+    };
+    /** 표에 포함할 단면 번호 목록. */
     SECTIONS?: Array<number>;
+    /** 부재 기준 출력의 정렬 기준 (단면번호 또는 부재번호) — 0=SECT; 1=MEMB */
     PRI_SORT?: number;
+    /** 검토 상태로 결과 필터링 — 0=전체; 1=OK; 2=NG */
     RESULT?: number;
+    /** 결과표 제목 */
     TABLE_NAME?: string;
+    /** 결과표 저장 경로 */
     EXPORT_PATH?: string;
-    UNIT?: PostBaseTypes.TableUnit;
-    STYLES?: PostBaseTypes.TableStyles;
+    /** 결과 단위 설정 */
+    UNIT?: {
+      /** 힘 단위 */
+      FORCE?: string;
+      /** 길이/거리 단위 */
+      DIST?: string;
+      /** 열 단위 */
+      HEAT?: string;
+      /** 온도 단위 */
+      TEMP?: string;
+    };
+    /** 결과 숫자 형식 */
+    STYLES?: {
+      /** 숫자 형식 — 가능값: Default, Fixed, Scientific, General */
+      FORMAT?: string;
+      /** 소수 자릿수 */
+      PLACE?: number;
+    };
+    /** SRC 검토 결과표 구성 항목 */
     COMPONENTS?: Array<string>;
   }
   /** Generated from contracts/endpoints/. */
@@ -18480,50 +18512,229 @@ export namespace OpeTypes {
     /** 변경값 · 명목크기: h / 체적표면비: v/s */
     H_VS: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface DivideByNodeOption {
-    ELEM_NUM?: number;
-    NODE_NUM?: number;
+    /** DividebyNode: 대상 요소번호 / 분할기준 노드번호 */
+    ELEM_NUM: number;
+    /** DividebyNode: 대상 요소번호 / 분할기준 노드번호 */
+    NODE_NUM: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface DivideElementsArgument {
+    /** 분할 대상 요소 ID */
     TARGETS?: Array<number>;
-    START_NUMBER?: DivideStartNumber;
-    DIVIDE?: DivideSettings;
+    /** 시작 노드/요소 번호 */
+    START_NUMBER?: {
+      NODE_NUMBER?: {
+        /** 노드 번호 옵션 · 최소 미사용: "Smallest" / 최대+1: "Largest" / 사용자지정: "User" */
+        NUMBER_OPTION?: string;
+        /** 사용자 지정 노드 번호 (NUMBER_OPTION="User"일 때) */
+        USER_NUM?: number;
+      };
+      ELEM_NUMBER?: {
+        /** 요소 번호 옵션 (노드와 동일 enum) */
+        NUMBER_OPTION?: string;
+        /** 사용자 지정 요소 번호 */
+        USER_NUM?: number;
+      };
+    };
+    /** 분할 설정 */
+    DIVIDE: {
+      /** 요소 타입 · 선요소: "Frame" / 벽: "Wall" / 평면: "Planar" / 솔리드: "Solid" */
+      ELEM_TYPE: string;
+      /** 분할 방법 · 등분할: "Equal" / 비등분할: "Unequal" / 비율분할: "ParametricUnequal" / 평행브레이싱: "ParallelBracing" / 노드기준: "DividebyNode" */
+      DIV_METHOD: string;
+      /** 분할 옵션 (DIV_METHOD별 하위 객체 중 하나) */
+      OPTION: {
+        EQUAL_OPTION?: {
+          /** Equal: X/Y/Z 방향 분할수 (Frame=X만, Planar=X,Y, Wall=X,Z, Solid=X,Y,Z) */
+          NUM_X: number;
+          /** Equal: X/Y/Z 방향 분할수 (Frame=X만, Planar=X,Y, Wall=X,Z, Solid=X,Y,Z) Required when DIVIDE.ELEM_TYPE is "Planar" or "Solid". */
+          NUM_Y?: number;
+          /** Equal: X/Y/Z 방향 분할수 (Frame=X만, Planar=X,Y, Wall=X,Z, Solid=X,Y,Z) Required when DIVIDE.ELEM_TYPE is "Wall" or "Solid". */
+          NUM_Z?: number;
+        };
+        UNEQUAL_OPTION?: {
+          /** Unequal: X/Y/Z 방향 비등분할 거리 문자열 (예: "3@2.0") */
+          DIST_X: string;
+          /** Unequal: X/Y/Z 방향 비등분할 거리 문자열 (예: "3@2.0") Required when DIVIDE.ELEM_TYPE is "Planar" or "Solid". */
+          DIST_Y?: string;
+          /** Unequal: X/Y/Z 방향 비등분할 거리 문자열 (예: "3@2.0") Required when DIVIDE.ELEM_TYPE is "Wall" or "Solid". */
+          DIST_Z?: string;
+        };
+        PARAMETRIC_OPTION?: {
+          /** ParametricUnequal: X/Y/Z 방향 비율 문자열 (예: "3@0.3") */
+          RATIO_X: string;
+          /** ParametricUnequal: X/Y/Z 방향 비율 문자열 (예: "3@0.3") Required when DIVIDE.ELEM_TYPE is "Planar" or "Solid". */
+          RATIO_Y?: string;
+          /** ParametricUnequal: X/Y/Z 방향 비율 문자열 (예: "3@0.3") Required when DIVIDE.ELEM_TYPE is "Wall" or "Solid". */
+          RATIO_Z?: string;
+        };
+        PARALLEL_OPTION?: {
+          /** ParallelBracing: 분할 수 / 기준 기둥(Post) 요소 목록 */
+          NUM_OF_DIVISIONS: number;
+          /** ParallelBracing: 분할 수 / 기준 기둥(Post) 요소 목록 */
+          MAIN_POST_ELEM: Array<number>;
+        };
+        BY_NODE_OPTION?: {
+          /** DividebyNode: 대상 요소번호 / 분할기준 노드번호 */
+          ELEM_NUM: number;
+          /** DividebyNode: 대상 요소번호 / 분할기준 노드번호 */
+          NODE_NUM: number;
+        };
+      };
+      /** 선요소 재분할 여부 */
+      SUBDIVIDE_ELEM?: boolean;
+      /** 중복 노드 병합 */
+      MERGE_DUPLICATE_NODES?: {
+        /** 활성화 여부 */
+        OPT_CHECK?: boolean;
+        /** 병합 허용오차 */
+        TOLERANCE?: number;
+      };
+    };
   }
+  /** Generated from contracts/endpoints/. */
   export interface DivideEqualOption {
-    NUM_X?: number;
+    /** Equal: X/Y/Z 방향 분할수 (Frame=X만, Planar=X,Y, Wall=X,Z, Solid=X,Y,Z) */
+    NUM_X: number;
+    /** Equal: X/Y/Z 방향 분할수 (Frame=X만, Planar=X,Y, Wall=X,Z, Solid=X,Y,Z) Required when DIVIDE.ELEM_TYPE is "Planar" or "Solid". */
     NUM_Y?: number;
+    /** Equal: X/Y/Z 방향 분할수 (Frame=X만, Planar=X,Y, Wall=X,Z, Solid=X,Y,Z) Required when DIVIDE.ELEM_TYPE is "Wall" or "Solid". */
     NUM_Z?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface DivideOption {
-    EQUAL_OPTION?: DivideEqualOption;
-    UNEQUAL_OPTION?: DivideUnequalOption;
-    PARAMETRIC_OPTION?: DivideParametricOption;
-    PARALLEL_OPTION?: DivideParallelOption;
-    BY_NODE_OPTION?: DivideByNodeOption;
+    EQUAL_OPTION?: {
+      /** Equal: X/Y/Z 방향 분할수 (Frame=X만, Planar=X,Y, Wall=X,Z, Solid=X,Y,Z) */
+      NUM_X: number;
+      /** Equal: X/Y/Z 방향 분할수 (Frame=X만, Planar=X,Y, Wall=X,Z, Solid=X,Y,Z) Required when DIVIDE.ELEM_TYPE is "Planar" or "Solid". */
+      NUM_Y?: number;
+      /** Equal: X/Y/Z 방향 분할수 (Frame=X만, Planar=X,Y, Wall=X,Z, Solid=X,Y,Z) Required when DIVIDE.ELEM_TYPE is "Wall" or "Solid". */
+      NUM_Z?: number;
+    };
+    UNEQUAL_OPTION?: {
+      /** Unequal: X/Y/Z 방향 비등분할 거리 문자열 (예: "3@2.0") */
+      DIST_X: string;
+      /** Unequal: X/Y/Z 방향 비등분할 거리 문자열 (예: "3@2.0") Required when DIVIDE.ELEM_TYPE is "Planar" or "Solid". */
+      DIST_Y?: string;
+      /** Unequal: X/Y/Z 방향 비등분할 거리 문자열 (예: "3@2.0") Required when DIVIDE.ELEM_TYPE is "Wall" or "Solid". */
+      DIST_Z?: string;
+    };
+    PARAMETRIC_OPTION?: {
+      /** ParametricUnequal: X/Y/Z 방향 비율 문자열 (예: "3@0.3") */
+      RATIO_X: string;
+      /** ParametricUnequal: X/Y/Z 방향 비율 문자열 (예: "3@0.3") Required when DIVIDE.ELEM_TYPE is "Planar" or "Solid". */
+      RATIO_Y?: string;
+      /** ParametricUnequal: X/Y/Z 방향 비율 문자열 (예: "3@0.3") Required when DIVIDE.ELEM_TYPE is "Wall" or "Solid". */
+      RATIO_Z?: string;
+    };
+    PARALLEL_OPTION?: {
+      /** ParallelBracing: 분할 수 / 기준 기둥(Post) 요소 목록 */
+      NUM_OF_DIVISIONS: number;
+      /** ParallelBracing: 분할 수 / 기준 기둥(Post) 요소 목록 */
+      MAIN_POST_ELEM: Array<number>;
+    };
+    BY_NODE_OPTION?: {
+      /** DividebyNode: 대상 요소번호 / 분할기준 노드번호 */
+      ELEM_NUM: number;
+      /** DividebyNode: 대상 요소번호 / 분할기준 노드번호 */
+      NODE_NUM: number;
+    };
   }
+  /** Generated from contracts/endpoints/. */
   export interface DivideParallelOption {
-    NUM_OF_DIVISIONS?: number;
-    MAIN_POST_ELEM?: Array<number>;
+    /** ParallelBracing: 분할 수 / 기준 기둥(Post) 요소 목록 */
+    NUM_OF_DIVISIONS: number;
+    /** ParallelBracing: 분할 수 / 기준 기둥(Post) 요소 목록 */
+    MAIN_POST_ELEM: Array<number>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface DivideParametricOption {
-    RATIO_X?: string;
+    /** ParametricUnequal: X/Y/Z 방향 비율 문자열 (예: "3@0.3") */
+    RATIO_X: string;
+    /** ParametricUnequal: X/Y/Z 방향 비율 문자열 (예: "3@0.3") Required when DIVIDE.ELEM_TYPE is "Planar" or "Solid". */
     RATIO_Y?: string;
+    /** ParametricUnequal: X/Y/Z 방향 비율 문자열 (예: "3@0.3") Required when DIVIDE.ELEM_TYPE is "Wall" or "Solid". */
     RATIO_Z?: string;
   }
+  /** Generated from contracts/endpoints/. */
   export interface DivideSettings {
-    ELEM_TYPE?: string;
-    DIV_METHOD?: string;
-    OPTION?: DivideOption;
+    /** 요소 타입 · 선요소: "Frame" / 벽: "Wall" / 평면: "Planar" / 솔리드: "Solid" */
+    ELEM_TYPE: string;
+    /** 분할 방법 · 등분할: "Equal" / 비등분할: "Unequal" / 비율분할: "ParametricUnequal" / 평행브레이싱: "ParallelBracing" / 노드기준: "DividebyNode" */
+    DIV_METHOD: string;
+    /** 분할 옵션 (DIV_METHOD별 하위 객체 중 하나) */
+    OPTION: {
+      EQUAL_OPTION?: {
+        /** Equal: X/Y/Z 방향 분할수 (Frame=X만, Planar=X,Y, Wall=X,Z, Solid=X,Y,Z) */
+        NUM_X: number;
+        /** Equal: X/Y/Z 방향 분할수 (Frame=X만, Planar=X,Y, Wall=X,Z, Solid=X,Y,Z) Required when ELEM_TYPE is "Planar" or "Solid". */
+        NUM_Y?: number;
+        /** Equal: X/Y/Z 방향 분할수 (Frame=X만, Planar=X,Y, Wall=X,Z, Solid=X,Y,Z) Required when ELEM_TYPE is "Wall" or "Solid". */
+        NUM_Z?: number;
+      };
+      UNEQUAL_OPTION?: {
+        /** Unequal: X/Y/Z 방향 비등분할 거리 문자열 (예: "3@2.0") */
+        DIST_X: string;
+        /** Unequal: X/Y/Z 방향 비등분할 거리 문자열 (예: "3@2.0") Required when ELEM_TYPE is "Planar" or "Solid". */
+        DIST_Y?: string;
+        /** Unequal: X/Y/Z 방향 비등분할 거리 문자열 (예: "3@2.0") Required when ELEM_TYPE is "Wall" or "Solid". */
+        DIST_Z?: string;
+      };
+      PARAMETRIC_OPTION?: {
+        /** ParametricUnequal: X/Y/Z 방향 비율 문자열 (예: "3@0.3") */
+        RATIO_X: string;
+        /** ParametricUnequal: X/Y/Z 방향 비율 문자열 (예: "3@0.3") Required when ELEM_TYPE is "Planar" or "Solid". */
+        RATIO_Y?: string;
+        /** ParametricUnequal: X/Y/Z 방향 비율 문자열 (예: "3@0.3") Required when ELEM_TYPE is "Wall" or "Solid". */
+        RATIO_Z?: string;
+      };
+      PARALLEL_OPTION?: {
+        /** ParallelBracing: 분할 수 / 기준 기둥(Post) 요소 목록 */
+        NUM_OF_DIVISIONS: number;
+        /** ParallelBracing: 분할 수 / 기준 기둥(Post) 요소 목록 */
+        MAIN_POST_ELEM: Array<number>;
+      };
+      BY_NODE_OPTION?: {
+        /** DividebyNode: 대상 요소번호 / 분할기준 노드번호 */
+        ELEM_NUM: number;
+        /** DividebyNode: 대상 요소번호 / 분할기준 노드번호 */
+        NODE_NUM: number;
+      };
+    };
+    /** 선요소 재분할 여부 */
     SUBDIVIDE_ELEM?: boolean;
-    MERGE_DUPLICATE_NODES?: MergeDuplicateNodesOption;
+    /** 중복 노드 병합 */
+    MERGE_DUPLICATE_NODES?: {
+      /** 활성화 여부 */
+      OPT_CHECK?: boolean;
+      /** 병합 허용오차 */
+      TOLERANCE?: number;
+    };
   }
+  /** Generated from contracts/endpoints/. */
   export interface DivideStartNumber {
-    NODE_NUMBER?: NumberOption;
-    ELEM_NUMBER?: NumberOption;
+    NODE_NUMBER?: {
+      /** 노드 번호 옵션 · 최소 미사용: "Smallest" / 최대+1: "Largest" / 사용자지정: "User" */
+      NUMBER_OPTION?: string;
+      /** 사용자 지정 노드 번호 (NUMBER_OPTION="User"일 때) */
+      USER_NUM?: number;
+    };
+    ELEM_NUMBER?: {
+      /** 요소 번호 옵션 (노드와 동일 enum) */
+      NUMBER_OPTION?: string;
+      /** 사용자 지정 요소 번호 */
+      USER_NUM?: number;
+    };
   }
+  /** Generated from contracts/endpoints/. */
   export interface DivideUnequalOption {
-    DIST_X?: string;
+    /** Unequal: X/Y/Z 방향 비등분할 거리 문자열 (예: "3@2.0") */
+    DIST_X: string;
+    /** Unequal: X/Y/Z 방향 비등분할 거리 문자열 (예: "3@2.0") Required when DIVIDE.ELEM_TYPE is "Planar" or "Solid". */
     DIST_Y?: string;
+    /** Unequal: X/Y/Z 방향 비등분할 거리 문자열 (예: "3@2.0") Required when DIVIDE.ELEM_TYPE is "Wall" or "Solid". */
     DIST_Z?: string;
   }
   /** Generated from contracts/endpoints/. */
@@ -18895,17 +19106,123 @@ export namespace OpeTypes {
     /** 프리스트레스 손실 반영 여부 */
     PRESTRESS_LOSS?: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface LoadCombinationGeneralKdsArgument {
-    OPTION?: string;
-    CODE_SELECTION?: string;
-    DGNCODE?: string;
+    /** OPTION – 기존 조합에 추가할지 전체 대체할지 */
+    OPTION: "ADD" | "REPLACE";
+    /** Add envelope option for LCOM-GEN (세 바디 CONCRETE/STEEL/SRC 공통) */
     ADD_ENVELOPE?: boolean;
-    RS_SCALE_FACTOR?: Array<LoadCombScaleFactorItem>;
-    WIND_LOAD_COMB?: WindLoadComb;
-    ORTHO_EFFECT?: OrthoEffect;
-    ADDITIONAL_LOAD?: AdditionalLoad;
-    UNDERGROUND_LOAD?: UndergroundLoad;
+    /** 설계 카테고리 선택 – 바디 구조 분기 키 */
+    CODE_SELECTION: string;
+    /** 설계기준 코드 값. CODE_SELECTION="CONCRETE"일 때 const/기본값 "KDS 41 20 : 2022" */
+    DGNCODE?: string;
+    /** 응답스펙트럼 하중조합 목록 */
+    RS_SCALE_FACTOR?: Array<{
+      /** 하중 케이스명 (정적: NAME(ST), 응답스펙트럼: NAME(RS)) */
+      LOAD_CASE: string;
+      /** 축계수 */
+      FACTOR: number;
+    }>;
+    /** 풍하중 조합 세트. SRC 바디에서는 WIND_LOAD_COMB 자체가 필수, CONCRETE/STEEL 바디에서는 선택 */
+    WIND_LOAD_COMB?: {
+      /** 풍하중 조합 세트 목록 */
+      PARAMETERS?: Array<{
+        /** 풍하중 그룹 */
+        BUILDING_TYPE: "MIDDLE" | "HIGH";
+        /** 풍하중 방향별 케이스 */
+        WIND_LOAD_CASE: {
+          /** 순풍(Along) 방향 하중 케이스 */
+          ALONG?: string;
+          /** 횡풍(Across) 방향 하중 케이스 */
+          ACROSS?: string;
+          /** 비틀림(Torsion) 하중 케이스 */
+          TORSION?: string;
+        };
+        /** 거스트 계수(GD) */
+        GUST_FACTOR?: number;
+        /** Kappa 계수 */
+        KAPPA_FACTOR?: number;
+      }>;
+      /** 비틀림 풍하중 방향 */
+      TORSION_DIR?: "BOTH" | "POSITIVE" | "NEGATIVE";
+    };
+    /** 직교효과 고려 옵션 */
+    ORTHO_EFFECT?: {
+      /** 직교효과 고려 여부 */
+      OPT_USE: boolean;
+      /** 직교효과 방식 – ORTHO_EFFECT.OPT_USE가 true일 때 필수 */
+      TYPE?: "100_30" | "SRSS";
+      /** 직교 하중케이스 쌍 (Load Case1, Load Case2) – ORTHO_EFFECT.OPT_USE가 true일 때 필수 */
+      LOAD_GROUP?: [string, string];
+    };
+    /** 추가 하중 옵션 컨테이너 */
+    ADDITIONAL_LOAD?: {
+      /** 특별지진하중 옵션 */
+      SPECIAL_LOAD: {
+        /** 특별지진하중 사용 여부 */
+        OPT_USE: boolean;
+        /** 수직하중계수 – OPT_USE가 true일 때 필수 */
+        VERTICAL_LOAD_FACTOR?: number;
+        /** Sds – OPT_USE가 true일 때 필수 */
+        SDS?: number;
+        /** 초과강도계수 목록 – OPT_USE가 true일 때 필수 */
+        OVER_STRENGTH_FACTOR?: Array<{
+          /** 하중 케이스명 */
+          LOAD_CASE: string;
+          /** 축계수 */
+          FACTOR: number;
+        }>;
+      };
+      /** 수직지진력 옵션 */
+      VERTICAL_LOAD: {
+        /** 수직지진력 고려 여부 */
+        OPT_USE: boolean;
+        /** 수직력 계수 – OPT_USE가 true일 때 필수 */
+        FORCE_FACTOR?: number;
+      };
+    };
+    /** 지하구조물 하중 옵션. SRC 바디에서는 UNDERGROUND_LOAD 자체가 필수, CONCRETE/STEEL 바디에서는 ADDITIONAL_LOAD의 하위가 아닌 별도 최상위 옵션(선택) */
+    UNDERGROUND_LOAD?: {
+      /** 지하구조물 하중 사용 여부 */
+      OPT_USE?: boolean;
+      /** 지하구조물 하중 축계수 목록 – OPT_USE가 true일 때 필수 */
+      SCALE_FACTOR?: Array<{
+        /** 하중 케이스명 */
+        LOAD_CASE: string;
+        /** 축계수 */
+        FACTOR: number;
+      }>;
+      /** 지진 하중케이스 목록 – OPT_USE가 true일 때 필수 */
+      LOAD_CASE_LIST?: Array<{
+        /** 지진 하중케이스명 */
+        LOAD_CASE: string;
+        /** 지진 하중케이스 방향 */
+        DIRECTION: "POSITIVE" | "NEGATIVE";
+        /** 토압 하중케이스 – 지진 성분 */
+        LOAD_CASE_SEISMIC: Array<string>;
+        /** 토압 하중케이스 – 정적 성분 */
+        LOAD_CASE_STATIC: Array<string>;
+      }>;
+      /** 지하구조물 특별하중 사용 옵션 – UNDERGROUND_LOAD 내부, 최상위 SPECIAL_LOAD와 별개 */
+      SPECIAL_LOAD?: {
+        /** 지하구조물 특별하중 사용 여부 */
+        OPT_USE: boolean;
+        /** 수직하중계수 – OPT_USE가 true일 때 필수 */
+        VERTICAL_LOAD_FACTOR?: number;
+        /** Sds – OPT_USE가 true일 때 필수 */
+        SDS?: number;
+        /** 지하구조물 특별하중 초과강도계수 목록 – OPT_USE가 true일 때 필수 */
+        OVER_STRENGTH_FACTOR?: Array<{
+          /** 하중 케이스명 */
+          LOAD_CASE: string;
+          /** 축계수 */
+          FACTOR: number;
+        }>;
+      };
+    };
+    /** 시공단계 해석결과 반영 여부 (CONCRETE 바디에만 존재) */
     CS_ANALYSIS?: boolean;
+    /** 프리스트레스 손실 반영 여부 (CONCRETE 바디에만 존재) */
     PRESTRESS_LOSS?: boolean;
   }
   /** Generated from contracts/endpoints/. */
@@ -18915,7 +19232,116 @@ export namespace OpeTypes {
     /** 하중조합 이름 */
     NAME: string;
   }
-  export interface LoadCombinationSrcKdsArgument extends _LoadCombinationSteelSrcKdsArgument {
+  /** Generated from contracts/endpoints/. */
+  export interface LoadCombinationSrcKdsArgument {
+    /** OPTION – 기존 조합에 추가할지 전체 대체할지 */
+    OPTION: "ADD" | "REPLACE";
+    /** SRC 설계기준 코드 값 */
+    DGNCODE: "KDS 41 SRC : 2022";
+    /** 응답스펙트럼 하중조합 목록 */
+    RS_SCALE_FACTOR?: Array<{
+      /** 하중 케이스명 (정적: NAME(ST), 응답스펙트럼: NAME(RS)) */
+      LOAD_CASE: string;
+      /** 축계수 */
+      FACTOR: number;
+    }>;
+    /** 풍하중 조합 세트 */
+    WIND_LOAD_COMB?: {
+      /** 풍하중 조합 세트 목록 */
+      PARAMETERS?: Array<{
+        /** 풍하중 그룹 */
+        BUILDING_TYPE: "MIDDLE" | "HIGH";
+        /** 풍하중 방향(Wind Direction)별 케이스 */
+        WIND_LOAD_CASE: {
+          /** 순풍(Along) 방향 하중 케이스 */
+          ALONG?: string;
+          /** 횡풍(Across) 방향 하중 케이스 */
+          ACROSS?: string;
+          /** 비틀림(Torsion) 하중 케이스 */
+          TORSION?: string;
+        };
+        /** 거스트 계수 */
+        GUST_FACTOR?: number;
+        /** Kappa 계수 */
+        KAPPA_FACTOR?: number;
+      }>;
+      /** 비틀림 풍하중 방향 */
+      TORSION_DIR?: "BOTH" | "POSITIVE" | "NEGATIVE";
+    };
+    /** 직교효과 고려 옵션 */
+    ORTHO_EFFECT?: {
+      /** 직교효과 고려 여부 */
+      OPT_USE: boolean;
+      /** 직교효과 방식 – ORTHO_EFFECT.OPT_USE가 true일 때 필수 */
+      TYPE?: "100_30" | "SRSS";
+      /** 직교 하중케이스 쌍 (길이 2 고정) – ORTHO_EFFECT.OPT_USE가 true일 때 필수 */
+      LOAD_GROUP?: [string, string];
+    };
+    /** 추가 하중 옵션 컨테이너 */
+    ADDITIONAL_LOAD?: {
+      /** 특별지진하중 옵션 */
+      SPECIAL_LOAD?: {
+        /** 특별지진하중 사용 여부 */
+        OPT_USE: boolean;
+        /** 수직하중계수 – OPT_USE가 true일 때 필수 */
+        VERTICAL_LOAD_FACTOR?: number;
+        /** Sds – OPT_USE가 true일 때 필수 */
+        SDS?: number;
+        /** Over strength factor 목록 – OPT_USE가 true일 때 필수 */
+        OVER_STRENGTH_FACTOR?: Array<{
+          /** 하중 케이스명 */
+          LOAD_CASE: string;
+          /** 축계수 */
+          FACTOR: number;
+        }>;
+      };
+      /** 수직지진력 옵션 */
+      VERTICAL_LOAD?: {
+        /** 수직지진력 고려 여부 */
+        OPT_USE: boolean;
+        /** 수직력 계수 – OPT_USE가 true일 때 필수 */
+        FORCE_FACTOR?: number;
+      };
+    };
+    /** 지하구조물 하중 옵션 */
+    UNDERGROUND_LOAD?: {
+      /** 지하구조물 하중 사용 여부 */
+      OPT_USE?: boolean;
+      /** 지하구조물 하중 축계수 목록 – OPT_USE가 true일 때 필수 */
+      SCALE_FACTOR?: Array<{
+        /** 하중 케이스명 */
+        LOAD_CASE: string;
+        /** 축계수 */
+        FACTOR: number;
+      }>;
+      /** 지진 하중케이스 목록(Seismic Load Case List) – OPT_USE가 true일 때 필수 */
+      LOAD_CASE_LIST?: Array<{
+        /** 하중 케이스명 */
+        LOAD_CASE: string;
+        /** 지진 하중케이스 방향 */
+        DIRECTION: "POSITIVE" | "NEGATIVE";
+        /** 지진 성분 토압 하중케이스명 */
+        LOAD_CASE_SEISMIC: Array<string>;
+        /** 정적 성분 토압 하중케이스명 */
+        LOAD_CASE_STATIC: Array<string>;
+      }>;
+      /** 지하구조물 특별하중 사용 옵션 */
+      SPECIAL_LOAD?: {
+        /** 지하구조물 특별하중 사용 여부 */
+        OPT_USE: boolean;
+        /** 수직하중계수 – OPT_USE가 true일 때 필수 */
+        VERTICAL_LOAD_FACTOR?: number;
+        /** Sds – OPT_USE가 true일 때 필수 */
+        SDS?: number;
+        /** 지하구조물 특별하중 초과강도계수 목록 – OPT_USE가 true일 때 필수 */
+        OVER_STRENGTH_FACTOR?: Array<{
+          /** 하중 케이스명 */
+          LOAD_CASE: string;
+          /** 축계수 */
+          FACTOR: number;
+        }>;
+      };
+    };
   }
   /** Generated from contracts/endpoints/. */
   export interface LoadCombinationSteelArgument {
@@ -19039,12 +19465,18 @@ export namespace OpeTypes {
     /** 단일요소 부재 허용 여부 */
     ALLOW_SINGLE: boolean;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MergeDuplicateNodesOption {
+    /** 활성화 여부 */
     OPT_CHECK?: boolean;
+    /** 병합 허용오차 */
     TOLERANCE?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface NumberOption {
+    /** 노드 번호 옵션 · 최소 미사용: "Smallest" / 최대+1: "Largest" / 사용자지정: "User" */
     NUMBER_OPTION?: string;
+    /** 사용자 지정 노드 번호 (NUMBER_OPTION="User"일 때) */
     USER_NUM?: number;
   }
   /** Generated from contracts/endpoints/. */

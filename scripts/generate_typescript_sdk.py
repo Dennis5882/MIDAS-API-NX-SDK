@@ -1993,9 +1993,22 @@ def _bind_payload_types(
 
 
 _STRUCTURAL_KEYS = (
-    "key", "type", "requirement", "enum", "items", "minItems", "maxItems",
-    "appliesWhen", "products",
+    "key", "type", "requirement", "enum", "items", "appliesWhen", "products",
 )
+
+
+def _tuple_length(field: dict[str, Any]) -> int | None:
+    """The array bound a caller is held to: a length only when it is exact.
+
+    `_array_type` renders `minItems`/`maxItems` as a tuple when the two agree
+    and as a plain `Array<...>` otherwise, so an unequal bound is documentation
+    like a description is. /DESIGN/SRC/AIK-SRC2K's CC-TABLE gives SECTIONS
+    `minItems: 1` and BC-TABLE does not; both publish `Array<number>`, and
+    comparing the raw bound kept SrcMemberCheckTableArgument on Python until
+    2026-09-22 over a difference no caller could see.
+    """
+    minimum = field.get("minItems")
+    return minimum if isinstance(minimum, int) and minimum == field.get("maxItems") else None
 
 
 def _structure(fields: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -2010,6 +2023,7 @@ def _structure(fields: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return sorted(
         (
             {key: field.get(key) for key in _STRUCTURAL_KEYS}
+            | {"tupleLength": _tuple_length(field)}
             | {"properties": _structure(field.get("properties") or [])}
             for field in fields
         ),
@@ -2256,20 +2270,41 @@ def _contract_nested_types() -> dict[tuple[str, str], dict[str, Any]]:
 #:   refuse calls the product accepts. Fixing one takes a permitted source for
 #:   the real condition, not a guess.
 _ARGUMENT_TYPES_LEFT_ON_PYTHON: dict[str, tuple[str, str]] = {
-    "SrcMemberCheckTableArgument": (
-        "divergent",
-        "the manual itself differs: /DESIGN/SRC/AIK-SRC2K/CC-TABLE's JSON Schema "
-        "gives SECTIONS minItems 1 and BC-TABLE's does not, and each contract "
-        "transcribes its own section",
-    ),
-    "DivideElementsArgument": (
-        "requiredness",
-        "/ope/DIVIDEELEM marks DIST_X/Y/Z and RATIO_X/Y/Z Required with no "
-        "condition, while the Equal row beside them states which axes each "
-        "element type uses (Frame=X only). The same rule surely applies, but no "
-        "row says so, and as written a Frame division would have to send Y and Z",
-    ),
 }
+
+
+def _argument_part(
+    fields: list[dict[str, Any]], when: dict[str, Any] | None,
+) -> list[dict[str, Any]]:
+    """One part of a union argument: the fields its discriminator value admits.
+
+    `/ope/LCOM-SRC` takes a KDS 41 SRC:2022 body and an AIK-SRC2K one on the
+    same route, told apart by `DGNCODE`. The contract states which fields apply
+    to which value with `appliesWhen`; a field whose condition on that path
+    excludes the value is not part of this part, a satisfied condition is
+    dropped, and the discriminator itself narrows to the one value.
+    """
+    if not when:
+        return fields
+    path, value = when["path"], when["equals"]
+    part: list[dict[str, Any]] = []
+    for field in fields:
+        conditions = field.get("appliesWhen") or []
+        own = [c for c in conditions if c.get("path") == path]
+        if any(
+            value not in (c["in"] if "in" in c else [c.get("equals")]) for c in own
+        ):
+            continue
+        field = dict(field)
+        rest = [c for c in conditions if c.get("path") != path]
+        if rest:
+            field["appliesWhen"] = rest
+        else:
+            field.pop("appliesWhen", None)
+        if field["key"] == path:
+            field["enum"] = [value]
+        part.append(field)
+    return part
 
 
 def _contract_argument_types() -> dict[tuple[str, str], dict[str, Any]]:
@@ -2284,8 +2319,9 @@ def _contract_argument_types() -> dict[tuple[str, str], dict[str, Any]]:
     removed, because the npm operation adds that wrapper itself.
 
     Left on Python, on purpose: a contract declaring `unmergedTables`, for the
-    reason payloads skip them, and an operation whose argument is a **union**
-    of two names, where nothing says which part of the field list is which.
+    reason payloads skip them, and any part of a **union** argument that the
+    operation's `argumentParts` does not name - the list says which value of
+    the discriminator each part is, and a part nobody named is not guessed.
     A name several contracts share (the RC check trio) must come out the same
     from each, prose aside, or generation fails.
     """
@@ -2305,26 +2341,38 @@ def _contract_argument_types() -> dict[tuple[str, str], dict[str, Any]]:
             continue
         for operation in contract.get("operations") or []:
             surface = operation.get("surface") or {}
-            name = surface.get("argumentTypeName")
-            if not isinstance(name, str):
-                continue
-            if _ARGUMENT_TYPES_LEFT_ON_PYTHON.get(name, ("",))[0] == "requiredness":
-                continue
+            declared = surface.get("argumentTypeName")
             fields, variants = _strip_assign_envelope(contract, "Argument")
-            pseudo = {"fields": fields, "variants": variants}
-            namespace = _path_namespace(surface["modulePath"])
-            key = (namespace, name)
-            if key in found:
-                if _nested_fingerprint(found[key]) != _nested_fingerprint(pseudo):
-                    if name not in _ARGUMENT_TYPES_LEFT_ON_PYTHON:
-                        raise ValueError(
-                            f"{namespace}.{name} is the argument of {origin[key]} and "
-                            f"{path.name}, whose contracts give it different shapes"
-                        )
-                    diverged.add(name)
+            if declared is None:
+                parts = []
+            elif isinstance(declared, str):
+                parts = [(declared, fields)]
+            else:
+                # A union: only the parts `argumentParts` names come from here.
+                parts = [
+                    (part["name"], _argument_part(fields, part.get("when")))
+                    for part in surface.get("argumentParts") or []
+                    if part["name"] in (declared or [])
+                ]
+            if not parts:
                 continue
-            found[key] = pseudo
-            origin[key] = path.name
+            namespace = _path_namespace(surface["modulePath"])
+            for name, part_fields in parts:
+                if _ARGUMENT_TYPES_LEFT_ON_PYTHON.get(name, ("",))[0] == "requiredness":
+                    continue
+                pseudo = {"fields": part_fields, "variants": variants}
+                key = (namespace, name)
+                if key in found:
+                    if _nested_fingerprint(found[key]) != _nested_fingerprint(pseudo):
+                        if name not in _ARGUMENT_TYPES_LEFT_ON_PYTHON:
+                            raise ValueError(
+                                f"{namespace}.{name} is the argument of {origin[key]} and "
+                                f"{path.name}, whose contracts give it different shapes"
+                            )
+                        diverged.add(name)
+                    continue
+                found[key] = pseudo
+                origin[key] = path.name
     stale = sorted(
         name
         for name, (kind, _) in _ARGUMENT_TYPES_LEFT_ON_PYTHON.items()
