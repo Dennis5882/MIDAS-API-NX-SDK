@@ -4567,6 +4567,24 @@ def test_a_declared_structural_destination_is_not_drift():
     assert not _under_structural_destination("LANE_ITEMS.ELEM", destinations, manual)
 
 
+def test_a_structural_destination_accepts_names_from_the_sections_other_tables():
+    """/db/MVLDpl states DEFAULT's members in LOAD_MODEL groups the draft does
+    not merge, so the names are the section's without being `manual_fields`.
+
+    The exemption widens to those names and no further: a member no table in
+    the section names is still reported.
+    """
+    from extract_contracts import _under_structural_destination
+
+    destinations = {"DEFAULT"}
+    names = frozenset({"DEFAULT", "COMB_OPTION", "SUB_LOAD_DATAS", "LANE_NAMES"})
+    assert not _under_structural_destination("DEFAULT.COMB_OPTION", destinations, {})
+    assert _under_structural_destination("DEFAULT.COMB_OPTION", destinations, {}, names)
+    assert _under_structural_destination("DEFAULT.SUB_LOAD_DATAS.LANE_NAMES", destinations, {}, names)
+    assert not _under_structural_destination("DEFAULT.INVENTED", destinations, {}, names)
+    assert not _under_structural_destination("AUTO_OPTIMIZE.COMB_OPTION", destinations, {}, names)
+
+
 def test_a_branch_that_redeclares_its_destination_accounts_for_the_rows():
     """/db/MCON: two `TYPE=... 일 때 SLAVES[]` tables, kept as variants.
 

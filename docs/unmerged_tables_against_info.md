@@ -36,13 +36,12 @@ not the same finding as a source that is absent.
 | [`/db/SPFC`](#dbspfc) | 11 | 74 | 74 | 100% |
 | [`/view/RESULTGRAPHIC`](#viewresultgraphic) | 10 | 63 | -- | n/a |
 | [`/db/THIS`](#dbthis) | 10 | 41 | 41 | 100% |
-| [`/db/MVLDpl`](#dbmvldpl) | 4 | 27 | 27 | 100% |
 | [`/db/MVLD`](#dbmvld) | 4 | 21 | 21 | 100% |
 | [`/db/TDME`](#dbtdme) | 2 | 7 | 7 | 100% |
 | [`/ope/LCOM-SRC`](#opelcomsrc) | 1 | 5 | -- | n/a |
-| **total** | **50** | **353** | **285** | **80%** |
+| **total** | **46** | **326** | **258** | **79%** |
 
-Of the **285** names on endpoints `/info` answers for, **285** are declared (100%) and **0** are not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
+Of the **258** names on endpoints `/info` answers for, **258** are declared (100%) and **0** are not. The remaining **68** names sit on 11 tables of two endpoints `/info` does not serve at all.
 
 ### What each table has, as a count
 
@@ -50,9 +49,9 @@ Of the **285** names on endpoints `/info` answers for, **285** are declared (100
 | --- | ---: |
 | whole table, one object | 19 |
 | whole table, several objects | 1 |
-| whole table, scattered | 19 |
+| whole table, scattered | 15 |
 | out of reach | 11 |
-| **all** | **50** |
+| **all** | **46** |
 
 *one object* means `/info` has a single object holding every name in that table; *scattered* means it declares them all but under no common parent, so the table's shape is not something the baseline confirms. Neither is a recommendation -- a table with two sources still needs its manual section read before anything moves.
 
@@ -165,22 +164,6 @@ Baseline answers on `civil`, `gen`. 41 of 41 names declared across 10 tables.
 - **6-7. Nonlinear + Static** declared: `bCUMULATE` at `bCUMULATE`, `bITER` at `bITER`, `iINCCTRL` at `iINCCTRL`
 - **증분 방법(iINCCTRL) 세부 파라미터** declared: `bCONV` at `bCONV`, `iMSTEP` at `iMSTEP`, `bEN` at `bEN`, `EN` at `EN`
 - **6-8. 반복 제어 파라미터 (Nonlinear 공통)** declared: `iMAXITER` at `iMAXITER`, `bDN` at `bDN`, `DN` at `DN`, `bFN` at `bFN`, `FN` at `FN`, `bULSM` at `bULSM`, `ULSM` at `ULSM`, `iRKM` at `iRKM`, `dTOL` at `dTOL`
-
-## `/db/MVLDpl`
-
-Baseline answers on `civil`, `gen`. 27 of 27 names declared across 4 tables.
-
-| table | names | declared | not declared | nesting |
-| --- | ---: | ---: | ---: | --- |
-| Vehicle S/2S/Permit(LOAD_MODEL=1) | 8 | 8 | 0 | scattered; `DEFAULT.SUB_LOAD_DATAS` covers 5 of 8 |
-| Vehicle K/Military(LOAD_MODEL=2/3) | 4 | 4 | 0 | scattered; `DEFAULT` covers 2 of 4 |
-| Vehicle S/2S(LOAD_MODEL=1) | 10 | 10 | 0 | scattered; `AUTO_OPTIMIZE` covers 6 of 10 |
-| Vehicle K/Military(LOAD_MODEL=2/3) | 5 | 5 | 0 | scattered; `AUTO_OPTIMIZE` covers 4 of 5 |
-
-- **Vehicle S/2S/Permit(LOAD_MODEL=1)** declared: `DEFAULT` at `DEFAULT`, `COMB_OPTION` at `AUTO_OPTIMIZE.COMB_OPTION`, `SUB_LOAD_DATAS` at `DEFAULT.SUB_LOAD_DATAS`, `VEHICLE_NAME` at `DEFAULT.SUB_LOAD_DATAS.VEHICLE_NAME`, `SCALE_FACTOR` at `DEFAULT.SUB_LOAD_DATAS.SCALE_FACTOR`, `MIN_LOADED_LANE` at `DEFAULT.SUB_LOAD_DATAS.MIN_LOADED_LANE`, `MAX_LOADED_LANE` at `DEFAULT.SUB_LOAD_DATAS.MAX_LOADED_LANE`, `LANE_NAMES` at `DEFAULT.SUB_LOAD_DATAS.LANE_NAMES`
-- **Vehicle K/Military(LOAD_MODEL=2/3)** declared: `DEFAULT` at `DEFAULT`, `VEHICLE_LOAD_NAME` at `DEFAULT.VEHICLE_LOAD_NAME`, `SUB_LOAD_DATAS` at `DEFAULT.SUB_LOAD_DATAS`, `LANE_NAMES` at `DEFAULT.SUB_LOAD_DATAS.LANE_NAMES`
-- **Vehicle S/2S(LOAD_MODEL=1)** declared: `AUTO_OPTIMIZE` at `AUTO_OPTIMIZE`, `MIN_VEHL_DIST` at `AUTO_OPTIMIZE.MIN_VEHL_DIST`, `LANE_NAME` at `AUTO_OPTIMIZE.LANE_NAME`, `MIN_NUM_VEHICLE` at `AUTO_OPTIMIZE.MIN_NUM_VEHICLE`, `MAX_NUM_VEHICLE` at `AUTO_OPTIMIZE.MAX_NUM_VEHICLE`, `COMB_OPTION` at `AUTO_OPTIMIZE.COMB_OPTION`, `OPTIMIZE_ITEMS` at `AUTO_OPTIMIZE.OPTIMIZE_ITEMS`, `VEHICLE_TYPE` at `AUTO_OPTIMIZE.OPTIMIZE_ITEMS.VEHICLE_TYPE`, `VEHICLE_NAME` at `AUTO_OPTIMIZE.OPTIMIZE_ITEMS.VEHICLE_NAME`, `SCALE_FACTOR` at `AUTO_OPTIMIZE.OPTIMIZE_ITEMS.SCALE_FACTOR`
-- **Vehicle K/Military(LOAD_MODEL=2/3)** declared: `AUTO_OPTIMIZE` at `AUTO_OPTIMIZE`, `VEHICLE_LOAD_NAME` at `AUTO_OPTIMIZE.VEHICLE_LOAD_NAME`, `MIN_VEHL_DIST` at `AUTO_OPTIMIZE.MIN_VEHL_DIST`, `LANE_NAME` at `AUTO_OPTIMIZE.LANE_NAME`, `NUM_LOADED_LANES` at `AUTO_OPTIMIZE.NUM_LOADED_LANES`
 
 ## `/db/MVLD`
 

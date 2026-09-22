@@ -7,11 +7,24 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 ## Unreleased
 
 > **Breaking at the type level; nothing changes at runtime.** No export is
-> added, removed or renamed. 19 members of `/post` request types and 116 of
-> other named types narrow, 99 of them to required, and `/db/MCON`'s
+> added, removed or renamed. 19 members of `/post` request types and 135 of
+> other named types narrow, 116 of them to required, and `/db/MCON`'s
 > `LinearConstraintItem` is corrected to the shape the manual gives it, which
 > removes four members it should never have had. `/db/TDME` loses four
 > members that only a code this API refuses could use.
+
+### Changed - `/db/MVLDpl` is generated from its contract
+
+`MovingLoadCasePolandPayload` and its five object types came from Python,
+all optional. The payload is now a union on the section's two switches -
+`AUTO_OPTIMIZE` required with `bAUTO_OPTIMIZE: true`, `PERMIT_LOAD` with
+`bPERMIT_LOAD: true` - and `DEFAULT` applies when both are off, which is
+how the section's own Optimization example leaves it out. 17 members become
+required across 6 types (`LCNAME`, `LOAD_MODEL`, the rows both `LOAD_MODEL`
+groups share, and each `OPTIMIZE_ITEMS` and `PERMIT_LOAD` row); rows only
+one group states are required only for that `LOAD_MODEL`, in JSDoc. Both
+`COMB_OPTION`s narrow to `"COMBINED" | "INDEPENDENT"` and `VEHICLE_TYPE` to
+`"VL" | "VC"`.
 
 ### Changed - `/db/ELEM` is a union over `TYPE` and `STYPE`
 

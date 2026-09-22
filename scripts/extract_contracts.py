@@ -5730,7 +5730,10 @@ def _branch_destination_fields(contract: dict) -> dict[str, dict]:
 
 
 def _under_structural_destination(
-    key: str, destinations: set[str], manual_fields: dict[str, dict]
+    key: str,
+    destinations: set[str],
+    manual_fields: dict[str, dict],
+    section_names: frozenset[str] = frozenset(),
 ) -> bool:
     """Whether a contract path is a declared structural destination or inside one.
 
@@ -5746,12 +5749,19 @@ def _under_structural_destination(
     heading does. Everything under it is exempt only if its own leaf name is a
     field the manual's tables state, so a member the manual never mentions is
     still reported.
+
+    "The manual's tables" means every table in the section, not only the ones
+    the draft merged: `/db/MVLDpl` states DEFAULT's and AUTO_OPTIMIZE's members
+    in bold-row groups keyed by LOAD_MODEL, which stay separate tables to the
+    parser, so their names are in `section_names` and nowhere in
+    `manual_fields`.
     """
     if key in destinations:
         return True
     for destination in destinations:
         if key.startswith(f"{destination}."):
-            return key[len(destination) + 1:] in manual_fields
+            remainder = key[len(destination) + 1:]
+            return remainder in manual_fields or remainder.rsplit(".", 1)[-1] in section_names
     return False
 
 
@@ -5857,6 +5867,9 @@ def run_check(sections: list[Section]) -> int:
             for path in entry.get("paths", [])
         }
         branch_fields = _branch_destination_fields(contract)
+        section_names = frozenset(
+            field.key for table in section.tables for field in _walk(table.fields)
+        )
 
         # The section heading, which carries its number. Inserting one endpoint
         # renumbers every section below it - /db/STYP-M1 landing at 02's #4 on
@@ -6009,7 +6022,7 @@ def run_check(sections: list[Section]) -> int:
         for key in contract_fields:
             if key in prose_fields:
                 continue
-            if _under_structural_destination(key, structural_paths, manual_fields):
+            if _under_structural_destination(key, structural_paths, manual_fields, section_names):
                 continue
             if key not in manual_fields and "field_name" not in overridden:
                 problems.append(
@@ -6177,6 +6190,8 @@ def run_check(sections: list[Section]) -> int:
                     else set(variant_manual)
                 )
                 for key in variant_contract:
+                    if _under_structural_destination(key, structural_paths, {}, section_names):
+                        continue
                     if key not in variant_manual and key not in documented_names:
                         problems.append(
                             f"{path.name}: variant {label} declares {key!r}, which its manual table does not"

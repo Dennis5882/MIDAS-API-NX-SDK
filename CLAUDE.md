@@ -103,7 +103,7 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   and operation readers already parse, and `tests/test_generate_typescript_sdk.py` fails if an
   import comes back. A missing or broken Python install no longer stops `npm publish`. The
   **source tree** is still load-bearing — deleting `src/midas_nx/` breaks `npm run generate`,
-  though a built `dist/` keeps working — because 76 of 765 generated npm types still come from
+  though a built `dist/` keeps working — because 70 of 765 generated npm types still come from
   Python TypedDicts. **Since 2026-09-22 that is the only reason**: which types exist and in which
   namespace is decided by the contracts for every type they own (payload roots by
   `surface.payloadTypeName` + `modulePath`, nested and argument types by their recorded
@@ -161,7 +161,7 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   `COMB_LIST[].LCNAME` and `/db/STAG`'s `DACT_ELEM[].GRUP_NAME` among them, both of which `/info`
   declares on both products. What remains Python-sourced is broken down in the
   script's docstring; most of it sits under no contract-generated root at all — operation
-  arguments and the 5 `unmergedTables` roots' children.
+  arguments and the 4 `unmergedTables` roots' children.
 - `scripts/contract_from_info.py` — the one path into a contract that does not start at the
   manual. Seven Hyper-S `-M1` sections state a URL, their methods and nothing else, so live
   `/info` is their only permitted source; this fills a draft's `fields` from

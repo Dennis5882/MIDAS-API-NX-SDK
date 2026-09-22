@@ -7125,48 +7125,165 @@ export namespace DbMovingLoadsTypes {
     REF_LANE?: string;
     SCALE_FACTOR?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadCasePolandAutoOptimize {
-    MIN_VEHL_DIST?: number;
-    LANE_NAME?: string;
-    MIN_NUM_VEHICLE?: number;
-    MAX_NUM_VEHICLE?: number;
-    COMB_OPTION?: string;
-    OPTIMIZE_ITEMS?: Array<MovingLoadCasePolandOptimizeItem>;
+    /** Vehicle Name Required when LOAD_MODEL is 2 or 3. */
     VEHICLE_LOAD_NAME?: string;
+    /** Min. Vehicle Distance */
+    MIN_VEHL_DIST: number;
+    /** Loaded Lane */
+    LANE_NAME: string;
+    /** Min. Number of Vehicle Required when LOAD_MODEL = 1. */
+    MIN_NUM_VEHICLE?: number;
+    /** Max. Number of Vehicle Required when LOAD_MODEL = 1. */
+    MAX_NUM_VEHICLE?: number;
+    /** Loading Effect(`"COMBINED"`/`"INDEPENDENT"`) Required when LOAD_MODEL = 1. */
+    COMB_OPTION?: "COMBINED" | "INDEPENDENT";
+    /** Sub-Load Cases Required when LOAD_MODEL = 1. */
+    OPTIMIZE_ITEMS?: Array<{
+      /** Vehicle Type(`"VL"`/`"VC"`) */
+      VEHICLE_TYPE: "VL" | "VC";
+      /** Vehicle Name */
+      VEHICLE_NAME: string;
+      /** Scale Factor */
+      SCALE_FACTOR: number;
+    }>;
+    /** Number of Loaded Lanes Required when LOAD_MODEL is 2 or 3. */
     NUM_LOADED_LANES?: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadCasePolandDefault {
-    COMB_OPTION?: string;
-    SUB_LOAD_DATAS?: Array<MovingLoadCasePolandSubLoadDataItem>;
+    /** Loading Effect(`"COMBINED"`/`"INDEPENDENT"`) Required when LOAD_MODEL = 1. */
+    COMB_OPTION?: "COMBINED" | "INDEPENDENT";
+    /** Vehicle Name Required when LOAD_MODEL is 2 or 3. */
     VEHICLE_LOAD_NAME?: string;
+    /** Sub-Load Data */
+    SUB_LOAD_DATAS: Array<{
+      /** Vehicle Name Required when LOAD_MODEL = 1. */
+      VEHICLE_NAME?: string;
+      /** Scale Factor Required when LOAD_MODEL = 1. */
+      SCALE_FACTOR?: number;
+      /** Min. Number of Loaded Lane Required when LOAD_MODEL = 1. */
+      MIN_LOADED_LANE?: number;
+      /** Max. Number of Loaded Lane Required when LOAD_MODEL = 1. */
+      MAX_LOADED_LANE?: number;
+      /** Selected Lanes */
+      LANE_NAMES: Array<string>;
+    }>;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadCasePolandOptimizeItem {
-    VEHICLE_TYPE?: string;
-    VEHICLE_NAME?: string;
-    SCALE_FACTOR?: number;
+    /** Vehicle Type(`"VL"`/`"VC"`) */
+    VEHICLE_TYPE: "VL" | "VC";
+    /** Vehicle Name */
+    VEHICLE_NAME: string;
+    /** Scale Factor */
+    SCALE_FACTOR: number;
   }
-  export interface MovingLoadCasePolandPayload {
-    LCNAME?: string;
+  /** Generated from contracts/endpoints/. */
+  export type MovingLoadCasePolandPayload = {
+    /** Load Case Name */
+    LCNAME: string;
+    /** Description */
     DESC?: string;
-    LOAD_MODEL?: number;
+    /** Moving Load Optimization */
     bAUTO_OPTIMIZE?: boolean;
+    /** Load Case for Permit Vehicle */
     bPERMIT_LOAD?: boolean;
-    DEFAULT?: MovingLoadCasePolandDefault;
-    AUTO_OPTIMIZE?: MovingLoadCasePolandAutoOptimize;
-    PERMIT_LOAD?: MovingLoadCasePolandPermitLoad;
-  }
+    /** Load Model (1=Vehicle S/2S/Permit, 2=Vehicle K, 3=Military) */
+    LOAD_MODEL: number;
+    /** Sub-Load Cases Required when bAUTO_OPTIMIZE = false and bPERMIT_LOAD = false. */
+    DEFAULT?: {
+      /** Loading Effect(`"COMBINED"`/`"INDEPENDENT"`) Required when LOAD_MODEL = 1. */
+      COMB_OPTION?: "COMBINED" | "INDEPENDENT";
+      /** Vehicle Name Required when LOAD_MODEL is 2 or 3. */
+      VEHICLE_LOAD_NAME?: string;
+      /** Sub-Load Data */
+      SUB_LOAD_DATAS: Array<{
+        /** Vehicle Name Required when LOAD_MODEL = 1. */
+        VEHICLE_NAME?: string;
+        /** Scale Factor Required when LOAD_MODEL = 1. */
+        SCALE_FACTOR?: number;
+        /** Min. Number of Loaded Lane Required when LOAD_MODEL = 1. */
+        MIN_LOADED_LANE?: number;
+        /** Max. Number of Loaded Lane Required when LOAD_MODEL = 1. */
+        MAX_LOADED_LANE?: number;
+        /** Selected Lanes */
+        LANE_NAMES: Array<string>;
+      }>;
+    };
+  } & (
+    {
+      bAUTO_OPTIMIZE: true;
+      /** Sub-Load Cases */
+      AUTO_OPTIMIZE: {
+        /** Vehicle Name Required when LOAD_MODEL is 2 or 3. */
+        VEHICLE_LOAD_NAME?: string;
+        /** Min. Vehicle Distance */
+        MIN_VEHL_DIST: number;
+        /** Loaded Lane */
+        LANE_NAME: string;
+        /** Min. Number of Vehicle Required when LOAD_MODEL = 1. */
+        MIN_NUM_VEHICLE?: number;
+        /** Max. Number of Vehicle Required when LOAD_MODEL = 1. */
+        MAX_NUM_VEHICLE?: number;
+        /** Loading Effect(`"COMBINED"`/`"INDEPENDENT"`) Required when LOAD_MODEL = 1. */
+        COMB_OPTION?: "COMBINED" | "INDEPENDENT";
+        /** Sub-Load Cases Required when LOAD_MODEL = 1. */
+        OPTIMIZE_ITEMS?: Array<{
+          /** Vehicle Type(`"VL"`/`"VC"`) */
+          VEHICLE_TYPE: "VL" | "VC";
+          /** Vehicle Name */
+          VEHICLE_NAME: string;
+          /** Scale Factor */
+          SCALE_FACTOR: number;
+        }>;
+        /** Number of Loaded Lanes Required when LOAD_MODEL is 2 or 3. */
+        NUM_LOADED_LANES?: number;
+      };
+    } |
+    {
+      bPERMIT_LOAD: true;
+      /** Permit Vehicle */
+      PERMIT_LOAD: {
+        /** Vehicle Name */
+        VEHICLE_LOAD_NAME: string;
+        /** Reference Lane */
+        REF_LANE: string;
+        /** Eccentricity */
+        ECC: number;
+        /** Scale Factor */
+        SCALE_FACTOR: number;
+      };
+    } |
+    {
+      AUTO_OPTIMIZE?: never;
+      PERMIT_LOAD?: never;
+    }
+  );
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadCasePolandPermitLoad {
-    VEHICLE_LOAD_NAME?: string;
-    REF_LANE?: string;
-    ECC?: number;
-    SCALE_FACTOR?: number;
+    /** Vehicle Name */
+    VEHICLE_LOAD_NAME: string;
+    /** Reference Lane */
+    REF_LANE: string;
+    /** Eccentricity */
+    ECC: number;
+    /** Scale Factor */
+    SCALE_FACTOR: number;
   }
+  /** Generated from contracts/endpoints/. */
   export interface MovingLoadCasePolandSubLoadDataItem {
+    /** Vehicle Name Required when LOAD_MODEL = 1. */
     VEHICLE_NAME?: string;
+    /** Scale Factor Required when LOAD_MODEL = 1. */
     SCALE_FACTOR?: number;
+    /** Min. Number of Loaded Lane Required when LOAD_MODEL = 1. */
     MIN_LOADED_LANE?: number;
+    /** Max. Number of Loaded Lane Required when LOAD_MODEL = 1. */
     MAX_LOADED_LANE?: number;
-    LANE_NAMES?: Array<string>;
+    /** Selected Lanes */
+    LANE_NAMES: Array<string>;
   }
   export interface MovingLoadCaseSubLoadDataItem {
     VEHICLE_TYPE?: string;
