@@ -7,10 +7,13 @@ by the contracts for the types they own, and deleting a TypedDict a contract has
 taken over changes nothing in `types.ts`. What is left is the types counted
 here, which reached zero on 2026-09-22. Deleting `src/midas_nx/` still breaks
 generation even so, because the IEHG trio's resource identity is read from the
-same tree and has no permitted source to move to; a built `dist/` and
-`npm publish` are unaffected. Until this script, the only measurement of it
-was a hand count in CLAUDE.md -- the same kind of number `check_state_numbers.py` exists to stop
-trusting.
+same tree and has no permitted source to move to. `npm publish` is not
+unaffected either, whatever this docstring said before 2026-09-23: it runs
+`prepack`, which re-runs this generator through Python. An already-built
+`dist/` still runs; publishing rebuilds it.
+
+Until this script, the only measurement of it was a hand count in CLAUDE.md
+-- the same kind of number `check_state_numbers.py` exists to stop trusting.
 
 This counts it from the generated file. `_render_types` marks every interface
 it builds from a contract with a one-line JSDoc, so the split is readable

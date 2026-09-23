@@ -892,9 +892,13 @@ wrong conclusion:
   installs TypeScript output and nothing else. The only trace of Python left in
   the generated sources is one Sphinx-style `:func:` cross-reference in a
   `tables.ts` JSDoc comment.
-- **It does gate one workflow.** Deleting `src/midas_nx/` breaks
-  `npm run generate`. A built `dist/` and `npm publish` keep working, so a
-  missing or broken Python install cannot stop a release.
+- **It does gate publishing.** Deleting `src/midas_nx/` breaks
+  `npm run generate` - measured 2026-09-23, it fails at `DbResource itself` -
+  and `npm pack` and `npm publish` with it, because npm runs `prepack` for
+  both and `prepack` re-runs the generator. `publish-npm.yml` sets up Python
+  3.13 and installs the dev extra for PyYAML for exactly that reason. What
+  2026-09-17 removed is the need for an importable `midas_nx`, not for
+  Python. An already-built `dist/` still runs; publishing rebuilds it.
 
 Inverting the last three would mean inventing a shape for an endpoint no
 permitted source describes, which `contracts/README.md` forbids. The honest end

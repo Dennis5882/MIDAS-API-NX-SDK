@@ -250,7 +250,9 @@ trio's resource identity - three endpoints with no permitted source, so there
 is nothing to invert them to. That is why `npm run generate` still needs the
 source tree present even though it needs no importable install (since
 2026-09-17 the class facts are read from source, not imported), and why
-deleting `src/midas_nx/` breaks generation while a built `dist/` keeps working.
+deleting `src/midas_nx/` breaks generation - measured 2026-09-23, it fails at
+`DbResource itself` - and with it `npm pack` and `npm publish`, both of which
+run `prepack` and so re-run the generator. An already-built `dist/` still runs.
 None of it reaches the published npm package, which declares no dependencies
 and ships `dist/` alone.
 

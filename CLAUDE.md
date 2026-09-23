@@ -102,12 +102,17 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   `_resource_identity`). **Since 2026-09-17 it does not import `midas_nx`**: class facts are
   read from the source tree by `_static_resource_classes`, the same syntax trees the payload-type
   and operation readers already parse, and `tests/test_generate_typescript_sdk.py` fails if an
-  import comes back. A missing or broken Python install no longer stops `npm publish`.
+  import comes back. What that removed is the need for an **importable `midas_nx`**;
+  publishing still needs Python. `prepack` runs `npm run generate`, which shells out to
+  `python scripts/generate_typescript_sdk.py`, and npm runs `prepack` on `npm pack` and
+  `npm publish` alike - `publish-npm.yml` sets up Python 3.13 and `pip install -e ".[dev]"`
+  for PyYAML because of it. This bullet claimed the opposite until 2026-09-23.
   **None of this is a dependency of the published npm package**, which declares no
   dependencies and ships `dist/` alone: nothing an npm user installs reaches Python or
   PyPI, and what is read is this repo's own source files at generation time, never an
   installed distribution. The **source tree** is still load-bearing — deleting `src/midas_nx/` breaks `npm run generate`,
-  though a built `dist/` keeps working — because the IEHG trio still takes its resource identity
+  and with it `npm publish`; an already-built `dist/` still *runs*, but publishing rebuilds it
+  — because the IEHG trio still takes its resource identity
   from Python classes. Its types no longer do: 0 of 751 generated npm types come from Python
   TypedDicts since 2026-09-22, when the last 14 - exported names nothing in the generated SDK
   referenced - were withdrawn at the author's request (`_PYTHON_TYPES_WITHDRAWN`). **Since 2026-09-22 the types are decided by contracts alone**: which types exist and in which
