@@ -1,20 +1,39 @@
 # midas-nx
 
-A unified Python SDK for the **MIDAS NX Open API** — one package covering both
-**MIDAS Civil NX** and **MIDAS Gen NX**.
+Unified Python and JavaScript/TypeScript SDKs for the **MIDAS NX Open API** —
+one package name on each registry, both covering **MIDAS Civil NX** and
+**MIDAS Gen NX** from the same reviewed endpoint inventory.
 
-```bash
-pip install midas-nx
-```
+=== "Python"
 
-```python
-from midas_nx import MidasClient, Product
-from midas_nx.db.node_element import Node
+    ```bash
+    pip install midas-nx
+    ```
 
-client = MidasClient(mapi_key="YOUR-MAPI-KEY", product=Product.GEN)
-print(client.verify_connection())
-print(f"{len(Node.items(client=client))} node(s) in the current model.")
-```
+    ```python
+    from midas_nx import MidasClient, Product
+    from midas_nx.db.node_element import Node
+
+    client = MidasClient(mapi_key="YOUR-MAPI-KEY", product=Product.GEN)
+    print(client.verify_connection())
+    print(f"{len(Node.items(client=client))} node(s) in the current model.")
+    ```
+
+=== "JavaScript / TypeScript"
+
+    ```bash
+    npm install midas-nx
+    ```
+
+    ```js
+    import { MidasClient, resources } from "midas-nx";
+
+    const client = new MidasClient({ mapiKey: "YOUR-MAPI-KEY", product: "gen" });
+    console.log(await client.verifyConnection());
+
+    const nodes = await resources.db.nodeElement.node.items(client);
+    console.log(`${Object.keys(nodes).length} node(s) in the current model.`);
+    ```
 
 **Risk level: 1 — read-only** (see [Risk levels](safety.md#risk-levels)). It
 cannot create, change, or delete anything, so it's safe to run against a

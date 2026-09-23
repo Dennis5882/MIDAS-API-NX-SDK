@@ -1,7 +1,8 @@
 site_name: midas-nx
 site_description: >-
-  Unified Python SDK for the MIDAS NX Open API (Civil NX + Gen NX).
-  An employee-led open-source project, not an official MIDAS IT product.
+  Unified Python and JavaScript/TypeScript SDKs for the MIDAS NX Open API
+  (Civil NX + Gen NX). An employee-led open-source project, not an official
+  MIDAS IT product.
 site_url: https://dennis5882.github.io/MIDAS-API-NX-SDK/
 repo_url: https://github.com/Dennis5882/MIDAS-API-NX-SDK
 repo_name: Dennis5882/MIDAS-API-NX-SDK

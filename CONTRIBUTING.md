@@ -26,12 +26,12 @@ npm install
 Three checks must pass before any commit. CI runs exactly these:
 
 ```bash
-pytest                        # ~690 tests, no live server needed
+pytest                        # ~1160 tests, no live server needed
 ruff check src tests scripts
 mypy
 
 cd packages/typescript
-npm run generate              # derives npm resources/types from Python
+npm run generate              # derives npm resources/types from contracts/
 npm run typecheck
 npm test
 ```
@@ -39,8 +39,15 @@ npm test
 Generated TypeScript files and `schema/typescript-coverage.json` are committed.
 The generator fails if any row in `docs/coverage.json` is not represented in
 the npm SDK, and CI fails if generated output has drifted. When the official
-manual changes, update the reviewed Python model and coverage ledger first,
-then regenerate both language surfaces in the same change.
+manual changes, update `contracts/` first — it is the source of truth both
+SDKs implement — then the reviewed Python model and the coverage ledger, and
+regenerate both language surfaces in the same change.
+
+`npm run generate` reads the contracts for everything it can: since
+2026-09-22 no generated type's shape comes from a Python `TypedDict`. It
+still parses `src/midas_nx/` for three endpoints with no permitted source
+(the IEHG trio), which is why it needs the Python source tree present, and
+why `npm publish` does too — `prepack` runs generation before packing.
 
 The test suite mocks HTTP with `responses`. **Nothing in it touches a real
 MIDAS NX session**, and it must stay that way — tests have to run in CI, where

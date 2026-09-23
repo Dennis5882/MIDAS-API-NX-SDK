@@ -93,9 +93,11 @@ still holding the gate. An already-built `dist/` runs fine without any of this.
   TypedDict is the subject the check measures, never a source. `sdkOnly` waives
   a name the server does not take.
   A contract that declares part of its field list missing does **not** get
-  skipped — fifteen do as of 2026-09-15, down from twenty as those tables were
-  merged, and skipping them was worth another 214 unchecked names when the
-  waiver was written.
+  skipped. Fifteen did when that waiver was written (2026-09-15, down from
+  twenty, and worth another 214 unchecked names); **none does now** — the last
+  of those tables were merged on 2026-09-22, and the only `unmergedTables`
+  entries left are `/db/TDME`'s two, both marked `excluded`, which waive
+  nothing. The rule stays for the next contract that needs it.
   Each `extraction.unmergedTables` entry records `fieldNames`, so the waiver is
   per-name: a name that table accounts for is a declared gap, a name in neither
   the contract nor any of those lists is a defect. `fields` had always given the
@@ -282,6 +284,17 @@ still holding the gate. An already-built `dist/` runs fine without any of this.
   B-items in July, and `/TEMP/.../OCHECK` is closed by MIDASIT as not-a-defect, so re-raising it is the
   author's call. `docs/manual_defects_register.md` is the same idea for findings about the
   **documentation** rather than the product. All three collect; none of them acts.
+- `AGENTS.md` — the root-level entry point **for an AI agent helping someone *use* the
+  SDK**, as opposed to this file, which is for maintaining the repository. It says that
+  in its second line, because an agent arriving at the repo finds `CLAUDE.md` first and
+  following it is the wrong path for that job. It points at the language-matched context
+  pack, the four hazards most likely to bite, the existence checks that stop invented
+  names, and `examples/`.
+- `examples/python/` and `examples/javascript/` — four runnable scripts each, the same
+  four, twinned by name and payload so the two SDKs can be read side by side. Each states
+  its risk level in its first lines. They ship in neither package; the READMEs link them
+  on GitHub. A resource path written here is checked against the built package before it
+  goes in, not recalled.
 - `PLAN.md` — the hand-maintained big-picture roadmap (`ROADMAP.md` is the generated per-endpoint
   counterpart). It is **editable, and goes stale fast**: it spent v0.11.0–v0.11.2 listing shipped
   work as pending, because releases updated the code but not the plan. When a release changes what
