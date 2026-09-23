@@ -288,9 +288,12 @@ covered above.
 
 ### The unmerged tables
 
-`docs/unmerged_tables_against_info.md` splits 72 tables (482 names) across 15
-contracts. Every mechanically mergeable table is merged; what is left needs a
-judgement about which `/info` object is meant. It is not a queue to rescan.
+`docs/unmerged_tables_against_info.md` is down to `/db/TDME`'s two tables,
+which review marked `excluded` with evidence rather than merged: they are iGen
+code tables this API refuses. Every other table it used to list was merged
+between 2026-09-21 and 2026-09-22, several after a live measurement. The
+report and its CI check stay as drift detection for the next contract that
+declares one - not as a queue to rescan.
 
 ## Open decisions
 

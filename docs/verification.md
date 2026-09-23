@@ -13,7 +13,8 @@ SDK ends up confidently sending a request shape no server accepts.
 
 Current counts are in
 [ROADMAP.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/ROADMAP.md),
-regenerated from `docs/coverage.json`.
+generated from `docs/coverage.json`, which records what is implemented, and
+`contracts/verification/ledger.yaml`, which records what was observed live.
 
 ## Why read and write are counted separately
 
@@ -23,31 +24,64 @@ payload.
 
 Nearly every substantive defect found in this project was invisible to reads:
 
-- `/db/REBW` — **every field name** in the manual's specification table was
-  wrong. Found by reading real populated data back from a production model and
+- `/db/REBW` — **every field name** in the specification table was wrong.
+  Found by reading real populated data back from a production model and
   confirming with a live PUT round trip.
-- `/db/TDMT` — the documented code-name enum was wrong; the server wants
-  `"European"`, not any CEB-FIP spelling.
-- `/db/SECF` — documented as keyed by element id; it is keyed by section id.
-- `/db/PRES` — the documented default `DIRECTION` is rejected.
-- `/db/MVHL` — `VEHICLE_TYPE_NAME` is not validated: a name no standard
-  vehicle has is stored verbatim, and it is what selects the axle loads.
+- `/db/REBC` — the documented single-object `MAIN_BAR` is refused; the server
+  takes a `vMAIN_BAR` array. A POST comparison settled it: the documented
+  shape answered `Wrong Field`, the other answered a *domain* error naming
+  the section it could not find. "Shape refused" and "shape accepted, target
+  missing" are the cheapest way to tell a wrong payload from a wrong model.
+- `/db/PRES` — the specification row marks `DIRECTION` optional with a
+  default of `"NORMAL"`, while the same article's own footnote matrix shows
+  `NORMAL` unavailable for a `"PLATE"` + `"FACE"` pressure. Omitting the
+  field is *how* the bad default gets applied, so both halves fail together.
+- `/db/NMAS` — omitting the optional `rmX`/`rmY`/`rmZ` crashed both products.
+  Sending them explicitly, even as their documented default of `0.0`, does
+  not. Both SDKs now fill them in before sending.
+- `/db/MVHL` — the specification table states branch-1 and branch-2
+  requiredness with no reference to the branch, so `VEHICLE_TYPE_NAME` reads
+  as always required when it is required only for `VEHICLE_LOAD_NUM: 1`.
 
 Every one of those endpoints answered a GET perfectly well the whole time.
 
+### Findings get retracted too
+
+Three entries this list used to carry were removed on 2026-07-27, when every
+documentation claim here was re-checked against MIDAS IT's own published
+articles rather than a vendored copy of them, and a fourth followed on
+2026-09-03. In each case the live observation was real and correctly
+recorded; the conclusion drawn about the *documentation* was not supported by
+the source once somebody read it. One of them was not even a vendor claim —
+it was this SDK's own docstring.
+
+So: a finding here is a claim about one specific article, and it is only as
+good as the last time that article was read. Measuring the product is the
+easy half.
+
 ## How the evidence is recorded
 
-Each endpoint in `docs/coverage.json` carries what was actually observed:
+`contracts/verification/ledger.yaml` carries one record per live session, and
+each record lists the endpoints that session covered:
 
-```json
-"live_verified": {
-  "date": "2026-08-02",
-  "products": ["gen"],
-  "level": "write",
-  "method": "scripts/live_crud_check.py (full CRUD round trip)",
-  "nx_versions": { "gen": "MIDAS Gen NX 2026 (v2.1), build 07/30/2026" }
-}
+```yaml
+- id: ledger-write-2026-07-29-rebw
+  endpoints: ["/db/REBW"]
+  date: 2026-07-29
+  level: write
+  products: [gen]
+  nxVersions: { gen: "MIDAS Gen NX 2026 (v2.1), build 07/28/2026" }
+  outcome: success
+  method: >-
+    PUT round trip against a real production Gen NX model ...
 ```
+
+**Re-verifying adds a record; it never edits one.** That is the point of the
+per-session shape: an endpoint's claim is resolved from every record naming it,
+so a later read cannot quietly overwrite an earlier write. Before 2026-09-21
+the same fact lived in `docs/coverage.json` as a single block per endpoint, and
+it did get overwritten that way. `docs/coverage.json` now records only what is
+implemented and in which module.
 
 `level` is `"write"` only when something was actually mutated — model data, or
 a file on the NX host. A POST that the server refused before doing anything is

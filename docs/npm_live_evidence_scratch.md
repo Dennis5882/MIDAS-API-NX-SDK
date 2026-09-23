@@ -3,11 +3,14 @@
 Started as a read-only extraction from `docs/live_verification_notes.md` on
 2026-09-01, and has been appended to session by session since. An entry appears
 only when a session record says the built npm package completed the operation.
-`docs/coverage.json` remains the authoritative endpoint ledger; this file is the
-session record behind the npm part of it.
+`contracts/verification/ledger.yaml` is the authoritative live-evidence ledger
+(it took that over from `docs/coverage.json` on 2026-09-21); this file is the
+session record behind the npm part of it. The name says scratch because that is
+how it started, on 2026-09-01, not because it can be thrown away.
 
 **It is enforced.** `scripts/report_npm_replay_coverage.py --check` fails when
-`docs/coverage.json` claims an npm replay this file records no session for.
+the ledger claims an npm replay this file records no session for. Run it before
+writing a claim; it is not one of the steps CI runs.
 That check exists because a ledger entry is a claim and this file is the
 evidence: on 2026-09-16 four entries were written citing a notes section that
 did not mention them, and nothing could see it. So append here in the same

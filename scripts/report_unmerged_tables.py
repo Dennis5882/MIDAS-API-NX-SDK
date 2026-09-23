@@ -151,6 +151,17 @@ def build() -> str:
     ib = _info_baseline_module()
     capture = ib._load(ib.BASELINE)
 
+    # Written before the walk below so the preamble can state what is actually
+    # there. It used to assert two out-of-reach endpoints and their 68 names
+    # outright, which stopped being true once the tables were merged: the
+    # paragraph survived the thing it described by a day.
+    unmerged = _contracts_with_unmerged_tables(ib)
+    unreachable = [
+        (endpoint, sum(len(t.get("fieldNames") or []) for t in tables))
+        for endpoint, tables in unmerged
+        if not _declared_paths(ib, capture, endpoint)
+    ]
+
     header: List[str] = [
         "# Unmerged extraction tables, measured against `/info`",
         "",
@@ -176,13 +187,19 @@ def build() -> str:
         "`NAME` repeats across every branch of `/db/MVHL`, so counting parents would",
         "measure how common the names are rather than the table's shape.",
         "",
-        "Two endpoints here are **outside `/info`'s reach**: introspection is served for",
-        "`/db/*` only, swept from both SDKs 2026-09-01, and a 404 on `/view/*` or",
-        "`/ope/*` is an API fact rather than a gap in the capture.  Their 68 names are",
-        "excluded from the in-scope share below, because a source that cannot exist is",
-        "not the same finding as a source that is absent.",
-        "",
     ]
+    if unreachable:
+        endpoints = ", ".join(f"`{endpoint}`" for endpoint, _ in unreachable)
+        header += [
+            f"{'Two' if len(unreachable) == 2 else len(unreachable)} endpoints here "
+            f"are **outside `/info`'s reach** ({endpoints}): introspection is served",
+            "for `/db/*` only, swept from both SDKs 2026-09-01, and a 404 on `/view/*`",
+            "or `/ope/*` is an API fact rather than a gap in the capture.  Their "
+            f"{sum(count for _, count in unreachable)} names are",
+            "excluded from the in-scope share below, because a source that cannot exist is",
+            "not the same finding as a source that is absent.",
+            "",
+        ]
 
     summary: List[str] = [
         "## Summary",
@@ -196,7 +213,7 @@ def build() -> str:
     out_of_scope_names = out_of_scope_tables = 0
     buckets: Dict[str, int] = {}
 
-    for endpoint, tables in _contracts_with_unmerged_tables(ib):
+    for endpoint, tables in unmerged:
         declared = _declared_paths(ib, capture, endpoint)
         names_here = declared_here = 0
         rows: List[str] = []
@@ -309,9 +326,14 @@ def build() -> str:
         f"**{in_scope_declared}** are declared "
         f"({in_scope_declared * 100 // in_scope_names}%) and "
         f"**{in_scope_names - in_scope_declared}** "
-        f"{'is' if in_scope_names - in_scope_declared == 1 else 'are'} not. The remaining "
-        f"**{out_of_scope_names}** names sit on {out_of_scope_tables} tables of two "
-        "endpoints `/info` does not serve at all."
+        f"{'is' if in_scope_names - in_scope_declared == 1 else 'are'} not."
+        + (
+            f" The remaining **{out_of_scope_names}** names sit on "
+            f"{out_of_scope_tables} tables of {len(unreachable)} endpoint"
+            f"{'' if len(unreachable) == 1 else 's'} `/info` does not serve at all."
+            if unreachable
+            else ""
+        )
     )
     summary.append("")
     summary.append("### What each table has, as a count")

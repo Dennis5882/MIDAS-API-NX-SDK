@@ -22,12 +22,6 @@ would attach to.  It is not a count of distinct parents -- a short leaf like
 `NAME` repeats across every branch of `/db/MVHL`, so counting parents would
 measure how common the names are rather than the table's shape.
 
-Two endpoints here are **outside `/info`'s reach**: introspection is served for
-`/db/*` only, swept from both SDKs 2026-09-01, and a 404 on `/view/*` or
-`/ope/*` is an API fact rather than a gap in the capture.  Their 68 names are
-excluded from the in-scope share below, because a source that cannot exist is
-not the same finding as a source that is absent.
-
 ## Summary
 
 | endpoint | tables | names | declared by `/info` | share |
@@ -35,7 +29,7 @@ not the same finding as a source that is absent.
 | [`/db/TDME`](#dbtdme) | 2 | 7 | 7 | 100% |
 | **total** | **2** | **7** | **7** | **100%** |
 
-Of the **7** names on endpoints `/info` answers for, **7** are declared (100%) and **0** are not. The remaining **0** names sit on 0 tables of two endpoints `/info` does not serve at all.
+Of the **7** names on endpoints `/info` answers for, **7** are declared (100%) and **0** are not.
 
 ### What each table has, as a count
 
