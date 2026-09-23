@@ -12,6 +12,12 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
   Python installation. No code change.
 - `author` is now `Dennis` with a LinkedIn URL, and the README points there
   for questions and feedback. GitHub Issues stays the place for SDK bugs.
+- The README now says what you need before installing (a running product, a
+  MAPI key and where to get one, Node 18), labels its first example
+  read-only, links the documentation site, safety guide, quickstart, AI
+  context pack and runnable examples, and carries the project-status
+  paragraph in Korean, Traditional Chinese and Simplified Chinese. The
+  maintainer-only release checklist link is gone.
 
 ## 2.9.2 - 2026-09-22
 

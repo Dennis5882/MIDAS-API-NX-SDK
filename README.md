@@ -43,8 +43,11 @@ It can't create, change, or delete anything, so it's safe to run against a
 real model.
 
 More examples, including ones that build a model:
-[`examples/python/`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/examples/python/).
-For the npm API and safety notes, see the
+[`examples/python/`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/examples/python/)
+and
+[`examples/javascript/`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/examples/javascript/)
+— the two directories mirror each other file for file. For the npm API and
+safety notes, see the
 [`packages/typescript` guide](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/packages/typescript).
 Full guide, safety notes, and API reference: **[Documentation site](https://dennis5882.github.io/MIDAS-API-NX-SDK/)**.
 
@@ -118,7 +121,7 @@ JavaScript/TypeScript(npm) 패키지로 제공하는 SDK입니다. 두 패키지
 | --- | --- |
 | Full docs & API reference | [Documentation site](https://dennis5882.github.io/MIDAS-API-NX-SDK/) |
 | JavaScript / TypeScript npm SDK | [packages/typescript/README.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/packages/typescript/README.md) |
-| Building with an AI coding assistant instead of writing Python yourself | [Safe start](https://dennis5882.github.io/MIDAS-API-NX-SDK/ai-coding/safe-start/) |
+| Building with an AI coding assistant instead of writing the code yourself | [Safe start](https://dennis5882.github.io/MIDAS-API-NX-SDK/ai-coding/safe-start/) |
 | Known issues / safety notes — read before writing anything | [docs/safety.md](https://dennis5882.github.io/MIDAS-API-NX-SDK/safety/) |
 | Endpoint implementation status | [ROADMAP.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/ROADMAP.md) |
 | Contributing / dev setup | [CONTRIBUTING.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/CONTRIBUTING.md) |

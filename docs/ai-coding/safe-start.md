@@ -1,9 +1,12 @@
 # Safe start: building with an AI coding assistant
 
-You don't need to know Python well to use `midas-nx` — tools like Claude
-Code, ChatGPT, GitHub Copilot, or similar can write the code for you. This
-page is for that path. It assumes you can describe what you want in plain
-language but can't fully review the Python that comes back.
+You don't need to know Python or TypeScript well to use `midas-nx` — tools
+like Claude Code, ChatGPT, GitHub Copilot, or similar can write the code for
+you. This page is for that path. It assumes you can describe what you want in
+plain language but can't fully review the code that comes back.
+
+It applies to both packages: `midas-nx` on PyPI (Python) and `midas-nx` on
+npm (JavaScript/TypeScript). Where a name differs, both are given.
 
 !!! danger "The one thing to internalize"
     **Generated code is not verified code**, even when it runs without
@@ -17,8 +20,9 @@ language but can't fully review the Python that comes back.
 
 1. **The first script should only read data.** Don't let an AI assistant's
    first attempt at your task include `create`, `update`, `delete`,
-   `delete_all`, `new_project`, `open_project`, or `analyze` calls. Get a
-   read-only version working and understood first, then extend it.
+   `delete_all`/`deleteAll`, `new_project`/`newProject`,
+   `open_project`/`openProject`, or `analyze` calls. Get a read-only version
+   working and understood first, then extend it.
 2. **AI assistants guess plausible-sounding function names.** `midas-nx` has
    changed shape across versions, and an assistant trained on old data (or
    just pattern-matching) will confidently write calls that don't exist. The
@@ -29,8 +33,11 @@ language but can't fully review the Python that comes back.
 
 Paste the [AI context pack](context-pack.md) into your chat before asking
 for any code — as a system prompt if your tool supports one, otherwise as
-your first message. It tells the assistant the real API shape, the error
-model, and the specific ways this SDK can hurt you if used carelessly
+your first message. Take the [Python](context-pack.md#python) box or the
+[JavaScript/TypeScript](context-pack.md#javascript-typescript) one, whichever
+matches the package you installed; pasting both just confuses the assistant
+about which language you want. It tells the assistant the real API shape, the
+error model, and the specific ways this SDK can hurt you if used carelessly
 (`doc.new_project()` discarding work, `delete_all()` emptying a whole table,
 timeouts not being rollbacks, and so on).
 
@@ -53,20 +60,22 @@ Go through this checklist. If you can't answer a line, ask the assistant to
 explain it in plain language rather than skipping it.
 
 - [ ] Does the script only *read* data (no `create`/`update`/`delete`/
-      `delete_all`/`new_project`/`open_project`/`analyze`) — or, if it
-      writes, did I explicitly ask for that after seeing a read-only version
-      work first?
+      `delete_all`/`deleteAll`/`new_project`/`newProject`/`open_project`/
+      `openProject`/`analyze`) — or, if it writes, did I explicitly ask for
+      that after seeing a read-only version work first?
 - [ ] Does it import only things that plausibly exist? (Ask the assistant to
       show `python -c "import midas_nx; print(dir(midas_nx))"` output, or
-      point it at the [reference](../reference/client.md), if unsure.)
-- [ ] Is the product (`Product.GEN` / `Product.CIVIL`) the one I actually
-      use?
+      point it at the [reference](../reference/client.md), if unsure. On npm,
+      run the TypeScript compiler — a name that does not type-check does not
+      exist, and that check is free.)
+- [ ] Is the product (`Product.GEN` / `Product.CIVIL`, or `"gen"` / `"civil"`
+      on npm) the one I actually use?
 - [ ] Is my MAPI-Key absent from the code the assistant shows back to me, or
       from anything it suggests logging/printing?
 - [ ] If it writes data, does it print a preview (ids, payload) *before* the
       write call runs?
-- [ ] Is there no `delete_all()` without `confirm=True`, and no blind
-      `new_project()`/`open_project()` at the top of the script?
+- [ ] Is there no `delete_all()`/`deleteAll()` without an explicit confirm,
+      and no blind `new_project()`/`newProject()` at the top of the script?
 - [ ] If a call can time out, does the script avoid automatically retrying
       the same write?
 - [ ] Am I running this against a test/disposable project the first time,
@@ -79,7 +88,8 @@ identifying details and use this shape instead:
 
 ```text
 Installed midas-nx version:
-Python version:
+Package: PyPI (Python) or npm (JavaScript/TypeScript)
+Python or Node.js version:
 Product: Gen NX / Civil NX
 Operation type: read / create / update / delete
 What I expected:
@@ -101,3 +111,7 @@ after a write timeout can double up whatever it was doing.
   things that can go wrong, independent of who or what wrote the code
 - [Getting started](../en/quickstart.md) — the read-only Python path, useful
   once you want to understand what the AI is actually doing
+- Runnable scripts to compare the generated code against:
+  [`examples/python/`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/examples/python/)
+  and
+  [`examples/javascript/`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/examples/javascript/)
