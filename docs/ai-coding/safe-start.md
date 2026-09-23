@@ -34,7 +34,7 @@ npm (JavaScript/TypeScript). Where a name differs, both are given.
 Paste the [AI context pack](context-pack.md) into your chat before asking
 for any code — as a system prompt if your tool supports one, otherwise as
 your first message. Take the [Python](context-pack.md#python) box or the
-[JavaScript/TypeScript](context-pack.md#javascript-typescript) one, whichever
+[JavaScript and TypeScript](context-pack.md#javascript-and-typescript) one, whichever
 matches the package you installed; pasting both just confuses the assistant
 about which language you want. It tells the assistant the real API shape, the
 error model, and the specific ways this SDK can hurt you if used carelessly

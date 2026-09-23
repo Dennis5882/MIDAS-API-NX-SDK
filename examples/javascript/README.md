@@ -1,8 +1,10 @@
 # JavaScript examples
 
-Runnable scripts for the npm package. Each one is the twin of the file with
-the same name in [`../python/`](../python/), so you can compare the two SDKs
-line for line.
+Runnable scripts for the npm package. Each is the twin of the file with the
+same name in [`../python/`](../python/), payload for payload, so you can
+compare the two SDKs line for line. `../python/` has two more that have no
+JavaScript version yet: a simply-supported beam with a load combination, and
+a KDS wind load on a plate.
 
 | Script | Risk level | What it does |
 | --- | --- | --- |

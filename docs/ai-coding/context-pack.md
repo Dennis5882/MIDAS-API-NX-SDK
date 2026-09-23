@@ -10,7 +10,7 @@ JavaScript/TypeScript package on npm. They wrap the same API and carry the
 same safety rules; only the names differ. Paste **one**:
 
 - [Python](#python) — `pip install midas-nx`
-- [JavaScript / TypeScript](#javascript-typescript) — `npm install midas-nx`
+- [JavaScript and TypeScript](#javascript-and-typescript) — `npm install midas-nx`
 
 It's in English because that's what AI coding tools tend to follow most
 reliably, even if you write your own messages in another language. Feel free
@@ -111,7 +111,7 @@ is passed explicitly).
   supported MIDAS IT product.
 ```
 
-## JavaScript / TypeScript
+## JavaScript and TypeScript
 
 ```text
 You are helping a structural engineer write TypeScript or JavaScript code

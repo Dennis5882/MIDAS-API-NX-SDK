@@ -48,9 +48,11 @@ Traditional Chinese and Simplified Chinese, matching the root README.
 
 ## New in the repository, shipped in neither package
 
-- **`examples/javascript/`** mirrors `examples/python/` file for file:
-  `verify-and-read.mjs` (risk 1) and `quickstart.mjs` (risk 4), payload for
-  payload, each stating its risk level.
+- **`examples/javascript/`** gives the npm package the two examples that
+  matter first: `verify-and-read.mjs` (risk 1) and `quickstart.mjs` (risk 4),
+  each matching its Python namesake payload for payload and stating its risk
+  level. The other two Python examples - a load combination and a KDS wind
+  load - have no JavaScript twin yet.
 - **The AI context pack has a TypeScript half.** `docs/ai-coding/` previously
   described the Python API only; `safe-start.md` now gives both spellings
   wherever a name differs.

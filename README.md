@@ -4,6 +4,11 @@ Unified Python and JavaScript/TypeScript SDKs for the **MIDAS NX Open API** —
 both packages cover **MIDAS Civil NX** and **MIDAS Gen NX** from the same
 reviewed endpoint inventory.
 
+Either one needs MIDAS Gen NX or Civil NX running with the Open API connected,
+and a **MAPI key**. The key is issued in the product, not here —
+[step 3 of the quickstart](https://dennis5882.github.io/MIDAS-API-NX-SDK/en/quickstart/#step-3-get-a-mapi-key)
+shows where to click, and the same screen gives you the Base URL.
+
 ## Python (PyPI)
 
 ```bash
@@ -44,10 +49,10 @@ real model.
 
 More examples, including ones that build a model:
 [`examples/python/`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/examples/python/)
-and
+(four, up to a load combination and a KDS wind load) and
 [`examples/javascript/`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/examples/javascript/)
-— the two directories mirror each other file for file. For the npm API and
-safety notes, see the
+(the read-only one and the model-building one, matching their Python
+namesakes payload for payload). For the npm API and safety notes, see the
 [`packages/typescript` guide](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/packages/typescript).
 Full guide, safety notes, and API reference: **[Documentation site](https://dennis5882.github.io/MIDAS-API-NX-SDK/)**.
 
@@ -122,6 +127,7 @@ JavaScript/TypeScript(npm) 패키지로 제공하는 SDK입니다. 두 패키지
 | Full docs & API reference | [Documentation site](https://dennis5882.github.io/MIDAS-API-NX-SDK/) |
 | JavaScript / TypeScript npm SDK | [packages/typescript/README.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/packages/typescript/README.md) |
 | Building with an AI coding assistant instead of writing the code yourself | [Safe start](https://dennis5882.github.io/MIDAS-API-NX-SDK/ai-coding/safe-start/) |
+| Pointing an AI agent at this repository | [AGENTS.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/AGENTS.md) |
 | Known issues / safety notes — read before writing anything | [docs/safety.md](https://dennis5882.github.io/MIDAS-API-NX-SDK/safety/) |
 | Endpoint implementation status | [ROADMAP.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/ROADMAP.md) |
 | Contributing / dev setup | [CONTRIBUTING.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/CONTRIBUTING.md) |
