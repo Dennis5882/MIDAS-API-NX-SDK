@@ -24,10 +24,10 @@ for you, not for the user. It has the real API shape, the error model, and
 the specific ways this SDK can hurt someone. Take the box that matches the
 package in use:
 
-| package | install | pack |
-| --- | --- | --- |
-| Python (PyPI) | `pip install midas-nx` | [Python](docs/ai-coding/context-pack.md#python) |
-| JavaScript / TypeScript (npm) | `npm install midas-nx` | [JavaScript and TypeScript](docs/ai-coding/context-pack.md#javascript-and-typescript) |
+| package | install | pack | human quickstart |
+| --- | --- | --- | --- |
+| Python (PyPI) | `pip install midas-nx` | [Python](docs/ai-coding/context-pack.md#python) | [docs/en/quickstart.md](docs/en/quickstart.md) |
+| JavaScript / TypeScript (npm) | `npm install midas-nx` | [JavaScript and TypeScript](docs/ai-coding/context-pack.md#javascript-and-typescript) | [docs/npm/quickstart.md](docs/npm/quickstart.md) |
 
 Paste one, not both.
 
@@ -66,8 +66,7 @@ verified against a running product.
 
 - [`examples/python/`](examples/python/) — four, from a read-only check to a
   load combination and a KDS wind load.
-- [`examples/javascript/`](examples/javascript/) — the read-only check and the
-  model-building quickstart.
+- [`examples/javascript/`](examples/javascript/) — the same four, as `.mjs`.
 
 Each states its risk level at the top. Start from the read-only one.
 

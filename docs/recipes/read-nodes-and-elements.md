@@ -1,8 +1,9 @@
 # Read nodes and elements
 
 - **Audience**: Python beginners, AI-assisted coding beginners, common
-- **SDK**: `midas-nx` (check your installed version with
-  `python -c "import midas_nx; print(midas_nx.__version__)"`)
+- **SDK**: `midas-nx`, on PyPI or npm — the code below is given for both
+  (check your version with `python -c "import midas_nx; print(midas_nx.__version__)"`
+  or `npm list midas-nx`)
 - **Product**: Gen NX or Civil NX
 - **Risk level**: 1 — read-only (see [Risk levels](../safety.md#risk-levels))
 - **Time**: a few minutes
@@ -35,27 +36,56 @@ shape of the data.
 
 ## Full code
 
-```python
-from midas_nx import MidasClient, Product
-from midas_nx.db.node_element import Node, Element
+=== "Python"
 
-client = MidasClient(mapi_key="paste-your-mapi-key-here", product=Product.GEN)
+    ```python
+    from midas_nx import MidasClient, Product
+    from midas_nx.db.node_element import Node, Element
 
-nodes = Node.items(client=client)
-elements = Element.items(client=client)
+    client = MidasClient(mapi_key="paste-your-mapi-key-here", product=Product.GEN)
 
-# Every node above Z = 3.0
-high_nodes = {nid: n for nid, n in nodes.items() if n["Z"] > 3.0}
-print(f"{len(high_nodes)} node(s) above Z=3.0:")
-for nid, n in high_nodes.items():
-    print(f"  #{nid}: ({n['X']}, {n['Y']}, {n['Z']})")
+    nodes = Node.items(client=client)
+    elements = Element.items(client=client)
 
-# Every beam element
-beams = {eid: e for eid, e in elements.items() if e["TYPE"] == "BEAM"}
-print(f"{len(beams)} beam element(s):")
-for eid, e in beams.items():
-    print(f"  #{eid}: nodes {e['NODE']}, material {e['MATL']}, section {e['SECT']}")
-```
+    # Every node above Z = 3.0
+    high_nodes = {nid: n for nid, n in nodes.items() if n["Z"] > 3.0}
+    print(f"{len(high_nodes)} node(s) above Z=3.0:")
+    for nid, n in high_nodes.items():
+        print(f"  #{nid}: ({n['X']}, {n['Y']}, {n['Z']})")
+
+    # Every beam element
+    beams = {eid: e for eid, e in elements.items() if e["TYPE"] == "BEAM"}
+    print(f"{len(beams)} beam element(s):")
+    for eid, e in beams.items():
+        print(f"  #{eid}: nodes {e['NODE']}, material {e['MATL']}, section {e['SECT']}")
+    ```
+
+=== "JavaScript / TypeScript"
+
+    ```js
+    import { MidasClient, resources } from "midas-nx";
+
+    const client = new MidasClient({ mapiKey: "paste-your-mapi-key-here", product: "gen" });
+    const { node, element } = resources.db.nodeElement;
+
+    const nodes = await node.items(client);
+    const elements = await element.items(client);
+
+    // Every node above Z = 3.0
+    const highNodes = Object.entries(nodes).filter(([, n]) => n.Z > 3.0);
+    console.log(`${highNodes.length} node(s) above Z=3.0:`);
+    for (const [nid, n] of highNodes) {
+      console.log(`  #${nid}: (${n.X}, ${n.Y}, ${n.Z})`);
+    }
+
+    // Every beam element
+    const beams = Object.entries(elements).filter(([, e]) => e.TYPE === "BEAM");
+    console.log(`${beams.length} beam element(s):`);
+    for (const [eid, e] of beams) {
+      console.log(`  #${eid}: nodes ${e.NODE}, material ${e.MATL}, section ${e.SECT}`);
+    }
+    ```
+
 
 ## What the code does
 

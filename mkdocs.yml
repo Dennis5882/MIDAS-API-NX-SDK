@@ -55,6 +55,12 @@ markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.superfences
+  # Recipes show the same task in Python and TypeScript side by side.
+  # Only pages that are read on the site use these - the quickstarts and
+  # READMEs are linked as GitHub blobs too, where a tab block would render
+  # as literal text.
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.details
 
 # Repo artifacts that live under docs/ but are not documentation pages.
@@ -69,11 +75,15 @@ exclude_docs: |
 
 nav:
   - Overview: index.md
-  - Getting started:
+  - Getting started (Python):
       - English: en/quickstart.md
       - 한국어: ko/quickstart.md
       - 繁體中文: zh-tw/quickstart.md
       - Python 기초 (한국어): ko/python-basics.md
+  - Getting started (JavaScript / TypeScript):
+      - English: npm/quickstart.md
+      - 한국어: npm/quickstart-ko.md
+      - 繁體中文: npm/quickstart-zh-tw.md
   - AI-assisted coding:
       - Safe start:
           - English: ai-coding/safe-start.md

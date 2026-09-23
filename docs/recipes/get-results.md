@@ -1,8 +1,9 @@
 # Extract a result table
 
 - **Audience**: Python beginners, AI-assisted coding beginners, common
-- **SDK**: `midas-nx` (check your installed version with
-  `python -c "import midas_nx; print(midas_nx.__version__)"`)
+- **SDK**: `midas-nx`, on PyPI or npm — the code below is given for both
+  (check your version with `python -c "import midas_nx; print(midas_nx.__version__)"`
+  or `npm list midas-nx`)
 - **Product**: Gen NX or Civil NX
 - **Risk level**: 1 — read-only (see [Risk levels](../safety.md#risk-levels))
 - **Time**: a few minutes
@@ -39,21 +40,44 @@ member forces, mode shapes, story drift, ...).
 
 ## Full code
 
-```python
-from midas_nx import MidasClient, Product
-from midas_nx.post.result_1 import get_reaction_table
-from midas_nx.post.base import unwrap_table
+=== "Python"
 
-client = MidasClient(mapi_key="paste-your-mapi-key-here", product=Product.GEN)
+    ```python
+    from midas_nx import MidasClient, Product
+    from midas_nx.post.result_1 import get_reaction_table
+    from midas_nx.post.base import unwrap_table
 
-raw = get_reaction_table(load_case_names=["DL(ST)"], client=client)
-table = unwrap_table(raw)
+    client = MidasClient(mapi_key="paste-your-mapi-key-here", product=Product.GEN)
 
-rows = table.get("DATA", [])
-print(f"{len(rows)} reaction row(s), columns: {table.get('HEAD')}")
-for row in rows:
-    print(row)
-```
+    raw = get_reaction_table(load_case_names=["DL(ST)"], client=client)
+    table = unwrap_table(raw)
+
+    rows = table.get("DATA", [])
+    print(f"{len(rows)} reaction row(s), columns: {table.get('HEAD')}")
+    for row in rows:
+        print(row)
+    ```
+
+=== "JavaScript / TypeScript"
+
+    ```js
+    import { MidasClient, tables, unwrapTable } from "midas-nx";
+
+    const client = new MidasClient({ mapiKey: "paste-your-mapi-key-here", product: "gen" });
+
+    const raw = await tables.result1.getReactionTable({
+      loadCaseNames: ["DL(ST)"],
+      client,
+    });
+    const table = unwrapTable(raw);
+
+    const rows = table.DATA ?? [];
+    console.log(`${rows.length} reaction row(s), columns: ${table.HEAD}`);
+    for (const row of rows) {
+      console.log(row);
+    }
+    ```
+
 
 ## What the code does
 

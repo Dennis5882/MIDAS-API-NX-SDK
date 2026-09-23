@@ -6,6 +6,14 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Documentation
+
+- The README's MAPI-key and quickstart links now point at an npm quickstart
+  (English, Korean, Traditional Chinese) instead of the Python one, which
+  opened with "Step 1: Install Python".
+- `examples/javascript/` gains the load-combination and KDS wind-load
+  examples, so it matches `examples/python/` at four.
+
 ## 2.9.3 - 2026-09-23
 
 > **Nothing executable changed.** `dist/` is identical to 2.9.2 - no

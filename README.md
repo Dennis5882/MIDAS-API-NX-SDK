@@ -5,9 +5,10 @@ both packages cover **MIDAS Civil NX** and **MIDAS Gen NX** from the same
 reviewed endpoint inventory.
 
 Either one needs MIDAS Gen NX or Civil NX running with the Open API connected,
-and a **MAPI key**. The key is issued in the product, not here —
-[step 3 of the quickstart](https://dennis5882.github.io/MIDAS-API-NX-SDK/en/quickstart/#step-3-get-a-mapi-key)
-shows where to click, and the same screen gives you the Base URL.
+and a **MAPI key**. The key is issued in the product, not here — step 3 of the
+[Python](https://dennis5882.github.io/MIDAS-API-NX-SDK/en/quickstart/#step-3-get-a-mapi-key) or
+[npm](https://dennis5882.github.io/MIDAS-API-NX-SDK/npm/quickstart/#step-3-get-a-mapi-key) quickstart shows where to
+click, and the same screen gives you the Base URL.
 
 ## Python (PyPI)
 

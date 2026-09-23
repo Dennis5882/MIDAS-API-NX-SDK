@@ -1,8 +1,9 @@
 # Inspect a project
 
 - **Audience**: Python beginners, AI-assisted coding beginners, common
-- **SDK**: `midas-nx` (check your installed version with
-  `python -c "import midas_nx; print(midas_nx.__version__)"`)
+- **SDK**: `midas-nx`, on PyPI or npm — the code below is given for both
+  (check your version with `python -c "import midas_nx; print(midas_nx.__version__)"`
+  or `npm list midas-nx`)
 - **Product**: Gen NX or Civil NX
 - **Risk level**: 1 — read-only (see [Risk levels](../safety.md#risk-levels))
 - **Time**: under a minute
@@ -25,8 +26,9 @@ connection is bad.
 ## Before you run this
 
 - [ ] Gen NX or Civil NX is open with a project loaded (even an empty one)
-- [ ] You have a MAPI-Key from that session (see
-  [Getting started, step 3](../en/quickstart.md#step-3-get-a-mapi-key))
+- [ ] You have a MAPI-Key from that session (see step 3 of the
+  [Python](../en/quickstart.md#step-3-get-a-mapi-key) or
+  [npm](../npm/quickstart.md#step-3-get-a-mapi-key) quickstart)
 - [ ] You're not pasting the key into a shared chat or committing it to git
 
 ## Inputs
@@ -37,19 +39,38 @@ connection is bad.
 
 ## Full code
 
-```python
-from midas_nx import MidasClient, Product
-from midas_nx.db.node_element import Node, Element
+=== "Python"
 
-client = MidasClient(mapi_key="paste-your-mapi-key-here", product=Product.GEN)
+    ```python
+    from midas_nx import MidasClient, Product
+    from midas_nx.db.node_element import Node, Element
 
-status = client.verify_connection()
-print(f"Connection: {status['status']} (key verified: {status['keyVerified']})")
+    client = MidasClient(mapi_key="paste-your-mapi-key-here", product=Product.GEN)
 
-nodes = Node.items(client=client)
-elements = Element.items(client=client)
-print(f"Model: {len(nodes)} node(s), {len(elements)} element(s).")
-```
+    status = client.verify_connection()
+    print(f"Connection: {status['status']} (key verified: {status['keyVerified']})")
+
+    nodes = Node.items(client=client)
+    elements = Element.items(client=client)
+    print(f"Model: {len(nodes)} node(s), {len(elements)} element(s).")
+    ```
+
+=== "JavaScript / TypeScript"
+
+    ```js
+    import { MidasClient, resources } from "midas-nx";
+
+    const client = new MidasClient({ mapiKey: "paste-your-mapi-key-here", product: "gen" });
+    const { node, element } = resources.db.nodeElement;
+
+    const status = await client.verifyConnection();
+    console.log(`Connection: ${status.status} (key verified: ${status.keyVerified})`);
+
+    const nodes = await node.items(client);
+    const elements = await element.items(client);
+    console.log(`Model: ${Object.keys(nodes).length} node(s), ${Object.keys(elements).length} element(s).`);
+    ```
+
 
 ## What the code does
 

@@ -44,6 +44,11 @@ read-only walkthrough that explains each step. No prior programming
 experience assumed.
 → [Getting started](en/quickstart.md) (also [한국어](ko/quickstart.md), [繁體中文](zh-tw/quickstart.md))
 
+**Already write JavaScript or TypeScript.** The same walkthrough for the npm
+package — Node, a MAPI key, and a first read-only script, with full type
+declarations in your editor.
+→ [Getting started (npm)](npm/quickstart.md) (also [한국어](npm/quickstart-ko.md), [繁體中文](npm/quickstart-zh-tw.md))
+
 **Build a script with an AI coding assistant.** Don't know Python well?
 Give your AI assistant (Claude Code, ChatGPT, Copilot, or similar) a
 verified context pack and a pre-run safety checklist, and describe your task

@@ -17,7 +17,7 @@ Three things, none of which this package can do for you:
    Calls go through MIDAS IT's relay to that machine — which is often not the
    machine running your code.
 2. **You need a MAPI key.** It is issued in the product, not here.
-   [Step 3 of the quickstart guide](https://dennis5882.github.io/MIDAS-API-NX-SDK/en/quickstart/#step-3-get-a-mapi-key)
+   [Step 3 of the npm quickstart](https://dennis5882.github.io/MIDAS-API-NX-SDK/npm/quickstart/#step-3-get-a-mapi-key)
    shows exactly where to click; the same screen gives you the Base URL.
 3. **Node.js 18 or newer.**
 
@@ -60,7 +60,7 @@ and must not expose a long-lived API key in public client code.
 | --- | --- |
 | Runnable scripts, read-only first | [`examples/javascript/`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/examples/javascript/) |
 | **Read before you write anything** — what can discard work or crash the product | [Safety guide](https://dennis5882.github.io/MIDAS-API-NX-SDK/safety/) |
-| Installing, getting a key, first script, step by step | [Quickstart](https://dennis5882.github.io/MIDAS-API-NX-SDK/en/quickstart/) |
+| Installing, getting a key, first script, step by step | [npm quickstart](https://dennis5882.github.io/MIDAS-API-NX-SDK/npm/quickstart/) — also in [한국어](https://dennis5882.github.io/MIDAS-API-NX-SDK/npm/quickstart-ko/) and [繁體中文](https://dennis5882.github.io/MIDAS-API-NX-SDK/npm/quickstart-zh-tw/) |
 | Letting an AI assistant write the code for you | [Safe start](https://dennis5882.github.io/MIDAS-API-NX-SDK/ai-coding/safe-start/) · [context pack](https://dennis5882.github.io/MIDAS-API-NX-SDK/ai-coding/context-pack/) |
 | Which endpoints exist and how far each is verified | [ROADMAP.md](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/ROADMAP.md) |
 | Full documentation | [Documentation site](https://dennis5882.github.io/MIDAS-API-NX-SDK/) |
@@ -166,7 +166,7 @@ JavaScript/TypeScript SDK입니다. PyPI의 Python 패키지와 동일한 검토
 Dennis의 [LinkedIn](https://www.linkedin.com/in/dennis58)으로 연락 주셔도 됩니다.
 
 시작하려면 MAPI 키가 필요합니다 —
-[한국어 퀵스타트 가이드](https://dennis5882.github.io/MIDAS-API-NX-SDK/ko/quickstart/#3-mapi)에
+[한국어 npm 퀵스타트](https://dennis5882.github.io/MIDAS-API-NX-SDK/npm/quickstart-ko/#3-mapi)에
 발급 위치가 나와 있습니다. 모델을 변경하는 코드를 쓰기 전에
 [안전 가이드](https://dennis5882.github.io/MIDAS-API-NX-SDK/safety/)를 먼저
 읽어보시길 권합니다.
@@ -183,7 +183,7 @@ JavaScript/TypeScript SDK，與 PyPI 上的 Python 套件依據同一份經審�
 [LinkedIn](https://www.linkedin.com/in/dennis58)。
 
 開始前需要 MAPI 金鑰 —
-[繁體中文快速入門指南](https://dennis5882.github.io/MIDAS-API-NX-SDK/zh-tw/quickstart/#3-mapi)
+[繁體中文 npm 快速入門](https://dennis5882.github.io/MIDAS-API-NX-SDK/npm/quickstart-zh-tw/#3-mapi)
 說明取得位置。在撰寫會變更模型的程式碼之前，請先閱讀
 [安全指南](https://dennis5882.github.io/MIDAS-API-NX-SDK/safety/)。
 
@@ -199,7 +199,7 @@ JavaScript/TypeScript SDK，与 PyPI 上的 Python 包依据同一份经审核�
 [LinkedIn](https://www.linkedin.com/in/dennis58)。
 
 开始前需要 MAPI 密钥 —
-[快速入门指南](https://dennis5882.github.io/MIDAS-API-NX-SDK/zh-tw/quickstart/#3-mapi)
+[npm 快速入门指南](https://dennis5882.github.io/MIDAS-API-NX-SDK/npm/quickstart-zh-tw/#3-mapi)
 （繁体中文版）说明获取位置。在编写会修改模型的代码之前，请先阅读
 [安全指南](https://dennis5882.github.io/MIDAS-API-NX-SDK/safety/)。
 
