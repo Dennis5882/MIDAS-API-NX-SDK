@@ -10,6 +10,8 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 - README states that the package has no runtime dependencies and needs no
   Python installation. No code change.
+- `author` is now `Dennis` with a LinkedIn URL, and the README points there
+  for questions and feedback. GitHub Issues stays the place for SDK bugs.
 
 ## 2.9.2 - 2026-09-22
 

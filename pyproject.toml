@@ -12,7 +12,7 @@ description = "Unified Python SDK for the MIDAS NX Open API (Civil NX + Gen NX) 
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.11"
-authors = [{ name = "Dennis5882" }]
+authors = [{ name = "Dennis" }]
 keywords = [
   "midas", "midas-nx", "midas-gen", "midas-civil", "civil-nx", "gen-nx",
   "midas-gen-nx", "midas-civil-nx", "midas-api", "midas-open-api",
@@ -65,6 +65,7 @@ Documentation = "https://dennis5882.github.io/MIDAS-API-NX-SDK/"
 "Bug Tracker" = "https://github.com/Dennis5882/MIDAS-API-NX-SDK/issues"
 Changelog = "https://github.com/Dennis5882/MIDAS-API-NX-SDK/releases"
 Manual = "https://github.com/Dennis5882/MIDAS-API"
+"Ask the author" = "https://www.linkedin.com/in/dennis58"
 
 [tool.hatch.version]
 path = "src/midas_nx/__init__.py"

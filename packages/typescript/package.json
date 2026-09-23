@@ -3,7 +3,10 @@
   "version": "2.9.2",
   "description": "Unified TypeScript SDK for the MIDAS NX Open API (Civil NX + Gen NX) - employee-led open source",
   "license": "MIT",
-  "author": "Dennis5882",
+  "author": {
+    "name": "Dennis",
+    "url": "https://www.linkedin.com/in/dennis58"
+  },
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

@@ -104,7 +104,9 @@ This is an employee-led open-source project built from the official MIDAS API
 manual and hands-on verification against real MIDAS NX sessions. It is not an
 officially released or supported MIDAS IT product. Report SDK issues through
 the repository's GitHub Issues; use MIDAS IT's official support channels for
-product, licensing, and Open API service questions.
+product, licensing, and Open API service questions. For anything else -
+questions, feedback, or just getting in touch - the author is Dennis, on
+[LinkedIn](https://www.linkedin.com/in/dennis58).
 
 ## Releases
 

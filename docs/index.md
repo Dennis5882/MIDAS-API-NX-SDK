@@ -28,6 +28,8 @@ real model.
     - Problems with **this SDK** → [GitHub Issues](https://github.com/Dennis5882/MIDAS-API-NX-SDK/issues)
     - Problems with **the products, licensing, or the Open API service** →
       MIDAS IT's official support channels
+    - Questions, feedback, or getting in touch → the author, Dennis, on
+      [LinkedIn](https://www.linkedin.com/in/dennis58)
 
 !!! danger "Read this before your first write"
     This SDK drives a live engineering application. Several calls can destroy

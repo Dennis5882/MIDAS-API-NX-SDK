@@ -57,7 +57,8 @@ and Civil NX sessions. It's an **employee-led open-source project — not an
 officially released or supported MIDAS IT product**. Issues with this SDK go
 to [GitHub Issues](https://github.com/Dennis5882/MIDAS-API-NX-SDK/issues);
 questions about the products, licensing, or the Open API service itself go to
-MIDAS IT's official support channels.
+MIDAS IT's official support channels. For anything else — questions, feedback,
+or just getting in touch — the author is Dennis, on [LinkedIn](https://www.linkedin.com/in/dennis58).
 
 The repository maintains both the Python package on PyPI and the typed
 JavaScript/TypeScript package on npm. **New to Python?**
@@ -74,7 +75,8 @@ JavaScript/TypeScript(npm) 패키지로 제공하는 SDK입니다. 두 패키지
 공식적으로 출시·지원하는 제품은 아닙니다. SDK 자체의 문제는
 [GitHub Issues](https://github.com/Dennis5882/MIDAS-API-NX-SDK/issues)로,
 제품·라이선스·Open API 서비스 자체에 대한 문의는 마이다스아이티 공식
-지원 채널로 부탁드립니다.
+지원 채널로 부탁드립니다. 그 밖의 질문이나 피드백, 그냥 연락을 원하시면
+제작자 Dennis의 [LinkedIn](https://www.linkedin.com/in/dennis58)으로 연락 주셔도 됩니다.
 
 **Python이나 프로그래밍이 처음이신 구조 엔지니어**는
 [한국어 퀵스타트 가이드](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/docs/ko/quickstart.md)에서
@@ -88,6 +90,7 @@ JavaScript/TypeScript(npm) 패키지로 제공하는 SDK입니다. 두 패키지
 **員工自主的開源專案**，並非 MIDAS IT 官方發布或提供技術支援的產品。SDK
 本身的問題請至 [GitHub Issues](https://github.com/Dennis5882/MIDAS-API-NX-SDK/issues)；
 產品、授權或 Open API 服務本身的問題，請洽 MIDAS IT 官方支援管道。
+其他問題、意見回饋或想直接聯繫，歡迎透過作者 Dennis 的 [LinkedIn](https://www.linkedin.com/in/dennis58)。
 
 **從未寫過 Python 的結構工程師**，可參考
 [繁體中文快速入門指南](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/docs/zh-tw/quickstart.md)，
@@ -101,6 +104,7 @@ JavaScript/TypeScript(npm) 패키지로 제공하는 SDK입니다. 두 패키지
 **员工自主的开源项目**，并非 MIDAS IT 官方发布或提供技术支持的产品。SDK
 本身的问题请提交至 [GitHub Issues](https://github.com/Dennis5882/MIDAS-API-NX-SDK/issues)；
 产品、授权或 Open API 服务本身的问题，请联系 MIDAS IT 官方支持渠道。
+其他问题、反馈或想直接联系，欢迎通过作者 Dennis 的 [LinkedIn](https://www.linkedin.com/in/dennis58)。
 
 **Python 新手**可参考
 [快速入门指南](https://github.com/Dennis5882/MIDAS-API-NX-SDK/blob/main/docs/zh-tw/quickstart.md)（繁体中文版），
