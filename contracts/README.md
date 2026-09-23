@@ -109,12 +109,12 @@ Three things to know:
   across that change. These are public API anchors on both registries; changing
   one is a breaking change, and now it is a breaking change you have to make on
   purpose.
-- **It is optional, and its absence means the Python fallback.** 301 of the 305
-  npm resources have one; the 4 without a contracted surface keep taking their
+- **It is optional, and its absence means the Python fallback.** 302 of the 305
+  npm resources have one; the 3 without a contracted surface keep taking their
   names from Python, exactly as they already do for `name` and `products`.
-  Three of those four are the IEHG trio, which has no permitted source at all
-  and so can never be contracted; the fourth is `/DESIGN/STEEL/DSTL`, waiting on
-  promotion. `payloadTypeName` is separately optional: `/db/DRLS` is typed
+  All three are the IEHG trio, which has no permitted source at all and so can
+  never be contracted. `/DESIGN/STEEL/DSTL` was the fourth until it was promoted
+  on 2026-09-16. `payloadTypeName` is separately optional: `/db/DRLS` is typed
   `JsonObject` and has no payload type of its own, so having no name there is a
   fact, not a gap.
 - **The generator refuses a disagreement**, as it does for every other contract
@@ -240,14 +240,19 @@ same day, so all 70 are now named by one. They had none because chapter 23 is a
 in those chapters whose `Input URI` is a route of its own, and still skips the
 shared-table ones.
 
-What this does **not** yet do is let a contract create anything. The generator
-still iterates `DbResource` subclasses and still reads every Python module's
-AST for operations, tables and most payload shapes, so a contract for an
-endpoint Python does not declare is skipped, and `npm run generate` needs the
-Python source tree to work at all. It no longer needs an importable install:
-since 2026-09-17 the class facts are read from source, not imported.
-Inverting that is the remaining step, and it is the tables and payload shapes
-that are left.
+Until 2026-09-22 this section closed by saying the generator could not create
+anything - only *correct* facts about something Python already declared, so a
+contract for an endpoint with no `DbResource` subclass was skipped outright.
+**That is no longer true.** The resource list is contracts ∪ Python classes,
+the 70 operations and 87 table wrappers are listed by the contracts rather than
+found in Python, and no generated type's shape comes from a TypedDict. What still reads the Python source tree is the IEHG
+trio's resource identity - three endpoints with no permitted source, so there
+is nothing to invert them to. That is why `npm run generate` still needs the
+source tree present even though it needs no importable install (since
+2026-09-17 the class facts are read from source, not imported), and why
+deleting `src/midas_nx/` breaks generation while a built `dist/` keeps working.
+None of it reaches the published npm package, which declares no dependencies
+and ships `dist/` alone.
 
 ## Unknown message shapes
 
@@ -608,9 +613,10 @@ They need a two-layer contract — endpoint plus table — which the schema does
 model yet, so the extractor reports them rather than flattening them into
 endpoint contracts.
 
-Still to come: that two-layer model; reversal of the remaining Python-to-npm
-generation. **Folding `docs/coverage.json` into `contracts/verification/`
-landed 2026-09-21**: live evidence is now `contracts/verification/ledger.yaml`,
+Still to come: that two-layer model. The reversal of Python-to-npm generation
+that stood here landed 2026-09-21/22, bar the IEHG trio, which has no permitted
+source to reverse it to. **Folding `docs/coverage.json` into
+`contracts/verification/` landed 2026-09-21**: live evidence is now `contracts/verification/ledger.yaml`,
 resolved by `scripts/verification_ledger.py`, and `docs/coverage.json` keeps
 only the implementation inventory. The per-product files here still carry the
 session findings a contract cites for provenance.

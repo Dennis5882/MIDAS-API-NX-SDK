@@ -5,9 +5,11 @@
 only thing it reads it for: which types exist and in which namespace is decided
 by the contracts for the types they own, and deleting a TypedDict a contract has
 taken over changes nothing in `types.ts`. What is left is the types counted
-here. Deleting `src/midas_nx/` would still break generation until it reaches
-zero. Until this script, the only measurement of it was a hand count in
-CLAUDE.md -- the same kind of number `check_state_numbers.py` exists to stop
+here, which reached zero on 2026-09-22. Deleting `src/midas_nx/` still breaks
+generation even so, because the IEHG trio's resource identity is read from the
+same tree and has no permitted source to move to; a built `dist/` and
+`npm publish` are unaffected. Until this script, the only measurement of it
+was a hand count in CLAUDE.md -- the same kind of number `check_state_numbers.py` exists to stop
 trusting.
 
 This counts it from the generated file. `_render_types` marks every interface
@@ -31,8 +33,8 @@ without re-running the generator:
 
 One caveat on how the buckets are attributed: a payload name is matched
 against the contracts by name alone, while the generator keys its lookup by
-`(namespace, name)` -- `types.ts` is a stack of namespaces and 765
-declarations carry 742 distinct names. That is only a risk for the two
+`(namespace, name)` -- `types.ts` is a stack of namespaces and 751
+declarations carry 728 distinct names. That is only a risk for the two
 contract-aware buckets, and today it is not one: `python:contract-ignored` is
 empty and `python:unmerged` is exactly the waived contracts (an entry marked
 `excluded` does not waive: see generate_typescript_sdk._admits_incomplete_fields).

@@ -6,6 +6,11 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Documentation
+
+- README states that the package has no runtime dependencies and needs no
+  Python installation. No code change.
+
 ## 2.9.2 - 2026-09-22
 
 > **Breaking at the type level; nothing changes at runtime.** Measured against

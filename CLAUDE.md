@@ -16,7 +16,7 @@ python scripts/validate_contracts.py   # validate contracts/ and check both SDKs
 
 cd packages/typescript
 npm ci                          # JavaScript/TypeScript dev setup
-npm run generate                # regenerate npm resources/types from contracts, with reviewed Python fallback
+npm run generate                # regenerate npm resources/types from contracts (3 resources fall back to Python)
 npm run typecheck
 npm test
 npm run build
@@ -88,8 +88,9 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   generated resources, operations, tables, and payload types live under `src/generated/`.
   `package.json` is the npm version source; `package-lock.json` must change with it.
 - `scripts/generate_typescript_sdk.py` — for a contracted `/db/*` endpoint, derives the npm
-  endpoint/name/products/methods/manual-chapter surface from its contract; uncontracted resources
-  still use the reviewed Python fallback. Since 2026-09-02 a contract's optional `surface` block
+  endpoint/name/products/methods/manual-chapter surface from its contract; the three
+  uncontracted resources (the IEHG trio) still use the reviewed Python fallback.
+  Since 2026-09-02 a contract's optional `surface` block
   also owns the **published npm names** — `className`, `exportName`, `modulePath`,
   `payloadTypeName` — for the 302 resources that have one, and the generator raises if a name
   disagrees with the contract, so moving a Python module can no longer rename an npm export in
@@ -101,8 +102,11 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   `_resource_identity`). **Since 2026-09-17 it does not import `midas_nx`**: class facts are
   read from the source tree by `_static_resource_classes`, the same syntax trees the payload-type
   and operation readers already parse, and `tests/test_generate_typescript_sdk.py` fails if an
-  import comes back. A missing or broken Python install no longer stops `npm publish`. The
-  **source tree** is still load-bearing — deleting `src/midas_nx/` breaks `npm run generate`,
+  import comes back. A missing or broken Python install no longer stops `npm publish`.
+  **None of this is a dependency of the published npm package**, which declares no
+  dependencies and ships `dist/` alone: nothing an npm user installs reaches Python or
+  PyPI, and what is read is this repo's own source files at generation time, never an
+  installed distribution. The **source tree** is still load-bearing — deleting `src/midas_nx/` breaks `npm run generate`,
   though a built `dist/` keeps working — because the IEHG trio still takes its resource identity
   from Python classes. Its types no longer do: 0 of 751 generated npm types come from Python
   TypedDicts since 2026-09-22, when the last 14 - exported names nothing in the generated SDK
@@ -121,9 +125,10 @@ safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these t
   review decided, with evidence, is not part of this API (`/db/TDME`'s two iGen code tables), and
   does not stop the contract's field list becoming the payload type. Only 3 of 305 resources still take their
   identity from a Python class: the IEHG trio, which has no permitted source and so can never be
-  contracted. **`scripts/report_npm_type_provenance.py` measures that 162 rather than counting it
-  by hand** (`--check` holds it as a ceiling in CI). **Since 2026-09-22 the 70 operations and 87
-  table wrappers are listed by the contracts, not found in Python**: an operation `surface` and a
+  contracted. **`scripts/report_npm_type_provenance.py` measures the type side of that rather than
+  leaving it to a hand count**, and `--check` holds both it and the exported-type count as
+  ceilings in CI. **Since 2026-09-22 the 70 operations and 87 table wrappers
+  are listed by the contracts, not found in Python**: an operation `surface` and a
   table contract's `surface` state the export, its place, its argument or TABLE_TYPE, and the JSDoc
   (`documentation`, seeded from the docstring the generator used to render, so no published text
   changed; from then on npm's text is owned there and Python's docstring is Python's). The old

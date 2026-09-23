@@ -43,6 +43,10 @@ contracts**:
 | npm resource facts (name/products/methods/chapter) | 124 | 304 | 41% |
 | drafts currently promotable | 70 | 259 | |
 
+> That table and the two dated measurements below are records of where the
+> migration was on those days. **The current one is the last section of this
+> file** (2026-09-23); every count between here and there has been superseded.
+
 Stage 3 has begun, and begun correctly: `_contract_resource_surfaces()` in
 `scripts/generate_typescript_sdk.py` replaces only the facts a contract owns,
 leaves `className`/`pythonModule` as compatibility anchors, falls back to the
@@ -52,7 +56,10 @@ uncontracted 59%.
 
 The Python package reads nothing from `contracts/` at runtime and should not
 start: contracts are consumed at generation and validation time, so an installed
-`midas-nx` still needs only `requests`.
+`midas-nx` still needs only `requests`. The npm package is the mirror image and
+the same rule applies to it: it declares no dependencies at all, ships `dist/`
+alone, and nothing it does at runtime reaches `contracts/`, Python or PyPI.
+Everything described in this file happens at generation time, in this repo.
 
 ### Continuation measurement — 2026-08-29
 
@@ -835,3 +842,60 @@ in the row and in a schema `oneOf`. Nobody had swept for it.
 The lesson is narrow and worth keeping: **"the manual does not say" is a claim
 about the whole manual, and needs a search, not a reading of one section.** A
 one-line grep over the chapter would have found it either time.
+
+## Measurement — 2026-09-23, at `00a3c7f` (post-2.9.2)
+
+Supersedes every table above. **The migration is finished bar one endpoint
+family**, and what is left is not a backlog item: it has no permitted source, so
+there is nothing to migrate it to.
+
+| npm artefact | count | contract-sourced | still Python |
+| --- | ---: | ---: | ---: |
+| DB resource **inventory** (which resources exist) | 305 | **302** | 3 |
+| DB resource facts (name / products / methods / chapter) | 305 | **302** | 3 |
+| Payload, nested and argument types | 751 | **751** | **0** |
+| Operation wrappers (`/doc`, `/ope`, `/view`, design) | 70 | **70** | 0 |
+| Result-table wrappers | 87 | **87** | 0 |
+
+384 endpoint contracts and 87 table contracts exist. The 3 drafts the extractor
+still reports as awaiting review are the same IEHG trio, and they are not a
+backlog of three: a draft it cannot source cannot be promoted. No contract
+carries a non-`excluded` `unmergedTables` entry any more, so no payload is held
+back on a Python type for that reason.
+
+Compare the 2026-09-02 table: the inventory was 0/304 contract-sourced, payload
+types 253/750, and operation and table wrappers 0/70 and 0/87. What moved them
+was the schema gaining somewhere to put a name — `surface` for resources,
+`surface.nestedTypes` for nested objects, an operation `surface` and a table
+`surface`, `surface.argumentTypeName` and `argumentParts` for arguments — which
+is exactly what "the blocker is that a contract cannot name anything" said was
+needed.
+
+### The three that are left, and the question they keep raising
+
+`/db/IEHG-GL-M1`, `/db/IEHG-PSS-M1` and `/db/IEHG-TRUSS-M1` have no JSON Schema
+in the manual repo and 404 on `/info`, which leaves them with **no permitted
+source at all**. So `_resource_identity` still falls back to the Python class
+for their `endpoint`, `name`, `products` and `methods` — four metadata values,
+on 3 of 305 resources. Their payload types come from contracts like everything
+else.
+
+Three consequences, worth stating plainly because the shape of this invites the
+wrong conclusion:
+
+- **It is not a dependency.** `npm run generate` parses this repo's own files
+  under `src/midas_nx/` as syntax trees. It does not import `midas_nx` (since
+  2026-09-17; a test fails if an import comes back), does not read an installed
+  distribution, and never touches PyPI.
+- **It does not reach anyone who installs the package.** `package.json` declares
+  no dependencies and `files` is `dist`, README, CHANGELOG, LICENSE. An npm user
+  installs TypeScript output and nothing else. The only trace of Python left in
+  the generated sources is one Sphinx-style `:func:` cross-reference in a
+  `tables.ts` JSDoc comment.
+- **It does gate one workflow.** Deleting `src/midas_nx/` breaks
+  `npm run generate`. A built `dist/` and `npm publish` keep working, so a
+  missing or broken Python install cannot stop a release.
+
+Inverting the last three would mean inventing a shape for an endpoint no
+permitted source describes, which `contracts/README.md` forbids. The honest end
+state is this one, not zero.

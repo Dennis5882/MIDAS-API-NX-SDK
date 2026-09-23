@@ -13,6 +13,10 @@ Node.js 18 or newer is required:
 npm install midas-nx
 ```
 
+The package has no runtime dependencies, and nothing in it needs Python
+installed. The `midas-nx` package on PyPI is the separate Python SDK for the
+same API, not a requirement of this one.
+
 ```ts
 import { MidasClient } from "midas-nx";
 
