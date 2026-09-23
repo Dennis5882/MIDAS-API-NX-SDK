@@ -26,7 +26,35 @@ Before a commit, run the checks for every affected surface. CI (`.github/workflo
 runs the Python checks on 3.11/3.12/3.13/3.14 and the npm generation, typecheck, tests, package build, declaration
 safety checks, and packed-artifact smoke tests on Node.js 18/22. None of these tests needs a live server.
 
-## Sibling repos on this machine
+## How the npm and PyPI packages relate
+
+Three layers, and they answer differently. Getting one confused for another is
+what produced two wrong statements in this file on 2026-09-23, both written
+while tidying prose rather than measuring.
+
+**To someone installing either one: no relationship at all.** The npm package
+declares no dependencies and ships `dist/`, README, CHANGELOG and LICENSE;
+0 of 751 generated npm types come from Python. The wheel depends on `requests`
+and nothing else. Neither package requires the other, and an npm user never
+reaches Python or PyPI.
+
+**Deliberately tied, and reversible:** one version number across both
+registries (lockstep since 2026-08-28 — a release moves both even when only
+one surface changed), and one upstream, `contracts/`, of which both SDKs are
+equal implementations.
+
+**Building the npm package needs Python — all of it, not part of it.**
+`prepack` is `npm run generate && …`, `generate` shells out to
+`python scripts/generate_typescript_sdk.py`, and npm runs `prepack` for
+`npm pack` and `npm publish` alike, so publishing rebuilds `dist/` through
+Python every time; `publish-npm.yml` sets up Python 3.13 and installs the dev
+extra for PyYAML because of it. The *reason* left is small — the IEHG trio's
+four metadata values, 3 of 305 resources, with no permitted source to contract
+— but it gates the whole step: point `PYTHON_SRC` at an empty directory and
+generation dies at `DbResource itself`. A small remnant holding the gate is
+still holding the gate. An already-built `dist/` runs fine without any of this.
+
+## Sibling repos on this machine
 
 | Path | What it is |
 | --- | --- |
