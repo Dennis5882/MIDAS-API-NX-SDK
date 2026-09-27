@@ -11482,3 +11482,30 @@ call caused it.
 No ledger record is added - nothing was newly achieved - and no fixture flag
 moved. The Civil document used to pin the STCT mechanism was reset through the
 npm harness afterwards; both products are on empty documents.
+
+## 2026-09-27 (manual repo request) - four documentation findings re-measured on Build 09/24/2026: all unchanged
+
+`MIDAS-API/docs/error_reports/live_verification_requests_20260927.md` asked
+whether four findings from the 2026-09-18 request still hold before they are
+quoted in a Jira comment. The build had moved, so they were re-run with the same
+harness and payloads - `scripts/live_manual_feedback.py --case b1` (Gen),
+`--case a1` and `--case a3` (both products) - on empty documents, a real GET
+after each invocation, both documents reset through the npm harness afterwards.
+
+| Request item | 2026-09-18 item | Endpoint | Result on 09/24/2026 |
+| --- | --- | --- | --- |
+| A-8 | B-1 | `/db/SSEIS` | `IINHERENT_TORSION` and `NHERENT_TORSION` answer 201, vanish from the response, and GET keeps `INHERENT_TORSION = false`; the correct key stores `true` |
+| A-7 | A-1 | `/ope/MEMB` | `SELETION_TYPE` behaves exactly like `SELECTION_TYPE` on both products (`AELEM = [2,3]`) - an alias |
+| B-2 (2D) | A-3 (b) | `/db/TDNA` | `PROFY[1].RADIUS = false` answers 201 with `Wrong Field`, GET `Not Found Key`, both products |
+| B-2 (3D) | A-3 (c) | `/db/TDNA` | `PROF[1].RADIUS = [0, 20]` answers the same, both products |
+
+The numeric baselines round-tripped as numbers (`[0, 20, 0]` in `PROFY`, `PROFZ`
+and `PROF`) on both products, so the refusals are about the type. Every row is
+the 2026-09-18 result. The reply is
+`MIDAS-API/docs/error_reports/live_verification_feedback_20260927.md`, left
+uncommitted there beside the request, which is uncommitted too.
+
+Outside what was asked: `/ope/MEMB`'s POST response says `bREVERSE: false` and
+the GET after it says `true`, identically for both keys. The 2026-09-18 reply
+recorded only `AELEM`, so whether that was already so cannot be told from the
+record.
