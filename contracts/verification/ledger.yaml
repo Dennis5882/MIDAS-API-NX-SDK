@@ -4560,3 +4560,36 @@ records:
     SDKs on Gen; npm replayed the same emitted fixture on Gen on 2026-09-27. Across the whole run
     302 of 302 confirmed endpoint-product pairs passed through both SDKs and nothing regressed. Evidence
     in docs/live_verification_notes.md and docs/npm_live_evidence_scratch.md.
+- id: ledger-write-2026-09-28-1
+  endpoints:
+  - /db/RCHK
+  date: '2026-09-28'
+  level: write
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build 09/24/2026
+  outcome: success
+  method: New extras13 case built from 24_DB_Design.md section 3's first Request example record
+    (COLUMN on section 1), the update changing only SUBBAR_NAME to "#5", a value the same example
+    uses. The record key is a section number - the example's second record, a BEAM on section 2,
+    was refused against the base model with "Rebar for Beam/Column/Brace Checking has been entered
+    in the section no. 2, which has not been specified", and a direct probe with section 2 added
+    completed the round trip for both records. The case then completed create/read/update/read/delete/read
+    through scripts/live_crud_check.py and packages/typescript/scripts/live-crud.mjs on Civil, each
+    checkpointing to C:/temp and restoring an empty document. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-09-28-2
+  endpoints:
+  - /db/DRLS
+  date: '2026-09-28'
+  level: write
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build 09/24/2026
+  outcome: success
+  method: Direct probe, not a harness case - the record is an empty object keyed by node id, with no
+    value to tell a create from an update, which is why live_crud_check.py leaves it deferred. On a
+    /doc/NEW document holding the harness base model, the manual's own example (empty records on nodes 1, 2 and 5)
+    was created, GET /db/DRLS/1 read it back, a PUT of node 1 was accepted and read back, DELETE /db/DRLS/1
+    removed node 1 alone and left 2 and 5. Evidence in docs/live_verification_notes.md.

@@ -192,6 +192,7 @@ from midas_nx.db.design import (
     ModifyMemberType,
     ModifyWallMark,
     RcDesignCode,
+    RebarCheckInput,
     SteelDesignCode,
     UnbracedLength,
 )
@@ -3391,6 +3392,26 @@ def _extras12_cases() -> List[Case]:
     ]
 
 
+def _rchk_column(subbar_name: str) -> Dict[str, Any]:
+    """24_DB_Design.md section 3's first Request example record (COLUMN)."""
+    return {
+        "MEMBTYPE": "COLUMN", "ENVTYPE": 0,
+        "COLM": {
+            "vLAYER": [
+                {"INDEX": 1, "dDc": 0.1, "vPOSITION": [
+                    {"POSITION": "P1", "BAR_NUM": 24, "BAR_NAME1": "#4", "BAR_NAME2": ""}]},
+                {"INDEX": 2, "dDc": 0.2, "vPOSITION": [
+                    {"POSITION": "P1", "BAR_NUM": 24, "BAR_NAME1": "#4", "BAR_NAME2": ""}]},
+            ],
+            "SUB_BAR": {
+                "SUBBAR_NAME": subbar_name, "SUBBAR_DIST": 0.1, "SUBBAR_NUM": 12,
+                "SUBBAR_NAME_Y": "#4", "SUBBAR_NAME_Z": "#4",
+                "SUBBAR_NUM_Y": 12, "SUBBAR_NUM_Z": 12,
+            },
+        },
+    }
+
+
 def _extras13_cases() -> List[Case]:
     """batch 13: the tractable, non-rebar subset of db.design (8 of 13) --
     design-code selection, unbraced length, member/frame/slenderness
@@ -3402,12 +3423,18 @@ def _extras13_cases() -> List[Case]:
     returns a Steel Design Control Data error. Keep that product difference
     explicit rather than marking the shared case confirmed.
 
-    Deferred: /db/RCHK
-    (Civil-only, large nested vMAIN/vSUB_BAR/vLAYER rebar-check structures)
-    and /db/REBB/REBC/REBW/REBR (Gen-only, similarly large rebar-data
-    overrides -- REBW's own manual section was already found wrong and
-    fixed against a live production model, see db/design.py; the other
-    three untested here).
+    /db/RCHK (Civil-only) joined on 2026-09-28: the record key is a
+    section number, not an element - the manual example's second record
+    (a BEAM on section 2) answers "Rebar for Beam/Column/Brace Checking has
+    been entered in the section no. 2, which has not been specified" against
+    the base model, and the whole POST is refused with it. The case keeps the
+    example's first record (COLUMN, on the base model's section 1) and
+    changes only SUBBAR_NAME to "#5", a value the same example uses, so the
+    PUT is checked by a value that occurs nowhere else in the record.
+
+    Deferred: /db/REBB/REBC/REBW/REBR (Gen-only rebar-data overrides). On
+    2026-09-27/28 every body the product parses answered "Unknown Error" on a
+    scratch model, POST or PUT; see docs/live_verification_notes.md.
 
     DGNCODE values for DCON/DSTL: live-bisected 2026-08-24, not taken
     verbatim from the manual. The manual's own worked-example values
@@ -3429,6 +3456,13 @@ def _extras13_cases() -> List[Case]:
             {"DGNCODE": "KCI-USD07"},
             lambda p: p.get("DGNCODE"), "KCI-USD12", "KCI-USD07",
             item_id=1, confirmed=True,
+        ),
+        Case(
+            RebarCheckInput,
+            _rchk_column("#4"), _rchk_column("#5"),
+            lambda p: p.get("COLM", {}).get("SUB_BAR", {}).get("SUBBAR_NAME"),
+            "#4", "#5",
+            item_id=1, products=("civil",), confirmed=True,
         ),
         Case(
             SteelDesignCode,
@@ -4780,7 +4814,7 @@ TIERS: List[Tier] = [
     Tier("extras10", "batch 10: standalone subset of db.construction_stage's heat-of-hydration family (ETFC/CCFC/HSFC/HAHS/STBK/HSTG confirmed; HAHS uses a real SOLID fixture; HPCE fails live; HECB/HSPT/CSCS deferred)", _extras10_seeds, _extras10_cases),
     Tier("extras11", "batch 11a/c: /db/STCT (fails live -- iITER/TOL silently don't persist), /db/HSPT and /db/HECB confirmed with a SOLID hydration fixture", _extras11_seeds, _extras11_cases),
     Tier("extras12", "batch 12: db.bridge in full, all 4 confirmed (GSBG/GCMB/CAMB Civil-only, ULFC both products)", _extras12_seeds, _extras12_cases),
-    Tier("extras13", "batch 13: tractable non-rebar subset of db.design (7 confirmed both products; DSTL Civil-only success/Gen failure; RCHK/REBB/REBC/REBW/REBR deferred)", _no_seeds, _extras13_cases),
+    Tier("extras13", "batch 13: tractable non-rebar subset of db.design (7 confirmed both products; DSTL Civil-only success/Gen failure; RCHK Civil-only; REBB/REBC/REBW/REBR deferred)", _no_seeds, _extras13_cases),
     Tier("extras14", "batch 14: the 12 Civil-only-by-design endpoints (5 db.moving_loads, 7 db.analysis_control Hyper-S/-M1), all confirmed", _extras14_seeds, _extras14_cases),
     Tier("extras15", "batch 15: tractable pushover and prestress assignments", _extras15_seeds, _extras15_cases),
     Tier("extras16", "batch 16: Task A properties with complete manual request values", _no_seeds, _extras16_cases),

@@ -42,6 +42,8 @@ verification:
   records:
     - product: civil
       ref: db-read-sweep-2026-07-26
+    - product: civil
+      ref: db-rchk-crud-2026-09-28
 
 operations:
   - method: DELETE

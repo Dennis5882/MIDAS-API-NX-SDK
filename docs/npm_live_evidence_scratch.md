@@ -844,3 +844,17 @@ before and are not rows here.
 **Count:** 0 new endpoints - a re-verification - so the totals above stand:
 168 distinct `/db` endpoints and 4 distinct result-table operations; 172
 distinct npm public-API operations overall.
+
+### 2026-09-28 - `/db/RCHK`, a new extras13 case
+
+The built npm package ran the new case on an empty Civil document at v2.2
+Build 09/24/2026, beside the Python harness: the manual example's COLUMN record
+on section 1, updated by `SUB_BAR.SUBBAR_NAME`. Create/read/update/read/delete/
+read passed.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/RCHK` | 2026-09-28 | Civil |
+
+**Count:** 1 new endpoint; 169 distinct `/db` endpoints and 4 distinct
+result-table operations; 173 distinct npm public-API operations overall.

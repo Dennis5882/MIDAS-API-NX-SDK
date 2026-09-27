@@ -11605,3 +11605,46 @@ No ledger record: nothing was newly achieved. The document was reset with
 
 Correction to the entry above: the reply to the four-finding request was
 committed in the manual repo (`60e7ca3`), not left uncommitted.
+
+## 2026-09-28 - the `/db` endpoints with no live case: RCHK and DRLS written, five others pinned to a cause
+
+Sixteen write-capable `/db` endpoints had no case in `scripts/live_crud_check.py`.
+Four were set aside before starting: `/db/IEHG-GL-M1`, `/db/IEHG-PSS-M1` and
+`/db/IEHG-TRUSS-M1` have no permitted source, and `/db/REBB` was measured the
+day before. Of the rest, those with a manual Request example and light
+prerequisites were probed first, each (endpoint, product) on its own `/doc/NEW`
+document with the harness base model, POST -> GET -> PUT -> GET -> per-id DELETE
+-> GET. Both products v2.2, Build 09/24/2026; checkpoints `C:/temp/nocase*`.
+
+| Endpoint | Product | Result |
+| --- | --- | --- |
+| `/db/DRLS` | Gen | full round trip on the manual example (empty records on nodes 1, 2, 5); per-id DELETE removed node 1 alone |
+| `/db/RCHK` | Civil | full round trip once section 2 existed - **the key is a section number** |
+| `/db/REBR` | Gen | manual example (long keys) `Wrong Field`; the same record in `/info`'s short keys with `ID` `Unknown Error` - the REBB/REBC/REBW pattern |
+| `/db/CSCS` | both | `contains errors.(Item:Section Type)` on an SB or VALUE section; the manual's PSC and COMPOSITE section examples are themselves refused (`Section Dimensions ... incorrectly entered`), so no composite target could be built |
+| `/db/MVLDbs` | both | blocked at the lanes: under `BS`, `/db/LLAN` and `/db/LLANop` both refuse the manual lanes on wheel spacing, the 2026-09-27 finding; lanes created under `EUROCODE` are deleted when the code is switched to `BS`. The case body answers `Wrong Field` without lanes |
+
+**`/db/RCHK`.** The manual example's second record is a BEAM keyed 2; against
+the base model (one section) the POST answers `[Error] Rebar for
+Beam/Column/Brace Checking has been entered in the section no. 2, which has not
+been specified.` and stores neither record. With an SB section 2 added, both
+records were created, read, updated and deleted. The new extras13 case keeps
+the first record (COLUMN, section 1) byte for byte and changes only
+`SUB_BAR.SUBBAR_NAME` to `"#5"`, a value the same example uses, so the PUT is
+checked by a value found nowhere else in the record. It passed through both
+`live_crud_check.py` and `live-crud.mjs` on Civil and is `confirmed=True`.
+
+**`/db/DRLS`** stays without a harness case for the reason its tier docstring
+gives: an empty record has no value that tells a create from an update. The
+write is recorded from the probe.
+
+Ledger: `ledger-write-2026-09-28-1` (RCHK, Civil) and `-2` (DRLS, Gen). Both
+contracts were re-promoted to cite the new write sessions
+(`db-rchk-crud-2026-09-28`, `db-drls-crud-2026-09-28`), which keeps
+`check_verification_lag.py` at its ceiling of 40.
+
+Not attempted yet, each for a stated reason: `/db/IMFM`, `/db/FIBR` and
+`/db/IEHG` form a chain on `/db/FIMP` records whose own case is still
+unconfirmed; `/db/TDCS` needs `/db/TDNA` (unconfirmed) and `/db/CSCS` (above);
+`/db/EPMT-M1`, `/db/IEHG-BEAM-M1` and `/db/IMFM-M1` have no manual example, so
+`/info` is their only source.

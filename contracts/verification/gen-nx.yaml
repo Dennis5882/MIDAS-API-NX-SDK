@@ -859,3 +859,20 @@ records:
       rather than at nothing.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-drls-crud-2026-09-28
+    endpoints: ["/db/DRLS"]
+    date: "2026-09-28"
+    nxVersion: MIDAS Gen NX 2026 (v2.2), build 09/24/2026
+    level: write
+    outcome: success
+    method: >-
+      Direct probe on a /doc/NEW document holding the harness base model, the
+      manual's own example (empty records on nodes 1, 2 and 5). Not a harness
+      case: an empty record has no value to tell a create from an update.
+    finding: >-
+      POST created all three; GET /db/DRLS/1 read node 1 back as {}; a PUT of
+      node 1 was accepted and read back; DELETE /db/DRLS/1 removed node 1 alone
+      and left 2 and 5.
+    evidence:
+      - docs/live_verification_notes.md

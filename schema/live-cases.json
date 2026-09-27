@@ -12768,6 +12768,112 @@
     },
     {
       "tier": "extras13",
+      "endpoint": "/db/RCHK",
+      "name": "Rebar Input for Checking - Beam/Column",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "MEMBTYPE": "COLUMN",
+        "ENVTYPE": 0,
+        "COLM": {
+          "vLAYER": [
+            {
+              "INDEX": 1,
+              "dDc": 0.1,
+              "vPOSITION": [
+                {
+                  "POSITION": "P1",
+                  "BAR_NUM": 24,
+                  "BAR_NAME1": "#4",
+                  "BAR_NAME2": ""
+                }
+              ]
+            },
+            {
+              "INDEX": 2,
+              "dDc": 0.2,
+              "vPOSITION": [
+                {
+                  "POSITION": "P1",
+                  "BAR_NUM": 24,
+                  "BAR_NAME1": "#4",
+                  "BAR_NAME2": ""
+                }
+              ]
+            }
+          ],
+          "SUB_BAR": {
+            "SUBBAR_NAME": "#4",
+            "SUBBAR_DIST": 0.1,
+            "SUBBAR_NUM": 12,
+            "SUBBAR_NAME_Y": "#4",
+            "SUBBAR_NAME_Z": "#4",
+            "SUBBAR_NUM_Y": 12,
+            "SUBBAR_NUM_Z": 12
+          }
+        }
+      },
+      "updatePayload": {
+        "MEMBTYPE": "COLUMN",
+        "ENVTYPE": 0,
+        "COLM": {
+          "vLAYER": [
+            {
+              "INDEX": 1,
+              "dDc": 0.1,
+              "vPOSITION": [
+                {
+                  "POSITION": "P1",
+                  "BAR_NUM": 24,
+                  "BAR_NAME1": "#4",
+                  "BAR_NAME2": ""
+                }
+              ]
+            },
+            {
+              "INDEX": 2,
+              "dDc": 0.2,
+              "vPOSITION": [
+                {
+                  "POSITION": "P1",
+                  "BAR_NUM": 24,
+                  "BAR_NAME1": "#4",
+                  "BAR_NAME2": ""
+                }
+              ]
+            }
+          ],
+          "SUB_BAR": {
+            "SUBBAR_NAME": "#5",
+            "SUBBAR_DIST": 0.1,
+            "SUBBAR_NUM": 12,
+            "SUBBAR_NAME_Y": "#4",
+            "SUBBAR_NAME_Z": "#4",
+            "SUBBAR_NUM_Y": 12,
+            "SUBBAR_NUM_Z": 12
+          }
+        }
+      },
+      "expected": {
+        "created": "#4",
+        "updated": "#5"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras13",
       "endpoint": "/db/DSTL",
       "name": "Design Steel Code",
       "id": 1,

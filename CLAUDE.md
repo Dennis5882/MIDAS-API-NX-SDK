@@ -500,8 +500,8 @@ Two things that have already caused rework:
   a design contract can never carry `provenance: info_schema`. The three `/db/*` exceptions
   are the Civil Hyper-S trio `/db/IEHG-GL-M1`, `/db/IEHG-PSS-M1` and `/db/IEHG-TRUSS-M1`.
 - **`scripts/live_crud_check.py` write coverage is tracked in the script itself.** Cases carry
-  `confirmed=True` only once someone has watched them pass live (183 of 220 cases as of
-  2026-09-20; the first 43 landed 2026-07-29 on Civil NX, after `/db/NMAS`'s crash was
+  `confirmed=True` only once someone has watched them pass live (184 of 221 cases as of
+  2026-09-28; the first 43 landed 2026-07-29 on Civil NX, after `/db/NMAS`'s crash was
   root-caused and worked around — see above); a failure of
   a confirmed case is a **regression** and exits 1, while a failure of an
   unconfirmed one exits 3 and means "triage the fixture first". Don't flip `confirmed` to silence

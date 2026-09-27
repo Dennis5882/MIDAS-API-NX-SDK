@@ -779,3 +779,24 @@ records:
       rather than at nothing.
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-rchk-crud-2026-09-28
+    endpoints: ["/db/RCHK"]
+    date: "2026-09-28"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 09/24/2026
+    level: write
+    outcome: success
+    method: >-
+      24_DB_Design.md section 3's Request example on a /doc/NEW document holding
+      the harness base model, then the new extras13 case through both
+      live_crud_check.py and live-crud.mjs.
+    finding: >-
+      The record key is a section number. The example's BEAM record, keyed 2,
+      was refused with "Rebar for Beam/Column/Brace Checking has been entered in
+      the section no. 2, which has not been specified", and the whole POST with
+      it; with section 2 added both records completed the round trip. The
+      COLUMN record completed create/read/update/read/delete/read through both
+      SDKs, the update changing SUB_BAR.SUBBAR_NAME, and per-id DELETE removed
+      that record alone.
+    evidence:
+      - docs/live_verification_notes.md

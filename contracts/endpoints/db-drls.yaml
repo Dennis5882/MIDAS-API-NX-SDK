@@ -31,6 +31,8 @@ verification:
   records:
     - product: gen
       ref: db-read-sweep-2026-07-26
+    - product: gen
+      ref: db-drls-crud-2026-09-28
 
 operations:
   - method: DELETE
