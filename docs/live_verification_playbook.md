@@ -252,7 +252,9 @@ Each `/db` endpoint below write level is here with its reason. **Read its entry
 in `docs/live_verification_notes.md` before touching it**: re-running an
 unchanged fixture on an unchanged build answers nothing, and on 2026-09-19 all
 15 runnable cases in the first table were re-run and every answer matched the
-earlier build word for word.
+earlier build word for word. **On 2026-09-27 every unconfirmed case in the
+fixture - these tables' whole content - was re-run on Build 09/24/2026 through
+both SDKs, and nothing was newly resolved**: every answer matched its row below.
 
 ### 23 endpoints with a case that has never passed
 
@@ -266,7 +268,7 @@ earlier build word for word.
 | `/db/FBLA`, `/db/MVLDeu`, `/db/PHGE` | `Unknown Error` | product finding |
 | `/db/MADO`, `/db/SBDO`, `/db/DOEL`, `/db/SINF`, `/db/MVLDpl` | POST accepted, record not stored | product finding |
 | `/db/ACTL` | Gen refuses every payload; Civil accepts and drops `TOL` | settled product behaviour |
-| `/db/STCT` | drops `iITER`/`TOL` on both products | settled product behaviour |
+| `/db/STCT` | Gen: drops `iITER` (`wrote 30, read back None`). Civil: never measured - the first `POST /db/STAG` auto-creates `/db/STCT` id 1 with product defaults, so the case's own POST of id 1 is refused by both harnesses before it is sent (pinned 2026-09-27; Gen does not auto-create) | Gen settled; Civil needs a case that PUTs the auto-created record, not one that POSTs |
 | `/db/FIMP` | printed `ECU=0.003` violates the product's `Epsilon_cu > 0.8 / Z + Epsilon_co` | no compliant value documented |
 | `/db/NLLP` | `nllp_seed` answers `Unknown Error` on both | — |
 | `/db/NLNK`, `/db/NLNK-M1`, `/db/CGLP` | blocked by `nllp_seed` | NLLP |
@@ -296,7 +298,7 @@ They move no count. None is actionable unless its cause changes.
 | case | product | recorded cause |
 | --- | --- | --- |
 | `/db/LLANch`, `/db/SLANch`, `/db/LLANid`, `/db/IMPF` | gen | `Unavailable moving load code` for the code these lanes need |
-| `/db/LLANop`, `/db/SLANop` | gen | refused under `BS`, the code ch08 gives Gen for this family |
+| `/db/LLANop`, `/db/SLANop` | gen | refused under `BS`, the code ch08 gives Gen for this family - `contains errors.(Item:Wheel Spacing)`, the first time the item was recorded (2026-09-27) |
 | `/db/LCOM-SEISMIC` | civil | documented `ANAL="RS"` answers `The Load Combination Type is not supported.` |
 | `/db/HHCT` | civil | POST accepted, expected value not read back |
 | `/db/NLCT` | civil | `LINE_SEARCH_OPTION` required when `OPT_ENABLE_LINE_SEARCH` is true; the contract records no value for it |

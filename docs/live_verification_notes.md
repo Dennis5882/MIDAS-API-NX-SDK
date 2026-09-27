@@ -11415,3 +11415,70 @@ Recorded as `ledger-write-2026-09-27-1` (both products), `-2` (Civil) and `-3`
 (Gen), and as a session section in `docs/npm_live_evidence_scratch.md`. The
 playbook's scope command with `BUILD = "09/24/2026"` now prints 0. No fixture
 change: nothing newly confirmed, and a failing unconfirmed case is not flipped.
+
+## 2026-09-27 (after the re-verification) - the unconfirmed cases on Build 09/24/2026: nothing newly resolved
+
+The re-verification above detects regressions: it replays what already worked.
+A fix would show up in the other set, so the author asked for it too. Every
+unconfirmed case in the fixture was re-run on Build 09/24/2026, through both
+harnesses, on each product the case names - 34 cases over 32 endpoints (the
+three Civil cases the re-verification had already exercised were not repeated).
+Same machine, same procedure: checkpoint to `C:/temp`, `/doc/NEW`, base model,
+cases, empty document restored, a real GET after every invocation. Both products
+answered throughout, and no case is quarantined for crashing.
+
+**Nothing that failed on Build 09/15/2026 passes on 09/24/2026.** npm and Python
+agreed on every case, and every answer matched the reason the playbook already
+records:
+
+| Endpoint | Product | Answer on 09/24/2026, both SDKs |
+| --- | --- | --- |
+| `/db/EPST`, `/db/EPSE` | Gen | `Wrong Field` |
+| `/db/WVLD` | Civil | `Wrong Field` |
+| `/db/TDMF`, `/db/RPSC` | both | `Wrong Field` |
+| `/db/EPMT` | Civil | `Wrong Field` (Gen passes, as before) |
+| `/db/POGD` | Gen | `Wrong Field` (Civil passes, as before) |
+| `/db/HPCE` | both | `Wrong Key` |
+| `/db/FBLA`, `/db/MVLDeu`, `/db/PHGE`, `/db/NLLP` | both | `Unknown Error` |
+| `/db/NLNK`, `/db/NLNK-M1`, `/db/CGLP` | both / Civil | blocked: their `nllp_seed` answers `Unknown Error` |
+| `/db/MADO`, `/db/SBDO`, `/db/DOEL` | both | POST accepted, `id 90 missing after setup POST` |
+| `/db/SINF` | both | POST accepted, `id 1 missing after POST` |
+| `/db/MVLDpl` | Civil | POST accepted, `id 1 missing after POST` |
+| `/db/ACTL` | Gen / Civil | `Wrong Field` / PUT accepted, `TOL` not kept (expected 0.0005) |
+| `/db/FIMP` | both | `contains errors.(Item:Epsilon_cu > 0.8 / Z + Epsilon_co)` (MD-54) |
+| `/db/TDNA` | both | `(Item:IS_DB_TDNA_NOTENSIONCALC : Not Registered String)` |
+| `/db/TDPL` | both | blocked by the TDNA seed |
+| `/db/LLANch`, `/db/SLANch`, `/db/LLANid`, `/db/IMPF` | Gen | blocked: `/db/MVCD` answers `Unavailable moving load code` |
+| `/db/LLANop`, `/db/SLANop` | Gen | `contains errors.(Item:Wheel Spacing)` under `BS` |
+| `/db/DSTL` | Gen | `Errors detected in Steel Design Control Data.(Item:)` (Civil passes, as before) |
+| `/db/STCT` | Gen | `wrote 30, read back None` - `iITER` dropped |
+
+Three passes appeared in the run, and none of them is new. `/db/EPMT` on Gen and
+`/db/POGD` on Civil are the confirmed halves of their endpoints, run because the
+selection covered both products. `/db/DSTL` on Civil passed on 2026-09-01 as
+well; the case stays unconfirmed because `confirmed` covers both products it
+names and Gen still refuses.
+
+**Two rows gained detail, and neither is a change.** `/db/LLANop` and
+`/db/SLANop` on Gen were recorded as "refused under `BS`" with no item; the
+product names `Wheel Spacing`, which was simply never written down. And
+`/db/STCT` on Civil now has a mechanism. It was `BLOCKED` on 2026-09-21 with the
+same harness message - `id 1 already exists before this case ran; a seed in this
+selection owns it` - and that session could only say the precondition was "a
+model with construction stages". Built up one call at a time on an empty Civil
+document: the base model's nine steps leave `/db/STCT` empty, and so do the
+case's `BNGR`, `GRUP`, `CCFC` and `ETFC` seed steps; **the first
+`POST /db/STAG` creates `/db/STCT` id 1** with the product's defaults
+(`bLAST_FINAL: true`, `CPFC: "INTERNAL"`, `iNLA_TYPE: 1`, ...). On Gen the
+case's own POST of id 1 is accepted after the same setup, so Gen does not do
+this. The Civil half therefore still has never been measured, and the reason is
+the case's shape, not the product: a Civil case has to PUT the record the stage
+created rather than POST one. That is a fixture change and is not made here.
+
+I first reported this as a change in Build 09/24/2026. It is not: the 2026-09-21
+block on Build 09/15/2026 is the same event, read then without knowing which
+call caused it.
+
+No ledger record is added - nothing was newly achieved - and no fixture flag
+moved. The Civil document used to pin the STCT mechanism was reset through the
+npm harness afterwards; both products are on empty documents.
