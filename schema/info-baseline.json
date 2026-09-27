@@ -1,15 +1,15 @@
 {
- "$comment": "GET /info{endpoint} for every DbResource this SDK knows, on both products, captured read-only in one session. /info returns the server's own JSON Schema for an endpoint - it is schema, never model data, and no GET response body is included. This is a baseline: diffing a later capture against it is how a product patch's effect on the API surface gets measured. The 2026-09-02 patch was checked this way against 26 endpoints and changed none of them; this file widens that comparison to every endpoint that answers.",
- "capturedAt": "2026-09-03",
+ "$comment": "GET /info{endpoint} for every DbResource this SDK knows, on both products, captured read-only in one session. /info returns the server's own JSON Schema for an endpoint - it is schema, never model data, and no GET response body is included. This is a baseline: diffing a later capture against it is how a product patch's effect on the API surface gets measured. The 2026-09-02 patch was checked this way against 26 endpoints and changed none of them; this file widens that comparison to every endpoint that answers. Re-captured 2026-09-27 on Build 09/24/2026, both products, replacing the 2026-09-03 capture. Against that one it moves three pairs: /db/SECT's USE_HAMBLY_EQ on both products (which arrived with Build 09/15/2026) and /db/RPSC's CONTRIBUTION_FACTOR on Civil only. Both are now recorded by their contracts, which is the precondition for re-baselining at all: --against-contracts and --divergence are held as ceilings, so a capture carrying a property no contract knows would fail CI rather than quietly widen the gap. The products were on a second machine when this was taken; a capture from the machine holding this checkout, made the same day, was byte-identical across all 399 pairs.",
+ "capturedAt": "2026-09-27",
  "method": "GET /info{endpoint}",
  "nxVersions": {
-  "civil": "MIDAS Civil NX 2026 (v2.2), build 09/02/2026",
-  "gen": "MIDAS Gen NX 2026 (v2.1), build 09/02/2026"
+  "civil": "MIDAS Civil NX 2026 (v2.2), build 09/24/2026",
+  "gen": "MIDAS Gen NX 2026 (v2.2), build 09/24/2026"
  },
  "coverage": {
-  "endpointsSwept": 304,
+  "endpointsSwept": 305,
   "pairsWithSchema": 399,
-  "pairsAnswering404": 152,
+  "pairsAnswering404": 211,
   "note": "/info is served for /db/* only. Every /DESIGN/* pair 404s, which is an API fact rather than a URL bug - see CLAUDE.md. The three /db/* exceptions are the Civil Hyper-S trio /db/IEHG-GL-M1, /db/IEHG-PSS-M1 and /db/IEHG-TRUSS-M1."
  },
  "endpoints": {
@@ -217,6 +217,10 @@
    "gen": {
     "error": "MidasNotFoundError: GET /info/DESIGN/RC/KDS-41-20-2022/MATD -> 404: 404 Not Found, Please check your request u",
     "status": null
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/DESIGN/RC/KDS-41-20-2022/MATD -> 404: 404 Not Found, Please check your request url. (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/DESIGN/RC/KDS-41-20-2022/MBTP": {
@@ -283,24 +287,40 @@
    "gen": {
     "error": "MidasNotFoundError: GET /info/DESIGN/RC/KDS-41-20-2022/REBB -> 404: 404 Not Found, Please check your request u",
     "status": null
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/DESIGN/RC/KDS-41-20-2022/REBB -> 404: 404 Not Found, Please check your request url. (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/DESIGN/RC/KDS-41-20-2022/REBC": {
    "gen": {
     "error": "MidasNotFoundError: GET /info/DESIGN/RC/KDS-41-20-2022/REBC -> 404: 404 Not Found, Please check your request u",
     "status": null
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/DESIGN/RC/KDS-41-20-2022/REBC -> 404: 404 Not Found, Please check your request url. (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/DESIGN/RC/KDS-41-20-2022/REBR": {
    "gen": {
     "error": "MidasNotFoundError: GET /info/DESIGN/RC/KDS-41-20-2022/REBR -> 404: 404 Not Found, Please check your request u",
     "status": null
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/DESIGN/RC/KDS-41-20-2022/REBR -> 404: 404 Not Found, Please check your request url. (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/DESIGN/RC/KDS-41-20-2022/REBW": {
    "gen": {
     "error": "MidasNotFoundError: GET /info/DESIGN/RC/KDS-41-20-2022/REBW -> 404: 404 Not Found, Please check your request u",
     "status": null
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/DESIGN/RC/KDS-41-20-2022/REBW -> 404: 404 Not Found, Please check your request url. (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/DESIGN/RC/KDS-41-20-2022/REXC": {
@@ -357,12 +377,20 @@
    "gen": {
     "error": "MidasNotFoundError: GET /info/DESIGN/RC/KDS-41-20-2022/TRFT -> 404: 404 Not Found, Please check your request u",
     "status": null
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/DESIGN/RC/KDS-41-20-2022/TRFT -> 404: 404 Not Found, Please check your request url. (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/DESIGN/RC/KDS-41-20-2022/ULCT": {
    "gen": {
     "error": "MidasNotFoundError: GET /info/DESIGN/RC/KDS-41-20-2022/ULCT -> 404: 404 Not Found, Please check your request u",
     "status": null
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/DESIGN/RC/KDS-41-20-2022/ULCT -> 404: 404 Not Found, Please check your request url. (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/DESIGN/RC/KDS-41-20-2022/WMAK": {
@@ -489,6 +517,10 @@
    "gen": {
     "error": "MidasNotFoundError: GET /info/DESIGN/SRC/AIK-SRC2K/MATD -> 404: 404 Not Found, Please check your request url.",
     "status": null
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/DESIGN/SRC/AIK-SRC2K/MATD -> 404: 404 Not Found, Please check your request url. (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/DESIGN/SRC/AIK-SRC2K/MBTP": {
@@ -765,6 +797,10 @@
    "gen": {
     "error": "MidasNotFoundError: GET /info/DESIGN/STEEL/KDS-41-30-2022/ULCT -> 404: 404 Not Found, Please check your reques",
     "status": null
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/DESIGN/STEEL/KDS-41-30-2022/ULCT -> 404: 404 Not Found, Please check your request url. (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/ACTL": {
@@ -976,6 +1012,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/ACTL-M1 -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/BCCT": {
@@ -1195,6 +1235,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/BCGA-M1 -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/BCGD-M1": {
@@ -1219,6 +1263,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/BCGD-M1 -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/BMLD": {
@@ -1896,6 +1944,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/CAMB -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/CCFC": {
@@ -2054,6 +2106,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/CJFG -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/CLDR": {
@@ -2243,6 +2299,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/CMCS -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/CNLD": {
@@ -2899,6 +2959,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/CRGR -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/CRPC": {
@@ -4028,6 +4092,10 @@
      }
     },
     "status": 200
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/DRLS -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/DSTL": {
@@ -4097,6 +4165,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/DYFG -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/DYLA": {
@@ -4121,6 +4193,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/DYLA -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/DYNF": {
@@ -4158,6 +4234,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/DYNF -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/EDMP": {
@@ -4528,6 +4608,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/EIGV-M1 -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/ELEM": {
@@ -5791,6 +5875,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/EPMT-M1 -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/EPSE": {
@@ -6113,6 +6201,10 @@
      }
     },
     "status": 200
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/EPST -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/ESSF": {
@@ -6481,6 +6573,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/EWSF -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/EXLD": {
@@ -9151,6 +9247,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/GCMB -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/GRDP": {
@@ -9628,6 +9728,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/GSBG -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/GSPR": {
@@ -10363,6 +10467,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/HHCT-M1 -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/HPCE": {
@@ -11054,24 +11162,40 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/IEHG-BEAM-M1 -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/IEHG-GL-M1": {
    "civil": {
     "error": "MidasNotFoundError: GET /info/db/IEHG-GL-M1 -> 404: 404 Not Found",
     "status": null
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/IEHG-GL-M1 -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/IEHG-PSS-M1": {
    "civil": {
     "error": "MidasNotFoundError: GET /info/db/IEHG-PSS-M1 -> 404: 404 Not Found",
     "status": null
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/IEHG-PSS-M1 -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/IEHG-TRUSS-M1": {
    "civil": {
     "error": "MidasNotFoundError: GET /info/db/IEHG-TRUSS-M1 -> 404: 404 Not Found",
     "status": null
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/IEHG-TRUSS-M1 -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/IELC": {
@@ -11289,6 +11413,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/IMFM-M1 -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/IMPF": {
@@ -16045,6 +16173,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/MATL-M1 -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/MBTP": {
@@ -25135,6 +25267,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/NLCT-M1 -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/NLLP": {
@@ -26208,6 +26344,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/NLNK-M1 -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/NMAS": {
@@ -27176,6 +27316,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/PLCB -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/PNLA": {
@@ -28468,6 +28612,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/POGD-M1 -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/POLC": {
@@ -28798,6 +28946,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/POLC-M1 -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/POSL": {
@@ -28984,6 +29136,10 @@
      }
     },
     "status": 200
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/POSP -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/PRES": {
@@ -29981,6 +30137,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/RCHK -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/REBB": {
@@ -30225,6 +30385,10 @@
      }
     },
     "status": 200
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/REBB -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/REBC": {
@@ -30344,6 +30508,10 @@
      }
     },
     "status": 200
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/REBC -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/REBR": {
@@ -30443,6 +30611,10 @@
      }
     },
     "status": 200
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/REBR -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/REBW": {
@@ -30556,6 +30728,10 @@
      }
     },
     "status": 200
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/REBW -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/RIGD": {
@@ -30798,6 +30974,10 @@
          "type": "object"
         },
         "type": "array"
+       },
+       "CONTRIBUTION_FACTOR": {
+        "description": " Concrete Contribution Factor (Steel Composite Type2 only, applied when OPT_CRACKED is true, otherwise reset to 1)",
+        "type": "number"
        }
       },
       "type": "object"
@@ -31193,6 +31373,10 @@
      }
     },
     "status": 200
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/SDHY -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/SDIS": {
@@ -31378,6 +31562,10 @@
      }
     },
     "status": 200
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/SDIS -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/SDSP": {
@@ -35711,6 +35899,10 @@
          "Z_VAR": {
           "description": " LzType",
           "type": "integer"
+         },
+         "USE_HAMBLY_EQ": {
+          "description": " Use Hambly Eq. for Ixx",
+          "type": "boolean"
          }
         },
         "type": "object"
@@ -38025,6 +38217,10 @@
          "Z_VAR": {
           "description": " LzType",
           "type": "integer"
+         },
+         "USE_HAMBLY_EQ": {
+          "description": " Use Hambly Eq. for Ixx",
+          "type": "boolean"
          }
         },
         "type": "object"
@@ -41385,6 +41581,10 @@
          "Z_VAR": {
           "description": " LzType",
           "type": "integer"
+         },
+         "USE_HAMBLY_EQ": {
+          "description": " Use Hambly Eq. for Ixx",
+          "type": "boolean"
          }
         },
         "type": "object"
@@ -43699,6 +43899,10 @@
          "Z_VAR": {
           "description": " LzType",
           "type": "integer"
+         },
+         "USE_HAMBLY_EQ": {
+          "description": " Use Hambly Eq. for Ixx",
+          "type": "boolean"
          }
         },
         "type": "object"
@@ -44807,6 +45011,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/SPAN -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/SPFC": {
@@ -46731,6 +46939,10 @@
      }
     },
     "status": 200
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/SSEIS -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/SSPS": {
@@ -48184,6 +48396,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/STCT-M1 -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/STLD": {
@@ -48382,6 +48598,10 @@
      }
     },
     "status": 200
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/STOR -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/STRPSSM": {
@@ -48441,6 +48661,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/STRPSSM -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/STYP": {
@@ -48600,6 +48824,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/STYP-M1 -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/SWIND": {
@@ -49089,6 +49317,10 @@
      }
     },
     "status": 200
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/SWIND -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/TDCS": {
@@ -51755,6 +51987,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/THGC-M1 -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/THIK": {
@@ -53057,6 +53293,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/THIS-M1 -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/THMS": {
@@ -53346,6 +53586,10 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/THOO-M1 -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   },
   "/db/THSL": {
@@ -54468,6 +54712,20 @@
      }
     },
     "status": 200
+   },
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/db/WVLD -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
+   }
+  },
+  "/DESIGN/STEEL/DSTL": {
+   "gen": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/DESIGN/STEEL/DSTL -> 404: 404 Not Found, Please check your request url. (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
+   },
+   "civil": {
+    "status": null,
+    "error": "MidasNotFoundError: GET /info/DESIGN/STEEL/DSTL -> 404: 404 Not Found, Please check your request url. (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
    }
   }
  }

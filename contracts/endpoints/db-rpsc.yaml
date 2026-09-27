@@ -119,6 +119,28 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+  - key: CONTRIBUTION_FACTOR
+    description: >-
+      Concrete Contribution Factor (Steel Composite Type2 only, applied when
+      OPT_CRACKED is true, otherwise reset to 1)
+    products: [civil]
+    type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    provenanceNote: >-
+      The manual documents this nowhere - neither the key nor "Contribution
+      Factor" appears in any chapter. GET /info/db/RPSC declares it on Civil
+      NX and not on Gen NX, with the description quoted above, measured
+      2026-09-27 on both products and on two separate machines, whose 399
+      /info pairs were byte-identical. It is absent from the 2026-09-03
+      baseline, so it arrived somewhere between Build 09/02/2026 and
+      09/24/2026; nothing recorded narrows that further. requirement is
+      unstated because /info declares no required array and no document
+      makes the claim, and the description's condition is not promoted to
+      appliesWhen because an /info schema is flat and states no branch.
   - key: SBAR_ITEMS
     description: >-
       Shear Reinforcement Data (Array, Index 0=i-section / 1=j-section)

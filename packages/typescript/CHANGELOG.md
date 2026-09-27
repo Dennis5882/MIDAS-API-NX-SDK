@@ -6,6 +6,21 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Added
+
+- `SectionReinforcementPayload.CONTRIBUTION_FACTOR?: number` (`/db/RPSC`),
+  the concrete contribution factor for Steel Composite Type2 sections,
+  applied when `OPT_CRACKED` is true. **Civil NX only.**
+- `SectionPayload`'s `SECT_BEFORE.USE_HAMBLY_EQ?: boolean` (`/db/SECT`), use
+  Hambly's equation for Ixx, on both products.
+
+  Both are optional and additive: nothing that compiled before stops
+  compiling, and no export is added, removed or renamed (751 before and
+  after). Neither appears in MIDAS IT's manual; both are declared by the
+  product's own `/info` schema on Build 09/24/2026, which is the source
+  they are typed from, and neither has been sent to a product by this
+  package's tests yet.
+
 ### Documentation
 
 - The README's MAPI-key and quickstart links now point at an npm quickstart

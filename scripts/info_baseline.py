@@ -148,7 +148,11 @@ EXPECTED_AGAINST_CONTRACTS: _AgainstContractsExpectation = {
 # were still unmerged.
 EXPECTED_DIVERGENCE: _DivergenceExpectation = {
     "endpointsAnsweringBothAtLeast": 177,
-    "divergentSchemasAtMost": 10,
+    # 10 -> 11 on 2026-09-27, when the baseline moved to Build 09/24/2026:
+    # /db/RPSC began declaring CONTRIBUTION_FACTOR on Civil only. A product
+    # change, tagged `products: [civil]` in the contract, so tagging stays
+    # complete - only the count of divergent endpoints moved.
+    "divergentSchemasAtMost": 11,
     "absentFieldsAtMost": {"/db/SPLC": 4},
 }
 

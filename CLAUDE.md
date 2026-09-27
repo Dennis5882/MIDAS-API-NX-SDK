@@ -216,7 +216,7 @@ still holding the gate. An already-built `dist/` runs fine without any of this.
   leaves them with **no permitted source at all**; they cannot be contracted as things stand.
   See `docs/contract_migration_brief.md`.
 - `schema/info-baseline.json` — every `GET /info{endpoint}` the products answer, both
-  products, captured read-only 2026-09-03. It is the server's own schema, never model
+  products, captured read-only (re-captured 2026-09-27 on Build 09/24/2026, replacing 2026-09-03). It is the server's own schema, never model
   data. `scripts/info_baseline.py` captures it (`--capture`, GET only, safe against an
   open model), diffs a fresh capture against it (`--diff`, which is how a product
   patch's effect on the API surface gets measured), and sweeps it against every
@@ -226,7 +226,7 @@ still holding the gate. An already-built `dist/` runs fine without any of this.
   server refuses. Reviewing a generated diff proves the generator followed the
   contract; only `/info` proves the contract followed the product. It sweeps **both
   directions** — properties `/info` declares that no contract records, and names a
-  contract publishes that `/info` declares nowhere. The second list is short (4 hits
+  contract publishes that `/info` declares nowhere. The second list is short (7 hits on 6 endpoints,
   across 384 contracts) and is where a wrong *name* shows up rather than a missing
   one, which a one-directional sweep cannot see: MD-37 and MD-38 were both found
   that way. **Read the second list weakly.** `/info` listing a property is not the
@@ -238,7 +238,7 @@ still holding the gate. An already-built `dist/` runs fine without any of this.
   waive a property it deliberately does not publish with `infoOnly`, which exists
   for placeholders like `/db/DRLS`'s `DUMMY`, not for anything a caller might send.
   `--divergence` answers a third question: **`products: [civil, gen]` says the route
-  answers on both, never that the record is the same.** Ten of the 177 both-product
+  answers on both, never that the record is the same.** Eleven of the 177 both-product (ten until 2026-09-27, when `/db/RPSC` began declaring `CONTRIBUTION_FACTOR` on Civil only)
   endpoints declare different schemas, so a field listed without its own `products`
   is a claim about both products that is sometimes false; tag it (MD-46).
   **`/info` is neither a superset nor a subset of what the server accepts.** It

@@ -305,6 +305,30 @@ fields:
         provenance: manual
         # RESOLVED: the manual nests this under 'SECT_BEFORE' by numbering it
         # '(12)', not by naming a path
+      - key: USE_HAMBLY_EQ
+        description: >-
+          Use Hambly Eq. for Ixx
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        provenanceNote: >-
+          The manual documents this nowhere; the common Specifications table
+          stops at row (12). GET /info/db/SECT declares it on both products,
+          identically, with the description quoted above, directly after
+          USE_SHEAR_DEFORM and USE_WARPING_EFFECT - rows (11) and (12), the
+          two other Boolean checkboxes of the same group. It arrived with
+          Build 09/15/2026 and was still declared on Build 09/24/2026. It was
+          held uncontracted on 2026-09-16 in case it was a beta flag, pending
+          the next manual sync; that sync (MIDAS-API 685be56, 2026-09-24)
+          came and did not add it, and a second build kept it on both
+          products, so it is recorded from /info now. requirement is
+          unstated because /info declares no required array. Ixx is the
+          torsional constant. SECT_AFTER declares the same property, but this
+          contract does not model SECT_AFTER at all (see the note at the end),
+          so only this path is recorded.
 
 
 variants:

@@ -124,13 +124,16 @@ def test_divergence_check_rejects_a_new_absent_field(
 def test_divergence_check_rejects_a_newly_divergent_endpoint(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    """Ten endpoints declare different schemas. An eleventh needs a decision.
+    """One more divergent endpoint than the established count needs a decision.
 
     A product patch can make a record diverge that did not before, and every
     field of it then needs a `products` tag or it becomes a claim about both
-    products that is false on one.
+    products that is false on one. The count is read from the ceiling rather
+    than restated here: this test pinned "10 to 11" until /db/RPSC became the
+    eleventh on 2026-09-27, and a restated figure is one more place to go stale.
     """
     both, different, untagged, absent = _established_divergence()
 
     assert _run_divergence_check((both, different + 1, untagged, absent)) == 1
-    assert "declaring different schemas grew from 10 to 11" in capsys.readouterr().err
+    expected = f"declaring different schemas grew from {different} to {different + 1}"
+    assert expected in capsys.readouterr().err

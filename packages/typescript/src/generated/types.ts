@@ -11404,6 +11404,8 @@ export namespace DbPropertiesSectionTypes {
       USE_SHEAR_DEFORM?: boolean;
       /** Consider Warping Effect */
       USE_WARPING_EFFECT?: boolean;
+      /** Use Hambly Eq. for Ixx */
+      USE_HAMBLY_EQ?: boolean;
     };
   } & (
     {
@@ -11542,6 +11544,8 @@ export namespace DbPropertiesSectionTypes {
     OPT_SBAR_J: boolean;
     /** Cracked Section */
     OPT_CRACKED: boolean;
+    /** Concrete Contribution Factor (Steel Composite Type2 only, applied when OPT_CRACKED is true, otherwise reset to 1) Civil NX only. */
+    CONTRIBUTION_FACTOR?: number;
     /** Shear Reinforcement Data (Array, Index 0=i-section / 1=j-section) */
     SBAR_ITEMS: Array<{
       /** Diagonal Reinforcement (DR) */

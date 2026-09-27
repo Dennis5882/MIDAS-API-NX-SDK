@@ -11337,3 +11337,28 @@ none is needed from here - those documents are not reachable through the API
 any more, and they are 10-node scratch models. The products now answering are
 on PC A with empty documents. The three `/doc/SAVEAS` checkpoints on PC B did
 write, by the same argument as the table above.
+
+## 2026-09-27 (closing) - both undocumented properties contracted, and the baseline moved
+
+The two sections above left `schema/info-baseline.json` at its 2026-09-03
+capture on purpose, because `/db/SECT`'s `USE_HAMBLY_EQ` and `/db/RPSC`'s
+`CONTRIBUTION_FACTOR` were declared by `/info` and recorded by no contract, and
+`--against-contracts` holds that gap as a ceiling. At the author's direction
+both are now contracted from `/info` (`provenance: info_schema`,
+`requirement: unstated`, each with its `/info` description verbatim and the
+evidence in `provenanceNote`), and the baseline is the Build 09/24/2026 capture
+taken earlier today on PC B, whose build strings are the ones the author read
+from the About dialogs. A PC A capture the same day was byte-identical across
+all 399 pairs.
+
+What changed the call on `USE_HAMBLY_EQ`, held since 2026-09-16: the reason for
+holding was to wait for the next manual sync, and that sync (MIDAS-API
+`685be56`, 2026-09-24) came without it, while a second build kept it on both
+products. Only `SECT_BEFORE`'s copy is recorded - the contract does not model
+`SECT_AFTER` - and `--against-contracts` stays within its `/db/SECT` ceiling
+without being raised. `--divergence`'s ceiling did move, 10 -> 11, because
+`/db/RPSC` is now a record the two products declare differently; the field is
+tagged `products: [civil]`, so tagging stays complete.
+
+The npm surface gains two optional members and nothing else. Neither property
+has been sent to a product.

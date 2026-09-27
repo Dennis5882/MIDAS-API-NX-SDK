@@ -343,20 +343,18 @@ declares one - not as a queue to rescan.
   (recorded in the contract's PUT `notes`).
 - **`/db/THIS-M1`'s 20 `/info` properties with no manual row** — the ceiling in
   `info_baseline.py` holds the number.
-- **`/db/SECT`'s `USE_HAMBLY_EQ`** — added by Build 09/15/2026 on both
-  products, documented nowhere. Not contracted, and
-  `schema/info-baseline.json` must not be re-captured: CI fails when the
-  uncontracted set grows. At the next manual sync, check whether
-  `04_DB_Properties.md`'s 공통 Specifications table grows a row.
-- **`/db/RPSC`'s `CONTRIBUTION_FACTOR`** — the same shape of finding, seen
-  2026-09-27: declared on **Civil only**, documented nowhere, described by
-  `/info` as `Concrete Contribution Factor (Steel Composite Type2 only,
-  applied when OPT_CRACKED is true, otherwise reset to 1)`. It arrived
-  somewhere between Build 09/02/2026 and 09/24/2026 and nothing recorded
-  narrows it further. Same two consequences: not contracted, and it is the
-  second reason the baseline must not be re-captured — it would grow the
-  `--against-contracts` set *and* the `--divergence` set, making `/db/RPSC`
-  an eleventh endpoint whose two products declare different records.
+- **`/db/SECT`'s `USE_HAMBLY_EQ`** and **`/db/RPSC`'s `CONTRIBUTION_FACTOR`**
+  — both documented nowhere, both contracted from `/info` on 2026-09-27
+  (`provenance: info_schema`, `requirement: unstated`), and
+  `schema/info-baseline.json` re-captured on Build 09/24/2026 in the same
+  change. `USE_HAMBLY_EQ` had been held since 2026-09-16 pending the next
+  manual sync; that sync came (MIDAS-API `685be56`) without it, and a second
+  build kept it on both products. `CONTRIBUTION_FACTOR` is Civil-only, which
+  raised `--divergence`'s ceiling 10 -> 11. Only `SECT_BEFORE`'s copy of
+  `USE_HAMBLY_EQ` is recorded: the contract does not model `SECT_AFTER`. At
+  the next manual sync, check whether either appears — if it does, the
+  manual's text replaces the `/info` description, and a condition it states
+  becomes `appliesWhen`.
 - **`/db/MVLDbs`'s contract shape**, and the ch24 rebar family above.
 
 ## Live-session rules
