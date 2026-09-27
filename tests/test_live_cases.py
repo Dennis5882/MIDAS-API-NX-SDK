@@ -194,25 +194,32 @@ def test_extras16_epmt_fixture_is_the_manual_von_mises_example() -> None:
     assert epmt["updatePayload"]["NAME"] == "Steel_VM"
 
 
-def test_extras16_fimp_fixture_is_the_manual_kent_park_example() -> None:
+def test_extras16_fimp_fixture_is_the_article_kent_park_example() -> None:
+    """MIDASIT article 35944335180569's own example, not the vendored chapter's.
+
+    The chapter prints EC1_METHOD 1, EC1 0.0035, Z 100 and STRENGTH_AFTER 0,
+    which the product refuses (MD-54); the article prints these values, which
+    both products accept (2026-09-28). Keyed 1 because /db/FIMP stores a POST
+    under the next serial id whatever key it names.
+    """
     cases = json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
     fimp = next(case for case in cases if case["endpoint"] == "/db/FIMP")
 
-    assert fimp["id"] == 3
+    assert fimp["id"] == 1
+    assert fimp["confirmed"] is True
     assert fimp["createPayload"] == {
         "NAME": "Conc_Kent&Park",
         "MATL_TYPE": "CONC",
         "HYS_MODEL": "KPM",
         "CONC": {"KENPAR": {
             "FC": 30000,
-            "PARTIAL_FACT": 1.0,
-            "K": 1.0,
             "EC0": 0.002,
-            "EC1_METHOD": 1,
-            "EC1": 0.0035,
-            "Z": 100,
+            "K": 1,
             "ECU": 0.003,
-            "STRENGTH_AFTER": 0,
+            "PARTIAL_FACT": 1,
+            "EC1_METHOD": 0,
+            "EC1": 0.0025,
+            "STRENGTH_AFTER": 1,
         }},
     }
     assert fimp["updatePayload"]["NAME"] == "Concrete_KP"

@@ -800,3 +800,37 @@ records:
       that record alone.
     evidence:
       - docs/live_verification_notes.md
+  - id: fiber-chain-crud-2026-09-28
+    endpoints: ["/db/FIMP", "/db/IMFM", "/db/FIBR"]
+    date: "2026-09-28"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 09/24/2026
+    level: write
+    outcome: success
+    method: >-
+      live_crud_check.py and live-crud.mjs, extras16's /db/FIMP case and the new
+      extras20 tier, on /doc/NEW documents holding the harness base model.
+    finding: >-
+      All 19 Request examples in MIDASIT article 35944335180569 are accepted by
+      POST; the vendored chapter's Kent & Park body is not the article's and is
+      refused. /db/FIMP ignores the key a POST names and stores the record under
+      the next serial id, while the response echoes the requested key. /db/IMFM
+      is keyed by material id and /db/FIBR by its own id; each, and /db/FIMP,
+      completed create/read/update/read/delete/read, per-id DELETE removing one
+      record.
+    evidence:
+      - docs/live_verification_notes.md
+  - id: db-imfm-m1-crud-2026-09-28
+    endpoints: ["/db/IMFM-M1"]
+    date: "2026-09-28"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 09/24/2026
+    level: write
+    outcome: success
+    method: >-
+      live_crud_check.py and live-crud.mjs, extras20's /db/IMFM-M1 case, on a
+      /doc/NEW document holding the harness base model and four FIMP records.
+    finding: >-
+      The shape /info declares - CONCRETE {UN_CONC_NAME, CONF_CONC_NAME,
+      REBAR_NAME} - is accepted and read back as sent; a PUT changing
+      REBAR_NAME landed, and per-id DELETE emptied the table.
+    evidence:
+      - docs/live_verification_notes.md

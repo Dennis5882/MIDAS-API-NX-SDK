@@ -1,0 +1,703 @@
+{
+  "source": "MIDASIT Help Center article 35944335180569 (Inelastic Material Properties, en-us, edited 2024-08-05), every Request example, record key as printed. Fetched 2026-09-28 through the Help Center API. All 19 records were accepted by POST on Gen NX and Civil NX v2.2 Build 09/24/2026.",
+  "examples": {
+    "3": {
+      "NAME": "Conc_Kent&Park",
+      "MATL_TYPE": "CONC",
+      "HYS_MODEL": "KPM",
+      "CONC": {
+        "KENPAR": {
+          "FC": 30000,
+          "EC0": 0.002,
+          "K": 1,
+          "ECU": 0.003,
+          "PARTIAL_FACT": 1,
+          "EC1_METHOD": 0,
+          "EC1": 0.0025,
+          "STRENGTH_AFTER": 1
+        }
+      }
+    },
+    "4": {
+      "NAME": "Conc_JCSS",
+      "MATL_TYPE": "CONC",
+      "HYS_MODEL": "JCSSM",
+      "CONC": {
+        "JPSTND": {
+          "FC": 30000,
+          "EPEAK": 0.002,
+          "PARTIAL_FACT": 1
+        }
+      }
+    },
+    "5": {
+      "NAME": "Conc_JRS24",
+      "MATL_TYPE": "CONC",
+      "HYS_MODEL": "JRSMH24",
+      "CONC": {
+        "JP_H24": {
+          "EC": 340000,
+          "SIGMA_CK": 30000,
+          "SIGMA_SY": 400000,
+          "ALPHA": 1,
+          "SIGMA_BT": 10000,
+          "AH": 0.0004,
+          "S": 0.12,
+          "D": 0.8,
+          "BETA": 1,
+          "STRENGTH_LIMIT": 0
+        }
+      }
+    },
+    "6": {
+      "NAME": "Conc_JRS14",
+      "MATL_TYPE": "CONC",
+      "HYS_MODEL": "JRSM",
+      "CONC": {
+        "JP_H14": {
+          "EARTHQUAKE_TYPE": 0,
+          "EC": 340000,
+          "SIGMA_CK": 30000,
+          "SIGMA_SY": 400000,
+          "ALPHA": 1,
+          "SIGMA_BT": 10000,
+          "AH": 0.0004,
+          "S": 0.12,
+          "D": 0.8,
+          "BETA": 1,
+          "STRENGTH_LIMIT": 0
+        }
+      }
+    },
+    "7": {
+      "NAME": "Conc_NGCM",
+      "MATL_TYPE": "CONC",
+      "HYS_MODEL": "NHCM",
+      "CONC": {
+        "NAGOYA": {
+          "SIGMA_CK": 30000,
+          "EPSILON_CC": 0.0023,
+          "K": 1,
+          "EPSILON_CU": 0.011,
+          "EPSILON_T0": 1e-06,
+          "EPSILON_TU": 0.1,
+          "EPSILON_T1": 0.05,
+          "STRENGTH_AFTER": 0
+        }
+      }
+    },
+    "8": {
+      "NAME": "Conc_Trilinear",
+      "MATL_TYPE": "CONC",
+      "HYS_MODEL": "TCM",
+      "CONC": {
+        "TRILIN": {
+          "INPUT_METHOD": 0,
+          "SIGMA_Y_ITEMS": [
+            30000,
+            34000,
+            40000
+          ],
+          "EPSILON_T_ITEMS": [
+            1e-06,
+            0.05,
+            0.1
+          ],
+          "EPSILON_Y_ITEMS": [
+            0.002,
+            0.0023,
+            0.0033
+          ],
+          "EPSILON_CU": 0.0035
+        }
+      }
+    },
+    "9": {
+      "NAME": "Conc_GB50010-10",
+      "MATL_TYPE": "CONC",
+      "HYS_MODEL": "GBCHINA2010",
+      "CONC": {
+        "CHGB10": {
+          "FCR": 40000,
+          "FTR": 10000,
+          "ECR": 0.00178782,
+          "ETR": 0.000225379,
+          "EC": 340000
+        }
+      }
+    },
+    "10": {
+      "NAME": "Conc_GB50010-02",
+      "MATL_TYPE": "CONC",
+      "HYS_MODEL": "GBCHINA",
+      "CONC": {
+        "CHGB02": {
+          "FCK": 40000,
+          "EC": 0.00178782,
+          "FTK": 10000,
+          "ET": 0.000225379
+        }
+      }
+    },
+    "11": {
+      "NAME": "Conc_Mander_Type1",
+      "MATL_TYPE": "CONC",
+      "HYS_MODEL": "MANDER",
+      "CONC": {
+        "MANDER": {
+          "CONC_TYPE": 0,
+          "KE": {
+            "SC_REBAR_TYPE": 0,
+            "OPT_ACC": true,
+            "ACC": 0,
+            "OPT_AE": true,
+            "AE": 0,
+            "OPT_KE": false,
+            "KE": 0,
+            "OPT_FL": false,
+            "FL": 0
+          },
+          "CCS": {
+            "OPT_FCC": false,
+            "FCC": 0,
+            "OPT_EPSILON_CC": false,
+            "EPSILON_CC": 0,
+            "OPT_EPSILON_CY": false,
+            "EPSILON_CY": 0,
+            "OPT_ENABLE_EPSILON_CU": false,
+            "USE_RHO_S": false,
+            "RHO_S": 0,
+            "IDX_STEEL_MATERIAL": 0,
+            "USE_EPSILON_CU": false,
+            "EPSILON_CU": 0
+          },
+          "UCD": {
+            "OPT_FCO": true,
+            "FCO": 40000,
+            "OPT_EPSILON_CO": true,
+            "EPSILON_CO": 0.002,
+            "OPT_EPSILON_CY": true,
+            "EPSILON_CY": 0.0014,
+            "OPT_EPSILON_SP": true,
+            "EPSILON_SP": 0.02,
+            "IDX_EC": 0,
+            "EC": 31622776.601683795,
+            "IDX_FT": 2,
+            "FT": 0,
+            "EPSILON_T": 0
+          },
+          "FIELD_2": {
+            "nRectSectAutoorUser": 1,
+            "nCircSectAutoorUser": 1,
+            "dXdirectionbc": 0,
+            "dXdirectionwxi": 0,
+            "nXdirectionn": 0,
+            "dYdirectiondc": 0,
+            "dYdirectionwyj": 0,
+            "nYdirectionm": 0,
+            "dds": 0,
+            "nLongiRebarType": 0,
+            "nLongiRebarNum": 0,
+            "strLongiRebarSize": "",
+            "dLongiRebarArea": 0,
+            "bLongiRebarRatio": false,
+            "dLongiRebarRatio": 0,
+            "nGeneralRebarType": 0,
+            "strGeneralRebarSize": "",
+            "dGeneralRebarArea": 0,
+            "dHoopsSpaceS1": 0,
+            "dClearHoopsSpaceS2": 0,
+            "nGeneralRebarNumX": 0,
+            "nGeneralRebarNumY": 0,
+            "dGeneralAsx": 0,
+            "dGeneralAsy": 0,
+            "bRectStrengthfyh": false,
+            "dRectStrengthfyh": 0,
+            "bGeneralAsx": false,
+            "bGeneralAsy": false,
+            "bRectRatiopx": false,
+            "dRectRatiopx": 0,
+            "bRectRatiopy": false,
+            "dRectRatiopy": 0,
+            "bRectStressflx": false,
+            "dRectStressflx": 0,
+            "bRectStressfly": false,
+            "dRectStressfly": 0,
+            "bCircularStrengthfyh": false,
+            "dCircularStrengthfyh": 0,
+            "bGeneralRebarArea": false,
+            "bCircularRatiops": false,
+            "dCircularRatiops": 0
+          }
+        }
+      }
+    },
+    "12": {
+      "NAME": "Conc_Mander_Type2",
+      "MATL_TYPE": "CONC",
+      "HYS_MODEL": "MANDER",
+      "CONC": {
+        "MANDER": {
+          "CONC_TYPE": 1,
+          "KE": {
+            "SC_REBAR_TYPE": 0,
+            "OPT_ACC": false,
+            "ACC": 0.7949032360000001,
+            "OPT_AE": false,
+            "AE": 0.6982378125,
+            "OPT_KE": false,
+            "KE": 0.8783934709004002,
+            "OPT_FL": false,
+            "FL": 0
+          },
+          "CCS": {
+            "OPT_FCC": false,
+            "FCC": 63098.065622451395,
+            "OPT_EPSILON_CC": false,
+            "EPSILON_CC": 0.007774516405612848,
+            "OPT_EPSILON_CY": false,
+            "EPSILON_CY": 0.007774516405612848,
+            "OPT_ENABLE_EPSILON_CU": true,
+            "USE_RHO_S": false,
+            "RHO_S": 0.019161251999999997,
+            "IDX_STEEL_MATERIAL": 2,
+            "USE_EPSILON_CU": true,
+            "EPSILON_CU": 0.01
+          },
+          "UCD": {
+            "OPT_FCO": true,
+            "FCO": 40000,
+            "OPT_EPSILON_CO": true,
+            "EPSILON_CO": 0.002,
+            "OPT_EPSILON_CY": true,
+            "EPSILON_CY": 0.0014,
+            "OPT_EPSILON_SP": true,
+            "EPSILON_SP": 0.02,
+            "IDX_EC": 0,
+            "EC": 31622776.601683795,
+            "IDX_FT": 0,
+            "FT": 3921.224298608791,
+            "EPSILON_T": 0.000124
+          },
+          "FIELD_2": {
+            "nRectSectAutoorUser": 1,
+            "nCircSectAutoorUser": 1,
+            "dXdirectionbc": 1,
+            "dXdirectionwxi": 0.2,
+            "nXdirectionn": 3,
+            "dYdirectiondc": 0.8,
+            "dYdirectionwyj": 0.1,
+            "nYdirectionm": 1,
+            "dds": 0,
+            "nLongiRebarType": 0,
+            "nLongiRebarNum": 10,
+            "strLongiRebarSize": "#8",
+            "dLongiRebarArea": 0.005096764,
+            "bLongiRebarRatio": false,
+            "dLongiRebarRatio": 0.006370955,
+            "nGeneralRebarType": 0,
+            "strGeneralRebarSize": "#6",
+            "dGeneralRebarArea": 0.0002838704,
+            "dHoopsSpaceS1": 0.1,
+            "dClearHoopsSpaceS2": 0.07,
+            "nGeneralRebarNumX": 3,
+            "nGeneralRebarNumY": 3,
+            "dGeneralAsx": 0.0008516112,
+            "dGeneralAsy": 0.0008516112,
+            "bRectStrengthfyh": false,
+            "dRectStrengthfyh": 500000,
+            "bGeneralAsx": false,
+            "bGeneralAsy": false,
+            "bRectRatiopx": false,
+            "dRectRatiopx": 0.010645139999999997,
+            "bRectRatiopy": false,
+            "dRectRatiopy": 0.008516112,
+            "bRectStressflx": false,
+            "dRectStressflx": 4675.310736410342,
+            "bRectStressfly": false,
+            "dRectStressfly": 3740.248589128274,
+            "bCircularStrengthfyh": false,
+            "dCircularStrengthfyh": 0,
+            "bGeneralRebarArea": false,
+            "bCircularRatiops": false,
+            "dCircularRatiops": 0
+          }
+        }
+      }
+    },
+    "13": {
+      "NAME": "Conc_Mander_Type3",
+      "MATL_TYPE": "CONC",
+      "HYS_MODEL": "MANDER",
+      "CONC": {
+        "MANDER": {
+          "CONC_TYPE": 1,
+          "KE": {
+            "SC_REBAR_TYPE": 1,
+            "OPT_ACC": false,
+            "ACC": 1.12472820664,
+            "OPT_AE": false,
+            "AE": 1.0659620224562874,
+            "OPT_KE": false,
+            "KE": 0.9477507687308119,
+            "OPT_FL": false,
+            "FL": 2241.9865818326925
+          },
+          "CCS": {
+            "OPT_FCC": false,
+            "FCC": 53621.47320604295,
+            "OPT_EPSILON_CC": false,
+            "EPSILON_CC": 0.005405368301510738,
+            "OPT_EPSILON_CY": false,
+            "EPSILON_CY": 0.005405368301510738,
+            "OPT_ENABLE_EPSILON_CU": false,
+            "USE_RHO_S": false,
+            "RHO_S": 0,
+            "IDX_STEEL_MATERIAL": 0,
+            "USE_EPSILON_CU": false,
+            "EPSILON_CU": 0
+          },
+          "UCD": {
+            "OPT_FCO": false,
+            "FCO": 40000,
+            "OPT_EPSILON_CO": false,
+            "EPSILON_CO": 0.002,
+            "OPT_EPSILON_CY": false,
+            "EPSILON_CY": 0.0014,
+            "OPT_EPSILON_SP": false,
+            "EPSILON_SP": 0.02,
+            "IDX_EC": 0,
+            "EC": 31622776.601683795,
+            "IDX_FT": 2,
+            "FT": 0,
+            "EPSILON_T": 0
+          },
+          "FIELD_2": {
+            "nRectSectAutoorUser": 1,
+            "nCircSectAutoorUser": 1,
+            "dXdirectionbc": 0,
+            "dXdirectionwxi": 0,
+            "nXdirectionn": 0,
+            "dYdirectiondc": 0,
+            "dYdirectionwyj": 0,
+            "nYdirectionm": 0,
+            "dds": 1.2,
+            "nLongiRebarType": 0,
+            "nLongiRebarNum": 22,
+            "strLongiRebarSize": "#6",
+            "dLongiRebarArea": 0.0062451488,
+            "bLongiRebarRatio": false,
+            "dLongiRebarRatio": 0.005521923898525756,
+            "nGeneralRebarType": 0,
+            "strGeneralRebarSize": "#6",
+            "dGeneralRebarArea": 0.0002838704,
+            "dHoopsSpaceS1": 0.1,
+            "dClearHoopsSpaceS2": 0.07,
+            "nGeneralRebarNumX": 0,
+            "nGeneralRebarNumY": 0,
+            "dGeneralAsx": 0,
+            "dGeneralAsy": 0,
+            "bRectStrengthfyh": false,
+            "dRectStrengthfyh": 0,
+            "bGeneralAsx": false,
+            "bGeneralAsy": false,
+            "bRectRatiopx": false,
+            "dRectRatiopx": 0,
+            "bRectRatiopy": false,
+            "dRectRatiopy": 0,
+            "bRectStressflx": false,
+            "dRectStressflx": 0,
+            "bRectStressfly": false,
+            "dRectStressfly": 0,
+            "bCircularStrengthfyh": false,
+            "dCircularStrengthfyh": 500000,
+            "bGeneralRebarArea": false,
+            "bCircularRatiops": false,
+            "dCircularRatiops": 0.009462346666666668
+          }
+        }
+      }
+    },
+    "14": {
+      "NAME": "Conc_Mander_Type4",
+      "MATL_TYPE": "CONC",
+      "HYS_MODEL": "MANDER",
+      "CONC": {
+        "MANDER": {
+          "CONC_TYPE": 1,
+          "KE": {
+            "SC_REBAR_TYPE": 3,
+            "OPT_ACC": false,
+            "ACC": 1.11677983544,
+            "OPT_AE": false,
+            "AE": 1.0979866325729999,
+            "OPT_KE": false,
+            "KE": 0.9831719715286623,
+            "OPT_FL": false,
+            "FL": 2325.7785068885833
+          },
+          "CCS": {
+            "OPT_FCC": false,
+            "FCC": 54077.70305055938,
+            "OPT_EPSILON_CC": false,
+            "EPSILON_CC": 0.005519425762639845,
+            "OPT_EPSILON_CY": false,
+            "EPSILON_CY": 0.005519425762639845,
+            "OPT_ENABLE_EPSILON_CU": false,
+            "USE_RHO_S": false,
+            "RHO_S": 0,
+            "IDX_STEEL_MATERIAL": 0,
+            "USE_EPSILON_CU": false,
+            "EPSILON_CU": 0
+          },
+          "UCD": {
+            "OPT_FCO": false,
+            "FCO": 40000,
+            "OPT_EPSILON_CO": false,
+            "EPSILON_CO": 0.002,
+            "OPT_EPSILON_CY": false,
+            "EPSILON_CY": 0.0014,
+            "OPT_EPSILON_SP": false,
+            "EPSILON_SP": 0.02,
+            "IDX_EC": 0,
+            "EC": 31622776.601683795,
+            "IDX_FT": 2,
+            "FT": 0,
+            "EPSILON_T": 0
+          },
+          "FIELD_2": {
+            "nRectSectAutoorUser": 1,
+            "nCircSectAutoorUser": 1,
+            "dXdirectionbc": 0,
+            "dXdirectionwxi": 0,
+            "nXdirectionn": 0,
+            "dYdirectiondc": 0,
+            "dYdirectionwyj": 0,
+            "nYdirectionm": 0,
+            "dds": 1.2,
+            "nLongiRebarType": 0,
+            "nLongiRebarNum": 22,
+            "strLongiRebarSize": "#9",
+            "dLongiRebarArea": 0.01419352,
+            "bLongiRebarRatio": false,
+            "dLongiRebarRatio": 0.012549827042103992,
+            "nGeneralRebarType": 0,
+            "strGeneralRebarSize": "#6",
+            "dGeneralRebarArea": 0.0002838704,
+            "dHoopsSpaceS1": 0.1,
+            "dClearHoopsSpaceS2": 0.07,
+            "nGeneralRebarNumX": 0,
+            "nGeneralRebarNumY": 0,
+            "dGeneralAsx": 0,
+            "dGeneralAsy": 0,
+            "bRectStrengthfyh": false,
+            "dRectStrengthfyh": 0,
+            "bGeneralAsx": false,
+            "bGeneralAsy": false,
+            "bRectRatiopx": false,
+            "dRectRatiopx": 0,
+            "bRectRatiopy": false,
+            "dRectRatiopy": 0,
+            "bRectStressflx": false,
+            "dRectStressflx": 0,
+            "bRectStressfly": false,
+            "dRectStressfly": 0,
+            "bCircularStrengthfyh": false,
+            "dCircularStrengthfyh": 500000,
+            "bGeneralRebarArea": false,
+            "bCircularRatiops": false,
+            "dCircularRatiops": 0.009462346666666668
+          }
+        }
+      }
+    },
+    "15": {
+      "NAME": "Conc_Mander_Type5",
+      "MATL_TYPE": "CONC",
+      "HYS_MODEL": "MANDER",
+      "CONC": {
+        "MANDER": {
+          "CONC_TYPE": 1,
+          "KE": {
+            "SC_REBAR_TYPE": 2,
+            "OPT_ACC": false,
+            "ACC": 0.791483888,
+            "OPT_AE": false,
+            "AE": 0.7201384875000001,
+            "OPT_KE": false,
+            "KE": 0.9098586824296796,
+            "OPT_FL": false,
+            "FL": 0
+          },
+          "CCS": {
+            "OPT_FCC": false,
+            "FCC": 56825.02353922174,
+            "OPT_EPSILON_CC": false,
+            "EPSILON_CC": 0.006206255884805435,
+            "OPT_EPSILON_CY": false,
+            "EPSILON_CY": 0.006206255884805435,
+            "OPT_ENABLE_EPSILON_CU": false,
+            "USE_RHO_S": false,
+            "RHO_S": 0,
+            "IDX_STEEL_MATERIAL": 0,
+            "USE_EPSILON_CU": false,
+            "EPSILON_CU": 0
+          },
+          "UCD": {
+            "OPT_FCO": false,
+            "FCO": 40000,
+            "OPT_EPSILON_CO": false,
+            "EPSILON_CO": 0.002,
+            "OPT_EPSILON_CY": false,
+            "EPSILON_CY": 0.0014,
+            "OPT_EPSILON_SP": false,
+            "EPSILON_SP": 0.02,
+            "IDX_EC": 0,
+            "EC": 31622776.601683795,
+            "IDX_FT": 2,
+            "FT": 0,
+            "EPSILON_T": 0
+          },
+          "FIELD_2": {
+            "nRectSectAutoorUser": 1,
+            "nCircSectAutoorUser": 1,
+            "dXdirectionbc": 1,
+            "dXdirectionwxi": 0.1,
+            "nXdirectionn": 3,
+            "dYdirectiondc": 0.8,
+            "dYdirectionwyj": 0.12,
+            "nYdirectionm": 2,
+            "dds": 0,
+            "nLongiRebarType": 0,
+            "nLongiRebarNum": 22,
+            "strLongiRebarSize": "#7",
+            "dLongiRebarArea": 0.008516112,
+            "bLongiRebarRatio": false,
+            "dLongiRebarRatio": 0.010645139999999999,
+            "nGeneralRebarType": 0,
+            "strGeneralRebarSize": "#6",
+            "dGeneralRebarArea": 0.0002838704,
+            "dHoopsSpaceS1": 0.1,
+            "dClearHoopsSpaceS2": 0.07,
+            "nGeneralRebarNumX": 2,
+            "nGeneralRebarNumY": 2,
+            "dGeneralAsx": 0.0005677408,
+            "dGeneralAsy": 0.0005677408,
+            "bRectStrengthfyh": false,
+            "dRectStrengthfyh": 500000,
+            "bGeneralAsx": false,
+            "bGeneralAsy": false,
+            "bRectRatiopx": false,
+            "dRectRatiopx": 0.007096759999999999,
+            "bRectRatiopy": false,
+            "dRectRatiopy": 0.005677408,
+            "bRectStressflx": false,
+            "dRectStressflx": 3228.524351559826,
+            "bRectStressfly": false,
+            "dRectStressfly": 2582.819481247861,
+            "bCircularStrengthfyh": false,
+            "dCircularStrengthfyh": 0,
+            "bGeneralRebarArea": false,
+            "bCircularRatiops": false,
+            "dCircularRatiops": 0
+          }
+        }
+      }
+    },
+    "16": {
+      "NAME": "Steel_MP",
+      "MATL_TYPE": "STEEL",
+      "HYS_MODEL": "MPM",
+      "STEEL": {
+        "MENEGO": {
+          "FY": 500000,
+          "E": 200000000,
+          "B": 0.7,
+          "PARTIAL_FACT": 1
+        }
+      }
+    },
+    "17": {
+      "NAME": "Steel_Blinear",
+      "MATL_TYPE": "STEEL",
+      "HYS_MODEL": "BM",
+      "STEEL": {
+        "BILINE": {
+          "FY": 500000,
+          "E1": 200000000,
+          "E2E1": 0.01,
+          "PARTIAL_FACT": 1
+        }
+      }
+    },
+    "18": {
+      "NAME": "Steel_ABSM",
+      "MATL_TYPE": "STEEL",
+      "HYS_MODEL": "UBSM",
+      "STEEL": {
+        "GENBIL": {
+          "SIGMA_Y": 500000,
+          "SIGMA_CY": 500000,
+          "EPSILON_1": 0.003,
+          "EPSILON_2": 0.004,
+          "E_ITEMS": [
+            200000000,
+            12000000,
+            13000000,
+            12000000,
+            15000000
+          ]
+        }
+      }
+    },
+    "19": {
+      "NAME": "Steel_Trilinear",
+      "MATL_TYPE": "STEEL",
+      "HYS_MODEL": "TSM",
+      "STEEL": {
+        "TRILIN": {
+          "INPUT_METHOD": 0,
+          "SIGMA_Y_ITEMS": [
+            400000,
+            420000,
+            500000,
+            410000,
+            420000,
+            510000
+          ],
+          "EPSILON_Y_ITEMS": [
+            0.002,
+            0.0022,
+            0.004
+          ]
+        }
+      }
+    },
+    "20": {
+      "NAME": "Steel_Park",
+      "MATL_TYPE": "STEEL",
+      "HYS_MODEL": "PM",
+      "STEEL": {
+        "PARKMD": {
+          "FY": 500000,
+          "FU": 800000,
+          "ES": 200000000,
+          "EPSILON_SH": 0.003,
+          "EPSILON_SU": 0.005
+        }
+      }
+    },
+    "21": {
+      "NAME": "Steel_JRSM",
+      "MATL_TYPE": "STEEL",
+      "HYS_MODEL": "JRSM_S",
+      "STEEL": {
+        "JPROAD": {
+          "SIGMA_Y": 500000,
+          "ES": 200000000,
+          "EPSILON_ST": 0.005
+        }
+      }
+    }
+  }
+}

@@ -79,7 +79,7 @@ def test_a_record_naming_several_endpoints_claims_each_of_them() -> None:
 
 
 def test_the_committed_ledger_still_produces_the_published_counts() -> None:
-    """210 write / 190 read over 400 inventory rows, as ROADMAP.md publishes.
+    """214 write / 186 read over 400 inventory rows, as ROADMAP.md publishes.
 
     Counted over the inventory rather than the ledger because three
     /DESIGN/*/TABLE rows share one endpoint URL: the ledger holds 397 claims,
@@ -93,8 +93,8 @@ def test_the_committed_ledger_still_produces_the_published_counts() -> None:
 
     levels = [resolved[e["endpoint"]].level for e in inventory if e["endpoint"] in resolved]
     assert len(levels) == len(inventory), "every inventory row needs a ledger claim"
-    assert levels.count("write") == 210
-    assert levels.count("read") == 190
+    assert levels.count("write") == 214
+    assert levels.count("read") == 186
 
 
 def test_every_ledger_record_states_a_level_a_count_can_read() -> None:

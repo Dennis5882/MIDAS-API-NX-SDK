@@ -11648,3 +11648,56 @@ Not attempted yet, each for a stated reason: `/db/IMFM`, `/db/FIBR` and
 unconfirmed; `/db/TDCS` needs `/db/TDNA` (unconfirmed) and `/db/CSCS` (above);
 `/db/EPMT-M1`, `/db/IEHG-BEAM-M1` and `/db/IMFM-M1` have no manual example, so
 `/info` is their only source.
+
+## 2026-09-28 (later) - the fiber chain: FIMP's example was the manual repo's, and IMFM and FIBR follow
+
+`/db/FIMP` had one case, unconfirmed since 2026-09-14 because the vendored
+chapter's Kent & Park body is refused with `Epsilon_cu > 0.8 / Z + Epsilon_co`
+(MD-54), and `/db/IMFM`, `/db/FIBR` and `/db/IEHG` all name FIMP records. The
+MIDASIT article itself (35944335180569, en-us, edited 2024-08-05) was fetched
+through the Help Center API: it carries 19 Request examples, 13 concrete and 6
+steel models.
+
+**Every one of the 19 is accepted by POST on both products** (Build 09/24/2026).
+The article's Kent & Park example is not the chapter's: `EC1_METHOD: 0`,
+`EC1: 0.0025`, `STRENGTH_AFTER: 1` and no `Z`, where the chapter prints
+`EC1_METHOD: 1`, `EC1: 0.0035`, `Z: 100`, `STRENGTH_AFTER: 0`. MD-54 blamed the
+article's example; it is the manual repo's transcription, and the register,
+`docs/vendor_report_triage.md` (where it was held as a B-item candidate until
+the article was read) and the playbook's failure table are corrected. The
+examples are kept verbatim in `scripts/fixtures/fimp_article_examples.json`.
+
+**`/db/FIMP` ignores a POST's key.** `{"3": ...}` into an empty table answers
+with the record under `"3"`, and `GET /db/FIMP` then lists it as `"1"`; a second
+POST under `"17"` is stored as `"2"`. The same renumbering `/db/STLD` does, and
+the echo hides it. The case is therefore keyed 1, and the seed sends ids 1-4 so
+the npm harness cleans up the ids it sent.
+
+**`/db/IMFM`** is keyed by material id. The manual example (material 1 concrete,
+material 2 steel) round-tripped on both products with its FIMP names moved onto
+article records; the case keeps material 1 and updates `REBAR_NAME`.
+
+**`/db/FIBR`** round-tripped on both products with the manual example's
+`SECT_KEY` moved to section 1 and its three FIMP names onto article records;
+`FIBR_BASE` and everything else as printed. The case updates `FIMP_NAME[0]`.
+
+All three passed through both harnesses on both products and are
+`confirmed=True`; ledger `ledger-write-2026-09-28-3` (Gen) and `-4` (Civil);
+contracts re-promoted to `fiber-chain-crud-2026-09-28`.
+
+**`/db/IEHG` stops here.** Its example assigns an inelastic hinge property
+(`PROP_NAME`) and no documented endpoint defines one - the manual has the
+assignment and the control (`/db/IEHC`), not the property. A POST naming a
+property that does not exist answers `Not Found Key` on both products. It stays
+at read level until a property can be created other than in the GUI.
+
+### The three Hyper-S `-M1` endpoints with no manual example
+
+`/info` is their only source, so each was tried with the nearest confirmed
+record written in the names `/info` declares, on Civil:
+
+| Endpoint | Sent | Result |
+| --- | --- | --- |
+| `/db/IMFM-M1` | the `/db/IMFM` record above, concrete references nested under `CONCRETE` as `/info` has them | full round trip through both harnesses; `confirmed=True`, ledger `ledger-write-2026-09-28-5` |
+| `/db/EPMT-M1` | `/db/EPMT`'s Gen-confirmed Von Mises record - `/info` declares the identical `VMISES` keys on both | `Wrong Field`, POST and PUT; the same Civil-only refusal `/db/EPMT` shows (MD-56) |
+| `/db/IEHG-BEAM-M1` | `INEL_PROP_NAME` naming a property that does not exist | `Inelastic Hinge Property not found: Fiber_Auto` - the product states the blocker `/db/IEHG` has |

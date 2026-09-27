@@ -129,17 +129,16 @@ silent deletion is not.
 
 ## Held, with the reason
 
-### `/db/FIMP`'s printed example is internally invalid — needs the official article
+### `/db/FIMP`'s printed example — closed, not a vendor item
 
 The chapter prints `ECU=0.003`, `Z=100`, `EC0=0.002` and the product refuses
-the POST with its own rule, `Epsilon_cu > 0.8 / Z + Epsilon_co`; `0.8/100 +
-0.002 = 0.010` is greater than `0.003`, and the second example repeats the same
-three numbers. Measured through both SDKs on both products.
-
-Already recorded as **MD-54** in `docs/manual_defects_register.md`. It is a
-strong B-item candidate and **it is not in the report yet**, because the
-measurement was made against the vendored chapter. See the rule above: fetch
-the official article, confirm it prints the same three values, then add it.
+the POST with its own rule, `Epsilon_cu > 0.8 / Z + Epsilon_co`. This was held
+until the official article had been read, and on 2026-09-28 it was: article
+35944335180569 prints a different Kent & Park body (`EC1_METHOD: 0`,
+`EC1: 0.0025`, `STRENGTH_AFTER: 1`, no `Z`), which both products accept, as
+they accept the article's other 18 examples. The defect is the vendored
+chapter's transcription (**MD-54**, re-attributed), so there is nothing to
+send. The hold did its job: this would have been a false B-item.
 
 ### `/post/TABLE`'s response key — mostly explained, too thin to send
 

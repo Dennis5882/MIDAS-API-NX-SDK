@@ -858,3 +858,33 @@ read passed.
 
 **Count:** 1 new endpoint; 169 distinct `/db` endpoints and 4 distinct
 result-table operations; 173 distinct npm public-API operations overall.
+
+### 2026-09-28 - the fiber chain: `/db/FIMP`, `/db/IMFM`, `/db/FIBR`
+
+The built npm package ran the three cases in one selection on each empty
+product document at v2.2 Build 09/24/2026. `/db/FIMP` now sends the MIDASIT
+article's own Kent & Park example under id 1; `/db/IMFM` and `/db/FIBR` set up
+four article FIMP records first. All three passed create/read/update/read/
+delete/read on both products.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/FIBR` | 2026-09-28 | Gen, Civil |
+| `/db/FIMP` | 2026-09-28 | Gen, Civil |
+| `/db/IMFM` | 2026-09-28 | Gen, Civil |
+
+**Count:** 3 new endpoints; 172 distinct `/db` endpoints and 4 distinct
+result-table operations; 176 distinct npm public-API operations overall.
+
+### 2026-09-28 - `/db/IMFM-M1`
+
+The built npm package ran the new extras20 case on an empty Civil document,
+after the same four FIMP setup records. Create/read/update/read/delete/read
+passed.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/IMFM-M1` | 2026-09-28 | Civil |
+
+**Count:** 1 new endpoint; 173 distinct `/db` endpoints and 4 distinct
+result-table operations; 177 distinct npm public-API operations overall.

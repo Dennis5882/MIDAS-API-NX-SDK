@@ -46,6 +46,10 @@ verification:
       ref: info-schema-sweep-2026-09-01
     - product: gen
       ref: info-schema-sweep-2026-09-01
+    - product: civil
+      ref: fiber-chain-crud-2026-09-28
+    - product: gen
+      ref: fiber-chain-crud-2026-09-28
 
 operations:
   - method: DELETE

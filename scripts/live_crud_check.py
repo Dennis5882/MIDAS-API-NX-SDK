@@ -287,6 +287,8 @@ from midas_nx.db.properties.damping import GroupDamping
 from midas_nx.db.properties.hinge import InelasticHingeControl
 from midas_nx.db.properties.material import (
     ChangeProperty,
+    InelasticFiberMaterialLink,
+    InelasticFiberMaterialLinkHyperS,
     InelasticMaterialProperty,
     Material,
     MaterialModifyConcrete,
@@ -299,6 +301,7 @@ from midas_nx.db.properties.material import (
 from midas_nx.db.properties.section import (
     EffectiveWidthScaleFactor,
     ElementStiffnessScaleFactor,
+    FiberDivision,
     PlateStiffnessScaleFactor,
     Section,
     SectionReinforcement,
@@ -4017,26 +4020,26 @@ def _plastic_material_payload(name: str) -> Dict[str, Any]:
     }
 
 
+def _fimp_article_example(key: str) -> Dict[str, Any]:
+    """One `/db/FIMP` Request example from MIDASIT's own article.
+
+    Not the vendored chapter's: its Kent & Park body (``EC1_METHOD: 1``,
+    ``Z: 100``, ``EC1: 0.0035``, ``STRENGTH_AFTER: 0``) is not what article
+    35944335180569 prints, and the product refuses it with ``Epsilon_cu >
+    0.8 / Z + Epsilon_co``. Every one of the article's 19 examples was
+    accepted on both products on 2026-09-28.
+    """
+    path = Path(__file__).parent / "fixtures" / "fimp_article_examples.json"
+    examples = json.loads(path.read_text(encoding="utf-8"))["examples"]
+    return copy.deepcopy(examples[key])
+
+
 def _inelastic_kent_park_payload(name: str, strength: float) -> Dict[str, Any]:
-    """Return section 28's complete `/db/FIMP` Kent & Park example."""
-    return {
-        "NAME": name,
-        "MATL_TYPE": "CONC",
-        "HYS_MODEL": "KPM",
-        "CONC": {
-            "KENPAR": {
-                "FC": strength,
-                "PARTIAL_FACT": 1.0,
-                "K": 1.0,
-                "EC0": 0.002,
-                "EC1_METHOD": 1,
-                "EC1": 0.0035,
-                "Z": 100,
-                "ECU": 0.003,
-                "STRENGTH_AFTER": 0,
-            },
-        },
-    }
+    """The article's Kent & Park example (key 3), NAME and FC as given."""
+    payload = _fimp_article_example("3")
+    payload["NAME"] = name
+    payload["CONC"]["KENPAR"]["FC"] = strength
+    return payload
 
 
 def _extras16_cases() -> List[Case]:
@@ -4053,14 +4056,108 @@ def _extras16_cases() -> List[Case]:
     return [
         Case(*args, item_id=1, products=("gen",), confirmed=True),
         Case(*args, item_id=1, products=("civil",)),
+        # The article's own example, created as printed; the update takes
+        # the vendored chapter's Python-example NAME and FC. id 1, not the
+        # article's 3: /db/FIMP stores a POST under the next serial id and
+        # echoes the requested key anyway (2026-09-28, both products), so a
+        # case keyed 3 reads back nothing on an empty table.
         Case(
             InelasticMaterialProperty,
             _inelastic_kent_park_payload("Conc_Kent&Park", 30000),
             _inelastic_kent_park_payload("Concrete_KP", 24000),
             lambda p: p.get("CONC", {}).get("KENPAR", {}).get("FC"),
-            30000, 24000, item_id=3,
+            30000, 24000, item_id=1, confirmed=True,
         ),
     ]
+
+
+#: The article's records the fiber chain names: Kent & Park, Mander type 1,
+#: Menegotto-Pinto and Bilinear (article keys 3, 11, 16, 17).
+_FIBER_CHAIN_FIMP = ("3", "11", "16", "17")
+
+
+def _extras20_seeds() -> List[SeedStep]:
+    """Sent under ids 1-4, the ids /db/FIMP will store them under anyway.
+
+    The product ignores a FIMP POST's key and takes the next serial id; the
+    npm harness cleans a seed up by the ids it sent, so they must agree.
+    Everything downstream names these records, never numbers them.
+    """
+    return [SeedStep(
+        "fiber_materials",
+        lambda client: InelasticMaterialProperty.create(
+            {i: _fimp_article_example(k) for i, k in enumerate(_FIBER_CHAIN_FIMP, 1)},
+            client=client,
+        ),
+    )]
+
+
+def _fibr_payload(first_material: str) -> Dict[str, Any]:
+    """04_DB_Properties.md section 29's Request example, model references moved.
+
+    SECT_KEY 11001 becomes the base model's section 1, and the three FIMP
+    names the example assumes ("Steel", "Cover Concrete", "Core Conc 1")
+    become the article records the seed creates. Nothing else changes.
+    """
+    rename = {"Steel": first_material, "Cover Concrete": "Conc_Kent&Park",
+              "Core Conc 1": "Conc_Mander_Type1"}
+    return {
+        "NAME": "Column_Fiber", "SECT_KEY": 1, "ASSIGN_TYPE": 0,
+        "FIMP_NAME": [rename[n] for n in (
+            "Steel", "Cover Concrete", "Core Conc 1", "Core Conc 1",
+            "Core Conc 1", "Core Conc 1")],
+        "FIMP_COLOR": [
+            {"R": 255, "G": 0, "B": 0}, {"R": 128, "G": 128, "B": 128},
+            {"R": 0, "G": 128, "B": 0}, {"R": 0, "G": 128, "B": 0},
+            {"R": 0, "G": 128, "B": 0}, {"R": 0, "G": 128, "B": 0},
+        ],
+        "FIBR_BASE": [{
+            "FIBR_BASE_KEY": 752, "REBAR_NAME": "", "AREA": 0.00688072,
+            "CENTER_Y": -1.05047e-16, "CENTER_Z": 1.06179, "FIBER_MATL_ID": 1,
+            "AREA_CONSIDER_REBAR": 0, "OPT_IS_REBAR": False,
+            "POINT_Y": [0.0527429, 0.0527429, -0.0527429, -0.0527429, 0],
+            "POINT_Z": [1.08596, 1.029, 1.029, 1.08596, 1.1025],
+        }],
+        "OPT_MONITORED_FIBER": True, "MONITORED_FIBER": [0, 0, 0, 0, 0, 0],
+    }
+
+
+def _extras20_cases() -> List[Case]:
+    """The fiber chain: FIMP records -> IMFM material link -> FIBR division.
+
+    Both probed 2026-09-28 on Gen and Civil, Build 09/24/2026: IMFM is keyed
+    by material id and FIBR by its own id; each completed a round trip. The
+    updates swap one FIMP name for another record the seed made, a value
+    that occurs nowhere else in the record. /db/IEHG, next in the chain,
+    names an inelastic hinge property no documented endpoint creates.
+    """
+    imfm = {"CONC_NAME": "Conc_Kent&Park", "CONFINED_CONC_NAME": "Conc_Mander_Type1"}
+    return [
+        Case(
+            InelasticFiberMaterialLink,
+            dict(imfm, REBAR_NAME="Steel_MP"), dict(imfm, REBAR_NAME="Steel_Blinear"),
+            lambda p: p.get("REBAR_NAME"), "Steel_MP", "Steel_Blinear",
+            item_id=1, needs=("fiber_materials",), confirmed=True,
+        ),
+        Case(
+            FiberDivision,
+            _fibr_payload("Steel_MP"), _fibr_payload("Steel_Blinear"),
+            lambda p: (p.get("FIMP_NAME") or [None])[0], "Steel_MP", "Steel_Blinear",
+            item_id=1, needs=("fiber_materials",), confirmed=True,
+        ),
+        # No manual example: the IMFM record above in /info's own -M1 names,
+        # which nest the concrete references under CONCRETE.
+        Case(
+            InelasticFiberMaterialLinkHyperS,
+            {"CONCRETE": dict(_IMFM_M1_CONCRETE, REBAR_NAME="Steel_MP")},
+            {"CONCRETE": dict(_IMFM_M1_CONCRETE, REBAR_NAME="Steel_Blinear")},
+            lambda p: p.get("CONCRETE", {}).get("REBAR_NAME"), "Steel_MP", "Steel_Blinear",
+            item_id=1, products=("civil",), needs=("fiber_materials",), confirmed=True,
+        ),
+    ]
+
+
+_IMFM_M1_CONCRETE = {"UN_CONC_NAME": "Conc_Kent&Park", "CONF_CONC_NAME": "Conc_Mander_Type1"}
 
 
 def _extras17_cases() -> List[Case]:
@@ -4821,6 +4918,7 @@ TIERS: List[Tier] = [
     Tier("extras17", "batch 17: Task A pushover controls and hinge assignment", _no_seeds, _extras17_cases),
     Tier("extras18", "batch 18: Task A ch07 tendon chain (TDNT -> TDNA -> TDPL)", _extras18_seeds, _extras18_cases),
     Tier("extras19", "Task P: ch07 pretension load on a truss element", _extras19_seeds, _extras19_cases),
+    Tier("extras20", "fiber chain: article FIMP records, IMFM material link, FIBR division", _extras20_seeds, _extras20_cases),
 ]
 
 

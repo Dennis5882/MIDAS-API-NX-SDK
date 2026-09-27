@@ -27,12 +27,12 @@ scoreboard.
   changelog's `Unreleased` holds two optional members from `/info`
   (`CONTRIBUTION_FACTOR`, `USE_HAMBLY_EQ`); nothing is released with them yet,
   and `src/midas_nx/` has not changed.
-- **Coverage: 400/400 implemented, 210 write / 190 read.** Of the 225 `/db`
-  endpoints, 188 are write-level and 37 are not.
-- **Fixture (`schema/live-cases.json`, version 6):** 221 cases over 197
-  endpoints; 184 confirmed over 173 endpoints; 9 base-model steps; 77 named
+- **Coverage: 400/400 implemented, 214 write / 186 read.** Of the 225 `/db`
+  endpoints, 192 are write-level and 33 are not.
+- **Fixture (`schema/live-cases.json`, version 6):** 224 cases over 200
+  endpoints; 188 confirmed over 177 endpoints; 9 base-model steps; 78 named
   seeds; 0 unsupported.
-- **npm has replayed all 184 confirmed cases** on every product each declares.
+- **npm has replayed all 188 confirmed cases** on every product each declares.
   Keep that gap at 0: every new confirmed case goes through both harnesses.
 - **Contracts: 384 endpoints + 87 result tables.** The three drafts left, the
   IEHG trio, have no permitted source; that is final.
@@ -59,11 +59,11 @@ python scripts/report_dropped_manual_rows.py \
 python scripts/live_crud_check.py --check-cases        # silent; exit 0
 python scripts/check_fixture_contract.py --check       # 1 fixture lead over 1
                                           # endpoint, 0 contract gaps over 0
-python scripts/report_npm_replay_coverage.py --check   # 184 cases over 173
-                                          # endpoints; every product: 184
+python scripts/report_npm_replay_coverage.py --check   # 188 cases over 177
+                                          # endpoints; every product: 188
 python scripts/check_verification_lag.py --check       # 40, ceiling 40
 python scripts/verification_ledger.py                  # 397 endpoints:
-                                          # 187 read, 210 write
+                                          # 183 read, 214 write
 python scripts/report_unmerged_tables.py --check       # exit 0
 python scripts/check_state_numbers.py --check          # OK; it checks this
                                           # block's own numbers too
@@ -269,7 +269,6 @@ both SDKs, and nothing was newly resolved**: every answer matched its row below.
 | `/db/MADO`, `/db/SBDO`, `/db/DOEL`, `/db/SINF`, `/db/MVLDpl` | POST accepted, record not stored | product finding |
 | `/db/ACTL` | Gen refuses every payload; Civil accepts and drops `TOL` | settled product behaviour |
 | `/db/STCT` | Gen: drops `iITER` (`wrote 30, read back None`). Civil: never measured - the first `POST /db/STAG` auto-creates `/db/STCT` id 1 with product defaults, so the case's own POST of id 1 is refused by both harnesses before it is sent (pinned 2026-09-27; Gen does not auto-create) | Gen settled; Civil needs a case that PUTs the auto-created record, not one that POSTs |
-| `/db/FIMP` | printed `ECU=0.003` violates the product's `Epsilon_cu > 0.8 / Z + Epsilon_co` | no compliant value documented |
 | `/db/NLLP` | `nllp_seed` answers `Unknown Error` on both | — |
 | `/db/NLNK`, `/db/NLNK-M1`, `/db/CGLP` | blocked by `nllp_seed` | NLLP |
 | `/db/TDNA` | `Errors detected in Tendon Profile Data.(Item:IS_DB_TDNA_NOTENSIONCALC : Not Registered String)` | a model precondition; permuting fields is not the answer |

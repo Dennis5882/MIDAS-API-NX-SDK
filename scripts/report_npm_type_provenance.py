@@ -90,8 +90,8 @@ the Python classes remain the Python package's own. What they were:
         unstated), LoadGroupDayItem (STAG requires LOAD_NAME, HSTG does not);
         SectBefore, whose shape each SECTTYPE branch redeclares;
         InelasticMaterialKentParkParam, whose EC1 and Z the manual marks both
-        Required though EC1_METHOD picks one, and whose example the product
-        refuses (MD-54); and ItemGroupFields, a Python base class
+        Required though EC1_METHOD picks one, and whose vendored example the
+        product refuses (MD-54, a transcription defect); and ItemGroupFields, a Python base class
      1  OpeTypes.AllowableStressLine, which nothing references
      1  /post: `PostStoryTypes.StorySetAngle`, the SET_ANGLE object four
         story tables share while the manual makes ANGLE required in two and

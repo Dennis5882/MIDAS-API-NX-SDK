@@ -4593,3 +4593,56 @@ records:
     /doc/NEW document holding the harness base model, the manual's own example (empty records on nodes 1, 2 and 5)
     was created, GET /db/DRLS/1 read it back, a PUT of node 1 was accepted and read back, DELETE /db/DRLS/1
     removed node 1 alone and left 2 and 5. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-09-28-3
+  endpoints:
+  - /db/FIBR
+  - /db/FIMP
+  - /db/IMFM
+  date: '2026-09-28'
+  level: write
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build 09/24/2026
+  outcome: success
+  method: New or rebased live cases through scripts/live_crud_check.py and packages/typescript/scripts/live-crud.mjs,
+    each invocation checkpointing to C:/temp and restoring an empty document. /db/FIMP (extras16) now sends
+    MIDASIT article 35944335180569's own Kent & Park example - the vendored chapter's body, which the product
+    refuses, is not what the article prints - keyed 1 because /db/FIMP stores a POST under the next serial
+    id whatever key it names. /db/IMFM and /db/FIBR (new extras20) run on four article FIMP records, with
+    the manual examples' model references moved onto them. All three completed create/read/update/read/delete/read
+    through both SDKs. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-09-28-4
+  endpoints:
+  - /db/FIBR
+  - /db/FIMP
+  - /db/IMFM
+  date: '2026-09-28'
+  level: write
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build 09/24/2026
+  outcome: success
+  method: New or rebased live cases through scripts/live_crud_check.py and packages/typescript/scripts/live-crud.mjs,
+    each invocation checkpointing to C:/temp and restoring an empty document. /db/FIMP (extras16) now sends
+    MIDASIT article 35944335180569's own Kent & Park example - the vendored chapter's body, which the product
+    refuses, is not what the article prints - keyed 1 because /db/FIMP stores a POST under the next serial
+    id whatever key it names. /db/IMFM and /db/FIBR (new extras20) run on four article FIMP records, with
+    the manual examples' model references moved onto them. All three completed create/read/update/read/delete/read
+    through both SDKs. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-09-28-5
+  endpoints:
+  - /db/IMFM-M1
+  date: '2026-09-28'
+  level: write
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build 09/24/2026
+  outcome: success
+  method: New extras20 case with no manual example to take - the confirmed /db/IMFM record written in
+    /info's own -M1 names, which nest the concrete references under CONCRETE, on the same four article
+    FIMP records. Completed create/read/update/read/delete/read through scripts/live_crud_check.py and
+    packages/typescript/scripts/live-crud.mjs on Civil, each checkpointing to C:/temp and restoring an
+    empty document. Evidence in docs/live_verification_notes.md.

@@ -1546,6 +1546,147 @@
         }
       }
     },
+    "fiber_materials": {
+      "endpoint": "/db/FIMP",
+      "records": {
+        "1": {
+          "NAME": "Conc_Kent&Park",
+          "MATL_TYPE": "CONC",
+          "HYS_MODEL": "KPM",
+          "CONC": {
+            "KENPAR": {
+              "FC": 30000,
+              "EC0": 0.002,
+              "K": 1,
+              "ECU": 0.003,
+              "PARTIAL_FACT": 1,
+              "EC1_METHOD": 0,
+              "EC1": 0.0025,
+              "STRENGTH_AFTER": 1
+            }
+          }
+        },
+        "2": {
+          "NAME": "Conc_Mander_Type1",
+          "MATL_TYPE": "CONC",
+          "HYS_MODEL": "MANDER",
+          "CONC": {
+            "MANDER": {
+              "CONC_TYPE": 0,
+              "KE": {
+                "SC_REBAR_TYPE": 0,
+                "OPT_ACC": true,
+                "ACC": 0,
+                "OPT_AE": true,
+                "AE": 0,
+                "OPT_KE": false,
+                "KE": 0,
+                "OPT_FL": false,
+                "FL": 0
+              },
+              "CCS": {
+                "OPT_FCC": false,
+                "FCC": 0,
+                "OPT_EPSILON_CC": false,
+                "EPSILON_CC": 0,
+                "OPT_EPSILON_CY": false,
+                "EPSILON_CY": 0,
+                "OPT_ENABLE_EPSILON_CU": false,
+                "USE_RHO_S": false,
+                "RHO_S": 0,
+                "IDX_STEEL_MATERIAL": 0,
+                "USE_EPSILON_CU": false,
+                "EPSILON_CU": 0
+              },
+              "UCD": {
+                "OPT_FCO": true,
+                "FCO": 40000,
+                "OPT_EPSILON_CO": true,
+                "EPSILON_CO": 0.002,
+                "OPT_EPSILON_CY": true,
+                "EPSILON_CY": 0.0014,
+                "OPT_EPSILON_SP": true,
+                "EPSILON_SP": 0.02,
+                "IDX_EC": 0,
+                "EC": 31622776.601683795,
+                "IDX_FT": 2,
+                "FT": 0,
+                "EPSILON_T": 0
+              },
+              "FIELD_2": {
+                "nRectSectAutoorUser": 1,
+                "nCircSectAutoorUser": 1,
+                "dXdirectionbc": 0,
+                "dXdirectionwxi": 0,
+                "nXdirectionn": 0,
+                "dYdirectiondc": 0,
+                "dYdirectionwyj": 0,
+                "nYdirectionm": 0,
+                "dds": 0,
+                "nLongiRebarType": 0,
+                "nLongiRebarNum": 0,
+                "strLongiRebarSize": "",
+                "dLongiRebarArea": 0,
+                "bLongiRebarRatio": false,
+                "dLongiRebarRatio": 0,
+                "nGeneralRebarType": 0,
+                "strGeneralRebarSize": "",
+                "dGeneralRebarArea": 0,
+                "dHoopsSpaceS1": 0,
+                "dClearHoopsSpaceS2": 0,
+                "nGeneralRebarNumX": 0,
+                "nGeneralRebarNumY": 0,
+                "dGeneralAsx": 0,
+                "dGeneralAsy": 0,
+                "bRectStrengthfyh": false,
+                "dRectStrengthfyh": 0,
+                "bGeneralAsx": false,
+                "bGeneralAsy": false,
+                "bRectRatiopx": false,
+                "dRectRatiopx": 0,
+                "bRectRatiopy": false,
+                "dRectRatiopy": 0,
+                "bRectStressflx": false,
+                "dRectStressflx": 0,
+                "bRectStressfly": false,
+                "dRectStressfly": 0,
+                "bCircularStrengthfyh": false,
+                "dCircularStrengthfyh": 0,
+                "bGeneralRebarArea": false,
+                "bCircularRatiops": false,
+                "dCircularRatiops": 0
+              }
+            }
+          }
+        },
+        "3": {
+          "NAME": "Steel_MP",
+          "MATL_TYPE": "STEEL",
+          "HYS_MODEL": "MPM",
+          "STEEL": {
+            "MENEGO": {
+              "FY": 500000,
+              "E": 200000000,
+              "B": 0.7,
+              "PARTIAL_FACT": 1
+            }
+          }
+        },
+        "4": {
+          "NAME": "Steel_Blinear",
+          "MATL_TYPE": "STEEL",
+          "HYS_MODEL": "BM",
+          "STEEL": {
+            "BILINE": {
+              "FY": 500000,
+              "E1": 200000000,
+              "E2E1": 0.01,
+              "PARTIAL_FACT": 1
+            }
+          }
+        }
+      }
+    },
     "mvcd_eurocode": {
       "endpoint": "/db/MVCD",
       "records": {
@@ -14339,7 +14480,7 @@
       "tier": "extras16",
       "endpoint": "/db/FIMP",
       "name": "Inelastic Material Properties",
-      "id": 3,
+      "id": 1,
       "products": [
         "gen",
         "civil"
@@ -14350,7 +14491,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "NAME": "Conc_Kent&Park",
         "MATL_TYPE": "CONC",
@@ -14358,14 +14499,13 @@
         "CONC": {
           "KENPAR": {
             "FC": 30000,
-            "PARTIAL_FACT": 1.0,
-            "K": 1.0,
             "EC0": 0.002,
-            "EC1_METHOD": 1,
-            "EC1": 0.0035,
-            "Z": 100,
+            "K": 1,
             "ECU": 0.003,
-            "STRENGTH_AFTER": 0
+            "PARTIAL_FACT": 1,
+            "EC1_METHOD": 0,
+            "EC1": 0.0025,
+            "STRENGTH_AFTER": 1
           }
         }
       },
@@ -14376,14 +14516,13 @@
         "CONC": {
           "KENPAR": {
             "FC": 24000,
-            "PARTIAL_FACT": 1.0,
-            "K": 1.0,
             "EC0": 0.002,
-            "EC1_METHOD": 1,
-            "EC1": 0.0035,
-            "Z": 100,
+            "K": 1,
             "ECU": 0.003,
-            "STRENGTH_AFTER": 0
+            "PARTIAL_FACT": 1,
+            "EC1_METHOD": 0,
+            "EC1": 0.0025,
+            "STRENGTH_AFTER": 1
           }
         }
       },
@@ -15025,6 +15164,282 @@
         },
         {
           "seed": "ptns_external_load_case"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras20",
+      "endpoint": "/db/IMFM",
+      "name": "Inelastic Material Properties for Fiber Model",
+      "id": 1,
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "CONC_NAME": "Conc_Kent&Park",
+        "CONFINED_CONC_NAME": "Conc_Mander_Type1",
+        "REBAR_NAME": "Steel_MP"
+      },
+      "updatePayload": {
+        "CONC_NAME": "Conc_Kent&Park",
+        "CONFINED_CONC_NAME": "Conc_Mander_Type1",
+        "REBAR_NAME": "Steel_Blinear"
+      },
+      "expected": {
+        "created": "Steel_MP",
+        "updated": "Steel_Blinear"
+      },
+      "needs": [
+        "fiber_materials"
+      ],
+      "setup": [
+        {
+          "seed": "fiber_materials"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras20",
+      "endpoint": "/db/FIBR",
+      "name": "Fiber Division of Section",
+      "id": 1,
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "NAME": "Column_Fiber",
+        "SECT_KEY": 1,
+        "ASSIGN_TYPE": 0,
+        "FIMP_NAME": [
+          "Steel_MP",
+          "Conc_Kent&Park",
+          "Conc_Mander_Type1",
+          "Conc_Mander_Type1",
+          "Conc_Mander_Type1",
+          "Conc_Mander_Type1"
+        ],
+        "FIMP_COLOR": [
+          {
+            "R": 255,
+            "G": 0,
+            "B": 0
+          },
+          {
+            "R": 128,
+            "G": 128,
+            "B": 128
+          },
+          {
+            "R": 0,
+            "G": 128,
+            "B": 0
+          },
+          {
+            "R": 0,
+            "G": 128,
+            "B": 0
+          },
+          {
+            "R": 0,
+            "G": 128,
+            "B": 0
+          },
+          {
+            "R": 0,
+            "G": 128,
+            "B": 0
+          }
+        ],
+        "FIBR_BASE": [
+          {
+            "FIBR_BASE_KEY": 752,
+            "REBAR_NAME": "",
+            "AREA": 0.00688072,
+            "CENTER_Y": -1.05047e-16,
+            "CENTER_Z": 1.06179,
+            "FIBER_MATL_ID": 1,
+            "AREA_CONSIDER_REBAR": 0,
+            "OPT_IS_REBAR": false,
+            "POINT_Y": [
+              0.0527429,
+              0.0527429,
+              -0.0527429,
+              -0.0527429,
+              0
+            ],
+            "POINT_Z": [
+              1.08596,
+              1.029,
+              1.029,
+              1.08596,
+              1.1025
+            ]
+          }
+        ],
+        "OPT_MONITORED_FIBER": true,
+        "MONITORED_FIBER": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "updatePayload": {
+        "NAME": "Column_Fiber",
+        "SECT_KEY": 1,
+        "ASSIGN_TYPE": 0,
+        "FIMP_NAME": [
+          "Steel_Blinear",
+          "Conc_Kent&Park",
+          "Conc_Mander_Type1",
+          "Conc_Mander_Type1",
+          "Conc_Mander_Type1",
+          "Conc_Mander_Type1"
+        ],
+        "FIMP_COLOR": [
+          {
+            "R": 255,
+            "G": 0,
+            "B": 0
+          },
+          {
+            "R": 128,
+            "G": 128,
+            "B": 128
+          },
+          {
+            "R": 0,
+            "G": 128,
+            "B": 0
+          },
+          {
+            "R": 0,
+            "G": 128,
+            "B": 0
+          },
+          {
+            "R": 0,
+            "G": 128,
+            "B": 0
+          },
+          {
+            "R": 0,
+            "G": 128,
+            "B": 0
+          }
+        ],
+        "FIBR_BASE": [
+          {
+            "FIBR_BASE_KEY": 752,
+            "REBAR_NAME": "",
+            "AREA": 0.00688072,
+            "CENTER_Y": -1.05047e-16,
+            "CENTER_Z": 1.06179,
+            "FIBER_MATL_ID": 1,
+            "AREA_CONSIDER_REBAR": 0,
+            "OPT_IS_REBAR": false,
+            "POINT_Y": [
+              0.0527429,
+              0.0527429,
+              -0.0527429,
+              -0.0527429,
+              0
+            ],
+            "POINT_Z": [
+              1.08596,
+              1.029,
+              1.029,
+              1.08596,
+              1.1025
+            ]
+          }
+        ],
+        "OPT_MONITORED_FIBER": true,
+        "MONITORED_FIBER": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "expected": {
+        "created": "Steel_MP",
+        "updated": "Steel_Blinear"
+      },
+      "needs": [
+        "fiber_materials"
+      ],
+      "setup": [
+        {
+          "seed": "fiber_materials"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras20",
+      "endpoint": "/db/IMFM-M1",
+      "name": "Inelastic Material Link for Auto Generation (Hyper-S)",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "CONCRETE": {
+          "UN_CONC_NAME": "Conc_Kent&Park",
+          "CONF_CONC_NAME": "Conc_Mander_Type1",
+          "REBAR_NAME": "Steel_MP"
+        }
+      },
+      "updatePayload": {
+        "CONCRETE": {
+          "UN_CONC_NAME": "Conc_Kent&Park",
+          "CONF_CONC_NAME": "Conc_Mander_Type1",
+          "REBAR_NAME": "Steel_Blinear"
+        }
+      },
+      "expected": {
+        "created": "Steel_MP",
+        "updated": "Steel_Blinear"
+      },
+      "needs": [
+        "fiber_materials"
+      ],
+      "setup": [
+        {
+          "seed": "fiber_materials"
         }
       ],
       "blockedSeeds": [],

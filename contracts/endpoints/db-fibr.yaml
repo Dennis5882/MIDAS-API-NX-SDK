@@ -38,6 +38,10 @@ verification:
       ref: db-read-sweep-2026-07-26
     - product: gen
       ref: db-read-sweep-2026-07-26
+    - product: civil
+      ref: fiber-chain-crud-2026-09-28
+    - product: gen
+      ref: fiber-chain-crud-2026-09-28
 
 operations:
   - method: DELETE
