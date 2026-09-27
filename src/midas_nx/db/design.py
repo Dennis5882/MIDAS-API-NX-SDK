@@ -374,6 +374,14 @@ class BeamRebarItem(TypedDict, total=False):
     `GET /info/db/REBB` schema, which also uses the array form) — but
     with the write path itself broken, neither can be confirmed live.
     Level stays read.
+
+    ⚠️ 2026-09-27 correction: the empty item did not rule the body out — it
+    lacks `ID`, and dropping `ID` from an otherwise valid body answers
+    `"Wrong Field"` too. The official ko example (this shape, with `ID`)
+    answers `"Unknown Error"` instead, keyed to a missing section it answers a
+    domain error naming that section, so the shape is parsed. Still no write
+    has succeeded. The en-us article's long keys (`CREATE_SUB_SECTION`,
+    `LAYER1`, `DT`, ...) answer `"Wrong Field"`; they are not this endpoint's.
     """
 
     ID: int  # Sub Section ID, read-only, optional

@@ -230,37 +230,42 @@ risks:
     evidence:
       - docs/live_verification_notes.md
   - id: db-rebb-write-path-refuses-every-payload
-    title: POST/PUT /db/REBB answers "Wrong Field" whatever the body
+    title: No write to /db/REBB has been seen to succeed
     severity: write
     endpoints: ["/db/REBB"]
     products: [gen]
     symptom: >-
-      Every write answers {"error": ... "Wrong Field"} and changes nothing. The
-      message names no field, so it reads as a payload problem and invites a
-      caller to keep permuting field names.
+      Every write so far has changed nothing. A body missing ID, or using the
+      en-us article's long keys, answers {"error": ... "Wrong Field"}; the ko
+      article's own example, which has ID, answers "Unknown Error". Neither
+      message names a field, so both invite a caller to keep permuting names.
     rootCause: >-
-      Unknown, and not the request body. A literally empty item, {"ITEMS":
-      [{}]}, fails identically to a fully specified one - which is what rules
-      the payload out, because an empty object cannot contain a wrong field.
-      Same class as the standing /db/NLLP and /db/WVLD write failures.
+      Unknown. This entry used to say the request body was ruled out, because
+      an empty item {"ITEMS": [{}]} failed like a full one. It was not: ID is
+      required, and on 2026-09-27 dropping ID from an otherwise valid body
+      answered "Wrong Field" too, so the empty item failed for its own reason.
+      What is established now is narrower. The short-key body is parsed and
+      checked against the model - keyed to a missing section it answers "Beam
+      Rebars has been entered in the section no. 3, which has not been
+      specified." - and then fails with "Unknown Error" on a section that
+      exists. /db/REBC and /db/REBW behave the same way on the same scratch
+      model.
     ruledOut: >-
-      Not a missing target: a C24 material, an SB section, a beam element using
-      it and a design code were built from scratch for the test. Not the
-      payload shape: this SDK's shape, the official article's own embedded
-      LAYER1/LAYER2 + DT/DB schema, mixtures of the two, and an empty item all
-      answered the same. Not the session: verify_connection() reported a clean
-      connected status rather than a blocked-modal false positive, and an
-      unrelated GET /db/NODE succeeded in the same session. GET /db/REBB works
-      throughout.
+      Not a missing target: materials, sections, beam, column and wall elements,
+      stories and a design code were built for the test (2026-08-27 and
+      2026-09-27). Not the method: PUT answers the same as POST. Not an
+      unanalysed model: the same after a completed /doc/ANAL. Not the design
+      code: the same under KCI-USD12 and KDS 41 20 : 2022. Not the session:
+      unrelated GETs succeed throughout, and GET /db/REBB works.
     mitigation: none
     sdkRule: db-rebb-write-path-unconfirmed
     status: >-
-      Open. Observed on one account and one session, so it is recorded as a
-      standing failure rather than proven universal - what is proven is that no
-      request body fixes it. This is why /db/REBB's field names rest on the
-      /info schema and the section's own example rather than on a round trip:
-      there is no write to confirm them with.
+      Open. The one write this family is known to accept is a 2026-07-29 PUT to
+      /db/REBW on a production model whose rows already existed, so a row the
+      product itself created may be a precondition; that has not been tested.
+      /db/REBB's field names rest on the /info schema and the article's own
+      example rather than on a round trip.
     firstObserved: "2026-08-27"
-    lastChecked: "2026-09-03"
+    lastChecked: "2026-09-27"
     evidence:
       - docs/live_verification_notes.md

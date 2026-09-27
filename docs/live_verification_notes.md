@@ -11509,3 +11509,99 @@ Outside what was asked: `/ope/MEMB`'s POST response says `bREVERSE: false` and
 the GET after it says `true`, identically for both keys. The 2026-09-18 reply
 recorded only `AELEM`, so whether that was already so cannot be told from the
 record.
+
+## 2026-09-27 (manual repo request, rebar) - REBB/REBC/REBW: which key generation the product takes
+
+`MIDAS-API/docs/error_reports/live_verification_requests_20260927_reb.md`
+asked which of two key generations in MIDASIT's own articles the product
+actually speaks. The ko pages (edited 2025) carry the short keys (`ID`,
+`vMAIN_BAR`, `D0`, `VER_BAR`, `bUSE_MODEL_THICK` ...); the en-us JSON Schemas
+(edited 2026-06-25) carry long ones (`CREATE_SUB_SECTION`, `MAIN_BAR`, `DO`,
+`VERTICAL_REBAR`, `USE_MODEL_THICKNESS` ...). REBC's and REBW's en-us examples
+follow the en-us schema; REBB's does not - it is the ko shape. The three
+articles (`49513985245849`, `49513980544793`, `49514033006745`) were fetched
+fresh from the Help Center API in both locales, and every payload below is the
+article's example copied byte for byte, with only the record key moved onto the
+scratch model.
+
+Gen NX 2026 v2.2, Build 09/24/2026. Each variant ran on its own `/doc/NEW`
+scratch document built for it: `UNIT` m/kN, a C24 material, an SB 0.6x0.6
+section 1 used by two columns, an SB 0.7x0.4 section 2 used by a beam, a
+two-storey wall id 1 (two `WALL` elements, `THIK` 0.2), stories 1F/2F/Roof and
+`DCON` `KCI-USD12`. All three tables read `{"message": ""}` before each write.
+Checkpoints are under `C:/temp/reb-*.mgbx` on the NX host.
+
+### Reads
+
+| | Civil NX | Gen NX `/info` item keys |
+| --- | --- | --- |
+| `/db/REBB` | GET and `/info` both 404 | `ID`, `BAR_SECTOR_I/M/J`, `MAIN_BAR_DC_TOP/BOT`, `bSAME_SIZE_TOP_BOT/IMJ/LAYER` |
+| `/db/REBC` | GET and `/info` both 404 | `ID`, `vMAIN_BAR`, `SHEAR_BAR_END/CEN`, `HOOP_TYPE`, `HOOK_TYPE`, `bSAME_SPACE_END_CEN`, `NUM_BAR_BC_JOINT` |
+| `/db/REBW` | GET and `/info` both 404 | `ID`, `bUSE_MODEL_THICK`, `THICK`, `DW`, `DE`, `VER_BAR`, `HOR_BAR`, `END_BAR`, `NUM_END_BAR`, `BE_HOR_BAR`, `BE_LENGTH`, `vSTORY_NAME` |
+
+Not one long-generation key is in the server's schema. Civil has none of the
+three routes, as `GEN_ONLY` already records.
+
+### Writes
+
+| Endpoint | Variant | HTTP | Body | GET after |
+| --- | --- | --- | --- | --- |
+| REBB | (a) ko example | 201 | `Unknown Error` | empty |
+| REBB | (b) en-us example (ko shape) | 201 | `Unknown Error` | empty |
+| REBB | (c) en-us schema, required fields + `CREATE_SUB_SECTION: false` | 201 | `Wrong Field` | empty |
+| REBB | (c) same with `CREATE_SUB_SECTION: true`, `ELEMS.KEYS: [3]` | 201 | `Wrong Field` | empty |
+| REBB | control: `{"ITEMS": [{}]}` | 201 | `Wrong Field` | empty |
+| REBC | (a) ko example | 201 | `Unknown Error` | empty |
+| REBC | (b) en-us example | 201 | `Wrong Field` | empty |
+| REBW | (a) ko example | 201 | `Unknown Error` | empty |
+| REBW | (b) en-us example | 201 | `Wrong Field` | empty |
+
+Nothing was stored, so no GET could show key names from a write. The split in
+the error is the result: every short-generation body gets past field
+validation, and every long-generation body is refused at it. Three follow-ups
+in one document pin that down:
+
+- **Short keys are parsed and checked against the model.** The ko REBB body
+  keyed to a section that does not exist (3) answers `[Error] Beam Rebars has
+  been entered in the section no. 3, which has not been specified.` - a domain
+  error that could only come after the body was read.
+- **`ID` is required.** The ko body with `ID` removed answers `Wrong Field` on
+  all three; with `ID: 1` instead of `0` it answers `Unknown Error` as before.
+  That is also why the empty-item control answers `Wrong Field`.
+- **`Unknown Error` survives everything tried:** PUT instead of POST (200,
+  same body), another existing section key, `vSTORY_NAME: ["1F"]` on REBW,
+  `HOOK_TYPE` on REBC, a completed `/doc/ANAL` (supports, a dead load, self
+  weight), and switching `DCON` to `KDS 41 20 : 2022` (accepted). Where it
+  comes from is still unknown.
+
+### Where the long generation comes from
+
+It is the ch26 endpoints' schema. `contracts/endpoints/design-rc-kds-41-20-2022-reb{b,c,w}.yaml`
+record `CREATE_SUB_SECTION`/`ELEMS`/`MAIN_BAR`/`USE_CORNER`/`DO`/`HOOK_TYPE` for
+`/DESIGN/RC/KDS-41-20-2022/REBC` and the whole long REBW set -
+`VERTICAL_REBAR`, `CONCRETE_FACE_TO_CENTER_OF_REBAR`, `STORY {FROM, TO}` ... -
+for its REBW, and on 2026-07-29 one production model answered for the same 102
+walls with the short keys on `/db/REBW` and the long ones on the ch26 route
+(entry of that date above). The en-us ch24 articles carry the ch26 schema. For
+REBB the match is partial: ch26's REBB has `CREATE_SUB_SECTION`/`ELEMS` but keeps
+the `vMAIN_BAR_TOP` arrays, while the en-us ch24 schema's `LAYER1`/`LAYER2`,
+`DT`/`DB` match neither route. Posting the en-us examples to the ch26 routes
+themselves was tried too and answered `Wrong Field` there (so did the ko
+bodies), so that route has its own unmet precondition and this proves nothing
+about ch26.
+
+### What this changes here
+
+`db-rebb-write-path-refuses-every-payload` rested on the empty item: "an empty
+object cannot contain a wrong field". It can - it lacks `ID`. The finding that
+no write to `/db/REBB` has ever been seen to succeed stands, and now covers REBC
+and REBW on a scratch model as well; the reasoning that the body was ruled out
+does not. The risk, the contract's rule and the TypedDict docstring are
+corrected to say so. The 2026-08-27 and 2026-09-03 verification records are
+left as written - records are not edited.
+
+No ledger record: nothing was newly achieved. The document was reset with
+`/doc/NEW` after the last checkpoint.
+
+Correction to the entry above: the reply to the four-finding request was
+committed in the manual repo (`60e7ca3`), not left uncommitted.

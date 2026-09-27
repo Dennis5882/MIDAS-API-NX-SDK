@@ -7,9 +7,10 @@
 # it says to follow the example. So this is not a chapter transcribing its
 # source badly - the source contradicts itself, and the chapter says so.
 #
-# What no source can settle is whether any of it is writable. Every POST tried
-# on 2026-08-27 against a purpose-built target answered `Wrong Field`, including
-# a literally empty item - which is what rules out the payload as the cause.
+# What no source can settle is whether any of it is writable. No write has been
+# seen to succeed. On 2026-08-27 an empty item answering `Wrong Field` was read
+# as ruling the payload out; on 2026-09-27 that turned out to be a missing `ID`,
+# and the article's own example, which has one, answers `Unknown Error` instead.
 # See risk db-rebb-write-path-refuses-every-payload.
 contractVersion: 1
 id: db-rebb
@@ -106,9 +107,10 @@ operations:
       wrapper: table
       keyStability: stable
     notes: >-
-      Not known to work. Every payload tried on 2026-08-27 - this shape, the
-      official article's own embedded schema, and an empty item - answered
-      `Wrong Field` against a real target section built for the test. See risk
+      Not known to work. Against a real target section built for the test,
+      this shape answers `Unknown Error` (2026-09-27, the article's own
+      example), while the article's embedded long-key schema, or any body
+      without `ID`, answers `Wrong Field`. See risk
       db-rebb-write-path-refuses-every-payload. The fields below are therefore
       the read contract, corroborated by /info, and nobody has confirmed them
       on the write path.
@@ -644,15 +646,14 @@ sdkRules:
     kind: warn
     appliesTo: [POST, PUT]
     reason: >-
-      No write to this endpoint has ever been seen to succeed. On 2026-08-27,
-      against a purpose-built target - a C24 material, an SB section, a beam
-      element using it and a design code - every payload tried answered
-      `Wrong Field`: this shape, the official article's own embedded schema,
-      and a literally empty item. The empty item is the deciding one, because
-      it fails the same way a full one does, so the cause is not the request
-      body. A caller who gets `Wrong Field` here should not spend a session
-      permuting field names, which is exactly what happened before the empty
-      item was tried.
+      No write to this endpoint has ever been seen to succeed. Against a
+      purpose-built target, a body with this shape and an `ID` answers
+      `Unknown Error` - by POST or PUT, before or after analysis, under two
+      design codes (2026-09-27). `Wrong Field` means something else: the body
+      lacks `ID` or uses the en-us article's long keys, which are not this
+      endpoint's. An empty item was once read as proving the body irrelevant;
+      it only lacked `ID`. A caller should not spend a session permuting field
+      names past `Unknown Error`, which is where every correct body stops.
     riskRef: db-rebb-write-path-refuses-every-payload
     alternative: >-
       Read the current rebar with GET, which works. For writing, the ch26
