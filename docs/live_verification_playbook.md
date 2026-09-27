@@ -60,7 +60,7 @@ python scripts/report_dropped_manual_rows.py \
   --manual-api-repo "E:\AI Study\MIDAS-API" --check    # exit 0
 python scripts/live_crud_check.py --check-cases        # silent; exit 0
 python scripts/check_fixture_contract.py --check       # 1 fixture lead over 1
-                                          # endpoint, 3 contract gaps over 2
+                                          # endpoint, 0 contract gaps over 0
 python scripts/report_npm_replay_coverage.py --check   # 183 cases over 172
                                           # endpoints; every product: 183
 python scripts/check_verification_lag.py --check       # 40, ceiling 40
@@ -73,7 +73,7 @@ cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 90 tests
 ```
 
-The manual repo is vendored at `e64a682`. If the drift or extraction check goes
+The manual repo is vendored at `685be56`. If the drift or extraction check goes
 red, a sync landed upstream: deciding what a chapter's new text means is real
 work, and a line reference that no longer resolves can mean a table moved or
 that it changed.

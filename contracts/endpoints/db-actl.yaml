@@ -183,8 +183,18 @@ fields:
     documentedOptional: null
     safeToOmit: unverified
     provenance: info_schema
-    # RESOLVED: declared by /info and absent from the manual - the whole
-    # manual was searched for the name, not just this section.
+    # RESOLVED: declared by /info and absent from the manual's tables - the
+    # whole manual was searched for the name, not just this section.
+    # Since the manual repo's 2026-09-24 sync (685be56) the name does appear,
+    # in a callout under this section: the ja-locale article alone gained a
+    # row, `ACWC` Boolean default false Optional, and the repo deliberately
+    # keeps en-us's nine rows. documentedDefault and documentedOptional stay
+    # null because the permitted source declines that row. The callout asks
+    # whether ACWC is Japan-only and proposes sending it on a general build.
+    # This repository already has both halves and they do not settle it: a
+    # general Gen build's /info declares it (so not Japan-only by schema),
+    # and a live Gen send answered `Wrong Key` - on an endpoint where Gen
+    # refuses every payload, including a bare {ITER, TOL}.
     # Gen NX only. The section describes one endpoint for both products and
     # says nothing about either; the `products` tag is a measurement from
     # /info, not a documentation claim. See MD-46.

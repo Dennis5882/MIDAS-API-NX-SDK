@@ -50,6 +50,7 @@ from collections import Counter
 sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 
+import check_fixture_contract  # noqa: E402
 import check_verification_lag  # noqa: E402
 import report_npm_type_provenance  # noqa: E402
 import validate_contracts  # noqa: E402
@@ -139,6 +140,18 @@ PATTERNS = (
         ("npm_types_from_python", "npm_types"),
     ),
     Pattern(re.compile(r"the (\d+) `unmergedTables` roots?"), ("npm_types_unmerged",)),
+    # check_fixture_contract.py's two results. The Gates block comments the
+    # tool's output, so a `#` can land between the count and "endpoint".
+    # These went unchecked until 2026-09-27, and the prose said "3 contract
+    # gaps on 2" for five days after the last of them closed.
+    Pattern(
+        re.compile(r"(\d+) fixture leads? (?:on|over|across) (\d+) (?:# )?endpoints?"),
+        ("fixture_leads", "fixture_lead_endpoints"),
+    ),
+    Pattern(
+        re.compile(r"(\d+) (?:live-confirmed )?contract gaps? (?:on|over|across) (\d+)"),
+        ("contract_gaps", "contract_gap_endpoints"),
+    ),
 )
 
 
@@ -176,6 +189,9 @@ def measure() -> dict[str, int]:
     # restating the split from drifting away from it.
     provenance = report_npm_type_provenance.classify()
     lagging = check_verification_lag.lagging_contracts()
+    # What the fixture checker actually finds, not its baseline constants:
+    # --check already fails when the two disagree, so this cannot drift from it.
+    leads, gaps, _ = check_fixture_contract.scan()
 
     return {
         "inventory": len(inventory),
@@ -208,6 +224,10 @@ def measure() -> dict[str, int]:
         ),
         "npm_types_unmerged": len(provenance["python:unmerged"]),
         "lagging_contracts": len(lagging),
+        "fixture_leads": sum(len(v) for v in leads.values()),
+        "fixture_lead_endpoints": len(leads),
+        "contract_gaps": sum(len(v) for v in gaps.values()),
+        "contract_gap_endpoints": len(gaps),
     }
 
 

@@ -3,8 +3,11 @@
 The repository already compares contracts against both SDKs, against `/info`,
 and against the manual.  Nothing compared them against the **fixtures**, which
 is the fourth thing that claims to know an endpoint's shape -- and the one that
-decides what a live run actually sends. Its current baseline has 1 fixture
-lead on 1 endpoint and 3 contract gaps on two confirmed endpoints.
+decides what a live run actually sends. The current baseline is `KNOWN` and
+`KNOWN_CONTRACT_GAPS` below; this docstring stopped restating their sizes on
+2026-09-27, after it had said "3 contract gaps" for five days while the
+constant was empty. PLAN.md and the live playbook state the counts, and
+`check_state_numbers.py` holds them to `scan()`.
 
 The remaining fixture-side lead is on a case nobody has watched pass:
 `/db/ACTL` sends `CLATS` on Gen even though the contract tags it Civil-only.
