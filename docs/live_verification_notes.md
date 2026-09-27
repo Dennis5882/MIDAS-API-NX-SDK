@@ -11362,3 +11362,56 @@ tagged `products: [civil]`, so tagging stays complete.
 
 The npm surface gains two optional members and nothing else. Neither property
 has been sent to a product.
+
+## 2026-09-27 (re-verification) - every confirmed case on Build 09/24/2026: nothing regressed
+
+**Live, destructive, run with the author's go-ahead**, on the machine holding
+this checkout (both products v2.2, Build 09/24/2026, author-confirmed from the
+About dialogs on both machines). Both documents were confirmed open and empty
+with each product's own key before the first `/doc/NEW`. Every harness
+invocation checkpointed to `C:/temp` - local here, so each checkpoint was
+checked on disk - sent `/doc/NEW`, built the base model, ran its cases and
+restored an empty document; a real `GET /db/NODE` followed every invocation,
+and both products answered after all of them.
+
+The confirmed cases were planned into 46 selections by tier, at most eight
+endpoints each, and each selection went through **npm then Python, Gen then
+Civil** - 101 npm and 79 Python invocations, about 60 minutes of
+harness time.
+
+| | Result |
+| --- | --- |
+| confirmed endpoint-product pairs | **302 of 302 passed through both SDKs** |
+| confirmed endpoints | 172 of 172 (130 on both products, 35 Civil only, 7 Gen only) |
+| regressions (exit 1) | **0** |
+| harness exits | 176 clean, 4 exit 3 |
+
+The four exit-3 invocations are two selections on Civil, one per harness, and
+they are the three cases the playbook already lists as never having passed on
+Civil. Both SDKs got the same server text as on Build 09/15/2026:
+
+| Case (Civil, unconfirmed) | Answer, both SDKs |
+| --- | --- |
+| `/db/LCOM-SEISMIC` | `The Load Combination Type is not supported.` |
+| `/db/HHCT` | POST accepted; wrote 1, read back 0 |
+| `/db/NLCT` | `LINE_SEARCH_OPTION is required when OPT_ENABLE_LINE_SEARCH is true.` |
+
+The build moved nothing that the fixture measures, in either direction.
+
+**One stop along the way, a harness refusal rather than a product event.** The
+first pass halted at extras1 on Gen: the npm harness refused `/db/STYP` with
+`a no-DELETE case must run last and be followed by a document reset` and exited
+2 before sending it, after `/db/PJCF` had passed. The selection planner had
+applied the playbook's trap bullet as written, which named only `/db/GRUP` and
+`/db/BNGR`; the harness's own rule is wider - any case whose endpoint, or
+anything its setup writes, has no DELETE - and eleven confirmed cases fall
+under it. The planner was widened to that rule, the aborted invocation set
+aside, and the run resumed from that selection; the playbook bullet now states
+the rule the harness applies. Both products were alive throughout, and the
+next invocation's checkpoint-then-`/doc/NEW` cleared the model the refusal had
+left behind.
+
+Recorded as `ledger-write-2026-09-27-1` (both products), `-2` (Civil) and `-3`
+(Gen), and as a session section in `docs/npm_live_evidence_scratch.md`. The
+playbook's scope command with `BUILD = "09/24/2026"` now prints 0. No fixture
+change: nothing newly confirmed, and a failing unconfirmed case is not flipped.

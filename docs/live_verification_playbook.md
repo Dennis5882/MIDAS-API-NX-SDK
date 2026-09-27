@@ -13,22 +13,20 @@ versions are in git history (`a9da9a0` and before).
 which build, with verbatim errors. This file is the procedure and the
 scoreboard.
 
-## Where things stand (measured 2026-09-20)
+## Where things stand (measured 2026-09-27)
 
 - **Both products are installed at v2.2, Build 09/24/2026** - Gen NX 2026
   (v2.2) and Civil NX 2026 (v2.2), each read from its own About dialog and
   author-confirmed 2026-09-27. **Gen crosses v2.1 -> v2.2 here**; Civil was
-  already v2.2, so only its build moves. **Everything else in this section was
-  measured on Build 09/15/2026**, and an About dialog changes what is
-  installed, never what was measured. **Reads are done on the new build**:
-  both products were GET-swept clean on 2026-09-27 (Gen 268 resources,
-  Civil 283, no failure on either) and `/info` was diffed. **Writes are
-  not** - re-verification has not started, and "The recurring task" below
-  names its scope.
-- **2.8.4 is published on PyPI and npm** (2026-09-20). It shipped the
-  `/db/TDNT` relaxation — `FT`, `FPK` and `TDMFNAME` optional, each with its
-  `appliesWhen` condition in JSDoc. Nothing in either packaged surface has
-  changed since.
+  already v2.2, so only its build moves. **Both reads and writes are
+  re-verified on it**: both products were GET-swept clean on 2026-09-27 (Gen
+  268 resources, Civil 283, no failure on either), `/info` was diffed and the
+  baseline moved, and every confirmed case replayed through both SDKs the same
+  day - all 302 endpoint-product pairs passed, nothing regressed.
+- **2.9.3 is published on PyPI and npm** (2026-09-23). Since then the npm
+  changelog's `Unreleased` holds two optional members from `/info`
+  (`CONTRIBUTION_FACTOR`, `USE_HAMBLY_EQ`); nothing is released with them yet,
+  and `src/midas_nx/` has not changed.
 - **Coverage: 400/400 implemented, 208 write / 192 read.** Of the 225 `/db`
   endpoints, 186 are write-level and 39 are not.
 - **Fixture (`schema/live-cases.json`, version 6):** 220 cases over 196
@@ -81,10 +79,10 @@ that it changed.
 ## The recurring task: re-verify on a new build
 
 **Live. Destructive: `/doc/NEW`.** Every confirmed case was replayed on Build
-09/15/2026 on 2026-09-18. **Build 09/24/2026 shipped both products on
-2026-09-27, so this task is active again** and not one confirmed case has run
-on it. A confirmed case failing on a new build is a **regression**, which is
-what this exists to catch before a user does.
+09/15/2026 on 2026-09-18, and again on **Build 09/24/2026 on 2026-09-27** -
+302 of 302 endpoint-product pairs through both SDKs, no regression - so this is
+dormant until a newer build ships. A confirmed case failing on a new build is a
+**regression**, which is what this exists to catch before a user does.
 
 When a build ships, this command names the scope — set `BUILD` to the **new**
 build's string and it lists every confirmed-case endpoint with no ledger
@@ -116,9 +114,9 @@ PY
 It asks which confirmed-case endpoints have no ledger record citing that
 build. A record mentioning the build for another reason drops out of the
 list; that errs toward doing less, never toward a false claim. With
-`BUILD = "09/24/2026"` it printed the whole confirmed set on 2026-09-27, and
-with `BUILD = "09/15/2026"` it prints 0 — every confirmed endpoint carries a
-record citing the old build and none carries one citing the new.
+`BUILD = "09/24/2026"` it printed the whole confirmed set on the morning of
+2026-09-27, before the replay, and prints 0 since the three ledger records that
+replay added (`ledger-write-2026-09-27-{1,2,3}`).
 
 Batch by tier (`--tier`), at most 8 endpoints per selection, through **both**
 harnesses on **both** products in the same session. **Before calling a batch
@@ -151,9 +149,17 @@ the ledger append is what is missing.
 
 Selection traps, each of which has cost a session:
 
-- **A case whose setup touches a table with no per-id DELETE** — `/db/GRUP`,
-  `/db/BNGR` — may only be the **last** endpoint of an npm invocation, because
-  the document reset is its cleanup. Give each such case its own invocation.
+- **A case the npm harness can only clean up by resetting the document** may
+  only be the **last** endpoint of an npm invocation. That is a case whose own
+  endpoint has no DELETE (`/db/GRUP`, `/db/BNGR`, `/db/STYP`, `/db/STYP-M1`,
+  `/db/CO_M`, `/db/CO_S`, `/db/CO_T`, `/db/CO_F`, `/db/PZEF`, `/db/CLDR`,
+  `/db/MATD`, extras14's `/db/MVCD`) **or** whose setup writes one - every seed
+  that creates a group or a boundary group. The rule is `caseCleanupMode` and
+  `setupCleanupMode` in `live-harness-support.mjs`; the harness refuses such a
+  case anywhere else with `a no-DELETE case must run last and be followed by a
+  document reset` and exits 2 before sending it. This bullet named only the
+  first two until 2026-09-27, when a selection of extras1 hit `/db/STYP`. Put
+  one at the end of each invocation and give the rest their own.
 - **An `--endpoints` selection can drop a case another case depends on**, and
   the Python harness does not warn. `extras14`'s `/db/DYFG` and `/db/DYNF` need
   that tier's `/db/MVCD` case; select them together.

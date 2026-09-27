@@ -4335,3 +4335,228 @@ records:
     claim across unchanged, and that claim said read -- a later read-sweep narrative had overwritten
     the write evidence in the single prose field the old ledger gave an endpoint. Nothing
     new was run for this; the session it records is 2026-07-29.'
+- id: ledger-write-2026-09-27-1
+  endpoints:
+  - /db/BCCT
+  - /db/BMLD
+  - /db/BNGR
+  - /db/BTMP
+  - /db/BUCK
+  - /db/CCFC
+  - /db/CLDR
+  - /db/CLWP
+  - /db/CNLD
+  - /db/CONS
+  - /db/CO_F
+  - /db/CO_M
+  - /db/CO_S
+  - /db/CO_T
+  - /db/CRPC
+  - /db/CUTL
+  - /db/DCON
+  - /db/DCTL
+  - /db/EDMP
+  - /db/EFCT
+  - /db/EIGV
+  - /db/ELNK
+  - /db/ESSF
+  - /db/ETFC
+  - /db/ETMP
+  - /db/EXLD
+  - /db/FBLD
+  - /db/FMLD
+  - /db/FRLS
+  - /db/GRDP
+  - /db/GRUP
+  - /db/GSPR
+  - /db/GSTP
+  - /db/GTMP
+  - /db/HAHS
+  - /db/HECB
+  - /db/HSFC
+  - /db/HSPT
+  - /db/HSTG
+  - /db/IEHC
+  - /db/IELC
+  - /db/IEPI
+  - /db/IFGS
+  - /db/INMF
+  - /db/LCOM-CONC
+  - /db/LCOM-GEN
+  - /db/LCOM-SRC
+  - /db/LCOM-STEEL
+  - /db/LCOM-STLCOMP
+  - /db/LDGR
+  - /db/LDSQ
+  - /db/LENG
+  - /db/LLAN
+  - /db/LLANtr
+  - /db/LTOM
+  - /db/LTSR
+  - /db/MATD
+  - /db/MBTP
+  - /db/MCON
+  - /db/MEMB
+  - /db/MLFC
+  - /db/MLSP
+  - /db/MLSR
+  - /db/MVCD
+  - /db/MVCT
+  - /db/MVCTbs
+  - /db/MVCTtr
+  - /db/MVHC
+  - /db/MVHL
+  - /db/MVHLtr
+  - /db/MVLD
+  - /db/MVLDtr
+  - /db/NBOF
+  - /db/NMAS
+  - /db/NODE
+  - /db/NPLN
+  - /db/NSPR
+  - /db/NTMP
+  - /db/OFFS
+  - /db/PDEL
+  - /db/PJCF
+  - /db/PNLA
+  - /db/PNLD
+  - /db/POLC
+  - /db/POSL
+  - /db/PRES
+  - /db/PRLS
+  - /db/PRST
+  - /db/PSLT
+  - /db/PSSF
+  - /db/PTNS
+  - /db/PZEF
+  - /db/RIGD
+  - /db/SDSP
+  - /db/SDST
+  - /db/SDVE
+  - /db/SDVI
+  - /db/SECF
+  - /db/SKEW
+  - /db/SLAN
+  - /db/SMCT
+  - /db/SMLC
+  - /db/SMPT
+  - /db/SPFC
+  - /db/SPLC
+  - /db/SSPS
+  - /db/STAG
+  - /db/STBK
+  - /db/STLD
+  - /db/STMP
+  - /db/STYP
+  - /db/TDGR
+  - /db/TDME
+  - /db/TDMT
+  - /db/TDNT
+  - /db/THFC
+  - /db/THGA
+  - /db/THGC
+  - /db/THIK
+  - /db/THIS
+  - /db/THMS
+  - /db/THNL
+  - /db/THSL
+  - /db/TMAT
+  - /db/TMLD
+  - /db/TSGR
+  - /db/ULFC
+  - /db/VBEM
+  - /db/VSEC
+  - /db/WMAK
+  date: '2026-09-27'
+  level: write
+  products:
+  - gen
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build 09/24/2026
+    gen: MIDAS Gen NX 2026 (v2.2), build 09/24/2026
+  outcome: success
+  method: Re-verification of every confirmed case in schema/live-cases.json on Build 09/24/2026 (both
+    products v2.2, author-confirmed from the About dialogs on both machines), run 2026-09-27 on the
+    machine holding this checkout. Each selection went through scripts/live_crud_check.py and packages/typescript/scripts/live-crud.mjs,
+    each invocation checkpointing to C:/temp, sending /doc/NEW, building the base model and restoring
+    an empty document afterwards. These completed create/read/update/read/delete/read through both
+    SDKs on Gen, Civil; npm replayed the same emitted fixture on Gen, Civil on 2026-09-27. Across
+    the whole run 302 of 302 confirmed endpoint-product pairs passed through both SDKs and nothing
+    regressed. Evidence in docs/live_verification_notes.md and docs/npm_live_evidence_scratch.md.
+- id: ledger-write-2026-09-27-2
+  endpoints:
+  - /db/ACTL-M1
+  - /db/BCGA-M1
+  - /db/BCGD-M1
+  - /db/CAMB
+  - /db/CJFG
+  - /db/CMCS
+  - /db/CRGR
+  - /db/DYFG
+  - /db/DYLA
+  - /db/DYNF
+  - /db/EIGV-M1
+  - /db/EWSF
+  - /db/GCMB
+  - /db/GSBG
+  - /db/HHCT-M1
+  - /db/IMPF
+  - /db/LLANch
+  - /db/LLANid
+  - /db/LLANop
+  - /db/MVCTid
+  - /db/MVLDch
+  - /db/MVLDid
+  - /db/NLCT-M1
+  - /db/PLCB
+  - /db/POGD
+  - /db/POGD-M1
+  - /db/POLC-M1
+  - /db/SLANch
+  - /db/SLANop
+  - /db/SPAN
+  - /db/STCT-M1
+  - /db/STRPSSM
+  - /db/STYP-M1
+  - /db/THGC-M1
+  - /db/THOO-M1
+  date: '2026-09-27'
+  level: write
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build 09/24/2026
+  outcome: success
+  method: Re-verification of every confirmed case in schema/live-cases.json on Build 09/24/2026 (both
+    products v2.2, author-confirmed from the About dialogs on both machines), run 2026-09-27 on the
+    machine holding this checkout. Each selection went through scripts/live_crud_check.py and packages/typescript/scripts/live-crud.mjs,
+    each invocation checkpointing to C:/temp, sending /doc/NEW, building the base model and restoring
+    an empty document afterwards. These completed create/read/update/read/delete/read through both
+    SDKs on Civil; npm replayed the same emitted fixture on Civil on 2026-09-27. Across the whole
+    run 302 of 302 confirmed endpoint-product pairs passed through both SDKs and nothing regressed.
+    Evidence in docs/live_verification_notes.md and docs/npm_live_evidence_scratch.md.
+- id: ledger-write-2026-09-27-3
+  endpoints:
+  - /db/EPMT
+  - /db/HHCT
+  - /db/LCOM-SEISMIC
+  - /db/NLCT
+  - /db/POSP
+  - /db/SDHY
+  - /db/SDIS
+  date: '2026-09-27'
+  level: write
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build 09/24/2026
+  outcome: success
+  method: Re-verification of every confirmed case in schema/live-cases.json on Build 09/24/2026 (both
+    products v2.2, author-confirmed from the About dialogs on both machines), run 2026-09-27 on the
+    machine holding this checkout. Each selection went through scripts/live_crud_check.py and packages/typescript/scripts/live-crud.mjs,
+    each invocation checkpointing to C:/temp, sending /doc/NEW, building the base model and restoring
+    an empty document afterwards. These completed create/read/update/read/delete/read through both
+    SDKs on Gen; npm replayed the same emitted fixture on Gen on 2026-09-27. Across the whole run
+    302 of 302 confirmed endpoint-product pairs passed through both SDKs and nothing regressed. Evidence
+    in docs/live_verification_notes.md and docs/npm_live_evidence_scratch.md.
