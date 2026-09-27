@@ -11285,34 +11285,55 @@ products. `/view/CAPTURE` was probed four ways on Civil:
 and names what is missing, and the SDK raises it properly rather than passing
 a 200 through as success.
 
-**Retracted: "and writes no file".** This section first reported the three
-`command complete` rows as a second instance of the `/doc/SAVEAS` defect - a
-success-shaped message for a write that never happened - on the evidence that
-no file appeared in `C:/temp`. That was **this** machine's `C:/temp`, and the
-products are on another PC, so the listing was never evidence about anything.
-The same mistake made the pair of `/doc/SAVEAS` checkpoints at the end of the
-session look like failures; they are not known to be. Nothing about whether
-any of these calls produced a file was established, in either direction.
+**Retracted: "and writes no file" - and then settled by measurement.** This
+section first reported the three `command complete` rows as a second instance
+of the `/doc/SAVEAS` defect, a success-shaped message for a write that never
+happened, on the evidence that no file appeared in `C:/temp`. That was **this**
+machine's `C:/temp` while the products were on another PC, so the listing was
+never evidence about anything.
 
-The premise was an inference - the local `C:/temp` holds checkpoints earlier
-sessions wrote, so NX must run here - and it was never measured, while
-`CLAUDE.md`'s first rule about paths says the opposite is the normal case. The
-cost was small only because the directory listing was run at all: the finding
-was written, then withdrawn before it was committed. **A file the caller cannot
-see is verified with `/doc/OPEN`, never with a local path check** - the rule was
-already in `CLAUDE.md`, and a probe that ignored it is what put the opposite of
-the truth about Civil into that file once before.
+The author then moved both products onto this machine, which makes a local
+listing mean something, and the same probes were re-run against empty
+documents with `/doc/SAVEAS` as the control:
 
-Files this session may have left on the NX host's `C:/temp`: up to five image
-probes (`nxprobe_a/c/d`, `midas_nx_probe_civil/gen`) and the two dummy-model
-checkpoints named below.
+| Call | Answer | File on disk |
+| --- | --- | --- |
+| `/doc/SAVEAS` (control) | `command complete` | **61,440 bytes** |
+| `/view/CAPTURE`, `EXPORT_PATH` only | `command complete` | **4,385 bytes** |
+| `/view/CAPTURE`, `+ WIDTH/HEIGHT/SET_HIDDEN/PERSPECTIVE/ZOOM_LEVEL` | `command complete` | **4,217 bytes** |
+| `/view/CAPTURE`, `.bmp` | `command complete` | **1,440,054 bytes** |
+| `/view/CAPTURE`, `+ FIGURE_NAME` | `It's not found Figure Name` | none, correctly |
+
+**`/view/CAPTURE` is not defective, and neither was `/doc/SAVEAS` here.** Every
+`command complete` was truthful; the files were being written on PC B all
+along. `EXPORT_PATH` alone is enough - no `FIGURE_NAME` is required unless
+Smart Report mode is wanted - and the only failure is the one that reports
+itself. Nothing is filed, and nothing should have been.
+
+The premise that caused it was an inference: the local `C:/temp` holds
+checkpoints earlier sessions wrote, so NX must run here. It was never
+measured, `CLAUDE.md`'s first rule about paths says the opposite is the normal
+case, and **the question "which machine is the product on?" was never asked**
+even while a file-writing endpoint was being called. One question would have
+cost nothing. **A file the caller cannot see is verified with `/doc/OPEN`,
+never with a local path check**, and where the product is decides which of
+those two a directory listing even is.
+
+The `.env` in this checkout made the same distinction in its own header - *Gen
+NX runs on two separate PCs (A and B) with independent MAPI keys/sessions* -
+and that file was overwritten during this session on the assumption that a new
+pair of keys refreshed the same session rather than naming a different
+machine. It is now split per machine so the next reader cannot miss it.
+
+Files this session left on PC B's `C:/temp`: five image probes
+(`nxprobe_a/c/d`, `midas_nx_probe_civil/gen`) and three dummy-model
+checkpoints, all of which did get written.
 
 ### State left behind
 
-Both documents hold the dummy model and its results, and **both are still
-open**: the cleanup was stopped when the checkpoint could not be verified,
-because `/doc/NEW` on an unsaved document raises the save-changes dialog that
-blocked both products on 2026-09-22. The only save this session performed is
-the pair of `/doc/SAVEAS` calls above, whose outcome is exactly what is
-unresolved; the author separately saved Civil by hand to clear the earlier
-dialog.
+The dummy models and their results are on **PC B**, which the author
+disconnected at the end of the session, so no `/doc/NEW` was ever sent and
+none is needed from here - those documents are not reachable through the API
+any more, and they are 10-node scratch models. The products now answering are
+on PC A with empty documents. The three `/doc/SAVEAS` checkpoints on PC B did
+write, by the same argument as the table above.
