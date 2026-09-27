@@ -10987,3 +10987,332 @@ condition; the Equal row beside them says which axes each element type uses,
 and that rule is what the product applies. The printed Planar Unequal body
 failed on its distances, which overrun this plate, not on its shape. Wall and
 Solid were not measured and follow the Equal row. MD-62.
+
+## 2026-09-27 - both products at v2.2 Build 09/24/2026, and Gen crosses a version line
+
+**Not a live measurement.** Both About dialogs were read by the author on
+2026-09-27 and nothing was called against either product beyond a connection
+probe. The API reports no build anywhere, so an About dialog is the only
+measurement of one there is.
+
+| Product | Read 2026-09-27 | Previously recorded |
+| --- | --- | --- |
+| MIDAS CIVIL NX 2026 | v2.2, Build 09/24/2026 | v2.2, Build 09/15/2026 |
+| MIDAS GEN NX 2026 | **v2.2**, Build 09/24/2026 | **v2.1**, Build 09/15/2026 |
+
+**Gen moving v2.1 -> v2.2 is the part worth noticing.** Every ledger record in
+this repository says Gen NX 2026 (v2.1); this is the first v2.2 Gen on this
+machine, and Civil has carried v2.2 since 2026-07-26. Civil's version does not
+move at all here - only its build does.
+
+**Neither product was connected.** `verify_connection()` answered
+`{'keyVerified': True, 'status': 'disconnected'}` for both, each with its own
+key, and a following `GET /db/NODE` raised `MidasNotFoundError: 404: client
+does not exist` on both. So the API connection is off inside both products;
+no GET reached a model and nothing below was run. Worth recording on its own:
+this is the shape a genuinely disconnected product answers with, against
+`CLAUDE.md`'s warning that `verify_connection()` cannot see a *blocked*
+session - a modal dialog keeps answering `"connected"`, this answers
+`"disconnected"`.
+
+What the new build opens, none of it run:
+
+1. **`/info` diff.** `scripts/info_baseline.py --capture` then `--diff` is the
+   mode that exists for exactly this question, and GET-only. Build 09/15/2026
+   added `/db/SECT`'s `USE_HAMBLY_EQ` on both products, so a build changing the
+   declared surface is not hypothetical here.
+2. **Hyper-S on Gen.** `db/base.py` gates the `-M1` family with
+   `HYPER_S_ONLY` rather than `CIVIL_ONLY` precisely because Hyper-S is
+   expected to reach Gen NX eventually, and that constant is the one place to
+   widen. Gen arriving at v2.2 - the version Civil has carried Hyper-S under -
+   is the first event that could change it. A GET per endpoint settles it.
+3. **`/db/ACTL`'s `ACWC` (MD-46).** Gen's `/info` declares it and Civil's does
+   not, and a live Gen send answered `"Wrong Key"` while a bare `{ITER, TOL}`
+   answered `"Wrong Field"`. A new Gen major version is a reason to re-read
+   both, and the manual repo's 2026-09-24 sync asks the same question from the
+   documentation side (ja-locale-only row; en-us/ko kept at 9 rows).
+4. **Re-verification.** The playbook's scope command, run with
+   `BUILD = "09/24/2026"` on 2026-09-27, names the whole confirmed set: not one
+   of them has a ledger record citing this build. That is the recurring task,
+   it is destructive (`/doc/NEW`), and it has not started.
+
+No ledger record was added. A build string is not evidence about an endpoint,
+and re-verifying is what would produce one.
+
+## 2026-09-27 (later) - the new build measured: Hyper-S did not move, and Civil declares one new property
+
+Both products connected on fresh keys, each document open and empty
+(`GET /db/NODE` and `GET /db/ELEM` both `{'message': ''}` on both, with that
+product's own key). **GET only throughout - nothing was written and no
+`/doc/NEW` was sent.** This answers items 1 to 3 of the section above.
+
+### `/info` on Build 09/24/2026: three changed pairs out of 399
+
+`info_baseline.py --capture` per product, merged, then `--diff` against the
+committed 2026-09-03 baseline. 305 endpoints swept on each product, 399 pairs
+with a schema - the same 399 the baseline holds, so **no endpoint started or
+stopped answering `/info`**.
+
+```
+CHANGED  /db/RPSC (civil)
+           + CONTRIBUTION_FACTOR (number)
+CHANGED  /db/SECT (civil)
+           + SECT_AFTER.USE_HAMBLY_EQ (boolean)
+           + SECT_BEFORE.USE_HAMBLY_EQ (boolean)
+CHANGED  /db/SECT (gen)
+           + SECT_AFTER.USE_HAMBLY_EQ (boolean)
+           + SECT_BEFORE.USE_HAMBLY_EQ (boolean)
+```
+
+`/db/SECT`'s pair is the known 2026-09-15 arrival, already recorded above.
+**`/db/RPSC`'s `CONTRIBUTION_FACTOR` is new to this repository.** The baseline
+is from Build 09/02/2026 and no capture was taken on 09/15/2026, so the window
+is 09/02 to 09/24 and **which of the two builds introduced it cannot be
+narrowed from what is recorded** - saying "09/24 added it" would be a guess.
+
+### `/db/RPSC`'s `CONTRIBUTION_FACTOR`, measured against the same three tests
+
+The property is documented nowhere: `CONTRIBUTION_FACTOR` and "Contribution
+Factor" both return zero hits across every chapter of the manual repo, and
+nothing in `contracts/`, `src/`, the npm types or `schema/` names it.
+
+1. **It carries a description, an unusually specific one.** `/info` gives it as
+   `{"description": " Concrete Contribution Factor (Steel Composite Type2 only,
+   applied when OPT_CRACKED is true, otherwise reset to 1)", "type": "number"}`.
+   That names its own gate and its own reset value. A placeholder like
+   `/db/DRLS`'s `DUMMY` carries no description at all.
+2. **Its position is the tell.** Civil declares
+   `OPT_MBAR_J, OPT_SBAR_J, OPT_CRACKED, CONTRIBUTION_FACTOR, SBAR_ITEMS,
+   MBARS` - it sits directly after `OPT_CRACKED`, the flag its own description
+   names as its condition. Gen declares the same list without it.
+3. **The products differ, and here that argues the opposite way.**
+   `USE_HAMBLY_EQ` reached both products in one patch, which was read above as
+   evidence against a beta flag. This one is Civil only - but "Steel Composite
+   Type2" is a Civil-side section concept, so a product-scoped field is what it
+   should be rather than a half-shipped one. Neither reading is proof.
+
+Nothing was sent to the server, so this says what the product *declares*, not
+what it accepts - the `/db/POSL` `CODE` case is the standing reminder that the
+two differ.
+
+It also makes `/db/RPSC` an **eleventh** both-product endpoint whose two
+schemas are not the same record, against the ten MD-46 lists. MD-46's point
+holds unchanged: `products: [civil, gen]` says the route answers on both, never
+that the record is the same.
+
+**`schema/info-baseline.json` is again deliberately left at its 2026-09-03
+capture**, for the reason the `USE_HAMBLY_EQ` section already sets out: CI runs
+`info_baseline.py --against-contracts --check` and `--divergence --check`, both
+of which fail when their set grows, and `CONTRIBUTION_FACTOR` would grow both.
+Re-baselining means first deciding what `contracts/endpoints/db-rpsc.yaml` says
+about the property - `/info` is a permitted source for a `/db/*` contract - and
+that is the author's call. Until then the 2026-09-03 baseline stays the right
+thing to diff against. The fresh captures were written to a scratch directory
+and are not in the repository.
+
+### Hyper-S did **not** reach Gen NX at v2.2
+
+All 21 `-M1` endpoints were sent a plain `GET` on Gen NX 2026 (v2.2), Build
+09/24/2026: **21 of 21 answered 404, none answered, none failed any other
+way.** So the version jump that made Gen's major version match Civil's did not
+bring Civil's solver with it. `HYPER_S_ONLY` in `db/base.py` stays exactly as
+it is, and it is still the right constant - this measured a negative, not a
+reason to change the gate.
+
+### `/db/ACTL`'s `ACWC` is unchanged by the new Gen build
+
+From the same capture: Gen declares
+`ACWC, ANRC, ARDC, BMSTRESS, CRBAR, CSECF, ITER, TOL, TRS` and Civil declares
+the same list with `CLATS` in place of `ACWC`. Identical to the 2026-09-03
+baseline on both products. **A new Gen major version changed neither side of
+MD-46**, and the manual repo's 2026-09-24 question - whether the ja-locale-only
+`ACWC` row means the en-us/ko tables are missing a row - is not settled by a
+schema read either way. Sending the field is a write and was not attempted.
+
+## 2026-09-27 (later still) - the GET breadth sweep on both products, and what a read sweep structurally cannot reach
+
+The `/info` work above is **not** a full read check, and this section exists
+because that was asked directly. `/info` is served for `/db/*` only, so of the
+610 pairs that capture swept, the 160 `/DESIGN` pairs answering 404 were never
+a check - they are the API fact that those endpoints have no `/info` route.
+`scripts/live_readonly_sweep.py` is the tool that issues a plain GET, and it
+was run on both products on Build 09/24/2026, GET only, against the same open
+and empty documents.
+
+| Product | GET-capable resources swept | Result | Skipped, and why |
+| --- | --- | --- | --- |
+| Gen NX (v2.2) | 268 | **268 ok, 0 failures** | 36 not on this product, 1 declares no GET |
+| Civil NX (v2.2) | 283 | **283 ok, 0 failures** | 21 not on this product, 1 declares no GET |
+
+Both counts are one higher than the 2026-09-03 sweep's 267 and 282. **That is
+the inventory growing, not the server**: `DESIGN/STEEL/DSTL` joined both SDKs
+in 2.8.2, after that sweep. No endpoint changed its answer.
+
+### Hyper-S, measured with its control in the same session
+
+The 21 `-M1` endpoints were sent a plain GET on both products:
+
+| Product | Result |
+| --- | --- |
+| Gen NX 2026 (v2.2), Build 09/24/2026 | **21 of 21 answered 404** |
+| Civil NX 2026 (v2.2), Build 09/24/2026 | **21 of 21 answered ok** |
+
+The Civil half is the control, and it is what makes the Gen half mean
+something: 404 there is the route not being served on Gen, not a broken sweep
+or a bad endpoint string. `HYPER_S_ONLY` is unchanged and still correct.
+
+### What no read sweep reaches, and it is not an omission to close
+
+Of the 397 endpoints in the inventory, **305 are `DbResource`-shaped and 92 are
+not**. The 92 are command-shaped, so there is no GET to issue:
+
+| Family | Count | Why a read sweep cannot reach it |
+| --- | --- | --- |
+| `/DESIGN/*` | 41 | the `*-ANAL` / `*-TABLE` / `*-REPORT` trios; `*-ANAL` runs a design check and has hung Gen NX before |
+| `/ope/*` | 19 | operations that mutate the model (`/ope/DIVIDEELEM`, `/ope/AUTOMESH`) |
+| `/post/*` | 13 | POST-shaped reads; non-destructive, but they need an analysed model to answer with anything |
+| `/doc/*` | 11 | `/doc/NEW` discards unsaved work, `/doc/SAVEAS` writes on the NX host |
+| `/view/*` | 7 | change the view; `/view/CAPTURE` writes a file on the NX host |
+| `/TEMP/...` | 1 | `OCHECK`, which crashes the session - never call it |
+
+Only the 13 `/post/*` could be probed safely as they stand, and on an empty
+document they would answer "perform analysis" rather than anything about their
+request shape. **The other 79 are reached by the write harness or not at all**,
+which is the 183-confirmed-case re-verification that has not started on this
+build. So: **every resource-shaped endpoint that declares a GET has been read
+on Build 09/24/2026 on every product that serves it**, and no command-shaped
+endpoint has been touched. The one resource-shaped exception is
+`/DESIGN/SRC/AIK-SRC2K/DSRC`, which declares only PUT and DELETE, so there is
+no read of it to take.
+
+## 2026-09-27 (last) - a dummy model on both products: the design-force gap closed, and `/view/CAPTURE` writes nothing
+
+The author asked for whatever of the 92 command-shaped endpoints a dummy model
+could reach, and authorised `C:/temp` for the calls that write on the NX host.
+Both products were on empty documents; both now hold the model described here.
+**The products are on a different PC** (author-confirmed at the end of the
+session). Every path below therefore resolves on that machine, and nothing in
+this checkout's own `C:/temp` is evidence about any of them. That is not a
+detail: a claim built on listing the local directory was written during this
+session and is retracted below.
+
+### The model, and the mistake that cost a session first
+
+`schema/live-cases.json`'s own `baseModel` (9 steps, nothing hand-written) plus
+supports. It is 10 nodes, 3 BEAM elements in a chain and 1 PLATE, one dead-load
+case with self weight.
+
+**The first attempt blocked Civil NX and needed a human to clear it.** The base
+model fixes node 1 only, so the plate floats; the supports were widened with
+`PUT /db/CONS` sending five `ITEMS` under record key `"1"`, the PUT answered
+200 and **echoed all five**, and `/doc/ANAL` was sent on the strength of that
+echo. The analysis raised a dialog on the Civil machine, and from then on
+`verify_connection()` kept answering `connected` through the relay while every
+`GET` timed out - the exact shape `CLAUDE.md` describes.
+
+`GET /db/CONS` had been printed in the same output and showed **one** record.
+Reading it would have stopped the analysis. The lesson is not new, it is the
+repository's own rule applied to the wrong half of the output: **an echo is the
+request coming back, not the record being stored.**
+
+The cause is in `db/boundary.py:31`: `/db/CONS` is **keyed by node id**, and
+`ITEMS[].ID` is a serial number within that node's list. Five items under key
+`"1"` is five constraints on node 1, and the server keeps one. Re-sent as
+`{"1": {...}, "5": {...}, ...}` across nodes 1, 5, 6, 7, 8, 21 and 22, all
+seven stored, `GET` confirmed it, and only then was the model analysed. The
+fixture's own `/db/CONS` case uses a single node, so this multi-record shape had
+never been exercised.
+
+### `/doc/ANAL` completes on Gen without answering
+
+| Product | `/doc/ANAL` | Results afterwards |
+| --- | --- | --- |
+| Civil NX | `{'message': 'MIDAS CIVIL NX command complete'}` in **1.78 s** | full |
+| Gen NX | **no response; read timeout at 60 s** | full, and identical |
+
+On Gen the HTTP call never returned, yet the analysis had run: the first result
+table took 10.09 s and then every table answered normally, with **exactly the
+row counts Civil produced** - reactions 14, displacements 20, beam forces 30,
+plate stresses 10. The session stayed alive throughout (`GET /db/NODE` answered
+10 nodes straight after the timeout). This is the `*-ANAL` advice in
+`CLAUDE.md` holding for `/doc/ANAL` itself on Build 09/24/2026: **use a short
+timeout and read the tables back regardless of whether the call returned.**
+Treating the timeout as a failed solve would have been wrong.
+
+### Pre-process and result tables against a populated, analysed model
+
+Civil, 10 pre-process tables: material 1 row, section 1, **supports 7** (the
+seven constraints, read back), element weight 4, load summary 2, mass summary 1;
+nodal body force `{"message": ""}`; the three **story** tables answer
+`there was an error creating utbl` because the model has no stories. Result
+tables carried real numbers on both products. Every table arrived under the
+top-level key `"empty"` - the confirmation, live again, that `"empty"` is the
+default key for a blank `TABLE_NAME` and **can carry a full table**.
+
+### The design-force family, on a populated and analysed model for the first time
+
+The 2026-09-16 re-test recorded its own gap in as many words: "a populated,
+analysed and designed model has still never been re-tested against them." All
+ten were run on both products, each followed by a real `GET /db/NODE`:
+
+| | Gen NX | Civil NX |
+| --- | --- | --- |
+| 8 Design Forces tables | all `{"message": ""}` | all `there was an error creating utbl` |
+| `/post/PM` | `Please Check RC Design Code` | `Please Check RC Design Code` |
+| `/post/STEELCODECHECK` | `{"message": ""}` | `{"message": ""}` |
+| crashes | **none** | **none** |
+| alive after every call | yes | yes |
+
+Each product answered exactly as it did on a blank document. **No crash path
+reopened**, and `/post/PM`'s answer is a *domain* error naming a missing design
+code rather than a shape refusal, so the request shape is one the server takes.
+What is still untested is a **designed** model; this closes the populated and
+analysed half.
+
+### `/view/CAPTURE`: what was measured, and a claim retracted
+
+`/view/SELECT`, `/view/ANGLE` and `/view/ACTIVE` all answered cleanly on both
+products. `/view/CAPTURE` was probed four ways on Civil:
+
+| Argument | Answer |
+| --- | --- |
+| `EXPORT_PATH` only | `command complete` |
+| `+ WIDTH/HEIGHT/SET_HIDDEN/PERSPECTIVE/ZOOM_LEVEL` | `command complete` |
+| same, `.bmp` instead of `.png` | `command complete` |
+| `+ FIGURE_NAME` (Smart Report) | `MidasResultError: It's not found Figure Name` |
+
+**The one real result is the last row**: Smart Report mode validates its input
+and names what is missing, and the SDK raises it properly rather than passing
+a 200 through as success.
+
+**Retracted: "and writes no file".** This section first reported the three
+`command complete` rows as a second instance of the `/doc/SAVEAS` defect - a
+success-shaped message for a write that never happened - on the evidence that
+no file appeared in `C:/temp`. That was **this** machine's `C:/temp`, and the
+products are on another PC, so the listing was never evidence about anything.
+The same mistake made the pair of `/doc/SAVEAS` checkpoints at the end of the
+session look like failures; they are not known to be. Nothing about whether
+any of these calls produced a file was established, in either direction.
+
+The premise was an inference - the local `C:/temp` holds checkpoints earlier
+sessions wrote, so NX must run here - and it was never measured, while
+`CLAUDE.md`'s first rule about paths says the opposite is the normal case. The
+cost was small only because the directory listing was run at all: the finding
+was written, then withdrawn before it was committed. **A file the caller cannot
+see is verified with `/doc/OPEN`, never with a local path check** - the rule was
+already in `CLAUDE.md`, and a probe that ignored it is what put the opposite of
+the truth about Civil into that file once before.
+
+Files this session may have left on the NX host's `C:/temp`: up to five image
+probes (`nxprobe_a/c/d`, `midas_nx_probe_civil/gen`) and the two dummy-model
+checkpoints named below.
+
+### State left behind
+
+Both documents hold the dummy model and its results, and **both are still
+open**: the cleanup was stopped when the checkpoint could not be verified,
+because `/doc/NEW` on an unsaved document raises the save-changes dialog that
+blocked both products on 2026-09-22. The only save this session performed is
+the pair of `/doc/SAVEAS` calls above, whose outcome is exactly what is
+unresolved; the author separately saved Civil by hand to clear the earlier
+dialog.

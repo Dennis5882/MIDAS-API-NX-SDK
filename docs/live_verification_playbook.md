@@ -15,8 +15,16 @@ scoreboard.
 
 ## Where things stand (measured 2026-09-20)
 
-- **Both products are on Build 09/15/2026** (Gen NX 2026 v2.1, Civil NX 2026
-  v2.2).
+- **Both products are installed at v2.2, Build 09/24/2026** - Gen NX 2026
+  (v2.2) and Civil NX 2026 (v2.2), each read from its own About dialog and
+  author-confirmed 2026-09-27. **Gen crosses v2.1 -> v2.2 here**; Civil was
+  already v2.2, so only its build moves. **Everything else in this section was
+  measured on Build 09/15/2026**, and an About dialog changes what is
+  installed, never what was measured. **Reads are done on the new build**:
+  both products were GET-swept clean on 2026-09-27 (Gen 268 resources,
+  Civil 283, no failure on either) and `/info` was diffed. **Writes are
+  not** - re-verification has not started, and "The recurring task" below
+  names its scope.
 - **2.8.4 is published on PyPI and npm** (2026-09-20). It shipped the
   `/db/TDNT` relaxation — `FT`, `FPK` and `TDMFNAME` optional, each with its
   `appliesWhen` condition in JSDoc. Nothing in either packaged surface has
@@ -73,13 +81,18 @@ that it changed.
 ## The recurring task: re-verify on a new build
 
 **Live. Destructive: `/doc/NEW`.** Every confirmed case was replayed on Build
-09/15/2026 on 2026-09-18, so this is dormant until a newer build ships. A
-confirmed case failing on a new build is a **regression**, which is what this
-exists to catch before a user does.
+09/15/2026 on 2026-09-18. **Build 09/24/2026 shipped both products on
+2026-09-27, so this task is active again** and not one confirmed case has run
+on it. A confirmed case failing on a new build is a **regression**, which is
+what this exists to catch before a user does.
 
-When a build ships, this command names the scope — set `BUILD` to the **old**
-build and it lists every confirmed-case endpoint not yet re-run on anything
-newer. Do not hand-count.
+When a build ships, this command names the scope — set `BUILD` to the **new**
+build's string and it lists every confirmed-case endpoint with no ledger
+record citing it. Do not hand-count. This sentence said "the **old** build"
+until 2026-09-27, which is the opposite of what the code does and of the
+comment inside it: the old build's string names everything already covered,
+so it prints 0 and no scope at all. Nothing had shipped since the file was
+written, so it was never run the wrong way round.
 
 ```bash
 PYTHONIOENCODING=utf-8 python - <<'PY'
@@ -87,7 +100,7 @@ import json, sys
 sys.path.insert(0, "scripts")
 from verification_ledger import load_records
 
-BUILD = "09/15/2026"   # replace with the NEW build's string
+BUILD = "09/24/2026"   # replace with the NEW build's string
 cases = json.load(open("schema/live-cases.json", encoding="utf-8"))["cases"]
 seen = set()
 for record in load_records():
@@ -103,7 +116,9 @@ PY
 It asks which confirmed-case endpoints have no ledger record citing that
 build. A record mentioning the build for another reason drops out of the
 list; that errs toward doing less, never toward a false claim. With
-`BUILD = "09/15/2026"` it prints 0 today.
+`BUILD = "09/24/2026"` it printed the whole confirmed set on 2026-09-27, and
+with `BUILD = "09/15/2026"` it prints 0 — every confirmed endpoint carries a
+record citing the old build and none carries one citing the new.
 
 Batch by tier (`--tier`), at most 8 endpoints per selection, through **both**
 harnesses on **both** products in the same session. **Before calling a batch
@@ -333,6 +348,15 @@ declares one - not as a queue to rescan.
   `schema/info-baseline.json` must not be re-captured: CI fails when the
   uncontracted set grows. At the next manual sync, check whether
   `04_DB_Properties.md`'s 공통 Specifications table grows a row.
+- **`/db/RPSC`'s `CONTRIBUTION_FACTOR`** — the same shape of finding, seen
+  2026-09-27: declared on **Civil only**, documented nowhere, described by
+  `/info` as `Concrete Contribution Factor (Steel Composite Type2 only,
+  applied when OPT_CRACKED is true, otherwise reset to 1)`. It arrived
+  somewhere between Build 09/02/2026 and 09/24/2026 and nothing recorded
+  narrows it further. Same two consequences: not contracted, and it is the
+  second reason the baseline must not be re-captured — it would grow the
+  `--against-contracts` set *and* the `--divergence` set, making `/db/RPSC`
+  an eleventh endpoint whose two products declare different records.
 - **`/db/MVLDbs`'s contract shape**, and the ch24 rebar family above.
 
 ## Live-session rules
