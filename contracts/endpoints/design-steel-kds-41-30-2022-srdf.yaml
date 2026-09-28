@@ -36,6 +36,8 @@ verification:
       ref: db-read-sweep-2026-07-26
     - product: gen
       ref: design-tables-2026-09-28
+    - product: gen
+      ref: design-singletons-2026-09-29
 
 operations:
   - method: DELETE

@@ -27,12 +27,12 @@ scoreboard.
   changelog's `Unreleased` holds two optional members from `/info`
   (`CONTRIBUTION_FACTOR`, `USE_HAMBLY_EQ`); nothing is released with them yet,
   and `src/midas_nx/` has not changed.
-- **Coverage: 400/400 implemented, 257 write / 143 read.** Of the 225 `/db`
+- **Coverage: 400/400 implemented, 277 write / 123 read.** Of the 225 `/db`
   endpoints, 192 are write-level and 33 are not.
-- **Fixture (`schema/live-cases.json`, version 6):** 306 cases over 243
-  endpoints; 254 confirmed over 212 endpoints; 9 base-model steps; 78 named
+- **Fixture (`schema/live-cases.json`, version 6):** 336 cases over 259
+  endpoints; 296 confirmed over 236 endpoints; 9 base-model steps; 81 named
   seeds; 0 unsupported.
-- **npm has replayed all 254 confirmed cases** on every product each declares.
+- **npm has replayed all 296 confirmed cases** on every product each declares.
   Keep that gap at 0: every new confirmed case goes through both harnesses.
 - **Contracts: 384 endpoints + 87 result tables.** The three drafts left, the
   IEHG trio, have no permitted source; that is final.
@@ -59,11 +59,11 @@ python scripts/report_dropped_manual_rows.py \
 python scripts/live_crud_check.py --check-cases        # silent; exit 0
 python scripts/check_fixture_contract.py --check       # 1 fixture lead over 1
                                           # endpoint, 0 contract gaps over 0
-python scripts/report_npm_replay_coverage.py --check   # 254 cases over 212
-                                          # endpoints; every product: 254
+python scripts/report_npm_replay_coverage.py --check   # 296 cases over 236
+                                          # endpoints; every product: 296
 python scripts/check_verification_lag.py --check       # 40, ceiling 40
 python scripts/verification_ledger.py                  # 397 endpoints:
-                                          # 140 read, 257 write
+                                          # 120 read, 277 write
 python scripts/report_unmerged_tables.py --check       # exit 0
 python scripts/check_state_numbers.py --check          # OK; it checks this
                                           # block's own numbers too
@@ -71,7 +71,7 @@ cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 90 tests
 ```
 
-The manual repo is vendored at `685be56`. If the drift or extraction check goes
+The manual repo is vendored at `253caa8`. If the drift or extraction check goes
 red, a sync landed upstream: deciding what a chapter's new text means is real
 work, and a line reference that no longer resolves can mean a table moved or
 that it changed.

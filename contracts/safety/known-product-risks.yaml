@@ -229,6 +229,38 @@ risks:
     lastChecked: "2026-08-24"
     evidence:
       - docs/live_verification_notes.md
+  - id: design-rc-cd-anal-without-design-code-kills-civil
+    title: CD-ANAL on Civil NX with no RC design code ends the session
+    severity: crash
+    endpoints: ["/DESIGN/RC/KDS-41-20-2022/CD-ANAL"]
+    products: [civil]
+    symptom: >-
+      The call never answers. It timed out client-side at 30 seconds; every
+      /db/NODE GET after it timed out for more than two minutes while
+      /mapikey/verify still answered connected, and the author found Civil NX
+      dead - it had to be restarted.
+    rootCause: >-
+      Unknown. The model was a solved RC column (live-analysis.mjs's model,
+      a concrete design load combination, member type COLUMN) on which
+      /doc/ANAL had completed. What set it apart from the Gen run that worked
+      is that Civil refuses the RC design-code selection - both /DESIGN/RC/DRC
+      and RC DCO answer design-control-data errors - so no RC design code was
+      set when CD-ANAL ran.
+    ruledOut: >-
+      Nothing yet: one occurrence. The identical sequence on Gen NX, where RC
+      DCO is accepted, ran CD-ANAL, CD-TABLE and CD-REPORT cleanly the same
+      day on the same build.
+    mitigation: none
+    status: >-
+      Open, one reproduction (Civil NX 2026 v2.2, Build 09/24/2026). Calling
+      CD-ANAL on an empty Civil document answers "Please perform analysis"
+      harmlessly; it is a model with analysis results and no RC design code
+      that is not safe. Whether the other RC *-ANAL calls share it is not
+      known. No SDK rule yet: a warning in both SDKs is proposed, not made.
+    firstObserved: "2026-09-29"
+    lastChecked: "2026-09-29"
+    evidence:
+      - docs/live_verification_notes.md
   - id: db-rebb-write-path-refuses-every-payload
     title: No write to /db/REBB has been seen to succeed
     severity: write

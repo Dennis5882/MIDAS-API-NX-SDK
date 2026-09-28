@@ -358,7 +358,20 @@ async function runCase(liveCase, client, cleanupContext) {
       assertPayloadDefaults(resource, updated, liveCase.endpoint, "PUT");
     }
 
-    if (cleanupMode === "per-id") {
+    if (cleanupMode === "per-id" && Object.hasOwn(liveCase.expected, "afterDelete")) {
+      // A design-parameter singleton answers DELETE by resetting the record
+      // to a baseline rather than removing it; the fixture names the value
+      // the record must read afterwards, and the record must still be there.
+      await resource.delete([liveCase.id], client);
+      targetCreatedIds.delete(liveCase.id);
+      const reset = requireStored(
+        await resource.items(client), liveCase.id, liveCase.endpoint, "DELETE",
+      );
+      requireExpectedValue(
+        reset, liveCase.expected.afterDelete, liveCase.endpoint, "DELETE",
+        liveCase.expected.unordered === true,
+      );
+    } else if (cleanupMode === "per-id") {
       await deleteAndVerify(resource, liveCase.id, client, liveCase.endpoint);
       targetCreatedIds.delete(liveCase.id);
     }

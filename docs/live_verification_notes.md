@@ -11724,14 +11724,18 @@ under `resources.design`; it only searched `resources.db`.
 What the tier found about the product:
 
 - **No design code is needed first** for the element-keyed tables and most
-  singletons; a fresh document takes them on both products.
+  singletons; a fresh document takes them on both products. (Not RC `LMRR`
+  and `SRDF` or steel `SRDF`, which need their chapter's `DCO` written first -
+  see 2026-09-29 below.)
 - **Per-id DELETE works on `/DESIGN` tables** and removes one record.
 - **On the singletons, DELETE means different things.** `DCO` (all three
   codes) is removed. `DCTL` (all three) and steel `SRDF` go back to the
   Specifications defaults (`DT: "3D"`, `bAUTOKF: false`; `PHI_T1 0.9`...).
   `LLRF` and `MATD` go back to the model's values. RC `SRDF` does not change at
   all. RC `LMRR` comes back with **`RHOR` and `RHOW` exchanged** - written
-  `RHOW 0.04, RHOR 0.03`, read `RHOR 0.04, RHOW 0.03` after the DELETE. These
+  `RHOW 0.04, RHOR 0.03`, read `RHOR 0.04, RHOW 0.03` after the DELETE.
+  (**Retracted 2026-09-29**: the DELETE writes fixed values; the example's
+  numbers only made it look like an exchange. See below.) These
   eight took a PUT and read it back, so they are written, but this checker's
   delete step expects the record gone and they stay unconfirmed.
 - **The three `LENG` tables are one table.** A record the RC case left behind
@@ -11756,3 +11760,188 @@ Still open in `/DESIGN`: the 13 tables the pilot refused for a visible reason
 a haunched beam), the 16 it refused for no visible reason (the four REB*
 tables, DCRE, the four DCRM, MEMB in all three codes, steel and SRC LLRF,
 BEMW, CRCM, SMODI, SRC MATD), `DCREM`, and the function calls.
+
+## 2026-09-29 - the design singletons whose DELETE resets: 12 confirmed
+
+The eight singletons left unconfirmed on 2026-09-28 were measured again on
+Build 09/24/2026, each with values chosen to be distinguishable from anything
+a reset could write, before a case was allowed to name an expected value. All
+of them are PUT-only (no POST); the harness writes with the PUT.
+
+| Table | What a per-id DELETE leaves | Products |
+| --- | --- | --- |
+| `DCTL` (RC, steel, SRC) | `bAUTOKF: false`, `DT: "3D"`; `FRAMEX`/`FRAMEY` as written | Gen, Civil |
+| RC `LLRF` | `APPLIED_COMP: ["AXIAL"]` (a fresh document has no LLRF record at all) | Gen, Civil |
+| RC `MATD` | the model's own material (the base model's C24, no rebar) | Gen |
+| RC `LMRR` | always `RHOR 0.04`, `RHOC 0.03`, `RHOW 0.03` - written 0.05/0.06/0.07, read those three | Gen |
+| steel `SRDF` | `PHI_C`, `PHI_B`, `PHI_V` to 0.9; `PHI_T1 0.9`, `PHI_T2 0.75` read the same either way | Gen |
+| RC `SRDF` | nothing: the DELETE answers HTTP 200 `{"message": "error status"}` and the record stays as written | Gen |
+
+Four things this corrects or adds:
+
+- **The three `DCTL` endpoints are one record**, like the three `LENG`: a PUT
+  through RC's reads back through steel's and SRC's.
+- **RC `LMRR`'s "exchange" on 2026-09-28 was an inference, and wrong.** The
+  DELETE writes the same three numbers whatever was stored; it only looked
+  like an exchange because the manual example is `RHOW 0.04, RHOR 0.03`.
+  Whether `RHOR 0.04` is a product default or a misplaced one cannot be told
+  from the API.
+- **RC `LMRR` and `SRDF` refuse a PUT until RC `DCO` has been written**
+  ("Errors detected in Concrete Design Control Data"), and steel `SRDF` until
+  steel `DCO` has ("... Steel Design Control Data"), on both products. The
+  design code survives the `DCO` record's own DELETE - a steel `DCO`
+  PUT-then-DELETE was enough for steel `SRDF` to take its PUT - so the tier's
+  order (each chapter's `DCO` case runs before these) is what satisfies it.
+  The npm harness gets the same order from the endpoint list. On Civil the
+  `DCO` itself is refused, so these stay unconfirmed there.
+- **RC `SRDF`'s refused DELETE does not raise.** `{"message": "error status"}`
+  carries no `error` key, so `MidasResultError` stays silent and `delete()`
+  returns as if it had worked. Another member of the "a 200 does not mean
+  success" family; nothing in the SDK detects it today.
+
+The harness side: `Case(expect_after_delete=...)` in
+`scripts/live_crud_check.py`, emitted as `expected.afterDelete` and read by
+`live-crud.mjs`; without it a DELETE must still remove the record. A probe of
+`"*"` compares the whole record, used where the reset touches keys other than
+the one the update moves (`DCTL`, `LMRR`, steel `SRDF`). `MATD` now probes
+`CONCRETE.GRADE`, because the reset removes the rebar grade key altogether.
+
+Result: the whole design_tables tier through both harnesses, Gen 43/43 and
+Civil 35/39 (the four design-control-data refusals). `confirmed=True` for the
+8 on Gen and `DCTL` x3 and RC `LLRF` on Civil; ledger
+`ledger-write-2026-09-29-1` (Gen) and `-2` (Civil), session
+`design-singletons-2026-09-29`.
+
+## 2026-09-29 (design, continued) - sixteen more tables, and what is still refused
+
+Of the 29 tables the 2026-09-28 pilot refused, sixteen became cases today.
+The pilot's own mapping caused most refusals: it spread each example's
+records over base-model elements 1-4, and element 4 is the plate, element 1
+the column. `[Error] The element no. 4 is an element type in which ... cannot
+be entered` and `... can only be assigned to BEAM type elements` were about
+that, not about the tables.
+
+| Table | What made it pass | Products |
+| --- | --- | --- |
+| RC `CMFT`, `EQCT`, `MBTP`, `SUEQ`, `MCMB`, `MRFT`, `TRFT` | one example record on beam element 2 | Gen, Civil (`TRFT` Gen only; Civil answers 404) |
+| RC `SCOL` | one example record on column element 1 | Gen, Civil |
+| `MEMB` (RC, steel, SRC) | the example's `AELEM` (elements 885-891, which this model lacks) pointed at beams 2 and 3 | Gen, Civil |
+| steel and SRC `LLRF` | the example's `LIVE_LOAD_CASES: ["LL2"]` and `REDUCTION_DATA` on story `B2` emptied - neither exists here | Gen, Civil |
+| steel `SMODI` | keyed by a **steel** material: `Not Found Key` on the base model's concrete material 1, accepted on a steel one at id 2 (new `design_steel_material` seed) | Gen, Civil |
+| steel `CRCM` | keyed by an element on a **circular** steel section: a user pipe (`SHAPE: "P"`, D 0.3, t 0.01) on the steel material, as a column off to the side (section 902, element 901; new `design_pipe_column` seed). The pilot's refusal was `Item:Material Type` | Gen, Civil |
+| RC `BEMW` | the example's `STOR_NAME: "B2"` names a story; with the manual's `/db/STOR` record POSTed as 1F/2F (new `design_stories` seed) it takes `1F`. With `BBOT_STOR: false` the product drops `STOR_NAME` from the record | Gen (`/db/STOR` is Gen-only in the SDK, so Civil gets no story) |
+
+Things the product does that these cases now pin:
+
+- **`MRFT` stores `FACTOR` differently per product.** The example's second
+  record is `0.01`. Gen stores it as `0.7` - and 0.05, 0.1 and 0.2 as well -
+  while 0.5 and 0.69 are stored as sent; Civil stores `0.01`. The manual
+  states the range as `>0, <=1`. The case expects each product's value.
+- **The three `LLRF` endpoints are one record**, like `DCTL` and `LENG`. A
+  fresh document has no LLRF record; DELETE leaves one reading
+  `APPLIED_COMP: ["AXIAL"]`. A PUT of `["AXIAL", "SHEAR", "MOMENTS", "ALL"]`
+  is stored as `["ALL"]`.
+- `MEMB`'s per-id DELETE removes the member; `SMODI`'s removes the
+  modification.
+
+Still refused, each with what was tried:
+
+- **`HCBM` (RC and steel)**: `Unknown Error` on three consecutive beams
+  (seeded 91-93) with the example's other fields, with and without `L1`/`L2`,
+  with `POS_TYPE` 1, with `PART_B` as a `TO` range, after RC `DCO`, and with
+  parts A and C on a tapered section (whose own POST was refused -
+  `Section input data contain errors` - so that last try proves nothing).
+  A haunched beam most likely needs real tapered members; no confirmed
+  tapered-section payload exists yet.
+- **SRC `MCRD`, `MRBD`**: keyed by an SRC section, and the manual's `/db/SECT`
+  SRC example (`SHAPE: "RBO"`) answers `Unknown Error` as printed, with
+  `DATATYPE: 1` added, and with the concrete dimensions enlarged. Without an
+  SRC section they answer `... section no. N, which has not been specified`.
+- **SRC `MATD`**: a PUT keyed by material 1 or 2 answers `{"message": ""}` and
+  stores nothing; the GET stays empty.
+- **`DCRE`** (`Wrong Field`) and **`DCRM-BEAM`/`-COLUMN`** (`Unknown Error`),
+  before and after RC `DCO`; `DCRM-BEAM` with `SPLICED_BARS: 1` instead of
+  `"50%"` answers `Wrong Field`.
+- Not retried today: the four `REB*` tables, `DCRM-BRACE`/`-WALL` (the
+  wall ones answer `Wrong Key`, which reads as wanting a wall id), `DCREM`.
+
+Result: Gen 59/59 and Civil 49/54 through both harnesses (Civil's BEMW
+blocked by its Gen-only story seed, then dropped); ledger
+`ledger-write-2026-09-29-3` (Gen) and `-4` (Civil), session
+`design-tables-2-2026-09-29`.
+
+## 2026-09-29 (design functions) - one RC column design on a solved model
+
+First attempt at the design *function* calls with real results behind them
+(until now every `*-ANAL`/`*-TABLE`/`*-REPORT` had only been called on empty
+documents, where each answers `Please perform analysis`). Model: the
+disposable column `live-analysis.mjs` builds (C24, 0.6 x 0.6 user section,
+fixed base, DL self weight), the harness's confirmed `/db/LCOM-CONC` record,
+RC `DCO` as the design_tables case writes it, `MBTP` COLUMN on element 1;
+`/doc/ANAL`; then each call with a short timeout and a `/db/NODE` liveness
+check after it.
+
+**Gen NX (Build 09/24/2026): the whole chain ran.**
+
+| Call | Answer |
+| --- | --- |
+| `CD-ANAL` (`PERFORM_TYPE: "ELEMS"`, element 1) | `{"message": "success"}`, well inside 30 s; session alive |
+| `CD-TABLE` (`TABLE_TYPE: "MEMB"`) | a `Result Table` with `HEAD`/`DATA` and one row for the column (`MEMB`, `SECT`, `fck`, `Pu`, `phiPn`, `Rat-P` ... `CHK`) |
+| `CD-REPORT` (`MEMB`, `Summary`, `EXPORT_PATH: "C:/temp"`, `OUTPUT_NAME: "cd-report-gen"`) | `{"SUCCESS": true, "FILE_PATH": "C:/tempcd-report-gen"}` |
+
+- **`CD-REPORT` joins `EXPORT_PATH` and `OUTPUT_NAME` with no separator.**
+  `C:/temp` + `cd-report-gen` came back as `C:/tempcd-report-gen` - a file
+  named `tempcd-report-gen...` in `C:\`, not in `C:\temp`. Every manual
+  example ends `EXPORT_PATH` with a separator (`"C:\\MIDAS\\Result\\"`), and
+  with `C:/temp/` the later reports came back as `C:/temp/<name>` - so this
+  is the documented form working as documented, not a defect; the trap is
+  only for a caller who leaves the separator off. The NX host is another machine, so the file
+  itself was not inspected; the answer is the product's own.
+- The historical `CC-ANAL` hang did not appear for `CD-ANAL` on this build
+  and model. One run is one data point.
+
+**Civil NX: `CD-ANAL` killed the product.** Civil refuses RC `DCO` (as on
+2026-09-28), so the same model had no RC design code; `/doc/ANAL` completed,
+then `CD-ANAL` did not answer within 30 s and every `/db/NODE` afterwards
+timed out for more than two minutes while `/mapikey/verify` still answered
+`connected`. The author found Civil NX dead and restarted it. **Do not call
+`CD-ANAL` on Civil with analysis results and no RC design code** - risk
+`design-rc-cd-anal-without-design-code-kills-civil` in
+`contracts/safety/known-product-risks.yaml`. An SDK warning for it is
+proposed, not made.
+
+Ledger `ledger-write-2026-09-29-5` (Gen `CD-ANAL`), `ledger-read-2026-09-29-6`
+(`CD-TABLE`), `-7` (`CD-REPORT`, read because the file was not inspected),
+`-8` (Civil `CD-ANAL`, `crash_or_hang`); session `design-cd-2026-09-29`.
+The other 39 design function calls are untouched.
+
+## 2026-09-29 (design functions, continued) - RC member design and the steel code check on Gen
+
+Both products restarted after the Civil `CD-ANAL` crash; each answered with an
+empty open document. Civil was left alone: it refuses the RC and steel
+design-code selections, which is the condition `CD-ANAL` died under. On Gen,
+one disposable solved model - RC column 1, beam 2, brace 3, a steel column 11
+on the `ltsr_material`/`ltsr_section` records, fixed bases, DL self weight, RC
+and steel `DCO`, the fixture's `LCOM-CONC` and `LCOM-STEEL`, member types -
+then each call with a short timeout and a liveness check. Nothing hung.
+
+| Call | Answer |
+| --- | --- |
+| `BD-ANAL` (beam 2), `BRD-ANAL` (brace 3), steel `CODE-ANAL` (column 11) | `{"message": "success"}` each |
+| `BD-TABLE`, `BRD-TABLE`, `CODE-TABLE` (`MEMB`) | a `Result Table` with the element's row |
+| `BD-REPORT`, `BRD-REPORT`, `CODE-REPORT` (`Graphic`, `EXPORT_PATH: "C:/temp/"`) | `SUCCESS: true`, `FILE_PATH: "C:/temp/<name>.jpg"` (not inspected - another machine) |
+| RC `TABLE` `BEAMDESIGNFORCES`, steel `TABLE` `STEELMEMBERDESIGNFORCES` (manual example arguments) | `{}` after `/doc/ANAL` alone; one row, under the key `empty`, once `BD-ANAL` / `CODE-ANAL` had run |
+| RC `TABLE` `COLUMNDESIGNFORCES`, `BRACEDESIGNFORCES` | `{}` - only asked before a design run |
+| `BC-ANAL`, `BRC-ANAL`, `CC-ANAL` (CC last, for its hang history) | `{"error": {"message": "failed:Rebar"}}` at once; session alive; their TABLEs headers only, REPORTs `No design results found` |
+
+- **The design-force tables are fed by the design run, not by the analysis.**
+  An empty `{}` right after `/doc/ANAL` means "run the member design first".
+- **The RC code checks need rebar data**, and no REB* write has been made to
+  work (see `db-rebb-write-path-refuses-every-payload`), so they stop at
+  `failed:Rebar` - cleanly. `CC-ANAL`'s historical hang was not reached.
+- Still untried: `WD`/`WC` (no wall element), `HCD` (no haunched beam),
+  SRC `BC`/`CC` (no SRC section can be made), and the Civil side.
+
+Ledger `ledger-write-2026-09-29-9` (the three ANALs), `ledger-read-2026-09-29-10`
+(TABLEs), `-11` (REPORTs), `-12` (the refused checks); session
+`design-functions-2026-09-29`.

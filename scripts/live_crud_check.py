@@ -276,6 +276,7 @@ from midas_nx.db.project import (
     ProjectInfo,
     SectionColor,
     Span,
+    Story,
     StructureGroup,
     StructureType,
     StructureTypeHyperS,
@@ -526,6 +527,10 @@ BASE_MODEL_SEEDS: Dict[str, Dict[str, Any]] = {
 }
 
 
+#: ``Case.expect_after_delete`` default: the DELETE must remove the record.
+_REMOVED = object()
+
+
 class Case:
     """One resource's round trip: what to write, what to change, what to check.
 
@@ -555,6 +560,7 @@ class Case:
         setup: Sequence[Dict[str, Any]] = (),
         unordered: bool = False,
         setup_replaces: Sequence[str] = (),
+        expect_after_delete: Any = _REMOVED,
     ) -> None:
         self.resource = resource
         self.create_payload = create_payload
@@ -590,6 +596,13 @@ class Case:
         #: to the emitted setup nor reported blocked. Python still runs and
         #: gates on them as ``needs``.
         self.setup_replaces = tuple(setup_replaces)
+        #: What a per-id DELETE leaves behind. By default the record must be
+        #: gone. A design-parameter singleton answers DELETE by putting the
+        #: record back to some baseline instead - the Specifications
+        #: defaults, the model's own values, or nothing changed at all - so
+        #: such a case names the probe value the record must read after the
+        #: DELETE, and the record must still be there.
+        self.expect_after_delete = expect_after_delete
 
 
 class SeedStep:
@@ -4197,11 +4210,21 @@ _SRC = "/DESIGN/SRC/AIK-SRC2K"
 #: 2 (the example's own ids name elements this model does not have), a
 #: singleton its example's id 1. Where the update takes a key the create does
 #: not send, the expected created value is the table's stated default.
+#:
+#: The example key may be (key, overrides) where the printed record names
+#: model objects this document lacks - elements, load cases, stories; the
+#: overrides point them at the base model and change nothing else.
+#:
+#: The singletons (DCO, DCTL, LLRF, LMRR, MATD, SRDF) have no POST, so their
+#: PUT is the only write and the created value is never read. A probe of "*"
+#: compares the whole record: DCTL, LMRR and steel SRDF are reset by DELETE in
+#: keys other than the one an update would move, so no single key shows both
+#: the write and the reset. DCTL and LMRR take their example as printed.
 _BOTH = ("gen", "civil")
-_DESIGN_TABLE_CASES: List[Tuple[str, int, str, Dict[str, Any], str, Any, Any, Tuple[str, ...]]] = [
+_DESIGN_TABLE_CASES: List[Tuple[str, int, Any, Dict[str, Any], str, Any, Any, Tuple[str, ...]]] = [
     # RC, KDS 41 20 : 2022 (26_Design_RC_KDS41202022.md)
     (f"{_RC}/DCO", 1, "1", {"SEISMIC_PROV": False}, "SEISMIC_PROV", True, False, ("gen",)),
-    (f"{_RC}/DCTL", 1, "1", {"DT": "3D"}, "DT", "XZ", "3D", _BOTH),
+    (f"{_RC}/DCTL", 1, "1", {}, "*", {"FRAMEX": "Braced Non-sway", "FRAMEY": "Braced Non-sway", "bAUTOKF": True, "DT": "XZ"}, {"FRAMEX": "Braced Non-sway", "FRAMEY": "Braced Non-sway", "bAUTOKF": True, "DT": "XZ"}, _BOTH),
     (f"{_RC}/DFBA", 2, "859", {"FORCE_TYPE": "Member Forces"}, "FORCE_TYPE",
      "Subdivided Forces", "Member Forces", _BOTH),
     (f"{_RC}/FMAG", 2, "915", {"B2Y_DELTA_SY": 1.3}, "B2Y_DELTA_SY", 1, 1.3, _BOTH),
@@ -4209,9 +4232,10 @@ _DESIGN_TABLE_CASES: List[Tuple[str, int, str, Dict[str, Any], str, Any, Any, Tu
     (f"{_RC}/LENG", 2, "891", {"LB": 1, "bNOTUSE": True, "LT": 1}, "bNOTUSE", False, True, _BOTH),
     (f"{_RC}/LLRF", 1, "1", {"APPLIED_COMP": ["MOMENTS"]}, "APPLIED_COMP",
      ["AXIAL"], ["MOMENTS"], _BOTH),
-    (f"{_RC}/LMRR", 1, "1", {"RHOW": 0.03}, "RHOW", 0.04, 0.03, _BOTH),
-    (f"{_RC}/MATD", 1, "1", {"REBAR.MAIN_REBAR_GRADE": "SD500"}, "REBAR.MAIN_REBAR_GRADE",
-     "SD400S", "SD500", ("gen",)),
+    (f"{_RC}/LMRR", 1, "1", {}, "*", {"RHOW": 0.04, "RHOC": 0.03, "RHOR": 0.03},
+     {"RHOW": 0.04, "RHOC": 0.03, "RHOR": 0.03}, _BOTH),
+    (f"{_RC}/MATD", 1, "1", {"REBAR.MAIN_REBAR_GRADE": "SD500"}, "CONCRETE.GRADE",
+     "C15", "C15", ("gen",)),
     (f"{_RC}/MLLR", 2, "922", {"FACTOR": 0.9}, "FACTOR", 1, 0.9, _BOTH),
     (f"{_RC}/PMDM", 1, "915", {"CALC_METHOD": "M/P"}, "CALC_METHOD", "P", "M/P", _BOTH),
     (f"{_RC}/REXC", 2, "17", {"EXPOSURE": "Etc"}, "EXPOSURE", "Dry", "Etc", _BOTH),
@@ -4220,39 +4244,76 @@ _DESIGN_TABLE_CASES: List[Tuple[str, int, str, Dict[str, Any], str, Any, Any, Tu
     (f"{_RC}/ULCT", 2, "885", {"bUNDERLOADTYPE": False}, "bUNDERLOADTYPE", True, False, ("gen",)),
     (f"{_RC}/WMAK", 1, "1", {"MARKNAME": "W200_RENAMED"}, "MARKNAME", "W200", "W200_RENAMED",
      _BOTH),
+    # The example names story B2; the design_stories seed's bottom story is 1F.
+    # With BBOT_STOR false the product drops STOR_NAME from the record. Gen
+    # only here: /db/STOR is Gen-only, so Civil gets no story to name.
+    (f"{_RC}/BEMW", 1, ("1", {"STOR_NAME": "1F"}), {"BBOT_STOR": False}, "BBOT_STOR", True, False,
+     ("gen",)),
+    # 2026-09-29. The pilot had these on element 4 (the plate) or column 1;
+    # on the element kind the product asks for they take the example as is.
+    (f"{_RC}/CMFT", 2, "1069", {"CMY": 0.72, "CMZ": 0.85}, "CMY", 0.7, 0.72, _BOTH),
+    (f"{_RC}/EQCT", 2, "1066", {"TYPE": "Vertical Seismic Forces"}, "TYPE",
+     "Special Seismic Loads", "Vertical Seismic Forces", _BOTH),
+    (f"{_RC}/MBTP", 2, "934", {"TYPE": "COLUMN"}, "TYPE", "BRACE", "COLUMN", _BOTH),
+    (f"{_RC}/SUEQ", 2, "934", {"LC_AXIAL": 1.2}, "LC_AXIAL", 1, 1.2, _BOTH),
+    (f"{_RC}/SCOL", 1, "915", {"TYPE": "SOFT_STORY"}, "TYPE", "PILOTI", "SOFT_STORY", _BOTH),
+    (f"{_RC}/MCMB", 2, "888", {"CALC_METHOD": "EQUI"}, "CALC_METHOD", "EACH", "EQUI", _BOTH),
+    # The example's second record, 0.01. Gen stores anything from 0.01 to
+    # 0.2 as 0.7 (0.5 and 0.69 as sent); Civil stores 0.01.
+    (f"{_RC}/MRFT", 2, "885", {"FACTOR": 0.01}, "FACTOR", 1, 0.7, ("gen",)),
+    (f"{_RC}/MRFT", 2, "885", {"FACTOR": 0.01}, "FACTOR", 1, 0.01, ("civil",)),
+    # TRFT's example gives only 1; 0.01 is the same chapter's MRFT value,
+    # inside TRFT's stated range (>0, <=1).
+    (f"{_RC}/TRFT", 2, "888", {"FACTOR": 0.01}, "FACTOR", 1, 0.01, ("gen",)),
+    # PUT-only. The example's members are elements this model lacks; the
+    # base model's beams 2 and 3 stand in.
+    (f"{_RC}/MEMB", 1, ("1", {"AELEM": [2, 3]}), {}, "AELEM", [2, 3], [2, 3], _BOTH),
     # Steel, KDS 41 30 : 2022 (25_Design_Steel_KDS41302022.md)
     (f"{_STEEL}/CBFT", 2, "915", {"AUTO_CAL": False, "VALUE": 1.2}, "AUTO_CAL", True, False,
      _BOTH),
     (f"{_STEEL}/CMFT", 2, "1069", {"CMY": 0.72, "CMZ": 0.85}, "CMY", 0.7, 0.72, _BOTH),
     (f"{_STEEL}/DCO", 1, "1", {"COMB_RATIO": 0}, "COMB_RATIO", 1, 0, _BOTH),
-    (f"{_STEEL}/DCTL", 1, "1", {"DT": "3D"}, "DT", "XZ", "3D", _BOTH),
+    (f"{_STEEL}/DCTL", 1, "1", {}, "*", {"FRAMEX": "Braced Non-sway", "FRAMEY": "Braced Non-sway", "bAUTOKF": True, "DT": "XZ"}, {"FRAMEX": "Braced Non-sway", "FRAMEY": "Braced Non-sway", "bAUTOKF": True, "DT": "XZ"}, _BOTH),
     (f"{_STEEL}/EQCT", 2, "1066", {"TYPE": "Vertical Seismic Forces"}, "TYPE",
      "Special Seismic Loads", "Vertical Seismic Forces", _BOTH),
     (f"{_STEEL}/FMAG", 2, "915", {"B2Y_DELTA_SY": 1.3}, "B2Y_DELTA_SY", 1, 1.3, _BOTH),
     (f"{_STEEL}/KFAC", 2, "859", {"Ky": 2}, "Ky", 1, 2, _BOTH),
     (f"{_STEEL}/LENG", 2, "891", {"LB": 1, "bNOTUSE": True, "LT": 1}, "bNOTUSE", False, True, _BOTH),
+    (f"{_STEEL}/LLRF", 1, ("1", {"LIVE_LOAD_CASES": [], "REDUCTION_DATA": []}), {},
+     "APPLIED_COMP", ["ALL"], ["ALL"], _BOTH),
     (f"{_STEEL}/LTSR", 2, "1067", {"bNOTCHECK": True}, "bNOTCHECK", False, True, _BOTH),
     (f"{_STEEL}/MBTP", 2, "934", {"TYPE": "COLUMN"}, "TYPE", "BRACE", "COLUMN", _BOTH),
+    (f"{_STEEL}/MEMB", 1, ("1", {"AELEM": [2, 3]}), {}, "AELEM", [2, 3], [2, 3], _BOTH),
     (f"{_STEEL}/MLLR", 2, "922", {"FACTOR": 0.9}, "FACTOR", 1, 0.9, _BOTH),
     (f"{_STEEL}/SERV", 2, "915", {"DEFLECT_CONTROL": 500}, "DEFLECT_CONTROL", 400, 500, _BOTH),
+    # Keyed by an element on a circular steel section: the design_pipe_column
+    # seed's 901.
+    (f"{_STEEL}/CRCM", 901, "1058", {"METHOD": "SRSS"}, "METHOD", "Linear Sum", "SRSS", _BOTH),
+    # Keyed by a steel material: the design_steel_material seed's id 2.
+    (f"{_STEEL}/SMODI", 2, "100", {}, "GRADE", "SM355", "SM355", _BOTH),
     (f"{_STEEL}/SLRS", 2, "915", {"FRAME_TYPE": "Ordinary Concentrically Braced Frames"},
      "FRAME_TYPE", "Special Concentrically Braced Frames",
      "Ordinary Concentrically Braced Frames", _BOTH),
-    (f"{_STEEL}/SRDF", 1, "1", {"PHI_T1": 0.9}, "PHI_T1", 0.75, 0.9, _BOTH),
+    (f"{_STEEL}/SRDF", 1, "1", {"PHI_T1": 0.9}, "*",
+     {"PHI_T1": 0.75, "PHI_T2": 0.75, "PHI_C": 0.25, "PHI_B": 0.45, "PHI_V": 0.85},
+     {"PHI_T1": 0.9, "PHI_T2": 0.75, "PHI_C": 0.25, "PHI_B": 0.45, "PHI_V": 0.85}, _BOTH),
     (f"{_STEEL}/SUEQ", 2, "934", {"LC_AXIAL": 1.2}, "LC_AXIAL", 1, 1.2, _BOTH),
     (f"{_STEEL}/ULCT", 2, "885", {"bUNDERLOADTYPE": False}, "bUNDERLOADTYPE", True, False,
      ("gen",)),
     # SRC, AIK-SRC2K (27_Design_SRC_AIKSRC2K.md)
     (f"{_SRC}/CMFT", 2, "885", {"OPT_AUTO": True}, "OPT_AUTO", False, True, _BOTH),
     (f"{_SRC}/DCO", 1, "1", {"SEISMIC": False}, "SEISMIC", True, False, _BOTH),
-    (f"{_SRC}/DCTL", 1, "1", {"DT": "3D"}, "DT", "XZ", "3D", _BOTH),
+    (f"{_SRC}/DCTL", 1, "1", {}, "*", {"FRAMEX": "Braced Non-sway", "FRAMEY": "Braced Non-sway", "bAUTOKF": True, "DT": "XZ"}, {"FRAMEX": "Braced Non-sway", "FRAMEY": "Braced Non-sway", "bAUTOKF": True, "DT": "XZ"}, _BOTH),
     (f"{_SRC}/EQCT", 2, "868", {"TYPE": "Vertical Seismic Forces"}, "TYPE",
      "Special Seismic Loads", "Vertical Seismic Forces", _BOTH),
     (f"{_SRC}/FMAG", 2, "868", {"B2Y_DELTA_SY": 1.3}, "B2Y_DELTA_SY", 1, 1.3, _BOTH),
     (f"{_SRC}/KFAC", 2, "868", {"Ky": 2}, "Ky", 1, 2, _BOTH),
     (f"{_SRC}/LENG", 2, "868", {"LZ": 1}, "LZ", 2, 1, _BOTH),
+    (f"{_SRC}/LLRF", 1, ("1", {"LIVE_LOAD_CASES": [], "REDUCTION_DATA": []}), {},
+     "APPLIED_COMP", ["ALL"], ["ALL"], _BOTH),
     (f"{_SRC}/LTSR", 2, "868", {"bNOTCHECK": True}, "bNOTCHECK", False, True, _BOTH),
     (f"{_SRC}/MBTP", 2, "868", {"TYPE": "COLUMN"}, "TYPE", "BRACE", "COLUMN", _BOTH),
+    (f"{_SRC}/MEMB", 1, ("1", {"AELEM": [2, 3]}), {}, "AELEM", [2, 3], [2, 3], _BOTH),
     (f"{_SRC}/MLLR", 2, "868", {"FACTOR": 0.9}, "FACTOR", 1, 0.9, _BOTH),
     (f"{_SRC}/SUEQ", 2, "874", {"LC_AXIAL": 1.2}, "LC_AXIAL", 1, 1.2, _BOTH),
 ]
@@ -4260,52 +4321,148 @@ _DESIGN_TABLE_CASES: List[Tuple[str, int, str, Dict[str, Any], str, Any, Any, Tu
 
 #: Which products each case has passed on through both harnesses. A case
 #: missing here, or a product missing from its set, stays unconfirmed; the
-#: reasons are in docs/live_verification_notes.md (2026-09-28). Two families
-#: of reason: the singletons whose DELETE restores defaults instead of
-#: removing the record (DCTL, LLRF, LMRR, MATD, SRDF), which this checker's
-#: delete step reads as a failure; and on Civil the tables that need design
-#: control data, which Civil will not take because it refuses the RC and
-#: steel design-code selections themselves.
+#: reasons are in docs/live_verification_notes.md (2026-09-28, 2026-09-29).
+#: What is left is on Civil: the tables that need design control data (RC
+#: LMRR and SRDF, steel DCO and SRDF), which Civil will not take because it
+#: refuses the RC and steel design-code selections themselves. The
+#: singletons whose DELETE resets instead of removing were confirmed on
+#: 2026-09-29 against _DESIGN_DELETE_RESETS.
 _DESIGN_CONFIRMED: Dict[str, Set[str]] = {
+    f"{_RC}/BEMW": {"gen"},
+    f"{_RC}/CMFT": {"civil", "gen"},
     f"{_RC}/DCO": {"gen"},
+    f"{_RC}/DCTL": {"civil", "gen"},
     f"{_RC}/DFBA": {"civil", "gen"},
+    f"{_RC}/EQCT": {"civil", "gen"},
     f"{_RC}/FMAG": {"civil", "gen"},
     f"{_RC}/KFAC": {"civil", "gen"},
     f"{_RC}/LENG": {"civil", "gen"},
+    f"{_RC}/LLRF": {"civil", "gen"},
+    f"{_RC}/LMRR": {"gen"},
+    f"{_RC}/MATD": {"gen"},
+    f"{_RC}/MBTP": {"civil", "gen"},
+    f"{_RC}/MCMB": {"civil", "gen"},
+    f"{_RC}/MEMB": {"civil", "gen"},
     f"{_RC}/MLLR": {"civil", "gen"},
+    f"{_RC}/MRFT": {"civil", "gen"},
     f"{_RC}/PMDM": {"civil", "gen"},
     f"{_RC}/REXC": {"civil", "gen"},
+    f"{_RC}/SCOL": {"civil", "gen"},
     f"{_RC}/SDGN": {"civil", "gen"},
+    f"{_RC}/SRDF": {"gen"},
+    f"{_RC}/SUEQ": {"civil", "gen"},
+    f"{_RC}/TRFT": {"gen"},
     f"{_RC}/ULCT": {"gen"},
     f"{_RC}/WMAK": {"civil", "gen"},
     f"{_SRC}/CMFT": {"civil", "gen"},
     f"{_SRC}/DCO": {"civil", "gen"},
+    f"{_SRC}/DCTL": {"civil", "gen"},
     f"{_SRC}/EQCT": {"civil", "gen"},
     f"{_SRC}/FMAG": {"civil", "gen"},
     f"{_SRC}/KFAC": {"civil", "gen"},
     f"{_SRC}/LENG": {"civil", "gen"},
+    f"{_SRC}/LLRF": {"civil", "gen"},
     f"{_SRC}/LTSR": {"civil", "gen"},
     f"{_SRC}/MBTP": {"civil", "gen"},
+    f"{_SRC}/MEMB": {"civil", "gen"},
     f"{_SRC}/MLLR": {"civil", "gen"},
     f"{_SRC}/SUEQ": {"civil", "gen"},
     f"{_STEEL}/CBFT": {"civil", "gen"},
     f"{_STEEL}/CMFT": {"civil", "gen"},
+    f"{_STEEL}/CRCM": {"civil", "gen"},
     f"{_STEEL}/DCO": {"gen"},
+    f"{_STEEL}/DCTL": {"civil", "gen"},
     f"{_STEEL}/EQCT": {"civil", "gen"},
     f"{_STEEL}/FMAG": {"civil", "gen"},
     f"{_STEEL}/KFAC": {"civil", "gen"},
     f"{_STEEL}/LENG": {"civil", "gen"},
+    f"{_STEEL}/LLRF": {"civil", "gen"},
     f"{_STEEL}/LTSR": {"civil", "gen"},
     f"{_STEEL}/MBTP": {"civil", "gen"},
+    f"{_STEEL}/MEMB": {"civil", "gen"},
     f"{_STEEL}/MLLR": {"civil", "gen"},
     f"{_STEEL}/SERV": {"civil", "gen"},
     f"{_STEEL}/SLRS": {"civil", "gen"},
+    f"{_STEEL}/SMODI": {"civil", "gen"},
+    f"{_STEEL}/SRDF": {"gen"},
     f"{_STEEL}/SUEQ": {"civil", "gen"},
     f"{_STEEL}/ULCT": {"gen"},
 }
 
 
+#: Singletons whose per-id DELETE resets the record instead of removing it,
+#: with the probe value the record reads afterwards, per product. Measured,
+#: never inferred: docs/live_verification_notes.md has each table's run.
+_DESIGN_DELETE_RESETS: Dict[str, Dict[str, Any]] = {
+    # The three DCTL endpoints are one record: a PUT through any of them reads
+    # back through the others. DELETE puts back bAUTOKF false and DT "3D".
+    **{f"{code}/DCTL": {product: {"FRAMEX": "Braced Non-sway", "FRAMEY": "Braced Non-sway",
+                                  "bAUTOKF": False, "DT": "3D"} for product in _BOTH}
+       for code in (_RC, _STEEL, _SRC)},
+    # The three LLRF endpoints are one record too. A fresh document has none;
+    # DELETE leaves one reading APPLIED_COMP ["AXIAL"].
+    **{f"{code}/LLRF": {product: ["AXIAL"] for product in _BOTH}
+       for code in (_RC, _STEEL, _SRC)},
+    # Back to the model's own material (the base model's C24).
+    f"{_RC}/MATD": {"gen": "C24"},
+    # Always these three, whatever was written - 0.05/0.06/0.07 as well.
+    f"{_RC}/LMRR": {"gen": {"RHOR": 0.04, "RHOC": 0.03, "RHOW": 0.03}},
+    # DELETE answers HTTP 200 {"message": "error status"} - no error key, so
+    # nothing raises - and the record is left exactly as written.
+    f"{_RC}/SRDF": {"gen": 0.85},
+    # PHI_C, PHI_B and PHI_V go to 0.9; PHI_T1 0.9 and PHI_T2 0.75 read the
+    # same either way.
+    f"{_STEEL}/SRDF": {"gen": {"PHI_T1": 0.9, "PHI_T2": 0.75, "PHI_C": 0.9, "PHI_B": 0.9,
+                               "PHI_V": 0.9}},
+}
+
+
+#: Seed steps a design case depends on.
+_DESIGN_NEEDS: Dict[str, Tuple[str, ...]] = {
+    f"{_STEEL}/SMODI": ("design_steel_material",),
+    f"{_STEEL}/CRCM": ("design_steel_material", "design_pipe_column"),
+    f"{_RC}/BEMW": ("design_stories",),
+}
+
+
+def _design_seeds() -> List[SeedStep]:
+    """A steel material at id 2 for /DESIGN/STEEL/.../SMODI, which is keyed by
+    material and answers Not Found Key on the base model's concrete one. The
+    record is the ltsr_material seed's, already confirmed on both products."""
+    steel = copy.deepcopy(BASE_MODEL_SEEDS["ltsr_material"]["records"]["1"])
+    # 02_DB_Project_Structure.md section 15's first record, and a second one
+    # level with the base model's beams; BEMW names the bottom story.
+    story = {"STORY_NAME": "1F", "STORY_LEVEL": 0, "bFLOOR_DIAPHRAGM": False,
+             "WIND_FLOOR_WIDTH_X": 36, "WIND_FLOOR_WIDTH_Y": 27.6, "WIND_CENTER_X": 18,
+             "WIND_CENTER_Y": 13.8, "WIND_ECCENT_X": 5.4, "WIND_ECCENT_Y": 4.14,
+             "SEIS_ACC_ECCENT_X": 1.8, "SEIS_ACC_ECCENT_Y": 1.38, "SEIS_INHERENT_ECCENT_X": 0,
+             "SEIS_INHERENT_ECCENT_Y": 0, "SEIS_TORSIONAL_AMP_FACTOR_X": 1,
+             "SEIS_TORSIONAL_AMP_FACTOR_Y": 1}
+
+    def pipe_column(client: MidasClient) -> None:
+        # CRCM is for circular steel sections: a user pipe (D 0.3, t 0.01)
+        # on the steel material, one column off to the side of the base model.
+        Section.create({902: {"SECTTYPE": "DBUSER", "SECT_NAME": "Pipe", "SECT_BEFORE": {
+            "USE_SHEAR_DEFORM": True, "SHAPE": "P", "DATATYPE": 2,
+            "SECT_I": {"vSIZE": [0.3, 0.01]}}}}, client=client)
+        Node.create({901: {"X": 0, "Y": 20, "Z": 0}, 902: {"X": 0, "Y": 20, "Z": 3.2}},
+                    client=client)
+        Element.create({901: {"TYPE": "BEAM", "MATL": 2, "SECT": 902, "NODE": [901, 902]}},
+                       client=client)
+
+    return [
+        SeedStep("design_steel_material",
+                 lambda client: Material.create({2: steel}, client=client)),
+        SeedStep("design_pipe_column", pipe_column),
+        SeedStep("design_stories", lambda client: Story.create(
+            {1: story, 2: dict(story, STORY_NAME="2F", STORY_LEVEL=3.2, bFLOOR_DIAPHRAGM=True)},
+            client=client), products=("gen",)),
+    ]
+
+
 def _dig(record: Any, dotted: str) -> Any:
+    if dotted == "*":
+        return record
     for part in dotted.split("."):
         record = record.get(part) if isinstance(record, dict) else None
     return record
@@ -4315,7 +4472,9 @@ def _design_table_cases() -> List[Case]:
     resources = _design_resources()
     cases = []
     for endpoint, item_id, key, overrides, probe, created, updated, products in _DESIGN_TABLE_CASES:
+        key, moved = key if isinstance(key, tuple) else (key, {})
         create = _design_example(endpoint, key)
+        create.update(copy.deepcopy(moved))
         update = copy.deepcopy(create)
         for dotted, value in overrides.items():
             *parents, leaf = dotted.split(".")
@@ -4329,6 +4488,9 @@ def _design_table_cases() -> List[Case]:
                 lambda p, path=probe: _dig(p, path), created, updated,
                 item_id=item_id, products=(product,),
                 confirmed=product in _DESIGN_CONFIRMED.get(endpoint, set()),
+                expect_after_delete=_DESIGN_DELETE_RESETS.get(endpoint, {}).get(
+                    product, _REMOVED),
+                needs=_DESIGN_NEEDS.get(endpoint, ()),
             ))
     return cases
 
@@ -5092,7 +5254,7 @@ TIERS: List[Tier] = [
     Tier("extras18", "batch 18: Task A ch07 tendon chain (TDNT -> TDNA -> TDPL)", _extras18_seeds, _extras18_cases),
     Tier("extras19", "Task P: ch07 pretension load on a truss element", _extras19_seeds, _extras19_cases),
     Tier("extras20", "fiber chain: article FIMP records, IMFM material link, FIBR division", _extras20_seeds, _extras20_cases),
-    Tier("design_tables", "ch25-27 design-parameter tables (RC, steel, SRC) from the manual's own examples", _no_seeds, _design_table_cases),
+    Tier("design_tables", "ch25-27 design-parameter tables (RC, steel, SRC) from the manual's own examples", _design_seeds, _design_table_cases),
 ]
 
 
@@ -5191,6 +5353,8 @@ def _run_case(case: Case, client: MidasClient) -> Dict[str, Any]:
             record("delete", lambda: res.delete([case.item_id], client=client))
 
             def check_deleted():
+                if case.expect_after_delete is not _REMOVED:
+                    return read_probe(case.expect_after_delete, "reset to")
                 if case.item_id in res.items(client=client):
                     raise MidasAPIError(
                         f"{res.ENDPOINT}: id {case.item_id} still present after delete"
@@ -5411,6 +5575,8 @@ def _live_cases_fixture() -> Dict[str, Any]:
                     # Only written when set, so the other cases' entries stay
                     # byte-identical.
                     **({"unordered": True} if case.unordered else {}),
+                    **({"afterDelete": case.expect_after_delete}
+                       if case.expect_after_delete is not _REMOVED else {}),
                 },
                 "needs": list(case.needs),
                 # A case that already spells out a seed keeps its own ordering;

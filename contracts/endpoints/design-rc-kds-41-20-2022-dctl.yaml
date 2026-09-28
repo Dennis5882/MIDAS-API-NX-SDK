@@ -38,6 +38,10 @@ verification:
       ref: design-tables-2026-09-28
     - product: gen
       ref: design-tables-2026-09-28
+    - product: gen
+      ref: design-singletons-2026-09-29
+    - product: civil
+      ref: design-singletons-2026-09-29
 
 operations:
   - method: DELETE

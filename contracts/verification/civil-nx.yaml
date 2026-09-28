@@ -851,3 +851,40 @@ records:
       removing the record. Per-id DELETE works on the /DESIGN tables.
     evidence:
       - docs/live_verification_notes.md
+  - id: design-singletons-2026-09-29
+    endpoints: ["/DESIGN/RC/KDS-41-20-2022/DCTL", "/DESIGN/RC/KDS-41-20-2022/LLRF", "/DESIGN/SRC/AIK-SRC2K/DCTL", "/DESIGN/STEEL/KDS-41-30-2022/DCTL"]
+    date: "2026-09-29"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 09/24/2026
+    level: write
+    outcome: success
+    method: >-
+      live_crud_check.py design_tables tier and live-crud.mjs with each
+      singleton's post-DELETE record named in the fixture (afterDelete),
+      measured first on this build with distinct values.
+    finding: >-
+      DCTL (one record behind all three codes) and RC LLRF passed
+      PUT/read/DELETE/read through both SDKs with the record still present
+      afterwards: DCTL back to bAUTOKF false and DT 3D, LLRF to AXIAL. RC
+      LMRR and SRDF and steel DCO and SRDF are refused for want of design
+      control data, as on 2026-09-28.
+    evidence:
+      - docs/live_verification_notes.md
+  - id: design-tables-2-2026-09-29
+    endpoints: ["/DESIGN/RC/KDS-41-20-2022/CMFT", "/DESIGN/RC/KDS-41-20-2022/EQCT", "/DESIGN/RC/KDS-41-20-2022/MBTP", "/DESIGN/RC/KDS-41-20-2022/MCMB", "/DESIGN/RC/KDS-41-20-2022/MEMB", "/DESIGN/RC/KDS-41-20-2022/MRFT", "/DESIGN/RC/KDS-41-20-2022/SCOL", "/DESIGN/RC/KDS-41-20-2022/SUEQ", "/DESIGN/SRC/AIK-SRC2K/LLRF", "/DESIGN/SRC/AIK-SRC2K/MEMB", "/DESIGN/STEEL/KDS-41-30-2022/LLRF", "/DESIGN/STEEL/KDS-41-30-2022/MEMB", "/DESIGN/STEEL/KDS-41-30-2022/SMODI", "/DESIGN/STEEL/KDS-41-30-2022/CRCM"]
+    date: "2026-09-29"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 09/24/2026
+    level: write
+    outcome: success
+    method: >-
+      live_crud_check.py design_tables tier and live-crud.mjs; manual example
+      records on the base-model element kind the product asks for, model
+      references in MEMB and LLRF pointed at the base model, SMODI on a
+      seeded steel material, CRCM on a seeded pipe column.
+    finding: >-
+      14 more tables completed a full round trip through both SDKs.
+      The pilot's refusals were its own element mapping (plate element 4,
+      column 1 for beam-only tables) and the examples' references to
+      elements, load cases and stories this document lacks. MRFT stores
+      FACTOR 0.01 as 0.01. The three LLRF endpoints are one record.
+    evidence:
+      - docs/live_verification_notes.md

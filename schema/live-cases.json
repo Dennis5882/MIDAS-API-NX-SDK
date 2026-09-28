@@ -1687,6 +1687,122 @@
         }
       }
     },
+    "design_steel_material": {
+      "endpoint": "/db/MATL",
+      "records": {
+        "2": {
+          "TYPE": "STEEL",
+          "NAME": "DB_Steel",
+          "HE_SPEC": 0,
+          "HE_COND": 0,
+          "PLMT": 0,
+          "P_NAME": "",
+          "bMASS_DENS": false,
+          "DAMP_RAT": 0.02,
+          "PARAM": [
+            {
+              "P_TYPE": 1,
+              "STANDARD": "EN05(S)",
+              "CODE": "",
+              "DB": "S450",
+              "bELAST": false
+            }
+          ]
+        }
+      }
+    },
+    "design_pipe_column": {
+      "steps": [
+        {
+          "endpoint": "/db/SECT",
+          "records": {
+            "902": {
+              "SECTTYPE": "DBUSER",
+              "SECT_NAME": "Pipe",
+              "SECT_BEFORE": {
+                "USE_SHEAR_DEFORM": true,
+                "SHAPE": "P",
+                "DATATYPE": 2,
+                "SECT_I": {
+                  "vSIZE": [
+                    0.3,
+                    0.01
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "endpoint": "/db/NODE",
+          "records": {
+            "901": {
+              "X": 0,
+              "Y": 20,
+              "Z": 0
+            },
+            "902": {
+              "X": 0,
+              "Y": 20,
+              "Z": 3.2
+            }
+          }
+        },
+        {
+          "endpoint": "/db/ELEM",
+          "records": {
+            "901": {
+              "TYPE": "BEAM",
+              "MATL": 2,
+              "SECT": 902,
+              "NODE": [
+                901,
+                902
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "design_stories": {
+      "endpoint": "/db/STOR",
+      "records": {
+        "1": {
+          "STORY_NAME": "1F",
+          "STORY_LEVEL": 0,
+          "bFLOOR_DIAPHRAGM": false,
+          "WIND_FLOOR_WIDTH_X": 36,
+          "WIND_FLOOR_WIDTH_Y": 27.6,
+          "WIND_CENTER_X": 18,
+          "WIND_CENTER_Y": 13.8,
+          "WIND_ECCENT_X": 5.4,
+          "WIND_ECCENT_Y": 4.14,
+          "SEIS_ACC_ECCENT_X": 1.8,
+          "SEIS_ACC_ECCENT_Y": 1.38,
+          "SEIS_INHERENT_ECCENT_X": 0,
+          "SEIS_INHERENT_ECCENT_Y": 0,
+          "SEIS_TORSIONAL_AMP_FACTOR_X": 1,
+          "SEIS_TORSIONAL_AMP_FACTOR_Y": 1
+        },
+        "2": {
+          "STORY_NAME": "2F",
+          "STORY_LEVEL": 3.2,
+          "bFLOOR_DIAPHRAGM": true,
+          "WIND_FLOOR_WIDTH_X": 36,
+          "WIND_FLOOR_WIDTH_Y": 27.6,
+          "WIND_CENTER_X": 18,
+          "WIND_CENTER_Y": 13.8,
+          "WIND_ECCENT_X": 5.4,
+          "WIND_ECCENT_Y": 4.14,
+          "SEIS_ACC_ECCENT_X": 1.8,
+          "SEIS_ACC_ECCENT_Y": 1.38,
+          "SEIS_INHERENT_ECCENT_X": 0,
+          "SEIS_INHERENT_ECCENT_Y": 0,
+          "SEIS_TORSIONAL_AMP_FACTOR_X": 1,
+          "SEIS_TORSIONAL_AMP_FACTOR_Y": 1
+        }
+      }
+    },
     "mvcd_eurocode": {
       "endpoint": "/db/MVCD",
       "records": {
@@ -15559,7 +15675,7 @@
         "GET",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "FRAMEX": "Braced Non-sway",
         "FRAMEY": "Braced Non-sway",
@@ -15570,11 +15686,27 @@
         "FRAMEX": "Braced Non-sway",
         "FRAMEY": "Braced Non-sway",
         "bAUTOKF": true,
-        "DT": "3D"
+        "DT": "XZ"
       },
       "expected": {
-        "created": "XZ",
-        "updated": "3D"
+        "created": {
+          "FRAMEX": "Braced Non-sway",
+          "FRAMEY": "Braced Non-sway",
+          "bAUTOKF": true,
+          "DT": "XZ"
+        },
+        "updated": {
+          "FRAMEX": "Braced Non-sway",
+          "FRAMEY": "Braced Non-sway",
+          "bAUTOKF": true,
+          "DT": "XZ"
+        },
+        "afterDelete": {
+          "FRAMEX": "Braced Non-sway",
+          "FRAMEY": "Braced Non-sway",
+          "bAUTOKF": false,
+          "DT": "3D"
+        }
       },
       "needs": [],
       "setup": [],
@@ -15594,7 +15726,7 @@
         "GET",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "FRAMEX": "Braced Non-sway",
         "FRAMEY": "Braced Non-sway",
@@ -15605,11 +15737,27 @@
         "FRAMEX": "Braced Non-sway",
         "FRAMEY": "Braced Non-sway",
         "bAUTOKF": true,
-        "DT": "3D"
+        "DT": "XZ"
       },
       "expected": {
-        "created": "XZ",
-        "updated": "3D"
+        "created": {
+          "FRAMEX": "Braced Non-sway",
+          "FRAMEY": "Braced Non-sway",
+          "bAUTOKF": true,
+          "DT": "XZ"
+        },
+        "updated": {
+          "FRAMEX": "Braced Non-sway",
+          "FRAMEY": "Braced Non-sway",
+          "bAUTOKF": true,
+          "DT": "XZ"
+        },
+        "afterDelete": {
+          "FRAMEX": "Braced Non-sway",
+          "FRAMEY": "Braced Non-sway",
+          "bAUTOKF": false,
+          "DT": "3D"
+        }
       },
       "needs": [],
       "setup": [],
@@ -15887,7 +16035,7 @@
         "GET",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "CALC_RULE": 0,
         "APPLIED_COMP": [
@@ -15910,6 +16058,9 @@
         ],
         "updated": [
           "MOMENTS"
+        ],
+        "afterDelete": [
+          "AXIAL"
         ]
       },
       "needs": [],
@@ -15930,7 +16081,7 @@
         "GET",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "CALC_RULE": 0,
         "APPLIED_COMP": [
@@ -15953,6 +16104,9 @@
         ],
         "updated": [
           "MOMENTS"
+        ],
+        "afterDelete": [
+          "AXIAL"
         ]
       },
       "needs": [],
@@ -15973,20 +16127,33 @@
         "GET",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "RHOW": 0.04,
         "RHOC": 0.03,
         "RHOR": 0.03
       },
       "updatePayload": {
-        "RHOW": 0.03,
+        "RHOW": 0.04,
         "RHOC": 0.03,
         "RHOR": 0.03
       },
       "expected": {
-        "created": 0.04,
-        "updated": 0.03
+        "created": {
+          "RHOW": 0.04,
+          "RHOC": 0.03,
+          "RHOR": 0.03
+        },
+        "updated": {
+          "RHOW": 0.04,
+          "RHOC": 0.03,
+          "RHOR": 0.03
+        },
+        "afterDelete": {
+          "RHOR": 0.04,
+          "RHOC": 0.03,
+          "RHOW": 0.03
+        }
       },
       "needs": [],
       "setup": [],
@@ -16013,13 +16180,21 @@
         "RHOR": 0.03
       },
       "updatePayload": {
-        "RHOW": 0.03,
+        "RHOW": 0.04,
         "RHOC": 0.03,
         "RHOR": 0.03
       },
       "expected": {
-        "created": 0.04,
-        "updated": 0.03
+        "created": {
+          "RHOW": 0.04,
+          "RHOC": 0.03,
+          "RHOR": 0.03
+        },
+        "updated": {
+          "RHOW": 0.04,
+          "RHOC": 0.03,
+          "RHOR": 0.03
+        }
       },
       "needs": [],
       "setup": [],
@@ -16039,7 +16214,7 @@
         "GET",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "CONCRETE": {
           "CODE": "Standard",
@@ -16071,8 +16246,9 @@
         }
       },
       "expected": {
-        "created": "SD400S",
-        "updated": "SD500"
+        "created": "C15",
+        "updated": "C15",
+        "afterDelete": "C24"
       },
       "needs": [],
       "setup": [],
@@ -16350,7 +16526,7 @@
         "GET",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "PHI_T": 0.8,
         "PHI_C1": 0.65,
@@ -16365,7 +16541,8 @@
       },
       "expected": {
         "created": 0.8,
-        "updated": 0.85
+        "updated": 0.85,
+        "afterDelete": 0.85
       },
       "needs": [],
       "setup": [],
@@ -16515,6 +16692,602 @@
     },
     {
       "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/BEMW",
+      "name": "Boundary Element Method by Wall ID",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "NMETHOD_TYPE": "Displacement Based Method",
+        "BBNDR_ELEM_METHOD": true,
+        "BBOT_STOR": true,
+        "STOR_NAME": "1F"
+      },
+      "updatePayload": {
+        "NMETHOD_TYPE": "Displacement Based Method",
+        "BBNDR_ELEM_METHOD": true,
+        "BBOT_STOR": false,
+        "STOR_NAME": "1F"
+      },
+      "expected": {
+        "created": true,
+        "updated": false
+      },
+      "needs": [
+        "design_stories"
+      ],
+      "setup": [
+        {
+          "seed": "design_stories"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/CMFT",
+      "name": "Equivalent Moment Correction Factor(Cm)",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "CMY": 0.7,
+        "CMZ": 0.6
+      },
+      "updatePayload": {
+        "CMY": 0.72,
+        "CMZ": 0.85
+      },
+      "expected": {
+        "created": 0.7,
+        "updated": 0.72
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/CMFT",
+      "name": "Equivalent Moment Correction Factor(Cm)",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "CMY": 0.7,
+        "CMZ": 0.6
+      },
+      "updatePayload": {
+        "CMY": 0.72,
+        "CMZ": 0.85
+      },
+      "expected": {
+        "created": 0.7,
+        "updated": 0.72
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/EQCT",
+      "name": "Seismic Load Combination Type",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "TYPE": "Special Seismic Loads"
+      },
+      "updatePayload": {
+        "TYPE": "Vertical Seismic Forces"
+      },
+      "expected": {
+        "created": "Special Seismic Loads",
+        "updated": "Vertical Seismic Forces"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/EQCT",
+      "name": "Seismic Load Combination Type",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "TYPE": "Special Seismic Loads"
+      },
+      "updatePayload": {
+        "TYPE": "Vertical Seismic Forces"
+      },
+      "expected": {
+        "created": "Special Seismic Loads",
+        "updated": "Vertical Seismic Forces"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/MBTP",
+      "name": "Modify Member Type",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "TYPE": "BRACE"
+      },
+      "updatePayload": {
+        "TYPE": "COLUMN"
+      },
+      "expected": {
+        "created": "BRACE",
+        "updated": "COLUMN"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/MBTP",
+      "name": "Modify Member Type",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "TYPE": "BRACE"
+      },
+      "updatePayload": {
+        "TYPE": "COLUMN"
+      },
+      "expected": {
+        "created": "BRACE",
+        "updated": "COLUMN"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/SUEQ",
+      "name": "Scale up Factor for Earthquake",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "LC_SHEAR": 1.2,
+        "LCOM_AXIAL": 1.2,
+        "LCOM_MOMENT": 1.2,
+        "LCOM_SHEAR": 1.2
+      },
+      "updatePayload": {
+        "LC_SHEAR": 1.2,
+        "LCOM_AXIAL": 1.2,
+        "LCOM_MOMENT": 1.2,
+        "LCOM_SHEAR": 1.2,
+        "LC_AXIAL": 1.2
+      },
+      "expected": {
+        "created": 1,
+        "updated": 1.2
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/SUEQ",
+      "name": "Scale up Factor for Earthquake",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "LC_SHEAR": 1.2,
+        "LCOM_AXIAL": 1.2,
+        "LCOM_MOMENT": 1.2,
+        "LCOM_SHEAR": 1.2
+      },
+      "updatePayload": {
+        "LC_SHEAR": 1.2,
+        "LCOM_AXIAL": 1.2,
+        "LCOM_MOMENT": 1.2,
+        "LCOM_SHEAR": 1.2,
+        "LC_AXIAL": 1.2
+      },
+      "expected": {
+        "created": 1,
+        "updated": 1.2
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/SCOL",
+      "name": "Seismic Column Type",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "TYPE": "PILOTI"
+      },
+      "updatePayload": {
+        "TYPE": "SOFT_STORY"
+      },
+      "expected": {
+        "created": "PILOTI",
+        "updated": "SOFT_STORY"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/SCOL",
+      "name": "Seismic Column Type",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "TYPE": "PILOTI"
+      },
+      "updatePayload": {
+        "TYPE": "SOFT_STORY"
+      },
+      "expected": {
+        "created": "PILOTI",
+        "updated": "SOFT_STORY"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/MCMB",
+      "name": "Moment Calculation Method for Beam",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "CALC_METHOD": "EACH"
+      },
+      "updatePayload": {
+        "CALC_METHOD": "EQUI"
+      },
+      "expected": {
+        "created": "EACH",
+        "updated": "EQUI"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/MCMB",
+      "name": "Moment Calculation Method for Beam",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "CALC_METHOD": "EACH"
+      },
+      "updatePayload": {
+        "CALC_METHOD": "EQUI"
+      },
+      "expected": {
+        "created": "EACH",
+        "updated": "EQUI"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/MRFT",
+      "name": "Moment Redistribution Factor",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "FACTOR": 1
+      },
+      "updatePayload": {
+        "FACTOR": 0.01
+      },
+      "expected": {
+        "created": 1,
+        "updated": 0.7
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/MRFT",
+      "name": "Moment Redistribution Factor",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "FACTOR": 1
+      },
+      "updatePayload": {
+        "FACTOR": 0.01
+      },
+      "expected": {
+        "created": 1,
+        "updated": 0.01
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/TRFT",
+      "name": "Torsion Reduction Factor",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "FACTOR": 1
+      },
+      "updatePayload": {
+        "FACTOR": 0.01
+      },
+      "expected": {
+        "created": 1,
+        "updated": 0.01
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/MEMB",
+      "name": "Member Assignment",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "AELEM": [
+          2,
+          3
+        ],
+        "bREVERSE": true
+      },
+      "updatePayload": {
+        "AELEM": [
+          2,
+          3
+        ],
+        "bREVERSE": true
+      },
+      "expected": {
+        "created": [
+          2,
+          3
+        ],
+        "updated": [
+          2,
+          3
+        ]
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/MEMB",
+      "name": "Member Assignment",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "AELEM": [
+          2,
+          3
+        ],
+        "bREVERSE": true
+      },
+      "updatePayload": {
+        "AELEM": [
+          2,
+          3
+        ],
+        "bREVERSE": true
+      },
+      "expected": {
+        "created": [
+          2,
+          3
+        ],
+        "updated": [
+          2,
+          3
+        ]
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/CBFT",
       "name": "Bending Coefficient",
       "id": 2,
@@ -16738,7 +17511,7 @@
         "GET",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "FRAMEX": "Braced Non-sway",
         "FRAMEY": "Braced Non-sway",
@@ -16749,11 +17522,27 @@
         "FRAMEX": "Braced Non-sway",
         "FRAMEY": "Braced Non-sway",
         "bAUTOKF": true,
-        "DT": "3D"
+        "DT": "XZ"
       },
       "expected": {
-        "created": "XZ",
-        "updated": "3D"
+        "created": {
+          "FRAMEX": "Braced Non-sway",
+          "FRAMEY": "Braced Non-sway",
+          "bAUTOKF": true,
+          "DT": "XZ"
+        },
+        "updated": {
+          "FRAMEX": "Braced Non-sway",
+          "FRAMEY": "Braced Non-sway",
+          "bAUTOKF": true,
+          "DT": "XZ"
+        },
+        "afterDelete": {
+          "FRAMEX": "Braced Non-sway",
+          "FRAMEY": "Braced Non-sway",
+          "bAUTOKF": false,
+          "DT": "3D"
+        }
       },
       "needs": [],
       "setup": [],
@@ -16773,7 +17562,7 @@
         "GET",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "FRAMEX": "Braced Non-sway",
         "FRAMEY": "Braced Non-sway",
@@ -16784,11 +17573,27 @@
         "FRAMEX": "Braced Non-sway",
         "FRAMEY": "Braced Non-sway",
         "bAUTOKF": true,
-        "DT": "3D"
+        "DT": "XZ"
       },
       "expected": {
-        "created": "XZ",
-        "updated": "3D"
+        "created": {
+          "FRAMEX": "Braced Non-sway",
+          "FRAMEY": "Braced Non-sway",
+          "bAUTOKF": true,
+          "DT": "XZ"
+        },
+        "updated": {
+          "FRAMEX": "Braced Non-sway",
+          "FRAMEY": "Braced Non-sway",
+          "bAUTOKF": true,
+          "DT": "XZ"
+        },
+        "afterDelete": {
+          "FRAMEX": "Braced Non-sway",
+          "FRAMEY": "Braced Non-sway",
+          "bAUTOKF": false,
+          "DT": "3D"
+        }
       },
       "needs": [],
       "setup": [],
@@ -17055,6 +17860,110 @@
     },
     {
       "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/LLRF",
+      "name": "Live Load Reduction Factor",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "CALC_RULE": 0,
+        "APPLIED_COMP": [
+          "AXIAL",
+          "SHEAR",
+          "MOMENTS",
+          "ALL"
+        ],
+        "LIVE_LOAD_CASES": [],
+        "REDUCTION_DATA": []
+      },
+      "updatePayload": {
+        "CALC_RULE": 0,
+        "APPLIED_COMP": [
+          "AXIAL",
+          "SHEAR",
+          "MOMENTS",
+          "ALL"
+        ],
+        "LIVE_LOAD_CASES": [],
+        "REDUCTION_DATA": []
+      },
+      "expected": {
+        "created": [
+          "ALL"
+        ],
+        "updated": [
+          "ALL"
+        ],
+        "afterDelete": [
+          "AXIAL"
+        ]
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/LLRF",
+      "name": "Live Load Reduction Factor",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "CALC_RULE": 0,
+        "APPLIED_COMP": [
+          "AXIAL",
+          "SHEAR",
+          "MOMENTS",
+          "ALL"
+        ],
+        "LIVE_LOAD_CASES": [],
+        "REDUCTION_DATA": []
+      },
+      "updatePayload": {
+        "CALC_RULE": 0,
+        "APPLIED_COMP": [
+          "AXIAL",
+          "SHEAR",
+          "MOMENTS",
+          "ALL"
+        ],
+        "LIVE_LOAD_CASES": [],
+        "REDUCTION_DATA": []
+      },
+      "expected": {
+        "created": [
+          "ALL"
+        ],
+        "updated": [
+          "ALL"
+        ],
+        "afterDelete": [
+          "AXIAL"
+        ]
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/LTSR",
       "name": "Limiting Slenderness Ratio",
       "id": 2,
@@ -17173,6 +18082,92 @@
       "expected": {
         "created": "BRACE",
         "updated": "COLUMN"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/MEMB",
+      "name": "Member Assignment",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "AELEM": [
+          2,
+          3
+        ],
+        "bREVERSE": false
+      },
+      "updatePayload": {
+        "AELEM": [
+          2,
+          3
+        ],
+        "bREVERSE": false
+      },
+      "expected": {
+        "created": [
+          2,
+          3
+        ],
+        "updated": [
+          2,
+          3
+        ]
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/MEMB",
+      "name": "Member Assignment",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "AELEM": [
+          2,
+          3
+        ],
+        "bREVERSE": false
+      },
+      "updatePayload": {
+        "AELEM": [
+          2,
+          3
+        ],
+        "bREVERSE": false
+      },
+      "expected": {
+        "created": [
+          2,
+          3
+        ],
+        "updated": [
+          2,
+          3
+        ]
       },
       "needs": [],
       "setup": [],
@@ -17323,6 +18318,164 @@
     },
     {
       "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/CRCM",
+      "name": "Combined Ratio Calculation Method for Circular Section",
+      "id": 901,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "METHOD": "Linear Sum"
+      },
+      "updatePayload": {
+        "METHOD": "SRSS"
+      },
+      "expected": {
+        "created": "Linear Sum",
+        "updated": "SRSS"
+      },
+      "needs": [
+        "design_steel_material",
+        "design_pipe_column"
+      ],
+      "setup": [
+        {
+          "seed": "design_steel_material"
+        },
+        {
+          "seed": "design_pipe_column"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/CRCM",
+      "name": "Combined Ratio Calculation Method for Circular Section",
+      "id": 901,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "METHOD": "Linear Sum"
+      },
+      "updatePayload": {
+        "METHOD": "SRSS"
+      },
+      "expected": {
+        "created": "Linear Sum",
+        "updated": "SRSS"
+      },
+      "needs": [
+        "design_steel_material",
+        "design_pipe_column"
+      ],
+      "setup": [
+        {
+          "seed": "design_steel_material"
+        },
+        {
+          "seed": "design_pipe_column"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/SMODI",
+      "name": "Modify Steel Material",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "CODE": "Standard",
+        "STANDARD_CODE": "KS22(S)",
+        "GRADE": "SM355"
+      },
+      "updatePayload": {
+        "CODE": "Standard",
+        "STANDARD_CODE": "KS22(S)",
+        "GRADE": "SM355"
+      },
+      "expected": {
+        "created": "SM355",
+        "updated": "SM355"
+      },
+      "needs": [
+        "design_steel_material"
+      ],
+      "setup": [
+        {
+          "seed": "design_steel_material"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/SMODI",
+      "name": "Modify Steel Material",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "CODE": "Standard",
+        "STANDARD_CODE": "KS22(S)",
+        "GRADE": "SM355"
+      },
+      "updatePayload": {
+        "CODE": "Standard",
+        "STANDARD_CODE": "KS22(S)",
+        "GRADE": "SM355"
+      },
+      "expected": {
+        "created": "SM355",
+        "updated": "SM355"
+      },
+      "needs": [
+        "design_steel_material"
+      ],
+      "setup": [
+        {
+          "seed": "design_steel_material"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
       "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/SLRS",
       "name": "Seismic Load Resisting System by Member",
       "id": 2,
@@ -17398,7 +18551,7 @@
         "GET",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "PHI_T1": 0.75,
         "PHI_T2": 0.75,
@@ -17414,8 +18567,27 @@
         "PHI_V": 0.85
       },
       "expected": {
-        "created": 0.75,
-        "updated": 0.9
+        "created": {
+          "PHI_T1": 0.75,
+          "PHI_T2": 0.75,
+          "PHI_C": 0.25,
+          "PHI_B": 0.45,
+          "PHI_V": 0.85
+        },
+        "updated": {
+          "PHI_T1": 0.9,
+          "PHI_T2": 0.75,
+          "PHI_C": 0.25,
+          "PHI_B": 0.45,
+          "PHI_V": 0.85
+        },
+        "afterDelete": {
+          "PHI_T1": 0.9,
+          "PHI_T2": 0.75,
+          "PHI_C": 0.9,
+          "PHI_B": 0.9,
+          "PHI_V": 0.9
+        }
       },
       "needs": [],
       "setup": [],
@@ -17451,8 +18623,20 @@
         "PHI_V": 0.85
       },
       "expected": {
-        "created": 0.75,
-        "updated": 0.9
+        "created": {
+          "PHI_T1": 0.75,
+          "PHI_T2": 0.75,
+          "PHI_C": 0.25,
+          "PHI_B": 0.45,
+          "PHI_V": 0.85
+        },
+        "updated": {
+          "PHI_T1": 0.9,
+          "PHI_T2": 0.75,
+          "PHI_C": 0.25,
+          "PHI_B": 0.45,
+          "PHI_V": 0.85
+        }
       },
       "needs": [],
       "setup": [],
@@ -17704,7 +18888,7 @@
         "GET",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "FRAMEX": "Braced Non-sway",
         "FRAMEY": "Braced Non-sway",
@@ -17715,11 +18899,27 @@
         "FRAMEX": "Braced Non-sway",
         "FRAMEY": "Braced Non-sway",
         "bAUTOKF": true,
-        "DT": "3D"
+        "DT": "XZ"
       },
       "expected": {
-        "created": "XZ",
-        "updated": "3D"
+        "created": {
+          "FRAMEX": "Braced Non-sway",
+          "FRAMEY": "Braced Non-sway",
+          "bAUTOKF": true,
+          "DT": "XZ"
+        },
+        "updated": {
+          "FRAMEX": "Braced Non-sway",
+          "FRAMEY": "Braced Non-sway",
+          "bAUTOKF": true,
+          "DT": "XZ"
+        },
+        "afterDelete": {
+          "FRAMEX": "Braced Non-sway",
+          "FRAMEY": "Braced Non-sway",
+          "bAUTOKF": false,
+          "DT": "3D"
+        }
       },
       "needs": [],
       "setup": [],
@@ -17739,7 +18939,7 @@
         "GET",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "FRAMEX": "Braced Non-sway",
         "FRAMEY": "Braced Non-sway",
@@ -17750,11 +18950,27 @@
         "FRAMEX": "Braced Non-sway",
         "FRAMEY": "Braced Non-sway",
         "bAUTOKF": true,
-        "DT": "3D"
+        "DT": "XZ"
       },
       "expected": {
-        "created": "XZ",
-        "updated": "3D"
+        "created": {
+          "FRAMEX": "Braced Non-sway",
+          "FRAMEY": "Braced Non-sway",
+          "bAUTOKF": true,
+          "DT": "XZ"
+        },
+        "updated": {
+          "FRAMEX": "Braced Non-sway",
+          "FRAMEY": "Braced Non-sway",
+          "bAUTOKF": true,
+          "DT": "XZ"
+        },
+        "afterDelete": {
+          "FRAMEX": "Braced Non-sway",
+          "FRAMEY": "Braced Non-sway",
+          "bAUTOKF": false,
+          "DT": "3D"
+        }
       },
       "needs": [],
       "setup": [],
@@ -18013,6 +19229,110 @@
     },
     {
       "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/LLRF",
+      "name": "Live Load Reduction Factor",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "CALC_RULE": 0,
+        "APPLIED_COMP": [
+          "AXIAL",
+          "SHEAR",
+          "MOMENTS",
+          "ALL"
+        ],
+        "LIVE_LOAD_CASES": [],
+        "REDUCTION_DATA": []
+      },
+      "updatePayload": {
+        "CALC_RULE": 0,
+        "APPLIED_COMP": [
+          "AXIAL",
+          "SHEAR",
+          "MOMENTS",
+          "ALL"
+        ],
+        "LIVE_LOAD_CASES": [],
+        "REDUCTION_DATA": []
+      },
+      "expected": {
+        "created": [
+          "ALL"
+        ],
+        "updated": [
+          "ALL"
+        ],
+        "afterDelete": [
+          "AXIAL"
+        ]
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/LLRF",
+      "name": "Live Load Reduction Factor",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "CALC_RULE": 0,
+        "APPLIED_COMP": [
+          "AXIAL",
+          "SHEAR",
+          "MOMENTS",
+          "ALL"
+        ],
+        "LIVE_LOAD_CASES": [],
+        "REDUCTION_DATA": []
+      },
+      "updatePayload": {
+        "CALC_RULE": 0,
+        "APPLIED_COMP": [
+          "AXIAL",
+          "SHEAR",
+          "MOMENTS",
+          "ALL"
+        ],
+        "LIVE_LOAD_CASES": [],
+        "REDUCTION_DATA": []
+      },
+      "expected": {
+        "created": [
+          "ALL"
+        ],
+        "updated": [
+          "ALL"
+        ],
+        "afterDelete": [
+          "AXIAL"
+        ]
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
       "endpoint": "/DESIGN/SRC/AIK-SRC2K/LTSR",
       "name": "Limiting Slenderness Ratio",
       "id": 2,
@@ -18131,6 +19451,92 @@
       "expected": {
         "created": "BRACE",
         "updated": "COLUMN"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/MEMB",
+      "name": "Member Assignment",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "AELEM": [
+          2,
+          3
+        ],
+        "bREVERSE": true
+      },
+      "updatePayload": {
+        "AELEM": [
+          2,
+          3
+        ],
+        "bREVERSE": true
+      },
+      "expected": {
+        "created": [
+          2,
+          3
+        ],
+        "updated": [
+          2,
+          3
+        ]
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/MEMB",
+      "name": "Member Assignment",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "AELEM": [
+          2,
+          3
+        ],
+        "bREVERSE": true
+      },
+      "updatePayload": {
+        "AELEM": [
+          2,
+          3
+        ],
+        "bREVERSE": true
+      },
+      "expected": {
+        "created": [
+          2,
+          3
+        ],
+        "updated": [
+          2,
+          3
+        ]
       },
       "needs": [],
       "setup": [],

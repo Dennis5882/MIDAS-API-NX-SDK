@@ -912,3 +912,81 @@ records:
       removing the record. Per-id DELETE works on the /DESIGN tables.
     evidence:
       - docs/live_verification_notes.md
+  - id: design-singletons-2026-09-29
+    endpoints: ["/DESIGN/RC/KDS-41-20-2022/DCTL", "/DESIGN/RC/KDS-41-20-2022/LLRF", "/DESIGN/RC/KDS-41-20-2022/LMRR", "/DESIGN/RC/KDS-41-20-2022/MATD", "/DESIGN/RC/KDS-41-20-2022/SRDF", "/DESIGN/SRC/AIK-SRC2K/DCTL", "/DESIGN/STEEL/KDS-41-30-2022/DCTL", "/DESIGN/STEEL/KDS-41-30-2022/SRDF"]
+    date: "2026-09-29"
+    nxVersion: MIDAS Gen NX 2026 (v2.2), build 09/24/2026
+    level: write
+    outcome: success
+    method: >-
+      live_crud_check.py design_tables tier and live-crud.mjs with each
+      singleton's post-DELETE record named in the fixture (afterDelete),
+      measured first on this build with distinct values.
+    finding: >-
+      The eight singletons passed PUT/read/DELETE/read through both SDKs
+      with the record still present afterwards and reading the value
+      measured for it. DCTL (one record behind all three codes) goes back
+      to bAUTOKF false and DT 3D, LLRF to APPLIED_COMP AXIAL, MATD to the model's material,
+      LMRR always to RHOR 0.04 / RHOC 0.03 / RHOW 0.03, steel SRDF to 0.9
+      for PHI_C, PHI_B and PHI_V. RC SRDF's DELETE answers HTTP 200
+      message "error status" and changes nothing. RC LMRR and SRDF need
+      RC DCO written first, steel SRDF steel DCO.
+    evidence:
+      - docs/live_verification_notes.md
+  - id: design-tables-2-2026-09-29
+    endpoints: ["/DESIGN/RC/KDS-41-20-2022/CMFT", "/DESIGN/RC/KDS-41-20-2022/EQCT", "/DESIGN/RC/KDS-41-20-2022/MBTP", "/DESIGN/RC/KDS-41-20-2022/MCMB", "/DESIGN/RC/KDS-41-20-2022/MEMB", "/DESIGN/RC/KDS-41-20-2022/MRFT", "/DESIGN/RC/KDS-41-20-2022/SCOL", "/DESIGN/RC/KDS-41-20-2022/SUEQ", "/DESIGN/RC/KDS-41-20-2022/TRFT", "/DESIGN/SRC/AIK-SRC2K/LLRF", "/DESIGN/SRC/AIK-SRC2K/MEMB", "/DESIGN/STEEL/KDS-41-30-2022/LLRF", "/DESIGN/STEEL/KDS-41-30-2022/MEMB", "/DESIGN/STEEL/KDS-41-30-2022/SMODI", "/DESIGN/RC/KDS-41-20-2022/BEMW", "/DESIGN/STEEL/KDS-41-30-2022/CRCM"]
+    date: "2026-09-29"
+    nxVersion: MIDAS Gen NX 2026 (v2.2), build 09/24/2026
+    level: write
+    outcome: success
+    method: >-
+      live_crud_check.py design_tables tier and live-crud.mjs; manual example
+      records on the base-model element kind the product asks for, model
+      references in MEMB and LLRF pointed at the base model, SMODI on a
+      seeded steel material, CRCM on a seeded pipe column, BEMW on
+      seeded stories.
+    finding: >-
+      16 more tables completed a full round trip through both SDKs.
+      The pilot's refusals were its own element mapping (plate element 4,
+      column 1 for beam-only tables) and the examples' references to
+      elements, load cases and stories this document lacks. MRFT stores
+      FACTOR 0.01 as 0.7. The three LLRF endpoints are one record.
+    evidence:
+      - docs/live_verification_notes.md
+  - id: design-cd-2026-09-29
+    endpoints: ["/DESIGN/RC/KDS-41-20-2022/CD-ANAL", "/DESIGN/RC/KDS-41-20-2022/CD-TABLE", "/DESIGN/RC/KDS-41-20-2022/CD-REPORT"]
+    date: "2026-09-29"
+    nxVersion: MIDAS Gen NX 2026 (v2.2), build 09/24/2026
+    level: write
+    outcome: success
+    method: >-
+      A disposable solved RC column (live-analysis.mjs's model, the confirmed
+      LCOM-CONC record, RC DCO, member type COLUMN), /doc/ANAL, then CD-ANAL,
+      CD-TABLE and CD-REPORT for element 1 with short timeouts and a /db/NODE
+      liveness check after each.
+    finding: >-
+      CD-ANAL answered success and did not hang; CD-TABLE returned a design
+      row for the column; CD-REPORT answered SUCCESS with FILE_PATH
+      C:/tempcd-report-gen, i.e. EXPORT_PATH and OUTPUT_NAME joined with no
+      separator (the manual's examples end EXPORT_PATH with one) (the file itself was not inspected - another machine).
+    evidence:
+      - docs/live_verification_notes.md
+  - id: design-functions-2026-09-29
+    endpoints: ["/DESIGN/RC/KDS-41-20-2022/BD-ANAL", "/DESIGN/RC/KDS-41-20-2022/BD-TABLE", "/DESIGN/RC/KDS-41-20-2022/BD-REPORT", "/DESIGN/RC/KDS-41-20-2022/BRD-ANAL", "/DESIGN/RC/KDS-41-20-2022/BRD-TABLE", "/DESIGN/RC/KDS-41-20-2022/BRD-REPORT", "/DESIGN/STEEL/KDS-41-30-2022/CODE-ANAL", "/DESIGN/STEEL/KDS-41-30-2022/CODE-TABLE", "/DESIGN/STEEL/KDS-41-30-2022/CODE-REPORT", "/DESIGN/RC/KDS-41-20-2022/TABLE", "/DESIGN/STEEL/KDS-41-30-2022/TABLE", "/DESIGN/RC/KDS-41-20-2022/BC-ANAL", "/DESIGN/RC/KDS-41-20-2022/BRC-ANAL", "/DESIGN/RC/KDS-41-20-2022/CC-ANAL"]
+    date: "2026-09-29"
+    nxVersion: MIDAS Gen NX 2026 (v2.2), build 09/24/2026
+    level: write
+    outcome: success
+    method: >-
+      A disposable solved Gen model with RC column/beam/brace and a steel
+      column, RC and steel design codes and design combinations; /doc/ANAL,
+      then each design call with a short timeout and a /db/NODE liveness
+      check after it.
+    finding: >-
+      BD-, BRD- and steel CODE-ANAL ran and their TABLE and REPORT calls
+      returned results (reports as file paths, not inspected). The
+      design-force TABLEs populate only after the matching design run. The RC
+      code checks BC-, BRC- and CC-ANAL answer failed:Rebar at once - no hang -
+      because the model has no rebar data.
+    evidence:
+      - docs/live_verification_notes.md

@@ -938,3 +938,61 @@ every /DESIGN case stopped at "no public resources.db entry".
 **Count:** 35 new endpoints; 173 distinct `/db` endpoints, 35 distinct
 `/DESIGN` endpoints and 4 distinct result-table operations; 212 distinct npm
 public-API operations overall.
+
+### 2026-09-29 - the design singletons whose DELETE resets the record
+
+The fixture now carries `expected.afterDelete` for the eight singletons whose
+per-id DELETE puts the record back to a baseline instead of removing it, and
+`live-crud.mjs` checks that the record is still there and reads that value.
+The built npm package ran the whole design_tables tier, one selection per
+product on an empty document at v2.2 Build 09/24/2026: 43 of 43 on Gen and
+35 of 39 on Civil, the same four Civil refusals the Python harness reports
+(RC LMRR and SRDF, steel DCO and SRDF - no design control data on Civil).
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/DESIGN/RC/KDS-41-20-2022/DCTL` | 2026-09-29 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/LLRF` | 2026-09-29 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/LMRR` | 2026-09-29 | Gen |
+| `/DESIGN/RC/KDS-41-20-2022/MATD` | 2026-09-29 | Gen |
+| `/DESIGN/RC/KDS-41-20-2022/SRDF` | 2026-09-29 | Gen |
+| `/DESIGN/SRC/AIK-SRC2K/DCTL` | 2026-09-29 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/DCTL` | 2026-09-29 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/SRDF` | 2026-09-29 | Gen |
+
+**Count:** 8 new endpoints; 173 distinct `/db` endpoints, 43 distinct
+`/DESIGN` endpoints and 4 distinct result-table operations; 220 distinct npm
+public-API operations overall.
+
+### 2026-09-29 - sixteen more design tables
+
+The built npm package ran the whole design_tables tier again after sixteen
+tables the 2026-09-28 pilot had refused became cases: 59 of 59 on Gen and 49
+of 54 on Civil - the same four design-control-data refusals as the Python
+harness, and BEMW blocked on Civil because its story seed is Gen-only (its
+Civil case was then dropped). `SMODI` and `CRCM` replay the new
+`design_steel_material` / `design_pipe_column` seeds as setup, `BEMW`
+`design_stories`.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/DESIGN/RC/KDS-41-20-2022/BEMW` | 2026-09-29 | Gen |
+| `/DESIGN/RC/KDS-41-20-2022/CMFT` | 2026-09-29 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/EQCT` | 2026-09-29 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/MBTP` | 2026-09-29 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/MCMB` | 2026-09-29 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/MEMB` | 2026-09-29 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/MRFT` | 2026-09-29 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/SCOL` | 2026-09-29 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/SUEQ` | 2026-09-29 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/TRFT` | 2026-09-29 | Gen |
+| `/DESIGN/SRC/AIK-SRC2K/LLRF` | 2026-09-29 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/MEMB` | 2026-09-29 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/CRCM` | 2026-09-29 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/LLRF` | 2026-09-29 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/MEMB` | 2026-09-29 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/SMODI` | 2026-09-29 | Gen, Civil |
+
+**Count:** 16 new endpoints; 173 distinct `/db` endpoints, 59 distinct
+`/DESIGN` endpoints and 4 distinct result-table operations; 236 distinct npm
+public-API operations overall.

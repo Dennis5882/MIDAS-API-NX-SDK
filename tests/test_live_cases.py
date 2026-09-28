@@ -1072,6 +1072,78 @@ def test_a_case_whose_id_a_seed_already_owns_is_blocked_not_regressed() -> None:
     assert "already exists" in row["steps"]["create"]["error"]
 
 
+def _singleton_resource(after_delete):
+    """A one-record table whose per-id DELETE leaves ``after_delete`` behind."""
+    table = {}
+
+    class _Resource:
+        ENDPOINT = "/DESIGN/FAKE/DCTL"
+        NAME = "Fake singleton"
+        METHODS = frozenset({"POST", "PUT", "DELETE"})
+
+        @staticmethod
+        def items(client=None):
+            return dict(table)
+
+        @staticmethod
+        def create(records, client=None):
+            table.update(records)
+
+        @staticmethod
+        def update(records, client=None):
+            table.update(records)
+
+        @staticmethod
+        def delete(ids, client=None):
+            for item in ids:
+                if after_delete is None:
+                    table.pop(item)
+                else:
+                    table[item] = dict(after_delete)
+
+    return _Resource
+
+
+def test_a_singleton_reset_passes_only_against_its_measured_value() -> None:
+    """Design singletons answer DELETE by resetting the record, not removing it.
+
+    Measured on Build 09/24/2026: /DESIGN/*/DCTL goes back to its
+    Specifications defaults, LLRF and MATD to the model's values, RC SRDF not
+    at all. A case names what the record reads afterwards, and the record
+    must still be there; any other value fails the case.
+    """
+    live = _live_crud_module()
+
+    def case(resource, after):
+        return live.Case(
+            resource, {"DT": "XZ"}, {"DT": "XY"},
+            lambda payload: payload.get("DT"), "XZ", "XY",
+            item_id=1, confirmed=True, expect_after_delete=after,
+        )
+
+    row = live._run_case(case(_singleton_resource({"DT": "3D"}), "3D"), client=None)
+    assert row["classification"] == live.OK, row
+
+    row = live._run_case(case(_singleton_resource({"DT": "XZ"}), "3D"), client=None)
+    assert row["classification"] == live.REGRESSION
+    assert "reset to '3D', read back 'XZ'" in row["steps"]["read_deleted"]["error"]
+
+    row = live._run_case(case(_singleton_resource(None), "3D"), client=None)
+    assert row["classification"] == live.REGRESSION
+    assert "missing after reset to" in row["steps"]["read_deleted"]["error"]
+
+
+def test_without_a_measured_reset_a_delete_must_remove_the_record() -> None:
+    live = _live_crud_module()
+    case = live.Case(
+        _singleton_resource({"DT": "3D"}), {"DT": "XZ"}, {"DT": "XY"},
+        lambda payload: payload.get("DT"), "XZ", "XY", item_id=1, confirmed=True,
+    )
+    row = live._run_case(case, client=None)
+    assert row["classification"] == live.REGRESSION
+    assert "still present after delete" in row["steps"]["read_deleted"]["error"]
+
+
 def test_nothing_attaches_an_element_to_the_reserved_node_pair() -> None:
     """Nodes 21-22 carry links, never elements.
 
