@@ -888,3 +888,53 @@ passed.
 
 **Count:** 1 new endpoint; 173 distinct `/db` endpoints and 4 distinct
 result-table operations; 177 distinct npm public-API operations overall.
+
+### 2026-09-28 - the ch25-27 design-parameter tables
+
+The built npm package ran every design_tables case the Python harness had
+passed, one selection per product on an empty document at v2.2 Build
+09/24/2026: 35 on Gen and 31 on Civil, all passed. `live-crud.mjs` now looks
+resources up under `resources.design` as well as `resources.db`; before that
+every /DESIGN case stopped at "no public resources.db entry".
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/DESIGN/RC/KDS-41-20-2022/DCO` | 2026-09-28 | Gen |
+| `/DESIGN/RC/KDS-41-20-2022/DFBA` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/FMAG` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/KFAC` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/LENG` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/MLLR` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/PMDM` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/REXC` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/SDGN` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/ULCT` | 2026-09-28 | Gen |
+| `/DESIGN/RC/KDS-41-20-2022/WMAK` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/CMFT` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/DCO` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/EQCT` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/FMAG` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/KFAC` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/LENG` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/LTSR` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/MBTP` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/MLLR` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/SUEQ` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/CBFT` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/CMFT` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/DCO` | 2026-09-28 | Gen |
+| `/DESIGN/STEEL/KDS-41-30-2022/EQCT` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/FMAG` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/KFAC` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/LENG` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/LTSR` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/MBTP` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/MLLR` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/SERV` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/SLRS` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/SUEQ` | 2026-09-28 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/ULCT` | 2026-09-28 | Gen |
+
+**Count:** 35 new endpoints; 173 distinct `/db` endpoints, 35 distinct
+`/DESIGN` endpoints and 4 distinct result-table operations; 212 distinct npm
+public-API operations overall.

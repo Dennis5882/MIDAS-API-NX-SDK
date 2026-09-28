@@ -144,8 +144,9 @@ function caseFor(endpoint, product) {
 }
 
 function resourceFor(endpoint) {
-  const resource = findResource(resources.db, endpoint);
-  if (!resource) throw new Error(`${endpoint}: no public resources.db entry exists in the built npm package.`);
+  // /DESIGN tables are DB-style resources too, published under resources.design.
+  const resource = findResource(resources.db, endpoint) ?? findResource(resources.design, endpoint);
+  if (!resource) throw new Error(`${endpoint}: no public resources.db or resources.design entry exists in the built npm package.`);
   return resource;
 }
 

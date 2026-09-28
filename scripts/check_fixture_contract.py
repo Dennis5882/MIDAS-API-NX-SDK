@@ -57,6 +57,14 @@ from typing import Dict, List, Set, Tuple
 import yaml
 
 sys.stdout.reconfigure(encoding="utf-8")
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+
+# The generator's rule for the manual's "Assign" wrapper row, so a record is
+# compared against the same field list the published payload type was built
+# from - one rule, not two. Without it every /DESIGN contract that still lists
+# the wrapper row reported "omits required Assign" for a payload the SDK wraps
+# itself (46 findings on 2026-09-28, all of them this).
+from generate_typescript_sdk import _strip_assign_envelope  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "schema" / "live-cases.json"
@@ -122,8 +130,7 @@ def _findings(case: dict, document: dict) -> List[str]:
                 return False
         return True
 
-    base_fields = document.get("fields") or []
-    variants = document.get("variants") or []
+    base_fields, variants = _strip_assign_envelope(document)
     variant_fields = [field for variant in variants for field in variant.get("fields") or []]
     recorded = {field["key"] for field in base_fields + variant_fields}
     waived = _waived_names(document)

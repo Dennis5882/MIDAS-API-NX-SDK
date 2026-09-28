@@ -11701,3 +11701,58 @@ record written in the names `/info` declares, on Civil:
 | `/db/IMFM-M1` | the `/db/IMFM` record above, concrete references nested under `CONCRETE` as `/info` has them | full round trip through both harnesses; `confirmed=True`, ledger `ledger-write-2026-09-28-5` |
 | `/db/EPMT-M1` | `/db/EPMT`'s Gen-confirmed Von Mises record - `/info` declares the identical `VMISES` keys on both | `Wrong Field`, POST and PUT; the same Civil-only refusal `/db/EPMT` shows (MD-56) |
 | `/db/IEHG-BEAM-M1` | `INEL_PROP_NAME` naming a property that does not exist | `Inelastic Hinge Property not found: Fiber_Auto` - the product states the blocker `/db/IEHG` has |
+
+## 2026-09-28 (design) - the ch25-27 design-parameter tables: 35 confirmed, 43 written
+
+`/DESIGN/*` held 124 inventory rows and 2 writes. Of them, 76 are DB-style
+parameter tables (the rest are the ANAL/REPORT/TABLE function calls, the three
+design-code selectors, the three LCTB tables with no example, and `/TEMP/.../OCHECK`,
+which is never called). A pilot on Gen wrote every table's first manual Request
+example with the matching design code selected: 44 were stored and read back.
+Those became the new `design_tables` tier - 43 of them; `/DESIGN/RC/.../DCREM`
+is held back because its GET keys the record by node id rather than the id it
+was written under - with every create a manual example record as printed
+(`scripts/fixtures/design_manual_examples.json`) and every update one key moved
+to a value the manual gives: another record of the same example, a
+Specifications enum value, or a stated default. Element-keyed tables take the
+base model's beam element 2 (column element 1 for `PMDM`).
+
+**Result, Build 09/24/2026:** 35 endpoints confirmed through both harnesses, 66
+endpoint-product pairs (Gen 35, Civil 31). `live-crud.mjs` had to learn to look
+under `resources.design`; it only searched `resources.db`.
+
+What the tier found about the product:
+
+- **No design code is needed first** for the element-keyed tables and most
+  singletons; a fresh document takes them on both products.
+- **Per-id DELETE works on `/DESIGN` tables** and removes one record.
+- **On the singletons, DELETE means different things.** `DCO` (all three
+  codes) is removed. `DCTL` (all three) and steel `SRDF` go back to the
+  Specifications defaults (`DT: "3D"`, `bAUTOKF: false`; `PHI_T1 0.9`...).
+  `LLRF` and `MATD` go back to the model's values. RC `SRDF` does not change at
+  all. RC `LMRR` comes back with **`RHOR` and `RHOW` exchanged** - written
+  `RHOW 0.04, RHOR 0.03`, read `RHOR 0.04, RHOW 0.03` after the DELETE. These
+  eight took a PUT and read it back, so they are written, but this checker's
+  delete step expects the record gone and they stay unconfirmed.
+- **The three `LENG` tables are one table.** A record the RC case left behind
+  made the steel and SRC cases refuse to start ("id 2 already exists"). The
+  manual's first `LENG` record also sets `bNOTUSE: true`, which the product
+  stores with `LB` 0; the case probes `bNOTUSE` instead.
+- **Civil refuses the RC and steel design-code selections**: `/DESIGN/RC/DRC`
+  with `KDS 41 20 : 2022` answers `Wrong Field`, `/DESIGN/STEEL/DSTL` a Steel
+  Design Control Data error; SRC's `DSRC` is accepted. So on Civil the tables
+  that need design control data - RC `LMRR` and `SRDF`, steel `DCO` and `SRDF`,
+  RC `DCO` - are refused, and their Civil cases stay unconfirmed. On Gen, RC
+  `LMRR`/`SRDF` took their PUT only once RC `DCO` had set a design code earlier
+  in the same run.
+- `/DESIGN/RC/.../MATD` and both `ULCT` tables are Gen-only in the SDK's
+  `PRODUCTS`, and Civil answered `404` for `MATD`.
+
+Ledger `ledger-write-2026-09-28-6` (Gen) and `-7` (Civil); the 43 contracts
+cite the new session `design-tables-2026-09-28`.
+
+Still open in `/DESIGN`: the 13 tables the pilot refused for a visible reason
+(beam-only element types hit by the pilot's key mapping, SRC section records,
+a haunched beam), the 16 it refused for no visible reason (the four REB*
+tables, DCRE, the four DCRM, MEMB in all three codes, steel and SRC LLRF,
+BEMW, CRCM, SMODI, SRC MATD), `DCREM`, and the function calls.

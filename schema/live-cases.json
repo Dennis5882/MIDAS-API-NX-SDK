@@ -15444,6 +15444,2850 @@
       ],
       "blockedSeeds": [],
       "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCO",
+      "name": "Concrete Design Code Option",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "DESIGN_CD": "KDS 41 20 : 2022",
+        "MOM_CALC_MTHD": "Equivalent",
+        "EXP_COND": "etc",
+        "PM_CRV_CALC": "KeepMPConstant",
+        "CONC_STRS_STRN": "Equivalent",
+        "FS_MAIN_BAR": "2/3fy",
+        "SEISMIC_PROV": true,
+        "TORS_DES": true,
+        "TORS_RDCT_FACT": 1,
+        "MOM_REDIST_FACT": 1,
+        "USE_SUBDIV_FORCE": true,
+        "UG_LC": true,
+        "SEISMIC": {
+          "FRAME_TYPE": "Special",
+          "STRONG_COL_WEAK_LAST": true,
+          "BEAM_COL_JNT_DES": true,
+          "JOINT": {
+            "CHK_POS": "Top",
+            "EXCL_MEM_TYPES": [
+              "SUBBEAM",
+              "CANTIL",
+              "UGBEAMCOL"
+            ]
+          },
+          "SHEAR_WALL": {
+            "SPEC_RC_WALL": true,
+            "BDRY_ELEM_MTHD": "Displacement",
+            "DEFL_AMP_FACT": 4,
+            "IMP_FACT": 1.2
+          },
+          "SHEAR_DES": {
+            "R": 0.5,
+            "MTHD": "Ve1",
+            "A1": 1.1,
+            "A2": 1.2
+          }
+        }
+      },
+      "updatePayload": {
+        "DESIGN_CD": "KDS 41 20 : 2022",
+        "MOM_CALC_MTHD": "Equivalent",
+        "EXP_COND": "etc",
+        "PM_CRV_CALC": "KeepMPConstant",
+        "CONC_STRS_STRN": "Equivalent",
+        "FS_MAIN_BAR": "2/3fy",
+        "SEISMIC_PROV": false,
+        "TORS_DES": true,
+        "TORS_RDCT_FACT": 1,
+        "MOM_REDIST_FACT": 1,
+        "USE_SUBDIV_FORCE": true,
+        "UG_LC": true,
+        "SEISMIC": {
+          "FRAME_TYPE": "Special",
+          "STRONG_COL_WEAK_LAST": true,
+          "BEAM_COL_JNT_DES": true,
+          "JOINT": {
+            "CHK_POS": "Top",
+            "EXCL_MEM_TYPES": [
+              "SUBBEAM",
+              "CANTIL",
+              "UGBEAMCOL"
+            ]
+          },
+          "SHEAR_WALL": {
+            "SPEC_RC_WALL": true,
+            "BDRY_ELEM_MTHD": "Displacement",
+            "DEFL_AMP_FACT": 4,
+            "IMP_FACT": 1.2
+          },
+          "SHEAR_DES": {
+            "R": 0.5,
+            "MTHD": "Ve1",
+            "A1": 1.1,
+            "A2": 1.2
+          }
+        }
+      },
+      "expected": {
+        "created": true,
+        "updated": false
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCTL",
+      "name": "Definition of Frame",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "FRAMEX": "Braced Non-sway",
+        "FRAMEY": "Braced Non-sway",
+        "bAUTOKF": true,
+        "DT": "XZ"
+      },
+      "updatePayload": {
+        "FRAMEX": "Braced Non-sway",
+        "FRAMEY": "Braced Non-sway",
+        "bAUTOKF": true,
+        "DT": "3D"
+      },
+      "expected": {
+        "created": "XZ",
+        "updated": "3D"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/DCTL",
+      "name": "Definition of Frame",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "FRAMEX": "Braced Non-sway",
+        "FRAMEY": "Braced Non-sway",
+        "bAUTOKF": true,
+        "DT": "XZ"
+      },
+      "updatePayload": {
+        "FRAMEX": "Braced Non-sway",
+        "FRAMEY": "Braced Non-sway",
+        "bAUTOKF": true,
+        "DT": "3D"
+      },
+      "expected": {
+        "created": "XZ",
+        "updated": "3D"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/DFBA",
+      "name": "Design Force for Beam Assigned as Member",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "FORCE_TYPE": "Subdivided Forces"
+      },
+      "updatePayload": {
+        "FORCE_TYPE": "Member Forces"
+      },
+      "expected": {
+        "created": "Subdivided Forces",
+        "updated": "Member Forces"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/DFBA",
+      "name": "Design Force for Beam Assigned as Member",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "FORCE_TYPE": "Subdivided Forces"
+      },
+      "updatePayload": {
+        "FORCE_TYPE": "Member Forces"
+      },
+      "expected": {
+        "created": "Subdivided Forces",
+        "updated": "Member Forces"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/FMAG",
+      "name": "Moment Magnifier(B1/Delta_b, B2/Delta_s)",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "B1Y_DELTA_BY": 1.1,
+        "B1Z_DELTA_BZ": 1.2
+      },
+      "updatePayload": {
+        "B1Y_DELTA_BY": 1.1,
+        "B1Z_DELTA_BZ": 1.2,
+        "B2Y_DELTA_SY": 1.3
+      },
+      "expected": {
+        "created": 1,
+        "updated": 1.3
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/FMAG",
+      "name": "Moment Magnifier(B1/Delta_b, B2/Delta_s)",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "B1Y_DELTA_BY": 1.1,
+        "B1Z_DELTA_BZ": 1.2
+      },
+      "updatePayload": {
+        "B1Y_DELTA_BY": 1.1,
+        "B1Z_DELTA_BZ": 1.2,
+        "B2Y_DELTA_SY": 1.3
+      },
+      "expected": {
+        "created": 1,
+        "updated": 1.3
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/KFAC",
+      "name": "Effective Length Factor (K)",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "Ky": 1
+      },
+      "updatePayload": {
+        "Ky": 2
+      },
+      "expected": {
+        "created": 1,
+        "updated": 2
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/KFAC",
+      "name": "Effective Length Factor (K)",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "Ky": 1
+      },
+      "updatePayload": {
+        "Ky": 2
+      },
+      "expected": {
+        "created": 1,
+        "updated": 2
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/LENG",
+      "name": "Unbraced Length (L, Lb)",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "LY": 1,
+        "LZ": 1,
+        "LB": 2
+      },
+      "updatePayload": {
+        "LY": 1,
+        "LZ": 1,
+        "LB": 1,
+        "bNOTUSE": true,
+        "LT": 1
+      },
+      "expected": {
+        "created": false,
+        "updated": true
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/LENG",
+      "name": "Unbraced Length (L, Lb)",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "LY": 1,
+        "LZ": 1,
+        "LB": 2
+      },
+      "updatePayload": {
+        "LY": 1,
+        "LZ": 1,
+        "LB": 1,
+        "bNOTUSE": true,
+        "LT": 1
+      },
+      "expected": {
+        "created": false,
+        "updated": true
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/LLRF",
+      "name": "Live Load Reduction Factor",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "CALC_RULE": 0,
+        "APPLIED_COMP": [
+          "AXIAL"
+        ],
+        "LIVE_LOAD_CASES": [],
+        "REDUCTION_DATA": []
+      },
+      "updatePayload": {
+        "CALC_RULE": 0,
+        "APPLIED_COMP": [
+          "MOMENTS"
+        ],
+        "LIVE_LOAD_CASES": [],
+        "REDUCTION_DATA": []
+      },
+      "expected": {
+        "created": [
+          "AXIAL"
+        ],
+        "updated": [
+          "MOMENTS"
+        ]
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/LLRF",
+      "name": "Live Load Reduction Factor",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "CALC_RULE": 0,
+        "APPLIED_COMP": [
+          "AXIAL"
+        ],
+        "LIVE_LOAD_CASES": [],
+        "REDUCTION_DATA": []
+      },
+      "updatePayload": {
+        "CALC_RULE": 0,
+        "APPLIED_COMP": [
+          "MOMENTS"
+        ],
+        "LIVE_LOAD_CASES": [],
+        "REDUCTION_DATA": []
+      },
+      "expected": {
+        "created": [
+          "AXIAL"
+        ],
+        "updated": [
+          "MOMENTS"
+        ]
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/LMRR",
+      "name": "Limiting Maximum Rebar Ratio",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "RHOW": 0.04,
+        "RHOC": 0.03,
+        "RHOR": 0.03
+      },
+      "updatePayload": {
+        "RHOW": 0.03,
+        "RHOC": 0.03,
+        "RHOR": 0.03
+      },
+      "expected": {
+        "created": 0.04,
+        "updated": 0.03
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/LMRR",
+      "name": "Limiting Maximum Rebar Ratio",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "RHOW": 0.04,
+        "RHOC": 0.03,
+        "RHOR": 0.03
+      },
+      "updatePayload": {
+        "RHOW": 0.03,
+        "RHOC": 0.03,
+        "RHOR": 0.03
+      },
+      "expected": {
+        "created": 0.04,
+        "updated": 0.03
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/MATD",
+      "name": "Modify Concrete Material",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "CONCRETE": {
+          "CODE": "Standard",
+          "STANDARD_CODE": "KS19(RC)",
+          "GRADE": "C15",
+          "LIGHTWEIGHT": true,
+          "LAMBDA": 1
+        },
+        "REBAR": {
+          "CODE": "Standard",
+          "STANDARD_CODE": "KS19(RC)",
+          "MAIN_REBAR_GRADE": "SD400S",
+          "SUB_REBAR_GRADE": "SD600"
+        }
+      },
+      "updatePayload": {
+        "CONCRETE": {
+          "CODE": "Standard",
+          "STANDARD_CODE": "KS19(RC)",
+          "GRADE": "C15",
+          "LIGHTWEIGHT": true,
+          "LAMBDA": 1
+        },
+        "REBAR": {
+          "CODE": "Standard",
+          "STANDARD_CODE": "KS19(RC)",
+          "MAIN_REBAR_GRADE": "SD500",
+          "SUB_REBAR_GRADE": "SD600"
+        }
+      },
+      "expected": {
+        "created": "SD400S",
+        "updated": "SD500"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/MLLR",
+      "name": "Modify Live Load Reduction Factor",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "COMPONENTS": {
+          "AXIAL": false,
+          "MOMENT": true,
+          "SHEAR": false
+        }
+      },
+      "updatePayload": {
+        "COMPONENTS": {
+          "AXIAL": false,
+          "MOMENT": true,
+          "SHEAR": false
+        },
+        "FACTOR": 0.9
+      },
+      "expected": {
+        "created": 1,
+        "updated": 0.9
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/MLLR",
+      "name": "Modify Live Load Reduction Factor",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "COMPONENTS": {
+          "AXIAL": false,
+          "MOMENT": true,
+          "SHEAR": false
+        }
+      },
+      "updatePayload": {
+        "COMPONENTS": {
+          "AXIAL": false,
+          "MOMENT": true,
+          "SHEAR": false
+        },
+        "FACTOR": 0.9
+      },
+      "expected": {
+        "created": 1,
+        "updated": 0.9
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/PMDM",
+      "name": "P-M Curve Calculation Method",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "CALC_METHOD": "P"
+      },
+      "updatePayload": {
+        "CALC_METHOD": "M/P"
+      },
+      "expected": {
+        "created": "P",
+        "updated": "M/P"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/PMDM",
+      "name": "P-M Curve Calculation Method",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "CALC_METHOD": "P"
+      },
+      "updatePayload": {
+        "CALC_METHOD": "M/P"
+      },
+      "expected": {
+        "created": "P",
+        "updated": "M/P"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/REXC",
+      "name": "Rebar Exposure Condition",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "EXPOSURE": "Dry"
+      },
+      "updatePayload": {
+        "EXPOSURE": "Etc"
+      },
+      "expected": {
+        "created": "Dry",
+        "updated": "Etc"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/REXC",
+      "name": "Rebar Exposure Condition",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "EXPOSURE": "Dry"
+      },
+      "updatePayload": {
+        "EXPOSURE": "Etc"
+      },
+      "expected": {
+        "created": "Dry",
+        "updated": "Etc"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/SDGN",
+      "name": "Seismic Design Type",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "NTYPE": "Seismic"
+      },
+      "updatePayload": {
+        "NTYPE": "Non-Seismic"
+      },
+      "expected": {
+        "created": "Seismic",
+        "updated": "Non-Seismic"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/SDGN",
+      "name": "Seismic Design Type",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "NTYPE": "Seismic"
+      },
+      "updatePayload": {
+        "NTYPE": "Non-Seismic"
+      },
+      "expected": {
+        "created": "Seismic",
+        "updated": "Non-Seismic"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/SRDF",
+      "name": "Strength Reduction Factors",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "PHI_T": 0.8,
+        "PHI_C1": 0.65,
+        "PHI_C2": 0.6,
+        "PHI_V": 0.6
+      },
+      "updatePayload": {
+        "PHI_T": 0.85,
+        "PHI_C1": 0.65,
+        "PHI_C2": 0.6,
+        "PHI_V": 0.6
+      },
+      "expected": {
+        "created": 0.8,
+        "updated": 0.85
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/SRDF",
+      "name": "Strength Reduction Factors",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "PHI_T": 0.8,
+        "PHI_C1": 0.65,
+        "PHI_C2": 0.6,
+        "PHI_V": 0.6
+      },
+      "updatePayload": {
+        "PHI_T": 0.85,
+        "PHI_C1": 0.65,
+        "PHI_C2": 0.6,
+        "PHI_V": 0.6
+      },
+      "expected": {
+        "created": 0.8,
+        "updated": 0.85
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/ULCT",
+      "name": "Underground Load Combination Type",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "bUNDERLOADTYPE": true
+      },
+      "updatePayload": {
+        "bUNDERLOADTYPE": false
+      },
+      "expected": {
+        "created": true,
+        "updated": false
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/WMAK",
+      "name": "Modify Wall Mark Data",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "MARKNAME": "W200",
+        "WID_LIST": [
+          1,
+          2
+        ]
+      },
+      "updatePayload": {
+        "MARKNAME": "W200_RENAMED",
+        "WID_LIST": [
+          1,
+          2
+        ]
+      },
+      "expected": {
+        "created": "W200",
+        "updated": "W200_RENAMED"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/RC/KDS-41-20-2022/WMAK",
+      "name": "Modify Wall Mark Data",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "MARKNAME": "W200",
+        "WID_LIST": [
+          1,
+          2
+        ]
+      },
+      "updatePayload": {
+        "MARKNAME": "W200_RENAMED",
+        "WID_LIST": [
+          1,
+          2
+        ]
+      },
+      "expected": {
+        "created": "W200",
+        "updated": "W200_RENAMED"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/CBFT",
+      "name": "Bending Coefficient",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "AUTO_CAL": true
+      },
+      "updatePayload": {
+        "AUTO_CAL": false,
+        "VALUE": 1.2
+      },
+      "expected": {
+        "created": true,
+        "updated": false
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/CBFT",
+      "name": "Bending Coefficient",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "AUTO_CAL": true
+      },
+      "updatePayload": {
+        "AUTO_CAL": false,
+        "VALUE": 1.2
+      },
+      "expected": {
+        "created": true,
+        "updated": false
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/CMFT",
+      "name": "Equivalent Moment Correction Factor",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "CMY": 0.7,
+        "CMZ": 0.6
+      },
+      "updatePayload": {
+        "CMY": 0.72,
+        "CMZ": 0.85
+      },
+      "expected": {
+        "created": 0.7,
+        "updated": 0.72
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/CMFT",
+      "name": "Equivalent Moment Correction Factor",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "CMY": 0.7,
+        "CMZ": 0.6
+      },
+      "updatePayload": {
+        "CMY": 0.72,
+        "CMZ": 0.85
+      },
+      "expected": {
+        "created": 0.7,
+        "updated": 0.72
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/DCO",
+      "name": "Design Code Option",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "DGNCODE": "KDS 41 30 : 2022",
+        "LAT_BRACE": false,
+        "DEFL_CHK": true,
+        "SEISMIC": true,
+        "COMB_RATIO": 1,
+        "SEIS_SYS": "Special Moment Frames",
+        "COL_WEAK": true,
+        "UNDGR_LD": true
+      },
+      "updatePayload": {
+        "DGNCODE": "KDS 41 30 : 2022",
+        "LAT_BRACE": false,
+        "DEFL_CHK": true,
+        "SEISMIC": true,
+        "COMB_RATIO": 0,
+        "SEIS_SYS": "Special Moment Frames",
+        "COL_WEAK": true,
+        "UNDGR_LD": true
+      },
+      "expected": {
+        "created": 1,
+        "updated": 0
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/DCO",
+      "name": "Design Code Option",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "DGNCODE": "KDS 41 30 : 2022",
+        "LAT_BRACE": false,
+        "DEFL_CHK": true,
+        "SEISMIC": true,
+        "COMB_RATIO": 1,
+        "SEIS_SYS": "Special Moment Frames",
+        "COL_WEAK": true,
+        "UNDGR_LD": true
+      },
+      "updatePayload": {
+        "DGNCODE": "KDS 41 30 : 2022",
+        "LAT_BRACE": false,
+        "DEFL_CHK": true,
+        "SEISMIC": true,
+        "COMB_RATIO": 0,
+        "SEIS_SYS": "Special Moment Frames",
+        "COL_WEAK": true,
+        "UNDGR_LD": true
+      },
+      "expected": {
+        "created": 1,
+        "updated": 0
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/DCTL",
+      "name": "Definition of Frame",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "FRAMEX": "Braced Non-sway",
+        "FRAMEY": "Braced Non-sway",
+        "bAUTOKF": true,
+        "DT": "XZ"
+      },
+      "updatePayload": {
+        "FRAMEX": "Braced Non-sway",
+        "FRAMEY": "Braced Non-sway",
+        "bAUTOKF": true,
+        "DT": "3D"
+      },
+      "expected": {
+        "created": "XZ",
+        "updated": "3D"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/DCTL",
+      "name": "Definition of Frame",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "FRAMEX": "Braced Non-sway",
+        "FRAMEY": "Braced Non-sway",
+        "bAUTOKF": true,
+        "DT": "XZ"
+      },
+      "updatePayload": {
+        "FRAMEX": "Braced Non-sway",
+        "FRAMEY": "Braced Non-sway",
+        "bAUTOKF": true,
+        "DT": "3D"
+      },
+      "expected": {
+        "created": "XZ",
+        "updated": "3D"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/EQCT",
+      "name": "Seismic Load Combination Type",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "TYPE": "Special Seismic Loads"
+      },
+      "updatePayload": {
+        "TYPE": "Vertical Seismic Forces"
+      },
+      "expected": {
+        "created": "Special Seismic Loads",
+        "updated": "Vertical Seismic Forces"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/EQCT",
+      "name": "Seismic Load Combination Type",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "TYPE": "Special Seismic Loads"
+      },
+      "updatePayload": {
+        "TYPE": "Vertical Seismic Forces"
+      },
+      "expected": {
+        "created": "Special Seismic Loads",
+        "updated": "Vertical Seismic Forces"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/FMAG",
+      "name": "Moment Magnifier",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "B1Y_DELTA_BY": 1.1,
+        "B1Z_DELTA_BZ": 1.2
+      },
+      "updatePayload": {
+        "B1Y_DELTA_BY": 1.1,
+        "B1Z_DELTA_BZ": 1.2,
+        "B2Y_DELTA_SY": 1.3
+      },
+      "expected": {
+        "created": 1,
+        "updated": 1.3
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/FMAG",
+      "name": "Moment Magnifier",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "B1Y_DELTA_BY": 1.1,
+        "B1Z_DELTA_BZ": 1.2
+      },
+      "updatePayload": {
+        "B1Y_DELTA_BY": 1.1,
+        "B1Z_DELTA_BZ": 1.2,
+        "B2Y_DELTA_SY": 1.3
+      },
+      "expected": {
+        "created": 1,
+        "updated": 1.3
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/KFAC",
+      "name": "Effective Length Factor",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "Ky": 1
+      },
+      "updatePayload": {
+        "Ky": 2
+      },
+      "expected": {
+        "created": 1,
+        "updated": 2
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/KFAC",
+      "name": "Effective Length Factor",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "Ky": 1
+      },
+      "updatePayload": {
+        "Ky": 2
+      },
+      "expected": {
+        "created": 1,
+        "updated": 2
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/LENG",
+      "name": "Unbraced Length",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "LY": 1,
+        "LZ": 1,
+        "LB": 2
+      },
+      "updatePayload": {
+        "LY": 1,
+        "LZ": 1,
+        "LB": 1,
+        "bNOTUSE": true,
+        "LT": 1
+      },
+      "expected": {
+        "created": false,
+        "updated": true
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/LENG",
+      "name": "Unbraced Length",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "LY": 1,
+        "LZ": 1,
+        "LB": 2
+      },
+      "updatePayload": {
+        "LY": 1,
+        "LZ": 1,
+        "LB": 1,
+        "bNOTUSE": true,
+        "LT": 1
+      },
+      "expected": {
+        "created": false,
+        "updated": true
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/LTSR",
+      "name": "Limiting Slenderness Ratio",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "COMP": 300,
+        "TENS": 200
+      },
+      "updatePayload": {
+        "COMP": 300,
+        "TENS": 200,
+        "bNOTCHECK": true
+      },
+      "expected": {
+        "created": false,
+        "updated": true
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/LTSR",
+      "name": "Limiting Slenderness Ratio",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "COMP": 300,
+        "TENS": 200
+      },
+      "updatePayload": {
+        "COMP": 300,
+        "TENS": 200,
+        "bNOTCHECK": true
+      },
+      "expected": {
+        "created": false,
+        "updated": true
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/MBTP",
+      "name": "Modify Member Type",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "TYPE": "BRACE"
+      },
+      "updatePayload": {
+        "TYPE": "COLUMN"
+      },
+      "expected": {
+        "created": "BRACE",
+        "updated": "COLUMN"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/MBTP",
+      "name": "Modify Member Type",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "TYPE": "BRACE"
+      },
+      "updatePayload": {
+        "TYPE": "COLUMN"
+      },
+      "expected": {
+        "created": "BRACE",
+        "updated": "COLUMN"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/MLLR",
+      "name": "Modify Live Load Reduction Factor",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "COMPONENTS": {
+          "AXIAL": false,
+          "MOMENT": true,
+          "SHEAR": false
+        }
+      },
+      "updatePayload": {
+        "COMPONENTS": {
+          "AXIAL": false,
+          "MOMENT": true,
+          "SHEAR": false
+        },
+        "FACTOR": 0.9
+      },
+      "expected": {
+        "created": 1,
+        "updated": 0.9
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/MLLR",
+      "name": "Modify Live Load Reduction Factor",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "COMPONENTS": {
+          "AXIAL": false,
+          "MOMENT": true,
+          "SHEAR": false
+        }
+      },
+      "updatePayload": {
+        "COMPONENTS": {
+          "AXIAL": false,
+          "MOMENT": true,
+          "SHEAR": false
+        },
+        "FACTOR": 0.9
+      },
+      "expected": {
+        "created": 1,
+        "updated": 0.9
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/SERV",
+      "name": "Serviceability Parameters",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "DEFLECT_CONTROL": 400,
+        "DAF": 2
+      },
+      "updatePayload": {
+        "DEFLECT_CONTROL": 500,
+        "DAF": 2
+      },
+      "expected": {
+        "created": 400,
+        "updated": 500
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/SERV",
+      "name": "Serviceability Parameters",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "DEFLECT_CONTROL": 400,
+        "DAF": 2
+      },
+      "updatePayload": {
+        "DEFLECT_CONTROL": 500,
+        "DAF": 2
+      },
+      "expected": {
+        "created": 400,
+        "updated": 500
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/SLRS",
+      "name": "Seismic Load Resisting System by Member",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "FRAME_TYPE": "Special Concentrically Braced Frames",
+        "CHECK_OPTION": true
+      },
+      "updatePayload": {
+        "FRAME_TYPE": "Ordinary Concentrically Braced Frames",
+        "CHECK_OPTION": true
+      },
+      "expected": {
+        "created": "Special Concentrically Braced Frames",
+        "updated": "Ordinary Concentrically Braced Frames"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/SLRS",
+      "name": "Seismic Load Resisting System by Member",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "FRAME_TYPE": "Special Concentrically Braced Frames",
+        "CHECK_OPTION": true
+      },
+      "updatePayload": {
+        "FRAME_TYPE": "Ordinary Concentrically Braced Frames",
+        "CHECK_OPTION": true
+      },
+      "expected": {
+        "created": "Special Concentrically Braced Frames",
+        "updated": "Ordinary Concentrically Braced Frames"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/SRDF",
+      "name": "Strength Reduction Factors",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "PHI_T1": 0.75,
+        "PHI_T2": 0.75,
+        "PHI_C": 0.25,
+        "PHI_B": 0.45,
+        "PHI_V": 0.85
+      },
+      "updatePayload": {
+        "PHI_T1": 0.9,
+        "PHI_T2": 0.75,
+        "PHI_C": 0.25,
+        "PHI_B": 0.45,
+        "PHI_V": 0.85
+      },
+      "expected": {
+        "created": 0.75,
+        "updated": 0.9
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/SRDF",
+      "name": "Strength Reduction Factors",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "PHI_T1": 0.75,
+        "PHI_T2": 0.75,
+        "PHI_C": 0.25,
+        "PHI_B": 0.45,
+        "PHI_V": 0.85
+      },
+      "updatePayload": {
+        "PHI_T1": 0.9,
+        "PHI_T2": 0.75,
+        "PHI_C": 0.25,
+        "PHI_B": 0.45,
+        "PHI_V": 0.85
+      },
+      "expected": {
+        "created": 0.75,
+        "updated": 0.9
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/SUEQ",
+      "name": "Scale up Factor for Earthquake",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "LC_SHEAR": 1.2,
+        "LCOM_AXIAL": 1.2,
+        "LCOM_MOMENT": 1.2,
+        "LCOM_SHEAR": 1.2
+      },
+      "updatePayload": {
+        "LC_SHEAR": 1.2,
+        "LCOM_AXIAL": 1.2,
+        "LCOM_MOMENT": 1.2,
+        "LCOM_SHEAR": 1.2,
+        "LC_AXIAL": 1.2
+      },
+      "expected": {
+        "created": 1,
+        "updated": 1.2
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/SUEQ",
+      "name": "Scale up Factor for Earthquake",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "LC_SHEAR": 1.2,
+        "LCOM_AXIAL": 1.2,
+        "LCOM_MOMENT": 1.2,
+        "LCOM_SHEAR": 1.2
+      },
+      "updatePayload": {
+        "LC_SHEAR": 1.2,
+        "LCOM_AXIAL": 1.2,
+        "LCOM_MOMENT": 1.2,
+        "LCOM_SHEAR": 1.2,
+        "LC_AXIAL": 1.2
+      },
+      "expected": {
+        "created": 1,
+        "updated": 1.2
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/STEEL/KDS-41-30-2022/ULCT",
+      "name": "Underground Load Combination Type",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "bUNDERLOADTYPE": true
+      },
+      "updatePayload": {
+        "bUNDERLOADTYPE": false
+      },
+      "expected": {
+        "created": true,
+        "updated": false
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/CMFT",
+      "name": "Equivalent Moment Correction Factor(Cm)",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "CMY": 0.7,
+        "CMZ": 0.6
+      },
+      "updatePayload": {
+        "CMY": 0.7,
+        "CMZ": 0.6,
+        "OPT_AUTO": true
+      },
+      "expected": {
+        "created": false,
+        "updated": true
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/CMFT",
+      "name": "Equivalent Moment Correction Factor(Cm)",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "CMY": 0.7,
+        "CMZ": 0.6
+      },
+      "updatePayload": {
+        "CMY": 0.7,
+        "CMZ": 0.6,
+        "OPT_AUTO": true
+      },
+      "expected": {
+        "created": false,
+        "updated": true
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/DCO",
+      "name": "Design Code Option",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "DGNCODE": "AIK-SRC2K",
+        "SEISMIC": true
+      },
+      "updatePayload": {
+        "DGNCODE": "AIK-SRC2K",
+        "SEISMIC": false
+      },
+      "expected": {
+        "created": true,
+        "updated": false
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/DCO",
+      "name": "Design Code Option",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "DGNCODE": "AIK-SRC2K",
+        "SEISMIC": true
+      },
+      "updatePayload": {
+        "DGNCODE": "AIK-SRC2K",
+        "SEISMIC": false
+      },
+      "expected": {
+        "created": true,
+        "updated": false
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/DCTL",
+      "name": "Definition of Frame",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "FRAMEX": "Braced Non-sway",
+        "FRAMEY": "Braced Non-sway",
+        "bAUTOKF": true,
+        "DT": "XZ"
+      },
+      "updatePayload": {
+        "FRAMEX": "Braced Non-sway",
+        "FRAMEY": "Braced Non-sway",
+        "bAUTOKF": true,
+        "DT": "3D"
+      },
+      "expected": {
+        "created": "XZ",
+        "updated": "3D"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/DCTL",
+      "name": "Definition of Frame",
+      "id": 1,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "FRAMEX": "Braced Non-sway",
+        "FRAMEY": "Braced Non-sway",
+        "bAUTOKF": true,
+        "DT": "XZ"
+      },
+      "updatePayload": {
+        "FRAMEX": "Braced Non-sway",
+        "FRAMEY": "Braced Non-sway",
+        "bAUTOKF": true,
+        "DT": "3D"
+      },
+      "expected": {
+        "created": "XZ",
+        "updated": "3D"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/EQCT",
+      "name": "Seismic Load Combination Type",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "TYPE": "Special Seismic Loads"
+      },
+      "updatePayload": {
+        "TYPE": "Vertical Seismic Forces"
+      },
+      "expected": {
+        "created": "Special Seismic Loads",
+        "updated": "Vertical Seismic Forces"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/EQCT",
+      "name": "Seismic Load Combination Type",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "TYPE": "Special Seismic Loads"
+      },
+      "updatePayload": {
+        "TYPE": "Vertical Seismic Forces"
+      },
+      "expected": {
+        "created": "Special Seismic Loads",
+        "updated": "Vertical Seismic Forces"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/FMAG",
+      "name": "Moment Magnifier(B1/Delta_b, B2/Delta_s)",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "B1Y_DELTA_BY": 1.1,
+        "B1Z_DELTA_BZ": 1.2
+      },
+      "updatePayload": {
+        "B1Y_DELTA_BY": 1.1,
+        "B1Z_DELTA_BZ": 1.2,
+        "B2Y_DELTA_SY": 1.3
+      },
+      "expected": {
+        "created": 1,
+        "updated": 1.3
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/FMAG",
+      "name": "Moment Magnifier(B1/Delta_b, B2/Delta_s)",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "B1Y_DELTA_BY": 1.1,
+        "B1Z_DELTA_BZ": 1.2
+      },
+      "updatePayload": {
+        "B1Y_DELTA_BY": 1.1,
+        "B1Z_DELTA_BZ": 1.2,
+        "B2Y_DELTA_SY": 1.3
+      },
+      "expected": {
+        "created": 1,
+        "updated": 1.3
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/KFAC",
+      "name": "Effective Length Factor (K)",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "Ky": 1
+      },
+      "updatePayload": {
+        "Ky": 2
+      },
+      "expected": {
+        "created": 1,
+        "updated": 2
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/KFAC",
+      "name": "Effective Length Factor (K)",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "Ky": 1
+      },
+      "updatePayload": {
+        "Ky": 2
+      },
+      "expected": {
+        "created": 1,
+        "updated": 2
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/LENG",
+      "name": "Unbraced Length (L, Lb)",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "LZ": 2,
+        "LY": 1
+      },
+      "updatePayload": {
+        "LZ": 1,
+        "LY": 1
+      },
+      "expected": {
+        "created": 2,
+        "updated": 1
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/LENG",
+      "name": "Unbraced Length (L, Lb)",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "LZ": 2,
+        "LY": 1
+      },
+      "updatePayload": {
+        "LZ": 1,
+        "LY": 1
+      },
+      "expected": {
+        "created": 2,
+        "updated": 1
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/LTSR",
+      "name": "Limiting Slenderness Ratio",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "COMP": 300,
+        "TENS": 200
+      },
+      "updatePayload": {
+        "COMP": 300,
+        "TENS": 200,
+        "bNOTCHECK": true
+      },
+      "expected": {
+        "created": false,
+        "updated": true
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/LTSR",
+      "name": "Limiting Slenderness Ratio",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "COMP": 300,
+        "TENS": 200
+      },
+      "updatePayload": {
+        "COMP": 300,
+        "TENS": 200,
+        "bNOTCHECK": true
+      },
+      "expected": {
+        "created": false,
+        "updated": true
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/MBTP",
+      "name": "Modify Member Type",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "TYPE": "BRACE"
+      },
+      "updatePayload": {
+        "TYPE": "COLUMN"
+      },
+      "expected": {
+        "created": "BRACE",
+        "updated": "COLUMN"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/MBTP",
+      "name": "Modify Member Type",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "TYPE": "BRACE"
+      },
+      "updatePayload": {
+        "TYPE": "COLUMN"
+      },
+      "expected": {
+        "created": "BRACE",
+        "updated": "COLUMN"
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/MLLR",
+      "name": "Modify Live Load Reduction Factor",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "COMPONENTS": {
+          "AXIAL": false,
+          "MOMENT": true,
+          "SHEAR": false
+        }
+      },
+      "updatePayload": {
+        "COMPONENTS": {
+          "AXIAL": false,
+          "MOMENT": true,
+          "SHEAR": false
+        },
+        "FACTOR": 0.9
+      },
+      "expected": {
+        "created": 1,
+        "updated": 0.9
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/MLLR",
+      "name": "Modify Live Load Reduction Factor",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "COMPONENTS": {
+          "AXIAL": false,
+          "MOMENT": true,
+          "SHEAR": false
+        }
+      },
+      "updatePayload": {
+        "COMPONENTS": {
+          "AXIAL": false,
+          "MOMENT": true,
+          "SHEAR": false
+        },
+        "FACTOR": 0.9
+      },
+      "expected": {
+        "created": 1,
+        "updated": 0.9
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/SUEQ",
+      "name": "Scale up Factor for Earthquake",
+      "id": 2,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "LC_SHEAR": 1.2,
+        "LCOM_AXIAL": 1.2,
+        "LCOM_MOMENT": 1.2,
+        "LCOM_SHEAR": 1.2
+      },
+      "updatePayload": {
+        "LC_SHEAR": 1.2,
+        "LCOM_AXIAL": 1.2,
+        "LCOM_MOMENT": 1.2,
+        "LCOM_SHEAR": 1.2,
+        "LC_AXIAL": 1.2
+      },
+      "expected": {
+        "created": 1,
+        "updated": 1.2
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "design_tables",
+      "endpoint": "/DESIGN/SRC/AIK-SRC2K/SUEQ",
+      "name": "Scale up Factor for Earthquake",
+      "id": 2,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "LC_SHEAR": 1.2,
+        "LCOM_AXIAL": 1.2,
+        "LCOM_MOMENT": 1.2,
+        "LCOM_SHEAR": 1.2
+      },
+      "updatePayload": {
+        "LC_SHEAR": 1.2,
+        "LCOM_AXIAL": 1.2,
+        "LCOM_MOMENT": 1.2,
+        "LCOM_SHEAR": 1.2,
+        "LC_AXIAL": 1.2
+      },
+      "expected": {
+        "created": 1,
+        "updated": 1.2
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
     }
   ]
 }

@@ -4646,3 +4646,115 @@ records:
     FIMP records. Completed create/read/update/read/delete/read through scripts/live_crud_check.py and
     packages/typescript/scripts/live-crud.mjs on Civil, each checkpointing to C:/temp and restoring an
     empty document. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-09-28-6
+  endpoints:
+  - /DESIGN/RC/KDS-41-20-2022/DCO
+  - /DESIGN/RC/KDS-41-20-2022/DCTL
+  - /DESIGN/RC/KDS-41-20-2022/DFBA
+  - /DESIGN/RC/KDS-41-20-2022/FMAG
+  - /DESIGN/RC/KDS-41-20-2022/KFAC
+  - /DESIGN/RC/KDS-41-20-2022/LENG
+  - /DESIGN/RC/KDS-41-20-2022/LLRF
+  - /DESIGN/RC/KDS-41-20-2022/LMRR
+  - /DESIGN/RC/KDS-41-20-2022/MATD
+  - /DESIGN/RC/KDS-41-20-2022/MLLR
+  - /DESIGN/RC/KDS-41-20-2022/PMDM
+  - /DESIGN/RC/KDS-41-20-2022/REXC
+  - /DESIGN/RC/KDS-41-20-2022/SDGN
+  - /DESIGN/RC/KDS-41-20-2022/SRDF
+  - /DESIGN/RC/KDS-41-20-2022/ULCT
+  - /DESIGN/RC/KDS-41-20-2022/WMAK
+  - /DESIGN/SRC/AIK-SRC2K/CMFT
+  - /DESIGN/SRC/AIK-SRC2K/DCO
+  - /DESIGN/SRC/AIK-SRC2K/DCTL
+  - /DESIGN/SRC/AIK-SRC2K/EQCT
+  - /DESIGN/SRC/AIK-SRC2K/FMAG
+  - /DESIGN/SRC/AIK-SRC2K/KFAC
+  - /DESIGN/SRC/AIK-SRC2K/LENG
+  - /DESIGN/SRC/AIK-SRC2K/LTSR
+  - /DESIGN/SRC/AIK-SRC2K/MBTP
+  - /DESIGN/SRC/AIK-SRC2K/MLLR
+  - /DESIGN/SRC/AIK-SRC2K/SUEQ
+  - /DESIGN/STEEL/KDS-41-30-2022/CBFT
+  - /DESIGN/STEEL/KDS-41-30-2022/CMFT
+  - /DESIGN/STEEL/KDS-41-30-2022/DCO
+  - /DESIGN/STEEL/KDS-41-30-2022/DCTL
+  - /DESIGN/STEEL/KDS-41-30-2022/EQCT
+  - /DESIGN/STEEL/KDS-41-30-2022/FMAG
+  - /DESIGN/STEEL/KDS-41-30-2022/KFAC
+  - /DESIGN/STEEL/KDS-41-30-2022/LENG
+  - /DESIGN/STEEL/KDS-41-30-2022/LTSR
+  - /DESIGN/STEEL/KDS-41-30-2022/MBTP
+  - /DESIGN/STEEL/KDS-41-30-2022/MLLR
+  - /DESIGN/STEEL/KDS-41-30-2022/SERV
+  - /DESIGN/STEEL/KDS-41-30-2022/SLRS
+  - /DESIGN/STEEL/KDS-41-30-2022/SRDF
+  - /DESIGN/STEEL/KDS-41-30-2022/SUEQ
+  - /DESIGN/STEEL/KDS-41-30-2022/ULCT
+  date: '2026-09-28'
+  level: write
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build 09/24/2026
+  outcome: success
+  method: New design_tables tier in scripts/live_crud_check.py, every create a Request example record from
+    chapters 25-27 as printed (scripts/fixtures/design_manual_examples.json) and every update one key moved to
+    a value the manual gives. 35 of these completed create/read/update/read/delete/read through both
+    scripts/live_crud_check.py and packages/typescript/scripts/live-crud.mjs on Gen and are confirmed. The other
+    8 are singletons whose PUT was written and read back through the Python harness, but whose DELETE
+    restores defaults rather than removing the record, which the checker's delete step reads as a failure;
+    they are not confirmed. Each invocation checkpointed to C:/temp and restored an empty document. Evidence in
+    docs/live_verification_notes.md.
+- id: ledger-write-2026-09-28-7
+  endpoints:
+  - /DESIGN/RC/KDS-41-20-2022/DCTL
+  - /DESIGN/RC/KDS-41-20-2022/DFBA
+  - /DESIGN/RC/KDS-41-20-2022/FMAG
+  - /DESIGN/RC/KDS-41-20-2022/KFAC
+  - /DESIGN/RC/KDS-41-20-2022/LENG
+  - /DESIGN/RC/KDS-41-20-2022/LLRF
+  - /DESIGN/RC/KDS-41-20-2022/MLLR
+  - /DESIGN/RC/KDS-41-20-2022/PMDM
+  - /DESIGN/RC/KDS-41-20-2022/REXC
+  - /DESIGN/RC/KDS-41-20-2022/SDGN
+  - /DESIGN/RC/KDS-41-20-2022/WMAK
+  - /DESIGN/SRC/AIK-SRC2K/CMFT
+  - /DESIGN/SRC/AIK-SRC2K/DCO
+  - /DESIGN/SRC/AIK-SRC2K/DCTL
+  - /DESIGN/SRC/AIK-SRC2K/EQCT
+  - /DESIGN/SRC/AIK-SRC2K/FMAG
+  - /DESIGN/SRC/AIK-SRC2K/KFAC
+  - /DESIGN/SRC/AIK-SRC2K/LENG
+  - /DESIGN/SRC/AIK-SRC2K/LTSR
+  - /DESIGN/SRC/AIK-SRC2K/MBTP
+  - /DESIGN/SRC/AIK-SRC2K/MLLR
+  - /DESIGN/SRC/AIK-SRC2K/SUEQ
+  - /DESIGN/STEEL/KDS-41-30-2022/CBFT
+  - /DESIGN/STEEL/KDS-41-30-2022/CMFT
+  - /DESIGN/STEEL/KDS-41-30-2022/DCTL
+  - /DESIGN/STEEL/KDS-41-30-2022/EQCT
+  - /DESIGN/STEEL/KDS-41-30-2022/FMAG
+  - /DESIGN/STEEL/KDS-41-30-2022/KFAC
+  - /DESIGN/STEEL/KDS-41-30-2022/LENG
+  - /DESIGN/STEEL/KDS-41-30-2022/LTSR
+  - /DESIGN/STEEL/KDS-41-30-2022/MBTP
+  - /DESIGN/STEEL/KDS-41-30-2022/MLLR
+  - /DESIGN/STEEL/KDS-41-30-2022/SERV
+  - /DESIGN/STEEL/KDS-41-30-2022/SLRS
+  - /DESIGN/STEEL/KDS-41-30-2022/SUEQ
+  date: '2026-09-28'
+  level: write
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build 09/24/2026
+  outcome: success
+  method: New design_tables tier in scripts/live_crud_check.py, every create a Request example record from
+    chapters 25-27 as printed (scripts/fixtures/design_manual_examples.json) and every update one key moved to
+    a value the manual gives. 31 of these completed create/read/update/read/delete/read through both
+    scripts/live_crud_check.py and packages/typescript/scripts/live-crud.mjs on Civil and are confirmed. The other
+    4 are singletons whose PUT was written and read back through the Python harness, but whose DELETE
+    restores defaults rather than removing the record, which the checker's delete step reads as a failure;
+    they are not confirmed. Each invocation checkpointed to C:/temp and restored an empty document. Evidence in
+    docs/live_verification_notes.md.

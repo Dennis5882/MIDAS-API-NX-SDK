@@ -27,12 +27,12 @@ scoreboard.
   changelog's `Unreleased` holds two optional members from `/info`
   (`CONTRIBUTION_FACTOR`, `USE_HAMBLY_EQ`); nothing is released with them yet,
   and `src/midas_nx/` has not changed.
-- **Coverage: 400/400 implemented, 214 write / 186 read.** Of the 225 `/db`
+- **Coverage: 400/400 implemented, 257 write / 143 read.** Of the 225 `/db`
   endpoints, 192 are write-level and 33 are not.
-- **Fixture (`schema/live-cases.json`, version 6):** 224 cases over 200
-  endpoints; 188 confirmed over 177 endpoints; 9 base-model steps; 78 named
+- **Fixture (`schema/live-cases.json`, version 6):** 306 cases over 243
+  endpoints; 254 confirmed over 212 endpoints; 9 base-model steps; 78 named
   seeds; 0 unsupported.
-- **npm has replayed all 188 confirmed cases** on every product each declares.
+- **npm has replayed all 254 confirmed cases** on every product each declares.
   Keep that gap at 0: every new confirmed case goes through both harnesses.
 - **Contracts: 384 endpoints + 87 result tables.** The three drafts left, the
   IEHG trio, have no permitted source; that is final.
@@ -59,11 +59,11 @@ python scripts/report_dropped_manual_rows.py \
 python scripts/live_crud_check.py --check-cases        # silent; exit 0
 python scripts/check_fixture_contract.py --check       # 1 fixture lead over 1
                                           # endpoint, 0 contract gaps over 0
-python scripts/report_npm_replay_coverage.py --check   # 188 cases over 177
-                                          # endpoints; every product: 188
+python scripts/report_npm_replay_coverage.py --check   # 254 cases over 212
+                                          # endpoints; every product: 254
 python scripts/check_verification_lag.py --check       # 40, ceiling 40
 python scripts/verification_ledger.py                  # 397 endpoints:
-                                          # 183 read, 214 write
+                                          # 140 read, 257 write
 python scripts/report_unmerged_tables.py --check       # exit 0
 python scripts/check_state_numbers.py --check          # OK; it checks this
                                           # block's own numbers too

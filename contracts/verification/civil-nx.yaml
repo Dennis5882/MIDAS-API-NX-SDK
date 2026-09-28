@@ -834,3 +834,20 @@ records:
       REBAR_NAME landed, and per-id DELETE emptied the table.
     evidence:
       - docs/live_verification_notes.md
+  - id: design-tables-2026-09-28
+    endpoints: ["/DESIGN/RC/KDS-41-20-2022/DCTL", "/DESIGN/RC/KDS-41-20-2022/DFBA", "/DESIGN/RC/KDS-41-20-2022/FMAG", "/DESIGN/RC/KDS-41-20-2022/KFAC", "/DESIGN/RC/KDS-41-20-2022/LENG", "/DESIGN/RC/KDS-41-20-2022/LLRF", "/DESIGN/RC/KDS-41-20-2022/MLLR", "/DESIGN/RC/KDS-41-20-2022/PMDM", "/DESIGN/RC/KDS-41-20-2022/REXC", "/DESIGN/RC/KDS-41-20-2022/SDGN", "/DESIGN/RC/KDS-41-20-2022/WMAK", "/DESIGN/SRC/AIK-SRC2K/CMFT", "/DESIGN/SRC/AIK-SRC2K/DCO", "/DESIGN/SRC/AIK-SRC2K/DCTL", "/DESIGN/SRC/AIK-SRC2K/EQCT", "/DESIGN/SRC/AIK-SRC2K/FMAG", "/DESIGN/SRC/AIK-SRC2K/KFAC", "/DESIGN/SRC/AIK-SRC2K/LENG", "/DESIGN/SRC/AIK-SRC2K/LTSR", "/DESIGN/SRC/AIK-SRC2K/MBTP", "/DESIGN/SRC/AIK-SRC2K/MLLR", "/DESIGN/SRC/AIK-SRC2K/SUEQ", "/DESIGN/STEEL/KDS-41-30-2022/CBFT", "/DESIGN/STEEL/KDS-41-30-2022/CMFT", "/DESIGN/STEEL/KDS-41-30-2022/DCTL", "/DESIGN/STEEL/KDS-41-30-2022/EQCT", "/DESIGN/STEEL/KDS-41-30-2022/FMAG", "/DESIGN/STEEL/KDS-41-30-2022/KFAC", "/DESIGN/STEEL/KDS-41-30-2022/LENG", "/DESIGN/STEEL/KDS-41-30-2022/LTSR", "/DESIGN/STEEL/KDS-41-30-2022/MBTP", "/DESIGN/STEEL/KDS-41-30-2022/MLLR", "/DESIGN/STEEL/KDS-41-30-2022/SERV", "/DESIGN/STEEL/KDS-41-30-2022/SLRS", "/DESIGN/STEEL/KDS-41-30-2022/SUEQ"]
+    date: "2026-09-28"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 09/24/2026
+    level: write
+    outcome: success
+    method: >-
+      live_crud_check.py design_tables tier and live-crud.mjs, on /doc/NEW
+      documents holding the harness base model; the manual's own Request
+      example records, element-keyed tables moved onto base-model elements.
+    finding: >-
+      31 tables completed create/read/update/read/delete/read through
+      both SDKs with no design code selected first. 4 singletons took a
+      PUT and read it back, and their per-id DELETE restores defaults instead of
+      removing the record. Per-id DELETE works on the /DESIGN tables.
+    evidence:
+      - docs/live_verification_notes.md

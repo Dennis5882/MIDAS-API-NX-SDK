@@ -1,0 +1,1265 @@
+{
+  "source": "25_Design_Steel_KDS41302022.md, 26_Design_RC_KDS41202022.md and 27_Design_SRC_AIKSRC2K.md, first JSON Request Body of each section, at manual repo commit e3e5a49",
+  "examples": {
+    "/DESIGN/STEEL/DSTL": {
+      "1": {
+        "DGNCODE": "KDS 41 30 : 2022"
+      }
+    },
+    "/DESIGN/STEEL/KDS-41-30-2022/DCO": {
+      "1": {
+        "DGNCODE": "KDS 41 30 : 2022",
+        "LAT_BRACE": false,
+        "DEFL_CHK": true,
+        "SEISMIC": true,
+        "COMB_RATIO": 1,
+        "SEIS_SYS": "Special Moment Frames",
+        "COL_WEAK": true,
+        "UNDGR_LD": true
+      }
+    },
+    "/DESIGN/STEEL/KDS-41-30-2022/DCTL": {
+      "1": {
+        "FRAMEX": "Braced Non-sway",
+        "FRAMEY": "Braced Non-sway",
+        "bAUTOKF": true,
+        "DT": "XZ"
+      }
+    },
+    "/DESIGN/STEEL/KDS-41-30-2022/LLRF": {
+      "1": {
+        "CALC_RULE": 0,
+        "APPLIED_COMP": [
+          "AXIAL",
+          "SHEAR",
+          "MOMENTS",
+          "ALL"
+        ],
+        "LIVE_LOAD_CASES": [
+          "LL2"
+        ],
+        "REDUCTION_DATA": [
+          {
+            "STORY": "B2",
+            "XMIN": -7.5,
+            "XMAX": 1.15,
+            "YMIN": -7.45,
+            "YMAX": -7.45,
+            "RANGE_MAX": 0.9,
+            "RANGE_MIN": 0.6
+          },
+          {
+            "STORY": "B2",
+            "XMIN": -7.5,
+            "XMAX": 1.15,
+            "YMIN": -7.45,
+            "YMAX": -7.45
+          }
+        ]
+      }
+    },
+    "/DESIGN/STEEL/KDS-41-30-2022/SRDF": {
+      "1": {
+        "PHI_T1": 0.75,
+        "PHI_T2": 0.75,
+        "PHI_C": 0.25,
+        "PHI_B": 0.45,
+        "PHI_V": 0.85
+      }
+    },
+    "/DESIGN/STEEL/KDS-41-30-2022/SERV": {
+      "915": {
+        "DEFLECT_CONTROL": 400,
+        "DAF": 2
+      },
+      "934": {
+        "DAF": 2
+      },
+      "1057": {
+        "DEFLECT_CONTROL": 500
+      }
+    },
+    "/DESIGN/STEEL/KDS-41-30-2022/EQCT": {
+      "1066": {
+        "TYPE": "Special Seismic Loads"
+      },
+      "1068": {
+        "TYPE": "Vertical Seismic Forces"
+      }
+    },
+    "/DESIGN/STEEL/KDS-41-30-2022/ULCT": {
+      "885": {
+        "bUNDERLOADTYPE": true
+      },
+      "888": {
+        "bUNDERLOADTYPE": false
+      }
+    },
+    "/DESIGN/STEEL/KDS-41-30-2022/SUEQ": {
+      "915": {
+        "LC_AXIAL": 1.2,
+        "LC_MOMENT": 1.2,
+        "LC_SHEAR": 1.2,
+        "LCOM_AXIAL": 1.2,
+        "LCOM_MOMENT": 1.2,
+        "LCOM_SHEAR": 1.2
+      },
+      "934": {
+        "LC_SHEAR": 1.2,
+        "LCOM_AXIAL": 1.2,
+        "LCOM_MOMENT": 1.2,
+        "LCOM_SHEAR": 1.2
+      }
+    },
+    "/DESIGN/STEEL/KDS-41-30-2022/CRCM": {
+      "1058": {
+        "METHOD": "Linear Sum"
+      },
+      "1059": {
+        "METHOD": "SRSS"
+      }
+    },
+    "/DESIGN/STEEL/KDS-41-30-2022/HCBM": {
+      "1": {
+        "NAME": "h1",
+        "POS_TYPE": 0,
+        "L1": 0.5,
+        "L2": 0.5,
+        "PART_A": {
+          "INPUT_METHOD": "KEYS",
+          "KEYS": [
+            1065
+          ]
+        },
+        "PART_B": {
+          "INPUT_METHOD": "TO",
+          "TO": "1066to1071"
+        },
+        "PART_C": {
+          "INPUT_METHOD": "KEYS",
+          "KEYS": [
+            1072
+          ]
+        }
+      }
+    },
+    "/DESIGN/STEEL/KDS-41-30-2022/LENG": {
+      "888": {
+        "LY": 1,
+        "LZ": 1,
+        "LB": 1,
+        "bNOTUSE": true,
+        "LT": 1
+      },
+      "891": {
+        "LY": 1,
+        "LZ": 1,
+        "LB": 2
+      }
+    },
+    "/DESIGN/STEEL/KDS-41-30-2022/KFAC": {
+      "859": {
+        "Ky": 1
+      },
+      "860": {
+        "Ky": 2,
+        "Kz": 2
+      },
+      "902": {
+        "Kz": 3,
+        "Kt": 3
+      }
+    },
+    "/DESIGN/STEEL/KDS-41-30-2022/LTSR": {
+      "1067": {
+        "COMP": 300,
+        "TENS": 200
+      },
+      "1068": {
+        "COMP": 300,
+        "TENS": 200
+      }
+    },
+    "/DESIGN/STEEL/KDS-41-30-2022/CMFT": {
+      "1067": {
+        "OPT_AUTO": true
+      },
+      "1069": {
+        "CMY": 0.7,
+        "CMZ": 0.6
+      },
+      "1070": {
+        "CMY": 0.72,
+        "CMZ": 0.85
+      }
+    },
+    "/DESIGN/STEEL/KDS-41-30-2022/FMAG": {
+      "915": {
+        "B1Y_DELTA_BY": 1.1,
+        "B1Z_DELTA_BZ": 1.2
+      },
+      "1058": {
+        "B2Y_DELTA_SY": 1.3,
+        "B2Z_DELTA_SZ": 1.4
+      }
+    },
+    "/DESIGN/STEEL/KDS-41-30-2022/CBFT": {
+      "915": {
+        "AUTO_CAL": true
+      },
+      "1058": {
+        "AUTO_CAL": false,
+        "VALUE": 1.2
+      },
+      "1059": {
+        "AUTO_CAL": false,
+        "VALUE": 1.25
+      }
+    },
+    "/DESIGN/STEEL/KDS-41-30-2022/MBTP": {
+      "934": {
+        "TYPE": "BRACE"
+      },
+      "1058": {
+        "TYPE": "COLUMN"
+      },
+      "1066": {
+        "TYPE": "BEAM"
+      }
+    },
+    "/DESIGN/STEEL/KDS-41-30-2022/SLRS": {
+      "915": {
+        "FRAME_TYPE": "Special Concentrically Braced Frames",
+        "CHECK_OPTION": true
+      },
+      "934": {
+        "FRAME_TYPE": "Ordinary Concentrically Braced Frames",
+        "CHECK_OPTION": false
+      },
+      "1058": {
+        "FRAME_TYPE": "Buckling Restrained Braced Frames"
+      }
+    },
+    "/DESIGN/STEEL/KDS-41-30-2022/MLLR": {
+      "922": {
+        "COMPONENTS": {
+          "AXIAL": false,
+          "MOMENT": true,
+          "SHEAR": false
+        }
+      },
+      "934": {
+        "FACTOR": 0.9,
+        "COMPONENTS": {
+          "AXIAL": true,
+          "SHEAR": false
+        }
+      }
+    },
+    "/DESIGN/STEEL/KDS-41-30-2022/MEMB": {
+      "1": {
+        "AELEM": [
+          933,
+          934
+        ],
+        "bREVERSE": false
+      },
+      "2": {
+        "AELEM": [
+          906,
+          891
+        ],
+        "bREVERSE": true
+      }
+    },
+    "/DESIGN/STEEL/KDS-41-30-2022/SMODI": {
+      "100": {
+        "CODE": "Standard",
+        "STANDARD_CODE": "KS22(S)",
+        "GRADE": "SM355"
+      },
+      "101": {
+        "CODE": "None",
+        "ES": 40000000,
+        "PS": 0,
+        "FU": 0,
+        "NAME": "test",
+        "FY": 0
+      }
+    },
+    "/DESIGN/RC/DRC": {
+      "1": {
+        "DGNCODE": "KDS 41 20 : 2022"
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/DCO": {
+      "1": {
+        "DESIGN_CD": "KDS 41 20 : 2022",
+        "MOM_CALC_MTHD": "Equivalent",
+        "EXP_COND": "etc",
+        "PM_CRV_CALC": "KeepMPConstant",
+        "CONC_STRS_STRN": "Equivalent",
+        "FS_MAIN_BAR": "2/3fy",
+        "SEISMIC_PROV": true,
+        "TORS_DES": true,
+        "TORS_RDCT_FACT": 1,
+        "MOM_REDIST_FACT": 1,
+        "USE_SUBDIV_FORCE": true,
+        "UG_LC": true,
+        "SEISMIC": {
+          "FRAME_TYPE": "Special",
+          "STRONG_COL_WEAK_LAST": true,
+          "BEAM_COL_JNT_DES": true,
+          "JOINT": {
+            "CHK_POS": "Top",
+            "EXCL_MEM_TYPES": [
+              "SUBBEAM",
+              "CANTIL",
+              "UGBEAMCOL"
+            ]
+          },
+          "SHEAR_WALL": {
+            "SPEC_RC_WALL": true,
+            "BDRY_ELEM_MTHD": "Displacement",
+            "DEFL_AMP_FACT": 4,
+            "IMP_FACT": 1.2
+          },
+          "SHEAR_DES": {
+            "R": 0.5,
+            "MTHD": "Ve1",
+            "A1": 1.1,
+            "A2": 1.2
+          }
+        }
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/DCTL": {
+      "1": {
+        "FRAMEX": "Braced Non-sway",
+        "FRAMEY": "Braced Non-sway",
+        "bAUTOKF": true,
+        "DT": "XZ"
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/LLRF": {
+      "1": {
+        "CALC_RULE": 0,
+        "APPLIED_COMP": [
+          "AXIAL"
+        ],
+        "LIVE_LOAD_CASES": [],
+        "REDUCTION_DATA": []
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/SRDF": {
+      "1": {
+        "PHI_T": 0.8,
+        "PHI_C1": 0.65,
+        "PHI_C2": 0.6,
+        "PHI_V": 0.6
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/EQCT": {
+      "1066": {
+        "TYPE": "Special Seismic Loads"
+      },
+      "1067": {
+        "TYPE": "Special Seismic Loads"
+      },
+      "1068": {
+        "TYPE": "Vertical Seismic Forces"
+      },
+      "1069": {
+        "TYPE": "Vertical Seismic Forces"
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/ULCT": {
+      "885": {
+        "bUNDERLOADTYPE": true
+      },
+      "888": {
+        "bUNDERLOADTYPE": false
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/SUEQ": {
+      "915": {
+        "LC_AXIAL": 1.2,
+        "LC_MOMENT": 1.2,
+        "LC_SHEAR": 1.2,
+        "LCOM_AXIAL": 1.2,
+        "LCOM_MOMENT": 1.2,
+        "LCOM_SHEAR": 1.2
+      },
+      "934": {
+        "LC_SHEAR": 1.2,
+        "LCOM_AXIAL": 1.2,
+        "LCOM_MOMENT": 1.2,
+        "LCOM_SHEAR": 1.2
+      },
+      "1057": {
+        "LC_AXIAL": 1.2,
+        "LC_MOMENT": 1.2,
+        "LCOM_MOMENT": 1.2,
+        "LCOM_SHEAR": 1.2
+      },
+      "1058": {
+        "LC_AXIAL": 1.2,
+        "LC_MOMENT": 1.2,
+        "LC_SHEAR": 1.2,
+        "LCOM_AXIAL": 1.2
+      },
+      "1059": {
+        "LC_AXIAL": 1.2,
+        "LC_MOMENT": 1.2,
+        "LCOM_MOMENT": 1.2,
+        "LCOM_SHEAR": 1.2
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/SDGN": {
+      "1": {
+        "NTYPE": "Seismic"
+      },
+      "2": {
+        "NTYPE": "Non-Seismic"
+      },
+      "3": {
+        "NTYPE": "Non-Seismic-Force-Resisting"
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/SCOL": {
+      "915": {
+        "TYPE": "PILOTI"
+      },
+      "916": {
+        "TYPE": "SOFT_STORY"
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/MBTP": {
+      "934": {
+        "TYPE": "BRACE"
+      },
+      "1058": {
+        "TYPE": "COLUMN"
+      },
+      "1059": {
+        "TYPE": "COLUMN"
+      },
+      "1066": {
+        "TYPE": "BEAM"
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/MEMB": {
+      "1": {
+        "AELEM": [
+          885,
+          888,
+          891
+        ],
+        "bREVERSE": true
+      },
+      "2": {
+        "AELEM": [
+          919
+        ],
+        "bREVERSE": true
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/MATD": {
+      "1": {
+        "CONCRETE": {
+          "CODE": "Standard",
+          "STANDARD_CODE": "KS19(RC)",
+          "GRADE": "C15",
+          "LIGHTWEIGHT": true,
+          "LAMBDA": 1
+        },
+        "REBAR": {
+          "CODE": "Standard",
+          "STANDARD_CODE": "KS19(RC)",
+          "MAIN_REBAR_GRADE": "SD400S",
+          "SUB_REBAR_GRADE": "SD600"
+        }
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/LENG": {
+      "888": {
+        "LY": 1,
+        "LZ": 1,
+        "LB": 1,
+        "bNOTUSE": true,
+        "LT": 1
+      },
+      "891": {
+        "LY": 1,
+        "LZ": 1,
+        "LB": 2
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/KFAC": {
+      "859": {
+        "Ky": 1
+      },
+      "860": {
+        "Ky": 2,
+        "Kz": 2
+      },
+      "902": {
+        "Kz": 3,
+        "Kt": 3
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/CMFT": {
+      "1067": {
+        "OPT_AUTO": true
+      },
+      "1068": {
+        "OPT_AUTO": true
+      },
+      "1069": {
+        "CMY": 0.7,
+        "CMZ": 0.6
+      },
+      "1070": {
+        "CMY": 0.72,
+        "CMZ": 0.85
+      },
+      "1071": {
+        "CMY": 0.8,
+        "CMZ": 0.8
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/FMAG": {
+      "915": {
+        "B1Y_DELTA_BY": 1.1,
+        "B1Z_DELTA_BZ": 1.2
+      },
+      "1058": {
+        "B2Y_DELTA_SY": 1.3,
+        "B2Z_DELTA_SZ": 1.4
+      },
+      "1059": {
+        "B1Z_DELTA_BZ": 1.2,
+        "B2Y_DELTA_SY": 1.3
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/MLLR": {
+      "922": {
+        "COMPONENTS": {
+          "AXIAL": false,
+          "MOMENT": true,
+          "SHEAR": false
+        }
+      },
+      "934": {
+        "FACTOR": 0.9,
+        "COMPONENTS": {
+          "AXIAL": true,
+          "SHEAR": false
+        }
+      },
+      "1057": {
+        "FACTOR": null,
+        "COMPONENTS": {
+          "MOMENT": true
+        }
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/HCBM": {
+      "1": {
+        "NAME": "h1",
+        "POS_TYPE": 0,
+        "L1": 0.5,
+        "L2": 0.5,
+        "PART_A": {
+          "INPUT_METHOD": "KEYS",
+          "KEYS": [
+            1065
+          ]
+        },
+        "PART_B": {
+          "INPUT_METHOD": "TO",
+          "TO": "1066to1071"
+        },
+        "PART_C": {
+          "INPUT_METHOD": "KEYS",
+          "KEYS": [
+            1072
+          ]
+        }
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/MRFT": {
+      "885": {
+        "FACTOR": 1
+      },
+      "888": {
+        "FACTOR": 0.01
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/TRFT": {
+      "888": {
+        "FACTOR": 1
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/MCMB": {
+      "888": {
+        "CALC_METHOD": "EACH"
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/DFBA": {
+      "859": {
+        "FORCE_TYPE": "Subdivided Forces"
+      },
+      "860": {
+        "FORCE_TYPE": "Member Forces"
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/PMDM": {
+      "915": {
+        "CALC_METHOD": "P"
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/WMAK": {
+      "1": {
+        "MARKNAME": "W200",
+        "WID_LIST": [
+          1,
+          2
+        ]
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/BEMW": {
+      "1": {
+        "NMETHOD_TYPE": "Displacement Based Method",
+        "BBNDR_ELEM_METHOD": true,
+        "BBOT_STOR": true,
+        "STOR_NAME": "B2"
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/REXC": {
+      "17": {
+        "EXPOSURE": "Dry"
+      },
+      "49": {
+        "EXPOSURE": "Etc"
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/LMRR": {
+      "1": {
+        "RHOW": 0.04,
+        "RHOC": 0.03,
+        "RHOR": 0.03
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/DCRM-BEAM": {
+      "885": {
+        "MAIN_REBAR": "D4",
+        "STIRRUPS": "D4",
+        "STIRRUP_ARRANGEMENT": 4,
+        "SIDE_BAR": "D4",
+        "DT": 0.05,
+        "DB": 0.05,
+        "DOUBLY_REBAR": true,
+        "DOUBLY_K": 1,
+        "SPACING_LIMIT": true,
+        "SPLICED_BARS": "50%"
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/DCRM-COLUMN": {
+      "915": {
+        "MAIN_REBAR": "D4",
+        "TIES_SPIRALS": "D4",
+        "ARRANGEMENT_Y": 2,
+        "ARRANGEMENT_Z": 2,
+        "DO": 0.05,
+        "SPACING_LIMIT": true,
+        "SPLICED_BARS": "50%"
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/DCRM-BRACE": {
+      "934": {
+        "MAIN_REBAR": "D4",
+        "TIES_SPIRALS": "D4",
+        "ARRANGEMENT_Y": 2,
+        "ARRANGEMENT_Z": 2,
+        "SPLICED_BARS": "50%",
+        "DO": 0.05,
+        "SPACING_LIMIT": true
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/DCRM-WALL": {
+      "3": {
+        "ITEMS": [
+          {
+            "STORY": "1F",
+            "VERTICAL_REBAR": "D22",
+            "HORIZONTAL_REBAR": "D32",
+            "END_REBAR": "D5",
+            "BE_HORZ_REBAR": "D13",
+            "BE_HORZ_SPACE": 1.6404199475065615,
+            "BE_VERT_SPACE": 1.6404199475065615,
+            "DE": 1.6404199475065615,
+            "DW": 1.6404199475065615
+          },
+          {
+            "STORY": "B1",
+            "VERTICAL_REBAR": "D4",
+            "HORIZONTAL_REBAR": "D10",
+            "END_REBAR": "D5",
+            "BE_HORZ_REBAR": "D13",
+            "BE_HORZ_SPACE": 1.6404199475065615,
+            "BE_VERT_SPACE": 1.6404199475065615,
+            "DE": 1.6404199475065615,
+            "DW": 1.6404199475065615
+          }
+        ]
+      },
+      "14": {
+        "ITEMS": [
+          {
+            "STORY": "1F",
+            "VERTICAL_REBAR": "D25",
+            "HORIZONTAL_REBAR": "D32",
+            "END_REBAR": "D5",
+            "BE_HORZ_REBAR": "D13",
+            "BE_HORZ_SPACE": 1.6404199475065615,
+            "BE_VERT_SPACE": 1.6404199475065615,
+            "DE": 1.6404199475065615,
+            "DW": 1.6404199475065615
+          },
+          {
+            "STORY": "B1",
+            "VERTICAL_REBAR": "D4",
+            "HORIZONTAL_REBAR": "D32",
+            "END_REBAR": "D41",
+            "BE_HORZ_REBAR": "D13",
+            "BE_HORZ_SPACE": 1.6404199475065615,
+            "BE_VERT_SPACE": 1.6404199475065615,
+            "DE": 1.6404199475065615,
+            "DW": 1.6404199475065615
+          }
+        ]
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/DCRE": {
+      "1": {
+        "BEAM": {
+          "MAIN_REBAR": [
+            "D22"
+          ],
+          "STIRRUPS": "D10",
+          "STIRRUP_ARRANGEMENT": 2,
+          "SIDE_BAR": "D13",
+          "DT": 0,
+          "DB": 0,
+          "DOUBLY_REBAR": true,
+          "SPACING_LIMIT": true,
+          "DOUBLY_K": 1,
+          "SPLICED_BARS": 1
+        },
+        "COLUMN": {
+          "MAIN_REBAR": [
+            "D22"
+          ],
+          "TIES_SPIRALS": "D10",
+          "ARRANGEMENT_Y": 2,
+          "ARRANGEMENT_Z": 2,
+          "DO": 0,
+          "SPACING_LIMIT": true,
+          "SPLICED_BARS": 1
+        },
+        "BRACE": {
+          "MAIN_REBAR": [
+            "D22"
+          ],
+          "TIES_SPIRALS": "D10",
+          "ARRANGEMENT_Y": 2,
+          "ARRANGEMENT_Z": 2,
+          "DO": 0,
+          "SPACING_LIMIT": true,
+          "SPLICED_BARS": 1
+        },
+        "WALL": {
+          "VERTICAL_REBAR": [
+            "D10",
+            "D13"
+          ],
+          "HORIZONTAL_REBAR": "D10",
+          "END_REBAR": "D13",
+          "BE_HORZ_REBAR": "D10",
+          "BE_HORZ_SPACE": 0.2,
+          "BE_VERT_SPACE": 0.1,
+          "DE": 0.05,
+          "DW": 0.05,
+          "MATERIAL_BY_DIAMETER": false,
+          "ADDITIONAL_WALL_DATA": {
+            "OUT_OF_PLANE_BENDING": false,
+            "VERTICAL_REBAR_SPACING": [
+              "@100",
+              "@150",
+              "@200",
+              "@300",
+              "@400"
+            ],
+            "HORIZONTAL_REBAR_SPACING_FROM": 0.05,
+            "END_REBAR_METHOD": 3,
+            "DIST1": 0.3,
+            "DIST2": 0.15,
+            "DIST3": 0.1
+          }
+        }
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/DCREM": {
+      "1": {
+        "SELECT_ALL": false,
+        "SELECTED_MEMBERS": {
+          "347": {
+            "ELEM_LIST": [
+              925,
+              926
+            ]
+          },
+          "364": {
+            "ELEM_LIST": [
+              922,
+              924
+            ]
+          },
+          "365": {
+            "ELEM_LIST": [
+              924,
+              925
+            ]
+          },
+          "396": {
+            "ELEM_LIST": [
+              926,
+              927
+            ]
+          }
+        }
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/REBB": {
+      "211": {
+        "ITEMS": [
+          {
+            "ID": 0,
+            "BAR_SECTOR_I": {
+              "vMAIN_BAR_TOP": [],
+              "vMAIN_BAR_BOT": [],
+              "SHEAR_BAR": {
+                "NAME": "D10",
+                "LEG": 2,
+                "DIST": 0.1
+              },
+              "SKIN_BAR_NAME": "",
+              "SKIN_BAR_NUM": 2
+            },
+            "BAR_SECTOR_M": {
+              "vMAIN_BAR_TOP": [],
+              "vMAIN_BAR_BOT": [],
+              "SHEAR_BAR": {
+                "NAME": "D10",
+                "LEG": 2,
+                "DIST": 0.1
+              },
+              "SKIN_BAR_NAME": "",
+              "SKIN_BAR_NUM": 2
+            },
+            "BAR_SECTOR_J": {
+              "vMAIN_BAR_TOP": [],
+              "vMAIN_BAR_BOT": [],
+              "SHEAR_BAR": {
+                "NAME": "D10",
+                "LEG": 2,
+                "DIST": 0.1
+              },
+              "SKIN_BAR_NAME": "",
+              "SKIN_BAR_NUM": 2
+            },
+            "MAIN_BAR_DC_TOP": 0.06999999999999999,
+            "MAIN_BAR_DC_BOT": 0.06999999999999999,
+            "bSAME_SIZE_TOP_BOT": true,
+            "bSAME_SIZE_IMJ": true,
+            "bSAME_SIZE_LAYER": true
+          }
+        ]
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/REBC": {
+      "1": {
+        "ITEMS": [
+          {
+            "CREATE_SUB_SECTION": false,
+            "MAIN_BAR": {
+              "NAME": "D19",
+              "NUM": 8,
+              "ROW": 3,
+              "USE_CORNER": false
+            },
+            "SHEAR_BAR_END": {
+              "NAME": "D10",
+              "LEG_Y": 2,
+              "LEG_Z": 2,
+              "DIST": 100
+            },
+            "SHEAR_BAR_CEN": {
+              "NAME": "D10",
+              "LEG_Y": 2,
+              "LEG_Z": 2,
+              "DIST": 200
+            },
+            "DO": 40,
+            "HOOP_TYPE": "Ties",
+            "HOOK_TYPE": 0
+          }
+        ]
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/REBW": {
+      "1": {
+        "ITEMS": [
+          {
+            "CREATE_SUB_WALL_ID": true,
+            "VERTICAL_REBAR": {
+              "NAME": "D19",
+              "DIST": 222
+            },
+            "HORIZONTAL_REBAR": {
+              "NAME": "D16",
+              "DIST": 200
+            },
+            "USE_END_REBAR": true,
+            "BE_HORIZONTAL_REBAR": {
+              "NAME": "D19",
+              "DIST": 222
+            },
+            "BOUNDARY_ELEMENT_LENGTH": 222,
+            "CONCRETE_FACE_TO_CENTER_OF_REBAR": {
+              "DW": 50,
+              "DE": 50
+            },
+            "USE_MODEL_THICKNESS": false,
+            "END_REBAR": {
+              "NAME": "D25",
+              "NUM": 2,
+              "DIST": 150
+            },
+            "THICKNESS": 1000,
+            "SUB_WALL_ID": 1,
+            "STORY": {
+              "FROM": "2F",
+              "TO": "Roof"
+            }
+          }
+        ]
+      }
+    },
+    "/DESIGN/RC/KDS-41-20-2022/REBR": {
+      "1": {
+        "ITEMS": [
+          {
+            "CREATE_SUB_SECTION": false,
+            "MAIN_BAR": {
+              "NAME": "D22",
+              "NUM": 4,
+              "ROW": 2
+            },
+            "SHEAR_BAR_END": {
+              "NAME": "D7",
+              "LEG_Y": 2,
+              "LEG_Z": 2,
+              "DIST": 300
+            },
+            "SHEAR_BAR_CEN": {
+              "NAME": "D22",
+              "LEG_Y": 3,
+              "LEG_Z": 3,
+              "DIST": 300
+            },
+            "DO": 0.05,
+            "HOOP_TYPE": "Spirals"
+          }
+        ]
+      }
+    },
+    "/DESIGN/SRC/AIK-SRC2K/DSRC": {
+      "1": {
+        "DGNCODE": "AIK-SRC2K"
+      }
+    },
+    "/DESIGN/SRC/AIK-SRC2K/DCO": {
+      "1": {
+        "DGNCODE": "AIK-SRC2K",
+        "SEISMIC": true
+      }
+    },
+    "/DESIGN/SRC/AIK-SRC2K/DCTL": {
+      "1": {
+        "FRAMEX": "Braced Non-sway",
+        "FRAMEY": "Braced Non-sway",
+        "bAUTOKF": true,
+        "DT": "XZ"
+      }
+    },
+    "/DESIGN/SRC/AIK-SRC2K/LLRF": {
+      "1": {
+        "CALC_RULE": 0,
+        "APPLIED_COMP": [
+          "AXIAL",
+          "SHEAR",
+          "MOMENTS",
+          "ALL"
+        ],
+        "LIVE_LOAD_CASES": [
+          "LL2"
+        ],
+        "REDUCTION_DATA": [
+          {
+            "STORY": "B2",
+            "XMIN": -7.5,
+            "XMAX": 1.15,
+            "YMIN": -7.45,
+            "YMAX": -7.45,
+            "RANGE_MAX": 0.9,
+            "RANGE_MIN": 0.6
+          },
+          {
+            "STORY": "B2",
+            "XMIN": -7.5,
+            "XMAX": 1.15,
+            "YMIN": -7.45,
+            "YMAX": -7.45
+          }
+        ]
+      }
+    },
+    "/DESIGN/SRC/AIK-SRC2K/LENG": {
+      "868": {
+        "LZ": 2,
+        "LY": 1
+      },
+      "874": {
+        "LY": 1,
+        "LZ": 1
+      }
+    },
+    "/DESIGN/SRC/AIK-SRC2K/KFAC": {
+      "868": {
+        "Ky": 1
+      },
+      "874": {
+        "Ky": 2,
+        "Kz": 2
+      },
+      "885": {
+        "Kz": 3,
+        "Kt": 3
+      }
+    },
+    "/DESIGN/SRC/AIK-SRC2K/LTSR": {
+      "868": {
+        "COMP": 300,
+        "TENS": 200
+      },
+      "874": {
+        "COMP": 300,
+        "TENS": 200
+      },
+      "885": {
+        "COMP": 300,
+        "TENS": 200
+      }
+    },
+    "/DESIGN/SRC/AIK-SRC2K/CMFT": {
+      "868": {
+        "OPT_AUTO": true
+      },
+      "874": {
+        "OPT_AUTO": true
+      },
+      "885": {
+        "CMY": 0.7,
+        "CMZ": 0.6
+      }
+    },
+    "/DESIGN/SRC/AIK-SRC2K/FMAG": {
+      "868": {
+        "B1Y_DELTA_BY": 1.1,
+        "B1Z_DELTA_BZ": 1.2
+      },
+      "874": {
+        "B2Y_DELTA_SY": 1.3,
+        "B2Z_DELTA_SZ": 1.4
+      },
+      "885": {
+        "B1Z_DELTA_BZ": 1.2,
+        "B2Y_DELTA_SY": 1.3
+      }
+    },
+    "/DESIGN/SRC/AIK-SRC2K/MLLR": {
+      "868": {
+        "COMPONENTS": {
+          "AXIAL": false,
+          "MOMENT": true,
+          "SHEAR": false
+        }
+      },
+      "874": {
+        "FACTOR": 0.9,
+        "COMPONENTS": {
+          "AXIAL": true,
+          "SHEAR": false
+        }
+      }
+    },
+    "/DESIGN/SRC/AIK-SRC2K/SUEQ": {
+      "868": {
+        "LC_AXIAL": 1.2,
+        "LC_MOMENT": 1.2,
+        "LC_SHEAR": 1.2,
+        "LCOM_AXIAL": 1.2,
+        "LCOM_MOMENT": 1.2,
+        "LCOM_SHEAR": 1.2
+      },
+      "874": {
+        "LC_SHEAR": 1.2,
+        "LCOM_AXIAL": 1.2,
+        "LCOM_MOMENT": 1.2,
+        "LCOM_SHEAR": 1.2
+      }
+    },
+    "/DESIGN/SRC/AIK-SRC2K/MBTP": {
+      "868": {
+        "TYPE": "BRACE"
+      },
+      "874": {
+        "TYPE": "COLUMN"
+      }
+    },
+    "/DESIGN/SRC/AIK-SRC2K/EQCT": {
+      "868": {
+        "TYPE": "Special Seismic Loads"
+      },
+      "874": {
+        "TYPE": "Vertical Seismic Forces"
+      }
+    },
+    "/DESIGN/SRC/AIK-SRC2K/MATD": {
+      "5": {
+        "STEEL": {
+          "CODE": "Standard",
+          "STANDARD_CODE": "KS22(S)",
+          "GRADE": "SM275TMC"
+        },
+        "CONCRETE": {
+          "CODE": "Standard",
+          "STANDARD_CODE": "KS19(RC)",
+          "GRADE": "C65"
+        },
+        "REINFORCEMENT": {
+          "CODE": "Standard",
+          "STANDARD_CODE": "KS19(RC)",
+          "MAIN_REBAR_GRADE": "SD700",
+          "SUB_REBAR_GRADE": "SD700"
+        }
+      }
+    },
+    "/DESIGN/SRC/AIK-SRC2K/MCRD": {
+      "4": {
+        "MAIN_BAR": {
+          "USE_REBAR_SPACE": true,
+          "REBAR_SPACE": 0,
+          "NUM": 4,
+          "NAME": "D4",
+          "ROW": 2,
+          "DO": 0.05
+        },
+        "SHEAR_BAR": {
+          "NAME": "D4",
+          "DIST": 300
+        }
+      }
+    },
+    "/DESIGN/SRC/AIK-SRC2K/MEMB": {
+      "1": {
+        "AELEM": [
+          859,
+          860,
+          861
+        ],
+        "bREVERSE": true
+      },
+      "2": {
+        "AELEM": [
+          883,
+          868
+        ],
+        "bREVERSE": true
+      }
+    },
+    "/DESIGN/SRC/AIK-SRC2K/MRBD": {
+      "3": {
+        "DT": 0.1,
+        "DB": 0.1,
+        "SHEAR_BAR": "D4",
+        "BAR_SECTOR_I": {
+          "STIRRUP_SPACE": 150,
+          "STIRRUP_NUM": 2,
+          "TOP": {
+            "LAYER1": {
+              "NAME": "D32",
+              "NUM": 2
+            },
+            "LAYER2": {
+              "NAME": "D32",
+              "NUM": 2
+            }
+          },
+          "BOT": {
+            "LAYER1": {
+              "NAME": "D35",
+              "NUM": 1
+            },
+            "LAYER2": {
+              "NAME": "D35",
+              "NUM": 3
+            }
+          }
+        },
+        "BAR_SECTOR_M": {
+          "STIRRUP_SPACE": 150,
+          "TOP": {
+            "LAYER1": {
+              "NAME": "D43",
+              "NUM": 1
+            }
+          },
+          "BOT": {
+            "LAYER1": {
+              "NAME": "D43",
+              "NUM": 2
+            }
+          }
+        },
+        "BAR_SECTOR_J": {
+          "STIRRUP_SPACE": 150,
+          "TOP": {
+            "LAYER1": {
+              "NAME": "D51",
+              "NUM": 2
+            }
+          },
+          "BOT": {
+            "LAYER1": {
+              "NAME": "D43",
+              "NUM": 2
+            }
+          }
+        }
+      }
+    }
+  }
+}

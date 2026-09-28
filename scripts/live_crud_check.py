@@ -4160,6 +4160,179 @@ def _extras20_cases() -> List[Case]:
 _IMFM_M1_CONCRETE = {"UN_CONC_NAME": "Conc_Kent&Park", "CONF_CONC_NAME": "Conc_Mander_Type1"}
 
 
+def _design_resources() -> Dict[str, Any]:
+    """Every /DESIGN resource class, by endpoint, from the three chapters' modules."""
+    import inspect
+
+    from midas_nx.db.base import DbResource
+    from midas_nx.design import src_aiksrc2k, steel_kds
+    from midas_nx.design.rc_kds import checks, design_forces, rebar, setup
+
+    found: Dict[str, Any] = {}
+    for module in (setup, rebar, checks, design_forces, steel_kds, src_aiksrc2k):
+        for _, obj in inspect.getmembers(module, inspect.isclass):
+            if issubclass(obj, DbResource) and str(getattr(obj, "ENDPOINT", "")).startswith("/DESIGN/"):
+                found[obj.ENDPOINT] = obj
+    return found
+
+
+def _design_example(endpoint: str, key: str) -> Dict[str, Any]:
+    """One record of a /DESIGN section's first Request example, as printed."""
+    path = Path(__file__).parent / "fixtures" / "design_manual_examples.json"
+    examples = json.loads(path.read_text(encoding="utf-8"))["examples"]
+    return copy.deepcopy(examples[endpoint][key])
+
+
+_RC = "/DESIGN/RC/KDS-41-20-2022"
+_STEEL = "/DESIGN/STEEL/KDS-41-30-2022"
+_SRC = "/DESIGN/SRC/AIK-SRC2K"
+
+#: (endpoint, item id, example record the create takes, update overrides,
+#: probe key, expected created, expected updated, products).
+#:
+#: Every create is a manual Request example record as printed. Every update
+#: changes one key to a value the manual itself gives: another record of the
+#: same example, an enum value from the Specifications table, or the table's
+#: stated default. An element-keyed table takes the base model's beam element
+#: 2 (the example's own ids name elements this model does not have), a
+#: singleton its example's id 1. Where the update takes a key the create does
+#: not send, the expected created value is the table's stated default.
+_BOTH = ("gen", "civil")
+_DESIGN_TABLE_CASES: List[Tuple[str, int, str, Dict[str, Any], str, Any, Any, Tuple[str, ...]]] = [
+    # RC, KDS 41 20 : 2022 (26_Design_RC_KDS41202022.md)
+    (f"{_RC}/DCO", 1, "1", {"SEISMIC_PROV": False}, "SEISMIC_PROV", True, False, ("gen",)),
+    (f"{_RC}/DCTL", 1, "1", {"DT": "3D"}, "DT", "XZ", "3D", _BOTH),
+    (f"{_RC}/DFBA", 2, "859", {"FORCE_TYPE": "Member Forces"}, "FORCE_TYPE",
+     "Subdivided Forces", "Member Forces", _BOTH),
+    (f"{_RC}/FMAG", 2, "915", {"B2Y_DELTA_SY": 1.3}, "B2Y_DELTA_SY", 1, 1.3, _BOTH),
+    (f"{_RC}/KFAC", 2, "859", {"Ky": 2}, "Ky", 1, 2, _BOTH),
+    (f"{_RC}/LENG", 2, "891", {"LB": 1, "bNOTUSE": True, "LT": 1}, "bNOTUSE", False, True, _BOTH),
+    (f"{_RC}/LLRF", 1, "1", {"APPLIED_COMP": ["MOMENTS"]}, "APPLIED_COMP",
+     ["AXIAL"], ["MOMENTS"], _BOTH),
+    (f"{_RC}/LMRR", 1, "1", {"RHOW": 0.03}, "RHOW", 0.04, 0.03, _BOTH),
+    (f"{_RC}/MATD", 1, "1", {"REBAR.MAIN_REBAR_GRADE": "SD500"}, "REBAR.MAIN_REBAR_GRADE",
+     "SD400S", "SD500", ("gen",)),
+    (f"{_RC}/MLLR", 2, "922", {"FACTOR": 0.9}, "FACTOR", 1, 0.9, _BOTH),
+    (f"{_RC}/PMDM", 1, "915", {"CALC_METHOD": "M/P"}, "CALC_METHOD", "P", "M/P", _BOTH),
+    (f"{_RC}/REXC", 2, "17", {"EXPOSURE": "Etc"}, "EXPOSURE", "Dry", "Etc", _BOTH),
+    (f"{_RC}/SDGN", 2, "1", {"NTYPE": "Non-Seismic"}, "NTYPE", "Seismic", "Non-Seismic", _BOTH),
+    (f"{_RC}/SRDF", 1, "1", {"PHI_T": 0.85}, "PHI_T", 0.8, 0.85, _BOTH),
+    (f"{_RC}/ULCT", 2, "885", {"bUNDERLOADTYPE": False}, "bUNDERLOADTYPE", True, False, ("gen",)),
+    (f"{_RC}/WMAK", 1, "1", {"MARKNAME": "W200_RENAMED"}, "MARKNAME", "W200", "W200_RENAMED",
+     _BOTH),
+    # Steel, KDS 41 30 : 2022 (25_Design_Steel_KDS41302022.md)
+    (f"{_STEEL}/CBFT", 2, "915", {"AUTO_CAL": False, "VALUE": 1.2}, "AUTO_CAL", True, False,
+     _BOTH),
+    (f"{_STEEL}/CMFT", 2, "1069", {"CMY": 0.72, "CMZ": 0.85}, "CMY", 0.7, 0.72, _BOTH),
+    (f"{_STEEL}/DCO", 1, "1", {"COMB_RATIO": 0}, "COMB_RATIO", 1, 0, _BOTH),
+    (f"{_STEEL}/DCTL", 1, "1", {"DT": "3D"}, "DT", "XZ", "3D", _BOTH),
+    (f"{_STEEL}/EQCT", 2, "1066", {"TYPE": "Vertical Seismic Forces"}, "TYPE",
+     "Special Seismic Loads", "Vertical Seismic Forces", _BOTH),
+    (f"{_STEEL}/FMAG", 2, "915", {"B2Y_DELTA_SY": 1.3}, "B2Y_DELTA_SY", 1, 1.3, _BOTH),
+    (f"{_STEEL}/KFAC", 2, "859", {"Ky": 2}, "Ky", 1, 2, _BOTH),
+    (f"{_STEEL}/LENG", 2, "891", {"LB": 1, "bNOTUSE": True, "LT": 1}, "bNOTUSE", False, True, _BOTH),
+    (f"{_STEEL}/LTSR", 2, "1067", {"bNOTCHECK": True}, "bNOTCHECK", False, True, _BOTH),
+    (f"{_STEEL}/MBTP", 2, "934", {"TYPE": "COLUMN"}, "TYPE", "BRACE", "COLUMN", _BOTH),
+    (f"{_STEEL}/MLLR", 2, "922", {"FACTOR": 0.9}, "FACTOR", 1, 0.9, _BOTH),
+    (f"{_STEEL}/SERV", 2, "915", {"DEFLECT_CONTROL": 500}, "DEFLECT_CONTROL", 400, 500, _BOTH),
+    (f"{_STEEL}/SLRS", 2, "915", {"FRAME_TYPE": "Ordinary Concentrically Braced Frames"},
+     "FRAME_TYPE", "Special Concentrically Braced Frames",
+     "Ordinary Concentrically Braced Frames", _BOTH),
+    (f"{_STEEL}/SRDF", 1, "1", {"PHI_T1": 0.9}, "PHI_T1", 0.75, 0.9, _BOTH),
+    (f"{_STEEL}/SUEQ", 2, "934", {"LC_AXIAL": 1.2}, "LC_AXIAL", 1, 1.2, _BOTH),
+    (f"{_STEEL}/ULCT", 2, "885", {"bUNDERLOADTYPE": False}, "bUNDERLOADTYPE", True, False,
+     ("gen",)),
+    # SRC, AIK-SRC2K (27_Design_SRC_AIKSRC2K.md)
+    (f"{_SRC}/CMFT", 2, "885", {"OPT_AUTO": True}, "OPT_AUTO", False, True, _BOTH),
+    (f"{_SRC}/DCO", 1, "1", {"SEISMIC": False}, "SEISMIC", True, False, _BOTH),
+    (f"{_SRC}/DCTL", 1, "1", {"DT": "3D"}, "DT", "XZ", "3D", _BOTH),
+    (f"{_SRC}/EQCT", 2, "868", {"TYPE": "Vertical Seismic Forces"}, "TYPE",
+     "Special Seismic Loads", "Vertical Seismic Forces", _BOTH),
+    (f"{_SRC}/FMAG", 2, "868", {"B2Y_DELTA_SY": 1.3}, "B2Y_DELTA_SY", 1, 1.3, _BOTH),
+    (f"{_SRC}/KFAC", 2, "868", {"Ky": 2}, "Ky", 1, 2, _BOTH),
+    (f"{_SRC}/LENG", 2, "868", {"LZ": 1}, "LZ", 2, 1, _BOTH),
+    (f"{_SRC}/LTSR", 2, "868", {"bNOTCHECK": True}, "bNOTCHECK", False, True, _BOTH),
+    (f"{_SRC}/MBTP", 2, "868", {"TYPE": "COLUMN"}, "TYPE", "BRACE", "COLUMN", _BOTH),
+    (f"{_SRC}/MLLR", 2, "868", {"FACTOR": 0.9}, "FACTOR", 1, 0.9, _BOTH),
+    (f"{_SRC}/SUEQ", 2, "874", {"LC_AXIAL": 1.2}, "LC_AXIAL", 1, 1.2, _BOTH),
+]
+
+
+#: Which products each case has passed on through both harnesses. A case
+#: missing here, or a product missing from its set, stays unconfirmed; the
+#: reasons are in docs/live_verification_notes.md (2026-09-28). Two families
+#: of reason: the singletons whose DELETE restores defaults instead of
+#: removing the record (DCTL, LLRF, LMRR, MATD, SRDF), which this checker's
+#: delete step reads as a failure; and on Civil the tables that need design
+#: control data, which Civil will not take because it refuses the RC and
+#: steel design-code selections themselves.
+_DESIGN_CONFIRMED: Dict[str, Set[str]] = {
+    f"{_RC}/DCO": {"gen"},
+    f"{_RC}/DFBA": {"civil", "gen"},
+    f"{_RC}/FMAG": {"civil", "gen"},
+    f"{_RC}/KFAC": {"civil", "gen"},
+    f"{_RC}/LENG": {"civil", "gen"},
+    f"{_RC}/MLLR": {"civil", "gen"},
+    f"{_RC}/PMDM": {"civil", "gen"},
+    f"{_RC}/REXC": {"civil", "gen"},
+    f"{_RC}/SDGN": {"civil", "gen"},
+    f"{_RC}/ULCT": {"gen"},
+    f"{_RC}/WMAK": {"civil", "gen"},
+    f"{_SRC}/CMFT": {"civil", "gen"},
+    f"{_SRC}/DCO": {"civil", "gen"},
+    f"{_SRC}/EQCT": {"civil", "gen"},
+    f"{_SRC}/FMAG": {"civil", "gen"},
+    f"{_SRC}/KFAC": {"civil", "gen"},
+    f"{_SRC}/LENG": {"civil", "gen"},
+    f"{_SRC}/LTSR": {"civil", "gen"},
+    f"{_SRC}/MBTP": {"civil", "gen"},
+    f"{_SRC}/MLLR": {"civil", "gen"},
+    f"{_SRC}/SUEQ": {"civil", "gen"},
+    f"{_STEEL}/CBFT": {"civil", "gen"},
+    f"{_STEEL}/CMFT": {"civil", "gen"},
+    f"{_STEEL}/DCO": {"gen"},
+    f"{_STEEL}/EQCT": {"civil", "gen"},
+    f"{_STEEL}/FMAG": {"civil", "gen"},
+    f"{_STEEL}/KFAC": {"civil", "gen"},
+    f"{_STEEL}/LENG": {"civil", "gen"},
+    f"{_STEEL}/LTSR": {"civil", "gen"},
+    f"{_STEEL}/MBTP": {"civil", "gen"},
+    f"{_STEEL}/MLLR": {"civil", "gen"},
+    f"{_STEEL}/SERV": {"civil", "gen"},
+    f"{_STEEL}/SLRS": {"civil", "gen"},
+    f"{_STEEL}/SUEQ": {"civil", "gen"},
+    f"{_STEEL}/ULCT": {"gen"},
+}
+
+
+def _dig(record: Any, dotted: str) -> Any:
+    for part in dotted.split("."):
+        record = record.get(part) if isinstance(record, dict) else None
+    return record
+
+
+def _design_table_cases() -> List[Case]:
+    resources = _design_resources()
+    cases = []
+    for endpoint, item_id, key, overrides, probe, created, updated, products in _DESIGN_TABLE_CASES:
+        create = _design_example(endpoint, key)
+        update = copy.deepcopy(create)
+        for dotted, value in overrides.items():
+            *parents, leaf = dotted.split(".")
+            target = update
+            for part in parents:
+                target = target[part]
+            target[leaf] = value
+        for product in products:
+            cases.append(Case(
+                resources[endpoint], copy.deepcopy(create), copy.deepcopy(update),
+                lambda p, path=probe: _dig(p, path), created, updated,
+                item_id=item_id, products=(product,),
+                confirmed=product in _DESIGN_CONFIRMED.get(endpoint, set()),
+            ))
+    return cases
+
+
 def _extras17_cases() -> List[Case]:
     """Task A pushover cases using ch14's documented wire values only.
 
@@ -4919,6 +5092,7 @@ TIERS: List[Tier] = [
     Tier("extras18", "batch 18: Task A ch07 tendon chain (TDNT -> TDNA -> TDPL)", _extras18_seeds, _extras18_cases),
     Tier("extras19", "Task P: ch07 pretension load on a truss element", _extras19_seeds, _extras19_cases),
     Tier("extras20", "fiber chain: article FIMP records, IMFM material link, FIBR division", _extras20_seeds, _extras20_cases),
+    Tier("design_tables", "ch25-27 design-parameter tables (RC, steel, SRC) from the manual's own examples", _no_seeds, _design_table_cases),
 ]
 
 
