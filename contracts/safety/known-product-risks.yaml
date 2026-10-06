@@ -297,7 +297,15 @@ risks:
       product itself created may be a precondition; that has not been tested.
       /db/REBB's field names rest on the /info schema and the article's own
       example rather than on a round trip.
+
+      2026-10-04: MIDASIT revised all three articles on 2026-09-28 to the
+      short-key generation /info already declares. Their new examples, sent
+      byte for byte on Gen (Build 09/24/2026) to a scratch beam section,
+      column section and two-storey wall, answer Unknown Error as before -
+      also as PUT, with ID 1, and on REBW with vSTORY_KEY [1] or
+      vSTORY_NAME ["1F"]. A beam design run (BD-ANAL) creates no REBB or REBC
+      row to edit, so the product-created-row idea is not satisfied that way.
     firstObserved: "2026-08-27"
-    lastChecked: "2026-09-27"
+    lastChecked: "2026-10-04"
     evidence:
       - docs/live_verification_notes.md

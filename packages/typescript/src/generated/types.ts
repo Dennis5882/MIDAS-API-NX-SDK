@@ -10430,11 +10430,11 @@ export namespace DbPropertiesMaterialTypes {
     MAINREBAR_B_FY?: number;
     /** Sub Rebar (fy) */
     SUBREBAR_B_FY?: number;
-    /** (추정) 사용성 검토 여부 ⚠️표·예제에 근거 없음 (스키마 설명 ServiceabilityCheck) */
+    /** Modulus of Elasticity Ratio Input Option */
     bSERVCHECK?: boolean;
-    /** (추정) 단기 계수 ⚠️표·예제에 근거 없음 (스키마 설명 ShortTerm) */
+    /** Short-Term Ratio of Modulus of Elasticity */
     dSHORTTERM?: number;
-    /** (추정) 장기 계수 ⚠️표·예제에 근거 없음 (스키마 설명 LongTerm) */
+    /** Long-Term Ratio of Modulus of Elasticity */
     dLONGTERM?: number;
   }
   /** Generated from contracts/endpoints/. */

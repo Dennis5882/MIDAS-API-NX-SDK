@@ -5011,3 +5011,115 @@ records:
     each answered error failed:Rebar at once and the session stayed alive; their TABLE calls returned headers
     with no rows and their REPORT calls No design results found. A check needs rebar data, and no REB* write
     has been made to work. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-10-04-1
+  endpoints:
+  - /db/MATD
+  date: '2026-10-04'
+  level: write
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build 09/24/2026
+  outcome: success
+  method: Re-measured after the manual's 2026-10-04 sync gave bSERVCHECK, dSHORTTERM and dLONGTERM official rows
+    with bSERVCHECK defaulting to true. On a /doc/NEW document with the harness base model, material 1 read
+    bSERVCHECK false with both ratios 0; PUTs of the confirmed case's update record without the three keys left
+    the stored values alone (false and 1.25/1.5 survived one); PUTs with them stored true or false and the ratios
+    as sent. The documented default is not what the product applies. Evidence in docs/live_verification_notes.md.
+- id: ledger-read-2026-10-04-2
+  endpoints:
+  - /db/REBB
+  - /db/REBC
+  - /db/REBW
+  date: '2026-10-04'
+  level: read
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build 09/24/2026
+  outcome: write_rejected
+  method: MIDASIT's 2026-09-28 revised examples sent byte for byte, record key moved onto a scratch model (beam
+    section 2, column section 1, wall 1 of two WALL elements, stories 1F/2F/Roof, DCON KCI-USD12) - each answered
+    HTTP 201 Unknown Error and stored nothing, also as PUT, with ID 1, and on REBW with vSTORY_KEY or vSTORY_NAME.
+    On a solved model after BD-ANAL neither REBB nor REBC held a row, and the same PUTs answered Unknown Error.
+    Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-10-04-3
+  endpoints:
+  - /db/MATD
+  date: '2026-10-04'
+  level: write
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build 09/24/2026
+  outcome: success
+  method: The Gen measurement of ledger-write-2026-10-04-1 repeated on Civil. The confirmed case's update record
+    was stored (its rebar strengths read back), but bSERVCHECK, dSHORTTERM and dLONGTERM never appeared in a GET -
+    not on the fresh document and not after PUTs carrying true or false with 1.25/1.5 - although each PUT echoed
+    them. As on Build 09/15/2026, Civil accepts the three keys without storing them. Evidence in
+    docs/live_verification_notes.md.
+- id: ledger-read-2026-10-06-1
+  endpoints:
+  - /doc/NEW
+  date: '2026-10-06'
+  level: read
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build 09/24/2026
+  outcome: crash_or_hang
+  method: Start of a vendor-report re-verification. The open document was confirmed empty (NODE, ELEM, STLD
+    each {"message":""}); a /doc/SAVEAS checkpoint to C:/temp was written (on disk); three GETs answered
+    (/DESIGN/RC/KDS-41-20-2022/DCTL 200, /info/DESIGN/RC/KDS-41-20-2022/DCTL 404, /info/db/NODE 200). The next
+    /doc/NEW did not answer in 60 s, every /db/NODE GET after it timed out while /mapikey/verify answered
+    connected, and the author found Gen NX dead and restarted it. An empty document, unlike the 2026-07-26 crash
+    on a 710-node model. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-10-06-2
+  endpoints:
+  - /db/NODE
+  - /db/STLD
+  - /db/CONS
+  - /db/SECF
+  - /db/MVHL
+  - /db/STBK
+  - /db/TDMT
+  - /db/SPLC
+  - /db/STCT
+  date: '2026-10-06'
+  level: write
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build 09/24/2026
+  outcome: success
+  method: Vendor report v1.5 re-verification after the restart that followed ledger-read-2026-10-06-1, on
+    scratch documents seeded by live_crud_check's base model, payloads from schema/live-cases.json and
+    live_manual_feedback.py. A-2 (per-id DELETE /db/NODE/6 took one node and one element; body-form DELETE
+    emptied STLD and then NODE with every element), A-3 CONS/SECF/MVHL/SPLC/STCT, A-4, A-6 (NOT-A-CODE Wrong
+    Field, Russian input data contain errors) and A-9 STBK all reproduced as in the report. STCT stored the
+    POST without iITER/TOL. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-10-06-3
+  endpoints:
+  - /db/NODE
+  - /db/STLD
+  - /db/CONS
+  - /db/SECF
+  - /db/MVHL
+  - /db/STBK
+  - /db/POSL
+  - /db/TDMT
+  - /db/STCT
+  - /doc/SAVEAS
+  - /doc/OPEN
+  date: '2026-10-06'
+  level: write
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build 09/24/2026
+  outcome: success
+  method: The same re-verification on Civil, plus A-9 POSL (CODE "" Wrong Field, accepted without it), A-7 (SAVEAS
+    into C:/Program Files answered command complete, no file on disk, OPEN answered path is wrong) and the first
+    Civil measurement of A-3 STCT - a PUT of the record the first POST /db/STAG creates, with iINC_NLA 0 and
+    then 1, echoed iITER and TOL and stored neither while the other fields were kept. Evidence in
+    docs/live_verification_notes.md.

@@ -11945,3 +11945,144 @@ then each call with a short timeout and a liveness check. Nothing hung.
 Ledger `ledger-write-2026-09-29-9` (the three ANALs), `ledger-read-2026-09-29-10`
 (TABLEs), `-11` (REPORTs), `-12` (the refused checks); session
 `design-functions-2026-09-29`.
+
+## 2026-10-04 (manual sync) - MIDASIT's REB* revision, /db/MATD's new rows, and what the product says
+
+The manual repo's 2026-10-04 sync (`69c3b5b`) touched four chapters. Ch09
+(SPLC `ALONG`) and ch25 (DSTL `maxProperties` gone from the official schema)
+are text the contracts already agree with. Two needed the products.
+
+**Ch24 REBB/REBC/REBW** were rewritten to MIDASIT's 2026-09-28 revision of
+all three articles, which moved them to the short-key generation the
+server's `/info` already declares - the same field set the SDK's contracts
+carry. The one name still different is REBW's story list: the revision
+writes `vSTORY_KEY` (integers), `/info` `vSTORY_NAME` (strings). Gen NX,
+Build 09/24/2026, scratch model: beam section 2, column section 1, wall 1
+of two `WALL` elements, stories 1F/2F/Roof, `DCON` `KCI-USD12`.
+
+| Body | Answer |
+| --- | --- |
+| REBB revised example, key 2 | 201 `Unknown Error`, nothing stored |
+| REBC revised example, key 1 | 201 `Unknown Error`, nothing stored |
+| REBW revised example, key 1 (no story key) | 201 `Unknown Error` |
+| REBW + `vSTORY_KEY: [1]` / + `vSTORY_NAME: ["1F"]` | `Unknown Error` both |
+| REBB with `ID: 1`; REBB as PUT | `Unknown Error` both |
+
+Then one idea from the REBB risk entry, that the product needs a row it
+created itself: on a solved RC frame, `BD-ANAL` ran (`success`) but neither
+`/db/REBB` nor `/db/REBC` held a row afterwards, and the revised examples
+as PUT still answered `Unknown Error`; the RC checks stayed at
+`failed:Rebar`. In that frame - column 1 framing into beam 2 -
+`CD-ANAL` answered `failed:BeamData`, where the lone column on 2026-09-29
+answered `success`.
+
+So the revision changes the documentation and not the product. The REBC
+class docstring's "full CRUD confirmed 2026-08-27" was measured on a model
+this file does not describe and has not been reproduced on a scratch model
+since; the docstring now says so.
+
+**Ch04 `/db/MATD`** gained official rows for `bSERVCHECK` (Modulus of
+Elasticity Ratio Input Option, default `true`), `dSHORTTERM` and
+`dLONGTERM` (short- and long-term ratios), all Optional. Contract updated
+from the table; npm's JSDoc changes with it. Measured on Gen:
+
+| Step | `bSERVCHECK` / `dSHORTTERM` / `dLONGTERM` read back |
+| --- | --- |
+| fresh document, base model's C24 | `false` / 0 / 0 |
+| PUT of the confirmed case's record, the three omitted | `false` / 0 / 0 |
+| PUT `false`, 1.25, 1.5 | `false` / 1.25 / 1.5 |
+| PUT omitting them again | `false` / 1.25 / 1.5 - kept |
+| PUT `true`, 1.25, 1.5 | `true` / 1.25 / 1.5 |
+
+The documented default `true` is not what the product holds or applies:
+omitting the key keeps the stored value. Recorded under the contract's
+`manualDefects`.
+
+Civil NX, once its MAPI connection was back (it had answered
+`404 client does not exist` after the restart; the key was unchanged): the
+same steps, and **none of the three keys appears in any GET** - not on the
+fresh document, not after a PUT with `false` or `true` and 1.25/1.5 - while
+every PUT echoes them back. Unchanged from Build 09/15/2026: Civil accepts
+the keys and keeps nothing a caller can read.
+
+Ledger `ledger-write-2026-10-04-1` (MATD, Gen), `ledger-read-2026-10-04-2`
+(the refused REB* writes) and `ledger-write-2026-10-04-3` (MATD, Civil).
+
+## 2026-10-06 - `/doc/NEW` killed Gen NX on an empty document
+
+Gen NX 2026 v2.2, Build 09/24/2026, at the start of a vendor-report
+re-verification. The sequence, all on one connection:
+
+| Call | Answer |
+| --- | --- |
+| `GET /db/NODE`, `/db/ELEM`, `/db/STLD` | `{"message":""}` each - empty document |
+| `POST /doc/SAVEAS` `C:/temp/rv1006-pre-gen.mgbx` | completed; the file is on disk (NX host = this machine) |
+| `GET /DESIGN/RC/KDS-41-20-2022/DCTL` | 200 `{"message": ""}` |
+| `GET /info/DESIGN/RC/KDS-41-20-2022/DCTL` | 404 (A-8, unchanged) |
+| `GET /info/db/NODE` | 200, the schema |
+| `POST /doc/NEW` | **no answer in 60 s** |
+
+Afterwards `/mapikey/verify` answered `connected` while `GET /db/NODE` timed
+out, and the author found Gen NX dead and restarted it. No dialog text was
+read.
+
+This is the sequence every destructive harness opens with - checkpoint, then
+`/doc/NEW` - and it has run hundreds of times since 2026-07-26 without
+incident, including on this build on 2026-09-27 (180 invocations) and
+2026-10-04. The 2026-07-26 crash (above) was on a 710-node analyzed model and
+pointed at document teardown; this document was empty, so size is not the
+whole story. The only calls here that the harness does not make before its
+`/doc/NEW` are the three GETs, and a GET of a `/DESIGN` table and two `/info`
+reads are not a plausible trigger on the record so far. One occurrence;
+cause unknown. Ledger `ledger-read-2026-10-06-1`.
+
+## 2026-10-06 (later) - the vendor report re-measured on Build 09/24/2026, minus the crash forms
+
+After the restart, the items the report still dated to Build 09/15/2026, on
+both products: each document confirmed empty with its own key, checkpointed to
+`C:/temp`, `/doc/NEW`, `_seed_model`, the fixture's own seeds where a case
+needs them (`mvcd` + `vehicle` for MVHL, `tdmt_seed`, `hecb_seed` +
+`stage11_seed` for STCT), every answer printed, empty documents at the end.
+Left out by the author's scope: the crash forms (A-5's kill window, Civil
+`CD-ANAL`), and Gen's half of A-7, which blocks the session when it
+reproduces.
+
+| Item | Gen | Civil |
+| --- | --- | --- |
+| A-2 | per-id `DELETE /db/NODE/6`: NODE 10->9, ELEM 4->3; body-form STLD 2->0; body-form NODE 9->0 with ELEM 3->0 | identical |
+| A-3 `/db/CONS` | 8 chars echoed, 7 stored; 6 chars refused | identical |
+| A-3 `/db/SECF` | key 4 (no such section) echoed whole, GET `{"message": ""}` | identical |
+| A-3 `/db/MVHL` | `NOT-A-VEHICLE` stored verbatim | identical |
+| A-3 `/db/SPLC` | POST `ALONG` 2.5 stored; PUT 3.5 echoed; GET 2.5 | (Gen-only block) |
+| A-3 `/db/STCT` | POST echoed `iITER` 50 / `TOL` 0.02; GET has neither | **first measured**: PUT of the STAG-created record, same - and again with `iINC_NLA: 1` |
+| A-4 | refusals under 201; `/db/STCT` PUT refusal under 200 | refusals under 201 |
+| A-6 `/db/TDMT` | `NOT-A-CODE` -> `Wrong Field`; `Russian` -> `input data contain errors` | identical |
+| A-7 | not run | SAVEAS to `C:/Program Files/` -> `command complete`; no file on disk; OPEN -> `path is wrong`; the `C:/temp` copy reopens with 10 nodes |
+| A-8 | `/DESIGN/...DCTL` 200, its `/info` 404 | same, and the IEHG trio's `/info` 404 |
+| A-9 | `/db/STBK` accepts `LCNAME`, neither response nor GET carries it | same; `/db/POSL` `CODE: ""` -> `Wrong Field`, without it created; Civil `/info` still declares 8 properties incl. `CODE` |
+
+Everything the report claims reproduced. What is new:
+
+- **`/db/STCT`'s Civil half is measured, and matches Gen.** On Civil the
+  first `POST /db/STAG` creates STCT id 1 (as recorded 2026-09-27), so the
+  probe PUT that record. `iITER`/`TOL` came back in the response and were
+  absent from the GET, while `bLAST_FINAL`, `FINAL_STAGE`, `CPFC`, `bCONV`,
+  `bTRUSS`, `bBEAM`, `bCAMBER`, `bCHANGE_CABLE`, `iNLA_TYPE` were stored. With
+  `iINC_NLA: 1` the record gains `iLSTEP`, `bENEG`, `bDISP`, `bFORC`,
+  `DV`/`FV`/`EV`, `bIEMF` and loses the creep/time-step keys - and still has
+  no `iITER`/`TOL`. Both products' `/info` declare both. The report's v1.4
+  guess (Accumulative `iNLA_TYPE` ignoring Linear-only fields) is withdrawn:
+  this payload sends `iNLA_TYPE: 0`.
+- **Gen's STCT record is shorter than Civil's.** For the same fixture payload
+  Gen reads back ten keys; the five booleans above are absent there too. On
+  2026-09-18, with the manual's payload (`iNLA_TYPE: 1`), Gen kept them. Gen
+  refuses `iINC_NLA: 1` without `iLSTEP` (`Item:Number of Load Steps`), which
+  Civil fills with 1. Not isolated; kept out of the report.
+- **`/db/POSL` on Civil stores `FA` 1.4 / `FV` 1.5 for a POST of 1.0 / 1.4**,
+  echoing 1.0 / 1.4. Plausibly the code's site coefficients for `S2` at
+  `SRF` 0.22, derived by design; held in the triage as an observation.
+- `/db/TDMT` with `CODE: "European"` and nothing but `NAME` is accepted and
+  stored as `{"NAME", "CODE": "EUROPEAN"}` - so "input data contain errors"
+  depends on the code, as the 2026-07-26 table already implies.
+
+Ledger `ledger-write-2026-10-06-2` (Gen) and `-3` (Civil).

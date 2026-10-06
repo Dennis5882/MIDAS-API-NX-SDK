@@ -27,8 +27,8 @@ scoreboard.
   changelog's `Unreleased` holds two optional members from `/info`
   (`CONTRIBUTION_FACTOR`, `USE_HAMBLY_EQ`); nothing is released with them yet,
   and `src/midas_nx/` has not changed.
-- **Coverage: 400/400 implemented, 277 write / 123 read.** Of the 225 `/db`
-  endpoints, 192 are write-level and 33 are not.
+- **Coverage: 400/400 implemented, 278 write / 122 read.** Of the 225 `/db`
+  endpoints, 193 are write-level and 32 are not.
 - **Fixture (`schema/live-cases.json`, version 6):** 336 cases over 259
   endpoints; 296 confirmed over 236 endpoints; 9 base-model steps; 81 named
   seeds; 0 unsupported.
@@ -63,7 +63,7 @@ python scripts/report_npm_replay_coverage.py --check   # 296 cases over 236
                                           # endpoints; every product: 296
 python scripts/check_verification_lag.py --check       # 40, ceiling 40
 python scripts/verification_ledger.py                  # 397 endpoints:
-                                          # 120 read, 277 write
+                                          # 119 read, 278 write
 python scripts/report_unmerged_tables.py --check       # exit 0
 python scripts/check_state_numbers.py --check          # OK; it checks this
                                           # block's own numbers too
@@ -71,7 +71,7 @@ cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 90 tests
 ```
 
-The manual repo is vendored at `253caa8`. If the drift or extraction check goes
+The manual repo is vendored at `69c3b5b`. If the drift or extraction check goes
 red, a sync landed upstream: deciding what a chapter's new text means is real
 work, and a line reference that no longer resolves can mean a table moved or
 that it changed.

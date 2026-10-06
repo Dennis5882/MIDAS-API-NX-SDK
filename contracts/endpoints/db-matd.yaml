@@ -214,11 +214,11 @@ fields:
     provenance: manual
   - key: bSERVCHECK
     description: >-
-      (추정) 사용성 검토 여부 ⚠️표·예제에 근거 없음 (스키마 설명 ServiceabilityCheck)
+      Modulus of Elasticity Ratio Input Option
     type: boolean
-    requirement: unstated
-    documentedDefault: null
-    documentedOptional: null
+    requirement: optional
+    documentedDefault: true
+    documentedOptional: true
     safeToOmit: unverified
     provenance: manual
     provenanceNote: >-
@@ -229,11 +229,11 @@ fields:
       products rather than being narrowed to Gen.
   - key: dSHORTTERM
     description: >-
-      (추정) 단기 계수 ⚠️표·예제에 근거 없음 (스키마 설명 ShortTerm)
+      Short-Term Ratio of Modulus of Elasticity
     type: number
-    requirement: unstated
+    requirement: optional
     documentedDefault: null
-    documentedOptional: null
+    documentedOptional: true
     safeToOmit: unverified
     provenance: manual
     provenanceNote: >-
@@ -244,11 +244,11 @@ fields:
       products rather than being narrowed to Gen.
   - key: dLONGTERM
     description: >-
-      (추정) 장기 계수 ⚠️표·예제에 근거 없음 (스키마 설명 LongTerm)
+      Long-Term Ratio of Modulus of Elasticity
     type: number
-    requirement: unstated
+    requirement: optional
     documentedDefault: null
-    documentedOptional: null
+    documentedOptional: true
     safeToOmit: unverified
     provenance: manual
     provenanceNote: >-
@@ -257,6 +257,24 @@ fields:
       from that GET, so Civil accepts this member without storing it. Both
       products' GET /info declare it, which is why it keeps the endpoint's
       products rather than being narrowed to Gen.
+
+manualDefects:
+  - describes: default
+    manualSays: >-
+      Since the 2026-09-28 official revision the Specifications table gives
+      `bSERVCHECK` (Modulus of Elasticity Ratio Input Option) the default `true`.
+    actual: >-
+      Gen NX, Build 09/24/2026, 2026-10-04: a fresh document's concrete
+      material reads `bSERVCHECK: false` with `dSHORTTERM`/`dLONGTERM` 0, and a
+      PUT that omits the three keeps whatever is stored - `false` and
+      1.25/1.5 survived one - so omitting it never applies `true`. Sent
+      explicitly, `true` and `false` are both stored. Civil NX, same build and
+      day: the keys are absent from every GET - a fresh document's and after
+      PUTs carrying `true` or `false` with 1.25/1.5 - while each PUT echoes
+      them back, as on Build 09/15/2026; Civil holds no value for the
+      documented default to describe.
+    evidence: >-
+      docs/live_verification_notes.md, 2026-10-04 (manual sync).
 
 extraction:
   source: 04_DB_Properties.md line 2489

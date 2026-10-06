@@ -34,6 +34,10 @@ verification:
       ref: db-read-sweep-2026-08-17
     - product: gen
       ref: db-read-sweep-2026-08-17
+    - product: civil
+      ref: vendor-reverify-2026-10-06
+    - product: gen
+      ref: vendor-reverify-2026-10-06
 
 operations:
   - method: DELETE

@@ -480,7 +480,10 @@ class ColumnRebar(DbResource):
     #: confirmed independently twice (2026-07-29 sweep, then a live
     #: re-check the same day) — see db/base.py's GEN_ONLY docstring.
     #: Full CRUD confirmed live 2026-08-27 (POST->GET->PUT->DELETE->GET,
-    #: DELETE actually removes the record). Distinct from ch26's
+    #: DELETE actually removes the record). Not reproduced since: on scratch
+    #: models (2026-09-27, and 2026-10-04 with MIDASIT's revised example)
+    #: the same shape answers "Unknown Error" and stores nothing - see
+    #: contracts/safety/known-product-risks.yaml. Distinct from ch26's
     #: design.rc_kds.rebar.ModifyColumnRebarData
     #: (/DESIGN/RC/KDS-41-20-2022/REBC), a separate endpoint with the same
     #: short name.

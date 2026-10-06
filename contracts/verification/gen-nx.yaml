@@ -990,3 +990,22 @@ records:
       because the model has no rebar data.
     evidence:
       - docs/live_verification_notes.md
+  - id: vendor-reverify-2026-10-06
+    endpoints: ["/db/NODE", "/db/STLD", "/db/CONS", "/db/SECF", "/db/MVHL", "/db/STBK", "/db/TDMT", "/db/STCT", "/db/SPLC"]
+    date: "2026-10-06"
+    nxVersion: MIDAS Gen NX 2026 (v2.2), build 09/24/2026
+    level: write
+    outcome: success
+    method: >-
+      Vendor report v1.5 re-verification on scratch documents seeded by
+      live_crud_check's base model, payloads from schema/live-cases.json and
+      live_manual_feedback.py; /db/STCT after the fixture's hecb_seed and
+      stage11_seed, POSTed with iITER 50 and TOL 0.02, then a PUT with
+      iINC_NLA 1.
+    finding: >-
+      Every report item reproduced. /db/STCT stored the POST (FINAL_STAGE,
+      CPFC, iINC_NLA, iNLA_TYPE among ten keys read back) without iITER or
+      TOL, which the response echoed; the iINC_NLA 1 PUT was refused for want
+      of iLSTEP (Item:Number of Load Steps).
+    evidence:
+      - docs/live_verification_notes.md

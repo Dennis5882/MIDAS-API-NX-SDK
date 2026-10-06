@@ -23,6 +23,11 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ### Documentation
 
+- `MaterialModifyConcretePayload`'s (`/db/MATD`) `bSERVCHECK`, `dSHORTTERM` and
+  `dLONGTERM` carry MIDAS IT's own descriptions now that the official table
+  lists them (Modulus of Elasticity Ratio Input Option, Short-Term / Long-Term
+  Ratio of Modulus of Elasticity), replacing guesses from the schema's
+  property names. Types unchanged; JSDoc only.
 - The README's MAPI-key and quickstart links now point at an npm quickstart
   (English, Korean, Traditional Chinese) instead of the Python one, which
   opened with "Step 1: Install Python".

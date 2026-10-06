@@ -39,16 +39,17 @@ is easier to trust on what it kept.
 
 | id | what | last measured |
 | --- | --- | --- |
-| A-2 | `DELETE {endpoint}` with an ID-keyed `"Assign"` empties the whole table | **2026-09-21**, both products, on a dummy model |
-| A-3 | 10 endpoints where a write is accepted, echoed back and not stored | **2026-09-21**, except `/db/STCT` on Civil |
-| A-4 | error bodies under HTTP 200 / 201 | **2026-09-21**, seventeen observations in one batch |
+| A-2 | `DELETE {endpoint}` with an ID-keyed `"Assign"` empties the whole table | **2026-10-06**, Build 09/24/2026, both products, on a dummy model |
+| A-3 | 10 endpoints where a write is accepted, echoed back and not stored | **Build 09/24/2026**, all ten: CONS, MVHL, SECF, SPLC (Gen), STCT (both, Civil first measured) on 2026-10-06; MATD (Civil) 2026-10-04; SSEIS, SBDO, SINF, MVLDpl 2026-09-27 |
+| A-4 | error bodies under HTTP 200 / 201 | **2026-10-06**: every refusal that day under 201, `/db/STCT`'s under 200 |
 | A-5 | `/mapikey/verify` answers `connected` after the product is gone | **2026-09-21**, incidentally — it answered `connected` twice while Gen was held by a modal |
-| A-6 | `"Wrong Field"` means a bad value, not a bad field name | **2026-09-21** |
-| A-7 | a write to a path the account cannot write to blocks the session | **2026-09-21** on Gen; **did not reproduce on Civil**, see below |
-| A-8 | `/info` is not served for `/DESIGN/*` or the Hyper-S `IEHG` trio | **2026-09-21** |
-| A-9 | `/info` disagrees with the server in both directions | **2026-09-21**; see the correction below |
-| A-10 | 9 endpoints + `/db/RPSC` whose write path has never passed — **an ask, not a defect claim** | **2026-09-21**, each on the product that declares it |
-| B-1…B-5 | documentation items, each checked against the official article | 2026-07-27 / 2026-08-27 |
+| A-6 | `"Wrong Field"` means a bad value, not a bad field name | **2026-10-06**, both products (`NOT-A-CODE` / `Russian`) |
+| A-7 | a write to a path the account cannot write to blocks the session | Civil **2026-10-06** (same chain, absence checked on disk); Gen 2026-09-21 - not repeated, it blocks the session |
+| A-8 | `/info` is not served for `/DESIGN/*` or the Hyper-S `IEHG` trio | **2026-10-06**, both products |
+| A-9 | `/info` disagrees with the server in both directions | **2026-10-06**; see the correction below |
+| A-10 | 9 endpoints + `/db/RPSC` + REBB/REBC/REBW whose write path has never passed — **an ask, not a defect claim** | **Build 09/24/2026** (2026-09-27; REB* 2026-10-04 on Gen), each on the product that declares it |
+| B-1…B-3 | documentation items, each checked against the official article | 2026-07-27 |
+| B-4, B-5 | REBW / REBC articles vs the server | **resolved by MIDASIT's 2026-09-28 revision**, read from the Help Center API on 2026-10-06; one residue each (REBW `vSTORY_KEY` vs `/info` `vSTORY_NAME`; REBC's Parameters row spelling `"DO"` beside the schema's `D0`) |
 
 ### Re-verification debt
 
@@ -58,11 +59,10 @@ something a scratch model cannot supply:
 
 - **A-5's original form** — the *crash* window still needs the product killed
   and then polled. The modal-block form was measured on 2026-09-21.
-- **`/db/STCT` on Civil** — needs a model with **construction stages**. On a
-  bare seeded model `GET /db/STCT` answers `{"message": ""}` on both products,
-  so the PUT has no record to update. The Gen half reproduced
-  (`wrote 30, read back None`); the table is also POST/DELETE-locked once
-  staging is in use, which is a separate documented business rule.
+- ~~**`/db/STCT` on Civil**~~ — **cleared 2026-10-06** by a PUT of the record
+  the first `POST /db/STAG` creates: `iITER`/`TOL` echoed, absent from the GET,
+  with `iINC_NLA` 0 and 1 alike. The fixture case still POSTs on Civil and so
+  still cannot measure it; that is a fixture change nobody has made.
 
 **No build string was read on 2026-09-21.** The API reports none. A fresh
 GET-only `/info` sweep of both products matched the Build 09/15/2026 surface
@@ -127,7 +127,32 @@ reference wrong. A note in the report's change log records that it was
 reported, fixed and verified, which is worth the vendor's attention in a way a
 silent deletion is not.
 
+### Corrected in v1.5 (2026-10-06)
+
+- **A-3 `/db/STCT` and `/db/MVLDpl` were stated as both-product.** STCT's
+  Civil half had never been measured - it was then, on 2026-10-06, and it
+  reproduces, so the both-product wording is right now and was unearned in
+  v1.4. MVLDpl's case exists on Civil only. v1.4's explanation for STCT
+  (`iNLA_TYPE` 1, Accumulative) is withdrawn: the fixture payload sends 0 and
+  loses the same two fields.
+  Same lesson as the 2026-09-21 corrections: a product scope in the report has
+  to come from a ledger or case record, not from the batch it arrived with.
+- **A-10 said "identical on both products"** for a list that includes
+  Gen-only `/db/EPST`/`/db/EPSE` and Civil-only `/db/WVLD`.
+
 ## Held, with the reason
+
+### Civil `CD-ANAL` ending the session — one reproduction, trigger not isolated
+
+2026-09-29, Build 09/24/2026: `/DESIGN/RC/KDS-41-20-2022/CD-ANAL` on a solved
+Civil model with no RC design code (Civil refuses RC `DCO`) never answered, and
+Civil NX had to be restarted. Recorded as the known risk
+`design-rc-cd-anal-without-design-code-kills-civil`. It is a crash, which is
+the class of finding this report exists for, but it rests on **one run**, and
+whether the missing design code is the trigger is a guess. A-1 went in with 15
+reproductions and a root cause. Reproducing it means killing Civil again, so
+whether to spend that is the author's call; until then it stays out.
+
 
 ### `/db/FIMP`'s printed example — closed, not a vendor item
 
@@ -167,9 +192,32 @@ a technical one. It is left out until the author says otherwise. If it ever
 goes in, the internal tracker id does not: no `MAPI-nnnn` and no mention of
 MIDASIT's internal Jira belongs in anything shipped.
 
+### Two observations from 2026-10-06, not yet claims
+
+- **`/db/POSL` on Civil stores `FA` 1.4 / `FV` 1.5 for a POST of 1.0 / 1.4**,
+  and the POST response echoes 1.0 / 1.4. The stored values look like the
+  site coefficients a code table gives for `SC: "S2"` with `SRF: 0.22`, so the
+  server may be deriving them by design. That would still be the A-3
+  signature (the response says what was not stored), but whether the user
+  value is meant to be honoured has not been asked of any source.
+- **`/db/STCT` on Gen reads back only ten keys** for the fixture payload -
+  `bCONV`, `bTRUSS`, `bBEAM`, `bCAMBER`, `bCHANGE_CABLE` sent `true` are
+  absent as well as `iITER`/`TOL` - where Civil keeps all five, and where Gen
+  kept them on 2026-09-18 with the manual's payload (`iNLA_TYPE` 1). Looks
+  mode-dependent; not isolated. Gen also refuses `iINC_NLA: 1` without
+  `iLSTEP` (`Item:Number of Load Steps`), which Civil fills in itself.
+
 ## Not candidates
 
-These look like findings in the coverage tables and are not ours to report.
+These look like findings in the coverage tables and are not ours to report,
+or not through this report.
+
+- **`/db/MATD`'s `bSERVCHECK` default.** The manual's 2026-10-04 table says
+  `true`; a fresh Gen material reads `false`. A documentation finding, and
+  since v1.4 those go through the manual channel rather than this report. It
+  is recorded under the contract's `manualDefects`.
+
+The rest are not ours to report at all.
 `docs/live_verification_playbook.md`'s "What is left, and why" has the full
 list with per-endpoint reasons; the classes are:
 
