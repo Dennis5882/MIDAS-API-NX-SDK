@@ -11052,6 +11052,100 @@
     },
     {
       "tier": "extras7",
+      "endpoint": "/db/POSP",
+      "name": "Parameter of Soil Properties",
+      "id": 91,
+      "products": [
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "NAME": "POSP_CRUD",
+        "DESC": "",
+        "GROUND_LEVEL": 0.0,
+        "BEDROCK_LEVEL": -25.0,
+        "FOOTING_LEVEL": -10.0,
+        "STR_HEIGHT": 10.0,
+        "STR_WIDTH": 10.0,
+        "ITEMS": [
+          {
+            "HEIGHT": 5.0,
+            "DENSITY": 17.0,
+            "POISSON": 0.3,
+            "VS": 150,
+            "KH": 10000,
+            "DISP": 0.001
+          },
+          {
+            "HEIGHT": 5.0,
+            "DENSITY": 18.0,
+            "POISSON": 0.3,
+            "VS": 200,
+            "KH": 20000,
+            "DISP": 0.001
+          },
+          {
+            "HEIGHT": 15.0,
+            "DENSITY": 19.0,
+            "POISSON": 0.3,
+            "VS": 300,
+            "KH": 50000,
+            "DISP": 0.001
+          }
+        ]
+      },
+      "updatePayload": {
+        "NAME": "POSP_CRUD",
+        "DESC": "",
+        "GROUND_LEVEL": 0.0,
+        "BEDROCK_LEVEL": -25.0,
+        "FOOTING_LEVEL": -10.0,
+        "STR_HEIGHT": 10.0,
+        "STR_WIDTH": 10.0,
+        "ITEMS": [
+          {
+            "HEIGHT": 5.0,
+            "DENSITY": 20.0,
+            "POISSON": 0.3,
+            "VS": 150,
+            "KH": 10000,
+            "DISP": 0.001
+          },
+          {
+            "HEIGHT": 5.0,
+            "DENSITY": 18.0,
+            "POISSON": 0.3,
+            "VS": 200,
+            "KH": 20000,
+            "DISP": 0.001
+          },
+          {
+            "HEIGHT": 15.0,
+            "DENSITY": 19.0,
+            "POISSON": 0.3,
+            "VS": 300,
+            "KH": 50000,
+            "DISP": 0.001
+          }
+        ]
+      },
+      "expected": {
+        "created": 17.0,
+        "updated": 20.0
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras7",
       "endpoint": "/db/EPST",
       "name": "Static Earth Pressure",
       "id": 1,

@@ -1,15 +1,15 @@
 {
- "$comment": "GET /info{endpoint} for every DbResource this SDK knows, on both products, captured read-only in one session. /info returns the server's own JSON Schema for an endpoint - it is schema, never model data, and no GET response body is included. This is a baseline: diffing a later capture against it is how a product patch's effect on the API surface gets measured. The 2026-09-02 patch was checked this way against 26 endpoints and changed none of them; this file widens that comparison to every endpoint that answers. Re-captured 2026-09-27 on Build 09/24/2026, both products, replacing the 2026-09-03 capture. Against that one it moves three pairs: /db/SECT's USE_HAMBLY_EQ on both products (which arrived with Build 09/15/2026) and /db/RPSC's CONTRIBUTION_FACTOR on Civil only. Both are now recorded by their contracts, which is the precondition for re-baselining at all: --against-contracts and --divergence are held as ceilings, so a capture carrying a property no contract knows would fail CI rather than quietly widen the gap. The products were on a second machine when this was taken; a capture from the machine holding this checkout, made the same day, was byte-identical across all 399 pairs.",
- "capturedAt": "2026-09-27",
+ "$comment": "GET /info{endpoint} for every DbResource this SDK knows, on both products, captured read-only in one session. /info returns the server's own JSON Schema for an endpoint - it is schema, never model data, and no GET response body is included. This is a baseline: diffing a later capture against it is how a product patch's effect on the API surface gets measured. The 2026-09-02 patch was checked this way against 26 endpoints and changed none of them; this file widens that comparison to every endpoint that answers. Re-captured 2026-09-27 on Build 09/24/2026, both products, replacing the 2026-09-03 capture. Against that one it moves three pairs: /db/SECT's USE_HAMBLY_EQ on both products (which arrived with Build 09/15/2026) and /db/RPSC's CONTRIBUTION_FACTOR on Civil only. Both are now recorded by their contracts, which is the precondition for re-baselining at all: --against-contracts and --divergence are held as ceilings, so a capture carrying a property no contract knows would fail CI rather than quietly widen the gap. The products were on a second machine when this was taken; a capture from the machine holding this checkout, made the same day, was byte-identical across all 399 pairs. Re-captured 2026-10-11 on Build 10/10/2026, both products: identical to the 2026-09-27 capture except that Civil NX now answers /db/POSP, with a schema of its own (STR_HEIGHT, STR_WIDTH and ITEMS[].POISSON in place of Gen's OPT_USE_N and ITEMS[].ANGLE_OR_N), which the contract records. Only that pair was replaced; the other 399 are the earlier capture's, which the diff showed unchanged.",
+ "capturedAt": "2026-10-11",
  "method": "GET /info{endpoint}",
  "nxVersions": {
-  "civil": "MIDAS Civil NX 2026 (v2.2), build 09/24/2026",
-  "gen": "MIDAS Gen NX 2026 (v2.2), build 09/24/2026"
+  "civil": "MIDAS Civil NX 2026 (v2.2), build 10/10/2026",
+  "gen": "MIDAS Gen NX 2026 (v2.2), build 10/10/2026"
  },
  "coverage": {
   "endpointsSwept": 305,
-  "pairsWithSchema": 399,
-  "pairsAnswering404": 211,
+  "pairsWithSchema": 400,
+  "pairsAnswering404": 210,
   "note": "/info is served for /db/* only. Every /DESIGN/* pair 404s, which is an API fact rather than a URL bug - see CLAUDE.md. The three /db/* exceptions are the Civil Hyper-S trio /db/IEHG-GL-M1, /db/IEHG-PSS-M1 and /db/IEHG-TRUSS-M1."
  },
  "endpoints": {
@@ -29138,8 +29138,75 @@
     "status": 200
    },
    "civil": {
-    "status": null,
-    "error": "MidasNotFoundError: GET /info/db/POSP -> 404: 404 Not Found (Hint: either the product isn't connected (call client.verify_connection() to check) or the id you asked for doesn't exist in the current model)"
+    "schema": {
+     "$schema": "http://json-schema.org/draft-07/schema#",
+     "Argument": {
+      "properties": {
+       "BEDROCK_LEVEL": {
+        "description": " Bedlock Level",
+        "type": "number"
+       },
+       "DESC": {
+        "description": " Property Description",
+        "type": "string"
+       },
+       "FOOTING_LEVEL": {
+        "description": " Footing Level",
+        "type": "number"
+       },
+       "GROUND_LEVEL": {
+        "description": " Ground Level",
+        "type": "number"
+       },
+       "ITEMS": {
+        "description": " Soil Param",
+        "items": {
+         "properties": {
+          "DENSITY": {
+           "description": " Density",
+           "type": "number"
+          },
+          "DISP": {
+           "description": " Disp",
+           "type": "number"
+          },
+          "HEIGHT": {
+           "description": " Height",
+           "type": "number"
+          },
+          "KH": {
+           "description": " Kh",
+           "type": "number"
+          },
+          "POISSON": {
+           "description": " Poisson Ratio",
+           "type": "number"
+          },
+          "VS": {
+           "description": " Vs",
+           "type": "number"
+          }
+         },
+         "type": "object"
+        },
+        "type": "array"
+       },
+       "NAME": {
+        "description": " Property Name",
+        "type": "string"
+       },
+       "STR_HEIGHT": {
+        "description": " Structure Height",
+        "type": "number"
+       },
+       "STR_WIDTH": {
+        "description": " Structure Width",
+        "type": "number"
+       }
+      },
+      "type": "object"
+     }
+    }
    }
   },
   "/db/PRES": {

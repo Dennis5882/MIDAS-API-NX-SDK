@@ -5424,12 +5424,12 @@ export namespace DbDynamicLoadsTypes {
     bACCECC_MINIMUM_TORSION?: boolean;
     /** 편심 목록 Gen NX only. */
     aACCECC_ECCEN_LIST?: Array<{
-      /** 층 이름 Gen NX only. */
-      STORY: string;
-      /** Cross 방향 위치 Gen NX only. */
-      CROSS: number;
-      /** Along 방향 위치 Gen NX only. */
-      ALONG: number;
+      /** 층 이름 Gen NX only; required there. */
+      STORY?: string;
+      /** Cross 방향 위치 Gen NX only; required there. */
+      CROSS?: number;
+      /** Along 방향 위치 Gen NX only; required there. */
+      ALONG?: number;
     }>;
     /** 비소산 요소 설계 Gen NX only. */
     bNDP?: boolean;
@@ -8988,10 +8988,10 @@ export namespace DbNodeElementTypes {
     } |
     {
       TYPE: "WALL";
-      /** Element Subtype • Membrane: 1 • Plate: 2 Gen NX only. */
-      STYPE: number;
-      /** Wall ID Gen NX only. */
-      WALL: number;
+      /** Element Subtype • Membrane: 1 • Plate: 2 Gen NX only; required there. */
+      STYPE?: number;
+      /** Wall ID Gen NX only; required there. */
+      WALL?: number;
       /** Orientation • Beta Angle: 0 • Ref Point: 1 • Ref Vector: 2 Gen NX only. */
       W_CON?: number;
       /** Wall Type • Plate base: 0 • CRB-Pin: 1 • CRB-Fixed: 2 Gen NX only. */
@@ -9154,16 +9154,16 @@ export namespace DbNodeElementTypes {
     V2: number;
     /** Domain Name */
     DOMAIN_NAME: string;
-    /** Member Type Civil • None: 0 • Plate Beam (1D): 1 • Plate Column (1D): 2 • Shell: 3 Civil NX only. */
-    MEMB_TYPE_CIVIL: number;
+    /** Member Type Civil • None: 0 • Plate Beam (1D): 1 • Plate Column (1D): 2 • Shell: 3 Civil NX only; required there. */
+    MEMB_TYPE_CIVIL?: number;
     /** Rebar Direction • Local: 0 • UCS: 1 • Reference Axis: 2 Civil NX only. */
     REBAR_AXIS_TYPE?: number;
     /** UCS (Rebar Direction이 UCS인 경우) Civil NX only. */
     STR_UCS?: string;
     /** Axis Vector (Rebar Direction이 Reference Axis인 경우) Civil NX only. */
     AXIS_VECTOR?: Array<number>;
-    /** Member Type • None: 0 • Slab: 1 • Mat: 2 Gen NX only. */
-    MEMBER_TYPE: number;
+    /** Member Type • None: 0 • Slab: 1 • Mat: 2 Gen NX only; required there. */
+    MEMBER_TYPE?: number;
     /** Basic Rebar Option Gen NX only. */
     OPT_BASIC_REBAR?: boolean;
     /** Top Rebar Name (X-Dir) Gen NX only. */
@@ -9186,10 +9186,10 @@ export namespace DbNodeElementTypes {
     OPT_REBAR_MATL?: boolean;
     /** Rebar Material Key Gen NX only. */
     REBAR_MATL_KEY?: number;
-    /** Use Mt Gen NX only. */
-    bUseMt: boolean;
-    /** Thickness Gen NX only. */
-    THICKNESS: number;
+    /** Use Mt Gen NX only; required there. */
+    bUseMt?: boolean;
+    /** Thickness Gen NX only; required there. */
+    THICKNESS?: number;
   }
 }
 
@@ -9692,24 +9692,24 @@ export namespace DbPropertiesHingeTypes {
     BeamDivNumNyCover: number;
     /** Number of divisions(Beam-Column, Cover) — Nz */
     BeamDivNumNzCover: number;
-    /** Consider Out of Plane Nonlinearity of Plate Type Gen NX only. */
-    WallConsOut: boolean;
-    /** Fiber Wall Areas Core Gen NX only. */
-    WAreaSize: number;
-    /** Number of divisions — z, Core Gen NX only. */
-    WallDivNumZ: number;
-    /** Number of divisions — y, Core Gen NX only. */
-    WallDivNumY: number;
-    /** Fiber Wall Areas Cover Gen NX only. */
-    WAreaSizeCover: number;
-    /** Number of divisions — z, Cover Gen NX only. */
-    WallDivNumZCover: number;
-    /** Number of divisions — y, Cover Gen NX only. */
-    WallDivNumYCover: number;
-    /** Wall, Consider Rebar Area Gen NX only. */
-    OPT_ConsiderRebarAreaWall: boolean;
-    /** Shear Spring Location Gen NX only. */
-    dR: number;
+    /** Consider Out of Plane Nonlinearity of Plate Type Gen NX only; required there. */
+    WallConsOut?: boolean;
+    /** Fiber Wall Areas Core Gen NX only; required there. */
+    WAreaSize?: number;
+    /** Number of divisions — z, Core Gen NX only; required there. */
+    WallDivNumZ?: number;
+    /** Number of divisions — y, Core Gen NX only; required there. */
+    WallDivNumY?: number;
+    /** Fiber Wall Areas Cover Gen NX only; required there. */
+    WAreaSizeCover?: number;
+    /** Number of divisions — z, Cover Gen NX only; required there. */
+    WallDivNumZCover?: number;
+    /** Number of divisions — y, Cover Gen NX only; required there. */
+    WallDivNumYCover?: number;
+    /** Wall, Consider Rebar Area Gen NX only; required there. */
+    OPT_ConsiderRebarAreaWall?: boolean;
+    /** Shear Spring Location Gen NX only; required there. */
+    dR?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface InelasticHingePropertyHyperSPayload {
@@ -12609,8 +12609,8 @@ export namespace DbPushoverTypes {
     MASTERMAXDISP: number;
     /** 층간변형각 제한 사용 Gen NX only. */
     bLIMITDEFORMANGLE?: boolean;
-    /** 층간변형각 제한값 (1/[rad]) Gen NX only. */
-    LIMITDEFORMANGLE: number;
+    /** 층간변형각 제한값 (1/[rad]) Gen NX only; required there. */
+    LIMITDEFORMANGLE?: number;
     /** 모든 수직요소의 최대 층간변위 Gen NX only. */
     bDRIFTMAX?: boolean;
     /** 바닥 다이아프램 중심 층간변위 Gen NX only. */
@@ -13266,8 +13266,8 @@ export namespace DbStaticLoadsTypes {
     LAYER_LV?: number;
     /** Soil Properties Name */
     SOIL_PROP: string;
-    /** Selection Type ("GROUP" / "ELEMENT") Gen NX only. */
-    SEL_TYPE: string;
+    /** Selection Type ("GROUP" / "ELEMENT") Gen NX only; required there. */
+    SEL_TYPE?: string;
     /** Element Type ("FRAME" / "PLANAR") */
     ELEM_TYPE?: string;
     /** Node List */
@@ -13317,24 +13317,24 @@ export namespace DbStaticLoadsTypes {
     METHOD?: string;
     /** Seismic Zone */
     SZ: string;
-    /** Effective Peak Ground Acceleration Gen NX only. */
-    EPA: number;
+    /** Effective Peak Ground Acceleration Gen NX only; required there. */
+    EPA?: number;
     /** Site Class */
     SC: string;
     /** Short-period Site Coefficient */
     FA: number;
     /** Long-period Site Coefficient */
     FV: number;
-    /** Design Spectral Acceleration at Short Period Gen NX only. */
-    SDS: number;
-    /** Design Spectral Acceleration at 1-sec Period Gen NX only. */
-    SD1: number;
+    /** Design Spectral Acceleration at Short Period Gen NX only; required there. */
+    SDS?: number;
+    /** Design Spectral Acceleration at 1-sec Period Gen NX only; required there. */
+    SD1?: number;
     /** Seismic User Group Gen NX only. */
     USER_GROUP?: string;
-    /** Importance Factor Gen NX only. */
-    IF: number;
-    /** Response Modification Factor Gen NX only. */
-    RMF: number;
+    /** Importance Factor Gen NX only; required there. */
+    IF?: number;
+    /** Response Modification Factor Gen NX only; required there. */
+    RMF?: number;
     /** Damping Ratio Civil NX only. */
     DAMP_RATIO?: number;
     /** Seismic Risk Factor Civil NX only. */
@@ -13357,8 +13357,8 @@ export namespace DbStaticLoadsTypes {
   export interface SoilPropertyItem {
     /** Soil Layer Thickness */
     HEIGHT: number;
-    /** Internal Friction Angle or N Value */
-    ANGLE_OR_N: number;
+    /** Internal Friction Angle or N Value Gen NX only; required there. */
+    ANGLE_OR_N?: number;
     /** Unit Volume Weight of Soil */
     DENSITY: number;
     /** Shear Wave Velocity */
@@ -13367,6 +13367,8 @@ export namespace DbStaticLoadsTypes {
     KH: number;
     /** Relative Displacement */
     DISP: number;
+    /** Poisson Ratio Civil NX only. */
+    POISSON?: number;
   }
   /** Generated from contracts/endpoints/. */
   export interface SoilPropertyPayload {
@@ -13374,7 +13376,7 @@ export namespace DbStaticLoadsTypes {
     NAME: string;
     /** Description */
     DESC?: string;
-    /** Use N Value (true=N값 / false=내부마찰각) */
+    /** Use N Value (true=N값 / false=내부마찰각) Gen NX only. */
     OPT_USE_N?: number;
     /** Level of Ground Surface */
     GROUND_LEVEL: number;
@@ -13382,12 +13384,16 @@ export namespace DbStaticLoadsTypes {
     BEDROCK_LEVEL: number;
     /** Level of Footing Bottom */
     FOOTING_LEVEL: number;
+    /** Structure Height Civil NX only. */
+    STR_HEIGHT?: number;
+    /** Structure Width Civil NX only. */
+    STR_WIDTH?: number;
     /** Soil Characteristic items */
     ITEMS: Array<{
       /** Soil Layer Thickness */
       HEIGHT: number;
-      /** Internal Friction Angle or N Value */
-      ANGLE_OR_N: number;
+      /** Internal Friction Angle or N Value Gen NX only; required there. */
+      ANGLE_OR_N?: number;
       /** Unit Volume Weight of Soil */
       DENSITY: number;
       /** Shear Wave Velocity */
@@ -13396,6 +13402,8 @@ export namespace DbStaticLoadsTypes {
       KH: number;
       /** Relative Displacement */
       DISP: number;
+      /** Poisson Ratio Civil NX only. */
+      POISSON?: number;
     }>;
   }
   /** Generated from contracts/endpoints/. */

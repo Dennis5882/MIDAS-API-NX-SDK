@@ -216,7 +216,7 @@ still holding the gate. An already-built `dist/` runs fine without any of this.
   leaves them with **no permitted source at all**; they cannot be contracted as things stand.
   See `docs/contract_migration_brief.md`.
 - `schema/info-baseline.json` — every `GET /info{endpoint}` the products answer, both
-  products, captured read-only (re-captured 2026-09-27 on Build 09/24/2026, replacing 2026-09-03). It is the server's own schema, never model
+  products, captured read-only (re-captured 2026-09-27 on Build 09/24/2026, replacing 2026-09-03; moved to Build 10/10/2026 on 2026-10-11, where only Civil's new `/db/POSP` changed). It is the server's own schema, never model
   data. `scripts/info_baseline.py` captures it (`--capture`, GET only, safe against an
   open model), diffs a fresh capture against it (`--diff`, which is how a product
   patch's effect on the API surface gets measured), and sweeps it against every
@@ -238,7 +238,7 @@ still holding the gate. An already-built `dist/` runs fine without any of this.
   waive a property it deliberately does not publish with `infoOnly`, which exists
   for placeholders like `/db/DRLS`'s `DUMMY`, not for anything a caller might send.
   `--divergence` answers a third question: **`products: [civil, gen]` says the route
-  answers on both, never that the record is the same.** Eleven of the 177 both-product (ten until 2026-09-27, when `/db/RPSC` began declaring `CONTRIBUTION_FACTOR` on Civil only)
+  answers on both, never that the record is the same.** Twelve of the 178 both-product (ten until 2026-09-27, when `/db/RPSC` began declaring `CONTRIBUTION_FACTOR` on Civil only; eleven until 2026-10-11, when Civil NX gained its own `/db/POSP`)
   endpoints declare different schemas, so a field listed without its own `products`
   is a claim about both products that is sometimes false; tag it (MD-46).
   **`/info` is neither a superset nor a subset of what the server accepts.** It
@@ -500,8 +500,8 @@ Two things that have already caused rework:
   a design contract can never carry `provenance: info_schema`. The three `/db/*` exceptions
   are the Civil Hyper-S trio `/db/IEHG-GL-M1`, `/db/IEHG-PSS-M1` and `/db/IEHG-TRUSS-M1`.
 - **`scripts/live_crud_check.py` write coverage is tracked in the script itself.** Cases carry
-  `confirmed=True` only once someone has watched them pass live (296 of 336 cases as of
-  2026-09-29; the first 43 landed 2026-07-29 on Civil NX, after `/db/NMAS`'s crash was
+  `confirmed=True` only once someone has watched them pass live (297 of 337 cases as of
+  2026-10-11; the first 43 landed 2026-07-29 on Civil NX, after `/db/NMAS`'s crash was
   root-caused and worked around — see above); a failure of
   a confirmed case is a **regression** and exits 1, while a failure of an
   unconfirmed one exits 3 and means "triage the fixture first". Don't flip `confirmed` to silence

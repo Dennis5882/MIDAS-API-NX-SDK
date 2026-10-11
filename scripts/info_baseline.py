@@ -147,12 +147,15 @@ EXPECTED_AGAINST_CONTRACTS: _AgainstContractsExpectation = {
 # bAUTO and iAUTOTYPE on Gen NX); it was 15 while its GEN NX-only tables
 # were still unmerged.
 EXPECTED_DIVERGENCE: _DivergenceExpectation = {
-    "endpointsAnsweringBothAtLeast": 177,
+    "endpointsAnsweringBothAtLeast": 178,
     # 10 -> 11 on 2026-09-27, when the baseline moved to Build 09/24/2026:
     # /db/RPSC began declaring CONTRIBUTION_FACTOR on Civil only. A product
     # change, tagged `products: [civil]` in the contract, so tagging stays
     # complete - only the count of divergent endpoints moved.
-    "divergentSchemasAtMost": 11,
+    # 11 -> 12 (and 177 -> 178 answering both) on 2026-10-11, Build
+    # 10/10/2026: Civil NX gained /db/POSP with its own record. Its three
+    # Civil-only and two Gen-only fields are tagged in the contract.
+    "divergentSchemasAtMost": 12,
     "absentFieldsAtMost": {"/db/SPLC": 4},
 }
 

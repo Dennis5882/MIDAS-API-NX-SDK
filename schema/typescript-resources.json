@@ -6192,6 +6192,7 @@
       "endpoint": "/db/POSP",
       "name": "Parameter of Soil Properties",
       "products": [
+        "civil",
         "gen"
       ],
       "methods": [

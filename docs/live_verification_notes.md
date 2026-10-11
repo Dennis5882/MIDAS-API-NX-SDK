@@ -12086,3 +12086,128 @@ Everything the report claims reproduced. What is new:
   depends on the code, as the 2026-07-26 table already implies.
 
 Ledger `ledger-write-2026-10-06-2` (Gen) and `-3` (Civil).
+
+## 2026-10-11 - both products at v2.2 Build 10/10/2026: one new route on Civil, `/db/POSP`
+
+Both About dialogs were read by the author on 2026-10-11 (screenshots):
+MIDAS CIVIL NX 2026 v2.2 and MIDAS GEN NX 2026 v2.2, **Build 10/10/2026**,
+on the author's home PC. The MAPI keys are the same ones `.env` holds - a key
+belongs to the account and product, not to a machine - so every call below
+reached whichever session was connected, which the author says was this one.
+
+**`/info` diff, GET only.** `scripts/info_baseline.py --capture` per product,
+each with its own key (`MIDAS_MAPI_KEY` set per run: run without it, the
+script sends no key and every pair answers `401 MAPI-Key is missing`, which
+the capture records as 610 404s - a first attempt here did exactly that), then
+`--diff` against the 2026-09-27 baseline (Build 09/24/2026). 400 pairs answered,
+against the baseline's 399:
+
+| Change | Detail |
+| --- | --- |
+| **NEW** `/db/POSP` (civil) | Civil now answers `GET /info/db/POSP` and `GET /db/POSP` (`{"message":""}`); both were 404 on Build 09/24/2026 |
+
+Nothing else moved on either product: every other schema is identical to the
+baseline. `/db/EPST` still 404s on Civil; `/db/EPSE` answers there, as before.
+
+**Civil's `/db/POSP` is not Gen's.** Same nine shared names (`NAME`, `DESC`,
+`GROUND_LEVEL`, `BEDROCK_LEVEL`, `FOOTING_LEVEL`, `ITEMS[].HEIGHT`,
+`DENSITY`, `VS`, `KH`, `DISP`), and then:
+
+| Only on Civil | Only on Gen |
+| --- | --- |
+| `STR_HEIGHT` (Structure Height), `STR_WIDTH` (Structure Width), `ITEMS[].POISSON` (Poisson Ratio) | `OPT_USE_N` (Use N), `ITEMS[].ANGLE_OR_N` (Angle Or N) |
+
+Gen's schema is unchanged from the baseline.
+
+What this opens, none of it done yet:
+
+1. `/db/POSP` is `GEN_ONLY` in both SDKs and its contract says
+   `products: [gen]`. Widening it needs the Civil-only fields tagged per
+   product (MD-46) and, before anything claims a request shape, a Civil write -
+   the fixture's Gen payload carries `OPT_USE_N`, which Civil does not declare.
+2. Re-baselining `schema/info-baseline.json` waits for (1): `--against-contracts`
+   is a ceiling, and three Civil properties no contract records would fail it.
+3. Re-verification of the confirmed cases on Build 10/10/2026 (destructive).
+   Checkpoints go to a directory on the NX host; this is a different machine
+   from the 2026-09-27 run, so `C:/temp` has to be confirmed there first.
+
+No ledger record: a build string and a schema diff are not evidence about an
+endpoint's request shape.
+
+## 2026-10-11 (later) - `/db/POSP` on Civil: its own record, both SDKs
+
+The NX host is this checkout's machine (`DESKTOP-7483A6T`): a `/doc/SAVEAS` of
+the empty Civil document to `C:/temp` appeared on this disk before anything
+destructive ran. Then, on a `/doc/NEW` document:
+
+| Request | Answer |
+| --- | --- |
+| POST Gen's confirmed fixture record (`OPT_USE_N`, `ITEMS[].ANGLE_OR_N`) | 201 `Wrong Field`, nothing stored |
+| POST Civil's `/info` shape: Gen's record without those two, plus `STR_HEIGHT: 10`, `STR_WIDTH: 10`, `ITEMS[].POISSON: 0.3` | 201, stored as sent |
+| POST the shared fields only (neither product's extras) | 201 `Wrong Field` |
+| PUT `DENSITY` 17 -> 20, `STR_HEIGHT` 10 -> 12, layer 2 `POISSON` 0.3 -> 0.35 | 200, read back as sent |
+| `DELETE /db/POSP/2` | 200, table empty after |
+
+So Civil's `/db/POSP` takes Civil's `/info` record and refuses Gen's, and at
+least one of its three extras is required (which, not isolated). The values
+for the three extras are the probe's: no document gives any.
+
+SDK: both SDKs' `SoilProperty`/`soilProperty` now answer on Civil; the
+contract tags `OPT_USE_N`/`ANGLE_OR_N` `[gen]` and the three new fields
+`[civil]` (`provenance: info_schema`, MD-46). A Civil case was added to
+`live_crud_check.py` and passed through both harnesses (`PASS /db/POSP`,
+`create/read/update/delete` all ok); it is `confirmed`. The tier's
+`posp_seed` and `posl_seed` (Gen records, for Gen-only cases) answer
+`Wrong Field` on Civil during that run, as `posl_seed` always did; no Civil
+case uses them.
+
+Writing the types exposed a generator defect older than this: a field the
+contract narrows to one product was still typed **required** when the manual
+required it, so a Civil caller had to send Gen's `ANGLE_OR_N`, which Civil
+refuses. 26 required fields across eight contracts (`/db/ELEM`, `/db/EPSE`,
+`/db/IEHC`, `/db/POLC`, `/db/POSL`, `/db/POSP`, `/db/SBDO`, `/db/SPLC`) were
+in that state. The generator now types them optional and says
+"Gen NX only; required there." - the rule it already applied to `appliesWhen`.
+
+Ledger `ledger-write-2026-10-11-1`; session `posp-civil-2026-10-11`.
+
+## 2026-10-11 (re-verification) - every confirmed case on Build 10/10/2026: nothing regressed
+
+Live, destructive, on the author's go-ahead ("1~3까지 진행해줘"), on this
+checkout's machine, which is the NX host (checked by a save that appeared on
+this disk). Both documents confirmed empty with each product's own key first.
+
+Plan, scripted this time rather than by hand: per product, one case per
+endpoint exactly as `live-crud.mjs` picks it (the first case for that
+product), grouped by that case's tier, at most eight endpoints per npm
+invocation, and any case the npm harness can only clean up by a document reset
+placed last in its own invocation - 51 npm invocations on Gen, 66 on Civil.
+Python ran each tier holding a confirmed case for the product, whole - 30 on
+Gen, 39 on Civil. Order npm then Python, Gen then Civil; a real `GET /db/NODE`
+after every invocation. About 75 minutes; both products answered throughout.
+
+| | Result |
+| --- | --- |
+| confirmed endpoint-product pairs | **419 of 419 passed through both SDKs** (236 endpoints: 183 on both, 37 Civil only, 16 Gen only) |
+| Python | 0 regressions; every failure is an unconfirmed case (Gen 14 + 3 blocked, Civil 18 + 5 blocked) |
+| npm | 417 on the first pass; RC and steel `SRDF` on Gen failed, then passed |
+
+**The two npm failures were the plan's.** RC `SRDF` and steel `SRDF` answered
+`Errors detected in Concrete/Steel Design Control Data` because their `DCO`
+case sat in another invocation - the dependency recorded on 2026-09-28 (RC
+`LMRR`/`SRDF` and steel `SRDF` take a PUT only after `DCO`), which no `needs`
+expresses. Re-run as `DCO,SRDF` for each code, all four passed. Python's
+`design_tables` tier, which runs `DCO` first, passed them in the main run. The
+playbook's selection traps now name it.
+
+The unconfirmed failures match the playbook's reasons word for word
+(`Wrong Field` for EPST/EPSE/TDMF/RPSC/WVLD/ACTL(Gen)/EPMT(Civil), `Wrong Key`
+for HPCE, `Unknown Error` for FBLA/NLLP/PHGE, `Wheel Spacing` for the Gen
+lane-optimization pair, `Not Registered String` for TDNA, STCT's dropped
+`iITER` on Gen and its STAG-owned id on Civil, HHCT's `wrote 1, read back 0`,
+LCOM-SEISMIC's unsupported type, NLCT's `LINE_SEARCH_OPTION`, SINF's missing
+id, the design-control refusals of RC LMRR/SRDF and steel DCO/SRDF on Civil).
+Nothing that failed before passes now.
+
+Ledger `ledger-write-2026-10-11-{2,3,4}` (both / Civil / Gen); npm rows in
+`docs/npm_live_evidence_scratch.md`. Both products left on empty documents.

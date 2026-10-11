@@ -1,6 +1,6 @@
 {
   "vendored_from": "Dennis5882/MIDAS-API docs/manual/INDEX.md",
-  "vendored_at_commit": "69c3b5b35dbf40d3198761f8974371efd10cd09d",
+  "vendored_at_commit": "0b2743862c466155356923f584a31f7deb3733fc",
   "source_note": "Static snapshot; re-run scripts/vendor_coverage.py to refresh. POST result-table types and the three Design Code chapters (25-27) are not itemized by URL in INDEX.md and are represented as single aggregate rows rather than one row per table/check.",
   "endpoints": [
     {
@@ -1125,7 +1125,8 @@
       "name": "Parameter of Soil Properties",
       "chapter_file": "06_DB_Static_Loads.md",
       "products": [
-        "gen"
+        "gen",
+        "civil"
       ],
       "status": "implemented",
       "module": "midas_nx.db.static_loads"

@@ -996,3 +996,272 @@ Civil case was then dropped). `SMODI` and `CRCM` replay the new
 **Count:** 16 new endpoints; 173 distinct `/db` endpoints, 59 distinct
 `/DESIGN` endpoints and 4 distinct result-table operations; 236 distinct npm
 public-API operations overall.
+
+## 2026-10-11 - `/db/POSP` on Civil NX, Build 10/10/2026
+
+`npm run live:crud -- --product civil --endpoints /db/POSP --save-dir C:/temp`
+on the new Civil case (Civil's own record: `STR_HEIGHT`, `STR_WIDTH`,
+`ITEMS[].POISSON`). `PASS /db/POSP`; checkpoint saved, empty document restored.
+The endpoint was already in the npm set through its Gen case, so the counts do
+not move.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/POSP` | 2026-10-11 | Civil |
+
+**Count:** 0 new endpoints; 173 distinct `/db` endpoints, 59 distinct
+`/DESIGN` endpoints and 4 distinct result-table operations; 236 distinct npm
+public-API operations overall.
+
+### 2026-10-11 - every confirmed case replayed on Build 10/10/2026
+
+The built npm package replayed the whole emitted fixture on both products at
+v2.2 Build 10/10/2026, one selection at a time beside the Python harness, each
+invocation starting and ending on an empty document. Every confirmed case
+passed on every product it is confirmed on - 419 endpoint-product pairs, 236
+endpoints - and nothing regressed. RC and steel `SRDF` on Gen failed in the
+first pass because the plan put their `DCO` case in a different invocation;
+re-run with `DCO` first, both passed.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/DESIGN/RC/KDS-41-20-2022/BEMW` | 2026-10-11 | Gen |
+| `/DESIGN/RC/KDS-41-20-2022/CMFT` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/DCO` | 2026-10-11 | Gen |
+| `/DESIGN/RC/KDS-41-20-2022/DCTL` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/DFBA` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/EQCT` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/FMAG` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/KFAC` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/LENG` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/LLRF` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/LMRR` | 2026-10-11 | Gen |
+| `/DESIGN/RC/KDS-41-20-2022/MATD` | 2026-10-11 | Gen |
+| `/DESIGN/RC/KDS-41-20-2022/MBTP` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/MCMB` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/MEMB` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/MLLR` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/MRFT` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/PMDM` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/REXC` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/SCOL` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/SDGN` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/SRDF` | 2026-10-11 | Gen |
+| `/DESIGN/RC/KDS-41-20-2022/SUEQ` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/RC/KDS-41-20-2022/TRFT` | 2026-10-11 | Gen |
+| `/DESIGN/RC/KDS-41-20-2022/ULCT` | 2026-10-11 | Gen |
+| `/DESIGN/RC/KDS-41-20-2022/WMAK` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/CMFT` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/DCO` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/DCTL` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/EQCT` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/FMAG` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/KFAC` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/LENG` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/LLRF` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/LTSR` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/MBTP` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/MEMB` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/MLLR` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/SRC/AIK-SRC2K/SUEQ` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/CBFT` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/CMFT` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/CRCM` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/DCO` | 2026-10-11 | Gen |
+| `/DESIGN/STEEL/KDS-41-30-2022/DCTL` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/EQCT` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/FMAG` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/KFAC` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/LENG` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/LLRF` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/LTSR` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/MBTP` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/MEMB` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/MLLR` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/SERV` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/SLRS` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/SMODI` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/SRDF` | 2026-10-11 | Gen |
+| `/DESIGN/STEEL/KDS-41-30-2022/SUEQ` | 2026-10-11 | Gen, Civil |
+| `/DESIGN/STEEL/KDS-41-30-2022/ULCT` | 2026-10-11 | Gen |
+| `/db/ACTL-M1` | 2026-10-11 | Civil |
+| `/db/BCCT` | 2026-10-11 | Gen, Civil |
+| `/db/BCGA-M1` | 2026-10-11 | Civil |
+| `/db/BCGD-M1` | 2026-10-11 | Civil |
+| `/db/BMLD` | 2026-10-11 | Gen, Civil |
+| `/db/BNGR` | 2026-10-11 | Gen, Civil |
+| `/db/BTMP` | 2026-10-11 | Gen, Civil |
+| `/db/BUCK` | 2026-10-11 | Gen, Civil |
+| `/db/CAMB` | 2026-10-11 | Civil |
+| `/db/CCFC` | 2026-10-11 | Gen, Civil |
+| `/db/CJFG` | 2026-10-11 | Civil |
+| `/db/CLDR` | 2026-10-11 | Gen, Civil |
+| `/db/CLWP` | 2026-10-11 | Gen, Civil |
+| `/db/CMCS` | 2026-10-11 | Civil |
+| `/db/CNLD` | 2026-10-11 | Gen, Civil |
+| `/db/CONS` | 2026-10-11 | Gen, Civil |
+| `/db/CO_F` | 2026-10-11 | Gen, Civil |
+| `/db/CO_M` | 2026-10-11 | Gen, Civil |
+| `/db/CO_S` | 2026-10-11 | Gen, Civil |
+| `/db/CO_T` | 2026-10-11 | Gen, Civil |
+| `/db/CRGR` | 2026-10-11 | Civil |
+| `/db/CRPC` | 2026-10-11 | Gen, Civil |
+| `/db/CUTL` | 2026-10-11 | Gen, Civil |
+| `/db/DCON` | 2026-10-11 | Gen, Civil |
+| `/db/DCTL` | 2026-10-11 | Gen, Civil |
+| `/db/DYFG` | 2026-10-11 | Civil |
+| `/db/DYLA` | 2026-10-11 | Civil |
+| `/db/DYNF` | 2026-10-11 | Civil |
+| `/db/EDMP` | 2026-10-11 | Gen, Civil |
+| `/db/EFCT` | 2026-10-11 | Gen, Civil |
+| `/db/EIGV` | 2026-10-11 | Gen, Civil |
+| `/db/EIGV-M1` | 2026-10-11 | Civil |
+| `/db/ELNK` | 2026-10-11 | Gen, Civil |
+| `/db/EPMT` | 2026-10-11 | Gen |
+| `/db/ESSF` | 2026-10-11 | Gen, Civil |
+| `/db/ETFC` | 2026-10-11 | Gen, Civil |
+| `/db/ETMP` | 2026-10-11 | Gen, Civil |
+| `/db/EWSF` | 2026-10-11 | Civil |
+| `/db/EXLD` | 2026-10-11 | Gen, Civil |
+| `/db/FBLD` | 2026-10-11 | Gen, Civil |
+| `/db/FIBR` | 2026-10-11 | Gen, Civil |
+| `/db/FIMP` | 2026-10-11 | Gen, Civil |
+| `/db/FMLD` | 2026-10-11 | Gen, Civil |
+| `/db/FRLS` | 2026-10-11 | Gen, Civil |
+| `/db/GCMB` | 2026-10-11 | Civil |
+| `/db/GRDP` | 2026-10-11 | Gen, Civil |
+| `/db/GRUP` | 2026-10-11 | Gen, Civil |
+| `/db/GSBG` | 2026-10-11 | Civil |
+| `/db/GSPR` | 2026-10-11 | Gen, Civil |
+| `/db/GSTP` | 2026-10-11 | Gen, Civil |
+| `/db/GTMP` | 2026-10-11 | Gen, Civil |
+| `/db/HAHS` | 2026-10-11 | Gen, Civil |
+| `/db/HECB` | 2026-10-11 | Gen, Civil |
+| `/db/HHCT` | 2026-10-11 | Gen |
+| `/db/HHCT-M1` | 2026-10-11 | Civil |
+| `/db/HSFC` | 2026-10-11 | Gen, Civil |
+| `/db/HSPT` | 2026-10-11 | Gen, Civil |
+| `/db/HSTG` | 2026-10-11 | Gen, Civil |
+| `/db/IEHC` | 2026-10-11 | Gen, Civil |
+| `/db/IELC` | 2026-10-11 | Gen, Civil |
+| `/db/IEPI` | 2026-10-11 | Gen, Civil |
+| `/db/IFGS` | 2026-10-11 | Gen, Civil |
+| `/db/IMFM` | 2026-10-11 | Gen, Civil |
+| `/db/IMFM-M1` | 2026-10-11 | Civil |
+| `/db/IMPF` | 2026-10-11 | Civil |
+| `/db/INMF` | 2026-10-11 | Gen, Civil |
+| `/db/LCOM-CONC` | 2026-10-11 | Gen, Civil |
+| `/db/LCOM-GEN` | 2026-10-11 | Gen, Civil |
+| `/db/LCOM-SEISMIC` | 2026-10-11 | Gen |
+| `/db/LCOM-SRC` | 2026-10-11 | Gen, Civil |
+| `/db/LCOM-STEEL` | 2026-10-11 | Gen, Civil |
+| `/db/LCOM-STLCOMP` | 2026-10-11 | Gen, Civil |
+| `/db/LDGR` | 2026-10-11 | Gen, Civil |
+| `/db/LDSQ` | 2026-10-11 | Gen, Civil |
+| `/db/LENG` | 2026-10-11 | Gen, Civil |
+| `/db/LLAN` | 2026-10-11 | Gen, Civil |
+| `/db/LLANch` | 2026-10-11 | Civil |
+| `/db/LLANid` | 2026-10-11 | Civil |
+| `/db/LLANop` | 2026-10-11 | Civil |
+| `/db/LLANtr` | 2026-10-11 | Gen, Civil |
+| `/db/LTOM` | 2026-10-11 | Gen, Civil |
+| `/db/LTSR` | 2026-10-11 | Gen, Civil |
+| `/db/MATD` | 2026-10-11 | Gen, Civil |
+| `/db/MBTP` | 2026-10-11 | Gen, Civil |
+| `/db/MCON` | 2026-10-11 | Gen, Civil |
+| `/db/MEMB` | 2026-10-11 | Gen, Civil |
+| `/db/MLFC` | 2026-10-11 | Gen, Civil |
+| `/db/MLSP` | 2026-10-11 | Gen, Civil |
+| `/db/MLSR` | 2026-10-11 | Gen, Civil |
+| `/db/MVCD` | 2026-10-11 | Gen, Civil |
+| `/db/MVCT` | 2026-10-11 | Gen, Civil |
+| `/db/MVCTbs` | 2026-10-11 | Gen, Civil |
+| `/db/MVCTid` | 2026-10-11 | Civil |
+| `/db/MVCTtr` | 2026-10-11 | Gen, Civil |
+| `/db/MVHC` | 2026-10-11 | Gen, Civil |
+| `/db/MVHL` | 2026-10-11 | Gen, Civil |
+| `/db/MVHLtr` | 2026-10-11 | Gen, Civil |
+| `/db/MVLD` | 2026-10-11 | Gen, Civil |
+| `/db/MVLDch` | 2026-10-11 | Civil |
+| `/db/MVLDid` | 2026-10-11 | Civil |
+| `/db/MVLDtr` | 2026-10-11 | Gen, Civil |
+| `/db/NBOF` | 2026-10-11 | Gen, Civil |
+| `/db/NLCT` | 2026-10-11 | Gen |
+| `/db/NLCT-M1` | 2026-10-11 | Civil |
+| `/db/NMAS` | 2026-10-11 | Gen, Civil |
+| `/db/NODE` | 2026-10-11 | Gen, Civil |
+| `/db/NPLN` | 2026-10-11 | Gen, Civil |
+| `/db/NSPR` | 2026-10-11 | Gen, Civil |
+| `/db/NTMP` | 2026-10-11 | Gen, Civil |
+| `/db/OFFS` | 2026-10-11 | Gen, Civil |
+| `/db/PDEL` | 2026-10-11 | Gen, Civil |
+| `/db/PJCF` | 2026-10-11 | Gen, Civil |
+| `/db/PLCB` | 2026-10-11 | Civil |
+| `/db/PNLA` | 2026-10-11 | Gen, Civil |
+| `/db/PNLD` | 2026-10-11 | Gen, Civil |
+| `/db/POGD` | 2026-10-11 | Civil |
+| `/db/POGD-M1` | 2026-10-11 | Civil |
+| `/db/POLC` | 2026-10-11 | Gen, Civil |
+| `/db/POLC-M1` | 2026-10-11 | Civil |
+| `/db/POSL` | 2026-10-11 | Gen, Civil |
+| `/db/POSP` | 2026-10-11 | Gen, Civil |
+| `/db/PRES` | 2026-10-11 | Gen, Civil |
+| `/db/PRLS` | 2026-10-11 | Gen, Civil |
+| `/db/PRST` | 2026-10-11 | Gen, Civil |
+| `/db/PSLT` | 2026-10-11 | Gen, Civil |
+| `/db/PSSF` | 2026-10-11 | Gen, Civil |
+| `/db/PTNS` | 2026-10-11 | Gen, Civil |
+| `/db/PZEF` | 2026-10-11 | Gen, Civil |
+| `/db/RCHK` | 2026-10-11 | Civil |
+| `/db/RIGD` | 2026-10-11 | Gen, Civil |
+| `/db/SDHY` | 2026-10-11 | Gen |
+| `/db/SDIS` | 2026-10-11 | Gen |
+| `/db/SDSP` | 2026-10-11 | Gen, Civil |
+| `/db/SDST` | 2026-10-11 | Gen, Civil |
+| `/db/SDVE` | 2026-10-11 | Gen, Civil |
+| `/db/SDVI` | 2026-10-11 | Gen, Civil |
+| `/db/SECF` | 2026-10-11 | Gen, Civil |
+| `/db/SKEW` | 2026-10-11 | Gen, Civil |
+| `/db/SLAN` | 2026-10-11 | Gen, Civil |
+| `/db/SLANch` | 2026-10-11 | Civil |
+| `/db/SLANop` | 2026-10-11 | Civil |
+| `/db/SMCT` | 2026-10-11 | Gen, Civil |
+| `/db/SMLC` | 2026-10-11 | Gen, Civil |
+| `/db/SMPT` | 2026-10-11 | Gen, Civil |
+| `/db/SPAN` | 2026-10-11 | Civil |
+| `/db/SPFC` | 2026-10-11 | Gen, Civil |
+| `/db/SPLC` | 2026-10-11 | Gen, Civil |
+| `/db/SSPS` | 2026-10-11 | Gen, Civil |
+| `/db/STAG` | 2026-10-11 | Gen, Civil |
+| `/db/STBK` | 2026-10-11 | Gen, Civil |
+| `/db/STCT-M1` | 2026-10-11 | Civil |
+| `/db/STLD` | 2026-10-11 | Gen, Civil |
+| `/db/STMP` | 2026-10-11 | Gen, Civil |
+| `/db/STRPSSM` | 2026-10-11 | Civil |
+| `/db/STYP` | 2026-10-11 | Gen, Civil |
+| `/db/STYP-M1` | 2026-10-11 | Civil |
+| `/db/TDGR` | 2026-10-11 | Gen, Civil |
+| `/db/TDME` | 2026-10-11 | Gen, Civil |
+| `/db/TDMT` | 2026-10-11 | Gen, Civil |
+| `/db/TDNT` | 2026-10-11 | Gen, Civil |
+| `/db/THFC` | 2026-10-11 | Gen, Civil |
+| `/db/THGA` | 2026-10-11 | Gen, Civil |
+| `/db/THGC` | 2026-10-11 | Gen, Civil |
+| `/db/THGC-M1` | 2026-10-11 | Civil |
+| `/db/THIK` | 2026-10-11 | Gen, Civil |
+| `/db/THIS` | 2026-10-11 | Gen, Civil |
+| `/db/THMS` | 2026-10-11 | Gen, Civil |
+| `/db/THNL` | 2026-10-11 | Gen, Civil |
+| `/db/THOO-M1` | 2026-10-11 | Civil |
+| `/db/THSL` | 2026-10-11 | Gen, Civil |
+| `/db/TMAT` | 2026-10-11 | Gen, Civil |
+| `/db/TMLD` | 2026-10-11 | Gen, Civil |
+| `/db/TSGR` | 2026-10-11 | Gen, Civil |
+| `/db/ULFC` | 2026-10-11 | Gen, Civil |
+| `/db/VBEM` | 2026-10-11 | Gen, Civil |
+| `/db/VSEC` | 2026-10-11 | Gen, Civil |
+| `/db/WMAK` | 2026-10-11 | Gen, Civil |
+
+**Count:** 0 new endpoints - a re-verification - so the totals above stand:
+173 distinct `/db` endpoints, 59 distinct `/DESIGN` endpoints and 4 distinct
+result-table operations; 236 distinct npm public-API operations overall.

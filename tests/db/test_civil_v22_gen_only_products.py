@@ -12,6 +12,10 @@ probe available), pending as a candidate until that second confirmation.
 See `db/base.py`'s `GEN_ONLY` docstring and `docs/live_verification_notes.md`
 for the full evidence.
 
+`/db/POSP` (`SoilProperty`) left the family on 2026-10-11: Civil NX Build
+10/10/2026 answers its route and `/info` with a Civil-specific record, and a
+round trip passed, so it is pinned below as answering both products instead.
+
 Unlike Hyper-S's `-M1` suffix, these endpoints share no naming convention, so
 the family is hard-coded here rather than discovered by pattern.
 """
@@ -50,7 +54,6 @@ from midas_nx.design.steel_kds import (
 )
 
 GEN_ONLY_CLASSES = [
-    SoilProperty,
     StaticEarthPressure,
     StaticWindLoad,
     StaticSeismicLoad,
@@ -75,8 +78,12 @@ GEN_ONLY_CLASSES = [
 
 
 def test_the_gen_only_family_is_the_expected_size():
-    assert len(GEN_ONLY_CLASSES) == 21, [c.ENDPOINT for c in GEN_ONLY_CLASSES]
-    assert len({c.ENDPOINT for c in GEN_ONLY_CLASSES}) == 21
+    assert len(GEN_ONLY_CLASSES) == 20, [c.ENDPOINT for c in GEN_ONLY_CLASSES]
+    assert len({c.ENDPOINT for c in GEN_ONLY_CLASSES}) == 20
+
+
+def test_soil_property_answers_both_products_since_build_10_10_2026():
+    assert SoilProperty.PRODUCTS == frozenset({"gen", "civil"})
 
 
 @pytest.mark.parametrize("cls", GEN_ONLY_CLASSES, ids=lambda c: c.ENDPOINT)

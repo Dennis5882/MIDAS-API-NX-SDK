@@ -18,7 +18,7 @@ surface:
   nestedTypes:
     - {path: ITEMS, name: SoilPropertyItem, namespace: DbStaticLoadsTypes}
 
-products: [gen]
+products: [civil, gen]
 
 source:
   manual:
@@ -30,8 +30,10 @@ source:
     - docs/live_verification_notes.md
 
 verification:
-  status: verified_gen
+  status: verified_both
   records:
+    - product: civil
+      ref: posp-civil-2026-10-11
     - product: gen
       ref: db-write-sweep-2026-08-16
 
@@ -108,6 +110,7 @@ fields:
   - key: OPT_USE_N
     description: >-
       Use N Value (true=N값 / false=내부마찰각)
+    products: [gen]
     type: number
     requirement: optional
     documentedDefault: false
@@ -141,6 +144,34 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+  - key: STR_HEIGHT
+    description: >-
+      Structure Height
+    products: [civil]
+    type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - Civil NX's /info,
+    # since Build 10/10/2026; the manual's section describes Gen's record. The `products`
+    # tag is a measurement from /info and a Civil round trip (2026-10-11), not
+    # a documentation claim. See MD-46.
+  - key: STR_WIDTH
+    description: >-
+      Structure Width
+    products: [civil]
+    type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # RESOLVED: declared by /info and absent from the manual - Civil NX's /info,
+    # since Build 10/10/2026; the manual's section describes Gen's record. The `products`
+    # tag is a measurement from /info and a Civil round trip (2026-10-11), not
+    # a documentation claim. See MD-46.
   - key: ITEMS
     description: >-
       Soil Characteristic items
@@ -167,6 +198,7 @@ fields:
       - key: ANGLE_OR_N
         description: >-
           Internal Friction Angle or N Value
+        products: [gen]
         type: number
         requirement: required
         documentedDefault: null
@@ -219,6 +251,35 @@ fields:
         provenance: manual
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(6)', not by
         # naming a path
+      - key: POISSON
+        description: >-
+          Poisson Ratio
+        products: [civil]
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        # RESOLVED: declared by /info and absent from the manual - Civil NX's /info,
+        # since Build 10/10/2026; the manual's section describes Gen's record. The `products`
+        # tag is a measurement from /info and a Civil round trip (2026-10-11), not
+        # a documentation claim. See MD-46.
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      /db/POSP's Specifications table gives one record, with OPT_USE_N and
+      ITEMS[].ANGLE_OR_N, for an endpoint the manual does not limit to a product.
+    actual: >-
+      That is Gen NX's record. Civil NX, which answers the route from Build
+      10/10/2026, declares STR_HEIGHT, STR_WIDTH and ITEMS[].POISSON instead,
+      and refuses Gen's record with Wrong Field.
+    evidence: >-
+      GET /info/db/POSP on both products on Build 10/10/2026 (2026-10-11), and
+      a Civil round trip that same day: Gen's fixture record and the shared
+      fields alone answer Wrong Field, Civil's /info shape round-trips.
+      Registered as MD-46's pattern.
 
 sdkRules:
   - id: db-posp-delete-per-id

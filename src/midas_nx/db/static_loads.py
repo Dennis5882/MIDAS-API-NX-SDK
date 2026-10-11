@@ -499,8 +499,9 @@ class FinishingMaterialLoad(DbResource):
 
 class SoilPropertyItem(TypedDict, total=False):
     HEIGHT: float  # Soil Layer Thickness, required
-    ANGLE_OR_N: float  # Internal Friction Angle or N Value, required
+    ANGLE_OR_N: float  # Internal Friction Angle or N Value, required (Gen NX only)
     DENSITY: float  # Unit Volume Weight of Soil, required
+    POISSON: float  # Poisson Ratio (Civil NX only; /info, not in the manual)
     VS: float  # Shear Wave Velocity, required
     KH: float  # Coeff. of Horizontal Ground Reaction, required
     DISP: float  # Relative Displacement, required
@@ -511,19 +512,23 @@ class SoilPropertyPayload(TypedDict, total=False):
 
     NAME: str  # Soil Properties Name, required
     DESC: str  # default "", optional
-    OPT_USE_N: bool  # true=use N value, false=use internal friction angle; default false
+    OPT_USE_N: bool  # true=use N value, false=use internal friction angle; default false (Gen NX only)
     GROUND_LEVEL: float  # Level of Ground Surface, required
     BEDROCK_LEVEL: float  # Level of Bedrock, required
     FOOTING_LEVEL: float  # Level of Footing Bottom, required
+    STR_HEIGHT: float  # Structure Height (Civil NX only; /info, not in the manual)
+    STR_WIDTH: float  # Structure Width (Civil NX only; /info, not in the manual)
     ITEMS: List[SoilPropertyItem]  # Soil Characteristic items (per layer), required
 
 
 class SoilProperty(DbResource):
     ENDPOINT = "/db/POSP"
     NAME = "Parameter of Soil Properties"
-    #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
-    #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
-    PRODUCTS = GEN_ONLY
+    #: Both products since Build 10/10/2026. Gen-only until then (404, route +
+    #: /info, on Civil NX - see db/base.py's GEN_ONLY docstring); Civil's
+    #: record is not Gen's: it takes STR_HEIGHT/STR_WIDTH and ITEMS[].POISSON
+    #: and answers "Wrong Field" for OPT_USE_N/ANGLE_OR_N. Measured 2026-10-11.
+    PRODUCTS = frozenset({"gen", "civil"})
 
 
 class StaticEarthPressureProfileItem(TypedDict, total=False):

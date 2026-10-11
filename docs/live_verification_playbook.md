@@ -29,10 +29,10 @@ scoreboard.
   and `src/midas_nx/` has not changed.
 - **Coverage: 400/400 implemented, 278 write / 122 read.** Of the 225 `/db`
   endpoints, 193 are write-level and 32 are not.
-- **Fixture (`schema/live-cases.json`, version 6):** 336 cases over 259
-  endpoints; 296 confirmed over 236 endpoints; 9 base-model steps; 81 named
+- **Fixture (`schema/live-cases.json`, version 6):** 337 cases over 259
+  endpoints; 297 confirmed over 236 endpoints; 9 base-model steps; 81 named
   seeds; 0 unsupported.
-- **npm has replayed all 296 confirmed cases** on every product each declares.
+- **npm has replayed all 297 confirmed cases** on every product each declares.
   Keep that gap at 0: every new confirmed case goes through both harnesses.
 - **Contracts: 384 endpoints + 87 result tables.** The three drafts left, the
   IEHG trio, have no permitted source; that is final.
@@ -59,8 +59,8 @@ python scripts/report_dropped_manual_rows.py \
 python scripts/live_crud_check.py --check-cases        # silent; exit 0
 python scripts/check_fixture_contract.py --check       # 1 fixture lead over 1
                                           # endpoint, 0 contract gaps over 0
-python scripts/report_npm_replay_coverage.py --check   # 296 cases over 236
-                                          # endpoints; every product: 296
+python scripts/report_npm_replay_coverage.py --check   # 297 cases over 236
+                                          # endpoints; every product: 297
 python scripts/check_verification_lag.py --check       # 40, ceiling 40
 python scripts/verification_ledger.py                  # 397 endpoints:
                                           # 119 read, 278 write
@@ -71,7 +71,7 @@ cd packages/typescript && npm run generate && npm run typecheck && npm test
                                           # no drift; 90 tests
 ```
 
-The manual repo is vendored at `69c3b5b`. If the drift or extraction check goes
+The manual repo is vendored at `0b27438`. If the drift or extraction check goes
 red, a sync landed upstream: deciding what a chapter's new text means is real
 work, and a line reference that no longer resolves can mean a table moved or
 that it changed.
@@ -79,9 +79,10 @@ that it changed.
 ## The recurring task: re-verify on a new build
 
 **Live. Destructive: `/doc/NEW`.** Every confirmed case was replayed on Build
-09/15/2026 on 2026-09-18, and again on **Build 09/24/2026 on 2026-09-27** -
-302 of 302 endpoint-product pairs through both SDKs, no regression - so this is
-dormant until a newer build ships. A confirmed case failing on a new build is a
+09/15/2026 on 2026-09-18, on Build 09/24/2026 on 2026-09-27 (302 of 302
+endpoint-product pairs), and on **Build 10/10/2026 on 2026-10-11** - 419 of 419
+pairs through both SDKs, no regression - so this is dormant until a newer
+build ships. A confirmed case failing on a new build is a
 **regression**, which is what this exists to catch before a user does.
 
 When a build ships, this command names the scope — set `BUILD` to the **new**
@@ -160,6 +161,12 @@ Selection traps, each of which has cost a session:
   document reset` and exits 2 before sending it. This bullet named only the
   first two until 2026-09-27, when a selection of extras1 hit `/db/STYP`. Put
   one at the end of each invocation and give the rest their own.
+- **RC `LMRR`/`SRDF` and steel `SRDF` need their code's `DCO` written earlier
+  in the same document**, and no `needs` says so. An npm selection that puts
+  `DCO` in another invocation fails them with `Errors detected in ... Design
+  Control Data` - it read as two regressions on 2026-10-11 and passed once
+  `DCO` came first. Python runs the whole `design_tables` tier and is not
+  affected.
 - **An `--endpoints` selection can drop a case another case depends on**, and
   the Python harness does not warn. `extras14`'s `/db/DYFG` and `/db/DYNF` need
   that tier's `/db/MVCD` case; select them together.

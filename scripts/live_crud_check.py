@@ -2683,6 +2683,34 @@ def _extras7_cases() -> List[Case]:
             lambda p: p["ITEMS"][0].get("DENSITY"), 17.0, 20.0,
             item_id=91, products=("gen",), confirmed=True,
         ),
+        # Civil NX's own record (Build 10/10/2026 onwards): its /info drops
+        # OPT_USE_N and ITEMS[].ANGLE_OR_N - both answer "Wrong Field" there -
+        # and adds STR_HEIGHT, STR_WIDTH and ITEMS[].POISSON, which no
+        # document gives values for; 10 m / 10 m / 0.3 are this fixture's.
+        # Measured 2026-10-11: the shared fields alone answer "Wrong Field".
+        Case(
+            SoilProperty,
+            {"NAME": "POSP_CRUD", "DESC": "", "GROUND_LEVEL": 0.0,
+             "BEDROCK_LEVEL": -25.0, "FOOTING_LEVEL": -10.0,
+             "STR_HEIGHT": 10.0, "STR_WIDTH": 10.0,
+             "ITEMS": [{"HEIGHT": 5.0, "DENSITY": 17.0, "POISSON": 0.3,
+                        "VS": 150, "KH": 10000, "DISP": 0.001},
+                       {"HEIGHT": 5.0, "DENSITY": 18.0, "POISSON": 0.3,
+                        "VS": 200, "KH": 20000, "DISP": 0.001},
+                       {"HEIGHT": 15.0, "DENSITY": 19.0, "POISSON": 0.3,
+                        "VS": 300, "KH": 50000, "DISP": 0.001}]},
+            {"NAME": "POSP_CRUD", "DESC": "", "GROUND_LEVEL": 0.0,
+             "BEDROCK_LEVEL": -25.0, "FOOTING_LEVEL": -10.0,
+             "STR_HEIGHT": 10.0, "STR_WIDTH": 10.0,
+             "ITEMS": [{"HEIGHT": 5.0, "DENSITY": 20.0, "POISSON": 0.3,
+                        "VS": 150, "KH": 10000, "DISP": 0.001},
+                       {"HEIGHT": 5.0, "DENSITY": 18.0, "POISSON": 0.3,
+                        "VS": 200, "KH": 20000, "DISP": 0.001},
+                       {"HEIGHT": 15.0, "DENSITY": 19.0, "POISSON": 0.3,
+                        "VS": 300, "KH": 50000, "DISP": 0.001}]},
+            lambda p: p["ITEMS"][0].get("DENSITY"), 17.0, 20.0,
+            item_id=91, products=("civil",), confirmed=True,
+        ),
         # ⚠️ Confirmed failing live 2026-08-16 (Gen NX v2.1, build
         # 08/14/2026) with "Wrong Field" -- field names match /info's own
         # schema exactly, and bisected several variants (SEL_TYPE=GRUP,

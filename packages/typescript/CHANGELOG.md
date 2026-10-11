@@ -6,6 +6,13 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.10.0 - 2026-10-11
+
+> **Additive, and one loosening.** `soilProperty` (`/db/POSP`) now runs on
+> Civil NX, six optional members are added, and 27 members that one product
+> could not satisfy become optional. Nothing that compiled against 2.9.3
+> stops compiling; the 751 exports are unchanged.
+
 ### Added
 
 - `SectionReinforcementPayload.CONTRIBUTION_FACTOR?: number` (`/db/RPSC`),
@@ -20,6 +27,29 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
   product's own `/info` schema on Build 09/24/2026, which is the source
   they are typed from, and neither has been sent to a product by this
   package's tests yet.
+- `db.staticLoads.soilProperty` (`/db/POSP`) answers on **Civil NX** as well
+  as Gen NX: Civil NX Build 10/10/2026 added the route. Civil's record differs
+  from Gen's, so `SoilPropertyPayload` gains `STR_HEIGHT?` and `STR_WIDTH?`
+  and `SoilPropertyItem` gains `POISSON?` (each **Civil NX only**, typed from
+  Civil's `/info`), while `OPT_USE_N` and `ANGLE_OR_N` are marked Gen NX only.
+  Civil refuses Gen's record with "Wrong Field"; a Civil round trip passed
+  through this package on 2026-10-11.
+
+### Changed
+
+- **27 type members across eight contracts' payloads became optional** (26
+  fields; `ANGLE_OR_N` is declared in two places): every field the manual requires but only one
+  product declares, on a resource both products answer. Typed required, they
+  made a caller on the other product send a field its product refuses - a
+  Civil NX caller of `soilProperty` had to send `ANGLE_OR_N`. They now read
+  "Gen NX only; required there." (or Civil NX) in their JSDoc, the same
+  treatment fields required under one branch (`appliesWhen`) already get.
+  Affected: `/db/ELEM` (`STYPE`, `WALL`), `/db/EPSE` (`SEL_TYPE`), `/db/IEHC`
+  (nine wall fields), `/db/POLC` (`LIMITDEFORMANGLE`), `/db/POSL` (`EPA`,
+  `SDS`, `SD1`, `IF`, `RMF`), `/db/POSP` (`ANGLE_OR_N`), `/db/SBDO`
+  (`MEMB_TYPE_CIVIL`, `MEMBER_TYPE`, `bUseMt`, `THICKNESS`) and `/db/SPLC`
+  (`STORY`, `CROSS`, `ALONG`). Loosening only: nothing that compiled before
+  stops compiling, and no export is added, removed or renamed.
 
 ### Documentation
 

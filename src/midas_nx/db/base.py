@@ -105,6 +105,10 @@ HYPER_S_ONLY = frozenset({"civil"})
 #: still cites the separate 2026-07-29 ``/info/db/REBC`` schema check as
 #: its evidence. No drift found among the 20 reconfirmed since
 #: 2026-07-29.
+#:
+#: ``/db/POSP`` left this set on 2026-10-11: Civil NX Build 10/10/2026 answers
+#: its route and ``/info`` (with a Civil-specific record), and a round trip
+#: passed - see ``SoilProperty`` in ``db/static_loads.py``.
 GEN_ONLY = frozenset({"gen"})
 
 #: Not a constant — a note on the mirror-image finding. On 2026-07-29, a live

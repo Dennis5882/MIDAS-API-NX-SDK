@@ -905,3 +905,22 @@ records:
       although both PUT responses echoed them and /info declares both.
     evidence:
       - docs/live_verification_notes.md
+  - id: posp-civil-2026-10-11
+    endpoints: ["/db/POSP"]
+    date: "2026-10-11"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build 10/10/2026
+    level: write
+    outcome: success
+    method: >-
+      First Civil NX session on the route, which answers from Build 10/10/2026.
+      A direct probe on a /doc/NEW document (Gen's fixture record, Civil's
+      /info shape, the shared fields alone; then PUT, per-id DELETE), then
+      live_crud_check.py and live-crud.mjs on the new Civil case.
+    finding: >-
+      Civil's record is its /info schema - STR_HEIGHT, STR_WIDTH and
+      ITEMS[].POISSON in place of OPT_USE_N and ITEMS[].ANGLE_OR_N. Gen's
+      fixture record and the shared fields alone answer Wrong Field; the
+      Civil shape created, read back, updated (DENSITY, STR_HEIGHT, POISSON)
+      and deleted per id, and passed through both SDKs.
+    evidence:
+      - docs/live_verification_notes.md

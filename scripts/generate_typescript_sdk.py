@@ -383,7 +383,17 @@ def _contract_interface_body(
         # asking for all six plasticity models at once. The condition moves
         # into the doc comment, which is where a requiredness TypeScript
         # cannot express belongs.
-        optional = "" if field.get("requirement") == "required" and not applies_when else "?"
+        #
+        # The same holds across products. A field only one product declares
+        # cannot be required of a resource both products answer: 26 such
+        # fields across eight contracts made a Civil NX caller of /db/POSP
+        # send ANGLE_OR_N, which Civil refuses with "Wrong Field", and a Gen
+        # caller of /db/SBDO send MEMB_TYPE_CIVIL. Found 2026-10-11 when
+        # /db/POSP gained a Civil record; the product moves into the comment.
+        products = field.get("products")
+        narrowed = bool(products) and len(products) == 1
+        required = field.get("requirement") == "required"
+        optional = "" if required and not applies_when and not narrowed else "?"
         documentation = []
         if field.get("description"):
             documentation.append(" ".join(field["description"].split()))
@@ -398,9 +408,12 @@ def _contract_interface_body(
         # generator read the resource-level list and ignored the field-level
         # one, so a Civil NX caller of /db/POGD saw twenty Gen-only fiber-model
         # options offered as if they were theirs.
-        products = field.get("products")
-        if products and len(products) == 1:
-            documentation.append(f"{_PRODUCT_LABELS[products[0]]} only.")
+        if narrowed:
+            label = _PRODUCT_LABELS[products[0]]
+            documentation.append(
+                f"{label} only; required there." if required and not applies_when
+                else f"{label} only."
+            )
         if documentation:
             lines.append(f"{indent}/** {' '.join(documentation)} */")
         lines.append(
