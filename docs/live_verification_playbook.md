@@ -13,20 +13,20 @@ versions are in git history (`a9da9a0` and before).
 which build, with verbatim errors. This file is the procedure and the
 scoreboard.
 
-## Where things stand (measured 2026-09-27)
+## Where things stand (measured 2026-10-11)
 
-- **Both products are installed at v2.2, Build 09/24/2026** - Gen NX 2026
+- **Both products are installed at v2.2, Build 10/10/2026** - Gen NX 2026
   (v2.2) and Civil NX 2026 (v2.2), each read from its own About dialog and
-  author-confirmed 2026-09-27. **Gen crosses v2.1 -> v2.2 here**; Civil was
-  already v2.2, so only its build moves. **Both reads and writes are
-  re-verified on it**: both products were GET-swept clean on 2026-09-27 (Gen
-  268 resources, Civil 283, no failure on either), `/info` was diffed and the
-  baseline moved, and every confirmed case replayed through both SDKs the same
-  day - all 302 endpoint-product pairs passed, nothing regressed.
-- **2.9.3 is published on PyPI and npm** (2026-09-23). Since then the npm
-  changelog's `Unreleased` holds two optional members from `/info`
-  (`CONTRIBUTION_FACTOR`, `USE_HAMBLY_EQ`); nothing is released with them yet,
-  and `src/midas_nx/` has not changed.
+  author-confirmed 2026-10-11, on the author's home PC, which is also the
+  machine holding this checkout. **Writes are re-verified on it**: `/info` was
+  diffed (one change, Civil's new `/db/POSP`) and the baseline moved, and every
+  confirmed case replayed through both SDKs the same day - all 419
+  endpoint-product pairs passed, nothing regressed. The GET breadth sweep was
+  not re-run on this build; its last clean run is Build 09/24/2026 (Gen 268
+  resources, Civil 283).
+- **2.10.0 is published on PyPI and npm** (2026-10-11): Civil NX `/db/POSP`
+  in both SDKs, and npm's product-only required fields typed optional. The npm
+  changelog's `Unreleased` is empty.
 - **Coverage: 400/400 implemented, 278 write / 122 read.** Of the 225 `/db`
   endpoints, 193 are write-level and 32 are not.
 - **Fixture (`schema/live-cases.json`, version 6):** 337 cases over 259

@@ -51,6 +51,10 @@ is easier to trust on what it kept.
 | B-1…B-3 | documentation items, each checked against the official article | 2026-07-27 |
 | B-4, B-5 | REBW / REBC articles vs the server | **resolved by MIDASIT's 2026-09-28 revision**, read from the Help Center API on 2026-10-06; one residue each (REBW `vSTORY_KEY` vs `/info` `vSTORY_NAME`; REBC's Parameters row spelling `"DO"` beside the schema's `D0`) |
 
+**Build 10/10/2026 (2026-10-11).** The full replay re-ran every unconfirmed case in a tier holding a
+confirmed one: A-10's nine minus `/db/MVLDeu`, plus `/db/RPSC`, and A-3's `/db/SINF` and Gen `/db/STCT`
+answered exactly as before. Nothing else in the report was re-measured on that build.
+
 ### Re-verification debt
 
 Cleared on 2026-09-21 in two passes: the fixture replay, then a dummy model

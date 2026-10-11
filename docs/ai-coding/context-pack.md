@@ -51,6 +51,10 @@ session can still leave every real request timing out while this reports
   `.get(client=)`, `.items(client=)`, `.create(items: dict, client=)`,
   `.update(items: dict, client=)`, `.delete(ids: list, client=)`,
   `.delete_all(client=, confirm=True)`.
+- Gen NX and Civil NX do not always take the same record for one endpoint.
+  A payload field commented `(Gen NX only)` or `(Civil NX only)` is refused
+  by the other product, so leave it out there - and send it on its own
+  product if its comment says required.
 - `/doc/*`, `/ope/*`, `/view/*` endpoints are plain functions, e.g.
   `midas_nx.doc.new_project`, `midas_nx.doc.save`, `midas_nx.doc.analyze`,
   `midas_nx.ope.get_project_status`, `midas_nx.view.capture`.
@@ -154,6 +158,11 @@ session can still leave every real request timing out while this reports
   `.deleteAll({ confirm: true, client })`.
   `items` is an object keyed by record id: `{ 1: { X: 0, Y: 0, Z: 0 } }`.
   Field names inside a payload are the official uppercase wire names.
+- Gen NX and Civil NX do not always take the same record for one endpoint.
+  A member whose doc comment says `Gen NX only` or `Civil NX only` is refused
+  by the other product, so leave it out there. When it says `Gen NX only;
+  required there.` (or Civil NX), it is typed optional only because the other
+  product refuses it - still send it when targeting that product.
 - `/doc/*` endpoints are functions on `doc`: `doc.newProject({ client })`,
   `doc.save({ client })`, `doc.analyze({ client })`, `doc.openProject(path,
   { client })`.
