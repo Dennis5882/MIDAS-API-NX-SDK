@@ -6,6 +6,21 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.10.1 - 2026-10-12
+
+> **A browser fix; nothing else.** No type, export or Node behaviour changes.
+
+### Fixed
+
+- `MidasClient` works in a browser. It called `fetch` as `this.fetch(...)`, so
+  a browser's native fetch received the client as its receiver and threw
+  `TypeError: Illegal invocation`, which surfaced as
+  `MidasConnectionError("GET /mapikey/verify failed")` with the cause hidden.
+  Node's fetch does not check its receiver, which is why no test saw it. The
+  client now calls the implementation detached, so both the default and a
+  `fetch: window.fetch` option work. The public `fetch` property is
+  unchanged; a custom fetch that relies on its own `this` must be bound.
+
 ## 2.10.0 - 2026-10-11
 
 > **Additive, and one loosening.** `soilProperty` (`/db/POSP`) now runs on

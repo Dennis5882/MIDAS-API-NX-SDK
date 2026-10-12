@@ -69,6 +69,29 @@ describe("MidasClient", () => {
     await expect(client.request("GET", "/db/NODE")).rejects.toBeInstanceOf(MidasServerError);
   });
 
+  it("calls fetch with no receiver, as a browser's native fetch requires", async () => {
+    // A browser's fetch throws "Illegal invocation" unless `this` is the
+    // global object or undefined; Node's does not check, so mimic the browser.
+    const strictFetch = function (this: unknown) {
+      if (this !== undefined && this !== globalThis) {
+        throw new TypeError("Illegal invocation");
+      }
+      return Promise.resolve(response({ status: "connected" }));
+    } as typeof globalThis.fetch;
+    const original = globalThis.fetch;
+    globalThis.fetch = strictFetch;
+    try {
+      await expect(new MidasClient({ mapiKey: "k" }).verifyConnection()).resolves.toEqual({
+        status: "connected",
+      });
+      await expect(
+        new MidasClient({ mapiKey: "k", fetch: strictFetch }).verifyConnection(),
+      ).resolves.toEqual({ status: "connected" });
+    } finally {
+      globalThis.fetch = original;
+    }
+  });
+
   it("enforces product compatibility", () => {
     const client = new MidasClient({ product: "gen", fetch: vi.fn() });
     expect(() => client.checkProduct(["civil"], "Civil-only resource")).toThrow(

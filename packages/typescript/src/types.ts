@@ -18,6 +18,11 @@ export interface MidasClientOptions {
   timeout?: Timeout;
   strictProduct?: boolean;
   raiseOnResultError?: boolean;
+  /**
+   * Fetch implementation, `globalThis.fetch` by default. It is called as a
+   * plain function, with no receiver, so a native browser fetch can be passed
+   * as is; an implementation that relies on its own `this` must be bound first.
+   */
   fetch?: typeof globalThis.fetch;
 }
 

@@ -106,7 +106,13 @@ export class MidasClient {
         signal: controller.signal,
       };
       if (body !== undefined) init.body = JSON.stringify(body);
-      response = await this.fetch(url, init);
+      // Called detached, never as `this.fetch(...)`: a browser's native fetch
+      // throws "Illegal invocation" when its receiver is anything but the
+      // global object or undefined, and a method call makes it this client.
+      // Node does not check, so only a browser ever saw it. Detaching covers
+      // the default and a `fetch: window.fetch` option alike.
+      const fetchImpl = this.fetch;
+      response = await fetchImpl(url, init);
     } catch (cause) {
       throw new MidasConnectionError(`${method} ${endpoint} failed`, { method, endpoint, cause });
     } finally {
