@@ -1,4 +1,4 @@
-import { designTables, operations, post, resources, tables } from "../src";
+import { MidasClient, designTables, operations, post, resources, tables } from "../src";
 import { describe, expect, it } from "vitest";
 
 // This file is compiled by `npm run typecheck`. The unreachable block keeps
@@ -13,6 +13,11 @@ if (false) {
     loadCaseNames: ["DL(ST)"],
   });
   tables.story.getStoryModeShapeTable({ modes: ["Mode1"] });
+  // Every table function takes a client, a timeout and a signal; the generated
+  // option types are Picks of the table's own fields and had dropped them.
+  tables.result1.getReactionTable({ loadCaseNames: ["DL(ST)"], client: new MidasClient(), timeout: 5_000 });
+  tables.result1.getVibrationModeShapeTable({ client: new MidasClient(), signal: new AbortController().signal });
+  post.getBeamDesignForcesTable({ client: new MidasClient() });
   post.getWallDesignForcesTable({ storyNames: ["1F"] });
   designTables.rcKds.getBeamDesignForcesTable({ exportPath: "C:/reports" });
 

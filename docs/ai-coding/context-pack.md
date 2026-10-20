@@ -69,7 +69,8 @@ subclass `MidasAPIError` (import from `midas_nx`): `MidasAuthError`,
 that still carries an `{"error": ...}` body — a 200 status is not proof of
 success), `MidasServerError`, `ProductMismatchError`,
 `DestructiveOperationError` (raised by `delete_all()` unless `confirm=True`
-is passed explicitly).
+is passed explicitly, and by `client.request("DELETE", "/db/<NAME>", ...)` -
+a DELETE with no id - on the same terms).
 
 ## Safety facts you must not get wrong
 
@@ -184,7 +185,9 @@ subclass `MidasAPIError` (import from `midas-nx`): `MidasAuthError`,
 `MidasResultError` (an HTTP 200 that still carries an `{"error": ...}` body -
 a 200 status is not proof of success), `MidasServerError`,
 `ProductMismatchError`, `UnsupportedMethodError`, `DestructiveOperationError`
-(thrown by `deleteAll()` unless `confirm: true` is passed explicitly).
+(thrown by `deleteAll()` unless `confirm: true` is passed explicitly, and by
+`client.request("DELETE", "/db/<NAME>", ...)` - a DELETE with no id - unless
+`{ confirm: true }` is its fourth argument).
 
 ## Safety facts you must not get wrong
 

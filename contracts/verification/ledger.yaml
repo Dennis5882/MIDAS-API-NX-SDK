@@ -5430,3 +5430,75 @@ records:
     confirmed endpoint-product pairs passed through both SDKs and nothing regressed; two npm selections first
     refused RC and steel SRDF because the plan had put their DCO case in another invocation, and both passed with
     DCO first. Evidence in docs/live_verification_notes.md and docs/npm_live_evidence_scratch.md.
+- id: ledger-write-2026-10-20-1
+  endpoints:
+  - /db/BMLD
+  - /db/BODF
+  - /db/CNLD
+  - /db/CONS
+  - /db/ELEM
+  - /db/LCOM-GEN
+  - /db/MATL
+  - /db/NODE
+  - /db/SECT
+  - /db/STLD
+  - /db/UNIT
+  - /view/ANGLE
+  - /view/CAPTURE
+  date: '2026-10-20'
+  level: write
+  products:
+  - gen
+  outcome: success
+  method: Live probes on Gen NX, on the machine holding this checkout (the NX host), of four rules a downstream app
+    (smart-midas-steel) states, plus PUT as create. Document confirmed empty with Gen's own key, checkpoint to
+    C:/temp, /doc/NEW, base model, empty document restored. LCOM-GEN refuses a NAME over 20 characters with an error
+    body; two CNLD items of one load case on one node are summed into one; BMLD on a TRUSS element is refused; PUT
+    created records on all eleven /db tables sent, with STLD renumbering a PUT key as it does a POST key;
+    /view/CAPTURE wrote its PNG for every ZOOM_LEVEL tried, the image following it, and every capture left the Gen
+    window fitted whatever ZOOM_LEVEL was given. Build not re-read (last author-confirmed 10/10/2026).
+    Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-10-20-2
+  endpoints:
+  - /db/BMLD
+  - /db/BODF
+  - /db/CONS
+  - /db/DSTL
+  - /db/EIGV
+  - /db/ELEM
+  - /db/FBLA
+  - /db/FBLD
+  - /db/LTOM
+  - /db/MATL
+  - /db/NODE
+  - /db/SECT
+  - /db/SPFC
+  - /db/SPLC
+  - /db/STLD
+  - /db/STOR
+  - /db/STYP
+  - /db/UNIT
+  - /doc/ANAL
+  - /ope/STOR
+  date: '2026-10-20'
+  level: write
+  products:
+  - gen
+  outcome: success
+  method: Three builds of a downstream app's (Steel-Frame) 4-storey braced frame on Gen NX, its payloads as sent apart
+    from an explicit SPFC aFUNC, on the machine holding this checkout (the NX host); document confirmed empty, checkpoint
+    to C:/temp, empty document restored after each. Counts read back for MATL, SECT, NODE, ELEM, CONS and DSTL; the
+    rest shown by the analysis they fed - floor and self-weight loads in the reactions, mass in the modal tables, the RS
+    cases in the story tables, ope/STOR's eccentricities in the STOR it returned. Build not re-read (last author-confirmed
+    10/10/2026). Evidence in docs/live_verification_notes.md.
+- id: ledger-read-2026-10-20-3
+  endpoints:
+  - /post/STEELCODECHECK
+  date: '2026-10-20'
+  level: read
+  products:
+  - gen
+  outcome: success
+  method: On an analysed model with /db/DSTL GB50017-17 set before the analysis and no /db/LCOM-STEEL, the call did not
+    answer and Gen held a "No Load Combination exists for Checking." dialog that blocked every call until WM_CLOSE
+    dismissed it; without DSTL it answered an empty message with no dialog. Evidence in docs/live_verification_notes.md.

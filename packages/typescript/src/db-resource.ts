@@ -270,7 +270,7 @@ export class DbResource<TPayload extends object = JsonObject> {
     }
     const client = options.client ?? getDefaultClient();
     this.check(client, "DELETE");
-    return client.request("DELETE", this.metadata.endpoint, { Assign: {} });
+    return client.request("DELETE", this.metadata.endpoint, { Assign: {} }, { confirm: true });
   }
 }
 

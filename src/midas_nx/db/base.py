@@ -315,4 +315,4 @@ class DbResource:
             )
         client = client or get_default_client()
         cls._check(client, "DELETE")
-        return client.request("DELETE", cls.ENDPOINT, {"Assign": {}})
+        return client.request("DELETE", cls.ENDPOINT, {"Assign": {}}, confirm=True)

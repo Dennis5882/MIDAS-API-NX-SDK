@@ -6,8 +6,12 @@ name: Vibration Mode Shape
 summary: Eigenvalue or participation-vector mode shapes with modal summary tables.
 products: [gen, civil]
 source: {manual: {status: documented, repo: Dennis5882/MIDAS-API, chapterFile: 20_POST_AnalysisResult_2.md, section: "28. Vibration Mode Shape"}}
-verification: {status: manual_only}
+verification: {status: verified_gen, records: [{product: gen, ref: steel-frame-gen-2026-10-20}]}
 risk: read_only
+mitigation: normalized
+knownDefects:
+  - ref: post-table-eigenvaluemode-needs-components
+    note: Both SDKs send the manual example's COMPONENTS list for EIGENVALUEMODE when the caller names none.
 surface:
   exportName: getVibrationModeShapeTable
   modulePath: [result1]
@@ -20,21 +24,48 @@ surface:
     table_type: TABLE_TYPE_EIGENVALUE_MODE (default) or
     TABLE_TYPE_PARTICIPATION_VECTOR_MODE. Mode shapes are not load-case scoped,
     so LOAD_CASE_NAMES/OPT_CS/STAGE_STEP are not exposed here.
+
+    ``EIGENVALUEMODE`` answers ``Unknown Error`` whenever ``COMPONENTS`` is
+    absent (Gen NX, 2026-10-20), so leaving ``components`` out sends the
+    manual's own example list: Node, Mode, UX, UY, UZ, RX, RY, RZ. The periods
+    and modal participation come back under ``SUB_TABLES``, keyed with spaces:
+    ``"EIGENVALUE ANALYSIS"``, ``"MODAL PARTICIPATION MASSES PRINTOUT (1)"``
+    and so on.
 tableTypes:
   - value: EIGENVALUEMODE
     description: Eigenvalue vibration mode shape
     head: [Index, Node, Mode, UX, UY, UZ, RX, RY, RZ]
     subTables:
-      - {name: EIGENVALUEANALYSIS, head: [ModeNo, Frequency(rad/sec), Frequency(cycle/sec), Period(sec), Tolerance]}
-      - {name: MODALPARTICIPATIONMASSESPRINTOUT(1), head: [ModeNo, TRAN-XMASS(%), TRAN-XSUM(%), TRAN-YMASS(%), TRAN-YSUM(%), TRAN-ZMASS(%), TRAN-ZSUM(%), ROTN-XMASS(%), ROTN-XSUM(%), ROTN-YMASS(%), ROTN-YSUM(%), ROTN-ZMASS(%), ROTN-ZSUM(%)]}
-      - {name: MODALPARTICIPATIONMASSESPRINTOUT(2), head: [ModeNo, TRAN-XMASS, TRAN-XSUM, TRAN-YMASS, TRAN-YSUM, TRAN-ZMASS, TRAN-ZSUM, ROTN-XMASS, ROTN-XSUM, ROTN-YMASS, ROTN-YSUM, ROTN-ZMASS, ROTN-ZSUM]}
-      - {name: "MODALPARTICIPATIONFACTORPRINTOUT(kN,m)", head: [ModeNo, TRAN-XValue, TRAN-YValue, TRAN-ZValue, ROTN-XValue, ROTN-YValue, ROTN-ZValue]}
-      - {name: MODALDIRECTIONFACTORPRINTOUT, head: [ModeNo, TRAN-XValue, TRAN-YValue, TRAN-ZValue, ROTN-XValue, ROTN-YValue, ROTN-ZValue]}
-    provenance: manual
+      - {name: EIGENVALUE ANALYSIS, head: [ModeNo, Frequency(rad/sec), Frequency(cycle/sec), Period(sec), Tolerance]}
+      - {name: MODAL PARTICIPATION MASSES PRINTOUT (1), head: [ModeNo, TRAN-XMASS(%), TRAN-XSUM(%), TRAN-YMASS(%), TRAN-YSUM(%), TRAN-ZMASS(%), TRAN-ZSUM(%), ROTN-XMASS(%), ROTN-XSUM(%), ROTN-YMASS(%), ROTN-YSUM(%), ROTN-ZMASS(%), ROTN-ZSUM(%)]}
+      - {name: MODAL PARTICIPATION MASSES PRINTOUT (2), head: [ModeNo, TRAN-XMASS, TRAN-XSUM, TRAN-YMASS, TRAN-YSUM, TRAN-ZMASS, TRAN-ZSUM, ROTN-XMASS, ROTN-XSUM, ROTN-YMASS, ROTN-YSUM, ROTN-ZMASS, ROTN-ZSUM]}
+      - {name: "MODAL PARTICIPATION FACTOR PRINTOUT (kN,m)", head: [ModeNo, TRAN-XValue, TRAN-YValue, TRAN-ZValue, ROTN-XValue, ROTN-YValue, ROTN-ZValue]}
+      - {name: MODAL DIRECTION FACTOR PRINTOUT, head: [ModeNo, TRAN-XValue, TRAN-YValue, TRAN-ZValue, ROTN-XValue, ROTN-YValue, ROTN-ZValue]}
+    provenance: live_corrected
   - value: PARTICIPATIONVECTORMODE
     description: Participation-vector mode shape
-    head: [Index, Node, Mode, UX, UY, UZ, RX, RY, RZ]
-    provenance: manual
+    head: [Index, Node, Mode, UX, UY, UZ, RX, RY, RZ, RW]
+    provenance: live_corrected
 requestFields:
   additional:
     - {key: MODES, description: Optional mode-name list such as Mode1., type: array, requirement: optional, provenance: manual}
+manualDefects:
+  - describes: behaviour
+    manualSays: COMPONENTS is one of the common Optional parameters, and the section's example sends it.
+    actual: >-
+      On Gen NX (2026-10-20) EIGENVALUEMODE answers Unknown Error whenever COMPONENTS is absent - five
+      bare calls, and calls with STYLES, NODE_ELEMS or MODES alone - and answers whenever it is sent
+      (1500 rows for 125 nodes and 12 modes). PARTICIPATIONVECTORMODE answers without it.
+    evidence: docs/live_verification_notes.md (2026-10-20, later); MD-63
+    resolved: true
+  - describes: head
+    manualSays: >-
+      The EIGENVALUEMODE sub-tables are keyed EIGENVALUEANALYSIS, MODALPARTICIPATIONMASSESPRINTOUT(1),
+      MODALPARTICIPATIONMASSESPRINTOUT(2), MODALPARTICIPATIONFACTORPRINTOUT(kN,m) and
+      MODALDIRECTIONFACTORPRINTOUT, and both table types share one HEAD ending in RZ.
+    actual: >-
+      The sub-table keys come back with spaces - "EIGENVALUE ANALYSIS", "MODAL PARTICIPATION MASSES
+      PRINTOUT (1)", "(2)", "MODAL PARTICIPATION FACTOR PRINTOUT (kN,m)", "MODAL DIRECTION FACTOR
+      PRINTOUT" - with the HEADs the manual gives. PARTICIPATIONVECTORMODE's HEAD has a tenth column, RW.
+    evidence: docs/live_verification_notes.md (2026-10-20, later); MD-63
+    resolved: true

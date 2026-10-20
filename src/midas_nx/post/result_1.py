@@ -1456,6 +1456,13 @@ def get_vibration_mode_shape_table(
     table_type: TABLE_TYPE_EIGENVALUE_MODE (default) or
     TABLE_TYPE_PARTICIPATION_VECTOR_MODE. Mode shapes are not load-case scoped,
     so LOAD_CASE_NAMES/OPT_CS/STAGE_STEP are not exposed here.
+
+    ``EIGENVALUEMODE`` answers ``Unknown Error`` whenever ``COMPONENTS`` is
+    absent (Gen NX, 2026-10-20), so leaving ``components`` out sends the
+    manual's own example list, ``post.base.EIGENVALUE_MODE_DEFAULT_COMPONENTS``.
+    The periods and modal participation come back under ``SUB_TABLES``, keyed
+    with spaces: ``"EIGENVALUE ANALYSIS"``, ``"MODAL PARTICIPATION MASSES
+    PRINTOUT (1)"`` and so on.
     """
     return get_table(
         table_type,

@@ -309,3 +309,4 @@ manualDefects:
 
 knownDefects:
   - ref: post-table-unstable-response-key
+  - ref: post-table-eigenvaluemode-needs-components

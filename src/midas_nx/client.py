@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 from enum import Enum
 from typing import Any, ClassVar, Mapping, Optional, Tuple, Union
 
@@ -151,6 +152,11 @@ class DestructiveOperationError(MidasAPIError):
     )
 
 
+#: ``/db/<NAME>`` with no id after it - the URL whose DELETE empties the whole
+#: table, whatever ids the body names. ``/db/<NAME>/<id>`` deletes one record.
+_WHOLE_TABLE_DELETE = re.compile(r"/db/[^/]+/?", re.IGNORECASE)
+
+
 _STATUS_EXCEPTIONS = {401: MidasAuthError, 403: MidasAuthError, 404: MidasNotFoundError}
 
 
@@ -208,9 +214,19 @@ class MidasClient:
         body: Optional[Mapping[str, Any]] = None,
         *,
         timeout: "Timeout | None" = None,
+        confirm: bool = False,
     ) -> dict:
         """Send one request. ``timeout`` overrides the client default for this
         call only; omitting it keeps the client's own ``timeout``.
+
+        A ``DELETE`` to a bare ``/db/<NAME>`` - no id after it - raises
+        :class:`DestructiveOperationError` before anything is sent unless
+        ``confirm=True``. That is the manual's documented delete call, and it
+        empties the whole table whatever ids its ``{"Assign": {...}}`` body
+        names; for ``/db/NODE`` it takes the attached elements too. Two apps
+        built on this SDK's raw request lost every material, and every element
+        of a 324-element model, to it. ``DELETE /db/<NAME>/<id>`` removes one
+        record and is not affected; ``DbResource.delete()`` sends exactly that.
 
         Pass a ``(connect, read)`` tuple to bound the two phases separately —
         useful for calls that are known to hang once the product has accepted
@@ -220,6 +236,14 @@ class MidasClient:
         rollback: the product may well finish the operation after the client
         has stopped waiting.
         """
+        path = re.split(r"[?#]", command, maxsplit=1)[0]
+        if method.upper() == "DELETE" and _WHOLE_TABLE_DELETE.fullmatch(path) and confirm is not True:
+            raise DestructiveOperationError(
+                f"DELETE {path} empties the whole table, whatever ids the body names, "
+                f"and cannot be undone; DELETE {path.rstrip('/')}/<id> removes one record",
+                method="DELETE",
+                endpoint=command,
+            )
         return self._send(method, self.base_url + command, body, endpoint=command, timeout=timeout)
 
     def verify_connection(self, *, timeout: "Timeout | None" = None) -> dict:

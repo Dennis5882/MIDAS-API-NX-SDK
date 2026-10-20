@@ -48,6 +48,16 @@ function compactRecord(values: Record<string, JsonValue | undefined>): JsonObjec
   return Object.fromEntries(Object.entries(values).filter(([, value]) => value !== undefined));
 }
 
+/**
+ * What `getTable` sends as `COMPONENTS` for `EIGENVALUEMODE` when the caller
+ * names none - the component list of the manual's own example. Without it Gen
+ * NX answers that table with `Unknown Error` every time, while the same call
+ * with it answers every time (2026-10-20).
+ */
+const EIGENVALUE_MODE_DEFAULT_COMPONENTS: readonly string[] = [
+  "Node", "Mode", "UX", "UY", "UZ", "RX", "RY", "RZ",
+];
+
 function tableArgument(tableType: string, options: TableOptions): JsonObject {
   const argument = compactRecord({
     TABLE_NAME: options.tableName ?? "",
@@ -71,7 +81,9 @@ function tableArgument(tableType: string, options: TableOptions): JsonObject {
     STYLES: options.styles
       ? compactRecord({ FORMAT: options.styles.format, PLACE: options.styles.decimalPlaces })
       : undefined,
-    COMPONENTS: options.components,
+    COMPONENTS:
+      options.components ??
+      (tableType === "EIGENVALUEMODE" ? [...EIGENVALUE_MODE_DEFAULT_COMPONENTS] : undefined),
     LOAD_CASE_NAMES: options.loadCaseNames,
     OPT_CS: options.constructionStage,
     STAGE_STEP: options.stageSteps,
@@ -125,7 +137,8 @@ export function unwrapTable(response: JsonObject): JsonObject {
 type BaseDesignForcesTableOptions = Pick<
   TableOptions,
   "tableName" | "nodeElements" | "unit" | "styles" | "components"
->;
+> &
+  OperationOptions;
 export type MemberDesignForcesTableOptions = BaseDesignForcesTableOptions &
   Pick<TableOptions, "parts">;
 export type WallDesignForcesTableOptions = BaseDesignForcesTableOptions &
@@ -135,14 +148,18 @@ function memberDesignForces(tableType: string) {
   return (options?: MemberDesignForcesTableOptions) => getTable(tableType, options);
 }
 
+// Each factory's options also take OperationOptions - client, timeout and
+// signal - because the generated TOptions is a Pick of the table's own fields.
+// Without it no generated table function could be given a client, a timeout
+// or a signal in TypeScript, although getTable forwards all three.
 export function defineTable<TOptions extends TableOptions = TableOptions>(tableType: string) {
-  return (options?: TOptions) => getTable(tableType, options);
+  return (options?: TOptions & OperationOptions) => getTable(tableType, options);
 }
 
 export function defineVariableTable<TOptions extends TableOptions = TableOptions>(
   defaultTableType?: string,
 ) {
-  return (options: TOptions & { tableType?: string } = {} as TOptions) => {
+  return (options: TOptions & OperationOptions & { tableType?: string } = {} as TOptions) => {
     const tableType = options.tableType ?? defaultTableType;
     if (!tableType) throw new TypeError("tableType is required");
     return getTable(tableType, options);
@@ -152,7 +169,8 @@ export function defineVariableTable<TOptions extends TableOptions = TableOptions
 export type TableDirection = "X" | "Y" | "Z";
 
 export function defineDirectionalTable<TOptions extends TableOptions = TableOptions>(prefix: string) {
-  return (direction: TableDirection, options?: TOptions) => getTable(`${prefix}${direction}`, options);
+  return (direction: TableDirection, options?: TOptions & OperationOptions) =>
+    getTable(`${prefix}${direction}`, options);
 }
 
 export const post = {

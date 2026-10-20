@@ -1,4 +1,5 @@
 import {
+  DestructiveOperationError,
   MidasConnectionError,
   MidasResultError,
   MidasServerError,
@@ -26,6 +27,12 @@ function readEnvironment(name: string): string | undefined {
   };
   return processLike.process?.env?.[name];
 }
+
+/**
+ * `/db/<NAME>` with no id after it - the URL whose DELETE empties the whole
+ * table, whatever ids the body names. `/db/<NAME>/<id>` deletes one record.
+ */
+const WHOLE_TABLE_DELETE = /^\/db\/[^/]+\/?$/i;
 
 function isJsonObject(value: unknown): value is JsonObject {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -62,12 +69,31 @@ export class MidasClient {
     console.warn(message);
   }
 
+  /**
+   * Send one request.
+   *
+   * A `DELETE` to a bare `/db/<NAME>` - no id after it - throws
+   * `DestructiveOperationError` before anything is sent unless
+   * `options.confirm` is `true`. That is the manual's documented delete call,
+   * and it empties the whole table whatever ids its `{ Assign: {...} }` body
+   * names; for `/db/NODE` it takes the attached elements too. Two apps built on
+   * this raw request lost every material, and every element of a 324-element
+   * model, to it. `DELETE /db/<NAME>/<id>` removes one record and is not
+   * affected; a resource's `delete(ids)` sends exactly that.
+   */
   async request<T extends JsonValue = JsonObject>(
     method: HttpMethod,
     command: string,
     body?: JsonObject,
-    options: RequestOptions = {},
+    options: RequestOptions & { confirm?: boolean } = {},
   ): Promise<T> {
+    const path = command.split(/[?#]/, 1)[0] ?? command;
+    if (method === "DELETE" && WHOLE_TABLE_DELETE.test(path) && options.confirm !== true) {
+      throw new DestructiveOperationError(
+        `DELETE ${path} empties the whole table, whatever ids the body names, and cannot be undone; DELETE ${path.replace(/\/$/, "")}/<id> removes one record. Pass { confirm: true } if emptying the table is intended.`,
+        { method: "DELETE", endpoint: path },
+      );
+    }
     return this.send<T>(method, `${this.baseUrl}${command}`, command, body, options);
   }
 
@@ -176,7 +202,7 @@ export async function midasApi<T extends JsonValue = JsonObject>(
   method: HttpMethod,
   command: string,
   body?: JsonObject,
-  options?: RequestOptions,
+  options?: RequestOptions & { confirm?: boolean },
 ): Promise<T> {
   return getDefaultClient().request<T>(method, command, body, options);
 }

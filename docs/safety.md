@@ -71,6 +71,24 @@ mistaken call costs nothing.
     undocumented form that removes exactly the record asked for. Do not
     "simplify" it back into a single request.
 
+The raw request is guarded the same way. A `DELETE` to a bare `/db/<NAME>` —
+no id after it — raises `DestructiveOperationError` before anything is sent
+unless you confirm it, in both SDKs:
+
+```python
+client.request("DELETE", "/db/MATL/9")                                  # one record
+client.request("DELETE", "/db/MATL", {"Assign": {"9": {}}})             # raises
+client.request("DELETE", "/db/MATL", {"Assign": {}}, confirm=True)      # empties MATL
+```
+
+```ts
+await client.request("DELETE", "/db/MATL", { Assign: {} }, { confirm: true });
+```
+
+Two apps built on the raw request learned why the hard way: a call meant to
+remove one test material removed every material, and one meant to remove the
+braces of a frame removed all 324 of its elements.
+
 ## Paths resolve on the NX machine, not yours
 
 Calls travel through a MIDASIT relay, so the product is frequently running on
@@ -81,9 +99,10 @@ A path that doesn't exist on that machine raises a modal dialog **on that
 machine** — blocking the session — while your HTTP call still returns
 something indistinguishable from success.
 
-```python
-user = client.verify_connection()["user"]   # build paths from this
-```
+Don't build a path from `verify_connection()["user"]`: that field is the MAPI
+account's email, not the NX machine's Windows profile, so a path made from it
+does not exist there and raises exactly that dialog. Ask for a directory that
+exists and is writable on the NX machine, such as `C:/temp`.
 
 Verify a write with `/doc/OPEN`, never `os.path.exists()`.
 
@@ -100,6 +119,13 @@ not just the call that raised it.
     ago" — **not** as clearance to run a destructive operation. There is no
     API-visible signal for a blocked session; the only reliable check is a
     cheap real call with a short timeout.
+
+A call can also raise one to report a missing precondition instead of
+answering. On Gen NX, `/post/STEELCODECHECK` against an analysed model with a
+steel design code and no steel design combinations never answers: Gen shows
+"No Load Combination exists for Checking." and every following call waits
+behind it. Closing that dialog — its button, or a `WM_CLOSE` message sent to
+it on the NX machine — releases the session without a restart.
 
 A read can trigger one, too: a plain `GET /db/CAMB` popped an access-denied
 dialog purely because the open document lived under `Program Files`, where a

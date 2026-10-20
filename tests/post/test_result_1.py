@@ -504,8 +504,31 @@ def test_get_vibration_mode_shape_table_defaults_to_eigenvalue(gen_client):
             "TABLE_NAME": "VibrationMode",
             "TABLE_TYPE": "EIGENVALUEMODE",
             "NODE_ELEMS": {"KEYS": [1]},
+            # Gen NX answers EIGENVALUEMODE with Unknown Error without
+            # COMPONENTS (2026-10-20), so the manual example's list is sent.
+            "COMPONENTS": ["Node", "Mode", "UX", "UY", "UZ", "RX", "RY", "RZ"],
         }
     }
+
+
+@responses.activate
+def test_get_vibration_mode_shape_table_keeps_callers_components(gen_client):
+    responses.add(responses.POST, "https://x.test:443/gen/post/TABLE", json={}, status=200)
+    result_1.get_vibration_mode_shape_table(components=["Node", "Mode", "UZ"], client=gen_client)
+    sent = responses.calls[0].request
+    assert json.loads(sent.body)["Argument"]["COMPONENTS"] == ["Node", "Mode", "UZ"]
+
+
+@responses.activate
+def test_eigenvalue_mode_default_reaches_raw_get_table_too(gen_client):
+    from midas_nx.post.base import get_table
+
+    responses.add(responses.POST, "https://x.test:443/gen/post/TABLE", json={}, status=200)
+    get_table("EIGENVALUEMODE", client=gen_client)
+    sent = responses.calls[0].request
+    assert json.loads(sent.body)["Argument"]["COMPONENTS"] == [
+        "Node", "Mode", "UX", "UY", "UZ", "RX", "RY", "RZ",
+    ]
 
 
 @responses.activate
@@ -513,7 +536,10 @@ def test_get_vibration_mode_shape_table_accepts_participation_vector_variant(gen
     responses.add(responses.POST, "https://x.test:443/gen/post/TABLE", json={}, status=200)
     result_1.get_vibration_mode_shape_table(result_1.TABLE_TYPE_PARTICIPATION_VECTOR_MODE, client=gen_client)
     sent = responses.calls[0].request
-    assert json.loads(sent.body)["Argument"]["TABLE_TYPE"] == "PARTICIPATIONVECTORMODE"
+    argument = json.loads(sent.body)["Argument"]
+    assert argument["TABLE_TYPE"] == "PARTICIPATIONVECTORMODE"
+    # Answers without COMPONENTS live, so nothing is added for it.
+    assert "COMPONENTS" not in argument
 
 
 @responses.activate

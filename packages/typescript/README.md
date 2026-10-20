@@ -129,7 +129,20 @@ always mean success.
   dialog *there* and blocks the session, while the HTTP call still answers
   like a success.
 - A request timeout only stops the SDK from waiting. It does not roll back an
-  analysis or design operation already accepted by MIDAS NX.
+  analysis or design operation already accepted by MIDAS NX. Keep the client
+  timeout short and lengthen it only for the calls that need it, because a
+  modal dialog in MIDAS NX can leave every call unanswered, and a long client-wide
+  timeout makes each of them wait that long. Every call also takes a `signal`,
+  so a Cancel button can stop the wait at once:
+
+  ```ts
+  const client = new MidasClient({ mapiKey, product: "gen", timeout: 30_000 });
+  const cancel = new AbortController(); // cancelButton.onclick = () => cancel.abort()
+
+  await doc.analyze(undefined, { client, timeout: 15 * 60_000, signal: cancel.signal });
+  ```
+
+  A timed-out or aborted call raises `MidasConnectionError`.
 - `doc.newProject()` can discard work, open a modal product dialog, or require
   the MIDAS NX process to be restarted. Do not use it unattended on a model
   that matters.
@@ -137,7 +150,9 @@ always mean success.
   their TypeScript JSDoc. Read what your editor shows you before calling an
   operation against a real model.
 - Per-ID deletion is deliberately sequential. Whole-table deletion remains
-  blocked unless `confirm: true` is passed explicitly.
+  blocked unless `confirm: true` is passed explicitly - through `deleteAll()`
+  and through `client.request("DELETE", "/db/<NAME>", ...)` alike, which is
+  the same call. `"/db/<NAME>/<id>"` removes one record.
 
 The [safety guide](https://dennis5882.github.io/MIDAS-API-NX-SDK/safety/) has
 the full list, including the calls that have crashed a product outright.

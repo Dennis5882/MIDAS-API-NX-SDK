@@ -28,7 +28,10 @@ verification:
     - product: civil
       ref: db-read-sweep-2026-07-31
     - product: gen
-      ref: db-read-sweep-2026-08-13
+      ref: steel-frame-gen-2026-10-20
+
+knownDefects:
+  - ref: post-steelcodecheck-dialog-holds-the-session
 
 operations:
   - method: POST
@@ -42,7 +45,16 @@ operations:
         Takes no arguments; returns ``{"vSECT": [...], "vELEM": [...]}`` — each
         entry has SECT/ELEM id, RAT (combined strength ratio), SLN (slenderness
         ratio), DEF (deflection), DEFA (allowable deflection).
-    risk: read_only
+
+        ⚠️ Can hold the whole session. On Gen NX (2026-10-20), an analysed model
+        with a steel design code in ``/db/DSTL`` and no ``/db/LCOM-STEEL`` rows
+        made this call not answer: Gen raised a "No Load Combination exists for
+        Checking." dialog, and every following call, plain GETs included, waited
+        until it was closed. Run it only after a steel design run has succeeded,
+        with a short timeout; if it times out, look for that dialog on the NX
+        host. Without a steel code it answers ``{"message": ""}``.
+    risk: product_crash_risk
+    mitigation: warn_only
     request:
       wrapper: argument
       itemSchema: empty
@@ -54,9 +66,30 @@ operations:
       titled "Response 필드", and the fields below transcribe that table: they
       describe the body the server returns, `{"vSECT": [...], "vELEM": [...]}`
       with no wrapper, not anything a caller sends. Live, on both products,
-      an analyzed model with no steel code check run answered
-      `{"message": ""}` instead; that is the nothing-to-show shape, not a
-      failure. A populated response has never been observed.
+      an analyzed model with no steel design code answered `{"message": ""}`;
+      that is the nothing-to-show shape, not a failure. With a steel design
+      code and no steel design combinations, Gen NX held the session behind a
+      dialog instead (2026-10-20, knownDefects). A populated response has
+      never been observed. mitigation is warn_only: the trigger is the state
+      of the caller's model, which the request cannot express, so there is
+      nothing to normalize or reject; both SDKs carry the warning on the
+      function.
+
+sdkRules:
+  - id: post-steelcodecheck-may-hold-the-session
+    kind: warn
+    appliesTo: [POST]
+    reason: >-
+      On a model with a steel design code and no steel design combinations the
+      call raises a modal dialog on the NX host and never answers, and the
+      dialog blocks every other call until someone closes it. There is no error
+      to catch, only a timeout, so the caller has to be told before the call.
+    riskRef: post-steelcodecheck-dialog-holds-the-session
+    alternative: >-
+      Run the steel design (the code's CODE-ANAL) first and call this only
+      after it succeeded, with a short timeout. Where the API has no steel
+      design for the code, read member forces with /post/TABLE and check them
+      outside the product.
 
 fields:
   - key: vSECT

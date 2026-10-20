@@ -1009,3 +1009,43 @@ records:
       of iLSTEP (Item:Number of Load Steps).
     evidence:
       - docs/live_verification_notes.md
+  - id: steel-rules-gen-2026-10-20
+    endpoints: ["/view/ANGLE", "/view/CAPTURE"]
+    date: "2026-10-20"
+    nxVersion: MIDAS Gen NX 2026 (v2.2), build not re-read (last author-confirmed 10/10/2026)
+    level: write
+    outcome: success
+    method: >-
+      Probes of four rules a downstream app (smart-midas-steel) states, on a
+      /doc/NEW document holding the base model with one node 60 m out:
+      /view/ANGLE, then /view/CAPTURE with ZOOM_LEVEL 190, 100, 30 and
+      omitted, the Gen window captured on its own (PrintWindow) after each.
+    finding: >-
+      Every call answered command complete and every capture wrote its PNG
+      on the NX host. The image follows ZOOM_LEVEL (190 in, 30 out), and an
+      omitted one is byte-identical to 100, the documented default. Window
+      captures of Gen itself showed every capture leaving the window fitted
+      to the model, whatever ZOOM_LEVEL it was given; ANGLE left it as it was.
+    evidence:
+      - docs/live_verification_notes.md
+  - id: steel-frame-gen-2026-10-20
+    endpoints: ["/db/FBLA", "/db/FBLD", "/db/STOR", "/db/LTOM", "/post/STEELCODECHECK", "/post/TABLE"]
+    date: "2026-10-20"
+    nxVersion: MIDAS Gen NX 2026 (v2.2), build not re-read (last author-confirmed 10/10/2026)
+    level: write
+    outcome: success
+    method: >-
+      A downstream app's (Steel-Frame) 4-storey braced frame built three times
+      on /doc/NEW documents, its payloads as sent apart from an explicit SPFC
+      aFUNC: STOR for five levels, FBLD floor and roof types with FBLA areas
+      per storey (two-way), LTOM, Lanczos and two RS cases, then /doc/ANAL and
+      /post/STEELCODECHECK with and without /db/DSTL GB50017-17.
+    finding: >-
+      The floor loads reached the reactions (DL sum 8588.905 kN) and the
+      story tables answered for the RS cases. STEELCODECHECK on the analysed
+      model with DSTL set and no LCOM-STEEL did not answer and Gen held a
+      "No Load Combination exists for Checking." dialog that blocked every
+      call until WM_CLOSE dismissed it; without DSTL it answered an empty
+      message and no dialog.
+    evidence:
+      - docs/live_verification_notes.md

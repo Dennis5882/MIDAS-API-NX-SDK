@@ -12211,3 +12211,62 @@ Nothing that failed before passes now.
 
 Ledger `ledger-write-2026-10-11-{2,3,4}` (both / Civil / Gen); npm rows in
 `docs/npm_live_evidence_scratch.md`. Both products left on empty documents.
+
+## 2026-10-20 - four Gen rules from smart-midas-steel, and PUT as create
+
+smart-midas-steel (a browser app on npm `midas-nx` 2.10.1) records Gen rules
+in its own CLAUDE.md that this repository had nowhere. Each was re-measured
+here before going in, on the author's go-ahead ("여기서할 것만 라이브로 검증하고
+진행해"), on Gen NX on this checkout's machine (the NX host), document
+confirmed empty with Gen's own key first, checkpoint to `C:/temp`, `/doc/NEW`,
+the shared base model from `live_crud_check.py`, empty document restored at the
+end. The build was not re-read from the About dialog; the last one the author
+confirmed is 10/10/2026. Payloads are the confirmed cases' own.
+
+| Claim (theirs) | Measured | Verdict |
+| --- | --- | --- |
+| Load-combination names are at most 20 characters | `/db/LCOM-GEN` `NAME` of 20 characters stored; 21 and 30 answered `201` `{"error": {"message": "[Error] The permitted number of characters to be entered for Load Combination Name(...) is 20."}}` and stored nothing; a PUT renaming id 1 to 25 characters answered the same under `200` and left the name alone | **holds**, and it is a refusal with an `error` body, so `MidasResultError` raises in both SDKs. The manual states no length |
+| Two CNLD items for the same load case on one node leave only one | POST of node 3 with `FZ` -10 and -5, both `LC_SCRATCH`: echoed both, but GET returns **one** item with `FZ` **-15**. PUT to node 2 did the same. Control, two different cases on node 4: both stored | **corrected**: the server *sums* them into one item, it does not drop one. Silent - no error, and the POST echo shows both. The app sums before sending, which matches the server |
+| A TRUSS element takes no beam load | `/db/BMLD` on TRUSS element 5: `{"error": {"message": "[Error] The element no. 5 is an element type in which Beam Loads cannot be entered."}}` under `201` (POST) and `200` (PUT); the same item on BEAM element 2 stored | **holds**, as an explicit refusal |
+| `/view/CAPTURE` with `ZOOM_LEVEL: 100` leaves the window fitted afterwards | the Gen window, captured by itself (PrintWindow) after each call on a model with one node 60 m out: after the PUTs it sat zoomed near the origin with the beam cut off, and `/view/ANGLE` 30/15 left it pixel-identical. After `/view/CAPTURE` with `ZOOM_LEVEL` 190 the window showed the whole frame, and after 100, 30 and an omitted `ZOOM_LEVEL` it was **byte-identical** to that. The PNGs did follow `ZOOM_LEVEL` - 190 zoomed in, 30 out - and the omitted one was byte-identical to 100, the documented default | **holds, but broader**: any capture leaves the window fitted, whatever `ZOOM_LEVEL` it was given; the value applies to the image only |
+
+**PUT creates records that do not exist (Gen).** smart-midas-steel builds its
+whole model with PUT straight after `/doc/NEW`. Replayed with the base model's
+payloads: PUT to an empty `/db/UNIT`, `MATL`, `SECT`, `NODE`, `ELEM`, `CONS`,
+`STLD`, `BODF`, `BMLD`, `CNLD` and `LCOM-GEN` stored every id sent, read back
+whole-table. A PUT of a new id into a populated table worked too: `NODE` 31
+read back under 31. **`/db/STLD` renumbers under PUT exactly as under POST**
+(see the 2026-07 entry): PUT of id 7 beside ids 1-2 echoed `"7"`, was stored as
+id **3**, and `GET /db/STLD/7` answered `Not Found Key`. So a PUT echo is no
+more proof of the stored key than a POST echo is.
+
+Ledger `ledger-write-2026-10-20-1`. Gen left on an empty document.
+
+## 2026-10-20 (later) - Steel-Frame's Gen cautions, re-measured: STEELCODECHECK can hold the session
+
+Steel-Frame (`E:\AI Study\Steel-Frame`, a multi-storey steel frame app on npm
+`midas-nx` 2.10.1) keeps a list of Gen cautions in `docs/gen-api-cautions.md`.
+Re-measured on the author's go-ahead ("위에 내용을 라이브 검증 진행 먼저 해줘"),
+Gen NX on this checkout's machine (the NX host), document empty first,
+checkpoint to `C:/temp`, empty document restored after each of three runs. The
+model is that app's own 4-storey braced frame (`scripts/gate/live-gate.ts`,
+125 nodes, 324 elements, five storeys of `STOR`, floor loads, mass from self
+weight and loads, Lanczos 12 modes, two RS cases), ported as sent, except that
+`SPFC` got an explicit `aFUNC` instead of `CALC_OPT: true` (2026-09-22 entry).
+Build not re-read; last author-confirmed 10/10/2026. A dialog was watched for
+by listing Gen's own top-level windows after each risky call.
+
+| Their caution | Measured | Verdict |
+| --- | --- | --- |
+| `/post/STEELCODECHECK` without design results opens a dialog and stops the API | **Analysed model with `/db/DSTL` `GB50017-17` set before the analysis and no `/db/LCOM-STEEL`**: the call did not answer in 20 s; Gen showed a `#32770` dialog titled `midas Gen NX`, text `Error Checking Result : No Load Combination exists for Checking.`, one button; a `GET /db/NODE` then timed out too. `PostMessage(WM_CLOSE)` to that dialog closed it, and the next `GET /db/NODE` answered in 0.3 s. Controls: the same analysed model **without** `DSTL` answered `{"message": ""}` with no dialog (what this repo had recorded before), and `DSTL` set **after** the analysis answered `MIDAS GEN NX Please perform analysis.` - because that PUT discarded the results (next row) | **holds**. The empty answer recorded since 2026-07-31 is the no-code case only; with a steel code and no steel combinations the call holds the session until someone closes the dialog |
+| A DB write after analysis invalidates the results | `REACTIONG` answered, then a PUT of `/db/MATL` 1 **with identical values** made it `[RE1] Cannot generate table data as there is no analysis result.`; re-save and `/doc/ANAL` brought it back unchanged (DL sum 8588.905 kN both times) | **holds**, even for a write that changes nothing |
+| `EIGENVALUEMODE` fails intermittently with `Unknown Error` | Deterministic, not intermittent: **without `COMPONENTS` it answers `Unknown Error` every time** (5 of 5 bare, and with `STYLES`, `NODE_ELEMS` or `MODES` alone); **with `COMPONENTS` it answers every time** - 1500 rows (125 nodes x 12 modes), 12 with `NODE_ELEMS [101]`, 2 with the manual's full example. A wrong component list (`Mode`, `Frequency`, `Period`) answered `{"message": ""}`. `PARTICIPATIONVECTORMODE` answers without `COMPONENTS` | **corrected**: send `COMPONENTS`. The sub-tables come back keyed with spaces - `EIGENVALUE ANALYSIS`, `MODAL PARTICIPATION MASSES PRINTOUT (1)`, `(2)`, `MODAL PARTICIPATION FACTOR PRINTOUT (kN,m)`, `MODAL DIRECTION FACTOR PRINTOUT` - where the manual and `contracts/tables/post-vibration-mode-shape.yaml` write them without (MD-63) |
+| RS `STORY_DRIFT` drops the top storey | `STORY_DRIFT_X` returned 3 rows (3F, 2F, 1F) of 4 storeys under `RX(RS)` **and under `DL(ST)`**; `STORY_DISPLACEMENT_X` returned all 5 levels | **holds, but not RS-specific**: the top storey's row is missing for a static case too |
+| `GB50017-17(S)` DB steel is refused | `Q355` and `Q235` under `GB50017-17(S)` answered `Unknown Error`; `GB03(S)` `Q345` stored. Their reading - the English-edition installation does not list the standard - was not tested here | **holds** as a measurement; the cause stays theirs |
+
+Per-id `DELETE /db/MATL/9` removed only material 9, as `DbResource.delete()`
+assumes; Steel-Frame's own incident (a body-form DELETE that emptied every
+material, and another that took all 324 elements) is the documented
+whole-table behaviour, reached through raw `request()`.
+
+Ledger `ledger-write-2026-10-20-2` and `ledger-read-2026-10-20-3`.

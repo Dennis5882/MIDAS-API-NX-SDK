@@ -755,6 +755,14 @@ export const operations = {
        * Takes no arguments; returns ``{"vSECT": [...], "vELEM": [...]}``  -  each
        * entry has SECT/ELEM id, RAT (combined strength ratio), SLN (slenderness
        * ratio), DEF (deflection), DEFA (allowable deflection).
+       *
+       *  WARNING: Can hold the whole session. On Gen NX (2026-10-20), an analysed model
+       * with a steel design code in ``/db/DSTL`` and no ``/db/LCOM-STEEL`` rows
+       * made this call not answer: Gen raised a "No Load Combination exists for
+       * Checking." dialog, and every following call, plain GETs included, waited
+       * until it was closed. Run it only after a steel design run has succeeded,
+       * with a short timeout; if it times out, look for that dialog on the NX
+       * host. Without a steel code it answers ``{"message": ""}``.
        */
       getSteelCodeCheck: defineEmptyPostOperation({"endpoint":"/post/STEELCODECHECK","method":"POST","products":["civil","gen"]}),
     },

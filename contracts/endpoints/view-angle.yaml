@@ -28,7 +28,7 @@ verification:
     - product: civil
       ref: db-read-sweep-2026-07-30
     - product: gen
-      ref: db-read-sweep-2026-07-30
+      ref: steel-rules-gen-2026-10-20
 
 operations:
   - method: POST

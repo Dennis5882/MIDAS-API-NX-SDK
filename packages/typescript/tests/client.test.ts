@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import {
+  DestructiveOperationError,
   MidasAuthError,
   MidasClient,
   MidasResultError,
@@ -97,5 +98,35 @@ describe("MidasClient", () => {
     expect(() => client.checkProduct(["civil"], "Civil-only resource")).toThrow(
       ProductMismatchError,
     );
+  });
+});
+
+describe("whole-table DELETE guard", () => {
+  // DELETE /db/<NAME> empties the table whatever ids its body names - two apps
+  // on the raw request lost every material and 324 elements to it.
+  it.each(["/db/MATL", "/db/matl/", "/db/NODE?confirm=no"])(
+    "refuses %s before sending anything",
+    async (command) => {
+      const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(response({}));
+      const client = new MidasClient({ fetch });
+
+      await expect(client.request("DELETE", command, { Assign: { 9: {} } })).rejects.toBeInstanceOf(
+        DestructiveOperationError,
+      );
+      expect(fetch).not.toHaveBeenCalled();
+    },
+  );
+
+  it("sends it once confirmed, and leaves a per-id DELETE alone", async () => {
+    const fetch = vi.fn<typeof globalThis.fetch>().mockImplementation(async () => response({}));
+    const client = new MidasClient({ fetch });
+
+    await client.request("DELETE", "/db/MATL", { Assign: {} }, { confirm: true });
+    await client.request("DELETE", "/db/MATL/9");
+
+    expect(fetch.mock.calls.map(([url]) => String(url))).toEqual([
+      "https://moa-engineers.midasit.com:443/gen/db/MATL",
+      "https://moa-engineers.midasit.com:443/gen/db/MATL/9",
+    ]);
   });
 });

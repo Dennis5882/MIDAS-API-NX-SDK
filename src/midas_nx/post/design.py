@@ -31,6 +31,16 @@ def get_steel_code_check(client: Optional[MidasClient] = None) -> dict:
     Takes no arguments; returns ``{"vSECT": [...], "vELEM": [...]}`` — each
     entry has SECT/ELEM id, RAT (combined strength ratio), SLN (slenderness
     ratio), DEF (deflection), DEFA (allowable deflection).
+
+    ⚠️ Can hold the whole session. On Gen NX (2026-10-20), an analysed model
+    with a steel design code in ``/db/DSTL`` and no ``/db/LCOM-STEEL`` rows
+    made this call not answer: Gen raised a "No Load Combination exists for
+    Checking." dialog, and every following call, plain GETs included, waited
+    until it was closed. Run it only after a steel design run has succeeded,
+    with a short timeout - a client built with one, or
+    ``client.request("POST", "/post/STEELCODECHECK", {"Argument": {}},
+    timeout=20)``; if it times out, look for that dialog on the NX host.
+    Without a steel code it answers ``{"message": ""}``.
     """
     return _post("/post/STEELCODECHECK", {}, client)
 

@@ -411,7 +411,11 @@ Two things that have already caused rework:
   ids — for `/db/NODE` that takes the attached elements with it. This is what the manual documents,
   and it cost a model before it was caught. The undocumented `DELETE {endpoint}/{id}` is the one
   that deletes a single record. `DbResource.delete()` uses it as of v0.14.0; the destructive form is
-  `delete_all()`. Don't "simplify" `delete()` back to one request.
+  `delete_all()`. Don't "simplify" `delete()` back to one request. Since 2026-10-20 the raw
+  `request()` in both SDKs refuses a `DELETE` to a bare `/db/<NAME>` too unless confirmed: both
+  downstream apps on npm (smart-midas-steel, Steel-Frame) call only `request()`, so none of the
+  resource-level guards reached them, and Steel-Frame lost every material and a 324-element frame
+  to the body form.
 - **Not every failure carries an `error` key.** `/doc/ANAL` reports a failed solve as
   `{"message": "... Analysis failed."}` and `/doc/SAVEAS` returns `"... command complete"` for a
   save that never happened. Error bodies also arrive under **201**, not just 200. When adding a

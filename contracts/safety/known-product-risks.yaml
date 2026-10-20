@@ -309,3 +309,65 @@ risks:
     lastChecked: "2026-10-04"
     evidence:
       - docs/live_verification_notes.md
+  - id: post-steelcodecheck-dialog-holds-the-session
+    title: POST /post/STEELCODECHECK can raise a dialog that holds the whole session
+    severity: product_crash_risk
+    endpoints: ["/post/STEELCODECHECK"]
+    products: [gen]
+    symptom: >-
+      The call does not answer. Gen NX shows a small dialog titled "midas Gen
+      NX" reading "Error Checking Result : No Load Combination exists for
+      Checking.", and every following call, a plain GET /db/NODE included,
+      waits behind it while /mapikey/verify still answers connected. Closing
+      the dialog releases the session; nothing has to be restarted.
+    rootCause: >-
+      The product's steel code check reports a missing precondition through a
+      modal dialog instead of the API response. Measured on an analysed model
+      whose /db/DSTL named a steel design code (GB50017-17) and which had no
+      /db/LCOM-STEEL rows.
+    ruledOut: >-
+      Not every call: the same analysed model with no /db/DSTL answers
+      {"message": ""} and raises nothing, which is all this repository had
+      observed before (2026-07-31 Civil, 2026-08-13 Gen, both models without a
+      steel code). Not an unanalysed model: a /db/DSTL written after the
+      analysis discards the results, and the call then answers "Please perform
+      analysis." as an ordinary error.
+    mitigation: none
+    sdkRule: post-steelcodecheck-may-hold-the-session
+    status: >-
+      Open. Found by a downstream app (Steel-Frame) on 2026-10-19 and reproduced
+      here on 2026-10-20. Not tested on Civil NX, with other steel codes, or
+      with steel design combinations present but no steel code check run.
+      PostMessage(WM_CLOSE) to the dialog closes it, as does pressing its
+      button.
+    firstObserved: "2026-10-19"
+    lastChecked: "2026-10-20"
+    evidence:
+      - docs/live_verification_notes.md
+  - id: post-table-eigenvaluemode-needs-components
+    title: /post/TABLE EIGENVALUEMODE answers Unknown Error without COMPONENTS
+    severity: read_only
+    endpoints: ["/post/TABLE"]
+    products: [gen]
+    symptom: >-
+      The vibration mode shape table answers {"error": {"message": "Unknown
+      Error"}} on an analysed model that has eigenvalue results, which reads as
+      a missing analysis or a broken build. A downstream app recorded it as an
+      intermittent failure for that reason.
+    rootCause: >-
+      The table needs COMPONENTS. Every call without it failed (five bare, and
+      with STYLES, NODE_ELEMS or MODES alone) and every call with it answered,
+      on the same model in the same session. PARTICIPATIONVECTORMODE does not
+      need it. Why the server cannot apply a default list is not known.
+    mitigation: normalized
+    status: >-
+      Open. Both SDKs send the component list of the manual's own example
+      (Node, Mode, UX, UY, UZ, RX, RY, RZ) for EIGENVALUEMODE when the caller
+      names none, so the SDK functions answer; a raw request without
+      COMPONENTS still fails. Measured on Gen NX only. No sdkRule kind
+      describes a table-argument default, so the normalization is held by
+      tests/post/test_result_1.py and the npm client tests.
+    firstObserved: "2026-10-19"
+    lastChecked: "2026-10-20"
+    evidence:
+      - docs/live_verification_notes.md

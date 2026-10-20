@@ -51,6 +51,14 @@ class NodeFlag(TypedDict, total=False):
     NODES: bool  # default false
 
 
+#: What :func:`get_table` sends as ``COMPONENTS`` for ``EIGENVALUEMODE`` when the
+#: caller names none - the component list of the manual's own example. Without
+#: it Gen NX answers that table with ``Unknown Error`` every time, while the
+#: same call with it answers every time (2026-10-20, docs/live_verification_notes.md;
+#: contracts/safety/known-product-risks.yaml ``post-table-eigenvaluemode-needs-components``).
+EIGENVALUE_MODE_DEFAULT_COMPONENTS = ("Node", "Mode", "UX", "UY", "UZ", "RX", "RY", "RZ")
+
+
 def get_table(
     table_type: str,
     table_name: str = "",
@@ -86,6 +94,8 @@ def get_table(
     :func:`unwrap_table` below, which finds the table by shape instead.
     node_elems/unit/styles/components: only meaningful for the specific table
     types documented as supporting them — see each caller's docstring.
+    ``EIGENVALUEMODE`` is the one table that fails without ``components``, so
+    leaving it out there sends :data:`EIGENVALUE_MODE_DEFAULT_COMPONENTS`.
     load_case_names: analysis-result tables (ch19-21) — load/combination
     names with a type suffix, e.g. "DL(ST)", "COMB1(CB)", "CS1(CS)". Also
     accepted by ch18's Story Load Summary Table as of the 2026-08-06 manual
@@ -149,6 +159,8 @@ def get_table(
         argument["STYLES"] = styles
     if components is not None:
         argument["COMPONENTS"] = components
+    elif table_type == "EIGENVALUEMODE":
+        argument["COMPONENTS"] = list(EIGENVALUE_MODE_DEFAULT_COMPONENTS)
     if load_case_names is not None:
         argument["LOAD_CASE_NAMES"] = load_case_names
     if opt_cs is not None:

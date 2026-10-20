@@ -5,6 +5,7 @@ import requests
 import responses
 
 from midas_nx.client import (
+    DestructiveOperationError,
     MidasAPI,
     MidasAPIError,
     MidasAuthError,
@@ -344,3 +345,28 @@ def test_verify_connection_accepts_a_timeout_override():
     client.verify_connection(timeout=1.0)
 
     assert session.calls[0]["timeout"] == 1.0
+
+
+@pytest.mark.parametrize("command", ["/db/MATL", "/db/matl/", "/db/NODE?confirm=no"])
+def test_request_refuses_a_whole_table_delete_before_sending(gen_client, command):
+    """DELETE /db/<NAME> empties the table whatever ids its body names - two
+    apps on the raw request lost every material and 324 elements to it."""
+    with responses.RequestsMock() as mocked:  # any request sent would fail this test
+        with pytest.raises(DestructiveOperationError) as raised:
+            gen_client.request("DELETE", command, {"Assign": {"9": {}}})
+        assert len(mocked.calls) == 0
+    assert "/<id> removes one record" in str(raised.value)
+
+
+@responses.activate
+def test_request_sends_a_whole_table_delete_once_confirmed(gen_client):
+    responses.add(responses.DELETE, "https://x.test:443/gen/db/MATL", json={}, status=200)
+    gen_client.request("DELETE", "/db/MATL", {"Assign": {}}, confirm=True)
+    assert len(responses.calls) == 1
+
+
+@responses.activate
+def test_request_leaves_a_per_id_delete_alone(gen_client):
+    responses.add(responses.DELETE, "https://x.test:443/gen/db/MATL/9", json={}, status=200)
+    gen_client.request("DELETE", "/db/MATL/9")
+    assert len(responses.calls) == 1

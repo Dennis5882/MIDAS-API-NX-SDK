@@ -24,11 +24,13 @@ scoreboard.
   endpoint-product pairs passed, nothing regressed. The GET breadth sweep was
   not re-run on this build; its last clean run is Build 09/24/2026 (Gen 268
   resources, Civil 283).
-- **2.10.0 is published on PyPI and npm** (2026-10-11): Civil NX `/db/POSP`
-  in both SDKs, and npm's product-only required fields typed optional. The npm
-  changelog's `Unreleased` is empty.
-- **Coverage: 400/400 implemented, 278 write / 122 read.** Of the 225 `/db`
-  endpoints, 193 are write-level and 32 are not.
+- **2.10.2 is published on PyPI and npm** (2026-10-20): `request()` refuses an
+  unconfirmed whole-table `DELETE` in both SDKs, `EIGENVALUEMODE` gets a default
+  `COMPONENTS`, `getSteelCodeCheck()` warns of its dialog, and npm's table
+  options accept `client`/`timeout`/`signal`. The npm changelog's `Unreleased`
+  is empty.
+- **Coverage: 400/400 implemented, 281 write / 119 read.** Of the 225 `/db`
+  endpoints, 194 are write-level and 31 are not.
 - **Fixture (`schema/live-cases.json`, version 6):** 337 cases over 259
   endpoints; 297 confirmed over 236 endpoints; 9 base-model steps; 81 named
   seeds; 0 unsupported.
@@ -63,15 +65,15 @@ python scripts/report_npm_replay_coverage.py --check   # 297 cases over 236
                                           # endpoints; every product: 297
 python scripts/check_verification_lag.py --check       # 40, ceiling 40
 python scripts/verification_ledger.py                  # 397 endpoints:
-                                          # 119 read, 278 write
+                                          # 116 read, 281 write
 python scripts/report_unmerged_tables.py --check       # exit 0
 python scripts/check_state_numbers.py --check          # OK; it checks this
                                           # block's own numbers too
 cd packages/typescript && npm run generate && npm run typecheck && npm test
-                                          # no drift; 90 tests
+                                          # no drift; 91 tests
 ```
 
-The manual repo is vendored at `0b27438`. If the drift or extraction check goes
+The manual repo is vendored at `ee5fa8f`. If the drift or extraction check goes
 red, a sync landed upstream: deciding what a chapter's new text means is real
 work, and a line reference that no longer resolves can mean a table moved or
 that it changed.

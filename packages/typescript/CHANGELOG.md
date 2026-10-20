@@ -6,6 +6,57 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.10.2 - 2026-10-20
+
+> **One behaviour change that can break a working call:** `client.request()`
+> and `midasApi()` now refuse a `DELETE` to a bare `/db/<NAME>` unless
+> `{ confirm: true }` is passed. Code that empties tables that way on purpose
+> needs that fourth argument.
+
+### Changed
+
+- `MidasClient.request()` and `midasApi()` throw `DestructiveOperationError`
+  before sending a `DELETE` to `/db/<NAME>` with no id after it, unless the
+  options carry `confirm: true`. That is the manual's documented delete call,
+  and it empties the whole table whatever ids its `{ Assign: {...} }` body
+  names. Two apps built on this package call only `request()`, so the
+  confirmation `deleteAll()` has always demanded never reached them, and one
+  of them lost every material, and later all 324 elements of a frame, to it.
+  `DELETE /db/<NAME>/<id>` - one record - is unaffected, and `deleteAll()`
+  passes the confirmation itself.
+- `getTable("EIGENVALUEMODE")` and `tables.result1.getVibrationModeShapeTable()`
+  send `COMPONENTS: ["Node", "Mode", "UX", "UY", "UZ", "RX", "RY", "RZ"]` - the
+  manual example's list - when no `components` are given. Gen NX answers that
+  table with `Unknown Error` every time `COMPONENTS` is absent and answers
+  every time it is present (2026-10-20); a list you pass is sent unchanged,
+  and `PARTICIPATIONVECTORMODE` gets nothing added.
+
+### Fixed
+
+- Every table function - `tables.*`, the `post.get*DesignForcesTable`
+  functions and anything built with `defineTable`, `defineVariableTable` or
+  `defineDirectionalTable` - accepts `client`, `timeout` and `signal` in its
+  options type. The generated option types are picks of each table's own
+  fields and had dropped them, so `getReactionTable({ ..., client })`, the
+  README's own example, did not type-check although it worked at run time.
+
+### Documentation
+
+- `operations.post.design.getSteelCodeCheck()` warns in its JSDoc that it can
+  hold the whole session: on Gen NX an analysed model with a steel design code
+  and no steel design combinations raises a "No Load Combination exists for
+  Checking." dialog, the call never answers, and every other call waits until
+  the dialog is closed.
+- `getVibrationModeShapeTable()`'s JSDoc names the `SUB_TABLES` keys as the
+  server sends them, with spaces (`"EIGENVALUE ANALYSIS"`, ...).
+
+- README: the safety note on timeouts now shows the per-call `timeout` and
+  `signal` options with an example — a short client timeout, a long one for
+  analysis only, and an `AbortController` for a Cancel button — and states that
+  a timed-out or aborted call raises `MidasConnectionError`. A browser app
+  built on 2.10.1 had set one 15-minute timeout for every call, which a modal
+  dialog in MIDAS NX turns into a 15-minute wait on each of them.
+
 ## 2.10.1 - 2026-10-12
 
 > **A browser fix; nothing else.** No type, export or Node behaviour changes.

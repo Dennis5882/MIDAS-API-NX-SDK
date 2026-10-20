@@ -52,6 +52,8 @@ verified against a running product.
    whatever document is open — including work unrelated to the script.
 2. **`delete_all()` / `deleteAll()` empties the whole table**, which is why it
    demands an explicit confirmation. Use `delete(ids)` for specific records.
+   The raw `request("DELETE", "/db/<NAME>", ...)` is the same call and is
+   guarded the same way; `"/db/<NAME>/<id>"` removes one record.
 3. **A timeout is not a rollback.** The operation may still land after the
    HTTP call gives up. Never auto-retry a write after a timeout; check the
    model state first.

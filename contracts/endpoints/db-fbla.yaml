@@ -33,7 +33,7 @@ verification:
     - product: civil
       ref: db-read-sweep-2026-08-16
     - product: gen
-      ref: db-read-sweep-2026-08-16
+      ref: steel-frame-gen-2026-10-20
 
 operations:
   - method: DELETE
