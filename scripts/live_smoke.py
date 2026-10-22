@@ -13,8 +13,10 @@ NX build, without re-deriving the whole walk-through by hand.
 
 ⚠️ Calls /doc/NEW, which replaces whatever is open in that NX session.
 Don't run this against a session with work you care about. The built model
-is left open afterward (not saved, not closed) so you can inspect it in the
-NX GUI.
+is saved into --save-dir just before the analysis (an unsaved document
+raises a blocking Save As dialog on /doc/ANAL) and left open afterward so
+you can inspect it in the NX GUI. With --no-save-before there is nowhere to
+save it, so the analyze step is refused.
 
 ⚠️ Corrected 2026-07-26: this used to say /doc/NEW discards the open
 document "WITHOUT saving". Not reliably. It can instead raise NX's own
@@ -96,7 +98,7 @@ def _find_head_data(response: dict) -> tuple:
     return None, None
 
 
-def run(client: MidasClient) -> dict:
+def run(client: MidasClient, save_dir: Optional[str]) -> dict:
     steps = []
 
     def step(name: str, fn):
@@ -144,7 +146,8 @@ def run(client: MidasClient) -> dict:
         step("self_weight", lambda: SelfWeight.create(
             {1: {"LCNAME": "DL", "FV": [0, 0, -1]}}, client=client,
         ))
-        step("analyze", lambda: doc.analyze(client=client))
+        step("analyze", lambda: harness_save_path.analyze_saved(
+            client, save_dir, "midas-nx-smoke-model", client.product.value))
         reactions = step("reactions", lambda: get_reaction_table(load_case_names=["DL(ST)"], client=client))
         step("displacements", lambda: get_displacement_table(load_case_names=["DL(ST)"], client=client))
         step("beam_forces", lambda: get_beam_force_table(load_case_names=["DL(ST)"], client=client))
@@ -199,7 +202,7 @@ def main() -> None:
         print(f"Saving the open document to {checkpoint} first...")
         doc.save_as(checkpoint, client=client)
 
-    report = run(client)
+    report = run(client, args.save_dir)
 
     sys.stdout.reconfigure(encoding="utf-8")
     output = json.dumps(report, ensure_ascii=False, indent=2)

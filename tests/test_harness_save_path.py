@@ -120,6 +120,11 @@ def test_the_checkpoint_carries_the_product_s_own_nx_extension(
      "must be an absolute directory"),
     ("scripts/live_manual_feedback.py", ["--product", "gen", "--out", "unused.json"],
      "no waiver for them"),
+    ("scripts/live_design_functions.py", ["--report-dir", "C:/temp/unused"],
+     "no waiver for them"),
+    ("scripts/live_design_functions.py",
+     ["--report-dir", "C:/temp/unused", "--save-dir", "scratch"],
+     "must be an absolute directory"),
 ])
 def test_each_destructive_harness_refuses_to_start_without_one(
     script, argv, expected
@@ -153,3 +158,41 @@ def test_the_npm_harness_still_applies_the_same_two_rules() -> None:
     assert 'product === "civil" ? "mcbz" : "mgbx"' in source
     # And it refuses before connecting, the same as the Python three.
     assert "isAbsoluteHostDirectory(args.saveDir)" in source
+
+
+
+def test_no_harness_analyses_an_unsaved_document() -> None:
+    """`/doc/ANAL` on a never-saved document raises a blocking Save As dialog.
+
+    Measured 2026-10-22 on Gen NX Build 10/17/2026, straight after `/doc/NEW`.
+    Every Python harness goes through `analyze_saved`; a direct
+    `doc.analyze(` anywhere else under scripts/ is the mistake that hit.
+    """
+    direct = [
+        path.name for path in (ROOT / "scripts").glob("*.py")
+        if path.name != "harness_save_path.py"
+        and "doc.analyze(" in path.read_text(encoding="utf-8")
+    ]
+    assert direct == []
+    analysis = (ROOT / "packages" / "typescript" / "scripts" / "live-analysis.mjs").read_text(
+        encoding="utf-8")
+    assert analysis.index("doc.saveAs(saved") < analysis.index("doc.analyze(")
+
+
+def test_analyze_saved_saves_first_and_refuses_without_a_directory(monkeypatch) -> None:
+    from midas_nx import doc
+
+    module = _module()
+    calls = []
+    monkeypatch.setattr(doc, "save_as", lambda path, client=None: calls.append(("save", path)))
+    monkeypatch.setattr(doc, "analyze", lambda client=None: calls.append(("analyze",)) or "ok")
+
+    assert module.analyze_saved(object(), "C:/temp", "model", "gen") == "ok"
+    assert calls[0][0] == "save" and calls[0][1].startswith("C:/temp/model-gen-")
+    assert calls[0][1].endswith(".mgbx")
+    assert calls[1] == ("analyze",)
+
+    calls.clear()
+    with pytest.raises(RuntimeError, match="Save As dialog"):
+        module.analyze_saved(object(), None, "model", "civil")
+    assert calls == []

@@ -12270,3 +12270,79 @@ material, and another that took all 324 elements) is the documented
 whole-table behaviour, reached through raw `request()`.
 
 Ledger `ledger-write-2026-10-20-2` and `ledger-read-2026-10-20-3`.
+
+
+## 2026-10-22 - both products at v2.2 Build 10/17/2026: no API change, three behaviour changes
+
+MIDAS CIVIL NX 2026 v2.2 and MIDAS GEN NX 2026 v2.2, **Build 10/17/2026**,
+each read from its own About dialog by the author. Live, destructive, on the
+author's go-ahead ("새로운 패치이고, 자동으로 c:\temp에 저장하고 하나씩 라이브
+검증 돌려줘"), on this checkout's machine (the NX host). Both documents
+confirmed open and empty with each product's own key first (`GET /db/NODE`,
+`/db/ELEM`, `/db/MATL` answered `{"message": ""}`).
+
+1. **`/info`, GET only.** Every endpoint captured on each product with its own
+   key and diffed against `schema/info-baseline.json` (Build 10/10/2026): 400
+   pairs compared, **no difference**. The baseline stands unchanged.
+2. **GET sweep**, `scripts/live_readonly_sweep.py`: Civil 284 of 284 resources,
+   Gen 268 of 268, all `ok`.
+3. **Every confirmed case replayed through both SDKs**, the 2026-10-11 plan:
+   Python one invocation per tier holding a confirmed case (30 Gen, 39 Civil),
+   npm one case per endpoint by tier, at most eight per invocation (50 Gen,
+   60 Civil), a real `GET /db/NODE` after each. Every invocation checkpointed
+   to `C:/temp`, sent `/doc/NEW` and restored an empty document.
+
+| | Result |
+| --- | --- |
+| confirmed endpoint-product pairs | **421 of 421 passed through both SDKs** (236 endpoints: 185 on both, 37 Civil only, 14 Gen only) - 419 as on 2026-10-11, plus Civil `/db/NLCT` and `/db/EPMT` |
+| Python | one confirmed case failed, Gen RC `MRFT` (below); every other failure is an unconfirmed case (Gen 14 + 3 blocked, as on 2026-10-11; Civil 16 + 5 blocked, two fewer than then because NLCT and EPMT now pass) |
+| npm | Gen RC `MRFT` as in Python; RC and steel `SRDF` on Gen with `DCO` in another invocation (the known trap; passed as `DCO,SRDF`); 3 Gen and 11 Civil cases refused by the harness before sending, because their setup writes a group or boundary group and they were not last - all passed run alone |
+
+**Gen stores RC `MRFT` `FACTOR` as sent.** The confirmed case encoded the
+2026-09-29 finding that Gen stored the example's `0.01` - and 0.05, 0.1, 0.2 -
+as `0.7`. On this build the PUT of `0.01` read back `0.01`
+(`updated to 0.7, read back 0.01` in the harness's terms). The confirmed case
+re-run with only the PUT's value and expectation changed stored `0.01`, `0.2`,
+`0.5`, `0.69` and `0.7` each as sent. Gen now behaves as Civil always did; the
+case expects `0.01` on both products.
+
+**Civil now accepts `/db/NLCT` and `/db/EPMT`.** Both were product-split cases
+because Civil refused the payload Gen accepts - NLCT with `LINE_SEARCH_OPTION is
+required when OPT_ENABLE_LINE_SEARCH is true.` (2026-08-16, unchanged through
+Build 10/10/2026), EPMT with `Wrong Field`. On this build both completed a full
+round trip in the tier run and again alone, through both SDKs. Both Civil cases
+are confirmed now. The fields named in the NLCT error still appear in neither
+the manual nor `/info`.
+
+**A single invocation over every tier is not this plan.** Before the per-tier
+run, `live_crud_check.py` was run once with no `--tier`, on each product. It
+reported six regressions on each (HSTG, IEPI, PRST, RC PMDM, RC SCOL, plus
+STCT-M1 on Civil and MRFT on Gen) with errors that name the model, not the
+request - `element no. 1 is an element type in which ... cannot be entered`,
+`cannot be deleted when the Construction Stage is registered` - and seeds
+answering `Key Already Exist`. The six re-run alone on Civil passed, and each
+passed in its own tier in the replay: earlier tiers' records left in the one
+document. Only MRFT survived both.
+
+Ledger `ledger-write-2026-10-22-{1,2,3}` (both / Civil / Gen); npm rows in
+`docs/npm_live_evidence_scratch.md`. Both products left on empty documents.
+
+
+## 2026-10-22 (later) - `/doc/ANAL` on an unsaved document raises a Save As dialog (Gen)
+
+Gen NX, Build 10/17/2026, on this checkout's machine. A first run of
+`scripts/live_design_functions.py` saved the open (empty) document to
+`C:/temp`, sent `/doc/NEW`, built the CRUD base model without its plate plus
+a steel column, RC and steel `DCO`, `LCOM-CONC`/`LCOM-STEEL` and member types
+- every record answered with its echo - and then sent `/doc/ANAL` without
+saving the new document. The call did not answer within 60 s; a following
+`GET /db/NODE` timed out too. Gen's top-level windows showed a `#32770`
+dialog titled **다른 이름으로 저장** (Save As) beside the main window, titled
+`[제목 없음 *]`. A `WM_CLOSE` was sent to that dialog; whether the session
+answered afterwards was not measured.
+
+So an analysis needs a saved document. `live-analysis.mjs` always saved
+first, which is why the npm path never met this; `live_smoke.py` analysed
+straight after `/doc/NEW`. Both Python harnesses now analyse through
+`harness_save_path.analyze_saved`, which saves into `--save-dir` first, and a
+test fails on a direct `doc.analyze(` under `scripts/`. Not measured on Civil.

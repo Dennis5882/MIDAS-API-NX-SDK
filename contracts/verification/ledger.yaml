@@ -5502,3 +5502,307 @@ records:
   method: On an analysed model with /db/DSTL GB50017-17 set before the analysis and no /db/LCOM-STEEL, the call did not
     answer and Gen held a "No Load Combination exists for Checking." dialog that blocked every call until WM_CLOSE
     dismissed it; without DSTL it answered an empty message with no dialog. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-10-22-1
+  endpoints:
+  - /DESIGN/RC/KDS-41-20-2022/CMFT
+  - /DESIGN/RC/KDS-41-20-2022/DCTL
+  - /DESIGN/RC/KDS-41-20-2022/DFBA
+  - /DESIGN/RC/KDS-41-20-2022/EQCT
+  - /DESIGN/RC/KDS-41-20-2022/FMAG
+  - /DESIGN/RC/KDS-41-20-2022/KFAC
+  - /DESIGN/RC/KDS-41-20-2022/LENG
+  - /DESIGN/RC/KDS-41-20-2022/LLRF
+  - /DESIGN/RC/KDS-41-20-2022/MBTP
+  - /DESIGN/RC/KDS-41-20-2022/MCMB
+  - /DESIGN/RC/KDS-41-20-2022/MEMB
+  - /DESIGN/RC/KDS-41-20-2022/MLLR
+  - /DESIGN/RC/KDS-41-20-2022/MRFT
+  - /DESIGN/RC/KDS-41-20-2022/PMDM
+  - /DESIGN/RC/KDS-41-20-2022/REXC
+  - /DESIGN/RC/KDS-41-20-2022/SCOL
+  - /DESIGN/RC/KDS-41-20-2022/SDGN
+  - /DESIGN/RC/KDS-41-20-2022/SUEQ
+  - /DESIGN/RC/KDS-41-20-2022/WMAK
+  - /DESIGN/SRC/AIK-SRC2K/CMFT
+  - /DESIGN/SRC/AIK-SRC2K/DCO
+  - /DESIGN/SRC/AIK-SRC2K/DCTL
+  - /DESIGN/SRC/AIK-SRC2K/EQCT
+  - /DESIGN/SRC/AIK-SRC2K/FMAG
+  - /DESIGN/SRC/AIK-SRC2K/KFAC
+  - /DESIGN/SRC/AIK-SRC2K/LENG
+  - /DESIGN/SRC/AIK-SRC2K/LLRF
+  - /DESIGN/SRC/AIK-SRC2K/LTSR
+  - /DESIGN/SRC/AIK-SRC2K/MBTP
+  - /DESIGN/SRC/AIK-SRC2K/MEMB
+  - /DESIGN/SRC/AIK-SRC2K/MLLR
+  - /DESIGN/SRC/AIK-SRC2K/SUEQ
+  - /DESIGN/STEEL/KDS-41-30-2022/CBFT
+  - /DESIGN/STEEL/KDS-41-30-2022/CMFT
+  - /DESIGN/STEEL/KDS-41-30-2022/CRCM
+  - /DESIGN/STEEL/KDS-41-30-2022/DCTL
+  - /DESIGN/STEEL/KDS-41-30-2022/EQCT
+  - /DESIGN/STEEL/KDS-41-30-2022/FMAG
+  - /DESIGN/STEEL/KDS-41-30-2022/KFAC
+  - /DESIGN/STEEL/KDS-41-30-2022/LENG
+  - /DESIGN/STEEL/KDS-41-30-2022/LLRF
+  - /DESIGN/STEEL/KDS-41-30-2022/LTSR
+  - /DESIGN/STEEL/KDS-41-30-2022/MBTP
+  - /DESIGN/STEEL/KDS-41-30-2022/MEMB
+  - /DESIGN/STEEL/KDS-41-30-2022/MLLR
+  - /DESIGN/STEEL/KDS-41-30-2022/SERV
+  - /DESIGN/STEEL/KDS-41-30-2022/SLRS
+  - /DESIGN/STEEL/KDS-41-30-2022/SMODI
+  - /DESIGN/STEEL/KDS-41-30-2022/SUEQ
+  - /db/BCCT
+  - /db/BMLD
+  - /db/BNGR
+  - /db/BTMP
+  - /db/BUCK
+  - /db/CCFC
+  - /db/CLDR
+  - /db/CLWP
+  - /db/CNLD
+  - /db/CONS
+  - /db/CO_F
+  - /db/CO_M
+  - /db/CO_S
+  - /db/CO_T
+  - /db/CRPC
+  - /db/CUTL
+  - /db/DCON
+  - /db/DCTL
+  - /db/EDMP
+  - /db/EFCT
+  - /db/EIGV
+  - /db/ELNK
+  - /db/EPMT
+  - /db/ESSF
+  - /db/ETFC
+  - /db/ETMP
+  - /db/EXLD
+  - /db/FBLD
+  - /db/FIBR
+  - /db/FIMP
+  - /db/FMLD
+  - /db/FRLS
+  - /db/GRDP
+  - /db/GRUP
+  - /db/GSPR
+  - /db/GSTP
+  - /db/GTMP
+  - /db/HAHS
+  - /db/HECB
+  - /db/HSFC
+  - /db/HSPT
+  - /db/HSTG
+  - /db/IEHC
+  - /db/IELC
+  - /db/IEPI
+  - /db/IFGS
+  - /db/IMFM
+  - /db/INMF
+  - /db/LCOM-CONC
+  - /db/LCOM-GEN
+  - /db/LCOM-SRC
+  - /db/LCOM-STEEL
+  - /db/LCOM-STLCOMP
+  - /db/LDGR
+  - /db/LDSQ
+  - /db/LENG
+  - /db/LLAN
+  - /db/LLANtr
+  - /db/LTOM
+  - /db/LTSR
+  - /db/MATD
+  - /db/MBTP
+  - /db/MCON
+  - /db/MEMB
+  - /db/MLFC
+  - /db/MLSP
+  - /db/MLSR
+  - /db/MVCD
+  - /db/MVCT
+  - /db/MVCTbs
+  - /db/MVCTtr
+  - /db/MVHC
+  - /db/MVHL
+  - /db/MVHLtr
+  - /db/MVLD
+  - /db/MVLDtr
+  - /db/NBOF
+  - /db/NLCT
+  - /db/NMAS
+  - /db/NODE
+  - /db/NPLN
+  - /db/NSPR
+  - /db/NTMP
+  - /db/OFFS
+  - /db/PDEL
+  - /db/PJCF
+  - /db/PNLA
+  - /db/PNLD
+  - /db/POLC
+  - /db/POSL
+  - /db/POSP
+  - /db/PRES
+  - /db/PRLS
+  - /db/PRST
+  - /db/PSLT
+  - /db/PSSF
+  - /db/PTNS
+  - /db/PZEF
+  - /db/RIGD
+  - /db/SDSP
+  - /db/SDST
+  - /db/SDVE
+  - /db/SDVI
+  - /db/SECF
+  - /db/SKEW
+  - /db/SLAN
+  - /db/SMCT
+  - /db/SMLC
+  - /db/SMPT
+  - /db/SPFC
+  - /db/SPLC
+  - /db/SSPS
+  - /db/STAG
+  - /db/STBK
+  - /db/STLD
+  - /db/STMP
+  - /db/STYP
+  - /db/TDGR
+  - /db/TDME
+  - /db/TDMT
+  - /db/TDNT
+  - /db/THFC
+  - /db/THGA
+  - /db/THGC
+  - /db/THIK
+  - /db/THIS
+  - /db/THMS
+  - /db/THNL
+  - /db/THSL
+  - /db/TMAT
+  - /db/TMLD
+  - /db/TSGR
+  - /db/ULFC
+  - /db/VBEM
+  - /db/VSEC
+  - /db/WMAK
+  date: '2026-10-22'
+  level: write
+  products:
+  - gen
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build 10/17/2026
+    gen: MIDAS Gen NX 2026 (v2.2), build 10/17/2026
+  outcome: success
+  method: >-
+    Re-verification of every confirmed case in schema/live-cases.json on Build 10/17/2026 (both products v2.2,
+    author-confirmed from the About dialogs), run 2026-10-22 on the machine holding this checkout, which is also the
+    NX host. Python ran every tier holding a confirmed case, whole; npm took one case per endpoint as live-crud.mjs
+    picks it, by tier, at most 8 per invocation, and a case whose setup writes a group or boundary group was re-run
+    alone after the harness refused it mid-batch. Each invocation checkpointed to C:/temp, sent /doc/NEW, built the
+    base model and restored an empty document. These completed create/read/update/read/delete/read through both SDKs
+    on Gen, Civil; npm replayed the same emitted fixture on Gen, Civil on 2026-10-22. Across the whole run 421 of
+    421 confirmed endpoint-product pairs passed through both SDKs. One confirmed expectation changed with the build,
+    not the SDK: Gen now stores RC MRFT FACTOR 0.01 as sent, where it stored 0.7 through Build 10/10/2026, and the
+    case expects 0.01 on both products. Civil now accepts /db/NLCT and /db/EPMT with the payloads Gen accepts, which
+    it refused through Build 10/10/2026; both cases are confirmed on Civil. RC and steel SRDF on Gen passed with DCO
+    first, as on 2026-10-11. Evidence in docs/live_verification_notes.md and docs/npm_live_evidence_scratch.md.
+- id: ledger-write-2026-10-22-2
+  endpoints:
+  - /db/ACTL-M1
+  - /db/BCGA-M1
+  - /db/BCGD-M1
+  - /db/CAMB
+  - /db/CJFG
+  - /db/CMCS
+  - /db/CRGR
+  - /db/DYFG
+  - /db/DYLA
+  - /db/DYNF
+  - /db/EIGV-M1
+  - /db/EWSF
+  - /db/GCMB
+  - /db/GSBG
+  - /db/HHCT-M1
+  - /db/IMFM-M1
+  - /db/IMPF
+  - /db/LLANch
+  - /db/LLANid
+  - /db/LLANop
+  - /db/MVCTid
+  - /db/MVLDch
+  - /db/MVLDid
+  - /db/NLCT-M1
+  - /db/PLCB
+  - /db/POGD
+  - /db/POGD-M1
+  - /db/POLC-M1
+  - /db/RCHK
+  - /db/SLANch
+  - /db/SLANop
+  - /db/SPAN
+  - /db/STCT-M1
+  - /db/STRPSSM
+  - /db/STYP-M1
+  - /db/THGC-M1
+  - /db/THOO-M1
+  date: '2026-10-22'
+  level: write
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build 10/17/2026
+  outcome: success
+  method: >-
+    Re-verification of every confirmed case in schema/live-cases.json on Build 10/17/2026 (both products v2.2,
+    author-confirmed from the About dialogs), run 2026-10-22 on the machine holding this checkout, which is also the
+    NX host. Python ran every tier holding a confirmed case, whole; npm took one case per endpoint as live-crud.mjs
+    picks it, by tier, at most 8 per invocation, and a case whose setup writes a group or boundary group was re-run
+    alone after the harness refused it mid-batch. Each invocation checkpointed to C:/temp, sent /doc/NEW, built the
+    base model and restored an empty document. These completed create/read/update/read/delete/read through both SDKs
+    on Civil; npm replayed the same emitted fixture on Civil on 2026-10-22. Across the whole run 421 of 421
+    confirmed endpoint-product pairs passed through both SDKs. One confirmed expectation changed with the build, not
+    the SDK: Gen now stores RC MRFT FACTOR 0.01 as sent, where it stored 0.7 through Build 10/10/2026, and the case
+    expects 0.01 on both products. Civil now accepts /db/NLCT and /db/EPMT with the payloads Gen accepts, which it
+    refused through Build 10/10/2026; both cases are confirmed on Civil. RC and steel SRDF on Gen passed with DCO
+    first, as on 2026-10-11. Evidence in docs/live_verification_notes.md and docs/npm_live_evidence_scratch.md.
+- id: ledger-write-2026-10-22-3
+  endpoints:
+  - /DESIGN/RC/KDS-41-20-2022/BEMW
+  - /DESIGN/RC/KDS-41-20-2022/DCO
+  - /DESIGN/RC/KDS-41-20-2022/LMRR
+  - /DESIGN/RC/KDS-41-20-2022/MATD
+  - /DESIGN/RC/KDS-41-20-2022/SRDF
+  - /DESIGN/RC/KDS-41-20-2022/TRFT
+  - /DESIGN/RC/KDS-41-20-2022/ULCT
+  - /DESIGN/STEEL/KDS-41-30-2022/DCO
+  - /DESIGN/STEEL/KDS-41-30-2022/SRDF
+  - /DESIGN/STEEL/KDS-41-30-2022/ULCT
+  - /db/HHCT
+  - /db/LCOM-SEISMIC
+  - /db/SDHY
+  - /db/SDIS
+  date: '2026-10-22'
+  level: write
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build 10/17/2026
+  outcome: success
+  method: >-
+    Re-verification of every confirmed case in schema/live-cases.json on Build 10/17/2026 (both products v2.2,
+    author-confirmed from the About dialogs), run 2026-10-22 on the machine holding this checkout, which is also the
+    NX host. Python ran every tier holding a confirmed case, whole; npm took one case per endpoint as live-crud.mjs
+    picks it, by tier, at most 8 per invocation, and a case whose setup writes a group or boundary group was re-run
+    alone after the harness refused it mid-batch. Each invocation checkpointed to C:/temp, sent /doc/NEW, built the
+    base model and restored an empty document. These completed create/read/update/read/delete/read through both SDKs
+    on Gen; npm replayed the same emitted fixture on Gen on 2026-10-22. Across the whole run 421 of 421 confirmed
+    endpoint-product pairs passed through both SDKs. One confirmed expectation changed with the build, not the SDK:
+    Gen now stores RC MRFT FACTOR 0.01 as sent, where it stored 0.7 through Build 10/10/2026, and the case expects
+    0.01 on both products. Civil now accepts /db/NLCT and /db/EPMT with the payloads Gen accepts, which it refused
+    through Build 10/10/2026; both cases are confirmed on Civil. RC and steel SRDF on Gen passed with DCO first, as
+    on 2026-10-11. Evidence in docs/live_verification_notes.md and docs/npm_live_evidence_scratch.md.

@@ -39,6 +39,15 @@ not the host's Windows profile.
 
 The shape check runs while arguments are parsed rather than at the save, so a
 malformed path costs nothing -- not even a connection.
+
+**A harness saves the model before it analyses it.** ``/doc/ANAL`` on a
+document that was never saved - which is every document right after
+``/doc/NEW`` - raised Gen NX's "Save As" dialog on 2026-10-22 (Build
+10/17/2026), and the call never answered until the dialog was closed. Every
+harness analyses through ``analyze_saved``, which writes a checkpoint into the
+same ``--save-dir`` first and refuses when there is none to write into;
+``tests/test_harness_save_path.py`` fails if a script calls ``doc.analyze``
+directly. The npm ``live-analysis.mjs`` saves before its analysis too.
 """
 
 from __future__ import annotations
@@ -46,6 +55,7 @@ from __future__ import annotations
 import argparse
 import re
 from datetime import datetime, timezone
+from typing import Any, Optional
 
 #: Product-native NX extensions, author-confirmed 2026-08-31.
 PRODUCT_EXTENSION = {"gen": "mgbx", "civil": "mcbz"}
@@ -68,6 +78,11 @@ MISSING_SAVE_DIR = (
     "this harness calls /doc/NEW and writes a checkpoint per probe. Give "
     "--save-dir a writable directory on the NX machine; those files are the "
     "run's evidence, so there is no waiver for them."
+)
+UNSAVED_ANALYSIS = (
+    "this harness analyses the model it built, and /doc/ANAL on a document "
+    "that was never saved raises a Save As dialog that blocks the session. "
+    "Give --save-dir so the model can be saved there first."
 )
 MISSING_SAVE_TARGET = (
     "this harness calls /doc/NEW and discards the open document. Give "
@@ -140,3 +155,18 @@ def checkpoint_prefix(save_dir: str, label: str, product: str) -> str:
 def checkpoint(save_dir: str, label: str, product: str) -> str:
     """``checkpoint_prefix`` with the product's own NX extension."""
     return f"{checkpoint_prefix(save_dir, label, product)}.{PRODUCT_EXTENSION[product]}"
+
+
+def analyze_saved(client: Any, save_dir: Optional[str], label: str, product: str) -> Any:
+    """Save the open document under ``save_dir``, then run ``/doc/ANAL``.
+
+    The only way a harness analyses. Without a directory there is nowhere to
+    save, and analysing unsaved raises the blocking "Save As" dialog, so it
+    refuses rather than send the call.
+    """
+    from midas_nx import doc  # noqa: PLC0415 - keep this module import-light
+
+    if not save_dir:
+        raise RuntimeError(UNSAVED_ANALYSIS)
+    doc.save_as(checkpoint(save_dir, label, product), client=client)
+    return doc.analyze(client=client)

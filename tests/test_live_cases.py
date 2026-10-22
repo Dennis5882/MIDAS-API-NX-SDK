@@ -178,7 +178,9 @@ def test_extras16_epmt_fixture_is_the_manual_von_mises_example() -> None:
     cases = json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
     epmt_cases = [case for case in cases if case["endpoint"] == "/db/EPMT"]
     assert [case["products"] for case in epmt_cases] == [["gen"], ["civil"]]
-    assert [case["confirmed"] for case in epmt_cases] == [True, False]
+    # Civil refused this payload through Build 10/10/2026 and takes it from
+    # Build 10/17/2026 (live notes, 2026-10-22).
+    assert [case["confirmed"] for case in epmt_cases] == [True, True]
     epmt = epmt_cases[0]
 
     assert epmt["createPayload"] == {

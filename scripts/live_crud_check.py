@@ -2956,7 +2956,8 @@ def _extras8_cases() -> List[Case]:
         # adding a guessed LINE_SEARCH_OPTION="AUTO" alongside
         # OPT_ENABLE_LINE_SEARCH=True (also the same error, unchanged) --
         # neither cleared it on Civil. Split into two cases since only one
-        # product's round trip actually completes.
+        # product's round trip actually completed. From Build 10/17/2026
+        # Civil takes this same payload too (2026-10-22, both SDKs).
         Case(
             NonlinearAnalysisControlData,
             {"NONLINEAR_TYPE": "GEOM+MATL", "ITERATION_METHOD": "NEWTON",
@@ -2974,7 +2975,7 @@ def _extras8_cases() -> List[Case]:
              "NEWTON_ITEMS": [{"ITERATION_METHOD": "NEWTON", "LCNAME": "LC_SCRATCH",
                                "NUMBER_STEPS": 1, "MAX_ITERATIONS": 50, "LOAD_FACTORS": [1]}]},
             lambda p: p.get("MAX_ITERATIONS"), 30, 50,
-            item_id=1, products=("civil",),
+            item_id=1, products=("civil",), confirmed=True,
         ),
         Case(
             NonlinearAnalysisControlData,
@@ -4094,9 +4095,10 @@ def _extras16_cases() -> List[Case]:
     # The identical manual payload passes Gen but Civil refuses it with
     # "Wrong Field" even though both products expose the same /info schema.
     # Keep separate cases so Gen's evidence does not bless Civil's behaviour.
+    # From Build 10/17/2026 Civil takes it too (2026-10-22, both SDKs).
     return [
         Case(*args, item_id=1, products=("gen",), confirmed=True),
-        Case(*args, item_id=1, products=("civil",)),
+        Case(*args, item_id=1, products=("civil",), confirmed=True),
         # The article's own example, created as printed; the update takes
         # the vendored chapter's Python-example NAME and FC. id 1, not the
         # article's 3: /db/FIMP stores a POST under the next serial id and
@@ -4286,10 +4288,10 @@ _DESIGN_TABLE_CASES: List[Tuple[str, int, Any, Dict[str, Any], str, Any, Any, Tu
     (f"{_RC}/SUEQ", 2, "934", {"LC_AXIAL": 1.2}, "LC_AXIAL", 1, 1.2, _BOTH),
     (f"{_RC}/SCOL", 1, "915", {"TYPE": "SOFT_STORY"}, "TYPE", "PILOTI", "SOFT_STORY", _BOTH),
     (f"{_RC}/MCMB", 2, "888", {"CALC_METHOD": "EQUI"}, "CALC_METHOD", "EACH", "EQUI", _BOTH),
-    # The example's second record, 0.01. Gen stores anything from 0.01 to
-    # 0.2 as 0.7 (0.5 and 0.69 as sent); Civil stores 0.01.
-    (f"{_RC}/MRFT", 2, "885", {"FACTOR": 0.01}, "FACTOR", 1, 0.7, ("gen",)),
-    (f"{_RC}/MRFT", 2, "885", {"FACTOR": 0.01}, "FACTOR", 1, 0.01, ("civil",)),
+    # The example's second record, 0.01. Until Build 10/10/2026 Gen stored
+    # anything from 0.01 to 0.2 as 0.7; from Build 10/17/2026 Gen stores
+    # 0.01, 0.2, 0.5, 0.69 and 0.7 as sent, as Civil always did.
+    (f"{_RC}/MRFT", 2, "885", {"FACTOR": 0.01}, "FACTOR", 1, 0.01, _BOTH),
     # TRFT's example gives only 1; 0.01 is the same chapter's MRFT value,
     # inside TRFT's stated range (>0, <=1).
     (f"{_RC}/TRFT", 2, "888", {"FACTOR": 0.01}, "FACTOR", 1, 0.01, ("gen",)),
@@ -5269,7 +5271,7 @@ TIERS: List[Tier] = [
     Tier("extras5", "batch 5: db.dynamic_loads (9 of 12, Hyper-S variants deferred)", _extras5_seeds, _extras5_cases),
     Tier("extras6", "batch 6: seismic-device family from db.boundary (SDVI/SDVE/SDST confirmed both products; SDHY/SDIS confirmed Gen-only; DRLS deferred)", _no_seeds, _extras6_cases),
     Tier("extras7", "batch 7: standalone/frame-attachable remainder of db.static_loads (PNLD/PNLA/FMLD/POSP/POSL confirmed; FBLA/EPST/EPSE fail live)", _extras7_seeds, _extras7_cases),
-    Tier("extras8", "batch 8: tractable subset of db.analysis_control (PDEL/BUCK/SMCT/EIGV/BCCT/MVCT confirmed both products; HHCT/NLCT confirmed Gen only and fail on Civil; ACTL remains unresolved)", _extras8_seeds, _extras8_cases),
+    Tier("extras8", "batch 8: tractable subset of db.analysis_control (PDEL/BUCK/SMCT/EIGV/BCCT/MVCT confirmed both products; HHCT confirmed Gen only and fails on Civil; NLCT confirmed Gen, and Civil from Build 10/17/2026; ACTL remains unresolved)", _extras8_seeds, _extras8_cases),
     Tier("extras9", "batch 9: db.node_element's Domain feature (MADO/SBDO/DOEL -- all 3 fail live, MADO silently drops writes on both products)", _extras9_seeds, _extras9_cases),
     Tier("extras10", "batch 10: standalone subset of db.construction_stage's heat-of-hydration family (ETFC/CCFC/HSFC/HAHS/STBK/HSTG confirmed; HAHS uses a real SOLID fixture; HPCE fails live; HECB/HSPT/CSCS deferred)", _extras10_seeds, _extras10_cases),
     Tier("extras11", "batch 11a/c: /db/STCT (fails live -- iITER/TOL silently don't persist), /db/HSPT and /db/HECB confirmed with a SOLID hydration fixture", _extras11_seeds, _extras11_cases),

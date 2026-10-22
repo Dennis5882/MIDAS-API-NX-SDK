@@ -13,17 +13,17 @@ versions are in git history (`a9da9a0` and before).
 which build, with verbatim errors. This file is the procedure and the
 scoreboard.
 
-## Where things stand (measured 2026-10-11)
+## Where things stand (measured 2026-10-22)
 
-- **Both products are installed at v2.2, Build 10/10/2026** - Gen NX 2026
-  (v2.2) and Civil NX 2026 (v2.2), each read from its own About dialog and
-  author-confirmed 2026-10-11, on the author's home PC, which is also the
-  machine holding this checkout. **Writes are re-verified on it**: `/info` was
-  diffed (one change, Civil's new `/db/POSP`) and the baseline moved, and every
-  confirmed case replayed through both SDKs the same day - all 419
-  endpoint-product pairs passed, nothing regressed. The GET breadth sweep was
-  not re-run on this build; its last clean run is Build 09/24/2026 (Gen 268
-  resources, Civil 283).
+- **Both products are installed at v2.2, Build 10/17/2026** - Gen NX 2026
+  (v2.2) and Civil NX 2026 (v2.2), each read from its own About dialog by the
+  author 2026-10-22, on the author's home PC, which is also the machine
+  holding this checkout. **Writes are re-verified on it**: `/info` was diffed
+  (no change; the 10/10/2026 baseline stands), the GET breadth sweep ran clean
+  (Gen 268 resources, Civil 284), and every confirmed case replayed through
+  both SDKs the same day - all 421 endpoint-product pairs passed. Gen RC `MRFT`
+  now stores `FACTOR` as sent, and Civil now accepts `/db/NLCT` and `/db/EPMT`;
+  the fixture follows both (live notes, 2026-10-22).
 - **2.10.2 is published on PyPI and npm** (2026-10-20): `request()` refuses an
   unconfirmed whole-table `DELETE` in both SDKs, `EIGENVALUEMODE` gets a default
   `COMPONENTS`, `getSteelCodeCheck()` warns of its dialog, and npm's table
@@ -32,9 +32,9 @@ scoreboard.
 - **Coverage: 400/400 implemented, 281 write / 119 read.** Of the 225 `/db`
   endpoints, 194 are write-level and 31 are not.
 - **Fixture (`schema/live-cases.json`, version 6):** 337 cases over 259
-  endpoints; 297 confirmed over 236 endpoints; 9 base-model steps; 81 named
+  endpoints; 299 confirmed over 236 endpoints; 9 base-model steps; 81 named
   seeds; 0 unsupported.
-- **npm has replayed all 297 confirmed cases** on every product each declares.
+- **npm has replayed all 299 confirmed cases** on every product each declares.
   Keep that gap at 0: every new confirmed case goes through both harnesses.
 - **Contracts: 384 endpoints + 87 result tables.** The three drafts left, the
   IEHG trio, have no permitted source; that is final.
@@ -61,8 +61,8 @@ python scripts/report_dropped_manual_rows.py \
 python scripts/live_crud_check.py --check-cases        # silent; exit 0
 python scripts/check_fixture_contract.py --check       # 1 fixture lead over 1
                                           # endpoint, 0 contract gaps over 0
-python scripts/report_npm_replay_coverage.py --check   # 297 cases over 236
-                                          # endpoints; every product: 297
+python scripts/report_npm_replay_coverage.py --check   # 299 cases over 236
+                                          # endpoints; every product: 299
 python scripts/check_verification_lag.py --check       # 40, ceiling 40
 python scripts/verification_ledger.py                  # 397 endpoints:
                                           # 116 read, 281 write
@@ -82,8 +82,9 @@ that it changed.
 
 **Live. Destructive: `/doc/NEW`.** Every confirmed case was replayed on Build
 09/15/2026 on 2026-09-18, on Build 09/24/2026 on 2026-09-27 (302 of 302
-endpoint-product pairs), and on **Build 10/10/2026 on 2026-10-11** - 419 of 419
-pairs through both SDKs, no regression - so this is dormant until a newer
+endpoint-product pairs), on Build 10/10/2026 on 2026-10-11 (419 of 419), and on
+**Build 10/17/2026 on 2026-10-22** - 421 of 421 pairs through both SDKs, after
+one expectation followed a product change - so this is dormant until a newer
 build ships. A confirmed case failing on a new build is a
 **regression**, which is what this exists to catch before a user does.
 
@@ -197,6 +198,11 @@ Selection traps, each of which has cost a session:
   full re-verification does exactly that. Give a new tier its own seeds, even
   when an existing one looks identical; extras19 was built the other way on
   2026-09-20 and rebuilt the same day (live notes).
+- **One Python invocation with no `--tier` is not a re-verification.** It runs
+  every tier in one document, and earlier tiers' records break later cases: on
+  2026-10-22 it reported six regressions per product, with errors naming the
+  model (`element no. 1 is an element type in which ...`), and five of each
+  passed in their own tier. Run one invocation per tier.
 
 ## Recording a run — three places, every time
 
@@ -309,9 +315,7 @@ They move no count. None is actionable unless its cause changes.
 | `/db/LLANop`, `/db/SLANop` | gen | refused under `BS`, the code ch08 gives Gen for this family - `contains errors.(Item:Wheel Spacing)`, the first time the item was recorded (2026-09-27) |
 | `/db/LCOM-SEISMIC` | civil | documented `ANAL="RS"` answers `The Load Combination Type is not supported.` |
 | `/db/HHCT` | civil | POST accepted, expected value not read back |
-| `/db/NLCT` | civil | `LINE_SEARCH_OPTION` required when `OPT_ENABLE_LINE_SEARCH` is true; the contract records no value for it |
 | `/db/DSTL` | gen | `Errors detected in Steel Design Control Data.` |
-| `/db/EPMT` | civil | `Wrong Field` for the request Gen accepts |
 | `/db/POGD` | gen | `Wrong Field` for the payload Civil accepts |
 
 `check_fixture_contract.py`'s one lead, `/db/ACTL` sending `CLATS` on Gen, is
@@ -383,22 +387,29 @@ declares one - not as a queue to rescan.
 - **`verify_connection()` cannot prove a session is alive.** It answers
   `connected` while a modal dialog holds the product; use a real `GET /db/NODE`.
 - **Paths belong to the NX machine.** `--save-dir` is required and never
-  inferred from `verify_connection()["user"]`, which is an email. All four
-  destructive harnesses ask the same way and refuse to start without an answer
+  inferred from `verify_connection()["user"]`, which is an email. Every
+  destructive harness asks the same way and refuse to start without an answer
   (`scripts/harness_save_path.py`); the shape is checked while arguments are
   parsed, so a relative path costs nothing, not even a connection.
   `C:/temp` exists; the author manages it — do not clean it.
 - **A GET can pop a modal dialog** if the open document lives under
   `Program Files`.
-- **Four harnesses call `/doc/NEW` and discard unsaved work**:
+- **Five harnesses call `/doc/NEW` and discard unsaved work**:
   `scripts/live_smoke.py`, `scripts/live_crud_check.py`,
-  `packages/typescript/scripts/live-crud.mjs` and
+  `packages/typescript/scripts/live-crud.mjs`,
   `scripts/live_manual_feedback.py`, which calls it once per probe rather than
-  once per run. Never against a document the author has not confirmed empty.
+  once per run, and `scripts/live_design_functions.py` (Gen only). Never against a document the author has not confirmed empty.
   Each takes the checkpoint directory from the caller and none guesses one.
   `--no-save-before` waives the checkpoint, not the `/doc/NEW`, and
-  `live_manual_feedback.py` does not offer it: its per-probe saves are the
-  run's evidence.
+  `live_manual_feedback.py` and `live_design_functions.py` do not offer it:
+  the first's per-probe saves are the run's evidence, the second saves before
+  its analysis regardless.
+- **Save before analysing.** `/doc/ANAL` on a document that was never saved -
+  every document straight after `/doc/NEW` - raised Gen's "Save As" dialog on
+  2026-10-22 and the call never answered. Python harnesses analyse only
+  through `harness_save_path.analyze_saved`, which saves into `--save-dir`
+  first and refuses without one; a test fails on a direct `doc.analyze(`
+  under `scripts/`. `live-analysis.mjs` saves before its analysis too.
 - **Assert a reset, do not assume it.** `/doc/NEW` without `{"Argument": {}}` is
   HTTP 500 and resets nothing.
 - **Never call `/TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK`**: it crashes Gen, MIDASIT

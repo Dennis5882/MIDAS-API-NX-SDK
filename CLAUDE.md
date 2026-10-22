@@ -475,16 +475,17 @@ Two things that have already caused rework:
   gate in that package shows up as a 404 there and nowhere else. They proved equal on
   2026-09-03 (282 Civil resources, 267 Gen). A clean sweep proves routes exist and parse and
   nothing about request shapes — every field-name, enum and default defect found so far was
-  invisible to a GET. **Four** harnesses call `/doc/NEW` and **discard unsaved work**:
+  invisible to a GET. **Five** harnesses call `/doc/NEW` and **discard unsaved work**:
   `scripts/live_smoke.py`, `scripts/live_crud_check.py`, since 2026-09-01
-  `packages/typescript/scripts/live-crud.mjs`, and since 2026-09-19
+  `packages/typescript/scripts/live-crud.mjs`, since 2026-09-19
   `scripts/live_manual_feedback.py`, which calls it once per probe rather than once per
-  run. Never run one against someone's open document without asking first. The npm one
+  run, and since 2026-10-22 `scripts/live_design_functions.py` (Gen only: builds a solved
+  model and runs the design functions, checking each report file on disk). Never run one against someone's open document without asking first. The npm one
   saves a checkpoint before the `/doc/NEW` unless `--no-save-before` is passed; that flag
   removes the safety net, not the destructive call. Every one of them writes its
   checkpoints to a directory **on the NX machine** that the caller names with `--save-dir`;
   none of them guesses one, because a path that does not exist there raises a blocking dialog
-  while the HTTP call still answers like a success. **Since 2026-09-21 all four ask the same
+  while the HTTP call still answers like a success. **Since 2026-09-21 they all ask the same
   way and refuse to start when nothing is named** — `scripts/harness_save_path.py` holds the
   rule, the reasons and the two stated departures, and `tests/test_harness_save_path.py` checks
   each harness applies it. `--save-dir` takes a directory and the file name is derived from the
@@ -492,8 +493,10 @@ Two things that have already caused rework:
   `.mcb` that `/doc/STAGAS` wants) cannot be got wrong; `--no-save-before` waives the checkpoint
   and **not** the `/doc/NEW`. The shape is checked while arguments are parsed, not at the save,
   so a relative path costs nothing — not even a connection. The departures: `live_crud_check.py`
-  also accepts `--save-as` for an exact path, and `live_manual_feedback.py` has no waiver,
-  because its per-probe saves are the evidence the run produces rather than a safety net.
+  also accepts `--save-as` for an exact path, and `live_manual_feedback.py` and
+  `live_design_functions.py` have no waiver - the first because its per-probe saves are the
+  evidence the run produces rather than a safety net, the second because it saves the model
+  before its analysis regardless.
 - **`/info/{endpoint}` introspection is served for `/db/*` only.** Swept from both SDKs
   2026-09-01: it answered for 399 of 402 `/db/*` resource-product pairs and for **none of the
   147 `/DESIGN/*` pairs**, even though those design endpoints answer a plain GET
@@ -504,8 +507,8 @@ Two things that have already caused rework:
   a design contract can never carry `provenance: info_schema`. The three `/db/*` exceptions
   are the Civil Hyper-S trio `/db/IEHG-GL-M1`, `/db/IEHG-PSS-M1` and `/db/IEHG-TRUSS-M1`.
 - **`scripts/live_crud_check.py` write coverage is tracked in the script itself.** Cases carry
-  `confirmed=True` only once someone has watched them pass live (297 of 337 cases as of
-  2026-10-11; the first 43 landed 2026-07-29 on Civil NX, after `/db/NMAS`'s crash was
+  `confirmed=True` only once someone has watched them pass live (299 of 337 cases as of
+  2026-10-22; the first 43 landed 2026-07-29 on Civil NX, after `/db/NMAS`'s crash was
   root-caused and worked around — see above); a failure of
   a confirmed case is a **regression** and exits 1, while a failure of an
   unconfirmed one exits 3 and means "triage the fixture first". Don't flip `confirmed` to silence
@@ -563,6 +566,14 @@ Two things that have already caused rework:
   still there for any future case that needs it). Full reproduction history in
   `docs/live_verification_notes.md`; the vendor report's A-1 now leads with the root cause and
   the workaround, not just "it crashes."
+- **Save before `/doc/ANAL`.** On 2026-10-22 (Gen NX, Build 10/17/2026) an analysis sent
+  straight after `/doc/NEW` + model building - a document never saved - raised a "Save As"
+  dialog, and the call and every later one hung until the dialog was closed. A harness
+  analyses only through `scripts/harness_save_path.py`'s `analyze_saved`, which saves into
+  `--save-dir` first and refuses without one; `tests/test_harness_save_path.py` fails on a
+  direct `doc.analyze(` under `scripts/`, and checks `live-analysis.mjs` saves first. The
+  SDK's own `doc.analyze()` does not save for you: writing a file on the NX host is the
+  caller's decision.
 - **Open a document before the first `/doc/NEW`.** On 2026-09-17 Gen NX had no project open
   (`GET /db/NODE` answered `The project is not opened`), and a `/doc/NEW` sent then did not
   answer and left the session blocked until the product was brought back up. Every harness
