@@ -71,6 +71,7 @@ exclude_docs: |
   vendor_report_*.docx
   vendor_report_triage.md
   vendor_repro_nmas.py
+  vendor_issues/
   release_notes_*.md
   planning/
 

@@ -5806,3 +5806,79 @@ records:
     0.01 on both products. Civil now accepts /db/NLCT and /db/EPMT with the payloads Gen accepts, which it refused
     through Build 10/10/2026; both cases are confirmed on Civil. RC and steel SRDF on Gen passed with DCO first, as
     on 2026-10-11. Evidence in docs/live_verification_notes.md and docs/npm_live_evidence_scratch.md.
+- id: ledger-read-2026-10-23-1
+  endpoints:
+  - /DESIGN/RC/KDS-41-20-2022/CD-ANAL
+  date: '2026-10-23'
+  level: read
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build 10/17/2026
+  outcome: crash_or_hang
+  method: >-
+    Deliberate reproduction on the author's go-ahead. Empty document checkpointed to C:/temp, /doc/NEW, the
+    CRUD base model's column only (C24 0.6x0.6, fixed base, DL self weight), the confirmed /db/LCOM-CONC
+    record and RC MBTP COLUMN; RC DCO was refused again (Errors detected in Concrete Design Control Data), so
+    no RC design code was set. Saved, /doc/ANAL answered command complete and /db/NODE read back. CD-ANAL on
+    element 1 answered 404 Client Disconnected after 24 s; every later call answered client does not exist
+    and /mapikey/verify answered disconnected. Windows recorded an APPCRASH of CVLw.exe in wg_rcs.dll 1.0.0.1,
+    exception c0000005 at offset 0x3eeae - the same module, exception and offset as the 2026-09-29 crash on
+    Build 09/24/2026, whose WER report is still on this machine. Evidence in docs/live_verification_notes.md.
+- id: ledger-read-2026-10-24-1
+  endpoints:
+  - /TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK
+  date: '2026-10-24'
+  level: read
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build 10/17/2026
+  outcome: crash_or_hang
+  method: >-
+    Deliberate re-measurement on the author's go-ahead. Empty document checkpointed to C:/temp, /doc/NEW, the
+    CRUD base model's unit, C24 material, plain 0.6x0.6 concrete section (not SRC-eligible), nodes 1-2 and beam
+    1, no analysis. OCHECK with the 2026-08-13 argument (SECT_LIST [{SECT_NO 1, SECT_DB USER}], ANALYSIS_OPT
+    ANAL_TIME 0, OUTPUT MODEL_UPDATE false) answered 404 Client Disconnected after 26 s; every later call
+    answered client does not exist and /mapikey/verify answered disconnected. Windows recorded an APPCRASH of
+    CVLw.exe in wg_main.dll 1.0.0.1, exception c0000005 at offset 0xb09a51; the two 2026-07-31 OCHECK crashes
+    on this machine are wg_main.dll at 0xb094e1. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-10-24-2
+  endpoints:
+  - /db/NMAS
+  date: '2026-10-24'
+  level: write
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build 10/17/2026
+  outcome: success
+  method: >-
+    Deliberate re-measurement of db-nmas-omitted-rotational-mass on the author's go-ahead, with raw request()
+    calls that bypass the SDK's rmX/rmY/rmZ fill-in. Empty document checkpointed to C:/temp, /doc/NEW, the
+    CRUD base model; the confirmed /db/NMAS case's payloads, which carry no rm* keys: POST and PUT on node 3,
+    then 50 sequential POSTs on new nodes 101-150, with GET /db/NODE/1 after each ten. Every write answered its
+    echo, the session answered throughout, Windows recorded no crash, and GET /db/NMAS returned 51 records
+    with rmX/rmY/rmZ all 0. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-10-24-3
+  endpoints:
+  - /db/NMAS
+  date: '2026-10-24'
+  level: write
+  products:
+  - gen
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build 10/17/2026
+    gen: MIDAS Gen NX 2026 (v2.2), build 10/17/2026
+  outcome: success
+  method: >-
+    Varied re-measurement of db-nmas-omitted-rotational-mass on the author's go-ahead, raw request() throughout
+    so the SDK fill-in never ran, on each product in turn. An 11 x 11 node frame in the X-Z plane (220 beams,
+    bottom row fixed) from the base model's material and section. A 110-record batch POST without rmX/rmY/rmZ;
+    five records giving one or two of the three; a 20-record PUT mixing full and omitted records; a PUT
+    creating a record followed by 100 overwrites; ten DELETE/POST cycles on one node; then the confirmed
+    /db/EIGV case and /doc/ANAL, and again after re-sending every record with rm* explicit. No crash on either
+    product and none in the Windows log; omitted fields read back 0, given ones as sent; the two analyses'
+    EIGENVALUEMODE tables (30 modes x 121 nodes, 3,630 rows) were identical. Evidence in
+    docs/live_verification_notes.md.

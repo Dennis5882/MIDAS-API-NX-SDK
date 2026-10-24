@@ -12346,3 +12346,143 @@ first, which is why the npm path never met this; `live_smoke.py` analysed
 straight after `/doc/NEW`. Both Python harnesses now analyse through
 `harness_save_path.analyze_saved`, which saves into `--save-dir` first, and a
 test fails on a direct `doc.analyze(` under `scripts/`. Not measured on Civil.
+
+
+## 2026-10-23 - Civil `CD-ANAL` without an RC design code: second reproduction, and where it dies
+
+Civil NX 2026 v2.2, Build 10/17/2026 (the author's About dialog, 2026-10-22),
+on this checkout's machine (`CVLw.exe`, PID 21900, started 19:57). A
+deliberate reproduction of `design-rc-cd-anal-without-design-code-kills-civil`
+on the author's go-ahead ("3번 부터 죽여봐"); the author watched it crash.
+
+Empty document confirmed (`GET /db/NODE` -> `{"message": ""}`), checkpoint to
+`C:/temp`, `/doc/NEW`, then the 2026-09-29 model: the CRUD base model's column
+only (material, section, nodes 1-2, element 1, support, `DL`, self weight),
+the confirmed `/db/LCOM-CONC` record, RC `MBTP` 1 `COLUMN`.
+
+| Call | Answer |
+| --- | --- |
+| `PUT` RC `DCO` (the design_tables case's record) | `{"error": {"message": "[Error] Errors detected in Concrete Design Control Data.(Item:)"}}`; `GET` afterwards `{"message": ""}` - no RC design code, as on 2026-09-28/29 |
+| `/doc/SAVEAS` then `/doc/ANAL` (`analyze_saved`) | `command complete`, 8.9 s; `/db/NODE` read back both nodes |
+| `CD-ANAL` (`PERFORM_TYPE: "ELEMS"`, element 1, 30 s timeout) | after **24.4 s**: `404 Client Disconnected` |
+| every call for the next two minutes | `404 client does not exist`; `/mapikey/verify` `status: "disconnected"` |
+
+Unlike 2026-09-29 the call did not time out: the relay answered `Client
+Disconnected` once the process was gone, and `verify` said `disconnected`
+rather than `connected`. `CVLw.exe` was no longer running.
+
+**Windows recorded where it died.** Application log, 20:04:35 (Application
+Error 1000) and 20:04:50 (WER 1001, APPCRASH):
+
+    CVLw.exe 26.3.24.1001, timestamp 0x6ad3b719
+    faulting module wg_rcs.dll 1.0.0.1, timestamp 0x6ad3b602
+    exception 0xc0000005, offset 0x000000000003eeae
+    E:\MIDAS PROGRAM\MIDAS CIVIL NX\MIDAS CIVIL NX\wg_rcs.dll
+    Report Id ebc3038f-09ef-45d3-8859-f2c210646e31
+
+The WER archive on this machine still holds the **2026-09-29 08:08** report
+(`AppCrash_CVLw.exe_75ba5a88...`): `CVLw.exe` timestamp `0x6ab55331` (Build
+09/24/2026), **`wg_rcs.dll`, `c0000005`, offset `0x3eeae`** - the same module,
+exception and offset on two builds. An access violation at one fixed address
+in the RC design module, reached the same way twice, is one defect, not a
+coincidence. Still not isolated: whether the missing design code is the
+trigger (Civil refuses every RC `DCO` this fixture has tried, so a control
+run with a code set is not available), and whether the other RC `*-ANAL`
+calls reach the same address.
+
+Ledger `ledger-read-2026-10-23-1` (`crash_or_hang`).
+
+
+## 2026-10-24 - `/TEMP/.../OCHECK` still ends Civil NX on Build 10/17/2026, in `wg_main.dll`
+
+Civil NX 2026 v2.2, Build 10/17/2026, this checkout's machine, on the
+author's go-ahead ("재측정해보자 그러면"); the author confirmed the product
+died ("죽음"). Civil restarted after the previous day's `CD-ANAL` crash,
+document confirmed empty, checkpoint to `C:/temp`, `/doc/NEW`, then the
+2026-08-13 precondition: the CRUD base model's unit, C24 material, the plain
+0.6 x 0.6 `SB` section (a real section SRC design cannot use), nodes 1-2 and
+beam 1. No analysis.
+
+`POST /TEMP/DESIGN/SRC/AIK-SRC2K/OCHECK` with the 2026-08-13 argument
+`{"SECT_LIST": [{"SECT_NO": 1, "SECT_DB": "USER"}], "ANALYSIS_OPT":
+{"ANAL_TIME": 0}, "OUTPUT": {"MODEL_UPDATE": false}}` answered `404 Client
+Disconnected` after **26.1 s**; every call for 80 s afterwards answered `404
+client does not exist`, and `/mapikey/verify` `status: "disconnected"`.
+Earlier OCHECK runs timed out instead; the relay's answer differs, the
+outcome does not.
+
+**Windows' crash records for every Civil crash on this machine** (Application
+Error 1000, `CVLw.exe` 26.3.24.1001):
+
+| When | Call | `CVLw.exe` timestamp | Module | Exception / offset |
+| --- | --- | --- | --- | --- |
+| 2026-07-31 10:18 | OCHECK | `0x6a6a3180` | `wg_main.dll` | `c0000005` / `0xb094e1` |
+| 2026-07-31 10:40 | OCHECK | `0x6a6a3180` | `wg_main.dll` | `c0000005` / `0xb094e1` |
+| 2026-09-29 08:08 | RC `CD-ANAL` | `0x6ab55331` | `wg_rcs.dll` | `c0000005` / `0x3eeae` |
+| 2026-10-23 20:04 | RC `CD-ANAL` | `0x6ad3b719` | `wg_rcs.dll` | `c0000005` / `0x3eeae` |
+| 2026-10-24 00:11 | OCHECK | `0x6ad3b719` | `wg_main.dll` | `c0000005` / `0xb09a51` |
+
+So OCHECK and `CD-ANAL` are two defects in two modules. OCHECK's address moved
+by 0x570 between a July build and Build 10/17/2026, inside a DLL that was
+rebuilt in between; the same code path is the natural reading, not a proven
+one. The 2026-08-13 Civil reproduction is not in this log. Today's Report Id is
+`642db7c3-38d8-40d8-a96d-385839227c63`.
+
+Ledger `ledger-read-2026-10-24-1` (`crash_or_hang`).
+
+
+## 2026-10-24 (later) - `/db/NMAS` without `rmX`/`rmY`/`rmZ` on Civil Build 10/17/2026: no crash
+
+Civil NX 2026 v2.2, Build 10/17/2026, this checkout's machine, on the
+author's go-ahead ("Nmas 가자"). Raw `client.request()` calls, so the SDK's
+fill-in in `NodalMass.create()`/`.update()` was bypassed; the payloads are
+the confirmed `/db/NMAS` case's (`{"mX": 1, "mY": 1, "mZ": 1}` and the update
+with `mZ` 2), which carry no `rm*` key. Empty document, checkpoint to
+`C:/temp`, `/doc/NEW`, the CRUD base model.
+
+| Step | Answer |
+| --- | --- |
+| POST node 3 | echo `{"mX": 1, "mY": 1, "mZ": 1}`; `GET /db/NMAS/3` adds `"rmX": 0, "rmY": 0, "rmZ": 0` |
+| PUT node 3 | echo `{"mX": 1, "mY": 1, "mZ": 2}`; read back with `rm*` 0 |
+| 50 sequential POSTs, nodes 101-150 | 50 of 50 echoed, no error body; `GET /db/NODE/1` answered after every ten |
+| `GET /db/NMAS` | 51 records, every one `rmX`/`rmY`/`rmZ` = 0 |
+
+No crash event in the Application log, and `CVLw.exe` kept its 00:18 start
+time. Same reading as 2026-09-04 on Build 09/02/2026: the server applies the
+documented default. The SDK fill-in stays (risk entry's reasons unchanged:
+an uninitialized read hides when the memory is zero, and these are small
+scratch documents). Gen NX not re-checked on this build. Ledger
+`ledger-write-2026-10-24-2`.
+
+
+## 2026-10-24 (later still) - `/db/NMAS` omissions, varied, on both products: no crash, and the solver reads 0
+
+Both products at v2.2 Build 10/17/2026, this checkout's machine, on the
+author's go-ahead ("Nmas 더미모델로 해서 다양하게 테스트 해봐"). Raw
+`client.request()` throughout. Model: an 11 x 11 node frame in the X-Z plane
+(4.0 m bays, 3.2 m storeys), 220 beams on the base model's C24 material and
+0.6 x 0.6 section, the 11 ground nodes fixed, `DL` with self weight. Each
+product: empty document, checkpoint to `C:/temp`, `/doc/NEW`, then:
+
+| Group | What was sent (no `rmX`/`rmY`/`rmZ` unless stated) | Civil | Gen |
+| --- | --- | --- | --- |
+| A | one POST of 110 records (every non-ground node) | 110 stored, all `rm*` 0 | same |
+| B | five records giving one or two of the three as 0.5 | given ones 0.5, missing ones 0 | same |
+| C | one PUT of 20 records, odd ids full (`rm*` 0), even ids omitted | all 20 identical, `rm*` 0 | same |
+| D | PUT creating node 121's record, then 100 PUTs | last `mX` 1.99, `rm*` 0 | same |
+| E | ten DELETE `/db/NMAS/60` + POST cycles | `rm*` 0 | same |
+| F | confirmed `/db/EIGV` case (Lanczos, 30 modes), `analyze_saved` | `command complete` | same |
+| G | every record PUT again with `rm*` explicit (B's 0.5 kept), analysed again | | |
+
+**F against G:** `EIGENVALUEMODE` (the SDK's default components) answered
+3,630 rows - 30 modes x 121 nodes - each time, and **no row differed** between
+the analysis of omitted masses and that of explicit zeros, on either product
+(mode 1 is the out-of-plane sway, `UY` 0.1498 at the top nodes). So the
+default reaches the solver, not only the stored record. The table carried
+mode shapes only; no frequency sub-table came back with these components.
+
+No session stopped answering (`GET /db/NODE/1` after every group and every
+25 of D's PUTs), the Application log holds no crash for either process, and
+both kept their start times. Both left on empty documents. This is the widest
+omission test so far and it is clean; the SDK fill-in still stays, for the
+risk entry's reasons. Ledger `ledger-write-2026-10-24-3`.

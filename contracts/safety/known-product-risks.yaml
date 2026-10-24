@@ -138,9 +138,23 @@ risks:
       returned normally, GET stored all three omitted fields as 0, and a
       follow-up NODE read confirmed each session remained responsive. This is
       corroboration on the same build, not a reason to remove the mitigation.
+      Re-checked 2026-10-24 on Civil NX 2026 v2.2 Build 10/17/2026 with raw
+      requests that bypass the SDK: one POST and one PUT on node 3 and 50
+      sequential POSTs on fresh nodes, all without rmX/rmY/rmZ. Every write
+      answered its echo, the session answered throughout, no crash was recorded
+      by Windows, and all 51 stored records read back rmX/rmY/rmZ as 0. The
+      same day both products took a wider set on an 11 x 11 frame: a 110-record
+      batch POST, partial omission (one or two of the three given), a mixed
+      batch, a PUT that creates a record then 100 overwrites, ten delete and
+      re-create cycles, and a Lanczos eigenvalue analysis on the omitted masses.
+      No crash on either; every omitted field read back 0, the given ones as
+      sent; and the 30-mode shapes (3,630 rows) matched, row for row, an
+      analysis of the same masses with rmX/rmY/rmZ sent as 0. So the solver
+      reads 0 too, not only the record. The SDK rule stays for the reasons
+      above.
     firstObserved: "2026-07-29"
     rootCausedOn: "2026-07-29"
-    lastChecked: "2026-09-05"
+    lastChecked: "2026-10-24"
     evidence:
       - docs/live_verification_notes.md
     reportedToVendor: A-1
@@ -204,16 +218,25 @@ risks:
       The call never answers. It times out client-side after 30-35 seconds, the
       product raises its "Failed to disconnect the work session" licence dialog,
       and every following call times out or reports a disconnected session. The
-      licence is held until the process is restarted properly.
+      licence is held until the process is restarted properly. On Civil NX
+      Build 10/17/2026 (2026-10-24) the call instead answered 404 Client
+      Disconnected after 26 seconds, then client does not exist, with
+      /mapikey/verify reporting disconnected.
     rootCause: >-
-      Unknown, and MIDASIT has not committed to one. The trigger is a precondition
+      An access violation in wg_main.dll on Civil NX, per Windows' own crash
+      records: c0000005 at offset 0xb094e1 twice on 2026-07-31 (CVLw.exe
+      0x6a6a3180) and at 0xb09a51 on 2026-10-24 (CVLw.exe 0x6ad3b719, Build
+      10/17/2026) - the same module, a nearby address in a rebuilt DLL. Not the
+      module the RC CD-ANAL crash dies in (wg_rcs.dll), so the two are separate
+      defects. Why it is reached is unknown, and MIDASIT has not committed to
+      one. The trigger is a precondition
       of the model rather than of the request: a run against a document with a
       real section SRC design cannot use crashes, while the identical call against
       a document with no sections answers a clean `Section 1 does not exist.`
       error and leaves the session healthy.
     ruledOut: >-
       Not build-dependent: reproduced on Gen NX 2026 v2.1 build 08/11/2026 and on
-      Civil NX 2026 v2.2 builds 08/12/2026 and 08/24/2026. Not fixed by the path
+      Civil NX 2026 v2.2 builds 08/12/2026, 08/24/2026 and 10/17/2026. Not fixed by the path
       move: MIDASIT relocated the route to the /TEMP/ prefix on 2026-08-06 to mark
       it as an unofficial, paused-development API, and the new path reproduces the
       crash identically. Not a payload problem: the same shape that crashes
@@ -223,10 +246,11 @@ risks:
     status: >-
       Open, and expected to stay open. MIDASIT classified it as an unofficial API
       with paused development and no fix timeline, which is what the /TEMP/ prefix
-      records. Four reproductions across two products and four builds; each needed
-      a full product restart to recover.
+      records. Five reproductions across two products and five builds, the last
+      on Civil NX Build 10/17/2026 (2026-10-24); each needed a full product
+      restart to recover.
     firstObserved: "2026-07-31"
-    lastChecked: "2026-08-24"
+    lastChecked: "2026-10-24"
     evidence:
       - docs/live_verification_notes.md
   - id: design-rc-cd-anal-without-design-code-kills-civil
@@ -235,30 +259,39 @@ risks:
     endpoints: ["/DESIGN/RC/KDS-41-20-2022/CD-ANAL"]
     products: [civil]
     symptom: >-
-      The call never answers. It timed out client-side at 30 seconds; every
-      /db/NODE GET after it timed out for more than two minutes while
-      /mapikey/verify still answered connected, and the author found Civil NX
-      dead - it had to be restarted.
+      The process dies. On 2026-09-29 the call timed out client-side at 30
+      seconds and every /db/NODE GET after it timed out for more than two
+      minutes while /mapikey/verify still answered connected; on 2026-10-23 it
+      answered 404 Client Disconnected after 24 seconds, every later call
+      answered client does not exist and /mapikey/verify said disconnected.
+      Both times Civil NX was gone and had to be restarted.
     rootCause: >-
-      Unknown. The model was a solved RC column (live-analysis.mjs's model,
+      An access violation in Civil's RC design module: Windows recorded both
+      crashes as APPCRASH of CVLw.exe in wg_rcs.dll 1.0.0.1, exception
+      c0000005, at the same offset 0x3eeae, on two builds (CVLw.exe timestamps
+      0x6ab55331 and 0x6ad3b719). Which input reaches that address is not
+      known. The model was a solved RC column (live-analysis.mjs's model,
       a concrete design load combination, member type COLUMN) on which
       /doc/ANAL had completed. What set it apart from the Gen run that worked
       is that Civil refuses the RC design-code selection - both /DESIGN/RC/DRC
       and RC DCO answer design-control-data errors - so no RC design code was
       set when CD-ANAL ran.
     ruledOut: >-
-      Nothing yet: one occurrence. The identical sequence on Gen NX, where RC
-      DCO is accepted, ran CD-ANAL, CD-TABLE and CD-REPORT cleanly the same
-      day on the same build.
+      A one-off: it reproduced on a second build with the same fault address.
+      The identical sequence on Gen NX, where RC DCO is accepted, ran CD-ANAL,
+      CD-TABLE and CD-REPORT cleanly on 2026-09-29. Not ruled out: that the
+      missing design code is incidental, since no control run with an RC code
+      set is possible on Civil while it refuses every DCO tried.
     mitigation: none
     status: >-
-      Open, one reproduction (Civil NX 2026 v2.2, Build 09/24/2026). Calling
+      Open, two reproductions on two builds (Civil NX 2026 v2.2, Build
+      09/24/2026 and Build 10/17/2026), the same fault address both times. Calling
       CD-ANAL on an empty Civil document answers "Please perform analysis"
       harmlessly; it is a model with analysis results and no RC design code
       that is not safe. Whether the other RC *-ANAL calls share it is not
       known. No SDK rule yet: a warning in both SDKs is proposed, not made.
     firstObserved: "2026-09-29"
-    lastChecked: "2026-09-29"
+    lastChecked: "2026-10-23"
     evidence:
       - docs/live_verification_notes.md
   - id: db-rebb-write-path-refuses-every-payload

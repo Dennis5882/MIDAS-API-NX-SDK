@@ -417,6 +417,19 @@ declares one - not as a queue to rescan.
   licence.
 - **Never hand-write a live payload.** Use the fixture, a contract or a manual
   example.
+- **The processes are `GenNX` and `CVLw`.** Civil NX's executable is
+  `CVLw.exe`, so a process filter on "Civil" finds nothing and reads as Civil
+  running on another machine (2026-10-23). Match on the window title
+  (`MIDAS CIVIL NX ...`) or the name `CVLw`.
+- **A crash leaves Windows' own record; read it before writing a report.**
+  The Application log's `Application Error` 1000 entries name the faulting
+  module, exception and offset (`Get-WinEvent -FilterHashtable
+  @{LogName='Application'; ProviderName='Application Error'; Id=1000}`,
+  filtered on `CVLw`/`GenNX`), and they go back months: on 2026-10-23/24 they
+  showed both reproductions of the Civil `CD-ANAL` crash at the same
+  `wg_rcs.dll` offset on two builds, and OCHECK in `wg_main.dll`. The
+  `ReportArchive` copies under `C:\ProgramData\...\WER` need admin rights
+  for older entries; the event log does not.
 
 ## Repository rules this work keeps running into
 

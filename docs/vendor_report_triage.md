@@ -153,10 +153,21 @@ silent deletion is not.
 Civil model with no RC design code (Civil refuses RC `DCO`) never answered, and
 Civil NX had to be restarted. Recorded as the known risk
 `design-rc-cd-anal-without-design-code-kills-civil`. It is a crash, which is
-the class of finding this report exists for, but it rests on **one run**, and
+the class of finding this report exists for, but it rested on **one run**, and
 whether the missing design code is the trigger is a guess. A-1 went in with 15
 reproductions and a root cause. Reproducing it means killing Civil again, so
 whether to spend that is the author's call; until then it stays out.
+
+**2026-10-23: reproduced on Build 10/17/2026, at the author's request.** Same
+model, same answer from RC `DCO`, and Civil died again - this time with the
+Windows crash record kept: APPCRASH of `CVLw.exe` in **`wg_rcs.dll` 1.0.0.1,
+`c0000005`, offset `0x3eeae`**, and the 2026-09-29 WER report on the same
+machine shows the identical module, exception and offset on Build 09/24/2026.
+That answers "one run" and gives MIDASIT something it can look up directly. The
+trigger is still a hypothesis (no control with an RC code set is possible on
+Civil). Whether it now goes into the report is the author's call; it has not
+been added. Filed in MIDASIT's tracker on 2026-10-24 as MAPI-2968 at the
+author's go-ahead (draft: `docs/vendor_issues/01_civil_cd_anal_crash.md`).
 
 
 ### `/db/FIMP`'s printed example — closed, not a vendor item
