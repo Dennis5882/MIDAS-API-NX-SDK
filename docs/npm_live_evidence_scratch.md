@@ -1522,3 +1522,54 @@ new on Civil, which now accepts the payloads it refused through Build
 **Count:** 0 new endpoints - a re-verification - so the totals above stand:
 173 distinct `/db` endpoints, 59 distinct `/DESIGN` endpoints and 4 distinct
 result-table operations; 236 distinct npm public-API operations overall.
+
+### 2026-10-24 - `/db/MADO` and `/db/DOEL` on Gen NX, Build 10/17/2026
+
+`node scripts/live-crud.mjs --product gen --endpoints /db/MADO,/db/SBDO,/db/DOEL --save-dir C:/temp`,
+straight after the Python harness's extras9 tier passed the first two twice.
+`PASS /db/MADO`, `FAIL /db/SBDO POST /db/SBDO -> 201 with an error body: Unknown Error`,
+`PASS /db/DOEL`; checkpoint saved, empty document restored. Through Build
+09/24/2026, the last build measured, a MADO POST stored nothing and DOEL failed with it; both Gen cases
+are confirmed now.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/MADO` | 2026-10-24 | Gen |
+| `/db/DOEL` | 2026-10-24 | Gen |
+
+**Count:** 2 new endpoints; 175 distinct `/db` endpoints, 59 distinct
+`/DESIGN` endpoints and 4 distinct result-table operations; 238 distinct npm
+public-API operations overall.
+
+### 2026-10-25 - `/db/MADO`, `/db/SBDO` and `/db/DOEL` on Civil NX
+
+`node scripts/live-crud.mjs --product civil --endpoints /db/MADO,/db/SBDO,/db/DOEL --save-dir C:/temp`,
+after the Python harness's extras9 tier passed all three twice. `PASS` for each;
+checkpoint saved, empty document restored. Civil had been restarted that day
+and its build was not re-read (last author-confirmed 10/17/2026). MADO and DOEL
+were already in the npm set through Gen; SBDO is new.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/MADO` | 2026-10-25 | Civil |
+| `/db/SBDO` | 2026-10-25 | Civil |
+| `/db/DOEL` | 2026-10-25 | Civil |
+
+**Count:** 1 new endpoint; 176 distinct `/db` endpoints, 59 distinct
+`/DESIGN` endpoints and 4 distinct result-table operations; 239 distinct npm
+public-API operations overall.
+
+### 2026-10-25 - `/db/DSTL` on Civil NX
+
+`node scripts/live-crud.mjs --product civil --endpoints /db/DSTL --save-dir C:/temp`,
+after the Python harness's unconfirmed-case run passed it on Civil. `PASS
+/db/DSTL`; checkpoint saved, empty document restored. The shared case is now one
+case per product: Civil confirmed, Gen unconfirmed.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/DSTL` | 2026-10-25 | Civil |
+
+**Count:** 1 new endpoint; 177 distinct `/db` endpoints, 59 distinct
+`/DESIGN` endpoints and 4 distinct result-table operations; 240 distinct npm
+public-API operations overall.

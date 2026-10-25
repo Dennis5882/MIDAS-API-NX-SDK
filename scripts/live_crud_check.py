@@ -3047,6 +3047,10 @@ def _extras9_seeds() -> List[SeedStep]:
     and demonstrate the downstream effect -- they reference a domain name
     that was never actually created, which is the real reason they fail
     too, not necessarily a defect of their own.
+
+    Build 10/17/2026 stores it (Gen 2026-10-24, Civil 2026-10-25, each
+    through both SDKs and twice in Python): MADO and DOEL complete a full
+    round trip on both products, and so does Civil's SBDO.
     """
     return [
         SeedStep("mado_seed", lambda c: MainDomain.create(
@@ -3057,21 +3061,21 @@ def _extras9_seeds() -> List[SeedStep]:
 
 
 def _extras9_cases() -> List[Case]:
-    """None of these 3 have ever passed live -- see the seed docstring
-    above for /db/MADO's root cause. SBDO and DOEL are included anyway
-    (not skipped) since a future MADO fix might unblock them without any
-    change needed here."""
+    """Until Build 10/17/2026 none of these passed live -- see the seed
+    docstring above for /db/MADO's root cause. On that build MADO and DOEL
+    pass on both products and SBDO on Civil; Gen's SBDO still answers
+    `Unknown Error` with the domain it names present, so its failure is its
+    own."""
     return [
         Case(
             MainDomain,
             {"NAME": "DM_CRUD", "TYPE": 4, "MATL": 1, "PROP": 1, "SUB_TYPE": 1},
             {"NAME": "DM_CRUD", "TYPE": 4, "MATL": 1, "PROP": 1, "SUB_TYPE": 2},
             lambda p: p.get("SUB_TYPE"), 1, 2,
-            item_id=92, needs=("mado_seed",),
+            item_id=92, needs=("mado_seed",), confirmed=True,
         ),
-        # DOMAIN_NAME references mado_seed's DM1_SEED by name -- which was
-        # never actually created (see above), so this fails downstream of
-        # /db/MADO's own defect, not necessarily one of its own. Civil-only
+        # DOMAIN_NAME references mado_seed's DM1_SEED by name. Passes on
+        # Build 10/17/2026, the first build to store the domain. Civil-only
         # field set (MEMB_TYPE_CIVIL/REBAR_AXIS_TYPE/STR_UCS/AXIS_VECTOR),
         # per the manual's own Civil worked example.
         Case(
@@ -3083,11 +3087,11 @@ def _extras9_cases() -> List[Case]:
              "MEMB_TYPE_CIVIL": 1, "REBAR_AXIS_TYPE": 0, "STR_UCS": "",
              "AXIS_VECTOR": [0, 0, 0, 0, 0, 0]},
             lambda p: p.get("V2"), 90, 45,
-            item_id=1, needs=("mado_seed",), products=("civil",),
+            item_id=1, needs=("mado_seed",), products=("civil",), confirmed=True,
         ),
         # Gen-only field set (MEMBER_TYPE/bUseMt/THICKNESS/rebar layout),
-        # per the manual's own Gen worked example. Same downstream-of-MADO
-        # caveat as the Civil case above.
+        # per the manual's own Gen worked example. On Build 10/17/2026 the
+        # domain it names exists and the POST still answers `Unknown Error`.
         Case(
             SubDomain,
             {"SUB_DOMAIN_NAME": "SDM_CRUD", "V1": 0, "V2": 90, "DOMAIN_NAME": "DM1_SEED",
@@ -3109,14 +3113,13 @@ def _extras9_cases() -> List[Case]:
         ),
         # Keyed by element id -- element 4 is the base model's plate.
         # KEY_DOMAIN/MAIN_DOMAIN_NAME reference mado_seed's domains, which
-        # were never actually created (same downstream caveat as SBDO
-        # above).
+        # Gen stores from Build 10/17/2026 (see the seed docstring).
         Case(
             DomainElement,
             {"TYPE": 0, "KEY_DOMAIN": 90, "MAIN_DOMAIN_NAME": "DM1_SEED"},
             {"TYPE": 0, "KEY_DOMAIN": 91, "MAIN_DOMAIN_NAME": "DM2_SEED"},
             lambda p: p.get("MAIN_DOMAIN_NAME"), "DM1_SEED", "DM2_SEED",
-            item_id=4, needs=("mado_seed",),
+            item_id=4, needs=("mado_seed",), confirmed=True,
         ),
     ]
 
@@ -3464,9 +3467,10 @@ def _extras13_cases() -> List[Case]:
     element-keyed tables, no analysis run needed.
 
     On 2026-09-01, seven cases round-tripped on both current builds. DSTL
-    remains unconfirmed: its documented fixture completes on Civil but Gen
-    returns a Steel Design Control Data error. Keep that product difference
-    explicit rather than marking the shared case confirmed.
+    did not: its documented fixture completes on Civil but Gen returns a
+    Steel Design Control Data error. It is one case per product since
+    2026-10-25, when Civil passed it again on Build 10/17/2026 through both
+    SDKs; the Civil case is confirmed and the Gen case stays unconfirmed.
 
     /db/RCHK (Civil-only) joined on 2026-09-28: the record key is a
     section number, not an element - the manual example's second record
@@ -3514,7 +3518,14 @@ def _extras13_cases() -> List[Case]:
             {"DGNCODE": "Eurocode3-2:05"},
             {"DGNCODE": "AISC-ASD89"},
             lambda p: p.get("DGNCODE"), "Eurocode3-2:05", "AISC-ASD89",
-            item_id=1,
+            item_id=1, products=("civil",), confirmed=True,
+        ),
+        Case(
+            SteelDesignCode,
+            {"DGNCODE": "Eurocode3-2:05"},
+            {"DGNCODE": "AISC-ASD89"},
+            lambda p: p.get("DGNCODE"), "Eurocode3-2:05", "AISC-ASD89",
+            item_id=1, products=("gen",),
         ),
         # Keyed by a real base-model BEAM element id (2).  The shared npm
         # fixture provisions that element before the element-keyed CRUD case.
@@ -5272,7 +5283,7 @@ TIERS: List[Tier] = [
     Tier("extras6", "batch 6: seismic-device family from db.boundary (SDVI/SDVE/SDST confirmed both products; SDHY/SDIS confirmed Gen-only; DRLS deferred)", _no_seeds, _extras6_cases),
     Tier("extras7", "batch 7: standalone/frame-attachable remainder of db.static_loads (PNLD/PNLA/FMLD/POSP/POSL confirmed; FBLA/EPST/EPSE fail live)", _extras7_seeds, _extras7_cases),
     Tier("extras8", "batch 8: tractable subset of db.analysis_control (PDEL/BUCK/SMCT/EIGV/BCCT/MVCT confirmed both products; HHCT confirmed Gen only and fails on Civil; NLCT confirmed Gen, and Civil from Build 10/17/2026; ACTL remains unresolved)", _extras8_seeds, _extras8_cases),
-    Tier("extras9", "batch 9: db.node_element's Domain feature (MADO/SBDO/DOEL -- all 3 fail live, MADO silently drops writes on both products)", _extras9_seeds, _extras9_cases),
+    Tier("extras9", "batch 9: db.node_element's Domain feature (MADO/SBDO/DOEL -- all pass from Build 10/17/2026 except Gen's SBDO)", _extras9_seeds, _extras9_cases),
     Tier("extras10", "batch 10: standalone subset of db.construction_stage's heat-of-hydration family (ETFC/CCFC/HSFC/HAHS/STBK/HSTG confirmed; HAHS uses a real SOLID fixture; HPCE fails live; HECB/HSPT/CSCS deferred)", _extras10_seeds, _extras10_cases),
     Tier("extras11", "batch 11a/c: /db/STCT (fails live -- iITER/TOL silently don't persist), /db/HSPT and /db/HECB confirmed with a SOLID hydration fixture", _extras11_seeds, _extras11_cases),
     Tier("extras12", "batch 12: db.bridge in full, all 4 confirmed (GSBG/GCMB/CAMB Civil-only, ULFC both products)", _extras12_seeds, _extras12_cases),

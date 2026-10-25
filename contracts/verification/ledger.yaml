@@ -5882,3 +5882,187 @@ records:
     product and none in the Windows log; omitted fields read back 0, given ones as sent; the two analyses'
     EIGENVALUEMODE tables (30 modes x 121 nodes, 3,630 rows) were identical. Evidence in
     docs/live_verification_notes.md.
+- id: ledger-write-2026-10-24-4
+  endpoints:
+  - /db/MADO
+  - /db/DOEL
+  date: '2026-10-24'
+  level: write
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build 10/17/2026
+  outcome: success
+  method: >-
+    On the author's request to continue Gen write verification with saves to C:/temp, on the machine holding
+    this checkout, which is also the NX host. Every tier of scripts/live_crud_check.py holding an unconfirmed
+    Gen case was run whole, one invocation per tier, each checkpointing to C:/temp, sending /doc/NEW, building
+    the base model and restoring an empty document. /db/MADO (id 92, SUB_TYPE 1 then 2) and /db/DOEL (element 4,
+    MAIN_DOMAIN_NAME DM1_SEED then DM2_SEED) completed create/read/update/read/delete/read, which no build had
+    done before: through Build 09/24/2026, the last build measured, a MADO POST answered success and stored
+    nothing, and DOEL failed with it. Reproduced by a second Python run of the tier; npm replayed the same
+    emitted fixture on Gen on 2026-10-24 (live-crud.mjs, the same three endpoints), with the same answers. Both
+    Gen cases are confirmed. Evidence in docs/live_verification_notes.md.
+- id: ledger-read-2026-10-24-5
+  endpoints:
+  - /db/SBDO
+  - /db/NLLP
+  - /db/NLNK
+  - /db/CGLP
+  - /db/FBLA
+  - /db/MVLDeu
+  - /db/PHGE
+  - /db/HPCE
+  - /db/TDMF
+  - /db/RPSC
+  - /db/EPST
+  - /db/EPSE
+  - /db/ACTL
+  - /db/POGD
+  - /db/DSTL
+  - /db/TDNA
+  - /db/TDPL
+  - /db/LLANop
+  - /db/SLANop
+  - /db/STCT
+  - /db/SINF
+  - /db/LLANch
+  - /db/SLANch
+  - /db/LLANid
+  - /db/IMPF
+  date: '2026-10-24'
+  level: read
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build 10/17/2026
+  outcome: write_rejected
+  method: >-
+    On the author's request to continue Gen write verification with saves to C:/temp, on the machine holding
+    this checkout, which is also the NX host. Same run as ledger-write-2026-10-24-4. Each of these answered as
+    it did on Build 09/24/2026 and Build 10/10/2026: SBDO Unknown Error, now with the domain it names present;
+    NLLP, FBLA, MVLDeu and PHGE Unknown Error; HPCE Wrong Key; TDMF, RPSC, EPST, EPSE, ACTL and POGD Wrong
+    Field; DSTL Errors detected in Steel Design Control Data; TDNA Not Registered String for
+    IS_DB_TDNA_NOTENSIONCALC; LLANop and SLANop contains errors (Item:Wheel Spacing); STCT accepted and iITER
+    read back None; SINF accepted and the record absent. NLNK and CGLP were blocked by the NLLP seed, TDPL by
+    the TDNA seed, and LLANch, SLANch, LLANid and IMPF by Unavailable moving load code from the /db/MVCD seed,
+    so their own requests were not sent. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-10-24-6
+  endpoints:
+  - /DESIGN/RC/KDS-41-20-2022/BD-ANAL
+  - /DESIGN/RC/KDS-41-20-2022/CD-ANAL
+  - /DESIGN/RC/KDS-41-20-2022/BRD-ANAL
+  - /DESIGN/RC/KDS-41-20-2022/BD-TABLE
+  - /DESIGN/RC/KDS-41-20-2022/CD-TABLE
+  - /DESIGN/RC/KDS-41-20-2022/BRD-TABLE
+  - /DESIGN/RC/KDS-41-20-2022/BD-REPORT
+  - /DESIGN/RC/KDS-41-20-2022/CD-REPORT
+  - /DESIGN/RC/KDS-41-20-2022/BRD-REPORT
+  - /DESIGN/STEEL/KDS-41-30-2022/CODE-ANAL
+  - /DESIGN/STEEL/KDS-41-30-2022/CODE-TABLE
+  - /DESIGN/STEEL/KDS-41-30-2022/CODE-REPORT
+  date: '2026-10-24'
+  level: write
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build 10/17/2026
+  outcome: success
+  method: >-
+    On the author's request to continue Gen write verification with saves to C:/temp, on the machine holding
+    this checkout, which is also the NX host. scripts/live_design_functions.py, its first complete run:
+    checkpoint to C:/temp, /doc/NEW, the CRUD base model without its plate, a steel column 11 from the ltsr
+    seeds, RC and steel DCO, the confirmed LCOM-CONC and LCOM-STEEL records and member types, saved to C:/temp
+    and analysed. BD-ANAL (beam 2), CD-ANAL (column 1), BRD-ANAL (brace 3) and steel CODE-ANAL (column 11) each
+    answered message success within 3 s with the session alive. Each TABLE (TABLE_TYPE MEMB) returned a Result
+    Table with a row for its element, and again with EXPORT_PATH C:/temp/midas-nx-design/<name>.json, where the
+    file appeared on disk (505 to 854 bytes; the CD file's row matches the response). Each REPORT (MEMB,
+    Graphic) answered SUCCESS true and wrote its JPG there (738 to 830 KB); the CD report was opened and is a
+    KDS 41 20 : 2022 column design result for member 1. The 2026-09-29 TABLE and REPORT records stayed reads
+    because that NX host was another machine; these files were listed on the host. Evidence in
+    docs/live_verification_notes.md.
+- id: ledger-write-2026-10-25-1
+  endpoints:
+  - /db/MADO
+  - /db/SBDO
+  - /db/DOEL
+  date: '2026-10-25'
+  level: write
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build not re-read after a restart on 2026-10-25 (last author-confirmed 10/17/2026)
+  outcome: success
+  method: >-
+    On the author's go-ahead (2026-10-25, Civil NX open and empty), on the machine holding this checkout, which
+    is also the NX host. scripts/live_crud_check.py's extras9 tier ran whole twice, each run checkpointing to
+    C:/temp, sending /doc/NEW, building the base model and restoring an empty document: /db/MADO (id 92,
+    SUB_TYPE 1 then 2), Civil's /db/SBDO (id 1, V2 90 then 45) and /db/DOEL (element 4, MAIN_DOMAIN_NAME
+    DM1_SEED then DM2_SEED) completed create/read/update/read/delete/read. npm replayed the same emitted fixture
+    on Civil on 2026-10-25 (live-crud.mjs, the same three endpoints), with the same answers. Through Build
+    09/24/2026, the last build measured, a MADO POST answered success and stored nothing on Civil as on Gen,
+    which also failed SBDO and DOEL. The Civil process had been restarted that day and its build was not re-
+    read. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-10-25-2
+  endpoints:
+  - /db/DSTL
+  date: '2026-10-25'
+  level: write
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build not re-read after a restart on 2026-10-25 (last author-confirmed 10/17/2026)
+  outcome: success
+  method: >-
+    On the author's request (2026-10-25, "Civil도 CRUD 진행해줘"), on the machine holding this checkout, which is
+    also the NX host; the Civil process had been restarted that day and its build was not re-read. Every tier of
+    scripts/live_crud_check.py holding an unconfirmed Civil case was run whole, one invocation per tier, each
+    checkpointing to C:/temp, sending /doc/NEW, building the base model and restoring an empty document, with
+    GET /db/NODE answering after each. /db/DSTL (DGNCODE Eurocode3-2:05 then AISC-ASD89) completed
+    create/read/update/read/delete/read, as it has on Civil since 2026-09-01, and again selected alone; npm
+    replayed the same emitted fixture on Civil on 2026-10-25 (live-crud.mjs --endpoints /db/DSTL) with the same
+    answer. The shared case is split into a confirmed Civil case and an unconfirmed Gen one. Evidence in
+    docs/live_verification_notes.md.
+- id: ledger-read-2026-10-25-3
+  endpoints:
+  - /db/SINF
+  - /db/MVLDeu
+  - /db/MVLDpl
+  - /db/NLLP
+  - /db/NLNK
+  - /db/NLNK-M1
+  - /db/CGLP
+  - /db/WVLD
+  - /db/TDMF
+  - /db/RPSC
+  - /db/LCOM-SEISMIC
+  - /db/FBLA
+  - /db/ACTL
+  - /db/HHCT
+  - /db/HPCE
+  - /db/STCT
+  - /db/PHGE
+  - /db/TDNA
+  - /db/TDPL
+  - /DESIGN/RC/KDS-41-20-2022/LMRR
+  - /DESIGN/RC/KDS-41-20-2022/SRDF
+  - /DESIGN/STEEL/KDS-41-30-2022/DCO
+  - /DESIGN/STEEL/KDS-41-30-2022/SRDF
+  date: '2026-10-25'
+  level: read
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build not re-read after a restart on 2026-10-25 (last author-confirmed 10/17/2026)
+  outcome: write_rejected
+  method: >-
+    On the author's request (2026-10-25, "Civil도 CRUD 진행해줘"), on the machine holding this checkout, which is
+    also the NX host; the Civil process had been restarted that day and its build was not re-read. Same run as
+    ledger-write-2026-10-25-2. Each of these answered as recorded on earlier builds: NLLP, FBLA, MVLDeu and PHGE
+    Unknown Error; HPCE Wrong Key; WVLD, TDMF and RPSC Wrong Field; LCOM-SEISMIC The Load Combination Type is
+    not supported; TDNA Not Registered String for IS_DB_TDNA_NOTENSIONCALC; SINF and MVLDpl accepted with the
+    record absent; HHCT wrote 1 and read back 0; ACTL updated to 0.0005 and read back 0.001; the RC LMRR and
+    SRDF PUTs Errors detected in Concrete Design Control Data, the steel DCO and SRDF PUTs Errors detected in
+    Steel Design Control Data. NLNK, NLNK-M1 and CGLP were blocked by the NLLP seed, TDPL by the TDNA seed, and
+    STCT by the record id 1 that the first /db/STAG creates, so their own requests were not sent. Evidence in
+    docs/live_verification_notes.md.

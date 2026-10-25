@@ -93,8 +93,8 @@ def test_the_committed_ledger_still_produces_the_published_counts() -> None:
 
     levels = [resolved[e["endpoint"]].level for e in inventory if e["endpoint"] in resolved]
     assert len(levels) == len(inventory), "every inventory row needs a ledger claim"
-    assert levels.count("write") == 281
-    assert levels.count("read") == 119
+    assert levels.count("write") == 292
+    assert levels.count("read") == 108
 
 
 def test_every_ledger_record_states_a_level_a_count_can_read() -> None:

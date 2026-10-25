@@ -604,14 +604,20 @@ def test_live_case_fixture_marks_current_design_round_trips() -> None:
         case["endpoint"]: case["confirmed"]
         for case in cases
         if case["endpoint"] in {
-            "/db/DCON", "/db/DSTL", "/db/LENG", "/db/MEMB",
+            "/db/DCON", "/db/LENG", "/db/MEMB",
             "/db/DCTL", "/db/LTSR", "/db/MBTP", "/db/WMAK",
         }
     }
+    dstl = {
+        tuple(case["products"]): case["confirmed"]
+        for case in cases
+        if case["endpoint"] == "/db/DSTL"
+    }
 
+    # One case per product: Civil stores the documented code, Gen refuses it.
+    assert dstl == {("civil",): True, ("gen",): False}
     assert confirmed == {
         "/db/DCON": True,
-        "/db/DSTL": False,
         "/db/LENG": True,
         "/db/MEMB": True,
         "/db/DCTL": True,

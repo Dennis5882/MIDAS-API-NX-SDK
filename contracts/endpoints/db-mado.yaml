@@ -32,9 +32,9 @@ verification:
   status: verified_both
   records:
     - product: civil
-      ref: db-read-sweep-2026-08-16
+      ref: db-domain-civil-2026-10-25
     - product: gen
-      ref: db-read-sweep-2026-08-16
+      ref: db-domain-gen-2026-10-24
 
 operations:
   - method: DELETE

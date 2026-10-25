@@ -12486,3 +12486,119 @@ No session stopped answering (`GET /db/NODE/1` after every group and every
 both kept their start times. Both left on empty documents. This is the widest
 omission test so far and it is clean; the SDK fill-in still stays, for the
 risk entry's reasons. Ledger `ledger-write-2026-10-24-3`.
+
+## 2026-10-24 (evening) - Gen write verification on Build 10/17/2026: `/db/MADO` stores, and the design functions run end to end
+
+On the author's request ("Gen NX 쓰기 검증 진행해줘 자동저장하고"), Gen NX 2026
+(v2.2) Build 10/17/2026 on the machine holding this checkout, which is also the
+NX host. Gen first answered `/mapikey/verify` with `disconnected` and every
+`/db` GET with `404 client does not exist`, its window responding on an
+untitled document; a minute later it answered `connected` with no action taken,
+and `/db/NODE`, `/db/ELEM`, `/db/MATL` and `/db/STLD` read empty.
+
+**Every unconfirmed Gen case.** The 16 tiers of `scripts/live_crud_check.py`
+that hold one ran whole, one invocation per tier, each checkpointing to
+`C:/temp`, sending `/doc/NEW`, building the base model and restoring an empty
+document, with `GET /db/NODE` after each (it answered every time). 27 cases:
+
+- **`/db/MADO` (id 92) and `/db/DOEL` (element 4) passed**: create, read,
+  update, read, delete, read. MADO read back `SUB_TYPE` 1 then 2, DOEL
+  `MAIN_DOMAIN_NAME` `DM1_SEED` then `DM2_SEED`. No earlier build stored a
+  MADO record (2026-08-16 to 2026-09-27, the last on Build 09/24/2026, both products; the 10/10 and 10/17 replays ran only tiers holding a confirmed case, which extras9 was not); DOEL
+  had failed behind it. Repeated: a second Python run of `extras9` and
+  `node scripts/live-crud.mjs --product gen --endpoints /db/MADO,/db/SBDO,/db/DOEL`
+  gave the same three answers.
+- **`/db/SBDO` (Gen) still fails**, now with the domain it names present:
+  `POST /db/SBDO -> 201 with an error body: Unknown Error`. Its failure is its
+  own from this build on, not MADO's.
+- The other 24 answered as their rows in the playbook say: NLLP, FBLA, MVLDeu,
+  PHGE `Unknown Error`; HPCE `Wrong Key`; TDMF, RPSC, EPST, EPSE, ACTL, POGD
+  `Wrong Field`; DSTL `Errors detected in Steel Design Control Data.(Item:)`;
+  TDNA `Not Registered String` for `IS_DB_TDNA_NOTENSIONCALC`; LLANop/SLANop
+  `contains errors.(Item:Wheel Spacing)`; STCT `wrote 30, read back None`; SINF
+  `id 1 missing after wrote`; NLNK and CGLP blocked by the NLLP seed, TDPL by
+  the TDNA seed, LLANch, SLANch, LLANid and IMPF by `/db/MVCD`'s `Unavailable
+  moving load code`.
+
+The MADO and DOEL cases cover both products, so for this session each was split
+into a confirmed Gen case and an unconfirmed Civil copy; Civil passed the next
+day (below) and they are one confirmed case each again.
+
+**The design functions, first complete run.** `scripts/live_design_functions.py
+--save-dir C:/temp --report-dir C:/temp/midas-nx-design --timeout 120`. The
+model (base model without its plate, steel column 11 from the `ltsr` seeds, RC
+and steel `DCO`, the confirmed LCOM-CONC/LCOM-STEEL records and member types)
+was saved and analysed through `analyze_saved` - no Save As dialog. Then, each
+followed by a `GET /db/NODE` that answered:
+
+| call | answer | file on the host |
+| --- | --- | --- |
+| RC `BD-ANAL` beam 2, `CD-ANAL` column 1, `BRD-ANAL` brace 3, steel `CODE-ANAL` column 11 | `message: success`, 0.9 - 2.9 s each | - |
+| RC `BD/CD/BRD-TABLE`, steel `CODE-TABLE` (`MEMB`) | `Result Table` with the element's row | - |
+| the same four with `EXPORT_PATH C:/temp/midas-nx-design/<x>-table.json` | the same table | 505 - 854 byte JSON each; `cd-table.json` holds the response's row |
+| `/post/TABLE` `MATERIAL`, `REACTIONG` with `EXPORT_PATH` | the table | 948 and 363 bytes |
+| RC `BD/CD/BRD-REPORT`, steel `CODE-REPORT` (`MEMB`, Graphic) | `SUCCESS: true`, `FILE_PATH` the JPG | 738 - 830 KB JPG each |
+
+`cd-report.jpg` was opened: "RC Column Design Result", KDS 41 20 : 2022,
+member 1, `12-4-d20`, axial and moment ratios 0.790, P-M interaction diagram,
+shear O.K - a real design report of this model. On 2026-09-29 the same TABLE
+and REPORT calls stayed read-level only because the NX host was another
+machine; here the files were listed on the host, so the eight are write-level.
+`STEEL CODE-ANAL` raised no dialog. (The 2026-10-20 dialog was a different
+call, `/post/STEELCODECHECK`, on a model with no LCOM-STEEL; this one has it.)
+
+Gen left on an empty document. Ledger `ledger-write-2026-10-24-4` (MADO,
+DOEL), `ledger-read-2026-10-24-5` (the 25 refused), `ledger-write-2026-10-24-6`
+(the twelve design functions); Gen session record `db-domain-gen-2026-10-24`.
+
+## 2026-10-25 - `/db/MADO`, `/db/SBDO` and `/db/DOEL` pass on Civil NX too
+
+On the author's go-ahead ("civil도 라이브는 켰으니 한번 해볼래?"), after the
+records showed Civil had failed exactly as Gen did (MADO POST accepted, nothing
+stored; 2026-08-16, 09-01, 09-05 and 09-27, the last on Build 09/24/2026). The
+Build 10/10 and 10/17 replays never ran extras9, which held no confirmed case,
+so neither build had been measured here before.
+
+Civil NX had been restarted that day (process start 20:05) and its build was
+not re-read; the last author-confirmed reading is 10/17/2026. It answered
+`connected` with `/db/NODE`, `/db/ELEM`, `/db/MATL`, `/db/STLD` and `/db/MADO`
+empty. `scripts/live_crud_check.py --product civil --tier extras9 --save-dir
+C:/temp`, run twice, and `node scripts/live-crud.mjs --product civil
+--endpoints /db/MADO,/db/SBDO,/db/DOEL --save-dir C:/temp`:
+
+- `/db/MADO` id 92: `SUB_TYPE` 1 then 2 - PASS, all three runs.
+- `/db/SBDO` id 1, Civil's fields (`MEMB_TYPE_CIVIL`, `REBAR_AXIS_TYPE`,
+  `STR_UCS`, `AXIS_VECTOR`): `V2` 90 then 45 - PASS, all three runs. Gen's
+  SBDO, a different field set, still answers `Unknown Error`.
+- `/db/DOEL` on element 4: `DM1_SEED` then `DM2_SEED` - PASS, all three runs.
+
+Each run checkpointed and restored an empty document. MADO and DOEL are one
+confirmed case each again (both products); Civil's SBDO case is confirmed.
+Fixture 337 cases, 302 confirmed. Ledger `ledger-write-2026-10-25-1`; Civil
+session record `db-domain-civil-2026-10-25`.
+
+## 2026-10-25 (later) - every unconfirmed Civil case on Build 10/17/2026: only `/db/DSTL` passes, as before
+
+On the author's request ("Civil도 CRUD 진행해줘"), the same Civil session
+(build not re-read since the restart). The 15 tiers of
+`scripts/live_crud_check.py` that hold an unconfirmed Civil case ran whole,
+one invocation per tier, each checkpointing to `C:/temp`, sending `/doc/NEW`,
+building the base model and restoring an empty document; `GET /db/NODE`
+answered after every one. 24 cases:
+
+- **`/db/DSTL` passed** (`DGNCODE` `Eurocode3-2:05` then `AISC-ASD89`), and
+  again selected alone in Python and through `live-crud.mjs`. Not new: it has
+  completed on Civil since 2026-09-01 and stayed unconfirmed only because one
+  case covered both products and Gen refuses it. It is one case per product
+  now - Civil confirmed, Gen unconfirmed - as MADO was split the day before.
+- The other 23 answered as recorded: NLLP, FBLA, MVLDeu, PHGE `Unknown Error`;
+  HPCE `Wrong Key`; WVLD, TDMF, RPSC `Wrong Field`; LCOM-SEISMIC `The Load
+  Combination Type is not supported.`; TDNA `Not Registered String`; SINF and
+  MVLDpl accepted with the record absent; HHCT `wrote 1, read back 0`; ACTL
+  `updated to 0.0005, read back 0.001`; RC `LMRR`/`SRDF` PUT `Errors detected
+  in Concrete Design Control Data`, steel `DCO`/`SRDF` PUT `Errors detected in
+  Steel Design Control Data`; NLNK, NLNK-M1 and CGLP blocked by the NLLP seed,
+  TDPL by the TDNA seed, STCT by the id 1 the first `/db/STAG` creates.
+
+Fixture 338 cases, 303 confirmed. Civil left on an empty document. Ledger
+`ledger-write-2026-10-25-2` (DSTL) and `ledger-read-2026-10-25-3` (the 23).

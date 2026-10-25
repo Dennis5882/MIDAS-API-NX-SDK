@@ -1049,3 +1049,23 @@ records:
       message and no dialog.
     evidence:
       - docs/live_verification_notes.md
+  - id: db-domain-gen-2026-10-24
+    endpoints: ["/db/MADO", "/db/DOEL"]
+    date: "2026-10-24"
+    nxVersion: MIDAS Gen NX 2026 (v2.2), build 10/17/2026
+    level: write
+    outcome: success
+    method: >-
+      scripts/live_crud_check.py's extras9 tier, run whole twice, and
+      live-crud.mjs on the same three endpoints, each on a /doc/NEW document
+      holding the base model after a checkpoint to C:/temp: the mado_seed
+      domains 90 and 91, then /db/MADO id 92 (SUB_TYPE 1 then 2) and
+      /db/DOEL on the plate element 4 (MAIN_DOMAIN_NAME DM1_SEED then
+      DM2_SEED), each created, read, updated, read, deleted and read.
+    finding: >-
+      Both completed every step through both SDKs. Through Build 09/24/2026, the last build measured,
+      a MADO POST answered success and stored nothing, which also failed
+      DOEL. /db/SBDO, run alongside with the domain it names present, still
+      answered Unknown Error.
+    evidence:
+      - docs/live_verification_notes.md

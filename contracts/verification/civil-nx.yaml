@@ -924,3 +924,23 @@ records:
       and deleted per id, and passed through both SDKs.
     evidence:
       - docs/live_verification_notes.md
+  - id: db-domain-civil-2026-10-25
+    endpoints: ["/db/MADO", "/db/SBDO", "/db/DOEL"]
+    date: "2026-10-25"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build not re-read after a restart on 2026-10-25 (last author-confirmed 10/17/2026)
+    level: write
+    outcome: success
+    method: >-
+      scripts/live_crud_check.py's extras9 tier, run whole twice, and
+      live-crud.mjs on the same three endpoints, each on a /doc/NEW document
+      holding the base model after a checkpoint to C:/temp: the mado_seed
+      domains 90 and 91, then /db/MADO id 92 (SUB_TYPE 1 then 2), Civil's
+      /db/SBDO id 1 (V2 90 then 45) and /db/DOEL on the plate element 4
+      (MAIN_DOMAIN_NAME DM1_SEED then DM2_SEED), each created, read,
+      updated, read, deleted and read.
+    finding: >-
+      All three completed every step through both SDKs. Through Build
+      09/24/2026, the last build measured, a MADO POST answered success and
+      stored nothing, which also failed SBDO and DOEL.
+    evidence:
+      - docs/live_verification_notes.md
